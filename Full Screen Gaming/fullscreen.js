@@ -1,8 +1,6 @@
-const gameAreaWidth  = 800; // at fullScreen
-const gameAreaHeight = 600; // at fullScreen
-const referenceResolution = {width: gameAreaWidth, height: gameAreaHeight}; 
-const gameScaleWindow = 0.5;  // Scrink by 1/2 to fit smaller area
-const gameFullScaleScreen = 1.0; 
+// fullscreen.js
+
+const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight }; 
 var isFullScreen = false;
 
 function openFullscreen() {
@@ -17,13 +15,20 @@ function openFullscreen() {
 }
 
 function closeFullscreen() {
-    var elem = document.getElementById("gameArea");
     if (document.exitFullscreen) {
         document.exitFullscreen();
     } else if (document.webkitExitFullscreen) {
         document.webkitExitFullscreen();
     } else if (document.msExitFullscreen) {
         document.msExitFullscreen();
+    }
+}
+
+function toggleFullscreen() {
+    if (!isFullScreen) {
+        openFullscreen();
+    } else {
+        closeFullscreen();
     }
 }
 
@@ -38,8 +43,8 @@ function resizeCanvas() {
             var scale = gameFullScaleScreen;
             ctx.setTransform(
                 scale, 0, 0, scale, 
-                (canvas.width - referenceResolution.width * scale) , 
-                (canvas.height - referenceResolution.height * scale)  
+                (canvas.width - referenceResolution.width * scale), 
+                (canvas.height - referenceResolution.height * scale)
             );
         }
     } else {
@@ -49,8 +54,8 @@ function resizeCanvas() {
             var scale = gameScaleWindow;
             ctx.setTransform(
                 scale, 0, 0, scale, 
-                (canvas.width - referenceResolution.width * scale) , 
-                (canvas.height - referenceResolution.height * scale)  
+                (canvas.width - referenceResolution.width * scale), 
+                (canvas.height - referenceResolution.height * scale)
             );
         }
     }
@@ -62,7 +67,7 @@ window.addEventListener('orientationchange', resizeCanvas, false);
 document.addEventListener('DOMContentLoaded', (event) => {
     var canvas = document.getElementById('gameArea');
     var ctx = canvas.getContext('2d');
-    
+
     // Set gameArea canvas size in DIV.
     canvas.width = gameAreaWidth * gameScaleWindow;
     canvas.height = gameAreaHeight * gameScaleWindow;
@@ -70,11 +75,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     var scale = gameScaleWindow;
     ctx.setTransform(
         scale, 0, 0, scale, 
-        (canvas.width - referenceResolution.width * scale) , 
-        (canvas.height - referenceResolution.height * scale)  
+        (canvas.width - referenceResolution.width * scale), 
+        (canvas.height - referenceResolution.height * scale)
     );
 
+    // Bind click event to canvas for toggling fullscreen
+    canvas.addEventListener('click', toggleFullscreen);
+
     // Uncomment these to initialize
-    //setDivs();  
-    //drawShape();
+    setDivs();  
+    drawShape();
 });

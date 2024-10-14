@@ -1,3 +1,4 @@
+// extra.js
 function drawShape() {
     var canvas = document.getElementById('gameArea');
     
@@ -48,9 +49,11 @@ function setDivs() {
     document.getElementById('docW').textContent = "document: " + document.documentElement.clientWidth + " x " + document.documentElement.clientHeight;	
     document.getElementById('wdowW').textContent = "window: " + window.innerWidth + " X " + window.innerHeight;			
     document.getElementById('scrnW').textContent = "screen: " + screen.width + " X " + screen.height;	
+    document.getElementById('gameScaleWindow').textContent = "gameScaleWindow: " + gameScaleWindow;	
 
     console.log(document.getElementById('canW').textContent);
     console.log(document.getElementById('divW').textContent);
     console.log(document.getElementById('docW').textContent);
     console.log(document.getElementById('scrnW').textContent);
+    console.log(document.getElementById('gameScaleWindow').textContent);
 }

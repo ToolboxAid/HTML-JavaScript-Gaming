@@ -1,23 +1,17 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta charset="UTF-8">
+    <title>Fullscreen Demo</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <script src="fullscreen.js" defer></script>
+    <script src="global.js" defer></script>
     <script src="extra.js" defer></script>
+    <script src="fullscreen.js" defer></script>
 </head>
 <body id="Fullscreen demo">
-    <h1>Fullscreen demo</h1>
+    <h1>Fullscreen Demo</h1>
     <div id="gameAreaContainer">      
-        <table>
-            <tr>
-                <td style="background-color:#0080FF;margin:auto;">right</td>
-                <td>
-                    <canvas id="gameArea" style="background-color:#0000FF;"></canvas>    
-                </td>
-                <td style="background-color:#8000FF;margin:auto;">left</td>
-            </tr>
-        </table>
+        <canvas id="gameArea" style="background-color:#0000FF;"></canvas>    
     </div>
     <div id="pDiv">      
         <p id="canW">can width: w x h</p>
@@ -25,11 +19,7 @@
         <p id="docW">document width: w x h</p>
         <p id="wdowW">window width: w x h</p>
         <p id="scrnW">screen width: w x h</p>
-        <p id="scaleW">scale width: w x h</p>
-    </div>
-    <div>
-        <p>Click on the button to open the game in fullscreen mode.</p>
-        <button style="z-index:2; position: flex; top:200px; left:200px;" onclick="openFullscreen();">Open game in Fullscreen Mode</button>
+        <p id="gameScaleWindow">screen width: w x h</p>
     </div>
 </body>
 </html>
