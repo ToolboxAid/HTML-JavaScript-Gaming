@@ -45,7 +45,7 @@ function drawShape() {
 function setDivs() {			
     document.getElementById('canW').textContent = "can: " + document.getElementById('gameArea').clientWidth + " x " + document.getElementById('gameArea').clientHeight;	
     document.getElementById('divW').textContent = "div: " + document.getElementById('gameAreaContainer').getBoundingClientRect().width + " x " + 
-        document.getElementById('gameAreaContainer').getBoundingClientRect().height;	
+    document.getElementById('gameAreaContainer').getBoundingClientRect().height;	
     document.getElementById('docW').textContent = "document: " + document.documentElement.clientWidth + " x " + document.documentElement.clientHeight;	
     document.getElementById('wdowW').textContent = "window: " + window.innerWidth + " X " + window.innerHeight;			
     document.getElementById('scrnW').textContent = "screen: " + screen.width + " X " + screen.height;	

@@ -1,5 +1,6 @@
 // fullscreen.js
 
+const gameFullScaleScreen = 1.0; 
 const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight }; 
 var isFullScreen = false;
 
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Bind click event to canvas for toggling fullscreen
     canvas.addEventListener('click', toggleFullscreen);
 
-    // Uncomment these to initialize
+    // comment these to initialize to hide graphics
     setDivs();  
     drawShape();
 });
