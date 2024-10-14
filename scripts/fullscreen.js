@@ -81,4 +81,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     // Bind click event to canvas for toggling fullscreen
     canvas.addEventListener('click', toggleFullscreen);
+
+    // comment these to hide graphics
+    drawShape();
 });
