@@ -60,7 +60,6 @@ function resizeCanvas() {
             );
         }
     }
-    setDivs();	
 }
 
 window.addEventListener("resize", resizeCanvas);
@@ -82,8 +81,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     // Bind click event to canvas for toggling fullscreen
     canvas.addEventListener('click', toggleFullscreen);
-
-    // comment these to initialize to hide graphics
-    setDivs();  
-    drawShape();
 });
