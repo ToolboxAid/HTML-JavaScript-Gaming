@@ -75,6 +75,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     );
 
     // Uncomment these to initialize
-     setDivs();  
-     drawShape();
+    //setDivs();  
+    //drawShape();
 });
