@@ -1,11 +1,11 @@
 // extra.js
 function drawShape() {
     var canvas = document.getElementById('gameArea');
-    
+
     if (canvas.getContext) {
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = "#767eff";
-        ctx.fillRect(0, 0, gameAreaWidth, gameAreaHeight);
+        ctx.fillRect(0, 0, gameAreaWidth/1.5, gameAreaHeight);
         ctx.save();
         
         for (let gx = 0; gx <= gameAreaHeight; gx += 100) {
@@ -39,5 +39,19 @@ function drawShape() {
     } else {
         alert('You need a modern browser to see this demo.');
     }
-    console.log("---------------------");
 }
+
+function animate(time){
+    var canvas = document.getElementById('gameArea');
+    var ctx = canvas.getContext('2d');
+    // clear the canvas
+    ctx.clearRect(0,0,gameAreaWidth,gameAreaHeight);
+
+    drawShape();
+
+    // request another loop of animation
+    requestAnimationFrame(animate);
+}
+
+// Start the game loop
+requestAnimationFrame(animate);

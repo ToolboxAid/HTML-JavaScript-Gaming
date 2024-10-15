@@ -1,7 +1,5 @@
-// fullscreen.js
-
-const gameFullScaleScreen = 1.0; 
-const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight }; 
+const gameFullScaleScreen = 1.0;
+const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight };
 var isFullScreen = false;
 
 function openFullscreen() {
@@ -40,51 +38,57 @@ function resizeCanvas() {
     if (window.innerHeight == screen.height) {
         if (!isFullScreen) {
             isFullScreen = true;
-            console.log("fullscreen: " + isFullScreen);
-            var scale = gameFullScaleScreen;
-            ctx.setTransform(
-                scale, 0, 0, scale, 
-                (canvas.width - referenceResolution.width * scale), 
-                (canvas.height - referenceResolution.height * scale)
-            );
+            canvas.width = gameAreaWidth * gameFullScaleScreen;
+            canvas.height = gameAreaHeight * gameFullScaleScreen;
+            console.log("Fullscreen mode activated.");
         }
     } else {
         if (isFullScreen) {
             isFullScreen = false;
-            console.log("fullscreen: " + isFullScreen);
-            var scale = gameScaleWindow;
-            ctx.setTransform(
-                scale, 0, 0, scale, 
-                (canvas.width - referenceResolution.width * scale), 
-                (canvas.height - referenceResolution.height * scale)
-            );
+            canvas.width = gameAreaWidth * gameScaleWindow;
+            canvas.height = gameAreaHeight * gameScaleWindow;
+            console.log("Windowed mode activated.");
         }
     }
-    // comment these to hide div updates
-    setDivs();  
 
+    // Set transformation after resizing
+    ctx.setTransform(
+        (isFullScreen ? gameFullScaleScreen : gameScaleWindow), 0, 0,
+        (isFullScreen ? gameFullScaleScreen : gameScaleWindow),
+        0, 0 // No offset for centering
+    );
+
+    // Optionally, clear the canvas and redraw shapes
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawShape(); // Call your drawing function here
+
+    // comment these to hide div updates
+    setDivs();
 }
 
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas, false);
+
 document.addEventListener('DOMContentLoaded', (event) => {
     var canvas = document.getElementById('gameArea');
     var ctx = canvas.getContext('2d');
 
-    // Set gameArea canvas size in DIV.
+    // Set initial canvas size
     canvas.width = gameAreaWidth * gameScaleWindow;
     canvas.height = gameAreaHeight * gameScaleWindow;
 
-    var scale = gameScaleWindow;
+    // Set the initial transformation
     ctx.setTransform(
-        scale, 0, 0, scale, 
-        (canvas.width - referenceResolution.width * scale), 
-        (canvas.height - referenceResolution.height * scale)
+        gameScaleWindow, 0, 0,
+        gameScaleWindow,
+        0, 0 // Center the drawing
     );
 
     // Bind click event to canvas for toggling fullscreen
     canvas.addEventListener('click', toggleFullscreen);
 
-    // comment these to hide graphics
+    // comment out to hide graphics
     drawShape();
+    // comment out to hide div updates
+    setDivs();
 });
