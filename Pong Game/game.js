@@ -129,20 +129,23 @@ function drawDashedLine(ctx) {
     ctx.restore(); // Restore the previous context state
 }
 
-function drawChar(ctx, char, x, y, pixelSize) {
+function drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
     const charArray = font5x3[char];
 
-    if (!charArray) return; // If character not found, return
+    // If character not found, return
+    if (!charArray) return; 
 
     for (let row = 0; row < charArray.length; row++) {
         for (let col = 0; col < charArray[row].length; col++) {
             if (charArray[row][col] === 1) {
-                ctx.fillRect(x + col * pixelSize, y + row * pixelSize, pixelSize, pixelSize);
+                ctx.fillRect(x + col * pixelWidth, 
+                            y + row * pixelHeight, 
+                            pixelWidth+1, 
+                            pixelHeight+1);
             }
         }
     }
 }
-
 
 // Game loop function
 function gameLoop(ctx) {
@@ -162,17 +165,18 @@ function gameLoop(ctx) {
     drawPuck(ctx);
 
     // Draw Score
-    const score1 = "2";
+    const score1 = "02";
     const score2 = "23";
-    const x = 200;
+    const x = 300;
     const y = 20;
-    const pixelSize = 20;
+    const pixelWidth = 10;
+    const pixelHeight = 20;
     for (let i = 0; i < score1.length; i++) {
-        drawChar(ctx, score1[i], x + i *  4 * pixelSize,  y, pixelSize); // Adjust spacing as needed
+        drawChar(ctx, score1[i], x + i *  4 * pixelWidth,  y, pixelWidth, pixelHeight); // Adjust spacing as needed
         //drawChar  (ctx, score1[i], x + i * (pixelSize + 1), y, pixelSize); // Adjust spacing as needed
     }
     for (let i = 0; i < score2.length; i++) {
-        drawChar(ctx, score2[i], x + 300 + i * 4 * pixelSize, y, pixelSize); // Adjust spacing as needed
+        drawChar(ctx, score2[i], x + 300 + i * 4 * pixelWidth, y, pixelWidth,pixelHeight); // Adjust spacing as needed
     }
 }
 
