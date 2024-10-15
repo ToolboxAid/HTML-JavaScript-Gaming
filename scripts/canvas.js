@@ -47,7 +47,7 @@ function animate(time) {
         initCanvas(ctx);
 
         // Game Loop
-        gameLoop(ctx);
+        gameLoop(ctx, time);
 
         // Draw Border
         drawBorder(ctx);

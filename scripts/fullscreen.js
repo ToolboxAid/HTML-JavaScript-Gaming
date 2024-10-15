@@ -60,7 +60,6 @@ function resizeCanvas() {
 
     // Optionally, clear the canvas and redraw shapes
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawShape(); // Call your drawing function here
 }
 
 window.addEventListener("resize", resizeCanvas);
