@@ -1,11 +1,180 @@
-// Variables to store the ball's position and radius 
-const ballRadius = 8;
-const speedIncrease = 1.1;
-let ballX = gameAreaWidth / 2;
-let ballY = gameAreaHeight / 2;
-let ballVelocityX = 1.5;
-let ballVelocityY = 1.3;
+// Font for Pong is 3x5 (ACROSS x DOWN)
 
+// Variables to store the puck's position and radius 
+const speedIncrease = 1.1;
+const puckWidth = 20; // Width of the puck
+const puckHeight = 20; // Height of the puck
+const puckColor = "white";
+let puckX = gameAreaWidth / 2;
+let puckY = gameAreaHeight / 2;
+let puckVelocityX = 1.5;
+let puckVelocityY = 1.3;
+
+// Paddle positions (use let to allow modification)
+const paddleWidth = 20;
+const paddleHeight = 110;
+const leftPaddleX = 20;
+const leftPaddleColor = "white";
+const rightPaddleX = gameAreaWidth - leftPaddleX - paddleWidth;
+const rightPaddleColor = "white";
+const paddleSpeed = 8.0;
+let leftPaddleY = gameAreaHeight / 2;
+let rightPaddleY = gameAreaHeight / 2;
+
+// Function to draw the puck
+function drawPuck(ctx) {
+    ctx.fillStyle = puckColor;
+    ctx.fillRect(puckX - puckWidth / 2, puckY - puckHeight / 2, puckWidth, puckHeight);
+}
+
+function movePuck() {
+    // Update puck position based on velocity
+    puckX += puckVelocityX;
+    puckY += puckVelocityY;
+
+    // Check for collision with canvas boundaries
+    if (puckX + puckWidth / 2 > gameAreaWidth || puckX - puckWidth / 2 < 0) {
+        puckVelocityX *= -1; // Reverse X direction
+    }
+    if (puckY + puckHeight / 2 > gameAreaHeight || puckY - puckHeight / 2 < 0) {
+        puckVelocityY *= -1; // Reverse Y direction
+    }
+
+    // Check for paddle collisions
+    // Check collision with left paddle
+    if (puckX - puckWidth / 2 < leftPaddleX + paddleWidth &&
+        puckY > leftPaddleY && puckY < leftPaddleY + paddleHeight) {
+
+        // Calculate the hit position on the paddle
+        let paddleCenterY = leftPaddleY + paddleHeight / 2;
+        let offsetY = puckY - paddleCenterY; // Distance from center of paddle
+
+        // Reverse X direction
+        puckVelocityX *= -1;
+
+        // Maintain the Y velocity, adjusting based on where it hits the paddle
+        puckVelocityY = Math.sign(puckVelocityY) * (Math.abs(puckVelocityY) + offsetY * 0.1);
+    }
+
+    // Check collision with right paddle
+    if (puckX + puckWidth / 2 > rightPaddleX &&
+        puckY > rightPaddleY && puckY < rightPaddleY + paddleHeight) {
+
+        // Calculate the hit position on the paddle
+        let paddleCenterY = rightPaddleY + paddleHeight / 2;
+        let offsetY = puckY - paddleCenterY; // Distance from center of paddle
+
+        // Reverse X direction
+        puckVelocityX *= -1;
+
+        // Maintain the Y velocity, adjusting based on where it hits the paddle
+        puckVelocityY = Math.sign(puckVelocityY) * (Math.abs(puckVelocityY) + offsetY * 0.1);
+    }
+}
+
+// Function to draw paddles
+function drawPaddles(ctx) {
+    // Draw left paddle
+    ctx.fillStyle = leftPaddleColor;
+    ctx.fillRect(leftPaddleX, leftPaddleY, paddleWidth, paddleHeight);
+
+    // Draw right paddle
+    ctx.fillStyle = rightPaddleColor;
+    ctx.fillRect(rightPaddleX, rightPaddleY, paddleWidth, paddleHeight);
+}
+
+// Function to move paddles
+function movePaddles() {
+    // Move left paddle
+    if (keys.a && leftPaddleY > 0) {
+        leftPaddleY -= paddleSpeed;
+    }
+    if (keys.z && leftPaddleY < gameAreaHeight - paddleHeight) {
+        leftPaddleY += paddleSpeed;
+    }
+
+    // Move right paddle
+    if (keys.up && rightPaddleY > 0) {
+        rightPaddleY -= paddleSpeed;
+    }
+    if (keys.down && rightPaddleY < gameAreaHeight - paddleHeight) {
+        rightPaddleY += paddleSpeed;
+    }
+}
+
+// Function to handle actions based on key states
+function handleInput() {
+    // Move paddles
+    movePaddles();
+}
+
+// Function to draw a dashed vertical line
+function drawDashedLine(ctx) {
+    ctx.save(); // Save the current context state
+
+    // Set the line properties
+    ctx.lineWidth = 8; // Line width
+    ctx.strokeStyle = 'white'; // Line color
+
+    // Set the line dash pattern (15px dash, 5px space)
+    ctx.setLineDash([19, 19]);
+
+    // Draw the dashed line
+    const centerX = gameAreaWidth / 2; // Middle of the canvas
+    ctx.beginPath();
+    ctx.moveTo(centerX, 0); // Start from the top
+    ctx.lineTo(centerX, gameAreaHeight); // End at the bottom
+    ctx.stroke(); // Render the line
+
+    ctx.restore(); // Restore the previous context state
+}
+
+function drawChar(ctx, char, x, y, pixelSize) {
+    const charArray = font5x3[char];
+
+    if (!charArray) return; // If character not found, return
+
+    for (let row = 0; row < charArray.length; row++) {
+        for (let col = 0; col < charArray[row].length; col++) {
+            if (charArray[row][col] === 1) {
+                ctx.fillRect(x + col * pixelSize, y + row * pixelSize, pixelSize, pixelSize);
+            }
+        }
+    }
+}
+
+
+// Game loop function
+function gameLoop(ctx) {
+    // Handle input
+    handleInput();
+
+    // Move the puck
+    movePuck();
+
+    // Draw the dashed line
+    drawDashedLine(ctx);
+
+    // Draw paddles
+    drawPaddles(ctx);
+
+    // Draw the puck
+    drawPuck(ctx);
+
+    // Draw Score
+    const score1 = "2";
+    const score2 = "23";
+    const x = 200;
+    const y = 20;
+    const pixelSize = 20;
+    for (let i = 0; i < score1.length; i++) {
+        drawChar(ctx, score1[i], x + i *  4 * pixelSize,  y, pixelSize); // Adjust spacing as needed
+        //drawChar  (ctx, score1[i], x + i * (pixelSize + 1), y, pixelSize); // Adjust spacing as needed
+    }
+    for (let i = 0; i < score2.length; i++) {
+        drawChar(ctx, score2[i], x + 300 + i * 4 * pixelSize, y, pixelSize); // Adjust spacing as needed
+    }
+}
 
 // Object to keep track of key states
 const keys = {
@@ -16,127 +185,6 @@ const keys = {
     a: false,
     z: false,
 };
-
-// Paddle positions (use let to allow modification)
-let leftPaddleY = gameAreaHeight / 2;
-let rightPaddleY = gameAreaHeight / 2;
-const paddleWidth = 10;
-const paddleHeight = 50;
-const leftPaddleX = 30;
-const rightPaddleX = gameAreaWidth - leftPaddleX - paddleWidth;
-const paddleSpeed = 4.00; 
-
-
-// Function to draw the ball
-function drawBall(ctx) {
-    ctx.beginPath();
-    ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = 'yellow';
-    ctx.fill();
-}
-
-// Function to move the ball
-function moveBall() {
-    // Update ball position based on velocity
-    ballX += ballVelocityX;
-    ballY += ballVelocityY;
-
-    // Check for collision with canvas boundaries
-    if (ballX + ballRadius > gameAreaWidth || ballX - ballRadius < 0) {
-        ballVelocityX *= -1; // Reverse X direction
-        //ballVelocityX *= speedIncrease; // Increase speed
-    }
-    if (ballY + ballRadius > gameAreaHeight || ballY - ballRadius < 0) {
-        ballVelocityY *= -1; // Reverse Y direction
-        //ballVelocityY *= speedIncrease; // Increase speed
-    }
-
-    // Check for paddle collisions
-    // Check collision with left paddle
-    if (ballX - ballRadius < leftPaddleX + paddleWidth &&
-        ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) {
-        
-        // Calculate the hit position on the paddle
-        let paddleCenterY = leftPaddleY + paddleHeight / 2;
-        let offsetY = ballY - paddleCenterY; // Distance from center of paddle
-
-        // Adjust ball's velocity based on where it hits the paddle
-        ballVelocityX *= -1; // Reverse X direction
-        ballVelocityY += offsetY * 0.1; // Modify Y velocity based on offset
-        ballVelocityX *= speedIncrease; // Increase speed
-    }
-
-    // Check collision with right paddle
-    if (ballX + ballRadius > rightPaddleX &&
-        ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight) {
-        
-        // Calculate the hit position on the paddle
-        let paddleCenterY = rightPaddleY + paddleHeight / 2;
-        let offsetY = ballY - paddleCenterY; // Distance from center of paddle
-
-        // Adjust ball's velocity based on where it hits the paddle
-        ballVelocityX *= -1; // Reverse X direction
-        ballVelocityY += offsetY * 0.1; // Modify Y velocity based on offset
-        ballVelocityX *= speedIncrease; // Increase speed
-    }
-}
-
-// Function to draw paddles
-function drawPaddles(ctx) {
-    // Draw left paddle
-    ctx.fillStyle = 'green';
-    ctx.fillRect(leftPaddleX, leftPaddleY, paddleWidth, paddleHeight);
-    
-    // Draw right paddle
-    ctx.fillStyle = 'red';
-    ctx.fillRect(rightPaddleX, rightPaddleY, paddleWidth, paddleHeight);
-}
-
-// Function to move paddles
-function movePaddles() {
-    // Move left paddle
-    if (keys.a && leftPaddleY > 0) {
-        leftPaddleY -= paddleSpeed; // Move up
-    }
-    if (keys.z && leftPaddleY < gameAreaHeight - paddleHeight) {
-        leftPaddleY += paddleSpeed; // Move down
-    }
-
-    // Move right paddle
-    if (keys.up && rightPaddleY > 0) {
-        rightPaddleY -= paddleSpeed; // Move up
-    }
-    if (keys.down && rightPaddleY < gameAreaHeight - paddleHeight) {
-        rightPaddleY += paddleSpeed; // Move down
-    }
-}
-
-// Function to handle actions based on key states
-function handleInput() {
-    // Move paddles
-    movePaddles();
-}
-
-// Game loop function
-function gameLoop(ctx) {
-    // Handle input
-    handleInput();
-
-    // Move the ball
-    moveBall();
-
-    // Clear the canvas for the new frame
-    ctx.clearRect(0, 0, gameAreaWidth, gameAreaHeight);
-
-    // Draw paddles
-    drawPaddles(ctx);
-
-    // Draw the ball
-    drawBall(ctx);
-
-    // // Request another loop of animation
-    // requestAnimationFrame(() => gameLoop(ctx));
-}
 
 // Event listener for keydown
 document.addEventListener('keydown', (event) => {

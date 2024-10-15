@@ -19,7 +19,12 @@ function drawFPS(ctx) {
     // Draw the FPS on the canvas
     ctx.globalAlpha = 1.0; // Reset opacity
     ctx.fillStyle = fpsColor; // Set text color
-    ctx.font = '40px Arial Bold'; // Set font size and family
+    try {
+        ctx.font = fpsSize + ' Arial Bold'; // Set font size and family
+    }
+    catch (error) {
+        ctx.font = '40px Arial Bold'; // Set font size and family
+    }
     ctx.fillText('FPS: ' + fps, 30, 50); // Draw the FPS at coordinates (30, 30)
 }
 

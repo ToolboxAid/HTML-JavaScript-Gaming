@@ -1,9 +1,9 @@
 // global.js
 // canvas variables
 
-var gameScaleWindow = 1.0;
-var gameAreaWidth = 256;
-var gameAreaHeight = 244;
+var gameScaleWindow = 0.75;
+var gameAreaWidth = 858;
+var gameAreaHeight = 525;
 
 var backgroundColor = "#000000";
 
@@ -12,4 +12,6 @@ var boarderColor = "#ff0000";
 
 var showFPS = true;
 var fpsColor = "white";
+var fpsSize = '30px';
+
 
