@@ -18,8 +18,8 @@ const leftPaddleColor = "white";
 const rightPaddleX = gameAreaWidth - leftPaddleX - paddleWidth;
 const rightPaddleColor = "white";
 const paddleSpeed = 8.0;
-let leftPaddleY = gameAreaHeight / 2;
-let rightPaddleY = gameAreaHeight / 2;
+let leftPaddleY = (gameAreaHeight / 2) - (paddleHeight / 2);
+let rightPaddleY = leftPaddleY;
 
 // Function to draw the puck
 function drawPuck(ctx) {
@@ -133,15 +133,15 @@ function drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
     const charArray = font5x3[char];
 
     // If character not found, return
-    if (!charArray) return; 
+    if (!charArray) return;
 
     for (let row = 0; row < charArray.length; row++) {
         for (let col = 0; col < charArray[row].length; col++) {
             if (charArray[row][col] === 1) {
-                ctx.fillRect(x + col * pixelWidth, 
-                            y + row * pixelHeight, 
-                            pixelWidth+1, 
-                            pixelHeight+1);
+                ctx.fillRect(x + col * pixelWidth,
+                    y + row * pixelHeight,
+                    pixelWidth + 1,
+                    pixelHeight + 1);
             }
         }
     }
@@ -165,18 +165,17 @@ function gameLoop(ctx) {
     drawPuck(ctx);
 
     // Draw Score
-    const score1 = "02";
+    const score1 = "01";
     const score2 = "23";
-    const x = 300;
-    const y = 20;
-    const pixelWidth = 10;
+    let x = 280;
+    const y = 30;
+    const pixelWidth = 15;
     const pixelHeight = 20;
     for (let i = 0; i < score1.length; i++) {
-        drawChar(ctx, score1[i], x + i *  4 * pixelWidth,  y, pixelWidth, pixelHeight); // Adjust spacing as needed
-        //drawChar  (ctx, score1[i], x + i * (pixelSize + 1), y, pixelSize); // Adjust spacing as needed
+        drawChar(ctx, score1[i], x + (i * 4 * pixelWidth), y, pixelWidth, pixelHeight);
     }
     for (let i = 0; i < score2.length; i++) {
-        drawChar(ctx, score2[i], x + 300 + i * 4 * pixelWidth, y, pixelWidth,pixelHeight); // Adjust spacing as needed
+        drawChar(ctx, score2[i], (x + 185) + (i * 4 * pixelWidth), y, pixelWidth, pixelHeight);
     }
 }
 
