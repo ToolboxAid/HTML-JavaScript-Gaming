@@ -1,9 +1,9 @@
 // global.js
 // canvas variables
 
-var gameScaleWindow = 0.5;
-var gameAreaWidth = 800;
-var gameAreaHeight = 600;
+var gameScaleWindow = 0.35;
+var gameAreaWidth = 1024;
+var gameAreaHeight = 768;
 
 var backgroundColor = "#000000";
 
