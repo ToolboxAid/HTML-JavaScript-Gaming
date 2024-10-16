@@ -1,3 +1,7 @@
+// ToolboxAid.com
+// David Quesenberry
+// fullscreen.js
+// 10/16/2024
 const gameFullScaleScreen = 1.0; 
 const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight }; 
 var isFullScreen = false;

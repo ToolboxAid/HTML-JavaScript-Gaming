@@ -1,3 +1,7 @@
+// ToolboxAid.com
+// David Quesenberry
+// objectDynamic.js
+// 10/16/2024
 class ObjectDynamic extends ObjectStatic {
     constructor(x, y, width, height, velocityX, velocityY) {
         super(x, y, width, height); // Call the parent constructor with size for width and height

@@ -1,3 +1,7 @@
+// ToolboxAid.com
+// David Quesenberry
+// objectStatic.js
+// 10/16/2024
 class ObjectStatic {
     constructor(x, y, width, height) {
         this.x = x; // X position

@@ -1,3 +1,7 @@
+// ToolboxAid.com
+// David Quesenberry
+// intersect.js
+// 10/16/2024
 
 // Check for intersection
 // This test is for a dynamic object (moving) against a static object (not moving)
@@ -5,10 +9,6 @@ function checkIntersection(ctx, dynamicObject, staticObject) {
     // Calculate future position of the square
     let futureSquareX = dynamicObject.x + dynamicObject.velocityX;
     let futureSquareY = dynamicObject.y + dynamicObject.velocityY;
-
-    // Determine the square's future boundaries
-    let futureSquareLeft = futureSquareX;
-    let futureSquareTop = futureSquareY;
 
     // Determine the rectangle's boundaries
     let rectLeft = staticObject.x;

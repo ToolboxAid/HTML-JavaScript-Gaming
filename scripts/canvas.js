@@ -1,4 +1,7 @@
+// ToolboxAid.com
+// David Quesenberry
 // canvas.js
+// 10/16/2024
 // canvas related variables & methods
 
 let frameCount = 0;

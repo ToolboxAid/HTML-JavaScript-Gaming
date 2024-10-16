@@ -1,3 +1,10 @@
+// ToolboxAid.com
+// David Quesenberry
+// font5x3.js
+// 10/16/2024
+
+// Font for Pong is 3x5 (ACROSS x DOWN)
+
 const font5x3 = {
     '0': [
         [1, 1, 1],

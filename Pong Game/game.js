@@ -1,4 +1,8 @@
-// Font for Pong is 3x5 (ACROSS x DOWN)
+// ToolboxAid.com
+// David Quesenberry
+// canvas.js
+// 10/16/2024
+
 
 // Variables to store the puck's position and radius 
 const speedIncrease = 1.1;
@@ -179,6 +183,7 @@ function gameLoop(ctx) {
     }
 
 
+    // Test entry and exit points
     if (false) {
         // Instantiate a static rectangle object
         let rectangleObject = new ObjectStatic(100, 100, 160, 100);
@@ -207,7 +212,7 @@ function gameLoop(ctx) {
         /* ------------------------------------
         Enter TOP: Exit Left, Right, Bottom
         ------------------------------------    */
-        if (false) {
+        if (true) {
 
             // Exit Right
             squareObject = new ObjectDynamic(180, 30, 10, 10, 125, 200);
@@ -242,7 +247,7 @@ function gameLoop(ctx) {
         /* ------------------------------------
         Enter Right: Exit Left, Top, Bottom
         ------------------------------------*/
-        if (false) {
+        if (true) {
             // Exit Left   (--- not working on exit ---)
             squareObject = new ObjectDynamic(170, 220, 10, 10, -125, -100);
             result = checkIntersection(ctx, squareObject, rectangleObject);
