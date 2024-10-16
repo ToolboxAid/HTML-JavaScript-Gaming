@@ -4,18 +4,15 @@
 // 10/16/2024
 
 // Canvas variables
+window.gameAreaWidth = 858;
+window.gameAreaHeight = 525;
+window.gameScaleWindow = 0.75;
 
-var gameScaleWindow = 0.75;
-var gameAreaWidth = 858;
-var gameAreaHeight = 525;
+window.backgroundColor = "#000000";
 
-var backgroundColor = "#000000";
+window.boarderSize = 5;
+window.boarderColor = "#00ff00";
 
-var boarderSize = 5;
-var boarderColor = "#ff0000";
-
-var showFPS = true;
-var fpsColor = "white";
-var fpsSize = '30px';
-
-
+window.showFPS = false;
+window.fpsColor = "white";
+window.fpsSize = '30px';
