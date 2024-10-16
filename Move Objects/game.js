@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// game.js
+// 10/16/2024
+
 // Function to get a random velocity between min and max
 function getRandomVelocity(min, max) {
     return Math.random() * (max - min) + min;

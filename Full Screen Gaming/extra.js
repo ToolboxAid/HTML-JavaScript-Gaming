@@ -1,4 +1,7 @@
+// ToolboxAid.com
+// David Quesenberry
 // extra.js
+// 10/16/2024
 function drawShape() {
     var canvas = document.getElementById('gameArea');
     

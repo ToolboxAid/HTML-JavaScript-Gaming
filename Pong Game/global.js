@@ -3,6 +3,8 @@
 // global.js
 // 10/16/2024
 
+// Canvas variables
+
 var gameScaleWindow = 0.75;
 var gameAreaWidth = 858;
 var gameAreaHeight = 525;

@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// game.js
+// 10/16/2024
+
 const sunRadius = 20;
 
 const celestialBodies = [

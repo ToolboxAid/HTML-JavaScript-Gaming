@@ -1,4 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
 // global.js
+// 10/16/2024
+
 // canvas variables
 
 var gameScaleWindow = 0.35;

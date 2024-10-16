@@ -1,5 +1,9 @@
+// ToolboxAid.com
+// David Quesenberry
 // global.js
-// canvas variables
+// 10/16/2024
+
+// Canvas variables
 
 var gameScaleWindow = 0.5;
 var gameAreaWidth = 800;
