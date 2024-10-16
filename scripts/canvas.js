@@ -28,6 +28,17 @@ function drawFPS(ctx) {
     ctx.fillText('FPS: ' + fps, 30, 50); // Draw the FPS at coordinates (30, 30)
 }
 
+// Draw a line from point (x1, y1) to (x2, y2) with a specified line width
+function drawLine(ctx, x1, y1, x2, y2, lineWidth) {
+    ctx.beginPath(); // Start a new path
+    ctx.moveTo(x1, y1); // Move to the starting point
+    ctx.lineTo(x2, y2); // Draw a line to the ending point
+    ctx.lineWidth = lineWidth; // Set the line width
+    ctx.stroke(); // Render the line
+}
+// Example usage
+//drawLine(ctx, squareX + squareSize / 2, squareY + squareSize / 2, futureSquareX + squareSize / 2, futureSquareY + squareSize / 2, 5); // Line width of 5
+
 function drawBorder(ctx) {
     ctx.lineWidth = boarderSize;
     ctx.strokeStyle = boarderColor;
@@ -68,5 +79,8 @@ function animate(time) {
     requestAnimationFrame(animate);
 }
 
-// Start the game loop
-requestAnimationFrame(animate);
+// Wait for the page to fully load before starting the game loop
+window.addEventListener('DOMContentLoaded', () => {
+    // Start the animation loop
+    requestAnimationFrame(animate);
+});
