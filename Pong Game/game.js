@@ -178,17 +178,84 @@ function gameLoop(ctx) {
         drawChar(ctx, score2[i], (x + 185) + (i * 4 * pixelWidth), y, pixelWidth, pixelHeight);
     }
 
-// Execute the check
-// Execute the check
-let result = checkIntersection(ctx);
-// if (result) {
-//     // console.log("Intersection Point:", result.intersectionPoint);
-//     // console.log("Angle of Intersection:", result.angle);
-// } else {
-//     console.log("No intersection.");
-// }
 
+    if (false) {
+        // Instantiate a static rectangle object
+        let rectangleObject = new ObjectStatic(100, 100, 160, 100);
 
+        let squareObject = null;
+        let result = null;
+        //  ObjectDynamic ( x, y, width, height, velocityX, velocityY )
+
+        /* ------------------------------------
+        Enter Left: Exit Top, Right, Bottom
+        ------------------------------------ */
+        if (false) {
+
+            // Exit TOP  (--- not working on exit ---)
+            squareObject = new ObjectDynamic(30, 150, 10, 10, 300, -100);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit RIGHT
+            squareObject = new ObjectDynamic(30, 150, 10, 10, 300, 0);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit Bottom
+            squareObject = new ObjectDynamic(30, 150, 10, 10, 300, 100);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+        }
+        /* ------------------------------------
+        Enter TOP: Exit Left, Right, Bottom
+        ------------------------------------    */
+        if (false) {
+
+            // Exit Right
+            squareObject = new ObjectDynamic(180, 30, 10, 10, 125, 200);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit Bottom
+            squareObject = new ObjectDynamic(180, 30, 10, 10, 0, 200);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit Left   (--- not working on exit ---)
+            squareObject = new ObjectDynamic(180, 30, 10, 10, -125, 200);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+        }
+
+        /* ------------------------------------
+        Enter Right: Exit Left, Top, Bottom
+        ------------------------------------*/
+        if (false) {
+            // Exit TOP   (--- not working on exit ---)
+            squareObject = new ObjectDynamic(280, 150, 10, 10, -125, -125);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit Left   (--- not working on exit ---)
+            squareObject = new ObjectDynamic(280, 150, 10, 10, -225, 0);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit Bottom
+            squareObject = new ObjectDynamic(280, 150, 10, 10, -125, 125);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+        }
+
+        /* ------------------------------------
+        Enter Right: Exit Left, Top, Bottom
+        ------------------------------------*/
+        if (false) {
+            // Exit Left   (--- not working on exit ---)
+            squareObject = new ObjectDynamic(170, 220, 10, 10, -125, -100);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit Top   (--- not working on exit ---)
+            squareObject = new ObjectDynamic(170, 220, 10, 10, 0, -185);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+
+            // Exit Right
+            squareObject = new ObjectDynamic(170, 220, 10, 10, 125, -100);
+            result = checkIntersection(ctx, squareObject, rectangleObject);
+        }
+    }
 }
 
 // Object to keep track of key states
