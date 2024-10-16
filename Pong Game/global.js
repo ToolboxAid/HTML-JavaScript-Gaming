@@ -16,3 +16,12 @@ window.boarderColor = "#00ff00";
 window.showFPS = false;
 window.fpsColor = "white";
 window.fpsSize = '30px';
+
+// Paddle Offset
+window.paddleOffset = 10;
+
+window.paddleWidth = 10; 
+window.paddleHeight = 180; 
+window.paddleSpeed = 1;
+window.leftPaddleColor = "red"; 
+window.rightPaddleColor = "green";

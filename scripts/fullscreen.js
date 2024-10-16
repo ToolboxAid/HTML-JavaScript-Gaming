@@ -2,8 +2,9 @@
 // David Quesenberry
 // fullscreen.js
 // 10/16/2024
+
 const gameFullScaleScreen = 1.0; 
-const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight }; 
+const referenceResolution = { width: window.gameAreaWidth, height: window.gameAreaHeight }; 
 var isFullScreen = false;
 
 function openFullscreen() {
@@ -42,27 +43,27 @@ function resizeCanvas() {
     if (window.innerHeight == screen.height) {
         if (!isFullScreen) {
             isFullScreen = true;
-            canvas.width = gameAreaWidth * gameFullScaleScreen;
-            canvas.height = gameAreaHeight * gameFullScaleScreen;
+            canvas.width = window.gameAreaWidth * gameFullScaleScreen;
+            canvas.height = window.gameAreaHeight * gameFullScaleScreen;
             console.log("Fullscreen mode activated.");
         }
     } else {
         if (isFullScreen) {
             isFullScreen = false;
-            canvas.width = gameAreaWidth * gameScaleWindow;
-            canvas.height = gameAreaHeight * gameScaleWindow;
+            canvas.width = window.gameAreaWidth * window.gameScaleWindow;
+            canvas.height = window.gameAreaHeight * window.gameScaleWindow;
             console.log("Windowed mode activated.");
         }
     }
 
     // Set transformation after resizing
     ctx.setTransform(
-        (isFullScreen ? gameFullScaleScreen : gameScaleWindow), 0, 0, 
-        (isFullScreen ? gameFullScaleScreen : gameScaleWindow), 
+        (isFullScreen ? gameFullScaleScreen : window.gameScaleWindow), 0, 0, 
+        (isFullScreen ? gameFullScaleScreen : window.gameScaleWindow), 
         0, 0 // No offset for centering
     );
 
-    // Optionally, clear the canvas and redraw shapes
+    // Clear the canvas to redraw shapes
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
@@ -74,13 +75,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
     var ctx = canvas.getContext('2d');
 
     // Set initial canvas size
-    canvas.width = gameAreaWidth * gameScaleWindow;
-    canvas.height = gameAreaHeight * gameScaleWindow;
+    canvas.width = window.gameAreaWidth * window.gameScaleWindow;
+    canvas.height = window.gameAreaHeight * window.gameScaleWindow;
 
     // Set the initial transformation
     ctx.setTransform(
-        gameScaleWindow, 0, 0, 
-        gameScaleWindow, 
+        window.gameScaleWindow, 0, 0, 
+        window.gameScaleWindow, 
         0, 0 // Center the drawing
     );
 

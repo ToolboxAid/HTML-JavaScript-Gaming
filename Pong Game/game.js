@@ -3,6 +3,15 @@
 // canvas.js
 // 10/16/2024
 
+//import { gameAreaWidth, gameAreaHeight } from './global.js'; // Import relevant constants
+import Paddle from './paddle.js'; // Import the Paddle class
+
+import { drawPuck, movePuck, resetPuck } from './puck.js';
+
+// // Create paddles
+// const leftPaddle = new Paddle(true);  // For the left paddle
+// const rightPaddle = new Paddle(false); // For the right paddle
+
 
 // Variables to store the puck's position and radius 
 const speedIncrease = 1.1;
@@ -24,57 +33,6 @@ const rightPaddleColor = "white";
 const paddleSpeed = 8.0;
 let leftPaddleY = (gameAreaHeight / 2) - (paddleHeight / 2);
 let rightPaddleY = leftPaddleY;
-
-// Function to draw the puck
-function drawPuck(ctx) {
-    ctx.fillStyle = puckColor;
-    ctx.fillRect(puckX - puckWidth / 2, puckY - puckHeight / 2, puckWidth, puckHeight);
-}
-
-function movePuck() {
-    // Update puck position based on velocity
-    puckX += puckVelocityX;
-    puckY += puckVelocityY;
-
-    // Check for collision with canvas boundaries
-    if (puckX + puckWidth / 2 > gameAreaWidth || puckX - puckWidth / 2 < 0) {
-        puckVelocityX *= -1; // Reverse X direction
-    }
-    if (puckY + puckHeight / 2 > gameAreaHeight || puckY - puckHeight / 2 < 0) {
-        puckVelocityY *= -1; // Reverse Y direction
-    }
-
-    // Check for paddle collisions
-    // Check collision with left paddle
-    if (puckX - puckWidth / 2 < leftPaddleX + paddleWidth &&
-        puckY > leftPaddleY && puckY < leftPaddleY + paddleHeight) {
-
-        // Calculate the hit position on the paddle
-        let paddleCenterY = leftPaddleY + paddleHeight / 2;
-        let offsetY = puckY - paddleCenterY; // Distance from center of paddle
-
-        // Reverse X direction
-        puckVelocityX *= -1;
-
-        // Maintain the Y velocity, adjusting based on where it hits the paddle
-        puckVelocityY = Math.sign(puckVelocityY) * (Math.abs(puckVelocityY) + offsetY * 0.1);
-    }
-
-    // Check collision with right paddle
-    if (puckX + puckWidth / 2 > rightPaddleX &&
-        puckY > rightPaddleY && puckY < rightPaddleY + paddleHeight) {
-
-        // Calculate the hit position on the paddle
-        let paddleCenterY = rightPaddleY + paddleHeight / 2;
-        let offsetY = puckY - paddleCenterY; // Distance from center of paddle
-
-        // Reverse X direction
-        puckVelocityX *= -1;
-
-        // Maintain the Y velocity, adjusting based on where it hits the paddle
-        puckVelocityY = Math.sign(puckVelocityY) * (Math.abs(puckVelocityY) + offsetY * 0.1);
-    }
-}
 
 // Function to draw paddles
 function drawPaddles(ctx) {
@@ -151,13 +109,42 @@ function drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
     }
 }
 
+const scores = {
+    player1: 0,
+    player2: 0
+};
+
+function formatScore(score) {
+    return score.toString().padStart(2, '0'); // Format score to 2 digits
+}
+
+function drawScores(ctx) {
+    const pixelWidth = 15;
+    const pixelHeight = 20;
+    const x = 280; // X position for player 1 score
+    const y = 30; // Y position for scores
+
+    // Draw Player 1 Score
+    const formattedScore1 = formatScore(scores.player1);
+    drawChar(ctx, formattedScore1[0], x, y, pixelWidth, pixelHeight); // Tens
+    drawChar(ctx, formattedScore1[1], x + 4 * pixelWidth, y, pixelWidth, pixelHeight); // Units
+
+    // Draw Player 2 Score
+    const formattedScore2 = formatScore(scores.player2);
+    drawChar(ctx, formattedScore2[0], x + 185, y, pixelWidth, pixelHeight); // Tens
+    drawChar(ctx, formattedScore2[1], x + 185 + 4 * pixelWidth, y, pixelWidth, pixelHeight); // Units
+}
+
+
+
+
 // Game loop function
 function gameLoop(ctx) {
     // Handle input
     handleInput();
 
     // Move the puck
-    movePuck();
+    movePuck(scores);
 
     // Draw the dashed line
     drawDashedLine(ctx);
@@ -165,23 +152,13 @@ function gameLoop(ctx) {
     // Draw paddles
     drawPaddles(ctx);
 
+    // leftPaddle.draw(ctx);
+    // rightPaddle.draw(ctx);
+    
     // Draw the puck
     drawPuck(ctx);
 
-    // Draw Score
-    const score1 = "01";
-    const score2 = "23";
-    let x = 280;
-    const y = 30;
-    const pixelWidth = 15;
-    const pixelHeight = 20;
-    for (let i = 0; i < score1.length; i++) {
-        drawChar(ctx, score1[i], x + (i * 4 * pixelWidth), y, pixelWidth, pixelHeight);
-    }
-    for (let i = 0; i < score2.length; i++) {
-        drawChar(ctx, score2[i], (x + 185) + (i * 4 * pixelWidth), y, pixelWidth, pixelHeight);
-    }
-
+    drawScores(ctx); // Call this function to draw scores
 
     // Test entry and exit points
     if (false) {
@@ -325,4 +302,25 @@ document.addEventListener('keyup', (event) => {
             keys.down = false;
             break;
     }
+});
+
+
+function animate(time) {
+    var canvas = document.getElementById('gameArea');
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        initCanvas(ctx);
+        gameLoop(ctx, time); // Ensure gameLoop is defined
+        drawBorder(ctx);
+        if (window.showFPS) { // Accessing global variable
+            drawFPS(ctx);
+        }
+    } else {
+        alert('You need a modern browser to see this.');
+    }
+    requestAnimationFrame(animate);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(animate);
 });
