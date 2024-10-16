@@ -177,6 +177,18 @@ function gameLoop(ctx) {
     for (let i = 0; i < score2.length; i++) {
         drawChar(ctx, score2[i], (x + 185) + (i * 4 * pixelWidth), y, pixelWidth, pixelHeight);
     }
+
+// Execute the check
+// Execute the check
+let result = checkIntersection(ctx);
+// if (result) {
+//     // console.log("Intersection Point:", result.intersectionPoint);
+//     // console.log("Angle of Intersection:", result.angle);
+// } else {
+//     console.log("No intersection.");
+// }
+
+
 }
 
 // Object to keep track of key states
