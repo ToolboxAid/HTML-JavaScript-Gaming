@@ -29,6 +29,23 @@ class Functions {
         ctx.lineTo(x2, y2);
         ctx.stroke();
     }
+
+    static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
+        ctx.save(); // Save the current context state
+
+        // Set the line properties
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = strokeColor;
+
+        // Set the line dash pattern
+        ctx.setLineDash(dashPattern);
+
+        // Draw the dashed line
+        ctx.beginPath();
+        ctx.moveTo(x1, y1); // Start point
+        ctx.lineTo(x2, y2); // End point
+        ctx.stroke(); // Render the line
+    }    
 }
 
 // Export the Functions class

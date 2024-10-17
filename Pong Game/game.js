@@ -5,6 +5,7 @@
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
 import { drawScores } from './font5x3.js'; // Ensure this path is correct
+import Functions from '../scripts/functions.js'; // Adjust the path accordingly
 import Paddle from './paddle.js'; // Import the Paddle class
 import Puck from './puck.js'; // Import the Puck class
 
@@ -15,43 +16,18 @@ const rightPaddle = new Paddle(false);
 // Create puck instance
 const puck = new Puck(); // Create a single puck instance
 
-// Variables to store the puck's position and radius 
-const speedIncrease = 1.1;
-const puckWidth = 20; // Width of the puck
-const puckHeight = 20; // Height of the puck
-const puckColor = "white";
-
-// Accessing dimensions
-let puckX = canvasConfig.width / 2;
-let puckY = canvasConfig.height / 2;
-let puckVelocityX = 1.5;
-let puckVelocityY = 1.3;
-
-// Function to draw a dashed vertical line
-function drawDashedLine(ctx) {
-    ctx.save(); // Save the current context state
-
-    // Set the line properties
-    ctx.lineWidth = 8; // Line width
-    ctx.strokeStyle = 'white'; // Line color
-
-    // Set the line dash pattern (15px dash, 5px space)
-    ctx.setLineDash([19, 19]);
-
-    // Draw the dashed line
-    const centerX = canvasConfig.width / 2; // Middle of the canvas
-    ctx.beginPath();
-    ctx.moveTo(centerX, 0); // Start from the top
-    ctx.lineTo(centerX, canvasConfig.height); // End at the bottom
-    ctx.stroke(); // Render the line
-
-    ctx.restore(); // Restore the previous context state
-}
-
+// Player scores
 const scores = {
     player1: 0,
     player2: 0
 };
+
+function drawDashedLine(ctx) {
+    const dashPattern = [19, 19]; // Define your dash pattern
+    const centerX = canvasConfig.width / 2; // Middle of the canvas
+    Functions.drawDashLine(ctx, centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
+    ctx.restore(); // Restore the previous context state
+}
 
 // Game loop function
 function gameLoop(ctx) {
@@ -61,15 +37,15 @@ function gameLoop(ctx) {
     // Move the puck using its method
     puck.move(scores, leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
 
-     // Update paddles
-     leftPaddle.update();
-     rightPaddle.update();
- 
-     // Draw paddles
-     leftPaddle.draw(ctx);
-     rightPaddle.draw(ctx);
-    
-//    drawScores(ctx); // Call this function to draw scores
+    // Update paddles
+    leftPaddle.update();
+    rightPaddle.update();
+
+    // Draw paddles
+    leftPaddle.draw(ctx);
+    rightPaddle.draw(ctx);
+
+    //    drawScores(ctx); // Call this function to draw scores
     // Call drawScores to display the current scores
     drawScores(ctx, scores);
 

@@ -20,7 +20,6 @@ export const puckConfig = {
     color: "yellow", // Color of the puck
 };
 
-
 // Configuration for the canvas
 export const canvasConfig = {
     width: 858, // Game area width
