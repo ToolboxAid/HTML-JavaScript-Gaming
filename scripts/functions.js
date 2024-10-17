@@ -4,7 +4,7 @@
 // 10/16/2024
 
 class Functions {
-    static calculateAngle(xVelocity, yVelocity) {
+    static calculateXY2Angle(xVelocity, yVelocity) {
         // Calculate angle in radians
         const angleInRadians = Math.atan2(yVelocity, xVelocity);
 
@@ -15,10 +15,10 @@ class Functions {
         return (angleInDegrees + 360) % 360; // Ensures the angle is positive
     }
 
-    static angleCalculateXY(angle, fixed = 4) {
+    static calculateAngle2XY(angle, decimals = 4) {
         const radians = angle * (Math.PI / 180);
-        const x = (Math.cos(radians)).toFixed(fixed);
-        const y = (Math.sin(radians)).toFixed(fixed);
+        const x = (Math.cos(radians)).toFixed(decimals);
+        const y = (Math.sin(radians)).toFixed(decimals);
 
         return { x: parseFloat(x), y: parseFloat(y) };
     }
