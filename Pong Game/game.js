@@ -3,78 +3,34 @@
 // canvas.js
 // 10/16/2024
 
-import { canvasConfig } from './global.js';
-
+import { canvasConfig } from './global.js'; // Import canvasConfig
 import Paddle from './paddle.js'; // Import the Paddle class
-
 import Puck from './puck.js'; // Import the Puck class
+
+// Create paddles instances
+const leftPaddle = new Paddle(true);
+const rightPaddle = new Paddle(false);
 
 // Create puck instance
 const puck = new Puck(); // Create a single puck instance
-
-// Create paddles instances
-const leftPaddle = new Paddle(true);  // For the left paddle
-const rightPaddle = new Paddle(false); // For the right paddle
-
 
 // Variables to store the puck's position and radius 
 const speedIncrease = 1.1;
 const puckWidth = 20; // Width of the puck
 const puckHeight = 20; // Height of the puck
 const puckColor = "white";
-// Accessing dimensions
 
+// Accessing dimensions
 let puckX = canvasConfig.width / 2;
 let puckY = canvasConfig.height / 2;
 let puckVelocityX = 1.5;
 let puckVelocityY = 1.3;
 
-// Paddle positions (use let to allow modification)
-const paddleWidth = 20;
-const paddleHeight = 110;
-const leftPaddleX = 20;
-const leftPaddleColor = "white";
-const rightPaddleX = canvasConfig.width - leftPaddleX - paddleWidth;
-const rightPaddleColor = "white";
-const paddleSpeed = 8.0;
-let leftPaddleY = (canvasConfig.height / 2) - (paddleHeight / 2);
-let rightPaddleY = leftPaddleY;
-
-// Function to draw paddles
-function drawPaddles(ctx) {
-    // Draw left paddle
-    ctx.fillStyle = leftPaddleColor;
-    ctx.fillRect(leftPaddleX, leftPaddleY, paddleWidth, paddleHeight);
-
-    // Draw right paddle
-    ctx.fillStyle = rightPaddleColor;
-    ctx.fillRect(rightPaddleX, rightPaddleY, paddleWidth, paddleHeight);
-}
-
-// Function to move paddles
-function movePaddles() {
-    // Move left paddle
-    if (keys.a && leftPaddleY > 0) {
-        leftPaddleY -= paddleSpeed;
-    }
-    if (keys.z && leftPaddleY < canvasConfig.height - paddleHeight) {
-        leftPaddleY += paddleSpeed;
-    }
-
-    // Move right paddle
-    if (keys.up && rightPaddleY > 0) {
-        rightPaddleY -= paddleSpeed;
-    }
-    if (keys.down && rightPaddleY < canvasConfig.height - paddleHeight) {
-        rightPaddleY += paddleSpeed;
-    }
-}
-
-// Function to handle actions based on key states
-function handleInput() {
-    // Move paddles
-    movePaddles();
-}
+// // Function to handle actions based on key states
+// function handleInput() {
+//     // Move paddles
+//    // movePaddles();
+// }
 
 // Function to draw a dashed vertical line
 function drawDashedLine(ctx) {
@@ -95,24 +51,6 @@ function drawDashedLine(ctx) {
     ctx.stroke(); // Render the line
 
     ctx.restore(); // Restore the previous context state
-}
-
-function drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
-    const charArray = font5x3[char];
-
-    // If character not found, return
-    if (!charArray) return;
-
-    for (let row = 0; row < charArray.length; row++) {
-        for (let col = 0; col < charArray[row].length; col++) {
-            if (charArray[row][col] === 1) {
-                ctx.fillRect(x + col * pixelWidth,
-                    y + row * pixelHeight,
-                    pixelWidth + 1,
-                    pixelHeight + 1);
-            }
-        }
-    }
 }
 
 const scores = {
@@ -141,29 +79,29 @@ function drawScores(ctx) {
     drawChar(ctx, formattedScore2[1], x + 185 + 4 * pixelWidth, y, pixelWidth, pixelHeight); // Units
 }
 
-
-
-
 // Game loop function
 function gameLoop(ctx) {
-    // Handle input
-    handleInput();
+    // // Handle input
+    // handleInput();
 
     // Move the puck using its method
     puck.move(scores, leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
 
-    // Draw the dashed line
-    drawDashedLine(ctx);
-
-    // Draw paddles
-    drawPaddles(ctx);
-    // leftPaddle.draw(ctx);
-    // rightPaddle.draw(ctx);
+     // Update paddles
+     leftPaddle.update();
+     rightPaddle.update();
+ 
+     // Draw paddles
+     leftPaddle.draw(ctx);
+     rightPaddle.draw(ctx);
     
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
 
     drawScores(ctx); // Call this function to draw scores
+
+    // Draw the dashed line
+    drawDashedLine(ctx);
 
     // Test entry and exit points
     if (false) {
@@ -245,71 +183,6 @@ function gameLoop(ctx) {
     }
 }
 
-// Object to keep track of key states
-const keys = {
-    left: false,
-    right: false,
-    up: false,
-    down: false,
-    a: false,
-    z: false,
-};
-
-// Event listener for keydown
-document.addEventListener('keydown', (event) => {
-    switch (event.code) {
-        case 'ArrowLeft':
-            keys.left = true;
-            break;
-        case 'ArrowRight':
-            keys.right = true;
-            break;
-        case 'Space':
-            keys.space = true;
-            break;
-        case 'KeyA':
-            keys.a = true;
-            break;
-        case 'KeyZ':
-            keys.z = true;
-            break;
-        case 'ArrowUp':
-            keys.up = true;
-            break;
-        case 'ArrowDown':
-            keys.down = true;
-            break;
-    }
-});
-
-// Event listener for keyup
-document.addEventListener('keyup', (event) => {
-    switch (event.code) {
-        case 'ArrowLeft':
-            keys.left = false;
-            break;
-        case 'ArrowRight':
-            keys.right = false;
-            break;
-        case 'Space':
-            keys.space = false;
-            break;
-        case 'KeyA':
-            keys.a = false;
-            break;
-        case 'KeyZ':
-            keys.z = false;
-            break;
-        case 'ArrowUp':
-            keys.up = false;
-            break;
-        case 'ArrowDown':
-            keys.down = false;
-            break;
-    }
-});
-
-
 function animate(time) {
     var canvas = document.getElementById('gameArea');
     if (canvas.getContext) {
@@ -319,7 +192,6 @@ function animate(time) {
         window.canvasUtils.drawBorder(ctx); // Use the global reference
         if (window.fpsShow) { // Accessing global variable
             window.canvasUtils.drawFPS(ctx); // Use the global reference
-            //canvasUtils.drawFPS(ctx); // Draw the FPS
         }
     } else {
         alert('You need a modern browser to see this.');
@@ -327,7 +199,6 @@ function animate(time) {
 
     requestAnimationFrame(animate);
 }
-
 
 window.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animate);

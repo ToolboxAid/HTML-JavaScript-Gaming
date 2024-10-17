@@ -3,7 +3,25 @@
 // font5x3.js
 // 10/16/2024
 
-// Font for Pong is 3x5 (ACROSS x DOWN)
+// Font for Pong is 3 x 5 (ACROSS x DOWN)
+
+function drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
+    const charArray = font5x3[char];
+
+    // If character not found, return
+    if (!charArray) return;
+
+    for (let row = 0; row < charArray.length; row++) {
+        for (let col = 0; col < charArray[row].length; col++) {
+            if (charArray[row][col] === 1) {
+                ctx.fillRect(x + col * pixelWidth,
+                    y + row * pixelHeight,
+                    pixelWidth + 1,
+                    pixelHeight + 1);
+            }
+        }
+    }
+}
 
 const font5x3 = {
     '0': [

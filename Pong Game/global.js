@@ -5,10 +5,10 @@
 
 // Configuration for paddles
 export const paddleConfig = {
-    offset: 10,
-    width: 10,
-    height: 180,
-    speed: 1,
+    offset: 20,
+    width: 20,
+    height: 130,
+    speed: 5.0,
     leftColor: "red",
     rightColor: "green",
 };
@@ -29,7 +29,7 @@ export const canvasConfig = {
     backgroundColor: "#000000",
 };
 
-// non dev modules
+// non type="module" in HTML
 // Set global canvas variables for ../scripts
 window.gameAreaWidth = canvasConfig.width;
 window.gameAreaHeight = canvasConfig.height;

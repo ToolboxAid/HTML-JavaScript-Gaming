@@ -3,40 +3,79 @@
 // paddle.js
 // 10/16/2024
 
-import { paddleConfig, canvasConfig } from './global.js'; // Import paddle and canvas configuration
-import ObjectStatic from '../scripts/objectStatic.js'; // Import the base class
+import { paddleConfig, canvasConfig } from './global.js'; 
+import ObjectStatic from '../scripts/objectStatic.js';
 
 class Paddle extends ObjectStatic {
     constructor(isLeft) {
-        // Calculate initial position and size
         const width = paddleConfig.width;
         const height = paddleConfig.height;
         const x = isLeft ? paddleConfig.offset : canvasConfig.width - paddleConfig.offset - width;
-        const y = (canvasConfig.height / 2) - (height / 2); // Center vertically
+        const y = (canvasConfig.height / 2) - (height / 2);
         
-        // Call the super constructor with the necessary parameters
-        super(x, y, width, height); // Assuming ObjectStatic takes (x, y, width, height)
-        
-        this.color = isLeft ? paddleConfig.leftColor : paddleConfig.rightColor; // Set color based on side
+        super(x, y, width, height);
+        this.color = isLeft ? paddleConfig.leftColor : paddleConfig.rightColor;
+        this.speed = paddleConfig.speed;
+        this.isLeft = isLeft; // Track if this is the left paddle
+
+        // Bind the keys for this paddle
+        this.keys = {
+            up: this.isLeft ? 'KeyA' : 'ArrowUp',
+            down: this.isLeft ? 'KeyZ' : 'ArrowDown'
+        };
+
+        this.movement = {
+            up: false,
+            down: false
+        };
+
+        this.bindKeys();
     }
 
     // Method to move the paddle up or down
     move(direction) {
-        // direction: -1 for up, 1 for down
         this.y += direction * this.speed;
 
-        // Optional: Add bounds checking
         if (this.y < 0) {
-            this.y = 0; // Prevent moving above the top
-        } else if (this.y + this.height > window.gameAreaHeight) { // Use gameAreaHeight for bounds
-            this.y = window.gameAreaHeight - this.height; // Prevent moving below the bottom
+            this.y = 0;
+        } else if (this.y + this.height > window.gameAreaHeight) {
+            this.y = window.gameAreaHeight - this.height;
+        }
+    }
+
+    // Key binding and handling
+    bindKeys() {
+        document.addEventListener('keydown', (event) => {
+            if (event.code === this.keys.up) {
+                this.movement.up = true; // Mark up movement
+            } else if (event.code === this.keys.down) {
+                this.movement.down = true; // Mark down movement
+            }
+        });
+
+        document.addEventListener('keyup', (event) => {
+            if (event.code === this.keys.up) {
+                this.movement.up = false; // Clear up movement
+            } else if (event.code === this.keys.down) {
+                this.movement.down = false; // Clear down movement
+            }
+        });
+    }
+
+    // Update method to handle movements
+    update() {
+        if (this.movement.up) {
+            this.move(-1); // Move up
+        }
+        if (this.movement.down) {
+            this.move(1); // Move down
         }
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color; // Set the paddle color
-        ctx.fillRect(this.x, this.y, this.width, this.height); // Draw the paddle using inherited properties
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
 
-export default Paddle; // Don't forget to export the Paddle class
+export default Paddle;
