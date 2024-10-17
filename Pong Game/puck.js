@@ -1,33 +1,35 @@
-// ToolboxAid.com
-// David Quesenberry
-// puck.js
-// 10/16/2024
-
 import { puckConfig } from './global.js'; // Import puck configuration
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
+import Functions from '../scripts/functions.js'; // Adjust the path as necessary
 
 class Puck extends ObjectDynamic {
     constructor() {
-        // Set initial position and size
-        const width = puckConfig.width; // Use width from puckConfig
-        const height = puckConfig.height; // Use height from puckConfig
-        const x = (window.gameAreaWidth / 2) - (width / 2); // Center horizontally
-        const y = (window.gameAreaHeight / 2) - (height / 2); // Center vertically
+        // const width = puckConfig.width;
+        // const height = puckConfig.height;
+        const x = (window.gameAreaWidth / 2) - (puckConfig.width / 2);
+        const y = (window.gameAreaHeight / 2) - (puckConfig.height / 2);
+        const angle = 0;
 
-        // Call the super constructor with the necessary parameters
-        super(x, y, width, height); // Ensure ObjectDynamic takes (x, y, width, height)
+        super(x, y, puckConfig.width, puckConfig.height);
 
-        this.color = puckConfig.color; // Set puck color
-        this.speed = 3; // Set puck speed (you can customize this)
+        this.color = puckConfig.color;
+        this.speed = 3.5;
+        this.speedIncrease = 0.3;
+        this.speedDefault = 3.5;
 
-        // Initialize velocity properties
-        this.velocityX = 0; // Initialize velocity in X
-        this.velocityY = 0; // Initialize velocity in Y
-        this.reset(); // Reset puck position and velocity
+        // not sure this is needed, just being safe.
+        this.velocityX = 0;
+        this.velocityY = 0;
+
+        if (Functions.randomGenerator(0, 1)) {
+            this.reset(-45, 45);
+        } else {
+            this.reset(135, 225);
+        }
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color; // Set the puck color 
+        ctx.fillStyle = this.color;
         ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
     }
 
@@ -41,17 +43,17 @@ class Puck extends ObjectDynamic {
 
     checkBoundaryCollision(scores) {
         if (this.x + this.width / 2 > window.gameAreaWidth) {
-            this.velocityX *= -1; // Reverse X direction
-            scores.player1++; // Player 1 scores
-            this.reset();
+            this.velocityX *= -1;
+            scores.player1++;
+            this.reset(-45, 45);
         }
         if (this.x - this.width / 2 < 0) {
-            this.velocityX *= -1; // Reverse X direction
-            scores.player2++; // Player 2 scores
-            this.reset();
+            this.velocityX *= -1;
+            scores.player2++;
+            this.reset(135, 225);
         }
         if (this.y + this.height / 2 > window.gameAreaHeight || this.y - this.height / 2 < 0) {
-            this.velocityY *= -1; // Reverse Y direction
+            this.velocityY *= -1;
         }
     }
 
@@ -63,6 +65,8 @@ class Puck extends ObjectDynamic {
         if (this.x + this.width / 2 > rightPaddle.x &&
             this.y > rightPaddle.y && this.y < rightPaddle.y + rightPaddle.height) {
             this.handlePaddleCollision(rightPaddle);
+            // let angle = (180-this.angle) + 180;
+            // this.resetVelocity(angle);
         }
     }
 
@@ -72,20 +76,40 @@ class Puck extends ObjectDynamic {
 
         this.velocityX *= -1;
         this.velocityY = Math.sign(this.velocityY) * (Math.abs(this.velocityY) + offsetY * 0.1);
+        
     }
 
-    reset() {
+    resetVelocity() {
+        const coordinates = Functions.angleCalculateXY(this.angle); // Call the method
+
+        this.speed += this.speedIncrease;
+        console.log(`speed is: ${this.speed}`);
+
+        this.velocityX = coordinates.x * this.speed;
+        this.velocityY = coordinates.y * this.speed;
+    }
+
+    /*
+        angle direction of travel
+           0 is right
+          45 is right and down
+          90 is down
+         135 is down and left
+         180 is left
+         225 is left and up
+         270 is up
+         315 if up and right
+    */
+    reset(min, max) {
+        // Place puck at center of screen
         this.x = window.gameAreaWidth / 2;
         this.y = window.gameAreaHeight / 2;
-        this.velocityX = 5 * (this.randomGenerator() * 2 - 1);
-        this.velocityY = 2 * (this.randomGenerator() * 2 - 1);
 
-        console.log(`Puck Position: X = ${this.x}, Y = ${this.y}`);
-        console.log(`Puck Velocity: X = ${this.velocityX.toFixed(2)}, Y = ${this.velocityY.toFixed(2)}`);
-    }
+        this.speed = this.speedDefault;
+        this.angle = Functions.randomGenerator(min, max);
+        // console.log(`The angle is: ${this.angle} degrees`);
 
-    randomGenerator() {
-        return Math.random();
+        this.resetVelocity();
     }
 }
 
