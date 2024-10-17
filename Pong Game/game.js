@@ -3,14 +3,18 @@
 // canvas.js
 // 10/16/2024
 
-//import { gameAreaWidth, gameAreaHeight } from './global.js'; // Import relevant constants
+import { canvasConfig } from './global.js';
+
 import Paddle from './paddle.js'; // Import the Paddle class
 
-import { drawPuck, movePuck, resetPuck } from './puck.js';
+import Puck from './puck.js'; // Import the Puck class
 
-// // Create paddles
-// const leftPaddle = new Paddle(true);  // For the left paddle
-// const rightPaddle = new Paddle(false); // For the right paddle
+// Create puck instance
+const puck = new Puck(); // Create a single puck instance
+
+// Create paddles instances
+const leftPaddle = new Paddle(true);  // For the left paddle
+const rightPaddle = new Paddle(false); // For the right paddle
 
 
 // Variables to store the puck's position and radius 
@@ -18,8 +22,10 @@ const speedIncrease = 1.1;
 const puckWidth = 20; // Width of the puck
 const puckHeight = 20; // Height of the puck
 const puckColor = "white";
-let puckX = gameAreaWidth / 2;
-let puckY = gameAreaHeight / 2;
+// Accessing dimensions
+
+let puckX = canvasConfig.width / 2;
+let puckY = canvasConfig.height / 2;
 let puckVelocityX = 1.5;
 let puckVelocityY = 1.3;
 
@@ -28,10 +34,10 @@ const paddleWidth = 20;
 const paddleHeight = 110;
 const leftPaddleX = 20;
 const leftPaddleColor = "white";
-const rightPaddleX = gameAreaWidth - leftPaddleX - paddleWidth;
+const rightPaddleX = canvasConfig.width - leftPaddleX - paddleWidth;
 const rightPaddleColor = "white";
 const paddleSpeed = 8.0;
-let leftPaddleY = (gameAreaHeight / 2) - (paddleHeight / 2);
+let leftPaddleY = (canvasConfig.height / 2) - (paddleHeight / 2);
 let rightPaddleY = leftPaddleY;
 
 // Function to draw paddles
@@ -51,7 +57,7 @@ function movePaddles() {
     if (keys.a && leftPaddleY > 0) {
         leftPaddleY -= paddleSpeed;
     }
-    if (keys.z && leftPaddleY < gameAreaHeight - paddleHeight) {
+    if (keys.z && leftPaddleY < canvasConfig.height - paddleHeight) {
         leftPaddleY += paddleSpeed;
     }
 
@@ -59,7 +65,7 @@ function movePaddles() {
     if (keys.up && rightPaddleY > 0) {
         rightPaddleY -= paddleSpeed;
     }
-    if (keys.down && rightPaddleY < gameAreaHeight - paddleHeight) {
+    if (keys.down && rightPaddleY < canvasConfig.height - paddleHeight) {
         rightPaddleY += paddleSpeed;
     }
 }
@@ -82,10 +88,10 @@ function drawDashedLine(ctx) {
     ctx.setLineDash([19, 19]);
 
     // Draw the dashed line
-    const centerX = gameAreaWidth / 2; // Middle of the canvas
+    const centerX = canvasConfig.width / 2; // Middle of the canvas
     ctx.beginPath();
     ctx.moveTo(centerX, 0); // Start from the top
-    ctx.lineTo(centerX, gameAreaHeight); // End at the bottom
+    ctx.lineTo(centerX, canvasConfig.height); // End at the bottom
     ctx.stroke(); // Render the line
 
     ctx.restore(); // Restore the previous context state
@@ -143,20 +149,19 @@ function gameLoop(ctx) {
     // Handle input
     handleInput();
 
-    // Move the puck
-    movePuck(scores);
+    // Move the puck using its method
+    puck.move(scores, leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
 
     // Draw the dashed line
     drawDashedLine(ctx);
 
     // Draw paddles
     drawPaddles(ctx);
-
     // leftPaddle.draw(ctx);
     // rightPaddle.draw(ctx);
     
     // Draw the puck
-    drawPuck(ctx);
+    puck.draw(ctx); // Use the draw method from the Puck class
 
     drawScores(ctx); // Call this function to draw scores
 
@@ -309,17 +314,19 @@ function animate(time) {
     var canvas = document.getElementById('gameArea');
     if (canvas.getContext) {
         var ctx = canvas.getContext('2d');
-        initCanvas(ctx);
+        window.canvasUtils.initCanvas(ctx); // Use the global reference
         gameLoop(ctx, time); // Ensure gameLoop is defined
-        drawBorder(ctx);
+        window.canvasUtils.drawBorder(ctx); // Use the global reference
         if (window.showFPS) { // Accessing global variable
-            drawFPS(ctx);
+            window.canvasUtils.drawFPS(ctx); // Use the global reference
         }
     } else {
         alert('You need a modern browser to see this.');
     }
+
     requestAnimationFrame(animate);
 }
+
 
 window.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animate);

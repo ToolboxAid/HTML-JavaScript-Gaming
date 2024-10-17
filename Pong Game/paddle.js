@@ -3,18 +3,21 @@
 // paddle.js
 // 10/16/2024
 
-import ObjectStatic from '../scripts/objectStatic.js'; // Import the ObjectStatic class
-//import { paddleWidth, paddleHeight, paddleSpeed, leftPaddleColor, rightPaddleColor } from './global.js'; // Import relevant constants
+import { paddleConfig, canvasConfig } from './global.js'; // Import paddle and canvas configuration
+import ObjectStatic from '../scripts/objectStatic.js'; // Import the base class
 
 class Paddle extends ObjectStatic {
-    constructor(isLeftPaddle) {
-        // Calculate the initial X position based on whether it's the left or right paddle
-        const initialX = isLeftPaddle ? window.paddleOffset : (window.gameAreaWidth - paddleWidth - window.paddleOffset);
-        // Set y to position the paddle in the middle of the canvas vertically
-        const initialY = (window.gameAreaHeight - paddleHeight) / 2; 
-
-        super(initialX, initialY, paddleWidth, paddleHeight); // Call the constructor of ObjectStatic
-        this.speed = paddleSpeed; // Use the imported paddle speed
+    constructor(isLeft) {
+        // Calculate initial position and size
+        const width = paddleConfig.width;
+        const height = paddleConfig.height;
+        const x = isLeft ? paddleConfig.offset : canvasConfig.width - paddleConfig.offset - width;
+        const y = (canvasConfig.height / 2) - (height / 2); // Center vertically
+        
+        // Call the super constructor with the necessary parameters
+        super(x, y, width, height); // Assuming ObjectStatic takes (x, y, width, height)
+        
+        this.color = isLeft ? paddleConfig.leftColor : paddleConfig.rightColor; // Set color based on side
     }
 
     // Method to move the paddle up or down
@@ -30,9 +33,9 @@ class Paddle extends ObjectStatic {
         }
     }
 
-    // Override the draw method if needed
-    draw(ctx, fillColor = leftPaddleColor) {
-        super.draw(ctx, fillColor); // Call the parent class draw method
+    draw(ctx) {
+        ctx.fillStyle = this.color; // Set the paddle color
+        ctx.fillRect(this.x, this.y, this.width, this.height); // Draw the paddle using inherited properties
     }
 }
 

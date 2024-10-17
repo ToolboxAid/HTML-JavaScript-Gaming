@@ -15,10 +15,10 @@ class ObjectDynamic extends ObjectStatic {
      * @param {number} y - The Y position of the object.
      * @param {number} width - The width of the object.
      * @param {number} height - The height of the object.
-     * @param {number} velocityX - The initial velocity in the X direction.
-     * @param {number} velocityY - The initial velocity in the Y direction.
+     * @param {number} [velocityX=0] - The initial velocity in the X direction.
+     * @param {number} [velocityY=0] - The initial velocity in the Y direction.
      */
-    constructor(x, y, width, height, velocityX, velocityY) {
+    constructor(x, y, width, height, velocityX = 0, velocityY = 0) {
         super(x, y, width, height); // Call the parent constructor
         this.velocityX = velocityX; // Velocity in X direction
         this.velocityY = velocityY; // Velocity in Y direction
@@ -26,7 +26,7 @@ class ObjectDynamic extends ObjectStatic {
 
     /**
      * Updates the position of the object based on its velocity and delta time.
-     * @param {number} deltaTime - The time elapsed since the last update.
+     * @param {number} deltaTime - The time elapsed since the last update, in seconds.
      */
     update(deltaTime) {
         this.x += this.velocityX * deltaTime;
@@ -48,7 +48,7 @@ class ObjectDynamic extends ObjectStatic {
      * @param {number} width - The width of the area to check against.
      * @param {number} height - The height of the area to check against.
      */
-    checkBounds(width, height) {
+    checkCollisionWithBounds(width, height) {
         if (this.x < 0) {
             this.x = 0; // Prevent moving out of bounds on the left
             this.velocityX *= -1; // Reverse direction

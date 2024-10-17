@@ -1,106 +1,75 @@
-// ToolboxAid.com
-// David Quesenberry
-// puck.js
-// 10/16/2024
+import { canvasConfig } from './global.js'; // Import canvas config
 
-// Variables for puck properties (ensure these are imported or defined)
-const puckWidth = 20; // Width of the puck
-const puckHeight = 20; // Height of the puck
-const puckColor = "white";
-let puckX = gameAreaWidth / 2;
-let puckY = gameAreaHeight / 2;
-let puckVelocityX = 1.5;
-let puckVelocityY = 1.3;
-
-// Function to draw the puck
-export function drawPuck(ctx) {
-    ctx.fillStyle = puckColor;
-    ctx.fillRect(puckX - puckWidth / 2, puckY - puckHeight / 2, puckWidth, puckHeight);
-}
-
-export function movePuck(scores) {
-    const { player1, player2 } = scores; // Destructure scores object
-
-    let leftPaddleX = 10;
-    let leftPaddleY = 10;
-
-    let rightPaddleX = 10;
-    let rightPaddleY = 10;
-
-    let paddleWidth = 10;
-    let paddleHeight = 10;
-
-    // Update puck position based on velocity
-    puckX += puckVelocityX;
-    puckY += puckVelocityY;
-
-    // Check for collision with canvas boundaries
-    if (puckX + puckWidth / 2 > gameAreaWidth) {
-        // Puck touched the right boundary
-        puckVelocityX *= -1; // Reverse X direction
-        scores.player1++; // Player 1 scores
-        resetPuck(); // Optional: reset puck position or speed if desired
-    }
-    if (puckX - puckWidth / 2 < 0) {
-        // Puck touched the left boundary
-        puckVelocityX *= -1; // Reverse X direction
-        scores.player2++; // Player 2 scores
-        resetPuck(); // Optional: reset puck position or speed if desired
+class Puck {
+    constructor() {
+        // Use canvasConfig for dimensions
+        this.x = canvasConfig.width / 2;
+        this.y = canvasConfig.height / 2;
+        this.velocityX = 1.5;
+        this.velocityY = 1.3;
     }
 
-    // Check for collision with the top and bottom boundaries (without scoring)
-    if (puckY + puckHeight / 2 > gameAreaHeight || puckY - puckHeight / 2 < 0) {
-        puckVelocityY *= -1; // Reverse Y direction
+    draw(ctx) {
+        ctx.fillStyle = window.puckColor; 
+        ctx.fillRect(this.x - window.puckWidth / 2, this.y - window.puckHeight / 2, window.puckWidth, window.puckHeight);
     }
 
-    // Check collision with paddles
-    // Check collision with left paddle
-    if (puckX - puckWidth / 2 < leftPaddleX + paddleWidth &&
-        puckY > leftPaddleY && puckY < leftPaddleY + paddleHeight) {
+    move(scores, leftPaddle, rightPaddle) {
+        this.x += this.velocityX;
+        this.y += this.velocityY;
 
-        // Calculate the hit position on the paddle
-        let paddleCenterY = leftPaddleY + paddleHeight / 2;
-        let offsetY = puckY - paddleCenterY; // Distance from center of paddle
-
-        // Reverse X direction
-        puckVelocityX *= -1;
-
-        // Maintain the Y velocity, adjusting based on where it hits the paddle
-        puckVelocityY = Math.sign(puckVelocityY) * (Math.abs(puckVelocityY) + offsetY * 0.1);
+        this.checkBoundaryCollision(scores);
+        this.checkPaddleCollision(leftPaddle, rightPaddle);
     }
 
-    // Check collision with right paddle
-    if (puckX + puckWidth / 2 > rightPaddleX &&
-        puckY > rightPaddleY && puckY < rightPaddleY + paddleHeight) {
+    checkBoundaryCollision(scores) {
+        if (this.x + window.puckWidth / 2 > canvasConfig.width) {
+            this.velocityX *= -1; // Reverse X direction
+            scores.player1++; // Player 1 scores
+            this.reset();
+        }
+        if (this.x - window.puckWidth / 2 < 0) {
+            this.velocityX *= -1; // Reverse X direction
+            scores.player2++; // Player 2 scores
+            this.reset();
+        }
+        if (this.y + window.puckHeight / 2 > canvasConfig.height || this.y - window.puckHeight / 2 < 0) {
+            this.velocityY *= -1; // Reverse Y direction
+        }
+    }
 
-        // Calculate the hit position on the paddle
-        let paddleCenterY = rightPaddleY + paddleHeight / 2;
-        let offsetY = puckY - paddleCenterY; // Distance from center of paddle
+    checkPaddleCollision(leftPaddle, rightPaddle) {
+        if (this.x - window.puckWidth / 2 < leftPaddle.x + leftPaddle.width &&
+            this.y > leftPaddle.y && this.y < leftPaddle.y + leftPaddle.height) {
+            this.handlePaddleCollision(leftPaddle);
+        }
+        if (this.x + window.puckWidth / 2 > rightPaddle.x &&
+            this.y > rightPaddle.y && this.y < rightPaddle.y + rightPaddle.height) {
+            this.handlePaddleCollision(rightPaddle);
+        }
+    }
 
-        // Reverse X direction
-        puckVelocityX *= -1;
+    handlePaddleCollision(paddle) {
+        let paddleCenterY = paddle.y + paddle.height / 2;
+        let offsetY = this.y - paddleCenterY;
 
-        // Maintain the Y velocity, adjusting based on where it hits the paddle
-        puckVelocityY = Math.sign(puckVelocityY) * (Math.abs(puckVelocityY) + offsetY * 0.1);
+        this.velocityX *= -1;
+        this.velocityY = Math.sign(this.velocityY) * (Math.abs(this.velocityY) + offsetY * 0.1);
+    }
+
+    reset() {
+        this.x = canvasConfig.width / 2;
+        this.y = canvasConfig.height / 2;
+        this.velocityX = 5 * (this.randomGenerator() * 2 - 1);
+        this.velocityY = 2 * (this.randomGenerator() * 2 - 1);
+
+        console.log(`Puck Position: X = ${this.x}, Y = ${this.y}`);
+        console.log(`Puck Velocity: X = ${this.velocityX.toFixed(2)}, Y = ${this.velocityY.toFixed(2)}`);
+    }
+
+    randomGenerator() {
+        return Math.random();
     }
 }
 
-// Reset puck position and velocity
-export function resetPuck() {
-    // Reset puck to the center of screen
-    puckX = gameAreaWidth / 2;
-    puckY = gameAreaHeight / 2;
-    
-    // Generate random velocity between -5 and 5
-    puckVelocityX = 5 * (randomGenerator() * 2 - 1); // Random initial X direction
-    puckVelocityY = 2 * (randomGenerator() * 2 - 1); // Random initial Y direction
-
-    // Print puck position and velocity
-    console.log(`Puck Position: X = ${puckX}, Y = ${puckY}`);
-    console.log(`Puck Velocity: X = ${puckVelocityX.toFixed(2)}, Y = ${puckVelocityY.toFixed(2)}`);
-}
-
-// Ensure randomGenerator is defined correctly
-function randomGenerator() {
-    return Math.random(); // Example of a simple random generator
-}
+export default Puck;

@@ -3,25 +3,49 @@
 // global.js
 // 10/16/2024
 
-// Canvas variables
-window.gameAreaWidth = 858;
-window.gameAreaHeight = 525;
-window.gameScaleWindow = 0.75;
+// Configuration for the canvas
+export const canvasConfig = {
+    width: 858, // Game area width
+    height: 525, // Game area height
+    scale: 0.75,
+    backgroundColor: "#000000",
+    borderColor: "red",
+    borderSize: 10,
+};
+// Set global canvas dimensions
+window.gameAreaWidth = canvasConfig.width;
+window.gameAreaHeight = canvasConfig.height;
+window.scale = canvasConfig.scale;
+window.backgroundColor = canvasConfig.backgroundColor;
+window.borderColor = canvasConfig.borderColor;
+window.borderSize = canvasConfig.borderSize;
 
-window.backgroundColor = "#000000";
+// Configuration for borders
+export const borderConfig = {
+    size: 5,
+    color: "#00ff00",
+};
 
-window.boarderSize = 5;
-window.boarderColor = "#00ff00";
+// Configuration for FPS display
+export const fpsConfig = {
+    show: false,
+    color: "blue",
+    size: '30px',
+};
 
-window.showFPS = false;
-window.fpsColor = "white";
-window.fpsSize = '30px';
+// Configuration for paddles
+export const paddleConfig = {
+    offset: 10,
+    width: 10,
+    height: 180,
+    speed: 1,
+    leftColor: "red",
+    rightColor: "green",
+};
 
-// Paddle Offset
-window.paddleOffset = 10;
-
-window.paddleWidth = 10; 
-window.paddleHeight = 180; 
-window.paddleSpeed = 1;
-window.leftPaddleColor = "red"; 
-window.rightPaddleColor = "green";
+// Configuration for puck
+export const puckConfig = {
+    width: 20,  // Width of the puck
+    height: 20, // Height of the puck
+    color: "green", // Color of the puck
+};

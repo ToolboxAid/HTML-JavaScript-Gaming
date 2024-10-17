@@ -1,5 +1,5 @@
-/**
- * Represents a static object in a game.
+/** 
+ * Represents a static object in a game that cannot move.
  */
 class ObjectStatic {
     /**
@@ -9,7 +9,10 @@ class ObjectStatic {
      * @param {number} width - The width of the object.
      * @param {number} height - The height of the object.
      */
-    constructor(x, y, width, height) {
+    constructor(x = 0, y = 0, width, height) {
+        if (width <= 0 || height <= 0) {
+            throw new Error('Width and height must be positive numbers.');
+        }
         this.x = x; 
         this.y = y; 
         this.width = width; 
@@ -45,4 +48,4 @@ class ObjectStatic {
     }
 }
 
-export default ObjectStatic; 
+export default ObjectStatic;
