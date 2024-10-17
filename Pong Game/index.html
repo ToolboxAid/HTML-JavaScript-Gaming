@@ -1,36 +1,27 @@
 <!DOCTYPE HTML>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <!-- Game specific code 
+
+    <!-- game specific code-->
     <script type="module" src="global.js" defer></script>
     <script type="module" src="game.js" defer></script>
-    <script type="module" src="puck.js" defer></script>
-    <script type="module" src="font5x3.js" defer></script>-->
-    <!-- Reusable JS code 
-    <script  type="module" src="../scripts/objectStatic.js" defer></script>
-    <script  type="module" src="../scripts/objectDynamic.js" defer></script>
+
+    <!-- reusable code -->
     <script src="../scripts/canvas.js" defer></script>
     <script src="../scripts/fullscreen.js" defer></script>
-    <script src="../scripts/intersect.js" defer></script>-->
-
-<script type="module" src="global.js" defer></script>
-<script type="module" src="../scripts/objectDynamic.js" defer></script> <!-- Load ObjectDynamic first -->
-<script type="module" src="puck.js" defer></script>
-<script type="module" src="game.js" defer></script>
-<script type="module" src="font5x3.js" defer></script>
-<script src="../scripts/canvas.js" defer></script>
-<script src="../scripts/fullscreen.js" defer></script>
-<script src="../scripts/intersect.js" defer></script>
-
+    <script src="../scripts/intersect.js" defer></script>
 </head>
+
 <body id="Pong">
     <h1>Pong</h1>
-    <div id="gameAreaContainer">      
-        <canvas id="gameArea" style="background-color:#888888;"></canvas>    
+    <div id="gameAreaContainer">
+        <canvas id="gameArea" style="background-color:#888888;"></canvas>
     </div>
 </body>
+
 </html>
