@@ -5,7 +5,6 @@
 
 (() => {
     const gameFullScaleScreen = 1.0;
-    const referenceResolution = { width: window.gameAreaWidth, height: window.gameAreaHeight };
     let isFullScreen = false;
 
     const canvas = document.getElementById("gameArea");
@@ -51,16 +50,8 @@
     }
 
     function setCanvasSize(scale) {
-        // Set scale to 1 if it's undefined
-        if (scale === undefined) {
-            scale = 0.75;
-        }
         canvas.width = window.gameAreaWidth * scale,
-            canvas.height = window.gameAreaHeight * scale;
-
-        console.log(`Scale = ${scale}`);
-        console.log(`Canvas dimensions set: Width = ${canvas.width}, Height = ${canvas.height}`);
-        console.log(`window.gameArea set: Width = ${window.gameAreaWidth}, Height = ${window.gameAreaHeight}`);
+        canvas.height = window.gameAreaHeight * scale;
     }
 
     function updateCanvasTransform() {

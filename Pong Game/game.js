@@ -317,8 +317,9 @@ function animate(time) {
         window.canvasUtils.initCanvas(ctx); // Use the global reference
         gameLoop(ctx, time); // Ensure gameLoop is defined
         window.canvasUtils.drawBorder(ctx); // Use the global reference
-        if (window.showFPS) { // Accessing global variable
+        if (window.fpsShow) { // Accessing global variable
             window.canvasUtils.drawFPS(ctx); // Use the global reference
+            //canvasUtils.drawFPS(ctx); // Draw the FPS
         }
     } else {
         alert('You need a modern browser to see this.');

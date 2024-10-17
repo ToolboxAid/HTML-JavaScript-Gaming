@@ -5,24 +5,28 @@
 
 (() => {
     let frameCount = 0;
-    let lastTime = 0;
+    let lastTime = performance.now();
     let fps = 0;
-
-    const FPS_DISPLAY_POSITION = { x: 30, y: 50 };
 
     function drawFPS(ctx) {
         frameCount++;
-
-        if (getElapsedTime() >= 1000) {
+    
+        const currentTime = performance.now();
+        const elapsedTime = currentTime - lastTime;
+    
+        if (elapsedTime >= 1000) {
             fps = frameCount;
+            //console.log(`FPS: ${fps}`); // Log the FPS to check if it updates
             frameCount = 0;
+            lastTime = currentTime; // Reset lastTime for the next second
         }
-
+    
         ctx.globalAlpha = 1.0; 
-        ctx.fillStyle = window.fpsColor;
-        ctx.font = `${window.fpsSize} Arial Bold`; 
-        ctx.fillText(`FPS: ${fps}`, FPS_DISPLAY_POSITION.x, FPS_DISPLAY_POSITION.y);
+        ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
+        ctx.font = `${window.fpsSize || '16px'} Arial Bold`; 
+        ctx.fillText(`FPS: ${fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
     }
+    
 
     function getElapsedTime() {
         const currentTime = performance.now();
@@ -42,22 +46,14 @@
     function drawBorder(ctx) {
         ctx.lineWidth = window.borderSize;
         ctx.strokeStyle = window.borderColor;
-        ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
-    }    
-
-    function initCanvas(ctx) {
-        ctx.clearRect(0, 0, 858, 525);
-        ctx.fillStyle = window.backgroundColor;
-        ctx.fillRect(0, 0, 858, 525);
-        console.log("init");
+        ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);       
     }
 
-    function initCanvas1(ctx) {
+    function initCanvas(ctx) {
         ctx.clearRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
         ctx.fillStyle = window.backgroundColor;
         ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
-        console.log("init");
-    }    
+    }
 
     // Export functions to global scope
     window.canvasUtils = {
