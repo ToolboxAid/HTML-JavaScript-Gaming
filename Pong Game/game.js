@@ -4,6 +4,7 @@
 // 10/16/2024
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
+import { drawScores } from './font5x3.js'; // Ensure this path is correct
 import Paddle from './paddle.js'; // Import the Paddle class
 import Puck from './puck.js'; // Import the Puck class
 
@@ -25,12 +26,6 @@ let puckX = canvasConfig.width / 2;
 let puckY = canvasConfig.height / 2;
 let puckVelocityX = 1.5;
 let puckVelocityY = 1.3;
-
-// // Function to handle actions based on key states
-// function handleInput() {
-//     // Move paddles
-//    // movePaddles();
-// }
 
 // Function to draw a dashed vertical line
 function drawDashedLine(ctx) {
@@ -58,27 +53,6 @@ const scores = {
     player2: 0
 };
 
-function formatScore(score) {
-    return score.toString().padStart(2, '0'); // Format score to 2 digits
-}
-
-function drawScores(ctx) {
-    const pixelWidth = 15;
-    const pixelHeight = 20;
-    const x = 280; // X position for player 1 score
-    const y = 30; // Y position for scores
-
-    // Draw Player 1 Score
-    const formattedScore1 = formatScore(scores.player1);
-    drawChar(ctx, formattedScore1[0], x, y, pixelWidth, pixelHeight); // Tens
-    drawChar(ctx, formattedScore1[1], x + 4 * pixelWidth, y, pixelWidth, pixelHeight); // Units
-
-    // Draw Player 2 Score
-    const formattedScore2 = formatScore(scores.player2);
-    drawChar(ctx, formattedScore2[0], x + 185, y, pixelWidth, pixelHeight); // Tens
-    drawChar(ctx, formattedScore2[1], x + 185 + 4 * pixelWidth, y, pixelWidth, pixelHeight); // Units
-}
-
 // Game loop function
 function gameLoop(ctx) {
     // // Handle input
@@ -98,7 +72,9 @@ function gameLoop(ctx) {
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
 
-    drawScores(ctx); // Call this function to draw scores
+//    drawScores(ctx); // Call this function to draw scores
+    // Call drawScores to display the current scores
+    drawScores(ctx, scores);
 
     // Draw the dashed line
     drawDashedLine(ctx);
