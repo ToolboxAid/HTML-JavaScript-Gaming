@@ -1,17 +1,45 @@
-import { canvasConfig } from './global.js'; // Import canvas config
+// ToolboxAid.com
+// David Quesenberry
+// puck.js
+// 10/16/2024
 
-class Puck {
+import { puckConfig } from './global.js'; // Import puck configuration
+import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
+
+class Puck extends ObjectDynamic {
     constructor() {
-        // Use canvasConfig for dimensions
-        this.x = canvasConfig.width / 2;
-        this.y = canvasConfig.height / 2;
-        this.velocityX = 1.5;
-        this.velocityY = 1.3;
+        // Set initial position and size
+        const width = puckConfig.width; // Use width from puckConfig
+        const height = puckConfig.height; // Use height from puckConfig
+        const x = (window.gameAreaWidth / 2) - (width / 2); // Center horizontally
+        const y = (window.gameAreaHeight / 2) - (height / 2); // Center vertically
+
+        // Call the super constructor with the necessary parameters
+        super(x, y, width, height); // Ensure ObjectDynamic takes (x, y, width, height)
+
+        this.color = puckConfig.color; // Set puck color
+        this.speed = 3; // Set puck speed (you can customize this)
+
+        // Initialize velocity properties
+        this.velocityX = 0; // Initialize velocity in X
+        this.velocityY = 0; // Initialize velocity in Y
+        this.reset(); // Reset puck position and velocity
     }
 
     draw(ctx) {
-        ctx.fillStyle = window.puckColor; 
-        ctx.fillRect(this.x - window.puckWidth / 2, this.y - window.puckHeight / 2, window.puckWidth, window.puckHeight);
+        ctx.fillStyle = this.color; // Set the puck color
+        ctx.fillRect(this.x, this.y, this.width, this.height); // Draw the puck using its dimensions
+    }
+
+    // The draw1 function seems unnecessary if draw is already drawing the puck
+    // but if you want to keep it, ensure to use the correct dimensions
+    draw1(ctx) {
+        ctx.fillStyle = "red"; // window.puckColor; 
+        console.log(`Drawing puck at position: (${this.x}, ${this.y})`);
+        console.log(`Puck dimensions: Width = ${this.width}, Height = ${this.height}`);
+
+        // Draw the puck with its dimensions
+        ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
     }
 
     move(scores, leftPaddle, rightPaddle) {
@@ -23,27 +51,27 @@ class Puck {
     }
 
     checkBoundaryCollision(scores) {
-        if (this.x + window.puckWidth / 2 > canvasConfig.width) {
+        if (this.x + this.width / 2 > window.gameAreaWidth) {
             this.velocityX *= -1; // Reverse X direction
             scores.player1++; // Player 1 scores
             this.reset();
         }
-        if (this.x - window.puckWidth / 2 < 0) {
+        if (this.x - this.width / 2 < 0) {
             this.velocityX *= -1; // Reverse X direction
             scores.player2++; // Player 2 scores
             this.reset();
         }
-        if (this.y + window.puckHeight / 2 > canvasConfig.height || this.y - window.puckHeight / 2 < 0) {
+        if (this.y + this.height / 2 > window.gameAreaHeight || this.y - this.height / 2 < 0) {
             this.velocityY *= -1; // Reverse Y direction
         }
     }
 
     checkPaddleCollision(leftPaddle, rightPaddle) {
-        if (this.x - window.puckWidth / 2 < leftPaddle.x + leftPaddle.width &&
+        if (this.x - this.width / 2 < leftPaddle.x + leftPaddle.width &&
             this.y > leftPaddle.y && this.y < leftPaddle.y + leftPaddle.height) {
             this.handlePaddleCollision(leftPaddle);
         }
-        if (this.x + window.puckWidth / 2 > rightPaddle.x &&
+        if (this.x + this.width / 2 > rightPaddle.x &&
             this.y > rightPaddle.y && this.y < rightPaddle.y + rightPaddle.height) {
             this.handlePaddleCollision(rightPaddle);
         }
@@ -58,8 +86,8 @@ class Puck {
     }
 
     reset() {
-        this.x = canvasConfig.width / 2;
-        this.y = canvasConfig.height / 2;
+        this.x = window.gameAreaWidth / 2;
+        this.y = window.gameAreaHeight / 2;
         this.velocityX = 5 * (this.randomGenerator() * 2 - 1);
         this.velocityY = 2 * (this.randomGenerator() * 2 - 1);
 

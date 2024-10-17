@@ -69,15 +69,15 @@ function gameLoop(ctx) {
      leftPaddle.draw(ctx);
      rightPaddle.draw(ctx);
     
-    // Draw the puck
-    puck.draw(ctx); // Use the draw method from the Puck class
-
 //    drawScores(ctx); // Call this function to draw scores
     // Call drawScores to display the current scores
     drawScores(ctx, scores);
 
     // Draw the dashed line
     drawDashedLine(ctx);
+
+    // Draw the puck
+    puck.draw(ctx); // Use the draw method from the Puck class
 
     // Test entry and exit points
     if (false) {

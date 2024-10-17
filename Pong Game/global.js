@@ -17,7 +17,7 @@ export const paddleConfig = {
 export const puckConfig = {
     width: 20,  // Width of the puck
     height: 20, // Height of the puck
-    color: "blue", // Color of the puck
+    color: "yellow", // Color of the puck
 };
 
 
