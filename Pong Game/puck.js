@@ -27,18 +27,7 @@ class Puck extends ObjectDynamic {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color; // Set the puck color
-        ctx.fillRect(this.x, this.y, this.width, this.height); // Draw the puck using its dimensions
-    }
-
-    // The draw1 function seems unnecessary if draw is already drawing the puck
-    // but if you want to keep it, ensure to use the correct dimensions
-    draw1(ctx) {
-        ctx.fillStyle = "red"; // window.puckColor; 
-        console.log(`Drawing puck at position: (${this.x}, ${this.y})`);
-        console.log(`Puck dimensions: Width = ${this.width}, Height = ${this.height}`);
-
-        // Draw the puck with its dimensions
+        ctx.fillStyle = this.color; // Set the puck color 
         ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
     }
 
