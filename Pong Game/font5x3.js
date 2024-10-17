@@ -78,12 +78,10 @@ const font5x3 = {
     ]
 };
 
-// Function to format score
 function formatScore(score) {
     return score.toString().padStart(2, '0'); // Format score to 2 digits
 }
 
-// Function to draw a character
 function drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
     const characterMatrix = font5x3[char];
     if (!characterMatrix) return; // Ignore if character doesn't exist

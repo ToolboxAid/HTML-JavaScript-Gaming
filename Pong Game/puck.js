@@ -101,7 +101,6 @@ class Puck extends ObjectDynamic {
             } else {
                 this.angle = 45;
             }
-            console.log(`Left angle: ${this.angle.toFixed(2)}`);
         } else {
             this.angle = angle - (offsetY * 1.0);
             this.angle = (this.angle + 360) % 360;
@@ -111,7 +110,6 @@ class Puck extends ObjectDynamic {
             if (this.angle > 225) {
                 this.angle = 225;
             }
-            console.log(`Right angle: ${this.angle.toFixed(2)}`);
         }
         // Set the puck's velocity based on the new angle
         this.setVelocity();
