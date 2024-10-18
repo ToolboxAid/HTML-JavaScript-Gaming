@@ -10,6 +10,7 @@ import Intersect from '../scripts/intersect.js';
 import Functions from '../scripts/functions.js';
 import Paddle from './paddle.js';
 import Puck from './puck.js';
+import CanvasUtils from '../scripts/canvas.js';
 
 // Create paddles instances
 const leftPaddle = new Paddle(true);
@@ -27,15 +28,11 @@ const scores = {
 function drawDashedLine(ctx) {
     const dashPattern = [19, 19]; // Define your dash pattern
     const centerX = canvasConfig.width / 2; // Middle of the canvas
-    Functions.drawDashLine(ctx, centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
-    ctx.restore(); // Restore the previous context state
+    CanvasUtils.drawDashLine(ctx, centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
 }
 
 // Game loop function
 function gameLoop(ctx) {
-    // // Handle input
-    // handleInput();
-
     // Move the puck using its method
     puck.move(scores, leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
 
@@ -47,7 +44,6 @@ function gameLoop(ctx) {
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
 
-    //    drawScores(ctx); // Call this function to draw scores
     // Call drawScores to display the current scores
     drawScores(ctx, scores);
 
@@ -56,6 +52,13 @@ function gameLoop(ctx) {
 
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
+
+    // // Test entry and exit points (Example Logic)
+    // // You can keep this section for testing intersection logic
+    // // Instantiate a static rectangle object
+    // let rectangleObject = new ObjectStatic(100, 100, 160, 100);
+    // let squareObject = null;
+    // let result = null;
 
     // Test entry and exit points
     if (false) {
@@ -141,11 +144,11 @@ function animate(time) {
     var canvas = document.getElementById('gameArea');
     if (canvas.getContext) {
         var ctx = canvas.getContext('2d');
-        window.canvasUtils.initCanvas(ctx); // Use the global reference
-        gameLoop(ctx, time); // Ensure gameLoop is defined
-        window.canvasUtils.drawBorder(ctx); // Use the global reference
+        CanvasUtils.initCanvas(ctx); // Use CanvasUtils to initialize canvas
+        gameLoop(ctx); // Ensure gameLoop is defined
+        CanvasUtils.drawBorder(ctx); // Draw the border using CanvasUtils
         if (window.fpsShow) { // Accessing global variable
-            window.canvasUtils.drawFPS(ctx); // Use the global reference
+            CanvasUtils.drawFPS(ctx); // Draw FPS using CanvasUtils
         }
     } else {
         alert('You need a modern browser to see this.');

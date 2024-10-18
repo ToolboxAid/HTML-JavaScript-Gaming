@@ -3,65 +3,69 @@
 // canvas.js
 // 10/16/2024
 
-(() => {
-    let frameCount = 0;
-    let lastTime = performance.now();
-    let fps = 0;
+class CanvasUtils {
+    static frameCount = 0;
+    static lastTime = performance.now();
+    static fps = 0;
 
-    function drawFPS(ctx) {
-        frameCount++;
+    static initCanvas(ctx) {
+        ctx.clearRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+        ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
+        ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+    }
+
+    static drawFPS(ctx) {
+        this.frameCount++;
 
         const currentTime = performance.now();
-        const elapsedTime = currentTime - lastTime;
+        const elapsedTime = currentTime - this.lastTime;
 
         if (elapsedTime >= 1000) {
-            fps = frameCount;
-            //console.log(`FPS: ${fps}`); // Log the FPS to check if it updates
-            frameCount = 0;
-            lastTime = currentTime; // Reset lastTime for the next second
+            this.fps = this.frameCount;
+            //console.log(`FPS: ${this.fps}`); // Log the FPS to check if it updates
+            this.frameCount = 0;
+            this.lastTime = currentTime; // Reset lastTime for the next second
         }
 
         ctx.globalAlpha = 1.0;
         ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
         ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
-        ctx.fillText(`FPS: ${fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
+        ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
     }
 
-
-    function getElapsedTime() {
+    static getElapsedTime() {
         const currentTime = performance.now();
-        const elapsed = currentTime - lastTime;
-        lastTime = currentTime;
+        const elapsed = currentTime - this.lastTime;
+        this.lastTime = currentTime;
         return elapsed;
     }
 
-    function drawLine(ctx, x1, y1, x2, y2, lineWidth) {
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.lineWidth = lineWidth;
-        ctx.stroke();
-    }
-
-    function drawBorder(ctx) {
-        ctx.lineWidth = window.borderSize;
-        ctx.strokeStyle = window.borderColor;
+    static drawBorder(ctx) {
+        ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
+        ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
         ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
-    function initCanvas(ctx) {
-        ctx.clearRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
-        ctx.fillStyle = window.backgroundColor;
-        ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+    static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = strokeColor;
 
-
+        ctx.beginPath();
+        ctx.moveTo(x1, y1); // Start point
+        ctx.lineTo(x2, y2); // End point
+        ctx.stroke(); // Draw the line
     }
 
-    // Export functions to global scope
-    window.canvasUtils = {
-        drawFPS,
-        drawLine,
-        drawBorder,
-        initCanvas
-    };
-})();
+    static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
+        // Set the line dash pattern
+        ctx.setLineDash(dashPattern);
+
+        CanvasUtils.drawLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor);
+
+        // Reset to solid line
+        ctx.setLineDash([]); // Empty array means a solid line        
+    }
+}
+
+// Export the CanvasUtils class
+export default CanvasUtils;

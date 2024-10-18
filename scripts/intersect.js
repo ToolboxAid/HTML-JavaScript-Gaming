@@ -3,6 +3,8 @@
 // intersect.js
 // 10/16/2024
 
+import CanvasUtils from '../scripts/canvas.js';
+
 class Intersect {
     static checkIntersection(ctx, dynamicObject, staticObject) {
         // Future position of the dynamic object
@@ -51,7 +53,7 @@ class Intersect {
         
         // Draw line connecting current and future position
         ctx.strokeStyle = 'purple';
-        Functions.drawLine(ctx, dynamicObject.x + dynamicObject.width / 2, dynamicObject.y + dynamicObject.height / 2, 
+        CanvasUtils.drawLine(ctx, dynamicObject.x + dynamicObject.width / 2, dynamicObject.y + dynamicObject.height / 2, 
                            futureX + dynamicObject.width / 2, futureY + dynamicObject.height / 2, 1);
     }
 
