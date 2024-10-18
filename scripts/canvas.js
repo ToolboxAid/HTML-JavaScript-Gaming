@@ -1,3 +1,9 @@
+// Import canvasConfig variables
+import { canvasConfig } from './global.js';
+
+// Set the game area width based on canvasConfig
+window.gameAreaWidth = canvasConfig.width;
+
 // ToolboxAid.com
 // David Quesenberry
 // canvas.js
@@ -22,7 +28,6 @@ class CanvasUtils {
 
         if (elapsedTime >= 1000) {
             this.fps = this.frameCount;
-            //console.log(`FPS: ${this.fps}`); // Log the FPS to check if it updates
             this.frameCount = 0;
             this.lastTime = currentTime; // Reset lastTime for the next second
         }
@@ -59,9 +64,7 @@ class CanvasUtils {
     static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
         // Set the line dash pattern
         ctx.setLineDash(dashPattern);
-
         CanvasUtils.drawLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor);
-
         // Reset to solid line
         ctx.setLineDash([]); // Empty array means a solid line        
     }
