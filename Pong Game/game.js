@@ -26,7 +26,7 @@ function drawDashedLine(ctx) {
 // Game loop function
 export function gameLoop(ctx) { // exported for use by canvs.js
     // Move the puck using its method
-    puck.move(leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
+    puck.move(leftPaddle, rightPaddle, ctx); // Ensure leftPaddle and rightPaddle are defined
 
     // Update paddles
     leftPaddle.update();

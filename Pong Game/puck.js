@@ -8,6 +8,7 @@ import { paddleConfig } from './global.js'; // Import padle configuration
 
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 import Functions from '../scripts/functions.js'; // Adjust the path as necessary
+import Intersect from '../scripts/intersect.js';
 
 class Puck extends ObjectDynamic {
     constructor() {
@@ -42,7 +43,7 @@ class Puck extends ObjectDynamic {
         ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
     }
 
-    move(leftPaddle, rightPaddle) {
+    move(leftPaddle, rightPaddle, ctx) {
         this.x += this.velocityX;
         this.y += this.velocityY;
 
@@ -50,6 +51,10 @@ class Puck extends ObjectDynamic {
         this.checkPaddleCollision(leftPaddle, rightPaddle);
     }
 
+
+    // check for wall to:
+    // - adjust scores for left & right
+    // - adjust Y direction for top & bottom
     checkBoundaryCollision(leftPaddle, rightPaddle) {
         if (this.x + this.width / 2 > window.gameAreaWidth) {
             this.velocityX *= -1;
@@ -105,7 +110,7 @@ class Puck extends ObjectDynamic {
                 this.angle = 45;
             }
         } else {
-            this.angle = angle - (offsetY * 1.0);
+            this.angle = angle - (offsetY * 0.9);
             this.angle = (this.angle + 360) % 360;
             if (this.angle < 135) {
                 this.angle = 135;
