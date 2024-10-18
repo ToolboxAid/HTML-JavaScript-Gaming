@@ -7,17 +7,17 @@
 export const paddleConfig = {
     offset: 20,
     width: 20,
-    height: 400,
+    height: 120,
     speed: 5.0,
-    leftColor: "blue",
-    rightColor: "green",
+    leftColor: "white",
+    rightColor: "white",
 };
 
 // Configuration for puck
 export const puckConfig = {
     width: 20,
     height: 20,
-    color: "yellow",
+    color: "white",
     speedDefault: 5.0,
     speedIncrease: 0.25,
     /*
@@ -35,9 +35,16 @@ export const puckConfig = {
 export const canvasConfig = {
     width: 858, // Game area width
     height: 525, // Game area height
-    scale: 0.75,
-    backgroundColor: "#000000",
+    scale: 0.5,
+    backgroundColor: "#333333",
 };
+
+export const font5x3 = {
+    color: "white",
+    pixelWidth: 15,
+    pixelHeight: 20,    
+
+}
 
 // non type="module" in HTML
 // Set global canvas variables for ../scripts

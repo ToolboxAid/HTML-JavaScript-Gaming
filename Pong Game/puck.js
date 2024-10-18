@@ -4,18 +4,15 @@
 // 10/16/2024
 
 import { puckConfig } from './global.js'; // Import puck configuration
-import { paddleConfig } from './global.js'; // Import padle configuration
 
 import CanvasUtils from '../scripts/canvas.js';
 
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 import Functions from '../scripts/functions.js'; // Adjust the path as necessary
-import Intersect from '../scripts/intersect.js';
+//import Intersect from '../scripts/intersect.js';
 
 class Puck extends ObjectDynamic {
     constructor() {
-        // const width = puckConfig.width;
-        // const height = puckConfig.height;
         const x = (window.gameAreaWidth / 2) - (puckConfig.width / 2);
         const y = (window.gameAreaHeight / 2) - (puckConfig.height / 2);
 
@@ -49,32 +46,33 @@ class Puck extends ObjectDynamic {
         this.x += this.velocityX;
         this.y += this.velocityY;
 
-        this.checkBoundaryCollision(leftPaddle, rightPaddle);
+        this.checkGameAreaBoundary(leftPaddle, rightPaddle);
 
         if (this.velocityX > 0) {
             this.vectorCollisionFront(ctx, rightPaddle);
-            // this.vectorCollisionTop(ctx, rightPaddle);
-            // this.vectorCollisionBottom(ctx, rightPaddle);
+            this.vectorCollisionTop(ctx, rightPaddle);
+            this.vectorCollisionBottom(ctx, rightPaddle);
         } else {
             this.vectorCollisionFront(ctx, leftPaddle);
-            // this.vectorCollisionTop(ctx, leftPaddle);
-            // this.vectorCollisionBottom(ctx, leftPaddle);
+            this.vectorCollisionTop(ctx, leftPaddle);
+            this.vectorCollisionBottom(ctx, leftPaddle);
         }
     }
 
-
-    checkBoundaryCollision(leftPaddle, rightPaddle) {
+    checkGameAreaBoundary(leftPaddle, rightPaddle) {
         // Check if wall hit:
         // - adjust scores for left & right
         // - adjust Y direction for top & bottom
         if (this.x + this.width / 2 > window.gameAreaWidth) {
             this.velocityX *= -1;
+            this.x += this.velocityX;
             leftPaddle.incrementScore();
             this.speedScore++;
             this.reset(-45, 45);
         }
         if (this.x - this.width / 2 < 0) {
             this.velocityX *= -1;
+            this.x += this.velocityX; // prevent getting stuck to top or bottom
             rightPaddle.incrementScore();
             this.speedScore++;
             this.reset(135, 225);
@@ -90,25 +88,65 @@ class Puck extends ObjectDynamic {
         const line1start = { x: this.x, y: this.y }
         const line1end = { x: this.x + (this.velocityX * lineExtend), y: this.y + (this.velocityY * lineExtend) }
         //console.log(line1start, line1end);
-        CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
+        //CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
 
         let line2start = { x: paddle.x, y: paddle.y };
         let line2end = { x: paddle.x, y: paddle.y + paddle.height };
 
-        // Paddle Linea
+        // Paddle Line
         if (paddle.isLeft) {
             line2start = { x: paddle.x + paddle.width, y: paddle.y };
             line2end = { x: paddle.x + paddle.width, y: paddle.y + paddle.height };
         }
         //console.log(line2start, line2end);
-        CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
+        //CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
 
         const intersection = Functions.linesIntersect(line1start, line1end, line2start, line2end);
         if (intersection) {
             CanvasUtils.drawCircle(ctx, intersection); // Draw a red dot at the intersection
-            console.log(intersection);
+            //console.log(intersection);
 
             this.handlePaddleCollision(paddle);
+        }
+    }
+    
+    vectorCollisionTop(ctx, paddle) {
+        let lineExtend = 1;
+        // Puck line
+        const line1start = { x: this.x, y: this.y }
+        const line1end = { x: this.x + (this.velocityX * lineExtend), y: this.y + (this.velocityY * lineExtend) }
+        //console.log(line1start, line1end);
+        //CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
+
+        let line2start = { x: paddle.x, y: paddle.y };
+        let line2end = { x: paddle.x + paddle.width, y: paddle.y };
+
+        // Draw Paddle Top Line
+        //CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
+
+        const intersection = Functions.linesIntersect(line1start, line1end, line2start, line2end);
+        if (intersection) {
+            this.velocityY *= -1;
+        }
+    }
+
+    vectorCollisionBottom(ctx, paddle) {
+        let lineExtend = 1;
+        // Puck line
+        const line1start = { x: this.x, y: this.y }
+        const line1end = { x: this.x + (this.velocityX * lineExtend), y: this.y + (this.velocityY * lineExtend) }
+        //console.log(line1start, line1end);
+        //CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
+
+        let line2start = { x: paddle.x, y: paddle.y + paddle.height };
+        let line2end = { x: paddle.x + paddle.width, y: paddle.y + paddle.height};
+
+        // Draw Paddle Bottom Line
+        //CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
+
+        const intersection = Functions.linesIntersect(line1start, line1end, line2start, line2end);
+        if (intersection) {
+            this.velocityY *= -1;
         }
     }
 
