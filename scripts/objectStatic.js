@@ -24,7 +24,7 @@ class ObjectStatic {
      * @param {number} newX - The new X position.
      * @param {number} newY - The new Y position.
      */
-    updatePosition(newX, newY) {
+    setPosition(newX, newY) {
         this.x = newX;
         this.y = newY;
     }

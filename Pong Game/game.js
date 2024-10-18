@@ -4,10 +4,12 @@
 // 10/16/2024
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
-import { drawScores } from './font5x3.js'; // Ensure this path is correct
-import Functions from '../scripts/functions.js'; // Adjust the path accordingly
-import Paddle from './paddle.js'; // Import the Paddle class
-import Puck from './puck.js'; // Import the Puck class
+import { drawScores } from './font5x3.js'; 
+import Fullscreen from '../scripts/fullscreen.js';
+import Intersect from '../scripts/intersect.js'; 
+import Functions from '../scripts/functions.js';
+import Paddle from './paddle.js';
+import Puck from './puck.js';
 
 // Create paddles instances
 const leftPaddle = new Paddle(true);
