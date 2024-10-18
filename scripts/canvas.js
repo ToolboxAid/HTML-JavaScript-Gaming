@@ -62,6 +62,18 @@ class CanvasUtils {
         // Reset to solid line
         ctx.setLineDash([]); // Empty array means a solid line        
     }
+
+    static drawLineFromPoints(ctx, start, end) {
+        // Function to draw a line from two points
+        CanvasUtils.drawLine(ctx, start.x, start.y, end.x, end.y);
+    }
+
+    static drawCircle(ctx, point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
+        ctx.fillStyle = color;
+        ctx.fill();
+    }
 }
 
 // Export the CanvasUtils class
@@ -80,7 +92,7 @@ async function animate(time) {
             // Check if gameModule is already loaded
             if (!gameModule) {
                 // Import game.js only if not loaded
-                gameModule = await import(`${window.canvasPath}/game.js`); 
+                gameModule = await import(`${window.canvasPath}/game.js`);
             }
             CanvasUtils.initCanvas(ctx);
             gameModule.gameLoop(ctx); // Call gameLoop from the imported module

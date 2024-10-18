@@ -6,6 +6,8 @@
 import { puckConfig } from './global.js'; // Import puck configuration
 import { paddleConfig } from './global.js'; // Import padle configuration
 
+import CanvasUtils from '../scripts/canvas.js';
+
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 import Functions from '../scripts/functions.js'; // Adjust the path as necessary
 import Intersect from '../scripts/intersect.js';
@@ -20,9 +22,9 @@ class Puck extends ObjectDynamic {
         super(x, y, puckConfig.width, puckConfig.height);
 
         this.color = puckConfig.color;
-        this.speed = 3.5;
-        this.speedIncrease = 0.3;
-        this.speedDefault = 3.5;
+        this.speed = 0;
+        this.speedIncrease = puckConfig.speedIncrease;
+        this.speedDefault = puckConfig.speedDefault;
         this.speedScore = 0;
 
         // not sure this is needed, just being safe.
@@ -49,8 +51,38 @@ class Puck extends ObjectDynamic {
 
         this.checkBoundaryCollision(leftPaddle, rightPaddle);
         this.checkPaddleCollision(leftPaddle, rightPaddle);
+
+        if (this.velocityX > 0) {
+            this.vectorCollision(ctx, rightPaddle);
+        } else {
+            this.vectorCollision(ctx, leftPaddle);
+        }
     }
 
+    vectorCollision(ctx, paddle) {
+        // Puck line
+        const line1start = { x: this.x, y: this.y }
+        const line1end = { x: this.x + (this.velocityX * 50), y: this.y + (this.velocityY * 50) }
+        //console.log(line1start, line1end);
+        CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
+
+        let line2start = { x: paddle.x, y: paddle.y };
+        let line2end = { x: paddle.x, y: paddle.y + paddle.height };
+
+        // Paddle Linea
+        if (paddle.isLeft) {
+            line2start = { x: paddle.x + paddle.width, y: paddle.y };
+            line2end = { x: paddle.x + paddle.width, y: paddle.y + paddle.height };
+        }
+        //console.log(line2start, line2end);
+        CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
+
+        const intersection = Functions.linesIntersect(line1start, line1end, line2start, line2end);
+        if (intersection) {
+            CanvasUtils.drawCircle(ctx, intersection); // Draw a red dot at the intersection
+            console.log(intersection);
+        }
+    }
 
     // check for wall to:
     // - adjust scores for left & right
@@ -123,7 +155,6 @@ class Puck extends ObjectDynamic {
         this.setVelocity();
     }
 
-
     setVelocity() {
         this.speed += this.speedIncrease;
 
@@ -133,18 +164,18 @@ class Puck extends ObjectDynamic {
         this.velocityY = coordinates.y * this.speed;
     }
 
-    /* Angle direction of travel
-           0 is right
-          45 is right and down
-          90 is down
-         135 is down and left
-         180 is left
-         225 is left and up
-         270 is up
-         315 if up and right
-    */
     reset(min, max) {
         // Place puck at center of screen
+        /* Angle direction of travel
+            0 is right
+            45 is right and down
+            90 is down
+            135 is down and left
+            180 is left
+            225 is left and up
+            270 is up
+            315 if up and right
+        */
         this.x = window.gameAreaWidth / 2;
         this.y = window.gameAreaHeight / 2;
 

@@ -7,9 +7,9 @@
 export const paddleConfig = {
     offset: 20,
     width: 20,
-    height: 1000,
+    height: 458,
     speed: 5.0,
-    leftColor: "red",
+    leftColor: "blue",
     rightColor: "green",
 };
 
@@ -23,12 +23,12 @@ export const puckConfig = {
     speedIncrease: 0.3,
     /*
     this.angle = (this.angle + 360) % 360;
-Left angles
-    this.angle = 315;
-    this.angle = 45;
-Right angles
-    this.angle = 135;
-    this.angle = 225
+    Left angles
+        this.angle = 315;
+        this.angle = 45;
+    Right angles
+        this.angle = 135;
+        this.angle = 225
     */
 };
 
@@ -47,8 +47,8 @@ window.gameAreaHeight = canvasConfig.height;
 window.gameScaleWindow = canvasConfig.scale;
 window.backgroundColor = canvasConfig.backgroundColor;
 
-window.borderColor = "pink"; //borderConfig.color; // This should be color
-window.borderSize = 15; //borderConfig.size; // This should be size
+window.borderColor = "red";
+window.borderSize = 5;
 
 // Configuration for FPS display
 window.fpsShow = false;
