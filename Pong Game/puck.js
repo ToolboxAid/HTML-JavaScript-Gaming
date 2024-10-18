@@ -22,6 +22,7 @@ class Puck extends ObjectDynamic {
         this.speed = 3.5;
         this.speedIncrease = 0.3;
         this.speedDefault = 3.5;
+        this.speedScore = 0;
 
         // not sure this is needed, just being safe.
         this.velocityX = 0;
@@ -41,24 +42,26 @@ class Puck extends ObjectDynamic {
         ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
     }
 
-    move(scores, leftPaddle, rightPaddle) {
+    move(leftPaddle, rightPaddle) {
         this.x += this.velocityX;
         this.y += this.velocityY;
 
-        this.checkBoundaryCollision(scores);
+        this.checkBoundaryCollision(leftPaddle, rightPaddle);
         this.checkPaddleCollision(leftPaddle, rightPaddle);
     }
 
-    checkBoundaryCollision(scores) {
+    checkBoundaryCollision(leftPaddle, rightPaddle) {
         if (this.x + this.width / 2 > window.gameAreaWidth) {
             this.velocityX *= -1;
-            scores.player1++;
-            this.reset(-45, 45, scores);
+            leftPaddle.incrementScore();
+            this.speedScore++;
+            this.reset(-45, 45);
         }
         if (this.x - this.width / 2 < 0) {
             this.velocityX *= -1;
-            scores.player2++;
-            this.reset(135, 225, scores);
+            rightPaddle.incrementScore();
+            this.speedScore++;
+            this.reset(135, 225);
         }
         if (this.y + this.height / 2 > window.gameAreaHeight || this.y - this.height / 2 < 0) {
             this.velocityY *= -1;
@@ -135,13 +138,13 @@ class Puck extends ObjectDynamic {
          270 is up
          315 if up and right
     */
-    reset(min, max, scores = { player1: 0, player2: 0 }) {
+    reset(min, max) {
         // Place puck at center of screen
         this.x = window.gameAreaWidth / 2;
         this.y = window.gameAreaHeight / 2;
 
         this.speed = this.speedDefault;
-        this.speed += (scores.player1 + scores.player2) * 0.1;
+        this.speed += this.speedScore * 0.1;
         this.angle = Functions.randomGenerator(min, max);
         this.setVelocity();
     }

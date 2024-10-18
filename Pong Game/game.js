@@ -34,7 +34,7 @@ function drawDashedLine(ctx) {
 // Game loop function
 export function gameLoop(ctx) {
     // Move the puck using its method
-    puck.move(scores, leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
+    puck.move(leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
 
     // Update paddles
     leftPaddle.update();
@@ -45,7 +45,7 @@ export function gameLoop(ctx) {
     rightPaddle.draw(ctx);
 
     // Call drawScores to display the current scores
-    drawScores(ctx, scores);
+    drawScores(ctx, leftPaddle, rightPaddle);
 
     // Draw the dashed line
     drawDashedLine(ctx);

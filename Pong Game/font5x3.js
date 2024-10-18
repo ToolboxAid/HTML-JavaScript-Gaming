@@ -97,19 +97,19 @@ function drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
     }
 }
 
-function drawScores(ctx, scores) {
+function drawScores(ctx, leftPaddle, rightPaddle) {
     const pixelWidth = 15;
     const pixelHeight = 20;
     const x = 280; // X position for player 1 score
     const y = 30; // Y position for scores
 
     // Draw Player 1 Score
-    const formattedScore1 = formatScore(scores.player1);
+    const formattedScore1 = formatScore(leftPaddle.score);
     drawChar(ctx, formattedScore1[0], x, y, pixelWidth, pixelHeight); // Tens
     drawChar(ctx, formattedScore1[1], x + 4 * pixelWidth, y, pixelWidth, pixelHeight); // Units
 
     // Draw Player 2 Score
-    const formattedScore2 = formatScore(scores.player2);
+    const formattedScore2 = formatScore(rightPaddle.score);
     drawChar(ctx, formattedScore2[0], x + 185, y, pixelWidth, pixelHeight); // Tens
     drawChar(ctx, formattedScore2[1], x + 185 + 4 * pixelWidth, y, pixelWidth, pixelHeight); // Units
 }

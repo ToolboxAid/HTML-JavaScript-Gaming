@@ -17,6 +17,7 @@ class Paddle extends ObjectStatic {
         this.color = isLeft ? paddleConfig.leftColor : paddleConfig.rightColor;
         this.speed = paddleConfig.speed;
         this.isLeft = isLeft; // Track if this is the left paddle
+        this.score = 0;
 
         // Bind the keys for this paddle
         this.keys = {
@@ -30,6 +31,13 @@ class Paddle extends ObjectStatic {
         };
 
         this.bindKeys();
+    }
+
+    incrementScore(){
+        this.score++;
+    }
+    resetScore(){
+        this.score = 0;
     }
 
     // Method to move the paddle up or down
