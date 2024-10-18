@@ -50,19 +50,45 @@ class Puck extends ObjectDynamic {
         this.y += this.velocityY;
 
         this.checkBoundaryCollision(leftPaddle, rightPaddle);
-        this.checkPaddleCollision(leftPaddle, rightPaddle);
 
         if (this.velocityX > 0) {
-            this.vectorCollision(ctx, rightPaddle);
+            this.vectorCollisionFront(ctx, rightPaddle);
+            // this.vectorCollisionTop(ctx, rightPaddle);
+            // this.vectorCollisionBottom(ctx, rightPaddle);
         } else {
-            this.vectorCollision(ctx, leftPaddle);
+            this.vectorCollisionFront(ctx, leftPaddle);
+            // this.vectorCollisionTop(ctx, leftPaddle);
+            // this.vectorCollisionBottom(ctx, leftPaddle);
         }
     }
 
-    vectorCollision(ctx, paddle) {
+
+    checkBoundaryCollision(leftPaddle, rightPaddle) {
+        // Check if wall hit:
+        // - adjust scores for left & right
+        // - adjust Y direction for top & bottom
+        if (this.x + this.width / 2 > window.gameAreaWidth) {
+            this.velocityX *= -1;
+            leftPaddle.incrementScore();
+            this.speedScore++;
+            this.reset(-45, 45);
+        }
+        if (this.x - this.width / 2 < 0) {
+            this.velocityX *= -1;
+            rightPaddle.incrementScore();
+            this.speedScore++;
+            this.reset(135, 225);
+        }
+        if (this.y + this.height / 2 > window.gameAreaHeight || this.y - this.height / 2 < 0) {
+            this.velocityY *= -1;
+        }
+    }
+
+    vectorCollisionFront(ctx, paddle) {
+        let lineExtend = 1;
         // Puck line
         const line1start = { x: this.x, y: this.y }
-        const line1end = { x: this.x + (this.velocityX * 50), y: this.y + (this.velocityY * 50) }
+        const line1end = { x: this.x + (this.velocityX * lineExtend), y: this.y + (this.velocityY * lineExtend) }
         //console.log(line1start, line1end);
         CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
 
@@ -81,40 +107,8 @@ class Puck extends ObjectDynamic {
         if (intersection) {
             CanvasUtils.drawCircle(ctx, intersection); // Draw a red dot at the intersection
             console.log(intersection);
-        }
-    }
 
-    // check for wall to:
-    // - adjust scores for left & right
-    // - adjust Y direction for top & bottom
-    checkBoundaryCollision(leftPaddle, rightPaddle) {
-        if (this.x + this.width / 2 > window.gameAreaWidth) {
-            this.velocityX *= -1;
-            leftPaddle.incrementScore();
-            this.speedScore++;
-            this.reset(-45, 45);
-        }
-        if (this.x - this.width / 2 < 0) {
-            this.velocityX *= -1;
-            rightPaddle.incrementScore();
-            this.speedScore++;
-            this.reset(135, 225);
-        }
-        if (this.y + this.height / 2 > window.gameAreaHeight || this.y - this.height / 2 < 0) {
-            this.velocityY *= -1;
-        }
-    }
-
-    checkPaddleCollision(leftPaddle, rightPaddle) {
-        if (this.x - this.width / 2 < leftPaddle.x + leftPaddle.width &&
-            this.y > leftPaddle.y && this.y < leftPaddle.y + leftPaddle.height) {
-            this.handlePaddleCollision(leftPaddle);
-            this.x += (paddleConfig.width / 4);
-        }
-        if (this.x + this.width / 2 > rightPaddle.x &&
-            this.y > rightPaddle.y && this.y < rightPaddle.y + rightPaddle.height) {
-            this.handlePaddleCollision(rightPaddle);
-            this.x -= (paddleConfig.width / 8);
+            this.handlePaddleCollision(paddle);
         }
     }
 

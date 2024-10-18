@@ -7,7 +7,7 @@
 export const paddleConfig = {
     offset: 20,
     width: 20,
-    height: 458,
+    height: 400,
     speed: 5.0,
     leftColor: "blue",
     rightColor: "green",
@@ -15,12 +15,11 @@ export const paddleConfig = {
 
 // Configuration for puck
 export const puckConfig = {
-    width: 20,  // Width of the puck
-    height: 20, // Height of the puck
-    color: "yellow", // Color of the puck
-    speed: 3.0,
-    speedDefault: 1.0,
-    speedIncrease: 0.3,
+    width: 20,
+    height: 20,
+    color: "yellow",
+    speedDefault: 5.0,
+    speedIncrease: 0.25,
     /*
     this.angle = (this.angle + 360) % 360;
     Left angles
