@@ -124,3 +124,94 @@ class Intersect {
 
 // Export the Intersect class
 export default Intersect;
+
+
+// import Intersect from '../scripts/intersect.js'; 
+
+    
+// 	// Test entry and exit points
+//     if (false) {
+//     // // Test entry and exit points (Example Logic)
+//     // // You can keep this section for testing intersection logic
+//     // // Instantiate a static rectangle object
+//     // let rectangleObject = new ObjectStatic(100, 100, 160, 100);
+//     // let squareObject = null;
+//     // let result = null;
+
+//         // Instantiate a static rectangle object
+//         let rectangleObject = new ObjectStatic(100, 100, 160, 100);
+
+//         let squareObject = null;
+//         let result = null;
+//         //  ObjectDynamic ( x, y, width, height, velocityX, velocityY )
+
+//         /* ------------------------------------
+//         Enter Left: Exit Top, Right, Bottom
+//         ------------------------------------ */
+//         if (false) {
+
+//             // Exit TOP  (--- not working on exit ---)
+//             squareObject = new ObjectDynamic(30, 150, 10, 10, 300, -100);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit RIGHT
+//             squareObject = new ObjectDynamic(30, 150, 10, 10, 300, 0);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit Bottom
+//             squareObject = new ObjectDynamic(30, 150, 10, 10, 300, 100);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+//         }
+//         /* ------------------------------------
+//         Enter TOP: Exit Left, Right, Bottom
+//         ------------------------------------    */
+//         if (true) {
+
+//             // Exit Right
+//             squareObject = new ObjectDynamic(180, 30, 10, 10, 125, 200);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit Bottom
+//             squareObject = new ObjectDynamic(180, 30, 10, 10, 0, 200);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit Left   (--- not working on exit ---)
+//             squareObject = new ObjectDynamic(180, 30, 10, 10, -125, 200);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+//         }
+
+//         /* ------------------------------------
+//         Enter Right: Exit Left, Top, Bottom
+//         ------------------------------------*/
+//         if (false) {
+//             // Exit TOP   (--- not working on exit ---)
+//             squareObject = new ObjectDynamic(280, 150, 10, 10, -125, -125);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit Left   (--- not working on exit ---)
+//             squareObject = new ObjectDynamic(280, 150, 10, 10, -225, 0);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit Bottom
+//             squareObject = new ObjectDynamic(280, 150, 10, 10, -125, 125);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+//         }
+
+//         /* ------------------------------------
+//         Enter Right: Exit Left, Top, Bottom
+//         ------------------------------------*/
+//         if (true) {
+//             // Exit Left   (--- not working on exit ---)
+//             squareObject = new ObjectDynamic(170, 220, 10, 10, -125, -100);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit Top   (--- not working on exit ---)
+//             squareObject = new ObjectDynamic(170, 220, 10, 10, 0, -185);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+
+//             // Exit Right
+//             squareObject = new ObjectDynamic(170, 220, 10, 10, 125, -100);
+//             result = checkIntersection(ctx, squareObject, rectangleObject);
+//         }
+//     }
+    

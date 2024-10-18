@@ -67,7 +67,9 @@ class CanvasUtils {
 // Export the CanvasUtils class
 export default CanvasUtils;
 
+
 // allow for gameloop to be called.
+let gameModule;
 async function animate(time) {
     var canvas = document.getElementById('gameArea');
     if (canvas.getContext) {
@@ -75,7 +77,11 @@ async function animate(time) {
 
         try {
             // Dynamically import game.js and call gameLoop
-            const gameModule = await import(`${window.canvasPath}/game.js`);
+            // Check if gameModule is already loaded
+            if (!gameModule) {
+                // Import game.js only if not loaded
+                gameModule = await import(`${window.canvasPath}/game.js`); 
+            }
             CanvasUtils.initCanvas(ctx);
             gameModule.gameLoop(ctx); // Call gameLoop from the imported module
             CanvasUtils.drawBorder(ctx);
