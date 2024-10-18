@@ -4,7 +4,7 @@
 // 10/16/2024
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
-import { drawScores } from './font5x3.js'; 
+import Font5x3 from './font5x3.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import Intersect from '../scripts/intersect.js'; 
 import Functions from '../scripts/functions.js';
@@ -18,12 +18,6 @@ const rightPaddle = new Paddle(false);
 
 // Create puck instance
 const puck = new Puck(); // Create a single puck instance
-
-// Player scores
-const scores = {
-    player1: 0,
-    player2: 0
-};
 
 function drawDashedLine(ctx) {
     const dashPattern = [19, 19]; // Define your dash pattern
@@ -45,7 +39,8 @@ export function gameLoop(ctx) {
     rightPaddle.draw(ctx);
 
     // Call drawScores to display the current scores
-    drawScores(ctx, leftPaddle, rightPaddle);
+    Font5x3.drawScores(ctx, leftPaddle, rightPaddle);
+
 
     // Draw the dashed line
     drawDashedLine(ctx);
