@@ -7,7 +7,7 @@
 export const paddleConfig = {
     offset: 20,
     width: 20,
-    height: 130,
+    height: 1000,
     speed: 5.0,
     leftColor: "red",
     rightColor: "green",
@@ -18,6 +18,18 @@ export const puckConfig = {
     width: 20,  // Width of the puck
     height: 20, // Height of the puck
     color: "yellow", // Color of the puck
+    speed: 3.0,
+    speedDefault: 1.0,
+    speedIncrease: 0.3,
+    /*
+    this.angle = (this.angle + 360) % 360;
+Left angles
+    this.angle = 315;
+    this.angle = 45;
+Right angles
+    this.angle = 135;
+    this.angle = 225
+    */
 };
 
 // Configuration for the canvas
