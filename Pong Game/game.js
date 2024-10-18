@@ -32,7 +32,7 @@ function drawDashedLine(ctx) {
 }
 
 // Game loop function
-function gameLoop(ctx) {
+export function gameLoop(ctx) {
     // Move the puck using its method
     puck.move(scores, leftPaddle, rightPaddle); // Ensure leftPaddle and rightPaddle are defined
 
@@ -53,6 +53,8 @@ function gameLoop(ctx) {
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
 
+    // Test entry and exit points
+    if (false) {
     // // Test entry and exit points (Example Logic)
     // // You can keep this section for testing intersection logic
     // // Instantiate a static rectangle object
@@ -60,8 +62,6 @@ function gameLoop(ctx) {
     // let squareObject = null;
     // let result = null;
 
-    // Test entry and exit points
-    if (false) {
         // Instantiate a static rectangle object
         let rectangleObject = new ObjectStatic(100, 100, 160, 100);
 
@@ -140,23 +140,6 @@ function gameLoop(ctx) {
     }
 }
 
-function animate(time) {
-    var canvas = document.getElementById('gameArea');
-    if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
-        CanvasUtils.initCanvas(ctx); // Use CanvasUtils to initialize canvas
-        gameLoop(ctx); // Ensure gameLoop is defined
-        CanvasUtils.drawBorder(ctx); // Draw the border using CanvasUtils
-        if (window.fpsShow) { // Accessing global variable
-            CanvasUtils.drawFPS(ctx); // Draw FPS using CanvasUtils
-        }
-    } else {
-        alert('You need a modern browser to see this.');
-    }
-
-    requestAnimationFrame(animate);
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-    requestAnimationFrame(animate);
-});
+// Canvas needs to know the current directory to game.js
+const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')); 
+window.canvasPath = currentDir;

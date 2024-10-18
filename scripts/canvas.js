@@ -1,9 +1,3 @@
-// Import canvasConfig variables
-import { canvasConfig } from './global.js';
-
-// Set the game area width based on canvasConfig
-window.gameAreaWidth = canvasConfig.width;
-
 // ToolboxAid.com
 // David Quesenberry
 // canvas.js
@@ -15,7 +9,7 @@ class CanvasUtils {
     static fps = 0;
 
     static initCanvas(ctx) {
-        ctx.clearRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+        //ctx.clearRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
         ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
         ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
@@ -72,3 +66,33 @@ class CanvasUtils {
 
 // Export the CanvasUtils class
 export default CanvasUtils;
+
+// allow for gameloop to be called.
+async function animate(time) {
+    var canvas = document.getElementById('gameArea');
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+
+        try {
+            // Dynamically import game.js and call gameLoop
+            const gameModule = await import(`${window.canvasPath}/game.js`);
+            CanvasUtils.initCanvas(ctx);
+            gameModule.gameLoop(ctx); // Call gameLoop from the imported module
+            CanvasUtils.drawBorder(ctx);
+            if (window.fpsShow) {
+                CanvasUtils.drawFPS(ctx);
+            }
+        } catch (error) {
+            console.error(`Failed to load game module: ${error}`);
+        }
+    } else {
+        alert('You need a modern browser to see this.');
+    }
+    requestAnimationFrame(animate);
+}
+
+// Log window.canvasPath when all documents are loaded
+window.addEventListener('DOMContentLoaded', () => {
+    console.log(`Canvas Path: ${window.canvasPath}`);
+    requestAnimationFrame(animate);
+});
