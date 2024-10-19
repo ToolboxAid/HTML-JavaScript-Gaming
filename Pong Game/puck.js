@@ -4,6 +4,7 @@
 // 10/16/2024
 
 import { puckConfig } from './global.js'; // Import puck configuration
+import { canvasConfig } from './global.js';
 
 import CanvasUtils from '../scripts/canvas.js';
 
@@ -13,8 +14,8 @@ import Functions from '../scripts/functions.js'; // Adjust the path as necessary
 
 class Puck extends ObjectDynamic {
     constructor() {
-        const x = (window.gameAreaWidth / 2) - (puckConfig.width / 2);
-        const y = (window.gameAreaHeight / 2) - (puckConfig.height / 2);
+        const x = (canvasConfig.width / 2) - (puckConfig.width / 2);
+        const y = (canvasConfig.height / 2) - (puckConfig.height / 2);
 
         super(x, y, puckConfig.width, puckConfig.height);
 
@@ -30,6 +31,10 @@ class Puck extends ObjectDynamic {
 
         this.angle = 0;
 
+        // Tail properties
+        this.previousPositions = []; // Array to store previous positions
+        this.tailLength = 15; // Length of the tail
+
         if (Functions.randomGenerator(0, 1)) {
             this.reset(-45, 45);
         } else {
@@ -38,11 +43,29 @@ class Puck extends ObjectDynamic {
     }
 
     draw(ctx) {
+        // Draw the tail
+        for (let i = 0; i < this.previousPositions.length; i++) {
+            const pos = this.previousPositions[i];
+            ctx.fillStyle = `rgba(255, 255, 255, ${(1 - ((this.tailLength-i) / this.tailLength)) * 0.15})`; // Fade effect
+            ctx.beginPath();
+            //ctx.arc(pos.x, pos.y, this.width / 2, 0, Math.PI * 2); // Draw a circle for each position
+            ctx.fillRect(pos.x - this.width / 2, pos.y - this.height / 2, this.width, this.height);
+            ctx.fill();
+        }
+
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
     }
 
     move(leftPaddle, rightPaddle, ctx) {
+        // Store the current position before updating
+        this.previousPositions.push({ x: this.x, y: this.y });
+
+        // Limit the length of the tail
+        if (this.previousPositions.length > this.tailLength) {
+            this.previousPositions.shift(); // Remove the oldest position
+        }
+
         this.x += this.velocityX;
         this.y += this.velocityY;
 
@@ -63,7 +86,7 @@ class Puck extends ObjectDynamic {
         // Check if wall hit:
         // - adjust scores for left & right
         // - adjust Y direction for top & bottom
-        if (this.x + this.width / 2 > window.gameAreaWidth) {
+        if (this.x + this.width / 2 > canvasConfig.width) {
             this.velocityX *= -1;
             this.x += this.velocityX;
             leftPaddle.incrementScore();
@@ -77,7 +100,7 @@ class Puck extends ObjectDynamic {
             this.speedScore++;
             this.reset(135, 225);
         }
-        if (this.y + this.height / 2 > window.gameAreaHeight || this.y - this.height / 2 < 0) {
+        if (this.y + this.height / 2 > canvasConfig.height || this.y - this.height / 2 < 0) {
             this.velocityY *= -1;
         }
     }
@@ -103,13 +126,13 @@ class Puck extends ObjectDynamic {
 
         const intersection = Functions.linesIntersect(line1start, line1end, line2start, line2end);
         if (intersection) {
-            CanvasUtils.drawCircle(ctx, intersection); // Draw a red dot at the intersection
+            //CanvasUtils.drawCircle(ctx, intersection); // Draw a red dot at the intersection
             //console.log(intersection);
 
             this.handlePaddleCollision(paddle);
         }
     }
-    
+
     vectorCollisionTop(ctx, paddle) {
         let lineExtend = 1;
         // Puck line
@@ -139,7 +162,7 @@ class Puck extends ObjectDynamic {
         //CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
 
         let line2start = { x: paddle.x, y: paddle.y + paddle.height };
-        let line2end = { x: paddle.x + paddle.width, y: paddle.y + paddle.height};
+        let line2end = { x: paddle.x + paddle.width, y: paddle.y + paddle.height };
 
         // Draw Paddle Bottom Line
         //CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
@@ -208,8 +231,8 @@ class Puck extends ObjectDynamic {
             270 is up
             315 if up and right
         */
-        this.x = window.gameAreaWidth / 2;
-        this.y = window.gameAreaHeight / 2;
+        this.x = canvasConfig.width / 2;
+        this.y = canvasConfig.height / 2;
 
         this.speed = this.speedDefault;
         this.speed += this.speedScore * 0.1;
