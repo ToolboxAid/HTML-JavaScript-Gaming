@@ -85,7 +85,8 @@ function drawOverlappingRectangles(ctx) {
 
 
 // Game loop function
-export function gameLoop(ctx) {
+export function gameLoop(ctx, deltaTime) {
+    console.log(deltaTime);
     // Call each drawing function
     drawFilledCircle(ctx);
     drawHollowCircle(ctx);
