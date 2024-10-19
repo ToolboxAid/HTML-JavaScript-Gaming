@@ -1,2 +1,18 @@
-body { margin: 0; overflow: hidden; }
-canvas { display: block; background-color: black; }
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    background-color: black;
+}
+
+#gameAreaContainer {
+    position: relative;
+}
+
+#gameArea {
+    background-color: #888888;
+    cursor: none; /* Hide the cursor */
+}

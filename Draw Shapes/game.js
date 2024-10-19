@@ -1,5 +1,11 @@
+// ToolboxAid.com
+// David Quesenberry
 // game.js
+// 10/16/2024
 
+import { canvasConfig } from './global.js'; // Import canvasConfig
+import CanvasUtils from '../scripts/canvas.js';
+import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
 
 
 function drawFilledCircle(ctx) {
@@ -78,7 +84,8 @@ function drawOverlappingRectangles(ctx) {
 }
 
 
-function gameLoop(ctx) {
+// Game loop function
+export function gameLoop(ctx) {
     // Call each drawing function
     drawFilledCircle(ctx);
     drawHollowCircle(ctx);
@@ -89,3 +96,7 @@ function gameLoop(ctx) {
     drawGridLines(ctx);
     drawOverlappingRectangles(ctx);
 }
+
+// Canvas needs to know the current directory to game.js
+const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+window.canvasPath = currentDir;
