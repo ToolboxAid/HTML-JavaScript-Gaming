@@ -8,7 +8,11 @@ canvas {
     background-color: black;
 }
 
+#gameAreaContainer {
+    position: relative;
+}
+
 #gameArea {
-    cursor: none;
-    /* Hide the cursor */
+    background-color: #888888;
+    cursor: none; /* Hide the cursor */
 }
