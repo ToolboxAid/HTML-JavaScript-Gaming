@@ -10,12 +10,31 @@ import Puck from './puck.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
 
+/*
+Sounds in Original Pong
+Ball Bounce Sound:
+
+Frequency: Approximately 400 Hz
+Duration: Around 100 milliseconds
+Description: A short beep sound that played whenever the ball hit the paddles or the walls.
+Paddle Hit Sound:
+
+Frequency: Similar to the ball bounce sound, around 400 Hz
+Duration: Also about 100 milliseconds
+Description: A distinct sound effect that played when the ball collided with a paddle.
+Score Sound:
+
+Frequency: Approximately 300 Hz to 400 Hz (varied based on the version)
+Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
+Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
+*/
+
 // Create paddles instances
-const leftPaddle = new Paddle(true);
-const rightPaddle = new Paddle(false);
+let leftPaddle = new Paddle(true);
+let rightPaddle = new Paddle(false);
 
 // Create puck instance
-const puck = new Puck(); // Create a single puck instance
+let puck = new Puck(); // Create a single puck instance
 
 function drawDashedLine(ctx) {
     const dashPattern = [19, 19]; // Define your dash pattern
@@ -44,8 +63,24 @@ export function gameLoop(ctx) { // exported for use by canvs.js
 
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
+
+
+    if (Paddle.winner) {
+        // Display a winner message
+        alert("We have a winner!");
+
+        // Optionally, stop the game loop or reset the game
+        // Example: clear the game loop or set a flag
+        // Create paddles instances
+        Paddle.winner = false;
+        leftPaddle = new Paddle(true);
+        rightPaddle = new Paddle(false);
+
+        // Create puck instance
+        puck = new Puck(); // Create a single puck instance
+    }
 }
 
 // Canvas needs to know the current directory to game.js
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')); 
+const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 window.canvasPath = currentDir;

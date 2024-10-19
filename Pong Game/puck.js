@@ -4,12 +4,12 @@
 // 10/16/2024
 
 import { puckConfig } from './global.js'; // Import puck configuration
-import { canvasConfig } from './global.js';
+import { canvasConfig } from './global.js'; // Import canvas configuration
 
 import CanvasUtils from '../scripts/canvas.js';
 
-import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
-import Functions from '../scripts/functions.js'; // Adjust the path as necessary
+import ObjectDynamic from '../scripts/objectDynamic.js';
+import Functions from '../scripts/functions.js';
 //import Intersect from '../scripts/intersect.js';
 
 class Puck extends ObjectDynamic {
@@ -82,6 +82,20 @@ class Puck extends ObjectDynamic {
         }
     }
 
+    playBounceSound(){
+        // Ball Bounce Sound:
+        // Frequency: Approximately 400 Hz
+        // Duration: Around 100 milliseconds
+        // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
+        Functions.playSound(400, 0.1);        
+    }
+    // playWinnerSound(){
+    //     // Ball Bounce Sound:
+    //     // Frequency: Approximately 400 Hz
+    //     // Duration: Around 100 milliseconds
+    //     // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
+    //     Functions.playSound(1000, 1.3);        
+    // }
     checkGameAreaBoundary(leftPaddle, rightPaddle) {
         // Check if wall hit:
         // - adjust scores for left & right
@@ -92,6 +106,7 @@ class Puck extends ObjectDynamic {
             leftPaddle.incrementScore();
             this.speedScore++;
             this.reset(-45, 45);
+
         }
         if (this.x - this.width / 2 < 0) {
             this.velocityX *= -1;
@@ -102,7 +117,9 @@ class Puck extends ObjectDynamic {
         }
         if (this.y + this.height / 2 > canvasConfig.height || this.y - this.height / 2 < 0) {
             this.velocityY *= -1;
+            this.playBounceSound();
         }
+
     }
 
     vectorCollisionFront(ctx, paddle) {
@@ -130,6 +147,7 @@ class Puck extends ObjectDynamic {
             //console.log(intersection);
 
             this.handlePaddleCollision(paddle);
+            this.playBounceSound();
         }
     }
 

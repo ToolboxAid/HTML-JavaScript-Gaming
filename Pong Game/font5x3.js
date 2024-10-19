@@ -105,7 +105,6 @@ class Font5x3 {
 
         const y = 30;  // Y position for scores
 
-        console.log(4 * font5x3.pixelWidth);
         // Draw Player 1 Score
         const formattedScore1 = this.#formatScore(leftPaddle.score);
         this.#drawChar(ctx, formattedScore1[0], player1X, y, font5x3.pixelWidth, font5x3.pixelHeight); // Tens

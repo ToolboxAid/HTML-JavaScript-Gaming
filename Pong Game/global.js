@@ -12,6 +12,7 @@ export const paddleConfig = {
     speed: 5.0,
     leftColor: "white",
     rightColor: "white",
+    winnerScore: 21,
 };
 
 // Configuration for puck
