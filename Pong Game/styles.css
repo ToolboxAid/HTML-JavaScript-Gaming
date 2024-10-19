@@ -1,2 +1,14 @@
-body { margin: 0; overflow: hidden; }
-canvas { display: block; background-color: black; }
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    background-color: black;
+}
+
+#gameArea {
+    cursor: none;
+    /* Hide the cursor */
+}
