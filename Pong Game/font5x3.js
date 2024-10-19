@@ -4,8 +4,8 @@
 // 10/16/2024
 
 
-import { font5x3 } from './global.js'; // Import canvasConfig
-
+import { font5x3 } from './global.js';
+import { canvasConfig} from './global.js';
 class Font5x3 {
     static font = {
         '0': [
@@ -88,30 +88,33 @@ class Font5x3 {
         const characterMatrix = this.font[char];
         if (!characterMatrix) return; // Ignore if character doesn't exist
 
-        ctx.fillStyle = font5x3.color;//'white'; // Set fill color
+        ctx.fillStyle = font5x3.color;
 
         for (let row = 0; row < characterMatrix.length; row++) {
             for (let col = 0; col < characterMatrix[row].length; col++) {
                 if (characterMatrix[row][col] === 1) {
-                    ctx.fillRect(x + col * pixelWidth, y + row * pixelHeight, pixelWidth, pixelHeight);
+                    ctx.fillRect(x + col * pixelWidth, y + row * pixelHeight, pixelWidth+1, pixelHeight+1);
                 }
             }
         }
     }
 
     static drawScores(ctx, leftPaddle, rightPaddle) {
-        const x = 280; // X position for player 1 score
-        const y = 30; // Y position for scores
+        const player1X = (canvasConfig.width/2)-(font5x3.pixelWidth * 11); // X position for Player 1 score
+        const player2X = (canvasConfig.width/2) + (font5x3.pixelWidth * 4); // X position for Player 2 score
 
+        const y = 30;  // Y position for scores
+
+        console.log(4 * font5x3.pixelWidth);
         // Draw Player 1 Score
         const formattedScore1 = this.#formatScore(leftPaddle.score);
-        this.#drawChar(ctx, formattedScore1[0], x, y, font5x3.pixelWidth, font5x3.pixelHeight); // Tens
-        this.#drawChar(ctx, formattedScore1[1], x + 4 * font5x3.pixelWidth, y, font5x3.pixelWidth, font5x3.pixelHeight); // Units
+        this.#drawChar(ctx, formattedScore1[0], player1X, y, font5x3.pixelWidth, font5x3.pixelHeight); // Tens
+        this.#drawChar(ctx, formattedScore1[1], player1X + (4 * font5x3.pixelWidth), y, font5x3.pixelWidth, font5x3.pixelHeight); // Units
 
         // Draw Player 2 Score
         const formattedScore2 = this.#formatScore(rightPaddle.score);
-        this.#drawChar(ctx, formattedScore2[0], x + 185, y, font5x3.pixelWidth, font5x3.pixelHeight); // Tens
-        this.#drawChar(ctx, formattedScore2[1], x + 185 + 4 * font5x3.pixelWidth, y, font5x3.pixelWidth, font5x3.pixelHeight); // Units
+        this.#drawChar(ctx, formattedScore2[0], player2X, y, font5x3.pixelWidth, font5x3.pixelHeight); // Tens
+        this.#drawChar(ctx, formattedScore2[1], player2X + (4 * font5x3.pixelWidth), y, font5x3.pixelWidth, font5x3.pixelHeight); // Units
     }
 }
 
