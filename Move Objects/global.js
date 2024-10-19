@@ -9,7 +9,7 @@ export const canvasConfig = {
     width: 800, // Game area width
     height: 600, // Game area height
     scale: 0.5,
-    backgroundColor: "#333333",
+    backgroundColor: "#000000",
 };
 
 // non type="module" in HTML
@@ -20,7 +20,7 @@ window.gameScaleWindow = canvasConfig.scale;
 window.backgroundColor = canvasConfig.backgroundColor;
 
 window.borderColor = "red";
-window.borderSize = 5;
+window.borderSize = 10;
 
 // Configuration for FPS display
 window.fpsShow = true;

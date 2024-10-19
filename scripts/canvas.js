@@ -5,11 +5,11 @@
 
 class CanvasUtils {
     static frameCount = 0;
-    static lastTime = performance.now();
+    static lastFPSUpdateTime = performance.now(); // Used for FPS calculation
+    static lastFrameTime = performance.now(); // Used for frame delta calculation
     static fps = 0;
 
     static initCanvas(ctx) {
-        //ctx.clearRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
         ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
         ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
@@ -18,12 +18,12 @@ class CanvasUtils {
         this.frameCount++;
 
         const currentTime = performance.now();
-        const elapsedTime = currentTime - this.lastTime;
+        const elapsedTime = currentTime - this.lastFPSUpdateTime; // Use the separate variable
 
         if (elapsedTime >= 1000) {
             this.fps = this.frameCount;
             this.frameCount = 0;
-            this.lastTime = currentTime; // Reset lastTime for the next second
+            this.lastFPSUpdateTime = currentTime; // Reset lastTime for the next second
         }
 
         ctx.globalAlpha = 1.0;
@@ -34,8 +34,8 @@ class CanvasUtils {
 
     static getElapsedTime() {
         const currentTime = performance.now();
-        const elapsed = currentTime - this.lastTime;
-        this.lastTime = currentTime;
+        const elapsed = currentTime - this.lastFrameTime; // Use the separate variable
+        this.lastFrameTime = currentTime;
         return elapsed;
     }
 
@@ -74,28 +74,52 @@ class CanvasUtils {
         ctx.fillStyle = color;
         ctx.fill();
     }
+
+    /**
+    * Draws the circle on the canvas.
+    * @param {CanvasRenderingContext2D} ctx - The drawing context.
+    * @param {string} [fillColor='white'] - The fill color of the circle.
+    * @param {string|null} [borderColor=null] - The border color of the circle.
+    * @param {number} [borderWidth=0] - The width of the border.
+    */
+    static drawCircle2(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+
+        if (borderColor && borderWidth > 0) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+            ctx.stroke();
+        }
+    }
+
 }
 
 // Export the CanvasUtils class
 export default CanvasUtils;
 
-
 // allow for gameloop to be called.
 let gameModule;
+let lastTimestamp = 0;
+
 async function animate(time) {
     var canvas = document.getElementById('gameArea');
     if (canvas.getContext) {
         var ctx = canvas.getContext('2d');
 
+        // Calculate the elapsed time since the last frame in seconds
+        const deltaTime = (time - lastTimestamp) / 1000; // Convert milliseconds to seconds
+        lastTimestamp = time;
+
         try {
             // Dynamically import game.js and call gameLoop
-            // Check if gameModule is already loaded
             if (!gameModule) {
-                // Import game.js only if not loaded
                 gameModule = await import(`${window.canvasPath}/game.js`);
             }
             CanvasUtils.initCanvas(ctx);
-            gameModule.gameLoop(ctx); // Call gameLoop from the imported module
+            gameModule.gameLoop(ctx, deltaTime); // Call gameLoop from the imported module
             CanvasUtils.drawBorder(ctx);
             if (window.fpsShow) {
                 CanvasUtils.drawFPS(ctx);

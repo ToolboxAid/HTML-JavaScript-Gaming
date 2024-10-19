@@ -70,6 +70,7 @@ class Puck extends ObjectDynamic {
         this.y += this.velocityY;
 
         this.checkGameAreaBoundary(leftPaddle, rightPaddle);
+        //checkCollisionWithBounds
 
         if (this.velocityX > 0) {
             this.vectorCollisionFront(ctx, rightPaddle);
@@ -89,25 +90,20 @@ class Puck extends ObjectDynamic {
         // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
         Functions.playSound(400, 0.1);        
     }
-    // playWinnerSound(){
-    //     // Ball Bounce Sound:
-    //     // Frequency: Approximately 400 Hz
-    //     // Duration: Around 100 milliseconds
-    //     // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
-    //     Functions.playSound(1000, 1.3);        
-    // }
+
     checkGameAreaBoundary(leftPaddle, rightPaddle) {
         // Check if wall hit:
         // - adjust scores for left & right
         // - adjust Y direction for top & bottom
+        // Left Paddle
         if (this.x + this.width / 2 > canvasConfig.width) {
             this.velocityX *= -1;
             this.x += this.velocityX;
             leftPaddle.incrementScore();
             this.speedScore++;
             this.reset(-45, 45);
-
         }
+        // Right Paddle
         if (this.x - this.width / 2 < 0) {
             this.velocityX *= -1;
             this.x += this.velocityX; // prevent getting stuck to top or bottom
@@ -115,11 +111,11 @@ class Puck extends ObjectDynamic {
             this.speedScore++;
             this.reset(135, 225);
         }
+        // Top/Bottom
         if (this.y + this.height / 2 > canvasConfig.height || this.y - this.height / 2 < 0) {
             this.velocityY *= -1;
             this.playBounceSound();
         }
-
     }
 
     vectorCollisionFront(ctx, paddle) {

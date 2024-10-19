@@ -43,28 +43,39 @@ class ObjectDynamic extends ObjectStatic {
         this.velocityY = velocityY;
     }
 
-    /**
-     * Checks the object's position against the specified boundaries and adjusts if necessary.
-     * @param {number} width - The width of the area to check against.
-     * @param {number} height - The height of the area to check against.
-     */
-    checkCollisionWithBounds(width, height) {
-        if (this.x < 0) {
-            this.x = 0; // Prevent moving out of bounds on the left
-            this.velocityX *= -1; // Reverse direction
-        } else if (this.x + this.width > width) {
-            this.x = width - this.width; // Prevent moving out of bounds on the right
-            this.velocityX *= -1; // Reverse direction
-        }
-        
-        if (this.y < 0) {
-            this.y = 0; // Prevent moving out of bounds at the top
-            this.velocityY *= -1; // Reverse direction
-        } else if (this.y + this.height > height) {
-            this.y = height - this.height; // Prevent moving out of bounds at the bottom
-            this.velocityY *= -1; // Reverse direction
-        }
+/**
+ * Checks the object's position against the specified boundaries and adjusts if necessary.
+ * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
+ * @param {number} width - The width of the area to check against.
+ * @param {number} height - The height of the area to check against.
+ * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
+ */
+checkCollisionWithBounds(width, height) {
+    let boundariesHit = [];
+
+    if (this.x < 0) {
+        this.x = 0; // Prevent moving out of bounds on the left
+        this.velocityX *= -1; // Reverse direction
+        boundariesHit.push('left');
+    } else if (this.x + this.width > width) {
+        this.x = width - this.width; // Prevent moving out of bounds on the right
+        this.velocityX *= -1; // Reverse direction
+        boundariesHit.push('right');
     }
+    
+    if (this.y < 0) {
+        this.y = 0; // Prevent moving out of bounds at the top
+        this.velocityY *= -1; // Reverse direction
+        boundariesHit.push('top');
+    } else if (this.y + this.height > height) {
+        this.y = height - this.height; // Prevent moving out of bounds at the bottom
+        this.velocityY *= -1; // Reverse direction
+        boundariesHit.push('bottom');
+    }
+
+    return boundariesHit;
+}
+
 }
 
 export default ObjectDynamic; // Export the class for use in other modules
