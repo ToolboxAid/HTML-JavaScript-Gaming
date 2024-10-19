@@ -4,7 +4,7 @@
 // 10/16/2024
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
-import CanvasUtils from '../scripts/canvas.js';
+import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
 import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
 
 
@@ -53,18 +53,18 @@ function drawHollowOval(ctx) {
 }
 
 function drawGridLines(ctx) {
-    for (let gx = 0; gx <= gameAreaHeight; gx += 100) {
+    for (let gx = 0; gx <= canvasConfig.height; gx += 100) {
         ctx.beginPath();
         ctx.moveTo(0, gx);
-        ctx.lineTo(gameAreaWidth, gx);
+        ctx.lineTo(canvasConfig.width, gx);
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#3600af';
         ctx.stroke();
     }
-    for (let gy = 0; gy <= gameAreaWidth; gy += 100) {
+    for (let gy = 0; gy <= canvasConfig.width; gy += 100) {
         ctx.beginPath();
         ctx.moveTo(gy, 0);
-        ctx.lineTo(gy, gameAreaHeight);
+        ctx.lineTo(gy, canvasConfig.height);
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#ed9700';
         ctx.stroke();
