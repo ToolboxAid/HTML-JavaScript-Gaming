@@ -3,6 +3,10 @@
 // game.js
 // 10/16/2024
 
+import { canvasConfig } from './global.js'; // Import canvasConfig
+import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
+import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
+
 const sunRadius = 20;
 
 const celestialBodies = [
@@ -56,43 +60,41 @@ const celestialBodies = [
 
 ];
 
-var context;
+function moveSolarSystem(ctx) {
 
-function moveSolarSystem() {
-
-    const centerX = gameAreaWidth / 2;
-    const centerY = gameAreaHeight / 2;
+    const centerX = canvasConfig.width / 2;
+    const centerY = canvasConfig.height / 2;
 
     celestialBodies.forEach(body => {
         body.angle += body.speed;
         const x = centerX + body.distance * Math.cos(body.angle);
         const y = centerY + body.distance * Math.sin(body.angle);
 
-        drawOrbitPath(centerX, centerY, body.distance, "rgba(200, 200, 200, 0.35)");
+        drawOrbitPath(ctx, centerX, centerY, body.distance, "rgba(200, 200, 200, 0.35)");
 
         if (body.ring) {
-            drawRing(x, y, body.ring.outerRadius, body.ring.innerRadius, body.ring.color);
+            drawRing(ctx, x, y, body.ring.outerRadius, body.ring.innerRadius, body.ring.color);
         }
         
-        drawCircle(x, y, body.radius, body.color);
+        drawCircle(ctx, x, y, body.radius, body.color);
 
         if (body.moons) {
             body.moons.forEach(moon => {
                 moon.angle += moon.speed;
                 const moonX = x + moon.distance * Math.cos(moon.angle);
                 const moonY = y + moon.distance * Math.sin(moon.angle);
-                drawCircle(moonX, moonY, moon.radius, getRandomGrayColor());
+                drawCircle(ctx, moonX, moonY, moon.radius, getRandomGrayColor());
             });
         }				
     });
 }
 
-function drawCircle(x, y, radius, color) {
-    context.beginPath();
-    context.arc(x, y, radius, 0, Math.PI * 2);
-    context.fillStyle = color;
-    context.fill();
-    context.closePath();
+function drawCircle(ctx, x, y, radius, color) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.closePath();
 }
 
 function getRandomGrayColor() {
@@ -100,31 +102,34 @@ function getRandomGrayColor() {
     return `rgb(${shade}, ${shade}, ${shade})`;
 }
 
-function drawRing(x, y, outerRadius, innerRadius, color) {
-    context.beginPath();
-    context.arc(x, y, outerRadius, 0, Math.PI * 2);
-    context.arc(x, y, innerRadius, 0, Math.PI * 2, true); // Counterclockwise to create a hole
-    context.closePath(); // Close the path
-    context.fillStyle = color;
-    context.fill();
+function drawRing(ctx, x, y, outerRadius, innerRadius, color) {
+    ctx.beginPath();
+    ctx.arc(x, y, outerRadius, 0, Math.PI * 2);
+    ctx.arc(x, y, innerRadius, 0, Math.PI * 2, true); // Counterclockwise to create a hole
+    ctx.closePath(); // Close the path
+    ctx.fillStyle = color;
+    ctx.fill();
 }
 
-function drawOrbitPath(x, y, radius, color) {
-    context.beginPath();
-    context.arc(x, y, radius, 0, Math.PI * 2);
-    context.strokeStyle = color;
-    context.lineWidth = 1; // Adjust the line width as needed
-    context.setLineDash([5, 5]); // Set the line dash pattern (optional)
-    context.stroke();
+function drawOrbitPath(ctx, x, y, radius, color) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1; // Adjust the line width as needed
+    ctx.setLineDash([5, 5]); // Set the line dash pattern (optional)
+    ctx.stroke();
 }
 
 
 //==========================================================================
 
 // Game loop function
-function gameLoop(ctx) {
-    context = ctx;
+export function gameLoop(ctx) {
 
     // Update and Draw solar system.
-    moveSolarSystem();
+    moveSolarSystem(ctx);
 }
+
+// Canvas needs to know the current directory to game.js
+const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+window.canvasPath = currentDir;
