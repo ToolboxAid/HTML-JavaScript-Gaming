@@ -3,6 +3,10 @@
 // game.js
 // 10/16/2024
 
+import { canvasConfig } from './global.js'; // Import canvasConfig
+import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
+import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
+
 // Function to get a random velocity between min and max
 function getRandomVelocity(min, max) {
     return Math.random() * (max - min) + min;
@@ -32,19 +36,23 @@ function updateCirclePosition() {
     circleY += velocityY;
 
     // Check for boundary collisions and reverse direction if necessary
-    if (circleX + circleRadius > gameAreaWidth || circleX - circleRadius < 0) {
+    if (circleX + circleRadius > canvasConfig.width || circleX - circleRadius < 0) {
         velocityX = -velocityX; // Reverse X direction
     }
-    if (circleY + circleRadius > gameAreaHeight || circleY - circleRadius < 0) {
+    if (circleY + circleRadius > canvasConfig.height || circleY - circleRadius < 0) {
         velocityY = -velocityY; // Reverse Y direction
     }
 }
 
 // Game loop function
-function gameLoop(ctx) {
+export function gameLoop(ctx) {
     // Update the circle's position
     updateCirclePosition();
 
     // Call the drawing function
     drawFilledCircle(ctx);
 }
+
+// Canvas needs to know the current directory to game.js
+const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+window.canvasPath = currentDir;
