@@ -3,14 +3,12 @@
 // game.js
 // 10/16/2024
 
-import { canvasConfig } from './global.js'; // Import canvasConfig
+import { canvasConfig, solarSystem } from './global.js'; // Import canvasConfig
 import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
 import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
 
-const sunRadius = 20;
-
 const celestialBodies = [
-    { name: "Sun", radius: sunRadius, distance: 0, color: "yellow", angle: 0, speed: 0 },
+    { name: "Sun", radius: solarSystem.sunRadius, distance: 0, color: "yellow", angle: 0, speed: 0 },
 
     { name: "Mercury", radius: 3, distance: 50, color: "gray", angle: Math.random() * Math.PI * 2, speed: 0.02,
       moons: [{ radius: 0.5, distance: 5, angle: Math.random() * Math.PI * 2, speed: 0.05 }] },

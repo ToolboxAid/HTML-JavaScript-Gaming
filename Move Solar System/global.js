@@ -9,9 +9,12 @@ export const canvasConfig = {
     width: 1024, // Game area width
     height: 768, // Game area height
     scale: 0.35,
-    backgroundColor: "#333333",
+    backgroundColor: "#000000",
 };
 
+export const solarSystem = {
+    sunRadius: 30,
+}
 // non type="module" in HTML
 // Set global canvas variables for ../scripts
 window.gameAreaWidth = canvasConfig.width;
