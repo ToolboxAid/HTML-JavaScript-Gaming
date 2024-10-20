@@ -54,18 +54,24 @@ class CanvasUtils {
         ctx.lineTo(x2, y2); // End point
         ctx.stroke(); // Draw the line
     }
+    
+    static drawLineFromPoints(ctx, start, end) {
+        // Function to draw a line from two points
+        CanvasUtils.drawLine(ctx, start.x, start.y, end.x, end.y);
+    }
 
     static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
+        /* ctx.setLineDash
+            ([5, 15]);        - Short dashes with longer gaps
+            ([15, 5]);        - Long dashes with short gaps
+            ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
+            ([20, 5, 10, 5]); - Alternating long and medium dashes
+        */
         // Set the line dash pattern
         ctx.setLineDash(dashPattern);
         CanvasUtils.drawLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor);
         // Reset to solid line
         ctx.setLineDash([]); // Empty array means a solid line        
-    }
-
-    static drawLineFromPoints(ctx, start, end) {
-        // Function to draw a line from two points
-        CanvasUtils.drawLine(ctx, start.x, start.y, end.x, end.y);
     }
 
     static drawCircle(ctx, point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
@@ -94,7 +100,6 @@ class CanvasUtils {
             ctx.stroke();
         }
     }
-
 }
 
 // Export the CanvasUtils class
