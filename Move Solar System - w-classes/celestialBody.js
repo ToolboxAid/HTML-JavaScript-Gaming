@@ -21,7 +21,7 @@ class CelestialBody extends ObjectDynamic {
      * @param {number} angle - The initial angle in radians for orbital position.
      * @param {number} speed - The speed of the celestial body in its orbit.
      * @param {Array} moons - An array of moons, each represented as an object.
-     * @param {Object} [ring=null] - An optional ring object containing outerRadius, innerRadius, and color.
+     * @param {Object} [ring=null] - An optional ring object containing radius, and color.
      */
     constructor(name, radius, distance, color, angle, speed, moons = [], ring = null) {
         // Calculate initial position based on distance and angle
@@ -63,7 +63,7 @@ update(deltaTime) {
 
     // Update the position of each moon relative to the planet, and rotate the moons around the planet
     this.moons.forEach(moon => {
-        deltaTime = 1;
+        //deltaTime = 1;
         moon.angle += moon.speed * deltaTime; // Update the moon's angle based on its speed
         moon.x = this.x + moon.distance * Math.cos(moon.angle); // Moon's position relative to the planet
         moon.y = this.y + moon.distance * Math.sin(moon.angle); // Moon's position relative to the planet
@@ -76,6 +76,15 @@ update(deltaTime) {
 draw(ctx) {
     const centerX = canvasConfig.width / 2;
     const centerY = canvasConfig.height / 2;
+
+    // Draw the orbit path for the planet
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, this.distance, 0, Math.PI * 2); // Orbit path is a circle with radius equal to distance from center
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)'; // Light color for the orbit path (adjust transparency if needed)
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 15]); // Set the line dash pattern (optional)
+    ctx.stroke();
+    ctx.closePath();
 
     // Draw the planet or celestial body
     ctx.beginPath();
