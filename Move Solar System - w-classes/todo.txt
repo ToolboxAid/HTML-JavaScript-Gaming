@@ -1,1 +1,2 @@
-- innerRadius/outerRadius
+x innerRadius/outerRadius, replace with ringRadius
+x remove dash border

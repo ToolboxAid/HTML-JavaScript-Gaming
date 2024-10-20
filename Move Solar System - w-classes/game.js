@@ -33,15 +33,15 @@ const celestialBodies = [
       { radius: 2, distance: 20, angle: Math.random() * Math.PI * 2, speed: 1.0 },
       { radius: 1.5, distance: 17, angle: Math.random() * Math.PI * 2, speed: 1.5 },
       { radius: 1, distance: 15, angle: Math.random() * Math.PI * 2, speed: 2.0 }
-  ], { outerRadius: 21, innerRadius: 14, color: "rgba(220, 220, 220, 0.5)" }),
+  ], { ringRadius: 21, color: "rgba(220, 220, 220, 0.5)" }),
   new CelestialBody("Uranus", 8, 310, "lightblue", Math.random() * Math.PI * 2, 0.002, [
       { radius: 1.2, distance: 18, angle: Math.random() * Math.PI * 2, speed: 1.0 },
       { radius: 0.8, distance: 14, angle: Math.random() * Math.PI * 2, speed: 1.5 }
-  ], { outerRadius: 14, innerRadius: 10, color: "rgba(150, 170, 190, 0.5)" }),
+  ], { ringRadius: 14, color: "rgba(150, 170, 190, 0.5)" }),
   new CelestialBody("Neptune", 8, 370, "blue", Math.random() * Math.PI * 2, 0.001, [
       { radius: 1, distance: 22, angle: Math.random() * Math.PI * 2, speed: 1.0 },
       { radius: 0.7, distance: 18, angle: Math.random() * Math.PI * 2, speed: 2.0 }
-  ], { outerRadius: 14, innerRadius: 10, color: "rgba(100, 120, 140, 0.5)" }),
+  ], { ringRadius: 14, color: "rgba(100, 120, 140, 0.5)" }),
 ];
 
 function moveSolarSystem(ctx, deltaTime) {
