@@ -8,7 +8,7 @@ import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
 
 /**
- * Represents a celestial body in a solar system, such as a planet or star.
+ * Represents a celestial body in a solar system, such as a planet or star/sun.
  */
 class CelestialBody extends ObjectDynamic {
 
@@ -38,21 +38,19 @@ class CelestialBody extends ObjectDynamic {
         this.moons = moons; // Array of moons
         this.ring = ring; // Optional ring properties
 
-        // if (this.name.trim().toLowerCase() === "sun") {
-        //     this.x = 512;
-        //     this.y = 512;
-        //     console.log(this.name);
-        // }
+        /* 
+        if (this.name.trim().toLowerCase() === "sun") {
+             this.x = 512;
+             this.y = 512;
+             console.log(this.name);
+         }
+        */
     }
 
     /**
      * Updates the position of the celestial body in its orbit.
      * @param {number} deltaTime - The time elapsed since the last update, in seconds.
      */
-    // ToolboxAid.com
-    // David Quesenberry
-    // celestialBody.js
-
     update(deltaTime) {
         // Update the angle of the planet based on its speed
         this.angle += this.speed * deltaTime;
@@ -83,7 +81,7 @@ class CelestialBody extends ObjectDynamic {
         ctx.arc(centerX, centerY, this.distance, 0, Math.PI * 2); // Orbit path is a circle with radius equal to distance from center
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)'; // Light color for the orbit path (adjust transparency if needed)
         ctx.lineWidth = 1;
-        ctx.setLineDash([5, 15]); // Set the line dash pattern
+        ctx.setLineDash([5, 20]); // Set the line dash pattern
         ctx.stroke();
         ctx.closePath();
 

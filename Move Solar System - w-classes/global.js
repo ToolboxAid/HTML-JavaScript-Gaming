@@ -15,6 +15,7 @@ export const canvasConfig = {
 export const solarSystem = {
     sunRadius: 30,
 }
+
 // non type="module" in HTML
 // Set global canvas variables for ../scripts
 window.gameAreaWidth = canvasConfig.width;
