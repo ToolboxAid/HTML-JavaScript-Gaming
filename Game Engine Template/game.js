@@ -10,7 +10,6 @@ import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is
 
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
-
   // Add code here}
 }
 

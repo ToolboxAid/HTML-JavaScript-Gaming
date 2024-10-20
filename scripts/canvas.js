@@ -32,13 +32,6 @@ class CanvasUtils {
         ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
     }
 
-    static getElapsedTime() {
-        const currentTime = performance.now();
-        const elapsed = currentTime - this.lastFrameTime; // Use the separate variable
-        this.lastFrameTime = currentTime;
-        return elapsed;
-    }
-
     static drawBorder(ctx) {
         ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
         ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
