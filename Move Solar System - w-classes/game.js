@@ -48,17 +48,16 @@ function moveSolarSystem(ctx, deltaTime) {
   const centerX = canvasConfig.width / 2;
   const centerY = canvasConfig.height / 2;
 
-  console.log(centerX, centerY);
-
   celestialBodies.forEach(body => {
+      // Update the planet's position and rotation
       body.angle += body.speed;
       const x = centerX + body.distance * Math.cos(body.angle);
       const y = centerY + body.distance * Math.sin(body.angle);
 
-      // Update the body's internal position
+      // Update the planet and its moons' positions
       body.update(deltaTime);
 
-      // Now draw the body (no need to pass x and y to draw)
+      // Draw the planet and its moons
       body.draw(ctx);
   });
 }

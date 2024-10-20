@@ -49,56 +49,60 @@ class CelestialBody extends ObjectDynamic {
      * Updates the position of the celestial body in its orbit.
      * @param {number} deltaTime - The time elapsed since the last update, in seconds.
      */
-    update(deltaTime) {
-        // Update the angle based on speed and delta time
-        this.angle += this.speed * deltaTime;
-    
-        // Update position based on distance and angle
-        this.x = this.distance * Math.cos(this.angle);
-        this.y = this.distance * Math.sin(this.angle);
-    
-        // Log the new position
-       // console.log(`New position: x = ${this.x}, y = ${this.y}`);
-        
-        // Call parent update to adjust position based on velocity
-        super.update(deltaTime);
-    }
-    
+// ToolboxAid.com
+// David Quesenberry
+// celestialBody.js
 
-    /**
-     * Draws the celestial body on the canvas.
-     * @param {CanvasRenderingContext2D} ctx - The drawing context.
-     */
-    draw(ctx) {
-        const centerX = canvasConfig.width / 2;
-        const centerY = canvasConfig.height / 2;
-        // Draw the celestial body
+update(deltaTime) {
+    // Update the angle of the planet based on its speed
+    this.angle += this.speed * deltaTime;
+
+    // Update the planet's position based on the angle and distance from the center
+    this.x = this.distance * Math.cos(this.angle);
+    this.y = this.distance * Math.sin(this.angle);
+
+    // Update the position of each moon relative to the planet, and rotate the moons around the planet
+    this.moons.forEach(moon => {
+        deltaTime = 1;
+        moon.angle += moon.speed * deltaTime; // Update the moon's angle based on its speed
+        moon.x = this.x + moon.distance * Math.cos(moon.angle); // Moon's position relative to the planet
+        moon.y = this.y + moon.distance * Math.sin(moon.angle); // Moon's position relative to the planet
+    });
+
+    // Call the parent class's update function (if necessary)
+    super.update(deltaTime);
+}
+
+draw(ctx) {
+    const centerX = canvasConfig.width / 2;
+    const centerY = canvasConfig.height / 2;
+
+    // Draw the planet or celestial body
+    ctx.beginPath();
+    ctx.arc(this.x + centerX, this.y + centerY, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.closePath();
+
+    // Draw rings if they exist
+    if (this.ring) {
         ctx.beginPath();
-        ctx.arc(this.x + centerX, this.y + centerY, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
+        ctx.ellipse(this.x + centerX, this.y + centerY, this.ring.outerRadius, this.ring.outerRadius, 0, 0, Math.PI * 2);
+        ctx.fillStyle = this.ring.color;
         ctx.fill();
         ctx.closePath();
-
-        //CanvasUtils.drawLine(ctx, 400, 400, 800, 800, 5, "yellow");
-
-        // Draw rings if they exist
-        if (this.ring) {
-            ctx.beginPath();
-            ctx.ellipse(this.x + centerX, this.y + centerY, this.ring.outerRadius, this.ring.innerRadius, 0, 0, Math.PI * 2);
-            ctx.fillStyle = this.ring.color;
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        // Draw moons if they exist
-        this.moons.forEach(moon => {
-            ctx.beginPath();
-            ctx.arc(this.x + centerX + moon.distance * Math.cos(moon.angle), this.y + centerY + moon.distance * Math.sin(moon.angle), moon.radius, 0, Math.PI * 2);
-            ctx.fillStyle = "white"; // Assuming moons are white for simplicity
-            ctx.fill();
-            ctx.closePath();
-        });
     }
+
+    // Draw each moon orbiting around the planet
+    this.moons.forEach(moon => {
+        ctx.beginPath();
+        ctx.arc(moon.x + centerX, moon.y + centerY, moon.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "white"; // Assuming moons are white for simplicity
+        ctx.fill();
+        ctx.closePath();
+    });
+}
+
 }
 
 export default CelestialBody; // Export the class for use in other modules
