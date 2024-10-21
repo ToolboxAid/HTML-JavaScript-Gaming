@@ -3,6 +3,8 @@
 // 10/16/2024
 // canvas.js
 
+import Fullscreen from '../scripts/fullscreen.js'; // Import the Fullscreen class
+
 class CanvasUtils {
     static frameCount = 0;
     static lastFPSUpdateTime = performance.now(); // Used for FPS calculation
@@ -87,6 +89,26 @@ class CanvasUtils {
         }
     }
 
+    static clickFullscreen(ctx) {
+        if (!Fullscreen.isFullScreen) {
+            // Set up the text properties using global variables or default values
+            const text = window.fullscreenText || 'Click here to enter fullscreen';
+            const font = window.fullscreenFont || '40px Arial';
+            const color = window.fullscreenColor || 'white';
+            ctx.fillStyle = color; // Set text color
+            ctx.font = font; // Set font size and family
+            
+            // Measure the width of the text "Click here to enter fullscreen"
+            const textWidth = ctx.measureText(text).width; // Get the width of the text in pixels
+            const textX = (window.gameAreaWidth - textWidth) / 2; // Center the text horizontally
+            const textY = window.gameAreaHeight * (4 / 5); // Position the text vertically
+            
+            // Draw the message on the canvas
+            ctx.fillText(text, textX, textY); // Display the text at the calculated position
+        }
+    }
+    
+
     // Animate function moved into the CanvasUtils class
     static async animate(time) {
         var canvas = document.getElementById('gameArea');
@@ -101,6 +123,7 @@ class CanvasUtils {
                     this.gameModule = await import(`${window.canvasPath}/game.js`);
                 }
                 CanvasUtils.initCanvas(ctx);
+                this.clickFullscreen(ctx);
                 this.gameModule.gameLoop(ctx, deltaTime); // Call gameLoop from the imported module
                 CanvasUtils.drawBorder(ctx);
                 if (window.fpsShow) {
