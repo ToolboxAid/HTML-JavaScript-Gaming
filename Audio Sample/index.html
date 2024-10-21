@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player Example</title>
+    <script type="module">
+        // Import the AudioPlayer class
+        import { AudioPlayer } from '../scripts/AudioPlayer.js';
+
+        const audioPlayer = new AudioPlayer();
+
+        // Load audio files
+        async function loadAudioFiles() {
+            await audioPlayer.loadAudio('./effects/elemental-magic.mp3');
+            await audioPlayer.loadAudio('./effects/relaxing-guitar-loop.mp3');
+            await audioPlayer.loadAudio('./effects/Alesis-Sanctuary.wav');
+            await audioPlayer.loadAudio('./effects/Ouch-6.wav');
+        }
+
+        // Play audio when button is clicked
+        function playAudio(filename) {
+            audioPlayer.playAudio(filename);
+        }
+
+        // Create buttons and add event listeners
+        function setupButtons() {
+            document.getElementById('play-sample1').addEventListener('click', () => {
+                audioPlayer.resume();  // Ensure the AudioContext is resumed
+                playAudio('elemental-magic.mp3');
+            });
+
+            document.getElementById('play-sample2').addEventListener('click', () => {
+                audioPlayer.resume();
+                playAudio('relaxing-guitar-loop.mp3');
+            });
+
+            document.getElementById('play-sample3').addEventListener('click', () => {
+                audioPlayer.resume();
+                playAudio('Alesis-Sanctuary.wav');
+            });
+
+            document.getElementById('play-sample4').addEventListener('click', () => {
+                audioPlayer.resume();
+                playAudio('Ouch-6.wav');
+            });
+        }
+
+        // Load audio files and setup buttons when the window loads
+        window.onload = async () => {
+            await loadAudioFiles();
+            setupButtons();
+        };
+    </script>
+</head>
+<body>
+    <h1>Audio Player Example</h1>
+    <div>
+        <button id="play-sample1">Play Sample 1</button>
+        <button id="play-sample2">Play Sample 2</button>
+        <button id="play-sample3">Play Sample 3</button>
+        <button id="play-sample4">Play Sample 4</button>
+    </div>
+</body>
+</html>
