@@ -1,0 +1,9 @@
+- is a todo
+> is in progress
+x is complete
+! is cancel/don't do
+-----------------------------------------------
+x non blocking (multi key press)
+x key just pressed
+x key down
+x key just released

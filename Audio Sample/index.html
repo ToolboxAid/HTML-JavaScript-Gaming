@@ -28,30 +28,16 @@
 
         // Play audio when button is clicked
         function playAudio(filename) {
+            audioPlayer.resume();  // Ensure the AudioContext is resumed
             audioPlayer.playAudio(filename);
         }
 
         // Create buttons and add event listeners
         function setupButtons() {
-            document.getElementById('play-sample1').addEventListener('click', () => {
-                audioPlayer.resume();  // Ensure the AudioContext is resumed
-                playAudio('elemental-magic.mp3');
-            });
-
-            document.getElementById('play-sample2').addEventListener('click', () => {
-                audioPlayer.resume();
-                playAudio('relaxing-guitar-loop.mp3');
-            });
-
-            document.getElementById('play-sample3').addEventListener('click', () => {
-                audioPlayer.resume();
-                playAudio('Alesis-Sanctuary.wav');
-            });
-
-            document.getElementById('play-sample4').addEventListener('click', () => {
-                audioPlayer.resume();
-                playAudio('Ouch-6.wav');
-            });
+            document.getElementById('play-sample1').addEventListener('click', () => playAudio('elemental-magic.mp3'));
+            document.getElementById('play-sample2').addEventListener('click', () => playAudio('relaxing-guitar-loop.mp3'));
+            document.getElementById('play-sample3').addEventListener('click', () => playAudio('Alesis-Sanctuary.wav'));
+            document.getElementById('play-sample4').addEventListener('click', () => playAudio('Ouch-6.wav'));
         }
 
         // Load audio files and setup buttons when the window loads
