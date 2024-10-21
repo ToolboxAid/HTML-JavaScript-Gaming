@@ -9,6 +9,9 @@ class CanvasUtils {
     static lastFrameTime = performance.now(); // Used for frame delta calculation
     static fps = 0;
 
+    static gameModule;
+    static lastTimestamp = 0;
+
     static initCanvas(ctx) {
         ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
         ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
@@ -47,24 +50,21 @@ class CanvasUtils {
         ctx.lineTo(x2, y2); // End point
         ctx.stroke(); // Draw the line
     }
-    
+
     static drawLineFromPoints(ctx, start, end) {
-        // Function to draw a line from two points
         CanvasUtils.drawLine(ctx, start.x, start.y, end.x, end.y);
     }
 
     static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
-        /* ctx.setLineDash
+       /* ctx.setLineDash
             ([5, 15]);        - Short dashes with longer gaps
             ([15, 5]);        - Long dashes with short gaps
             ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
             ([20, 5, 10, 5]); - Alternating long and medium dashes
         */
-        // Set the line dash pattern
-        ctx.setLineDash(dashPattern);
+               ctx.setLineDash(dashPattern);
         CanvasUtils.drawLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor);
-        // Reset to solid line
-        ctx.setLineDash([]); // Empty array means a solid line        
+        ctx.setLineDash([]); // Reset to solid line
     }
 
     static drawCircle(ctx, point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
@@ -74,13 +74,6 @@ class CanvasUtils {
         ctx.fill();
     }
 
-    /**
-    * Draws the circle on the canvas.
-    * @param {CanvasRenderingContext2D} ctx - The drawing context.
-    * @param {string} [fillColor='white'] - The fill color of the circle.
-    * @param {string|null} [borderColor=null] - The border color of the circle.
-    * @param {number} [borderWidth=0] - The width of the border.
-    */
     static drawCircle2(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
@@ -93,46 +86,46 @@ class CanvasUtils {
             ctx.stroke();
         }
     }
+
+    // Animate function moved into the CanvasUtils class
+    static async animate(time) {
+        var canvas = document.getElementById('gameArea');
+        if (canvas.getContext) {
+            var ctx = canvas.getContext('2d');
+
+            const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
+            this.lastTimestamp = time;
+
+            try {
+                if (!this.gameModule) {
+                    this.gameModule = await import(`${window.canvasPath}/game.js`);
+                }
+                CanvasUtils.initCanvas(ctx);
+                this.gameModule.gameLoop(ctx, deltaTime); // Call gameLoop from the imported module
+                CanvasUtils.drawBorder(ctx);
+                if (window.fpsShow) {
+                    CanvasUtils.drawFPS(ctx);
+                }
+            } catch (error) {
+                console.error(`Failed to load game module: ${error}`);
+            }
+        } else {
+            alert('You need a modern browser to see this.');
+        }
+        requestAnimationFrame(CanvasUtils.animate.bind(this)); // Call animate recursively
+    }
+
+    // Add EventListener moved into the class
+    static setupCanvas() {
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log(`Canvas Path: ${window.canvasPath}`);
+            requestAnimationFrame(CanvasUtils.animate.bind(this));
+        });
+    }
 }
 
 // Export the CanvasUtils class
 export default CanvasUtils;
 
-// allow for gameloop to be called.
-let gameModule;
-let lastTimestamp = 0;
-
-async function animate(time) {
-    var canvas = document.getElementById('gameArea');
-    if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
-
-        // Calculate the elapsed time since the last frame in seconds
-        const deltaTime = (time - lastTimestamp) / 1000; // Convert milliseconds to seconds
-        lastTimestamp = time;
-
-        try {
-            // Dynamically import game.js and call gameLoop
-            if (!gameModule) {
-                gameModule = await import(`${window.canvasPath}/game.js`);
-            }
-            CanvasUtils.initCanvas(ctx);
-            gameModule.gameLoop(ctx, deltaTime); // Call gameLoop from the imported module
-            CanvasUtils.drawBorder(ctx);
-            if (window.fpsShow) {
-                CanvasUtils.drawFPS(ctx);
-            }
-        } catch (error) {
-            console.error(`Failed to load game module: ${error}`);
-        }
-    } else {
-        alert('You need a modern browser to see this.');
-    }
-    requestAnimationFrame(animate);
-}
-
-// Log window.canvasPath when all documents are loaded
-window.addEventListener('DOMContentLoaded', () => {
-    console.log(`Canvas Path: ${window.canvasPath}`);
-    requestAnimationFrame(animate);
-});
+// Call the setupCanvas method to initialize the canvas and game loop
+CanvasUtils.setupCanvas();

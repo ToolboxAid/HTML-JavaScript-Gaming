@@ -8,6 +8,13 @@ requirements.tst
 x is complete
 ! is cancel/don't do
 -----------------------------------------------
-x play wav and mp3 files
-x play multi sounds concurrently
-x cache locally
+x keyboard usage
+x puck class
+x paddle class
+x classic font
+x frequency sounds
+x game reset
+x winner
+x hide mouse on hover
+- max speed
+- puck stuck at top.
