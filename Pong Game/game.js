@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// canvas.js
 // 10/16/2024
+// game.js
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
 import Font5x3 from './font5x3.js';

@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// fullscreen.js
 // 10/16/2024
+// fullscreen.js
 
 class Fullscreen {
     static gameFullScaleScreen = 1.0;

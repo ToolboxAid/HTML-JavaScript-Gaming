@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// paddle.js
 // 10/16/2024
+// paddle.js
 
 import { paddleConfig, canvasConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';

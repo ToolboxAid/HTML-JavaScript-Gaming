@@ -1,3 +1,6 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/16/2024
 // AudioPlayer.js
 export class AudioPlayer {
     constructor(basePath) {

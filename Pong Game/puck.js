@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// puck.js
 // 10/16/2024
+// puck.js
 
 import { puckConfig } from './global.js'; // Import puck configuration
 import { canvasConfig } from './global.js'; // Import canvas configuration

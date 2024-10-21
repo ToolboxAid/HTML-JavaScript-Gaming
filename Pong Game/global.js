@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// global.js
 // 10/16/2024
+// global.js
 
 // Set global variables for local classes (same directory)
 // Configuration for paddles

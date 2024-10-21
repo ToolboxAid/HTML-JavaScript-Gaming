@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// functions.js
 // 10/16/2024
+// functions.js
 
 class Functions {
     static calculateXY2Angle(xVelocity, yVelocity) {

@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/16/2024
+// objectStatic.js
+
 /** 
  * Represents a static object in a game that cannot move.
  */

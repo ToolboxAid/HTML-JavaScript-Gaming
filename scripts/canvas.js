@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// canvas.js
 // 10/16/2024
+// canvas.js
 
 class CanvasUtils {
     static frameCount = 0;

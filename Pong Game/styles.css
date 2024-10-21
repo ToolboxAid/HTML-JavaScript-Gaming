@@ -1,3 +1,9 @@
+/*
+ ToolboxAid.com
+ David Quesenberry
+ 10/16/2024
+ styles.css
+*/
 body {
     margin: 0;
     overflow: hidden;
@@ -8,11 +14,7 @@ canvas {
     background-color: black;
 }
 
-#gameAreaContainer {
-    position: relative;
-}
-
 #gameArea {
-    background-color: #888888;
-    cursor: none; /* Hide the cursor */
+    cursor: none;
+    /* Hide the cursor */
 }
