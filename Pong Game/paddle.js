@@ -6,6 +6,7 @@
 import { paddleConfig, canvasConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 import Functions from '../scripts/functions.js';
+import { AudioPlayer } from '../scripts/audioPlayer.js';
 
 class Paddle extends ObjectStatic {
     
@@ -45,14 +46,14 @@ class Paddle extends ObjectStatic {
             // Frequency: Approximately 400 Hz
             // Duration: Around 100 milliseconds
             // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
-            Functions.playSound(1000, 0.5);
+            AudioPlayer.playFrequency(1000, 0.5);
             Paddle.winner = true;
         } else {
             // Score Sound:
             // Frequency: Approximately 300 Hz to 400 Hz (varied based on the version)
             // Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
             // Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
-            Functions.playSound(350, 0.25);
+            AudioPlayer.playFrequency(350, 0.25);
         }
     }
 

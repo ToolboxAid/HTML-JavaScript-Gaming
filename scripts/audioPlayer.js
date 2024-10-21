@@ -34,6 +34,26 @@ export class AudioPlayer {
         }
     }
 
+    static playFrequency(frequency, duration) {
+        // Create a new audio context
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Create an oscillator
+        const oscillator = audioContext.createOscillator();
+
+        // Set the frequency
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+        // Connect the oscillator to the output (speakers)
+        oscillator.connect(audioContext.destination);
+
+        // Start the oscillator
+        oscillator.start();
+
+        // Stop the oscillator after 1 second
+        oscillator.stop(audioContext.currentTime + duration);
+    }
+
     playAudio(filename) {
         const url = `${this.basePath}/${filename}`;
 

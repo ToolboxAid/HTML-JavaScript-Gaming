@@ -11,6 +11,7 @@ import CanvasUtils from '../scripts/canvas.js';
 import ObjectDynamic from '../scripts/objectDynamic.js';
 import Functions from '../scripts/functions.js';
 //import Intersect from '../scripts/intersect.js';
+import { AudioPlayer } from '../scripts/audioPlayer.js';
 
 class Puck extends ObjectDynamic {
     constructor() {
@@ -88,7 +89,7 @@ class Puck extends ObjectDynamic {
         // Frequency: Approximately 400 Hz
         // Duration: Around 100 milliseconds
         // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
-        Functions.playSound(400, 0.1);        
+        AudioPlayer.playFrequency(400, 0.1);        
     }
 
     checkGameAreaBoundary(leftPaddle, rightPaddle) {
