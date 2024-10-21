@@ -1,31 +1,40 @@
 // AudioPlayer.js
 export class AudioPlayer {
-    constructor() {
+    constructor(basePath) {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.audioCache = {};
+        this.basePath = basePath; // Store the base path
     }
 
-    async loadAudio(url) {
+    async loadAudio(filename) {
+        const url = `${this.basePath}/${filename}`; // Use the base path and filename to construct the URL
+
         if (this.audioCache[url]) {
             console.log(`Loaded from cache: ${url}`);
             return;
         }
 
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-        this.audioCache[url] = audioBuffer;
-        console.log(`Loaded: ${url}`);
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+            this.audioCache[url] = audioBuffer;
+            console.log(`Loaded: ${url}`);
+        } catch (error) {
+            console.error(`Failed to load audio: ${url}`, error);
+        }
     }
 
     playAudio(filename) {
-        if (!this.audioCache[`./effects/${filename}`]) {
+        const url = `${this.basePath}/${filename}`; // Use the base path and filename to construct the URL
+
+        if (!this.audioCache[url]) {
             console.error(`Audio file not loaded: ${filename}`);
             return;
         }
 
         const source = this.audioContext.createBufferSource();
-        source.buffer = this.audioCache[`./effects/${filename}`];
+        source.buffer = this.audioCache[url];
         source.connect(this.audioContext.destination);
         source.start(0);
     }
@@ -37,12 +46,12 @@ export class AudioPlayer {
     }
 }
 
-// // Example usage
-// const audioPlayer = new AudioPlayer();
+// Example usage
+// const audioPlayer = new AudioPlayer('./audio');
 
 // // Load audio files without playing
-// audioPlayer.loadAudio('https://example.com/audio/sample1.wav');
-// audioPlayer.loadAudio('https://example.com/audio/sample2.wav');
+// audioPlayer.loadAudio('sample1.wav');
+// audioPlayer.loadAudio('sample2.wav');
 
 // // Later, play the loaded audio files using just the filename
 // audioPlayer.playAudio('sample1.wav');

@@ -8,14 +8,15 @@
         // Import the AudioPlayer class
         import { AudioPlayer } from '../scripts/AudioPlayer.js';
 
-        const audioPlayer = new AudioPlayer();
+        // Initialize AudioPlayer with the base path of the audio files
+        const audioPlayer = new AudioPlayer('./fx');
 
         // Load audio files
         async function loadAudioFiles() {
-            await audioPlayer.loadAudio('./effects/elemental-magic.mp3');
-            await audioPlayer.loadAudio('./effects/relaxing-guitar-loop.mp3');
-            await audioPlayer.loadAudio('./effects/Alesis-Sanctuary.wav');
-            await audioPlayer.loadAudio('./effects/Ouch-6.wav');
+            await audioPlayer.loadAudio('elemental-magic.mp3');
+            await audioPlayer.loadAudio('relaxing-guitar-loop.mp3');
+            await audioPlayer.loadAudio('Alesis-Sanctuary.wav');
+            await audioPlayer.loadAudio('Ouch-6.wav');
         }
 
         // Play audio when button is clicked
