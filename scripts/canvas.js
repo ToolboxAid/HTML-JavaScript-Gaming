@@ -56,13 +56,13 @@ class CanvasUtils {
     }
 
     static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
-       /* ctx.setLineDash
-            ([5, 15]);        - Short dashes with longer gaps
-            ([15, 5]);        - Long dashes with short gaps
-            ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
-            ([20, 5, 10, 5]); - Alternating long and medium dashes
-        */
-               ctx.setLineDash(dashPattern);
+        /* ctx.setLineDash
+             ([5, 15]);        - Short dashes with longer gaps
+             ([15, 5]);        - Long dashes with short gaps
+             ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
+             ([20, 5, 10, 5]); - Alternating long and medium dashes
+         */
+        ctx.setLineDash(dashPattern);
         CanvasUtils.drawLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor);
         ctx.setLineDash([]); // Reset to solid line
     }
