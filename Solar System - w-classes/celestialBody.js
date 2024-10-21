@@ -5,7 +5,6 @@
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
-import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
 
 /**
  * Represents a celestial body in a solar system, such as a planet or star/sun.
