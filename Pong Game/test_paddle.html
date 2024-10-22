@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paddle Unit Tests</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>Paddle Class Tests</h1>
+    <div id="results"></div>
+    
+    <script type="module">
+        import Paddle from './paddle.js'; // Make sure this path is correct
+
+        function runTests() {
+            const resultsDiv = document.getElementById('results');
+
+            // Test 1: Initialization
+            const leftPaddle = new Paddle(true);
+            const rightPaddle = new Paddle(false);
+            resultsDiv.innerHTML += `<p>Left Paddle Score: ${leftPaddle.score} (Expected: 0)</p>`;
+            resultsDiv.innerHTML += `<p>Right Paddle Score: ${rightPaddle.score} (Expected: 0)</p>`;
+
+            // Test 2: Incrementing Score
+            leftPaddle.incrementScore();
+            leftPaddle.incrementScore();
+            resultsDiv.innerHTML += `<p>Left Paddle Score After Increment: ${leftPaddle.score} (Expected: 2)</p>`;
+
+            // Test 3: Resetting Score
+            leftPaddle.resetScore();
+            resultsDiv.innerHTML += `<p>Left Paddle Score After Reset: ${leftPaddle.score} (Expected: 0)</p>`;
+        }
+
+               // Run tests when the page loads
+               window.onload = runTests();
+    </script>
+</body>
+</html>

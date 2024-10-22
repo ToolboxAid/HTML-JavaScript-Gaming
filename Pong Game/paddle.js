@@ -3,7 +3,7 @@
 // 10/16/2024
 // paddle.js
 
-import { paddleConfig, canvasConfig } from './global.js';
+import { canvasConfig, paddleConfig  } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 import Functions from '../scripts/functions.js';
 import { AudioPlayer } from '../scripts/audioPlayer.js';
@@ -102,8 +102,7 @@ class Paddle extends ObjectStatic {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        super.draw(ctx, this.color);
     }
 }
 

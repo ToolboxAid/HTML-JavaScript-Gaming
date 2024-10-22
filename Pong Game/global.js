@@ -20,8 +20,8 @@ export const puckConfig = {
     width: 20,
     height: 20,
     color: "white",
-    speedDefault: 5.0,
-    speedIncrease: 0.25,
+    speedDefault: 200.0,
+    speedIncrease: 5.0,
     /*
     this.angle = (this.angle + 360) % 360;
     Left angles

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puck Class Unit Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>Puck Class Unit Test</h1>
+    <div id="results"></div>
+
+    <!-- Include your puck.js file -->
+    <script type="module">
+        import Paddle from './puck.js'; // Make sure this path is correct
+
+        // Unit Tests
+        function runTests() {
+            let results = document.getElementById('results');
+            let passedTests = 0;
+            let totalTests = 0;
+
+            // Test case 1: Initial position
+            totalTests++;
+            let puck = new Puck();
+            if (puck.position.x === 400 && puck.position.y === 300) {
+                passedTests++;
+                results.innerHTML += `<p>Test 1 Passed: Initial position is correct.</p>`;
+            } else {
+                results.innerHTML += `<p>Test 1 Failed: Initial position is incorrect.</p>`;
+            }
+
+            // Test case 2: Update position
+            totalTests++;
+            puck.speed = { x: 100, y: 100 }; // Set speed
+            puck.update(null, null, 1); // Simulate 1 second
+            if (puck.position.x === 500 && puck.position.y === 400) {
+                passedTests++;
+                results.innerHTML += `<p>Test 2 Passed: Update position is correct.</p>`;
+            } else {
+                results.innerHTML += `<p>Test 2 Failed: Update position is incorrect. Expected (500, 400), got (${puck.position.x}, ${puck.position.y}).</p>`;
+            }
+
+            // Test case 3: Update with different delta time
+            totalTests++;
+            puck.position = { x: 400, y: 300 }; // Reset position
+            puck.speed = { x: 50, y: 50 }; // Set speed
+            puck.update(null, null, 2); // Simulate 2 seconds
+            if (puck.position.x === 500 && puck.position.y === 400) {
+                passedTests++;
+                results.innerHTML += `<p>Test 3 Passed: Update with delta time is correct.</p>`;
+            } else {
+                results.innerHTML += `<p>Test 3 Failed: Update with delta time is incorrect. Expected (500, 400), got (${puck.position.x}, ${puck.position.y}).</p>`;
+            }
+
+            // Final results
+            results.innerHTML += `<p>${passedTests} out of ${totalTests} tests passed.</p>`;
+        }
+
+        // Run tests when the page loads
+        window.onload = runTests;
+    </script>
+</body>
+</html>

@@ -53,8 +53,8 @@ class CanvasUtils {
         ctx.stroke(); // Draw the line
     }
 
-    static drawLineFromPoints(ctx, start, end) {
-        CanvasUtils.drawLine(ctx, start.x, start.y, end.x, end.y);
+    static drawLineFromPoints(ctx, start, end, lineWidth = 5, strokeColor = 'red') {
+        CanvasUtils.drawLine(ctx, start.x, start.y, end.x, end.y, lineWidth, strokeColor);
     }
 
     static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
@@ -106,7 +106,6 @@ class CanvasUtils {
         }
     }
     
-
     // Animate function moved into the CanvasUtils class
     static async animate(time) {
         var canvas = document.getElementById('gameArea');
@@ -116,7 +115,7 @@ class CanvasUtils {
             const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
             this.lastTimestamp = time;
 
-            try {
+            //try {
                 if (!this.gameModule) {
                     this.gameModule = await import(`${window.canvasPath}/game.js`);
                 }
@@ -127,9 +126,9 @@ class CanvasUtils {
                 if (window.fpsShow) {
                     CanvasUtils.drawFPS(ctx);
                 }
-            } catch (error) {
-                console.error(`Failed to load game module: ${error}`);
-            }
+            // } catch (error) {
+            //     console.error(`Failed to load game module: ${error}`);
+            // }
         } else {
             alert('You need a modern browser to see this.');
         }

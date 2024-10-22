@@ -43,38 +43,89 @@ class ObjectDynamic extends ObjectStatic {
         this.velocityY = velocityY;
     }
 
-/**
- * Checks the object's position against the specified boundaries and adjusts if necessary.
- * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
- * @param {number} width - The width of the area to check against.
- * @param {number} height - The height of the area to check against.
- * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
- */
-checkCollisionWithBounds(width, height) {
-    let boundariesHit = [];
+    /**
+     * Checks the object's position against the specified boundaries and adjusts if necessary.
+     * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
+     * @param {number} width - The width of the area to check against.
+     * @param {number} height - The height of the area to check against.
+     * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
+     */
+    checkCollisionWithBounds(width, height) {
+        let boundariesHit = [];
 
-    if (this.x < 0) {
-        this.x = 0; // Prevent moving out of bounds on the left
-        this.velocityX *= -1; // Reverse direction
-        boundariesHit.push('left');
-    } else if (this.x + this.width > width) {
-        this.x = width - this.width; // Prevent moving out of bounds on the right
-        this.velocityX *= -1; // Reverse direction
-        boundariesHit.push('right');
+        // left & right
+        if (this.x <= 0) {
+            this.x = 0; // Prevent moving out of bounds on the left
+            this.velocityX *= -1; // Reverse direction
+            boundariesHit.push('left');
+        } else if (this.x + this.width >= width) {
+            this.x = width - this.width; // Prevent moving out of bounds on the right
+            this.velocityX *= -1; // Reverse direction
+            boundariesHit.push('right');
+        }
+
+        // top and bottom
+        if (this.y <= 0) {
+            this.y = 0; // Prevent moving out of bounds at the top
+            this.velocityY *= -1; // Reverse direction
+            boundariesHit.push('top');
+        } else if (this.y + this.height >= height) {
+            this.y = height - this.height; // Prevent moving out of bounds at the bottom
+            this.velocityY *= -1; // Reverse direction
+            boundariesHit.push('bottom');
+        }
+
+        return boundariesHit;
+    }
+
+    checkCollisionWithObject(otherObject, deltaTime) {
+        // Calculate future positions based on current position and velocity
+        const futureX1 = this.x + this.velocityX * deltaTime;
+        const futureY1 = this.y + this.velocityY * deltaTime;
+        const futureX2 = otherObject.x; // Assuming otherObject is already updated
+        const futureY2 = otherObject.y;
+    
+        // Array to store sides of the collision
+        let collisionSides = [];
+    
+        // Check if a collision occurs (bounding box overlap check)
+        const isColliding = (
+            futureX1 < futureX2 + otherObject.width &&   // Check left side collision
+            futureX1 + this.width > futureX2 &&         // Check right side collision
+            futureY1 < futureY2 + otherObject.height && // Check top side collision
+            futureY1 + this.height > futureY2           // Check bottom side collision
+        );
+    
+        if (isColliding) {
+            // Check for left-side collision
+            if (this.x + this.width <= otherObject.x && 
+                futureX1 + this.width >= otherObject.x) {
+                collisionSides.push('left');
+            }
+    
+            // Check for right-side collision
+            if (this.x >= otherObject.x + otherObject.width && 
+                futureX1 <= otherObject.x + otherObject.width) {
+                collisionSides.push('right');
+            }
+    
+            // Check for top-side collision
+            if (this.y + this.height <= otherObject.y && 
+                futureY1 + this.height >= otherObject.y) {
+                collisionSides.push('top');
+            }
+    
+            // Check for bottom-side collision
+            if (this.y >= otherObject.y + otherObject.height && 
+                futureY1 <= otherObject.y + otherObject.height) {
+                collisionSides.push('bottom');
+            }
+        }
+    
+        return collisionSides;
     }
     
-    if (this.y < 0) {
-        this.y = 0; // Prevent moving out of bounds at the top
-        this.velocityY *= -1; // Reverse direction
-        boundariesHit.push('top');
-    } else if (this.y + this.height > height) {
-        this.y = height - this.height; // Prevent moving out of bounds at the bottom
-        this.velocityY *= -1; // Reverse direction
-        boundariesHit.push('bottom');
-    }
 
-    return boundariesHit;
-}
 
 }
 

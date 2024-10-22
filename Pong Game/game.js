@@ -43,7 +43,7 @@ function drawDashedLine(ctx) {
 }
 
 // Game loop function
-export function gameLoop(ctx) { // exported for use by canvs.js
+export function gameLoop(ctx, deltaTime) { // exported for use by canvs.js
     if (Paddle.winner) {
         // Display a winner message
         alert("We have a winner!");
@@ -59,12 +59,12 @@ export function gameLoop(ctx) { // exported for use by canvs.js
         puck = new Puck(); // Create a single puck instance
     }
 
-    // Move the puck using its method
-    puck.move(leftPaddle, rightPaddle, ctx); // Ensure leftPaddle and rightPaddle are defined
-
-    // Update paddles
+    // Update paddles using keyboard
     leftPaddle.update();
     rightPaddle.update();
+
+    // Upldate/Move the puck using its inheritaed method
+    puck.update(ctx, leftPaddle, rightPaddle, deltaTime); // Ensure leftPaddle and rightPaddle are defined
 
     // Draw paddles
     leftPaddle.draw(ctx);
@@ -78,9 +78,6 @@ export function gameLoop(ctx) { // exported for use by canvs.js
 
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
-
-
-
 }
 
 // Canvas needs to know the current directory to game.js
