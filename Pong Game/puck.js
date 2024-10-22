@@ -197,33 +197,34 @@ class Puck extends ObjectDynamic {
 
     handlePaddleCollision(paddle) {
 
-        const multAngle = 90;
-        const num = 30;
-        const leftMin = 45+num;
-        const leftMax = 315-num;
-        const rightMin = 135-num;
-        const rightMax = 225+num;
 
-        this.velocityX *= -1; // Reverse X direction
+        const multAngle = 90;
+        const num = 20;
+        const leftMin = 45 + num;
+        const leftMax = 315 - num;
+        const rightMin = 135 - num;
+        const rightMax = 225 + num;
 
         // Calculate the offset from the center of the paddle    
-        let paddleCenterY = paddle.y + paddle.height / 2;
-        let offsetY = this.y - paddleCenterY;
+        let paddleCenterY = paddle.y + (paddle.height / 2);
+        let offsetY = (this.y + (this.height/2)) - paddleCenterY;
         let offsetPercent = -(offsetY / (paddle.height / 2));
 
-        // Exponentially increase the angle based on the offset from the edges
-        // The closer to the edges (|offsetPercent| > 0.5), the more the angle changes
-        let exponentialFactor = Math.sign(offsetPercent) * Math.pow(Math.abs(offsetPercent), 2);
+        console.log("paddle.y: " + paddle.y, "paddle.height: " + paddle.height, "paddleCenterY: " + paddleCenterY);
+        console.log("Ball y: " + this.y, "offsetY: " + offsetY, "offsetPercent: " + offsetPercent);
 
-        // Calculate the new angle based on the offset from the paddle center
+        this.velocityX *= -1; // Reverse X direction
+        // Calculate the new angle based on velocityX change
         let angle = Functions.calculateXY2Angle(this.velocityX, this.velocityY);
 
-        console.log(this.angle);
-        this.angle = angle + (exponentialFactor * multAngle);
-
+        let expo = (offsetPercent ** 2);
+        if (offsetY > 0){
+            expo *= -1;
+        }
+        expo *= multAngle;
         // Adjust the angle based on the offset
         if (paddle.isLeft) {
-            this.angle = angle + (offsetY * 1.0);
+            this.angle = angle - expo;
             this.angle = (this.angle + 360) % 360;
 
             if (this.angle < leftMin || this.angle > leftMax) {
@@ -234,7 +235,8 @@ class Puck extends ObjectDynamic {
                 this.angle = leftMin;
             }
         } else {
-            this.angle = angle - (offsetY * 1.0);
+            //this.angle = angle - (offsetY * 1.0);
+            this.angle = angle + expo;
             this.angle = (this.angle + 360) % 360;
             if (this.angle < rightMin) {
                 this.angle = rightMin;
@@ -243,11 +245,11 @@ class Puck extends ObjectDynamic {
                 this.angle = rightMax;
             }
         }
-        console.log(this.angle);
+//        console.log("offsetY: " + offsetY, "offsetPercent: " + offsetPercent, "this.angle: " + this.angle, "expo: " + expo, "New angle: " + this.angle);
         // Set the puck's velocity based on the new angle
         this.setVelocity();
     }
-    
+
     setVelocity() {
         this.speed += this.speedIncrease;
 
@@ -272,13 +274,12 @@ class Puck extends ObjectDynamic {
             180 is left
             225 is left and up
         */
-        this.x = canvasConfig.width / 2;
-        this.y = canvasConfig.height / 2;
+        this.x = (canvasConfig.width / 2) - (this.width / 2);
+        this.y = (canvasConfig.height / 2) - (this.height / 2);
 
         this.speed = this.speedDefault;
         this.speed += this.speedScore * 0.1;
         this.angle = Functions.randomGenerator(min, max);
-        this.angle = Functions.randomGenerator(0, 0);
         this.setVelocity();
         this.velocityX *= -1;  // winner serves the puck
     }

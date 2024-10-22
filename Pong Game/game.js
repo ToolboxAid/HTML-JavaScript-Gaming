@@ -63,7 +63,7 @@ export function gameLoop(ctx, deltaTime) { // exported for use by canvs.js
     leftPaddle.update();
     rightPaddle.update();
 
-    // Upldate/Move the puck using its inheritaed method
+    // Update/Move the puck using its inheritaed method
     puck.update(ctx, leftPaddle, rightPaddle, deltaTime); // Ensure leftPaddle and rightPaddle are defined
 
     // Draw paddles
