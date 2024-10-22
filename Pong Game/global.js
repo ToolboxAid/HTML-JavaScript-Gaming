@@ -9,7 +9,7 @@ export const paddleConfig = {
     offset: 20,
     width: 20,
     height: 120,
-    speed: 5.0,
+    speed: 4.0,
     leftColor: "white",
     rightColor: "white",
     winnerScore: 21,
@@ -20,7 +20,7 @@ export const puckConfig = {
     width: 20,
     height: 20,
     color: "white",
-    speedDefault: 200.0,
+    speedDefault: 300.0,
     speedIncrease: 5.0,
     /*
     this.angle = (this.angle + 360) % 360;

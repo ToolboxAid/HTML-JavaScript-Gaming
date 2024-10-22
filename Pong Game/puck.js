@@ -14,8 +14,16 @@ import { AudioPlayer } from '../scripts/audioPlayer.js';
 
 const debug = false;
 
-
 class Puck extends ObjectDynamic {
+
+    // Defining properties as "constant-like"
+    multAngle = 90;
+    num = 10;
+    leftMin = 45 + this.num;
+    leftMax = 315 - this.num;
+    rightMin = 135 - this.num;
+    rightMax = 225 + this.num;
+
     constructor() {
         const x = (canvasConfig.width / 2) - (puckConfig.width / 2);
         const y = (canvasConfig.height / 2) - (puckConfig.height / 2);
@@ -39,17 +47,10 @@ class Puck extends ObjectDynamic {
         this.tailLength = 15; // Length of the tail
 
         if (Functions.randomGenerator(0, 1)) {
-            this.reset(-45, 45);
+            this.reset(-(this.leftMin), this.leftMin);
         } else {
-            this.reset(135, 225);
+            this.reset(this.rightMin, this.rightMax);
         }
-
-        this.multAngle = 90;
-        this.num = 30;
-        this.leftMin = 45 + this.num;
-        this.leftMax = 315 - this.num;
-        this.rightMin = 135 - this.num;
-        this.rightMax = 225 + this.num;
     }
 
     draw(ctx) {
@@ -109,24 +110,23 @@ class Puck extends ObjectDynamic {
         }
 
         // Adjust scores for left & right
-        // Left Paddle
-        if (boundariesHit.includes('left')) {
+        if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
             this.velocityX *= -1;
-            this.x += this.velocityX * deltaTime;
-            rightPaddle.incrementScore();
             this.speedScore++;
-            this.reset(-45, 45);
-        }
-        // Right Paddle
-        if (boundariesHit.includes('right')) {
-            this.velocityX *= -1;
-            this.x -= this.velocityX * deltaTime; // prevent getting stuck to top or bottom
-            leftPaddle.incrementScore();
-            this.speedScore++;
-            this.reset(135, 225);
+            // Left Paddle
+            if (boundariesHit.includes('left')) {
+                this.x += this.velocityX * deltaTime;
+                rightPaddle.incrementScore();
+                this.reset(-(this.leftMin), this.leftMin);
+            }
+            // Right Paddle
+            if (boundariesHit.includes('right')) {
+                this.x -= this.velocityX * deltaTime; // prevent getting stuck to top or bottom
+                leftPaddle.incrementScore();
+                this.reset(this.rightMin, this.rightMax);
+            }
         }
     }
-
     vectorCollisionFront(ctx, paddle, deltaTime) {
         // Puck line
         const line1start = { x: this.x, y: this.y }
@@ -196,56 +196,43 @@ class Puck extends ObjectDynamic {
     }
 
     handlePaddleCollision(paddle) {
-
-
-        const multAngle = 90;
-        const num = 20;
-        const leftMin = 45 + num;
-        const leftMax = 315 - num;
-        const rightMin = 135 - num;
-        const rightMax = 225 + num;
-
         // Calculate the offset from the center of the paddle    
         let paddleCenterY = paddle.y + (paddle.height / 2);
-        let offsetY = (this.y + (this.height/2)) - paddleCenterY;
+        let offsetY = (this.y + (this.height / 2)) - paddleCenterY;
         let offsetPercent = -(offsetY / (paddle.height / 2));
-
-        console.log("paddle.y: " + paddle.y, "paddle.height: " + paddle.height, "paddleCenterY: " + paddleCenterY);
-        console.log("Ball y: " + this.y, "offsetY: " + offsetY, "offsetPercent: " + offsetPercent);
-
-        this.velocityX *= -1; // Reverse X direction
+        // Reverse X direction
+        this.velocityX *= -1;
         // Calculate the new angle based on velocityX change
         let angle = Functions.calculateXY2Angle(this.velocityX, this.velocityY);
 
         let expo = (offsetPercent ** 2);
-        if (offsetY > 0){
+        if (offsetY > 0) {
             expo *= -1;
         }
-        expo *= multAngle;
+        expo *= this.multAngle;
         // Adjust the angle based on the offset
         if (paddle.isLeft) {
             this.angle = angle - expo;
             this.angle = (this.angle + 360) % 360;
 
-            if (this.angle < leftMin || this.angle > leftMax) {
+            if (this.angle < this.leftMin || this.angle > this.leftMax) {
                 // angle good
             } else if (this.angle > 180) {
-                this.angle = leftMax;
+                this.angle = this.leftMax;
             } else {
-                this.angle = leftMin;
+                this.angle = this.leftMin;
             }
         } else {
             //this.angle = angle - (offsetY * 1.0);
             this.angle = angle + expo;
             this.angle = (this.angle + 360) % 360;
-            if (this.angle < rightMin) {
-                this.angle = rightMin;
+            if (this.angle < this.rightMin) {
+                this.angle = this.rightMin;
             }
-            if (this.angle > rightMax) {
-                this.angle = rightMax;
+            if (this.angle > this.rightMax) {
+                this.angle = this.rightMax;
             }
         }
-//        console.log("offsetY: " + offsetY, "offsetPercent: " + offsetPercent, "this.angle: " + this.angle, "expo: " + expo, "New angle: " + this.angle);
         // Set the puck's velocity based on the new angle
         this.setVelocity();
     }

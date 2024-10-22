@@ -46,6 +46,8 @@ class Functions {
         return intersectionPoint; // Return the intersection point
     }
 
+
+    //s/b playFrequency
     static playSound(frequency, duration) {
         // Create a new audio context
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();

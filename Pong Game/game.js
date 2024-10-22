@@ -8,6 +8,7 @@ import Font5x3 from './font5x3.js';
 import Paddle from './paddle.js';
 import Puck from './puck.js';
 import CanvasUtils from '../scripts/canvas.js';
+import Functions from '../scripts/functions.js';
 import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
 
 /*
@@ -41,6 +42,8 @@ function drawDashedLine(ctx) {
     const centerX = canvasConfig.width / 2; // Middle of the canvas
     CanvasUtils.drawDashLine(ctx, centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
 }
+
+const debugIntersect = true;
 
 // Game loop function
 export function gameLoop(ctx, deltaTime) { // exported for use by canvs.js
@@ -78,6 +81,34 @@ export function gameLoop(ctx, deltaTime) { // exported for use by canvs.js
 
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
+
+    
+    if (debugIntersect) {
+        const puck_start = { x: puck.x + (puck.width / 2),                  y: puck.y + (puck.height / 2) };
+        const puck_end =   { x: puck.x + (puck.width / 2) + puck.velocityX, y: puck.y + (puck.height / 2) + puck.velocityY };
+        CanvasUtils.drawLineFromPoints(ctx, puck_start, puck_end);
+
+        // Left Paddle test
+        const left_start = { x: leftPaddle.x + leftPaddle.width, y: leftPaddle.y};
+        const left_end =   { x: leftPaddle.x + leftPaddle.width, y: leftPaddle.y + leftPaddle.height};
+        CanvasUtils.drawLineFromPoints(ctx, left_start, left_end);
+        const intersectionLeft = Functions.linesIntersect(puck_start, puck_end, left_start, left_end);
+        if (intersectionLeft) {
+            //console.log(intersectionLeft);
+            CanvasUtils.drawCircle(ctx, intersectionLeft,"blue");
+        }
+
+        // Right Paddle test
+        const right_start = { x: rightPaddle.x, y: rightPaddle.y};
+        const right_end =   { x: rightPaddle.x, y: rightPaddle.y + rightPaddle.height};
+        CanvasUtils.drawLineFromPoints(ctx, right_start, right_end);
+        const intersectionRight = Functions.linesIntersect(puck_start, puck_end, right_start, right_end);
+        if (intersectionRight) {
+            //console.log(intersectionRight);
+            CanvasUtils.drawCircle(ctx, intersectionRight,"blue");
+        }
+    }
+
 }
 
 // Canvas needs to know the current directory to game.js
