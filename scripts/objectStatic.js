@@ -28,15 +28,19 @@ class ObjectStatic {
     getCenterPoint() {
         return { x: this.x + (this.width / 2), y: this.y + (this.height / 2) };
     }
+
     getTopLeftPoint() {
         return { x: this.x, y: this.y };
     }
+
     getTopRightPoint() {
         return { x: this.x + this.width, y: this.y };
     }
+
     getBottomLeftPoint() {
         return { x: this.x, y: this.y + this.height };
     }
+    
     getBottomRightPoint() {
         return { x: this.x + this.width, y: this.y + this.height };
     }

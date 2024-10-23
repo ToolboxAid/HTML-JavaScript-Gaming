@@ -7,8 +7,8 @@
 // Configuration for paddles
 export const paddleConfig = {
     offset: 20,
-    width: 40,
-    height: 140,
+    width: 30,
+    height: 160,
     speed: 4.0,
     leftColor: "white",
     rightColor: "white",
@@ -17,8 +17,8 @@ export const paddleConfig = {
 
 // Configuration for puck
 export const puckConfig = {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
     color: "white",
     speedDefault: 300.0,
     speedIncrease: 5.0,

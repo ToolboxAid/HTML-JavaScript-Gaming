@@ -36,10 +36,6 @@ class Puck extends ObjectDynamic {
         this.speedDefault = puckConfig.speedDefault;
         this.speedScore = 0;
 
-        // // not sure this is needed, just being safe.
-        // this.velocityX = 0;
-        // this.velocityY = 0;
-
         this.angle = 0;
 
         // Tail properties
@@ -67,55 +63,6 @@ class Puck extends ObjectDynamic {
         super.draw(ctx, puckConfig.color);
     }
 
-
-    checkPaddleCollision(paddle) {
-        // Check if the puck is within the paddle's bounds
-        if (
-            this.x + this.width >= paddle.x &&
-            this.x <= paddle.x + paddle.width &&
-            this.y + this.height >= paddle.y &&
-            this.y <= paddle.y + paddle.height
-        ) {
-            // Uncomment for debugging
-            //console.log(`Puck Position: (${this.x}, ${this.y}), Size: ${this.size}`);
-           // console.log(`Paddle Position: (${paddle.x}, ${paddle.y}), Width: ${paddle.width}, Height: ${paddle.height}`);
-            let collisionSide;
-
-            // Determine the side of collision
-            const offsetLeft = Math.abs(this.x - paddle.x);
-            const offsetRight = Math.abs(this.x - (paddle.x + paddle.width));
-            const offsetTop = Math.abs(this.y - paddle.y);
-            const offsetBottom = Math.abs(this.y - (paddle.y + paddle.height));
-
-            // Find the smallest offset to determine the collision side
-            const minOffset = Math.min(offsetLeft, offsetRight, offsetTop, offsetBottom);
-
-            if (minOffset === offsetLeft) {
-                collisionSide = 'left';
-                this.x = paddle.x - this.width; // Push puck out of the paddle
-                this.velocityX *= -1; // Reverse X velocity for left collision
-            } else if (minOffset === offsetRight) {
-                collisionSide = 'right';
-                this.x = paddle.x + paddle.width; // Push puck out of the paddle
-                this.velocityX *= -1; // Reverse X velocity for right collision
-            } else if (minOffset === offsetTop) {
-                collisionSide = 'top';
-                this.y = paddle.y - this.width; // Push puck out of the paddle
-                //this.velocityY *= -1; // Reverse Y velocity for top collision
-            } else if (minOffset === offsetBottom) {
-                collisionSide = 'bottom';
-                this.y = paddle.y + paddle.height; // Push puck out of the paddle
-                //this.velocityY *= -1; // Reverse Y velocity for bottom collision
-            }
-
-            // Log collision side immediately
-            //console.log(`Collision detected on the ${collisionSide} side.`);
-            return collisionSide; // Return the side of collision
-        }
-
-        return null; // No collision
-    }
-    
     update(ctx, leftPaddle, rightPaddle, deltaTime) {
         // Store the current position before updating
         this.previousPositions.push({ x: this.x, y: this.y });
@@ -128,13 +75,13 @@ class Puck extends ObjectDynamic {
         super.update(deltaTime);
 
         // Check for collisions with left and right paddles
-        const leftCollision = this.checkPaddleCollision(leftPaddle);
+        const leftCollision = this.checkObjectCollision(leftPaddle);
         if (leftCollision) {
             this.handlePaddleCollision(leftPaddle, leftCollision);
             //console.log(`Left paddle collision: ${leftCollision}`);
         }
 
-        const rightCollision = this.checkPaddleCollision(rightPaddle);
+        const rightCollision = this.checkObjectCollision(rightPaddle);
         if (rightCollision) {
             this.handlePaddleCollision(rightPaddle, rightCollision);
             //console.log(`Right paddle collision: ${rightCollision}`);
@@ -162,100 +109,35 @@ class Puck extends ObjectDynamic {
 
         // Adjust scores for left & right
         if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
-            this.velocityX *= -1;
             this.speedScore++;
             // Left Paddle
             if (boundariesHit.includes('left')) {
-                this.x += this.velocityX * deltaTime;
+                //this.x += this.velocityX * deltaTime;
                 rightPaddle.incrementScore();
                 this.reset(-(this.leftMin), this.leftMin);
             }
             // Right Paddle
             if (boundariesHit.includes('right')) {
-                this.x -= this.velocityX * deltaTime; // prevent getting stuck to top or bottom
+                //this.x -= this.velocityX * deltaTime;
                 leftPaddle.incrementScore();
                 this.reset(this.rightMin, this.rightMax);
             }
         }
     }
-    vectorCollisionFront(ctx, paddle, deltaTime) {
-        // Puck line
-        const line1start = { x: this.x, y: this.y }
-        const line1end = { x: this.x + (this.velocityX * deltaTime), y: this.y + (this.velocityY * deltaTime) }
 
-        let line2start = { x: paddle.x, y: paddle.y };
-        let line2end = { x: paddle.x, y: paddle.y + paddle.height };
-
-        // Paddle Line
-        if (paddle.isLeft) {
-            line2start = { x: paddle.x + paddle.width, y: paddle.y };
-            line2end = { x: paddle.x + paddle.width, y: paddle.y + paddle.height };
-        }
-
-        if (debug) {
-            CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
-            CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
-        }
-
-        const boundariesHit = this.checkCollisionWithObject(paddle, deltaTime);
-
-        if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
-            // Here you could add logic to handle the left-side collision specifically
-            this.handlePaddleCollision(paddle);
-            this.playBounceSound();
-        }
-    }
-
-    vectorCollisionTop(ctx, paddle, deltaTime) {
-        // Puck line
-        const line1start = { x: this.x, y: this.y }
-        const line1end = { x: this.x + (this.velocityX * deltaTime), y: this.y + (this.velocityY * deltaTime) }
-
-        let line2start = { x: paddle.x, y: paddle.y };
-        let line2end = { x: paddle.x + paddle.width, y: paddle.y };
-
-
-        if (debug) {//         Draw Paddle Top Line
-            CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
-            CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
-        }
-
-        const intersection = Functions.linesIntersect(line1start, line1end, line2start, line2end);
-        if (intersection) {
-            this.velocityY *= -1;
-        }
-    }
-
-    vectorCollisionBottom(ctx, paddle, deltaTime) {
-        // Puck line
-        const line1start = { x: this.x, y: this.y }
-        const line1end = { x: this.x + (this.velocityX * deltaTime), y: this.y + (this.velocityY * deltaTime) }
-
-        let line2start = { x: paddle.x, y: paddle.y + paddle.height };
-        let line2end = { x: paddle.x + paddle.width, y: paddle.y + paddle.height };
-
-
-        if (debug) {
-            CanvasUtils.drawLineFromPoints(ctx, line1start, line1end);
-            CanvasUtils.drawLineFromPoints(ctx, line2start, line2end);
-        }
-
-        const intersection = Functions.linesIntersect(line1start, line1end, line2start, line2end);
-        if (intersection) {
-            this.velocityY *= -1;
-        }
-    }
-
+    
     handlePaddleCollision(paddle, collisionSide) {
         //console.log(`paddle collision: ${collisionSide}`);
         if (collisionSide === 'top' || collisionSide === 'bottom') {
-            this.velocityY *= -1;
             return;
         }
-        
+
         // Calculate the offset from the center of the paddle    
-        let paddleCenterY = paddle.y + (paddle.height / 2);
-        let offsetY = (this.y + (this.height / 2)) - paddleCenterY;
+        // let paddleCenterY = paddle.y + (paddle.height / 2);
+        // let offsetY = (this.y + (this.height / 2)) - paddleCenterY;
+
+        
+        let offsetY = this.getCenterPoint().y - paddle.getCenterPoint().y;
         let offsetPercent = -(offsetY / (paddle.height / 2));
 
         // Reverse X direction
@@ -264,11 +146,11 @@ class Puck extends ObjectDynamic {
         let angle = Functions.calculateXY2Angle(this.velocityX, this.velocityY);
 
         let expo = (offsetPercent ** 2);
-        if (offsetY > 0) {
+        if (offsetY < 0) {
             expo *= -1;
         }
         expo *= this.multAngle;
-        
+
         // Adjust the angle based on the offset
         if (paddle.isLeft) {
             this.angle = angle - expo;
@@ -284,6 +166,7 @@ class Puck extends ObjectDynamic {
         } else {
             //this.angle = angle - (offsetY * 1.0);
             this.angle = angle + expo;
+            console.log(offsetY, offsetPercent, expo, angle, this.angle);            
             this.angle = (this.angle + 360) % 360;
             if (this.angle < this.rightMin) {
                 this.angle = this.rightMin;
@@ -291,6 +174,7 @@ class Puck extends ObjectDynamic {
             if (this.angle > this.rightMax) {
                 this.angle = this.rightMax;
             }
+        
         }
         // Set the puck's velocity based on the new angle
         this.setVelocity();
@@ -306,7 +190,8 @@ class Puck extends ObjectDynamic {
     }
 
     reset(min, max) {
-        // Place puck at center of screen
+        // Place puck at center of screen and move tward loser.
+        
         /* Angle direction of travel
             270 is up
 
@@ -326,7 +211,7 @@ class Puck extends ObjectDynamic {
         this.speed = this.speedDefault;
         this.speed += this.speedScore * 0.1;
         this.angle = Functions.randomGenerator(min, max);
-this.angle = 0;         // temp remove
+        this.angle = 180;         // temp remove
         this.setVelocity();
         this.velocityX *= -1;  // winner serves the puck
     }

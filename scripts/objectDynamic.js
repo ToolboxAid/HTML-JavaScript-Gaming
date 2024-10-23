@@ -27,15 +27,19 @@ class ObjectDynamic extends ObjectStatic {
     getFutureCenterPoint(deltaTime) {
         return { x: this.x + (this.width / 2) + (this.velocityX * deltaTime), y: this.y + (this.height / 2) + (this.velocityY * deltaTime) };
     }
+
     getFutureTopLeftPoint(deltaTime) {
         return { x: this.x + (this.velocityX * deltaTime), y: this.y + (this.velocityY * deltaTime) };
     }
+
     getFutureTopRightPoint(deltaTime) {
         return { x: this.x + this.width + (this.velocityX * deltaTime), y: this.y + (this.velocityY * deltaTime) };
     }
+
     getFutureBottomLeftPoint(deltaTime) {
         return { x: this.x + (this.velocityX * deltaTime), y: this.y + this.height + (this.velocityY * deltaTime) };
     }
+
     getFutureBottomRightPoint(deltaTime) {
         return { x: this.x + this.width + (this.velocityX * deltaTime), y: this.y + this.height + (this.velocityY * deltaTime) };
     }
@@ -94,45 +98,105 @@ class ObjectDynamic extends ObjectStatic {
         return boundariesHit;
     }
 
-    checkCollisionWithObject(otherObject, deltaTime) {
-        // Array to store sides of the collision
-        let collisionSides = [];
+    checkObjectCollision(object) {
+        // Check if the object is within the object's bounds
+        if (
+            this.x + this.width >= object.x &&
+            this.x <= object.x + object.width &&
+            this.y + this.height >= object.y &&
+            this.y <= object.y + object.height
+        ) {
+            let collisionSide;
+    
+            // Define the edges of the object
+            const leftEdge = object.x;
+            const rightEdge = object.x + object.width;
+            const topEdge = object.y;
+            const bottomEdge = object.y + object.height;
+    
+            // Define the puck's edges
+            const puckLeftEdge = this.x;
+            const puckRightEdge = this.x + this.width;
+            const puckTopEdge = this.y;
+            const puckBottomEdge = this.y + this.height;
+    
+            // Determine the side of collision using line-based logic
+            const overlapLeft = puckRightEdge - leftEdge;  // Distance puck has passed into the left edge
+            const overlapRight = rightEdge - puckLeftEdge; // Distance puck has passed into the right edge
+            const overlapTop = puckBottomEdge - topEdge;   // Distance puck has passed into the top edge
+            const overlapBottom = bottomEdge - puckTopEdge;// Distance puck has passed into the bottom edge
+    
+            // Find the smallest overlap to determine the collision side
+            const smallestOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+    
+            // Determine which side was hit based on the smallest overlap
+            if (smallestOverlap === overlapLeft) {
+                collisionSide = 'left';
+                this.x = object.x - this.width; // Push 'this' out of the object
+                this.velocityX *= -1; // Reverse X velocity for left collision
+            } else if (smallestOverlap === overlapRight) {
+                collisionSide = 'right';
+                this.x = object.x + object.width; // Push 'this' out of the object
+                this.velocityX *= -1; // Reverse X velocity for right collision
+            } else if (smallestOverlap === overlapTop) {
+                collisionSide = 'top';
+                this.y = object.y - this.height; // Push 'this' out of the object
+                this.velocityY *= -1; // Reverse Y velocity for top collision
+            } else if (smallestOverlap === overlapBottom) {
+                collisionSide = 'bottom';
+                this.y = object.y + object.height; // Push 'this' out of the object
+                this.velocityY *= -1; // Reverse Y velocity for bottom collision
+            }
+    
+            console.log(`Collision detected on the ${collisionSide} side.`);
+            return collisionSide; // Return the side of collision
+        }
+    
+        return null; // No collision
+    }
+  
+    checkObjectCollisionPoint(object) {
+        // Check if the object is within the object's bounds
+        if (
+            this.x + this.width >= object.x &&
+            this.x <= object.x + object.width &&
+            this.y + this.height >= object.y &&
+            this.y <= object.y + object.height
+        ) {
+            let collisionSide;
 
-        // Check if a collision occurs (bounding box overlap check)
-        const isColliding = (
-            this.getFutureTopLeftPoint(deltaTime).x < otherObject.getTopRightPoint().x &&  // Check left side
-            this.getFutureTopRightPoint(deltaTime).x > otherObject.getTopLeftPoint().x &&  // Check right side
-            this.getFutureTopLeftPoint(deltaTime).y < otherObject.getBottomLeftPoint().y && // Check top side
-            this.getFutureBottomLeftPoint(deltaTime).y > otherObject.getTopLeftPoint().y   // Check bottom side
-        );
+            // Determine the side of collision
+            const offsetLeft = Math.abs(this.x - object.x);
+            const offsetRight = Math.abs(this.x - (object.x + object.width));
+            const offsetTop = Math.abs(this.y - object.y);
+            const offsetBottom = Math.abs(this.y - (object.y + object.height));
 
-        if (isColliding) {
-            // Check for left-side collision
-            if (this.getTopRightPoint().x <= otherObject.getTopLeftPoint().x &&
-                this.getFutureTopRightPoint(deltaTime).x >= otherObject.getTopLeftPoint().x) {
-                collisionSides.push('left');
+            // Find the smallest offset to determine the collision side
+            const minOffset = Math.min(offsetLeft, offsetRight, offsetTop, offsetBottom);
+
+            if (minOffset === offsetLeft) {
+                collisionSide = 'left';
+                this.x = object.x - this.width; // Push 'this' out of the object
+                this.velocityX *= -1; // Reverse X velocity for left collision
+            } else if (minOffset === offsetRight) {
+                collisionSide = 'right';
+                this.x = object.x + object.width; // Push 'this' out of the object
+                this.velocityX *= -1; // Reverse X velocity for right collision
+            } else if (minOffset === offsetTop) {
+                collisionSide = 'top';
+                this.y = object.y - this.height; // Push 'this' out of the object
+                this.velocityY *= -1; // Reverse Y velocity for top collision (uncommented)
+            } else if (minOffset === offsetBottom) {
+                collisionSide = 'bottom';
+                this.y = object.y + object.height; // Push 'this' out of the object
+                this.velocityY *= -1; // Reverse Y velocity for bottom collision (uncommented)
             }
 
-            // Check for right-side collision
-            if (this.getTopLeftPoint().x >= otherObject.getTopRightPoint().x &&
-                this.getFutureTopLeftPoint(deltaTime).x <= otherObject.getTopRightPoint().x) {
-                collisionSides.push('right');
-            }
-
-            // Check for top-side collision
-            if (this.getBottomLeftPoint().y <= otherObject.getTopLeftPoint().y &&
-                this.getFutureBottomLeftPoint(deltaTime).y >= otherObject.getTopLeftPoint().y) {
-                collisionSides.push('top');
-            }
-
-            // Check for bottom-side collision
-            if (this.getTopLeftPoint().y >= otherObject.getBottomLeftPoint().y &&
-                this.getFutureTopLeftPoint(deltaTime).y <= otherObject.getBottomLeftPoint().y) {
-                collisionSides.push('bottom');
-            }
+            console.log(`Collision detected on the ${collisionSide} side.`);
+            return collisionSide; // Return the side of collision
         }
 
-        return collisionSides;
+        return null; // No collision
     }
 
     getDirection() {
@@ -149,7 +213,6 @@ class ObjectDynamic extends ObjectStatic {
         // Return the direction of movement
         return direction;
     }
-
 
 }
 
