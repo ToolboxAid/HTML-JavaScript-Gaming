@@ -4,6 +4,14 @@
 // functions.js
 
 class Functions {
+    static radToDeg(radians) {
+        return radians * (180 / Math.PI);
+    }
+
+    static degToRad(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+    
     static calculateXY2Angle(xVelocity, yVelocity) {
         const angleInRadians = Math.atan2(yVelocity, xVelocity);
         const angleInDegrees = angleInRadians * (180 / Math.PI);

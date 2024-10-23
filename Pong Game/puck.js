@@ -196,8 +196,7 @@ class Puck extends ObjectDynamic {
 
         this.speed = this.speedDefault;
         this.speed += this.speedScore * 0.1;
-        this.angle = Functions.randomGenerator(min, max);        // temp remove
-        this.angle = 180;
+        this.angle = Functions.randomGenerator(min, max);
         this.setVelocity();
         this.velocityX *= -1;  // winner serves the puck
     }

@@ -3,13 +3,13 @@
 // 10/16/2024
 // paddle.js
 
-import { canvasConfig, paddleConfig  } from './global.js';
+import { canvasConfig, paddleConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 import Functions from '../scripts/functions.js';
 import { AudioPlayer } from '../scripts/audioPlayer.js';
 
 class Paddle extends ObjectStatic {
-    
+
     static winner = false; // Default to false
 
     constructor(isLeft) {
@@ -36,23 +36,21 @@ class Paddle extends ObjectStatic {
         };
 
         this.bindKeys();
+
+        // Tail properties
+        this.previousPositions = []; // Array to store previous positions
+        this.tailLength = 15; // Length of the tail
+        this.tailOpacities = []; // Array to store opacity values
+        this.fadeSpeed = 0.1; // Speed of fading out the tail
     }
 
     incrementScore() {
         this.score++;
 
         if (this.score >= paddleConfig.winnerScore) {
-            // Ball Bounce Sound:
-            // Frequency: Approximately 400 Hz
-            // Duration: Around 100 milliseconds
-            // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
             AudioPlayer.playFrequency(1000, 0.5);
             Paddle.winner = true;
         } else {
-            // Score Sound:
-            // Frequency: Approximately 300 Hz to 400 Hz (varied based on the version)
-            // Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
-            // Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
             AudioPlayer.playFrequency(350, 0.25);
         }
     }
@@ -69,6 +67,30 @@ class Paddle extends ObjectStatic {
             this.y = 0;
         } else if (this.y + this.height > window.gameAreaHeight) {
             this.y = window.gameAreaHeight - this.height;
+        }
+
+        // Update previous positions for the tail
+        this.updateTail();
+    }
+
+    // Update tail positions
+    updateTail() {
+        this.previousPositions.push({ x: this.x, y: this.y });
+        this.tailOpacities.push(1); // Start with full opacity
+
+        if (this.previousPositions.length > this.tailLength) {
+            this.previousPositions.shift(); // Remove the oldest position if exceeding the tail length
+            this.tailOpacities.shift(); // Remove the oldest opacity value
+        }
+    }
+
+    // Update opacity values over time
+    updateTailOpacities() {
+        for (let i = 0; i < this.tailOpacities.length; i++) {
+            this.tailOpacities[i] -= this.fadeSpeed; // Decrease opacity
+            if (this.tailOpacities[i] < 0) {
+                this.tailOpacities[i] = 0; // Ensure opacity doesn't go below 0
+            }
         }
     }
 
@@ -99,9 +121,19 @@ class Paddle extends ObjectStatic {
         if (this.movement.down) {
             this.move(1); // Move down
         }
+        // Update tail opacities whether moving or not
+        this.updateTailOpacities();
     }
 
     draw(ctx) {
+        // Draw the tail
+        for (let i = 0; i < this.previousPositions.length; i++) {
+            const pos = this.previousPositions[i];
+            const opacity = this.tailOpacities[i];
+            ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.15})`; // Fade effect
+            ctx.fillRect(pos.x, pos.y, this.width, this.height);
+        }
+
         super.draw(ctx, this.color);
     }
 }

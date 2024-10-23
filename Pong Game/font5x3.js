@@ -5,9 +5,9 @@
 
 
 import { font5x3 } from './global.js';
-import { canvasConfig} from './global.js';
+import { canvasConfig } from './global.js';
 class Font5x3 {
-    static font = {
+    static #font = {
         '0': [
             [1, 1, 1],
             [1, 0, 1],
@@ -85,7 +85,7 @@ class Font5x3 {
     }
 
     static #drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
-        const characterMatrix = this.font[char];
+        const characterMatrix = this.#font[char];
         if (!characterMatrix) return; // Ignore if character doesn't exist
 
         ctx.fillStyle = font5x3.color;
@@ -93,15 +93,15 @@ class Font5x3 {
         for (let row = 0; row < characterMatrix.length; row++) {
             for (let col = 0; col < characterMatrix[row].length; col++) {
                 if (characterMatrix[row][col] === 1) {
-                    ctx.fillRect(x + col * pixelWidth, y + row * pixelHeight, pixelWidth+1, pixelHeight+1);
+                    ctx.fillRect(x + col * pixelWidth, y + row * pixelHeight, pixelWidth + 1, pixelHeight + 1);
                 }
             }
         }
     }
 
     static drawScores(ctx, leftPaddle, rightPaddle) {
-        const player1X = (canvasConfig.width/2)-(font5x3.pixelWidth * 11); // X position for Player 1 score
-        const player2X = (canvasConfig.width/2) + (font5x3.pixelWidth * 4); // X position for Player 2 score
+        const player1X = (canvasConfig.width / 2) - (font5x3.pixelWidth * 24); // X position for Player 1 score
+        const player2X = (canvasConfig.width / 2) + (font5x3.pixelWidth * 18); // X position for Player 2 score
 
         const y = 30;  // Y position for scores
 

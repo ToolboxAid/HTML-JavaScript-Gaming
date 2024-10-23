@@ -95,12 +95,15 @@ class CanvasUtils {
             ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
             ctx.font = window.fullscreenFont || '40px Arial';; // Set font size and family
             
+            // Reset text alignment to default (start)
+            ctx.textAlign = 'start';
+
             // Measure the width of the text "Click here to enter fullscreen"
             const text = window.fullscreenText || 'Click here to enter fullscreen';
             const textWidth = ctx.measureText(text).width; // Get the width of the text in pixels
             const textX = (window.gameAreaWidth - textWidth) / 2; // Center the text horizontally
             const textY = window.gameAreaHeight * (4 / 5); // Position the text vertically
-            
+      
             // Draw the message on the canvas
             ctx.fillText(text, textX, textY); // Display the text at the calculated position
         }

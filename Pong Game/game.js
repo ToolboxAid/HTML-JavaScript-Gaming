@@ -44,41 +44,62 @@ function drawDashedLine(ctx) {
 }
 
 // Game loop function
-export function gameLoop(ctx, deltaTime) { // exported for use by canvs.js
+// Game loop function
+export function gameLoop(ctx, deltaTime) {
+
+    // Call drawScores to display the current scores
+    Font5x3.drawScores(ctx, leftPaddle, rightPaddle);
+
+    // Draw the dashed line
+    drawDashedLine(ctx);
+
     if (Paddle.winner) {
-        // Display a winner message
-        alert("We have a winner!");
+        // Stop the game loop and display the winner message
+        drawWinnerMessage(ctx);
 
-        // Optionally, stop the game loop or reset the game
-        // Example: clear the game loop or set a flag
-        // Create paddles instances
-        Paddle.winner = false;
-        leftPaddle = new Paddle(true);
-        rightPaddle = new Paddle(false);
+        // Draw paddles
+        leftPaddle.draw(ctx);
+        rightPaddle.draw(ctx);
 
-        // Create puck instance
-        puck = new Puck(); // Create a single puck instance
+        // Pause the game until a key is pressed
+        document.addEventListener('keydown', restartGame);
+        return; // Exit the game loop
     }
 
     // Update paddles using keyboard
     leftPaddle.update();
     rightPaddle.update();
 
-    // Update/Move the puck using its inheritaed method
+    // Update/Move the puck using its inherited method
     puck.update(ctx, leftPaddle, rightPaddle, deltaTime); // Ensure leftPaddle and rightPaddle are defined
 
-    // Draw the dashed line
-    drawDashedLine(ctx);
-    
     // Draw paddles
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
 
-    // Call drawScores to display the current scores
-    Font5x3.drawScores(ctx, leftPaddle, rightPaddle);
-
     // Draw the puck
     puck.draw(ctx); // Use the draw method from the Puck class
+}
+
+// Function to draw the winner message on the canvas
+function drawWinnerMessage(ctx, message) {
+    ctx.fillStyle = 'white'; // Set text color
+    ctx.font = '55px Arial'; // Set font size and style
+    ctx.textAlign = 'center'; // Center the text
+    ctx.fillText("We have a winner!", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) - 33); // Draw the message at the center of the canvas
+    ctx.fillText("Press any key to Play", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) + 33); // Draw the message at the center of the canvas
+}
+
+// Function to restart the game
+function restartGame() {
+    // Reset paddle winner state
+    Paddle.winner = false;
+    leftPaddle = new Paddle(true);
+    rightPaddle = new Paddle(false);
+    puck = new Puck(); // Create a new puck instance
+
+    // Remove the keydown event listener to prevent multiple triggers
+    document.removeEventListener('keydown', restartGame);
 }
 
 // Canvas needs to know the current directory to game.js
