@@ -24,7 +24,6 @@ class ObjectStatic {
         this.height = height;
     }
 
-
     getCenterPoint() {
         return { x: this.x + (this.width / 2), y: this.y + (this.height / 2) };
     }
@@ -40,7 +39,7 @@ class ObjectStatic {
     getBottomLeftPoint() {
         return { x: this.x, y: this.y + this.height };
     }
-    
+
     getBottomRightPoint() {
         return { x: this.x + this.width, y: this.y + this.height };
     }

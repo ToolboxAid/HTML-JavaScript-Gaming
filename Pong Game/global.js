@@ -9,7 +9,7 @@ export const paddleConfig = {
     offset: 20,
     width: 30,
     height: 160,
-    speed: 4.0,
+    speed: 6.0,
     leftColor: "white",
     rightColor: "white",
     winnerScore: 21,
@@ -21,16 +21,7 @@ export const puckConfig = {
     height: 30,
     color: "white",
     speedDefault: 300.0,
-    speedIncrease: 5.0,
-    /*
-    this.angle = (this.angle + 360) % 360;
-    Left angles
-        this.angle = 315;
-        this.angle = 45;
-    Right angles
-        this.angle = 135;
-        this.angle = 225
-    */
+    speedIncrease: 20.0,
 };
 
 // Configuration for the canvas

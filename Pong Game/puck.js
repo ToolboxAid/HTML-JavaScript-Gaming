@@ -36,12 +36,11 @@ class Puck extends ObjectDynamic {
         this.speedDefault = puckConfig.speedDefault;
         this.speedScore = 0;
 
-        this.angle = 0;
-
         // Tail properties
         this.previousPositions = []; // Array to store previous positions
         this.tailLength = 15; // Length of the tail
 
+        // First volly is random.
         if (Functions.randomGenerator(0, 1)) {
             this.reset(-(this.leftMin), this.leftMin);
         } else {
@@ -64,6 +63,8 @@ class Puck extends ObjectDynamic {
     }
 
     update(ctx, leftPaddle, rightPaddle, deltaTime) {
+        super.update(deltaTime);
+
         // Store the current position before updating
         this.previousPositions.push({ x: this.x, y: this.y });
 
@@ -72,19 +73,15 @@ class Puck extends ObjectDynamic {
             this.previousPositions.shift(); // Remove the oldest position
         }
 
-        super.update(deltaTime);
-
         // Check for collisions with left and right paddles
         const leftCollision = this.checkObjectCollision(leftPaddle);
         if (leftCollision) {
             this.handlePaddleCollision(leftPaddle, leftCollision);
-            //console.log(`Left paddle collision: ${leftCollision}`);
         }
 
         const rightCollision = this.checkObjectCollision(rightPaddle);
         if (rightCollision) {
             this.handlePaddleCollision(rightPaddle, rightCollision);
-            //console.log(`Right paddle collision: ${rightCollision}`);
         }
 
         this.checkGameAreaBoundary(leftPaddle, rightPaddle, deltaTime);
@@ -112,41 +109,30 @@ class Puck extends ObjectDynamic {
             this.speedScore++;
             // Left Paddle
             if (boundariesHit.includes('left')) {
-                //this.x += this.velocityX * deltaTime;
                 rightPaddle.incrementScore();
                 this.reset(-(this.leftMin), this.leftMin);
             }
             // Right Paddle
             if (boundariesHit.includes('right')) {
-                //this.x -= this.velocityX * deltaTime;
                 leftPaddle.incrementScore();
                 this.reset(this.rightMin, this.rightMax);
             }
         }
     }
 
-    
     handlePaddleCollision(paddle, collisionSide) {
-        //console.log(`paddle collision: ${collisionSide}`);
         if (collisionSide === 'top' || collisionSide === 'bottom') {
             return;
         }
 
-        // Calculate the offset from the center of the paddle    
-        // let paddleCenterY = paddle.y + (paddle.height / 2);
-        // let offsetY = (this.y + (this.height / 2)) - paddleCenterY;
-
-        
         let offsetY = this.getCenterPoint().y - paddle.getCenterPoint().y;
         let offsetPercent = -(offsetY / (paddle.height / 2));
 
-        // Reverse X direction
-        this.velocityX *= -1;
         // Calculate the new angle based on velocityX change
         let angle = Functions.calculateXY2Angle(this.velocityX, this.velocityY);
 
         let expo = (offsetPercent ** 2);
-        if (offsetY < 0) {
+        if (offsetY > 0) {
             expo *= -1;
         }
         expo *= this.multAngle;
@@ -166,7 +152,6 @@ class Puck extends ObjectDynamic {
         } else {
             //this.angle = angle - (offsetY * 1.0);
             this.angle = angle + expo;
-            console.log(offsetY, offsetPercent, expo, angle, this.angle);            
             this.angle = (this.angle + 360) % 360;
             if (this.angle < this.rightMin) {
                 this.angle = this.rightMin;
@@ -174,8 +159,8 @@ class Puck extends ObjectDynamic {
             if (this.angle > this.rightMax) {
                 this.angle = this.rightMax;
             }
-        
         }
+
         // Set the puck's velocity based on the new angle
         this.setVelocity();
     }
@@ -191,7 +176,7 @@ class Puck extends ObjectDynamic {
 
     reset(min, max) {
         // Place puck at center of screen and move tward loser.
-        
+
         /* Angle direction of travel
             270 is up
 
@@ -205,13 +190,12 @@ class Puck extends ObjectDynamic {
             180 is left
             225 is left and up
         */
-        this.x = (canvasConfig.width / 2) - (this.width / 2);
-        this.y = (canvasConfig.height / 2) - (this.height / 2);
+        this.setPosition((canvasConfig.width / 2) - (this.width / 2), (canvasConfig.height / 2) - (this.height / 2));
 
         this.speed = this.speedDefault;
         this.speed += this.speedScore * 0.1;
-        this.angle = Functions.randomGenerator(min, max);
-        this.angle = 180;         // temp remove
+        this.angle = Functions.randomGenerator(min, max);        // temp remove
+        this.angle = 180;
         this.setVelocity();
         this.velocityX *= -1;  // winner serves the puck
     }

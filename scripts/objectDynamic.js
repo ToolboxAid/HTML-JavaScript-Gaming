@@ -148,57 +148,13 @@ class ObjectDynamic extends ObjectStatic {
                 this.velocityY *= -1; // Reverse Y velocity for bottom collision
             }
     
-            console.log(`Collision detected on the ${collisionSide} side.`);
+            //console.log(`Collision detected on the ${collisionSide} side.`);
             return collisionSide; // Return the side of collision
         }
     
         return null; // No collision
     }
   
-    checkObjectCollisionPoint(object) {
-        // Check if the object is within the object's bounds
-        if (
-            this.x + this.width >= object.x &&
-            this.x <= object.x + object.width &&
-            this.y + this.height >= object.y &&
-            this.y <= object.y + object.height
-        ) {
-            let collisionSide;
-
-            // Determine the side of collision
-            const offsetLeft = Math.abs(this.x - object.x);
-            const offsetRight = Math.abs(this.x - (object.x + object.width));
-            const offsetTop = Math.abs(this.y - object.y);
-            const offsetBottom = Math.abs(this.y - (object.y + object.height));
-
-            // Find the smallest offset to determine the collision side
-            const minOffset = Math.min(offsetLeft, offsetRight, offsetTop, offsetBottom);
-
-            if (minOffset === offsetLeft) {
-                collisionSide = 'left';
-                this.x = object.x - this.width; // Push 'this' out of the object
-                this.velocityX *= -1; // Reverse X velocity for left collision
-            } else if (minOffset === offsetRight) {
-                collisionSide = 'right';
-                this.x = object.x + object.width; // Push 'this' out of the object
-                this.velocityX *= -1; // Reverse X velocity for right collision
-            } else if (minOffset === offsetTop) {
-                collisionSide = 'top';
-                this.y = object.y - this.height; // Push 'this' out of the object
-                this.velocityY *= -1; // Reverse Y velocity for top collision (uncommented)
-            } else if (minOffset === offsetBottom) {
-                collisionSide = 'bottom';
-                this.y = object.y + object.height; // Push 'this' out of the object
-                this.velocityY *= -1; // Reverse Y velocity for bottom collision (uncommented)
-            }
-
-            console.log(`Collision detected on the ${collisionSide} side.`);
-            return collisionSide; // Return the side of collision
-        }
-
-        return null; // No collision
-    }
-
     getDirection() {
         /** Angle to direction
            - down to right 0 to <90
