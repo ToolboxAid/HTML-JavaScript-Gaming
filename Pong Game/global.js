@@ -7,8 +7,8 @@
 // Configuration for paddles
 export const paddleConfig = {
     offset: 20,
-    width: 20,
-    height: 120,
+    width: 40,
+    height: 140,
     speed: 4.0,
     leftColor: "white",
     rightColor: "white",
