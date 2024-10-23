@@ -21,18 +21,27 @@ class Functions {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    static getDistance(startPoint, endPoint) {
+        //console.log('Start Point:', startPoint, 'End Point:', endPoint);
+
+        const dx = endPoint.x - startPoint.x; // Difference in x-coordinates
+        const dy = endPoint.y - startPoint.y; // Difference in y-coordinates
+        return Math.sqrt(dx * dx + dy * dy); // Calculate the Euclidean distance
+    }
+    
+
     static linesIntersect(line1Start, line1End, line2Start, line2End) {
-        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) -
-                      (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
+        // These are points : line1Start, line1End, line2Start, line2End
+        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) - (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
 
         if (denom === 0) {
             return null; // Lines are parallel
         }
 
         const ua = ((line2End.x - line2Start.x) * (line1Start.y - line2Start.y) -
-                     (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
+            (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
         const ub = ((line1End.x - line1Start.x) * (line1Start.y - line2Start.y) -
-                     (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
+            (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
 
         if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
             return null; // Intersection is outside the line segments
@@ -45,7 +54,6 @@ class Functions {
 
         return intersectionPoint; // Return the intersection point
     }
-
 
     //s/b playFrequency
     static playSound(frequency, duration) {

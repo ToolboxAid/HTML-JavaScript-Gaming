@@ -24,6 +24,22 @@ class ObjectDynamic extends ObjectStatic {
         this.velocityY = velocityY; // Velocity in Y direction
     }
 
+    getFutureCenterPoint(deltaTime) {
+        return { x: this.x + (this.width / 2) + (this.velocityX * deltaTime), y: this.y + (this.height / 2) + (this.velocityY * deltaTime) };
+    }
+    getFutureTopLeftPoint(deltaTime) {
+        return { x: this.x + (this.velocityX * deltaTime), y: this.y + (this.velocityY * deltaTime) };
+    }
+    getFutureTopRightPoint(deltaTime) {
+        return { x: this.x + this.width + (this.velocityX * deltaTime), y: this.y + (this.velocityY * deltaTime) };
+    }
+    getFutureBottomLeftPoint(deltaTime) {
+        return { x: this.x + (this.velocityX * deltaTime), y: this.y + this.height + (this.velocityY * deltaTime) };
+    }
+    getFutureBottomRightPoint(deltaTime) {
+        return { x: this.x + this.width + (this.velocityX * deltaTime), y: this.y + this.height + (this.velocityY * deltaTime) };
+    }
+
     /**
      * Updates the position of the object based on its velocity and delta time.
      * @param {number} deltaTime - The time elapsed since the last update, in seconds.
@@ -79,52 +95,60 @@ class ObjectDynamic extends ObjectStatic {
     }
 
     checkCollisionWithObject(otherObject, deltaTime) {
-        // Calculate future positions based on current position and velocity
-        const futureX1 = this.x + this.velocityX * deltaTime;
-        const futureY1 = this.y + this.velocityY * deltaTime;
-        const futureX2 = otherObject.x; // Assuming otherObject is already updated
-        const futureY2 = otherObject.y;
-    
         // Array to store sides of the collision
         let collisionSides = [];
-    
+
         // Check if a collision occurs (bounding box overlap check)
         const isColliding = (
-            futureX1 < futureX2 + otherObject.width &&   // Check left side collision
-            futureX1 + this.width > futureX2 &&         // Check right side collision
-            futureY1 < futureY2 + otherObject.height && // Check top side collision
-            futureY1 + this.height > futureY2           // Check bottom side collision
+            this.getFutureTopLeftPoint(deltaTime).x < otherObject.getTopRightPoint().x &&  // Check left side
+            this.getFutureTopRightPoint(deltaTime).x > otherObject.getTopLeftPoint().x &&  // Check right side
+            this.getFutureTopLeftPoint(deltaTime).y < otherObject.getBottomLeftPoint().y && // Check top side
+            this.getFutureBottomLeftPoint(deltaTime).y > otherObject.getTopLeftPoint().y   // Check bottom side
         );
-    
+
         if (isColliding) {
             // Check for left-side collision
-            if (this.x + this.width <= otherObject.x && 
-                futureX1 + this.width >= otherObject.x) {
+            if (this.getTopRightPoint().x <= otherObject.getTopLeftPoint().x &&
+                this.getFutureTopRightPoint(deltaTime).x >= otherObject.getTopLeftPoint().x) {
                 collisionSides.push('left');
             }
-    
+
             // Check for right-side collision
-            if (this.x >= otherObject.x + otherObject.width && 
-                futureX1 <= otherObject.x + otherObject.width) {
+            if (this.getTopLeftPoint().x >= otherObject.getTopRightPoint().x &&
+                this.getFutureTopLeftPoint(deltaTime).x <= otherObject.getTopRightPoint().x) {
                 collisionSides.push('right');
             }
-    
+
             // Check for top-side collision
-            if (this.y + this.height <= otherObject.y && 
-                futureY1 + this.height >= otherObject.y) {
+            if (this.getBottomLeftPoint().y <= otherObject.getTopLeftPoint().y &&
+                this.getFutureBottomLeftPoint(deltaTime).y >= otherObject.getTopLeftPoint().y) {
                 collisionSides.push('top');
             }
-    
+
             // Check for bottom-side collision
-            if (this.y >= otherObject.y + otherObject.height && 
-                futureY1 <= otherObject.y + otherObject.height) {
+            if (this.getTopLeftPoint().y >= otherObject.getBottomLeftPoint().y &&
+                this.getFutureTopLeftPoint(deltaTime).y <= otherObject.getBottomLeftPoint().y) {
                 collisionSides.push('bottom');
             }
         }
-    
+
         return collisionSides;
     }
-    
+
+    getDirection() {
+        /** Angle to direction
+           - down to right 0 to <90
+           - down to left 90 to <180
+           - up to left 180 < 270
+           - up to right 270 to 360
+        */
+        let direction = {
+            x: this.velocityX > 0 ? 'right' : this.velocityX < 0 ? 'left' : 'none',
+            y: this.velocityY > 0 ? 'down' : this.velocityY < 0 ? 'up' : 'none'
+        };
+        // Return the direction of movement
+        return direction;
+    }
 
 
 }

@@ -18,10 +18,27 @@ class ObjectStatic {
         if (width <= 0 || height <= 0) {
             throw new Error('Width and height must be positive numbers.');
         }
-        this.x = x; 
-        this.y = y; 
-        this.width = width; 
-        this.height = height; 
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+
+    getCenterPoint() {
+        return { x: this.x + (this.width / 2), y: this.y + (this.height / 2) };
+    }
+    getTopLeftPoint() {
+        return { x: this.x, y: this.y };
+    }
+    getTopRightPoint() {
+        return { x: this.x + this.width, y: this.y };
+    }
+    getBottomLeftPoint() {
+        return { x: this.x, y: this.y + this.height };
+    }
+    getBottomRightPoint() {
+        return { x: this.x + this.width, y: this.y + this.height };
     }
 
     /**
@@ -44,7 +61,7 @@ class ObjectStatic {
     draw(ctx, fillColor = 'yellow', borderColor = null, borderWidth = 0) {
         ctx.fillStyle = fillColor;
         ctx.fillRect(this.x, this.y, this.width, this.height);
-        
+
         if (borderColor && borderWidth > 0) {
             ctx.strokeStyle = borderColor;
             ctx.lineWidth = borderWidth;
