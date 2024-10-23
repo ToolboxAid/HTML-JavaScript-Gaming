@@ -15,25 +15,6 @@ export class AudioPlayer {
         this.currentBuffer = null; // Store the current audio buffer
     }
 
-    async loadAudio(filename) {
-        const url = `${this.basePath}/${filename}`;
-
-        if (this.audioCache[url]) {
-            console.log(`Loaded from cache: ${url}`);
-            return;
-        }
-
-        try {
-            const response = await fetch(url);
-            const arrayBuffer = await response.arrayBuffer();
-            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-            this.audioCache[url] = audioBuffer;
-            console.log(`Loaded: ${url}`);
-        } catch (error) {
-            console.error(`Failed to load audio: ${url}`, error);
-        }
-    }
-
     static playFrequency(frequency, duration) {
         // Create a new audio context
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -53,6 +34,26 @@ export class AudioPlayer {
         // Stop the oscillator after 1 second
         oscillator.stop(audioContext.currentTime + duration);
     }
+    
+    async loadAudio(filename) {
+        const url = `${this.basePath}/${filename}`;
+
+        if (this.audioCache[url]) {
+            console.log(`Loaded from cache: ${url}`);
+            return;
+        }
+
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+            this.audioCache[url] = audioBuffer;
+            console.log(`Loaded: ${url}`);
+        } catch (error) {
+            console.error(`Failed to load audio: ${url}`, error);
+        }
+    }
+
 
     playAudio(filename) {
         const url = `${this.basePath}/${filename}`;

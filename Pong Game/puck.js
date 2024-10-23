@@ -92,7 +92,7 @@ class Puck extends ObjectDynamic {
         // Frequency: Approximately 400 Hz
         // Duration: Around 100 milliseconds
         // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
-        AudioPlayer.playFrequency(400, 0.1);
+        AudioPlayer.playFrequency(440, 0.1);
     }
 
     checkGameAreaBoundary(leftPaddle, rightPaddle, deltaTime) {
@@ -121,13 +121,15 @@ class Puck extends ObjectDynamic {
     }
 
     handlePaddleCollision(paddle, collisionSide) {
+        this.playBounceSound();
+
         if (collisionSide === 'top' || collisionSide === 'bottom') {
             return;
         }
 
         let offsetY = this.getCenterPoint().y - paddle.getCenterPoint().y;
         let offsetPercent = -(offsetY / (paddle.height / 2));
-
+        
         // Calculate the new angle based on velocityX change
         let angle = Functions.calculateXY2Angle(this.velocityX, this.velocityY);
 

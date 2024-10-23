@@ -27,8 +27,7 @@ class Functions {
         const dx = endPoint.x - startPoint.x; // Difference in x-coordinates
         const dy = endPoint.y - startPoint.y; // Difference in y-coordinates
         return Math.sqrt(dx * dx + dy * dy); // Calculate the Euclidean distance
-    }
-    
+    }    
 
     static linesIntersect(line1Start, line1End, line2Start, line2End) {
         // These are points : line1Start, line1End, line2Start, line2End
@@ -53,27 +52,6 @@ class Functions {
         };
 
         return intersectionPoint; // Return the intersection point
-    }
-
-    //s/b playFrequency
-    static playSound(frequency, duration) {
-        // Create a new audio context
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        // Create an oscillator
-        const oscillator = audioContext.createOscillator();
-
-        // Set the frequency
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-
-        // Connect the oscillator to the output (speakers)
-        oscillator.connect(audioContext.destination);
-
-        // Start the oscillator
-        oscillator.start();
-
-        // Stop the oscillator after 1 second
-        oscillator.stop(audioContext.currentTime + duration);
     }
 }
 
