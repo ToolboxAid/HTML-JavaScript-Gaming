@@ -1,9 +1,21 @@
-class Enemy {
-    constructor(frames, offsetX = 0, pixelSize = 30) {
+import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
+
+class Enemy extends ObjectStatic {
+    constructor(x, y, frames, pixelSize = 3) {
+        super(x,y); // Call the parent class constructor
         this.frames = frames;
         this.currentFrameIndex = 0;
-        this.offsetX = offsetX;
         this.pixelSize = pixelSize;
+        this.value = 0;
+        this.value = 0;
+
+/*
+### Enemy Point Values
+- **Squid**: 10 points
+- **Octopus**: 20 points
+- **Crab**: 30 points
+- **Shielded Alien (if applicable in some versions)**: 40 points
+*/
     }
 
     // Method to draw the current frame
@@ -11,14 +23,12 @@ class Enemy {
         const frame = this.frames[this.currentFrameIndex];
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
-                //console.log("draw");
                 const pixel = frame[row][col];
-                const color = pixel === '1' ? 'white' : 'black';
+                const color = pixel === '1' ? 'white' : 'red';
                 ctx.fillStyle = color;
-                ctx.fillRect((col * this.pixelSize) + this.offsetX, row * this.pixelSize, this.pixelSize, this.pixelSize);
+                ctx.fillRect((col * this.pixelSize) + this.x, (row * this.pixelSize) + this.y, this.pixelSize, this.pixelSize);
             }
         }
-       //ctx.drawLine(ctx,0,0,500,600,5,"yellow");
     }
 
     // Method to switch to the next frame
