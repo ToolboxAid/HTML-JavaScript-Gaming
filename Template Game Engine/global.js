@@ -9,7 +9,7 @@ export const canvasConfig = {
     width: 800, // Game area width
     height: 800, // Game area height
     scale: 0.35,
-    backgroundColor: "#000000",   
+    backgroundColor: "white",   
     
     fullscreenText: 'Click game to enter fullscreen',
     fullscreenFont: '50px Arial',
@@ -27,7 +27,7 @@ window.fullscreenText = canvasConfig.fullscreenText;
 window.fullscreenFont = canvasConfig.fullscreenFont;
 window.fullscreenColor = canvasConfig.fullscreenColor; 
 
-window.borderColor = "red";
+window.borderColor = "#888888";
 window.borderSize = 5;
 
 // Configuration for FPS display
