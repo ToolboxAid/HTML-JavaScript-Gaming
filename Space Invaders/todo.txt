@@ -1,1 +1,134 @@
 - create a temple directory that can be used to start a new game.
+
+
+
+The classic arcade game Space Invaders, released in 1978, had a resolution 
+of 256x224 pixels. This resolution was typical for many arcade games of that 
+era, allowing for a simple yet effective graphical presentation. The game 
+displayed monochrome graphics with colored overlays, giving it a distinctive 
+look that contributed to its popularity.
+
+Yes, the enemies in Space Invaders had names. The original game featured four 
+different types of alien invaders, each with a unique appearance and characteristics:
+
+Squid: The lowest-ranking enemy, usually represented as the most basic form of alien.
+Octopus: A slightly tougher enemy that moves faster than the Squid.
+Crab: This enemy has a unique appearance and is faster than the Octopus.
+UFO: A bonus enemy that appears occasionally, offering additional points when shot down.
+
+Each enemy type had a different point value, with the Squid being worth the least and 
+the UFO worth the most. This variety added strategic depth to the game as players 
+could prioritize which enemies to target based on their point values and behaviors.
+
+In **Space Invaders**, the point values for the enemies and UFOs can vary based on 
+different game versions and specific conditions. Here’s a detailed breakdown of the point values:
+
+### Enemy Point Values
+- **Squid**: 10 points
+- **Octopus**: 20 points
+- **Crab**: 30 points
+- **Shielded Alien (if applicable in some versions)**: 40 points
+
+### UFO Point Values
+- **UFO (Regular)**: 50 points
+- **UFO (Bonus)**:
+  - Generally worth **100 points**.
+  - In some versions, it can be worth **200 points** or more if shot down during specific 
+       intervals or conditions, such as:
+    - Appearing during a specific round.
+    - Being shot down while a player has a certain score.
+  
+### Variations in Different Versions
+- Some remakes or ports of Space Invaders might adjust these values further, introducing 
+unique bonuses or multipliers based on player performance, stage progression, or special events.
+
+These point values encourage players to prioritize targets strategically, aiming for the 
+higher-scoring enemies while managing the gameplay dynamics.
+
+In the classic **Space Invaders** arcade game, the dimensions of the enemies can vary 
+slightly based on the version and platform. However, the original arcade game had the 
+following approximate dimensions for each enemy type:
+
+### Enemy Dimensions
+
+1. **Squid**:
+   - Width: **24 pixels**
+   - Height: **16 pixels**
+
+2. **Octopus**:
+   - Width: **24 pixels**
+   - Height: **16 pixels**
+
+3. **Crab**:
+   - Width: **24 pixels**
+   - Height: **16 pixels**
+
+4. **Shielded Alien** (if applicable in some versions):
+   - Width: **24 pixels**
+   - Height: **16 pixels**
+
+### UFO Dimensions
+
+- **UFO (Regular and Bonus)**:
+  - Width: **40 pixels**
+  - Height: **16 pixels**
+
+These dimensions are typically in pixel units, as per the graphics used in the 
+original game. The consistent height of 16 pixels across the enemies contributes 
+to the game's overall design and spacing. Adjustments might be made in modern 
+adaptations or remakes, but these values reflect the classic arcade version.
+
+
+In the classic Space Invaders arcade game, the shields (or bunkers) typically
+have dimensions of approximately:
+
+Width: 32 pixels
+Height: 16 pixels
+The shields are designed as blocks that can vary slightly in shape and appearance,
+but these dimensions are a good reference for the standard representation of shields
+in the original game. Keep in mind that different versions or adaptations of Space Invaders
+might have slightly different shield dimensions.
+
+Here’s the list of objects in **Space Invaders**, along with their typical dimensions:
+
+1. **Player Ship**:
+   - **Dimensions**: Approximately **40 pixels wide** by **16 pixels high**.
+
+2. **Invading Aliens**:
+   - **Dimensions**: Each alien typically measures around **24 pixels wide** by **16 pixels high**. 
+       Different types of aliens may have slightly varying sizes.
+
+3. **UFO**:
+   - **Dimensions**: Regular UFOs are often around **50 pixels wide** by **20 pixels high**. 
+       Bonus UFOs can vary, but they are typically similar in size.
+
+4. **Shields (Bunkers)**:
+   - **Dimensions**: Each shield is usually about **50 pixels wide** by **20 pixels high** and can 
+      vary in shape depending on the design.
+
+5. **Missiles**:
+   - **Dimensions**: Player missiles are generally around **4 pixels wide** by **8 pixels high**. 
+       Alien missiles may be similar or slightly larger.
+
+6. **Game Score Display**:
+   - **Dimensions**: The display itself doesn’t have a fixed size but typically spans across the
+       top of the screen and is proportional to the game's resolution.
+
+7. **Lives Indicator**:
+   - **Dimensions**: The indicator usually consists of several icons (player ships), each approximately
+        **16 pixels wide** by **8 pixels high**. The total size depends on how many lives are displayed.
+
+8. **Level Indicator**:
+   - **Dimensions**: Like the score display, the level indicator is also proportional to the screen size
+        and varies depending on the game resolution.
+
+9. **Background**:
+   - **Dimensions**: The background covers the entire game area, matching the game resolution 
+       (commonly **256 pixels wide** by **224 pixels high** for classic arcade versions).
+
+These dimensions may vary slightly depending on the specific version or port of Space Invaders,  
+    but these values represent common sizes used in many iterations of the game.
+
+
+
+    
