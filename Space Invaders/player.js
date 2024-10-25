@@ -7,34 +7,35 @@ import ObjectDynamic from '../scripts/objectDynamic.js';
 import { spriteConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 
-// New 22x16 pixel image (single frame)
-const frame = [
-    "00000000000100000000000",
-    "00000000001110000000000",
-    "00000000011111000000000",
-    "00000000011111000000000",
-    "00000000011111000000000",
-    "00111111111111111111100",
-    "01111111111111111111110",
-    "11111111111111111111111",
-    "11111111111111111111111",
-    "11111111111111111111111",
-    "11111111111111111111111",
-    "11111111111111111111111",
-    "11111111111111111111111"
-];
+
 
 class Player extends ObjectDynamic {
+
+    // New 22x16 pixel image (single frame)
+static frame = [
+    "00000000100000000",
+    "00000001110000000",
+    "00000011111000000",
+    "00000011111000000",
+    "00111111111111100",
+    "01111111111111110",
+    "11111111111111111",
+    "11111111111111111",
+    "11111111111111111",
+    "11111111111111111",
+    "11111111111111111"
+];
+
     constructor(x, y) {
         super(x, y); // Call the parent class constructor
-        this.frame = frame; // Assign the single frame to this object
         this.score = 0; // Initialize score
+        this.lives = 5;
 
-        this.pixelSize = window.pixelSize;
+        this.pixelSize = 3; //spriteConfig.pixelSize; //window.pixelSize;
     }
 
     draw(ctx) {
-        CanvasUtils.spriteDrawer(ctx, this.x, this.y, this.frame, this.pixelSize);
+        CanvasUtils.spriteDrawer(ctx, this.x, this.y, Player.frame, this.pixelSize);
     }
 }
 

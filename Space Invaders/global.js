@@ -6,18 +6,21 @@
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
-    width: 800, // Game area width
-    height: 800, // Game area height
-    scale: 0.35,
+    width: 896, // Game area width (256 * 4)
+    height: 960, // Game area height (240 * 4)
+    scale: 0.5,
     backgroundColor: "#000000",   
     
     fullscreenText: 'Click game to enter fullscreen',
     fullscreenFont: '50px Arial',
     fullscreenColor: 'yellow',
+    //fullscreenX: 100, // X position for fullscreen text
+    fullscreenY: 600, // Y position for fullscreen text
+
 };
 
 export const spriteConfig = {
-    pixelSize: 3,
+    pixelSize: 3.5,
 
     shipColor: 'red',
     crabColor: 'orange',
@@ -39,6 +42,9 @@ window.pixelSize = spriteConfig.pixelSize
 window.fullscreenText = canvasConfig.fullscreenText; 
 window.fullscreenFont = canvasConfig.fullscreenFont;
 window.fullscreenColor = canvasConfig.fullscreenColor; 
+window.fullscreenX = canvasConfig.fullscreenX; // This must match the property name in canvasConfig
+window.fullscreenY = canvasConfig.fullscreenY; 
+
 
 window.borderColor = "red";
 window.borderSize = 5;
@@ -47,5 +53,5 @@ window.borderSize = 5;
 window.fpsShow = true;
 window.fpsColor = "yellow";
 window.fpsSize = "40px";
-window.fpsX = 30;
-window.fpsY = 550;
+window.fpsX = 50;
+window.fpsY = 165;

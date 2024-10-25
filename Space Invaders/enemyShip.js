@@ -6,7 +6,10 @@
 import Enemy from './Enemy.js';
 import { spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 
-const frames= [
+
+
+class EnemyShip extends Enemy {
+static frames= [
     [
         "0000000000000000",
         "0000011111100000",
@@ -29,9 +32,8 @@ const frames= [
       ]
 ];
 
-class EnemyShip extends Enemy {
     constructor(x, y) {
-        super(x,y,frames);
+        super(x,y,EnemyShip.frames);
         this.value = 30;
     }
 

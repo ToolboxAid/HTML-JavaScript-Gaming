@@ -4,6 +4,8 @@
 // canvas.js
 
 import Fullscreen from '../scripts/fullscreen.js'; // Import the Fullscreen class
+import CanvasUtil from '../scripts/canvas.js'
+import Font5x6 from './font5x6.js';
 
 class CanvasUtils {
     static frameCount = 0;
@@ -43,6 +45,29 @@ class CanvasUtils {
         ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
+    static drawNumber(ctx, x, y, number, fontSize, color = 'white', leadingCount = 5, leadingChar = '0') {
+        const numberStr = number.toString();
+        const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
+        const text = leadingChar.repeat(leadingLength) + numberStr; // Create text with leading characters
+        
+        // Ensure text length is exactly 5
+        const formattedText = text.padStart(leadingCount, leadingChar).slice(-leadingCount);
+        this.drawText(ctx, x, y, formattedText, fontSize, color); // Call drawText with formatted text
+    }
+
+    static drawText(ctx, x, y, text, fontSize, color = 'white') {
+        const pixelSize = fontSize / 5; // Adjust pixel size based on font size, assuming 5x6 grid
+
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            const frame = Font5x6.font5x6[char];
+
+            if (frame) {
+                CanvasUtil.spriteDrawer(ctx, x + i * (fontSize + 2), y, frame, pixelSize, color);
+            }
+        }
+    }
+
     // Method to draw the current frame
     static spriteDrawer(ctx, x, y, frame, pixelSize, spriteColor = '') {
         // Define a color map for letters
@@ -80,7 +105,7 @@ class CanvasUtils {
                     color = spriteColor; // Use sprite color instead of white
                 }
                 ctx.fillStyle = color;
-                ctx.fillRect((col * pixelSize) + x, (row * pixelSize) + y, pixelSize, pixelSize);
+                ctx.fillRect((col * pixelSize) + x, (row * pixelSize) + y, pixelSize +1, pixelSize+1);
             }
         }
     }
@@ -143,8 +168,11 @@ class CanvasUtils {
             // Measure the width of the text "Click here to enter fullscreen"
             const text = window.fullscreenText || 'Click here to enter fullscreen';
             const textWidth = ctx.measureText(text).width; // Get the width of the text in pixels
-            const textX = (window.gameAreaWidth - textWidth) / 2; // Center the text horizontally
-            const textY = window.gameAreaHeight * (4 / 5); // Position the text vertically
+
+            const textX = window.fullscreenX || (window.gameAreaWidth - textWidth) / 2;
+
+            const textY = window.fullscreenY || window.gameAreaHeight * (4 / 5); // Position the text vertically
+
 
             // Draw the message on the canvas
             ctx.fillText(text, textX, textY); // Display the text at the calculated position

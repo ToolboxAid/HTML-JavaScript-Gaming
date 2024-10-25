@@ -6,21 +6,32 @@
 import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
 
 class Enemy extends ObjectStatic {
-    constructor(x, y, frames) {
-        super(x,y); // Call the parent class constructor
+    constructor(x, y, frames, dropDelay = -1) { // Default value added
+        super(x, y);
+        this.height = 40;
+        this.width = 40;
         this.frames = frames;
         this.currentFrameIndex = 0;
-        this.pixelSize = window.pixelSize;//pixelSize;
-        this.value = 0;
-        this.value = 0;
+        this.pixelSize = window.pixelSize;
 
-/*
-### Enemy Point Values
-- **Squid**: 10 points
-- **Octopus**: 20 points
-- **Crab**: 30 points
-- **Shielded Alien (if applicable in some versions)**: 40 points
-*/
+        // move enemy to next line.
+        this.doDrop = false;
+        this.dropDelay = dropDelay; // dropDelay should now default to 5000 if not provided
+        this.dropTime = 0;
+    }
+
+
+    setDropTimer() {
+        this.doDrop = true;
+        this.dropTime = Date.now() + this.dropDelay;
+    }
+
+    update() {
+        if (Date.now() >= this.dropTime && this.doDrop) {
+            this.y += this.height;  // Drop by the height value
+            this.dropTime = Date.now() + this.dropDelay; // Set the next drop time
+            this.doDrop = false;
+        }
     }
 
     // Method to draw the current frame

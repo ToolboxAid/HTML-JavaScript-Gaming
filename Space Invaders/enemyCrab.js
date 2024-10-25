@@ -6,7 +6,11 @@
 import Enemy from './Enemy.js';
 import { spriteConfig } from './global.js';
 
-const frames = [
+
+
+class EnemyCrab extends Enemy {
+    
+    static frames = [
     [
         "000011110000",
         "011111111110",
@@ -28,16 +32,15 @@ const frames = [
         "001100001100"
     ]
 ];
-
-class EnemyCrab extends Enemy {
-    constructor(x, y) {
-        super(x, y, frames);
+    constructor(x, y, dropDelay) {
+        super(x, y, EnemyCrab.frames, dropDelay);
         this.value = 30;
     }
 
     draw(ctx) {
         super.draw(ctx, spriteConfig.crabColor);
     }
+
 }
 
 export default EnemyCrab;
