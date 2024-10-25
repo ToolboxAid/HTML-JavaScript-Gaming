@@ -5,6 +5,7 @@
 
 import ObjectDynamic from '../scripts/objectDynamic.js';
 import { spriteConfig } from './global.js';
+import CanvasUtils from '../scripts/canvas.js';
 
 // New 22x16 pixel image (single frame)
 const frame = [
@@ -28,20 +29,12 @@ class Player extends ObjectDynamic {
         super(x, y); // Call the parent class constructor
         this.frame = frame; // Assign the single frame to this object
         this.score = 0; // Initialize score
-        
+
         this.pixelSize = window.pixelSize;
     }
 
-    // Method to draw the current frame
     draw(ctx) {
-        for (let row = 0; row < this.frame.length; row++) {
-            for (let col = 0; col < this.frame[row].length; col++) {
-                const pixel = this.frame[row][col];
-                const color = pixel === '1' ? spriteConfig.playerColor : 'transparent'; // Color green for '1' and transparent for '0'
-                ctx.fillStyle = color;
-                ctx.fillRect((col * this.pixelSize) + this.x, (row * this.pixelSize) + this.y, this.pixelSize, this.pixelSize);
-            }
-        }
+        CanvasUtils.spriteDrawer(ctx, this.x, this.y, this.frame, this.pixelSize);
     }
 }
 

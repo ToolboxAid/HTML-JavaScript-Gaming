@@ -42,7 +42,7 @@ const shields = [];
 
 // Function to initialize enemy positions
 function initializeEnemies() {
-    let enemyWidth = 40;
+    // let enemyWidth = 40;
     // let enemyHeight = 40;
     let enemyHeightSpacing = 33;
     let enemyHeightPosition = 150;
@@ -120,8 +120,7 @@ function animate(deltaTime) {
 }
 
 function drawScore(ctx) {
-    CanvasUtils.drawLine(ctx, 0, 740, 800, 740, 5, "red");
-
+    CanvasUtils.drawLine(ctx, 0, 740, 800, 740, 5, "pink");
 
     ctx.font = '30px Arial';
     ctx.fillStyle = 'white';
@@ -129,10 +128,9 @@ function drawScore(ctx) {
     ctx.fillText('HI-SCORE', 300, 50);
     ctx.fillText('SCORE<2>', 550, 50);
 
-    ctx.fillText('SCORE<1>', 50, 80);
-    ctx.fillText('HI-SCORE', 300, 80);
-    ctx.fillText('SCORE<2>', 550, 80);
-
+    ctx.fillText('     0010', 50, 80);
+    ctx.fillText('     9990', 300, 80);
+    ctx.fillText('     0000', 550, 80);
 }
 
 // Game loop function

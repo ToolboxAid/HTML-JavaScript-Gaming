@@ -43,6 +43,48 @@ class CanvasUtils {
         ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
+    // Method to draw the current frame
+    static spriteDrawer(ctx, x, y, frame, pixelSize, spriteColor = '') {
+        // Define a color map for letters
+        const colorMap = {
+            'R': 'red',
+            'O': 'orange',
+            'Y': 'yellow',
+            'G': 'green',
+            'B': 'blue',
+            'I': 'indigo',
+            'V': 'violet',
+            '0': 'transparent', // '0' is transparent
+            '': 'transparent', // empty is transparent
+            '1': 'white', // default color for '1'
+            'b': 'black',
+            'w': 'white',
+            'P': 'pink',
+            'C': 'cyan',
+            'M': 'magenta',
+            'L': 'lightgray',
+            'D': 'darkgray',
+            'A': 'aqua',
+            'S': 'silver',
+            'N': 'navy',
+            'K': 'khaki',
+        };
+
+        for (let row = 0; row < frame.length; row++) {
+            for (let col = 0; col < frame[row].length; col++) {
+                const pixel = frame[row][col];
+                let color = colorMap[pixel] || 'transparent'; // Default to transparent if pixel is not in colorMap
+
+                // Replace white with spriteColor if present
+                if (pixel === '1' && spriteColor) {
+                    color = spriteColor; // Use sprite color instead of white
+                }
+                ctx.fillStyle = color;
+                ctx.fillRect((col * pixelSize) + x, (row * pixelSize) + y, pixelSize, pixelSize);
+            }
+        }
+    }
+
     static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
         ctx.lineWidth = lineWidth;
         ctx.strokeStyle = strokeColor;
@@ -94,7 +136,7 @@ class CanvasUtils {
             // Set up the text properties using global variables or default values
             ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
             ctx.font = window.fullscreenFont || '40px Arial';; // Set font size and family
-            
+
             // Reset text alignment to default (start)
             ctx.textAlign = 'start';
 
@@ -103,12 +145,12 @@ class CanvasUtils {
             const textWidth = ctx.measureText(text).width; // Get the width of the text in pixels
             const textX = (window.gameAreaWidth - textWidth) / 2; // Center the text horizontally
             const textY = window.gameAreaHeight * (4 / 5); // Position the text vertically
-      
+
             // Draw the message on the canvas
             ctx.fillText(text, textX, textY); // Display the text at the calculated position
         }
     }
-    
+
     // Animate function moved into the CanvasUtils class
     static async animate(time) {
         var canvas = document.getElementById('gameArea');
@@ -119,16 +161,16 @@ class CanvasUtils {
             this.lastTimestamp = time;
 
             //try {
-                if (!this.gameModule) {
-                    this.gameModule = await import(`${window.canvasPath}/game.js`);
-                }
-                CanvasUtils.initCanvas(ctx);
-                this.clickFullscreen(ctx);
-                this.gameModule.gameLoop(ctx, deltaTime); // Call gameLoop from the imported module
-                CanvasUtils.drawBorder(ctx);
-                if (window.fpsShow) {
-                    CanvasUtils.drawFPS(ctx);
-                }
+            if (!this.gameModule) {
+                this.gameModule = await import(`${window.canvasPath}/game.js`);
+            }
+            CanvasUtils.initCanvas(ctx);
+            this.clickFullscreen(ctx);
+            this.gameModule.gameLoop(ctx, deltaTime); // Call gameLoop from the imported module
+            CanvasUtils.drawBorder(ctx);
+            if (window.fpsShow) {
+                CanvasUtils.drawFPS(ctx);
+            }
             // } catch (error) {
             //     console.error(`Failed to load game module: ${error}`);
             // }
