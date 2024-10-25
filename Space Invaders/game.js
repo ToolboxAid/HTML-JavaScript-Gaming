@@ -42,41 +42,49 @@ const shields = [];
 
 // Function to initialize enemy positions
 function initializeEnemies() {
-    const octopusWidth = 40;
-    const octopusHeight = 40;
-    const squidWidth = 40;
-    const squidHeight = 40;
-    const crabWidth = 40;
-    const crabHeight = 40;
+    let enemyWidth = 40;
+    // let enemyHeight = 40;
+    let enemyHeightSpacing = 33;
+    let enemyHeightPosition = 150;
 
-    // Create 2 rows of octopuses
-    for (let row = 0; row < enemyRows; row++) {
+    const octopusWidth = 40;
+    const squidWidth = 40;
+    const crabWidth = 40;
+
+    // Create 1 rows of octopuses
+    for (let row = 0; row < enemyRows - 1; row++) {
         for (let col = 0; col < enemyCols; col++) {
-            const x = 40 + col * (octopusWidth + enemySpacing);
-            const y = 100 + row * (octopusHeight + enemySpacing);
+            const x = 47 + col * (octopusWidth + enemySpacing);
+            const y = enemyHeightPosition ;//+ (row * (octopusHeight + enemySpacing));
             const enemyOctopus = new EnemyOctopus(x, y);
             enemyOctopuses.push(enemyOctopus);
         }
+        enemyHeightPosition += enemyHeightSpacing;
+        console.log("1-" + enemyHeightPosition);
     }
 
     // Create 2 rows of squids
     for (let row = 0; row < enemyRows; row++) {
         for (let col = 0; col < enemyCols; col++) {
-            const x = 40 + col * (squidWidth + enemySpacing);
-            const y = 190 + row * (squidHeight + enemySpacing);
+            const x = 42 + col * (squidWidth + enemySpacing);
+            const y = enemyHeightPosition;// + (row * (squidHeight + enemySpacing));
             const enemySquid = new EnemySquid(x, y);
             enemySquids.push(enemySquid);
         }
+        enemyHeightPosition += enemyHeightSpacing;
+        console.log("2-" + enemyHeightPosition);
     }
 
     // Create 2 rows of crabs
     for (let row = 0; row < enemyRows; row++) {
         for (let col = 0; col < enemyCols; col++) {
             const x = 40 + col * (crabWidth + enemySpacing);
-            const y = 280 + row * (crabHeight + enemySpacing);
+            const y = enemyHeightPosition;// + (row * (crabHeight + enemySpacing));
             const enemyCrab = new EnemyCrab(x, y);
             enemyCrabs.push(enemyCrab);
         }
+        enemyHeightPosition += enemyHeightSpacing;
+        console.log("3-" + enemyHeightPosition);
     }
 }
 
@@ -90,7 +98,7 @@ function initializeShields() {
 }
 
 // Initialize other enemies
-const enemyShip = new EnemyShip(100, 50);
+const enemyShip = new EnemyShip(100, 105);
 
 let elapsedTime = 0;
 let intervalTime = 0.5;
@@ -111,16 +119,35 @@ function animate(deltaTime) {
     }
 }
 
+function drawScore(ctx) {
+    CanvasUtils.drawLine(ctx, 0, 740, 800, 740, 5, "red");
+
+
+    ctx.font = '30px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText('SCORE<1>', 50, 50);
+    ctx.fillText('HI-SCORE', 300, 50);
+    ctx.fillText('SCORE<2>', 550, 50);
+
+    ctx.fillText('SCORE<1>', 50, 80);
+    ctx.fillText('HI-SCORE', 300, 80);
+    ctx.fillText('SCORE<2>', 550, 80);
+
+}
+
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
     animate(deltaTime);
+
+    // Draw scores & bottom Line
+    drawScore(ctx);
 
     // Draw player
     player1.draw(ctx);
     lives1.draw(ctx);
 
     // Draw shields
-    shields.forEach(shield => {shield.draw(ctx); });
+    shields.forEach(shield => { shield.draw(ctx); });
 
     // Draw all enemies
     enemyOctopuses.forEach(enemyOctopus => enemyOctopus.draw(ctx));
