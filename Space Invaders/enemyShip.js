@@ -1,4 +1,10 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/24/2024
+// enemyShip.js
+
 import Enemy from './Enemy.js';
+import { spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 
 const frames= [
     [
@@ -28,6 +34,12 @@ class EnemyShip extends Enemy {
         super(x,y,frames);
         this.value = 30;
     }
+
+    
+    draw(ctx){
+        super.draw(ctx, spriteConfig.shipColor);
+    }
+
 }
 
 export default EnemyShip;

@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
+// 10/24/2024
 // global.js
-// 10/16/2024
 
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
@@ -16,12 +16,25 @@ export const canvasConfig = {
     fullscreenColor: 'yellow',
 };
 
+export const spriteConfig = {
+    pixelSize: 3,
+
+    shipColor: 'red',
+    crabColor: 'orange',
+    octopusColor: 'yellow',
+    squidColor: '#ff6666',
+    playerColor: 'pink',
+    sheildColor: '#44FF44',
+};
+
 // non type="module" in HTML
 // Set global canvas variables for ../scripts
 window.gameAreaWidth = canvasConfig.width;
 window.gameAreaHeight = canvasConfig.height;
 window.gameScaleWindow = canvasConfig.scale;
 window.backgroundColor = canvasConfig.backgroundColor;
+
+window.pixelSize = spriteConfig.pixelSize
 
 window.fullscreenText = canvasConfig.fullscreenText; 
 window.fullscreenFont = canvasConfig.fullscreenFont;

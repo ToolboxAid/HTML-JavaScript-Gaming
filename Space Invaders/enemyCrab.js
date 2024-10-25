@@ -1,6 +1,12 @@
-import Enemy from './Enemy.js';
+// ToolboxAid.com
+// David Quesenberry
+// 10/24/2024
+// enemyCrab.js
 
-const frames= [
+import Enemy from './Enemy.js';
+import { spriteConfig } from './global.js';
+
+const frames = [
     [
         "000011110000",
         "011111111110",
@@ -25,8 +31,12 @@ const frames= [
 
 class EnemyCrab extends Enemy {
     constructor(x, y) {
-        super(x,y,frames);
+        super(x, y, frames);
         this.value = 30;
+    }
+
+    draw(ctx) {
+        super.draw(ctx, spriteConfig.crabColor);
     }
 }
 

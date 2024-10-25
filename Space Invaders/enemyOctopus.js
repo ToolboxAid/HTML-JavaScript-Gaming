@@ -1,4 +1,10 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/24/2024
+// enemyOctopus.js
+
 import Enemy from './Enemy.js';
+import { spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 
 const frames= [
     [
@@ -27,6 +33,10 @@ class EnemyOctopus extends Enemy {
     constructor(x, y) {
         super(x,y,frames);
         this.value = 20;
+    }
+    
+    draw(ctx){
+        super.draw(ctx, spriteConfig.octopusColor);
     }
 }
 

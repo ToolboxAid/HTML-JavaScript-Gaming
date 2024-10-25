@@ -1,10 +1,18 @@
 // https://www.youtube.com/watch?v=MU4psw3ccUI
 
+// ToolboxAid.com
+// David Quesenberry
+// 10/24/2024
+// game.js
+
 import { canvasConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
 
-import EnemySquid from './EnemySquid.js';
+import Player from './player.js';
+import Sheild from './sheild.js';
+
+import EnemySquid from './enemySquid.js';
 import EnemyCrab from './enemyCrab.js';
 import EnemyOctopus from './enemyOctopus.js';
 import EnemyShip from './enemyShip.js';
@@ -14,6 +22,9 @@ import EnemyBullet3 from './enemyBullet3.js';
 
 
 // Initialize enemies
+const player1 = new Player(300,300);
+const sheild = new Sheild(400,400);
+
 const enemyCrab = new EnemyCrab(100, 100);
 const enemyOctopus = new EnemyOctopus(150, 100);
 const enemySquid = new EnemySquid(200, 100);
@@ -50,6 +61,9 @@ export function gameLoop(ctx, deltaTime) {
     // Update game state with deltaTime
     animate(deltaTime); // Handles animation and frame updates
 
+    // Draw player
+    player1.draw(ctx);
+    sheild.draw(ctx);
     // Draw enemies on the canvas
     enemyCrab.draw(ctx);
     enemyOctopus.draw(ctx);

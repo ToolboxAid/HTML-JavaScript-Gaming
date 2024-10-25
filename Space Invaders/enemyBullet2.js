@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/24/2024
+// enemyBullet2.js
+
 import Enemy from './Enemy.js';
 
 const frames = [
