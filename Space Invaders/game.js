@@ -10,6 +10,10 @@ import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen co
 
 import Player from './player.js';
 import Sheild from './sheild.js';
+import Laser from './laser.js';
+
+import KeyboardInput from '../scripts/keyboard.js';
+const keyboardInput = new KeyboardInput();
 
 import Enemy from './Enemy.js';
 import EnemySquid from './enemySquid.js';
@@ -95,32 +99,36 @@ function initializeShields() {
     }
 }
 
-// function enimiesAnimationRequired() {
-//     // Calculate the number of remaining enemies
-//     const remainingEnemies = enemies.length;
-//     const initialEnemyCount = enemyRows * enemyColumns;
 
-//     let AnimationRequired = false;
+/*
 
-//     // Set the dynamic animation interval based on remaining enemies
-//     // Start at 60 frames (1 second) and go down to 1 frame (1/100 of a second)
-//     const maxInterval = 60;  // 1 second at 60 FPS
-//     const minInterval = 2;   // 2 frame, representing 2/60 second
 
-//     // Update animation based on dynamic animation interval
-//     if (frameCount % dynamicAnimationInterval === 0) {
+export function gameLoop(ctx, deltaTime) {
+    // Call update to manage key states
+    keyboardInput.update();
 
-//       AnimationRequired = true;
+    // Retrieve keys from the KeyboardInput instance
+    const keysJustPressed = keyboardInput.getKeyJustPressed();
+    const keysPressed = keyboardInput.getKeyPressed();
+    const keysReleased = keyboardInput.getKeyReleased();
 
-//       dynamicAnimationInterval = Math.max(minInterval, Math.floor(maxInterval * (remainingEnemies / initialEnemyCount)));
-//       console.log(`FrameCount: ${frameCount}, dynamicAnimationInterval: ${dynamicAnimationInterval}`);
-//     }
+    // Clear the canvas before drawing
+    ctx.clearRect(0, 0, canvasConfig.width, canvasConfig.height);
+    
+    // Draw a rectangle as a background element
+    ctx.fillStyle = '#333333'; // Color for the rectangle
+    ctx.fillRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100); // Draw a rectangle
 
-//     // Log the interval for debugging purposes (optional)
-//     // console.log(`Remaining Enemies: ${remainingEnemies}, Dynamic Animation Interval: ${dynamicAnimationInterval}`);
-//     return AnimationRequired;
-//   }
-
+    // Example: Change the rectangle color based on key presses
+    if (keysPressed.includes('KeyR')) {
+        ctx.fillStyle = 'red'; // Change color to red if 'R' is pressed
+        ctx.fillRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100); // Draw red rectangle
+    } 
+    if (keysPressed.includes('KeyG')) {
+        ctx.fillStyle = 'green'; // Change color to green if 'G' is pressed
+        ctx.fillRect((canvasConfig.width / 2), (canvasConfig.height / 2) - 50, 100, 100); // Draw green rectangle
+    }
+*/
 function setEnemyDropTimer() {
     const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
     const time = 750; //1500; // 1.5 seconds
@@ -208,15 +216,40 @@ function drawBottomBar(ctx) {
     CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
 }
 
+
+let laser = null;
+
+
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
+    keyboardInput.update();
+    let laserPoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
+    if (!laser) {
+        if (laserPoint) {
+            console.log(laserPoint);
+            laser = new Laser(laserPoint.x, laserPoint.y);
+        }
+    }
     animate(deltaTime);
 
     // Draw scores
     drawScore(ctx);
 
     updateEnimies();
+
+    if (laser) {
+        let outBounds = laser.update();
+        if (outBounds) {
+            // Delete the laser object
+            laser = null;
+        }
+    }
+
+
+    if (laser) {
+        laser.draw(ctx);
+    }
     // Draw player
     player1.draw(ctx);
     drawBottomBar(ctx);
