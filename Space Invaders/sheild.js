@@ -36,13 +36,12 @@ class Shield extends ObjectStatic {
     constructor(x, y) {
         super(x, y);
         this.frame = Shield.frame;
-        //this.pixelSize = Math.ceil(window.pixelSize)+1;
         this.pixelSize = window.pixelSize;
     }
 
     // Method to draw the shield
     draw(ctx) {
-        CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize);
+        CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize, spriteConfig.sheildColor);
     }
 }
 

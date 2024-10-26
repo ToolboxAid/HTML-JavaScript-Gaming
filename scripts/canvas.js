@@ -114,18 +114,17 @@ class CanvasUtils {
                     color = spriteColor; // Use sprite color instead of white
                 }
                 ctx.fillStyle = color;
-                let roundedpixelSize = pixelSize; //Math.floor(pixelSize);
-                ctx.fillRect((col * pixelSize) + x, (row * pixelSize) + y, roundedpixelSize, roundedpixelSize);
-
-
+                let roundX = Math.ceil((col * pixelSize) + x);
+                let roundY = Math.ceil((row * pixelSize) + y);
+                let roundpixelSize = Math.ceil(pixelSize); //pixelSize + 1; //Math.floor(pixelSize);//Math.ceil(pixelSize);
+                ctx.fillRect(roundX, roundY, roundpixelSize, roundpixelSize);
             }
         }
 
         if (true) {
             h = pixelSize * frame.length;
             w = pixelSize * frame[0].length;
-            CanvasUtils.drawBounds(ctx, x, y, w, h);
-            //console.log(pixelSize);
+            CanvasUtils.drawBounds(ctx, x, y, w, h,spriteColor,2);
         }
     }
 

@@ -40,14 +40,13 @@ class Enemy extends ObjectStatic {
     // Method to draw the current frame
     draw(ctx, spriteColor = "#888888") {
         const frame = this.frames[this.currentFrameIndex];
-        CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize);
-        CanvasUtils.drawBounds(ctx, this.x, this.y, this.width, this.height, 'yellow', 3);
+        CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize,spriteColor);
     }
 
     static changeDirections(){
         Enemy.move*=-1;
     }
-    
+
     // Method to switch to the next frame
     nextFrame() {
         let atBounds = false;
@@ -56,14 +55,14 @@ class Enemy extends ObjectStatic {
 
         if (Enemy.move>0){
             // check right
-            if (this.x + this.width +10 > window.gameAreaWidth) {
+            if (this.x + (this.width * 1.25) > window.gameAreaWidth) {
                 if (!atBounds) {
                     atBounds = true;
                 }
             }
         }else {
             // check left
-            if (this.x < 10) {
+            if (this.x < (this.width * 0.25) ) {
                 if (!atBounds) {
                     atBounds = true;
                 }

@@ -123,7 +123,7 @@ function initializeShields() {
 
 function setEnemyDropTimer() {
     const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
-    const time = 1500; // 1.5 seconds
+    const time = 750; //1500; // 1.5 seconds
     const dropIncr = time / initialEnemyCount;
     let dropDelay = 0;
 
@@ -144,8 +144,6 @@ function setEnemyDropTimer() {
         dropDelay += dropIncr;
     });
 }
-
-
 
 let elapsedTime = 0;
 let intervalTime = 0.5;
@@ -170,7 +168,6 @@ function animate(deltaTime) {
             Enemy.changeDirections();
             setEnemyDropTimer();
         }
-        //enemyShip.nextFrame();
     }
 }
 
@@ -209,9 +206,8 @@ function drawLives(ctx, player) {
 function drawBottomBar(ctx) {
     let bottom = 880;
     CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
-
-
 }
+
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
