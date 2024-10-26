@@ -9,7 +9,6 @@ import CanvasUtils from '../scripts/canvas.js';
 
 class Enemy extends ObjectStatic {
     static move = 10;
-    static flipFlop = false;
     constructor(x, y, frames) {
         const width = window.pixelSize * frames[0][0].length;;
         const height = window.pixelSize * frames[0].length;
@@ -45,16 +44,34 @@ class Enemy extends ObjectStatic {
         CanvasUtils.drawBounds(ctx, this.x, this.y, this.width, this.height, 'yellow', 3);
     }
 
+    static changeDirections(){
+        Enemy.move*=-1;
+    }
+    
     // Method to switch to the next frame
     nextFrame() {
+        let atBounds = false;
         this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
-//        this.x += Enemy.move;
-        if (this.x < 10 || this.x + this.width +10 > window.gameAreaWidth) {
-            this.setDropTimer();
-            if (Enemy.flipFlop == false) {
-                Enemy.flipFlop = true;
+        this.x += Enemy.move;
+
+        if (Enemy.move>0){
+            // check right
+            if (this.x + this.width +10 > window.gameAreaWidth) {
+                if (!atBounds) {
+                    atBounds = true;
+                }
+            }
+        }else {
+            // check left
+            if (this.x < 10) {
+                if (!atBounds) {
+                    atBounds = true;
+                }
             }
         }
+
+       // console.log("atbounds: "+ atBounds);
+        return atBounds;
     }
 }
 

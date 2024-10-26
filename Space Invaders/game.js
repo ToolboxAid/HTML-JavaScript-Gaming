@@ -11,6 +11,7 @@ import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen co
 import Player from './player.js';
 import Sheild from './sheild.js';
 
+import Enemy from './Enemy.js';
 import EnemySquid from './enemySquid.js';
 import EnemyCrab from './enemyCrab.js';
 import EnemyOctopus from './enemyOctopus.js';
@@ -37,6 +38,9 @@ const shieldYPosition = 700; //(canvasConfig.height * 5) / 6; // 4/5 down the ca
 const shieldWidth = 100; // Adjust as needed
 const shieldSpacing = (canvasConfig.width - numShields * shieldWidth) / (numShields + 1); // Even spacing between shields
 const shields = [];
+
+// Initialize other enemies
+const enemyShip = new EnemyShip(295, 145);
 
 // Function to initialize enemy positions
 function initializeEnemies() {
@@ -80,7 +84,6 @@ function initializeEnemies() {
         }
         enemyHeightPosition -= enemyHeightSpacing;
     }
-    setEnemyDropTimer();
 }
 
 // Function to initialize shield positions
@@ -122,7 +125,7 @@ function setEnemyDropTimer() {
     const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
     const time = 1500; // 1.5 seconds
     const dropIncr = time / initialEnemyCount;
-    let dropDelay = 1000;
+    let dropDelay = 0;
 
     // Calculate the number of remaining enemies
     const remainingEnemies = enemyOctopuses.length + enemySquids.length + enemyCrabs.length;
@@ -140,15 +143,9 @@ function setEnemyDropTimer() {
         enemyOctopus.setDropTimer(dropDelay);
         dropDelay += dropIncr;
     });
-
-
-
-    //setEnemyDropTimer();
-    console.log("dropDelay: " + dropDelay);
 }
 
-// Initialize other enemies
-const enemyShip = new EnemyShip(295, 145);
+
 
 let elapsedTime = 0;
 let intervalTime = 0.5;
@@ -160,12 +157,20 @@ function animate(deltaTime) {
     if (elapsedTime >= intervalTime) {
         elapsedTime = 0;
 
-        // Update frames for all enemies
-        enemySquids.forEach(enemySquid => enemySquid.nextFrame());
-        enemyOctopuses.forEach(enemyOctopus => enemyOctopus.nextFrame());
-        enemyCrabs.forEach(enemyCrab => enemyCrab.nextFrame());
-
-        enemyShip.nextFrame();
+        let dropEnimy = false;
+        // Update frames and set drop timer for all enemies
+        [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
+            let atBounds = enemy.nextFrame();
+            if (!dropEnimy && atBounds) {
+                dropEnimy = true;
+            }
+        });
+        if (dropEnimy) {
+            //enemy.setDropTimer();
+            Enemy.changeDirections();
+            setEnemyDropTimer();
+        }
+        //enemyShip.nextFrame();
     }
 }
 
