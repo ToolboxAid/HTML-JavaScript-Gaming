@@ -24,6 +24,10 @@ class Enemy extends ObjectStatic {
         this.dropTime = 0;
     }
 
+    static changeDirections(){
+        Enemy.move*=-1;
+    }
+    
     setDropTimer(dropDelay) {
         this.doDrop = true;
         this.dropTime = Date.now() + dropDelay;
@@ -43,10 +47,6 @@ class Enemy extends ObjectStatic {
         CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize,spriteColor);
     }
 
-    static changeDirections(){
-        Enemy.move*=-1;
-    }
-
     // Method to switch to the next frame
     nextFrame() {
         let atBounds = false;
@@ -55,7 +55,7 @@ class Enemy extends ObjectStatic {
 
         if (Enemy.move>0){
             // check right
-            if (this.x + (this.width * 1.25) > window.gameAreaWidth) {
+            if (this.x + (this.width * 1.45) > window.gameAreaWidth) {
                 if (!atBounds) {
                     atBounds = true;
                 }
@@ -68,8 +68,6 @@ class Enemy extends ObjectStatic {
                 }
             }
         }
-
-       // console.log("atbounds: "+ atBounds);
         return atBounds;
     }
 }
