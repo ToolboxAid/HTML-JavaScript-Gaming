@@ -31,8 +31,8 @@ class EnemySquid extends Enemy {
         ]
     ];
 
-    constructor(x, y, dropDelay) {
-        super(x, y, EnemySquid.frames, dropDelay);
+    constructor(x, y) {
+        super(x, y, EnemySquid.frames);
         this.value = 10;
     }
 

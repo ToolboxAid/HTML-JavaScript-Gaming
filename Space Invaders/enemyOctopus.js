@@ -31,8 +31,8 @@ class EnemyOctopus extends Enemy {
         ]
     ];
 
-    constructor(x, y, dropDelay) {
-        super(x, y, EnemyOctopus.frames, dropDelay);
+    constructor(x, y) {
+        super(x, y, EnemyOctopus.frames);
         this.value = 20;
     }
 

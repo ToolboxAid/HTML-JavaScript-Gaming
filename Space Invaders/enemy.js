@@ -10,7 +10,7 @@ import CanvasUtils from '../scripts/canvas.js';
 class Enemy extends ObjectStatic {
     static move = 10;
     static flipFlop = false;
-    constructor(x, y, frames, dropDelay = -1) {
+    constructor(x, y, frames) {
         const width = window.pixelSize * frames[0][0].length;;
         const height = window.pixelSize * frames[0].length;
 
@@ -21,13 +21,13 @@ class Enemy extends ObjectStatic {
 
         // disable move enemy to next line.
         this.doDrop = false;
-        this.dropDelay = dropDelay; // dropDelay should now default to 5000 if not provided
+        this.dropDelay = -1;
         this.dropTime = 0;
     }
 
-    setDropTimer() {
+    setDropTimer(dropDelay) {
         this.doDrop = true;
-        this.dropTime = Date.now() + this.dropDelay;
+        this.dropTime = Date.now() + dropDelay;
     }
 
     update() {

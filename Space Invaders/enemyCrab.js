@@ -31,8 +31,8 @@ class EnemyCrab extends Enemy {
         ]
     ];
     
-    constructor(x, y, dropDelay) {
-        super(x, y, EnemyCrab.frames, dropDelay);
+    constructor(x, y) {
+        super(x, y, EnemyCrab.frames);
         this.value = 30;
     }
 

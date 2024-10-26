@@ -47,18 +47,13 @@ function initializeEnemies() {
     const squidWidth = 40;
     const crabWidth = 40;
 
-    let dropDelay = 1000;
-    const dropIncr = 1500 / 55;
-
     // Create 2 rows of crabs
     for (let row = 0; row < enemyRows; row++) {
         for (let col = 0; col < enemyCols; col++) {
             const x = 40 + col * (crabWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemyCrab = new EnemyCrab(x, y, dropDelay);
-            enemyCrab.setDropTimer(); // Initialize drop timer
+            const enemyCrab = new EnemyCrab(x, y);
             enemyCrabs.push(enemyCrab);
-            dropDelay += dropIncr;
         }
         enemyHeightPosition -= enemyHeightSpacing;
     }
@@ -68,10 +63,8 @@ function initializeEnemies() {
         for (let col = 0; col < enemyCols; col++) {
             const x = 42 + col * (squidWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemySquid = new EnemySquid(x, y, dropDelay);
-            enemySquid.setDropTimer(); // Initialize drop timer
+            const enemySquid = new EnemySquid(x, y);
             enemySquids.push(enemySquid);
-            dropDelay += dropIncr;
         }
         enemyHeightPosition -= enemyHeightSpacing;
     }
@@ -82,15 +75,12 @@ function initializeEnemies() {
         for (let col = 0; col < enemyCols; col++) {
             const x = 47 + col * (octopusWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemyOctopus = new EnemyOctopus(x, y, dropDelay);
-            enemyOctopus.setDropTimer(); // Initialize drop timer
+            const enemyOctopus = new EnemyOctopus(x, y);
             enemyOctopuses.push(enemyOctopus);
-            dropDelay += dropIncr; // Increase delay for each instance
         }
         enemyHeightPosition -= enemyHeightSpacing;
     }
-
-    console.log("dropDelay: " + dropDelay);
+    setEnemyDropTimer();
 }
 
 // Function to initialize shield positions
@@ -102,16 +92,59 @@ function initializeShields() {
     }
 }
 
+// function enimiesAnimationRequired() {
+//     // Calculate the number of remaining enemies
+//     const remainingEnemies = enemies.length;
+//     const initialEnemyCount = enemyRows * enemyColumns;
+
+//     let AnimationRequired = false;
+
+//     // Set the dynamic animation interval based on remaining enemies
+//     // Start at 60 frames (1 second) and go down to 1 frame (1/100 of a second)
+//     const maxInterval = 60;  // 1 second at 60 FPS
+//     const minInterval = 2;   // 2 frame, representing 2/60 second
+
+//     // Update animation based on dynamic animation interval
+//     if (frameCount % dynamicAnimationInterval === 0) {
+
+//       AnimationRequired = true;
+
+//       dynamicAnimationInterval = Math.max(minInterval, Math.floor(maxInterval * (remainingEnemies / initialEnemyCount)));
+//       console.log(`FrameCount: ${frameCount}, dynamicAnimationInterval: ${dynamicAnimationInterval}`);
+//     }
+
+//     // Log the interval for debugging purposes (optional)
+//     // console.log(`Remaining Enemies: ${remainingEnemies}, Dynamic Animation Interval: ${dynamicAnimationInterval}`);
+//     return AnimationRequired;
+//   }
+
 function setEnemyDropTimer() {
-    enemyOctopuses.forEach(enemyOctopus => {
-        enemyOctopus.setDropTimer();
+    const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
+    const time = 1500; // 1.5 seconds
+    const dropIncr = time / initialEnemyCount;
+    let dropDelay = 1000;
+
+    // Calculate the number of remaining enemies
+    const remainingEnemies = enemyOctopuses.length + enemySquids.length + enemyCrabs.length;
+
+    let adj = remainingEnemies / initialEnemyCount;
+    enemyCrabs.forEach(enemyCrab => {
+        enemyCrab.setDropTimer(dropDelay);
+        dropDelay += dropIncr;
     });
     enemySquids.forEach(enemySquid => {
-        enemySquid.setDropTimer();
+        enemySquid.setDropTimer(dropDelay);
+        dropDelay += dropIncr;
     });
-    enemyCrabs.forEach(enemyCrab => {
-        enemyCrab.setDropTimer();
+    enemyOctopuses.forEach(enemyOctopus => {
+        enemyOctopus.setDropTimer(dropDelay);
+        dropDelay += dropIncr;
     });
+
+
+
+    //setEnemyDropTimer();
+    console.log("dropDelay: " + dropDelay);
 }
 
 // Initialize other enemies
@@ -142,14 +175,14 @@ function updateEnimies() {
     enemyCrabs.forEach(enemyCrab => enemyCrab.update());
 }
 
-let tmpScore =0;
+let tmpScore = 0;
 function drawScore(ctx, player) {
     tmpScore++;
     // ctx.font = '30px Arial';
     // ctx.fillStyle = 'white';
-    let color='yellow';
+    let color = 'yellow';
     const pixelSize = 5;
-    CanvasUtils.drawText(ctx, 50, 30,  "SCORE-1", pixelSize, 'red');
+    CanvasUtils.drawText(ctx, 50, 30, "SCORE-1", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", pixelSize, 'red');
     let number = 0;
