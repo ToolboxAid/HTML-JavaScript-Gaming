@@ -45,31 +45,37 @@ class CanvasUtils {
         ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
-    static drawNumber(ctx, x, y, number, fontSize, color = 'white', leadingCount = 5, leadingChar = '0') {
+    static drawNumber(ctx, x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         const numberStr = number.toString();
         const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
         const text = leadingChar.repeat(leadingLength) + numberStr; // Create text with leading characters
-        
+
         // Ensure text length is exactly 5
         const formattedText = text.padStart(leadingCount, leadingChar).slice(-leadingCount);
-        this.drawText(ctx, x, y, formattedText, fontSize, color); // Call drawText with formatted text
+        this.drawText(ctx, x, y, formattedText, pixelSize, color);
     }
 
-    static drawText(ctx, x, y, text, fontSize, color = 'white') {
-        const pixelSize = fontSize / 5; // Adjust pixel size based on font size, assuming 5x6 grid
-
+    static drawText(ctx, x, y, text, pixelSize, color = 'white') {
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
             const frame = Font5x6.font5x6[char];
 
             if (frame) {
-                CanvasUtil.spriteDrawer(ctx, x + i * (fontSize + 2), y, frame, pixelSize, color);
+                // Assuming each character has a fixed width, you can adjust the space here
+                const charWidth = frame[0].length; // Get the width from the frame
+                CanvasUtil.drawSprite(ctx, x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
             }
         }
     }
 
+
+    static drawBounds(ctx, x, y, w, h, color = 'red') {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = color;
+        ctx.strokeRect(x, y, w, h);
+    }
     // Method to draw the current frame
-    static spriteDrawer(ctx, x, y, frame, pixelSize, spriteColor = '') {
+    static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '') {
         // Define a color map for letters
         const colorMap = {
             'R': 'red',
@@ -95,6 +101,8 @@ class CanvasUtils {
             'K': 'khaki',
         };
 
+        let w = 0;
+        let h = 0;
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
@@ -105,8 +113,18 @@ class CanvasUtils {
                     color = spriteColor; // Use sprite color instead of white
                 }
                 ctx.fillStyle = color;
-                ctx.fillRect((col * pixelSize) + x, (row * pixelSize) + y, pixelSize +1, pixelSize+1);
+                let roundedpixelSize = pixelSize; //Math.floor(pixelSize);
+                ctx.fillRect((col * pixelSize) + x, (row * pixelSize) + y, roundedpixelSize, roundedpixelSize);
+
+
             }
+        }
+
+        if (true) {
+            h = pixelSize * frame.length;
+            w = pixelSize * frame[0].length;
+            CanvasUtils.drawBounds(ctx, x, y, w, h);
+            //console.log(pixelSize);
         }
     }
 

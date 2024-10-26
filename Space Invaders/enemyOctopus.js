@@ -4,9 +4,7 @@
 // enemyOctopus.js
 
 import Enemy from './Enemy.js';
-import { spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
-
-
+import { spriteConfig } from './global.js';
 
 class EnemyOctopus extends Enemy {
 

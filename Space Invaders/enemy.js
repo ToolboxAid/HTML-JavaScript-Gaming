@@ -5,6 +5,8 @@
 
 import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
 
+import CanvasUtils from '../scripts/canvas.js';
+
 class Enemy extends ObjectStatic {
     constructor(x, y, frames, dropDelay = -1) { // Default value added
         super(x, y);
@@ -12,6 +14,7 @@ class Enemy extends ObjectStatic {
         this.width = 40;
         this.frames = frames;
         this.currentFrameIndex = 0;
+//        this.pixelSize = Math.ceil(window.pixelSize);
         this.pixelSize = window.pixelSize;
 
         // move enemy to next line.
@@ -39,14 +42,7 @@ class Enemy extends ObjectStatic {
         //const sheildColor = spriteConfig.sheildColor;
 
         const frame = this.frames[this.currentFrameIndex];
-        for (let row = 0; row < frame.length; row++) {
-            for (let col = 0; col < frame[row].length; col++) {
-                const pixel = frame[row][col];
-                const color = pixel === '1' ? spriteColor : 'transparent'; // Color green for '1' and transparent for '0'
-                ctx.fillStyle = color;
-                ctx.fillRect((col * this.pixelSize) + this.x, (row * this.pixelSize) + this.y, this.pixelSize, this.pixelSize);
-            }
-        }
+        CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize);
     }
 
     // Method to switch to the next frame

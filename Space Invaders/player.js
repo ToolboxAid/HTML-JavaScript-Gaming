@@ -27,15 +27,16 @@ static frame = [
 ];
 
     constructor(x, y) {
-        super(x, y); // Call the parent class constructor
-        this.score = 0; // Initialize score
-        this.lives = 5;
-
-        this.pixelSize = 3; //spriteConfig.pixelSize; //window.pixelSize;
+        super(x, y);
+        this.score = 0;
+        this.lives = 3;
+        this.pixelSize = 3.0;
+        // this.pixelSize = Math.ceil(window.pixelSize);
+        // spriteConfig.pixelSize; //window.pixelSize;
     }
 
     draw(ctx) {
-        CanvasUtils.spriteDrawer(ctx, this.x, this.y, Player.frame, this.pixelSize);
+        CanvasUtils.drawSprite(ctx, this.x, this.y, Player.frame, this.pixelSize);
     }
 }
 

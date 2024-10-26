@@ -148,16 +148,16 @@ function drawScore(ctx, player) {
     // ctx.font = '30px Arial';
     // ctx.fillStyle = 'white';
     let color='yellow';
-    const fontSize = 23;
-    CanvasUtils.drawText(ctx, 50, 30,  "SCORE-1", fontSize, 'red');
-    CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", fontSize, 'red');
-    CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", fontSize, 'red');
+    const pixelSize = 5;
+    CanvasUtils.drawText(ctx, 50, 30,  "SCORE-1", pixelSize, 'red');
+    CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", pixelSize, 'red');
+    CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", pixelSize, 'red');
     let number = 0;
-    CanvasUtils.drawNumber(ctx, 50, 80, tmpScore, fontSize, color, 5, '-');
+    CanvasUtils.drawNumber(ctx, 50, 80, tmpScore, pixelSize, color, 5, '-');
     number += 999;
-    CanvasUtils.drawNumber(ctx, 300, 80, 0, fontSize, color, 5, '0');
+    CanvasUtils.drawNumber(ctx, 300, 80, 0, pixelSize, color, 5, '0');
     number += 999;
-    CanvasUtils.drawNumber(ctx, 550, 80, number, fontSize, color, 5, '-');
+    CanvasUtils.drawNumber(ctx, 550, 80, number, pixelSize, color, 5, '-');
 }
 
 function drawLives(ctx, player) {
@@ -165,7 +165,7 @@ function drawLives(ctx, player) {
     ctx.fillStyle = 'white';
     let dwn = 930;
     ctx.fillText(player.lives, 25, dwn);
-    CanvasUtils.spriteDrawer(ctx, 65, dwn - 30, Player.frame, 3);
+    CanvasUtils.drawSprite(ctx, 65, dwn - 30, Player.frame, 3);
 }
 
 function drawBottomBar(ctx) {
