@@ -69,11 +69,12 @@ class CanvasUtils {
     }
 
 
-    static drawBounds(ctx, x, y, w, h, color = 'red') {
-        ctx.lineWidth = 1;
+    static drawBounds(ctx, x, y, w, h, color = 'red', lineSize = 1) {
+        ctx.lineWidth = lineSize;
         ctx.strokeStyle = color;
         ctx.strokeRect(x, y, w, h);
     }
+    
     // Method to draw the current frame
     static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '') {
         // Define a color map for letters

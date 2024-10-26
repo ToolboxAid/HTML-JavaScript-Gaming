@@ -8,21 +8,22 @@ import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is ca
 import CanvasUtils from '../scripts/canvas.js';
 
 class Enemy extends ObjectStatic {
-    constructor(x, y, frames, dropDelay = -1) { // Default value added
-        super(x, y);
-        this.height = 40;
-        this.width = 40;
+    static move = 10;
+    static flipFlop = false;
+    constructor(x, y, frames, dropDelay = -1) {
+        const width = window.pixelSize * frames[0][0].length;;
+        const height = window.pixelSize * frames[0].length;
+
+        super(x, y, width, height);
+        this.pixelSize = window.pixelSize;
         this.frames = frames;
         this.currentFrameIndex = 0;
-//        this.pixelSize = Math.ceil(window.pixelSize);
-        this.pixelSize = window.pixelSize;
 
-        // move enemy to next line.
+        // disable move enemy to next line.
         this.doDrop = false;
         this.dropDelay = dropDelay; // dropDelay should now default to 5000 if not provided
         this.dropTime = 0;
     }
-
 
     setDropTimer() {
         this.doDrop = true;
@@ -39,15 +40,21 @@ class Enemy extends ObjectStatic {
 
     // Method to draw the current frame
     draw(ctx, spriteColor = "#888888") {
-        //const sheildColor = spriteConfig.sheildColor;
-
         const frame = this.frames[this.currentFrameIndex];
         CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize);
+        CanvasUtils.drawBounds(ctx, this.x, this.y, this.width, this.height, 'yellow', 3);
     }
 
     // Method to switch to the next frame
     nextFrame() {
         this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
+//        this.x += Enemy.move;
+        if (this.x < 10 || this.x + this.width +10 > window.gameAreaWidth) {
+            this.setDropTimer();
+            if (Enemy.flipFlop == false) {
+                Enemy.flipFlop = true;
+            }
+        }
     }
 }
 

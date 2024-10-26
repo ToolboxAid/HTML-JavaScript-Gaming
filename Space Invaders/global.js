@@ -21,7 +21,6 @@ export const canvasConfig = {
 
 export const spriteConfig = {
     pixelSize: 3.5,
-
     shipColor: 'red',
     crabColor: 'orange',
     octopusColor: 'yellow',
