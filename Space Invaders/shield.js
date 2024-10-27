@@ -34,9 +34,7 @@ class Shield extends ObjectStatic {
 
     constructor(x, y) {
         let dimensions = CanvasUtils.spriteWidthHeight(Shield.frame, window.pixelSize);
-        console.log(dimensions);
-
-        super(x, y, 2, 10);
+        super(x, y, dimensions.width, dimensions.height);
         this.frame = Shield.frame.map(row => [...row]); // Clone to avoid modifying the static frame directly
         this.pixelSize = window.pixelSize;
     }

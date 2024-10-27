@@ -11,6 +11,7 @@ import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen co
 import Player from './player.js';
 import Shield from './shield.js';
 import Laser from './laser.js';
+let laser = null;
 
 import KeyboardInput from '../scripts/keyboard.js';
 const keyboardInput = new KeyboardInput();
@@ -46,6 +47,22 @@ const shields = [];
 
 // Initialize other enemies
 const enemyShip = new EnemyShip(295, 145);
+
+const initialSpeed = 0.0;
+const finalSpeed = 7;
+const initialEnemies = 55;
+function calculateSpeed(remainingEnemies) {
+    // Calculate the slope with positive change
+    const speedChangePerEnemy = (finalSpeed - initialSpeed) / (initialEnemies - 1);
+
+    // Calculate the current speed
+    const speed = initialSpeed + (speedChangePerEnemy * (initialEnemies - remainingEnemies));
+
+    // Ensure speed does not go above the final speed
+    return Math.min(speed, finalSpeed);
+}
+
+
 
 // Function to initialize enemy positions
 function initializeEnemies() {
@@ -100,35 +117,6 @@ function initializeShields() {
     }
 }
 
-/*
-
-
-export function gameLoop(ctx, deltaTime) {
-    // Call update to manage key states
-    keyboardInput.update();
-
-    // Retrieve keys from the KeyboardInput instance
-    const keysJustPressed = keyboardInput.getKeyJustPressed();
-    const keysPressed = keyboardInput.getKeyPressed();
-    const keysReleased = keyboardInput.getKeyReleased();
-
-    // Clear the canvas before drawing
-    ctx.clearRect(0, 0, canvasConfig.width, canvasConfig.height);
-    
-    // Draw a rectangle as a background element
-    ctx.fillStyle = '#333333'; // Color for the rectangle
-    ctx.fillRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100); // Draw a rectangle
-
-    // Example: Change the rectangle color based on key presses
-    if (keysPressed.includes('KeyR')) {
-        ctx.fillStyle = 'red'; // Change color to red if 'R' is pressed
-        ctx.fillRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100); // Draw red rectangle
-    } 
-    if (keysPressed.includes('KeyG')) {
-        ctx.fillStyle = 'green'; // Change color to green if 'G' is pressed
-        ctx.fillRect((canvasConfig.width / 2), (canvasConfig.height / 2) - 50, 100, 100); // Draw green rectangle
-    }
-*/
 function setEnemyDropTimer() {
     const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
     const time = 750; //1500; // 1.5 seconds
@@ -153,14 +141,27 @@ function setEnemyDropTimer() {
     });
 }
 
-let elapsedTime = 0;
-let intervalTime = 0.5;
-// Function to animate and update frames every 0.4 seconds
-function animate(deltaTime) {
-    elapsedTime += deltaTime;
+// Function to animate and update frames, start every 0.4 seconds 
+const maxInterval = 60;  // 1 second at 60 FPS
+const minInterval = 2;   // 2 frame, representing 2/60 second
 
-    if (elapsedTime >= intervalTime) {
-        elapsedTime = 0;
+let frameCount = 0;
+let initialEnemyCount = 55;
+let dynamicAnimationInterval = initialEnemyCount;
+function animate(deltaTime) {
+
+    const remainingEnemies = enemySquids.length + enemyOctopuses.length + enemyCrabs.length;
+    frameCount++;
+    dynamicAnimationInterval = Math.max(minInterval, Math.floor(maxInterval * (remainingEnemies / initialEnemyCount)));
+    if (frameCount % dynamicAnimationInterval === 0) {
+
+        //const speedMultiplier = (initialEnemyCount - remainingEnemies) / (initialEnemyCount - 1);
+        //const speed = Math.max(0, Math.min(2, speedMultiplier)) * 5; // Ensure the value stays within 0 and 2
+        const speed = calculateSpeed(remainingEnemies);
+        //      console.log(speedMultiplier + " " + speed );
+        Enemy.setSpeed(speed);
+
+        //console.log(`FrameCount: ${frameCount}, dynamicAnimationInterval: ${dynamicAnimationInterval}`);
 
         let dropEnimy = false;
         // Update frames and set drop timer for all enemies
@@ -171,17 +172,16 @@ function animate(deltaTime) {
             }
         });
         if (dropEnimy) {
-            //enemy.setDropTimer();
             Enemy.changeDirections();
             setEnemyDropTimer();
         }
     }
 }
 
-function updateEnimies() {
-    enemySquids.forEach(enemySquid => enemySquid.update());
-    enemyOctopuses.forEach(enemyOctopus => enemyOctopus.update());
-    enemyCrabs.forEach(enemyCrab => enemyCrab.update());
+function updateEnimies(deltaTime) {
+    enemySquids.forEach(enemySquid => enemySquid.update(deltaTime));
+    enemyOctopuses.forEach(enemyOctopus => enemyOctopus.update(deltaTime));
+    enemyCrabs.forEach(enemyCrab => enemyCrab.update(deltaTime));
 }
 
 let tmpScore = 0;
@@ -212,7 +212,7 @@ function drawBottomBar(ctx) {
     CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
 }
 
-function checkLaser() {
+function checkLaserColliision() {
     let hitDetected = false; // Flag to track if a hit occurred
 
     // Check for collisions and remove hit enemies
@@ -222,7 +222,7 @@ function checkLaser() {
             if (!hitDetected) {
                 if (laser.checkObjectCollision(enemy)) {
                     player1.score += enemy.value;
-                    enemyArray.splice(i, 1); // Remove the enemy at index i
+                    enemy.setHit();
                     laser = null; // Delete the laser
                     hitDetected = true; // Set the flag to indicate a hit
                     break; // Exit the current `for` loop
@@ -233,12 +233,23 @@ function checkLaser() {
     return hitDetected;
 }
 
-
-
-let laser = null;
+function removeDeadEnemy() {
+    // Check for dead enemy and remove
+    [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
+        for (let i = enemyArray.length - 1; i >= 0; i--) {
+            const enemy = enemyArray[i];
+            if (enemy.isDead()) {
+                enemyArray.splice(i, 1); // Remove the enemy at index i
+                break; // Exit the current `for` loop
+            }
+        }
+    });
+}
 
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
+
+    removeDeadEnemy();
 
     keyboardInput.update();
     let laserPoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
@@ -252,14 +263,9 @@ export function gameLoop(ctx, deltaTime) {
         // Loop over each shield and apply overlay with enemyBomb
 
         shields.forEach(shield => {
-
-            console.log("shield: x "+ shield.x +" y "+ shield.y +" w "+ shield.width +" h "+ shield.height);
-            console.log("laser: x "+ laser.x +" y "+ laser.y +" w "+ laser.width +" h "+ laser.height);
-
-            if (laser.checkObjectCollision(shield)){
-                console.log("sheild laser")
+            if (laser.checkObjectCollision(shield)) {
+                console.log("Shield was hit at position:", shield.x, shield.y);
             }
-                
 
             const hit = shield.applyOverlay(laser);
             if (hit) {
@@ -273,7 +279,7 @@ export function gameLoop(ctx, deltaTime) {
     // Draw scores
     drawScore(ctx);
 
-    updateEnimies();
+    updateEnimies(deltaTime);
 
     if (laser) {
         let outBounds = laser.update();
@@ -284,7 +290,7 @@ export function gameLoop(ctx, deltaTime) {
     }
 
     if (laser) {
-        let hitEnimy = checkLaser();
+        let hitEnimy = checkLaserColliision();
     }
 
     if (laser) {
@@ -312,3 +318,18 @@ initializeShields();
 // Canvas needs to know the current directory to game.js for dynamic imports
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 window.canvasPath = currentDir;
+
+//-------------------------------------------------------------------------
+// tests below this line
+//-------------------------------------------------------------------------
+
+if (true) {
+    // Test for speed calc
+    for (let enemies = 55; enemies >= 1; enemies--) {
+        let timer = calculateSpeed(enemies);
+        console.log("Enemies: " + enemies + ", Speed: " + timer.toFixed(4));
+    }
+
+
+
+}
