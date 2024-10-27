@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 10/24/2024
-// enemyBullet1.js
+// enemyBomb1.js
 
 import Enemy from './Enemy.js';
 
@@ -46,11 +46,11 @@ const frames= [
   
 ];
 
-class EnemyBullet1 extends Enemy {
+class EnemyBomb1 extends Enemy {
     constructor(x, y) {
         super(x,y,frames);
         this.value = 30;
     }
 }
 
-export default EnemyBullet1;
+export default EnemyBomb1;

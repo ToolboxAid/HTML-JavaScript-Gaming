@@ -20,9 +20,9 @@ import EnemySquid from './enemySquid.js';
 import EnemyCrab from './enemyCrab.js';
 import EnemyOctopus from './enemyOctopus.js';
 import EnemyShip from './enemyShip.js';
-import EnemyBullet1 from './enemyBullet1.js';
-import EnemyBullet2 from './enemyBullet2.js';
-import EnemyBullet3 from './enemyBullet3.js';
+import EnemyBomb1 from './enemyBomb1.js';
+import EnemyBomb2 from './enemyBomb2.js';
+import EnemyBomb3 from './enemyBomb3.js';
 
 // Initialize player
 const player1 = new Player(100, 790);
