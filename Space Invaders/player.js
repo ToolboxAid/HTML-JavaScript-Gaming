@@ -54,8 +54,6 @@ class Player extends ObjectDynamic {
         }
 
         if (keyJustPressed.includes('Space')) {
-            console.log('Space');
-
             let laserPoint = {x: this.x + (this.width/2), y: this.y};
             return laserPoint;
         }

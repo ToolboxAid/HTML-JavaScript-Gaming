@@ -99,7 +99,6 @@ function initializeShields() {
     }
 }
 
-
 /*
 
 
@@ -155,7 +154,6 @@ function setEnemyDropTimer() {
 
 let elapsedTime = 0;
 let intervalTime = 0.5;
-
 // Function to animate and update frames every 0.4 seconds
 function animate(deltaTime) {
     elapsedTime += deltaTime;
@@ -195,11 +193,9 @@ function drawScore(ctx, player) {
     CanvasUtils.drawText(ctx, 50, 30, "SCORE-1", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", pixelSize, 'red');
-    let number = 0;
-    CanvasUtils.drawNumber(ctx, 50, 80, tmpScore, pixelSize, color, 5, '-');
-    number += 999;
+    CanvasUtils.drawNumber(ctx, 50, 80, player1.score, pixelSize, color, 5, '-');
     CanvasUtils.drawNumber(ctx, 300, 80, 0, pixelSize, color, 5, '0');
-    number += 999;
+    let number = 0;
     CanvasUtils.drawNumber(ctx, 550, 80, number, pixelSize, color, 5, '-');
 }
 
@@ -216,9 +212,33 @@ function drawBottomBar(ctx) {
     CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
 }
 
+function checkLaser() {
+    let hitDetected = false; // Flag to track if a hit occurred
+
+    // Check for collisions and remove hit enemies
+    [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
+        //if (hitDetected) return true; // Exit the outer loop if a hit was detected
+
+
+        for (let i = enemyArray.length - 1; i >= 0; i--) {
+            const enemy = enemyArray[i];
+            if (!hitDetected) {
+                if (laser.checkObjectCollision(enemy)) {
+                    player1.score += enemy.value;
+                    enemyArray.splice(i, 1); // Remove the enemy at index i
+                    laser = null; // Delete the laser
+                    hitDetected = true; // Set the flag to indicate a hit
+                    break; // Exit the current `for` loop
+                }
+            }
+        }
+    });
+    return hitDetected;
+}
+
+
 
 let laser = null;
-
 
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
@@ -227,10 +247,11 @@ export function gameLoop(ctx, deltaTime) {
     let laserPoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     if (!laser) {
         if (laserPoint) {
-            console.log(laserPoint);
+            //console.log(laserPoint);
             laser = new Laser(laserPoint.x, laserPoint.y);
         }
     }
+
     animate(deltaTime);
 
     // Draw scores
@@ -246,7 +267,11 @@ export function gameLoop(ctx, deltaTime) {
         }
     }
 
+    if (laser) {
+        let hitEnimy = checkLaser();
+    }
 
+    // checkObjectCollision
     if (laser) {
         laser.draw(ctx);
     }

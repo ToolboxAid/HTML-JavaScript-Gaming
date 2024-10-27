@@ -33,7 +33,7 @@ class EnemyOctopus extends Enemy {
 
     constructor(x, y) {
         super(x, y, EnemyOctopus.frames);
-        this.value = 20;
+        this.value = 30;
     }
 
     draw(ctx) {

@@ -33,7 +33,7 @@ class EnemySquid extends Enemy {
 
     constructor(x, y) {
         super(x, y, EnemySquid.frames);
-        this.value = 10;
+        this.value = 20;
     }
 
     draw(ctx) {
