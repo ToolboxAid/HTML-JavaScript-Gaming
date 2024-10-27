@@ -74,7 +74,7 @@ class CanvasUtils {
         ctx.strokeStyle = color;
         ctx.strokeRect(x, y, w, h);
     }
-    
+
     // Method to draw the current frame
     static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '') {
         // Define a color map for letters
@@ -122,10 +122,15 @@ class CanvasUtils {
         }
 
         if (true) {
-            h = pixelSize * frame.length;
-            w = pixelSize * frame[0].length;
-            CanvasUtils.drawBounds(ctx, x, y, w, h,spriteColor,2);
+            let dimensions = CanvasUtil.spriteWidthHeight(frame, pixelSize);
+            CanvasUtils.drawBounds(ctx, x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
+    }
+
+    static spriteWidthHeight(frame, pixelSize) {
+        let w = Math.ceil(pixelSize * frame[0].length);
+        let h = Math.ceil(pixelSize * frame.length);
+        return { width: w, height: h };
     }
 
     static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {

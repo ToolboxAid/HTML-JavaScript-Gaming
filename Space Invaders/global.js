@@ -26,7 +26,7 @@ export const spriteConfig = {
     octopusColor: 'yellow',
     squidColor: '#ff6666',
     playerColor: 'pink',
-    sheildColor: '#44FF44',
+    shieldColor: '#44FF44',
 };
 
 // non type="module" in HTML

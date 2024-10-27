@@ -9,7 +9,7 @@ import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas o
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
 
 import Player from './player.js';
-import Sheild from './sheild.js';
+import Shield from './shield.js';
 import Laser from './laser.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
@@ -25,7 +25,8 @@ import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 
 // Initialize player
-const player1 = new Player(100, 790);
+const player1 = new Player(100, 810);// was 790
+const player2 = new Player(100, 810);
 
 // Enemy configurations for octopus, squid, and crab
 const enemyRows = 2;
@@ -94,7 +95,7 @@ function initializeEnemies() {
 function initializeShields() {
     for (let i = 0; i < numShields; i++) {
         const x = shieldSpacing + i * (shieldWidth + shieldSpacing);
-        const shield = new Sheild(x, shieldYPosition);
+        const shield = new Shield(x, shieldYPosition);
         shields.push(shield);
     }
 }
@@ -193,10 +194,9 @@ function drawScore(ctx, player) {
     CanvasUtils.drawText(ctx, 50, 30, "SCORE-1", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", pixelSize, 'red');
-    CanvasUtils.drawNumber(ctx, 50, 80, player1.score, pixelSize, color, 5, '-');
-    CanvasUtils.drawNumber(ctx, 300, 80, 0, pixelSize, color, 5, '0');
-    let number = 0;
-    CanvasUtils.drawNumber(ctx, 550, 80, number, pixelSize, color, 5, '-');
+    CanvasUtils.drawNumber(ctx, 50, 80, player1.score, pixelSize, color, 5, ' ');
+    CanvasUtils.drawNumber(ctx, 300, 80, 0, pixelSize, color, 5, ' ');
+    CanvasUtils.drawNumber(ctx, 550, 80, player2.score, pixelSize, color, 5, ' ');
 }
 
 function drawLives(ctx, player) {
@@ -217,9 +217,6 @@ function checkLaser() {
 
     // Check for collisions and remove hit enemies
     [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
-        //if (hitDetected) return true; // Exit the outer loop if a hit was detected
-
-
         for (let i = enemyArray.length - 1; i >= 0; i--) {
             const enemy = enemyArray[i];
             if (!hitDetected) {
@@ -251,6 +248,25 @@ export function gameLoop(ctx, deltaTime) {
             laser = new Laser(laserPoint.x, laserPoint.y);
         }
     }
+    if (laser) {
+        // Loop over each shield and apply overlay with enemyBomb
+
+        shields.forEach(shield => {
+
+            console.log("shield: x "+ shield.x +" y "+ shield.y +" w "+ shield.width +" h "+ shield.height);
+            console.log("laser: x "+ laser.x +" y "+ laser.y +" w "+ laser.width +" h "+ laser.height);
+
+            if (laser.checkObjectCollision(shield)){
+                console.log("sheild laser")
+            }
+                
+
+            const hit = shield.applyOverlay(laser);
+            if (hit) {
+                console.log("Shield was hit at position:", shield.x, shield.y);
+            }
+        });
+    }
 
     animate(deltaTime);
 
@@ -271,7 +287,6 @@ export function gameLoop(ctx, deltaTime) {
         let hitEnimy = checkLaser();
     }
 
-    // checkObjectCollision
     if (laser) {
         laser.draw(ctx);
     }

@@ -27,6 +27,7 @@ class Laser extends ObjectDynamic {
         super(x, y, 2, 2);
         this.score = 0;
         this.pixelSize = 3.0;
+        this.frame = Laser.frame;
     }
 
     draw(ctx) {
