@@ -22,13 +22,20 @@ class Laser extends ObjectDynamic {
         "1",
         "1",
     ];
-
+/*
     constructor(x, y) {
-        super(x, y, 1, 10);
+        console.log(x + " " + y);
+        const dimensions = CanvasUtils.spriteWidthHeight(Laser.frame[0], window.pixelSize);
+        super(x, y, dimensions.width, dimensions.height, -600, 0);
+        this.x = 22;
+        this.y = y;
         this.score = 0;
         this.pixelSize = 3.0;
         this.frame = Laser.frame;
-        this.velocity = 600;
+
+        console.log("abasd");
+        console.log(this);
+        console.log(this.x);
     }
 
     draw(ctx) {
@@ -36,16 +43,27 @@ class Laser extends ObjectDynamic {
     }
 
     update(deltaTime = 1) {
-        //console.log(deltaTime);
-        this.y -= this.velocity * deltaTime; // Update y position
+        super.update(deltaTime);
+        */
+    constructor(x, y) {
+        console.log(x + " " + y);
+        const dimensions = CanvasUtils.spriteWidthHeight(Laser.frame[0], window.pixelSize);
+        super(x, y, dimensions.width, dimensions.height, 0, -600);
+        this.score = 0;
+        this.pixelSize = 3.0;
+        this.frame = Laser.frame;
+        console.log(x + " " + y);
+        console.log(this);
+    }
 
-        // const speed = 11;
-        // let oldY = this.y;
-        // this.y -= speed;
+    draw(ctx) {
+        CanvasUtils.drawSprite(ctx, this.x, this.y, Laser.frame, this.pixelSize);
+    }
 
-        // console.log(oldY + " " + this.y);
-        console.log(this.y + " " + this.velocity + " " + deltaTime);
-        if (this.y <= 0) {
+    update(deltaTime = 1) {
+        super.update(deltaTime);
+
+        if (this.y <= 0 || this.y > 1000) {
             return true;
         }
         return false;
