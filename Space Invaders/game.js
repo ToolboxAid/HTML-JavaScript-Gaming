@@ -235,11 +235,11 @@ function checkLaserShieldCollision(){
     shields.forEach(shield => {
         const hit = laser.checkObjectCollision(shield, false);
         if (hit) {
-            let preX = laser.x;
-            laser.velocityY *=-1;
-            laser.y -= 30;
+            //let preX = laser.x;
+            //laser.velocityY *=-1;
+            //laser.y -= 30;
             //laser.x =preX;
-            console.log("Shield hit:", shield.x, shield.y, " Laser was hit Shield at position:", laser.x, laser.y, " X ", preX, laser.x);
+            console.log("Shield hit:", shield.x, shield.y, " Laser was hit Shield at position:", laser.x, laser.y);
             //shield.applyOverlay(laser); // Apply the overlay if a hit is detected
         }
     });
