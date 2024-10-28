@@ -233,7 +233,8 @@ function checkLaserEnemyCollision() {
 function checkLaserShieldCollision(){
     let hit = false;
     shields.forEach(shield => {
-        const hit = laser.checkObjectCollision(shield, false);
+        //const hit = laser.checkObjectCollision(shield, false);
+        const hit = laser.isFullyInside(shield);
         if (hit) {
             //let preX = laser.x;
             //laser.velocityY *=-1;

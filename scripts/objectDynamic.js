@@ -98,7 +98,22 @@ class ObjectDynamic extends ObjectStatic {
         return boundariesHit;
     }
 
-    static firstTime = false;
+    /**
+     * Checks if this object is fully contained within the specified container object.
+     * @param {Object} container - The container object with x, y, width, and height properties.
+     * @returns {boolean} - True if this object is fully inside the container, false otherwise.
+     */
+    isFullyInside(container) {
+        return (
+            this.x >= container.x &&
+            this.y >= container.y &&
+            this.x + this.width <= container.x + container.width &&
+            this.y + this.height <= container.y + container.height
+        );
+    }
+
+
+//    static firstTime = false;
     checkObjectCollision(object, updatePosition = true) {
         // Check if the object is within the object's bounds
         if (
@@ -164,14 +179,14 @@ class ObjectDynamic extends ObjectStatic {
 
             }
 
-            if (object.constructor.name === "Shield") {
-                if (!ObjectDynamic.firstTime) {
-                    console.log("This object is of type Shield:");
-                    console.log(this);
-                    console.log(object);
-                    ObjectDynamic.firstTime = true;
-                }
-            }
+            // if (object.constructor.name === "Shield") {
+            //     if (!ObjectDynamic.firstTime) {
+            //         console.log("This object is of type Shield:");
+            //         console.log(this);
+            //         console.log(object);
+            //         ObjectDynamic.firstTime = true;
+            //     }
+            // }
 
             //console.log(`Collision detected on the ${collisionSide} side.`);
             return collisionSide; // Return the side of collision
