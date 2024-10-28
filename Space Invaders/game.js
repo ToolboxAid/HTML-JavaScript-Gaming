@@ -210,7 +210,7 @@ function drawBottomBar(ctx) {
     CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
 }
 
-function checkLaserColliision() {
+function checkLaserEnemyColliision() {
     let hitDetected = false; // Flag to track if a hit occurred
 
     // Check for collisions and remove hit enemies
@@ -265,16 +265,19 @@ export function gameLoop(ctx, deltaTime) {
             shields.forEach(shield => {
                 const hit = laser.checkObjectCollision(shield);
                 if (hit) {
-                    //console.log("Shield was hit at position:", shield.x, shield.y);
+                    console.log("Shield was hit at position:", shield.x, shield.y);
                     //shield.applyOverlay(laser); // Apply the overlay if a hit is detected
                 }
             });
         }
     }
     // if (laser) {
-    //     let hitEnimy = checkLaserColliision();
+    //     let hitEnimy = checkLaserEnemyColliision();
     // }    
 
+    if (laser) {
+        let hitEnimy = checkLaserEnemyColliision();
+    }
     animate(deltaTime);
 
     // Draw scores
@@ -290,9 +293,6 @@ export function gameLoop(ctx, deltaTime) {
     //     }
     // }
 
-    if (laser) {
-        let hitEnimy = checkLaserColliision();
-    }
 
     if (laser) {
         laser.draw(ctx);

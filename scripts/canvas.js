@@ -126,7 +126,15 @@ class CanvasUtils {
         }
     }
 
-    static spriteWidthHeight(frame, pixelSize) {
+    static spriteWidthHeight(frame, pixelSize, debug = false) {
+
+            if (debug) {
+                console.log(pixelSize);
+                console.log(frame);
+                console.log(frame[0].length);
+                console.log(frame.length);
+            }
+
         let w = Math.ceil(pixelSize * frame[0].length);
         let h = Math.ceil(pixelSize * frame.length);
         return { width: w, height: h };
