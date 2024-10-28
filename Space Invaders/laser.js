@@ -24,7 +24,7 @@ class Laser extends ObjectDynamic {
     ];
 
     constructor(x, y) {
-        const dimensions = CanvasUtils.spriteWidthHeight(Laser.frame, window.pixelSize, true);
+        const dimensions = CanvasUtils.spriteWidthHeight(Laser.frame, window.pixelSize);
         super(x, y, dimensions.width, dimensions.height, 0, -600);
         this.score = 0;
         this.pixelSize = 3.0;

@@ -99,7 +99,7 @@ class ObjectDynamic extends ObjectStatic {
     }
 
     static firstTime = false;
-    checkObjectCollision(object) {
+    checkObjectCollision(object, updatePosition = true) {
         // Check if the object is within the object's bounds
         if (
             this.x + this.width >= object.x &&
@@ -130,23 +130,38 @@ class ObjectDynamic extends ObjectStatic {
             // Find the smallest overlap to determine the collision side
             const smallestOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
 
-            // Determine which side was hit based on the smallest overlap
-            if (smallestOverlap === overlapLeft) {
-                collisionSide = 'left';
-                this.x = object.x - this.width; // Push 'this' out of the object
-                this.velocityX *= -1; // Reverse X velocity for left collision
-            } else if (smallestOverlap === overlapRight) {
-                collisionSide = 'right';
-                this.x = object.x + object.width; // Push 'this' out of the object
-                this.velocityX *= -1; // Reverse X velocity for right collision
-            } else if (smallestOverlap === overlapTop) {
-                collisionSide = 'top';
-                this.y = object.y - this.height; // Push 'this' out of the object
-                this.velocityY *= -1; // Reverse Y velocity for top collision
-            } else if (smallestOverlap === overlapBottom) {
-                collisionSide = 'bottom';
-                this.y = object.y + object.height; // Push 'this' out of the object
-                this.velocityY *= -1; // Reverse Y velocity for bottom collision
+            if (updatePosition) {
+                // Determine which side was hit based on the smallest overlap
+                if (smallestOverlap === overlapLeft) {
+                    collisionSide = 'left';
+                    this.x = object.x - this.width; // Push 'this' out of the object
+                    this.velocityX *= -1; // Reverse X velocity for left collision
+                } else if (smallestOverlap === overlapRight) {
+                    collisionSide = 'right';
+                    this.x = object.x + object.width; // Push 'this' out of the object
+                    this.velocityX *= -1; // Reverse X velocity for right collision
+                } else if (smallestOverlap === overlapTop) {
+                    collisionSide = 'top';
+                    this.y = object.y - this.height; // Push 'this' out of the object
+                    this.velocityY *= -1; // Reverse Y velocity for top collision
+                } else if (smallestOverlap === overlapBottom) {
+                    collisionSide = 'bottom';
+                    this.y = object.y + object.height; // Push 'this' out of the object
+                    this.velocityY *= -1; // Reverse Y velocity for bottom collision
+                }
+            } else {
+                // Determine which side was hit based on the smallest overlap
+                // no update to position or velocity
+                if (smallestOverlap === overlapLeft) {
+                    collisionSide = 'left';
+                } else if (smallestOverlap === overlapRight) {
+                    collisionSide = 'right';
+                } else if (smallestOverlap === overlapTop) {
+                    collisionSide = 'top';
+                } else if (smallestOverlap === overlapBottom) {
+                    collisionSide = 'bottom';
+                }
+
             }
 
             if (object.constructor.name === "Shield") {

@@ -210,7 +210,7 @@ function drawBottomBar(ctx) {
     CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
 }
 
-function checkLaserEnemyColliision() {
+function checkLaserEnemyCollision() {
     let hitDetected = false; // Flag to track if a hit occurred
 
     // Check for collisions and remove hit enemies
@@ -229,6 +229,21 @@ function checkLaserEnemyColliision() {
         }
     });
     return hitDetected;
+}
+function checkLaserShieldCollision(){
+    let hit = false;
+    shields.forEach(shield => {
+        const hit = laser.checkObjectCollision(shield, false);
+        if (hit) {
+            let preX = laser.x;
+            laser.velocityY *=-1;
+            laser.y -= 30;
+            //laser.x =preX;
+            console.log("Shield hit:", shield.x, shield.y, " Laser was hit Shield at position:", laser.x, laser.y, " X ", preX, laser.x);
+            //shield.applyOverlay(laser); // Apply the overlay if a hit is detected
+        }
+    });
+    return hit;
 }
 
 function removeDeadEnemy() {
@@ -250,34 +265,21 @@ export function gameLoop(ctx, deltaTime) {
     removeDeadEnemy();
 
     keyboardInput.update();
-    let laserPoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
-
+    let laserFirePoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     if (!laser) {
-        if (laserPoint) {
-            laser = new Laser(laserPoint.x, laserPoint.y);
+        if (laserFirePoint) {
+            laser = new Laser(laserFirePoint.x, laserFirePoint.y);
         }
-    }
-
-    if (laser) {
+    } else { //} if (laser) {
         if (laser.update(deltaTime)) { // Update laser position
             laser = null; //laser out of bounds, delete it
         } else {
-            shields.forEach(shield => {
-                const hit = laser.checkObjectCollision(shield);
-                if (hit) {
-                    console.log("Shield was hit at position:", shield.x, shield.y);
-                    //shield.applyOverlay(laser); // Apply the overlay if a hit is detected
-                }
-            });
+            let hit1 = checkLaserShieldCollision();
+            //console.log(hit1);
+
         }
     }
-    // if (laser) {
-    //     let hitEnimy = checkLaserEnemyColliision();
-    // }    
 
-    if (laser) {
-        let hitEnimy = checkLaserEnemyColliision();
-    }
     animate(deltaTime);
 
     // Draw scores
@@ -285,14 +287,9 @@ export function gameLoop(ctx, deltaTime) {
 
     updateEnimies(deltaTime);
 
-    // if (laser) {
-    //     let outBounds = laser.update();
-    //     if (outBounds) {
-    //         // Delete the laser object
-    //         laser = null;
-    //     }
-    // }
-
+    if (laser) {
+        let hitEnimy = checkLaserEnemyCollision();
+    }    
 
     if (laser) {
         laser.draw(ctx);
