@@ -61,7 +61,7 @@ class ObjectStatic {
      * @param {string|null} [borderColor=null] - The border color of the object.
      * @param {number} [borderWidth=0] - The width of the border.
      */
-    draw(ctx, fillColor = 'yellow', borderColor = null, borderWidth = 0) {
+    draw(ctx, fillColor = 'gray', borderColor = null, borderWidth = 0) {
         ctx.fillStyle = fillColor;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 

@@ -68,7 +68,6 @@ class CanvasUtils {
         }
     }
 
-
     static drawBounds(ctx, x, y, w, h, color = 'red', lineSize = 1) {
         ctx.lineWidth = lineSize;
         ctx.strokeStyle = color;
@@ -121,7 +120,7 @@ class CanvasUtils {
             }
         }
 
-        if (true) {
+        if (false) {
             let dimensions = CanvasUtil.spriteWidthHeight(frame, pixelSize);
             CanvasUtils.drawBounds(ctx, x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
@@ -183,7 +182,7 @@ class CanvasUtils {
         if (!Fullscreen.isFullScreen) {
             // Set up the text properties using global variables or default values
             ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
-            ctx.font = window.fullscreenFont || '40px Arial';; // Set font size and family
+            ctx.font = window.fullscreenFont || '40px Arial'; // Set font size and family
 
             // Reset text alignment to default (start)
             ctx.textAlign = 'start';
@@ -204,9 +203,9 @@ class CanvasUtils {
 
     // Animate function moved into the CanvasUtils class
     static async animate(time) {
-        var canvas = document.getElementById('gameArea');
+        const canvas = document.getElementById('gameArea');
         if (canvas.getContext) {
-            var ctx = canvas.getContext('2d');
+            const  ctx = canvas.getContext('2d');
 
             const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
             this.lastTimestamp = time;

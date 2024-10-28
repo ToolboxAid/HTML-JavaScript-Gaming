@@ -9,7 +9,7 @@ import CanvasUtils from '../scripts/canvas.js';
 
 
 class Enemy extends ObjectStatic {
-    static direction =1;
+    static direction = 1;
     static move = 10;
     static speed = 0;
 
@@ -60,10 +60,8 @@ class Enemy extends ObjectStatic {
     ];
 
     constructor(x, y, frames) {
-        const width = window.pixelSize * frames[0][0].length;;
-        const height = window.pixelSize * frames[0].length;
-
-        super(x, y, width, height);
+        const dimensions = CanvasUtils.spriteWidthHeight(frames[0], window.pixelSize);
+        super(x, y, dimensions.width, dimensions.height);
         this.state = Enemy.Status.ALIVE;
         this.pixelSize = window.pixelSize;
         this.frames = frames;
@@ -81,9 +79,9 @@ class Enemy extends ObjectStatic {
         Enemy.direction *= -1;
     }
 
-    static setSpeed(speed){
+    static setSpeed(speed) {
         Enemy.speed = speed;
- //       console.log("Enemy.speed " + Enemy.speed + " " + speed);
+        //       console.log("Enemy.speed " + Enemy.speed + " " + speed);
     }
 
     setDropTimer(dropDelay) {
@@ -93,7 +91,7 @@ class Enemy extends ObjectStatic {
 
     static deadModulue = 4;
     static frameCount = 3;
-    update(delta) {
+    update(delta = 1) {
         if (Date.now() >= this.dropTime && this.doDrop) {
             this.y += this.height;  // Drop by the height value
             this.dropTime = Date.now() + this.dropDelay; // Set the next drop time
@@ -116,6 +114,11 @@ class Enemy extends ObjectStatic {
 
     // Method to draw the current frame
     draw(ctx, spriteColor = "#888888") {
+        if (!this.frames || this.frames.length === 0) {
+            console.warn("No frames available for drawing");
+            return;
+        }
+
         const frame = this.frames[this.currentFrameIndex];
 
         if (this.state === Enemy.Status.ALIVE) {
@@ -131,15 +134,25 @@ class Enemy extends ObjectStatic {
 
     // Method to switch to the next frame
     nextFrame() {
+        this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
+        this.x += (Enemy.move + Enemy.speed) * Enemy.direction;
+
+        const atRightBound = Enemy.direction > 0 && this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
+        const atLeftBound = Enemy.direction < 0 && this.x - Enemy.speed < (this.width * 0.25);
+
+        return atRightBound || atLeftBound;
+    }
+
+    nextFrame1() {
         let atBounds = false;
         this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
 
-        this.x += (Enemy.move + Enemy.speed)* Enemy.direction;
- //       console.log(Enemy.speed);
+        this.x += (Enemy.move + Enemy.speed) * Enemy.direction;
+        //       console.log(Enemy.speed);
 
         if (Enemy.direction > 0) {
             // check right
-            if (this.x + (this.width * 1.45)  + Enemy.speed > window.gameAreaWidth) {
+            if (this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth) {
                 if (!atBounds) {
                     atBounds = true;
                 }

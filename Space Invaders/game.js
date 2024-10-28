@@ -62,8 +62,6 @@ function calculateSpeed(remainingEnemies) {
     return Math.min(speed, finalSpeed);
 }
 
-
-
 // Function to initialize enemy positions
 function initializeEnemies() {
     let enemyHeightSpacing = 59;
@@ -253,26 +251,29 @@ export function gameLoop(ctx, deltaTime) {
 
     keyboardInput.update();
     let laserPoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
+
     if (!laser) {
         if (laserPoint) {
-            //console.log(laserPoint);
             laser = new Laser(laserPoint.x, laserPoint.y);
         }
     }
+
     if (laser) {
-        // Loop over each shield and apply overlay with enemyBomb
-
-        shields.forEach(shield => {
-            if (laser.checkObjectCollision(shield)) {
-                console.log("Shield was hit at position:", shield.x, shield.y);
-            }
-
-            const hit = shield.applyOverlay(laser);
-            if (hit) {
-                console.log("Shield was hit at position:", shield.x, shield.y);
-            }
-        });
+        if (laser.update(deltaTime)) { // Update laser position
+            laser = null; //laser out of bounds, delete it
+        } else {
+            shields.forEach(shield => {
+                const hit = laser.checkObjectCollision(shield);
+                if (hit) {
+                    //console.log("Shield was hit at position:", shield.x, shield.y);
+                    //shield.applyOverlay(laser); // Apply the overlay if a hit is detected
+                }
+            });
+        }
     }
+    // if (laser) {
+    //     let hitEnimy = checkLaserColliision();
+    // }    
 
     animate(deltaTime);
 
@@ -281,13 +282,13 @@ export function gameLoop(ctx, deltaTime) {
 
     updateEnimies(deltaTime);
 
-    if (laser) {
-        let outBounds = laser.update();
-        if (outBounds) {
-            // Delete the laser object
-            laser = null;
-        }
-    }
+    // if (laser) {
+    //     let outBounds = laser.update();
+    //     if (outBounds) {
+    //         // Delete the laser object
+    //         laser = null;
+    //     }
+    // }
 
     if (laser) {
         let hitEnimy = checkLaserColliision();
@@ -323,7 +324,7 @@ window.canvasPath = currentDir;
 // tests below this line
 //-------------------------------------------------------------------------
 
-if (true) {
+if (false) {
     // Test for speed calc
     for (let enemies = 55; enemies >= 1; enemies--) {
         let timer = calculateSpeed(enemies);

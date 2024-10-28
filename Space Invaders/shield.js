@@ -50,27 +50,27 @@ class Shield extends ObjectStatic {
     //    console.log("x "+ this.x +" y "+ this.y +" w "+ this.width +" h "+ this.height);
 
         let shieldHit = false;
-        const { x: offsetX, y: offsetY, frames } = enemyBomb;  // Extract frames and position
+        // const { x: offsetX, y: offsetY, frames } = enemyBomb;  // Extract frames and position
 
-        // Use the current frame of the enemy bomb
-        const overlayFrame = enemyBomb.frame;
+        // // Use the current frame of the enemy bomb
+        // const overlayFrame = enemyBomb.frame;
 
-        overlayFrame.forEach((row, rowIndex) => {
-            row.split("").forEach((cell, colIndex) => {
-                const targetY = rowIndex + offsetY - this.y;
-                const targetX = colIndex + offsetX - this.x;
+        // overlayFrame.forEach((row, rowIndex) => {
+        //     row.split("").forEach((cell, colIndex) => {
+        //         const targetY = rowIndex + offsetY - this.y;
+        //         const targetX = colIndex + offsetX - this.x;
 
-                // Check bounds to ensure overlay stays within the shield frame
-                if (
-                    targetY >= 0 && targetY < this.frame.length &&
-                    targetX >= 0 && targetX < this.frame[targetY].length &&
-                    cell === "1" && this.frame[targetY][targetX] === "1"
-                ) {
-                    this.frame[targetY][targetX] = "0"; // Replace overlapping '1's with '0's
-                    shieldHit = true;
-                }
-            });
-        });
+        //         // Check bounds to ensure overlay stays within the shield frame
+        //         if (
+        //             targetY >= 0 && targetY < this.frame.length &&
+        //             targetX >= 0 && targetX < this.frame[targetY].length &&
+        //             cell === "1" && this.frame[targetY][targetX] === "0"
+        //         ) {
+        //             this.frame[targetY][targetX] = "0"; // Replace overlapping '1's with '0's
+        //             shieldHit = true;
+        //         }
+        //     });
+        // });
         return shieldHit;
     }
 

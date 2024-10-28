@@ -24,7 +24,7 @@ class ObjectDynamic extends ObjectStatic {
         this.velocityY = velocityY; // Velocity in Y direction
     }
 
-    getFutureCenterPoint(deltaTime) {
+    getFutureCenterPoint(deltaTime = 1) {
         return { x: this.x + (this.width / 2) + (this.velocityX * deltaTime), y: this.y + (this.height / 2) + (this.velocityY * deltaTime) };
     }
 
@@ -98,6 +98,7 @@ class ObjectDynamic extends ObjectStatic {
         return boundariesHit;
     }
 
+    static firstTime = false;
     checkObjectCollision(object) {
         // Check if the object is within the object's bounds
         if (
@@ -107,28 +108,28 @@ class ObjectDynamic extends ObjectStatic {
             this.y <= object.y + object.height
         ) {
             let collisionSide;
-    
+
             // Define the edges of the object
             const leftEdge = object.x;
             const rightEdge = object.x + object.width;
             const topEdge = object.y;
             const bottomEdge = object.y + object.height;
-    
+
             // Define the puck's edges
             const puckLeftEdge = this.x;
             const puckRightEdge = this.x + this.width;
             const puckTopEdge = this.y;
             const puckBottomEdge = this.y + this.height;
-    
+
             // Determine the side of collision using line-based logic
             const overlapLeft = puckRightEdge - leftEdge;  // Distance puck has passed into the left edge
             const overlapRight = rightEdge - puckLeftEdge; // Distance puck has passed into the right edge
             const overlapTop = puckBottomEdge - topEdge;   // Distance puck has passed into the top edge
             const overlapBottom = bottomEdge - puckTopEdge;// Distance puck has passed into the bottom edge
-    
+
             // Find the smallest overlap to determine the collision side
             const smallestOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
-    
+
             // Determine which side was hit based on the smallest overlap
             if (smallestOverlap === overlapLeft) {
                 collisionSide = 'left';
@@ -147,14 +148,23 @@ class ObjectDynamic extends ObjectStatic {
                 this.y = object.y + object.height; // Push 'this' out of the object
                 this.velocityY *= -1; // Reverse Y velocity for bottom collision
             }
-    
+
+            if (object.constructor.name === "Shield") {
+                if (!ObjectDynamic.firstTime) {
+                    console.log("This object is of type Shield:");
+                    console.log(this);
+                    console.log(object);
+                    ObjectDynamic.firstTime = true;
+                }
+            }
+
             //console.log(`Collision detected on the ${collisionSide} side.`);
             return collisionSide; // Return the side of collision
         }
-    
+
         return null; // No collision
     }
-  
+
     getDirection() {
         /** Angle to direction
            - down to right 0 to <90
