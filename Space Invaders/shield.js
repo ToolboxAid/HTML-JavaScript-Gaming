@@ -44,35 +44,79 @@ class Shield extends ObjectStatic {
         CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize, spriteConfig.shieldColor);
     }
 
+
+
+
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
     applyOverlay(enemyBomb) {
-
-    //    console.log("x "+ this.x +" y "+ this.y +" w "+ this.width +" h "+ this.height);
-
         let shieldHit = false;
-        // const { x: offsetX, y: offsetY, frames } = enemyBomb;  // Extract frames and position
 
-        // // Use the current frame of the enemy bomb
-        // const overlayFrame = enemyBomb.frame;
+let offsetX = Math.round((enemyBomb.x - this.x)/window.pixelSize);
+let offsetY = Math.round((enemyBomb.y - this.y)/window.pixelSize);
 
-        // overlayFrame.forEach((row, rowIndex) => {
-        //     row.split("").forEach((cell, colIndex) => {
-        //         const targetY = rowIndex + offsetY - this.y;
-        //         const targetX = colIndex + offsetX - this.x;
+console.log("Offset ", offsetX, offsetY);
 
-        //         // Check bounds to ensure overlay stays within the shield frame
-        //         if (
-        //             targetY >= 0 && targetY < this.frame.length &&
-        //             targetX >= 0 && targetX < this.frame[targetY].length &&
-        //             cell === "1" && this.frame[targetY][targetX] === "0"
-        //         ) {
-        //             this.frame[targetY][targetX] = "0"; // Replace overlapping '1's with '0's
-        //             shieldHit = true;
-        //         }
-        //     });
-        // });
-        return shieldHit;
+let stg = "";
+    console.log(enemyBomb);
+        for (let i = 0; i < enemyBomb.frame.length; i++) {
+            stg = "";
+            for (let j = 0; j < enemyBomb.frame[i].length; j++) {
+                stg += enemyBomb.frame[i][j];
+            }
+            console.log(stg);
+        }  
+
+
+// frame.length gives you the number of rows (height).
+// frame[i].length gives you the number of columns (width) for the i-th row.
+console.log(enemyBomb);
+console.log("c Height:; "+this.frame.length + " r Width: " + this.frame[0].length)
+for (let c = 0; c < this.frame.length; c++) {  // c for rows (height)
+    let stg = "";
+    for (let r = 0; r < this.frame[0].length; r++) {  // r for columns (width)
+        const c1 = c ;/// window.pixelSize;
+        const r1 = r ;/// window.pixelSize;
+        stg += this.frame[c][r];  // Access the current cell
+        if (r1 == offsetX) {
+            this.frame[c1][r1] = 'Y';  // Change value to 'Y' if the column index is 10
+        }
     }
+    console.log(stg);  // Log the current column string
+}          
+this.frame[0][2] = 'Y';
+// this.frame
+
+
+//         const { x: bombX, y: bombY, frame: overlayFrame } = enemyBomb; // Get bomb position and frame
+//         const { x: shieldX, y: shieldY } = this; // Get shield position
+    
+
+//         overlayFrame.forEach((cell, rowIndex) => {
+//             const targetX = Math.round(bombX) - Math.round(shieldX); // Calculate relative X position of the bomb on the shield
+//             const targetY = rowIndex + Math.round(bombY) - Math.round(shieldY); // Calculate target Y position
+
+
+//             // Check bounds and ensure `this.frame[targetY]` exists before accessing `targetX`
+//             if (
+//                 targetY >= 0 && targetY < this.frame.length &&
+//                 targetX >= 0 && targetX < (this.frame[targetY]?.length || 0) &&
+//                 cell === "1" && this.frame[targetY][targetX] === "1"
+//             ) {
+//                 this.frame[targetX][targetY] = "0"; // Apply overlay by setting to '0'
+//                 shieldHit = true;
+// //console.log("");;    
+// console.log(targetX, targetY, this, enemyBomb,'overlay', targetY, targetX);
+//             }
+//         });
+    
+        return shieldHit; // Returns true if any part of the shield was hit
+    }
+    
+    
+    
+
+    
+    
 
 }
 

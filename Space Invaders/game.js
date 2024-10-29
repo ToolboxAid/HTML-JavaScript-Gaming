@@ -236,12 +236,8 @@ function checkLaserShieldCollision(){
         //const hit = laser.checkObjectCollision(shield, false);
         const hit = laser.isFullyInside(shield);
         if (hit) {
-            //let preX = laser.x;
-            //laser.velocityY *=-1;
-            //laser.y -= 30;
-            //laser.x =preX;
-            console.log("Shield hit:", shield.x, shield.y, " Laser was hit Shield at position:", laser.x, laser.y);
-            //shield.applyOverlay(laser); // Apply the overlay if a hit is detected
+            //console.log("Shield hit:", shield.x, shield.y, " Laser was hit Shield at position:", laser.x, laser.y);
+            shield.applyOverlay(laser); // Apply the overlay if a hit is detected
         }
     });
     return hit;
@@ -290,7 +286,7 @@ export function gameLoop(ctx, deltaTime) {
 
     if (laser) {
         let hitEnimy = checkLaserEnemyCollision();
-    }    
+    }
 
     if (laser) {
         laser.draw(ctx);
