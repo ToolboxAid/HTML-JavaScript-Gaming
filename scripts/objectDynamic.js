@@ -102,6 +102,11 @@ class ObjectDynamic extends ObjectStatic {
      * Checks if this object is fully contained within the specified container object.
      * @param {Object} container - The container object with x, y, width, and height properties.
      * @returns {boolean} - True if this object is fully inside the container, false otherwise.
+Renamed to:
+isContainedWithin(container)
+isCompletelyInside(container)
+isEntirelyWithin(container)
+     * 
      */
     isFullyInside(container) {
         return (
@@ -112,15 +117,32 @@ class ObjectDynamic extends ObjectStatic {
         );
     }
 
-
-//    static firstTime = false;
-    checkObjectCollision(object, updatePosition = true) {
-        // Check if the object is within the object's bounds
-        if (
+    /*
+    Renamed to:
+isCollidingWith(object)
+hasCollisionWith(object)
+detectsOverlapWith(object)
+*/
+    isObjectCollusion(object) {
+        return (
             this.x + this.width >= object.x &&
             this.x <= object.x + object.width &&
             this.y + this.height >= object.y &&
             this.y <= object.y + object.height
+        );
+    }
+
+    /*
+    Renamed to:
+resolveCollisionWith(object, updatePosition = true)
+handleCollisionResponse(object, updatePosition = true)
+processCollisionWith(object, updatePosition = true)
+*/
+    //    static firstTime = false;
+    checkObjectCollision(object, updatePosition = true) {
+        // Check if the object is within the object's bounds
+        if (
+            this.isObjectCollusion(object)
         ) {
             let collisionSide;
 
