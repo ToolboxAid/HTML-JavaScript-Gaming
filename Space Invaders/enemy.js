@@ -4,7 +4,6 @@
 // enemy.js
 
 import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
-
 import CanvasUtils from '../scripts/canvas.js';
 
 

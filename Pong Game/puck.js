@@ -74,12 +74,12 @@ class Puck extends ObjectDynamic {
         }
 
         // Check for collisions with left and right paddles
-        const leftCollision = this.checkObjectCollision(leftPaddle);
+        const leftCollision = this.processCollisionWith(leftPaddle);
         if (leftCollision) {
             this.handlePaddleCollision(leftPaddle, leftCollision);
         }
 
-        const rightCollision = this.checkObjectCollision(rightPaddle);
+        const rightCollision = this.processCollisionWith(rightPaddle);
         if (rightCollision) {
             this.handlePaddleCollision(rightPaddle, rightCollision);
         }

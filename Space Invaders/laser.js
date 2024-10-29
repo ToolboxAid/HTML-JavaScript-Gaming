@@ -10,19 +10,11 @@ import CanvasUtils from '../scripts/canvas.js';
 
 class Laser extends ObjectDynamic {
 
+
     static frame = [
-        "11111",
-        "11111",
-        "11111",
-        "11111",
-        "11111",
-        "11111",
-        "11111",
-        "11111",
-        "11111",
-        "11111",
-    ];
-    static frame1 = [
+        "1",
+        "1",
+        "1",
         "1",
         "1",
         "1",

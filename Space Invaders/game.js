@@ -218,7 +218,7 @@ function checkLaserEnemyCollision() {
         for (let i = enemyArray.length - 1; i >= 0; i--) {
             const enemy = enemyArray[i];
             if (!hitDetected) {
-                if (laser.checkObjectCollision(enemy)) {
+                if (laser.processCollisionWith(enemy)) {
                     player1.score += enemy.value;
                     enemy.setHit();
                     laser = null; // Delete the laser
@@ -230,14 +230,14 @@ function checkLaserEnemyCollision() {
     });
     return hitDetected;
 }
-function checkLaserShieldCollision(){
+function checkLaserShieldCollision() {
     let hit = false;
     shields.forEach(shield => {
-        //const hit = laser.checkObjectCollision(shield, false);
-        const hit = laser.isFullyInside(shield);
-        if (hit) {
-            //console.log("Shield hit:", shield.x, shield.y, " Laser was hit Shield at position:", laser.x, laser.y);
-            shield.applyOverlay(laser); // Apply the overlay if a hit is detected
+        const colliding = laser.isCollidingWith(shield); //const hit = laser.processCollisionWith(shield, false);
+        if (colliding) {
+            if (shield.applyBigBoom(laser)) {
+                hit = true;
+            }
         }
     });
     return hit;
@@ -266,14 +266,17 @@ export function gameLoop(ctx, deltaTime) {
     if (!laser) {
         if (laserFirePoint) {
             laser = new Laser(laserFirePoint.x, laserFirePoint.y);
-            laser.x = laserFirePoint.x - (laser.width/2)
+            laser.x = laserFirePoint.x - (laser.width / 2)
         }
     } else { //} if (laser) {
         if (laser.update(deltaTime)) { // Update laser position
             laser = null; //laser out of bounds, delete it
         } else {
-            let hit1 = checkLaserShieldCollision();
+            let hit = checkLaserShieldCollision();
             //console.log(hit1);
+            if (hit) {
+                laser = null;
+            }
 
         }
     }
