@@ -38,6 +38,8 @@ const enemyOctopuses = [];
 const enemySquids = [];
 const enemyCrabs = [];
 
+const enemyBombs = [];
+
 // Shield configurations
 const numShields = 4; // Number of shields
 const shieldYPosition = 700; //(canvasConfig.height * 5) / 6; // 4/5 down the canvas height
@@ -126,15 +128,15 @@ function setEnemyDropTimer() {
 
     let adj = remainingEnemies / initialEnemyCount;
     enemyCrabs.forEach(enemyCrab => {
-        enemyCrab.setDropTimer(dropDelay);
+        enemyCrab.setMoveDownTimer(dropDelay);
         dropDelay += dropIncr;
     });
     enemySquids.forEach(enemySquid => {
-        enemySquid.setDropTimer(dropDelay);
+        enemySquid.setMoveDownTimer(dropDelay);
         dropDelay += dropIncr;
     });
     enemyOctopuses.forEach(enemyOctopus => {
-        enemyOctopus.setDropTimer(dropDelay);
+        enemyOctopus.setMoveDownTimer(dropDelay);
         dropDelay += dropIncr;
     });
 }
@@ -176,10 +178,36 @@ function animate(deltaTime) {
     }
 }
 
+function enimiesDropBomb(deltaTime) {
+    let dropBomb = false; // Flag to track if a hit occurred
+
+    // Check if enemy should drop bomb
+    [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
+        for (let i = enemyArray.length - 1; i >= 0; i--) {
+            const enemy = enemyArray[i];
+            if (enemy.getDropBomb()) {
+                enemyBombs.push(new EnemyBomb1(enemy.x + enemy.width, enemy.y));
+                dropBomb = true; // Set the flag to indicate a hit
+                break; // Exit the current `for` loop
+
+            }
+        }
+    });
+    return dropBomb;
+}
+
 function updateEnimies(deltaTime) {
     enemySquids.forEach(enemySquid => enemySquid.update(deltaTime));
     enemyOctopuses.forEach(enemyOctopus => enemyOctopus.update(deltaTime));
     enemyCrabs.forEach(enemyCrab => enemyCrab.update(deltaTime));
+}
+
+function updateBombs(deltaTime) {
+    enimiesDropBomb(deltaTime);
+    enemyBombs.forEach(enemyBomb => {
+        enemyBomb.update(deltaTime);
+        enemyBomb.y += 3;
+    });
 }
 
 let tmpScore = 0;
@@ -287,6 +315,7 @@ export function gameLoop(ctx, deltaTime) {
     drawScore(ctx);
 
     updateEnimies(deltaTime);
+    updateBombs(deltaTime);
 
     if (laser) {
         let hitEnimy = checkLaserEnemyCollision();
@@ -307,6 +336,7 @@ export function gameLoop(ctx, deltaTime) {
     enemyOctopuses.forEach(enemyOctopus => enemyOctopus.draw(ctx));
     enemySquids.forEach(enemySquid => enemySquid.draw(ctx));
     enemyCrabs.forEach(enemyCrab => enemyCrab.draw(ctx));
+    enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx));
     enemyShip.draw(ctx);
 }
 

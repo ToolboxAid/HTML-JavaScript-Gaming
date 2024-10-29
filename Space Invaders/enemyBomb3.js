@@ -6,7 +6,7 @@
 import Enemy from './Enemy.js';
 
 const frames = [
-  // New 5x8 pixel images
+
   [
     "110",
     "010",

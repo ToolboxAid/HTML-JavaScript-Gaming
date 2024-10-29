@@ -95,7 +95,6 @@ class Shield extends ObjectStatic {
                     if (distructionPathX2 > this.frame[0].length) { distructionPathX2 = this.frame[0].length; }
 
                     for (let loop3 = distructionPathX1; loop3 < distructionPathX2; loop3++) {
-                        console.log(loop3);
                         if (this.frame[targetY][loop3] === "1") {
                             if (Functions.randomGenerator(0, 1, false) > 0.33) { // replace 66% of the 1's with 0's
                                 this.frame[targetY][loop3] = '0';// transparent/blank
@@ -107,7 +106,6 @@ class Shield extends ObjectStatic {
                 }
                 stg += this.frame[c][r];  // Access the current cell
             }
-            console.log(stg);  // Log the current row string
         }
 
         return shieldHit; // Returns true if any part of the shield was hit

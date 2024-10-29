@@ -57,7 +57,7 @@ class Enemy extends ObjectStatic {
         ]
     ];
 
-    constructor(x, y, frames) {
+    constructor(x, y, frames, dropBombDelay = 600) {
         const dimensions = CanvasUtils.spriteWidthHeight(frames[0], window.pixelSize);
         super(x, y, dimensions.width, dimensions.height);
         this.state = Enemy.Status.ALIVE;
@@ -66,11 +66,14 @@ class Enemy extends ObjectStatic {
         this.currentFrameIndex = 0;
 
         // disable move enemy to next line.
-        this.doDrop = false;
-        this.dropDelay = -1;
-        this.dropTime = 0;
+        this.doMoveDown = false;
+        this.moveDownDelay = -1;
+        this.moveDownTime = 0;
 
         this.dyingDelay = 0;
+
+        this.dropBombTimer = 0;
+        this.dropBombDelay = dropBombDelay; // drop bomb after 60 frames (based on update calls)
     }
 
     static changeDirections() {
@@ -81,24 +84,40 @@ class Enemy extends ObjectStatic {
         Enemy.speed = speed;
     }
 
-    setDropTimer(dropDelay) {
-        this.doDrop = true;
-        this.dropTime = Date.now() + dropDelay;
+    getDropBomb() {
+        let dropBomb = false;
+        if (this.dropBombTimer > this.dropBombDelay) {
+            this.dropBombTimer = 0;
+            dropBomb = true;
+        }
+        return dropBomb;
+    }
+
+    update(delta = 1){
+        this.y +=1;
+    }
+
+
+    setMoveDownTimer(moveDownDelay) {
+        this.doMoveDown = true;
+        this.moveDownTime = Date.now() + moveDownDelay;
     }
 
     static deadModulue = 4;
     static frameCount = 3;
     update(delta = 1) {
-        if (Date.now() >= this.dropTime && this.doDrop) {
+        if (Date.now() >= this.moveDownTime && this.doMoveDown) {
             this.y += this.height;  // Drop by the height value
-            this.dropTime = Date.now() + this.dropDelay; // Set the next drop time
-            this.doDrop = false;
+            this.moveDownTime = Date.now() + this.moveDownDelay; // Set the next drop time
+            this.doMoveDown = false;
         }
         if (this.state === Enemy.Status.DYING) {
             if (this.dyingDelay++ >= Enemy.deadModulue * Enemy.frameCount) {
                 this.state = Enemy.Status.DEAD
             }
         }
+
+        this.dropBombTimer++;
     }
 
     isDead() {
@@ -122,8 +141,6 @@ class Enemy extends ObjectStatic {
             CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize, spriteColor);
         } else if (this.state === Enemy.Status.DYING) {
 
-            const updatesPerFrame = 10;
-            //this.totalUpdates / this.frames;
             let frameNum = Math.floor((this.dyingDelay / Enemy.deadModulue) % Enemy.frameCount);
             CanvasUtils.drawSprite(ctx, this.x, this.y, Enemy.dyingFrames[frameNum], this.pixelSize, spriteColor);
         }
@@ -140,30 +157,6 @@ class Enemy extends ObjectStatic {
         return atRightBound || atLeftBound;
     }
 
-    nextFrame1() {
-        let atBounds = false;
-        this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
-
-        this.x += (Enemy.move + Enemy.speed) * Enemy.direction;
-        //       console.log(Enemy.speed);
-
-        if (Enemy.direction > 0) {
-            // check right
-            if (this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth) {
-                if (!atBounds) {
-                    atBounds = true;
-                }
-            }
-        } else {
-            // check left
-            if (this.x - Enemy.speed < (this.width * 0.25)) {
-                if (!atBounds) {
-                    atBounds = true;
-                }
-            }
-        }
-        return atBounds;
-    }
 }
 
 export default Enemy;
