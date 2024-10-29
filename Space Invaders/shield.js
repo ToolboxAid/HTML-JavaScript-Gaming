@@ -44,9 +44,6 @@ class Shield extends ObjectStatic {
         CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize, spriteConfig.shieldColor);
     }
 
-
-
-
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
     applyOverlay(enemyBomb) {
         let shieldHit = false;
@@ -77,8 +74,8 @@ for (let c = 0; c < this.frame.length; c++) {  // c for rows (height)
         const c1 = c ;/// window.pixelSize;
         const r1 = r ;/// window.pixelSize;
         stg += this.frame[c][r];  // Access the current cell
-        if (r1 == offsetX) {
-            this.frame[c1][r1] = 'Y';  // Change value to 'Y' if the column index is 10
+        if (r1 >= offsetX && r1 <= offsetX + (3)) {
+            this.frame[c1][r1] = 'R';  // Change value to 'Y' if the column index is 10
         }
     }
     console.log(stg);  // Log the current column string

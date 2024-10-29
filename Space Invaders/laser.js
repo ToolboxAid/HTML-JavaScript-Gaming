@@ -11,17 +11,29 @@ import CanvasUtils from '../scripts/canvas.js';
 class Laser extends ObjectDynamic {
 
     static frame = [
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
+        "11111",
+        "11111",
+        "11111",
+        "11111",
+        "11111",
+        "11111",
+        "11111",
+        "11111",
+        "11111",
+        "11111",
     ];
+    static frame1 = [
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+    ];    
 
     constructor(x, y) {
         const dimensions = CanvasUtils.spriteWidthHeight(Laser.frame, window.pixelSize);
