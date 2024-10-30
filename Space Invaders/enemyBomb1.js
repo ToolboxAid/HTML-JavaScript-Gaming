@@ -46,6 +46,9 @@ const frames= [
   
 ];
 
+// super(x, y, level, frames);
+// this.level = level;
+
 class EnemyBomb1 extends Enemy {
     constructor(x, y) {
         super(x,y,frames);
