@@ -33,6 +33,22 @@ class Shield extends ObjectStatic {
         "1111110000000000000111111",
     ].map(row => row.split("")); // Convert strings to arrays of characters for easy modification
 
+    // Check if enemyBomb or its frame is undefined, and assign a default frame if needed
+    // Define a default frame pattern
+    static defaultFrame = [
+        "010",
+        "100",
+        "010",
+        "001",
+        "010",
+        "100",
+        "010",
+        "001",
+        "010",
+        "100",
+        "010",
+    ].map(row => row.split("")); // Convert to a 2D array of characters;
+
     constructor(x, y) {
         let dimensions = CanvasUtils.spriteWidthHeight(Shield.frame, window.pixelSize);
         super(x, y, dimensions.width, dimensions.height);
@@ -48,21 +64,7 @@ class Shield extends ObjectStatic {
 
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
     applyBigBoom(enemyBomb) {
-        // Check if enemyBomb or its frame is undefined, and assign a default frame if needed
-        // Define a default frame pattern
-        const defaultFrame = [
-            "010",
-            "100",
-            "010",
-            "001",
-            "010",
-            "100",
-            "010",
-            "001",
-            "010",
-            "100",
-            "010",
-        ].map(row => row.split("")); // Convert to a 2D array of characters;
+
 
         const { x: bombX, y: bombY, currentFrameIndex } = enemyBomb || {}; // Get bomb position and Index if defined 
         const { x: shieldX, y: shieldY } = this; // Get shield position
@@ -80,10 +82,9 @@ class Shield extends ObjectStatic {
                 console.log("enemyBomb2.frames:", overlayFrame); // Debugging log
             }
         } else {
-            overlayFrame = defaultFrame; // Fallback to default frame
+            overlayFrame = Shield.defaultFrame; // Fallback to default frame
             console.log("Error: fix overlayFrame");
         }
-
 
         let shieldHit = false;
 
