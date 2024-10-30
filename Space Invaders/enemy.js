@@ -5,7 +5,7 @@
 
 import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
 import CanvasUtils from '../scripts/canvas.js';
-
+import Functions from '../scripts/functions.js';
 
 class Enemy extends ObjectStatic {
     static direction = 1;
@@ -57,7 +57,7 @@ class Enemy extends ObjectStatic {
         ]
     ];
 
-    constructor(x, y, frames, dropBombDelay) {
+    constructor(x, y, frames, bombAggression) {
         const dimensions = CanvasUtils.spriteWidthHeight(frames[0], window.pixelSize);
         super(x, y, dimensions.width, dimensions.height);
         this.state = Enemy.Status.ALIVE;
@@ -72,8 +72,7 @@ class Enemy extends ObjectStatic {
 
         this.dyingDelay = 0;
 
-        this.dropBombTimer = 0;
-        this.dropBombDelay = dropBombDelay;
+        this.bombAggression = 3 + (bombAggression * 2);
     }
 
     static changeDirections() {
@@ -85,12 +84,8 @@ class Enemy extends ObjectStatic {
     }
 
     getDropBomb() {
-        let dropBomb = false;
-        if (this.dropBombTimer > this.dropBombDelay) {
-            this.dropBombTimer = 0;
-            dropBomb = true;
-        }
-        return dropBomb;
+        const number = Functions.randomGenerator(0, 10000, true);
+        return (number <= this.bombAggression);
     }
 
     update(delta = 1) {
@@ -115,8 +110,6 @@ class Enemy extends ObjectStatic {
                 this.state = Enemy.Status.DEAD
             }
         }
-
-        this.dropBombTimer++;
     }
 
     isDead() {

@@ -65,9 +65,6 @@ function calculateSpeed(remainingEnemies) {
     return Math.min(speed, finalSpeed);
 }
 
-function getRandomNumber(fromNumber, toNumber){
-    return Functions.randomGenerator(fromNumber, toNumber, true);
-}
 // Function to initialize enemy positions
 function initializeEnemies() {
     let enemyHeightSpacing = 59;
@@ -76,13 +73,12 @@ function initializeEnemies() {
     const octopusWidth = 40;
     const squidWidth = 40;
     const crabWidth = 40;
-
     // Create 2 rows of crabs
     for (let row = 0; row < enemyRows; row++) {
         for (let col = 0; col < enemyCols; col++) {
             const x = 40 + col * (crabWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemyCrab = new EnemyCrab(x, y, getRandomNumber(500,1000));
+            const enemyCrab = new EnemyCrab(x, y, player.level);
             enemyCrabs.push(enemyCrab);
 
         }
@@ -94,7 +90,7 @@ function initializeEnemies() {
         for (let col = 0; col < enemyCols; col++) {
             const x = 42 + col * (squidWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemySquid = new EnemySquid(x, y, getRandomNumber(500,1000));
+            const enemySquid = new EnemySquid(x, y, player.level);
             enemySquids.push(enemySquid);
         }
         enemyHeightPosition -= enemyHeightSpacing;
@@ -105,7 +101,7 @@ function initializeEnemies() {
         for (let col = 0; col < enemyCols; col++) {
             const x = 47 + col * (octopusWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemyOctopus = new EnemyOctopus(x, y, getRandomNumber(500,1000));
+            const enemyOctopus = new EnemyOctopus(x, y, player.level);
             enemyOctopuses.push(enemyOctopus);
         }
         enemyHeightPosition -= enemyHeightSpacing;

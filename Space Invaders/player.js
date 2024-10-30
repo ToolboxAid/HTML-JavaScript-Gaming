@@ -39,8 +39,12 @@ class Player extends ObjectDynamic {
         CanvasUtils.drawSprite(ctx, this.x, this.y, Player.frame, this.pixelSize);
     }
 
+    setLevel(level) {
+        this.level = level;
+    }
+
     update(keysPressed, keyJustPressed) {
-        const speed =4;
+        const speed = 4;
         if (keysPressed.includes('ArrowLeft')) {
             if (this.x - speed > 0) {
                 this.x -= speed;
@@ -53,10 +57,10 @@ class Player extends ObjectDynamic {
         }
 
         if (keyJustPressed.includes('Space')) {
-            let laserPoint = {x: this.x + (this.width/2), y: this.y};
+            let laserPoint = { x: this.x + (this.width / 2), y: this.y };
             return laserPoint;
         }
-        return ;// empty
+        return;// empty
     }
 }
 
