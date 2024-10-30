@@ -50,6 +50,7 @@ class Laser extends ObjectDynamic {
         this.score = 0;
         this.pixelSize = 3.0;
         this.frames = Laser.frames;
+        this.currentFrameIndex = 0;
     }
 
     draw(ctx) {

@@ -62,24 +62,58 @@ class Shield extends ObjectStatic {
             "010",
             "100",
             "010",
-        ];
+        ].map(row => row.split("")); // Convert to a 2D array of characters;
+
+        const { x: bombX, y: bombY, currentFrameIndex } = enemyBomb || {}; // Get bomb position and Index if defined 
+        const { x: shieldX, y: shieldY } = this; // Get shield position
 
         // Use enemyBomb's frame if it exists; otherwise, use the default frame
-        const overlayFrame = enemyBomb?.frame || defaultFrame;
-        const { x: bombX, y: bombY } = enemyBomb || {}; // Get bomb position if defined
-        const { x: shieldX, y: shieldY } = this; // Get shield position
+        let overlayFrame;
+        if (enemyBomb && enemyBomb.frames) {
+            if (Array.isArray(enemyBomb.frames[0])) {
+                // multi dimension Array
+                overlayFrame = enemyBomb.frames[currentFrameIndex].map(row => Array.from(row)); // Use it directly if it's already in the correct format
+                //console.log("enemyBomb1.frames:", overlayFrame); // Debugging log
+            } else {
+                // single dimention
+                overlayFrame = enemyBomb.frames.map(row => Array.from(row)); // Adjust based on actual type
+                console.log("enemyBomb2.frames:", overlayFrame); // Debugging log
+            }
+        } else {
+            overlayFrame = defaultFrame; // Fallback to default frame
+            console.log("Error: fix overlayFrame");
+        }
+
+
         let shieldHit = false;
 
         // Calculate offset
         let offsetX = Math.round((bombX - shieldX) / window.pixelSize);
         let offsetY = Math.round((bombY - shieldY) / window.pixelSize);
 
-        // Log the overlay frame for debugging
-        overlayFrame.forEach(row => console.log(row));
+        // overlay shield frame debug
+        if (false) {
+            console.log(overlayFrame.length, overlayFrame[0].length, this.frame.length, this.frame[0].length, enemyBomb.currentFrameIndex);
+
+            for (let c = 0; c < overlayFrame.length; c++) { // c for rows (height)
+                let stg = "";
+                for (let r = 0; r < overlayFrame[0].length; r++) { // r for columns (width)
+                    stg += overlayFrame[c][r];
+                }
+                //console.log("stg 1: " + stg);
+            }
+
+            for (let c = 0; c < this.frame.length; c++) { // c for rows (height)
+                let stg = "";
+                for (let r = 0; r < this.frame[0].length; r++) { // r for columns (width)
+                    stg += this.frame[c][r];
+                }
+                //.log("stg 2: " + stg);
+            }
+        }
 
         // Loop through the shield frame and apply overlay where needed
         for (let c = 0; c < this.frame.length; c++) { // c for rows (height)
-            let stg = "";
             for (let r = 0; r < this.frame[0].length; r++) { // r for columns (width)
                 const targetX = r + offsetX;
                 const targetY = c + offsetY;
@@ -105,7 +139,7 @@ class Shield extends ObjectStatic {
                         }
                     }
                 }
-                stg += this.frame[c][r];
+
             }
         }
 

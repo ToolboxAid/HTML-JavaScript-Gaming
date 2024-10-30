@@ -24,7 +24,7 @@ class EnemyBomb extends ObjectDynamic {
         this.velocityY = 50;
 
         this.frames = frames;
-        this.currentFrame = 1;
+        this.currentFrameIndex = 1;
 
         this.frameDelay = 7;
         this.frameTime = 0;
@@ -39,7 +39,7 @@ class EnemyBomb extends ObjectDynamic {
     }
 
     draw(ctx) {
-        CanvasUtils.drawSprite(ctx, this.x, this.y, this.frames[this.currentFrame], this.pixelSize, "white");
+        CanvasUtils.drawSprite(ctx, this.x, this.y, this.frames[this.currentFrameIndex], this.pixelSize, "white");
     }
 
     update(deltaTime = 1) {
@@ -47,8 +47,8 @@ class EnemyBomb extends ObjectDynamic {
 
         if (this.frameTime++ > this.frameDelay) {
             this.frameTime = 0;
-            if (++this.currentFrame >= 3) {
-                this.currentFrame = 0;
+            if (++this.currentFrameIndex >= 3) {
+                this.currentFrameIndex = 0;
             }
         }
 
