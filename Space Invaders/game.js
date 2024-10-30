@@ -179,21 +179,15 @@ function animate(deltaTime) {
 }
 
 function enimiesDropBomb(deltaTime) {
-    let dropBomb = false; // Flag to track if a hit occurred
-
     // Check if enemy should drop bomb
     [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
         for (let i = enemyArray.length - 1; i >= 0; i--) {
             const enemy = enemyArray[i];
             if (enemy.getDropBomb()) {
                 enemyBombs.push(new EnemyBomb1(enemy.x + enemy.width, enemy.y));
-                dropBomb = true; // Set the flag to indicate a hit
-                break; // Exit the current `for` loop
-
             }
         }
     });
-    return dropBomb;
 }
 
 function updateEnimies(deltaTime) {
@@ -210,9 +204,8 @@ function updateBombs(deltaTime) {
     });
 }
 
-let tmpScore = 0;
+
 function drawScore(ctx, player) {
-    tmpScore++;
     // ctx.font = '30px Arial';
     // ctx.fillStyle = 'white';
     let color = 'yellow';
@@ -271,6 +264,19 @@ function checkLaserShieldCollision() {
     return hit;
 }
 
+function checkBombShieldCollision() {
+    enemyBombs.forEach(enemyBomb => {
+        shields.forEach(shield => {
+            const colliding = enemyBomb.isCollidingWith(shield); //const hit = laser.processCollisionWith(shield, false);
+            if (colliding) {
+                if (shield.applyBigBoom(enemyBomb)) {
+                    enemyBomb.setIsDead();
+                }
+            }
+        });
+    });
+}
+
 function removeDeadEnemy() {
     // Check for dead enemy and remove
     [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
@@ -284,10 +290,25 @@ function removeDeadEnemy() {
     });
 }
 
+function removeDeadBomb() {
+    // Check for dead enemy and remove
+    [enemyBombs].forEach(enemyArray => {
+        for (let i = enemyArray.length - 1; i >= 0; i--) {
+            const enemy = enemyArray[i];
+            if (enemy.isDead()) {
+                enemyArray.splice(i, 1); // Remove the bomb at index i
+            }
+        }
+    });
+}
+
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
     removeDeadEnemy();
+    removeDeadBomb();
+
+    //checkBombShieldCollision();
 
     keyboardInput.update();
     let laserFirePoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
@@ -336,7 +357,7 @@ export function gameLoop(ctx, deltaTime) {
     enemyOctopuses.forEach(enemyOctopus => enemyOctopus.draw(ctx));
     enemySquids.forEach(enemySquid => enemySquid.draw(ctx));
     enemyCrabs.forEach(enemyCrab => enemyCrab.draw(ctx));
-    enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx));
+    enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx,"white"));
     enemyShip.draw(ctx);
 }
 

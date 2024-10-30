@@ -48,6 +48,12 @@ class Shield extends ObjectStatic {
 
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
     applyBigBoom(enemyBomb) {
+
+        if (!enemyBomb || !enemyBomb.frame) {
+            console.error("Invalid enemyBomb or enemyBomb.frame is undefined.");
+            return false;
+        }
+        
         const { x: bombX, y: bombY, frame: overlayFrame } = enemyBomb; // Get bomb position and frame
         const { x: shieldX, y: shieldY } = this; // Get shield position
         let shieldHit = false;

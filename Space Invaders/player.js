@@ -8,8 +8,6 @@ import { canvasConfig, spriteConfig } from './global.js';
 
 import CanvasUtils from '../scripts/canvas.js';
 
-
-
 class Player extends ObjectDynamic {
 
     // New 22x16 pixel image (single frame)
@@ -32,6 +30,7 @@ class Player extends ObjectDynamic {
         this.score = 0;
         this.lives = 3;
         this.pixelSize = 3.0;
+        this.level = 1;
         // this.pixelSize = Math.ceil(window.pixelSize);
         // spriteConfig.pixelSize; //window.pixelSize;
     }
