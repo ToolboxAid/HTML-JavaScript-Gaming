@@ -65,7 +65,6 @@ class Shield extends ObjectStatic {
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
     applyBigBoom(enemyBomb) {
 
-
         const { x: bombX, y: bombY, currentFrameIndex } = enemyBomb || {}; // Get bomb position and Index if defined 
         const { x: shieldX, y: shieldY } = this; // Get shield position
 
@@ -75,15 +74,13 @@ class Shield extends ObjectStatic {
             if (Array.isArray(enemyBomb.frames[0])) {
                 // multi dimension Array
                 overlayFrame = enemyBomb.frames[currentFrameIndex].map(row => Array.from(row)); // Use it directly if it's already in the correct format
-                //console.log("enemyBomb1.frames:", overlayFrame); // Debugging log
             } else {
                 // single dimention
                 overlayFrame = enemyBomb.frames.map(row => Array.from(row)); // Adjust based on actual type
-                console.log("enemyBomb2.frames:", overlayFrame); // Debugging log
             }
         } else {
             overlayFrame = Shield.defaultFrame; // Fallback to default frame
-            console.log("Error: fix overlayFrame");
+            console.log("Error: fix overlayFrame", overlayFrame);
         }
 
         let shieldHit = false;

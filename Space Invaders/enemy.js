@@ -67,7 +67,7 @@ class Enemy extends ObjectStatic {
 
         // disable move enemy to next line.
         this.doMoveDown = false;
-        this.moveDownDelay = -1;
+        this.moveDownDelay = 0;
         this.moveDownTime = 0;
 
         this.dyingDelay = 0;
