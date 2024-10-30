@@ -11,39 +11,56 @@ import CanvasUtils from '../scripts/canvas.js';
 class Laser extends ObjectDynamic {
 
 
-    static frame = [
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-    ];    
+    static frames = [
+        [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+        ],
+        [
+            "1",
+            "0",
+            "1",
+            "0",
+            "1",
+            "0",
+            "1",
+            "0",
+            "1",
+            "0",
+            "1",
+            "0",
+            "1",
+        ],
+    ]
 
     constructor(x, y) {
-        const dimensions = CanvasUtils.spriteWidthHeight(Laser.frame, window.pixelSize);
+        const dimensions = CanvasUtils.spriteWidthHeight(Laser.frames[0], window.pixelSize);
         super(x, y, dimensions.width, dimensions.height, 0, -600);
         this.score = 0;
         this.pixelSize = 3.0;
-        this.frame = Laser.frame;
+        this.frames = Laser.frames;
     }
 
     draw(ctx) {
-        CanvasUtils.drawSprite(ctx, this.x, this.y, Laser.frame, this.pixelSize);
+        CanvasUtils.drawSprite(ctx, this.x, this.y, Laser.frames[0], this.pixelSize);
     }
 
     update(deltaTime = 1) {
         super.update(deltaTime);
 
-        if (this.y <= 0 || this.y > 1000 ||
-            this.x <= 0 || this.x > 1000
+        if (this.y <= 0 || this.y > canvasConfig.width ||
+            this.x <= 0 || this.x > canvasConfig.height
         ) {
             return true;
         }

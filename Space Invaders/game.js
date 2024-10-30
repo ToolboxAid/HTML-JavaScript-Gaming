@@ -316,7 +316,6 @@ export function gameLoop(ctx, deltaTime) {
     if (!laser) {
         if (laserFirePoint) {
             laser = new Laser(laserFirePoint.x, laserFirePoint.y);
-            laser.x = laserFirePoint.x - (laser.width / 2)
         }
     } else { //} if (laser) {
         if (laser.update(deltaTime)) { // Update laser position

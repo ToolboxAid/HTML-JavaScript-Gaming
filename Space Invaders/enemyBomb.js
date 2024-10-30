@@ -19,11 +19,12 @@ class EnemyBomb extends ObjectDynamic {
         const dimensions = CanvasUtils.spriteWidthHeight(frames, window.pixelSize);
         super(x, y, dimensions.width, dimensions.height, 0, 300);
         this.pixelSize = window.pixelSize;
-        this.frames = frames;
         this.state === EnemyBomb.Status.ALIVE;
-        this.currentFrame = 1;
         this.velocityX = 0;
         this.velocityY = 50;
+
+        this.frames = frames;
+        this.currentFrame = 1;
 
         this.frameDelay = 7;
         this.frameTime = 0;
@@ -51,9 +52,9 @@ class EnemyBomb extends ObjectDynamic {
             }
         }
 
-        if (this.y <= 0 || this.y > 800 ||
-            this.x <= 0 || this.x > 800
-        ) {
+        if (this.y <= 0 || this.y > canvasConfig.width ||
+            this.x <= 0 || this.x > canvasConfig.height
+        ){
             this.setIsDead();
         }
     }

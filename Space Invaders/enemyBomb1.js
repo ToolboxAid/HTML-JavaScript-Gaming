@@ -54,7 +54,6 @@ class EnemyBomb1 extends EnemyBomb {
 
   ];
 
-
   constructor(x, y) {
     super(x, y, EnemyBomb1.frames);
   }
