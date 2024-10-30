@@ -65,6 +65,9 @@ function calculateSpeed(remainingEnemies) {
     return Math.min(speed, finalSpeed);
 }
 
+function getRandomNumber(fromNumber, toNumber){
+    return Functions.randomGenerator(fromNumber, toNumber, true);
+}
 // Function to initialize enemy positions
 function initializeEnemies() {
     let enemyHeightSpacing = 59;
@@ -79,8 +82,9 @@ function initializeEnemies() {
         for (let col = 0; col < enemyCols; col++) {
             const x = 40 + col * (crabWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemyCrab = new EnemyCrab(x, y);
+            const enemyCrab = new EnemyCrab(x, y, getRandomNumber(500,1000));
             enemyCrabs.push(enemyCrab);
+
         }
         enemyHeightPosition -= enemyHeightSpacing;
     }
@@ -90,7 +94,7 @@ function initializeEnemies() {
         for (let col = 0; col < enemyCols; col++) {
             const x = 42 + col * (squidWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemySquid = new EnemySquid(x, y);
+            const enemySquid = new EnemySquid(x, y, getRandomNumber(500,1000));
             enemySquids.push(enemySquid);
         }
         enemyHeightPosition -= enemyHeightSpacing;
@@ -101,7 +105,7 @@ function initializeEnemies() {
         for (let col = 0; col < enemyCols; col++) {
             const x = 47 + col * (octopusWidth + enemySpacing);
             const y = enemyHeightPosition;
-            const enemyOctopus = new EnemyOctopus(x, y);
+            const enemyOctopus = new EnemyOctopus(x, y, getRandomNumber(500,1000));
             enemyOctopuses.push(enemyOctopus);
         }
         enemyHeightPosition -= enemyHeightSpacing;
@@ -117,27 +121,27 @@ function initializeShields() {
     }
 }
 
-function setEnemyDropTimer() {
+function setEnimyMoveDown() {
     const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
     const time = 750; //1500; // 1.5 seconds
-    const dropIncr = time / initialEnemyCount;
-    let dropDelay = 0;
+    const moveDownIncr = time / initialEnemyCount;
+    let moveDownDelay = 0;
 
     // Calculate the number of remaining enemies
     const remainingEnemies = enemyOctopuses.length + enemySquids.length + enemyCrabs.length;
 
     let adj = remainingEnemies / initialEnemyCount;
     enemyCrabs.forEach(enemyCrab => {
-        enemyCrab.setMoveDownTimer(dropDelay);
-        dropDelay += dropIncr;
+        enemyCrab.setMoveDownTimer(moveDownDelay);
+        moveDownDelay += moveDownIncr;
     });
     enemySquids.forEach(enemySquid => {
-        enemySquid.setMoveDownTimer(dropDelay);
-        dropDelay += dropIncr;
+        enemySquid.setMoveDownTimer(moveDownDelay);
+        moveDownDelay += moveDownIncr;
     });
     enemyOctopuses.forEach(enemyOctopus => {
-        enemyOctopus.setMoveDownTimer(dropDelay);
-        dropDelay += dropIncr;
+        enemyOctopus.setMoveDownTimer(moveDownDelay);
+        moveDownDelay += moveDownIncr;
     });
 }
 
@@ -167,7 +171,7 @@ function animate(deltaTime) {
         });
         if (moveEnimyDown) {
             Enemy.changeDirections();
-            setEnemyDropTimer();
+            setEnimyMoveDown();
         }
     }
 }

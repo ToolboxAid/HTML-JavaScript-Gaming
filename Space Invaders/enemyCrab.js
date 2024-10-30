@@ -31,11 +31,10 @@ class EnemyCrab extends Enemy {
         ]
     ];
     
-    constructor(x, y) {
-        super(x, y, EnemyCrab.frames);
+    constructor(x, y, dropBombDelay) {
+        super(x, y, EnemyCrab.frames, dropBombDelay);
         this.value = 10;
     }
-
     draw(ctx) {
         super.draw(ctx, spriteConfig.crabColor);
     }

@@ -57,7 +57,7 @@ class Enemy extends ObjectStatic {
         ]
     ];
 
-    constructor(x, y, frames, dropBombDelay = 200) {
+    constructor(x, y, frames, dropBombDelay) {
         const dimensions = CanvasUtils.spriteWidthHeight(frames[0], window.pixelSize);
         super(x, y, dimensions.width, dimensions.height);
         this.state = Enemy.Status.ALIVE;
@@ -73,7 +73,7 @@ class Enemy extends ObjectStatic {
         this.dyingDelay = 0;
 
         this.dropBombTimer = 0;
-        this.dropBombDelay = dropBombDelay; // drop bomb after 60 frames (based on update calls)
+        this.dropBombDelay = dropBombDelay;
     }
 
     static changeDirections() {
