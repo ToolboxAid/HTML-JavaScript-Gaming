@@ -7,6 +7,7 @@ import { canvasConfig, spriteConfig } from './global.js'; // Assuming these cont
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
+import Functions from '../scripts/functions.js';
 
 import Player from './player.js';
 import Shield from './shield.js';
@@ -185,7 +186,23 @@ function enimiesDropBomb(deltaTime) {
             const enemy = enemyArray[i];
             if (enemy.getDropBomb()) {
                 const bombWidth = 5;
-                enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+
+                const bombType = Functions.randomGenerator(0, 2, true); // Generate a random bomb type (0 to 2)
+                switch (bombType) {
+                    case 0: // Handle bombType 0
+                        enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                        break;                
+                    case 1:// Handle bombType 1
+                        enemyBombs.push(new EnemyBomb2(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                        break;                
+                    case 2:// Handle bombType 2
+                        enemyBombs.push(new EnemyBomb3(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                        break;                
+                    default:
+                        console.log("Unexpected bombType:", bombType);
+                        break;
+                }
+                
             }
         }
     });
@@ -252,6 +269,7 @@ function checkLaserEnemyCollision() {
     });
     return hitDetected;
 }
+
 function checkLaserShieldCollision() {
     let hit = false;
     shields.forEach(shield => {

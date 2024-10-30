@@ -3,9 +3,13 @@
 // 10/24/2024
 // enemyBomb2.js
 
-import Enemy from './Enemy.js';
+import EnemyBomb from "./enemyBomb.js";
 
-const frames = [
+
+
+class EnemyBomb2 extends EnemyBomb {
+
+static frames = [
 
   [
     "111",
@@ -48,10 +52,8 @@ const frames = [
   ]
 ];
 
-class EnemyBomb2 extends Enemy {
   constructor(x, y) {
-    super(x, y, frames);
-    this.value = 30;
+    super(x, y, EnemyBomb2.frames);
   }
 }
 

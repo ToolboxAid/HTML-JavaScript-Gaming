@@ -24,7 +24,7 @@ class EnemyBomb extends ObjectDynamic {
         this.velocityY = 50;
 
         this.frames = frames;
-        this.currentFrameIndex = 1;
+        this.currentFrameIndex = 0;
 
         this.frameDelay = 7;
         this.frameTime = 0;
@@ -47,7 +47,7 @@ class EnemyBomb extends ObjectDynamic {
 
         if (this.frameTime++ > this.frameDelay) {
             this.frameTime = 0;
-            if (++this.currentFrameIndex >= 3) {
+            if (++this.currentFrameIndex >= this.frames.length) {
                 this.currentFrameIndex = 0;
             }
         }
