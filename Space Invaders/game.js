@@ -96,7 +96,6 @@ function initializeEnemies() {
         enemyHeightPosition -= enemyHeightSpacing;
     }
 
-
     // Create 1 row of octopuses
     for (let row = 0; row < enemyRows - 1; row++) {
         for (let col = 0; col < enemyCols; col++) {
@@ -155,24 +154,18 @@ function animate(deltaTime) {
     frameCount++;
     dynamicAnimationInterval = Math.max(minInterval, Math.floor(maxInterval * (remainingEnemies / initialEnemyCount)));
     if (frameCount % dynamicAnimationInterval === 0) {
-
-        //const speedMultiplier = (initialEnemyCount - remainingEnemies) / (initialEnemyCount - 1);
-        //const speed = Math.max(0, Math.min(2, speedMultiplier)) * 5; // Ensure the value stays within 0 and 2
         const speed = calculateSpeed(remainingEnemies);
-        //      console.log(speedMultiplier + " " + speed );
         Enemy.setSpeed(speed);
 
-        //console.log(`FrameCount: ${frameCount}, dynamicAnimationInterval: ${dynamicAnimationInterval}`);
-
-        let dropEnimy = false;
         // Update frames and set drop timer for all enemies
+        let moveEnimyDown = false;
         [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
             let atBounds = enemy.nextFrame();
-            if (!dropEnimy && atBounds) {
-                dropEnimy = true;
+            if (!moveEnimyDown && atBounds) {
+                moveEnimyDown = true;
             }
         });
-        if (dropEnimy) {
+        if (moveEnimyDown) {
             Enemy.changeDirections();
             setEnemyDropTimer();
         }
@@ -222,8 +215,7 @@ function updateBombs(deltaTime) {
     });
 }
 
-
-function drawScore(ctx, player) {
+function drawScore(ctx) {
     // ctx.font = '30px Arial';
     // ctx.fillStyle = 'white';
     let color = 'yellow';
@@ -249,7 +241,7 @@ function drawBottomBar(ctx) {
     CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
 }
 
-function checkLaserEnemyCollision() {
+function checkLaserEnemyCollision(player) {
     let hitDetected = false; // Flag to track if a hit occurred
 
     // Check for collisions and remove hit enemies
@@ -258,7 +250,7 @@ function checkLaserEnemyCollision() {
             const enemy = enemyArray[i];
             if (!hitDetected) {
                 if (laser.processCollisionWith(enemy)) {
-                    player1.score += enemy.value;
+                    player.score += enemy.value;
                     enemy.setHit();
                     laser = null; // Delete the laser
                     hitDetected = true; // Set the flag to indicate a hit
@@ -321,6 +313,7 @@ function removeDeadBomb() {
     });
 }
 
+let player = player2;
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
@@ -330,7 +323,7 @@ export function gameLoop(ctx, deltaTime) {
     checkBombShieldCollision();
 
     keyboardInput.update();
-    let laserFirePoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
+    let laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     if (!laser) {
         if (laserFirePoint) {
             laser = new Laser(laserFirePoint.x, laserFirePoint.y);
@@ -357,16 +350,16 @@ export function gameLoop(ctx, deltaTime) {
     updateBombs(deltaTime);
 
     if (laser) {
-        let hitEnimy = checkLaserEnemyCollision();
+        let hitEnimy = checkLaserEnemyCollision(player);
     }
 
     if (laser) {
         laser.draw(ctx);
     }
     // Draw player
-    player1.draw(ctx);
+    player.draw(ctx);
     drawBottomBar(ctx);
-    drawLives(ctx, player1);
+    drawLives(ctx, player);
 
     // Draw shields
     shields.forEach(shield => { shield.draw(ctx); });
