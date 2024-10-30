@@ -57,7 +57,7 @@ class Enemy extends ObjectStatic {
         ]
     ];
 
-    constructor(x, y, frames, dropBombDelay = 600) {
+    constructor(x, y, frames, dropBombDelay = 200) {
         const dimensions = CanvasUtils.spriteWidthHeight(frames[0], window.pixelSize);
         super(x, y, dimensions.width, dimensions.height);
         this.state = Enemy.Status.ALIVE;
@@ -93,10 +93,9 @@ class Enemy extends ObjectStatic {
         return dropBomb;
     }
 
-    update(delta = 1){
-        this.y +=1;
+    update(delta = 1) {
+        this.y += 1;
     }
-
 
     setMoveDownTimer(moveDownDelay) {
         this.doMoveDown = true;

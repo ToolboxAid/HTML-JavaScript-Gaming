@@ -184,7 +184,8 @@ function enimiesDropBomb(deltaTime) {
         for (let i = enemyArray.length - 1; i >= 0; i--) {
             const enemy = enemyArray[i];
             if (enemy.getDropBomb()) {
-                enemyBombs.push(new EnemyBomb1(enemy.x + enemy.width, enemy.y));
+                const bombWidth = 5;
+                enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
             }
         }
     });
@@ -291,12 +292,12 @@ function removeDeadEnemy() {
 }
 
 function removeDeadBomb() {
-    // Check for dead enemy and remove
-    [enemyBombs].forEach(enemyArray => {
-        for (let i = enemyArray.length - 1; i >= 0; i--) {
-            const enemy = enemyArray[i];
-            if (enemy.isDead()) {
-                enemyArray.splice(i, 1); // Remove the bomb at index i
+    // Check for dead enemyBomb and remove
+    [enemyBombs].forEach(enemyBombArray => {
+        for (let i = enemyBombArray.length - 1; i >= 0; i--) {
+            const enemyBomb = enemyBombArray[i];
+            if (enemyBomb.isDead()) {
+                enemyBombArray.splice(i, 1); // Remove the bomb at index i
             }
         }
     });
@@ -308,7 +309,7 @@ export function gameLoop(ctx, deltaTime) {
     removeDeadEnemy();
     removeDeadBomb();
 
-    //checkBombShieldCollision();
+    checkBombShieldCollision();
 
     keyboardInput.update();
     let laserFirePoint = player1.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
@@ -357,7 +358,7 @@ export function gameLoop(ctx, deltaTime) {
     enemyOctopuses.forEach(enemyOctopus => enemyOctopus.draw(ctx));
     enemySquids.forEach(enemySquid => enemySquid.draw(ctx));
     enemyCrabs.forEach(enemyCrab => enemyCrab.draw(ctx));
-    enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx,"white"));
+    enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx, "white"));
     enemyShip.draw(ctx);
 }
 
