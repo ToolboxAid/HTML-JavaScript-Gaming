@@ -13,6 +13,7 @@ import Player from './player.js';
 import Shield from './shield.js';
 import Laser from './laser.js';
 let laser = null;
+import Ground from './ground.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
 const keyboardInput = new KeyboardInput();
@@ -40,6 +41,7 @@ const enemySquids = [];
 const enemyCrabs = [];
 
 const enemyBombs = [];
+const grounds = [];
 
 // Shield configurations
 const numShields = 4; // Number of shields
@@ -117,6 +119,14 @@ function initializeShields() {
     }
 }
 
+const groundY = 870;
+function initialGround() {
+    for (let i = 0; i < canvasConfig.width; i += Ground.groundSize) {
+        const ground = new Ground(i, groundY);
+        grounds.push(ground);
+    }
+}
+
 function setEnimyMoveDown() {
     const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
     const time = 750; //1500; // 1.5 seconds
@@ -184,18 +194,18 @@ function enimiesDropBomb(deltaTime) {
                 switch (bombType) {
                     case 0: // Handle bombType 0
                         enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                        break;                
+                        break;
                     case 1:// Handle bombType 1
                         enemyBombs.push(new EnemyBomb2(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                        break;                
+                        break;
                     case 2:// Handle bombType 2
                         enemyBombs.push(new EnemyBomb3(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                        break;                
+                        break;
                     default:
                         console.log("Unexpected bombType:", bombType);
                         break;
                 }
-                
+
             }
         }
     });
@@ -236,9 +246,12 @@ function drawLives(ctx, player) {
     CanvasUtils.drawSprite(ctx, 65, dwn - 30, Player.frame, 3);
 }
 
-function drawBottomBar(ctx) {
-    let bottom = 880;
-    CanvasUtils.drawLine(ctx, 0, bottom, 800, bottom, 5, "pink");
+function drawGround(ctx) {
+    grounds.forEach(ground => {
+        ground.draw(ctx);
+    });
+    
+    CanvasUtils.drawLine(ctx, 0, groundY+5, canvasConfig.width, groundY+5, 5, "brown");
 }
 
 function checkLaserEnemyCollision(player) {
@@ -288,6 +301,19 @@ function checkBombShieldCollision() {
     });
 }
 
+function checkBombGroundCollision() {
+    enemyBombs.forEach(enemyBomb => {
+        grounds.forEach(ground => {
+            const colliding = enemyBomb.isCollidingWith(ground);
+            if (colliding) {
+                console.log("ground");
+                enemyBomb.setIsDead();
+                ground.setIsDead();
+            }
+        });
+    });
+}
+
 function removeDeadEnemy() {
     // Check for dead enemy and remove
     [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
@@ -321,6 +347,7 @@ export function gameLoop(ctx, deltaTime) {
     removeDeadBomb();
 
     checkBombShieldCollision();
+    checkBombGroundCollision();
 
     keyboardInput.update();
     let laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
@@ -358,7 +385,7 @@ export function gameLoop(ctx, deltaTime) {
     }
     // Draw player
     player.draw(ctx);
-    drawBottomBar(ctx);
+
     drawLives(ctx, player);
 
     // Draw shields
@@ -370,11 +397,13 @@ export function gameLoop(ctx, deltaTime) {
     enemyCrabs.forEach(enemyCrab => enemyCrab.draw(ctx));
     enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx, "white"));
     enemyShip.draw(ctx);
+    drawGround(ctx);
 }
 
 // Initialize enemies and shields
 initializeEnemies();
 initializeShields();
+initialGround();
 
 // Canvas needs to know the current directory to game.js for dynamic imports
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
@@ -391,6 +420,5 @@ if (false) {
         console.log("Enemies: " + enemies + ", Speed: " + timer.toFixed(4));
     }
 
-
-
+    // 
 }
