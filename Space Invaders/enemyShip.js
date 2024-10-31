@@ -76,8 +76,6 @@ class EnemyShip extends ObjectDynamic {
     constructor(y) {
         const dimensions = CanvasUtils.spriteWidthHeight(EnemyShip.livingFrames[0], spriteConfig.pixelSize);
 
-        console.log(Functions.randomGenerator(0,1,true));
-
         let velocityX = 150;
         let x = -(dimensions.width);  // off left screen the width of ship
 
