@@ -224,7 +224,6 @@ function updateBombs(deltaTime) {
     enimiesDropBomb(deltaTime);
     enemyBombs.forEach(enemyBomb => {
         enemyBomb.update(deltaTime);
-        enemyBomb.y += 3;
     });
 }
 
@@ -276,6 +275,23 @@ function checkLaserEnemyCollision(player) {
         }
     });
     return hitDetected;
+}
+
+function checkLaserBombCollision() {
+    if (laser) {
+        // Check for collisions and remove hit laser and bomb
+        let hitBomb = false;
+        enemyBombs.forEach(enemyBomb => {
+            if (laser.processCollisionWith(enemyBomb)) {
+                enemyBomb.setIsDead();
+                hitBomb = true;
+            }
+        });
+        if (hitBomb) {
+            laser = null; // Delete the laser
+            // console.log("laserBomb")
+        }
+    }
 }
 
 function checkLaserShieldCollision() {
@@ -382,6 +398,24 @@ function removeDeadBomb() {
     });
 }
 
+function checkLaser(deltaTime, laserFirePoint) {
+    if (!laser) {
+        if (laserFirePoint) {
+            laser = new Laser(laserFirePoint.x, laserFirePoint.y - 10);
+            o3 = new ObjectStatic(laser.x, laser.y, laser.width, laser.height);
+        }
+    } else {
+        if (laser.update(deltaTime)) { // Update laser position
+            laser = null; //laser out of bounds, delete it
+        } else {
+            let hit = checkLaserShieldCollision();
+            if (hit) {
+                laser = null;
+            }
+        }
+    }
+}
+
 let player = player2;
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
@@ -396,29 +430,16 @@ export function gameLoop(ctx, deltaTime) {
     checkEnimiesMoveDown();
 
     keyboardInput.update();
-    let laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
-    if (!laser) {
-        if (laserFirePoint) {
-            laser = new Laser(laserFirePoint.x, laserFirePoint.y - 10);
-            o3 = new ObjectStatic(laser.x, laser.y, laser.width, laser.height);
-        }
-    } else { //} if (laser) {
-        if (laser.update(deltaTime)) { // Update laser position
-            laser = null; //laser out of bounds, delete it
-        } else {
-            let hit = checkLaserShieldCollision();
-            if (hit) {
-                laser = null;
-            }
-        }
-    }
+    const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
+    checkLaser(deltaTime, laserFirePoint);
 
     animate(deltaTime);
 
     updateBombs(deltaTime);
 
     if (laser) {
-        let hitEnimy = checkLaserEnemyCollision(player);
+        let hitEnimy1 = checkLaserEnemyCollision(player);
+        let hitEnimy2 = checkLaserBombCollision();
     }
 
     // Draw scores

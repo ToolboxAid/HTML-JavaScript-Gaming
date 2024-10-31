@@ -23,7 +23,7 @@ class EnemyBomb extends ObjectDynamic {
         this.pixelSize = window.pixelSize;
         this.state === EnemyBomb.Status.ALIVE;
         this.velocityX = 0;
-        this.velocityY = 50;
+        this.velocityY = 175 ;
 
         this.frames = frames;
         this.currentFrameIndex = 0;
