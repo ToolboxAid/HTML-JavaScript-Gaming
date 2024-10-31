@@ -294,7 +294,7 @@ function checkLaserShieldCollision() {
 function checkBombShieldCollision() {
     enemyBombs.forEach(enemyBomb => {
         shields.forEach(shield => {
-            const colliding = enemyBomb.isCollidingWith(shield); //const hit = laser.processCollisionWith(shield, false);
+            const colliding = enemyBomb.isCollidingWith(shield);
             if (colliding) {
                 if (shield.applyBigBoom(enemyBomb)) {
                     enemyBomb.setIsDead();
@@ -302,6 +302,21 @@ function checkBombShieldCollision() {
             }
         });
     });
+}
+
+function checkEnimyShieldCollision() {
+
+
+    [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
+        shields.forEach(shield => {
+            const colliding = enemy.isCollidingWith(shield);
+            if (colliding) {
+                if (shield.applyBigBoom(enemy)) {
+                    console.log("enimy hit shield");
+                }
+            }
+        });
+});
 }
 
 function checkBombGroundCollision() {
@@ -315,8 +330,6 @@ function checkBombGroundCollision() {
         });
     });
 }
-
-
 
 let o1 = null;
 let o2 = null;
@@ -335,7 +348,7 @@ function checkBombPlayerCollision() {
     enemyBombs.forEach(enemyBomb => {
         const colliding = enemyBomb.isCollidingWith(player);
         if (colliding) {
- //           console.log("player");
+            console.log("playerhit");
             enemyBomb.setIsDead();
             //player.setIsDead();
             player.lives -=1;
@@ -378,6 +391,7 @@ export function gameLoop(ctx, deltaTime) {
     removeDeadEnemy();
     removeDeadBomb();
 
+    //checkEnimyShieldCollision();
     checkBombShieldCollision();
     checkBombGroundCollision();
     checkBombPlayerCollision();
@@ -394,7 +408,6 @@ export function gameLoop(ctx, deltaTime) {
             laser = null; //laser out of bounds, delete it
         } else {
             let hit = checkLaserShieldCollision();
-            //console.log(hit1);
             if (hit) {
                 laser = null;
             }
@@ -403,9 +416,6 @@ export function gameLoop(ctx, deltaTime) {
 
     animate(deltaTime);
 
-    // Draw scores
-    drawScore(ctx);
-
     updateEnimies(deltaTime);
     updateBombs(deltaTime);
 
@@ -413,9 +423,12 @@ export function gameLoop(ctx, deltaTime) {
         let hitEnimy = checkLaserEnemyCollision(player);
     }
 
+    // Draw scores
+    drawScore(ctx);
     if (laser) {
         laser.draw(ctx);
     }
+
     // Draw player
     player.draw(ctx);
 
@@ -431,7 +444,6 @@ export function gameLoop(ctx, deltaTime) {
     enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx, "white"));
     enemyShip.draw(ctx);
     drawGround(ctx);
-
 
     //drawCollision(ctx);
 }

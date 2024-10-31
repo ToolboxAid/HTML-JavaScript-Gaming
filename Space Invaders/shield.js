@@ -63,7 +63,7 @@ class Shield extends ObjectStatic {
     }
 
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
-    applyBigBoom(enemyBomb) {
+    applyBigBoom(enemyBomb, doOverlay = true) {
 
         const { x: bombX, y: bombY, currentFrameIndex } = enemyBomb || {}; // Get bomb position and Index if defined 
         const { x: shieldX, y: shieldY } = this; // Get shield position
@@ -111,36 +111,37 @@ class Shield extends ObjectStatic {
         }
 
         // Loop through the shield frame and apply overlay where needed
-        for (let c = 0; c < this.frame.length; c++) { // c for rows (height)
-            for (let r = 0; r < this.frame[0].length; r++) { // r for columns (width)
-                const targetX = r + offsetX;
-                const targetY = c + offsetY;
+        if (doOverlay) {
+            for (let c = 0; c < this.frame.length; c++) { // c for rows (height)
+                for (let r = 0; r < this.frame[0].length; r++) { // r for columns (width)
+                    const targetX = r + offsetX;
+                    const targetY = c + offsetY;
 
-                // Ensure `targetX` and `targetY` are within bounds and check for overlap with `overlayFrame`
-                if (
-                    targetX >= 0 && targetX < this.frame[0].length &&
-                    targetY >= 0 && targetY < this.frame.length &&
-                    overlayFrame[c]?.[r] === "1" &&
-                    this.frame[targetY][targetX] === "1"
-                ) {
-                    shieldHit = true;
-                    this.frame[targetY][targetX] = "0"; // Apply overlay by setting to '0'
+                    // Ensure `targetX` and `targetY` are within bounds and check for overlap with `overlayFrame`
+                    if (
+                        targetX >= 0 && targetX < this.frame[0].length &&
+                        targetY >= 0 && targetY < this.frame.length &&
+                        overlayFrame[c]?.[r] === "1" &&
+                        this.frame[targetY][targetX] === "1"
+                    ) {
+                        shieldHit = true;
+                        this.frame[targetY][targetX] = "0"; // Apply overlay by setting to '0'
 
-                    // Apply further destruction pattern
-                    const destructionWidth = 2;
-                    let destructionPathX1 = Math.max(0, targetX - destructionWidth);
-                    let destructionPathX2 = Math.min(this.frame[0].length, targetX + destructionWidth);
+                        // Apply further destruction pattern
+                        const destructionWidth = 2;
+                        let destructionPathX1 = Math.max(0, targetX - destructionWidth);
+                        let destructionPathX2 = Math.min(this.frame[0].length, targetX + destructionWidth);
 
-                    for (let loop3 = destructionPathX1; loop3 < destructionPathX2; loop3++) {
-                        if (this.frame[targetY][loop3] === "1" && Functions.randomGenerator(0, 1, false) > 0.33) {
-                            this.frame[targetY][loop3] = '0'; // transparent/blank
+                        for (let loop3 = destructionPathX1; loop3 < destructionPathX2; loop3++) {
+                            if (this.frame[targetY][loop3] === "1" && Functions.randomGenerator(0, 1, false) > 0.33) {
+                                this.frame[targetY][loop3] = '0'; // transparent/blank
+                            }
                         }
                     }
-                }
 
+                }
             }
         }
-
         return shieldHit; // Returns true if any part of the shield was hit
     }
 
