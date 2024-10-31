@@ -228,7 +228,7 @@ function checkEnemyShip(deltaTime) {
         }
     } else {
         enemyShip.update(deltaTime);
-        if (enemyShip.isDead()){
+        if (enemyShip.isDead()) {
             enemyShip = null;
         }
     }
@@ -322,6 +322,17 @@ function checkLaserShieldCollision() {
         }
     });
     return hit;
+}
+
+function checkLaserShipCollision(player) {
+    if (laser && enemyShip) {
+            const colliding = laser.isCollidingWith(enemyShip); //const hit = laser.processCollisionWith(shield, false);
+            if (colliding) {
+                player.score += enemyShip.value;
+                enemyShip.setHit();
+                laser = null;
+            }
+    }
 }
 
 function checkBombShieldCollision() {
@@ -450,7 +461,7 @@ export function gameLoop(ctx, deltaTime) {
     keyboardInput.update();
     const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     checkLaser(deltaTime, laserFirePoint);
-
+    checkLaserShipCollision(player);
     animate(deltaTime);
 
     checkLaserEnemyCollision(player);

@@ -78,7 +78,7 @@ class EnemyShip extends ObjectDynamic {
 
         console.log(Functions.randomGenerator(0,1,true));
 
-        let velocityX = 200;
+        let velocityX = 150;
         let x = -(dimensions.width);  // off left screen the width of ship
 
         if (Functions.randomGenerator(0,1,true)){
