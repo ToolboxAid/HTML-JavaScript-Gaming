@@ -75,7 +75,7 @@ class CanvasUtils {
     }
 
     // Method to draw the current frame
-    static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '') {
+    static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '', drawBounds = false) {
         // Define a color map for letters
         const colorMap = {
             'R': 'red',
@@ -120,7 +120,7 @@ class CanvasUtils {
             }
         }
 
-        if (false) {
+        if (drawBounds) {
             let dimensions = CanvasUtil.spriteWidthHeight(frame, pixelSize);
             CanvasUtils.drawBounds(ctx, x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }

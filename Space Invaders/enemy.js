@@ -98,7 +98,6 @@ class Enemy extends ObjectDynamic {
 
     static deadModulus = 4;
     static frameCount = 3;
-    //update(delta = 1) {
     checkMoveDown(){
         if (Date.now() >= this.moveDownTime && this.doMoveDown) {
             this.y += this.height;  // Drop by the height value

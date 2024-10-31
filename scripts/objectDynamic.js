@@ -48,7 +48,7 @@ class ObjectDynamic extends ObjectStatic {
      * Updates the position of the object based on its velocity and delta time.
      * @param {number} deltaTime - The time elapsed since the last update, in seconds.
      */
-    update(deltaTime) {
+    update(deltaTime = 1) {
         this.x += this.velocityX * deltaTime;
         this.y += this.velocityY * deltaTime;
     }
