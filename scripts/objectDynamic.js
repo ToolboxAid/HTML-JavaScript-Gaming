@@ -113,7 +113,7 @@ class ObjectDynamic extends ObjectStatic {
     }
 
 
-isCollidingWith(object) {
+    isCollidingWith(object) {
         return (
             this.x + this.width >= object.x &&
             this.x <= object.x + object.width &&
@@ -122,13 +122,6 @@ isCollidingWith(object) {
         );
     }
 
-    /*
-    Renamed to:
-resolveCollisionWith(object, updatePosition = true)
-handleCollisionResponse(object, updatePosition = true)
-processCollisionWith(object, updatePosition = true)
-*/
-    //    static firstTime = false;
     processCollisionWith(object, updatePosition = true) {
         // Check if the object is within the object's bounds
         if (

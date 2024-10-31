@@ -3,11 +3,13 @@
 // 10/24/2024
 // enemy.js
 
-import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
+//import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
+
+import ObjectDynamic from '../scripts/objectDynamic.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
-class Enemy extends ObjectStatic {
+class Enemy extends ObjectDynamic {
     static direction = 1;
     static move = 10;
     static speed = 0;
@@ -88,9 +90,6 @@ class Enemy extends ObjectStatic {
         return (number <= this.bombAggression);
     }
 
-    update(delta = 1) {
-        this.y += 1;
-    }
 
     setMoveDownTimer(moveDownDelay) {
         this.doMoveDown = true;

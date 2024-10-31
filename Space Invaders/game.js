@@ -312,11 +312,11 @@ function checkEnimyShieldCollision() {
             const colliding = enemy.isCollidingWith(shield);
             if (colliding) {
                 if (shield.applyBigBoom(enemy)) {
-                    console.log("enimy hit shield");
+                    //console.log("enimy hit shield");
                 }
             }
         });
-});
+    });
 }
 
 function checkBombGroundCollision() {
@@ -351,7 +351,7 @@ function checkBombPlayerCollision() {
             console.log("playerhit");
             enemyBomb.setIsDead();
             //player.setIsDead();
-            player.lives -=1;
+            player.lives -= 1;
             // ground.setIsDead();
             o1 = new ObjectStatic(player.x, player.y, player.width, player.height);
             o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
@@ -391,7 +391,7 @@ export function gameLoop(ctx, deltaTime) {
     removeDeadEnemy();
     removeDeadBomb();
 
-    //checkEnimyShieldCollision();
+    checkEnimyShieldCollision();
     checkBombShieldCollision();
     checkBombGroundCollision();
     checkBombPlayerCollision();
@@ -400,7 +400,7 @@ export function gameLoop(ctx, deltaTime) {
     let laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     if (!laser) {
         if (laserFirePoint) {
-            laser = new Laser(laserFirePoint.x, laserFirePoint.y-10);
+            laser = new Laser(laserFirePoint.x, laserFirePoint.y - 10);
             o3 = new ObjectStatic(laser.x, laser.y, laser.width, laser.height);
         }
     } else { //} if (laser) {
