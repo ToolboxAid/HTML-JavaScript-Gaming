@@ -337,6 +337,8 @@ function checkBombPlayerCollision() {
         if (colliding) {
  //           console.log("player");
             enemyBomb.setIsDead();
+            //player.setIsDead();
+            player.lives -=1;
             // ground.setIsDead();
             o1 = new ObjectStatic(player.x, player.y, player.width, player.height);
             o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
@@ -396,7 +398,6 @@ export function gameLoop(ctx, deltaTime) {
             if (hit) {
                 laser = null;
             }
-
         }
     }
 
