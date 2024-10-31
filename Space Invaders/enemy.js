@@ -96,16 +96,17 @@ class Enemy extends ObjectDynamic {
         this.moveDownTime = Date.now() + moveDownDelay;
     }
 
-    static deadModulue = 4;
+    static deadModulus = 4;
     static frameCount = 3;
-    update(delta = 1) {
+    //update(delta = 1) {
+    checkMoveDown(){
         if (Date.now() >= this.moveDownTime && this.doMoveDown) {
             this.y += this.height;  // Drop by the height value
             this.moveDownTime = Date.now() + this.moveDownDelay; // Set the next drop time
             this.doMoveDown = false;
         }
         if (this.state === Enemy.Status.DYING) {
-            if (this.dyingDelay++ >= Enemy.deadModulue * Enemy.frameCount) {
+            if (this.dyingDelay++ >= Enemy.deadModulus * Enemy.frameCount) {
                 this.state = Enemy.Status.DEAD
             }
         }
@@ -132,7 +133,7 @@ class Enemy extends ObjectDynamic {
             CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize, spriteColor);
         } else if (this.state === Enemy.Status.DYING) {
 
-            let currentFrameIndex = Math.floor((this.dyingDelay / Enemy.deadModulue) % Enemy.frameCount);
+            let currentFrameIndex = Math.floor((this.dyingDelay / Enemy.deadModulus) % Enemy.frameCount);
             CanvasUtils.drawSprite(ctx, this.x, this.y, Enemy.dyingFrames[this.currentFrameIndex], this.pixelSize, spriteColor);
         }
     }

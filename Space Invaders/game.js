@@ -214,10 +214,10 @@ function enimiesDropBomb(deltaTime) {
     });
 }
 
-function updateEnimies(deltaTime) {
-    enemySquids.forEach(enemySquid => enemySquid.update(deltaTime));
-    enemyOctopuses.forEach(enemyOctopus => enemyOctopus.update(deltaTime));
-    enemyCrabs.forEach(enemyCrab => enemyCrab.update(deltaTime));
+function checkEnimiesMoveDown() {
+    enemySquids.forEach(enemySquid => enemySquid.checkMoveDown());
+    enemyOctopuses.forEach(enemyOctopus => enemyOctopus.checkMoveDown());
+    enemyCrabs.forEach(enemyCrab => enemyCrab.checkMoveDown());
 }
 
 function updateBombs(deltaTime) {
@@ -393,6 +393,7 @@ export function gameLoop(ctx, deltaTime) {
     checkBombShieldCollision();
     checkBombGroundCollision();
     checkBombPlayerCollision();
+    checkEnimiesMoveDown();
 
     keyboardInput.update();
     let laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
@@ -414,7 +415,6 @@ export function gameLoop(ctx, deltaTime) {
 
     animate(deltaTime);
 
-    updateEnimies(deltaTime);
     updateBombs(deltaTime);
 
     if (laser) {
