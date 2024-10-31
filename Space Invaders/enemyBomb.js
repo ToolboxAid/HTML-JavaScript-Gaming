@@ -16,8 +16,10 @@ class EnemyBomb extends ObjectDynamic {
     });
 
     constructor(x, y, frames) {
-        const dimensions = CanvasUtils.spriteWidthHeight(frames, window.pixelSize);
+        const dimensions = CanvasUtils.spriteWidthHeight(frames[0], window.pixelSize);
+        //console.log("EnemyBomb: width:",dimensions.width," height: ", dimensions.height);
         super(x, y, dimensions.width, dimensions.height, 0, 300);
+
         this.pixelSize = window.pixelSize;
         this.state === EnemyBomb.Status.ALIVE;
         this.velocityX = 0;

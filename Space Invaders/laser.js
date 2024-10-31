@@ -23,7 +23,6 @@ class Laser extends ObjectDynamic {
         "1",
         "1",
         "1",
-        "1",
     ]
 
     constructor(x, y) {

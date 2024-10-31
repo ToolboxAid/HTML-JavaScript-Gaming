@@ -133,8 +133,8 @@ class Enemy extends ObjectStatic {
             CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize, spriteColor);
         } else if (this.state === Enemy.Status.DYING) {
 
-            let frameNum = Math.floor((this.dyingDelay / Enemy.deadModulue) % Enemy.frameCount);
-            CanvasUtils.drawSprite(ctx, this.x, this.y, Enemy.dyingFrames[frameNum], this.pixelSize, spriteColor);
+            let currentFrameIndex = Math.floor((this.dyingDelay / Enemy.deadModulue) % Enemy.frameCount);
+            CanvasUtils.drawSprite(ctx, this.x, this.y, Enemy.dyingFrames[this.currentFrameIndex], this.pixelSize, spriteColor);
         }
     }
 

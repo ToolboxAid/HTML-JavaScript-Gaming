@@ -26,6 +26,7 @@ import EnemyShip from './enemyShip.js';
 import EnemyBomb1 from './enemyBomb1.js';
 import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
+import ObjectStatic from '../scripts/objectStatic.js';
 
 // Initialize player
 const player1 = new Player(100, 810);// was 790
@@ -112,7 +113,9 @@ function initializeEnemies() {
 
 // Function to initialize shield positions
 function initializeShields() {
+    //console.log("Shields");
     for (let i = 0; i < numShields; i++) {
+        //console.log("Shield");
         const x = shieldSpacing + i * (shieldWidth + shieldSpacing);
         const shield = new Shield(x, shieldYPosition);
         shields.push(shield);
@@ -250,8 +253,8 @@ function drawGround(ctx) {
     grounds.forEach(ground => {
         ground.draw(ctx);
     });
-    
-    CanvasUtils.drawLine(ctx, 0, groundY+5, canvasConfig.width, groundY+5, 5, "brown");
+
+    CanvasUtils.drawLine(ctx, 0, groundY + 5, canvasConfig.width, groundY + 5, 5, "brown");
 }
 
 function checkLaserEnemyCollision(player) {
@@ -306,11 +309,38 @@ function checkBombGroundCollision() {
         grounds.forEach(ground => {
             const colliding = enemyBomb.isCollidingWith(ground);
             if (colliding) {
-                console.log("ground");
                 enemyBomb.setIsDead();
                 ground.setIsDead();
             }
         });
+    });
+}
+
+
+
+let o1 = null;
+let o2 = null;
+let o3 = null;
+function drawCollision(ctx) {
+    if (o1) {
+        CanvasUtils.drawBounds(ctx, o1.x, o1.y, o1.width, o1.height, "red", 3);
+        CanvasUtils.drawBounds(ctx, o2.x, o2.y, o2.width, o2.height, "pink", 3);
+    }
+    if (o3) {
+        CanvasUtils.drawBounds(ctx, o3.x, o3.y, o3.width, o3.height, "orange", 3);
+    }
+}
+
+function checkBombPlayerCollision() {
+    enemyBombs.forEach(enemyBomb => {
+        const colliding = enemyBomb.isCollidingWith(player);
+        if (colliding) {
+ //           console.log("player");
+            enemyBomb.setIsDead();
+            // ground.setIsDead();
+            o1 = new ObjectStatic(player.x, player.y, player.width, player.height);
+            o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
+        }
     });
 }
 
@@ -348,12 +378,14 @@ export function gameLoop(ctx, deltaTime) {
 
     checkBombShieldCollision();
     checkBombGroundCollision();
+    checkBombPlayerCollision();
 
     keyboardInput.update();
     let laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     if (!laser) {
         if (laserFirePoint) {
-            laser = new Laser(laserFirePoint.x, laserFirePoint.y);
+            laser = new Laser(laserFirePoint.x, laserFirePoint.y-10);
+            o3 = new ObjectStatic(laser.x, laser.y, laser.width, laser.height);
         }
     } else { //} if (laser) {
         if (laser.update(deltaTime)) { // Update laser position
@@ -398,6 +430,9 @@ export function gameLoop(ctx, deltaTime) {
     enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx, "white"));
     enemyShip.draw(ctx);
     drawGround(ctx);
+
+
+    //drawCollision(ctx);
 }
 
 // Initialize enemies and shields

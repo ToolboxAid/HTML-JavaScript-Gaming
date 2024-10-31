@@ -31,11 +31,12 @@ class Shield extends ObjectStatic {
         "1111110000000000000111111",
         "1111110000000000000111111",
         "1111110000000000000111111",
-    ].map(row => row.split("")); // Convert strings to arrays of characters for easy modification
+
+    ];//.map(row => row.split("")); // Convert strings to arrays of characters for easy modification
 
     // Check if enemyBomb or its frame is undefined, and assign a default frame if needed
     // Define a default frame pattern
-    static defaultFrame = [
+    static defaultBomb = [
         "010",
         "100",
         "010",
@@ -47,7 +48,7 @@ class Shield extends ObjectStatic {
         "010",
         "100",
         "010",
-    ].map(row => row.split("")); // Convert to a 2D array of characters;
+    ]//.map(row => row.split("")); // Convert to a 2D array of characters;
 
     constructor(x, y) {
         let dimensions = CanvasUtils.spriteWidthHeight(Shield.frame, window.pixelSize);
@@ -60,7 +61,6 @@ class Shield extends ObjectStatic {
     draw(ctx) {
         CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize, spriteConfig.shieldColor);
     }
-
 
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
     applyBigBoom(enemyBomb) {
@@ -79,7 +79,7 @@ class Shield extends ObjectStatic {
                 overlayFrame = enemyBomb.frames.map(row => Array.from(row)); // Adjust based on actual type
             }
         } else {
-            overlayFrame = Shield.defaultFrame; // Fallback to default frame
+            overlayFrame = Shield.defaultBomb; // Fallback to default frame
             console.log("Error: fix overlayFrame", overlayFrame);
         }
 

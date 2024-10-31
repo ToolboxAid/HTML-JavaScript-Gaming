@@ -126,19 +126,39 @@ class CanvasUtils {
         }
     }
 
-    static spriteWidthHeight(frame, pixelSize, debug = false) {
-
+    static spriteWidthHeight(object, pixelSize, debug = false) {
+        let width, height, frame;
+    
+        if (Array.isArray(object) && Array.isArray(object[0])) {
+            // Multi-dimensional array (each element is an array, implying rows of frames)
+            frame = object.map(row => Array.from(row));
+            height = frame.length; // Number of rows
+            width = frame[0]?.length || 0; // Length of each row (assuming uniform row lengths)
+            
             if (debug) {
-                console.log(pixelSize);
-                console.log(frame);
-                console.log(frame[0].length);
-                console.log(frame.length);
+                console.log(`Multi-dimensional array detected. Width: ${width}, Height: ${height}`);
+                console.log(frame); // Display the actual frame for verification
+            }            
+        } else if (Array.isArray(object)) {
+            // Single-dimensional array (likely one frame as an array of strings or characters)
+            frame = Array.from(object); // Create a copy for manipulation
+            height = frame.length; // Number of elements (lines or rows)
+            width = frame[0]?.length || 1; // Length of each line or character    
+            if (debug) {
+                console.log(`Single-dimensional array detected. Width: ${width}, Height: ${height}`);
+                console.log(frame); // Display the actual frame for verification
             }
+        } else {
+            console.error("Invalid object format");
+            return { width: 0, height: 0 };
+        }
 
-        let w = Math.ceil(pixelSize * frame[0].length);
-        let h = Math.ceil(pixelSize * frame.length);
-        return { width: w, height: h };
+        width = Math.round(width);
+        height = Math.round(height);
+
+        return { width: width * pixelSize, height: height * pixelSize };
     }
+    
 
     static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
         ctx.lineWidth = lineWidth;
@@ -213,7 +233,7 @@ class CanvasUtils {
     static async animate(time) {
         const canvas = document.getElementById('gameArea');
         if (canvas.getContext) {
-            const  ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d');
 
             const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
             this.lastTimestamp = time;
