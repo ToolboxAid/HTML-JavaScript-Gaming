@@ -305,13 +305,11 @@ function checkBombShieldCollision() {
 }
 
 function checkEnimyShieldCollision() {
-
-
     [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
         shields.forEach(shield => {
             const colliding = enemy.isCollidingWith(shield);
             if (colliding) {
-                if (shield.applyBigBoom(enemy)) {
+                if (shield.applyBigBoom(enemy, false)) {
                     //console.log("enimy hit shield");
                 }
             }

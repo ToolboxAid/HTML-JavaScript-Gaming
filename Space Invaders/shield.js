@@ -34,7 +34,7 @@ class Shield extends ObjectStatic {
 
     ];//.map(row => row.split("")); // Convert strings to arrays of characters for easy modification
 
-    // Check if enemyBomb or its frame is undefined, and assign a default frame if needed
+    // Check if distructiveObject or its frame is undefined, and assign a default frame if needed
     // Define a default frame pattern
     static defaultBomb = [
         "010",
@@ -63,20 +63,25 @@ class Shield extends ObjectStatic {
     }
 
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
-    applyBigBoom(enemyBomb, doOverlay = true) {
+    applyBigBoom(distructiveObject, doExplode = true) {
 
-        const { x: bombX, y: bombY, currentFrameIndex } = enemyBomb || {}; // Get bomb position and Index if defined 
+        const { x: bombX, y: bombY, currentFrameIndex } = distructiveObject || {}; // Get bomb position and Index if defined 
         const { x: shieldX, y: shieldY } = this; // Get shield position
 
-        // Use enemyBomb's frame if it exists; otherwise, use the default frame
+        // Use distructiveObject's frame if it exists; otherwise, use the default frame
         let overlayFrame;
-        if (enemyBomb && enemyBomb.frames) {
-            if (Array.isArray(enemyBomb.frames[0])) {
+        if (distructiveObject && distructiveObject.frames) {
+            if (Array.isArray(distructiveObject.frames[0])) {
                 // multi dimension Array
-                overlayFrame = enemyBomb.frames[currentFrameIndex].map(row => Array.from(row)); // Use it directly if it's already in the correct format
+                overlayFrame = distructiveObject.frames[currentFrameIndex].map(row => Array.from(row)); // Use it directly if it's already in the correct format
+
+                // if (distructiveObject.constructor.name === "EnemyCrab") {
+                //     console.log("This object is a EnemyCrab!");
+                // }
+                //console.log(distructiveObject.constructor.name);
             } else {
                 // single dimention
-                overlayFrame = enemyBomb.frames.map(row => Array.from(row)); // Adjust based on actual type
+                overlayFrame = distructiveObject.frames.map(row => Array.from(row)); // Adjust based on actual type
             }
         } else {
             overlayFrame = Shield.defaultBomb; // Fallback to default frame
@@ -91,7 +96,7 @@ class Shield extends ObjectStatic {
 
         // overlay shield frame debug
         if (false) {
-            console.log(overlayFrame.length, overlayFrame[0].length, this.frame.length, this.frame[0].length, enemyBomb.currentFrameIndex);
+            console.log(overlayFrame.length, overlayFrame[0].length, this.frame.length, this.frame[0].length, distructiveObject.currentFrameIndex);
 
             for (let c = 0; c < overlayFrame.length; c++) { // c for rows (height)
                 let stg = "";
@@ -111,34 +116,42 @@ class Shield extends ObjectStatic {
         }
 
         // Loop through the shield frame and apply overlay where needed
-        if (doOverlay) {
-            for (let c = 0; c < this.frame.length; c++) { // c for rows (height)
-                for (let r = 0; r < this.frame[0].length; r++) { // r for columns (width)
-                    const targetX = r + offsetX;
-                    const targetY = c + offsetY;
 
-                    // Ensure `targetX` and `targetY` are within bounds and check for overlap with `overlayFrame`
-                    if (
-                        targetX >= 0 && targetX < this.frame[0].length &&
-                        targetY >= 0 && targetY < this.frame.length &&
-                        overlayFrame[c]?.[r] === "1" &&
-                        this.frame[targetY][targetX] === "1"
-                    ) {
-                        shieldHit = true;
-                        this.frame[targetY][targetX] = "0"; // Apply overlay by setting to '0'
+        for (let c = 0; c < this.frame.length; c++) { // c for rows (height)
+            for (let r = 0; r < this.frame[0].length; r++) { // r for columns (width)
+                const targetX = r + offsetX;
+                const targetY = c + offsetY;
 
-                        // Apply further destruction pattern
+                // Ensure `targetX` and `targetY` are within bounds and check for overlap with `overlayFrame`
+                if (
+                    targetX >= 0 && targetX < this.frame[0].length &&
+                    targetY >= 0 && targetY < this.frame.length &&
+                    overlayFrame[c]?.[r] === "1" &&
+                    this.frame[targetY][targetX] === "1"
+                ) {
+                    shieldHit = true;
+                    this.frame[targetY][targetX] = "0"; // Apply overlay by setting to '0'
+
+                    // Apply further destruction pattern
+                    if (doExplode) {// random explosion of pixels
                         const destructionWidth = 2;
-                        let destructionPathX1 = Math.max(0, targetX - destructionWidth);
-                        let destructionPathX2 = Math.min(this.frame[0].length, targetX + destructionWidth);
-
+                        const destructionPathX1 = Math.max(0, targetX - destructionWidth);
+                        const destructionPathX2 = Math.min(this.frame[0].length, targetX + destructionWidth);
                         for (let loop3 = destructionPathX1; loop3 < destructionPathX2; loop3++) {
                             if (this.frame[targetY][loop3] === "1" && Functions.randomGenerator(0, 1, false) > 0.33) {
                                 this.frame[targetY][loop3] = '0'; // transparent/blank
                             }
                         }
+                    } else {
+                        const destructionWidth = 4;
+                        const destructionPathX1 = Math.max(0, targetX - destructionWidth);
+                        const destructionPathX2 = Math.min(this.frame[0].length, targetX + destructionWidth);
+                        for (let loop3 = destructionPathX1; loop3 < destructionPathX2; loop3++) {
+                            if (this.frame[targetY][loop3] === "1") {
+                                this.frame[targetY][loop3] = '0'; // transparent/blank
+                            }
+                        }
                     }
-
                 }
             }
         }
