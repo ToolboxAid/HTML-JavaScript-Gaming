@@ -8,7 +8,6 @@ import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 
-
 class EnemyShip extends ObjectDynamic {
 
     static livingFrames = [
@@ -73,25 +72,56 @@ class EnemyShip extends ObjectDynamic {
         DEAD: 'dead'
     });
 
-    constructor(y) {
+    getValue() {
+        let value = 0;
+        const switchValue = Functions.randomGenerator(0, 3, true);
+        switch (switchValue) {
+            case 0:
+                value = 50;
+                break;
+            case 1:
+                value = 100;
+                break;
+            case 2:
+                value = 250;
+                break;
+            case 3:
+                value = 500;
+                break;
+        }
+        return value;
+    }
+
+    constructor(y, dyingModulus = 5) {
         const dimensions = CanvasUtils.spriteWidthHeight(EnemyShip.livingFrames[0], spriteConfig.pixelSize);
 
         let velocityX = 150;
         let x = -(dimensions.width);  // off left screen the width of ship
-
-        if (Functions.randomGenerator(0,1,true)){
+        if (Functions.randomGenerator(0, 1, true)) {
             velocityX *= -1;
-            x = canvasConfig.width+dimensions.width;  // off right screen width of ship
-        }       
+            x = canvasConfig.width + dimensions.width;  // off right screen width of ship
+        }
+
 
         super(x, y, dimensions.width, dimensions.height, velocityX, 0);
-        this.value = 50;
+
+        this.status = EnemyShip.Status.ALIVE;
+        this.value = this.getValue();
 
         this.currentFrameIndex = 0;
+
+        this.livingDelay = 0;
+        this.livingFrames = EnemyShip.livingFrames;
+        this.livingFrameCount = this.livingFrames.length;
+
         this.dyingDelay = 0;
+        this.dyingFrames = EnemyShip.dyingFrames;
+        this.dyingFrameCount = this.dyingFrames.length;
+
+        this.dyingModulus = dyingModulus;
     }
 
-    static nextShipDelay = 5 * 1000; // Convert seconds to milliseconds
+    static nextShipDelay = 25 * 1000; // Convert seconds to milliseconds
     static nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     static isCreationTime() {
         if (Date.now() > EnemyShip.nextShipTimer) {
@@ -101,13 +131,12 @@ class EnemyShip extends ObjectDynamic {
         return false;
     }
 
-    static deadModulus = 4;// this is ?????
-    static frameCount = 3;
 
     update(deltaTime) {
         super.update(deltaTime);
 
-        if (this.isAlive) {
+        if (this.isAlive()) { // is Alive
+            this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
             if (this.velocityX > 0) {// moving to right
                 if (this.x > canvasConfig.width + this.width) {
                     this.setHit();
@@ -117,46 +146,50 @@ class EnemyShip extends ObjectDynamic {
                     this.setHit();
                 }
             }
-        } else { // Dying or Dead
-            if (this.state === EnemyShip.Status.DYING) {
-                if (this.dyingDelay++ >= EnemyShip.deadModulus * EnemyShip.frameCount) {
-                    this.state = EnemyShip.Status.DEAD;
+        } else { // is Dying or Dead
+            if (this.isDying()) {
+                if (++this.dyingDelay >= this.dyingModulus * this.dyingFrameCount) {
+                    this.setDead();
+                }
+                if (!this.isDead()) {
+                    this.currentFrameIndex = Math.floor((this.dyingDelay / this.dyingModulus) % this.dyingFrameCount);
                 }
             }
-            currentFrameIndex = Math.floor((this.dyingDelay / EnemyShip.deadModulus) % EnemyShip.frameCount);
         }
     }
 
     isAlive() {
-        return this.state === EnemyShip.Status.ALIVE;
+        return this.status === EnemyShip.Status.ALIVE;
     }
 
     setHit() {
         if (this.dyingFrames) {
-            this.state = EnemyShip.Status.DYING;
+            this.status = EnemyShip.Status.DYING;
         } else {
-            this.state = EnemyShip.Status.DEAD;
+            this.status = EnemyShip.Status.DEAD;
         }
     }
 
     isDying() {
-        return this.state === EnemyShip.Status.DYING;
+        return this.status === EnemyShip.Status.DYING;
     }
 
     isDead() {
         EnemyShip.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
-        return this.state === EnemyShip.Status.DEAD;
+        return this.status === EnemyShip.Status.DEAD;
     }
 
     setDead() {
-        this.state = EnemyShip.Status.DEAD;
+        this.status = EnemyShip.Status.DEAD;
     }
 
     draw(ctx) {
         if (this.isAlive()) {
-            CanvasUtils.drawSprite(ctx, this.x, this.y, EnemyShip.livingFrames[0], spriteConfig.pixelSize, spriteConfig.shipColor);
+            CanvasUtils.drawSprite(ctx, this.x, this.y, this.livingFrames[this.currentFrameIndex], spriteConfig.pixelSize, spriteConfig.shipColor);
         } else {
-            CanvasUtils.drawSprite(ctx, this.x, this.y, EnemyShip.dyingFrames[this.currentFrameIndex], spriteConfig.pixelSize, spriteConfig.shipColor);
+            if (this.isDying()) {
+                CanvasUtils.drawSprite(ctx, this.x, this.y, this.dyingFrames[this.currentFrameIndex], spriteConfig.pixelSize, spriteConfig.shipColor);
+            }
         }
     }
 
