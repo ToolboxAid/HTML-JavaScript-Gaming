@@ -90,7 +90,6 @@ class Enemy extends ObjectDynamic {
         return (number <= this.bombAggression);
     }
 
-
     setMoveDownTimer(moveDownDelay) {
         this.doMoveDown = true;
         this.moveDownTime = Date.now() + moveDownDelay;
@@ -131,8 +130,6 @@ class Enemy extends ObjectDynamic {
         if (this.state === Enemy.Status.ALIVE) {
             CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize, spriteColor);
         } else if (this.state === Enemy.Status.DYING) {
-
-            let currentFrameIndex = Math.floor((this.dyingDelay / Enemy.deadModulus) % Enemy.frameCount);
             CanvasUtils.drawSprite(ctx, this.x, this.y, Enemy.dyingFrames[this.currentFrameIndex], this.pixelSize, spriteColor);
         }
     }

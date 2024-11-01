@@ -22,7 +22,7 @@ class EnemyBomb extends ObjectDynamic {
         this.pixelSize = window.pixelSize;
         this.state === EnemyBomb.Status.ALIVE;
         this.velocityX = 0;
-        this.velocityY = 175 ;
+        this.velocityY = 175;
 
         this.frames = frames;
         this.currentFrameIndex = 0;
@@ -54,8 +54,7 @@ class EnemyBomb extends ObjectDynamic {
         }
 
         if (this.y <= 0 || this.y > canvasConfig.width ||
-            this.x <= 0 || this.x > canvasConfig.height
-        ){
+            this.x <= 0 || this.x > canvasConfig.height) {
             this.setIsDead();
         }
     }

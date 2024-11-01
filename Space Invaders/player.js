@@ -61,7 +61,7 @@ class Player extends ObjectDynamic {
             let laserPoint = { x: this.x + (this.width / 2), y: this.y };
             return laserPoint;
         }
-        return;// empty
+        return; // empty
     }
 }
 
