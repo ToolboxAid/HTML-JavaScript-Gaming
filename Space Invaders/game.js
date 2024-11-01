@@ -266,8 +266,6 @@ function drawGround(ctx) {
     grounds.forEach(ground => {
         ground.draw(ctx);
     });
-
-    CanvasUtils.drawLine(ctx, 0, groundY + 5, canvasConfig.width, groundY + 5, 5, "brown");
 }
 
 function checkLaserEnemyCollision(player) {

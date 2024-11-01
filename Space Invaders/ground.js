@@ -9,6 +9,7 @@ import Functions from '../scripts/functions.js';
 
 class Ground extends ObjectStatic {
 
+    static counter = 0;
     static Status = Object.freeze({
         ALIVE: 'alive',
         DEAD: 'dead'
@@ -18,10 +19,13 @@ class Ground extends ObjectStatic {
     constructor(x, y,) {
         super(x, y, Ground.groundSize, Ground.groundSize);
         this.state = Ground.Status.ALIVE;
+        this.isKillable = (Ground.counter++ % 2) === 0;
     }
 
     setIsDead() {
-        this.state = Ground.Status.DEAD;
+        if (this.isKillable) {
+            this.state = Ground.Status.DEAD;
+        }
     }
 
     draw(ctx, spriteColor = "green") {
