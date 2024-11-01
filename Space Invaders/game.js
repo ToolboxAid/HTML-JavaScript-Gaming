@@ -113,9 +113,7 @@ function initializeEnemies() {
 
 // Function to initialize shield positions
 function initializeShields() {
-    //console.log("Shields");
     for (let i = 0; i < numShields; i++) {
-        //console.log("Shield");
         const x = shieldSpacing + i * (shieldWidth + shieldSpacing);
         const shield = new Shield(x, shieldYPosition);
         shields.push(shield);
@@ -220,11 +218,10 @@ function checkEnemiesMoveDown() {
     enemyCrabs.forEach(enemyCrab => enemyCrab.checkMoveDown());
 }
 
-
 function checkEnemyShip(deltaTime) {
     if (!enemyShip) {
         if (EnemyShip.isCreationTime()) {
-            enemyShip = new EnemyShip(145);
+            enemyShip = new EnemyShip();
         }
     } else {
         enemyShip.update(deltaTime);
@@ -326,7 +323,7 @@ function checkLaserShipCollision(player) {
     if (laser && enemyShip) {
             const colliding = laser.isCollidingWith(enemyShip); //const hit = laser.processCollisionWith(shield, false);
             if (colliding) {
-                player.score += enemyShip.value;
+                player.score += enemyShip.getValue();
                 enemyShip.setHit();
                 laser = null;
             }

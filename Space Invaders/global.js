@@ -8,8 +8,8 @@
 export const canvasConfig = {
     width: 896, // Game area width (256 * 4)
     height: 960, // Game area height (240 * 4)
-    scale: 0.6,
-    backgroundColor: "#000000",   
+    scale: 0.5,
+    backgroundColor: "#222222",   
     
     fullscreenText: 'Click game to enter fullscreen',
     fullscreenFont: '50px Arial',
@@ -21,6 +21,9 @@ export const canvasConfig = {
 
 export const spriteConfig = {
     pixelSize: 3.5,
+    shipY: 145,
+    shipVelX: 150,
+    shipSpawnSec: 25,
     shipColor: 'red',
     crabColor: 'orange',
     octopusColor: 'yellow',

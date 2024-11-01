@@ -5,7 +5,7 @@
 
 import ObjectDynamic from './objectDynamic.js';
 import CanvasUtils from './canvas.js';
-//import { spriteConfig } from '../Space Invaders/global.js';
+import { spriteConfig } from '../Space Invaders/global.js';
 
 class ObjectKillable extends ObjectDynamic {
     static Status = Object.freeze({
@@ -14,8 +14,8 @@ class ObjectKillable extends ObjectDynamic {
         DEAD: 'dead'
     });
 
-    constructor(x, y, dyingModulus = 5) {
-        const dimensions = CanvasUtils.spriteWidthHeight(ObjectKillable.livingFrames[0], spriteConfig.pixelSize);
+    constructor(x, y, livingFrames, dyingFrames, velocityX = 0, velocityY = 0, dyingModulus = 5) {
+        const dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
 
         super(x, y, dimensions.width, dimensions.height, velocityX, 0);
 
@@ -24,29 +24,27 @@ class ObjectKillable extends ObjectDynamic {
         this.currentFrameIndex = 0;
 
         this.livingDelay = 0;
-        this.livingFrames = ObjectKillable.livingFrames;
+        this.livingFrames = livingFrames;
         this.livingFrameCount = this.livingFrames.length;
 
         this.dyingDelay = 0;
-        this.dyingFrames = ObjectKillable.dyingFrames;
+        this.dyingFrames = dyingFrames;
         this.dyingFrameCount = this.dyingFrames.length;
 
         this.dyingModulus = dyingModulus;
     }
 
-
     update(deltaTime) {
-        super.update(deltaTime);
-
         if (this.isAlive()) { // is Alive
+            super.update(deltaTime);
             this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
         } else { // is Dying or Dead
             if (this.isDying()) {
-                this.dyingDelay;
+                this.dyingDelay++;
+
                 if (this.dyingDelay >= this.dyingModulus * this.dyingFrameCount) {
                     this.setDead();
-                }
-                if (!this.isDead()) {
+                } else {
                     this.currentFrameIndex = Math.floor((this.dyingDelay / this.dyingModulus) % this.dyingFrameCount);
                 }
             }
@@ -57,20 +55,20 @@ class ObjectKillable extends ObjectDynamic {
         return this.status === ObjectKillable.Status.ALIVE;
     }
 
-    setHit() {
-        if (this.dyingFrames) {
-            this.status = ObjectKillable.Status.DYING;
-        } else {
-            this.status = ObjectKillable.Status.DEAD;
-        }
-    }
-
     isDying() {
         return this.status === ObjectKillable.Status.DYING;
     }
 
     isDead() {
         return this.status === ObjectKillable.Status.DEAD;
+    }
+
+    setHit() {
+        if (this.dyingFrames) {
+            this.status = ObjectKillable.Status.DYING;
+        } else {
+            this.status = ObjectKillable.Status.DEAD;
+        }
     }
 
     setDead() {
