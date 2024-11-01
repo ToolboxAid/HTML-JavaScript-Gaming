@@ -84,8 +84,8 @@ class Shield extends ObjectStatic {
                 overlayFrame = distructiveObject.frames.map(row => Array.from(row)); // Adjust based on actual type
             }
         } else {
+            console.log("Error: fix overlayFrame", overlayFrame, distructiveObject);
             overlayFrame = Shield.defaultBomb; // Fallback to default frame
-            console.log("Error: fix overlayFrame", overlayFrame);
         }
 
         let shieldHit = false;

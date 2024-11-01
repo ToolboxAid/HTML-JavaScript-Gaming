@@ -6,19 +6,14 @@
 //import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
 
 import ObjectDynamic from '../scripts/objectDynamic.js';
+import ObjectKillable from '../scripts/objectKillable.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
-class Enemy extends ObjectDynamic {
+class Enemy extends ObjectKillable {
     static direction = 1;
     static move = 10;
     static speed = 0;
-
-    static Status = Object.freeze({
-        ALIVE: 'alive',
-        DYING: 'dying',
-        DEAD: 'dead'
-    });
 
     static dyingFrames = [
         [
@@ -59,20 +54,13 @@ class Enemy extends ObjectDynamic {
         ]
     ];
 
-    constructor(x, y, frames, bombAggression) {
-        const dimensions = CanvasUtils.spriteWidthHeight(frames[0], window.pixelSize);
-        super(x, y, dimensions.width, dimensions.height);
-        this.state = Enemy.Status.ALIVE;
-        this.pixelSize = window.pixelSize;
-        this.frames = frames;
-        this.currentFrameIndex = 0;
+    constructor(x, y, livingFrames, bombAggression) {
+        super(x, y, livingFrames, Enemy.dyingFrames);
 
         // disable move enemy to next line.
         this.doMoveDown = false;
         this.moveDownDelay = 0;
         this.moveDownTime = 0;
-
-        this.dyingDelay = 0;
 
         this.bombAggression = 3 + (bombAggression * 2);
     }
@@ -85,7 +73,11 @@ class Enemy extends ObjectDynamic {
         Enemy.speed = speed;
     }
 
-    getDropBomb() {
+    update() {
+        this.updateDyingFrames();
+    }
+
+    isDropBombTime() {
         const number = Functions.randomGenerator(0, 10000, true);
         return (number <= this.bombAggression);
     }
@@ -95,48 +87,18 @@ class Enemy extends ObjectDynamic {
         this.moveDownTime = Date.now() + moveDownDelay;
     }
 
-    static deadModulus = 4;
-    static frameCount = 3;
     checkMoveDown() {
         if (Date.now() >= this.moveDownTime && this.doMoveDown) {
-            this.y += this.height;  // Drop by the height value
-            this.moveDownTime = Date.now() + this.moveDownDelay; // Set the next drop time
+            this.y += this.height;
+            // Set the next drop time
+            this.moveDownTime = Date.now() + this.moveDownDelay;
             this.doMoveDown = false;
-        }
-        if (this.state === Enemy.Status.DYING) {
-            if (this.dyingDelay++ >= Enemy.deadModulus * Enemy.frameCount) {
-                this.state = Enemy.Status.DEAD
-            }
-        }
-    }
-
-    isDead() {
-        return this.state === Enemy.Status.DEAD;
-    }
-
-    setHit() {
-        this.state = Enemy.Status.DYING;
-    }
-
-    // Method to draw the current frame
-    draw(ctx, spriteColor = "#888888") {
-        if (!this.frames || this.frames.length === 0) {
-            console.warn("No frames available for drawing");
-            return;
-        }
-
-        const frame = this.frames[this.currentFrameIndex];
-
-        if (this.state === Enemy.Status.ALIVE) {
-            CanvasUtils.drawSprite(ctx, this.x, this.y, frame, this.pixelSize, spriteColor);
-        } else if (this.state === Enemy.Status.DYING) {
-            CanvasUtils.drawSprite(ctx, this.x, this.y, Enemy.dyingFrames[this.currentFrameIndex], this.pixelSize, spriteColor);
         }
     }
 
     // Method to switch to the next frame
     nextFrame() {
-        this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
+        this.currentFrameIndex = (this.currentFrameIndex + 1) % this.livingFrameCount;
         this.x += (Enemy.move + Enemy.speed) * Enemy.direction;
 
         const atRightBound = Enemy.direction > 0 && this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;

@@ -175,7 +175,12 @@ function animate(deltaTime) {
             if (!moveEnemyDown && atBounds) {
                 moveEnemyDown = true;
             }
+            enemy.update();
         });
+
+
+        
+
         if (moveEnemyDown) {
             Enemy.changeDirections();
             setEnemyMoveDown();
@@ -183,12 +188,18 @@ function animate(deltaTime) {
     }
 }
 
+function EnemiesUpdate(){
+            //---------------------------------------
+            [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
+                enemy.update();
+            });
+}
 function EnemiesDropBomb(deltaTime) {
     // Check if enemy should drop bomb
     [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
         for (let i = enemyArray.length - 1; i >= 0; i--) {
             const enemy = enemyArray[i];
-            if (enemy.getDropBomb()) {
+            if (enemy.isDropBombTime()) {
                 const bombWidth = 5;
 
                 const bombType = Functions.randomGenerator(0, 2, true); // Generate a random bomb type (0 to 2)
@@ -444,6 +455,8 @@ export function gameLoop(ctx, deltaTime) {
 
     removeDeadEnemy();
     removeDeadBomb();
+    updateBombs(deltaTime);
+    EnemiesUpdate();
 
     checkEnemyShieldCollision();
     checkBombShieldCollision();
@@ -461,7 +474,6 @@ export function gameLoop(ctx, deltaTime) {
     checkLaserEnemyCollision(player);
     checkLaserBombCollision();
 
-    updateBombs(deltaTime);
 
     // Draw scores
     drawScore(ctx);

@@ -3,9 +3,7 @@
 // 10/24/2024
 // enemyShip.js
 
-import ObjectDynamic from '../scripts/objectDynamic.js';
 import ObjectKillable from '../scripts/objectKillable.js';
-import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 
@@ -75,6 +73,7 @@ class EnemyShip extends ObjectKillable {
 
     constructor() {
         super(0, spriteConfig.shipY, EnemyShip.livingFrames, EnemyShip.dyingFrames, spriteConfig.shipVelX);
+        this.setSpriteColor(spriteConfig.shipColor);
         // place off left screen the width of ship moving right
         this.x = -(this.width);
         if (Functions.randomGenerator(0, 1, true)) {
@@ -122,19 +121,19 @@ class EnemyShip extends ObjectKillable {
             if (this.velocityX > 0) {
                 // moving to right
                 if (this.x > canvasConfig.width + this.width) {
-                    this.setDead();
+                    this.setIsDead();
                 }
             } else {
                 // moving to left
                 if (this.x < -(this.width)) {
-                    this.setDead();
+                    this.setIsDead();
                 }
             }
         }
     }
 
-    setDead() {// required for when objectKillable calls setDead.
-        super.setDead();
+    setIsDead() {// required for when objectKillable calls setIsDead.
+        super.setIsDead();
         EnemyShip.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     }
 }

@@ -74,39 +74,39 @@ class CanvasUtils {
         ctx.strokeRect(x, y, w, h);
     }
 
+    // Move the color map to be a static property of the class
+    static colorMap = {
+        'R': 'red',
+        'O': 'orange',
+        'Y': 'yellow',
+        'G': 'green',
+        'B': 'blue',
+        'I': 'indigo',
+        'V': 'violet',
+        '0': 'transparent', // '0' is transparent
+        '': 'transparent', // empty is transparent
+        '1': 'white', // default color for '1'
+        'b': 'black',
+        'w': 'white',
+        'P': 'pink',
+        'C': 'cyan',
+        'M': 'magenta',
+        'L': 'lightgray',
+        'D': 'darkgray',
+        'A': 'aqua',
+        'S': 'silver',
+        'N': 'navy',
+        'K': 'khaki',
+    };
+
     // Method to draw the current frame
     static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '', drawBounds = false) {
-        // Define a color map for letters
-        const colorMap = {
-            'R': 'red',
-            'O': 'orange',
-            'Y': 'yellow',
-            'G': 'green',
-            'B': 'blue',
-            'I': 'indigo',
-            'V': 'violet',
-            '0': 'transparent', // '0' is transparent
-            '': 'transparent', // empty is transparent
-            '1': 'white', // default color for '1'
-            'b': 'black',
-            'w': 'white',
-            'P': 'pink',
-            'C': 'cyan',
-            'M': 'magenta',
-            'L': 'lightgray',
-            'D': 'darkgray',
-            'A': 'aqua',
-            'S': 'silver',
-            'N': 'navy',
-            'K': 'khaki',
-        };
-
         let w = 0;
         let h = 0;
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
-                let color = colorMap[pixel] || 'transparent'; // Default to transparent if pixel is not in colorMap
+                let color = CanvasUtils.colorMap[pixel] || 'transparent'; // Use the static colorMap
 
                 // Replace white with spriteColor if present
                 if (pixel === '1' && spriteColor) {
@@ -115,30 +115,30 @@ class CanvasUtils {
                 ctx.fillStyle = color;
                 let roundX = Math.ceil((col * pixelSize) + x);
                 let roundY = Math.ceil((row * pixelSize) + y);
-                let roundpixelSize = Math.ceil(pixelSize); //pixelSize + 1; //Math.floor(pixelSize);//Math.ceil(pixelSize);
+                let roundpixelSize = Math.ceil(pixelSize);
                 ctx.fillRect(roundX, roundY, roundpixelSize, roundpixelSize);
             }
         }
 
         if (drawBounds) {
-            let dimensions = CanvasUtil.spriteWidthHeight(frame, pixelSize);
+            let dimensions = CanvasUtils.spriteWidthHeight(frame, pixelSize);
             CanvasUtils.drawBounds(ctx, x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
     }
 
     static spriteWidthHeight(object, pixelSize, debug = false) {
         let width, height, frame;
-    
+
         if (Array.isArray(object) && Array.isArray(object[0])) {
             // Multi-dimensional array (each element is an array, implying rows of frames)
             frame = object.map(row => Array.from(row));
             height = frame.length; // Number of rows
             width = frame[0]?.length || 0; // Length of each row (assuming uniform row lengths)
-            
+
             if (debug) {
                 console.log(`Multi-dimensional array detected. Width: ${width}, Height: ${height}`);
                 console.log(frame); // Display the actual frame for verification
-            }            
+            }
         } else if (Array.isArray(object)) {
             // Single-dimensional array (likely one frame as an array of strings or characters)
             frame = Array.from(object); // Create a copy for manipulation
@@ -158,7 +158,7 @@ class CanvasUtils {
 
         return { width: width * pixelSize, height: height * pixelSize };
     }
-    
+
 
     static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
         ctx.lineWidth = lineWidth;
