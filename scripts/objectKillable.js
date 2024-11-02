@@ -15,28 +15,39 @@ class ObjectKillable extends ObjectDynamic {
     });
 
     constructor(x, y, livingFrames, dyingFrames, velocityX = 0, velocityY = 0, dyingModulus = 5) {
+        // Ensure livingFrames is provided and is not empty
+        if (!livingFrames || livingFrames.length === 0) {
+            throw new Error("livingFrames must be provided and cannot be empty.");
+        }
+    
+        // Calculate dimensions based on the first living frame
         const dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
-
+    
         super(x, y, dimensions.width, dimensions.height, velocityX, velocityY);
-
+    
         this.status = ObjectKillable.Status.ALIVE;
-
         this.currentFrameIndex = 0;
-
+    
+        // Initialize living frames
         this.livingDelay = 0;
         this.livingFrames = livingFrames;
         this.livingFrameCount = this.livingFrames.length;
-
+    
+        // Initialize dying frames and replace with living frames if null or empty
         this.dyingDelay = 0;
-        this.dyingFrames = dyingFrames;
-        if (this.dyingFrames) {
-            this.dyingFrameCount = this.dyingFrames.length;
+        if (!dyingFrames || dyingFrames.length === 0) {
+            this.dyingFrames = this.livingFrames;
+        } else {
+            this.dyingFrames = dyingFrames;
         }
+        this.dyingFrameCount = this.dyingFrames.length;
+    
+        // Other properties
         this.dyingModulus = dyingModulus;
         this.spriteColor = "white";
         this.pixelSize = spriteConfig.pixelSize;
     }
-
+    
     update(deltaTime) {
         if (this.isAlive()) { // is Alive
             super.update(deltaTime);

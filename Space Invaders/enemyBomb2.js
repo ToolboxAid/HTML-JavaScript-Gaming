@@ -5,11 +5,9 @@
 
 import EnemyBomb from "./enemyBomb.js";
 
-
-
 class EnemyBomb2 extends EnemyBomb {
 
-static frames = [
+static livingFrames = [
 
   [
     "111",
@@ -53,7 +51,7 @@ static frames = [
 ];
 
   constructor(x, y) {
-    super(x, y, EnemyBomb2.frames);
+    super(x, y, EnemyBomb2.livingFrames, 200);
   }
 }
 

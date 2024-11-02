@@ -8,7 +8,7 @@ import { spriteConfig } from './global.js';
 
 class EnemyCrab extends Enemy {
 
-    static frames = [
+    static livingFrames = [
         [
             "000011110000",
             "011111111110",
@@ -28,15 +28,15 @@ class EnemyCrab extends Enemy {
             "001110011100",
             "011001100110",
             "001100001100",
-
         ]
     ];
 
     constructor(x, y, dropBombDelay) {
-        super(x, y, EnemyCrab.frames, dropBombDelay);
+        super(x, y, EnemyCrab.livingFrames, dropBombDelay);
         this.setSpriteColor(spriteConfig.crabColor);
         this.value = 10;
     }
+    
     draw(ctx) {
         super.draw(ctx, spriteConfig.crabColor);
     }

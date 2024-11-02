@@ -10,7 +10,7 @@ import CanvasUtils from '../scripts/canvas.js';
 
 class Laser extends ObjectDynamic {
 
-    static frames = [
+    static livingFrames = [
         "1",
         "1",
         "1",
@@ -26,17 +26,17 @@ class Laser extends ObjectDynamic {
     ]
 
     constructor(x, y) {
-        const dimensions = CanvasUtils.spriteWidthHeight(Laser.frames, window.pixelSize);
+        const dimensions = CanvasUtils.spriteWidthHeight(Laser.livingFrames, window.pixelSize);
         super(x, y, dimensions.width, dimensions.height, 0, -600);
         this.score = 0;
         this.pixelSize = 3.0;
-        this.frames = Laser.frames;
+        this.livingFrames = Laser.livingFrames;
         this.currentFrameIndex = 0;
     }
 
     draw(ctx) {
         // CanvasUtils.drawSprite(ctx, this.x, this.y, Laser.frames[0], this.pixelSize);  //[0] required for multip dimension array
-        CanvasUtils.drawSprite(ctx, this.x, this.y, Laser.frames, this.pixelSize);  // no [0] for single dimension arrays
+        CanvasUtils.drawSprite(ctx, this.x, this.y, this.livingFrames, this.pixelSize);  // no [0] for single dimension arrays
     }
 
     update(deltaTime = 1) {

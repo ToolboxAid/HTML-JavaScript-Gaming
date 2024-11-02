@@ -16,8 +16,9 @@ class EnemyBomb extends ObjectKillable {
         DEAD: 'dead'
     });
 
-    constructor(x, y, frames) {
-        super(x, y, frames, null, 0, 175);
+    constructor(x, y, frames, velocityY = 150) {
+        super(x, y, frames, null, 0, velocityY);
+
     }
 
     update(deltaTime = 1) {

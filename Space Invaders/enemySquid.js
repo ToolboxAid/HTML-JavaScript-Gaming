@@ -8,7 +8,7 @@ import { spriteConfig } from './global.js'; // Import canvasConfig for canvas-re
 
 class EnemySquid extends Enemy {
     
-    static frames = [
+    static livingFrames = [
         [
             "00100000100",
             "10010001001",
@@ -32,7 +32,7 @@ class EnemySquid extends Enemy {
     ];
 
     constructor(x, y, dropBombDelay) {
-        super(x, y, EnemySquid.frames, dropBombDelay);
+        super(x, y, EnemySquid.livingFrames, dropBombDelay);
         this.setSpriteColor(spriteConfig.squidColor);
         this.value = 20;
     }

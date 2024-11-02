@@ -70,10 +70,15 @@ class Shield extends ObjectStatic {
 
         // Use distructiveObject's frame if it exists; otherwise, use the default frame
         let overlayFrame;
-        if (distructiveObject && distructiveObject.frames) {
-            if (Array.isArray(distructiveObject.frames[0])) {
+        if (distructiveObject && distructiveObject.livingFrames) {
+            if (Array.isArray(distructiveObject.livingFrames[0])) {
                 // multi dimension Array
-                overlayFrame = distructiveObject.frames[currentFrameIndex].map(row => Array.from(row)); // Use it directly if it's already in the correct format
+                try {
+                    overlayFrame = distructiveObject.livingFrames[currentFrameIndex].map(row => Array.from(row)); // Use it directly if it's already in the correct format
+                } catch (error) {                    
+                    console.error("An error occurred:", error);
+                    overlayFrame = distructiveObject.livingFrames[0].map(row => Array.from(row)); // Use it directly if it's already in the correct format
+                }
 
                 // if (distructiveObject.constructor.name === "EnemyCrab") {
                 //     console.log("This object is a EnemyCrab!");
@@ -81,10 +86,21 @@ class Shield extends ObjectStatic {
                 //console.log(distructiveObject.constructor.name);
             } else {
                 // single dimention
-                overlayFrame = distructiveObject.frames.map(row => Array.from(row)); // Adjust based on actual type
+                overlayFrame = distructiveObject.livingFrames.map(row => Array.from(row)); // Adjust based on actual type
             }
         } else {
             console.log("Error: fix overlayFrame", overlayFrame, distructiveObject);
+            if (distructiveObject) {
+                console.log("Class: ", distructiveObject.constructor.name, " distrutable ", distructiveObject);
+            } else {
+                console.log("distructable null")
+            };
+            if (distructiveObject.livingFrames) {
+                console.log("livingFrames ", distructiveObject.livingFrames);
+            } else {
+                console.log("livingFrames null")
+            };
+
             overlayFrame = Shield.defaultBomb; // Fallback to default frame
         }
 

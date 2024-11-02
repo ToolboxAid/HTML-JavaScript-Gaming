@@ -137,7 +137,7 @@ function setEnemyMoveDown() {
     // Calculate the number of remaining enemies
     const remainingEnemies = enemyOctopuses.length + enemySquids.length + enemyCrabs.length;
 
-    let adj = remainingEnemies / initialEnemyCount;
+
     enemyCrabs.forEach(enemyCrab => {
         enemyCrab.setMoveDownTimer(moveDownDelay);
         moveDownDelay += moveDownIncr;
@@ -160,7 +160,6 @@ let frameCount = 0;
 let initialEnemyCount = 55;
 let dynamicAnimationInterval = initialEnemyCount;
 function animate(deltaTime) {
-
     const remainingEnemies = enemySquids.length + enemyOctopuses.length + enemyCrabs.length;
     frameCount++;
     dynamicAnimationInterval = Math.max(minInterval, Math.floor(maxInterval * (remainingEnemies / initialEnemyCount)));
@@ -178,9 +177,6 @@ function animate(deltaTime) {
             enemy.update();
         });
 
-
-        
-
         if (moveEnemyDown) {
             Enemy.changeDirections();
             setEnemyMoveDown();
@@ -188,12 +184,13 @@ function animate(deltaTime) {
     }
 }
 
-function EnemiesUpdate(){
-            //---------------------------------------
-            [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
-                enemy.update();
-            });
+function EnemiesUpdate() {
+    //---------------------------------------
+    [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
+        enemy.update();
+    });
 }
+
 function EnemiesDropBomb(deltaTime) {
     // Check if enemy should drop bomb
     [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
@@ -263,11 +260,238 @@ function drawScore(ctx) {
 }
 
 function drawLives(ctx, player) {
-    ctx.font = '30px Arial';
-    ctx.fillStyle = 'white';
-    let dwn = 930;
-    ctx.fillText(player.lives, 25, dwn);
-    CanvasUtils.drawSprite(ctx, 65, dwn - 30, Player.frame, 3);
+    const dwn = 900;
+    const color = 'white';
+    const pixelSize = 5;
+    CanvasUtils.drawNumber(ctx, 15, dwn, player.lives, pixelSize, color, 2, '0');
+    CanvasUtils.drawSprite(ctx, 95, dwn, Player.frame, 3);
+}
+
+const LevelFrames = [
+    [   // 0
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010000010000",
+        "0000100000001000",
+        "0001000000000100",
+        "0010000000000010",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+    ],
+    [   // 1
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100000001000",
+        "0001000000000100",
+        "0010000000000010",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+    ],
+    [   // 2
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100000001000",
+        "0001000000000100",
+        "0010000000000010",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+    ],
+    [   // 3
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100000001000",
+        "0001000000000100",
+        "0010000000000010",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000"
+    ],
+    [   // 4
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100000001000",
+        "0001000000000100",
+        "0010000000000010",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000"
+    ],
+    [   // 5
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100000001000",
+        "0001000000000100",
+        "0010000000000010",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000"
+    ],
+    [   // 6
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100000001000",
+        "0001000111000100",
+        "0010000000000010",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000"
+    ],
+    [   // 7
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100010001000",
+        "0001000111000100",
+        "0010000010000010",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000"
+    ],
+    [   // 8
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100010001000",
+        "0001000111000100",
+        "0010000010000010",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000"
+    ],
+    [   // 9
+        "0000000010000000",
+        "0000000101000000",
+        "0000001000100000",
+        "0000010010010000",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010010010010",
+        "0000100101001000",
+        "0001001000100100",
+        "0010010000010010",
+        "0000100111001000",
+        "0001000101000100",
+        "0010000111000010",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000",
+        "0100000000000001",
+        "0011100000001110",
+        "0000011111110000"
+    ],
+];
+
+
+function drawLevel(ctx, player) {
+    const dwn = 895;
+    const color = 'white';
+    const pixelSize = 5;
+    //CanvasUtils.drawText(ctx, 650, dwn, "Level ", pixelSize, color);
+    //CanvasUtils.drawNumber(ctx, 825, dwn, player.level, pixelSize, color, 2, '0');
+    CanvasUtils.drawSprite(ctx, 825, dwn, LevelFrames[0], 2.0); // current 0-9
+
 }
 
 function drawGround(ctx) {
@@ -306,13 +530,14 @@ function checkLaserBombCollision() {
         let hitBomb = false;
         enemyBombs.forEach(enemyBomb => {
             if (laser.processCollisionWith(enemyBomb)) {
-                enemyBomb.setIsDead();
                 hitBomb = true;
+                if (enemyBomb.constructor.name !== "EnemyBomb3"){
+                    enemyBomb.setIsDead();
+                }
             }
         });
         if (hitBomb) {
             laser = null; // Delete the laser
-            // console.log("laserBomb")
         }
     }
 }
@@ -332,12 +557,12 @@ function checkLaserShieldCollision() {
 
 function checkLaserShipCollision(player) {
     if (laser && enemyShip) {
-            const colliding = laser.isCollidingWith(enemyShip); //const hit = laser.processCollisionWith(shield, false);
-            if (colliding) {
-                player.score += enemyShip.getValue();
-                enemyShip.setHit();
-                laser = null;
-            }
+        const colliding = laser.isCollidingWith(enemyShip); //const hit = laser.processCollisionWith(shield, false);
+        if (colliding) {
+            player.score += enemyShip.getValue();
+            enemyShip.setHit();
+            laser = null;
+        }
     }
 }
 
@@ -452,10 +677,10 @@ function checkLaser(deltaTime, laserFirePoint) {
 let player = player2;
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
-
+    updateBombs(deltaTime);
     removeDeadEnemy();
     removeDeadBomb();
-    updateBombs(deltaTime);
+
     EnemiesUpdate();
 
     checkEnemyShieldCollision();
@@ -477,6 +702,7 @@ export function gameLoop(ctx, deltaTime) {
 
     // Draw scores
     drawScore(ctx);
+    drawLevel(ctx, player);
 
     // Draw enemy ship
     if (enemyShip) {

@@ -8,7 +8,7 @@ import { spriteConfig } from './global.js';
 
 class EnemyOctopus extends Enemy {
 
-    static frames = [
+    static livingFrames = [
         [
             "00011000",
             "00111100",
@@ -32,7 +32,7 @@ class EnemyOctopus extends Enemy {
     ];
 
     constructor(x, y, dropBombDelay) {
-        super(x, y, EnemyOctopus.frames, dropBombDelay);
+        super(x, y, EnemyOctopus.livingFrames, dropBombDelay);
         this.setSpriteColor(spriteConfig.octopusColor);
         this.value = 30;
     }
