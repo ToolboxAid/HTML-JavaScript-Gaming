@@ -149,16 +149,15 @@ class CanvasUtils {
                 console.log(frame); // Display the actual frame for verification
             }
         } else {
-            console.error("Invalid object format");
+            console.error("Invalid object format:", object);
             return { width: 0, height: 0 };
         }
 
-        width = Math.round(width);
-        height = Math.round(height);
+        width = Math.round(width * pixelSize);
+        height = Math.round(height * pixelSize);
 
-        return { width: width * pixelSize, height: height * pixelSize };
+        return { width: width, height: height};
     }
-
 
     static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
         ctx.lineWidth = lineWidth;
