@@ -52,7 +52,7 @@ const shieldSpacing = (canvasConfig.width - numShields * shieldWidth) / (numShie
 const shields = [];
 
 // Initialize other enemies
-let enemyShip = null;
+let enemyShip = null;/*  */
 
 const initialSpeed = 0.0;
 const finalSpeed = 7;
