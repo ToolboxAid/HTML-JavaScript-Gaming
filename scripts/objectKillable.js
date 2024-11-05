@@ -108,7 +108,6 @@ class ObjectKillable extends ObjectDynamic {
 
         if (isNamedColor || isHexColor) {
             this.spriteColor = spriteColor;
-            console.log("Valid color:", spriteColor);
         } else {
             console.error("Invalid color:", spriteColor);
             this.spriteColor = 'white'; // Default to white or another default color

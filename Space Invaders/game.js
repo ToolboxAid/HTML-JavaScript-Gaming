@@ -69,25 +69,6 @@ function calculateSpeed(remainingEnemies) {
 }
 
 // Function to initialize enemy positions
-function initializeEnemies_() {
-    let enemyHeightSpacing = 59;
-    let enemyHeightPosition = 425;
-
-    const crabWidth = 40;
-    // Create 2 rows of crabs
-    for (let row = 0; row < enemyRows; row++) {
-        for (let col = 0; col < enemyCols; col++) {
-            const x = 40 + col * (crabWidth + enemySpacing);
-            const y = enemyHeightPosition;
-            const enemyCrab = new EnemyCrab(x, y, player.level);
-            enemyCrabs.push(enemyCrab);
-
-        }
-        enemyHeightPosition -= enemyHeightSpacing;
-    }
-}
-
-// Function to initialize enemy positions
 function initializeEnemies() {
     let enemyHeightSpacing = 59;
     let enemyHeightPosition = 425;
@@ -95,9 +76,10 @@ function initializeEnemies() {
     const octopusWidth = 40;
     const squidWidth = 40;
     const crabWidth = 40;
-    // Create 2 rows of crabs
+    // Create 2 rows of crabs (bottom)
     for (let row = 0; row < enemyRows; row++) {
         for (let col = 0; col < enemyCols; col++) {
+            console.log(" #1 Row: ", row, " Col: ", col);
             const x = 40 + col * (crabWidth + enemySpacing);
             const y = enemyHeightPosition;
             const enemyCrab = new EnemyCrab(x, y, player.level);
@@ -107,9 +89,10 @@ function initializeEnemies() {
         enemyHeightPosition -= enemyHeightSpacing;
     }
 
-    // Create 2 rows of squids
+    // Create 2 rows of squids (middle)
     for (let row = 0; row < enemyRows; row++) {
         for (let col = 0; col < enemyCols; col++) {
+            console.log("#2 Row: ", row, " Col: ", col);
             const x = 42 + col * (squidWidth + enemySpacing);
             const y = enemyHeightPosition;
             const enemySquid = new EnemySquid(x, y, player.level);
@@ -118,9 +101,10 @@ function initializeEnemies() {
         enemyHeightPosition -= enemyHeightSpacing;
     }
 
-    // Create 1 row of octopuses
+    // Create 1 row of octopuses (top)
     for (let row = 0; row < enemyRows - 1; row++) {
         for (let col = 0; col < enemyCols; col++) {
+            console.log("#3 Row: ", row, " Col: ", col);
             const x = 47 + col * (octopusWidth + enemySpacing);
             const y = enemyHeightPosition;
             const enemyOctopus = new EnemyOctopus(x, y, player.level);
