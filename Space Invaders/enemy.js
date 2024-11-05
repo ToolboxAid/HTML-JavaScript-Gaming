@@ -15,6 +15,8 @@ class Enemy extends ObjectKillable {
     static move = 10;
     static speed = 0;
 
+    static remainingEnimy = 35;
+    static frameDelay = (35 / 55) * 60;
     static dyingFrames = [
         [
             "100100010001",
@@ -54,7 +56,14 @@ class Enemy extends ObjectKillable {
         ],
     ];
 
+    /*
+    constructor(row, colun, livingFrames, bombAggression) {
+
+        const x = 10;
+        const y = 10;
+    */
     constructor(x, y, livingFrames, bombAggression) {
+
         super(x, y, livingFrames, Enemy.dyingFrames);
 
         // disable move enemy to next line.
@@ -63,6 +72,10 @@ class Enemy extends ObjectKillable {
         this.moveDownTime = 0;
 
         this.bombAggression = 3 + (bombAggression * 2);
+
+        this.velocityX = 250;
+        //        this.actionFrame = Enemy.enemyID;
+        this.enemyID = ++Enemy.enemyID;
     }
 
     static changeDirections() {
@@ -73,8 +86,26 @@ class Enemy extends ObjectKillable {
         Enemy.speed = speed;
     }
 
-    update() {
-        this.updateDyingFrames();
+
+    static enemyID = 0;
+
+    static setID() {
+        if (++Enemy.enemyID > 55 + 2) { // Number of remaining enemies
+            Enemy.enemyID = 0;
+        }
+        console.log("setID: ", Enemy.enemyID);
+    }
+
+    update(deltaTime) {
+        //     console.log("this.enemyID: ", this.enemyID);
+
+        // Use === for comparison
+        if (this.enemyID === Enemy.enemyID) {
+            console.log("update", this.enemyID);
+            super.update(deltaTime, true); // Ensure 'super.update' is valid
+        }
+
+        //  this.updateDyingFrames();
     }
 
     isDropBombTime() {
@@ -98,8 +129,8 @@ class Enemy extends ObjectKillable {
 
     // Method to switch to the next frame
     nextFrame() {
-        this.currentFrameIndex = (this.currentFrameIndex + 1) % this.livingFrameCount;
-        this.x += (Enemy.move + Enemy.speed) * Enemy.direction;
+        // this.currentFrameIndex = (this.currentFrameIndex + 1) % this.livingFrameCount;
+        // this.x += (Enemy.move + Enemy.speed) * Enemy.direction;
 
         const atRightBound = Enemy.direction > 0 && this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
         const atLeftBound = Enemy.direction < 0 && this.x - Enemy.speed < (this.width * 0.25);

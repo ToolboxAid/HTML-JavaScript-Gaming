@@ -69,7 +69,7 @@ function calculateSpeed(remainingEnemies) {
 }
 
 // Function to initialize enemy positions
-function initializeEnemies() {
+function initializeEnemies_() {
     let enemyHeightSpacing = 59;
     let enemyHeightPosition = 425;
 
@@ -88,7 +88,7 @@ function initializeEnemies() {
 }
 
 // Function to initialize enemy positions
-function initializeEnemies_orig() {
+function initializeEnemies() {
     let enemyHeightSpacing = 59;
     let enemyHeightPosition = 425;
 
@@ -188,11 +188,11 @@ function animate(deltaTime) {
         // Update frames and set drop timer for all enemies
         let moveEnemyDown = false;
         [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
-            let atBounds = enemy.nextFrame();
-            if (!moveEnemyDown && atBounds) {
-                moveEnemyDown = true;
-            }
-            enemy.update();
+            // let atBounds = enemy.nextFrame();
+            // if (!moveEnemyDown && atBounds) {
+            //     moveEnemyDown = true;
+            // }
+           // enemy.update(deltaTime);   ///////
         });
 
         if (moveEnemyDown) {
@@ -202,10 +202,10 @@ function animate(deltaTime) {
     }
 }
 
-function EnemiesUpdate() {
+function EnemiesUpdate(deltaTime) {
     //---------------------------------------
     [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
-        enemy.update();
+        enemy.update(deltaTime, true);
     });
 }
 
@@ -506,8 +506,6 @@ function drawLevel(ctx, player) {
     const dwn = 895;
     const color = 'white';
     const pixelSize = 5;
-    //CanvasUtils.drawText(ctx, 650, dwn, "Level ", pixelSize, color);
-    //CanvasUtils.drawNumber(ctx, 825, dwn, player.level, pixelSize, color, 2, '0');
     CanvasUtils.drawSprite(ctx, 825, dwn, LevelFrames[0], 2.0); // current 0-9
 
 }
@@ -695,11 +693,14 @@ function checkLaser(deltaTime, laserFirePoint) {
 let player = player2;
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
+
+    Enemy.setID();
+
     updateBombs(deltaTime);
     removeDeadEnemy();
     removeDeadBomb();
 
-    EnemiesUpdate();
+    EnemiesUpdate(deltaTime);
 
     checkEnemyShieldCollision();
     checkBombShieldCollision();
@@ -712,7 +713,7 @@ export function gameLoop(ctx, deltaTime) {
     const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     checkLaser(deltaTime, laserFirePoint);
     checkLaserShipCollision(player);
-    animate(deltaTime);
+    //animate(deltaTime);
 
     checkLaserEnemyCollision(player);
     checkLaserBombCollision();
@@ -745,8 +746,6 @@ export function gameLoop(ctx, deltaTime) {
     player.draw(ctx);
 
     drawGround(ctx);
-
-
 
     drawLives(ctx, player);
 

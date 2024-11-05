@@ -19,20 +19,20 @@ class ObjectKillable extends ObjectDynamic {
         if (!livingFrames || livingFrames.length === 0) {
             throw new Error("livingFrames must be provided and cannot be empty.");
         }
-    
+
         // Calculate dimensions based on the first living frame
         const dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
-    
+
         super(x, y, dimensions.width, dimensions.height, velocityX, velocityY);
-    
+
         this.status = ObjectKillable.Status.ALIVE;
         this.currentFrameIndex = 0;
-    
+
         // Initialize living frames
         this.livingDelay = 0;
         this.livingFrames = livingFrames;
         this.livingFrameCount = this.livingFrames.length;
-    
+
         // Initialize dying frames and replace with living frames if null or empty
         this.dyingDelay = 0;
         if (!dyingFrames || dyingFrames.length === 0) {
@@ -41,17 +41,24 @@ class ObjectKillable extends ObjectDynamic {
             this.dyingFrames = dyingFrames;
         }
         this.dyingFrameCount = this.dyingFrames.length;
-    
+
         // Other properties
         this.dyingModulus = dyingModulus;
         this.spriteColor = "white";
         this.pixelSize = spriteConfig.pixelSize;
     }
-    
-    update(deltaTime) {
+
+    update(deltaTime, incFrame = false) {
         if (this.isAlive()) { // is Alive
             super.update(deltaTime);
-            this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
+            if (incFrame) {
+                this.currentFrameIndex++;
+                if (this.currentFrameIndex >= this.livingFrameCount) {
+                    this.currentFrameIndex = 0;
+                }
+            } else {
+                this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
+            }
         } else { // is Dying or Dead
             this.updateDyingFrames();
         }
