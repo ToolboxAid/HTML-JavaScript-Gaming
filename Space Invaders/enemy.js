@@ -90,7 +90,7 @@ class Enemy extends ObjectKillable {
     static enemyID = 0;
 
     static setID() {
-        if (++Enemy.enemyID > 55 + 2) { // Number of remaining enemies
+        if (++Enemy.enemyID > 55 + 1) { // Number of remaining enemies
             Enemy.enemyID = 0;
         }
         console.log("setID: ", Enemy.enemyID);
