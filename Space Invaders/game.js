@@ -73,6 +73,25 @@ function initializeEnemies() {
     let enemyHeightSpacing = 59;
     let enemyHeightPosition = 425;
 
+    const crabWidth = 40;
+    // Create 2 rows of crabs
+    for (let row = 0; row < enemyRows; row++) {
+        for (let col = 0; col < enemyCols; col++) {
+            const x = 40 + col * (crabWidth + enemySpacing);
+            const y = enemyHeightPosition;
+            const enemyCrab = new EnemyCrab(x, y, player.level);
+            enemyCrabs.push(enemyCrab);
+
+        }
+        enemyHeightPosition -= enemyHeightSpacing;
+    }
+}
+
+// Function to initialize enemy positions
+function initializeEnemies_orig() {
+    let enemyHeightSpacing = 59;
+    let enemyHeightPosition = 425;
+
     const octopusWidth = 40;
     const squidWidth = 40;
     const crabWidth = 40;
@@ -136,7 +155,6 @@ function setEnemyMoveDown() {
 
     // Calculate the number of remaining enemies
     const remainingEnemies = enemyOctopuses.length + enemySquids.length + enemyCrabs.length;
-
 
     enemyCrabs.forEach(enemyCrab => {
         enemyCrab.setMoveDownTimer(moveDownDelay);
@@ -254,9 +272,9 @@ function drawScore(ctx) {
     CanvasUtils.drawText(ctx, 50, 30, "SCORE-1", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", pixelSize, 'red');
-    CanvasUtils.drawNumber(ctx, 50, 80, player1.score, pixelSize, color, 5, ' ');
-    CanvasUtils.drawNumber(ctx, 300, 80, 0, pixelSize, color, 5, ' ');
-    CanvasUtils.drawNumber(ctx, 550, 80, player2.score, pixelSize, color, 5, ' ');
+    CanvasUtils.drawNumber(ctx, 90, 80, player1.score, pixelSize, color, 4, '0');
+    CanvasUtils.drawNumber(ctx, 340, 80, 0, pixelSize, color, 4, '0');
+    CanvasUtils.drawNumber(ctx, 590, 80, player2.score, pixelSize, color, 4, '0');
 }
 
 function drawLives(ctx, player) {
