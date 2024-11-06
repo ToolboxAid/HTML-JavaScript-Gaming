@@ -63,6 +63,13 @@ class CanvasUtils {
             if (frame) {
                 // Assuming each character has a fixed width, you can adjust the space here
                 const charWidth = frame[0].length; // Get the width from the frame
+
+                // Not needed, completed in drawSprite()
+                // const cx = Math.ceil(x + i * (charWidth * pixelSize + 5));
+                // const cy = Math.ceil(y);
+                // const cp = Math.ceil(pixelSize);
+                // CanvasUtil.drawSprite(ctx, cx, cy, frame, cp, color);
+
                 CanvasUtil.drawSprite(ctx, x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
             }
         }
@@ -101,8 +108,6 @@ class CanvasUtils {
 
     // Method to draw the current frame
     static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '', drawBounds = false) {
-        let w = 0;
-        let h = 0;
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
@@ -113,10 +118,10 @@ class CanvasUtils {
                     color = spriteColor; // Use sprite color instead of white
                 }
                 ctx.fillStyle = color;
-                let roundX = Math.ceil((col * pixelSize) + x);
-                let roundY = Math.ceil((row * pixelSize) + y);
-                let roundpixelSize = Math.ceil(pixelSize);
-                ctx.fillRect(roundX, roundY, roundpixelSize, roundpixelSize);
+                let ceilX = Math.ceil((col * pixelSize) + x);
+                let ceilY = Math.ceil((row * pixelSize) + y);
+                let ceilPixelSize = Math.ceil(pixelSize);
+                ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
             }
         }
 

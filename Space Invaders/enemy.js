@@ -52,6 +52,10 @@ class Enemy extends ObjectKillable {
         ],
     ];
 
+    static enemyID = 0;
+    static remainingEnemies = 54;
+    static maximumEnemies = 54;
+
     constructor(x, y, livingFrames, bombAggression) {
 
         super(x, y, livingFrames, Enemy.dyingFrames);
@@ -66,11 +70,10 @@ class Enemy extends ObjectKillable {
         Enemy.remainingEnemies = count;
     }
 
-
-    static enemyID = 0;
-    static setID() {
-        // if (Enemy.enemyID >= 54) { // Update to number of remaining enemies
-        if (Enemy.enemyID >= Enemy.remainingEnemies) {
+    static setNextID() {
+        if (Enemy.remainingEnemies > Enemy.enemyID) {
+            Enemy.enemyID++;
+        } else {
             Enemy.enemyID = 0;
             if (Enemy.prepMoveDown) {
                 Enemy.prepMoveDown = false;
@@ -78,19 +81,23 @@ class Enemy extends ObjectKillable {
             } else {
                 Enemy.doMoveDown = false;
             }
-        } else {
-            Enemy.enemyID++;
         }
     }
 
-    doResetEnemyID(ID) {
-        this.enemyID = ID;
-        if (this.velocityX > 0){
-            this.velocityX += (55-Enemy.remainingEnemies); 
-        }else{
-            this.velocityX -= (55-Enemy.remainingEnemies);
+    static resetEnemyID(){
+        Enemy.remainingEnemiesyID = 0;
+    }
+    doResetEnemyID() {
+        const newID = Enemy.remainingEnemiesyID++;        
+        console.log("ID: ", this.enemyID, " newID: ",newID);
+        this.enemyID = newID;
+        // Increase speed 
+        if (this.velocityX > 0) {
+            this.velocityX += (Enemy.maximumEnemies - Enemy.remainingEnemies);
+        } else {
+            this.velocityX -= (Enemy.maximumEnemies - Enemy.remainingEnemies);
         }
-        console.log(this.velocityX);
+        //console.log(this.velocityX);
     }
 
     static prepMoveDown = false;
@@ -102,7 +109,9 @@ class Enemy extends ObjectKillable {
                 this.velocityX *= -1;
                 this.y += this.height;
             }
-            super.update(deltaTime, true); // Ensure 'super.update' is valid
+
+            super.update(deltaTime, true);
+            //            console.log("update b", this.enemyID, this.x);
             if (this.atBounds()) {
                 console.log("atbounds");
                 Enemy.prepMoveDown = true;

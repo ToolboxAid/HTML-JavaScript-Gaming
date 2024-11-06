@@ -29,17 +29,13 @@ import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
 // Initialize player
-const player1 = new Player(100, 810);// was 790
+const player1 = new Player(100, 810);
 const player2 = new Player(100, 810);
 
-// Enemy configurations for octopus, squid, and crab
-const enemyRows = 2;
-const enemyCols = 11;
 const enemySpacing = 19; // 5px space between each enemy
 
-const enemyOctopuses = [];
-const enemySquids = [];
-const enemyCrabs = [];
+// Correctly initialize the enemies array as a 5x11 array (5 rows, 11 columns)
+const enemies = Array.from({ length: 5 }, () => Array(11).fill(null));
 
 const enemyBombs = [];
 const grounds = [];
@@ -51,54 +47,50 @@ const shieldWidth = 100; // Adjust as needed
 const shieldSpacing = (canvasConfig.width - numShields * shieldWidth) / (numShields + 1); // Even spacing between shields
 const shields = [];
 
-// Initialize other enemies
-let enemyShip = null;/*  */
 
-// Function to initialize enemy positions
+let initializingGame = true;
+
+// Enemy configurations for octopus, squid, and crab
+let enemyRow = 0;
+let enemyCol = 0;
 function initializeEnemies() {
+
     let enemyHeightSpacing = 59;
     let enemyHeightPosition = 425;
 
-    const octopusWidth = 40;
-    const squidWidth = 40;
-    const crabWidth = 40;
-    // Create 2 rows of crabs (bottom)
-    for (let row = 0; row < enemyRows; row++) {
-        for (let col = 0; col < enemyCols; col++) {
-            console.log(" #1 Row: ", row, " Col: ", col);
-            const x = 40 + col * (crabWidth + enemySpacing);
-            const y = enemyHeightPosition;
-            const enemyCrab = new EnemyCrab(x, y, player.level);
-            enemyCrabs.push(enemyCrab);
+    const enemyWidth = 40;
 
-        }
-        enemyHeightPosition -= enemyHeightSpacing;
+    const x = 40 + (enemyCol * (enemyWidth + enemySpacing));
+    const y = enemyHeightPosition - (enemyRow * enemyHeightSpacing);
+
+    let enemy = null;
+    switch (enemyRow) {
+        case 0:
+        case 1:
+            enemy = new EnemyCrab(x, y, player.level);
+            break;
+        case 2:
+        case 3:
+            enemy = new EnemySquid(x, y, player.level);
+            break;
+        case 4:
+            enemy = new EnemyOctopus(x, y, player.level);
+            break;
+        default:
+            console.log("Unknown enemy type!");
+            break;
     }
 
-    // Create 2 rows of squids (middle)
-    for (let row = 0; row < enemyRows; row++) {
-        for (let col = 0; col < enemyCols; col++) {
-            console.log("#2 Row: ", row, " Col: ", col);
-            const x = 42 + col * (squidWidth + enemySpacing);
-            const y = enemyHeightPosition;
-            const enemySquid = new EnemySquid(x, y, player.level);
-            enemySquids.push(enemySquid);
-        }
-        enemyHeightPosition -= enemyHeightSpacing;
-    }
+    // Add enemy to two (2) dimensional array
+    enemies[enemyRow][enemyCol] = enemy;
 
-    // Create 1 row of octopuses (top)
-    for (let row = 0; row < enemyRows - 1; row++) {
-        for (let col = 0; col < enemyCols; col++) {
-            console.log("#3 Row: ", row, " Col: ", col);
-            const x = 47 + col * (octopusWidth + enemySpacing);
-            const y = enemyHeightPosition;
-            const enemyOctopus = new EnemyOctopus(x, y, player.level);
-            enemyOctopuses.push(enemyOctopus);
+    if (++enemyCol >= 11) {
+        enemyCol = 0;
+        if (++enemyRow >= 5) {
+            initializingGame = false;
+            console.log(enemies);
         }
-        enemyHeightPosition -= enemyHeightSpacing;
     }
-    Enemy.enemyID = -3;
 }
 
 // Function to initialize shield positions
@@ -108,6 +100,7 @@ function initializeShields() {
         const shield = new Shield(x, shieldYPosition);
         shields.push(shield);
     }
+    console.log(shields);
 }
 
 const groundY = 870;
@@ -118,11 +111,16 @@ function initialGround() {
     }
 }
 
-function EnemiesUpdate(deltaTime) {
-    //---------------------------------------
-    [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
-        enemy.update(deltaTime, true);
-    });
+function EnemiesUpdate(deltaTime) {//
+    for (let row = 0; row <= enemies.length - 1; row++) {
+        // Loop through the columns from the last one down to the first
+        for (let col = 0; col <= enemies[row].length - 1; col++) {
+            const enemy = enemies[row][col];
+            if (enemy) { // Check if the enemy is present
+                enemy.update(deltaTime, true);; // Call the draw method on the enemy object
+            }
+        }
+    }
 }
 
 function EnemiesDropBomb(deltaTime) {
@@ -411,7 +409,6 @@ const LevelFrames = [
     ],
 ];
 
-
 function drawLevel(ctx, player) {
     const dwn = 895;
     const color = 'white';
@@ -428,23 +425,25 @@ function drawGround(ctx) {
 function checkLaserEnemyCollision(player) {
     if (laser) {
         let hitDetected = false;
-        // Check for collisions and remove hit enemies
-        [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
-            for (let i = enemyArray.length - 1; i >= 0; i--) {
-                const enemy = enemyArray[i];
-                if (!hitDetected) {
-                    if (laser.processCollisionWith(enemy)) {
-                        player.score += enemy.value;
-                        enemy.setHit();
-                        hitDetected = true;
 
 
-
-                        break; // Exit the current `for` loop
+        for (let row = 0; row <= enemies.length - 1; row++) {
+            // Loop through the columns from the last one down to the first
+            for (let col = 0; col <= enemies[row].length - 1; col++) {
+                const enemy = enemies[row][col];
+                if (enemy) { // Check if the enemy is present
+                    if (!hitDetected) {
+                        if (laser.processCollisionWith(enemy)) {
+                            player.score += enemy.value;
+                            enemy.setHit();
+                            hitDetected = true;
+                            break; // Exit the current `for` loop
+                        }
                     }
                 }
             }
-        });
+        }
+
         // Delete the laser
         if (hitDetected) {
             laser = null;
@@ -559,37 +558,58 @@ function checkBombPlayerCollision() {
     });
 }
 
-function doResetEnemyID(){
+function doResetEnemyID() {
 
-    const enemyArrays = [enemySquids, enemyOctopuses, enemyCrabs];
-    const totalCount = enemyArrays.reduce((sum, enemyArray) => sum + enemyArray.length, 0);
-    Enemy.setRemainingEnemies(totalCount);
-
-    [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
-        for (let i = enemyArray.length - 1; i >= 0; i--) {
-            const enemy = enemyArray[i];
-            //enemy.enemyID = i;
-            enemy.doResetEnemyID(i);
+    Enemy.resetEnemyID();
+    for (let row = 0; row >= enemies.length - 1; row++) {
+        for (let col = enemies[row].length - 1; col >= 0; col--) {
+            const enemy = enemies[row][col];
+            if (enemy) { // Check if the enemy is present
+                enemy.doResetEnemyID(); // Reset the enemy's ID with the current value of newID
+               // totalCount++;
+            }
         }
-    });
+    }
 
+    // Optionally, log the total count of enemies processed
+    console.log(`Total enemies reset: ${Enemy.remainingEnemies}`);
 }
 
 function removeDeadEnemy() {
-    let reset = false;
+    let resetNeeded = false;
     // Check for dead enemy and remove
-    [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
-        for (let i = enemyArray.length - 1; i >= 0; i--) {
-            const enemy = enemyArray[i];
-            if (enemy.isDead()) {
-                enemyArray.splice(i, 1); // Remove the enemy at index i
-                reset = true;
-                break; // Exit the current `for` loop
+
+    for (let row = enemies.length - 1; row >= 0; row--) {
+        // Loop through the columns from the last one down to the first
+        for (let col = enemies[row].length - 1; col >= 0; col--) {
+            const enemy = enemies[row][col];
+            if (enemy) { // Check if the enemy is present
+                if (enemy.isDead()) {
+                    console.log("killed ID:", enemy.enemyID);
+                    enemies[row][col] = null;
+                    resetNeeded = true;
+                }
             }
         }
-    });
-    return reset;
+    }
+    return resetNeeded;
 }
+
+
+function drawEnemies(ctx) {
+    // Loop through the rows from the last one down to the first
+    for (let row = enemies.length - 1; row >= 0; row--) {
+        // Loop through the columns from the last one down to the first
+        for (let col = enemies[row].length - 1; col >= 0; col--) {
+            const enemy = enemies[row][col];
+            if (enemy) { // Check if the enemy is present
+                enemy.draw(ctx); // Call the draw method on the enemy object
+                //console.log(enemy.enemyID);
+            }
+        }
+    }
+}
+
 
 function removeDeadBomb() {
     // Check for dead enemyBomb and remove
@@ -622,33 +642,45 @@ function checkLaser(deltaTime, laserFirePoint) {
 }
 
 let player = player2;
+
+let enemyShip = null;/*  */
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
-    Enemy.setID();
+    if (initializingGame) {
+        console.log("initGame");
+        initializeEnemies();
 
-    updateBombs(deltaTime);
-    const resetEnemyID = removeDeadEnemy();
-    if (resetEnemyID){
-        doResetEnemyID();
+        if (shields.length === 0) {
+            initializeShields();
+            initialGround();
+        }
+    } else {
+        if (removeDeadEnemy()) {
+            doResetEnemyID();
+        }
+        Enemy.setNextID();
+        EnemiesUpdate(deltaTime);
+        // checkEnemyShieldCollision();
+
+
+        // Update, Remove and Check bombs
+        // removeDeadBomb();
+        // updateBombs(deltaTime);
+        // checkBombShieldCollision();
+        // checkBombGroundCollision();
+        // checkBombPlayerCollision();
+
+        // checkEnemyShip(deltaTime);
+
+
+        keyboardInput.update();
+        const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
+        checkLaser(deltaTime, laserFirePoint);
+        checkLaserEnemyCollision(player);
+        checkLaserShipCollision(player);
+        checkLaserBombCollision();
     }
-    removeDeadBomb();
-
-    EnemiesUpdate(deltaTime);
-
-    checkEnemyShieldCollision();
-    checkBombShieldCollision();
-    checkBombGroundCollision();
-    checkBombPlayerCollision();
-    checkEnemyShip(deltaTime);
-
-    keyboardInput.update();
-    const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
-    checkLaser(deltaTime, laserFirePoint);
-    checkLaserShipCollision(player);
-
-    checkLaserEnemyCollision(player);
-    checkLaserBombCollision();
 
     // Draw scores
     drawScore(ctx);
@@ -659,10 +691,9 @@ export function gameLoop(ctx, deltaTime) {
         enemyShip.draw(ctx);
     }
 
-    // Draw all enemies
-    enemyOctopuses.forEach(enemyOctopus => enemyOctopus.draw(ctx));
-    enemySquids.forEach(enemySquid => enemySquid.draw(ctx));
-    enemyCrabs.forEach(enemyCrab => enemyCrab.draw(ctx));
+    drawEnemies(ctx);
+
+    // Draw all bombs
     enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx, "white"));
 
     // Draw shields
@@ -683,10 +714,7 @@ export function gameLoop(ctx, deltaTime) {
     // draw Level
 }
 
-// Initialize enemies and shields
-initializeEnemies();
-initializeShields();
-initialGround();
+
 
 // Canvas needs to know the current directory to game.js for dynamic imports
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
