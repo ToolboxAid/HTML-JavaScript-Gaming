@@ -61,7 +61,7 @@ class ObjectKillable extends ObjectDynamic {
             }
         } else { // is Dying or Dead
             this.updateDyingFrames();
-            console.log("dying");        }
+        }
     }
 
     updateDyingFrames() {

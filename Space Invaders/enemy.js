@@ -11,12 +11,8 @@ import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
 class Enemy extends ObjectKillable {
-    //   static direction = 1;
-    static move = 10;
     static speed = 0;
 
-    static remainingEnimy = 35;
-    static frameDelay = (35 / 55) * 60;
     static dyingFrames = [
         [
             "100100010001",
@@ -66,17 +62,16 @@ class Enemy extends ObjectKillable {
         this.enemyID = Enemy.enemyID++;
     }
 
-    static setSpeed(speed) {
-        Enemy.speed = speed;
+    static setRemainingEnemies(count) {
+        Enemy.remainingEnemies = count;
     }
 
 
     static enemyID = 0;
-
     static setID() {
-        if (Enemy.enemyID >= 54) { // Update to number of remaining enemies
+        // if (Enemy.enemyID >= 54) { // Update to number of remaining enemies
+        if (Enemy.enemyID >= Enemy.remainingEnemies) {
             Enemy.enemyID = 0;
-            console.log("Enemy.prepMoveDown: ", Enemy.prepMoveDown, "Enemy.doMoveDown", Enemy.doMoveDown);
             if (Enemy.prepMoveDown) {
                 Enemy.prepMoveDown = false;
                 Enemy.doMoveDown = true;
@@ -86,7 +81,16 @@ class Enemy extends ObjectKillable {
         } else {
             Enemy.enemyID++;
         }
-        // console.log("setID: ", Enemy.enemyID);
+    }
+
+    doResetEnemyID(ID) {
+        this.enemyID = ID;
+        if (this.velocityX > 0){
+            this.velocityX += (55-Enemy.remainingEnemies); 
+        }else{
+            this.velocityX -= (55-Enemy.remainingEnemies);
+        }
+        console.log(this.velocityX);
     }
 
     static prepMoveDown = false;
@@ -112,9 +116,7 @@ class Enemy extends ObjectKillable {
     }
 
 
-    // Method to switch to the next frame
     atBounds() {
-        console.log("this.velocityX: ", this.velocityX);
         let changeDir = false;
         if (this.velocityX > 0) {
             changeDir = this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;

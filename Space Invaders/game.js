@@ -54,20 +54,6 @@ const shields = [];
 // Initialize other enemies
 let enemyShip = null;/*  */
 
-const initialSpeed = 0.0;
-const finalSpeed = 7;
-const initialEnemies = 55;
-function calculateSpeed(remainingEnemies) {
-    // Calculate the slope with positive change
-    const speedChangePerEnemy = (finalSpeed - initialSpeed) / (initialEnemies - 1);
-
-    // Calculate the current speed
-    const speed = initialSpeed + (speedChangePerEnemy * (initialEnemies - remainingEnemies));
-
-    // Ensure speed does not go above the final speed
-    return Math.min(speed, finalSpeed);
-}
-
 // Function to initialize enemy positions
 function initializeEnemies() {
     let enemyHeightSpacing = 59;
@@ -451,6 +437,9 @@ function checkLaserEnemyCollision(player) {
                         player.score += enemy.value;
                         enemy.setHit();
                         hitDetected = true;
+
+
+
                         break; // Exit the current `for` loop
                     }
                 }
@@ -470,7 +459,7 @@ function checkLaserBombCollision() {
         enemyBombs.forEach(enemyBomb => {
             if (laser.processCollisionWith(enemyBomb)) {
                 hitBomb = true;
-                if (enemyBomb.constructor.name !== "EnemyBomb3"){
+                if (enemyBomb.constructor.name !== "EnemyBomb3") {
                     enemyBomb.setIsDead();
                 }
             }
@@ -570,17 +559,36 @@ function checkBombPlayerCollision() {
     });
 }
 
+function doResetEnemyID(){
+
+    const enemyArrays = [enemySquids, enemyOctopuses, enemyCrabs];
+    const totalCount = enemyArrays.reduce((sum, enemyArray) => sum + enemyArray.length, 0);
+    Enemy.setRemainingEnemies(totalCount);
+
+    [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
+        for (let i = enemyArray.length - 1; i >= 0; i--) {
+            const enemy = enemyArray[i];
+            //enemy.enemyID = i;
+            enemy.doResetEnemyID(i);
+        }
+    });
+
+}
+
 function removeDeadEnemy() {
+    let reset = false;
     // Check for dead enemy and remove
     [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
         for (let i = enemyArray.length - 1; i >= 0; i--) {
             const enemy = enemyArray[i];
             if (enemy.isDead()) {
                 enemyArray.splice(i, 1); // Remove the enemy at index i
+                reset = true;
                 break; // Exit the current `for` loop
             }
         }
     });
+    return reset;
 }
 
 function removeDeadBomb() {
@@ -620,7 +628,10 @@ export function gameLoop(ctx, deltaTime) {
     Enemy.setID();
 
     updateBombs(deltaTime);
-    removeDeadEnemy();
+    const resetEnemyID = removeDeadEnemy();
+    if (resetEnemyID){
+        doResetEnemyID();
+    }
     removeDeadBomb();
 
     EnemiesUpdate(deltaTime);
@@ -684,13 +695,3 @@ window.canvasPath = currentDir;
 //-------------------------------------------------------------------------
 // tests below this line
 //-------------------------------------------------------------------------
-
-if (false) {
-    // Test for speed calc
-    for (let enemies = 55; enemies >= 1; enemies--) {
-        let timer = calculateSpeed(enemies);
-        console.log("Enemies: " + enemies + ", Speed: " + timer.toFixed(4));
-    }
-
-    // 
-}
