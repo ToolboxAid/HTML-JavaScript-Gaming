@@ -66,8 +66,10 @@ class Enemy extends ObjectKillable {
         this.enemyID = Enemy.enemyID++;
     }
 
-    static setRemainingEnemies(count) {
-        Enemy.remainingEnemies = count;
+    static resetRemainingEnemies() {
+        Enemy.remainingEnemies = 0;
+        //Enemy.enemyID = 0;
+        console.log("resetRemainingEnemies")
     }
 
     static setNextID() {
@@ -84,37 +86,41 @@ class Enemy extends ObjectKillable {
         }
     }
 
-    static resetEnemyID(){
-        Enemy.remainingEnemiesyID = 0;
-    }
-    doResetEnemyID() {
-        const newID = Enemy.remainingEnemiesyID++;        
-        console.log("ID: ", this.enemyID, " newID: ",newID);
+    reorgID() {
+        const newID = Enemy.remainingEnemies++;
+        console.log("doResetEnemyID1 --- ID: ", this.enemyID, " newID: ", newID);
         this.enemyID = newID;
+    }
+
+    adjustSpeed() {
         // Increase speed 
         if (this.velocityX > 0) {
             this.velocityX += (Enemy.maximumEnemies - Enemy.remainingEnemies);
         } else {
             this.velocityX -= (Enemy.maximumEnemies - Enemy.remainingEnemies);
         }
-        //console.log(this.velocityX);
+        console.log("this.velocityX", this.velocityX);
     }
 
     static prepMoveDown = false;
     static doMoveDown = false;
     update(deltaTime) {
-        // Use === for comparison
-        if (this.enemyID === Enemy.enemyID || !this.isAlive()) {
+        // Use `===` for comparison
+        if (this.enemyID === Enemy.enemyID) {
             if (Enemy.doMoveDown) {
                 this.velocityX *= -1;
                 this.y += this.height;
             }
 
             super.update(deltaTime, true);
-            //            console.log("update b", this.enemyID, this.x);
+
             if (this.atBounds()) {
                 console.log("atbounds");
                 Enemy.prepMoveDown = true;
+            }
+        } else {
+            if (this.isDying()) {
+                super.update(deltaTime, true);
             }
         }
     }

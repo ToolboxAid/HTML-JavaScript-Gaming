@@ -558,21 +558,34 @@ function checkBombPlayerCollision() {
     });
 }
 
-function doResetEnemyID() {
+function doReorgEnemyID() {
 
-    Enemy.resetEnemyID();
-    for (let row = 0; row >= enemies.length - 1; row++) {
-        for (let col = enemies[row].length - 1; col >= 0; col--) {
+    console.log("doReorgEnemyID()", Enemy.remainingEnemies);
+    Enemy.resetRemainingEnemies();
+    for (let row = 0; row <= enemies.length - 1; row++) {
+        for (let col = 0; col <= enemies[row].length - 1; col++) {
             const enemy = enemies[row][col];
             if (enemy) { // Check if the enemy is present
-                enemy.doResetEnemyID(); // Reset the enemy's ID with the current value of newID
-               // totalCount++;
+                enemy.reorgID(); // Reset the enemy's ID with the current value of newID
             }
         }
     }
 
+
+    for (let row = 0; row <= enemies.length - 1; row++) {
+        for (let col = 0; col <= enemies[row].length - 1; col++) {
+            const enemy = enemies[row][col];
+            if (enemy) { // Check if the enemy is present
+                enemy.adjustSpeed(); // Reset the enemy's ID with the current value of newID
+            }
+        }
+    }
+
+    
+
     // Optionally, log the total count of enemies processed
     console.log(`Total enemies reset: ${Enemy.remainingEnemies}`);
+    console.log(enemies);
 }
 
 function removeDeadEnemy() {
@@ -585,7 +598,7 @@ function removeDeadEnemy() {
             const enemy = enemies[row][col];
             if (enemy) { // Check if the enemy is present
                 if (enemy.isDead()) {
-                    console.log("killed ID:", enemy.enemyID);
+                    console.log("Killed ID:", enemy.enemyID);
                     enemies[row][col] = null;
                     resetNeeded = true;
                 }
@@ -594,7 +607,6 @@ function removeDeadEnemy() {
     }
     return resetNeeded;
 }
-
 
 function drawEnemies(ctx) {
     // Loop through the rows from the last one down to the first
@@ -609,7 +621,6 @@ function drawEnemies(ctx) {
         }
     }
 }
-
 
 function removeDeadBomb() {
     // Check for dead enemyBomb and remove
@@ -657,7 +668,8 @@ export function gameLoop(ctx, deltaTime) {
         }
     } else {
         if (removeDeadEnemy()) {
-            doResetEnemyID();
+            doReorgEnemyID();
+            // change velocity?????
         }
         Enemy.setNextID();
         EnemiesUpdate(deltaTime);
