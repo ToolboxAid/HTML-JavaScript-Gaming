@@ -112,6 +112,7 @@ function initializeEnemies() {
         }
         enemyHeightPosition -= enemyHeightSpacing;
     }
+    Enemy.enemyID = -3;
 }
 
 // Function to initialize shield positions
@@ -491,7 +492,6 @@ function drawLevel(ctx, player) {
     const color = 'white';
     const pixelSize = 5;
     CanvasUtils.drawSprite(ctx, 825, dwn, LevelFrames[0], 2.0); // current 0-9
-
 }
 
 function drawGround(ctx) {

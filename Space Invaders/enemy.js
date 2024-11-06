@@ -56,12 +56,6 @@ class Enemy extends ObjectKillable {
         ],
     ];
 
-    /*
-    constructor(row, colun, livingFrames, bombAggression) {
-
-        const x = 10;
-        const y = 10;
-    */
     constructor(x, y, livingFrames, bombAggression) {
 
         super(x, y, livingFrames, Enemy.dyingFrames);
@@ -74,8 +68,7 @@ class Enemy extends ObjectKillable {
         this.bombAggression = 3 + (bombAggression * 2);
 
         this.velocityX = 250;
-        //        this.actionFrame = Enemy.enemyID;
-        this.enemyID = ++Enemy.enemyID;
+        this.enemyID = Enemy.enemyID++;
     }
 
     static changeDirections() {
@@ -90,22 +83,19 @@ class Enemy extends ObjectKillable {
     static enemyID = 0;
 
     static setID() {
-        if (++Enemy.enemyID > 55 + 1) { // Number of remaining enemies
+        if (Enemy.enemyID >= 54) { // Update to number of remaining enemies
             Enemy.enemyID = 0;
+        } else {
+            Enemy.enemyID++;
         }
-        console.log("setID: ", Enemy.enemyID);
+        // console.log("setID: ", Enemy.enemyID);
     }
 
     update(deltaTime) {
-        //     console.log("this.enemyID: ", this.enemyID);
-
         // Use === for comparison
-        if (this.enemyID === Enemy.enemyID) {
-            console.log("update", this.enemyID);
+        if (this.enemyID === Enemy.enemyID || !this.isAlive()) {
             super.update(deltaTime, true); // Ensure 'super.update' is valid
         }
-
-        //  this.updateDyingFrames();
     }
 
     isDropBombTime() {
