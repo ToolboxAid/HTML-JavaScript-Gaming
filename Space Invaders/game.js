@@ -132,61 +132,6 @@ function initialGround() {
     }
 }
 
-function setEnemyMoveDown() {
-    const initialEnemyCount = 5 * enemyCols;// 5 for enemyRows
-    const time = 750; //1500; // 1.5 seconds
-    const moveDownIncr = time / initialEnemyCount;
-    let moveDownDelay = 0;
-
-    // Calculate the number of remaining enemies
-    const remainingEnemies = enemyOctopuses.length + enemySquids.length + enemyCrabs.length;
-
-    enemyCrabs.forEach(enemyCrab => {
-        enemyCrab.setMoveDownTimer(moveDownDelay);
-        moveDownDelay += moveDownIncr;
-    });
-    enemySquids.forEach(enemySquid => {
-        enemySquid.setMoveDownTimer(moveDownDelay);
-        moveDownDelay += moveDownIncr;
-    });
-    enemyOctopuses.forEach(enemyOctopus => {
-        enemyOctopus.setMoveDownTimer(moveDownDelay);
-        moveDownDelay += moveDownIncr;
-    });
-}
-
-// Function to animate and update frames, start every 0.4 seconds 
-const maxInterval = 60;  // 1 second at 60 FPS
-const minInterval = 2;   // 2 frame, representing 2/60 second
-
-let frameCount = 0;
-let initialEnemyCount = 55;
-let dynamicAnimationInterval = initialEnemyCount;
-function animate(deltaTime) {
-    const remainingEnemies = enemySquids.length + enemyOctopuses.length + enemyCrabs.length;
-    frameCount++;
-    dynamicAnimationInterval = Math.max(minInterval, Math.floor(maxInterval * (remainingEnemies / initialEnemyCount)));
-    if (frameCount % dynamicAnimationInterval === 0) {
-        const speed = calculateSpeed(remainingEnemies);
-        Enemy.setSpeed(speed);
-
-        // Update frames and set drop timer for all enemies
-        let moveEnemyDown = false;
-        [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
-            // let atBounds = enemy.nextFrame();
-            // if (!moveEnemyDown && atBounds) {
-            //     moveEnemyDown = true;
-            // }
-           // enemy.update(deltaTime);   ///////
-        });
-
-        if (moveEnemyDown) {
-            Enemy.changeDirections();
-            setEnemyMoveDown();
-        }
-    }
-}
-
 function EnemiesUpdate(deltaTime) {
     //---------------------------------------
     [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
@@ -221,12 +166,6 @@ function EnemiesDropBomb(deltaTime) {
             }
         }
     });
-}
-
-function checkEnemiesMoveDown() {
-    enemySquids.forEach(enemySquid => enemySquid.checkMoveDown());
-    enemyOctopuses.forEach(enemyOctopus => enemyOctopus.checkMoveDown());
-    enemyCrabs.forEach(enemyCrab => enemyCrab.checkMoveDown());
 }
 
 function checkEnemyShip(deltaTime) {
@@ -690,18 +629,15 @@ export function gameLoop(ctx, deltaTime) {
     checkBombShieldCollision();
     checkBombGroundCollision();
     checkBombPlayerCollision();
-    checkEnemiesMoveDown();
     checkEnemyShip(deltaTime);
 
     keyboardInput.update();
     const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
     checkLaser(deltaTime, laserFirePoint);
     checkLaserShipCollision(player);
-    //animate(deltaTime);
 
     checkLaserEnemyCollision(player);
     checkLaserBombCollision();
-
 
     // Draw scores
     drawScore(ctx);

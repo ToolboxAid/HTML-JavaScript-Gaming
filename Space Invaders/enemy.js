@@ -11,7 +11,7 @@ import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
 class Enemy extends ObjectKillable {
- //   static direction = 1;
+    //   static direction = 1;
     static move = 10;
     static speed = 0;
 
@@ -60,20 +60,11 @@ class Enemy extends ObjectKillable {
 
         super(x, y, livingFrames, Enemy.dyingFrames);
 
-        // disable move enemy to next line.
-        this.doMoveDown = false;
-        this.moveDownDelay = 0;
-        this.moveDownTime = 0;
-
         this.bombAggression = 3 + (bombAggression * 2);
 
         this.velocityX = 250;
         this.enemyID = Enemy.enemyID++;
     }
-
-    // static changeDirections() {
-    //     this.velocityX *= -1;
-    // }
 
     static setSpeed(speed) {
         Enemy.speed = speed;
@@ -89,8 +80,6 @@ class Enemy extends ObjectKillable {
             if (Enemy.prepMoveDown) {
                 Enemy.prepMoveDown = false;
                 Enemy.doMoveDown = true;
-                //Enemy.direction *= -1;
-                //this.velocityX *= -1;
             } else {
                 Enemy.doMoveDown = false;
             }
@@ -105,9 +94,9 @@ class Enemy extends ObjectKillable {
     update(deltaTime) {
         // Use === for comparison
         if (this.enemyID === Enemy.enemyID || !this.isAlive()) {
-            if (Enemy.doMoveDown){
+            if (Enemy.doMoveDown) {
                 this.velocityX *= -1;
-                this.y +=50;
+                this.y += this.height;
             }
             super.update(deltaTime, true); // Ensure 'super.update' is valid
             if (this.atBounds()) {
@@ -122,32 +111,16 @@ class Enemy extends ObjectKillable {
         return (number <= this.bombAggression);
     }
 
-    setMoveDownTimer(moveDownDelay) {
-        this.doMoveDown = true;
-        this.moveDownTime = Date.now() + moveDownDelay;
-    }
-
-    checkMoveDown() {
-        if (Date.now() >= this.moveDownTime && this.doMoveDown) {
-            this.y += this.height;
-            // Set the next drop time
-            this.moveDownTime = Date.now() + this.moveDownDelay;
-            this.doMoveDown = false;
-        }
-    }
 
     // Method to switch to the next frame
     atBounds() {
-        console.log("this.velocityX: ",this.velocityX);
+        console.log("this.velocityX: ", this.velocityX);
         let changeDir = false;
         if (this.velocityX > 0) {
             changeDir = this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
         } else {
             changeDir = this.x - Enemy.speed < (this.width * 0.25);
         }
-        // const atRightBound = Enemy.direction > 0 && this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
-        // const atLeftBound = Enemy.direction < 0 && this.x - Enemy.speed < (this.width * 0.25);
-
         return changeDir;
     }
 
