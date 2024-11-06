@@ -11,7 +11,7 @@ import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
 class Enemy extends ObjectKillable {
-    static direction = 1;
+ //   static direction = 1;
     static move = 10;
     static speed = 0;
 
@@ -71,9 +71,9 @@ class Enemy extends ObjectKillable {
         this.enemyID = Enemy.enemyID++;
     }
 
-    static changeDirections() {
-        Enemy.direction *= -1;
-    }
+    // static changeDirections() {
+    //     this.velocityX *= -1;
+    // }
 
     static setSpeed(speed) {
         Enemy.speed = speed;
@@ -85,16 +85,35 @@ class Enemy extends ObjectKillable {
     static setID() {
         if (Enemy.enemyID >= 54) { // Update to number of remaining enemies
             Enemy.enemyID = 0;
+            console.log("Enemy.prepMoveDown: ", Enemy.prepMoveDown, "Enemy.doMoveDown", Enemy.doMoveDown);
+            if (Enemy.prepMoveDown) {
+                Enemy.prepMoveDown = false;
+                Enemy.doMoveDown = true;
+                //Enemy.direction *= -1;
+                //this.velocityX *= -1;
+            } else {
+                Enemy.doMoveDown = false;
+            }
         } else {
             Enemy.enemyID++;
         }
         // console.log("setID: ", Enemy.enemyID);
     }
 
+    static prepMoveDown = false;
+    static doMoveDown = false;
     update(deltaTime) {
         // Use === for comparison
         if (this.enemyID === Enemy.enemyID || !this.isAlive()) {
+            if (Enemy.doMoveDown){
+                this.velocityX *= -1;
+                this.y +=50;
+            }
             super.update(deltaTime, true); // Ensure 'super.update' is valid
+            if (this.atBounds()) {
+                console.log("atbounds");
+                Enemy.prepMoveDown = true;
+            }
         }
     }
 
@@ -118,14 +137,18 @@ class Enemy extends ObjectKillable {
     }
 
     // Method to switch to the next frame
-    nextFrame() {
-        // this.currentFrameIndex = (this.currentFrameIndex + 1) % this.livingFrameCount;
-        // this.x += (Enemy.move + Enemy.speed) * Enemy.direction;
+    atBounds() {
+        console.log("this.velocityX: ",this.velocityX);
+        let changeDir = false;
+        if (this.velocityX > 0) {
+            changeDir = this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
+        } else {
+            changeDir = this.x - Enemy.speed < (this.width * 0.25);
+        }
+        // const atRightBound = Enemy.direction > 0 && this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
+        // const atLeftBound = Enemy.direction < 0 && this.x - Enemy.speed < (this.width * 0.25);
 
-        const atRightBound = Enemy.direction > 0 && this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
-        const atLeftBound = Enemy.direction < 0 && this.x - Enemy.speed < (this.width * 0.25);
-
-        return atRightBound || atLeftBound;
+        return changeDir;
     }
 
 }

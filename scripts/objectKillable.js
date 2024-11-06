@@ -57,7 +57,6 @@ class ObjectKillable extends ObjectDynamic {
                     this.currentFrameIndex = 0;
                 }
             } else {
-
                 this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
             }
         } else { // is Dying or Dead
