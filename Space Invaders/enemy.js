@@ -56,11 +56,14 @@ class Enemy extends ObjectKillable {
     static remainingEnemies = 54;
     static maximumEnemies = 54;
 
-    constructor(x, y, livingFrames, bombAggression) {
+    static nextID = 0;
+
+
+    constructor(x, y, livingFrames, bombAggression, enemyRow, enemyCol) {
 
         super(x, y, livingFrames, Enemy.dyingFrames);
 
-this.key =null;
+        this.key = enemyRow + "x" + enemyCol;
 
         this.bombAggression = 3 + (bombAggression * 2);
 
@@ -69,10 +72,10 @@ this.key =null;
     }
 
     static setNextID() {
-        if (Enemy.remainingEnemies > Enemy.enemyID) {
-            Enemy.enemyID++;
+        if (Enemy.remainingEnemies > Enemy.nextID) {
+            Enemy.nextID++;
         } else {
-            Enemy.enemyID = -3;
+            Enemy.nextID = 0;
             if (Enemy.prepMoveDown) {
                 Enemy.prepMoveDown = false;
                 Enemy.doMoveDown = true;
@@ -82,15 +85,12 @@ this.key =null;
         }
     }
 
-    static resetRemainingEnemies() {
-        Enemy.remainingEnemies = 0;
+    static reorgID = 0;
+    reorgID() {
+        this.enemyID = Enemy.reorgID++;
+        console.log(this.key, this.enemyID, this.currentFrameIndex);
     }
 
-    reorgID() {
-        //const newID = Enemy.remainingEnemies++;
-        //    console.log("doResetEnemyID1 --- ID: ", this.enemyID, " newID: ", newID);
-        this.enemyID = Enemy.remainingEnemies++;
-    }
 
     adjustSpeed() {
         // Increase speed 
@@ -106,7 +106,7 @@ this.key =null;
     static doMoveDown = false;
     update(deltaTime) {
         // Use `===` for comparison
-        if (this.enemyID === Enemy.enemyID) {
+        if (this.enemyID === Enemy.nextID) {
             if (Enemy.doMoveDown) {
                 this.velocityX *= -1;
                 this.y += this.height;

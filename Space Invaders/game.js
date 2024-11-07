@@ -54,21 +54,6 @@ let initializingGame = true;
 let enemyRow = 0;
 let enemyCol = 0;
 
-/*
-let gameSettings = new Map();
-
-// Add some settings
-gameSettings.set("volume", 5);
-gameSettings.set("difficulty", "hard");
-gameSettings.set("fullscreen", true);
-
-console.log("Before deletion:", gameSettings); // Map with 3 items
-
-// Remove an item from the map
-gameSettings.delete("fullscreen");
-
-console.log("After deletion:", gameSettings); // Map without the "fullscreen" setting
-*/
 let gameEnemies = new Map();
 
 function initializeEnemies() {
@@ -87,27 +72,24 @@ function initializeEnemies() {
         case 0:
         case 1:
             x -= Math.ceil((12 * spriteConfig.pixelSize) / 2);
-            enemy = new EnemyCrab(x, y, player.level);
+            enemy = new EnemyCrab(x, y, player.level, enemyRow, enemyCol);
             break;
         case 2:
         case 3:
             x -= Math.ceil((11 * spriteConfig.pixelSize) / 2);
-            enemy = new EnemySquid(x, y, player.level);
+            enemy = new EnemySquid(x, y, player.level, enemyRow, enemyCol);
             break;
         case 4:
             x -= Math.ceil((8 * spriteConfig.pixelSize) / 2);
-            enemy = new EnemyOctopus(x, y, player.level);
+            enemy = new EnemyOctopus(x, y, player.level, enemyRow, enemyCol);
             break;
         default:
             console.log("Unknown enemy type!");
             break;
     }
 
-    // Add enemy to two (2) dimensional array
-    //enemies[enemyRow][enemyCol] = enemy;
     enemy.key = key;
     gameEnemies.set(key, enemy);
-    //   console.log("Map Size 0:", gameEnemies.size);
 
     if (++enemyCol >= 11) {
         enemyCol = 0;
@@ -136,22 +118,10 @@ function initialGround() {
     }
 }
 
-function EnemiesUpdate(deltaTime) {//
-
-    gameEnemies.forEach((value, key) => { 
-        let enemy = value;
-enemy.update(deltaTime,true);
+function EnemiesUpdate(deltaTime) {
+    gameEnemies.forEach((enemy, key) => {
+        enemy.update(deltaTime, true);
     });
-
-    // for (let row = 0; row <= enemies.length - 1; row++) {
-    //     // Loop through the columns from the last one down to the first
-    //     for (let col = 0; col <= enemies[row].length - 1; col++) {
-    //         const enemy = enemies[row][col];
-    //         if (enemy) { // Check if the enemy is present
-    //             enemy.update(deltaTime, true);; // Call the draw method on the enemy object
-    //         }
-    //     }
-    // }
     Enemy.setNextID();
 }
 
@@ -457,35 +427,13 @@ function drawGround(ctx) {
 function checkLaserEnemyCollision(player) {
     if (laser) {
         let hitDetected = false;
-
-
-        gameEnemies.forEach((value, key) => { 
-            let enemy = value;
+        gameEnemies.forEach((enemy, key) => {
             if (laser.processCollisionWith(enemy)) {
                 player.score += enemy.value;
                 enemy.setHit();
                 hitDetected = true;
-                //break;
             }
-
         });
-
-        // for (let row = 0; row <= enemies.length - 1; row++) {
-        //     for (let col = 0; col <= enemies[row].length - 1; col++) {
-        //         const enemy = enemies[row][col];
-        //         if (enemy) {
-        //             if (enemy.isAlive()) {
-        //                 if (laser.processCollisionWith(enemy)) {
-        //                     player.score += enemy.value;
-        //                     enemy.setHit();
-        //                     hitDetected = true;
-        //                     //break;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
         if (hitDetected) { // Delete the laser
             laser = null;
         }
@@ -599,75 +547,42 @@ function checkBombPlayerCollision() {
     });
 }
 
-// function doReorgEnemyID() {
-//     console.log("doReorg");
-//     // console.log("doReorgEnemyID()", Enemy.remainingEnemies);
-//     Enemy.resetRemainingEnemies();
-//     for (let row = 0; row <= enemies.length - 1; row++) {
-//         for (let col = 0; col <= enemies[row].length - 1; col++) {
-//             const enemy = enemies[row][col];
-//             if (enemy) {
-//                 enemy.toString();
-//                 if (enemy.isAlive()) {
-//                     enemy.reorgID();
-//                 } else {
-//                     enemy.enemyID = 999;
-//                 }
-//             }
-//         }
-//     }
-
-//     for (let row = 0; row <= enemies.length - 1; row++) {
-//         for (let col = 0; col <= enemies[row].length - 1; col++) {
-//             const enemy = enemies[row][col];
-//             if (enemy) {
-//                 //                console.log(enemy.velocityX);
-//                 //                enemy.adjustSpeed();
-//             }
-//         }
-//     }
-
-//     Enemy.remainingEnemies++;
-
-//     //console.log(enemies);
-// }
-
 function removeDeadEnemy() {
-//    let resetNeeded = false;
-    // Check for dead enemy and remove?
-
-    gameEnemies.forEach((value, key) => { 
-        let enemy = value;
-        if (enemy.isDead()){
-            gameEnemies.delete(enemy.key);
+    let foundDead = false;
+    let foundID = -1;
+    let foundKey = null;
+    gameEnemies.forEach((enemy) => {
+        if (enemy.isDead()) {
+            foundID =   enemy.enemyID;
+            foundKey = enemy.key;
+            foundDead = gameEnemies.delete(enemy.key);            
         }
     });
 
-    // if (resetNeeded) {
-    //     // doReorgEnemyID();
-    // }
-    // return resetNeeded;
+    if (foundDead) {
+        console.log("found---------------------------------------");
+        Enemy.remainingEnemies = gameEnemies.size;
+        Enemy.reorgID = 0;
+        if (foundID <= Enemy.nextID){
+            Enemy.nextID--;
+            console.log("nextID--");
+            if (Enemy.nextID < 0){
+                Enemy.nextID = Enemy.remainingEnemies;
+                console.log("move to end");
+                console.log(foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
+            }
+        }
+        //Enemy.nextID--;
+        gameEnemies.forEach((enemy) => {
+            enemy.reorgID();
+        });
+    }
 }
 
 function drawEnemies(ctx) {
-    // // Loop through the rows from the last one down to the first
-    // for (let row = enemies.length - 1; row >= 0; row--) {
-    //     // Loop through the columns from the last one down to the first
-    //     for (let col = enemies[row].length - 1; col >= 0; col--) {
-    //         const enemy = enemies[row][col];
-    //         if (enemy) { // Check if the enemy is present
-    //             enemy.draw(ctx); // Call the draw method on the enemy object
-    //             //console.log(enemy.enemyID);
-    //         }
-    //     }
-    // }
-
-    gameEnemies.forEach((value, key) => { 
-        // console.log("Key & Value: ", key);
-        // value.toString();
-        value.draw(ctx);
+    gameEnemies.forEach((enemy, key) => {
+        enemy.draw(ctx);
     });
-
 }
 
 function removeDeadBomb() {
@@ -720,26 +635,9 @@ export function gameLoop(ctx, deltaTime) {
     } else {
         if (onetime) {
             onetime = false;
-            //console.log("Before deletion:", gameEnemies);
             console.log("Map Size:", gameEnemies.size);
 
-            // for (let [key, value] of gameEnemies) {
-            //     console.log(key);
-            //     console.log("Key&Value: ", key," Value: " , value);
-            // } 
-            // Iterating over maps
-
-            // gameEnemies.forEach((value, key) => {
-            //     //console.log(`${key}: ${value.toString()}`);
-            //     console.log("Key&Value: ", key," Value: " , value.toString());    
-            // });
-
-            gameEnemies.delete("2x0");
-            gameEnemies.delete("2x1");
-            gameEnemies.delete("2x2");
-            gameEnemies.delete("2x3");
-
-            gameEnemies.forEach((value, key) => { 
+            gameEnemies.forEach((value, key) => {
                 //console.log("Key & Value: ", key);
                 value.toString();
             });

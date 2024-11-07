@@ -31,8 +31,8 @@ class EnemyCrab extends Enemy {
         ]
     ];
 
-    constructor(x, y, dropBombDelay) {
-        super(x, y, EnemyCrab.livingFrames, dropBombDelay);
+    constructor(x, y, dropBombDelay, enemyRow, enemyCol) {
+        super(x, y, EnemyCrab.livingFrames, dropBombDelay, enemyRow, enemyCol);
         this.setSpriteColor(spriteConfig.crabColor);
         this.value = 10;
     }
