@@ -137,6 +137,11 @@ class Enemy extends ObjectKillable {
         const number = Functions.randomGenerator(0, 10000, true);
         return (number <= this.bombAggression);
     }
+
+    toString() {
+        console.log(`Enemy ID: ${this.enemyID}, Status: ${this.status}, velocityX ${this.velocityX}`);
+    }
+
 }
 
 export default Enemy;

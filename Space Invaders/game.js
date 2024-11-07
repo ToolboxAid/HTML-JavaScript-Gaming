@@ -435,7 +435,6 @@ function checkLaserEnemyCollision(player) {
             for (let col = 0; col <= enemies[row].length - 1; col++) {
                 const enemy = enemies[row][col];
                 if (enemy) {
-                    //if (!hitDetected) {
                     if (enemy.isAlive()){
                         if (laser.processCollisionWith(enemy)) {
                             player.score += enemy.value;
@@ -444,7 +443,6 @@ function checkLaserEnemyCollision(player) {
                             //break;
                         }
                     }
-                    //}
                 }
             }
         }
@@ -563,16 +561,18 @@ function checkBombPlayerCollision() {
 }
 
 function doReorgEnemyID() {
-    console.log("doReorgEnemyID()", Enemy.remainingEnemies);
+    console.log("doReorg");
+   // console.log("doReorgEnemyID()", Enemy.remainingEnemies);
     Enemy.resetRemainingEnemies();
     for (let row = 0; row <= enemies.length - 1; row++) {
         for (let col = 0; col <= enemies[row].length - 1; col++) {
             const enemy = enemies[row][col];
             if (enemy) {
+                enemy.toString();
                 if(enemy.isAlive()){
                 enemy.reorgID();
                 }else{
-                   /// enemy.enemyID = 999;
+                   enemy.enemyID = 999;
                 }
             }
         }
@@ -582,7 +582,7 @@ function doReorgEnemyID() {
         for (let col = 0; col <= enemies[row].length - 1; col++) {
             const enemy = enemies[row][col];
             if (enemy) {
-                console.log(enemy.velocityX);
+//                console.log(enemy.velocityX);
 //                enemy.adjustSpeed();
             }
         }
@@ -590,7 +590,7 @@ function doReorgEnemyID() {
 
     Enemy.remainingEnemies++;
 
-    console.log(enemies);
+    //console.log(enemies);
 }
 
 function removeDeadEnemy() {
@@ -601,13 +601,16 @@ function removeDeadEnemy() {
         for (let col = enemies[row].length - 1; col >= 0; col--) {
             const enemy = enemies[row][col];
             if (enemy) { // Check if the enemy is present
-                if (enemy.isDead()) {
+                if (enemy.isDead() && enemy.enemyID != 999) {
  //                   console.log("Killed ID:", enemy.enemyID);
 //                    enemies[row][col] = null;
                   resetNeeded = true;
                 }
             }
         }
+    }
+    if (resetNeeded){        
+       // doReorgEnemyID();
     }
     return resetNeeded;
 }
