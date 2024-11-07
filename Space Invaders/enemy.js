@@ -82,6 +82,12 @@ class Enemy extends ObjectKillable {
             } else {
                 Enemy.doMoveDown = false;
             }
+            if (Enemy.prepSpeed) {
+                Enemy.prepSpeed = false;
+                Enemy.doSpeed = true;
+            } else {
+                Enemy.doSpeed = false;
+            }            
         }
     }
 
@@ -89,18 +95,22 @@ class Enemy extends ObjectKillable {
     reorgID() {
         this.enemyID = Enemy.reorgID++;
         console.log(this.key, this.enemyID, this.currentFrameIndex);
+        Enemy.prepSpeed  = true;
     }
 
 
-    adjustSpeed() {
+    adjustSpeed(deltaTime) {
         // Increase speed 
         if (this.velocityX > 0) {
             this.velocityX += (Enemy.maximumEnemies - Enemy.remainingEnemies);
         } else {
             this.velocityX -= (Enemy.maximumEnemies - Enemy.remainingEnemies);
         }
-        console.log("this.velocityX", this.velocityX, " max ", Enemy.maximumEnemies, "remai", Enemy.remainingEnemies);
+        console.log("deltaTime", deltaTime, "this.velocityX", this.velocityX, " max ", Enemy.maximumEnemies, "remai", Enemy.remainingEnemies);
     }
+
+    static prepSpeed = false;
+    static doSpeed = false;
 
     static prepMoveDown = false;
     static doMoveDown = false;
@@ -110,6 +120,11 @@ class Enemy extends ObjectKillable {
             if (Enemy.doMoveDown) {
                 this.velocityX *= -1;
                 this.y += this.height;
+                console.log("Key", this.key, "velX", this.velocityX);
+            }
+            if (Enemy.doSpeed){
+                this.adjustSpeed(deltaTime);
+                //console.log("speed adj", this.velocityX);
             }
 
             super.update(deltaTime, true);
