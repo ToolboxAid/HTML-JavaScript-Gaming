@@ -560,16 +560,15 @@ function removeDeadEnemy() {
     });
 
     if (foundDead) {
-        console.log("found---------------------------------------");
+        console.log("found--------: ", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
         Enemy.remainingEnemies = gameEnemies.size;
         Enemy.reorgID = 0;
-        if (foundID <= Enemy.nextID){
+        if (foundID < Enemy.nextID){
             Enemy.nextID--;
             console.log("nextID--");
             if (Enemy.nextID < 0){
                 Enemy.nextID = Enemy.remainingEnemies;
-                console.log("move to end");
-                console.log(foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
+                console.log("move to end", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
             }
         }
         //Enemy.nextID--;
