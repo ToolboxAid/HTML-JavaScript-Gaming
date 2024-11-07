@@ -26,22 +26,20 @@ class Player extends ObjectDynamic {
       
     ];
 
-    constructor(x, y) {
+    constructor(x = 127, y = 810) {
         super(x, y, 50, 50);
         this.score = 0;
         this.lives = 3;
         this.pixelSize = 3.0;
         this.level = 1;
-        // this.pixelSize = Math.ceil(window.pixelSize);
-        // spriteConfig.pixelSize; //window.pixelSize;
     }
 
     draw(ctx) {
         CanvasUtils.drawSprite(ctx, this.x, this.y, Player.frame, this.pixelSize);
     }
 
-    setLevel(level) {
-        this.level = level;
+    setLevel() {
+        this.level++;
     }
 
     update(keysPressed, keyJustPressed) {

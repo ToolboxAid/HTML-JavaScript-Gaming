@@ -59,7 +59,7 @@ class Enemy extends ObjectKillable {
     static nextID = 0;
 
 
-    constructor(x, y, livingFrames, bombAggression, enemyRow, enemyCol) {
+    constructor(x, y, livingFrames, bombAggression, enemyRow=12, enemyCol=12) {
 
         super(x, y, livingFrames, Enemy.dyingFrames);
 

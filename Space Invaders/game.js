@@ -29,8 +29,8 @@ import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
 // Initialize player
-const player1 = new Player(100, 810);
-const player2 = new Player(100, 810);
+const player1 = new Player();
+const player2 = new Player();
 
 const enemySpacing = 19; // 5px space between each enemy
 let gameEnemies = new Map();
@@ -58,7 +58,6 @@ function initializeEnemies() {
     let x = 40 + (enemyCol * (enemyWidth + enemySpacing));
     const y = enemyHeightPosition - (enemyRow * enemyHeightSpacing);
 
-    let key = enemyRow + "x" + enemyCol;
     let enemy = null;
     switch (enemyRow) {
         case 0:
@@ -80,8 +79,7 @@ function initializeEnemies() {
             break;
     }
 
-    enemy.key = key;
-    gameEnemies.set(key, enemy);
+    gameEnemies.set(enemy.key, enemy);
 
     if (++enemyCol >= 11) {
         enemyCol = 0;
