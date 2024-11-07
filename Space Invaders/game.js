@@ -560,21 +560,24 @@ function removeDeadEnemy() {
     });
 
     if (foundDead) {
-        console.log("found--------: ", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
+//        console.log("found--------: ", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
         Enemy.remainingEnemies = gameEnemies.size;
         Enemy.reorgID = 0;
         if (foundID < Enemy.nextID){
             Enemy.nextID--;
-            console.log("nextID--");
+ //           console.log("nextID--");
             if (Enemy.nextID < 0){
                 Enemy.nextID = Enemy.remainingEnemies;
-                console.log("move to end", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
+ //               console.log("move to end", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
             }
         }
         //Enemy.nextID--;
         gameEnemies.forEach((enemy) => {
             enemy.reorgID();
         });
+        gameEnemies.forEach((enemy) => {
+            enemy.adjustSpeed();
+        });        
     }
 }
 
@@ -626,6 +629,7 @@ export function gameLoop(ctx, deltaTime) {
         if (shields.length === 0) {
             initializeShields();
             initialGround();
+            Enemy.enemyID = 0;
             console.log("initGame");
         }
 
@@ -635,11 +639,6 @@ export function gameLoop(ctx, deltaTime) {
         if (onetime) {
             onetime = false;
             console.log("Map Size:", gameEnemies.size);
-
-            gameEnemies.forEach((value, key) => {
-                //console.log("Key & Value: ", key);
-                value.toString();
-            });
         }
 
         removeDeadEnemy();
