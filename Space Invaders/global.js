@@ -12,25 +12,34 @@ export const canvasConfig = {
     backgroundColor: "#222222",   
     
     fullscreenText: 'Click game to enter fullscreen',
-    fullscreenFont: '50px Arial',
+    fullscreenFont: '40px Arial',
     fullscreenColor: 'yellow',
-    //fullscreenX: 100, // X position for fullscreen text
-    fullscreenY: 600, // Y position for fullscreen text
+    fullscreenX: 180, // X position for fullscreen text
+    fullscreenY: 930,//675, // Y position for fullscreen text
 
 };
 
 export const spriteConfig = {
     pixelSize: 3.5,
+
     shipY: 145,
     shipVelX: 150,
     shipSpawnSec: 25,
     shipColor: 'red',
+
     crabColor: 'orange',
     octopusColor: 'yellow',
     squidColor: '#ff6666',
     playerColor: 'pink',
-    shieldColor: '#44FF44',
 };
+
+export const shieldConfig = {
+    count: 4, // Number of shields
+    yPosition: 700,
+    color: '#44FF44',
+}
+window.shieldCount = shieldConfig.count;
+
 
 // non type="module" in HTML
 // Set global canvas variables for ../scripts
@@ -47,13 +56,12 @@ window.fullscreenColor = canvasConfig.fullscreenColor;
 window.fullscreenX = canvasConfig.fullscreenX; 
 window.fullscreenY = canvasConfig.fullscreenY; 
 
-
 window.borderColor = "red";
 window.borderSize = 5;
 
 // Configuration for FPS display
 window.fpsShow = true;
-window.fpsColor = "yellow";
-window.fpsSize = "40px";
-window.fpsX = 50;
-window.fpsY = 165;
+window.fpsColor = "red";
+window.fpsSize = "30px";
+window.fpsX = 404;
+window.fpsY = 855;

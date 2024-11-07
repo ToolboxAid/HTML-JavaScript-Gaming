@@ -4,7 +4,7 @@
 // shield.js
 
 import ObjectStatic from '../scripts/objectStatic.js';
-import { spriteConfig } from './global.js';
+import { canvasConfig, shieldConfig, spriteConfig } from './global.js'; // Assuming these contain canvas and sprite details
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
@@ -32,7 +32,7 @@ class Shield extends ObjectStatic {
         "1111110000000000000111111",
         "1111110000000000000111111",
 
-    ];//.map(row => row.split("")); // Convert strings to arrays of characters for easy modification
+    ];
 
     // Check if distructiveObject or its frame is undefined, and assign a default frame if needed
     // Define a default frame pattern
@@ -50,16 +50,19 @@ class Shield extends ObjectStatic {
         "010",
     ]//.map(row => row.split("")); // Convert to a 2D array of characters;
 
-    constructor(x, y) {
-        let dimensions = CanvasUtils.spriteWidthHeight(Shield.frame, window.pixelSize);
+    constructor(shieldNum) {
+        const dimensions = CanvasUtils.spriteWidthHeight(Shield.frame, window.pixelSize);
+        const shieldSpacing = (canvasConfig.width - shieldConfig.count * dimensions.width) / (shieldConfig.count + 1); // Even spacing between shields
+        const x = shieldSpacing + shieldNum * (dimensions.width + shieldSpacing);
+        const y = shieldConfig.yPosition;
         super(x, y, dimensions.width, dimensions.height);
         this.frame = Shield.frame.map(row => [...row]); // Clone to avoid modifying the static frame directly
-        this.pixelSize = window.pixelSize;
+        this.pixelSize = spriteConfig.pixelSize;
     }
 
     // Method to draw the shield
     draw(ctx) {
-        CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize, spriteConfig.shieldColor);
+        CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize, shieldConfig.color);
     }
 
     // Method to overlay another frame from an enemy bomb object, replacing overlapping '1's with '0's
@@ -75,15 +78,10 @@ class Shield extends ObjectStatic {
                 // multi dimension Array
                 try {
                     overlayFrame = distructiveObject.livingFrames[currentFrameIndex].map(row => Array.from(row)); // Use it directly if it's already in the correct format
-                } catch (error) {                    
+                } catch (error) {
                     console.error("An error occurred:", error);
                     overlayFrame = distructiveObject.livingFrames[0].map(row => Array.from(row)); // Use it directly if it's already in the correct format
                 }
-
-                // if (distructiveObject.constructor.name === "EnemyCrab") {
-                //     console.log("This object is a EnemyCrab!");
-                // }
-                //console.log(distructiveObject.constructor.name);
             } else {
                 // single dimention
                 overlayFrame = distructiveObject.livingFrames.map(row => Array.from(row)); // Adjust based on actual type
@@ -110,8 +108,7 @@ class Shield extends ObjectStatic {
         let offsetX = Math.round((bombX - shieldX) / window.pixelSize);
         let offsetY = Math.round((bombY - shieldY) / window.pixelSize);
 
-        // overlay shield frame debug
-        if (false) {
+        if (false) {// overlay shield frame debug
             console.log(overlayFrame.length, overlayFrame[0].length, this.frame.length, this.frame[0].length, distructiveObject.currentFrameIndex);
 
             for (let c = 0; c < overlayFrame.length; c++) { // c for rows (height)
@@ -132,7 +129,6 @@ class Shield extends ObjectStatic {
         }
 
         // Loop through the shield frame and apply overlay where needed
-
         for (let c = 0; c < this.frame.length; c++) { // c for rows (height)
             for (let r = 0; r < this.frame[0].length; r++) { // r for columns (width)
                 const targetX = r + offsetX;

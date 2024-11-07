@@ -33,20 +33,12 @@ const player1 = new Player(100, 810);
 const player2 = new Player(100, 810);
 
 const enemySpacing = 19; // 5px space between each enemy
-
-// Correctly initialize the enemies array as a 5x11 array (5 rows, 11 columns)
-const enemies = Array.from({ length: 5 }, () => Array(11).fill(null));
-
+let gameEnemies = new Map();
 const enemyBombs = [];
-const grounds = [];
 
-// Shield configurations
-const numShields = 4; // Number of shields
-const shieldYPosition = 700; //(canvasConfig.height * 5) / 6; // 4/5 down the canvas height
-const shieldWidth = 100; // Adjust as needed
-const shieldSpacing = (canvasConfig.width - numShields * shieldWidth) / (numShields + 1); // Even spacing between shields
 const shields = [];
 
+const grounds = [];
 
 let initializingGame = true;
 
@@ -54,7 +46,7 @@ let initializingGame = true;
 let enemyRow = 0;
 let enemyCol = 0;
 
-let gameEnemies = new Map();
+
 
 function initializeEnemies() {
 
@@ -95,19 +87,15 @@ function initializeEnemies() {
         enemyCol = 0;
         if (++enemyRow >= 5) {
             initializingGame = false;
-            console.log(enemies);
         }
     }
 }
 
 // Function to initialize shield positions
 function initializeShields() {
-    for (let i = 0; i < numShields; i++) {
-        const x = shieldSpacing + i * (shieldWidth + shieldSpacing);
-        const shield = new Shield(x, shieldYPosition);
-        shields.push(shield);
+    for (let i = 0; i < window.shieldCount; i++) {
+        shields.push(new Shield(i));
     }
-    console.log(shields);
 }
 
 const groundY = 870;
@@ -127,29 +115,26 @@ function EnemiesUpdate(deltaTime) {
 }
 
 function EnemiesDropBomb(deltaTime) {
+
     // Check if enemy should drop bomb
-    [enemySquids, enemyOctopuses, enemyCrabs].forEach(enemyArray => {
-        for (let i = enemyArray.length - 1; i >= 0; i--) {
-            const enemy = enemyArray[i];
-            if (enemy.isDropBombTime()) {
-                const bombWidth = 5;
+    gameEnemies.forEach((enemy, key) => {
+        if (enemy.isDropBombTime()) {
+            const bombWidth = 5;
 
-                const bombType = Functions.randomGenerator(0, 2, true); // Generate a random bomb type (0 to 2)
-                switch (bombType) {
-                    case 0: // Handle bombType 0
-                        enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                        break;
-                    case 1:// Handle bombType 1
-                        enemyBombs.push(new EnemyBomb2(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                        break;
-                    case 2:// Handle bombType 2
-                        enemyBombs.push(new EnemyBomb3(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                        break;
-                    default:
-                        console.log("Unexpected bombType:", bombType);
-                        break;
-                }
-
+            const bombType = Functions.randomGenerator(0, 2, true); // Generate a random bomb type (0 to 2)
+            switch (bombType) {
+                case 0: // Handle bombType 0
+                    enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                    break;
+                case 1:// Handle bombType 1
+                    enemyBombs.push(new EnemyBomb2(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                    break;
+                case 2:// Handle bombType 2
+                    enemyBombs.push(new EnemyBomb3(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                    break;
+                default:
+                    console.log("Unexpected bombType:", bombType);
+                    break;
             }
         }
     });
@@ -462,8 +447,7 @@ function checkLaserBombCollision() {
 function checkLaserShieldCollision() {
     let hit = false;
     shields.forEach(shield => {
-        const colliding = laser.isCollidingWith(shield); //const hit = laser.processCollisionWith(shield, false);
-        if (colliding) {
+        if (laser.isCollidingWith(shield)) {
             if (shield.applyBigBoom(laser)) {
                 hit = true;
             }
@@ -474,7 +458,7 @@ function checkLaserShieldCollision() {
 
 function checkLaserShipCollision(player) {
     if (laser && enemyShip) {
-        const colliding = laser.isCollidingWith(enemyShip); //const hit = laser.processCollisionWith(shield, false);
+        const colliding = laser.isCollidingWith(enemyShip);
         if (colliding) {
             player.score += enemyShip.getValue();
             enemyShip.setHit();
@@ -486,8 +470,7 @@ function checkLaserShipCollision(player) {
 function checkBombShieldCollision() {
     enemyBombs.forEach(enemyBomb => {
         shields.forEach(shield => {
-            const colliding = enemyBomb.isCollidingWith(shield);
-            if (colliding) {
+            if (enemyBomb.isCollidingWith(shield)) {
                 if (shield.applyBigBoom(enemyBomb)) {
                     enemyBomb.setIsDead();
                 }
@@ -497,15 +480,14 @@ function checkBombShieldCollision() {
 }
 
 function checkEnemyShieldCollision() {
-    [...enemySquids, ...enemyOctopuses, ...enemyCrabs].forEach(enemy => {
+
+    gameEnemies.forEach((enemy, key) => {
         shields.forEach(shield => {
-            const colliding = enemy.isCollidingWith(shield);
-            if (colliding) {
+            if (enemy.isCollidingWith(shield)) {
                 if (shield.applyBigBoom(enemy, false)) {
-                    //console.log("enemy hit shield");
                 }
             }
-        });
+        });       
     });
 }
 
@@ -536,15 +518,12 @@ function removeDeadEnemy() {
     });
 
     if (foundDead) {
-        //        console.log("found--------: ", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
         Enemy.remainingEnemies = gameEnemies.size;
         Enemy.reorgID = 0;
         if (foundID < Enemy.nextID) {
             Enemy.nextID--;
-            //           console.log("nextID--");
             if (Enemy.nextID < 0) {
                 Enemy.nextID = Enemy.remainingEnemies;
-                //               console.log("move to end", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
             }
         }
         //Enemy.nextID--;
@@ -611,8 +590,7 @@ function checkLaser(deltaTime, laserFirePoint) {
         if (laser.update(deltaTime)) { // Update laser position
             laser = null; //laser out of bounds, delete it
         } else {
-            let hit = checkLaserShieldCollision();
-            if (hit) {
+            if (checkLaserShieldCollision()) {
                 laser = null;
             }
         }
@@ -632,7 +610,6 @@ export function gameLoop(ctx, deltaTime) {
             initializeShields();
             initialGround();
             Enemy.enemyID = 0;
-            console.log("initGame");
         }
 
         initializeEnemies();
@@ -640,14 +617,13 @@ export function gameLoop(ctx, deltaTime) {
     } else {
         if (onetime) {
             onetime = false;
-            console.log("Map Size:", gameEnemies.size);
             Enemy.remainingEnemies = gameEnemies.size;
         }
 
         removeDeadEnemy();
 
         EnemiesUpdate(deltaTime);
-        // checkEnemyShieldCollision();
+        checkEnemyShieldCollision();
 
 
         // Update, Remove and Check bombs

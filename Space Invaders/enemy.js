@@ -97,7 +97,6 @@ class Enemy extends ObjectKillable {
     static reorgID = 0;
     reorgID() {
         this.enemyID = Enemy.reorgID++;
-        //console.log(this.key, this.enemyID, this.currentFrameIndex);
         Enemy.prepSpeed  = true;
     }
 
@@ -114,7 +113,6 @@ class Enemy extends ObjectKillable {
         } else {
             this.velocityX -= Enemy.newSpeed;
         }
-        //console.log("deltaTime", deltaTime, "this.velocityX", this.velocityX, " max ", Enemy.maximumEnemies, "remai", Enemy.remainingEnemies);
     }
 
     static prepSpeed = false;
@@ -128,17 +126,14 @@ class Enemy extends ObjectKillable {
             if (Enemy.doMoveDown) {
                 this.velocityX *= -1;
                 this.y += this.height;
-                //console.log("Key", this.key, "velX", this.velocityX);
             }
             if (Enemy.doSpeed){
                 this.adjustSpeed(deltaTime);
-                //console.log("speed adj", this.velocityX);
             }
 
             super.update(deltaTime, true);
 
             if (this.atBounds()) {
-                //console.log("atbounds");
                 Enemy.prepMoveDown = true;
             }
         } else {
@@ -151,7 +146,6 @@ class Enemy extends ObjectKillable {
     atBounds() {
         let changeDir = false;
         if (!(Enemy.preMoveDown || Enemy.doMoveDown)) {
-            //console.log(Enemy.prepMoveDown, Enemy.doMoveDown);
             if (this.velocityX > 0) {
                 changeDir = this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
             } else {
