@@ -60,20 +60,23 @@ function initializeEnemies() {
 
     const enemyWidth = 40;
 
-    const x = 40 + (enemyCol * (enemyWidth + enemySpacing));
+    let x = 40 + (enemyCol * (enemyWidth + enemySpacing));
     const y = enemyHeightPosition - (enemyRow * enemyHeightSpacing);
 
     let enemy = null;
     switch (enemyRow) {
         case 0:
         case 1:
+            x -= Math.ceil((12 * spriteConfig.pixelSize) / 2);
             enemy = new EnemyCrab(x, y, player.level);
             break;
         case 2:
         case 3:
+            x -= Math.ceil((11 * spriteConfig.pixelSize) / 2);
             enemy = new EnemySquid(x, y, player.level);
             break;
         case 4:
+            x -= Math.ceil((8 * spriteConfig.pixelSize) / 2);
             enemy = new EnemyOctopus(x, y, player.level);
             break;
         default:
@@ -112,6 +115,7 @@ function initialGround() {
 }
 
 function EnemiesUpdate(deltaTime) {//
+    
     for (let row = 0; row <= enemies.length - 1; row++) {
         // Loop through the columns from the last one down to the first
         for (let col = 0; col <= enemies[row].length - 1; col++) {
@@ -121,6 +125,7 @@ function EnemiesUpdate(deltaTime) {//
             }
         }
     }
+    Enemy.setNextID();
 }
 
 function EnemiesDropBomb(deltaTime) {
@@ -426,26 +431,25 @@ function checkLaserEnemyCollision(player) {
     if (laser) {
         let hitDetected = false;
 
-
         for (let row = 0; row <= enemies.length - 1; row++) {
-            // Loop through the columns from the last one down to the first
             for (let col = 0; col <= enemies[row].length - 1; col++) {
                 const enemy = enemies[row][col];
-                if (enemy) { // Check if the enemy is present
-                    if (!hitDetected) {
+                if (enemy) {
+                    //if (!hitDetected) {
+                    if (enemy.isAlive()){
                         if (laser.processCollisionWith(enemy)) {
                             player.score += enemy.value;
                             enemy.setHit();
                             hitDetected = true;
-                            break; // Exit the current `for` loop
+                            //break;
                         }
                     }
+                    //}
                 }
             }
         }
 
-        // Delete the laser
-        if (hitDetected) {
+        if (hitDetected) { // Delete the laser
             laser = null;
         }
     }
@@ -559,48 +563,48 @@ function checkBombPlayerCollision() {
 }
 
 function doReorgEnemyID() {
-
     console.log("doReorgEnemyID()", Enemy.remainingEnemies);
     Enemy.resetRemainingEnemies();
     for (let row = 0; row <= enemies.length - 1; row++) {
         for (let col = 0; col <= enemies[row].length - 1; col++) {
             const enemy = enemies[row][col];
-            if (enemy) { // Check if the enemy is present
-                enemy.reorgID(); // Reset the enemy's ID with the current value of newID
+            if (enemy) {
+                if(enemy.isAlive()){
+                enemy.reorgID();
+                }else{
+                   /// enemy.enemyID = 999;
+                }
             }
         }
     }
-
 
     for (let row = 0; row <= enemies.length - 1; row++) {
         for (let col = 0; col <= enemies[row].length - 1; col++) {
             const enemy = enemies[row][col];
-            if (enemy) { // Check if the enemy is present
-                enemy.adjustSpeed(); // Reset the enemy's ID with the current value of newID
+            if (enemy) {
+                console.log(enemy.velocityX);
+//                enemy.adjustSpeed();
             }
         }
     }
 
-    
+    Enemy.remainingEnemies++;
 
-    // Optionally, log the total count of enemies processed
-    console.log(`Total enemies reset: ${Enemy.remainingEnemies}`);
     console.log(enemies);
 }
 
 function removeDeadEnemy() {
     let resetNeeded = false;
-    // Check for dead enemy and remove
+    // Check for dead enemy and remove?
 
     for (let row = enemies.length - 1; row >= 0; row--) {
-        // Loop through the columns from the last one down to the first
         for (let col = enemies[row].length - 1; col >= 0; col--) {
             const enemy = enemies[row][col];
             if (enemy) { // Check if the enemy is present
                 if (enemy.isDead()) {
-                    console.log("Killed ID:", enemy.enemyID);
-                    enemies[row][col] = null;
-                    resetNeeded = true;
+ //                   console.log("Killed ID:", enemy.enemyID);
+//                    enemies[row][col] = null;
+                  resetNeeded = true;
                 }
             }
         }
@@ -671,7 +675,7 @@ export function gameLoop(ctx, deltaTime) {
             doReorgEnemyID();
             // change velocity?????
         }
-        Enemy.setNextID();
+
         EnemiesUpdate(deltaTime);
         // checkEnemyShieldCollision();
 

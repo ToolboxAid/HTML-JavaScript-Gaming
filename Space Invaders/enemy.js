@@ -62,21 +62,15 @@ class Enemy extends ObjectKillable {
 
         this.bombAggression = 3 + (bombAggression * 2);
 
-        this.velocityX = 250;
+        this.velocityX = 250; //1250;
         this.enemyID = Enemy.enemyID++;
-    }
-
-    static resetRemainingEnemies() {
-        Enemy.remainingEnemies = 0;
-        //Enemy.enemyID = 0;
-        console.log("resetRemainingEnemies")
     }
 
     static setNextID() {
         if (Enemy.remainingEnemies > Enemy.enemyID) {
             Enemy.enemyID++;
         } else {
-            Enemy.enemyID = 0;
+            Enemy.enemyID = -3;
             if (Enemy.prepMoveDown) {
                 Enemy.prepMoveDown = false;
                 Enemy.doMoveDown = true;
@@ -86,10 +80,14 @@ class Enemy extends ObjectKillable {
         }
     }
 
+    static resetRemainingEnemies() {
+        Enemy.remainingEnemies = 0;
+    }
+
     reorgID() {
-        const newID = Enemy.remainingEnemies++;
-        console.log("doResetEnemyID1 --- ID: ", this.enemyID, " newID: ", newID);
-        this.enemyID = newID;
+        //const newID = Enemy.remainingEnemies++;
+        //    console.log("doResetEnemyID1 --- ID: ", this.enemyID, " newID: ", newID);
+        this.enemyID = Enemy.remainingEnemies++;
     }
 
     adjustSpeed() {
@@ -99,7 +97,7 @@ class Enemy extends ObjectKillable {
         } else {
             this.velocityX -= (Enemy.maximumEnemies - Enemy.remainingEnemies);
         }
-        console.log("this.velocityX", this.velocityX);
+        console.log("this.velocityX", this.velocityX, " max ", Enemy.maximumEnemies, "remai", Enemy.remainingEnemies);
     }
 
     static prepMoveDown = false;
@@ -125,12 +123,6 @@ class Enemy extends ObjectKillable {
         }
     }
 
-    isDropBombTime() {
-        const number = Functions.randomGenerator(0, 10000, true);
-        return (number <= this.bombAggression);
-    }
-
-
     atBounds() {
         let changeDir = false;
         if (this.velocityX > 0) {
@@ -141,6 +133,10 @@ class Enemy extends ObjectKillable {
         return changeDir;
     }
 
+    isDropBombTime() {
+        const number = Functions.randomGenerator(0, 10000, true);
+        return (number <= this.bombAggression);
+    }
 }
 
 export default Enemy;
