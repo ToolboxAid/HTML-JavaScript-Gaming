@@ -44,7 +44,7 @@ window.pixelSize = spriteConfig.pixelSize
 window.fullscreenText = canvasConfig.fullscreenText; 
 window.fullscreenFont = canvasConfig.fullscreenFont;
 window.fullscreenColor = canvasConfig.fullscreenColor; 
-window.fullscreenX = canvasConfig.fullscreenX; // This must match the property name in canvasConfig
+window.fullscreenX = canvasConfig.fullscreenX; 
 window.fullscreenY = canvasConfig.fullscreenY; 
 
 
