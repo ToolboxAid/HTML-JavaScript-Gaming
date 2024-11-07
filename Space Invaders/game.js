@@ -120,7 +120,7 @@ function initialGround() {
 
 function EnemiesUpdate(deltaTime) {
     gameEnemies.forEach((enemy, key) => {
-        deltaTime = 1/60; // required to maintain spacing between enemies.
+        deltaTime = 1 / 60; // required to maintain spacing between enemies.
         enemy.update(deltaTime, true);
     });
     Enemy.setNextID();
@@ -521,6 +521,47 @@ function checkBombGroundCollision() {
     });
 }
 
+
+
+function removeDeadEnemy() {
+    let foundDead = false;
+    let foundID = -1;
+    let foundKey = null;
+    gameEnemies.forEach((enemy) => {
+        if (enemy.isDead()) {
+            foundID = enemy.enemyID;
+            foundKey = enemy.key;
+            foundDead = gameEnemies.delete(enemy.key);
+        }
+    });
+
+    if (foundDead) {
+        //        console.log("found--------: ", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
+        Enemy.remainingEnemies = gameEnemies.size;
+        Enemy.reorgID = 0;
+        if (foundID < Enemy.nextID) {
+            Enemy.nextID--;
+            //           console.log("nextID--");
+            if (Enemy.nextID < 0) {
+                Enemy.nextID = Enemy.remainingEnemies;
+                //               console.log("move to end", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
+            }
+        }
+        //Enemy.nextID--;
+        gameEnemies.forEach((enemy) => {
+            enemy.reorgID();
+        });
+        Enemy.prepSpeed = true;
+    }
+}
+
+function drawEnemies(ctx) {
+    gameEnemies.forEach((enemy, key) => {
+        enemy.draw(ctx);
+    });
+}
+
+
 let o1 = null;
 let o2 = null;
 let o3 = null;
@@ -545,47 +586,6 @@ function checkBombPlayerCollision() {
             o1 = new ObjectStatic(player.x, player.y, player.width, player.height);
             o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
         }
-    });
-}
-
-function removeDeadEnemy() {
-    let foundDead = false;
-    let foundID = -1;
-    let foundKey = null;
-    gameEnemies.forEach((enemy) => {
-        if (enemy.isDead()) {
-            foundID =   enemy.enemyID;
-            foundKey = enemy.key;
-            foundDead = gameEnemies.delete(enemy.key);            
-        }
-    });
-
-    if (foundDead) {
-//        console.log("found--------: ", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
-        Enemy.remainingEnemies = gameEnemies.size;
-        Enemy.reorgID = 0;
-        if (foundID < Enemy.nextID){
-            Enemy.nextID--;
- //           console.log("nextID--");
-            if (Enemy.nextID < 0){
-                Enemy.nextID = Enemy.remainingEnemies;
- //               console.log("move to end", foundKey," Enemy.nextID: ", Enemy.nextID, " foundID ",foundID);
-            }
-        }
-        //Enemy.nextID--;
-        gameEnemies.forEach((enemy) => {
-            enemy.reorgID();
-        });
-        Enemy.prepSpeed  = true;
-        // gameEnemies.forEach((enemy) => {
-        //     enemy.adjustSpeed();
-        // });        
-    }
-}
-
-function drawEnemies(ctx) {
-    gameEnemies.forEach((enemy, key) => {
-        enemy.draw(ctx);
     });
 }
 
@@ -639,76 +639,12 @@ export function gameLoop(ctx, deltaTime) {
 
     } else {
         if (onetime) {
-
-            gameEnemies.delete("0x2");
-            gameEnemies.delete("1x2");
-            gameEnemies.delete("2x2");
-            gameEnemies.delete("3x2");
-            gameEnemies.delete("4x2");
-            
-            gameEnemies.delete("0x3");
-            gameEnemies.delete("1x3");
-            gameEnemies.delete("2x3");
-            gameEnemies.delete("3x3");
-            gameEnemies.delete("4x3");
-            
-            gameEnemies.delete("0x4");
-            gameEnemies.delete("1x4");
-            gameEnemies.delete("2x4");
-            gameEnemies.delete("3x4");
-            gameEnemies.delete("4x4");
-            
-            gameEnemies.delete("0x5");
-            gameEnemies.delete("1x5");
-            gameEnemies.delete("2x5");
-            gameEnemies.delete("3x5");
-            gameEnemies.delete("4x5");
-
-            gameEnemies.delete("0x6");
-            gameEnemies.delete("1x6");
-            gameEnemies.delete("2x6");
-            gameEnemies.delete("3x6");
-            gameEnemies.delete("4x6");
-
-
-            gameEnemies.delete("0x7");
-            gameEnemies.delete("1x7");
-            gameEnemies.delete("2x7");
-            gameEnemies.delete("3x7");
-            gameEnemies.delete("4x7");
-
-            gameEnemies.delete("0x8");
-            gameEnemies.delete("1x8");
-            gameEnemies.delete("2x8");
-            gameEnemies.delete("3x8");
-            gameEnemies.delete("4x8");
-
-            gameEnemies.delete("0x9");
-            gameEnemies.delete("1x9");
-            gameEnemies.delete("2x9");
-            gameEnemies.delete("3x9");
-            gameEnemies.delete("4x9");
-
-            gameEnemies.delete("0x10");
-            gameEnemies.delete("1x10");
-            gameEnemies.delete("2x10");
-            gameEnemies.delete("3x10");
-            gameEnemies.delete("4x10");
-
             onetime = false;
             console.log("Map Size:", gameEnemies.size);
             Enemy.remainingEnemies = gameEnemies.size;
-            
-            gameEnemies.forEach((enemy) => {
-                enemy.reorgID();
-            });
         }
 
         removeDeadEnemy();
-        // if (removeDeadEnemy()) {
-        //     doReorgEnemyID();
-        //     // change velocity?????
-        // }
 
         EnemiesUpdate(deltaTime);
         // checkEnemyShieldCollision();
