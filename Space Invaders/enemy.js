@@ -60,6 +60,8 @@ class Enemy extends ObjectKillable {
 
         super(x, y, livingFrames, Enemy.dyingFrames);
 
+this.key =null;
+
         this.bombAggression = 3 + (bombAggression * 2);
 
         this.velocityX = 250; //1250;
@@ -139,7 +141,7 @@ class Enemy extends ObjectKillable {
     }
 
     toString() {
-        console.log(`Enemy ID: ${this.enemyID}, Status: ${this.status}, velocityX ${this.velocityX}`);
+        console.log(`Key: ${this.key}, Status: ${this.status}, velocityX ${this.velocityX}`);
     }
 
 }

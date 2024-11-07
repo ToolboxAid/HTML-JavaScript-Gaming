@@ -53,6 +53,24 @@ let initializingGame = true;
 // Enemy configurations for octopus, squid, and crab
 let enemyRow = 0;
 let enemyCol = 0;
+
+/*
+let gameSettings = new Map();
+
+// Add some settings
+gameSettings.set("volume", 5);
+gameSettings.set("difficulty", "hard");
+gameSettings.set("fullscreen", true);
+
+console.log("Before deletion:", gameSettings); // Map with 3 items
+
+// Remove an item from the map
+gameSettings.delete("fullscreen");
+
+console.log("After deletion:", gameSettings); // Map without the "fullscreen" setting
+*/
+let gameEnemies = new Map();
+
 function initializeEnemies() {
 
     let enemyHeightSpacing = 59;
@@ -63,6 +81,7 @@ function initializeEnemies() {
     let x = 40 + (enemyCol * (enemyWidth + enemySpacing));
     const y = enemyHeightPosition - (enemyRow * enemyHeightSpacing);
 
+    let key = enemyRow + "x" + enemyCol;
     let enemy = null;
     switch (enemyRow) {
         case 0:
@@ -85,7 +104,10 @@ function initializeEnemies() {
     }
 
     // Add enemy to two (2) dimensional array
-    enemies[enemyRow][enemyCol] = enemy;
+    //enemies[enemyRow][enemyCol] = enemy;
+    enemy.key = key;
+    gameEnemies.set(key, enemy);
+    //   console.log("Map Size 0:", gameEnemies.size);
 
     if (++enemyCol >= 11) {
         enemyCol = 0;
@@ -115,16 +137,21 @@ function initialGround() {
 }
 
 function EnemiesUpdate(deltaTime) {//
-    
-    for (let row = 0; row <= enemies.length - 1; row++) {
-        // Loop through the columns from the last one down to the first
-        for (let col = 0; col <= enemies[row].length - 1; col++) {
-            const enemy = enemies[row][col];
-            if (enemy) { // Check if the enemy is present
-                enemy.update(deltaTime, true);; // Call the draw method on the enemy object
-            }
-        }
-    }
+
+    gameEnemies.forEach((value, key) => { 
+        let enemy = value;
+enemy.update(deltaTime,true);
+    });
+
+    // for (let row = 0; row <= enemies.length - 1; row++) {
+    //     // Loop through the columns from the last one down to the first
+    //     for (let col = 0; col <= enemies[row].length - 1; col++) {
+    //         const enemy = enemies[row][col];
+    //         if (enemy) { // Check if the enemy is present
+    //             enemy.update(deltaTime, true);; // Call the draw method on the enemy object
+    //         }
+    //     }
+    // }
     Enemy.setNextID();
 }
 
@@ -431,21 +458,33 @@ function checkLaserEnemyCollision(player) {
     if (laser) {
         let hitDetected = false;
 
-        for (let row = 0; row <= enemies.length - 1; row++) {
-            for (let col = 0; col <= enemies[row].length - 1; col++) {
-                const enemy = enemies[row][col];
-                if (enemy) {
-                    if (enemy.isAlive()){
-                        if (laser.processCollisionWith(enemy)) {
-                            player.score += enemy.value;
-                            enemy.setHit();
-                            hitDetected = true;
-                            //break;
-                        }
-                    }
-                }
+
+        gameEnemies.forEach((value, key) => { 
+            let enemy = value;
+            if (laser.processCollisionWith(enemy)) {
+                player.score += enemy.value;
+                enemy.setHit();
+                hitDetected = true;
+                //break;
             }
-        }
+
+        });
+
+        // for (let row = 0; row <= enemies.length - 1; row++) {
+        //     for (let col = 0; col <= enemies[row].length - 1; col++) {
+        //         const enemy = enemies[row][col];
+        //         if (enemy) {
+        //             if (enemy.isAlive()) {
+        //                 if (laser.processCollisionWith(enemy)) {
+        //                     player.score += enemy.value;
+        //                     enemy.setHit();
+        //                     hitDetected = true;
+        //                     //break;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         if (hitDetected) { // Delete the laser
             laser = null;
@@ -560,73 +599,75 @@ function checkBombPlayerCollision() {
     });
 }
 
-function doReorgEnemyID() {
-    console.log("doReorg");
-   // console.log("doReorgEnemyID()", Enemy.remainingEnemies);
-    Enemy.resetRemainingEnemies();
-    for (let row = 0; row <= enemies.length - 1; row++) {
-        for (let col = 0; col <= enemies[row].length - 1; col++) {
-            const enemy = enemies[row][col];
-            if (enemy) {
-                enemy.toString();
-                if(enemy.isAlive()){
-                enemy.reorgID();
-                }else{
-                   enemy.enemyID = 999;
-                }
-            }
-        }
-    }
+// function doReorgEnemyID() {
+//     console.log("doReorg");
+//     // console.log("doReorgEnemyID()", Enemy.remainingEnemies);
+//     Enemy.resetRemainingEnemies();
+//     for (let row = 0; row <= enemies.length - 1; row++) {
+//         for (let col = 0; col <= enemies[row].length - 1; col++) {
+//             const enemy = enemies[row][col];
+//             if (enemy) {
+//                 enemy.toString();
+//                 if (enemy.isAlive()) {
+//                     enemy.reorgID();
+//                 } else {
+//                     enemy.enemyID = 999;
+//                 }
+//             }
+//         }
+//     }
 
-    for (let row = 0; row <= enemies.length - 1; row++) {
-        for (let col = 0; col <= enemies[row].length - 1; col++) {
-            const enemy = enemies[row][col];
-            if (enemy) {
-//                console.log(enemy.velocityX);
-//                enemy.adjustSpeed();
-            }
-        }
-    }
+//     for (let row = 0; row <= enemies.length - 1; row++) {
+//         for (let col = 0; col <= enemies[row].length - 1; col++) {
+//             const enemy = enemies[row][col];
+//             if (enemy) {
+//                 //                console.log(enemy.velocityX);
+//                 //                enemy.adjustSpeed();
+//             }
+//         }
+//     }
 
-    Enemy.remainingEnemies++;
+//     Enemy.remainingEnemies++;
 
-    //console.log(enemies);
-}
+//     //console.log(enemies);
+// }
 
 function removeDeadEnemy() {
-    let resetNeeded = false;
+//    let resetNeeded = false;
     // Check for dead enemy and remove?
 
-    for (let row = enemies.length - 1; row >= 0; row--) {
-        for (let col = enemies[row].length - 1; col >= 0; col--) {
-            const enemy = enemies[row][col];
-            if (enemy) { // Check if the enemy is present
-                if (enemy.isDead() && enemy.enemyID != 999) {
- //                   console.log("Killed ID:", enemy.enemyID);
-//                    enemies[row][col] = null;
-                  resetNeeded = true;
-                }
-            }
+    gameEnemies.forEach((value, key) => { 
+        let enemy = value;
+        if (enemy.isDead()){
+            gameEnemies.delete(enemy.key);
         }
-    }
-    if (resetNeeded){        
-       // doReorgEnemyID();
-    }
-    return resetNeeded;
+    });
+
+    // if (resetNeeded) {
+    //     // doReorgEnemyID();
+    // }
+    // return resetNeeded;
 }
 
 function drawEnemies(ctx) {
-    // Loop through the rows from the last one down to the first
-    for (let row = enemies.length - 1; row >= 0; row--) {
-        // Loop through the columns from the last one down to the first
-        for (let col = enemies[row].length - 1; col >= 0; col--) {
-            const enemy = enemies[row][col];
-            if (enemy) { // Check if the enemy is present
-                enemy.draw(ctx); // Call the draw method on the enemy object
-                //console.log(enemy.enemyID);
-            }
-        }
-    }
+    // // Loop through the rows from the last one down to the first
+    // for (let row = enemies.length - 1; row >= 0; row--) {
+    //     // Loop through the columns from the last one down to the first
+    //     for (let col = enemies[row].length - 1; col >= 0; col--) {
+    //         const enemy = enemies[row][col];
+    //         if (enemy) { // Check if the enemy is present
+    //             enemy.draw(ctx); // Call the draw method on the enemy object
+    //             //console.log(enemy.enemyID);
+    //         }
+    //     }
+    // }
+
+    gameEnemies.forEach((value, key) => { 
+        // console.log("Key & Value: ", key);
+        // value.toString();
+        value.draw(ctx);
+    });
+
 }
 
 function removeDeadBomb() {
@@ -662,22 +703,53 @@ function checkLaser(deltaTime, laserFirePoint) {
 let player = player2;
 
 let enemyShip = null;/*  */
+let onetime = true;
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
     if (initializingGame) {
-        console.log("initGame");
-        initializeEnemies();
 
         if (shields.length === 0) {
             initializeShields();
             initialGround();
+            console.log("initGame");
         }
+
+        initializeEnemies();
+
     } else {
-        if (removeDeadEnemy()) {
-            doReorgEnemyID();
-            // change velocity?????
+        if (onetime) {
+            onetime = false;
+            //console.log("Before deletion:", gameEnemies);
+            console.log("Map Size:", gameEnemies.size);
+
+            // for (let [key, value] of gameEnemies) {
+            //     console.log(key);
+            //     console.log("Key&Value: ", key," Value: " , value);
+            // } 
+            // Iterating over maps
+
+            // gameEnemies.forEach((value, key) => {
+            //     //console.log(`${key}: ${value.toString()}`);
+            //     console.log("Key&Value: ", key," Value: " , value.toString());    
+            // });
+
+            gameEnemies.delete("2x0");
+            gameEnemies.delete("2x1");
+            gameEnemies.delete("2x2");
+            gameEnemies.delete("2x3");
+
+            gameEnemies.forEach((value, key) => { 
+                //console.log("Key & Value: ", key);
+                value.toString();
+            });
         }
+
+        removeDeadEnemy();
+        // if (removeDeadEnemy()) {
+        //     doReorgEnemyID();
+        //     // change velocity?????
+        // }
 
         EnemiesUpdate(deltaTime);
         // checkEnemyShieldCollision();
