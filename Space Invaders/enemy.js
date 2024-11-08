@@ -3,14 +3,10 @@
 // 10/24/2024
 // enemy.js
 
-//import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
-
-import ObjectDynamic from '../scripts/objectDynamic.js';
 import ObjectKillable from '../scripts/objectKillable.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 import { enemyConfig, spriteConfig } from './global.js';
-
 
 class Enemy extends ObjectKillable {
     static speed = 0;
@@ -121,7 +117,7 @@ class Enemy extends ObjectKillable {
 
         this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
 
-        this.bombAggression = 3 + (bombAggression * 2);
+        this.bombAggression = 15 + (bombAggression * 25);
 
         this.velocityX = 250; //1250;
         this.enemyID = Enemy.enemyID++;
@@ -184,8 +180,8 @@ class Enemy extends ObjectKillable {
     }
 
     isDropBombTime() {
-        const number = Functions.randomGenerator(0, 10000, true);
-        return (number <= this.bombAggression);
+        const randomNumber = Functions.randomGenerator(0, 10000, true);
+        return (randomNumber <= this.bombAggression);
     }
 
     toString() {

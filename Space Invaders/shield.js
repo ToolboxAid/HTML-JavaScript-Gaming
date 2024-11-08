@@ -116,7 +116,12 @@ class Shield extends ObjectStatic {
             try {
                 overlayFrame = distructiveObject.livingFrames[currentFrameIndex].map(row => Array.from(row));
             } catch {
+                try{
                 overlayFrame = distructiveObject.livingFrames[0].map(row => Array.from(row));
+                }catch{
+                    console.log("failed overlayFrame");
+                    return;
+                }
             }
         } else {
             overlayFrame = Shield.defaultBomb;

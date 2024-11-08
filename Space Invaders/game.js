@@ -18,7 +18,7 @@ import Ground from './ground.js';
 import KeyboardInput from '../scripts/keyboard.js';
 const keyboardInput = new KeyboardInput();
 
-import Enemy from './Enemy.js';
+import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';
 import EnemyCrab from './enemyCrab.js';
 import EnemyOctopus from './enemyOctopus.js';
@@ -64,29 +64,21 @@ function initializeEnemies() {
             console.log("Unknown enemy type!");
             break;
     }
-    gameEnemies.set(enemy.key, enemy);    
+    gameEnemies.set(enemy.key, enemy);
 }
 
 function setGameEnemiesBottom(column) {
-    //console.log(`--------------------Setting bottom enemy for column: ${column}`);
-    
     gameEnemiesBottom[column] = null;
-  for (let row = enemyConfig.rowSize - 1; row >= 0; row--) {
-    //for (let row = 0; row <= enemyConfig.rowSize - 1; row++) {
+    for (let row = enemyConfig.rowSize - 1; row >= 0; row--) {
         const key = `${row}x${column}`;
-        //console.log("KEY:::: ",key);
         const enemy = gameEnemies.get(key);
 
         if (enemy) {
-            //console.log(`Bottom enemy Key: ${key}`);
             gameEnemiesBottom[column] = key;
-            //break;
-        }else{
+        } else {
             //console.log("not found",key);
         }
     }
-    
-    //console.log(`--------------------Bottom enemy key for column ${column}: ${gameEnemiesBottom[column]}`);
 }
 
 // Function to initialize shield positions
@@ -113,8 +105,11 @@ function EnemiesUpdate(deltaTime) {
 
 function EnemiesDropBomb(deltaTime) {
 
-    // Check if enemy should drop bomb
-    gameEnemies.forEach((enemy, key) => {
+    // Check only bottom enemy should drop bomb
+
+    for (let column = 0; column < enemyConfig.colSize; column++) {
+        //            console.log(gameEnemiesBottom[column]);
+        const enemy = gameEnemies.get(gameEnemiesBottom[column]);
         if (enemy.isDropBombTime()) {
             const bombWidth = 5;
 
@@ -134,7 +129,7 @@ function EnemiesDropBomb(deltaTime) {
                     break;
             }
         }
-    });
+    }
 }
 
 function checkEnemyShip(deltaTime) {
@@ -509,7 +504,7 @@ function removeDeadEnemy() {
             foundID = enemy.enemyID;
             foundKey = enemy.key;
             foundDead = gameEnemies.delete(enemy.key);
-            console.log("removed gameEnemies key: ",foundKey)
+            console.log("removed gameEnemies key: ", foundKey)
         }
     });
 
@@ -594,15 +589,12 @@ function checkLaser(deltaTime, laserFirePoint) {
     }
 }
 
-function findBottom(){
-    //console.log("================================================================");
-            // find bottom of each column
-            for (let column = 0; column < enemyConfig.colSize; column++) {
-               setGameEnemiesBottom(column);
-               //console.log(gameEnemiesBottom[column]);
-            }
-            //console.log(gameEnemiesBottom);
-        }
+function findBottom() {
+    // if the column is know, call `setGameEnemiesBottom(column)` instead
+    for (let column = 0; column < enemyConfig.colSize; column++) {
+        setGameEnemiesBottom(column);
+    }
+}
 
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
@@ -622,8 +614,8 @@ export function gameLoop(ctx, deltaTime) {
             onetime = false;
             Enemy.remainingEnemies = gameEnemies.size;
 
-findBottom();
-          
+            findBottom();
+
         }
 
         removeDeadEnemy();
@@ -659,10 +651,10 @@ findBottom();
         enemyShip.draw(ctx);
     }
 
-    drawEnemies(ctx);
-
     // Draw all bombs
     enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx, "white"));
+
+    drawEnemies(ctx);
 
     // Draw shields
     shields.forEach(shield => { shield.draw(ctx); });
