@@ -28,17 +28,20 @@ import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
+const gameEnemies = new Map();
+const enemyBombs = [];
+const shields = [];
+const grounds = [];
+
+
 // Initialize player
 const player1 = new Player();
 const player2 = new Player();
 
+let player = player2;
 
-let gameEnemies = new Map();
-const enemyBombs = [];
-
-const shields = [];
-
-const grounds = [];
+let enemyShip = null;
+let onetime = true;
 
 function initializeEnemies() {
     let enemy = null;
@@ -59,7 +62,6 @@ function initializeEnemies() {
             console.log("Unknown enemy type!");
             break;
     }
-
     gameEnemies.set(enemy.key, enemy);
 }
 
@@ -70,10 +72,9 @@ function initializeShields() {
     }
 }
 
-const groundY = 870;
 function initialGround() {
     for (let i = 0; i < canvasConfig.width; i += Ground.groundSize) {
-        const ground = new Ground(i, groundY);
+        const ground = new Ground(i, spriteConfig.groundY);
         grounds.push(ground);
     }
 }
@@ -475,8 +476,6 @@ function checkBombGroundCollision() {
     });
 }
 
-
-
 function removeDeadEnemy() {
     let foundDead = false;
     let foundID = -1;
@@ -511,7 +510,6 @@ function drawEnemies(ctx) {
         enemy.draw(ctx);
     });
 }
-
 
 let o1 = null;
 let o2 = null;
@@ -569,10 +567,6 @@ function checkLaser(deltaTime, laserFirePoint) {
     }
 }
 
-let player = player2;
-
-let enemyShip = null;/*  */
-let onetime = true;
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
@@ -599,13 +593,13 @@ export function gameLoop(ctx, deltaTime) {
 
 
         // Update, Remove and Check bombs
-        // removeDeadBomb();
-        // updateBombs(deltaTime);
-        // checkBombShieldCollision();
-        // checkBombGroundCollision();
-        // checkBombPlayerCollision();
+        removeDeadBomb();
+        updateBombs(deltaTime);
+        checkBombShieldCollision();
+        checkBombGroundCollision();
+        checkBombPlayerCollision();
 
-        // checkEnemyShip(deltaTime);
+        checkEnemyShip(deltaTime);
 
 
         keyboardInput.update();
@@ -644,11 +638,7 @@ export function gameLoop(ctx, deltaTime) {
     drawGround(ctx);
 
     drawLives(ctx, player);
-
-    // draw Level
 }
-
-
 
 // Canvas needs to know the current directory to game.js for dynamic imports
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));

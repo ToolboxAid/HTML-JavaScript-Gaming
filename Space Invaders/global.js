@@ -26,17 +26,28 @@ export const spriteConfig = {
     shipSpawnSec: 25,
     shipColor: 'red',
 
+    playerColor: 'white',
+
     crabColor: 'orange',
     octopusColor: 'yellow',
-    squidColor: '#ff6666',
-    playerColor: 'blue',
+    squidColor: '#ff4444',
+
+    bomb1Color: "#ff4444",
+    bomb2Color: "#44ff44",
+    bomb3Color: "#4444ff",
+    bomb1VelocityX: 350,
+    bomb2VelocityX: 275,
+    bomb3VelocityX: 200,
+    
+    groundColor: "green",
+    groundY: 870,
 };
 
 export const enemyConfig = {
+    xPosition: 50,
+    yPosition: 450,
     colSize: 11,
     rowSize: 5,
-    xPosition: 50,
-    yPosition: 425,
     xSpacing: 62,
     ySpacing: 62,
 }

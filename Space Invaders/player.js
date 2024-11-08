@@ -35,7 +35,7 @@ class Player extends ObjectDynamic {
     }
 
     draw(ctx) {
-        CanvasUtils.drawSprite(ctx, this.x, this.y, Player.frame, this.pixelSize);
+        CanvasUtils.drawSprite(ctx, this.x, this.y, Player.frame, this.pixelSize, spriteConfig.playerColor);
     }
 
     setLevel() {

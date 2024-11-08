@@ -4,54 +4,56 @@
 // enemyBomb2.js
 
 import EnemyBomb from "./enemyBomb.js";
+import { spriteConfig } from './global.js';
 
 class EnemyBomb2 extends EnemyBomb {
 
-static livingFrames = [
+  static livingFrames = [
 
-  [
-    "111",
-    "010",
-    "010",
-    "010",
-    "010",
-    "010",
-    "010",
-    "010"
-  ],
-  [
-    "010",
-    "010",
-    "111",
-    "010",
-    "010",
-    "010",
-    "010",
-    "010"
-  ],  [
-    "010",
-    "010",
-    "010",
-    "010",
-    "111",
-    "010",
-    "010",
-    "010",
-  ],
-  [
-    "010",
-    "010",
-    "010",
-    "010",
-    "010",
-    "010",
-    "111",
-    "010",
-  ]
-];
+    [
+      "111",
+      "010",
+      "010",
+      "010",
+      "010",
+      "010",
+      "010",
+      "010"
+    ],
+    [
+      "010",
+      "010",
+      "111",
+      "010",
+      "010",
+      "010",
+      "010",
+      "010"
+    ], [
+      "010",
+      "010",
+      "010",
+      "010",
+      "111",
+      "010",
+      "010",
+      "010",
+    ],
+    [
+      "010",
+      "010",
+      "010",
+      "010",
+      "010",
+      "010",
+      "111",
+      "010",
+    ]
+  ];
 
   constructor(x, y) {
-    super(x, y, EnemyBomb2.livingFrames, 200);
+    super(x, y, EnemyBomb2.livingFrames, spriteConfig.bomb2VelocityX);
+    this.spriteColor = spriteConfig.bomb2Color;
   }
 }
 

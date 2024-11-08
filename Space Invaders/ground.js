@@ -7,6 +7,8 @@ import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is ca
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
+import { canvasConfig, spriteConfig } from './global.js';
+
 class Ground extends ObjectStatic {
 
     static counter = 0;
@@ -28,9 +30,9 @@ class Ground extends ObjectStatic {
         }
     }
 
-    draw(ctx, spriteColor = "green") {
+    draw(ctx) {
         if (this.state === Ground.Status.ALIVE) {
-            super.draw(ctx, spriteColor);
+            super.draw(ctx, spriteConfig.groundColor);
         }
     }
 

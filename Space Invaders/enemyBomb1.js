@@ -4,9 +4,9 @@
 // enemyBomb1.js
 
 import EnemyBomb from "./enemyBomb.js";
+import { spriteConfig } from './global.js';
 
 class EnemyBomb1 extends EnemyBomb {
-
 
   static livingFrames = [
 
@@ -50,7 +50,8 @@ class EnemyBomb1 extends EnemyBomb {
   ];
 
   constructor(x, y) {
-    super(x, y, EnemyBomb1.livingFrames,150);
+    super(x, y, EnemyBomb1.livingFrames, spriteConfig.bomb1VelocityX);
+    this.spriteColor = spriteConfig.bomb1Color;
   }
 }
 
