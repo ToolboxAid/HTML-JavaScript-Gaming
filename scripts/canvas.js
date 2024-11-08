@@ -107,7 +107,7 @@ class CanvasUtils {
     };
 
     // Method to draw the current frame
-    static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = '', drawBounds = false) {
+    static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
@@ -139,7 +139,7 @@ class CanvasUtils {
     //         // Assuming all rows have the same width
     //     return frames[0][0].length * spriteConfig.pixelSize; // Width of the first row of the first frame
     // }
-    
+
     static spriteWidthHeight(object, pixelSize, debug = false) {
         let width, height;
 
@@ -170,7 +170,7 @@ class CanvasUtils {
         width = Math.round(width * pixelSize);
         height = Math.round(height * pixelSize);
 
-        return { width: width, height: height};
+        return { width: width, height: height };
     }
 
     static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {

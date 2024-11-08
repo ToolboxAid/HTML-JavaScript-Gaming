@@ -27,14 +27,15 @@ export const spriteConfig = {
     shipColor: 'red',
 
     playerColor: 'white',
+    lazerColor: 'white',
 
     crabColor: 'orange',
     octopusColor: 'yellow',
     squidColor: '#ff4444',
 
-    bomb1Color: "#ff4444",
-    bomb2Color: "#44ff44",
-    bomb3Color: "#4444ff",
+    bomb1Color: "#ff9999",
+    bomb2Color: "#99ff99",
+    bomb3Color: "#9999ff",
     bomb1VelocityX: 350,
     bomb2VelocityX: 275,
     bomb3VelocityX: 200,

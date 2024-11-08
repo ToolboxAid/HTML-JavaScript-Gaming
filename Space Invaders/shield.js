@@ -4,7 +4,7 @@
 // shield.js
 
 import ObjectStatic from '../scripts/objectStatic.js';
-import { canvasConfig, shieldConfig, spriteConfig } from './global.js'; 
+import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
@@ -49,17 +49,16 @@ class Shield extends ObjectStatic {
      * @static
      */
     static defaultBomb = [
-        "010",
-        "100",
-        "010",
-        "001",
-        "010",
-        "100",
-        "010",
-        "001",
-        "010",
-        "100",
-        "010",
+        "00100001",
+        "00000000",
+        "10011000",
+        "00011000",
+        "00011000",
+        "00011000",
+        "00011000",
+        "00011001",
+        "00000000",
+        "10000100",
     ];
 
     /**
@@ -72,7 +71,7 @@ class Shield extends ObjectStatic {
         const x = shieldSpacing + shieldNum * (dimensions.width + shieldSpacing);
         const y = shieldConfig.yPosition;
         super(x, y, dimensions.width, dimensions.height);
-        
+
         /**
          * The frame of the shield, cloned from the static frame.
          * @type {string[][]}
@@ -106,7 +105,7 @@ class Shield extends ObjectStatic {
      * @param {boolean} [doExplode=true] - Whether to apply random additional destruction.
      * @returns {boolean} - Returns true if any part of the shield was hit.
      */
-    applyBigBoom(distructiveObject, doExplode = true) {
+    applyBigBoom(distructiveObject, doExplode = true, adjY = 0) {
         const { x: bombX, y: bombY, currentFrameIndex } = distructiveObject || {};
         const { x: shieldX, y: shieldY } = this;
         let overlayFrame;
@@ -116,20 +115,30 @@ class Shield extends ObjectStatic {
             try {
                 overlayFrame = distructiveObject.livingFrames[currentFrameIndex].map(row => Array.from(row));
             } catch {
-                try{
-                overlayFrame = distructiveObject.livingFrames[0].map(row => Array.from(row));
-                }catch{
-                    console.log("failed overlayFrame");
-                    return;
+                try {
+                    overlayFrame = distructiveObject.livingFrames[0].map(row => Array.from(row));
+                } catch {
+                    try {
+                        overlayFrame = distructiveObject.livingFrames;
+                    } catch {
+                        console.log("-------------------failed overlayFrame-------------------");
+                        console.log(distructiveObject.livingFrames[currentFrameIndex]);
+                        console.log(distructiveObject.livingFrames[0]);
+                        console.log(distructiveObject.livingFrames);
+                        overlayFrame = Shield.defaultBomb;
+                    }
                 }
             }
         } else {
+            console.log("using `defaultBomb`");
             overlayFrame = Shield.defaultBomb;
         }
 
+        //overlayFrame = Shield.defaultBomb;
+
         let shieldHit = false;
         const offsetX = Math.round((bombX - shieldX) / window.pixelSize);
-        const offsetY = Math.round((bombY - shieldY) / window.pixelSize);
+        const offsetY = Math.round((bombY - shieldY) / window.pixelSize) + adjY;
 
         // Apply the bomb overlay to the shield frame
         for (let c = 0; c < this.frame.length; c++) {
@@ -144,17 +153,50 @@ class Shield extends ObjectStatic {
                     this.frame[targetY][targetX] === "1"
                 ) {
                     shieldHit = true;
-                    this.frame[targetY][targetX] = "0";
+                    this.frame[targetY][targetX] = "0"; // zero/blank the target frame.
 
-                    const destructionWidth = doExplode ? 2 : 4;
-                    const pathStart = Math.max(0, targetX - destructionWidth);
-                    const pathEnd = Math.min(this.frame[0].length, targetX + destructionWidth);
-
-                    for (let i = pathStart; i < pathEnd; i++) {
-                        if (this.frame[targetY][i] === "1" && (doExplode || Functions.randomGenerator(0, 1, false) > 0.33)) {
-                            this.frame[targetY][i] = "0";
+                    if (doExplode) {
+                        const destructionWidth = 2; // Width of the destruction area horizontally
+                        const destructionHeight = 2; // Height of the destruction area vertically
+                    
+                        const pathStartX = Math.max(0, targetX - destructionWidth);
+                        const pathEndX = Math.min(this.frame[0].length, targetX + destructionWidth);
+                    
+                        // Vertical range from -2 rows (up) to +2 rows (down)
+                        const pathStartY = Math.max(0, targetY - destructionHeight);
+                        const pathEndY = Math.min(this.frame.length, targetY + destructionHeight);
+                    
+                        const centerX = pathStartX + (pathEndX - pathStartX) / 2; // Calculate horizontal center
+                        const centerY = pathStartY + (pathEndY - pathStartY) / 2; // Calculate vertical center
+                    
+                        for (let y = pathStartY; y <= pathEndY; y++) {
+                            for (let x = pathStartX; x <= pathEndX; x++) {
+                                // Calculate distance from the center
+                                const distanceFromCenterX = Math.abs(x - centerX);
+                                const distanceFromCenterY = Math.abs(y - centerY);
+                                const maxDistanceX = (pathEndX - pathStartX) / 2;
+                                const maxDistanceY = (pathEndY - pathStartY) / 2;
+                    
+                                // Calculate probability threshold based on distance from the center
+                                const probabilityX = 0.2 + (1 - (distanceFromCenterX / maxDistanceX)) * 0.8;
+                                const probabilityY = 0.2 + (1 - (distanceFromCenterY / maxDistanceY)) * 0.8;
+                    
+                                // Use the combined adjusted probability for explosion effect
+                                const combinedProbability = (probabilityX + probabilityY) / 2;
+                    
+                                //console.log(`X Index: ${x}, Y Index: ${y}, Probability: ${combinedProbability.toFixed(2)}`);
+                    
+                                // Apply the explosion effect based on the combined probability
+                                if (Functions.randomGenerator(0, 1, false) < combinedProbability) {
+                                    try{
+                                    this.frame[y][x] = "0";
+                                    }catch{
+                                        console.log("invalid post: ", x, y);
+                                    }
+                                }
+                            }
                         }
-                    }
+                    }                    
                 }
             }
         }

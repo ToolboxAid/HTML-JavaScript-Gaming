@@ -112,23 +112,25 @@ function EnemiesDropBomb(deltaTime) {
     for (let column = 0; column < enemyConfig.colSize; column++) {
         //            console.log(gameEnemiesBottom[column]);
         const enemy = gameEnemies.get(gameEnemiesBottom[column]);
-        if (enemy.isDropBombTime()) {
-            const bombWidth = 5;
+        if (enemy) {
+            if (enemy.isDropBombTime()) {
+                const bombWidth = 5;
 
-            const bombType = Functions.randomGenerator(0, 2, true); // Generate a random bomb type (0 to 2)
-            switch (bombType) {
-                case 0: // Handle bombType 0
-                    enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                    break;
-                case 1:// Handle bombType 1
-                    enemyBombs.push(new EnemyBomb2(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                    break;
-                case 2:// Handle bombType 2
-                    enemyBombs.push(new EnemyBomb3(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
-                    break;
-                default:
-                    console.log("Unexpected bombType:", bombType);
-                    break;
+                const bombType = Functions.randomGenerator(0, 2, true); // Generate a random bomb type (0 to 2)
+                switch (bombType) {
+                    case 0: // Handle bombType 0
+                        enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                        break;
+                    case 1:// Handle bombType 1
+                        enemyBombs.push(new EnemyBomb2(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                        break;
+                    case 2:// Handle bombType 2
+                        enemyBombs.push(new EnemyBomb3(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
+                        break;
+                    default:
+                        console.log("Unexpected bombType:", bombType);
+                        break;
+                }
             }
         }
     }
@@ -442,7 +444,7 @@ function checkLaserShieldCollision() {
     let hit = false;
     shields.forEach(shield => {
         if (laser.isCollidingWith(shield)) {
-            if (shield.applyBigBoom(laser)) {
+            if (shield.applyBigBoom(laser, true, -5)) {
                 hit = true;
             }
         }
@@ -465,7 +467,7 @@ function checkBombShieldCollision() {
     enemyBombs.forEach(enemyBomb => {
         shields.forEach(shield => {
             if (enemyBomb.isCollidingWith(shield)) {
-                if (shield.applyBigBoom(enemyBomb)) {
+                if (shield.applyBigBoom(enemyBomb, true, 6)) {
                     enemyBomb.setIsDead();
                 }
             }
@@ -506,7 +508,7 @@ function removeDeadEnemy() {
             foundID = enemy.enemyID;
             foundKey = enemy.key;
             foundDead = gameEnemies.delete(enemy.key);
-            console.log("removed gameEnemies key: ", foundKey)
+            //console.log("removed gameEnemies key: ", foundKey)
         }
     });
 
