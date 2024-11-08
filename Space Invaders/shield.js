@@ -193,7 +193,7 @@ class Shield extends ObjectStatic {
                                 }
                                 const combinedProbability = (probabilityX + probabilityY) / 2;
 
-                                console.log(`X Index: ${x}, Y Index: ${y}, Probability: ${combinedProbability.toFixed(2)}`);
+                                //console.log(`X Index: ${x}, Y Index: ${y}, Probability: ${combinedProbability.toFixed(2)}`);
 
                                 // Apply the explosion effect based on the combined probability
                                 if (Functions.randomGenerator(0, 1, false) < combinedProbability) {
