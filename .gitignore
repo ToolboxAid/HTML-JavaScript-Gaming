@@ -1,3 +1,6 @@
-# ignore log files
+# Ignore log files
 .env.development
 *.log
+
+# Ignore the docs directory
+/docs/
