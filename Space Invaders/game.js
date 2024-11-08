@@ -3,7 +3,7 @@
 // 10/24/2024
 // game.js
 
-import { canvasConfig, spriteConfig } from './global.js'; // Assuming these contain canvas and sprite details
+import { canvasConfig, spriteConfig, enemyConfig } from './global.js'; // Assuming these contain canvas and sprite details
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
@@ -29,6 +29,8 @@ import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
 const gameEnemies = new Map();
+const gameEnemiesBottom = new Array(enemyConfig.colSize).fill(null);
+
 const enemyBombs = [];
 const shields = [];
 const grounds = [];
@@ -62,7 +64,29 @@ function initializeEnemies() {
             console.log("Unknown enemy type!");
             break;
     }
-    gameEnemies.set(enemy.key, enemy);
+    gameEnemies.set(enemy.key, enemy);    
+}
+
+function setGameEnemiesBottom(column) {
+    //console.log(`--------------------Setting bottom enemy for column: ${column}`);
+    
+    gameEnemiesBottom[column] = null;
+  for (let row = enemyConfig.rowSize - 1; row >= 0; row--) {
+    //for (let row = 0; row <= enemyConfig.rowSize - 1; row++) {
+        const key = `${row}x${column}`;
+        //console.log("KEY:::: ",key);
+        const enemy = gameEnemies.get(key);
+
+        if (enemy) {
+            //console.log(`Bottom enemy Key: ${key}`);
+            gameEnemiesBottom[column] = key;
+            //break;
+        }else{
+            //console.log("not found",key);
+        }
+    }
+    
+    //console.log(`--------------------Bottom enemy key for column ${column}: ${gameEnemiesBottom[column]}`);
 }
 
 // Function to initialize shield positions
@@ -460,7 +484,7 @@ function checkEnemyShieldCollision() {
                 if (shield.applyBigBoom(enemy, false)) {
                 }
             }
-        });       
+        });
     });
 }
 
@@ -485,6 +509,7 @@ function removeDeadEnemy() {
             foundID = enemy.enemyID;
             foundKey = enemy.key;
             foundDead = gameEnemies.delete(enemy.key);
+            console.log("removed gameEnemies key: ",foundKey)
         }
     });
 
@@ -502,6 +527,8 @@ function removeDeadEnemy() {
             enemy.reorgID();
         });
         Enemy.prepSpeed = true;
+
+        findBottom();
     }
 }
 
@@ -567,6 +594,16 @@ function checkLaser(deltaTime, laserFirePoint) {
     }
 }
 
+function findBottom(){
+    //console.log("================================================================");
+            // find bottom of each column
+            for (let column = 0; column < enemyConfig.colSize; column++) {
+               setGameEnemiesBottom(column);
+               //console.log(gameEnemiesBottom[column]);
+            }
+            //console.log(gameEnemiesBottom);
+        }
+
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
@@ -584,6 +621,9 @@ export function gameLoop(ctx, deltaTime) {
         if (onetime) {
             onetime = false;
             Enemy.remainingEnemies = gameEnemies.size;
+
+findBottom();
+          
         }
 
         removeDeadEnemy();

@@ -60,6 +60,7 @@ class Enemy extends ObjectKillable {
     static remainingEnemies = 54;
     static maximumEnemies = 54;
     static newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
+
     // Enemy configurations for octopus, squid, and crab
     static enemyRow = 0;
     static enemyCol = 0;
@@ -107,6 +108,10 @@ class Enemy extends ObjectKillable {
         Enemy.newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies) / 3;
     }
 
+    static getKey(row, column) {
+        return Enemy.enemyRow + "x" + Enemy.enemyCol;
+    }
+
     constructor(livingFrames, bombAggression) {
         const frameWidth = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
@@ -114,7 +119,7 @@ class Enemy extends ObjectKillable {
 
         super(x, y, livingFrames, Enemy.dyingFrames);
 
-        this.key = Enemy.enemyRow + "x" + Enemy.enemyCol;
+        this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
 
         this.bombAggression = 3 + (bombAggression * 2);
 
