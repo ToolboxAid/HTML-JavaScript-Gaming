@@ -67,7 +67,7 @@ class Enemy extends ObjectKillable {
         return Enemy.enemyRow;
     }
 
-    static getEnemiesInitialized() {
+    static isEnemiesInitialized() {
         return Enemy.enemiesInitialized;
     }
 
@@ -116,7 +116,7 @@ class Enemy extends ObjectKillable {
         super(x, y, livingFrames, Enemy.dyingFrames);
 
         this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
-
+        
         this.bombAggression = 15 + (bombAggression * 25);
 
         this.velocityX = 250; //1250;

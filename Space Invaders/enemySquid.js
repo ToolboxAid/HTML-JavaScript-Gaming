@@ -3,7 +3,7 @@
 // 10/24/2024
 // enemySquid.js
 
-import Enemy from './Enemy.js';
+import Enemy from './enemy.js';
 import { spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 
 class EnemySquid extends Enemy {

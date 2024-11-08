@@ -3,7 +3,7 @@
 // 10/24/2024
 // enemyOctopus.js
 
-import Enemy from './Enemy.js';
+import Enemy from './enemy.js';
 import { spriteConfig } from './global.js';
 
 class EnemyOctopus extends Enemy {

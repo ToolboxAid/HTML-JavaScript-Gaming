@@ -12,12 +12,12 @@ import Functions from '../scripts/functions.js';
 import Player from './player.js';
 import Shield from './shield.js';
 import Laser from './laser.js';
-let laser = null;
 import Ground from './ground.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
 const keyboardInput = new KeyboardInput();
 
+//import Enemy from './Enemy.js';
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';
 import EnemyCrab from './enemyCrab.js';
@@ -41,6 +41,8 @@ const player1 = new Player();
 const player2 = new Player();
 
 let player = player2;
+
+let laser = null;
 
 let enemyShip = null;
 let onetime = true;
@@ -560,8 +562,7 @@ function checkBombPlayerCollision() {
     });
 }
 
-function removeDeadBomb() {
-    // Check for dead enemyBomb and remove
+function removeDeadBomb() {    // Check for dead enemyBomb and remove
     [enemyBombs].forEach(enemyBombArray => {
         for (let i = enemyBombArray.length - 1; i >= 0; i--) {
             const enemyBomb = enemyBombArray[i];
@@ -589,8 +590,7 @@ function checkLaser(deltaTime, laserFirePoint) {
     }
 }
 
-function findBottom() {
-    // if the column is know, call `setGameEnemiesBottom(column)` instead
+function findBottom() {// if the column is know, call `setGameEnemiesBottom(column)` instead    
     for (let column = 0; column < enemyConfig.colSize; column++) {
         setGameEnemiesBottom(column);
     }
@@ -598,8 +598,7 @@ function findBottom() {
 
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
-
-    if (!Enemy.getEnemiesInitialized()) {
+    if (!Enemy.isEnemiesInitialized()) {
 
         if (shields.length === 0) {
             initializeShields();
