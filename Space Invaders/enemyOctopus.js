@@ -31,8 +31,8 @@ class EnemyOctopus extends Enemy {
         ]
     ];
 
-    constructor(x, y, dropBombDelay, enemyRow, enemyCol) {
-        super(x, y, EnemyOctopus.livingFrames, dropBombDelay, enemyRow, enemyCol);
+    constructor(dropBombDelay) {
+        super(EnemyOctopus.livingFrames, dropBombDelay);
         this.setSpriteColor(spriteConfig.octopusColor);
         this.value = 30;
     }

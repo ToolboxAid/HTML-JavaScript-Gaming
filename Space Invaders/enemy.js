@@ -9,6 +9,8 @@ import ObjectDynamic from '../scripts/objectDynamic.js';
 import ObjectKillable from '../scripts/objectKillable.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
+import { enemyConfig, spriteConfig } from './global.js';
+
 
 class Enemy extends ObjectKillable {
     static speed = 0;
@@ -53,22 +55,23 @@ class Enemy extends ObjectKillable {
     ];
 
     static enemyID = 0;
-    static remainingEnemies = 54;
-    static maximumEnemies = 54;
-
     static nextID = 0;
 
+    static remainingEnemies = 54;
+    static maximumEnemies = 54;
+    static newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
+    // Enemy configurations for octopus, squid, and crab
+    static enemyRow = 0;
+    static enemyCol = 0;
 
-    constructor(x, y, livingFrames, bombAggression, enemyRow=12, enemyCol=12) {
+    static enemiesInitialized = false;
 
-        super(x, y, livingFrames, Enemy.dyingFrames);
+    static getRow() {
+        return Enemy.enemyRow;
+    }
 
-        this.key = enemyRow + "x" + enemyCol;
-
-        this.bombAggression = 3 + (bombAggression * 2);
-
-        this.velocityX = 250; //1250;
-        this.enemyID = Enemy.enemyID++;
+    static getEnemiesInitialized() {
+        return Enemy.enemiesInitialized;
     }
 
     static setNextID() {
@@ -90,20 +93,40 @@ class Enemy extends ObjectKillable {
                 Enemy.setSpeed();
             } else {
                 Enemy.doSpeed = false;
-            }            
+            }
         }
     }
 
     static reorgID = 0;
     reorgID() {
         this.enemyID = Enemy.reorgID++;
-        Enemy.prepSpeed  = true;
+        Enemy.prepSpeed = true;
+    }
+   
+    static setSpeed() {
+        Enemy.newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies) / 3;
     }
 
-    static newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
-    static setSpeed(){
-        Enemy.newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies)/3;
-        
+    constructor(livingFrames, bombAggression) {
+        const frameWidth = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
+        const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
+        const y = enemyConfig.yPosition - (Enemy.enemyRow * enemyConfig.ySpacing);
+
+        super(x, y, livingFrames, Enemy.dyingFrames);
+
+        this.key = Enemy.enemyRow + "x" + Enemy.enemyCol;
+
+        this.bombAggression = 3 + (bombAggression * 2);
+
+        this.velocityX = 250; //1250;
+        this.enemyID = Enemy.enemyID++;
+
+        if (++Enemy.enemyCol >= enemyConfig.colSize) {
+            Enemy.enemyCol = 0;
+            if (++Enemy.enemyRow >= enemyConfig.rowSize) {
+                Enemy.enemiesInitialized = true;
+            }
+        }
     }
 
     adjustSpeed(deltaTime) {
@@ -127,7 +150,7 @@ class Enemy extends ObjectKillable {
                 this.velocityX *= -1;
                 this.y += this.height;
             }
-            if (Enemy.doSpeed){
+            if (Enemy.doSpeed) {
                 this.adjustSpeed(deltaTime);
             }
 

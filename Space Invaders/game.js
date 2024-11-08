@@ -32,7 +32,7 @@ import ObjectStatic from '../scripts/objectStatic.js';
 const player1 = new Player();
 const player2 = new Player();
 
-const enemySpacing = 19; // 5px space between each enemy
+
 let gameEnemies = new Map();
 const enemyBombs = [];
 
@@ -40,53 +40,27 @@ const shields = [];
 
 const grounds = [];
 
-let initializingGame = true;
-
-// Enemy configurations for octopus, squid, and crab
-let enemyRow = 0;
-let enemyCol = 0;
-
-
-
 function initializeEnemies() {
-
-    let enemyHeightSpacing = 59;
-    let enemyHeightPosition = 425;
-
-    const enemyWidth = 40;
-
-    let x = 40 + (enemyCol * (enemyWidth + enemySpacing));
-    const y = enemyHeightPosition - (enemyRow * enemyHeightSpacing);
-
     let enemy = null;
-    switch (enemyRow) {
+    switch (Enemy.getRow()) {
         case 0:
         case 1:
-            x -= Math.ceil((12 * spriteConfig.pixelSize) / 2);
-            enemy = new EnemyCrab(x, y, player.level, enemyRow, enemyCol);
+            enemy = new EnemyCrab(player.level);
             break;
         case 2:
         case 3:
-            x -= Math.ceil((11 * spriteConfig.pixelSize) / 2);
-            enemy = new EnemySquid(x, y, player.level, enemyRow, enemyCol);
+            enemy = new EnemySquid(player.level);
             break;
         case 4:
-            x -= Math.ceil((8 * spriteConfig.pixelSize) / 2);
-            enemy = new EnemyOctopus(x, y, player.level, enemyRow, enemyCol);
+            enemy = new EnemyOctopus(player.level);
             break;
         default:
+            enemy = new EnemyCrab(player.level);
             console.log("Unknown enemy type!");
             break;
     }
 
     gameEnemies.set(enemy.key, enemy);
-
-    if (++enemyCol >= 11) {
-        enemyCol = 0;
-        if (++enemyRow >= 5) {
-            initializingGame = false;
-        }
-    }
 }
 
 // Function to initialize shield positions
@@ -602,7 +576,7 @@ let onetime = true;
 // Game loop function
 export function gameLoop(ctx, deltaTime) {
 
-    if (initializingGame) {
+    if (!Enemy.getEnemiesInitialized()) {
 
         if (shields.length === 0) {
             initializeShields();

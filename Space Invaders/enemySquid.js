@@ -31,8 +31,8 @@ class EnemySquid extends Enemy {
         ]
     ];
 
-    constructor(x, y, dropBombDelay, enemyRow, enemyCol) {
-        super(x, y, EnemySquid.livingFrames, dropBombDelay, enemyRow, enemyCol);
+    constructor(dropBombDelay) {
+        super(EnemySquid.livingFrames, dropBombDelay);
         this.setSpriteColor(spriteConfig.squidColor);
         this.value = 20;
     }

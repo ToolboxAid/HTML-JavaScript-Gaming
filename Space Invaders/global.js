@@ -16,7 +16,6 @@ export const canvasConfig = {
     fullscreenColor: 'yellow',
     fullscreenX: 180, // X position for fullscreen text
     fullscreenY: 930,//675, // Y position for fullscreen text
-
 };
 
 export const spriteConfig = {
@@ -30,8 +29,17 @@ export const spriteConfig = {
     crabColor: 'orange',
     octopusColor: 'yellow',
     squidColor: '#ff6666',
-    playerColor: 'pink',
+    playerColor: 'blue',
 };
+
+export const enemyConfig = {
+    colSize: 11,
+    rowSize: 5,
+    xPosition: 50,
+    yPosition: 425,
+    xSpacing: 62,
+    ySpacing: 62,
+}
 
 export const shieldConfig = {
     count: 4, // Number of shields
@@ -39,7 +47,6 @@ export const shieldConfig = {
     color: '#44FF44',
 }
 window.shieldCount = shieldConfig.count;
-
 
 // non type="module" in HTML
 // Set global canvas variables for ../scripts

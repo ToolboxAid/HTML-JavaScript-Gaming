@@ -131,12 +131,21 @@ class CanvasUtils {
         }
     }
 
+    // const frameWidth = Enemy.getFrameWidth(livingFrames);
+    // static getFrameWidth(frames) {
+    //     if (!frames || frames.length === 0 || frames[0].length === 0) {
+    //         return 0; // Return 0 if the frames array is empty or malformed
+    //     }
+    //         // Assuming all rows have the same width
+    //     return frames[0][0].length * spriteConfig.pixelSize; // Width of the first row of the first frame
+    // }
+    
     static spriteWidthHeight(object, pixelSize, debug = false) {
-        let width, height, frame;
+        let width, height;
 
         if (Array.isArray(object) && Array.isArray(object[0])) {
             // Multi-dimensional array (each element is an array, implying rows of frames)
-            frame = object.map(row => Array.from(row));
+            let frame = object.map(row => Array.from(row));
             height = frame.length; // Number of rows
             width = frame[0]?.length || 0; // Length of each row (assuming uniform row lengths)
 
@@ -146,7 +155,7 @@ class CanvasUtils {
             }
         } else if (Array.isArray(object)) {
             // Single-dimensional array (likely one frame as an array of strings or characters)
-            frame = Array.from(object); // Create a copy for manipulation
+            let frame = Array.from(object); // Create a copy for manipulation
             height = frame.length; // Number of elements (lines or rows)
             width = frame[0]?.length || 1; // Length of each line or character    
             if (debug) {
