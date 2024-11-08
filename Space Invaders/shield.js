@@ -155,20 +155,25 @@ class Shield extends ObjectStatic {
                     shieldHit = true;
                     this.frame[targetY][targetX] = "0"; // zero/blank the target frame.
 
-                    if (doExplode) {
-                        const destructionWidth = 2; // Width of the destruction area horizontally
-                        const destructionHeight = 2; // Height of the destruction area vertically
-                    
+                    if (true) {
+                        let destructionWidth = 2; // Width of the destruction area horizontally
+                        let destructionHeight = 2; // Height of the destruction area vertically
+
+                        if (!doExplode) {
+                            destructionWidth += 2; // Width of the destruction area horizontally
+                            destructionHeight += 2; // Height of the destruction area vertically
+                        }
+
                         const pathStartX = Math.max(0, targetX - destructionWidth);
                         const pathEndX = Math.min(this.frame[0].length, targetX + destructionWidth);
-                    
+
                         // Vertical range from -2 rows (up) to +2 rows (down)
                         const pathStartY = Math.max(0, targetY - destructionHeight);
                         const pathEndY = Math.min(this.frame.length, targetY + destructionHeight);
-                    
+
                         const centerX = pathStartX + (pathEndX - pathStartX) / 2; // Calculate horizontal center
                         const centerY = pathStartY + (pathEndY - pathStartY) / 2; // Calculate vertical center
-                    
+
                         for (let y = pathStartY; y <= pathEndY; y++) {
                             for (let x = pathStartX; x <= pathEndX; x++) {
                                 // Calculate distance from the center
@@ -176,27 +181,31 @@ class Shield extends ObjectStatic {
                                 const distanceFromCenterY = Math.abs(y - centerY);
                                 const maxDistanceX = (pathEndX - pathStartX) / 2;
                                 const maxDistanceY = (pathEndY - pathStartY) / 2;
-                    
+
                                 // Calculate probability threshold based on distance from the center
-                                const probabilityX = 0.2 + (1 - (distanceFromCenterX / maxDistanceX)) * 0.8;
-                                const probabilityY = 0.2 + (1 - (distanceFromCenterY / maxDistanceY)) * 0.8;
-                    
+                                let probabilityX = 0.2 + (1 - (distanceFromCenterX / maxDistanceX)) * 0.8;
+                                let probabilityY = 0.2 + (1 - (distanceFromCenterY / maxDistanceY)) * 0.8;
+
                                 // Use the combined adjusted probability for explosion effect
+                                if (!doExplode) {
+                                    probabilityX = 1;
+                                    probabilityY = 1;
+                                }
                                 const combinedProbability = (probabilityX + probabilityY) / 2;
-                    
-                                //console.log(`X Index: ${x}, Y Index: ${y}, Probability: ${combinedProbability.toFixed(2)}`);
-                    
+
+                                console.log(`X Index: ${x}, Y Index: ${y}, Probability: ${combinedProbability.toFixed(2)}`);
+
                                 // Apply the explosion effect based on the combined probability
                                 if (Functions.randomGenerator(0, 1, false) < combinedProbability) {
-                                    try{
-                                    this.frame[y][x] = "0";
-                                    }catch{
-                                        console.log("invalid post: ", x, y);
+                                    try {
+                                        this.frame[y][x] = "0";
+                                    } catch {
+                                        console.log("invalid position: ", x, y);
                                     }
                                 }
                             }
                         }
-                    }                    
+                    }
                 }
             }
         }
