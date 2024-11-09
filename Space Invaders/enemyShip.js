@@ -65,12 +65,6 @@ class EnemyShip extends ObjectKillable {
         ]
     ];
 
-    static Status = Object.freeze({
-        ALIVE: 'alive',
-        DYING: 'dying',
-        DEAD: 'dead'
-    });
-
     constructor() {
         super(0, spriteConfig.shipY, EnemyShip.livingFrames, EnemyShip.dyingFrames, spriteConfig.shipVelX);
         this.setSpriteColor(spriteConfig.shipColor);
@@ -81,6 +75,7 @@ class EnemyShip extends ObjectKillable {
             this.x = canvasConfig.width + this.width;
             this.velocityX *= -1;
         }
+        this.value = this.getShipValue();
     }
 
     static nextShipDelay = spriteConfig.shipSpawnSec * 1000; // Convert seconds to milliseconds
@@ -93,7 +88,11 @@ class EnemyShip extends ObjectKillable {
         return false;
     }
 
-    getValue() {
+    getValue(){
+        return this.value;
+    }
+
+    getShipValue() {
         let value = 0;
         const switchValue = Functions.randomGenerator(0, 3, true);
         switch (switchValue) {
@@ -115,7 +114,7 @@ class EnemyShip extends ObjectKillable {
 
     update(deltaTime) {
         super.update(deltaTime);
-
+        
         // If ship off playing field, kill it
         if (this.isAlive()) {
             if (this.velocityX > 0) {

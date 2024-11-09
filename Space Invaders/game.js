@@ -616,7 +616,6 @@ export function gameLoop(ctx, deltaTime) {
             Enemy.remainingEnemies = gameEnemies.size;
 
             findBottom();
-
         }
 
         removeDeadEnemy();

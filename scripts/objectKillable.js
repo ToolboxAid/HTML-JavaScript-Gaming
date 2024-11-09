@@ -11,6 +11,7 @@ class ObjectKillable extends ObjectDynamic {
     static Status = Object.freeze({
         ALIVE: 'alive',
         DYING: 'dying',
+        OTHER: 'other',
         DEAD: 'dead'
     });
 
@@ -59,8 +60,12 @@ class ObjectKillable extends ObjectDynamic {
             } else {
                 this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
             }
-        } else { // is Dying or Dead
-            this.updateDyingFrames();
+        } else { // is Dying
+            if (this.isDying) {
+                this.updateDyingFrames();
+            } else {// is other or Dead
+                console.log("dead/other");
+            }
         }
     }
 
@@ -83,6 +88,10 @@ class ObjectKillable extends ObjectDynamic {
         return this.status === ObjectKillable.Status.DYING;
     }
 
+    isOther() {
+        return this.status === ObjectKillable.Status.OTHER;
+    }
+
     isDead() {
         return this.status === ObjectKillable.Status.DEAD;
     }
@@ -93,6 +102,10 @@ class ObjectKillable extends ObjectDynamic {
         } else {
             this.status = ObjectKillable.Status.DEAD;
         }
+    }
+
+    setIsOther() {
+        this.status = ObjectKillable.Status.OTHER;
     }
 
     setIsDead() {
@@ -127,6 +140,10 @@ class ObjectKillable extends ObjectDynamic {
         } else {
             if (this.isDying()) {
                 CanvasUtils.drawSprite(ctx, this.x, this.y, this.dyingFrames[this.currentFrameIndex], spriteConfig.pixelSize, this.spriteColor);
+            } else {
+                if (this.isOther()){
+                    console.log("other")
+                }
             }
         }
     }
