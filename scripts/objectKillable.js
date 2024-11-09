@@ -5,7 +5,7 @@
 
 import ObjectDynamic from './objectDynamic.js';
 import CanvasUtils from './canvas.js';
-import { spriteConfig } from '../Space Invaders/global.js';
+import { canvasConfig, spriteConfig } from '../Space Invaders/global.js';
 
 class ObjectKillable extends ObjectDynamic {
     static Status = Object.freeze({
@@ -193,8 +193,15 @@ class ObjectKillable extends ObjectDynamic {
             } else {
                 if (this.isOther()) {
                     console.log("draw other")
-                    if (this.otherFrames){
-                    CanvasUtils.drawSprite(ctx, this.x, this.y, this.otherFrames, spriteConfig.pixelSize, this.spriteColor);                    
+                    if (this.otherFrames) {
+                        if (this.x < 25) {
+                            this.x = 25;
+                        } else {
+                            if (this.x > canvasConfig.width - 100) {
+                                this.x = canvasConfig.width - 100;
+                            }
+                        }
+                        CanvasUtils.drawSprite(ctx, this.x, this.y, this.otherFrames, spriteConfig.pixelSize, this.spriteColor);
                     }
                 } else {
                     console.log("draw dead");
