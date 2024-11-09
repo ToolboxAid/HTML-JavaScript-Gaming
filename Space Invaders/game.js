@@ -182,7 +182,11 @@ function checkEnemyShip(deltaTime) {
         enemyShip.update(deltaTime);
 
         if (enemyShip.isDying()) {
-            enemyShip.setOtherFrames(60, otherFrames, 1); // daq
+            let shipValue = `${enemyShip.getValue()}`;
+
+            const someFrame = CanvasUtils.getSpriteText(shipValue, 2)
+            console.log(someFrame);
+            enemyShip.setOtherFrames(60, someFrame, 1); // daq
         }
 
         if (enemyShip.isDead()) {

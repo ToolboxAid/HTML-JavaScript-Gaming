@@ -75,6 +75,37 @@ class CanvasUtils {
         }
     }
 
+    static getSpriteText(text, space = 1) {
+        // Initialize the sprite array
+        const sprite = [];
+        
+        // Find the maximum height of characters (assuming all characters have the same height)
+        const charHeight = Font5x6.font5x6['A']?.length || 7;
+
+        // Prepare an empty row for spacing
+        const emptyRow = '0'.repeat(space);
+
+        // Initialize empty rows
+        for (let i = 0; i < charHeight; i++) {
+            sprite.push('');
+        }
+
+        // Loop through each character in the text
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            const frame = Font5x6.font5x6[char] || Font5x6.font5x6[' '];
+
+            // Add each line of the character frame to the sprite
+            for (let row = 0; row < charHeight; row++) {
+                // Add character row + space for each line in the sprite
+                sprite[row] += frame[row] + emptyRow;
+            }
+        }
+
+        return sprite;
+    }
+
+
     static drawBounds(ctx, x, y, w, h, color = 'red', lineSize = 1) {
         ctx.lineWidth = lineSize;
         ctx.strokeStyle = color;

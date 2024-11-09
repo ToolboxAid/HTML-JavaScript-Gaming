@@ -193,7 +193,9 @@ class ObjectKillable extends ObjectDynamic {
             } else {
                 if (this.isOther()) {
                     console.log("draw other")
-                    CanvasUtils.drawSprite(ctx, this.x, this.y, this.otherFrames[0], spriteConfig.pixelSize, this.spriteColor);                    
+                    if (this.otherFrames){
+                    CanvasUtils.drawSprite(ctx, this.x, this.y, this.otherFrames, spriteConfig.pixelSize, this.spriteColor);                    
+                    }
                 } else {
                     console.log("draw dead");
                 }
