@@ -623,7 +623,6 @@ export function gameLoop(ctx, deltaTime) {
         EnemiesUpdate(deltaTime);
         checkEnemyShieldCollision();
 
-
         // Update, Remove and Check bombs
         removeDeadBomb();
         updateBombs(deltaTime);
