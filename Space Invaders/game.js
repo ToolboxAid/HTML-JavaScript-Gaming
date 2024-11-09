@@ -211,7 +211,7 @@ function drawScore(ctx) {
     CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", pixelSize, 'red');
     CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", pixelSize, 'red');
     CanvasUtils.drawNumber(ctx, 90, 80, player1.score, pixelSize, color, 4, '0');
-    CanvasUtils.drawNumber(ctx, 340, 80, 0, pixelSize, color, 4, '0');
+    CanvasUtils.drawNumber(ctx, 340, 80, highScore, pixelSize, color, 4, '0');
     CanvasUtils.drawNumber(ctx, 590, 80, player2.score, pixelSize, color, 4, '0');
 }
 
@@ -452,15 +452,22 @@ function drawGround(ctx) {
     });
 }
 
+let highScore = 0;
+function updatePlayerScore(score) {
+    player.updateScore(score);
+    if (player.score > highScore) {
+        highScore = player.score;
+    }
+}
+
 function checkLaserEnemyCollision(player) {
     if (laser) {
         let hitDetected = false;
         gameEnemies.forEach((enemy, key) => {
             if (enemy.processCollisionWith(laser)) {
-                player.score += enemy.value;
+                updatePlayerScore(enemy.value);
                 enemy.setHit();
                 hitDetected = true;
-                enemy.update(1);
             }
         });
         if (hitDetected) { // Delete the laser
@@ -503,7 +510,7 @@ function checkLaserShipCollision(player) {
     if (laser && enemyShip) {
         const colliding = enemyShip.isCollidingWith(laser);
         if (colliding) {
-            player.score += enemyShip.getValue();
+            updatePlayerScore(enemyShip.getValue());
             enemyShip.setHit();
             laser = null;
         }

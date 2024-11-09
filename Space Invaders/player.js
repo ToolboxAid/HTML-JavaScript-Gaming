@@ -23,15 +23,25 @@ class Player extends ObjectDynamic {
         "11111111111111111",
         "11111111111111111",
         "11111111111111111",
-      
+
     ];
 
     constructor(x = 127, y = 810) {
         super(x, y, 50, 50);
-        this.score = 0;
-        this.lives = 3;
+        this.score = 1450;
+        this.lives = spriteConfig.playerLives;
         this.pixelSize = 3.0;
         this.level = 1;
+        this.bonus = spriteConfig.playerBonusScore;
+        this.nextBonus = this.bonus;
+    }
+
+    updateScore(score) {
+        this.score += score;
+        if (this.score > this.nextBonus) {
+            this.lives++;
+            this.nextBonus += this.bonus;
+        }
     }
 
     draw(ctx) {
