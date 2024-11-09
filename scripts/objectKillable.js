@@ -44,7 +44,7 @@ class ObjectKillable extends ObjectDynamic {
         this.dyingFrameCount = this.dyingFrames.length;
 
         // Other properties
-        this.otherDelay = 5;
+        this.otherDelay = 0;
         this.otherFrames = null;
         this.otherFrameCount = 0;
 
@@ -141,12 +141,12 @@ class ObjectKillable extends ObjectDynamic {
         } else {
             this.setIsDead();
         }
-    }    
+    }
 
     setIsDying() {
         this.status = ObjectKillable.Status.DYING;
     }
-    
+
     setIsOther() {
         this.status = ObjectKillable.Status.OTHER;
     }
@@ -177,6 +177,13 @@ class ObjectKillable extends ObjectDynamic {
         this.pixelSize = pixelSize;
     }
 
+    setOtherFrames(otherDelay, otherFrames, otherFrameCount) {
+        // Other properties
+        this.otherDelay = otherDelay;
+        this.otherFrames = otherFrames;
+        this.otherFrameCount = otherFrameCount;
+    }
+
     draw(ctx) {
         if (this.isAlive()) {
             CanvasUtils.drawSprite(ctx, this.x, this.y, this.livingFrames[this.currentFrameIndex], spriteConfig.pixelSize, this.spriteColor);
@@ -186,6 +193,7 @@ class ObjectKillable extends ObjectDynamic {
             } else {
                 if (this.isOther()) {
                     console.log("draw other")
+                    CanvasUtils.drawSprite(ctx, this.x, this.y, this.otherFrames[0], spriteConfig.pixelSize, this.spriteColor);                    
                 } else {
                     console.log("draw dead");
                 }

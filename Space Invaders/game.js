@@ -105,7 +105,6 @@ function EnemiesUpdate(deltaTime) {
 }
 
 function EnemiesDropBomb(deltaTime) {
-return;
     // Check only bottom enemy should drop bomb
 
     for (let column = 0; column < enemyConfig.colSize; column++) {
@@ -135,6 +134,45 @@ return;
     }
 }
 
+const otherFrames = [
+    [
+        "111111111111",
+        "010010100010",
+        "001001000100",
+        "110100001011",
+        "001001000100",
+        "010010100010",
+        "111111111111",
+    ],
+    [
+        "000000000000",
+        "010010100010",
+        "001001000100",
+        "010100001010",
+        "001001000100",
+        "010010100010",
+        "000000000000",
+    ],
+    [
+        "000000000000",
+        "000000000000",
+        "001001000100",
+        "000101101000",
+        "001001000100",
+        "000000000000",
+        "000000000000",
+    ],
+    [
+        "000000000000",
+        "000000000000",
+        "000101001000",
+        "000011110000",
+        "000101001000",
+        "000000000000",
+        "000000000000",
+    ],
+];
+
 function checkEnemyShip(deltaTime) {
     if (!enemyShip) {
         if (EnemyShip.isCreationTime()) {
@@ -142,6 +180,11 @@ function checkEnemyShip(deltaTime) {
         }
     } else {
         enemyShip.update(deltaTime);
+
+        if (enemyShip.isDying()) {
+            enemyShip.setOtherFrames(60, otherFrames, 1); // daq
+        }
+
         if (enemyShip.isDead()) {
             enemyShip = null;
         }
@@ -476,7 +519,6 @@ function checkBombShieldCollision() {
 }
 
 function checkEnemyShieldCollision() {
-
     gameEnemies.forEach((enemy, key) => {
         shields.forEach(shield => {
             if (enemy.isCollidingWith(shield)) {

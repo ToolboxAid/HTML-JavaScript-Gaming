@@ -23,7 +23,7 @@ export const spriteConfig = {
 
     shipY: 145,
     shipVelX: 150,
-    shipSpawnSec: 25,
+    shipSpawnSec: 2,
     shipColor: 'red',
 
     playerColor: 'white',
