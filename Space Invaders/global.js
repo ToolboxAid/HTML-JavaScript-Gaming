@@ -9,8 +9,8 @@ export const canvasConfig = {
     width: 896, // Game area width (256 * 4)
     height: 960, // Game area height (240 * 4)
     scale: 0.5,
-    backgroundColor: "#222222",   
-    
+    backgroundColor: "#222222",
+
     fullscreenText: 'Click game to enter fullscreen',
     fullscreenFont: '40px Arial',
     fullscreenColor: 'yellow',
@@ -21,13 +21,16 @@ export const canvasConfig = {
 export const spriteConfig = {
     pixelSize: 3.5,
 
+    playerLives: 3,
+    playerBonusScore: 1500,
+    playerColor: 'white',
+
+    lazerColor: 'white',
+
     shipY: 145,
     shipVelX: 150,
-    shipSpawnSec: 2,
+    shipSpawnSec: 25,
     shipColor: 'red',
-
-    playerColor: 'white',
-    lazerColor: 'white',
 
     crabColor: 'orange',
     octopusColor: 'yellow',
@@ -39,7 +42,7 @@ export const spriteConfig = {
     bomb1VelocityX: 350,
     bomb2VelocityX: 275,
     bomb3VelocityX: 200,
-    
+
     groundColor: "green",
     groundY: 870,
 };
@@ -69,11 +72,11 @@ window.backgroundColor = canvasConfig.backgroundColor;
 
 window.pixelSize = spriteConfig.pixelSize
 
-window.fullscreenText = canvasConfig.fullscreenText; 
+window.fullscreenText = canvasConfig.fullscreenText;
 window.fullscreenFont = canvasConfig.fullscreenFont;
-window.fullscreenColor = canvasConfig.fullscreenColor; 
-window.fullscreenX = canvasConfig.fullscreenX; 
-window.fullscreenY = canvasConfig.fullscreenY; 
+window.fullscreenColor = canvasConfig.fullscreenColor;
+window.fullscreenX = canvasConfig.fullscreenX;
+window.fullscreenY = canvasConfig.fullscreenY;
 
 window.borderColor = "red";
 window.borderSize = 5;

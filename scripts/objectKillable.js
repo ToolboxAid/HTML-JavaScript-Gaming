@@ -29,24 +29,21 @@ class ObjectKillable extends ObjectDynamic {
         this.status = ObjectKillable.Status.ALIVE;
         this.currentFrameIndex = 0;
 
+        this.delayCounter = 0;
+
         // Initialize living frames
         this.livingDelay = 0;
         this.livingFrames = livingFrames;
         this.livingFrameCount = this.livingFrames.length;
 
         // Initialize dying frames and replace with living frames if null or empty
-        this.dyingDelay = 0;
-        if (!dyingFrames || dyingFrames.length === 0) {
-            this.dyingFrames = this.livingFrames;
-        } else {
-            this.dyingFrames = dyingFrames;
-        }
-        this.dyingFrameCount = this.dyingFrames.length;
+        this.dyingDelay = 3;
+        this.dyingFrames = dyingFrames;
+        this.dyingFrameCount = this.dyingFrames ? this.dyingFrames.length : 0;
 
         // Other properties
         this.otherDelay = 0;
-        this.otherFrames = null;
-        this.otherFrameCount = 0;
+        this.otherFrame = null;
 
         // More properties
         this.dyingModulus = dyingModulus;
@@ -86,27 +83,34 @@ class ObjectKillable extends ObjectDynamic {
         }
     }
 
-    handleDyingStatus() { // Handle DYING status
-        console.log("Handling DYING status logic");
-        this.dyingDelay++;
-        if (this.dyingDelay >= this.dyingModulus * this.dyingFrameCount) {
-            this.setIsOther();
-        } else {
-            this.currentFrameIndex = Math.floor((this.dyingDelay / this.dyingModulus) % this.dyingFrameCount);
+    handleDyingStatus() {
+        // Increment the delay count
+        this.delayCounter++;
+    
+        // Check if the delay count reached the threshold set by dyingDelay
+        if (this.delayCounter >= this.dyingDelay) {
+            // Reset the delay count
+            this.delayCounter = 0;
+    
+            // Move to the next frame
+            this.currentFrameIndex++;
+    
+            // If all frames have been displayed, transition to 'Other' status
+            if (this.currentFrameIndex >= this.dyingFrameCount) {
+                this.setIsOther();
+            }
         }
     }
+    
 
     handleOtherStatus() { // Custom logic for OTHER status
-        if (this.otherFrameCount++ > this.otherDelay) {
-            console.log("Handling OTHER status to dead");
+        if (this.delayCounter++ > this.otherDelay) {
+            //console.log("Handling OTHER status to dead");
             this.setIsDead();
-        } else {
-            console.log("Handling OTHER status logic");
         }
     }
 
     handleDeadStatus() { // Custom logic for DEAD status
-        console.log("Handling DEAD status logic");
     }
 
     processCollisionWith(object, updatePosition = false) {
@@ -136,7 +140,7 @@ class ObjectKillable extends ObjectDynamic {
     setHit() {
         if (this.dyingFrames) {
             this.setIsDying();
-        } else if (this.otherFrames) {
+        } else if (this.otherFrame) {
             this.setIsOther();
         } else {
             this.setIsDead();
@@ -177,36 +181,30 @@ class ObjectKillable extends ObjectDynamic {
         this.pixelSize = pixelSize;
     }
 
-    setOtherFrames(otherDelay, otherFrames, otherFrameCount) {
-        // Other properties
+    setOtherFrame(otherDelay, otherFrame) { // Other properties        
         this.otherDelay = otherDelay;
-        this.otherFrames = otherFrames;
-        this.otherFrameCount = otherFrameCount;
+        this.otherFrame = otherFrame;
     }
 
     draw(ctx) {
+        const { x, y, currentFrameIndex, spriteColor } = this;
+        const pixelSize = spriteConfig.pixelSize;
+    
         if (this.isAlive()) {
-            CanvasUtils.drawSprite(ctx, this.x, this.y, this.livingFrames[this.currentFrameIndex], spriteConfig.pixelSize, this.spriteColor);
-        } else {
-            if (this.isDying()) {
-                CanvasUtils.drawSprite(ctx, this.x, this.y, this.dyingFrames[this.currentFrameIndex], spriteConfig.pixelSize, this.spriteColor);
-            } else {
-                if (this.isOther()) {
-                    console.log("draw other")
-                    if (this.otherFrames) {
-                        if (this.x < 25) {
-                            this.x = 25;
-                        } else {
-                            if (this.x > canvasConfig.width - 100) {
-                                this.x = canvasConfig.width - 100;
-                            }
-                        }
-                        CanvasUtils.drawSprite(ctx, this.x, this.y, this.otherFrames, spriteConfig.pixelSize, this.spriteColor);
-                    }
-                } else {
-                    console.log("draw dead");
-                }
-            }
+            CanvasUtils.drawSprite(ctx, x, y, this.livingFrames[currentFrameIndex], pixelSize, spriteColor);
+            return;
+        }
+    
+        if (this.isDying() && this.dyingFrames) {
+            CanvasUtils.drawSprite(ctx, x, y, this.dyingFrames[currentFrameIndex], pixelSize, spriteColor);
+            return;
+        }
+    
+        if (this.isOther() && this.otherFrame) {
+            // Constrain x within canvas boundaries
+            this.x = Math.max(25, Math.min(this.x, canvasConfig.width - 100));
+            CanvasUtils.drawSprite(ctx, this.x, y, this.otherFrame, pixelSize, spriteColor);
+            return;
         }
     }
 

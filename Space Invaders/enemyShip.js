@@ -76,7 +76,6 @@ class EnemyShip extends ObjectKillable {
             this.velocityX *= -1;
         }
         this.value = this.getShipValue();
-        console.log(this);
     }
 
     static nextShipDelay = spriteConfig.shipSpawnSec * 1000; // Convert seconds to milliseconds
