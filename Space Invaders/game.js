@@ -35,7 +35,6 @@ const enemyBombs = [];
 const shields = [];
 const grounds = [];
 
-
 // Initialize player
 const player1 = new Player();
 const player2 = new Player();
@@ -106,7 +105,7 @@ function EnemiesUpdate(deltaTime) {
 }
 
 function EnemiesDropBomb(deltaTime) {
-
+return;
     // Check only bottom enemy should drop bomb
 
     for (let column = 0; column < enemyConfig.colSize; column++) {
@@ -410,10 +409,11 @@ function checkLaserEnemyCollision(player) {
     if (laser) {
         let hitDetected = false;
         gameEnemies.forEach((enemy, key) => {
-            if (laser.processCollisionWith(enemy)) {
+            if (enemy.processCollisionWith(laser)) {
                 player.score += enemy.value;
                 enemy.setHit();
                 hitDetected = true;
+                enemy.update(1);
             }
         });
         if (hitDetected) { // Delete the laser
@@ -427,7 +427,7 @@ function checkLaserBombCollision() {
         // Check for collisions and remove hit laser and bomb
         let hitBomb = false;
         enemyBombs.forEach(enemyBomb => {
-            if (laser.processCollisionWith(enemyBomb)) {
+            if (enemyBomb.processCollisionWith(laser)) {
                 hitBomb = true;
                 if (enemyBomb.constructor.name !== "EnemyBomb3") {
                     enemyBomb.setIsDead();
@@ -454,7 +454,7 @@ function checkLaserShieldCollision() {
 
 function checkLaserShipCollision(player) {
     if (laser && enemyShip) {
-        const colliding = laser.isCollidingWith(enemyShip);
+        const colliding = enemyShip.isCollidingWith(laser);
         if (colliding) {
             player.score += enemyShip.getValue();
             enemyShip.setHit();

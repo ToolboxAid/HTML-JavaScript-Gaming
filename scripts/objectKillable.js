@@ -44,40 +44,76 @@ class ObjectKillable extends ObjectDynamic {
         this.dyingFrameCount = this.dyingFrames.length;
 
         // Other properties
+        this.otherDelay = 0;
+        this.otherFrames = null;
+        this.otherFrameCount = 0;
+
+        // More properties
         this.dyingModulus = dyingModulus;
         this.spriteColor = "white";
         this.pixelSize = spriteConfig.pixelSize;
     }
 
     update(deltaTime, incFrame = false) {
-        if (this.isAlive()) { // is Alive
-            super.update(deltaTime);
-            if (incFrame) {
-                this.currentFrameIndex++;
-                if (this.currentFrameIndex >= this.livingFrameCount) {
-                    this.currentFrameIndex = 0;
-                }
-            } else {
-                this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
-            }
-        } else { // is Dying
-            if (this.isDying) {
-                this.updateDyingFrames();
-            } else {// is other or Dead
-                console.log("dead/other");
-            }
+        switch (this.status) {
+            case ObjectKillable.Status.ALIVE: // Handle ALIVE status
+                this.handleAliveStatus(deltaTime, incFrame);
+                break;
+            case ObjectKillable.Status.DYING: // Handle DYING status
+                this.handleDyingStatus();
+                break;
+            case ObjectKillable.Status.OTHER: // Handle OTHER status
+                this.handleOtherStatus();
+                break;
+            case ObjectKillable.Status.DEAD: // Handle DEAD status
+                this.handleDeadStatus();
+                break;
+            default:  // Handle OOPS - Handle unknown status
+                console.error("OOPS : Unknown status:", this.status);
+                break;
         }
     }
 
-    updateDyingFrames() {
-        if (this.isDying()) {
-            this.dyingDelay++;
-            if (this.dyingDelay >= this.dyingModulus * this.dyingFrameCount) {
-                this.setIsDead();
-            } else {
-                this.currentFrameIndex = Math.floor((this.dyingDelay / this.dyingModulus) % this.dyingFrameCount);
+    handleAliveStatus(deltaTime, incFrame) { // Handle ALIVE status
+        super.update(deltaTime);
+        if (incFrame) {
+            this.currentFrameIndex++;
+            if (this.currentFrameIndex >= this.livingFrameCount) {
+                this.currentFrameIndex = 0;
             }
+        } else {
+            this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
         }
+    }
+
+    handleDyingStatus() { // Handle DYING status
+        console.log("Handling DYING status logic");
+        this.dyingDelay++;
+        if (this.dyingDelay >= this.dyingModulus * this.dyingFrameCount) {
+            this.setIsOther();
+        } else {
+            this.currentFrameIndex = Math.floor((this.dyingDelay / this.dyingModulus) % this.dyingFrameCount);
+        }
+    }
+
+    handleOtherStatus() { // Custom logic for OTHER status
+        console.log("Handling OTHER status logic");
+        this.setIsDead();
+    }
+
+    handleDeadStatus() { // Custom logic for DEAD status
+        console.log("Handling DEAD status logic");
+    }
+
+    processCollisionWith(object, updatePosition = false) {
+        let collision = false;
+        if (this.isAlive()) {
+            collision = super.processCollisionWith(object, updatePosition);
+        }
+        // else{
+        //     console.log("npe");
+        // }
+        return collision;
     }
 
     isAlive() {
@@ -141,8 +177,10 @@ class ObjectKillable extends ObjectDynamic {
             if (this.isDying()) {
                 CanvasUtils.drawSprite(ctx, this.x, this.y, this.dyingFrames[this.currentFrameIndex], spriteConfig.pixelSize, this.spriteColor);
             } else {
-                if (this.isOther()){
-                    console.log("other")
+                if (this.isOther()) {
+                    console.log("draw other")
+                } else {
+                    console.log("draw dead");
                 }
             }
         }

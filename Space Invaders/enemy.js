@@ -99,7 +99,7 @@ class Enemy extends ObjectKillable {
         this.enemyID = Enemy.reorgID++;
         Enemy.prepSpeed = true;
     }
-   
+
     static setSpeed() {
         Enemy.newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies) / 3;
     }
@@ -116,7 +116,7 @@ class Enemy extends ObjectKillable {
         super(x, y, livingFrames, Enemy.dyingFrames);
 
         this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
-        
+
         this.bombAggression = 15 + (bombAggression * 25);
 
         this.velocityX = 250; //1250;
@@ -145,25 +145,24 @@ class Enemy extends ObjectKillable {
     static prepMoveDown = false;
     static doMoveDown = false;
     update(deltaTime) {
-        // Use `===` for comparison
-        if (this.enemyID === Enemy.nextID) {
-            if (Enemy.doMoveDown) {
-                this.velocityX *= -1;
-                this.y += this.height;
-            }
-            if (Enemy.doSpeed) {
-                this.adjustSpeed(deltaTime);
-            }
+        if (this.isAlive()) {
+            if (this.enemyID === Enemy.nextID) {
+                if (Enemy.doMoveDown) {
+                    this.velocityX *= -1;
+                    this.y += this.height;
+                }
+                if (Enemy.doSpeed) {
+                    this.adjustSpeed(deltaTime);
+                }
 
-            super.update(deltaTime, true);
+                super.update(deltaTime, true);
 
-            if (this.atBounds()) {
-                Enemy.prepMoveDown = true;
+                if (this.atBounds()) {
+                    Enemy.prepMoveDown = true;
+                }
             }
         } else {
-            if (this.isDying()) {
-                super.update(deltaTime, true);
-            }
+            super.update(deltaTime, true);
         }
     }
 
