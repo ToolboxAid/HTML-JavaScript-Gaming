@@ -44,7 +44,7 @@ class ObjectKillable extends ObjectDynamic {
         this.dyingFrameCount = this.dyingFrames.length;
 
         // Other properties
-        this.otherDelay = 0;
+        this.otherDelay = 5;
         this.otherFrames = null;
         this.otherFrameCount = 0;
 
@@ -97,8 +97,12 @@ class ObjectKillable extends ObjectDynamic {
     }
 
     handleOtherStatus() { // Custom logic for OTHER status
-        console.log("Handling OTHER status logic");
-        this.setIsDead();
+        if (this.otherFrameCount++ > this.otherDelay) {
+            console.log("Handling OTHER status to dead");
+            this.setIsDead();
+        } else {
+            console.log("Handling OTHER status logic");
+        }
     }
 
     handleDeadStatus() { // Custom logic for DEAD status
@@ -110,9 +114,6 @@ class ObjectKillable extends ObjectDynamic {
         if (this.isAlive()) {
             collision = super.processCollisionWith(object, updatePosition);
         }
-        // else{
-        //     console.log("npe");
-        // }
         return collision;
     }
 
@@ -134,12 +135,18 @@ class ObjectKillable extends ObjectDynamic {
 
     setHit() {
         if (this.dyingFrames) {
-            this.status = ObjectKillable.Status.DYING;
+            this.setIsDying();
+        } else if (this.otherFrames) {
+            this.setIsOther();
         } else {
-            this.status = ObjectKillable.Status.DEAD;
+            this.setIsDead();
         }
-    }
+    }    
 
+    setIsDying() {
+        this.status = ObjectKillable.Status.DYING;
+    }
+    
     setIsOther() {
         this.status = ObjectKillable.Status.OTHER;
     }
