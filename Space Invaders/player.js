@@ -26,9 +26,9 @@ class Player extends ObjectDynamic {
 
     ];
 
-    constructor(x = 127, y = 810) {
+    constructor(x = 127, y = 830) {
         super(x, y, 50, 50);
-        this.score = 1450;
+        this.score = 0;
         this.lives = spriteConfig.playerLives;
         this.pixelSize = 3.0;
         this.level = 1;
@@ -45,7 +45,7 @@ class Player extends ObjectDynamic {
     }
 
     draw(ctx) {
-        CanvasUtils.drawSprite(ctx, this.x, this.y, Player.frame, this.pixelSize, spriteConfig.playerColor);
+        CanvasUtils.drawSprite(ctx, this.x, this.y-20, Player.frame, this.pixelSize, spriteConfig.playerColor);
     }
 
     setLevel() {
@@ -69,7 +69,7 @@ class Player extends ObjectDynamic {
             let laserPoint = { x: this.x + (this.width / 2), y: this.y };
             return laserPoint;
         }
-        return; // empty
+        return;
     }
 }
 

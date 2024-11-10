@@ -84,28 +84,23 @@ class ObjectKillable extends ObjectDynamic {
     }
 
     handleDyingStatus() {
-        // Increment the delay count
-        this.delayCounter++;
-    
         // Check if the delay count reached the threshold set by dyingDelay
-        if (this.delayCounter >= this.dyingDelay) {
+        if (this.delayCounter++ >= this.dyingDelay) {
             // Reset the delay count
             this.delayCounter = 0;
-    
+
             // Move to the next frame
             this.currentFrameIndex++;
-    
+
             // If all frames have been displayed, transition to 'Other' status
             if (this.currentFrameIndex >= this.dyingFrameCount) {
                 this.setIsOther();
             }
         }
     }
-    
 
     handleOtherStatus() { // Custom logic for OTHER status
-        if (this.delayCounter++ > this.otherDelay) {
-            //console.log("Handling OTHER status to dead");
+        if (this.delayCounter++ >= this.otherDelay) {
             this.setIsDead();
         }
     }
@@ -149,14 +144,22 @@ class ObjectKillable extends ObjectDynamic {
 
     setIsDying() {
         this.status = ObjectKillable.Status.DYING;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
     }
 
     setIsOther() {
         this.status = ObjectKillable.Status.OTHER;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
+
     }
 
     setIsDead() {
         this.status = ObjectKillable.Status.DEAD;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
+
     }
 
     setSpriteColor(spriteColor) {
@@ -187,24 +190,30 @@ class ObjectKillable extends ObjectDynamic {
     }
 
     draw(ctx) {
-        const { x, y, currentFrameIndex, spriteColor } = this;
-        const pixelSize = spriteConfig.pixelSize;
-    
-        if (this.isAlive()) {
-            CanvasUtils.drawSprite(ctx, x, y, this.livingFrames[currentFrameIndex], pixelSize, spriteColor);
-            return;
-        }
-    
-        if (this.isDying() && this.dyingFrames) {
-            CanvasUtils.drawSprite(ctx, x, y, this.dyingFrames[currentFrameIndex], pixelSize, spriteColor);
-            return;
-        }
-    
-        if (this.isOther() && this.otherFrame) {
-            // Constrain x within canvas boundaries
-            this.x = Math.max(25, Math.min(this.x, canvasConfig.width - 100));
-            CanvasUtils.drawSprite(ctx, this.x, y, this.otherFrame, pixelSize, spriteColor);
-            return;
+        try {
+            const { x, y, currentFrameIndex, spriteColor } = this;
+            const pixelSize = spriteConfig.pixelSize;
+
+            if (this.isAlive()) {
+                CanvasUtils.drawSprite(ctx, x, y, this.livingFrames[currentFrameIndex], pixelSize, spriteColor);
+                return;
+            }
+
+            if (this.isDying() && this.dyingFrames) {
+                CanvasUtils.drawSprite(ctx, x, y, this.dyingFrames[currentFrameIndex], pixelSize, spriteColor);
+                return;
+            }
+
+            if (this.isOther() && this.otherFrame) {
+                // Constrain x within canvas boundaries
+                this.x = Math.max(25, Math.min(this.x, canvasConfig.width - 100));
+                CanvasUtils.drawSprite(ctx, this.x, y, this.otherFrame, pixelSize, spriteColor);
+                return;
+            }
+        } catch (error) {
+            console.error("Error occurred:", error.message);
+            console.error("Stack trace:", error.stack);
+            console.log(this);
         }
     }
 

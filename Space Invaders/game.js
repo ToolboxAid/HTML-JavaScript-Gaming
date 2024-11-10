@@ -135,45 +135,6 @@ function EnemiesDropBomb(deltaTime) {
     }
 }
 
-const otherFrames = [
-    [
-        "111111111111",
-        "010010100010",
-        "001001000100",
-        "110100001011",
-        "001001000100",
-        "010010100010",
-        "111111111111",
-    ],
-    [
-        "000000000000",
-        "010010100010",
-        "001001000100",
-        "010100001010",
-        "001001000100",
-        "010010100010",
-        "000000000000",
-    ],
-    [
-        "000000000000",
-        "000000000000",
-        "001001000100",
-        "000101101000",
-        "001001000100",
-        "000000000000",
-        "000000000000",
-    ],
-    [
-        "000000000000",
-        "000000000000",
-        "000101001000",
-        "000011110000",
-        "000101001000",
-        "000000000000",
-        "000000000000",
-    ],
-];
-
 function checkEnemyShip(deltaTime) {
     if (!enemyShip) {
         if (EnemyShip.isCreationTime()) {
@@ -484,7 +445,8 @@ function checkLaserBombCollision() {
             if (enemyBomb.processCollisionWith(laser)) {
                 hitBomb = true;
                 if (enemyBomb.constructor.name !== "EnemyBomb3") {
-                    enemyBomb.setIsDead();
+                    enemyBomb.setIsDying();
+                    enemyBomb.x -= 20;
                 }
             }
         });
@@ -522,7 +484,10 @@ function checkBombShieldCollision() {
         shields.forEach(shield => {
             if (enemyBomb.isCollidingWith(shield)) {
                 if (shield.applyBigBoom(enemyBomb, true, 6)) {
-                    enemyBomb.setIsDead();
+                    if (enemyBomb.isAlive()) {
+                        enemyBomb.setIsDying();
+                        enemyBomb.y += 10;
+                    }
                 }
             }
         });
@@ -545,8 +510,12 @@ function checkBombGroundCollision() {
         grounds.forEach(ground => {
             const colliding = enemyBomb.isCollidingWith(ground);
             if (colliding) {
-                enemyBomb.setIsDead();
-                ground.setIsDead();
+                if (enemyBomb.isAlive()) {
+                    enemyBomb.setIsDying();
+                    enemyBomb.x -= 12;
+                    enemyBomb.y += 7;
+                    ground.setIsDead();
+                }
             }
         });
     });
@@ -605,14 +574,17 @@ function drawCollision(ctx) {
 
 function checkBombPlayerCollision() {
     enemyBombs.forEach(enemyBomb => {
-        const colliding = enemyBomb.isCollidingWith(player);
-        if (colliding) {
-            console.log("playerhit");
-            enemyBomb.setIsDead();
-            //player.setIsDead();
-            player.lives -= 1;
-            o1 = new ObjectStatic(player.x, player.y, player.width, player.height);
-            o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
+        if (enemyBomb.isAlive()) {
+            const colliding = player.isCollidingWith(enemyBomb);
+            if (colliding) {
+                console.log("playerhit");
+                enemyBomb.setIsDying();
+                enemyBomb.x -=20;
+                //player.setIsDead();
+                player.lives -= 1;
+                o1 = new ObjectStatic(player.x, player.y, player.width, player.height);
+                o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
+            }
         }
     });
 }
