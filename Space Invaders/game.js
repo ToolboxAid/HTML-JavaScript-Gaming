@@ -17,7 +17,6 @@ import Ground from './ground.js';
 import KeyboardInput from '../scripts/keyboard.js';
 const keyboardInput = new KeyboardInput();
 
-//import Enemy from './Enemy.js';
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';
 import EnemyCrab from './enemyCrab.js';
@@ -28,24 +27,23 @@ import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
+// Initialize player
+const player1 = new Player();
+const player2 = new Player();
+let player = player2; // current player
+let highScore = 0;
+
+// Items to move into the player
 const gameEnemies = new Map();
 const gameEnemiesBottom = new Array(enemyConfig.colSize).fill(null);
-
 const enemyBombs = [];
 const shields = [];
 const grounds = [];
 
-// Initialize player
-const player1 = new Player();
-const player2 = new Player();
-let highScore = 0;
 
-let player = player2;
-
+// non player items
 let laser = null;
-
 let enemyShip = null;
-let onetime = true;
 
 function initializeEnemies() {
     let enemy = null;
@@ -581,7 +579,7 @@ function checkBombPlayerCollision() {
                 player.setIsDying();
                 console.log(player);
                 enemyBomb.setIsDying();
-                enemyBomb.x -=20;
+                enemyBomb.x -= 20;
                 //player.setIsDead();
                 player.lives -= 1;
                 o1 = new ObjectStatic(player.x, player.y, player.width, player.height);
@@ -625,49 +623,58 @@ function findBottom() {// if the column is know, call `setGameEnemiesBottom(colu
     }
 }
 
-// Game loop function
-export function gameLoop(ctx, deltaTime) {
-    if (!Enemy.isEnemiesInitialized()) {
+let gameInitialized = false;
+let onetime = true;
+function initializeGame() {
 
+    if (!Enemy.isEnemiesInitialized()) {
         if (shields.length === 0) {
             initializeShields();
             initialGround();
             Enemy.enemyID = 0;
         }
-
         initializeEnemies();
-
     } else {
-        if (onetime) {
-            onetime = false;
-            Enemy.remainingEnemies = gameEnemies.size;
+        // if (onetime) {
+        //   onetime = false;
+        Enemy.remainingEnemies = gameEnemies.size;
+        //}
+        findBottom();
+        gameInitialized = true;
+    }
+}
 
-            findBottom();
-        }
-
-        removeDeadEnemy();
-
-        EnemiesUpdate(deltaTime);
-        checkEnemyShieldCollision();
-
-        // Update, Remove and Check bombs
-        removeDeadBomb();
-        updateBombs(deltaTime);
-        checkBombShieldCollision();
-        checkBombGroundCollision();
-        checkBombPlayerCollision();
-
-        checkEnemyShip(deltaTime);
-
-
-        keyboardInput.update();
-        const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
-        checkLaser(deltaTime, laserFirePoint);
-        checkLaserEnemyCollision(player);
-        checkLaserShipCollision(player);
-        checkLaserBombCollision();
+// Game loop function
+export function gameLoop(ctx, deltaTime) {
+    if (!gameInitialized) {
+        initializeGame();
     }
 
+    removeDeadEnemy();
+
+    EnemiesUpdate(deltaTime);
+    checkEnemyShieldCollision();
+
+    // Update, Remove and Check bombs
+    removeDeadBomb();
+    updateBombs(deltaTime);
+    checkBombShieldCollision();
+    checkBombGroundCollision();
+    checkBombPlayerCollision();
+
+    checkEnemyShip(deltaTime);
+
+
+    keyboardInput.update();
+    const laserFirePoint = player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
+    checkLaser(deltaTime, laserFirePoint);
+    checkLaserEnemyCollision(player);
+    checkLaserShipCollision(player);
+    checkLaserBombCollision();
+
+
+    /* Drawing
+    */
     // Draw scores
     drawScore(ctx);
     drawLevel(ctx, player);
@@ -701,7 +708,3 @@ export function gameLoop(ctx, deltaTime) {
 // Canvas needs to know the current directory to game.js for dynamic imports
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 window.canvasPath = currentDir;
-
-//-------------------------------------------------------------------------
-// tests below this line
-//-------------------------------------------------------------------------
