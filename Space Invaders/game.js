@@ -38,6 +38,7 @@ const grounds = [];
 // Initialize player
 const player1 = new Player();
 const player2 = new Player();
+let highScore = 0;
 
 let player = player2;
 
@@ -452,7 +453,6 @@ function drawGround(ctx) {
     });
 }
 
-let highScore = 0;
 function updatePlayerScore(score) {
     player.updateScore(score);
     if (player.score > highScore) {
