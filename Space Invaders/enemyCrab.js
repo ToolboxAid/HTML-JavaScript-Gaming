@@ -38,7 +38,7 @@ class EnemyCrab extends Enemy {
     }
     
     draw(ctx) {
-        super.draw(ctx, spriteConfig.crabColor);
+        super.draw(ctx);
     }
 
 }

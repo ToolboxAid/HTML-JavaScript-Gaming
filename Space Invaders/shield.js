@@ -200,7 +200,7 @@ class Shield extends ObjectStatic {
                                     try {
                                         this.frame[y][x] = "0";
                                     } catch {
-                                        console.log("invalid position: ", x, y);
+                                        //console.log("invalid position: ", x, y);
                                     }
                                 }
                             }

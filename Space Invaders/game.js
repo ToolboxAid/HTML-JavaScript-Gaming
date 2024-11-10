@@ -578,6 +578,8 @@ function checkBombPlayerCollision() {
             const colliding = player.isCollidingWith(enemyBomb);
             if (colliding) {
                 console.log("playerhit");
+                player.setHit();
+                console.log(player);
                 enemyBomb.setIsDying();
                 enemyBomb.x -=20;
                 //player.setIsDead();
@@ -676,7 +678,7 @@ export function gameLoop(ctx, deltaTime) {
     }
 
     // Draw all bombs
-    enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx, "white"));
+    enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx));
 
     drawEnemies(ctx);
 

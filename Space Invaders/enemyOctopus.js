@@ -38,7 +38,7 @@ class EnemyOctopus extends Enemy {
     }
 
     draw(ctx) {
-        super.draw(ctx, spriteConfig.octopusColor);
+        super.draw(ctx);
     }
 
 }

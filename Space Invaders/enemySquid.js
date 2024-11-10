@@ -38,7 +38,7 @@ class EnemySquid extends Enemy {
     }
 
     draw(ctx) {
-        super.draw(ctx, spriteConfig.squidColor);
+        super.draw(ctx);
     }
 
 }

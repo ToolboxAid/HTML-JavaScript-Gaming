@@ -117,13 +117,11 @@ class EnemyShip extends ObjectKillable {
         
         // If ship off playing field, kill it
         if (this.isAlive()) {
-            if (this.velocityX > 0) {
-                // moving to right
+            if (this.velocityX > 0) { // moving to right
                 if (this.x > canvasConfig.width + this.width) {
                     this.setIsDead();
                 }
-            } else {
-                // moving to left
+            } else { // moving to left
                 if (this.x < -(this.width)) {
                     this.setIsDead();
                 }
@@ -131,7 +129,7 @@ class EnemyShip extends ObjectKillable {
         }
     }
 
-    setIsDead() {// required for when objectKillable calls setIsDead.
+    setIsDead() {// required for when objectKillable calls setIsDead to reset timer
         super.setIsDead();
         EnemyShip.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     }

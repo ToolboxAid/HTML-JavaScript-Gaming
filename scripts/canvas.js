@@ -194,6 +194,8 @@ class CanvasUtils {
                 console.log(frame); // Display the actual frame for verification
             }
         } else {
+            console.error("Error occurred:", error.message);
+            console.error("Stack trace:", error.stack);        
             console.error("Invalid object format:", object);
             return { width: 0, height: 0 };
         }

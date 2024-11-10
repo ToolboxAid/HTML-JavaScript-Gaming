@@ -15,7 +15,7 @@ class ObjectKillable extends ObjectDynamic {
         DEAD: 'dead'
     });
 
-    constructor(x, y, livingFrames, dyingFrames, velocityX = 0, velocityY = 0, dyingModulus = 5) {
+    constructor(x, y, livingFrames, dyingFrames, velocityX = 0, velocityY = 0) {
         // Ensure livingFrames is provided and is not empty
         if (!livingFrames || livingFrames.length === 0) {
             throw new Error("livingFrames must be provided and cannot be empty.");
@@ -32,7 +32,7 @@ class ObjectKillable extends ObjectDynamic {
         this.delayCounter = 0;
 
         // Initialize living frames
-        this.livingDelay = 0;
+        this.livingDelay = 10;
         this.livingFrames = livingFrames;
         this.livingFrameCount = this.livingFrames.length;
 
@@ -46,7 +46,6 @@ class ObjectKillable extends ObjectDynamic {
         this.otherFrame = null;
 
         // More properties
-        this.dyingModulus = dyingModulus;
         this.spriteColor = "white";
         this.pixelSize = spriteConfig.pixelSize;
     }
@@ -79,7 +78,15 @@ class ObjectKillable extends ObjectDynamic {
                 this.currentFrameIndex = 0;
             }
         } else {
-            this.currentFrameIndex = Math.floor((this.livingDelay++ / this.dyingModulus) % this.livingFrameCount);
+            this.delayCounter++;
+            if (this.delayCounter >= this.livingDelay) {
+                this.delayCounter = 0;
+                this.currentFrameIndex++;
+                if (this.currentFrameIndex >= this.livingFrameCount) {
+                    this.currentFrameIndex = 0;
+                }
+            }
+            //console.log(this.currentFrameIndex);       
         }
     }
 
@@ -189,31 +196,46 @@ class ObjectKillable extends ObjectDynamic {
         this.otherFrame = otherFrame;
     }
 
-    draw(ctx) {
+    // Example method
+    draw(ctx, offsetX = 0, offsetY = 0) {
         try {
-            const { x, y, currentFrameIndex, spriteColor } = this;
+            const { x, y, currentFrameIndex, spriteColor, livingFrames, dyingFrames, otherFrame } = this;
             const pixelSize = spriteConfig.pixelSize;
 
+            const newX = x + offsetX;
+            const newY = y + offsetY;
+
             if (this.isAlive()) {
-                CanvasUtils.drawSprite(ctx, x, y, this.livingFrames[currentFrameIndex], pixelSize, spriteColor);
+                if (livingFrames?.[currentFrameIndex]) {
+                    CanvasUtils.drawSprite(ctx, newX, newY, livingFrames[currentFrameIndex], pixelSize, spriteColor);
+                }
                 return;
             }
 
-            if (this.isDying() && this.dyingFrames) {
-                CanvasUtils.drawSprite(ctx, x, y, this.dyingFrames[currentFrameIndex], pixelSize, spriteColor);
+            if (this.isDying()) {
+                if (dyingFrames?.[currentFrameIndex]) {
+                    CanvasUtils.drawSprite(ctx, newX, newY, dyingFrames[currentFrameIndex], pixelSize, spriteColor);
+                }
                 return;
             }
 
-            if (this.isOther() && this.otherFrame) {
-                // Constrain x within canvas boundaries
-                this.x = Math.max(25, Math.min(this.x, canvasConfig.width - 100));
-                CanvasUtils.drawSprite(ctx, this.x, y, this.otherFrame, pixelSize, spriteColor);
+            if (this.isOther()) {
+                if (otherFrame) {
+                    const otherX = Math.max(25, Math.min(x, canvasConfig.width - 100));
+                    CanvasUtils.drawSprite(ctx, otherX, newY, otherFrame, pixelSize, spriteColor);
+                }
                 return;
             }
+            if (this.isDead()) {
+                return;
+            }
+
+            //this.setIsOther()
+            console.log("No valid frame to draw for current status: ", this.status);
         } catch (error) {
             console.error("Error occurred:", error.message);
             console.error("Stack trace:", error.stack);
-            console.log(this);
+            console.log("Object state:", this);
         }
     }
 
