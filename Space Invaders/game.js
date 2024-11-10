@@ -182,7 +182,7 @@ function drawLives(ctx, player) {
     const color = 'white';
     const pixelSize = 5;
     CanvasUtils.drawNumber(ctx, 15, dwn, player.lives, pixelSize, color, 2, '0');
-    CanvasUtils.drawSprite(ctx, 95, dwn, Player.frame, 3);
+    CanvasUtils.drawSprite(ctx, 95, dwn, Player.frame[0], spriteConfig.pixelSize);
 }
 
 const LevelFrames = [
