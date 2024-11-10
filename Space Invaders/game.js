@@ -578,7 +578,7 @@ function checkBombPlayerCollision() {
             const colliding = player.isCollidingWith(enemyBomb);
             if (colliding) {
                 console.log("playerhit");
-                player.setHit();
+                player.setIsDying();
                 console.log(player);
                 enemyBomb.setIsDying();
                 enemyBomb.x -=20;

@@ -144,6 +144,7 @@ class Player extends ObjectKillable {
     }
 
     update(keysPressed, keyJustPressed) {
+        super.update(1);
         const speed = 4;
         if (keysPressed.includes('ArrowLeft')) {
             if (this.x - speed > 0) {
