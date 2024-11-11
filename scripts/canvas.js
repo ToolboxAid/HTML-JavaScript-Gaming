@@ -288,7 +288,7 @@ static async animate(time) {
         if (!this.gameInstance) {
             // Dynamically import the game.js module and create an instance of the Game class
             const gameModule = await import(`${window.canvasPath}/game.js`);
-            this.gameInstance = new gameModule.default();  // Use the default export from game.js
+            this.gameInstance = new gameModule.default(canvas, ctx);  // Use the default export from game.js
         }
 
         // Initialize the canvas and game loop
