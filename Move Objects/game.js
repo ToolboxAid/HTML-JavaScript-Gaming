@@ -9,38 +9,45 @@ import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is
 import Functions from '../scripts/functions.js';
 import Circle from './circle.js';
 
+class Game {
+    constructor() {
+        // Create our circle
+        this.radius = 25;
+        this.circle = new Circle(canvasConfig.width, canvasConfig.height, this.radius, 
+            Functions.randomGenerator(150.0, 350.0), Functions.randomGenerator(150.0, 350.0));
 
-// Create our circle
-let radius = 25;
-let circle = new Circle(canvasConfig.width, canvasConfig.height, radius, 
-    Functions.randomGenerator(150.0, 350.0), Functions.randomGenerator(150.0, 350.0));
+        // Canvas needs to know the current directory to game.js
+        this.currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+        window.canvasPath = this.currentDir;
+    }
 
-// Function to update the circle's position
-function updateCirclePosition(hitBoundaries) {
-    // Check if the array is empty
-    if (hitBoundaries.length === 0) {
-        console.log("No boundaries were hit");
-    } else {
-        console.log("Boundaries hit:", hitBoundaries);
+    updateCirclePosition(hitBoundaries) {
+        // Check if the array is empty
+        if (hitBoundaries.length === 0) {
+            console.log("No boundaries were hit");
+        } else {
+            console.log("Boundaries hit:", hitBoundaries);
+        }
+    }
+
+    gameLoop(ctx, deltaTime) {
+        // Update circle position
+        this.circle.update(deltaTime);
+
+        // Call the checkCollisionWithBounds function
+        const boundariesHit = this.circle.checkCollisionWithBounds(canvasConfig.width, canvasConfig.height);
+        if (boundariesHit.length > 0) {
+            // Pass boundariesHit to updateCirclePosition
+            this.updateCirclePosition(boundariesHit);
+        }
+
+        // Call the drawing function
+        this.circle.draw(ctx);
     }
 }
 
-// Game loop function
-export function gameLoop(ctx, deltaTime) {
-
-    // Update circle position
-    circle.update(deltaTime);
-
-    // Call the checkCollisionWithBounds function
-    const boundariesHit = circle.checkCollisionWithBounds(canvasConfig.width, canvasConfig.height);
-    if (boundariesHit.length > 0) {
-        // Pass boundariesHit to updateCirclePosition
-        updateCirclePosition(boundariesHit);
-    }
-
-    // // Call the drawing function
-    circle.draw(ctx);
-}
+// Export the Game class
+export default Game;
 
 // Canvas needs to know the current directory to game.js
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));

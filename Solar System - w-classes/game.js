@@ -4,8 +4,8 @@
 // 10/16/2024
 
 import { canvasConfig, solarSystem } from './global.js'; // Import canvasConfig
-import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
-import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
+import CanvasUtils from '../scripts/canvas.js'; // Required but unused
+import Fullscreen from '../scripts/fullscreen.js'; // Required but unused
 import CelestialBody from './celestialBody.js';
 
 // Celestial bodies array (as defined previously)
@@ -44,11 +44,16 @@ const celestialBodies = [
   ], { ringRadius: 14, color: "rgba(100, 120, 140, 0.5)" }),
 ];
 
-function moveSolarSystem(ctx, deltaTime) {
-  const centerX = canvasConfig.width / 2;
-  const centerY = canvasConfig.height / 2;
+class SolarSystem {
+  constructor() {
+    this.celestialBodies = celestialBodies;
+  }
 
-  celestialBodies.forEach(body => {
+  moveSolarSystem(ctx, deltaTime) {
+    const centerX = canvasConfig.width / 2;
+    const centerY = canvasConfig.height / 2;
+
+    this.celestialBodies.forEach(body => {
       // Update the planet's position and rotation
       body.angle += body.speed;
       const x = centerX + body.distance * Math.cos(body.angle);
@@ -59,17 +64,17 @@ function moveSolarSystem(ctx, deltaTime) {
 
       // Draw the planet and its moons
       body.draw(ctx);
-  });
-}
+    });
+  }
 
-
-// Game loop function
-export function gameLoop(ctx, deltaTime) {
-
+  gameLoop(ctx, deltaTime) {
     // Update and Draw solar system.
-    moveSolarSystem(ctx, deltaTime);
+    this.moveSolarSystem(ctx, deltaTime);
+  }
 }
 
 // Canvas needs to know the current directory to game.js
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 window.canvasPath = currentDir;
+
+export default SolarSystem;

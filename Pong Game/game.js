@@ -11,6 +11,8 @@ import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
 
+class Game {
+    constructor() {
 /*
 Sounds in Original Pong
 Ball Bounce Sound:
@@ -30,77 +32,89 @@ Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
 Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
 */
 
-// Create paddles instances
-let leftPaddle = new Paddle(true);
-let rightPaddle = new Paddle(false);
+        // Create paddles instances
+        this.leftPaddle = new Paddle(true);
+        this.rightPaddle = new Paddle(false);
 
-// Create puck instance
-let puck = new Puck(); // Create a single puck instance
+        // Create puck instance
+        this.puck = new Puck();
 
-function drawDashedLine(ctx) {
-    const dashPattern = [19, 19]; // Define your dash pattern
-    const centerX = canvasConfig.width / 2; // Middle of the canvas
-    CanvasUtils.drawDashLine(ctx, centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
-}
+        // Initialize the canvas path
+        this.currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+        window.canvasPath = this.currentDir;
 
-// Game loop function
-// Game loop function
-export function gameLoop(ctx, deltaTime) {
-
-    // Call drawScores to display the current scores
-    Font5x3.drawScores(ctx, leftPaddle, rightPaddle);
-
-    // Draw the dashed line
-    drawDashedLine(ctx);
-
-    if (Paddle.winner) {
-        // Stop the game loop and display the winner message
-        drawWinnerMessage(ctx);
-
-        // Draw paddles
-        leftPaddle.draw(ctx);
-        rightPaddle.draw(ctx);
-
-        // Pause the game until a key is pressed
-        document.addEventListener('keydown', restartGame);
-        return; // Exit the game loop
+        // Bind methods
+        this.gameLoop = this.gameLoop.bind(this);
+        this.drawDashedLine = this.drawDashedLine.bind(this);
+        this.drawWinnerMessage = this.drawWinnerMessage.bind(this);
+        this.restartGame = this.restartGame.bind(this);
     }
 
-    // Update paddles using keyboard
-    leftPaddle.update();
-    rightPaddle.update();
+    drawDashedLine(ctx) {
+        const dashPattern = [19, 19]; // Define your dash pattern
+        const centerX = canvasConfig.width / 2; // Middle of the canvas
+        CanvasUtils.drawDashLine(ctx, centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
+    }
 
-    // Update/Move the puck using its inherited method
-    puck.update(ctx, leftPaddle, rightPaddle, deltaTime); // Ensure leftPaddle and rightPaddle are defined
+    gameLoop(ctx, deltaTime) {
+        // Call drawScores to display the current scores
+        Font5x3.drawScores(ctx, this.leftPaddle, this.rightPaddle);
 
-    // Draw paddles
-    leftPaddle.draw(ctx);
-    rightPaddle.draw(ctx);
+        // Draw the dashed line
+        this.drawDashedLine(ctx);
 
-    // Draw the puck
-    puck.draw(ctx); // Use the draw method from the Puck class
+        if (Paddle.winner) {
+            // Stop the game loop and display the winner message
+            this.drawWinnerMessage(ctx);
+
+            // Draw paddles
+            this.leftPaddle.draw(ctx);
+            this.rightPaddle.draw(ctx);
+
+            // Pause the game until a key is pressed
+            document.addEventListener('keydown', this.restartGame);
+            return; // Exit the game loop
+        }
+
+        // Update paddles using keyboard
+        this.leftPaddle.update();
+        this.rightPaddle.update();
+
+        // Update/Move the puck using its inherited method
+        this.puck.update(ctx, this.leftPaddle, this.rightPaddle, deltaTime);
+
+        // Draw paddles
+        this.leftPaddle.draw(ctx);
+        this.rightPaddle.draw(ctx);
+
+        // Draw the puck
+        this.puck.draw(ctx);
+    }
+
+    // Function to draw the winner message on the canvas
+    drawWinnerMessage(ctx, message) {
+        ctx.fillStyle = 'white'; // Set text color
+        ctx.font = '55px Arial'; // Set font size and style
+        ctx.textAlign = 'center'; // Center the text
+        ctx.fillText("We have a winner!", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) - 33); // Draw the message at the center of the canvas
+        ctx.fillText("Press any key to Play", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) + 33); // Draw the message at the center of the canvas
+    }
+
+    // Function to restart the game
+    restartGame() {
+        // Reset paddle winner state
+        Paddle.winner = false;
+        this.leftPaddle = new Paddle(true);
+        this.rightPaddle = new Paddle(false);
+        this.puck = new Puck(); // Create a new puck instance
+
+        // Remove the keydown event listener to prevent multiple triggers
+        document.removeEventListener('keydown', this.restartGame);
+    }
 }
 
-// Function to draw the winner message on the canvas
-function drawWinnerMessage(ctx, message) {
-    ctx.fillStyle = 'white'; // Set text color
-    ctx.font = '55px Arial'; // Set font size and style
-    ctx.textAlign = 'center'; // Center the text
-    ctx.fillText("We have a winner!", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) - 33); // Draw the message at the center of the canvas
-    ctx.fillText("Press any key to Play", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) + 33); // Draw the message at the center of the canvas
-}
-
-// Function to restart the game
-function restartGame() {
-    // Reset paddle winner state
-    Paddle.winner = false;
-    leftPaddle = new Paddle(true);
-    rightPaddle = new Paddle(false);
-    puck = new Puck(); // Create a new puck instance
-
-    // Remove the keydown event listener to prevent multiple triggers
-    document.removeEventListener('keydown', restartGame);
-}
+// Export the Game class
+export default Game;
 
 // Canvas needs to know the current directory to game.js
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));

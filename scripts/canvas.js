@@ -276,33 +276,40 @@ class CanvasUtils {
     }
 
     // Animate function moved into the CanvasUtils class
-    static async animate(time) {
-        const canvas = document.getElementById('gameArea');
-        if (canvas.getContext) {
-            const ctx = canvas.getContext('2d');
+static async animate(time) {
+    const canvas = document.getElementById('gameArea');
+    if (canvas.getContext) {
+        const ctx = canvas.getContext('2d');
 
-            const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
-            this.lastTimestamp = time;
+        const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
+        this.lastTimestamp = time;
 
-            //try {
-            if (!this.gameModule) {
-                this.gameModule = await import(`${window.canvasPath}/game.js`);
-            }
-            CanvasUtils.initCanvas(ctx);
-            this.clickFullscreen(ctx);
-            this.gameModule.gameLoop(ctx, deltaTime); // Call gameLoop from the imported module
-            CanvasUtils.drawBorder(ctx);
-            if (window.fpsShow) {
-                CanvasUtils.drawFPS(ctx);
-            }
-            // } catch (error) {
-            //     console.error(`Failed to load game module: ${error}`);
-            // }
-        } else {
-            alert('You need a modern browser to see this.');
+        // Try loading the game module only once and instantiate the Game class
+        if (!this.gameInstance) {
+            // Dynamically import the game.js module and create an instance of the Game class
+            const gameModule = await import(`${window.canvasPath}/game.js`);
+            this.gameInstance = new gameModule.default();  // Use the default export from game.js
         }
-        requestAnimationFrame(CanvasUtils.animate.bind(this)); // Call animate recursively
+
+        // Initialize the canvas and game loop
+        CanvasUtils.initCanvas(ctx);
+        this.clickFullscreen(ctx);
+        
+        // Call the game loop method of the Game class
+        this.gameInstance.gameLoop(ctx, deltaTime);
+
+        // Draw border and FPS if necessary
+        CanvasUtils.drawBorder(ctx);
+        if (window.fpsShow) {
+            CanvasUtils.drawFPS(ctx);
+        }
+    } else {
+        alert('You need a modern browser to see this.');
     }
+
+    // Call animate recursively to continue the animation loop
+    requestAnimationFrame(CanvasUtils.animate.bind(this)); // Use `bind(this)` to maintain context
+}
 
     // Add EventListener moved into the class
     static setupCanvas() {
