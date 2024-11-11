@@ -300,7 +300,6 @@ class Game {
         }
     }
 
-    // Function to initialize shield positions
     initializeShields() {
         for (let i = 0; i < window.shieldCount; i++) {
             this.shields.push(new Shield(i));

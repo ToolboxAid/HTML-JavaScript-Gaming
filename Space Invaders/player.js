@@ -129,8 +129,12 @@ class Player extends ObjectKillable {
         super.draw(ctx, 0, -20);
     }
 
-    setLevel() {
+    incLevel() {
         this.level++;
+    }
+
+    resetLevel() {
+        this.level = 0;
     }
 
     update(keysPressed, keyJustPressed) {
