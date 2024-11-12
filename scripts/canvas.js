@@ -78,7 +78,7 @@ class CanvasUtils {
     static getSpriteText(text, space = 1) {
         // Initialize the sprite array
         const sprite = [];
-        
+
         // Find the maximum height of characters (assuming all characters have the same height)
         const charHeight = Font5x6.font5x6['A']?.length || 7;
 
@@ -195,7 +195,7 @@ class CanvasUtils {
             }
         } else {
             console.error("Error occurred:", error.message);
-            console.error("Stack trace:", error.stack);        
+            console.error("Stack trace:", error.stack);
             console.error("Invalid object format:", object);
             return { width: 0, height: 0 };
         }
@@ -276,40 +276,40 @@ class CanvasUtils {
     }
 
     // Animate function moved into the CanvasUtils class
-static async animate(time) {
-    const canvas = document.getElementById('gameArea');
-    if (canvas.getContext) {
-        const ctx = canvas.getContext('2d');
+    static async animate(time) {
+        const canvas = document.getElementById('gameArea');
+        if (canvas.getContext) {
+            const ctx = canvas.getContext('2d');
 
-        const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
-        this.lastTimestamp = time;
+            const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
+            this.lastTimestamp = time;
 
-        // Try loading the game module only once and instantiate the Game class
-        if (!this.gameInstance) {
-            // Dynamically import the game.js module and create an instance of the Game class
-            const gameModule = await import(`${window.canvasPath}/game.js`);
-            this.gameInstance = new gameModule.default(canvas, ctx);  // Use the default export from game.js
+            // Try loading the game module only once and instantiate the Game class
+            if (!this.gameInstance) {
+                // Dynamically import the game.js module and create an instance of the Game class
+                const gameModule = await import(`${window.canvasPath}/game.js`);
+                this.gameInstance = new gameModule.default(canvas, ctx);  // Use the default export from game.js
+            }
+
+            // Initialize the canvas and game loop
+            CanvasUtils.initCanvas(ctx);
+            this.clickFullscreen(ctx);
+
+            // Call the game loop method of the Game class
+            this.gameInstance.gameLoop(ctx, deltaTime);
+
+            // Draw border and FPS if necessary
+            CanvasUtils.drawBorder(ctx);
+            if (window.fpsShow) {
+                CanvasUtils.drawFPS(ctx);
+            }
+        } else {
+            alert('You need a modern browser to see this.');
         }
 
-        // Initialize the canvas and game loop
-        CanvasUtils.initCanvas(ctx);
-        this.clickFullscreen(ctx);
-        
-        // Call the game loop method of the Game class
-        this.gameInstance.gameLoop(ctx, deltaTime);
-
-        // Draw border and FPS if necessary
-        CanvasUtils.drawBorder(ctx);
-        if (window.fpsShow) {
-            CanvasUtils.drawFPS(ctx);
-        }
-    } else {
-        alert('You need a modern browser to see this.');
+        // Call animate recursively to continue the animation loop
+        requestAnimationFrame(CanvasUtils.animate.bind(this)); // Use `bind(this)` to maintain context
     }
-
-    // Call animate recursively to continue the animation loop
-    requestAnimationFrame(CanvasUtils.animate.bind(this)); // Use `bind(this)` to maintain context
-}
 
     // Add EventListener moved into the class
     static setupCanvas() {
