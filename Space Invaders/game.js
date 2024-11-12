@@ -14,6 +14,8 @@ import Shield from './shield.js';
 import Laser from './laser.js';
 import Ground from './ground.js';
 
+import LevelFrames from './levelFrams.js';
+
 import KeyboardInput from '../scripts/keyboard.js';
 const keyboardInput = new KeyboardInput();
 
@@ -27,221 +29,12 @@ import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
-const LevelFrames = [
-    [   // 0
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010000010000",
-        "0000100000001000",
-        "0001000000000100",
-        "0010000000000010",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000"
-    ],
-    [   // 1
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100000001000",
-        "0001000000000100",
-        "0010000000000010",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000"
-    ],
-    [   // 2
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100000001000",
-        "0001000000000100",
-        "0010000000000010",
-        "0000000000000000",
-        "0000000000000000",
-        "0000000000000000"
-    ],
-    [   // 3
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100000001000",
-        "0001000000000100",
-        "0010000000000010",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000"
-    ],
-    [   // 4
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100000001000",
-        "0001000000000100",
-        "0010000000000010",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000"
-    ],
-    [   // 5
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100000001000",
-        "0001000000000100",
-        "0010000000000010",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000"
-    ],
-    [   // 6
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100000001000",
-        "0001000111000100",
-        "0010000000000010",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000"
-    ],
-    [   // 7
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100010001000",
-        "0001000111000100",
-        "0010000010000010",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000"
-    ],
-    [   // 8
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100010001000",
-        "0001000111000100",
-        "0010000010000010",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000"
-    ],
-    [   // 9
-        "0000000010000000",
-        "0000000101000000",
-        "0000001000100000",
-        "0000010010010000",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010010010010",
-        "0000100101001000",
-        "0001001000100100",
-        "0010010000010010",
-        "0000100111001000",
-        "0001000101000100",
-        "0010000111000010",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000",
-        "0100000000000001",
-        "0011100000001110",
-        "0000011111110000"
-    ],
-];
+
+// would like to have game extend canvas to eliminate bad form
+// would like to have game extend canvas to eliminate bad form
+// would like to have game extend canvas to eliminate bad form
+// would like to have game extend canvas to eliminate bad form
+// would like to have game extend canvas to eliminate bad form
 
 class Game {
     constructor(canvas, ctx) {
@@ -256,12 +49,9 @@ class Game {
         this.keyboardInput = new KeyboardInput();
 
         // Game State Variables
-        this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, pauseGame, gameOver
+        this.gameState = "attract"; // Possible states: attract, playerSelect, initGameShield, initGameEnemy, playGame, pauseGame, gameOver
         this.playerCount = 1;
         this.currentPlayer = 1;
-        this.gameInitialized = false;
-        this.enemyInitialized = false;
-        this.onetime = true;
 
         this.backToAttract = 600;
         this.backToAttractCounter = 0;
@@ -283,28 +73,6 @@ class Game {
         this.enemyShip = null;
     }
 
-    initializeEnemies() {
-        let enemy = null;
-        switch (Enemy.getRow()) {
-            case 0:
-            case 1:
-                enemy = new EnemyCrab(this.player.level);
-                break;
-            case 2:
-            case 3:
-                enemy = new EnemySquid(this.player.level);
-                break;
-            case 4:
-                enemy = new EnemyOctopus(this.player.level);
-                break;
-            default:
-                enemy = new EnemyCrab(this.player.level);
-                console.log("Unknown enemy type!");
-                break;
-        }
-        this.gameEnemies.set(enemy.key, enemy);
-    }
-
     setGameEnemiesBottom(column) {
         this.gameEnemiesBottom[column] = null;
         for (let row = enemyConfig.rowSize - 1; row >= 0; row--) {
@@ -316,19 +84,6 @@ class Game {
             } else {
                 //console.log("not found",key);
             }
-        }
-    }
-
-    initializeShields() {
-        for (let i = 0; i < window.shieldCount; i++) {
-            this.shields.push(new Shield(i));
-        }
-    }
-
-    initialGround() {
-        for (let i = 0; i < canvasConfig.width; i += Ground.groundSize) {
-            const ground = new Ground(i, spriteConfig.groundY);
-            this.grounds.push(ground);
         }
     }
 
@@ -396,36 +151,55 @@ class Game {
         });
     }
 
-    drawScore(ctx) {
+    drawScore() {
         let color = 'yellow';
         const pixelSize = 5;
-        CanvasUtils.drawText(ctx, 50, 30, "SCORE-1", pixelSize, 'red');
-        CanvasUtils.drawText(ctx, 300, 30, "MIDWAY", pixelSize, 'red');
-        CanvasUtils.drawText(ctx, 550, 30, "SCORE-2", pixelSize, 'red');
-        CanvasUtils.drawNumber(ctx, 90, 80, this.player1.score, pixelSize, color, 4, '0');
-        CanvasUtils.drawNumber(ctx, 340, 80, this.highScore, pixelSize, color, 4, '0');
-        CanvasUtils.drawNumber(ctx, 590, 80, this.player2.score, pixelSize, color, 4, '0');
+        CanvasUtils.drawText(this.ctx, 50, 30, "SCORE-1", pixelSize, 'red');
+        CanvasUtils.drawText(this.ctx, 300, 30, "MIDWAY", pixelSize, 'red');
+        CanvasUtils.drawText(this.ctx, 550, 30, "SCORE-2", pixelSize, 'red');
+        CanvasUtils.drawNumber(this.ctx, 90, 80, this.players[0].score, pixelSize, color, 4, '0');
+        CanvasUtils.drawNumber(this.ctx, 340, 80, this.highScore, pixelSize, color, 4, '0');
+        CanvasUtils.drawNumber(this.ctx, 590, 80, this.players[1].score, pixelSize, color, 4, '0');
     }
 
-    drawLives(ctx, player) {
+    drawLives(player) {
         const dwn = 900;
         const color = 'white';
         const pixelSize = 5;
-        CanvasUtils.drawNumber(ctx, 15, dwn, player.lives, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(ctx, 95, dwn, Player.frame[0], spriteConfig.pixelSize);
+        CanvasUtils.drawNumber(this.ctx, 15, dwn, player.lives, pixelSize, color, 2, '0');
+        CanvasUtils.drawSprite(this.ctx, 95, dwn, Player.frame[0], spriteConfig.pixelSize);
     }
 
-    drawLevel(ctx, player) {
+    drawLevel(player) {
         const dwn = 895;
         const color = 'white';
         const pixelSize = 5;
-        CanvasUtils.drawSprite(ctx, 825, dwn, LevelFrames[0], 2.0); // current 0-9
+        CanvasUtils.drawSprite(this.ctx, 825, dwn, LevelFrames.frames[player.level], 2.0); // current 0-9
     }
 
-    drawGround(ctx) {
+    drawGround() {
         this.grounds.forEach(ground => {
-            ground.draw(ctx);
+            ground.draw(this.ctx);
         });
+    }
+
+    drawEnemies() {
+        this.gameEnemies.forEach((enemy, key) => {
+            enemy.draw(this.ctx);
+        });
+    }
+
+    static o1 = null;
+    static o2 = null;
+    static o3 = null;
+    drawCollision() {
+        if (Game.o1) {
+            CanvasUtils.drawBounds(this.ctx, Game.o1.x, Game.o1.y, Game.o1.width, Game.o1.height, "red", 3);
+            CanvasUtils.drawBounds(this.ctx, Game.o2.x, Game.o2.y, Game.o2.width, Game.o2.height, "pink", 3);
+        }
+        if (Game.o3) {
+            CanvasUtils.drawBounds(this.ctx, Game.o3.x, Game.o3.y, Game.o3.width, Game.o3.height, "orange", 3);
+        }
     }
 
     updatePlayerScore(score) {
@@ -542,7 +316,7 @@ class Game {
         this.gameEnemies.forEach((enemy) => {
             if (enemy.isDead()) {
                 foundID = enemy.enemyID;
-                foundKey = enemy.key;
+                //foundKey = enemy.key;
                 foundDead = this.gameEnemies.delete(enemy.key);
                 //console.log("removed gameEnemies key: ", foundKey)
             }
@@ -567,50 +341,29 @@ class Game {
         }
     }
 
-    drawEnemies(ctx) {
-        this.gameEnemies.forEach((enemy, key) => {
-            enemy.draw(ctx);
-        });
-    }
-
-    static o1 = null;
-    static o2 = null;
-    static o3 = null;
-    drawCollision(ctx) {
-        if (Game.o1) {
-            CanvasUtils.drawBounds(ctx, Game.o1.x, Game.o1.y, Game.o1.width, Game.o1.height, "red", 3);
-            CanvasUtils.drawBounds(ctx, Game.o2.x, Game.o2.y, Game.o2.width, Game.o2.height, "pink", 3);
-        }
-        if (Game.o3) {
-            CanvasUtils.drawBounds(ctx, Game.o3.x, Game.o3.y, Game.o3.width, Game.o3.height, "orange", 3);
-        }
-    }
-
-    checkBombPlayerCollision() {
-        this.enemyBombs.forEach(enemyBomb => {
-            if (enemyBomb.isAlive()) {
-                const colliding = this.player.isCollidingWith(enemyBomb);
-                if (colliding) {
-                    console.log("playerhit");
-                    this.player.setIsDying();
-                    console.log(this.player);
-                    enemyBomb.setIsDying();
-                    enemyBomb.x -= 20;
-                    //player.setIsDead();
-                    this.player.lives -= 1;
-                    Game.o1 = new ObjectStatic(this.player.x, this.player.y, this.player.width, this.player.height);
-                    Game.o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
-                }
-            }
-        });
-    }
-
     removeDeadBomb() {    // Check for dead enemyBomb and remove
         [this.enemyBombs].forEach(enemyBombArray => {
             for (let i = enemyBombArray.length - 1; i >= 0; i--) {
                 const enemyBomb = enemyBombArray[i];
                 if (enemyBomb.isDead()) {
                     enemyBombArray.splice(i, 1); // Remove the bomb at index i
+                }
+            }
+        });
+    }
+
+    checkBombPlayerCollision() {
+        this.enemyBombs.forEach(enemyBomb => {
+            if (enemyBomb.isAlive() && this.player.isAlive()) {
+                const colliding = this.player.isCollidingWith(enemyBomb);
+                if (colliding) {
+                    console.log("playerhit");
+                    this.player.setIsDying();
+                    enemyBomb.setIsDying();
+                    enemyBomb.x -= 20;
+                    console.log(this.player);
+                    Game.o1 = new ObjectStatic(this.player.x, this.player.y, this.player.width, this.player.height);
+                    Game.o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
                 }
             }
         });
@@ -639,27 +392,6 @@ class Game {
         }
     }
 
-    static gameInitialized = false;
-    static onetime = true;
-    initializeGame() {
-
-        if (!Enemy.isEnemiesInitialized()) {
-            if (this.shields.length === 0) {
-                this.initializeShields();
-                this.initialGround();
-                Enemy.enemyID = 0;
-            }
-            this.initializeEnemies();
-        } else {
-            // if (onetime) {
-            //   onetime = false;
-            Enemy.remainingEnemies = this.gameEnemies.size;
-            //}
-            this.findBottom();
-            this.gameInitialized = true;
-        }
-    }
-
     // Example: object.position += object.velocity * deltaTime;
     gameLoop(ctx, deltaTime) {
 
@@ -668,28 +400,28 @@ class Game {
         // Update game state with deltaTime
         switch (this.gameState) {
             case "attract":
-                this.displayAttractMode(this.ctx);
+                this.displayAttractMode(deltaTime);
                 break;
 
             case "playerSelect":
                 this.displayPlayerSelect();
                 break;
 
-            case "initGame":
-                if (!this.gameInitialized) {
-                    this.initializeGame();
-                }
+            case "initGameShield":
+                this.initializeGameShields();
                 break;
 
-            case "initEnemy":
-                if (!this.enemyInitialized) {
-                    this.initializeEnemy();
-                }
+            case "initGameGround":
+                this.initializeGameGround();
+                break;
+
+            case "initGameEnemy":
+                this.initializeGameEnemy();
                 break;
 
             case "playGame":
                 //                this.playGameLogic(this.ctx, this.canvas)
-                this.playGame();
+                this.playGame(deltaTime);
                 break;
 
             case "pauseGame":
@@ -703,7 +435,7 @@ class Game {
     }
 
     // Display Functions
-    displayAttractMode(ctx) {
+    displayAttractMode(deltaTime) {
         CanvasUtils.drawText(this.ctx, 150, 200, "Welcome to the Game!", 3.5, "white");
         CanvasUtils.drawText(this.ctx, 150, 300, "Press `Enter` to Start", 3.5, "white");
         console.log("attract");
@@ -715,36 +447,45 @@ class Game {
 
     displayPlayerSelect() {
         CanvasUtils.drawText(this.ctx, 150, 200, "Select Player Mode", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 150, 250, "Press `1` for Single Player", 3.5, "white");
+        CanvasUtils.drawText(this.ctx, 150, 250, "Press `1` for One Player", 3.5, "white");
         CanvasUtils.drawText(this.ctx, 150, 300, "Press `2` for Two Players", 3.5, "white");
 
         console.log("player select");
 
         if (this.keyboardInput.getKeyJustPressed().includes('Digit1')) {
             this.playerCount = 1;
-            this.gameState = "initGame";
+            this.gameState = "initGameShield";
         } else if (this.keyboardInput.getKeyJustPressed().includes('Digit2')) {
             this.playerCount = 2;
-            this.gameState = "initGame";
+            this.gameState = "initGameShield";
         }
     }
 
     displayGameOver() {
-        const color = "white";
-        CanvasUtils.drawText(this.ctx, 250, 200, "Game Over", 3.5, color);
-        CanvasUtils.drawText(this.ctx, 150, 250, "Press `Enter` to Restart", 3.5, color);
+        // const color = "white";
+        // CanvasUtils.drawText(this.ctx, 250, 200, "Game Over", 3.5, color);
+        // CanvasUtils.drawText(this.ctx, 150, 250, "Press `Enter` to Restart", 3.5, color);
 
-        //this.players[0].lives <= 0 && this.players[1].lives
-        console.log(this.players[0].score);
-        console.log(this.players[1].score);
+        // CanvasUtils.drawText(this.ctx, 100, 300, "Player 1 score:", 3.5, color);
+        // CanvasUtils.drawNumber(this.ctx, 450, 300, this.players[0].score, pixelSize, color, 4, '0');
 
-        CanvasUtils.drawText(this.ctx, 100, 300, "Player 1 score:", 3.5, color);
-        CanvasUtils.drawNumber(this.ctx, 450, 300, this.players[0].score, pixelSize, color, 4, '0');
-
-        CanvasUtils.drawText(this.ctx, 100, 350, "Player 2 score:", 3.5, color);
-        CanvasUtils.drawNumber(this.ctx, 450, 350, this.players[1].score, pixelSize, color, 4, '0');
+        // CanvasUtils.drawText(this.ctx, 100, 350, "Player 2 score:", 3.5, color);
+        // CanvasUtils.drawNumber(this.ctx, 450, 350, this.players[1].score, pixelSize, color, 4, '0');
 
         console.log("game over");
+
+        this.drawGame();
+
+        // Set the fill style to black with 50% alpha
+        this.ctx.fillStyle = canvasConfig.backgroundColor + "88";
+        console.log(this.ctx.fillStyle);
+        this.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
+
+        const x = canvasConfig.width / 2 - 100;
+        const y = canvasConfig.height / 2 - 100;
+
+        CanvasUtils.drawText(this.ctx, x, y, "Game Over.", 3.5, "white");
+        CanvasUtils.drawText(this.ctx, x - 150, y + 60, "Press `Enter` to Restart", 3.5, "#ffffffff");
 
         if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
             this.backToAttractCounter++ > this.backToAttract) {
@@ -752,31 +493,91 @@ class Game {
         }
     }
 
-    // Game Logic Functions
-    initializeGame() {
-        console.log("Initializing Game...");
-        this.gameInitialized = true;
-        this.onetime = true;
-        // this.playerLives = [3, 3]; // Reset lives
-        // this.score = [0, 0]; // Reset score
-        //this.currentPlayer = 1;
-
-        this.gameState = "initEnemy";
+    initializeGameShields() {
+        console.log("Initializing Game Shields...");
+        for (let i = 0; i < window.shieldCount; i++) {
+            this.shields.push(new Shield(i));
+        }
+        this.gameState = "initGameGround";
     }
 
-    initializeEnemy() {
-        console.log("Initializing Enemy...");
-        this.enemyInitialized = true;
+    initializeGameGround() {
+        for (let i = 0; i < canvasConfig.width; i += Ground.groundSize) {
+            const ground = new Ground(i, spriteConfig.groundY);
+            this.grounds.push(ground);
+        }
+        this.gameState = "initGameEnemy";
+    }
 
-        this.gameState = "playGame";
+    initializeGameEnemy() {
+        console.log("Initializing Game Enemy...");
+
+        let enemy = null;
+        switch (Enemy.getRow()) {
+            case 0:
+            case 1:
+                enemy = new EnemyCrab(this.player.level);
+                break;
+            case 2:
+            case 3:
+                enemy = new EnemySquid(this.player.level);
+                break;
+            case 4:
+                enemy = new EnemyOctopus(this.player.level);
+                break;
+            default:
+                enemy = new EnemyCrab(this.player.level);
+                console.log("Unknown enemy type!");
+                break;
+        }
+
+        this.gameEnemies.set(enemy.key, enemy);
+
+        if (Enemy.isEnemiesInitialized()) {
+            Enemy.remainingEnemies = this.gameEnemies.size;
+            this.findBottom();
+            this.gameState = "playGame";
+
+            Enemy.enemyID = 0;
+
+        }
+        this.drawGame();
+    }
+
+    // Draw Game
+    drawGame() {
+        // Draw scores
+        this.drawScore();
+        this.drawLevel(this.player);
+
+        // Draw enemy ship
+        if (this.enemyShip) {
+            this.enemyShip.draw(this.ctx);
+        }
+
+        // Draw all bombs
+        this.enemyBombs.forEach(enemyBomb => enemyBomb.draw(this.ctx));
+
+        this.drawEnemies();
+
+        // Draw shields
+        this.shields.forEach(shield => { shield.draw(this.ctx); });
+
+        // Draw Laser
+        if (this.laser) {
+            this.laser.draw(this.ctx);
+        }
+
+        // Draw player
+        this.player.draw(this.ctx);
+
+        this.drawGround(this.ctx);
+
+        this.drawLives(this.player);
     }
 
     // Game loop function
-    playGameLogic(ctx, deltaTime) {
-        if (!this.gameInitialized) {
-            this.initializeGame();
-        }
-
+    playGameLogic(deltaTime) {
         this.removeDeadEnemy();
 
         this.EnemiesUpdate(deltaTime);
@@ -791,45 +592,13 @@ class Game {
 
         this.checkEnemyShip(deltaTime);
 
-
-        keyboardInput.update();
-        const laserFirePoint = this.player.update(keyboardInput.getKeyPressed(), keyboardInput.getKeyJustPressed());
+        const laserFirePoint = this.player.update(this.keyboardInput.getKeyPressed(), this.keyboardInput.getKeyJustPressed());
         this.checkLaser(deltaTime, laserFirePoint);
         this.checkLaserEnemyCollision(this.player);
         this.checkLaserShipCollision(this.player);
         this.checkLaserBombCollision();
 
-
-        /* Drawing
-        */
-        // Draw scores
-        this.drawScore(ctx);
-        this.drawLevel(ctx, this.player);
-
-        // Draw enemy ship
-        if (this.enemyShip) {
-            this.enemyShip.draw(ctx);
-        }
-
-        // Draw all bombs
-        this.enemyBombs.forEach(enemyBomb => enemyBomb.draw(ctx));
-
-        this.drawEnemies(ctx);
-
-        // Draw shields
-        this.shields.forEach(shield => { shield.draw(ctx); });
-
-        // Draw Laser
-        if (this.laser) {
-            this.laser.draw(ctx);
-        }
-
-        // Draw player
-        this.player.draw(ctx);
-
-        this.drawGround(ctx);
-
-        this.drawLives(ctx, this.player);
+        this.drawGame();
     }
 
     checkGamePause() {
@@ -844,97 +613,109 @@ class Game {
 
     pauseGame() {
         this.checkGamePause();
-        CanvasUtils.drawText(this.ctx, 150, 200, "Game Paused.", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 150, 250, "Press `P` to unpause game", 3.5, "white");
         console.log("paused");
+        this.drawGame();
+
+        // Set the fill style to black with 50% alpha
+        this.ctx.fillStyle = canvasConfig.backgroundColor + "88";
+        console.log(this.ctx.fillStyle);
+        this.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
+
+        const x = canvasConfig.width / 5;
+        const y = canvasConfig.height - 75;
+
+        CanvasUtils.drawText(this.ctx, x, y, "Game Paused.", 3.5, "white");
+        CanvasUtils.drawText(this.ctx, x, y + 35, "Press `P` to unpause game", 3.5, "#ffffffff");
     }
 
     // Initialize player based on current player index
-    initializePlayer() {
-        const x = 127, y = 820; // Default starting position
+    resetCurrentPlayer() {
         const currentPlayer = this.currentPlayer - 1;
 
         // Set current player as the active player in the array
         this.player = this.players[currentPlayer];
 
-        //const color = currentPlayer === 0 ? spriteConfig.playerColor1 : spriteConfig.playerColor2;
-
-        // Initialize player with specific attributes
+        const x = 127, y = 820; // Default starting position
         this.player.setPosition(x, y);
-        // this.player.setSpriteColor(color);
-        //this.player.lives = this.playerLives[currentPlayer];  // Set lives from the playerLives array
-        // this.player.decrementLives();
-        //this.player.score = this.score[currentPlayer];  // Set score from the score array
+        this.player.setIsAlive();
+    }
+    
+    killBombs(deltaTime) {
+        this.enemyBombs.forEach(enemyBomb => {
+            enemyBomb.isDying();
+        });
     }
 
-    playGame() {
+    playGame(deltaTime) {
         this.checkGamePause();
 
         console.log("play game");
 
-        // Display current player status using Player class properties
-        const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.player.lives} - Score: ${this.player.score}`;
-        CanvasUtils.drawText(this.ctx, 100, 200, playerInfo, 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 100, 250, "Press `D` for player death", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 100, 300, "Press `S` for score", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 100, 350, "Press `P` to pause game", 3.5, "white");
+        this.playGameLogic(deltaTime);
 
-        // Increment player score using Player class method
-        if (this.keyboardInput.getKeyJustPressed().includes('KeyS')) {
-            this.player.updateScore(100);
-            console.log("Score increased");
-        }
+        // // Display current player status using Player class properties
+        // const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.player.lives} - Score: ${this.player.score}`;
+        // console.log(playerInfo);
+        const x = canvasConfig.width / 5;
+        const y = canvasConfig.height - 75;
+        CanvasUtils.drawText(this.ctx, x, y, "Press `P` to pause game", 3.5, "white");
 
-// Simulate losing a life with 'D' key
-if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
-    // Decrease current player's life
-    this.player.decrementLives();
-    console.log(this.currentPlayer, this.player, this.players);
-    console.log(`Player ${this.currentPlayer} lost a life!`);
+        // Simulate losing a life with 'D' key
+        if (this.player.isDead()) {
 
-    // Check if current player is out of lives
-    if (this.player.lives <= 0) {
-        console.log(`Player ${this.currentPlayer} is out of lives.`);
+            // Decrease current player's life
+            this.player.decrementLives();
+            console.log(this.currentPlayer, this.player, this.players);
+            console.log(`Player ${this.currentPlayer} lost a life!`);
 
-        // If it's a single-player game, game over
-        if (this.playerCount === 1) {
-            console.log("Player 1 is out of lives. Game Over!");
-            this.gameState = "gameOver";
-            return;
-        }
+            // Check if current player is out of lives
+            if (this.player.lives <= 0) {
+                console.log(`Player ${this.currentPlayer} is out of lives.`);
 
-        // In multiplayer mode, check if the other player is out of lives
-        if (this.playerCount === 2) {
-            // Check if both players are out of lives
-            if (this.players[0].lives <= 0 && this.players[1].lives <= 0) {
-                console.log("Both players are out of lives. Game Over!");
-                this.gameState = "gameOver";
-                return; // End the game if both players are out of lives
+                // If it's a single-player game, game over
+                if (this.playerCount === 1) {
+                    console.log("Player 1 is out of lives. Game Over!");
+                    this.gameState = "gameOver";
+                    return;
+                }
+
+                // In multiplayer mode, check if the other player is out of lives
+                if (this.playerCount === 2) {
+                    // Check if both players are out of lives
+                    if (this.players[0].lives <= 0 && this.players[1].lives <= 0) {
+                        console.log("Both players are out of lives. Game Over!");
+                        this.gameState = "gameOver";
+                        return; // End the game if both players are out of lives
+                    } else {
+                        // Swap to the other player if there are lives remaining for the other player
+                        this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+                        this.resetCurrentPlayer();
+                        console.log(`Swapping to Player ${this.currentPlayer}.`);
+                    }
+                }
             } else {
-                // Swap to the other player if there are lives remaining for the other player
-                this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-                this.initializePlayer();
-                console.log(`Swapping to Player ${this.currentPlayer}.`);
+                // Alternate players if the current one still has lives
+                if (this.playerCount === 2) {
+                    this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+                    this.resetCurrentPlayer();
+                    console.log(`Swapping to Player ${this.currentPlayer}.`);
+                } else {
+                    this.resetCurrentPlayer();
+                }
+            }
+        } else {
+            if (this.gameEnemies.size <= 0){
+                Enemy.unsetEnemiesInitialized()
+                this.initializeGameShields();
+                this.initializeGameGround();
+                this.initializeGameEnemy();
             }
         }
-    } else {
-        // Alternate players if the current one still has lives
-        if (this.playerCount === 2) {
-            this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-            this.initializePlayer();
-            console.log(`Swapping to Player ${this.currentPlayer}.`);
-        }
     }
-}
-    }
-
-
 
     resetGame() {
         console.log("Resetting Game...");
         this.gameState = "attract";
-        this.gameInitialized = false;
-        this.enemyInitialized = false;
         this.backToAttractCounter = 0;
     }
 

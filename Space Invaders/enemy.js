@@ -71,6 +71,10 @@ class Enemy extends ObjectKillable {
         return Enemy.enemiesInitialized;
     }
 
+    static unsetEnemiesInitialized() {
+        Enemy.enemiesInitialized = false;
+    }
+
     static setNextID() {
         if (Enemy.remainingEnemies > Enemy.nextID) {
             Enemy.nextID++;

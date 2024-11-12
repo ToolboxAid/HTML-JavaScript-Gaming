@@ -149,6 +149,12 @@ class ObjectKillable extends ObjectDynamic {
         }
     }
 
+    setIsAlive() {
+        this.status = ObjectKillable.Status.ALIVE;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
+    }
+
     setIsDying() {
         this.status = ObjectKillable.Status.DYING;
         this.currentFrameIndex = 0;
