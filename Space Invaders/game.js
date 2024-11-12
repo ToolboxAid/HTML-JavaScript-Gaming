@@ -696,6 +696,10 @@ class Game {
                 this.playGame();
                 break;
 
+            case "pauseGame":
+                this.pauseGame();
+                break;
+
             case "gameOver":
                 this.displayGameOver();
                 break;
@@ -759,8 +763,8 @@ class Game {
         this.gameState = "playGame";
     }
 
-     // Game loop function
-     playGameLogic(ctx, deltaTime) {
+    // Game loop function
+    playGameLogic(ctx, deltaTime) {
         if (!this.gameInitialized) {
             this.initializeGame();
         }
@@ -820,7 +824,26 @@ class Game {
         this.drawLives(ctx, this.player);
     }
 
+    gamePauseCheck() {
+        if (this.keyboardInput.getKeyJustPressed().includes('KeyP')) {
+            if (this.gameState === "playGame") {
+                this.gameState = "pauseGame";
+            } else if (this.gameState === "pauseGame") {
+                this.gameState = "playGame";
+            }
+        }
+    }
+
+    pauseGame() {
+        this.gamePauseCheck();
+            CanvasUtils.drawText(this.ctx, 150, 200, "Game Paused.", 3.5, "white");
+            CanvasUtils.drawText(this.ctx, 150, 250, "Press `P` to unpause game", 3.5, "white");
+            console.log("paused");
+    }
+
     playGame() {
+        this.gamePauseCheck();
+
         if (this.playerLives[this.currentPlayer - 1] <= 0) {
             if (this.currentPlayer < this.playerCount) {
                 this.currentPlayer++;
@@ -836,6 +859,7 @@ class Game {
         CanvasUtils.drawText(this.ctx, 100, 200, playerInfo, 3.5, "white");
         CanvasUtils.drawText(this.ctx, 100, 250, "Press `D` for player death", 3.5, "white");
         CanvasUtils.drawText(this.ctx, 100, 300, "Press `S` for score", 3.5, "white");
+        CanvasUtils.drawText(this.ctx, 100, 350, "Press `P` to pause game", 3.5, "white");
 
         if (this.keyboardInput.getKeyJustPressed().includes('KeyS')) {
             this.score[this.currentPlayer - 1] += 100;

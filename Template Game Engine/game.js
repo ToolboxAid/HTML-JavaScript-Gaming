@@ -32,7 +32,7 @@ class Game {
     this.enemyInitialized = false;
     this.onetime = true;
 
-    this.backToAttract = 600; 
+    this.backToAttract = 600;
     this.backToAttractCounter = 0;
   }
 
@@ -66,6 +66,10 @@ class Game {
         this.playGame();
         break;
 
+      case "pauseGame":
+        this.pauseGame();
+        break;
+
       case "gameOver":
         this.displayGameOver();
         break;
@@ -77,7 +81,7 @@ class Game {
     this.ctx.fillStyle = "white";
     this.ctx.font = "30px Arial";
     this.ctx.fillText("Welcome to the Game!", 250, 200);
-    this.ctx.fillText("Press Enter to Start", 250, 300);
+    this.ctx.fillText("Press `Enter` to Start", 250, 300);
     console.log("attract");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
@@ -89,8 +93,8 @@ class Game {
     this.ctx.fillStyle = "white";
     this.ctx.font = "30px Arial";
     this.ctx.fillText("Select Player Mode", 250, 200);
-    this.ctx.fillText("Press 1 for Single Player", 250, 250);
-    this.ctx.fillText("Press 2 for Two Players", 250, 300);
+    this.ctx.fillText("Press `1` for Single Player", 250, 250);
+    this.ctx.fillText("Press `2` for Two Players", 250, 300);
     console.log("player select");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Digit1')) {
@@ -106,7 +110,7 @@ class Game {
     this.ctx.fillStyle = "red";
     this.ctx.font = "30px Arial";
     this.ctx.fillText("Game Over", 300, 200);
-    this.ctx.fillText("Press Enter to Restart", 250, 300);
+    this.ctx.fillText("Press `Enter` to Restart", 250, 300);
     console.log("game over");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
@@ -134,67 +138,86 @@ class Game {
     this.gameState = "playGame";
   }
 
-  playGame() {
-    if (this.playerLives[this.currentPlayer - 1] <= 0) {
-      if (this.currentPlayer < this.playerCount) {
-        this.currentPlayer++;
-        this.gameState = "initGame";
-      } else {
-        this.gameState = "gameOver";
-      }
-    }
-
-    console.log("play game");
-
-    // Display current player status
-    this.ctx.fillStyle = "white";
-    this.ctx.font = "30px Arial";
-
-    this.ctx.fillText(
-      `Player ${this.currentPlayer} - Lives: ${this.playerLives[this.currentPlayer - 1]} - Score: ${this.score[this.currentPlayer - 1]}`,
-      200,
-      200
-    );
-    this.ctx.fillText("Press SpaceBar for next life",200, 250);
-
-    // Check if Space key was just pressed to simulate losing a life
-    if (this.keyboardInput.getKeyJustPressed().includes('Space')) {
-      this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
-      console.log(`Player ${this.currentPlayer} lost a life!`);
-
-      // Check if current player is out of lives
-      if (this.playerLives[this.currentPlayer - 1] <= 0) {
-        console.log(`Player ${this.currentPlayer} is out of lives.`);
-
-        // If only one player (single-player mode)
-        if (this.playerCount === 1) {
-          // End game if the single player is out of lives
-          console.log("Player 1 is out of lives. Game Over!");
-          this.gameState = "gameOver";
-          return;
-        }
-
-        // If two players (multiplayer mode), check if both are out of lives
-        if (this.playerCount === 2) {
-          if (this.playerLives[0] <= 0 && this.playerLives[1] <= 0) {
-            console.log("Both players are out of lives. Game Over!");
-            this.gameState = "gameOver";
-            return;
-          }
-
-          // Swap to the other player if the current one is out of lives
-          this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-          console.log(`Swapping to Player ${this.currentPlayer}.`);
-        }
-      } else {
-        // If current player still has lives left, swap only in two-player mode
-        if (this.playerCount === 2) {
-          this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-          console.log(`Swapping to Player ${this.currentPlayer}.`);
-        }
+  gamePauseCheck() {
+    if (this.keyboardInput.getKeyJustPressed().includes('KeyP')) {
+      if (this.gameState === "playGame") {
+        this.gameState = "pauseGame";
+      } else if (this.gameState === "pauseGame") {
+        this.gameState = "playGame";
       }
     }
   }
+
+  pauseGame() {
+    this.gamePauseCheck();
+    CanvasUtils.drawText(this.ctx, 150, 200, "Game Paused.", 3.5, "white");
+    CanvasUtils.drawText(this.ctx, 150, 250, "Press `P` to unpause game", 3.5, "white");
+    console.log("paused");
+  }
+
+  playGame() {
+    this.gamePauseCheck();
+
+    if (this.playerLives[this.currentPlayer - 1] <= 0) {
+        if (this.currentPlayer < this.playerCount) {
+            this.currentPlayer++;
+            this.gameState = "initGame";
+        } else {
+            this.gameState = "gameOver";
+        }
+    }
+
+    console.log("play game");
+    // Display current player status
+    const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.playerLives[this.currentPlayer - 1]} - Score: ${this.score[this.currentPlayer - 1]}`;
+    CanvasUtils.drawText(this.ctx, 100, 200, playerInfo, 3.5, "white");
+    CanvasUtils.drawText(this.ctx, 100, 250, "Press `D` for player death", 3.5, "white");
+    CanvasUtils.drawText(this.ctx, 100, 300, "Press `S` for score", 3.5, "white");
+    CanvasUtils.drawText(this.ctx, 100, 350, "Press `P` to pause game", 3.5, "white");
+
+    if (this.keyboardInput.getKeyJustPressed().includes('KeyS')) {
+        this.score[this.currentPlayer - 1] += 100;
+        console.log("score");
+    }
+
+    // Check if Space key was just pressed to simulate losing a life
+    if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
+        this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
+        console.log(`Player ${this.currentPlayer} lost a life!`);
+
+        // Check if current player is out of lives
+        if (this.playerLives[this.currentPlayer - 1] <= 0) {
+            console.log(`Player ${this.currentPlayer} is out of lives.`);
+
+            // If only one player (single-player mode)
+            if (this.playerCount === 1) {
+                // End game if the single player is out of lives
+                console.log("Player 1 is out of lives. Game Over!");
+                this.gameState = "gameOver";
+                return;
+            }
+
+            // If two players (multiplayer mode), check if both are out of lives
+            if (this.playerCount === 2) {
+                if (this.playerLives[0] <= 0 && this.playerLives[1] <= 0) {
+                    console.log("Both players are out of lives. Game Over!");
+                    this.gameState = "gameOver";
+                    return;
+                }
+
+                // Swap to the other player if the current one is out of lives
+                this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+                console.log(`Swapping to Player ${this.currentPlayer}.`);
+            }
+        } else {
+            // If current player still has lives left, swap only in two-player mode
+            if (this.playerCount === 2) {
+                this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+                console.log(`Swapping to Player ${this.currentPlayer}.`);
+            }
+        }
+    }
+}
 
   resetGame() {
     console.log("Resetting Game...");
