@@ -105,18 +105,26 @@ class Player extends ObjectKillable {
                 "00000000000000000",
             ],
         ];
-    
+
+    static playerID = 0;
+
     constructor(x = 127, y = 820) {
         super(x, y, Player.frame, Player.dyingFrames);
-        this.setSpriteColor(spriteConfig.playerColor);
+        this.playerID = Player.playerID++;
+        this.level = 1;
         this.score = 0;
         this.lives = spriteConfig.playerLives;
+
+        this.setSpriteColor(spriteConfig.playerColor);
         this.pixelSize = spriteConfig.pixelSize;
-        this.level = 1;
+
         this.bonus = spriteConfig.playerBonusScore;
         this.nextBonus = this.bonus;
     }
     
+    decrementLives(){
+        this.lives -=1;
+    }
     updateScore(score) {
         this.score += score;
         if (this.score > this.nextBonus) {

@@ -256,21 +256,19 @@ class Game {
         this.keyboardInput = new KeyboardInput();
 
         // Game State Variables
-        this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
+        this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, pauseGame, gameOver
         this.playerCount = 1;
         this.currentPlayer = 1;
-        this.playerLives = [3, 3]; // Player 1 and Player 2 lives
-        this.score = [0, 0]; // Player 1 and Player 2 scores
         this.gameInitialized = false;
         this.enemyInitialized = false;
         this.onetime = true;
 
         this.backToAttract = 600;
         this.backToAttractCounter = 0;
-        //------------------------------------------------------------
-        this.player1 = new Player();
-        this.player2 = new Player();
-        this.player = this.player2; // Current player
+
+        // Initialize players as an array of player instances
+        this.players = [new Player(), new Player()]; // Array holding player1 and player2
+        this.player = this.players[0]; // Current player
         this.highScore = 0;
 
         // Items to move into the player
@@ -283,8 +281,6 @@ class Game {
         // Non-player items
         this.laser = null;
         this.enemyShip = null;
-
-        //       this.initialize();
     }
 
     initializeEnemies() {
@@ -734,8 +730,20 @@ class Game {
     }
 
     displayGameOver() {
-        CanvasUtils.drawText(this.ctx, 250, 200, "Game Over", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 150, 250, "Press `Enter` to Restart", 3.5, "white");
+        const color = "white";
+        CanvasUtils.drawText(this.ctx, 250, 200, "Game Over", 3.5, color);
+        CanvasUtils.drawText(this.ctx, 150, 250, "Press `Enter` to Restart", 3.5, color);
+
+        //this.players[0].lives <= 0 && this.players[1].lives
+        console.log(this.players[0].score);
+        console.log(this.players[1].score);
+
+        CanvasUtils.drawText(this.ctx, 100, 300, "Player 1 score:", 3.5, color);
+        CanvasUtils.drawNumber(this.ctx, 450, 300, this.players[0].score, pixelSize, color, 4, '0');
+
+        CanvasUtils.drawText(this.ctx, 100, 350, "Player 2 score:", 3.5, color);
+        CanvasUtils.drawNumber(this.ctx, 450, 350, this.players[1].score, pixelSize, color, 4, '0');
+
         console.log("game over");
 
         if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
@@ -749,9 +757,9 @@ class Game {
         console.log("Initializing Game...");
         this.gameInitialized = true;
         this.onetime = true;
-        this.playerLives = [3, 3]; // Reset lives
-        this.score = [0, 0]; // Reset score
-        this.currentPlayer = 1;
+        // this.playerLives = [3, 3]; // Reset lives
+        // this.score = [0, 0]; // Reset score
+        //this.currentPlayer = 1;
 
         this.gameState = "initEnemy";
     }
@@ -824,7 +832,7 @@ class Game {
         this.drawLives(ctx, this.player);
     }
 
-    gamePauseCheck() {
+    checkGamePause() {
         if (this.keyboardInput.getKeyJustPressed().includes('KeyP')) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
@@ -835,75 +843,92 @@ class Game {
     }
 
     pauseGame() {
-        this.gamePauseCheck();
-            CanvasUtils.drawText(this.ctx, 150, 200, "Game Paused.", 3.5, "white");
-            CanvasUtils.drawText(this.ctx, 150, 250, "Press `P` to unpause game", 3.5, "white");
-            console.log("paused");
+        this.checkGamePause();
+        CanvasUtils.drawText(this.ctx, 150, 200, "Game Paused.", 3.5, "white");
+        CanvasUtils.drawText(this.ctx, 150, 250, "Press `P` to unpause game", 3.5, "white");
+        console.log("paused");
+    }
+
+    // Initialize player based on current player index
+    initializePlayer() {
+        const x = 127, y = 820; // Default starting position
+        const currentPlayer = this.currentPlayer - 1;
+
+        // Set current player as the active player in the array
+        this.player = this.players[currentPlayer];
+
+        //const color = currentPlayer === 0 ? spriteConfig.playerColor1 : spriteConfig.playerColor2;
+
+        // Initialize player with specific attributes
+        this.player.setPosition(x, y);
+        // this.player.setSpriteColor(color);
+        //this.player.lives = this.playerLives[currentPlayer];  // Set lives from the playerLives array
+        // this.player.decrementLives();
+        //this.player.score = this.score[currentPlayer];  // Set score from the score array
     }
 
     playGame() {
-        this.gamePauseCheck();
-
-        if (this.playerLives[this.currentPlayer - 1] <= 0) {
-            if (this.currentPlayer < this.playerCount) {
-                this.currentPlayer++;
-                this.gameState = "initGame";
-            } else {
-                this.gameState = "gameOver";
-            }
-        }
+        this.checkGamePause();
 
         console.log("play game");
-        // Display current player status
-        const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.playerLives[this.currentPlayer - 1]} - Score: ${this.score[this.currentPlayer - 1]}`;
+
+        // Display current player status using Player class properties
+        const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.player.lives} - Score: ${this.player.score}`;
         CanvasUtils.drawText(this.ctx, 100, 200, playerInfo, 3.5, "white");
         CanvasUtils.drawText(this.ctx, 100, 250, "Press `D` for player death", 3.5, "white");
         CanvasUtils.drawText(this.ctx, 100, 300, "Press `S` for score", 3.5, "white");
         CanvasUtils.drawText(this.ctx, 100, 350, "Press `P` to pause game", 3.5, "white");
 
+        // Increment player score using Player class method
         if (this.keyboardInput.getKeyJustPressed().includes('KeyS')) {
-            this.score[this.currentPlayer - 1] += 100;
-            console.log("score");
+            this.player.updateScore(100);
+            console.log("Score increased");
         }
 
-        // Check if Space key was just pressed to simulate losing a life
-        if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
-            this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
-            console.log(`Player ${this.currentPlayer} lost a life!`);
+// Simulate losing a life with 'D' key
+if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
+    // Decrease current player's life
+    this.player.decrementLives();
+    console.log(this.currentPlayer, this.player, this.players);
+    console.log(`Player ${this.currentPlayer} lost a life!`);
 
-            // Check if current player is out of lives
-            if (this.playerLives[this.currentPlayer - 1] <= 0) {
-                console.log(`Player ${this.currentPlayer} is out of lives.`);
+    // Check if current player is out of lives
+    if (this.player.lives <= 0) {
+        console.log(`Player ${this.currentPlayer} is out of lives.`);
 
-                // If only one player (single-player mode)
-                if (this.playerCount === 1) {
-                    // End game if the single player is out of lives
-                    console.log("Player 1 is out of lives. Game Over!");
-                    this.gameState = "gameOver";
-                    return;
-                }
+        // If it's a single-player game, game over
+        if (this.playerCount === 1) {
+            console.log("Player 1 is out of lives. Game Over!");
+            this.gameState = "gameOver";
+            return;
+        }
 
-                // If two players (multiplayer mode), check if both are out of lives
-                if (this.playerCount === 2) {
-                    if (this.playerLives[0] <= 0 && this.playerLives[1] <= 0) {
-                        console.log("Both players are out of lives. Game Over!");
-                        this.gameState = "gameOver";
-                        return;
-                    }
-
-                    // Swap to the other player if the current one is out of lives
-                    this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-                    console.log(`Swapping to Player ${this.currentPlayer}.`);
-                }
+        // In multiplayer mode, check if the other player is out of lives
+        if (this.playerCount === 2) {
+            // Check if both players are out of lives
+            if (this.players[0].lives <= 0 && this.players[1].lives <= 0) {
+                console.log("Both players are out of lives. Game Over!");
+                this.gameState = "gameOver";
+                return; // End the game if both players are out of lives
             } else {
-                // If current player still has lives left, swap only in two-player mode
-                if (this.playerCount === 2) {
-                    this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-                    console.log(`Swapping to Player ${this.currentPlayer}.`);
-                }
+                // Swap to the other player if there are lives remaining for the other player
+                this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+                this.initializePlayer();
+                console.log(`Swapping to Player ${this.currentPlayer}.`);
             }
         }
+    } else {
+        // Alternate players if the current one still has lives
+        if (this.playerCount === 2) {
+            this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+            this.initializePlayer();
+            console.log(`Swapping to Player ${this.currentPlayer}.`);
+        }
     }
+}
+    }
+
+
 
     resetGame() {
         console.log("Resetting Game...");
