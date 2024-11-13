@@ -72,6 +72,15 @@ class Enemy extends ObjectKillable {
     }
 
     static unsetEnemiesInitialized() {
+        Enemy.enemyID = 0;
+        Enemy.nextID = 0;
+
+        // newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
+    
+        // Enemy configurations for octopus, squid, and crab
+        Enemy.enemyRow = 0;
+        Enemy.enemyCol = 0;
+           
         Enemy.enemiesInitialized = false;
     }
 

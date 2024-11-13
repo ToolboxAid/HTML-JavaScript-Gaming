@@ -37,10 +37,7 @@ import ObjectStatic from '../scripts/objectStatic.js';
 // would like to have game extend canvas to eliminate bad form
 
 class Game {
-    constructor(canvas, ctx) {
-        // Canvas Setup
-        this.ctx = ctx;
-        this.canvas = canvas;
+    constructor() {
 
         // Canvas needs to know the current directory to game.js for dynamic imports
         const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
@@ -174,7 +171,7 @@ class Game {
         const dwn = 895;
         const color = 'white';
         const pixelSize = 5;
-        CanvasUtils.drawSprite(825, dwn, LevelFrames.frames[player.level], 2.0); // current 0-9
+        CanvasUtils.drawSprite(825, dwn, LevelFrames.frames[player.level - 1], 2.0); // current 0-9
     }
 
     drawGround() {
@@ -430,6 +427,14 @@ class Game {
             case "gameOver":
                 this.displayGameOver();
                 break;
+
+            case "resetPlayers":
+                this.resetPlayers();
+                break;
+
+            default:
+                console.log("bad gameState: ", this.gameState);
+                break;
         }
     }
 
@@ -467,7 +472,7 @@ class Game {
 
         // Set the fill style to black with 50% alpha
         CanvasUtils.ctx.fillStyle = canvasConfig.backgroundColor + "88";
-        console.log(CanvasUtils.ctx.fillStyle);
+        //console.log(CanvasUtils.ctx.fillStyle);
         CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
 
         const x = canvasConfig.width / 2 - 100;
@@ -478,8 +483,9 @@ class Game {
 
         if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
             this.backToAttractCounter++ > this.backToAttract) {
-            this.resetGame();
+            this.gameState = "resetPlayers";
         }
+
     }
 
     initializeGameShields() {
@@ -628,10 +634,11 @@ class Game {
         this.player.setPosition(x, y);
         this.player.setIsAlive();
     }
-    
-    killBombs(deltaTime) {
+
+    killBombs() {
         this.enemyBombs.forEach(enemyBomb => {
-            enemyBomb.isDying();
+            enemyBomb.setIsDying();
+            console.log(enemyBomb);
         });
     }
 
@@ -693,19 +700,45 @@ class Game {
                 }
             }
         } else {
-            if (this.gameEnemies.size <= 0){
+            if (this.gameEnemies.size <= 0) {
+                // reset player field
+                this.player.incLevel();
+                this.killBombs();
                 Enemy.unsetEnemiesInitialized()
                 this.initializeGameShields();
                 this.initializeGameGround();
                 this.initializeGameEnemy();
             }
         }
+        //console.log(this.keyboardInput.getKeyJustPressed());
+        if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
+            this.killBombs();
+        }
     }
 
-    resetGame() {
+    //resetGame() {
+    resetPlayers() {
         console.log("Resetting Game...");
-        this.gameState = "attract";
+
         this.backToAttractCounter = 0;
+
+        // Initialize players as an array of player instances
+        this.players = [new Player(), new Player()]; // Array holding player1 and player2
+        this.player = this.players[0]; // Current player
+
+        this.gameEnemies = new Map();
+        this.gameEnemiesBottom = new Array(enemyConfig.colSize).fill(null);
+
+        // Items to move into the player
+        this.gameEnemies = new Map();
+        this.gameEnemiesBottom = new Array(enemyConfig.colSize).fill(null);
+        this.enemyBombs = [];
+        this.shields = [];
+        this.grounds = [];
+        this.laser = null;
+
+        Enemy.unsetEnemiesInitialized();
+        this.gameState = "attract";
     }
 
 }
