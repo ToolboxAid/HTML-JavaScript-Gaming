@@ -78,10 +78,10 @@ class Game {
 
   // Display Functions
   displayAttractMode() {
-    this.ctx.fillStyle = "white";
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText("Welcome to the Game!", 250, 200);
-    this.ctx.fillText("Press `Enter` to Start", 250, 300);
+   CanvasUtils.ctx.fillStyle = "white";
+   CanvasUtils.ctx.font = "30px Arial";
+   CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
+   CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
     console.log("attract");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
@@ -90,11 +90,11 @@ class Game {
   }
 
   displayPlayerSelect() {
-    this.ctx.fillStyle = "white";
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText("Select Player Mode", 250, 200);
-    this.ctx.fillText("Press `1` for Single Player", 250, 250);
-    this.ctx.fillText("Press `2` for Two Players", 250, 300);
+   CanvasUtils.ctx.fillStyle = "white";
+   CanvasUtils.ctx.font = "30px Arial";
+   CanvasUtils.ctx.fillText("Select Player Mode", 250, 200);
+   CanvasUtils.ctx.fillText("Press `1` for Single Player", 250, 250);
+   CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
     console.log("player select");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Digit1')) {
@@ -107,10 +107,10 @@ class Game {
   }
 
   displayGameOver() {
-    this.ctx.fillStyle = "red";
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText("Game Over", 300, 200);
-    this.ctx.fillText("Press `Enter` to Restart", 250, 300);
+   CanvasUtils.ctx.fillStyle = "red";
+   CanvasUtils.ctx.font = "30px Arial";
+   CanvasUtils.ctx.fillText("Game Over", 300, 200);
+   CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
     console.log("game over");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
