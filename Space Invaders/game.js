@@ -154,27 +154,27 @@ class Game {
     drawScore() {
         let color = 'yellow';
         const pixelSize = 5;
-        CanvasUtils.drawText(this.ctx, 50, 30, "SCORE-1", pixelSize, 'red');
-        CanvasUtils.drawText(this.ctx, 300, 30, "MIDWAY", pixelSize, 'red');
-        CanvasUtils.drawText(this.ctx, 550, 30, "SCORE-2", pixelSize, 'red');
-        CanvasUtils.drawNumber(this.ctx, 90, 80, this.players[0].score, pixelSize, color, 4, '0');
-        CanvasUtils.drawNumber(this.ctx, 340, 80, this.highScore, pixelSize, color, 4, '0');
-        CanvasUtils.drawNumber(this.ctx, 590, 80, this.players[1].score, pixelSize, color, 4, '0');
+        CanvasUtils.drawText(50, 30, "SCORE-1", pixelSize, 'red');
+        CanvasUtils.drawText(300, 30, "MIDWAY", pixelSize, 'red');
+        CanvasUtils.drawText(550, 30, "SCORE-2", pixelSize, 'red');
+        CanvasUtils.drawNumber(90, 80, this.players[0].score, pixelSize, color, 4, '0');
+        CanvasUtils.drawNumber(340, 80, this.highScore, pixelSize, color, 4, '0');
+        CanvasUtils.drawNumber(590, 80, this.players[1].score, pixelSize, color, 4, '0');
     }
 
     drawLives(player) {
         const dwn = 900;
         const color = 'white';
         const pixelSize = 5;
-        CanvasUtils.drawNumber(this.ctx, 15, dwn, player.lives, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(this.ctx, 95, dwn, Player.frame[0], spriteConfig.pixelSize);
+        CanvasUtils.drawNumber(15, dwn, player.lives, pixelSize, color, 2, '0');
+        CanvasUtils.drawSprite(95, dwn, Player.frame[0], spriteConfig.pixelSize);
     }
 
     drawLevel(player) {
         const dwn = 895;
         const color = 'white';
         const pixelSize = 5;
-        CanvasUtils.drawSprite(this.ctx, 825, dwn, LevelFrames.frames[player.level], 2.0); // current 0-9
+        CanvasUtils.drawSprite(825, dwn, LevelFrames.frames[player.level], 2.0); // current 0-9
     }
 
     drawGround() {
@@ -194,11 +194,11 @@ class Game {
     static o3 = null;
     drawCollision() {
         if (Game.o1) {
-            CanvasUtils.drawBounds(this.ctx, Game.o1.x, Game.o1.y, Game.o1.width, Game.o1.height, "red", 3);
-            CanvasUtils.drawBounds(this.ctx, Game.o2.x, Game.o2.y, Game.o2.width, Game.o2.height, "pink", 3);
+            CanvasUtils.drawBounds(Game.o1.x, Game.o1.y, Game.o1.width, Game.o1.height, "red", 3);
+            CanvasUtils.drawBounds(Game.o2.x, Game.o2.y, Game.o2.width, Game.o2.height, "pink", 3);
         }
         if (Game.o3) {
-            CanvasUtils.drawBounds(this.ctx, Game.o3.x, Game.o3.y, Game.o3.width, Game.o3.height, "orange", 3);
+            CanvasUtils.drawBounds(Game.o3.x, Game.o3.y, Game.o3.width, Game.o3.height, "orange", 3);
         }
     }
 
@@ -436,8 +436,8 @@ class Game {
 
     // Display Functions
     displayAttractMode(deltaTime) {
-        CanvasUtils.drawText(this.ctx, 150, 200, "Welcome to the Game!", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 150, 300, "Press `Enter` to Start", 3.5, "white");
+        CanvasUtils.drawText(150, 200, "Welcome to the Game!", 3.5, "white");
+        CanvasUtils.drawText(150, 300, "Press `Enter` to Start", 3.5, "white");
         console.log("attract");
 
         if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
@@ -446,9 +446,9 @@ class Game {
     }
 
     displayPlayerSelect() {
-        CanvasUtils.drawText(this.ctx, 150, 200, "Select Player Mode", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 150, 250, "Press `1` for One Player", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, 150, 300, "Press `2` for Two Players", 3.5, "white");
+        CanvasUtils.drawText(150, 200, "Select Player Mode", 3.5, "white");
+        CanvasUtils.drawText(150, 250, "Press `1` for One Player", 3.5, "white");
+        CanvasUtils.drawText(150, 300, "Press `2` for Two Players", 3.5, "white");
 
         console.log("player select");
 
@@ -462,16 +462,6 @@ class Game {
     }
 
     displayGameOver() {
-        // const color = "white";
-        // CanvasUtils.drawText(this.ctx, 250, 200, "Game Over", 3.5, color);
-        // CanvasUtils.drawText(this.ctx, 150, 250, "Press `Enter` to Restart", 3.5, color);
-
-        // CanvasUtils.drawText(this.ctx, 100, 300, "Player 1 score:", 3.5, color);
-        // CanvasUtils.drawNumber(this.ctx, 450, 300, this.players[0].score, pixelSize, color, 4, '0');
-
-        // CanvasUtils.drawText(this.ctx, 100, 350, "Player 2 score:", 3.5, color);
-        // CanvasUtils.drawNumber(this.ctx, 450, 350, this.players[1].score, pixelSize, color, 4, '0');
-
         console.log("game over");
 
         this.drawGame();
@@ -484,8 +474,8 @@ class Game {
         const x = canvasConfig.width / 2 - 100;
         const y = canvasConfig.height / 2 - 100;
 
-        CanvasUtils.drawText(this.ctx, x, y, "Game Over.", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, x - 150, y + 60, "Press `Enter` to Restart", 3.5, "#ffffffff");
+        CanvasUtils.drawText(x, y, "Game Over.", 3.5, "white");
+        CanvasUtils.drawText(x - 150, y + 60, "Press `Enter` to Restart", 3.5, "#ffffffff");
 
         if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
             this.backToAttractCounter++ > this.backToAttract) {
@@ -624,8 +614,8 @@ class Game {
         const x = canvasConfig.width / 5;
         const y = canvasConfig.height - 75;
 
-        CanvasUtils.drawText(this.ctx, x, y, "Game Paused.", 3.5, "white");
-        CanvasUtils.drawText(this.ctx, x, y + 35, "Press `P` to unpause game", 3.5, "#ffffffff");
+        CanvasUtils.drawText(x, y, "Game Paused.", 3.5, "white");
+        CanvasUtils.drawText(x, y + 35, "Press `P` to unpause game", 3.5, "#ffffffff");
     }
 
     // Initialize player based on current player index
@@ -658,7 +648,7 @@ class Game {
         // console.log(playerInfo);
         const x = canvasConfig.width / 5;
         const y = canvasConfig.height - 75;
-        CanvasUtils.drawText(this.ctx, x, y, "Press `P` to pause game", 3.5, "white");
+        CanvasUtils.drawText(x, y, "Press `P` to pause game", 3.5, "white");
 
         // Simulate losing a life with 'D' key
         if (this.player.isDead()) {

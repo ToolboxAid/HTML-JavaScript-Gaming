@@ -90,7 +90,7 @@ class Shield extends ObjectStatic {
      * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
      */
     draw(ctx) {
-        CanvasUtils.drawSprite(ctx, this.x, this.y, this.frame, this.pixelSize, shieldConfig.color);
+        CanvasUtils.drawSprite(this.x, this.y, this.frame, this.pixelSize, shieldConfig.color);
     }
 
     /**

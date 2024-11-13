@@ -53,7 +53,7 @@ Description: A sound indicating a score was made, usually more pronounced than t
     drawDashedLine(ctx) {
         const dashPattern = [19, 19]; // Define your dash pattern
         const centerX = canvasConfig.width / 2; // Middle of the canvas
-        CanvasUtils.drawDashLine(ctx, centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
+        CanvasUtils.drawDashLine(centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
     }
 
     gameLoop(ctx, deltaTime) {

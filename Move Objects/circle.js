@@ -30,7 +30,7 @@ class Circle extends ObjectDynamic {
      * @param {number} [borderWidth=0] - The width of the border.
      */
     draw(ctx, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        CanvasUtils.drawCircle2(ctx, this.x, this.y, this.radius, fillColor, borderColor, borderColor);
+        CanvasUtils.drawCircle2(this.x, this.y, this.radius, fillColor, borderColor, borderColor);
     }
 
     /** Checks the circle's position against the specified boundaries and adjusts if necessary.

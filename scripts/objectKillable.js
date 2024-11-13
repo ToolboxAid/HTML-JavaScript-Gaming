@@ -213,14 +213,14 @@ class ObjectKillable extends ObjectDynamic {
 
             if (this.isAlive()) {
                 if (livingFrames?.[currentFrameIndex]) {
-                    CanvasUtils.drawSprite(ctx, newX, newY, livingFrames[currentFrameIndex], pixelSize, spriteColor);
+                    CanvasUtils.drawSprite(newX, newY, livingFrames[currentFrameIndex], pixelSize, spriteColor);
                 }
                 return;
             }
 
             if (this.isDying()) {
                 if (dyingFrames?.[currentFrameIndex]) {
-                    CanvasUtils.drawSprite(ctx, newX, newY, dyingFrames[currentFrameIndex], pixelSize, spriteColor);
+                    CanvasUtils.drawSprite(newX, newY, dyingFrames[currentFrameIndex], pixelSize, spriteColor);
                 }
                 return;
             }
@@ -228,7 +228,7 @@ class ObjectKillable extends ObjectDynamic {
             if (this.isOther()) {
                 if (otherFrame) {
                     const otherX = Math.max(25, Math.min(x, canvasConfig.width - 100));
-                    CanvasUtils.drawSprite(ctx, otherX, newY, otherFrame, pixelSize, spriteColor);
+                    CanvasUtils.drawSprite(otherX, newY, otherFrame, pixelSize, spriteColor);
                 }
                 return;
             }

@@ -74,20 +74,20 @@ function moveSolarSystem(ctx) {
             drawRing(ctx, x, y, body.ring.outerRadius, body.ring.innerRadius, body.ring.color);
         }
         
-        drawCircle(ctx, x, y, body.radius, body.color);
+        drawCircle(x, y, body.radius, body.color);
 
         if (body.moons) {
             body.moons.forEach(moon => {
                 moon.angle += moon.speed;
                 const moonX = x + moon.distance * Math.cos(moon.angle);
                 const moonY = y + moon.distance * Math.sin(moon.angle);
-                drawCircle(ctx, moonX, moonY, moon.radius, getRandomGrayColor());
+                drawCircle(moonX, moonY, moon.radius, getRandomGrayColor());
             });
         }				
     });
 }
 
-function drawCircle(ctx, x, y, radius, color) {
+function drawCircle(x, y, radius, color) {
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fillStyle = color;

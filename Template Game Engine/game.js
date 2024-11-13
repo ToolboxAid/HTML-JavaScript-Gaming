@@ -150,8 +150,8 @@ class Game {
 
   pauseGame() {
     this.gamePauseCheck();
-    CanvasUtils.drawText(this.ctx, 150, 200, "Game Paused.", 3.5, "white");
-    CanvasUtils.drawText(this.ctx, 150, 250, "Press `P` to unpause game", 3.5, "white");
+    CanvasUtils.drawText( 150, 200, "Game Paused.", 3.5, "white");
+    CanvasUtils.drawText( 150, 250, "Press `P` to unpause game", 3.5, "white");
     console.log("paused");
   }
 
@@ -170,10 +170,10 @@ class Game {
     console.log("play game");
     // Display current player status
     const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.playerLives[this.currentPlayer - 1]} - Score: ${this.score[this.currentPlayer - 1]}`;
-    CanvasUtils.drawText(this.ctx, 100, 200, playerInfo, 3.5, "white");
-    CanvasUtils.drawText(this.ctx, 100, 250, "Press `D` for player death", 3.5, "white");
-    CanvasUtils.drawText(this.ctx, 100, 300, "Press `S` for score", 3.5, "white");
-    CanvasUtils.drawText(this.ctx, 100, 350, "Press `P` to pause game", 3.5, "white");
+    CanvasUtils.drawText( 100, 200, playerInfo, 3.5, "white");
+    CanvasUtils.drawText( 100, 250, "Press `D` for player death", 3.5, "white");
+    CanvasUtils.drawText( 100, 300, "Press `S` for score", 3.5, "white");
+    CanvasUtils.drawText( 100, 350, "Press `P` to pause game", 3.5, "white");
 
     if (this.keyboardInput.getKeyJustPressed().includes('KeyS')) {
         this.score[this.currentPlayer - 1] += 100;

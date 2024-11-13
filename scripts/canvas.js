@@ -16,12 +16,14 @@ class CanvasUtils {
     static gameModule;
     static lastTimestamp = 0;
 
+    static ctx = null;
     static initCanvas(ctx) {
-        ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
-        ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+        CanvasUtil.ctx = ctx;
+        CanvasUtil.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
+        CanvasUtil.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
-    static drawFPS(ctx) {
+    static drawFPS() {
         this.frameCount++;
 
         const currentTime = performance.now();
@@ -33,29 +35,29 @@ class CanvasUtils {
             this.lastFPSUpdateTime = currentTime; // Reset lastTime for the next second
         }
 
-        ctx.globalAlpha = 1.0;
-        ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
-        ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
-        ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
+        CanvasUtil.ctx.globalAlpha = 1.0;
+        CanvasUtil.ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
+        CanvasUtil.ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
+        CanvasUtil.ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
     }
 
-    static drawBorder(ctx) {
-        ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
-        ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
-        ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+    static drawBorder() {
+        CanvasUtil.ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
+        CanvasUtil.ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
+        CanvasUtil.ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
-    static drawNumber(ctx, x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
+    static drawNumber(x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         const numberStr = number.toString();
         const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
         const text = leadingChar.repeat(leadingLength) + numberStr; // Create text with leading characters
 
         // Ensure text length is exactly 5
         const formattedText = text.padStart(leadingCount, leadingChar).slice(-leadingCount);
-        this.drawText(ctx, x, y, formattedText, pixelSize, color);
+        this.drawText(x, y, formattedText, pixelSize, color);
     }
 
-    static drawText(ctx, x, y, text, pixelSize, color = 'white') {
+    static drawText(x, y, text, pixelSize, color = 'white') {
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
             const frame = Font5x6.font5x6[char];
@@ -68,9 +70,9 @@ class CanvasUtils {
                 // const cx = Math.ceil(x + i * (charWidth * pixelSize + 5));
                 // const cy = Math.ceil(y);
                 // const cp = Math.ceil(pixelSize);
-                // CanvasUtil.drawSprite(ctx, cx, cy, frame, cp, color);
+                // CanvasUtil.drawSprite( cx, cy, frame, cp, color);
 
-                CanvasUtil.drawSprite(ctx, x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
+                CanvasUtil.drawSprite( x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
             }
         }
     }
@@ -105,11 +107,10 @@ class CanvasUtils {
         return sprite;
     }
 
-
-    static drawBounds(ctx, x, y, w, h, color = 'red', lineSize = 1) {
-        ctx.lineWidth = lineSize;
-        ctx.strokeStyle = color;
-        ctx.strokeRect(x, y, w, h);
+    static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
+        CanvasUtil.ctx.lineWidth = lineSize;
+        CanvasUtil.ctx.strokeStyle = color;
+        CanvasUtil.ctx.strokeRect(x, y, w, h);
     }
 
     // Move the color map to be a static property of the class
@@ -138,7 +139,7 @@ class CanvasUtils {
     };
 
     // Method to draw the current frame
-    static drawSprite(ctx, x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
+    static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
@@ -148,17 +149,17 @@ class CanvasUtils {
                 if (pixel === '1' && spriteColor) {
                     color = spriteColor; // Use sprite color instead of white
                 }
-                ctx.fillStyle = color;
+                CanvasUtil.ctx.fillStyle = color;
                 let ceilX = Math.ceil((col * pixelSize) + x);
                 let ceilY = Math.ceil((row * pixelSize) + y);
                 let ceilPixelSize = Math.ceil(pixelSize);
-                ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
+                CanvasUtil.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
             }
         }
 
         if (drawBounds) {
             let dimensions = CanvasUtils.spriteWidthHeight(frame, pixelSize);
-            CanvasUtils.drawBounds(ctx, x, y, dimensions.width, dimensions.height, spriteColor, 2);
+            CanvasUtils.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
     }
 
@@ -206,64 +207,64 @@ class CanvasUtils {
         return { width: width, height: height };
     }
 
-    static drawLine(ctx, x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
-        ctx.lineWidth = lineWidth;
-        ctx.strokeStyle = strokeColor;
+    static drawLine(x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
+        CanvasUtil.ctx.lineWidth = lineWidth;
+        CanvasUtil.ctx.strokeStyle = strokeColor;
 
-        ctx.beginPath();
-        ctx.moveTo(x1, y1); // Start point
-        ctx.lineTo(x2, y2); // End point
-        ctx.stroke(); // Draw the line
+        CanvasUtil.ctx.beginPath();
+        CanvasUtil.ctx.moveTo(x1, y1); // Start point
+        CanvasUtil.ctx.lineTo(x2, y2); // End point
+        CanvasUtil.ctx.stroke(); // Draw the line
     }
 
-    static drawLineFromPoints(ctx, start, end, lineWidth = 5, strokeColor = 'red') {
-        CanvasUtils.drawLine(ctx, start.x, start.y, end.x, end.y, lineWidth, strokeColor);
+    static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
+        CanvasUtils.drawLine(CanvasUtil.ctx, start.x, start.y, end.x, end.y, lineWidth, strokeColor);
     }
 
-    static drawDashLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
+    static drawDashLine(x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
         /* ctx.setLineDash
              ([5, 15]);        - Short dashes with longer gaps
              ([15, 5]);        - Long dashes with short gaps
              ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
              ([20, 5, 10, 5]); - Alternating long and medium dashes
          */
-        ctx.setLineDash(dashPattern);
-        CanvasUtils.drawLine(ctx, x1, y1, x2, y2, lineWidth, strokeColor);
-        ctx.setLineDash([]); // Reset to solid line
+        CanvasUtil.ctx.setLineDash(dashPattern);
+        CanvasUtils.drawLine(x1, y1, x2, y2, lineWidth, strokeColor);
+        CanvasUtil.ctx.setLineDash([]); // Reset to solid line
     }
 
-    static drawCircle(ctx, point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
-        ctx.fillStyle = color;
-        ctx.fill();
+    static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
+        CanvasUtil.ctx.beginPath();
+        CanvasUtil.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
+        CanvasUtil.ctx.fillStyle = color;
+        CanvasUtil.ctx.fill();
     }
 
-    static drawCircle2(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
-        ctx.fillStyle = fillColor;
-        ctx.fill();
+    static drawCircle2(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
+        CanvasUtil.ctx.beginPath();
+        CanvasUtil.ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
+        CanvasUtil.ctx.fillStyle = fillColor;
+        CanvasUtil.ctx.fill();
 
         if (borderColor && borderWidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = borderWidth;
-            ctx.stroke();
+            CanvasUtil.ctx.strokeStyle = borderColor;
+            CanvasUtil.ctx.lineWidth = borderWidth;
+            CanvasUtil.ctx.stroke();
         }
     }
 
-    static clickFullscreen(ctx) {
+    static clickFullscreen() {
         if (!Fullscreen.isFullScreen) {
             // Set up the text properties using global variables or default values
-            ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
-            ctx.font = window.fullscreenFont || '40px Arial'; // Set font size and family
+            CanvasUtil.ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
+            CanvasUtil.ctx.font = window.fullscreenFont || '40px Arial'; // Set font size and family
 
             // Reset text alignment to default (start)
-            ctx.textAlign = 'start';
+            CanvasUtil.ctx.textAlign = 'start';
 
             // Measure the width of the text "Click here to enter fullscreen"
             const text = window.fullscreenText || 'Click here to enter fullscreen';
-            const textWidth = ctx.measureText(text).width; // Get the width of the text in pixels
+            const textWidth = CanvasUtil.ctx.measureText(text).width; // Get the width of the text in pixels
 
             const textX = window.fullscreenX || (window.gameAreaWidth - textWidth) / 2;
 
@@ -271,7 +272,7 @@ class CanvasUtils {
 
 
             // Draw the message on the canvas
-            ctx.fillText(text, textX, textY); // Display the text at the calculated position
+            CanvasUtil.ctx.fillText(text, textX, textY); // Display the text at the calculated position
         }
     }
 
@@ -293,15 +294,15 @@ class CanvasUtils {
 
             // Initialize the canvas and game loop
             CanvasUtils.initCanvas(ctx);
-            this.clickFullscreen(ctx);
+            this.clickFullscreen();
 
             // Call the game loop method of the Game class
             this.gameInstance.gameLoop(ctx, deltaTime);
 
             // Draw border and FPS if necessary
-            CanvasUtils.drawBorder(ctx);
+            CanvasUtils.drawBorder();
             if (window.fpsShow) {
-                CanvasUtils.drawFPS(ctx);
+                CanvasUtils.drawFPS();
             }
         } else {
             alert('You need a modern browser to see this.');
