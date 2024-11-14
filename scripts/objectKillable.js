@@ -86,7 +86,6 @@ class ObjectKillable extends ObjectDynamic {
                     this.currentFrameIndex = 0;
                 }
             }
-            //console.log(this.currentFrameIndex);       
         }
     }
 
@@ -165,14 +164,12 @@ class ObjectKillable extends ObjectDynamic {
         this.status = ObjectKillable.Status.OTHER;
         this.currentFrameIndex = 0;
         this.delayCounter = 0;
-
     }
 
     setIsDead() {
         this.status = ObjectKillable.Status.DEAD;
         this.currentFrameIndex = 0;
         this.delayCounter = 0;
-
     }
 
     setSpriteColor(spriteColor) {

@@ -29,13 +29,6 @@ import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
-
-// would like to have game extend canvas to eliminate bad form
-// would like to have game extend canvas to eliminate bad form
-// would like to have game extend canvas to eliminate bad form
-// would like to have game extend canvas to eliminate bad form
-// would like to have game extend canvas to eliminate bad form
-
 class Game {
     constructor() {
 
@@ -67,7 +60,7 @@ class Game {
 
         // Non-player items
         this.laser = null;
-        this.enemyShip = null;
+        this.enemyShip = EnemyShip.getInstance();
     }
 
     setGameEnemiesBottom(column) {
@@ -115,28 +108,6 @@ class Game {
                             break;
                     }
                 }
-            }
-        }
-    }
-
-    checkEnemyShip(deltaTime) {
-        if (!this.enemyShip) {
-            if (EnemyShip.isCreationTime()) {
-                this.enemyShip = new EnemyShip();
-            }
-        } else {
-            this.enemyShip.update(deltaTime);
-
-            if (this.enemyShip.isDying()) {
-                const shipValue = `${this.enemyShip.getValue()}`;
-                const spacing = 2;
-                const someFrame = CanvasUtils.getSpriteText(shipValue, spacing);
-                const displayFrames = 60;
-                this.enemyShip.setOtherFrame(displayFrames, someFrame);
-            }
-
-            if (this.enemyShip.isDead()) {
-                this.enemyShip = null;
             }
         }
     }
@@ -253,14 +224,13 @@ class Game {
         return hit;
     }
 
-    checkLaserShipCollision(player) {
-        if (this.laser && this.enemyShip) {
-            const colliding = this.enemyShip.isCollidingWith(this.laser);
-            if (colliding) {
-                this.updatePlayerScore(this.enemyShip.getValue());
-                this.enemyShip.setHit();
-                this.laser = null;
-            }
+    /// daq
+    checkEnemyShip(deltaTime) {
+        this.enemyShip.update(deltaTime, this.laser);
+        const value = this.enemyShip.getValue();
+        if (value > 0) {
+            this.updatePlayerScore(value);
+            this.laser = null;
         }
     }
 
@@ -590,7 +560,6 @@ class Game {
         const laserFirePoint = this.player.update(this.keyboardInput.getKeyPressed(), this.keyboardInput.getKeyJustPressed());
         this.checkLaser(deltaTime, laserFirePoint);
         this.checkLaserEnemyCollision(this.player);
-        this.checkLaserShipCollision(this.player);
         this.checkLaserBombCollision();
 
         this.drawGame();
