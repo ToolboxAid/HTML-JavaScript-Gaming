@@ -30,8 +30,14 @@ import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
 class Game {
-    constructor() {
 
+    static scoreFlash = 0;
+    static scoreDelay = 0;
+    static scoreOn = true;
+    static scoreOnPlayer1 = true;
+    static scoreOnPlayer2 = true;
+
+    constructor() {
         // Canvas needs to know the current directory to game.js for dynamic imports
         const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         window.canvasPath = currentDir;
@@ -120,15 +126,28 @@ class Game {
     }
 
     drawScore() {
-        let color = 'yellow';
+        const color = 'yellow';
         const pixelSize = 5;
+    
+        // Draw score labels
         CanvasUtils.drawText(50, 30, "SCORE-1", pixelSize, 'red');
         CanvasUtils.drawText(300, 30, "MIDWAY", pixelSize, 'red');
         CanvasUtils.drawText(550, 30, "SCORE-2", pixelSize, 'red');
-        CanvasUtils.drawNumber(90, 80, this.players[0].score, pixelSize, color, 4, '0');
+    
+        // Display Player 1's score if Game.scoreOn is true and current player is 1
+        if (Game.scoreOnPlayer1) {
+            CanvasUtils.drawNumber(90, 80, this.players[0].score, pixelSize, color, 4, '0');
+        }
+    
+        // Display high score
         CanvasUtils.drawNumber(340, 80, this.highScore, pixelSize, color, 4, '0');
-        CanvasUtils.drawNumber(590, 80, this.players[1].score, pixelSize, color, 4, '0');
+    
+        // Display Player 2's score if Game.scoreOn is true and current player is 2
+        if (Game.scoreOnPlayer2) {
+            CanvasUtils.drawNumber(590, 80, this.players[1].score, pixelSize, color, 4, '0');
+        }
     }
+   
 
     drawLives(player) {
         const dwn = 900;
@@ -224,7 +243,6 @@ class Game {
         return hit;
     }
 
-    /// daq
     checkEnemyShip(deltaTime) {
         this.enemyShip.update(deltaTime, this.laser);
         const value = this.enemyShip.getValue();
@@ -386,6 +404,16 @@ class Game {
                 this.initializeGameEnemy();
                 break;
 
+            case "player1":
+                // Flash player 1 score
+                this.player1up();
+                break;
+
+            case "player2":
+                // flash player 2 score
+                this.player2up();
+                break;
+
             case "playGame":
                 this.playGame(deltaTime);
                 break;
@@ -501,12 +529,50 @@ class Game {
         if (Enemy.isEnemiesInitialized()) {
             Enemy.remainingEnemies = this.gameEnemies.size;
             this.findBottom();
-            this.gameState = "playGame";
+            this.gameState = "player1";
 
             Enemy.enemyID = 0;
 
         }
         this.drawGame();
+    }
+
+    flashPlayerScore() {
+        // Increment flash counter
+        if (Game.scoreFlash++ > 10) {
+            Game.scoreFlash = 0;
+            // Toggle the score visibility
+            Game.scoreOn = !Game.scoreOn;
+
+            // Delay the flashing effect
+            if (Game.scoreDelay++ > 20) {
+                // Reset counters after flashing sequence
+                Game.scoreFlash = 0;
+                Game.scoreDelay = 0;
+                this.gameState = "playGame";
+                Game.scoreOn = true; // Ensure score is visible at the end of flashing
+            }
+        }
+    }
+
+    player1up() {
+        // this.currentPlayer = 1;
+        // Game.scoreFlash = 0;    // Reset flash counter
+        // Game.scoreDelay = 0;    // Reset delay counter
+        // Game.scoreOn = false;   // Start with score invisible
+        this.flashPlayerScore();
+        Game.scoreOnPlayer1 = Game.scoreOn;
+        this.drawGame();
+    }
+
+    player2up() {
+        // this.currentPlayer = 2;
+        // Game.scoreFlash = 0;    // Reset flash counter
+        // Game.scoreDelay = 0;    // Reset delay counter
+        // Game.scoreOn = false;   // Start with score invisible
+        this.flashPlayerScore();
+        Game.scoreOnPlayer2 = Game.scoreOn;        
+        this.drawGame();        
     }
 
     // Draw Game
@@ -516,9 +582,7 @@ class Game {
         this.drawLevel(this.player);
 
         // Draw enemy ship
-        if (this.enemyShip) {
-            this.enemyShip.draw(CanvasUtils.ctx);
-        }
+        this.enemyShip.draw(CanvasUtils.ctx);
 
         // Draw all bombs
         this.enemyBombs.forEach(enemyBomb => enemyBomb.draw(CanvasUtils.ctx));
@@ -619,8 +683,6 @@ class Game {
         this.playGameLogic(deltaTime);
 
         // // Display current player status using Player class properties
-        // const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.player.lives} - Score: ${this.player.score}`;
-        // console.log(playerInfo);
         const x = canvasConfig.width / 5;
         const y = canvasConfig.height - 75;
         CanvasUtils.drawText(x, y, "Press `P` to pause game", 3.5, "white");
@@ -656,6 +718,7 @@ class Game {
                         this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
                         this.resetCurrentPlayer();
                         console.log(`Swapping to Player ${this.currentPlayer}.`);
+                        this.gameState = "player" + this.currentPlayer;
                     }
                 }
             } else {
@@ -664,6 +727,7 @@ class Game {
                     this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
                     this.resetCurrentPlayer();
                     console.log(`Swapping to Player ${this.currentPlayer}.`);
+                    this.gameState = "player" + this.currentPlayer;
                 } else {
                     this.resetCurrentPlayer();
                 }
