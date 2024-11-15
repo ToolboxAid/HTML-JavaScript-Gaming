@@ -30,7 +30,7 @@ class Game {
         }
     }
 
-    gameLoop(ctx, deltaTime) {
+    gameLoop(deltaTime) {
         // Update circle position
         this.circle.update(deltaTime);
 
@@ -42,7 +42,7 @@ class Game {
         }
 
         // Call the drawing function
-        this.circle.draw(ctx);
+        this.circle.draw();
     }
 }
 

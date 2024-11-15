@@ -11,11 +11,7 @@ import KeyboardInput from '../scripts/keyboard.js';
 
 class Game {
 
-  constructor(canvas, ctx) {
-    // Canvas Setup
-    this.ctx = ctx;
-    this.canvas = canvas;
-
+    constructor(){
     // Canvas needs to know the current directory to game.js for dynamic imports
     const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     window.canvasPath = currentDir;
@@ -37,7 +33,7 @@ class Game {
   }
 
   // Example: object.position += object.velocity * deltaTime;
-  gameLoop(ctx, deltaTime) {
+  gameLoop(deltaTime) {
     this.keyboardInput.update();
 
     // Update game state with deltaTime

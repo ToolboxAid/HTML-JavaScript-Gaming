@@ -50,18 +50,19 @@ Description: A sound indicating a score was made, usually more pronounced than t
         this.restartGame = this.restartGame.bind(this);
     }
 
-    drawDashedLine(ctx) {
+    drawDashedLine() {
         const dashPattern = [19, 19]; // Define your dash pattern
         const centerX = canvasConfig.width / 2; // Middle of the canvas
         CanvasUtils.drawDashLine(centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
     }
 
-    gameLoop(ctx, deltaTime) {
+    gameLoop(deltaTime) {
+        let ctx = CanvasUtils.ctx;
         // Call drawScores to display the current scores
         Font5x3.drawScores(ctx, this.leftPaddle, this.rightPaddle);
 
         // Draw the dashed line
-        this.drawDashedLine(ctx);
+        this.drawDashedLine();
 
         if (Paddle.winner) {
             // Stop the game loop and display the winner message
@@ -92,7 +93,7 @@ Description: A sound indicating a score was made, usually more pronounced than t
     }
 
     // Function to draw the winner message on the canvas
-    drawWinnerMessage(ctx, message) {
+    drawWinnerMessage(ctx) {
         ctx.fillStyle = 'white'; // Set text color
         ctx.font = '55px Arial'; // Set font size and style
         ctx.textAlign = 'center'; // Center the text

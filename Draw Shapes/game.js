@@ -13,92 +13,92 @@ export default class Game {
         this.currentDir = currentDir;
     }
 
-    drawFilledCircle(ctx) {
-        ctx.beginPath();
-        ctx.arc(450, 550, 50, 0, Math.PI * 2);
-        ctx.fillStyle = 'yellow';
-        ctx.fill();
+    drawFilledCircle() {
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.arc(450, 550, 50, 0, Math.PI * 2);
+        CanvasUtils.ctx.fillStyle = 'yellow';
+        CanvasUtils.ctx.fill();
     }
 
-    drawHollowCircle(ctx) {
-        ctx.beginPath();
-        ctx.arc(550, 550, 50, 0, Math.PI * 2);
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+    drawHollowCircle() {
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.arc(550, 550, 50, 0, Math.PI * 2);
+        CanvasUtils.ctx.strokeStyle = 'red';
+        CanvasUtils.ctx.lineWidth = 2;
+        CanvasUtils.ctx.stroke();
     }
 
-    drawFilledSquare(ctx) {
-        ctx.fillStyle = 'yellow';
-        ctx.fillRect(350, 350, 100, 100);
+    drawFilledSquare() {
+        CanvasUtils.ctx.fillStyle = 'yellow';
+        CanvasUtils.ctx.fillRect(350, 350, 100, 100);
     }
 
-    drawHollowSquare(ctx) {
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(500, 350, 100, 100);
+    drawHollowSquare() {
+        CanvasUtils.ctx.strokeStyle = 'red';
+        CanvasUtils.ctx.lineWidth = 2;
+        CanvasUtils.ctx.strokeRect(500, 350, 100, 100);
     }
 
-    drawFilledTriangle(ctx) {
-        ctx.fillStyle = 'blue';
-        ctx.beginPath();
-        ctx.moveTo(50, 100);
-        ctx.lineTo(100, 250);
-        ctx.lineTo(0, 250);
-        ctx.closePath();
-        ctx.fill();
+    drawFilledTriangle() {
+        CanvasUtils.ctx.fillStyle = 'blue';
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.moveTo(50, 100);
+        CanvasUtils.ctx.lineTo(100, 250);
+        CanvasUtils.ctx.lineTo(0, 250);
+        CanvasUtils.ctx.closePath();
+        CanvasUtils.ctx.fill();
     }
 
-    drawHollowOval(ctx) {
-        ctx.strokeStyle = 'orange';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.ellipse(200, 150, 75, 50, 0, 0, Math.PI * 2);
-        ctx.stroke();
+    drawHollowOval() {
+        CanvasUtils.ctx.strokeStyle = 'orange';
+        CanvasUtils.ctx.lineWidth = 2;
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.ellipse(200, 150, 75, 50, 0, 0, Math.PI * 2);
+        CanvasUtils.ctx.stroke();
     }
 
-    drawGridLines(ctx) {
+    drawGridLines() {
         for (let gx = 0; gx <= canvasConfig.height; gx += 100) {
-            ctx.beginPath();
-            ctx.moveTo(0, gx);
-            ctx.lineTo(canvasConfig.width, gx);
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#3600af';
-            ctx.stroke();
+            CanvasUtils.ctx.beginPath();
+            CanvasUtils.ctx.moveTo(0, gx);
+            CanvasUtils.ctx.lineTo(canvasConfig.width, gx);
+            CanvasUtils.ctx.lineWidth = 3;
+            CanvasUtils.ctx.strokeStyle = '#3600af';
+            CanvasUtils.ctx.stroke();
         }
         for (let gy = 0; gy <= canvasConfig.width; gy += 100) {
-            ctx.beginPath();
-            ctx.moveTo(gy, 0);
-            ctx.lineTo(gy, canvasConfig.height);
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#ed9700';
-            ctx.stroke();
+            CanvasUtils.ctx.beginPath();
+            CanvasUtils.ctx.moveTo(gy, 0);
+            CanvasUtils.ctx.lineTo(gy, canvasConfig.height);
+            CanvasUtils.ctx.lineWidth = 3;
+            CanvasUtils.ctx.strokeStyle = '#ed9700';
+            CanvasUtils.ctx.stroke();
         }
     }
 
-    drawOverlappingRectangles(ctx) {
-        ctx.fillStyle = 'yellow';
-        ctx.fillRect(415, 115, 120, 120);
-        ctx.fillStyle = 'red';
-        ctx.globalAlpha = 0.5;
-        ctx.fillRect(430, 130, 90, 90);
-        ctx.globalAlpha = 1.0; // Reset alpha to 1
-        ctx.fillRect(445, 145, 60, 60);
-        ctx.fillStyle = '#00808080';
-        ctx.fillRect(460, 160, 70, 70);
+    drawOverlappingRectangles() {
+        CanvasUtils.ctx.fillStyle = 'yellow';
+        CanvasUtils.ctx.fillRect(415, 115, 120, 120);
+        CanvasUtils.ctx.fillStyle = 'red';
+        CanvasUtils.ctx.globalAlpha = 0.5;
+        CanvasUtils.ctx.fillRect(430, 130, 90, 90);
+        CanvasUtils.ctx.globalAlpha = 1.0; // Reset alpha to 1
+        CanvasUtils.ctx.fillRect(445, 145, 60, 60);
+        CanvasUtils.ctx.fillStyle = '#00808080';
+        CanvasUtils.ctx.fillRect(460, 160, 70, 70);
     }
 
-    gameLoop(ctx, deltaTime) {
+    gameLoop(deltaTime) {
         console.log(deltaTime);
         // Call each drawing function
-        this.drawFilledCircle(ctx);
-        this.drawHollowCircle(ctx);
-        this.drawFilledSquare(ctx);
-        this.drawHollowSquare(ctx);
-        this.drawFilledTriangle(ctx);
-        this.drawHollowOval(ctx);
-        this.drawGridLines(ctx);
-        this.drawOverlappingRectangles(ctx);
+        this.drawFilledCircle();
+        this.drawHollowCircle();
+        this.drawFilledSquare();
+        this.drawHollowSquare();
+        this.drawFilledTriangle();
+        this.drawHollowOval();
+        this.drawGridLines();
+        this.drawOverlappingRectangles();
     }
 }
 

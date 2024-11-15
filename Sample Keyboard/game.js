@@ -60,7 +60,9 @@ class GameLoop {
         ctx.fillText(keysPressed.length > 0 ? keysPressed.join(', ') : 'None', 10, 180);
     }
 
-    gameLoop(ctx) {
+    gameLoop() {
+        let ctx = CanvasUtils.ctx;
+        
         // Call update to manage key states
         this.updateKeyStates();
 

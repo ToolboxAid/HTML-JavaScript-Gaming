@@ -378,7 +378,7 @@ class Game {
     }
 
     // Example: object.position += object.velocity * deltaTime;
-    gameLoop(ctx, deltaTime) {
+    gameLoop(deltaTime) {
 
         this.keyboardInput.update();
 

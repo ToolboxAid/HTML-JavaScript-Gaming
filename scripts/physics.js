@@ -94,13 +94,13 @@ const puck = {
         this.x += this.xVelocity;
         this.y += this.yVelocity;
     },
-    draw(ctx) {
+    draw() {
         // Drawing logic here
     }
 };
 
 // In your game loop
-function gameLoop(ctx, deltaTime) {
+function gameLoop(deltaTime) {
     // Apply gravity and wind to the puck
     physics.applyForces(puck, deltaTime);
 
@@ -108,7 +108,7 @@ function gameLoop(ctx, deltaTime) {
     puck.updatePosition();
 
     // Draw puck
-    puck.draw(ctx);
+    puck.draw();
 }
 
 */

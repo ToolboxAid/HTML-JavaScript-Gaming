@@ -67,9 +67,9 @@ class SolarSystem {
     });
   }
 
-  gameLoop(ctx, deltaTime) {
+  gameLoop(deltaTime) {
     // Update and Draw solar system.
-    this.moveSolarSystem(ctx, deltaTime);
+    this.moveSolarSystem(deltaTime);
   }
 }
 
