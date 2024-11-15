@@ -87,29 +87,27 @@ class Game {
   }
 
   drawGrid() {
+    const lineWidth = 3;
     const gridSize = canvasConfig.width / 3;
-    CanvasUtils.ctx.strokeStyle = "white";
-    CanvasUtils.ctx.lineWidth = 2;
 
     for (let i = 1; i < 3; i++) {
-      CanvasUtils.ctx.beginPath();
-      CanvasUtils.ctx.moveTo(i * gridSize, 0);
-      CanvasUtils.ctx.lineTo(i * gridSize, canvasConfig.height);
-      CanvasUtils.ctx.stroke();
+      // Vertical
+      const start1 = { x: i * gridSize, y: 0 };
+      const end1 = { x: i * gridSize, y: canvasConfig.height };
+      CanvasUtils.drawLineFromPoints(start1, end1, lineWidth, "green");
 
-      CanvasUtils.ctx.beginPath();
-      CanvasUtils.ctx.moveTo(0, i * gridSize);
-      CanvasUtils.ctx.lineTo(canvasConfig.width, i * gridSize);
-      CanvasUtils.ctx.stroke();
+      // Horizontal
+      const start2 = { x: 0, y: i * gridSize };
+      const end2 = { x: canvasConfig.width, y: i * gridSize };
+      CanvasUtils.drawLineFromPoints(start2, end2, lineWidth, "green");
     }
 
     // Draw numbers in each cell for player assistance
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
+
     for (let i = 0; i < 9; i++) {
-      const x = (i % 3) * gridSize + 10;// + gridSize / 2;
+      const x = (i % 3) * gridSize + 10;
       const y = Math.floor(i / 3) * gridSize + gridSize / 4;
-      CanvasUtils.ctx.fillText((i + 1).toString(), x, y - 20);
+      CanvasUtils.drawText(x, y - 40, (i + 1).toString(), 4, 'white')
     }
   }
 

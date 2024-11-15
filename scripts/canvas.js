@@ -218,7 +218,7 @@ class CanvasUtils {
     }
 
     static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
-        CanvasUtils.drawLine(CanvasUtil.ctx, start.x, start.y, end.x, end.y, lineWidth, strokeColor);
+        CanvasUtils.drawLine(start.x, start.y, end.x, end.y, lineWidth, strokeColor);
     }
 
     static drawDashLine(x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
