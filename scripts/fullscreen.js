@@ -59,7 +59,6 @@ class Fullscreen {
         } else if (Fullscreen.isFullScreen) {
             Fullscreen.isFullScreen = false;
             Fullscreen.setCanvasSize(window.gameScaleWindow);
-            console.log("Windowed mode activated.");
         }
 
         Fullscreen.updateCanvasTransform();
@@ -69,6 +68,8 @@ class Fullscreen {
     static setCanvasSize(scale) {
         Fullscreen.canvas.width = window.gameAreaWidth * scale;
         Fullscreen.canvas.height = window.gameAreaHeight * scale;
+
+        console.log("setCanvasSize: ", Fullscreen.canvas.width, Fullscreen.canvas.height);
     }
 
     static updateCanvasTransform() {

@@ -9,11 +9,11 @@ export const canvasConfig = {
     width: 1024, // Game area width
     height: 768, // Game area height
     scale: 0.35,
-    backgroundColor: "#333333",   
+    backgroundColor: "#DDDD00",   
     
     fullscreenText: 'Click game to enter fullscreen',
-    fullscreenFont: '50px Arial',
-    fullscreenColor: 'yellow',
+    fullscreenFont: '45px Arial',
+    fullscreenColor: 'blue',
 };
 
 // non type="module" in HTML
@@ -26,13 +26,14 @@ window.backgroundColor = canvasConfig.backgroundColor;
 window.fullscreenText = canvasConfig.fullscreenText; 
 window.fullscreenFont = canvasConfig.fullscreenFont;
 window.fullscreenColor = canvasConfig.fullscreenColor; 
-
+window.fullscreenX = 210;
+window.fullscreenY = canvasConfig.height - 110;
 window.borderColor = "#888888";
 window.borderSize = 5;
 
 // Configuration for FPS display
 window.fpsShow = true;
-window.fpsColor = "yellow";
-window.fpsSize = "40px";
-window.fpsX = 30;
-window.fpsY = 50;
+window.fpsColor = "blue";
+window.fpsSize = "20px";
+window.fpsX = 5;
+window.fpsY = 20;

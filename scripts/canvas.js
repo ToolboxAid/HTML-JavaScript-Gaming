@@ -296,10 +296,12 @@ class CanvasUtils {
 
             // Initialize the canvas and game loop
             CanvasUtils.initCanvas(ctx);
-            this.clickFullscreen();
 
             // Call the game loop method of the Game class
             this.gameInstance.gameLoop(deltaTime);
+
+            // Draw click full screen
+            this.clickFullscreen();
 
             // Draw border and FPS if necessary
             CanvasUtils.drawBorder();

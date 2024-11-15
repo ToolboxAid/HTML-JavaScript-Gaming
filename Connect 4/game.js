@@ -10,25 +10,29 @@ import KeyboardInput from '../scripts/keyboard.js';
 
 class Game {
   constructor() {
-
-    // Canvas needs to know the current directory to game.js for dynamic imports
-    const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    window.canvasPath = currentDir;
-
     this.keyboardInput = new KeyboardInput();
+
+    this.columns = 7;
+    this.rows = 6;
+    this.lineWidth = 10;
+    this.cellWidth = canvasConfig.width / (this.rows + 1);
+    this.cellHeight = canvasConfig.height / (this.columns - 1);
 
     // Game State Variables
     this.gameState = "attract"; // Possible states: attract, playerSelect, playGame, gameOver
     this.currentPlayer = 1; // Player 1 (Red) and Player 2 (Yellow)
-    this.playerSymbols = ['R', 'Y']; // 'R' for Red, 'Y' for Yellow
+    this.playerSymbols = ['R', 'B']; // 'R' for Red, 'B' for Yellow
     this.board = this.createBoard(); // 7 columns x 6 rows
     this.attractDropInterval = 60; // Frame count between drops in attract mode
     this.attractCounter = 0;
+
+    this.counter = 0;
+    this.blinkOn = true;
   }
 
   createBoard() {
     // 7 columns and 6 rows, filled with null initially
-    return Array.from({ length: 7 }, () => Array(6).fill(null));
+    return Array.from({ length: this.columns }, () => Array(this.rows).fill(null));
   }
 
   resetBoard() {
@@ -54,8 +58,12 @@ class Game {
   }
 
   displayAttractMode() {
-    CanvasUtils.drawText(200, 50, "Welcome to Connect 4!", 4, "white");
-    CanvasUtils.drawText(200, 100, "Press Enter to Start", 3, "white");
+    this.renderBoard();
+
+    const y1 = this.cellHeight * 2 - 10;
+    const y2 = this.cellHeight * 3 - 10;
+    CanvasUtils.drawText(250, y1, "Welcome to Connect 4!", 4, "blue");
+    CanvasUtils.drawText(300, y2, "Press `Enter` to Start", 3, "blue");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
       this.resetBoard();
@@ -68,10 +76,14 @@ class Game {
       }
     }
 
-    this.renderBoard();
+    if (this.isBoardFull()){
+      this.resetBoard();
+    }
+
   }
 
   randomDropInAttractMode() {
+    console.log("randome");
     const column = Math.floor(Math.random() * 7); // Random column from 0 to 6
     const symbol = this.playerSymbols[this.currentPlayer - 1];
     this.dropChip(column, symbol);
@@ -79,14 +91,25 @@ class Game {
   }
 
   displayPlayerSelect() {
-    
+
     CanvasUtils.drawText(200, 50, "Select Player Mode", 4, "white");
-    CanvasUtils.drawText(200, 100, "Press Enter to Start", 3, "white");
+    CanvasUtils.drawText(200, 100, "Press `Enter` to Start", 3, "white");
 
     if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
       this.resetBoard();
       this.gameState = "playGame";
     }
+  }
+
+  isBoardFull() {
+    for (let col = 0; col < this.columns; col++) {
+      for (let row = 0; row < this.rows; row++) {
+        if (!this.board[col][row]) {
+          return false; // There is at least one empty slot
+        }
+      }
+    }
+    return true; // All slots are filled
   }
 
   playGame() {
@@ -100,6 +123,9 @@ class Game {
         if (this.dropChip(column, symbol)) {
           if (this.checkWin(symbol)) {
             this.gameState = "gameOver";
+          } else if (this.isBoardFull()) {
+            // If board is full and no winner, it's a draw
+            this.gameState = "gameOver";
           } else {
             this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
           }
@@ -109,6 +135,7 @@ class Game {
   }
 
   dropChip(column, symbol) {
+
     for (let row = 5; row >= 0; row--) {
       if (!this.board[column][row]) {
         this.board[column][row] = symbol;
@@ -163,26 +190,81 @@ class Game {
   }
 
   renderBoard() {
-    
-    for (let col = 0; col < 7; col++) {
-      for (let row = 0; row < 6; row++) {
-        const x = col * 100 + 50;
-        const y = row * 100 + 50;
+    const over = 110;
+    for (let col = 0; col < this.columns; col++) {
+      const x = col * this.cellWidth + over;
+      const y = 10;
+      CanvasUtils.drawNumber(x, y, col + 1, 5, "blue", 0)
+    }
+
+    const offset = 65;
+    for (let col = 0; col < this.columns; col++) {
+      for (let row = 0; row < this.rows; row++) {
+        const x = col * this.cellWidth + offset;
+        const y = row * this.cellHeight + offset;
         const symbol = this.board[col][row];
-        CanvasUtils.drawCircle(x, y, 40, symbol === 'R' ? "red" : symbol === 'Y' ? "yellow" : "black");
+        CanvasUtils.drawCircle2(x, y, 40, symbol === 'R' ? "red" : symbol === 'B' ? "black" : "yellow");
       }
     }
+
+    for (let col = 0; col <= this.columns; col++) {
+      // Vertical lines
+      //const x = col * (canvasConfig.width / this.columns);
+      const x = col * this.cellWidth;
+      CanvasUtils.drawLineFromPoints({ x, y: 0 }, { x, y: canvasConfig.height }, this.lineWidth, "yellow");
+    }
+    for (let row = 0; row <= this.rows; row++) {
+      // Horizontal lines
+      const y = row * this.cellHeight;
+      CanvasUtils.drawLineFromPoints({ x: 0, y }, { x: canvasConfig.width, y }, this.lineWidth, "yellow");
+    }
+
   }
 
   displayGameOver() {
-    CanvasUtils.drawText(200, 200, "Game Over", 4, "red");
-    CanvasUtils.drawText(200, 250, "Press Enter to Restart", 3, "white");
+    this.renderBoard();
 
+    let x2 = 310;
+    // Determine the game over message (win or draw)
+    let message = '';
+    const symbol = this.playerSymbols[this.currentPlayer - 1];
+    const color = symbol === 'R' ? "red" : symbol === 'B' ? "black" : "yellow";
+
+    if (this.isBoardFull() && !this.checkWin('R') && !this.checkWin('B')) {
+      message = "It's a Draw!";
+      x2 += 85;  // Adjust x2 for draw message if needed
+    } else {
+      message = "The winner is: `" + color + "`";
+    }
+
+    // Set the vertical positions for the text
+    const y1 = this.cellHeight * 2 - 10;
+    const y2 = this.cellHeight * 3 - 10;
+    const y3 = this.cellHeight * 4 - 10;
+
+    // Display "Game Over" text
+    CanvasUtils.drawText(400, y1, "Game Over", 4, "red");
+
+    // Blink the winner or draw message
+    if (this.counter++ > 10) {
+      this.counter = 0;       // Reset counter after 10 frames
+      this.blinkOn = !this.blinkOn;  // Toggle the blink state
+    }
+
+    if (this.blinkOn) {
+      CanvasUtils.drawText(x2, y2, message, 3, "blue");
+    }
+
+    // Display restart message
+    CanvasUtils.drawText(280, y3, "Press `Enter` to Restart", 3, "blue");
+
+    // Check for restart input
     if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
       this.resetBoard();
       this.gameState = "attract";
     }
   }
+
 }
 
 export default Game;
