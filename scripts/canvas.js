@@ -218,6 +218,8 @@ class CanvasUtils {
     }
 
     static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
+    //   const start1 = { x: 0, y: 0 };
+    //   const end1   = { x: 500, y: 500 };
         CanvasUtils.drawLine(start.x, start.y, end.x, end.y, lineWidth, strokeColor);
     }
 
