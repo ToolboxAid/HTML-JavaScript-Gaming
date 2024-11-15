@@ -30,6 +30,8 @@ window.fullscreenColor = canvasConfig.fullscreenColor;
 window.borderColor = "#888888";
 window.borderSize = 5;
 
+window.fullscreenY=590;
+
 // Configuration for FPS display
 window.fpsShow = true;
 window.fpsColor = "yellow";

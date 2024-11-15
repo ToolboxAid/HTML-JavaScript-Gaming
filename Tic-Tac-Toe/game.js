@@ -7,6 +7,7 @@ import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
+import AttractMode from './attractMode.js';
 
 class Game {
 
@@ -28,16 +29,16 @@ class Game {
     this.gameInitialized = false;
     this.backToAttract = 600;
     this.backToAttractCounter = 0;
+
+    // Initialize Attract Mode
+    this.attractMode = new AttractMode(this.board);
   }
 
   gameLoop(ctx, deltaTime) {
     this.keyboardInput.update();
     switch (this.gameState) {
       case "attract":
-        this.displayAttractMode();
-        break;
-      case "playerSelect":
-        this.displayPlayerSelect();
+        this.displayAttractMode(deltaTime);
         break;
       case "initGame":
         if (!this.gameInitialized) {
@@ -53,36 +54,31 @@ class Game {
     }
   }
 
-  displayAttractMode() {
+  displayAttractMode(deltaTime) {
+    this.drawGrid();
+    this.drawBoard();
+
+    // Run AttractMode to randomly place X and O
+    this.attractMode.update(deltaTime);
+
+    // Display attract text
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to Tic-Tac-Toe!", 125, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` to Start", 125, 300);
+    const gridSize = canvasConfig.width / 3;
+    CanvasUtils.ctx.fillText("Welcome to Tic-Tac-Toe", 150, gridSize - 10);
+    CanvasUtils.ctx.fillText("Press `Enter` to Start", 150, gridSize * 2 - 10);
 
     if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
-      this.gameState = "playerSelect";
-    }
-  }
-
-  displayPlayerSelect() {
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Select Player Mode", 250, 200);
-    CanvasUtils.ctx.fillText("Press `1` for Single Player", 250, 250);
-    CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
-
-    if (this.keyboardInput.getKeyJustPressed().includes('Digit1')) {
-      this.playerCount = 1;
-      this.gameState = "initGame";
-    } else if (this.keyboardInput.getKeyJustPressed().includes('Digit2')) {
-      this.playerCount = 2;
+      this.resetGame();
       this.gameState = "initGame";
     }
-    this.gameState = "initGame";
   }
 
   initializeGame() {
-    this.board = Array(9).fill(null);
+    // Clear the board
+    for (let i = 0; i < this.board.length; i++) {
+      this.board[i] = null;
+    }
     this.currentPlayer = 1;
     this.winner = null;
     this.movesMade = 0;
@@ -113,7 +109,7 @@ class Game {
     for (let i = 0; i < 9; i++) {
       const x = (i % 3) * gridSize + 10;// + gridSize / 2;
       const y = Math.floor(i / 3) * gridSize + gridSize / 4;
-      CanvasUtils.ctx.fillText((i + 1).toString(), x, y-20);
+      CanvasUtils.ctx.fillText((i + 1).toString(), x, y - 20);
     }
   }
 
@@ -124,7 +120,6 @@ class Game {
     for (let i = 0; i < 9; i++) {
       const x = (i % 3) * gridSize + 45;
       const y = Math.floor(i / 3) * gridSize + 40;
-
       if (this.board[i] === "X") {
         CanvasUtils.drawText(x, y, "X", 22, "red");
       } else if (this.board[i] === "O") {
@@ -190,6 +185,7 @@ class Game {
     this.gameInitialized = false;
     this.winner = null;
     this.gameState = "attract";
+    this.attractMode.reset();
   }
 
 }
