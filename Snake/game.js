@@ -8,8 +8,6 @@ import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
 
-import AttractScreen from './attract.js';
-
 class Game {
   constructor() {
     this.keyboardInput = new KeyboardInput();
