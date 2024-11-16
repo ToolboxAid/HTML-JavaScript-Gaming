@@ -442,15 +442,11 @@ class Game {
 
         console.log("AttractMode.coun", AttractMode.count);
         if (AttractMode.count === 0) {
-            this.removeDeadEnemy();
-            Enemy.remainingEnemies = this.gameEnemies.size;
-
-            
-            Enemy.unsetEnemiesInitialized();
-
-            //this.findBottom();
             this.resetPlayers();
-            //Enemy.unsetEnemiesInitialized()
+            this.removeDeadEnemy();
+            Enemy.remainingEnemies = this.gameEnemies.size;            
+            Enemy.unsetEnemiesInitialized();
+            
             this.initializeGameShields();
             this.initializeGameGround();
             this.gameState = "attract";

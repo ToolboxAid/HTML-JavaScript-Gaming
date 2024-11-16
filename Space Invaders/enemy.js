@@ -63,6 +63,14 @@ class Enemy extends ObjectKillable {
 
     static enemiesInitialized = false;
 
+    static prepSpeed = false;
+    static doSpeed = false;
+
+    static prepMoveDown = false;
+    static doMoveDown = false;
+
+    static reorgID = 0;
+    
     static getRow() {
         return Enemy.enemyRow;
     }
@@ -107,7 +115,7 @@ class Enemy extends ObjectKillable {
         }
     }
 
-    static reorgID = 0;
+
     reorgID() {
         this.enemyID = Enemy.reorgID++;
         Enemy.prepSpeed = true;
@@ -152,11 +160,7 @@ class Enemy extends ObjectKillable {
         }
     }
 
-    static prepSpeed = false;
-    static doSpeed = false;
 
-    static prepMoveDown = false;
-    static doMoveDown = false;
     update(deltaTime) {
         if (this.isAlive()) {
             if (this.enemyID === Enemy.nextID) {
