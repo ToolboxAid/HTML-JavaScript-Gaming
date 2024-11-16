@@ -11,10 +11,7 @@ import AttractMode from './attractMode.js';
 
 class Game {
 
-  constructor(canvas, ctx) {
-    this.ctx = ctx;
-    this.canvas = canvas;
-
+  constructor() {
     // Canvas needs to know the current directory to game.js for dynamic imports
     const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     window.canvasPath = currentDir;
