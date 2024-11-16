@@ -48,8 +48,6 @@ export default class AttractMode {
     }
 
     reset() {
-        console.log("reset() called");
-
         // Clear the board
         for (let i = 0; i < this.board.length; i++) {
             this.board[i] = null;
