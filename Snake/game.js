@@ -8,6 +8,8 @@ import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
 
+import AttractScreen from './attract.js';
+
 class Game {
   constructor() {
     this.keyboardInput = new KeyboardInput();
@@ -22,8 +24,8 @@ class Game {
     this.lastMoveTime = 0;
 
 
-    // Initialize Attract Screen with a callback to start the game
-    this.attractScreen = new AttractScreen(() => this.startGame());    
+    // Initialize AttractScreen
+    this.attractScreen = new AttractScreen();   
   }
 
   gameLoop(deltaTime) {
@@ -52,12 +54,11 @@ class Game {
     }
   }
 
-  displayAttractMode() {    
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to Snake Game", 150, 150);
-    CanvasUtils.ctx.fillText("Press `Enter` to Start", 150, 250);
+  displayAttractMode(deltaTime) {
+    // Update AttractScreen
+    this.attractScreen.update(deltaTime);
 
+    // Check for player input to start the game
     if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
       this.resetGame();
       this.gameState = "initGame";
