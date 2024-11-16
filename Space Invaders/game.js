@@ -29,6 +29,7 @@ import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
+import AttractMode from './attractMode.js';
 class Game {
 
     static scoreFlash = 0;
@@ -67,6 +68,8 @@ class Game {
         // Non-player items
         this.laser = null;
         this.enemyShip = EnemyShip.getInstance();
+
+        this.attractMode = new AttractMode();
     }
 
     setGameEnemiesBottom(column) {
@@ -128,26 +131,26 @@ class Game {
     drawScore() {
         const color = 'yellow';
         const pixelSize = 5;
-    
+
         // Draw score labels
         CanvasUtils.drawText(50, 30, "SCORE-1", pixelSize, 'red');
         CanvasUtils.drawText(300, 30, "MIDWAY", pixelSize, 'red');
         CanvasUtils.drawText(550, 30, "SCORE-2", pixelSize, 'red');
-    
+
         // Display Player 1's score if Game.scoreOn is true and current player is 1
         if (Game.scoreOnPlayer1) {
             CanvasUtils.drawNumber(90, 80, this.players[0].score, pixelSize, color, 4, '0');
         }
-    
+
         // Display high score
         CanvasUtils.drawNumber(340, 80, this.highScore, pixelSize, color, 4, '0');
-    
+
         // Display Player 2's score if Game.scoreOn is true and current player is 2
         if (Game.scoreOnPlayer2) {
             CanvasUtils.drawNumber(590, 80, this.players[1].score, pixelSize, color, 4, '0');
         }
     }
-   
+
 
     drawLives(player) {
         const dwn = 900;
@@ -297,18 +300,16 @@ class Game {
     removeDeadEnemy() {
         let foundDead = false;
         let foundID = -1;
-        let foundKey = null;
         this.gameEnemies.forEach((enemy) => {
             if (enemy.isDead()) {
                 foundID = enemy.enemyID;
-                //foundKey = enemy.key;
                 foundDead = this.gameEnemies.delete(enemy.key);
-                //console.log("removed gameEnemies key: ", foundKey)
+                console.log(foundDead);
             }
         });
-
         if (foundDead) {
             Enemy.remainingEnemies = this.gameEnemies.size;
+            console.log(Enemy.remainingEnemies);
             Enemy.reorgID = 0;
             if (foundID < Enemy.nextID) {
                 Enemy.nextID--;
@@ -438,11 +439,40 @@ class Game {
 
     // Display Functions
     displayAttractMode(deltaTime) {
-        CanvasUtils.drawText(150, 200, "Welcome to the Game!", 3.5, "white");
-        CanvasUtils.drawText(150, 300, "Press `Enter` to Start", 3.5, "white");
-        console.log("attract");
+
+        console.log("AttractMode.coun", AttractMode.count);
+        if (AttractMode.count === 0) {
+            this.removeDeadEnemy();
+            Enemy.remainingEnemies = this.gameEnemies.size;
+
+            
+            Enemy.unsetEnemiesInitialized();
+
+            //this.findBottom();
+            this.resetPlayers();
+            //Enemy.unsetEnemiesInitialized()
+            this.initializeGameShields();
+            this.initializeGameGround();
+            this.gameState = "attract";
+            console.log("Enemy.enemyID",Enemy.enemyID);
+        }
+
+        if (AttractMode.count < 22) {
+            this.initializeGameEnemy();
+            this.attractMode.setup(this.gameEnemies, this.shields, this.grounds);
+            this.gameEnemies.forEach((enemy) => {
+                enemy.reorgID();
+                //console.log(enemy.enemyID);
+            });
+        }
+
+        this.attractMode.update(1 / 60);
+        this.attractMode.draw();
+
+        this.drawScore();
 
         if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+            AttractMode.count = 0;
             this.gameState = "playerSelect";
         }
     }
@@ -571,8 +601,8 @@ class Game {
         // Game.scoreDelay = 0;    // Reset delay counter
         // Game.scoreOn = false;   // Start with score invisible
         this.flashPlayerScore();
-        Game.scoreOnPlayer2 = Game.scoreOn;        
-        this.drawGame();        
+        Game.scoreOnPlayer2 = Game.scoreOn;
+        this.drawGame();
     }
 
     // Draw Game
