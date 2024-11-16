@@ -12,11 +12,7 @@ import KeyboardInput from '../scripts/keyboard.js';
 class Game {
 
     constructor(){
-    // Canvas needs to know the current directory to game.js for dynamic imports
-    const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    window.canvasPath = currentDir;
-
-    this.keyboardInput = new KeyboardInput();
+     this.keyboardInput = new KeyboardInput();
 
     // Game State Variables
     this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
