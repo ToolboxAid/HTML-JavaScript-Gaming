@@ -255,6 +255,11 @@ class CanvasUtils {
         }
     }
 
+    static drawRect(x, y, width, height, color) {
+    CanvasUtils.ctx.fillStyle = color;
+    CanvasUtils.ctx.fillRect(x, y, width, height);
+  }
+
     static clickFullscreen() {
         if (!Fullscreen.isFullScreen) {
             // Set up the text properties using global variables or default values

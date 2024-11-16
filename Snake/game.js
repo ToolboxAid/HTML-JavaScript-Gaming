@@ -1,0 +1,199 @@
+// ToolboxAid.com
+// David Quesenberry
+// game.js
+// 11/15/2024
+
+import { canvasConfig } from './global.js';
+import CanvasUtils from '../scripts/canvas.js';
+import Fullscreen from '../scripts/fullscreen.js';
+import KeyboardInput from '../scripts/keyboard.js';
+
+import AttractScreen from './attract.js';
+
+class Game {
+  constructor() {
+    this.keyboardInput = new KeyboardInput();
+    this.gameState = "attract";
+    this.snake = [];
+    this.direction = 'right';
+    this.food = {};
+    this.score = 0;
+    this.gameInitialized = false;
+    this.tileSize = 20;
+    this.gameSpeed = 100;
+    this.lastMoveTime = 0;
+
+
+    // Initialize Attract Screen with a callback to start the game
+    this.attractScreen = new AttractScreen(() => this.startGame());    
+  }
+
+  gameLoop(deltaTime) {
+    this.keyboardInput.update();
+
+    switch (this.gameState) {
+      case "attract":
+        this.displayAttractMode();
+        break;
+      case "initGame":
+        if (!this.gameInitialized) {
+          this.initializeGame();
+        }
+        break;
+      case "playGame":
+        if (Date.now() - this.lastMoveTime > this.gameSpeed) {
+          this.playGame();
+          this.lastMoveTime = Date.now();
+        }else{
+          this.drawGame() ;
+        }
+        break;
+      case "gameOver":
+        this.displayGameOver();
+        break;
+    }
+  }
+
+  displayAttractMode() {    
+    CanvasUtils.ctx.fillStyle = "white";
+    CanvasUtils.ctx.font = "30px Arial";
+    CanvasUtils.ctx.fillText("Welcome to Snake Game", 150, 150);
+    CanvasUtils.ctx.fillText("Press `Enter` to Start", 150, 250);
+
+    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+      this.resetGame();
+      this.gameState = "initGame";
+    }
+  }
+
+  initializeGame() {
+    // Initialize Snake
+    this.snake = [{ x: 100, y: 100 }, { x: 80, y: 100 }, { x: 60, y: 100 }];
+    this.direction = 'right';
+    this.spawnFood();
+    this.score = 0;
+    this.gameInitialized = true;
+    this.gameState = "playGame";
+  }
+
+  playGame() {
+    this.handleInput();
+    this.moveSnake();
+    this.checkCollision();
+    this.drawGame();
+  }
+
+  handleInput() {
+    const keyPressed = this.keyboardInput.getKeyPressed();
+    if (keyPressed.includes('ArrowUp') && this.direction !== 'down') {
+      this.direction = 'up';
+    } else if (keyPressed.includes('ArrowDown') && this.direction !== 'up') {
+      this.direction = 'down';
+    } else if (keyPressed.includes('ArrowLeft') && this.direction !== 'right') {
+      this.direction = 'left';
+    } else if (keyPressed.includes('ArrowRight') && this.direction !== 'left') {
+      this.direction = 'right';
+    }
+  }
+
+  moveSnake() {
+    const head = { ...this.snake[0] };
+
+    switch (this.direction) {
+      case 'up':
+        head.y -= this.tileSize;
+        break;
+      case 'down':
+        head.y += this.tileSize;
+        break;
+      case 'left':
+        head.x -= this.tileSize;
+        break;
+      case 'right':
+        head.x += this.tileSize;
+        break;
+    }
+
+    this.snake.unshift(head);
+
+    // Check if the snake ate the food
+    if (head.x === this.food.x && head.y === this.food.y) {
+      this.score += 10;
+      this.spawnFood();
+    } else {
+      this.snake.pop(); // Remove the tail
+    }
+  }
+
+  checkCollision() {
+    const head = this.snake[0];
+
+    // Check collision with walls
+    if (
+      head.x < 0 || 
+      head.y < 0 || 
+      head.x >= canvasConfig.width || 
+      head.y >= canvasConfig.height
+    ) {
+      this.gameState = "gameOver";
+    }
+
+    // Check collision with self
+    for (let i = 1; i < this.snake.length; i++) {
+      if (head.x === this.snake[i].x && head.y === this.snake[i].y) {
+        this.gameState = "gameOver";
+      }
+    }
+  }
+
+  drawGame() {
+    // Draw Snake
+    this.snake.forEach(segment => {
+      CanvasUtils.drawRect(segment.x, segment.y, this.tileSize, this.tileSize, 'green');
+    });
+
+    // Draw Food
+    CanvasUtils.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
+
+    // Draw Score
+    CanvasUtils.ctx.fillStyle = 'white';
+    CanvasUtils.ctx.font = "20px Arial";
+    CanvasUtils.ctx.fillText(`Score: ${this.score}`, 10, 20);
+  }
+
+  spawnFood() {
+    const cols = canvasConfig.width / this.tileSize;
+    const rows = canvasConfig.height / this.tileSize;
+
+    this.food = {
+      x: Math.floor(Math.random() * cols) * this.tileSize,
+      y: Math.floor(Math.random() * rows) * this.tileSize
+    };
+  }
+
+  displayGameOver() {    
+    CanvasUtils.ctx.fillStyle = "white";
+    CanvasUtils.ctx.font = "30px Arial";
+    CanvasUtils.ctx.fillText("Game Over!", 200, 150);
+    CanvasUtils.ctx.fillText(`Score: ${this.score}`, 220, 200);
+    CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 250);
+
+    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+      this.resetGame();
+    }
+  }
+
+  resetGame() {
+    this.gameInitialized = false;
+    this.gameState = "attract";
+  }
+}
+
+// Export the Game class
+export default Game;
+
+// Canvas needs to know the current directory to game.js for dynamic imports
+const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+window.canvasPath = currentDir;
+
+

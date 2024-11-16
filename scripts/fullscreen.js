@@ -69,7 +69,7 @@ class Fullscreen {
         Fullscreen.canvas.width = window.gameAreaWidth * scale;
         Fullscreen.canvas.height = window.gameAreaHeight * scale;
 
-        console.log("setCanvasSize: ", Fullscreen.canvas.width, Fullscreen.canvas.height);
+        // console.log("setCanvasSize: ", Fullscreen.canvas.width, Fullscreen.canvas.height);
     }
 
     static updateCanvasTransform() {
