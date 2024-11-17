@@ -70,7 +70,7 @@ class Enemy extends ObjectKillable {
     static doMoveDown = false;
 
     static reorgID = 0;
-    
+
     static getRow() {
         return Enemy.enemyRow;
     }
@@ -84,11 +84,11 @@ class Enemy extends ObjectKillable {
         Enemy.nextID = 0;
 
         // newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
-    
+
         // Enemy configurations for octopus, squid, and crab
         Enemy.enemyRow = 0;
         Enemy.enemyCol = 0;
-           
+
         Enemy.enemiesInitialized = false;
     }
 
@@ -200,8 +200,16 @@ class Enemy extends ObjectKillable {
         return (randomNumber <= this.bombAggression);
     }
 
-    toString() {
-        console.log(`Key: ${this.key}, Status: ${this.status}, velocityX ${this.velocityX}`);
+    toString(from = "default: ") {
+        console.log(`
+            ${from},
+            NextID: ${Enemy.nextID},
+            EnemyID: ${Enemy.enemyID},
+            Key: ${this.key}, 
+            ID: ${this.enemyID},
+            Status: ${this.status},
+            velocityX ${this.velocityX},            
+            `);
     }
 
 }

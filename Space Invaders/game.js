@@ -438,37 +438,21 @@ class Game {
     }
 
     // Display Functions
-    displayAttractMode(deltaTime) {
-
-        console.log("AttractMode.coun", AttractMode.count);
-        if (AttractMode.count === 0) {
-            this.resetPlayers();
-            this.removeDeadEnemy();
-            Enemy.remainingEnemies = this.gameEnemies.size;            
-            Enemy.unsetEnemiesInitialized();
-            
-            this.initializeGameShields();
-            this.initializeGameGround();
-            this.gameState = "attract";
-            console.log("Enemy.enemyID",Enemy.enemyID);
-        }
-
-        if (AttractMode.count < 22) {
-            this.initializeGameEnemy();
-            this.attractMode.setup(this.gameEnemies, this.shields, this.grounds);
-            this.gameEnemies.forEach((enemy) => {
-                enemy.reorgID();
-                //console.log(enemy.enemyID);
-            });
-        }
-
-        this.attractMode.update(1 / 60);
+    displayAttractMode() {
+        this.attractMode.update();
         this.attractMode.draw();
-
         this.drawScore();
+        CanvasUtils.drawSprite(127, 800, Player.frame[0], spriteConfig.pixelSize);
+
+        const dwn = 900;
+        const color = 'white';
+        const pixelSize = 5;
+        CanvasUtils.drawNumber(15, dwn, 0, pixelSize, color, 2, '0');
+        CanvasUtils.drawSprite(95, dwn, Player.frame[0], spriteConfig.pixelSize);
 
         if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
             AttractMode.count = 0;
+            this.resetPlayers();
             this.gameState = "playerSelect";
         }
     }
@@ -477,8 +461,6 @@ class Game {
         CanvasUtils.drawText(150, 200, "Select Player Mode", 3.5, "white");
         CanvasUtils.drawText(150, 250, "Press `1` for One Player", 3.5, "white");
         CanvasUtils.drawText(150, 300, "Press `2` for Two Players", 3.5, "white");
-
-        console.log("player select");
 
         if (this.keyboardInput.getKeyJustPressed().includes('Digit1')) {
             this.playerCount = 1;
