@@ -5,7 +5,7 @@
 
 import ObjectDynamic from './objectDynamic.js';
 import CanvasUtils from './canvas.js';
-//TODO: this class has to much ties to Space Invaders.
+//FIXME: this class has to much detail about Space Invaders.
 import { canvasConfig, spriteConfig } from '../Space Invaders/global.js';
 
 class ObjectKillable extends ObjectDynamic {
