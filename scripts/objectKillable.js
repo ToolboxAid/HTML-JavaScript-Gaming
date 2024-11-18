@@ -174,7 +174,7 @@ class ObjectKillable extends ObjectDynamic {
 
     setSpriteColor(spriteColor) {
         // Check if the color is a valid named color in the color map
-        const isNamedColor = Object.values(CanvasUtils.colorMap).includes(spriteColor);
+        const isNamedColor = Object.values(CanvasUtils.colorMapSprite).includes(spriteColor);
 
         // Check if the color is a valid hexadecimal color code
         const isHexColor = /^#([0-9A-F]{3}){1,2}$/i.test(spriteColor);
