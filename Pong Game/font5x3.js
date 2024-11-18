@@ -6,8 +6,10 @@
 
 import { font5x3 } from './global.js';
 import { canvasConfig } from './global.js';
+import CanvasUtils from '../scripts/canvas.js';
+
 class Font5x3 {
-    static #font = {
+    static font = {
         '0': [
             [1, 1, 1],
             [1, 0, 1],
@@ -80,41 +82,43 @@ class Font5x3 {
         ]
     };
 
-    static #formatScore(score) {
-        return score.toString().padStart(2, '0'); // Format score to 2 digits
-    }
 
-    static #drawChar(ctx, char, x, y, pixelWidth, pixelHeight) {
-        const characterMatrix = this.#font[char];
+    static #drawChar(char, x, y, pixelWidth, pixelHeight) {
+        const characterMatrix = Font5x3.font[char];
         if (!characterMatrix) return; // Ignore if character doesn't exist
 
-        ctx.fillStyle = font5x3.color;
+        CanvasUtils.ctx.fillStyle = font5x3.color;
 
         for (let row = 0; row < characterMatrix.length; row++) {
             for (let col = 0; col < characterMatrix[row].length; col++) {
                 if (characterMatrix[row][col] === 1) {
-                    ctx.fillRect(x + col * pixelWidth, y + row * pixelHeight, pixelWidth + 1, pixelHeight + 1);
+                    CanvasUtils.ctx.fillRect(x + col * pixelWidth, y + row * pixelHeight, pixelWidth + 1, pixelHeight + 1);
                 }
             }
         }
     }
 
-    static drawScores(ctx, leftPaddle, rightPaddle) {
-        const player1X = (canvasConfig.width / 2) - (font5x3.pixelWidth * 24); // X position for Player 1 score
-        const player2X = (canvasConfig.width / 2) + (font5x3.pixelWidth * 18); // X position for Player 2 score
-
-        const y = 30;  // Y position for scores
-
-        // Draw Player 1 Score
-        const formattedScore1 = this.#formatScore(leftPaddle.score);
-        this.#drawChar(ctx, formattedScore1[0], player1X, y, font5x3.pixelWidth, font5x3.pixelHeight); // Tens
-        this.#drawChar(ctx, formattedScore1[1], player1X + (4 * font5x3.pixelWidth), y, font5x3.pixelWidth, font5x3.pixelHeight); // Units
-
-        // Draw Player 2 Score
-        const formattedScore2 = this.#formatScore(rightPaddle.score);
-        this.#drawChar(ctx, formattedScore2[0], player2X, y, font5x3.pixelWidth, font5x3.pixelHeight); // Tens
-        this.#drawChar(ctx, formattedScore2[1], player2X + (4 * font5x3.pixelWidth), y, font5x3.pixelWidth, font5x3.pixelHeight); // Units
+    static #formatNumber(number, digits) {
+        return number.toString().padStart(digits, '0'); // Format number to 2 digits
     }
+
+    // todo: this is specific to PONG, needs to be for number only.
+    static drawNumber(x, y, number, digits) {
+        const formattedNumber = this.#formatNumber(number, digits);
+
+        // Loop through each character in formattedNumber
+        for (let i = 0; i < formattedNumber.length; i++) {
+            const offsetX = i * (4 * font5x3.pixelWidth); // Calculate the x-offset for each character
+            this.#drawChar(
+                formattedNumber[i],  // Current character
+                x + offsetX,         // Adjusted x-position
+                y,                   // y-position remains the same
+                font5x3.pixelWidth,  // Character width
+                font5x3.pixelHeight  // Character height
+            );
+        }
+    }
+
 }
 
 // Export the Font5x3 class

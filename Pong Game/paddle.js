@@ -7,6 +7,7 @@ import { canvasConfig, paddleConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 import Functions from '../scripts/functions.js';
 import { AudioPlayer } from '../scripts/audioPlayer.js';
+import CanvasUtils from '../scripts/canvas.js';
 
 class Paddle extends ObjectStatic {
 
@@ -125,16 +126,17 @@ class Paddle extends ObjectStatic {
         this.updateTailOpacities();
     }
 
-    draw(ctx) {
+    draw() {
         // Draw the tail
+        
         for (let i = 0; i < this.previousPositions.length; i++) {
             const pos = this.previousPositions[i];
             const opacity = this.tailOpacities[i];
-            ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.15})`; // Fade effect
-            ctx.fillRect(pos.x, pos.y, this.width, this.height);
+            CanvasUtils.ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.15})`; // Fade effect
+            CanvasUtils.ctx.fillRect(pos.x, pos.y, this.width, this.height);
         }
 
-        super.draw(ctx, this.color);
+        super.draw(this.color);
     }
 }
 

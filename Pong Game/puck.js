@@ -9,9 +9,7 @@ import CanvasUtils from '../scripts/canvas.js';
 
 import ObjectDynamic from '../scripts/objectDynamic.js';
 import Functions from '../scripts/functions.js';
-//import Intersect from '../scripts/intersect.js';
 import { AudioPlayer } from '../scripts/audioPlayer.js';
-
 const debug = false;
 
 class Puck extends ObjectDynamic {
@@ -48,21 +46,20 @@ class Puck extends ObjectDynamic {
         }
     }
 
-    draw(ctx) {
+    draw() {
         // Draw the tail
         for (let i = 0; i < this.previousPositions.length; i++) {
             const pos = this.previousPositions[i];
-            ctx.fillStyle = `rgba(255, 255, 255, ${(1 - ((this.tailLength - i) / this.tailLength)) * 0.15})`; // Fade effect
-            ctx.beginPath();
-            //ctx.arc(pos.x, pos.y, this.width / 2, 0, Math.PI * 2); // Draw a circle for each position
-            ctx.fillRect(pos.x, pos.y, this.width, this.height);
-            ctx.fill();
+            CanvasUtils.ctx.fillStyle = `rgba(255, 255, 255, ${(1 - ((this.tailLength - i) / this.tailLength)) * 0.15})`; // Fade effect
+            CanvasUtils.ctx.beginPath();
+            CanvasUtils.ctx.fillRect(pos.x, pos.y, this.width, this.height);
+            CanvasUtils.ctx.fill();
         }
 
-        super.draw(ctx, puckConfig.color);
+        super.draw(puckConfig.color);
     }
 
-    update(ctx, leftPaddle, rightPaddle, deltaTime) {
+    update(leftPaddle, rightPaddle, deltaTime) {
         super.update(deltaTime);
 
         // Store the current position before updating

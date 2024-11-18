@@ -4,6 +4,7 @@
 // celestialBody.js
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
+import CanvasUtils from '../scripts/canvas.js';
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 
 /**
@@ -70,7 +71,8 @@ class CelestialBody extends ObjectDynamic {
         super.update(deltaTime);
     }
 
-    draw(ctx) {
+    draw() {
+        const ctx = CanvasUtils.ctx;
         // order matters, draw orbits, rings, bodies, moons
         const centerX = canvasConfig.width / 2;
         const centerY = canvasConfig.height / 2;

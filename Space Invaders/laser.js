@@ -34,7 +34,7 @@ class Laser extends ObjectDynamic {
         this.currentFrameIndex = 0;
     }
 
-    draw(ctx) {
+    draw() {
         CanvasUtils.drawSprite(this.x, this.y, this.livingFrames, this.pixelSize, spriteConfig.lazerColor);  // no [0] for single dimension arrays
     }
 

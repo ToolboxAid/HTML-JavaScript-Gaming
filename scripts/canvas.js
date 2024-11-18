@@ -8,21 +8,15 @@ import CanvasUtil from '../scripts/canvas.js'
 import Font5x6 from './font5x6.js';
 
 class CanvasUtils {
+
+
+    /**
+     * Draw FPS
+     */
     static frameCount = 0;
     static lastFPSUpdateTime = performance.now(); // Used for FPS calculation
     static lastFrameTime = performance.now(); // Used for frame delta calculation
     static fps = 0;
-
-    static gameModule;
-    static lastTimestamp = 0;
-
-    static ctx = null;
-    static initCanvas(ctx) {
-        CanvasUtil.ctx = ctx;
-        CanvasUtil.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
-        CanvasUtil.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
-    }
-
     static drawFPS() {
         this.frameCount++;
 
@@ -41,12 +35,10 @@ class CanvasUtils {
         CanvasUtil.ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
     }
 
-    static drawBorder() {
-        CanvasUtil.ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
-        CanvasUtil.ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
-        CanvasUtil.ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
-    }
-
+    /**
+     * 
+     * Draw text and numbers 
+     */
     static drawNumber(x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         const numberStr = number.toString();
         const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
@@ -65,18 +57,14 @@ class CanvasUtils {
             if (frame) {
                 // Assuming each character has a fixed width, you can adjust the space here
                 const charWidth = frame[0].length; // Get the width from the frame
-
-                // Not needed, completed in drawSprite()
-                // const cx = Math.ceil(x + i * (charWidth * pixelSize + 5));
-                // const cy = Math.ceil(y);
-                // const cp = Math.ceil(pixelSize);
-                // CanvasUtil.drawSprite( cx, cy, frame, cp, color);
-
-                CanvasUtil.drawSprite( x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
+                CanvasUtil.drawSprite(x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
             }
         }
     }
 
+    /**
+     *  Sprite methods
+     */
     static getSpriteText(text, space = 1) {
         // Initialize the sprite array
         const sprite = [];
@@ -107,68 +95,8 @@ class CanvasUtils {
         return sprite;
     }
 
-    static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
-        CanvasUtil.ctx.lineWidth = lineSize;
-        CanvasUtil.ctx.strokeStyle = color;
-        CanvasUtil.ctx.strokeRect(x, y, w, h);
-    }
-
-    // Predefined list of valid color names
-    static colorMapNamed = {
-        aliceblue: "#f0f8ff", antiquewhite: "#faebd7", aqua: "#00ffff", aquamarine: "#7fffd4",
-        azure: "#f0ffff", beige: "#f5f5dc", bisque: "#ffe4c4", black: "#000000",
-        blanchedalmond: "#ffebcd", blue: "#0000ff", blueviolet: "#8a2be2", brown: "#a52a2a",
-        burlywood: "#deb887", cadetblue: "#5f9ea0", chartreuse: "#7fff00", chocolate: "#d2691e",
-        coral: "#ff7f50", cornflowerblue: "#6495ed", cornsilk: "#fff8dc", crimson: "#dc143c",
-        cyan: "#00ffff", darkblue: "#00008b", darkcyan: "#008b8b", darkgoldenrod: "#b8860b",
-        darkgray: "#a9a9a9", darkgreen: "#006400", darkkhaki: "#bdb76b", darkmagenta: "#8b008b",
-        darkolivegreen: "#556b2f", darkorange: "#ff8c00", darkorchid: "#9932cc", darkred: "#8b0000",
-        darksalmon: "#e9967a", darkseagreen: "#8fbc8f", darkslateblue: "#483d8b", darkslategray: "#2f4f4f",
-        darkturquoise: "#00ced1", darkviolet: "#9400d3", deeppink: "#ff1493", deepskyblue: "#00bfff",
-        dimgray: "#696969", dodgerblue: "#1e90ff", firebrick: "#b22222", floralwhite: "#fffaf0",
-        forestgreen: "#228b22", fuchsia: "#ff00ff", gainsboro: "#dcdcdc", ghostwhite: "#f8f8ff",
-        gold: "#ffd700", goldenrod: "#daa520", gray: "#808080", green: "#008000",
-        greenyellow: "#adff2f", honeydew: "#f0fff0", hotpink: "#ff69b4", indianred: "#cd5c5c",
-        indigo: "#4b0082", ivory: "#fffff0", khaki: "#f0e68c", lavender: "#e6e6fa",
-        lavenderblush: "#fff0f5", lawngreen: "#7cfc00", lemonchiffon: "#fffacd", lightblue: "#add8e6",
-        lightcoral: "#f08080", lightcyan: "#e0ffff", lightgoldenrodyellow: "#fafad2", lightgreen: "#90ee90",
-        lightgrey: "#d3d3d3", lightpink: "#ffb6c1", lightsalmon: "#ffa07a", lightseagreen: "#20b2aa",
-        lightskyblue: "#87cefa", lightslategray: "#778899", lightsteelblue: "#b0c4de", lightyellow: "#ffffe0",
-        lime: "#00ff00", limegreen: "#32cd32", linen: "#faf0e6", magenta: "#ff00ff",
-        maroon: "#800000", mediumaquamarine: "#66cdaa", mediumblue: "#0000cd", mediumorchid: "#ba55d3",
-        mediumpurple: "#9370db", mediumseagreen: "#3cb371", mediumslateblue: "#7b68ee", mediumspringgreen: "#00fa9a",
-        mediumturquoise: "#48d1cc", mediumvioletred: "#c71585", midnightblue: "#191970", mintcream: "#f5fffa",
-        mistyrose: "#ffe4e1", moccasin: "#ffe4b5", navajowhite: "#ffdead", navy: "#000080",
-        oldlace: "#fdf5e6", olive: "#808000", olivedrab: "#6b8e23", orange: "#ffa500",
-        orangered: "#ff4500", orchid: "#da70d6", palegoldenrod: "#eee8aa", palegreen: "#98fb98",
-        paleturquoise: "#afeeee", palevioletred: "#db7093", papayawhip: "#ffefd5", peachpuff: "#ffdab9",
-        peru: "#cd853f", pink: "#ffc0cb", plum: "#dda0dd", powderblue: "#b0e0e6",
-        purple: "#800080", red: "#ff0000", rosybrown: "#bc8f8f", royalblue: "#4169e1",
-        saddlebrown: "#8b4513", salmon: "#fa8072", sandybrown: "#f4a460", seagreen: "#2e8b57",
-        seashell: "#fff5ee", sienna: "#a0522d", silver: "#c0c0c0", skyblue: "#87ceeb",
-        slateblue: "#6a5acd", slategray: "#708090", snow: "#fffafa", springgreen: "#00ff7f",
-        steelblue: "#4682b4", tan: "#d2b48c", teal: "#008080", thistle: "#d8bfd8",
-        tomato: "#ff6347", turquoise: "#40e0d0", violet: "#ee82ee", wheat: "#f5deb3",
-        white: "#ffffff", whitesmoke: "#f5f5f5", yellow: "#ffff00", yellowgreen: "#9acd32"
-    };
-
-    /**
-     * Validates if the given color is a valid named color or a valid hexadecimal color code
-     * including rrggbbaa format.
-     * @param {string} color - The color to validate.
-     * @returns {boolean} - True if the color is valid, false otherwise.
-     */
-    static isValidColor(color) {
-        // Check if it's a valid named color
-        if (CanvasUtils.colorMapNamed[color.toLowerCase()]) return true;
-
-        // Check if it's a valid hexadecimal color code (6 or 8 characters)
-        const hexRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
-        return hexRegex.test(color);
-    }
-
-       // Move the color map to be a static property of the class
-       static colorMapSprite = {
+    // Move the color map to be a static property of the class
+    static colorMapSprite = {
         'R': 'red',
         'O': 'orange',
         'Y': 'yellow',
@@ -260,6 +188,60 @@ class CanvasUtils {
         return { width: width, height: height };
     }
 
+    /**
+     *  Color validation
+     */
+
+    static colorMapNamed = {
+        aliceblue: "#f0f8ff", antiquewhite: "#faebd7", aqua: "#00ffff", aquamarine: "#7fffd4",
+        azure: "#f0ffff", beige: "#f5f5dc", bisque: "#ffe4c4", black: "#000000",
+        blanchedalmond: "#ffebcd", blue: "#0000ff", blueviolet: "#8a2be2", brown: "#a52a2a",
+        burlywood: "#deb887", cadetblue: "#5f9ea0", chartreuse: "#7fff00", chocolate: "#d2691e",
+        coral: "#ff7f50", cornflowerblue: "#6495ed", cornsilk: "#fff8dc", crimson: "#dc143c",
+        cyan: "#00ffff", darkblue: "#00008b", darkcyan: "#008b8b", darkgoldenrod: "#b8860b",
+        darkgray: "#a9a9a9", darkgreen: "#006400", darkkhaki: "#bdb76b", darkmagenta: "#8b008b",
+        darkolivegreen: "#556b2f", darkorange: "#ff8c00", darkorchid: "#9932cc", darkred: "#8b0000",
+        darksalmon: "#e9967a", darkseagreen: "#8fbc8f", darkslateblue: "#483d8b", darkslategray: "#2f4f4f",
+        darkturquoise: "#00ced1", darkviolet: "#9400d3", deeppink: "#ff1493", deepskyblue: "#00bfff",
+        dimgray: "#696969", dodgerblue: "#1e90ff", firebrick: "#b22222", floralwhite: "#fffaf0",
+        forestgreen: "#228b22", fuchsia: "#ff00ff", gainsboro: "#dcdcdc", ghostwhite: "#f8f8ff",
+        gold: "#ffd700", goldenrod: "#daa520", gray: "#808080", green: "#008000",
+        greenyellow: "#adff2f", honeydew: "#f0fff0", hotpink: "#ff69b4", indianred: "#cd5c5c",
+        indigo: "#4b0082", ivory: "#fffff0", khaki: "#f0e68c", lavender: "#e6e6fa",
+        lavenderblush: "#fff0f5", lawngreen: "#7cfc00", lemonchiffon: "#fffacd", lightblue: "#add8e6",
+        lightcoral: "#f08080", lightcyan: "#e0ffff", lightgoldenrodyellow: "#fafad2", lightgreen: "#90ee90",
+        lightgrey: "#d3d3d3", lightpink: "#ffb6c1", lightsalmon: "#ffa07a", lightseagreen: "#20b2aa",
+        lightskyblue: "#87cefa", lightslategray: "#778899", lightsteelblue: "#b0c4de", lightyellow: "#ffffe0",
+        lime: "#00ff00", limegreen: "#32cd32", linen: "#faf0e6", magenta: "#ff00ff",
+        maroon: "#800000", mediumaquamarine: "#66cdaa", mediumblue: "#0000cd", mediumorchid: "#ba55d3",
+        mediumpurple: "#9370db", mediumseagreen: "#3cb371", mediumslateblue: "#7b68ee", mediumspringgreen: "#00fa9a",
+        mediumturquoise: "#48d1cc", mediumvioletred: "#c71585", midnightblue: "#191970", mintcream: "#f5fffa",
+        mistyrose: "#ffe4e1", moccasin: "#ffe4b5", navajowhite: "#ffdead", navy: "#000080",
+        oldlace: "#fdf5e6", olive: "#808000", olivedrab: "#6b8e23", orange: "#ffa500",
+        orangered: "#ff4500", orchid: "#da70d6", palegoldenrod: "#eee8aa", palegreen: "#98fb98",
+        paleturquoise: "#afeeee", palevioletred: "#db7093", papayawhip: "#ffefd5", peachpuff: "#ffdab9",
+        peru: "#cd853f", pink: "#ffc0cb", plum: "#dda0dd", powderblue: "#b0e0e6",
+        purple: "#800080", red: "#ff0000", rosybrown: "#bc8f8f", royalblue: "#4169e1",
+        saddlebrown: "#8b4513", salmon: "#fa8072", sandybrown: "#f4a460", seagreen: "#2e8b57",
+        seashell: "#fff5ee", sienna: "#a0522d", silver: "#c0c0c0", skyblue: "#87ceeb",
+        slateblue: "#6a5acd", slategray: "#708090", snow: "#fffafa", springgreen: "#00ff7f",
+        steelblue: "#4682b4", tan: "#d2b48c", teal: "#008080", thistle: "#d8bfd8",
+        tomato: "#ff6347", turquoise: "#40e0d0", violet: "#ee82ee", wheat: "#f5deb3",
+        white: "#ffffff", whitesmoke: "#f5f5f5", yellow: "#ffff00", yellowgreen: "#9acd32"
+    };
+
+    static isValidColor(color) {
+        // Check if it's a valid named color
+        if (CanvasUtils.colorMapNamed[color.toLowerCase()]) return true;
+
+        // Check if it's a valid hexadecimal color code (6 or 8 characters)
+        const hexRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
+        return hexRegex.test(color);
+    }
+
+    /**
+     * Line methods
+     */
     static drawLine(x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
         CanvasUtil.ctx.lineWidth = lineWidth;
         CanvasUtil.ctx.strokeStyle = strokeColor;
@@ -271,8 +253,8 @@ class CanvasUtils {
     }
 
     static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
-    //   const start1 = { x: 0, y: 0 };
-    //   const end1   = { x: 500, y: 500 };
+        //   const start1 = { x: 0, y: 0 };
+        //   const end1   = { x: 500, y: 500 };
         CanvasUtils.drawLine(start.x, start.y, end.x, end.y, lineWidth, strokeColor);
     }
 
@@ -288,6 +270,26 @@ class CanvasUtils {
         CanvasUtil.ctx.setLineDash([]); // Reset to solid line
     }
 
+    static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
+        CanvasUtil.ctx.lineWidth = lineSize;
+        CanvasUtil.ctx.strokeStyle = color;
+        CanvasUtil.ctx.strokeRect(x, y, w, h);
+    }
+
+    static drawBorder() {
+        CanvasUtil.ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
+        CanvasUtil.ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
+        CanvasUtil.ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+    }
+
+    static drawRect(x, y, width, height, color) {
+        CanvasUtils.ctx.fillStyle = color;
+        CanvasUtils.ctx.fillRect(x, y, width, height);
+    }
+
+    /**
+     * Circle methods
+     */
     static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
         CanvasUtil.ctx.beginPath();
         CanvasUtil.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
@@ -308,10 +310,19 @@ class CanvasUtils {
         }
     }
 
-    static drawRect(x, y, width, height, color) {
-    CanvasUtils.ctx.fillStyle = color;
-    CanvasUtils.ctx.fillRect(x, y, width, height);
-  }
+    /**
+     *  Canvas Init Methods
+     */
+
+    static gameModule;
+    static lastTimestamp = 0;
+    static ctx = null;
+
+    static initCanvas(ctx) {
+        CanvasUtil.ctx = ctx;
+        CanvasUtil.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
+        CanvasUtil.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+    }
 
     static clickFullscreen() {
         if (!Fullscreen.isFullScreen) {

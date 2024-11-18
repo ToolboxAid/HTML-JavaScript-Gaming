@@ -49,7 +49,7 @@ class SolarSystem {
     this.celestialBodies = celestialBodies;
   }
 
-  moveSolarSystem(ctx, deltaTime) {
+  moveSolarSystem(deltaTime) {
     const centerX = canvasConfig.width / 2;
     const centerY = canvasConfig.height / 2;
 
@@ -63,7 +63,7 @@ class SolarSystem {
       body.update(deltaTime);
 
       // Draw the planet and its moons
-      body.draw(ctx);
+      body.draw();
     });
   }
 

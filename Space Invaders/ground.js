@@ -3,11 +3,10 @@
 // 10/24/2024
 // Ground.js
 
-import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
-import CanvasUtils from '../scripts/canvas.js';
-import Functions from '../scripts/functions.js';
-
 import { canvasConfig, spriteConfig } from './global.js';
+import CanvasUtils from '../scripts/canvas.js';
+import ObjectStatic from '../scripts/objectStatic.js'; // Ensure the class is capitalized
+
 
 class Ground extends ObjectStatic {
 
@@ -30,9 +29,9 @@ class Ground extends ObjectStatic {
         }
     }
 
-    draw(ctx) {
+    draw() {
         if (this.state === Ground.Status.ALIVE) {
-            super.draw(ctx, spriteConfig.groundColor);
+            super.draw(spriteConfig.groundColor);
         }
     }
 

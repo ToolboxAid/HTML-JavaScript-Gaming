@@ -37,10 +37,6 @@ class EnemyOctopus extends Enemy {
         this.value = 30;
     }
 
-    draw(ctx) {
-        super.draw(ctx);
-    }
-
 }
 
 export default EnemyOctopus;

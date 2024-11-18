@@ -169,13 +169,13 @@ class Game {
 
     drawGround() {
         this.grounds.forEach(ground => {
-            ground.draw(CanvasUtils.ctx);
+            ground.draw();
         });
     }
 
     drawEnemies() {
         this.gameEnemies.forEach((enemy, key) => {
-            enemy.draw(CanvasUtils.ctx);
+            enemy.draw();
         });
     }
 
@@ -304,12 +304,10 @@ class Game {
             if (enemy.isDead()) {
                 foundID = enemy.enemyID;
                 foundDead = this.gameEnemies.delete(enemy.key);
-                console.log(foundDead);
             }
         });
         if (foundDead) {
             Enemy.remainingEnemies = this.gameEnemies.size;
-            console.log(Enemy.remainingEnemies);
             Enemy.reorgID = 0;
             if (foundID < Enemy.nextID) {
                 Enemy.nextID--;
@@ -347,7 +345,6 @@ class Game {
                     this.player.setIsDying();
                     enemyBomb.setIsDying();
                     enemyBomb.x -= 20;
-                    console.log(this.player);
                     Game.o1 = new ObjectStatic(this.player.x, this.player.y, this.player.width, this.player.height);
                     Game.o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
                 }
@@ -477,8 +474,8 @@ class Game {
         this.drawGame();
 
         // Set the fill style to black with 50% alpha
-        CanvasUtils.ctx.fillStyle = canvasConfig.backgroundColor + "88";
-        //console.log(CanvasUtils.ctx.fillStyle);
+        const alpha = "88";
+        CanvasUtils.ctx.fillStyle = canvasConfig.backgroundColor + alpha;
         CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
 
         const x = canvasConfig.width / 2 - 100;
@@ -590,25 +587,25 @@ class Game {
         this.drawLevel(this.player);
 
         // Draw enemy ship
-        this.enemyShip.draw(CanvasUtils.ctx);
+        this.enemyShip.draw();
 
         // Draw all bombs
-        this.enemyBombs.forEach(enemyBomb => enemyBomb.draw(CanvasUtils.ctx));
+        this.enemyBombs.forEach(enemyBomb => enemyBomb.draw());
 
         this.drawEnemies();
 
         // Draw shields
-        this.shields.forEach(shield => { shield.draw(CanvasUtils.ctx); });
+        this.shields.forEach(shield => { shield.draw(); });
 
         // Draw Laser
         if (this.laser) {
-            this.laser.draw(CanvasUtils.ctx);
+            this.laser.draw();
         }
 
         // Draw player
-        this.player.draw(CanvasUtils.ctx);
+        this.player.draw();
 
-        this.drawGround(CanvasUtils.ctx);
+        this.drawGround();
 
         this.drawLives(this.player);
     }
@@ -654,7 +651,6 @@ class Game {
 
         // Set the fill style to black with 50% alpha
         CanvasUtils.ctx.fillStyle = canvasConfig.backgroundColor + "88";
-        console.log(CanvasUtils.ctx.fillStyle);
         CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
 
         const x = canvasConfig.width / 5;
@@ -700,7 +696,6 @@ class Game {
 
             // Decrease current player's life
             this.player.decrementLives();
-            console.log(this.currentPlayer, this.player, this.players);
             console.log(`Player ${this.currentPlayer} lost a life!`);
 
             // Check if current player is out of lives

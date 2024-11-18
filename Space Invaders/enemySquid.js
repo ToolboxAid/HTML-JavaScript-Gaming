@@ -37,10 +37,6 @@ class EnemySquid extends Enemy {
         this.value = 20;
     }
 
-    draw(ctx) {
-        super.draw(ctx);
-    }
-
 }
 
 export default EnemySquid;

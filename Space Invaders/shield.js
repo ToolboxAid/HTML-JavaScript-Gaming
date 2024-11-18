@@ -3,8 +3,9 @@
 // 10/24/2024
 // shield.js
 
-import ObjectStatic from '../scripts/objectStatic.js';
 import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
+
+import ObjectStatic from '../scripts/objectStatic.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
@@ -87,9 +88,8 @@ class Shield extends ObjectStatic {
 
     /**
      * Draws the shield on the canvas.
-     * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
      */
-    draw(ctx) {
+    draw() {
         CanvasUtils.drawSprite(this.x, this.y, this.frame, this.pixelSize, shieldConfig.color);
     }
 

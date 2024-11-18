@@ -3,13 +3,12 @@
 // 10/24/2024
 // enemyBomb.js
 
-import ObjectDynamic from '../scripts/objectDynamic.js';
-import ObjectKillable from '../scripts/objectKillable.js';
 import { canvasConfig, spriteConfig } from './global.js';
-
 import CanvasUtils from '../scripts/canvas.js';
 
-class EnemyBomb extends ObjectKillable {
+import ObjectSprite from '../scripts/objectSprite.js';
+
+class EnemyBomb extends ObjectSprite {
 
     static dyingFrames = [
         [

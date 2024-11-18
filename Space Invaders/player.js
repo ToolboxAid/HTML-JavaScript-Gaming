@@ -3,12 +3,12 @@
 // 10/24/2024
 // player.js
 
-import ObjectKillable from '../scripts/objectKillable.js';
 import { canvasConfig, spriteConfig } from './global.js';
-
 import CanvasUtils from '../scripts/canvas.js';
+import ObjectSprite from '../scripts/objectSprite.js'
 
-class Player extends ObjectKillable {
+
+class Player extends ObjectSprite {
 
     // New 22x16 pixel image (single frame)
     static frame = [[
@@ -133,8 +133,8 @@ class Player extends ObjectKillable {
         }
     }
 
-    draw(ctx) {
-        super.draw(ctx, 0, -20);
+    draw() {
+        super.draw(0, -20);
     }
 
     incLevel() {

@@ -6,6 +6,9 @@
 /** 
  * Represents a static object in a game that cannot move.
  */
+
+import CanvasUtils from "../scripts/canvas.js";
+
 class ObjectStatic {
     /**
      * Creates an instance of ObjectStatic.
@@ -61,14 +64,14 @@ class ObjectStatic {
      * @param {string|null} [borderColor=null] - The border color of the object.
      * @param {number} [borderWidth=0] - The width of the border.
      */
-    draw(ctx, fillColor = 'gray', borderColor = null, borderWidth = 0) {
-        ctx.fillStyle = fillColor;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+    draw(fillColor = 'gray', borderColor = null, borderWidth = 0) {
+        CanvasUtils.ctx.fillStyle = fillColor;
+        CanvasUtils.ctx.fillRect(this.x, this.y, this.width, this.height);
 
         if (borderColor && borderWidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = borderWidth;
-            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            CanvasUtils.ctx.strokeStyle = borderColor;
+            CanvasUtils.ctx.lineWidth = borderWidth;
+            CanvasUtils.ctx.strokeRect(this.x, this.y, this.width, this.height);
         }
     }
 }

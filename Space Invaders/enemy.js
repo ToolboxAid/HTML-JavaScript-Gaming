@@ -3,12 +3,14 @@
 // 10/24/2024
 // enemy.js
 
-import ObjectKillable from '../scripts/objectKillable.js';
-import CanvasUtils from '../scripts/canvas.js';
-import Functions from '../scripts/functions.js';
 import { enemyConfig, spriteConfig } from './global.js';
 
-class Enemy extends ObjectKillable {
+import CanvasUtils from '../scripts/canvas.js';
+import Functions from '../scripts/functions.js';
+
+import ObjectSprite from '../scripts/objectSprite.js';
+
+class Enemy extends ObjectSprite {
     static speed = 0;
 
     static dyingFrames = [

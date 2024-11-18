@@ -3,8 +3,9 @@
 // 10/16/2024
 // game.js
 
-import { canvasConfig } from './global.js'; // Import canvasConfig
+import { canvasConfig, font5x3 } from './global.js'; // Import canvasConfig
 import Font5x3 from './font5x3.js';
+
 import Paddle from './paddle.js';
 import Puck from './puck.js';
 import CanvasUtils from '../scripts/canvas.js';
@@ -57,20 +58,23 @@ Description: A sound indicating a score was made, usually more pronounced than t
     }
 
     gameLoop(deltaTime) {
-        let ctx = CanvasUtils.ctx;
-        // Call drawScores to display the current scores
-        Font5x3.drawScores(ctx, this.leftPaddle, this.rightPaddle);
+        const player1X = (canvasConfig.width / 2) - (font5x3.pixelWidth * 24); // X position for Player 1 score
+        const player2X = (canvasConfig.width / 2) + (font5x3.pixelWidth * 18); // X position for Player 2 score
+        const y = 30;  // Y position for scores
+        const digits = 2;
+        Font5x3.drawNumber(player1X,y,this.leftPaddle.score, digits);
+        Font5x3.drawNumber(player2X,y,this.rightPaddle.score, digits);
 
         // Draw the dashed line
         this.drawDashedLine();
 
         if (Paddle.winner) {
             // Stop the game loop and display the winner message
-            this.drawWinnerMessage(ctx);
+            this.drawWinnerMessage();
 
             // Draw paddles
-            this.leftPaddle.draw(ctx);
-            this.rightPaddle.draw(ctx);
+            this.leftPaddle.draw();
+            this.rightPaddle.draw();
 
             // Pause the game until a key is pressed
             document.addEventListener('keydown', this.restartGame);
@@ -82,23 +86,23 @@ Description: A sound indicating a score was made, usually more pronounced than t
         this.rightPaddle.update();
 
         // Update/Move the puck using its inherited method
-        this.puck.update(ctx, this.leftPaddle, this.rightPaddle, deltaTime);
+        this.puck.update(this.leftPaddle, this.rightPaddle, deltaTime);
 
         // Draw paddles
-        this.leftPaddle.draw(ctx);
-        this.rightPaddle.draw(ctx);
+        this.leftPaddle.draw();
+        this.rightPaddle.draw();
 
         // Draw the puck
-        this.puck.draw(ctx);
+        this.puck.draw();
     }
 
     // Function to draw the winner message on the canvas
-    drawWinnerMessage(ctx) {
-        ctx.fillStyle = 'white'; // Set text color
-        ctx.font = '55px Arial'; // Set font size and style
-        ctx.textAlign = 'center'; // Center the text
-        ctx.fillText("We have a winner!", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) - 33); // Draw the message at the center of the canvas
-        ctx.fillText("Press any key to Play", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) + 33); // Draw the message at the center of the canvas
+    drawWinnerMessage() {
+        CanvasUtils.ctx.fillStyle = 'white'; // Set text color
+        CanvasUtils.ctx.font = '55px Arial'; // Set font size and style
+        CanvasUtils.ctx.textAlign = 'center'; // Center the text
+        CanvasUtils.ctx.fillText("We have a winner!", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) - 33); // Draw the message at the center of the canvas
+        CanvasUtils.ctx.fillText("Press any key to Play", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) + 33); // Draw the message at the center of the canvas
     }
 
     // Function to restart the game

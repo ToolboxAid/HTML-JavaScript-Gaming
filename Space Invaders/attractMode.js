@@ -22,6 +22,8 @@ export default class AttractMode {
 
         this.shields = [];
         this.grounds = [];
+
+        this.reset();
     }
 
     initializeGameEnemy() {
@@ -115,9 +117,9 @@ export default class AttractMode {
         CanvasUtils.drawText(110, 200, "Welcome to Space Invaders!", 3.5, "white");
         CanvasUtils.drawText(150, 300, "Press `Enter` to Start", 3.5, "white");
 
-        this.gameEnemies.forEach((enemy, key) => { enemy.draw(CanvasUtils.ctx); });
-        this.shields.forEach(shield => { shield.draw(CanvasUtils.ctx); });
-        this.grounds.forEach(ground => { ground.draw(CanvasUtils.ctx); });
+        this.gameEnemies.forEach((enemy, key) => { enemy.draw(); });
+        this.shields.forEach(shield => { shield.draw(); });
+        this.grounds.forEach(ground => { ground.draw(); });
     }
 
     reset() {

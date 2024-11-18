@@ -3,12 +3,12 @@
 // 10/24/2024
 // enemyShip.js
 
-import ObjectKillable from '../scripts/objectKillable.js';
-import Functions from '../scripts/functions.js';
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
+import Functions from '../scripts/functions.js';
 import CanvasUtils from '../scripts/canvas.js';
+import objectSprite from '../scripts/objectSprite.js';
 
-class EnemyShip extends ObjectKillable {
+class EnemyShip extends objectSprite {
 
     // Explicit static declaration
     static instance = null;
@@ -176,7 +176,7 @@ class EnemyShip extends ObjectKillable {
         this.nextShipTimer = Date.now() + (EnemyShip.nextShipDelay * 2); //1000);
     }
 
-    setIsDead() {// required for when objectKillable calls setIsDead to reset timer
+    setIsDead() {
         super.setIsDead();
         this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     }

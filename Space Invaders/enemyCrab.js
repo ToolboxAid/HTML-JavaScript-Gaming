@@ -36,10 +36,6 @@ class EnemyCrab extends Enemy {
         this.setSpriteColor(spriteConfig.crabColor);
         this.value = 10;
     }
-    
-    draw(ctx) {
-        super.draw(ctx);
-    }
 
 }
 
