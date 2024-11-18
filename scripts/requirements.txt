@@ -1,0 +1,21 @@
+ToolboxAid.com
+David Quesenberry
+10/16/2024
+requirements.txt
+
+FIXME
+BUG
+HACK
+TODO
+[]
+[ ] action to perform
+[>] is in progress
+[x] action complete
+[!] is cancel/don't do
+
+-----------------------------------------------
+[x] non blocking (multi key press)
+[x] key just pressed
+[x] key down
+[x] key just released
+
