@@ -21,7 +21,7 @@ class GameLoop {
     getKeyStates() {
         // Retrieve keys from the KeyboardInput instance
         const keysJustPressed = this.keyboardInput.getKeyJustPressed();
-        const keysPressed = this.keyboardInput.getKeyPressed();
+        const keysPressed = this.keyboardInput.getKeyDown();
         const keysReleased = this.keyboardInput.getKeyReleased();
         return { keysJustPressed, keysPressed, keysReleased };
     }

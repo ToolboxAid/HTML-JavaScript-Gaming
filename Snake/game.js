@@ -83,14 +83,14 @@ class Game {
   }
 
   handleInput() {
-    const keyPressed = this.keyboardInput.getKeyPressed();
-    if (keyPressed.includes('ArrowUp') && this.direction !== 'down') {
+    const KeyDown = this.keyboardInput.getKeyDown();
+    if (KeyDown.includes('ArrowUp') && this.direction !== 'down') {
       this.direction = 'up';
-    } else if (keyPressed.includes('ArrowDown') && this.direction !== 'up') {
+    } else if (KeyDown.includes('ArrowDown') && this.direction !== 'up') {
       this.direction = 'down';
-    } else if (keyPressed.includes('ArrowLeft') && this.direction !== 'right') {
+    } else if (KeyDown.includes('ArrowLeft') && this.direction !== 'right') {
       this.direction = 'left';
-    } else if (keyPressed.includes('ArrowRight') && this.direction !== 'left') {
+    } else if (KeyDown.includes('ArrowRight') && this.direction !== 'left') {
       this.direction = 'right';
     }
   }

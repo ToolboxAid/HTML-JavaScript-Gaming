@@ -127,9 +127,9 @@ class Game {
     this.drawGrid();
     this.drawBoard();
 
-    const keyPressed = this.keyboardInput.getKeyJustPressed();
+    const KeyDown = this.keyboardInput.getKeyJustPressed();
     for (let i = 1; i <= 9; i++) {
-      if (keyPressed.includes(`Digit${i}`) && !this.board[i - 1] && !this.winner) {
+      if (KeyDown.includes(`Digit${i}`) && !this.board[i - 1] && !this.winner) {
         this.board[i - 1] = this.currentPlayer === 1 ? "X" : "O";
         this.movesMade++;
         this.checkWinner();

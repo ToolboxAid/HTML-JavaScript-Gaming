@@ -629,7 +629,7 @@ class Game {
 
         this.checkEnemyShip(deltaTime);
 
-        const laserFirePoint = this.player.update(this.keyboardInput.getKeyPressed(), this.keyboardInput.getKeyJustPressed());
+        const laserFirePoint = this.player.update(this.keyboardInput.getKeyDown(), this.keyboardInput.getKeyJustPressed());
         this.checkLaser(deltaTime, laserFirePoint);
         this.checkLaserEnemyCollision(this.player);
         this.checkLaserBombCollision();
