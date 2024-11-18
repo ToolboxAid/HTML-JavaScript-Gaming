@@ -6,8 +6,6 @@
 import CanvasUtils from './canvas.js';
 
 //TODO: this class has to much ties to Space Invaders.
-//TODO: this class has to much ties to Space Invaders.
-//TODO: this class has to much ties to Space Invaders.
 import { canvasConfig, spriteConfig } from '../Space Invaders/global.js';
 
 import ObjectKillable2 from './objectKillable2.js';

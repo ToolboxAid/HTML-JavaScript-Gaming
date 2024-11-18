@@ -5,7 +5,6 @@
 
 
 import { font5x3 } from './global.js';
-import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 class Font5x3 {
@@ -81,7 +80,6 @@ class Font5x3 {
             [1, 1, 1],
         ]
     };
-
 
     static #drawChar(char, x, y, pixelWidth, pixelHeight) {
         const characterMatrix = Font5x3.font[char];
