@@ -8,33 +8,19 @@ export class AudioPlayer {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.audioCache = {};
         this.basePath = basePath;
-        this.currentSource = null;
-        this.startTime = 0;
-        this.playbackPosition = 0;
-        this.isPlaying = false;
-        this.currentBuffer = null; // Store the current audio buffer
+        this.loopingSources = {}; // Store each looping source by filename
     }
 
     static playFrequency(frequency, duration) {
-        // Create a new audio context
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        // Create an oscillator
         const oscillator = audioContext.createOscillator();
-
-        // Set the frequency
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-
-        // Connect the oscillator to the output (speakers)
         oscillator.connect(audioContext.destination);
-
-        // Start the oscillator
         oscillator.start();
-
-        // Stop the oscillator after 1 second
         oscillator.stop(audioContext.currentTime + duration);
     }
-    
+
+    // Load and cache the audio file
     async loadAudio(filename) {
         const url = `${this.basePath}/${filename}`;
 
@@ -54,8 +40,8 @@ export class AudioPlayer {
         }
     }
 
-
-    playAudio(filename) {
+    // Play a sound (with optional looping)
+    playAudio(filename, loop = false) {
         const url = `${this.basePath}/${filename}`;
 
         if (!this.audioCache[url]) {
@@ -63,66 +49,42 @@ export class AudioPlayer {
             return;
         }
 
-        // If already playing, stop it
-        if (this.currentSource) {
-            this.currentSource.stop();
+        // Create a new source for each sound request
+        const source = this.audioContext.createBufferSource();
+        source.buffer = this.audioCache[url];
+        source.connect(this.audioContext.destination);
+
+        // If looping is requested, set the loop property to true
+        if (loop) {
+            source.loop = true;
+            this.loopingSources[filename] = source; // Store this looping source by filename
         }
 
-        // Create a new source and buffer
-        this.currentSource = this.audioContext.createBufferSource();
-        this.currentBuffer = this.audioCache[url]; // Store the buffer for resuming
-        this.currentSource.buffer = this.currentBuffer;
-        this.currentSource.connect(this.audioContext.destination);
+        // // Handle the end of playback for non-looping sounds
+        // source.onended = () => {
+        //     console.log(`Finished playing: ${filename}`);
+        // };
 
-        // Handle the end of playback
-        this.currentSource.onended = () => {
-            this.isPlaying = false;
-            this.playbackPosition = 0; // Reset position when playback ends
-        };
-
-        // Start playback from the last known position
-        this.currentSource.start(0, this.playbackPosition);
-        this.startTime = this.audioContext.currentTime; // Capture the current time
-        this.isPlaying = true;
-
-        console.log(`Playing: ${url}`);
+        // Start the playback of the sound immediately
+        source.start(0);
+        // console.log(`Playing: ${filename}`);
     }
 
-    pause() {
-        if (this.isPlaying) {
-            this.playbackPosition += this.audioContext.currentTime - this.startTime; // Update position
-            this.currentSource.stop(); // Stop the current source
-            this.isPlaying = false;
-            console.log("Paused at position:", this.playbackPosition);
+    // Stop the looping sound by filename
+    stopLooping(filename) {
+        if (this.loopingSources[filename]) {
+            this.loopingSources[filename].stop(); // Stop the looping sound
+            delete this.loopingSources[filename]; // Remove from the looping sources map
+//            console.log(`Stopped looping sound: ${filename}`);
         }
     }
 
-    resume() {
-        if (!this.currentBuffer) {
-            console.log("No audio loaded for resuming");
-            return;
+    // Stop all looping sounds
+    stopAllLooping() {
+        for (let filename in this.loopingSources) {
+            this.loopingSources[filename].stop();
+            delete this.loopingSources[filename];
+            console.log(`Stopped all looping sounds`);
         }
-
-        if (this.isPlaying) {
-            console.log("Audio is already playing");
-            return;
-        }
-
-        console.log("Resumed playback from position:", this.playbackPosition);
-        
-        // Create a new buffer source for resuming playback
-        const bufferSource = this.audioContext.createBufferSource();
-        bufferSource.buffer = this.currentBuffer;
-        bufferSource.connect(this.audioContext.destination);
-
-        // Start playback from the last known position
-        bufferSource.start(0, this.playbackPosition);
-        this.startTime = this.audioContext.currentTime; // Update start time
-        this.isPlaying = true;
-
-        // Set the current source to the new buffer source
-        this.currentSource = bufferSource;
-
-        console.log("Resumed playback from position:", this.playbackPosition);
     }
 }

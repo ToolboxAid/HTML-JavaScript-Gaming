@@ -29,6 +29,8 @@ import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
+import { AudioPlayer } from '../scripts/audioPlayer.js';
+
 import AttractMode from './attractMode.js';
 class Game {
 
@@ -37,8 +39,43 @@ class Game {
     static scoreOn = true;
     static scoreOnPlayer1 = true;
     static scoreOnPlayer2 = true;
+    static audioPlayer = new AudioPlayer('./assets/effects');
+
+    // List of audio files to be loaded
+    static audioFiles = [
+        'explosion.wav',
+        'fastinvader1.wav',
+        'fastinvader2.wav',
+        'fastinvader3.wav',
+        'fastinvader4.wav',
+        'invaderkilled.wav',
+        'shoot.wav',
+        'ufo_highpitch.wav',
+        'ufo_lowpitch.wav'
+    ];
+
+    // Method to load all audio files
+    async loadAllAudioFiles() {
+        for (const filename of Game.audioFiles) {
+            try {
+                await Game.audioPlayer.loadAudio(filename);
+                console.log(`Sound cached: ${filename}`);
+            } catch (error) {
+                console.error(`Error loading ${filename}:`, error);
+            }
+        }
+    }
 
     constructor() {
+        // Load all audio files
+        this.loadAllAudioFiles().then(() => {
+            console.log("All audio files have been loaded and cached.");
+            // Example: Play explosion sound to verify loading
+            // Game.audioPlayer.playAudio('explosion.wav');
+        });
+
+        console.log(Game.audioPlayer.audioCache);
+
         // Canvas needs to know the current directory to game.js for dynamic imports
         const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         window.canvasPath = currentDir;
@@ -91,6 +128,9 @@ class Game {
             deltaTime = 1 / 60; // required to maintain spacing between enemies.
             enemy.update(deltaTime, true);
         });
+        if (Enemy.nextID === 0) {
+            Game.audioPlayer.playAudio('fastinvader1.wav');
+        }
         Enemy.setNextID();
     }
 
@@ -207,6 +247,7 @@ class Game {
                     this.updatePlayerScore(enemy.value);
                     enemy.setHit();
                     hitDetected = true;
+                    Game.audioPlayer.playAudio('invaderkilled.wav');
                 }
             });
             if (hitDetected) { // Delete the laser
@@ -248,8 +289,19 @@ class Game {
 
     checkEnemyShip(deltaTime) {
         this.enemyShip.update(deltaTime, this.laser);
+        if (this.enemyShip.getStartAudio()) {
+            Game.audioPlayer.playAudio('ufo_highpitch.wav', true);
+        }
+
+        if (this.enemyShip.getStopAudio()){
+            Game.audioPlayer.stopLooping('ufo_highpitch.wav');
+        }
+
         const value = this.enemyShip.getValue();
+
         if (value > 0) {
+//            Game.audioPlayer.stopLooping('ufo_highpitch.wav');
+            Game.audioPlayer.playAudio('ufo_lowpitch.wav');
             this.updatePlayerScore(value);
             this.laser = null;
         }
@@ -340,6 +392,8 @@ class Game {
                 const colliding = this.player.isCollidingWith(enemyBomb);
                 if (colliding) {
                     console.log("playerhit");
+                    Game.audioPlayer.playAudio('explosion.wav');
+
                     this.player.setIsDying();
                     enemyBomb.setIsDying();
                     enemyBomb.x -= 20;
@@ -354,6 +408,7 @@ class Game {
         if (!this.laser) {
             if (laserFirePoint) {
                 this.laser = new Laser(laserFirePoint.x, laserFirePoint.y - 10);
+                Game.audioPlayer.playAudio('shoot.wav');
                 Game.o3 = new ObjectStatic(this.laser.x, this.laser.y, this.laser.width, this.laser.height);
             }
         } else {
@@ -468,6 +523,8 @@ class Game {
 
     displayGameOver() {
         console.log("game over");
+
+        Game.audioPlayer.stopAllLooping();
 
         this.drawGame();
 

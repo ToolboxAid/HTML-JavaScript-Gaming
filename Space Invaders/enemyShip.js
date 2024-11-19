@@ -92,12 +92,16 @@ class EnemyShip extends objectSprite {
 
         this.value = 0;
 
+        this.startAudio = false;
+        this.stopAudio = false;
+
         EnemyShip.instance = this;
     }
 
     isCreationTime() {
         if (this.isDead() && Date.now() > this.nextShipTimer) {
             this.setIsAlive();
+            this.startAudio = true;
         }
     }
 
@@ -125,26 +129,38 @@ class EnemyShip extends objectSprite {
         }
     }
 
+    getStartAudio() {
+        const start = this.startAudio;
+        this.startAudio = false;
+        return start;
+    }
+    getStopAudio(){
+        const stop = this.stopAudio;
+        this.stopAudio = false;
+        return stop;
+    }
 
     update(deltaTime, laser) {
+        console.log(this);
         // If ship off playing field, kill it
-
         super.update(deltaTime);
         if (this.isAlive()) {
-            //super.update(deltaTime);
-            //this.enemyShip.isCollidingWith(this.laser);
+            //console.log(this.x, this.velocityX, this.width);
             if (laser) {
                 if (this.isCollidingWith(laser)) {
                     this.setHit();
+                    this.stopAudio = true;
                 }
             }
             if (this.velocityX > 0) { // moving to right
                 if (this.x > canvasConfig.width + this.width) {
                     this.setIsDead();
+                    this.stopAudio = true;
                 }
             } else { // moving to left
                 if (this.x < -(this.width)) {
                     this.setIsDead();
+                    this.stopAudio = true;
                 }
             }
         } else {
@@ -159,7 +175,8 @@ class EnemyShip extends objectSprite {
         const someFrame = CanvasUtils.getSpriteText(shipValue, spacing);
         const displayFrames = 60;
         this.setOtherFrame(displayFrames, someFrame);
-        super.setHit();    }
+        super.setHit();
+    }
 
     setIsAlive() {
         super.setIsAlive();
@@ -173,12 +190,13 @@ class EnemyShip extends objectSprite {
         }
 
         // prevent acidental double, way out there.
-        this.nextShipTimer = Date.now() + (EnemyShip.nextShipDelay * 2); //1000);
+        this.nextShipTimer = Date.now() + (EnemyShip.nextShipDelay * 10); //1000);
     }
 
     setIsDead() {
         super.setIsDead();
         this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
+        console.log(this.nextShipTimer);
     }
 }
 

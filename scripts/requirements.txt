@@ -16,7 +16,6 @@ requirements.txt
 
 - - - Sprite drawer - - -
 
-
 - - - keyboard - - -
 [x] non blocking (multi key press)
 [x] key just pressed
