@@ -141,11 +141,9 @@ class EnemyShip extends objectSprite {
     }
 
     update(deltaTime, laser) {
-        console.log(this);
         // If ship off playing field, kill it
         super.update(deltaTime);
         if (this.isAlive()) {
-            //console.log(this.x, this.velocityX, this.width);
             if (laser) {
                 if (this.isCollidingWith(laser)) {
                     this.setHit();
@@ -196,7 +194,6 @@ class EnemyShip extends objectSprite {
     setIsDead() {
         super.setIsDead();
         this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
-        console.log(this.nextShipTimer);
     }
 }
 
