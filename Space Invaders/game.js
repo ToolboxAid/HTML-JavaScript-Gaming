@@ -30,6 +30,8 @@ import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 
 import { AudioPlayer } from '../scripts/audioPlayer.js';
+import { Cookies } from '../scripts/cookies.js';
+
 
 import AttractMode from './attractMode.js';
 class Game {
@@ -70,8 +72,6 @@ class Game {
         // Load all audio files
         this.loadAllAudioFiles().then(() => {
             console.log("All audio files have been loaded and cached.");
-            // Example: Play explosion sound to verify loading
-            // Game.audioPlayer.playAudio('explosion.wav');
         });
 
         console.log(Game.audioPlayer.audioCache);
@@ -93,7 +93,11 @@ class Game {
         // Initialize players as an array of player instances
         this.players = [new Player(), new Player()]; // Array holding player1 and player2
         this.player = this.players[0]; // Current player
-        this.highScore = 0;
+
+        // Static cookie name & path for consistency
+        this.cookieName = Cookies.sanitizeCookieName(currentDir);
+        this.cookiePath = "/";
+        this.getHighScoreCookie();
 
         // Items to move into the player
         this.gameEnemies = new Map();
@@ -107,6 +111,50 @@ class Game {
         this.enemyShip = EnemyShip.getInstance();
 
         this.attractMode = new AttractMode();
+    }
+
+    // Method to get the high score cookie
+    getHighScoreCookie(initScore = 0) {
+        // Try to get the cookie value
+        let cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
+        console.log("Retrieved cookie:", cookie);
+
+        if (cookie === null) {
+            // Set the high score cookie if it doesn't exist
+            this.setHighScoreCookie(initScore);
+
+            // Immediate retrieval to ensure the cookie is accessible
+            cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
+            if (cookie === null) {
+                console.error("Failed to set the cookie!", this.cookieName, this.cookiePath);
+            } else {
+                console.log("Set new cookie:", cookie);
+            }
+        } else {
+            console.log("Cookie found:", cookie);
+        }
+
+        // Convert the cookie to a number and store it as the high score
+        if (cookie !== null) {
+            this.highScore = parseInt(cookie, 10);
+            if (isNaN(this.highScore)) {
+                console.error("Error: Cookie value is not a valid number");
+                this.highScore = 0; // Default fallback
+            } else {
+                console.log("Parsed high score:", this.highScore);
+            }
+        } else {
+            this.highScore = 0; // Default fallback for null
+        }
+    }
+    
+    // Method to set the high score cookie
+    setHighScoreCookie(score) {
+        Cookies.set(this.cookieName, score, {
+            expires: 7, // Expires in 7 days
+            path: this.cookiePath // Root path for simplicity
+        });
+        console.log(`Cookie set: ${this.cookieName}=${score}`);
     }
 
     setGameEnemiesBottom(column) {
@@ -236,10 +284,13 @@ class Game {
         this.player.updateScore(score);
         if (this.player.score > this.highScore) {
             this.highScore = this.player.score;
+            this.setHighScoreCookie(this.player.score);
+            // let cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
+            // console.log("new high score", cookie);
         }
     }
 
-    checkLaserEnemyCollision(player) {
+    checkLaserEnemyCollision() {
         if (this.laser) {
             let hitDetected = false;
             this.gameEnemies.forEach((enemy, key) => {
@@ -293,14 +344,13 @@ class Game {
             Game.audioPlayer.playAudio('ufo_highpitch.wav', true);
         }
 
-        if (this.enemyShip.getStopAudio()){
+        if (this.enemyShip.getStopAudio()) {
             Game.audioPlayer.stopLooping('ufo_highpitch.wav');
         }
 
         const value = this.enemyShip.getValue();
 
         if (value > 0) {
-//            Game.audioPlayer.stopLooping('ufo_highpitch.wav');
             Game.audioPlayer.playAudio('ufo_lowpitch.wav');
             this.updatePlayerScore(value);
             this.laser = null;
