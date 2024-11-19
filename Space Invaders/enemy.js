@@ -73,64 +73,7 @@ class Enemy extends ObjectSprite {
 
     static reorgID = 0;
 
-    static getRow() {
-        return Enemy.enemyRow;
-    }
-
-    static isEnemiesInitialized() {
-        return Enemy.enemiesInitialized;
-    }
-
-    static unsetEnemiesInitialized() {
-        Enemy.enemyID = 0;
-        Enemy.nextID = 0;
-
-        // newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
-
-        // Enemy configurations for octopus, squid, and crab
-        Enemy.enemyRow = 0;
-        Enemy.enemyCol = 0;
-
-        Enemy.enemiesInitialized = false;
-    }
-
-    static setNextID() {
-        if (Enemy.remainingEnemies > Enemy.nextID) {
-            Enemy.nextID++;
-        } else {
-            Enemy.nextID = 0;
-
-            if (Enemy.prepMoveDown) {
-                Enemy.prepMoveDown = false;
-                Enemy.doMoveDown = true;
-            } else {
-                Enemy.doMoveDown = false;
-            }
-
-            if (Enemy.prepSpeed) {
-                Enemy.prepSpeed = false;
-                Enemy.doSpeed = true;
-                Enemy.setSpeed();
-            } else {
-                Enemy.doSpeed = false;
-            }
-        }
-    }
-
-
-    reorgID() {
-        this.enemyID = Enemy.reorgID++;
-        Enemy.prepSpeed = true;
-    }
-
-    static setSpeed() {
-        Enemy.newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies) / 3;
-    }
-
-    static getKey(row, column) {
-        return Enemy.enemyRow + "x" + Enemy.enemyCol;
-    }
-
+    
     constructor(livingFrames, bombAggression) {
         const frameWidth = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
@@ -153,6 +96,64 @@ class Enemy extends ObjectSprite {
         }
     }
 
+    static getRow() {
+        return Enemy.enemyRow;
+    }
+
+    static isEnemiesInitialized() {
+        return Enemy.enemiesInitialized;
+    }
+
+    static unsetEnemiesInitialized() {
+        Enemy.enemyID = 0;
+        Enemy.nextID = 0;
+
+        // newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
+
+        // Enemy configurations for octopus, squid, and crab
+        Enemy.enemyRow = 0;
+        Enemy.enemyCol = 0;
+
+        Enemy.enemiesInitialized = false;
+    }
+
+    static setNextID() {
+        Enemy.doSpeed = false;
+        if (Enemy.remainingEnemies > Enemy.nextID) {
+            Enemy.nextID++;
+        } else {
+            Enemy.nextID = 0;
+
+            if (Enemy.prepMoveDown) {
+                Enemy.prepMoveDown = false;
+                Enemy.doMoveDown = true;
+            } else {
+                Enemy.doMoveDown = false;
+            }
+
+            if (Enemy.prepSpeed) {
+                Enemy.prepSpeed = false;
+                Enemy.doSpeed = true;
+                Enemy.setSpeed();
+            } else {
+                Enemy.doSpeed = false;
+            }
+        }
+    }
+
+    reorgID() {
+        this.enemyID = Enemy.reorgID++;
+        Enemy.prepSpeed = true;
+    }
+
+    static setSpeed() {
+        Enemy.newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies) / 3;
+    }
+
+    static getKey(row, column) {
+        return Enemy.enemyRow + "x" + Enemy.enemyCol;
+    }
+
     adjustSpeed(deltaTime) {
         // Increase speed 
         if (this.velocityX > 0) {
@@ -162,19 +163,18 @@ class Enemy extends ObjectSprite {
         }
     }
 
-
     update(deltaTime) {
         if (this.isAlive()) {
+            if (Enemy.doSpeed) {
+                this.adjustSpeed(deltaTime);
+            }
             if (this.enemyID === Enemy.nextID) {
                 if (Enemy.doMoveDown) {
                     this.velocityX *= -1;
                     this.y += this.height;
+                } else {
+                    super.update(deltaTime, true);
                 }
-                if (Enemy.doSpeed) {
-                    this.adjustSpeed(deltaTime);
-                }
-
-                super.update(deltaTime, true);
 
                 if (this.atBounds()) {
                     Enemy.prepMoveDown = true;
@@ -191,7 +191,7 @@ class Enemy extends ObjectSprite {
             if (this.velocityX > 0) {
                 changeDir = this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
             } else {
-                changeDir = this.x - Enemy.speed < (this.width * 0.25);
+                changeDir = this.x - Enemy.speed < (this.width * 0.45);
             }
         }
         return changeDir;

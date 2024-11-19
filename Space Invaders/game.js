@@ -319,8 +319,6 @@ class Game {
             this.gameEnemies.forEach((enemy) => {
                 enemy.reorgID();
             });
-            Enemy.prepSpeed = true;
-
             this.findBottom();
         }
     }
@@ -746,7 +744,7 @@ class Game {
                 this.initializeGameEnemy();
             }
         }
-        //console.log(this.keyboardInput.getKeyJustPressed());
+
         if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
             this.killBombs();
         }

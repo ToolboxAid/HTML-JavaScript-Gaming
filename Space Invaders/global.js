@@ -48,7 +48,7 @@ export const spriteConfig = {
 };
 
 export const enemyConfig = {
-    xPosition: 50,
+    xPosition: 75,
     yPosition: 450,
     colSize: 11,
     rowSize: 5,
