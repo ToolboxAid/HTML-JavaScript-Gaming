@@ -8,7 +8,7 @@
 export const canvasConfig = {
     width: 1024, // Game area width
     height: 768, // Game area height
-    scale: 0.35,
+    scale: 0.5,
     backgroundColor: "#333333",   
     
     fullscreenText: 'Click game to enter fullscreen',

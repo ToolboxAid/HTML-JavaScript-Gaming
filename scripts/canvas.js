@@ -276,15 +276,15 @@ class CanvasUtils {
         CanvasUtil.ctx.strokeRect(x, y, w, h);
     }
 
+    static drawRect(x, y, width, height, color) {
+        CanvasUtils.ctx.fillStyle = color;
+        CanvasUtils.ctx.fillRect(x, y, width, height);
+    }
+
     static drawBorder() {
         CanvasUtil.ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
         CanvasUtil.ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
         CanvasUtil.ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
-    }
-
-    static drawRect(x, y, width, height, color) {
-        CanvasUtils.ctx.fillStyle = color;
-        CanvasUtils.ctx.fillRect(x, y, width, height);
     }
 
     /**

@@ -11,6 +11,7 @@ import KeyboardInput from '../scripts/keyboard.js';
 import PlayerShip from './playerShip.js';
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
+import Ship from './ship.js';
 
 class Game {
   constructor() {
@@ -29,6 +30,16 @@ class Game {
 
     this.backToAttract = 600;
     this.backToAttractCounter = 0;
+
+    this.ship=new Ship(500,500);
+    this.ship.setColor("red");
+    this.asteroidS = new Asteroid(200,200,'small');
+    this.asteroidS.setColor("yellow");
+    this.asteroidM = new Asteroid(300,200,'medium');
+    this.asteroidM.setColor("pink");
+    this.asteroidL = new Asteroid(400,200,'large');
+    this.asteroidL.setColor("orange");
+
   }
 
   gameLoop(deltaTime) {
@@ -37,6 +48,19 @@ class Game {
     switch (this.gameState) {
       case "attract":
         this.displayAttractMode();
+
+        this.ship.update(deltaTime);
+        this.ship.draw();
+
+        this.asteroidS.update(deltaTime);
+        this.asteroidS.draw();
+
+        this.asteroidM.update(deltaTime);
+        this.asteroidM.draw();
+
+        this.asteroidL.update(deltaTime);
+        this.asteroidL.draw();
+        
         break;
 
       case "initGame":
@@ -154,7 +178,7 @@ class Game {
   }
 
   spawnAsteroid() {
-    const asteroid = new Asteroid();
+    const asteroid = new Asteroid(40, "livingFrames", "dyingFrames");
     this.asteroids.set(asteroid.key, asteroid);
   }
 
