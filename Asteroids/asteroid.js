@@ -5,12 +5,11 @@
 
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
-import CanvasUtils from '../scripts/canvas.js';
 
 class Asteroid extends ObjectVector {
   constructor(x, y, size = 'medium') {
     const vectorMap = Asteroid.generateVectorMap(size);
-    const vectorMap1 = [[10,40], [50,20], [45,5], [25,-10], [50,-35], [30,-45], [10,-38], [-20,-45], [-43,-18], [-43,20], [-25,20], [-25,40], ];
+    const vectorMap1 = [[10, 40], [50, 20], [45, 5], [25, -10], [50, -35], [30, -45], [10, -38], [-20, -45], [-43, -18], [-43, 20], [-25, 20], [-25, 40],];
     // Ensure the vectorMap has at least three points
     if (vectorMap.length < 3) {
       throw new Error("'vectorMap' frame must contain at least three points.");
@@ -34,16 +33,11 @@ class Asteroid extends ObjectVector {
     this.wrapAround();
   }
 
-  draw() {
-    super.draw();
-    CanvasUtils.drawBounds(this.x, this.y, this.width, this.height, 'white', 1);  // Blue color and line width of 2
-  }
-
   wrapAround() {// Screen wrapping logic
     if (this.x > canvasConfig.width) this.x = this.width * -1;
-    if (this.x+this.width < 0) this.x = canvasConfig.width;
+    if (this.x + this.width < 0) this.x = canvasConfig.width;
     if (this.y > canvasConfig.height) this.y = this.height * -1;
-    if (this.y+this.height < 0) this.y = canvasConfig.height;
+    if (this.y + this.height < 0) this.y = canvasConfig.height;
   }
 
   static generateVectorMap(size) {
@@ -56,24 +50,24 @@ class Asteroid extends ObjectVector {
     // Generate random jagged points for the asteroid vectorMap
     let currentAngle = 0;
     for (let i = 0; i < numPoints; i++) {
-        // Increment angle by a random step to create irregular intervals
-        const angleStep = (Math.PI * 2) / numPoints + Math.random() * 0.4 - 0.2;
-        currentAngle += angleStep;
+      // Increment angle by a random step to create irregular intervals
+      const angleStep = (Math.PI * 2) / numPoints + Math.random() * 0.4 - 0.2;
+      currentAngle += angleStep;
 
-        // Increase the variability of the radius to make it more jagged
-        const radius = sizeFactor + (Math.random() * sizeFactor * 0.8);
+      // Increase the variability of the radius to make it more jagged
+      const radius = sizeFactor + (Math.random() * sizeFactor * 0.8);
 
-        // Calculate X and Y positions
-        const x = Math.cos(currentAngle) * radius;
-        const y = Math.sin(currentAngle) * radius;
+      // Calculate X and Y positions
+      const x = Math.cos(currentAngle) * radius;
+      const y = Math.sin(currentAngle) * radius;
 
-        points.push([x, y]);
+      points.push([x, y]);
     }
 
     return points;
-}
+  }
 
-  static generateVectorMap1(size) {// generate vectorMap based on the asteroid size
+  static generateVectorMap1(size) {// old generate vectorMap based on the asteroid size
     const sizeFactor = Asteroid.getSizeFactor(size);
 
     // Random number of points between 7 and 10
@@ -101,8 +95,7 @@ class Asteroid extends ObjectVector {
     return points;
   }
 
-  // Determine size factor based on asteroid size
-  static getSizeFactor(size) {
+  static getSizeFactor(size) {  // Determine size factor based on asteroid size
     switch (size) {
       case 'small':
         return 10; // Smaller radius
@@ -118,12 +111,30 @@ class Asteroid extends ObjectVector {
 
 export default Asteroid;
 
-// Example usage
-const smallAsteroid = new Asteroid(100, 100, 'small');
-console.log('Small Asteroid:', smallAsteroid.vectorMap);
+// Example usage and tests
+if (false) {
+  const smallAsteroid = new Asteroid(100, 100, 'small');
+  console.log('Small Asteroid:', smallAsteroid);
 
-const mediumAsteroid = new Asteroid(200, 200, 'medium');
-console.log('Medium Asteroid:', mediumAsteroid.vectorMap);
+  const mediumAsteroid = new Asteroid(200, 200, 'medium');
+  console.log('Medium Asteroid:', mediumAsteroid);
 
-const largeAsteroid = new Asteroid(300, 300, 'large');
-console.log('Large Asteroid:', largeAsteroid.vectorMap);
+  const largeAsteroid = new Asteroid(300, 300, 'large');
+  console.log('Large Asteroid:', largeAsteroid);
+
+  // Collusion test
+  const otherObject = new Asteroid(205, 205, 'small');
+  otherObject.rotationAngle = -30; // Example rotation for the other object
+
+  if (mediumAsteroid.collisionDetection(otherObject)) {
+    console.log("Collision detected!");
+  } else {
+    console.log("No collision.");
+  }
+  if (smallAsteroid.collisionDetection(otherObject)) {
+    console.log("Collision detected!");
+  } else {
+    console.log("No collision.");
+  }
+
+}

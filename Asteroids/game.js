@@ -31,15 +31,15 @@ class Game {
     this.backToAttract = 600;
     this.backToAttractCounter = 0;
 
-    this.ship=new Ship(500,500);
+    this.ship=new Ship();
     this.ship.setColor("red");
+    this.ship.setDrawBounds();
     this.asteroidS = new Asteroid(200,200,'small');
     this.asteroidS.setColor("yellow");
     this.asteroidM = new Asteroid(300,200,'medium');
     this.asteroidM.setColor("pink");
     this.asteroidL = new Asteroid(400,200,'large');
     this.asteroidL.setColor("orange");
-
   }
 
   gameLoop(deltaTime) {

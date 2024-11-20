@@ -5,16 +5,19 @@
 
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
-import CanvasUtils from '../scripts/canvas.js';
 
 class Ship extends ObjectVector {
-    constructor(x, y, velocityX = 0, velocityY = 0) {
+    constructor() {
         const vectorMap = [[-20, 16], [28, 0], [-20, -16], [-12, -8], [-12, 8]];
 
-        velocityX = (Math.random() - 0.5) * 300;
-        velocityY = (Math.random() - 0.5) * 300;
+        // start in center of screen
+        const x = canvasConfig.width/2;
+        const y = canvasConfig.height/2;
 
-        super(x, y, vectorMap, velocityX, velocityY);
+        // const velocityX = (Math.random() - 0.5) * 300;
+        // const velocityY = (Math.random() - 0.5) * 300;
+
+        super(x, y, vectorMap,);//, velocityX, velocityY);
 
         this.velocityRotation = (Math.random() - 0.5) * 5;
     }
@@ -32,11 +35,10 @@ class Ship extends ObjectVector {
         if (this.y + this.height < 0) this.y = canvasConfig.height;
     }
 
-    draw() {
-        super.draw();
-        CanvasUtils.drawBounds(this.x, this.y, this.width, this.height, 'white', 1);  // Blue color and line width of 2
-    }
-
 }
 
 export default Ship;
+
+// Example usage
+const ship = new Ship(100, 100);
+console.log('Ship:', ship);

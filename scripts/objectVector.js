@@ -30,22 +30,22 @@ class ObjectVector extends ObjectKillable2 {
         this.color = "white"; // Default color for vector shapes
 
         this.rotationAngle = 0;
+
+        this.drawBounds = false;
     }
 
-    // Method to update the width and height based on the bounding box
-    updateDimensions() {
+    updateDimensions() {// Method to update the width and height based on the bounding box
         const { minX, minY, maxX, maxY } = ObjectVector.getBoundingBox(this.vectorMap, this.rotationAngle);
         this.width = maxX - minX;
         this.height = maxY - minY;
     }
 
-    update(deltaTime){
+    update(deltaTime) {
         super.update(deltaTime);
         this.updateDimensions();
     }
 
-    // Updated getBoundingBox method that accounts for rotation
-    static getBoundingBox(points, rotationAngle = 0) {
+    static getBoundingBox(points, rotationAngle = 0) {// Updated getBoundingBox method that accounts for rotation
         // Calculate the center of the object (this could be done outside this function)
         const centerX = 0;
         const centerY = 0;
@@ -78,6 +78,10 @@ class ObjectVector extends ObjectKillable2 {
             console.error("Invalid color:", color);
             this.color = "white"; // Default to white
         }
+    }
+
+    setDrawBounds() {
+        this.drawBounds = true;
     }
 
     draw(lineWidth = 2, offsetX = 0, offsetY = 0) {
@@ -127,12 +131,66 @@ class ObjectVector extends ObjectKillable2 {
             // Finish drawing
             CanvasUtils.ctx.closePath();
             CanvasUtils.ctx.stroke();
+
+
+            if (this.drawBounds) {
+                CanvasUtils.drawBounds(this.x, this.y, this.width, this.height, 'white', 1);  // Blue color and line width of 2
+            }
+
         } catch (error) {
             console.error("Error occurred while drawing:", error.message);
             console.error("Stack trace:", error.stack);
             console.log("Object state:", this);
         }
     }
+
+    collisionDetection(object) {
+        // Rotate and translate the asteroid's vectorMap based on its rotationAngle and position
+        const asteroidPoints = this.vectorMap.map(([px, py]) => {
+            const angleInRadians = (this.rotationAngle * Math.PI) / 180;
+            const rotatedX = this.x + px * Math.cos(angleInRadians) - py * Math.sin(angleInRadians);
+            const rotatedY = this.y + px * Math.sin(angleInRadians) + py * Math.cos(angleInRadians);
+            return [rotatedX, rotatedY];
+        });
+
+        // Rotate and translate the object's vectorMap based on its rotationAngle and position
+        const objectPoints = object.vectorMap.map(([px, py]) => {
+            const angleInRadians = (object.rotationAngle * Math.PI) / 180;
+            const rotatedX = object.x + px * Math.cos(angleInRadians) - py * Math.sin(angleInRadians);
+            const rotatedY = object.y + px * Math.sin(angleInRadians) + py * Math.cos(angleInRadians);
+            return [rotatedX, rotatedY];
+        });
+
+        // Check if any point of the object is inside the asteroid
+        for (let [pointX, pointY] of objectPoints) {
+            if (this.isPointInsidePolygon(pointX, pointY, asteroidPoints)) {
+                return true; // Collision detected
+            }
+        }
+
+        // Check if any point of the asteroid is inside the object (optional for mutual collision)
+        for (let [pointX, pointY] of asteroidPoints) {
+            if (this.isPointInsidePolygon(pointX, pointY, objectPoints)) {
+                return true; // Collision detected
+            }
+        }
+
+        return false; // No collision
+    }
+
+    isPointInsidePolygon(x, y, polygon) {// Helper method: Point-in-Polygon test using ray-casting algorithm
+        let inside = false;
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const [xi, yi] = polygon[i];
+            const [xj, yj] = polygon[j];
+            const intersect =
+                yi > y !== yj > y &&
+                x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
 }
 
 export default ObjectVector;
