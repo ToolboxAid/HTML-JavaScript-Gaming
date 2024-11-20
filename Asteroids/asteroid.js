@@ -9,25 +9,20 @@ import CanvasUtils from '../scripts/canvas.js';
 
 class Asteroid extends ObjectVector {
   constructor(x, y, size = 'medium') {
-    // Generate the vectorMap dynamically based on size
     const vectorMap = Asteroid.generateVectorMap(size);
-
+    const vectorMap1 = [[10,40], [50,20], [45,5], [25,-10], [50,-35], [30,-45], [10,-38], [-20,-45], [-43,-18], [-43,20], [-25,20], [-25,40], ];
     // Ensure the vectorMap has at least three points
     if (vectorMap.length < 3) {
       throw new Error("'vectorMap' frame must contain at least three points.");
     }
 
-    // Set the framesMap with the vectorMap vectorMap
-    const framesMap = vectorMap;
-
     // Random velocity
     const velocityX = (Math.random() - 0.5) * 100;
     const velocityY = (Math.random() - 0.5) * 100;
 
-    // Initialize the parent class with the generated framesMap
-    super(x, y, framesMap, velocityX, velocityY);  // Pass framesMap here
+    // Initialize the parent class with the generated vectorMap
+    super(x, y, vectorMap, velocityX, velocityY);  // Pass vectorMap here
 
-    // Initialize additional properties (like size) if needed
     this.size = size;
 
     this.velocityRotation = (Math.random() - 0.5) * 5;
@@ -51,8 +46,34 @@ class Asteroid extends ObjectVector {
     if (this.y+this.height < 0) this.y = canvasConfig.height;
   }
 
-  
-  static generateVectorMap(size) {// generate vectorMap based on the asteroid size
+  static generateVectorMap(size) {
+    const sizeFactor = Asteroid.getSizeFactor(size);
+
+    // Random number of points between 10 and 12
+    const numPoints = Math.floor(Math.random() * 3) + 10;
+    const points = [];
+
+    // Generate random jagged points for the asteroid vectorMap
+    let currentAngle = 0;
+    for (let i = 0; i < numPoints; i++) {
+        // Increment angle by a random step to create irregular intervals
+        const angleStep = (Math.PI * 2) / numPoints + Math.random() * 0.4 - 0.2;
+        currentAngle += angleStep;
+
+        // Increase the variability of the radius to make it more jagged
+        const radius = sizeFactor + (Math.random() * sizeFactor * 0.8);
+
+        // Calculate X and Y positions
+        const x = Math.cos(currentAngle) * radius;
+        const y = Math.sin(currentAngle) * radius;
+
+        points.push([x, y]);
+    }
+
+    return points;
+}
+
+  static generateVectorMap1(size) {// generate vectorMap based on the asteroid size
     const sizeFactor = Asteroid.getSizeFactor(size);
 
     // Random number of points between 7 and 10
