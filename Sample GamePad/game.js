@@ -43,7 +43,7 @@ function gameUpdate() {
             // Handle button presses for each gamepad
             gamepadState.buttons.forEach((buttonPressed, buttonIndex) => {
                 // Update button colors based on whether the button is pressed or not
-                player.buttonColors[buttonIndex] = buttonPressed ? 'green' : 'gray';
+                player.buttonColors[buttonIndex] = buttonPressed.pressed ? 'green' : 'gray';
             });
 
             // Handle movement with gamepad analog stick (axes)
@@ -111,7 +111,3 @@ function gameLoop() {
 
 gameLoop(); // Start the first frame
 
-// Clean up when done (e.g., if game is paused or closed)
-window.addEventListener('beforeunload', () => {
-    gamepadInput.disconnect(); // Stop polling gamepads before the page unloads
-});
