@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/16/2024
+// gampad.js
+
 class GamepadInput {
     constructor() {
         this.buttonsPressed = new Set();  // Buttons pressed this frame

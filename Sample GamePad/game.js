@@ -1,4 +1,4 @@
-// ga// ToolboxAid.com
+// ToolboxAid.com
 // David Quesenberry
 // 11/21/2024
 // game.js - Gamepad Integration with Button States on Canvas
