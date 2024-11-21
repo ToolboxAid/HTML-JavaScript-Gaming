@@ -5,7 +5,7 @@
 
 class GamepadInput {
     constructor() {
-        this.buttonsJustPressed = new Set();  // Buttons pressed this frame
+        this.buttonsPressed = new Set();  // Buttons pressed this frame
         this.buttonsDown = new Set();        // Buttons currently pressed
         this.buttonsReleased = new Set();   // Buttons released this frame
 
@@ -15,18 +15,28 @@ class GamepadInput {
         this.axes = [];  // Array to store the state of the gamepad axes (analog sticks, triggers)
         this.deadzone = 0.2; // Deadzone threshold for analog inputs to prevent drift
 
-        // Automatically poll for gamepad updates
-        this.pollInterval = setInterval(this.pollGamepads.bind(this), 16); // ~60 FPS
+        // Start polling after a brief delay to ensure gamepad is available
+        setTimeout(() => {
+            this.pollInterval = setInterval(this.pollGamepads.bind(this), 16); // ~60 FPS
+        }, 1000); // Wait for 1 second before starting polling
     }
 
     pollGamepads() {
         const gamepads = navigator.getGamepads();
-
-        if (!gamepads) return;
-
+    
+        if (!gamepads) {
+            console.log("No gamepads available.");
+            return;
+        }
+    
+        let foundGamepad = false;
+    
         for (const gamepad of gamepads) {
             if (!gamepad) continue; // Skip disconnected gamepads
-
+    
+            foundGamepad = true; // Mark that a valid gamepad was found
+//            console.log("Gamepad found:", gamepad);
+    
             // Process buttons
             gamepad.buttons.forEach((button, index) => {
                 if (button.pressed) {
@@ -39,22 +49,27 @@ class GamepadInput {
                     }
                 }
             });
-
+    
             // Process axes (analog sticks, triggers)
             this.axes = gamepad.axes.map(value => 
                 Math.abs(value) > this.deadzone ? value : 0
             );
         }
+    
+        if (!foundGamepad) {
+            console.log("No valid gamepad found.");
+        }
     }
+    
 
     update() {
         // Clear previous frame states
-        this.buttonsJustPressed.clear();
+        this.buttonsPressed.clear();
         this.buttonsReleased.clear();
 
         // Process button presses
         this.tempButtonsDown.forEach(button => {
-            this.buttonsJustPressed.add(button);
+            this.buttonsPressed.add(button);
             this.buttonsDown.add(button);
         });
         this.tempButtonsDown.clear();
@@ -68,8 +83,8 @@ class GamepadInput {
     }
 
     // Utility methods
-    getButtonsJustPressed() {
-        return Array.from(this.buttonsJustPressed);
+    getbuttonsPressed() {
+        return Array.from(this.buttonsPressed);
     }
 
     getButtonsDown() {
@@ -81,7 +96,7 @@ class GamepadInput {
     }
 
     isButtonJustPressed(buttonIndex) {
-        return this.buttonsJustPressed.has(buttonIndex);
+        return this.buttonsPressed.has(buttonIndex);
     }
 
     isButtonDown(buttonIndex) {
