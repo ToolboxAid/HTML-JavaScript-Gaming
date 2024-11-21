@@ -3,10 +3,10 @@
 // 11/19/2024
 // objectVector.js
 
-import ObjectKillable2 from './objectKillable2.js';
+import ObjectKillable from './objectKillable.js';
 import CanvasUtils from './canvas.js';
 
-class ObjectVector extends ObjectKillable2 {
+class ObjectVector extends ObjectKillable {
     constructor(x, y, vectorMap, velocityX = 0, velocityY = 0) {
         // Validate that vectorMap is a single array of point pairs
         if (!Array.isArray(vectorMap) || !vectorMap.every(point => Array.isArray(point) && point.length === 2)) {

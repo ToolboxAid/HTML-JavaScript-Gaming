@@ -1,18 +1,21 @@
 // ToolboxAid.com
 // David Quesenberry
 // 10/24/2024
-// objectSprite.js
+// objectKillable.js
 
+import ObjectDynamic from './objectDynamic.js';
 import CanvasUtils from './canvas.js';
-
 //FIXME: this class has to much detail about Space Invaders.
 import { canvasConfig, spriteConfig } from '../Space Invaders/global.js';
 
-import ObjectKillable from './objectKillable.js';
+class ObjectKillable extends ObjectDynamic {
+    static Status = Object.freeze({
+        ALIVE: 'alive',
+        DYING: 'dying',
+        OTHER: 'other',
+        DEAD: 'dead'
+    });
 
-
-
-class ObjectSprite extends ObjectKillable {
     constructor(x, y, livingFrames, dyingFrames, velocityX = 0, velocityY = 0) {
         // Ensure livingFrames is provided and is not empty
         if (!livingFrames || livingFrames.length === 0) {
@@ -24,8 +27,9 @@ class ObjectSprite extends ObjectKillable {
 
         super(x, y, dimensions.width, dimensions.height, velocityX, velocityY);
 
-        // this.status = ObjectKillable.Status.ALIVE;
+        this.status = ObjectKillable.Status.ALIVE;
         this.currentFrameIndex = 0;
+
         this.delayCounter = 0;
 
         // Initialize living frames
@@ -47,8 +51,28 @@ class ObjectSprite extends ObjectKillable {
         this.pixelSize = spriteConfig.pixelSize;
     }
 
+    update(deltaTime, incFrame = false) {
+        switch (this.status) {
+            case ObjectKillable.Status.ALIVE: // Handle ALIVE status
+                this.handleAliveStatus(deltaTime, incFrame);
+                break;
+            case ObjectKillable.Status.DYING: // Handle DYING status
+                this.handleDyingStatus();
+                break;
+            case ObjectKillable.Status.OTHER: // Handle OTHER status
+                this.handleOtherStatus();
+                break;
+            case ObjectKillable.Status.DEAD: // Handle DEAD status
+                this.handleDeadStatus();
+                break;
+            default:  // Handle OOPS - Handle unknown status
+                console.error("OOPS : Unknown status:", this.status);
+                break;
+        }
+    }
+
     handleAliveStatus(deltaTime, incFrame) { // Handle ALIVE status
-        super.handleAliveStatus(deltaTime, incFrame);
+        super.update(deltaTime);
         if (incFrame) {
             this.currentFrameIndex++;
             if (this.currentFrameIndex >= this.livingFrameCount) {
@@ -67,7 +91,6 @@ class ObjectSprite extends ObjectKillable {
     }
 
     handleDyingStatus() {
-        super.handleDyingStatus();
         // Check if the delay count reached the threshold set by dyingDelay
         if (this.delayCounter++ >= this.dyingDelay) {
             // Reset the delay count
@@ -84,14 +107,36 @@ class ObjectSprite extends ObjectKillable {
     }
 
     handleOtherStatus() { // Custom logic for OTHER status
-        super.handleOtherStatus();
         if (this.delayCounter++ >= this.otherDelay) {
             this.setIsDead();
         }
     }
 
     handleDeadStatus() { // Custom logic for DEAD status
-        super.handleDeadStatus();
+    }
+
+    processCollisionWith(object, updatePosition = false) {
+        let collision = false;
+        if (this.isAlive()) {
+            collision = super.processCollisionWith(object, updatePosition);
+        }
+        return collision;
+    }
+
+    isAlive() {
+        return this.status === ObjectKillable.Status.ALIVE;
+    }
+
+    isDying() {
+        return this.status === ObjectKillable.Status.DYING;
+    }
+
+    isOther() {
+        return this.status === ObjectKillable.Status.OTHER;
+    }
+
+    isDead() {
+        return this.status === ObjectKillable.Status.DEAD;
     }
 
     setHit() {
@@ -102,6 +147,30 @@ class ObjectSprite extends ObjectKillable {
         } else {
             this.setIsDead();
         }
+    }
+
+    setIsAlive() {
+        this.status = ObjectKillable.Status.ALIVE;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
+    }
+
+    setIsDying() {
+        this.status = ObjectKillable.Status.DYING;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
+    }
+
+    setIsOther() {
+        this.status = ObjectKillable.Status.OTHER;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
+    }
+
+    setIsDead() {
+        this.status = ObjectKillable.Status.DEAD;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
     }
 
     setSpriteColor(spriteColor) {
@@ -131,9 +200,11 @@ class ObjectSprite extends ObjectKillable {
         this.otherFrame = otherFrame;
     }
 
-    draw(offsetX = 0, offsetY = 0) {
+    // Example method
+    draw(ctx, offsetX = 0, offsetY = 0) {
         try {
-            const { x, y, currentFrameIndex, spriteColor, livingFrames, dyingFrames, otherFrame, pixelSize } = this;
+            const { x, y, currentFrameIndex, spriteColor, livingFrames, dyingFrames, otherFrame } = this;
+            const pixelSize = spriteConfig.pixelSize;
 
             const newX = x + offsetX;
             const newY = y + offsetY;
@@ -154,7 +225,7 @@ class ObjectSprite extends ObjectKillable {
 
             if (this.isOther()) {
                 if (otherFrame) {
-                    const otherX = Math.max(25, Math.min(newX, canvasConfig.width - 100));
+                    const otherX = Math.max(25, Math.min(x, canvasConfig.width - 100));
                     CanvasUtils.drawSprite(otherX, newY, otherFrame, pixelSize, spriteColor);
                 }
                 return;
@@ -174,4 +245,4 @@ class ObjectSprite extends ObjectKillable {
 
 }
 
-export default ObjectSprite;
+export default ObjectKillable;
