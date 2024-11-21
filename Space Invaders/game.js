@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 10/24/2024
-// game.js
+// game.js - Space Invaders
 
 import { canvasConfig, spriteConfig, enemyConfig } from './global.js'; // Assuming these contain canvas and sprite details
 
@@ -550,7 +550,7 @@ class Game {
         CanvasUtils.drawNumber(15, dwn, 0, pixelSize, color, 2, '0');
         CanvasUtils.drawSprite(95, dwn, Player.frame[0], spriteConfig.pixelSize);
 
-        if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+        if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
             AttractMode.count = 0;
             this.resetPlayers();
             this.gameState = "playerSelect";
@@ -562,10 +562,10 @@ class Game {
         CanvasUtils.drawText(150, 250, "Press `1` for One Player", 3.5, "white");
         CanvasUtils.drawText(150, 300, "Press `2` for Two Players", 3.5, "white");
 
-        if (this.keyboardInput.getKeyJustPressed().includes('Digit1')) {
+        if (this.keyboardInput.getKeysJustPressed().includes('Digit1')) {
             this.playerCount = 1;
             this.gameState = "initGameShield";
-        } else if (this.keyboardInput.getKeyJustPressed().includes('Digit2')) {
+        } else if (this.keyboardInput.getKeysJustPressed().includes('Digit2')) {
             this.playerCount = 2;
             this.gameState = "initGameShield";
         }
@@ -589,7 +589,7 @@ class Game {
         CanvasUtils.drawText(x, y, "Game Over.", 3.5, "white");
         CanvasUtils.drawText(x - 150, y + 60, "Press `Enter` to Restart", 3.5, "#ffffffff");
 
-        if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
+        if (this.keyboardInput.getKeysJustPressed().includes('Enter') ||
             this.backToAttractCounter++ > this.backToAttract) {
             this.gameState = "resetPlayers";
         }
@@ -731,7 +731,7 @@ class Game {
 
         this.checkEnemyShip(deltaTime);
 
-        const laserFirePoint = this.player.update(this.keyboardInput.getKeyDown(), this.keyboardInput.getKeyJustPressed());
+        const laserFirePoint = this.player.update(this.keyboardInput.getKeysDown(), this.keyboardInput.getKeysJustPressed());
         this.checkLaser(deltaTime, laserFirePoint);
         this.checkLaserEnemyCollision(this.player);
         this.checkLaserBombCollision();
@@ -740,7 +740,7 @@ class Game {
     }
 
     checkGamePause() {
-        if (this.keyboardInput.getKeyJustPressed().includes('KeyP')) {
+        if (this.keyboardInput.getKeysJustPressed().includes('KeyP')) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
             } else if (this.gameState === "pauseGame") {
@@ -852,7 +852,7 @@ class Game {
             }
         }
 
-        if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
+        if (this.keyboardInput.getKeysJustPressed().includes('KeyD')) {
             this.killBombs();
         }
     }

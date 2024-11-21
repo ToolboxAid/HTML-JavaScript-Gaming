@@ -1,7 +1,8 @@
 // ToolboxAid.com
 // David Quesenberry
-// game.js
+
 // 11/14/2024
+// game.js - Tic Tac Toe
 
 import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
@@ -65,7 +66,7 @@ class Game {
     CanvasUtils.ctx.fillText("Welcome to Tic-Tac-Toe", 150, gridSize - 10);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 150, gridSize * 2 - 10);
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.resetGame();
       this.gameState = "initGame";
     }
@@ -127,7 +128,7 @@ class Game {
     this.drawGrid();
     this.drawBoard();
 
-    const KeyDown = this.keyboardInput.getKeyJustPressed();
+    const KeyDown = this.keyboardInput.getKeysJustPressed();
     for (let i = 1; i <= 9; i++) {
       if (KeyDown.includes(`Digit${i}`) && !this.board[i - 1] && !this.winner) {
         this.board[i - 1] = this.currentPlayer === 1 ? "X" : "O";
@@ -175,7 +176,7 @@ class Game {
     }
 
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 400);
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.resetGame();
     }
   }

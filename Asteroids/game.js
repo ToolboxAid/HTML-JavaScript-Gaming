@@ -1,8 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// asteroids
 // 11/15/2024
-// game.js
+// game.js - asteroids
 
 import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
@@ -96,7 +95,7 @@ class Game {
     CanvasUtils.ctx.fillText("Welcome to Asteroids!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.gameState = "initGame";
     }
   }
@@ -107,7 +106,7 @@ class Game {
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -136,7 +135,7 @@ class Game {
   }
 
   gamePauseCheck() {
-    if (this.keyboardInput.getKeyJustPressed().includes('KeyP')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('KeyP')) {
       this.gameState = this.gameState === "playGame" ? "pauseGame" : "playGame";
     }
   }

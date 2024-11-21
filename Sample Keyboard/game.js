@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/16/2024
+// game.js - Sample Keyboard
+
 import { canvasConfig } from './global.js';
 import KeyboardInput from '../scripts/keyboard.js';
 import CanvasUtils from '../scripts/canvas.js';
@@ -20,9 +25,9 @@ class GameLoop {
 
     getKeyStates() {
         // Retrieve keys from the KeyboardInput instance
-        const keysJustPressed = this.keyboardInput.getKeyJustPressed();
-        const keysPressed = this.keyboardInput.getKeyDown();
-        const keysReleased = this.keyboardInput.getKeyReleased();
+        const keysJustPressed = this.keyboardInput.getKeysJustPressed();
+        const keysPressed = this.keyboardInput.getKeysDown();
+        const keysReleased = this.keyboardInput.getKeysReleased();
         return { keysJustPressed, keysPressed, keysReleased };
     }
 

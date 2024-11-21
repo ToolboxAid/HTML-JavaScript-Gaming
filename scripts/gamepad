@@ -1,0 +1,104 @@
+// ToolboxAid.com
+// David Quesenberry
+// 10/16/2024
+// gamepad.js
+
+class GamepadInput {
+    constructor() {
+        this.buttonsJustPressed = new Set();  // Buttons pressed this frame
+        this.buttonsDown = new Set();        // Buttons currently pressed
+        this.buttonsReleased = new Set();   // Buttons released this frame
+
+        this.tempButtonsDown = new Set();   // Temporary storage for button presses
+        this.tempButtonsUp = new Set();     // Temporary storage for button releases
+
+        this.axes = [];  // Array to store the state of the gamepad axes (analog sticks, triggers)
+        this.deadzone = 0.2; // Deadzone threshold for analog inputs to prevent drift
+
+        // Automatically poll for gamepad updates
+        this.pollInterval = setInterval(this.pollGamepads.bind(this), 16); // ~60 FPS
+    }
+
+    pollGamepads() {
+        const gamepads = navigator.getGamepads();
+
+        if (!gamepads) return;
+
+        for (const gamepad of gamepads) {
+            if (!gamepad) continue; // Skip disconnected gamepads
+
+            // Process buttons
+            gamepad.buttons.forEach((button, index) => {
+                if (button.pressed) {
+                    if (!this.buttonsDown.has(index)) {
+                        this.tempButtonsDown.add(index); // Add to temporary buttonsDown
+                    }
+                } else {
+                    if (this.buttonsDown.has(index)) {
+                        this.tempButtonsUp.add(index); // Add to temporary buttonsUp
+                    }
+                }
+            });
+
+            // Process axes (analog sticks, triggers)
+            this.axes = gamepad.axes.map(value => 
+                Math.abs(value) > this.deadzone ? value : 0
+            );
+        }
+    }
+
+    update() {
+        // Clear previous frame states
+        this.buttonsJustPressed.clear();
+        this.buttonsReleased.clear();
+
+        // Process button presses
+        this.tempButtonsDown.forEach(button => {
+            this.buttonsJustPressed.add(button);
+            this.buttonsDown.add(button);
+        });
+        this.tempButtonsDown.clear();
+
+        // Process button releases
+        this.tempButtonsUp.forEach(button => {
+            this.buttonsReleased.add(button);
+            this.buttonsDown.delete(button);
+        });
+        this.tempButtonsUp.clear();
+    }
+
+    // Utility methods
+    getButtonsJustPressed() {
+        return Array.from(this.buttonsJustPressed);
+    }
+
+    getButtonsDown() {
+        return Array.from(this.buttonsDown);
+    }
+
+    getButtonsReleased() {
+        return Array.from(this.buttonsReleased);
+    }
+
+    isButtonJustPressed(buttonIndex) {
+        return this.buttonsJustPressed.has(buttonIndex);
+    }
+
+    isButtonDown(buttonIndex) {
+        return this.buttonsDown.has(buttonIndex);
+    }
+
+    isButtonReleased(buttonIndex) {
+        return this.buttonsReleased.has(buttonIndex);
+    }
+
+    getAxes() {
+        return [...this.axes];
+    }
+
+    disconnect() {
+        clearInterval(this.pollInterval); // Stop polling gamepads
+    }
+}
+
+export default GamepadInput;

@@ -1,8 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// asteroids
 // 11/15/2024
-// playerShip.js
+// playerShip.js - asteroids
 
 import CanvasUtils from '../scripts/canvas.js';
 import { canvasConfig } from './global.js';
@@ -45,7 +44,7 @@ class PlayerShip {
     this.wrapAround();
 
     // Shoot bullets
-    if (keyboardInput.getKeyJustPressed().includes('Space') 
+    if (keyboardInput.getKeysJustPressed().includes('Space') 
         && this.bullets.length < this.maxBullets) {
       this.shootBullet();
     }

@@ -1,7 +1,8 @@
 // ToolboxAid.com
 // David Quesenberry
-// game.js
+
 // 10/16/2024
+// game.js - Template Game Engine
 
 import { canvasConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
@@ -76,7 +77,7 @@ class Game {
    CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
     console.log("attract");
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.gameState = "playerSelect";
     }
   }
@@ -89,10 +90,10 @@ class Game {
    CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
     console.log("player select");
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Digit1')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Digit1')) {
       this.playerCount = 1;
       this.gameState = "initGame";
-    } else if (this.keyboardInput.getKeyJustPressed().includes('Digit2')) {
+    } else if (this.keyboardInput.getKeysJustPressed().includes('Digit2')) {
       this.playerCount = 2;
       this.gameState = "initGame";
     }
@@ -105,7 +106,7 @@ class Game {
    CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
     console.log("game over");
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter') ||
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -131,7 +132,7 @@ class Game {
   }
 
   gamePauseCheck() {
-    if (this.keyboardInput.getKeyJustPressed().includes('KeyP')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('KeyP')) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -167,13 +168,13 @@ class Game {
     CanvasUtils.drawText( 100, 300, "Press `S` for score", 3.5, "white");
     CanvasUtils.drawText( 100, 350, "Press `P` to pause game", 3.5, "white");
 
-    if (this.keyboardInput.getKeyJustPressed().includes('KeyS')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('KeyS')) {
         this.score[this.currentPlayer - 1] += 100;
         console.log("score");
     }
 
     // Check if Space key was just pressed to simulate losing a life
-    if (this.keyboardInput.getKeyJustPressed().includes('KeyD')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('KeyD')) {
         this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
         console.log(`Player ${this.currentPlayer} lost a life!`);
 

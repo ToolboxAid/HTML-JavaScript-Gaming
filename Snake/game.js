@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// game.js
 // 11/15/2024
+// game.js - Snack
 
 import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
@@ -59,7 +59,7 @@ class Game {
     this.attractScreen.update(deltaTime);
 
     // Check for player input to start the game
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.resetGame();
       this.gameState = "initGame";
     }
@@ -83,7 +83,7 @@ class Game {
   }
 
   handleInput() {
-    const KeyDown = this.keyboardInput.getKeyDown();
+    const KeyDown = this.keyboardInput.getKeysDown();
     if (KeyDown.includes('ArrowUp') && this.direction !== 'down') {
       this.direction = 'up';
     } else if (KeyDown.includes('ArrowDown') && this.direction !== 'up') {
@@ -177,7 +177,7 @@ class Game {
     CanvasUtils.ctx.fillText(`Score: ${this.score}`, 220, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 250);
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.resetGame();
     }
   }

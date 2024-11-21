@@ -65,7 +65,7 @@ class Game {
     CanvasUtils.drawText(250, y1, "Welcome to Connect 4!", 4, "blue");
     CanvasUtils.drawText(300, y2, "Press `Enter` to Start", 3, "blue");
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.resetBoard();
       this.gameState = "playGame";
     } else {
@@ -95,7 +95,7 @@ class Game {
     CanvasUtils.drawText(200, 50, "Select Player Mode", 4, "white");
     CanvasUtils.drawText(200, 100, "Press `Enter` to Start", 3, "white");
 
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.resetBoard();
       this.gameState = "playGame";
     }
@@ -117,7 +117,7 @@ class Game {
     CanvasUtils.drawText(20, 20, `Player ${this.currentPlayer}'s Turn`, 3, "white");
 
     for (let i = 0; i < 7; i++) {
-      if (this.keyboardInput.getKeyJustPressed().includes(`Digit${i + 1}`)) {
+      if (this.keyboardInput.getKeysJustPressed().includes(`Digit${i + 1}`)) {
         const column = i;
         const symbol = this.playerSymbols[this.currentPlayer - 1];
         if (this.dropChip(column, symbol)) {
@@ -259,7 +259,7 @@ class Game {
     CanvasUtils.drawText(280, y3, "Press `Enter` to Restart", 3, "blue");
 
     // Check for restart input
-    if (this.keyboardInput.getKeyJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.resetBoard();
       this.gameState = "attract";
     }
