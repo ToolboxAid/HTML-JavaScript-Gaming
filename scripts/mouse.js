@@ -6,7 +6,7 @@
 class MouseInput {
     constructor(canvas) {
         this.canvas = canvas;
-        this.buttonsJustPressed = new Set();
+        this.buttonsPressed = new Set();
         this.buttonsDown = new Set();
         this.buttonsReleased = new Set();
         this.mouseX = 0;
@@ -19,10 +19,21 @@ class MouseInput {
         this.tempButtonsUp = new Set();
 
         // Event listeners for mouse input
-        window.addEventListener('mousedown', this.handleMouseDown.bind(this));
-        window.addEventListener('mouseup', this.handleMouseUp.bind(this));
-        window.addEventListener('mousemove', this.handleMouseMove.bind(this));
-        window.addEventListener('wheel', this.handleWheel.bind(this)); // Listen to the wheel event
+        this.canvas = canvas; // Store the canvas reference
+        this.handleMouseDown = this.handleMouseDown.bind(this); // Bind methods
+        this.handleMouseUp = this.handleMouseUp.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleWheel = this.handleWheel.bind(this);
+        this.handleContextMenu = this.handleContextMenu.bind(this);
+
+        // Add event listeners
+        canvas.addEventListener('mousedown', this.handleMouseDown);
+        canvas.addEventListener('mouseup', this.handleMouseUp);
+        canvas.addEventListener('mousemove', this.handleMouseMove);
+        canvas.addEventListener('wheel', this.handleWheel);
+
+        // Prevent right-click context menu
+        canvas.addEventListener('contextmenu', this.handleContextMenu);
     }
 
     handleMouseDown(event) {
@@ -38,30 +49,35 @@ class MouseInput {
     }
 
     handleMouseMove(event) {
+        const rect = this.canvas.getBoundingClientRect(); // Get canvas position and size
+        const scaleX = this.canvas.width / rect.width;   // Scale factor for X
+        const scaleY = this.canvas.height / rect.height; // Scale factor for Y
+
         // Store the previous mouse position before updating
         this.prevX = this.mouseX;
         this.prevY = this.mouseY;
 
         // Calculate mouse position relative to the canvas
-        const rect = this.canvas.getBoundingClientRect();
-        this.mouseX = event.clientX - rect.left;
-        this.mouseY = event.clientY - rect.top;
+        this.mouseX = (event.clientX - rect.left) * scaleX;
+        this.mouseY = (event.clientY - rect.top) * scaleY;
     }
 
     handleWheel(event) {
-        // You can use event.deltaX, event.deltaY, or event.deltaZ to get scroll direction
         console.log('Wheel movement detected:', event.deltaY);
-        // Handle wheel movement here, e.g., zooming or scrolling
+    }
+
+    handleContextMenu(event) {
+        event.preventDefault(); // Prevent the default context menu
     }
 
     update() {
-        // Clear buttonsJustPressed and buttonsReleased
-        this.buttonsJustPressed.clear();
+        // Clear buttonsPressed and buttonsReleased
+        this.buttonsPressed.clear();
         this.buttonsReleased.clear();
 
         // Process mousedown events
         this.tempButtonsDown.forEach(button => {
-            this.buttonsJustPressed.add(button);
+            this.buttonsPressed.add(button);
             this.buttonsDown.add(button);
         });
         this.tempButtonsDown.clear();
@@ -74,8 +90,8 @@ class MouseInput {
         this.tempButtonsUp.clear();
     }
 
-    getButtonsJustPressed() {
-        return Array.from(this.buttonsJustPressed);
+    getButtonsPressed() {
+        return Array.from(this.buttonsPressed);
     }
 
     getButtonsDown() {
@@ -91,12 +107,11 @@ class MouseInput {
     }
 
     getMouseDelta() {
-        // Return change in mouse position
         return { x: this.mouseX - this.prevX, y: this.mouseY - this.prevY };
     }
 
     isButtonJustPressed(button) {
-        return this.buttonsJustPressed.has(button);
+        return this.buttonsPressed.has(button);
     }
 
     isButtonDown(button) {
