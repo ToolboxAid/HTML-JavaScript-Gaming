@@ -1,7 +1,7 @@
-// ToolboxAid.com
+// ga// ToolboxAid.com
 // David Quesenberry
 // 11/21/2024
-// game.js - Gamepad Integration
+// game.js - Gamepad Integration with Button States on Canvas
 
 import GamepadInput from '../scripts/gamepad.js';
 
@@ -9,69 +9,97 @@ const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
 const gamepadInput = new GamepadInput(); // Instantiate the GamepadInput class
 
-// Example game state
-let playerX = 250;
-let playerY = 350;
-const playerSpeed = 2;
-const playerSize = 8;
+// Player state for each gamepad
+const players = [];
+
+// Create a player for each gamepad
+function createPlayer(gamepadIndex) {
+    // Assign each player a different color and initial position
+    const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'cyan', 'magenta', 'brown', 'lime'];
+    const color = colors[gamepadIndex % colors.length]; // Loop through colors if more than 10 gamepads
+
+    players[gamepadIndex] = {
+        color,
+        x: 100 + gamepadIndex * 50,  // Offset initial positions for each player
+        y: 100 + gamepadIndex * 50,
+        speed: 2,
+        size: 8,
+        buttonColors: Array(10).fill('gray'), // Initialize button colors (max of 10 buttons)
+    };
+}
 
 // Function to update the game state (called on every frame)
 function gameUpdate() {
     gamepadInput.update(); // Update the gamepad state
 
-    // Handle gamepad button presses and releases
-    if (gamepadInput.isButtonJustPressed(0)) { // Button 0 (usually 'A' or 'X')
-        console.log('Button 0 just pressed!');
-    }
+    // Iterate over all connected gamepads and handle input for each player
+    gamepadInput.gamepads.forEach((gamepadState, index) => {
+        if (gamepadState) {
+            // Create player if it's the first time this gamepad is detected
+            if (!players[index]) createPlayer(index);
 
-    if (gamepadInput.isButtonJustPressed(1)) { // Button 1 (usually 'B' or 'Circle')
-        console.log('Button 1 just pressed!');
-    }
+            const player = players[index];
 
-    if (gamepadInput.isButtonReleased(2)) { // Button 2 (usually 'X' or 'Square')
-        console.log('Button 2 released!');
-    }
+            // Handle button presses for each gamepad
+            gamepadState.buttons.forEach((buttonPressed, buttonIndex) => {
+                // Update button colors based on whether the button is pressed or not
+                player.buttonColors[buttonIndex] = buttonPressed ? 'green' : 'gray';
+            });
 
-    // // Log the buttons currently pressed
-    // console.log("Currently pressed buttons: ");
-    // for (const button of gamepadInput.buttonsDown) {
-    //     console.log(button); // Logs the button index of currently pressed buttons
-    // }
+            // Handle movement with gamepad analog stick (axes)
+            const [axisX, axisY] = gamepadInput.getAxes(index);
+            let moveX = 0, moveY = 0;
 
-    // Log the buttons currently pressed
-    console.log("Currently released buttons: ");
-    for (const button of gamepadInput.buttonsReleased) {
-        console.log(button); // Logs the button index of currently pressed buttons
-    }
+            if (axisX > 0) moveX = player.speed;
+            else if (axisX < 0) moveX = -player.speed;
 
-    // Handle movement with gamepad analog stick (axes)
-    const [axisX, axisY] = gamepadInput.getAxes();
+            if (axisY > 0) moveY = player.speed;
+            else if (axisY < 0) moveY = -player.speed;
 
-    if (axisX > 0) {
-        playerX += playerSpeed;
-    } else if (axisX < 0) {
-        playerX -= playerSpeed;
-    }
+            player.x += moveX;
+            player.y += moveY;
 
-    if (axisY > 0) {
-        playerY += playerSpeed;
-    } else if (axisY < 0) {
-        playerY -= playerSpeed;
-    }
-
-    // Ensure player stays within the canvas bounds
-    playerX = Math.max(0, Math.min(canvas.width - playerSize, playerX));
-    playerY = Math.max(0, Math.min(canvas.height - playerSize, playerY));
+            // Ensure player stays within the canvas bounds
+            player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
+            player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
+        }
+    });
 }
 
 // Function to render the game scene
 function gameRender() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-    // Draw the player as a square
-    ctx.fillStyle = 'red';
-    ctx.fillRect(playerX, playerY, playerSize, playerSize);
-    //console.log(playerX, playerY, playerSize, playerSize);
+    // Draw each player as a square with their unique color
+    players.forEach((player, index) => {
+        if (player) {
+            // Draw player (colored square)
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+
+            // Draw button states for each player
+            const buttonSize = 12;
+            ctx.font = '8px Arial';
+            ctx.fillStyle = 'black';
+
+            // Draw the button indicators next to the player
+            player.buttonColors.forEach((color, buttonIndex) => {
+                const buttonX = player.x + player.size + 10 + (buttonIndex % 5) * (buttonSize + 10);
+                const buttonY = player.y + 10 + Math.floor(buttonIndex / 5) * (buttonSize + 10);
+
+                // Draw button circle
+                ctx.beginPath();
+                ctx.arc(buttonX, buttonY, buttonSize / 2, 0, 2 * Math.PI);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.stroke();
+
+                // Label the button number
+                ctx.fillStyle = 'white';
+                ctx.fillText(buttonIndex, buttonX - 2.5, buttonY + 2.5);
+            });
+        }
+    });
 }
 
 // Start the game loop
