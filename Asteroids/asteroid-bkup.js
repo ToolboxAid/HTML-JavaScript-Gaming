@@ -55,13 +55,6 @@ class Asteroid extends ObjectVector {
     }
   }
 
-  wrapAround() {
-    // Screen wrapping logic
-    if (this.x > canvasConfig.width) this.x = 0;
-    if (this.x < 0) this.x = canvasConfig.width;
-    if (this.y > canvasConfig.height) this.y = 0;
-    if (this.y < 0) this.y = canvasConfig.height;
-  }
 
   collidesWith(bullet) {
     // Collision detection using ObjectDynamic's boundary collision method

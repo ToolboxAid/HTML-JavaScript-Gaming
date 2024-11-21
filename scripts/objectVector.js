@@ -34,6 +34,10 @@ class ObjectVector extends ObjectKillable2 {
         this.drawBounds = false;
     }
 
+    setRotationAngle(angle){
+        this.rotationAngle= angle;
+    }
+
     updateDimensions() {// Method to update the width and height based on the bounding box
         const { minX, minY, maxX, maxY } = ObjectVector.getBoundingBox(this.vectorMap, this.rotationAngle);
         this.width = maxX - minX;
@@ -72,7 +76,7 @@ class ObjectVector extends ObjectKillable2 {
     }
 
     setColor(color) {
-        if (typeof color === 'string' && (color.startsWith('#') || color.match(/^[a-zA-Z]+$/))) {
+        if (CanvasUtils.isValidColor(color)) {
             this.color = color;
         } else {
             console.error("Invalid color:", color);
@@ -86,17 +90,13 @@ class ObjectVector extends ObjectKillable2 {
 
     draw(lineWidth = 2, offsetX = 0, offsetY = 0) {
         try {
-            const { x, y, vectorMap, color } = this;
-
-            const newX = x + offsetX;
-            const newY = y + offsetY;
-
-            let frameToDraw = vectorMap; // There's only one frame in the array
-
-            if (!frameToDraw || !Array.isArray(frameToDraw)) {
-                console.error("No valid frame to draw:", frameToDraw);
+            if (!this.vectorMap || !Array.isArray(this.vectorMap)) {
+                console.error("No valid frame to draw:", this.vectorMap);
                 return;
             }
+
+            const newX = this.x + offsetX;
+            const newY = this.y + offsetY;
 
             // Convert the rotation angle from degrees to radians
             const angleInRadians = (this.rotationAngle * Math.PI) / 180;
@@ -107,10 +107,10 @@ class ObjectVector extends ObjectKillable2 {
 
             // Begin drawing
             CanvasUtils.ctx.beginPath();
-            CanvasUtils.ctx.strokeStyle = color;
+            CanvasUtils.ctx.strokeStyle = this.color;
             CanvasUtils.ctx.lineWidth = lineWidth;
 
-            frameToDraw.forEach(([px, py], index) => {
+            this.vectorMap.forEach(([px, py], index) => {
                 if (!Array.isArray([px, py]) || [px, py].length !== 2) {
                     console.error("Invalid point in frame:", [px, py]);
                     return;
@@ -189,6 +189,25 @@ class ObjectVector extends ObjectKillable2 {
             if (intersect) inside = !inside;
         }
         return inside;
+    }
+
+    wrapAround() {// Screen wrapping object logic
+        if (this.x > window.gameAreaWidth) this.x = this.width * -1;
+        if (this.x + this.width < 0) this.x = window.gameAreaWidth;
+        if (this.y > window.gameAreaHeight) this.y = this.height * -1;
+        if (this.y + this.height < 0) this.y = window.gameAreaHeight;
+    }
+
+    checkOutOfBounds() { // Object outside canvas window
+        if (
+            this.x > window.width ||
+            this.x < 0 ||
+            this.y > window.height ||
+            this.y < 0
+        ) {
+            return true;
+        }
+        return false;
     }
 
 }

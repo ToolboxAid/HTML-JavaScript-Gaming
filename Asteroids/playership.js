@@ -38,8 +38,8 @@ class PlayerShip {
     // Update position
     this.velocity.x *= this.friction;
     this.velocity.y *= this.friction;
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.X += this.velocity.x;
+    this.Y += this.velocity.y;
 
     // Screen wrap
     this.wrapAround();
@@ -56,14 +56,14 @@ class PlayerShip {
   }
 
   shootBullet() {
-    const bullet = new Bullet(this.position.x, this.position.y, this.angle);
+    const bullet = new Bullet(this.X, this.Y, this.angle);
     this.bullets.push(bullet);
   }
 
   draw() {
     // Draw the ship
     CanvasUtils.ctx.save();
-    CanvasUtils.ctx.translate(this.position.x, this.position.y);
+    CanvasUtils.ctx.translate(this.X, this.Y);
     CanvasUtils.ctx.rotate(this.angle);
     CanvasUtils.ctx.strokeStyle = 'white';
     CanvasUtils.ctx.beginPath();
@@ -78,17 +78,9 @@ class PlayerShip {
     this.bullets.forEach(bullet => bullet.draw());
   }
 
-  wrapAround() {
-    // Screen wrapping logic
-    if (this.position.x > canvasConfig.width) this.position.x = 0;
-    if (this.position.x < 0) this.position.x = canvasConfig.width;
-    if (this.position.y > canvasConfig.height) this.position.y = 0;
-    if (this.position.y < 0) this.position.y = canvasConfig.height;
-  }
-
   collidesWith(asteroid) {
-    const dx = this.position.x - asteroid.position.x;
-    const dy = this.position.y - asteroid.position.y;
+    const dx = this.X - asteroid.position.x;
+    const dy = this.Y - asteroid.positionY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     return distance < asteroid.size / 2 + 10; // Collision radius
   }

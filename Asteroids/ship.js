@@ -6,33 +6,98 @@
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
 
+import Bullet from './bullet.js';
+
 class Ship extends ObjectVector {
     constructor() {
-        const vectorMap = [[-20, 16], [28, 0], [-20, -16], [-12, -8], [-12, 8]];
+        const vectorMap = [[24, 0], [-24, -16], [-16, -8], [-16, 8], [-24, 16]];
 
         // start in center of screen
-        const x = canvasConfig.width/2;
-        const y = canvasConfig.height/2;
+        const x = canvasConfig.width / 2;
+        const y = canvasConfig.height / 2;
 
-        // const velocityX = (Math.random() - 0.5) * 300;
-        // const velocityY = (Math.random() - 0.5) * 300;
+        super(x, y, vectorMap);
+        this.rotationAngle = 0;
+        this.rotationSpeed = 2.0; //0.1;
+        this.thrust = 0.07;
+        this.friction = 0.995;
 
-        super(x, y, vectorMap,);//, velocityX, velocityY);
-
-        this.velocityRotation = (Math.random() - 0.5) * 5;
+        this.bullets = [];
+        this.maxBullets = 5;
     }
 
-    update(deltaTime) {
-        this.rotationAngle += this.velocityRotation;
+    update(deltaTime, keyboardInput) {
+        // Rotate the ship
+        if (keyboardInput.isKeyDown('ArrowLeft')) {
+            this.rotationAngle -= this.rotationSpeed;
+        }
+        if (keyboardInput.isKeyDown('ArrowRight')) {
+            this.rotationAngle += this.rotationSpeed;
+        }
+        // Wrap rotationAngle to keep it between 0 and 360
+        this.rotationAngle = (this.rotationAngle % 360 + 360) % 360;
+
+        // Convert rotationAngle to radians
+        const angleInRadians = this.rotationAngle * (Math.PI / 180);
+
+        // Apply thrust
+        if (keyboardInput.isKeyDown('ArrowUp')) {
+            this.velocityX += Math.cos(angleInRadians) * this.thrust;
+            this.velocityY += Math.sin(angleInRadians) * this.thrust;
+        }
+
+        // Update position with friction
+        this.velocityX *= this.friction;
+        this.velocityY *= this.friction;
+        this.x += this.velocityX;
+        this.y += this.velocityY;
+
         super.update(deltaTime);
         this.wrapAround();
+
+        // Shoot bullets
+        if (keyboardInput.getKeyJustPressed().includes('Space')
+            && this.bullets.length < this.maxBullets) {
+            this.shootBullet();
+        }
+
+        // Update bullets
+        this.updateBullets(deltaTime);//
     }
 
-    wrapAround() {// Screen wrapping logic
-        if (this.x > canvasConfig.width) this.x = this.width * -1;
-        if (this.x + this.width < 0) this.x = canvasConfig.width;
-        if (this.y > canvasConfig.height) this.y = this.height * -1;
-        if (this.y + this.height < 0) this.y = canvasConfig.height;
+    shootBullet() {
+        const angleInRadians = this.rotationAngle * (Math.PI / 180); // Convert rotation angle from degrees to radians
+
+        // Calculate the nose offset in world space (taking into account ship's rotation)
+        const noseX = Math.cos(angleInRadians) * 24;  // Rotate the x-component of the nose vector
+        const noseY = Math.sin(angleInRadians) * 24;  // Rotate the y-component of the nose vector
+
+        // Bullet position is the ship's position plus the rotated nose offset
+        const bulletX = this.x + noseX + ((this.width / 2) - 1);
+        const bulletY = this.y + noseY + ((this.height / 2) - 1);
+
+        // Create the bullet at the calculated position
+        const bullet = new Bullet(bulletX, bulletY, angleInRadians);  // Bullet angle is the same as the ship's rotation
+        //const bullet = new Bullet(bulletX, bulletY, this.rotationAngle);  // Bullet angle is the same as the ship's rotation
+        bullet.rotationAngle = this.rotationAngle;
+        this.bullets.push(bullet);
+    }
+
+    updateBullets(deltaTime) {
+        this.bullets.forEach((bullet, index) => {
+            bullet.update(deltaTime);
+            if (bullet.isDead()) {
+                this.bullets.splice(index, 1); // Remove dead bullets
+            }
+        });
+    }
+
+    draw() {
+        // Draw ship
+        super.draw();
+
+        // Draw bullets
+        this.bullets.forEach(bullet => bullet.draw());
     }
 
 }

@@ -9,7 +9,6 @@ import Font5x6 from './font5x6.js';
 
 class CanvasUtils {
 
-
     /**
      * Draw FPS
      */
@@ -231,6 +230,8 @@ class CanvasUtils {
     };
 
     static isValidColor(color) {
+        if (typeof color !== 'string') return false;
+
         // Check if it's a valid named color
         if (CanvasUtils.colorMapNamed[color.toLowerCase()]) return true;
 

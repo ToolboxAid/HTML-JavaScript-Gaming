@@ -33,13 +33,6 @@ class Asteroid extends ObjectVector {
     this.wrapAround();
   }
 
-  wrapAround() {// Screen wrapping logic
-    if (this.x > canvasConfig.width) this.x = this.width * -1;
-    if (this.x + this.width < 0) this.x = canvasConfig.width;
-    if (this.y > canvasConfig.height) this.y = this.height * -1;
-    if (this.y + this.height < 0) this.y = canvasConfig.height;
-  }
-
   static generateVectorMap(size) {
     const sizeFactor = Asteroid.getSizeFactor(size);
 
