@@ -198,9 +198,10 @@ class ObjectKillable extends ObjectDynamic {
     //     this.otherFrame = otherFrame;
     // }
 
-    draw(ctx, offsetX = 0, offsetY = 0) {
-        super.draw(CanvasUtils.ctx);
-}
+//     draw(ctx, offsetX = 0, offsetY = 0) {
+//         super.draw(CanvasUtils.ctx);
+// }
+
     // // Example method
     // draw(ctx, offsetX = 0, offsetY = 0) {
     //     try {

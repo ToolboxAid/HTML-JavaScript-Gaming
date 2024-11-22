@@ -13,12 +13,16 @@ class ObjectVector extends ObjectKillable {
             throw new Error("vectorMap must be an array of point pairs (e.g., [[x, y], [x, y], ...]).");
         }
 
-        // Calculate object dimensions based on the bounding box of the rotated frame
-        const { minX, minY, maxX, maxY } = ObjectVector.getBoundingBox(vectorMap, 0);  // Initial bounding box without rotation
-        const width = maxX - minX;
-        const height = maxY - minY;
+        // Get the width and height based on the bounding box
+        const bounds = ObjectVector.calculateBoundingBox({ x: x, y: y, rotationAngle: 0, vectorMap: vectorMap });
 
-        super(x, y, width, height, velocityX, velocityY);
+        // Call super with calculated width and height
+        super(x, y, bounds.width, bounds.height, velocityX, velocityY);
+
+        this.drawX = bounds.x;
+        this.drawY = bounds.y;
+        this.drawWidth = bounds.width;
+        this.drawHeight = bounds.height;
 
         // Store the vector map (frame data)
         this.vectorMap = vectorMap;
@@ -32,16 +36,27 @@ class ObjectVector extends ObjectKillable {
         this.rotationAngle = 0;
 
         this.drawBounds = false;
+
+
     }
 
-    setRotationAngle(angle){
-        this.rotationAngle= angle;
+    setRotationAngle(angle) {
+        this.rotationAngle = angle;
     }
 
     updateDimensions() {// Method to update the width and height based on the bounding box
-        const { minX, minY, maxX, maxY } = ObjectVector.getBoundingBox(this.vectorMap, this.rotationAngle);
-        this.width = maxX - minX;
-        this.height = maxY - minY;
+        // const { minX, minY, maxX, maxY } = ObjectVector.getBoundingBox(this.vectorMap, this.rotationAngle);
+        // this.width = maxX - minX;
+        // this.height = maxY - minY;
+
+        // Get the width and height based on the bounding box
+        const bounds = ObjectVector.calculateBoundingBox({ x: this.x, y: this.y, rotationAngle: this.rotationAngle, vectorMap: this.vectorMap });
+
+        this.drawX = bounds.x;
+        this.drawY = bounds.y;
+        this.drawWidth = bounds.width;
+        this.drawHeight = bounds.height;
+
     }
 
     update(deltaTime) {
@@ -76,27 +91,28 @@ class ObjectVector extends ObjectKillable {
     }
 
     static calculateBoundingBox({ x, y, rotationAngle, vectorMap }) {
+
         if (!vectorMap || !Array.isArray(vectorMap)) {
             console.error("Invalid vectorMap:", vectorMap);
             return { x: 0, y: 0, width: 0, height: 0 }; // Prevent breaking
         }
-    
+
         const radians = (rotationAngle * Math.PI) / 180;
-    
+
         const rotatedPoints = vectorMap.map(([vx, vy]) => {
             const rotatedX = vx * Math.cos(radians) - vy * Math.sin(radians);
             const rotatedY = vx * Math.sin(radians) + vy * Math.cos(radians);
             return [rotatedX, rotatedY];
         });
-    
+
         const xs = rotatedPoints.map(([rx]) => rx);
-        const ys = rotatedPoints.map(([ , ry]) => ry);
-    
+        const ys = rotatedPoints.map(([, ry]) => ry);
+
         const minX = Math.min(...xs);
         const maxX = Math.max(...xs);
         const minY = Math.min(...ys);
         const maxY = Math.max(...ys);
-    
+
         return {
             x: minX + x,
             y: minY + y,
@@ -104,9 +120,9 @@ class ObjectVector extends ObjectKillable {
             height: maxY - minY,
         };
     }
-    
-    
-    
+
+
+
     // // Example Usage
     // const boundingBox = calculateBoundingBox({
     //     x: 0,
@@ -116,11 +132,11 @@ class ObjectVector extends ObjectKillable {
     //     rotationAngle: 45,
     //     vectorMap: [[-10, -20], [10, -20], [10, 20], [-10, 20], [-10, -20]],
     // });
-    
+
     // console.log(boundingBox);
     // // Output: { x: ..., y: ..., width: ..., height: ... }
 
-    
+
     setColor(color) {
         if (CanvasUtils.isValidColor(color)) {
             this.color = color;
@@ -141,8 +157,17 @@ class ObjectVector extends ObjectKillable {
                 return;
             }
 
-            const newX = this.x + offsetX;
-            const newY = this.y + offsetY;
+            let newX = this.x + offsetX;
+            let newY = this.y + offsetY;
+
+            // // this.drawX = bounds.x;
+            // // this.drawY = bounds.y;
+            // // this.drawWidth = bounds.width;
+            // // this.drawHeight = bounds.height;
+            // newX = this.drawX;
+            // newY = this.drawY;
+
+
 
             // Convert the rotation angle from degrees to radians
             const angleInRadians = (this.rotationAngle * Math.PI) / 180;
@@ -180,7 +205,16 @@ class ObjectVector extends ObjectKillable {
 
 
             if (this.drawBounds) {
-                CanvasUtils.drawBounds(this.x, this.y, this.width, this.height, 'white', 1);  // Blue color and line width of 2
+                //CanvasUtils.drawBounds(this.x, this.y, this.width, this.height, 'white', 1);  // Blue color and line width of 2
+                // // this.drawX = bounds.x;
+                // // this.drawY = bounds.y;
+                // // this.drawWidth = bounds.width;
+                // // this.drawHeight = bounds.height;
+                // newX = this.drawX;
+                // newY = this.drawY;
+                CanvasUtils.drawBounds(newX, 
+                newY, this.drawWidth, this.drawHeight,
+            "");;
             }
 
         } catch (error) {
