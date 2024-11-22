@@ -112,7 +112,6 @@ class Game {
     this.gameInitialized = true;
     this.playerLives = 3;
     this.score = 0;
-//    this.playerShip = new PlayerShip();
     this.asteroids.clear();
     this.bullets = [];
 

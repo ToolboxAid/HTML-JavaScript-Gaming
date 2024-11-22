@@ -18,7 +18,7 @@ class Ship extends ObjectVector {
             //,[0, 0]
         ];
 
-        // start in center of screen
+        // start SHIP at center of screen
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
@@ -27,9 +27,9 @@ class Ship extends ObjectVector {
         this.level = 1;
 
         this.rotationAngle = 0;
-        this.rotationSpeed = 125;
+        this.rotationSpeed = 120; // degrees per second 
 
-        this.thrust = 150.0;
+        this.thrust = 150;
         this.friction = 0.995;
 
         this.accelerationX = 0;
@@ -38,6 +38,7 @@ class Ship extends ObjectVector {
         this.velocityX = 0;
         this.velocityY = 0;
 
+// TODO: need a bullet/asteroid/ufo manager for below inside this SHIP (the player).
         this.bullets = [];
         this.maxBullets = 5;
 
@@ -71,20 +72,19 @@ class Ship extends ObjectVector {
         // Wrap rotationAngle to keep it between 0 and 360
         this.rotationAngle = Functions.degreeLimits(this.rotationAngle);
 
-        // Convert rotationAngle to radians
-        const angleInRadians = this.rotationAngle * (Math.PI / 180);
-
         // Reset acceleration values
         this.accelerationX = 0;
         this.accelerationY = 0;
 
         // Apply thrust (acceleration) when ArrowUp is held down
         if (keyboardInput.isKeyDown('ArrowUp')) {
-            Physics.applyRotationToPoint()
-            this.accelerationX = Math.cos(angleInRadians) * this.thrust * deltaTime;
-            this.accelerationY = Math.sin(angleInRadians) * this.thrust * deltaTime;
+            const vectorDirection = Physics.getVectorDirection(this.rotationAngle);
+
+            this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
+            this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
+            // TODO: add a flame to the ship for thrust
         } else {
-            // Apply acceleration with friction (only if no thrust)
+            // Apply decelleration with friction (only if no thrust)
             this.velocityX *= this.friction;
             this.velocityY *= this.friction;
         }

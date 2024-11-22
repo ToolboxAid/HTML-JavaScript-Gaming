@@ -170,18 +170,40 @@ class ObjectVector extends ObjectKillable {
         if (this.y + this.height < 0) this.y = window.gameAreaHeight;
     }
 
-    checkOutOfBounds() { // Object outside canvas window
+    isOutOfBounds() { // Object outside canvas window
         if (
-            this.x > window.width ||
-            this.x < 0 ||
-            this.y > window.height ||
-            this.y < 0
+            this.x > window.gameAreaWidth ||
+            this.x < -this.width ||
+            this.y > window.gameAreaHeight ||
+            this.y < -this.height
         ) {
             return true;
         }
         return false;
     }
     
+    /*
+      collidesWith(bullet) {
+    // Collision detection using ObjectDynamic's boundary collision method
+    if (this.isAlive()) {
+      const dx = this.x - bullet.position.x;
+      const dy = this.y - bullet.position.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      return distance < this.size / 2;
+    }
+    return false;
+  }
+
+  // Override processCollisionWith to handle asteroid-specific logic
+  processCollisionWith(object) {
+    const collided = super.processCollisionWith(object);
+    if (collided && this.isAlive()) {
+      this.setHit(); // Transition to dying state if a collision is detected
+    }
+    return collided;
+  }
+    */
+
     collisionDetection(object) {
         // Rotate and translate the asteroid's vectorMap based on its rotationAngle and position
         const asteroidPoints = this.vectorMap.map(([px, py]) => {

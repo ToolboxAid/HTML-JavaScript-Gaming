@@ -26,16 +26,16 @@ export default class Physics {
         object.yVelocity *= (1 - frictionCoefficient);
     }// Physics.applyFriction(puck, 0.05);  // Apply friction with a coefficient of 0.05
 
-    // Apply bounce (elasticity) to the object (e.g., ball) using the Physics class
-    static applyBounce(object, elasticity = 0.9) {
-        object.yVelocity *= -elasticity;
-    } // Physics.applyBounce(ball, 0.8);  // Apply bounce with an elasticity of 0.8
-
     // Apply drag (resistance) to the object (e.g., spaceship) using the Physics class (air or water resistance)
     static applyDrag(object, dragCoefficient = 0.05) {
         object.xVelocity *= (1 - dragCoefficient);
         object.yVelocity *= (1 - dragCoefficient);
     } // Physics.applyDrag(spaceship, 0.1);  // Apply drag with a coefficient of 0.1
+
+    // Apply bounce (elasticity) to the object (e.g., ball) using the Physics class
+    static applyBounce(object, elasticity = 0.9) {
+        object.yVelocity *= -elasticity;
+    } // Physics.applyBounce(ball, 0.8);  // Apply bounce with an elasticity of 0.8
 
     // Apply acceleration to the object (e.g., spaceship) using the Physics class
     static applyAcceleration(object, acceleration, deltaTime) {
@@ -48,14 +48,24 @@ export default class Physics {
         object.rotationAngle += (object.rotationSpeed * direction) * deltaTime;
     }// Physics.applyRotation(spaceship, spaceship.angularVelocity, deltaTime);
 
+
+    static getVectorDirection(rotationAngle) {
+        // Convert the angle/degree to radians
+        const radians = (rotationAngle * Math.PI) / 180;
+        return {
+            x: Math.cos(radians), // X-component
+            y: Math.sin(radians)  // Y-component
+        };
+    }
+
     // Apply Rotation (around the origin)
-    static applyRotationToPoint(originalX, originalY, rotationAngle) {
+    static applyRotationToPoint(x, y, rotationAngle) {
         // Convert the angle to radians
         const radians = (rotationAngle * Math.PI) / 180;
 
         // Apply the rotation formula
-        const rotatedX = originalX * Math.cos(radians) - originalY * Math.sin(radians);
-        const rotatedY = originalX * Math.sin(radians) + originalY * Math.cos(radians);
+        const rotatedX = x * Math.cos(radians) - y * Math.sin(radians);
+        const rotatedY = x * Math.sin(radians) + y * Math.cos(radians);
 
         // Return the rotated coordinates
         return { rotatedX, rotatedY };
@@ -80,7 +90,6 @@ export default class Physics {
         object.x += object.xVelocity * deltaTime;
         object.y += object.yVelocity * deltaTime;
     }// Physics.applyProjectileMotion(projectile, deltaTime);
-
 
     // Apply spring force to the object (Hooke’s Law)
     static applySpringForce(object, springConstant, displacement) {
