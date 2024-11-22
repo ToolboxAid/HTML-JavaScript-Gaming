@@ -35,4 +35,4 @@ window.fpsShow = true;
 window.fpsColor = "yellow";
 window.fpsSize = "40px";
 window.fpsX = 30;
-window.fpsY = 50;
+window.fpsY = 738;

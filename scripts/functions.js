@@ -12,6 +12,11 @@ class Functions {
         return degrees * (Math.PI / 180);
     }
     
+    // Wrap rotationAngle to keep it between 0 and 360
+    static degreeLimits(rotationAngle){
+        return (rotationAngle % 360 + 360) % 360;
+    }
+
     static calculateXY2Angle(xVelocity, yVelocity) {
         const angleInRadians = Math.atan2(yVelocity, xVelocity);
         const angleInDegrees = angleInRadians * (180 / Math.PI);

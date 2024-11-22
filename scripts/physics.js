@@ -44,8 +44,8 @@ export default class Physics {
     } // Physics.applyAcceleration(spaceship, acceleration, deltaTime);
 
     // Applies rotation to the object based on its angular velocity and the elapsed time (deltaTime).
-    static applyRotation(object, angularVelocity, deltaTime) {
-        object.rotation += angularVelocity * deltaTime;
+    static applyRotation(object, deltaTime, direction) {
+        object.rotationAngle += (object.rotationSpeed * direction) * deltaTime;
     }// Physics.applyRotation(spaceship, spaceship.angularVelocity, deltaTime);
 
     // Apply Rotation (around the origin)

@@ -5,76 +5,109 @@
 
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
-
+import Physics from '../scripts/physics.js';
 import Bullet from './bullet.js';
-
+import CanvasUtils from '../scripts/canvas.js';
+import Functions from '../scripts/functions.js';
 class Ship extends ObjectVector {
+
+    static maxSpeed = 800; // Set a maximum velocity cap (adjust as needed)
+
     constructor() {
-        const vectorMap = [[14, 0],[-10, -8],[-6, -3],[-6, 3],[-10, 8],[14, 0]
+        const vectorMap = [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]
             //,[0, 0]
-          ];
-          
+        ];
 
         // start in center of screen
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
         super(x, y, vectorMap);
+
+        this.level = 1;
+
         this.rotationAngle = 0;
-        this.rotationSpeed = 2.0; //0.1;
-        this.thrust = 0.07;
+        this.rotationSpeed = 125;
+
+        this.thrust = 150.0;
         this.friction = 0.995;
+
+        this.accelerationX = 0;
+        this.accelerationY = 0;
+
+        this.velocityX = 0;
+        this.velocityY = 0;
 
         this.bullets = [];
         this.maxBullets = 5;
 
         this.asteroids = [];
-        this.maxAsteroids = 5;
+        this.maxAsteroids = 3 + (3 * this.level);
+    }
+
+    drawDebugInfo(ctx) {
+        // Draw the current velocity and thrust values on the screen
+        ctx.font = '16px Arial';  // Choose font size and style
+        ctx.fillStyle = 'white';  // Text color
+        ctx.fillText(`Velocity X: ${this.velocityX.toFixed(2)}`, 10, 20);
+        ctx.fillText(`Velocity Y: ${this.velocityY.toFixed(2)}`, 10, 40);
+        ctx.fillText(`Acceleration X: ${this.accelerationX.toFixed(2)}`, 10, 60);
+        ctx.fillText(`Acceleration Y: ${this.accelerationY.toFixed(2)}`, 10, 80);
+        ctx.fillText(`Rotation Angle: ${this.rotationAngle.toFixed(2)}`, 10, 100);
+        ctx.fillText(`Friction: ${this.friction.toFixed(3)}`, 10, 120);
     }
 
     update(deltaTime, keyboardInput) {
+        this.drawDebugInfo(CanvasUtils.ctx);
+
         // Rotate the ship
         if (keyboardInput.isKeyDown('ArrowLeft')) {
-            this.rotationAngle -= this.rotationSpeed;
+            Physics.applyRotation(this, deltaTime, -1)
         }
         if (keyboardInput.isKeyDown('ArrowRight')) {
-            this.rotationAngle += this.rotationSpeed;
+            Physics.applyRotation(this, deltaTime, 1);
         }
+
         // Wrap rotationAngle to keep it between 0 and 360
-        this.rotationAngle = (this.rotationAngle % 360 + 360) % 360;
+        this.rotationAngle = Functions.degreeLimits(this.rotationAngle);
 
         // Convert rotationAngle to radians
         const angleInRadians = this.rotationAngle * (Math.PI / 180);
 
-        // Apply thrust
+        // Reset acceleration values
+        this.accelerationX = 0;
+        this.accelerationY = 0;
+
+        // Apply thrust (acceleration) when ArrowUp is held down
         if (keyboardInput.isKeyDown('ArrowUp')) {
-            this.velocityX += Math.cos(angleInRadians) * this.thrust;
-            this.velocityY += Math.sin(angleInRadians) * this.thrust;
+            Physics.applyRotationToPoint()
+            this.accelerationX = Math.cos(angleInRadians) * this.thrust * deltaTime;
+            this.accelerationY = Math.sin(angleInRadians) * this.thrust * deltaTime;
+        } else {
+            // Apply acceleration with friction (only if no thrust)
+            this.velocityX *= this.friction;
+            this.velocityY *= this.friction;
         }
 
-        // Update position with friction
-        this.velocityX *= this.friction;
-        this.velocityY *= this.friction;
-        // static applyFriction(object, frictionCoefficient = 0.1) {
-        //     object.xVelocity *= (1 - frictionCoefficient);
-        //     object.yVelocity *= (1 - frictionCoefficient);
-        // }        
+        // Apply acceleration to velocity
+        this.velocityX += this.accelerationX;
+        this.velocityY += this.accelerationY;
 
-        // this.x += this.velocityX;
-        // this.y += this.velocityY;
+        // Apply a velocity cap to prevent runaway motion
+        if (Math.abs(this.velocityX) > Ship.maxSpeed) this.velocityX = Ship.maxSpeed * Math.sign(this.velocityX);
+        if (Math.abs(this.velocityY) > Ship.maxSpeed) this.velocityY = Ship.maxSpeed * Math.sign(this.velocityY);
 
-
+        // Update position based on velocity
         super.update(deltaTime);
         this.wrapAround();
 
         // Shoot bullets
-        if (keyboardInput.getKeysJustPressed().includes('Space')
-            && this.bullets.length < this.maxBullets) {
+        if (keyboardInput.getKeysJustPressed().includes('Space') && this.bullets.length < this.maxBullets) {
             this.shootBullet();
         }
 
         // Update bullets
-        this.updateBullets(deltaTime);//
+        this.updateBullets(deltaTime);
     }
 
     shootBullet() {
@@ -117,5 +150,7 @@ class Ship extends ObjectVector {
 export default Ship;
 
 // Example usage
-const ship = new Ship(100, 100);
-console.log('Ship:', ship);
+if (false) {
+    const ship = new Ship(100, 100);
+    console.log('Ship:', ship);
+}

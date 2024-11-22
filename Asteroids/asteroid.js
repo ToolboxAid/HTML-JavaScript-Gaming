@@ -92,11 +92,11 @@ class Asteroid extends ObjectVector {
   static getSizeFactor(size) {  // Determine size factor based on asteroid size
     switch (size) {
       case 'small':
-        return 8; // Smaller radius
+        return 6; // Smaller radius
       case 'medium':
-        return 16; // Medium radius
+        return 12; // Medium radius
       case 'large':
-        return 24; // Larger radius
+        return 18; // Larger radius
       default:
         return 16; // Default to medium
     }

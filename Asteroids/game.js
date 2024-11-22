@@ -7,11 +7,9 @@ import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
-//import PlayerShip from './playerShip.js';
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
 import Ship from './ship.js';
-import ObjectVector from '../scripts/objectVector.js';
 
 class Game {
   constructor() {
@@ -24,7 +22,6 @@ class Game {
     this.gameInitialized = false;
     this.asteroids = new Map();
     this.bullets = [];
-  //  this.playerShip = null;
     this.spawnAsteroidsCount = 5;
     this.spawnRate = 0.001; //0.5; // Asteroid spawn rate
 
@@ -64,9 +61,6 @@ class Game {
 
         this.asteroidL.update(deltaTime);
         this.asteroidL.draw();
-        
-        this.bullet.update(deltaTime);
-        this.bullet.draw();
 
         break;
 
