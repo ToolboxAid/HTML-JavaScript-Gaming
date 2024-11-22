@@ -10,7 +10,7 @@ import Bullet from './bullet.js';
 
 class Ship extends ObjectVector {
     constructor() {
-        const vectorMap = [[24, 0], [-24, -16], [-16, -8], [-16, 8], [-24, 16]];
+        const vectorMap = [[24, 0], [-24, -16], [-16, -8], [-16, 8], [-24, 16],[24, 0],[0,0]];
 
         // start in center of screen
         const x = canvasConfig.width / 2;

@@ -11,6 +11,7 @@ import KeyboardInput from '../scripts/keyboard.js';
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
 import Ship from './ship.js';
+import ObjectVector from '../scripts/objectVector.js';
 
 class Game {
   constructor() {
@@ -55,6 +56,13 @@ class Game {
         this.ship.update(deltaTime, this.keyboardInput);
         this.ship.draw();
 
+        console.log(this.ship.x, this.ship.y, this.ship.rotationAngle, this.ship.vectorMap);        
+        const value = ObjectVector.calculateBoundingBox(this.ship);
+        console.log(value);
+        
+
+        CanvasUtils.drawBounds(value.x+(value.width/2), value.y+(value.height/2),value.width, value.height);
+        
         this.asteroidS.update(deltaTime);
         this.asteroidS.draw();
 

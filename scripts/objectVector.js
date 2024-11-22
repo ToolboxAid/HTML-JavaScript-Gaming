@@ -75,6 +75,52 @@ class ObjectVector extends ObjectKillable {
         return { minX, minY, maxX, maxY };
     }
 
+    static calculateBoundingBox({ x, y, rotationAngle, vectorMap }) {
+        if (!vectorMap || !Array.isArray(vectorMap)) {
+            console.error("Invalid vectorMap:", vectorMap);
+            return { x: 0, y: 0, width: 0, height: 0 }; // Prevent breaking
+        }
+    
+        const radians = (rotationAngle * Math.PI) / 180;
+    
+        const rotatedPoints = vectorMap.map(([vx, vy]) => {
+            const rotatedX = vx * Math.cos(radians) - vy * Math.sin(radians);
+            const rotatedY = vx * Math.sin(radians) + vy * Math.cos(radians);
+            return [rotatedX, rotatedY];
+        });
+    
+        const xs = rotatedPoints.map(([rx]) => rx);
+        const ys = rotatedPoints.map(([ , ry]) => ry);
+    
+        const minX = Math.min(...xs);
+        const maxX = Math.max(...xs);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+    
+        return {
+            x: minX + x,
+            y: minY + y,
+            width: maxX - minX,
+            height: maxY - minY,
+        };
+    }
+    
+    
+    
+    // // Example Usage
+    // const boundingBox = calculateBoundingBox({
+    //     x: 0,
+    //     y: 0,
+    //     width: 20,
+    //     height: 40,
+    //     rotationAngle: 45,
+    //     vectorMap: [[-10, -20], [10, -20], [10, 20], [-10, 20], [-10, -20]],
+    // });
+    
+    // console.log(boundingBox);
+    // // Output: { x: ..., y: ..., width: ..., height: ... }
+
+    
     setColor(color) {
         if (CanvasUtils.isValidColor(color)) {
             this.color = color;
