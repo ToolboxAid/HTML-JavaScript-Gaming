@@ -91,35 +91,43 @@ class ObjectVector extends ObjectKillable {
     }
 
     static calculateBoundingBox({ x, y, rotationAngle, vectorMap }) {
-
         if (!vectorMap || !Array.isArray(vectorMap)) {
             console.error("Invalid vectorMap:", vectorMap);
             return { x: 0, y: 0, width: 0, height: 0 }; // Prevent breaking
         }
-
+    
+        // Calculate the center of the vectorMap
+        const centerX = vectorMap.reduce((sum, [vx]) => sum + vx, 0) / vectorMap.length;
+        const centerY = vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / vectorMap.length;
+    
         const radians = (rotationAngle * Math.PI) / 180;
-
+    
+        // Rotate the points around the center of the vectorMap
         const rotatedPoints = vectorMap.map(([vx, vy]) => {
-            const rotatedX = vx * Math.cos(radians) - vy * Math.sin(radians);
-            const rotatedY = vx * Math.sin(radians) + vy * Math.cos(radians);
+            const rotatedX = centerX + (vx - centerX) * Math.cos(radians) - (vy - centerY) * Math.sin(radians);
+            const rotatedY = centerY + (vx - centerX) * Math.sin(radians) + (vy - centerY) * Math.cos(radians);
             return [rotatedX, rotatedY];
         });
-
+    
+        // Calculate the bounding box for the rotated points
         const xs = rotatedPoints.map(([rx]) => rx);
         const ys = rotatedPoints.map(([, ry]) => ry);
-
+    
         const minX = Math.min(...xs);
         const maxX = Math.max(...xs);
         const minY = Math.min(...ys);
         const maxY = Math.max(...ys);
-
+    
+        // The bounding box should be relative to the object’s actual position (x, y)
         return {
-            x: minX + x,
-            y: minY + y,
+            x: x + minX - centerX,
+            y: y + minY - centerY,
             width: maxX - minX,
-            height: maxY - minY,
+            height: maxY - minY
         };
     }
+    
+    
 
 
 
@@ -156,41 +164,32 @@ class ObjectVector extends ObjectKillable {
                 console.error("No valid frame to draw:", this.vectorMap);
                 return;
             }
-
+    
             let newX = this.x + offsetX;
             let newY = this.y + offsetY;
-
-            // // this.drawX = bounds.x;
-            // // this.drawY = bounds.y;
-            // // this.drawWidth = bounds.width;
-            // // this.drawHeight = bounds.height;
-            // newX = this.drawX;
-            // newY = this.drawY;
-
-
-
+    
             // Convert the rotation angle from degrees to radians
             const angleInRadians = (this.rotationAngle * Math.PI) / 180;
-
+    
             // Calculate the center of the object (bounding box center)
             const centerX = newX + (this.width / 2);
             const centerY = newY + (this.height / 2);
-
+    
             // Begin drawing
             CanvasUtils.ctx.beginPath();
             CanvasUtils.ctx.strokeStyle = this.color;
             CanvasUtils.ctx.lineWidth = lineWidth;
-
+    
             this.vectorMap.forEach(([px, py], index) => {
                 if (!Array.isArray([px, py]) || [px, py].length !== 2) {
                     console.error("Invalid point in frame:", [px, py]);
                     return;
                 }
-
+    
                 // Apply rotation around the center of the object
                 const transformedX = centerX + (px * Math.cos(angleInRadians) - py * Math.sin(angleInRadians));
                 const transformedY = centerY + (px * Math.sin(angleInRadians) + py * Math.cos(angleInRadians));
-
+    
                 // Draw the path
                 if (index === 0) {
                     CanvasUtils.ctx.moveTo(transformedX, transformedY);
@@ -198,31 +197,31 @@ class ObjectVector extends ObjectKillable {
                     CanvasUtils.ctx.lineTo(transformedX, transformedY);
                 }
             });
-
+    
             // Finish drawing
             CanvasUtils.ctx.closePath();
             CanvasUtils.ctx.stroke();
-
-
+    this.drawBounds = true;
             if (this.drawBounds) {
-                //CanvasUtils.drawBounds(this.x, this.y, this.width, this.height, 'white', 1);  // Blue color and line width of 2
-                // // this.drawX = bounds.x;
-                // // this.drawY = bounds.y;
-                // // this.drawWidth = bounds.width;
-                // // this.drawHeight = bounds.height;
-                // newX = this.drawX;
-                // newY = this.drawY;
-                CanvasUtils.drawBounds(newX, 
-                newY, this.drawWidth, this.drawHeight,
-            "");;
+                // Calculate the bounding box with the correct position
+                const bounds = ObjectVector.calculateBoundingBox({
+                    x: this.x,
+                    y: this.y,
+                    rotationAngle: this.rotationAngle,
+                    vectorMap: this.vectorMap
+                });
+    
+                // Draw the bounding box
+                CanvasUtils.drawBounds(bounds.x+(this.width/2), bounds.y+(this.height/2), bounds.width, bounds.height, "white", 1);
             }
-
+    
         } catch (error) {
             console.error("Error occurred while drawing:", error.message);
             console.error("Stack trace:", error.stack);
             console.log("Object state:", this);
         }
     }
+    
 
     collisionDetection(object) {
         // Rotate and translate the asteroid's vectorMap based on its rotationAngle and position
