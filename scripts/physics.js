@@ -4,111 +4,94 @@
 // physics.js
 
 export default class Physics {
-//    constructor() {}
+    constructor() {
+        throw new Error("'Physics' has only static methods.");
+    }
 
-    // Apply Gravity
+    // Apply gravity to the object (e.g., spaceship) using the Physics class
     static applyGravity(object, gravity = 9.81, deltaTime) {
         object.yVelocity += gravity * deltaTime;
-    }
+    }// Physics.applyGravity(spaceship, 9.81, deltaTime);  // Apply gravity of 9.81 units (default) over deltaTime
 
-    // Apply Wind (or any constant horizontal force)
+
+    // Apply wind force to the object (e.g., puck) using the Physics class (or any constant horizontal force)
     static applyWind(object, windForce, deltaTime) {
         object.xVelocity += windForce * deltaTime;
-    }
+    } // Physics.applyWind(puck, 2.5, deltaTime);  // Apply a wind force of 2.5 units over deltaTime
 
-    // Apply Friction (to simulate surface resistance)
+
+    // Apply friction to the object (e.g., puck) using the Physics class (to simulate surface resistance)
     static applyFriction(object, frictionCoefficient = 0.1) {
         object.xVelocity *= (1 - frictionCoefficient);
         object.yVelocity *= (1 - frictionCoefficient);
-    }
+    }// Physics.applyFriction(puck, 0.05);  // Apply friction with a coefficient of 0.05
 
-    // Apply Elasticity (Bounce)
+    // Apply bounce (elasticity) to the object (e.g., ball) using the Physics class
     static applyBounce(object, elasticity = 0.9) {
         object.yVelocity *= -elasticity;
-    }
+    } // Physics.applyBounce(ball, 0.8);  // Apply bounce with an elasticity of 0.8
 
-    // Apply Drag (air or water resistance)
+    // Apply drag (resistance) to the object (e.g., spaceship) using the Physics class (air or water resistance)
     static applyDrag(object, dragCoefficient = 0.05) {
         object.xVelocity *= (1 - dragCoefficient);
         object.yVelocity *= (1 - dragCoefficient);
-    }
+    } // Physics.applyDrag(spaceship, 0.1);  // Apply drag with a coefficient of 0.1
 
-    // Apply Acceleration
+    // Apply acceleration to the object (e.g., spaceship) using the Physics class
     static applyAcceleration(object, acceleration, deltaTime) {
         object.xVelocity += acceleration.x * deltaTime;
         object.yVelocity += acceleration.y * deltaTime;
-    }
+    } // Physics.applyAcceleration(spaceship, acceleration, deltaTime);
 
-    // Apply Angular Motion (Rotation)
+    // Applies rotation to the object based on its angular velocity and the elapsed time (deltaTime).
     static applyRotation(object, angularVelocity, deltaTime) {
         object.rotation += angularVelocity * deltaTime;
-    }
+    }// Physics.applyRotation(spaceship, spaceship.angularVelocity, deltaTime);
 
-    // Apply Momentum (p = mv)
+    // Apply Rotation (around the origin)
+    static applyRotationToPoint(originalX, originalY, rotationAngle) {
+        // Convert the angle to radians
+        const radians = (rotationAngle * Math.PI) / 180;
+
+        // Apply the rotation formula
+        const rotatedX = originalX * Math.cos(radians) - originalY * Math.sin(radians);
+        const rotatedY = originalX * Math.sin(radians) + originalY * Math.cos(radians);
+
+        // Return the rotated coordinates
+        return { rotatedX, rotatedY };
+    }  // const rotatedPoint = Physics.applyRotationToPoint(originalX, originalY, rotationAngle);
+
+    // Apply momentum to the object using the Physics class - Apply Momentum (p = mv)
     static applyMomentum(object, mass) {
         object.momentumX = object.xVelocity * mass;
         object.momentumY = object.yVelocity * mass;
-    }
+    } // Physics.applyMomentum(object, mass);
 
-    // Apply Impulse (a sudden change in velocity)
+    // Apply the impulse to the object using the Physics class (a sudden change in velocity)
     static applyImpulse(object, impulse) {
         object.xVelocity += impulse.x;
         object.yVelocity += impulse.y;
-    }
+    }// Physics.applyImpulse(object, impulse);
 
-    // Projectile Motion (combined gravity and wind)
+    // Apply projectile motion to the object (considering/combined gravity and wind)
     static applyProjectileMotion(object, deltaTime) {
         this.applyGravity(object, 9.81, deltaTime);
         this.applyWind(object, 0, deltaTime); // No wind by default
         object.x += object.xVelocity * deltaTime;
         object.y += object.yVelocity * deltaTime;
-    }
+    }// Physics.applyProjectileMotion(projectile, deltaTime);
 
-    // Apply Spring Force (Hooke’s Law)
+
+    // Apply spring force to the object (Hooke’s Law)
     static applySpringForce(object, springConstant, displacement) {
         let force = -springConstant * displacement;
         object.xVelocity += force;
-    }
+    } // Physics.applySpringForce(object, springConstant, displacement);
 
-    // Kinematics (Position Update based on acceleration)
+    // Apply kinematics to update position based on velocity (Position Update based on acceleration)
     static applyKinematics(object, deltaTime) {
         object.x += object.xVelocity * deltaTime;
         object.y += object.yVelocity * deltaTime;
-    }
+    }// Physics.applyKinematics(object, deltaTime);
+
 }
-
-
-
-/*
-// game.js
-import Physics from './physics.js';
-
-// Create an instance of the Physics class
-const physics = new Physics(9.81, 0.05); // Gravity and wind
-
-// Example object to apply physics on
-const puck = {
-    xVelocity: 2,
-    yVelocity: 0,
-    updatePosition() {
-        this.x += this.xVelocity;
-        this.y += this.yVelocity;
-    },
-    draw() {
-        // Drawing logic here
-    }
-};
-
-// In your game loop
-function gameLoop(deltaTime) {
-    // Apply gravity and wind to the puck
-    physics.applyForces(puck, deltaTime);
-
-    // Update puck's position based on its velocity
-    puck.updatePosition();
-
-    // Draw puck
-    puck.draw();
-}
-
-*/

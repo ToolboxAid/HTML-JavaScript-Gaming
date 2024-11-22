@@ -10,27 +10,8 @@ import Bullet from './bullet.js';
 
 class Ship extends ObjectVector {
     constructor() {
-        const vectorMap = 
-        // //+4
-        // [
-        //     [28, 0], 
-        //     [-20, -16], 
-        //     [-12, -6], 
-        //     [-12, 6], 
-        //     [-20, 16], 
-        //     [28, 0], 
-        //     [0, 0]
-        //   ];
-        
-        // div 2
-        [
-            [14, 0],
-            [-10, -8],
-            [-6, -3],
-            [-6, 3],
-            [-10, 8],
-            [14, 0],
-            [0, 0]
+        const vectorMap = [[14, 0],[-10, -8],[-6, -3],[-6, 3],[-10, 8],[14, 0]
+            //,[0, 0]
           ];
           
 
@@ -46,6 +27,9 @@ class Ship extends ObjectVector {
 
         this.bullets = [];
         this.maxBullets = 5;
+
+        this.asteroids = [];
+        this.maxAsteroids = 5;
     }
 
     update(deltaTime, keyboardInput) {
@@ -71,8 +55,14 @@ class Ship extends ObjectVector {
         // Update position with friction
         this.velocityX *= this.friction;
         this.velocityY *= this.friction;
-        this.x += this.velocityX;
-        this.y += this.velocityY;
+        // static applyFriction(object, frictionCoefficient = 0.1) {
+        //     object.xVelocity *= (1 - frictionCoefficient);
+        //     object.yVelocity *= (1 - frictionCoefficient);
+        // }        
+
+        // this.x += this.velocityX;
+        // this.y += this.velocityY;
+
 
         super.update(deltaTime);
         this.wrapAround();

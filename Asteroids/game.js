@@ -56,9 +56,6 @@ class Game {
         this.ship.update(deltaTime, this.keyboardInput);
         this.ship.draw();
 
-        //console.log(this.ship.x, this.ship.y, this.ship.rotationAngle, this.ship.vectorMap);        
-        const value = this.ship.calculateBoundingBox(this.ship);
-        
         this.asteroidS.update(deltaTime);
         this.asteroidS.draw();
 

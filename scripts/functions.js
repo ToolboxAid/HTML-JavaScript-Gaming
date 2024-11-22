@@ -19,7 +19,7 @@ class Functions {
     }
 
     static calculateAngle2XY(angle, decimals = 4) {
-        const radians = angle * (Math.PI / 180);
+        const radians = Functions.degToRad(angle); //angle * (Math.PI / 180);
         const x = (Math.cos(radians)).toFixed(decimals);
         const y = (Math.sin(radians)).toFixed(decimals);
         return { x: parseFloat(x), y: parseFloat(y) };
@@ -57,7 +57,6 @@ class Functions {
         };
     }
 
-    
     static linesIntersect2(line1Start, line1End, line2Start, line2End) {
         // These are points : line1Start, line1End, line2Start, line2End
         const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) - (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
