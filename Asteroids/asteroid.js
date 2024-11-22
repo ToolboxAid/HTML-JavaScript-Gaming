@@ -56,6 +56,7 @@ class Asteroid extends ObjectVector {
 
       points.push([x, y]);
     }
+    //points.push([0, 0]);
 
     return points;
   }
@@ -91,13 +92,13 @@ class Asteroid extends ObjectVector {
   static getSizeFactor(size) {  // Determine size factor based on asteroid size
     switch (size) {
       case 'small':
-        return 10; // Smaller radius
+        return 8; // Smaller radius
       case 'medium':
-        return 20; // Medium radius
+        return 16; // Medium radius
       case 'large':
-        return 30; // Larger radius
+        return 24; // Larger radius
       default:
-        return 20; // Default to medium
+        return 16; // Default to medium
     }
   }
 }
