@@ -95,37 +95,38 @@ class ObjectVector extends ObjectKillable {
             console.error("Invalid vectorMap:", vectorMap);
             return { x: 0, y: 0, width: 0, height: 0 }; // Prevent breaking
         }
-    
-        // Calculate the center of the vectorMap
+        
+        // Calculate the center of the vectorMap (this ensures proper rotation)
         const centerX = vectorMap.reduce((sum, [vx]) => sum + vx, 0) / vectorMap.length;
         const centerY = vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / vectorMap.length;
-    
+        
         const radians = (rotationAngle * Math.PI) / 180;
-    
+        
         // Rotate the points around the center of the vectorMap
         const rotatedPoints = vectorMap.map(([vx, vy]) => {
             const rotatedX = centerX + (vx - centerX) * Math.cos(radians) - (vy - centerY) * Math.sin(radians);
             const rotatedY = centerY + (vx - centerX) * Math.sin(radians) + (vy - centerY) * Math.cos(radians);
             return [rotatedX, rotatedY];
         });
-    
+        
         // Calculate the bounding box for the rotated points
         const xs = rotatedPoints.map(([rx]) => rx);
         const ys = rotatedPoints.map(([, ry]) => ry);
-    
+        
         const minX = Math.min(...xs);
         const maxX = Math.max(...xs);
         const minY = Math.min(...ys);
         const maxY = Math.max(...ys);
-    
-        // The bounding box should be relative to the object’s actual position (x, y)
+        
+        // Return the bounding box with the object's position (x, y)
         return {
-            x: x + minX - centerX,
-            y: y + minY - centerY,
+            x: minX + x - centerX,
+            y: minY + y - centerY,
             width: maxX - minX,
             height: maxY - minY
         };
     }
+    
     
     
 
@@ -201,8 +202,9 @@ class ObjectVector extends ObjectKillable {
             // Finish drawing
             CanvasUtils.ctx.closePath();
             CanvasUtils.ctx.stroke();
-    this.drawBounds = true;
-            if (this.drawBounds) {
+    
+    
+            if (this.drawBounds || true) {
                 // Calculate the bounding box with the correct position
                 const bounds = ObjectVector.calculateBoundingBox({
                     x: this.x,
@@ -211,8 +213,10 @@ class ObjectVector extends ObjectKillable {
                     vectorMap: this.vectorMap
                 });
     
-                // Draw the bounding box
-                CanvasUtils.drawBounds(bounds.x+(this.width/2), bounds.y+(this.height/2), bounds.width, bounds.height, "white", 1);
+                // Adjust the bounding box to draw it around the rotated object
+                const padding = 3; // Padding to make the bounding box larger than the object itself
+                CanvasUtils.drawBounds(bounds.x + (this.width / 2) - padding, bounds.y + (this.height / 2) - padding,
+                    bounds.width + (padding * 2), bounds.height + (padding * 2), "white", 1);
             }
     
         } catch (error) {
@@ -221,6 +225,7 @@ class ObjectVector extends ObjectKillable {
             console.log("Object state:", this);
         }
     }
+    
     
 
     collisionDetection(object) {
