@@ -57,11 +57,7 @@ class Game {
         this.ship.draw();
 
         //console.log(this.ship.x, this.ship.y, this.ship.rotationAngle, this.ship.vectorMap);        
-        const value = ObjectVector.calculateBoundingBox(this.ship);
-        //console.log(value);
-        
-
-        // CanvasUtils.drawBounds(value.x+(value.width/2), value.y+(value.height/2),value.width, value.height);
+        const value = this.ship.calculateBoundingBox(this.ship);
         
         this.asteroidS.update(deltaTime);
         this.asteroidS.draw();

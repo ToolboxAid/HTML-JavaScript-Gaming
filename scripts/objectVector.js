@@ -14,15 +14,16 @@ class ObjectVector extends ObjectKillable {
         }
 
         // Get the width and height based on the bounding box
-        const bounds = ObjectVector.calculateBoundingBox({ x: x, y: y, rotationAngle: 0, vectorMap: vectorMap });
+        // const bounds = ObjectVector.calculateBoundingBox({ x: x, y: y, rotationAngle: 0, vectorMap: vectorMap });
 
         // Call super with calculated width and height
-        super(x, y, bounds.width, bounds.height, velocityX, velocityY);
+        //        super(x, y, bounds.width, bounds.height, velocityX, velocityY);
+        super(x, y, 1, 1, velocityX, velocityY);
 
-        this.drawX = bounds.x;
-        this.drawY = bounds.y;
-        this.drawWidth = bounds.width;
-        this.drawHeight = bounds.height;
+        // this.drawX = bounds.x;
+        // this.drawY = bounds.y;
+        // this.drawWidth = bounds.width;
+        // this.drawHeight = bounds.height;
 
         // Store the vector map (frame data)
         this.vectorMap = vectorMap;
@@ -36,27 +37,10 @@ class ObjectVector extends ObjectKillable {
         this.rotationAngle = 0;
 
         this.drawBounds = false;
-
-
     }
 
     setRotationAngle(angle) {
         this.rotationAngle = angle;
-    }
-
-    updateDimensions() {// Method to update the width and height based on the bounding box
-        // const { minX, minY, maxX, maxY } = ObjectVector.getBoundingBox(this.vectorMap, this.rotationAngle);
-        // this.width = maxX - minX;
-        // this.height = maxY - minY;
-
-        // Get the width and height based on the bounding box
-        const bounds = ObjectVector.calculateBoundingBox({ x: this.x, y: this.y, rotationAngle: this.rotationAngle, vectorMap: this.vectorMap });
-
-        this.drawX = bounds.x;
-        this.drawY = bounds.y;
-        this.drawWidth = bounds.width;
-        this.drawHeight = bounds.height;
-
     }
 
     update(deltaTime) {
@@ -64,86 +48,84 @@ class ObjectVector extends ObjectKillable {
         this.updateDimensions();
     }
 
-    static getBoundingBox(points, rotationAngle = 0) {// Updated getBoundingBox method that accounts for rotation
-        // Calculate the center of the object (this could be done outside this function)
-        const centerX = 0;
-        const centerY = 0;
+    updateDimensions() {// Method to update the width and height based on the bounding box
+        const bounds = this.calculateBoundingBox({ x: this.x, y: this.y, rotationAngle: this.rotationAngle, vectorMap: this.vectorMap });
 
-        // Convert the rotation angle from degrees to radians
-        const angleInRadians = (rotationAngle * Math.PI) / 180;
-
-        // Rotate all points and calculate the min and max bounds
-        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-        points.forEach(([px, py]) => {
-            // Apply rotation around the center of the object
-            const rotatedX = centerX + (px * Math.cos(angleInRadians) - py * Math.sin(angleInRadians));
-            const rotatedY = centerY + (px * Math.sin(angleInRadians) + py * Math.cos(angleInRadians));
-
-            // Update the bounding box
-            minX = Math.min(minX, rotatedX);
-            minY = Math.min(minY, rotatedY);
-            maxX = Math.max(maxX, rotatedX);
-            maxY = Math.max(maxY, rotatedY);
-        });
-
-        return { minX, minY, maxX, maxY };
+        this.drawX = bounds.x;
+        this.drawY = bounds.y;
+        this.drawWidth = bounds.width;
+        this.drawHeight = bounds.height;
     }
 
-    static calculateBoundingBox({ x, y, rotationAngle, vectorMap }) {
+    calculateBoundingBox({ x, y, rotationAngle, vectorMap }) {
         if (!vectorMap || !Array.isArray(vectorMap)) {
             console.error("Invalid vectorMap:", vectorMap);
             return { x: 0, y: 0, width: 0, height: 0 }; // Prevent breaking
         }
-        
-        // Calculate the center of the vectorMap (this ensures proper rotation)
+
+        // Calculate the geometric center of the vectorMap
         const centerX = vectorMap.reduce((sum, [vx]) => sum + vx, 0) / vectorMap.length;
         const centerY = vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / vectorMap.length;
-        
+
+        // Convert rotation angle from degrees to radians
         const radians = (rotationAngle * Math.PI) / 180;
-        
-        // Rotate the points around the center of the vectorMap
+
+        // Rotate points and compute bounding box
+        let minX = Infinity;
+        let maxX = -Infinity;
+        let minY = Infinity;
+        let maxY = -Infinity;
+
         const rotatedPoints = vectorMap.map(([vx, vy]) => {
-            const rotatedX = centerX + (vx - centerX) * Math.cos(radians) - (vy - centerY) * Math.sin(radians);
-            const rotatedY = centerY + (vx - centerX) * Math.sin(radians) + (vy - centerY) * Math.cos(radians);
-            return [rotatedX, rotatedY];
+            // Translate to origin (relative to center)
+            const dx = vx - centerX;
+            const dy = vy - centerY;
+
+            // Apply rotation formula
+            const rotatedX = dx * Math.cos(radians) - dy * Math.sin(radians);
+            const rotatedY = dx * Math.sin(radians) + dy * Math.cos(radians);
+
+            // Translate back to the center
+            const finalX = rotatedX + centerX;
+            const finalY = rotatedY + centerY;
+
+            // Update bounding box calculations
+            if (finalX < minX) minX = finalX;
+            if (finalX > maxX) maxX = finalX;
+            if (finalY < minY) minY = finalY;
+            if (finalY > maxY) maxY = finalY;
+
+            // Update bounding box calculations
+            minX = Math.floor(Math.min(minX, finalX));
+            maxX = Math.ceil(Math.max(maxX, finalX));
+            minY = Math.floor(Math.min(minY, finalY));
+            maxY = Math.ceil(Math.max(maxY, finalY));
+
+            return [finalX, finalY];
         });
-        
-        // Calculate the bounding box for the rotated points
-        const xs = rotatedPoints.map(([rx]) => rx);
-        const ys = rotatedPoints.map(([, ry]) => ry);
-        
-        const minX = Math.min(...xs);
-        const maxX = Math.max(...xs);
-        const minY = Math.min(...ys);
-        const maxY = Math.max(...ys);
-        
-        // Return the bounding box with the object's position (x, y)
+
+        // Debug logs
+        if (this.drawBounds) {
+            console.log("Rotated Points:", rotatedPoints);
+            console.log(
+                "Bounding Box:",
+                `minX: ${minX}, maxX: ${maxX}, minY: ${minY}, maxY: ${maxY}`
+            );
+        }
+
+        this.boundX = x + minX - centerX;
+        this.boundY = y + minY - centerY;
+        this.boundWidth = maxX - minX +1;
+        this.boundHeight = maxY - minY +1;
+        // Return bounding box with the object's position
         return {
-            x: minX + x - centerX,
-            y: minY + y - centerY,
+            x: x + minX - centerX,
+            y: y + minY - centerY,
             width: maxX - minX,
             height: maxY - minY
         };
     }
-    
-    
-    
 
-
-
-    // // Example Usage
-    // const boundingBox = calculateBoundingBox({
-    //     x: 0,
-    //     y: 0,
-    //     width: 20,
-    //     height: 40,
-    //     rotationAngle: 45,
-    //     vectorMap: [[-10, -20], [10, -20], [10, 20], [-10, 20], [-10, -20]],
-    // });
-
-    // console.log(boundingBox);
-    // // Output: { x: ..., y: ..., width: ..., height: ... }
 
 
     setColor(color) {
@@ -159,38 +141,38 @@ class ObjectVector extends ObjectKillable {
         this.drawBounds = true;
     }
 
-    draw(lineWidth = 2, offsetX = 0, offsetY = 0) {
+    draw(lineWidth = 1, offsetX = 0, offsetY = 0) {
         try {
             if (!this.vectorMap || !Array.isArray(this.vectorMap)) {
                 console.error("No valid frame to draw:", this.vectorMap);
                 return;
             }
-    
+
             let newX = this.x + offsetX;
             let newY = this.y + offsetY;
-    
+
             // Convert the rotation angle from degrees to radians
             const angleInRadians = (this.rotationAngle * Math.PI) / 180;
-    
+
             // Calculate the center of the object (bounding box center)
             const centerX = newX + (this.width / 2);
             const centerY = newY + (this.height / 2);
-    
+
             // Begin drawing
             CanvasUtils.ctx.beginPath();
             CanvasUtils.ctx.strokeStyle = this.color;
             CanvasUtils.ctx.lineWidth = lineWidth;
-    
+
             this.vectorMap.forEach(([px, py], index) => {
                 if (!Array.isArray([px, py]) || [px, py].length !== 2) {
                     console.error("Invalid point in frame:", [px, py]);
                     return;
                 }
-    
+
                 // Apply rotation around the center of the object
                 const transformedX = centerX + (px * Math.cos(angleInRadians) - py * Math.sin(angleInRadians));
                 const transformedY = centerY + (px * Math.sin(angleInRadians) + py * Math.cos(angleInRadians));
-    
+
                 // Draw the path
                 if (index === 0) {
                     CanvasUtils.ctx.moveTo(transformedX, transformedY);
@@ -198,35 +180,49 @@ class ObjectVector extends ObjectKillable {
                     CanvasUtils.ctx.lineTo(transformedX, transformedY);
                 }
             });
-    
+
             // Finish drawing
             CanvasUtils.ctx.closePath();
             CanvasUtils.ctx.stroke();
-    
-    
-            if (this.drawBounds || true) {
-                // Calculate the bounding box with the correct position
-                const bounds = ObjectVector.calculateBoundingBox({
+
+            if (this.drawBounds) {
+                lineWidth = 10;
+                // // Calculate the bounding box with the correct position
+                const bounds = this.calculateBoundingBox({
                     x: this.x,
                     y: this.y,
                     rotationAngle: this.rotationAngle,
                     vectorMap: this.vectorMap
                 });
-    
-                // Adjust the bounding box to draw it around the rotated object
-                const padding = 3; // Padding to make the bounding box larger than the object itself
-                CanvasUtils.drawBounds(bounds.x + (this.width / 2) - padding, bounds.y + (this.height / 2) - padding,
-                    bounds.width + (padding * 2), bounds.height + (padding * 2), "white", 1);
+
+                // CanvasUtils.drawBounds(
+                //     bounds.x + (this.width / 2),
+                //     bounds.y + (this.height / 2),
+                //     bounds.width,
+                //     bounds.height, 
+                //     "white", 1);
+
+                // this.boundX = x + minX - centerX;
+                // this.boundY = y + minY - centerY;
+                // this.boundWidth = maxX - minX;
+                // this.boundHeight = maxY - minY;
+                console.log(this.boundX, this.boundY, this.boundHeight, this.boundWidth);
+                CanvasUtils.drawCircle2(this.x, this.y, 2, "white");
+                CanvasUtils.drawBounds(
+                    this.boundX,
+                    this.boundY,
+                    this.boundWidth,
+                    this.boundHeight,
+                    "white", 1);
+
             }
-    
+
         } catch (error) {
             console.error("Error occurred while drawing:", error.message);
             console.error("Stack trace:", error.stack);
             console.log("Object state:", this);
         }
     }
-    
-    
 
     collisionDetection(object) {
         // Rotate and translate the asteroid's vectorMap based on its rotationAngle and position
@@ -258,7 +254,6 @@ class ObjectVector extends ObjectKillable {
                 return true; // Collision detected
             }
         }
-
         return false; // No collision
     }
 
