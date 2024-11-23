@@ -11,12 +11,17 @@ import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
 import Ship from './ship.js';
 
+import AttractMode from './attractMode.js';
+
 class Game {
+
+  static attractMode = null;
+
   constructor() {
     this.keyboardInput = new KeyboardInput();
 
     // Game State Variables
-    this.gameState = "attract";
+    this.gameState = "initAttract";
     this.playerLives = 3;
     this.score = 0;
     this.gameInitialized = false;
@@ -27,19 +32,6 @@ class Game {
 
     this.backToAttract = 60;
     this.backToAttractCounter = 0;
-
-    this.ship=new Ship();
-    this.ship.setColor("red");
-    this.ship.setDrawBounds();
-    this.asteroidS = new Asteroid(200,200,'small');
-    this.asteroidS.setColor("yellow");
-    this.asteroidM = new Asteroid(300,200,'medium');
-    this.asteroidM.setColor("pink");
-    this.asteroidL = new Asteroid(400,200,'large');
-    this.asteroidL.setColor("orange");
-
-    this.bullet = new Bullet(canvasConfig.width/2,canvasConfig.height/2,90,70,3);
-    this.bullet.setColor("white");
   }
 
   gameLoop(deltaTime) {
@@ -47,21 +39,13 @@ class Game {
     this.keyboardInput.update();
 
     switch (this.gameState) {
+      case "initAttract":
+        Game.attractMode = new AttractMode();
+        this.gameState = "attract";
+        break;
+
       case "attract":
-        this.displayAttractMode();
-
-        this.ship.update(deltaTime, this.keyboardInput);
-        this.ship.draw();
-
-        this.asteroidS.update(deltaTime);
-        this.asteroidS.draw();
-
-        this.asteroidM.update(deltaTime);
-        this.asteroidM.draw();
-
-        this.asteroidL.update(deltaTime);
-        this.asteroidL.draw();
-
+        this.displayAttractMode(deltaTime);
         break;
 
       case "initGame":
@@ -84,11 +68,10 @@ class Game {
     }
   }
 
-  displayAttractMode() {
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to Asteroids!", 250, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
+  displayAttractMode(deltaTime) {
+    console.log("Attract Game...");
+    Game.attractMode.update(deltaTime);
+    Game.attractMode.draw();
 
     if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
       this.gameState = "initGame";
@@ -138,14 +121,12 @@ class Game {
     this.gamePauseCheck();
 
     // Player movement and actions
-  //  this.playerShip.update(this.keyboardInput, deltaTime);
     this.updateAsteroids(deltaTime);
     this.updateBullets(deltaTime);
 
     this.checkCollisions();
 
     // Draw all game objects
-  //  this.playerShip.draw();
     this.bullets.forEach(bullet => bullet.draw());
     this.asteroids.forEach(asteroid => asteroid.draw());
 
@@ -205,7 +186,7 @@ class Game {
 
   resetGame() {
     console.log("Resetting Game...");
-    this.gameState = "attract";
+    this.gameState = "initAttract";
     this.gameInitialized = false;
     this.backToAttractCounter = 0;
   }
