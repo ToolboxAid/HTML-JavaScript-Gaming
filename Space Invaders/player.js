@@ -145,7 +145,7 @@ class Player extends ObjectSprite {
         this.level = 0;
     }
 
-    update(keysDown, keyJustPressed) {
+    update(keysDown, keyPressed) {
         super.update(1);
         const speed = 4;
         if (keysDown.includes('ArrowLeft')) {
@@ -159,7 +159,7 @@ class Player extends ObjectSprite {
             }
         }
 
-        if (keyJustPressed.includes('Space')) {
+        if (keyPressed.includes('Space')) {
             let laserPoint = { x: this.x + (this.width / 2), y: this.y };
             return laserPoint;
         }

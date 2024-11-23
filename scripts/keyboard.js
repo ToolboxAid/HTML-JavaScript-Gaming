@@ -66,7 +66,7 @@ class KeyboardInput {
         return Array.from(this.keysReleased);
     }
 
-    isKeyJustPressed(key) {
+    isKeyPressed(key) {
         return this.keysPressed.has(key);
     }
 
