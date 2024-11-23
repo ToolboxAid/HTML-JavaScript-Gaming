@@ -33,6 +33,8 @@ class Game {
   gameLoop(deltaTime) {
     this.keyboardInput.update();
 
+    console.log(this.gameState);
+
     // Update game state with deltaTime
     switch (this.gameState) {
       case "attract":
@@ -44,9 +46,7 @@ class Game {
         break;
 
       case "initGame":
-        if (!this.gameInitialized) {
           this.initializeGame();
-        }
         break;
 
       case "initEnemy":
@@ -75,7 +75,6 @@ class Game {
    CanvasUtils.ctx.font = "30px Arial";
    CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
    CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
-    console.log("attract");
 
     if (this.keyboardInput.getkeysPressed().includes('Enter')) {
       this.gameState = "playerSelect";
@@ -88,14 +87,15 @@ class Game {
    CanvasUtils.ctx.fillText("Select Player Mode", 250, 200);
    CanvasUtils.ctx.fillText("Press `1` for Single Player", 250, 250);
    CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
-    console.log("player select");
 
     if (this.keyboardInput.getkeysPressed().includes('Digit1')) {
       this.playerCount = 1;
       this.gameState = "initGame";
+      console.log("Players: 1");
     } else if (this.keyboardInput.getkeysPressed().includes('Digit2')) {
       this.playerCount = 2;
       this.gameState = "initGame";
+      console.log("Players: 2");
     }
   }
 
@@ -104,7 +104,6 @@ class Game {
    CanvasUtils.ctx.font = "30px Arial";
    CanvasUtils.ctx.fillText("Game Over", 300, 200);
    CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
-    console.log("game over");
 
     if (this.keyboardInput.getkeysPressed().includes('Enter') ||
       this.backToAttractCounter++ > this.backToAttract) {
@@ -114,7 +113,6 @@ class Game {
 
   // Game Logic Functions
   initializeGame() {
-    console.log("Initializing Game...");
     this.gameInitialized = true;
     this.onetime = true;
     this.playerLives = [3, 3]; // Reset lives
@@ -145,22 +143,11 @@ class Game {
     this.gamePauseCheck();
     CanvasUtils.drawText( 150, 200, "Game Paused.", 3.5, "white");
     CanvasUtils.drawText( 150, 250, "Press `P` to unpause game", 3.5, "white");
-    console.log("paused");
   }
 
   playGame() {
     this.gamePauseCheck();
-
-    if (this.playerLives[this.currentPlayer - 1] <= 0) {
-        if (this.currentPlayer < this.playerCount) {
-            this.currentPlayer++;
-            this.gameState = "initGame";
-        } else {
-            this.gameState = "gameOver";
-        }
-    }
-
-    console.log("play game");
+    
     // Display current player status
     const playerInfo = `Player ${this.currentPlayer} - Lives: ${this.playerLives[this.currentPlayer - 1]} - Score: ${this.score[this.currentPlayer - 1]}`;
     CanvasUtils.drawText( 100, 200, playerInfo, 3.5, "white");
@@ -173,47 +160,50 @@ class Game {
         console.log("score");
     }
 
-    // Check if Space key was just pressed to simulate losing a life
+    // Check if `D`` key was just pressed, simulate losing a life
     if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
-        this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
-        console.log(`Player ${this.currentPlayer} lost a life!`);
-
-        // Check if current player is out of lives
-        if (this.playerLives[this.currentPlayer - 1] <= 0) {
-            console.log(`Player ${this.currentPlayer} is out of lives.`);
-
-            // If only one player (single-player mode)
-            if (this.playerCount === 1) {
-                // End game if the single player is out of lives
-                console.log("Player 1 is out of lives. Game Over!");
-                this.gameState = "gameOver";
-                return;
-            }
-
-            // If two players (multiplayer mode), check if both are out of lives
-            if (this.playerCount === 2) {
-                if (this.playerLives[0] <= 0 && this.playerLives[1] <= 0) {
-                    console.log("Both players are out of lives. Game Over!");
-                    this.gameState = "gameOver";
-                    return;
-                }
-
-                // Swap to the other player if the current one is out of lives
-                this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-                console.log(`Swapping to Player ${this.currentPlayer}.`);
-            }
-        } else {
-            // If current player still has lives left, swap only in two-player mode
-            if (this.playerCount === 2) {
-                this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-                console.log(`Swapping to Player ${this.currentPlayer}.`);
-            }
-        }
+      this.swapPlayer();
     }
 }
 
+swapPlayer(){
+  this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
+  console.log(`Player ${this.currentPlayer} lost a life!`);
+
+  // Check if current player is out of lives
+  if (this.playerLives[this.currentPlayer - 1] <= 0) {
+      console.log(`Player ${this.currentPlayer} is out of lives.`);
+
+      // If only one player (single-player mode)
+      if (this.playerCount === 1) {
+          // End game if the single player is out of lives
+          console.log("Player 1 is out of lives. Game Over!");
+          this.gameState = "gameOver";
+          return;
+      }
+
+      // If two players (multiplayer mode), check if both are out of lives
+      if (this.playerCount === 2) {
+          if (this.playerLives[0] <= 0 && this.playerLives[1] <= 0) {
+              console.log("Both players are out of lives. Game Over!");
+              this.gameState = "gameOver";
+              return;
+          }
+
+          // Swap to the other player if the current one is out of lives
+          this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+          console.log(`Swapping to Player ${this.currentPlayer}.`);
+      }
+  } else {
+      // If current player still has lives left, swap only in two-player mode
+      if (this.playerCount === 2) {
+          this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+          console.log(`Swapping to Player ${this.currentPlayer}.`);
+      }
+  }
+
+}
   resetGame() {
-    console.log("Resetting Game...");
     this.gameState = "attract";
     this.gameInitialized = false;
     this.enemyInitialized = false;
