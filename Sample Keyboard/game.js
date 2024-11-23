@@ -59,8 +59,9 @@ class GameLoop {
         ctx.fillText("Press `r` for RED", 275, 390);
         ctx.fillText("Press `g` for GREEN", 275, 425);
 
-        ctx.fillText("Caution, some keyboard scan and cannot", 105, 550);
-        ctx.fillText("display all keys pressed: test your key combos.", 85, 575);
+        ctx.fillStyle = 'orange'; // Set text color
+        ctx.fillText("Caution, some keyboards scan and cannot", 105, 540);
+        ctx.fillText("display all keys pressed: test your player keys.", 85, 575);
     }
 
     gameLoop() {
