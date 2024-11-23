@@ -9,7 +9,7 @@ export const canvasConfig = {
     width: 800, // Game area width
     height: 600, // Game area height
     scale: 0.5,
-    backgroundColor: "#000000",
+    backgroundColor: "#333333",
 };
 
 // non type="module" in HTML

@@ -145,15 +145,15 @@ class Player extends ObjectSprite {
         this.level = 0;
     }
 
-    update(keysPressed, keyJustPressed) {
+    update(keysDown, keyJustPressed) {
         super.update(1);
         const speed = 4;
-        if (keysPressed.includes('ArrowLeft')) {
+        if (keysDown.includes('ArrowLeft')) {
             if (this.x - speed > 0) {
                 this.x -= speed;
             }
         }
-        if (keysPressed.includes('ArrowRight')) {
+        if (keysDown.includes('ArrowRight')) {
             if (this.x < canvasConfig.width - this.width - speed) {
                 this.x += speed;
             }

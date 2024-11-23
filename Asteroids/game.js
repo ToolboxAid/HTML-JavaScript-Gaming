@@ -73,7 +73,7 @@ class Game {
     Game.attractMode.update(deltaTime);
     Game.attractMode.draw();
 
-    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getkeysPressed().includes('Enter')) {
       this.gameState = "initGame";
     }
   }
@@ -84,7 +84,7 @@ class Game {
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
-    if (this.keyboardInput.getKeysJustPressed().includes('Enter') ||
+    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -112,7 +112,7 @@ class Game {
   }
 
   gamePauseCheck() {
-    if (this.keyboardInput.getKeysJustPressed().includes('KeyP')) {
+    if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
       this.gameState = this.gameState === "playGame" ? "pauseGame" : "playGame";
     }
   }

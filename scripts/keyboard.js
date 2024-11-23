@@ -4,7 +4,7 @@
 // keyboard.js
 class KeyboardInput {
     constructor() {
-        this.keysJustPressed = new Set();  // Keys pressed this frame
+        this.keysPressed = new Set();  // Keys pressed this frame
         this.keysDown = new Set();         // Keys currently pressed
         this.keysReleased = new Set();     // Keys released this frame
 
@@ -35,12 +35,12 @@ class KeyboardInput {
 
     update() {
         // Clear previous frame states
-        this.keysJustPressed.clear();
+        this.keysPressed.clear();
         this.keysReleased.clear();
 
         // Process new keydown events
         this.tempKeysDown.forEach(key => {
-            this.keysJustPressed.add(key);
+            this.keysPressed.add(key);
             this.keysDown.add(key);
         });
         this.tempKeysDown.clear(); // Clear after processing
@@ -54,8 +54,8 @@ class KeyboardInput {
     }
 
     // Utility methods
-    getKeysJustPressed() {
-        return Array.from(this.keysJustPressed);
+    getkeysPressed() {
+        return Array.from(this.keysPressed);
     }
 
     getKeysDown() {
@@ -67,7 +67,7 @@ class KeyboardInput {
     }
 
     isKeyJustPressed(key) {
-        return this.keysJustPressed.has(key);
+        return this.keysPressed.has(key);
     }
 
     isKeyDown(key) {

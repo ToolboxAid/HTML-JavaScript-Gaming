@@ -102,7 +102,7 @@ class Ship extends ObjectVector {
         this.wrapAround();
 
         // Shoot bullets
-        if (keyboardInput.getKeysJustPressed().includes('Space') && this.bullets.length < this.maxBullets) {
+        if (keyboardInput.getkeysPressed().includes('Space') && this.bullets.length < this.maxBullets) {
             this.shootBullet();
         }
 

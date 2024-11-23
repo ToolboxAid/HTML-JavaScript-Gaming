@@ -77,7 +77,7 @@ class Game {
    CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
     console.log("attract");
 
-    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getkeysPressed().includes('Enter')) {
       this.gameState = "playerSelect";
     }
   }
@@ -90,10 +90,10 @@ class Game {
    CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
     console.log("player select");
 
-    if (this.keyboardInput.getKeysJustPressed().includes('Digit1')) {
+    if (this.keyboardInput.getkeysPressed().includes('Digit1')) {
       this.playerCount = 1;
       this.gameState = "initGame";
-    } else if (this.keyboardInput.getKeysJustPressed().includes('Digit2')) {
+    } else if (this.keyboardInput.getkeysPressed().includes('Digit2')) {
       this.playerCount = 2;
       this.gameState = "initGame";
     }
@@ -106,7 +106,7 @@ class Game {
    CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
     console.log("game over");
 
-    if (this.keyboardInput.getKeysJustPressed().includes('Enter') ||
+    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -132,7 +132,7 @@ class Game {
   }
 
   gamePauseCheck() {
-    if (this.keyboardInput.getKeysJustPressed().includes('KeyP')) {
+    if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -168,13 +168,13 @@ class Game {
     CanvasUtils.drawText( 100, 300, "Press `S` for score", 3.5, "white");
     CanvasUtils.drawText( 100, 350, "Press `P` to pause game", 3.5, "white");
 
-    if (this.keyboardInput.getKeysJustPressed().includes('KeyS')) {
+    if (this.keyboardInput.getkeysPressed().includes('KeyS')) {
         this.score[this.currentPlayer - 1] += 100;
         console.log("score");
     }
 
     // Check if Space key was just pressed to simulate losing a life
-    if (this.keyboardInput.getKeysJustPressed().includes('KeyD')) {
+    if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
         this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
         console.log(`Player ${this.currentPlayer} lost a life!`);
 

@@ -66,7 +66,7 @@ class Game {
     CanvasUtils.ctx.fillText("Welcome to Tic-Tac-Toe", 150, gridSize - 10);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 150, gridSize * 2 - 10);
 
-    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getkeysPressed().includes('Enter')) {
       this.resetGame();
       this.gameState = "initGame";
     }
@@ -128,7 +128,7 @@ class Game {
     this.drawGrid();
     this.drawBoard();
 
-    const KeyDown = this.keyboardInput.getKeysJustPressed();
+    const KeyDown = this.keyboardInput.getkeysPressed();
     for (let i = 1; i <= 9; i++) {
       if (KeyDown.includes(`Digit${i}`) && !this.board[i - 1] && !this.winner) {
         this.board[i - 1] = this.currentPlayer === 1 ? "X" : "O";
@@ -176,7 +176,7 @@ class Game {
     }
 
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 400);
-    if (this.keyboardInput.getKeysJustPressed().includes('Enter')) {
+    if (this.keyboardInput.getkeysPressed().includes('Enter')) {
       this.resetGame();
     }
   }
