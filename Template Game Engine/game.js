@@ -19,8 +19,8 @@ class Game {
     this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
     this.playerCount = 1;
     this.currentPlayer = 1;
-    this.playerLives = [3, 3]; // Player 1 and Player 2 lives
-    this.score = [0, 0]; // Player 1 and Player 2 scores
+    this.playerLives = null; // Player 1 and Player 2 lives
+    this.score = null; // Player 1 and Player 2 scores
     this.gameInitialized = false;
     this.enemyInitialized = false;
     this.onetime = true;
@@ -87,6 +87,8 @@ class Game {
    CanvasUtils.ctx.fillText("Select Player Mode", 250, 200);
    CanvasUtils.ctx.fillText("Press `1` for Single Player", 250, 250);
    CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
+   CanvasUtils.ctx.fillText("Press `3` for Three Players", 250, 350);
+   CanvasUtils.ctx.fillText("Press `4` for Four Players", 250, 400);
 
     if (this.keyboardInput.getkeysPressed().includes('Digit1')) {
       this.playerCount = 1;
@@ -96,6 +98,14 @@ class Game {
       this.playerCount = 2;
       this.gameState = "initGame";
       console.log("Players: 2");
+    } else if (this.keyboardInput.getkeysPressed().includes('Digit3')) {
+      this.playerCount = 3;
+      this.gameState = "initGame";
+      console.log("Players: 3");
+    } else if (this.keyboardInput.getkeysPressed().includes('Digit4')) {
+      this.playerCount = 4;
+      this.gameState = "initGame";
+      console.log("Players: 4");
     }
   }
 
@@ -115,8 +125,8 @@ class Game {
   initializeGame() {
     this.gameInitialized = true;
     this.onetime = true;
-    this.playerLives = [3, 3]; // Reset lives
-    this.score = [0, 0]; // Reset score
+    this.playerLives = [3, 3, 4, 3]; // Reset lives
+    this.score = [0, 0, 0, 0]; // Reset score
     this.currentPlayer = 1;
 
     this.gameState = "initEnemy";
@@ -166,43 +176,35 @@ class Game {
     }
 }
 
-swapPlayer(){
-  this.playerLives[this.currentPlayer - 1] -= 1; // Decrease current player's life
+swapPlayer() {
+  // Decrease the current player's life
+  this.playerLives[this.currentPlayer - 1] -= 1;
   console.log(`Player ${this.currentPlayer} lost a life!`);
 
-  // Check if current player is out of lives
+  // Check if the current player is out of lives
   if (this.playerLives[this.currentPlayer - 1] <= 0) {
       console.log(`Player ${this.currentPlayer} is out of lives.`);
-
-      // If only one player (single-player mode)
-      if (this.playerCount === 1) {
-          // End game if the single player is out of lives
-          console.log("Player 1 is out of lives. Game Over!");
+      
+      // Check if all players are out of lives
+      const allOut = this.playerLives.every(lives => lives <= 0);
+      if (allOut) {
+          console.log("All players are out of lives. Game Over!");
           this.gameState = "gameOver";
           return;
       }
-
-      // If two players (multiplayer mode), check if both are out of lives
-      if (this.playerCount === 2) {
-          if (this.playerLives[0] <= 0 && this.playerLives[1] <= 0) {
-              console.log("Both players are out of lives. Game Over!");
-              this.gameState = "gameOver";
-              return;
-          }
-
-          // Swap to the other player if the current one is out of lives
-          this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-          console.log(`Swapping to Player ${this.currentPlayer}.`);
-      }
-  } else {
-      // If current player still has lives left, swap only in two-player mode
-      if (this.playerCount === 2) {
-          this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-          console.log(`Swapping to Player ${this.currentPlayer}.`);
-      }
   }
 
+  // Find the next player with lives left
+  let nextPlayer = this.currentPlayer;
+  do {
+      nextPlayer = (nextPlayer % this.playerCount) + 1; // Cycle to the next player
+  } while (this.playerLives[nextPlayer - 1] <= 0);
+
+  // Set the next player as the current player
+  this.currentPlayer = nextPlayer;
+  console.log(`Swapping to Player ${this.currentPlayer}.`);
 }
+
   resetGame() {
     this.gameState = "attract";
     this.gameInitialized = false;
