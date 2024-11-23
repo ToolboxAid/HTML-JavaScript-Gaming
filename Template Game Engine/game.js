@@ -19,8 +19,8 @@ class Game {
     this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
     this.playerCount = 1;
     this.currentPlayer = 1;
-    this.playerLives = null; // Player 1 and Player 2 lives
-    this.score = null; // Player 1 and Player 2 scores
+    this.playerLives = null; // Player 1 - Player 4 lives
+    this.score = null; // Player 1 - Player 4 scores
     this.gameInitialized = false;
     this.enemyInitialized = false;
     this.onetime = true;
@@ -89,21 +89,25 @@ class Game {
    CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
    CanvasUtils.ctx.fillText("Press `3` for Three Players", 250, 350);
    CanvasUtils.ctx.fillText("Press `4` for Four Players", 250, 400);
-
+const lives = 3;
     if (this.keyboardInput.getkeysPressed().includes('Digit1')) {
       this.playerCount = 1;
+      this.playerLives = [lives,0,0,0]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 1");
     } else if (this.keyboardInput.getkeysPressed().includes('Digit2')) {
       this.playerCount = 2;
+      this.playerLives = [lives,lives,0,0]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 2");
     } else if (this.keyboardInput.getkeysPressed().includes('Digit3')) {
       this.playerCount = 3;
+      this.playerLives = [lives,lives,lives,0]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 3");
     } else if (this.keyboardInput.getkeysPressed().includes('Digit4')) {
       this.playerCount = 4;
+      this.playerLives = [lives,lives,lives,lives]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 4");
     }
@@ -125,7 +129,7 @@ class Game {
   initializeGame() {
     this.gameInitialized = true;
     this.onetime = true;
-    this.playerLives = [3, 3, 4, 3]; // Reset lives
+    // this.playerLives = [3, 3, 4, 3]; // Reset lives
     this.score = [0, 0, 0, 0]; // Reset score
     this.currentPlayer = 1;
 

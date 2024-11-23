@@ -1,40 +1,38 @@
 // ToolboxAid.com
 // David Quesenberry
-// 11/15/2024
-// AttractMode.js - asteroids
+// 11/23/2024
+// gamePlay.js - asteroids
 
 import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import Asteroid from './asteroid.js';
 import Functions from '../scripts/functions.js';
+import Ship from './ship.js';
 
-class AttractMode {
+class GamePlay {
     constructor() {
         this.asteroids = new Map();
         this.spawnAsteroidsCount = 7;
-
         this.initAttract();
+        const ship1 = new Ship();
+        const ship2 = new Ship();
+        this.ships = [ship1, ship2];
     }
 
-    update(deltaTime) {
+    update(deltaTime, keyboardInput) {
         this.asteroids.forEach((asteroid) => {
             asteroid.update(deltaTime);
         });
+        this.ships[0].update(deltaTime, keyboardInput);
     }
 
     draw() {
+        this.ships[0].draw();
+
         this.asteroids.forEach((asteroid, key) => {
             asteroid.draw();
         });
-        this.displayAttract();
-    }
-
-    displayAttract() {
-        CanvasUtils.ctx.fillStyle = "white";
-        CanvasUtils.ctx.font = "30px Arial";
-        CanvasUtils.ctx.fillText("Welcome to Asteroids!", 250, 200);
-        CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
     }
 
     initAttract() {
@@ -55,5 +53,5 @@ class AttractMode {
 
 }
 
-export default AttractMode;
+export default GamePlay;
 
