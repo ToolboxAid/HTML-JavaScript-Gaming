@@ -82,34 +82,28 @@ class Game {
   }
 
   displayPlayerSelect() {
+    const maxPlayers = 4;
+    const lives = 3;
+
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Select Player Mode", 250, 200);
-    CanvasUtils.ctx.fillText("Press `1` for Single Player", 250, 250);
-    CanvasUtils.ctx.fillText("Press `2` for Two Players", 250, 300);
-    CanvasUtils.ctx.fillText("Press `3` for Three Players", 250, 350);
-    CanvasUtils.ctx.fillText("Press `4` for Four Players", 250, 400);
-    const lives = 3;
-    if (this.keyboardInput.getkeysPressed().includes('Digit1')) {
-      this.playerCount = 1;
-      this.playerLives = [lives, 0, 0, 0]; // Reset lives
-      this.gameState = "initGame";
-      console.log("Players: 1");
-    } else if (this.keyboardInput.getkeysPressed().includes('Digit2')) {
-      this.playerCount = 2;
-      this.playerLives = [lives, lives, 0, 0]; // Reset lives
-      this.gameState = "initGame";
-      console.log("Players: 2");
-    } else if (this.keyboardInput.getkeysPressed().includes('Digit3')) {
-      this.playerCount = 3;
-      this.playerLives = [lives, lives, lives, 0]; // Reset lives
-      this.gameState = "initGame";
-      console.log("Players: 3");
-    } else if (this.keyboardInput.getkeysPressed().includes('Digit4')) {
-      this.playerCount = 4;
-      this.playerLives = [lives, lives, lives, lives]; // Reset lives
-      this.gameState = "initGame";
-      console.log("Players: 4");
+    const optionBaseY = 275;
+    const optionSpacing = 50;
+    for (let i = 1; i <= maxPlayers; i++) {
+      CanvasUtils.ctx.fillText(`Press \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
+        canvasConfig.width / 2 - 200, optionBaseY + (i - 1) * optionSpacing);
+    }
+
+    // Loop through potential player counts
+    for (let i = 1; i <= maxPlayers; i++) {
+      if (this.keyboardInput.getkeysPressed().includes(`Digit${i}`)) {
+        this.playerCount = i;
+        this.playerLives = Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)); // Assign lives dynamically
+        this.gameState = "initGame";
+        console.log(`Players: ${i}`);
+        break; // Exit the loop once the matching key is found
+      }
     }
   }
 
