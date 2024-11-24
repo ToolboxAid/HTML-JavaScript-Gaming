@@ -12,19 +12,17 @@ import Bullet from './bullet.js';
 import Ship from './ship.js';
 
 import GameAttract from './gameAttract.js';
-import GamePlay from './gamePlay.js';
 
 class Game {
 
   static gameAttract = null;
-  static gamePlay = null;
 
   constructor() {
     this.keyboardInput = new KeyboardInput();
 
     this.ships = [];
 
-    this.currentPlayer = 1;
+    this.currentPlayer = 0;
     this.playerLives = null; // Player 1 - Player 4 lives
     this.score = null; // Player 1 - Player 4 scores
 
@@ -118,16 +116,13 @@ class Game {
   }
 
   initializeGame() {
-    Game.gamePlay = new GamePlay();
-
-
     for (let i = 0; i <= 3; i++) {
       this.ships[i] = new Ship();
       this.ships[i].init();
     }
 
     this.score = [0, 0, 0, 0]; // Reset score
-    this.currentPlayer = 1;
+    this.currentPlayer = 0;
 
     this.gameState = "playGame";
   }
@@ -141,27 +136,27 @@ class Game {
   playGame(deltaTime) {
     this.gamePauseCheck();
 
-    const asteroidValue = this.ships[this.currentPlayer - 1].update(deltaTime, this.keyboardInput);
-    this.score[this.currentPlayer - 1] += asteroidValue;
-    this.ships[this.currentPlayer - 1].draw();
+    const asteroidValue = this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
+    this.score[this.currentPlayer] += asteroidValue;
+    this.ships[this.currentPlayer].draw();
 
-    this.drawLivesScores()
+    this.drawLivesScores();
 
     // Check if `D`` key was just pressed, simulate losing a life
     if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
       this.swapPlayer();
-      this.ships[this.currentPlayer - 1].reset();
+      this.ships[this.currentPlayer].reset();
     }
   }
 
   swapPlayer() {
     // Decrease the current player's life
-    this.playerLives[this.currentPlayer - 1] -= 1;
-    console.log(`Player ${this.currentPlayer} lost a life!`);
+    this.playerLives[this.currentPlayer] -= 1;
+    console.log(`Player ${this.currentPlayer + 1} lost a life!`);
 
     // Check if the current player is out of lives
-    if (this.playerLives[this.currentPlayer - 1] <= 0) {
-      console.log(`Player ${this.currentPlayer} is out of lives.`);
+    if (this.playerLives[this.currentPlayer] <= 0) {
+      console.log(`Player ${this.currentPlayer + 1} is out of lives.`);
 
       // Check if all players are out of lives
       const allOut = this.playerLives.every(lives => lives <= 0);
@@ -175,13 +170,15 @@ class Game {
     // Find the next player with lives left
     let nextPlayer = this.currentPlayer;
     do {
-      nextPlayer = (nextPlayer % this.playerCount) + 1; // Cycle to the next player
-    } while (this.playerLives[nextPlayer - 1] <= 0);
+      nextPlayer = (nextPlayer + 1) % this.playerCount; // Cycle to the next player
+    } while (this.playerLives[nextPlayer] <= 0);
 
     // Set the next player as the current player
     this.currentPlayer = nextPlayer;
-    console.log(`Swapping to Player ${this.currentPlayer}.`);
+    console.log(`Swapping to Player ${this.currentPlayer + 1}.`);
   }
+
+
 
   pauseGame() {
     this.gamePauseCheck();
@@ -190,7 +187,7 @@ class Game {
   }
 
   gamePauseCheck() {
-    this.ships[this.currentPlayer - 1].draw();
+    this.ships[this.currentPlayer].draw();
 
     if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
       this.gameState = this.gameState === "playGame" ? "pauseGame" : "playGame";
@@ -204,7 +201,7 @@ class Game {
   }
 
   gamePauseCheck() {
-    this.ships[this.currentPlayer - 1].draw();
+    this.ships[this.currentPlayer].draw();
 
     if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
       this.gameState = this.gameState === "playGame" ? "pauseGame" : "playGame";
