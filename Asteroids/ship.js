@@ -5,10 +5,14 @@
 
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
-import Physics from '../scripts/physics.js';
-import Bullet from './bullet.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
+import Physics from '../scripts/physics.js';
+
+import Asteroid from './asteroid.js';
+import Bullet from './bullet.js';
+//import UFO from './ufo.js';
+
 class Ship extends ObjectVector {
 
     static maxSpeed = 800; // Set a maximum velocity cap (adjust as needed)
@@ -38,12 +42,55 @@ class Ship extends ObjectVector {
         this.velocityX = 0;
         this.velocityY = 0;
 
-// TODO: need a bullet/asteroid/ufo manager for below inside this SHIP (the player).
+        // asteroids
+        this.asteroids = new Map();
+        this.asteroidID = 0;
+        // this.asteroids.delete(key);
+
+        // bullets
         this.bullets = [];
         this.maxBullets = 5;
 
-        this.asteroids = [];
-        this.maxAsteroids = 3 + (3 * this.level);
+        // ufos
+
+        this.reset();
+        this.init();
+    }
+
+    reset() { // called before player plays
+        this.x = canvasConfig.width / 2;
+        this.y = canvasConfig.height / 2;
+
+        this.rotationAngle = 0;
+        this.rotationSpeed = 120; // degrees per second 
+
+        this.accelerationX = 0;
+        this.accelerationY = 0;
+
+        this.velocityX = 0;
+        this.velocityY = 0;
+    }
+
+    init() {
+        // this.initAsteroids('small');
+        // this.initAsteroids('medium');
+        this.initAsteroids('large');
+    }
+
+    initAsteroids(size) {
+        const maxAsteroids = 3 + (3 * this.level);
+
+        for (let i = 0; i < maxAsteroids; i++) {
+            const x = Functions.randomGenerator(0, canvasConfig.width);
+            const y = Functions.randomGenerator(0, canvasConfig.height);
+            this.createAsteroid(x, y, size);
+        }
+    }
+
+    createAsteroid(x,y,size){
+        const key = size + "-" + this.asteroidID++;
+        const asteroid = new Asteroid(x, y, size);
+        this.asteroids.set(key, asteroid);
     }
 
     drawDebugInfo(ctx) {
@@ -60,6 +107,8 @@ class Ship extends ObjectVector {
 
     update(deltaTime, keyboardInput) {
         this.drawDebugInfo(CanvasUtils.ctx);
+
+        let asteroidValue = 0;
 
         // Rotate the ship
         if (keyboardInput.isKeyDown('ArrowLeft')) {
@@ -83,8 +132,7 @@ class Ship extends ObjectVector {
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
             // TODO: add a flame to the ship for thrust
-        } else {
-            // Apply decelleration with friction (only if no thrust)
+        } else { // Apply decelleration with friction (only if no thrust)
             this.velocityX *= this.friction;
             this.velocityY *= this.friction;
         }
@@ -102,12 +150,66 @@ class Ship extends ObjectVector {
         this.wrapAround();
 
         // Shoot bullets
-        if (keyboardInput.getkeysPressed().includes('Space') && this.bullets.length < this.maxBullets) {
+        if (keyboardInput.getkeysPressed().includes('Space') &&
+            this.bullets.length < this.maxBullets) {
             this.shootBullet();
         }
 
-        // Update bullets
-        this.updateBullets(deltaTime);
+        //  update game objects
+        this.asteroids.forEach((asteroid, key) => {
+            asteroid.update(deltaTime);
+            // 
+        });
+
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const bullet = this.bullets[i];
+            bullet.update(deltaTime);
+
+// check collusion with asteroids
+            this.asteroids.forEach((asteroid, asteroidKey) => {
+                if (bullet.collisionDetection(asteroid)) {
+                    bullet.setIsDead();
+
+                    if (asteroid.size === 'large'){
+                        console.log("hit large");
+                        // spawn 2 mediume
+                        this.createAsteroid(asteroid.x,asteroid.y,'medium');
+                        this.createAsteroid(asteroid.x,asteroid.y,'medium');
+                        asteroidValue = 100;
+                    }
+                    if (asteroid.size === 'medium'){
+                        console.log("hit large");
+                        // spawn 2 small 
+                        this.createAsteroid(asteroid.x,asteroid.y,'small');
+                        this.createAsteroid(asteroid.x,asteroid.y,'small');
+                        asteroidValue =  50;
+                    }                    
+                    if (asteroid.size === 'small'){
+                        console.log("hit small");
+                        asteroidValue = 10;
+                    }
+                    this.asteroids.delete(asteroidKey);
+                }
+            });
+            // check collusion with UFO
+
+            // check collusion with ship (hit myself, dumb ass)
+
+            if (bullet.isDead()) {
+                this.bullets.splice(i, 1); // Remove the bullet if it's "dead"
+            }
+        }
+
+        // // Draw bullets
+        // // this.bullets.forEach(bullet => bullet.draw());
+        // this.asteroids.forEach((asteroid, key) => {
+        //     asteroid.draw();
+        //     console.log("Draw");
+        //     //     if (asteroid.isOutOfBounds()) {
+        //     //         this.asteroids.delete(key);
+        //     //     }
+        // });
+        return asteroidValue;
     }
 
     shootBullet() {
@@ -128,21 +230,13 @@ class Ship extends ObjectVector {
         this.bullets.push(bullet);
     }
 
-    updateBullets(deltaTime) {
-        this.bullets.forEach((bullet, index) => {
-            bullet.update(deltaTime);
-            if (bullet.isDead()) {
-                this.bullets.splice(index, 1); // Remove dead bullets
-            }
-        });
-    }
-
     draw() {
         // Draw ship
         super.draw();
 
-        // Draw bullets
+        // Draw all game objects
         this.bullets.forEach(bullet => bullet.draw());
+        this.asteroids.forEach(asteroid => asteroid.draw());
     }
 
 }

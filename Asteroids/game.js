@@ -22,19 +22,16 @@ class Game {
   constructor() {
     this.keyboardInput = new KeyboardInput();
 
-    this.currentPlayer = 0;
+    this.ships = [];
+
+    this.currentPlayer = 1;
     this.playerLives = null; // Player 1 - Player 4 lives
     this.score = null; // Player 1 - Player 4 scores
 
     // Game State Variables
     this.gameState = "initAttract";
-    
-    this.asteroids = new Map();
-    this.bullets = [];
-    this.spawnAsteroidsCount = 5;
-    this.spawnRate = 0.001; //0.5; // Asteroid spawn rate
 
-    this.backToAttract = 60;
+    this.backToAttract = 180;
     this.backToAttractCounter = 0;
   }
 
@@ -86,7 +83,6 @@ class Game {
   }
 
   displayPlayerSelect(deltaTime) {
-
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Select Player Mode", 250, 300);
@@ -100,22 +96,22 @@ class Game {
     const lives = 3;
     if (this.keyboardInput.getkeysPressed().includes('Digit1')) {
       this.playerCount = 1;
-      this.playerLives = [lives,0,0,0]; // Reset lives
+      this.playerLives = [lives, 0, 0, 0]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 1");
     } else if (this.keyboardInput.getkeysPressed().includes('Digit2')) {
       this.playerCount = 2;
-      this.playerLives = [lives,lives,0,0]; // Reset lives
+      this.playerLives = [lives, lives, 0, 0]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 2");
     } else if (this.keyboardInput.getkeysPressed().includes('Digit3')) {
       this.playerCount = 3;
-      this.playerLives = [lives,lives,lives,0]; // Reset lives
+      this.playerLives = [lives, lives, lives, 0]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 3");
     } else if (this.keyboardInput.getkeysPressed().includes('Digit4')) {
       this.playerCount = 4;
-      this.playerLives = [lives,lives,lives,lives]; // Reset lives
+      this.playerLives = [lives, lives, lives, lives]; // Reset lives
       this.gameState = "initGame";
       console.log("Players: 4");
     }
@@ -124,44 +120,37 @@ class Game {
   initializeGame() {
     Game.gamePlay = new GamePlay();
 
+
+    for (let i = 0; i <= 3; i++) {
+      this.ships[i] = new Ship();
+      this.ships[i].init();
+    }
+
     this.score = [0, 0, 0, 0]; // Reset score
     this.currentPlayer = 1;
-
-    // this.asteroids.clear();
-    // this.bullets = [];
-
-    // for (let i = 0; i < this.spawnAsteroidsCount; i++) {
-    //   this.spawnAsteroid();
-    // }
 
     this.gameState = "playGame";
   }
 
-drawLivesScores(){
+  drawLivesScores() {
     // Display scores and lives
     CanvasUtils.drawText(20, 220, `Lives: ${this.playerLives}`, 2, "white");
     CanvasUtils.drawText(20, 250, `Score: ${this.score}`, 2, "white");
-}
+  }
+
   playGame(deltaTime) {
     this.gamePauseCheck();
 
-    Game.gamePlay.update(deltaTime, this.keyboardInput);
-    Game.gamePlay.draw();
-    // // Player movement and actions
-    // this.updateAsteroids(deltaTime);
-    // this.updateBullets(deltaTime);
+    const asteroidValue = this.ships[this.currentPlayer - 1].update(deltaTime, this.keyboardInput);
+    this.score[this.currentPlayer - 1] += asteroidValue;
+    this.ships[this.currentPlayer - 1].draw();
 
-    // this.checkCollisions();
-
-    // // Draw all game objects
-    // this.bullets.forEach(bullet => bullet.draw());
-    // this.asteroids.forEach(asteroid => asteroid.draw());
-
-this.drawLivesScores()
+    this.drawLivesScores()
 
     // Check if `D`` key was just pressed, simulate losing a life
     if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
       this.swapPlayer();
+      this.ships[this.currentPlayer - 1].reset();
     }
   }
 
@@ -201,7 +190,7 @@ this.drawLivesScores()
   }
 
   gamePauseCheck() {
-    Game.gamePlay.draw();
+    this.ships[this.currentPlayer - 1].draw();
 
     if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
       this.gameState = this.gameState === "playGame" ? "pauseGame" : "playGame";
@@ -215,7 +204,7 @@ this.drawLivesScores()
   }
 
   gamePauseCheck() {
-    Game.gamePlay.draw();
+    this.ships[this.currentPlayer - 1].draw();
 
     if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
       this.gameState = this.gameState === "playGame" ? "pauseGame" : "playGame";
@@ -232,51 +221,6 @@ this.drawLivesScores()
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
-  }
-
-  updateBullets(deltaTime) {
-    this.bullets = this.bullets.filter(bullet => !bullet.isOutOfBounds());
-    this.bullets.forEach(bullet => bullet.update(deltaTime));
-  }
-
-  updateAsteroids(deltaTime) {
-    this.asteroids.forEach((asteroid, key) => {
-      asteroid.update(deltaTime);
-      if (asteroid.isOutOfBounds()) {
-        this.asteroids.delete(key);
-      }
-    });
-
-    // Spawn new asteroids based on spawn rate
-    if (Math.random() < this.spawnRate) {
-      this.spawnAsteroid();
-    }
-  }
-
-  spawnAsteroid() {
-    const asteroid = new Asteroid(40, "livingFrames", "dyingFrames");
-    this.asteroids.set(asteroid.key, asteroid);
-  }
-
-  checkCollisions() {
-    // Bullet-Asteroid collisions
-    this.bullets.forEach((bullet, bulletIndex) => {
-      this.asteroids.forEach((asteroid, asteroidKey) => {
-        if (bullet.collidesWith(asteroid)) {
-          this.score += 100;
-          this.bullets.splice(bulletIndex, 1);
-          this.asteroids.delete(asteroidKey);
-        }
-      });
-    });
-
-    // // Player-Asteroid collisions
-    // this.asteroids.forEach(asteroid => {
-    //   if (this.playerShip.collidesWith(asteroid)) {
-    //     this.playerLives -= 1;
-    //     this.asteroids.delete(asteroid.key);
-    //   }
-    // });
   }
 
   resetGame() {

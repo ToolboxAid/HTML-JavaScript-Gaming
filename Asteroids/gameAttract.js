@@ -13,7 +13,7 @@ class GameAttract {
     constructor() {
         this.asteroids = new Map();
         this.spawnAsteroidsCount = 7;
-        this.initAttract();
+        this.initAsteroids();
     }
 
     update(deltaTime) {
@@ -38,7 +38,7 @@ class GameAttract {
         CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
     }
 
-    initAttract() {
+    initAsteroids() {
         this.spawnAsteroids('small');
         this.spawnAsteroids('medium');
         this.spawnAsteroids('large');
