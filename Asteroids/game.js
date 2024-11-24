@@ -91,19 +91,19 @@ class Game {
     const optionBaseY = 350;
     const optionSpacing = 50;
     for (let i = 1; i <= maxPlayers; i++) {
-        CanvasUtils.ctx.fillText(`Press \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`, 
-          canvasConfig.width / 2-200 , optionBaseY + (i - 1) * optionSpacing);
+      CanvasUtils.ctx.fillText(`Press \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
+        canvasConfig.width / 2 - 200, optionBaseY + (i - 1) * optionSpacing);
     }
-    
+
     // Loop through potential player counts
     for (let i = 1; i <= maxPlayers; i++) {
-        if (this.keyboardInput.getkeysPressed().includes(`Digit${i}`)) {
-            this.playerCount = i;
-            this.playerLives = Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)); // Assign lives dynamically
-            this.gameState = "initGame";
-            console.log(`Players: ${i}`);
-            break; // Exit the loop once the matching key is found
-        }
+      if (this.keyboardInput.getkeysPressed().includes(`Digit${i}`)) {
+        this.playerCount = i;
+        this.playerLives = Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)); // Assign lives dynamically
+        this.gameState = "initGame";
+        console.log(`Players: ${i}`);
+        break; // Exit the loop once the matching key is found
+      }
     }
   }
 
@@ -128,17 +128,16 @@ class Game {
   playGame(deltaTime) {
     this.gamePauseCheck();
 
-    const asteroidValue = this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
-    this.score[this.currentPlayer] += asteroidValue;
-    this.ships[this.currentPlayer].draw();
-
-    this.drawLivesScores();
-
-    // Check if `D`` key was just pressed, simulate losing a life
-    if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
+    this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
+    this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
+    if (this.ships[this.currentPlayer].isDead()) {
+      this.ships[this.currentPlayer].setIsAlive();
       this.swapPlayer();
       this.ships[this.currentPlayer].reset();
     }
+    this.ships[this.currentPlayer].draw();
+
+    this.drawLivesScores();
   }
 
   swapPlayer() {

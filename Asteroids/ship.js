@@ -31,7 +31,7 @@ class Ship extends ObjectVector {
         this.level = 1;
 
         this.rotationAngle = 0;
-        this.rotationSpeed = 120; // degrees per second 
+        this.rotationSpeed = 180; // 120; // degrees per second 
 
         this.thrust = 150;
         this.friction = 0.995;
@@ -45,7 +45,6 @@ class Ship extends ObjectVector {
         // asteroids
         this.asteroids = new Map();
         this.asteroidID = 0;
-        // this.asteroids.delete(key);
 
         // bullets
         this.bullets = [];
@@ -53,28 +52,35 @@ class Ship extends ObjectVector {
 
         // ufos
 
+        // value is used to add to score
+        this.value = 0;
+
         this.reset();
-        this.init();
+        this.initAsteroids('large');
     }
 
+    setValue(value) {
+        this.value = value;
+    }
+
+    getValue() {
+        const value = this.value;
+        this.value = 0;
+        return this.value;
+    }
+
+    //TODO: this.setHit(); // Transition to dying state if a collision is detected
     reset() { // called before player plays
+        this.bullets = [];
+
         this.x = canvasConfig.width / 2;
         this.y = canvasConfig.height / 2;
-
-        this.rotationAngle = 0;
-        this.rotationSpeed = 120; // degrees per second 
 
         this.accelerationX = 0;
         this.accelerationY = 0;
 
         this.velocityX = 0;
         this.velocityY = 0;
-    }
-
-    init() {
-        // this.initAsteroids('small');
-        // this.initAsteroids('medium');
-        this.initAsteroids('large');
     }
 
     initAsteroids(size) {
@@ -87,29 +93,19 @@ class Ship extends ObjectVector {
         }
     }
 
-    createAsteroid(x,y,size){
+    createAsteroid(x, y, size) {
         const key = size + "-" + this.asteroidID++;
         const asteroid = new Asteroid(x, y, size);
         this.asteroids.set(key, asteroid);
     }
 
-    drawDebugInfo(ctx) {
-        // Draw the current velocity and thrust values on the screen
-        ctx.font = '16px Arial';  // Choose font size and style
-        ctx.fillStyle = 'white';  // Text color
-        ctx.fillText(`Velocity X: ${this.velocityX.toFixed(2)}`, 10, 20);
-        ctx.fillText(`Velocity Y: ${this.velocityY.toFixed(2)}`, 10, 40);
-        ctx.fillText(`Acceleration X: ${this.accelerationX.toFixed(2)}`, 10, 60);
-        ctx.fillText(`Acceleration Y: ${this.accelerationY.toFixed(2)}`, 10, 80);
-        ctx.fillText(`Rotation Angle: ${this.rotationAngle.toFixed(2)}`, 10, 100);
-        ctx.fillText(`Friction: ${this.friction.toFixed(3)}`, 10, 120);
+    update(deltaTime, keyboardInput) {
+        this.updateShip(deltaTime, keyboardInput);
+        this.updateBullet(deltaTime);
+        this.updateAsteroid(deltaTime);
     }
 
-    update(deltaTime, keyboardInput) {
-        this.drawDebugInfo(CanvasUtils.ctx);
-
-        let asteroidValue = 0;
-
+    updateShip(deltaTime, keyboardInput) {
         // Rotate the ship
         if (keyboardInput.isKeyDown('ArrowLeft')) {
             Physics.applyRotation(this, deltaTime, -1)
@@ -154,62 +150,63 @@ class Ship extends ObjectVector {
             this.bullets.length < this.maxBullets) {
             this.shootBullet();
         }
+    }
 
+    updateAsteroid(deltaTime) {
         //  update game objects
         this.asteroids.forEach((asteroid, key) => {
             asteroid.update(deltaTime);
-            // 
+            if (asteroid.collisionDetection(this)) {
+                this.setIsDead();
+                this.bullets = [];
+            }
         });
+    }
 
+    updateBullet(deltaTime) {
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i];
             bullet.update(deltaTime);
 
-// check collusion with asteroids
-            this.asteroids.forEach((asteroid, asteroidKey) => {
-                if (bullet.collisionDetection(asteroid)) {
-                    bullet.setIsDead();
+            if (bullet.isAlive()) {
+                // check collusion with asteroids
+                this.asteroids.forEach((asteroid, asteroidKey) => {
+                    if (bullet.collisionDetection(asteroid)) {
+                        bullet.setIsDead();
+                        if (asteroid.size === 'large') {
+                            console.log("hit large");
+                            // spawn 2 mediume
+                            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
+                            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
+                            this.setValue(100);
+                        }
+                        if (asteroid.size === 'medium') {
+                            // spawn 2 small 
+                            this.createAsteroid(asteroid.x, asteroid.y, 'small');
+                            this.createAsteroid(asteroid.x, asteroid.y, 'small');
+                            this.setValue(50);
+                        }
+                        if (asteroid.size === 'small') {
+                            this.setValue(10);
+                        }
+                        this.asteroids.delete(asteroidKey);
+                    }
+                });
 
-                    if (asteroid.size === 'large'){
-                        console.log("hit large");
-                        // spawn 2 mediume
-                        this.createAsteroid(asteroid.x,asteroid.y,'medium');
-                        this.createAsteroid(asteroid.x,asteroid.y,'medium');
-                        asteroidValue = 100;
-                    }
-                    if (asteroid.size === 'medium'){
-                        console.log("hit large");
-                        // spawn 2 small 
-                        this.createAsteroid(asteroid.x,asteroid.y,'small');
-                        this.createAsteroid(asteroid.x,asteroid.y,'small');
-                        asteroidValue =  50;
-                    }                    
-                    if (asteroid.size === 'small'){
-                        console.log("hit small");
-                        asteroidValue = 10;
-                    }
-                    this.asteroids.delete(asteroidKey);
+                // check collusion with ship (hit myself, dumb ass)
+                if (bullet.collisionDetection(this)) {
+                    this.setIsDead();
+                    this.bullets = [];
+                    break;
                 }
-            });
-            // check collusion with UFO
-
-            // check collusion with ship (hit myself, dumb ass)
+                // check collusion with UFO
+            }
 
             if (bullet.isDead()) {
                 this.bullets.splice(i, 1); // Remove the bullet if it's "dead"
+                break;
             }
         }
-
-        // // Draw bullets
-        // // this.bullets.forEach(bullet => bullet.draw());
-        // this.asteroids.forEach((asteroid, key) => {
-        //     asteroid.draw();
-        //     console.log("Draw");
-        //     //     if (asteroid.isOutOfBounds()) {
-        //     //         this.asteroids.delete(key);
-        //     //     }
-        // });
-        return asteroidValue;
     }
 
     shootBullet() {
@@ -233,10 +230,22 @@ class Ship extends ObjectVector {
     draw() {
         // Draw ship
         super.draw();
+        this.drawShipDebug(CanvasUtils.ctx);
 
         // Draw all game objects
         this.bullets.forEach(bullet => bullet.draw());
         this.asteroids.forEach(asteroid => asteroid.draw());
+    }
+
+    drawShipDebug(ctx) {
+        ctx.font = '16px Arial';  // Choose font size and style
+        ctx.fillStyle = 'white';  // Text color
+        ctx.fillText(`Velocity X: ${this.velocityX.toFixed(2)}`, 10, 20);
+        ctx.fillText(`Velocity Y: ${this.velocityY.toFixed(2)}`, 10, 40);
+        ctx.fillText(`Acceleration X: ${this.accelerationX.toFixed(2)}`, 10, 60);
+        ctx.fillText(`Acceleration Y: ${this.accelerationY.toFixed(2)}`, 10, 80);
+        ctx.fillText(`Rotation Angle: ${this.rotationAngle.toFixed(2)}`, 10, 100);
+        ctx.fillText(`Friction: ${this.friction.toFixed(3)}`, 10, 120);
     }
 
 }
