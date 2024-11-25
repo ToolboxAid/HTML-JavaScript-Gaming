@@ -11,14 +11,15 @@ import Physics from '../scripts/physics.js';
 
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
-//import UFO from './ufo.js';
+import UFO from './ufo.js';
 
 class Ship extends ObjectVector {
 
     static maxSpeed = 800; // Set a maximum velocity cap (adjust as needed)
 
     constructor() {
-        const vectorMap = [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]]; //,[0, 0]
+        const vectorMap = //[[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]]; //,[0, 0]
+        [[24, 0],[-24, -18],[-18, 0],[-24, 18]];
 
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
@@ -48,8 +49,7 @@ class Ship extends ObjectVector {
         this.maxBullets = 5;
 
         // ufos
-        // TODO: do the UFO
-        this.ufo = null;
+        this.ufo = new UFO(300,300);
 
         // value is used to add to score
         this.value = 0;
@@ -105,7 +105,7 @@ class Ship extends ObjectVector {
 
     initAsteroids() {
         const maxAsteroids = 3 + (this.level * 2);
-
+//TODO:/ update to be a circle around center.
         for (let i = 0; i < maxAsteroids; i++) {
             const x = Functions.randomGenerator(0, canvasConfig.width);
             const y = Functions.randomGenerator(0, canvasConfig.height);
@@ -123,6 +123,7 @@ class Ship extends ObjectVector {
         this.updateShip(deltaTime, keyboardInput);
         this.updateBullet(deltaTime);
         this.updateAsteroid(deltaTime);
+        this.updateUFO(deltaTime);
 
         if (this.asteroids.size === 0){
             this.level += 1;
@@ -235,6 +236,18 @@ class Ship extends ObjectVector {
         this.bullets.push(bullet);
     }
 
+    updateUFO(deltaTime) {
+        if (this.ufo){
+            this.ufo.update(deltaTime);
+        }
+        // this.asteroids.forEach((asteroid, key) => {
+        //     asteroid.update(deltaTime);
+        //     if (asteroid.collisionDetection(this)) {
+        //         this.setShipHit();
+        //     }
+        // });
+    }
+
     draw() {
         // Draw ship
         super.draw();
@@ -243,6 +256,7 @@ class Ship extends ObjectVector {
         // Draw all game objects
         this.bullets.forEach(bullet => bullet.draw());
         this.asteroids.forEach(asteroid => asteroid.draw());
+        this.ufo.draw();
     }
 
     drawShipDebug(ctx) {
