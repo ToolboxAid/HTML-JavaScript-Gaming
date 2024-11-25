@@ -110,7 +110,6 @@ class Game {
   initializeGame() {
     for (let i = 0; i <= 3; i++) {
       this.ships[i] = new Ship();
-      this.ships[i].init();
     }
 
     this.score = [0, 0, 0, 0]; // Reset score
@@ -130,6 +129,7 @@ class Game {
 
     this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
     this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
+
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
       this.swapPlayer();

@@ -18,11 +18,8 @@ class Ship extends ObjectVector {
     static maxSpeed = 800; // Set a maximum velocity cap (adjust as needed)
 
     constructor() {
-        const vectorMap = [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]
-            //,[0, 0]
-        ];
+        const vectorMap = [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]]; //,[0, 0]
 
-        // start SHIP at center of screen
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
@@ -51,12 +48,49 @@ class Ship extends ObjectVector {
         this.maxBullets = 5;
 
         // ufos
+        // TODO: do the UFO
+        this.ufo = null;
 
         // value is used to add to score
         this.value = 0;
 
         this.reset();
         this.initAsteroids('large');
+    }
+
+    reset() { // called before player plays
+        this.setIsAlive();
+
+        this.x = canvasConfig.width / 2;
+        this.y = canvasConfig.height / 2;
+
+        this.accelerationX = 0;
+        this.accelerationY = 0;
+
+        this.velocityX = 0;
+        this.velocityY = 0;
+    }
+
+    setShipHit() {
+        this.setIsDead();
+        this.bullets = [];
+    }
+
+    setAsteroidHit(asteroid, asteroidKey) {
+        if (asteroid.size === 'large') {
+            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
+            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
+            this.setValue(100);
+        }
+        if (asteroid.size === 'medium') {
+            this.createAsteroid(asteroid.x, asteroid.y, 'small');
+            this.createAsteroid(asteroid.x, asteroid.y, 'small');
+            this.setValue(50);
+        }
+        if (asteroid.size === 'small') {
+            this.setValue(10);
+        }
+        this.asteroids.delete(asteroidKey);
     }
 
     setValue(value) {
@@ -69,27 +103,13 @@ class Ship extends ObjectVector {
         return this.value;
     }
 
-    //TODO: this.setHit(); // Transition to dying state if a collision is detected
-    reset() { // called before player plays
-        this.bullets = [];
-
-        this.x = canvasConfig.width / 2;
-        this.y = canvasConfig.height / 2;
-
-        this.accelerationX = 0;
-        this.accelerationY = 0;
-
-        this.velocityX = 0;
-        this.velocityY = 0;
-    }
-
-    initAsteroids(size) {
-        const maxAsteroids = 3 + (3 * this.level);
+    initAsteroids() {
+        const maxAsteroids = 3 + (this.level * 2);
 
         for (let i = 0; i < maxAsteroids; i++) {
             const x = Functions.randomGenerator(0, canvasConfig.width);
             const y = Functions.randomGenerator(0, canvasConfig.height);
-            this.createAsteroid(x, y, size);
+            this.createAsteroid(x, y, "large");
         }
     }
 
@@ -103,6 +123,11 @@ class Ship extends ObjectVector {
         this.updateShip(deltaTime, keyboardInput);
         this.updateBullet(deltaTime);
         this.updateAsteroid(deltaTime);
+
+        if (this.asteroids.size === 0){
+            this.level += 1;
+            this.initAsteroids();
+        }
     }
 
     updateShip(deltaTime, keyboardInput) {
@@ -153,12 +178,10 @@ class Ship extends ObjectVector {
     }
 
     updateAsteroid(deltaTime) {
-        //  update game objects
         this.asteroids.forEach((asteroid, key) => {
             asteroid.update(deltaTime);
             if (asteroid.collisionDetection(this)) {
-                this.setIsDead();
-                this.bullets = [];
+                this.setShipHit();
             }
         });
     }
@@ -173,35 +196,20 @@ class Ship extends ObjectVector {
                 this.asteroids.forEach((asteroid, asteroidKey) => {
                     if (bullet.collisionDetection(asteroid)) {
                         bullet.setIsDead();
-                        if (asteroid.size === 'large') {
-                            console.log("hit large");
-                            // spawn 2 mediume
-                            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
-                            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
-                            this.setValue(100);
-                        }
-                        if (asteroid.size === 'medium') {
-                            // spawn 2 small 
-                            this.createAsteroid(asteroid.x, asteroid.y, 'small');
-                            this.createAsteroid(asteroid.x, asteroid.y, 'small');
-                            this.setValue(50);
-                        }
-                        if (asteroid.size === 'small') {
-                            this.setValue(10);
-                        }
-                        this.asteroids.delete(asteroidKey);
+                        this.setAsteroidHit(asteroid, asteroidKey);
                     }
                 });
 
                 // check collusion with ship (hit myself, dumb ass)
                 if (bullet.collisionDetection(this)) {
-                    this.setIsDead();
-                    this.bullets = [];
+                    bullet.setIsDead();
+                    this.setShipHit();
                     break;
                 }
                 // check collusion with UFO
-            }
 
+
+            }
             if (bullet.isDead()) {
                 this.bullets.splice(i, 1); // Remove the bullet if it's "dead"
                 break;
