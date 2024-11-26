@@ -18,8 +18,14 @@ class Ship extends ObjectVector {
     static maxSpeed = 800; // Set a maximum velocity cap (adjust as needed)
 
     constructor() {
-        const vectorMap = //[[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]]; //,[0, 0]
-        [[24, 0],[-24, -18],[-18, 0],[-24, 18]];
+        // // const vectorMap = //[[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]]; //,[0, 0]
+        // //     [[24, 0], [-24, -18], [-18, 0], [-24, 18]];
+        // const vectorMap = [
+        //     [18, 0], [-18, -14], [-13, 0], [-18, 14]
+        //   ];
+          const vectorMap = [
+            [14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]
+          ];
 
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
@@ -48,14 +54,14 @@ class Ship extends ObjectVector {
         this.bullets = [];
         this.maxBullets = 5;
 
-        // ufos
-        this.ufo = new UFO(300,300);
+        // ufo's
+        this.ufo = new UFO();
 
         // value is used to add to score
         this.value = 0;
 
         this.reset();
-        this.initAsteroids('large');
+        this.initAsteroids();
     }
 
     reset() { // called before player plays
@@ -105,11 +111,17 @@ class Ship extends ObjectVector {
 
     initAsteroids() {
         const maxAsteroids = 3 + (this.level * 2);
-//TODO:/ update to be a circle around center.
+        let angleStep = 360 / maxAsteroids;
         for (let i = 0; i < maxAsteroids; i++) {
-            const x = Functions.randomGenerator(0, canvasConfig.width);
-            const y = Functions.randomGenerator(0, canvasConfig.height);
-            this.createAsteroid(x, y, "large");
+            const angle = angleStep * i;
+            const d1 = canvasConfig.width / 4;
+            const d2 = canvasConfig.width / 3;
+            console.log(d1, d2);
+            const distance = Functions.randomGenerator(d1, d2);
+            const position = Functions.calculateOrbitalPosition(
+                canvasConfig.width / 2, canvasConfig.height / 2, angle, distance);
+
+            this.createAsteroid(position.x, position.y, "large");
         }
     }
 
@@ -125,7 +137,7 @@ class Ship extends ObjectVector {
         this.updateAsteroid(deltaTime);
         this.updateUFO(deltaTime);
 
-        if (this.asteroids.size === 0){
+        if (this.asteroids.size === 0) {
             this.level += 1;
             this.initAsteroids();
         }
@@ -237,7 +249,7 @@ class Ship extends ObjectVector {
     }
 
     updateUFO(deltaTime) {
-        if (this.ufo){
+        if (this.ufo) {
             this.ufo.update(deltaTime);
         }
         // this.asteroids.forEach((asteroid, key) => {

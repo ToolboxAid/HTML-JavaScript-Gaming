@@ -30,6 +30,17 @@ class Functions {
         return { x: parseFloat(x), y: parseFloat(y) };
     }
 
+    static calculateOrbitalPosition(centerX, centerY, angle, distance) {
+        const radian = this.degToRad(angle);
+        const x = centerX + distance * Math.cos(radian);
+        const y = centerY + distance * Math.sin(radian);
+        return { x: x, y: y };
+    }
+
+    static randomBoolean(){
+        return Functions.randomGenerator(0,1,true);
+    }
+
     static randomGenerator(min, max, isInteger = true) {
         const result = Math.random() * (max - min + (isInteger ? 1 : 0)) + min;
         return isInteger ? Math.floor(result) : result;

@@ -5,26 +5,57 @@
 
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
-
+import Functions from '../scripts/functions.js';
 class Asteroid extends ObjectVector {
-  constructor(x, y, size = 'medium') {
+  constructor(x, y, size = 'large') {
     const vectorMap = Asteroid.generateVectorMap(size);
     const vectorMap1 = [[10, 40], [50, 20], [45, 5], [25, -10], [50, -35], [30, -45], [10, -38], [-20, -45], [-43, -18], [-43, 20], [-25, 20], [-25, 40],];
+    const speed = 100;
     // Ensure the vectorMap has at least three points
     if (vectorMap.length < 3) {
       throw new Error("'vectorMap' frame must contain at least three points.");
     }
 
-    // Random velocity
-    const velocityX = (Math.random() - 0.5) * 100;
-    const velocityY = (Math.random() - 0.5) * 100;
+    const velocityX = Asteroid.randomRange(size) * speed;
+    const velocityY = Asteroid.randomRange(size) * speed;
 
     // Initialize the parent class with the generated vectorMap
     super(x, y, vectorMap, velocityX, velocityY);  // Pass vectorMap here
 
     this.size = size;
 
-    this.velocityRotation = (Math.random() - 0.5) * 5;
+    this.velocityRotation = (Math.random() - 0.5) * 8;
+  }
+
+  static randomRange(size) {
+
+    // Random velocity
+    let min = 0.25;
+    let max = 0.50;
+    
+    switch (size) {
+      case 'small':
+        min *= 2;
+        max *= 4;
+        break;
+      case 'medium':
+        min *= 1.5;
+        max *= 2; 
+        break;
+      case 'large':
+        min *= 1;
+        max *= 1; 
+        break;
+      default:
+        console.error("Invalid size. Use 'small', 'medium', or 'large'.");
+        min *= 0;
+        max *= 0; 
+        break;
+    }
+
+    const random = Functions.randomGenerator(min, max, false);
+    const sign = Functions.randomGenerator(0, 1, true) < 0.5 ? -1 : 1;
+    return random * sign;
   }
 
   update(deltaTime) {
