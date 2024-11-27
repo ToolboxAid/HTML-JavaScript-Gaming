@@ -18,6 +18,19 @@ export const canvasConfig = {
     fullscreenY: 930,//675, // Y position for fullscreen text
 };
 
+export const playerSelect = {
+    maxPlayers: 2,
+    lives: 3,
+    
+    fillStyle: "yellow",
+    font: "25px Arial",
+    fillText: "Select Player(s)",
+    
+    optionBaseX: 250,
+    optionBaseY: 300,
+    optionSpacing: 40
+  }
+  
 export const spriteConfig = {
     pixelSize: 3.5,
 

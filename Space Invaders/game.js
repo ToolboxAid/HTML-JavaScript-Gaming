@@ -3,7 +3,7 @@
 // 10/24/2024
 // game.js - Space Invaders
 
-import { canvasConfig, spriteConfig, enemyConfig } from './global.js'; // Assuming these contain canvas and sprite details
+import { canvasConfig, spriteConfig, enemyConfig, playerSelect  } from './global.js'; // Assuming these contain canvas and sprite details
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
@@ -557,7 +557,18 @@ class Game {
         }
     }
 
-    displayPlayerSelect() {
+    displayPlayerSelect(deltaTime) {
+        // Game.gameAttract.update(deltaTime);
+        // Game.gameAttract.draw(false);    
+        const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
+        if (result) {
+            this.playerCount = result.playerCount;
+            this.playerLives = result.playerLives;
+            this.gameState = "initGameShield";
+        }  
+      }
+
+    displayPlayerSelect1() {
         CanvasUtils.drawText(150, 200, "Select Player Mode", 3.5, "white");
         CanvasUtils.drawText(150, 250, "Press `1` for One Player", 3.5, "white");
         CanvasUtils.drawText(150, 300, "Press `2` for Two Players", 3.5, "white");
