@@ -4,10 +4,10 @@
 // 10/16/2024
 // game.js - Template Game Engine
 
-import { canvasConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
+import { canvasConfig, playerSelect } from './global.js'; // Import canvasConfig for canvas-related configurations
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
-
+import Functions from '../scripts/functions.js';
 import KeyboardInput from '../scripts/keyboard.js';
 
 class Game {
@@ -81,31 +81,15 @@ class Game {
     }
   }
 
-  displayPlayerSelect() {
-    const maxPlayers = 4;
-    const lives = 3;
-
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Select Player Mode", 250, 200);
-    const optionBaseY = 275;
-    const optionSpacing = 50;
-    for (let i = 1; i <= maxPlayers; i++) {
-      CanvasUtils.ctx.fillText(`Press \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
-        canvasConfig.width / 2 - 200, optionBaseY + (i - 1) * optionSpacing);
-    }
-
-    // Loop through potential player counts
-    for (let i = 1; i <= maxPlayers; i++) {
-      if (this.keyboardInput.getkeysPressed().includes(`Digit${i}`)) {
-        this.playerCount = i;
-        this.playerLives = Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)); // Assign lives dynamically
+  displayPlayerSelect(deltaTime) {  
+    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
+    if (result) {
+        this.playerCount = result.playerCount;
+        this.playerLives = result.playerLives;
         this.gameState = "initGame";
-        console.log(`Players: ${i}`);
-        break; // Exit the loop once the matching key is found
-      }
-    }
+    }  
   }
+
 
   displayGameOver() {
     CanvasUtils.ctx.fillStyle = "red";

@@ -16,6 +16,19 @@ export const canvasConfig = {
     fullscreenColor: 'yellow',
 };
 
+export const playerSelect = {
+    maxPlayers: 2,
+    lives: 3,
+    
+    fillStyle: "yellow",
+    font: "25px Arial",
+    fillText: "Select Player(s)",
+    
+    optionBaseX: 250,
+    optionBaseY: 300,
+    optionSpacing: 40
+  }
+  
 // non type="module" in HTML
 // Set global canvas variables for ../scripts
 window.gameAreaWidth = canvasConfig.width;
