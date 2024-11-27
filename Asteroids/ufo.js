@@ -63,7 +63,7 @@ class UFO extends ObjectVector {
     if (this.directionCnt++ > this.directionDelay) {
       this.directionDelay = Functions.randomGenerator(300, 400);
       // console.log(Functions.randomGenerator(0, 3) );
-      console.log(this.directionDelay);
+      //console.log(this.directionDelay);
     }
 
     // Update super position based on velocity

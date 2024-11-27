@@ -106,7 +106,7 @@ class Ship extends ObjectVector {
     getValue() {
         const value = this.value;
         this.value = 0;
-        return this.value;
+        return value;
     }
 
     initAsteroids() {

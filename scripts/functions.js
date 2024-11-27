@@ -4,6 +4,32 @@
 // functions.js
 
 class Functions {
+
+    static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput) {
+        const maxPlayers = playerSelect.maxPlayers || 4;
+        const lives = playerSelect.lives || 3;
+        const fillText = playerSelect.fillText || "Select Player Mode";
+        const x = playerSelect.optionBaseX || 300;
+        const y = playerSelect.optionBaseY || 300;
+        const spacing = playerSelect.optionSpacing || 50;
+
+        ctx.fillStyle = playerSelect.fillStyle || "white";
+        ctx.font = playerSelect.font || "30px Arial";
+        ctx.fillText(fillText, x, y);
+
+        for (let i = 1; i <= maxPlayers; i++) {
+            ctx.fillText(`Press \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
+                (canvasConfig.width / 2) - 200, y + i * spacing);
+        }
+
+        // Loop through potential player counts
+        for (let i = 1; i <= maxPlayers; i++) {
+            if (keyboardInput.getkeysPressed().includes(`Digit${i}`)) {
+                return { playerCount: i, playerLives: Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)), gameState: "initGame" };
+            }
+        }
+    }
+
     static radToDeg(radians) {
         return radians * (180 / Math.PI);
     }
@@ -11,9 +37,9 @@ class Functions {
     static degToRad(degrees) {
         return degrees * (Math.PI / 180);
     }
-    
+
     // Wrap rotationAngle to keep it between 0 and 360
-    static degreeLimits(rotationAngle){
+    static degreeLimits(rotationAngle) {
         return (rotationAngle % 360 + 360) % 360;
     }
 
@@ -37,8 +63,8 @@ class Functions {
         return { x: x, y: y };
     }
 
-    static randomBoolean(){
-        return Functions.randomGenerator(0,1,true);
+    static randomBoolean() {
+        return Functions.randomGenerator(0, 1, true);
     }
 
     static randomGenerator(min, max, isInteger = true) {
@@ -52,20 +78,20 @@ class Functions {
         if (debug) console.log('Start Point:', startPoint, 'End Point:', endPoint);
         return Math.sqrt(dx * dx + dy * dy);
     }
-      
+
     static linesIntersect(line1Start, line1End, line2Start, line2End) {
         if (!line1Start || !line1End || !line2Start || !line2End ||
             !('x' in line1Start && 'y' in line1Start && 'x' in line1End && 'y' in line1End &&
-              'x' in line2Start && 'y' in line2Start && 'x' in line2End && 'y' in line2End)) {
+                'x' in line2Start && 'y' in line2Start && 'x' in line2End && 'y' in line2End)) {
             throw new Error('Invalid input: all points must have x and y properties');
         }
-        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) - 
-                      (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
+        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) -
+            (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
         if (denom === 0) return null;
         const ua = ((line2End.x - line2Start.x) * (line1Start.y - line2Start.y) -
-                    (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
+            (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
         const ub = ((line1End.x - line1Start.x) * (line1Start.y - line2Start.y) -
-                    (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
+            (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
         if (ua < 0 || ua > 1 || ub < 0 || ub > 1) return null;
         return {
             x: line1Start.x + ua * (line1End.x - line1Start.x),

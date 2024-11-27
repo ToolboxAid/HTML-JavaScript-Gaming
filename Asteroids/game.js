@@ -3,10 +3,12 @@
 // 11/15/2024
 // game.js - asteroids
 
-import { canvasConfig } from './global.js';
+import { canvasConfig, playerSelect} from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
+import Functions from '../scripts/functions.js'
+
 import Ship from './ship.js';
 
 import GameAttract from './gameAttract.js';
@@ -79,32 +81,14 @@ class Game {
   }
 
   displayPlayerSelect(deltaTime) {
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Select Player Mode", 250, 300);
-    const maxPlayers = 4;
-    const lives = 3;
-
     Game.gameAttract.update(deltaTime);
-    Game.gameAttract.draw(false);
-
-    const optionBaseY = 350;
-    const optionSpacing = 50;
-    for (let i = 1; i <= maxPlayers; i++) {
-      CanvasUtils.ctx.fillText(`Press \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
-        canvasConfig.width / 2 - 200, optionBaseY + (i - 1) * optionSpacing);
-    }
-
-    // Loop through potential player counts
-    for (let i = 1; i <= maxPlayers; i++) {
-      if (this.keyboardInput.getkeysPressed().includes(`Digit${i}`)) {
-        this.playerCount = i;
-        this.playerLives = Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)); // Assign lives dynamically
+    Game.gameAttract.draw(false);    
+    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
+    if (result) {
+        this.playerCount = result.playerCount;
+        this.playerLives = result.playerLives;
         this.gameState = "initGame";
-        console.log(`Players: ${i}`);
-        break; // Exit the loop once the matching key is found
-      }
-    }
+    }  
   }
 
   initializeGame() {

@@ -4,7 +4,6 @@
 // 10/16/2024
 
 // Set global variables for local classes (same directory)
-// Configuration for the canvas
 export const canvasConfig = {
     width: 1024, // Game area width
     height: 768, // Game area height
@@ -15,6 +14,19 @@ export const canvasConfig = {
     fullscreenFont: '50px Arial',
     fullscreenColor: 'yellow',
 };
+
+export const playerSelect = {
+    maxPlayers: 2,
+    lives: 3,
+    
+    fillStyle: "yellow",
+    font: "25px Arial",
+    fillText: "Select Player(s)",
+    
+    optionBaseX: 250,
+    optionBaseY: 300,
+    optionSpacing: 40
+  }
 
 // non type="module" in HTML
 // Set global canvas variables for ../scripts
