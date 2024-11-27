@@ -14,7 +14,7 @@ import Shield from './shield.js';
 import Laser from './laser.js';
 import Ground from './ground.js';
 
-import LevelFrames from './levelFrams.js';
+import LevelFrames from './levelFrames.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
 const keyboardInput = new KeyboardInput();
@@ -31,7 +31,6 @@ import ObjectStatic from '../scripts/objectStatic.js';
 
 import { AudioPlayer } from '../scripts/audioPlayer.js';
 import { Cookies } from '../scripts/cookies.js';
-
 
 import AttractMode from './attractMode.js';
 class Game {
@@ -563,24 +562,10 @@ class Game {
         const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
         if (result) {
             this.playerCount = result.playerCount;
-            this.playerLives = result.playerLives;
+            //this.playerLives = result.playerLives;
             this.gameState = "initGameShield";
         }  
       }
-
-    displayPlayerSelect1() {
-        CanvasUtils.drawText(150, 200, "Select Player Mode", 3.5, "white");
-        CanvasUtils.drawText(150, 250, "Press `1` for One Player", 3.5, "white");
-        CanvasUtils.drawText(150, 300, "Press `2` for Two Players", 3.5, "white");
-
-        if (this.keyboardInput.getkeysPressed().includes('Digit1')) {
-            this.playerCount = 1;
-            this.gameState = "initGameShield";
-        } else if (this.keyboardInput.getkeysPressed().includes('Digit2')) {
-            this.playerCount = 2;
-            this.gameState = "initGameShield";
-        }
-    }
 
     displayGameOver() {
         console.log("game over");
