@@ -116,44 +116,24 @@ class Game {
 
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
-      this.swapPlayer();
+//      this.swapPlayer();
+const result = Functions.swapPlayer(
+  this.playerLives,
+  this.currentPlayer,
+  this.playerCount,
+  (newState) => { this.gameState = newState; }
+);
+
+// Update the current player and 
+// lives based on the result from swapPlayer
+this.currentPlayer = result.updatedPlayer;
+this.playerLives = result.updatedLives;
       this.ships[this.currentPlayer].reset();
     }
     this.ships[this.currentPlayer].draw();
 
     this.drawLivesScores();
   }
-
-  swapPlayer() {
-    // Decrease the current player's life
-    this.playerLives[this.currentPlayer] -= 1;
-    console.log(`Player ${this.currentPlayer + 1} lost a life!`);
-
-    // Check if the current player is out of lives
-    if (this.playerLives[this.currentPlayer] <= 0) {
-      console.log(`Player ${this.currentPlayer + 1} is out of lives.`);
-
-      // Check if all players are out of lives
-      const allOut = this.playerLives.every(lives => lives <= 0);
-      if (allOut) {
-        console.log("All players are out of lives. Game Over!");
-        this.gameState = "gameOver";
-        return;
-      }
-    }
-
-    // Find the next player with lives left
-    let nextPlayer = this.currentPlayer;
-    do {
-      nextPlayer = (nextPlayer + 1) % this.playerCount; // Cycle to the next player
-    } while (this.playerLives[nextPlayer] <= 0);
-
-    // Set the next player as the current player
-    this.currentPlayer = nextPlayer;
-    console.log(`Swapping to Player ${this.currentPlayer + 1}.`);
-  }
-
-
 
   pauseGame() {
     this.gamePauseCheck();
