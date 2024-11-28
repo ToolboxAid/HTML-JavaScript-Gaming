@@ -14,7 +14,7 @@ class Game {
         // Create our circle
         this.radius = 25;
         this.circle = new Circle(canvasConfig.width, canvasConfig.height, this.radius, 
-            Functions.randomGenerator(150.0, 350.0), Functions.randomGenerator(150.0, 350.0));
+            Functions.randomRange(150.0, 350.0), Functions.randomRange(150.0, 350.0));
 
         // Canvas needs to know the current directory to game.js
         this.currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));

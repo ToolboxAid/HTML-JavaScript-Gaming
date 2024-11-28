@@ -116,7 +116,6 @@ class Game {
 
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
-//      this.swapPlayer();
 const result = Functions.swapPlayer(
   this.playerLives,
   this.currentPlayer,

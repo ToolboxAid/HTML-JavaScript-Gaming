@@ -196,7 +196,7 @@ class Shield extends ObjectStatic {
                                 //console.log(`X Index: ${x}, Y Index: ${y}, Probability: ${combinedProbability.toFixed(2)}`);
 
                                 // Apply the explosion effect based on the combined probability
-                                if (Functions.randomGenerator(0, 1, false) < combinedProbability) {
+                                if (Functions.randomRange(0, 1, false) < combinedProbability) {
                                     try {
                                         this.frame[y][x] = "0";
                                     } catch {

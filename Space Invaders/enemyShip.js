@@ -112,7 +112,7 @@ class EnemyShip extends objectSprite {
     }
 
     setValue() {
-        const switchValue = Functions.randomGenerator(0, 3, true);
+        const switchValue = Functions.randomRange(0, 3, true);
         switch (switchValue) {
             case 0:
                 this.value = 50;
@@ -181,7 +181,7 @@ class EnemyShip extends objectSprite {
         // place off left screen the width of ship moving right
         this.x = -(this.width);
 
-        if (Functions.randomGenerator(0, 1, true)) {
+        if (Functions.randomRange(0, 1, true)) {
             // place off right screen width of ship moving left
             this.x = canvasConfig.width + this.width;
             this.velocityX *= -1;

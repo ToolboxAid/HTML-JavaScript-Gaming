@@ -53,8 +53,8 @@ class Asteroid extends ObjectVector {
         break;
     }
 
-    const random = Functions.randomGenerator(min, max, false);
-    const sign = Functions.randomGenerator(0, 1, true) < 0.5 ? -1 : 1;
+    const random = Functions.randomRange(min, max, false);
+    const sign = Functions.randomRange(0, 1, true) < 0.5 ? -1 : 1;
     return random * sign;
   }
 

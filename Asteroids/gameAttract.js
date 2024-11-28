@@ -47,8 +47,8 @@ class GameAttract {
     spawnAsteroids(size) {
         for (let i = 0; i < this.spawnAsteroidsCount; i++) {
             const key = size + "-" + i;
-            const x = Functions.randomGenerator(0, canvasConfig.width);
-            const y = Functions.randomGenerator(0, canvasConfig.height);
+            const x = Functions.randomRange(0, canvasConfig.width);
+            const y = Functions.randomRange(0, canvasConfig.height);
             const asteroid = new Asteroid(x, y, size);
             this.asteroids.set(key, asteroid);
         }

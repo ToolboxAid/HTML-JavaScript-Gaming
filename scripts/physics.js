@@ -43,34 +43,6 @@ export default class Physics {
         object.yVelocity += acceleration.y * deltaTime;
     } // Physics.applyAcceleration(spaceship, acceleration, deltaTime);
 
-    // Applies rotation to the object based on its angular velocity and the elapsed time (deltaTime).
-    static applyRotation(object, deltaTime, direction) {
-        object.rotationAngle += (object.rotationSpeed * direction) * deltaTime;
-    }// Physics.applyRotation(spaceship, spaceship.angularVelocity, deltaTime);
-
-
-    static getVectorDirection(rotationAngle) {
-        // Convert the angle/degree to radians
-        const radians = (rotationAngle * Math.PI) / 180;
-        return {
-            x: Math.cos(radians), // X-component
-            y: Math.sin(radians)  // Y-component
-        };
-    }
-
-    // Apply Rotation (around the origin)
-    static applyRotationToPoint(x, y, rotationAngle) {
-        // Convert the angle to radians
-        const radians = (rotationAngle * Math.PI) / 180;
-
-        // Apply the rotation formula
-        const rotatedX = x * Math.cos(radians) - y * Math.sin(radians);
-        const rotatedY = x * Math.sin(radians) + y * Math.cos(radians);
-
-        // Return the rotated coordinates
-        return { rotatedX, rotatedY };
-    }  // const rotatedPoint = Physics.applyRotationToPoint(originalX, originalY, rotationAngle);
-
     // Apply momentum to the object using the Physics class - Apply Momentum (p = mv)
     static applyMomentum(object, mass) {
         object.momentumX = object.xVelocity * mass;

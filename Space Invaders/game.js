@@ -188,7 +188,7 @@ class Game {
             if (enemy) {
                 if (enemy.isDropBombTime()) {
                     const bombWidth = 5;
-                    const bombType = Functions.randomGenerator(0, 2, true); // Generate a random bomb type (0 to 2)
+                    const bombType = Functions.randomRange(0, 2, true); // Generate a random bomb type (0 to 2)
                     switch (bombType) {
                         case 0:
                             this.enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));

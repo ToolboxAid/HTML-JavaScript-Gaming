@@ -198,7 +198,7 @@ class Enemy extends ObjectSprite {
     }
 
     isDropBombTime() {
-        const randomNumber = Functions.randomGenerator(0, 10000, true);
+        const randomNumber = Functions.randomRange(0, 10000, true);
         return (randomNumber <= this.bombAggression);
     }
 

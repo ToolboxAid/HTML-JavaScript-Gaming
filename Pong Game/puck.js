@@ -39,7 +39,7 @@ class Puck extends ObjectDynamic {
         this.tailLength = 15; // Length of the tail
 
         // First volly is random.
-        if (Functions.randomGenerator(0, 1)) {
+        if (Functions.randomRange(0, 1)) {
             this.reset(-(this.leftMin), this.leftMin);
         } else {
             this.reset(this.rightMin, this.rightMax);
@@ -193,7 +193,7 @@ class Puck extends ObjectDynamic {
 
         this.speed = this.speedDefault;
         this.speed += this.speedScore * 0.1;
-        this.angle = Functions.randomGenerator(min, max);
+        this.angle = Functions.randomRange(min, max);
         this.setVelocity();
         this.velocityX *= -1;  // winner serves the puck
     }

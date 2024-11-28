@@ -5,6 +5,8 @@
 
 class Functions {
 
+    /**  Player information
+    */
     static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput) {
         const maxPlayers = playerSelect.maxPlayers || 4;
         const lives = playerSelect.lives || 3;
@@ -59,6 +61,7 @@ class Functions {
         return { updatedPlayer: nextPlayer, updatedLives: playerLives };
     }
 
+    /** Angles */
     static radToDeg(radians) {
         return radians * (180 / Math.PI);
     }
@@ -67,10 +70,36 @@ class Functions {
         return degrees * (Math.PI / 180);
     }
 
-    // Wrap rotationAngle to keep it between 0 and 360
-    static degreeLimits(rotationAngle) {
+    static degreeLimits(rotationAngle) {// Wrap rotationAngle to keep it between 0 and 360
         return (rotationAngle % 360 + 360) % 360;
     }
+
+    // Applies rotation to the object based on its angular velocity and the elapsed time (deltaTime).
+    static applyRotation(object, deltaTime, direction) {
+        object.rotationAngle += (object.rotationSpeed * direction) * deltaTime;
+    }// Physics.applyRotation(spaceship, spaceship.angularVelocity, deltaTime);
+
+    static getVectorDirection(rotationAngle) {
+        // Convert the angle/degree to radians
+        const radians = (rotationAngle * Math.PI) / 180;
+        return {
+            x: Math.cos(radians), // X-component
+            y: Math.sin(radians)  // Y-component
+        };
+    }
+
+    // Apply Rotation (around the origin)
+    static applyRotationToPoint(x, y, rotationAngle) {
+        // Convert the angle to radians
+        const radians = (rotationAngle * Math.PI) / 180;
+
+        // Apply the rotation formula
+        const rotatedX = x * Math.cos(radians) - y * Math.sin(radians);
+        const rotatedY = x * Math.sin(radians) + y * Math.cos(radians);
+
+        // Return the rotated coordinates
+        return { rotatedX, rotatedY };
+    }  // const rotatedPoint = Physics.applyRotationToPoint(originalX, originalY, rotationAngle);
 
     static calculateXY2Angle(xVelocity, yVelocity) {
         const angleInRadians = Math.atan2(yVelocity, xVelocity);
@@ -92,15 +121,21 @@ class Functions {
         return { x: x, y: y };
     }
 
+    /** Random
+     * 
+     */
     static randomBoolean() {
-        return Functions.randomGenerator(0, 1, true);
+        return Functions.randomRange(0, 1, true);
     }
 
-    static randomGenerator(min, max, isInteger = true) {
+    static randomRange(min, max, isInteger = true) {
         const result = Math.random() * (max - min + (isInteger ? 1 : 0)) + min;
         return isInteger ? Math.floor(result) : result;
     }
 
+    /** Lines and Distanc
+     * 
+     */
     static getDistance(startPoint, endPoint, debug = false) {
         const dx = endPoint.x - startPoint.x;
         const dy = endPoint.y - startPoint.y;
@@ -152,6 +187,7 @@ class Functions {
 
         return intersectionPoint; // Return the intersection point
     }
+
 }
 
 // Export the Functions class

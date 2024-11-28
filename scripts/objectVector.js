@@ -65,7 +65,7 @@ class ObjectVector extends ObjectKillable {
             const dy = vy - centerY;
 
             // Apply rotation formula
-            const rotatedPoint = Physics.applyRotationToPoint(dx, dy, this.rotationAngle);
+            const rotatedPoint = Functions.applyRotationToPoint(dx, dy, this.rotationAngle);
 
             // Translate back to the center
             const finalX = rotatedPoint.rotatedX + centerX;
@@ -131,7 +131,7 @@ class ObjectVector extends ObjectKillable {
                 }
 
                 // Apply rotation formula
-                const rotatedPoint = Physics.applyRotationToPoint(px, py, this.rotationAngle);
+                const rotatedPoint = Functions.applyRotationToPoint(px, py, this.rotationAngle);
 
                 // Draw the path
                 if (index === 0) {
@@ -170,12 +170,12 @@ class ObjectVector extends ObjectKillable {
         if (this.y + this.height < 0) this.y = window.gameAreaHeight;
     }
 
-    isOutOfBounds() { // Object outside canvas window
+    isOutOfBounds(offset = 0) { // Object outside canvas window
         if (
-            this.x > window.gameAreaWidth ||
-            this.x < -this.width ||
-            this.y > window.gameAreaHeight ||
-            this.y < -this.height
+            this.x > window.gameAreaWidth + offset ||
+            this.x < -this.width - offset ||
+            this.y > window.gameAreaHeight + offset ||
+            this.y < -this.height - offset
         ) {
             return true;
         }

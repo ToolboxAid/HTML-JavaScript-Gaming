@@ -23,9 +23,9 @@ class Ship extends ObjectVector {
         // const vectorMap = [
         //     [18, 0], [-18, -14], [-13, 0], [-18, 14]
         //   ];
-          const vectorMap = [
+        const vectorMap = [
             [14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]
-          ];
+        ];
 
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
@@ -55,7 +55,7 @@ class Ship extends ObjectVector {
         this.maxBullets = 5;
 
         // ufo's
-        this.ufo = new UFO();
+        // this.ufo = new UFO();
 
         // value is used to add to score
         this.value = 0;
@@ -116,8 +116,8 @@ class Ship extends ObjectVector {
             const angle = angleStep * i;
             const d1 = canvasConfig.width / 4;
             const d2 = canvasConfig.width / 3;
-            console.log(d1, d2);
-            const distance = Functions.randomGenerator(d1, d2);
+            //            console.log(d1, d2);
+            const distance = Functions.randomRange(d1, d2);
             const position = Functions.calculateOrbitalPosition(
                 canvasConfig.width / 2, canvasConfig.height / 2, angle, distance);
 
@@ -146,10 +146,10 @@ class Ship extends ObjectVector {
     updateShip(deltaTime, keyboardInput) {
         // Rotate the ship
         if (keyboardInput.isKeyDown('ArrowLeft')) {
-            Physics.applyRotation(this, deltaTime, -1)
+            Functions.applyRotation(this, deltaTime, -1)
         }
         if (keyboardInput.isKeyDown('ArrowRight')) {
-            Physics.applyRotation(this, deltaTime, 1);
+            Functions.applyRotation(this, deltaTime, 1);
         }
 
         // Wrap rotationAngle to keep it between 0 and 360
@@ -161,7 +161,7 @@ class Ship extends ObjectVector {
 
         // Apply thrust (acceleration) when ArrowUp is held down
         if (keyboardInput.isKeyDown('ArrowUp')) {
-            const vectorDirection = Physics.getVectorDirection(this.rotationAngle);
+            const vectorDirection = Functions.getVectorDirection(this.rotationAngle);
 
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
@@ -187,6 +187,7 @@ class Ship extends ObjectVector {
         if (keyboardInput.getkeysPressed().includes('Space') &&
             this.bullets.length < this.maxBullets) {
             this.shootBullet();
+            this.ufo = new UFO();
         }
     }
 
@@ -268,7 +269,8 @@ class Ship extends ObjectVector {
         // Draw all game objects
         this.bullets.forEach(bullet => bullet.draw());
         this.asteroids.forEach(asteroid => asteroid.draw());
-        this.ufo.draw();
+        if (this.ufo){
+        this.ufo.draw();}
     }
 
     drawShipDebug(ctx) {
