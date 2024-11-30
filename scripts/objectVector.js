@@ -170,18 +170,6 @@ class ObjectVector extends ObjectKillable {
         if (this.y + this.height < 0) this.y = window.gameAreaHeight;
     }
 
-    isOutOfBounds(offset = 0) { // Object outside canvas window
-        if (
-            this.x > window.gameAreaWidth + offset ||
-            this.x < -this.width - offset ||
-            this.y > window.gameAreaHeight + offset ||
-            this.y < -this.height - offset
-        ) {
-            return true;
-        }
-        return false;
-    }
-
     collisionDetection(object, debug = false) {
         if (debug && object) {
             console.log(object);

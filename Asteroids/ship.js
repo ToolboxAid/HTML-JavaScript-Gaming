@@ -53,9 +53,10 @@ class Ship extends ObjectVector {
         // bullets
         this.bullets = [];
         this.maxBullets = 5;
+        this.bulletsUFO = [];
 
         // ufo's
-        // this.ufo = new UFO();
+        this.ufo = new UFO();
 
         // value is used to add to score
         this.value = 0;

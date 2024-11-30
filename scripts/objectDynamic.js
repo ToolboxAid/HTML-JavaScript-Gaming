@@ -131,7 +131,7 @@ class ObjectDynamic extends ObjectStatic {
  * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
  * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
  */
-    checkGameBounds() {
+    checkGameBounds(offset = 0) {
         if (this.radius) {
             throw new Error("object has 'this.radius' use checkGameBoundsCircle.");
         }
@@ -139,16 +139,16 @@ class ObjectDynamic extends ObjectStatic {
         let boundariesHit = [];
 
         // top and bottom
-        if (this.y <= 0) {
+        if (this.y + offset <= 0) {
             boundariesHit.push('top');
-        } else if (this.y + this.height >= ObjectStatic.gameAreaHeight) {
+        } else if (this.y + this.height - offset >= ObjectStatic.gameAreaHeight) {
             boundariesHit.push('bottom');
         }
 
         // left & right
-        if (this.x <= 0) {
+        if (this.x + offset <= 0) {
             boundariesHit.push('left');
-        } else if (this.x + this.width >= ObjectStatic.gameAreaWidth) {
+        } else if (this.x + this.width - offset >= ObjectStatic.gameAreaWidth) {
             boundariesHit.push('right');
         }
 

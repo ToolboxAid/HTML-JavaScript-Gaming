@@ -51,8 +51,11 @@ class UFO extends ObjectVector {
     super.update(deltaTime);
 
     // If the ufo exceeds bounds, mark it for removal
-    if (this.isOutOfBounds(UFO.offset * 2)) {
-      if (!this.isDead()) {
+    const boundariesHit = this.checkGameBounds(this.height );
+
+    if (!this.isDead()) {
+      if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
+        console.log(boundariesHit);
         this.setIsDead();
         console.log("ufo dead");
       }
@@ -66,7 +69,7 @@ class UFO extends ObjectVector {
 
     if (this.velocityX) {
       this.velocityY = this.velocityX;
-    }else{
+    } else {
       this.velocityY = this.velocityX;
     }
   }
