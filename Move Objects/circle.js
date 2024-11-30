@@ -3,24 +3,36 @@
 // circle.js
 // 10/16/2024
 
+import { canvasConfig } from './global.js'; // Import canvasConfig
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 import CanvasUtils from '../scripts/canvas.js';
+import Functions from '../scripts/functions.js';
 
 /**
  * Represents a dynamic circle object in a game.
  */
 class Circle extends ObjectDynamic {
     /** Creates an instance of Circle.
-     * @param {number} x - The X position of the circle's center.
-     * @param {number} y - The Y position of the circle's center.
-     * @param {number} radius - The radius of the circle.
-     * @param {number} [velocityX=0] - The initial velocity in the X direction.
-     * @param {number} [velocityY=0] - The initial velocity in the Y direction.
-     */
-    constructor(x, y, radius, velocityX = 0, velocityY = 0) {
+ * 
+ */
+    constructor() {
+        const radius = 25;
+        const velocityX = Functions.randomRange(150.0, 350.0);
+        const velocityY = Functions.randomRange(150.0, 350.0);
+
         // Call ObjectDynamic constructor, passing the radius as both width and height
-        super(x, y, radius * 2, radius * 2, velocityX, velocityY);
+        super(100, 100, radius, radius, velocityX, velocityY);
         this.radius = radius;
+    }
+
+    update(deltaTime) {
+        super.update(deltaTime);
+        // Call the checkGameBoundsCircle function
+        const boundariesHit = this.checkGameBoundsCircle();
+        if (boundariesHit.length > 0) {
+            // Pass boundariesHit to updateCirclePosition
+            this.updateCircle(boundariesHit);
+        }
     }
 
     /** Draws the circle on the canvas.
@@ -32,43 +44,27 @@ class Circle extends ObjectDynamic {
         CanvasUtils.drawCircle2(this.x, this.y, this.radius, fillColor, borderColor, borderColor);
     }
 
-    /** Checks the circle's position against the specified boundaries and adjusts if necessary.
-     * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
-     * @param {number} gameAreaWidth - The gameAreaWidth of the area to check against.
-     * @param {number} gameAreaHeight - The gameAreaHeight of the area to check against.
-     * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
-     */
-    checkCollisionWithBounds(gameAreaWidth, gameAreaHeight) {
-        let boundariesHit = [];
+    updateCircle(boundariesHit) {
+        console.log("Boundaries hit:", boundariesHit);
 
-        // Check for collision with the top boundary
-        if (this.y - this.radius < 0) {
+        if (boundariesHit.includes('top')) {
             this.y = this.radius; // Prevent moving out of bounds at the top
             this.velocityY *= -1; // Reverse direction
-            boundariesHit.push('top');
         }
-        // Check for collision with the bottom boundary
-        else if (this.y + this.radius > gameAreaHeight) {
-            this.y = gameAreaHeight - this.radius; // Prevent moving out of bounds at the bottom
+        if (boundariesHit.includes('bottom')) {
+            this.y = canvasConfig.height - this.radius; // Prevent moving out of bounds at the bottom
             this.velocityY *= -1; // Reverse direction
-            boundariesHit.push('bottom');
         }
-
-        // Check for collision with the left boundary
-        if (this.x - this.radius < 0) {
+        if (boundariesHit.includes('left')) {
             this.x = this.radius; // Prevent moving out of bounds on the left
             this.velocityX *= -1; // Reverse direction
-            boundariesHit.push('left');
         }
-        // Check for collision with the right boundary
-        else if (this.x + this.radius > gameAreaWidth) {
-            this.x = gameAreaWidth - this.radius; // Prevent moving out of bounds on the right
+        if (boundariesHit.includes('right')) {
+            this.x = canvasConfig.width - this.radius; // Prevent moving out of bounds on the right
             this.velocityX *= -1; // Reverse direction
-            boundariesHit.push('right');
         }
-
-        return boundariesHit;
     }
+
 }
 
 export default Circle; // Export the class for use in other modules

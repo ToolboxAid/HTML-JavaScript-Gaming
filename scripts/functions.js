@@ -104,7 +104,7 @@ class Functions {
     static calculateXY2Angle(xVelocity, yVelocity) {
         const angleInRadians = Math.atan2(yVelocity, xVelocity);
         const angleInDegrees = angleInRadians * (180 / Math.PI);
-        return (angleInDegrees + 360) % 360; // Ensure the angle is positive
+        return Functions.degreeLimits(angleInDegrees); // Ensure the angle is positive
     }
 
     static calculateAngle2XY(angle, decimals = 4) {
@@ -188,6 +188,17 @@ class Functions {
         return intersectionPoint; // Return the intersection point
     }
 
+    /** time */
+    /**
+     * Static method for a hard wait.
+     * @param {number} ms - Duration of the wait in milliseconds.
+     */
+    static delay(ms) {
+        const start = Date.now();
+        while (Date.now() - start < ms) {
+            // Busy-wait loop
+        }
+    }
 }
 
 // Export the Functions class

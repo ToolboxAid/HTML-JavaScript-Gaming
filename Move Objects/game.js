@@ -12,34 +12,16 @@ import Circle from './circle.js';
 class Game {
     constructor() {
         // Create our circle
-        this.radius = 25;
-        this.circle = new Circle(canvasConfig.width, canvasConfig.height, this.radius, 
-            Functions.randomRange(150.0, 350.0), Functions.randomRange(150.0, 350.0));
+        this.circle = new Circle();
 
         // Canvas needs to know the current directory to game.js
         this.currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         window.canvasPath = this.currentDir;
     }
 
-    updateCirclePosition(hitBoundaries) {
-        // Check if the array is empty
-        if (hitBoundaries.length === 0) {
-            console.log("No boundaries were hit");
-        } else {
-            console.log("Boundaries hit:", hitBoundaries);
-        }
-    }
-
     gameLoop(deltaTime) {
         // Update circle position
         this.circle.update(deltaTime);
-
-        // Call the checkCollisionWithBounds function
-        const boundariesHit = this.circle.checkCollisionWithBounds(canvasConfig.width, canvasConfig.height);
-        if (boundariesHit.length > 0) {
-            // Pass boundariesHit to updateCirclePosition
-            this.updateCirclePosition(boundariesHit);
-        }
 
         // Call the drawing function
         this.circle.draw();

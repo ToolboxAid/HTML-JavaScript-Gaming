@@ -24,6 +24,8 @@ class ObjectDynamic extends ObjectStatic {
         this.velocityY = velocityY; // Velocity in Y direction
     }
 
+
+    /** Future methods */
     getFutureCenterPoint(deltaTime = 1) {
         return { x: this.x + (this.width / 2) + (this.velocityX * deltaTime), y: this.y + (this.height / 2) + (this.velocityY * deltaTime) };
     }
@@ -53,6 +55,21 @@ class ObjectDynamic extends ObjectStatic {
         this.y += this.velocityY * deltaTime;
     }
 
+    getDirection() {
+        /** Angle to direction
+           - down to right 0 to <90
+           - down to left 90 to <180
+           - up to left 180 < 270
+           - up to right 270 to 360
+        */
+        let direction = {
+            x: this.velocityX > 0 ? 'right' : this.velocityX < 0 ? 'left' : 'none',
+            y: this.velocityY > 0 ? 'down' : this.velocityY < 0 ? 'up' : 'none'
+        };
+        // Return the direction of movement
+        return direction;
+    }
+
     /**
      * Changes the velocity of the object.
      * @param {number} velocityX - The new velocity in the X direction.
@@ -61,41 +78,6 @@ class ObjectDynamic extends ObjectStatic {
     setVelocity(velocityX, velocityY) {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
-    }
-
-    /**
-     * Checks the object's position against the specified boundaries and adjusts if necessary.
-     * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
-     * @param {number} width - The width of the area to check against.
-     * @param {number} height - The height of the area to check against.
-     * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
-     */
-    checkCollisionWithBounds(width, height) {
-        let boundariesHit = [];
-
-        // left & right
-        if (this.x <= 0) {
-            this.x = 0; // Prevent moving out of bounds on the left
-            this.velocityX *= -1; // Reverse direction
-            boundariesHit.push('left');
-        } else if (this.x + this.width >= width) {
-            this.x = width - this.width; // Prevent moving out of bounds on the right
-            this.velocityX *= -1; // Reverse direction
-            boundariesHit.push('right');
-        }
-
-        // top and bottom
-        if (this.y <= 0) {
-            this.y = 0; // Prevent moving out of bounds at the top
-            this.velocityY *= -1; // Reverse direction
-            boundariesHit.push('top');
-        } else if (this.y + this.height >= height) {
-            this.y = height - this.height; // Prevent moving out of bounds at the bottom
-            this.velocityY *= -1; // Reverse direction
-            boundariesHit.push('bottom');
-        }
-
-        return boundariesHit;
     }
 
     /**
@@ -112,7 +94,6 @@ class ObjectDynamic extends ObjectStatic {
         );
     }
 
-
     isCollidingWith(object) {
         return (
             this.x + this.width >= object.x &&
@@ -122,97 +103,88 @@ class ObjectDynamic extends ObjectStatic {
         );
     }
 
-    processCollisionWith(object, updatePosition = true) {
-        // Check if the object is within the object's bounds
-        if (
-            this.isCollidingWith(object)
-        ) {
-            let collisionSide;
+    isCollidingWithSides(object) {
+        let collisions = [];
 
-            // Define the edges of the object
-            const leftEdge = object.x;
-            const rightEdge = object.x + object.width;
-            const topEdge = object.y;
-            const bottomEdge = object.y + object.height;
-
-            // Define the puck's edges
-            const puckLeftEdge = this.x;
-            const puckRightEdge = this.x + this.width;
-            const puckTopEdge = this.y;
-            const puckBottomEdge = this.y + this.height;
-
-            // Determine the side of collision using line-based logic
-            const overlapLeft = puckRightEdge - leftEdge;  // Distance puck has passed into the left edge
-            const overlapRight = rightEdge - puckLeftEdge; // Distance puck has passed into the right edge
-            const overlapTop = puckBottomEdge - topEdge;   // Distance puck has passed into the top edge
-            const overlapBottom = bottomEdge - puckTopEdge;// Distance puck has passed into the bottom edge
-
-            // Find the smallest overlap to determine the collision side
-            const smallestOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
-
-            if (updatePosition) {
-                // Determine which side was hit based on the smallest overlap
-                if (smallestOverlap === overlapLeft) {
-                    collisionSide = 'left';
-                    this.x = object.x - this.width; // Push 'this' out of the object
-                    this.velocityX *= -1; // Reverse X velocity for left collision
-                } else if (smallestOverlap === overlapRight) {
-                    collisionSide = 'right';
-                    this.x = object.x + object.width; // Push 'this' out of the object
-                    this.velocityX *= -1; // Reverse X velocity for right collision
-                } else if (smallestOverlap === overlapTop) {
-                    collisionSide = 'top';
-                    this.y = object.y - this.height; // Push 'this' out of the object
-                    this.velocityY *= -1; // Reverse Y velocity for top collision
-                } else if (smallestOverlap === overlapBottom) {
-                    collisionSide = 'bottom';
-                    this.y = object.y + object.height; // Push 'this' out of the object
-                    this.velocityY *= -1; // Reverse Y velocity for bottom collision
-                }
-            } else {
-                // Determine which side was hit based on the smallest overlap
-                // no update to position or velocity
-                if (smallestOverlap === overlapLeft) {
-                    collisionSide = 'left';
-                } else if (smallestOverlap === overlapRight) {
-                    collisionSide = 'right';
-                } else if (smallestOverlap === overlapTop) {
-                    collisionSide = 'top';
-                } else if (smallestOverlap === overlapBottom) {
-                    collisionSide = 'bottom';
-                }
-
+        if (this.isCollidingWith(object)) {
+            // Check for collisions
+            if (this.x + this.width >= object.x && this.x < object.x) {
+                collisions.push('right'); // This object's right edge collides with the other object's left edge
             }
-
-            // if (object.constructor.name === "Shield") {
-            //     if (!ObjectDynamic.firstTime) {
-            //         console.log("This object is of type Shield:");
-            //         console.log(this);
-            //         console.log(object);
-            //         ObjectDynamic.firstTime = true;
-            //     }
-            // }
-
-            //console.log(`Collision detected on the ${collisionSide} side.`);
-            return collisionSide; // Return the side of collision
+            if (this.x <= object.x + object.width && this.x + this.width > object.x + object.width) {
+                collisions.push('left'); // This object's left edge collides with the other object's right edge
+            }
+            if (this.y + this.height >= object.y && this.y < object.y) {
+                collisions.push('bottom'); // This object's bottom edge collides with the other object's top edge
+            }
+            if (this.y <= object.y + object.height && this.y + this.height > object.y + object.height) {
+                collisions.push('top'); // This object's top edge collides with the other object's bottom edge
+            }
         }
-
-        return null; // No collision
+        // Return false if no collisions, otherwise return collisions
+        return collisions;
     }
 
-    getDirection() {
-        /** Angle to direction
-           - down to right 0 to <90
-           - down to left 90 to <180
-           - up to left 180 < 270
-           - up to right 270 to 360
-        */
-        let direction = {
-            x: this.velocityX > 0 ? 'right' : this.velocityX < 0 ? 'left' : 'none',
-            y: this.velocityY > 0 ? 'down' : this.velocityY < 0 ? 'up' : 'none'
-        };
-        // Return the direction of movement
-        return direction;
+
+    /**
+ * Checks the object's position against the specified boundaries and adjusts if necessary.
+ * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
+ * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
+ */
+    checkGameBounds() {
+        if (this.radius) {
+            throw new Error("object has 'this.radius' use checkGameBoundsCircle.");
+        }
+
+        let boundariesHit = [];
+
+        // top and bottom
+        if (this.y <= 0) {
+            boundariesHit.push('top');
+        } else if (this.y + this.height >= ObjectStatic.gameAreaHeight) {
+            boundariesHit.push('bottom');
+        }
+
+        // left & right
+        if (this.x <= 0) {
+            boundariesHit.push('left');
+        } else if (this.x + this.width >= ObjectStatic.gameAreaWidth) {
+            boundariesHit.push('right');
+        }
+
+        return boundariesHit;
+    }
+
+    /** Checks the circle's position against the specified boundaries and adjusts if necessary.
+     * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
+     * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
+     */
+    checkGameBoundsCircle() {
+        if (!this.radius) {
+            throw new Error("object requires a 'this.radius' that is not null, undefined, or empty.");
+        }
+
+        let boundariesHit = [];
+
+        // Check for collision with the top boundary
+        if (this.y - this.radius <= 0) {
+            boundariesHit.push('top');
+        }
+        // Check for collision with the bottom boundary
+        else if (this.y + this.radius >= ObjectStatic.gameAreaHeight) {
+            boundariesHit.push('bottom');
+        }
+
+        // Check for collision with the left boundary
+        if (this.x - this.radius <= 0) {
+            boundariesHit.push('left');
+        }
+        // Check for collision with the right boundary
+        else if (this.x + this.radius >= ObjectStatic.gameAreaWidth) {
+            boundariesHit.push('right');
+        }
+
+        return boundariesHit;
     }
 
 }

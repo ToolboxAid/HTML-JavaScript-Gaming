@@ -3,6 +3,7 @@
 // 10/16/2024
 // canvas.js
 
+import ObjectStatic from './objectStatic.js';
 import Fullscreen from '../scripts/fullscreen.js'; // Import the Fullscreen class
 import CanvasUtil from '../scripts/canvas.js'
 import Font5x6 from './font5x6.js';
@@ -319,8 +320,7 @@ class CanvasUtils {
     static lastTimestamp = 0;
     static ctx = null;
 
-    static initCanvas(ctx) {
-        CanvasUtil.ctx = ctx;
+    static canvasClear(ctx) {        
         CanvasUtil.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
         CanvasUtil.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
@@ -363,10 +363,12 @@ class CanvasUtils {
                 // HACK - needs to be moved elseware
                 const gameModule = await import(`${window.canvasPath}/game.js`);
                 this.gameInstance = new gameModule.default();  // Use the default export from game.js
+
+                CanvasUtil.ctx = ctx;
             }
 
             // Initialize the canvas and game loop
-            CanvasUtils.initCanvas(ctx);
+            CanvasUtils.canvasClear(ctx);
 
             // Call the game loop method of the Game class
             this.gameInstance.gameLoop(deltaTime);
@@ -389,6 +391,9 @@ class CanvasUtils {
 
     // Add EventListener moved into the class
     static setupCanvas() {
+        ObjectStatic.gameAreaWidth = window.gameAreaWidth;
+        ObjectStatic.gameAreaHeight = window.gameAreaHeight;
+
         window.addEventListener('DOMContentLoaded', () => {
             console.log(`Canvas Path: ${window.canvasPath}`);
             requestAnimationFrame(CanvasUtils.animate.bind(this));

@@ -293,7 +293,8 @@ class Game {
         if (this.laser) {
             let hitDetected = false;
             this.gameEnemies.forEach((enemy, key) => {
-                if (enemy.processCollisionWith(this.laser)) {
+                console.log(enemy.isCollidingWith(this.laser));                
+                if (enemy.isCollidingWith(this.laser)) {
                     this.updatePlayerScore(enemy.value);
                     enemy.setHit();
                     hitDetected = true;
@@ -311,7 +312,7 @@ class Game {
             // Check for collisions and remove hit laser and bomb
             let hitBomb = false;
             this.enemyBombs.forEach(enemyBomb => {
-                if (enemyBomb.processCollisionWith(this.laser)) {
+                if (enemyBomb.isCollidingWith(this.laser)) {
                     hitBomb = true;
                     if (enemyBomb.constructor.name !== "EnemyBomb3") {
                         enemyBomb.setIsDying();

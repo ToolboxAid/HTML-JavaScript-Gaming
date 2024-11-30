@@ -113,14 +113,6 @@ class ObjectKillable extends ObjectDynamic {
      handleDeadStatus() { // Custom logic for DEAD status
      }
 
-    processCollisionWith(object, updatePosition = false) {
-        let collision = false;
-        if (this.isAlive()) {
-            collision = super.processCollisionWith(object, updatePosition);
-        }
-        return collision;
-    }
-
     isAlive() {
         return this.status === ObjectKillable.Status.ALIVE;
     }

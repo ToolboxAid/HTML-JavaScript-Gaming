@@ -15,12 +15,12 @@ const debug = false;
 class Puck extends ObjectDynamic {
 
     // Defining properties as "constant-like"
-    multAngle = 90;
-    num = 10;
+    num = 20;
     leftMin = 45 + this.num;
     leftMax = 315 - this.num;
     rightMin = 135 - this.num;
     rightMax = 225 + this.num;
+    maxAngle = (this.rightMax - this.rightMin) / 2;
 
     constructor() {
         const x = (canvasConfig.width / 2) - (puckConfig.width / 2);
@@ -46,22 +46,61 @@ class Puck extends ObjectDynamic {
         }
     }
 
-    draw() {
-        // Draw the tail
-        for (let i = 0; i < this.previousPositions.length; i++) {
-            const pos = this.previousPositions[i];
-            CanvasUtils.ctx.fillStyle = `rgba(255, 255, 255, ${(1 - ((this.tailLength - i) / this.tailLength)) * 0.15})`; // Fade effect
-            CanvasUtils.ctx.beginPath();
-            CanvasUtils.ctx.fillRect(pos.x, pos.y, this.width, this.height);
-            CanvasUtils.ctx.fill();
+    processCollisionPoint(paddle) {
+        if (Puck.paddleTopBottomHit === true) {
+            return;
         }
 
-        super.draw(puckConfig.color);
+        const sides = this.isCollidingWithSides(paddle);
+
+        // Check if the paddle is within the paddle's bounds
+        if (sides.length !== 0) {
+            // Define the edges of the paddle
+            const leftEdge = paddle.x;
+            const rightEdge = paddle.x + paddle.width;
+            const topEdge = paddle.y;
+            const bottomEdge = paddle.y + paddle.height;
+
+            // Define the puck's edges
+            const puckLeftEdge = this.x;
+            const puckRightEdge = this.x + this.width;
+            const puckTopEdge = this.y;
+            const puckBottomEdge = this.y + this.height;
+
+            // Determine the side of collision using line-based logic
+            const overlapLeft = puckRightEdge - leftEdge;  // Distance puck has passed into the left edge
+            const overlapRight = rightEdge - puckLeftEdge; // Distance puck has passed into the right edge
+            const overlapTop = puckBottomEdge - topEdge;   // Distance puck has passed into the top edge
+            const overlapBottom = bottomEdge - puckTopEdge;// Distance puck has passed into the bottom edge
+
+            // Find the smallest overlap to determine the collision side
+            const smallestOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+
+            const offset = 0;
+            // Determine which side was hit based on the smallest overlap
+            if (smallestOverlap === overlapLeft) {
+                this.x = paddle.x - this.width - offset; // Push 'this' out of the paddle
+                this.handlePuckCollisionSides(paddle);
+            }
+            if (smallestOverlap === overlapRight) {
+                this.x = paddle.x + paddle.width + offset; // Push 'this' out of the paddle
+                this.handlePuckCollisionSides(paddle);
+            }
+
+            if (smallestOverlap === overlapTop) {
+                this.y = paddle.y - this.height; // Push 'this' out of the paddle
+                this.velocityY *= -1; // Reverse Y velocity for top collision
+                Puck.paddleTopBottomHit = true;
+            }
+            if (smallestOverlap === overlapBottom) {
+                this.y = paddle.y + paddle.height; // Push 'this' out of the paddle
+                this.velocityY *= -1; // Reverse Y velocity for bottom collision
+                Puck.paddleTopBottomHit = true;
+            }
+        }
     }
 
-    update(leftPaddle, rightPaddle, deltaTime) {
-        super.update(deltaTime);
-
+    handleTail() {
         // Store the current position before updating
         this.previousPositions.push({ x: this.x, y: this.y });
 
@@ -69,17 +108,18 @@ class Puck extends ObjectDynamic {
         if (this.previousPositions.length > this.tailLength) {
             this.previousPositions.shift(); // Remove the oldest position
         }
+    }
 
-        // Check for collisions with left and right paddles
-        const leftCollision = this.processCollisionWith(leftPaddle);
-        if (leftCollision) {
-            this.handlePaddleCollision(leftPaddle, leftCollision);
+    static paddleTopBottomHit = false;
+    update(leftPaddle, rightPaddle, deltaTime) {
+        if (Puck.doUpdate) {
+            super.update(deltaTime);
         }
 
-        const rightCollision = this.processCollisionWith(rightPaddle);
-        if (rightCollision) {
-            this.handlePaddleCollision(rightPaddle, rightCollision);
-        }
+        this.handleTail();
+
+        this.processCollisionPoint(leftPaddle, true);
+        this.processCollisionPoint(rightPaddle, true);
 
         this.checkGameAreaBoundary(leftPaddle, rightPaddle, deltaTime);
     }
@@ -92,15 +132,64 @@ class Puck extends ObjectDynamic {
         AudioPlayer.playFrequency(440, 0.1);
     }
 
-    checkGameAreaBoundary(leftPaddle, rightPaddle, deltaTime) {
-        const boundariesHit = this.checkCollisionWithBounds(canvasConfig.width, canvasConfig.height);
+    handlePuckCollisionSides(paddle) {
+        this.playBounceSound();
 
-        // Call the checkCollisionWithBounds function
-        // Top/Bottom  - adjust Y direction
-        if (boundariesHit.includes('top') || boundariesHit.includes('bottom')) {
-            this.playBounceSound();
+        // find percent of paddle for angle adjust (+/-)maxAngle
+        let offsetY = this.getCenterPoint().y - paddle.getCenterPoint().y;
+        let offsetPercent = offsetY / (paddle.height / 2);
+
+        // set new angle based on offsetPercent
+        this.angle = this.maxAngle * offsetPercent;
+
+        if (!paddle.isLeft) { // reverse for right paddle.
+            this.angle = (this.angle * -1) + 180;
         }
 
+        this.angle = Functions.degreeLimits(this.angle);
+
+        // Set the puck's velocity based on the new angle
+        this.setVelocity();
+    }
+
+    setVelocity() {
+        const coordinates = Functions.calculateAngle2XY(this.angle);
+
+        this.speed += this.speedIncrease;
+
+        this.velocityX = coordinates.x * this.speed;
+        this.velocityY = coordinates.y * this.speed;
+    }
+
+    draw() {
+        // Draw puck
+        super.draw(puckConfig.color);
+
+        // Draw the tail
+        for (let i = 0; i < this.previousPositions.length; i++) {
+            const pos = this.previousPositions[i];
+            CanvasUtils.ctx.fillStyle = `rgba(255, 255, 255, ${(1 - ((this.tailLength - i) / this.tailLength)) * 0.15})`; // Fade effect
+            CanvasUtils.ctx.beginPath();
+            CanvasUtils.ctx.fillRect(pos.x, pos.y, this.width, this.height);
+            CanvasUtils.ctx.fill();
+        }
+    }
+
+    checkGameAreaBoundary(leftPaddle, rightPaddle) { // score or bounce
+        const boundariesHit = this.checkGameBounds();
+
+        // Top/Bottom  - adjust Y direction
+        if (boundariesHit.includes('top') || boundariesHit.includes('bottom')) {
+            this.velocityY *= -1; // Reverse direction            
+            this.playBounceSound();
+
+            if (boundariesHit.includes('top')) {
+                this.y = 0; // Prevent moving out of bounds at the top
+            }
+            if (boundariesHit.includes('bottom')) {
+                this.y = canvasConfig.height - this.height; // Prevent moving out of bounds at the bottom
+            }
+        }
         // Adjust scores for left & right
         if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
             this.speedScore++;
@@ -117,65 +206,9 @@ class Puck extends ObjectDynamic {
         }
     }
 
-    handlePaddleCollision(paddle, collisionSide) {
-        this.playBounceSound();
-
-        if (collisionSide === 'top' || collisionSide === 'bottom') {
-            return;
-        }
-
-        let offsetY = this.getCenterPoint().y - paddle.getCenterPoint().y;
-        let offsetPercent = -(offsetY / (paddle.height / 2));
-        
-        // Calculate the new angle based on velocityX change
-        let angle = Functions.calculateXY2Angle(this.velocityX, this.velocityY);
-
-        let expo = (offsetPercent ** 2);
-        if (offsetY > 0) {
-            expo *= -1;
-        }
-        expo *= this.multAngle;
-
-        // Adjust the angle based on the offset
-        if (paddle.isLeft) {
-            this.angle = angle - expo;
-            this.angle = (this.angle + 360) % 360;
-
-            if (this.angle < this.leftMin || this.angle > this.leftMax) {
-                // angle good
-            } else if (this.angle > 180) {
-                this.angle = this.leftMax;
-            } else {
-                this.angle = this.leftMin;
-            }
-        } else {
-            //this.angle = angle - (offsetY * 1.0);
-            this.angle = angle + expo;
-            this.angle = (this.angle + 360) % 360;
-            if (this.angle < this.rightMin) {
-                this.angle = this.rightMin;
-            }
-            if (this.angle > this.rightMax) {
-                this.angle = this.rightMax;
-            }
-        }
-
-        // Set the puck's velocity based on the new angle
-        this.setVelocity();
-    }
-
-    setVelocity() {
-        this.speed += this.speedIncrease;
-
-        const coordinates = Functions.calculateAngle2XY(this.angle); // Call the method
-
-        this.velocityX = coordinates.x * this.speed;
-        this.velocityY = coordinates.y * this.speed;
-    }
-
-    reset(min, max) {
-        // Place puck at center of screen and move tward loser.
-
+    static doUpdate = true;
+    reset(min, max) {// Place puck at center of screen and move tward loser.
+        Puck.paddleTopBottomHit = false;
         /* Angle direction of travel
             270 is up
 
@@ -196,6 +229,13 @@ class Puck extends ObjectDynamic {
         this.angle = Functions.randomRange(min, max);
         this.setVelocity();
         this.velocityX *= -1;  // winner serves the puck
+
+        Puck.doUpdate = false;
+        console.log("Start wait");
+        setTimeout(() => {
+            Puck.doUpdate = true;
+            console.log("Waited for 1 seconds");
+        }, 1000);
     }
 }
 
