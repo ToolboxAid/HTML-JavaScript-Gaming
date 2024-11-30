@@ -23,7 +23,6 @@ class ObjectStatic {
         if (ObjectStatic.gameAreaWidth <= 0 || ObjectStatic.gameAreaHeight <= 0) {
             throw new Error('gameAreaWidth and gameAreaHeight must be positive numbers.');
         }
-        console.log(ObjectStatic.gameAreaWidth, ObjectStatic.gameAreaHeight);
         if (width <= 0 || height <= 0) {
             throw new Error('Width and height must be positive numbers.');
         }        
