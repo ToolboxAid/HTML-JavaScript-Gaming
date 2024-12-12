@@ -6,8 +6,8 @@
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
-  width: 896, // Game area width (256 * 4)
-  height: 960, // Game area height (240 * 4)
+  width: 800, // Game area width
+  height: 600, // Game area height
   scale: 0.5,
   backgroundColor: "#222222",
 

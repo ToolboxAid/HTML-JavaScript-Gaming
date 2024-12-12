@@ -27,10 +27,8 @@ class GameAttract {
 
     draw(show = true) {
         // this.displayAttract();
-
-
-        this.hero.draw();
-        this.tileMap.draw();
+        // this.hero.draw();  // needs to be drawn on the correct layer.
+        this.tileMap.draw(this.hero);
     }
 
     displayAttract() {

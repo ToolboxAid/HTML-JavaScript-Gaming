@@ -106,7 +106,7 @@ class Hero extends ObjectSprite {
     ];
 
 
-    constructor(x = 127, y = 820) {
+    constructor(x = 127, y = 510) {
         super(x, y, Hero.frame, Hero.dyingFrames);
 
         this.speed = 300;
@@ -139,8 +139,6 @@ class Hero extends ObjectSprite {
         this.level = 0;
     }
 
-
-
     update(deltaTime, keyboardInput, tileMap) {
         super.update(deltaTime);
 
@@ -165,7 +163,6 @@ class Hero extends ObjectSprite {
 
     draw() {
         super.draw(0, 0);
-
     }
 }
 
