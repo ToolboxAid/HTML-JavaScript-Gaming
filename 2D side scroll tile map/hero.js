@@ -117,23 +117,6 @@ class Hero extends ObjectSprite {
 
         this.setSpriteColor(spriteConfig.heroColor);
         this.pixelSize = spriteConfig.pixelSize;
-
-        this.scrollPos = 0;
-        this.tileSetWidth = 0;
-        this.canvasMidPoint = 0;
-        this.scrollMax = 0;
-    }
-
-
-    setTileMapInfo(tileSetWidth, canvasMidPoint, scrollMax, scrollPos = 0) {
-        this.scrollPos = scrollPos;
-        this.tileSetWidth = tileSetWidth;
-        this.canvasMidPoint = canvasMidPoint;
-        this.scrollMax = scrollMax;
-    }
-
-    getScrollPos() {
-        return this.scrollPos;
     }
 
     decrementLives() {
@@ -158,14 +141,8 @@ class Hero extends ObjectSprite {
 
 
 
-    update(deltaTime, keyboardInput) {
+    update(deltaTime, keyboardInput, tileMap) {
         super.update(deltaTime);
-
-        // console.log("Tile Set Width:", this.tileSetWidth);
-        // console.log("Canvas Mid Point:" ,this.canvasMidPoint);
-        // console.log("Max Scroll:" ,this.scrollMax);
-
-
 
         if (keyboardInput.isKeyDown('ArrowLeft')) {
             this.velocityX = -this.speed;
@@ -175,26 +152,10 @@ class Hero extends ObjectSprite {
             this.velocityX = 0;
         }
 
-        if (this.velocityX > 0
-            && this.x > this.canvasMidPoint
-        ) {
-            if (this.scrollPos < this.scrollMax) {
-                this.scrollPos += this.velocityX * deltaTime;
-                this.velocityX = 0;
-            }
-        } else {
-            if (this.velocityX < 0
-                && this.x < this.canvasMidPoint
-            ) {
-                if (this.scrollPos > 0) {
-                    this.scrollPos += this.velocityX * deltaTime;
-                    this.velocityX = 0;
-                }
-            }
+         if (keyboardInput.isKeyPressed('Space')) {
         }
 
-        if (keyboardInput.isKeyPressed('Space')) {
-        }
+        tileMap.update(deltaTime, this);
 
         // keep on screen
         if (this.x <= 0 || this.x >= canvasConfig.width - this.width) {
@@ -205,13 +166,6 @@ class Hero extends ObjectSprite {
     draw() {
         super.draw(0, 0);
 
-        if (true) {
-            CanvasUtils.ctx.fillStyle = "white";
-            CanvasUtils.ctx.font = "30px Arial";
-            CanvasUtils.ctx.fillText(this.x, 50, 100);
-            CanvasUtils.ctx.fillText(this.scrollPos, 50, 150);
-            CanvasUtils.ctx.fillText(this.scrollMax, 50, 200);
-        }
     }
 }
 

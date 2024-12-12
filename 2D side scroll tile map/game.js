@@ -31,7 +31,7 @@ class Game {
     this.backToAttract = 600;
     this.backToAttractCounter = 0;
 
-    this.GameAttract = new GameAttract();
+    this.gameAttract = new GameAttract();
   }
 
   // Example: object.position += object.velocity * deltaTime;
@@ -81,8 +81,8 @@ class Game {
     // CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
     // CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
-    this.GameAttract.update(deltaTime, keyboardInput);
-    this.GameAttract.draw();
+    this.gameAttract.update(deltaTime, keyboardInput);
+    this.gameAttract.draw();
 
     if (keyboardInput.getkeysPressed().includes('Enter')) {
       this.gameState = "playerSelect";
