@@ -105,6 +105,7 @@ class Hero extends ObjectSprite {
         ],
     ];
 
+
     constructor(x = 127, y = 820) {
         super(x, y, Hero.frame, Hero.dyingFrames);
 
@@ -114,6 +115,23 @@ class Hero extends ObjectSprite {
 
         this.setSpriteColor(spriteConfig.heroColor);
         this.pixelSize = spriteConfig.pixelSize;
+
+        this.scrollPos = 0;
+        this.tileSetWidth = 0;
+        this.canvasMidPoint = 0;
+        this.scrollMax = 0;
+    }
+
+
+    setTileMapInfo(tileSetWidth, canvasMidPoint, scrollMax, scrollPos = 0) {
+        this.scrollPos = scrollPos;
+        this.tileSetWidth = tileSetWidth;
+        this.canvasMidPoint = canvasMidPoint;
+        this.scrollMax = scrollMax;
+    }
+
+    getScrollPos() {
+        return this.scrollPos;
     }
 
     decrementLives() {
@@ -136,14 +154,16 @@ class Hero extends ObjectSprite {
         this.level = 0;
     }
 
-    draw() {
-        super.draw(0, 0);
-    }
+
 
     update(deltaTime, keyboardInput) {
         super.update(deltaTime);
 
-        const speed = 15;
+        // console.log("Tile Set Width:", this.tileSetWidth);
+        // console.log("Canvas Mid Point:" ,this.canvasMidPoint);
+        // console.log("Max Scroll:" ,this.scrollMax);
+
+        const speed = 300;
 
         if (keyboardInput.isKeyDown('ArrowLeft')) {
             this.velocityX = -speed;
@@ -153,12 +173,57 @@ class Hero extends ObjectSprite {
             this.velocityX = 0;
         }
 
+        if (this.velocityX > 0
+            && this.x > this.canvasMidPoint
+        ) {
+            if (this.scrollPos < this.scrollMax) {
+                console.log("right 0", this.scrollPos, this.velocityX, deltaTime);
+                const add = (this.velocityX * deltaTime);
+                console.log("right 1", this.scrollPos, this.velocityX, add, deltaTime);
+                this.scrollPos += add;
+                console.log("right 2", this.scrollPos, this.velocityX, add, deltaTime);
+                this.velocityX = 0;
+            }
+        } else {
+            if (this.velocityX < 0
+                && this.x < this.canvasMidPoint
+            ) {
+                if (this.scrollPos > 0) {
+                    console.log("left 0", this.scrollPos, this.velocityX, deltaTime);
+                    const add = (this.velocityX * deltaTime);
+                    console.log("left 1", this.scrollPos, this.velocityX, add, deltaTime);
+                    this.scrollPos += add;
+                    console.log("left 2", this.scrollPos, this.velocityX, add, deltaTime);
+                    this.velocityX = 0;
+                }
+            }
+        }
+
+        // if (this.hero.velocityX < 0 && this.hero.x < canvasConfig.width - 400) {
+        //     this.scrollPos -= 1;
+        //     console.log("left", this.scrollPos);
+        //     this.hero.velocityX = 0;
+        // }
+
+
         if (keyboardInput.isKeyPressed('Space')) {
         }
 
-        if (this.x < 0 || this.x > canvasConfig.width - this.width) {
+        // keep on screen
+        if (this.x <= 0 || this.x >= canvasConfig.width - this.width) {
             this.x = Math.max(0, Math.min(canvasConfig.width - this.width, this.x));
-            console.log(this.x, canvasConfig.width);
+        }
+    }
+
+    draw() {
+        super.draw(0, 0);
+
+        if (true) {
+            CanvasUtils.ctx.fillStyle = "white";
+            CanvasUtils.ctx.font = "30px Arial";
+            CanvasUtils.ctx.fillText(this.x, 50, 100);
+            CanvasUtils.ctx.fillText(this.scrollPos, 50, 150);
+            CanvasUtils.ctx.fillText(this.scrollMax, 50, 200);
         }
     }
 }

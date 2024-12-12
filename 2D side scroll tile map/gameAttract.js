@@ -41,15 +41,30 @@ const tileMap = [
 const tileSize = 60;
 // Get the number of sets in the tile map (3)
 const numberOfSets = tileMap.length;
-console.log("Number of sets:", numberOfSets);
 
 // Get the number of rows in each set (4)
 const numberOfRowsInFirstSet = tileMap[0].length;
-console.log("Number of rows in the first set:", numberOfRowsInFirstSet);
 
 // Get the length of a row (17)
 const lengthOfFirstRowInFirstSet = tileMap[0][0].length;
-console.log("Length of a row in the first set:", lengthOfFirstRowInFirstSet);
+
+const tileSetWidth = tileSize * lengthOfFirstRowInFirstSet;
+
+const canvasMidPoint = canvasConfig.width / 2;
+
+const scrollMax = tileSetWidth - (canvasMidPoint * 2);
+if (scrollMax < 0){
+    scrollMax = 0;
+}
+
+if (false){
+    console.log("Number of sets:", numberOfSets);
+    console.log("Number of rows in the first set:", numberOfRowsInFirstSet);
+    console.log("Length of a row in the first set:", lengthOfFirstRowInFirstSet);
+    console.log("Tile Set Width:", tileSetWidth);
+    console.log("Canvas Mid Point:" ,canvasMidPoint);
+    console.log("Scroll Max:" ,scrollMax);
+}
 
 const air = 1;
 const barrier = 0;
@@ -57,77 +72,64 @@ const barrier = 0;
 class GameAttract {
     constructor() {
         this.hero = new Hero();
+        this.hero.setTileMapInfo(tileSetWidth,canvasMidPoint,scrollMax);
+        this.scrollPos = 0;
     }
 
     update(deltaTime, keyboardInput) {
         this.hero.update(deltaTime, keyboardInput);
     }
 
-    drawHero() {
-        //        console.log("Current row " + j + ", col " + k + ": has an unknown value: " + value);
-        CanvasUtils.ctx.fillStyle = "rgb(0, 255 , 255)";
-        CanvasUtils.ctx.fillRect(this.hero.x, this.hero.y, tileSize, tileSize); // draw a rectangle at (10, 10) with width=200 and height=200        
+    // drawHero() {
+    //     CanvasUtils.ctx.fillStyle = "rgb(0, 255 , 255)";
+    //     CanvasUtils.ctx.fillRect(this.hero.x, this.hero.y, tileSize, tileSize); // draw a rectangle at (10, 10) with width=200 and height=200        
 
-    }
+    // }
 
-    drawSingleTileSet(tileSet) {
-        console.log(tileMap);
+    drawSingleTileSet(currentSet) {
+        const scrollPos = this.hero.getScrollPos();
+        // Iterate over each row in a set
+        for (let row = 0; row < currentSet.length; row++) {
+            const currentRow = currentSet[row];
+            // Iterate over each column in a row
+            for (let col = 0; col < currentRow.length; col++) {
+                switch (currentRow[col]) {
+                    case 0:
+                        CanvasUtils.ctx.fillStyle = "rgb(0, 0, 0)";
+                        break;
+                    case 1:
+                        CanvasUtils.ctx.fillStyle = "rgb(255, 0, 0)";
+                        break;
+                    case 2:
+                        CanvasUtils.ctx.fillStyle = "rgb(0, 255, 0 )";
+                        break;
+                    case 3:
+                        CanvasUtils.ctx.fillStyle = "rgb(0 , 0, 255)";
+                        break;
+                    case 4:
+                        CanvasUtils.ctx.fillStyle = "rgb(255 ,255, 0)";
+                        break;
+                    default:
+                        //console.log("Current row " + row + ", col " + col + ": has an unknown value: " + value);
+                        CanvasUtils.ctx.fillStyle = "rgb(255, 255 , 255)";
+                }
+
+                const x = (col * tileSize) - scrollPos;
+                const y = row * tileSize;
+                CanvasUtils.ctx.fillRect(x, y, tileSize, tileSize); // draw a rectangle
+            }
+        }
     }
 
     draw(show = true) {
         // this.displayAttract();
         const numberOfSets = tileMap.length;
-        //       console.log("-----------------");
         // Iterate over each set (or level) in the tile map
         for (let i = 0; i < tileMap.length; i++) {
-            // console.log("Set " + (i + 1));
-
-            // Access and manipulate the individual sets as desired
-            const currentSet = tileMap[i];
-
-            // Iterate over each row in a set
-            for (let j = 0; j < currentSet.length; j++) {
-                // console.log("Row " + (j + 1));
-
-                // Access and manipulate the individual rows as desired
-                const currentRow = currentSet[j];
-
-                // Iterate over each column in a row
-                for (let k = 0; k < currentRow.length; k++) {
-                    // console.log("Col " + (k + 1) + ": " + currentRow[k]);
-
-                    //---------------------------------------------------
-                    let value = currentRow[k];
-
-                    switch (value) {
-                        case 0:
-                            CanvasUtils.ctx.fillStyle = "rgb(0, 0, 0)";
-                            break;
-                        case 1:
-                            CanvasUtils.ctx.fillStyle = "rgb(255, 0, 0)";
-                            break;
-                        case 2:
-                            CanvasUtils.ctx.fillStyle = "rgb(0, 255, 0 )";
-                            break;
-                        case 3:
-                            CanvasUtils.ctx.fillStyle = "rgb(0 , 0, 255)";
-                            break;
-                        case 4:
-                            CanvasUtils.ctx.fillStyle = "rgb(255 ,255, 0)";
-                            break; default:
-                            console.log("Current row " + j + ", col " + k + ": has an unknown value: " + value);
-                            CanvasUtils.ctx.fillStyle = "rgb(255, 255 , 255)";
-                    }
-
-                    const x = k * tileSize;
-                    const y = j * tileSize;
-                    CanvasUtils.ctx.fillRect(x, y, tileSize, tileSize); // draw a rectangle at (10, 10) with width=200 and height=200        
-                    // ...
-                }
-            }
+            this.drawSingleTileSet(tileMap[i]);
         }
 
-        this.drawHero();
+        this.hero.draw();
     }
 
     displayAttract() {

@@ -43,7 +43,7 @@ class Game {
     // Update game state with deltaTime
     switch (this.gameState) {
       case "attract":
-        this.displayAttractMode();
+        this.displayAttractMode(deltaTime);
         break;
 
       case "playerSelect":
