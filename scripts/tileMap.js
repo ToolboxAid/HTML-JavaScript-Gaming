@@ -118,9 +118,9 @@ class TileMap {
         }
 
         if (false) {
-            console.log("Number of sets:", this.numberOfSets);
-            console.log("Number of rows in the first set:", this.numberOfRowsInFirstSet);
-            console.log("Length of a row in the first set:", this.lengthOfFirstRowInFirstSet);
+            console.log("Number of layers:", this.numberOfSets);
+            console.log("Number of rows in the first layer:", this.numberOfRowsInFirstSet);
+            console.log("Length of a row in the first layer:", this.lengthOfFirstRowInFirstSet);
             console.log("Tile Set Width:", this.tileSetWidth);
             console.log("Canvas Mid Point:", this.canvasMidPoint);
             console.log("Scroll Max:", this.scrollMax);
