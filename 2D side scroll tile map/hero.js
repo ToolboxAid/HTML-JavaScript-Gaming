@@ -109,6 +109,8 @@ class Hero extends ObjectSprite {
     constructor(x = 127, y = 820) {
         super(x, y, Hero.frame, Hero.dyingFrames);
 
+        this.speed = 300;
+
         this.level = 1;
         this.score = 0;
         this.lives = spriteConfig.heroLives;
@@ -163,12 +165,12 @@ class Hero extends ObjectSprite {
         // console.log("Canvas Mid Point:" ,this.canvasMidPoint);
         // console.log("Max Scroll:" ,this.scrollMax);
 
-        const speed = 300;
+
 
         if (keyboardInput.isKeyDown('ArrowLeft')) {
-            this.velocityX = -speed;
+            this.velocityX = -this.speed;
         } else if (keyboardInput.isKeyDown('ArrowRight')) {
-            this.velocityX = speed;
+            this.velocityX = this.speed;
         } else {
             this.velocityX = 0;
         }
@@ -177,11 +179,7 @@ class Hero extends ObjectSprite {
             && this.x > this.canvasMidPoint
         ) {
             if (this.scrollPos < this.scrollMax) {
-                console.log("right 0", this.scrollPos, this.velocityX, deltaTime);
-                const add = (this.velocityX * deltaTime);
-                console.log("right 1", this.scrollPos, this.velocityX, add, deltaTime);
-                this.scrollPos += add;
-                console.log("right 2", this.scrollPos, this.velocityX, add, deltaTime);
+                this.scrollPos += this.velocityX * deltaTime;
                 this.velocityX = 0;
             }
         } else {
@@ -189,22 +187,11 @@ class Hero extends ObjectSprite {
                 && this.x < this.canvasMidPoint
             ) {
                 if (this.scrollPos > 0) {
-                    console.log("left 0", this.scrollPos, this.velocityX, deltaTime);
-                    const add = (this.velocityX * deltaTime);
-                    console.log("left 1", this.scrollPos, this.velocityX, add, deltaTime);
-                    this.scrollPos += add;
-                    console.log("left 2", this.scrollPos, this.velocityX, add, deltaTime);
+                    this.scrollPos += this.velocityX * deltaTime;
                     this.velocityX = 0;
                 }
             }
         }
-
-        // if (this.hero.velocityX < 0 && this.hero.x < canvasConfig.width - 400) {
-        //     this.scrollPos -= 1;
-        //     console.log("left", this.scrollPos);
-        //     this.hero.velocityX = 0;
-        // }
-
 
         if (keyboardInput.isKeyPressed('Space')) {
         }
