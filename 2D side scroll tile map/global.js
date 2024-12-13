@@ -6,8 +6,8 @@
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
-  width: 800, // Game area width
-  height: 600, // Game area height
+  width: 480, // Game area width
+  height: 480, // Game area height
   scale: 0.5,
   backgroundColor: "#222222",
 
@@ -15,7 +15,7 @@ export const canvasConfig = {
   fullscreenFont: '40px Arial',
   fullscreenColor: 'yellow',
   fullscreenX: 180, // X position for fullscreen text
-  fullscreenY: 930,//675, // Y position for fullscreen text
+  fullscreenY: 330,//675, // Y position for fullscreen text
 };
 
 export const playerSelect = {
@@ -59,7 +59,7 @@ window.borderSize = 5;
 
 // Configuration for FPS display
 window.fpsShow = true;
-window.fpsColor = "red";
+window.fpsColor = "green";
 window.fpsSize = "30px";
 window.fpsX = 404;
-window.fpsY = 855;
+window.fpsY = 255;
