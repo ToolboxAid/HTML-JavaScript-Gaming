@@ -28,7 +28,22 @@ class CanvasUtils {
             this.frameCount = 0;
             this.lastFPSUpdateTime = currentTime; // Reset lastTime for the next second
         }
+        if (false) {
+            console.log("window.fpsShow", window.fpsShow);
+            console.log("window.fpsColor", window.fpsColor);
+            console.log("window.fpsSize", window.fpsSize);
+            console.log("window.fpsX", window.fpsX);
+            console.log("window.fpsY", window.fpsY);
 
+            console.log("window.gameAreaWidth", window.gameAreaWidth);
+            console.log("window.gameAreaHeight", window.gameAreaHeight);
+            console.log("window.gameScaleWindow", window.gameScaleWindow);
+            console.log("window.backgroundColor", window.backgroundColor);
+            console.log("window.game", window.game);
+            //console.log("",);
+            window.game
+
+        }
         CanvasUtil.ctx.globalAlpha = 1.0;
         CanvasUtil.ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
         CanvasUtil.ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
@@ -320,7 +335,7 @@ class CanvasUtils {
     static lastTimestamp = 0;
     static ctx = null;
 
-    static canvasClear(ctx) {        
+    static canvasClear(ctx) {
         CanvasUtil.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
         CanvasUtil.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }

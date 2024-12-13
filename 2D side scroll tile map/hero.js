@@ -106,7 +106,7 @@ class Hero extends ObjectSprite {
     ];
 
 
-    constructor(x = 127, y = 510) {
+    constructor(x = 127, y = 380) {
         super(x, y, Hero.frame, Hero.dyingFrames);
 
         this.speed = 300;
@@ -115,7 +115,7 @@ class Hero extends ObjectSprite {
         this.score = 0;
         this.lives = spriteConfig.heroLives;
 
-        this.setSpriteColor(spriteConfig.heroColor);
+        this.setSpriteColor(spriteConfig.playerColor);
         this.pixelSize = spriteConfig.pixelSize;
     }
 
@@ -150,14 +150,17 @@ class Hero extends ObjectSprite {
             this.velocityX = 0;
         }
 
-         if (keyboardInput.isKeyPressed('Space')) {
+        if (keyboardInput.isKeyPressed('Space')) {
         }
 
         tileMap.update(deltaTime, this);
 
         // keep on screen
-        if (this.x <= 0 || this.x >= canvasConfig.width - this.width) {
-            this.x = Math.max(0, Math.min(canvasConfig.width - this.width, this.x));
+        if (this.x <= 0 || this.x >= canvasConfig.width - this.width -61) {
+            console.log(this.width);
+            //this.x = Math.max(0, Math.min(canvasConfig.width - this.width, this.x));
+            // TODO: figure out what 61 is.
+            this.x = Math.max(0, Math.min(canvasConfig.width - 61, this.x));
         }
     }
 

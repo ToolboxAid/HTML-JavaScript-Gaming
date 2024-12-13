@@ -18,6 +18,24 @@ class Game {
 
   constructor() {
 
+    if (false){
+      
+      console.log("canvasConfig.game",canvasConfig.game);
+
+      console.log("window.fpsShow",window.fpsShow);
+      console.log("window.fpsColor",window.fpsColor);
+      console.log("window.fpsSize",window.fpsSize);
+      console.log("window.fpsX",window.fpsX);
+      console.log("window.fpsY",window.fpsY);
+      
+      console.log("window.gameAreaWidth",window.gameAreaWidth);
+      console.log("window.gameAreaHeight",window.gameAreaHeight);
+      console.log("window.gameScaleWindow",window.gameScaleWindow);
+      console.log("window.backgroundColor",window.backgroundColor);
+      console.log("",);
+      
+      }
+
     // Game State Variables
     this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
     this.playerCount = 1;

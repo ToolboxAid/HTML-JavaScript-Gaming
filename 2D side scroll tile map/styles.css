@@ -20,5 +20,5 @@ canvas {
 
 #gameArea {
     background-color: #888888;
-    cursor: none; /* Hide the cursor */
+   /* cursor: none;  Hide the cursor */
 }

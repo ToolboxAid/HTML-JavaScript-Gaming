@@ -3,7 +3,6 @@
 // 10/24/2024
 // tileMap.js
 
-//import { canvasConfig, spriteConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 // The given tileMap data
@@ -108,19 +107,16 @@ class TileMap {
     resetCanves() {
         const canvas = document.getElementById('gameArea');
 
-        // Change the canvas resolution
-        canvas.width = 480; // Set the width of the canvas
-        canvas.height = 480; // Set the height of the canvas
-
         // Optionally clear the canvas after resizing
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    setTileMapInfo(scrollPosX = 0) {
+    setTileMapInfo(scrollPosX = 0, tileSize = 40) {
         this.resetCanves();
         this.scrollPosX = scrollPosX;
-        this.tileSize = 50;
+        // TODO: this should be passed in on params
+        this.tileSize = tileSize;
 
         this.numberOfSets = tileMapLevel1.length;
         this.numberOfRowsInFirstSet = tileMapLevel1[0].length;
@@ -148,7 +144,7 @@ class TileMap {
     }
 
     update(deltaTime, hero) {
-        if (hero.velocityX > 0 && hero.x > this.canvasMidPoint && this.canvasWidth) {//} && this.moveX) {
+        if (hero.velocityX > 0 && hero.x  > this.canvasMidPoint && this.canvasWidth) {//} && this.moveX) {
             if (this.scrollPosX < this.scrollMax) {
                 this.scrollPosX += hero.velocityX * deltaTime;
                 hero.velocityX = 0;
@@ -174,27 +170,20 @@ class TileMap {
             CanvasUtils.ctx.fillStyle = "white";
             CanvasUtils.ctx.font = "30px Arial";
 
-            CanvasUtils.ctx.fillText("Hero X   :" + Math.round(hero.x), 50, 200);
-            CanvasUtils.ctx.fillText("Scrl PosX:" + Math.round(this.scrollPosX), 50, 250);
-            CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), 50, 300);
-            CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), 50, 350);
-            CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), 50, 400);
-            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentscrollPosX), 50, 450);
-            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentscrollPosX + hero.width), 50, 500);
-            CanvasUtils.ctx.fillText("max X    :" + Math.round(this.maxX) + " move " + this.moveX, 50, 550);
+            if (true){}
+            CanvasUtils.ctx.fillText("Hero X   :" + Math.round(hero.x), 50, 0);
+            CanvasUtils.ctx.fillText("Scrl PosX:" + Math.round(this.scrollPosX), 50, 50);
+            CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), 50, 100);
+            CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), 50, 150);
+            CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), 50, 200);
+            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentscrollPosX), 50, 250);
+            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentscrollPosX + hero.width), 50, 300);
+            CanvasUtils.ctx.fillText("max X    :" + Math.round(this.maxX) + " move " + this.moveX, 50, 350);
 
-            // const w = CanvasUtils.ctx.width;
-            // const h = CanvasUtils.ctx.height;
-            // console.log (w);
-
-            var canvas = document.getElementById('gameArea');
-            var width = canvas.width;
-            var height = canvas.height;
-            console.log(width, height);
         }
     }
 
-    drawSetTileColor(currentColor) {
+    setTileColor(currentColor) {
         switch (currentColor) {
             case 0:  // Transparent (air)
                 CanvasUtils.ctx.fillStyle = "rgb(0, 0, 0, 0)";
@@ -223,14 +212,20 @@ class TileMap {
             const currentRow = currentMap[row];
             // Iterate over each column in a row
             for (let col = 0; col < currentRow.length; col++) {
-                this.drawSetTileColor(currentRow[col]);
+                this.setTileColor(currentRow[col]);
                 let offset = this.currentscrollPosX * layerSpeeds[layer];
                 if (layer === heroLayer) {
                     offset = (this.scrollPosX * layerSpeeds[layer])
                 }
                 const x = (col * this.tileSize) - offset;
                 const y = row * this.tileSize;
-                CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
+
+                // Draw only things within the gameArea
+                if (x > -this.tileSize && x < this.canvasWidth + this.tileSize) {
+                    CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
+                } else{
+                    //CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
+                }
 
                 if (layer === heroLayer) {
                     if (x > this.maxX) {
@@ -241,13 +236,12 @@ class TileMap {
         }
 
         if (layer === heroLayer) {
+            hero.draw();
             if (this.maxX < this.canvasWidth + 50) {
                 this.moveX = false
             }
         }
 
-        // If heroLayer is drawn, draw the hero on top of it.       if (layer === heroLayer) {
-        hero.draw();
     }
 
     draw(hero) {
