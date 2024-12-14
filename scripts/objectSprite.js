@@ -9,18 +9,22 @@ import CanvasUtils from './canvas.js';
 import ObjectKillable from './objectKillable.js';
 
 class ObjectSprite extends ObjectKillable {
-    constructor(x, y, livingFrames, dyingFrames, velocityX = 0, velocityY = 0) {
+    constructor(x, y, livingFrames, dyingFrames, pixelSize) {
+
+        if (pixelSize <= 0 || typeof pixelSize !== 'number') {
+            throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
+        }
+
         // Ensure livingFrames is provided and is not empty
         if (!livingFrames || livingFrames.length === 0) {
             throw new Error("livingFrames must be provided and cannot be empty.");
         }
 
-        // // FIXME: commented out and needs to be fixed for space invaders down to and include super
-        // // Calculate dimensions based on the first living frame
-        // const dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
+        // Calculate dimensions based on the first living frame
+        const dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], pixelSize);
 
-//        super(x, y, dimensions.width, dimensions.height, velocityX, velocityY);
-super(x, y, 25,25, velocityX, velocityY);
+        super(x, y, dimensions.width, dimensions.height);
+        this.pixelSize = pixelSize;
 
         // this.status = ObjectKillable.Status.ALIVE;
         this.currentFrameIndex = 0;
@@ -42,7 +46,6 @@ super(x, y, 25,25, velocityX, velocityY);
 
         // More properties
         this.spriteColor = "white";
-        this.pixelSize = 1.0;//spriteConfig.pixelSize;
     }
 
     handleAliveStatus(deltaTime, incFrame) { // Handle ALIVE status
@@ -114,18 +117,11 @@ super(x, y, 25,25, velocityX, velocityY);
         } else {
             try {
                 throw new Error("Invalid color:", spriteColor);
-            } catch(e) {
+            } catch (e) {
                 console.log(e.stack);
             }
             this.spriteColor = 'white'; // Default to white or another default color
         }
-    }
-
-    setPixelSize(pixelSize) {
-        if (pixelSize <= 0 || typeof pixelSize !== 'number') {
-            console.error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
-        }
-        this.pixelSize = pixelSize;
     }
 
     setOtherFrame(otherDelay, otherFrame) { // Other properties        

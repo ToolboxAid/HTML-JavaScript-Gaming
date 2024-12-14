@@ -84,7 +84,8 @@ class EnemyShip extends objectSprite {
             return EnemyShip.instance;
         }
 
-        super(0, spriteConfig.shipY, EnemyShip.livingFrames, EnemyShip.dyingFrames, spriteConfig.shipVelX);
+        super(0, spriteConfig.shipY, EnemyShip.livingFrames, EnemyShip.dyingFrames,spriteConfig.pixelSize);
+        this.velocityX = spriteConfig.shipVelX;
         this.setSpriteColor(spriteConfig.shipColor);
 
         this.nextShipTimer = 0;

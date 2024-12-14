@@ -73,7 +73,7 @@ class Game {
             console.log("All audio files have been loaded and cached.");
         });
 
-        console.log(Game.audioPlayer.audioCache);
+       // console.log(Game.audioPlayer.audioCache);
 
         // Canvas needs to know the current directory to game.js for dynamic imports
         const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));

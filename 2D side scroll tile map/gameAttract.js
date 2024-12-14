@@ -27,7 +27,9 @@ class GameAttract {
 
     draw(show = true) {
         // this.displayAttract();
-        // this.hero.draw();  // needs to be drawn on the correct layer.
+        // needs to be drawn on the correct layer.
+        // moved to tilemap.js
+        // this.hero.draw();  
         this.tileMap.draw(this.hero);
     }
 

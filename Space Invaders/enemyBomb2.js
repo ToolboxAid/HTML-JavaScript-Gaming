@@ -52,7 +52,8 @@ class EnemyBomb2 extends EnemyBomb {
   ];
 
   constructor(x, y) {
-    super(x, y, EnemyBomb2.livingFrames, spriteConfig.bomb2VelocityX);
+    super(x, y, EnemyBomb2.livingFrames);
+    this.velocityY = spriteConfig.bomb2VelocityX;
     this.spriteColor = spriteConfig.bomb2Color;
   }
 }

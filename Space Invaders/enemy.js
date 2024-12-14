@@ -73,13 +73,13 @@ class Enemy extends ObjectSprite {
 
     static reorgID = 0;
 
-    
+
     constructor(livingFrames, bombAggression) {
         const frameWidth = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
         const y = enemyConfig.yPosition - (Enemy.enemyRow * enemyConfig.ySpacing);
 
-        super(x, y, livingFrames, Enemy.dyingFrames);
+        super(x, y, livingFrames, Enemy.dyingFrames, spriteConfig.pixelSize);
 
         this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
 

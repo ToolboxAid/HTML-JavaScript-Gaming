@@ -107,7 +107,7 @@ class Hero extends ObjectSprite {
 
 
     constructor(x = 127, y = 380) {
-        super(x, y, Hero.frame, Hero.dyingFrames);
+        super(x, y, Hero.frame, Hero.dyingFrames, spriteConfig.pixelSize);
 
         this.speed = 300;
 
@@ -156,16 +156,13 @@ class Hero extends ObjectSprite {
         tileMap.update(deltaTime, this);
 
         // keep on screen
-        if (this.x <= 0 || this.x >= canvasConfig.width - this.width -61) {
-            console.log(this.width);
-            //this.x = Math.max(0, Math.min(canvasConfig.width - this.width, this.x));
-            // TODO: figure out what 61 is.
-            this.x = Math.max(0, Math.min(canvasConfig.width - 61, this.x));
+        if (this.x <= 0 || this.x >= canvasConfig.width - this.width) {
+            this.x = Math.max(0, Math.min(canvasConfig.width - this.width, this.x));
         }
     }
 
     draw() {
-        super.draw(0, 0);
+       super.draw();
     }
 }
 
