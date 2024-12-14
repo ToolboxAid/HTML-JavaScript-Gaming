@@ -83,7 +83,7 @@ const tileMapLevel1 = [
 
 const heroLayer = 3;
 // layer num --->       0     1     2    3   4
-const layerSpeeds = [0.25, 0.50, 0.75, 1.0, 1.5]; // layers speeds per level
+const layerSpeeds = [0.25, 0.50, 0.75, 1.0, 1.25]; // layers speeds per level
 
 class TileMap {
 
@@ -99,23 +99,12 @@ class TileMap {
         this.scrollMax = 0;
 
         this.currentscrollPosX = 0;
-
-        this.maxX = 0;
-        this.moveX = true;
-    }
-
-    resetCanves() {
-        const canvas = document.getElementById('gameArea');
-
-        // Optionally clear the canvas after resizing
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     setTileMapInfo(scrollPosX = 0, tileSize = 40) {
-        this.resetCanves();
+        //       this.resetCanves();
         this.scrollPosX = scrollPosX;
-        // TODO: this should be passed in on params
+        // TODO: tileSize should be passed in on params
         this.tileSize = tileSize;
 
         this.numberOfSets = tileMapLevel1.length;
@@ -136,21 +125,22 @@ class TileMap {
             console.log("Tile Set Width:", this.tileSetWidth);
             console.log("Canvas Mid Point:", this.canvasMidPoint);
             console.log("Scroll Max:", this.scrollMax);
-        }
-        console.log(this.canvasWidth, this.canvasHeight, this.tileSize);
-        console.log("Number of 'X' Tiles: ", this.canvasWidth / this.tileSize);
-        console.log("Number of 'Y' Tiles: ", this.canvasHeight / this.tileSize);
 
+            console.log("Canvas width: ", this.canvasWidth, "Canvas Height: ", this.canvasHeight, "Tile Size: ", this.tileSize);
+            console.log("Number of 'X' Tiles: ", this.canvasWidth / this.tileSize);
+            console.log("Number of 'Y' Tiles: ", this.canvasHeight / this.tileSize);
+        }
     }
 
     update(deltaTime, hero) {
-        if (hero.velocityX > 0 && hero.x  > this.canvasMidPoint && this.canvasWidth) {//} && this.moveX) {
+        const heroHalf = hero.width / 2;
+        if (hero.velocityX > 0 && hero.x > this.canvasMidPoint - heroHalf) {
             if (this.scrollPosX < this.scrollMax) {
                 this.scrollPosX += hero.velocityX * deltaTime;
                 hero.velocityX = 0;
             }
         } else {
-            if (hero.velocityX < 0 && hero.x < this.canvasMidPoint) {
+            if (hero.velocityX < 0 && hero.x < this.canvasMidPoint - heroHalf) {
                 if (this.scrollPosX > 0) {
                     this.scrollPosX += hero.velocityX * deltaTime;
                     hero.velocityX = 0;
@@ -166,19 +156,22 @@ class TileMap {
 
         this.currentscrollPosX = this.scrollPosX + hero.x;
 
-        if (true) {
+        if (false) {
             CanvasUtils.ctx.fillStyle = "white";
-            CanvasUtils.ctx.font = "30px Arial";
+            CanvasUtils.ctx.font = "10px Arial";
 
-            if (true){}
-            CanvasUtils.ctx.fillText("Hero X   :" + Math.round(hero.x), 50, 0);
-            CanvasUtils.ctx.fillText("Scrl PosX:" + Math.round(this.scrollPosX), 50, 50);
-            CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), 50, 100);
-            CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), 50, 150);
-            CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), 50, 200);
-            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentscrollPosX), 50, 250);
-            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentscrollPosX + hero.width), 50, 300);
-            CanvasUtils.ctx.fillText("max X    :" + Math.round(this.maxX) + " move " + this.moveX, 50, 350);
+            const accross = 250;
+            CanvasUtils.ctx.fillText("Hero X   :" + Math.round(hero.x), accross, 0);
+            CanvasUtils.ctx.fillText("Scrl PosX:" + Math.round(this.scrollPosX), accross, 60);
+            CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), accross, 70);
+            CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), accross, 80);
+            CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), accross, 90);
+            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentscrollPosX), accross, 100);
+            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentscrollPosX + hero.width), accross, 110);
+
+            //console.log("Cur Scroll X:", this.currentscrollPosX, "% x travel:", (this.currentscrollPosX / this.tileSetWidth));
+            //console.log("--------------------------------------");
+
 
         }
     }
@@ -206,7 +199,7 @@ class TileMap {
         }
     }
 
-    drawSingleTileLayer(layer, currentMap, hero) {
+    drawSingleTileLayer(layer, currentMap) {
         // Iterate over each row in a layer
         for (let row = 0; row < currentMap.length; row++) {
             const currentRow = currentMap[row];
@@ -220,41 +213,26 @@ class TileMap {
                 const x = (col * this.tileSize) - offset;
                 const y = row * this.tileSize;
 
-                // Draw only things within the gameArea
+                // Draw only tiles within the gameArea
                 if (x > -this.tileSize && x < this.canvasWidth + this.tileSize) {
                     CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
-                } else{
+                } else {
                     //CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
                 }
-
-                if (layer === heroLayer) {
-                    if (x > this.maxX) {
-                        this.maxX = x;
-                    }
-                }
             }
         }
-
-        if (layer === heroLayer) {
-            hero.draw();
-            if (this.maxX < this.canvasWidth + 50) {
-                this.moveX = false
-            }
-        }
-
     }
 
     draw(hero) {
-        // console.log("Cur Scroll X:",this.currentscrollPosX, "% x travel:",(this.currentscrollPosX/ this.tileSetWidth));
-        //console.log("--------------------------------------");
-
-        this.maxX = 0;
-        this.moveX = true;
-
         // Iterate over each layer (or level) in the tile map
         for (let layer = 0; layer < this.numberOfSets; layer++) {
-            this.drawSingleTileLayer(layer, tileMapLevel1[layer], hero);
+            this.drawSingleTileLayer(layer, tileMapLevel1[layer]);
+
+            if (layer === heroLayer) {
+                hero.draw();
+            }
         }
+        //CanvasUtils.drawLine(this.canvasWidth / 2, 0, this.canvasWidth / 2, this.canvasHeight);
     }
 
 }

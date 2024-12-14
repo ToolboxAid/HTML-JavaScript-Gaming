@@ -23,8 +23,6 @@ class GameAttract {
         this.hero.update(deltaTime, keyboardInput, this.tileMap);
     }
 
-
-
     draw(show = true) {
         // this.displayAttract();
         // needs to be drawn on the correct layer.
@@ -43,4 +41,3 @@ class GameAttract {
 }
 
 export default GameAttract;
-
