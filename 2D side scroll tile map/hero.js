@@ -11,17 +11,45 @@ class Hero extends ObjectSprite {
 
     // New 22x16 pixel image (single frame)
     static frame = [[
-        "00000000100000000",
-        "00000001110000000",
-        "00000011111000000",
-        "00000011111000000",
-        "00111111111111100",
-        "01111111111111110",
-        "11111111111111111",
-        "11111111111111111",
-        "11111111111111111",
-        "11111111111111111",
-        "11111111111111111",
+        //        1         2
+        //234567890123456789
+        "00wwwwwwwwwwwwwww00", // 1
+        "0wOOOOOOOOOOOOOOOw0", // 2
+        "wObbYYYYYYYYYYYbbOw", // 3
+        "wObbYYbbbbbbOYYbbOw", // 4
+        "wOYYYbYYYYYYbOYYYOw", // 5
+        "wOYYbYYYYYYYYbOYYOw", // 6
+        "wOYYbYYYbbYYYbOYYOw", // 7
+        "wOYYbYYYbbYYYbOYYOw", // 8
+        "wOYYYbbbbYYYbOYYYOw", // 9
+        "wOYYYYYbYYYbOYYYYOw", // 10
+        "wOYYYYYbYYYbOYYYYOw", // 1
+        "wOYYYYYbYYYbOYYYYOw", // 2
+        "wOYYYYYYbbbOYYYYYOw", // 3
+        "wOYYYYYbYYYbOYYYYOw", // 4
+        "wOYYYYYbYYYbOYYYYOw", // 5
+        "wObbYYYYbBbOYYYbbOw", // 6
+        "wObbYYYYYYYYYYYbbOw", // 7
+        "0wOOOOOOOOOOOOOOOw0", // 8
+        "00wwwwwwwwwwwwwww00", // 9
+    ],[
+        //        1
+        //23456789012345
+        "00000bbbbb00000", // 1
+        "000bbbwRwbbb000", // 2
+        "00bbwwwRwwwbb00", // 3
+        "0bbRwwRRRwwRbb0", // 4
+        "0bwRRRRRRRRRwb0", // 5
+        "bbwwRRRwwRRwwbb", // 6
+        "bwwwRRRwwRRwwwb", // 7
+        "bwwRRRRwwRRRwwb", // 8
+        "bRRRRRRwwRRRRRb", // 9
+        "bRRbbbbbbbbRRRb", // 10
+        "bbbbPPbPPbPbbbb", // 1
+        "0bbPPPbPPbPPbb0", // 2
+        "00bPPPPPPPPPb00", // 3
+        "00bPPPPPPPPPb00", // 3
+        "000bbbbbbbbb000", // 5
     ],];
 
     static dyingFrames = [
@@ -162,7 +190,7 @@ class Hero extends ObjectSprite {
     }
 
     draw() {
-       super.draw();
+        super.draw();
     }
 }
 

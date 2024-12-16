@@ -33,11 +33,11 @@ export const playerSelect = {
 }
 
 export const spriteConfig = {
-  pixelSize: 3.5,
+  pixelSize: 2.0,
 
   playerLives: 3,
   playerBonusScore: 1500,
-  playerColor: 'pink',
+  playerColor: 'white',
 }
 
 // non type="module" in HTML

@@ -112,18 +112,18 @@ class CanvasUtils {
 
     // Move the color map to be a static property of the class
     static colorMapSprite = {
-        'R': 'red',
-        'O': 'orange',
-        'Y': 'yellow',
-        'G': 'green',
-        'B': 'blue',
-        'I': 'indigo',
-        'V': 'violet',
+        'R': 'Red',
+        'O': 'Orange',
+        'Y': 'Yellow',
+        'G': 'Green',
+        'B': 'Blue',
+        'I': 'Indigo',
+        'V': 'Violet',
         '0': 'transparent', // '0' is transparent
         '': 'transparent', // empty is transparent
         '1': 'white', // default color for '1'
-        'b': 'black',
         'w': 'white',
+        'b': 'black',
         'P': 'pink',
         'C': 'cyan',
         'M': 'magenta',
