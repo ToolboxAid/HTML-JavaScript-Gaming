@@ -129,7 +129,8 @@ class CanvasUtils {
         'M': 'magenta',
         'L': 'lightgray',
         'D': 'darkgray',
-        'A': 'aqua',
+        'V': '#444444',// very dark gray
+        'A': '#AAFFFF',
         'S': 'silver',
         'N': 'navy',
         'K': 'khaki',

@@ -13,3 +13,15 @@ x access to reusable canvas methods
 x ability to switch between fullscreen and window
 x reusable game loop with context and deltaTime
 x ability to display fps
+
+
+https://www.google.com/search?num=10&newwindow=1&sca_esv=5e578eb918a33978&rlz=1C1CHBF_enUS787US787&sxsrf=ADLYWIIih3b3A-RAORvz7ZYm9kHbDgZCTw:1734233911757&q=Mario+8+Bit+sprite+grid&sa=X&ved=2ahUKEwje7JHi7KiKAxV7lYkEHbWMOKUQ1QJ6BAhHEAE&biw=1372&bih=696&dpr=1.25
+
+https://nesmaps.com/index.html
+https://nesmaps.com/maps/SuperMarioBrothers/SuperMarioBrothersBG.html
+
+https://www.mariouniverse.com/sprites-nes-smb/
+
+https://www.mariouniverse.com/sprites-nes-dk/
+
+
