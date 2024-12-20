@@ -6,50 +6,53 @@
 
 	<style>
 		button {
-		  width: 50px;
-		  height: 50px;
-		  background-color: #007BFF;
-		  color: white;
-		  border: none;
-		  border-radius: 5px;
-		  cursor: pointer;
-		  font-size: 16px;
-		  margin: 0;
-		  padding: 0;
-		  line-height: 0; /* Remove extra space around text */
-		  display: block; /* Ensure the button behaves like a block element */
-		  text-align: center;
+			width: 50px;
+			height: 50px;
+			background-color: #007BFF;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 16px;
+			margin: 0;
+			padding: 0;
+			line-height: 0;
+			/* Remove extra space around text */
+			display: block;
+			/* Ensure the button behaves like a block element */
+			text-align: center;
 		}
-	  
+
 		button:hover {
-		  background-color: #0056b3;
+			background-color: #0056b3;
 		}
-	  
+
 		table {
-		  border-collapse: collapse;
-		  margin: 0;
-		  padding: 0;
-		  width: 60%;
-		  text-align: center;
+			border-collapse: collapse;
+			margin: 0;
+			padding: 0;
+			width: 60%;
+			text-align: center;
 		}
-	  
+
 		thead,
 		th,
 		tr,
 		td {
-		  margin: 0;
-		  padding: 0;
-		  border: 2px solid #000;
+			margin: 0;
+			padding: 0;
+			border: 2px solid #000;
 		}
-	  
+
 		td {
-		  width: 50px !important;
-		  height: 50px !important;
-		  vertical-align: middle; /* Align button vertically within the cell */
+			width: 50px !important;
+			height: 50px !important;
+			vertical-align: middle;
+			/* Align button vertically within the cell */
 		}
-	  </style>
-	  
-	  
+	</style>
+
+
 </head>
 
 <body>
@@ -64,32 +67,55 @@
 		<tbody>
 			<tr>
 				<td></td>
-				<td><button onclick="myFunction()">Up</button></td>
+				<td><button onclick="moveImageUp()">Up</button></td>
 				<td></td>
 				<td rowspan="4"> <canvas id="spriteEditor"></canvas></td>
 			</tr>
 			<tr>
-				<td><button onclick="myFunction()">Left</button></td>
+				<td><button onclick="moveImageLeft()">Left</button></td>
 				<td>Move</td>
-				<td><button onclick="myFunction()">Right</button></td>
+				<td><button onclick="moveImageRight()">Right</button></td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><button onclick="myFunction()">Down</button></td>
+				<td><button onclick="moveImageDown()">Down</button></td>
 				<td></td>
 			</tr>
 			<tr>
-				<td><button onclick="myFunction()">+</button></td>
+				<td><button onclick="zoomImageIn()">+</button></td>
 				<td>Zoom</td>
-				<td><button onclick="myFunction()">-</button></td>
+				<td><button onclick="zoomImageOut()">-</button></td>
 			</tr>
 		</tbody>
 	</table>
 
 	<script>
 
-		function myFunction() {
-			alert('Button clicked!');
+		function moveImageLeft() {
+			x -= 10;
+			draw(); // Redraw the canvas with the new scale
+		}
+		function moveImageRight() {
+			x += 10;
+			draw(); // Redraw the canvas with the new scale
+		}
+		function moveImageUp() {
+			y -= 10;
+			draw(); // Redraw the canvas with the new scale
+		}
+		function moveImageDown() {
+			y += 10;
+			draw(); // Redraw the canvas with the new scale
+		}
+		function zoomImageIn() {
+			const zoomIn = event.deltaY < 0; // Determine zoom direction
+			scale /= scaleFactor;
+			draw(); // Redraw the canvas with the new scale
+		}
+		function zoomImageOut() {
+			const zoomIn = event.deltaY < 0; // Determine zoom direction
+			scale *= scaleFactor;
+			draw(); // Redraw the canvas with the new scale
 		}
 
 		// Get the canvas element
@@ -102,18 +128,15 @@
 		// Create a new CanvasRenderingContext2D object
 		var ctx = canvas.getContext("2d");
 
-
-    // Clear the canvas and set background color to #333333
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    ctx.fillStyle = '#333333'; // Set background color to dark gray
-    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas
-
-
+		// Clear the canvas and set background color to #333333
+		ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+		ctx.fillStyle = '#333333'; // Set background color to dark gray
+		ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas
 
 		// ---------------------------------------------------
 		// VariablAQes for zooming
-		let scale = 0.25;
-		const scaleFactor = 0.25; // Zoom factor
+		let scale = 1.0;
+		const scaleFactor = 0.975; // Zoom factor
 
 		// Create a new image object
 		// Load an image
@@ -129,8 +152,8 @@
 			"#00FF00FF", "#00FFFFFF", "#0000FFFF", "#FF00FFFF"];
 
 		// Define the width and height of each sprite
-		var spriteWidth = 25;
-		var spriteHeight = 25;
+		var spriteWidth = 15;
+		var spriteHeight = 15;
 
 		// Draw the pallet colors on the canvas
 		for (var i = 0; i < palletColors.length; i++) {
@@ -179,12 +202,15 @@
 			draw(); // Redraw the canvas with the new scale
 		});
 
+
+		let x = 0;
+		let y = 100;
 		// Function to redraw the canvas with the current scale
 		function draw() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 			ctx.save(); // Save the current state
 			ctx.scale(scale, scale); // Apply the scaling transformation
-			ctx.drawImage(image, 0, 0); // Draw the image
+			ctx.drawImage(image, x, y); // Draw the image
 			ctx.restore(); // Restore to the original state
 		}
 
@@ -225,7 +251,7 @@
 			ctx.beginPath();
 			ctx.arc((spriteWidth * x) + offsetX + spriteWidth / 2,
 				(spriteHeight * y) + offsetY + spriteHeight / 2,
-				10, 0, 2 * Math.PI);
+				5, 0, 2 * Math.PI);
 			ctx.strokeStyle = color;
 			ctx.fillStyle = color;
 			ctx.stroke();
@@ -237,7 +263,7 @@
 			ctx.beginPath();
 			ctx.arc((spriteWidth * x) + offsetX + spriteWidth / 2,
 				(spriteHeight * y) + offsetY + spriteHeight / 2,
-				10, 0, 2 * Math.PI);
+				5, 0, 2 * Math.PI);
 			ctx.strokeStyle = "#000000";
 			ctx.fillStyle = "#FFFFFF80";
 			ctx.stroke();
@@ -272,7 +298,7 @@
 				ctx.beginPath();
 				ctx.arc((spriteWidth * selectedCellX) + offsetX + spriteWidth / 2,
 					(spriteHeight * selectedCellY) + offsetY + spriteHeight / 2,
-					10, 0, 2 * Math.PI);
+					5, 0, 1 * Math.PI);
 				ctx.strokeStyle = selectedColor;
 				ctx.fillStyle = selectedColor;
 				ctx.stroke();
