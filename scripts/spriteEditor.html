@@ -1,174 +1,315 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Sprite Editor</title>
-  </head>
-  <body>
-    <canvas id="spriteEditor"></canvas>
-    
-    <script>
-	// Get the canvas element
-	var canvas = document.getElementById("spriteEditor");
 
-	// Set the canvas dimensions
-	canvas.width = 500;
-	canvas.height = 500;
+<head>
+	<title>Sprite Editor</title>
 
-	// Create a new CanvasRenderingContext2D object
-	var ctx = canvas.getContext("2d");
+	<style>
+		button {
+		  width: 50px;
+		  height: 50px;
+		  background-color: #007BFF;
+		  color: white;
+		  border: none;
+		  border-radius: 5px;
+		  cursor: pointer;
+		  font-size: 16px;
+		  margin: 0;
+		  padding: 0;
+		  line-height: 0; /* Remove extra space around text */
+		  display: block; /* Ensure the button behaves like a block element */
+		  text-align: center;
+		}
+	  
+		button:hover {
+		  background-color: #0056b3;
+		}
+	  
+		table {
+		  border-collapse: collapse;
+		  margin: 0;
+		  padding: 0;
+		  width: 60%;
+		  text-align: center;
+		}
+	  
+		thead,
+		th,
+		tr,
+		td {
+		  margin: 0;
+		  padding: 0;
+		  border: 2px solid #000;
+		}
+	  
+		td {
+		  width: 50px !important;
+		  height: 50px !important;
+		  vertical-align: middle; /* Align button vertically within the cell */
+		}
+	  </style>
+	  
+	  
+</head>
 
-	// Define the pallet of colors
-	//palletLetters
-	var palletColors = ["#00000000", "#FF0000FF", "#FF8800FF", "#FFFF00FF",
-				  "#00FF00FF", "#00FFFFFF", "#0000FFFF", "#FF00FFFF"];
+<body>
 
-	// Define the width and height of each sprite
-	var spriteWidth = 25;
-	var spriteHeight = 25;
+	<table>
+		<thead>
+			<tr>
+				<th colspan="3">Controls</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td></td>
+				<td><button onclick="myFunction()">Up</button></td>
+				<td></td>
+				<td rowspan="4"> <canvas id="spriteEditor"></canvas></td>
+			</tr>
+			<tr>
+				<td><button onclick="myFunction()">Left</button></td>
+				<td>Move</td>
+				<td><button onclick="myFunction()">Right</button></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><button onclick="myFunction()">Down</button></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><button onclick="myFunction()">+</button></td>
+				<td>Zoom</td>
+				<td><button onclick="myFunction()">-</button></td>
+			</tr>
+		</tbody>
+	</table>
 
-	// Draw the pallet colors on the canvas
-	for (var i = 0; i < palletColors.length; i++) {
-	  ctx.fillStyle = palletColors[i];
-	  ctx.fillRect(spriteWidth * i, 0, spriteWidth, spriteHeight);
-	}
-	
-	const gridCellWidth = 5;
-	const gridCellHeight = 10;
-	const offsetX = 50;
-	const offsetY = 50;	
-	
-	let selectedColor = "#00000000";
-	let selectedColorIndex = 0;
-	let selectedCellX = 0;
-	let selectedCellY = 0
-	
-	var array = new Array(gridCellWidth);
-	var arrayIndex = new Array(gridCellWidth);
-	function initArrays(){
-		// Create the array
-		for (var i = 0; i < gridCellWidth; i++) {
-			array[i] = new Array(gridCellHeight);
-			arrayIndex[i] = new Array(gridCellHeight);
+	<script>
+
+		function myFunction() {
+			alert('Button clicked!');
 		}
 
-		for (var x = 0; x < gridCellWidth; x++) {
-			for (var y = 0; y < gridCellHeight; y++) {
-				array[x][y] = "#00000000";
-				arrayIndex[x][y] = 0;
+		// Get the canvas element
+		var canvas = document.getElementById("spriteEditor");
+
+		// Set the canvas dimensions
+		canvas.width = 200;
+		canvas.height = 200;
+
+		// Create a new CanvasRenderingContext2D object
+		var ctx = canvas.getContext("2d");
+
+
+    // Clear the canvas and set background color to #333333
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+    ctx.fillStyle = '#333333'; // Set background color to dark gray
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas
+
+
+
+		// ---------------------------------------------------
+		// VariablAQes for zooming
+		let scale = 0.25;
+		const scaleFactor = 0.25; // Zoom factor
+
+		// Create a new image object
+		// Load an image
+		const image = new Image();
+		image.src = '8bit tiles.jpg'; // Replace with your image path
+		image.onload = function () {
+			draw();
+		};
+
+		// Define the pallet of colors
+		//palletLetters
+		var palletColors = ["#00000000", "#FF0000FF", "#FF8800FF", "#FFFF00FF",
+			"#00FF00FF", "#00FFFFFF", "#0000FFFF", "#FF00FFFF"];
+
+		// Define the width and height of each sprite
+		var spriteWidth = 25;
+		var spriteHeight = 25;
+
+		// Draw the pallet colors on the canvas
+		for (var i = 0; i < palletColors.length; i++) {
+			ctx.fillStyle = palletColors[i];
+			ctx.fillRect(spriteWidth * i, 0, spriteWidth, spriteHeight);
+		}
+
+		const gridCellWidth = 5;
+		const gridCellHeight = 10;
+		const offsetX = 50;
+		const offsetY = 50;
+
+		let selectedColor = "#00000000";
+		let selectedColorIndex = 0;
+		let selectedCellX = 0;
+		let selectedCellY = 0
+
+		var array = new Array(gridCellWidth);
+		var arrayIndex = new Array(gridCellWidth);
+		function initArrays() {
+			// Create the array
+			for (var i = 0; i < gridCellWidth; i++) {
+				array[i] = new Array(gridCellHeight);
+				arrayIndex[i] = new Array(gridCellHeight);
 			}
-		}		
-	}	
-	
-	function drawGrid(){
-		
-	  ctx.strokeStyle = "#000000";
-	  ctx.fillStyle   = "#000000";
 
-	  // Start a new Path
-	  for (var x = 0; x < gridCellWidth + 1; x++){
-		ctx.beginPath();
-		ctx.moveTo(x * spriteWidth + offsetX, offsetY);
-		ctx.lineTo(x * spriteWidth + offsetX, spriteHeight*gridCellHeight + offsetY);
-		ctx.stroke();
-	  }
-	  
-	  for (var y = 0; y < gridCellHeight + 1; y++){
-		ctx.beginPath();
-		ctx.moveTo(offsetX, y * spriteHeight + offsetY);
-		ctx.lineTo(spriteWidth*gridCellWidth + offsetX, y*spriteHeight + offsetY);
-		ctx.stroke();
-	  }
-
-  	  for (var x = 0; x < gridCellWidth; x++) {
-		  for (var y = 0; y < gridCellHeight; y++) {
-				if (arrayIndex[x][y] === 0){
-					drawTransparent(x,y);
-				}else{
-					drawColor(x,y, array[x][y]);
+			for (var x = 0; x < gridCellWidth; x++) {
+				for (var y = 0; y < gridCellHeight; y++) {
+					array[x][y] = "#00000000";
+					arrayIndex[x][y] = 0;
 				}
-			  }
-		 }
-		
-	}
+			}
+		}
 
-	function drawColor(x, y, color){
-	  // Draw a circle on the selected sprite
-	  ctx.beginPath();
-	  ctx.arc((spriteWidth * x) + offsetX  + spriteWidth/2,
-			  (spriteHeight * y) + offsetY  + spriteHeight/2,
-			   10, 0, 2 * Math.PI);
-	  ctx.strokeStyle = color;
-	  ctx.fillStyle = color;
-	  ctx.stroke();
-	  ctx.fill();	  
-	}
-	
-	function drawTransparent(x, y){
-		  // Draw a circle on the selected sprite
-		  ctx.beginPath();
-		  ctx.arc((spriteWidth * x) + offsetX  + spriteWidth/2,
-				  (spriteHeight * y) + offsetY  + spriteHeight/2,
-				   10, 0, 2 * Math.PI);
-		  ctx.strokeStyle = "#000000";
-		  ctx.fillStyle   = "#FFFFFF";
-		  ctx.stroke();
-		  ctx.fill();
-	}
-	
-	initArrays();
-	drawGrid();
+		// Mouse wheel event for zooming
+		canvas.addEventListener('wheel', function (event) {
+			event.preventDefault(); // Prevent the default scrolling behavior
 
-	// Add an event listener to the canvas for clicks
-	canvas.addEventListener("click", function(event) {
-	  // Get the coordinates of the click
-	  var x = event.offsetX;
-	  var y = event.offsetY;
-	
-  	  if (y > 	spriteHeight){
-		  selectedCellX = Math.floor((x - offsetX) / spriteWidth);
-		  selectedCellY = Math.floor((y - offsetY) / spriteHeight);
+			const zoomIn = event.deltaY < 0; // Determine zoom direction
+			if (zoomIn) {
+				scale *= scaleFactor; // Zoom in
+			} else {
+				scale /= scaleFactor; // Zoom out
+			}
 
-		  console.log(x, y, selectedCellX, selectedCellY);
+			draw(); // Redraw the canvas with the new scale
+		});
 
-		  if (selectedCellX < 0 || selectedCellX > gridCellWidth || 
-			  selectedCellY < 0 || selectedCellY > gridCellHeight){
-				  return;
-			  }
-			
-		  // Set the array element
-		  arrayIndex[selectedCellX][selectedCellY] = selectedColorIndex;
-		  array[selectedCellX][selectedCellY] = selectedColor;
+		// Function to redraw the canvas with the current scale
+		function draw() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+			ctx.save(); // Save the current state
+			ctx.scale(scale, scale); // Apply the scaling transformation
+			ctx.drawImage(image, 0, 0); // Draw the image
+			ctx.restore(); // Restore to the original state
+		}
 
-		  // Draw a circle on the selected sprite
-		  ctx.beginPath();
-		  ctx.arc((spriteWidth * selectedCellX) + offsetX  + spriteWidth/2,
-				  (spriteHeight * selectedCellY) + offsetY  + spriteHeight/2,
-				   10, 0, 2 * Math.PI);
-		  ctx.strokeStyle = selectedColor;
-		  ctx.fillStyle = selectedColor;
-		  ctx.stroke();
-		  ctx.fill();		  
-		  
-		  drawGrid();
-		  
-  	      return;
-	  }
-	  
-	  // Determine which sprite was clicked
-	  var clickedSprite = Math.floor(x / spriteWidth);
+		function drawGrid() {
 
-	  selectedColor = palletColors[clickedSprite];
-	  console.log(arrayIndex);
-	  console.log(array);
-  
-	  // Change the color of the selected sprite
-	  ctx.fillStyle = palletColors[clickedSprite];
-	  ctx.fillRect(0, spriteHeight, spriteWidth, spriteHeight);
+			ctx.strokeStyle = "#000000";
+			ctx.fillStyle = "#000000";
 
-	  // Log the selected color to the canvas
-	  console.log("Selected Color:", palletColors[clickedSprite]);
-	  selectedColorIndex = clickedSprite;
-	});
-    </script>
-  </body>
+			// Start a new Path
+			for (var x = 0; x < gridCellWidth + 1; x++) {
+				ctx.beginPath();
+				ctx.moveTo(x * spriteWidth + offsetX, offsetY);
+				ctx.lineTo(x * spriteWidth + offsetX, spriteHeight * gridCellHeight + offsetY);
+				ctx.stroke();
+			}
+
+			for (var y = 0; y < gridCellHeight + 1; y++) {
+				ctx.beginPath();
+				ctx.moveTo(offsetX, y * spriteHeight + offsetY);
+				ctx.lineTo(spriteWidth * gridCellWidth + offsetX, y * spriteHeight + offsetY);
+				ctx.stroke();
+			}
+
+			for (var x = 0; x < gridCellWidth; x++) {
+				for (var y = 0; y < gridCellHeight; y++) {
+					if (arrayIndex[x][y] === 0) {
+						drawTransparent(x, y);
+					} else {
+						drawColor(x, y, array[x][y]);
+					}
+				}
+			}
+
+		}
+
+		function drawColor(x, y, color) {
+			// Draw a circle on the selected sprite
+			ctx.beginPath();
+			ctx.arc((spriteWidth * x) + offsetX + spriteWidth / 2,
+				(spriteHeight * y) + offsetY + spriteHeight / 2,
+				10, 0, 2 * Math.PI);
+			ctx.strokeStyle = color;
+			ctx.fillStyle = color;
+			ctx.stroke();
+			ctx.fill();
+		}
+
+		function drawTransparent(x, y) {
+			// Draw a circle on the selected sprite
+			ctx.beginPath();
+			ctx.arc((spriteWidth * x) + offsetX + spriteWidth / 2,
+				(spriteHeight * y) + offsetY + spriteHeight / 2,
+				10, 0, 2 * Math.PI);
+			ctx.strokeStyle = "#000000";
+			ctx.fillStyle = "#FFFFFF80";
+			ctx.stroke();
+			ctx.fill();
+		}
+
+		initArrays();
+		drawGrid();
+
+		// Add an event listener to the canvas for clicks
+		canvas.addEventListener("click", function (event) {
+			// Get the coordinates of the click
+			var x = event.offsetX;
+			var y = event.offsetY;
+
+			if (y > spriteHeight) {
+				selectedCellX = Math.floor((x - offsetX) / spriteWidth);
+				selectedCellY = Math.floor((y - offsetY) / spriteHeight);
+
+				console.log(x, y, selectedCellX, selectedCellY);
+
+				if (selectedCellX < 0 || selectedCellX > gridCellWidth ||
+					selectedCellY < 0 || selectedCellY > gridCellHeight) {
+					return;
+				}
+
+				// Set the array element
+				arrayIndex[selectedCellX][selectedCellY] = selectedColorIndex;
+				array[selectedCellX][selectedCellY] = selectedColor;
+
+				// Draw a circle on the selected sprite
+				ctx.beginPath();
+				ctx.arc((spriteWidth * selectedCellX) + offsetX + spriteWidth / 2,
+					(spriteHeight * selectedCellY) + offsetY + spriteHeight / 2,
+					10, 0, 2 * Math.PI);
+				ctx.strokeStyle = selectedColor;
+				ctx.fillStyle = selectedColor;
+				ctx.stroke();
+				ctx.fill();
+
+				drawGrid();
+
+				return;
+			}
+
+			// Determine which sprite was clicked
+			var clickedSprite = Math.floor(x / spriteWidth);
+
+			selectedColor = palletColors[clickedSprite];
+			console.log(arrayIndex);
+			console.log(array);
+
+			// Change the color of the selected sprite
+			ctx.fillStyle = palletColors[clickedSprite];
+			ctx.fillRect(0, spriteHeight, spriteWidth, spriteHeight);
+
+			// Log the selected color to the canvas
+			console.log("Selected Color:", palletColors[clickedSprite]);
+			selectedColorIndex = clickedSprite;
+		});
+	</script>
+	<br />
+	<label>Image (abc.png)</label>
+	<br />
+	<label>Pallet (0 is always Transparent)</label>
+	<br />
+	<textarea id="palletID" name="pallet" rows="5" cols="50"></textarea>
+	<br />
+	<label>Sprite array</label>
+	<br />
+	<textarea id="spriteID" name="sprite" rows="5" cols="50"></textarea>
+
+</body>
+
 </html>
