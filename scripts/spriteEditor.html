@@ -7,7 +7,7 @@
 	<style>
 		button {
 			width: 50px;
-			height: 50px;
+			height: 16px;
 			background-color: #007BFF;
 			color: white;
 			border: none;
@@ -52,7 +52,6 @@
 		}
 	</style>
 
-
 </head>
 
 <body>
@@ -67,63 +66,135 @@
 		<tbody>
 			<tr>
 				<td></td>
-				<td><button onclick="moveImageUp()">Up</button></td>
+				<td>
+					<button onclick="moveImageUp(100.0)">-100</button>
+					<button onclick="moveImageUp(10.00)">-10.0</button>
+					<button onclick="moveImageUp(1.000)">-1.00</button>
+				</td>
 				<td></td>
-				<td rowspan="4"> <canvas id="spriteEditor"></canvas></td>
+				<td rowspan="7"> <canvas id="spriteEditor"></canvas></td>
 			</tr>
 			<tr>
-				<td><button onclick="moveImageLeft()">Left</button></td>
-				<td>Move</td>
-				<td><button onclick="moveImageRight()">Right</button></td>
+				<td>
+					<button onclick="moveImageLeft(100.0)">-100</button>
+					<button onclick="moveImageLeft(10.00)">-10.0</button>
+					<button onclick="moveImageLeft(1.000)">-1.00</button>
+				</td>
+				<td>Move Image</td>
+				<td>
+					<button onclick="moveImageRight(100.0)">+100</button>
+					<button onclick="moveImageRight(10.00)">+10.0</button>
+					<button onclick="moveImageRight(1.000)">+1.00</button>
+				</td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><button onclick="moveImageDown()">Down</button></td>
+				<td>
+					<button onclick="moveImageDown(100.0)">+100</button>
+					<button onclick="moveImageDown(10.00)">+10.0</button>
+					<button onclick="moveImageDown(1.000)">+1.00</button>
+				</td>
 				<td></td>
 			</tr>
 			<tr>
-				<td><button onclick="zoomImageIn()">+</button></td>
-				<td>Zoom</td>
-				<td><button onclick="zoomImageOut()">-</button></td>
+				<td>
+					<button onclick="zoomImageOut(1.00)">1.00</button>
+					<button onclick="zoomImageOut(0.10)">0.10</button>
+					<button onclick="zoomImageOut(0.01)">0.01</button>
+				</td>
+				<td>Image Zoom</td>
+				<td>
+					<button onclick="zoomImageIn(1.00)">1.00</button>
+					<button onclick="zoomImageIn(0.10)">0.10</button>
+					<button onclick="zoomImageIn(0.01)">0.01</button>
+				</td>
 			</tr>
+			<tr>
+				<td>
+					<button onclick="zoomGridOut(2.00)">-2.00</button>
+					<button onclick="zoomGridOut(1.00)">-1.00</button>
+					<button onclick="zoomGridOut(0.50)">-0.50</button>
+				</td>
+				<td>Grid Zoom</td>
+				<td>
+					<button onclick="zoomGridIn(2.00)">+2.00</button>
+					<button onclick="zoomGridIn(1.00)">+1.00</button>
+					<button onclick="zoomGridIn(0.50)">+0.50</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button onclick="zoomSpriteWidthAdd(1.00)">-1.00</button>
+				</td>
+				<td>X Width</td>
+				<td>
+					<button onclick="zoomSpriteWidthSub(1.00)">+1.00</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button onclick="zoomSpriteHeightAdd(1.00)">-1.00</button>
+				</td>
+				<td>Y Height</td>
+				<td>
+					<button onclick="zoomSpriteHeightSub(1.00)">+1.00</button>
+				</td>
+			</tr>						
 		</tbody>
 	</table>
 
 	<script>
 
-		function moveImageLeft() {
-			x -= 10;
-			draw(); // Redraw the canvas with the new scale
+		function moveImageLeft(moveFactor) {
+			x -= moveFactor;
+			drawall();
 		}
-		function moveImageRight() {
-			x += 10;
-			draw(); // Redraw the canvas with the new scale
+		function moveImageRight(moveFactor) {
+			x += moveFactor;
+			drawall();
 		}
-		function moveImageUp() {
-			y -= 10;
-			draw(); // Redraw the canvas with the new scale
+
+		function moveImageUp(moveFactor) {
+			y -= moveFactor;
+			drawall();
 		}
-		function moveImageDown() {
-			y += 10;
-			draw(); // Redraw the canvas with the new scale
+		function moveImageDown(moveFactor) {
+			y += moveFactor;
+			drawall();
 		}
-		function zoomImageIn() {
-			const zoomIn = event.deltaY < 0; // Determine zoom direction
-			scale /= scaleFactor;
-			draw(); // Redraw the canvas with the new scale
+
+		function zoomImageIn(zoomFactor) {
+			scaleFactor += zoomFactor;
+			if (scaleFactor >= 5.0) {
+				scaleFactor = 5.0;
+			}
+			drawall();
+			console.log(scaleFactor);
 		}
-		function zoomImageOut() {
-			const zoomIn = event.deltaY < 0; // Determine zoom direction
-			scale *= scaleFactor;
-			draw(); // Redraw the canvas with the new scale
+		function zoomImageOut(zoomFactor) {
+			scaleFactor -= zoomFactor;
+			if (scaleFactor <= 0.01) {
+				scaleFactor = 0.01;
+			}
+			drawall();
+			console.log(scaleFactor);
+		}
+
+		function zoomGridIn(zoomFactor) {
+			spriteSize += zoomFactor;
+			drawall();
+		}
+		function zoomGridOut(zoomFactor) {
+			spriteSize -= zoomFactor;
+			drawall();
 		}
 
 		// Get the canvas element
 		var canvas = document.getElementById("spriteEditor");
 
 		// Set the canvas dimensions
-		canvas.width = 200;
-		canvas.height = 200;
+		canvas.width = 600;
+		canvas.height = 600;
 
 		// Create a new CanvasRenderingContext2D object
 		var ctx = canvas.getContext("2d");
@@ -135,15 +206,14 @@
 
 		// ---------------------------------------------------
 		// VariablAQes for zooming
-		let scale = 1.0;
-		const scaleFactor = 0.975; // Zoom factor
+		let scaleFactor = 1.0; // Zoom factor
 
 		// Create a new image object
 		// Load an image
 		const image = new Image();
 		image.src = '8bit tiles.jpg'; // Replace with your image path
 		image.onload = function () {
-			draw();
+			drawall();
 		};
 
 		// Define the pallet of colors
@@ -152,13 +222,12 @@
 			"#00FF00FF", "#00FFFFFF", "#0000FFFF", "#FF00FFFF"];
 
 		// Define the width and height of each sprite
-		var spriteWidth = 15;
-		var spriteHeight = 15;
+		let spriteSize = 10;
 
 		// Draw the pallet colors on the canvas
 		for (var i = 0; i < palletColors.length; i++) {
 			ctx.fillStyle = palletColors[i];
-			ctx.fillRect(spriteWidth * i, 0, spriteWidth, spriteHeight);
+			ctx.fillRect(spriteSize * i, 0, spriteSize, spriteSize);
 		}
 
 		const gridCellWidth = 5;
@@ -188,30 +257,18 @@
 			}
 		}
 
-		// Mouse wheel event for zooming
-		canvas.addEventListener('wheel', function (event) {
-			event.preventDefault(); // Prevent the default scrolling behavior
-
-			const zoomIn = event.deltaY < 0; // Determine zoom direction
-			if (zoomIn) {
-				scale *= scaleFactor; // Zoom in
-			} else {
-				scale /= scaleFactor; // Zoom out
-			}
-
-			draw(); // Redraw the canvas with the new scale
-		});
-
-
 		let x = 0;
 		let y = 100;
-		// Function to redraw the canvas with the current scale
-		function draw() {
-			ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
-			ctx.save(); // Save the current state
-			ctx.scale(scale, scale); // Apply the scaling transformation
-			ctx.drawImage(image, x, y); // Draw the image
-			ctx.restore(); // Restore to the original state
+
+		// Function to redraw the canvas with the current scaleFactor
+		function drawall() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.save();
+			ctx.scale(scaleFactor, scaleFactor);
+			ctx.drawImage(image, x, y);
+			ctx.restore();
+
+			drawGrid();
 		}
 
 		function drawGrid() {
@@ -222,15 +279,15 @@
 			// Start a new Path
 			for (var x = 0; x < gridCellWidth + 1; x++) {
 				ctx.beginPath();
-				ctx.moveTo(x * spriteWidth + offsetX, offsetY);
-				ctx.lineTo(x * spriteWidth + offsetX, spriteHeight * gridCellHeight + offsetY);
+				ctx.moveTo(x * spriteSize + offsetX, offsetY);
+				ctx.lineTo(x * spriteSize + offsetX, spriteSize * gridCellHeight + offsetY);
 				ctx.stroke();
 			}
 
 			for (var y = 0; y < gridCellHeight + 1; y++) {
 				ctx.beginPath();
-				ctx.moveTo(offsetX, y * spriteHeight + offsetY);
-				ctx.lineTo(spriteWidth * gridCellWidth + offsetX, y * spriteHeight + offsetY);
+				ctx.moveTo(offsetX, y * spriteSize + offsetY);
+				ctx.lineTo(spriteSize * gridCellWidth + offsetX, y * spriteSize + offsetY);
 				ctx.stroke();
 			}
 
@@ -249,8 +306,8 @@
 		function drawColor(x, y, color) {
 			// Draw a circle on the selected sprite
 			ctx.beginPath();
-			ctx.arc((spriteWidth * x) + offsetX + spriteWidth / 2,
-				(spriteHeight * y) + offsetY + spriteHeight / 2,
+			ctx.arc((spriteSize * x) + offsetX + spriteSize / 2,
+				(spriteSize * y) + offsetY + spriteSize / 2,
 				5, 0, 2 * Math.PI);
 			ctx.strokeStyle = color;
 			ctx.fillStyle = color;
@@ -261,8 +318,8 @@
 		function drawTransparent(x, y) {
 			// Draw a circle on the selected sprite
 			ctx.beginPath();
-			ctx.arc((spriteWidth * x) + offsetX + spriteWidth / 2,
-				(spriteHeight * y) + offsetY + spriteHeight / 2,
+			ctx.arc((spriteSize * x) + offsetX + spriteSize / 2,
+				(spriteSize * y) + offsetY + spriteSize / 2,
 				5, 0, 2 * Math.PI);
 			ctx.strokeStyle = "#000000";
 			ctx.fillStyle = "#FFFFFF80";
@@ -271,6 +328,7 @@
 		}
 
 		initArrays();
+
 		drawGrid();
 
 		// Add an event listener to the canvas for clicks
@@ -279,9 +337,9 @@
 			var x = event.offsetX;
 			var y = event.offsetY;
 
-			if (y > spriteHeight) {
-				selectedCellX = Math.floor((x - offsetX) / spriteWidth);
-				selectedCellY = Math.floor((y - offsetY) / spriteHeight);
+			if (y > spriteSize) {
+				selectedCellX = Math.floor((x - offsetX) / spriteSize);
+				selectedCellY = Math.floor((y - offsetY) / spriteSize);
 
 				console.log(x, y, selectedCellX, selectedCellY);
 
@@ -296,8 +354,8 @@
 
 				// Draw a circle on the selected sprite
 				ctx.beginPath();
-				ctx.arc((spriteWidth * selectedCellX) + offsetX + spriteWidth / 2,
-					(spriteHeight * selectedCellY) + offsetY + spriteHeight / 2,
+				ctx.arc((spriteSize * selectedCellX) + offsetX + spriteSize / 2,
+					(spriteSize * selectedCellY) + offsetY + spriteSize / 2,
 					5, 0, 1 * Math.PI);
 				ctx.strokeStyle = selectedColor;
 				ctx.fillStyle = selectedColor;
@@ -310,7 +368,7 @@
 			}
 
 			// Determine which sprite was clicked
-			var clickedSprite = Math.floor(x / spriteWidth);
+			var clickedSprite = Math.floor(x / spriteSize);
 
 			selectedColor = palletColors[clickedSprite];
 			console.log(arrayIndex);
@@ -318,13 +376,16 @@
 
 			// Change the color of the selected sprite
 			ctx.fillStyle = palletColors[clickedSprite];
-			ctx.fillRect(0, spriteHeight, spriteWidth, spriteHeight);
+			ctx.fillRect(0, spriteSize, spriteSize, spriteSize);
 
 			// Log the selected color to the canvas
 			console.log("Selected Color:", palletColors[clickedSprite]);
 			selectedColorIndex = clickedSprite;
 		});
 	</script>
+
+
+
 	<br />
 	<label>Image (abc.png)</label>
 	<br />
