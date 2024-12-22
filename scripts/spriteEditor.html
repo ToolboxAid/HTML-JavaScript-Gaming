@@ -387,28 +387,36 @@
 			ctx.fillRect(0, spriteSize, spriteSize, spriteSize);
 		}
 
+		function getMousePositionOnCanvas(canvas, event) {
+			const rect = canvas.getBoundingClientRect(); // Get canvas bounding box
+			const scaleX = canvas.width / rect.width;   // Scale factor for X
+			const scaleY = canvas.height / rect.height; // Scale factor for Y
+
+			const x = (event.clientX - rect.left) * scaleX; // Adjusted X coordinate
+			const y = (event.clientY - rect.top) * scaleY;  // Adjusted Y coordinate
+
+			return { x, y };
+		}
+
 		// Add an event listener to the canvas for clicks
 		canvas.addEventListener("click", function (event) {
-			// Get the coordinates of the click
-			var x = event.gridX;
-			var y = event.gridY;
 
-			if (y > spriteSize) {
-				selectedCellX = Math.floor((x - gridX) / spriteSize);
-				selectedCellY = Math.floor((y - gridY) / spriteSize);
+			const mouse = getMousePositionOnCanvas(canvas, event);
+
+			if (mouse.y > spriteSize) {
+				selectedCellX = Math.floor((mouse.x - gridX) / spriteSize);
+				selectedCellY = Math.floor((mouse.y - gridY) / spriteSize);
 
 				if (selectedCellX < 0 || selectedCellX > gridCellWidth - 1 ||
 					selectedCellY < 0 || selectedCellY > gridCellHeight - 1) {
 					return;
 				}
-
-				// Set the array element
+				// Set the array elements
 				arrayIndex[selectedCellX][selectedCellY] = selectedColorIndex;
 				array[selectedCellX][selectedCellY] = selectedColor;
 			} else {
 				// Determine which sprite was clicked
-				var clickedSprite = Math.floor(x / spriteSize);
-
+				var clickedSprite = Math.floor(mouse.x / spriteSize);
 				selectedColor = palletColors[clickedSprite];
 				selectedColorIndex = clickedSprite;
 			}
