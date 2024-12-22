@@ -14,12 +14,10 @@
 			border-radius: 5px;
 			cursor: pointer;
 			font-size: 16px;
-			margin: 0;
-			padding: 0;
-			line-height: 0;
-			/* Remove extra space around text */
+			margin: 4px !important;
+			padding: 0px;
+			line-height: 0px;
 			display: block;
-			/* Ensure the button behaves like a block element */
 			text-align: center;
 		}
 
@@ -29,8 +27,8 @@
 
 		table {
 			border-collapse: collapse;
-			margin: 0;
-			padding: 0;
+			margin: 0px;
+			padding: 0px;
 			width: 60%;
 			text-align: center;
 		}
@@ -39,21 +37,24 @@
 		th,
 		tr,
 		td {
-			margin: 0;
-			padding: 0;
+			margin: 0px;
+			padding: 0px;
 			border: 2px solid #000;
+		}
+
+		tr.custom-height {
+			height: 100%;
 		}
 
 		td {
 			width: 50px !important;
 			height: 50px !important;
 			vertical-align: middle;
-			/* Align button vertically within the cell */
 		}
 	</style>
 
 </head>
-abc
+
 <body>
 
 	<table>
@@ -72,7 +73,7 @@ abc
 					<button onclick="moveImageUp(1.000)">-1.00</button>
 				</td>
 				<td></td>
-				<td rowspan="7"> <canvas id="spriteEditor"></canvas></td>
+				<td rowspan="8"> <canvas id="spriteEditor"></canvas></td>
 			</tr>
 			<tr>
 				<td>
@@ -114,81 +115,41 @@ abc
 					<button onclick="zoomGridOut(2.00)">-2.00</button>
 					<button onclick="zoomGridOut(1.00)">-1.00</button>
 					<button onclick="zoomGridOut(0.50)">-0.50</button>
+					<button onclick="zoomGridOut(0.10)">-0.10</button>
 				</td>
 				<td>Grid Zoom</td>
 				<td>
 					<button onclick="zoomGridIn(2.00)">+2.00</button>
 					<button onclick="zoomGridIn(1.00)">+1.00</button>
 					<button onclick="zoomGridIn(0.50)">+0.50</button>
+					<button onclick="zoomGridIn(0.10)">+0.10</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="zoomSpriteWidthAdd(1.00)">-1.00</button>
+					<button onclick="spriteWidthSub(1.00)">-1.00</button>
 				</td>
 				<td>Grid X Width</td>
 				<td>
-					<button onclick="zoomSpriteWidthSub(1.00)">+1.00</button>
+					<button onclick="spriteWidthAdd(1.00)">+1.00</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="zoomSpriteHeightAdd(1.00)">-1.00</button>
+					<button onclick="spriteHeightSub(1.00)">-1.00</button>
 				</td>
 				<td>Grid Y Height</td>
 				<td>
-					<button onclick="zoomSpriteHeightSub(1.00)">+1.00</button>
+					<button onclick="spriteHeightAdd(1.00)">+1.00</button>
 				</td>
-			</tr>						
+			</tr>
+			<tr class="custom-height">
+				<td colspan="3"></td>
+			</tr>
 		</tbody>
 	</table>
 
 	<script>
-
-		function moveImageLeft(moveFactor) {
-			x -= moveFactor;
-			drawall();
-		}
-		function moveImageRight(moveFactor) {
-			x += moveFactor;
-			drawall();
-		}
-
-		function moveImageUp(moveFactor) {
-			y -= moveFactor;
-			drawall();
-		}
-		function moveImageDown(moveFactor) {
-			y += moveFactor;
-			drawall();
-		}
-
-		function zoomImageIn(zoomFactor) {
-			scaleFactor += zoomFactor;
-			if (scaleFactor >= 5.0) {
-				scaleFactor = 5.0;
-			}
-			drawall();
-			console.log(scaleFactor);
-		}
-		function zoomImageOut(zoomFactor) {
-			scaleFactor -= zoomFactor;
-			if (scaleFactor <= 0.01) {
-				scaleFactor = 0.01;
-			}
-			drawall();
-			console.log(scaleFactor);
-		}
-
-		function zoomGridIn(zoomFactor) {
-			spriteSize += zoomFactor;
-			drawall();
-		}
-		function zoomGridOut(zoomFactor) {
-			spriteSize -= zoomFactor;
-			drawall();
-		}
-
 		// Get the canvas element
 		var canvas = document.getElementById("spriteEditor");
 
@@ -199,49 +160,65 @@ abc
 		// Create a new CanvasRenderingContext2D object
 		var ctx = canvas.getContext("2d");
 
-		// Clear the canvas and set background color to #333333
-		ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-		ctx.fillStyle = '#333333'; // Set background color to dark gray
-		ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas
-
-		// ---------------------------------------------------
-		// VariablAQes for zooming
 		let scaleFactor = 1.0; // Zoom factor
-
-		// Create a new image object
-		// Load an image
-		const image = new Image();
-		image.src = '8bit tiles.jpg'; // Replace with your image path
-		image.onload = function () {
-			drawall();
-		};
 
 		// Define the pallet of colors
 		//palletLetters
 		var palletColors = ["#00000000", "#FF0000FF", "#FF8800FF", "#FFFF00FF",
 			"#00FF00FF", "#00FFFFFF", "#0000FFFF", "#FF00FFFF"];
 
-		// Define the width and height of each sprite
-		let spriteSize = 10;
+		function loadPalletLetters() {
+			// Get the textarea element by its ID
+			const textarea = document.getElementById('lettersID');
 
-		// Draw the pallet colors on the canvas
-		for (var i = 0; i < palletColors.length; i++) {
-			ctx.fillStyle = palletColors[i];
-			ctx.fillRect(spriteSize * i, 0, spriteSize, spriteSize);
+			// Access the content (value) of the textarea
+			const content = textarea.value;
+			console.log("Pallet Colors:", content);
+		}
+		function loadPalletColors() {
+			// Get the textarea element by its ID
+			const textarea = document.getElementById('palletID');
+
+			// Access the content (value) of the textarea
+			const content = textarea.value;
+			console.log("Pallet Colors:", content);
+		}
+		function loadSprite() {
+			// Get the textarea element by its ID
+			const textarea = document.getElementById('spriteID');
+
+			// Access the content (value) of the textarea
+			const content = textarea.value;
+			console.log("Sprite:", content);
 		}
 
-		const gridCellWidth = 5;
-		const gridCellHeight = 10;
-		const offsetX = 50;
-		const offsetY = 50;
+		// Define the width and height of each sprite
+		let spriteSize = 30;
+
+		const gridX = spriteSize / 2.0;
+		const gridY = spriteSize * 2.5;
 
 		let selectedColor = "#00000000";
 		let selectedColorIndex = 0;
 		let selectedCellX = 0;
-		let selectedCellY = 0
+		let selectedCellY = 0;
 
-		var array = new Array(gridCellWidth);
-		var arrayIndex = new Array(gridCellWidth);
+		let imageX = 0;
+		let imageY = 100;
+
+		let gridCellWidth = 10;
+		let gridCellHeight = 10;
+		let array = new Array(gridCellWidth);
+		let arrayIndex = new Array(gridCellWidth);
+
+		initArrays();
+
+		const image = new Image();
+		image.src = '8bit tiles.jpg';
+		image.onload = function () {
+			drawAll();
+		};
+
 		function initArrays() {
 			// Create the array
 			for (var i = 0; i < gridCellWidth; i++) {
@@ -257,37 +234,108 @@ abc
 			}
 		}
 
-		let x = 0;
-		let y = 100;
+		function moveImageLeft(moveFactor) {
+			imageX -= moveFactor;
+			drawAll();
+		}
+		function moveImageRight(moveFactor) {
+			imageX += moveFactor;
+			drawAll();
+		}
 
-		// Function to redraw the canvas with the current scaleFactor
-		function drawall() {
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		function moveImageUp(moveFactor) {
+			imageY -= moveFactor;
+			drawAll();
+		}
+		function moveImageDown(moveFactor) {
+			imageY += moveFactor;
+			drawAll();
+		}
+
+		function zoomImageIn(zoomFactor) {
+			scaleFactor += zoomFactor;
+			if (scaleFactor >= 5.0) {
+				scaleFactor = 5.0;
+			}
+			drawAll();
+			console.log(scaleFactor);
+		}
+		function zoomImageOut(zoomFactor) {
+			scaleFactor -= zoomFactor;
+			if (scaleFactor <= 0.01) {
+				scaleFactor = 0.01;
+			}
+			drawAll();
+			console.log(scaleFactor);
+		}
+
+		function zoomGridIn(zoomFactor) {
+			spriteSize += zoomFactor;
+			drawAll();
+		}
+		function zoomGridOut(zoomFactor) {
+			spriteSize -= zoomFactor;
+			drawAll();
+		}
+
+		function spriteWidthAdd(width) {
+			gridCellWidth += width;
+			initArrays();
+			drawAll();
+		}
+		function spriteWidthSub(width) {
+			gridCellWidth -= width;
+			if (gridCellWidth < 1) {
+				gridCellWidth = 1;
+			}
+			initArrays();
+			drawAll();
+		}
+		function spriteHeightAdd(height) {
+			gridCellHeight += height;
+			initArrays();
+			drawAll();
+		}
+		function spriteHeightSub(height) {
+			gridCellHeight -= height;
+			if (gridCellHeight < 1) {
+				gridCellHeight = 1;
+			}
+			initArrays();
+			drawAll();
+		}
+
+		function drawAll() {
+			// Clear the canvas and set background color to #333333
+			ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+			ctx.fillStyle = '#333333'; // Set background color to dark gray
+			ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas
+
 			ctx.save();
 			ctx.scale(scaleFactor, scaleFactor);
-			ctx.drawImage(image, x, y);
+			ctx.drawImage(image, imageX, imageY);
 			ctx.restore();
 
 			drawGrid();
+			drawPallet();
+			drawSelectedColor();
 		}
-
 		function drawGrid() {
-
 			ctx.strokeStyle = "#000000";
 			ctx.fillStyle = "#000000";
 
 			// Start a new Path
 			for (var x = 0; x < gridCellWidth + 1; x++) {
 				ctx.beginPath();
-				ctx.moveTo(x * spriteSize + offsetX, offsetY);
-				ctx.lineTo(x * spriteSize + offsetX, spriteSize * gridCellHeight + offsetY);
+				ctx.moveTo(x * spriteSize + gridX, gridY);
+				ctx.lineTo(x * spriteSize + gridX, spriteSize * gridCellHeight + gridY);
 				ctx.stroke();
 			}
 
 			for (var y = 0; y < gridCellHeight + 1; y++) {
 				ctx.beginPath();
-				ctx.moveTo(offsetX, y * spriteSize + offsetY);
-				ctx.lineTo(spriteSize * gridCellWidth + offsetX, y * spriteSize + offsetY);
+				ctx.moveTo(gridX, y * spriteSize + gridY);
+				ctx.lineTo(spriteSize * gridCellWidth + gridX, y * spriteSize + gridY);
 				ctx.stroke();
 			}
 
@@ -300,102 +348,96 @@ abc
 					}
 				}
 			}
-
 		}
-
 		function drawColor(x, y, color) {
 			// Draw a circle on the selected sprite
 			ctx.beginPath();
-			ctx.arc((spriteSize * x) + offsetX + spriteSize / 2,
-				(spriteSize * y) + offsetY + spriteSize / 2,
-				5, 0, 2 * Math.PI);
+			ctx.arc((spriteSize * x) + gridX + spriteSize / 2,
+				(spriteSize * y) + gridY + spriteSize / 2,
+				spriteSize / 4, 0, 2 * Math.PI);
 			ctx.strokeStyle = color;
 			ctx.fillStyle = color;
 			ctx.stroke();
 			ctx.fill();
 		}
-
 		function drawTransparent(x, y) {
 			// Draw a circle on the selected sprite
 			ctx.beginPath();
-			ctx.arc((spriteSize * x) + offsetX + spriteSize / 2,
-				(spriteSize * y) + offsetY + spriteSize / 2,
-				5, 0, 2 * Math.PI);
+			ctx.arc((spriteSize * x) + gridX + spriteSize / 2,
+				(spriteSize * y) + gridY + spriteSize / 2,
+				spriteSize / 4, 0, 2 * Math.PI);
 			ctx.strokeStyle = "#000000";
 			ctx.fillStyle = "#FFFFFF80";
 			ctx.stroke();
 			ctx.fill();
 		}
+		function drawPallet() {
+			ctx.clearRect(0, 0, canvas.width, spriteSize * 2); // Clear the canvas
+			ctx.fillStyle = '#000000'; // Set background color to dark gray
+			ctx.fillRect(0, 0, canvas.width, spriteSize * 2); // Fill the entire canvas
 
-		initArrays();
-
-		drawGrid();
+			for (var i = 0; i < palletColors.length; i++) {
+				ctx.fillStyle = palletColors[i];
+				ctx.fillRect(spriteSize * i, 0, spriteSize, spriteSize);
+			}
+		}
+		function drawSelectedColor() {
+			// Change the color of the selected sprite
+			ctx.fillStyle = selectedColor;
+			ctx.fillRect(0, spriteSize, spriteSize, spriteSize);
+		}
 
 		// Add an event listener to the canvas for clicks
 		canvas.addEventListener("click", function (event) {
 			// Get the coordinates of the click
-			var x = event.offsetX;
-			var y = event.offsetY;
+			var x = event.gridX;
+			var y = event.gridY;
 
 			if (y > spriteSize) {
-				selectedCellX = Math.floor((x - offsetX) / spriteSize);
-				selectedCellY = Math.floor((y - offsetY) / spriteSize);
+				selectedCellX = Math.floor((x - gridX) / spriteSize);
+				selectedCellY = Math.floor((y - gridY) / spriteSize);
 
-				console.log(x, y, selectedCellX, selectedCellY);
-
-				if (selectedCellX < 0 || selectedCellX > gridCellWidth ||
-					selectedCellY < 0 || selectedCellY > gridCellHeight) {
+				if (selectedCellX < 0 || selectedCellX > gridCellWidth - 1 ||
+					selectedCellY < 0 || selectedCellY > gridCellHeight - 1) {
 					return;
 				}
 
 				// Set the array element
 				arrayIndex[selectedCellX][selectedCellY] = selectedColorIndex;
 				array[selectedCellX][selectedCellY] = selectedColor;
+			} else {
+				// Determine which sprite was clicked
+				var clickedSprite = Math.floor(x / spriteSize);
 
-				// Draw a circle on the selected sprite
-				ctx.beginPath();
-				ctx.arc((spriteSize * selectedCellX) + offsetX + spriteSize / 2,
-					(spriteSize * selectedCellY) + offsetY + spriteSize / 2,
-					5, 0, 1 * Math.PI);
-				ctx.strokeStyle = selectedColor;
-				ctx.fillStyle = selectedColor;
-				ctx.stroke();
-				ctx.fill();
-
-				drawGrid();
-
-				return;
+				selectedColor = palletColors[clickedSprite];
+				selectedColorIndex = clickedSprite;
 			}
-
-			// Determine which sprite was clicked
-			var clickedSprite = Math.floor(x / spriteSize);
-
-			selectedColor = palletColors[clickedSprite];
-			console.log(arrayIndex);
-			console.log(array);
-
-			// Change the color of the selected sprite
-			ctx.fillStyle = palletColors[clickedSprite];
-			ctx.fillRect(0, spriteSize, spriteSize, spriteSize);
-
-			// Log the selected color to the canvas
-			console.log("Selected Color:", palletColors[clickedSprite]);
-			selectedColorIndex = clickedSprite;
+			drawAll();
 		});
-	</script>
 
+		window.onload = function () {
+			loadPalletLetters();
+			loadPalletColors();
+			loadSprite();
+		};
+	</script>
 
 
 	<br />
 	<label>Image (abc.png)</label>
 	<br />
-	<label>Pallet (0 is always Transparent)</label>
+
+	<label>Sprite array</label>
 	<br />
-	<textarea id="palletID" name="pallet" rows="5" cols="50"></textarea>
+	<textarea id="lettersID" name="letter" rows="5" cols="50">letters</textarea>
+
+	<label>Pallet ('0' should always Transparent)</label>
+	<br />
+	<textarea id="palletID" name="pallet" rows="5" cols="50">pallet</textarea>
 	<br />
 	<label>Sprite array</label>
 	<br />
-	<textarea id="spriteID" name="sprite" rows="5" cols="50"></textarea>
+	<textarea id="spriteID" name="sprite" rows="5" cols="50">sprite</textarea>
 
 </body>
 
