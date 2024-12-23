@@ -184,20 +184,20 @@
 			</tr>
 			<tr>
 				<td>
-					<button onclick="spriteWidth(-1.00)">-1.00</button>
+					<button onclick="removeColumn()">Sub</button>
 				</td>
-				<td>Grid X Width</td>
+				<td>Grid X Column</td>
 				<td>
-					<button onclick="spriteWidth(1.00)">+1.00</button>
+					<button onclick="addColumn()">Add</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="spriteHeight(-1.00)">-1.00</button>
+					<button onclick="removeRow()">Sub</button>
 				</td>
-				<td>Grid Y Height</td>
+				<td>Grid Y Row</td>
 				<td>
-					<button onclick="spriteHeight(1.00)">+1.00</button>
+					<button onclick="addRow()">Add</button>
 				</td>
 			</tr>
 			<tr class="custom-height">
@@ -237,6 +237,66 @@
 		// need palletLetters
 		let palletLetters = [];
 		let palletColors = [];
+
+		let gridCellWidth = 10;
+		let gridCellHeight = 10;
+		let sprteIndex = new Array(gridCellWidth);
+		let sprteColor = new Array(gridCellWidth);
+
+
+		/// test
+		/// test
+		/// test
+		/// test
+		let testArray = [];
+		for (let i = 0; i < gridCellWidth; i++) {
+			testArray[i] = new Array(gridCellHeight).fill(i);
+		}
+
+		for (let i = 1; i < 9; i++) {
+			testArray[i][i] = i - 1;
+		}
+		testArray[0][0] = 82 / 2;
+		testArray[9][9] = 82;
+
+		console.log("Before adding column:");
+		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+
+		// Add a new column
+		let newColumnValue = 99; // Value for the new column
+		for (let i = 0; i < testArray.length; i++) {
+			testArray[i].push(newColumnValue);
+		}
+
+		console.log("After adding column:", testArray);
+		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+
+		// Add a new row
+		let newRowValue = 1; // Value for the new row
+		let newRow = new Array(gridCellHeight + 1).fill(newRowValue); // Create the new row
+		testArray.push(newRow);
+
+		console.log("After adding row:", testArray);
+		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+
+		// Delete the last column from each row
+		for (let i = 0; i < testArray.length; i++) {
+			testArray[i].splice(testArray[i].length - 1, 1);
+		}
+		console.log("After deleting column:", testArray);
+		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+
+		// Delete the last row
+		testArray.splice(testArray.length - 1, 1);
+		console.log("After deleting row:", testArray);
+		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+
+
+		/// test
+		/// test
+		/// test
+		/// test
+
 
 		function loadPallet() {
 			const textarea = document.getElementById('palletID');
@@ -288,14 +348,14 @@
 
 				for (let x = 0; x < gridCellWidth; x++) {
 					const letter = row[x];
-					arrayIndex[x][y] = letter;
+					sprteIndex[x][y] = letter;
 
 					// Find the corresponding color
 					const letterIndex = palletLetters.indexOf(letter);
-					arrayColor[x][y] = letterIndex !== -1 ? palletColors[letterIndex] : "none"; // Default to "none" if not found
-					if (arrayColor[x][y] === "none") {
+					sprteColor[x][y] = letterIndex !== -1 ? palletColors[letterIndex] : "none"; // Default to "none" if not found
+					if (sprteColor[x][y] === "none") {
 						console.log("Invalid color at:", x, "x", y, "value:", letterIndex);
-						arrayColor[x][y] === transparentColor;
+						sprteColor[x][y] === transparentColor;
 					}
 				}
 			}
@@ -315,55 +375,13 @@
 		let imageX = 0;
 		let imageY = 100;
 
-		let gridCellWidth = 10;
-		let gridCellHeight = 10;
-		let arrayIndex = new Array(gridCellWidth);
-		let arrayColor = new Array(gridCellWidth);
-
 		initArrays();
 
 		function initArrays() {
-			// Create the array
-			for (var i = 0; i < gridCellWidth; i++) {
-				arrayIndex[i] = new Array(gridCellHeight);
-				arrayColor[i] = new Array(gridCellHeight);
+			for (let x = 0; x < gridCellWidth; x++) {
+				sprteIndex[x] = new Array(gridCellHeight).fill('0');
+				sprteColor[x] = new Array(gridCellHeight).fill(transparentColor);
 			}
-
-			for (var x = 0; x < gridCellWidth; x++) {
-				for (var y = 0; y < gridCellHeight; y++) {
-					arrayIndex[x][y] = 0;
-					arrayColor[x][y] = transparentColor;
-				}
-			}
-		}
-
-		function copyArrays(change) {
-			// Deep copy using JSON methods
-			let tempIndex = JSON.parse(JSON.stringify(arrayIndex));
-			let tempColor = JSON.parse(JSON.stringify(arrayColor));
-
-			// Check if change > 0 and modify the arrays
-			if (change > 0) {
-				// Modify the last 2x2 grid cells to be transparent
-				for (let x = Math.max(0, gridCellWidth - 2); x < gridCellWidth; x++) {
-					for (let y = Math.max(0, gridCellHeight - 2); y < gridCellHeight; y++) {
-						// Ensure x and y are within array bounds
-						if (x < tempIndex.length && y < tempIndex[x].length) {
-							console.log("Updating cell:", "x:", x, "y:", y);
-							tempIndex[x][y] = 0;                // Set index to 0
-							tempColor[x][y] = 0;//transparentColor; // Set color to transparent
-						} else {
-							console.error(`Index out of bounds: x=${x}, y=${y}, y=${y}`);
-						}
-					}
-				}
-			}
-
-			console.log("Before):", tempIndex, tempColor, "After):", arrayIndex, arrayColor);
-
-			// Assign deep copies back to global arrays
-			arrayIndex = tempIndex;
-			arrayColor = tempColor;
 		}
 
 		const image = new Image();
@@ -394,33 +412,54 @@
 			drawAll();
 		}
 
-		function spriteWidth(width) {
-			gridCellWidth += width;
-			if (gridCellWidth < 1) {
-				gridCellWidth = 1;
-				width = 0;
-			} else if (gridCellWidth > 32) {
-				gridCellWidth = 32;
-				width = 0;
-			}
 
-			for (let x = 0; x < arrayIndex.length; x++) {
-			arrayIndex[x].push(0);
-			arrayColor[x].push(transparentColor);
-			}
+		// Add a new column
+		function addRow() {
+			const newIndexRow = new Array(gridCellWidth - 1).fill('R');
+			const newColorRow = new Array(gridCellWidth - 1).fill('red');//transparentColor);
 
-			//copyArrays(width);
+			sprteIndex.push(newIndexRow);
+			sprteColor.push(newColorRow);
+
+			gridCellHeight++;
 			drawAll();
 		}
-		function spriteHeight(height) {
-			gridCellHeight += height;
-			if (gridCellHeight < 1) {
-				gridCellHeight = 1;
-			} else if (gridCellHeight > 32) {
-				gridCellHeight = 1;
+
+		// Add a new row
+		function addColumn() {
+			for (let x = 0; x < sprteIndex.length; x++) {
+				sprteIndex[x].push('C');
+				sprteColor[x].push('Cyan');//transparentColor);
 			}
-			//copyArrays(height);
+			//console.log(sprteIndex, sprteColor)
+			gridCellWidth++;
 			drawAll();
+		}
+
+		// Remove the last column
+		function removeColumn() {
+			if (gridCellWidth > 0) {
+				for (let x = 0; x < sprteIndex.length; x++) {
+					sprteIndex[x].pop();
+					sprteColor[x].pop();
+				}
+				gridCellWidth--;
+				drawAll();
+			} else {
+				console.error("Cannot remove column, gridCellWidth is already 0.");
+			}
+		}
+
+		// Remove the last row
+		function removeRow() {
+			if (gridCellHeight > 0) {
+				sprteIndex.pop();
+				sprteColor.pop();
+				gridCellHeight--;
+				drawAll();
+			} else {
+				console.error("Cannot remove row, gridCellHeight is already 0.");
+			}
 		}
 
 		function drawAll() {
@@ -459,10 +498,8 @@
 					const gridCellPosX = x * imageSize + offset;
 					const gridCellPosY = y * imageSize + offset;
 
-					ctxImage.fillStyle = arrayColor[x][y];
+					ctxImage.fillStyle = sprteColor[x][y];
 					ctxImage.fillRect(gridCellPosX, gridCellPosY, imageSize, imageSize); // (x, y, width, height)
-
-					//console.log("imageSize", imageSize, "x", x, "y", y, "posX", gridCellPosX, "poxY".gridCellPosY, arrayColor[x][y]);
 
 				}
 			}
@@ -488,19 +525,21 @@
 				ctxEditor.stroke();
 			}
 
+			console.log(sprteIndex, sprteColor);
+
 			// Grid
 			for (var x = 0; x < gridCellWidth; x++) {
 				for (var y = 0; y < gridCellHeight; y++) {
 					//					console.log("x:", x, "y:",y, "w:", gridCellWidth,"h:",gridCellHeight );
-					if (arrayColor[x][y] === undefined) {
-						arrayColor[x][y] = transparentColor;
+					if (sprteColor[x][y] === undefined) {
+						sprteColor[x][y] = transparentColor;
 					}
-					if (arrayColor[x][y] === transparentColor) {
+					if (sprteColor[x][y] === transparentColor) {
 						const gridCellPosX = gridX + (spriteSize * x) + spriteSize / 4;
 						const gridCellPosY = gridY + (spriteSize * y) + spriteSize / 4;
 						drawTransparentX(gridCellPosX, gridCellPosY, spriteSize / 2);
 					} else {
-						drawColor(x, y, arrayColor[x][y]);
+						drawColor(x, y, sprteColor[x][y]);
 						if (true) {
 							const gridCellPosX = gridX + (spriteSize * x) + spriteSize / 3;
 							const gridCellPosY = gridY + (spriteSize * y) + (spriteSize / 3) + 15;
@@ -510,12 +549,12 @@
 							ctxEditor.fillStyle = 'black';
 
 							// Draw filled text
-							ctxEditor.fillText(arrayIndex[x][y], gridCellPosX, gridCellPosY);
+							ctxEditor.fillText(sprteIndex[x][y], gridCellPosX, gridCellPosY);
 
 							// Optional: Outline the text
 							ctxEditor.strokeStyle = 'white';
 							ctxEditor.lineWidth = 1;
-							ctxEditor.strokeText(arrayIndex[x][y], gridCellPosX, gridCellPosY);
+							ctxEditor.strokeText(sprteIndex[x][y], gridCellPosX, gridCellPosY);
 						}
 					}
 				}
@@ -596,7 +635,7 @@
 			for (let x = 0; x < gridCellHeight; x++) {
 				let r = "";
 				for (let y = 0; y < gridCellWidth; y++) {
-					const letterIndex = arrayIndex[y][x];
+					const letterIndex = sprteIndex[x][y];
 					//console.log(letterIndex, palletLetters[letterIndex], palletLetters);
 					r += letterIndex;//palletLetters[letterIndex];
 				}
@@ -622,8 +661,8 @@
 					return;
 				}
 				// Set the array elements
-				arrayIndex[selectedCellX][selectedCellY] = palletLetters[selectedColorIndex];
-				arrayColor[selectedCellX][selectedCellY] = selectedColor;
+				sprteIndex[selectedCellX][selectedCellY] = palletLetters[selectedColorIndex];
+				sprteColor[selectedCellX][selectedCellY] = selectedColor;
 			} else {
 				// Determine which sprite was clicked
 				var clickedSprite = Math.floor(mouse.x / spriteSize);
