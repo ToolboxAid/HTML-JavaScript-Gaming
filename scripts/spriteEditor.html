@@ -68,79 +68,79 @@
 			<tr>
 				<td></td>
 				<td>
-					<button onclick="moveImageUp(100.0)">-100</button>
-					<button onclick="moveImageUp(10.00)">-10.0</button>
-					<button onclick="moveImageUp(1.000)">-1.00</button>
+					<button onclick="moveImageVertical(-100.0)">-100</button>
+					<button onclick="moveImageVertical(-10.00)">-10.0</button>
+					<button onclick="moveImageVertical(-1.000)">-1.00</button>
 				</td>
 				<td></td>
 				<td rowspan="8"> <canvas id="spriteEditor"></canvas></td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="moveImageLeft(100.0)">-100</button>
-					<button onclick="moveImageLeft(10.00)">-10.0</button>
-					<button onclick="moveImageLeft(1.000)">-1.00</button>
+					<button onclick="moveImageHorizontal(-100.0)">-100</button>
+					<button onclick="moveImageHorizontal(-10.00)">-10.0</button>
+					<button onclick="moveImageHorizontal(-1.000)">-1.00</button>
 				</td>
 				<td>Move Image</td>
 				<td>
-					<button onclick="moveImageRight(100.0)">+100</button>
-					<button onclick="moveImageRight(10.00)">+10.0</button>
-					<button onclick="moveImageRight(1.000)">+1.00</button>
+					<button onclick="moveImageHorizontal(100.0)">+100</button>
+					<button onclick="moveImageHorizontal(10.00)">+10.0</button>
+					<button onclick="moveImageHorizontal(1.000)">+1.00</button>
 				</td>
 			</tr>
 			<tr>
 				<td></td>
 				<td>
-					<button onclick="moveImageDown(100.0)">+100</button>
-					<button onclick="moveImageDown(10.00)">+10.0</button>
-					<button onclick="moveImageDown(1.000)">+1.00</button>
+					<button onclick="moveImageVertical(100.0)">+100</button>
+					<button onclick="moveImageVertical(10.00)">+10.0</button>
+					<button onclick="moveImageVertical(1.000)">+1.00</button>
 				</td>
 				<td></td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="zoomImageOut(1.00)">1.00</button>
-					<button onclick="zoomImageOut(0.10)">0.10</button>
-					<button onclick="zoomImageOut(0.01)">0.01</button>
+					<button onclick="zoomImage(-1.00)">-1.00</button>
+					<button onclick="zoomImage(-0.10)">-0.10</button>
+					<button onclick="zoomImage(-0.01)">-0.01</button>
 				</td>
 				<td>Image Zoom</td>
 				<td>
-					<button onclick="zoomImageIn(1.00)">1.00</button>
-					<button onclick="zoomImageIn(0.10)">0.10</button>
-					<button onclick="zoomImageIn(0.01)">0.01</button>
+					<button onclick="zoomImage(1.00)">+1.00</button>
+					<button onclick="zoomImage(0.10)">+0.10</button>
+					<button onclick="zoomImage(0.01)">+0.01</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="zoomGridOut(2.00)">-2.00</button>
-					<button onclick="zoomGridOut(1.00)">-1.00</button>
-					<button onclick="zoomGridOut(0.50)">-0.50</button>
-					<button onclick="zoomGridOut(0.10)">-0.10</button>
+					<button onclick="zoomGrid(-2.00)">-2.00</button>
+					<button onclick="zoomGrid(-1.00)">-1.00</button>
+					<button onclick="zoomGrid(-0.50)">-0.50</button>
+					<button onclick="zoomGrid(-0.10)">-0.10</button>
 				</td>
 				<td>Grid Zoom</td>
 				<td>
-					<button onclick="zoomGridIn(2.00)">+2.00</button>
-					<button onclick="zoomGridIn(1.00)">+1.00</button>
-					<button onclick="zoomGridIn(0.50)">+0.50</button>
-					<button onclick="zoomGridIn(0.10)">+0.10</button>
+					<button onclick="zoomGrid(2.00)">+2.00</button>
+					<button onclick="zoomGrid(1.00)">+1.00</button>
+					<button onclick="zoomGrid(0.50)">+0.50</button>
+					<button onclick="zoomGrid(0.10)">+0.10</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="spriteWidthSub(1.00)">-1.00</button>
+					<button onclick="spriteWidth(-1.00)">-1.00</button>
 				</td>
 				<td>Grid X Width</td>
 				<td>
-					<button onclick="spriteWidthAdd(1.00)">+1.00</button>
+					<button onclick="spriteWidth(1.00)">+1.00</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="spriteHeightSub(1.00)">-1.00</button>
+					<button onclick="spriteHeight(-1.00)">-1.00</button>
 				</td>
 				<td>Grid Y Height</td>
 				<td>
-					<button onclick="spriteHeightAdd(1.00)">+1.00</button>
+					<button onclick="spriteHeight(1.00)">+1.00</button>
 				</td>
 			</tr>
 			<tr class="custom-height">
@@ -154,8 +154,8 @@
 		var canvas = document.getElementById("spriteEditor");
 
 		// Set the canvas dimensions
-		canvas.width = 600;
-		canvas.height = 600;
+		canvas.width = 1024;
+		canvas.height = 768;
 
 		// Create a new CanvasRenderingContext2D object
 		var ctx = canvas.getContext("2d");
@@ -163,33 +163,71 @@
 		let scaleFactor = 1.0; // Zoom factor
 
 		// Define the pallet of colors
-		//palletLetters
-		var palletColors = ["#00000000", "#FF0000FF", "#FF8800FF", "#FFFF00FF",
-			"#00FF00FF", "#00FFFFFF", "#0000FFFF", "#FF00FFFF"];
+		const transparentColor = "#00000000";
+		// need palletLetters
+		let palletLetters = [];
+		let palletColors = [];
 
-		function loadPalletLetters() {
-			// Get the textarea element by its ID
-			const textarea = document.getElementById('lettersID');
-
-			// Access the content (value) of the textarea
-			const content = textarea.value;
-			console.log("Pallet Colors:", content);
-		}
-		function loadPalletColors() {
-			// Get the textarea element by its ID
+		function loadPallet() {
 			const textarea = document.getElementById('palletID');
-
-			// Access the content (value) of the textarea
 			const content = textarea.value;
-			console.log("Pallet Colors:", content);
+
+			// Remove comments and extra whitespace, then split by commas
+			const cleanContent = content
+				.replace(/\/\/.*/g, '')  // Remove comments
+				.replace(/\s+/g, '')     // Remove extra spaces
+				.trim();
+
+			// Initialize arrays and Set to track duplicates
+			palletLetters = [];
+			palletColors = [];
+			const letterSet = new Set();  // Set to check for duplicates
+
+			// Match the key-value pairs (e.g., 'R': 'Red')
+			const regex = /'([^']+)'\s*:\s*'([^']+)'/g;
+			let match;
+
+			// Parse the content and populate the arrays
+			while ((match = regex.exec(cleanContent)) !== null) {
+				const letter = match[1];
+				const color = match[2];
+
+				// Check for duplicate letters
+				if (letterSet.has(letter)) {
+					throw new Error(`Duplicate letter found: ${letter}`);
+				}
+
+				letterSet.add(letter);
+				palletLetters.push(letter);
+				palletColors.push(color);
+			}
 		}
-		function loadSprite() {
-			// Get the textarea element by its ID
-			const textarea = document.getElementById('spriteID');
 
-			// Access the content (value) of the textarea
-			const content = textarea.value;
-			console.log("Sprite:", content);
+		function loadSprite(width = 0, height = 0) {
+			const spriteTextarea = document.getElementById("spriteID");
+			const spriteContent = spriteTextarea.value.trim();
+
+			const rows = spriteContent.replace(/[\[\]]/g, "").split(",");
+			const row = rows[0].trim().replace(/"/g, ""); // Clean up row
+			gridCellWidth = rows.length + width;
+			gridCellHeight = row.length - 1 + height;
+			initArrays();
+			// Process each row and populate the arrays
+			for (let y = 0; y < gridCellHeight; y++) {
+				const row = rows[y].trim().replace(/"/g, ""); // Clean up row
+
+				for (let x = 0; x < gridCellWidth; x++) {
+					const letter = row[x]; // Get letter at (x, y)
+					arrayIndex[x][y] = letter; // Assign letter to arrayIndex
+					console.log(arrayIndex);
+					// Find the corresponding color
+					const letterIndex = palletLetters.indexOf(letter);
+					arrayColor[x][y] = letterIndex !== -1 ? palletColors[letterIndex] : "none"; // Default to "none" if not found
+					if (arrayColor[x][y] === "none") {
+						console.log("Invalid color at:", x, "x", y, "value:", letterIndex);
+					}
+				}
+			}
 		}
 
 		// Define the width and height of each sprite
@@ -198,7 +236,7 @@
 		const gridX = spriteSize / 2.0;
 		const gridY = spriteSize * 2.5;
 
-		let selectedColor = "#00000000";
+		let selectedColor = transparentColor;
 		let selectedColorIndex = 0;
 		let selectedCellX = 0;
 		let selectedCellY = 0;
@@ -208,100 +246,103 @@
 
 		let gridCellWidth = 10;
 		let gridCellHeight = 10;
-		let array = new Array(gridCellWidth);
 		let arrayIndex = new Array(gridCellWidth);
+		let arrayColor = new Array(gridCellWidth);
 
 		initArrays();
-
-		const image = new Image();
-		image.src = '8bit tiles.jpg';
-		image.onload = function () {
-			drawAll();
-		};
 
 		function initArrays() {
 			// Create the array
 			for (var i = 0; i < gridCellWidth; i++) {
-				array[i] = new Array(gridCellHeight);
 				arrayIndex[i] = new Array(gridCellHeight);
+				arrayColor[i] = new Array(gridCellHeight);
 			}
 
 			for (var x = 0; x < gridCellWidth; x++) {
 				for (var y = 0; y < gridCellHeight; y++) {
-					array[x][y] = "#00000000";
 					arrayIndex[x][y] = 0;
+					arrayColor[x][y] = transparentColor;
 				}
 			}
 		}
 
-		function moveImageLeft(moveFactor) {
-			imageX -= moveFactor;
-			drawAll();
+		function copyArrays(change) {
+			// Deep copy using JSON methods
+			let tempIndex = JSON.parse(JSON.stringify(arrayIndex));
+			let tempColor = JSON.parse(JSON.stringify(arrayColor));
+
+			console.log("Temporary Arrays (Before Modification):", tempIndex, tempColor);
+
+			// Check if change > 0 and modify the arrays
+			if (change > 0) {
+				// Modify the last 2x2 grid cells to be transparent
+				for (let x = Math.max(0, gridCellWidth - 2); x < gridCellWidth; x++) {
+					for (let y = Math.max(0, gridCellHeight - 2); y < gridCellHeight; y++) {
+						// Ensure x and y are within array bounds
+						if (x < tempIndex.length && y < tempIndex[x].length) {
+							console.log("Updating cell:", "x:", x, "y:", y);
+							tempIndex[x][y] = 0;                // Set index to 0
+							tempColor[x][y] = transparentColor; // Set color to transparent
+						} else {
+							console.error(`Index out of bounds: x=${x}, y=${y}`);
+						}
+					}
+				}
+			}
+
+			// Assign deep copies back to global arrays
+			arrayIndex = tempIndex;
+			arrayColor = tempColor;
+
+			console.log("Updated Arrays (After Modification):", arrayIndex, arrayColor);
 		}
-		function moveImageRight(moveFactor) {
+
+		const image = new Image();
+		image.src = '8bit tiles.jpg';
+
+		function moveImageHorizontal(moveFactor) {
 			imageX += moveFactor;
 			drawAll();
 		}
-
-		function moveImageUp(moveFactor) {
-			imageY -= moveFactor;
-			drawAll();
-		}
-		function moveImageDown(moveFactor) {
+		function moveImageVertical(moveFactor) {
 			imageY += moveFactor;
 			drawAll();
 		}
 
-		function zoomImageIn(zoomFactor) {
+		function zoomImage(zoomFactor) {
 			scaleFactor += zoomFactor;
 			if (scaleFactor >= 5.0) {
 				scaleFactor = 5.0;
-			}
-			drawAll();
-			console.log(scaleFactor);
-		}
-		function zoomImageOut(zoomFactor) {
-			scaleFactor -= zoomFactor;
-			if (scaleFactor <= 0.01) {
-				scaleFactor = 0.01;
+			} else if (scaleFactor <= 0.3) {
+				scaleFactor = 0.3;
 			}
 			drawAll();
 			console.log(scaleFactor);
 		}
 
-		function zoomGridIn(zoomFactor) {
+		function zoomGrid(zoomFactor) {
 			spriteSize += zoomFactor;
 			drawAll();
 		}
-		function zoomGridOut(zoomFactor) {
-			spriteSize -= zoomFactor;
-			drawAll();
-		}
 
-		function spriteWidthAdd(width) {
+		function spriteWidth(width) {
 			gridCellWidth += width;
-			initArrays();
-			drawAll();
-		}
-		function spriteWidthSub(width) {
-			gridCellWidth -= width;
 			if (gridCellWidth < 1) {
 				gridCellWidth = 1;
+			} else if (gridCellWidth > 32) {
+				gridCellWidth = 32;
 			}
-			initArrays();
+			copyArrays(width);
 			drawAll();
 		}
-		function spriteHeightAdd(height) {
+		function spriteHeight(height) {
 			gridCellHeight += height;
-			initArrays();
-			drawAll();
-		}
-		function spriteHeightSub(height) {
-			gridCellHeight -= height;
 			if (gridCellHeight < 1) {
 				gridCellHeight = 1;
+			} else if (gridCellHeight > 32) {
+				gridCellHeight = 1;
 			}
-			initArrays();
+			copyArrays(height);
 			drawAll();
 		}
 
@@ -321,8 +362,8 @@
 			drawSelectedColor();
 		}
 		function drawGrid() {
-			ctx.strokeStyle = "#000000";
-			ctx.fillStyle = "#000000";
+			ctx.strokeStyle = "black";
+			ctx.fillStyle = "#black";
 
 			// Start a new Path
 			for (var x = 0; x < gridCellWidth + 1; x++) {
@@ -341,10 +382,32 @@
 
 			for (var x = 0; x < gridCellWidth; x++) {
 				for (var y = 0; y < gridCellHeight; y++) {
-					if (arrayIndex[x][y] === 0) {
-						drawTransparent(x, y);
+					//					console.log("x:", x, "y:",y, "w:", gridCellWidth,"h:",gridCellHeight );
+					if (arrayColor[x][y] === undefined) {
+						arrayColor[x][y] = transparentColor;
+					}
+					if (arrayColor[x][y] === transparentColor) {
+						const gridCellPosX = gridX + (spriteSize * x) + spriteSize / 4;
+						const gridCellPosY = gridY + (spriteSize * y) + spriteSize / 4;
+						drawTransparentX(gridCellPosX, gridCellPosY, spriteSize / 2);
 					} else {
-						drawColor(x, y, array[x][y]);
+						drawColor(x, y, arrayColor[x][y]);
+						if (true) {
+							const gridCellPosX = gridX + (spriteSize * x) + spriteSize / 3;
+							const gridCellPosY = gridY + (spriteSize * y) + (spriteSize / 3) + 15;
+
+							// Set font properties
+							ctx.font = '20px Arial';
+							ctx.fillStyle = 'black';
+
+							// Draw filled text
+							ctx.fillText(arrayIndex[x][y], gridCellPosX, gridCellPosY);
+
+							// Optional: Outline the text
+							ctx.strokeStyle = 'white';
+							ctx.lineWidth = 1;
+							ctx.strokeText(arrayIndex[x][y], gridCellPosX, gridCellPosY);
+						}
 					}
 				}
 			}
@@ -354,37 +417,58 @@
 			ctx.beginPath();
 			ctx.arc((spriteSize * x) + gridX + spriteSize / 2,
 				(spriteSize * y) + gridY + spriteSize / 2,
-				spriteSize / 4, 0, 2 * Math.PI);
+				spriteSize / 3, 0, 2 * Math.PI);
 			ctx.strokeStyle = color;
 			ctx.fillStyle = color;
 			ctx.stroke();
 			ctx.fill();
 		}
-		function drawTransparent(x, y) {
-			// Draw a circle on the selected sprite
+		function drawTransparentX(x, y, size) {
+			// Calculate circle parameters
+			const centerX = x + size / 2; // Center X-coordinate
+			const centerY = y + size / 2; // Center Y-coordinate
+			const radius = size / 3;      // Radius of the circle
+
+			// Draw the circle
 			ctx.beginPath();
-			ctx.arc((spriteSize * x) + gridX + spriteSize / 2,
-				(spriteSize * y) + gridY + spriteSize / 2,
-				spriteSize / 4, 0, 2 * Math.PI);
-			ctx.strokeStyle = "#000000";
-			ctx.fillStyle = "#FFFFFF80";
-			ctx.stroke();
+			ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+			ctx.fillStyle = '#ffffff88'; // 50% white
 			ctx.fill();
+			ctx.strokeStyle = '#FF000088'; // 50% transparent red
+			ctx.lineWidth = 2;
+			ctx.stroke();
+
+			// Draw the X
+			ctx.beginPath();
+			ctx.moveTo(centerX - radius, centerY - radius);
+			ctx.lineTo(centerX + radius, centerY + radius);
+			ctx.moveTo(centerX + radius, centerY - radius);
+			ctx.lineTo(centerX - radius, centerY + radius);
+			ctx.lineWidth = 2;
+			ctx.stroke();
 		}
+
 		function drawPallet() {
 			ctx.clearRect(0, 0, canvas.width, spriteSize * 2); // Clear the canvas
-			ctx.fillStyle = '#000000'; // Set background color to dark gray
+			ctx.fillStyle = 'black';
 			ctx.fillRect(0, 0, canvas.width, spriteSize * 2); // Fill the entire canvas
-
 			for (var i = 0; i < palletColors.length; i++) {
-				ctx.fillStyle = palletColors[i];
-				ctx.fillRect(spriteSize * i, 0, spriteSize, spriteSize);
+				if (palletColors[i] === transparentColor) {
+					drawTransparentX(spriteSize * i, 0, spriteSize);
+				} else {
+					ctx.fillStyle = palletColors[i];
+					ctx.fillRect(spriteSize * i, 0, spriteSize, spriteSize);
+				}
 			}
 		}
 		function drawSelectedColor() {
 			// Change the color of the selected sprite
 			ctx.fillStyle = selectedColor;
 			ctx.fillRect(0, spriteSize, spriteSize, spriteSize);
+
+			if (selectedColor === transparentColor) {
+				drawTransparentX(0, spriteSize, spriteSize);
+			}
 		}
 
 		function getMousePositionOnCanvas(canvas, event) {
@@ -396,6 +480,23 @@
 			const y = (event.clientY - rect.top) * scaleY;  // Adjusted Y coordinate
 
 			return { x, y };
+		}
+
+		function outputSprite() {
+			let c = "[\n";
+			for (let x = 0; x < gridCellHeight; x++) {
+				let r = "";
+				for (let y = 0; y < gridCellWidth; y++) {
+					const letterIndex = arrayIndex[y][x];
+					//console.log(letterIndex, palletLetters[letterIndex], palletLetters);
+					r += letterIndex;//palletLetters[letterIndex];
+				}
+				c += '"' + r + '",\n';
+			}
+			c += '\n]';
+			console.log(c);
+			const spriteTextarea = document.getElementById("spriteID");
+			spriteTextarea.value = c;
 		}
 
 		// Add an event listener to the canvas for clicks
@@ -412,21 +513,22 @@
 					return;
 				}
 				// Set the array elements
-				arrayIndex[selectedCellX][selectedCellY] = selectedColorIndex;
-				array[selectedCellX][selectedCellY] = selectedColor;
+				arrayIndex[selectedCellX][selectedCellY] = palletLetters[selectedColorIndex];
+				arrayColor[selectedCellX][selectedCellY] = selectedColor;
 			} else {
 				// Determine which sprite was clicked
 				var clickedSprite = Math.floor(mouse.x / spriteSize);
 				selectedColor = palletColors[clickedSprite];
 				selectedColorIndex = clickedSprite;
 			}
+			outputSprite();
 			drawAll();
 		});
 
 		window.onload = function () {
-			loadPalletLetters();
-			loadPalletColors();
+			loadPallet();
 			loadSprite();
+			drawAll();
 		};
 	</script>
 
@@ -434,18 +536,51 @@
 	<br />
 	<label>Image (abc.png)</label>
 	<br />
-
+	<label>Pallet Collor ('#00000000' is Transparent)</label> <br />
+	<textarea id="palletID" name="pallet" rows="5" cols="50">
+'R': 'Red',
+'O': 'Orange',
+'Y': 'Yellow',
+'G': 'Green',
+'B': 'Blue',
+'I': 'Indigo',
+'V': 'Violet',
+'0': '#00000000', // transparent    
+'w': 'white',     // also '1' wht
+'b': 'black',
+'P': 'pink',
+'C': 'cyan',
+'M': 'magenta',
+'L': 'lightgray',
+'D': 'darkgray',
+'4': '#444444',// very dark gray
+'A': '#AAFFFF',
+'S': 'silver',
+'N': 'navy',
+'K': 'khaki',
+	</textarea>
+	<br />
 	<label>Sprite array</label>
 	<br />
-	<textarea id="lettersID" name="letter" rows="5" cols="50">letters</textarea>
-
-	<label>Pallet ('0' should always Transparent)</label>
-	<br />
-	<textarea id="palletID" name="pallet" rows="5" cols="50">pallet</textarea>
-	<br />
-	<label>Sprite array</label>
-	<br />
-	<textarea id="spriteID" name="sprite" rows="5" cols="50">sprite</textarea>
+	<textarea id="spriteID" name="sprite" rows="5" cols="50">
+[
+"0000bbbbbbbb0000",
+"00bbBBBBBBBBbb00",
+"0bBBBCCCCCCBBBb0",
+"bBBCCAVAAVACCBBb",
+"bBBCAwbwwbwACBBb",
+"bBBCCAVAAVACCBBb",
+"0bBBBCCCCCCBBBb0",
+"00bbBBBBBBBBbb00",
+"0000bbbbbbbb0000",
+"0bb000bGGb000bb0",
+"bGGbb0bGGb0bbGGb",
+"bGGGGbbGGbbGGGGb",
+"0bGGGGbGGbGGGGb0",
+"00bbGGGGGGGGbb00",
+"0000bbbbbbbb0000",
+]
+	</textarea>
 
 </body>
 

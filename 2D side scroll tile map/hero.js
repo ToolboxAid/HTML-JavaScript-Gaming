@@ -151,7 +151,6 @@ class Hero extends ObjectSprite {
         ],
     ];
 
-
     constructor(x = 127, y = 280) {
         super(x, y, Hero.frame, Hero.dyingFrames, spriteConfig.pixelSize);
 
