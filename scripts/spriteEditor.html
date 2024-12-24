@@ -126,9 +126,13 @@
 "bGGGGbbGGbbGGGGb",
 "0bGGGGbGGbGGGGb0",
 "00bbGGGGGGGGbb00",
-"0000bbbbbbbb0000",
+"0000bbbbbbbb0000"
 ]
 					</textarea>
+					<!--
+[
+
+]-->
 
 				</td>
 			</tr>
@@ -184,20 +188,20 @@
 			</tr>
 			<tr>
 				<td>
-					<button onclick="removeColumn()">Sub</button>
+					<button onclick="spriteDelColumn()">Sub</button>
 				</td>
 				<td>Grid X Column</td>
 				<td>
-					<button onclick="addColumn()">Add</button>
+					<button onclick="spriteAddColumn()">Add</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button onclick="removeRow()">Sub</button>
+					<button onclick="spriteDelRow()">Sub</button>
 				</td>
 				<td>Grid Y Row</td>
 				<td>
-					<button onclick="addRow()">Add</button>
+					<button onclick="spriteAddRow()">Add</button>
 				</td>
 			</tr>
 			<tr class="custom-height">
@@ -238,64 +242,65 @@
 		let palletLetters = [];
 		let palletColors = [];
 
-		let gridCellWidth = 10;
-		let gridCellHeight = 10;
-		let sprteIndex = new Array(gridCellWidth);
-		let sprteColor = new Array(gridCellWidth);
+		let gridCellWidth = 4;
+		let gridCellHeight = 5;
+		const maxGrid = 32;
+		let spriteIndex = new Array(gridCellWidth);
+		let spriteColor = new Array(gridCellWidth);
 
 
-		/// test
-		/// test
-		/// test
-		/// test
-		let testArray = [];
-		for (let i = 0; i < gridCellWidth; i++) {
-			testArray[i] = new Array(gridCellHeight).fill(i);
-		}
+		// /// test
+		// /// test
+		// /// test
+		// /// test
+		// let testArray = [];
+		// for (let i = 0; i < gridCellWidth; i++) {
+		// 	testArray[i] = new Array(gridCellHeight).fill(i);
+		// }
 
-		for (let i = 1; i < 9; i++) {
-			testArray[i][i] = i - 1;
-		}
-		testArray[0][0] = 82 / 2;
-		testArray[9][9] = 82;
+		// for (let i = 1; i < 9; i++) {
+		// 	testArray[i][i] = i - 1;
+		// }
+		// testArray[0][0] = 82 / 2;
+		// testArray[9][9] = 82;
 
-		console.log("Before adding column:");
-		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+		// console.log("Before adding column:");
+		// testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
 
-		// Add a new column
-		let newColumnValue = 99; // Value for the new column
-		for (let i = 0; i < testArray.length; i++) {
-			testArray[i].push(newColumnValue);
-		}
+		// // Add a new column
+		// let newColumnValue = 99; // Value for the new column
+		// for (let i = 0; i < testArray.length; i++) {
+		// 	testArray[i].push(newColumnValue);
+		// }
+		// console.log("After adding column:", testArray);
 
-		console.log("After adding column:", testArray);
-		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+		// testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
 
-		// Add a new row
-		let newRowValue = 1; // Value for the new row
-		let newRow = new Array(gridCellHeight + 1).fill(newRowValue); // Create the new row
-		testArray.push(newRow);
+		// // Add a new row
+		// let newRowValue = 1; // Value for the new row
+		// let newRow = new Array(gridCellHeight + 1).fill(newRowValue); // Create the new row
+		// testArray.push(newRow);
 
-		console.log("After adding row:", testArray);
-		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+		// console.log("After adding row:", testArray);
+		// testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
 
-		// Delete the last column from each row
-		for (let i = 0; i < testArray.length; i++) {
-			testArray[i].splice(testArray[i].length - 1, 1);
-		}
-		console.log("After deleting column:", testArray);
-		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+		// // Delete the last column from each row
+		// for (let i = 0; i < testArray.length; i++) {
+		// 	testArray[i].splice(testArray[i].length - 1, 1);
+		// }
+		// console.log("After deleting column:", testArray);
+		// testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
 
-		// Delete the last row
-		testArray.splice(testArray.length - 1, 1);
-		console.log("After deleting row:", testArray);
-		testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
+		// // Delete the last row
+		// testArray.splice(testArray.length - 1, 1);
+		// console.log("After deleting row:", testArray);
+		// testArray.forEach((row, index) => console.log(`Row ${index}:`, row));
 
 
-		/// test
-		/// test
-		/// test
-		/// test
+		// /// test
+		// /// test
+		// /// test
+		// /// test
 
 
 		function loadPallet() {
@@ -333,32 +338,49 @@
 			}
 		}
 
-		function loadSprite(width = 0, height = 0) {
+		function loadSprite() {
 			const spriteTextarea = document.getElementById("spriteID");
 			const spriteContent = spriteTextarea.value.trim();
 
-			const rows = spriteContent.replace(/[\[\]]/g, "").split(",");
-			const row = rows[0].trim().replace(/"/g, ""); // Clean up row
-			gridCellWidth = rows.length + width;
-			gridCellHeight = row.length - 1 + height;
-			initArrays();
-			// Process each row and populate the arrays
-			for (let y = 0; y < gridCellHeight; y++) {
-				const row = rows[y].trim().replace(/"/g, ""); // Clean up row
+			// Parse rows from the input, removing brackets and splitting by commas
+			const rows = spriteContent.replace(/[\[\]]/g, "").split(",").map(row => row.trim().replace(/"/g, ""));
 
+			// Set grid dimensions based on the parsed rows
+			gridCellHeight = rows.length;
+			gridCellWidth = rows[0]?.length || 0;
+
+			// Log debugging information
+			console.log("Grid Dimensions:", gridCellWidth, gridCellHeight);
+			console.log("Parsed Rows:", rows);
+
+			// // Initialize spriteIndex and spriteColor arrays
+			// spriteIndex = Array.from({ length: gridCellHeight }, () => new Array(gridCellWidth).fill(null));
+			// spriteColor = Array.from({ length: gridCellHeight }, () => new Array(gridCellWidth).fill(transparentColor));
+
+			// Process each row and populate spriteIndex and spriteColor
+			for (let y = 0; y < gridCellHeight; y++) {
+				const row = rows[y];
 				for (let x = 0; x < gridCellWidth; x++) {
 					const letter = row[x];
-					sprteIndex[x][y] = letter;
+
+					// Update spriteIndex
+					spriteIndex[x][y] = letter;
 
 					// Find the corresponding color
 					const letterIndex = palletLetters.indexOf(letter);
-					sprteColor[x][y] = letterIndex !== -1 ? palletColors[letterIndex] : "none"; // Default to "none" if not found
-					if (sprteColor[x][y] === "none") {
-						console.log("Invalid color at:", x, "x", y, "value:", letterIndex);
-						sprteColor[x][y] === transparentColor;
+					spriteColor[x][y] = letterIndex !== -1 ? palletColors[letterIndex] : transparentColor;
+
+					// Log invalid colors
+					if (letterIndex === -1) {
+						console.log(`Invalid color at (${x}, ${y}): "${letter}"`);
+						spriteColor[x][y] = 'red';
 					}
 				}
 			}
+
+			// Log results
+			//console.log("Sprite Index:", spriteIndex);
+			//console.log("Sprite Color:", spriteColor);
 		}
 
 		// Define the width and height of each sprite
@@ -378,9 +400,9 @@
 		initArrays();
 
 		function initArrays() {
-			for (let x = 0; x < gridCellWidth; x++) {
-				sprteIndex[x] = new Array(gridCellHeight).fill('0');
-				sprteColor[x] = new Array(gridCellHeight).fill(transparentColor);
+			for (let x = 0; x < maxGrid; x++) {
+				spriteIndex[x] = new Array(maxGrid).fill('0');
+				spriteColor[x] = new Array(maxGrid).fill(transparentColor);
 			}
 		}
 
@@ -412,49 +434,34 @@
 			drawAll();
 		}
 
-
-		// Add a new column
-		function addRow() {
-			const newIndexRow = new Array(gridCellWidth - 1).fill('R');
-			const newColorRow = new Array(gridCellWidth - 1).fill('red');//transparentColor);
-
-			sprteIndex.push(newIndexRow);
-			sprteColor.push(newColorRow);
-
-			gridCellHeight++;
-			drawAll();
-		}
-
-		// Add a new row
-		function addColumn() {
-			for (let x = 0; x < sprteIndex.length; x++) {
-				sprteIndex[x].push('C');
-				sprteColor[x].push('Cyan');//transparentColor);
+		function spriteAddRow() {
+			if (gridCellHeight < maxGrid) {
+				gridCellHeight++;
+				drawAll();
+			} else {
+				console.error("Cannot add row, gridCellHeight is already 32.");
 			}
-			//console.log(sprteIndex, sprteColor)
-			gridCellWidth++;
-			drawAll();
 		}
-
-		// Remove the last column
-		function removeColumn() {
+		function spriteAddColumn() {
+			if (gridCellWidth < maxGrid) {
+				gridCellWidth++;
+				drawAll();
+			} else {
+				console.error("Cannot add column, gridCellWidth is already 32.");
+			}
+		}
+		function spriteDelColumn() {
 			if (gridCellWidth > 0) {
-				for (let x = 0; x < sprteIndex.length; x++) {
-					sprteIndex[x].pop();
-					sprteColor[x].pop();
-				}
 				gridCellWidth--;
 				drawAll();
 			} else {
 				console.error("Cannot remove column, gridCellWidth is already 0.");
 			}
 		}
-
-		// Remove the last row
-		function removeRow() {
+		function spriteDelRow() {
 			if (gridCellHeight > 0) {
-				sprteIndex.pop();
-				sprteColor.pop();
+				// spriteIndex.pop();
+				// spriteColor.pop();
 				gridCellHeight--;
 				drawAll();
 			} else {
@@ -468,18 +475,16 @@
 			ctxEditor.fillStyle = '#333333'; // Set background color to dark gray
 			ctxEditor.fillRect(0, 0, canvasEditor.width, canvasEditor.height); // Fill the entire canvasEditor
 
-			//
 			ctxEditor.save();
 			ctxEditor.scale(scaleFactor, scaleFactor);
 			ctxEditor.drawImage(image, imageX, imageY);
 			ctxEditor.restore();
 
-			//
 			drawGrid();
 			drawPallet();
 			drawSelectedColor();
-
 			drawSpriteImage();
+			outputSprite();
 		}
 
 		function drawSpriteImage() {
@@ -498,7 +503,7 @@
 					const gridCellPosX = x * imageSize + offset;
 					const gridCellPosY = y * imageSize + offset;
 
-					ctxImage.fillStyle = sprteColor[x][y];
+					ctxImage.fillStyle = spriteColor[x][y];
 					ctxImage.fillRect(gridCellPosX, gridCellPosY, imageSize, imageSize); // (x, y, width, height)
 
 				}
@@ -525,21 +530,20 @@
 				ctxEditor.stroke();
 			}
 
-			console.log(sprteIndex, sprteColor);
-
 			// Grid
+			//console.log(gridCellWidth, gridCellHeight, spriteIndex, spriteColor);
 			for (var x = 0; x < gridCellWidth; x++) {
 				for (var y = 0; y < gridCellHeight; y++) {
 					//					console.log("x:", x, "y:",y, "w:", gridCellWidth,"h:",gridCellHeight );
-					if (sprteColor[x][y] === undefined) {
-						sprteColor[x][y] = transparentColor;
+					if (spriteColor[x][y] === undefined) {
+						spriteColor[x][y] = transparentColor;
 					}
-					if (sprteColor[x][y] === transparentColor) {
+					if (spriteColor[x][y] === transparentColor) {
 						const gridCellPosX = gridX + (spriteSize * x) + spriteSize / 4;
 						const gridCellPosY = gridY + (spriteSize * y) + spriteSize / 4;
 						drawTransparentX(gridCellPosX, gridCellPosY, spriteSize / 2);
 					} else {
-						drawColor(x, y, sprteColor[x][y]);
+						drawColor(x, y, spriteColor[x][y]);
 						if (true) {
 							const gridCellPosX = gridX + (spriteSize * x) + spriteSize / 3;
 							const gridCellPosY = gridY + (spriteSize * y) + (spriteSize / 3) + 15;
@@ -549,12 +553,12 @@
 							ctxEditor.fillStyle = 'black';
 
 							// Draw filled text
-							ctxEditor.fillText(sprteIndex[x][y], gridCellPosX, gridCellPosY);
+							ctxEditor.fillText(spriteIndex[x][y], gridCellPosX, gridCellPosY);
 
 							// Optional: Outline the text
 							ctxEditor.strokeStyle = 'white';
 							ctxEditor.lineWidth = 1;
-							ctxEditor.strokeText(sprteIndex[x][y], gridCellPosX, gridCellPosY);
+							ctxEditor.strokeText(spriteIndex[x][y], gridCellPosX, gridCellPosY);
 						}
 					}
 				}
@@ -632,10 +636,11 @@
 
 		function outputSprite() {
 			let c = "[\n";
+			console.log(spriteIndex);
 			for (let x = 0; x < gridCellHeight; x++) {
 				let r = "";
 				for (let y = 0; y < gridCellWidth; y++) {
-					const letterIndex = sprteIndex[x][y];
+					const letterIndex = spriteIndex[y][x];
 					//console.log(letterIndex, palletLetters[letterIndex], palletLetters);
 					r += letterIndex;//palletLetters[letterIndex];
 				}
@@ -661,15 +666,14 @@
 					return;
 				}
 				// Set the array elements
-				sprteIndex[selectedCellX][selectedCellY] = palletLetters[selectedColorIndex];
-				sprteColor[selectedCellX][selectedCellY] = selectedColor;
+				spriteIndex[selectedCellX][selectedCellY] = palletLetters[selectedColorIndex];
+				spriteColor[selectedCellX][selectedCellY] = selectedColor;
 			} else {
 				// Determine which sprite was clicked
 				var clickedSprite = Math.floor(mouse.x / spriteSize);
 				selectedColor = palletColors[clickedSprite];
 				selectedColorIndex = clickedSprite;
 			}
-			outputSprite();
 			drawAll();
 		});
 
