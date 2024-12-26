@@ -230,56 +230,62 @@
 'Î':'#778899':'LightSlateGray',
 'Ï':'#708090':'SlateGray',
 'Ð':'#2F4F4F':'DarkSlateGray',
-'Ñ''#000000''Black',
+'Ñ':'#000000''Black',
+
 					</textarea>
-					<!--  
-'R': 'Red',
-'O': 'Orange',
-'Y': 'Yellow',
-'G': 'Green',
-'B': 'Blue',
-'I': 'Indigo',
-'V': 'Violet',
-'0': '#00000000', // transparent    
-'w': 'white',     // also '1' wht
-'b': 'black',
-'P': 'pink',
-'C': 'cyan',
-'M': 'magenta',
-'L': 'lightgray',
-'D': 'darkgray',
-'4': '#444444',// very dark gray
-'A': '#AAFFFF',
-'S': 'silver',
-'N': 'navy',
-'K': 'khaki',
--->
+
 					<br /><br />
 					<h3>Sprite array</h3>
 					<textarea id="spriteID" name="sprite" rows="5" cols="50">
 [
-"ØØØ¥¥¥¥¥¥¥¥¥¥ØØØ",
-"Ø¥¥¥11111111¥¥¥Ø",
-"¥¥111777777111¥¥",
-"¥11777¥ÄÄ¥77711¥",
-"¥11777¥77¥77711¥",
-"¥11117777771111¥",
-"¥¥111111111111¥¥",
-"Ø¥¥¥11111111¥¥¥Ø",
-"ØØØ¥¥¥¥¥¥¥¥¥¥ØØØ",
-"Ø¥¥ØØØ¥__¥ØØØ¥¥Ø",
-"¥__¥¥Ø¥__¥Ø¥¥__¥",
-"¥____¥¥__¥¥____¥",
-"¥_____¥__¥_____¥",
-"Ø¥____¥__¥____¥Ø",
-"ØØ¥¥________¥¥ØØ",
-"ØØØØ¥¥¥¥¥¥¥¥ØØØØ"
-]
+"ØØØØØØØÑÑÑÑØÑÑÑØ",
+"ØØØØØÑÑ&&&ÑÑ©©©Ñ",
+"ØØØØÑ&&&&&&Ñ©©©Ñ",
+"ØØØÑ&&&ÑÑÑÑÑÑ©©Ñ",
+"ØØÑ&&&ÑÑÑÑÑÑÑÑ©Ñ",
+"ØØÑ&ÑÑ©©©©©©ÑÑÑØ",
+"ØÑÑÑÑ©©©Ñ©Ñ©Ñ&&Ñ",
+"ØÑ©ÑÑ©©©Ñ©Ñ©Ñ&&Ñ",
+"Ñ©©ÑÑÑ©©©©©©©Ñ&Ñ",
+"Ñ©©©Ñ©©Ñ©©©©©Ñ&Ñ",
+"ØÑ©©©©ÑÑÑÑ©ÑÑÑÑØ",
+"ØØÑÑ©©©©ÑÑÑÑÑ&ÑØ",
+"ØØØÑÑÑ©©©©©Ñ&&ÑØ",
+"ØØÑ&&&ÑÑÑÑÑÑ&ÑØØ",
+"ØÑ&&&&&ÑÑ&&ÑÑØØØ",
+"Ñ&&&ÑÑÑ&Ñ&&&ÑÑØØ",
+"Ñ&&Ñ©©©ÑÑÑ&&&ÑØØ",
+"Ñ&Ñ©©©©©ÑÑÑ&&ÑÑØ",
+"ØÑÑ©©©©©Ñ77ÑÑ7ÑØ",
+"ØØÑÑ©©©ÑÑ77ÑÑ´´Ñ",
+"ØÑ´´ÑÑÑÑÑÑÑÑ´´´Ñ",
+"Ñ³´ÑÑÑÑÑÑÑÑÑ´´´Ñ",
+"Ñ´´ÑÑÑÑÑÑÑÑÑ´´´Ñ",
+"Ñ´´ÑÑÑÑØØØØÑ´´ÑÑ",
+"Ñ´´ÑÑØØØØØØØÑÑÑØ",
+"ØÑÑØØØØØØØØØØØØØ"
+]						
 					</textarea>
-					<!--
+<!--
 [
-
-]-->
+"ØØØÑÑÑÑÑÑÑÑÑÑØØØ",
+"ØÑÑÑ11111111ÑÑÑØ",
+"ÑÑ111777777111ÑÑ",
+"Ñ11777ÑÄÄÑ77711Ñ",
+"Ñ11777Ñ77Ñ77711Ñ",
+"Ñ11117777771111Ñ",
+"ÑÑ111111111111ÑÑ",
+"ØÑÑÑ11111111ÑÑÑØ",
+"ØØØÑÑÑÑÑÑÑÑÑÑØØØ",
+"ØÑÑØØØÑ__ÑØØØÑÑØ",
+"Ñ__ÑÑØÑ__ÑØÑÑ__Ñ",
+"Ñ____ÑÑ__ÑÑ____Ñ",
+"Ñ_____Ñ__Ñ_____Ñ",
+"ØÑ____Ñ__Ñ____ÑØ",
+"ØØÑÑ________ÑÑØØ",
+"ØØØØÑÑÑÑÑÑÑÑØØØØ"
+]
+-->
 
 				</td>
 			</tr>
@@ -399,12 +405,10 @@
 		const transparentColor = "#00000000";
 		const palletAcrossCnt = 5;
 		const palletDownCnt = 36;
-		const palletSize = 35;
+		const palletSize = 33;
 
 		let palletLetters = [];
 		let palletColors = [];
-
-
 
 		function loadPallet() {
 			const textarea = document.getElementById('palletID');
@@ -439,6 +443,7 @@
 				letterSet.add(letter);
 				palletLetters.push(letter);
 				palletColors.push(color);
+				//console.log(letter, color);
 			}
 		}
 
@@ -454,7 +459,7 @@
 			gridCellWidth = rows[0]?.length || 0;
 
 			// Log debugging information
-			console.log("Grid Dimensions:", gridCellWidth, gridCellHeight);
+			//console.log("Grid Dimensions:", gridCellWidth, gridCellHeight);
 
 			// // Initialize spriteIndex and spriteColor arrays
 
@@ -524,7 +529,7 @@
 				scaleFactor = 0.3;
 			}
 			drawAll();
-			console.log(scaleFactor);
+			//console.log(scaleFactor);
 		}
 
 		function zoomGrid(zoomFactor) {
@@ -695,22 +700,22 @@
 			ctxEditor.lineWidth = 2;
 			ctxEditor.stroke();
 		}
-		
+
 		let palletSelectedX = 0;
 		let palletSelectedY = 0;
 		let palletScale = (palletSize / spriteSize);
 
 		function drawSelectedColor() {
-			 ctxEditor.strokeStyle = "white";
-			 ctxEditor.lineWidth = 4;
-			 ctxEditor.strokeRect(palletSelectedX*palletSize,palletSelectedY*palletSize,palletSize,palletSize);			
+			ctxEditor.strokeStyle = "white";
+			ctxEditor.lineWidth = 4;
+			ctxEditor.strokeRect(palletSelectedX * palletSize, palletSelectedY * palletSize, palletSize, palletSize);
 		}
 		function drawPallet() {
 			palletScale = (palletSize / spriteSize);
 
-			ctxEditor.clearRect(0, 0, spriteSize * palletAcrossCnt*palletScale, canvasEditor.height); // Clear the canvasEditor
+			ctxEditor.clearRect(0, 0, spriteSize * palletAcrossCnt * palletScale, canvasEditor.height); // Clear the canvasEditor
 			ctxEditor.fillStyle = 'black';
-			ctxEditor.fillRect(0, 0, spriteSize * palletAcrossCnt*palletScale, canvasEditor.height); // Fill the entire canvasEditor
+			ctxEditor.fillRect(0, 0, spriteSize * palletAcrossCnt * palletScale, canvasEditor.height); // Fill the entire canvasEditor
 			for (var i = 0; i < palletColors.length; i++) {
 				let mod = i % palletDownCnt;
 				let div = Math.floor(i / palletDownCnt);
@@ -719,11 +724,10 @@
 
 				if (palletColors[i] === transparentColor) {
 					//drawTransparentX(spriteSize * div, spriteSize * mod, spriteSize);
-					drawTransparentX(newX, newY, spriteSize*palletScale);
+					drawTransparentX(newX, newY, spriteSize * palletScale);
 				} else {
-					ctxEditor.fillStyle = palletColors[i];					
-					console.log(div, mod, newX, newY, spriteSize, palletSize, palletScale);
-					ctxEditor.fillRect(newX, newY, spriteSize * palletScale -4, spriteSize * palletScale-4);
+					ctxEditor.fillStyle = palletColors[i];
+					ctxEditor.fillRect(newX, newY, spriteSize * palletScale - 4, spriteSize * palletScale - 4);
 				}
 			}
 		}
@@ -741,7 +745,7 @@
 
 		function outputSprite() {
 			let c = "[\n";
-			console.log(spriteIndex);
+			//console.log(spriteIndex);
 			for (let x = 0; x < gridCellHeight; x++) {
 				let r = "";
 				for (let y = 0; y < gridCellWidth; y++) {
@@ -762,7 +766,7 @@
 
 			const mouse = getMousePositionOncanvas(canvasEditor, event);
 
-			if (mouse.x > (spriteSize * palletAcrossCnt)*palletScale) {
+			if (mouse.x > (spriteSize * palletAcrossCnt) * palletScale) {
 				// Determine which sprite cell clicked
 				selectedCellX = Math.floor((mouse.x - gridX) / spriteSize);
 				selectedCellY = Math.floor((mouse.y - gridY) / spriteSize);
@@ -780,7 +784,11 @@
 				var clickedPalletY = Math.floor(mouse.y / palletSize);
 				var clickedPallet = clickedPalletX * palletDownCnt + clickedPalletY;
 
-				console.log("x", clickedPalletX, "y", clickedPalletY, "clk", clickedPallet);
+				//console.log("x", clickedPalletX, "y", clickedPalletY, "clk", clickedPallet, palletColors.length);
+
+				if (clickedPallet > palletColors.length - 1) {
+					return;// don't allow invalid color
+				}
 
 				selectedColor = palletColors[clickedPallet];
 				selectedColorIndex = clickedPallet;
