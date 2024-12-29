@@ -1,14 +1,9 @@
-//
-//
-//
-//
+// ToolboxAid.com
+// David Quesenberry
+// 12/28/2024
+// spriteEditor.js
 
 import SpritePallets from "../scripts/spritePallets.js";
-
-window.onload = () => {
-    SpriteEditor.initialize();
-};
-
 
 //-------------------------------------------
 export class SpriteEditor {
@@ -21,13 +16,21 @@ export class SpriteEditor {
     static canvasImage = null;
     static ctxImage = null;
 
-
     //-------------------------------------------
-    // Define the pallet
+    // Pallet information
     static transparentColor = "#00000000";
     static palletAcrossCnt = 5;
     static palletDownCnt = 36;
     static palletSize = 30;
+
+    static palletSelectedX = 0;
+    static palletSelectedY = 0;
+    static palletScale = (this.palletSize / this.spriteSize);
+
+    static palletSpacing = 10;
+
+    // Pallet to load
+    static palletName = null;
 
     //-------------------------------------------
     // Grid information
@@ -35,9 +38,6 @@ export class SpriteEditor {
     static gridCellWidth = this.maxGrid;
     static gridCellHeight = this.maxGrid;
     static spriteIndex = new Array(this.gridCellWidth);
-    static spriteColor = new Array(this.gridCellWidth);
-
-    //-------------------------------------------
 
     static gridX = this.palletSize * (this.palletAcrossCnt + 1) + this.palletSize / 4;
     static gridY = this.palletSize;
@@ -49,21 +49,16 @@ export class SpriteEditor {
 
     //-------------------------------------------
     // Define the width, height, and Image of the sprite
-    static imageSize = 5;
-    static spriteImageSize = this.maxGrid * this.imageSize + 4;
-    static spriteSize = 50
+    static spritePixelSize = 5;
+    static spriteImageSize = this.maxGrid * this.spritePixelSize + 4;
+    static spriteSize = 50;
 
+    //-------------------------------------------
+    // Grid Image
     static image = null;
     static imageX = this.gridX;
     static imageY = this.gridY;
-
-    //-------------------------------------------
-    // Pallet information
-    static palletSelectedX = 0;
-    static palletSelectedY = 0;
-    static palletScale = (this.palletSize / this.spriteSize);
-
-    static palletSpacing = 10;
+    static imageScaleFactor = 1.0; // Zoom factor
 
     static initialize() {
         this.initializeArrays();
@@ -78,7 +73,8 @@ export class SpriteEditor {
             console.error("Canvas 'SpriteEditor' not found!");
         }
 
-        // 
+        // set palletName to load
+        SpriteEditor.palletName = "default";
         this.loadPallet();
         this.loadSprite();
 
@@ -86,10 +82,20 @@ export class SpriteEditor {
         this.image = new Image();
         this.image.src = './8bit tiles.jpg';
 
-        this.drawAll();
+        // Wait for the image to load before calling drawAll
+        this.image.onload = () => {
+            // Now that the image is loaded, draw it
+            this.drawAll();
+        };
+
+        // image loading errors:
+        this.image.onerror = (error) => {
+            console.error("Failed to load image:", error);
+        };
+
+        console.log(SpritePallets.getByHex("#000000"));
     }
 
-    //-------------------------------------------
     static initializeCanvasEditor() {
         // Get the canvas element
         this.canvasEditor = document.getElementById("spriteEditor");
@@ -100,7 +106,7 @@ export class SpriteEditor {
         }
 
         // Set the canvas dimensions
-        this.canvasEditor.width = 1600;
+        this.canvasEditor.width = 2075;
         this.canvasEditor.height = 1200;
 
         // Create a new CanvasRenderingContext2D object
@@ -130,85 +136,22 @@ export class SpriteEditor {
 
     static initializeArrays() {
         for (let x = 0; x < this.maxGrid; x++) {
-            this.spriteIndex[x] = new Array(this.maxGrid).fill('0');
-            this.spriteColor[x] = new Array(this.maxGrid).fill(this.transparentColor);
+            this.spriteIndex[x] = new Array(this.maxGrid).fill('Ø');
         }
     }
 
-    static scaleFactor = 1.0; // Zoom factor
-
-    static palletLetters = [];
-    static palletColors = [];
-    static palletNames = [];
-
-    static spritePalletMap = null;
-
     static loadPallet() {
+        const spriteTextarea = document.getElementById("palletID");  // Ensure the textarea element exists
 
-        // // Example usage:
-        // console.log(SpritePallets.getByIndex('default', 1)); // { symbol: '"', hex: '#FFB6C1', name: 'LightPink' }
-        // console.log(SpritePallets.getBySymbol('default', 'Ø')); // { symbol: '!', hex: '#FFC0CB', name: 'Pink' }
-        // console.log(SpritePallets.getByHex('default', '#FF1493')); // { symbol: '$', hex: '#FF1493', name: 'DeepPink' }
-
-        // console.log(SpritePallets.getByIndex('Crayola16', 5)); // { symbol: 'B', hex: '#FF8833', name: 'Orange' }
-        // console.log(SpritePallets.getBySymbol('Crayola16', 'A')); // { symbol: 'A', hex: '#ED0A3F', name: 'Red' }
-        // console.log(SpritePallets.getBySymbol('Crayola16', 'Ø')); // { symbol: 'A', hex: '#ED0A3F', name: 'Red' }
-        // console.log(SpritePallets.getByHex('Crayola16', '#1F75FE')); // { symbol: 'E', hex: '#0066CC', name: 'Blue' }
-
-        // SpritePallets.default.forEach((pallet, index) => {
-        //     pallet.symbol = index.toString();
-        // });
-
-        // // Iterate over the spritePallets object (the 'default' property)
-        // Object.entries(palette).forEach(([symbol, { hex, name }]) => {
-        //     console.log(`Symbol: ${symbol}, Hex: ${hex}, Name: ${name}`);
-        // });
-
-        // // Check if the index is within bounds
-        // let index = 20;
-        // if (index >= 0 && index < entries.length) {
-        //     const [symbol, { hex, name }] = entries[index];
-        //     console.log(`Symbol: ${symbol}, Hex: ${hex}, Name: ${name}`);
-        // } else {
-        //     console.log("Index out of bounds");
-        // }
-
-        const palletID = document.getElementById('palletID');
-        const palletText = palletID.value;
-
-        // Remove comments and extra whitespace, then split by commas
-        const cleanContent = palletText
-            .replace(/\/\/.*/g, '')  // Remove comments
-            .replace(/\s+/g, '')     // Remove extra spaces
-            .trim();
-
-        // Initialize arrays and Set to track duplicates
-        this.palletLetters = [];
-        this.palletColors = [];
-        const letterSet = new Set();  // Set to check for duplicates
-
-        // Match the key-value pairs (e.g., 'R': 'Red')
-        //const regex = /'([^']+)'\s*:\s*'([^']+)'/g;
-        const regex = /'([^']+)'\s*:\s*'([^']+)'\s*:\s*'([^']+)'/g;
-
-        let match;
-
-        // Parse the content and populate the arrays
-        while ((match = regex.exec(cleanContent)) !== null) {
-            const letter = match[1];
-            const color = match[2];
-            const name = match[3];
-
-            // Check for duplicate letters
-            if (letterSet.has(letter)) {
-                throw new Error(`Duplicate letter found: ${letter},  ${color},  ${name}`);
-            }
-
-            letterSet.add(letter);
-            this.palletLetters.push(letter);
-            this.palletColors.push(color);
-            this.palletNames.push(name);
+        if (!spriteTextarea) {
+            console.error("Sprite textarea not found.");
+            return;
         }
+
+        spriteTextarea.value = "";
+        spriteTextarea.value += `#  Sym  Hex      Name\n`;
+        spriteTextarea.value += `-  ---  -------  --------\n`;
+        spriteTextarea.value = SpritePallets.getPaletteDetails();
     }
 
     static loadSprite() {
@@ -222,7 +165,7 @@ export class SpriteEditor {
         this.gridCellHeight = rows.length;
         this.gridCellWidth = rows[0]?.length || 0;
 
-        // Process each row and populate spriteIndex and spriteColor
+        // Process each row and populate spriteIndex
         for (let y = 0; y < this.gridCellHeight; y++) {
             const row = rows[y];
             for (let x = 0; x < this.gridCellWidth; x++) {
@@ -231,20 +174,8 @@ export class SpriteEditor {
 
                 // Update spriteIndex
                 this.spriteIndex[x][y] = letter;
-
-                // Update sprite color
-                this.spriteColor[x][y] = SpritePallets.getBySymbol('default', letter).hex;
             }
         }
-
-        //SpritePallets.dumpPallet();
-                    // Iterate through the palette and display all details
-                    const paletteName = "default";
-                    const palette = SpritePallets[paletteName];
-                    console.log(`Details of "${paletteName}" palette:`);
-                    palette.forEach((pallet, index) => {
-                        console.log(`Index: ${index}, Symbol: ${pallet.symbol}, Hex: ${pallet.hex}, Name: ${pallet.name}`);
-                    });
     }
 
     static moveImageHorizontal(moveFactor) {
@@ -255,13 +186,12 @@ export class SpriteEditor {
         this.imageY += moveFactor;
         this.drawAll();
     }
-
     static zoomImage(zoomFactor) {
-        this.scaleFactor += zoomFactor;
-        if (this.scaleFactor >= 5.0) {
-            this.scaleFactor = 5.0;
-        } else if (this.scaleFactor <= 0.3) {
-            this.scaleFactor = 0.3;
+        this.imageScaleFactor += zoomFactor;
+        if (this.imageScaleFactor >= 5.0) {
+            this.imageScaleFactor = 5.0;
+        } else if (this.imageScaleFactor <= 0.3) {
+            this.imageScaleFactor = 0.3;
         }
         this.drawAll();
     }
@@ -276,7 +206,7 @@ export class SpriteEditor {
             this.gridCellHeight++;
             this.drawAll();
         } else {
-            console.error("Cannot add row, gridCellHeight is already 32.");
+            console.error(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
         }
     }
     static spriteAddColumn() {
@@ -284,7 +214,7 @@ export class SpriteEditor {
             this.gridCellWidth++;
             this.drawAll();
         } else {
-            console.error("Cannot add column, gridCellWidth is already 32.");
+            console.error(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
         }
     }
     static spriteDelColumn() {
@@ -292,7 +222,7 @@ export class SpriteEditor {
             this.gridCellWidth--;
             this.drawAll();
         } else {
-            console.error("Cannot remove column, gridCellWidth is already 0.");
+            console.error("Cannot remove column, gridCellWidth is already 1.");
         }
     }
     static spriteDelRow() {
@@ -300,18 +230,18 @@ export class SpriteEditor {
             this.gridCellHeight--;
             this.drawAll();
         } else {
-            console.error("Cannot remove row, gridCellHeight is already 0.");
+            console.error("Cannot remove row, gridCellHeight is already 1.");
         }
     }
 
     static drawAll() {
         // Clear the canvas and set background color to #333333
-        this.ctxEditor.clearRect(0, 0, this.canvasEditor.width, this.canvasEditor.height); // Clear the canvasEditor
-        this.ctxEditor.fillStyle = '#333333'; // Set background color to dark gray
-        this.ctxEditor.fillRect(0, 0, this.canvasEditor.width, this.canvasEditor.height); // Fill the entire canvasEditor
+        this.ctxEditor.clearRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
+        this.ctxEditor.fillStyle = '#333333';
+        this.ctxEditor.fillRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
 
         this.ctxEditor.save();
-        this.ctxEditor.scale(this.scaleFactor, this.scaleFactor);
+        this.ctxEditor.scale(this.imageScaleFactor, this.imageScaleFactor);
         this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
         this.ctxEditor.restore();
 
@@ -334,11 +264,13 @@ export class SpriteEditor {
         // Sprite image
         for (var x = 0; x < this.gridCellWidth; x++) {
             for (var y = 0; y < this.gridCellHeight; y++) {
-                const gridCellPosX = x * this.imageSize + offset;
-                const gridCellPosY = y * this.imageSize + offset;
+                const gridCellPosX = x * this.spritePixelSize + offset;
+                const gridCellPosY = y * this.spritePixelSize + offset;
 
-                this.ctxImage.fillStyle = this.spriteColor[x][y];
-                this.ctxImage.fillRect(gridCellPosX, gridCellPosY, this.imageSize, this.imageSize);
+                // Update sprite color
+                const result = SpritePallets.getBySymbol(this.spriteIndex[x][y]);
+                this.ctxImage.fillStyle = result.hex;
+                this.ctxImage.fillRect(gridCellPosX, gridCellPosY, this.spritePixelSize, this.spritePixelSize);
             }
         }
     }
@@ -365,34 +297,18 @@ export class SpriteEditor {
             this.ctxEditor.stroke();
         }
 
-        // Grid
+        // draw sprite array colors on grid
         for (var x = 0; x < this.gridCellWidth; x++) {
             for (var y = 0; y < this.gridCellHeight; y++) {
-                if (this.spriteColor[x][y] === undefined) {
-                    this.spriteColor[x][y] = this.transparentColor;
-                }
-                if (this.spriteColor[x][y] === this.transparentColor) {
+                const result = SpritePallets.getBySymbol(this.spriteIndex[x][y]);
+
+                if (result.hex === this.transparentColor) {
                     const gridCellPosX = this.gridX + (this.spriteSize * x) + this.spriteSize / 4;
                     const gridCellPosY = this.gridY + (this.spriteSize * y) + this.spriteSize / 4;
 
                     this.drawTransparentX(gridCellPosX, gridCellPosY, this.spriteSize / 2);
                 } else {
-                    this.drawColor(x, y, this.spriteColor[x][y]);
-                    if (false) {
-                        const gridCellPosX = gridX + (spriteSize * x) + spriteSize / 3;
-                        const gridCellPosY = gridY + (spriteSize * y) + (spriteSize / 3) + 15;
-
-                        // Set font properties
-                        this.ctxEditor.font = '20px Arial';
-                        this.ctxEditor.fillStyle = 'black';
-
-                        // Draw filled text
-                        this.ctxEditor.fillText(spriteIndex[x][y], gridCellPosX, gridCellPosY);
-
-                        // Optional: Outline the text
-                        this.ctxEditor.strokeStyle = 'white';
-                        this.ctxEditor.strokeText(spriteIndex[x][y], gridCellPosX, gridCellPosY);
-                    }
+                    this.drawColor(x, y, result.hex);
                 }
             }
         }
@@ -410,9 +326,9 @@ export class SpriteEditor {
     }
     static drawTransparentX(x, y, size) {
         // Calculate circle parameters
-        const centerX = x + size / 2; // Center X-coordinate
-        const centerY = y + size / 2; // Center Y-coordinate
-        const radius = size / 3;      // Radius of the circle
+        const centerX = x + size / 2;
+        const centerY = y + size / 2;
+        const radius = size / 3;
 
         // Draw the circle
         this.ctxEditor.beginPath();
@@ -434,6 +350,7 @@ export class SpriteEditor {
     }
 
     static drawSelectedColor() {
+        // show selected color
         this.ctxEditor.strokeStyle = "white";
         this.ctxEditor.lineWidth = 4;
         this.ctxEditor.strokeRect(
@@ -441,30 +358,33 @@ export class SpriteEditor {
             this.palletSelectedY * this.palletSize + this.palletSpacing / 4,
             this.palletSize, this.palletSize);
 
+        // Get Selected Color by Index
+        const result = SpritePallets.getByIndex(SpriteEditor.selectedColorIndex);
+
+        // Display selected color details
         const selectedColorInfo = document.getElementById("selectedColorInfo");
-        selectedColorInfo.innerHTML = `<b>Selected Color Info</b><br>` +
+        selectedColorInfo.innerHTML = `<h3>Selected Color Info</h3><br>` +
             `Index:  ${this.selectedColorIndex} <br>` +
-            `Char:   ${this.palletLetters[this.selectedColorIndex]} <br>` +
-            `Code:   ${this.palletColors[this.selectedColorIndex]} <br>` +
-            `Name:   ${this.palletNames[this.selectedColorIndex]} `;
+            `Char:   ${result.symbol} <br>` +
+            `Code:   ${result.hex} <br>` +
+            `Name:   ${result.name} `;
     }
     static drawPallet() {
         this.palletScale = (this.palletSize / this.spriteSize);
 
-        // clear location
+        // Clear location
         this.ctxEditor.clearRect(0, 0, this.spriteSize * this.palletAcrossCnt * this.palletScale + this.palletSpacing, this.canvasEditor.height); // Clear the canvasEditor
         this.ctxEditor.fillStyle = 'black';
         this.ctxEditor.fillRect(0, 0, this.spriteSize * this.palletAcrossCnt * this.palletScale + this.palletSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
 
-        // draw the colors
-        for (var i = 0; i < this.palletColors.length + 1; i++) {
-            let div = i % this.palletAcrossCnt;
-            let mod = Math.floor(i / this.palletAcrossCnt);
+        for (let index = 0; index < SpritePallets.getLength(); index++) {
+            const result = SpritePallets.getByIndex(index);
+            let div = index % this.palletAcrossCnt;
+            let mod = Math.floor(index / this.palletAcrossCnt);
             const newX = div * this.palletSize + this.palletSpacing / 2;
             const newY = mod * this.palletSize + this.palletSpacing / 2;
-            const result = SpritePallets.getByIndex('default', i)
 
-            if (result.hex === SpriteEditor.transparentColor) {
+            if (result.hex === this.transparentColor) {
                 SpriteEditor.drawTransparentX(newX, newY, this.spriteSize * this.palletScale);
             } else {
                 this.ctxEditor.fillStyle = result.hex;
@@ -474,32 +394,30 @@ export class SpriteEditor {
     }
 
     static outputSprite() {
-        let c = "[\n";
-        //console.log(this.spriteIndex);
+        // Format textArea sprite
+        let textArea = "[\n";
         for (let x = 0; x < this.gridCellHeight; x++) {
-            let r = "";
+            let line = "";
             for (let y = 0; y < this.gridCellWidth; y++) {
                 const letterIndex = this.spriteIndex[y][x];
-                //console.log(letterIndex, this.palletLetters[letterIndex], this.palletLetters);
-                r += letterIndex;//palletLetters[letterIndex];
+                line += letterIndex;
             }
-            c += '"' + r + '",\n';
+            textArea += '"' + line + '",\n';
         }
-        c += ']';
-        //console.log(c);
+        textArea += ']';
+
+        // Place textArea in spriteTextarea
         const spriteTextarea = document.getElementById("spriteID");
-        spriteTextarea.value = c;
+        spriteTextarea.value = textArea;
     }
 
-    static entries = Object.entries(SpritePallets.default);
-
     static getMousePositionOncanvas(canvas, event) {
-        const rect = canvas.getBoundingClientRect(); // Get canvas bounding box
-        const scaleX = canvas.width / rect.width;   // Scale factor for X
-        const scaleY = canvas.height / rect.height; // Scale factor for Y
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
 
-        const x = (event.clientX - rect.left) * scaleX; // Adjusted X coordinate
-        const y = (event.clientY - rect.top) * scaleY;  // Adjusted Y coordinate
+        const x = (event.clientX - rect.left) * scaleX;
+        const y = (event.clientY - rect.top) * scaleY;
 
         return { x, y };
     }
@@ -520,19 +438,19 @@ export class SpriteEditor {
             }
 
             // Set the array elements
-            SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = SpriteEditor.palletLetters[SpriteEditor.selectedColorIndex];
-            SpriteEditor.spriteColor[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = SpriteEditor.palletColors[SpriteEditor.selectedColorIndex];
+            let result = SpritePallets.getByIndex(SpriteEditor.selectedColorIndex);
+            SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = result.symbol;
         } else {
             // Determine which pallet color was clicked
             const clickedPalletX = Math.floor(mouse.x / SpriteEditor.palletSize);
             const clickedPalletY = Math.floor(mouse.y / SpriteEditor.palletSize);
-            const clickedPallet = clickedPalletX + clickedPalletY * SpriteEditor.palletAcrossCnt;
+            const clickedPalletIndex = clickedPalletX + clickedPalletY * SpriteEditor.palletAcrossCnt;
 
-            if (clickedPallet > SpriteEditor.palletColors.length - 1) {
+            if (clickedPalletIndex > SpritePallets.getLength() - 1) {
                 return; // don't allow invalid color index
             }
 
-            SpriteEditor.selectedColorIndex = clickedPallet;
+            SpriteEditor.selectedColorIndex = clickedPalletIndex;
             SpriteEditor.palletSelectedX = clickedPalletX;
             SpriteEditor.palletSelectedY = clickedPalletY;
         }
@@ -541,3 +459,7 @@ export class SpriteEditor {
     };
 
 }
+
+window.onload = () => {
+    SpriteEditor.initialize();
+};

@@ -2,62 +2,11 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sprite Editor</title>
-
-	<style>
-		button {
-			width: 50px;
-			height: 16px;
-			background-color: #007BFF;
-			color: white;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			font-size: 16px;
-			margin: 4px !important;
-			padding: 0px;
-			line-height: 0px;
-			display: block;
-			text-align: center;
-		}
-
-		button:hover {
-			background-color: #0056b3;
-		}
-
-		table {
-			border-collapse: collapse;
-			margin: 0px;
-			padding: 0px;
-			width: 60%;
-			text-align: center;
-		}
-
-		canvas,
-		h3,
-		thead,
-		th,
-		tr,
-		td {
-			margin: 0px;
-			padding: 0px;
-			border: 2px solid #000;
-		}
-
-		tr.custom-height {
-			height: 100%;
-		}
-
-		td {
-			width: 50px !important;
-			height: 50px !important;
-			vertical-align: middle;
-		}
-
-		textarea {
-			height: 30%;
-		}
-	</style>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="./spriteEditor.css">	
 
 <script type="module">
     import { SpriteEditor } from './spriteEditor.js';
@@ -73,7 +22,7 @@
 	<table>
 		<thead>
 			<tr>
-				<th colspan="3">Controls</th>
+				<th colspan="3"><h3>Controls</h3></th>
 				<th>ToolboxAid.com (Enhancing Skills)</th>
 			</tr>
 		</thead>
@@ -90,160 +39,6 @@
 				<td rowspan="11">
 					<h3>Pallet Color<p>(add '#00000000' for Transparent)</p></h3>
 					<textarea id="palletID" name="pallet" rows="35" cols="35" style="height: 55%;">
-// Pink Colors'						
-'!':'#FFC0CB':'Pink'
-'"':'#FFB6C1':'LightPink'
-'#':'#FF69B4':'HotPink'
-'$':'#FF1493':'DeepPink'
-'%':'#DB7093':'PaleVioletRed'
-'&':'#C71585':'MediumVioletRed'
-// Red Colors
-':':'#FFA07A':'LightSalmon'
-';':'#FA8072':'Salmon'
-'<':'#E9967A':'DarkSalmon'
-'=':'#F08080':'LightCoral'
-'>':'#CD5C5C':'IndianRed'
-'?':'#DC143C':'Crimson'
-'@':'#FF0000':'Red'
-'A':'#B22222':'FireBrick'
-'B':'#8B0000':'DarkRed'
-// Orange Colors
-'C':'#FFA500':'Orange'
-'D':'#FF8C00':'DarkOrange'
-'E':'#FF7F50':'Coral'
-'F':'#FF6347':'Tomato'
-'G':'#FF4500':'OrangeRed'
-// Yellow Colors
-'H':'#FFD700':'Gold'
-'I':'#FFFF00':'Yellow'
-'J':'#FFFFE0':'LightYellow'
-'K':'#FFFACD':'LemonChiffon'
-'L':'#FAFAD2':'LightGoldenRodYellow'
-'M':'#FFEFD5':'PapayaWhip'
-'N':'#FFE4B5':'Moccasin'
-'O':'#FFDAB9':'PeachPuff'
-'P':'#EEE8AA':'PaleGoldenRod'
-'Q':'#F0E68C':'Khaki'
-'R':'#BDB76B':'DarkKhaki'
-// Green Colors
-'S':'#ADFF2F':'GreenYellow'
-'T':'#7FFF00':'Chartreuse'
-'U':'#7CFC00':'LawnGreen'
-'V':'#00FF00':'Lime'
-'W':'#32CD32':'LimeGreen'
-'X':'#98FB98':'PaleGreen'
-'Y':'#90EE90':'LightGreen'
-'Z':'#00FA9A':'MediumSpringGreen'
-'[':'#00FF7F':'SpringGreen'
-'\':'#3CB371':'MediumSeaGreen'
-']':'#2E8B57':'SeaGreen'
-'^':'#228B22':'ForestGreen'
-'_':'#008000':'Green'
-'`':'#006400':'DarkGreen'
-'a':'#9ACD32':'YellowGreen'
-'b':'#6B8E23':'OliveDrab'
-'c':'#556B2F':'DarkOliveGreen'
-'d':'#66CDAA':'MediumAquaMarine'
-'e':'#8FBC8F':'DarkSeaGreen'
-'f':'#20B2AA':'LightSeaGreen'
-'g':'#008B8B':'DarkCyan'
-'h':'#008080':'Teal'
-// Cyan Colors
-'i':'#00FFFF':'Aqua'
-'j':'#00FFFF':'Cyan'
-'k':'#E0FFFF':'LightCyan'
-'l':'#AFEEEE':'PaleTurquoise'
-'m':'#7FFFD4':'Aquamarine'
-'n':'#40E0D0':'Turquoise'
-'o':'#48D1CC':'MediumTurquoise'
-'p':'#00CED1':'DarkTurquoise'
-// Blue Colors
-'q':'#5F9EA0':'CadetBlue'
-'r':'#4682B4':'SteelBlue'
-'s':'#B0C4DE':'LightSteelBlue'
-'t':'#ADD8E6':'LightBlue'
-'u':'#B0E0E6':'PowderBlue'
-'v':'#87CEFA':'LightSkyBlue'
-'w':'#87CEEB':'SkyBlue'
-'x':'#6495ED':'CornflowerBlue'
-'y':'#00BFFF':'DeepSkyBlue'
-'z':'#1E90FF':'DodgerBlue'
-'{':'#4169E1':'RoyalBlue'
-'|':'#0000FF':'Blue'
-'}':'#0000CD':'MediumBlue'
-'~':'#00008B':'DarkBlue'
-'¡':'#000080':'Navy'
-'¢':'#191970':'MidnightBlue'
-// Purple Colors
-//'×':'#E6E6FA':'Lavender'
-'(':'#D8BFD8':'Thistle'
-')':'#DDA0DD':'Plum'
-'*':'#DA70D6':'Orchid'
-'+':'#EE82EE':'Violet'
-',':'#FF00FF':'Fuchsia'
-'-':'#FF00FF':'Magenta'
-'.':'#BA55D3':'MediumOrchid'
-'/':'#9932CC':'DarkOrchid'
-'0':'#9400D3':'DarkViolet'
-'1':'#8A2BE2':'BlueViolet'
-'2':'#8B008B':'DarkMagenta'
-'3':'#800080':'Purple'
-'4':'#9370DB':'MediumPurple'
-'5':'#7B68EE':'MediumSlateBlue'
-'6':'#6A5ACD':'SlateBlue'
-'7':'#483D8B':'DarkSlateBlue'
-'8':'#663399':'RebeccaPurple'
-'9':'#4B0082':'Indigo'
-// White Colors
-'µ':'#FFFFFF':'White'
-'¶':'#FFFAFA':'Snow'
-'·':'#F0FFF0':'HoneyDew'
-'¸':'#F5FFFA':'MintCream'
-'¹':'#F0FFFF':'Azure'
-'º':'#F0F8FF':'AliceBlue'
-'»':'#F8F8FF':'GhostWhite'
-'¼':'#F5F5F5':'WhiteSmoke'
-'½':'#FFF5EE':'SeaShell'
-'¾':'#F5F5DC':'Beige'
-'¿':'#FDF5E6':'OldLace'
-'À':'#FFFAF0':'FloralWhite'
-'Á':'#FFFFF0':'Ivory'
-'Â':'#FAEBD7':'AntiqueWhite'
-'Ã':'#FAF0E6':'Linen'
-'Ä':'#FFF0F5':'LavenderBlush'
-'Å':'#FFE4E1':'MistyRose'
-// Brown Colors
-'£':'#FFF8DC':'Cornsilk'
-'¤':'#FFEBCD':'BlanchedAlmond'
-'¥':'#FFE4C4':'Bisque'
-'¦':'#FFDEAD':'NavajoWhite'
-'§':'#F5DEB3':'Wheat'
-'¨':'#DEB887':'BurlyWood'
-'©':'#D2B48C':'Tan'
-'ª':'#BC8F8F':'RosyBrown'
-'«':'#F4A460':'SandyBrown'
-'¬':'#DAA520':'GoldenRod'
-'­':'#B8860B':'DarkGoldenRod'
-'®':'#CD853F':'Peru'
-'¯':'#D2691E':'Chocolate'
-'°':'#808000':'Olive'
-'±':'#8B4513':'SaddleBrown'
-'²':'#A0522D':'Sienna'
-'³':'#A52A2A':'Brown'
-'´':'#800000':'Maroon'
-// Grey Colors
-'Æ':'#DCDCDC':'Gainsboro'
-'Ç':'#D3D3D3':'LightGray'
-'È':'#C0C0C0':'Silver'
-'É':'#A9A9A9':'DarkGray'
-'Ê':'#696969':'DimGray'
-'Ë':'#808080':'Gray'
-'Ì':'#778899':'LightSlateGray'
-'Í':'#708090':'SlateGray'
-'Î':'#2F4F4F':'DarkSlateGray'
-'Ñ':'#000000':'Black',
-
-'Ø':'#00000000':'Transparent'
 					</textarea>
 					<br/>
 					<h3>Sprite array</h3>
@@ -275,7 +70,7 @@
 "Ñ±±ÑÑÑÑØØØØÑ±±ÑÑ",
 "Ñ±±ÑÑØØØØØØØÑÑÑØ",
 "ØÑÑØØØØØØØØØØØØØ"
-]						
+]
 					</textarea>
 				</td>
 			</tr>

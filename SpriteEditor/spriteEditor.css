@@ -1,0 +1,52 @@
+button {
+    width: 50px;
+    height: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 4px !important;
+    padding: 0px;
+    line-height: 0px;
+    display: block;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 0px;
+    padding: 0px;
+    width: 60%;
+    text-align: center;
+}
+
+canvas,
+h3,
+thead,
+th,
+tr,
+td {
+    margin: 0px;
+    padding: 0px;
+    border: 2px solid #000000;
+}
+
+tr.custom-height {
+    height: 100%;
+}
+
+td {
+    width: 50px !important;
+    height: 50px !important;
+    vertical-align: middle;
+}
+
+textarea {
+    height: 30%;
+}
