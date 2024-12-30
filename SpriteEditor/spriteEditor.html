@@ -2,18 +2,18 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sprite Editor</title>
-    <!-- Link to external CSS file -->
-    <link rel="stylesheet" href="./spriteEditor.css">	
+	<!-- Link to external CSS file -->
+	<link rel="stylesheet" href="./spriteEditor.css">
 
-<script type="module">
-    import { SpriteEditor } from './spriteEditor.js';
+	<script type="module">
+		import { SpriteEditor } from './spriteEditor.js';
 
-    // Expose the class or specific functions to the global scope
-    window.SpriteEditor = SpriteEditor;
-</script>
+		// Expose the class or specific functions to the global scope
+		window.SpriteEditor = SpriteEditor;
+	</script>
 
 </head>
 
@@ -22,7 +22,9 @@
 	<table>
 		<thead>
 			<tr>
-				<th colspan="3"><h3>Controls</h3></th>
+				<th colspan="3">
+					<h3>Controls</h3>
+				</th>
 				<th>ToolboxAid.com (Enhancing Skills)</th>
 			</tr>
 		</thead>
@@ -37,12 +39,13 @@
 				<td></td>
 				<td rowspan="11"> <canvas id="spriteEditor"></canvas></td>
 				<td rowspan="11">
-					<h3>Pallet Color<p>(add '#00000000' for Transparent)</p></h3>
+					<h3>Pallet Color<p>(add '#00000000' for Transparent)</p>
+					</h3>
 					<textarea id="palletID" name="pallet" rows="35" cols="35" style="height: 55%;">
 					</textarea>
-					<br/>
+					<br />
 					<h3>Sprite array</h3>
-					<textarea id="spriteID" name="sprite" rows="35" cols="35" style="height: 35%;"">
+					<textarea id="spriteID" name="sprite" rows="35" cols="35" style="height: 35%;">
 [
 "ØØØØØØØÑÑÑÑØÑÑÑØ",
 "ØØØØØÑÑ@@@ÑÑNNNÑ",
@@ -156,6 +159,8 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<div id="orderedColorDiv"></div>
 
 </body>
 

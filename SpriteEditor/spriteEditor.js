@@ -75,6 +75,7 @@ export class SpriteEditor {
 
         // set palletName to load
         SpriteEditor.palletName = "default";
+        SpritePallets.setPalette(SpriteEditor.palletName);
         this.loadPallet();
         this.loadSprite();
 
@@ -92,8 +93,6 @@ export class SpriteEditor {
         this.image.onerror = (error) => {
             console.error("Failed to load image:", error);
         };
-
-        console.log(SpritePallets.getByHex("#000000"));
     }
 
     static initializeCanvasEditor() {
