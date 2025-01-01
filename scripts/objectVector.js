@@ -93,14 +93,14 @@ class ObjectVector extends ObjectKillable {
         this.boundHeight = maxY - minY + 1;
     }
 
-    setColor(color) {
-        if (CanvasUtils.isValidColor(color)) {
-            this.color = color;
-        } else {
-            console.error("Invalid color:", color);
-            this.color = "white"; // Default to white
-        }
-    }
+    // setColor(color) {
+    //     if (CanvasUtils.isValidColor(color)) {
+    //         this.color = color;
+    //     } else {
+    //         console.error("Invalid color:", color);
+    //         this.color = "white"; // Default to white
+    //     }
+    // }
 
     setDrawBounds() {
         this.drawBounds = true;

@@ -41,38 +41,38 @@
 				<td rowspan="11">
 					<h3>Pallet Color<p>(add '#00000000' for Transparent)</p>
 					</h3>
-					<textarea id="palletID" name="pallet" rows="35" cols="35" style="height: 55%;">
+					<textarea id="paletteID" name="pallet" rows="35" cols="35" style="height: 55%;">
 					</textarea>
 					<br />
 					<h3>Sprite array</h3>
 					<textarea id="spriteID" name="sprite" rows="35" cols="35" style="height: 35%;">
 [
-"ØØØØØØØÑÑÑÑØÑÑÑØ",
-"ØØØØØÑÑ@@@ÑÑNNNÑ",
-"ØØØØÑ@@@@@@ÑNNNÑ",
-"ØØØÑ@@@ÑÑÑÑÑÑNNÑ",
-"ØØÑ@@@ÑÑÑÑÑÑÑÑNÑ",
-"ØØÑ@ÑÑNNNNNNÑÑÑØ",
-"ØÑÑÑÑNNNÑNÑNÑ@@Ñ",
-"ØÑNÑÑNNNÑNÑNÑ@@Ñ",
-"ÑNNÑÑÑNNNNNNNÑ@Ñ",
-"ÑNNNÑNNÑNNNNNÑ@Ñ",
-"ØÑNNNNÑÑÑÑNNÑÑÑØ",
-"ØØÑÑNNNNÑÑÑÑÑ@ÑØ",
-"ØØØÑÑÑNNNNNÑ@@ÑØ",
-"ØØÑ@@@ÑÑÑÑÑÑ@ÑØØ",
-"ØÑ@@@@@ÑÑ@@ÑÑØØØ",
-"Ñ@@@ÑÑÑ@Ñ@@@ÑÑØØ",
-"Ñ@@ÑNNNÑÑÑ@@@ÑØØ",
-"Ñ@ÑNNNNNÑÑÑ@@ÑÑØ",
-"ØÑÑNNNNNÑIIÑÑIÑØ",
-"ØØÑÑNNNÑÑIIÑÑ±±Ñ",
-"ØÑ±±ÑÑÑÑÑÑÑÑ±±±Ñ",
-"Ñ±±ÑÑÑÑÑÑÑÑÑ±±±Ñ",
-"Ñ±±ÑÑÑÑÑÑÑÑÑ±±±Ñ",
-"Ñ±±ÑÑÑÑØØØØÑ±±ÑÑ",
-"Ñ±±ÑÑØØØØØØØÑÑÑØ",
-"ØÑÑØØØØØØØØØØØØØ"
+"ØØØØØØØ3333Ø333Ø",
+"ØØØØØ33ÎÎÎ33NNN3",
+"ØØØØ3ÎÎÎÎÎÎ3NNN3",
+"ØØØ3ÎÎÎ333333NN3",
+"ØØ3ÎÎÎ33333333N3",
+"ØØ3Î33LLLLLL333Ø",
+"Ø3333LLL3L3L3ÎÎ3",
+"Ø3L33LLL3L3L3ÎÎ3",
+"3LL333LLLLLLL3Î3",
+"3LLL3LL3LLLLL3Î3",
+"Ø3LLLL3333LL333Ø",
+"ØØ33LLLL33333Î3Ø",
+"ØØØ333LLLLL3ÎÎ3Ø",
+"ØØ3ÎÎÎ333333Î3ØØ",
+"Ø3ÎÎÎÎÎ33ÎÎ33ØØØ",
+"3ÎÎÎ333Î3ÎÎÎ33ØØ",
+"3ÎÎ3LLL333ÎÎÎ3ØØ",
+"3Î3LLLLL333ÎÎ33Ø",
+"Ø33LLLLL3WW33W3Ø",
+"ØØ33LLL33WW33==3",
+"Ø3==33333333===3",
+"3==333333333===3",
+"3==333333333===3",
+"3==3333ØØØØ3==33",
+"3==33ØØØØØØØ333Ø",
+"Ø33ØØØØØØØØØØØØØ"
 ]
 					</textarea>
 				</td>
@@ -149,7 +149,12 @@
 				<td id="selectedColorInfo" colspan="3"><b>Selected Color Info</b></td>
 			</tr>
 			<tr>
-				<td colspan="3">
+				<td><button id="hsl-h" onclick="SpriteEditor.sortBy('hue')">Hue</button></td>
+				<td><button id="hsl-s" onclick="SpriteEditor.sortBy('saturation')">Satur</button></td>
+				<td><button id="hsl-l" onclick="SpriteEditor.sortBy('lightness')">Light</button></td>
+			</tr>
+			<tr>
+				<td colspan="2">
 					<h3>Sprite</h3>
 					<canvas id="spriteImage"></canvas>
 				</td>

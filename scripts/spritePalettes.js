@@ -3,7 +3,19 @@
 // 12/28/2024
 // spritePallets.js
 
-class SpritePallets {
+/** Reference colors
+ * Crayola Colors
+ * https://www.crayola.com/explore-colors/
+ * https://toolboxaid.com/programming/html/crayola-colors/
+ * https://www.w3schools.com/colors/colors_crayola.asp
+ * https://www.jennyscrayoncollection.com/2017/10/complete-list-of-current-crayola-crayon.html
+ * 
+ */
+class SpritePalettes {
+
+    static currentPaletteName = 'default';
+    static transparentColor = "#00000000";
+    static errorResult = { symbol: 'Ø', hex: '#00000000', name: 'Transparent' };
 
     static palettes = {
         default: [
@@ -151,6 +163,8 @@ class SpritePallets {
             // Transparent
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
         ],
+
+        // Crayola Crayon colors by package
         crayola008: [
             { symbol: '!', hex: '#232323', name: 'Black' }, 		 // color #'0' ascii'33'
             { symbol: '#', hex: '#B4674D', name: 'Brown' }, 		 // color #'2' ascii'35'
@@ -611,7 +625,7 @@ class SpritePallets {
             { symbol: ',', hex: '#FFFFFF', name: 'White' }, 		    // color #'10' ascii'44'
             { symbol: '-', hex: '#F5F5F5', name: 'White Smoke' }, 	// color #'11' ascii'45'
             { symbol: '.', hex: '#FF6A6A', name: 'Wild Watermelon' }, // color #'12' ascii'46'
-//            { symbol: '/', hex: '#00000000', name: 'Transparent' }, 	// color #'13' ascii'47'
+            //            { symbol: '/', hex: '#00000000', name: 'Transparent' }, 	// color #'13' ascii'47'
             { symbol: '0', hex: '#C45655', name: 'Fuzzy Wuzzy Brown' },//color #'14' ascii'48'
             { symbol: '1', hex: '#FF5349', name: 'Red Orange' }, 		// color #'15' ascii'49'
             { symbol: '2', hex: '#FF6F61', name: 'Zinnia' }, 		    // color #'16' ascii'50'
@@ -750,7 +764,7 @@ class SpritePallets {
             { symbol: 'Ú', hex: '#9B1B30', name: 'Jazzberry Jam' }, 	// color #'149' ascii'218'
             { symbol: 'Û', hex: '#FFB6C1', name: 'Light Pink' }, 		// color #'150' ascii'219'
             { symbol: 'Ü', hex: '#9E2A2F', name: 'Brick Red' }, 		// color #'151' ascii'220'   
-            
+
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
 
         ],
@@ -898,109 +912,260 @@ class SpritePallets {
             // Transparent
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
         ],
-        test: [
-            {symbol: '!', hex: '#843530', name: 'Color-132-53-48'}, 		 // color #'0' ascii'33'
-            {symbol: '"', hex: '#8b3d32', name: 'Color-139-61-50'}, 		 // color #'1' ascii'34'
-            {symbol: '#', hex: '#b36b5a', name: 'Color-179-107-90'}, 		 // color #'2' ascii'35'
-            {symbol: '$', hex: '#d7a28b', name: 'Color-215-162-139'}, 		 // color #'3' ascii'36'
-            {symbol: '%', hex: '#f67614', name: 'Color-246-118-20'}, 		 // color #'4' ascii'37'
-            {symbol: '&', hex: '#f9ad25', name: 'Color-249-173-37'}, 		 // color #'5' ascii'38'
-            {symbol: '(', hex: '#a59b88', name: 'Color-165-155-136'}, 		 // color #'6' ascii'40'
-            {symbol: ')', hex: '#826e32', name: 'Color-130-110-50'}, 		 // color #'7' ascii'41'
-            {symbol: '*', hex: '#cbc8b4', name: 'Color-203-200-180'}, 		 // color #'8' ascii'42'
-            {symbol: '+', hex: '#dbd28f', name: 'Color-219-210-143'}, 		 // color #'9' ascii'43'
-            {symbol: ',', hex: '#928f76', name: 'Color-146-143-118'}, 		 // color #'10' ascii'44'
-            {symbol: '-', hex: '#e5d866', name: 'Color-229-216-102'}, 		 // color #'11' ascii'45'
-            {symbol: '.', hex: '#b3b270', name: 'Color-179-178-112'}, 		 // color #'12' ascii'46'
-            {symbol: '/', hex: '#7da932', name: 'Color-125-169-50'}, 		 // color #'13' ascii'47'
-            {symbol: '0', hex: '#8efe20', name: 'Color-142-254-32'}, 		 // color #'14' ascii'48'
-            {symbol: '1', hex: '#5cab22', name: 'Color-92-171-34'}, 		 // color #'15' ascii'49'
-            {symbol: '2', hex: '#86e44e', name: 'Color-134-228-78'}, 		 // color #'16' ascii'50'
-            {symbol: '3', hex: '#64cb2f', name: 'Color-100-203-47'}, 		 // color #'17' ascii'51'
-            {symbol: '4', hex: '#72d63f', name: 'Color-114-214-63'}, 		 // color #'18' ascii'52'
-            {symbol: '5', hex: '#57f517', name: 'Color-87-245-23'}, 		 // color #'19' ascii'53'
-            {symbol: '6', hex: '#4ce315', name: 'Color-76-227-21'}, 		 // color #'20' ascii'54'
-            {symbol: '7', hex: '#3f6e37', name: 'Color-63-110-55'}, 		 // color #'21' ascii'55'
-            {symbol: '8', hex: '#68fa56', name: 'Color-104-250-86'}, 		 // color #'22' ascii'56'
-            {symbol: '9', hex: '#32e02d', name: 'Color-50-224-45'}, 		 // color #'23' ascii'57'
-            {symbol: ':', hex: '#486048', name: 'Color-72-96-72'}, 		 // color #'24' ascii'58'
-            {symbol: ';', hex: '#23e628', name: 'Color-35-230-40'}, 		 // color #'25' ascii'59'
-            {symbol: '<', hex: '#629f66', name: 'Color-98-159-102'}, 		 // color #'26' ascii'60'
-            {symbol: '=', hex: '#78f086', name: 'Color-120-240-134'}, 		 // color #'27' ascii'61'
-            {symbol: '>', hex: '#0bc334', name: 'Color-11-195-52'}, 		 // color #'28' ascii'62'
-            {symbol: '?', hex: '#8cca9c', name: 'Color-140-202-156'}, 		 // color #'29' ascii'63'
-            {symbol: '@', hex: '#1cc251', name: 'Color-28-194-81'}, 		 // color #'30' ascii'64'
-            {symbol: 'A', hex: '#22fc76', name: 'Color-34-252-118'}, 		 // color #'31' ascii'65'
-            {symbol: 'B', hex: '#12fa77', name: 'Color-18-250-119'}, 		 // color #'32' ascii'66'
-            {symbol: 'C', hex: '#7dab94', name: 'Color-125-171-148'}, 		 // color #'33' ascii'67'
-            {symbol: 'D', hex: '#14d87a', name: 'Color-20-216-122'}, 		 // color #'34' ascii'68'
-            {symbol: 'E', hex: '#81998e', name: 'Color-129-153-142'}, 		 // color #'35' ascii'69'
-            {symbol: 'F', hex: '#7ff1bd', name: 'Color-127-241-189'}, 		 // color #'36' ascii'70'
-            {symbol: 'G', hex: '#41c289', name: 'Color-65-194-137'}, 		 // color #'37' ascii'71'
-            {symbol: 'H', hex: '#85e8bd', name: 'Color-133-232-189'}, 		 // color #'38' ascii'72'
-            {symbol: 'I', hex: '#dbe5e1', name: 'Color-219-229-225'}, 		 // color #'39' ascii'73'
-            {symbol: 'J', hex: '#27b987', name: 'Color-39-185-135'}, 		 // color #'40' ascii'74'
-            {symbol: 'K', hex: '#19d89d', name: 'Color-25-216-157'}, 		 // color #'41' ascii'75'
-            {symbol: 'L', hex: '#24be91', name: 'Color-36-190-145'}, 		 // color #'42' ascii'76'
-            {symbol: 'M', hex: '#13b78b', name: 'Color-19-183-139'}, 		 // color #'43' ascii'77'
-            {symbol: 'N', hex: '#99e5d9', name: 'Color-153-229-217'}, 		 // color #'44' ascii'78'
-            {symbol: 'O', hex: '#59d3c7', name: 'Color-89-211-199'}, 		 // color #'45' ascii'79'
-            {symbol: 'P', hex: '#144d48', name: 'Color-20-77-72'}, 		 // color #'46' ascii'80'
-            {symbol: 'Q', hex: '#2accd4', name: 'Color-42-204-212'}, 		 // color #'47' ascii'81'
-            {symbol: 'R', hex: '#2ac1d5', name: 'Color-42-193-213'}, 		 // color #'48' ascii'82'
-            {symbol: 'S', hex: '#1dcaf9', name: 'Color-29-202-249'}, 		 // color #'49' ascii'83'
-            {symbol: 'T', hex: '#627d8c', name: 'Color-98-125-140'}, 		 // color #'50' ascii'84'
-            {symbol: 'U', hex: '#176796', name: 'Color-23-103-150'}, 		 // color #'51' ascii'85'
-            {symbol: 'V', hex: '#2c92d4', name: 'Color-44-146-212'}, 		 // color #'52' ascii'86'
-            {symbol: 'W', hex: '#045bb3', name: 'Color-4-91-179'}, 		 // color #'53' ascii'87'
-            {symbol: 'X', hex: '#afcff3', name: 'Color-175-207-243'}, 		 // color #'54' ascii'88'
-            {symbol: 'Y', hex: '#345b8d', name: 'Color-52-91-141'}, 		 // color #'55' ascii'89'
-            {symbol: 'Z', hex: '#a1c6ff', name: 'Color-161-198-255'}, 		 // color #'56' ascii'90'
-            {symbol: '[', hex: '#276eed', name: 'Color-39-110-237'}, 		 // color #'57' ascii'91'
-            {symbol: ']', hex: '#0f41cf', name: 'Color-15-65-207'}, 		 // color #'58' ascii'93'
-            {symbol: '^', hex: '#4e5467', name: 'Color-78-84-103'}, 		 // color #'59' ascii'94'
-            {symbol: '_', hex: '#2448d6', name: 'Color-36-72-214'}, 		 // color #'60' ascii'95'
-            {symbol: '`', hex: '#3252e7', name: 'Color-50-82-231'}, 		 // color #'61' ascii'96'
-            {symbol: 'a', hex: '#0317d8', name: 'Color-3-23-216'}, 		 // color #'62' ascii'97'
-            {symbol: 'b', hex: '#232bef', name: 'Color-35-43-239'}, 		 // color #'63' ascii'98'
-            {symbol: 'c', hex: '#1e1492', name: 'Color-30-20-146'}, 		 // color #'64' ascii'99'
-            {symbol: 'd', hex: '#8177e3', name: 'Color-129-119-227'}, 		 // color #'65' ascii'100'
-            {symbol: 'e', hex: '#aaa8b9', name: 'Color-170-168-185'}, 		 // color #'66' ascii'101'
-            {symbol: 'f', hex: '#9685fb', name: 'Color-150-133-251'}, 		 // color #'67' ascii'102'
-            {symbol: 'g', hex: '#54498b', name: 'Color-84-73-139'}, 		 // color #'68' ascii'103'
-            {symbol: 'h', hex: '#360cb2', name: 'Color-54-12-178'}, 		 // color #'69' ascii'104'
-            {symbol: 'i', hex: '#4008c7', name: 'Color-64-8-199'}, 		 // color #'70' ascii'105'
-            {symbol: 'j', hex: '#792df9', name: 'Color-121-45-249'}, 		 // color #'71' ascii'106'
-            {symbol: 'k', hex: '#441888', name: 'Color-68-24-136'}, 		 // color #'72' ascii'107'
-            {symbol: 'l', hex: '#6907e9', name: 'Color-105-7-233'}, 		 // color #'73' ascii'108'
-            {symbol: 'm', hex: '#855fb0', name: 'Color-133-95-176'}, 		 // color #'74' ascii'109'
-            {symbol: 'n', hex: '#7124c3', name: 'Color-113-36-195'}, 		 // color #'75' ascii'110'
-            {symbol: 'o', hex: '#9a2ffc', name: 'Color-154-47-252'}, 		 // color #'76' ascii'111'
-            {symbol: 'p', hex: '#a30ffe', name: 'Color-163-15-254'}, 		 // color #'77' ascii'112'
-            {symbol: 'q', hex: '#59057e', name: 'Color-89-5-126'}, 		 // color #'78' ascii'113'
-            {symbol: 'r', hex: '#561071', name: 'Color-86-16-113'}, 		 // color #'79' ascii'114'
-            {symbol: 's', hex: '#c36be4', name: 'Color-195-107-228'}, 		 // color #'80' ascii'115'
-            {symbol: 't', hex: '#da90f1', name: 'Color-218-144-241'}, 		 // color #'81' ascii'116'
-            {symbol: 'u', hex: '#894998', name: 'Color-137-73-152'}, 		 // color #'82' ascii'117'
-            {symbol: 'v', hex: '#c317d2', name: 'Color-195-23-210'}, 		 // color #'83' ascii'118'
-            {symbol: 'w', hex: '#b20eb7', name: 'Color-178-14-183'}, 		 // color #'84' ascii'119'
-            {symbol: 'x', hex: '#cb50cd', name: 'Color-203-80-205'}, 		 // color #'85' ascii'120'
-            {symbol: 'y', hex: '#9f729f', name: 'Color-159-114-159'}, 		 // color #'86' ascii'121'
-            {symbol: 'z', hex: '#d64bcf', name: 'Color-214-75-207'}, 		 // color #'87' ascii'122'
-            {symbol: '{', hex: '#511f4b', name: 'Color-81-31-75'}, 		 // color #'88' ascii'123'
-            {symbol: '|', hex: '#9d388c', name: 'Color-157-56-140'}, 		 // color #'89' ascii'124'
-            {symbol: '}', hex: '#fd2fc1', name: 'Color-253-47-193'}, 		 // color #'90' ascii'125'
-            {symbol: '~', hex: '#5c2b40', name: 'Color-92-43-64'}, 		 // color #'91' ascii'126'
-            {symbol: '¡', hex: '#da9cb5', name: 'Color-218-156-181'}, 		 // color #'92' ascii'161'
-            {symbol: '¢', hex: '#e292ad', name: 'Color-226-146-173'}, 		 // color #'93' ascii'162'
-            {symbol: '£', hex: '#cb0a43', name: 'Color-203-10-67'}, 		 // color #'94' ascii'163'
-            {symbol: '¤', hex: '#fc7194', name: 'Color-252-113-148'}, 		 // color #'95' ascii'164'
-            {symbol: '¥', hex: '#fe0a26', name: 'Color-254-10-38'}, 		 // color #'96' ascii'165'
-            {symbol: '¦', hex: '#873d3f', name: 'Color-135-61-63'}, 		 // color #'97' ascii'166'
-            {symbol: '§', hex: '#9e383a', name: 'Color-158-56-58'}, 		 // color #'98' ascii'167'
-            { symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
-            
+
+        // JavaScript named colors
+        javascript: [
+            { symbol: '!', hex: '#000000', name: 'Black' }, 		 // color #'0' ascii'33'
+            { symbol: '"', hex: '#a52a2a', name: 'Brown' }, 		 // color #'1' ascii'34'
+            { symbol: '#', hex: '#a9a9a9', name: 'DarkGray' }, 		 // color #'2' ascii'35'
+            { symbol: '$', hex: '#8b0000', name: 'DarkRed' }, 		 // color #'3' ascii'36'
+            { symbol: '%', hex: '#696969', name: 'DimGray' }, 		 // color #'4' ascii'37'
+            { symbol: '&', hex: '#b22222', name: 'Firebrick' }, 		 // color #'5' ascii'38'
+            { symbol: '(', hex: '#dcdcdc', name: 'Gainsboro' }, 		 // color #'6' ascii'40'
+            { symbol: ')', hex: '#808080', name: 'Gray' }, 		 // color #'7' ascii'41'
+            { symbol: '*', hex: '#cd5c5c', name: 'IndianRed' }, 		 // color #'8' ascii'42'
+            { symbol: '+', hex: '#f08080', name: 'LightCoral' }, 		 // color #'9' ascii'43'
+            { symbol: ',', hex: '#d3d3d3', name: 'LightGrey' }, 		 // color #'10' ascii'44'
+            { symbol: '-', hex: '#800000', name: 'Maroon' }, 		 // color #'11' ascii'45'
+            { symbol: '.', hex: '#ff0000', name: 'Red' }, 		 // color #'12' ascii'46'
+            { symbol: '/', hex: '#bc8f8f', name: 'RosyBrown' }, 		 // color #'13' ascii'47'
+            { symbol: '0', hex: '#c0c0c0', name: 'Silver' }, 		 // color #'14' ascii'48'
+            { symbol: '1', hex: '#fffafa', name: 'Snow' }, 		 // color #'15' ascii'49'
+            { symbol: '2', hex: '#ffffff', name: 'White' }, 		 // color #'16' ascii'50'
+            { symbol: '3', hex: '#f5f5f5', name: 'WhiteSmoke' }, 		 // color #'17' ascii'51'
+            { symbol: '4', hex: '#ffe4e1', name: 'MistyRose' }, 		 // color #'18' ascii'52'
+            { symbol: '5', hex: '#fa8072', name: 'Salmon' }, 		 // color #'19' ascii'53'
+            { symbol: '6', hex: '#ff6347', name: 'Tomato' }, 		 // color #'20' ascii'54'
+            { symbol: '7', hex: '#e9967a', name: 'DarkSalmon' }, 		 // color #'21' ascii'55'
+            { symbol: '8', hex: '#ff7f50', name: 'Coral' }, 		 // color #'22' ascii'56'
+            { symbol: '9', hex: '#ff4500', name: 'OrangeRed' }, 		 // color #'23' ascii'57'
+            { symbol: ':', hex: '#ffa07a', name: 'LightSalmon' }, 		 // color #'24' ascii'58'
+            { symbol: ';', hex: '#a0522d', name: 'Sienna' }, 		 // color #'25' ascii'59'
+            { symbol: '<', hex: '#fff5ee', name: 'Seashell' }, 		 // color #'26' ascii'60'
+            { symbol: '=', hex: '#d2691e', name: 'Chocolate' }, 		 // color #'27' ascii'61'
+            { symbol: '>', hex: '#8b4513', name: 'SaddleBrown' }, 		 // color #'28' ascii'62'
+            { symbol: '?', hex: '#f4a460', name: 'SandyBrown' }, 		 // color #'29' ascii'63'
+            { symbol: '@', hex: '#ffdab9', name: 'PeachPuff' }, 		 // color #'30' ascii'64'
+            { symbol: 'A', hex: '#cd853f', name: 'Peru' }, 		 // color #'31' ascii'65'
+            { symbol: 'B', hex: '#faf0e6', name: 'Linen' }, 		 // color #'32' ascii'66'
+            { symbol: 'C', hex: '#ffe4c4', name: 'Bisque' }, 		 // color #'33' ascii'67'
+            { symbol: 'D', hex: '#ff8c00', name: 'DarkOrange' }, 		 // color #'34' ascii'68'
+            { symbol: 'E', hex: '#deb887', name: 'BurlyWood' }, 		 // color #'35' ascii'69'
+            { symbol: 'F', hex: '#faebd7', name: 'AntiqueWhite' }, 		 // color #'36' ascii'70'
+            { symbol: 'G', hex: '#d2b48c', name: 'Tan' }, 		 // color #'37' ascii'71'
+            { symbol: 'H', hex: '#ffdead', name: 'NavajoWhite' }, 		 // color #'38' ascii'72'
+            { symbol: 'I', hex: '#ffebcd', name: 'BlanchedAlmond' }, 		 // color #'39' ascii'73'
+            { symbol: 'J', hex: '#ffefd5', name: 'PapayaWhip' }, 		 // color #'40' ascii'74'
+            { symbol: 'K', hex: '#ffe4b5', name: 'Moccasin' }, 		 // color #'41' ascii'75'
+            { symbol: 'L', hex: '#ffa500', name: 'Orange' }, 		 // color #'42' ascii'76'
+            { symbol: 'M', hex: '#f5deb3', name: 'Wheat' }, 		 // color #'43' ascii'77'
+            { symbol: 'N', hex: '#fdf5e6', name: 'OldLace' }, 		 // color #'44' ascii'78'
+            { symbol: 'O', hex: '#fffaf0', name: 'FloralWhite' }, 		 // color #'45' ascii'79'
+            { symbol: 'P', hex: '#b8860b', name: 'DarkGoldenrod' }, 		 // color #'46' ascii'80'
+            { symbol: 'Q', hex: '#daa520', name: 'Goldenrod' }, 		 // color #'47' ascii'81'
+            { symbol: 'R', hex: '#fff8dc', name: 'Cornsilk' }, 		 // color #'48' ascii'82'
+            { symbol: 'S', hex: '#ffd700', name: 'Gold' }, 		 // color #'49' ascii'83'
+            { symbol: 'T', hex: '#fffacd', name: 'LemonChiffon' }, 		 // color #'50' ascii'84'
+            { symbol: 'U', hex: '#f0e68c', name: 'Khaki' }, 		 // color #'51' ascii'85'
+            { symbol: 'V', hex: '#eee8aa', name: 'PaleGoldenrod' }, 		 // color #'52' ascii'86'
+            { symbol: 'W', hex: '#bdb76b', name: 'DarkKhaki' }, 		 // color #'53' ascii'87'
+            { symbol: 'X', hex: '#f5f5dc', name: 'Beige' }, 		 // color #'54' ascii'88'
+            { symbol: 'Y', hex: '#fffff0', name: 'Ivory' }, 		 // color #'55' ascii'89'
+            { symbol: 'Z', hex: '#fafad2', name: 'LightGoldenrodYellow' }, 		 // color #'56' ascii'90'
+            { symbol: '[', hex: '#ffffe0', name: 'LightYellow' }, 		 // color #'57' ascii'91'
+            { symbol: ']', hex: '#808000', name: 'Olive' }, 		 // color #'58' ascii'93'
+            { symbol: '^', hex: '#ffff00', name: 'Yellow' }, 		 // color #'59' ascii'94'
+            { symbol: '_', hex: '#6b8e23', name: 'OliveDrab' }, 		 // color #'60' ascii'95'
+            { symbol: '`', hex: '#9acd32', name: 'YellowGreen' }, 		 // color #'61' ascii'96'
+            { symbol: 'a', hex: '#556b2f', name: 'DarkOliveGreen' }, 		 // color #'62' ascii'97'
+            { symbol: 'b', hex: '#adff2f', name: 'GreenYellow' }, 		 // color #'63' ascii'98'
+            { symbol: 'c', hex: '#7fff00', name: 'Chartreuse' }, 		 // color #'64' ascii'99'
+            { symbol: 'd', hex: '#7cfc00', name: 'LawnGreen' }, 		 // color #'65' ascii'100'
+            { symbol: 'e', hex: '#006400', name: 'DarkGreen' }, 		 // color #'66' ascii'101'
+            { symbol: 'f', hex: '#8fbc8f', name: 'DarkSeaGreen' }, 		 // color #'67' ascii'102'
+            { symbol: 'g', hex: '#228b22', name: 'ForestGreen' }, 		 // color #'68' ascii'103'
+            { symbol: 'h', hex: '#008000', name: 'Green' }, 		 // color #'69' ascii'104'
+            { symbol: 'i', hex: '#f0fff0', name: 'Honeydew' }, 		 // color #'70' ascii'105'
+            { symbol: 'j', hex: '#90ee90', name: 'LightGreen' }, 		 // color #'71' ascii'106'
+            { symbol: 'k', hex: '#00ff00', name: 'Lime' }, 		 // color #'72' ascii'107'
+            { symbol: 'l', hex: '#32cd32', name: 'LimeGreen' }, 		 // color #'73' ascii'108'
+            { symbol: 'm', hex: '#98fb98', name: 'PaleGreen' }, 		 // color #'74' ascii'109'
+            { symbol: 'n', hex: '#2e8b57', name: 'SeaGreen' }, 		 // color #'75' ascii'110'
+            { symbol: 'o', hex: '#3cb371', name: 'MediumSeaGreen' }, 		 // color #'76' ascii'111'
+            { symbol: 'p', hex: '#00ff7f', name: 'SpringGreen' }, 		 // color #'77' ascii'112'
+            { symbol: 'q', hex: '#f5fffa', name: 'MintCream' }, 		 // color #'78' ascii'113'
+            { symbol: 'r', hex: '#00fa9a', name: 'MediumSpringGreen' }, 		 // color #'79' ascii'114'
+            { symbol: 's', hex: '#66cdaa', name: 'MediumAquamarine' }, 		 // color #'80' ascii'115'
+            { symbol: 't', hex: '#7fffd4', name: 'Aquamarine' }, 		 // color #'81' ascii'116'
+            { symbol: 'u', hex: '#40e0d0', name: 'Turquoise' }, 		 // color #'82' ascii'117'
+            { symbol: 'v', hex: '#20b2aa', name: 'LightSeaGreen' }, 		 // color #'83' ascii'118'
+            { symbol: 'w', hex: '#48d1cc', name: 'MediumTurquoise' }, 		 // color #'84' ascii'119'
+            { symbol: 'x', hex: '#00ffff', name: 'Aqua' }, 		 // color #'85' ascii'120'
+            { symbol: 'y', hex: '#f0ffff', name: 'Azure' }, 		 // color #'86' ascii'121'
+            { symbol: 'z', hex: '#00ffff', name: 'Cyan' }, 		 // color #'87' ascii'122'
+            { symbol: '{', hex: '#008b8b', name: 'DarkCyan' }, 		 // color #'88' ascii'123'
+            { symbol: '|', hex: '#2f4f4f', name: 'DarkSlateGray' }, 		 // color #'89' ascii'124'
+            { symbol: '}', hex: '#e0ffff', name: 'LightCyan' }, 		 // color #'90' ascii'125'
+            { symbol: '~', hex: '#afeeee', name: 'PaleTurquoise' }, 		 // color #'91' ascii'126'
+            { symbol: '¡', hex: '#008080', name: 'Teal' }, 		 // color #'92' ascii'161'
+            { symbol: '¢', hex: '#00ced1', name: 'DarkTurquoise' }, 		 // color #'93' ascii'162'
+            { symbol: '£', hex: '#5f9ea0', name: 'CadetBlue' }, 		 // color #'94' ascii'163'
+            { symbol: '¤', hex: '#b0e0e6', name: 'PowderBlue' }, 		 // color #'95' ascii'164'
+            { symbol: '¥', hex: '#add8e6', name: 'LightBlue' }, 		 // color #'96' ascii'165'
+            { symbol: '¦', hex: '#00bfff', name: 'DeepSkyBlue' }, 		 // color #'97' ascii'166'
+            { symbol: '§', hex: '#87ceeb', name: 'SkyBlue' }, 		 // color #'98' ascii'167'
+            { symbol: '¨', hex: '#87cefa', name: 'LightSkyBlue' }, 		 // color #'99' ascii'168'
+            { symbol: '©', hex: '#4682b4', name: 'SteelBlue' }, 		 // color #'100' ascii'169'
+            { symbol: 'ª', hex: '#f0f8ff', name: 'AliceBlue' }, 		 // color #'101' ascii'170'
+            { symbol: '«', hex: '#1e90ff', name: 'DodgerBlue' }, 		 // color #'102' ascii'171'
+            { symbol: '¬', hex: '#778899', name: 'LightSlateGray' }, 		 // color #'103' ascii'172'
+            { symbol: '­', hex: '#708090', name: 'SlateGray' }, 		 // color #'104' ascii'173'
+            { symbol: '®', hex: '#b0c4de', name: 'LightSteelBlue' }, 		 // color #'105' ascii'174'
+            { symbol: '¯', hex: '#6495ed', name: 'CornflowerBlue' }, 		 // color #'106' ascii'175'
+            { symbol: '°', hex: '#4169e1', name: 'RoyalBlue' }, 		 // color #'107' ascii'176'
+            { symbol: '±', hex: '#0000ff', name: 'Blue' }, 		 // color #'108' ascii'177'
+            { symbol: '²', hex: '#00008b', name: 'DarkBlue' }, 		 // color #'109' ascii'178'
+            { symbol: '³', hex: '#f8f8ff', name: 'GhostWhite' }, 		 // color #'110' ascii'179'
+            { symbol: '´', hex: '#e6e6fa', name: 'Lavender' }, 		 // color #'111' ascii'180'
+            { symbol: 'µ', hex: '#0000cd', name: 'MediumBlue' }, 		 // color #'112' ascii'181'
+            { symbol: '¶', hex: '#191970', name: 'MidnightBlue' }, 		 // color #'113' ascii'182'
+            { symbol: '·', hex: '#000080', name: 'Navy' }, 		 // color #'114' ascii'183'
+            { symbol: '¸', hex: '#6a5acd', name: 'SlateBlue' }, 		 // color #'115' ascii'184'
+            { symbol: '¹', hex: '#483d8b', name: 'DarkSlateBlue' }, 		 // color #'116' ascii'185'
+            { symbol: 'º', hex: '#7b68ee', name: 'MediumSlateBlue' }, 		 // color #'117' ascii'186'
+            { symbol: '»', hex: '#9370db', name: 'MediumPurple' }, 		 // color #'118' ascii'187'
+            { symbol: '¼', hex: '#8a2be2', name: 'BlueViolet' }, 		 // color #'119' ascii'188'
+            { symbol: '½', hex: '#4b0082', name: 'Indigo' }, 		 // color #'120' ascii'189'
+            { symbol: '¾', hex: '#9932cc', name: 'DarkOrchid' }, 		 // color #'121' ascii'190'
+            { symbol: '¿', hex: '#9400d3', name: 'DarkViolet' }, 		 // color #'122' ascii'191'
+            { symbol: 'À', hex: '#ba55d3', name: 'MediumOrchid' }, 		 // color #'123' ascii'192'
+            { symbol: 'Á', hex: '#8b008b', name: 'DarkMagenta' }, 		 // color #'124' ascii'193'
+            { symbol: 'Â', hex: '#ff00ff', name: 'Fuchsia' }, 		 // color #'125' ascii'194'
+            { symbol: 'Ã', hex: '#ff00ff', name: 'Magenta' }, 		 // color #'126' ascii'195'
+            { symbol: 'Ä', hex: '#dda0dd', name: 'Plum' }, 		 // color #'127' ascii'196'
+            { symbol: 'Å', hex: '#800080', name: 'Purple' }, 		 // color #'128' ascii'197'
+            { symbol: 'Æ', hex: '#d8bfd8', name: 'Thistle' }, 		 // color #'129' ascii'198'
+            { symbol: 'Ç', hex: '#ee82ee', name: 'Violet' }, 		 // color #'130' ascii'199'
+            { symbol: 'È', hex: '#da70d6', name: 'Orchid' }, 		 // color #'131' ascii'200'
+            { symbol: 'É', hex: '#c71585', name: 'MediumVioletRed' }, 		 // color #'132' ascii'201'
+            { symbol: 'Ê', hex: '#ff1493', name: 'DeepPink' }, 		 // color #'133' ascii'202'
+            { symbol: 'Ë', hex: '#ff69b4', name: 'HotPink' }, 		 // color #'134' ascii'203'
+            { symbol: 'Ì', hex: '#fff0f5', name: 'LavenderBlush' }, 		 // color #'135' ascii'204'
+            { symbol: 'Í', hex: '#db7093', name: 'PaleVioletRed' }, 		 // color #'136' ascii'205'
+            { symbol: 'Î', hex: '#dc143c', name: 'Crimson' }, 		 // color #'137' ascii'206'
+            { symbol: 'Ï', hex: '#ffc0cb', name: 'Pink' }, 		 // color #'138' ascii'207'
+            { symbol: 'Ð', hex: '#ffb6c1', name: 'LightPink' }, 		 // color #'139' ascii'208'
+
+            // Transparent
+            { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
         ],
+
+        // 
+        test: [
+            { symbol: '!', hex: '#843530', name: 'Color-132-53-48' }, 		 // color #'0' ascii'33'
+            { symbol: '"', hex: '#8b3d32', name: 'Color-139-61-50' }, 		 // color #'1' ascii'34'
+            { symbol: '#', hex: '#b36b5a', name: 'Color-179-107-90' }, 		 // color #'2' ascii'35'
+            { symbol: '$', hex: '#d7a28b', name: 'Color-215-162-139' }, 		 // color #'3' ascii'36'
+            { symbol: '%', hex: '#f67614', name: 'Color-246-118-20' }, 		 // color #'4' ascii'37'
+            { symbol: '&', hex: '#f9ad25', name: 'Color-249-173-37' }, 		 // color #'5' ascii'38'
+            { symbol: '(', hex: '#a59b88', name: 'Color-165-155-136' }, 		 // color #'6' ascii'40'
+            { symbol: ')', hex: '#826e32', name: 'Color-130-110-50' }, 		 // color #'7' ascii'41'
+            { symbol: '*', hex: '#cbc8b4', name: 'Color-203-200-180' }, 		 // color #'8' ascii'42'
+            { symbol: '+', hex: '#dbd28f', name: 'Color-219-210-143' }, 		 // color #'9' ascii'43'
+            { symbol: ',', hex: '#928f76', name: 'Color-146-143-118' }, 		 // color #'10' ascii'44'
+            { symbol: '-', hex: '#e5d866', name: 'Color-229-216-102' }, 		 // color #'11' ascii'45'
+            { symbol: '.', hex: '#b3b270', name: 'Color-179-178-112' }, 		 // color #'12' ascii'46'
+            { symbol: '/', hex: '#7da932', name: 'Color-125-169-50' }, 		 // color #'13' ascii'47'
+            { symbol: '0', hex: '#8efe20', name: 'Color-142-254-32' }, 		 // color #'14' ascii'48'
+            { symbol: '1', hex: '#5cab22', name: 'Color-92-171-34' }, 		 // color #'15' ascii'49'
+            { symbol: '2', hex: '#86e44e', name: 'Color-134-228-78' }, 		 // color #'16' ascii'50'
+            { symbol: '3', hex: '#64cb2f', name: 'Color-100-203-47' }, 		 // color #'17' ascii'51'
+            { symbol: '4', hex: '#72d63f', name: 'Color-114-214-63' }, 		 // color #'18' ascii'52'
+            { symbol: '5', hex: '#57f517', name: 'Color-87-245-23' }, 		 // color #'19' ascii'53'
+            { symbol: '6', hex: '#4ce315', name: 'Color-76-227-21' }, 		 // color #'20' ascii'54'
+            { symbol: '7', hex: '#3f6e37', name: 'Color-63-110-55' }, 		 // color #'21' ascii'55'
+            { symbol: '8', hex: '#68fa56', name: 'Color-104-250-86' }, 		 // color #'22' ascii'56'
+            { symbol: '9', hex: '#32e02d', name: 'Color-50-224-45' }, 		 // color #'23' ascii'57'
+            { symbol: ':', hex: '#486048', name: 'Color-72-96-72' }, 		 // color #'24' ascii'58'
+            { symbol: ';', hex: '#23e628', name: 'Color-35-230-40' }, 		 // color #'25' ascii'59'
+            { symbol: '<', hex: '#629f66', name: 'Color-98-159-102' }, 		 // color #'26' ascii'60'
+            { symbol: '=', hex: '#78f086', name: 'Color-120-240-134' }, 		 // color #'27' ascii'61'
+            { symbol: '>', hex: '#0bc334', name: 'Color-11-195-52' }, 		 // color #'28' ascii'62'
+            { symbol: '?', hex: '#8cca9c', name: 'Color-140-202-156' }, 		 // color #'29' ascii'63'
+            { symbol: '@', hex: '#1cc251', name: 'Color-28-194-81' }, 		 // color #'30' ascii'64'
+            { symbol: 'A', hex: '#22fc76', name: 'Color-34-252-118' }, 		 // color #'31' ascii'65'
+            { symbol: 'B', hex: '#12fa77', name: 'Color-18-250-119' }, 		 // color #'32' ascii'66'
+            { symbol: 'C', hex: '#7dab94', name: 'Color-125-171-148' }, 		 // color #'33' ascii'67'
+            { symbol: 'D', hex: '#14d87a', name: 'Color-20-216-122' }, 		 // color #'34' ascii'68'
+            { symbol: 'E', hex: '#81998e', name: 'Color-129-153-142' }, 		 // color #'35' ascii'69'
+            { symbol: 'F', hex: '#7ff1bd', name: 'Color-127-241-189' }, 		 // color #'36' ascii'70'
+            { symbol: 'G', hex: '#41c289', name: 'Color-65-194-137' }, 		 // color #'37' ascii'71'
+            { symbol: 'H', hex: '#85e8bd', name: 'Color-133-232-189' }, 		 // color #'38' ascii'72'
+            { symbol: 'I', hex: '#dbe5e1', name: 'Color-219-229-225' }, 		 // color #'39' ascii'73'
+            { symbol: 'J', hex: '#27b987', name: 'Color-39-185-135' }, 		 // color #'40' ascii'74'
+            { symbol: 'K', hex: '#19d89d', name: 'Color-25-216-157' }, 		 // color #'41' ascii'75'
+            { symbol: 'L', hex: '#24be91', name: 'Color-36-190-145' }, 		 // color #'42' ascii'76'
+            { symbol: 'M', hex: '#13b78b', name: 'Color-19-183-139' }, 		 // color #'43' ascii'77'
+            { symbol: 'N', hex: '#99e5d9', name: 'Color-153-229-217' }, 		 // color #'44' ascii'78'
+            { symbol: 'O', hex: '#59d3c7', name: 'Color-89-211-199' }, 		 // color #'45' ascii'79'
+            { symbol: 'P', hex: '#144d48', name: 'Color-20-77-72' }, 		 // color #'46' ascii'80'
+            { symbol: 'Q', hex: '#2accd4', name: 'Color-42-204-212' }, 		 // color #'47' ascii'81'
+            { symbol: 'R', hex: '#2ac1d5', name: 'Color-42-193-213' }, 		 // color #'48' ascii'82'
+            { symbol: 'S', hex: '#1dcaf9', name: 'Color-29-202-249' }, 		 // color #'49' ascii'83'
+            { symbol: 'T', hex: '#627d8c', name: 'Color-98-125-140' }, 		 // color #'50' ascii'84'
+            { symbol: 'U', hex: '#176796', name: 'Color-23-103-150' }, 		 // color #'51' ascii'85'
+            { symbol: 'V', hex: '#2c92d4', name: 'Color-44-146-212' }, 		 // color #'52' ascii'86'
+            { symbol: 'W', hex: '#045bb3', name: 'Color-4-91-179' }, 		 // color #'53' ascii'87'
+            { symbol: 'X', hex: '#afcff3', name: 'Color-175-207-243' }, 		 // color #'54' ascii'88'
+            { symbol: 'Y', hex: '#345b8d', name: 'Color-52-91-141' }, 		 // color #'55' ascii'89'
+            { symbol: 'Z', hex: '#a1c6ff', name: 'Color-161-198-255' }, 		 // color #'56' ascii'90'
+            { symbol: '[', hex: '#276eed', name: 'Color-39-110-237' }, 		 // color #'57' ascii'91'
+            { symbol: ']', hex: '#0f41cf', name: 'Color-15-65-207' }, 		 // color #'58' ascii'93'
+            { symbol: '^', hex: '#4e5467', name: 'Color-78-84-103' }, 		 // color #'59' ascii'94'
+            { symbol: '_', hex: '#2448d6', name: 'Color-36-72-214' }, 		 // color #'60' ascii'95'
+            { symbol: '`', hex: '#3252e7', name: 'Color-50-82-231' }, 		 // color #'61' ascii'96'
+            { symbol: 'a', hex: '#0317d8', name: 'Color-3-23-216' }, 		 // color #'62' ascii'97'
+            { symbol: 'b', hex: '#232bef', name: 'Color-35-43-239' }, 		 // color #'63' ascii'98'
+            { symbol: 'c', hex: '#1e1492', name: 'Color-30-20-146' }, 		 // color #'64' ascii'99'
+            { symbol: 'd', hex: '#8177e3', name: 'Color-129-119-227' }, 		 // color #'65' ascii'100'
+            { symbol: 'e', hex: '#aaa8b9', name: 'Color-170-168-185' }, 		 // color #'66' ascii'101'
+            { symbol: 'f', hex: '#9685fb', name: 'Color-150-133-251' }, 		 // color #'67' ascii'102'
+            { symbol: 'g', hex: '#54498b', name: 'Color-84-73-139' }, 		 // color #'68' ascii'103'
+            { symbol: 'h', hex: '#360cb2', name: 'Color-54-12-178' }, 		 // color #'69' ascii'104'
+            { symbol: 'i', hex: '#4008c7', name: 'Color-64-8-199' }, 		 // color #'70' ascii'105'
+            { symbol: 'j', hex: '#792df9', name: 'Color-121-45-249' }, 		 // color #'71' ascii'106'
+            { symbol: 'k', hex: '#441888', name: 'Color-68-24-136' }, 		 // color #'72' ascii'107'
+            { symbol: 'l', hex: '#6907e9', name: 'Color-105-7-233' }, 		 // color #'73' ascii'108'
+            { symbol: 'm', hex: '#855fb0', name: 'Color-133-95-176' }, 		 // color #'74' ascii'109'
+            { symbol: 'n', hex: '#7124c3', name: 'Color-113-36-195' }, 		 // color #'75' ascii'110'
+            { symbol: 'o', hex: '#9a2ffc', name: 'Color-154-47-252' }, 		 // color #'76' ascii'111'
+            { symbol: 'p', hex: '#a30ffe', name: 'Color-163-15-254' }, 		 // color #'77' ascii'112'
+            { symbol: 'q', hex: '#59057e', name: 'Color-89-5-126' }, 		 // color #'78' ascii'113'
+            { symbol: 'r', hex: '#561071', name: 'Color-86-16-113' }, 		 // color #'79' ascii'114'
+            { symbol: 's', hex: '#c36be4', name: 'Color-195-107-228' }, 		 // color #'80' ascii'115'
+            { symbol: 't', hex: '#da90f1', name: 'Color-218-144-241' }, 		 // color #'81' ascii'116'
+            { symbol: 'u', hex: '#894998', name: 'Color-137-73-152' }, 		 // color #'82' ascii'117'
+            { symbol: 'v', hex: '#c317d2', name: 'Color-195-23-210' }, 		 // color #'83' ascii'118'
+            { symbol: 'w', hex: '#b20eb7', name: 'Color-178-14-183' }, 		 // color #'84' ascii'119'
+            { symbol: 'x', hex: '#cb50cd', name: 'Color-203-80-205' }, 		 // color #'85' ascii'120'
+            { symbol: 'y', hex: '#9f729f', name: 'Color-159-114-159' }, 		 // color #'86' ascii'121'
+            { symbol: 'z', hex: '#d64bcf', name: 'Color-214-75-207' }, 		 // color #'87' ascii'122'
+            { symbol: '{', hex: '#511f4b', name: 'Color-81-31-75' }, 		 // color #'88' ascii'123'
+            { symbol: '|', hex: '#9d388c', name: 'Color-157-56-140' }, 		 // color #'89' ascii'124'
+            { symbol: '}', hex: '#fd2fc1', name: 'Color-253-47-193' }, 		 // color #'90' ascii'125'
+            { symbol: '~', hex: '#5c2b40', name: 'Color-92-43-64' }, 		 // color #'91' ascii'126'
+            { symbol: '¡', hex: '#da9cb5', name: 'Color-218-156-181' }, 		 // color #'92' ascii'161'
+            { symbol: '¢', hex: '#e292ad', name: 'Color-226-146-173' }, 		 // color #'93' ascii'162'
+            { symbol: '£', hex: '#cb0a43', name: 'Color-203-10-67' }, 		 // color #'94' ascii'163'
+            { symbol: '¤', hex: '#fc7194', name: 'Color-252-113-148' }, 		 // color #'95' ascii'164'
+            { symbol: '¥', hex: '#fe0a26', name: 'Color-254-10-38' }, 		 // color #'96' ascii'165'
+            { symbol: '¦', hex: '#873d3f', name: 'Color-135-61-63' }, 		 // color #'97' ascii'166'
+            { symbol: '§', hex: '#9e383a', name: 'Color-158-56-58' }, 		 // color #'98' ascii'167'
+            { symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
+
+        ],
+
+        //
         spaceInvaders: [
             { symbol: 'R', hex: '#FF0000', name: 'Red' },
             { symbol: 'O', hex: '#FFA500', name: 'Orange' },
@@ -1026,9 +1191,6 @@ class SpritePallets {
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
         ]
     };
-
-    static currentPaletteName = 'default';
-    static errorResult = { symbol: 'Ø', hex: '#00000000', name: 'Transparent' };
 
     // Get the current palette
     static getPallet() {
@@ -1061,8 +1223,8 @@ class SpritePallets {
         const palette = this.getPallet();
 
         // Iterate through the palette and add details to the textarea
-        palette.forEach((pallet, index) => {
-            value += `${index}   ${pallet.symbol}   ${pallet.hex}  ${pallet.name}\n`;
+        palette.forEach((color, index) => {
+            value += `${index}   ${color.symbol}   ${color.hex}  ${color.name}\n`;
         });
         return value;
     }
@@ -1072,7 +1234,7 @@ class SpritePallets {
         const palette = this.getPallet(); // Use current palette
         if (index < 0 || index >= palette.length) {
             console.error(`Index out of bounds: ${index}`);
-            return SpritePallets.errorResult;
+            return SpritePalettes.errorResult;
         }
         return palette[index];
     }
@@ -1084,7 +1246,7 @@ class SpritePallets {
         // Validate that symbol is a non-empty string and a single ASCII character
         if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
             console.error("Invalid symbol provided:", symbol);
-            result = SpritePallets.errorResult;
+            result = SpritePalettes.errorResult;
         }
 
 
@@ -1093,7 +1255,7 @@ class SpritePallets {
 
         if (!result) {
             console.error(`Symbol not found:'${symbol}'`);
-            result = SpritePallets.errorResult;
+            result = SpritePalettes.errorResult;
         }
 
         return result;
@@ -1105,7 +1267,7 @@ class SpritePallets {
         const result = palette.find(item => item.hex.toLowerCase() === hex.toLowerCase());
         if (!result) {
             console.error(`Hex not found: ${hex}`);
-            return SpritePallets.errorResult;
+            return SpritePalettes.errorResult;
         }
         return result;
     }
@@ -1131,102 +1293,157 @@ class SpritePallets {
         }
     }
 
-
-
-}
-
-export default SpritePallets;
-
-//---------------------------------------------------
-//---------------------------------------------------
-//---------------------------------------------------
-if (false) {
-
-    function sortColors(colors) {
-        // Helper function to convert hex to RGB
-        function hexToRgb(hex) {
-            let r = parseInt(hex.substring(1, 3), 16);
-            let g = parseInt(hex.substring(3, 5), 16);
-            let b = parseInt(hex.substring(5, 7), 16);
-            return { r, g, b };
-        }
-
-        // Helper function to convert RGB to HSL
-        function rgbToHsl(r, g, b) {
-            r /= 255;
-            g /= 255;
-            b /= 255;
-
-            let max = Math.max(r, g, b);
-            let min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
-
-            if (max === min) {
-                h = s = 0; // achromatic
-            } else {
-                let d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch (max) {
-                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                    case g: h = (b - r) / d + 2; break;
-                    case b: h = (r - g) / d + 4; break;
-                }
-                h /= 6;
-            }
-
-            return { h: h * 360, s, l }; // return hue in degrees
-        }
-
-        // Log the colors' hue values before sorting
-        colors.forEach(color => {
-            let rgb = hexToRgb(color.hex);
-            let hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-            console.log(`${color.name}: Hue = ${hsl.h}`);
-        });
-
-        // Sort the colors based on hue
-        colors.sort((a, b) => {
-            let rgbA = hexToRgb(a.hex);
-            let rgbB = hexToRgb(b.hex);
-
-            let hslA = rgbToHsl(rgbA.r, rgbA.g, rgbA.b);
-            let hslB = rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
-
-            return hslA.h - hslB.h; // Sort based on hue
-        });
-
-        return colors;
+    // Helper function to convert hex to RGB
+    static hexToRgb(hex) {
+        let r = parseInt(hex.substring(1, 3), 16);
+        let g = parseInt(hex.substring(3, 5), 16);
+        let b = parseInt(hex.substring(5, 7), 16);
+        return { r, g, b };
     }
 
-    let value = "<h1>Sorted Colors by Hue</h1>";
-    value += '<textarea id="orderedColor" rows="35" cols="125" style="height: 35%;">';
+    // Helper function to convert RGB to HSL
+    static rgbToHsl(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        let max = Math.max(r, g, b);
+        let min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+
+        if (max === min) {
+            h = s = 0; // achromatic
+        } else {
+            let d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+
+        return { //h: h * 360, s, l }; // return hue in degrees
+            h: (h * 360).toFixed(4), // Hue in degrees
+            s: s.toFixed(4), // Saturation
+            l: l.toFixed(4), // Lightness
+        }
+    }
+
+    // Helper function to check if a color is transparent (based on alpha)
+    static isTransparent(hex) {
+        // Assuming the color is in #RRGGBBAA format
+        if (hex === SpritePalettes.transparentColor || hex.length === 9) {
+            let alpha = parseInt(hex.slice(7, 9), 16) / 255;
+            return alpha < 1;
+        }
+        // If it's not in #RRGGBBAA format, assume it's fully opaque
+        return false;
+    }
+
+    /** sort options:
+        // Sorting by Hue
+        const sortedByHue = sortColors(colors, 'hue');
+        // Sorting by Saturation
+        const sortedBySaturation = sortColors(colors, 'saturation');
+        // Sorting by Lightness
+        const sortedByLightness = sortColors(colors, 'lightness');
+     */
+    static sortColors(colors, sortBy = 'hue') {
+        colors.sort((a, b) => {
+            // Check for transparency
+            if (SpritePalettes.isTransparent(a.hex)) {
+                return 1; // Move transparent color 'a' to the bottom
+            }
+            if (SpritePalettes.isTransparent(b.hex)) {
+                return -1; // Move transparent color 'b' to the bottom
+            }
+
+            // Convert hex to RGB
+            let rgbA = SpritePalettes.hexToRgb(a.hex);
+            let rgbB = SpritePalettes.hexToRgb(b.hex);
+
+            // Convert RGB to HSL
+            let hslA = SpritePalettes.rgbToHsl(rgbA.r, rgbA.g, rgbA.b);
+            let hslB = SpritePalettes.rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
+
+            // Sort based on the selected criterion
+            if (sortBy === 'hue') {
+                return hslA.h - hslB.h; // Sort by hue
+            } else if (sortBy === 'saturation') {
+                return hslA.s - hslB.s; // Sort by saturation
+            } else if (sortBy === 'lightness') {
+                return hslA.l - hslB.l; // Sort by lightness
+            } else {
+                console.log('sortBy:', sortBy); // Debug log to check the value
+                console.warn(` --- Invalid sortBy value:'${sortBy}'. Defaulting to 'hue'. ---`);
+                return hslA.h - hslB.h; // Default to sorting by hue
+            }
+        });
+        return colors;
+    }
+    /* The hue range for each color in the visible spectrum (ROYGBIV) within the HSL (Hue, Saturation, Lightness) model is generally as follows: */
+    // const colorRanges = {
+    //     Red: ['#FF0000', '#FF6347'], // 0°–30° and 330°–360°    Red
+    //     Orange: ['#FFA500', '#FF8C00'], // 30°–60°              Orange
+    //     Yellow: ['#FFFF00', '#FFD700'], // 60°–90°              Yellow
+    //     Green: ['#00FF00', '#32CD32'], // 90°–150°              Green
+    //     Blue: ['#0000FF', '#1E90FF'], // 180°–240°              Blue
+    //     Indigo: ['#4B0082', '#6A5ACD'], // 240°–270°            Indigo
+    //     Violet: ['#EE82EE', '#9400D3'], // 270°–330°            Violet
+    // };
+}
+
+export default SpritePalettes;
+
+//---------------------------------------------------
+//---------------------------------------------------
+//---------------------------------------------------
+// Sorted Color pallette 'xxxx' by 'yyyy'
+if (false) {  // sort colors and put on editor screen.
+    SpritePalettes.setPalette("default");
+    var sortBy = "saturation"; // hue, saturation, lightness
+
+    let value = `<h1>Sorted Color pallette '${SpritePalettes.currentPaletteName}' by '${sortBy}'</h1>`;
+    value += '<p>Options are: hue, saturation, & lightness</p>';
+    value += '<textarea id="orderedColor" rows="35" cols="150" style="height: 35%;">';
 
     // colors to Sort 
-    //var sortedColors = sortColors(colors);
-    var sortedColors = sortColors(SpritePallets.palettes.test);
+    var sortedColors = SpritePalettes.sortColors(SpritePalettes.getPallet(), sortBy);
 
     let colorNumber = 0;
-    let asciiINumber = 33;
+    let asciiINumber = 32;
 
     sortedColors.forEach(function (color) {
+        colorNumber++;
+        asciiINumber++;
+
         if (asciiINumber === 39 || asciiINumber === 92) {
             asciiINumber++;
         }
         if (asciiINumber === 127) {
             asciiINumber = 161;
         }
-        const symbol = String.fromCharCode(asciiINumber);
 
-        //{ symbol: '5', hex: '#00000000', name: 'Transparent' }, 	 //<!-- '53' --> 
-        //     if (color.hex === '#00000000') {
-        // //        asciiINumber--;
-        //     } else{
-        // Append formatted color object to .value as a string
-        value += `{symbol: '${symbol}', hex: '${color.hex}', name: '${color.name}'}, \t\t // color #'${colorNumber++}' ascii'${asciiINumber++}'\n`;
-        // }
+        var rgb = SpritePalettes.hexToRgb(color.hex);
+        let hsl = SpritePalettes.rgbToHsl(rgb.r, rgb.g, rgb.b);
+
+        if (false) {// show HSL and Color details}
+            // Append formatted color object to .value as a string
+            if (isNaN(hsl.h)) {
+                console.error("Invalid hue value:", hsl.h);
+                value += `Invalid hue value:`, '${hsl.h}';
+            } else {
+                let hue = Number(hsl.h);
+                value += `/* {h: '${hue.toFixed(3).padStart(7, ' ')}', s: '${hsl.s}', l: '${hsl.l},'} `;
+            }
+            value += `- color # ${colorNumber.toFixed(0).padStart(3, '0')} ascii'${asciiINumber}'*/  `;
+        }
+        const symbol = String.fromCharCode(asciiINumber);
+        value += `{symbol: '${symbol}', hex: '${color.hex}', name: '${color.name}'},\n`;
     });
 
-    //value += "{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, \t //<!--  LAST --> ";
     value += '</textarea>';
 
     // Output the sorted colors

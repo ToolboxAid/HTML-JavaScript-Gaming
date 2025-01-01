@@ -1,3 +1,8 @@
+button:disabled {
+    background-color: grey;
+    cursor: not-allowed;
+}
+
 button {
     width: 50px;
     height: 16px;
@@ -50,3 +55,4 @@ td {
 textarea {
     height: 30%;
 }
+

@@ -3,7 +3,7 @@
 // 12/28/2024
 // spriteEditor.js
 
-import SpritePallets from "../scripts/spritePallets.js";
+import SpritePalettes from "../scripts/spritePalettes.js";
 
 //-------------------------------------------
 export class SpriteEditor {
@@ -17,20 +17,20 @@ export class SpriteEditor {
     static ctxImage = null;
 
     //-------------------------------------------
-    // Pallet information
-    static transparentColor = "#00000000";
-    static palletAcrossCnt = 5;
-    static palletDownCnt = 36;
-    static palletSize = 30;
+    // Palette information
+    static paletteSortOrder = "hue"; // hue, saturation, lightness sortBy
+    static paletteAcrossCnt = 5;
+    static paletteDownCnt = 36;
+    static paletteSize = 30;
 
-    static palletSelectedX = 0;
-    static palletSelectedY = 0;
-    static palletScale = (this.palletSize / this.spriteSize);
+    static paletteSelectedX = 0;
+    static paletteSelectedY = 0;
+    static paletteScale = (this.paletteSize / this.spriteSize);
 
-    static palletSpacing = 10;
+    static paletteSpacing = 10;
 
-    // Pallet to load
-    static palletName = null;
+    // Palette to load
+    static paletteName = null;
 
     //-------------------------------------------
     // Grid information
@@ -39,10 +39,10 @@ export class SpriteEditor {
     static gridCellHeight = this.maxGrid;
     static spriteIndex = new Array(this.gridCellWidth);
 
-    static gridX = this.palletSize * (this.palletAcrossCnt + 1) + this.palletSize / 4;
-    static gridY = this.palletSize;
+    static gridX = this.paletteSize * (this.paletteAcrossCnt + 1) + this.paletteSize / 4;
+    static gridY = this.paletteSize;
 
-    static selectedColor = this.transparentColor;
+    static selectedColor = SpritePalettes.transparentColor;
     static selectedColorIndex = 0;
     static selectedCellX = 0;
     static selectedCellY = 0;
@@ -61,6 +61,10 @@ export class SpriteEditor {
     static imageScaleFactor = 1.0; // Zoom factor
 
     static initialize() {
+        // document.getElementById("hsl-h").disabled = true;
+        // document.getElementById("hsl-s").disabled = true;
+        // document.getElementById("hsl-l").disabled = true;
+
         this.initializeArrays();
 
         this.initializeCanvasEditor();
@@ -73,10 +77,10 @@ export class SpriteEditor {
             console.error("Canvas 'SpriteEditor' not found!");
         }
 
-        // set palletName to load
-        SpriteEditor.palletName = "default";
-        SpritePallets.setPalette(SpriteEditor.palletName);
-        this.loadPallet();
+        // set paletteName to load
+        SpriteEditor.paletteName = "default";
+        SpritePalettes.setPalette(SpriteEditor.paletteName);
+        this.showPalette();
         this.loadSprite();
 
         // load background image
@@ -139,8 +143,8 @@ export class SpriteEditor {
         }
     }
 
-    static loadPallet() {
-        const spriteTextarea = document.getElementById("palletID");  // Ensure the textarea element exists
+    static showPalette() {
+        const spriteTextarea = document.getElementById("paletteID");  // Ensure the textarea element exists
 
         if (!spriteTextarea) {
             console.error("Sprite textarea not found.");
@@ -150,7 +154,7 @@ export class SpriteEditor {
         spriteTextarea.value = "";
         spriteTextarea.value += `#  Sym  Hex      Name\n`;
         spriteTextarea.value += `-  ---  -------  --------\n`;
-        spriteTextarea.value = SpritePallets.getPaletteDetails();
+        spriteTextarea.value = SpritePalettes.getPaletteDetails();
     }
 
     static loadSprite() {
@@ -245,7 +249,7 @@ export class SpriteEditor {
         this.ctxEditor.restore();
 
         this.drawGrid();
-        this.drawPallet();
+        this.drawPalette();
         this.drawSelectedColor();
         this.drawSpriteImage();
         this.outputSprite();
@@ -267,7 +271,7 @@ export class SpriteEditor {
                 const gridCellPosY = y * this.spritePixelSize + offset;
 
                 // Update sprite color
-                const result = SpritePallets.getBySymbol(this.spriteIndex[x][y]);
+                const result = SpritePalettes.getBySymbol(this.spriteIndex[x][y]);
                 this.ctxImage.fillStyle = result.hex;
                 this.ctxImage.fillRect(gridCellPosX, gridCellPosY, this.spritePixelSize, this.spritePixelSize);
             }
@@ -299,9 +303,9 @@ export class SpriteEditor {
         // draw sprite array colors on grid
         for (var x = 0; x < this.gridCellWidth; x++) {
             for (var y = 0; y < this.gridCellHeight; y++) {
-                const result = SpritePallets.getBySymbol(this.spriteIndex[x][y]);
+                const result = SpritePalettes.getBySymbol(this.spriteIndex[x][y]);
 
-                if (result.hex === this.transparentColor) {
+                if (result.hex === SpritePalettes.transparentColor) {
                     const gridCellPosX = this.gridX + (this.spriteSize * x) + this.spriteSize / 4;
                     const gridCellPosY = this.gridY + (this.spriteSize * y) + this.spriteSize / 4;
 
@@ -348,49 +352,64 @@ export class SpriteEditor {
         this.ctxEditor.stroke();
     }
 
+    static sortBy(arg) {
+        this.paletteSortOrder = arg;
+        this.drawAll();
+    }
+
     static drawSelectedColor() {
         // show selected color
         this.ctxEditor.strokeStyle = "white";
         this.ctxEditor.lineWidth = 4;
         this.ctxEditor.strokeRect(
-            this.palletSelectedX * this.palletSize + this.palletSpacing / 4,
-            this.palletSelectedY * this.palletSize + this.palletSpacing / 4,
-            this.palletSize, this.palletSize);
+            this.paletteSelectedX * this.paletteSize + this.paletteSpacing / 4,
+            this.paletteSelectedY * this.paletteSize + this.paletteSpacing / 4,
+            this.paletteSize, this.paletteSize);
+
+        // Get the sorted palette colors from SpritePalettes
+        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
 
         // Get Selected Color by Index
-        const result = SpritePallets.getByIndex(SpriteEditor.selectedColorIndex);
+        const result = sortedPalette[SpriteEditor.selectedColorIndex];
 
         // Display selected color details
         const selectedColorInfo = document.getElementById("selectedColorInfo");
-        selectedColorInfo.innerHTML = `<h3>Selected Color Info</h3><br>` +
+        selectedColorInfo.innerHTML = `<h3>Selected Color Info</h3>` +
+            `Palette:  ${SpriteEditor.paletteName} <br>` +
             `Index:  ${this.selectedColorIndex} <br>` +
             `Char:   ${result.symbol} <br>` +
             `Code:   ${result.hex} <br>` +
-            `Name:   ${result.name} `;
+            `Name:   ${result.name} <br>` +
+            `H  S  L`; //TODO
     }
-    static drawPallet() {
-        this.palletScale = (this.palletSize / this.spriteSize);
+    static drawPalette() {// hue, saturation, lightness
+        this.paletteScale = (this.paletteSize / this.spriteSize);
 
         // Clear location
-        this.ctxEditor.clearRect(0, 0, this.spriteSize * this.palletAcrossCnt * this.palletScale + this.palletSpacing, this.canvasEditor.height); // Clear the canvasEditor
+        this.ctxEditor.clearRect(0, 0, this.spriteSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Clear the canvasEditor
         this.ctxEditor.fillStyle = 'black';
-        this.ctxEditor.fillRect(0, 0, this.spriteSize * this.palletAcrossCnt * this.palletScale + this.palletSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
+        this.ctxEditor.fillRect(0, 0, this.spriteSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
 
-        for (let index = 0; index < SpritePallets.getLength(); index++) {
-            const result = SpritePallets.getByIndex(index);
-            let div = index % this.palletAcrossCnt;
-            let mod = Math.floor(index / this.palletAcrossCnt);
-            const newX = div * this.palletSize + this.palletSpacing / 2;
-            const newY = mod * this.palletSize + this.palletSpacing / 2;
+        // Get the sorted palette colors from SpritePalettes
+        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(),SpriteEditor.paletteSortOrder);
+        
+        // Draw the sorted palette
+        for (let index = 0; index < sortedPalette.length; index++) {
+            const result = sortedPalette[index];
+            let div = index % this.paletteAcrossCnt;
+            let mod = Math.floor(index / this.paletteAcrossCnt);
+            const newX = div * this.paletteSize + this.paletteSpacing / 2;
+            const newY = mod * this.paletteSize + this.paletteSpacing / 2;
 
-            if (result.hex === this.transparentColor) {
-                SpriteEditor.drawTransparentX(newX, newY, this.spriteSize * this.palletScale);
+            if (result.hex === SpritePalettes.transparentColor) {
+                SpriteEditor.drawTransparentX(newX, newY, this.spriteSize * this.paletteScale);
             } else {
                 this.ctxEditor.fillStyle = result.hex;
-                this.ctxEditor.fillRect(newX, newY, this.spriteSize * this.palletScale - this.palletSpacing / 2, this.spriteSize * this.palletScale - this.palletSpacing / 2);
+                this.ctxEditor.fillRect(newX, newY, this.spriteSize * this.paletteScale - this.paletteSpacing / 2, this.spriteSize * this.paletteScale - this.paletteSpacing / 2);
             }
         }
     }
+
 
     static outputSprite() {
         // Format textArea sprite
@@ -401,14 +420,16 @@ export class SpriteEditor {
                 const letterIndex = this.spriteIndex[y][x];
                 line += letterIndex;
             }
-            textArea += '"' + line + '",\n';
+            // Add a comma for all lines except the last one
+            textArea += '"' + line + '"' + (x < this.gridCellHeight - 1 ? ',\n' : '\n');
         }
         textArea += ']';
-
+    
         // Place textArea in spriteTextarea
         const spriteTextarea = document.getElementById("spriteID");
         spriteTextarea.value = textArea;
     }
+    
 
     static getMousePositionOncanvas(canvas, event) {
         const rect = canvas.getBoundingClientRect();
@@ -426,7 +447,7 @@ export class SpriteEditor {
     static handleCanvasClick(event) {
         const mouse = SpriteEditor.getMousePositionOncanvas(SpriteEditor.canvasEditor, event);
 
-        if (mouse.x > (SpriteEditor.spriteSize * SpriteEditor.palletAcrossCnt) * SpriteEditor.palletScale) {
+        if (mouse.x > (SpriteEditor.spriteSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
             // Determine which sprite cell clicked
             SpriteEditor.selectedCellX = Math.floor((mouse.x - SpriteEditor.gridX) / SpriteEditor.spriteSize);
             SpriteEditor.selectedCellY = Math.floor((mouse.y - SpriteEditor.gridY) / SpriteEditor.spriteSize);
@@ -436,22 +457,25 @@ export class SpriteEditor {
                 return;
             }
 
+            // Get the sorted palette colors from SpritePalettes
+            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
+
             // Set the array elements
-            let result = SpritePallets.getByIndex(SpriteEditor.selectedColorIndex);
+            let result = sortedPalette[SpriteEditor.selectedColorIndex];
             SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = result.symbol;
         } else {
-            // Determine which pallet color was clicked
-            const clickedPalletX = Math.floor(mouse.x / SpriteEditor.palletSize);
-            const clickedPalletY = Math.floor(mouse.y / SpriteEditor.palletSize);
-            const clickedPalletIndex = clickedPalletX + clickedPalletY * SpriteEditor.palletAcrossCnt;
+            // Determine which palette color was clicked
+            const clickedPaletteX = Math.floor(mouse.x / SpriteEditor.paletteSize);
+            const clickedPaletteY = Math.floor(mouse.y / SpriteEditor.paletteSize);
+            const clickedPaletteIndex = clickedPaletteX + clickedPaletteY * SpriteEditor.paletteAcrossCnt;
 
-            if (clickedPalletIndex > SpritePallets.getLength() - 1) {
+            if (clickedPaletteIndex > SpritePalettes.getLength() - 1) {
                 return; // don't allow invalid color index
             }
 
-            SpriteEditor.selectedColorIndex = clickedPalletIndex;
-            SpriteEditor.palletSelectedX = clickedPalletX;
-            SpriteEditor.palletSelectedY = clickedPalletY;
+            SpriteEditor.selectedColorIndex = clickedPaletteIndex;
+            SpriteEditor.paletteSelectedX = clickedPaletteX;
+            SpriteEditor.paletteSelectedY = clickedPaletteY;
         }
 
         SpriteEditor.drawAll();
