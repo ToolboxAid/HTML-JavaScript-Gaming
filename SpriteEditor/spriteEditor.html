@@ -15,6 +15,30 @@
 		window.SpriteEditor = SpriteEditor;
 	</script>
 
+<script>
+	const canvasEditor = document.getElementById('canvasEditor');
+
+	canvasEditor.addEventListener('mousedown', (event) => {
+		switch (event.button) {
+			case 0:
+				console.log("Left click detected");
+				break;
+			case 1:
+				console.log("Middle click detected");
+				break;
+			case 2:
+				event.preventDefault();
+				console.log("Right click detected");
+				break;
+			default:
+				console.log("Other mouse button:", event.button);
+		}
+	});
+
+	// Prevent right-click menu from showing
+	canvasEditor.addEventListener('contextmenu', (event) => event.preventDefault());
+</script>
+
 </head>
 
 <body>
@@ -83,7 +107,7 @@
 					<button onclick="SpriteEditor.moveImageHorizontal(-10.00)">-10.0</button>
 					<button onclick="SpriteEditor.moveImageHorizontal(-1.000)">-1.00</button>
 				</td>
-				<td>Move Image</td>
+				<td>Move<br>Image</td>
 				<td>
 					<button onclick="SpriteEditor.moveImageHorizontal(100.0)">+100</button>
 					<button onclick="SpriteEditor.moveImageHorizontal(10.00)">+10.0</button>
@@ -105,7 +129,7 @@
 					<button onclick="SpriteEditor.zoomImage(-0.10)">-0.10</button>
 					<button onclick="SpriteEditor.zoomImage(-0.01)">-0.01</button>
 				</td>
-				<td>Image Zoom</td>
+				<td>Image<br>Zoom</td>
 				<td>
 					<button onclick="SpriteEditor.zoomImage(1.00)">+1.00</button>
 					<button onclick="SpriteEditor.zoomImage(0.10)">+0.10</button>
@@ -119,7 +143,7 @@
 					<button onclick="SpriteEditor.zoomGrid(-0.50)">-0.50</button>
 					<button onclick="SpriteEditor.zoomGrid(-0.10)">-0.10</button>
 				</td>
-				<td>Grid Zoom</td>
+				<td>Grid<br>Zoom</td>
 				<td>
 					<button onclick="SpriteEditor.zoomGrid(2.00)">+2.00</button>
 					<button onclick="SpriteEditor.zoomGrid(1.00)">+1.00</button>
@@ -131,7 +155,7 @@
 				<td>
 					<button onclick="SpriteEditor.spriteDelColumn()">Sub</button>
 				</td>
-				<td>Grid X Column</td>
+				<td>Grid X<br>Column</td>
 				<td>
 					<button onclick="SpriteEditor.spriteAddColumn()">Add</button>
 				</td>
@@ -140,7 +164,7 @@
 				<td>
 					<button onclick="SpriteEditor.spriteDelRow()">Sub</button>
 				</td>
-				<td>Grid Y Row</td>
+				<td>Grid Y<br>Row</td>
 				<td>
 					<button onclick="SpriteEditor.spriteAddRow()">Add</button>
 				</td>
@@ -149,12 +173,12 @@
 				<td id="selectedColorInfo" colspan="3"><b>Selected Color Info</b></td>
 			</tr>
 			<tr>
-				<td><button id="hsl-h" onclick="SpriteEditor.sortBy('hue')">Hue</button></td>
-				<td><button id="hsl-s" onclick="SpriteEditor.sortBy('saturation')">Satur</button></td>
-				<td><button id="hsl-l" onclick="SpriteEditor.sortBy('lightness')">Light</button></td>
+				<td><button id="hsl-h" onclick="SpriteEditor.setSortBy('hue')">Hue</button></td>
+				<td><button id="hsl-s" onclick="SpriteEditor.setSortBy('saturation')">Saturation</button></td>
+				<td><button id="hsl-l" onclick="SpriteEditor.setSortBy('lightness')">Lightness</button></td>
 			</tr>
 			<tr>
-				<td colspan="2">
+				<td colspan="3">
 					<h3>Sprite</h3>
 					<canvas id="spriteImage"></canvas>
 				</td>
