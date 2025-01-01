@@ -56,6 +56,7 @@ export class SpriteEditor {
 
     //-------------------------------------------
     // Grid Image
+    static imageName = './8bit tiles.jpg';
     static image = null;
     static imageX = this.gridX;
     static imageY = this.gridY;
@@ -81,7 +82,7 @@ export class SpriteEditor {
 
         // load background image
         this.image = new Image();
-        this.image.src = './8bit tiles.jpg';
+        this.image.src = SpriteEditor.imageName;
 
         // image loading errors:
         this.image.onerror = (error) => {
@@ -167,7 +168,11 @@ export class SpriteEditor {
             }
         }
 
-        this.image = metadata['image'];
+        this.imageName = metadata['imageName'];
+        if (this.imageName === undefined) {
+            throw new Error(`imageName not found:${this.imageName} in meta:`);
+        }
+
         this.imageScale = Number(metadata['imageS']);
         this.imageX = Number(metadata['imageX']);
         this.imageY = Number(metadata['imageY']);
@@ -424,7 +429,7 @@ export class SpriteEditor {
         // Format textArea sprite
         let textArea = "[\n";
 
-        textArea += `// meta:image:${this.image.src}\n`;
+        textArea += `// meta:imageName:${this.imageName}\n`;
         textArea += `// meta:imageX:${this.imageX}\n`;
         textArea += `// meta:imageY:${this.imageY}\n`;
         textArea += `// meta:imageS:${this.imageScale.toFixed(2)}\n`;
