@@ -15,30 +15,6 @@
 		window.SpriteEditor = SpriteEditor;
 	</script>
 
-<script>
-	const canvasEditor = document.getElementById('canvasEditor');
-
-	canvasEditor.addEventListener('mousedown', (event) => {
-		switch (event.button) {
-			case 0:
-				console.log("Left click detected");
-				break;
-			case 1:
-				console.log("Middle click detected");
-				break;
-			case 2:
-				event.preventDefault();
-				console.log("Right click detected");
-				break;
-			default:
-				console.log("Other mouse button:", event.button);
-		}
-	});
-
-	// Prevent right-click menu from showing
-	canvasEditor.addEventListener('contextmenu', (event) => event.preventDefault());
-</script>
-
 </head>
 
 <body>
@@ -71,11 +47,17 @@
 					<h3>Sprite array</h3>
 					<textarea id="spriteID" name="sprite" rows="35" cols="35" style="height: 35%;">
 [
+// meta:image:http://127.0.0.1:5500/SpriteEditor/8bit%20tiles.jpg
+// meta:imageX:-117.5
+// meta:imageY:-190
+// meta:imageS:2.169999999999999
+// meta:palette:default
+// meta:spriteS:44.6
 "ØØØØØØØ3333Ø333Ø",
-"ØØØØØ33ÎÎÎ33NNN3",
-"ØØØØ3ÎÎÎÎÎÎ3NNN3",
-"ØØØ3ÎÎÎ333333NN3",
-"ØØ3ÎÎÎ33333333N3",
+"ØØØØØ33ÎÎÎ33LLL3",
+"ØØØØ3ÎÎÎÎÎÎ3LLL3",
+"ØØØ3ÎÎÎ333333LL3",
+"ØØ3ÎÎÎ33333333L3",
 "ØØ3Î33LLLLLL333Ø",
 "Ø3333LLL3L3L3ÎÎ3",
 "Ø3L33LLL3L3L3ÎÎ3",

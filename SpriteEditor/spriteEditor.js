@@ -4,6 +4,7 @@
 // spriteEditor.js
 
 import SpritePalettes from "../scripts/spritePalettes.js";
+import MouseInput from '../scripts/mouse.js';
 
 //-------------------------------------------
 export class SpriteEditor {
@@ -25,7 +26,7 @@ export class SpriteEditor {
 
     static paletteSelectedX = 0;
     static paletteSelectedY = 0;
-    static paletteScale = (this.paletteSize / this.spriteSize);
+    static paletteScale = this.paletteSize / this.spriteSize;
 
     static paletteSpacing = 10;
 
@@ -58,25 +59,19 @@ export class SpriteEditor {
     static image = null;
     static imageX = this.gridX;
     static imageY = this.gridY;
-    static imageScaleFactor = 1.0; // Zoom factor
+    static imageScale = 1.0; // Zoom factor
+
+    static mouse = null;
 
     static initialize() {
+
         this.initializeArrays();
 
-        console.log("Canvas before assignment:", SpriteEditor.canvasEditor);
         this.initializeCanvasEditor();
         this.initializeCanvasImage();
 
-        // Add event listener to the canvas
-        if (this.canvasEditor) {
-            // Add an event listener for the context menu to suppress the default menu
-            this.canvasEditor.addEventListener("contextmenu", (event) => event.preventDefault());
-            this.canvasEditor.addEventListener("click", this.handleCanvasClick);
-        } else {
-            console.error("Canvas 'SpriteEditor' not found!");
-        }
-
-        console.log("Canvas after assignment:", SpriteEditor.canvasEditor);
+        // Setup our mouse
+        SpriteEditor.mouse = new MouseInput(this.canvasEditor);
 
         // set paletteName to load
         SpriteEditor.paletteName = "default";
@@ -88,17 +83,10 @@ export class SpriteEditor {
         this.image = new Image();
         this.image.src = './8bit tiles.jpg';
 
-        // Wait for the image to load before calling drawAll
-        this.image.onload = () => {
-            // Now that the image is loaded, draw it
-            this.drawAll();
-        };
-
         // image loading errors:
         this.image.onerror = (error) => {
             console.error("Failed to load image:", error);
         };
-
     }
 
     static initializeCanvasEditor() {
@@ -117,7 +105,7 @@ export class SpriteEditor {
         // Create a new CanvasRenderingContext2D object
         this.ctxEditor = this.canvasEditor.getContext("2d");
 
-        console.log("Canvas Editor initialized with dimensions:", this.canvasEditor.width, "x", this.canvasEditor.height, ".");
+        console.debug("Canvas Editor initialized with dimensions:", this.canvasEditor.width, "x", this.canvasEditor.height, ".");
     }
 
     static initializeCanvasImage() {
@@ -136,7 +124,7 @@ export class SpriteEditor {
         // Create a new CanvasRenderingContext2D object
         this.ctxImage = this.canvasImage.getContext("2d");
 
-        console.log("Canvas Image initialized with dimensions:", this.canvasImage.width, "x", this.canvasImage.height, ".");
+        console.debug("Canvas Image initialized with dimensions:", this.canvasImage.width, "x", this.canvasImage.height, ".");
     }
 
     static initializeArrays() {
@@ -163,14 +151,42 @@ export class SpriteEditor {
         const spriteTextarea = document.getElementById("spriteID");
         const spriteContent = spriteTextarea.value.trim();
 
-        // Parse rows from the input, removing brackets and splitting by commas
-        const rows = spriteContent.replace(/[\[\]]/g, "").split(",").map(row => row.trim().replace(/"/g, ""));
+        const lines = spriteContent.split("\n").map(line => line.trim());
 
-        // Set grid dimensions based on the parsed rows
+        const rows = [];
+        const metadata = {};
+
+        for (const line of lines) {
+            if (line.startsWith("// meta:")) {
+                // Extract metadata by splitting on the first colon
+                const [key, value] = line.slice(8).split(/:(.+)/).map(part => part.trim());
+                metadata[key] = value;
+            } else if (line.startsWith('"')) {
+                // It's a sprite row, remove quotes and store it
+                rows.push(line.replace(/"/g, ""));
+            }
+        }
+
+        this.image = metadata['image'];
+        this.imageScale = Number(metadata['imageS']);
+        this.imageX = Number(metadata['imageX']);
+        this.imageY = Number(metadata['imageY']);
+
+        this.paletteName = metadata['palette'];
+
+        this.spriteSize = Number(metadata['spriteS']);
+
+        this.paletteScale = (this.paletteSize / this.spriteSize)
+
+        // this.spriteSize= metadata['spriteS'];
+
+        // // Parse rows from the input, removing brackets and splitting by commas
+        // const rows = spriteContent.replace(/[\[\]]/g, "").split(",").map(row => row.trim().replace(/"/g, ""));
+
+        // // Set grid dimensions based on the parsed rows
         this.gridCellHeight = rows.length;
-        this.gridCellWidth = rows[0]?.length || 0;
+        this.gridCellWidth = rows[0]?.length - 1 || 0;
 
-        // Process each row and populate spriteIndex
         for (let y = 0; y < this.gridCellHeight; y++) {
             const row = rows[y];
             for (let x = 0; x < this.gridCellWidth; x++) {
@@ -178,38 +194,37 @@ export class SpriteEditor {
                 const letter = row[x];
 
                 // Update spriteIndex
-                this.spriteIndex[x][y] = letter;
+                if (letter === undefined) {
+                    this.spriteIndex[x][y] = SpritePalettes.errorResult.symbol;
+                } else {
+                    this.spriteIndex[x][y] = letter;
+                }
             }
         }
     }
 
     static moveImageHorizontal(moveFactor) {
         this.imageX += moveFactor;
-        this.drawAll();
     }
     static moveImageVertical(moveFactor) {
         this.imageY += moveFactor;
-        this.drawAll();
     }
     static zoomImage(zoomFactor) {
-        this.imageScaleFactor += zoomFactor;
-        if (this.imageScaleFactor >= 5.0) {
-            this.imageScaleFactor = 5.0;
-        } else if (this.imageScaleFactor <= 0.3) {
-            this.imageScaleFactor = 0.3;
+        this.imageScale += zoomFactor;
+        if (this.imageScale >= 5.0) {
+            this.imageScale = 5.0;
+        } else if (this.imageScale <= 0.3) {
+            this.imageScale = 0.3;
         }
-        this.drawAll();
     }
 
     static zoomGrid(zoomFactor) {
         this.spriteSize += zoomFactor;
-        this.drawAll();
     }
 
     static spriteAddRow() {
         if (this.gridCellHeight < this.maxGrid) {
             this.gridCellHeight++;
-            this.drawAll();
         } else {
             console.error(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
         }
@@ -217,7 +232,6 @@ export class SpriteEditor {
     static spriteAddColumn() {
         if (this.gridCellWidth < this.maxGrid) {
             this.gridCellWidth++;
-            this.drawAll();
         } else {
             console.error(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
         }
@@ -225,7 +239,6 @@ export class SpriteEditor {
     static spriteDelColumn() {
         if (this.gridCellWidth > 1) {
             this.gridCellWidth--;
-            this.drawAll();
         } else {
             console.error("Cannot remove column, gridCellWidth is already 1.");
         }
@@ -233,7 +246,6 @@ export class SpriteEditor {
     static spriteDelRow() {
         if (this.gridCellHeight > 1) {
             this.gridCellHeight--;
-            this.drawAll();
         } else {
             console.error("Cannot remove row, gridCellHeight is already 1.");
         }
@@ -241,7 +253,6 @@ export class SpriteEditor {
 
     static setSortBy(arg) {
         this.paletteSortOrder = arg;
-        this.drawAll();
     }
 
     static drawAll() {
@@ -251,7 +262,7 @@ export class SpriteEditor {
         this.ctxEditor.fillRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
 
         this.ctxEditor.save();
-        this.ctxEditor.scale(this.imageScaleFactor, this.imageScaleFactor);
+        this.ctxEditor.scale(this.imageScale, this.imageScale);
         this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
         this.ctxEditor.restore();
 
@@ -417,12 +428,25 @@ export class SpriteEditor {
     static outputSprite() {
         // Format textArea sprite
         let textArea = "[\n";
+
+        textArea += `// meta:image:${this.image.src}\n`;
+        textArea += `// meta:imageX:${this.imageX}\n`;
+        textArea += `// meta:imageY:${this.imageY}\n`;
+        textArea += `// meta:imageS:${this.imageScale}\n`;
+
+        textArea += `// meta:palette:${this.paletteName}\n`;
+
+        textArea += `// meta:spriteS:${this.spriteSize}\n`;
+
         for (let x = 0; x < this.gridCellHeight; x++) {
             let line = "";
+
             for (let y = 0; y < this.gridCellWidth; y++) {
+
                 const letterIndex = this.spriteIndex[y][x];
                 line += letterIndex;
             }
+
             // Add a comma for all lines except the last one
             textArea += '"' + line + '"' + (x < this.gridCellHeight - 1 ? ',\n' : '\n');
         }
@@ -432,7 +456,6 @@ export class SpriteEditor {
         const spriteTextarea = document.getElementById("spriteID");
         spriteTextarea.value = textArea;
     }
-
 
     static getMousePositionOncanvas(canvas, event) {
         const rect = canvas.getBoundingClientRect();
@@ -445,66 +468,93 @@ export class SpriteEditor {
         return { x, y };
     }
 
-    // Add an event listener to the canvas for clicks
-    static handleCanvasClick(event) {
-        const mouse = SpriteEditor.getMousePositionOncanvas(SpriteEditor.canvasEditor, event);
-console.log(event,mouse);
-        // Check which mouse button was clicked
-        switch (event.button) {
-            case 0: // Left click
-                if (mouse.x > (SpriteEditor.spriteSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
-                    // Determine which sprite cell clicked
-                    SpriteEditor.selectedCellX = Math.floor((mouse.x - SpriteEditor.gridX) / SpriteEditor.spriteSize);
-                    SpriteEditor.selectedCellY = Math.floor((mouse.y - SpriteEditor.gridY) / SpriteEditor.spriteSize);
+    static handleCanvasLeftClick(mouse) {
+        if (mouse.mouseX > (SpriteEditor.spriteSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
+            // Determine which sprite cell clicked
+            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteSize);
+            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteSize);
 
-                    if (SpriteEditor.selectedCellX < 0 || SpriteEditor.selectedCellX > SpriteEditor.gridCellWidth - 1 ||
-                        SpriteEditor.selectedCellY < 0 || SpriteEditor.selectedCellY > SpriteEditor.gridCellHeight - 1) {
-                        return;
-                    }
+            if (SpriteEditor.selectedCellX < 0 || SpriteEditor.selectedCellX > SpriteEditor.gridCellWidth - 1 ||
+                SpriteEditor.selectedCellY < 0 || SpriteEditor.selectedCellY > SpriteEditor.gridCellHeight - 1) {
+                return;
+            }
 
-                    // Get the sorted palette colors from SpritePalettes
-                    let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
+            // Get the sorted palette colors from SpritePalettes
+            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
 
-                    // Set the array elements
-                    let result = sortedPalette[SpriteEditor.selectedColorIndex];
-                    SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = result.symbol;
-                } else {
-                    // Determine which palette color was clicked
-                    const clickedPaletteX = Math.floor(mouse.x / SpriteEditor.paletteSize);
-                    const clickedPaletteY = Math.floor(mouse.y / SpriteEditor.paletteSize);
-                    const clickedPaletteIndex = clickedPaletteX + clickedPaletteY * SpriteEditor.paletteAcrossCnt;
+            // Set the array elements
+            let result = sortedPalette[SpriteEditor.selectedColorIndex];
+            SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = result.symbol;
+        } else {
+            // Determine which palette color was clicked
+            const clickedPaletteX = Math.floor(mouse.mouseX / SpriteEditor.paletteSize);
+            const clickedPaletteY = Math.floor(mouse.mouseY / SpriteEditor.paletteSize);
+            const clickedPaletteIndex = clickedPaletteX + clickedPaletteY * SpriteEditor.paletteAcrossCnt;
 
-                    if (clickedPaletteIndex > SpritePalettes.getLength() - 1) {
-                        return; // don't allow invalid color index
-                    }
+            if (clickedPaletteIndex > SpritePalettes.getLength() - 1) {
+                return; // don't allow invalid color index
+            }
 
-                    SpriteEditor.selectedColorIndex = clickedPaletteIndex;
-                    SpriteEditor.paletteSelectedX = clickedPaletteX;
-                    SpriteEditor.paletteSelectedY = clickedPaletteY;
-                }
-                break;
+            SpriteEditor.selectedColorIndex = clickedPaletteIndex;
+            SpriteEditor.paletteSelectedX = clickedPaletteX;
+            SpriteEditor.paletteSelectedY = clickedPaletteY;
+        }
+    }
+    static handleCanvasRightClick(mouse) {
 
-            case 1: // Middle click
-                console.log("Middle button clicked");
-                // Add custom middle-click logic here
-                break;
+        if (mouse.mouseX > (SpriteEditor.spriteSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
+            // Determine which sprite cell clicked
+            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteSize);
+            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteSize);
 
-            case 2: // Right click
-                event.preventDefault(); // Prevent the context menu
-                console.log("Right button clicked");
-                // Add custom right-click logic here
-                break;
+            if (SpriteEditor.selectedCellX < 0 || SpriteEditor.selectedCellX > SpriteEditor.gridCellWidth - 1 ||
+                SpriteEditor.selectedCellY < 0 || SpriteEditor.selectedCellY > SpriteEditor.gridCellHeight - 1) {
+                return;
+            }
 
-            default:
-                console.log("Unhandled mouse button:", event.button);
+            // Get the sorted palette colors from SpritePalettes
+            let symbolToFind = SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY];
+
+            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
+            const index = sortedPalette.findIndex(entry => entry.symbol === symbolToFind);
+
+            if (index !== -1) {
+                SpriteEditor.selectedColorIndex = index;
+                SpriteEditor.paletteSelectedX = index % 5;
+                SpriteEditor.paletteSelectedY = Math.floor(index / 5);
+            }
+
+        }
+    }
+
+    static gameUpdate() {
+        SpriteEditor.mouse.update();
+
+        if (SpriteEditor.mouse.isButtonJustPressed(0)) {
+            SpriteEditor.handleCanvasLeftClick(SpriteEditor.mouse);
+        }
+
+        // if (SpriteEditor.mouse.isButtonReleased(1)) {
+        //     console.log('Middle mouse button just released at:', SpriteEditor.mouse.getPosition());
+        // }
+
+        if (SpriteEditor.mouse.isButtonJustPressed(2)) {
+            SpriteEditor.handleCanvasRightClick(SpriteEditor.mouse);
         }
 
         SpriteEditor.drawAll();
     }
 
-
+    // Start the game loop
+    static gameLoop() {
+        SpriteEditor.gameUpdate();
+        requestAnimationFrame(SpriteEditor.gameLoop);
+    }
 
 }
+
+
+
 
 window.onload = () => {
     // // Assign the canvas element to SpriteEditor.canvasEditor
@@ -512,4 +562,5 @@ window.onload = () => {
 
     // Call initialize after canvasEditor is assigned
     SpriteEditor.initialize();
+    SpriteEditor.gameLoop();
 };

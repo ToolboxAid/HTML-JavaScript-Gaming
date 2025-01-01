@@ -1243,15 +1243,15 @@ class SpritePalettes {
     static getBySymbol(symbol) {
         const palette = this.getPallet(); // Use current palette
 
+        let result = '';
         // Validate that symbol is a non-empty string and a single ASCII character
         if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
             console.error("Invalid symbol provided:", symbol);
             result = SpritePalettes.errorResult;
         }
 
-
         // Search the palette for the symbol
-        let result = palette.find(item => item.symbol === symbol);
+        result = palette.find(item => item.symbol === symbol);
 
         if (!result) {
             console.error(`Symbol not found:'${symbol}'`);
