@@ -30,7 +30,7 @@ class MouseInput {
         canvas.addEventListener('mousedown', this.handleMouseDown);
         canvas.addEventListener('mouseup', this.handleMouseUp);
         canvas.addEventListener('mousemove', this.handleMouseMove);
-        canvas.addEventListener('wheel', this.handleWheel);
+        canvas.addEventListener('wheel', this.handleWheel, { passive: true });
 
         // Prevent right-click context menu
         canvas.addEventListener('contextmenu', this.handleContextMenu);

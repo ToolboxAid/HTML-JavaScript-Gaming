@@ -534,10 +534,6 @@ export class SpriteEditor {
             SpriteEditor.handleCanvasLeftClick(SpriteEditor.mouse);
         }
 
-        // if (SpriteEditor.mouse.isButtonReleased(1)) {
-        //     console.log('Middle mouse button just released at:', SpriteEditor.mouse.getPosition());
-        // }
-
         if (SpriteEditor.mouse.isButtonJustPressed(2)) {
             SpriteEditor.handleCanvasRightClick(SpriteEditor.mouse);
         }
@@ -553,14 +549,10 @@ export class SpriteEditor {
 
 }
 
-
-
-
 window.onload = () => {
-    // // Assign the canvas element to SpriteEditor.canvasEditor
-    // SpriteEditor.canvasEditor = document.getElementById("canvasEditor");
-
     // Call initialize after canvasEditor is assigned
     SpriteEditor.initialize();
+
+    // Start gameLoop
     SpriteEditor.gameLoop();
 };
