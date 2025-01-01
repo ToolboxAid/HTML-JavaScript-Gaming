@@ -178,11 +178,6 @@ export class SpriteEditor {
 
         this.paletteScale = (this.paletteSize / this.spriteSize)
 
-        // this.spriteSize= metadata['spriteS'];
-
-        // // Parse rows from the input, removing brackets and splitting by commas
-        // const rows = spriteContent.replace(/[\[\]]/g, "").split(",").map(row => row.trim().replace(/"/g, ""));
-
         // // Set grid dimensions based on the parsed rows
         this.gridCellHeight = rows.length;
         this.gridCellWidth = rows[0]?.length - 1 || 0;
@@ -432,11 +427,11 @@ export class SpriteEditor {
         textArea += `// meta:image:${this.image.src}\n`;
         textArea += `// meta:imageX:${this.imageX}\n`;
         textArea += `// meta:imageY:${this.imageY}\n`;
-        textArea += `// meta:imageS:${this.imageScale}\n`;
+        textArea += `// meta:imageS:${this.imageScale.toFixed(2)}\n`;
 
         textArea += `// meta:palette:${this.paletteName}\n`;
 
-        textArea += `// meta:spriteS:${this.spriteSize}\n`;
+        textArea += `// meta:spriteS:${this.spriteSize.toFixed(1)}\n`;
 
         for (let x = 0; x < this.gridCellHeight; x++) {
             let line = "";
