@@ -21,6 +21,10 @@ button:hover {
     background-color: #0056b3;
 }
 
+#loadSample{
+    width:125px;
+}
+
 #hsl-h,
 #hsl-s,
 #hsl-l {

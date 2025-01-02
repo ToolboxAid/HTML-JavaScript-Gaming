@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 12/28/2024
-// spritePallets.js
+// spritePalettes.js
 
 /** Reference colors
  * Crayola Colors
@@ -11,7 +11,7 @@
  * https://www.jennyscrayoncollection.com/2017/10/complete-list-of-current-crayola-crayon.html
  * 
  */
-class SpritePalettes {
+export class SpritePalettes {
 
     static currentPaletteName = 'default';
     static transparentColor = "#00000000";
@@ -1189,18 +1189,23 @@ class SpritePalettes {
             { symbol: 'K', hex: '#F0E68C', name: 'khaki' },
             // Transparent
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
-        ]
+        ],
+
+        custom: [
+            // Transparent
+            { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
+        ],        
     };
 
     // Get the current palette
-    static getPallet() {
+    static getPalette() {
         return this.palettes[this.currentPaletteName];
     }
 
     // Set the active palette
     static setPalette(name) {
         if (!this.palettes[name]) {
-            console.error(`Palette "${name}" not found.`);
+            alert(`Palette '"${name}"' not found.`);
             return false;
         }
         this.currentPaletteName = name;
@@ -1209,7 +1214,7 @@ class SpritePalettes {
 
     // Get the length of the current palette
     static getLength() {
-        const palette = this.getPallet(); // Use current palette
+        const palette = this.getPalette(); // Use current palette
         return palette.length;
     }
 
@@ -1217,23 +1222,24 @@ class SpritePalettes {
     static getPaletteDetails() {
 
         // Clear the existing content
-        let value = '';
+        let value = `${this.currentPaletteName}: [\n`;
 
         // Get the current palette
-        const palette = this.getPallet();
+        const palette = this.getPalette();
 
         // Iterate through the palette and add details to the textarea
         palette.forEach((color, index) => {
-            value += `${index}   ${color.symbol}   ${color.hex}  ${color.name}\n`;
+            value += `{ symbol: '${color.symbol}', hex: '${color.hex}', name: '${color.name}' },\n`;
         });
+        value += '], \n';
         return value;
     }
 
     // Get an item by its index
     static getByIndex(index) {
-        const palette = this.getPallet(); // Use current palette
+        const palette = this.getPalette(); // Use current palette
         if (index < 0 || index >= palette.length) {
-            console.error(`Index out of bounds: ${index}`);
+            alert(`Index out of bounds: ${index}`);
             return SpritePalettes.errorResult;
         }
         return palette[index];
@@ -1241,12 +1247,12 @@ class SpritePalettes {
 
     // Get an item by its symbol
     static getBySymbol(symbol) {
-        const palette = this.getPallet(); // Use current palette
+        const palette = this.getPalette(); // Use current palette
 
         let result = '';
         // Validate that symbol is a non-empty string and a single ASCII character
         if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
-            console.error("Invalid symbol provided:", symbol);
+            console.warn("Invalid symbol provided:", symbol);
             result = SpritePalettes.errorResult;
         }
 
@@ -1254,7 +1260,7 @@ class SpritePalettes {
         result = palette.find(item => item.symbol === symbol);
 
         if (!result) {
-            console.error(`Symbol not found:'${symbol}'`);
+            //console.warn(`Symbol not found:'${symbol}'`);
             result = SpritePalettes.errorResult;
         }
 
@@ -1263,20 +1269,20 @@ class SpritePalettes {
 
     // Get an item by its hex value
     static getByHex(hex) {
-        const palette = this.getPallet(); // Use current palette
+        const palette = this.getPalette(); // Use current palette
         const result = palette.find(item => item.hex.toLowerCase() === hex.toLowerCase());
         if (!result) {
-            console.error(`Hex not found: ${hex}`);
+            alert(`Hex not found: ${hex}`);
             return SpritePalettes.errorResult;
         }
         return result;
     }
 
     // Dump the current palette to the console
-    static dumpPallet() {
+    static dumpPalette() {
         try {
             const paletteName = this.currentPaletteName; // Use the current active palette name
-            const palette = this.getPallet(); // Retrieve the palette
+            const palette = this.getPalette(); // Retrieve the palette
 
             if (!Array.isArray(palette)) {
                 throw new Error(`Palette "${paletteName}" does not exist or is not an array.`);
@@ -1289,7 +1295,7 @@ class SpritePalettes {
             });
 
         } catch (error) {
-            console.error(`Failed to retrieve details for palette "${this.currentPaletteName}":`, error);
+            alert(`Failed to retrieve details for palette "${this.currentPaletteName}":`, error);
         }
     }
 
@@ -1400,17 +1406,17 @@ export default SpritePalettes;
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------
-// Sorted Color pallette 'xxxx' by 'yyyy'
+// Sorted Color Palette 'xxxx' by 'yyyy'
 if (false) {  // sort colors and put on editor screen.
     SpritePalettes.setPalette("default");
     var sortBy = "saturation"; // hue, saturation, lightness
 
-    let value = `<h1>Sorted Color pallette '${SpritePalettes.currentPaletteName}' by '${sortBy}'</h1>`;
+    let value = `<h1>Sorted Color Palette '${SpritePalettes.currentPaletteName}' by '${sortBy}'</h1>`;
     value += '<p>Options are: hue, saturation, & lightness</p>';
     value += '<textarea id="orderedColor" rows="35" cols="150" style="height: 35%;">';
 
     // colors to Sort 
-    var sortedColors = SpritePalettes.sortColors(SpritePalettes.getPallet(), sortBy);
+    var sortedColors = SpritePalettes.sortColors(SpritePalettes.getPalette(), sortBy);
 
     let colorNumber = 0;
     let asciiINumber = 32;
@@ -1449,7 +1455,7 @@ if (false) {  // sort colors and put on editor screen.
     // Output the sorted colors
     const orderedColorDiv = document.getElementById("orderedColorDiv");  // Ensure the div element exists
     if (!orderedColorDiv) {
-        console.error("orderedColorDiv not found.");
+        alert("orderedColorDiv not found.");
     } else {
         orderedColorDiv.innerHTML = value;
     }

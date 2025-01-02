@@ -67,6 +67,10 @@ export class SpriteEditor {
 
     // TODO: Need to figure out multi frames for animation
 
+    static loadSample(){
+alert("load sample");
+    }
+
     static initialize() {
 
         this.initializeArrays();
@@ -89,7 +93,7 @@ export class SpriteEditor {
 
         // image loading errors:
         this.image.onerror = (error) => {
-            console.error("Failed to load image:", error);
+            alert("Failed to load image:", error);
         };
     }
 
@@ -98,7 +102,7 @@ export class SpriteEditor {
         this.canvasEditor = document.getElementById("spriteEditor");
 
         if (!this.canvasEditor) {
-            console.error("Canvas element with id 'spriteEditor' not found.");
+            alert("Canvas element with id 'spriteEditor' not found.");
             return;
         }
 
@@ -117,7 +121,7 @@ export class SpriteEditor {
         this.canvasImage = document.getElementById("spriteImage");
 
         if (!this.canvasImage) {
-            console.error("Canvas element with id 'spriteEditor' not found.");
+            alert("Canvas element with id 'spriteEditor' not found.");
             return;
         }
 
@@ -137,18 +141,37 @@ export class SpriteEditor {
         }
     }
 
+    // Set the active palette
+    static selectPalette(name) {
+        console.log(name);
+        if (!SpritePalettes.palettes[name]) {
+            alert(`Palette '${name}' not found.`);
+            return false;
+        }
+        SpriteEditor.paletteName = name;
+        SpritePalettes.setPalette(SpriteEditor.paletteName);
+        this.showPalette();
+        return true;
+    }
+
     static showPalette() {
         const spriteTextarea = document.getElementById("paletteID");  // Ensure the textarea element exists
 
         if (!spriteTextarea) {
-            console.error("Sprite textarea not found.");
+            alert(`Sprite textarea '${paletteID}' not found.`);
             return;
         }
 
-        spriteTextarea.value = "";
-        spriteTextarea.value += `#  Sym  Hex      Name\n`;
-        spriteTextarea.value += `-  ---  -------  --------\n`;
         spriteTextarea.value = SpritePalettes.getPaletteDetails();
+
+        // Only custom palette can be updated by user
+        if (SpriteEditor.paletteName === "custom") {
+            spriteTextarea.disabled = false;
+            spriteTextarea.value += "// Use transparent as sample code to add whatever colors you need.\n";
+            spriteTextarea.value += "// FYI: no intelisence, errors will prevent palette from displaying.\n";
+        } else {
+            spriteTextarea.disabled = true;
+        }
     }
 
     static loadSprite() {
@@ -229,28 +252,28 @@ export class SpriteEditor {
         if (this.gridCellHeight < this.maxGrid) {
             this.gridCellHeight++;
         } else {
-            console.error(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
+            alert(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
         }
     }
     static spriteAddColumn() {
         if (this.gridCellWidth < this.maxGrid) {
             this.gridCellWidth++;
         } else {
-            console.error(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
+            alert(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
         }
     }
     static spriteDelColumn() {
         if (this.gridCellWidth > 1) {
             this.gridCellWidth--;
         } else {
-            console.error("Cannot remove column, gridCellWidth is already 1.");
+            alert("Cannot remove column, gridCellWidth is already 1.");
         }
     }
     static spriteDelRow() {
         if (this.gridCellHeight > 1) {
             this.gridCellHeight--;
         } else {
-            console.error("Cannot remove row, gridCellHeight is already 1.");
+            alert("Cannot remove row, gridCellHeight is already 1.");
         }
     }
 
@@ -383,7 +406,7 @@ export class SpriteEditor {
             this.paletteSize, this.paletteSize);
 
         // Get the sorted palette colors from SpritePalettes
-        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
+        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
 
         // Get Selected Color by Index
         const result = sortedPalette[SpriteEditor.selectedColorIndex];
@@ -409,7 +432,7 @@ export class SpriteEditor {
         this.ctxEditor.fillRect(0, 0, this.spriteSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
 
         // Get the sorted palette colors from SpritePalettes
-        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
+        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
 
         // Draw the sorted palette
         for (let index = 0; index < sortedPalette.length; index++) {
@@ -483,7 +506,7 @@ export class SpriteEditor {
             }
 
             // Get the sorted palette colors from SpritePalettes
-            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
+            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
 
             // Set the array elements
             let result = sortedPalette[SpriteEditor.selectedColorIndex];
@@ -518,7 +541,7 @@ export class SpriteEditor {
             // Get the sorted palette colors from SpritePalettes
             let symbolToFind = SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY];
 
-            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPallet(), SpriteEditor.paletteSortOrder);
+            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
             const index = sortedPalette.findIndex(entry => entry.symbol === symbolToFind);
 
             if (index !== -1) {
@@ -544,7 +567,7 @@ export class SpriteEditor {
         SpriteEditor.drawAll();
     }
 
-    // Start the game loop
+    // the game loop
     static gameLoop() {
         SpriteEditor.gameUpdate();
         requestAnimationFrame(SpriteEditor.gameLoop);
@@ -559,3 +582,49 @@ window.onload = () => {
     // Start gameLoop
     SpriteEditor.gameLoop();
 };
+
+// --------------------------------------------------------------------------
+// JavaScript to handle dropdown selection and call SpritePalettes.setPalette
+const dropdown = document.getElementById('paletteDropdown');
+dropdown.addEventListener('change', (event) => {
+    const selectedPalette = event.target.value;
+
+    // Call SpriteEditor.selectPalette with the selected value
+    if (typeof SpriteEditor !== 'undefined' && typeof SpriteEditor.selectPalette === 'function') {
+        console.log(selectedPalette);
+        SpriteEditor.selectPalette(selectedPalette);
+        console.log(`Palette changed to: ${selectedPalette}`);
+    } else {
+        alert('SpriteEditor.selectPalette is not defined.');
+    }
+});
+
+// --------------------------------------------------------------------------
+// Select the file input and image element
+const fileInput = document.getElementById('fileInput');
+const fileName = document.getElementById('fileName');
+// Add event listener for file input
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    fileName.textContent = file ? file.name : 'No background image chosen!';
+
+    if (file && file.type === 'image/png') {
+        // Create a FileReader to read the file
+        const reader = new FileReader();
+
+        // Define the onload callback
+        reader.onload = function (e) {
+            const img = new Image(); // Create an Image object
+            img.onload = function () {
+                SpriteEditor.image = img;
+                SpriteEditor.imageName = file.name;
+            };
+            img.src = e.target.result; // Set the image source
+        };
+
+        // Read the file as a Data URL
+        reader.readAsDataURL(file);
+    } else {
+        alert('Please upload a valid PNG image.');
+    }
+});

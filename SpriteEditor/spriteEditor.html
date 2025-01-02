@@ -26,6 +26,7 @@
 					<h3>Controls</h3>
 				</th>
 				<th>ToolboxAid.com (Enhancing Skills)</th>
+				<th><button id="loadSample" onclick="SpriteEditor.loadSample()">Load sample</button></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -39,13 +40,45 @@
 				<td></td>
 				<td rowspan="11"> <canvas id="spriteEditor"></canvas></td>
 				<td rowspan="11">
-					<h3>Pallet Color<p>(add '#00000000' for Transparent)</p>
+
+					<h3>Palette Color<p>(add '#00000000' for Transparent)</p>
 					</h3>
-					<textarea id="paletteID" name="pallet" rows="35" cols="35" style="height: 55%;">
+					<select id="paletteDropdown" name="paletteDropdown">
+						<option value='default'>default</option>
+						<option value='fault'>fault</option> //TODO: delete this line
+
+						<option value='crayola008'>Crayola 8</option>
+						<option value='crayola016'>Crayola 16</option>
+						<option value='crayola024'>Crayola 24</option>
+						<option value='crayola032'>Crayola 32</option>
+						<option value='crayola048'>Crayola 48</option>
+						<option value='crayola064'>Crayola 64</option>
+						<option value='crayola096'>Crayola 96</option>
+						<option value='crayola120'>Crayola 120</option>
+						<option value='crayola150'>Crayola 150</option>
+
+						<option value='javascript'>Javascript Named</option>
+						<option value='spaceInvaders'>Space Invaders</option>
+						<option value='test'>Test</option>
+						<option value='w3c'>W3C</option>
+						<option value='custom'>Custom</option>
+					</select>
+					<textarea id="paletteID" name="Palette" rows="20" cols="70" style="height: 35%;">
 					</textarea>
 					<br />
 					<h3>Sprite array</h3>
-					<textarea id="spriteID" name="sprite" rows="35" cols="35" style="height: 35%;">
+					<!-- Hidden file input -->
+					<input type="file" id="fileInput" accept="image/png" style="display: none;" />
+
+					<!-- Custom label -->
+					<label for="fileInput" id="fileInputLabel"
+						style="cursor: pointer; background-color: #007BFF; color: white; border-radius: 5px;">
+						Upload Background Image</label>
+
+					<!-- Display selected file name -->
+					<span id="fileName">No background image chosen!</span>
+
+					<textarea id="spriteID" name="sprite" rows="50" cols="70" style="height: 50%;">
 [
 // meta:imageName:./8bit%20tiles.jpg
 // meta:imageX:-117.5
@@ -166,7 +199,8 @@
 				</td>
 			</tr>
 			<tr class="custom-height">
-				<td colspan="3"></td>
+				<td colspan="3">
+				</td>
 			</tr>
 		</tbody>
 	</table>
