@@ -62,7 +62,10 @@ export class SpriteEditor {
     static imageY = this.gridY;
     static imageScale = 1.0; // Zoom factor
 
+    //-------------------------------------------
     static mouse = null;
+
+    // TODO: Need to figure out multi frames for animation
 
     static initialize() {
 
