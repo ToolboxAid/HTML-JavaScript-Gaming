@@ -67,20 +67,24 @@
 					</textarea>
 					<br />
 					<h3>Sprite array</h3>
-					<!-- Hidden file input -->
-					<input type="file" id="fileInput" accept="image/png" style="display: none;" />
+<!-- Hidden file input -->
 
-					<!-- Custom label -->
-					<label for="fileInput" id="fileInputLabel"
-						style="cursor: pointer; background-color: #007BFF; color: white; border-radius: 5px;">
-						Upload Background Image</label>
+    <!-- File Upload -->
+    <input type="file" id="fileInput" accept=".png,.jpeg,.jpg,.gif,.webp,.svg,.bmp,.ico" style="display: none;">
 
-					<!-- Display selected file name -->
-					<span id="fileName">No background image chosen!</span>
+<!-- Custom label -->
+<label for="fileInput" id="fileInputLabel"
+    style="cursor: pointer; background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;">
+    Upload Background Image
+</label>
+
+<!-- Display selected file name -->
+<span id="fileName" style="margin-left: 10px;">No background image chosen!</span>
+
 
 					<textarea id="spriteID" name="sprite" rows="50" cols="70" style="height: 50%;">
 [
-// meta:imageName:./8bit%20tiles.jpg
+// meta1:imageName:./8bit%20tiles.jpg
 // meta:imageX:-117.5
 // meta:imageY:-190
 // meta:imageS:2.169999999999999

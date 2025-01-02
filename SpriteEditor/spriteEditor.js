@@ -56,7 +56,7 @@ export class SpriteEditor {
 
     //-------------------------------------------
     // Grid Image
-    static imageName = './8bit tiles.jpg';
+    static imageName = null;
     static image = null;
     static imageX = this.gridX;
     static imageY = this.gridY;
@@ -69,7 +69,8 @@ export class SpriteEditor {
 
     static loadSample(){
 alert("load sample");
-    }
+SpriteEditor.imageName = './8bit tiles.jpg';
+}
 
     static initialize() {
 
@@ -89,8 +90,10 @@ alert("load sample");
 
         // load background image
         this.image = new Image();
+        console.log("test imageName");
+        if (SpriteEditor.imageName !== null){
         this.image.src = SpriteEditor.imageName;
-
+        }
         // image loading errors:
         this.image.onerror = (error) => {
             alert("Failed to load image:", error);
@@ -196,7 +199,8 @@ alert("load sample");
 
         this.imageName = metadata['imageName'];
         if (this.imageName === undefined) {
-            throw new Error(`imageName not found:${this.imageName} in meta:`);
+            alert(`Image not loaded `);
+            //throw new Error(`imageName not found:${this.imageName} in meta:`);
         }
 
         this.imageScale = Number(metadata['imageS']);
@@ -287,11 +291,13 @@ alert("load sample");
         this.ctxEditor.fillStyle = '#333333';
         this.ctxEditor.fillRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
 
+        if (this.imageName){
         this.ctxEditor.save();
         this.ctxEditor.scale(this.imageScale, this.imageScale);
         this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
         this.ctxEditor.restore();
-
+        }
+        
         this.drawGrid();
         this.drawPalette();
         this.drawSelectedColor();
@@ -455,7 +461,7 @@ alert("load sample");
         // Format textArea sprite
         let textArea = "[\n";
 
-        textArea += `// meta:imageName:${this.imageName}\n`;
+      //  textArea += `// meta:imageName:${this.imageName}\n`;
         textArea += `// meta:imageX:${this.imageX}\n`;
         textArea += `// meta:imageY:${this.imageY}\n`;
         textArea += `// meta:imageS:${this.imageScale.toFixed(2)}\n`;
@@ -599,32 +605,117 @@ dropdown.addEventListener('change', (event) => {
     }
 });
 
-// --------------------------------------------------------------------------
-// Select the file input and image element
+
+// Select the file input and file name element
 const fileInput = document.getElementById('fileInput');
 const fileName = document.getElementById('fileName');
-// Add event listener for file input
-fileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    fileName.textContent = file ? file.name : 'No background image chosen!';
 
-    if (file && file.type === 'image/png') {
-        // Create a FileReader to read the file
-        const reader = new FileReader();
 
-        // Define the onload callback
-        reader.onload = function (e) {
-            const img = new Image(); // Create an Image object
-            img.onload = function () {
+
+// fileInput.addEventListener('change', (event) => {
+//     const file = event.target.files[0];
+
+//     // Check if a file is selected
+//     if (!file) {
+//         fileName.textContent = 'No image selected!';
+//         return;
+//     }
+
+//     // Update file name display
+//     fileName.textContent = file.name;
+
+//     // Validate file type
+//     if (!supportedTypes.includes(file.type)) {
+//         alert('Invalid file type! Please upload a valid image.');
+//         return;
+//     }
+
+//     // Read and draw the image
+//     const reader = new FileReader();
+//     reader.onload = function (e) {
+//         const img = new Image();
+//         img.onload = function () {
+//             console.log(img);
+//             SpriteEditor.image = img;
+//             SpriteEditor.imageName = file.name;
+//         };
+//         img.src = e.target.result; // Set the image source
+//     };
+//     reader.readAsDataURL(file); // Read the file as a Data URL
+// });
+
+
+
+// // Add event listener for file input
+// fileInput.addEventListener('change', (event) => {
+//     const file = event.target.files[0];
+//     fileName.textContent = file ? file.name : 'No background image chosen!';
+
+//     // Check if the file is a valid image type
+//     if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+//         // Create a FileReader to read the file
+//         const reader = new FileReader();
+
+//         // Define the onload callback
+//         reader.onload = function (e) {
+//             const img = new Image(); // Create an Image object
+//             img.onload = function () {
+//                 console.log(img);
+//                 SpriteEditor.image = img;
+//                 SpriteEditor.imageName = file.name;
+//             };
+//             img.src = e.target.result; // Set the image source
+//         };
+
+//         // Read the file as a Data URL
+//         reader.readAsDataURL(file);
+//     } else {
+//         alert('Please upload a valid JPG, JPEG, or PNG image.');
+//     }
+// });
+
+        // Supported MIME types
+        const supportedTypes = [
+            'image/png',
+            'image/jpeg',
+            'image/jpg',
+            'image/gif',
+            'image/webp',
+            'image/svg+xml',
+            'image/bmp',
+            'image/x-icon' // For .ico files
+        ];
+
+        // Handle file input change
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+
+            // Check if a file is selected
+            if (!file) {
+                fileName.textContent = 'No image selected!';
+                return;
+            }
+
+            // Update file name display
+            fileName.textContent = file.name;
+
+            // Validate file type
+            if (!supportedTypes.includes(file.type)) {
+                alert('Invalid file type! Please upload a valid image.');
+                return;
+            }
+
+            // Read and draw the image
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    // Clear the canvas and draw the uploaded image
+                console.log(img);
                 SpriteEditor.image = img;
                 SpriteEditor.imageName = file.name;
+                };
+                img.src = e.target.result; // Set the image source
             };
-            img.src = e.target.result; // Set the image source
-        };
-
-        // Read the file as a Data URL
-        reader.readAsDataURL(file);
-    } else {
-        alert('Please upload a valid PNG image.');
-    }
-});
+            reader.readAsDataURL(file); // Read the file as a Data URL
+        });
