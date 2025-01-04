@@ -19,6 +19,7 @@ export class SpriteEditor {
 
     //-------------------------------------------
     // Palette information
+    static paletteName = 'default';
     static paletteSortOrder = "hue"; // hue, saturation, lightness
     static paletteAcrossCnt = 5;
     static paletteDownCnt = 36;
@@ -30,14 +31,11 @@ export class SpriteEditor {
 
     static paletteSpacing = 10;
 
-    // Palette to load
-    static paletteName = null;
-
     //-------------------------------------------
     // Grid information
     static maxGrid = 32;
-    static gridCellWidth = this.maxGrid;
-    static gridCellHeight = this.maxGrid;
+    static gridCellWidth = 8; //this.maxGrid;
+    static gridCellHeight = 8; //this.maxGrid;
     static spriteIndex = new Array(this.gridCellWidth);
 
     static gridX = this.paletteSize * (this.paletteAcrossCnt + 1) + this.paletteSize / 4;
@@ -49,17 +47,17 @@ export class SpriteEditor {
     static selectedCellY = 0;
 
     //-------------------------------------------
-    // Define the width, height, and Image of the sprite
+    // Define the width, height, and size of the sprite
     static spritePixelSize = 5;
     static spriteImageSize = this.maxGrid * this.spritePixelSize + 4;
-    static spriteSize = 50;
+    static spriteSize = 40;
 
     //-------------------------------------------
-    // Grid Image
+    // Image details
     static imageName = null;
     static image = null;
-    static imageX = this.gridX;
-    static imageY = this.gridY;
+    static imageX = 0;//this.gridX;
+    static imageY = 0;//this.gridY;
     static imageScale = 1.0; // Zoom factor
 
     //-------------------------------------------
@@ -67,39 +65,159 @@ export class SpriteEditor {
 
     // TODO: Need to figure out multi frames for animation
 
-    static loadSample(){
-alert("load sample");
-SpriteEditor.imageName = './8bit tiles.jpg';
-}
+    static currentFrame = 0;
+    static jsonData = {
+        "metadata": {
+            "sprite": "sprite starter json",
+            "spriteSize": 40, // this is gridZ - zoom
+            "palette": "default",
+        },
+        "layers": [
+            {
+                "metadata": {
+                    "spriteimage": "test.jpg",
+                    "imageX": 100,
+                    "imageY": 45,
+                    "imageZ": 40,
+                    "gridZ": 24.0,
+                },
+                "data": [
+                    "0000",
+                    "0000",
+                    "0000",
+                    "0000",
+                ]
+            }
+        ]
+    };
 
+
+    // ------------------------------------------
+    // load samples
+
+    static loadSample1() {
+        SpriteEditor.addMessages('loadSample1');
+        const jsonData = {
+            "metadata": {
+                "sprite": "starter json",
+                "spriteSize": 5,
+                "palette": "default",
+            },
+            "layers": [
+                {
+                    "metadata": {
+                        "spriteimage": "test.jpg",
+                        "imageX": 0,
+                        "imageY": 0,
+                        "imageZ": 2,
+                        "gridZ": 4.0,
+                    },
+                    "data": [
+                        "0000",
+                        "0000",
+                        "0000",
+                        "0000",
+                    ]
+                }
+            ]
+        };
+        SpriteEditor.jsonData = jsonData;
+        //SpriteEditor.imageName = './1 bit tiles.jpg';
+    }
+    static loadSample2() {
+        SpriteEditor.addMessages('loadSample2')
+        const jsonData = {
+            "metadata": {
+              "sprite": "sprite starter json",
+              "spriteSize": 37.599999999999966,
+              "palette": "default"
+            },
+            "layers": [
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": -147,
+                  "imageY": -1,
+                  "imageZ": 3.9400000000000013,
+                  "gridZ": 24
+                },
+                "data": [
+                  "ØØØ3333333333ØØØ",
+                  "ØØ3)))))))0003ØØ",
+                  "Ø3))))))))))003Ø",
+                  "Ø3)))))))))))03Ø",
+                  "Ø3)))))))))))03Ø",
+                  "3)))))3))3))))03",
+                  "3)))))3))3))))03",
+                  "3)))))3))3))))03",
+                  "3)))))))))))))03",
+                  "3)))))))))))))03",
+                  "30)))3))))3)))03",
+                  "Ø3))))3333)))03Ø",
+                  "Ø30)))))))))003Ø",
+                  "Ø300))0000))003Ø",
+                  "ØØ300003300003ØØ",
+                  "ØØØ3333ØØ3333ØØØ"
+                ]
+              }
+            ]
+          };
+
+        SpriteEditor.jsonData = jsonData;
+        //SpriteEditor.imageName = './2 bit tiles.jpg';
+    }
+    static loadSample3() {
+        SpriteEditor.addMessages('loadSample3')
+
+        //SpriteEditor.imageName = './3 bit tiles.jpg';
+    }
+    static loadSample4() {
+        SpriteEditor.addMessages('loadSample4')
+
+        SpriteEditor.imageName = './4 bit tiles.jpg';
+    }
+
+    // ------------------------------------------
     static initialize() {
-
+        this.clearMessages();
         this.initializeArrays();
 
         this.initializeCanvasEditor();
         this.initializeCanvasImage();
 
         // Setup our mouse
-        SpriteEditor.mouse = new MouseInput(this.canvasEditor);
+        this.mouse = new MouseInput(this.canvasEditor);
 
-        // set paletteName to load
-        SpriteEditor.paletteName = "default";
-        SpritePalettes.setPalette(SpriteEditor.paletteName);
-        this.showPalette();
-        this.loadSprite();
+        // set paletteName on load
+        this.initializePaletteDD();
 
-        // load background image
         this.image = new Image();
-        console.log("test imageName");
-        if (SpriteEditor.imageName !== null){
-        this.image.src = SpriteEditor.imageName;
-        }
-        // image loading errors:
-        this.image.onerror = (error) => {
-            alert("Failed to load image:", error);
-        };
+
+        this.outputJsonData();
+
+        this.loadJsonFromTextarea();
+    }
+    // ------------------------------------------
+    // Message methods
+    static addMessages(message) {
+        const formattedTimestamp = new Date().toLocaleString().replace(/,/g, '');
+        const textarea = document.getElementById('messagesID');
+        textarea.value += `${formattedTimestamp} ${message} \n`;
+    }
+    static clearMessages() {
+        const textarea = document.getElementById('messagesID');
+        textarea.value = "";
+        this.addMessages(`Messages Cleared.`)
     }
 
+    // ------------------------------------------
+    // Initialization methods.
+    static initializeArrays() {
+        for (let x = 0; x < this.maxGrid; x++) {
+            this.spriteIndex[x] = new Array(this.maxGrid).fill('Ø');
+        }
+        this.addMessages(`Initialize array @ ${this.maxGrid}x${this.maxGrid}.`);
+    }
     static initializeCanvasEditor() {
         // Get the canvas element
         this.canvasEditor = document.getElementById("spriteEditor");
@@ -116,9 +234,8 @@ SpriteEditor.imageName = './8bit tiles.jpg';
         // Create a new CanvasRenderingContext2D object
         this.ctxEditor = this.canvasEditor.getContext("2d");
 
-        console.debug("Canvas Editor initialized with dimensions:", this.canvasEditor.width, "x", this.canvasEditor.height, ".");
+        this.addMessages(`Canvas Editor initialized @ ${this.canvasEditor.width}x${this.canvasEditor.height}.`);
     }
-
     static initializeCanvasImage() {
         // SpriteImage
         this.canvasImage = document.getElementById("spriteImage");
@@ -135,29 +252,34 @@ SpriteEditor.imageName = './8bit tiles.jpg';
         // Create a new CanvasRenderingContext2D object
         this.ctxImage = this.canvasImage.getContext("2d");
 
-        console.debug("Canvas Image initialized with dimensions:", this.canvasImage.width, "x", this.canvasImage.height, ".");
+        this.addMessages(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
     }
 
-    static initializeArrays() {
-        for (let x = 0; x < this.maxGrid; x++) {
-            this.spriteIndex[x] = new Array(this.maxGrid).fill('Ø');
-        }
-    }
+    // ------------------------------------------
+    // Palette methods.    
+    static initializePaletteDD() {
+        // Get the dropdown element by its ID
+        const dropdown = document.getElementById("paletteDropdown");
 
-    // Set the active palette
+        // Set the selected value to 'crayola024' (or any other value you wish to select)
+        dropdown.value = this.paletteName;
+        // Trigger the change event manually if needed
+        const event = new Event('change');
+        dropdown.dispatchEvent(event);
+    }
     static selectPalette(name) {
-        console.log(name);
         if (!SpritePalettes.palettes[name]) {
             alert(`Palette '${name}' not found.`);
             return false;
         }
         SpriteEditor.paletteName = name;
-        SpritePalettes.setPalette(SpriteEditor.paletteName);
-        this.showPalette();
+        SpritePalettes.setPalette(name);
+
+        this.addMessages(`Selected palette: '${name}'.`);
+
         return true;
     }
-
-    static showPalette() {
+    static showPaletteColors() {
         const spriteTextarea = document.getElementById("paletteID");  // Ensure the textarea element exists
 
         if (!spriteTextarea) {
@@ -176,135 +298,201 @@ SpriteEditor.imageName = './8bit tiles.jpg';
             spriteTextarea.disabled = true;
         }
     }
-
-    static loadSprite() {
-        const spriteTextarea = document.getElementById("spriteID");
-        const spriteContent = spriteTextarea.value.trim();
-
-        const lines = spriteContent.split("\n").map(line => line.trim());
-
-        const rows = [];
-        const metadata = {};
-
-        for (const line of lines) {
-            if (line.startsWith("// meta:")) {
-                // Extract metadata by splitting on the first colon
-                const [key, value] = line.slice(8).split(/:(.+)/).map(part => part.trim());
-                metadata[key] = value;
-            } else if (line.startsWith('"')) {
-                // It's a sprite row, remove quotes and store it
-                rows.push(line.replace(/"/g, ""));
-            }
-        }
-
-        this.imageName = metadata['imageName'];
-        if (this.imageName === undefined) {
-            alert(`Image not loaded `);
-            //throw new Error(`imageName not found:${this.imageName} in meta:`);
-        }
-
-        this.imageScale = Number(metadata['imageS']);
-        this.imageX = Number(metadata['imageX']);
-        this.imageY = Number(metadata['imageY']);
-
-        this.paletteName = metadata['palette'];
-
-        this.spriteSize = Number(metadata['spriteS']);
-
-        this.paletteScale = (this.paletteSize / this.spriteSize)
-
-        // // Set grid dimensions based on the parsed rows
-        this.gridCellHeight = rows.length;
-        this.gridCellWidth = rows[0]?.length - 1 || 0;
-
-        for (let y = 0; y < this.gridCellHeight; y++) {
-            const row = rows[y];
-            for (let x = 0; x < this.gridCellWidth; x++) {
-                // Get letter/symbol
-                const letter = row[x];
-
-                // Update spriteIndex
-                if (letter === undefined) {
-                    this.spriteIndex[x][y] = SpritePalettes.errorResult.symbol;
-                } else {
-                    this.spriteIndex[x][y] = letter;
-                }
-            }
-        }
+    static setPaletteSortBy(arg) {
+        this.paletteSortOrder = arg;
     }
 
+    // static loadSprite() {
+    //     // const spriteTextarea = document.getElementById("spriteID");
+    //     // const spriteContent = spriteTextarea.value.trim();
+
+    //     // const lines = spriteContent.split("\n").map(line => line.trim());
+
+    //     // const rows = [];
+    //     // const metadata = {};
+
+    //     // for (const line of lines) {
+    //     //     if (line.startsWith("// meta:")) {
+    //     //         // Extract metadata by splitting on the first colon
+    //     //         const [key, value] = line.slice(8).split(/:(.+)/).map(part => part.trim());
+    //     //         metadata[key] = value;
+    //     //     } else if (line.startsWith('"')) {
+    //     //         // It's a sprite row, remove quotes and store it
+    //     //         rows.push(line.replace(/"/g, ""));
+    //     //     }
+    //     // }
+
+    //     // this.imageName = metadata['imageName'];
+    //     // if (this.imageName === undefined) {
+    //     //     alert(`Image not loaded `);
+    //     //     //throw new Error(`imageName not found:${this.imageName} in meta:`);
+    //     // }
+
+    //     // this.imageScale = Number(metadata['imageS']);
+    //     // this.imageX = Number(metadata['imageX']);
+    //     // this.imageY = Number(metadata['imageY']);
+
+    //     // this.paletteName = metadata['palette'];
+
+    //     // this.spriteSize = Number(metadata['spriteS']);
+
+    //     // this.paletteScale = (this.paletteSize / this.spriteSize)
+
+    //     // // // Set grid dimensions based on the parsed rows
+    //     // this.gridCellHeight = rows.length;
+    //     // this.gridCellWidth = rows[0]?.length - 1 || 0;
+
+    //     // for (let y = 0; y < this.gridCellHeight; y++) {
+    //     //     const row = rows[y];
+    //     //     for (let x = 0; x < this.gridCellWidth; x++) {
+    //     //         // Get letter/symbol
+    //     //         const letter = row[x];
+
+    //     //         // Update spriteIndex
+    //     //         if (letter === undefined) {
+    //     //             this.spriteIndex[x][y] = SpritePalettes.errorResult.symbol;
+    //     //         } else {
+    //     //             this.spriteIndex[x][y] = letter;
+    //     //         }
+    //     //     }
+    //     // }
+    // }
+
+    /** */
+    // ------------------------------------------
+    // Background image methods
+    static setImageX(imageX) {
+        if (typeof imageX === 'number' && !isNaN(imageX)) {
+            this.imageX = 0;
+            this.moveImageHorizontal(imageX);
+        } else {
+            this.addMessages("imageX is not a valid number:", imageX);
+        }
+    }
     static moveImageHorizontal(moveFactor) {
         this.imageX += moveFactor;
+        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX = this.imageX;
+    }
+
+    static setImageY(imageY) {
+        if (typeof imageY === 'number' && !isNaN(imageY)) {
+            this.imageY = 0;
+            this.moveImageVertical(imageY);
+        } else {
+            this.addMessages("imageY is not a valid number:", imageY);
+        }
     }
     static moveImageVertical(moveFactor) {
         this.imageY += moveFactor;
+        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY = this.imageY;
+    }
+
+    static setImageZoom(imageZ) {
+        if (typeof imageZ === 'number' && !isNaN(imageZ)) {
+            this.imageZ = 0;
+            this.zoomImage(imageZ);
+        } else {
+            this.addMessages("'imageZ' is not a valid number:", imageZ);
+        }
     }
     static zoomImage(zoomFactor) {
         this.imageScale += zoomFactor;
-        if (this.imageScale >= 5.0) {
+        if (this.imageScale > 5.0) {
             this.imageScale = 5.0;
-        } else if (this.imageScale <= 0.3) {
-            this.imageScale = 0.3;
+            this.addMessages(`Max image scale reached: ${this.imageScale}`)
+        } else if (this.imageScale < 0.01) {
+            this.imageScale = 0.01;
+            this.addMessages(`Min image scale reached: ${this.imageScale}`)
+        }
+        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageZ = this.imageScale;
+    }
+
+    // ------------------------------------------
+    // Grid methods
+    static setGridZoom(spriteSize) {
+        if (typeof spriteSize === 'number' && !isNaN(spriteSize)) {
+            this.spriteSize = 0;
+            this.zoomGrid(spriteSize);
+        } else {
+            this.addMessages("spriteSize is not a valid number:", spriteSize);
         }
     }
-
     static zoomGrid(zoomFactor) {
         this.spriteSize += zoomFactor;
+        if (this.spriteSize < 4.0) {
+            this.spriteSize = 4.0;
+            this.addMessages(`Min grid scall reached: ${this.spriteSize}`)
+        }
+        if (this.spriteSize > 80.0) {
+            this.spriteSize = 80.0;
+            this.addMessages(`Max grid scall reached: ${this.spriteSize}`)
+        }
+        SpriteEditor.jsonData.metadata.spriteSize = this.spriteSize;
     }
-
+    static showGridSize(){
+        this.addMessages(` Grid Size ${this.gridCellWidth}x${this.gridCellHeight} - z:${this.gridZ}`);
+    }
     static spriteAddRow() {
         if (this.gridCellHeight < this.maxGrid) {
             this.gridCellHeight++;
+            this.saveModifiedSprite();
         } else {
-            alert(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
+            this.addMessages(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
         }
+        this.showGridSize();
     }
     static spriteAddColumn() {
         if (this.gridCellWidth < this.maxGrid) {
             this.gridCellWidth++;
+            this.saveModifiedSprite();
         } else {
-            alert(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
+            this.addMessages(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
         }
+        this.showGridSize();
     }
     static spriteDelColumn() {
         if (this.gridCellWidth > 1) {
             this.gridCellWidth--;
+            this.saveModifiedSprite();
         } else {
-            alert("Cannot remove column, gridCellWidth is already 1.");
+            this.addMessages("Cannot remove column, gridCellWidth is already 1.");
         }
+        this.showGridSize();
     }
     static spriteDelRow() {
         if (this.gridCellHeight > 1) {
             this.gridCellHeight--;
+            this.saveModifiedSprite();
         } else {
-            alert("Cannot remove row, gridCellHeight is already 1.");
+            this.addMessages("Cannot remove row, gridCellHeight is already 1.");
         }
+        this.showGridSize();
     }
 
-    static setSortBy(arg) {
-        this.paletteSortOrder = arg;
-    }
-
+    // ------------------------------------------
+    // Draw methods
     static drawAll() {
         // Clear the canvas and set background color to #333333
         this.ctxEditor.clearRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
         this.ctxEditor.fillStyle = '#333333';
         this.ctxEditor.fillRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
 
-        if (this.imageName){
-        this.ctxEditor.save();
-        this.ctxEditor.scale(this.imageScale, this.imageScale);
-        this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
-        this.ctxEditor.restore();
+        if (this.imageName) {
+            this.ctxEditor.save();
+            this.ctxEditor.scale(this.imageScale, this.imageScale);
+            this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
+            this.ctxEditor.restore();
         }
-        
+
+        this.outputJsonData();
+
+        this.showPaletteColors();
+
         this.drawGrid();
         this.drawPalette();
         this.drawSelectedColor();
         this.drawSpriteImage();
-        this.outputSprite();
     }
-
     static drawSpriteImage() {
         const fillColor = "#888888";
         const offset = 2;
@@ -327,7 +515,6 @@ SpriteEditor.imageName = './8bit tiles.jpg';
             }
         }
     }
-
     static drawGrid() {
         this.ctxEditor.strokeStyle = "black";
         this.ctxEditor.fillStyle = "black";
@@ -401,7 +588,6 @@ SpriteEditor.imageName = './8bit tiles.jpg';
         this.ctxEditor.lineWidth = 2;
         this.ctxEditor.stroke();
     }
-
     static drawSelectedColor() {
         // show selected color
         this.ctxEditor.strokeStyle = "white";
@@ -457,36 +643,152 @@ SpriteEditor.imageName = './8bit tiles.jpg';
         }
     }
 
-    static outputSprite() {
-        // Format textArea sprite
-        let textArea = "[\n";
+    //output sprite details
+    static outputJsonData() {
+        //SpriteEditor.loadJsonSprite();
+        // Locate the textarea in the document
+        const textArea = document.getElementById("spriteID");
 
-      //  textArea += `// meta:imageName:${this.imageName}\n`;
-        textArea += `// meta:imageX:${this.imageX}\n`;
-        textArea += `// meta:imageY:${this.imageY}\n`;
-        textArea += `// meta:imageS:${this.imageScale.toFixed(2)}\n`;
+        // Convert the JSON object into a formatted string
+        const jsonString = JSON.stringify(SpriteEditor.jsonData, null, 2); // Indent with 2 spaces
 
-        textArea += `// meta:palette:${this.paletteName}\n`;
-
-        textArea += `// meta:spriteS:${this.spriteSize.toFixed(1)}\n`;
-
-        for (let x = 0; x < this.gridCellHeight; x++) {
-            let line = "";
-
-            for (let y = 0; y < this.gridCellWidth; y++) {
-
-                const letterIndex = this.spriteIndex[y][x];
-                line += letterIndex;
-            }
-
-            // Add a comma for all lines except the last one
-            textArea += '"' + line + '"' + (x < this.gridCellHeight - 1 ? ',\n' : '\n');
+        if (textArea.value === jsonString) {
+            return;
         }
-        textArea += ']';
 
-        // Place textArea in spriteTextarea
-        const spriteTextarea = document.getElementById("spriteID");
-        spriteTextarea.value = textArea;
+        // Set the textarea value
+        textArea.value = jsonString;
+
+        // Assuming jsonData is the JSON object that contains the data
+        // Validate that jsonData, layers, the first layer, and its data exist
+        const firstLayerData = SpriteEditor?.jsonData?.layers?.[0]?.data ?? null;
+
+        if (firstLayerData) {
+            // Use firstLayerData safely
+            console.log(firstLayerData);
+        } else {
+            this.addMessages("The required data does not exist.");
+            return;
+        }
+
+        // Update gridCellWidth and gridCellHeight based on firstLayerData
+        this.gridCellWidth = firstLayerData[0].length;  // Number of columns
+        this.gridCellHeight = firstLayerData.length;    // Number of rows
+
+        // Map the first layer's `data` to `spriteIndex`
+        for (let y = 0; y < firstLayerData.length; y++) {
+            for (let x = 0; x < firstLayerData[y].length; x++) {
+                if (y < this.maxGrid && x < this.maxGrid) {
+                    this.spriteIndex[x][y] = firstLayerData[y][x];
+                }
+            }
+        }
+        //SpriteEditor.addMessages('outputJsonData');
+    }
+
+    // ------------------------------------------------
+    // json methods
+
+    static setFrameLayer() {
+        //--------------------------------
+        if (
+            SpriteEditor.jsonData.layers &&
+            this.currentFrame >= 0 &&
+            this.currentFrame < SpriteEditor.jsonData.layers.length
+        ) {
+            this.setImageZoom(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageZ);
+        } else {
+            console.error('Invalid currentFrame or layers data:', this.currentFrame);
+        }
+        //--------------------------------
+        const currentLayer = SpriteEditor.jsonData.layers[this.currentFrame];
+        if (currentLayer && currentLayer.metadata && 'imageZ' in currentLayer.metadata) {
+            this.setImageZoom(currentLayer.metadata.imageZ);
+        } else {
+            console.error('imageZ is not defined in metadata for the current layer.');
+        }
+    }
+
+    /**        
+"layers": [
+    {
+        "metadata": {
+            "spriteimage": "test.jpg",
+
+            "gridZ": 24.0,
+                */
+    static setStaticVarsFromJson() {
+        // Access metadata.sprite
+        const sprite = SpriteEditor.jsonData.metadata.sprite;
+        const palette = SpriteEditor.jsonData.metadata.palette;
+
+        console.log(SpriteEditor.jsonData.metadata.spriteSize);
+        this.setGridZoom(SpriteEditor.jsonData.metadata.spriteSize);
+
+
+        console.log('Sprite:', sprite);
+        console.log('Palette:', palette);
+
+        // Access metadata.layer frames
+        const spriteImage = SpriteEditor.jsonData.layers[this.currentFrame].metadata.spriteimage;
+
+        this.setImageX(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX);
+        this.setImageY(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY);
+        this.setImageZoom(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageZ);
+        // this.setGridZoom(SpriteEditor.jsonData.layers[this.currentFrame].metadata.gridZ);
+
+        console.log('Sprite Image:', spriteImage);
+        console.log('Sprite Size:', this.spriteSize);
+
+        console.log('ImageX-a:', this.imageX);
+        console.log('ImageY:', this.imageY);
+        console.log('ImageZ:', this.imageScale);
+        console.log('gridZ:', this.spriteSize);
+    }
+
+    // Method to load JSON from textarea to SpriteEditor.jsonData
+    static loadJsonFromTextarea() {
+        const textarea = document.getElementById('spriteID');
+        const jsonString = textarea.value; // Get the content of the textarea
+
+        try {
+            // Parse the JSON string into an object
+            const parsedData = JSON.parse(jsonString);
+
+            // Assign the parsed data to SpriteEditor.jsonData
+            if (typeof SpriteEditor !== 'undefined') {
+                SpriteEditor.jsonData = parsedData;
+                console.log('cImageY:', this.imageY);
+                this.setStaticVarsFromJson();
+                console.log('dImageY:', this.imageY);
+            } else {
+                SpriteEditor.addMessages('SpriteEditor is not defined.')
+            }
+        } catch (error) {
+            SpriteEditor.addMessages(`Invalid JSON format: ${error} \n ${textarea.value}`);
+        }
+    }
+
+
+
+    static saveModifiedSprite() {
+        // Assuming spriteIndex is a 2D array with gridX and gridY dimensions
+        const updatedData = [];
+
+        // Iterate over each row (height) and each column (width)
+        for (let x = 0; x < this.gridCellHeight; x++) {
+            let row = '';
+            for (let y = 0; y < this.gridCellWidth; y++) {
+                row += this.spriteIndex[y][x] || SpritePalettes.transparentColor; // 'Ø' as a fallback for missing data
+            }
+            updatedData.push(row);
+        }
+
+        // Update the JSON data's first layer
+        if (SpriteEditor.jsonData.layers && SpriteEditor.jsonData.layers[0]) {
+            SpriteEditor.jsonData.layers[0].data = updatedData;
+        }
+
     }
 
     static getMousePositionOncanvas(canvas, event) {
@@ -517,6 +819,8 @@ SpriteEditor.imageName = './8bit tiles.jpg';
             // Set the array elements
             let result = sortedPalette[SpriteEditor.selectedColorIndex];
             SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = result.symbol;
+
+            SpriteEditor.saveModifiedSprite();
         } else {
             // Determine which palette color was clicked
             const clickedPaletteX = Math.floor(mouse.mouseX / SpriteEditor.paletteSize);
@@ -562,7 +866,7 @@ SpriteEditor.imageName = './8bit tiles.jpg';
     static gameUpdate() {
         SpriteEditor.mouse.update();
 
-        if (SpriteEditor.mouse.isButtonJustPressed(0)) {
+        if (SpriteEditor.mouse.isButtonDown(0)) {
             SpriteEditor.handleCanvasLeftClick(SpriteEditor.mouse);
         }
 
@@ -592,130 +896,80 @@ window.onload = () => {
 // --------------------------------------------------------------------------
 // JavaScript to handle dropdown selection and call SpritePalettes.setPalette
 const dropdown = document.getElementById('paletteDropdown');
-dropdown.addEventListener('change', (event) => {
-    const selectedPalette = event.target.value;
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdown = document.getElementById('paletteDropdown');
 
-    // Call SpriteEditor.selectPalette with the selected value
-    if (typeof SpriteEditor !== 'undefined' && typeof SpriteEditor.selectPalette === 'function') {
-        console.log(selectedPalette);
-        SpriteEditor.selectPalette(selectedPalette);
-        console.log(`Palette changed to: ${selectedPalette}`);
+    // Ensure the dropdown exists before attaching the event listener
+    if (dropdown) {
+        dropdown.addEventListener('change', (event) => {
+            const selectedPalette = event.target.value;
+            if (typeof SpriteEditor !== 'undefined' && typeof SpriteEditor.selectPalette === 'function') {
+                SpriteEditor.selectPalette(selectedPalette);
+
+            } else {
+                alert('SpriteEditor.selectPalette is not defined.');
+            }
+        });
     } else {
-        alert('SpriteEditor.selectPalette is not defined.');
+        alert('Dropdown not found.');
     }
 });
 
-
+// --------------------------------------------------------------------------
 // Select the file input and file name element
 const fileInput = document.getElementById('fileInput');
 const fileName = document.getElementById('fileName');
+// Supported MIME types
+const supportedTypes = [
+    'image/png',
+    'image/jpeg',
+    'image/jpg',
+    'image/gif',
+    'image/webp',
+    'image/svg+xml',
+    'image/bmp',
+    'image/x-icon' // For .ico files
+];
 
+// Handle file input change
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
 
+    // Check if a file is selected
+    if (!file) {
+        fileName.textContent = 'No image selected!';
+        return;
+    }
 
-// fileInput.addEventListener('change', (event) => {
-//     const file = event.target.files[0];
+    // Update file name display
+    fileName.textContent = file.name;
 
-//     // Check if a file is selected
-//     if (!file) {
-//         fileName.textContent = 'No image selected!';
-//         return;
-//     }
+    // Validate file type
+    if (!supportedTypes.includes(file.type)) {
+        alert('Invalid file type! Please upload a valid image.');
+        return;
+    }
 
-//     // Update file name display
-//     fileName.textContent = file.name;
+    // Read and draw the image
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+            // Clear the canvas and draw the uploaded image
+            console.log(img);
+            SpriteEditor.image = img;
+            SpriteEditor.imageName = file.name;
+            SpriteEditor.addMessages(`Image loaded: '${SpriteEditor.imageName}'`);
+        };
+        img.src = e.target.result; // Set the image source
+    };
+    reader.readAsDataURL(file); // Read the file as a Data URL
+});
 
-//     // Validate file type
-//     if (!supportedTypes.includes(file.type)) {
-//         alert('Invalid file type! Please upload a valid image.');
-//         return;
-//     }
-
-//     // Read and draw the image
-//     const reader = new FileReader();
-//     reader.onload = function (e) {
-//         const img = new Image();
-//         img.onload = function () {
-//             console.log(img);
-//             SpriteEditor.image = img;
-//             SpriteEditor.imageName = file.name;
-//         };
-//         img.src = e.target.result; // Set the image source
-//     };
-//     reader.readAsDataURL(file); // Read the file as a Data URL
-// });
-
-
-
-// // Add event listener for file input
-// fileInput.addEventListener('change', (event) => {
-//     const file = event.target.files[0];
-//     fileName.textContent = file ? file.name : 'No background image chosen!';
-
-//     // Check if the file is a valid image type
-//     if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-//         // Create a FileReader to read the file
-//         const reader = new FileReader();
-
-//         // Define the onload callback
-//         reader.onload = function (e) {
-//             const img = new Image(); // Create an Image object
-//             img.onload = function () {
-//                 console.log(img);
-//                 SpriteEditor.image = img;
-//                 SpriteEditor.imageName = file.name;
-//             };
-//             img.src = e.target.result; // Set the image source
-//         };
-
-//         // Read the file as a Data URL
-//         reader.readAsDataURL(file);
-//     } else {
-//         alert('Please upload a valid JPG, JPEG, or PNG image.');
-//     }
-// });
-
-        // Supported MIME types
-        const supportedTypes = [
-            'image/png',
-            'image/jpeg',
-            'image/jpg',
-            'image/gif',
-            'image/webp',
-            'image/svg+xml',
-            'image/bmp',
-            'image/x-icon' // For .ico files
-        ];
-
-        // Handle file input change
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-
-            // Check if a file is selected
-            if (!file) {
-                fileName.textContent = 'No image selected!';
-                return;
-            }
-
-            // Update file name display
-            fileName.textContent = file.name;
-
-            // Validate file type
-            if (!supportedTypes.includes(file.type)) {
-                alert('Invalid file type! Please upload a valid image.');
-                return;
-            }
-
-            // Read and draw the image
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = new Image();
-                img.onload = function () {
-                    // Clear the canvas and draw the uploaded image
-                console.log(img);
-                SpriteEditor.image = img;
-                SpriteEditor.imageName = file.name;
-                };
-                img.src = e.target.result; // Set the image source
-            };
-            reader.readAsDataURL(file); // Read the file as a Data URL
-        });
+// --------------------------------------------------------------------------
+// Add event listener for input (change in json text content)
+const textarea = document.getElementById('spriteID');
+textarea.addEventListener('input', (event) => {
+    SpriteEditor.addMessages(`Sprite JSON data changed.`);
+    SpriteEditor.loadJsonFromTextarea();
+});

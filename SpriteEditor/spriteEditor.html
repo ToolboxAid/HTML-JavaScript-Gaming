@@ -26,7 +26,11 @@
 					<h3>Controls</h3>
 				</th>
 				<th>ToolboxAid.com (Enhancing Skills)</th>
-				<th><button id="loadSample" onclick="SpriteEditor.loadSample()">Load sample</button></th>
+				<th><button id="loadSample" onclick="SpriteEditor.loadSample1()">sample 1</button>
+					<button id="loadSample" onclick="SpriteEditor.loadSample2()">sample 2</button>
+					<button id="loadSample" onclick="SpriteEditor.loadSample3()">sample 3</button>
+					<button id="loadSample" onclick="SpriteEditor.loadSample4()">sample 4</button>
+				</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -41,6 +45,9 @@
 				<td rowspan="11"> <canvas id="spriteEditor"></canvas></td>
 				<td rowspan="11">
 
+					<!-- -->
+					<!-- -->
+					<!-- -->
 					<h3>Palette Color<p>(add '#00000000' for Transparent)</p>
 					</h3>
 					<select id="paletteDropdown" name="paletteDropdown">
@@ -63,26 +70,40 @@
 						<option value='w3c'>W3C</option>
 						<option value='custom'>Custom</option>
 					</select>
-					<textarea id="paletteID" name="Palette" rows="20" cols="70" style="height: 35%;">
+					<textarea id="paletteID" name="Palette" rows="15" cols="70" style="height: 15%;">
 					</textarea>
 					<br />
-					<h3>Sprite array</h3>
-<!-- Hidden file input -->
+					<!-- -->
+					<!-- -->
+					<!-- -->
+					<h3>Sprite JSON</h3>
+					<!-- Hidden file input -->
 
-    <!-- File Upload -->
-    <input type="file" id="fileInput" accept=".png,.jpeg,.jpg,.gif,.webp,.svg,.bmp,.ico" style="display: none;">
+					<!-- File Upload -->
+					<input type="file" id="fileInput" accept=".png,.jpeg,.jpg,.gif,.webp,.svg,.bmp,.ico"
+						style="display: none;">
 
-<!-- Custom label -->
-<label for="fileInput" id="fileInputLabel"
-    style="cursor: pointer; background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;">
-    Upload Background Image
-</label>
+					<!-- Custom label -->
+					<label for="fileInput" id="fileInputLabel"
+						style="cursor: pointer; background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;">
+						Upload Background Image
+					</label>
 
-<!-- Display selected file name -->
-<span id="fileName" style="margin-left: 10px;">No background image chosen!</span>
+					<!-- Display selected file name -->
+					<span id="fileName" style="margin-left: 10px;">No background image chosen!</span>
 
 
-					<textarea id="spriteID" name="sprite" rows="50" cols="70" style="height: 50%;">
+					<textarea id="spriteID" name="sprite" rows="15" cols="70" style="height: 50%;">
+					</textarea>
+
+					<!-- -->
+					<!-- -->
+					<!-- -->
+					<h3>Messages
+					<button id="clearMessages" onclick="SpriteEditor.clearMessages()">Clear Messages</button></h3>
+					<textarea id="messagesID" name="messages" rows="15" cols="70" style="height: 15%;">
+					</textarea>
+					<!--
 [
 // meta1:imageName:./8bit%20tiles.jpg
 // meta:imageX:-117.5
@@ -116,8 +137,7 @@
 "3==3333ØØØØ3==33",
 "3==33ØØØØØØØ333Ø",
 "Ø33ØØØØØØØØØØØØØ"
-]
-					</textarea>
+]-->
 				</td>
 			</tr>
 			<tr>
@@ -192,9 +212,9 @@
 				<td id="selectedColorInfo" colspan="3"><b>Selected Color Info</b></td>
 			</tr>
 			<tr>
-				<td><button id="hsl-h" onclick="SpriteEditor.setSortBy('hue')">Hue</button></td>
-				<td><button id="hsl-s" onclick="SpriteEditor.setSortBy('saturation')">Saturation</button></td>
-				<td><button id="hsl-l" onclick="SpriteEditor.setSortBy('lightness')">Lightness</button></td>
+				<td><button id="hsl-h" onclick="SpriteEditor.setPaletteSortBy('hue')">Hue</button></td>
+				<td><button id="hsl-s" onclick="SpriteEditor.setPaletteSortBy('saturation')">Saturation</button></td>
+				<td><button id="hsl-l" onclick="SpriteEditor.setPaletteSortBy('lightness')">Lightness</button></td>
 			</tr>
 			<tr>
 				<td colspan="3">
@@ -210,6 +230,16 @@
 	</table>
 
 	<div id="orderedColorDiv"></div>
+
+
+	<!-- HTML -->
+<div id="customDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ccc; background: white; padding: 20px; z-index: 1000;">
+    <p>Are you sure you want to proceed?</p>
+    <button id="confirmOk">OK</button>
+    <button id="confirmCancel">Cancel</button>
+</div>
+<div id="dialogOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+
 
 </body>
 

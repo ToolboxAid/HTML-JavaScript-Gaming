@@ -17,12 +17,17 @@ button {
     text-align: center;
 }
 
+label:hover,
 button:hover {
     background-color: #0056b3;
 }
 
 #loadSample{
-    width:125px;
+    width:20%;
+}
+
+#clearMessages{
+    width:25%;
 }
 
 #hsl-h,
