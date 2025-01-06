@@ -19,15 +19,18 @@ export class SpriteEditor {
 
     //-------------------------------------------
     // Palette information
+    // default, crayola008, crayola016, crayola024, crayola032, crayola048, crayola064,
+    // crayola096, crayola120, crayola150, javascript, spaceInvaders, test, w3c, custom
     static paletteName = 'default';
-    static paletteSortOrder = "hue"; // hue, saturation, lightness
+    // hue, saturation, lightness
+    static paletteSortOrder = "hue";
     static paletteAcrossCnt = 5;
     static paletteDownCnt = 36;
     static paletteSize = 30;
 
     static paletteSelectedX = 0;
     static paletteSelectedY = 0;
-    static paletteScale = this.paletteSize / this.spriteSize;
+    static paletteScale = this.paletteSize / this.spriteGridSize;
 
     static paletteSpacing = 10;
 
@@ -50,18 +53,20 @@ export class SpriteEditor {
     // Define the width, height, and size of the sprite
     static spritePixelSize = 5;
     static spriteImageSize = this.maxGrid * this.spritePixelSize + 4;
-    static spriteSize = 40;
+    static spriteGridSize = 40; // in pixel
 
     //-------------------------------------------
     // Image details
     static imageName = null;
     static image = null;
-    static imageX = 0;//this.gridX;
-    static imageY = 0;//this.gridY;
-    static imageScale = 1.0; // Zoom factor
+    static imageX = 0;
+    static imageY = 0;
+    static imageScale = 1.5; // Zoom factor
 
     //-------------------------------------------
     static mouse = null;
+
+    static initMessages = false;
 
     // TODO: Need to figure out multi frames for animation
 
@@ -69,7 +74,7 @@ export class SpriteEditor {
     static jsonData = {
         "metadata": {
             "sprite": "sprite starter json",
-            "spriteSize": 40, // this is gridZ - zoom
+            "spriteGridSize": 10,
             "palette": "default",
         },
         "layers": [
@@ -78,8 +83,7 @@ export class SpriteEditor {
                     "spriteimage": "test.jpg",
                     "imageX": 100,
                     "imageY": 45,
-                    "imageZ": 40,
-                    "gridZ": 24.0,
+                    "imageScale": 2.0,
                 },
                 "data": [
                     "0000",
@@ -100,7 +104,7 @@ export class SpriteEditor {
         const jsonData = {
             "metadata": {
                 "sprite": "starter json",
-                "spriteSize": 5,
+                "spriteGridSize": 5,
                 "palette": "default",
             },
             "layers": [
@@ -109,8 +113,7 @@ export class SpriteEditor {
                         "spriteimage": "test.jpg",
                         "imageX": 0,
                         "imageY": 0,
-                        "imageZ": 2,
-                        "gridZ": 4.0,
+                        "imageScale": 2,
                     },
                     "data": [
                         "0000",
@@ -128,43 +131,43 @@ export class SpriteEditor {
         SpriteEditor.addMessages('loadSample2')
         const jsonData = {
             "metadata": {
-              "sprite": "sprite starter json",
-              "spriteSize": 37.599999999999966,
-              "palette": "default"
+                "sprite": "sprite starter json",
+                "spriteGridSize": 51.30000000000004,
+                "palette": "crayola024"
             },
             "layers": [
-              {
-                "metadata": {
-                  "spriteimage": "test.jpg",
-                  "imageX": -147,
-                  "imageY": -1,
-                  "imageZ": 3.9400000000000013,
-                  "gridZ": 24
-                },
-                "data": [
-                  "ØØØ3333333333ØØØ",
-                  "ØØ3)))))))0003ØØ",
-                  "Ø3))))))))))003Ø",
-                  "Ø3)))))))))))03Ø",
-                  "Ø3)))))))))))03Ø",
-                  "3)))))3))3))))03",
-                  "3)))))3))3))))03",
-                  "3)))))3))3))))03",
-                  "3)))))))))))))03",
-                  "3)))))))))))))03",
-                  "30)))3))))3)))03",
-                  "Ø3))))3333)))03Ø",
-                  "Ø30)))))))))003Ø",
-                  "Ø300))0000))003Ø",
-                  "ØØ300003300003ØØ",
-                  "ØØØ3333ØØ3333ØØØ"
-                ]
-              }
+                {
+                    "metadata": {
+                        "spriteimage": "test.jpg",
+                        "imageX": -156,
+                        "imageY": -2,
+                        "imageScale": 0.5,
+                    },
+                    "data": [
+                        "ØØØ!!!!!!!!!!ØØØ",
+                        "ØØ!######))))!ØØ",
+                        "Ø!#########)))!Ø",
+                        "Ø!##########))!Ø",
+                        "Ø!##########))!Ø",
+                        "!#####!##!###))!",
+                        "!#####!##!###))!",
+                        "!#####!##!###))!",
+                        "!############))!",
+                        "!############))!",
+                        "!)###!####!##))!",
+                        "Ø!####!!!!##))!Ø",
+                        "Ø!)####))###))!Ø",
+                        "Ø!))))))))))))!Ø",
+                        "ØØ!))))!!))))!ØØ",
+                        "ØØØ!!!!ØØ!!!!ØØØ"
+                    ]
+                }
             ]
-          };
+        };
 
         SpriteEditor.jsonData = jsonData;
-        //SpriteEditor.imageName = './2 bit tiles.jpg';
+        this.outputJsonData();
+        this.loadJsonFromTextarea();
     }
     static loadSample3() {
         SpriteEditor.addMessages('loadSample3')
@@ -189,7 +192,7 @@ export class SpriteEditor {
         this.mouse = new MouseInput(this.canvasEditor);
 
         // set paletteName on load
-        this.initializePaletteDD();
+        this.updatePaletteDD();
 
         this.image = new Image();
 
@@ -203,11 +206,17 @@ export class SpriteEditor {
         const formattedTimestamp = new Date().toLocaleString().replace(/,/g, '');
         const textarea = document.getElementById('messagesID');
         textarea.value += `${formattedTimestamp} ${message} \n`;
+        textarea.disabled = true;
     }
     static clearMessages() {
         const textarea = document.getElementById('messagesID');
         textarea.value = "";
         this.addMessages(`Messages Cleared.`)
+        if (this.initMessages) {
+            this.initMessages = true;
+            this.addMessages(`Press F11 to enter/exit full screen.`)
+            this.addMessages(`Add '#00000000' for Transparent.`)
+        }
     }
 
     // ------------------------------------------
@@ -257,7 +266,7 @@ export class SpriteEditor {
 
     // ------------------------------------------
     // Palette methods.    
-    static initializePaletteDD() {
+    static updatePaletteDD() {
         // Get the dropdown element by its ID
         const dropdown = document.getElementById("paletteDropdown");
 
@@ -276,6 +285,9 @@ export class SpriteEditor {
         SpritePalettes.setPalette(name);
 
         this.addMessages(`Selected palette: '${name}'.`);
+
+        // const trace = new Error("Show stack trace:");
+        // console.log(trace.stack);
 
         return true;
     }
@@ -334,9 +346,9 @@ export class SpriteEditor {
 
     //     // this.paletteName = metadata['palette'];
 
-    //     // this.spriteSize = Number(metadata['spriteS']);
+    //     // this.spriteGridSize = Number(metadata['spriteS']);
 
-    //     // this.paletteScale = (this.paletteSize / this.spriteSize)
+    //     // this.paletteScale = (this.paletteSize / this.spriteGridSize)
 
     //     // // // Set grid dimensions based on the parsed rows
     //     // this.gridCellHeight = rows.length;
@@ -387,16 +399,16 @@ export class SpriteEditor {
         SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY = this.imageY;
     }
 
-    static setImageZoom(imageZ) {
-        if (typeof imageZ === 'number' && !isNaN(imageZ)) {
-            this.imageZ = 0;
-            this.zoomImage(imageZ);
+    static setImageScale(imageScale) {
+        if (typeof imageScale === 'number' && !isNaN(imageScale)) {
+            imageScale = 0;
+            this.updateImageScale(imageScale);
         } else {
-            this.addMessages("'imageZ' is not a valid number:", imageZ);
+            this.addMessages("'imageScale' is not a valid number:", imageScale);
         }
     }
-    static zoomImage(zoomFactor) {
-        this.imageScale += zoomFactor;
+    static updateImageScale(imageScale) {
+        this.imageScale += imageScale;
         if (this.imageScale > 5.0) {
             this.imageScale = 5.0;
             this.addMessages(`Max image scale reached: ${this.imageScale}`)
@@ -404,33 +416,35 @@ export class SpriteEditor {
             this.imageScale = 0.01;
             this.addMessages(`Min image scale reached: ${this.imageScale}`)
         }
-        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageZ = this.imageScale;
+        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageScale = this.imageScale;
     }
 
     // ------------------------------------------
     // Grid methods
-    static setGridZoom(spriteSize) {
-        if (typeof spriteSize === 'number' && !isNaN(spriteSize)) {
-            this.spriteSize = 0;
-            this.zoomGrid(spriteSize);
+    static setSpriteGridSize(spriteGridSize) {
+        if (typeof spriteGridSize === 'number' && !isNaN(spriteGridSize)) {
+            this.spriteGridSize = 0;
+            console.log(spriteGridSize);
+            this.updateSpriteGridSize(spriteGridSize);
+            console.log(this.spriteGridSize);
         } else {
-            this.addMessages("spriteSize is not a valid number:", spriteSize);
+            this.addMessages("spriteGridSize is not a valid number:", spriteGridSize);
         }
     }
-    static zoomGrid(zoomFactor) {
-        this.spriteSize += zoomFactor;
-        if (this.spriteSize < 4.0) {
-            this.spriteSize = 4.0;
-            this.addMessages(`Min grid scall reached: ${this.spriteSize}`)
+    static updateSpriteGridSize(spriteGridSize) {
+        this.spriteGridSize += spriteGridSize;
+        if (this.spriteGridSize < 4.0) {
+            this.spriteGridSize = 4.0;
+            this.addMessages(`Min grid scall reached: ${this.spriteGridSize}`)
         }
-        if (this.spriteSize > 80.0) {
-            this.spriteSize = 80.0;
-            this.addMessages(`Max grid scall reached: ${this.spriteSize}`)
+        if (this.spriteGridSize > 80.0) {
+            this.spriteGridSize = 80.0;
+            this.addMessages(`Max grid scall reached: ${this.spriteGridSize}`)
         }
-        SpriteEditor.jsonData.metadata.spriteSize = this.spriteSize;
+        SpriteEditor.jsonData.metadata.spriteGridSize = this.spriteGridSize;
     }
-    static showGridSize(){
-        this.addMessages(` Grid Size ${this.gridCellWidth}x${this.gridCellHeight} - z:${this.gridZ}`);
+    static showSpriteGridDimensions() {
+        this.addMessages(` Grid Size ${this.gridCellWidth}x${this.gridCellHeight}`);
     }
     static spriteAddRow() {
         if (this.gridCellHeight < this.maxGrid) {
@@ -439,7 +453,7 @@ export class SpriteEditor {
         } else {
             this.addMessages(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
         }
-        this.showGridSize();
+        this.showSpriteGridDimensions();
     }
     static spriteAddColumn() {
         if (this.gridCellWidth < this.maxGrid) {
@@ -448,7 +462,7 @@ export class SpriteEditor {
         } else {
             this.addMessages(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
         }
-        this.showGridSize();
+        this.showSpriteGridDimensions();
     }
     static spriteDelColumn() {
         if (this.gridCellWidth > 1) {
@@ -457,7 +471,7 @@ export class SpriteEditor {
         } else {
             this.addMessages("Cannot remove column, gridCellWidth is already 1.");
         }
-        this.showGridSize();
+        this.showSpriteGridDimensions();
     }
     static spriteDelRow() {
         if (this.gridCellHeight > 1) {
@@ -466,7 +480,7 @@ export class SpriteEditor {
         } else {
             this.addMessages("Cannot remove row, gridCellHeight is already 1.");
         }
-        this.showGridSize();
+        this.showSpriteGridDimensions();
     }
 
     // ------------------------------------------
@@ -524,16 +538,16 @@ export class SpriteEditor {
         // Lines on X
         for (var x = 0; x < this.gridCellWidth + 1; x++) {
             this.ctxEditor.beginPath();
-            this.ctxEditor.moveTo(x * this.spriteSize + this.gridX, this.gridY);
-            this.ctxEditor.lineTo(x * this.spriteSize + this.gridX, this.spriteSize * this.gridCellHeight + this.gridY);
+            this.ctxEditor.moveTo(x * this.spriteGridSize + this.gridX, this.gridY);
+            this.ctxEditor.lineTo(x * this.spriteGridSize + this.gridX, this.spriteGridSize * this.gridCellHeight + this.gridY);
             this.ctxEditor.stroke();
         }
 
         // Lines on Y
         for (var y = 0; y < this.gridCellHeight + 1; y++) {
             this.ctxEditor.beginPath();
-            this.ctxEditor.moveTo(this.gridX, y * this.spriteSize + this.gridY);
-            this.ctxEditor.lineTo(this.spriteSize * this.gridCellWidth + this.gridX, y * this.spriteSize + this.gridY);
+            this.ctxEditor.moveTo(this.gridX, y * this.spriteGridSize + this.gridY);
+            this.ctxEditor.lineTo(this.spriteGridSize * this.gridCellWidth + this.gridX, y * this.spriteGridSize + this.gridY);
             this.ctxEditor.stroke();
         }
 
@@ -543,10 +557,10 @@ export class SpriteEditor {
                 const result = SpritePalettes.getBySymbol(this.spriteIndex[x][y]);
 
                 if (result.hex === SpritePalettes.transparentColor) {
-                    const gridCellPosX = this.gridX + (this.spriteSize * x) + this.spriteSize / 4;
-                    const gridCellPosY = this.gridY + (this.spriteSize * y) + this.spriteSize / 4;
+                    const gridCellPosX = this.gridX + (this.spriteGridSize * x) + this.spriteGridSize / 4;
+                    const gridCellPosY = this.gridY + (this.spriteGridSize * y) + this.spriteGridSize / 4;
 
-                    this.drawTransparentX(gridCellPosX, gridCellPosY, this.spriteSize / 2);
+                    this.drawTransparentX(gridCellPosX, gridCellPosY, this.spriteGridSize / 2);
                 } else {
                     this.drawColor(x, y, result.hex);
                 }
@@ -556,9 +570,9 @@ export class SpriteEditor {
     static drawColor(x, y, color) {
         // Draw a circle on the selected sprite
         this.ctxEditor.beginPath();
-        this.ctxEditor.arc((this.spriteSize * x) + this.gridX + this.spriteSize / 2,
-            (this.spriteSize * y) + this.gridY + this.spriteSize / 2,
-            this.spriteSize / 3, 0, 2 * Math.PI);
+        this.ctxEditor.arc((this.spriteGridSize * x) + this.gridX + this.spriteGridSize / 2,
+            (this.spriteGridSize * y) + this.gridY + this.spriteGridSize / 2,
+            this.spriteGridSize / 3, 0, 2 * Math.PI);
         this.ctxEditor.strokeStyle = color;
         this.ctxEditor.fillStyle = color;
         this.ctxEditor.stroke();
@@ -616,12 +630,12 @@ export class SpriteEditor {
             `H: ${hsl.h}  S: ${hsl.s}  L: ${hsl.l}`;
     }
     static drawPalette() {// hue, saturation, lightness
-        this.paletteScale = (this.paletteSize / this.spriteSize);
+        this.paletteScale = (this.paletteSize / this.spriteGridSize);
 
         // Clear location
-        this.ctxEditor.clearRect(0, 0, this.spriteSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Clear the canvasEditor
+        this.ctxEditor.clearRect(0, 0, this.spriteGridSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Clear the canvasEditor
         this.ctxEditor.fillStyle = 'black';
-        this.ctxEditor.fillRect(0, 0, this.spriteSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
+        this.ctxEditor.fillRect(0, 0, this.spriteGridSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
 
         // Get the sorted palette colors from SpritePalettes
         let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
@@ -635,10 +649,10 @@ export class SpriteEditor {
             const newY = mod * this.paletteSize + this.paletteSpacing / 2;
 
             if (result.hex === SpritePalettes.transparentColor) {
-                SpriteEditor.drawTransparentX(newX, newY, this.spriteSize * this.paletteScale);
+                SpriteEditor.drawTransparentX(newX, newY, this.spriteGridSize * this.paletteScale);
             } else {
                 this.ctxEditor.fillStyle = result.hex;
-                this.ctxEditor.fillRect(newX, newY, this.spriteSize * this.paletteScale - this.paletteSpacing / 2, this.spriteSize * this.paletteScale - this.paletteSpacing / 2);
+                this.ctxEditor.fillRect(newX, newY, this.spriteGridSize * this.paletteScale - this.paletteSpacing / 2, this.spriteGridSize * this.paletteScale - this.paletteSpacing / 2);
             }
         }
     }
@@ -665,7 +679,6 @@ export class SpriteEditor {
 
         if (firstLayerData) {
             // Use firstLayerData safely
-            console.log(firstLayerData);
         } else {
             this.addMessages("The required data does not exist.");
             return;
@@ -683,12 +696,10 @@ export class SpriteEditor {
                 }
             }
         }
-        //SpriteEditor.addMessages('outputJsonData');
     }
 
     // ------------------------------------------------
     // json methods
-
     static setFrameLayer() {
         //--------------------------------
         if (
@@ -696,61 +707,45 @@ export class SpriteEditor {
             this.currentFrame >= 0 &&
             this.currentFrame < SpriteEditor.jsonData.layers.length
         ) {
-            this.setImageZoom(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageZ);
+            this.setImageScale(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageScale);
         } else {
             console.error('Invalid currentFrame or layers data:', this.currentFrame);
         }
         //--------------------------------
         const currentLayer = SpriteEditor.jsonData.layers[this.currentFrame];
-        if (currentLayer && currentLayer.metadata && 'imageZ' in currentLayer.metadata) {
-            this.setImageZoom(currentLayer.metadata.imageZ);
+        if (currentLayer && currentLayer.metadata && 'imageScale' in currentLayer.metadata) {
+            this.setImageScale(currentLayer.metadata.imageScale);
         } else {
-            console.error('imageZ is not defined in metadata for the current layer.');
+            console.error('imageScale is not defined in metadata for the current layer.');
         }
     }
-
-    /**        
-"layers": [
-    {
-        "metadata": {
-            "spriteimage": "test.jpg",
-
-            "gridZ": 24.0,
-                */
     static setStaticVarsFromJson() {
         // Access metadata.sprite
         const sprite = SpriteEditor.jsonData.metadata.sprite;
-        const palette = SpriteEditor.jsonData.metadata.palette;
-
-        console.log(SpriteEditor.jsonData.metadata.spriteSize);
-        this.setGridZoom(SpriteEditor.jsonData.metadata.spriteSize);
-
+        this.selectPalette(SpriteEditor.jsonData.metadata.palette);
+        this.updatePaletteDD();
+        this.setSpriteGridSize(SpriteEditor.jsonData.metadata.spriteGridSize);
 
         console.log('Sprite:', sprite);
-        console.log('Palette:', palette);
+        console.log('Sprite Grid Size:', this.spriteGridSize);
+        console.log('Palette:', SpriteEditor.paletteName);//this.palette);
 
         // Access metadata.layer frames
         const spriteImage = SpriteEditor.jsonData.layers[this.currentFrame].metadata.spriteimage;
-
         this.setImageX(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX);
         this.setImageY(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY);
-        this.setImageZoom(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageZ);
-        // this.setGridZoom(SpriteEditor.jsonData.layers[this.currentFrame].metadata.gridZ);
+        this.setImageScale(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageScale);
 
         console.log('Sprite Image:', spriteImage);
-        console.log('Sprite Size:', this.spriteSize);
-
-        console.log('ImageX-a:', this.imageX);
+        console.log('ImageX:', this.imageX);
         console.log('ImageY:', this.imageY);
-        console.log('ImageZ:', this.imageScale);
-        console.log('gridZ:', this.spriteSize);
+        console.log('ImageScale:', this.imageScale);
     }
 
     // Method to load JSON from textarea to SpriteEditor.jsonData
     static loadJsonFromTextarea() {
         const textarea = document.getElementById('spriteID');
-        const jsonString = textarea.value; // Get the content of the textarea
-
+        const jsonString = textarea.value;
         try {
             // Parse the JSON string into an object
             const parsedData = JSON.parse(jsonString);
@@ -758,9 +753,7 @@ export class SpriteEditor {
             // Assign the parsed data to SpriteEditor.jsonData
             if (typeof SpriteEditor !== 'undefined') {
                 SpriteEditor.jsonData = parsedData;
-                console.log('cImageY:', this.imageY);
                 this.setStaticVarsFromJson();
-                console.log('dImageY:', this.imageY);
             } else {
                 SpriteEditor.addMessages('SpriteEditor is not defined.')
             }
@@ -768,8 +761,6 @@ export class SpriteEditor {
             SpriteEditor.addMessages(`Invalid JSON format: ${error} \n ${textarea.value}`);
         }
     }
-
-
 
     static saveModifiedSprite() {
         // Assuming spriteIndex is a 2D array with gridX and gridY dimensions
@@ -803,10 +794,10 @@ export class SpriteEditor {
     }
 
     static handleCanvasLeftClick(mouse) {
-        if (mouse.mouseX > (SpriteEditor.spriteSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
+        if (mouse.mouseX > (SpriteEditor.spriteGridSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
             // Determine which sprite cell clicked
-            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteSize);
-            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteSize);
+            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteGridSize);
+            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteGridSize);
 
             if (SpriteEditor.selectedCellX < 0 || SpriteEditor.selectedCellX > SpriteEditor.gridCellWidth - 1 ||
                 SpriteEditor.selectedCellY < 0 || SpriteEditor.selectedCellY > SpriteEditor.gridCellHeight - 1) {
@@ -838,10 +829,10 @@ export class SpriteEditor {
     }
     static handleCanvasRightClick(mouse) {
 
-        if (mouse.mouseX > (SpriteEditor.spriteSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
+        if (mouse.mouseX > (SpriteEditor.spriteGridSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
             // Determine which sprite cell clicked
-            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteSize);
-            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteSize);
+            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteGridSize);
+            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteGridSize);
 
             if (SpriteEditor.selectedCellX < 0 || SpriteEditor.selectedCellX > SpriteEditor.gridCellWidth - 1 ||
                 SpriteEditor.selectedCellY < 0 || SpriteEditor.selectedCellY > SpriteEditor.gridCellHeight - 1) {
@@ -895,7 +886,6 @@ window.onload = () => {
 
 // --------------------------------------------------------------------------
 // JavaScript to handle dropdown selection and call SpritePalettes.setPalette
-const dropdown = document.getElementById('paletteDropdown');
 document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById('paletteDropdown');
 
@@ -905,7 +895,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedPalette = event.target.value;
             if (typeof SpriteEditor !== 'undefined' && typeof SpriteEditor.selectPalette === 'function') {
                 SpriteEditor.selectPalette(selectedPalette);
-
             } else {
                 alert('SpriteEditor.selectPalette is not defined.');
             }

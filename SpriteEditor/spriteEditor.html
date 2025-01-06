@@ -1,246 +1,211 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sprite Editor</title>
-	<!-- Link to external CSS file -->
 	<link rel="stylesheet" href="./spriteEditor.css">
-
 	<script type="module">
 		import { SpriteEditor } from './spriteEditor.js';
-
-		// Expose the class or specific functions to the global scope
 		window.SpriteEditor = SpriteEditor;
 	</script>
-
 </head>
 
 <body>
 
-	<table>
-		<thead>
-			<tr>
-				<th colspan="3">
-					<h3>Controls</h3>
-				</th>
-				<th>ToolboxAid.com (Enhancing Skills)</th>
-				<th><button id="loadSample" onclick="SpriteEditor.loadSample1()">sample 1</button>
-					<button id="loadSample" onclick="SpriteEditor.loadSample2()">sample 2</button>
-					<button id="loadSample" onclick="SpriteEditor.loadSample3()">sample 3</button>
-					<button id="loadSample" onclick="SpriteEditor.loadSample4()">sample 4</button>
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td></td>
-				<td>
-					<button onclick="SpriteEditor.moveImageVertical(-100.0)">-100</button>
-					<button onclick="SpriteEditor.moveImageVertical(-10.00)">-10.0</button>
-					<button onclick="SpriteEditor.moveImageVertical(-1.000)">-1.00</button>
-				</td>
-				<td></td>
-				<td rowspan="11"> <canvas id="spriteEditor"></canvas></td>
-				<td rowspan="11">
+	<div class="container">
+		<div class="box box1"><h3>Controls</h3>
+			<div class="inner">
 
-					<!-- -->
-					<!-- -->
-					<!-- -->
-					<h3>Palette Color<p>(add '#00000000' for Transparent)</p>
-					</h3>
-					<select id="paletteDropdown" name="paletteDropdown">
-						<option value='default'>default</option>
-						<option value='fault'>fault</option> //TODO: delete this line
+				<table>
+					<tbody>
+						<!-- Image Scale Controls -->
+						<tr>
+							<td class="left-cell" style="background-color: #CCCCCC;">
+								<button onclick="SpriteEditor.updateImageScale(-1.00)">-1.00</button>
+								<button onclick="SpriteEditor.updateImageScale(-0.10)">-0.10</button>
+								<button onclick="SpriteEditor.updateImageScale(-0.01)">-0.01</button>
+							</td>
+							<td class="left-cell td-padding" style="background-color: #CCCCCC;">Image<br>Scale</td>
+							<td class="left-cell" style="background-color: #CCCCCC;">
+								<button onclick="SpriteEditor.updateImageScale(1.00)">+1.00</button>
+								<button onclick="SpriteEditor.updateImageScale(0.10)">+0.10</button>
+								<button onclick="SpriteEditor.updateImageScale(0.01)">+0.01</button>
+							</td>
+						</tr>
+				</table>
+			</div>
+			<div class="inner">
+				<table>
+					<!-- Vertical Move -->
+					<tr style="background-color: #AAAAAA;">
+						<td class="left-cell"></td>
+						<td class="left-cell">
+							<button onclick="SpriteEditor.moveImageVertical(-100.0)">-100</button>
+							<button onclick="SpriteEditor.moveImageVertical(-10.00)">-10.0</button>
+							<button onclick="SpriteEditor.moveImageVertical(-1.000)">-1.00</button>
+						</td>
+						<td></td>
+					</tr>
 
-						<option value='crayola008'>Crayola 8</option>
-						<option value='crayola016'>Crayola 16</option>
-						<option value='crayola024'>Crayola 24</option>
-						<option value='crayola032'>Crayola 32</option>
-						<option value='crayola048'>Crayola 48</option>
-						<option value='crayola064'>Crayola 64</option>
-						<option value='crayola096'>Crayola 96</option>
-						<option value='crayola120'>Crayola 120</option>
-						<option value='crayola150'>Crayola 150</option>
+					<!-- Horizontal Move -->
+					<tr style="background-color: #AAAAAA;">
+						<td class="left-cell">
+							<button onclick="SpriteEditor.moveImageHorizontal(-100.0)">-100</button>
+							<button onclick="SpriteEditor.moveImageHorizontal(-10.00)">-10.0</button>
+							<button onclick="SpriteEditor.moveImageHorizontal(-1.000)">-1.00</button>
+						</td>
+						<td>Move<br>Image</td>
+						<td class="left-cell">
+							<button onclick="SpriteEditor.moveImageHorizontal(100.0)">+100</button>
+							<button onclick="SpriteEditor.moveImageHorizontal(10.00)">+10.0</button>
+							<button onclick="SpriteEditor.moveImageHorizontal(1.000)">+1.00</button>
+						</td>
+					</tr>
+					<!-- Vertical Move -->
+					<tr style="background-color: #AAAAAA;">
+						<td class="left-cell"></td>
+						<td class="left-cell">
+							<button onclick="SpriteEditor.moveImageVertical(100.0)">+100</button>
+							<button onclick="SpriteEditor.moveImageVertical(10.00)">+10.0</button>
+							<button onclick="SpriteEditor.moveImageVertical(1.000)">+1.00</button>
+						</td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="inner">
+				<h3>Background image</h3>
+							<input type="file" id="fileInput" accept=".png,.jpeg,.jpg,.gif,.webp,.svg,.bmp,.ico">
+							<label for="fileInput" id="fileInputLabel">Background Image</label>
+							<span id="fileName">Not chosen!</span>
+			</div>
+			<div class="inner">
+				<table>
 
-						<option value='javascript'>Javascript Named</option>
-						<option value='spaceInvaders'>Space Invaders</option>
-						<option value='test'>Test</option>
-						<option value='w3c'>W3C</option>
-						<option value='custom'>Custom</option>
-					</select>
-					<textarea id="paletteID" name="Palette" rows="15" cols="70" style="height: 15%;">
-					</textarea>
-					<br />
-					<!-- -->
-					<!-- -->
-					<!-- -->
-					<h3>Sprite JSON</h3>
-					<!-- Hidden file input -->
+					<!-- Sprite Grid Size -->
+					<tr style="background-color: #999999;">
+						<td class="left-cell">
+							<button onclick="SpriteEditor.updateSpriteGridSize(-2.00)">-2.00</button>
+							<button onclick="SpriteEditor.updateSpriteGridSize(-1.00)">-1.00</button>
+							<button onclick="SpriteEditor.updateSpriteGridSize(-0.50)">-0.50</button>
+							<button onclick="SpriteEditor.updateSpriteGridSize(-0.10)">-0.10</button>
+						</td>
+						<td>Sprite<br>Grid<br>Size</td>
+						<td class="left-cell">
+							<button onclick="SpriteEditor.updateSpriteGridSize(2.00)">+2.00</button>
+							<button onclick="SpriteEditor.updateSpriteGridSize(1.00)">+1.00</button>
+							<button onclick="SpriteEditor.updateSpriteGridSize(0.50)">+0.50</button>
+							<button onclick="SpriteEditor.updateSpriteGridSize(0.10)">+0.10</button>
+						</td>
+					</tr>
 
-					<!-- File Upload -->
-					<input type="file" id="fileInput" accept=".png,.jpeg,.jpg,.gif,.webp,.svg,.bmp,.ico"
-						style="display: none;">
+				</table>
+			</div>
+			<div class="inner">
+				<table>
+					<tr>
+						<td id="selectedColorInfo" class="left-cell" colspan="3">
+							<b>Selected Color Info</b>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="inner">
+				<table>
 
-					<!-- Custom label -->
-					<label for="fileInput" id="fileInputLabel"
-						style="cursor: pointer; background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;">
-						Upload Background Image
-					</label>
+					<tr><td colspan="3"><h3>Palette sort order</h3></td></tr>
+					<!-- HSL Sorting -->
+					<tr class="hsl">
+						<td class="hsl hsl-h"><button class="hsl-h" onclick="SpriteEditor.setPaletteSortBy('hue')">Hue</button>
+						</td>
+						<td class="hsl hsl-s"><button  class="hsl-s" onclick="SpriteEditor.setPaletteSortBy('saturation')">Saturation</button>
+						</td>
+						<td class="hsl hsl-l"><button class="hsl-l" onclick="SpriteEditor.setPaletteSortBy('lightness')">Lightness</button>
+						</td>
+					</tr>
 
-					<!-- Display selected file name -->
-					<span id="fileName" style="margin-left: 10px;">No background image chosen!</span>
-
-
-					<textarea id="spriteID" name="sprite" rows="15" cols="70" style="height: 50%;">
-					</textarea>
-
-					<!-- -->
-					<!-- -->
-					<!-- -->
-					<h3>Messages
-					<button id="clearMessages" onclick="SpriteEditor.clearMessages()">Clear Messages</button></h3>
-					<textarea id="messagesID" name="messages" rows="15" cols="70" style="height: 15%;">
-					</textarea>
-					<!--
-[
-// meta1:imageName:./8bit%20tiles.jpg
-// meta:imageX:-117.5
-// meta:imageY:-190
-// meta:imageS:2.169999999999999
-// meta:palette:default
-// meta:spriteS:44.6
-"ØØØØØØØ3333Ø333Ø",
-"ØØØØØ33ÎÎÎ33LLL3",
-"ØØØØ3ÎÎÎÎÎÎ3LLL3",
-"ØØØ3ÎÎÎ333333LL3",
-"ØØ3ÎÎÎ33333333L3",
-"ØØ3Î33LLLLLL333Ø",
-"Ø3333LLL3L3L3ÎÎ3",
-"Ø3L33LLL3L3L3ÎÎ3",
-"3LL333LLLLLLL3Î3",
-"3LLL3LL3LLLLL3Î3",
-"Ø3LLLL3333LL333Ø",
-"ØØ33LLLL33333Î3Ø",
-"ØØØ333LLLLL3ÎÎ3Ø",
-"ØØ3ÎÎÎ333333Î3ØØ",
-"Ø3ÎÎÎÎÎ33ÎÎ33ØØØ",
-"3ÎÎÎ333Î3ÎÎÎ33ØØ",
-"3ÎÎ3LLL333ÎÎÎ3ØØ",
-"3Î3LLLLL333ÎÎ33Ø",
-"Ø33LLLLL3WW33W3Ø",
-"ØØ33LLL33WW33==3",
-"Ø3==33333333===3",
-"3==333333333===3",
-"3==333333333===3",
-"3==3333ØØØØ3==33",
-"3==33ØØØØØØØ333Ø",
-"Ø33ØØØØØØØØØØØØØ"
-]-->
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<button onclick="SpriteEditor.moveImageHorizontal(-100.0)">-100</button>
-					<button onclick="SpriteEditor.moveImageHorizontal(-10.00)">-10.0</button>
-					<button onclick="SpriteEditor.moveImageHorizontal(-1.000)">-1.00</button>
-				</td>
-				<td>Move<br>Image</td>
-				<td>
-					<button onclick="SpriteEditor.moveImageHorizontal(100.0)">+100</button>
-					<button onclick="SpriteEditor.moveImageHorizontal(10.00)">+10.0</button>
-					<button onclick="SpriteEditor.moveImageHorizontal(1.000)">+1.00</button>
-				</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td>
-					<button onclick="SpriteEditor.moveImageVertical(100.0)">+100</button>
-					<button onclick="SpriteEditor.moveImageVertical(10.00)">+10.0</button>
-					<button onclick="SpriteEditor.moveImageVertical(1.000)">+1.00</button>
-				</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>
-					<button onclick="SpriteEditor.zoomImage(-1.00)">-1.00</button>
-					<button onclick="SpriteEditor.zoomImage(-0.10)">-0.10</button>
-					<button onclick="SpriteEditor.zoomImage(-0.01)">-0.01</button>
-				</td>
-				<td>Image<br>Zoom</td>
-				<td>
-					<button onclick="SpriteEditor.zoomImage(1.00)">+1.00</button>
-					<button onclick="SpriteEditor.zoomImage(0.10)">+0.10</button>
-					<button onclick="SpriteEditor.zoomImage(0.01)">+0.01</button>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<button onclick="SpriteEditor.zoomGrid(-2.00)">-2.00</button>
-					<button onclick="SpriteEditor.zoomGrid(-1.00)">-1.00</button>
-					<button onclick="SpriteEditor.zoomGrid(-0.50)">-0.50</button>
-					<button onclick="SpriteEditor.zoomGrid(-0.10)">-0.10</button>
-				</td>
-				<td>Grid<br>Zoom</td>
-				<td>
-					<button onclick="SpriteEditor.zoomGrid(2.00)">+2.00</button>
-					<button onclick="SpriteEditor.zoomGrid(1.00)">+1.00</button>
-					<button onclick="SpriteEditor.zoomGrid(0.50)">+0.50</button>
-					<button onclick="SpriteEditor.zoomGrid(0.10)">+0.10</button>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<button onclick="SpriteEditor.spriteDelColumn()">Sub</button>
-				</td>
-				<td>Grid X<br>Column</td>
-				<td>
-					<button onclick="SpriteEditor.spriteAddColumn()">Add</button>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<button onclick="SpriteEditor.spriteDelRow()">Sub</button>
-				</td>
-				<td>Grid Y<br>Row</td>
-				<td>
-					<button onclick="SpriteEditor.spriteAddRow()">Add</button>
-				</td>
-			</tr>
-			<tr>
-				<td id="selectedColorInfo" colspan="3"><b>Selected Color Info</b></td>
-			</tr>
-			<tr>
-				<td><button id="hsl-h" onclick="SpriteEditor.setPaletteSortBy('hue')">Hue</button></td>
-				<td><button id="hsl-s" onclick="SpriteEditor.setPaletteSortBy('saturation')">Saturation</button></td>
-				<td><button id="hsl-l" onclick="SpriteEditor.setPaletteSortBy('lightness')">Lightness</button></td>
-			</tr>
-			<tr>
-				<td colspan="3">
-					<h3>Sprite</h3>
-					<canvas id="spriteImage"></canvas>
-				</td>
-			</tr>
-			<tr class="custom-height">
-				<td colspan="3">
-				</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<div id="orderedColorDiv"></div>
+			</div>
+			</tbody>
+			</table>
 
 
-	<!-- HTML -->
-<div id="customDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ccc; background: white; padding: 20px; z-index: 1000;">
-    <p>Are you sure you want to proceed?</p>
-    <button id="confirmOk">OK</button>
-    <button id="confirmCancel">Cancel</button>
-</div>
-<div id="dialogOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+		</div>
+		<div class="inner">
+			<h3>Sprite</h3>
+			<canvas id="spriteImage"></canvas>
+		</div>
+
+	</div>
+	<div class="box box2"><h3>ToolboxAid.com (Enhancing Skills)</h3>
+		<div class="inner">
+
+			<canvas id="spriteEditor"></canvas>
+
+		</div>
+	</div>
+	<div class="box box3"><h3>Data</h3>
+		<div class="inner"><h3>Load Sample(s)</h3>
+			<button id="loadSample" onclick="SpriteEditor.loadSample1()">1</button>
+			<button id="loadSample" onclick="SpriteEditor.loadSample2()">2</button>
+			<button id="loadSample" onclick="SpriteEditor.loadSample3()">3</button>
+			<button id="loadSample" onclick="SpriteEditor.loadSample4()">4</button>
+		</div>
+		<div class="inner">
+			<div>
+			<h3>Palette Colors</h3>
+			<select id="paletteDropdown">
+				<option value='custom'>Custom</option>
+				<option value='default'>default</option>
+				<option value='crayola008'>Crayola 8</option>
+				<option value='crayola016'>Crayola 16</option>
+				<option value='crayola024'>Crayola 24</option>
+				<option value='crayola032'>Crayola 32</option>
+				<option value='crayola048'>Crayola 48</option>
+				<option value='crayola064'>Crayola 64</option>
+				<option value='crayola096'>Crayola 96</option>
+				<option value='crayola120'>Crayola 120</option>
+				<option value='crayola150'>Crayola 150</option>
+
+				<option value='javascript'>Javascript Named</option>
+				<option value='spaceInvaders'>Space Invaders</option>
+				<option value='test'>Test</option>
+				<option value='w3c'>W3C</option>
+				<!-- Add other options here -->
+			</select>
+		</div>
+			<textarea id="paletteID"></textarea>
+		</div>
+
+		<div class="inner">
+			<h3>Sprite JSON</h3>
+			<button id="copyJson" onclick="SpriteEditor.clearMessages()">Copy JSON</button>
+			<textarea id="spriteID"></textarea>
+
+		</div>
+
+		<div class="inner">
+			<h3>Messages</h3>
+			<button id="clearMessages" onclick="SpriteEditor.clearMessages()">Clear Messages</button>
+			<textarea id="messagesID"></textarea>
+
+		</div>
+	</div>
+	</div>
 
 
+
+	<!-- Custom Dialog -->
+	<div id="customDialog"
+		style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px solid #ccc; background: white; padding: 20px; z-index: 1000;">
+		<p>Are you sure you want to proceed?</p>
+		<button id="confirmOk">OK</button>
+		<button id="confirmCancel">Cancel</button>
+	</div>
+	<div id="dialogOverlay"
+		style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;">
+	</div>
 </body>
 
 </html>
