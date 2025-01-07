@@ -51,8 +51,9 @@ export class SpriteEditor {
 
     //-------------------------------------------
     // Define the width, height, and size of the sprite
-    static spritePixelSize = 5;
+    static spritePixelSize = 7;
     static spriteImageSize = this.maxGrid * this.spritePixelSize + 4;
+    
     static spriteGridSize = 40; // in pixel
 
     //-------------------------------------------
@@ -66,7 +67,7 @@ export class SpriteEditor {
     //-------------------------------------------
     static mouse = null;
 
-    static initMessages = false;
+    static initMessages = true;
 
     // TODO: Need to figure out multi frames for animation
 
@@ -75,6 +76,7 @@ export class SpriteEditor {
         "metadata": {
             "sprite": "sprite starter json",
             "spriteGridSize": 10,
+            "spritePixelSize": 8,
             "palette": "default",
         },
         "layers": [
@@ -105,6 +107,7 @@ export class SpriteEditor {
             "metadata": {
                 "sprite": "starter json",
                 "spriteGridSize": 5,
+                "spritePixelSize": 5,
                 "palette": "default",
             },
             "layers": [
@@ -133,6 +136,7 @@ export class SpriteEditor {
             "metadata": {
                 "sprite": "sprite starter json",
                 "spriteGridSize": 51.30000000000004,
+                "spritePixelSize": 5,
                 "palette": "crayola024"
             },
             "layers": [
@@ -182,6 +186,9 @@ export class SpriteEditor {
 
     // ------------------------------------------
     static initialize() {
+        //static spriteImageSize = this.maxGrid * this.spritePixelSize + 4;
+        console.log("ps",this.spritePixelSize ,this.maxGrid * this.spritePixelSize + 4);
+
         this.clearMessages();
         this.initializeArrays();
 
@@ -213,9 +220,9 @@ export class SpriteEditor {
         textarea.value = "";
         this.addMessages(`Messages Cleared.`)
         if (this.initMessages) {
-            this.initMessages = true;
-            this.addMessages(`Press F11 to enter/exit full screen.`)
-            this.addMessages(`Add '#00000000' for Transparent.`)
+            this.initMessages = false;
+            this.addMessages(`Press 'F11' to enter/exit full screen.`)
+            this.addMessages(`Add '#00000000' to palette for Transparent.`)
         }
     }
 
@@ -484,6 +491,30 @@ export class SpriteEditor {
     }
 
     // ------------------------------------------
+    // Grid methods
+    static setSpritePixelSize(spritePixelSize){
+        if (typeof spritePixelSize === 'number' && !isNaN(spritePixelSize)) {
+            this.spritePixelSize = 0;
+            console.log(spritePixelSize);
+            this.updateSpritePixelSize(spritePixelSize);
+            console.log(this.spritePixelSize);
+        } else {
+            this.addMessages("spriteGridSize is not a valid number:", spritePixelSize);
+        }
+    }
+    static updateSpritePixelSize(spritePixelSize){
+        this.spritePixelSize += spritePixelSize;
+        if (this.spritePixelSize < 1.0) {
+            this.spritePixelSize = 1.0;
+            this.addMessages(`Min sprite pixel size reached: ${this.spritePixelSize}`)
+        }
+        if (this.spritePixelSize > 10.0) {
+            this.spritePixelSize = 10.0;
+            this.addMessages(`Max sprite pixel size reached: ${this.spritePixelSize}`)
+        }
+        SpriteEditor.jsonData.metadata.spritePixelSize = this.spritePixelSize;
+    }
+    // ------------------------------------------
     // Draw methods
     static drawAll() {
         // Clear the canvas and set background color to #333333
@@ -724,12 +755,14 @@ export class SpriteEditor {
         const sprite = SpriteEditor.jsonData.metadata.sprite;
         this.selectPalette(SpriteEditor.jsonData.metadata.palette);
         this.updatePaletteDD();
+        this.setSpritePixelSize(SpriteEditor.jsonData.metadata.spritePixelSize);
         this.setSpriteGridSize(SpriteEditor.jsonData.metadata.spriteGridSize);
 
         console.log('Sprite:', sprite);
         console.log('Sprite Grid Size:', this.spriteGridSize);
-        console.log('Palette:', SpriteEditor.paletteName);//this.palette);
-
+        console.log('Sprite Pixel Size:', SpriteEditor.spritePixelSize);
+        console.log('Palette:', SpriteEditor.paletteName);
+        
         // Access metadata.layer frames
         const spriteImage = SpriteEditor.jsonData.layers[this.currentFrame].metadata.spriteimage;
         this.setImageX(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX);

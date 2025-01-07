@@ -119,6 +119,35 @@ button:hover {
     background-color: #ed9700;   
 }
 
+
+.scrollableDiv {
+    height: 100vh; /* Set the height to 100% of the viewport height */
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds the div's height */
+    padding: 10px; /* Optional padding */
+    box-sizing: border-box; /* Ensure padding is included in the height */
+    width:28%;
+}
+
+
+
+td.buttonMulti {
+    width: 100%; /* Adjust width as needed */
+}
+button.buttonMulti {
+    width: auto; /* Ensure the width adjusts based on content */
+    height: 40px; /* Allow height to adjust based on content */
+    line-height: 1.2; /* Set line height for proper spacing */
+    text-align: center; /* Center text horizontally */
+    white-space: normal; /* Enable text wrapping */
+    padding: 0px 10px; /* Add 10px padding to left & right */
+    margin: 0px 15px;
+    border: 2px solid #3600af; /* Optional styling */
+    background-color: #3600af; /* Optional styling */
+    color: white; /* Optional styling */
+    font-size: 14px; /* Adjust font size for readability */
+}
+
+
 #loadSample {
     width: 20%;
 }
