@@ -20,7 +20,7 @@ export class SpritePalettes {
     static palettes = {
         default: [
             { symbol: '!', hex: '#F08080', name: 'LightCoral' }, 		// color #'0' ascii'33'
-            { symbol: '"', hex: '#CD5C5C', name: 'IndianRed' }, 		// color #'1' ascii'34'
+            { symbol: 'Ñ', hex: '#CD5C5C', name: 'IndianRed' }, 		// color #'1' ascii'34'
             { symbol: '#', hex: '#FF0000', name: 'Red' }, 		    // color #'2' ascii'35'
             { symbol: '$', hex: '#B22222', name: 'FireBrick' }, 		// color #'3' ascii'36'
             { symbol: '%', hex: '#8B0000', name: 'DarkRed' }, 		// color #'4' ascii'37'
@@ -488,7 +488,6 @@ export class SpritePalettes {
         ],
         crayola120: [
             { symbol: '!', hex: '#232323', name: 'Black' }, 		    // color #'0' ascii'33'
-            //{ symbol: '"', hex: '#00000000', name: 'Transparent' }, 	// color #'1' ascii'34'
             { symbol: '#', hex: '#EDEDED', name: 'White' }, 		    // color #'2' ascii'35'
             { symbol: '$', hex: '#CD4A4A', name: 'Mahogany' }, 		// color #'3' ascii'36'
             { symbol: '%', hex: '#CC6666', name: 'Fuzzy Wuzzy' }, 	// color #'4' ascii'37'
@@ -613,7 +612,7 @@ export class SpritePalettes {
         ],
         crayola150: [
             { symbol: '!', hex: '#000000', name: 'Black' }, 		    // color #'0' ascii'33'
-            { symbol: '"', hex: '#F1C6C6', name: 'Blush' }, 		    // color #'1' ascii'34'
+            { symbol: 'ÿ', hex: '#F1C6C6', name: 'Blush' }, 		    // color #'1' ascii'34'
             { symbol: '#', hex: '#696969', name: 'Dim Gray' }, 		// color #'2' ascii'35'
             { symbol: '$', hex: '#F08080', name: 'Light Coral' }, 	// color #'3' ascii'36'
             { symbol: '%', hex: '#D3D3D3', name: 'Light Gray' }, 		// color #'4' ascii'37'
@@ -770,7 +769,7 @@ export class SpritePalettes {
         ],
         w3c: [
             { symbol: '!', hex: '#000000', name: 'Black' },
-            { symbol: '"', hex: '#696969', name: 'DimGray or DimGrey' },
+            { symbol: 'ÿ', hex: '#696969', name: 'DimGray or DimGrey' },
             { symbol: '#', hex: '#808080', name: 'Gray or Grey' },
             { symbol: '$', hex: '#A9A9A9', name: 'DarkGray or DarkGrey' },
             { symbol: '%', hex: '#C0C0C0', name: 'Silver' },
@@ -916,7 +915,7 @@ export class SpritePalettes {
         // JavaScript named colors
         javascript: [
             { symbol: '!', hex: '#000000', name: 'Black' }, 		 // color #'0' ascii'33'
-            { symbol: '"', hex: '#a52a2a', name: 'Brown' }, 		 // color #'1' ascii'34'
+            { symbol: 'ÿ', hex: '#a52a2a', name: 'Brown' }, 		 // color #'1' ascii'34'
             { symbol: '#', hex: '#a9a9a9', name: 'DarkGray' }, 		 // color #'2' ascii'35'
             { symbol: '$', hex: '#8b0000', name: 'DarkRed' }, 		 // color #'3' ascii'36'
             { symbol: '%', hex: '#696969', name: 'DimGray' }, 		 // color #'4' ascii'37'
@@ -1063,7 +1062,7 @@ export class SpritePalettes {
         // 
         test: [
             { symbol: '!', hex: '#843530', name: 'Color-132-53-48' }, 		 // color #'0' ascii'33'
-            { symbol: '"', hex: '#8b3d32', name: 'Color-139-61-50' }, 		 // color #'1' ascii'34'
+            { symbol: 'ÿ', hex: '#8b3d32', name: 'Color-139-61-50' }, 		 // color #'1' ascii'34'
             { symbol: '#', hex: '#b36b5a', name: 'Color-179-107-90' }, 		 // color #'2' ascii'35'
             { symbol: '$', hex: '#d7a28b', name: 'Color-215-162-139' }, 		 // color #'3' ascii'36'
             { symbol: '%', hex: '#f67614', name: 'Color-246-118-20' }, 		 // color #'4' ascii'37'

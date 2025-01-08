@@ -171,44 +171,16 @@
 				</div>
 				<div class="inner">
 					<h3>Frame(s)</h3>
+					<button class="frames" onclick="SpriteEditor.prevCurrentFrameLayer()">Prev</button>
+					<select id="animationDropdown"></select>
+					<button class="frames" onclick="SpriteEditor.nextCurrentFrameLayer()">Next</button><br>
+
+					<div id="setCurrentFrameLayer">
+						<!-- Buttons will be dynamically added here -->
+					</div>
 					<button class="frames" onclick="SpriteEditor.addLayer(0)">Add Before</button>
-					<select id="animarionDropdown"> //TODO: fill this with a method 0-60 frames
-						<option value=0>Stop</option>
-						<option value=1>1/60</option>
-						<option value=2>2/60</option>
-						<option value=3>3/60</option>
-						<option value=4>4/60</option>
-						<option value=5>5/60</option>
-						<option value=6>6/60</option>
-						<option value=7>7/60</option>
-						<option value=8>8/60</option>
-						<option value=9>91/60</option>
-						<option value=10>10/60</option>
-						<option value=11>11/60</option>
-						<option value=12>12/60</option>
-						<option value=13>13/60</option>
-						<option value=14>14/60</option>
-						<option value=15>15/60</option>
-						<option value=16>16/60</option>
-						<option value=17>17/60</option>
-						<option value=18>18/60</option>
-						<option value=19>19/60</option>
-						<option value=20>20/60</option>
-					</select>
-					<button class="frames" onclick="SpriteEditor.addLayer(1)">Add After</button><br>
-					<!-- <p>Active Frame [?]</p> -->
-					<button onclick="SpriteEditor.setCurrentFrameLayer(0)">0</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(1)">1</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(2)">2</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(3)">3</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(4)">4</button>
-					<br>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(5)">5</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(6)">6</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(7)">7</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(8)">8</button>
-					<button onclick="SpriteEditor.setCurrentFrameLayer(9)">9</button>
-					<button class="frames" onclick="SpriteEditor.subLayer()">Sub Current</button><br>
+					<button class="frames" onclick="SpriteEditor.subLayer()">Sub Current</button>
+					<button class="frames" onclick="SpriteEditor.addLayer(1)">Add After</button>
 
 				</div>
 			</div>

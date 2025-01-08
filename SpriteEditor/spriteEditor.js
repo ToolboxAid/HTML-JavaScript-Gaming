@@ -106,7 +106,7 @@ export class SpriteEditor {
         const jsonData = {
             "metadata": {
                 "sprite": "starter json",
-                "spriteGridSize": 5,
+                "spriteGridSize": 30,
                 "spritePixelSize": 5,
                 "palette": "default",
             },
@@ -134,56 +134,70 @@ export class SpriteEditor {
         SpriteEditor.addMessages('loadSample2')
         const jsonData = {
             "metadata": {
-              "sprite": "sprite starter json",
-              "spriteGridSize": 65,
-              "spritePixelSize": 8,
-              "palette": "default"
+                "sprite": "sprite starter json",
+                "spriteGridSize": 65,
+                "spritePixelSize": 8,
+                "palette": "default"
             },
             "layers": [
-              {
-                "metadata": {
-                  "spriteimage": "test.jpg",
-                  "imageX": 100,
-                  "imageY": 45,
-                  "imageScale": 1.5
+                {
+                    "metadata": {
+                        "spriteimage": "test.jpg",
+                        "imageX": 100,
+                        "imageY": 45,
+                        "imageScale": 1.5
+                    },
+                    "data": [
+                        "!!!!",
+                        "ØØØØ",
+                        "ØØØØ",
+                        "ØØØØ"
+                    ]
                 },
-                "data": [
-                  "!!!!",
-                  "ØØØØ",
-                  "ØØØØ",
-                  "ØØØØ"
-                ]
-              },
-              {
-                "metadata": {
-                  "spriteimage": "test.jpg",
-                  "imageX": 1,
-                  "imageY": 1,
-                  "imageScale": 1.5
+                {
+                    "metadata": {
+                        "spriteimage": "test.jpg",
+                        "imageX": 1,
+                        "imageY": 2,
+                        "imageScale": 1.5
+                    },
+                    "data": [
+                        "ØØØØ",
+                        "####",
+                        "ØØØØ",
+                        "ØØØØ"
+                    ]
                 },
-                "data": [
-                  "ØØØØ",
-                  "\"\"\"\"",
-                  "ØØØØ",
-                  "ØØØØ"
-                ]
-              },
-              {
-                "metadata": {
-                  "spriteimage": "test.jpg",
-                  "imageX": 1,
-                  "imageY": 0,
-                  "imageScale": 1.5
+                {
+                    "metadata": {
+                        "spriteimage": "test.jpg",
+                        "imageX": 1,
+                        "imageY": 1,
+                        "imageScale": 1.5
+                    },
+                    "data": [
+                        "ØØØØ",
+                        "ØØØØ",
+                        "ÑÑÑÑ",
+                        "ØØØØ"
+                    ]
                 },
-                "data": [
-                  "ØØØØ",
-                  "ØØØØ",
-                  "####",
-                  "ØØØØ"
-                ]
-              }
+                {
+                    "metadata": {
+                        "spriteimage": "test.jpg",
+                        "imageX": 1,
+                        "imageY": 0,
+                        "imageScale": 1.5
+                    },
+                    "data": [
+                        "ØØØØ",
+                        "ØØØØ",
+                        "ØØØØ",
+                        "$$$$"
+                    ]
+                }
             ]
-          };
+        };
 
         SpriteEditor.jsonData = jsonData;
         this.outputJsonData();
@@ -202,9 +216,6 @@ export class SpriteEditor {
 
     // ------------------------------------------
     static initialize() {
-        //static spriteImageSize = this.maxGrid * this.spritePixelSize + 4;
-        console.log("ps", this.spritePixelSize, this.maxGrid * this.spritePixelSize + 4);
-
         this.clearMessages();
         this.initializeArrays();
 
@@ -222,6 +233,8 @@ export class SpriteEditor {
         this.outputJsonData();
 
         this.loadJsonFromTextarea();
+        this.generateFrameLayerButtons();
+        this.populateAnimationDropdown();
     }
     // ------------------------------------------
     // Message methods
@@ -700,8 +713,74 @@ export class SpriteEditor {
         }
     }
 
+
+    static generateFrameLayerButtons() {
+        const container = document.getElementById("setCurrentFrameLayer");
+        if (!container) {
+            this.addMessages("Container with id 'setCurrentFrameLayer' not found!");
+            return;
+        }
+
+        // Clear existing buttons in the container
+        container.innerHTML = "";
+
+        // Add buttons based on the number of layers
+        this.jsonData.layers.forEach((_, index) => {
+            const button = document.createElement("button");
+            button.textContent = index;
+            button.id = `frameButton-${index}`; // Unique ID for each button
+            button.classList.add("frameButton");
+
+            // Set initial 'currentFrame' class for the current frame
+            if (index === this.currentFrame) {
+                button.classList.add("currentFrame");
+            }
+
+            // Attach onclick event to set the current frame
+            button.onclick = () => this.setCurrentFrameLayer(index);
+
+            // Append the button to the container
+            container.appendChild(button);
+
+            // Add a <br> after every 5 buttons
+            if ((index + 1) % 5 === 0) {
+                const lineBreak = document.createElement("br");
+                container.appendChild(lineBreak);
+            }
+        });
+
+    }
+
+    static populateAnimationDropdown() {
+        const dropdown = document.getElementById("animationDropdown");
+
+        if (!dropdown) {
+            this.addMessages(`'animationDropdown' not found.`);
+            return;
+        }
+
+        // Clear any existing options
+        dropdown.innerHTML = "";
+
+        // Add the "Stop" option
+        const stopOption = document.createElement("option");
+        stopOption.value = 0;
+        stopOption.textContent = "Stop";
+        dropdown.appendChild(stopOption);
+
+        // Add options for 1/60 to 60/60
+        for (let i = 1; i <= 60; i++) {
+            const option = document.createElement("option");
+            option.value = i; // Set value to the current number
+            const frameDuration = (i / 60).toFixed(4); // Calculate frame duration with 4 decimal places
+            option.textContent = `${frameDuration}/sec`; // Set text as "1 - 0.0166"
+            dropdown.appendChild(option);
+        }
+    }
+
     //output sprite details
     static outputJsonData() {
+        // this.generateFrameLayerButtons();
         //SpriteEditor.loadJsonSprite();
         // Locate the textarea in the document
         const textArea = document.getElementById("spriteID");
@@ -729,13 +808,13 @@ export class SpriteEditor {
         }
 
         this.loadSpriteFromJSON();
-
     }
 
     static loadSpriteFromJSON() {
         const firstLayerData = SpriteEditor?.jsonData?.layers?.[this.currentFrame]?.data ?? null;
-        // Update gridCellWidth and gridCellHeight based on firstLayerData
-        this.gridCellWidth = firstLayerData[this.currentFrame].length;  // Number of columns
+        // Update gridCellWidth and gridCellHeight based on firstLayerData        
+        //TODO: ???? this.gridCellWidth = firstLayerData[this.currentFrame].length;  // Number of columns
+        this.gridCellWidth = firstLayerData[0].length;  // Number of columns
         this.gridCellHeight = firstLayerData.length;    // Number of rows
 
         // Map the first layer's `data` to `spriteIndex`
@@ -756,37 +835,38 @@ export class SpriteEditor {
         tempLayer.metadata.imageX = layerIndex;
         tempLayer.metadata.imageY = this.currentFrame;
 
-        SpriteEditor.jsonData.layers.splice(layerIndex, 0, tempLayer);
+        SpriteEditor.jsonData.layers.splice(this.currentFrame, 0, tempLayer);
 
         this.currentFrame += layerIndex;
 
-        this.addMessages(`Layer added @ ${layerIndex}`);
+        this.addMessages(`Layer added at: ${this.currentFrame}`);
         this.setCurrentFrameLayer(this.currentFrame)
-
-console.log(SpriteEditor.jsonData.layers);
     }
-
     // Remove a layer at the specified index
     static subLayer() {
+        // Prevent removal if there's only one layer remaining
+        if (SpriteEditor.jsonData.layers.length <= 1) {
+            this.addMessages("Cannot remove the last remaining layer.");
+            return;
+        }
+
         if (this.currentFrame >= 0 && this.currentFrame < SpriteEditor.jsonData.layers.length) {
             SpriteEditor.jsonData.layers.splice(this.currentFrame, 1);
 
-            if (this.currentFrame > SpriteEditor.jsonData.layers.length) {
-                this.currentFrame = SpriteEditor.jsonData.layers.length
+            let currentFrame = this.currentFrame;
+            if (this.currentFrame > SpriteEditor.jsonData.layers.length - 1) {
+                this.currentFrame = SpriteEditor.jsonData.layers.length - 1;
             }
-
+            this.addMessages(`Layer removed at index: ${currentFrame}`);
             this.setCurrentFrameLayer(this.currentFrame);
-            this.addMessages("Layer removed at index:", this.currentFrame);
         } else {
-            this.addMessages("Invalid layer index:", this.currentFrame);
+            this.addMessages(`Invalid layer index: ${currentFrame} ${this.currentFrame}`);
         }
     }
 
     // ------------------------------------------------
     // json methods
     static setCurrentFrameLayer(currentFrame) {
-console.log(currentFrame, this.currentFrame);
-
         if (
             SpriteEditor.jsonData.layers &&
             currentFrame >= 0 &&
@@ -802,6 +882,23 @@ console.log(currentFrame, this.currentFrame);
         this.loadSpriteFromJSON();
 
         this.outputJsonData();
+        this.generateFrameLayerButtons();
+        this.populateAnimationDropdown();
+    }
+
+    static prevCurrentFrameLayer() {
+        if (this.currentFrame === 0) {
+            this.setCurrentFrameLayer(SpriteEditor.jsonData.layers.length - 1);
+        } else {
+            this.setCurrentFrameLayer(--this.currentFrame);
+        }
+    }
+    static nextCurrentFrameLayer() {
+        if (this.currentFrame === SpriteEditor.jsonData.layers.length - 1) {
+            this.setCurrentFrameLayer(0);
+        } else {
+            this.setCurrentFrameLayer(++this.currentFrame);
+        }
     }
 
     static setStaticVarsFromJson() {
@@ -832,6 +929,7 @@ console.log(currentFrame, this.currentFrame);
         }
     }
 
+
     // Method to load JSON from textarea to SpriteEditor.jsonData
     static loadJsonFromTextarea() {
         const textarea = document.getElementById('spriteID');
@@ -839,7 +937,6 @@ console.log(currentFrame, this.currentFrame);
         try {
             // Parse the JSON string into an object
             const parsedData = JSON.parse(jsonString);
-console.log(jsonString);
             // Assign the parsed data to SpriteEditor.jsonData
             if (typeof SpriteEditor !== 'undefined') {
                 SpriteEditor.jsonData = parsedData;
@@ -850,6 +947,8 @@ console.log(jsonString);
         } catch (error) {
             SpriteEditor.addMessages(`Invalid JSON format: ${error} \n ${textarea.value}`);
         }
+
+        this.generateFrameLayerButtons();
     }
 
     static saveModifiedSprite() {
