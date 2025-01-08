@@ -883,7 +883,7 @@ export class SpriteEditor {
 
         this.outputJsonData();
         this.generateFrameLayerButtons();
-        this.populateAnimationDropdown();
+        // this.populateAnimationDropdown();
     }
 
     static prevCurrentFrameLayer() {
@@ -1074,6 +1074,31 @@ export class SpriteEditor {
         }
     }
 
+    static frameRate = 0;
+    static frameRateCurrent = 0;
+    static setAnimationFrameRate(frameRate) {
+        this.frameRate = frameRate;
+    }
+    static animateSpriteImage() {
+        // Exit if no animation is needed
+        // Convert frameRate to a number and check if it equals 0
+        const frameRate = Number(this.frameRate);
+        if (!frameRate || frameRate <= 0) {
+            console.log("Animation halted, frameRate:", frameRate);
+            return;
+        }
+
+        console.log("Animating with frameRate:", frameRate);
+
+        // Increment frame rate counter
+        this.frameRateCurrent++;
+
+        // Check if it's time to advance to the next frame
+        if (this.frameRateCurrent >= this.frameRate) {
+            this.frameRateCurrent = 0; // Reset counter
+            this.nextCurrentFrameLayer(); // Move to the next frame
+        }
+    }
     // the game loop
     static gameLoop() {
         SpriteEditor.mouse.update();
@@ -1087,6 +1112,7 @@ export class SpriteEditor {
         }
 
         SpriteEditor.drawAll();
+        SpriteEditor.animateSpriteImage();
         requestAnimationFrame(SpriteEditor.gameLoop);
     }
 
@@ -1119,6 +1145,25 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Dropdown not found.');
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdown = document.getElementById('animationDropdown');
+
+    // Ensure the dropdown exists before attaching the event listener
+    if (dropdown) {
+        dropdown.addEventListener('change', (event) => {
+            const frameRate = event.target.value;
+            if (typeof SpriteEditor !== 'undefined' && typeof SpriteEditor.selectPalette === 'function') {
+                SpriteEditor.setAnimationFrameRate(frameRate);
+            } else {
+                alert('SpriteEditor.selectPalette is not defined.');
+            }
+        });
+    } else {
+        alert('Dropdown not found.');
+    }
+});
+
 
 // --------------------------------------------------------------------------
 // Select the file input and file name element
