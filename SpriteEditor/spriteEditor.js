@@ -134,70 +134,168 @@ export class SpriteEditor {
         SpriteEditor.addMessages('loadSample2')
         const jsonData = {
             "metadata": {
-                "sprite": "sprite starter json",
-                "spriteGridSize": 65,
-                "spritePixelSize": 8,
-                "palette": "default"
+              "sprite": "sprite starter json",
+              "spriteGridSize": 65,
+              "spritePixelSize": 8,
+              "palette": "default"
             },
             "layers": [
-                {
-                    "metadata": {
-                        "spriteimage": "test.jpg",
-                        "imageX": 100,
-                        "imageY": 45,
-                        "imageScale": 1.5
-                    },
-                    "data": [
-                        "!!!!",
-                        "ØØØØ",
-                        "ØØØØ",
-                        "ØØØØ"
-                    ]
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 100,
+                  "imageY": 45,
+                  "imageScale": 1.5
                 },
-                {
-                    "metadata": {
-                        "spriteimage": "test.jpg",
-                        "imageX": 1,
-                        "imageY": 2,
-                        "imageScale": 1.5
-                    },
-                    "data": [
-                        "ØØØØ",
-                        "####",
-                        "ØØØØ",
-                        "ØØØØ"
-                    ]
+                "data": [
+                  "&ØØØ",
+                  "&ØØØ",
+                  "&ØØØ",
+                  "&ØØØ"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 2,
+                  "imageScale": 1.5
                 },
-                {
-                    "metadata": {
-                        "spriteimage": "test.jpg",
-                        "imageX": 1,
-                        "imageY": 1,
-                        "imageScale": 1.5
-                    },
-                    "data": [
-                        "ØØØØ",
-                        "ØØØØ",
-                        "ÑÑÑÑ",
-                        "ØØØØ"
-                    ]
+                "data": [
+                  "Ø&ØØ",
+                  "&ØØØ",
+                  "&ØØØ",
+                  "&ØØØ"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 1,
+                  "imageScale": 1.5
                 },
-                {
-                    "metadata": {
-                        "spriteimage": "test.jpg",
-                        "imageX": 1,
-                        "imageY": 0,
-                        "imageScale": 1.5
-                    },
-                    "data": [
-                        "ØØØØ",
-                        "ØØØØ",
-                        "ØØØØ",
-                        "$$$$"
-                    ]
-                }
+                "data": [
+                  "ØØ&Ø",
+                  "Ø&ØØ",
+                  "&ØØØ",
+                  "&ØØØ"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 3,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "ØØØ&",
+                  "ØØ&Ø",
+                  "Ø&ØØ",
+                  "&ØØØ"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 4,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "ØØØ&",
+                  "ØØØ&",
+                  "ØØ&Ø",
+                  "Ø&ØØ"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 5,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "ØØØ&",
+                  "ØØØ&",
+                  "ØØØ&",
+                  "ØØ&Ø"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 6,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "ØØØ&",
+                  "ØØØ&",
+                  "ØØØ&",
+                  "ØØØ&"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 7,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "&ØØØ",
+                  "ØØØ&",
+                  "ØØØ&",
+                  "ØØØ&"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 8,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "&ØØØ",
+                  "&ØØØ",
+                  "ØØØ&",
+                  "ØØØ&"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 9,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "&ØØØ",
+                  "&ØØØ",
+                  "&ØØØ",
+                  "ØØØ&"
+                ]
+              },
+              {
+                "metadata": {
+                  "spriteimage": "test.jpg",
+                  "imageX": 1,
+                  "imageY": 0,
+                  "imageScale": 1.5
+                },
+                "data": [
+                  "&ØØØ",
+                  "&ØØØ",
+                  "&ØØØ",
+                  "&ØØØ"
+                ]
+              }
             ]
-        };
+          };
 
         SpriteEditor.jsonData = jsonData;
         this.outputJsonData();
@@ -481,41 +579,119 @@ export class SpriteEditor {
         this.addMessages(` Grid Size ${this.gridCellWidth}x${this.gridCellHeight}`);
     }
     static spriteAddRow() {
+        // Ensure we don't exceed the maximum grid height
         if (this.gridCellHeight < this.maxGrid) {
             this.gridCellHeight++;
+    
+            // Iterate over all layers
+            SpriteEditor.jsonData.layers.forEach((layer) => {
+                const layerData = layer.data;
+    
+                // Add a new row to the bottom of the layer's data
+                const newRow = SpritePalettes.errorResult.symbol.repeat(layerData[0].length); // Create a row of 0s with the correct width
+                layerData.push(newRow);
+            });
+    
+            // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
             this.addMessages(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
         }
+    
+        // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
-    }
+    }    
     static spriteAddColumn() {
+        // Ensure we don't exceed the maximum grid width
         if (this.gridCellWidth < this.maxGrid) {
             this.gridCellWidth++;
+    
+            // Iterate over all layers
+            SpriteEditor.jsonData.layers.forEach((layer) => {
+                const layerData = layer.data;
+    
+                // Add a new column to the right of each row
+                layer.data = layerData.map(row => row + SpritePalettes.errorResult.symbol);
+            });
+    
+            // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
             this.addMessages(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
         }
+    
+        // Update sprite grid dimensions display
+        this.showSpriteGridDimensions();
+    }
+    static spriteAddColumn() {
+        // Ensure we don't exceed the maximum grid width
+        if (this.gridCellWidth < this.maxGrid) {
+            this.gridCellWidth++;
+    
+            // Iterate over all layers
+            SpriteEditor.jsonData.layers.forEach((layer) => {
+                const layerData = layer.data;
+    
+                // Add a new column to the right of each row
+                layer.data = layerData.map(row => row + SpritePalettes.errorResult.symbol);
+            });
+    
+            // Save the updated sprite data
+            this.saveModifiedSprite();
+        } else {
+            this.addMessages(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
+        }
+    
+        // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
     }
     static spriteDelColumn() {
+        // Ensure we don't remove columns below the minimum grid width (1 column)
         if (this.gridCellWidth > 1) {
             this.gridCellWidth--;
+    
+            // Iterate over all layers
+            SpriteEditor.jsonData.layers.forEach((layer) => {
+                const layerData = layer.data;
+    
+                // Remove the last character (column) from each row
+                layer.data = layerData.map(row => row.slice(0, -1));
+            });
+    
+            // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
-            this.addMessages("Cannot remove column, gridCellWidth is already 1.");
+            this.addMessages("Cannot delete column, gridCellWidth is already at the minimum (1).");
         }
+    
+        // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
-    }
+    }        
     static spriteDelRow() {
+        // Ensure we don't go below the minimum grid height
         if (this.gridCellHeight > 1) {
             this.gridCellHeight--;
+    
+            // Iterate over all layers
+            SpriteEditor.jsonData.layers.forEach((layer) => {
+                const layerData = layer.data;
+    
+                // Remove the last row from the layer's data
+                if (layerData.length > 0) {
+                    layerData.pop();
+                }
+            });
+    
+            // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
-            this.addMessages("Cannot remove row, gridCellHeight is already 1.");
+            this.addMessages(`Cannot delete row, gridCellHeight is already at the minimum value of 1.`);
         }
+    
+        // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
     }
+    
 
     // ------------------------------------------
     // Grid methods
@@ -877,13 +1053,11 @@ export class SpriteEditor {
         } else {
             this.addMessages(`Invalid currentFrame or layers data: ${currentFrame}`);
         }
-        //TODO: need to copy new current layer to sprite array
 
         this.loadSpriteFromJSON();
 
         this.outputJsonData();
         this.generateFrameLayerButtons();
-        // this.populateAnimationDropdown();
     }
 
     static prevCurrentFrameLayer() {
