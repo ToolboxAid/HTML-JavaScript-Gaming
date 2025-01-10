@@ -36,7 +36,7 @@ export class SpriteEditor {
 
     //-------------------------------------------
     // Grid information
-    static maxGrid = 32;
+    static maxGrid = 64;
     static gridCellWidth = 8; //this.maxGrid;
     static gridCellHeight = 8; //this.maxGrid;
     static spriteIndex = new Array(this.gridCellWidth);
