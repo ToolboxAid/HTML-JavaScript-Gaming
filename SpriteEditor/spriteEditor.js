@@ -748,7 +748,7 @@ export class SpriteEditor {
             this.setCurrentFrameLayer(++this.currentFrame);
         }
     }
-    /** Animation methods*/    
+    /** Animation methods*/
     static frameRate = 0;
     static frameRateCount = 0;
     static setAnimationFrameRate(frameRate) {
@@ -1022,24 +1022,6 @@ export class SpriteEditor {
 
         }
     }
-
-    // the game loop
-    static gameLoop() {
-        SpriteEditor.mouse.update();
-
-        if (SpriteEditor.mouse.isButtonDown(0)) {
-            SpriteEditor.handleCanvasLeftClick(SpriteEditor.mouse);
-        }
-
-        if (SpriteEditor.mouse.isButtonJustPressed(2)) {
-            SpriteEditor.handleCanvasRightClick(SpriteEditor.mouse);
-        }
-
-        SpriteEditor.drawAll();
-        SpriteEditor.animateSpriteImage();
-        requestAnimationFrame(SpriteEditor.gameLoop);
-    }
-
     static showHideData() {
         // Select the box3 element
         const box3 = document.querySelector('.box3');
@@ -1063,6 +1045,24 @@ export class SpriteEditor {
         } else {
             console.error("box3 element not found.");
         }
+    }
+
+    // ------------------------------------------
+    /** the game loop  */
+    static gameLoop() {
+        SpriteEditor.mouse.update();
+
+        if (SpriteEditor.mouse.isButtonDown(0)) {
+            SpriteEditor.handleCanvasLeftClick(SpriteEditor.mouse);
+        }
+
+        if (SpriteEditor.mouse.isButtonJustPressed(2)) {
+            SpriteEditor.handleCanvasRightClick(SpriteEditor.mouse);
+        }
+
+        SpriteEditor.drawAll();
+        SpriteEditor.animateSpriteImage();
+        requestAnimationFrame(SpriteEditor.gameLoop);
     }
 }
 
