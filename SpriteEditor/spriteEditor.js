@@ -118,6 +118,10 @@ export class SpriteEditor {
         SpriteEditor.addMessages('sample4')
         this.loadSample(Demo.sample4);
     }
+    static loadSample5() {
+        SpriteEditor.addMessages('sample5')
+        this.loadSample(Demo.sample5);
+    }    
 
     // ------------------------------------------
     /** Initialization methods*/
