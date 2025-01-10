@@ -1,5 +1,3 @@
-
-
 .container {
     display: flex;
     justify-content: space-between;
@@ -51,7 +49,6 @@
     display: none;
 }
 
-
 table {
     border-collapse: collapse;
     margin: 0px;
@@ -59,7 +56,6 @@ table {
     text-align: center;
     table-layout: fixed;
 }
-
 
 br,
 canvas,
@@ -97,7 +93,6 @@ h3,h4{
     padding: 5px;
 }
 
-
 label,
 button {
     padding: 9px;
@@ -125,7 +120,6 @@ button:hover {
     background-color: #ed9700;   
 }
 
-
 .scrollableDiv {
     height: 100vh; /* Set the height to 100% of the viewport height */
     overflow-y: auto; /* Enable vertical scrolling when content exceeds the div's height */
@@ -133,8 +127,6 @@ button:hover {
     box-sizing: border-box; /* Ensure padding is included in the height */
     width:28%;
 }
-
-
 
 td.buttonMulti {
     width: 100%; /* Adjust width as needed */
@@ -153,12 +145,28 @@ button.buttonMulti {
     font-size: 14px; /* Adjust font size for readability */
 }
 
-#showHide{
-    color: #000000;
-    border: 2px solid #ed9700; /* Optional styling */
-    background-color: #ed9700;  
-    font-size: 14px; /* Adjust font size for readability */
+.box2 h3 {
+    display: flex;             /* Enable flexbox layout */
+    justify-content: center;   /* Center align the content horizontally */
+    align-items: center;       /* Center align the content vertically */
+    position: relative;        /* Allow positioning of the button */
 }
+
+#showHide {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: black;
+    border: 2px solid #ed9700;
+    background-color: #ed9700;  
+    font-size: 14px;
+    border-radius: 5px;
+    padding: 6px;
+    cursor: pointer;
+    margin-right: 25px;
+}
+
 #showHide:hover{
     color: #000000;
     background-color: #3600af;  
@@ -259,9 +267,7 @@ span#fileName {
     display: block;
     margin-left: 10px;
     padding: 10px !important;
-
     align-items: center;
     justify-content: center;
     text-align: center;    
-
 }
