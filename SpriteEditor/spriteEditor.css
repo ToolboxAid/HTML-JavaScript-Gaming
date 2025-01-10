@@ -153,6 +153,17 @@ button.buttonMulti {
     font-size: 14px; /* Adjust font size for readability */
 }
 
+#showHide{
+    color: #000000;
+    border: 2px solid #ed9700; /* Optional styling */
+    background-color: #ed9700;  
+    font-size: 14px; /* Adjust font size for readability */
+}
+#showHide:hover{
+    color: #000000;
+    background-color: #3600af;  
+    color: white; /* Optional styling */
+}
 
 #loadSample {
     width: 20%;
