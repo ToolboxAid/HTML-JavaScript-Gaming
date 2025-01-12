@@ -93,35 +93,38 @@ export class SpriteEditor {
             }
         ]
     };
+    static jsonImages = {
+    };
 
     // ------------------------------------------
     /** Samples methods*/
-    static loadSample(jsonData) {
+    static loadSample(jsonData, jsonImage) {
         SpriteEditor.jsonData = jsonData;
+        SpriteEditor.jsonImages = jsonImage;
         this.outputJsonData();
         this.loadJsonFromTextarea();
         this.loadCurrentFrameImage();
     }
     static loadSample1() {
         SpriteEditor.addMessages('sample1')
-        this.loadSample(Demo.sample1);
+        this.loadSample(Demo.sample1, Demo.sample1Images);
     }
     static loadSample2() {
         SpriteEditor.addMessages('sample2')
-        this.loadSample(Demo.sample2);
+        this.loadSample(Demo.sample2, Demo.sample2Images);
     }
     static loadSample3() {
         SpriteEditor.addMessages('sample3')
-        this.loadSample(Demo.sample3);
+        this.loadSample(Demo.sample3, Demo.sample3Images);
     }
     static loadSample4() {
         SpriteEditor.addMessages('sample4')
-        this.loadSample(Demo.sample4);
+        this.loadSample(Demo.sample4, Demo.sample4Images);
     }
     static loadSample5() {
         SpriteEditor.addMessages('sample5')
-        this.loadSample(Demo.sample5);
-    }    
+        this.loadSample(Demo.sample5, Demo.sample5Images);
+    }
 
     // ------------------------------------------
     /** Initialization methods*/
@@ -263,37 +266,43 @@ export class SpriteEditor {
     // Background image methods
     /** Image methods*/
     static loadCurrentFrameImage() {
-
-        this.imageName = null;
-        this.image = null;
-
         // Check if the current frame and its metadata exist
         if (
             SpriteEditor.jsonData.layers &&
             SpriteEditor.jsonData.layers[SpriteEditor.currentFrame] &&
-            SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata &&
+            SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata && 
             SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage
         ) {
+
             const imageName = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage;
 
+            // if (imageName === SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
+            //     console.log("same image");
+            //     return;
+            // }
+
             // Check if the image exists in the jsonData.images object
-            if (SpriteEditor.jsonData.images && SpriteEditor.jsonData.images[imageName]) {
+            if (SpriteEditor.jsonImages && SpriteEditor.jsonImages[imageName]) {
                 const img = new Image();
                 img.onload = () => {
-                    console.log(`Image '${imageName}' successfully loaded.`);
+                    this.addMessages(`Image '${imageName}' successfully loaded.`);
                     SpriteEditor.image = img; // Store the image for further use
                 };
                 this.imageName = imageName;
-                img.src = SpriteEditor.jsonData.images[imageName]; // Set the image source to the base64 data
+                img.src = SpriteEditor.jsonImages[imageName]; // Set the image source to the base64 data
                 this.image = img;
 
                 this.imageX = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.imageX;
                 this.imageY = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.imageY;
 
             } else {
-                this.addMessages(`Image '${imageName}' not found in SpriteEditor.jsonData.images.`);
+                this.addMessages(`Image '${imageName}' not found in SpriteEditor.jsonImages[imageName].`);
+                this.imageName = null;
+                this.image = null;
             }
         } else {
+            this.imageName = null;
+            this.image = null;
             this.addMessages("No spriteimage metadata found for the current frame.");
         }
     }
@@ -365,7 +374,7 @@ export class SpriteEditor {
             this.spriteGridSize = 80.0;
             this.addMessages(`Max grid scall reached: ${this.spriteGridSize}`)
         }
-        SpriteEditor.jsonData.metadata.spriteGridSize = this.spriteGridSize;
+        SpriteEditor.jsonData.metadata.spriteGridSize = this.spriteGridSize.toFixed(1);
     }
     static spriteAddRow() {
         // Ensure we don't exceed the maximum grid height
@@ -476,7 +485,7 @@ export class SpriteEditor {
             this.spritePixelSize = 10.0;
             this.addMessages(`Max sprite pixel size reached: ${this.spritePixelSize}`)
         }
-        SpriteEditor.jsonData.metadata.spritePixelSize = this.spritePixelSize;
+        SpriteEditor.jsonData.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
     }
 
     // ------------------------------------------
@@ -491,8 +500,6 @@ export class SpriteEditor {
             this.ctxEditor.save();
             this.ctxEditor.scale(this.imageScale, this.imageScale);
             this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
-
-            console.log(this.imageX, this.imageY);        //TODO: delete line    
             this.ctxEditor.restore();
         }
 
@@ -860,7 +867,6 @@ export class SpriteEditor {
     }
     static setStaticVarsFromJson() {
         // Access metadata.sprite
-        const sprite = SpriteEditor.jsonData.metadata.sprite;
         this.selectPalette(SpriteEditor.jsonData.metadata.palette);
         this.updatePaletteDD();
         this.setSpritePixelSize(SpriteEditor.jsonData.metadata.spritePixelSize);
@@ -873,13 +879,11 @@ export class SpriteEditor {
             console.log('Palette:', SpriteEditor.paletteName);
         }
         // Access metadata.layer frames
-        const spriteImage = SpriteEditor.jsonData.layers[this.currentFrame].metadata.spriteimage;
         this.setImageX(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX);
         this.setImageY(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY);
         this.setImageScale(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageScale);
 
         if (false) {
-            console.log('Sprite Image:', spriteImage);
             console.log('ImageX:', this.imageX);
             console.log('ImageY:', this.imageY);
             console.log('ImageScale:', this.imageScale);
@@ -927,13 +931,26 @@ export class SpriteEditor {
     static copyJSON() {
         // Get the textarea element
         const textarea = document.getElementById("spriteID");
+        const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2); // Pretty-print for readability
 
+    
         // Check if the textarea exists and has content
         if (textarea && textarea.value) {
-            // Select the text in the textarea
-            textarea.select();
-            textarea.setSelectionRange(0, textarea.value.length); // For mobile devices
-
+            // Create the modified text (desired beginning + original content + semicolon)
+            const modifiedText = "static jsonData = " + textarea.value + "; \n" +
+            "static jsonImages = " + jsonImagesString + ";";
+    
+            // Create a temporary textarea to hold the modified text
+            const tempTextarea = document.createElement("textarea");
+            document.body.appendChild(tempTextarea);
+    
+            // Set the modified text in the temporary textarea
+            tempTextarea.value = modifiedText;
+    
+            // Select the text in the temporary textarea
+            tempTextarea.select();
+            tempTextarea.setSelectionRange(0, tempTextarea.value.length); // For mobile devices
+    
             try {
                 // Copy the selected text to the clipboard
                 const success = document.execCommand("copy");
@@ -946,13 +963,14 @@ export class SpriteEditor {
                 console.error("Error copying JSON:", err);
                 this.addMessages("An error occurred while copying JSON.");
             }
-
-            // Deselect the text
-            textarea.setSelectionRange(0, 0);
+    
+            // Remove the temporary textarea after copying
+            document.body.removeChild(tempTextarea);
         } else {
             this.addMessages("No JSON data to copy!");
         }
     }
+    
 
     // ------------------------------------------
     /** canvas click methods*/
@@ -1132,6 +1150,8 @@ const supportedTypes = [
     'image/x-icon' // For .ico files
 ];
 
+
+//TODO load do not set image & name until drawn?
 fileInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
 
@@ -1160,25 +1180,21 @@ fileInput.addEventListener('change', (event) => {
             SpriteEditor.imageName = file.name;
 
             // Add image to JSON with the key being the name and value being the image data
-            SpriteEditor.jsonData.images = SpriteEditor.jsonData.images || {};
-            SpriteEditor.jsonData.images[SpriteEditor.imageName] = e.target.result; // Store the base64 string
-            //            console.log(SpriteEditor.imageName, img.src, SpriteEditor.jsonData.images);
-
-            // Update the current frame's metadata with the image name
+            SpriteEditor.jsonImages = SpriteEditor.jsonImages || {};            // Update the current frame's metadata with the image name
             if (
                 SpriteEditor.jsonData.layers &&
                 SpriteEditor.jsonData.layers[SpriteEditor.currentFrame] &&
                 SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata
             ) {
                 SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage = SpriteEditor.imageName;
+                SpriteEditor.jsonImages[SpriteEditor.imageName] = e.target.result;
             } else {
                 SpriteEditor.addMessages("Failed to update current frame's image metadata.");
             }
 
             SpriteEditor.addMessages(`Image loaded and set: '${SpriteEditor.imageName}'`);
         };
-        img.src = e.target.result; // Set the image source to the file's base64 data
-
+        img.src = e.target.result;
     };
     reader.readAsDataURL(file); // Read the file as a Data URL
 });
