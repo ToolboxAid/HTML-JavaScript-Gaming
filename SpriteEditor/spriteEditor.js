@@ -181,6 +181,7 @@ export class SpriteEditor {
             alert("Canvas element with id 'spriteEditor' not found.");
             return;
         }
+        this.canvasImage.addEventListener("click", this.handleImageClick);
 
         // Set the canvas iamge dimensions
         this.canvasImage.width = this.spriteImageSize;
@@ -190,6 +191,24 @@ export class SpriteEditor {
         this.ctxImage = this.canvasImage.getContext("2d");
 
         this.addMessages(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
+
+    }
+
+    static lastAnimationDD = "10";
+    static handleImageClick(event) {
+        const dropdown = document.getElementById("animationDropdown");
+
+        if (dropdown) {
+            if (SpriteEditor.animationActive) {
+                SpriteEditor.animationActive = false;
+                SpriteEditor.lastAnimationDD = dropdown.value;
+                SpriteEditor.setAnimationRate();
+            } else {
+                SpriteEditor.setAnimationRate(SpriteEditor.lastAnimationDD);
+            }
+        }
+
+
     }
 
     // ------------------------------------------
@@ -249,16 +268,16 @@ export class SpriteEditor {
         }
 
         spriteTextarea.value = SpritePalettes.getPaletteDetails()
-        .replace(/'(\w+)'/g, '"$1"')  // Replace single quotes around keys with double quotes
-        .replace(/'([^']+)'/g, '"$1"') // Replace single quotes around string values with double quotes
-        // 4. Remove the trailing comma at the end of the array
-        .replace(/,\s*$/, '')
-        .replace(/;\s*$/, '');
+            .replace(/'(\w+)'/g, '"$1"')  // Replace single quotes around keys with double quotes
+            .replace(/'([^']+)'/g, '"$1"') // Replace single quotes around string values with double quotes
+            // 4. Remove the trailing comma at the end of the array
+            .replace(/,\s*$/, '')
+            .replace(/;\s*$/, '');
 
         // Only custom palette can be updated by user
         if (SpriteEditor.paletteName === "custom") {
             spriteTextarea.disabled = false;
-            spriteTextarea.value += "\n\n";            
+            spriteTextarea.value += "\n\n";
             spriteTextarea.value += "// Use transparent as sample code to add whatever colors you need.\n";
             spriteTextarea.value += "// FYI: no intelisence, errors will prevent palette from displaying.\n";
         } else {
@@ -269,41 +288,38 @@ export class SpriteEditor {
         this.paletteSortOrder = arg;
     }
 
-static loadPaletteFromTextarea() {
-    // Get the value from the textarea
-    const paletteTextarea = document.getElementById("paletteID").value;
+    static loadPaletteFromTextarea() {
+        // Get the value from the textarea
+        const paletteTextarea = document.getElementById("paletteID").value;
 
-    // Step 1: Remove comments
-    const withoutComments = paletteTextarea.replace(/\/\/.*$/gm, '');
+        // Step 1: Remove comments
+        const withoutComments = paletteTextarea.replace(/\/\/.*$/gm, '');
 
-    // Step 2: Remove `custom:` and trim whitespace
-    const withoutCustomKey = withoutComments.replace(/custom:\s*/, '').trim();
+        // Step 2: Remove `custom:` and trim whitespace
+        const withoutCustomKey = withoutComments.replace(/custom:\s*/, '').trim();
 
-    // Step 3: Convert to valid JSON:
-    const validJSON = withoutCustomKey
-        .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
-        .replace(/'/g, '"') // Replace single quotes with double quotes
-        .replace(/,\s*}/g, '}') // Remove trailing commas in objects
-        .replace(/,\s*]/g, ']'); // Remove trailing commas in arrays
+        // Step 3: Convert to valid JSON:
+        const validJSON = withoutCustomKey
+            .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
+            .replace(/'/g, '"') // Replace single quotes with double quotes
+            .replace(/,\s*}/g, '}') // Remove trailing commas in objects
+            .replace(/,\s*]/g, ']'); // Remove trailing commas in arrays
 
-    try {
-        // Parse the cleaned string into JSON
-        const customPalette = JSON.parse(validJSON);
+        try {
+            // Parse the cleaned string into JSON
+            const customPalette = JSON.parse(validJSON);
 
-        // Use the parsed palette
-        SpritePalettes.setCustomPalette(customPalette);
-    } catch (error) {
-        console.error("Error parsing the palette data:", error);
-        this.addMessages(`Error parsing the palette data: ${error.message}`);
+            // Use the parsed palette
+            SpritePalettes.setCustomPalette(customPalette);
+        } catch (error) {
+            console.error("Error parsing the palette data:", error);
+            this.addMessages(`Error parsing the palette data: ${error.message}`);
+        }
     }
-}
 
-    
-
-    
     // // Call the function to load the palette
     // loadPaletteFromTextarea();
-    
+
 
     // ------------------------------------------
     // Background image methods
@@ -316,10 +332,10 @@ static loadPaletteFromTextarea() {
             SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata &&
             SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage
         ) {
-
+            console.log(SpriteEditor.jsonData.layers[SpriteEditor.currentFrame]);
             const imageName = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage;
 
-            if (imageName === SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
+            if (this.imageName === SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
                 console.log("Same image");
                 return;
             }
@@ -360,7 +376,7 @@ static loadPaletteFromTextarea() {
     static moveImageHorizontal(moveFactor) {
         this.imageX += moveFactor;
         SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX = this.imageX;
-        
+
         this.outputJsonData();
     }
     static setImageY(imageY) {
@@ -450,7 +466,7 @@ static loadPaletteFromTextarea() {
 
         // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
-    
+
         this.outputJsonData();
     }
     static spriteAddColumn() {
@@ -547,7 +563,7 @@ static loadPaletteFromTextarea() {
         }
         //SpriteEditor.jsonData.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
         SpriteEditor.jsonData.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
-        
+
         this.outputJsonData();
     }
 
@@ -789,6 +805,18 @@ static loadPaletteFromTextarea() {
             dropdown.appendChild(option);
         }
     }
+    static setAnimationRate(value = "0") {
+
+        const dropdown = document.getElementById("animationDropdown");
+        if (dropdown) {
+            // Set the selected value to '0' to 'Stop' or 1-60 for frames
+            dropdown.value = value; //
+
+            // Trigger the change event manually if needed
+            const event = new Event('change');
+            dropdown.dispatchEvent(event);
+        }
+    }
     static setCurrentFrameLayer(currentFrame) {
         if (
             SpriteEditor.jsonData.layers &&
@@ -832,7 +860,6 @@ static loadPaletteFromTextarea() {
         } else {
             this.animationActive = false;
         }
-
     }
     static animateSpriteImage() {
         // Exit if no animation is needed
@@ -855,7 +882,7 @@ static loadPaletteFromTextarea() {
     // ------------------------------------------
     /** JSON methods*/
     static outputJsonData() {
-        
+
         // const trace = new Error("Show stack trace:");
         // console.log(trace.stack);        
 
@@ -945,7 +972,6 @@ static loadPaletteFromTextarea() {
     static setStaticVarsFromJson() {
         // Access metadata.sprite
         this.selectPalette(SpriteEditor.jsonData.metadata.palette);
-//        this.updatePaletteDD();
         this.setSpritePixelSize(SpriteEditor.jsonData.metadata.spritePixelSize);
         this.setSpriteGridSize(SpriteEditor.jsonData.metadata.spriteGridSize);
 
@@ -974,7 +1000,7 @@ static loadPaletteFromTextarea() {
             const parsedData = JSON.parse(jsonString);
             // Assign the parsed data to SpriteEditor.jsonData
             if (typeof SpriteEditor !== 'undefined') {
-                SpriteEditor.jsonData = parsedData;          
+                SpriteEditor.jsonData = parsedData;
 
                 this.setStaticVarsFromJson();
             } else {
@@ -985,7 +1011,7 @@ static loadPaletteFromTextarea() {
         }
 
         this.generateFrameLayerButtons();
-    }    
+    }
     static loadImageFromTextarea() {
         const textarea = document.getElementById('imageID');
         const jsonString = textarea.value;
@@ -1031,38 +1057,38 @@ static loadPaletteFromTextarea() {
             .replace(/[^a-z0-9\s]/g, '') // Remove special characters
             .trim() // Remove leading and trailing spaces
             .split(/\s+/) // Split into words
-            .map((word, index) => 
-                index === 0 
+            .map((word, index) =>
+                index === 0
                     ? word // First word remains lowercase
                     : word.charAt(0).toUpperCase() + word.slice(1) // Capitalize subsequent words
             )
             .join(''); // Combine into camel case
     }
-    
+
     static copyJSON() {
-        const camelCasePalete = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite,"palette");
-        const camelCaseSprite = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite,"sprite");
-        const camelCaseImage = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite,"image");
+        const camelCasePalete = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite, "palette");
+        const camelCaseSprite = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite, "sprite");
+        const camelCaseImage = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite, "image");
 
         // Get the textarea element
         const textarea = document.getElementById("spriteID");
-    
+
         // Check if the textarea exists and has content
         if (textarea && textarea.value) {
             // Prepare JSON strings
             const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2);
-    
+
             let jsonPaletteString = "";
             if (SpriteEditor.paletteName === "custom") {
-                jsonPaletteString = "static "+camelCasePalete+" = " +
+                jsonPaletteString = "static " + camelCasePalete + " = " +
                     JSON.stringify(SpritePalettes.getPalette(), null, 2) +
                     ";";
             }
-    
+
             // Create the modified text
             const modifiedText =
-                "static "+ camelCaseSprite + " = " + textarea.value + "; \n" +
-                "static "+ camelCaseImage+" = " + jsonImagesString + ";\n" +
+                "static " + camelCaseSprite + " = " + textarea.value + "; \n" +
+                "static " + camelCaseImage + " = " + jsonImagesString + ";\n" +
                 jsonPaletteString;
             // Use Clipboard API if supported
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1082,12 +1108,12 @@ static loadPaletteFromTextarea() {
                 // Create a temporary textarea
                 const tempTextarea = document.createElement("textarea");
                 document.body.appendChild(tempTextarea);
-    
+
                 tempTextarea.value = modifiedText; // Set the text
                 tempTextarea.style.position = "fixed"; // Prevent scrolling to bottom
                 tempTextarea.select();
                 tempTextarea.setSelectionRange(0, tempTextarea.value.length); // For mobile
-    
+
                 try {
                     const success = document.execCommand("copy");
                     if (success) {
@@ -1107,7 +1133,7 @@ static loadPaletteFromTextarea() {
             this.addMessages("No JSON data to copy!");
         }
     }
-    
+
     // ------------------------------------------
     /** canvas click methods*/
     static getMousePositionOncanvas(canvas, event) {
@@ -1250,7 +1276,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     } else {
-        alert('Dropdown not found.');
+        alert('paletteDropdown not found.');
     }
 });
 
@@ -1268,7 +1294,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     } else {
-        alert('Dropdown not found.');
+        alert('animationDropdown not found.');
     }
 });
 
@@ -1287,9 +1313,6 @@ const supportedTypes = [
     'image/bmp',
     'image/x-icon' // For .ico files
 ];
-
-
-//TODO load do not set image & name until drawn?
 fileInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
 
