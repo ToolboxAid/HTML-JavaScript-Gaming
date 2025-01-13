@@ -69,7 +69,9 @@ export class SpriteEditor {
     static initMessages = true;
 
     static currentFrame = 0;
-    static jsonData = {
+    // static jsonPalette = {        
+    // }
+    static jsonSprite = {
         "metadata": {
             "sprite": "sprite starter json",
             "spriteGridSize": 30,
@@ -80,8 +82,8 @@ export class SpriteEditor {
             {
                 "metadata": {
                     "spriteimage": "",
-                    "imageX": 100,
-                    "imageY": 45,
+                    "imageX": 0,
+                    "imageY": 0,
                     "imageScale": 2.0,
                 },
                 "data": [
@@ -98,8 +100,8 @@ export class SpriteEditor {
 
     // ------------------------------------------
     /** Samples methods*/
-    static loadSample(jsonData, jsonImage) {
-        SpriteEditor.jsonData = jsonData;
+    static loadSample(jsonSprite, jsonImage, jsonPalette) {
+        SpriteEditor.jsonSprite = jsonSprite;
         SpriteEditor.jsonImages = jsonImage;
         this.outputJsonData();
         this.loadSpriteFromTextarea();
@@ -125,7 +127,10 @@ export class SpriteEditor {
         SpriteEditor.addMessages('sample5')
         this.loadSample(Demo.sample5Sprite, Demo.sample5Image);
     }
-
+    static loadSample6() {
+        SpriteEditor.addMessages('sample6')
+        this.loadSample(Demo.marioSprite, Demo.marioImage, Demo.marioPalette);
+    }
     // ------------------------------------------
     /** Initialization methods*/
     static initialize() {
@@ -157,7 +162,7 @@ export class SpriteEditor {
     }
     static initializeCanvasEditor() {
         // Get the canvas element
-        this.canvasEditor = document.getElementById("spriteEditor");
+        this.canvasEditor = document.getElementById("spriteEditorID");
 
         if (!this.canvasEditor) {
             alert("Canvas element with id 'spriteEditor' not found.");
@@ -181,7 +186,7 @@ export class SpriteEditor {
             alert("Canvas element with id 'spriteEditor' not found.");
             return;
         }
-        this.canvasImage.addEventListener("click", this.handleImageClick);
+        this.canvasImage.addEventListener("click", this.handleAnimationClick);
 
         // Set the canvas iamge dimensions
         this.canvasImage.width = this.spriteImageSize;
@@ -194,8 +199,8 @@ export class SpriteEditor {
 
     }
 
-    static lastAnimationDD = "10";
-    static handleImageClick(event) {
+    static lastAnimationDD = "10";  // set default
+    static handleAnimationClick(event) {
         const dropdown = document.getElementById("animationDropdown");
 
         if (dropdown) {
@@ -250,7 +255,7 @@ export class SpriteEditor {
         }
         SpriteEditor.paletteName = name;
         SpritePalettes.setPalette(name);
-        SpriteEditor.jsonData.metadata.palette = SpriteEditor.paletteName;
+        SpriteEditor.jsonSprite.metadata.palette = SpriteEditor.paletteName;
 
         this.addMessages(`Selected palette: '${name}'.`);
 
@@ -327,20 +332,21 @@ export class SpriteEditor {
     static loadCurrentFrameImage() {
         // Check if the current frame and its metadata exist
         if (
-            SpriteEditor.jsonData.layers &&
-            SpriteEditor.jsonData.layers[SpriteEditor.currentFrame] &&
-            SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata &&
-            SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage
+            SpriteEditor.jsonSprite.layers &&
+            SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame] &&
+            SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata &&
+            SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage
         ) {
-            console.log(SpriteEditor.jsonData.layers[SpriteEditor.currentFrame]);
-            const imageName = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage;
+            console.log("lcfi");
+            const imageName = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage;
 
-            if (this.imageName === SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
-                console.log("Same image");
-                return;
-            }
+            // don't do this, prevents image by name (not x & Y)
+            // // if (this.imageName === SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
+            // //     console.log("Same image");
+            // //     return;
+            // // }
 
-            // Check if the image exists in the jsonData.images object
+            // Check if the image exists in the jsonSprite.images object
             if (SpriteEditor.jsonImages && SpriteEditor.jsonImages[imageName]) {
                 const img = new Image();
                 img.onload = () => {
@@ -351,8 +357,8 @@ export class SpriteEditor {
                 img.src = SpriteEditor.jsonImages[imageName]; // Set the image source to the base64 data
                 this.image = img;
 
-                this.imageX = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.imageX;
-                this.imageY = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.imageY;
+                this.imageX = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageX;
+                this.imageY = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageY;
 
             } else {
                 this.addMessages(`Image '${imageName}' not found in SpriteEditor.jsonImages[imageName].`);
@@ -375,7 +381,7 @@ export class SpriteEditor {
     }
     static moveImageHorizontal(moveFactor) {
         this.imageX += moveFactor;
-        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX = this.imageX;
+        SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageX = this.imageX;
 
         this.outputJsonData();
     }
@@ -389,7 +395,7 @@ export class SpriteEditor {
     }
     static moveImageVertical(moveFactor) {
         this.imageY += moveFactor;
-        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY = this.imageY;
+        SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageY = this.imageY;
 
         this.outputJsonData();
     }
@@ -411,7 +417,7 @@ export class SpriteEditor {
             this.imageScale = 0.01;
             this.addMessages(`Min image scale reached: ${this.imageScale}`)
         }
-        SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageScale = this.imageScale;
+        SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageScale = this.imageScale;
 
         this.outputJsonData();
     }
@@ -440,7 +446,7 @@ export class SpriteEditor {
             this.spriteGridSize = 80.0;
             this.addMessages(`Max grid scall reached: ${this.spriteGridSize}`)
         }
-        SpriteEditor.jsonData.metadata.spriteGridSize = parseFloat(this.spriteGridSize.toFixed(1));
+        SpriteEditor.jsonSprite.metadata.spriteGridSize = parseFloat(this.spriteGridSize.toFixed(1));
         this.outputJsonData();
 
     }
@@ -450,7 +456,7 @@ export class SpriteEditor {
             this.gridCellHeight++;
 
             // Iterate over all layers
-            SpriteEditor.jsonData.layers.forEach((layer) => {
+            SpriteEditor.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Add a new row to the bottom of the layer's data
@@ -475,7 +481,7 @@ export class SpriteEditor {
             this.gridCellWidth++;
 
             // Iterate over all layers
-            SpriteEditor.jsonData.layers.forEach((layer) => {
+            SpriteEditor.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Add a new column to the right of each row
@@ -499,7 +505,7 @@ export class SpriteEditor {
             this.gridCellWidth--;
 
             // Iterate over all layers
-            SpriteEditor.jsonData.layers.forEach((layer) => {
+            SpriteEditor.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Remove the last character (column) from each row
@@ -523,7 +529,7 @@ export class SpriteEditor {
             this.gridCellHeight--;
 
             // Iterate over all layers
-            SpriteEditor.jsonData.layers.forEach((layer) => {
+            SpriteEditor.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Remove the last row from the layer's data
@@ -561,8 +567,8 @@ export class SpriteEditor {
             this.spritePixelSize = 10.0;
             this.addMessages(`Max sprite pixel size reached: ${this.spritePixelSize}`)
         }
-        //SpriteEditor.jsonData.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
-        SpriteEditor.jsonData.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
+        //SpriteEditor.jsonSprite.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
+        SpriteEditor.jsonSprite.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
 
         this.outputJsonData();
     }
@@ -754,7 +760,7 @@ export class SpriteEditor {
         container.innerHTML = "";
 
         // Add buttons based on the number of layers
-        this.jsonData.layers.forEach((_, index) => {
+        this.jsonSprite.layers.forEach((_, index) => {
             const button = document.createElement("button");
             button.textContent = index;
             button.id = `frameButton-${index}`; // Unique ID for each button
@@ -819,9 +825,9 @@ export class SpriteEditor {
     }
     static setCurrentFrameLayer(currentFrame) {
         if (
-            SpriteEditor.jsonData.layers &&
+            SpriteEditor.jsonSprite.layers &&
             currentFrame >= 0 &&
-            currentFrame < SpriteEditor.jsonData.layers.length
+            currentFrame < SpriteEditor.jsonSprite.layers.length
         ) {
             this.currentFrame = currentFrame;
             this.addMessages(`Current Layer frame at index: ${this.currentFrame}`);
@@ -837,13 +843,13 @@ export class SpriteEditor {
     }
     static prevCurrentFrameLayer() {
         if (this.currentFrame === 0) {
-            this.setCurrentFrameLayer(SpriteEditor.jsonData.layers.length - 1);
+            this.setCurrentFrameLayer(SpriteEditor.jsonSprite.layers.length - 1);
         } else {
             this.setCurrentFrameLayer(--this.currentFrame);
         }
     }
     static nextCurrentFrameLayer() {
-        if (this.currentFrame === SpriteEditor.jsonData.layers.length - 1) {
+        if (this.currentFrame === SpriteEditor.jsonSprite.layers.length - 1) {
             this.setCurrentFrameLayer(0);
         } else {
             this.setCurrentFrameLayer(++this.currentFrame);
@@ -879,12 +885,13 @@ export class SpriteEditor {
         }
     }
 
+    static showStackTrace(){
+        const trace = new Error("Show stack trace:");
+        console.log(trace.stack);         
+    }
     // ------------------------------------------
     /** JSON methods*/
-    static outputJsonData() {
-
-        // const trace = new Error("Show stack trace:");
-        // console.log(trace.stack);        
+    static outputJsonData() {      
 
         // this.generateFrameLayerButtons();
         //SpriteEditor.loadJsonSprite();
@@ -892,7 +899,7 @@ export class SpriteEditor {
         const textArea = document.getElementById("spriteID");
 
         // Convert the JSON object into a formatted string
-        const jsonString = JSON.stringify(SpriteEditor.jsonData, null, 2); // Indent with 2 spaces
+        const jsonString = JSON.stringify(SpriteEditor.jsonSprite, null, 2); // Indent with 2 spaces
 
         if (textArea.value === jsonString) {
             return;
@@ -901,10 +908,10 @@ export class SpriteEditor {
         // Set the textarea value
         textArea.value = jsonString;
 
-        // Assuming jsonData is the JSON object that contains the data
-        // Validate that jsonData, layers, the first layer, and its data exist
-        //const firstLayerData = SpriteEditor?.jsonData?.layers?.[0]?.data ?? null;
-        const firstLayerData = SpriteEditor?.jsonData?.layers?.[this.currentFrame]?.data ?? null;
+        // Assuming jsonSprite is the JSON object that contains the data
+        // Validate that jsonSprite, layers, the first layer, and its data exist
+        //const firstLayerData = SpriteEditor?.jsonSprite?.layers?.[0]?.data ?? null;
+        const firstLayerData = SpriteEditor?.jsonSprite?.layers?.[this.currentFrame]?.data ?? null;
 
         if (firstLayerData) {
             // Use firstLayerData safely
@@ -916,7 +923,8 @@ export class SpriteEditor {
         this.loadSpriteFromJSON();
     }
     static loadSpriteFromJSON() {
-        const firstLayerData = SpriteEditor?.jsonData?.layers?.[this.currentFrame]?.data ?? null;
+        console.log("lsfj");
+        const firstLayerData = SpriteEditor?.jsonSprite?.layers?.[this.currentFrame]?.data ?? null;
         // Update gridCellWidth and gridCellHeight based on firstLayerData        
         this.gridCellWidth = firstLayerData[0].length;  // Number of columns
         this.gridCellHeight = firstLayerData.length;    // Number of rows
@@ -932,13 +940,13 @@ export class SpriteEditor {
     }
     static addLayer(layerIndex) {
         // Create a deep copy of the layer at `this.currentFrame`
-        let originalLayer = SpriteEditor.jsonData.layers[this.currentFrame];
+        let originalLayer = SpriteEditor.jsonSprite.layers[this.currentFrame];
         let tempLayer = JSON.parse(JSON.stringify(originalLayer));
 
         tempLayer.metadata.imageX = layerIndex;
         tempLayer.metadata.imageY = this.currentFrame;
 
-        SpriteEditor.jsonData.layers.splice(this.currentFrame, 0, tempLayer);
+        SpriteEditor.jsonSprite.layers.splice(this.currentFrame, 0, tempLayer);
 
         this.currentFrame += layerIndex;
 
@@ -949,17 +957,17 @@ export class SpriteEditor {
     }
     static subLayer() {
         // Prevent removal if there's only one layer remaining
-        if (SpriteEditor.jsonData.layers.length <= 1) {
+        if (SpriteEditor.jsonSprite.layers.length <= 1) {
             this.addMessages("Cannot remove the last remaining layer.");
             return;
         }
 
-        if (this.currentFrame >= 0 && this.currentFrame < SpriteEditor.jsonData.layers.length) {
-            SpriteEditor.jsonData.layers.splice(this.currentFrame, 1);
+        if (this.currentFrame >= 0 && this.currentFrame < SpriteEditor.jsonSprite.layers.length) {
+            SpriteEditor.jsonSprite.layers.splice(this.currentFrame, 1);
 
             let currentFrame = this.currentFrame;
-            if (this.currentFrame > SpriteEditor.jsonData.layers.length - 1) {
-                this.currentFrame = SpriteEditor.jsonData.layers.length - 1;
+            if (this.currentFrame > SpriteEditor.jsonSprite.layers.length - 1) {
+                this.currentFrame = SpriteEditor.jsonSprite.layers.length - 1;
             }
             this.addMessages(`Layer removed at index: ${currentFrame}`);
             this.setCurrentFrameLayer(this.currentFrame);
@@ -971,9 +979,9 @@ export class SpriteEditor {
     }
     static setStaticVarsFromJson() {
         // Access metadata.sprite
-        this.selectPalette(SpriteEditor.jsonData.metadata.palette);
-        this.setSpritePixelSize(SpriteEditor.jsonData.metadata.spritePixelSize);
-        this.setSpriteGridSize(SpriteEditor.jsonData.metadata.spriteGridSize);
+        this.selectPalette(SpriteEditor.jsonSprite.metadata.palette);
+        this.setSpritePixelSize(SpriteEditor.jsonSprite.metadata.spritePixelSize);
+        this.setSpriteGridSize(SpriteEditor.jsonSprite.metadata.spriteGridSize);
 
         if (false) {
             console.log('Sprite:', sprite);
@@ -982,10 +990,11 @@ export class SpriteEditor {
             console.log('Palette:', SpriteEditor.paletteName);
         }
         // Access metadata.layer frames
-        this.setImageX(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX);
-        this.setImageY(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY);
-        this.setImageScale(SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageScale);
+        this.setImageX(SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageX);
+        this.setImageY(SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageY);
+        this.setImageScale(SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageScale);
 
+        this.loadCurrentFrameImage();
         if (false) {
             console.log('ImageX:', this.imageX);
             console.log('ImageY:', this.imageY);
@@ -995,32 +1004,35 @@ export class SpriteEditor {
     static loadSpriteFromTextarea() {
         const textarea = document.getElementById('spriteID');
         const jsonString = textarea.value;
+
         try {
             // Parse the JSON string into an object
             const parsedData = JSON.parse(jsonString);
-            // Assign the parsed data to SpriteEditor.jsonData
+            // Assign the parsed data to SpriteEditor.jsonSprite
             if (typeof SpriteEditor !== 'undefined') {
-                SpriteEditor.jsonData = parsedData;
-
+                SpriteEditor.jsonSprite = parsedData;
                 this.setStaticVarsFromJson();
-            } else {
+                this.generateFrameLayerButtons();
+                this.loadSpriteFromJSON();
+                    } else {
                 SpriteEditor.addMessages('SpriteEditor is not defined.')
             }
         } catch (error) {
             SpriteEditor.addMessages(`Invalid spriteID JSON format: ${error} \n `);
         }
 
-        this.generateFrameLayerButtons();
     }
     static loadImageFromTextarea() {
+        console.log("lifta");
         const textarea = document.getElementById('imageID');
         const jsonString = textarea.value;
         try {
             // Parse the JSON string into an object
             const parsedData = JSON.parse(jsonString);
-            // Assign the parsed data to SpriteEditor.jsonData
+            // Assign the parsed data to SpriteEditor.jsonSprite
             if (typeof SpriteEditor !== 'undefined') {
                 SpriteEditor.jsonImages = parsedData;
+                this.loadCurrentFrameImage();
             } else {
                 SpriteEditor.addMessages('imageID is not defined.')
             }
@@ -1044,8 +1056,8 @@ export class SpriteEditor {
         }
 
         // Update the JSON data's first layer
-        if (SpriteEditor.jsonData.layers && SpriteEditor.jsonData.layers[this.currentFrame]) {
-            SpriteEditor.jsonData.layers[this.currentFrame].data = updatedData;
+        if (SpriteEditor.jsonSprite.layers && SpriteEditor.jsonSprite.layers[this.currentFrame]) {
+            SpriteEditor.jsonSprite.layers[this.currentFrame].data = updatedData;
         }
 
     }
@@ -1065,10 +1077,11 @@ export class SpriteEditor {
             .join(''); // Combine into camel case
     }
 
+    
     static copyJSON() {
-        const camelCasePalete = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite, "palette");
-        const camelCaseSprite = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite, "sprite");
-        const camelCaseImage = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite, "image");
+        const camelCasePalete = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "palette");
+        const camelCaseSprite = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "sprite");
+        const camelCaseImage = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "image");
 
         // Get the textarea element
         const textarea = document.getElementById("spriteID");
@@ -1078,12 +1091,25 @@ export class SpriteEditor {
             // Prepare JSON strings
             const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2);
 
+
+            
             let jsonPaletteString = "";
-            if (SpriteEditor.paletteName === "custom") {
-                jsonPaletteString = "static " + camelCasePalete + " = " +
-                    JSON.stringify(SpritePalettes.getPalette(), null, 2) +
-                    ";";
-            }
+if (SpriteEditor.paletteName === "custom") {
+    jsonPaletteString = "static " + camelCasePalete + " = {custom: \n" +
+        JSON.stringify(SpritePalettes.getPalette(), null, 0)
+        .replace(/(\r\n|\n|\r)/g, '') // Remove all carriage returns and line feeds
+        .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
+        .replace(/'/g, '"') // Replace single quotes with double quotes
+        .replace(/,\s*}/g, '}') // Remove trailing commas in objects
+        .replace(/,\s*]/g, ']') // Remove trailing commas in arrays
+        .replace(/\},/g, '},\n') // Add a newline after each closing brace
+        .replace(/\[\s*\{/g, '[\n{') // Replace "[ {" with "[\n{"
+        + "\n};"; // Close the array with a newline before the closing bracket
+}
+
+
+            
+            
 
             // Create the modified text
             const modifiedText =
@@ -1341,16 +1367,18 @@ fileInput.addEventListener('change', (event) => {
             SpriteEditor.imageName = file.name;
 
             // Add image to JSON with the key being the name and value being the image data
-            SpriteEditor.jsonImages = SpriteEditor.jsonImages || {};            // Update the current frame's metadata with the image name
             if (
-                SpriteEditor.jsonData.layers &&
-                SpriteEditor.jsonData.layers[SpriteEditor.currentFrame] &&
-                SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata
+                SpriteEditor.jsonSprite.layers &&
+                SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame] &&
+                SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata
             ) {
-                SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage = SpriteEditor.imageName;
+                SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage = SpriteEditor.imageName;
                 SpriteEditor.jsonImages[SpriteEditor.imageName] = e.target.result;
+
+                const textarea = document.getElementById('imageID');
+                textarea.value = JSON.stringify(SpriteEditor.jsonImages, null,2);
             } else {
-                SpriteEditor.addMessages("Failed to update current frame's image metadata.");
+                SpriteEditor.addMessages("Failed to update current frame(s) image.");
             }
 
             SpriteEditor.addMessages(`Image loaded and set: '${SpriteEditor.imageName}'`);
