@@ -231,8 +231,12 @@ export class SpriteEditor {
         }
         SpriteEditor.paletteName = name;
         SpritePalettes.setPalette(name);
+        SpriteEditor.jsonData.metadata.palette = SpriteEditor.paletteName;
 
         this.addMessages(`Selected palette: '${name}'.`);
+
+        this.outputJsonData();
+        this.showPaletteColors();
 
         // const trace = new Error("Show stack trace:");
         // console.log(trace.stack);
@@ -262,6 +266,74 @@ export class SpriteEditor {
         this.paletteSortOrder = arg;
     }
 
+//     static loadPaletteFromTextarea() {
+//         console.log("palette change");
+
+//         const paletteTextarea = document.getElementById("paletteID");  // Ensure the textarea element exists
+
+//         if (!paletteTextarea) {
+//             alert(`Palette textarea 'paletteID' not found.`);
+//             return;
+//         }
+
+// console.log(paletteTextarea.value);
+
+//         // paletteTextarea.value = SpritePalettes.getPaletteDetails();
+
+//         // // Only custom palette can be updated by user
+//         //     paletteTextarea.disabled = false;
+//         //     paletteTextarea.value += "// Use transparent as sample code to add whatever colors you need.\n";
+//         //     paletteTextarea.value += "// FYI: no intelisence, errors will prevent palette from displaying.\n";
+
+
+//     }
+
+    static loadPaletteFromTextarea() {
+        // Get the value from the textarea
+        const paletteTextarea = document.getElementById("paletteID").value;
+    
+        // Clean the string:
+        // 1. Remove any comments (lines starting with `//`)
+        const cleanedText = paletteTextarea.replace(/\/\/.*$/gm, '');
+    
+        // 2. Remove the `custom: ` part (if it's included) and parse it
+        const cleanedArrayText = cleanedText.replace(/custom:\s*/, '');
+    
+        // 3. Fix the array syntax:
+        // Replace single quotes with double quotes for valid JSON
+        const validJSON = cleanedArrayText
+            .replace(/'(\w+)'/g, '"$1"')  // Replace single quotes around keys with double quotes
+            .replace(/'([^']+)'/g, '"$1"') // Replace single quotes around string values with double quotes
+            // 4. Remove the trailing comma at the end of the array
+            .replace(/,\s*$/, '')
+            .replace(/;\s*$/, '');
+    
+        try {
+            console.log(validJSON); // Output the result to the console
+
+            // Parse the cleaned and corrected string into an array
+            const paletteArray = JSON.parse(validJSON);
+    
+            console.log(paletteArray); // Output the result to the console
+    
+            // Example: Iterate over the palette
+            paletteArray.forEach(color => {
+                console.log(`${color.name}: ${color.hex}`);
+            });
+            
+            return paletteArray; // Return the array in case you need it later
+    
+        } catch (error) {
+            console.error("Error parsing the palette data:", error);
+        }
+    }
+    
+
+    
+    // // Call the function to load the palette
+    // loadPaletteFromTextarea();
+    
+
     // ------------------------------------------
     // Background image methods
     /** Image methods*/
@@ -270,16 +342,16 @@ export class SpriteEditor {
         if (
             SpriteEditor.jsonData.layers &&
             SpriteEditor.jsonData.layers[SpriteEditor.currentFrame] &&
-            SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata && 
+            SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata &&
             SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage
         ) {
 
             const imageName = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage;
 
-            // if (imageName === SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
-            //     console.log("same image");
-            //     return;
-            // }
+            if (imageName === SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
+                console.log("same image");
+                return;
+            }
 
             // Check if the image exists in the jsonData.images object
             if (SpriteEditor.jsonImages && SpriteEditor.jsonImages[imageName]) {
@@ -496,7 +568,7 @@ export class SpriteEditor {
         this.ctxEditor.fillStyle = '#333333';
         this.ctxEditor.fillRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
 
-        if (this.imageName) {
+        if (!(this.animationActive) && this.imageName && this.image) {
             this.ctxEditor.save();
             this.ctxEditor.scale(this.imageScale, this.imageScale);
             this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
@@ -505,7 +577,7 @@ export class SpriteEditor {
 
         this.outputJsonData();
 
-        this.showPaletteColors();
+        //this.showPaletteColors();
 
         this.drawGrid();
         this.drawPalette();
@@ -760,10 +832,17 @@ export class SpriteEditor {
         }
     }
     /** Animation methods*/
+    static animationActive = false;
     static frameRate = 0;
     static frameRateCount = 0;
     static setAnimationFrameRate(frameRate) {
         this.frameRate = frameRate;
+        if (this.frameRate > 0) {
+            this.animationActive = true;
+        } else {
+            this.animationActive = false;
+        }
+
     }
     static animateSpriteImage() {
         // Exit if no animation is needed
@@ -903,7 +982,8 @@ export class SpriteEditor {
                 SpriteEditor.addMessages('SpriteEditor is not defined.')
             }
         } catch (error) {
-            SpriteEditor.addMessages(`Invalid JSON format: ${error} \n ${textarea.value}`);
+            //SpriteEditor.addMessages(`Invalid JSON format: ${error} \n ${textarea.value}`);
+            SpriteEditor.addMessages(`Invalid JSON format: ${error} \n `);
         }
 
         this.generateFrameLayerButtons();
@@ -931,26 +1011,36 @@ export class SpriteEditor {
     static copyJSON() {
         // Get the textarea element
         const textarea = document.getElementById("spriteID");
-        const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2); // Pretty-print for readability
 
-    
         // Check if the textarea exists and has content
         if (textarea && textarea.value) {
+            const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2);
+
+            let jsonPaletteString = "";
+            console.log(SpriteEditor.paletteName, JSON.stringify(SpritePalettes.getPalette(), null, 2));
+            if (SpriteEditor.paletteName === "custom") {
+                jsonPaletteString = "static jsonData = " +
+                    JSON.stringify(SpritePalettes.getPalette(), null, 2) +
+                    ";";
+            }
+
             // Create the modified text (desired beginning + original content + semicolon)
-            const modifiedText = "static jsonData = " + textarea.value + "; \n" +
-            "static jsonImages = " + jsonImagesString + ";";
-    
+            const modifiedText =
+                "static jsonData = " + textarea.value + "; \n" +
+                "static jsonImages = " + jsonImagesString + ";\n" +
+                jsonPaletteString;
+
             // Create a temporary textarea to hold the modified text
             const tempTextarea = document.createElement("textarea");
             document.body.appendChild(tempTextarea);
-    
+
             // Set the modified text in the temporary textarea
             tempTextarea.value = modifiedText;
-    
+
             // Select the text in the temporary textarea
             tempTextarea.select();
             tempTextarea.setSelectionRange(0, tempTextarea.value.length); // For mobile devices
-    
+
             try {
                 // Copy the selected text to the clipboard
                 const success = document.execCommand("copy");
@@ -963,14 +1053,14 @@ export class SpriteEditor {
                 console.error("Error copying JSON:", err);
                 this.addMessages("An error occurred while copying JSON.");
             }
-    
+
             // Remove the temporary textarea after copying
             document.body.removeChild(tempTextarea);
         } else {
             this.addMessages("No JSON data to copy!");
         }
     }
-    
+
 
     // ------------------------------------------
     /** canvas click methods*/
@@ -1201,8 +1291,16 @@ fileInput.addEventListener('change', (event) => {
 
 // --------------------------------------------------------------------------
 // Add event listener for input (change in json text content)
-const textarea = document.getElementById('spriteID');
-textarea.addEventListener('input', (event) => {
+const textareaSprite = document.getElementById('spriteID');
+textareaSprite.addEventListener('input', (event) => {
     SpriteEditor.addMessages(`Sprite JSON data changed.`);
     SpriteEditor.loadJsonFromTextarea();
+});
+
+// --------------------------------------------------------------------------
+// Add event listener for palette (change in json text content)
+const textareaPalette = document.getElementById('paletteID');
+textareaPalette.addEventListener('input', (event) => {
+    SpriteEditor.addMessages(`Palette JSON data changed.`);
+    SpriteEditor.loadPaletteFromTextarea();
 });

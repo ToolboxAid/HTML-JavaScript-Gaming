@@ -164,6 +164,11 @@ export class SpritePalettes {
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
         ],
 
+        custom: [
+            // Transparent
+            { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
+        ],           
+
         // Crayola Crayon colors by package
         crayola008: [
             { symbol: '!', hex: '#232323', name: 'Black' }, 		 // color #'0' ascii'33'
@@ -1189,11 +1194,7 @@ export class SpritePalettes {
             // Transparent
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
         ],
-
-        custom: [
-            // Transparent
-            { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
-        ],        
+     
     };
 
     // Get the current palette

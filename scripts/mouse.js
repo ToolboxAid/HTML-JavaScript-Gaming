@@ -13,6 +13,7 @@ class MouseInput {
         this.mouseY = 0;
         this.prevX = 0;
         this.prevY = 0;
+        this.wheel = 0;
 
         // Temporary sets to handle button press/release events
         this.tempButtonsDown = new Set();
@@ -63,7 +64,8 @@ class MouseInput {
     }
 
     handleWheel(event) {
-        console.log('Wheel movement detected:', event.deltaY);
+        this.wheel = event.deltaY;
+        //console.log('Wheel movement detected:', this.wheel);
     }
 
     handleContextMenu(event) {
