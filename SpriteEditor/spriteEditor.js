@@ -107,23 +107,23 @@ export class SpriteEditor {
     }
     static loadSample1() {
         SpriteEditor.addMessages('sample1')
-        this.loadSample(Demo.sample1, Demo.sample1Images);
+        this.loadSample(Demo.sample1Sprite, Demo.sample1Image);
     }
     static loadSample2() {
         SpriteEditor.addMessages('sample2')
-        this.loadSample(Demo.sample2, Demo.sample2Images);
+        this.loadSample(Demo.sample2Sprite, Demo.sample2Image);
     }
     static loadSample3() {
         SpriteEditor.addMessages('sample3')
-        this.loadSample(Demo.sample3, Demo.sample3Images);
+        this.loadSample(Demo.sample3Sprite, Demo.sample3Image);
     }
     static loadSample4() {
         SpriteEditor.addMessages('sample4')
-        this.loadSample(Demo.sample4, Demo.sample4Images);
+        this.loadSample(Demo.sample4Sprite, Demo.sample4Image);
     }
     static loadSample5() {
         SpriteEditor.addMessages('sample5')
-        this.loadSample(Demo.sample5, Demo.sample5Images);
+        this.loadSample(Demo.sample5Sprite, Demo.sample5Image);
     }
 
     // ------------------------------------------
