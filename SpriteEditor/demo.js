@@ -224,7 +224,7 @@ export class Demo {
     static sample3 = {
         "metadata": {
             "sprite": "sprite starter json",
-            "spriteGridSize": 41.40000000000005,
+            "spriteGridSize": 41.4,
             "spritePixelSize": 10,
             "palette": "default"
         },
@@ -370,7 +370,7 @@ export class Demo {
         "metadata": {
             "sprite": "sprite starter json",
             "spriteGridSize": 30,
-            "spritePixelSize": 4.2000000000000135,
+            "spritePixelSize": 4.2,
             "palette": "default"
         },
         "layers": [
@@ -437,8 +437,8 @@ export class Demo {
     static sample5 = {
         "metadata": {
             "sprite": "sprite starter json",
-            "spriteGridSize": 13.799999999999997,
-            "spritePixelSize": 6.700000000000001,
+            "spriteGridSize": 13.79,
+            "spritePixelSize": 6.7,
             "palette": "default"
         },
         "layers": [
@@ -447,7 +447,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": 41,
                     "imageY": -3,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",
@@ -499,7 +499,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": -24,
                     "imageY": 1,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",
@@ -551,7 +551,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": -78,
                     "imageY": 2,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",
@@ -603,7 +603,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": -137,
                     "imageY": 3,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",
@@ -655,7 +655,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": -207,
                     "imageY": -1,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",
@@ -707,7 +707,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": -271,
                     "imageY": -4,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",
@@ -759,7 +759,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": -329,
                     "imageY": -3,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",
@@ -811,7 +811,7 @@ export class Demo {
                     "spriteimage": "walk.png",
                     "imageX": -382,
                     "imageY": -4,
-                    "imageScale": 3.8000000000000016
+                    "imageScale": 3.8
                 },
                 "data": [
                     "ØØØØØØØØØØØØØØØØØØØØØ",

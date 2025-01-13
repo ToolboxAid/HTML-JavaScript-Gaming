@@ -246,8 +246,13 @@ textarea {
 }
 
 #spriteID {
-    height: 45vh;
+    height: 30vh;
 }
+
+#imageID {
+    height: 15vh;
+}
+
 
 #messagesID {
     height: 15vh;

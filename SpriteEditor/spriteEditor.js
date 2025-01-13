@@ -85,10 +85,10 @@ export class SpriteEditor {
                     "imageScale": 2.0,
                 },
                 "data": [
-                    "0000",
-                    "0000",
-                    "0000",
-                    "0000",
+                    "ØØØØ",
+                    "ØØØØ",
+                    "ØØØØ",
+                    "ØØØØ",
                 ]
             }
         ]
@@ -102,7 +102,7 @@ export class SpriteEditor {
         SpriteEditor.jsonData = jsonData;
         SpriteEditor.jsonImages = jsonImage;
         this.outputJsonData();
-        this.loadJsonFromTextarea();
+        this.loadSpriteFromTextarea();
         this.loadCurrentFrameImage();
     }
     static loadSample1() {
@@ -145,7 +145,7 @@ export class SpriteEditor {
 
         this.outputJsonData();
 
-        this.loadJsonFromTextarea();
+        this.loadSpriteFromTextarea();
         this.generateFrameLayerButtons();
         this.populateAnimationDropdown();
     }
@@ -207,7 +207,7 @@ export class SpriteEditor {
         if (this.initMessages) {
             this.initMessages = false;
             this.addMessages(`Press 'F11' to enter/exit full screen.`)
-            this.addMessages(`Add '#00000000' to palette for Transparent.`)
+            this.addMessages(`Add '#ØØØØØØØØ' to palette for Transparent.`)
         }
     }
 
@@ -238,9 +238,6 @@ export class SpriteEditor {
         this.outputJsonData();
         this.showPaletteColors();
 
-        // const trace = new Error("Show stack trace:");
-        // console.log(trace.stack);
-
         return true;
     }
     static showPaletteColors() {
@@ -251,11 +248,17 @@ export class SpriteEditor {
             return;
         }
 
-        spriteTextarea.value = SpritePalettes.getPaletteDetails();
+        spriteTextarea.value = SpritePalettes.getPaletteDetails()
+        .replace(/'(\w+)'/g, '"$1"')  // Replace single quotes around keys with double quotes
+        .replace(/'([^']+)'/g, '"$1"') // Replace single quotes around string values with double quotes
+        // 4. Remove the trailing comma at the end of the array
+        .replace(/,\s*$/, '')
+        .replace(/;\s*$/, '');
 
         // Only custom palette can be updated by user
         if (SpriteEditor.paletteName === "custom") {
             spriteTextarea.disabled = false;
+            spriteTextarea.value += "\n\n";            
             spriteTextarea.value += "// Use transparent as sample code to add whatever colors you need.\n";
             spriteTextarea.value += "// FYI: no intelisence, errors will prevent palette from displaying.\n";
         } else {
@@ -266,67 +269,35 @@ export class SpriteEditor {
         this.paletteSortOrder = arg;
     }
 
-//     static loadPaletteFromTextarea() {
-//         console.log("palette change");
+static loadPaletteFromTextarea() {
+    // Get the value from the textarea
+    const paletteTextarea = document.getElementById("paletteID").value;
 
-//         const paletteTextarea = document.getElementById("paletteID");  // Ensure the textarea element exists
+    // Step 1: Remove comments
+    const withoutComments = paletteTextarea.replace(/\/\/.*$/gm, '');
 
-//         if (!paletteTextarea) {
-//             alert(`Palette textarea 'paletteID' not found.`);
-//             return;
-//         }
+    // Step 2: Remove `custom:` and trim whitespace
+    const withoutCustomKey = withoutComments.replace(/custom:\s*/, '').trim();
 
-// console.log(paletteTextarea.value);
+    // Step 3: Convert to valid JSON:
+    const validJSON = withoutCustomKey
+        .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
+        .replace(/'/g, '"') // Replace single quotes with double quotes
+        .replace(/,\s*}/g, '}') // Remove trailing commas in objects
+        .replace(/,\s*]/g, ']'); // Remove trailing commas in arrays
 
-//         // paletteTextarea.value = SpritePalettes.getPaletteDetails();
+    try {
+        // Parse the cleaned string into JSON
+        const customPalette = JSON.parse(validJSON);
 
-//         // // Only custom palette can be updated by user
-//         //     paletteTextarea.disabled = false;
-//         //     paletteTextarea.value += "// Use transparent as sample code to add whatever colors you need.\n";
-//         //     paletteTextarea.value += "// FYI: no intelisence, errors will prevent palette from displaying.\n";
-
-
-//     }
-
-    static loadPaletteFromTextarea() {
-        // Get the value from the textarea
-        const paletteTextarea = document.getElementById("paletteID").value;
-    
-        // Clean the string:
-        // 1. Remove any comments (lines starting with `//`)
-        const cleanedText = paletteTextarea.replace(/\/\/.*$/gm, '');
-    
-        // 2. Remove the `custom: ` part (if it's included) and parse it
-        const cleanedArrayText = cleanedText.replace(/custom:\s*/, '');
-    
-        // 3. Fix the array syntax:
-        // Replace single quotes with double quotes for valid JSON
-        const validJSON = cleanedArrayText
-            .replace(/'(\w+)'/g, '"$1"')  // Replace single quotes around keys with double quotes
-            .replace(/'([^']+)'/g, '"$1"') // Replace single quotes around string values with double quotes
-            // 4. Remove the trailing comma at the end of the array
-            .replace(/,\s*$/, '')
-            .replace(/;\s*$/, '');
-    
-        try {
-            console.log(validJSON); // Output the result to the console
-
-            // Parse the cleaned and corrected string into an array
-            const paletteArray = JSON.parse(validJSON);
-    
-            console.log(paletteArray); // Output the result to the console
-    
-            // Example: Iterate over the palette
-            paletteArray.forEach(color => {
-                console.log(`${color.name}: ${color.hex}`);
-            });
-            
-            return paletteArray; // Return the array in case you need it later
-    
-        } catch (error) {
-            console.error("Error parsing the palette data:", error);
-        }
+        // Use the parsed palette
+        SpritePalettes.setCustomPalette(customPalette);
+    } catch (error) {
+        console.error("Error parsing the palette data:", error);
+        this.addMessages(`Error parsing the palette data: ${error.message}`);
     }
+}
+
     
 
     
@@ -349,7 +320,7 @@ export class SpriteEditor {
             const imageName = SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage;
 
             if (imageName === SpriteEditor.jsonData.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
-                console.log("same image");
+                console.log("Same image");
                 return;
             }
 
@@ -389,6 +360,8 @@ export class SpriteEditor {
     static moveImageHorizontal(moveFactor) {
         this.imageX += moveFactor;
         SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageX = this.imageX;
+        
+        this.outputJsonData();
     }
     static setImageY(imageY) {
         if (typeof imageY === 'number' && !isNaN(imageY)) {
@@ -401,6 +374,8 @@ export class SpriteEditor {
     static moveImageVertical(moveFactor) {
         this.imageY += moveFactor;
         SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageY = this.imageY;
+
+        this.outputJsonData();
     }
     static setImageScale(imageScale) {
 
@@ -421,6 +396,8 @@ export class SpriteEditor {
             this.addMessages(`Min image scale reached: ${this.imageScale}`)
         }
         SpriteEditor.jsonData.layers[this.currentFrame].metadata.imageScale = this.imageScale;
+
+        this.outputJsonData();
     }
 
     // ------------------------------------------
@@ -431,6 +408,7 @@ export class SpriteEditor {
     static setSpriteGridSize(spriteGridSize) {
         if (typeof spriteGridSize === 'number' && !isNaN(spriteGridSize)) {
             this.spriteGridSize = 0;
+
             this.updateSpriteGridSize(spriteGridSize);
         } else {
             this.addMessages("spriteGridSize is not a valid number:", spriteGridSize);
@@ -446,7 +424,9 @@ export class SpriteEditor {
             this.spriteGridSize = 80.0;
             this.addMessages(`Max grid scall reached: ${this.spriteGridSize}`)
         }
-        SpriteEditor.jsonData.metadata.spriteGridSize = this.spriteGridSize.toFixed(1);
+        SpriteEditor.jsonData.metadata.spriteGridSize = parseFloat(this.spriteGridSize.toFixed(1));
+        this.outputJsonData();
+
     }
     static spriteAddRow() {
         // Ensure we don't exceed the maximum grid height
@@ -470,6 +450,8 @@ export class SpriteEditor {
 
         // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
+    
+        this.outputJsonData();
     }
     static spriteAddColumn() {
         // Ensure we don't exceed the maximum grid width
@@ -492,6 +474,8 @@ export class SpriteEditor {
 
         // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
+
+        this.outputJsonData();
     }
     static spriteDelColumn() {
         // Ensure we don't remove columns below the minimum grid width (1 column)
@@ -514,6 +498,8 @@ export class SpriteEditor {
 
         // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
+
+        this.outputJsonData();
     }
     static spriteDelRow() {
         // Ensure we don't go below the minimum grid height
@@ -538,6 +524,8 @@ export class SpriteEditor {
 
         // Update sprite grid dimensions display
         this.showSpriteGridDimensions();
+
+        this.outputJsonData();
     }
     static setSpritePixelSize(spritePixelSize) {
         if (typeof spritePixelSize === 'number' && !isNaN(spritePixelSize)) {
@@ -557,7 +545,10 @@ export class SpriteEditor {
             this.spritePixelSize = 10.0;
             this.addMessages(`Max sprite pixel size reached: ${this.spritePixelSize}`)
         }
-        SpriteEditor.jsonData.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
+        //SpriteEditor.jsonData.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
+        SpriteEditor.jsonData.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
+        
+        this.outputJsonData();
     }
 
     // ------------------------------------------
@@ -575,7 +566,7 @@ export class SpriteEditor {
             this.ctxEditor.restore();
         }
 
-        this.outputJsonData();
+        //this.outputJsonData();
 
         //this.showPaletteColors();
 
@@ -812,7 +803,6 @@ export class SpriteEditor {
 
         this.loadSpriteFromJSON();
 
-        this.outputJsonData();
         this.generateFrameLayerButtons();
 
         this.loadCurrentFrameImage();
@@ -865,6 +855,10 @@ export class SpriteEditor {
     // ------------------------------------------
     /** JSON methods*/
     static outputJsonData() {
+        
+        // const trace = new Error("Show stack trace:");
+        // console.log(trace.stack);        
+
         // this.generateFrameLayerButtons();
         //SpriteEditor.loadJsonSprite();
         // Locate the textarea in the document
@@ -922,7 +916,9 @@ export class SpriteEditor {
         this.currentFrame += layerIndex;
 
         this.addMessages(`Layer added at: ${this.currentFrame}`);
-        this.setCurrentFrameLayer(this.currentFrame)
+        this.setCurrentFrameLayer(this.currentFrame);
+
+        this.outputJsonData();
     }
     static subLayer() {
         // Prevent removal if there's only one layer remaining
@@ -940,6 +936,8 @@ export class SpriteEditor {
             }
             this.addMessages(`Layer removed at index: ${currentFrame}`);
             this.setCurrentFrameLayer(this.currentFrame);
+
+            this.outputJsonData();
         } else {
             this.addMessages(`Invalid layer index: ${currentFrame} ${this.currentFrame}`);
         }
@@ -947,7 +945,7 @@ export class SpriteEditor {
     static setStaticVarsFromJson() {
         // Access metadata.sprite
         this.selectPalette(SpriteEditor.jsonData.metadata.palette);
-        this.updatePaletteDD();
+//        this.updatePaletteDD();
         this.setSpritePixelSize(SpriteEditor.jsonData.metadata.spritePixelSize);
         this.setSpriteGridSize(SpriteEditor.jsonData.metadata.spriteGridSize);
 
@@ -968,7 +966,7 @@ export class SpriteEditor {
             console.log('ImageScale:', this.imageScale);
         }
     }
-    static loadJsonFromTextarea() {
+    static loadSpriteFromTextarea() {
         const textarea = document.getElementById('spriteID');
         const jsonString = textarea.value;
         try {
@@ -976,20 +974,37 @@ export class SpriteEditor {
             const parsedData = JSON.parse(jsonString);
             // Assign the parsed data to SpriteEditor.jsonData
             if (typeof SpriteEditor !== 'undefined') {
-                SpriteEditor.jsonData = parsedData;
+                SpriteEditor.jsonData = parsedData;          
+
                 this.setStaticVarsFromJson();
             } else {
                 SpriteEditor.addMessages('SpriteEditor is not defined.')
             }
         } catch (error) {
-            //SpriteEditor.addMessages(`Invalid JSON format: ${error} \n ${textarea.value}`);
-            SpriteEditor.addMessages(`Invalid JSON format: ${error} \n `);
+            SpriteEditor.addMessages(`Invalid spriteID JSON format: ${error} \n `);
         }
 
         this.generateFrameLayerButtons();
+    }    
+    static loadImageFromTextarea() {
+        const textarea = document.getElementById('imageID');
+        const jsonString = textarea.value;
+        try {
+            // Parse the JSON string into an object
+            const parsedData = JSON.parse(jsonString);
+            // Assign the parsed data to SpriteEditor.jsonData
+            if (typeof SpriteEditor !== 'undefined') {
+                SpriteEditor.jsonImages = parsedData;
+            } else {
+                SpriteEditor.addMessages('imageID is not defined.')
+            }
+        } catch (error) {
+            SpriteEditor.addMessages(`Invalid imageID JSON format: ${error} \n `);
+        }
     }
+
     static saveModifiedSprite() {
-        console.log("modspr");
+
         // Assuming spriteIndex is a 2D array with gridX and gridY dimensions
         const updatedData = [];
 
@@ -1008,60 +1023,91 @@ export class SpriteEditor {
         }
 
     }
+
+    static toCamelCase(...args) {
+        return args
+            .join(' ') // Concatenate all arguments with a space in between
+            .toLowerCase() // Convert to lowercase
+            .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+            .trim() // Remove leading and trailing spaces
+            .split(/\s+/) // Split into words
+            .map((word, index) => 
+                index === 0 
+                    ? word // First word remains lowercase
+                    : word.charAt(0).toUpperCase() + word.slice(1) // Capitalize subsequent words
+            )
+            .join(''); // Combine into camel case
+    }
+    
     static copyJSON() {
+        const camelCasePalete = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite,"palette");
+        const camelCaseSprite = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite,"sprite");
+        const camelCaseImage = this.toCamelCase(SpriteEditor.jsonData.metadata.sprite,"image");
+
         // Get the textarea element
         const textarea = document.getElementById("spriteID");
-
+    
         // Check if the textarea exists and has content
         if (textarea && textarea.value) {
+            // Prepare JSON strings
             const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2);
-
+    
             let jsonPaletteString = "";
-            console.log(SpriteEditor.paletteName, JSON.stringify(SpritePalettes.getPalette(), null, 2));
             if (SpriteEditor.paletteName === "custom") {
-                jsonPaletteString = "static jsonData = " +
+                jsonPaletteString = "static "+camelCasePalete+" = " +
                     JSON.stringify(SpritePalettes.getPalette(), null, 2) +
                     ";";
             }
-
-            // Create the modified text (desired beginning + original content + semicolon)
+    
+            // Create the modified text
             const modifiedText =
-                "static jsonData = " + textarea.value + "; \n" +
-                "static jsonImages = " + jsonImagesString + ";\n" +
+                "static "+ camelCaseSprite + " = " + textarea.value + "; \n" +
+                "static "+ camelCaseImage+" = " + jsonImagesString + ";\n" +
                 jsonPaletteString;
+            // Use Clipboard API if supported
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(modifiedText)
+                    .then(() => {
+                        this.addMessages("JSON copied to clipboard!");
+                    })
+                    .catch((error) => {
+                        console.error("Error copying JSON to clipboard:", error);
+                        this.addMessages("An error occurred while copying JSON.");
+                    });
+            } else {
+                // Fallback for older browsers using execCommand
+                console.warn("Clipboard API not supported. Falling back to execCommand.");
+                this.addMessages("Clipboard API not supported. Falling back to execCommand.");
 
-            // Create a temporary textarea to hold the modified text
-            const tempTextarea = document.createElement("textarea");
-            document.body.appendChild(tempTextarea);
-
-            // Set the modified text in the temporary textarea
-            tempTextarea.value = modifiedText;
-
-            // Select the text in the temporary textarea
-            tempTextarea.select();
-            tempTextarea.setSelectionRange(0, tempTextarea.value.length); // For mobile devices
-
-            try {
-                // Copy the selected text to the clipboard
-                const success = document.execCommand("copy");
-                if (success) {
-                    this.addMessages("JSON copied to clipboard!");
-                } else {
-                    this.addMessages("Failed to copy JSON.");
+                // Create a temporary textarea
+                const tempTextarea = document.createElement("textarea");
+                document.body.appendChild(tempTextarea);
+    
+                tempTextarea.value = modifiedText; // Set the text
+                tempTextarea.style.position = "fixed"; // Prevent scrolling to bottom
+                tempTextarea.select();
+                tempTextarea.setSelectionRange(0, tempTextarea.value.length); // For mobile
+    
+                try {
+                    const success = document.execCommand("copy");
+                    if (success) {
+                        this.addMessages("JSON copied to clipboard!");
+                    } else {
+                        this.addMessages("Failed to copy JSON.");
+                    }
+                } catch (err) {
+                    console.error("Error copying JSON using execCommand:", err);
+                    this.addMessages("An error occurred while copying JSON.");
+                } finally {
+                    // Clean up
+                    document.body.removeChild(tempTextarea);
                 }
-            } catch (err) {
-                console.error("Error copying JSON:", err);
-                this.addMessages("An error occurred while copying JSON.");
             }
-
-            // Remove the temporary textarea after copying
-            document.body.removeChild(tempTextarea);
         } else {
             this.addMessages("No JSON data to copy!");
         }
     }
-
-
+    
     // ------------------------------------------
     /** canvas click methods*/
     static getMousePositionOncanvas(canvas, event) {
@@ -1093,6 +1139,10 @@ export class SpriteEditor {
             SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = result.symbol;
 
             SpriteEditor.saveModifiedSprite();
+
+            this.outputJsonData();
+
+
         } else {
             // Determine which palette color was clicked
             const clickedPaletteX = Math.floor(mouse.mouseX / SpriteEditor.paletteSize);
@@ -1146,12 +1196,10 @@ export class SpriteEditor {
             if (isHidden) {
                 // If hidden, show it
                 box3.classList.remove('hidden');
-                console.log("Data is now visible.");
                 if (button) button.textContent = "Hide data";
             } else {
                 // If visible, hide it
                 box3.classList.add('hidden');
-                console.log("Data is now hidden.");
                 if (button) button.textContent = "Show data"; // Update button text
             }
         } else {
@@ -1290,17 +1338,26 @@ fileInput.addEventListener('change', (event) => {
 });
 
 // --------------------------------------------------------------------------
-// Add event listener for input (change in json text content)
-const textareaSprite = document.getElementById('spriteID');
-textareaSprite.addEventListener('input', (event) => {
-    SpriteEditor.addMessages(`Sprite JSON data changed.`);
-    SpriteEditor.loadJsonFromTextarea();
-});
-
-// --------------------------------------------------------------------------
 // Add event listener for palette (change in json text content)
 const textareaPalette = document.getElementById('paletteID');
 textareaPalette.addEventListener('input', (event) => {
     SpriteEditor.addMessages(`Palette JSON data changed.`);
     SpriteEditor.loadPaletteFromTextarea();
 });
+
+// --------------------------------------------------------------------------
+// Add event listener for input (change in json text content)
+const textareaSprite = document.getElementById('spriteID');
+textareaSprite.addEventListener('input', (event) => {
+    SpriteEditor.addMessages(`Sprite JSON data changed.`);
+    SpriteEditor.loadSpriteFromTextarea();
+});
+
+// --------------------------------------------------------------------------
+// Add event listener for images (change in json text content)
+const textareaImages = document.getElementById('imageID');
+textareaImages.addEventListener('input', (event) => {
+    SpriteEditor.addMessages(`Image JSON data changed.`);
+    SpriteEditor.loadImageFromTextarea();
+});
+

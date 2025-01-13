@@ -160,7 +160,7 @@
 						</tr>
 					</table>
 				</div>
-				<div class="inner">
+				<div class="inner" style="overflow-x: auto; white-space: nowrap;">
 					<h3>Sprite Image</h3>
 					<canvas id="spriteImage"></canvas><br>
 					<!-- <p>Zoom</p> -->
@@ -205,7 +205,9 @@
 			</div>
 			<div class="inner">
 				<div>
-					<h3>Palette Colors</h3>
+					<button id="copyJson" onclick="SpriteEditor.copyJSON()">Copy all JSON</button>
+
+					<h3>Palette Colors JSON</h3>
 					<select id="paletteDropdown">
 						<option value='custom'>Custom</option>
 						<option value='default'>default</option>
@@ -231,8 +233,13 @@
 
 			<div class="inner">
 				<h3>Sprite JSON</h3>
-				<button id="copyJson" onclick="SpriteEditor.copyJSON()">Copy JSON</button>
 				<textarea id="spriteID"></textarea>
+
+			</div>
+
+			<div class="inner">
+				<h3>Image JSON</h3>
+				<textarea id="imageID"></textarea>
 
 			</div>
 
