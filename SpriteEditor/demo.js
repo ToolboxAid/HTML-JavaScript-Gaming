@@ -841,66 +841,66 @@ export class Demo {
 
     static marioSprite = {
         "metadata": {
-            "sprite": "Mario",
-            "spriteGridSize": 20.1,
-            "spritePixelSize": 3,
-            "palette": "custom"
+          "sprite": "Mario",
+          "spriteGridSize": 20.1,
+          "spritePixelSize": 3,
+          "palette": "custom"
         },
         "layers": [
-            {
-                "metadata": {
-                    "spriteimage": "jump.gif",
-                    "imageX": -34,
-                    "imageY": -142,
-                    "imageScale": 5
-                },
-                "data": [
-                    "ØØØØØØbbbbØØØØ",
-                    "ØØØØbbRRRRbØØØ",
-                    "ØØØbRRRRRRbØØØ",
-                    "ØØbRRRRbbbbbbØ",
-                    "ØbRRRbbbbbbbbb",
-                    "ØbRRbbMMMMbØØØ",
-                    "bbbbbMMMbMbØØØ",
-                    "bMMbbMMMbMbbbØ",
-                    "bMMbbbMMMMMMMb",
-                    "bMMMbMMbMMMMMb",
-                    "ØbMMMMbbbMMMbØ",
-                    "ØØbbMMMMbbbbØØ",
-                    "ØbbbbMMMMMbØØØ",
-                    "ØbRRbbbbbbØØØØ",
-                    "bRRRRbbMMMbØØØ",
-                    "bRRRRbMMMMMbØØ",
-                    "bRRRRbMMMMMbØØ",
-                    "bbRRRRbMMMbbbØ",
-                    "ØbbRRRbbbbbObØ",
-                    "ØbbbbbbOObbObØ",
-                    "ØbbbbbbbbbbbbØ",
-                    "ØbbbbbbbbbbbØØ",
-                    "ØØbbbbbbbbbbØØ",
-                    "ØØbbbbbbbbbØØØ",
-                    "ØØbRRRRRbØØØØØ",
-                    "ØØbRRRRRRbØØØØ",
-                    "ØØbbbbbbbbØØØØ"
-                ]
-            }
+          {
+            "metadata": {
+              "spriteimage": "mario.gif",
+              "imageX": -34,
+              "imageY": -142,
+              "imageScale": 5
+            },
+            "data": [
+              "ØØØØØØbbbbØØØØ",
+              "ØØØØbbRRRRbØØØ",
+              "ØØØbRRRRRRbØØØ",
+              "ØØbRRRRbbbbbbØ",
+              "ØbRRRbbbbbbbbb",
+              "ØbRRbbMMMMbØØØ",
+              "bbbbbMMMbMbØØØ",
+              "bMMbbMMMbMbbbØ",
+              "bMMbbbMMMMMMMb",
+              "bMMMbMMbMMMMMb",
+              "ØbMMMMbbbMMMbØ",
+              "ØØbbMMMMbbbbØØ",
+              "ØbbbbMMMMMbØØØ",
+              "ØbRRbbbbbbØØØØ",
+              "bRRRRbbMMMbØØØ",
+              "bRRRRbMMMMMbØØ",
+              "bRRRRbMMMMMbØØ",
+              "bbRRRRbMMMbbbØ",
+              "ØbbRRRbbbbbYbØ",
+              "ØbbbbbbYYbbYbØ",
+              "ØbbbbbbYYbbbbØ",
+              "ØbbbbbbbbbbbØØ",
+              "ØØbbbbbbbbbbØØ",
+              "ØØbbbbbbbbbØØØ",
+              "ØØbRRRRRbØØØØØ",
+              "ØØbRRRRRRbØØØØ",
+              "ØØbbbbbbbbØØØØ"
+            ]
+          }
         ]
-    };
-    static marioImage = {
-        "jump.gif": "data:image/gif;base64,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"
-    };
-    static marioPalette = {
-        custom: [
-            { "symbol": "R", "hex": "#FF0000", "name": "Red" },
-            { "symbol": "b", "hex": "#000000", "name": "Black" },
-            { "symbol": "M", "hex": "#FCE5CD", "name": "Mario Skin Tone" },
-            { "symbol": "O", "hex": "#FF8800", "name": "Orange" },
-            { "symbol": "Y", "hex": "#FFFF00", "name": "Yellow" },
-            { "symbol": "G", "hex": "#00FF00", "name": "Green" },
-            { "symbol": "B", "hex": "#0000FF", "name": "Blue" },
-            { "symbol": "V", "hex": "#8A2BE2", "name": "Violet" },
-            { "symbol": "I", "hex": "#4B0082", "name": "Indigo" },
-            { "symbol": "Ø", "hex": "#00000000", "name": "Transparent" }]
-    };
+      }; 
+      static marioImage = {
+        "mario.gif": "data:image/gif;base64,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",
+      };
+      static marioPalette = {
+      custom: [
+      {"symbol":"R","hex":"#FF0000","name":"Red"},
+      {"symbol":"b","hex":"#000000","name":"Black"},
+      {"symbol":"M","hex":"#FCE5CD","name":"Mario Skin Tone"},
+      {"symbol":"O","hex":"#FF8800","name":"Orange"},
+      {"symbol":"Y","hex":"#FFFF00","name":"Yellow"},
+      {"symbol":"G","hex":"#00FF00","name":"Green"},
+      {"symbol":"B","hex":"#0000FF","name":"Blue"},
+      {"symbol":"V","hex":"#8A2BE2","name":"Violet"},
+      {"symbol":"I","hex":"#4B0082","name":"Indigo"},
+      {"symbol":"Ø","hex":"#00000000","name":"Transparent"}]
+      };
 
 }
