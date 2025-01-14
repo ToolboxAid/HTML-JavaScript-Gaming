@@ -100,12 +100,22 @@ export class SpriteEditor {
 
     // ------------------------------------------
     /** Samples methods*/
-    static loadSample(jsonSprite, jsonImage, jsonPalette) {
+    static loadSample(jsonSprite, jsonImage, jsonPalette = null) {
         SpriteEditor.jsonSprite = jsonSprite;
         SpriteEditor.jsonImages = jsonImage;
+
         this.outputJsonData();
         this.loadSpriteFromTextarea();
-        this.loadCurrentFrameImage();
+
+        SpriteEditor.updatePaletteDD();
+
+        if (jsonPalette) {
+            SpritePalettes.palettes.custom = [...Demo.marioPalette.custom];
+            this.showPaletteColors();
+        }
+        const textarea = document.getElementById('imageID');
+        const jsonString = JSON.stringify(SpriteEditor.jsonImages, null, 2); // Indent with 2 spaces        
+        textarea.value = jsonString;
     }
     static loadSample1() {
         SpriteEditor.addMessages('sample1')
@@ -268,7 +278,7 @@ export class SpriteEditor {
         const spriteTextarea = document.getElementById("paletteID");  // Ensure the textarea element exists
 
         if (!spriteTextarea) {
-            alert(`Sprite textarea '${paletteID}' not found.`);
+            alert(`Sprite textarea 'paletteID' not found.`);
             return;
         }
 
@@ -885,16 +895,13 @@ export class SpriteEditor {
         }
     }
 
-    static showStackTrace(){
+    static showStackTrace() {
         const trace = new Error("Show stack trace:");
-        console.log(trace.stack);         
+        console.log(trace.stack);
     }
     // ------------------------------------------
     /** JSON methods*/
-    static outputJsonData() {      
-
-        // this.generateFrameLayerButtons();
-        //SpriteEditor.loadJsonSprite();
+    static outputJsonData() {
         // Locate the textarea in the document
         const textArea = document.getElementById("spriteID");
 
@@ -915,12 +922,11 @@ export class SpriteEditor {
 
         if (firstLayerData) {
             // Use firstLayerData safely
+            this.loadSpriteFromJSON();
         } else {
             this.addMessages("The required data does not exist.");
             return;
         }
-
-        this.loadSpriteFromJSON();
     }
     static loadSpriteFromJSON() {
         console.log("lsfj");
@@ -1014,7 +1020,7 @@ export class SpriteEditor {
                 this.setStaticVarsFromJson();
                 this.generateFrameLayerButtons();
                 this.loadSpriteFromJSON();
-                    } else {
+            } else {
                 SpriteEditor.addMessages('SpriteEditor is not defined.')
             }
         } catch (error) {
@@ -1077,7 +1083,7 @@ export class SpriteEditor {
             .join(''); // Combine into camel case
     }
 
-    
+
     static copyJSON() {
         const camelCasePalete = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "palette");
         const camelCaseSprite = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "sprite");
@@ -1092,24 +1098,20 @@ export class SpriteEditor {
             const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2);
 
 
-            
+
             let jsonPaletteString = "";
-if (SpriteEditor.paletteName === "custom") {
-    jsonPaletteString = "static " + camelCasePalete + " = {\ncustom: " +
-        JSON.stringify(SpritePalettes.getPalette(), null, 0)
-        .replace(/(\r\n|\n|\r)/g, '') // Remove all carriage returns and line feeds
-        .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
-        .replace(/'/g, '"') // Replace single quotes with double quotes
-        .replace(/,\s*}/g, '}') // Remove trailing commas in objects
-        .replace(/,\s*]/g, ']') // Remove trailing commas in arrays
-        .replace(/\},/g, '},\n') // Add a newline after each closing brace
-        .replace(/\[\s*\{/g, '[\n{') // Replace "[ {" with "[\n{"
-        + "\n};"; // Close the array with a newline before the closing bracket
-}
-
-
-            
-            
+            if (SpriteEditor.paletteName === "custom") {
+                jsonPaletteString = "static " + camelCasePalete + " = {\ncustom: " +
+                    JSON.stringify(SpritePalettes.getPalette(), null, 0)
+                        .replace(/(\r\n|\n|\r)/g, '') // Remove all carriage returns and line feeds
+                        .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
+                        .replace(/'/g, '"') // Replace single quotes with double quotes
+                        .replace(/,\s*}/g, '}') // Remove trailing commas in objects
+                        .replace(/,\s*]/g, ']') // Remove trailing commas in arrays
+                        .replace(/\},/g, '},\n') // Add a newline after each closing brace
+                        .replace(/\[\s*\{/g, '[\n{') // Replace "[ {" with "[\n{"
+                    + "\n};"; // Close the array with a newline before the closing bracket
+            }
 
             // Create the modified text
             const modifiedText =
@@ -1374,9 +1376,10 @@ fileInput.addEventListener('change', (event) => {
             ) {
                 SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage = SpriteEditor.imageName;
                 SpriteEditor.jsonImages[SpriteEditor.imageName] = e.target.result;
+                SpriteEditor.outputJsonData();
 
                 const textarea = document.getElementById('imageID');
-                textarea.value = JSON.stringify(SpriteEditor.jsonImages, null,2);
+                textarea.value = JSON.stringify(SpriteEditor.jsonImages, null, 2);
             } else {
                 SpriteEditor.addMessages("Failed to update current frame(s) image.");
             }
