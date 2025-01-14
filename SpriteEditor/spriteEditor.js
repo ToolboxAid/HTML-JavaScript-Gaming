@@ -1095,7 +1095,7 @@ export class SpriteEditor {
             
             let jsonPaletteString = "";
 if (SpriteEditor.paletteName === "custom") {
-    jsonPaletteString = "static " + camelCasePalete + " = {custom: \n" +
+    jsonPaletteString = "static " + camelCasePalete + " = {\ncustom: " +
         JSON.stringify(SpritePalettes.getPalette(), null, 0)
         .replace(/(\r\n|\n|\r)/g, '') // Remove all carriage returns and line feeds
         .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
