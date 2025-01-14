@@ -63,7 +63,6 @@ export class Demo {
         "layers": [
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 100,
                     "imageY": 45,
                     "imageScale": 1.5
@@ -77,7 +76,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 2,
                     "imageScale": 1.5
@@ -105,7 +103,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 3,
                     "imageScale": 1.5
@@ -119,7 +116,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 4,
                     "imageScale": 1.5
@@ -133,7 +129,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 5,
                     "imageScale": 1.5
@@ -147,7 +142,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 6,
                     "imageScale": 1.5
@@ -161,7 +155,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 7,
                     "imageScale": 1.5
@@ -175,7 +168,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 8,
                     "imageScale": 1.5
@@ -189,7 +181,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 9,
                     "imageScale": 1.5
@@ -203,7 +194,6 @@ export class Demo {
             },
             {
                 "metadata": {
-                    "spriteimage": "test.jpg",
                     "imageX": 1,
                     "imageY": 0,
                     "imageScale": 1.5

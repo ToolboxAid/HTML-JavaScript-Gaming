@@ -69,8 +69,7 @@ export class SpriteEditor {
     static initMessages = true;
 
     static currentFrame = 0;
-    // static jsonPalette = {        
-    // }
+
     static jsonSprite = {
         "metadata": {
             "sprite": "sprite starter json",
@@ -101,6 +100,9 @@ export class SpriteEditor {
     // ------------------------------------------
     /** Samples methods*/
     static loadSample(jsonSprite, jsonImage, jsonPalette = null) {
+
+        this.initialize();
+
         SpriteEditor.jsonSprite = jsonSprite;
         SpriteEditor.jsonImages = jsonImage;
 
@@ -156,6 +158,7 @@ export class SpriteEditor {
         // set paletteName on load
         this.updatePaletteDD();
 
+        this.imageName = null;
         this.image = new Image();
 
         this.outputJsonData();
@@ -163,6 +166,9 @@ export class SpriteEditor {
         this.loadSpriteFromTextarea();
         this.generateFrameLayerButtons();
         this.populateAnimationDropdown();
+
+        this.setAnimationRate();
+        this.setCurrentFrameLayer(0);
     }
     static initializeArrays() {
         for (let x = 0; x < this.maxGrid; x++) {
@@ -347,40 +353,39 @@ export class SpriteEditor {
             SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata &&
             SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage
         ) {
-            console.log("lcfi");
             const imageName = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage;
-
-            // don't do this, prevents image by name (not x & Y)
-            // // if (this.imageName === SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage) {
-            // //     console.log("Same image");
-            // //     return;
-            // // }
-
+    
             // Check if the image exists in the jsonSprite.images object
             if (SpriteEditor.jsonImages && SpriteEditor.jsonImages[imageName]) {
+                // Create the image and set its source
                 const img = new Image();
-                img.onload = () => {
-                    this.addMessages(`Image '${imageName}' successfully loaded.`);
-                    SpriteEditor.image = img; // Store the image for further use
-                };
-                this.imageName = imageName;
                 img.src = SpriteEditor.jsonImages[imageName]; // Set the image source to the base64 data
-                this.image = img;
-
+    
+                // Check if the image has been updated
+                if (this.imageName !== imageName) {
+                    this.imageName = imageName;
+                    SpriteEditor.image = img; // Store the image for further use
+                    this.image = img;
+                    this.addMessages(`Image '${imageName}' successfully loaded.`);
+                }
+    
+                // Set image position
                 this.imageX = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageX;
                 this.imageY = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageY;
-
             } else {
-                this.addMessages(`Image '${imageName}' not found in SpriteEditor.jsonImages[imageName].`);
+                // Handle case where image is not found
+                this.addMessages(`Image '${imageName}' not found in SpriteEditor.jsonImages for the current frame: ${this.currentFrame}.`);
                 this.imageName = null;
                 this.image = null;
             }
         } else {
+            // Handle case where metadata is missing
             this.imageName = null;
             this.image = null;
-            this.addMessages("No spriteimage metadata found for the current frame.");
+            // this.addMessages(`No spriteimage metadata found for the current frame: ${SpriteEditor.currentFrame}.`);
         }
     }
+    
     static setImageX(imageX) {
         if (typeof imageX === 'number' && !isNaN(imageX)) {
             this.imageX = 0;
@@ -597,10 +602,6 @@ export class SpriteEditor {
             this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
             this.ctxEditor.restore();
         }
-
-        //this.outputJsonData();
-
-        //this.showPaletteColors();
 
         this.drawGrid();
         this.drawPalette();
@@ -840,7 +841,7 @@ export class SpriteEditor {
             currentFrame < SpriteEditor.jsonSprite.layers.length
         ) {
             this.currentFrame = currentFrame;
-            this.addMessages(`Current Layer frame at index: ${this.currentFrame}`);
+            //this.addMessages(`Current Layer frame at index: ${this.currentFrame}`);
         } else {
             this.addMessages(`Invalid currentFrame or layers data: ${currentFrame}`);
         }
@@ -924,13 +925,16 @@ export class SpriteEditor {
             // Use firstLayerData safely
             this.loadSpriteFromJSON();
         } else {
-            this.addMessages("The required data does not exist.");
+            this.addMessages("The required 'firstLayerData' does not exist.");
             return;
         }
     }
     static loadSpriteFromJSON() {
-        console.log("lsfj");
         const firstLayerData = SpriteEditor?.jsonSprite?.layers?.[this.currentFrame]?.data ?? null;
+        if (firstLayerData === null) {
+            console.log("null");
+            return;
+        }
         // Update gridCellWidth and gridCellHeight based on firstLayerData        
         this.gridCellWidth = firstLayerData[0].length;  // Number of columns
         this.gridCellHeight = firstLayerData.length;    // Number of rows
@@ -1024,12 +1028,13 @@ export class SpriteEditor {
                 SpriteEditor.addMessages('SpriteEditor is not defined.')
             }
         } catch (error) {
-            SpriteEditor.addMessages(`Invalid spriteID JSON format: ${error} \n `);
+            SpriteEditor.addMessages(`Invalid spriteID JSON format: ${error} \n`);
+            console.log(`Invalid spriteID JSON format: ${error} \n ${error.message} \n ${jsonString}`);
+            alert("I must be trashing some variable...\n'spriteID' failure, \n if the issue persists, press 'F5' to reset");
         }
 
     }
     static loadImageFromTextarea() {
-        console.log("lifta");
         const textarea = document.getElementById('imageID');
         const jsonString = textarea.value;
         try {
