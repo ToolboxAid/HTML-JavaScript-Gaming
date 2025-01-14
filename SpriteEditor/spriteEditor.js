@@ -103,8 +103,10 @@ export class SpriteEditor {
 
         this.initialize();
 
-        SpriteEditor.jsonSprite = jsonSprite;
-        SpriteEditor.jsonImages = jsonImage;
+        //SpriteEditor.jsonSprite = jsonSprite;
+        SpriteEditor.jsonSprite = JSON.parse(JSON.stringify(jsonSprite));
+//        SpriteEditor.jsonImages = jsonImage;
+        SpriteEditor.jsonImages = JSON.parse(JSON.stringify(jsonImage));
 
         this.outputJsonData();
         this.loadSpriteFromTextarea();
@@ -338,10 +340,6 @@ export class SpriteEditor {
         }
     }
 
-    // // Call the function to load the palette
-    // loadPaletteFromTextarea();
-
-
     // ------------------------------------------
     // Background image methods
     /** Image methods*/
@@ -354,13 +352,13 @@ export class SpriteEditor {
             SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage
         ) {
             const imageName = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage;
-    
+
             // Check if the image exists in the jsonSprite.images object
             if (SpriteEditor.jsonImages && SpriteEditor.jsonImages[imageName]) {
                 // Create the image and set its source
                 const img = new Image();
                 img.src = SpriteEditor.jsonImages[imageName]; // Set the image source to the base64 data
-    
+
                 // Check if the image has been updated
                 if (this.imageName !== imageName) {
                     this.imageName = imageName;
@@ -368,7 +366,7 @@ export class SpriteEditor {
                     this.image = img;
                     this.addMessages(`Image '${imageName}' successfully loaded.`);
                 }
-    
+
                 // Set image position
                 this.imageX = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageX;
                 this.imageY = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageY;
@@ -385,7 +383,7 @@ export class SpriteEditor {
             // this.addMessages(`No spriteimage metadata found for the current frame: ${SpriteEditor.currentFrame}.`);
         }
     }
-    
+
     static setImageX(imageX) {
         if (typeof imageX === 'number' && !isNaN(imageX)) {
             this.imageX = 0;
@@ -987,9 +985,22 @@ export class SpriteEditor {
             this.addMessages(`Invalid layer index: ${currentFrame} ${this.currentFrame}`);
         }
     }
+    static setPaletteDropDown(value = "default") {
+
+        const dropdown = document.getElementById("paletteDropdown");
+        if (dropdown) {
+            // Set the selected value to '0' to 'Stop' or 1-60 for frames
+            dropdown.value = value; //
+
+            // Trigger the change event manually if needed
+            const event = new Event('change');
+            dropdown.dispatchEvent(event);
+        }
+    }
     static setStaticVarsFromJson() {
         // Access metadata.sprite
-        this.selectPalette(SpriteEditor.jsonSprite.metadata.palette);
+        //this.selectPalette(SpriteEditor.jsonSprite.metadata.palette);
+        this.setPaletteDropDown(SpriteEditor.jsonSprite.metadata.palette);
         this.setSpritePixelSize(SpriteEditor.jsonSprite.metadata.spritePixelSize);
         this.setSpriteGridSize(SpriteEditor.jsonSprite.metadata.spriteGridSize);
 
