@@ -188,6 +188,24 @@ class Functions {
         return intersectionPoint; // Return the intersection point
     }
 
+    /** Misc
+     * 
+     */
+    static toCamelCase(...args) {
+        return args
+            .join(' ') // Concatenate all arguments with a space in between
+            .toLowerCase() // Convert to lowercase
+            .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+            .trim() // Remove leading and trailing spaces
+            .split(/\s+/) // Split into words
+            .map((word, index) =>
+                index === 0
+                    ? word // First word remains lowercase
+                    : word.charAt(0).toUpperCase() + word.slice(1) // Capitalize subsequent words
+            )
+            .join(''); // Combine into camel case
+    }
+
     /** time */
     /**
      * Static method for a hard wait.

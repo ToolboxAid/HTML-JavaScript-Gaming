@@ -6,7 +6,8 @@
 import Colors from "../scripts/colors.js";
 import Palettes from "../scripts/palettes.js";
 import MouseInput from '../scripts/mouse.js';
-import { Demo } from "./demo.js";
+import Samples from "./samples.js";
+import Functions from "../scripts/functions.js";
 //-------------------------------------------
 export class SpriteEditor {
 
@@ -100,7 +101,7 @@ export class SpriteEditor {
 
     // ------------------------------------------
     /** Samples methods*/
-    static loadSample(jsonSprite, jsonImage, jsonPalette = null) {
+    static loadSample(name, jsonSprite, jsonImage, jsonPalette = null) {
 
         this.initialize();
 
@@ -113,36 +114,32 @@ export class SpriteEditor {
         this.updatePaletteDD();
 
         if (jsonPalette) {
-            Palettes.palettes.custom = [...Demo.marioPalette.custom];
+            Palettes.palettes.custom = [...Samples.marioPalette.custom];
             this.showPaletteColors();
         }
         const textarea = document.getElementById('imageID');
         const jsonString = JSON.stringify(this.jsonImages, null, 2); // Indent with 2 spaces        
         textarea.value = jsonString;
+
+        this.addMessages(`Loaded: '${name}'`)
     }
     static loadSample1() {
-        this.addMessages('sample1')
-        this.loadSample(Demo.sample1Sprite, Demo.sample1Image);
+        this.loadSample('sample 1', Samples.sample1Sprite, Samples.sample1Image);
     }
     static loadSample2() {
-        this.addMessages('sample2')
-        this.loadSample(Demo.sample2Sprite, Demo.sample2Image);
+        this.loadSample('sample 2', Samples.sample2Sprite, Samples.sample2Image);
     }
     static loadSample3() {
-        this.addMessages('sample3')
-        this.loadSample(Demo.sample3Sprite, Demo.sample3Image);
+        this.loadSample('sample 3', Samples.sample3Sprite, Samples.sample3Image);
     }
     static loadSample4() {
-        this.addMessages('sample4')
-        this.loadSample(Demo.sample4Sprite, Demo.sample4Image);
+        this.loadSample('sample 4', Samples.sample4Sprite, Samples.sample4Image);
     }
     static loadSample5() {
-        this.addMessages('sample5')
-        this.loadSample(Demo.sample5Sprite, Demo.sample5Image);
+        this.loadSample('sample 5', Samples.sample5Sprite, Samples.sample5Image);
     }
     static loadSample6() {
-        this.addMessages('sample6')
-        this.loadSample(Demo.marioSprite, Demo.marioImage, Demo.marioPalette);
+        this.loadSample('sample 6', Samples.marioSprite, Samples.marioImage, Samples.marioPalette);
     }
     // ------------------------------------------
     /** Initialization methods*/
@@ -563,7 +560,6 @@ export class SpriteEditor {
 
         this.outputJsonData();
     }
-
     static setFrameCount(framesPerSprite) {
         if (typeof framesPerSprite === 'string' && /^\d+$/.test(framesPerSprite)) {
             const num = Number(framesPerSprite);
@@ -1107,25 +1103,10 @@ export class SpriteEditor {
 
     }
 
-    static toCamelCase(...args) {
-        return args
-            .join(' ') // Concatenate all arguments with a space in between
-            .toLowerCase() // Convert to lowercase
-            .replace(/[^a-z0-9\s]/g, '') // Remove special characters
-            .trim() // Remove leading and trailing spaces
-            .split(/\s+/) // Split into words
-            .map((word, index) =>
-                index === 0
-                    ? word // First word remains lowercase
-                    : word.charAt(0).toUpperCase() + word.slice(1) // Capitalize subsequent words
-            )
-            .join(''); // Combine into camel case
-    }
-
     static copyJSON() {
-        const camelCasePalete = this.toCamelCase(this.jsonSprite.metadata.sprite, "palette");
-        const camelCaseSprite = this.toCamelCase(this.jsonSprite.metadata.sprite, "sprite");
-        const camelCaseImage = this.toCamelCase(this.jsonSprite.metadata.sprite, "image");
+        const camelCasePalete = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "palette");
+        const camelCaseSprite = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "sprite");
+        const camelCaseImage = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "image");
 
         // Get the textarea element
         const textarea = document.getElementById("spriteID");
@@ -1134,8 +1115,6 @@ export class SpriteEditor {
         if (textarea && textarea.value) {
             // Prepare JSON strings
             const jsonImagesString = JSON.stringify(this.jsonImages, null, 2);
-
-
 
             let jsonPaletteString = "";
             if (this.paletteName === "custom") {
@@ -1163,8 +1142,8 @@ export class SpriteEditor {
                         this.addMessages("JSON copied to clipboard!");
                     })
                     .catch((error) => {
-                        console.error("Error copying JSON to clipboard:", error);
                         this.addMessages("An error occurred while copying JSON.");
+                        console.error("Error copying JSON to clipboard:", error);
                     });
             } else {
                 // Fallback for older browsers using execCommand

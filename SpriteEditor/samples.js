@@ -1,10 +1,10 @@
 // ToolboxAid.com
 // David Quesenberry
 // 12/28/2024
-// demo.js
+// sample.js
 
 //-------------------------------------------
-export class Demo {
+class Samples {
 
     /** Usage:
      * const imageName = SpriteEditor.sample1.layers[0].metadata.spriteimage;
@@ -1000,3 +1000,5 @@ export class Demo {
       };
 
 }
+// Export the Samples class
+export default Samples;
