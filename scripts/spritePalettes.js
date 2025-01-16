@@ -13,6 +13,9 @@
  */
 export class SpritePalettes {
 
+    // --------------------------------------------------------
+    // Palette methods
+    // --------------------------------------------------------
     static currentPaletteName = 'default';
     static transparentColor = "#00000000";
     static errorResult = { symbol: 'Ø', hex: '#00000000', name: 'Transparent' };
@@ -21,7 +24,7 @@ export class SpritePalettes {
         custom: [
             // Transparent
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
-        ],           
+        ],
 
         default: [
             { symbol: '!', hex: '#F08080', name: 'LightCoral' }, 		// color #'0' ascii'33'
@@ -1194,7 +1197,7 @@ export class SpritePalettes {
             // Transparent
             { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
         ],
-     
+
     };
 
     // Get the current palette
@@ -1212,7 +1215,7 @@ export class SpritePalettes {
         return true;
     }
 
-    static setCustomPalette(customPalette){
+    static setCustomPalette(customPalette) {
         this.setPalette('custom');
         this.palettes.custom = customPalette;
     }
@@ -1245,7 +1248,7 @@ export class SpritePalettes {
         const palette = this.getPalette(); // Use current palette
         if (index < 0 || index >= palette.length) {
             alert(`Index out of bounds: ${index}`);
-            return SpritePalettes.errorResult;
+            return this.errorResult;
         }
         return palette[index];
     }
@@ -1258,7 +1261,7 @@ export class SpritePalettes {
         // Validate that symbol is a non-empty string and a single ASCII character
         if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
             console.warn("Invalid symbol provided:", symbol);
-            result = SpritePalettes.errorResult;
+            result = this.errorResult;
         }
 
         // Search the palette for the symbol
@@ -1266,7 +1269,7 @@ export class SpritePalettes {
 
         if (!result) {
             //console.warn(`Symbol not found:'${symbol}'`);
-            result = SpritePalettes.errorResult;
+            result = this.errorResult;
         }
 
         return result;
@@ -1278,7 +1281,7 @@ export class SpritePalettes {
         const result = palette.find(item => item.hex.toLowerCase() === hex.toLowerCase());
         if (!result) {
             alert(`Hex not found: ${hex}`);
-            return SpritePalettes.errorResult;
+            return this.errorResult;
         }
         return result;
     }
@@ -1304,8 +1307,81 @@ export class SpritePalettes {
         }
     }
 
+    // -----------------------------------------------------------------------------------
+
+    static sortColors(colors, sortBy = 'hue') {
+        /** sort options:
+            // Sorting by Hue
+            const sortedByHue = sortColors(colors, 'hue');
+            // Sorting by Saturation
+            const sortedBySaturation = sortColors(colors, 'saturation');
+            // Sorting by Lightness
+            const sortedByLightness = sortColors(colors, 'lightness');
+         */
+        colors.sort((a, b) => {
+            // Check for transparency
+            if (this.isTransparent(a.hex)) {
+                return 1; // Move transparent color 'a' to the bottom
+            }
+            if (this.isTransparent(b.hex)) {
+                return -1; // Move transparent color 'b' to the bottom
+            }
+
+            // Convert hex to RGB
+            let rgbA = this.hexToRgb(a.hex);
+            let rgbB = this.hexToRgb(b.hex);
+
+            // Convert RGB to HSL
+            let hslA = this.rgbToHsl(rgbA.r, rgbA.g, rgbA.b);
+            let hslB = this.rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
+
+            // Sort based on the selected criterion
+            if (sortBy === 'hue') {
+                return hslA.h - hslB.h; // Sort by hue
+            } else if (sortBy === 'saturation') {
+                return hslA.s - hslB.s; // Sort by saturation
+            } else if (sortBy === 'lightness') {
+                return hslA.l - hslB.l; // Sort by lightness
+            } else {
+                console.log('sortBy:', sortBy); // Debug log to check the value
+                console.warn(` --- Invalid sortBy value:'${sortBy}'. Defaulting to 'hue'. ---`);
+                return hslA.h - hslB.h; // Default to sorting by hue
+            }
+        });
+        return colors;
+    }
+
+    // --------------------------------------------------------
+    // Color methods
+    // --------------------------------------------------------
+
+    /* The hue range for each color in the visible spectrum (ROYGBIV) within the HSL
+     (Hue, Saturation, Lightness) model is generally as follows: 
+      const colorRanges = {
+        Red:    ['#FF0000', '#FF6347'], // 0°–30° and 330°–360°    Red rgb(255, 0, 0)
+        Orange: ['#FFA500', '#FF8C00'], // 30°–60°              Orange rgb(255, 127, 0)
+        Yellow: ['#FFFF00', '#FFD700'], // 60°–90°              Yellow rgb(255, 255, 0)
+        Green:  ['#00FF00', '#32CD32'], // 90°–150°              Green rgb(0, 255, 0)
+        Blue:   ['#0000FF', '#1E90FF'], // 180°–240°              Blue rgb(0, 0, 255)
+        Indigo: ['#4B0082', '#6A5ACD'], // 240°–270°            Indigo rgb(75, 0, 130)
+        Violet: ['#EE82EE', '#9400D3'], // 270°–330°            Violet rgb(238, 130, 238)
+                                        // 330°–360° see 0°–30°    Red rgb(255,0,0)
+    }; */
+
+    // Method to validate #RRGGBB and #RRGGBBAA formats
+    static isValidHexColor(color) {
+        //     // Example Usages:
+        // console.log(isValidHexColor("#FF5733"));    // true (valid #RRGGBB format)
+        // Regular expression to match #RRGGBB or #RRGGBBAA format
+        const hexColorRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
+
+        // Test if the color matches the regular expression
+        return hexColorRegex.test(color);
+    }
+
     // Helper function to convert hex to RGB
     static hexToRgb(hex) {
+        this.isValidHexColor(hex);
         let r = parseInt(hex.substring(1, 3), 16);
         let g = parseInt(hex.substring(3, 5), 16);
         let b = parseInt(hex.substring(5, 7), 16);
@@ -1342,68 +1418,115 @@ export class SpritePalettes {
         }
     }
 
+    // Helper function to convert HSL (Hue, Saturation, Lightness) to RGB
+    static hslToRgb(h, s, l) {
+        // // Example Usage:
+        // const rgb = hslToRgb(120, 100, 50); // Green with full saturation and medium lightness
+        // console.log(rgb); // Outputs: { r: 0, g: 255, b: 0 }
+
+        // Normalize saturation and lightness
+        s /= 100;
+        l /= 100;
+
+        let r, g, b;
+
+        if (s === 0) {
+            // Achromatic case (gray)
+            r = g = b = l; // All RGB values will be equal in this case
+        } else {
+            const hueToRgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1 / 6) return p + (q - p) * 6 * t;
+                if (t < 1 / 2) return q;
+                if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                return p;
+            };
+
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+
+            r = hueToRgb(p, q, h / 360 + 1 / 3);
+            g = hueToRgb(p, q, h / 360);
+            b = hueToRgb(p, q, h / 360 - 1 / 3);
+        }
+
+        // Convert the RGB values to a range of 0 to 255
+        r = Math.round(r * 255);
+        g = Math.round(g * 255);
+        b = Math.round(b * 255);
+
+        return {
+            r: r,
+            g: g,
+            b: b
+        };
+    }
+
+    // Convert RGB (and optional Alpha) to Hex
+    static rgbToHex(r, g, b, a = 1) {
+        // Ensure RGB values are within the 0-255 range and round them
+        r = Math.round(Math.min(255, Math.max(0, r)));
+        g = Math.round(Math.min(255, Math.max(0, g)));
+        b = Math.round(Math.min(255, Math.max(0, b)));
+
+        // Convert RGB values to Hex
+        let hex = "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase();
+
+        // If Alpha (a) is provided, convert it to Hex and append it to the result
+        if (a < 1) {
+            let alphaHex = Math.round(a * 255).toString(16).padStart(2, "0").toUpperCase();
+            hex += alphaHex;
+        }
+
+        return hex;
+    }
+
+    // Helper function to return the transparency percentage as a decimal (0 to 1)
+    static getTransparencyPercentage(hex) {
+        // Assuming the color is in #RRGGBBAA format
+        if (this.isValidHexColor(hex)) {
+            // Extract the alpha channel (last 2 characters) and convert from hex to decimal (0 to 255)
+            let alpha = parseInt(hex.slice(7, 9), 16) / 255;
+            return alpha; // Returns a value between 0 (fully transparent) and 1 (fully opaque)
+        }
+        return 1; // If not in #RRGGBBAA format, assume fully opaque
+    }
+
     // Helper function to check if a color is transparent (based on alpha)
     static isTransparent(hex) {
-        // Assuming the color is in #RRGGBBAA format
-        if (hex === SpritePalettes.transparentColor || hex.length === 9) {
-            let alpha = parseInt(hex.slice(7, 9), 16) / 255;
-            return alpha < 1;
+        // Get the transparency percentage (alpha value)
+        const alpha = this.getTransparencyPercentage(hex);
+
+        // If alpha is 0, it's fully transparent; otherwise, it's partially transparent
+        return alpha === 0 || alpha < 1;
+    }
+
+    static generateHSLColors() {
+        // console.log(generateHSLColors());
+        const colors = [];
+        for (let h = 0; h <= 360; h += 30) {
+            // Create a color with full saturation and lightness at 50%
+            const color = `hsl(${h}, 100%, 50%)`;
+            colors.push(color);
         }
-        // If it's not in #RRGGBBAA format, assume it's fully opaque
-        return false;
-    }
-
-    /** sort options:
-        // Sorting by Hue
-        const sortedByHue = sortColors(colors, 'hue');
-        // Sorting by Saturation
-        const sortedBySaturation = sortColors(colors, 'saturation');
-        // Sorting by Lightness
-        const sortedByLightness = sortColors(colors, 'lightness');
-     */
-    static sortColors(colors, sortBy = 'hue') {
-        colors.sort((a, b) => {
-            // Check for transparency
-            if (SpritePalettes.isTransparent(a.hex)) {
-                return 1; // Move transparent color 'a' to the bottom
-            }
-            if (SpritePalettes.isTransparent(b.hex)) {
-                return -1; // Move transparent color 'b' to the bottom
-            }
-
-            // Convert hex to RGB
-            let rgbA = SpritePalettes.hexToRgb(a.hex);
-            let rgbB = SpritePalettes.hexToRgb(b.hex);
-
-            // Convert RGB to HSL
-            let hslA = SpritePalettes.rgbToHsl(rgbA.r, rgbA.g, rgbA.b);
-            let hslB = SpritePalettes.rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
-
-            // Sort based on the selected criterion
-            if (sortBy === 'hue') {
-                return hslA.h - hslB.h; // Sort by hue
-            } else if (sortBy === 'saturation') {
-                return hslA.s - hslB.s; // Sort by saturation
-            } else if (sortBy === 'lightness') {
-                return hslA.l - hslB.l; // Sort by lightness
-            } else {
-                console.log('sortBy:', sortBy); // Debug log to check the value
-                console.warn(` --- Invalid sortBy value:'${sortBy}'. Defaulting to 'hue'. ---`);
-                return hslA.h - hslB.h; // Default to sorting by hue
-            }
-        });
         return colors;
+        /* [
+        "hsl(0,   100%, 50%)",  // Red
+        "hsl(30,  100%, 50%)",  // Orange
+        "hsl(60,  100%, 50%)",  // Yellow
+        "hsl(90,  100%, 50%)",  // Green
+        "hsl(120, 100%, 50%)",  // Light Green
+        "hsl(150, 100%, 50%)",  // Chartreuse
+        "hsl(180, 100%, 50%)",  // Cyan
+        "hsl(210, 100%, 50%)",  // Light Blue
+        "hsl(240, 100%, 50%)",  // Blue
+        "hsl(270, 100%, 50%)",  // Violet
+        "hsl(300, 100%, 50%)",  // Purple
+        "hsl(330, 100%, 50%)",  // Deep Red
+        "hsl(360, 100%, 50%)"   // Red (Back to 0°)
+        ] */
     }
-    /* The hue range for each color in the visible spectrum (ROYGBIV) within the HSL (Hue, Saturation, Lightness) model is generally as follows: */
-    // const colorRanges = {
-    //     Red: ['#FF0000', '#FF6347'], // 0°–30° and 330°–360°    Red
-    //     Orange: ['#FFA500', '#FF8C00'], // 30°–60°              Orange
-    //     Yellow: ['#FFFF00', '#FFD700'], // 60°–90°              Yellow
-    //     Green: ['#00FF00', '#32CD32'], // 90°–150°              Green
-    //     Blue: ['#0000FF', '#1E90FF'], // 180°–240°              Blue
-    //     Indigo: ['#4B0082', '#6A5ACD'], // 240°–270°            Indigo
-    //     Violet: ['#EE82EE', '#9400D3'], // 270°–330°            Violet
-    // };
 }
 
 export default SpritePalettes;
