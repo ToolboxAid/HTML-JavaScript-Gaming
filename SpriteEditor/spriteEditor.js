@@ -581,7 +581,6 @@ export class SpriteEditor {
             this.spritePixelSize = 10.0;
             this.addMessages(`Max sprite pixel size reached: ${this.spritePixelSize}`)
         }
-        //SpriteEditor.jsonSprite.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
         SpriteEditor.jsonSprite.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
 
         this.outputJsonData();
