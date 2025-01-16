@@ -3,7 +3,8 @@
 // 12/28/2024
 // spriteEditor.js
 
-import SpritePalettes from "../scripts/spritePalettes.js";
+import Colors from "../scripts/colors.js";
+import Palettes from "../scripts/palettes.js";
 import MouseInput from '../scripts/mouse.js';
 import { Demo } from "./demo.js";
 //-------------------------------------------
@@ -44,7 +45,7 @@ export class SpriteEditor {
     static gridX = this.paletteSize * (this.paletteAcrossCnt + 1) + this.paletteSize / 4;
     static gridY = this.paletteSize;
 
-    static selectedColor = SpritePalettes.transparentColor;
+    static selectedColor = Palettes.transparentColor;
     static selectedColorIndex = 0;
     static selectedCellX = 0;
     static selectedCellY = 0;
@@ -114,7 +115,7 @@ export class SpriteEditor {
         SpriteEditor.updatePaletteDD();
 
         if (jsonPalette) {
-            SpritePalettes.palettes.custom = [...Demo.marioPalette.custom];
+            Palettes.palettes.custom = [...Demo.marioPalette.custom];
             this.showPaletteColors();
         }
         const textarea = document.getElementById('imageID');
@@ -267,12 +268,12 @@ export class SpriteEditor {
         dropdown.dispatchEvent(event);
     }
     static selectPalette(name) {
-        if (!SpritePalettes.palettes[name]) {
+        if (!Palettes.palettes[name]) {
             alert(`Palette '${name}' not found.`);
             return false;
         }
         SpriteEditor.paletteName = name;
-        SpritePalettes.setPalette(name);
+        Palettes.setPalette(name);
         SpriteEditor.jsonSprite.metadata.palette = SpriteEditor.paletteName;
 
         this.addMessages(`Selected palette: '${name}'.`);
@@ -290,7 +291,7 @@ export class SpriteEditor {
             return;
         }
 
-        spriteTextarea.value = SpritePalettes.getPaletteDetails()
+        spriteTextarea.value = Palettes.getPaletteDetails()
             .replace(/'(\w+)'/g, '"$1"')  // Replace single quotes around keys with double quotes
             .replace(/'([^']+)'/g, '"$1"') // Replace single quotes around string values with double quotes
             // 4. Remove the trailing comma at the end of the array
@@ -333,7 +334,7 @@ export class SpriteEditor {
             const customPalette = JSON.parse(validJSON);
 
             // Use the parsed palette
-            SpritePalettes.setCustomPalette(customPalette);
+            Palettes.setCustomPalette(customPalette);
         } catch (error) {
             console.error("Error parsing the palette data:", error);
             this.addMessages(`Error parsing the palette data: ${error.message}`);
@@ -473,7 +474,7 @@ export class SpriteEditor {
                 const layerData = layer.data;
 
                 // Add a new row to the bottom of the layer's data
-                const newRow = SpritePalettes.errorResult.symbol.repeat(layerData[0].length); // Create a row of 0s with the correct width
+                const newRow = Palettes.errorResult.symbol.repeat(layerData[0].length); // Create a row of 0s with the correct width
                 layerData.push(newRow);
             });
 
@@ -498,7 +499,7 @@ export class SpriteEditor {
                 const layerData = layer.data;
 
                 // Add a new column to the right of each row
-                layer.data = layerData.map(row => row + SpritePalettes.errorResult.symbol);
+                layer.data = layerData.map(row => row + Palettes.errorResult.symbol);
             });
 
             // Save the updated sprite data
@@ -622,7 +623,7 @@ export class SpriteEditor {
                 const gridCellPosY = y * this.spritePixelSize + offset;
 
                 // Update sprite color
-                const result = SpritePalettes.getBySymbol(this.spriteIndex[x][y]);
+                const result = Palettes.getBySymbol(this.spriteIndex[x][y]);
                 this.ctxImage.fillStyle = result.hex;
                 this.ctxImage.fillRect(gridCellPosX, gridCellPosY, this.spritePixelSize, this.spritePixelSize);
             }
@@ -653,9 +654,9 @@ export class SpriteEditor {
         // draw sprite array colors on grid
         for (var x = 0; x < this.gridCellWidth; x++) {
             for (var y = 0; y < this.gridCellHeight; y++) {
-                const result = SpritePalettes.getBySymbol(this.spriteIndex[x][y]);
+                const result = Palettes.getBySymbol(this.spriteIndex[x][y]);
 
-                if (result.hex === SpritePalettes.transparentColor) {
+                if (result.hex === Palettes.transparentColor) {
                     const gridCellPosX = this.gridX + (this.spriteGridSize * x) + this.spriteGridSize / 4;
                     const gridCellPosY = this.gridY + (this.spriteGridSize * y) + this.spriteGridSize / 4;
 
@@ -711,12 +712,12 @@ export class SpriteEditor {
             this.paletteSize, this.paletteSize);
 
         // Get the sorted palette colors from SpritePalettes
-        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
+        let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
 
         // Get Selected Color by Index
         const result = sortedPalette[SpriteEditor.selectedColorIndex];
-        const rgb = SpritePalettes.hexToRgb(result.hex);
-        const hsl = SpritePalettes.rgbToHsl(rgb.r, rgb.g, rgb.b);
+        const rgb = Colors.hexToRgb(result.hex);
+        const hsl = Colors.rgbToHsl(rgb.r, rgb.g, rgb.b);
 
         // Display selected color details
         const selectedColorInfo = document.getElementById("selectedColorInfo");
@@ -737,7 +738,7 @@ export class SpriteEditor {
         this.ctxEditor.fillRect(0, 0, this.spriteGridSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
 
         // Get the sorted palette colors from SpritePalettes
-        let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
+        let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
 
         // Draw the sorted palette
         for (let index = 0; index < sortedPalette.length; index++) {
@@ -747,7 +748,7 @@ export class SpriteEditor {
             const newX = div * this.paletteSize + this.paletteSpacing / 2;
             const newY = mod * this.paletteSize + this.paletteSpacing / 2;
 
-            if (result.hex === SpritePalettes.transparentColor) {
+            if (result.hex === Palettes.transparentColor) {
                 SpriteEditor.drawTransparentX(newX, newY, this.spriteGridSize * this.paletteScale);
             } else {
                 this.ctxEditor.fillStyle = result.hex;
@@ -1072,7 +1073,7 @@ export class SpriteEditor {
         for (let x = 0; x < this.gridCellHeight; x++) {
             let row = '';
             for (let y = 0; y < this.gridCellWidth; y++) {
-                row += this.spriteIndex[y][x] || SpritePalettes.transparentColor; // 'Ø' as a fallback for missing data
+                row += this.spriteIndex[y][x] || Palettes.transparentColor; // 'Ø' as a fallback for missing data
             }
             updatedData.push(row);
         }
@@ -1118,7 +1119,7 @@ export class SpriteEditor {
             let jsonPaletteString = "";
             if (SpriteEditor.paletteName === "custom") {
                 jsonPaletteString = "static " + camelCasePalete + " = {\ncustom: " +
-                    JSON.stringify(SpritePalettes.getPalette(), null, 0)
+                    JSON.stringify(Palettes.getPalette(), null, 0)
                         .replace(/(\r\n|\n|\r)/g, '') // Remove all carriage returns and line feeds
                         .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
                         .replace(/'/g, '"') // Replace single quotes with double quotes
@@ -1202,7 +1203,7 @@ export class SpriteEditor {
             }
 
             // Get the sorted palette colors from SpritePalettes
-            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
+            let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
 
             // Set the array elements
             let result = sortedPalette[SpriteEditor.selectedColorIndex];
@@ -1219,7 +1220,7 @@ export class SpriteEditor {
             const clickedPaletteY = Math.floor(mouse.mouseY / SpriteEditor.paletteSize);
             const clickedPaletteIndex = clickedPaletteX + clickedPaletteY * SpriteEditor.paletteAcrossCnt;
 
-            if (clickedPaletteIndex > SpritePalettes.getLength() - 1) {
+            if (clickedPaletteIndex > Palettes.getLength() - 1) {
                 return; // don't allow invalid color index
             }
 
@@ -1243,7 +1244,7 @@ export class SpriteEditor {
             // Get the sorted palette colors from SpritePalettes
             let symbolToFind = SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY];
 
-            let sortedPalette = SpritePalettes.sortColors(SpritePalettes.getPalette(), SpriteEditor.paletteSortOrder);
+            let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
             const index = sortedPalette.findIndex(entry => entry.symbol === symbolToFind);
 
             if (index !== -1) {
@@ -1305,7 +1306,7 @@ window.onload = () => {
 };
 
 // --------------------------------------------------------------------------
-// JavaScript to handle dropdown selection and call SpritePalettes.setPalette
+// JavaScript to handle dropdown selection and call Palettes.setPalette
 document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById('paletteDropdown');
 
