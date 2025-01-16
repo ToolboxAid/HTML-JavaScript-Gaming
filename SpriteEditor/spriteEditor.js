@@ -424,8 +424,8 @@ export class SpriteEditor {
     }
     static updateImageScale(imageScale) {
         this.imageScale += imageScale;
-        if (this.imageScale > 5.0) {
-            this.imageScale = 5.0;
+        if (this.imageScale > 10.0) {
+            this.imageScale = 10.0;
             this.addMessages(`Max image scale reached: ${this.imageScale}`)
         } else if (this.imageScale < 0.01) {
             this.imageScale = 0.01;
