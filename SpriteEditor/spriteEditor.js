@@ -111,8 +111,6 @@ export class SpriteEditor {
         this.outputJsonData();
         this.loadSpriteFromTextarea();
 
-        this.updatePaletteDD();
-
         if (jsonPalette) {
             Palettes.palettes.custom = [...Samples.marioPalette.custom];
             this.showPaletteColors();
@@ -1307,6 +1305,12 @@ window.onload = () => {
 };
 
 // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
+// Non Class supporting methods
+// --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
 // JavaScript to handle dropdown selection and call Palettes.setPalette
 document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById('paletteDropdown');
@@ -1325,6 +1329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('paletteDropdown not found.');
     }
 });
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById('animationDropdown');
