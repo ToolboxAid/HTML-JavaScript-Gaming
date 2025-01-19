@@ -6,7 +6,8 @@
 import Colors from "../scripts/colors.js";
 import Palettes from "../scripts/palettes.js";
 import MouseInput from '../scripts/mouse.js';
-import { Demo } from "./demo.js";
+import Samples from "./samples.js";
+import Functions from "../scripts/functions.js";
 //-------------------------------------------
 export class SpriteEditor {
 
@@ -22,9 +23,7 @@ export class SpriteEditor {
     // Palette information
     // default, crayola008, crayola016, crayola024, crayola032, crayola048, crayola064,
     // crayola096, crayola120, crayola150, javascript, spaceInvaders, test, w3c, custom
-    static paletteName = 'default';
     // hue, saturation, lightness
-    static paletteSortOrder = "hue";
     static paletteAcrossCnt = 5;
     static paletteDownCnt = 36;
     static paletteSize = 30;
@@ -45,7 +44,7 @@ export class SpriteEditor {
     static gridX = this.paletteSize * (this.paletteAcrossCnt + 1) + this.paletteSize / 4;
     static gridY = this.paletteSize;
 
-    static selectedColor = Palettes.transparentColor;
+    static selectedColor = Palettes.transparent;
     static selectedColorIndex = 0;
     static selectedCellX = 0;
     static selectedCellY = 0;
@@ -100,51 +99,43 @@ export class SpriteEditor {
 
     // ------------------------------------------
     /** Samples methods*/
-    static loadSample(jsonSprite, jsonImage, jsonPalette = null) {
+    static loadSample(name, jsonSprite, jsonImage, jsonPalette = null) {
 
         this.initialize();
 
-        //SpriteEditor.jsonSprite = jsonSprite;
-        SpriteEditor.jsonSprite = JSON.parse(JSON.stringify(jsonSprite));
-//        SpriteEditor.jsonImages = jsonImage;
-        SpriteEditor.jsonImages = JSON.parse(JSON.stringify(jsonImage));
+        this.jsonSprite = JSON.parse(JSON.stringify(jsonSprite));
+        this.jsonImages = JSON.parse(JSON.stringify(jsonImage));
 
         this.outputJsonData();
         this.loadSpriteFromTextarea();
 
-        SpriteEditor.updatePaletteDD();
-
         if (jsonPalette) {
-            Palettes.palettes.custom = [...Demo.marioPalette.custom];
+            Palettes.palettes.custom = [...Samples.marioPalette.custom];
             this.showPaletteColors();
         }
         const textarea = document.getElementById('imageID');
-        const jsonString = JSON.stringify(SpriteEditor.jsonImages, null, 2); // Indent with 2 spaces        
+        const jsonString = JSON.stringify(this.jsonImages, null, 2); // Indent with 2 spaces        
         textarea.value = jsonString;
+
+        this.addMessages(`Loaded: '${name}'`)
     }
     static loadSample1() {
-        SpriteEditor.addMessages('sample1')
-        this.loadSample(Demo.sample1Sprite, Demo.sample1Image);
+        this.loadSample('sample 1', Samples.sample1Sprite, Samples.sample1Image);
     }
     static loadSample2() {
-        SpriteEditor.addMessages('sample2')
-        this.loadSample(Demo.sample2Sprite, Demo.sample2Image);
+        this.loadSample('sample 2', Samples.sample2Sprite, Samples.sample2Image);
     }
     static loadSample3() {
-        SpriteEditor.addMessages('sample3')
-        this.loadSample(Demo.sample3Sprite, Demo.sample3Image);
+        this.loadSample('sample 3', Samples.sample3Sprite, Samples.sample3Image);
     }
     static loadSample4() {
-        SpriteEditor.addMessages('sample4')
-        this.loadSample(Demo.sample4Sprite, Demo.sample4Image);
+        this.loadSample('sample 4', Samples.sample4Sprite, Samples.sample4Image);
     }
     static loadSample5() {
-        SpriteEditor.addMessages('sample5')
-        this.loadSample(Demo.sample5Sprite, Demo.sample5Image);
+        this.loadSample('sample 5', Samples.sample5Sprite, Samples.sample5Image);
     }
     static loadSample6() {
-        SpriteEditor.addMessages('sample6')
-        this.loadSample(Demo.marioSprite, Demo.marioImage, Demo.marioPalette);
+        this.loadSample('sample 6', Samples.marioSprite, Samples.marioImage, Samples.marioPalette);
     }
     // ------------------------------------------
     /** Initialization methods*/
@@ -164,14 +155,14 @@ export class SpriteEditor {
         this.imageName = null;
         this.image = new Image();
 
+        this.resetAnimationFrame();
+        this.setCurrentFrameLayer(0);
+
         this.outputJsonData();
 
         this.loadSpriteFromTextarea();
         this.generateFrameLayerButtons();
         this.populateAnimationDropdown();
-
-        this.setAnimationRate();
-        this.setCurrentFrameLayer(0);
     }
     static initializeArrays() {
         for (let x = 0; x < this.maxGrid; x++) {
@@ -205,7 +196,7 @@ export class SpriteEditor {
             alert("Canvas element with id 'spriteEditor' not found.");
             return;
         }
-        this.canvasImage.addEventListener("click", this.handleAnimationClick);
+        this.canvasImage.addEventListener("click", this.handleCanvasImageClick);
 
         // Set the canvas iamge dimensions
         this.canvasImage.width = this.spriteImageSize;
@@ -215,24 +206,6 @@ export class SpriteEditor {
         this.ctxImage = this.canvasImage.getContext("2d");
 
         this.addMessages(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
-
-    }
-
-    static lastAnimationDD = "10";  // set default
-    static handleAnimationClick(event) {
-        const dropdown = document.getElementById("animationDropdown");
-
-        if (dropdown) {
-            if (SpriteEditor.animationActive) {
-                SpriteEditor.animationActive = false;
-                SpriteEditor.lastAnimationDD = dropdown.value;
-                SpriteEditor.setAnimationRate();
-            } else {
-                SpriteEditor.setAnimationRate(SpriteEditor.lastAnimationDD);
-            }
-        }
-
-
     }
 
     // ------------------------------------------
@@ -262,7 +235,7 @@ export class SpriteEditor {
         const dropdown = document.getElementById("paletteDropdown");
 
         // Set the selected value to 'crayola024' (or any other value you wish to select)
-        dropdown.value = this.paletteName;
+        dropdown.value = Palettes.activeName;
         // Trigger the change event manually if needed
         const event = new Event('change');
         dropdown.dispatchEvent(event);
@@ -272,9 +245,9 @@ export class SpriteEditor {
             alert(`Palette '${name}' not found.`);
             return false;
         }
-        SpriteEditor.paletteName = name;
-        Palettes.setPalette(name);
-        SpriteEditor.jsonSprite.metadata.palette = SpriteEditor.paletteName;
+        
+        Palettes.set(name);
+        this.jsonSprite.metadata.palette = Palettes.activeName;
 
         this.addMessages(`Selected palette: '${name}'.`);
 
@@ -291,7 +264,7 @@ export class SpriteEditor {
             return;
         }
 
-        spriteTextarea.value = Palettes.getPaletteDetails()
+        spriteTextarea.value = Palettes.getDetails()
             .replace(/'(\w+)'/g, '"$1"')  // Replace single quotes around keys with double quotes
             .replace(/'([^']+)'/g, '"$1"') // Replace single quotes around string values with double quotes
             // 4. Remove the trailing comma at the end of the array
@@ -299,7 +272,7 @@ export class SpriteEditor {
             .replace(/;\s*$/, '');
 
         // Only custom palette can be updated by user
-        if (SpriteEditor.paletteName === "custom") {
+        if (Palettes.activeName === "custom") {
             spriteTextarea.disabled = false;
             spriteTextarea.value += "\n\n";
             spriteTextarea.value += "// Use transparent as sample code to add whatever colors you need.\n";
@@ -309,9 +282,8 @@ export class SpriteEditor {
         }
     }
     static setPaletteSortBy(arg) {
-        this.paletteSortOrder = arg;
+        Palettes.setSortByOrder(arg);
     }
-
     static loadPaletteFromTextarea() {
         // Get the value from the textarea
         const paletteTextarea = document.getElementById("paletteID").value;
@@ -334,7 +306,7 @@ export class SpriteEditor {
             const customPalette = JSON.parse(validJSON);
 
             // Use the parsed palette
-            Palettes.setCustomPalette(customPalette);
+            Palettes.setCustom(customPalette);
         } catch (error) {
             console.error("Error parsing the palette data:", error);
             this.addMessages(`Error parsing the palette data: ${error.message}`);
@@ -347,33 +319,33 @@ export class SpriteEditor {
     static loadCurrentFrameImage() {
         // Check if the current frame and its metadata exist
         if (
-            SpriteEditor.jsonSprite.layers &&
-            SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame] &&
-            SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata &&
-            SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage
+            this.jsonSprite.layers &&
+            this.jsonSprite.layers[this.currentFrame] &&
+            this.jsonSprite.layers[this.currentFrame].metadata &&
+            this.jsonSprite.layers[this.currentFrame].metadata.spriteimage
         ) {
-            const imageName = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.spriteimage;
+            const imageName = this.jsonSprite.layers[this.currentFrame].metadata.spriteimage;
 
             // Check if the image exists in the jsonSprite.images object
-            if (SpriteEditor.jsonImages && SpriteEditor.jsonImages[imageName]) {
+            if (this.jsonImages && this.jsonImages[imageName]) {
                 // Create the image and set its source
                 const img = new Image();
-                img.src = SpriteEditor.jsonImages[imageName]; // Set the image source to the base64 data
+                img.src = this.jsonImages[imageName]; // Set the image source to the base64 data
 
                 // Check if the image has been updated
                 if (this.imageName !== imageName) {
                     this.imageName = imageName;
-                    SpriteEditor.image = img; // Store the image for further use
+                    this.image = img; // Store the image for further use
                     this.image = img;
                     this.addMessages(`Image '${imageName}' successfully loaded.`);
                 }
 
                 // Set image position
-                this.imageX = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageX;
-                this.imageY = SpriteEditor.jsonSprite.layers[SpriteEditor.currentFrame].metadata.imageY;
+                this.imageX = this.jsonSprite.layers[this.currentFrame].metadata.imageX;
+                this.imageY = this.jsonSprite.layers[this.currentFrame].metadata.imageY;
             } else {
                 // Handle case where image is not found
-                this.addMessages(`Image '${imageName}' not found in SpriteEditor.jsonImages for the current frame: ${this.currentFrame}.`);
+                this.addMessages(`Image '${imageName}' not found in this.jsonImages for the current frame: ${this.currentFrame}.`);
                 this.imageName = null;
                 this.image = null;
             }
@@ -381,10 +353,9 @@ export class SpriteEditor {
             // Handle case where metadata is missing
             this.imageName = null;
             this.image = null;
-            // this.addMessages(`No spriteimage metadata found for the current frame: ${SpriteEditor.currentFrame}.`);
+            // this.addMessages(`No spriteimage metadata found for the current frame: ${this.currentFrame}.`);
         }
     }
-
     static setImageX(imageX) {
         if (typeof imageX === 'number' && !isNaN(imageX)) {
             this.imageX = 0;
@@ -395,7 +366,7 @@ export class SpriteEditor {
     }
     static moveImageHorizontal(moveFactor) {
         this.imageX += moveFactor;
-        SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageX = this.imageX;
+        this.jsonSprite.layers[this.currentFrame].metadata.imageX = this.imageX;
 
         this.outputJsonData();
     }
@@ -409,7 +380,7 @@ export class SpriteEditor {
     }
     static moveImageVertical(moveFactor) {
         this.imageY += moveFactor;
-        SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageY = this.imageY;
+        this.jsonSprite.layers[this.currentFrame].metadata.imageY = this.imageY;
 
         this.outputJsonData();
     }
@@ -424,14 +395,14 @@ export class SpriteEditor {
     }
     static updateImageScale(imageScale) {
         this.imageScale += imageScale;
-        if (this.imageScale > 5.0) {
-            this.imageScale = 5.0;
+        if (this.imageScale > 10.0) {
+            this.imageScale = 10.0;
             this.addMessages(`Max image scale reached: ${this.imageScale}`)
         } else if (this.imageScale < 0.01) {
             this.imageScale = 0.01;
             this.addMessages(`Min image scale reached: ${this.imageScale}`)
         }
-        SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageScale = this.imageScale;
+        this.jsonSprite.layers[this.currentFrame].metadata.imageScale = this.imageScale;
 
         this.outputJsonData();
     }
@@ -460,7 +431,7 @@ export class SpriteEditor {
             this.spriteGridSize = 80.0;
             this.addMessages(`Max grid scall reached: ${this.spriteGridSize}`)
         }
-        SpriteEditor.jsonSprite.metadata.spriteGridSize = parseFloat(this.spriteGridSize.toFixed(1));
+        this.jsonSprite.metadata.spriteGridSize = parseFloat(this.spriteGridSize.toFixed(1));
         this.outputJsonData();
 
     }
@@ -470,7 +441,7 @@ export class SpriteEditor {
             this.gridCellHeight++;
 
             // Iterate over all layers
-            SpriteEditor.jsonSprite.layers.forEach((layer) => {
+            this.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Add a new row to the bottom of the layer's data
@@ -495,7 +466,7 @@ export class SpriteEditor {
             this.gridCellWidth++;
 
             // Iterate over all layers
-            SpriteEditor.jsonSprite.layers.forEach((layer) => {
+            this.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Add a new column to the right of each row
@@ -519,7 +490,7 @@ export class SpriteEditor {
             this.gridCellWidth--;
 
             // Iterate over all layers
-            SpriteEditor.jsonSprite.layers.forEach((layer) => {
+            this.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Remove the last character (column) from each row
@@ -543,7 +514,7 @@ export class SpriteEditor {
             this.gridCellHeight--;
 
             // Iterate over all layers
-            SpriteEditor.jsonSprite.layers.forEach((layer) => {
+            this.jsonSprite.layers.forEach((layer) => {
                 const layerData = layer.data;
 
                 // Remove the last row from the layer's data
@@ -581,9 +552,26 @@ export class SpriteEditor {
             this.spritePixelSize = 10.0;
             this.addMessages(`Max sprite pixel size reached: ${this.spritePixelSize}`)
         }
-        //SpriteEditor.jsonSprite.metadata.spritePixelSize = this.spritePixelSize.toFixed(2);
-        SpriteEditor.jsonSprite.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
+        this.jsonSprite.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
 
+        this.outputJsonData();
+    }
+    static setFrameCount(framesPerSprite) {
+        if (typeof framesPerSprite === 'string' && /^\d+$/.test(framesPerSprite)) {
+            const num = Number(framesPerSprite);
+            if (num < 0) {
+                num = 0;
+                this.addMessages(`Min FrameCount reached: ${num}`)
+            }
+            if (num > 60.0) {
+                num = 60.0;
+                this.addMessages(`Max FrameCount reached: ${num}`)
+            }
+            this.framesPerSprite = framesPerSprite;
+            this.jsonSprite.metadata.framesPerSprite = this.framesPerSprite;
+        } else {
+            this.addMessages("framesPerSprite is not a valid string of numbers :", num);
+        }
         this.outputJsonData();
     }
 
@@ -595,7 +583,7 @@ export class SpriteEditor {
         this.ctxEditor.fillStyle = '#333333';
         this.ctxEditor.fillRect(0, 0, this.canvasEditor.width, this.canvasEditor.height);
 
-        if (!(this.animationActive) && this.imageName && this.image) {
+        if (!(this.isAnimationActive) && this.imageName && this.image) {
             this.ctxEditor.save();
             this.ctxEditor.scale(this.imageScale, this.imageScale);
             this.ctxEditor.drawImage(this.image, this.imageX, this.imageY);
@@ -656,7 +644,7 @@ export class SpriteEditor {
             for (var y = 0; y < this.gridCellHeight; y++) {
                 const result = Palettes.getBySymbol(this.spriteIndex[x][y]);
 
-                if (result.hex === Palettes.transparentColor) {
+                if ( Colors.isTransparent(result.hex)) {
                     const gridCellPosX = this.gridX + (this.spriteGridSize * x) + this.spriteGridSize / 4;
                     const gridCellPosY = this.gridY + (this.spriteGridSize * y) + this.spriteGridSize / 4;
 
@@ -712,17 +700,22 @@ export class SpriteEditor {
             this.paletteSize, this.paletteSize);
 
         // Get the sorted palette colors from SpritePalettes
-        let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
+        let sortedPalette = Palettes.sortColors();
 
         // Get Selected Color by Index
-        const result = sortedPalette[SpriteEditor.selectedColorIndex];
+        const result = sortedPalette[this.selectedColorIndex];
+
+        if (!result || !result.hex) {
+            this.showStackTrace();
+        }
+
         const rgb = Colors.hexToRgb(result.hex);
         const hsl = Colors.rgbToHsl(rgb.r, rgb.g, rgb.b);
 
         // Display selected color details
         const selectedColorInfo = document.getElementById("selectedColorInfo");
         selectedColorInfo.innerHTML = `<h3>Selected Color Info</h3>` +
-            `Palette:  ${SpriteEditor.paletteName} <br>` +
+            `Palette:  ${Palettes.activeName} <br>` +
             `Index:  ${this.selectedColorIndex} <br>` +
             `Char:   ${result.symbol} <br>` +
             `Code:   ${result.hex} <br>` +
@@ -738,7 +731,7 @@ export class SpriteEditor {
         this.ctxEditor.fillRect(0, 0, this.spriteGridSize * this.paletteAcrossCnt * this.paletteScale + this.paletteSpacing, this.canvasEditor.height); // Fill the entire canvasEditor
 
         // Get the sorted palette colors from SpritePalettes
-        let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
+        let sortedPalette = Palettes.sortColors();
 
         // Draw the sorted palette
         for (let index = 0; index < sortedPalette.length; index++) {
@@ -748,8 +741,8 @@ export class SpriteEditor {
             const newX = div * this.paletteSize + this.paletteSpacing / 2;
             const newY = mod * this.paletteSize + this.paletteSpacing / 2;
 
-            if (result.hex === Palettes.transparentColor) {
-                SpriteEditor.drawTransparentX(newX, newY, this.spriteGridSize * this.paletteScale);
+            if (Colors.isTransparent(result.hex)) {
+                this.drawTransparentX(newX, newY, this.spriteGridSize * this.paletteScale);
             } else {
                 this.ctxEditor.fillStyle = result.hex;
                 this.ctxEditor.fillRect(newX, newY, this.spriteGridSize * this.paletteScale - this.paletteSpacing / 2, this.spriteGridSize * this.paletteScale - this.paletteSpacing / 2);
@@ -821,23 +814,73 @@ export class SpriteEditor {
             dropdown.appendChild(option);
         }
     }
-    static setAnimationRate(value = "0") {
-
+    static resetAnimationFrame() {
         const dropdown = document.getElementById("animationDropdown");
-        if (dropdown) {
-            // Set the selected value to '0' to 'Stop' or 1-60 for frames
-            dropdown.value = value; //
 
+        if (dropdown) {
+            this.isAnimationActive = false;
+            dropdown.value = "0";// "Stop"
             // Trigger the change event manually if needed
             const event = new Event('change');
             dropdown.dispatchEvent(event);
         }
     }
+   /** Animation methods*/
+    static handleCanvasImageClick() { // Using SpriteEditor because it's called from a listener
+        const dropdown = document.getElementById("animationDropdown");
+
+        if (dropdown) {
+            if (SpriteEditor.isAnimationActive) {
+                dropdown.value = "0"; //"Stop"
+            } else {
+                dropdown.value = SpriteEditor.lastAnimationDD;
+            }
+            // Trigger the change event manually if needed
+            const event = new Event('change');
+            dropdown.dispatchEvent(event);
+        }
+    }
+ 
+    static lastAnimationDD = "10";  // set default
+    static isAnimationActive = false;
+    static animationFrameRate = 0;
+    static animationFrameRateCount = 0;
+    static setAnimationFrameRate(animationFrameRate) {
+        this.animationFrameRate = animationFrameRate;
+        if (this.animationFrameRate > 0) {
+            this.isAnimationActive = true;
+            this.lastAnimationDD = animationFrameRate;
+            this.setFrameCount(this.lastAnimationDD);
+
+        } else {
+            this.isAnimationActive = false;
+        }
+    }
+    static animateSpriteImage() {
+        // Exit if no animation is needed
+        // Convert animationFrameRate to a number and check if it equals 0
+        const animationFrameRate = Number(this.animationFrameRate);
+        if (!animationFrameRate || animationFrameRate <= 0) {
+            return;
+        }
+
+        // Increment frame rate counter
+        this.animationFrameRateCount++;
+
+        // Check if it's time to advance to the next frame
+        if (this.animationFrameRateCount >= this.animationFrameRate) {
+            this.animationFrameRateCount = 0; // Reset counter
+            this.nextCurrentFrameLayer(); // Move to the next frame
+        }
+    }
+
+    // ------------------------------------------
+    /** Current Frame Layer */
     static setCurrentFrameLayer(currentFrame) {
         if (
-            SpriteEditor.jsonSprite.layers &&
+            this.jsonSprite.layers &&
             currentFrame >= 0 &&
-            currentFrame < SpriteEditor.jsonSprite.layers.length
+            currentFrame < this.jsonSprite.layers.length
         ) {
             this.currentFrame = currentFrame;
             //this.addMessages(`Current Layer frame at index: ${this.currentFrame}`);
@@ -853,60 +896,30 @@ export class SpriteEditor {
     }
     static prevCurrentFrameLayer() {
         if (this.currentFrame === 0) {
-            this.setCurrentFrameLayer(SpriteEditor.jsonSprite.layers.length - 1);
+            this.setCurrentFrameLayer(this.jsonSprite.layers.length - 1);
         } else {
             this.setCurrentFrameLayer(--this.currentFrame);
         }
     }
     static nextCurrentFrameLayer() {
-        if (this.currentFrame === SpriteEditor.jsonSprite.layers.length - 1) {
+        if (this.currentFrame === this.jsonSprite.layers.length - 1) {
             this.setCurrentFrameLayer(0);
         } else {
             this.setCurrentFrameLayer(++this.currentFrame);
         }
     }
-    /** Animation methods*/
-    static animationActive = false;
-    static frameRate = 0;
-    static frameRateCount = 0;
-    static setAnimationFrameRate(frameRate) {
-        this.frameRate = frameRate;
-        if (this.frameRate > 0) {
-            this.animationActive = true;
-        } else {
-            this.animationActive = false;
-        }
-    }
-    static animateSpriteImage() {
-        // Exit if no animation is needed
-        // Convert frameRate to a number and check if it equals 0
-        const frameRate = Number(this.frameRate);
-        if (!frameRate || frameRate <= 0) {
-            return;
-        }
-
-        // Increment frame rate counter
-        this.frameRateCount++;
-
-        // Check if it's time to advance to the next frame
-        if (this.frameRateCount >= this.frameRate) {
-            this.frameRateCount = 0; // Reset counter
-            this.nextCurrentFrameLayer(); // Move to the next frame
-        }
-    }
-
-    static showStackTrace() {
-        const trace = new Error("Show stack trace:");
+    static showStackTrace(text = "") {
+        const trace = new Error("Show stack trace (${text}):");
         console.log(trace.stack);
     }
     // ------------------------------------------
-    /** JSON methods*/
+    /** JSON methods */
     static outputJsonData() {
         // Locate the textarea in the document
         const textArea = document.getElementById("spriteID");
 
         // Convert the JSON object into a formatted string
-        const jsonString = JSON.stringify(SpriteEditor.jsonSprite, null, 2); // Indent with 2 spaces
+        const jsonString = JSON.stringify(this.jsonSprite, null, 2); // Indent with 2 spaces
 
         if (textArea.value === jsonString) {
             return;
@@ -949,13 +962,13 @@ export class SpriteEditor {
     }
     static addLayer(layerIndex) {
         // Create a deep copy of the layer at `this.currentFrame`
-        let originalLayer = SpriteEditor.jsonSprite.layers[this.currentFrame];
+        let originalLayer = this.jsonSprite.layers[this.currentFrame];
         let tempLayer = JSON.parse(JSON.stringify(originalLayer));
 
         tempLayer.metadata.imageX = layerIndex;
         tempLayer.metadata.imageY = this.currentFrame;
 
-        SpriteEditor.jsonSprite.layers.splice(this.currentFrame, 0, tempLayer);
+        this.jsonSprite.layers.splice(this.currentFrame, 0, tempLayer);
 
         this.currentFrame += layerIndex;
 
@@ -966,17 +979,17 @@ export class SpriteEditor {
     }
     static subLayer() {
         // Prevent removal if there's only one layer remaining
-        if (SpriteEditor.jsonSprite.layers.length <= 1) {
+        if (this.jsonSprite.layers.length <= 1) {
             this.addMessages("Cannot remove the last remaining layer.");
             return;
         }
 
-        if (this.currentFrame >= 0 && this.currentFrame < SpriteEditor.jsonSprite.layers.length) {
-            SpriteEditor.jsonSprite.layers.splice(this.currentFrame, 1);
+        if (this.currentFrame >= 0 && this.currentFrame < this.jsonSprite.layers.length) {
+            this.jsonSprite.layers.splice(this.currentFrame, 1);
 
             let currentFrame = this.currentFrame;
-            if (this.currentFrame > SpriteEditor.jsonSprite.layers.length - 1) {
-                this.currentFrame = SpriteEditor.jsonSprite.layers.length - 1;
+            if (this.currentFrame > this.jsonSprite.layers.length - 1) {
+                this.currentFrame = this.jsonSprite.layers.length - 1;
             }
             this.addMessages(`Layer removed at index: ${currentFrame}`);
             this.setCurrentFrameLayer(this.currentFrame);
@@ -987,10 +1000,8 @@ export class SpriteEditor {
         }
     }
     static setPaletteDropDown(value = "default") {
-
         const dropdown = document.getElementById("paletteDropdown");
         if (dropdown) {
-            // Set the selected value to '0' to 'Stop' or 1-60 for frames
             dropdown.value = value; //
 
             // Trigger the change event manually if needed
@@ -1000,21 +1011,25 @@ export class SpriteEditor {
     }
     static setStaticVarsFromJson() {
         // Access metadata.sprite
-        //this.selectPalette(SpriteEditor.jsonSprite.metadata.palette);
-        this.setPaletteDropDown(SpriteEditor.jsonSprite.metadata.palette);
-        this.setSpritePixelSize(SpriteEditor.jsonSprite.metadata.spritePixelSize);
-        this.setSpriteGridSize(SpriteEditor.jsonSprite.metadata.spriteGridSize);
+        //this.selectPalette(this.jsonSprite.metadata.palette);
+        this.setPaletteDropDown(this.jsonSprite.metadata.palette);
+        this.setSpritePixelSize(this.jsonSprite.metadata.spritePixelSize);
+        this.setSpriteGridSize(this.jsonSprite.metadata.spriteGridSize);
+
+        this.framesPerSprite = this.jsonSprite.metadata.framesPerSprite || "10";
+        this.lastAnimationDD = this.framesPerSprite;
 
         if (false) {
             console.log('Sprite:', sprite);
             console.log('Sprite Grid Size:', this.spriteGridSize);
-            console.log('Sprite Pixel Size:', SpriteEditor.spritePixelSize);
-            console.log('Palette:', SpriteEditor.paletteName);
+            console.log('Sprite Pixel Size:', this.spritePixelSize);
+            console.log('Palette:', Palettes.activeName);
+            
         }
         // Access metadata.layer frames
-        this.setImageX(SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageX);
-        this.setImageY(SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageY);
-        this.setImageScale(SpriteEditor.jsonSprite.layers[this.currentFrame].metadata.imageScale);
+        this.setImageX(this.jsonSprite.layers[this.currentFrame].metadata.imageX);
+        this.setImageY(this.jsonSprite.layers[this.currentFrame].metadata.imageY);
+        this.setImageScale(this.jsonSprite.layers[this.currentFrame].metadata.imageScale);
 
         this.loadCurrentFrameImage();
         if (false) {
@@ -1030,17 +1045,17 @@ export class SpriteEditor {
         try {
             // Parse the JSON string into an object
             const parsedData = JSON.parse(jsonString);
-            // Assign the parsed data to SpriteEditor.jsonSprite
+            // Assign the parsed data to this.jsonSprite
             if (typeof SpriteEditor !== 'undefined') {
-                SpriteEditor.jsonSprite = parsedData;
+                this.jsonSprite = parsedData;
                 this.setStaticVarsFromJson();
                 this.generateFrameLayerButtons();
                 this.loadSpriteFromJSON();
             } else {
-                SpriteEditor.addMessages('SpriteEditor is not defined.')
+                this.addMessages('SpriteEditor is not defined.')
             }
         } catch (error) {
-            SpriteEditor.addMessages(`Invalid spriteID JSON format: ${error} \n`);
+            this.addMessages(`Invalid spriteID JSON format: ${error} \n`);
             console.log(`Invalid spriteID JSON format: ${error} \n ${error.message} \n ${jsonString}`);
             alert("I must be trashing some variable...\n'spriteID' failure, \n if the issue persists, press 'F5' to reset");
         }
@@ -1052,15 +1067,15 @@ export class SpriteEditor {
         try {
             // Parse the JSON string into an object
             const parsedData = JSON.parse(jsonString);
-            // Assign the parsed data to SpriteEditor.jsonSprite
+            // Assign the parsed data to this.jsonSprite
             if (typeof SpriteEditor !== 'undefined') {
-                SpriteEditor.jsonImages = parsedData;
+                this.jsonImages = parsedData;
                 this.loadCurrentFrameImage();
             } else {
-                SpriteEditor.addMessages('imageID is not defined.')
+                this.addMessages('imageID is not defined.')
             }
         } catch (error) {
-            SpriteEditor.addMessages(`Invalid imageID JSON format: ${error} \n `);
+            this.addMessages(`Invalid imageID JSON format: ${error} \n `);
         }
     }
 
@@ -1073,38 +1088,22 @@ export class SpriteEditor {
         for (let x = 0; x < this.gridCellHeight; x++) {
             let row = '';
             for (let y = 0; y < this.gridCellWidth; y++) {
-                row += this.spriteIndex[y][x] || Palettes.transparentColor; // 'Ø' as a fallback for missing data
+                row += this.spriteIndex[y][x] || Palettes.transparent; // 'Ø' as a fallback for missing data
             }
             updatedData.push(row);
         }
 
         // Update the JSON data's first layer
-        if (SpriteEditor.jsonSprite.layers && SpriteEditor.jsonSprite.layers[this.currentFrame]) {
-            SpriteEditor.jsonSprite.layers[this.currentFrame].data = updatedData;
+        if (this.jsonSprite.layers && this.jsonSprite.layers[this.currentFrame]) {
+            this.jsonSprite.layers[this.currentFrame].data = updatedData;
         }
 
     }
 
-    static toCamelCase(...args) {
-        return args
-            .join(' ') // Concatenate all arguments with a space in between
-            .toLowerCase() // Convert to lowercase
-            .replace(/[^a-z0-9\s]/g, '') // Remove special characters
-            .trim() // Remove leading and trailing spaces
-            .split(/\s+/) // Split into words
-            .map((word, index) =>
-                index === 0
-                    ? word // First word remains lowercase
-                    : word.charAt(0).toUpperCase() + word.slice(1) // Capitalize subsequent words
-            )
-            .join(''); // Combine into camel case
-    }
-
-
     static copyJSON() {
-        const camelCasePalete = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "palette");
-        const camelCaseSprite = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "sprite");
-        const camelCaseImage = this.toCamelCase(SpriteEditor.jsonSprite.metadata.sprite, "image");
+        const camelCasePalete = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "palette");
+        const camelCaseSprite = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "sprite");
+        const camelCaseImage = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "image");
 
         // Get the textarea element
         const textarea = document.getElementById("spriteID");
@@ -1112,14 +1111,13 @@ export class SpriteEditor {
         // Check if the textarea exists and has content
         if (textarea && textarea.value) {
             // Prepare JSON strings
-            const jsonImagesString = JSON.stringify(SpriteEditor.jsonImages, null, 2);
-
-
+            const jsonImagesString = JSON.stringify(this.jsonImages, null, 2);
 
             let jsonPaletteString = "";
-            if (SpriteEditor.paletteName === "custom") {
+            
+            if (Palettes.activeName === "custom") {
                 jsonPaletteString = "static " + camelCasePalete + " = {\ncustom: " +
-                    JSON.stringify(Palettes.getPalette(), null, 0)
+                    JSON.stringify(Palettes.get(), null, 0)
                         .replace(/(\r\n|\n|\r)/g, '') // Remove all carriage returns and line feeds
                         .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // Enclose keys in double quotes
                         .replace(/'/g, '"') // Replace single quotes with double quotes
@@ -1142,8 +1140,8 @@ export class SpriteEditor {
                         this.addMessages("JSON copied to clipboard!");
                     })
                     .catch((error) => {
-                        console.error("Error copying JSON to clipboard:", error);
                         this.addMessages("An error occurred while copying JSON.");
+                        console.error("Error copying JSON to clipboard:", error);
                     });
             } else {
                 // Fallback for older browsers using execCommand
@@ -1192,65 +1190,65 @@ export class SpriteEditor {
         return { x, y };
     }
     static handleCanvasLeftClick(mouse) {
-        if (mouse.mouseX > (SpriteEditor.spriteGridSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
+        if (mouse.mouseX > (this.spriteGridSize * this.paletteAcrossCnt) * this.paletteScale) {
             // Determine which sprite cell clicked
-            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteGridSize);
-            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteGridSize);
+            this.selectedCellX = Math.floor((mouse.mouseX - this.gridX) / this.spriteGridSize);
+            this.selectedCellY = Math.floor((mouse.mouseY - this.gridY) / this.spriteGridSize);
 
-            if (SpriteEditor.selectedCellX < 0 || SpriteEditor.selectedCellX > SpriteEditor.gridCellWidth - 1 ||
-                SpriteEditor.selectedCellY < 0 || SpriteEditor.selectedCellY > SpriteEditor.gridCellHeight - 1) {
+            if (this.selectedCellX < 0 || this.selectedCellX > this.gridCellWidth - 1 ||
+                this.selectedCellY < 0 || this.selectedCellY > this.gridCellHeight - 1) {
                 return;
             }
 
             // Get the sorted palette colors from SpritePalettes
-            let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
+            let sortedPalette = Palettes.sortColors();
 
             // Set the array elements
-            let result = sortedPalette[SpriteEditor.selectedColorIndex];
-            SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY] = result.symbol;
+            let result = sortedPalette[this.selectedColorIndex];
+            this.spriteIndex[this.selectedCellX][this.selectedCellY] = result.symbol;
 
-            SpriteEditor.saveModifiedSprite();
+            this.saveModifiedSprite();
 
             this.outputJsonData();
 
 
         } else {
             // Determine which palette color was clicked
-            const clickedPaletteX = Math.floor(mouse.mouseX / SpriteEditor.paletteSize);
-            const clickedPaletteY = Math.floor(mouse.mouseY / SpriteEditor.paletteSize);
-            const clickedPaletteIndex = clickedPaletteX + clickedPaletteY * SpriteEditor.paletteAcrossCnt;
+            const clickedPaletteX = Math.floor(mouse.mouseX / this.paletteSize);
+            const clickedPaletteY = Math.floor(mouse.mouseY / this.paletteSize);
+            const clickedPaletteIndex = clickedPaletteX + clickedPaletteY * this.paletteAcrossCnt;
 
             if (clickedPaletteIndex > Palettes.getLength() - 1) {
                 return; // don't allow invalid color index
             }
 
-            SpriteEditor.selectedColorIndex = clickedPaletteIndex;
-            SpriteEditor.paletteSelectedX = clickedPaletteX;
-            SpriteEditor.paletteSelectedY = clickedPaletteY;
+            this.selectedColorIndex = clickedPaletteIndex;
+            this.paletteSelectedX = clickedPaletteX;
+            this.paletteSelectedY = clickedPaletteY;
         }
     }
     static handleCanvasRightClick(mouse) {
 
-        if (mouse.mouseX > (SpriteEditor.spriteGridSize * SpriteEditor.paletteAcrossCnt) * SpriteEditor.paletteScale) {
+        if (mouse.mouseX > (this.spriteGridSize * this.paletteAcrossCnt) * this.paletteScale) {
             // Determine which sprite cell clicked
-            SpriteEditor.selectedCellX = Math.floor((mouse.mouseX - SpriteEditor.gridX) / SpriteEditor.spriteGridSize);
-            SpriteEditor.selectedCellY = Math.floor((mouse.mouseY - SpriteEditor.gridY) / SpriteEditor.spriteGridSize);
+            this.selectedCellX = Math.floor((mouse.mouseX - this.gridX) / this.spriteGridSize);
+            this.selectedCellY = Math.floor((mouse.mouseY - this.gridY) / this.spriteGridSize);
 
-            if (SpriteEditor.selectedCellX < 0 || SpriteEditor.selectedCellX > SpriteEditor.gridCellWidth - 1 ||
-                SpriteEditor.selectedCellY < 0 || SpriteEditor.selectedCellY > SpriteEditor.gridCellHeight - 1) {
+            if (this.selectedCellX < 0 || this.selectedCellX > this.gridCellWidth - 1 ||
+                this.selectedCellY < 0 || this.selectedCellY > this.gridCellHeight - 1) {
                 return;
             }
 
             // Get the sorted palette colors from SpritePalettes
-            let symbolToFind = SpriteEditor.spriteIndex[SpriteEditor.selectedCellX][SpriteEditor.selectedCellY];
+            let symbolToFind = this.spriteIndex[this.selectedCellX][this.selectedCellY];
 
-            let sortedPalette = Palettes.sortColors(Palettes.getPalette(), SpriteEditor.paletteSortOrder);
+            let sortedPalette = Palettes.sortColors();
             const index = sortedPalette.findIndex(entry => entry.symbol === symbolToFind);
 
             if (index !== -1) {
-                SpriteEditor.selectedColorIndex = index;
-                SpriteEditor.paletteSelectedX = index % 5;
-                SpriteEditor.paletteSelectedY = Math.floor(index / 5);
+                this.selectedColorIndex = index;
+                this.paletteSelectedX = index % 5;
+                this.paletteSelectedY = Math.floor(index / 5);
             }
 
         }
@@ -1295,6 +1293,7 @@ export class SpriteEditor {
         SpriteEditor.animateSpriteImage();
         requestAnimationFrame(SpriteEditor.gameLoop);
     }
+
 }
 
 window.onload = () => {
@@ -1304,6 +1303,12 @@ window.onload = () => {
     // Start gameLoop
     SpriteEditor.gameLoop();
 };
+
+// --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
+// Non Class supporting methods
+// --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
 // JavaScript to handle dropdown selection and call Palettes.setPalette
@@ -1325,15 +1330,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById('animationDropdown');
 
     // Ensure the dropdown exists before attaching the event listener
     if (dropdown) {
         dropdown.addEventListener('change', (event) => {
-            const frameRate = event.target.value;
+            const animationFrameRate = event.target.value;
             if (typeof SpriteEditor !== 'undefined' && typeof SpriteEditor.selectPalette === 'function') {
-                SpriteEditor.setAnimationFrameRate(frameRate);
+                SpriteEditor.setAnimationFrameRate(animationFrameRate);
             } else {
                 alert('SpriteEditor.selectPalette is not defined.');
             }

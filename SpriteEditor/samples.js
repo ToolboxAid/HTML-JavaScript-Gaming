@@ -1,10 +1,10 @@
 // ToolboxAid.com
 // David Quesenberry
 // 12/28/2024
-// demo.js
+// sample.js
 
 //-------------------------------------------
-export class Demo {
+class Samples {
 
     /** Usage:
      * const imageName = SpriteEditor.sample1.layers[0].metadata.spriteimage;
@@ -55,167 +55,272 @@ export class Demo {
     // ---------- Sample 2 ------------------------------
     static sample2Sprite = {
         "metadata": {
-            "sprite": "sample 2",
-            "spriteGridSize": 65,
-            "spritePixelSize": 8,
-            "palette": "default"
+          "sprite": "sample 2",
+          "spriteGridSize": 65,
+          "spritePixelSize": 8,
+          "palette": "default",
+          "framesPerSprite": "5"
         },
         "layers": [
-            {
-                "metadata": {
-                    "imageX": 100,
-                    "imageY": 45,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "&ØØØ",
-                    "&ØØØ",
-                    "&ØØØ",
-                    "&ØØØ"
-                ]
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 2,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "Ø&ØØ",
-                    "&ØØØ",
-                    "&ØØØ",
-                    "&ØØØ"
-                ]
+            "data": [
+              "&ØØØ",
+              "&ØØØ",
+              "&ØØØ",
+              "&ØØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "spriteimage": "test.jpg",
-                    "imageX": 1,
-                    "imageY": 1,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "ØØ&Ø",
-                    "Ø&ØØ",
-                    "&ØØØ",
-                    "&ØØØ"
-                ]
+            "data": [
+              "Ø&ØØ",
+              "&ØØØ",
+              "&ØØØ",
+              "&ØØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 3,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "ØØØ&",
-                    "ØØ&Ø",
-                    "Ø&ØØ",
-                    "&ØØØ"
-                ]
+            "data": [
+              "ØØ&Ø",
+              "Ø&ØØ",
+              "&ØØØ",
+              "&ØØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 4,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "ØØØ&",
-                    "ØØØ&",
-                    "ØØ&Ø",
-                    "Ø&ØØ"
-                ]
+            "data": [
+              "ØØØ&",
+              "ØØ&Ø",
+              "Ø&ØØ",
+              "&ØØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 5,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "ØØØ&",
-                    "ØØØ&",
-                    "ØØØ&",
-                    "ØØ&Ø"
-                ]
+            "data": [
+              "ØØØ&",
+              "ØØØ&",
+              "ØØ&Ø",
+              "Ø&ØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 6,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "ØØØ&",
-                    "ØØØ&",
-                    "ØØØ&",
-                    "ØØØ&"
-                ]
+            "data": [
+              "ØØØ&",
+              "ØØØ&",
+              "ØØØ&",
+              "ØØ&Ø"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 7,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "&ØØØ",
-                    "ØØØ&",
-                    "ØØØ&",
-                    "ØØØ&"
-                ]
+            "data": [
+              "ØØØ&",
+              "ØØØ&",
+              "ØØØ&",
+              "ØØØ&"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 8,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "&ØØØ",
-                    "&ØØØ",
-                    "ØØØ&",
-                    "ØØØ&"
-                ]
+            "data": [
+              "ØØØØ",
+              "ØØØ&",
+              "ØØØ&",
+              "ØØØ&"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 9,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "&ØØØ",
-                    "&ØØØ",
-                    "&ØØØ",
-                    "ØØØ&"
-                ]
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØ&",
+              "ØØØ&"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
             },
-            {
-                "metadata": {
-                    "imageX": 1,
-                    "imageY": 0,
-                    "imageScale": 1.5
-                },
-                "data": [
-                    "&ØØØ",
-                    "&ØØØ",
-                    "&ØØØ",
-                    "&ØØØ"
-                ]
-            }
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØ&"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØØ",
+              "ØØ&&"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØØ",
+              "Ø&&&"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØØ",
+              "&&&&"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØØ",
+              "&&&Ø"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØØ",
+              "&&ØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "ØØØØ",
+              "&ØØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "ØØØØ",
+              "&ØØØ",
+              "&ØØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "ØØØØ",
+              "&ØØØ",
+              "&ØØØ",
+              "&ØØØ"
+            ]
+          },
+          {
+            "metadata": {
+              "imageX": 0,
+              "imageY": 0,
+              "imageScale": 1.5
+            },
+            "data": [
+              "&ØØØ",
+              "&ØØØ",
+              "&ØØØ",
+              "&ØØØ"
+            ]
+          }
         ]
-    };
-    static sample2Image = {};
-
+      }; 
+      static sample2Image = {};
+      
     // ---------- Sample 3 ------------------------------
     static sample3Sprite = {
         "metadata": {
             "sprite": "sample 3",
             "spriteGridSize": 41.4,
             "spritePixelSize": 10,
-            "palette": "crayola008"
+            "palette": "crayola008",
+            "framesPerSprite": "6"
         },
         "layers": [
             {
@@ -403,7 +508,8 @@ export class Demo {
             "sprite": "sample 5",
             "spriteGridSize": 13.8,
             "spritePixelSize": 6.7,
-            "palette": "default"
+            "palette": "default",
+            "framesPerSprite": "9"
         },
         "layers": [
             {
@@ -894,3 +1000,5 @@ export class Demo {
       };
 
 }
+// Export the Samples class
+export default Samples;

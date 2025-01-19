@@ -14,14 +14,15 @@
 
 import Colors from "./colors.js";
 
-export class Palettes {
+class Palettes {
 
     // --------------------------------------------------------
     // Palette methods
     // --------------------------------------------------------
-    static currentPaletteName = 'default';
-    static transparentColor = "#00000000";
+    static activeName = 'default';
+    static transparent = "#00000000";
     static errorResult = { symbol: 'Ø', hex: '#00000000', name: 'Transparent' };
+    static sortByOrder = "hue";
 
     static palettes = {
         custom: [
@@ -1204,39 +1205,39 @@ export class Palettes {
     };
 
     // Get the current palette
-    static getPalette() {
-        return this.palettes[this.currentPaletteName];
+    static get() {
+        return this.palettes[this.activeName];
     }
 
     // Set the active palette
-    static setPalette(name) {
+    static set(name) {
         if (!this.palettes[name]) {
             alert(`Palette '"${name}"' not found.`);
             return false;
         }
-        this.currentPaletteName = name;
+        this.activeName = name;
         return true;
     }
 
-    static setCustomPalette(customPalette) {
-        this.setPalette('custom');
+    static setCustom(customPalette) {
+        this.set('custom');
         this.palettes.custom = customPalette;
     }
 
     // Get the length of the current palette
     static getLength() {
-        const palette = this.getPalette(); // Use current palette
+        const palette = this.get(); // Use current palette
         return palette.length;
     }
 
     // Method to display all details of the current palette in the textarea
-    static getPaletteDetails() {
+    static getDetails() {
 
         // Clear the existing content
-        let value = `${this.currentPaletteName}: [\n`;
+        let value = `${this.activeName}: [\n`;
 
         // Get the current palette
-        const palette = this.getPalette();
+        const palette = this.get();
 
         // Iterate through the palette and add details to the textarea
         palette.forEach((color, index) => {
@@ -1248,7 +1249,7 @@ export class Palettes {
 
     // Get an item by its index
     static getByIndex(index) {
-        const palette = this.getPalette(); // Use current palette
+        const palette = this.get(); // Use current palette
         if (index < 0 || index >= palette.length) {
             alert(`Index out of bounds: ${index}`);
             return this.errorResult;
@@ -1258,7 +1259,7 @@ export class Palettes {
 
     // Get an item by its symbol
     static getBySymbol(symbol) {
-        const palette = this.getPalette(); // Use current palette
+        const palette = this.get(); // Use current palette
 
         let result = '';
         // Validate that symbol is a non-empty string and a single ASCII character
@@ -1280,7 +1281,7 @@ export class Palettes {
 
     // Get an item by its hex value
     static getByHex(hex) {
-        const palette = this.getPalette(); // Use current palette
+        const palette = this.get(); // Use current palette
         const result = palette.find(item => item.hex.toLowerCase() === hex.toLowerCase());
         if (!result) {
             alert(`Hex not found: ${hex}`);
@@ -1289,38 +1290,17 @@ export class Palettes {
         return result;
     }
 
-    // Dump the current palette to the console
-    static dumpPalette() {
-        try {
-            const paletteName = this.currentPaletteName; // Use the current active palette name
-            const palette = this.getPalette(); // Retrieve the palette
-
-            if (!Array.isArray(palette)) {
-                throw new Error(`Palette "${paletteName}" does not exist or is not an array.`);
-            }
-
-            // Iterate through the palette and display all details
-            console.log(`Details of "${paletteName}" palette:`);
-            palette.forEach((item, index) => {
-                console.log(`Index: ${index}, Symbol: ${item.symbol}, Hex: ${item.hex}, Name: ${item.name}`);
-            });
-
-        } catch (error) {
-            alert(`Failed to retrieve details for palette "${this.currentPaletteName}":`, error);
+    static setSortByOrder(arg) {
+        if (arg !== 'hue' && arg !== 'saturation' & arg !== 'lightness') {
+            console.log(`Invalid sort by '${arg}'. No change.`);
+            return;
         }
+        this.sortByOrder = arg;
     }
 
-    // -----------------------------------------------------------------------------------
+    static sortColors() {
+        const colors = this.get();
 
-    static sortColors(colors, sortBy = 'hue') {
-        /** sort options:
-            // Sorting by Hue
-            const sortedByHue = sortColors(colors, 'hue');
-            // Sorting by Saturation
-            const sortedBySaturation = sortColors(colors, 'saturation');
-            // Sorting by Lightness
-            const sortedByLightness = sortColors(colors, 'lightness');
-         */
         colors.sort((a, b) => {
             // Check for transparency
             if (Colors.isTransparent(a.hex)) {
@@ -1339,19 +1319,40 @@ export class Palettes {
             let hslB = Colors.rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
 
             // Sort based on the selected criterion
-            if (sortBy === 'hue') {
+            if (this.sortByOrder === 'hue') {
                 return hslA.h - hslB.h; // Sort by hue
-            } else if (sortBy === 'saturation') {
+            } else if (this.sortByOrder === 'saturation') {
                 return hslA.s - hslB.s; // Sort by saturation
-            } else if (sortBy === 'lightness') {
+            } else if (this.sortByOrder === 'lightness') {
                 return hslA.l - hslB.l; // Sort by lightness
             } else {
-                console.log('sortBy:', sortBy); // Debug log to check the value
-                console.warn(` --- Invalid sortBy value:'${sortBy}'. Defaulting to 'hue'. ---`);
+                console.log('this.sortByOrder:', this.sortByOrder); // Debug log to check the value
+                console.warn(` --- Invalid this.sortByOrder value:'${this.sortByOrder}'. Defaulting to 'hue'. ---`);
                 return hslA.h - hslB.h; // Default to sorting by hue
             }
         });
         return colors;
+    }
+
+    // Dump the current palette to the console
+    static dump() {
+        try {
+            const paletteName = this.activeName; // Use the current active palette name
+            const palette = this.get(); // Retrieve the palette
+
+            if (!Array.isArray(palette)) {
+                throw new Error(`Palette '${paletteName}' does not exist or is not an array.`);
+            }
+
+            // Iterate through the palette and display all details
+            console.log(`Details of "${paletteName}" palette:`);
+            palette.forEach((item, index) => {
+                console.log(`Index: ${index}, Symbol: ${item.symbol}, Hex: ${item.hex}, Name: ${item.name}`);
+            });
+
+        } catch (error) {
+            alert(`Failed to retrieve details for palette '${this.activeName}':`, error);
+        }
     }
 
 }
@@ -1363,15 +1364,15 @@ export default Palettes;
 //---------------------------------------------------
 // Sorted Color Palette 'xxxx' by 'yyyy'
 if (false) {  // sort colors and put on editor screen.
-    Palettes.setPalette("default");
+    Palettes.set("default");
     var sortBy = "saturation"; // hue, saturation, lightness
 
-    let value = `<h1>Sorted Color Palette '${Palettes.currentPaletteName}' by '${sortBy}'</h1>`;
+    let value = `<h1>Sorted Color Palette '${Palettes.activeName}' by '${sortBy}'</h1>`;
     value += '<p>Options are: hue, saturation, & lightness</p>';
     value += '<textarea id="orderedColor" rows="35" cols="150" style="height: 35%;">';
 
     // colors to Sort 
-    var sortedColors = Palettes.sortColors(Palettes.getPalette(), sortBy);
+    var sortedColors = Palettes.sortColors();
 
     let colorNumber = 0;
     let asciiINumber = 32;
