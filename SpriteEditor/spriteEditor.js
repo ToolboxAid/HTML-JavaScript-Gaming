@@ -8,6 +8,10 @@ import Palettes from "../scripts/palettes.js";
 import MouseInput from '../scripts/mouse.js';
 import Samples from "./samples.js";
 import Functions from "../scripts/functions.js";
+
+// import { ImageScale } from "./imageScale.js";
+import { Message } from './message.js';
+
 //-------------------------------------------
 export class SpriteEditor {
 
@@ -66,8 +70,6 @@ export class SpriteEditor {
     //-------------------------------------------
     static mouse = null;
 
-    static initMessages = true;
-
     static currentFrame = 0;
 
     static jsonSprite = {
@@ -117,7 +119,7 @@ export class SpriteEditor {
         const jsonString = JSON.stringify(this.jsonImages, null, 2); // Indent with 2 spaces        
         textarea.value = jsonString;
 
-        this.addMessages(`Loaded: '${name}'`)
+        Message.add(`Loaded: '${name}'`)
     }
     static loadSample1() {
         this.loadSample('sample 1', Samples.sample1Sprite, Samples.sample1Image);
@@ -140,7 +142,7 @@ export class SpriteEditor {
     // ------------------------------------------
     /** Initialization methods*/
     static initialize() {
-        this.clearMessages();
+        Message.clear();
         this.initializeArrays();
 
         this.initializeCanvasEditor();
@@ -168,7 +170,7 @@ export class SpriteEditor {
         for (let x = 0; x < this.maxGrid; x++) {
             this.spriteIndex[x] = new Array(this.maxGrid).fill('Ø');
         }
-        this.addMessages(`Initialize array @ ${this.maxGrid}x${this.maxGrid}.`);
+        Message.add(`Initialize array @ ${this.maxGrid}x${this.maxGrid}.`);
     }
     static initializeCanvasEditor() {
         // Get the canvas element
@@ -186,7 +188,7 @@ export class SpriteEditor {
         // Create a new CanvasRenderingContext2D object
         this.ctxEditor = this.canvasEditor.getContext("2d");
 
-        this.addMessages(`Canvas Editor initialized @ ${this.canvasEditor.width}x${this.canvasEditor.height}.`);
+        Message.add(`Canvas Editor initialized @ ${this.canvasEditor.width}x${this.canvasEditor.height}.`);
     }
     static initializeCanvasImage() {
         // SpriteImage
@@ -205,26 +207,8 @@ export class SpriteEditor {
         // Create a new CanvasRenderingContext2D object
         this.ctxImage = this.canvasImage.getContext("2d");
 
-        this.addMessages(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
-    }
-
-    // ------------------------------------------
-    /** Message methods*/
-    static addMessages(message) {
-        const formattedTimestamp = new Date().toLocaleString().replace(/,/g, '');
-        const textarea = document.getElementById('messagesID');
-        textarea.value += `${formattedTimestamp} ${message} \n`;
-        textarea.disabled = true;
-    }
-    static clearMessages() {
-        const textarea = document.getElementById('messagesID');
-        textarea.value = "";
-        this.addMessages(`Messages Cleared.`)
-        if (this.initMessages) {
-            this.initMessages = false;
-            this.addMessages(`Press 'F11' to enter/exit full screen.`)
-            this.addMessages(`Add '#ØØØØØØØØ' to palette for Transparent.`)
-        }
+        Message.add(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
+        
     }
 
     // ------------------------------------------
@@ -249,7 +233,7 @@ export class SpriteEditor {
         Palettes.set(name);
         this.jsonSprite.metadata.palette = Palettes.activeName;
 
-        this.addMessages(`Selected palette: '${name}'.`);
+        Message.add(`Selected palette: '${name}'.`);
 
         this.outputJsonData();
         this.showPaletteColors();
@@ -309,7 +293,7 @@ export class SpriteEditor {
             Palettes.setCustom(customPalette);
         } catch (error) {
             console.error("Error parsing the palette data:", error);
-            this.addMessages(`Error parsing the palette data: ${error.message}`);
+            Message.add(`Error parsing the palette data: ${error.message}`);
         }
     }
 
@@ -337,7 +321,7 @@ export class SpriteEditor {
                     this.imageName = imageName;
                     this.image = img; // Store the image for further use
                     this.image = img;
-                    this.addMessages(`Image '${imageName}' successfully loaded.`);
+                    Message.add(`Image '${imageName}' successfully loaded.`);
                 }
 
                 // Set image position
@@ -345,7 +329,7 @@ export class SpriteEditor {
                 this.imageY = this.jsonSprite.layers[this.currentFrame].metadata.imageY;
             } else {
                 // Handle case where image is not found
-                this.addMessages(`Image '${imageName}' not found in this.jsonImages for the current frame: ${this.currentFrame}.`);
+                Message.add(`Image '${imageName}' not found in this.jsonImages for the current frame: ${this.currentFrame}.`);
                 this.imageName = null;
                 this.image = null;
             }
@@ -353,7 +337,7 @@ export class SpriteEditor {
             // Handle case where metadata is missing
             this.imageName = null;
             this.image = null;
-            // this.addMessages(`No spriteimage metadata found for the current frame: ${this.currentFrame}.`);
+            // Message.add(`No spriteimage metadata found for the current frame: ${this.currentFrame}.`);
         }
     }
     static setImageX(imageX) {
@@ -361,7 +345,7 @@ export class SpriteEditor {
             this.imageX = 0;
             this.moveImageHorizontal(imageX);
         } else {
-            this.addMessages("imageX is not a valid number:", imageX);
+            Message.add("imageX is not a valid number:", imageX);
         }
     }
     static moveImageHorizontal(moveFactor) {
@@ -375,7 +359,7 @@ export class SpriteEditor {
             this.imageY = 0;
             this.moveImageVertical(imageY);
         } else {
-            this.addMessages("imageY is not a valid number:", imageY);
+            Message.add("imageY is not a valid number:", imageY);
         }
     }
     static moveImageVertical(moveFactor) {
@@ -390,17 +374,17 @@ export class SpriteEditor {
             this.imageScale = 0;
             this.updateImageScale(imageScale);
         } else {
-            this.addMessages("'imageScale' is not a valid number:", imageScale);
+            Message.add("'imageScale' is not a valid number:", imageScale);
         }
     }
     static updateImageScale(imageScale) {
         this.imageScale += imageScale;
         if (this.imageScale > 10.0) {
             this.imageScale = 10.0;
-            this.addMessages(`Max image scale reached: ${this.imageScale}`)
+            Message.add(`Max image scale reached: ${this.imageScale}`)
         } else if (this.imageScale < 0.01) {
             this.imageScale = 0.01;
-            this.addMessages(`Min image scale reached: ${this.imageScale}`)
+            Message.add(`Min image scale reached: ${this.imageScale}`)
         }
         this.jsonSprite.layers[this.currentFrame].metadata.imageScale = this.imageScale;
 
@@ -410,7 +394,7 @@ export class SpriteEditor {
     // ------------------------------------------
     /** Grid methods*/
     static showSpriteGridDimensions() {
-        this.addMessages(` Grid Size ${this.gridCellWidth}x${this.gridCellHeight}`);
+        Message.add(` Grid Size ${this.gridCellWidth}x${this.gridCellHeight}`);
     }
     static setSpriteGridSize(spriteGridSize) {
         if (typeof spriteGridSize === 'number' && !isNaN(spriteGridSize)) {
@@ -418,18 +402,18 @@ export class SpriteEditor {
 
             this.updateSpriteGridSize(spriteGridSize);
         } else {
-            this.addMessages("spriteGridSize is not a valid number:", spriteGridSize);
+            Message.add("spriteGridSize is not a valid number:", spriteGridSize);
         }
     }
     static updateSpriteGridSize(spriteGridSize) {
         this.spriteGridSize += spriteGridSize;
         if (this.spriteGridSize < 4.0) {
             this.spriteGridSize = 4.0;
-            this.addMessages(`Min grid scall reached: ${this.spriteGridSize}`)
+            Message.add(`Min grid scall reached: ${this.spriteGridSize}`)
         }
         if (this.spriteGridSize > 80.0) {
             this.spriteGridSize = 80.0;
-            this.addMessages(`Max grid scall reached: ${this.spriteGridSize}`)
+            Message.add(`Max grid scall reached: ${this.spriteGridSize}`)
         }
         this.jsonSprite.metadata.spriteGridSize = parseFloat(this.spriteGridSize.toFixed(1));
         this.outputJsonData();
@@ -452,7 +436,7 @@ export class SpriteEditor {
             // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
-            this.addMessages(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
+            Message.add(`Cannot add row, gridCellHeight is already ${this.maxGrid}.`);
         }
 
         // Update sprite grid dimensions display
@@ -476,7 +460,7 @@ export class SpriteEditor {
             // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
-            this.addMessages(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
+            Message.add(`Cannot add column, gridCellWidth is already ${this.maxGrid}.`);
         }
 
         // Update sprite grid dimensions display
@@ -500,7 +484,7 @@ export class SpriteEditor {
             // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
-            this.addMessages("Cannot delete column, gridCellWidth is already at the minimum (1).");
+            Message.add("Cannot delete column, gridCellWidth is already at the minimum (1).");
         }
 
         // Update sprite grid dimensions display
@@ -526,7 +510,7 @@ export class SpriteEditor {
             // Save the updated sprite data
             this.saveModifiedSprite();
         } else {
-            this.addMessages(`Cannot delete row, gridCellHeight is already at the minimum value of 1.`);
+            Message.add(`Cannot delete row, gridCellHeight is already at the minimum value of 1.`);
         }
 
         // Update sprite grid dimensions display
@@ -539,18 +523,18 @@ export class SpriteEditor {
             this.spritePixelSize = 0;
             this.updateSpritePixelSize(spritePixelSize);
         } else {
-            this.addMessages("spriteGridSize is not a valid number:", spritePixelSize);
+            Message.add("spriteGridSize is not a valid number:", spritePixelSize);
         }
     }
     static updateSpritePixelSize(spritePixelSize) {
         this.spritePixelSize += spritePixelSize;
         if (this.spritePixelSize < 1.0) {
             this.spritePixelSize = 1.0;
-            this.addMessages(`Min sprite pixel size reached: ${this.spritePixelSize}`)
+            Message.add(`Min sprite pixel size reached: ${this.spritePixelSize}`)
         }
         if (this.spritePixelSize > 10.0) {
             this.spritePixelSize = 10.0;
-            this.addMessages(`Max sprite pixel size reached: ${this.spritePixelSize}`)
+            Message.add(`Max sprite pixel size reached: ${this.spritePixelSize}`)
         }
         this.jsonSprite.metadata.spritePixelSize = parseFloat(this.spritePixelSize.toFixed(2));
 
@@ -561,16 +545,16 @@ export class SpriteEditor {
             const num = Number(framesPerSprite);
             if (num < 0) {
                 num = 0;
-                this.addMessages(`Min FrameCount reached: ${num}`)
+                Message.add(`Min FrameCount reached: ${num}`)
             }
             if (num > 60.0) {
                 num = 60.0;
-                this.addMessages(`Max FrameCount reached: ${num}`)
+                Message.add(`Max FrameCount reached: ${num}`)
             }
             this.framesPerSprite = framesPerSprite;
             this.jsonSprite.metadata.framesPerSprite = this.framesPerSprite;
         } else {
-            this.addMessages("framesPerSprite is not a valid string of numbers :", num);
+            Message.add("framesPerSprite is not a valid string of numbers :", num);
         }
         this.outputJsonData();
     }
@@ -755,7 +739,7 @@ export class SpriteEditor {
     static generateFrameLayerButtons() {
         const container = document.getElementById("setCurrentFrameLayer");
         if (!container) {
-            this.addMessages("Container with id 'setCurrentFrameLayer' not found!");
+            Message.add("Container with id 'setCurrentFrameLayer' not found!");
             return;
         }
 
@@ -792,7 +776,7 @@ export class SpriteEditor {
         const dropdown = document.getElementById("animationDropdown");
 
         if (!dropdown) {
-            this.addMessages(`'animationDropdown' not found.`);
+            Message.add(`'animationDropdown' not found.`);
             return;
         }
 
@@ -883,9 +867,9 @@ export class SpriteEditor {
             currentFrame < this.jsonSprite.layers.length
         ) {
             this.currentFrame = currentFrame;
-            //this.addMessages(`Current Layer frame at index: ${this.currentFrame}`);
+            //Message.add(`Current Layer frame at index: ${this.currentFrame}`);
         } else {
-            this.addMessages(`Invalid currentFrame or layers data: ${currentFrame}`);
+            Message.add(`Invalid currentFrame or layers data: ${currentFrame}`);
         }
 
         this.loadSpriteFromJSON();
@@ -937,7 +921,7 @@ export class SpriteEditor {
             // Use firstLayerData safely
             this.loadSpriteFromJSON();
         } else {
-            this.addMessages("The required 'firstLayerData' does not exist.");
+            Message.add("The required 'firstLayerData' does not exist.");
             return;
         }
     }
@@ -972,7 +956,7 @@ export class SpriteEditor {
 
         this.currentFrame += layerIndex;
 
-        this.addMessages(`Layer added at: ${this.currentFrame}`);
+        Message.add(`Layer added at: ${this.currentFrame}`);
         this.setCurrentFrameLayer(this.currentFrame);
 
         this.outputJsonData();
@@ -980,7 +964,7 @@ export class SpriteEditor {
     static subLayer() {
         // Prevent removal if there's only one layer remaining
         if (this.jsonSprite.layers.length <= 1) {
-            this.addMessages("Cannot remove the last remaining layer.");
+            Message.add("Cannot remove the last remaining layer.");
             return;
         }
 
@@ -991,12 +975,12 @@ export class SpriteEditor {
             if (this.currentFrame > this.jsonSprite.layers.length - 1) {
                 this.currentFrame = this.jsonSprite.layers.length - 1;
             }
-            this.addMessages(`Layer removed at index: ${currentFrame}`);
+            Message.add(`Layer removed at index: ${currentFrame}`);
             this.setCurrentFrameLayer(this.currentFrame);
 
             this.outputJsonData();
         } else {
-            this.addMessages(`Invalid layer index: ${currentFrame} ${this.currentFrame}`);
+            Message.add(`Invalid layer index: ${currentFrame} ${this.currentFrame}`);
         }
     }
     static setPaletteDropDown(value = "default") {
@@ -1029,7 +1013,8 @@ export class SpriteEditor {
         // Access metadata.layer frames
         this.setImageX(this.jsonSprite.layers[this.currentFrame].metadata.imageX);
         this.setImageY(this.jsonSprite.layers[this.currentFrame].metadata.imageY);
-        this.setImageScale(this.jsonSprite.layers[this.currentFrame].metadata.imageScale);
+       this.setImageScale(this.jsonSprite.layers[this.currentFrame].metadata.imageScale);
+       //ImageScale.setImageScale(this.jsonSprite.layers[this.currentFrame].metadata.imageScale);
 
         this.loadCurrentFrameImage();
         if (false) {
@@ -1052,10 +1037,10 @@ export class SpriteEditor {
                 this.generateFrameLayerButtons();
                 this.loadSpriteFromJSON();
             } else {
-                this.addMessages('SpriteEditor is not defined.')
+                Message.add('SpriteEditor is not defined.')
             }
         } catch (error) {
-            this.addMessages(`Invalid spriteID JSON format: ${error} \n`);
+            Message.add(`Invalid spriteID JSON format: ${error} \n`);
             console.log(`Invalid spriteID JSON format: ${error} \n ${error.message} \n ${jsonString}`);
             alert("I must be trashing some variable...\n'spriteID' failure, \n if the issue persists, press 'F5' to reset");
         }
@@ -1072,10 +1057,10 @@ export class SpriteEditor {
                 this.jsonImages = parsedData;
                 this.loadCurrentFrameImage();
             } else {
-                this.addMessages('imageID is not defined.')
+                Message.add('imageID is not defined.')
             }
         } catch (error) {
-            this.addMessages(`Invalid imageID JSON format: ${error} \n `);
+            Message.add(`Invalid imageID JSON format: ${error} \n `);
         }
     }
 
@@ -1137,16 +1122,16 @@ export class SpriteEditor {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(modifiedText)
                     .then(() => {
-                        this.addMessages("JSON copied to clipboard!");
+                        Message.add("JSON copied to clipboard!");
                     })
                     .catch((error) => {
-                        this.addMessages("An error occurred while copying JSON.");
+                        Message.add("An error occurred while copying JSON.");
                         console.error("Error copying JSON to clipboard:", error);
                     });
             } else {
                 // Fallback for older browsers using execCommand
                 console.warn("Clipboard API not supported. Falling back to execCommand.");
-                this.addMessages("Clipboard API not supported. Falling back to execCommand.");
+                Message.add("Clipboard API not supported. Falling back to execCommand.");
 
                 // Create a temporary textarea
                 const tempTextarea = document.createElement("textarea");
@@ -1160,20 +1145,20 @@ export class SpriteEditor {
                 try {
                     const success = document.execCommand("copy");
                     if (success) {
-                        this.addMessages("JSON copied to clipboard!");
+                        Message.add("JSON copied to clipboard!");
                     } else {
-                        this.addMessages("Failed to copy JSON.");
+                        Message.add("Failed to copy JSON.");
                     }
                 } catch (err) {
                     console.error("Error copying JSON using execCommand:", err);
-                    this.addMessages("An error occurred while copying JSON.");
+                    Message.add("An error occurred while copying JSON.");
                 } finally {
                     // Clean up
                     document.body.removeChild(tempTextarea);
                 }
             }
         } else {
-            this.addMessages("No JSON data to copy!");
+            Message.add("No JSON data to copy!");
         }
     }
 
@@ -1404,10 +1389,10 @@ fileInput.addEventListener('change', (event) => {
                 const textarea = document.getElementById('imageID');
                 textarea.value = JSON.stringify(SpriteEditor.jsonImages, null, 2);
             } else {
-                SpriteEditor.addMessages("Failed to update current frame(s) image.");
+                SpriteEditor.add("Failed to update current frame(s) image.");
             }
 
-            SpriteEditor.addMessages(`Image loaded and set: '${SpriteEditor.imageName}'`);
+            SpriteEditor.add(`Image loaded and set: '${SpriteEditor.imageName}'`);
         };
         img.src = e.target.result;
     };
@@ -1418,7 +1403,7 @@ fileInput.addEventListener('change', (event) => {
 // Add event listener for palette (change in json text content)
 const textareaPalette = document.getElementById('paletteID');
 textareaPalette.addEventListener('input', (event) => {
-    SpriteEditor.addMessages(`Palette JSON data changed.`);
+    SpriteEditor.add(`Palette JSON data changed.`);
     SpriteEditor.loadPaletteFromTextarea();
 });
 
@@ -1426,7 +1411,7 @@ textareaPalette.addEventListener('input', (event) => {
 // Add event listener for input (change in json text content)
 const textareaSprite = document.getElementById('spriteID');
 textareaSprite.addEventListener('input', (event) => {
-    SpriteEditor.addMessages(`Sprite JSON data changed.`);
+    SpriteEditor.add(`Sprite JSON data changed.`);
     SpriteEditor.loadSpriteFromTextarea();
 });
 
@@ -1434,7 +1419,7 @@ textareaSprite.addEventListener('input', (event) => {
 // Add event listener for images (change in json text content)
 const textareaImages = document.getElementById('imageID');
 textareaImages.addEventListener('input', (event) => {
-    SpriteEditor.addMessages(`Image JSON data changed.`);
+    SpriteEditor.add(`Image JSON data changed.`);
     SpriteEditor.loadImageFromTextarea();
 });
 
