@@ -9,7 +9,7 @@ import MouseInput from '../scripts/mouse.js';
 import Samples from "./samples.js";
 import Functions from "../scripts/functions.js";
 
-// import { ImageScale } from "./imageScale.js";
+import { ImageScale } from "./imageScale.js";
 import { Message } from './message.js';
 
 //-------------------------------------------
@@ -208,7 +208,7 @@ export class SpriteEditor {
         this.ctxImage = this.canvasImage.getContext("2d");
 
         Message.add(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
-        
+
     }
 
     // ------------------------------------------
@@ -229,7 +229,7 @@ export class SpriteEditor {
             alert(`Palette '${name}' not found.`);
             return false;
         }
-        
+
         Palettes.set(name);
         this.jsonSprite.metadata.palette = Palettes.activeName;
 
@@ -368,26 +368,11 @@ export class SpriteEditor {
 
         this.outputJsonData();
     }
-    static setImageScale(imageScale) {
 
-        if (typeof imageScale === 'number' && !isNaN(imageScale)) {
-            this.imageScale = 0;
-            this.updateImageScale(imageScale);
-        } else {
-            Message.add("'imageScale' is not a valid number:", imageScale);
-        }
-    }
-    static updateImageScale(imageScale) {
-        this.imageScale += imageScale;
-        if (this.imageScale > 10.0) {
-            this.imageScale = 10.0;
-            Message.add(`Max image scale reached: ${this.imageScale}`)
-        } else if (this.imageScale < 0.01) {
-            this.imageScale = 0.01;
-            Message.add(`Min image scale reached: ${this.imageScale}`)
-        }
-        this.jsonSprite.layers[this.currentFrame].metadata.imageScale = this.imageScale;
-
+    // ------------------------------------------ 
+    /** Image Scale called from HTML */
+    static updateImageScale(value) {
+        ImageScale.updateImageScale(value, this.jsonSprite, this.currentFrame);
         this.outputJsonData();
     }
 
@@ -628,7 +613,7 @@ export class SpriteEditor {
             for (var y = 0; y < this.gridCellHeight; y++) {
                 const result = Palettes.getBySymbol(this.spriteIndex[x][y]);
 
-                if ( Colors.isTransparent(result.hex)) {
+                if (Colors.isTransparent(result.hex)) {
                     const gridCellPosX = this.gridX + (this.spriteGridSize * x) + this.spriteGridSize / 4;
                     const gridCellPosY = this.gridY + (this.spriteGridSize * y) + this.spriteGridSize / 4;
 
@@ -809,7 +794,7 @@ export class SpriteEditor {
             dropdown.dispatchEvent(event);
         }
     }
-   /** Animation methods*/
+    /** Animation methods*/
     static handleCanvasImageClick() { // Using SpriteEditor because it's called from a listener
         const dropdown = document.getElementById("animationDropdown");
 
@@ -824,7 +809,7 @@ export class SpriteEditor {
             dropdown.dispatchEvent(event);
         }
     }
- 
+
     static lastAnimationDD = "10";  // set default
     static isAnimationActive = false;
     static animationFrameRate = 0;
@@ -1008,13 +993,15 @@ export class SpriteEditor {
             console.log('Sprite Grid Size:', this.spriteGridSize);
             console.log('Sprite Pixel Size:', this.spritePixelSize);
             console.log('Palette:', Palettes.activeName);
-            
+
         }
         // Access metadata.layer frames
         this.setImageX(this.jsonSprite.layers[this.currentFrame].metadata.imageX);
         this.setImageY(this.jsonSprite.layers[this.currentFrame].metadata.imageY);
-       this.setImageScale(this.jsonSprite.layers[this.currentFrame].metadata.imageScale);
-       //ImageScale.setImageScale(this.jsonSprite.layers[this.currentFrame].metadata.imageScale);
+
+        const imageScale = this.jsonSprite.layers[this.currentFrame].metadata.imageScale;
+        ImageScale.setImageScale(imageScale, this.jsonSprite, this.currentFrame);
+        this.outputJsonData();
 
         this.loadCurrentFrameImage();
         if (false) {
@@ -1099,7 +1086,7 @@ export class SpriteEditor {
             const jsonImagesString = JSON.stringify(this.jsonImages, null, 2);
 
             let jsonPaletteString = "";
-            
+
             if (Palettes.activeName === "custom") {
                 jsonPaletteString = "static " + camelCasePalete + " = {\ncustom: " +
                     JSON.stringify(Palettes.get(), null, 0)
@@ -1403,7 +1390,7 @@ fileInput.addEventListener('change', (event) => {
 // Add event listener for palette (change in json text content)
 const textareaPalette = document.getElementById('paletteID');
 textareaPalette.addEventListener('input', (event) => {
-    SpriteEditor.add(`Palette JSON data changed.`);
+    Message.add(`Palette JSON data changed.`);
     SpriteEditor.loadPaletteFromTextarea();
 });
 
@@ -1411,7 +1398,7 @@ textareaPalette.addEventListener('input', (event) => {
 // Add event listener for input (change in json text content)
 const textareaSprite = document.getElementById('spriteID');
 textareaSprite.addEventListener('input', (event) => {
-    SpriteEditor.add(`Sprite JSON data changed.`);
+    Message.add(`Sprite JSON data changed.`);
     SpriteEditor.loadSpriteFromTextarea();
 });
 
@@ -1419,7 +1406,7 @@ textareaSprite.addEventListener('input', (event) => {
 // Add event listener for images (change in json text content)
 const textareaImages = document.getElementById('imageID');
 textareaImages.addEventListener('input', (event) => {
-    SpriteEditor.add(`Image JSON data changed.`);
+    Message.add(`Image JSON data changed.`);
     SpriteEditor.loadImageFromTextarea();
 });
 
