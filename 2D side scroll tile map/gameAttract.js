@@ -11,7 +11,6 @@ import Functions from '../scripts/functions.js';
 import Hero from './hero.js';
 import TileMap from '../scripts/tileMap.js';
 
-
 class GameAttract {
     constructor() {
         this.hero = new Hero();
@@ -34,7 +33,7 @@ class GameAttract {
     displayAttract() {
         CanvasUtils.ctx.fillStyle = "white";
         CanvasUtils.ctx.font = "30px Arial";
-        CanvasUtils.ctx.fillText("Welcome to Asteroids!", 250, 200);
+        CanvasUtils.ctx.fillText("Welcome to Scrolling Tile Map!", 250, 200);
         CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
     }
 
