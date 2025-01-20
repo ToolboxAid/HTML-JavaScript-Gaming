@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 12/28/2024
+// message.js
+
 export class Message {
 
     static textArea = null;

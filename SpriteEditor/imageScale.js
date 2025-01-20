@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 12/28/2024
+// imageScale.js
+
 import { Message } from './message.js';
 
 export class ImageScale {
