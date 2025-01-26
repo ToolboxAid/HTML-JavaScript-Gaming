@@ -14,9 +14,9 @@ class ObjectKillable extends ObjectDynamic {
         DEAD: 'dead'
     });
 
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height, velocityX, velocityY) {
 
-        super(x, y, width, height);
+        super(x, y, width, height, velocityX, velocityY);
 
         this.status = ObjectKillable.Status.ALIVE;
     }

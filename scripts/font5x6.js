@@ -3,7 +3,7 @@
 // 10/16/2024
 // font5x6.js
 
-export default class Font5x6 {
+class Font5x6 {
     static font5x6 = {
         // A-Z
         // A-Z
@@ -713,4 +713,1422 @@ export default class Font5x6 {
         ]
     };
 
+    
+    static font5x6Sprite = {
+        "metadata": {
+            "sprite": "Font 5x6",
+            "spriteGridSize": 30,
+            "spritePixelSize": 3,
+            "palette": "custom",
+            "framesPerSprite": "30"
+        },
+        "layers": [
+            {
+                "key": "0",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10011",
+                    "10101",
+                    "11001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "1",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00100",
+                    "01100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "2",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "00001",
+                    "01110",
+                    "10000",
+                    "11111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "3",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "00010",
+                    "00001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "4",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00010",
+                    "00110",
+                    "01010",
+                    "10010",
+                    "11111",
+                    "00010",
+                    "00000"
+                ]
+            },
+            {
+                "key": "5",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11111",
+                    "10000",
+                    "11110",
+                    "00001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "6",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10000",
+                    "11110",
+                    "10001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "7",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11111",
+                    "00001",
+                    "00010",
+                    "00100",
+                    "01000",
+                    "10000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "8",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "01110",
+                    "10001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "9",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10001",
+                    "01111",
+                    "00001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "A",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10001",
+                    "11111",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "B",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11110",
+                    "10001",
+                    "11110",
+                    "10001",
+                    "10001",
+                    "11110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "C",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10000",
+                    "10000",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "D",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11110",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "11110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "E",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11111",
+                    "10000",
+                    "11110",
+                    "10000",
+                    "10000",
+                    "11111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "F",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11111",
+                    "10000",
+                    "11110",
+                    "10000",
+                    "10000",
+                    "10000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "G",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10000",
+                    "10111",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "H",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "10001",
+                    "11111",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "I",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "J",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00111",
+                    "00001",
+                    "00001",
+                    "00001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "K",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "10010",
+                    "11100",
+                    "10010",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "L",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10000",
+                    "10000",
+                    "10000",
+                    "10000",
+                    "10000",
+                    "11111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "M",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "11011",
+                    "10101",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "N",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "11001",
+                    "10101",
+                    "10011",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "O",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "P",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11110",
+                    "10001",
+                    "10001",
+                    "11110",
+                    "10000",
+                    "10000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "Q",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10001",
+                    "10101",
+                    "10011",
+                    "01111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "R",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11110",
+                    "10001",
+                    "11110",
+                    "10010",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "S",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01111",
+                    "10000",
+                    "01110",
+                    "00001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "T",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11111",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "U",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "V",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "01010",
+                    "00100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "W",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "10001",
+                    "10001",
+                    "10101",
+                    "11011",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "X",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "01010",
+                    "00100",
+                    "01010",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "Y",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10001",
+                    "01010",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "Z",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "11111",
+                    "00001",
+                    "00110",
+                    "01000",
+                    "10000",
+                    "11111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "a",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "01110",
+                    "00001",
+                    "01111",
+                    "10001",
+                    "01111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "b",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10000",
+                    "10000",
+                    "11110",
+                    "10001",
+                    "10001",
+                    "11110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "c",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "01111",
+                    "10000",
+                    "10000",
+                    "10000",
+                    "01111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "d",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00001",
+                    "00001",
+                    "01111",
+                    "10001",
+                    "10001",
+                    "01111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "e",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "01110",
+                    "10001",
+                    "11111",
+                    "10000",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "f",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00110",
+                    "01001",
+                    "01000",
+                    "11110",
+                    "01000",
+                    "01000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "g",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "01111",
+                    "10001",
+                    "10001",
+                    "01111",
+                    "00001",
+                    "11110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "h",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10000",
+                    "10000",
+                    "11110",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "i",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00100",
+                    "00000",
+                    "01100",
+                    "00100",
+                    "00100",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "j",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00010",
+                    "00000",
+                    "00010",
+                    "00010",
+                    "00010",
+                    "10010",
+                    "01100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "k",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10000",
+                    "10010",
+                    "10100",
+                    "11000",
+                    "10100",
+                    "10010",
+                    "00000"
+                ]
+            },
+            {
+                "key": "l",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "m",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "11010",
+                    "10101",
+                    "10101",
+                    "10101",
+                    "00000"
+                ]
+            },
+            {
+                "key": "n",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "10110",
+                    "11001",
+                    "10001",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "o",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "01110",
+                    "10001",
+                    "10001",
+                    "01110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "p",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "11110",
+                    "10001",
+                    "10001",
+                    "11110",
+                    "10000",
+                    "10000"
+                ]
+            },
+            {
+                "key": "q",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "01111",
+                    "10001",
+                    "10001",
+                    "01111",
+                    "00001",
+                    "00001"
+                ]
+            },
+            {
+                "key": "r",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "10110",
+                    "11001",
+                    "10000",
+                    "10000",
+                    "10000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "s",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "01111",
+                    "10000",
+                    "01110",
+                    "00001",
+                    "11110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "t",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01000",
+                    "01000",
+                    "11110",
+                    "01000",
+                    "01001",
+                    "00110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "u",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "01111",
+                    "00000"
+                ]
+            },
+            {
+                "key": "v",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "10001",
+                    "10001",
+                    "10001",
+                    "01010",
+                    "00100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "w",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "10001",
+                    "10001",
+                    "10101",
+                    "10101",
+                    "01010",
+                    "00000"
+                ]
+            },
+            {
+                "key": "x",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "10001",
+                    "01010",
+                    "00100",
+                    "01010",
+                    "10001",
+                    "00000"
+                ]
+            },
+            {
+                "key": "y",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "10001",
+                    "10001",
+                    "01111",
+                    "00001",
+                    "11110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "z",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "11111",
+                    "00010",
+                    "00100",
+                    "01000",
+                    "11111",
+                    "00000"
+                ]
+            },
+            {
+                "key": " ",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "`",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "10000",
+                    "01000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "!",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00000",
+                    "00100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "?",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "00010",
+                    "00100",
+                    "00000",
+                    "00100",
+                    "00000"
+                ]
+            },
+            {
+                "key": ".",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "-",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000",
+                    "00000",
+                    "11111",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "#",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01010",
+                    "11111",
+                    "01010",
+                    "11111",
+                    "01010",
+                    "00000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "<",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00010",
+                    "00100",
+                    "01000",
+                    "01000",
+                    "00100",
+                    "00010",
+                    "00000"
+                ]
+            },
+            {
+                "key": ">",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01000",
+                    "00100",
+                    "00010",
+                    "00010",
+                    "00100",
+                    "01000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "[",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00110",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00110",
+                    "00000"
+                ]
+            },
+            {
+                "key": "]",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "00100",
+                    "01100",
+                    "00000"
+                ]
+            },
+            {
+                "key": "/",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00001",
+                    "00010",
+                    "00100",
+                    "01000",
+                    "10000",
+                    "00000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "'",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00100",
+                    "01000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "\"",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01010",
+                    "01010",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000",
+                    "00000"
+                ]
+            },
+            {
+                "key": "@",
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "01110",
+                    "10001",
+                    "10111",
+                    "10101",
+                    "10111",
+                    "10000",
+                    "01110"
+                ]
+            }
+        ]
+    };
+    static font5x6Image = {};
+    static font5x6Palette = {
+        custom: [
+            { "symbol": "1", "hex": "#888888", "name": "Gray" },
+            { "symbol": "0", "hex": "#00000000", "name": "Transparent" }
+        ]
+    };
+
+    static getLayerDataByKey(key) {
+        const layer = this.font5x6Sprite.layers.find(layer => layer.key === key);
+        return layer ? layer.data : null;
+    }
 }
+
+// Export the Functions class
+export default Font5x6;
+

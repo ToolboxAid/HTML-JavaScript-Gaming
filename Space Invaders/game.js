@@ -293,7 +293,7 @@ class Game {
         if (this.laser) {
             let hitDetected = false;
             this.gameEnemies.forEach((enemy, key) => {
-                console.log(enemy.isCollidingWith(this.laser));                
+//                console.log(enemy.isCollidingWith(this.laser));                
                 if (enemy.isCollidingWith(this.laser)) {
                     this.updatePlayerScore(enemy.value);
                     enemy.setHit();

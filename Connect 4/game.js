@@ -83,7 +83,6 @@ class Game {
   }
 
   randomDropInAttractMode() {
-    console.log("randome");
     const column = Math.floor(Math.random() * 7); // Random column from 0 to 6
     const symbol = this.playerSymbols[this.currentPlayer - 1];
     this.dropChip(column, symbol);

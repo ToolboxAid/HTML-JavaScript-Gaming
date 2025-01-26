@@ -4,6 +4,7 @@
 // objectSprite.js
 
 import CanvasUtils from './canvas.js';
+import Colors from './colors.js';
 
 
 import ObjectKillable from './objectKillable.js';
@@ -106,13 +107,13 @@ class ObjectSprite extends ObjectKillable {
     }
 
     setSpriteColor(spriteColor) {
-        // Check if the color is a valid named color in the color map
-        const isNamedColor = Object.values(CanvasUtils.colorMapSprite).includes(spriteColor);
+        // Check if the color is a valid named color in the color map, ignoring case
+        const isValidSymbol = Colors.isValidSymbol(spriteColor);
 
         // Check if the color is a valid hexadecimal color code
-        const isHexColor = /^#([0-9A-F]{3}){1,2}$/i.test(spriteColor);
+        const isHexColor = Colors.isValidHexColor(spriteColor);
 
-        if (isNamedColor || isHexColor) {
+        if (isValidSymbol || isHexColor) {
             this.spriteColor = spriteColor;
         } else {
             try {
@@ -120,7 +121,7 @@ class ObjectSprite extends ObjectKillable {
             } catch (e) {
                 console.log(e.stack);
             }
-            this.spriteColor = 'white'; // Default to white or another default color
+            this.spriteColor = Colors.getRandomColor();// 'white'; // Default to white
         }
     }
 

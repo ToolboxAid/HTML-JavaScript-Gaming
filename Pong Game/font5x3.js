@@ -100,7 +100,7 @@ class Font5x3 {
         return number.toString().padStart(digits, '0'); // Format number to 2 digits
     }
 
-    // todo: this is specific to PONG, needs to be for number only.
+     // todo: this is specific to PONG, needs to use ./scripts/font5x3.js
     static drawNumber(x, y, number, digits) {
         const formattedNumber = this.#formatNumber(number, digits);
 

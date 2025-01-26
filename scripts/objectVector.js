@@ -10,7 +10,7 @@ import Functions from './functions.js';
 import Physics from './physics.js';
 
 class ObjectVector extends ObjectKillable {
-    constructor(x, y, vectorMap, velocityX = 0, velocityY = 0) {
+    constructor(x, y, vectorMap, velocityX, velocityY) {
         // Validate that vectorMap is a single array of point pairs
         if (!Array.isArray(vectorMap) || !vectorMap.every(point => Array.isArray(point) && point.length === 2)) {
             throw new Error("vectorMap must be an array of point pairs (e.g., [[x, y], [x, y], ...]).");
@@ -92,15 +92,6 @@ class ObjectVector extends ObjectKillable {
         this.boundWidth = maxX - minX + 1;
         this.boundHeight = maxY - minY + 1;
     }
-
-    // setColor(color) {
-    //     if (CanvasUtils.isValidColor(color)) {
-    //         this.color = color;
-    //     } else {
-    //         console.error("Invalid color:", color);
-    //         this.color = "white"; // Default to white
-    //     }
-    // }
 
     setDrawBounds() {
         this.drawBounds = true;

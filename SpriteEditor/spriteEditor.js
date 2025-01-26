@@ -229,8 +229,13 @@ export class SpriteEditor {
             return false;
         }
 
-        Palettes.set(name);
-        this.jsonSprite.metadata.palette = Palettes.activeName;
+        if (name === 'custom'){            
+            Palettes.setCustom(Palettes.get());// it was set elseware, 
+            this.jsonSprite.metadata.palette = Palettes.activeName;    
+        }else{
+            Palettes.set(name);
+            this.jsonSprite.metadata.palette = Palettes.activeName;    
+        }
 
         Message.add(`Selected palette: '${name}'.`);
 
@@ -674,7 +679,7 @@ export class SpriteEditor {
         const result = sortedPalette[this.selectedColorIndex];
 
         if (!result || !result.hex) {
-            this.showStackTrace();
+            Functions.showStackTrace();
         }
 
         const rgb = Colors.hexToRgb(result.hex);
@@ -876,10 +881,7 @@ export class SpriteEditor {
             this.setCurrentFrameLayer(++this.currentFrame);
         }
     }
-    static showStackTrace(text = "") {
-        const trace = new Error("Show stack trace (${text}):");
-        console.log(trace.stack);
-    }
+
     // ------------------------------------------
     /** JSON methods */
     static outputJsonData() {

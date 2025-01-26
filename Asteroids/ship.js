@@ -166,7 +166,6 @@ class Ship extends ObjectVector {
 
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
-            // TODO: add a flame to the ship for thrust
         } else { // Apply decelleration with friction (only if no thrust)
             this.velocityX *= this.friction;
             this.velocityY *= this.friction;

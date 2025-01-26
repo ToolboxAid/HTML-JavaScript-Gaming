@@ -4,9 +4,11 @@
 // canvas.js
 
 import ObjectStatic from './objectStatic.js';
-import Fullscreen from '../scripts/fullscreen.js'; // Import the Fullscreen class
-import CanvasUtil from '../scripts/canvas.js'
+import Fullscreen from './fullscreen.js'; // Import the Fullscreen class
 import Font5x6 from './font5x6.js';
+import Palettes from './palettes.js';
+import Functions from './functions.js';
+import Colors from './colors.js';
 
 class CanvasUtils {
 
@@ -15,7 +17,6 @@ class CanvasUtils {
      */
     static frameCount = 0;
     static lastFPSUpdateTime = performance.now(); // Used for FPS calculation
-    static lastFrameTime = performance.now(); // Used for frame delta calculation
     static fps = 0;
     static drawFPS() {
         this.frameCount++;
@@ -44,10 +45,42 @@ class CanvasUtils {
             window.game
 
         }
-        CanvasUtil.ctx.globalAlpha = 1.0;
-        CanvasUtil.ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
-        CanvasUtil.ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
-        CanvasUtil.ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
+        CanvasUtils.ctx.globalAlpha = 1.0;
+        CanvasUtils.ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
+        CanvasUtils.ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
+        CanvasUtils.ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
+    }
+
+
+    /**
+     * Animation CPU / percent for available time (16.67ms)
+     */
+    static availableTimeMs = 1000 / 60; // Time per frame in milliseconds (16.67ms)
+    static timeSpentMs = 0.0; // Time spent in the current frame
+    static totalTimeSpentMs = 0.0; // Sum of all time spent to be averaged into gfxPercentUsage
+    static frameSampleCount = 0; // Number of samples taken
+    static frameSampleSize = 60; // Number of samples before calculating gfxPercentUsage
+    static gfxPercentUsage = 0.0; // CPU usage percentage
+
+    static drawGraphicFrameExecution() {
+        this.totalTimeSpentMs += this.timeSpentMs;
+        if (this.frameSampleCount++ >= this.frameSampleSize) {
+            const averageTimeMs = this.totalTimeSpentMs / this.frameSampleSize;
+            this.gfxPercentUsage = (averageTimeMs / this.availableTimeMs) * 100;
+            this.frameSampleCount = 0;
+            this.totalTimeSpentMs = 0;
+        }
+        let color = 'green';
+        if (this.gfxPercentUsage > 90) {
+            color = 'red';
+        } else if (this.gfxPercentUsage > 60) {
+            color = 'yellow';
+        }
+
+        this.ctx.globalAlpha = 1.0;
+        this.ctx.fillStyle = color;
+        this.ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
+        this.ctx.fillText(`GFX: ${this.gfxPercentUsage.toFixed(1)}%`, window.fpsX || 10, window.fpsY + 25 || 45); // Default positions
     }
 
     /**
@@ -72,7 +105,7 @@ class CanvasUtils {
             if (frame) {
                 // Assuming each character has a fixed width, you can adjust the space here
                 const charWidth = frame[0].length; // Get the width from the frame
-                CanvasUtil.drawSprite(x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
+                CanvasUtils.drawSprite(x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
             }
         }
     }
@@ -110,54 +143,214 @@ class CanvasUtils {
         return sprite;
     }
 
-    // Move the color map to be a static property of the class
-    static colorMapSprite = {
-        'R': 'Red',
-        'O': 'Orange',
-        'Y': 'Yellow',
-        'G': 'Green',
-        'B': 'Blue',
-        'I': 'Indigo',
-        'V': 'Violet',
-        '0': 'transparent', // '0' is transparent
-        '1': 'white', // default color for '1'
-        'w': 'white',
-        'b': 'black',
-        'P': 'pink',
-        'C': 'cyan',
-        'M': 'magenta',
-        'L': 'lightgray',
-        'D': 'darkgray',
-        'V': '#444444',// very dark gray
-        'A': '#AAFFFF',
-        'S': 'silver',
-        'N': 'navy',
-        'K': 'khaki',
-    };
+    static getSpriteFromText(text, space = 1) {
+        // Initialize the sprite array
+        const sprite = [];
+
+        // Find the maximum height of characters (assuming all characters have the same height)
+        const sampleFrame = Font5x6.getLayerDataByKey('A');
+        const charHeight = sampleFrame?.length || 7;
+
+        // Prepare an empty row for spacing
+        const emptyRow = '0'.repeat(space);
+
+        // Initialize empty rows
+        for (let i = 0; i < charHeight; i++) {
+            sprite.push('');
+        }
+
+        // Loop through each character in the text
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            const frame = Font5x6.getLayerDataByKey(char) || Font5x6.getLayerDataByKey(' ');
+
+            // Add each line of the character frame to the sprite
+            for (let row = 0; row < charHeight; row++) {
+                sprite[row] += frame[row] + emptyRow;
+            }
+        }
+
+        // Create the JSON object in the specified format
+        const jsonSprite = {
+            "metadata": {
+                "sprite": "Font5x6",
+                "spriteGridSize": 1,
+                "spritePixelSize": 3,
+                "palette": "default",
+                "framesPerSprite": 30
+
+            },
+            "layers": [
+                {
+                    "metadata": {
+                        "spriteimage": "",
+                        "imageX": 0,
+                        "imageY": 0,
+                        "imageScale": 1.0,
+                    },
+                    "data": sprite
+                }
+            ]
+        };
+
+        return jsonSprite;
+    }
+
+    static validateJsonSpriteFormat(jsonSprite) {
+        const requiredMetadataFields = ["sprite", "spriteGridSize", "spritePixelSize", "palette", "framesPerSprite"];
+        const requiredLayerFields = ["spriteimage", "imageX", "imageY", "imageScale"];
+
+        if (!jsonSprite.metadata || !jsonSprite.layers) {
+            return false;
+        }
+
+        for (const field of requiredMetadataFields) {
+            if (!(field in jsonSprite.metadata)) {
+                return false;
+            }
+        }
+
+        for (const layer of jsonSprite.layers) {
+            if (!layer.metadata || !layer.data) {
+                return false;
+            }
+
+            for (const field of requiredLayerFields) {
+                if (!(field in layer.metadata)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // static getHexFromSymbol(palette, symbol) {
+    //     const color = palette.custom.find(color => color.symbol === symbol);
+    //     return color ? color.hex : Palettes.transparent; // '#00000000';
+    // }
+
+    //     // Function to find a color from any palette
+    // function findColor(paletteName, symbol) {
+    //     return palette[paletteName].find(color => color.symbol === symbol);
+    // }
+
+    // // Example usage
+    // const customColor = findColor('custom', symbol);
+    // const specialColor = findColor('special', symbol);
+
+    // // ...existing code...
+
+    static getLayerData(jsonSprite, frameIndex) {
+        if (jsonSprite && jsonSprite.layers && jsonSprite.layers[frameIndex] && jsonSprite.layers[frameIndex].data) {
+            return jsonSprite.layers[frameIndex].data;
+        } else {
+            console.error("Invalid layer data or index:", jsonSprite);
+            return null;
+        }
+    }
+    static noSpamUpdate = 0;
+    static updateLayerData(layerData) {
+        for (let row = 0; row < layerData.length; row++) {
+            // Convert the row string to an array for modification
+            let rowArray = Array.from(layerData[row]);
+            for (let col = 0; col < rowArray.length; col++) {
+                const pixel = rowArray[col];
+                const color = Palettes.getBySymbol(pixel);
+                // if (CanvasUtils.noSpamUpdate++ < 20) {
+                //     console.log(`${CanvasUtils.noSpamUpdate}) Pixel: ${pixel} "HEX: ${color.hex}`);
+                // }
+                rowArray[col] = color.hex;
+            }
+            // Assign the modified array back to the layerData
+            layerData[row] = rowArray;
+        }
+    }
+    static setLayerData(jsonSprite, layerData, frameIndex) {
+        if (jsonSprite && jsonSprite.layers && jsonSprite.layers[frameIndex]) {
+            jsonSprite.layers[frameIndex].data = layerData;
+        } else {
+            console.error("Invalid layer data or index:", jsonSprite, frameIndex);
+        }
+    }
+
+    static spamSprit2HEX = 0;
+    static convertSprite2HEX(jsonSprite, paletteArray = null) {
+        const paletteName = jsonSprite.metadata.palette;
+
+        if (paletteName === 'custom') {
+            Palettes.setCustom(paletteArray);
+        } else {
+            Palettes.set(paletteName)
+        }
+        if (CanvasUtils.validateJsonSpriteFormat(jsonSprite)) { // everything is fine    
+            // Iterate over jsonSprite.layers
+            for (let i = 0; i < jsonSprite.layers.length; i++) {
+                const layerData = CanvasUtils.getLayerData(jsonSprite, i);
+
+                if (CanvasUtils.spamSprit2HEX++ < 20) {
+                    console.log(`${CanvasUtils.spamSprit2HEX}-1) ${JSON.stringify(layerData)}`);
+                    console.log(`${CanvasUtils.spamSprit2HEX}-2) ${paletteName}, ${JSON.stringify(Palettes.get())}`);
+                }
+    
+                CanvasUtils.updateLayerData(layerData);
+                
+                if (CanvasUtils.spamSprit2HEX < 20) {
+                    console.log(`${CanvasUtils.spamSprit2HEX}-3) ${JSON.stringify(jsonSprite)}`);
+                }
+    
+                CanvasUtils.setLayerData(jsonSprite, layerData, i);
+            }
+            return jsonSprite;
+        } else {
+            console.error("Not sure what to do with this.")
+            return null;
+        }
+    }
+
+   
     // Method to draw the current frame
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
-                let color = CanvasUtils.colorMapSprite[pixel] || 'transparent';
+                let color = Colors.symbolColorMap[pixel] || '#00000000'; // transparent';
 
                 // Replace white with spriteColor if present
                 if (pixel === '1' && spriteColor) {
                     color = spriteColor; // Use sprite color instead of white
                 }
-                CanvasUtil.ctx.fillStyle = color;
+                CanvasUtils.ctx.fillStyle = color;
                 let ceilX = Math.ceil((col * pixelSize) + x);
                 let ceilY = Math.ceil((row * pixelSize) + y);
                 let ceilPixelSize = Math.ceil(pixelSize);
-                CanvasUtil.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
+                CanvasUtils.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
             }
         }
 
         if (drawBounds) {
+            console.log(this.width, this.height);
             let dimensions = CanvasUtils.spriteWidthHeight(frame, pixelSize);
             CanvasUtils.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
     }
+
+        // Method to draw the current frame
+        static drawSpriteRGB(x, y, frame, pixelSize, drawBounds = false) {
+            for (let row = 0; row < frame.length; row++) {
+                for (let col = 0; col < frame[row].length; col++) {
+                    CanvasUtils.ctx.fillStyle = frame[row][col];
+                    let ceilX = Math.ceil((col * pixelSize) + x);
+                    let ceilY = Math.ceil((row * pixelSize) + y);
+                    let ceilPixelSize = Math.ceil(pixelSize);
+                    CanvasUtils.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
+                }
+            }
+    
+            if (drawBounds) {
+                CanvasUtils.drawBounds(x, y, this.width, this.height, spriteColor, 2);
+            }
+        }
 
     // const frameWidth = Enemy.getFrameWidth(livingFrames);
     // static getFrameWidth(frames) {
@@ -168,7 +361,34 @@ class CanvasUtils {
     //     return frames[0][0].length * spriteConfig.pixelSize; // Width of the first row of the first frame
     // }
 
+
+    static spamLayerDimensions = 0;
+    static getLayerDimensions(layer, pixelSize) {
+        if (layer && Functions.getObjectType(layer) === 'Object' && pixelSize >= 1) {
+            console.log(layer, Functions.getObjectType(layer));
+            if (layer.data && layer.data[0]) {
+                const height = layer.data.length * pixelSize;
+                const width = layer.data[0].length * pixelSize;
+                console.log(width, height);
+                return { width: width, height: height };
+            } else {
+                if (CanvasUtils.spamLayerDimensions++ < 10) {
+                    console.error(`${CanvasUtils.spamLayerDimensions}) Invalid layer data: ${JSON.stringify(layer)}`);
+                }
+                return { width: 10, height: 10 };
+            }
+        }
+        return { width: 10, height: 10 };
+    }
+
+    /**
+     * @deprecated Use drawCircle instead.
+     */
     static spriteWidthHeight(object, pixelSize, debug = false) {
+        if (CanvasUtils.doOnce) {
+            CanvasUtils.doOnce = false;
+            console.warn('spriteWidthHeight is deprecated. Use getLayerDimensions instead.');
+        }
         let width, height;
 
         if (Array.isArray(object) && Array.isArray(object[0])) {
@@ -191,8 +411,6 @@ class CanvasUtils {
                 console.log(frame); // Display the actual frame for verification
             }
         } else {
-            console.error("Error occurred:", error.message);
-            console.error("Stack trace:", error.stack);
             console.error("Invalid object format:", object);
             return { width: 0, height: 0 };
         }
@@ -204,68 +422,16 @@ class CanvasUtils {
     }
 
     /**
-     *  Color validation
-     */
-
-    // static colorMapNamed = {
-    //     aliceblue: "#f0f8ff", antiquewhite: "#faebd7", aqua: "#00ffff", aquamarine: "#7fffd4",
-    //     azure: "#f0ffff", beige: "#f5f5dc", bisque: "#ffe4c4", black: "#000000",
-    //     blanchedalmond: "#ffebcd", blue: "#0000ff", blueviolet: "#8a2be2", brown: "#a52a2a",
-    //     burlywood: "#deb887", cadetblue: "#5f9ea0", chartreuse: "#7fff00", chocolate: "#d2691e",
-    //     coral: "#ff7f50", cornflowerblue: "#6495ed", cornsilk: "#fff8dc", crimson: "#dc143c",
-    //     cyan: "#00ffff", darkblue: "#00008b", darkcyan: "#008b8b", darkgoldenrod: "#b8860b",
-    //     darkgray: "#a9a9a9", darkgreen: "#006400", darkkhaki: "#bdb76b", darkmagenta: "#8b008b",
-    //     darkolivegreen: "#556b2f", darkorange: "#ff8c00", darkorchid: "#9932cc", darkred: "#8b0000",
-    //     darksalmon: "#e9967a", darkseagreen: "#8fbc8f", darkslateblue: "#483d8b", darkslategray: "#2f4f4f",
-    //     darkturquoise: "#00ced1", darkviolet: "#9400d3", deeppink: "#ff1493", deepskyblue: "#00bfff",
-    //     dimgray: "#696969", dodgerblue: "#1e90ff", firebrick: "#b22222", floralwhite: "#fffaf0",
-    //     forestgreen: "#228b22", fuchsia: "#ff00ff", gainsboro: "#dcdcdc", ghostwhite: "#f8f8ff",
-    //     gold: "#ffd700", goldenrod: "#daa520", gray: "#808080", green: "#008000",
-    //     greenyellow: "#adff2f", honeydew: "#f0fff0", hotpink: "#ff69b4", indianred: "#cd5c5c",
-    //     indigo: "#4b0082", ivory: "#fffff0", khaki: "#f0e68c", lavender: "#e6e6fa",
-    //     lavenderblush: "#fff0f5", lawngreen: "#7cfc00", lemonchiffon: "#fffacd", lightblue: "#add8e6",
-    //     lightcoral: "#f08080", lightcyan: "#e0ffff", lightgoldenrodyellow: "#fafad2", lightgreen: "#90ee90",
-    //     lightgrey: "#d3d3d3", lightpink: "#ffb6c1", lightsalmon: "#ffa07a", lightseagreen: "#20b2aa",
-    //     lightskyblue: "#87cefa", lightslategray: "#778899", lightsteelblue: "#b0c4de", lightyellow: "#ffffe0",
-    //     lime: "#00ff00", limegreen: "#32cd32", linen: "#faf0e6", magenta: "#ff00ff",
-    //     maroon: "#800000", mediumaquamarine: "#66cdaa", mediumblue: "#0000cd", mediumorchid: "#ba55d3",
-    //     mediumpurple: "#9370db", mediumseagreen: "#3cb371", mediumslateblue: "#7b68ee", mediumspringgreen: "#00fa9a",
-    //     mediumturquoise: "#48d1cc", mediumvioletred: "#c71585", midnightblue: "#191970", mintcream: "#f5fffa",
-    //     mistyrose: "#ffe4e1", moccasin: "#ffe4b5", navajowhite: "#ffdead", navy: "#000080",
-    //     oldlace: "#fdf5e6", olive: "#808000", olivedrab: "#6b8e23", orange: "#ffa500",
-    //     orangered: "#ff4500", orchid: "#da70d6", palegoldenrod: "#eee8aa", palegreen: "#98fb98",
-    //     paleturquoise: "#afeeee", palevioletred: "#db7093", papayawhip: "#ffefd5", peachpuff: "#ffdab9",
-    //     peru: "#cd853f", pink: "#ffc0cb", plum: "#dda0dd", powderblue: "#b0e0e6",
-    //     purple: "#800080", red: "#ff0000", rosybrown: "#bc8f8f", royalblue: "#4169e1",
-    //     saddlebrown: "#8b4513", salmon: "#fa8072", sandybrown: "#f4a460", seagreen: "#2e8b57",
-    //     seashell: "#fff5ee", sienna: "#a0522d", silver: "#c0c0c0", skyblue: "#87ceeb",
-    //     slateblue: "#6a5acd", slategray: "#708090", snow: "#fffafa", springgreen: "#00ff7f",
-    //     steelblue: "#4682b4", tan: "#d2b48c", teal: "#008080", thistle: "#d8bfd8",
-    //     tomato: "#ff6347", turquoise: "#40e0d0", violet: "#ee82ee", wheat: "#f5deb3",
-    //     white: "#ffffff", whitesmoke: "#f5f5f5", yellow: "#ffff00", yellowgreen: "#9acd32"
-    // };
-    // static isValidColor(color) {
-    //     if (typeof color !== 'string') return false;
-
-    //     // Check if it's a valid named color
-    //     if (CanvasUtils.colorMapNamed[color.toLowerCase()]) return true;
-
-    //     // Check if it's a valid hexadecimal color code (6 or 8 characters)
-    //     const hexRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
-    //     return hexRegex.test(color);
-    // }
-
-    /**
      * Line methods
      */
     static drawLine(x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
-        CanvasUtil.ctx.lineWidth = lineWidth;
-        CanvasUtil.ctx.strokeStyle = strokeColor;
+        CanvasUtils.ctx.lineWidth = lineWidth;
+        CanvasUtils.ctx.strokeStyle = strokeColor;
 
-        CanvasUtil.ctx.beginPath();
-        CanvasUtil.ctx.moveTo(x1, y1); // Start point
-        CanvasUtil.ctx.lineTo(x2, y2); // End point
-        CanvasUtil.ctx.stroke(); // Draw the line
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.moveTo(x1, y1); // Start point
+        CanvasUtils.ctx.lineTo(x2, y2); // End point
+        CanvasUtils.ctx.stroke(); // Draw the line
     }
 
     static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
@@ -281,15 +447,15 @@ class CanvasUtils {
              ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
              ([20, 5, 10, 5]); - Alternating long and medium dashes
          */
-        CanvasUtil.ctx.setLineDash(dashPattern);
+        CanvasUtils.ctx.setLineDash(dashPattern);
         CanvasUtils.drawLine(x1, y1, x2, y2, lineWidth, strokeColor);
-        CanvasUtil.ctx.setLineDash([]); // Reset to solid line
+        CanvasUtils.ctx.setLineDash([]); // Reset to solid line
     }
 
     static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
-        CanvasUtil.ctx.lineWidth = lineSize;
-        CanvasUtil.ctx.strokeStyle = color;
-        CanvasUtil.ctx.strokeRect(x, y, w, h);
+        CanvasUtils.ctx.lineWidth = lineSize;
+        CanvasUtils.ctx.strokeStyle = color;
+        CanvasUtils.ctx.strokeRect(x, y, w, h);
     }
 
     static drawRect(x, y, width, height, color) {
@@ -298,31 +464,31 @@ class CanvasUtils {
     }
 
     static drawBorder() {
-        CanvasUtil.ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
-        CanvasUtil.ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
-        CanvasUtil.ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+        CanvasUtils.ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
+        CanvasUtils.ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
+        CanvasUtils.ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
     /**
      * Circle methods
      */
     static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
-        CanvasUtil.ctx.beginPath();
-        CanvasUtil.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
-        CanvasUtil.ctx.fillStyle = color;
-        CanvasUtil.ctx.fill();
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
+        CanvasUtils.ctx.fillStyle = color;
+        CanvasUtils.ctx.fill();
     }
 
     static drawCircle2(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        CanvasUtil.ctx.beginPath();
-        CanvasUtil.ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
-        CanvasUtil.ctx.fillStyle = fillColor;
-        CanvasUtil.ctx.fill();
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
+        CanvasUtils.ctx.fillStyle = fillColor;
+        CanvasUtils.ctx.fill();
 
         if (borderColor && borderWidth > 0) {
-            CanvasUtil.ctx.strokeStyle = borderColor;
-            CanvasUtil.ctx.lineWidth = borderWidth;
-            CanvasUtil.ctx.stroke();
+            CanvasUtils.ctx.strokeStyle = borderColor;
+            CanvasUtils.ctx.lineWidth = borderWidth;
+            CanvasUtils.ctx.stroke();
         }
     }
 
@@ -335,22 +501,22 @@ class CanvasUtils {
     static ctx = null;
 
     static canvasClear(ctx) {
-        CanvasUtil.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
-        CanvasUtil.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+        CanvasUtils.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
+        CanvasUtils.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
     }
 
     static clickFullscreen() {
         if (!Fullscreen.isFullScreen) {
             // Set up the text properties using global variables or default values
-            CanvasUtil.ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
-            CanvasUtil.ctx.font = window.fullscreenFont || '40px Arial'; // Set font size and family
+            CanvasUtils.ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
+            CanvasUtils.ctx.font = window.fullscreenFont || '40px Arial'; // Set font size and family
 
             // Reset text alignment to default (start)
-            CanvasUtil.ctx.textAlign = 'start';
+            CanvasUtils.ctx.textAlign = 'start';
 
             // Measure the width of the text "Click here to enter fullscreen"
             const text = window.fullscreenText || 'Click here to enter fullscreen';
-            const textWidth = CanvasUtil.ctx.measureText(text).width; // Get the width of the text in pixels
+            const textWidth = CanvasUtils.ctx.measureText(text).width; // Get the width of the text in pixels
 
             const textX = window.fullscreenX || (window.gameAreaWidth - textWidth) / 2;
 
@@ -358,12 +524,13 @@ class CanvasUtils {
 
 
             // Draw the message on the canvas
-            CanvasUtil.ctx.fillText(text, textX, textY); // Display the text at the calculated position
+            CanvasUtils.ctx.fillText(text, textX, textY); // Display the text at the calculated position
         }
     }
 
     // Animate function moved into the CanvasUtils class
     static async animate(time) {
+        const timeStartMs = Date.now();
         const canvas = document.getElementById('gameArea');
         if (canvas.getContext) {
             const ctx = canvas.getContext('2d');
@@ -378,13 +545,14 @@ class CanvasUtils {
                 const gameModule = await import(`${window.canvasPath}/game.js`);
                 this.gameInstance = new gameModule.default();  // Use the default export from game.js
 
-                CanvasUtil.ctx = ctx;
+                CanvasUtils.ctx = ctx;
             }
 
             // Initialize the canvas and game loop
             CanvasUtils.canvasClear(ctx);
 
             // Call the game loop method of the Game class
+            Colors.generateRandomColor();
             this.gameInstance.gameLoop(deltaTime);
 
             // Draw click full screen
@@ -394,10 +562,13 @@ class CanvasUtils {
             CanvasUtils.drawBorder();
             if (window.fpsShow) {
                 CanvasUtils.drawFPS();
+                CanvasUtils.drawGraphicFrameExecution();
             }
         } else {
             alert('You need a modern browser to see this.');
         }
+
+        this.timeSpentMs = Date.now() - timeStartMs;
 
         // Call animate recursively to continue the animation loop
         requestAnimationFrame(CanvasUtils.animate.bind(this)); // Use `bind(this)` to maintain context

@@ -18,10 +18,10 @@ class ObjectDynamic extends ObjectStatic {
      * @param {number} [velocityX=0] - The initial velocity in the X direction.
      * @param {number} [velocityY=0] - The initial velocity in the Y direction.
      */
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height, velocityX=0, velocityY=0) {
         super(x, y, width, height); // Call the parent constructor
-        this.velocityX = 0; // Velocity in X direction
-        this.velocityY = 0; // Velocity in Y direction
+        this.velocityX = velocityX; // Velocity in X direction
+        this.velocityY = velocityY; // Velocity in Y direction
     }
 
 

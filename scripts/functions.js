@@ -8,6 +8,9 @@ class Functions {
     /**  Player information
     */
     static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput) {
+        ctx.fillStyle= canvasConfig.backgroundColor + 'AA'; // Semi-transparent
+        ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Overlay the canvas
+
         const maxPlayers = playerSelect.maxPlayers || 4;
         const lives = playerSelect.lives || 3;
         const fillText = playerSelect.fillText || "Select Player Mode";
@@ -206,6 +209,19 @@ class Functions {
             .join(''); // Combine into camel case
     }
 
+    static getObjectType(object) {
+        if (!object || object === undefined){
+            return 'Null';
+        }
+        return object.constructor.name;
+    }
+
+    /** StackTrace Dump */
+    static showStackTrace(text = '') {
+        const trace = new Error(`'${text}':`);
+        console.log(trace);
+    }
+
     /** time */
     /**
      * Static method for a hard wait.
@@ -214,9 +230,22 @@ class Functions {
     static delay(ms) {
         const start = Date.now();
         while (Date.now() - start < ms) {
-            // Busy-wait loop
+            // Busy-wait loop - burns CPU & GFX
         }
     }
+
+    /**
+     * Static method for an asynchronous wait.
+     * @param {number} ms - Duration of the wait in milliseconds.
+     * @returns {Promise} - A promise that resolves after the specified duration.
+        console.log('Start');
+        await Functions.sleep(2000); // Wait for 2 seconds
+        console.log('End');
+     */
+    static sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
 }
 
 // Export the Functions class
