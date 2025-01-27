@@ -1,3 +1,111 @@
+// scripts/todo tree.txt
 {
-    "todo-tree.tree.showBadges": true
+    "todo-tree.general.tags": [
+        "BUG",
+        "HACK",
+        "TODO",
+        "[]",
+        "[ ]",
+        "[.]",
+        "[x]",
+        "[!]",
+        "FIXME",
+        "xxx"
+    ],
+    "todo-tree.highlights.customHighlight": {
+        "BUG": {
+            "icon": "bug",
+            "type": "line",
+            "foreground": "white",
+            "background": "red",
+            "iconColour": "red",
+        },
+        "FIXME": {
+            "icon": "flame",
+            "type": "line",
+            "foreground": "black",
+            "background": "#ffff88",
+            "iconColour": "#ffff88",
+            "gutterIcon": true
+        },
+        "HACK": {
+            "icon": "tools",
+            "type": "line",
+            "foreground": "black",
+            "background": "orange",
+            "iconColour": "orange",
+            "gutterIcon": true
+        },
+        "TODO": {
+            "icon": "circle",
+            "type": "line",
+            "foreground": "white",
+            "background": "#06cc2B",
+            "iconColour": "#06cc2B",
+        },
+        "[]": {
+            "icon": "circle",
+            "type": "line",
+            "foreground": "white",
+            "background": "#06cc2B",
+            "iconColour": "#06cc2B",
+        },
+        "[ ]": {
+            "icon": "circle",
+            "type": "line",
+            "foreground": "white",
+            "background": "#06cc2B",
+            "iconColour": "#06cc2B",
+        },
+        "[.]": {
+            "icon": "issue-opened",
+            "type": "line",
+            "foreground": "white",
+            "background": "green",
+            "iconColour": "green",
+        },
+        "[x]": {
+            "icon": "check-circle",
+            "type": "line",
+            "foreground": "white",
+            "background": "blue",
+            "iconColour": "blue",
+        },
+        "[X]": {
+            "icon": "check-circle",
+            "type": "line",
+            "foreground": "white",
+            "background": "blue",
+            "iconColour": "blue",
+        },        
+
+        "[!]": {
+            "icon": "blocked",
+            "type": "line",
+            "foreground": "white",
+            "background": "purple",
+            "iconColour": "purple",
+        },        
+        "xxx": {
+            "icon": "blocked",
+            "type": "line",
+            "foreground": "white",
+            "background": "purple",
+            "iconColour": "purple",
+        },
+
+    },    
+    "todo-tree.tree.showBadges": true,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": true,
+        "strings": true
+    },
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "on",
+    "javascript.suggest.autoImports": true,
+    "typescript.suggest.autoImports": true,
+    "html.suggest.angular1": true,
+    "html.suggest.ionic": true
 }
