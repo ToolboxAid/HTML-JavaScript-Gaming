@@ -4,7 +4,6 @@
 // hero.js
 
 import { canvasConfig, spriteConfig } from './global.js';
-import CanvasUtils from '../scripts/canvas.js';
 import ObjectSprite from '../scripts/objectSprite.js'
 
 class Hero extends ObjectSprite {
@@ -14,21 +13,21 @@ class Hero extends ObjectSprite {
 
                 //        1
         //234567890123456
-        "0000bbbbbbbb0000", // 1
-        "00bbBBBBBBBBbb00", // 2
-        "0bBBBCCCCCCBBBb0", // 3
-        "bBBCCAVAAVACCBBb", // 4
-        "bBBCAwbwwbwACBBb", // 5
-        "bBBCCAVAAVACCBBb", // 6
-        "0bBBBCCCCCCBBBb0", // 7
-        "00bbBBBBBBBBbb00", // 8
-        "0000bbbbbbbb0000", // 9
-        "0bb000bGGb000bb0", // 10
-        "bGGbb0bGGb0bbGGb", // 1
-        "bGGGGbbGGbbGGGGb", // 2
-        "0bGGGGbGGbGGGGb0", // 3
-        "00bbGGGGGGGGbb00", // 3
-        "0000bbbbbbbb0000", // 5
+        "0000bbbbbbbb0000",
+        "00bbBBBBBBBBbb00",
+        "0bBBBCCCCCCBBBb0",
+        "bBBCCAVAAVACCBBb",
+        "bBBCAwbwwbwACBBb",
+        "bBBCCAVAAVACCBBb",
+        "0bBBBCCCCCCBBBb0",
+        "00bbBBBBBBBBbb00",
+        "0000bbbbbbbb0000",
+        "0bb000bGGb000bb0",
+        "bGGbb0bGGb0bbGGb",
+        "bGGGGbbGGbbGGGGb",
+        "0bGGGGbGGbGGGGb0",
+        "00bbGGGGGGGGbb00",
+        "0000bbbbbbbb0000"
     //     //        1         2
     //     //234567890123456789
     //     "00wwwwwwwwwwwwwww00", // 1
@@ -151,17 +150,146 @@ class Hero extends ObjectSprite {
         ],
     ];
 
-    constructor(x = 127, y = 280) {
-        super(x, y, Hero.frame, Hero.dyingFrames, spriteConfig.pixelSize);
+    static heroSprite = {
+        "metadata": {
+            "sprite": "Hero",
+            "spriteGridSize": 30,
+            "spritePixelSize": 8,
+            "palette": "custom",
+            "framesPerSprite": 5
+        },
+        "layers": [
+            {
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "wwww000000000000",
+                    "0000bbbbbbbb0000",
+                    "00bbBBBBBBBBbb00",
+                    "0bBBBCCCCCCBBBb0",
+                    "bBBCCAVAAVACCBBb",
+                    "bBBCAwbwwbwACBBb",
+                    "bBBCCAVAAVACCBBb",
+                    "0bBBBCCCCCCBBBb0",
+                    "00bbBBBBBBBBbb00",
+                    "0000bbbbbbbb0000",
+                    "0bb000bGGb000bb0",
+                    "bGGbb0bGGb0bbGGb",
+                    "bGGGGbbGGbbGGGGb",
+                    "0bGGGGbGGbGGGGb0",
+                    "00bbGGGGGGGGbb00",
+                    "0000bbbbbbbb0000"
+                ]
+            },
+            {
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "0000wwww00000000",
+                    "0000bbbbbbbb0000",
+                    "00bbBBBBBBBBbb00",
+                    "0bBBBCCCCCCBBBb0",
+                    "bBBCCAVAAVACCBBb",
+                    "bBBCAwbwwbwACBBb",
+                    "bBBCCAVAAVACCBBb",
+                    "0bBBBCCCCCCBBBb0",
+                    "00bbBBBBBBBBbb00",
+                    "0000bbbbbbbb0000",
+                    "0bb000bGGb000bb0",
+                    "bGGbb0bGGb0bbGGb",
+                    "bGGGGbbGGbbGGGGb",
+                    "0bGGGGbGGbGGGGb0",
+                    "00bbGGGGGGGGbb00",
+                    "0000bbbbbbbb0000"
+                ]
+            },
+            {
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "00000000wwww0000",
+                    "0000bbbbbbbb0000",
+                    "00bbBBBBBBBBbb00",
+                    "0bBBBCCCCCCBBBb0",
+                    "bBBCCAVAAVACCBBb",
+                    "bBBCAwbwwbwACBBb",
+                    "bBBCCAVAAVACCBBb",
+                    "0bBBBCCCCCCBBBb0",
+                    "00bbBBBBBBBBbb00",
+                    "0000bbbbbbbb0000",
+                    "0bb000bGGb000bb0",
+                    "bGGbb0bGGb0bbGGb",
+                    "bGGGGbbGGbbGGGGb",
+                    "0bGGGGbGGbGGGGb0",
+                    "00bbGGGGGGGGbb00",
+                    "0000bbbbbbbb0000"
+                ]
+            },
+            {
+                "metadata": {
+                    "spriteimage": "",
+                    "imageX": 0,
+                    "imageY": 0,
+                    "imageScale": 2
+                },
+                "data": [
+                    "000000000000wwww",
+                    "0000bbbbbbbb0000",
+                    "00bbBBBBBBBBbb00",
+                    "0bBBBCCCCCCBBBb0",
+                    "bBBCCAVAAVACCBBb",
+                    "bBBCAwbwwbwACBBb",
+                    "bBBCCAVAAVACCBBb",
+                    "0bBBBCCCCCCBBBb0",
+                    "00bbBBBBBBBBbb00",
+                    "0000bbbbbbbb0000",
+                    "0bb000bGGb000bb0",
+                    "bGGbb0bGGb0bbGGb",
+                    "bGGGGbbGGbbGGGGb",
+                    "0bGGGGbGGbGGGGb0",
+                    "00bbGGGGGGGGbb00",
+                    "0000bbbbbbbb0000"
+                ]
+            }            
+        ]
+    };
+    static heroImage = {};
+    static heroPalette = {
+        custom: [
+            { "symbol": "b", "hex": "#000000", "name": "Black" },
+            { "symbol": "w", "hex": "#FFFFFF", "name": "White" },
+            { "symbol": "G", "hex": "#00ff00", "name": "Green" },
+            { "symbol": "C", "hex": "#00FFFF", "name": "Cyan" },
+            { "symbol": "A", "hex": "#AAFFFF", "name": "Light Blue" },
+            { "symbol": "B", "hex": "#0000FF", "name": "Blue" },
+            { "symbol": "V", "hex": "#ff00ff", "name": "Violet" },
+            { "symbol": "Ø", "hex": "#00000000", "name": "Transparent" }]
+    };
 
-        this.speed = 300;
+    constructor(x = 127, y = 280) {
+//////////super(x, y, Hero.heroSprite, Hero.dyingFrames, spriteConfig.pixelSize, Hero.heroPalette);
+//        super(x, y, Hero.frame,      null, spriteConfig.pixelSize, Hero.heroPalette);
+        super(x, y, Hero.heroSprite, null, spriteConfig.pixelSize, Hero.heroPalette);
+
+        this.speed = 125;
 
         this.level = 1;
         this.score = 0;
         this.lives = spriteConfig.heroLives;
 
         this.setSpriteColor(spriteConfig.playerColor);
-        this.pixelSize = spriteConfig.pixelSize;
     }
 
     decrementLives() {

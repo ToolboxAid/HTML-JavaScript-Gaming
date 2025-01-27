@@ -178,7 +178,6 @@ class CanvasUtils {
                 "spritePixelSize": 3,
                 "palette": "default",
                 "framesPerSprite": 30
-
             },
             "layers": [
                 {
@@ -195,28 +194,32 @@ class CanvasUtils {
 
         return jsonSprite;
     }
-
+    
     static validateJsonSpriteFormat(jsonSprite) {
         const requiredMetadataFields = ["sprite", "spriteGridSize", "spritePixelSize", "palette", "framesPerSprite"];
         const requiredLayerFields = ["spriteimage", "imageX", "imageY", "imageScale"];
 
         if (!jsonSprite.metadata || !jsonSprite.layers) {
+            console.error(`jsonSprite.metadata ||  jsonSprite.layers missing\njsonSprite ${JSON.stringify(jsonSprite)}`);
             return false;
         }
-
+        
         for (const field of requiredMetadataFields) {
             if (!(field in jsonSprite.metadata)) {
+                console.error(`jsonSprite requiredMetadataFields missing field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);
                 return false;
             }
         }
 
         for (const layer of jsonSprite.layers) {
             if (!layer.metadata || !layer.data) {
+                console.error(`jsonSprite missing: layer.metadata || layer.data`);
                 return false;
             }
 
             for (const field of requiredLayerFields) {
                 if (!(field in layer.metadata)) {
+                    console.error(`jsonSprite requiredLayerFields missing  field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);                    
                     return false;
                 }
             }
@@ -274,28 +277,28 @@ class CanvasUtils {
         }
     }
 
-    static spamSprit2HEX = 0;
-    static convertSprite2HEX(jsonSprite, paletteArray = null) {
-        const paletteName = jsonSprite.metadata.palette;
-
+    static spamSprit2HEX = 2;
+    static convertSprite2RGB(jsonSprite, paletteArray = null) {
+        let paletteName = jsonSprite.metadata.palette;
         if (paletteName === 'custom') {
             Palettes.setCustom(paletteArray);
         } else {
             Palettes.set(paletteName)
         }
+
         if (CanvasUtils.validateJsonSpriteFormat(jsonSprite)) { // everything is fine    
             // Iterate over jsonSprite.layers
             for (let i = 0; i < jsonSprite.layers.length; i++) {
                 const layerData = CanvasUtils.getLayerData(jsonSprite, i);
 
-                if (CanvasUtils.spamSprit2HEX++ < 20) {
+                if (CanvasUtils.spamSprit2HEX++ < 2) {
                     console.log(`${CanvasUtils.spamSprit2HEX}-1) ${JSON.stringify(layerData)}`);
                     console.log(`${CanvasUtils.spamSprit2HEX}-2) ${paletteName}, ${JSON.stringify(Palettes.get())}`);
                 }
     
                 CanvasUtils.updateLayerData(layerData);
                 
-                if (CanvasUtils.spamSprit2HEX < 20) {
+                if (CanvasUtils.spamSprit2HEX < 2) {
                     console.log(`${CanvasUtils.spamSprit2HEX}-3) ${JSON.stringify(jsonSprite)}`);
                 }
     
@@ -307,7 +310,6 @@ class CanvasUtils {
             return null;
         }
     }
-
    
     // Method to draw the current frame
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
@@ -329,7 +331,6 @@ class CanvasUtils {
         }
 
         if (drawBounds) {
-            console.log(this.width, this.height);
             let dimensions = CanvasUtils.spriteWidthHeight(frame, pixelSize);
             CanvasUtils.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
@@ -352,33 +353,23 @@ class CanvasUtils {
             }
         }
 
-    // const frameWidth = Enemy.getFrameWidth(livingFrames);
-    // static getFrameWidth(frames) {
-    //     if (!frames || frames.length === 0 || frames[0].length === 0) {
-    //         return 0; // Return 0 if the frames array is empty or malformed
-    //     }
-    //         // Assuming all rows have the same width
-    //     return frames[0][0].length * spriteConfig.pixelSize; // Width of the first row of the first frame
-    // }
+    static getLayerDimensions(layerData, pixelSize) { // layerData is the Sprite Editor Json Sprite data.
+        if (layerData && Functions.getObjectType(layerData) === 'Object' && pixelSize >= 1) {
+            const layer = layerData.layers[0]; // Only process the first layer
+            const data = layer.data;
+            let rowCount = data.length;
+            let colCount = data[0].length;
 
+            rowCount *= pixelSize;
+            colCount *= pixelSize;
 
-    static spamLayerDimensions = 0;
-    static getLayerDimensions(layer, pixelSize) {
-        if (layer && Functions.getObjectType(layer) === 'Object' && pixelSize >= 1) {
-            console.log(layer, Functions.getObjectType(layer));
-            if (layer.data && layer.data[0]) {
-                const height = layer.data.length * pixelSize;
-                const width = layer.data[0].length * pixelSize;
-                console.log(width, height);
-                return { width: width, height: height };
-            } else {
-                if (CanvasUtils.spamLayerDimensions++ < 10) {
-                    console.error(`${CanvasUtils.spamLayerDimensions}) Invalid layer data: ${JSON.stringify(layer)}`);
-                }
-                return { width: 10, height: 10 };
-            }
+            rowCount = Math.ceil(rowCount);
+            colCount = Math.ceil(colCount);
+
+            return { width: colCount, height: rowCount };
         }
-        return { width: 10, height: 10 };
+
+        return { width: 10, height: 10, oops: true };
     }
 
     /**
@@ -453,6 +444,12 @@ class CanvasUtils {
     }
 
     static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
+        if (w <=0){
+            w=10;
+        }
+        if (h <=0){
+            h=10;
+        }
         CanvasUtils.ctx.lineWidth = lineSize;
         CanvasUtils.ctx.strokeStyle = color;
         CanvasUtils.ctx.strokeRect(x, y, w, h);

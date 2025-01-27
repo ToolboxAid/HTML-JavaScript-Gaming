@@ -5,48 +5,124 @@
 
 import CanvasUtils from './canvas.js';
 import Colors from './colors.js';
-
-
 import ObjectKillable from './objectKillable.js';
+import Functions from './functions.js';
+
 
 class ObjectSprite extends ObjectKillable {
-    constructor(x, y, livingFrames, dyingFrames, pixelSize) {
 
-        if (pixelSize <= 0 || typeof pixelSize !== 'number') {
-            throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
-        }
-
+    constructor(x, y, livingFrames, dyingFrames, pixelSize, palette) {
         // Ensure livingFrames is provided and is not empty
         if (!livingFrames || livingFrames.length === 0) {
-            throw new Error("livingFrames must be provided and cannot be empty.");
+            throw new Error("livingFrames must be provided.");
         }
 
         // Calculate dimensions based on the first living frame
-        const dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], pixelSize);
+        let dimensions = null;
+        let livingArray = livingFrames;
+        let livingDelay = 30;
+        let spritePixelSize = pixelSize;
+        let livingFrameCount = livingFrames.length;
+        const frameType = ObjectSprite.getFrameType(livingFrames);
+
+        switch (frameType) {
+            case 'json':
+                console.log('Handling an object');
+                CanvasUtils.validateJsonSpriteFormat(livingFrames);
+                //TODO: Need to complete the dyingFrames, dyingDelay, dyingFrameCount,  and otherFrames, otherDelay, otherFrameCount
+                spritePixelSize = livingFrames.metadata.spritePixelSize;
+                dimensions = CanvasUtils.getLayerDimensions(livingFrames, spritePixelSize);
+                livingFrameCount = livingFrames.layers.length;
+                livingDelay = livingFrames.metadata.framesPerSprite;
+
+                let paletteArray = null;
+                if (palette) {
+                    paletteArray = ObjectSprite.extractArray(palette);
+                }
+                livingArray = CanvasUtils.convertSprite2RGB(livingFrames, paletteArray);
+                break;
+            case 'array':
+                console.log('Handling an array');
+                if (pixelSize <= 0 || typeof pixelSize !== 'number') {
+                    throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
+                }
+                dimensions = CanvasUtils.spriteWidthHeight(livingFrames, spritePixelSize);
+                break;
+            case 'doubleArray':
+                if (pixelSize <= 0 || typeof pixelSize !== 'number') {
+                    throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
+                }
+                console.log('Handling a double array');
+                dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], spritePixelSize);
+                break;
+            case 'string':
+                if (pixelSize <= 0 || typeof pixelSize !== 'number') {
+                    throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
+                }
+                console.warn('Handling a string (incomplete/not working');
+                break;
+            default:
+                console.error(`Unknown value: ${ObjectSprite.getFrameType(livingFrames)}`);
+                break;
+        }
 
         super(x, y, dimensions.width, dimensions.height);
-        this.pixelSize = pixelSize;
 
-        // this.status = ObjectKillable.Status.ALIVE;
+        this.frameType = frameType;
+
+        this.pixelSize = spritePixelSize;
+
         this.currentFrameIndex = 0;
         this.delayCounter = 0;
 
         // Initialize living frames
-        this.livingDelay = 10;
-        this.livingFrames = livingFrames;
-        this.livingFrameCount = this.livingFrames.length;
+        this.livingDelay = livingDelay;
+        this.livingFrames = livingArray;
+        this.livingFrameCount = livingFrameCount;
 
-        // Initialize dying frames and replace with living frames if null or empty
+        // Initialize dying frames
         this.dyingDelay = 3;
         this.dyingFrames = dyingFrames;
         this.dyingFrameCount = this.dyingFrames ? this.dyingFrames.length : 0;
 
-        // Other properties
+        // Other frames
         this.otherDelay = 0;
         this.otherFrame = null;
 
         // More properties
         this.spriteColor = "white";
+    }
+
+    static getFrameType(object) {
+        if (object) {
+            if (Functions.getObjectType(object) === "Object") {
+                // Json data
+                return "json";
+            } else if (Array.isArray(object) && Array.isArray(object[0])) {
+                // Multi-dimensional array (each element is an array, implying rows of frames)
+                return "doubleArray";
+            } else if (Array.isArray(object)) {
+                // Single-dimensional array (likely one frame as an array of strings or characters)
+                return "array";
+            } else if (Functions.getObjectType(object) === "String") {
+                // String data
+                return "string";
+            } else {
+                console.log(Functions.getObjectType(object));
+            }
+        } else {
+            return "null";
+        }
+    }
+
+    static extractArray(obj) {
+        const values = Object.values(obj);
+        for (const value of values) {
+            if (Array.isArray(value)) {
+                return value;
+            }
+        }
+        throw new Error("No array found in the object.");
     }
 
     handleAliveStatus(deltaTime, incFrame) { // Handle ALIVE status
@@ -76,6 +152,7 @@ class ObjectSprite extends ObjectKillable {
             this.delayCounter = 0;
 
             // Move to the next frame
+
             this.currentFrameIndex++;
 
             // If all frames have been displayed, transition to 'Other' status
@@ -131,6 +208,10 @@ class ObjectSprite extends ObjectKillable {
     }
 
     draw(offsetX = 0, offsetY = 0) {
+        if (this.frameType === "json") {
+            this.drawRGB(offsetX, offsetY);
+            return;
+        }
         try {
             const { x, y, currentFrameIndex, spriteColor, livingFrames, dyingFrames, otherFrame, pixelSize } = this;
 
@@ -164,6 +245,58 @@ class ObjectSprite extends ObjectKillable {
 
             //this.setIsOther()
             console.log("No valid frame to draw for current status: ", this.status);
+        } catch (error) {
+            console.error("Error occurred:", error.message);
+            console.error("Stack trace:", error.stack);
+            console.log("Object state:", this);
+        }
+    }
+
+    drawRGB(offsetX = 0, offsetY = 0) {
+        try {
+            const { x, y, currentFrameIndex, livingFrames, dyingFrames, otherFrame, pixelSize } = this;
+
+            const newX = x + offsetX;
+            const newY = y + offsetY;
+
+            if (this.isAlive()) {
+                if (livingFrames.layers[this.currentFrameIndex].data) {
+                    const frame = livingFrames.layers[this.currentFrameIndex].data;
+                    if (frame) {
+                        CanvasUtils.drawSpriteRGB(newX, newY, frame, pixelSize);
+                    } else {
+                        // no frame to draw (do something random)
+                        CanvasUtils.drawSpriteRGB(newX, newY, livingFrames[currentFrameIndex], pixelSize);
+                    }
+
+                }
+                return;
+            }
+
+            if (this.isDying()) {
+                console.log("Status: Dying");
+                if (dyingFrames?.[currentFrameIndex]) {
+                    console.log("Drawing dying frame:", dyingFrames[currentFrameIndex]);
+                    CanvasUtils.drawSpriteRGB(newX, newY, dyingFrames[currentFrameIndex], pixelSize);
+                }
+                return;
+            }
+
+            if (this.isOther()) {
+                console.log("Status: Other");
+                if (otherFrame) {
+                    const otherX = Math.max(25, Math.min(newX, window.gameAreaWidth));
+                    console.log("Drawing other frame:", otherFrame);
+                    CanvasUtils.drawSpriteRGB(otherX, newY, otherFrame, pixelSize);
+                }
+                return;
+            }
+            if (this.isDead()) {
+                console.log("Status: Dead");
+                return;
+            }
+
+            console.log("No valid frame to draw for current status:", this.status);
         } catch (error) {
             console.error("Error occurred:", error.message);
             console.error("Stack trace:", error.stack);
