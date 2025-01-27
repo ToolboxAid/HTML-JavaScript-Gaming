@@ -7,7 +7,7 @@ import ObjectDynamic from '../scripts/objectDynamic.js';
 import { canvasConfig, spriteConfig } from './global.js';
 
 import CanvasUtils from '../scripts/canvas.js';
-
+import Sprite from '../scripts/sprite.js';
 class Laser extends ObjectDynamic {
 
 
@@ -26,7 +26,7 @@ class Laser extends ObjectDynamic {
         ];
 
     constructor(x, y) {
-        const dimensions = CanvasUtils.spriteWidthHeight(Laser.livingFrames, window.pixelSize);
+        const dimensions = Sprite.getWidthHeight(Laser.livingFrames, window.pixelSize);
         super(x, y, dimensions.width, dimensions.height);
         this.velocityY = -600;
         this.score = 0;

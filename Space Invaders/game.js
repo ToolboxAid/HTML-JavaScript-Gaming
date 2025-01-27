@@ -34,6 +34,8 @@ import { AudioPlayer } from '../scripts/audioPlayer.js';
 import { Cookies } from '../scripts/cookies.js';
 
 import AttractMode from './attractMode.js';
+
+import Sprite from '../scripts/sprite.js';
 class Game {
 
     static scoreFlash = 0;
@@ -382,6 +384,22 @@ class Game {
         });
     }
 
+    checkEnemyPlayerCollision() {
+        this.gameEnemies.forEach((enemy, key) => {
+            if (enemy.isCollidingWith(this.player)) {
+                if (enemy.isAlive()) {
+                    // Deal with enemy
+                    enemy.setHit();
+
+                    // Deal with player
+                    console.log("enemy player Collision");
+                    Game.audioPlayer.playAudio('explosion.wav');
+                    this.player.setIsDying();
+                }
+            }
+        });
+    }
+
     checkBombGroundCollision() {
         this.enemyBombs.forEach(enemyBomb => {
             this.grounds.forEach(ground => {
@@ -717,6 +735,7 @@ class Game {
 
         this.EnemiesUpdate(deltaTime);
         this.checkEnemyShieldCollision();
+        this.checkEnemyPlayerCollision()
 
         // Update, Remove and Check bombs
         this.removeDeadBomb();
@@ -776,7 +795,7 @@ class Game {
     killBombs() {
         this.enemyBombs.forEach(enemyBomb => {
             enemyBomb.setIsDying();
-            console.log(enemyBomb);
+          //  console.log(enemyBomb);
         });
     }
 
@@ -786,10 +805,10 @@ class Game {
     static upauseFrame =  null;
 
     static initText() {
-        Game.scoreTextFrame = CanvasUtils.getTextRGB("SCORE<1>   MIDWAY   SCORE<2>", Game.redPalette);
+        Game.scoreTextFrame = Sprite.getTextRGB("SCORE<1>   MIDWAY   SCORE<2>", Game.redPalette);
         Game.scoreNumbFrame = null;
-        Game.pauseFrame = CanvasUtils.getTextRGB("Press `P` to pause game", Game.redPalette);
-        Game.upauseFrame = CanvasUtils.getTextRGB("Press `P` to unpause game", Game.whitePalette);
+        Game.pauseFrame = Sprite.getTextRGB("Press `P` to pause game", Game.redPalette);
+        Game.upauseFrame = Sprite.getTextRGB("Press `P` to unpause game", Game.whitePalette);
     }
     static redPalette = {
         custom: [
@@ -884,7 +903,7 @@ class Game {
         }
     }
 
-    //resetGame() {
+
     resetPlayers() {
         console.log("Resetting Game...");
 
@@ -907,6 +926,7 @@ class Game {
 
         Enemy.unsetEnemiesInitialized();
         this.gameState = "attract";
+        this.attractMode.reset();
     }
 
 }

@@ -9,6 +9,8 @@ import CanvasUtils from "../scripts/canvas.js";
 import Enemy from "./enemy.js";
 
 import EnemyCrab from "./enemyCrab.js";
+import EnemySquid from "./enemySquid.js";
+import EnemyOctopus from "./enemyOctopus.js"
 import Shield from "./shield.js";
 import Ground from "./ground.js";
 
@@ -54,7 +56,6 @@ export default class AttractMode {
             this.gameState = "player1";
 
             Enemy.enemyID = 0;
-
         }
         this.draw();
     }
@@ -123,6 +124,11 @@ export default class AttractMode {
     }
 
     reset() {
+
+        this.gameEnemies.forEach((enemy, key) => {
+                this.gameEnemies.delete(key);
+        });
+
         AttractMode.delayCounter = 0;
         Enemy.enemyID = 0;
         Enemy.enemyRow = 0;

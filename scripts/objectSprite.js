@@ -7,7 +7,7 @@ import CanvasUtils from './canvas.js';
 import Colors from './colors.js';
 import ObjectKillable from './objectKillable.js';
 import Functions from './functions.js';
-
+import Sprite from './sprite.js';
 
 class ObjectSprite extends ObjectKillable {
 
@@ -28,14 +28,14 @@ class ObjectSprite extends ObjectKillable {
 
         let dyingArray = dyingFrames;
         let dyingDelay = 7;
-        let dyingFrameCount = dyingFrames.length;
+        let dyingFrameCount = 0;
 
         switch (frameType) {
             case 'json':
                 //console.log('Handling an object');
-                CanvasUtils.validateJsonSpriteFormat(livingFrames);
+                Sprite.validateJsonFormat(livingFrames);
                 spritePixelSize = livingFrames.metadata.spritePixelSize;
-                dimensions = CanvasUtils.getLayerDimensions(livingFrames, spritePixelSize);
+                dimensions = Sprite.getLayerDimensions(livingFrames, spritePixelSize);
 
                 // Living
                 livingFrameCount = livingFrames.layers.length;
@@ -45,27 +45,29 @@ class ObjectSprite extends ObjectKillable {
                 if (palette) {
                     paletteArray = ObjectSprite.extractArray(palette);
                 }
-                livingArray = CanvasUtils.convertSprite2RGB(livingFrames, paletteArray);
+                livingArray = Sprite.convert2RGB(livingFrames, paletteArray);
 
                 // Dying
+                if (dyingFrames){
                 dyingFrameCount = dyingFrames.layers.length;
                 dyingDelay = dyingFrames.metadata.framesPerSprite;
 
-                dyingArray = CanvasUtils.convertSprite2RGB(dyingFrames, paletteArray);                
+                dyingArray = Sprite.convert2RGB(dyingFrames, paletteArray);                
+                }
                 break;
             case 'array':
                 //console.log('Handling an array');
                 if (pixelSize <= 0 || typeof pixelSize !== 'number') {
                     throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
                 }
-                dimensions = CanvasUtils.spriteWidthHeight(livingFrames, spritePixelSize);
+                dimensions = Sprite.getWidthHeight(livingFrames, spritePixelSize);
                 break;
             case 'doubleArray':
                 if (pixelSize <= 0 || typeof pixelSize !== 'number') {
                     throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
                 }
                 //console.log('Handling a double array');
-                dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], spritePixelSize);
+                dimensions = Sprite.getWidthHeight(livingFrames[0], spritePixelSize);
                 break;
             default:
                 console.error(`Unknown value: ${ObjectSprite.getFrameType(livingFrames)}`);

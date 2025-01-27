@@ -5,10 +5,10 @@
 
 import { enemyConfig, spriteConfig } from './global.js';
 
-import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 
 import ObjectSprite from '../scripts/objectSprite.js';
+import Sprite from '../scripts/sprite.js';
 
 class Enemy extends ObjectSprite {
     static speed = 0;
@@ -75,7 +75,7 @@ class Enemy extends ObjectSprite {
 
 
     constructor(livingFrames, bombAggression) {
-        const frameWidth = CanvasUtils.spriteWidthHeight(livingFrames[0], spriteConfig.pixelSize);
+        const frameWidth = Sprite.getWidthHeight(livingFrames[0], spriteConfig.pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
         const y = enemyConfig.yPosition - (Enemy.enemyRow * enemyConfig.ySpacing);
 

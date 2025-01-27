@@ -8,6 +8,7 @@ import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
+import Sprite from '../scripts/sprite.js';
 
 /**
  * Represents a shield object in the game.
@@ -67,7 +68,7 @@ class Shield extends ObjectStatic {
      * @param {number} shieldNum - The index of the shield, used for positioning.
      */
     constructor(shieldNum) {
-        const dimensions = CanvasUtils.spriteWidthHeight(Shield.frame, window.pixelSize);
+        const dimensions = Sprite.getWidthHeight(Shield.frame, window.pixelSize);
         const shieldSpacing = (canvasConfig.width - shieldConfig.count * dimensions.width) / (shieldConfig.count + 1);
         const x = shieldSpacing + shieldNum * (dimensions.width + shieldSpacing);
         const y = shieldConfig.yPosition;

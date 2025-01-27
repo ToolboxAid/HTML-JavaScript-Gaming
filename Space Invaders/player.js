@@ -3,7 +3,7 @@
 // 10/24/2024
 // player.js
 
-import { canvasConfig, spriteConfig } from './global.js';
+import { canvasConfig, spriteConfig, playerSelect } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import ObjectSprite from '../scripts/objectSprite.js'
 
@@ -113,8 +113,8 @@ class Player extends ObjectSprite {
         this.playerID = Player.playerID++;
         this.level = 1;
         this.score = 0;
-        this.lives = spriteConfig.playerLives;
 
+        this.lives = playerSelect.lives;
         this.setSpriteColor(spriteConfig.playerColor);
         this.pixelSize = spriteConfig.pixelSize;
 

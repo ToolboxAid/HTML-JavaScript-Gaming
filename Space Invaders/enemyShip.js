@@ -5,10 +5,10 @@
 
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 import Functions from '../scripts/functions.js';
-import CanvasUtils from '../scripts/canvas.js';
-import objectSprite from '../scripts/objectSprite.js';
+import ObjectSprite from '../scripts/objectSprite.js';
+import Sprite from '../scripts/sprite.js';
 
-class EnemyShip extends objectSprite {
+class EnemyShip extends ObjectSprite {
 
     // Explicit static declaration
     static instance = null;
@@ -167,13 +167,13 @@ class EnemyShip extends objectSprite {
         }
     }
 
-    setHit() {
+           () {
         this.setValue()
         const shipValue = `${this.value}`;
         const spacing = 2;
-        const someFrame = CanvasUtils.getSpriteText(shipValue, spacing);
-        const someOther = CanvasUtils.getSpriteFromText(shipValue, spacing);
-console.log(someFrame,someOther)        ;
+        const someFrame = Sprite.getText(shipValue, spacing);
+        const someOther = Sprite.getFromText(shipValue, spacing);
+console.log(someFrame,someOther);
         const displayFrames = 60;
         this.setOtherFrame(displayFrames, someFrame);
         super.setHit();
@@ -183,7 +183,8 @@ console.log(someFrame,someOther)        ;
         super.setIsAlive();
         // place off left screen the width of ship moving right
         this.x = -(this.width);
-
+        this.velocityX = spriteConfig.shipVelX;
+        
         if (Functions.randomRange(0, 1, true)) {
             // place off right screen width of ship moving left
             this.x = canvasConfig.width + this.width;
