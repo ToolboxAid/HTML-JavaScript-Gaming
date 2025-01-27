@@ -28,6 +28,7 @@ import EnemyBomb1 from './enemyBomb1.js';
 import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 import ObjectStatic from '../scripts/objectStatic.js';
+import ObjectSprite from '../scripts/objectSprite.js';
 
 import { AudioPlayer } from '../scripts/audioPlayer.js';
 import { Cookies } from '../scripts/cookies.js';
@@ -219,10 +220,8 @@ class Game {
         const color = 'yellow';
         const pixelSize = 5;
 
-        // Draw score labels
-        CanvasUtils.drawText(50, 30, "SCORE-1", pixelSize, 'red');
-        CanvasUtils.drawText(300, 30, "MIDWAY", pixelSize, 'red');
-        CanvasUtils.drawText(550, 30, "SCORE-2", pixelSize, 'red');
+        // Draw score text labels
+        CanvasUtils.drawSpriteRGB(30,30,Game.scoreTextFrame.layers[0].data, pixelSize);        
 
         // Display Player 1's score if Game.scoreOn is true and current player is 1
         if (Game.scoreOnPlayer1) {
@@ -230,11 +229,11 @@ class Game {
         }
 
         // Display high score
-        CanvasUtils.drawNumber(340, 80, this.highScore, pixelSize, color, 4, '0');
+        CanvasUtils.drawNumber(390, 80, this.highScore, pixelSize, color, 4, '0');
 
         // Display Player 2's score if Game.scoreOn is true and current player is 2
         if (Game.scoreOnPlayer2) {
-            CanvasUtils.drawNumber(590, 80, this.players[1].score, pixelSize, color, 4, '0');
+            CanvasUtils.drawNumber(685, 80, this.players[1].score, pixelSize, color, 4, '0');
         }
     }
 
@@ -759,7 +758,7 @@ class Game {
         const y = canvasConfig.height - 75;
 
         CanvasUtils.drawText(x, y, "Game Paused.", 3.5, "white");
-        CanvasUtils.drawText(x, y + 35, "Press `P` to unpause game", 3.5, "#ffffffff");
+        CanvasUtils.drawSpriteRGB(x,y+35,Game.upauseFrame.layers[0].data, 3.5);
     }
 
     // Initialize player based on current player index
@@ -781,6 +780,36 @@ class Game {
         });
     }
 
+    static scoreTextFrame = null;
+    static scoreNumbFrame = null;
+    static pauseFrame =  null;
+    static upauseFrame =  null;
+
+    static initText() {
+        Game.scoreTextFrame = CanvasUtils.getTextRGB("SCORE<1>   MIDWAY   SCORE<2>", Game.redPalette);
+        Game.scoreNumbFrame = null;
+        Game.pauseFrame = CanvasUtils.getTextRGB("Press `P` to pause game", Game.redPalette);
+        Game.upauseFrame = CanvasUtils.getTextRGB("Press `P` to unpause game", Game.whitePalette);
+    }
+    static redPalette = {
+        custom: [
+            { "symbol": "0", "hex": "#00000000", "name": "Transparent" },
+            { "symbol": "1", "hex": "#FF0000", "name": "red" },
+        ]
+    };
+    static yellowPalette = {
+        custom: [
+            { "symbol": "0", "hex": "#00000000", "name": "Transparent" },
+            { "symbol": "1", "hex": "#FFFF00", "name": "yellow" },
+        ]
+    };
+    static whitePalette = {
+        custom: [
+            { "symbol": "0", "hex": "#00000000", "name": "Transparent" },
+            { "symbol": "1", "hex": "#FFFFFF", "name": "White" },
+        ]
+    };        
+
     playGame(deltaTime) {
         this.checkGamePause();
 
@@ -791,7 +820,8 @@ class Game {
         // // Display current player status using Player class properties
         const x = canvasConfig.width / 5;
         const y = canvasConfig.height - 75;
-        CanvasUtils.drawText(x, y, "Press `P` to pause game", 3.5, "white");
+        //CanvasUtils.drawText(x, y, "Press `P` to pause game", 3.5, "white");
+        CanvasUtils.drawSpriteRGB(x,y,Game.pauseFrame.layers[0].data, 3.5);
 
         // Simulate losing a life with 'D' key
         if (this.player.isDead()) {
@@ -882,6 +912,9 @@ class Game {
 }
 
 export default Game;
+
+Game.initText();
+
 
 // Canvas needs to know the current directory to game.js for dynamic imports
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));

@@ -172,11 +172,13 @@ class EnemyShip extends objectSprite {
         const shipValue = `${this.value}`;
         const spacing = 2;
         const someFrame = CanvasUtils.getSpriteText(shipValue, spacing);
+        const someOther = CanvasUtils.getSpriteFromText(shipValue, spacing);
+console.log(someFrame,someOther)        ;
         const displayFrames = 60;
         this.setOtherFrame(displayFrames, someFrame);
         super.setHit();
     }
-
+    
     setIsAlive() {
         super.setIsAlive();
         // place off left screen the width of ship moving right

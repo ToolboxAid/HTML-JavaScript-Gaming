@@ -27,13 +27,13 @@ class ObjectKillable extends ObjectDynamic {
                 this.handleAliveStatus(deltaTime, incFrame);
                 break;
             case ObjectKillable.Status.DYING: // Handle DYING status
-                this.handleDyingStatus();
+                this.handleDyingStatus(deltaTime);
                 break;
             case ObjectKillable.Status.OTHER: // Handle OTHER status
-                this.handleOtherStatus();
+                this.handleOtherStatus(deltaTime);
                 break;
             case ObjectKillable.Status.DEAD: // Handle DEAD status
-                this.handleDeadStatus();
+                this.handleDeadStatus(deltaTime);
                 break;
             default:  // Handle OOPS - Handle unknown status
                 console.error("OOPS : Unknown status:", this.status);
@@ -45,13 +45,13 @@ class ObjectKillable extends ObjectDynamic {
         super.update(deltaTime);
     }
 
-    handleDyingStatus() {
+    handleDyingStatus(deltaTime) {
     }
 
-     handleOtherStatus() { // Custom logic for OTHER status
+     handleOtherStatus(deltaTime) { // Custom logic for OTHER status
      }
 
-     handleDeadStatus() { // Custom logic for DEAD status
+     handleDeadStatus(deltaTime) { // Custom logic for DEAD status
      }
 
     isAlive() {

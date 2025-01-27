@@ -18,20 +18,26 @@ class ObjectSprite extends ObjectKillable {
         }
 
         // Calculate dimensions based on the first living frame
+        let spritePixelSize = pixelSize;
         let dimensions = null;
         let livingArray = livingFrames;
         let livingDelay = 30;
-        let spritePixelSize = pixelSize;
         let livingFrameCount = livingFrames.length;
+        // Assumes living, dying, other are all the same frameType
         const frameType = ObjectSprite.getFrameType(livingFrames);
+
+        let dyingArray = dyingFrames;
+        let dyingDelay = 7;
+        let dyingFrameCount = dyingFrames.length;
 
         switch (frameType) {
             case 'json':
-                console.log('Handling an object');
+                //console.log('Handling an object');
                 CanvasUtils.validateJsonSpriteFormat(livingFrames);
-                //TODO: Need to complete the dyingFrames, dyingDelay, dyingFrameCount,  and otherFrames, otherDelay, otherFrameCount
                 spritePixelSize = livingFrames.metadata.spritePixelSize;
                 dimensions = CanvasUtils.getLayerDimensions(livingFrames, spritePixelSize);
+
+                // Living
                 livingFrameCount = livingFrames.layers.length;
                 livingDelay = livingFrames.metadata.framesPerSprite;
 
@@ -40,9 +46,15 @@ class ObjectSprite extends ObjectKillable {
                     paletteArray = ObjectSprite.extractArray(palette);
                 }
                 livingArray = CanvasUtils.convertSprite2RGB(livingFrames, paletteArray);
+
+                // Dying
+                dyingFrameCount = dyingFrames.layers.length;
+                dyingDelay = dyingFrames.metadata.framesPerSprite;
+
+                dyingArray = CanvasUtils.convertSprite2RGB(dyingFrames, paletteArray);                
                 break;
             case 'array':
-                console.log('Handling an array');
+                //console.log('Handling an array');
                 if (pixelSize <= 0 || typeof pixelSize !== 'number') {
                     throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
                 }
@@ -52,14 +64,8 @@ class ObjectSprite extends ObjectKillable {
                 if (pixelSize <= 0 || typeof pixelSize !== 'number') {
                     throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
                 }
-                console.log('Handling a double array');
+                //console.log('Handling a double array');
                 dimensions = CanvasUtils.spriteWidthHeight(livingFrames[0], spritePixelSize);
-                break;
-            case 'string':
-                if (pixelSize <= 0 || typeof pixelSize !== 'number') {
-                    throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
-                }
-                console.warn('Handling a string (incomplete/not working');
                 break;
             default:
                 console.error(`Unknown value: ${ObjectSprite.getFrameType(livingFrames)}`);
@@ -81,8 +87,8 @@ class ObjectSprite extends ObjectKillable {
         this.livingFrameCount = livingFrameCount;
 
         // Initialize dying frames
-        this.dyingDelay = 3;
-        this.dyingFrames = dyingFrames;
+        this.dyingDelay = dyingDelay;
+        this.dyingFrames = dyingArray;
         this.dyingFrameCount = this.dyingFrames ? this.dyingFrames.length : 0;
 
         // Other frames
