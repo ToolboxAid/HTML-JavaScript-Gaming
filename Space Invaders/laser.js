@@ -28,7 +28,7 @@ class Laser extends ObjectDynamic {
     constructor(x, y) {
         const dimensions = Sprite.getWidthHeight(Laser.livingFrames, window.pixelSize);
         super(x, y, dimensions.width, dimensions.height);
-        this.velocityY = -600;
+        this.velocityY = -spriteConfig.laserVelocityY;
         this.score = 0;
         this.pixelSize = 3.0;
         this.livingFrames = Laser.livingFrames;
@@ -36,14 +36,16 @@ class Laser extends ObjectDynamic {
     }
 
     draw() {
-        CanvasUtils.drawSprite(this.x, this.y, this.livingFrames, this.pixelSize, spriteConfig.lazerColor);  // no [0] for single dimension arrays
+        CanvasUtils.drawSprite(this.x, this.y, this.livingFrames, this.pixelSize, spriteConfig.laserColor);  // no [0] for single dimension arrays
     }
 
     update(deltaTime = 1) {
         super.update(deltaTime);
 
-        if (this.y <= 0 || this.y > canvasConfig.width ||
-            this.x <= 0 || this.x > canvasConfig.height
+        //canvasConfig.width
+        console
+        if (this.y <= 0 || this.y > canvasConfig.height ||
+            this.x <= 0 || this.x > canvasConfig.width
         ) {
             return true;
         }

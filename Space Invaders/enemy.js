@@ -11,7 +11,6 @@ import ObjectSprite from '../scripts/objectSprite.js';
 import Sprite from '../scripts/sprite.js';
 
 class Enemy extends ObjectSprite {
-    static speed = 0;
 
     static dyingFrames = [
         [
@@ -52,12 +51,14 @@ class Enemy extends ObjectSprite {
         ],
     ];
 
+    static speed = 0;
+
     static enemyID = 0;
     static nextID = 0;
 
     static remainingEnemies = 54;
-    static maximumEnemies = 54;
-    static newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
+    
+    static newSpeed = (Enemy.getMaxCount() - Enemy.remainingEnemies);
 
     // Enemy configurations for octopus, squid, and crab
     static enemyRow = 0;
@@ -73,7 +74,6 @@ class Enemy extends ObjectSprite {
 
     static reorgID = 0;
 
-
     constructor(livingFrames, playerLevel) {
         const frameWidth = Sprite.getWidthHeight(livingFrames[0], spriteConfig.pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
@@ -86,7 +86,7 @@ class Enemy extends ObjectSprite {
         this.playerLevel = playerLevel;
         this.playerLevel = 1;
         this.bombAggression = 30 + (this.playerLevel * 5);  // 35% to 80% chance to drop bomb 
-        this.bombDelay = Functions.randomRange(50, 350, true);//this.setDelay();
+        this.bombDelay = Functions.randomRange(50, 350, true);
         this.bombDelayCnt = 0;
         this.velocityX = 250;
         this.enemyID = Enemy.enemyID++;
@@ -99,6 +99,54 @@ class Enemy extends ObjectSprite {
         }
     }
 
+    static #savedStates = [[], []];
+    
+    static saveState(index) {
+        if (index !== 0 && index !== 1) return;
+        
+        this.#savedStates[index] = [
+            this.speed,
+            this.enemyID,
+            this.nextID,
+            this.remainingEnemies,
+            this.newSpeed,
+            this.enemyRow,
+            this.enemyCol,
+            this.enemiesInitialized,
+            this.prepSpeed,
+            this.doSpeed,
+            this.prepMoveDown,
+            this.doMoveDown,
+            this.reorgID
+        ];
+    }
+
+    static restoreState(index) {
+        if (index !== 0 && index !== 1) return;
+        if (!this.#savedStates[index].length) return;
+        
+        [
+            this.speed,
+            this.enemyID,
+            this.nextID,
+            this.remainingEnemies,
+            this.newSpeed,
+            this.enemyRow,
+            this.enemyCol,
+            this.enemiesInitialized,
+            this.prepSpeed,
+            this.doSpeed,
+            this.prepMoveDown,
+            this.doMoveDown,
+            this.reorgID
+        ] = this.#savedStates[index];
+    }
+
+    static getMaxCount(){
+        const maximumEnemies = 54;
+        return maximumEnemies;
+    }    
+
     static getRow() {
         return Enemy.enemyRow;
     }
@@ -110,8 +158,6 @@ class Enemy extends ObjectSprite {
     static unsetEnemiesInitialized() {
         Enemy.enemyID = 0;
         Enemy.nextID = 0;
-
-        // newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies);
 
         // Enemy configurations for octopus, squid, and crab
         Enemy.enemyRow = 0;
@@ -150,7 +196,7 @@ class Enemy extends ObjectSprite {
     }
 
     static setSpeed() {
-        Enemy.newSpeed = (Enemy.maximumEnemies - Enemy.remainingEnemies) / 3;
+        Enemy.newSpeed = (Enemy.getMaxCount() - Enemy.remainingEnemies) / 3;
     }
 
     static getKey(row, column) {
@@ -201,7 +247,7 @@ class Enemy extends ObjectSprite {
     }
 
     setDelay(){
-        let multiplier = 15 - this.playerLevel; // multiplier 5 to 14
+        let multiplier = 9 - this.playerLevel; // multiplier 1 to 8
         if (multiplier < 1) {
             multiplier = 1;
         }

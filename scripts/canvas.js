@@ -90,6 +90,9 @@ class CanvasUtils {
      */
     static drawNumber(x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         const numberStr = number.toString();
+        if (numberStr.length > leadingCount){
+            leadingCount = numberStr.length;
+        }
         const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
         const text = leadingChar.repeat(leadingLength) + numberStr; // Create text with leading characters
 

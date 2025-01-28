@@ -168,12 +168,13 @@ class EnemyShip extends ObjectSprite {
     }
 
     setHit() {
+        this.x = Math.max(25, Math.min(this.x, window.gameAreaWidth - 100));
         this.setValue()
         const shipValue = `${this.value}`;
         const spacing = 2;
         const someFrame = Sprite.getText(shipValue, spacing);
-        const someOther = Sprite.getFromText(shipValue, spacing);
-console.log(someFrame,someOther);
+//        const someOther = Sprite.getFromText(shipValue, spacing);
+//console.log(someFrame,someOther);
         const displayFrames = 60;
         this.setOtherFrame(displayFrames, someFrame);
         super.setHit();
@@ -195,12 +196,8 @@ console.log(someFrame,someOther);
         this.nextShipTimer = Date.now() + (EnemyShip.nextShipDelay * 10); //1000);
     }
 
-    setIsDying(){
-        super.setIsDying();
-        this.stopAudio = true;
-    }
-
     setIsDead() {
+        this.stopAudio = true;
         super.setIsDead();
         this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     }

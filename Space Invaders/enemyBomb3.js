@@ -9,7 +9,6 @@ import { spriteConfig } from './global.js';
 class EnemyBomb3 extends EnemyBomb {
 
   static livingFrames = [
-
     [
       "110",
       "010",

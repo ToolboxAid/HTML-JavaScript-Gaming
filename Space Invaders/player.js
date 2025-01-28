@@ -108,7 +108,10 @@ class Player extends ObjectSprite {
 
     static playerID = 0;
 
-    constructor(x = 127, y = 820) {
+    constructor() {
+        const x = spriteConfig.playerX;
+        const y = spriteConfig.playerY;
+
         super(x, y, Player.frame, Player.dyingFrames, spriteConfig.pixelSize);
         this.playerID = Player.playerID++;
         this.level = 1;

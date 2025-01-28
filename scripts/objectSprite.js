@@ -48,11 +48,11 @@ class ObjectSprite extends ObjectKillable {
                 livingArray = Sprite.convert2RGB(livingFrames, paletteArray);
 
                 // Dying
-                if (dyingFrames){
-                dyingFrameCount = dyingFrames.layers.length;
-                dyingDelay = dyingFrames.metadata.framesPerSprite;
+                if (dyingFrames) {
+                    dyingFrameCount = dyingFrames.layers.length;
+                    dyingDelay = dyingFrames.metadata.framesPerSprite;
 
-                dyingArray = Sprite.convert2RGB(dyingFrames, paletteArray);                
+                    dyingArray = Sprite.convert2RGB(dyingFrames, paletteArray);
                 }
                 break;
             case 'array':
@@ -241,9 +241,8 @@ class ObjectSprite extends ObjectKillable {
             }
 
             if (this.isOther()) {
-                if (otherFrame) {
-                    const otherX = Math.max(25, Math.min(newX, window.gameAreaWidth));
-                    CanvasUtils.drawSprite(otherX, newY, otherFrame, pixelSize, spriteColor);
+                if (this.otherFrame) {
+                    CanvasUtils.drawSprite(newX, newY, otherFrame, pixelSize, spriteColor);
                 }
                 return;
             }
@@ -252,7 +251,7 @@ class ObjectSprite extends ObjectKillable {
             }
 
             //this.setIsOther()
-            console.log("No valid frame to draw for current status: ", this.status);
+            console.log("No valid frame to draw for current status: ", this.status, this);
         } catch (error) {
             console.error("Error occurred:", error.message);
             console.error("Stack trace:", error.stack);

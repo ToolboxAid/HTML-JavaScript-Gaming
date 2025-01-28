@@ -6,16 +6,17 @@
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
-    width: 896, // Game area width (256 * 4)
-    height: 960, // Game area height (240 * 4)
+    width: 960, //896, // Game area width (256 * 4)
+    height: 896, //960, // Game area height (240 * 4)
     scale: 0.5,
+    
     backgroundColor: "#222222",
 
     fullscreenText: 'Click game to enter fullscreen',
     fullscreenFont: '40px Arial',
     fullscreenColor: 'yellow',
-    fullscreenX: 180, // X position for fullscreen text
-    fullscreenY: 930,//675, // Y position for fullscreen text
+    fullscreenX: 180,
+    fullscreenY: 870,
 };
 
 export const playerSelect = {
@@ -37,8 +38,18 @@ export const spriteConfig = {
     playerLives: 3,
     playerBonusScore: 1500,
     playerColor: 'white',
+    playerX: 127,
+    playerY: 700,
 
-    lazerColor: 'white',
+    livesX: 15,
+    livesY: 780,
+    livesColor: 'white',
+
+    levelX: 825,
+    levelY: 780,
+
+    laserColor: 'white',
+    laserVelocityY: 700,
 
     shipY: 145,
     shipVelX: 150,
@@ -49,15 +60,16 @@ export const spriteConfig = {
     octopusColor: 'yellow',
     squidColor: '#ff4444',
 
+    bombYoffset: 30,
     bomb1Color: "#ff9999",
     bomb2Color: "#99ff99",
     bomb3Color: "#9999ff",
-    bomb1VelocityX: 350,
-    bomb2VelocityX: 275,
-    bomb3VelocityX: 200,
+    bomb1VelocityX: 410,
+    bomb2VelocityX: 380,
+    bomb3VelocityX: 350,
 
     groundColor: "green",
-    groundY: 870,
+    groundY: 740,
 };
 
 export const enemyConfig = {
@@ -71,7 +83,7 @@ export const enemyConfig = {
 
 export const shieldConfig = {
     count: 4, // Number of shields
-    yPosition: 700,
+    yPosition: 580,
     color: '#44FF44',
 }
 window.shieldCount = shieldConfig.count;
@@ -98,5 +110,5 @@ window.borderSize = 5;
 window.fpsShow = true;
 window.fpsColor = "red";
 window.fpsSize = "30px";
-window.fpsX = 404;
-window.fpsY = 855;
+window.fpsX = 10;
+window.fpsY = 850;

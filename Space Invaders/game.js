@@ -3,7 +3,7 @@
 // 10/24/2024
 // game.js - Space Invaders
 
-import { canvasConfig, spriteConfig, enemyConfig, playerSelect  } from './global.js'; // Assuming these contain canvas and sprite details
+import { canvasConfig, spriteConfig, enemyConfig, playerSelect } from './global.js'; // Assuming these contain canvas and sprite details
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
@@ -76,7 +76,7 @@ class Game {
             console.log("All audio files have been loaded and cached.");
         });
 
-       // console.log(Game.audioPlayer.audioCache);
+        // console.log(Game.audioPlayer.audioCache);
 
         // Canvas needs to know the current directory to game.js for dynamic imports
         const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
@@ -92,27 +92,73 @@ class Game {
         this.backToAttract = 600;
         this.backToAttractCounter = 0;
 
-        // Initialize players as an array of player instances
-        this.players = [new Player(), new Player()]; // Array holding player1 and player2
-        this.player = this.players[0]; // Current player
-
         // Static cookie name & path for consistency
         this.cookieName = Cookies.sanitizeCookieName(currentDir);
         this.cookiePath = "/";
         this.getHighScoreCookie();
 
-        // Items to move into the player
-        this.gameEnemies = new Map();
-        this.gameEnemiesBottom = new Array(enemyConfig.colSize).fill(null);
-        this.enemyBombs = [];
-        this.shields = [];
-        this.grounds = [];
+        // Initialize players as an array of player instances
+        this.players = [new Player(), new Player()]; // Array holding player1 and player2
+        this.player = this.players[0]; // Current player
 
+        // Items to move into the player
+        this.playersEnimies = [new Map(), new Map()];
+        this.gameEnemies = this.playersEnimies[0];
+
+        this.playersEnemiesBottom = [new Array(enemyConfig.colSize).fill(null), new Array(enemyConfig.colSize).fill(null)];
+        this.gameEnemiesBottom = this.playersEnemiesBottom[0];
+
+        // Initialize 2D array with proper syntax
+        this.playersShields = [[], []];
+        this.shields = this.playersShields[0];
+
+        this.playersGrounds = [[], []];
+        this.grounds = this.playersGrounds[0];
+
+        this.enemyBombs = [];
+
+        this.playersEnemiesStatic = [[], []];
+        this.setPlayersEnemiesStatic(0);
+        this.setPlayersEnemiesStatic(1);
         // Non-player items
         this.laser = null;
         this.enemyShip = EnemyShip.getInstance();
 
         this.attractMode = new AttractMode();
+    }
+
+    setPlayersEnemiesStatic(player) {
+        this.playersEnemiesStatic[player] =
+            [
+                Enemy.enemyID,
+                Enemy.nextID,
+                Enemy.remainingEnemies,
+                Enemy.newSpeed,
+                Enemy.enemyRow,
+                Enemy.enemyCol,
+                Enemy.enemiesInitialized,
+                Enemy.prepSpeed,
+                Enemy.doSpeed,
+                Enemy.prepMoveDown,
+                Enemy.doMoveDown,
+                Enemy.reorgID
+            ]
+    }
+    restorePlayersEnemiesStatic(player) {
+        [
+            Enemy.enemyID,
+            Enemy.nextID,
+            Enemy.remainingEnemies,
+            Enemy.newSpeed,
+            Enemy.enemyRow,
+            Enemy.enemyCol,
+            Enemy.enemiesInitialized,
+            Enemy.prepSpeed,
+            Enemy.doSpeed,
+            Enemy.prepMoveDown,
+            Enemy.doMoveDown,
+            Enemy.reorgID
+        ] = this.playersEnemiesStatic[player];
     }
 
     // Method to get the high score cookie
@@ -149,7 +195,7 @@ class Game {
             this.highScore = 0; // Default fallback for null
         }
     }
-    
+
     // Method to set the high score cookie
     setHighScoreCookie(score) {
         Cookies.set(this.cookieName, score, {
@@ -223,7 +269,7 @@ class Game {
         const pixelSize = 5;
 
         // Draw score text labels
-        CanvasUtils.drawSpriteRGB(30,30,Game.scoreTextFrame.layers[0].data, pixelSize);        
+        CanvasUtils.drawSpriteRGB(30, 30, Game.scoreTextFrame.layers[0].data, pixelSize);
 
         // Display Player 1's score if Game.scoreOn is true and current player is 1
         if (Game.scoreOnPlayer1) {
@@ -231,28 +277,27 @@ class Game {
         }
 
         // Display high score
-        CanvasUtils.drawNumber(390, 80, this.highScore, pixelSize, color, 4, '0');
+        CanvasUtils.drawNumber(410, 80, this.highScore, pixelSize, color, 4, '0');
 
         // Display Player 2's score if Game.scoreOn is true and current player is 2
         if (Game.scoreOnPlayer2) {
-            CanvasUtils.drawNumber(685, 80, this.players[1].score, pixelSize, color, 4, '0');
+            CanvasUtils.drawNumber(750, 80, this.players[1].score, pixelSize, color, 4, '0');
         }
     }
 
-
     drawLives(player) {
-        const dwn = 900;
-        const color = 'white';
+        const acr = spriteConfig.livesX;
+        const dwn = spriteConfig.livesY;
+        const color = spriteConfig.livesColor || 'red';
         const pixelSize = 5;
-        CanvasUtils.drawNumber(15, dwn, player.lives, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(95, dwn, Player.frame[0], spriteConfig.pixelSize);
+        CanvasUtils.drawNumber(acr, dwn, player.lives, pixelSize, color, 2, '0');
+        CanvasUtils.drawSprite(acr + 80, dwn, Player.frame[0], spriteConfig.pixelSize);
     }
 
     drawLevel(player) {
-        const dwn = 895;
-        const color = 'white';
-        const pixelSize = 5;
-        CanvasUtils.drawSprite(825, dwn, LevelFrames.frames[player.level - 1], 2.0); // current 0-9
+        const acr = spriteConfig.levelX;
+        const dwn = spriteConfig.levelY;
+        CanvasUtils.drawSprite(acr, dwn, LevelFrames.frames[player.level - 1], 2.0); // current 0-9
     }
 
     drawGround() {
@@ -294,17 +339,20 @@ class Game {
         if (this.laser) {
             let hitDetected = false;
             this.gameEnemies.forEach((enemy, key) => {
-//                console.log(enemy.isCollidingWith(this.laser));                
-                if (enemy.isCollidingWith(this.laser)) {
-                    this.updatePlayerScore(enemy.value);
-                    enemy.setHit();
-                    hitDetected = true;
-                    Game.audioPlayer.playAudio('invaderkilled.wav');
+                if (enemy.isAlive()) {
+                    if (enemy.isCollidingWith(this.laser)) {
+                        this.updatePlayerScore(enemy.value);
+                        enemy.setHit();
+                        hitDetected = true;
+                        Game.audioPlayer.playAudio('invaderkilled.wav');
+                    }
                 }
             });
+
             if (hitDetected) { // Delete the laser
                 this.laser = null;
             }
+
         }
     }
 
@@ -497,7 +545,6 @@ class Game {
 
     // Example: object.position += object.velocity * deltaTime;
     gameLoop(deltaTime) {
-
         this.keyboardInput.update();
 
         // Update game state with deltaTime
@@ -541,11 +588,11 @@ class Game {
                 break;
 
             case "gameOver":
+                this.resetPlayers();
                 this.displayGameOver();
                 break;
 
             case "resetPlayers":
-                this.resetPlayers();
                 break;
 
             default:
@@ -558,14 +605,18 @@ class Game {
     displayAttractMode() {
         this.attractMode.update();
         this.attractMode.draw();
-        this.drawScore();
-        CanvasUtils.drawSprite(127, 800, Player.frame[0], spriteConfig.pixelSize);
 
-        const dwn = 900;
-        const color = 'white';
+        this.drawScore();
+        const x = spriteConfig.playerX;
+        const y = spriteConfig.playerY;
+        CanvasUtils.drawSprite(x, y - 20, Player.frame[0], spriteConfig.pixelSize);
+
+        const acr = spriteConfig.livesX;
+        const dwn = spriteConfig.livesY;
+        const color = spriteConfig.livesColor;
         const pixelSize = 5;
-        CanvasUtils.drawNumber(15, dwn, 0, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(95, dwn, Player.frame[0], spriteConfig.pixelSize);
+        CanvasUtils.drawNumber(acr, dwn, 0, pixelSize, color, 2, '0');
+        CanvasUtils.drawSprite(acr + 80, dwn-10, Player.frame[0], spriteConfig.pixelSize);
 
         if (this.keyboardInput.getkeysPressed().includes('Enter')) {
             AttractMode.count = 0;
@@ -575,15 +626,13 @@ class Game {
     }
 
     displayPlayerSelect(deltaTime) {
-        // Game.gameAttract.update(deltaTime);
-        // Game.gameAttract.draw(false);    
         const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
         if (result) {
             this.playerCount = result.playerCount;
             //this.playerLives = result.playerLives;
             this.gameState = "initGameShield";
-        }  
-      }
+        }
+    }
 
     displayGameOver() {
         console.log("game over");
@@ -653,8 +702,8 @@ class Game {
         if (Enemy.isEnemiesInitialized()) {
             Enemy.remainingEnemies = this.gameEnemies.size;
             this.findBottom();
-            this.gameState = "player1";
-
+            //            this.gameState = "player1";
+            this.gameState = "player" + this.currentPlayer;
             Enemy.enemyID = 0;
 
         }
@@ -663,15 +712,14 @@ class Game {
 
     flashPlayerScore() {
         // Increment flash counter
-        if (Game.scoreFlash++ > 10) {
+        if (Game.scoreFlash++ >= 8) {
             Game.scoreFlash = 0;
             // Toggle the score visibility
             Game.scoreOn = !Game.scoreOn;
 
             // Delay the flashing effect
-            if (Game.scoreDelay++ > 20) {
+            if (Game.scoreDelay++ >= 20) {
                 // Reset counters after flashing sequence
-                Game.scoreFlash = 0;
                 Game.scoreDelay = 0;
                 this.gameState = "playGame";
                 Game.scoreOn = true; // Ensure score is visible at the end of flashing
@@ -680,20 +728,12 @@ class Game {
     }
 
     player1up() {
-        // this.currentPlayer = 1;
-        // Game.scoreFlash = 0;    // Reset flash counter
-        // Game.scoreDelay = 0;    // Reset delay counter
-        // Game.scoreOn = false;   // Start with score invisible
         this.flashPlayerScore();
         Game.scoreOnPlayer1 = Game.scoreOn;
         this.drawGame();
     }
 
     player2up() {
-        // this.currentPlayer = 2;
-        // Game.scoreFlash = 0;    // Reset flash counter
-        // Game.scoreDelay = 0;    // Reset delay counter
-        // Game.scoreOn = false;   // Start with score invisible
         this.flashPlayerScore();
         Game.scoreOnPlayer2 = Game.scoreOn;
         this.drawGame();
@@ -753,11 +793,11 @@ class Game {
 
         this.drawGame();
     }
-
     checkGamePause() {
         if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
+                Game.audioPlayer.stopAllLooping();
             } else if (this.gameState === "pauseGame") {
                 this.gameState = "playGame";
             }
@@ -774,38 +814,52 @@ class Game {
         CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
 
         const x = canvasConfig.width / 5;
-        const y = canvasConfig.height - 75;
+        const y = canvasConfig.height - 120;
 
         CanvasUtils.drawText(x, y, "Game Paused.", 3.5, "white");
-        CanvasUtils.drawSpriteRGB(x,y+35,Game.upauseFrame.layers[0].data, 3.5);
+        CanvasUtils.drawSpriteRGB(x, y + 35, Game.upauseFrame.layers[0].data, 3.5);
     }
 
     // Initialize player based on current player index
     resetCurrentPlayer() {
+
+        this.killBombs();
         const currentPlayer = this.currentPlayer - 1;
+
+        this.restorePlayersEnemiesStatic(currentPlayer)
 
         // Set current player as the active player in the array
         this.player = this.players[currentPlayer];
 
-        const x = 127, y = 820; // Default starting position
+        const x = spriteConfig.playerX;
+        const y = spriteConfig.playerY;
+
         this.player.setPosition(x, y);
         this.player.setIsAlive();
+
+        this.gameEnemies = this.playersEnimies[currentPlayer];
+        this.gameEnemiesBottom = this.playersEnemiesBottom[currentPlayer];
+        this.shields = this.playersShields[currentPlayer];
+        this.grounds = this.playersGrounds[currentPlayer];
+
+        this.laser = null;
+
     }
 
     killBombs() {
-        this.enemyShip.setIsDying();
+        this.enemyShip.setIsDead();
         this.enemyBombs.forEach(enemyBomb => {
-            enemyBomb.setIsDying();
+            enemyBomb.setIsDead();
         });
     }
 
     static scoreTextFrame = null;
     static scoreNumbFrame = null;
-    static pauseFrame =  null;
-    static upauseFrame =  null;
+    static pauseFrame = null;
+    static upauseFrame = null;
 
     static initText() {
-        Game.scoreTextFrame = Sprite.getTextRGB("SCORE<1>   MIDWAY   SCORE<2>", Game.redPalette);
+        Game.scoreTextFrame = Sprite.getTextRGB("SCORE<1>    MIDWAY    SCORE<2>", Game.redPalette);
         Game.scoreNumbFrame = null;
         Game.pauseFrame = Sprite.getTextRGB("Press `P` to pause game", Game.redPalette);
         Game.upauseFrame = Sprite.getTextRGB("Press `P` to unpause game", Game.whitePalette);
@@ -827,7 +881,7 @@ class Game {
             { "symbol": "0", "hex": "#00000000", "name": "Transparent" },
             { "symbol": "1", "hex": "#FFFFFF", "name": "White" },
         ]
-    };        
+    };
 
     playGame(deltaTime) {
         this.checkGamePause();
@@ -838,12 +892,15 @@ class Game {
 
         // // Display current player status using Player class properties
         const x = canvasConfig.width / 5;
-        const y = canvasConfig.height - 75;
+        const y = canvasConfig.height - 90;
         //CanvasUtils.drawText(x, y, "Press `P` to pause game", 3.5, "white");
-        CanvasUtils.drawSpriteRGB(x,y,Game.pauseFrame.layers[0].data, 3.5);
+        CanvasUtils.drawSpriteRGB(x, y, Game.pauseFrame.layers[0].data, 3.5);
 
         // Simulate losing a life with 'D' key
         if (this.player.isDead()) {
+            this.gameState = "player" + this.currentPlayer;
+
+            this.setPlayersEnemiesStatic(this.currentPlayer - 1);
 
             // Decrease current player's life
             this.player.decrementLives();
@@ -858,6 +915,7 @@ class Game {
                 if (this.playerCount === 1) {
                     console.log("Player 1 is out of lives. Game Over!");
                     this.gameState = "gameOver";
+                    this.currentPlayer = 1;
                     return;
                 }
 
@@ -867,6 +925,7 @@ class Game {
                     if (this.players[0].lives <= 0 && this.players[1].lives <= 0) {
                         console.log("Both players are out of lives. Game Over!");
                         this.gameState = "gameOver";
+                        this.currentPlayer = 1;
                         return; // End the game if both players are out of lives
                     } else {
                         // Swap to the other player if there are lives remaining for the other player
@@ -904,7 +963,6 @@ class Game {
         }
     }
 
-
     resetPlayers() {
         console.log("Resetting Game...");
 
@@ -914,20 +972,27 @@ class Game {
         this.players = [new Player(), new Player()]; // Array holding player1 and player2
         this.player = this.players[0]; // Current player
 
-        this.gameEnemies = new Map();
-        this.gameEnemiesBottom = new Array(enemyConfig.colSize).fill(null);
-
         // Items to move into the player
-        this.gameEnemies = new Map();
-        this.gameEnemiesBottom = new Array(enemyConfig.colSize).fill(null);
+        this.playersEnimies = [new Map(), new Map()];
+        this.gameEnemies = this.playersEnimies[0];
+
+        this.playersEnemiesBottom = [new Array(enemyConfig.colSize).fill(null), new Array(enemyConfig.colSize).fill(null)];
+        this.gameEnemiesBottom = this.playersEnemiesBottom[0];
+
+        this.playersShields = [[], []];
+        this.shields = this.playersShields[0];
+
+        this.playersGrounds = [[], []];
+        this.grounds = this.playersGrounds[0];
+
         this.enemyBombs = [];
-        this.shields = [];
-        this.grounds = [];
+
         this.laser = null;
 
         Enemy.unsetEnemiesInitialized();
         this.gameState = "attract";
         this.attractMode.reset();
+        this.attractMode = new AttractMode();
     }
 
 }
