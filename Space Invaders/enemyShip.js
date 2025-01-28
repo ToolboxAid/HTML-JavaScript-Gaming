@@ -167,7 +167,7 @@ class EnemyShip extends ObjectSprite {
         }
     }
 
-           () {
+    setHit() {
         this.setValue()
         const shipValue = `${this.value}`;
         const spacing = 2;
@@ -193,6 +193,11 @@ console.log(someFrame,someOther);
 
         // prevent acidental double, way out there.
         this.nextShipTimer = Date.now() + (EnemyShip.nextShipDelay * 10); //1000);
+    }
+
+    setIsDying(){
+        super.setIsDying();
+        this.stopAudio = true;
     }
 
     setIsDead() {

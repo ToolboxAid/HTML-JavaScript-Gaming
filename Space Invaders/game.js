@@ -793,9 +793,9 @@ class Game {
     }
 
     killBombs() {
+        this.enemyShip.setIsDying();
         this.enemyBombs.forEach(enemyBomb => {
             enemyBomb.setIsDying();
-          //  console.log(enemyBomb);
         });
     }
 
@@ -847,6 +847,7 @@ class Game {
 
             // Decrease current player's life
             this.player.decrementLives();
+            this.killBombs();
             console.log(`Player ${this.currentPlayer} lost a life!`);
 
             // Check if current player is out of lives

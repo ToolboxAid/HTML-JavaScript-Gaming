@@ -74,7 +74,7 @@ class Enemy extends ObjectSprite {
     static reorgID = 0;
 
 
-    constructor(livingFrames, bombAggression) {
+    constructor(livingFrames, playerLevel) {
         const frameWidth = Sprite.getWidthHeight(livingFrames[0], spriteConfig.pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
         const y = enemyConfig.yPosition - (Enemy.enemyRow * enemyConfig.ySpacing);
@@ -83,9 +83,12 @@ class Enemy extends ObjectSprite {
 
         this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
 
-        this.bombAggression = 15 + (bombAggression * 25);
-
-        this.velocityX = 250; //1250;
+        this.playerLevel = playerLevel;
+        this.playerLevel = 1;
+        this.bombAggression = 30 + (this.playerLevel * 5);  // 35% to 80% chance to drop bomb 
+        this.bombDelay = Functions.randomRange(50, 350, true);//this.setDelay();
+        this.bombDelayCnt = 0;
+        this.velocityX = 250;
         this.enemyID = Enemy.enemyID++;
 
         if (++Enemy.enemyCol >= enemyConfig.colSize) {
@@ -197,8 +200,26 @@ class Enemy extends ObjectSprite {
         return changeDir;
     }
 
+    setDelay(){
+        let multiplier = 15 - this.playerLevel; // multiplier 5 to 14
+        if (multiplier < 1) {
+            multiplier = 1;
+        }
+        const ms = 10;
+        this.bombDelay = Functions.randomRange(ms * multiplier, ms * (multiplier+5), true);
+    }
+
     isDropBombTime() {
-        const randomNumber = Functions.randomRange(0, 10000, true);
+        if (this.bombDelayCnt++ < this.bombDelay) {
+            return false
+        } else {
+            this.bombDelayCnt = 0;
+        }
+
+        this.setDelay();
+
+        const randomNumber = Functions.randomRange(this.playerLevel*5, 100, true); 
+
         return (randomNumber <= this.bombAggression);
     }
 
