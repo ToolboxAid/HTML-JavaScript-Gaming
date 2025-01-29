@@ -5,15 +5,12 @@
 
 class GamepadInput {
     constructor() {
-        this.buttonsPressed = new Set();  // Buttons pressed this frame
-        this.buttonsDown = new Set();     // Buttons currently pressed
-        this.buttonsReleased = new Set(); // Buttons released this frame
-
-        this.tempButtonsDown = new Set(); // Temporary storage for button presses
-        this.tempButtonsUp = new Set();   // Temporary storage for button releases
-
         this.gamepads = []; // Array to store the state of connected gamepads
         this.axesData = []; // Separate storage for axes data
+
+        this.buttonsPressed = Array.from({ length: 4 }, () => new Set());  // Buttons just pressed
+        this.buttonsDown = Array.from({ length: 4 }, () => new Set());     // Buttons currently pressed
+        this.buttonsReleased = Array.from({ length: 4 }, () => new Set()); // Buttons just released
 
         this.deadzone = 0.2; // Deadzone threshold for analog inputs
 
@@ -35,71 +32,72 @@ class GamepadInput {
     }
 
     update() {
-        // Clear previous frame states
-        this.buttonsPressed.clear();
-        this.buttonsReleased.clear();
-
-        // Ensure we are not iterating over undefined gamepads
         this.gamepads.forEach((gamepad, index) => {
             if (!gamepad) return; // Skip disconnected gamepads
 
             // Store the raw axes data for each gamepad
             this.axesData[index] = gamepad.axes;
 
+            // Clear previous button states
+            this.buttonsPressed[index].clear();
+            this.buttonsReleased[index].clear;
+
+            let showDetails = false;
             // Handle button presses
             gamepad.buttons.forEach((button, buttonIndex) => {
                 if (button.pressed) {
-                    if (!this.buttonsDown.has(buttonIndex)) {
-                        this.tempButtonsDown.add(buttonIndex); // Add to temporary buttonsDown
+                    if (!this.buttonsDown[index].has(buttonIndex)) {// First time pressed
+                        this.buttonsPressed[index].add(buttonIndex);
                     }
-                } else {
-                    if (this.buttonsDown.has(buttonIndex)) {
-                        this.tempButtonsUp.add(buttonIndex); // Add to temporary buttonsUp
+                    this.buttonsDown[index].add(buttonIndex);
+                    showDetails = true;
+                } else { // !button.pressed
+                    if (this.buttonsDown[index].has(buttonIndex)) {
+                        this.buttonsReleased[index].add(buttonIndex);
+                        this.buttonsDown[index].delete(buttonIndex);
+                        showDetails = true
+                    } else {
+                        if (this.buttonsReleased[index].has(buttonIndex)) {
+                            this.buttonsReleased[index].delete(buttonIndex)
+                            showDetails = true;
+                        };
                     }
                 }
             });
-        });
 
-        // Apply button updates
-        this.tempButtonsDown.forEach(button => {
-            this.buttonsPressed.add(button);
-            this.buttonsDown.add(button);
+            showDetails = false;
+            if (showDetails) {
+                console.log("Pressed:", this.buttonsPressed[index], "Down:", this.buttonsDown[index], "Released:", this.buttonsReleased[index]);
+            }
         });
-        this.tempButtonsDown.clear();
-
-        this.tempButtonsUp.forEach(button => {
-            this.buttonsReleased.add(button);
-            this.buttonsDown.delete(button);
-        });
-        this.tempButtonsUp.clear();
     }
 
     // Utility methods
-    getButtonsPressed() {
-        return Array.from(this.buttonsPressed);
+    getButtonsPressed(gamepad) {
+        return Array.from(this.buttonsPressed[gamepad]);
     }
 
-    getButtonsDown() {
-        return Array.from(this.buttonsDown);
+    getButtonsDown(gamepad) {
+        return Array.from(this.buttonsDown[gamepad]);
     }
 
-    getButtonsReleased() {
-        return Array.from(this.buttonsReleased);
+    getButtonsReleased(gamepad) {
+        return Array.from(this.buttonsReleased[gamepad]);
     }
 
-    isButtonJustPressed(buttonIndex) {
-        return this.buttonsPressed.has(buttonIndex);
+    isButtonJustPressed(gamepad, buttonIndex) {
+        return this.buttonsPressed[gamepad].has(buttonIndex);
     }
 
-    isButtonDown(buttonIndex) {
-        return this.buttonsDown.has(buttonIndex);
+    isButtonDown(gamepad, buttonIndex) {
+        return this.buttonsDown[gamepad].has(buttonIndex);
     }
 
-    isButtonReleased(buttonIndex) {
-        return this.buttonsReleased.has(buttonIndex);
+    isButtonReleased(gamepad, buttonIndex) {
+        return this.buttonsReleased[gamepad].has(buttonIndex);
     }
 
-    getAxes(gamepadIndex) { // Return the axes of a specific gamepad with a deadzone applied
+    getAxes(gamepadIndex) {
         const axes = this.axesData[gamepadIndex] || [0, 0]; // Get axes from stored data, or return [0, 0] if no axes
 
         // Apply deadzone: If the axis value is within the deadzone, set it to zero
