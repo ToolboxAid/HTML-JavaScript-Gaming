@@ -32,6 +32,7 @@ export default class AttractMode {
         let enemy = null;
         switch (Enemy.getRow()) {
             case 0:
+                Enemy.reset();
             case 1:
                 enemy = new EnemyCrab(0);
                 break;
@@ -53,7 +54,6 @@ export default class AttractMode {
         if (Enemy.isEnemiesInitialized()) {
             Enemy.remainingEnemies = this.gameEnemies.size;
             this.findBottom();
-            this.gameState = "player1";
 
             Enemy.enemyID = 0;
         }

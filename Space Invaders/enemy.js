@@ -120,7 +120,18 @@ class Enemy extends ObjectSprite {
             this.reorgID
         ];
     }
-
+    static reset(){
+        Enemy.speed = 0;
+        Enemy.enemyID = 0;
+        Enemy.nextID =0;
+        Enemy.remainingEnemies = 54;
+        Enemy.enemiesInitialized = false;
+        Enemy.prepSpeed = false;
+        Enemy.doSpeed = false;
+        Enemy.prepMoveDown = false;
+        Enemy.doMoveDown = false;
+        Enemy.reorgID = 0;
+    }    
     static restoreState(index) {
         if (index !== 0 && index !== 1) return;
         if (!this.#savedStates[index].length) return;
@@ -141,7 +152,7 @@ class Enemy extends ObjectSprite {
             this.reorgID
         ] = this.#savedStates[index];
     }
-
+    
     static getMaxCount(){
         const maximumEnemies = 54;
         return maximumEnemies;

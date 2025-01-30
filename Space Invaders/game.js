@@ -623,6 +623,7 @@ class Game {
         CanvasUtils.drawNumber(acr, dwn, 0, pixelSize, color, 2, '0');
         CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
 
+//        console.log(this.gamepadInput.getButtonsDown(0));
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
             this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
             this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_9)) {
@@ -667,7 +668,7 @@ class Game {
 
         CanvasUtils.drawText(x, y, "Game Over.", 3.5, "white");
         CanvasUtils.drawText(x - 300, y + 60, "Press Keyboard `Enter` to Restart", 3.5, "#ffffffff");
-        CanvasUtils.drawText(x - 350, y + 90, "Press GamePad `Select` to Restart", 3.5, "#ffffffff");
+        CanvasUtils.drawText(x - 350, y + 90, "Press GamePad `Start` to Restart", 3.5, "#ffffffff");
 
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
             this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
