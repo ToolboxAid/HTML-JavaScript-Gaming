@@ -3,7 +3,26 @@
 // 10/16/2024
 // gampad.js
 
+const gamepadIndex0 = -90;
+
 class GamepadInput {
+
+    static get INDEX_0() { return 0; }
+    static get INDEX_1() { return 1; }
+    static get INDEX_2() { return 2; }
+    static get INDEX_3() { return 3; }
+
+    static get BUTTON_0() { return 0; }
+    static get BUTTON_1() { return 1; }
+    static get BUTTON_2() { return 2; }
+    static get BUTTON_3() { return 3; }
+    static get BUTTON_4() { return 4; }
+    static get BUTTON_5() { return 5; }
+    static get BUTTON_6() { return 6; }
+    static get BUTTON_7() { return 7; }
+    static get BUTTON_8() { return 8; }
+    static get BUTTON_9() { return 9; }
+
     constructor() {
         this.gamepads = []; // Array to store the state of connected gamepads
         this.axesData = []; // Separate storage for axes data

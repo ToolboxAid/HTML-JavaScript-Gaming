@@ -3,35 +3,63 @@
 // 10/16/2024
 // functions.js
 
+import GamepadInput from "./gamepad.js";
+
 class Functions {
 
     /**  Player information
     */
-    static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput) {
-        ctx.fillStyle= canvasConfig.backgroundColor + 'AA'; // Semi-transparent
+    static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput, gamepadInput) {
+        ctx.fillStyle = canvasConfig.backgroundColor + 'AA'; // Semi-transparent
         ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Overlay the canvas
 
         const maxPlayers = playerSelect.maxPlayers || 4;
         const lives = playerSelect.lives || 3;
         const fillText = playerSelect.fillText || "Select Player Mode";
-        const x = playerSelect.optionBaseX || 300;
-        const y = playerSelect.optionBaseY || 300;
+        const x = playerSelect.optionBaseX || 100;
+        const y = playerSelect.optionBaseY || 100;
         const spacing = playerSelect.optionSpacing || 50;
 
+        // ---------------------
+        // Keyboard Input
         ctx.fillStyle = playerSelect.fillStyle || "white";
         ctx.font = playerSelect.font || "30px Arial";
         ctx.fillText(fillText, x, y);
 
         for (let i = 1; i <= maxPlayers; i++) {
-            ctx.fillText(`Press \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
+            ctx.fillText(`Keyboard \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
                 (canvasConfig.width / 2) - 200, y + i * spacing);
         }
-
         // Loop through potential player counts
         for (let i = 1; i <= maxPlayers; i++) {
-            if (keyboardInput.getkeysPressed().includes(`Digit${i}`)) {
+            if (keyboardInput.getkeysPressed().includes(`Digit${i}`) ||
+                keyboardInput.getkeysPressed().includes(`Numpad${i}`)) {
                 return { playerCount: i, playerLives: Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)), gameState: "initGame" };
             }
+        }
+
+        // ---------------------
+        // GamePad Input
+        ctx.fillText('Gamepad Select Player(s)', x, y + 150);
+        ctx.fillText('`Left Bumper` 1 player', (canvasConfig.width / 2) - 200, y + 200);
+        ctx.fillText('`Right Bumper` 2 players', (canvasConfig.width / 2) - 200, y + 250);
+
+        if (gamepadInput) {
+            console.warn('Gamepad currently supports 2 players');
+            if (gamepadInput.isButtonDown(GamepadInput.INDEX_0, GamepadInput.BUTTON_4)) {
+                const i = 1;
+                return {
+                    playerCount: i, playerLives: Array.from({ length: maxPlayers },
+                        (_, index) => (index < i ? lives : 0)), gameState: "initGame"
+                };
+            }
+            if (gamepadInput.isButtonDown(GamepadInput.INDEX_0, GamepadInput.BUTTON_5)) {
+                const i = 2;
+                return {
+                    playerCount: i, playerLives: Array.from({ length: maxPlayers },
+                        (_, index) => (index < i ? lives : 0)), gameState: "initGame"
+                };
+            }            
         }
     }
 
@@ -210,7 +238,7 @@ class Functions {
     }
 
     static getObjectType(object) {
-        if (!object || object === undefined){
+        if (!object || object === undefined) {
             return 'Null';
         }
         return object.constructor.name;

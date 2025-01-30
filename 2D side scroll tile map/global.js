@@ -7,16 +7,16 @@
 // Configuration for the canvas
 export const canvasConfig = {
   game: "2D Tile Map",
-  width: 480, // Game area width
+  width: 640, // Game area width
   height: 480, // Game area height
-  scale: 1.0,
+  scale: 0.5,
   backgroundColor: "#222222",
 
-  fullscreenText: 'Click game to enter fullscreen',
-  fullscreenFont: '10px Arial',
+  fullscreenText: 'Click game canvas to enter fullscreen',
+  fullscreenFont: '30px Arial',
   fullscreenColor: 'pink',
-  fullscreenX: 180, // X position for fullscreen text
-  fullscreenY: 230 //675, // Y position for fullscreen text
+  fullscreenX: 70, // X position for fullscreen text
+  fullscreenY: 270 // Y position for fullscreen text
 }
 
 export const playerSelect = {
@@ -63,6 +63,6 @@ window.borderSize = 5;
 // Configuration for FPS display
 window.fpsShow = true;
 window.fpsColor = "pink";
-window.fpsSize = "10px";
-window.fpsX = 40;
-window.fpsY = 55;
+window.fpsSize = "30px";
+window.fpsX = 5;
+window.fpsY = 27;

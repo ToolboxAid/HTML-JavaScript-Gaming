@@ -15,13 +15,13 @@ const players = [];
 // Create a player for each gamepad
 function createPlayer(gamepadIndex) {
     // Assign each player a different color and initial position
-    const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'magenta', 'purple', 'cyan', 'brown', 'lime'];
+    const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
     const color = colors[gamepadIndex % colors.length]; // Loop through colors if more than 10 gamepads
 
     players[gamepadIndex] = {// this is to allow player to be drawn
         color,
-        x: 100 + gamepadIndex * 50,  // Offset initial positions for each player
-        y: 100 + gamepadIndex * 50,
+        x: gamepadIndex * 25,  // Offset initial positions for each player
+        y: gamepadIndex * 25,
         speed: 2,
         size: 8,
         width: 77,
@@ -35,8 +35,8 @@ function gameUpdate() {
     gamepadInput.update(); // Update the gamepad state
 
     // Iterate over all connected gamepads and handle input for each player
-    gamepadInput.gamepads.forEach((gamepadState, index) => {
-        if (gamepadState) {
+    gamepadInput.gamepads.forEach((gamepad, index) => {
+        if (gamepad) {
             // Create player if it's the first time this gamepad is detected
             if (!players[index]) createPlayer(index);
 

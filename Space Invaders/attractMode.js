@@ -116,7 +116,8 @@ export default class AttractMode {
 
     draw() {
         CanvasUtils.drawText(170, 200, "Welcome to Space Invaders!", 3.5, "white");
-        CanvasUtils.drawText(210, 300, "Press `Enter` to Start", 3.5, "white");
+        CanvasUtils.drawText(210, 280, "Press `Enter` to Start", 3.5, "white");
+        CanvasUtils.drawText(210, 320, "Press GamePad `Start`", 3.5, "white");
 
         this.gameEnemies.forEach((enemy, key) => { enemy.draw(); });
         this.shields.forEach(shield => { shield.draw(); });

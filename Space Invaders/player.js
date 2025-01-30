@@ -6,6 +6,7 @@
 import { canvasConfig, spriteConfig, playerSelect } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import ObjectSprite from '../scripts/objectSprite.js'
+import GamepadInput from '../scripts/gamepad.js';
 
 
 class Player extends ObjectSprite {
@@ -148,9 +149,11 @@ class Player extends ObjectSprite {
         this.level = 0;
     }
 
-    update(keysDown, keyPressed) {
+    update(keysDown, keyPressed, gamepadInput) {
         super.update(1);
         const speed = 4;
+
+        // Keyboard
         if (keysDown.includes('ArrowLeft')) {
             if (this.x - speed > 0) {
                 this.x -= speed;
@@ -161,10 +164,28 @@ class Player extends ObjectSprite {
                 this.x += speed;
             }
         }
-
         if (keyPressed.includes('Space')) {
             let laserPoint = { x: this.x + (this.width / 2), y: this.y };
             return laserPoint;
+        }
+
+        // GamePad
+        if (gamepadInput.getAxes(GamepadInput.INDEX_0)) {
+            // -1 left, 0 no move, 1 right
+            const direction = gamepadInput.getAxes(GamepadInput.INDEX_0)[0];  // -1 left, 0 no move, 1 right
+
+            if (this.x + (direction * speed) > 0 &&
+                this.x < canvasConfig.width - this.width - (direction * speed)) {
+                this.x += speed * direction;
+            }
+        }
+
+        if (gamepadInput.getButtonsPressed(GamepadInput.INDEX_0).length > 0) {
+            if (gamepadInput.getButtonsPressed(GamepadInput.INDEX_0).includes(1) ||
+                gamepadInput.getButtonsPressed(GamepadInput.INDEX_0).includes(2)) {
+                let laserPoint = { x: this.x + (this.width / 2), y: this.y };
+                return laserPoint;
+            }
         }
         return;
     }

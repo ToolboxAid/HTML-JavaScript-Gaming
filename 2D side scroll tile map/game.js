@@ -94,10 +94,10 @@ class Game {
 
   // Display Functions
   displayAttractMode(deltaTime) {
-    // CanvasUtils.ctx.fillStyle = "white";
-    // CanvasUtils.ctx.font = "30px Arial";
-    // CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
-    // CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
+    CanvasUtils.ctx.fillStyle = "white";
+    CanvasUtils.ctx.font = "30px Arial";
+    CanvasUtils.ctx.fillText("Welcome to the `2D` Game!", 145, 170);
+    CanvasUtils.ctx.fillText("Press `Enter` to Start", 190, 205);
 
     this.gameAttract.update(deltaTime, keyboardInput);
     this.gameAttract.draw();

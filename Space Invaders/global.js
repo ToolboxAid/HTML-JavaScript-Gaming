@@ -15,8 +15,8 @@ export const canvasConfig = {
     fullscreenText: 'Click game to enter fullscreen',
     fullscreenFont: '40px Arial',
     fullscreenColor: 'yellow',
-    fullscreenX: 180,
-    fullscreenY: 870,
+    fullscreenX: 230,
+    fullscreenY: 790,
 };
 
 export const playerSelect = {
@@ -25,10 +25,10 @@ export const playerSelect = {
     
     fillStyle: "yellow",
     font: "25px Arial",
-    fillText: "Select Player(s)",
+    fillText: "Keyboard Select Player(s)",
     
     optionBaseX: 250,
-    optionBaseY: 300,
+    optionBaseY: 50,
     optionSpacing: 40
   }
   
@@ -110,5 +110,5 @@ window.borderSize = 5;
 window.fpsShow = true;
 window.fpsColor = "red";
 window.fpsSize = "30px";
-window.fpsX = 10;
-window.fpsY = 850;
+window.fpsX = 770;
+window.fpsY = 140;

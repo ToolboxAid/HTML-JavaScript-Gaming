@@ -36,6 +36,8 @@ import { Cookies } from '../scripts/cookies.js';
 import AttractMode from './attractMode.js';
 
 import Sprite from '../scripts/sprite.js';
+import GamepadInput from '../scripts/gamepad.js';
+
 class Game {
 
     static scoreFlash = 0;
@@ -83,6 +85,7 @@ class Game {
         window.canvasPath = currentDir;
 
         this.keyboardInput = new KeyboardInput();
+        this.gamepadInput = new GamepadInput();
 
         // Game State Variables
         this.gameState = "attract"; // Possible states: attract, playerSelect, initGameShield, initGameEnemy, playGame, pauseGame, gameOver
@@ -291,7 +294,7 @@ class Game {
         const color = spriteConfig.livesColor || 'red';
         const pixelSize = 5;
         CanvasUtils.drawNumber(acr, dwn, player.lives, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(acr + 80, dwn, Player.frame[0], spriteConfig.pixelSize);
+        CanvasUtils.drawSprite(acr + 80, dwn-10, Player.frame[0], spriteConfig.pixelSize);
     }
 
     drawLevel(player) {
@@ -546,6 +549,7 @@ class Game {
     // Example: object.position += object.velocity * deltaTime;
     gameLoop(deltaTime) {
         this.keyboardInput.update();
+        this.gamepadInput.update();
 
         // Update game state with deltaTime
         switch (this.gameState) {
@@ -569,13 +573,11 @@ class Game {
                 this.initializeGameEnemy();
                 break;
 
-            case "player1":
-                // Flash player 1 score
+            case "player1": // Flash player 1 score
                 this.player1up();
                 break;
 
-            case "player2":
-                // flash player 2 score
+            case "player2": // flash player 2 score
                 this.player2up();
                 break;
 
@@ -588,27 +590,30 @@ class Game {
                 break;
 
             case "gameOver":
-                this.resetPlayers();
                 this.displayGameOver();
                 break;
 
             case "resetPlayers":
+                this.resetPlayers();
                 break;
 
             default:
-                console.log("bad gameState: ", this.gameState);
+                console.warn("bad gameState: ", this.gameState);
                 break;
         }
     }
 
     // Display Functions
     displayAttractMode() {
+        //console.log("attract mode");
+
         this.attractMode.update();
         this.attractMode.draw();
 
         this.drawScore();
         const x = spriteConfig.playerX;
         const y = spriteConfig.playerY;
+        // -20 because of offset in x and height elsewhere
         CanvasUtils.drawSprite(x, y - 20, Player.frame[0], spriteConfig.pixelSize);
 
         const acr = spriteConfig.livesX;
@@ -616,9 +621,11 @@ class Game {
         const color = spriteConfig.livesColor;
         const pixelSize = 5;
         CanvasUtils.drawNumber(acr, dwn, 0, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(acr + 80, dwn-10, Player.frame[0], spriteConfig.pixelSize);
+        CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
 
-        if (this.keyboardInput.getkeysPressed().includes('Enter')) {
+        if (this.keyboardInput.getkeysPressed().includes('Enter') ||
+            this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
+            this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_9)) {
             AttractMode.count = 0;
             this.resetPlayers();
             this.gameState = "playerSelect";
@@ -626,10 +633,19 @@ class Game {
     }
 
     displayPlayerSelect(deltaTime) {
-        const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
+        console.log("player select");
+        CanvasUtils.drawText(40, 400, "Keyboard <left arrow> key to move left.", 3.5, "yellow");
+        CanvasUtils.drawText(40, 440, "Keyboard <right arrow> key to move right.", 3.5, "yellow");
+        CanvasUtils.drawText(40, 480, "Keyboard <spacebar> to fire.", 3.5, "yellow");
+
+        CanvasUtils.drawText(40, 600, "Gamepad <left D-pad> to move left.", 3.5, "yellow");
+        CanvasUtils.drawText(40, 640, "Gamepad <right D-bay> to move right.", 3.5, "yellow");
+        CanvasUtils.drawText(40, 680, "Gamepad <A> to fire.", 3.5, "yellow");
+
+        const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect,
+            this.keyboardInput, this.gamepadInput);
         if (result) {
             this.playerCount = result.playerCount;
-            //this.playerLives = result.playerLives;
             this.gameState = "initGameShield";
         }
     }
@@ -650,13 +666,15 @@ class Game {
         const y = canvasConfig.height / 2 - 100;
 
         CanvasUtils.drawText(x, y, "Game Over.", 3.5, "white");
-        CanvasUtils.drawText(x - 150, y + 60, "Press `Enter` to Restart", 3.5, "#ffffffff");
+        CanvasUtils.drawText(x - 300, y + 60, "Press Keyboard `Enter` to Restart", 3.5, "#ffffffff");
+        CanvasUtils.drawText(x - 350, y + 90, "Press GamePad `Select` to Restart", 3.5, "#ffffffff");
 
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
+            this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
+            this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_9) ||
             this.backToAttractCounter++ > this.backToAttract) {
             this.gameState = "resetPlayers";
         }
-
     }
 
     initializeGameShields() {
@@ -786,7 +804,10 @@ class Game {
 
         this.checkEnemyShip(deltaTime);
 
-        const laserFirePoint = this.player.update(this.keyboardInput.getKeysDown(), this.keyboardInput.getkeysPressed());
+        const laserFirePoint = this.player.update(
+            this.keyboardInput.getKeysDown(),
+            this.keyboardInput.getkeysPressed(),
+            this.gamepadInput);
         this.checkLaser(deltaTime, laserFirePoint);
         this.checkLaserEnemyCollision(this.player);
         this.checkLaserBombCollision();
@@ -794,6 +815,7 @@ class Game {
         this.drawGame();
     }
     checkGamePause() {
+        // Keyboard input
         if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
@@ -802,6 +824,16 @@ class Game {
                 this.gameState = "playGame";
             }
         }
+
+        // Gamepad input
+        if (this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_8)){
+            if (this.gameState === "playGame") {
+                this.gameState = "pauseGame";
+                Game.audioPlayer.stopAllLooping();
+            } else if (this.gameState === "pauseGame") {
+                this.gameState = "playGame";
+            }
+        }        
     }
 
     pauseGame() {
@@ -813,11 +845,14 @@ class Game {
         CanvasUtils.ctx.fillStyle = canvasConfig.backgroundColor + "88";
         CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
 
-        const x = canvasConfig.width / 5;
-        const y = canvasConfig.height - 120;
+        const x1 = canvasConfig.width / 5;
+        const y1 = canvasConfig.height - 120 + 35;
 
-        CanvasUtils.drawText(x, y, "Game Paused.", 3.5, "white");
-        CanvasUtils.drawSpriteRGB(x, y + 35, Game.upauseFrame.layers[0].data, 3.5);
+        const x2 = canvasConfig.width / 5 - 170;
+        const y2 = canvasConfig.height - 40;
+
+        CanvasUtils.drawText(x1, y1, "Game Paused.", 3.5, "white");
+        CanvasUtils.drawSpriteRGB(x2, y2, Game.upauseFrame.layers[0].data, 3.5);
     }
 
     // Initialize player based on current player index
@@ -861,8 +896,8 @@ class Game {
     static initText() {
         Game.scoreTextFrame = Sprite.getTextRGB("SCORE<1>    MIDWAY    SCORE<2>", Game.redPalette);
         Game.scoreNumbFrame = null;
-        Game.pauseFrame = Sprite.getTextRGB("Press `P` to pause game", Game.redPalette);
-        Game.upauseFrame = Sprite.getTextRGB("Press `P` to unpause game", Game.whitePalette);
+        Game.pauseFrame = Sprite.getTextRGB("Pause game Keyboard `P` / GamePad `Select`", Game.redPalette);
+        Game.upauseFrame = Sprite.getTextRGB("Unpause game Keyboard `P` / GamePad `Select`", Game.whitePalette);
     }
     static redPalette = {
         custom: [
@@ -891,9 +926,8 @@ class Game {
         this.playGameLogic(deltaTime);
 
         // // Display current player status using Player class properties
-        const x = canvasConfig.width / 5;
-        const y = canvasConfig.height - 90;
-        //CanvasUtils.drawText(x, y, "Press `P` to pause game", 3.5, "white");
+        const x = canvasConfig.width / 5 - 170;
+        const y = canvasConfig.height - 40;
         CanvasUtils.drawSpriteRGB(x, y, Game.pauseFrame.layers[0].data, 3.5);
 
         // Simulate losing a life with 'D' key
@@ -990,9 +1024,10 @@ class Game {
         this.laser = null;
 
         Enemy.unsetEnemiesInitialized();
-        this.gameState = "attract";
+
         this.attractMode.reset();
-        this.attractMode = new AttractMode();
+        this.gameState = "attract";
+        //this.attractMode = new AttractMode();
     }
 
 }

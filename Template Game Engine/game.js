@@ -9,6 +9,7 @@ import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas o
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
 import Functions from '../scripts/functions.js';
 import KeyboardInput from '../scripts/keyboard.js';
+import GamepadInput from '../scripts/gamepad.js';
 
 class Game {
 
@@ -76,7 +77,8 @@ class Game {
     CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
-    if (this.keyboardInput.getkeysPressed().includes('Enter')) {
+    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
+      this.keyboardInput.getkeysPressed().includes('NumpadEnter')) {
       this.gameState = "playerSelect";
     }
   }
@@ -97,6 +99,7 @@ class Game {
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
     if (this.keyboardInput.getkeysPressed().includes('Enter') ||
+      this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
