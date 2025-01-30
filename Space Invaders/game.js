@@ -353,7 +353,8 @@ class Game {
             });
 
             if (hitDetected) { // Delete the laser
-                this.laser = null;
+                this.laser.destroy();
+                this.laser = null;                
             }
 
         }
@@ -373,7 +374,8 @@ class Game {
                 }
             });
             if (hitBomb) {
-                this.laser = null; // Delete the laser
+                this.laser.destroy();
+                this.laser = null;
             }
         }
     }
@@ -405,6 +407,7 @@ class Game {
         if (value > 0) {
             Game.audioPlayer.playAudio('ufo_lowpitch.wav');
             this.updatePlayerScore(value);
+            this.laser.destroy();
             this.laser = null;
         }
     }
@@ -515,8 +518,8 @@ class Game {
                     this.player.setIsDying();
                     enemyBomb.setIsDying();
                     enemyBomb.x -= 20;
-                    Game.o1 = new ObjectStatic(this.player.x, this.player.y, this.player.width, this.player.height);
-                    Game.o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
+                    //Game.o1 = new ObjectStatic(this.player.x, this.player.y, this.player.width, this.player.height);
+                    //Game.o2 = new ObjectStatic(enemyBomb.x, enemyBomb.y, enemyBomb.width, enemyBomb.height);
                 }
             }
         });
@@ -527,13 +530,15 @@ class Game {
             if (laserFirePoint) {
                 this.laser = new Laser(laserFirePoint.x, laserFirePoint.y - 10);
                 Game.audioPlayer.playAudio('shoot.wav');
-                Game.o3 = new ObjectStatic(this.laser.x, this.laser.y, this.laser.width, this.laser.height);
+                //Game.o3 = new ObjectStatic(this.laser.x, this.laser.y, this.laser.width, this.laser.height);
             }
         } else {
             if (this.laser.update(deltaTime)) { // Update laser position
+                this.laser.destroy();
                 this.laser = null; //laser out of bounds, delete it
             } else {
                 if (this.checkLaserShieldCollision()) {
+                    this.laser.destroy();
                     this.laser = null;
                 }
             }
@@ -607,7 +612,7 @@ class Game {
     displayAttractMode() {
         //console.log("attract mode");
 
-        this.attractMode.update();
+        this.attractMode.update(CanvasUtils.gfxPercentUsage);
         this.attractMode.draw();
 
         this.drawScore();
@@ -878,8 +883,8 @@ class Game {
         this.shields = this.playersShields[currentPlayer];
         this.grounds = this.playersGrounds[currentPlayer];
 
+        this.laser.destroy();
         this.laser = null;
-
     }
 
     killBombs() {

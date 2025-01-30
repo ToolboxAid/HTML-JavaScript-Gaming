@@ -14,9 +14,10 @@ export class Message {
     }
 
     static add(message) {
-        const formattedTimestamp = new Date().toLocaleString().replace(/,/g, '');
+        let formattedTimestamp = new Date().toLocaleString().replace(/,/g, '');
         this.textArea.value += `${formattedTimestamp} ${message} \n`;
         this.textArea.disabled = true;
+        formattedTimestamp = null;
     }
 
     static clear() {

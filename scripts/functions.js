@@ -59,7 +59,7 @@ class Functions {
                     playerCount: i, playerLives: Array.from({ length: maxPlayers },
                         (_, index) => (index < i ? lives : 0)), gameState: "initGame"
                 };
-            }            
+            }
         }
     }
 
@@ -246,8 +246,42 @@ class Functions {
 
     /** StackTrace Dump */
     static showStackTrace(text = '') {
-        const trace = new Error(`'${text}':`);
+        let trace = new Error(`'${text}':`);
         console.log(trace);
+        trace = null;
+    }
+
+    /** Memory cleanup */
+    static cleanupArray(array) {
+        if (!Array.isArray(array)) return false;
+        try {
+            array.forEach(item => {
+                if (typeof item?.destroy === 'function') {
+                    item.destroy();
+                }
+                item = null;
+            });
+        } catch (error) {
+            console.error("Cleanup Array:", error)
+        }
+        array.length = 0;
+        return true;
+    }
+
+    static cleanupMap(map) {
+        if (!(map instanceof Map)) return false;
+        try {
+            map.forEach((item, key) => {
+                if (typeof item?.destroy === 'function') {
+                    item.destroy();
+                }
+                item = null;
+                item.delete(key);
+            });
+        } catch (error) {
+            console.error("Cleanup Map:", error)
+        }
+        return true;
     }
 
     /** time */

@@ -64,9 +64,9 @@ export const spriteConfig = {
     bomb1Color: "#ff9999",
     bomb2Color: "#99ff99",
     bomb3Color: "#9999ff",
-    bomb1VelocityX: 410,
-    bomb2VelocityX: 380,
-    bomb3VelocityX: 350,
+    bomb1VelocityY: 410,
+    bomb2VelocityY: 380,
+    bomb3VelocityY: 350,
 
     groundColor: "green",
     groundY: 740,

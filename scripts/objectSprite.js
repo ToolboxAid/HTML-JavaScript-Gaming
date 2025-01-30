@@ -311,6 +311,23 @@ class ObjectSprite extends ObjectKillable {
         }
     }
 
+    destroy() {
+        super.destroy();
+        this.frameType = null;
+        this.pixelSize = null;
+        this.currentFrameIndex = null;
+        this.delayCounter = null;
+        this.livingDelay = null;
+        this.livingFrames = null;
+        this.livingFrameCount = null;
+        this.dyingDelay = null;
+        this.dyingFrames = null;
+        this.dyingFramesCount = null;
+        this.otherDelay = null;
+        this.otherFrame = null;
+        this.spriteColor = null;
+    }
+
 }
 
 export default ObjectSprite;

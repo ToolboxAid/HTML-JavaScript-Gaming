@@ -80,10 +80,6 @@ class Shield extends ObjectStatic {
          */
         this.frame = Shield.frame.map(row => [...row]);
 
-        /**
-         * Pixel size used for drawing the shield.
-         * @type {number}
-         */
         this.pixelSize = spriteConfig.pixelSize;
     }
 
@@ -213,6 +209,13 @@ class Shield extends ObjectStatic {
 
         return shieldHit;
     }
+
+    destroy() {
+        super.destroy();
+        this.frame = null;
+        this.pixelSize = null;
+    }
+
 }
 
 export default Shield;

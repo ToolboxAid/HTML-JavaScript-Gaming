@@ -189,6 +189,18 @@ class Player extends ObjectSprite {
         }
         return;
     }
+
+    destroy() {
+        super.destroy();
+        this.playerID = null;
+        this.level = null;
+        this.score = null;
+        this.lives = null;
+        this.pixelSize = null;
+        this.bonus = null;
+        this.nextBonus = null;
+    }  
+      
 }
 
 export default Player;

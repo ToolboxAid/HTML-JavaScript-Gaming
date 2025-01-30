@@ -37,6 +37,11 @@ class EnemySquid extends Enemy {
         this.value = 20;
     }
 
+    destroy() {
+        super.destroy();
+        this.value = null;
+    }
+    
 }
 
 export default EnemySquid;

@@ -13,25 +13,23 @@ import EnemySquid from "./enemySquid.js";
 import EnemyOctopus from "./enemyOctopus.js"
 import Shield from "./shield.js";
 import Ground from "./ground.js";
+import Functions from "../scripts/functions.js";
 
 export default class AttractMode {
     static delayCounter = 0;
 
     constructor() {
-        this.enemies = null;
-
         this.gameEnemies = new Map();
 
         this.shields = [];
         this.grounds = [];
-
-        this.reset();
     }
 
     initializeGameEnemy() {
         let enemy = null;
         switch (Enemy.getRow()) {
             case 0:
+                //this.reset();
                 Enemy.reset();
             case 1:
                 enemy = new EnemyCrab(0);
@@ -73,7 +71,7 @@ export default class AttractMode {
         }
     }
 
-    update() {
+    update(gfxPercentUsage) {
         let deltaTime = 1 / 16;
         switch (AttractMode.delayCounter++) {
             case 0:
@@ -88,10 +86,14 @@ export default class AttractMode {
             case 22:
                 Enemy.nextID = this.gameEnemies.size;
                 break;
+            case 1600:
+                // Trying to find memory leak.
+                console.log("AttraceMode resets:", ++AttractMode.cntr, "GFX%:", (gfxPercentUsage?.toFixed(2) || '0.00'));
+                break;
             default:
                 Enemy.setNextID();
                 this.gameEnemies.forEach((enemy) => { enemy.update(deltaTime, true); });
-                if (AttractMode.delayCounter > 1500) {
+                if (AttractMode.delayCounter > 1700) {
                     const killEntry = this.gameEnemies.entries().next().value;
                     if (killEntry) {
                         const [key, enemyObject] = killEntry;
@@ -103,6 +105,8 @@ export default class AttractMode {
 
                 this.gameEnemies.forEach((enemy, key) => {
                     if (enemy.isDead()) {
+                        enemy.destroy();
+                        enemy = null;
                         this.gameEnemies.delete(key);
                     }
                 });
@@ -126,13 +130,15 @@ export default class AttractMode {
 
     reset() {
         // Make sure it is empty
-        this.gameEnemies.forEach((enemy, key) => {
-                this.gameEnemies.delete(key);
-        });
+        Functions.cleanupMap(this.gameEnemies);
+        Functions.cleanupArray(this.shields);
+        Functions.cleanupArray(this.grounds);
 
         AttractMode.delayCounter = 0;
-        Enemy.enemyID = 0;
+        Enemy.reset();
         Enemy.enemyRow = 0;
         Enemy.enemyCol = 0;
     }
+    static cntr = 0;
+
 }

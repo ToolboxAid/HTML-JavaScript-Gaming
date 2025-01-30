@@ -126,6 +126,10 @@ class Enemy extends ObjectSprite {
         Enemy.nextID =0;
         Enemy.remainingEnemies = 54;
         Enemy.enemiesInitialized = false;
+
+        // Enemy.enemyRow = 0;
+        // Enemy.enemyCol = 0;
+
         Enemy.prepSpeed = false;
         Enemy.doSpeed = false;
         Enemy.prepMoveDown = false;
@@ -278,6 +282,17 @@ class Enemy extends ObjectSprite {
         const randomNumber = Functions.randomRange(this.playerLevel*5, 100, true); 
 
         return (randomNumber <= this.bombAggression);
+    }
+
+    destroy() {
+        super.destroy();
+        this.playerLevel = null;
+        this.playerLevel = null;
+        this.bombAggression = null;
+        this.bombDelay = null;
+        this.bombDelayCnt = null;
+        this.velocityX = null;
+        this.enemyID = null;
     }
 
     toString(from = "default: ") {

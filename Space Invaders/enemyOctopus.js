@@ -37,6 +37,11 @@ class EnemyOctopus extends Enemy {
         this.value = 30;
     }
 
+    destroy() {
+        super.destroy();
+        this.value = null;
+    }
+    
 }
 
 export default EnemyOctopus;

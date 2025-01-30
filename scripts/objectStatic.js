@@ -79,6 +79,15 @@ class ObjectStatic {
             CanvasUtils.ctx.strokeRect(this.x, this.y, this.width, this.height);
         }
     }
+    
+    destroy() {
+        //super.destroy();
+        this.x = null;
+        this.y = null;
+        this.width = null;
+        this.height = null;
+    }
+
 }
 
 export default ObjectStatic;

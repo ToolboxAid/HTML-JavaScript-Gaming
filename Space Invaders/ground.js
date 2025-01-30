@@ -35,6 +35,12 @@ class Ground extends ObjectStatic {
         }
     }
 
+    destroy() {
+        super.destroy();
+        this.state = null;
+        this.isKillable = null;
+    }
+
 }
 
 export default Ground;

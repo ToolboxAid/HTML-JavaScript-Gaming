@@ -48,11 +48,11 @@ class ObjectKillable extends ObjectDynamic {
     handleDyingStatus(deltaTime) {
     }
 
-     handleOtherStatus(deltaTime) { // Custom logic for OTHER status
-     }
+    handleOtherStatus(deltaTime) { // Custom logic for OTHER status
+    }
 
-     handleDeadStatus(deltaTime) { // Custom logic for DEAD status
-     }
+    handleDeadStatus(deltaTime) { // Custom logic for DEAD status
+    }
 
     isAlive() {
         return this.status === ObjectKillable.Status.ALIVE;
@@ -94,6 +94,10 @@ class ObjectKillable extends ObjectDynamic {
         this.delayCounter = 0;
     }
 
+    destroy() {
+        super.destroy();
+        this.status = null;
+    }
 }
 
 export default ObjectKillable;

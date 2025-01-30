@@ -52,7 +52,7 @@ class EnemyBomb extends ObjectSprite {
     constructor(x, y, frames, velocityY = 150) {
         y += spriteConfig.bombYoffset;
         super(x, y, frames, EnemyBomb.dyingFrames, spriteConfig.pixelSize);
-        this.velocityX = this.velocityX;
+        this.setVelocity(0, velocityY);
 
         this.livingDelay = 6;
     }
@@ -65,6 +65,12 @@ class EnemyBomb extends ObjectSprite {
             this.setIsDead();
         }
     }
+
+    destroy() {
+        super.destroy();
+        this.livingDelay = null;
+    }
+
 }
 
 export default EnemyBomb;

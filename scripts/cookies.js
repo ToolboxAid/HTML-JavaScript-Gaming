@@ -25,9 +25,10 @@ export class Cookies {
         if (options.expires) {
             if (typeof options.expires === 'number') {
                 // Convert days to a UTC string
-                const date = new Date();
+                let date = new Date();
                 date.setTime(date.getTime() + options.expires * 24 * 60 * 60 * 1000);
                 cookieString += `; expires=${date.toUTCString()}`;
+                date = null;
             } else if (options.expires instanceof Date) {
                 cookieString += `; expires=${options.expires.toUTCString()}`;
             }

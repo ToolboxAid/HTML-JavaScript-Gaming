@@ -37,6 +37,11 @@ class EnemyCrab extends Enemy {
         this.value = 10;
     }
 
+    destroy() {
+        super.destroy();
+        this.value = null;
+    }
+
 }
 
 export default EnemyCrab;

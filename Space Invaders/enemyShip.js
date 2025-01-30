@@ -201,6 +201,7 @@ class EnemyShip extends ObjectSprite {
         super.setIsDead();
         this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     }
+    
 }
 
 export default EnemyShip;
