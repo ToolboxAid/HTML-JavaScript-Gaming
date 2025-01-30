@@ -168,6 +168,7 @@ class EnemyShip extends ObjectSprite {
     }
 
     setHit() {
+        this.stopAudio = true;
         this.x = Math.max(25, Math.min(this.x, window.gameAreaWidth - 100));
         this.setValue()
         const shipValue = `${this.value}`;
@@ -197,10 +198,12 @@ class EnemyShip extends ObjectSprite {
     }
 
     setIsDead() {
-        this.stopAudio = true;
         super.setIsDead();
+        this.stopAudio = true;
         this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     }
+    
+    //destroy(){ not valid as this is a Singleton Class -> getInstance()
     
 }
 

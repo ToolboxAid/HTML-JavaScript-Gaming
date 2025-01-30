@@ -17,7 +17,6 @@ import Ground from './ground.js';
 import LevelFrames from './levelFrames.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
-const keyboardInput = new KeyboardInput();
 
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';
@@ -121,8 +120,8 @@ class Game {
         this.enemyBombs = [];
 
         this.playersEnemiesStatic = [[], []];
-        this.setPlayersEnemiesStatic(0);
-        this.setPlayersEnemiesStatic(1);
+        this.savePlayersEnemiesStatic(0);
+        this.savePlayersEnemiesStatic(1);
         // Non-player items
         this.laser = null;
         this.enemyShip = EnemyShip.getInstance();
@@ -130,7 +129,7 @@ class Game {
         this.attractMode = new AttractMode();
     }
 
-    setPlayersEnemiesStatic(player) {
+    savePlayersEnemiesStatic(player) {
         this.playersEnemiesStatic[player] =
             [
                 Enemy.enemyID,
@@ -209,7 +208,7 @@ class Game {
     }
 
     setGameEnemiesBottom(column) {
-        this.gameEnemiesBottom[column] = null;
+        this.gameEnemiesBottom[column] = Functions.destroy(this.gameEnemiesBottom[column]);
         for (let row = enemyConfig.rowSize - 1; row >= 0; row--) {
             const key = `${row}x${column}`;
             const enemy = this.gameEnemies.get(key);
@@ -294,7 +293,7 @@ class Game {
         const color = spriteConfig.livesColor || 'red';
         const pixelSize = 5;
         CanvasUtils.drawNumber(acr, dwn, player.lives, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(acr + 80, dwn-10, Player.frame[0], spriteConfig.pixelSize);
+        CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
     }
 
     drawLevel(player) {
@@ -333,8 +332,6 @@ class Game {
         if (this.player.score > this.highScore) {
             this.highScore = this.player.score;
             this.setHighScoreCookie(this.player.score);
-            // let cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
-            // console.log("new high score", cookie);
         }
     }
 
@@ -353,8 +350,7 @@ class Game {
             });
 
             if (hitDetected) { // Delete the laser
-                this.laser.destroy();
-                this.laser = null;                
+                this.laser = Functions.destroy(this.laser);
             }
 
         }
@@ -374,8 +370,7 @@ class Game {
                 }
             });
             if (hitBomb) {
-                this.laser.destroy();
-                this.laser = null;
+                this.laser = Functions.destroy(this.laser);
             }
         }
     }
@@ -407,8 +402,7 @@ class Game {
         if (value > 0) {
             Game.audioPlayer.playAudio('ufo_lowpitch.wav');
             this.updatePlayerScore(value);
-            this.laser.destroy();
-            this.laser = null;
+            this.laser = Functions.destroy(this.laser);
         }
     }
 
@@ -476,6 +470,7 @@ class Game {
         this.gameEnemies.forEach((enemy) => {
             if (enemy.isDead()) {
                 foundID = enemy.enemyID;
+                Functions.destroy(enemy);
                 foundDead = this.gameEnemies.delete(enemy.key);
             }
         });
@@ -534,18 +529,16 @@ class Game {
             }
         } else {
             if (this.laser.update(deltaTime)) { // Update laser position
-                this.laser.destroy();
-                this.laser = null; //laser out of bounds, delete it
+                this.laser = Functions.destroy(this.laser); //laser out of bounds (off screen), delete it
             } else {
                 if (this.checkLaserShieldCollision()) {
-                    this.laser.destroy();
-                    this.laser = null;
+                    this.laser = Functions.destroy(this.laser);
                 }
             }
         }
     }
 
-    findBottom() {// if the column is know, call `setGameEnemiesBottom(column)` instead    
+    findBottom() {
         for (let column = 0; column < enemyConfig.colSize; column++) {
             this.setGameEnemiesBottom(column);
         }
@@ -610,7 +603,7 @@ class Game {
 
     // Display Functions
     displayAttractMode() {
-        //console.log("attract mode");
+        console.log("attract mode");
 
         this.attractMode.update(CanvasUtils.gfxPercentUsage);
         this.attractMode.draw();
@@ -628,7 +621,6 @@ class Game {
         CanvasUtils.drawNumber(acr, dwn, 0, pixelSize, color, 2, '0');
         CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
 
-//        console.log(this.gamepadInput.getButtonsDown(0));
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
             this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
             this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_9)) {
@@ -683,6 +675,10 @@ class Game {
         }
     }
 
+    //        // Initialize 2D array with proper syntax
+    // this.playersShields = [[], []];
+    // this.shields = this.playersShields[0];
+
     initializeGameShields() {
         console.log("Initializing Game Shields...");
         for (let i = 0; i < window.shieldCount; i++) {
@@ -726,10 +722,8 @@ class Game {
         if (Enemy.isEnemiesInitialized()) {
             Enemy.remainingEnemies = this.gameEnemies.size;
             this.findBottom();
-            //            this.gameState = "player1";
             this.gameState = "player" + this.currentPlayer;
             Enemy.enemyID = 0;
-
         }
         this.drawGame();
     }
@@ -832,14 +826,14 @@ class Game {
         }
 
         // Gamepad input
-        if (this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_8)){
+        if (this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_8)) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
                 Game.audioPlayer.stopAllLooping();
             } else if (this.gameState === "pauseGame") {
                 this.gameState = "playGame";
             }
-        }        
+        }
     }
 
     pauseGame() {
@@ -863,14 +857,10 @@ class Game {
 
     // Initialize player based on current player index
     resetCurrentPlayer() {
+        this.enemyShip.setIsDead();
 
-        this.killBombs();
-        const currentPlayer = this.currentPlayer - 1;
-
-        this.restorePlayersEnemiesStatic(currentPlayer)
-
-        // Set current player as the active player in the array
-        this.player = this.players[currentPlayer];
+        Functions.cleanupArray(this.enemyBombs);
+        this.laser = Functions.destroy(this.laser);
 
         const x = spriteConfig.playerX;
         const y = spriteConfig.playerY;
@@ -878,20 +868,17 @@ class Game {
         this.player.setPosition(x, y);
         this.player.setIsAlive();
 
+        // Set current player as the active player in the array
+        const currentPlayer = this.currentPlayer - 1; //this.currentPlayer is 1 or 2, array is 0 or 1
+
+        this.restorePlayersEnemiesStatic(currentPlayer)
+
+        this.player = this.players[currentPlayer];
+
         this.gameEnemies = this.playersEnimies[currentPlayer];
         this.gameEnemiesBottom = this.playersEnemiesBottom[currentPlayer];
         this.shields = this.playersShields[currentPlayer];
         this.grounds = this.playersGrounds[currentPlayer];
-
-        this.laser.destroy();
-        this.laser = null;
-    }
-
-    killBombs() {
-        this.enemyShip.setIsDead();
-        this.enemyBombs.forEach(enemyBomb => {
-            enemyBomb.setIsDead();
-        });
     }
 
     static scoreTextFrame = null;
@@ -940,11 +927,11 @@ class Game {
         if (this.player.isDead()) {
             this.gameState = "player" + this.currentPlayer;
 
-            this.setPlayersEnemiesStatic(this.currentPlayer - 1);
+            this.savePlayersEnemiesStatic(this.currentPlayer - 1);
 
             // Decrease current player's life
             this.player.decrementLives();
-            this.killBombs();
+            Functions.cleanupArray(this.enemyBombs);
             console.log(`Player ${this.currentPlayer} lost a life!`);
 
             // Check if current player is out of lives
@@ -990,7 +977,7 @@ class Game {
             if (this.gameEnemies.size <= 0) {
                 // reset player field
                 this.player.incLevel();
-                this.killBombs();
+                Functions.cleanupArray(this.enemyBombs);
                 Enemy.unsetEnemiesInitialized()
                 this.initializeGameShields();
                 this.initializeGameGround();
@@ -998,8 +985,9 @@ class Game {
             }
         }
 
+        // Easter Egg
         if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
-            this.killBombs();
+            Functions.cleanupArray(this.enemyBombs);
         }
     }
 
@@ -1009,31 +997,42 @@ class Game {
         this.backToAttractCounter = 0;
 
         // Initialize players as an array of player instances
+        this.players[0] = Functions.destroy(this.players[0]);
+        this.players[1] = Functions.destroy(this.players[1]);
         this.players = [new Player(), new Player()]; // Array holding player1 and player2
         this.player = this.players[0]; // Current player
 
+        // Need to destroy objects        
         // Items to move into the player
-        this.playersEnimies = [new Map(), new Map()];
+        //this.playersEnimies = [new Map(), new Map()];
+        Functions.cleanupMap(this.playersEnimies[0]);
+        Functions.cleanupMap(this.playersEnimies[1]);
         this.gameEnemies = this.playersEnimies[0];
 
-        this.playersEnemiesBottom = [new Array(enemyConfig.colSize).fill(null), new Array(enemyConfig.colSize).fill(null)];
+        //this.playersEnemiesBottom = [new Array(enemyConfig.colSize).fill(null), new Array(enemyConfig.colSize).fill(null)];
+        Functions.cleanupArray(this.playersEnemiesBottom[0]);
+        Functions.cleanupArray(this.playersEnemiesBottom[1]);
         this.gameEnemiesBottom = this.playersEnemiesBottom[0];
 
-        this.playersShields = [[], []];
+        //this.playersShields = [[], []];
+        Functions.cleanupArray(this.playersShields[0]);
+        Functions.cleanupArray(this.playersShields[1]);
         this.shields = this.playersShields[0];
 
-        this.playersGrounds = [[], []];
+        //this.playersGrounds = [[], []];
+        Functions.cleanupArray(this.playersGrounds[0]);
+        Functions.cleanupArray(this.playersGrounds[1]);
         this.grounds = this.playersGrounds[0];
 
-        this.enemyBombs = [];
+        //this.enemyBombs = [];
+        Functions.cleanupArray(this.enemyBombs);
 
-        this.laser = null;
+        this.laser = Functions.destroy(this.laser);
 
         Enemy.unsetEnemiesInitialized();
 
         this.attractMode.reset();
         this.gameState = "attract";
-        //this.attractMode = new AttractMode();
     }
 
 }

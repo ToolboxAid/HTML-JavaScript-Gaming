@@ -251,37 +251,56 @@ class Functions {
         trace = null;
     }
 
-    /** Memory cleanup */
+    /** Memory cleanup (anytime keyword 'new' is used */
+    static destroy(item) {
+        if (!item) return null;
+        try {
+            if (typeof item?.destroy === 'function') {
+                item.destroy();
+            }
+            return null;
+        } catch (error) {
+            console.error("Destroy failed:", error);
+            return item;
+        }
+    }
     static cleanupArray(array) {
         if (!Array.isArray(array)) return false;
+        let success = true;
+    
         try {
-            array.forEach(item => {
-                if (typeof item?.destroy === 'function') {
-                    item.destroy();
+            for (let i = array.length - 1; i >= 0; i--) {
+                if (!Functions.destroy(array[i])) {
+                    success = false;
                 }
-                item = null;
-            });
+                array[i] = null;
+            }
+            array.length = 0;
         } catch (error) {
-            console.error("Cleanup Array:", error)
+            console.error("Cleanup Array:", error);
+            success = false;
         }
-        array.length = 0;
-        return true;
+    
+        return success;
     }
-
+    
     static cleanupMap(map) {
         if (!(map instanceof Map)) return false;
+        let success = true;
+    
         try {
-            map.forEach((item, key) => {
-                if (typeof item?.destroy === 'function') {
-                    item.destroy();
+            for (const [key, item] of map) {
+                if (!Functions.destroy(item)) {
+                    success = false;
                 }
-                item = null;
-                item.delete(key);
-            });
+                map.delete(key);
+            }
         } catch (error) {
-            console.error("Cleanup Map:", error)
+            console.error("Cleanup Map:", error);
+            success = false;
         }
-        return true;
+    
+        return success;
     }
 
     /** time */
