@@ -8,6 +8,7 @@ import Fullscreen from './fullscreen.js'; // Import the Fullscreen class
 import Font5x6 from './font5x6.js';
 import Colors from './colors.js';
 import Sprite from './sprite.js';
+import PerformanceMonitor from './performacneMonitor.js';
 
 class CanvasUtils {
 
@@ -16,81 +17,11 @@ class CanvasUtils {
     static ctx = null;
 
     /**
-     * Draw FPS
-     */
-    static frameCount = 0;
-    static lastFPSUpdateTime = performance.now(); // Used for FPS calculation
-    static fps = 0;
-    static drawFPS() {
-        this.frameCount++;
-
-        const currentTime = performance.now();
-        const elapsedTime = currentTime - this.lastFPSUpdateTime; // Use the separate variable
-
-        if (elapsedTime >= 1000) {
-            this.fps = this.frameCount;
-            this.frameCount = 0;
-            this.lastFPSUpdateTime = currentTime; // Reset lastTime for the next second
-        }
-        if (false) {
-            console.log("window.fpsShow", window.fpsShow);
-            console.log("window.fpsColor", window.fpsColor);
-            console.log("window.fpsSize", window.fpsSize);
-            console.log("window.fpsX", window.fpsX);
-            console.log("window.fpsY", window.fpsY);
-
-            console.log("window.gameAreaWidth", window.gameAreaWidth);
-            console.log("window.gameAreaHeight", window.gameAreaHeight);
-            console.log("window.gameScaleWindow", window.gameScaleWindow);
-            console.log("window.backgroundColor", window.backgroundColor);
-            console.log("window.game", window.game);
-            //console.log("",);
-            window.game
-
-        }
-        CanvasUtils.ctx.globalAlpha = 1.0;
-        CanvasUtils.ctx.fillStyle = window.fpsColor || 'white'; // Fallback color
-        CanvasUtils.ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
-        CanvasUtils.ctx.fillText(`FPS: ${this.fps}`, window.fpsX || 10, window.fpsY || 20); // Default positions
-    }
-
-    /**
-     * Animation CPU / percent of available frame time (16.67ms for 60 FPS)
-     */
-    static availableTimeMs = 1000 / 60; // Time per frame in milliseconds (16.67ms)
-    static timeSpentMs = 0.0; // Time spent in the current frame
-    static totalTimeSpentMs = 0.0; // Sum of all time spent to be averaged into gfxPercentUsage
-    static frameSampleCount = 0; // Number of samples taken
-    static frameSampleSize = 60; // Number of samples before calculating gfxPercentUsage
-    static gfxPercentUsage = 0.0; // CPU usage percentage
-
-    static drawGraphicFrameExecution() {
-        this.totalTimeSpentMs += this.timeSpentMs;
-        if (this.frameSampleCount++ >= this.frameSampleSize) {
-            const averageTimeMs = this.totalTimeSpentMs / this.frameSampleSize;
-            this.gfxPercentUsage = (averageTimeMs / this.availableTimeMs) * 100;
-            this.frameSampleCount = 0;
-            this.totalTimeSpentMs = 0;
-        }
-        let color = 'green';
-        if (this.gfxPercentUsage > 90) {
-            color = 'red';
-        } else if (this.gfxPercentUsage > 60) {
-            color = 'yellow';
-        }
-
-        this.ctx.globalAlpha = 1.0;
-        this.ctx.fillStyle = color;
-        this.ctx.font = `${window.fpsSize || '16px'} Arial Bold`;
-        this.ctx.fillText(`GFX: ${this.gfxPercentUsage.toFixed(1)}%`, window.fpsX || 10, window.fpsY + 25 || 45); // Default positions
-    }
-
-    /**
      * Draw text and numbers 
      */
     static drawNumber(x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         const numberStr = number.toString();
-        if (numberStr.length > leadingCount){
+        if (numberStr.length > leadingCount) {
             leadingCount = numberStr.length;
         }
         const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
@@ -112,6 +43,27 @@ class CanvasUtils {
                 CanvasUtils.drawSprite(x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
             }
         }
+    }
+
+    // get text width & height based on size & font w/padding
+    static calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
+        // Set font
+        CanvasUtils.ctx.font = `${fontSize}px ${font}`;
+
+        // Measure text
+        const metrics = CanvasUtils.ctx.measureText(text);
+        const width = Math.ceil(metrics.width);
+
+        // Get height using font metrics
+        const height = Math.ceil(
+            metrics.actualBoundingBoxAscent +
+            metrics.actualBoundingBoxDescent
+        );
+
+        return {
+            width: width + 10,    // Add padding
+            height: height + 5    // Add padding
+        };
     }
 
     // Method to draw the current frame
@@ -266,9 +218,12 @@ class CanvasUtils {
         }
     }
 
-    // Animate function moved into the CanvasUtils class
+    // Animate function moved into the CanvasUtils class?
+    static showTextMetrics = false;
     static async animate(time) {
+
         const timeStartMs = Date.now();
+
         const canvas = document.getElementById('gameArea');
         if (canvas.getContext) {
             const ctx = canvas.getContext('2d');
@@ -286,8 +241,13 @@ class CanvasUtils {
                 CanvasUtils.ctx = ctx;
             }
 
-            // Initialize the canvas and game loop
             CanvasUtils.canvasClear(ctx);
+
+            if (CanvasUtils.showTextMetrics) {
+                CanvasUtils.showTextMetrics = false;
+                CanvasUtils.canvasClear(CanvasUtils.ctx);
+                console.log(CanvasUtils.calculateTextMetrics("MEM: 30.66/33.08MB", 30, "monospace"));
+            }
 
             // Call the game loop method of the Game class
             Colors.generateRandomColor();
@@ -296,17 +256,16 @@ class CanvasUtils {
             // Draw click full screen
             this.clickFullscreen();
 
-            // Draw border and FPS if necessary
+            // Draw border
             CanvasUtils.drawBorder();
-            if (window.fpsShow) {
-                CanvasUtils.drawFPS();
-                CanvasUtils.drawGraphicFrameExecution();
-            }
+
         } else {
             alert('You need a modern browser to see this.');
         }
 
-        this.timeSpentMs = Date.now() - timeStartMs;
+        const timeSpentMs = Date.now() - timeStartMs;
+        PerformanceMonitor.update(timeSpentMs);
+        PerformanceMonitor.draw(CanvasUtils.ctx);
 
         // Call animate recursively to continue the animation loop
         requestAnimationFrame(CanvasUtils.animate.bind(this)); // Use `bind(this)` to maintain context

@@ -86,10 +86,6 @@ export default class AttractMode {
             case 22:
                 Enemy.nextID = this.gameEnemies.size;
                 break;
-            case 1600:
-                // Trying to find memory leak.
-                console.log("AttraceMode resets:", ++AttractMode.cntr, "GFX%:", (gfxPercentUsage?.toFixed(2) || '0.00'));
-                break;
             default:
                 Enemy.setNextID();
                 this.gameEnemies.forEach((enemy) => { enemy.update(deltaTime, true); });

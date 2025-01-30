@@ -9,7 +9,7 @@ export const canvasConfig = {
     width: 960, //896, // Game area width (256 * 4)
     height: 896, //960, // Game area height (240 * 4)
     scale: 0.5,
-    
+
     backgroundColor: "#222222",
 
     fullscreenText: 'Click game to enter fullscreen',
@@ -22,16 +22,16 @@ export const canvasConfig = {
 export const playerSelect = {
     maxPlayers: 2,
     lives: 3,
-    
+
     fillStyle: "yellow",
     font: "25px Arial",
     fillText: "Keyboard Select Player(s)",
-    
+
     optionBaseX: 250,
     optionBaseY: 50,
     optionSpacing: 40
-  }
-  
+}
+
 export const spriteConfig = {
     pixelSize: 3.5,
 
@@ -86,6 +86,20 @@ export const shieldConfig = {
     yPosition: 580,
     color: '#44FF44',
 }
+
+export const fpsConfig = {
+    // Configuration for FPS display
+    show: true,
+    size: "30",
+    font: "monospace",
+    colorLow: "green",
+    colorMed: "yellow",
+    colorHigh: "red",
+    backgroundColor: "#AAAAAABB",
+    x: 20,
+    y: 40,
+}
+
 window.shieldCount = shieldConfig.count;
 
 // non type="module" in HTML
@@ -107,8 +121,12 @@ window.borderColor = "red";
 window.borderSize = 5;
 
 // Configuration for FPS display
-window.fpsShow = true;
-window.fpsColor = "red";
-window.fpsSize = "30px";
-window.fpsX = 770;
-window.fpsY = 140;
+window.fpsShow = fpsConfig.show;
+window.fpsSize = fpsConfig.size;
+window.fpsFont = fpsConfig.font;
+window.fpsColorLow = fpsConfig.colorLow;
+window.fpsColorMed = fpsConfig.colorMed;
+window.fpsColorHigh = fpsConfig.colorHigh;
+window.fpsBackgroundColor = fpsConfig.backgroundColor;
+window.fpsX = fpsConfig.x;
+window.fpsY = fpsConfig.y;
