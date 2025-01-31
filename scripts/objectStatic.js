@@ -10,8 +10,8 @@
 import CanvasUtils from "../scripts/canvas.js";
 
 class ObjectStatic {
-    static gameAreaWidth = 0;
-    static gameAreaHeight = 0;
+    static gameAreaWidth = window.gameAreaWidth;
+    static gameAreaHeight = window.gameAreaHeight;
     /**
      * Creates an instance of ObjectStatic.
      * @param {number} x - The X position of the object.

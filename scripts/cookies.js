@@ -3,14 +3,18 @@
 // 11/19/2024
 // Cookies.js
 
-    /** example usages
-    // Set a cookie valid for 7 days
-    Cookies.set('username', 'david', { expires: 7, path: '/', secure: true });
+/** example usages
+// Set a cookie valid for 7 days
+Cookies.set('username', 'david', { expires: 7, path: '/', secure: true });
 
-    // Set a cookie with SameSite
-    Cookies.set('session_id', '12345', { sameSite: 'Strict', path: '/' });
-    */
+// Set a cookie with SameSite
+Cookies.set('session_id', '12345', { sameSite: 'Strict', path: '/' });
+*/
 
+/**
+ * In most cases, you want to use part of the URL path
+const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+ */
 export class Cookies {
 
     /**
@@ -93,7 +97,7 @@ export class Cookies {
         return cookies;
     }
 
-    static sanitizeCookieName(name) { 
+    static sanitizeCookieName(name) {
         // Replace % followed by two hexadecimal digits with a hyphen
         return name
             .replace(/%[0-9A-Fa-f]{2}/g, match => '-')

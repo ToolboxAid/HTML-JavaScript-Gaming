@@ -5,6 +5,8 @@
 
 import { canvasConfig, spriteConfig, enemyConfig, playerSelect } from './global.js'; // Assuming these contain canvas and sprite details
 
+import GameBase from '../scripts/gamebase.js';
+
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
 import Functions from '../scripts/functions.js';
@@ -37,7 +39,7 @@ import AttractMode from './attractMode.js';
 import Sprite from '../scripts/sprite.js';
 import GamepadInput from '../scripts/gamepad.js';
 
-class Game {
+class Game extends GameBase {
 
     static scoreFlash = 0;
     static scoreDelay = 0;
@@ -71,17 +73,26 @@ class Game {
         }
     }
 
+    static isInitialized = false;
+
     constructor() {
-        // Load all audio files
-        this.loadAllAudioFiles().then(() => {
+        super();
+    }
+
+    // async initializeGame() {
+    async onInitialize() {
+        try {
+            // Initialize text
+            // await Game.initCanvas();
+            await Game.initText();
+
+            // Load audio files
+            await this.loadAllAudioFiles();
             console.log("All audio files have been loaded and cached.");
-        });
-
-        // console.log(Game.audioPlayer.audioCache);
-
-        // Canvas needs to know the current directory to game.js for dynamic imports
-        const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        window.canvasPath = currentDir;
+        } catch (error) {
+            console.warn("Audio cache state:", Game.audioPlayer.audioCache);
+            throw error; // Propagate error up
+        }
 
         this.keyboardInput = new KeyboardInput();
         this.gamepadInput = new GamepadInput();
@@ -95,6 +106,10 @@ class Game {
         this.backToAttractCounter = 0;
 
         // Static cookie name & path for consistency
+
+        // Use current directory as name
+        const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+
         this.cookieName = Cookies.sanitizeCookieName(currentDir);
         this.cookiePath = "/";
         this.getHighScoreCookie();
@@ -251,7 +266,7 @@ class Game {
                             this.enemyBombs.push(new EnemyBomb3(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
                             break;
                         default:
-                            console.log("Unexpected bombType:", bombType);
+                            console.warn("Unexpected bombType:", bombType);
                             break;
                     }
                 }
@@ -546,6 +561,8 @@ class Game {
 
     // Example: object.position += object.velocity * deltaTime;
     gameLoop(deltaTime) {
+        //  console.log("gameLoop");
+
         this.keyboardInput.update();
         this.gamepadInput.update();
 
@@ -713,7 +730,7 @@ class Game {
                 break;
             default:
                 enemy = new EnemyCrab(this.player.level);
-                console.log("Unknown enemy type!");
+                console.warn("Unknown enemy type!");
                 break;
         }
 
@@ -1035,13 +1052,9 @@ class Game {
         this.gameState = "attract";
     }
 
+
 }
 
 export default Game;
 
-Game.initText();
-
-
-// Canvas needs to know the current directory to game.js for dynamic imports
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

@@ -15,6 +15,7 @@ class CanvasUtils {
     static gameModule;
     static lastTimestamp = 0;
     static ctx = null;
+    static config = null;
 
     /**
      * Draw text and numbers 
@@ -40,7 +41,7 @@ class CanvasUtils {
             if (frame) {
                 // Assuming each character has a fixed width, you can adjust the space here
                 const charWidth = frame[0].length; // Get the width from the frame
-                CanvasUtils.drawSprite(x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
+                this.drawSprite(x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
             }
         }
     }
@@ -48,10 +49,10 @@ class CanvasUtils {
     // get text width & height based on size & font w/padding
     static calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
         // Set font
-        CanvasUtils.ctx.font = `${fontSize}px ${font}`;
+        this.ctx.font = `${fontSize}px ${font}`;
 
         // Measure text
-        const metrics = CanvasUtils.ctx.measureText(text);
+        const metrics = this.ctx.measureText(text);
         const width = Math.ceil(metrics.width);
 
         // Get height using font metrics
@@ -65,7 +66,7 @@ class CanvasUtils {
             height: height + 5    // Add padding
         };
     }
-
+    //TODO: should these move to the sprite class (and split sprite class)
     // Method to draw the current frame
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         for (let row = 0; row < frame.length; row++) {
@@ -77,17 +78,17 @@ class CanvasUtils {
                 if (pixel === '1' && spriteColor) {
                     color = spriteColor; // Use sprite color instead of white
                 }
-                CanvasUtils.ctx.fillStyle = color;
+                this.ctx.fillStyle = color;
                 let ceilX = Math.ceil((col * pixelSize) + x);
                 let ceilY = Math.ceil((row * pixelSize) + y);
                 let ceilPixelSize = Math.ceil(pixelSize);
-                CanvasUtils.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
+                this.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
             }
         }
 
         if (drawBounds) {
             let dimensions = Sprite.getWidthHeight(frame, pixelSize);
-            CanvasUtils.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
+            this.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
     }
 
@@ -95,17 +96,17 @@ class CanvasUtils {
     static drawSpriteRGB(x, y, frame, pixelSize, drawBounds = false) {
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
-                CanvasUtils.ctx.fillStyle = frame[row][col];
+                this.ctx.fillStyle = frame[row][col];
                 let ceilX = Math.ceil((col * pixelSize) + x);
                 let ceilY = Math.ceil((row * pixelSize) + y);
                 let ceilPixelSize = Math.ceil(pixelSize);
-                CanvasUtils.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
+                this.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
             }
         }
 
         if (drawBounds) {
             const dimensions = Sprite.getLayerDimensions(frame, pixelSize);
-            CanvasUtils.drawBounds(x, y, dimensions.width, dimensions.height, "white", 2);
+            this.drawBounds(x, y, dimensions.width, dimensions.height, "white", 2);
         }
     }
 
@@ -113,19 +114,19 @@ class CanvasUtils {
      * Line methods
      */
     static drawLine(x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
-        CanvasUtils.ctx.lineWidth = lineWidth;
-        CanvasUtils.ctx.strokeStyle = strokeColor;
+        this.ctx.lineWidth = lineWidth;
+        this.ctx.strokeStyle = strokeColor;
 
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.moveTo(x1, y1); // Start point
-        CanvasUtils.ctx.lineTo(x2, y2); // End point
-        CanvasUtils.ctx.stroke(); // Draw the line
+        this.ctx.beginPath();
+        this.ctx.moveTo(x1, y1); // Start point
+        this.ctx.lineTo(x2, y2); // End point
+        this.ctx.stroke(); // Draw the line
     }
 
     static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
         //   const start1 = { x: 0, y: 0 };
         //   const end1   = { x: 500, y: 500 };
-        CanvasUtils.drawLine(start.x, start.y, end.x, end.y, lineWidth, strokeColor);
+        this.drawLine(start.x, start.y, end.x, end.y, lineWidth, strokeColor);
     }
 
     static drawDashLine(x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
@@ -135,9 +136,9 @@ class CanvasUtils {
              ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
              ([20, 5, 10, 5]); - Alternating long and medium dashes
          */
-        CanvasUtils.ctx.setLineDash(dashPattern);
-        CanvasUtils.drawLine(x1, y1, x2, y2, lineWidth, strokeColor);
-        CanvasUtils.ctx.setLineDash([]); // Reset to solid line
+        this.ctx.setLineDash(dashPattern);
+        this.drawLine(x1, y1, x2, y2, lineWidth, strokeColor);
+        this.ctx.setLineDash([]); // Reset to solid line
     }
 
     static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
@@ -147,144 +148,105 @@ class CanvasUtils {
         if (h <= 0) {
             h = 10;
         }
-        CanvasUtils.ctx.lineWidth = lineSize;
-        CanvasUtils.ctx.strokeStyle = color;
-        CanvasUtils.ctx.strokeRect(x, y, w, h);
+        this.ctx.lineWidth = lineSize;
+        this.ctx.strokeStyle = color;
+        this.ctx.strokeRect(x, y, w, h);
     }
 
     static drawRect(x, y, width, height, color) {
-        CanvasUtils.ctx.fillStyle = color;
-        CanvasUtils.ctx.fillRect(x, y, width, height);
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x, y, width, height);
     }
 
     static drawBorder() {
-        CanvasUtils.ctx.lineWidth = window.borderSize || 1; // Fallback if borderSize is not set
-        CanvasUtils.ctx.strokeStyle = window.borderColor || 'black'; // Fallback if borderColor is not set
-        CanvasUtils.ctx.strokeRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+        const {
+            width,
+            height,
+            borderSize = 6,
+            borderColor = Colors.getRandomColor()
+        } = this.config?.canvasConfig || {};
+
+        this.ctx.lineWidth = borderSize;
+        this.ctx.strokeStyle = borderColor;
+        this.ctx.strokeRect(0, 0, width, height);
     }
 
     /**
      * Circle methods
      */
     static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
-        CanvasUtils.ctx.fillStyle = color;
-        CanvasUtils.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
+        this.ctx.fillStyle = color;
+        this.ctx.fill();
     }
 
     static drawCircle2(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
-        CanvasUtils.ctx.fillStyle = fillColor;
-        CanvasUtils.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
+        this.ctx.fillStyle = fillColor;
+        this.ctx.fill();
 
         if (borderColor && borderWidth > 0) {
-            CanvasUtils.ctx.strokeStyle = borderColor;
-            CanvasUtils.ctx.lineWidth = borderWidth;
-            CanvasUtils.ctx.stroke();
+            this.ctx.strokeStyle = borderColor;
+            this.ctx.lineWidth = borderWidth;
+            this.ctx.stroke();
         }
     }
 
     /**
      *  Canvas Init Methods
      */
+    static canvasClear() {
+        const { width, height, backgroundColor } = this.config?.canvasConfig || {};
 
-    static canvasClear(ctx) {
-        CanvasUtils.ctx.fillStyle = window.backgroundColor || 'white'; // Fallback if backgroundColor is not set
-        CanvasUtils.ctx.fillRect(0, 0, window.gameAreaWidth, window.gameAreaHeight);
+        this.ctx.fillStyle = backgroundColor || Colors.getRandomColor();
+        this.ctx.fillRect(0, 0, width, height);
     }
 
     static clickFullscreen() {
         if (!Fullscreen.isFullScreen) {
-            // Set up the text properties using global variables or default values
-            CanvasUtils.ctx.fillStyle = window.fullscreenColor || 'white'; // Set text color
-            CanvasUtils.ctx.font = window.fullscreenFont || '40px Arial'; // Set font size and family
+            const {
+                color = 'white',
+                font = '40px Arial',
+                text = 'Click here to enter fullscreen',
+                x = 230,
+                y = 790
+            } = this.config?.fullscreenConfig || {};
 
-            // Reset text alignment to default (start)
-            CanvasUtils.ctx.textAlign = 'start';
-
-            // Measure the width of the text "Click here to enter fullscreen"
-            const text = window.fullscreenText || 'Click here to enter fullscreen';
-            const textWidth = CanvasUtils.ctx.measureText(text).width; // Get the width of the text in pixels
-
-            const textX = window.fullscreenX || (window.gameAreaWidth - textWidth) / 2;
-
-            const textY = window.fullscreenY || window.gameAreaHeight * (4 / 5); // Position the text vertically
-
-
-            // Draw the message on the canvas
-            CanvasUtils.ctx.fillText(text, textX, textY); // Display the text at the calculated position
+            this.ctx.fillStyle = color;
+            this.ctx.font = font;
+            this.ctx.textAlign = 'start';
+            this.ctx.fillText(text, x, y);
         }
     }
 
-    // Animate function moved into the CanvasUtils class?
-    static showTextMetrics = false;
-    static async animate(time) {
+    static async initialize(ctx, configPath) {
+        try {
+            this.ctx = ctx;
+            this.globalConfigPath = configPath;
 
-        const timeStartMs = Date.now();
+            // Import all configs
+            const {
+                canvasConfig,
+                fpsConfig,
+                fullscreenConfig
+            } = await import(configPath);
 
-        const canvas = document.getElementById('gameArea');
-        if (canvas.getContext) {
-            const ctx = canvas.getContext('2d');
+            // Store configs
+            this.config = {
+                canvasConfig,
+                fpsConfig,
+                fullscreenConfig
+            };
 
-            const deltaTime = (time - this.lastTimestamp) / 1000; // Convert milliseconds to seconds
-            this.lastTimestamp = time;
-
-            // Try loading the game module only once and instantiate the Game class
-            if (!this.gameInstance) {
-                // Dynamically import the game.js module and create an instance of the Game class
-                // HACK - needs to be moved elseware
-                const gameModule = await import(`${window.canvasPath}/game.js`);
-                this.gameInstance = new gameModule.default();  // Use the default export from game.js
-
-                CanvasUtils.ctx = ctx;
-            }
-
-            CanvasUtils.canvasClear(ctx);
-
-            if (CanvasUtils.showTextMetrics) {
-                CanvasUtils.showTextMetrics = false;
-                CanvasUtils.canvasClear(CanvasUtils.ctx);
-                console.log(CanvasUtils.calculateTextMetrics("MEM: 30.66/33.08MB", 30, "monospace"));
-            }
-
-            // Call the game loop method of the Game class
-            Colors.generateRandomColor();
-            this.gameInstance.gameLoop(deltaTime);
-
-            // Draw click full screen
-            this.clickFullscreen();
-
-            // Draw border
-            CanvasUtils.drawBorder();
-
-        } else {
-            alert('You need a modern browser to see this.');
+            return true;
+        } catch (error) {
+            console.error('Canvas initialization failed:', error);
+            return false;
         }
-
-        const timeSpentMs = Date.now() - timeStartMs;
-        PerformanceMonitor.update(timeSpentMs);
-        PerformanceMonitor.draw(CanvasUtils.ctx);
-
-        // Call animate recursively to continue the animation loop
-        requestAnimationFrame(CanvasUtils.animate.bind(this)); // Use `bind(this)` to maintain context
     }
 
-    // Add EventListener moved into the class
-    static setupCanvas() {
-        ObjectStatic.gameAreaWidth = window.gameAreaWidth;
-        ObjectStatic.gameAreaHeight = window.gameAreaHeight;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log(`Canvas Path: ${window.canvasPath}`);
-            requestAnimationFrame(CanvasUtils.animate.bind(this));
-        });
-    }
 }
 
-// Export the CanvasUtils class
 export default CanvasUtils;
-
-// Call the setupCanvas method to initialize the canvas and game loop
-CanvasUtils.setupCanvas();
