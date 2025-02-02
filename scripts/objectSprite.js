@@ -292,7 +292,7 @@ class ObjectSprite extends ObjectKillable {
             if (this.isOther()) {
                 console.log("Status: Other");
                 if (otherFrame) {
-                    const otherX = Math.max(25, Math.min(newX, window.gameAreaWidth));
+                    const otherX = Math.max(25, Math.min(newX, CanvasUtils.getWidth()))
                     console.log("Drawing other frame:", otherFrame);
                     CanvasUtils.drawSpriteRGB(otherX, newY, otherFrame, pixelSize);
                 }

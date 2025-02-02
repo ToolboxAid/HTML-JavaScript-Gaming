@@ -5,14 +5,16 @@
 
 import CanvasUtils from "../scripts/canvas.js";
 import Colors from "../scripts/colors.js";
+import Fullscreen from "./fullscreen.js";
 import PerformanceMonitor from "../scripts/performacneMonitor.js";
 
 class GameBase {
 
     static isInitialized = false;
 
-    constructor() {
-        this.initializeGame()
+    constructor(canvasConfig, fpsConfig, fullscreenConfig) {
+
+        this.initializeGame(canvasConfig, fpsConfig, fullscreenConfig)
             .then(() => {
                 console.log('*** Game initialization complete ***');
 
@@ -30,6 +32,17 @@ class GameBase {
         // Bind animation method to instance
         this.animate = this.animate.bind(this);// bind once
     }
+
+    async initializeGame(canvasConfig, fpsConfig, fullscreenConfig) {
+
+        await PerformanceMonitor.init(fpsConfig);
+        await CanvasUtils.init(canvasConfig);
+        await Fullscreen.init(fullscreenConfig, canvasConfig);        
+
+        // Initialize inheriting class (game.js)
+        await this.onInitialize();
+    }
+
 
     static lastTimestamp = 0;
     static showTextMetrics = false;
@@ -57,7 +70,8 @@ class GameBase {
                 PerformanceMonitor.update(timeSpentMs);
 
                 // Draw click full screen
-                CanvasUtils.clickFullscreen();
+                //CanvasUtils.clickFullscreen();
+                Fullscreen.draw(CanvasUtils.ctx);
 
                 // Draw Performance data
                 PerformanceMonitor.draw(CanvasUtils.ctx);
@@ -81,34 +95,6 @@ class GameBase {
     // Abstract method
     async gameLoop() {
         throw new Error('gameLoop must be implemented');
-    }
-    async initializeGame() {
-        await this.initCanvas();
-
-        // Initialize inheriting class (game.js)
-        await this.onInitialize();
-    }
-
-    async initCanvas() {
-        const canvas = document.getElementById('gameArea');
-        if (canvas.getContext) {
-            const ctx = canvas.getContext('2d');
-
-            // Try loading the game module only once and instantiate the Game class
-            if (!CanvasUtils.ctx) {
-
-                const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-                try {
-                    return await CanvasUtils.initialize(ctx, `${currentDir}/global.js`);
-                } catch (error) {
-                    console.error('Canvas initialization failed:', error);
-                    throw error;
-                }
-            }
-        } else {
-            alert('You need a modern browser to see this.');
-            throw new Error('You need a modern browser to see this.');
-        }
     }
 
     async onInitialize() {

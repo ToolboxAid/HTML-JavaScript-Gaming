@@ -3,6 +3,8 @@
 // 10/16/2024
 // fullscreen.js
 
+import Functions from "./functions.js";
+
 class Fullscreen {
     static gameFullScaleScreen = 1.0;
     static isFullScreen = false;
@@ -10,8 +12,46 @@ class Fullscreen {
     static canvas = document.getElementById("gameArea");
     static ctx = Fullscreen.canvas.getContext('2d');
 
-    static initialize() {
-        Fullscreen.setCanvasSize(window.gameScaleWindow);
+    static canvasWidth = 0;  // window.gameAreaWidth = canvasConfig.width;        
+    static canvasHeight = 0; // window.gameAreaHeight = canvasConfig.height;
+    static scale = 0;        // window.gameScaleWindow = canvasConfig.scale;
+
+    static config = {
+        width: 1024,
+        height: 768,
+        color: 'red',
+        font: '40px Arial',
+        scale: 1,
+        text: 'Click here to enter fullscreen, default',
+        x: 300,
+        y: 300
+    };
+
+    static async init(config, canvasConfig) {
+        if (!config) {
+            console.error("No 'fullscreenConfig' provided");
+        }
+        const schema = {
+            color: 'string',     // Text color
+            font: 'string',      // Font style and size
+            text: 'string',      // Display text
+            x: 'number',         // X position
+            y: 'number'          // Y position
+        };
+        const validation = Functions.validateConfig("FullScreen", config, schema);
+        if (validation) {
+            this.config = config;
+        }
+
+        if (!canvasConfig) {
+            console.error("'canvasConfig' not provided.");
+        }
+        const { width = 1024, height = 768, scale = 0.25 } = canvasConfig || {};
+        this.canvasWidth = width;
+        this.canvasHeight = height;
+        this.scale = scale;
+
+        Fullscreen.setCanvasSize(Fullscreen.scale);
         Fullscreen.updateCanvasTransform();
 
         // Event listeners
@@ -25,6 +65,7 @@ class Fullscreen {
         document.addEventListener('fullscreenchange', () => {
             Fullscreen.isFullScreen = !!document.fullscreenElement;
         });
+        
     }
 
     static openFullscreen() {
@@ -58,7 +99,7 @@ class Fullscreen {
             console.log("Fullscreen mode activated.");
         } else if (Fullscreen.isFullScreen) {
             Fullscreen.isFullScreen = false;
-            Fullscreen.setCanvasSize(window.gameScaleWindow);
+            Fullscreen.setCanvasSize(Fullscreen.scale);
         }
 
         Fullscreen.updateCanvasTransform();
@@ -66,22 +107,30 @@ class Fullscreen {
     }
 
     static setCanvasSize(scale) {
-        Fullscreen.canvas.width = window.gameAreaWidth * scale;
-        Fullscreen.canvas.height = window.gameAreaHeight * scale;
-
-        // console.log("setCanvasSize: ", Fullscreen.canvas.width, Fullscreen.canvas.height);
+        Fullscreen.canvas.width = Fullscreen.canvasWidth * scale;
+        Fullscreen.canvas.height = Fullscreen.canvasHeight * scale;
     }
 
     static updateCanvasTransform() {
         Fullscreen.ctx.setTransform(
-            (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : window.gameScaleWindow), 0, 0,
-            (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : window.gameScaleWindow), 0, 0 // No offset for centering
+            (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : Fullscreen.scale), 0, 0,
+            (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : Fullscreen.scale), 0, 0 // No offset for centering
         );
     }
+
+    static draw(ctx) {
+        if (!Fullscreen.isFullScreen) {
+            ctx.fillStyle = this.config.color;
+            ctx.font = this.config.font;
+            ctx.textAlign = 'start';
+            ctx.fillText(this.config.text, this.config.x, this.config.y);
+        }
+    }
+
 }
 
 // Export the Functions class
 export default Fullscreen;
 
 // Initialize the fullscreen functionality
-Fullscreen.initialize();
+Fullscreen.init(Fullscreen.config);

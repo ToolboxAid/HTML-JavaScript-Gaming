@@ -4,13 +4,52 @@
 // performanceMonitor.js
 
 //** Javascript usages */
+
+import Functions from "./functions.js";
+
 class PerformanceMonitor {
+
     static metrics = {
         memory: {},
         cpu: 0,
         frameTime: 0,
         samples: []
     };
+
+    static fpsConfig = {// Let's give some defaults
+        show: true,
+        size: 30,
+        font: 'monospace',
+        colorLow: 'lime',
+        colorMed: 'orange',
+        colorHigh: 'pink',
+        backgroundColor: "gray",
+        x: 300,
+        y: 300,
+    };
+    static async init(config) {
+        if (!config) {
+            console.error("No 'config' provided");
+        }
+        const schema = {
+            show: 'boolean',
+            size: 'number',
+            font: 'string',
+            colorLow: 'string',
+            colorMed: 'string',
+            colorHigh: 'string',
+            backgroundColor: 'string',
+            x: 'number',
+            y: 'number'
+        };
+        const validation = Functions.validateConfig("PerformanceMonitor", config, schema);
+        if (validation) {
+            this.fpsConfig = config;
+            return true;
+        }
+
+        return false;
+    }
 
     /* This method should be called once per second. */
     static oncePerSecond() {
@@ -49,7 +88,7 @@ class PerformanceMonitor {
         this.frameCount++;
     }
     static calcFPS() {
-        window.fps = this.frameCount;
+        this.fps = this.frameCount;
         this.frameCount = 0;
     }
 
@@ -72,56 +111,55 @@ class PerformanceMonitor {
     static draw(ctx) {
         this.updateMetrics();
 
-        if (!window.fpsShow) return;
-        const x = window.fpsX;
-        let y = window.fpsY;
-
         // {width: 126, height: 24} console.log(CanvasUtils.calculateTextMetrics("FPS: 60", 30, "monospace")); 
         // {width: 307, height: 29} console.log(CanvasUtils.calculateTextMetrics("MEM: 30.66/33.08MB", 30, "monospace")); 
         const width = 307;
         const height = 29;
 
-        const lines = 5;
+        let newY = this.fpsConfig.y;
+        const padding = 5;
 
-        ctx.fillStyle = window.fpsBackgroundColor;
-        ctx.fillRect(x - 5, y - height, width, height * lines + 5);
+        // create the background
+        ctx.fillStyle = this.fpsConfig.backgroundColor;
+        ctx.fillRect(this.fpsConfig.x - 5, newY, width, height * padding + 5);
+        newY += height;
 
         // Javascript memory
-        ctx.fillStyle = window.fpsColorLow;
-        ctx.font = `${window.fpsSize || '30'}px ${window.fpsFont || 'monospace'}`;
-        ctx.fillText(`MEM: ${this.metrics.memory.used}/${this.metrics.memory.total}MB`, x, y);
-        y += height;
+        ctx.fillStyle = this.fpsConfig.colorLow;
+        ctx.font = `${this.fpsConfig.size || '30'}px ${this.fpsConfig.font || 'monospace'}`;
+        ctx.fillText(`MEM: ${this.metrics.memory.used}/${this.metrics.memory.total}MB`, this.fpsConfig.x, newY);
+        newY += height;
 
-        ctx.fillText(`MEM% :  ${this.metrics.memory.percent}%`, x, y);
-        y += height;
+        ctx.fillText(`MEM% :  ${this.metrics.memory.percent}%`, this.fpsConfig.x, newY);
+        newY += height;
 
         // FPS
-        ctx.fillStyle = window.fpsColorLow;
-        if (window.fps < 57 || window.fps > 63) {
-            ctx.fillStyle = window.fpsColorHigh;
+        ctx.fillStyle = this.colorLow;
+        if (this.fps < 57 || this.fps > 63) {
+            ctx.fillStyle = this.fpsConfig.colorHigh;
         } else {
-            if (window.fps < 59 || window.fps > 61) {
-                ctx.fillStyle = window.fpsColorMed;
+            if (this.fps < 59 || this.fps > 61) {
+                ctx.fillStyle = this.fpsConfig.colorMed;
             }
         }
-        ctx.fillText(`FPS  : ${window.fps || 0}`, x, y);
-        y += height;
+        ctx.fillText(`FPS  : ${this.fps || 0}`, this.fpsConfig.x, newY);
+        newY += height;
 
         // Frame
-        ctx.fillStyle = window.fpsColorLow;
-        ctx.fillText(`Frame: ${this.metrics.frameTime.toFixed(2)}ms`, x, y);
-        y += height;
+        ctx.fillStyle = this.fpsConfig.colorLow;
+        ctx.fillText(`Frame: ${this.metrics.frameTime.toFixed(2)}ms`, this.fpsConfig.x, newY);
+        newY += height;
 
         // GFX
-        ctx.fillStyle = window.fpsColorLow;
-        if (this.gfxPercentUsage > 60) {
-            ctx.fillStyle = window.fpsColorHigh;
+        //ctx.fillStyle = this.colorLow;
+        if (this.gfxPercentUsage > 80) {
+            ctx.fillStyle = this.fpsConfig.colorHigh;
         } else {
-            if (this.gfxPercentUsage > 80) {
-                ctx.fillStyle = window.fpsColorMed;
+            if (this.gfxPercentUsage > 60) {
+                ctx.fillStyle = this.fpsConfig.colorMed;
             }
         }
-        ctx.fillText(`GFX  : ${this.gfxPercentUsage.toFixed(2)}%`, x, y);
+        ctx.fillText(`GFX  : ${this.gfxPercentUsage.toFixed(2)}%`, this.fpsConfig.x, newY);
     }
 
     static getMemoryStats() {
@@ -156,7 +194,7 @@ class PerformanceMonitor {
         console.log(`  Usage: ${metrics.usage}%`);
 
         console.log('%cFrame Stats', 'color: #2196F3');
-        console.log(`  FPS: ${window.fps || 0}`);
+        console.log(`  FPS: ${this.fps || 0}`);
         console.log(`  Frame Time: ${window.frameTime?.toFixed(2) || 0}ms`);
         console.log(`  GFX Usage: ${this.gfxPercentUsage?.toFixed(2) || 0}%`);
         console.groupEnd();

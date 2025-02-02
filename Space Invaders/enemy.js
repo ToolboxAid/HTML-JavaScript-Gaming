@@ -3,7 +3,7 @@
 // 10/24/2024
 // enemy.js
 
-import { enemyConfig, spriteConfig } from './global.js';
+import { canvasConfig, enemyConfig, spriteConfig } from './global.js';
 
 import Functions from '../scripts/functions.js';
 
@@ -75,11 +75,12 @@ class Enemy extends ObjectSprite {
     static reorgID = 0;
 
     constructor(livingFrames, playerLevel) {
-        const frameWidth = Sprite.getWidthHeight(livingFrames[0], spriteConfig.pixelSize);
+        const pixelSize = spriteConfig.pixelSize || 1;
+        const frameWidth = Sprite.getWidthHeight(livingFrames[0], pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
         const y = enemyConfig.yPosition - (Enemy.enemyRow * enemyConfig.ySpacing);
 
-        super(x, y, livingFrames, Enemy.dyingFrames, spriteConfig.pixelSize);
+        super(x, y, livingFrames, Enemy.dyingFrames, pixelSize);
 
         this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
 
@@ -253,7 +254,8 @@ class Enemy extends ObjectSprite {
         let changeDir = false;
         if (!(Enemy.preMoveDown || Enemy.doMoveDown)) {
             if (this.velocityX > 0) {
-                changeDir = this.x + (this.width * 1.45) + Enemy.speed > window.gameAreaWidth;
+                const width = canvasConfig?.width ?? 40;
+                changeDir = this.x + (this.width * 1.45) + Enemy.speed > width;
             } else {
                 changeDir = this.x - Enemy.speed < (this.width * 0.45);
             }

@@ -86,14 +86,14 @@ export const enemyConfig = {
 
 export const shieldConfig = {
     count: 4, // Number of shields
-    yPosition: 580,
+    y: 580,
     color: '#44FF44',
 }
 
 export const fpsConfig = {
     // Configuration for FPS display
     show: true,
-    size: "30",
+    size: 30,
     font: "monospace",
     colorLow: "green",
     colorMed: "yellow",
@@ -103,13 +103,9 @@ export const fpsConfig = {
     y: 40,
 }
 
-window.shieldCount = shieldConfig.count;
-
 // non type="module" in HTML
 // Set global canvas variables for ../scripts
-window.gameAreaWidth = canvasConfig.width;
-window.gameAreaHeight = canvasConfig.height;
-window.gameScaleWindow = canvasConfig.scale;
-window.backgroundColor = canvasConfig.backgroundColor;
+// No longer needed, passing configs via gameBase.js
 
-window.pixelSize = spriteConfig.pixelSize
+// window.gameAreaWidth = canvasConfig.width;
+// window.backgroundColor = canvasConfig.backgroundColor;

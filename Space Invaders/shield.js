@@ -68,10 +68,12 @@ class Shield extends ObjectStatic {
      * @param {number} shieldNum - The index of the shield, used for positioning.
      */
     constructor(shieldNum) {
-        const dimensions = Sprite.getWidthHeight(Shield.frame, window.pixelSize);
-        const shieldSpacing = (canvasConfig.width - shieldConfig.count * dimensions.width) / (shieldConfig.count + 1);
+        const pixelSize = spriteConfig.pixelSize || 1;
+        const dimensions = Sprite.getWidthHeight(Shield.frame, pixelSize);
+        let shieldCount = shieldConfig?.count ?? 1;
+        const shieldSpacing = (canvasConfig.width - shieldCount * dimensions.width) / (shieldCount + 1);
         const x = shieldSpacing + shieldNum * (dimensions.width + shieldSpacing);
-        const y = shieldConfig.yPosition;
+        const y = shieldConfig?.y ?? 1;
         super(x, y, dimensions.width, dimensions.height);
 
         /**
@@ -80,7 +82,7 @@ class Shield extends ObjectStatic {
          */
         this.frame = Shield.frame.map(row => [...row]);
 
-        this.pixelSize = spriteConfig.pixelSize;
+        this.pixelSize = pixelSize;
     }
 
     /**
@@ -134,8 +136,8 @@ class Shield extends ObjectStatic {
         //overlayFrame = Shield.defaultBomb;
 
         let shieldHit = false;
-        const offsetX = Math.round((bombX - shieldX) / window.pixelSize);
-        const offsetY = Math.round((bombY - shieldY) / window.pixelSize) + adjY;
+        const offsetX = Math.round((bombX - shieldX) / this.pixelSize);
+        const offsetY = Math.round((bombY - shieldY) / this.pixelSize) + adjY;
 
         // Apply the bomb overlay to the shield frame
         for (let c = 0; c < this.frame.length; c++) {

@@ -3,12 +3,10 @@
 // 10/16/2024
 // canvas.js
 
-import ObjectStatic from './objectStatic.js';
-import Fullscreen from './fullscreen.js'; // Import the Fullscreen class
+import Functions from './functions.js'
 import Font5x6 from './font5x6.js';
 import Colors from './colors.js';
 import Sprite from './sprite.js';
-import PerformanceMonitor from './performacneMonitor.js';
 
 class CanvasUtils {
 
@@ -16,6 +14,49 @@ class CanvasUtils {
     static lastTimestamp = 0;
     static ctx = null;
     static config = null;
+
+    static config = {
+        width: 1024,
+        height: 768,
+        scale: 1.0,
+        backgroundColor: "#222222",
+        borderColor: "red",
+        borderSize: 15,
+    };
+
+    static async init(config) {
+        const canvas = document.getElementById('gameArea');
+        if (canvas.getContext) {
+            this.ctx = canvas.getContext('2d');
+        } else {
+            alert('You need a modern browser to see this.');
+            throw new Error('You need a modern browser to see this.');
+        }
+
+        if (!config) {
+            console.error("No 'canvaseConfig' provided");
+        }
+        const schema = {
+            width: 'number',           // Game area width
+            height: 'number',          // Game area height
+            scale: 'number',           // Scale factor
+            backgroundColor: 'string', // Background color hex/name
+            borderColor: 'string',     // Border color hex/name
+            borderSize: 'number'       // Border width in pixels
+        };
+
+        const validation = Functions.validateConfig("Canvas", config, schema);
+        if (validation) {
+            this.config = config;
+        }
+    }
+
+    static getWidth() {
+        return this.config.width;
+    }
+    static getHeight() {
+        return this.config.height;
+    }
 
     /**
      * Draw text and numbers 
@@ -159,16 +200,9 @@ class CanvasUtils {
     }
 
     static drawBorder() {
-        const {
-            width,
-            height,
-            borderSize = 6,
-            borderColor = Colors.getRandomColor()
-        } = this.config?.canvasConfig || {};
-
-        this.ctx.lineWidth = borderSize;
-        this.ctx.strokeStyle = borderColor;
-        this.ctx.strokeRect(0, 0, width, height);
+        this.ctx.lineWidth = this.config.borderSize;
+        this.ctx.strokeStyle = this.config.borderColor;
+        this.ctx.strokeRect(0, 0, this.config.width, this.config.height);
     }
 
     /**
@@ -198,53 +232,8 @@ class CanvasUtils {
      *  Canvas Init Methods
      */
     static canvasClear() {
-        const { width, height, backgroundColor } = this.config?.canvasConfig || {};
-
-        this.ctx.fillStyle = backgroundColor || Colors.getRandomColor();
-        this.ctx.fillRect(0, 0, width, height);
-    }
-
-    static clickFullscreen() {
-        if (!Fullscreen.isFullScreen) {
-            const {
-                color = 'white',
-                font = '40px Arial',
-                text = 'Click here to enter fullscreen',
-                x = 230,
-                y = 790
-            } = this.config?.fullscreenConfig || {};
-
-            this.ctx.fillStyle = color;
-            this.ctx.font = font;
-            this.ctx.textAlign = 'start';
-            this.ctx.fillText(text, x, y);
-        }
-    }
-
-    static async initialize(ctx, configPath) {
-        try {
-            this.ctx = ctx;
-            this.globalConfigPath = configPath;
-
-            // Import all configs
-            const {
-                canvasConfig,
-                fpsConfig,
-                fullscreenConfig
-            } = await import(configPath);
-
-            // Store configs
-            this.config = {
-                canvasConfig,
-                fpsConfig,
-                fullscreenConfig
-            };
-
-            return true;
-        } catch (error) {
-            console.error('Canvas initialization failed:', error);
-            return false;
-        }
+        this.ctx.fillStyle = this.config.backgroundColor || Colors.getRandomColor();
+        this.ctx.fillRect(0, 0, this.config.width, this.config.height);
     }
 
 }

@@ -113,14 +113,15 @@ class Player extends ObjectSprite {
         const x = spriteConfig.playerX;
         const y = spriteConfig.playerY;
 
-        super(x, y, Player.frame, Player.dyingFrames, spriteConfig.pixelSize);
+        const pixelSize = spriteConfig.pixelSize || 1;
+        super(x, y, Player.frame, Player.dyingFrames, pixelSize);
         this.playerID = Player.playerID++;
         this.level = 1;
         this.score = 0;
 
         this.lives = playerSelect.lives;
         this.setSpriteColor(spriteConfig.playerColor);
-        this.pixelSize = spriteConfig.pixelSize;
+        this.pixelSize = pixelSize;
 
         this.bonus = spriteConfig.playerBonusScore;
         this.nextBonus = this.bonus;

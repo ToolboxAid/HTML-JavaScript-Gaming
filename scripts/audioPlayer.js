@@ -34,7 +34,7 @@ export class AudioPlayer {
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
             this.audioCache[url] = audioBuffer;
-            console.log(`Loaded: ${url}`);
+            //console.log(`Loaded: ${url}`);
         } catch (error) {
             console.error(`Failed to load audio: ${url}`, error);
         }

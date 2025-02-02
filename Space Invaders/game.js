@@ -3,7 +3,7 @@
 // 10/24/2024
 // game.js - Space Invaders
 
-import { canvasConfig, spriteConfig, enemyConfig, playerSelect } from './global.js'; // Assuming these contain canvas and sprite details
+import { canvasConfig, spriteConfig, enemyConfig, fpsConfig, fullscreenConfig, playerSelect, shieldConfig } from './global.js'; // Assuming these contain canvas and sprite details
 
 import GameBase from '../scripts/gamebase.js';
 
@@ -76,7 +76,7 @@ class Game extends GameBase {
     static isInitialized = false;
 
     constructor() {
-        super();
+        super(canvasConfig, fpsConfig, fullscreenConfig);
     }
 
     // async initializeGame() {
@@ -698,7 +698,8 @@ class Game extends GameBase {
 
     initializeGameShields() {
         console.log("Initializing Game Shields...");
-        for (let i = 0; i < window.shieldCount; i++) {
+        let shieldCount = shieldConfig?.count?? 1;
+        for (let i = 0; i < shieldCount; i++) {
             this.shields.push(new Shield(i));
         }
         this.gameState = "initGameGround";

@@ -84,7 +84,8 @@ class EnemyShip extends ObjectSprite {
             return EnemyShip.instance;
         }
 
-        super(0, spriteConfig.shipY, EnemyShip.livingFrames, EnemyShip.dyingFrames,spriteConfig.pixelSize);
+        const pixelSize = spriteConfig.pixelSize || 1;
+        super(0, spriteConfig.shipY, EnemyShip.livingFrames, EnemyShip.dyingFrames, pixelSize);
         this.velocityX = spriteConfig.shipVelX;
         this.setSpriteColor(spriteConfig.shipColor);
 
@@ -135,7 +136,7 @@ class EnemyShip extends ObjectSprite {
         this.startAudio = false;
         return start;
     }
-    getStopAudio(){
+    getStopAudio() {
         const stop = this.stopAudio;
         this.stopAudio = false;
         return stop;
@@ -169,24 +170,25 @@ class EnemyShip extends ObjectSprite {
 
     setHit() {
         this.stopAudio = true;
-        this.x = Math.max(25, Math.min(this.x, window.gameAreaWidth - 100));
+        const width = canvasConfig?.width ?? 40;
+        this.x = Math.max(25, Math.min(this.x, width - 100));
         this.setValue()
         const shipValue = `${this.value}`;
         const spacing = 2;
         const someFrame = Sprite.getText(shipValue, spacing);
-//        const someOther = Sprite.getFromText(shipValue, spacing);
-//console.log(someFrame,someOther);
+        //        const someOther = Sprite.getFromText(shipValue, spacing);
+        //console.log(someFrame,someOther);
         const displayFrames = 60;
         this.setOtherFrame(displayFrames, someFrame);
         super.setHit();
     }
-    
+
     setIsAlive() {
         super.setIsAlive();
         // place off left screen the width of ship moving right
         this.x = -(this.width);
         this.velocityX = spriteConfig.shipVelX;
-        
+
         if (Functions.randomRange(0, 1, true)) {
             // place off right screen width of ship moving left
             this.x = canvasConfig.width + this.width;
@@ -202,9 +204,9 @@ class EnemyShip extends ObjectSprite {
         this.stopAudio = true;
         this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
     }
-    
+
     //destroy(){ not valid as this is a Singleton Class -> getInstance()
-    
+
 }
 
 export default EnemyShip;

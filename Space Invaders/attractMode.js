@@ -59,7 +59,8 @@ export default class AttractMode {
     }
 
     initializeGameShields() {
-        for (let i = 0; i < shieldConfig.count; i++) {
+        let shieldCount = shieldConfig?.count ?? 1;
+        for (let i = 0; i < shieldCount; i++) {
             this.shields.push(new Shield(i));
         }
     }

@@ -50,8 +50,9 @@ class EnemyBomb extends ObjectSprite {
     ];
 
     constructor(x, y, frames, velocityY = 150) {
+        const pixelSize = spriteConfig.pixelSize || 1;
         y += spriteConfig.bombYoffset;
-        super(x, y, frames, EnemyBomb.dyingFrames, spriteConfig.pixelSize);
+        super(x, y, frames, EnemyBomb.dyingFrames, pixelSize);
         this.setVelocity(0, velocityY);
 
         this.livingDelay = 6;
