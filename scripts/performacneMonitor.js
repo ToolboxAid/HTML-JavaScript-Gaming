@@ -45,6 +45,7 @@ class PerformanceMonitor {
         const validation = Functions.validateConfig("PerformanceMonitor", config, schema);
         if (validation) {
             this.fpsConfig = config;
+            console.log(`PerformanceMonitor.init complete.`);
             return true;
         }
 

@@ -8,7 +8,6 @@ import { canvasConfig, spriteConfig, enemyConfig, fpsConfig, fullscreenConfig, p
 import GameBase from '../scripts/gamebase.js';
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
-import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
 import Functions from '../scripts/functions.js';
 
 import Player from './player.js';
@@ -72,8 +71,6 @@ class Game extends GameBase {
             }
         }
     }
-
-    static isInitialized = false;
 
     constructor() {
         super(canvasConfig, fpsConfig, fullscreenConfig);

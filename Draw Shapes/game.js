@@ -3,14 +3,18 @@
 // game.js
 // 10/16/2024
 
-import { canvasConfig } from './global.js'; // Import canvasConfig
+import { canvasConfig, fpsConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import CanvasUtils from '../scripts/canvas.js'; // Required import
-import Fullscreen from '../scripts/fullscreen.js'; // Required import
+import GameBase from '../scripts/gamebase.js';
 
 // Define the Game class
-export default class Game {
+class Game extends GameBase {
     constructor() {
-        this.currentDir = currentDir;
+        super(canvasConfig, fpsConfig, fullscreenConfig);
+    }
+
+    async onInitialize() {
+        console.log("onInit");
     }
 
     drawFilledCircle() {
@@ -102,6 +106,6 @@ export default class Game {
     }
 }
 
-// Canvas needs to know the current directory to game.js
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+export default Game;
+
+const game = new Game();

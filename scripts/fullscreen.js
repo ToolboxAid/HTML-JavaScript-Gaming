@@ -27,6 +27,7 @@ class Fullscreen {
         y: 300
     };
 
+    //static firstTime = true;
     static async init(config, canvasConfig) {
         if (!config) {
             console.error("No 'fullscreenConfig' provided");
@@ -43,7 +44,10 @@ class Fullscreen {
             this.config = config;
         }
 
+        //if (!canvasConfig && !Fullscreen.firstTime) {
         if (!canvasConfig) {
+            Fullscreen.firstTime = false;
+            Functions.showStackTrace("")
             console.error("'canvasConfig' not provided.");
         }
         const { width = 1024, height = 768, scale = 0.25 } = canvasConfig || {};
@@ -66,6 +70,7 @@ class Fullscreen {
             Fullscreen.isFullScreen = !!document.fullscreenElement;
         });
         
+        console.log(`FullScreen.init complete.`);
     }
 
     static openFullscreen() {
@@ -133,4 +138,4 @@ class Fullscreen {
 export default Fullscreen;
 
 // Initialize the fullscreen functionality
-Fullscreen.init(Fullscreen.config);
+//Fullscreen.init(Fullscreen.config);

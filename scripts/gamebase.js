@@ -70,7 +70,6 @@ class GameBase {
                 PerformanceMonitor.update(timeSpentMs);
 
                 // Draw click full screen
-                //CanvasUtils.clickFullscreen();
                 Fullscreen.draw(CanvasUtils.ctx);
 
                 // Draw Performance data
