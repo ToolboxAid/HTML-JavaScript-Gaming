@@ -73,7 +73,7 @@ class GamepadInput {
                 } else { // !button.pressed
                     if (this.buttonsDown[index].has(buttonIndex)) {
                         this.buttonsReleased[index].add(buttonIndex);
-                        this.buttonsDown[index].delete(buttonIndex);
+                        this.buttonrsDown[index].delete(buttonIndex);
                         showDetails = true
                     } else {
                         if (this.buttonsReleased[index].has(buttonIndex)) {

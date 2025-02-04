@@ -40,7 +40,9 @@ class KeyboardInput {
 
         // Process new keydown events
         this.tempKeysDown.forEach(key => {
-            this.keysPressed.add(key);
+            if (!this.keysDown.has(key)) {
+                this.keysPressed.add(key);
+            }
             this.keysDown.add(key);
         });
         this.tempKeysDown.clear(); // Clear after processing

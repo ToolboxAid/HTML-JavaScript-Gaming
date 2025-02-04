@@ -104,8 +104,8 @@ class CanvasUtils {
         );
 
         return {
-            width: width + 10,    // Add padding
-            height: height + 5    // Add padding
+            width: width,
+            height: height
         };
     }
     //TODO: should these move to the sprite class (and split sprite class)

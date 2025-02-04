@@ -36,9 +36,9 @@ class GameBase {
         if (!canvasConfig || !performanceConfig || !fullscreenConfig) {
             throw new Error('Missing required configuration');
         }
-        await PerformanceMonitor.init(performanceConfig);
         await CanvasUtils.init(canvasConfig);
         await Fullscreen.init(fullscreenConfig, canvasConfig);
+        await PerformanceMonitor.init(performanceConfig);
 
         // Initialize inheriting (child) class (game.js)
         await this.onInitialize();

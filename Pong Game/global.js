@@ -26,7 +26,6 @@ export const fullscreenConfig = {
 };
 
 export const performanceConfig = {
-    // Configuration for FPS display
     show: true,
     size: 30,
     font: "monospace",

@@ -21,10 +21,9 @@ export const fullscreenConfig = {
   y: 790
 };
 
-export const performanceConfig = {
-  // Configuration for FPS display
+export const performanceConfig = {  
   show: true,
-  size: 30,
+  size: 10,
   font: "monospace",
   colorLow: "green",
   colorMed: "yellow",
@@ -32,7 +31,7 @@ export const performanceConfig = {
   backgroundColor: "#AAAAAABB",
 
   x: 20,
-  y: 40,
+  y: 700,
 }
 
 export const playerSelect = {

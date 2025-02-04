@@ -6,6 +6,7 @@
 //** Javascript usages */
 
 import Functions from "./functions.js";
+import CanvasUtils from "./canvas.js";
 
 class PerformanceMonitor {
 
@@ -42,9 +43,12 @@ class PerformanceMonitor {
             x: 'number',
             y: 'number'
         };
+
         const validation = Functions.validateConfig("PerformanceMonitor", config, schema);
         if (validation) {
             this.performanceConfig = config;
+            this.dimentions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
+            //console.log(this.dimentions);
             console.log(`PerformanceMonitor.init complete.`);
             return true;
         }
@@ -74,7 +78,6 @@ class PerformanceMonitor {
         this.totalTimeSpentMs += timeSpentMs;
     }
     static calcGFX() {
-        // if (this.frameSampleCount++ >= this.frameSampleSize) {
         this.frameSampleCount++;
         const averageTimeMs = this.totalTimeSpentMs / this.frameSampleCount;
         this.gfxPercentUsage = (averageTimeMs / this.availableTimeMs) * 100;
@@ -114,15 +117,18 @@ class PerformanceMonitor {
 
         // {width: 126, height: 24} console.log(CanvasUtils.calculateTextMetrics("FPS: 60", 30, "monospace")); 
         // {width: 307, height: 29} console.log(CanvasUtils.calculateTextMetrics("MEM: 30.66/33.08MB", 30, "monospace")); 
-        const width = 307;
-        const height = 29;
 
-        let newY = this.performanceConfig.y;
+        //this.dimentions
+        const width = this.dimentions.width;
+        const height = this.dimentions.height + (this.dimentions.height/5);
+
+        let newY = this.performanceConfig.y ;
+        const lines = 5;
         const padding = 5;
 
         // create the background
         ctx.fillStyle = this.performanceConfig.backgroundColor;
-        ctx.fillRect(this.performanceConfig.x - 5, newY, width, height * padding + 5);
+        ctx.fillRect(this.performanceConfig.x - 3, newY, width, (height * lines) + padding);
         newY += height;
 
         // Javascript memory

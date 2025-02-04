@@ -3,19 +3,21 @@
 // 10/16/2024
 // game.js - Sample Keyboard
 
-import { canvasConfig } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
+import GameBase from '../scripts/gamebase.js';
+
 import KeyboardInput from '../scripts/keyboard.js';
 import CanvasUtils from '../scripts/canvas.js';
-import Fullscreen from '../scripts/fullscreen.js';
 
-class GameLoop {
+class Game extends GameBase{
     constructor() {
+        super(canvasConfig, performanceConfig, fullscreenConfig);
+    }
+
+    async onInitialize() {
+        console.log("onInit");
         // Create an instance of KeyboardInput
         this.keyboardInput = new KeyboardInput();
-
-        // Initialize canvas path
-        this.currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        window.canvasPath = this.currentDir;
     }
 
     getKeyStates() {
@@ -82,10 +84,6 @@ class GameLoop {
 }
 
 // Export the GameLoop class
-export default GameLoop;
+export default Game;
 
-// To start the game loop, ensure to call this function in the animation frame as shown in canvas.js
-
-// Canvas needs to know the current directory to game.js
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

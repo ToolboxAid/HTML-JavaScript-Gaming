@@ -9,22 +9,27 @@ export const canvasConfig = {
     width: 800, // Game area width
     height: 600, // Game area height
     scale: 0.5,
-    backgroundColor: "#333333",
+    backgroundColor: "#222222",
+    borderColor: "yellow",
+    borderSize: 15,    
 };
 
-// non type="module" in HTML
-// Set global canvas variables for ../scripts
-window.gameAreaWidth = canvasConfig.width;
-window.gameAreaHeight = canvasConfig.height;
-window.gameScaleWindow = canvasConfig.scale;
-window.backgroundColor = canvasConfig.backgroundColor;
+export const fullscreenConfig = {
+    color: 'yellow',
+    font: '40px Arial',
+    text: 'Click here to enter fullscreen',
+    x: 230,
+    y: 790
+};
 
-window.borderColor = "red";
-window.borderSize = 10;
-
-// Configuration for FPS display
-window.fpsShow = true;
-window.fpsColor = "yellow";
-window.fpsSize = "40px";
-window.fpsX = 30;
-window.fpsY = 50;
+export const performanceConfig = {
+    show: true,
+    size: 10,
+    font: "monospace",
+    colorLow: "green",
+    colorMed: "yellow",
+    colorHigh: "red",
+    backgroundColor: "#AAAAAABB",
+    x: 688,
+    y: 10,
+}
