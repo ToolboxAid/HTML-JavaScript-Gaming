@@ -90,7 +90,7 @@ export const shieldConfig = {
     color: '#44FF44',
 }
 
-export const fpsConfig = {
+export const performanceConfig = {
     // Configuration for FPS display
     show: true,
     size: 30,

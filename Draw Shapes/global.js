@@ -22,7 +22,7 @@ export const fullscreenConfig = {
     y: 790
 };
 
-export const fpsConfig = {
+export const performanceConfig = {
     // Configuration for FPS display
     show: true,
     size: 30,

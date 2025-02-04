@@ -4,7 +4,7 @@
 // 10/16/2024
 
 const gameFullScaleScreen = 1.0;
-const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight };
+const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight, scale: gameScaleWindow };
 var isFullScreen = false;
 
 function openFullscreen() {
@@ -71,6 +71,7 @@ function resizeCanvas() {
     setDivs();
 }
 
+// listeners below this line
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas, false);
 

@@ -4,11 +4,13 @@
 // objectDynamic.js
 
 import ObjectStatic from '../scripts/objectStatic.js'; // Import ObjectStatic
+import CanvasUtils from "../scripts/canvas.js";
 
 /**
  * Represents a dynamic object in a game that can move based on velocity.
  */
 class ObjectDynamic extends ObjectStatic {
+    
     /**
      * Creates an instance of ObjectDynamic.
      * @param {number} x - The X position of the object.
@@ -22,6 +24,9 @@ class ObjectDynamic extends ObjectStatic {
         super(x, y, width, height); // Call the parent constructor
         this.velocityX = velocityX; // Velocity in X direction
         this.velocityY = velocityY; // Velocity in Y direction
+
+        this.gameAreaWidth = CanvasUtils.getWidth();
+        this.gameAreaHeight = CanvasUtils.getHeight();
     }
 
     /** Future methods */
@@ -50,6 +55,10 @@ class ObjectDynamic extends ObjectStatic {
      * @param {number} deltaTime - The time elapsed since the last update, in seconds.
      */
     update(deltaTime = 1) {
+        if (!deltaTime){
+            console.error("'deltaTime' is required");
+            return;
+        }
         this.x += this.velocityX * deltaTime;
         this.y += this.velocityY * deltaTime;
     }
@@ -134,20 +143,19 @@ class ObjectDynamic extends ObjectStatic {
         if (this.radius) {
             throw new Error("object has 'this.radius' use checkGameBoundsCircle.");
         }
-
         let boundariesHit = [];
 
         // top and bottom
         if (this.y + offset <= 0) {
             boundariesHit.push('top');
-        } else if (this.y + this.height - offset >= ObjectStatic.gameAreaHeight) {
+        } else if (this.y + this.height - offset >= this.gameAreaHeight) {
             boundariesHit.push('bottom');
         }
 
         // left & right
         if (this.x + offset <= 0) {
             boundariesHit.push('left');
-        } else if (this.x + this.width - offset >= ObjectStatic.gameAreaWidth) {
+        } else if (this.x + this.width - offset >= this.gameAreaWidth) {
             boundariesHit.push('right');
         }
 
@@ -170,7 +178,7 @@ class ObjectDynamic extends ObjectStatic {
             boundariesHit.push('top');
         }
         // Check for collision with the bottom boundary
-        else if (this.y + this.radius >= ObjectStatic.gameAreaHeight) {
+        else if (this.y + this.radius >= this.gameAreaWidth) {
             boundariesHit.push('bottom');
         }
 
@@ -179,7 +187,7 @@ class ObjectDynamic extends ObjectStatic {
             boundariesHit.push('left');
         }
         // Check for collision with the right boundary
-        else if (this.x + this.radius >= ObjectStatic.gameAreaWidth) {
+        else if (this.x + this.radius >= this.gameAreaWidth) {
             boundariesHit.push('right');
         }
 

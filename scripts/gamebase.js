@@ -12,9 +12,9 @@ class GameBase {
 
     static isInitialized = false;
 
-    constructor(canvasConfig, fpsConfig, fullscreenConfig) {
-
-        this.initializeGame(canvasConfig, fpsConfig, fullscreenConfig)
+    constructor(canvasConfig, performanceConfig, fullscreenConfig) {
+console.log(canvasConfig, performanceConfig, fullscreenConfig);
+        this.initializeGame(canvasConfig, performanceConfig, fullscreenConfig)
             .then(() => {
                 console.log('*** Game initialization complete ***');
 
@@ -33,26 +33,27 @@ class GameBase {
         this.animate = this.animate.bind(this);// bind once
     }
 
-    async initializeGame(canvasConfig, fpsConfig, fullscreenConfig) {
-
-        await PerformanceMonitor.init(fpsConfig);
+    async initializeGame(canvasConfig, performanceConfig, fullscreenConfig) {
+        if (!canvasConfig || !performanceConfig || !fullscreenConfig) {
+            throw new Error('Missing required configuration');
+        }
+        await PerformanceMonitor.init(performanceConfig);
         await CanvasUtils.init(canvasConfig);
-        await Fullscreen.init(fullscreenConfig, canvasConfig);        
+        await Fullscreen.init(fullscreenConfig, canvasConfig);
 
-        // Initialize inheriting class (game.js)
+        // Initialize inheriting (child) class (game.js)
         await this.onInitialize();
     }
 
-
-    static lastTimestamp = 0;
+    static lastTimestamp = performance.now();
     static showTextMetrics = false;
     async animate(timestamp) {
         try {
             Colors.generateRandomColor();
 
             // Calculate delta time
-            const deltaTime = (timestamp - this.lastTimestamp) / 1000;
-            this.lastTimestamp = timestamp;
+            const deltaTime = (timestamp - GameBase.lastTimestamp) / 1000;
+            GameBase.lastTimestamp = timestamp;
 
             if (CanvasUtils.ctx && this.gameLoop) {
                 // start performance timer

@@ -252,7 +252,7 @@ class Functions {
             console.log("failed");
             return false;
         }
-    
+
         if (!schema) {
             console.group(`'${name}' Config Validation Failed`);
             console.error("Schema is 'null' or 'undefined'");
@@ -260,10 +260,10 @@ class Functions {
             console.log("failed");
             return false;
         }
-    
-        console.log(`Validating '${name}' Config: `,'\n', config, schema);
+
+        console.log(`Validating '${name}' Config: `, '\n', config, schema);
         const failures = [];
-    
+
         // Check all required fields
         for (const [field, expectedType] of Object.entries(schema)) {
             if (!(field in config)) {
@@ -275,7 +275,7 @@ class Functions {
                 });
                 continue;
             }
-    
+
             const actualType = typeof config[field];
             if (actualType !== expectedType) {
                 failures.push({
@@ -287,7 +287,7 @@ class Functions {
                 });
             }
         }
-    
+
         if (failures.length > 0) {
             console.group(`'${name}' Config Validation Failed`);
             console.warn('Failed validations:', failures);
@@ -300,7 +300,7 @@ class Functions {
             console.groupEnd();
             return false;
         }
-    
+
         return true;
     }
 
@@ -327,7 +327,7 @@ class Functions {
     static cleanupArray(array) {
         if (!Array.isArray(array)) return false;
         let success = true;
-    
+
         try {
             for (let i = array.length - 1; i >= 0; i--) {
                 if (!Functions.destroy(array[i])) {
@@ -340,14 +340,14 @@ class Functions {
             console.error("Cleanup Array:", error);
             success = false;
         }
-    
+
         return success;
     }
-    
+
     static cleanupMap(map) {
         if (!(map instanceof Map)) return false;
         let success = true;
-    
+
         try {
             for (const [key, item] of map) {
                 if (!Functions.destroy(item)) {
@@ -359,7 +359,7 @@ class Functions {
             console.error("Cleanup Map:", error);
             success = false;
         }
-    
+
         return success;
     }
 
@@ -380,13 +380,48 @@ class Functions {
      * @param {number} ms - Duration of the wait in milliseconds.
      * @returns {Promise} - A promise that resolves after the specified duration.
         console.log('Start');
-        await Functions.sleep(2000); // Wait for 2 seconds
-        console.log('End');
+        await Functions.sleep(2000); // Code stops here until complete
+        console.log('After 1 second');
      */
     static sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        let isDone = false;
+        return new Promise(resolve => {
+            setTimeout(() => {
+                isDone = true;
+                resolve(isDone);
+            }, ms);
+        });
     }
 
+    /** Usage in game loop:
+```javascript
+// Example usage:
+const timer = Functions.createTimer(2000); // 2 seconds
+
+// In game loop:
+if (timer.isComplete()) {
+console.log('Timer completed!');
+console.log('Elapsed time:', timer.getElapsed());
+}
+*/
+    static Timer(duration, debug = false) {
+        const timer = {
+            startTime: performance.now(),
+            duration: duration,
+            isComplete: function () {
+                const elapsed = this.getElapsed();
+                return elapsed >= this.duration;
+            },
+            getElapsed: function () {
+                const elapsed = performance.now() - this.startTime;
+                return elapsed;
+            },
+            reset: function () {
+                this.startTime = performance.now();
+            }
+        };
+        return timer;
+    }
 }
 
 // Export the Functions class

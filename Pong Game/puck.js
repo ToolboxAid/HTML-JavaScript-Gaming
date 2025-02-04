@@ -9,8 +9,9 @@ import CanvasUtils from '../scripts/canvas.js';
 
 import ObjectDynamic from '../scripts/objectDynamic.js';
 import Functions from '../scripts/functions.js';
+import Timer from '../scripts/timer.js';
+
 import { AudioPlayer } from '../scripts/audioPlayer.js';
-const debug = false;
 
 class Puck extends ObjectDynamic {
 
@@ -37,6 +38,9 @@ class Puck extends ObjectDynamic {
         // Tail properties
         this.previousPositions = []; // Array to store previous positions
         this.tailLength = 15; // Length of the tail
+
+        // puck reset movement delay 
+        this.actionTimer = new Timer(2000);
 
         // First volly is random.
         if (Functions.randomRange(0, 1)) {
@@ -112,7 +116,9 @@ class Puck extends ObjectDynamic {
 
     static paddleTopBottomHit = false;
     update(leftPaddle, rightPaddle, deltaTime) {
-        if (Puck.doUpdate) {
+
+        // Check timer status
+        if (this.actionTimer.isComplete()) {
             super.update(deltaTime);
         }
 
@@ -231,11 +237,8 @@ class Puck extends ObjectDynamic {
         this.velocityX *= -1;  // winner serves the puck
 
         Puck.doUpdate = false;
-        console.log("Start wait");
-        setTimeout(() => {
-            Puck.doUpdate = true;
-            console.log("Waited for 1 seconds");
-        }, 1000);
+
+        this.actionTimer.reset();
     }
 }
 

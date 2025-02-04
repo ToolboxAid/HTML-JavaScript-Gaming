@@ -16,7 +16,7 @@ class PerformanceMonitor {
         samples: []
     };
 
-    static fpsConfig = {// Let's give some defaults
+    static performanceConfig = {// Let's give some defaults
         show: true,
         size: 30,
         font: 'monospace',
@@ -44,7 +44,7 @@ class PerformanceMonitor {
         };
         const validation = Functions.validateConfig("PerformanceMonitor", config, schema);
         if (validation) {
-            this.fpsConfig = config;
+            this.performanceConfig = config;
             console.log(`PerformanceMonitor.init complete.`);
             return true;
         }
@@ -117,50 +117,50 @@ class PerformanceMonitor {
         const width = 307;
         const height = 29;
 
-        let newY = this.fpsConfig.y;
+        let newY = this.performanceConfig.y;
         const padding = 5;
 
         // create the background
-        ctx.fillStyle = this.fpsConfig.backgroundColor;
-        ctx.fillRect(this.fpsConfig.x - 5, newY, width, height * padding + 5);
+        ctx.fillStyle = this.performanceConfig.backgroundColor;
+        ctx.fillRect(this.performanceConfig.x - 5, newY, width, height * padding + 5);
         newY += height;
 
         // Javascript memory
-        ctx.fillStyle = this.fpsConfig.colorLow;
-        ctx.font = `${this.fpsConfig.size || '30'}px ${this.fpsConfig.font || 'monospace'}`;
-        ctx.fillText(`MEM: ${this.metrics.memory.used}/${this.metrics.memory.total}MB`, this.fpsConfig.x, newY);
+        ctx.fillStyle = this.performanceConfig.colorLow;
+        ctx.font = `${this.performanceConfig.size || '30'}px ${this.performanceConfig.font || 'monospace'}`;
+        ctx.fillText(`MEM: ${this.metrics.memory.used}/${this.metrics.memory.total}MB`, this.performanceConfig.x, newY);
         newY += height;
 
-        ctx.fillText(`MEM% :  ${this.metrics.memory.percent}%`, this.fpsConfig.x, newY);
+        ctx.fillText(`MEM% :  ${this.metrics.memory.percent}%`, this.performanceConfig.x, newY);
         newY += height;
 
         // FPS
         ctx.fillStyle = this.colorLow;
         if (this.fps < 57 || this.fps > 63) {
-            ctx.fillStyle = this.fpsConfig.colorHigh;
+            ctx.fillStyle = this.performanceConfig.colorHigh;
         } else {
             if (this.fps < 59 || this.fps > 61) {
-                ctx.fillStyle = this.fpsConfig.colorMed;
+                ctx.fillStyle = this.performanceConfig.colorMed;
             }
         }
-        ctx.fillText(`FPS  : ${this.fps || 0}`, this.fpsConfig.x, newY);
+        ctx.fillText(`FPS  : ${this.fps || 0}`, this.performanceConfig.x, newY);
         newY += height;
 
         // Frame
-        ctx.fillStyle = this.fpsConfig.colorLow;
-        ctx.fillText(`Frame: ${this.metrics.frameTime.toFixed(2)}ms`, this.fpsConfig.x, newY);
+        ctx.fillStyle = this.performanceConfig.colorLow;
+        ctx.fillText(`Frame: ${this.metrics.frameTime.toFixed(2)}ms`, this.performanceConfig.x, newY);
         newY += height;
 
         // GFX
         //ctx.fillStyle = this.colorLow;
         if (this.gfxPercentUsage > 80) {
-            ctx.fillStyle = this.fpsConfig.colorHigh;
+            ctx.fillStyle = this.performanceConfig.colorHigh;
         } else {
             if (this.gfxPercentUsage > 60) {
-                ctx.fillStyle = this.fpsConfig.colorMed;
+                ctx.fillStyle = this.performanceConfig.colorMed;
             }
         }
-        ctx.fillText(`GFX  : ${this.gfxPercentUsage.toFixed(2)}%`, this.fpsConfig.x, newY);
+        ctx.fillText(`GFX  : ${this.gfxPercentUsage.toFixed(2)}%`, this.performanceConfig.x, newY);
     }
 
     static getMemoryStats() {

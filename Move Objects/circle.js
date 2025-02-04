@@ -13,19 +13,24 @@ import Functions from '../scripts/functions.js';
  */
 class Circle extends ObjectDynamic {
     /** Creates an instance of Circle.
- * 
- */
-    constructor() {
+     * 
+     */
+    constructor(canvasConfig) {
         const radius = 25;
         const velocityX = Functions.randomRange(150.0, 350.0);
         const velocityY = Functions.randomRange(150.0, 350.0);
 
         // Call ObjectDynamic constructor, passing the radius as both width and height
         super(100, 100, radius, radius, velocityX, velocityY);
+        this.canvasWidth = canvasConfig.width;
+        this.canvasHeight = canvasConfig.height;
         this.radius = radius;
     }
 
     update(deltaTime) {
+        // if (!deltaTime){
+        //     throw new Error("deltaTime");
+        // }
         super.update(deltaTime);
         // Call the checkGameBoundsCircle function
         const boundariesHit = this.checkGameBoundsCircle();

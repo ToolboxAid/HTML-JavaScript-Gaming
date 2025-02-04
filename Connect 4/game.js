@@ -4,12 +4,17 @@
 // Game.js - Connect 4 Implementation
 // 11/15/2024
 
-import { canvasConfig } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
+import GameBase from '../scripts/gamebase.js';
 import CanvasUtils from '../scripts/canvas.js';
 import KeyboardInput from '../scripts/keyboard.js';
 
-class Game {
+class Game extends GameBase {
   constructor() {
+    super(canvasConfig, performanceConfig, fullscreenConfig);
+  }
+
+  async onInitialize() {
     this.keyboardInput = new KeyboardInput();
 
     this.columns = 7;
@@ -76,7 +81,7 @@ class Game {
       }
     }
 
-    if (this.isBoardFull()){
+    if (this.isBoardFull()) {
       this.resetBoard();
     }
 
@@ -268,6 +273,4 @@ class Game {
 
 export default Game;
 
-// Canvas needs to know the current directory to game.js for dynamic imports
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

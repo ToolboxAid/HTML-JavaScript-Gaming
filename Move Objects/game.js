@@ -3,34 +3,32 @@
 // game.js
 // 10/16/2024
 
-import { canvasConfig } from './global.js'; // Import canvasConfig
-import CanvasUtils from '../scripts/canvas.js'; // shows as unused, but it is required.
-import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
-import Functions from '../scripts/functions.js';
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
+import GameBase from '../scripts/gamebase.js';
 import Circle from './circle.js';
 
-class Game {
+class Game  extends GameBase {
     constructor() {
-        // Create our circle
-        this.circle = new Circle();
-
-        // Canvas needs to know the current directory to game.js
-        this.currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        window.canvasPath = this.currentDir;
+        super(canvasConfig, performanceConfig, fullscreenConfig);
     }
+
+    static circle = null;
+    async onInitialize() {
+        // Create our circle
+        this.circle = new Circle(canvasConfig);
+        console.log("Game 'onInitialize' is complete");
+    }
+
 
     gameLoop(deltaTime) {
         // Update circle position
         this.circle.update(deltaTime);
-
+    
         // Call the drawing function
         this.circle.draw();
     }
 }
 
-// Export the Game class
 export default Game;
 
-// Canvas needs to know the current directory to game.js
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

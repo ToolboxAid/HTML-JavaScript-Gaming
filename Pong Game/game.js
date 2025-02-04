@@ -3,52 +3,54 @@
 // 10/16/2024
 // game.js
 
-import { canvasConfig, font5x3 } from './global.js'; // Import canvasConfig
-import Font5x3 from './font5x3.js';
+import { font5x3 } from './global.js'; // Import canvasConfig
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
+import GameBase from '../scripts/gamebase.js';
+import CanvasUtils from '../scripts/canvas.js';
 
+import KeyboardInput from '../scripts/keyboard.js';
+import GamepadInput from '../scripts/gamepad.js';
+
+import Font5x3 from './font5x3.js';
 import Paddle from './paddle.js';
 import Puck from './puck.js';
-import CanvasUtils from '../scripts/canvas.js';
-import Functions from '../scripts/functions.js';
-import Fullscreen from '../scripts/fullscreen.js'; // shows as unused, but it is required.
 
-class Game {
+class Game extends GameBase {
     constructor() {
-/*
-Sounds in Original Pong
-Ball Bounce Sound:
+        super(canvasConfig, performanceConfig, fullscreenConfig);
+    }
 
-Frequency: Approximately 400 Hz
-Duration: Around 100 milliseconds
-Description: A short beep sound that played whenever the ball hit the paddles or the walls.
-Paddle Hit Sound:
+    async onInitialize() {
+        console.log("onInit");
+        /*
+        Sounds in Original Pong
+        Ball Bounce Sound:
+        
+        Frequency: Approximately 400 Hz
+        Duration: Around 100 milliseconds
+        Description: A short beep sound that played whenever the ball hit the paddles or the walls.
+        Paddle Hit Sound:
+        
+        Frequency: Similar to the ball bounce sound, around 400 Hz
+        Duration: Also about 100 milliseconds
+        Description: A distinct sound effect that played when the ball collided with a paddle.
+        Score Sound:
+        
+        Frequency: Approximately 300 Hz to 400 Hz (varied based on the version)
+        Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
+        Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
+        */
 
-Frequency: Similar to the ball bounce sound, around 400 Hz
-Duration: Also about 100 milliseconds
-Description: A distinct sound effect that played when the ball collided with a paddle.
-Score Sound:
-
-Frequency: Approximately 300 Hz to 400 Hz (varied based on the version)
-Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
-Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
-*/
+        this.keyboardInput = new KeyboardInput();
+        this.gamepadInput = new GamepadInput();
 
         // Create paddles instances
-        this.leftPaddle = new Paddle(true);
-        this.rightPaddle = new Paddle(false);
+        this.isLeft = true;
+        this.leftPaddle = new Paddle(this.isLeft);
+        this.rightPaddle = new Paddle(!this.isLeft);
 
         // Create puck instance
         this.puck = new Puck();
-
-        // Initialize the canvas path
-        this.currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        window.canvasPath = this.currentDir;
-
-        // Bind methods
-        this.gameLoop = this.gameLoop.bind(this);
-        this.drawDashedLine = this.drawDashedLine.bind(this);
-        this.drawWinnerMessage = this.drawWinnerMessage.bind(this);
-        this.restartGame = this.restartGame.bind(this);
     }
 
     drawDashedLine() {
@@ -58,12 +60,15 @@ Description: A sound indicating a score was made, usually more pronounced than t
     }
 
     gameLoop(deltaTime) {
+        this.keyboardInput.update();
+        this.gamepadInput.update();
+
         const player1X = (canvasConfig.width / 2) - (font5x3.pixelWidth * 24); // X position for Player 1 score
         const player2X = (canvasConfig.width / 2) + (font5x3.pixelWidth * 18); // X position for Player 2 score
         const y = 30;  // Y position for scores
         const digits = 2;
-        Font5x3.drawNumber(player1X,y,this.leftPaddle.score, digits);
-        Font5x3.drawNumber(player2X,y,this.rightPaddle.score, digits);
+        Font5x3.drawNumber(player1X, y, this.leftPaddle.score, digits);
+        Font5x3.drawNumber(player2X, y, this.rightPaddle.score, digits);
 
         // Draw the dashed line
         this.drawDashedLine();
@@ -77,13 +82,20 @@ Description: A sound indicating a score was made, usually more pronounced than t
             this.rightPaddle.draw();
 
             // Pause the game until a key is pressed
-            document.addEventListener('keydown', this.restartGame);
+            if (this.keyboardInput.getKeysDown().length > 0 ||
+            this.gamepadInput.isButtonJustPressed(0,8) ||
+            this.gamepadInput.isButtonJustPressed(0,9) ||
+            this.gamepadInput.isButtonJustPressed(1,8) ||
+            this.gamepadInput.isButtonJustPressed(1,9)) {
+                this.restartGame();
+            }
+
             return; // Exit the game loop
         }
 
         // Update paddles using keyboard
-        this.leftPaddle.update();
-        this.rightPaddle.update();
+        this.leftPaddle.update(this.keyboardInput, this.gamepadInput);
+        this.rightPaddle.update(this.keyboardInput, this.gamepadInput);
 
         // Update/Move the puck using its inherited method
         this.puck.update(this.leftPaddle, this.rightPaddle, deltaTime);
@@ -101,26 +113,21 @@ Description: A sound indicating a score was made, usually more pronounced than t
         CanvasUtils.ctx.fillStyle = 'white'; // Set text color
         CanvasUtils.ctx.font = '55px Arial'; // Set font size and style
         CanvasUtils.ctx.textAlign = 'center'; // Center the text
-        CanvasUtils.ctx.fillText("We have a winner!", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) - 33); // Draw the message at the center of the canvas
-        CanvasUtils.ctx.fillText("Press any key to Play", window.gameAreaWidth / 2, (window.gameAreaHeight / 2) + 33); // Draw the message at the center of the canvas
+        CanvasUtils.ctx.fillText("We have a winner!", canvasConfig.width / 2, (canvasConfig.height / 2) - 33); // Draw the message at the center of the canvas
+        CanvasUtils.ctx.fillText("Press any key to Play", canvasConfig.width / 2, (canvasConfig.height / 2) + 33); // Draw the message at the center of the canvas
     }
 
     // Function to restart the game
     restartGame() {
         // Reset paddle winner state
         Paddle.winner = false;
-        this.leftPaddle = new Paddle(true);
-        this.rightPaddle = new Paddle(false);
+        this.leftPaddle = new Paddle(this.isLeft);
+        this.rightPaddle = new Paddle(!this.isLeft);
         this.puck = new Puck(); // Create a new puck instance
-
-        // Remove the keydown event listener to prevent multiple triggers
-        document.removeEventListener('keydown', this.restartGame);
     }
 }
 
 // Export the Game class
 export default Game;
 
-// Canvas needs to know the current directory to game.js
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

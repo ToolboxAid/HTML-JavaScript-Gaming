@@ -3,14 +3,14 @@
 // game.js
 // 10/16/2024
 
-import { canvasConfig, fpsConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
-import CanvasUtils from '../scripts/canvas.js'; // Required import
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import GameBase from '../scripts/gamebase.js';
+import CanvasUtils from '../scripts/canvas.js'; // Required import
 
 // Define the Game class
 class Game extends GameBase {
     constructor() {
-        super(canvasConfig, fpsConfig, fullscreenConfig);
+        super(canvasConfig, performanceConfig, fullscreenConfig);
     }
 
     async onInitialize() {

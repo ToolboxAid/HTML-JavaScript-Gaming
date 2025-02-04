@@ -3,7 +3,7 @@
 // 10/24/2024
 // game.js - Space Invaders
 
-import { canvasConfig, spriteConfig, enemyConfig, fpsConfig, fullscreenConfig, playerSelect, shieldConfig } from './global.js'; // Assuming these contain canvas and sprite details
+import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenConfig, playerSelect, shieldConfig } from './global.js'; // Assuming these contain canvas and sprite details
 
 import GameBase from '../scripts/gamebase.js';
 
@@ -18,6 +18,7 @@ import Ground from './ground.js';
 import LevelFrames from './levelFrames.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
+import GamepadInput from '../scripts/gamepad.js';
 
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';
@@ -27,8 +28,6 @@ import EnemyShip from './enemyShip.js';
 import EnemyBomb1 from './enemyBomb1.js';
 import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
-import ObjectStatic from '../scripts/objectStatic.js';
-import ObjectSprite from '../scripts/objectSprite.js';
 
 import { AudioPlayer } from '../scripts/audioPlayer.js';
 import { Cookies } from '../scripts/cookies.js';
@@ -36,7 +35,7 @@ import { Cookies } from '../scripts/cookies.js';
 import AttractMode from './attractMode.js';
 
 import Sprite from '../scripts/sprite.js';
-import GamepadInput from '../scripts/gamepad.js';
+
 
 class Game extends GameBase {
 
@@ -73,7 +72,7 @@ class Game extends GameBase {
     }
 
     constructor() {
-        super(canvasConfig, fpsConfig, fullscreenConfig);
+        super(canvasConfig, performanceConfig, fullscreenConfig);
     }
 
     // async initializeGame() {
@@ -81,7 +80,7 @@ class Game extends GameBase {
         try {
             // Initialize text
             // await Game.initCanvas();
-            await Game.initText();
+            Game.initText();
 
             // Load audio files
             await this.loadAllAudioFiles();

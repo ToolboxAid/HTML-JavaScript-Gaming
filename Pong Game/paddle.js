@@ -5,9 +5,10 @@
 
 import { canvasConfig, paddleConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
-import Functions from '../scripts/functions.js';
 import { AudioPlayer } from '../scripts/audioPlayer.js';
 import CanvasUtils from '../scripts/canvas.js';
+
+import GamepadMapSNES from '../scripts/gamepadMapSNES.js';
 
 class Paddle extends ObjectStatic {
 
@@ -26,17 +27,22 @@ class Paddle extends ObjectStatic {
         this.score = 0;
 
         // Bind the keys for this paddle
-        this.keys = {
-            up: this.isLeft ? 'KeyA' : 'ArrowUp',
-            down: this.isLeft ? 'KeyZ' : 'ArrowDown'
+        this.controls = {
+            keyboard: {
+                up: this.isLeft ? 'KeyA' : 'ArrowUp',
+                down: this.isLeft ? 'KeyZ' : 'ArrowDown'
+            },
+            gamepad: {
+                up: this.isLeft ? GamepadMapSNES.Axes.X : GamepadMapSNES.Axes.X,
+                down: this.isLeft ? GamepadMapSNES.Axes.X : GamepadMapSNES.Axes.X
+            }
         };
+
 
         this.movement = {
             up: false,
             down: false
         };
-
-        this.bindKeys();
 
         // Tail properties
         this.previousPositions = []; // Array to store previous positions
@@ -66,8 +72,8 @@ class Paddle extends ObjectStatic {
 
         if (this.y < 0) {
             this.y = 0;
-        } else if (this.y + this.height > window.gameAreaHeight) {
-            this.y = window.gameAreaHeight - this.height;
+        } else if (this.y + this.height > canvasConfig.height) {
+            this.y = canvasConfig.height - this.height;
         }
 
         // Update previous positions for the tail
@@ -95,27 +101,27 @@ class Paddle extends ObjectStatic {
         }
     }
 
-    // Key binding and handling
-    bindKeys() {
-        document.addEventListener('keydown', (event) => {
-            if (event.code === this.keys.up) {
-                this.movement.up = true; // Mark up movement
-            } else if (event.code === this.keys.down) {
-                this.movement.down = true; // Mark down movement
-            }
-        });
-
-        document.addEventListener('keyup', (event) => {
-            if (event.code === this.keys.up) {
-                this.movement.up = false; // Clear up movement
-            } else if (event.code === this.keys.down) {
-                this.movement.down = false; // Clear down movement
-            }
-        });
-    }
-
+    //TODO: need to improve how keyboard and gamepad are used.
     // Update method to handle movements
-    update() {
+    update(keyboardInput, gamepadInput) {
+
+        // Check keyboard controls
+        this.movement.up = keyboardInput.getKeysDown().includes(this.controls.keyboard.up);
+        this.movement.down = keyboardInput.getKeysDown().includes(this.controls.keyboard.down);
+
+        // Get gamepads
+        const gamepads = navigator.getGamepads();
+        const gamepadIndex = this.isLeft ? 0 : 1;
+        const gamepad = gamepads[gamepadIndex];
+
+        if (gamepad) {
+            // Movement check
+            const dPad = GamepadMapSNES.getDPad(gamepad);
+            this.movement.up = this.movement.up || dPad.up;
+            this.movement.down = this.movement.down || dPad.down;
+        }
+
+        // Apply movement
         if (this.movement.up) {
             this.move(-1); // Move up
         }
@@ -128,7 +134,7 @@ class Paddle extends ObjectStatic {
 
     draw() {
         // Draw the tail
-        
+
         for (let i = 0; i < this.previousPositions.length; i++) {
             const pos = this.previousPositions[i];
             const opacity = this.tailOpacities[i];

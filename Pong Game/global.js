@@ -13,7 +13,30 @@ export const canvasConfig = {
     height: 480, // Game area height
     scale: 0.6,
     backgroundColor: "#333333",
+    borderColor: "#bbbbbb",
+    borderSize: 5,    
 };
+
+export const fullscreenConfig = {
+    color: 'red',
+    font: '40px Arial',
+    text: 'Click here to enter fullscreen',
+    x: 60,
+    y: 450
+};
+
+export const performanceConfig = {
+    // Configuration for FPS display
+    show: true,
+    size: 30,
+    font: "monospace",
+    colorLow: "green",
+    colorMed: "yellow",
+    colorHigh: "red",
+    backgroundColor: "#AAAAAABB",
+    x: 20,
+    y: 40,
+}
 
 // Configuration for puck
 // In the original Pong game, the puck (or ball) had the following dimensions:
@@ -38,7 +61,7 @@ export const paddleConfig = {
     speed: 6.0,
     leftColor: "white",
     rightColor: "white",
-    winnerScore: 21,
+    winnerScore: 2,
 };
 
 export const font5x3 = {
@@ -48,19 +71,3 @@ export const font5x3 = {
 
 }
 
-// non type="module" in HTML
-// Set global canvas variables for ../scripts
-window.gameAreaWidth = canvasConfig.width;
-window.gameAreaHeight = canvasConfig.height;
-window.gameScaleWindow = canvasConfig.scale;
-window.backgroundColor = canvasConfig.backgroundColor;
-
-window.borderColor = "white";
-window.borderSize = 5;
-
-// Configuration for FPS display
-window.fpsShow = false;
-window.fpsColor = "yellow";
-window.fpsSize = "30px";
-window.fpsX = 30;
-window.fpsY = 50;
