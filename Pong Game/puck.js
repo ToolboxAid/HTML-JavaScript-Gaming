@@ -11,7 +11,7 @@ import ObjectDynamic from '../scripts/objectDynamic.js';
 import Functions from '../scripts/functions.js';
 import Timer from '../scripts/timer.js';
 
-import { AudioPlayer } from '../scripts/audioPlayer.js';
+import AudioPlayer from '../scripts/audioPlayer.js';
 
 class Puck extends ObjectDynamic {
 

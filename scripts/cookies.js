@@ -15,7 +15,7 @@ Cookies.set('session_id', '12345', { sameSite: 'Strict', path: '/' });
  * In most cases, you want to use part of the URL path
 const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
  */
-export class Cookies {
+class Cookies {
 
     /**
      * Set a cookie with a specified name, value, and optional settings.
@@ -105,3 +105,5 @@ export class Cookies {
     }
 
 }
+
+export default Cookies;

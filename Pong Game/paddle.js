@@ -5,7 +5,7 @@
 
 import { canvasConfig, paddleConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
-import { AudioPlayer } from '../scripts/audioPlayer.js';
+import AudioPlayer from '../scripts/audioPlayer.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 import GamepadMapSNES from '../scripts/gamepadMapSNES.js';

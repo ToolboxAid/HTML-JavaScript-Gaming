@@ -27,14 +27,14 @@ export const fullscreenConfig = {
 
 export const performanceConfig = {
     show: true,
-    size: 30,
+    size: 10,
     font: "monospace",
     colorLow: "green",
     colorMed: "yellow",
     colorHigh: "red",
     backgroundColor: "#AAAAAABB",
-    x: 20,
-    y: 40,
+    x: 10,
+    y: 10,
 }
 
 // Configuration for puck

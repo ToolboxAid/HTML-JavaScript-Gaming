@@ -3,7 +3,7 @@
 // 10/16/2024
 // AudioPlayer.js
 
-export class AudioPlayer {
+class AudioPlayer {
     constructor(basePath) {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.audioCache = {};
@@ -88,3 +88,8 @@ export class AudioPlayer {
         }
     }
 }
+
+export default AudioPlayer;
+// export default Game;
+
+// const game = new Game();

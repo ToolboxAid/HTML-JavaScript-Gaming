@@ -192,6 +192,11 @@ class ObjectSprite extends ObjectKillable {
     }
 
     setSpriteColor(spriteColor) {
+        if (this.frameType === "json") {
+            console.log('spriteColor nave valid for json');
+            return;
+        }
+        
         // Check if the color is a valid named color in the color map, ignoring case
         const isValidSymbol = Colors.isValidSymbol(spriteColor);
 

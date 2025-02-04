@@ -29,13 +29,12 @@ import EnemyBomb1 from './enemyBomb1.js';
 import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 
-import { AudioPlayer } from '../scripts/audioPlayer.js';
-import { Cookies } from '../scripts/cookies.js';
+import AudioPlayer from '../scripts/audioPlayer.js';
+import Cookies from '../scripts/cookies.js';
 
 import AttractMode from './attractMode.js';
 
 import Sprite from '../scripts/sprite.js';
-
 
 class Game extends GameBase {
 
