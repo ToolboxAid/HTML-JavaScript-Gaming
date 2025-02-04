@@ -10,7 +10,7 @@ import CanvasUtils from "../scripts/canvas.js";
  * Represents a dynamic object in a game that can move based on velocity.
  */
 class ObjectDynamic extends ObjectStatic {
-    
+
     /**
      * Creates an instance of ObjectDynamic.
      * @param {number} x - The X position of the object.
@@ -55,7 +55,7 @@ class ObjectDynamic extends ObjectStatic {
      * @param {number} deltaTime - The time elapsed since the last update, in seconds.
      */
     update(deltaTime = 1) {
-        if (!deltaTime){
+        if (!deltaTime) {
             console.error("'deltaTime' is required");
             return;
         }
@@ -178,7 +178,7 @@ class ObjectDynamic extends ObjectStatic {
             boundariesHit.push('top');
         }
         // Check for collision with the bottom boundary
-        else if (this.y + this.radius >= this.gameAreaWidth) {
+        else if (this.y + this.radius >= this.gameAreaHeight) {
             boundariesHit.push('bottom');
         }
 

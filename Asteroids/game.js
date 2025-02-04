@@ -3,7 +3,9 @@
 // 11/15/2024
 // game.js - asteroids
 
-import { canvasConfig, playerSelect} from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
+import GameBase from '../scripts/gamebase.js';
+
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
@@ -13,11 +15,17 @@ import Ship from './ship.js';
 
 import GameAttract from './gameAttract.js';
 
-class Game {
+class Game extends GameBase {
 
   static gameAttract = null;
 
   constructor() {
+    super(canvasConfig, performanceConfig, fullscreenConfig);
+  }
+
+  async onInitialize() {
+
+    console.log("onInit");
     this.keyboardInput = new KeyboardInput();
 
     this.ships = [];
@@ -54,7 +62,7 @@ class Game {
         break;
 
       case "initGame":
-        this.initializeGame();
+        this.initGame();
         break;
 
       case "playGame":
@@ -82,16 +90,16 @@ class Game {
 
   displayPlayerSelect(deltaTime) {
     Game.gameAttract.update(deltaTime);
-    Game.gameAttract.draw(false);    
+    Game.gameAttract.draw(false);
     const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
     if (result) {
-        this.playerCount = result.playerCount;
-        this.playerLives = result.playerLives;
-        this.gameState = "initGame";
-    }  
+      this.playerCount = result.playerCount;
+      this.playerLives = result.playerLives;
+      this.gameState = "initGame";
+    }
   }
 
-  initializeGame() {
+  initGame() {
     for (let i = 0; i <= 3; i++) {
       this.ships[i] = new Ship();
     }
@@ -116,17 +124,17 @@ class Game {
 
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
-const result = Functions.swapPlayer(
-  this.playerLives,
-  this.currentPlayer,
-  this.playerCount,
-  (newState) => { this.gameState = newState; }
-);
+      const result = Functions.swapPlayer(
+        this.playerLives,
+        this.currentPlayer,
+        this.playerCount,
+        (newState) => { this.gameState = newState; }
+      );
 
-// Update the current player and 
-// lives based on the result from swapPlayer
-this.currentPlayer = result.updatedPlayer;
-this.playerLives = result.updatedLives;
+      // Update the current player and 
+      // lives based on the result from swapPlayer
+      this.currentPlayer = result.updatedPlayer;
+      this.playerLives = result.updatedLives;
       this.ships[this.currentPlayer].reset();
     }
     this.ships[this.currentPlayer].draw();
@@ -182,6 +190,4 @@ this.playerLives = result.updatedLives;
 
 export default Game;
 
-// Canvas needs to know the current directory to game.js for dynamic imports
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

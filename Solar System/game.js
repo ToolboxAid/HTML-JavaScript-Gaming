@@ -3,12 +3,18 @@
 // SolarSystem.js
 // 11/15/2024
 
-import { canvasConfig, solarSystem } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig, solarSystem } from './global.js';
+import GameBase from '../scripts/gamebase.js';
 import CanvasUtils from '../scripts/canvas.js';
-import Fullscreen from '../scripts/fullscreen.js';
 
-class Game {
+class Game extends GameBase {
   constructor() {
+    super(canvasConfig, performanceConfig, fullscreenConfig);
+  }
+
+  async onInitialize() {
+    console.log("onInit");
+
     this.centerX = canvasConfig.width / 2;
     this.centerY = canvasConfig.height / 2;
     this.celestialBodies = [
@@ -85,6 +91,4 @@ class Game {
 // Export the Game class
 export default Game;
 
-// Canvas needs to know the current directory to game.js
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

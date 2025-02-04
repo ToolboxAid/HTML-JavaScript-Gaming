@@ -4,9 +4,10 @@
 // 10/16/2024
 // game.js - Template Game Engine
 
-import { canvasConfig, playerSelect } from './global.js'; // Import canvasConfig for canvas-related configurations
+import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
+import GameBase from '../scripts/gamebase.js';
+
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
-import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
 import Functions from '../scripts/functions.js';
 import KeyboardInput from '../scripts/keyboard.js';
 
@@ -14,27 +15,33 @@ import GameAttract from './gameAttract.js';
 
 const keyboardInput = new KeyboardInput();
 
-class Game {
+class Game extends GameBase {
 
   constructor() {
+    super(canvasConfig, performanceConfig, fullscreenConfig);
+  }
 
-    if (false){
-      
-      console.log("canvasConfig.game",canvasConfig.game);
+  async onInitialize() {
 
-      console.log("window.fpsShow",window.fpsShow);
-      console.log("window.fpsColor",window.fpsColor);
-      console.log("window.fpsSize",window.fpsSize);
-      console.log("window.fpsX",window.fpsX);
-      console.log("window.fpsY",window.fpsY);
-      
-      console.log("window.gameAreaWidth",window.gameAreaWidth);
-      console.log("window.gameAreaHeight",window.gameAreaHeight);
-      console.log("window.gameScaleWindow",window.gameScaleWindow);
-      console.log("window.backgroundColor",window.backgroundColor);
+    console.log("onInit");
+
+    if (false) {
+
+      console.log("canvasConfig.game", canvasConfig.game);
+
+      console.log("window.fpsShow", window.fpsShow);
+      console.log("window.fpsColor", window.fpsColor);
+      console.log("window.fpsSize", window.fpsSize);
+      console.log("window.fpsX", window.fpsX);
+      console.log("window.fpsY", window.fpsY);
+
+      console.log("window.gameAreaWidth", window.gameAreaWidth);
+      console.log("window.gameAreaHeight", window.gameAreaHeight);
+      console.log("window.gameScaleWindow", window.gameScaleWindow);
+      console.log("window.backgroundColor", window.backgroundColor);
       console.log("",);
-      
-      }
+
+    }
 
     // Game State Variables
     this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
@@ -69,7 +76,7 @@ class Game {
         break;
 
       case "initGame":
-        this.initializeGame();
+        this.initGame();
         break;
 
       case "initEnemy":
@@ -129,7 +136,7 @@ class Game {
   }
 
   // Game Logic Functions
-  initializeGame() {
+  initGame() {
     this.gameInitialized = true;
     this.onetime = true;
     // this.playerLives = [3, 3, 4, 3]; // Reset lives
@@ -204,6 +211,4 @@ class Game {
 
 export default Game;
 
-// Canvas needs to know the current directory to game.js for dynamic imports
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

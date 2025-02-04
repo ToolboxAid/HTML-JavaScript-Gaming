@@ -3,7 +3,9 @@
 // 11/15/2024
 // game.js - Snack
 
-import { canvasConfig } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
+import GameBase from '../scripts/gamebase.js';
+
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
@@ -11,8 +13,14 @@ import Functions from '../scripts/functions.js';
 
 import AttractScreen from './attract.js';
 
-class Game {
+class Game extends GameBase {
   constructor() {
+    super(canvasConfig, performanceConfig, fullscreenConfig);
+  }
+
+  async onInitialize() {
+
+    console.log("onInit");
     this.keyboardInput = new KeyboardInput();
     this.gameState = "attract";
     this.snake = [];
@@ -26,7 +34,7 @@ class Game {
 
 
     // Initialize AttractScreen
-    this.attractScreen = new AttractScreen();   
+    this.attractScreen = new AttractScreen();
   }
 
   gameLoop(deltaTime) {
@@ -38,15 +46,15 @@ class Game {
         break;
       case "initGame":
         if (!this.gameInitialized) {
-          this.initializeGame();
+          this.initGame();
         }
         break;
       case "playGame":
         if (Date.now() - this.lastMoveTime > this.gameSpeed) {
           this.playGame();
           this.lastMoveTime = Date.now();
-        }else{
-          this.drawGame() ;
+        } else {
+          this.drawGame();
         }
         break;
       case "gameOver":
@@ -66,7 +74,7 @@ class Game {
     }
   }
 
-  initializeGame() {
+  initGame() {
     // Initialize Snake
     this.snake = [{ x: 100, y: 100 }, { x: 80, y: 100 }, { x: 60, y: 100 }];
     this.direction = 'right';
@@ -130,9 +138,9 @@ class Game {
 
     // Check collision with walls
     if (
-      head.x < 0 || 
-      head.y < 0 || 
-      head.x >= canvasConfig.width || 
+      head.x < 0 ||
+      head.y < 0 ||
+      head.x >= canvasConfig.width ||
       head.y >= canvasConfig.height
     ) {
       this.gameState = "gameOver";
@@ -171,7 +179,7 @@ class Game {
     };
   }
 
-  displayGameOver() {    
+  displayGameOver() {
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Game Over!", 200, 150);
@@ -192,8 +200,6 @@ class Game {
 // Export the Game class
 export default Game;
 
-// Canvas needs to know the current directory to game.js for dynamic imports
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();
 
 

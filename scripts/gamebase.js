@@ -13,7 +13,6 @@ class GameBase {
     static isInitialized = false;
 
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {
-console.log(canvasConfig, performanceConfig, fullscreenConfig);
         this.initializeGame(canvasConfig, performanceConfig, fullscreenConfig)
             .then(() => {
                 console.log('*** Game initialization complete ***');

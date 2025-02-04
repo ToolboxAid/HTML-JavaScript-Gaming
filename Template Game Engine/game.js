@@ -4,16 +4,25 @@
 // 10/16/2024
 // game.js - Template Game Engine
 
-import { canvasConfig, playerSelect } from './global.js'; // Import canvasConfig for canvas-related configurations
-import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
-import Fullscreen from '../scripts/fullscreen.js'; // Required for fullscreen control, used elsewhere
+import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
+import GameBase from '../scripts/gamebase.js';
+
+import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
 import KeyboardInput from '../scripts/keyboard.js';
-import GamepadInput from '../scripts/gamepad.js';
 
-class Game {
+class Game extends GameBase {
 
   constructor() {
+    super(canvasConfig, performanceConfig, fullscreenConfig);
+  }
+
+  async onInitialize() {
+
+    console.log("onInit");
+
+    this.playerSelect = playerSelect;
+
     this.keyboardInput = new KeyboardInput();
 
     // Game State Variables
@@ -28,6 +37,8 @@ class Game {
 
     this.backToAttract = 600;
     this.backToAttractCounter = 0;
+
+
   }
 
   // Example: object.position += object.velocity * deltaTime;
@@ -47,7 +58,7 @@ class Game {
         break;
 
       case "initGame":
-        this.initializeGame();
+        this.initGame();
         break;
 
       case "initEnemy":
@@ -84,7 +95,7 @@ class Game {
   }
 
   displayPlayerSelect(deltaTime) {
-    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
+    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput);
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;
@@ -106,7 +117,7 @@ class Game {
   }
 
   // Game Logic Functions
-  initializeGame() {
+  initGame() {
     this.gameInitialized = true;
     this.onetime = true;
     // this.playerLives = [3, 3, 4, 3]; // Reset lives
@@ -181,6 +192,4 @@ class Game {
 
 export default Game;
 
-// Canvas needs to know the current directory to game.js for dynamic imports
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();

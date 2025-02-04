@@ -14,7 +14,7 @@ export const canvasConfig = {
     scale: 0.6,
     backgroundColor: "#333333",
     borderColor: "#bbbbbb",
-    borderSize: 5,    
+    borderSize: 5,
 };
 
 export const fullscreenConfig = {
@@ -61,13 +61,12 @@ export const paddleConfig = {
     speed: 6.0,
     leftColor: "white",
     rightColor: "white",
-    winnerScore: 2,
+    winnerScore: 21,
 };
 
 export const font5x3 = {
     color: "white",
     pixelWidth: 7,
-    pixelHeight: 12,    
-
+    pixelHeight: 12,
 }
 

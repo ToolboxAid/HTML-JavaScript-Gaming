@@ -11,12 +11,30 @@ export const canvasConfig = {
   height: 480, // Game area height
   scale: 0.5,
   backgroundColor: "#222222",
+  borderColor: "white",
+  borderSize: 15,
+};
 
-  fullscreenText: 'Click game canvas to enter fullscreen',
-  fullscreenFont: '30px Arial',
-  fullscreenColor: 'pink',
-  fullscreenX: 70, // X position for fullscreen text
-  fullscreenY: 270 // Y position for fullscreen text
+export const fullscreenConfig = {
+  color: 'yellow',
+  font: '40px Arial',
+  text: 'Click here to enter fullscreen',
+  x: 230,
+  y: 790
+};
+
+export const performanceConfig = {
+  // Configuration for FPS display
+  show: true,
+  size: 30,
+  font: "monospace",
+  colorLow: "green",
+  colorMed: "yellow",
+  colorHigh: "red",
+  backgroundColor: "#AAAAAABB",
+
+  x: 20,
+  y: 40,
 }
 
 export const playerSelect = {
@@ -39,30 +57,3 @@ export const spriteConfig = {
   playerBonusScore: 1500,
   playerColor: 'white',
 }
-
-// non type="module" in HTML
-// Set global canvas variables for ../scripts
-window.game = canvasConfig.game;
-
-window.gameAreaWidth = canvasConfig.width;
-window.gameAreaHeight = canvasConfig.height;
-window.gameScaleWindow = canvasConfig.scale;
-window.backgroundColor = canvasConfig.backgroundColor;
-
-window.pixelSize = spriteConfig.pixelSize;
-
-window.fullscreenText = canvasConfig.fullscreenText;
-window.fullscreenFont = canvasConfig.fullscreenFont;
-window.fullscreenColor = canvasConfig.fullscreenColor;
-window.fullscreenX = canvasConfig.fullscreenX;
-window.fullscreenY = canvasConfig.fullscreenY;
-
-window.borderColor = "pink";
-window.borderSize = 5;
-
-// Configuration for FPS display
-window.fpsShow = true;
-window.fpsColor = "pink";
-window.fpsSize = "30px";
-window.fpsX = 5;
-window.fpsY = 27;

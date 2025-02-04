@@ -6,35 +6,36 @@
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
-    width: 600, // Game area width
-    height: 600, // Game area height
-    scale: 0.5,
-    backgroundColor: "#222222",   
-    
-    fullscreenText: 'Click game to enter fullscreen',
-    fullscreenFont: '30px Arial',
-    fullscreenColor: 'yellow',
+  width: 600, // Game area width
+  height: 600, // Game area height
+  scale: 0.5,
+  backgroundColor: "#222222",
+
+  fullscreenText: 'Click game to enter fullscreen',
+  fullscreenFont: '30px Arial',
+  fullscreenColor: 'yellow',
+  borderColor: "white",
+  borderSize: 15,
 };
 
-// non type="module" in HTML
-// Set global canvas variables for ../scripts
-window.gameAreaWidth = canvasConfig.width;
-window.gameAreaHeight = canvasConfig.height;
-window.gameScaleWindow = canvasConfig.scale;
-window.backgroundColor = canvasConfig.backgroundColor;
+export const fullscreenConfig = {
+  color: 'yellow',
+  font: '40px Arial',
+  text: 'Click here to enter fullscreen',
+  x: 230,
+  y: 790
+};
 
-window.fullscreenText = canvasConfig.fullscreenText; 
-window.fullscreenFont = canvasConfig.fullscreenFont;
-window.fullscreenColor = canvasConfig.fullscreenColor; 
+export const performanceConfig = {
+  // Configuration for FPS display
+  show: true,
+  size: 30,
+  font: "monospace",
+  colorLow: "green",
+  colorMed: "yellow",
+  colorHigh: "red",
+  backgroundColor: "#AAAAAABB",
 
-window.borderColor = "#888888";
-window.borderSize = 5;
-
-window.fullscreenY=590;
-
-// Configuration for FPS display
-window.fpsShow = true;
-window.fpsColor = "yellow";
-window.fpsSize = "40px";
-window.fpsX = 30;
-window.fpsY = 50;
+  x: 20,
+  y: 40,
+}

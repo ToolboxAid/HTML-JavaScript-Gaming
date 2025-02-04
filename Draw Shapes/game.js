@@ -5,7 +5,7 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import GameBase from '../scripts/gamebase.js';
-import CanvasUtils from '../scripts/canvas.js'; // Required import
+import CanvasUtils from '../scripts/canvas.js';
 
 // Define the Game class
 class Game extends GameBase {

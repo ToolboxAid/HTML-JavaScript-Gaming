@@ -6,29 +6,36 @@
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
-    width: 800, // Game area width
-    height: 800, // Game area height
-    scale: 0.35,
-    backgroundColor: "#000000",
+  width: 1024, // Game area width
+  height: 768, // Game area height
+  scale: 0.35,
+  backgroundColor: "#000000",
+  borderColor: "white",
+  borderSize: 15,
 };
 
-export const solarSystem = {
-    sunRadius: 30,
+export const fullscreenConfig = {
+  color: 'yellow',
+  font: '40px Arial',
+  text: 'Click here to enter fullscreen',
+  x: 230,
+  y: 790
+};
+
+export const performanceConfig = {
+  // Configuration for FPS display
+  show: true,
+  size: 30,
+  font: "monospace",
+  colorLow: "green",
+  colorMed: "yellow",
+  colorHigh: "red",
+  backgroundColor: "#AAAAAABB",
+
+  x: 20,
+  y: 40,
 }
 
-// non type="module" in HTML
-// Set global canvas variables for ../scripts
-window.gameAreaWidth = canvasConfig.width;
-window.gameAreaHeight = canvasConfig.height;
-window.gameScaleWindow = canvasConfig.scale;
-window.backgroundColor = canvasConfig.backgroundColor;
-
-window.borderColor = "red";
-window.borderSize = 5;
-
-// Configuration for FPS display
-window.fpsShow = true;
-window.fpsColor = "yellow";
-window.fpsSize = "40px";
-window.fpsX = 30;
-window.fpsY = 50;
+export const solarSystemConfig = {
+  sunRadius: 30,
+}

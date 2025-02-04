@@ -34,6 +34,7 @@ class Circle extends ObjectDynamic {
         super.update(deltaTime);
         // Call the checkGameBoundsCircle function
         const boundariesHit = this.checkGameBoundsCircle();
+
         if (boundariesHit.length > 0) {
             // Pass boundariesHit to updateCirclePosition
             this.updateCircle(boundariesHit);

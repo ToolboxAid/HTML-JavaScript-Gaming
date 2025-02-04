@@ -4,15 +4,23 @@
 // 11/14/2024
 // game.js - Tic Tac Toe
 
-import { canvasConfig } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
+import GameBase from '../scripts/gamebase.js';
+
+
 import CanvasUtils from '../scripts/canvas.js';
-import Fullscreen from '../scripts/fullscreen.js';
 import KeyboardInput from '../scripts/keyboard.js';
 import AttractMode from './attractMode.js';
 
-class Game {
+class Game extends GameBase {
 
   constructor() {
+    super(canvasConfig, performanceConfig, fullscreenConfig);
+  }
+
+  async onInitialize() {
+
+    console.log("onInit");
     // Canvas needs to know the current directory to game.js for dynamic imports
     const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     window.canvasPath = currentDir;
@@ -40,7 +48,7 @@ class Game {
         break;
       case "initGame":
         if (!this.gameInitialized) {
-          this.initializeGame();
+          this.initGame();
         }
         break;
       case "playGame":
@@ -72,7 +80,7 @@ class Game {
     }
   }
 
-  initializeGame() {
+  initGame() {
     // Clear the board
     for (let i = 0; i < this.board.length; i++) {
       this.board[i] = null;
@@ -172,7 +180,7 @@ class Game {
       CanvasUtils.ctx.fillText("It's a Draw!", 225, 200);
     } else {
       const winner = this.winner;
-      CanvasUtils.ctx.fillText("Player `"+ winner +"` Wins!", 200, 200);
+      CanvasUtils.ctx.fillText("Player `" + winner + "` Wins!", 200, 200);
     }
 
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 400);
@@ -193,6 +201,4 @@ class Game {
 // Export the Game class
 export default Game;
 
-// Canvas needs to know the current directory to game.js for dynamic imports
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-window.canvasPath = currentDir;
+const game = new Game();
