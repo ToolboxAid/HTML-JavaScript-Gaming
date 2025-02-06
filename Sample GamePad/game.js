@@ -1,27 +1,27 @@
 // ToolboxAid.com
 // David Quesenberry
 // 11/21/2024
-// game.js - Gamepad Integration with Button States on Canvas
+// game.js - GameController Integration with Button States on Canvas
 
-import GamepadInput from '../scripts/gamepad.js';
+import GameControllers from '../scripts/gameControllers.js';
 
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
-const gamepadInput = new GamepadInput(); // Instantiate the GamepadInput class
+const gameControllers = new GameControllers(); // Instantiate the GameControllers class
 
-// Player state for each gamepad
+// Player state for each gameController
 const players = [];
 
-// Create a player for each gamepad
-function createPlayer(gamepadIndex) {
+// Create a player for each gameController
+function createPlayer(gameControllerIndex) {
     // Assign each player a different color and initial position
     const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
-    const color = colors[gamepadIndex % colors.length]; // Loop through colors if more than 10 gamepads
+    const color = colors[gameControllerIndex % colors.length]; // Loop through colors if more than 10 gameControllers
 
-    players[gamepadIndex] = {// this is to allow player to be drawn
+    players[gameControllerIndex] = {// this is to allow player to be drawn
         color,
-        x: gamepadIndex * 25,  // Offset initial positions for each player
-        y: gamepadIndex * 25,
+        x: gameControllerIndex * 25,  // Offset initial positions for each player
+        y: gameControllerIndex * 25,
         speed: 2,
         size: 8,
         width: 77,
@@ -32,12 +32,13 @@ function createPlayer(gamepadIndex) {
 
 // Function to update the game state (called on every frame)
 function gameUpdate() {
-    gamepadInput.update(); // Update the gamepad state
+    gameControllers.update(); // Update the gameController state
 
-    // Iterate over all connected gamepads and handle input for each player
-    gamepadInput.gamepads.forEach((gamepad, index) => {
-        if (gamepad) {
-            // Create player if it's the first time this gamepad is detected
+    // Iterate over all connected gameControllers and handle input for each player
+    gameControllers.gameControllers.forEach((gameController, index) => {
+        if (gameController) {
+            console.log(gameController);
+            // Create player if it's the first time this gameController is detected
             if (!players[index]) createPlayer(index);
 
             const player = players[index];
@@ -45,8 +46,8 @@ function gameUpdate() {
             // Reset all button colors to gray
             player.buttonColors = Array(10).fill('gray');
 
-            // Handle button presses for each gamepad
-            const buttonsDown = gamepadInput.getButtonsDown(index);
+            // Handle button presses for each gameController
+            const buttonsDown = gameControllers.getButtonsDown(index);
             if (buttonsDown.length > 0) {
                 // Set all buttons to 'gray'
                 player.buttonColors = new Array(10).fill('gray');
@@ -57,8 +58,8 @@ function gameUpdate() {
                 });
             }
 
-            // Handle movement with gamepad analog stick (axes)
-            const [axisX, axisY] = gamepadInput.getAxes(index);
+            // Handle movement with gameController analog stick (axes)
+            const [axisX, axisY] = gameControllers.getAxes(index);
             let moveX = 0, moveY = 0;
 
             if (axisX > 0) moveX = player.speed;

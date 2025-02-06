@@ -18,7 +18,7 @@ import Ground from './ground.js';
 import LevelFrames from './levelFrames.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
-import GamepadInput from '../scripts/gamepad.js';
+import GameControllers from '../scripts/gameControllers.js';
 
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';
@@ -90,7 +90,7 @@ class Game extends GameBase {
         }
 
         this.keyboardInput = new KeyboardInput();
-        this.gamepadInput = new GamepadInput();
+        this.gameControllers = new GameControllers();
 
         // Game State Variables
         this.gameState = "attract"; // Possible states: attract, playerSelect, initGameShield, initGameEnemy, playGame, pauseGame, gameOver
@@ -559,7 +559,7 @@ class Game extends GameBase {
         //  console.log("gameLoop");
 
         this.keyboardInput.update();
-        this.gamepadInput.update();
+        this.gameControllers.update();
 
         // Update game state with deltaTime
         switch (this.gameState) {
@@ -635,7 +635,7 @@ class Game extends GameBase {
 
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
             this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
-            this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_9)) {
+            this.gameControllers.isButtonJustPressed(GameControllers.INDEX_0, GameControllers.BUTTON_9)) {
             AttractMode.count = 0;
             this.resetPlayers();
             this.gameState = "playerSelect";
@@ -648,12 +648,12 @@ class Game extends GameBase {
         CanvasUtils.drawText(40, 440, "Keyboard <right arrow> key to move right.", 3.5, "yellow");
         CanvasUtils.drawText(40, 480, "Keyboard <spacebar> to fire.", 3.5, "yellow");
 
-        CanvasUtils.drawText(40, 600, "Gamepad <left D-pad> to move left.", 3.5, "yellow");
-        CanvasUtils.drawText(40, 640, "Gamepad <right D-bay> to move right.", 3.5, "yellow");
-        CanvasUtils.drawText(40, 680, "Gamepad <A> to fire.", 3.5, "yellow");
+        CanvasUtils.drawText(40, 600, "GameController <left D-pad> to move left.", 3.5, "yellow");
+        CanvasUtils.drawText(40, 640, "GameController <right D-bay> to move right.", 3.5, "yellow");
+        CanvasUtils.drawText(40, 680, "GameController <A> to fire.", 3.5, "yellow");
 
         const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect,
-            this.keyboardInput, this.gamepadInput);
+            this.keyboardInput, this.gameControllers);
         if (result) {
             this.playerCount = result.playerCount;
             this.gameState = "initGameShield";
@@ -677,11 +677,11 @@ class Game extends GameBase {
 
         CanvasUtils.drawText(x, y, "Game Over.", 3.5, "white");
         CanvasUtils.drawText(x - 300, y + 60, "Press Keyboard `Enter` to Restart", 3.5, "#ffffffff");
-        CanvasUtils.drawText(x - 350, y + 90, "Press GamePad `Start` to Restart", 3.5, "#ffffffff");
+        CanvasUtils.drawText(x - 350, y + 90, "Press GameController `Start` to Restart", 3.5, "#ffffffff");
 
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
             this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
-            this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_9) ||
+            this.gameControllers.isButtonJustPressed(GameControllers.INDEX_0, GameControllers.BUTTON_9) ||
             this.backToAttractCounter++ > this.backToAttract) {
             this.gameState = "resetPlayers";
         }
@@ -820,7 +820,7 @@ class Game extends GameBase {
         const laserFirePoint = this.player.update(
             this.keyboardInput.getKeysDown(),
             this.keyboardInput.getkeysPressed(),
-            this.gamepadInput);
+            this.gameControllers);
         this.checkLaser(deltaTime, laserFirePoint);
         this.checkLaserEnemyCollision(this.player);
         this.checkLaserBombCollision();
@@ -838,8 +838,8 @@ class Game extends GameBase {
             }
         }
 
-        // Gamepad input
-        if (this.gamepadInput.isButtonJustPressed(GamepadInput.INDEX_0, GamepadInput.BUTTON_8)) {
+        // GameController input
+        if (this.gameControllers.isButtonJustPressed(GameControllers.INDEX_0, GameControllers.BUTTON_8)) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
                 Game.audioPlayer.stopAllLooping();
@@ -902,8 +902,8 @@ class Game extends GameBase {
     static initText() {
         Game.scoreTextFrame = Sprite.getTextRGB("SCORE<1>    MIDWAY    SCORE<2>", Game.redPalette);
         Game.scoreNumbFrame = null;
-        Game.pauseFrame = Sprite.getTextRGB("Pause game Keyboard `P` / GamePad `Select`", Game.redPalette);
-        Game.upauseFrame = Sprite.getTextRGB("Unpause game Keyboard `P` / GamePad `Select`", Game.whitePalette);
+        Game.pauseFrame = Sprite.getTextRGB("Pause game Keyboard `P` / GameController `Select`", Game.redPalette);
+        Game.upauseFrame = Sprite.getTextRGB("Unpause game Keyboard `P` / GameController `Select`", Game.whitePalette);
     }
     static redPalette = {
         custom: [

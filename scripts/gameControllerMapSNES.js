@@ -1,4 +1,4 @@
-class GamepadMapSNES {
+class GameControllerMapSNES {
     static debug = true;
 
     // SNES USB Controller Layout
@@ -19,33 +19,15 @@ class GamepadMapSNES {
     // D-Pad uses axes
     static Axes = {
         X: 0,  // -1 left, +1 right
-        Y: 1   // -1 up, +1 down
+        Y: 0   // -1 up, +1 down
     };
 
-    static getDPad(gamepad) {
-        if (!gamepad) return null;
-        return {
-            up: gamepad.axes[this.Axes.Y] < -0.5,
-            down: gamepad.axes[this.Axes.Y] > 0.5,
-            left: gamepad.axes[this.Axes.X] < -0.5,
-            right: gamepad.axes[this.Axes.X] > 0.5
-        };
-    }
-
-    static logGamepad(gamepad) {
-        if (!this.debug || !gamepad) return;
-        console.group(`SNES Gamepad ${gamepad.index}`);
-        console.log('ID:', gamepad.id);
-        console.log('Buttons:', gamepad.buttons.length);
-        console.log('Axes:', gamepad.axes.length);
-        console.groupEnd();
-    }
 }
 
-export default GamepadMapSNES;
+export default GameControllerMapSNES;
         
     // static Buttons = {
-    //     // Face buttons (may vary by browser/gamepad)
+    //     // Face buttons (may vary by browser/gameController)
     //     A: 0,          // Xbox A, PS X/Cross
     //     B: 1,          // Xbox B, PS Circle
     //     X: 2,          // Xbox X, PS Square
@@ -78,4 +60,4 @@ export default GamepadMapSNES;
     // };
 // }
 
-// export default GamepadMap;
+// export default GameControllerMap;

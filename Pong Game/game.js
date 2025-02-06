@@ -9,7 +9,7 @@ import GameBase from '../scripts/gamebase.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
-import GamepadInput from '../scripts/gamepad.js';
+import GameControllers from '../scripts/gameControllers.js';
 
 import Font5x3 from './font5x3.js';
 import Paddle from './paddle.js';
@@ -42,7 +42,7 @@ class Game extends GameBase {
         */
 
         this.keyboardInput = new KeyboardInput();
-        this.gamepadInput = new GamepadInput();
+        this.gameControllers = new GameControllers();
 
         // Create paddles instances
         this.isLeft = true;
@@ -61,7 +61,7 @@ class Game extends GameBase {
 
     gameLoop(deltaTime) {
         this.keyboardInput.update();
-        this.gamepadInput.update();
+        this.gameControllers.update();
 
         const player1X = (canvasConfig.width / 2) - (font5x3.pixelWidth * 24); // X position for Player 1 score
         const player2X = (canvasConfig.width / 2) + (font5x3.pixelWidth * 18); // X position for Player 2 score
@@ -83,10 +83,10 @@ class Game extends GameBase {
 
             // Pause the game until a key is pressed
             if (this.keyboardInput.getKeysDown().length > 0 ||
-            this.gamepadInput.isButtonJustPressed(0,8) ||
-            this.gamepadInput.isButtonJustPressed(0,9) ||
-            this.gamepadInput.isButtonJustPressed(1,8) ||
-            this.gamepadInput.isButtonJustPressed(1,9)) {
+            this.gameControllers.isButtonJustPressed(0,8) ||
+            this.gameControllers.isButtonJustPressed(0,9) ||
+            this.gameControllers.isButtonJustPressed(1,8) ||
+            this.gameControllers.isButtonJustPressed(1,9)) {
                 this.restartGame();
             }
 
@@ -94,8 +94,8 @@ class Game extends GameBase {
         }
 
         // Update paddles using keyboard
-        this.leftPaddle.update(this.keyboardInput, this.gamepadInput);
-        this.rightPaddle.update(this.keyboardInput, this.gamepadInput);
+        this.leftPaddle.update(this.keyboardInput, this.gameControllers);
+        this.rightPaddle.update(this.keyboardInput, this.gameControllers);
 
         // Update/Move the puck using its inherited method
         this.puck.update(this.leftPaddle, this.rightPaddle, deltaTime);

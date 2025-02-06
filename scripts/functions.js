@@ -3,13 +3,13 @@
 // 10/16/2024
 // functions.js
 
-import GamepadInput from "./gamepad.js";
+import GameControllers from "./gameControllers.js";
 
 class Functions {
 
     /**  Player information
     */
-    static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput, gamepadInput) {
+    static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput, gameControllers) {
         ctx.fillStyle = canvasConfig.backgroundColor + 'AA'; // Semi-transparent
         ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Overlay the canvas
 
@@ -39,21 +39,21 @@ class Functions {
         }
 
         // ---------------------
-        // GamePad Input
-        ctx.fillText('Gamepad Select Player(s)', x, y + 150);
+        // GameController Input
+        ctx.fillText('GameController Select Player(s)', x, y + 150);
         ctx.fillText('`Left Bumper` 1 player', (canvasConfig.width / 2) - 200, y + 200);
         ctx.fillText('`Right Bumper` 2 players', (canvasConfig.width / 2) - 200, y + 250);
 
-        if (gamepadInput) {
-            console.warn('Gamepad currently supports 2 players');
-            if (gamepadInput.isButtonDown(GamepadInput.INDEX_0, GamepadInput.BUTTON_4)) {
+        if (gameControllers) {
+            console.warn('GameController currently supports 2 players');
+            if (gameControllers.isButtonDown(GameControllers.INDEX_0, GameControllers.BUTTON_4)) {
                 const i = 1;
                 return {
                     playerCount: i, playerLives: Array.from({ length: maxPlayers },
                         (_, index) => (index < i ? lives : 0)), gameState: "initGame"
                 };
             }
-            if (gamepadInput.isButtonDown(GamepadInput.INDEX_0, GamepadInput.BUTTON_5)) {
+            if (gameControllers.isButtonDown(GameControllers.INDEX_0, GameControllers.BUTTON_5)) {
                 const i = 2;
                 return {
                     playerCount: i, playerLives: Array.from({ length: maxPlayers },

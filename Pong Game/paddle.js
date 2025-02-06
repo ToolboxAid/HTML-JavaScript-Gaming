@@ -8,7 +8,7 @@ import ObjectStatic from '../scripts/objectStatic.js';
 import AudioPlayer from '../scripts/audioPlayer.js';
 import CanvasUtils from '../scripts/canvas.js';
 
-import GamepadMapSNES from '../scripts/gamepadMapSNES.js';
+import GameControllerMapSNES from '../scripts/gameControllerMapSNES.js';
 
 class Paddle extends ObjectStatic {
 
@@ -32,9 +32,9 @@ class Paddle extends ObjectStatic {
                 up: this.isLeft ? 'KeyA' : 'ArrowUp',
                 down: this.isLeft ? 'KeyZ' : 'ArrowDown'
             },
-            gamepad: {
-                up: this.isLeft ? GamepadMapSNES.Axes.X : GamepadMapSNES.Axes.X,
-                down: this.isLeft ? GamepadMapSNES.Axes.X : GamepadMapSNES.Axes.X
+            gameController: {
+                up: this.isLeft ? GameControllerMapSNES.Axes.X.up : GameControllerMapSNES.Axes.X.up,
+                down: this.isLeft ? GameControllerMapSNES.Axes.X.up : GameControllerMapSNES.Axes.X.up
             }
         };
 
@@ -101,24 +101,29 @@ class Paddle extends ObjectStatic {
         }
     }
 
-    //TODO: need to improve how keyboard and gamepad are used.
+    //TODO: need to improve how keyboard and gameController are used.
+
     // Update method to handle movements
-    update(keyboardInput, gamepadInput) {
+    update(keyboardInput, gameControllers) {
 
         // Check keyboard controls
         this.movement.up = keyboardInput.getKeysDown().includes(this.controls.keyboard.up);
         this.movement.down = keyboardInput.getKeysDown().includes(this.controls.keyboard.down);
 
-        // Get gamepads
-        const gamepads = navigator.getGamepads();
-        const gamepadIndex = this.isLeft ? 0 : 1;
-        const gamepad = gamepads[gamepadIndex];
+        const gameControllerIndex = this.isLeft ? 0 : 1;
+        const gameController = gameControllers.getGameController(gameControllerIndex);
 
-        if (gamepad) {
-            // Movement check
-            const dPad = GamepadMapSNES.getDPad(gamepad);
+        // Movement check
+
+        if (gameController) {
+
+            gameControllers.logGameController(gameControllerIndex);
+
+            const dPad = gameControllers.getGameControllerDPad(gameControllerIndex);
+            
             this.movement.up = this.movement.up || dPad.up;
             this.movement.down = this.movement.down || dPad.down;
+
         }
 
         // Apply movement
