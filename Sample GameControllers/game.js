@@ -37,7 +37,6 @@ function gameUpdate() {
     // Iterate over all connected gameControllers and handle input for each player
     gameControllers.gameControllers.forEach((gameController, index) => {
         if (gameController) {
-            console.log(gameController);
             // Create player if it's the first time this gameController is detected
             if (!players[index]) createPlayer(index);
 
