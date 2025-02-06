@@ -5,8 +5,6 @@
 
 import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
-import Fullscreen from '../scripts/fullscreen.js';
-import Functions from '../scripts/functions.js';
 
 import Hero from './hero.js';
 import TileMap from '../scripts/tileMap.js';
@@ -23,10 +21,7 @@ class GameAttract {
     }
 
     draw(show = true) {
-        // this.displayAttract();
-        // needs to be drawn on the correct layer.
-        // moved to tilemap.js
-        // this.hero.draw();  
+  
         this.tileMap.draw(this.hero);
     }
 

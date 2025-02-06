@@ -1,0 +1,21 @@
+ToolboxAid.com
+David Quesenberry
+10/16/2024
+todo tree.txt
+
+ICONS used:
+https://primer.style/foundations/icons
+
+// used in code files
+BUG
+TODO
+
+// used in requirements text file
+[ ] TODO
+[.] in progres
+[x] complete
+[!] cancel/don't do
+
+
+For the above results, update settings.json.
+The settings.json is in the .vscode folder.

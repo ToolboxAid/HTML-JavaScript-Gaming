@@ -2,14 +2,12 @@
 {
     "todo-tree.general.tags": [
         "BUG",
-        "HACK",
         "TODO",
+
         "[ ]",
         "[.]",
         "[x]",
         "[!]",
-        "FIXME",
-        "xxx"
     ],
     "todo-tree.highlights.customHighlight": {
         "BUG": {
@@ -19,30 +17,7 @@
             "background": "red",
             "iconColour": "red",
         },
-        "FIXME": {
-            "icon": "flame",
-            "type": "line",
-            "foreground": "black",
-            "background": "#ffff88",
-            "iconColour": "#ffff88",
-            "gutterIcon": true
-        },
-        "HACK": {
-            "icon": "tools",
-            "type": "line",
-            "foreground": "black",
-            "background": "orange",
-            "iconColour": "orange",
-            "gutterIcon": true
-        },
         "TODO": {
-            "icon": "circle",
-            "type": "line",
-            "foreground": "white",
-            "background": "#06cc2B",
-            "iconColour": "#06cc2B",
-        },
-        "[]": {
             "icon": "circle",
             "type": "line",
             "foreground": "white",
@@ -79,13 +54,6 @@
         },        
 
         "[!]": {
-            "icon": "blocked",
-            "type": "line",
-            "foreground": "white",
-            "background": "purple",
-            "iconColour": "purple",
-        },        
-        "xxx": {
             "icon": "blocked",
             "type": "line",
             "foreground": "white",

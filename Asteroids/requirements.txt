@@ -45,50 +45,50 @@ Bullet Mechanics:
 [x] Bullets have limited lifetime or range  
   Bullets should disappear after traveling a certain distance or after a set amount of time.
 
-[ ] Bullets should be destroyed on impact with asteroids/or any object.
+[x] Bullets should be destroyed on impact with asteroids/or any object.
   When a bullet hits an asteroid, both the bullet and the asteroid should be destroyed.
 
 ------------------------------------------------------------
 
 Asteroid Mechanics:
-[ ] Asteroids spawn in random locations  
+[x] Asteroids spawn in random locations  
   Asteroids should appear on the screen at random positions and velocities.
 
-[ ] Asteroids break into smaller pieces  
+[x] Asteroids break into smaller pieces  
   When an asteroid is destroyed, it breaks into two 2 smaller asteroids two times.
   Total of 7 asteroids (1 lrg, 2, med, 4 sml)
 
 [x] Asteroids move in a random direction  
   Asteroids should move in random directions and may have a slight spin.
 
-[ ] Asteroids should have a limited lifespan  
+[x] Asteroids should have a limited lifespan  
   After is hit by bullet or ship, the asteroid should be removed from the screen.
 
 ------------------------------------------------------------
 
 Collision Detection:
-[ ] Ship collides with asteroids  
+[x] Ship collides with asteroids  
   If the ship comes into contact with an asteroid, the ship should be destroyed or lose a life.
 
-[ ] Bullets collide with asteroids  
+[x] Bullets collide with asteroids  
   Bullets should destroy asteroids when they make contact.
 
-[ ] Asteroids collide with each other  
+[x] Asteroids collide with each other  
   Asteroids should not pass through each other but instead bounce off one another.
 
 ------------------------------------------------------------
 
 Game Progression:
-[ ] Player has a limited number of lives  
+[x] Player has a limited number of lives  
   The player starts with a set number of lives (e.g., 3), and when all are lost, the game ends.
 
-[ ] Score is tracked  
+[x] Score is tracked  
   The player earns points for destroying asteroids and other in-game actions.
 
-[ ] Difficulty increases with progression  
+[x] Difficulty increases with progression  
   As the player destroys more asteroids, the game should increase in difficulty (e.g., more asteroids, faster speed).
 
-[ ] Game reset or new game option  
+[x] Game reset or new game option  
   After losing all lives or completing the game, the player should be able to start a new game.
 
 ------------------------------------------------------------
@@ -97,31 +97,31 @@ Sound and Visual Effects:
 [ ] Thrust sound effect when the ship accelerates  
   A distinct sound should play when the ship moves forward.
 
-[ ] Bullet sound effect when the ship fires  
+[X] Bullet sound effect when the ship fires  
   A unique sound effect should play when the player shoots a bullet.
 
-[ ] Asteroid destruction sound effect  
+[x] Asteroid destruction sound effect  
   A specific sound should play when an asteroid is destroyed by a bullet.
 
-[ ] Ship destruction sound effect  
+[x] Ship destruction sound effect  
   A different sound should play when the ship collides with an asteroid.
 
-[ ] Background music and ambient sound  
+[!] Background music and ambient sound  
   There should be a looping background track with space-like ambient sounds.
 
 ------------------------------------------------------------
 
 Visuals:
-[ ] Vector graphics for ship and asteroids  
+[x] Vector graphics for ship and asteroids  
   The original game used simple, vector-based graphics for ship and asteroid rendering.
 
-[ ] Simple explosions for ship and asteroid destruction  
+[!] Simple explosions for ship and asteroid destruction  
   When asteroids are destroyed or the ship is hit, an explosion animation should play.
 
 [ ] Screen shake or flash when the ship is hit  
   To show the ship has been hit, there could be a screen shake or visual effect.
 
-[ ] HUD elements: score, lives, and level  
+[x] HUD elements: score, lives, and level  
   Display the player’s current score, number of remaining lives, and current level.
 
 ------------------------------------------------------------

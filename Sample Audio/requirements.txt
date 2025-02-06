@@ -1,9 +1,13 @@
 ToolboxAid.com
 David Quesenberry
 10/16/2024
-requirements.tst
+requirements.txt
 
+
+[x] play frequency
 
 [x] play wav and mp3 files
 [x] play multi sounds concurrently
 [x] cache locally
+[x] stop play
+[x] stop all play

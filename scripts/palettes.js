@@ -189,7 +189,7 @@ export default Palettes;
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------
-// Sorted Color Palette 'xxxx' by 'yyyy'
+// Sorted Color Palette 'x' by 'y'
 if (false) {  // sort colors and put on editor screen.
     Palettes.set("default");
     var sortBy = "saturation"; // hue, saturation, lightness

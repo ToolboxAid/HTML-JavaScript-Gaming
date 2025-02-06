@@ -108,7 +108,7 @@ class CanvasUtils {
             height: height
         };
     }
-    //TODO: should these move to the sprite class (and split sprite class)
+
     // Method to draw the current frame
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         for (let row = 0; row < frame.length; row++) {

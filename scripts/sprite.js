@@ -269,7 +269,6 @@ class Sprite {
         return { width: width, height: height };
     }
 
-
     static getTextRGB(text, palette) {
         let frame = Sprite.getFromText(text);
         frame.metadata.palette = 'custom';
