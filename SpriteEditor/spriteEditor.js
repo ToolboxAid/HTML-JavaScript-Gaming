@@ -209,7 +209,7 @@ export class SpriteEditor {
         Message.add(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
 
     }
- 
+
     // ------------------------------------------
     // Palette methods.    
     /** Palette methods*/
@@ -229,12 +229,12 @@ export class SpriteEditor {
             return false;
         }
 
-        if (name === 'custom'){            
+        if (name === 'custom') {
             Palettes.setCustom(Palettes.get());// it was set elseware, 
-            this.jsonSprite.metadata.palette = Palettes.activeName;    
-        }else{
+            this.jsonSprite.metadata.palette = Palettes.activeName;
+        } else {
             Palettes.set(name);
-            this.jsonSprite.metadata.palette = Palettes.activeName;    
+            this.jsonSprite.metadata.palette = Palettes.activeName;
         }
 
         Message.add(`Selected palette: '${name}'.`);
@@ -1232,11 +1232,11 @@ export class SpriteEditor {
     static gameLoop() {
         SpriteEditor.mouse.update();
 
-        if (SpriteEditor.mouse.isButtonDown(0)) {
+        if (SpriteEditor.mouse.isButtonIndexDown(0)) {
             SpriteEditor.handleCanvasLeftClick(SpriteEditor.mouse);
         }
 
-        if (SpriteEditor.mouse.isButtonJustPressed(2)) {
+        if (SpriteEditor.mouse.wasButtonIndexPressed(2)) {
             SpriteEditor.handleCanvasRightClick(SpriteEditor.mouse);
         }
 

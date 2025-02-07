@@ -3,40 +3,65 @@
 // 10/16/2024
 // gampad.js
 
+import GameControllerMap from "../scripts/gameControllerMap.js"
+
 const gameControllerIndex0 = -90;
 
 class GameControllers {
 
-    static get INDEX_0() { return 0; }
-    static get INDEX_1() { return 1; }
-    static get INDEX_2() { return 2; }
-    static get INDEX_3() { return 3; }
-
-    static get BUTTON_0() { return 0; }
-    static get BUTTON_1() { return 1; }
-    static get BUTTON_2() { return 2; }
-    static get BUTTON_3() { return 3; }
-    static get BUTTON_4() { return 4; }
-    static get BUTTON_5() { return 5; }
-    static get BUTTON_6() { return 6; }
-    static get BUTTON_7() { return 7; }
-    static get BUTTON_8() { return 8; }
-    static get BUTTON_9() { return 9; }
-
     constructor() {
         this.gameControllers = []; // Array to store the state of connected gameControllers
-        this.axesData = []; // Separate storage for axes data
 
+        // Buttons for a max of 4 controllers
         this.buttonsPressed = Array.from({ length: 4 }, () => new Set());  // Buttons just pressed
         this.buttonsDown = Array.from({ length: 4 }, () => new Set());     // Buttons currently pressed
         this.buttonsReleased = Array.from({ length: 4 }, () => new Set()); // Buttons just released
+        this.buttonNames = Array.from({ length: 4 }, () => new Set());
 
-        this.deadzone = 0.2; // Deadzone threshold for analog inputs
+        // Axes for a max of 4 controllers
+        this.axisData = Array.from({ length: 4 }, () => new Set());
+        this.axisNames = Array.from({ length: 4 }, () => new Set());
+        this.axisDeadzone = Array.from({ length: 4 }, () => new Set());// 0.2;
+
+        this.dPadType = Array.from({ length: 4 }, () => new Set());// 0.2;
 
         // Automatically poll for gameController updates
         this.pollInterval = setInterval(this.pollGameControllers.bind(this), 16); // ~60 FPS or 16mS = 0.016S
 
-        // Cleanup when the page is unloaded (or game is paused)
+        this.start();
+    }
+
+    // Start listening for gameController connections/disconnections, also unload
+    start() {
+        // Connect
+        window.addEventListener("gamepadconnected", (event) => {
+            const gameController = event.gamepad;
+            this.gameControllers[gameController.index] = gameController;
+            console.log(`GameController '${gameController.id}' connected at index '${gameController.index}'`);
+
+            // Map buttons and axis for a specific gameController
+            const controller = GameControllerMap.controllers[gameController.id] || GameControllerMap.controllers["default"];
+            if (gameController.index, controller.shortName === "default") {
+                console.warn(`Controller maping not found for '${gameController.id}', \nUsing:`, controller);
+            }
+            // Use the controller object directly
+            this.mapButtonLetters(gameController.index, controller.buttonNames);
+            this.mapAxis(gameController.index, controller.axisNames);
+
+            this.axisDeadzone[gameController.index] = controller.axisDeadzone;
+            this.dPadType[gameController.index] = controller.dPadType;
+
+            console.log(this);
+        });
+
+        // Disconnect
+        window.addEventListener("gamepaddisconnected", (event) => {
+            const gameController = event.gamepad;
+            delete this.gameControllers[gameController.index];
+            console.warn(`GameController ${gameController.id} disconnected from index ${gameController.index}`);
+        });
+
+        // Cleanup when the page is unloaded
         window.addEventListener('beforeunload', () => {
             this.disconnect(); // Stop polling gameControllers before the page unloads
         });
@@ -52,12 +77,17 @@ class GameControllers {
         this.gameControllers = Array.from(gameControllers).map(gameController => gameController || null);
     }
 
+    // Disconnect the gameController polling when no longer needed
+    disconnect() {
+        clearInterval(this.pollInterval); // Stop polling gameControllers
+    }
+
     update() {
         this.gameControllers.forEach((gameController, index) => {
             if (!gameController) return; // Skip disconnected gameControllers
 
-            // Store the raw axes data for each gameController
-            this.axesData[index] = gameController.axes;
+            // Store the raw axis data for each gameController
+            this.axisData[index] = gameController.axes;
 
             // Clear previous button states
             this.buttonsPressed[index].clear();
@@ -93,7 +123,7 @@ class GameControllers {
         });
     }
 
-    // Utility methods
+    // Game Controller methods
     getButtonsPressed(gameController) {
         return Array.from(this.buttonsPressed[gameController]);
     }
@@ -106,46 +136,146 @@ class GameControllers {
         return Array.from(this.buttonsReleased[gameController]);
     }
 
-    isButtonJustPressed(gameController, buttonIndex) {
-        return this.buttonsPressed[gameController].has(buttonIndex);
-    }
-
-    isButtonDown(gameController, buttonIndex) {
-        return this.buttonsDown[gameController].has(buttonIndex);
-    }
-
-    isButtonReleased(gameController, buttonIndex) {
-        return this.buttonsReleased[gameController].has(buttonIndex);
-    }
-
-    getAxes(gameControllerIndex) {
-        const axes = this.axesData[gameControllerIndex] || [0, 0]; // Get axes from stored data, or return [0, 0] if no axes
-
-        // Apply deadzone: If the axis value is within the deadzone, set it to zero
-        const deadzone = this.deadzone;
-        const filteredAxes = axes.map(axis => Math.abs(axis) < deadzone ? 0 : axis);
-
-        return filteredAxes; // Return axes after deadzone processing
-    }
-
     getGameController(gameControllerIndex) {
         return this.gameControllers[gameControllerIndex];
     }
 
-    getGameControllerDPad(gameControllerIndex = 0) {
-        if (!GameControllers.debug || gameControllerIndex < 0) return { left: false, right: false, up: false, down: false, };;
+    // Map axis indices to names (should this be POV and axis?)
+    mapAxis(gameControllerIndex, axisNames) {
+        if (this.gameControllers.length <= 0) return;
 
+        if (this.gameControllers[gameControllerIndex]) {
+            this.axisNames[gameControllerIndex] = axisNames;
+        } else {
+            console.error(`GameController at index ${gameControllerIndex} not found.`);
+        }
+    }
+    // Get axis value by name
+    getAxisState(gameControllerIndex, axisName) {
+        if (gameControllerIndex < 0) return { left: false, right: false, up: false, down: false };
+
+        if (this.gameControllers[gameControllerIndex] && this.axisNames[gameControllerIndex]) {
+            const axisButtonIndex = this.axisNames[gameControllerIndex].indexOf(axisName);
+            if (axisButtonIndex !== -1) {
+                return this.axisData[gameControllerIndex][axisButtonIndex];
+            } else {
+                console.error(`Axis name "${axisName}" not found for gameController at index ${gameControllerIndex}.`);
+            }
+        } else {
+            console.error(`GameController at index ${gameControllerIndex} or axis names not found.`);
+        }
+        return 0;
+    }
+
+    getDPad(gameControllerIndex) {
+        if (gameControllerIndex < 0) return { left: false, right: false, up: false, down: false, index: -1 };
+
+        if (this.dPadType[gameControllerIndex] === "button") {
+            return {
+                left: this.isButtonLetterDown(gameControllerIndex,"dPadLEFT"),
+                right: this.isButtonLetterDown(gameControllerIndex,"dPadRIGHT"),
+                up: this.isButtonLetterDown(gameControllerIndex,"dPadUP"),
+                down: this.isButtonLetterDown(gameControllerIndex,"dPadDOWN"),
+                type: "button",
+            };
+        }
+        if (this.dPadType[gameControllerIndex] === "axis") {
+            return {
+                left: this.axisData[gameControllerIndex][0] < -this.axisDeadzone[gameControllerIndex],
+                right: this.axisData[gameControllerIndex][0] > this.axisDeadzone[gameControllerIndex],
+                up: this.axisData[gameControllerIndex][1] < -this.axisDeadzone[gameControllerIndex],
+                down: this.axisData[gameControllerIndex][1] > this.axisDeadzone[gameControllerIndex],
+                type: "axis",
+            };
+        }
         return {
-            left: this.axesData[gameControllerIndex][0] < -0.5,
-            right: this.axesData[gameControllerIndex][0] > 0.5,
-            up: this.axesData[gameControllerIndex][1] < -0.5,
-            down: this.axesData[gameControllerIndex][1] > 0.5,
+            left: false,
+            right: false,
+            up: false,
+            down: false,
+            type: "none",
         };
     }
 
-    static number = 301;
-    static debug = true;
-    logGameController(gameControllerIndex = 0) {
+    getAxis(gameControllerIndex) {
+        const axis = this.axisData[gameControllerIndex] || [0, 0]; // Get axis from stored data, or return [0, 0] if no axis
+
+        // Apply axisDeadzone: If the axis value is within the axisDeadzone, set it to zero
+        const filteredAxis = axis.map(axis => Math.abs(axis) < this.axisDeadzone[gameControllerIndex] ? 0 : axis);
+
+        return filteredAxis; // Return axis after axisDeadzone processing
+    }
+
+    // Game Controller button methods
+    // -- index --
+    wasButtonIndexPressed(gameControllerIndex, buttonIndex) {
+        return this.buttonsPressed[gameControllerIndex].has(buttonIndex);
+    }
+
+    isButtonIndexDown(gameControllerIndex, buttonIndex) {
+        return this.buttonsDown[gameControllerIndex].has(buttonIndex);
+    }
+
+    wasButtonIndexReleased(gameControllerIndex, buttonIndex) {
+        return this.buttonsReleased[gameControllerIndex].has(buttonIndex);
+    }
+
+    // -- names --
+    mapButtonLetters(gameControllerIndex, buttonNames) {
+        if (this.gameControllers.length <= 0) return;
+        if (this.gameControllers[gameControllerIndex]) {
+            this.buttonNames[gameControllerIndex] = buttonNames;
+        } else {
+            console.error(`GameController at index ${gameControllerIndex} not found.`);
+        }
+    }
+
+    wasButtonLetterPressed(gameControllerIndex, buttonName) {
+        if (this.gameControllers[gameControllerIndex] && this.buttonNames[gameControllerIndex]) {
+            const buttonIndex = this.buttonNames[gameControllerIndex].indexOf(buttonName);
+            if (buttonIndex !== -1) {
+                return this.buttonsPressed[gameControllerIndex].has(buttonIndex);
+            } else {
+                console.error(`Button name "${buttonName}" not found for gameController at index ${gameControllerIndex}.`);
+            }
+        } else {
+            console.error(`GameController at index ${gameControllerIndex} or button names not found.`);
+        }
+        return false;
+    }
+
+    isButtonLetterDown(gameControllerIndex, buttonName) {
+        if (this.gameControllers[gameControllerIndex] && this.buttonNames[gameControllerIndex]) {
+            const buttonIndex = this.buttonNames[gameControllerIndex].indexOf(buttonName);
+            if (buttonIndex !== -1) {
+                return this.buttonsDown[gameControllerIndex].has(buttonIndex);
+            } else {
+                console.error(`Button name "${buttonName}" not found for gameController at index ${gameControllerIndex}.`);
+            }
+        } else {
+            console.error(`GameController at index ${gameControllerIndex} or button names not found.`);
+        }
+        return false;
+    }
+
+    wasButtonLetterReleased(gameControllerIndex, buttonName) {
+        if (this.gameControllers[gameControllerIndex] && this.buttonNames[gameControllerIndex]) {
+            const buttonIndex = this.buttonNames[gameControllerIndex].indexOf(buttonName);
+            if (buttonIndex !== -1) {
+                return this.buttonsReleased[gameControllerIndex].has(buttonIndex);
+            } else {
+                console.error(`Button name "${buttonName}" not found for gameController at index ${gameControllerIndex}.`);
+            }
+        } else {
+            console.error(`GameController at index ${gameControllerIndex} or button names not found.`);
+        }
+        return false;
+    }
+
+    // Debug methods
+    static number = 301; // Prevent spamming console log
+    static debug = false;
+    logGameController(gameControllerIndex) {
         if (!GameControllers.debug || gameControllerIndex < 0) return;
 
         if (GameControllers.number++ > 60 * 5) {
@@ -153,17 +283,21 @@ class GameControllers {
             console.group(`GameController [${gameControllerIndex}]`);
             console.log('ID:', this.gameControllers[gameControllerIndex].id);
             console.log('Buttons:', this.gameControllers[gameControllerIndex].buttons.length);
-            console.log('Axes:', this.gameControllers[gameControllerIndex].axes.length);
-            console.log("controller", 'Axes:', this.gameControllers[gameControllerIndex]);
-            console.log("dPad", this.getGameControllerDPad(gameControllerIndex));
+            console.log('Axis:', this.gameControllers[gameControllerIndex].axis.length);
+            console.log("controller", 'Axis:', this.gameControllers[gameControllerIndex]);
+            console.log("dPad", this.getDPad(gameControllerIndex));
             console.groupEnd();
         }
     }
 
-    // Disconnect the gameController polling when no longer needed
-    disconnect() {
-        clearInterval(this.pollInterval); // Stop polling gameControllers
+    logPressedName(gameControllerIndex) {
+        if (!GameControllers.debug || gameControllerIndex < 0) return;
+
+        this.buttonsPressed[gameControllerIndex].forEach((button, buttonIndex) => {
+            console.log(`Controller: ${gameControllerIndex}, Button >>> Index: ${buttonIndex}, Name: ${this.buttonNames[gameControllerIndex][buttonIndex]}`);
+        });
     }
+
 }
 
 export default GameControllers;

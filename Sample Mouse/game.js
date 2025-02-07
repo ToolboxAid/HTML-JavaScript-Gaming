@@ -4,12 +4,12 @@
 // game.js - Sample Mouse
 
 import MouseInput from '../scripts/mouse.js';
+import { LEFT, MIDDLE, RIGHT } from '../scripts/mouse.js';
 
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
 
 const mouse = new MouseInput(canvas);
-
 
 // Update the mouse state and log interactions
 function gameUpdate() {
@@ -18,15 +18,15 @@ function gameUpdate() {
     // Log mouse position relative to the canvas
     //console.log('Mouse position relative to canvas:', mouse.getPosition());
 
-    if (mouse.isButtonJustPressed(0)) {
+    if (mouse.wasButtonIndexPressed(0)) {
         console.log('Left mouse button just pressed at:', mouse.getPosition());
     }
 
-    if (mouse.isButtonReleased(1)) {
+    if (mouse.wasButtonIndexReleased(1)) {
         console.log('Middle mouse button just released at:', mouse.getPosition());
     }
 
-    if (mouse.isButtonReleased(2)) {
+    if (mouse.wasButtonIndexReleased(2)) {
         console.log('Right mouse button just released at:', mouse.getPosition());
     }
 
@@ -37,8 +37,17 @@ function gameUpdate() {
 
 function drawDot(x, y) {
     ctx.beginPath();
-    ctx.arc(x, y, 2, 0, 2 * Math.PI); // Draw a circle with radius 5
-    ctx.fillStyle = 'red'; // Set the color of the dot
+    ctx.arc(x, y, 2, 0, 2 * Math.PI);
+    ctx.fillStyle = 'red';
+    if (mouse.isButtonIndexDown(LEFT)) {
+        ctx.fillStyle = 'orange';
+    }
+    if (mouse.isButtonIndexDown(MIDDLE)) {
+        ctx.fillStyle = 'yellow';
+    }
+    if (mouse.isButtonIndexDown(RIGHT)) {
+        ctx.fillStyle = 'green';
+    }
     ctx.fill(); // Fill the circle
     ctx.closePath();
 }

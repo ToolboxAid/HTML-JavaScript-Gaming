@@ -635,7 +635,7 @@ class Game extends GameBase {
 
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
             this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
-            this.gameControllers.isButtonJustPressed(GameControllers.INDEX_0, GameControllers.BUTTON_9)) {
+            this.gameControllers.wasButtonIndexPressed(0, 9)) {
             AttractMode.count = 0;
             this.resetPlayers();
             this.gameState = "playerSelect";
@@ -681,7 +681,7 @@ class Game extends GameBase {
 
         if (this.keyboardInput.getkeysPressed().includes('Enter') ||
             this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
-            this.gameControllers.isButtonJustPressed(GameControllers.INDEX_0, GameControllers.BUTTON_9) ||
+            this.gameControllers.wasButtonIndexPressed(0, 9) ||
             this.backToAttractCounter++ > this.backToAttract) {
             this.gameState = "resetPlayers";
         }
@@ -693,7 +693,7 @@ class Game extends GameBase {
 
     initializeGameShields() {
         console.log("Initializing Game Shields...");
-        let shieldCount = shieldConfig?.count?? 1;
+        let shieldCount = shieldConfig?.count ?? 1;
         for (let i = 0; i < shieldCount; i++) {
             this.shields.push(new Shield(i));
         }
@@ -839,7 +839,7 @@ class Game extends GameBase {
         }
 
         // GameController input
-        if (this.gameControllers.isButtonJustPressed(GameControllers.INDEX_0, GameControllers.BUTTON_8)) {
+        if (this.gameControllers.wasButtonIndexPressed(0, 8)) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
                 Game.audioPlayer.stopAllLooping();

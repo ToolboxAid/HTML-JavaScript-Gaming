@@ -33,8 +33,8 @@ class Paddle extends ObjectStatic {
                 down: this.isLeft ? 'KeyZ' : 'ArrowDown'
             },
             gameController: {
-                up: this.isLeft ? GameControllerMapSNES.Axes.X.up : GameControllerMapSNES.Axes.X.up,
-                down: this.isLeft ? GameControllerMapSNES.Axes.X.up : GameControllerMapSNES.Axes.X.up
+                up: this.isLeft ? GameControllerMapSNES.Axis.X.up : GameControllerMapSNES.Axis.X.up,
+                down: this.isLeft ? GameControllerMapSNES.Axis.X.up : GameControllerMapSNES.Axis.X.up
             }
         };
 
@@ -101,8 +101,6 @@ class Paddle extends ObjectStatic {
         }
     }
 
-    //TODO: need to improve how keyboard and gameController are used.
-
     // Update method to handle movements
     update(keyboardInput, gameControllers) {
 
@@ -116,11 +114,8 @@ class Paddle extends ObjectStatic {
         // Movement check
 
         if (gameController) {
+            const dPad = gameControllers.getDPad(gameControllerIndex);
 
-            gameControllers.logGameController(gameControllerIndex);
-
-            const dPad = gameControllers.getGameControllerDPad(gameControllerIndex);
-            
             this.movement.up = this.movement.up || dPad.up;
             this.movement.down = this.movement.down || dPad.down;
 

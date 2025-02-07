@@ -46,14 +46,14 @@ class Functions {
 
         if (gameControllers) {
             console.warn('GameController currently supports 2 players');
-            if (gameControllers.isButtonDown(GameControllers.INDEX_0, GameControllers.BUTTON_4)) {
+            if (gameControllers.isButtonIndexDown(0, 4)) {
                 const i = 1;
                 return {
                     playerCount: i, playerLives: Array.from({ length: maxPlayers },
                         (_, index) => (index < i ? lives : 0)), gameState: "initGame"
                 };
             }
-            if (gameControllers.isButtonDown(GameControllers.INDEX_0, GameControllers.BUTTON_5)) {
+            if (gameControllers.isButtonIndexDown(0, 5)) {
                 const i = 2;
                 return {
                     playerCount: i, playerLives: Array.from({ length: maxPlayers },

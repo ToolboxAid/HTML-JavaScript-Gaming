@@ -3,6 +3,10 @@
 // 10/16/2024
 // mouse.js
 
+
+export  const LEFT = 0;
+export const MIDDLE = 1;
+export const RIGHT = 2;
 class MouseInput {
     constructor(canvas) {
         this.canvas = canvas;
@@ -19,8 +23,12 @@ class MouseInput {
         this.tempButtonsDown = new Set();
         this.tempButtonsUp = new Set();
 
+        // add listeners
+        this.start();
+    }
+
+    start() {
         // Event listeners for mouse input
-        this.canvas = canvas; // Store the canvas reference
         this.handleMouseDown = this.handleMouseDown.bind(this); // Bind methods
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -28,13 +36,13 @@ class MouseInput {
         this.handleContextMenu = this.handleContextMenu.bind(this);
 
         // Add event listeners
-        canvas.addEventListener('mousedown', this.handleMouseDown);
-        canvas.addEventListener('mouseup', this.handleMouseUp);
-        canvas.addEventListener('mousemove', this.handleMouseMove);
-        canvas.addEventListener('wheel', this.handleWheel, { passive: true });
+        this.canvas.addEventListener('mousedown', this.handleMouseDown);
+        this.canvas.addEventListener('mouseup', this.handleMouseUp);
+        this.canvas.addEventListener('mousemove', this.handleMouseMove);
+        this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
 
         // Prevent right-click context menu
-        canvas.addEventListener('contextmenu', this.handleContextMenu);
+        this.canvas.addEventListener('contextmenu', this.handleContextMenu);
     }
 
     handleMouseDown(event) {
@@ -92,6 +100,16 @@ class MouseInput {
         this.tempButtonsUp.clear();
     }
 
+    // Positions
+    getPosition() {
+        return { x: this.mouseX, y: this.mouseY };
+    }
+
+    getMouseDelta() {
+        return { x: this.mouseX - this.prevX, y: this.mouseY - this.prevY };
+    }
+
+    // Buttons
     getButtonsPressed() {
         return Array.from(this.buttonsPressed);
     }
@@ -104,24 +122,16 @@ class MouseInput {
         return Array.from(this.buttonsReleased);
     }
 
-    getPosition() {
-        return { x: this.mouseX, y: this.mouseY };
+    wasButtonIndexPressed(buttonIndex) {
+        return this.buttonsPressed.has(buttonIndex);
     }
 
-    getMouseDelta() {
-        return { x: this.mouseX - this.prevX, y: this.mouseY - this.prevY };
+    isButtonIndexDown(buttonIndex) {
+        return this.buttonsDown.has(buttonIndex);
     }
 
-    isButtonJustPressed(button) {
-        return this.buttonsPressed.has(button);
-    }
-
-    isButtonDown(button) {
-        return this.buttonsDown.has(button);
-    }
-
-    isButtonReleased(button) {
-        return this.buttonsReleased.has(button);
+    wasButtonIndexReleased(buttonIndex) {
+        return this.buttonsReleased.has(buttonIndex);
     }
 }
 

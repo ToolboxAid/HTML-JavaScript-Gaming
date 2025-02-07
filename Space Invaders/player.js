@@ -171,9 +171,9 @@ class Player extends ObjectSprite {
         }
 
         // GameController
-        if (gameControllers.getAxes(GameControllers.INDEX_0)) {
+        if (gameControllers.getAxis(0)) {
             // -1 left, 0 no move, 1 right
-            const direction = gameControllers.getAxes(GameControllers.INDEX_0)[0];  // -1 left, 0 no move, 1 right
+            const direction = gameControllers.getAxis(0)[0];  // -1 left, 0 no move, 1 right
 
             if (this.x + (direction * speed) > 0 &&
                 this.x < canvasConfig.width - this.width - (direction * speed)) {
@@ -181,9 +181,9 @@ class Player extends ObjectSprite {
             }
         }
 
-        if (gameControllers.getButtonsPressed(GameControllers.INDEX_0).length > 0) {
-            if (gameControllers.getButtonsPressed(GameControllers.INDEX_0).includes(1) ||
-                gameControllers.getButtonsPressed(GameControllers.INDEX_0).includes(2)) {
+        if (gameControllers.getButtonsPressed(0).length > 0) {
+            if (gameControllers.getButtonsPressed(0).includes(1) ||
+                gameControllers.getButtonsPressed(0).includes(2)) {
                 let laserPoint = { x: this.x + (this.width / 2), y: this.y };
                 return laserPoint;
             }
@@ -200,8 +200,8 @@ class Player extends ObjectSprite {
         this.pixelSize = null;
         this.bonus = null;
         this.nextBonus = null;
-    }  
-      
+    }
+
 }
 
 export default Player;

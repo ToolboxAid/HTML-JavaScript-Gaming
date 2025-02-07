@@ -63,6 +63,12 @@ class Game extends GameBase {
         this.keyboardInput.update();
         this.gameControllers.update();
 
+        // Movement check
+        const gameController = this.gameControllers.getGameController(0);
+        if (gameController) {
+            console.log("Button 'A' pressed", this.gameControllers.isButtonLetterDown(0, "A"));
+        }
+
         const player1X = (canvasConfig.width / 2) - (font5x3.pixelWidth * 24); // X position for Player 1 score
         const player2X = (canvasConfig.width / 2) + (font5x3.pixelWidth * 18); // X position for Player 2 score
         const y = 30;  // Y position for scores
@@ -83,10 +89,10 @@ class Game extends GameBase {
 
             // Pause the game until a key is pressed
             if (this.keyboardInput.getKeysDown().length > 0 ||
-            this.gameControllers.isButtonJustPressed(0,8) ||
-            this.gameControllers.isButtonJustPressed(0,9) ||
-            this.gameControllers.isButtonJustPressed(1,8) ||
-            this.gameControllers.isButtonJustPressed(1,9)) {
+                this.gameControllers.wasButtonIndexPressed(0, 8) ||
+                this.gameControllers.wasButtonIndexPressed(0, 9) ||
+                this.gameControllers.wasButtonIndexPressed(1, 8) ||
+                this.gameControllers.wasButtonIndexPressed(1, 9)) {
                 this.restartGame();
             }
 

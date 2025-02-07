@@ -6,7 +6,10 @@
 import GameControllers from '../scripts/gameControllers.js';
 
 const canvas = document.getElementById('gameArea');
+canvas.width = 480;
+canvas.height = 320;
 const ctx = canvas.getContext('2d');
+
 const gameControllers = new GameControllers(); // Instantiate the GameControllers class
 
 // Player state for each gameController
@@ -24,15 +27,19 @@ function createPlayer(gameControllerIndex) {
         y: gameControllerIndex * 25,
         speed: 2,
         size: 8,
-        width: 77,
-        height: 18,
+        width: 140,
+        height: 36,
         buttonColors: Array(10).fill('gray'), // Initialize button colors (max of 10 buttons)
+        axis: [0, 0],
+        dPad: [],
     };
 }
 
 // Function to update the game state (called on every frame)
 function gameUpdate() {
     gameControllers.update(); // Update the gameController state
+
+//    gameControllers.logPressedName(1);
 
     // Iterate over all connected gameControllers and handle input for each player
     gameControllers.gameControllers.forEach((gameController, index) => {
@@ -57,15 +64,26 @@ function gameUpdate() {
                 });
             }
 
-            // Handle movement with gameController analog stick (axes)
-            const [axisX, axisY] = gameControllers.getAxes(index);
+            player.axis = gameControllers.getAxis(index);
+            player.dPad = gameControllers.getDPad(index);
+
             let moveX = 0, moveY = 0;
+            if (true) {
+                // Handle movement with gameController (dPAD)
+                if (player.dPad.left) { moveX = -1 };
+                if (player.dPad.right) { moveX = 1 };
+                if (player.dPad.up) { moveY = -1 };
+                if (player.dPad.down) { moveY = 1 };
+            } else {
+                // Handle movement with gameController (axis [analoge])
+                const [axisX, axisY] = gameControllers.getAxis(index);
 
-            if (axisX > 0) moveX = player.speed;
-            else if (axisX < 0) moveX = -player.speed;
+                if (axisX > 0) moveX = player.speed;
+                else if (axisX < 0) moveX = -player.speed;
 
-            if (axisY > 0) moveY = player.speed;
-            else if (axisY < 0) moveY = -player.speed;
+                if (axisY > 0) moveY = player.speed;
+                else if (axisY < 0) moveY = -player.speed;
+            }
 
             player.x += moveX;
             player.y += moveY;
@@ -84,19 +102,16 @@ function gameRender() {
     // Draw each player as a square with their unique color
     players.forEach((player, index) => {
         if (player) {
-            // // Draw player (colored square)
-            // ctx.fillStyle = player.color;
-            // ctx.fillRect(player.x, player.y, player.size, player.size);
-
             // Draw button states for each player
+            const buttonsAcross = 5;
             const buttonSize = 12;
             ctx.font = '8px Arial';
             ctx.fillStyle = 'black';
 
             // Draw the button indicators next to the player
             player.buttonColors.forEach((color, buttonIndex) => {
-                const buttonX = player.x + player.size + 6 + (buttonIndex % 5) * (buttonSize + 2);
-                const buttonY = player.y - 3 + Math.floor(buttonIndex / 5) * (buttonSize + 2);
+                const buttonX = player.x + player.size + 6 + (buttonIndex % buttonsAcross) * (buttonSize + 2);
+                const buttonY = player.y - 3 + Math.floor(buttonIndex / buttonsAcross) * (buttonSize + 2);
 
                 // Draw button circle
                 ctx.beginPath();
@@ -110,7 +125,34 @@ function gameRender() {
                 ctx.fillStyle = 'white';
                 ctx.fillText(buttonIndex, buttonX - 2.5, buttonY + 2.5);
             });
+
+            // axis and dpad
+            ctx.fillStyle = player.color;
+            const newX = player.x + (buttonsAcross + 1.5) * buttonSize;
+            ctx.fillText("dPad:", newX, player.y + 0);
+            const activeDirections = [];
+            if (player.dPad.up) activeDirections.push("Up");
+            if (player.dPad.down) activeDirections.push("Down");
+            if (player.dPad.left) activeDirections.push("Left");
+            if (player.dPad.right) activeDirections.push("Right");
+
+            // Convert the active directions to a string
+            const dPadStateString = activeDirections.length > 0 ? `${activeDirections.join(", ")}` : "None";
+
+            ctx.fillText(dPadStateString, newX + 30, player.y + 0);
+
+            // Axis 0
+            ctx.fillText("Axis0 X:", newX, player.y + 8);
+            ctx.fillText(player.axis[0], newX + 30, player.y + 8);
+            ctx.fillText("Axis0 Y:", newX, player.y + 16);
+            ctx.fillText(player.axis[1], newX + 30, player.y + 16);
+
+            ctx.fillText("Axis1 X:", newX, player.y + 24);
+            ctx.fillText(player.axis[2], newX + 30, player.y + 24);
+            ctx.fillText("Axis1 Y:", newX, player.y + 32);
+            ctx.fillText(player.axis[3], newX + 30, player.y + 32);
         }
+
     });
 }
 
