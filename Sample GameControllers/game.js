@@ -4,6 +4,7 @@
 // game.js - GameController Integration with Button States on Canvas
 
 import GameControllers from '../scripts/gameControllers.js';
+//import GameControllerMap from "../scripts/gameControllerMap.js"
 
 const canvas = document.getElementById('gameArea');
 canvas.width = 480;
@@ -39,21 +40,21 @@ function createPlayer(gameControllerIndex) {
 function gameUpdate() {
     gameControllers.update(); // Update the gameController state
 
-//    gameControllers.logPressedName(1);
+    //    gameControllers.logPressedName(1);
 
     // Iterate over all connected gameControllers and handle input for each player
-    gameControllers.gameControllers.forEach((gameController, index) => {
+    gameControllers.gameControllers.forEach((gameController, playerIndex) => {
         if (gameController) {
             // Create player if it's the first time this gameController is detected
-            if (!players[index]) createPlayer(index);
+            if (!players[playerIndex]) createPlayer(playerIndex);
 
-            const player = players[index];
+            const player = players[playerIndex];
 
             // Reset all button colors to gray
             player.buttonColors = Array(10).fill('gray');
 
             // Handle button presses for each gameController
-            const buttonsDown = gameControllers.getButtonsDown(index);
+            const buttonsDown = gameControllers.getButtonsDown(playerIndex);
             if (buttonsDown.length > 0) {
                 // Set all buttons to 'gray'
                 player.buttonColors = new Array(10).fill('gray');
@@ -64,8 +65,8 @@ function gameUpdate() {
                 });
             }
 
-            player.axis = gameControllers.getAxis(index);
-            player.dPad = gameControllers.getDPad(index);
+            //player.axis = gameControllers.getAxisByIndex(playerIndex,0);
+            player.dPad = gameControllers.getDPad(playerIndex);
 
             let moveX = 0, moveY = 0;
             if (true) {
@@ -76,7 +77,7 @@ function gameUpdate() {
                 if (player.dPad.down) { moveY = 1 };
             } else {
                 // Handle movement with gameController (axis [analoge])
-                const [axisX, axisY] = gameControllers.getAxis(index);
+                const [axisX, axisY] = gameControllers.getAxisByIndex(playerIndex);
 
                 if (axisX > 0) moveX = player.speed;
                 else if (axisX < 0) moveX = -player.speed;
@@ -100,7 +101,7 @@ function gameRender() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
     // Draw each player as a square with their unique color
-    players.forEach((player, index) => {
+    players.forEach((player, playerIndex) => {
         if (player) {
             // Draw button states for each player
             const buttonsAcross = 5;
@@ -136,21 +137,44 @@ function gameRender() {
             if (player.dPad.left) activeDirections.push("Left");
             if (player.dPad.right) activeDirections.push("Right");
 
-            // Convert the active directions to a string
+            // Convert active directions to a string
             const dPadStateString = activeDirections.length > 0 ? `${activeDirections.join(", ")}` : "None";
+            ctx.fillText(dPadStateString, newX + 22, player.y + 0);
 
-            ctx.fillText(dPadStateString, newX + 30, player.y + 0);
+            // Different access methods
+            // console.log(GameControllerMap.controllerConfigs.default.buttonNames); // ["A", "B"]
+            // console.log(GameControllerMap.controllerConfigs["Logitech RumblePad 2 USB"].axisNames); // ["StickLeftX", "StickLeftY", "StickRightX", "StickRightY"]
+            // console.log(GameControllerMap.controllerMappings.default.buttons.A); // 0
+            // console.log(GameControllerMap.controllerMappings.default.axes.LeftStickX); // 0
+            // console.log(
+            //     GameControllerMap.controllerMappings.default.buttons.A, // 0
+            //     GameControllerMap.controllerMappings.default.buttons.B, // 1
+            //     GameControllerMap.controllerMappings.default.axes.LeftStickX, // 0
+            //     GameControllerMap.controllerMappings.default.axes.LeftStickY); // 1
 
-            // Axis 0
-            ctx.fillText("Axis0 X:", newX, player.y + 8);
-            ctx.fillText(player.axis[0], newX + 30, player.y + 8);
-            ctx.fillText("Axis0 Y:", newX, player.y + 16);
-            ctx.fillText(player.axis[1], newX + 30, player.y + 16);
+            const decimals = 2;
+            if (false) {
+                // get by axis Index
+                ctx.fillText("Axis0 X:", newX, player.y + 8);
+                ctx.fillText(gameControllers.getAxisByIndex(playerIndex, 0).toFixed(decimals), newX + 30, player.y + 8);
+                ctx.fillText("Axis0 Y:", newX, player.y + 16);
+                ctx.fillText(gameControllers.getAxisByIndex(playerIndex, 1).toFixed(decimals), newX + 30, player.y + 16);
+                ctx.fillText("Axis1 X:", newX, player.y + 24);
+                ctx.fillText(gameControllers.getAxisByIndex(playerIndex, 2).toFixed(decimals), newX + 30, player.y + 24);
+                ctx.fillText("Axis1 Y:", newX, player.y + 32);
+                ctx.fillText(gameControllers.getAxisByIndex(playerIndex, 3).toFixed(decimals), newX + 30, player.y + 32);
+            } else {
+                // get by axis Name
+                ctx.fillText("Axis0 X:", newX, player.y + 8);
+                ctx.fillText(gameControllers.getAxisByName(playerIndex, "StickLeftX").toFixed(decimals), newX + 30, player.y + 8);
+                ctx.fillText("Axis0 Y:", newX, player.y + 16);
+                ctx.fillText(gameControllers.getAxisByName(playerIndex, "StickLeftY").toFixed(decimals), newX + 30, player.y + 16);
+                ctx.fillText("Axis1 X:", newX, player.y + 24);
+                ctx.fillText(gameControllers.getAxisByName(playerIndex, "StickRightX").toFixed(decimals), newX + 30, player.y + 24);
+                ctx.fillText("Axis1 Y:", newX, player.y + 32);
+                ctx.fillText(gameControllers.getAxisByName(playerIndex, "StickRightY").toFixed(decimals), newX + 30, player.y + 32);
+            }
 
-            ctx.fillText("Axis1 X:", newX, player.y + 24);
-            ctx.fillText(player.axis[2], newX + 30, player.y + 24);
-            ctx.fillText("Axis1 Y:", newX, player.y + 32);
-            ctx.fillText(player.axis[3], newX + 30, player.y + 32);
         }
 
     });

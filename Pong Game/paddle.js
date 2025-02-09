@@ -8,8 +8,6 @@ import ObjectStatic from '../scripts/objectStatic.js';
 import AudioPlayer from '../scripts/audioPlayer.js';
 import CanvasUtils from '../scripts/canvas.js';
 
-import GameControllerMapSNES from '../scripts/gameControllerMapSNES.js';
-
 class Paddle extends ObjectStatic {
 
     static winner = false; // Default to false
@@ -32,10 +30,6 @@ class Paddle extends ObjectStatic {
                 up: this.isLeft ? 'KeyA' : 'ArrowUp',
                 down: this.isLeft ? 'KeyZ' : 'ArrowDown'
             },
-            gameController: {
-                up: this.isLeft ? GameControllerMapSNES.Axis.X.up : GameControllerMapSNES.Axis.X.up,
-                down: this.isLeft ? GameControllerMapSNES.Axis.X.up : GameControllerMapSNES.Axis.X.up
-            }
         };
 
 

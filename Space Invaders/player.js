@@ -4,10 +4,8 @@
 // player.js
 
 import { canvasConfig, spriteConfig, playerSelect } from './global.js';
-import CanvasUtils from '../scripts/canvas.js';
 import ObjectSprite from '../scripts/objectSprite.js'
-import GameControllers from '../scripts/gameControllers.js';
-
+import GameControllerMap from '../scripts/gameControllerMap.js';
 
 class Player extends ObjectSprite {
 
@@ -171,9 +169,9 @@ class Player extends ObjectSprite {
         }
 
         // GameController
-        if (gameControllers.getAxis(0)) {
+        if (gameControllers.getAxisByIndex(0, 0)) {
             // -1 left, 0 no move, 1 right
-            const direction = gameControllers.getAxis(0)[0];  // -1 left, 0 no move, 1 right
+            const direction = gameControllers.getAxisByIndex(0,0);  // -1 left, 0 no move, 1 right
 
             if (this.x + (direction * speed) > 0 &&
                 this.x < canvasConfig.width - this.width - (direction * speed)) {
@@ -182,8 +180,9 @@ class Player extends ObjectSprite {
         }
 
         if (gameControllers.getButtonsPressed(0).length > 0) {
-            if (gameControllers.getButtonsPressed(0).includes(1) ||
-                gameControllers.getButtonsPressed(0).includes(2)) {
+            
+            if (gameControllers.getButtonsPressed(0).includes(GameControllerMap.controllerMappings.default.buttons.A) ||
+                gameControllers.getButtonsPressed(0).includes(GameControllerMap.controllerMappings.default.buttons.B)) {
                 let laserPoint = { x: this.x + (this.width / 2), y: this.y };
                 return laserPoint;
             }

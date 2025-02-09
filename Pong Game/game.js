@@ -66,7 +66,7 @@ class Game extends GameBase {
         // Movement check
         const gameController = this.gameControllers.getGameController(0);
         if (gameController) {
-            console.log("Button 'A' pressed", this.gameControllers.isButtonLetterDown(0, "A"));
+            console.log("Button 'A' pressed", this.gameControllers.isButtonNameDown(0, "A"));
         }
 
         const player1X = (canvasConfig.width / 2) - (font5x3.pixelWidth * 24); // X position for Player 1 score

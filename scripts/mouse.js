@@ -4,9 +4,10 @@
 // mouse.js
 
 
-export  const LEFT = 0;
+export const LEFT = 0;
 export const MIDDLE = 1;
 export const RIGHT = 2;
+
 class MouseInput {
     constructor(canvas) {
         this.canvas = canvas;
