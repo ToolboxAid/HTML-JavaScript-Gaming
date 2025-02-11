@@ -8,8 +8,8 @@ import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../scripts/gamebase.js';
 import CanvasUtils from '../scripts/canvas.js';
 
-import KeyboardInput from '../scripts/keyboard.js';
-import GameControllers from '../scripts/gameController/gameControllers.js';
+import KeyboardInput from '../scripts/input/keyboard.js';
+import GameControllers from '../scripts/input/controller/gameControllers.js';
 
 import Font5x3 from './font5x3.js';
 import Paddle from './paddle.js';

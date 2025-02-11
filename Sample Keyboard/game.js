@@ -6,7 +6,7 @@
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import GameBase from '../scripts/gamebase.js';
 
-import KeyboardInput from '../scripts/keyboard.js';
+import KeyboardInput from '../scripts/input/keyboard.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 class Game extends GameBase{

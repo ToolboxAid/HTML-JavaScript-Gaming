@@ -7,8 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 import GameBase from '../scripts/gamebase.js';
 
 import CanvasUtils from '../scripts/canvas.js';
-import Fullscreen from '../scripts/fullscreen.js';
-import KeyboardInput from '../scripts/keyboard.js';
+import KeyboardInput from '../scripts/input/keyboard.js';
 import Functions from '../scripts/functions.js'
 
 import Ship from './ship.js';

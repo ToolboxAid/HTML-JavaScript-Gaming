@@ -9,7 +9,7 @@ import GameBase from '../scripts/gamebase.js';
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import Functions from '../scripts/functions.js';
-import KeyboardInput from '../scripts/keyboard.js';
+import KeyboardInput from '../scripts/input/keyboard.js';
 
 import GameAttract from './gameAttract.js';
 

@@ -11,7 +11,7 @@ import ObjectDynamic from '../scripts/objectDynamic.js';
 import Functions from '../scripts/functions.js';
 import Timer from '../scripts/timer.js';
 
-import AudioPlayer from '../scripts/audioPlayer.js';
+import AudioFrequency from '../scripts/output/audioFrequency.js';
 
 class Puck extends ObjectDynamic {
 
@@ -135,7 +135,7 @@ class Puck extends ObjectDynamic {
         // Frequency: Approximately 400 Hz
         // Duration: Around 100 milliseconds
         // Description: A short beep sound that played whenever the ball hit the paddles or the walls.
-        AudioPlayer.playFrequency(440, 0.1);
+        AudioFrequency.play(440, 0.1);
     }
 
     handlePuckCollisionSides(paddle) {

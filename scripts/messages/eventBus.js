@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 02/10/2025
-// eventBus.js
+// .js
 
 import Sender from '../../scripts/messages/sender.js';
 

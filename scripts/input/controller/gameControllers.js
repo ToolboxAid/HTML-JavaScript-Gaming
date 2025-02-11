@@ -6,8 +6,8 @@
 import GamepadManager from "./gamepadManager.js";
 import GamepadState from "./gamepadState.js";
 import GamepadMapper from "./gamepadMapper.js";
-import Receiver from '../messages/receiver.js';
-import EventBus from '../messages/eventBus.js';
+import Receiver from '../../../scripts/messages/receiver.js';
+import EventBus from '../../../scripts/messages/eventBus.js';
 import { DPadType } from "./gamepadEnums.js";
 import { GAMEPAD_EVENT } from './gamepadManager.js';
 

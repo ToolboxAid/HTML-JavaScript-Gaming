@@ -7,7 +7,6 @@ import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Functions from '../scripts/functions.js';
-import Physics from '../scripts/physics.js';
 
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';

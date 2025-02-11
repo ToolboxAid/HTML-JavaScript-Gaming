@@ -3,7 +3,7 @@
 // 11/21/2024
 // game.js - GameController Integration with Button States on Canvas
 
-import GameControllers from '../scripts/gameController/gameControllers.js';
+import GameControllers from '../scripts/input/controller/gameControllers.js';
 
 const canvas = document.getElementById('gameArea');
 canvas.width = 480;

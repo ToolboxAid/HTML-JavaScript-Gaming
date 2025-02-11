@@ -5,7 +5,7 @@
 
 import Colors from "../scripts/colors.js";
 import Palettes from "../scripts/palettes.js";
-import MouseInput from '../scripts/mouse.js';
+import MouseInput from '../scripts/input/mouse.js';
 import Samples from "./samples.js";
 import Functions from "../scripts/functions.js";
 

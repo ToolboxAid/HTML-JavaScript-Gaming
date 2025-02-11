@@ -5,7 +5,7 @@
 
 import { canvasConfig, paddleConfig } from './global.js';
 import ObjectStatic from '../scripts/objectStatic.js';
-import AudioPlayer from '../scripts/audioPlayer.js';
+import AudioFrequency from '../scripts/output/audioFrequency.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 class Paddle extends ObjectStatic {
@@ -49,10 +49,10 @@ class Paddle extends ObjectStatic {
         this.score++;
 
         if (this.score >= paddleConfig.winnerScore) {
-            AudioPlayer.playFrequency(1000, 0.5);
+            AudioFrequency.play(1000, 0.5);
             Paddle.winner = true;
         } else {
-            AudioPlayer.playFrequency(350, 0.25);
+            AudioFrequency.play(350, 0.25);
         }
     }
 

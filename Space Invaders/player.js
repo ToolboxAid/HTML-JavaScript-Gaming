@@ -5,7 +5,7 @@
 
 import { canvasConfig, spriteConfig, playerSelect } from './global.js';
 import ObjectSprite from '../scripts/objectSprite.js'
-import GameControllerMap from '../scripts/gameController/gameControllerMap.js';
+import GameControllerMap from '../scripts/input/controller/gameControllerMap.js';
 
 class Player extends ObjectSprite {
 

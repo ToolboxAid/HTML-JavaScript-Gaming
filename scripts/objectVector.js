@@ -7,7 +7,6 @@ import ObjectKillable from './objectKillable.js';
 import CanvasUtils from './canvas.js';
 
 import Functions from './functions.js';
-import Physics from './physics.js';
 
 class ObjectVector extends ObjectKillable {
     constructor(x, y, vectorMap, velocityX, velocityY) {

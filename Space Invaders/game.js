@@ -17,8 +17,8 @@ import Ground from './ground.js';
 
 import LevelFrames from './levelFrames.js';
 
-import KeyboardInput from '../scripts/keyboard.js';
-import GameControllers from '../scripts/gameController/gameControllers.js';
+import KeyboardInput from '../scripts/input/keyboard.js';
+import GameControllers from '../scripts/input/controller/gameControllers.js';
 
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';
@@ -29,7 +29,7 @@ import EnemyBomb1 from './enemyBomb1.js';
 import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 
-import AudioPlayer from '../scripts/audioPlayer.js';
+import AudioPlayer from '../scripts/output/audioPlayer.js';
 import Cookies from '../scripts/cookies.js';
 
 import AttractMode from './attractMode.js';

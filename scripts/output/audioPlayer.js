@@ -11,15 +11,6 @@ class AudioPlayer {
         this.loopingSources = {}; // Store each looping source by filename
     }
 
-    static playFrequency(frequency, duration) {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        oscillator.connect(audioContext.destination);
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + duration);
-    }
-
     // Load and cache the audio file
     async loadAudio(filename) {
         const url = `${this.basePath}/${filename}`;

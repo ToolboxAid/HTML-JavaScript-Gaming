@@ -3,8 +3,8 @@
 // 10/16/2024
 // game.js - Sample Mouse
 
-import MouseInput from '../scripts/mouse.js';
-import { LEFT, MIDDLE, RIGHT } from '../scripts/mouse.js';
+import MouseInput from '../scripts/input/mouse.js';
+import { LEFT, MIDDLE, RIGHT } from '../scripts/input/mouse.js';
 
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
