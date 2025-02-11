@@ -1,11 +1,10 @@
 // ToolboxAid.com
 // David Quesenberry
-// 10/16/2024
+// 02/10/2025
 // gameControllerMap.js
-// Enum for DPad types
 
 class GameControllerMap {
-    static controllerConfigs = { // dictionary or lookup table
+    static controllerConfigs = {
         "default":
         {
             "shortName": "default",
@@ -16,7 +15,7 @@ class GameControllerMap {
         "Logitech RumblePad 2 USB (STANDARD GAMEPAD Vendor: 046d Product: c218)":
         {
             "shortName": "Logitech RumblePad 2",
-            "buttonNames": ["Y", "A", "B", "X", "LT", "RT", "LB", "RB", "Select", "Start", "n/a", "n/a", "DPadUP", "DPadDOWN", "DPadLEFT", "DPadRIGHT"],
+            "buttonNames": ["Y", "A", "B", "X", "LT", "RT", "LB", "RB", "Select", "Start", "", "", "DPadUP", "DPadDOWN", "DPadLEFT", "DPadRIGHT"],
             "axisNames": ["StickLeftX", "StickLeftY", "StickRightX", "StickRightY"],
             "axisDeadzone": 0.1,
         },
@@ -25,34 +24,9 @@ class GameControllerMap {
             "shortName": "USB gamepad",
             "buttonNames": ["X", "A", "B", "Y", "LT", "RT", "", "", "Select", "Start"],
             "axisNames": ["DPadX", "DPadY"],
-            "axisDeadzone": 0.1,
+            "axisDeadzone": 0.2,
         },
     };
-
-    // Method to build controllerMappings from controllerConfigs
-    static buildControllerMappings() {
-        for (const controllerId in this.controllerConfigs) {
-            const config = this.controllerConfigs[controllerId];
-
-            // Create the mapping object for this controller
-            this.controllerMappings[controllerId] = {
-                shortName: config.shortName,
-                buttons: config.buttonNames.reduce((acc, buttonName, index) => {
-                    if (buttonName) { // Skip empty button names
-                        acc[buttonName] = index; // Map button name to its index
-                    }
-                    return acc;
-                }, {}),
-                axes: config.axisNames.reduce((acc, axisName, index) => {
-                    if (axisName) { // Skip empty axis names
-                        acc[axisName] = index; // Map axis name to its index
-                    }
-                    return acc;
-                }, {}),
-                axisDeadzone: config.axisDeadzone,
-            };
-        }
-    }
 
     //    static controllerMappings = {};
     static controllerMappings = {
@@ -81,7 +55,7 @@ class GameControllerMap {
                 "RB": 7,
                 "Select": 8,
                 "Start": 9,
-                "n/a": 11,
+                "": 11,
                 "DPadUP": 12,
                 "DPadDOWN": 13,
                 "DPadLEFT": 14,
@@ -112,6 +86,32 @@ class GameControllerMap {
                 "DPadY": 1
             },
             "axisDeadzone": 0.1
+        }
+    }
+
+    // Support method to build mapping 'contrllerMappings' above.
+    // Method to build controllerMappings from controllerConfigs
+    static buildControllerMappings() {
+        for (const controllerId in this.controllerConfigs) {
+            const config = this.controllerConfigs[controllerId];
+
+            // Create the mapping object for this controller
+            this.controllerMappings[controllerId] = {
+                shortName: config.shortName,
+                buttons: config.buttonNames.reduce((acc, buttonName, index) => {
+                    if (buttonName) { // Skip empty button names
+                        acc[buttonName] = index; // Map button name to its index
+                    }
+                    return acc;
+                }, {}),
+                axes: config.axisNames.reduce((acc, axisName, index) => {
+                    if (axisName) { // Skip empty axis names
+                        acc[axisName] = index; // Map axis name to its index
+                    }
+                    return acc;
+                }, {}),
+                axisDeadzone: config.axisDeadzone,
+            };
         }
     }
 

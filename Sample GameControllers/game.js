@@ -3,18 +3,17 @@
 // 11/21/2024
 // game.js - GameController Integration with Button States on Canvas
 
-import GameControllers from '../scripts/gameControllers.js';
-//import GameControllerMap from "../scripts/gameControllerMap.js"
+import GameControllers from '../scripts/gameController/gameControllers.js';
 
 const canvas = document.getElementById('gameArea');
 canvas.width = 480;
 canvas.height = 320;
 const ctx = canvas.getContext('2d');
 
-const gameControllers = new GameControllers(); // Instantiate the GameControllers class
-
 // Player state for each gameController
 const players = [];
+
+const gameControllers = new GameControllers();
 
 // Create a player for each gameController
 function createPlayer(gameControllerIndex) {
@@ -38,15 +37,16 @@ function createPlayer(gameControllerIndex) {
 
 // Function to update the game state (called on every frame)
 function gameUpdate() {
-    gameControllers.update(); // Update the gameController state
-
-    //    gameControllers.logPressedName(1);
+    // Update gamepad states (call this in your game loop)
+    gameControllers.update();
 
     // Iterate over all connected gameControllers and handle input for each player
-    gameControllers.gameControllers.forEach((gameController, playerIndex) => {
+    gameControllers.getConnectedGamepads().forEach((gameController, playerIndex) => {
         if (gameController) {
             // Create player if it's the first time this gameController is detected
-            if (!players[playerIndex]) createPlayer(playerIndex);
+            if (!players[playerIndex]) {
+                createPlayer(playerIndex);
+            }
 
             const player = players[playerIndex];
 
@@ -54,7 +54,7 @@ function gameUpdate() {
             player.buttonColors = Array(10).fill('gray');
 
             // Handle button presses for each gameController
-            const buttonsDown = gameControllers.getButtonsDown(playerIndex);
+            const buttonsDown = gameControllers.gamepadStates[playerIndex].getButtonsDown();
             if (buttonsDown.length > 0) {
                 // Set all buttons to 'gray'
                 player.buttonColors = new Array(10).fill('gray');
@@ -65,19 +65,29 @@ function gameUpdate() {
                 });
             }
 
-            //player.axis = gameControllers.getAxisByIndex(playerIndex,0);
-            player.dPad = gameControllers.getDPad(playerIndex);
-
             let moveX = 0, moveY = 0;
             if (true) {
+                // use DPad
+                player.dPad = gameControllers.getDPad(playerIndex);
                 // Handle movement with gameController (dPAD)
                 if (player.dPad.left) { moveX = -1 };
                 if (player.dPad.right) { moveX = 1 };
                 if (player.dPad.up) { moveY = -1 };
                 if (player.dPad.down) { moveY = 1 };
-            } else {
-                // Handle movement with gameController (axis [analoge])
-                const [axisX, axisY] = gameControllers.getAxisByIndex(playerIndex);
+            } else if (false) {
+                // use Index
+                const axisX = gameControllers.getAxisByIndex(playerIndex, 0);
+                const axisY = gameControllers.getAxisByIndex(playerIndex, 1);
+
+                if (axisX > 0) moveX = player.speed;
+                else if (axisX < 0) moveX = -player.speed;
+
+                if (axisY > 0) moveY = player.speed;
+                else if (axisY < 0) moveY = -player.speed;
+            } else { 
+                // use Name
+                const axisX = gameControllers.getAxisByName(playerIndex, "StickLeftX");
+                const axisY = gameControllers.getAxisByName(playerIndex, "StickLeftY");
 
                 if (axisX > 0) moveX = player.speed;
                 else if (axisX < 0) moveX = -player.speed;
@@ -150,7 +160,8 @@ function gameRender() {
             //     GameControllerMap.controllerMappings.default.buttons.A, // 0
             //     GameControllerMap.controllerMappings.default.buttons.B, // 1
             //     GameControllerMap.controllerMappings.default.axes.LeftStickX, // 0
-            //     GameControllerMap.controllerMappings.default.axes.LeftStickY); // 1
+            //     GameControllerMap.controllerMappings.default.axes.LeftStickY  // 1
+            // );
 
             const decimals = 2;
             if (false) {

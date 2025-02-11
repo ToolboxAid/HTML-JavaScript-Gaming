@@ -90,6 +90,3 @@ class AudioPlayer {
 }
 
 export default AudioPlayer;
-// export default Game;
-
-// const game = new Game();

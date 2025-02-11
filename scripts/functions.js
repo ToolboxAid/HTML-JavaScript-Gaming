@@ -3,8 +3,6 @@
 // 10/16/2024
 // functions.js
 
-import GameControllers from "./gameControllers.js";
-
 class Functions {
 
     /**  Player information
