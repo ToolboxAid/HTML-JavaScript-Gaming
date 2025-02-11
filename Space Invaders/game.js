@@ -18,7 +18,7 @@ import Ground from './ground.js';
 import LevelFrames from './levelFrames.js';
 
 import KeyboardInput from '../scripts/keyboard.js';
-import GameControllers from '../scripts/gameControllers.js';
+import GameControllers from '../scripts/gameController/gameControllers.js';
 
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';

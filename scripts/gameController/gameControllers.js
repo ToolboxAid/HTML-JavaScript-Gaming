@@ -91,10 +91,10 @@ class GameControllers {
 
         if (type === DPadType.BUTTON) {
             return {
-                left: this.getButtonDownByName(gameControllerIndex, "DPadLEFT"),
-                right: this.getButtonDownByName(gameControllerIndex, "DPadRIGHT"),
-                up: this.getButtonDownByName(gameControllerIndex, "DPadUP"),
-                down: this.getButtonDownByName(gameControllerIndex, "DPadDOWN"),
+                left: this.isButtonNameDown(gameControllerIndex, "DPadLEFT"),
+                right: this.isButtonNameDown(gameControllerIndex, "DPadRIGHT"),
+                up: this.isButtonNameDown(gameControllerIndex, "DPadUP"),
+                down: this.isButtonNameDown(gameControllerIndex, "DPadDOWN"),
                 type: DPadType.BUTTON,
             };
         } else if (type === DPadType.AXIS) {
@@ -129,8 +129,26 @@ class GameControllers {
         this.gamepadMappers[gameControllerIndex].axisNames = axisNames;
     }
 
+    // --------------------------------------------
     // Look up a button value by name
-    getButtonDownByName(gameControllerIndex, buttonName) {
+    // --------------------------------------------
+    wasButtonNamePressed(gameControllerIndex, buttonName) {
+        const mapper = this.gamepadMappers[gameControllerIndex];
+        if (!mapper) {
+            this.messageError(`Gamepad mapper not found for index ${gameControllerIndex}`);
+            return false;
+        }
+
+        const buttonIndex = mapper.getButtonIndex(buttonName);
+        if (buttonIndex === -1) {
+            this.messageError(`Button name "${buttonName}" not found for game controller at index ${gameControllerIndex}`);
+            return false;
+        }
+
+        // Use the isButtonIndexDown method to check if the button is pressed
+        return this.wasButtonIndexPressed(gameControllerIndex, buttonIndex);
+    }
+    isButtonNameDown(gameControllerIndex, buttonName) {
         const mapper = this.gamepadMappers[gameControllerIndex];
         if (!mapper) {
             this.messageError(`Gamepad mapper not found for index ${gameControllerIndex}`);
@@ -146,8 +164,34 @@ class GameControllers {
         // Use the isButtonIndexDown method to check if the button is pressed
         return this.isButtonIndexDown(gameControllerIndex, buttonIndex);
     }
+    wasButtonNameReleased(gameControllerIndex, buttonName) {
+        const mapper = this.gamepadMappers[gameControllerIndex];
+        if (!mapper) {
+            this.messageError(`Gamepad mapper not found for index ${gameControllerIndex}`);
+            return false;
+        }
 
-    // Check if a button (by index) is currently pressed
+        const buttonIndex = mapper.getButtonIndex(buttonName);
+        if (buttonIndex === -1) {
+            this.messageError(`Button name "${buttonName}" not found for game controller at index ${gameControllerIndex}`);
+            return false;
+        }
+
+        // Use the isButtonIndexDown method to check if the button is pressed
+        return this.wasButtonIndexReleased(gameControllerIndex, buttonIndex);
+    }
+
+    // --------------------------------------------
+    // Look up a button value by index
+    // --------------------------------------------
+    wasButtonIndexPressed(gameControllerIndex, buttonIndex) {
+        const gamepadState = this.gamepadStates[gameControllerIndex];
+        if (!gamepadState) {
+            this.messageError(`Gamepad state not found for index ${gameControllerIndex}`);
+            return false;
+        }
+        return gamepadState.buttonsPressed.has(buttonIndex);
+    }
     isButtonIndexDown(gameControllerIndex, buttonIndex) {
         const gamepadState = this.gamepadStates[gameControllerIndex];
         if (!gamepadState) {
@@ -155,6 +199,14 @@ class GameControllers {
             return false;
         }
         return gamepadState.buttonsDown.has(buttonIndex);
+    }
+    wasButtonIndexReleased(gameControllerIndex, buttonIndex) {
+        const gamepadState = this.gamepadStates[gameControllerIndex];
+        if (!gamepadState) {
+            this.messageError(`Gamepad state not found for index ${gameControllerIndex}`);
+            return false;
+        }
+        return gamepadState.buttonsReleased.has(buttonIndex);
     }
 
     // Look up an axis value by name

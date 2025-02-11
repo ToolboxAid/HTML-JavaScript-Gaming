@@ -95,7 +95,8 @@ class Game extends GameBase {
   }
 
   displayPlayerSelect(deltaTime) {
-    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput);
+    const gameController = null; // no controller instance - for clarity
+    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput, gameController);
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;

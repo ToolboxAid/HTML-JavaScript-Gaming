@@ -103,13 +103,10 @@ class Paddle extends ObjectStatic {
         this.movement.down = keyboardInput.getKeysDown().includes(this.controls.keyboard.down);
 
         const gameControllerIndex = this.isLeft ? 0 : 1;
-        const gameController = gameControllers.getGameController(gameControllerIndex);
 
-        // Movement check
-
-        if (gameController) {
-            const dPad = gameControllers.getDPad(gameControllerIndex);
-
+        //Movement check
+        const dPad = gameControllers.getDPad(gameControllerIndex);
+        if (dPad) {
             this.movement.up = this.movement.up || dPad.up;
             this.movement.down = this.movement.down || dPad.down;
 

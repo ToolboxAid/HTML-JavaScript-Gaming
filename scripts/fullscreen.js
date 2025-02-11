@@ -136,6 +136,3 @@ class Fullscreen {
 
 // Export the Functions class
 export default Fullscreen;
-
-// Initialize the fullscreen functionality
-//Fullscreen.init(Fullscreen.config);

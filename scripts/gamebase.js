@@ -62,7 +62,7 @@ class GameBase {
                 // Draw border
                 CanvasUtils.drawBorder();
 
-                // Call game loop implementation
+                // Call game loop implementation (code and draw)
                 await this.gameLoop(deltaTime); // call game.js (the inheriting class)
 
                 // Update performance data

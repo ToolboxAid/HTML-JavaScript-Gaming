@@ -39,7 +39,6 @@ class GamepadManager {
         this.sender.triggerEvent(GAMEPAD_EVENT, args);
     }
 
-
     handleGamepadDisconnected(event) { // Disconnect
         const gameController = event.gamepad;
         delete this.gameControllers[gameController.index];
