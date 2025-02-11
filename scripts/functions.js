@@ -37,8 +37,7 @@ class Functions {
         }
 
         // ---------------------
-        if (gameControllers){
-        // GameController Input
+        if (gameControllers){ // GameController Input
         ctx.fillText('GameController Select Player(s)', x, y + 150);
         ctx.fillText('`Left Bumper` 1 player', (canvasConfig.width / 2) - 200, y + 200);
         ctx.fillText('`Right Bumper` 2 players', (canvasConfig.width / 2) - 200, y + 250);
