@@ -37,14 +37,6 @@ class CelestialBody extends ObjectDynamic {
         this.speed = speed; // Speed of orbital movement
         this.moons = moons; // Array of moons
         this.ring = ring; // Optional ring properties
-
-        /* 
-        if (this.name.trim().toLowerCase() === "sun") {
-             this.x = 512;
-             this.y = 512;
-             console.log(this.name);
-         }
-        */
     }
 
     /**
@@ -87,7 +79,6 @@ class CelestialBody extends ObjectDynamic {
         ctx.closePath();
 
         ctx.setLineDash([0, 0]); // reset dashes:
-
 
         // Draw rings if they exist
         if (this.ring) {

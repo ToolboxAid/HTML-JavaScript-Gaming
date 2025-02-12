@@ -59,15 +59,15 @@ class GameBase {
                 const startTimeMs = Date.now();
                 CanvasUtils.canvasClear();
 
-                // Draw border
-                CanvasUtils.drawBorder();
-
                 // Call game loop implementation (code and draw)
                 await this.gameLoop(deltaTime); // call game.js (the inheriting class)
 
                 // Update performance data
                 const timeSpentMs = Date.now() - startTimeMs; // end performance timer
                 PerformanceMonitor.update(timeSpentMs);
+
+                // Draw border
+                CanvasUtils.drawBorder();
 
                 // Draw click full screen
                 Fullscreen.draw(CanvasUtils.ctx);

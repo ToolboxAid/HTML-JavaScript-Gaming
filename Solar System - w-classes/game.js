@@ -3,7 +3,12 @@
 // game.js
 // 10/16/2024
 
-import { canvasConfig, performanceConfig, fullscreenConfig, solarSystemConfig } from './global.js';
+import {
+  canvasConfig,
+  performanceConfig,
+  fullscreenConfig,
+  solarSystemConfig
+} from './global.js';
 import CelestialBody from './celestialBody.js';
 import GameBase from '../scripts/gamebase.js';
 
@@ -54,14 +59,10 @@ class SolarSystem extends GameBase {
   }
 
   moveSolarSystem(deltaTime) {
-    const centerX = canvasConfig.width / 2;
-    const centerY = canvasConfig.height / 2;
 
     this.celestialBodies.forEach(body => {
       // Update the planet's position and rotation
       body.angle += body.speed;
-      const x = centerX + body.distance * Math.cos(body.angle);
-      const y = centerY + body.distance * Math.sin(body.angle);
 
       // Update the planet and its moons' positions
       body.update(deltaTime);
