@@ -13,7 +13,7 @@ import EnemySquid from "./enemySquid.js";
 import EnemyOctopus from "./enemyOctopus.js"
 import Shield from "./shield.js";
 import Ground from "./ground.js";
-import Functions from "../scripts/functions.js";
+import SystemUtils from "../scripts/utils/systemUtils.js";
 
 export default class AttractMode {
     static delayCounter = 0;
@@ -127,9 +127,9 @@ export default class AttractMode {
 
     reset() {
         // Make sure it is empty
-        Functions.cleanupMap(this.gameEnemies);
-        Functions.cleanupArray(this.shields);
-        Functions.cleanupArray(this.grounds);
+        SystemUtils.cleanupMap(this.gameEnemies);
+        SystemUtils.cleanupArray(this.shields);
+        SystemUtils.cleanupArray(this.grounds);
 
         AttractMode.delayCounter = 0;
         Enemy.reset();

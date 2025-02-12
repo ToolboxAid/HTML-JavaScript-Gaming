@@ -7,7 +7,8 @@ import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Fullscreen from '../scripts/fullscreen.js';
 import Asteroid from './asteroid.js';
-import Functions from '../scripts/functions.js';
+
+import RandomUtils from '../scripts/math/randomUtils.js';
 
 class GameAttract {
     constructor() {
@@ -47,8 +48,8 @@ class GameAttract {
     spawnAsteroids(size) {
         for (let i = 0; i < this.spawnAsteroidsCount; i++) {
             const key = size + "-" + i;
-            const x = Functions.randomRange(0, canvasConfig.width);
-            const y = Functions.randomRange(0, canvasConfig.height);
+            const x = RandomUtils.randomRange(0, canvasConfig.width);
+            const y = RandomUtils.randomRange(0, canvasConfig.height);
             const asteroid = new Asteroid(x, y, size);
             this.asteroids.set(key, asteroid);
         }

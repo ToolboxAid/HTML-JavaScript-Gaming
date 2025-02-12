@@ -6,7 +6,9 @@
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
 import CanvasUtils from '../scripts/canvas.js';
-import Functions from '../scripts/functions.js';
+
+import AngleUtils from '../scripts/math/angleUtils.js';
+import RandomUtils from '../scripts/math/randomUtils.js';
 
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
@@ -117,8 +119,8 @@ class Ship extends ObjectVector {
             const d1 = canvasConfig.width / 4;
             const d2 = canvasConfig.width / 3;
             //            console.log(d1, d2);
-            const distance = Functions.randomRange(d1, d2);
-            const position = Functions.calculateOrbitalPosition(
+            const distance = RandomUtils.randomRange(d1, d2);
+            const position = AngleUtils.calculateOrbitalPosition(
                 canvasConfig.width / 2, canvasConfig.height / 2, angle, distance);
 
             this.createAsteroid(position.x, position.y, "large");
@@ -146,14 +148,14 @@ class Ship extends ObjectVector {
     updateShip(deltaTime, keyboardInput) {
         // Rotate the ship
         if (keyboardInput.isKeyDown('ArrowLeft')) {
-            Functions.applyRotation(this, deltaTime, -1)
+            AngleUtils.applyRotation(this, deltaTime, -1)
         }
         if (keyboardInput.isKeyDown('ArrowRight')) {
-            Functions.applyRotation(this, deltaTime, 1);
+            AngleUtils.applyRotation(this, deltaTime, 1);
         }
 
         // Wrap rotationAngle to keep it between 0 and 360
-        this.rotationAngle = Functions.degreeLimits(this.rotationAngle);
+        this.rotationAngle = AngleUtils.degreeLimits(this.rotationAngle);
 
         // Reset acceleration values
         this.accelerationX = 0;
@@ -161,7 +163,7 @@ class Ship extends ObjectVector {
 
         // Apply thrust (acceleration) when ArrowUp is held down
         if (keyboardInput.isKeyDown('ArrowUp')) {
-            const vectorDirection = Functions.getVectorDirection(this.rotationAngle);
+            const vectorDirection = AngleUtils.getVectorDirection(this.rotationAngle);
 
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;

@@ -4,7 +4,7 @@
 // sprite.js
 
 import Palettes from './palettes.js';
-import Functions from './functions.js';
+import SystemUtils from './utils/systemUtils.js';
 import Font5x6 from './font5x6.js';
 
 
@@ -197,7 +197,7 @@ class Sprite {
 
     // accepts JSON object and a 2D frame array
     static getLayerDimensions(layerData, pixelSize) { // layerData is the Sprite Editor Json Sprite data.
-        if (layerData && Functions.getObjectType(layerData) === 'Object' && pixelSize >= 1) {
+        if (layerData && SystemUtils.getObjectType(layerData) === 'Object' && pixelSize >= 1) {
             const layer = layerData.layers[0]; // Only process the first layer
             const data = layer.data;
             let rowCount = data.length;
@@ -212,7 +212,10 @@ class Sprite {
             return { width: colCount, height: rowCount };
         } else {
             //if (layerData && Array.isArray(layerData) && Array.isArray(layerData[0]) && pixelSize >= 1) {
-            if (layerData && Functions.getObjectType(layerData) === 'Array' && Functions.getObjectType(layerData[0]) === 'Array' && pixelSize >= 1) {
+            if (layerData
+                && SystemUtils.getObjectType(layerData) === 'Array' 
+                && SystemUtils.getObjectType(layerData[0]) === 'Array'
+                && pixelSize >= 1) {
                 let rowCount = layerData.length;
                 let colCount = layerData[0].length;
 

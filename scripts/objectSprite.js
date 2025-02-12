@@ -6,7 +6,7 @@
 import CanvasUtils from './canvas.js';
 import Colors from './colors.js';
 import ObjectKillable from './objectKillable.js';
-import Functions from './functions.js';
+import SystemUtils from './utils/systemUtils.js';
 import Sprite from './sprite.js';
 
 class ObjectSprite extends ObjectKillable {
@@ -103,7 +103,7 @@ class ObjectSprite extends ObjectKillable {
 
     static getFrameType(object) {
         if (object) {
-            if (Functions.getObjectType(object) === "Object") {
+            if (SystemUtils.getObjectType(object) === "Object") {
                 // Json data
                 return "json";
             } else if (Array.isArray(object) && Array.isArray(object[0])) {
@@ -112,11 +112,11 @@ class ObjectSprite extends ObjectKillable {
             } else if (Array.isArray(object)) {
                 // Single-dimensional array (likely one frame as an array of strings or characters)
                 return "array";
-            } else if (Functions.getObjectType(object) === "String") {
+            } else if (SystemUtils.getObjectType(object) === "String") {
                 // String data
                 return "string";
             } else {
-                console.log(Functions.getObjectType(object));
+                console.log(SystemUtils.getObjectType(object));
             }
         } else {
             return "null";

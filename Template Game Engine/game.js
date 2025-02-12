@@ -8,7 +8,8 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 import GameBase from '../scripts/gamebase.js';
 
 import CanvasUtils from '../scripts/canvas.js';
-import Functions from '../scripts/functions.js';
+import GameUtils from '../scripts/game/gameUtils.js';
+
 import KeyboardInput from '../scripts/input/keyboard.js';
 
 class Game extends GameBase {
@@ -81,7 +82,7 @@ class Game extends GameBase {
     }
   }
 
-  // Display Functions
+  // Display 
   displayAttractMode() {
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
@@ -96,7 +97,7 @@ class Game extends GameBase {
 
   displayPlayerSelect(deltaTime) {
     const gameController = null; // no controller instance - for clarity
-    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput, gameController);
+    const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput, gameController);
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;
@@ -117,7 +118,7 @@ class Game extends GameBase {
     }
   }
 
-  // Game Logic Functions
+  // Game Logic 
   initGame() {
     this.gameInitialized = true;
     this.onetime = true;
@@ -168,7 +169,7 @@ class Game extends GameBase {
 
     // Check if `D` key was just pressed, simulate losing a life
     if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
-      const result = Functions.swapPlayer(
+      const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
         this.playerCount,

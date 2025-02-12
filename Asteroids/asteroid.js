@@ -3,9 +3,10 @@
 // 11/19/2024
 // asteroid.js
 
-import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
-import Functions from '../scripts/functions.js';
+
+import RandomUtils from '../scripts/math/randomUtils.js';
+
 class Asteroid extends ObjectVector {
   constructor(x, y, size = 'large') {
     const vectorMap = Asteroid.generateVectorMap(size);
@@ -53,8 +54,8 @@ class Asteroid extends ObjectVector {
         break;
     }
 
-    const random = Functions.randomRange(min, max, false);
-    const sign = Functions.randomRange(0, 1, true) < 0.5 ? -1 : 1;
+    const random = RandomUtils.randomRange(min, max, false);
+    const sign = RandomUtils.randomRange(0, 1, true) < 0.5 ? -1 : 1;
     return random * sign;
   }
 

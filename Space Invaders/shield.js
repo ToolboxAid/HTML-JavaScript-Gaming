@@ -7,7 +7,8 @@ import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
 
 import ObjectStatic from '../scripts/objectStatic.js';
 import CanvasUtils from '../scripts/canvas.js';
-import Functions from '../scripts/functions.js';
+
+import RandomUtils from '../scripts/math/randomUtils.js';
 import Sprite from '../scripts/sprite.js';
 
 /**
@@ -195,7 +196,7 @@ class Shield extends ObjectStatic {
                                 //console.log(`X Index: ${x}, Y Index: ${y}, Probability: ${combinedProbability.toFixed(2)}`);
 
                                 // Apply the explosion effect based on the combined probability
-                                if (Functions.randomRange(0, 1, false) < combinedProbability) {
+                                if (RandomUtils.randomRange(0, 1, false) < combinedProbability) {
                                     try {
                                         this.frame[y][x] = "0";
                                     } catch {

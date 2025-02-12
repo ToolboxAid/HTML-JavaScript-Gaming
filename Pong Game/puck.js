@@ -8,8 +8,11 @@ import { canvasConfig, puckConfig } from './global.js'; // Import puck & canvas 
 import CanvasUtils from '../scripts/canvas.js';
 
 import ObjectDynamic from '../scripts/objectDynamic.js';
-import Functions from '../scripts/functions.js';
-import Timer from '../scripts/timer.js';
+
+import AngleUtils from '../scripts/math/angleUtils.js';
+import RandomUtils from '../scripts/math/randomUtils.js';
+
+import Timer from '../scripts/utils/timer.js';
 
 import AudioFrequency from '../scripts/output/audioFrequency.js';
 
@@ -43,7 +46,7 @@ class Puck extends ObjectDynamic {
         this.actionTimer = new Timer(2000);
 
         // First volly is random.
-        if (Functions.randomRange(0, 1)) {
+        if (RandomUtils.randomRange(0, 1)) {
             this.reset(-(this.leftMin), this.leftMin);
         } else {
             this.reset(this.rightMin, this.rightMax);
@@ -152,14 +155,14 @@ class Puck extends ObjectDynamic {
             this.angle = (this.angle * -1) + 180;
         }
 
-        this.angle = Functions.degreeLimits(this.angle);
+        this.angle = AngleUtils.degreeLimits(this.angle);
 
         // Set the puck's velocity based on the new angle
         this.setVelocity();
     }
 
     setVelocity() {
-        const coordinates = Functions.calculateAngle2XY(this.angle);
+        const coordinates = AngleUtils.calculateAngle2XY(this.angle);
 
         this.speed += this.speedIncrease;
 
@@ -232,7 +235,7 @@ class Puck extends ObjectDynamic {
 
         this.speed = this.speedDefault;
         this.speed += this.speedScore * 0.1;
-        this.angle = Functions.randomRange(min, max);
+        this.angle = RandomUtils.randomRange(min, max);
         this.setVelocity();
         this.velocityX *= -1;  // winner serves the puck
 

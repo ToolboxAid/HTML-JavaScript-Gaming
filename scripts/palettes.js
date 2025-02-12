@@ -4,7 +4,7 @@
 // spritePalettes.js
 
 import Colors from "./colors.js";
-import Functions from "./functions.js";
+import SystemUtils from "./utils/systemUtils.js";
 import palettesList from "./palettesList.js";
 
 class Palettes {
@@ -31,7 +31,7 @@ class Palettes {
             throw new Error("Custom palette is not supported in this context. Use 'setCustom(customPalette)' instead.");
         }
         if (!this.palettes[name]) {
-            Functions.showStackTrace(`Palette '"${name}"' not found.`);
+            SystemUtils.showStackTrace(`Palette '"${name}"' not found.`);
             return false;
         }
         this.activeName = name;

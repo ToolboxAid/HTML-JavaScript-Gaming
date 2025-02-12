@@ -5,7 +5,7 @@
 
 //** Javascript usages */
 
-import Functions from "./functions.js";
+import SystemUtils from "./utils/systemUtils.js";
 import CanvasUtils from "./canvas.js";
 
 class PerformanceMonitor {
@@ -44,7 +44,7 @@ class PerformanceMonitor {
             y: 'number'
         };
 
-        const validation = Functions.validateConfig("PerformanceMonitor", config, schema);
+        const validation = SystemUtils.validateConfig("PerformanceMonitor", config, schema);
         if (validation) {
             this.performanceConfig = config;
             this.dimentions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);

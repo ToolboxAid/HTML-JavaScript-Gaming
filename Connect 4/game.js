@@ -8,6 +8,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../scripts/gamebase.js';
 import CanvasUtils from '../scripts/canvas.js';
 import KeyboardInput from '../scripts/input/keyboard.js';
+import RandomUtils from '../scripts/math/randomUtils.js';
 
 class Game extends GameBase {
   constructor() {
@@ -88,7 +89,7 @@ class Game extends GameBase {
   }
 
   randomDropInAttractMode() {
-    const column = Math.floor(Math.random() * 7); // Random column from 0 to 6
+    const column = Math.floor(RandomUtils.randomRange(0,6)); // Random column from 0 to 6
     const symbol = this.playerSymbols[this.currentPlayer - 1];
     this.dropChip(column, symbol);
     this.currentPlayer = this.currentPlayer === 1 ? 2 : 1; // Alternate players

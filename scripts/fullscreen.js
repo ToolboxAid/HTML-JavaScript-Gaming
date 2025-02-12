@@ -3,7 +3,7 @@
 // 10/16/2024
 // fullscreen.js
 
-import Functions from "./functions.js";
+import SystemUtils from "./utils/systemUtils.js";
 
 class Fullscreen {
     static gameFullScaleScreen = 1.0;
@@ -39,7 +39,7 @@ class Fullscreen {
             x: 'number',         // X position
             y: 'number'          // Y position
         };
-        const validation = Functions.validateConfig("FullScreen", config, schema);
+        const validation = SystemUtils.validateConfig("FullScreen", config, schema);
         if (validation) {
             this.config = config;
         }
@@ -47,7 +47,7 @@ class Fullscreen {
         //if (!canvasConfig && !Fullscreen.firstTime) {
         if (!canvasConfig) {
             Fullscreen.firstTime = false;
-            Functions.showStackTrace("")
+            SystemUtils.showStackTrace("")
             console.error("'canvasConfig' not provided.");
         }
         const { width = 1024, height = 768, scale = 0.25 } = canvasConfig || {};
@@ -134,5 +134,5 @@ class Fullscreen {
 
 }
 
-// Export the Functions class
+// Export the class
 export default Fullscreen;

@@ -6,7 +6,7 @@
 import ObjectKillable from './objectKillable.js';
 import CanvasUtils from './canvas.js';
 
-import Functions from './functions.js';
+import AngleUtils from '../scripts/math/angleUtils.js';
 
 class ObjectVector extends ObjectKillable {
     constructor(x, y, vectorMap, velocityX, velocityY) {
@@ -64,7 +64,7 @@ class ObjectVector extends ObjectKillable {
             const dy = vy - centerY;
 
             // Apply rotation formula
-            const rotatedPoint = Functions.applyRotationToPoint(dx, dy, this.rotationAngle);
+            const rotatedPoint = AngleUtils.applyRotationToPoint(dx, dy, this.rotationAngle);
 
             // Translate back to the center
             const finalX = rotatedPoint.rotatedX + centerX;
@@ -121,7 +121,7 @@ class ObjectVector extends ObjectKillable {
                 }
 
                 // Apply rotation formula
-                const rotatedPoint = Functions.applyRotationToPoint(px, py, this.rotationAngle);
+                const rotatedPoint = AngleUtils.applyRotationToPoint(px, py, this.rotationAngle);
 
                 // Draw the path
                 if (index === 0) {

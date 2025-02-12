@@ -6,7 +6,8 @@
 import { canvasConfig } from './global.js'; // Import canvasConfig
 import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 import CanvasUtils from '../scripts/canvas.js';
-import Functions from '../scripts/functions.js';
+
+import RandomUtils from '../scripts/math/randomUtils.js';
 
 /**
  * Represents a dynamic circle object in a game.
@@ -17,8 +18,8 @@ class Circle extends ObjectDynamic {
      */
     constructor(canvasConfig) {
         const radius = 25;
-        const velocityX = Functions.randomRange(150.0, 350.0);
-        const velocityY = Functions.randomRange(150.0, 350.0);
+        const velocityX = RandomUtils.randomRange(150.0, 350.0);
+        const velocityY = RandomUtils.randomRange(150.0, 350.0);
 
         // Call ObjectDynamic constructor, passing the radius as both width and height
         super(100, 100, radius, radius, velocityX, velocityY);

@@ -6,7 +6,9 @@
 
 import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
-import Functions from '../scripts/functions.js';
+
+import AngleUtils from '../scripts/math/angleUtils.js';
+import RandomUtils from '../scripts/math/randomUtils.js';
 
 class UFO extends ObjectVector {
   static vectorMap = [
@@ -20,16 +22,16 @@ class UFO extends ObjectVector {
 
   constructor() {
     let x = canvasConfig.width + UFO.offset;
-    let y = Functions.randomRange((UFO.offset * 2), canvasConfig.height - (UFO.offset * 2), true);
+    let y = RandomUtils.randomRange((UFO.offset * 2), canvasConfig.height - (UFO.offset * 2), true);
 
     let angle = 180;// left
-    const dir = Functions.randomBoolean();
+    const dir = RandomUtils.randomBoolean();
     if (dir) {// 0 is left , 1 is right.
       angle = 0;//right
       x = -UFO.offset;
     }
 
-    const velocity = Functions.getVectorDirection(angle);
+    const velocity = AngleUtils.getVectorDirection(angle);
 
     let velocityX = velocity.x * UFO.speed;
     let velocityY = velocity.y * UFO.speed;
@@ -75,7 +77,7 @@ class UFO extends ObjectVector {
   }
 
   getDelay() {
-    this.directionDelay = Functions.randomRange(100, 200);
+    this.directionDelay = RandomUtils.randomRange(100, 200);
     return this.directionDelay;
   }
 

@@ -4,9 +4,10 @@
 // enemyShip.js
 
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
-import Functions from '../scripts/functions.js';
+import RandomUtils from '../scripts/math/randomUtils.js';
 import ObjectSprite from '../scripts/objectSprite.js';
 import Sprite from '../scripts/sprite.js';
+import Timer from '../scripts/utils/timer.js';
 
 class EnemyShip extends ObjectSprite {
 
@@ -89,7 +90,8 @@ class EnemyShip extends ObjectSprite {
         this.velocityX = spriteConfig.shipVelX;
         this.setSpriteColor(spriteConfig.shipColor);
 
-        this.nextShipTimer = 0;
+        this.nextShipTimer = new Timer(EnemyShip.nextShipDelay);
+        console.log(EnemyShip.nextShipDelay)
         this.setIsDead();
 
         this.value = 0;
@@ -101,9 +103,8 @@ class EnemyShip extends ObjectSprite {
     }
 
     isCreationTime() {
-        if (this.isDead() && Date.now() > this.nextShipTimer) {
+        if (this.isDead() && this.nextShipTimer.isComplete()) {
             this.setIsAlive();
-            this.startAudio = true;
         }
     }
 
@@ -114,7 +115,7 @@ class EnemyShip extends ObjectSprite {
     }
 
     setValue() {
-        const switchValue = Functions.randomRange(0, 3, true);
+        const switchValue = RandomUtils.randomRange(0, 3, true);
         switch (switchValue) {
             case 0:
                 this.value = 50;
@@ -184,29 +185,27 @@ class EnemyShip extends ObjectSprite {
     }
 
     setIsAlive() {
-        super.setIsAlive();
+        super.setIsAlive();        
+        this.startAudio = true;
+
         // place off left screen the width of ship moving right
         this.x = -(this.width);
         this.velocityX = spriteConfig.shipVelX;
 
-        if (Functions.randomRange(0, 1, true)) {
+        if (RandomUtils.randomRange(0, 1, true)) {
             // place off right screen width of ship moving left
             this.x = canvasConfig.width + this.width;
             this.velocityX *= -1;
         }
-
-        // prevent acidental double, way out there.
-        this.nextShipTimer = Date.now() + (EnemyShip.nextShipDelay * 10); //1000);
     }
 
     setIsDead() {
         super.setIsDead();
         this.stopAudio = true;
-        this.nextShipTimer = Date.now() + EnemyShip.nextShipDelay;
+        this.nextShipTimer.reset();
     }
 
-    //destroy(){ not valid as this is a Singleton Class -> getInstance()
-
+    //destroy(){ not valid as this is a Singleton Class -> getInstance() }
 }
 
 export default EnemyShip;

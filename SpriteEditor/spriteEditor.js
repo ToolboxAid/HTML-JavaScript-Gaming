@@ -7,7 +7,8 @@ import Colors from "../scripts/colors.js";
 import Palettes from "../scripts/palettes.js";
 import MouseInput from '../scripts/input/mouse.js';
 import Samples from "./samples.js";
-import Functions from "../scripts/functions.js";
+
+import SystemUtils from "../scripts/utils/systemUtils.js";
 
 import { ImageScale } from "./imageScale.js";
 import { Message } from './message.js';
@@ -679,7 +680,7 @@ export class SpriteEditor {
         const result = sortedPalette[this.selectedColorIndex];
 
         if (!result || !result.hex) {
-            Functions.showStackTrace();
+            SystemUtils.showStackTrace();
         }
 
         const rgb = Colors.hexToRgb(result.hex);
@@ -1074,9 +1075,9 @@ export class SpriteEditor {
     }
 
     static copyJSON() {
-        const camelCasePalete = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "palette");
-        const camelCaseSprite = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "sprite");
-        const camelCaseImage = Functions.toCamelCase(this.jsonSprite.metadata.sprite, "image");
+        const camelCasePalete = SystemUtils.toCamelCase(this.jsonSprite.metadata.sprite, "palette");
+        const camelCaseSprite = SystemUtils.toCamelCase(this.jsonSprite.metadata.sprite, "sprite");
+        const camelCaseImage = SystemUtils.toCamelCase(this.jsonSprite.metadata.sprite, "image");
 
         // Get the textarea element
         const textarea = document.getElementById("spriteID");

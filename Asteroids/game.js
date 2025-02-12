@@ -8,7 +8,7 @@ import GameBase from '../scripts/gamebase.js';
 
 import CanvasUtils from '../scripts/canvas.js';
 import KeyboardInput from '../scripts/input/keyboard.js';
-import Functions from '../scripts/functions.js'
+import GameUtils from '../scripts/game/gameUtils.js';
 
 import Ship from './ship.js';
 
@@ -90,7 +90,7 @@ class Game extends GameBase {
   displayPlayerSelect(deltaTime) {
     Game.gameAttract.update(deltaTime);
     Game.gameAttract.draw(false);
-    const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
+    const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;
@@ -123,7 +123,7 @@ class Game extends GameBase {
 
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
-      const result = Functions.swapPlayer(
+      const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
         this.playerCount,

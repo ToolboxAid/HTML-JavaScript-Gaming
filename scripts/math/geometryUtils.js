@@ -1,4 +1,5 @@
-export class GeometryUtils {
+class GeometryUtils {
+
     // Distance between two points
     static getDistance(startPoint, endPoint, debug = false) {
         const dx = endPoint.x - startPoint.x;
@@ -7,8 +8,50 @@ export class GeometryUtils {
     }
 
     // Check if two lines intersect
+
     static linesIntersect(line1Start, line1End, line2Start, line2End) {
-        // Implementation of line intersection logic
+        if (!line1Start || !line1End || !line2Start || !line2End ||
+            !('x' in line1Start && 'y' in line1Start && 'x' in line1End && 'y' in line1End &&
+                'x' in line2Start && 'y' in line2Start && 'x' in line2End && 'y' in line2End)) {
+            throw new Error('Invalid input: all points must have x and y properties');
+        }
+        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) -
+            (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
+        if (denom === 0) return null;
+        const ua = ((line2End.x - line2Start.x) * (line1Start.y - line2Start.y) -
+            (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
+        const ub = ((line1End.x - line1Start.x) * (line1Start.y - line2Start.y) -
+            (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
+        if (ua < 0 || ua > 1 || ub < 0 || ub > 1) return null;
+        return {
+            x: line1Start.x + ua * (line1End.x - line1Start.x),
+            y: line1Start.y + ua * (line1End.y - line1Start.y)
+        };
+    }
+
+    static linesIntersect2(line1Start, line1End, line2Start, line2End) {
+        // These are points : line1Start, line1End, line2Start, line2End
+        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) - (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
+
+        if (denom === 0) {
+            return null; // Lines are parallel
+        }
+
+        const ua = ((line2End.x - line2Start.x) * (line1Start.y - line2Start.y) -
+            (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
+        const ub = ((line1End.x - line1Start.x) * (line1Start.y - line2Start.y) -
+            (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
+
+        if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+            return null; // Intersection is outside the line segments
+        }
+
+        const intersectionPoint = {
+            x: line1Start.x + ua * (line1End.x - line1Start.x),
+            y: line1Start.y + ua * (line1End.y - line1Start.y)
+        };
+
+        return intersectionPoint; // Return the intersection point
     }
 
     // Calculate the area of a triangle
@@ -38,3 +81,5 @@ export class GeometryUtils {
         };
     }
 }
+
+export default GeometryUtils;

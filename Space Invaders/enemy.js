@@ -5,7 +5,7 @@
 
 import { canvasConfig, enemyConfig, spriteConfig } from './global.js';
 
-import Functions from '../scripts/functions.js';
+import RandomUtils from '../scripts/math/randomUtils.js';
 
 import ObjectSprite from '../scripts/objectSprite.js';
 import Sprite from '../scripts/sprite.js';
@@ -87,7 +87,7 @@ class Enemy extends ObjectSprite {
         this.playerLevel = playerLevel;
         this.playerLevel = 1;
         this.bombAggression = 30 + (this.playerLevel * 5);  // 35% to 80% chance to drop bomb 
-        this.bombDelay = Functions.randomRange(50, 350, true);
+        this.bombDelay = RandomUtils.randomRange(50, 350, true);
         this.bombDelayCnt = 0;
         this.velocityX = 250;
         this.enemyID = Enemy.enemyID++;
@@ -269,7 +269,7 @@ class Enemy extends ObjectSprite {
             multiplier = 1;
         }
         const ms = 10;
-        this.bombDelay = Functions.randomRange(ms * multiplier, ms * (multiplier+5), true);
+        this.bombDelay = RandomUtils.randomRange(ms * multiplier, ms * (multiplier+5), true);
     }
 
     isDropBombTime() {
@@ -281,7 +281,7 @@ class Enemy extends ObjectSprite {
 
         this.setDelay();
 
-        const randomNumber = Functions.randomRange(this.playerLevel*5, 100, true); 
+        const randomNumber = RandomUtils.randomRange(this.playerLevel*5, 100, true); 
 
         return (randomNumber <= this.bombAggression);
     }

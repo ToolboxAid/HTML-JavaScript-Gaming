@@ -235,7 +235,11 @@ class GameControllers {
             this.messageError(`Gamepad state not found for index ${gameControllerIndex}`);
             return 0;
         }
-
+        const gamepadMappers = this.gamepadMappers[gameControllerIndex];
+        if (!gamepadMappers) {
+            this.messageError(`Gamepad mapper not found for index ${gameControllerIndex}`);
+            return 0;
+        }
         // Apply deadzone logic
         const deadzone = this.gamepadMappers[gameControllerIndex].axisDeadzone;// 0.2;//this.gamepadMappers.axisDeadzone;
         const axisValue = gamepadState.getAxisByIndexRaw(axisIndex);

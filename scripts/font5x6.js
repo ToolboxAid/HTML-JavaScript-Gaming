@@ -2129,6 +2129,6 @@ class Font5x6 {
     }
 }
 
-// Export the Functions class
+// Export the class
 export default Font5x6;
 

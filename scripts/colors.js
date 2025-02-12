@@ -3,6 +3,8 @@
 // 12/28/2024
 // spritePalettes.js
 
+import RandomUtils from "./math/randomUtils.js";
+
 /** Reference colors
  * Crayola Colors
  * https://www.crayola.com/explore-colors/
@@ -10,7 +12,7 @@
  * https://www.w3schools.com/colors/colors_crayola.asp
  * https://www.jennyscrayoncollection.com/2017/10/complete-list-of-current-crayola-crayon.html
  * 
- */ 
+ */
 
 /* The hue range for each color in the visible spectrum (ROYGBIV) within the HSL
      (Hue, Saturation, Lightness) model is generally as follows: 
@@ -36,7 +38,7 @@ export class Colors {
         // Test if the testColor matches the regular expression
         return hexColorRegex.test(testColor);
     }
-    
+
     static isValidSymbol(testColor) {
         return Object.values(Colors.symbolColorMap).some(color => color.toLowerCase() === testColor.toLowerCase());
     }
@@ -69,7 +71,7 @@ export class Colors {
         // If alpha is 0, it's fully transparent; otherwise, it's partially transparent
         return alpha === 0 || alpha < 1;
     }
-    
+
     // Helper function to convert hex to RGB
     static hexToRgb(hex) {
         this.isValidHexColor(hex);
@@ -174,17 +176,19 @@ export class Colors {
     }
 
     // Methods for generate a random color in format #RRGGBB
-    static generateRandomColor(){
-        const randomHex = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-        this.randomColor =  `#${randomHex()}${randomHex()}${randomHex()}`;
+    static generateRandomColor() {
+
+        const random = RandomUtils.randomRange(0,255);
+        const randomHex = () => Math.floor(random).toString(16).padStart(2, '0');
+        this.randomColor = `#${randomHex()}${randomHex()}${randomHex()}`;
         return this.randomColor;
     }
-    
+
     // Get the random color
-    static getRandomColor() {        
+    static getRandomColor() {
         return this.randomColor;
     }
-    
+
     // Move the color map / or remove
 
     static namedColorMap = {
@@ -328,7 +332,7 @@ export class Colors {
         'whitesmoke': '#f5f5f5',
         'yellow': '#ffff00',
         'yellowgreen': '#9acd32'
-        };
+    };
 
     static symbolColorMap = {
         'R': 'Red',
@@ -363,32 +367,32 @@ Colors.generateRandomColor();
 //---------------------------------------------------
 // Sorted Color Palette 'xxxx' by 'yyyy'
 if (false) {  // sort colors and put on editor screen.
-    
-function generateHSLColors() { // Step 30°
-    const colors = [];
-    for (let h = 0; h <= 360; h += 30) {
-        // Create a color with full saturation and lightness at 50%
-        const color = `hsl(${h}, 100%, 50%)`;
-        colors.push(color);
+
+    function generateHSLColors() { // Step 30°
+        const colors = [];
+        for (let h = 0; h <= 360; h += 30) {
+            // Create a color with full saturation and lightness at 50%
+            const color = `hsl(${h}, 100%, 50%)`;
+            colors.push(color);
+        }
+        return colors;
+        /* [
+        "hsl(0,   100%, 50%)",  // Red
+        "hsl(30,  100%, 50%)",  // Orange
+        "hsl(60,  100%, 50%)",  // Yellow
+        "hsl(90,  100%, 50%)",  // Green
+        "hsl(120, 100%, 50%)",  // Light Green
+        "hsl(150, 100%, 50%)",  // Chartreuse
+        "hsl(180, 100%, 50%)",  // Cyan
+        "hsl(210, 100%, 50%)",  // Light Blue
+        "hsl(240, 100%, 50%)",  // Blue
+        "hsl(270, 100%, 50%)",  // Violet
+        "hsl(300, 100%, 50%)",  // Purple
+        "hsl(330, 100%, 50%)",  // Deep Red
+        "hsl(360, 100%, 50%)"   // Red (Back to 0°)
+        ] */
     }
-    return colors;
-    /* [
-    "hsl(0,   100%, 50%)",  // Red
-    "hsl(30,  100%, 50%)",  // Orange
-    "hsl(60,  100%, 50%)",  // Yellow
-    "hsl(90,  100%, 50%)",  // Green
-    "hsl(120, 100%, 50%)",  // Light Green
-    "hsl(150, 100%, 50%)",  // Chartreuse
-    "hsl(180, 100%, 50%)",  // Cyan
-    "hsl(210, 100%, 50%)",  // Light Blue
-    "hsl(240, 100%, 50%)",  // Blue
-    "hsl(270, 100%, 50%)",  // Violet
-    "hsl(300, 100%, 50%)",  // Purple
-    "hsl(330, 100%, 50%)",  // Deep Red
-    "hsl(360, 100%, 50%)"   // Red (Back to 0°)
-    ] */
-}
-console.log(generateHSLColors());
+    console.log(generateHSLColors());
 
 }
 //---------------------------------------------------

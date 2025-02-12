@@ -3,7 +3,8 @@
 // 10/16/2024
 // canvas.js
 
-import Functions from './functions.js'
+import SystemUtils from './utils/systemUtils.js';
+
 import Font5x6 from './font5x6.js';
 import Colors from './colors.js';
 import Sprite from './sprite.js';
@@ -45,7 +46,7 @@ class CanvasUtils {
             borderSize: 'number'       // Border width in pixels
         };
 
-        const validation = Functions.validateConfig("Canvas", config, schema);
+        const validation = SystemUtils.validateConfig("Canvas", config, schema);
         if (validation) {
             this.config = config;
         }

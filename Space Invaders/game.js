@@ -8,8 +8,10 @@ import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenC
 import GameBase from '../scripts/gamebase.js';
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
-import Functions from '../scripts/functions.js';
+import SystemUtils from '../scripts/utils/systemUtils.js';
+    import GameUtils from '../scripts/game/gameUtils.js';
 
+import RandomUtils from '../scripts/math/randomUtils.js';
 import Player from './player.js';
 import Shield from './shield.js';
 import Laser from './laser.js';
@@ -218,7 +220,7 @@ class Game extends GameBase {
     }
 
     setGameEnemiesBottom(column) {
-        this.gameEnemiesBottom[column] = Functions.destroy(this.gameEnemiesBottom[column]);
+        this.gameEnemiesBottom[column] = SystemUtils.destroy(this.gameEnemiesBottom[column]);
         for (let row = enemyConfig.rowSize - 1; row >= 0; row--) {
             const key = `${row}x${column}`;
             const enemy = this.gameEnemies.get(key);
@@ -249,7 +251,7 @@ class Game extends GameBase {
             if (enemy) {
                 if (enemy.isDropBombTime()) {
                     const bombWidth = 5;
-                    const bombType = Functions.randomRange(0, 2, true); // Generate a random bomb type (0 to 2)
+                    const bombType = RandomUtils.randomRange(0, 2, true); // Generate a random bomb type (0 to 2)
                     switch (bombType) {
                         case 0:
                             this.enemyBombs.push(new EnemyBomb1(enemy.x + (enemy.width / 2) - bombWidth, enemy.y));
@@ -360,7 +362,7 @@ class Game extends GameBase {
             });
 
             if (hitDetected) { // Delete the laser
-                this.laser = Functions.destroy(this.laser);
+                this.laser = SystemUtils.destroy(this.laser);
             }
 
         }
@@ -380,7 +382,7 @@ class Game extends GameBase {
                 }
             });
             if (hitBomb) {
-                this.laser = Functions.destroy(this.laser);
+                this.laser = SystemUtils.destroy(this.laser);
             }
         }
     }
@@ -412,7 +414,7 @@ class Game extends GameBase {
         if (value > 0) {
             Game.audioPlayer.playAudio('ufo_lowpitch.wav');
             this.updatePlayerScore(value);
-            this.laser = Functions.destroy(this.laser);
+            this.laser = SystemUtils.destroy(this.laser);
         }
     }
 
@@ -480,7 +482,7 @@ class Game extends GameBase {
         this.gameEnemies.forEach((enemy) => {
             if (enemy.isDead()) {
                 foundID = enemy.enemyID;
-                Functions.destroy(enemy);
+                SystemUtils.destroy(enemy);
                 foundDead = this.gameEnemies.delete(enemy.key);
             }
         });
@@ -539,10 +541,10 @@ class Game extends GameBase {
             }
         } else {
             if (this.laser.update(deltaTime)) { // Update laser position
-                this.laser = Functions.destroy(this.laser); //laser out of bounds (off screen), delete it
+                this.laser = SystemUtils.destroy(this.laser); //laser out of bounds (off screen), delete it
             } else {
                 if (this.checkLaserShieldCollision()) {
-                    this.laser = Functions.destroy(this.laser);
+                    this.laser = SystemUtils.destroy(this.laser);
                 }
             }
         }
@@ -613,7 +615,7 @@ class Game extends GameBase {
         }
     }
 
-    // Display Functions
+    // Display
     displayAttractMode() {
         console.log("attract mode");
 
@@ -652,7 +654,7 @@ class Game extends GameBase {
         CanvasUtils.drawText(40, 640, "GameController <right D-bay> to move right.", 3.5, "yellow");
         CanvasUtils.drawText(40, 680, "GameController <A> to fire.", 3.5, "yellow");
 
-        const result = Functions.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect,
+        const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect,
             this.keyboardInput, this.gameControllers);
         if (result) {
             this.playerCount = result.playerCount;
@@ -872,8 +874,8 @@ class Game extends GameBase {
     resetCurrentPlayer() {
         this.enemyShip.setIsDead();
 
-        Functions.cleanupArray(this.enemyBombs);
-        this.laser = Functions.destroy(this.laser);
+        SystemUtils.cleanupArray(this.enemyBombs);
+        this.laser = SystemUtils.destroy(this.laser);
 
         const x = spriteConfig.playerX;
         const y = spriteConfig.playerY;
@@ -944,7 +946,7 @@ class Game extends GameBase {
 
             // Decrease current player's life
             this.player.decrementLives();
-            Functions.cleanupArray(this.enemyBombs);
+            SystemUtils.cleanupArray(this.enemyBombs);
             console.log(`Player ${this.currentPlayer} lost a life!`);
 
             // Check if current player is out of lives
@@ -990,7 +992,7 @@ class Game extends GameBase {
             if (this.gameEnemies.size <= 0) {
                 // reset player field
                 this.player.incLevel();
-                Functions.cleanupArray(this.enemyBombs);
+                SystemUtils.cleanupArray(this.enemyBombs);
                 Enemy.unsetEnemiesInitialized()
                 this.initializeGameShields();
                 this.initializeGameGround();
@@ -1000,7 +1002,7 @@ class Game extends GameBase {
 
         // Easter Egg
         if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
-            Functions.cleanupArray(this.enemyBombs);
+            SystemUtils.cleanupArray(this.enemyBombs);
         }
     }
 
@@ -1010,37 +1012,37 @@ class Game extends GameBase {
         this.backToAttractCounter = 0;
 
         // Initialize players as an array of player instances
-        this.players[0] = Functions.destroy(this.players[0]);
-        this.players[1] = Functions.destroy(this.players[1]);
+        this.players[0] = SystemUtils.destroy(this.players[0]);
+        this.players[1] = SystemUtils.destroy(this.players[1]);
         this.players = [new Player(), new Player()]; // Array holding player1 and player2
         this.player = this.players[0]; // Current player
 
         // Need to destroy objects        
         // Items to move into the player
         //this.playersEnimies = [new Map(), new Map()];
-        Functions.cleanupMap(this.playersEnimies[0]);
-        Functions.cleanupMap(this.playersEnimies[1]);
+        SystemUtils.cleanupMap(this.playersEnimies[0]);
+        SystemUtils.cleanupMap(this.playersEnimies[1]);
         this.gameEnemies = this.playersEnimies[0];
 
         //this.playersEnemiesBottom = [new Array(enemyConfig.colSize).fill(null), new Array(enemyConfig.colSize).fill(null)];
-        Functions.cleanupArray(this.playersEnemiesBottom[0]);
-        Functions.cleanupArray(this.playersEnemiesBottom[1]);
+        SystemUtils.cleanupArray(this.playersEnemiesBottom[0]);
+        SystemUtils.cleanupArray(this.playersEnemiesBottom[1]);
         this.gameEnemiesBottom = this.playersEnemiesBottom[0];
 
         //this.playersShields = [[], []];
-        Functions.cleanupArray(this.playersShields[0]);
-        Functions.cleanupArray(this.playersShields[1]);
+        SystemUtils.cleanupArray(this.playersShields[0]);
+        SystemUtils.cleanupArray(this.playersShields[1]);
         this.shields = this.playersShields[0];
 
         //this.playersGrounds = [[], []];
-        Functions.cleanupArray(this.playersGrounds[0]);
-        Functions.cleanupArray(this.playersGrounds[1]);
+        SystemUtils.cleanupArray(this.playersGrounds[0]);
+        SystemUtils.cleanupArray(this.playersGrounds[1]);
         this.grounds = this.playersGrounds[0];
 
         //this.enemyBombs = [];
-        Functions.cleanupArray(this.enemyBombs);
+        SystemUtils.cleanupArray(this.enemyBombs);
 
-        this.laser = Functions.destroy(this.laser);
+        this.laser = SystemUtils.destroy(this.laser);
 
         Enemy.unsetEnemiesInitialized();
 
