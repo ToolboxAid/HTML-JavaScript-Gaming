@@ -1,6 +1,5 @@
 // ToolboxAid.com
 // David Quesenberry
-
 // 10/16/2024
 // game.js - Template Game Engine
 
@@ -11,6 +10,30 @@ import CanvasUtils from '../scripts/canvas.js';
 import GameUtils from '../scripts/game/gameUtils.js';
 
 import KeyboardInput from '../scripts/input/keyboard.js';
+
+
+// Testing between here and 'class Game', can be deleted when move to new project
+import { testAngleUtils } from '../scripts/math/angleUtilsTest.js';
+import { testGameUtils } from '../scripts/game/gameUtilsTest.js';
+import { testGeometryUtils } from '../scripts/math/geometryUtilsTest.js';
+import { testKeyboardInput } from '../scripts/input/keyboardTest.js';
+import { testMouseInput } from '../scripts/input/mouseTest.js';
+import { testPhysicsUtils } from '../scripts/physics/physicsUtilsTest.js';
+import { testRandomUtils } from '../scripts/math/randomUtilsTest.js';
+import { testSystemUtils } from '../scripts/utils/systemUtilsTest.js';
+
+// Run all tests
+import { runTests } from '../scripts/runTest.js';
+
+// Run the tests
+runTests('AngleUtils', testAngleUtils);
+runTests('GameUtils', testGameUtils);
+runTests('GeometryUtils', testGeometryUtils);
+runTests('KeyboardInput',testKeyboardInput);
+runTests('MouseInput', testMouseInput);
+runTests('PhysicsUtils', testPhysicsUtils);
+runTests('RandomUtils', testRandomUtils);
+runTests('System Utils', testSystemUtils);
 
 class Game extends GameBase {
 

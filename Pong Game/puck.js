@@ -10,6 +10,7 @@ import CanvasUtils from '../scripts/canvas.js';
 import ObjectDynamic from '../scripts/objectDynamic.js';
 
 import AngleUtils from '../scripts/math/angleUtils.js';
+
 import RandomUtils from '../scripts/math/randomUtils.js';
 
 import Timer from '../scripts/utils/timer.js';
@@ -155,14 +156,14 @@ class Puck extends ObjectDynamic {
             this.angle = (this.angle * -1) + 180;
         }
 
-        this.angle = AngleUtils.degreeLimits(this.angle);
+        this.angle = AngleUtils.normalizeAngle(this.angle);
 
         // Set the puck's velocity based on the new angle
         this.setVelocity();
     }
 
     setVelocity() {
-        const coordinates = AngleUtils.calculateAngle2XY(this.angle);
+        const coordinates = AngleUtils.angleToVelocity(this.angle);
 
         this.speed += this.speedIncrease;
 

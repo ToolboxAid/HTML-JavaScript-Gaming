@@ -31,7 +31,7 @@ class UFO extends ObjectVector {
       x = -UFO.offset;
     }
 
-    const velocity = AngleUtils.getVectorDirection(angle);
+    const velocity = AngleUtils.angleToVector(angle);
 
     let velocityX = velocity.x * UFO.speed;
     let velocityY = velocity.y * UFO.speed;

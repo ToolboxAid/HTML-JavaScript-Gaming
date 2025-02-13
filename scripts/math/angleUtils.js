@@ -1,64 +1,73 @@
 
-class AngleUtils{
+// ToolboxAid.com
+// David Quesenberry
+// 02/12/2025
+// angleUtils.js
 
-    /** Angles */
-    static radToDeg(radians) {
-        return radians * (180 / Math.PI);
+class AngleUtils {
+
+    static DEG_TO_RAD = Math.PI / 180;
+    static RAD_TO_DEG = 180 / Math.PI;
+
+    static toDegrees(radians) {
+        return radians * this.RAD_TO_DEG;
     }
 
-    static degToRad(degrees) {
-        return degrees * (Math.PI / 180);
+    static toRadians(degrees) {
+        return degrees * this.DEG_TO_RAD;
     }
 
-    static degreeLimits(rotationAngle) {// Wrap rotationAngle to keep it between 0 and 360
-        return (rotationAngle % 360 + 360) % 360;
+    static normalizeAngle(angle) {// Normalize an angle to be within 0-360 degrees
+        return ((angle % 360) + 360) % 360; // Ensures angle is within [0, 360)
     }
 
-    // Applies rotation to the object based on its angular velocity and the elapsed time (deltaTime).
     static applyRotation(object, deltaTime, direction) {
         object.rotationAngle += (object.rotationSpeed * direction) * deltaTime;
-    }// Physics.applyRotation(spaceship, spaceship.angularVelocity, deltaTime);
+    }
 
-    static getVectorDirection(rotationAngle) {
-        // Convert the angle/degree to radians
+    static applyRotationToPoint(x, y, rotationAngle) {
         const radians = (rotationAngle * Math.PI) / 180;
         return {
-            x: Math.cos(radians), // X-component
-            y: Math.sin(radians)  // Y-component
+            rotatedX: x * Math.cos(radians) - y * Math.sin(radians),
+            rotatedY: x * Math.sin(radians) + y * Math.cos(radians)
         };
     }
 
-    // Apply Rotation (around the origin)
-    static applyRotationToPoint(x, y, rotationAngle) {
-        // Convert the angle to radians
-        const radians = (rotationAngle * Math.PI) / 180;
-
-        // Apply the rotation formula
-        const rotatedX = x * Math.cos(radians) - y * Math.sin(radians);
-        const rotatedY = x * Math.sin(radians) + y * Math.cos(radians);
-
-        // Return the rotated coordinates
-        return { rotatedX, rotatedY };
-    }  // const rotatedPoint = Physics.applyRotationToPoint(originalX, originalY, rotationAngle);
-
-    static calculateXY2Angle(xVelocity, yVelocity) {
-        const angleInRadians = Math.atan2(yVelocity, xVelocity);
-        const angleInDegrees = angleInRadians * (180 / Math.PI);
-        return AngleUtils.degreeLimits(angleInDegrees); // Ensure the angle is positive
+    // Convert an angle in degrees to a direction vector
+    static angleToVector(angle) {
+        const radians = angle * this.DEG_TO_RAD;
+        return { x: Math.cos(radians), y: Math.sin(radians) };
     }
 
-    static calculateAngle2XY(angle, decimals = 4) {
-        const radians = AngleUtils.degToRad(angle); //angle * (Math.PI / 180);
-        const x = (Math.cos(radians)).toFixed(decimals);
-        const y = (Math.sin(radians)).toFixed(decimals);
-        return { x: parseFloat(x), y: parseFloat(y) };
+    // Convert velocity components (x, y) to an angle in degrees
+    static velocityToAngle(xVelocity, yVelocity) {
+        const angleInRadians = Math.atan2(yVelocity, xVelocity);
+        return this.normalizeAngle(angleInRadians * this.RAD_TO_DEG);
+    }
+
+    // Convert an angle in degrees to velocity components (x, y)
+    static angleToVelocity(angle, precision = 4) {
+        const radians = angle * this.DEG_TO_RAD;
+        return {
+            x: parseFloat(Math.cos(radians).toFixed(precision)),
+            y: parseFloat(Math.sin(radians).toFixed(precision))
+        };
     }
 
     static calculateOrbitalPosition(centerX, centerY, angle, distance) {
-        const radian = this.degToRad(angle);
-        const x = centerX + distance * Math.cos(radian);
-        const y = centerY + distance * Math.sin(radian);
-        return { x: x, y: y };
+        const radian = this.toRadians(angle);
+        return {
+            x: centerX + distance * Math.cos(radian),
+            y: centerY + distance * Math.sin(radian)
+        };
+    }
+    // Calculate the position of an object in a circular orbit
+    static getOrbitalPosition(centerX, centerY, angle, radius) {
+        const radians = angle * this.DEG_TO_RAD;
+        return {
+            x: centerX + radius * Math.cos(radians),
+            y: centerY + radius * Math.sin(radians)
+        };
     }
 }
 

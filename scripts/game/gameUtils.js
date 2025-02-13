@@ -1,4 +1,7 @@
-
+// ToolboxAid.com
+// David Quesenberry
+// 02/12/2025
+// gameUtils.js
 
 class GameUtils{
     /**  Player information
@@ -62,30 +65,30 @@ class GameUtils{
         // Decrease the current player's life
         playerLives[currentPlayer] -= 1;
         console.log(`Player ${currentPlayer + 1} lost a life!`);
-
+    
         // Check if the current player is out of lives
         if (playerLives[currentPlayer] <= 0) {
             console.log(`Player ${currentPlayer + 1} is out of lives.`);
-
+    
             // Check if all players are out of lives
             const allOut = playerLives.every(lives => lives <= 0);
             if (allOut) {
                 console.log("All players are out of lives. Game Over!");
-                setGameState("gameOver");
-                return { updatedPlayer: currentPlayer, updatedLives: playerLives };
+                setGameState("gameOver"); // Trigger game over state
+                return { updatedPlayer: undefined, updatedLives: playerLives }; // Return undefined for player
             }
         }
-
+    
         // Find the next player with lives left
         let nextPlayer = currentPlayer;
         do {
             nextPlayer = (nextPlayer + 1) % playerCount; // Cycle to the next player
-        } while (playerLives[nextPlayer] <= 0);
-
+        } while (playerLives[nextPlayer] <= 0 && nextPlayer !== currentPlayer); // Ensure not stuck in infinite loop
+    
         // Set the next player as the current player
         console.log(`Swapping to Player ${nextPlayer + 1}.`);
         return { updatedPlayer: nextPlayer, updatedLives: playerLives };
-    }
+    }    
 
 }
 

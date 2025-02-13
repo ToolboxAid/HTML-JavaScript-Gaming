@@ -8,7 +8,7 @@ requirements.txt
 
 - - - Functions - - -
 
-- - - Physics - - -
+- - - PhysicsUtils - - -
 
 - - - Sound Hz - - -
 

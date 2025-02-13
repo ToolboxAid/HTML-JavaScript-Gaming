@@ -1,18 +1,15 @@
-
-
 class SystemUtils {
     /** Misc */
     static toCamelCase(...args) {
         return args
             .join(' ') // Concatenate all arguments with a space in between
-            .toLowerCase() // Convert to lowercase
-            .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+            .replace(/[^a-zA-Z0-9]+/g, ' ') // Convert special characters to spaces
             .trim() // Remove leading and trailing spaces
             .split(/\s+/) // Split into words
             .map((word, index) =>
                 index === 0
-                    ? word // First word remains lowercase
-                    : word.charAt(0).toUpperCase() + word.slice(1) // Capitalize subsequent words
+                    ? word.toLowerCase() // Ensure first word is in lowercase
+                    : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() // Capitalize subsequent words
             )
             .join(''); // Combine into camel case
     }
@@ -73,10 +70,8 @@ class SystemUtils {
             console.warn('Failed validations:', failures);
             console.table(failures);
             console.warn('Detailed errors:', failures.map(f =>
-                `${f.field}: ${f.error === 'missing' ?
-                    'Missing field' :
-                    `Expected ${f.expected}, got ${f.actual} (${f.value})`}`
-            ));
+                `${f.field}: ${f.error === 'missing' ? 'Missing field' :
+                    `Expected ${f.expected}, got ${f.actual} (${f.value})`}`));
             console.groupEnd();
             return false;
         }
@@ -91,58 +86,82 @@ class SystemUtils {
         trace = null;
     }
 
-    /** Memory cleanup (anytime keyword 'new' is used */
-    static destroy(item) {
-        if (!item) return null;
-        try {
-            if (typeof item?.destroy === 'function') {
-                item.destroy();
+    /** Memory cleanup (anytime keyword 'new' is used) */
+    static destroy(element) {
+        if (element && element.destroy) {
+            try {
+                element.destroy(); // Clean up the element as intended
+                return true; // Ensure this is `true`
+            } catch (error) {
+                console.error("Error during destroy:", error);
+                return false; // Return false only on error
             }
-            return null;
-        } catch (error) {
-            console.error("Destroy failed:", error);
-            return item;
         }
+        return false; // Return false if no destroy method exists
     }
-
+    
     static cleanupArray(array) {
-        if (!Array.isArray(array)) return false;
         let success = true;
-
+    
+        if (!Array.isArray(array)) {
+            console.warn(`Not an array:`, array);
+            return false; // Ensure the return is false if it's not an array
+        }
+    
         try {
             for (let i = array.length - 1; i >= 0; i--) {
-                if (!SystemUtils.destroy(array[i])) {
-                    success = false;
+                const element = array[i];
+                
+                // If element has a destroy method, call it
+                if (SystemUtils.destroy(element) !== true) {
+                    console.warn(`Failed to destroy element at index ${i}`);
+                    success = false; // Flag failure if the destroy failed
                 }
-                array[i] = null;
+    
+                array[i] = null; // Set the element to null after attempting to destroy it
             }
-            array.length = 0;
+    
+            array.length = 0; // Ensure the array is emptied
         } catch (error) {
-            console.error("Cleanup Array:", error);
+            console.error("Error in cleanupArray:", error);
             success = false;
         }
-
-        return success;
+    
+        return success; // Return whether the cleanup was successful
     }
-
+    
     static cleanupMap(map) {
-        if (!(map instanceof Map)) return false;
         let success = true;
-
+        if (!(map instanceof Map)) {
+            console.warn(`not an instance of Map: ${map}`);
+            return success; // Return true since the map wasn't valid
+        }
+    
         try {
-            for (const [key, item] of map) {
-                if (!SystemUtils.destroy(item)) {
+            for (const [key, element] of map) {
+                // Check if destroy exists on the element
+                if (element && typeof element.destroy === 'function') {
+                    const result = SystemUtils.destroy(element);
+                    if (!result) {
+                        console.warn(`Failed to destroy MAP element with key: ${key}`);
+                        success = false;
+                    }
+                } else {
+                    console.warn(`Element at key ${key} doesn't have a 'destroy' method.`);
                     success = false;
                 }
+    
+                // After attempting to destroy, delete the element from the map
                 map.delete(key);
             }
         } catch (error) {
-            console.error("Cleanup Map:", error);
+            console.error("Error during map cleanup:", error);
             success = false;
         }
-
+    
         return success;
     }
+    
 
 }
 

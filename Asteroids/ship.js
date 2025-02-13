@@ -155,7 +155,7 @@ class Ship extends ObjectVector {
         }
 
         // Wrap rotationAngle to keep it between 0 and 360
-        this.rotationAngle = AngleUtils.degreeLimits(this.rotationAngle);
+        this.rotationAngle = AngleUtils.normalizeAngle(this.rotationAngle);
 
         // Reset acceleration values
         this.accelerationX = 0;
@@ -163,7 +163,7 @@ class Ship extends ObjectVector {
 
         // Apply thrust (acceleration) when ArrowUp is held down
         if (keyboardInput.isKeyDown('ArrowUp')) {
-            const vectorDirection = AngleUtils.getVectorDirection(this.rotationAngle);
+            const vectorDirection = AngleUtils.angleToVector(this.rotationAngle);
 
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
