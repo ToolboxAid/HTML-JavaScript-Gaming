@@ -1,11 +1,15 @@
+// ToolboxAid.com
+// David Quesenberry
+// 02/14/2025
+// collisionUtils.js
 
 import CanvasUtils from "../../scripts/canvas.js"
 import SystemUtils from "../utils/systemUtils.js";
-
+import GeometryUtils from "../math/geometryUtils.js"
 export default class CollisionUtils {
     // Play your game normally: game.html
-    // Enable debug mode: game.html?debug
-    static DEBUG = new URLSearchParams(window.location.search).has('debug');
+    // Enable debug mode: game.html?collisionUtils
+    static DEBUG = new URLSearchParams(window.location.search).has('collisionUtils');
 
     constructor() {
         throw new Error("'CollisionUtils' has only static methods.");
@@ -60,6 +64,44 @@ export default class CollisionUtils {
         return inside;
     }
 
+    static arePolygonsOverlapping(polygon1, polygon2) {
+        if (!Array.isArray(polygon1) || polygon1.length < 3 ||
+            !Array.isArray(polygon2) || polygon2.length < 3) {
+            return false;
+        }
+
+        // Check if any point of polygon1 is inside polygon2
+        for (const [x, y] of polygon1) {
+            if (this.isPointInsidePolygon(x, y, polygon2)) {
+                return true;
+            }
+        }
+
+        // Check if any point of polygon2 is inside polygon1
+        for (const [x, y] of polygon2) {
+            if (this.isPointInsidePolygon(x, y, polygon1)) {
+                return true;
+            }
+        }
+
+        // Check if any edges of polygon1 intersect with edges of polygon2
+        for (let i = 0; i < polygon1.length; i++) {
+            let p1 = polygon1[i];
+            let p2 = polygon1[(i + 1) % polygon1.length]; // Wrap around
+
+            for (let j = 0; j < polygon2.length; j++) {
+                let q1 = polygon2[j];
+                let q2 = polygon2[(j + 1) % polygon2.length]; // Wrap around
+
+                if (GeometryUtils.doLinesIntersectByPoints(p1, p2, q1, q2)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     static isContainedWithin(object, container) {
         if (this.DEBUG) {
             console.assert(
@@ -86,7 +128,7 @@ export default class CollisionUtils {
 
     static isCollidingWith(objectA, objectB) {
         if (this.DEBUG) {
-            if (objectB === true){
+            if (objectB === true) {
                 console.log(objectB);
                 SystemUtils.showStackTrace("isCollidingWith");
             }
@@ -116,7 +158,6 @@ export default class CollisionUtils {
             objectA.y + objectA.height > objectB.y
         );
     }
-
     static isCollidingWithSides(objectA, objectB) {
         if (this.DEBUG) {
             console.assert(
@@ -164,11 +205,10 @@ export default class CollisionUtils {
         return (
             object.x + offset <= 0 ||
             object.y + offset <= 0 ||
-            object.x + object.width - offset >= CanvasUtils.getWidth() ||
-            object.y + object.height - offset >= CanvasUtils.getHeight()
+            object.x + object.width - offset >= CanvasUtils.getCanvasWidth() ||
+            object.y + object.height - offset >= CanvasUtils.getCanvasHeight()
         );
     }
-
     static checkGameBoundsSides(object, offset = 0) {
         if (this.DEBUG) {
             console.assert(
@@ -192,13 +232,13 @@ export default class CollisionUtils {
         if (object.y + offset <= 0) {
             boundariesHit.push('top');
         }
-        if (object.y + object.height - offset >= CanvasUtils.getHeight()) {
+        if (object.y + object.height - offset >= CanvasUtils.getCanvasHeight()) {
             boundariesHit.push('bottom');
         }
         if (object.x + offset <= 0) {
             boundariesHit.push('left');
         }
-        if (object.x + object.width - offset >= CanvasUtils.getWidth()) {
+        if (object.x + object.width - offset >= CanvasUtils.getCanvasWidth()) {
             boundariesHit.push('right');
         }
 
@@ -215,8 +255,8 @@ export default class CollisionUtils {
         }
         return object.x - object.radius <= 0 ||
             object.y - object.radius <= 0 ||
-            object.x + object.radius >= CanvasUtils.getWidth() ||
-            object.y + object.radius >= CanvasUtils.getHeight();
+            object.x + object.radius >= CanvasUtils.getCanvasWidth() ||
+            object.y + object.radius >= CanvasUtils.getCanvasHeight();
     }
     static checkGameBoundsCircleSides(object) {
         if (this.DEBUG) {
@@ -238,7 +278,7 @@ export default class CollisionUtils {
             boundariesHit.push('top');
         }
         // Check for collision with the bottom boundary
-        if (object.y + object.radius >= CanvasUtils.getHeight()) {
+        if (object.y + object.radius >= CanvasUtils.getCanvasHeight()) {
             boundariesHit.push('bottom');
         }
 
@@ -247,7 +287,7 @@ export default class CollisionUtils {
             boundariesHit.push('left');
         }
         // Check for collision with the right boundary
-        if (object.x + object.radius >= CanvasUtils.getWidth()) {
+        if (object.x + object.radius >= CanvasUtils.getCanvasWidth()) {
             boundariesHit.push('right');
         }
 

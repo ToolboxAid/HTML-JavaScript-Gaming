@@ -14,6 +14,7 @@ import KeyboardInput from '../scripts/input/keyboard.js';
 
 // Testing between here and 'class Game', can be deleted when move to new project
 import { testAngleUtils } from '../scripts/math/angleUtilsTest.js';
+import { testCollisionUtils } from '../scripts/physics/collisionUtilsTest.js';
 import { testGameUtils } from '../scripts/game/gameUtilsTest.js';
 import { testGeometryUtils } from '../scripts/math/geometryUtilsTest.js';
 import { testKeyboardInput } from '../scripts/input/keyboardTest.js';
@@ -27,6 +28,7 @@ import { runTests } from '../scripts/runTest.js';
 
 // Run the tests
 runTests('AngleUtils', testAngleUtils);
+runTests('CollisionUtils',testCollisionUtils)
 runTests('GameUtils', testGameUtils);
 runTests('GeometryUtils', testGeometryUtils);
 runTests('KeyboardInput',testKeyboardInput);

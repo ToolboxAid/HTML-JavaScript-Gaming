@@ -4,6 +4,7 @@
 // 10/16/2024
 
 const gameFullScaleScreen = 1.0;
+// Populated by global.js
 const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight, scale: gameScaleWindow };
 var isFullScreen = false;
 

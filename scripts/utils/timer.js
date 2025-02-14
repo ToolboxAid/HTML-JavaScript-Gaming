@@ -4,7 +4,10 @@
 // timer.js
 
 class Timer {
-    static debug = false;
+    
+    // Play your game normally: game.html
+    // Enable debug mode: game.html?timer
+    static DEBUG = new URLSearchParams(window.location.search).has('timer');
 
     constructor(durationMs) {
         if (!durationMs || durationMs <= 0) {
@@ -16,7 +19,7 @@ class Timer {
         this.isPaused = false;
         this.pauseTime = null;
         
-        if (Timer.debug) console.log(`Timer created: duration ${durationMs}ms`);
+        if (Timer.DEBUG) console.log(`Timer created: duration ${durationMs}ms`);
     }
 
     start() {
@@ -24,7 +27,7 @@ class Timer {
             this.startTime = performance.now();
             this.isActive = true;
             this.isPaused = false;
-            if (Timer.debug) console.log('Timer started');
+            if (Timer.DEBUG) console.log('Timer started');
         }
         return this;
     }
@@ -33,7 +36,7 @@ class Timer {
         if (this.isActive && !this.isPaused) {
             this.isPaused = true;
             this.pauseTime = performance.now();
-            if (Timer.debug) console.log('Timer paused');
+            if (Timer.DEBUG) console.log('Timer paused');
         }
         return this;
     }
@@ -44,7 +47,7 @@ class Timer {
             this.startTime += pauseDuration;
             this.isPaused = false;
             this.pauseTime = null;
-            if (Timer.debug) console.log('Timer resumed');
+            if (Timer.DEBUG) console.log('Timer resumed');
         }
         return this;
     }
@@ -52,7 +55,7 @@ class Timer {
     stop() {
         this.isActive = false;
         this.isPaused = false;
-        if (Timer.debug) console.log('Timer stopped');
+        if (Timer.DEBUG) console.log('Timer stopped');
         return this;
     }
 
@@ -60,7 +63,7 @@ class Timer {
         this.startTime = performance.now();
         this.isPaused = false;
         this.pauseTime = null;
-        if (Timer.debug) console.log('Timer reset');
+        if (Timer.DEBUG) console.log('Timer reset');
         return this;
     }
 

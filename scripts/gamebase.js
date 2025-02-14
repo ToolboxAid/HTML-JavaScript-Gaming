@@ -10,6 +10,11 @@ import PerformanceMonitor from "../scripts/performacneMonitor.js";
 
 class GameBase {
 
+    // Play your game normally: game.html
+    // Enable debug mode: game.html?gameBase
+    static DEBUG = new URLSearchParams(window.location.search).has('gameBase');
+
+
     static isInitialized = false;
 
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {

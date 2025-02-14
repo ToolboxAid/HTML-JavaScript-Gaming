@@ -4,6 +4,10 @@
 // physicsUtils.js
 
 export default class PhysicsUtils {
+    // Play your game normally: game.html
+    // Enable debug mode: game.html?physicsUtils
+    static DEBUG = new URLSearchParams(window.location.search).has('physicsUtils');
+
     constructor() {
         throw new Error("'PhysicsUtils' has only static methods.");
     }

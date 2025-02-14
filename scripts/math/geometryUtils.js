@@ -6,52 +6,58 @@ class GeometryUtils {
         const dy = endPoint.y - startPoint.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
-
-    // Check if two lines intersect
-
-    static linesIntersect(line1Start, line1End, line2Start, line2End) {
-        if (!line1Start || !line1End || !line2Start || !line2End ||
-            !('x' in line1Start && 'y' in line1Start && 'x' in line1End && 'y' in line1End &&
-                'x' in line2Start && 'y' in line2Start && 'x' in line2End && 'y' in line2End)) {
-            throw new Error('Invalid input: all points must have x and y properties');
-        }
-        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) -
-            (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
-        if (denom === 0) return null;
-        const ua = ((line2End.x - line2Start.x) * (line1Start.y - line2Start.y) -
-            (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
-        const ub = ((line1End.x - line1Start.x) * (line1Start.y - line2Start.y) -
-            (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
-        if (ua < 0 || ua > 1 || ub < 0 || ub > 1) return null;
-        return {
-            x: line1Start.x + ua * (line1End.x - line1Start.x),
-            y: line1Start.y + ua * (line1End.y - line1Start.y)
-        };
+    // Check if two lines intersect (defined by points)
+    static doLinesIntersectByPoints(p1, p2, p3, p4) {
+        return this.getLineIntersectionPoint(p1, p2, p3, p4) !== null;
     }
 
-    static linesIntersect2(line1Start, line1End, line2Start, line2End) {
-        // These are points : line1Start, line1End, line2Start, line2End
-        const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) - (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
+    // Check if two lines intersect (defined as objects)
+    static doLinesIntersect(line1, line2) {
+        return this.getLinesIntersection(line1, line2) !== null;
+    }
 
-        if (denom === 0) {
-            return null; // Lines are parallel
+    // Get the intersection point of two lines (defined as objects)
+    static getLinesIntersection(line1, line2) {
+        return this.getLineIntersectionPoint(line1.start, line1.end, line2.start, line2.end);
+    }
+
+    // Get the intersection point of two lines (defined by points)
+    static getLineIntersectionPoint(p1, p2, p3, p4) {
+        // Convert arrays to objects if necessary
+        if (Array.isArray(p1)) p1 = { x: p1[0], y: p1[1] };
+        if (Array.isArray(p2)) p2 = { x: p2[0], y: p2[1] };
+        if (Array.isArray(p3)) p3 = { x: p3[0], y: p3[1] };
+        if (Array.isArray(p4)) p4 = { x: p4[0], y: p4[1] };
+
+        // Validate that each point is an object with 'x' and 'y' properties
+        if (!p1 || !p2 || !p3 || !p4 ||
+            typeof p1.x === 'undefined' || typeof p1.y === 'undefined' ||
+            typeof p2.x === 'undefined' || typeof p2.y === 'undefined' ||
+            typeof p3.x === 'undefined' || typeof p3.y === 'undefined' ||
+            typeof p4.x === 'undefined' || typeof p4.y === 'undefined') {
+            throw new Error('Invalid points passed to getLineIntersectionPoint');
         }
 
-        const ua = ((line2End.x - line2Start.x) * (line1Start.y - line2Start.y) -
-            (line2End.y - line2Start.y) * (line1Start.x - line2Start.x)) / denom;
-        const ub = ((line1End.x - line1Start.x) * (line1Start.y - line2Start.y) -
-            (line1End.y - line1Start.y) * (line1Start.x - line2Start.x)) / denom;
+        const { x: x1, y: y1 } = p1;
+        const { x: x2, y: y2 } = p2;
+        const { x: x3, y: y3 } = p3;
+        const { x: x4, y: y4 } = p4;
 
-        if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
-            return null; // Intersection is outside the line segments
+        const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+        if (denominator === 0) return null; // Lines are parallel or coincident
+
+        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
+        const u = ((x1 - x3) * (y1 - y2) - (y1 - y3) * (x1 - x2)) / denominator;
+
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+            return {
+                x: x1 + t * (x2 - x1),
+                y: y1 + t * (y2 - y1),
+            };
         }
 
-        const intersectionPoint = {
-            x: line1Start.x + ua * (line1End.x - line1Start.x),
-            y: line1Start.y + ua * (line1End.y - line1Start.y)
-        };
-
-        return intersectionPoint; // Return the intersection point
+        return null; // Intersection is outside the line segments
     }
 
     // Calculate the area of a triangle

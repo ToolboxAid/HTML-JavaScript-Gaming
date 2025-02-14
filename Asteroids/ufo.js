@@ -52,16 +52,16 @@ class UFO extends ObjectVector {
     // Update super position based on velocity
     super.update(deltaTime);
 
-    // If the ufo exceeds bounds, mark it for removal
-    const boundariesHit = this.checkGameBounds(this.height );
+    // // If the ufo exceeds bounds, mark it for removal
+    // const boundariesHit = this.checkGameBounds(this );
 
-    if (!this.isDead()) {
-      if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
-        console.log(boundariesHit);
-        this.setIsDead();
-        console.log("ufo dead");
-      }
-    }
+    // if (!this.isDead()) {
+    //   if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
+    //     console.log(boundariesHit);
+    //     this.setIsDead();
+    //     console.log("ufo dead");
+    //   }
+    // }
   }
 
   changeDirections() {

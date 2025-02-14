@@ -1,4 +1,13 @@
+// ToolboxAid.com
+// David Quesenberry
+// 02/14/2025
+// systemUtils.js
+
 class SystemUtils {
+    // Play your game normally: game.html
+    // Enable debug mode: game.html?systemUtils
+    static DEBUG = new URLSearchParams(window.location.search).has('systemUtils');
+
     /** Misc */
     static toCamelCase(...args) {
         return args

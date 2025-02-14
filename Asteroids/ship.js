@@ -19,19 +19,19 @@ class Ship extends ObjectVector {
     static maxSpeed = 800; // Set a maximum velocity cap (adjust as needed)
 
     constructor() {
-        // // const vectorMap = //[[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]]; //,[0, 0]
-        // //     [[24, 0], [-24, -18], [-18, 0], [-24, 18]];
-        // const vectorMap = [
-        //     [18, 0], [-18, -14], [-13, 0], [-18, 14]
-        //   ];
-        const vectorMap = [
-            [14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]
-        ];
+        // --- X Large
+        // const shipVectorMap = [[24, 0], [-24, -18], [-18, 0], [-24, 18]];
+        // --- Large
+        // const shipVectorMap = [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]];
+        // --- Medium
+        // const shipVectorMap = [ [18, 0], [-18, -14], [-13, 0], [-18, 14] ];
+        // --- Small
+        const shipVectorMap = [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]];
 
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
-        super(x, y, vectorMap);
+        super(x, y, shipVectorMap);
 
         this.level = 1;
 
@@ -270,8 +270,9 @@ class Ship extends ObjectVector {
         // Draw all game objects
         this.bullets.forEach(bullet => bullet.draw());
         this.asteroids.forEach(asteroid => asteroid.draw());
-        if (this.ufo){
-        this.ufo.draw();}
+        if (this.ufo) {
+            this.ufo.draw();
+        }
     }
 
     drawShipDebug(ctx) {

@@ -13,20 +13,47 @@ export function testGeometryUtils(assert) {
     const point2 = { x: 3, y: 4 };
     assert(Math.abs(GeometryUtils.getDistance(point1, point2) - 5) < 1e-10, "getDistance failed");
 
-    // Test linesIntersect
+    // Standard intersection test
     const line1Start = { x: 0, y: 0 };
     const line1End = { x: 4, y: 4 };
     const line2Start = { x: 0, y: 4 };
     const line2End = { x: 4, y: 0 };
-    const intersection1 = GeometryUtils.linesIntersect(line1Start, line1End, line2Start, line2End);
-    assert(intersection1 !== null, "linesIntersect failed (lines should intersect)");
-    assert(Math.abs(intersection1.x - 2) < 1e-10 && Math.abs(intersection1.y - 2) < 1e-10, "linesIntersect failed (incorrect intersection point)");
+    const intersection1 = GeometryUtils.getLineIntersectionPoint(line1Start, line1End, line2Start, line2End);
+    assert(intersection1 !== null, "Test failed: Lines should intersect");
+    assert(Math.abs(intersection1.x - 2) < 1e-10 && Math.abs(intersection1.y - 2) < 1e-10, "Test failed: Incorrect intersection point");
 
-    // Test linesIntersect2 (with same logic, you can test it similarly)
-    const intersection2 = GeometryUtils.linesIntersect2(line1Start, line1End, line2Start, line2End);
-    assert(intersection2 !== null, "linesIntersect2 failed (lines should intersect)");
-    assert(Math.abs(intersection2.x - 2) < 1e-10 && Math.abs(intersection2.y - 2) < 1e-10, "linesIntersect2 failed (incorrect intersection point)");
+    // Parallel lines (no intersection)
+    const line3Start = { x: 0, y: 1 };
+    const line3End = { x: 4, y: 1 };
+    const line4Start = { x: 0, y: 3 };
+    const line4End = { x: 4, y: 3 };
+    const intersection2 = GeometryUtils.getLineIntersectionPoint(line3Start, line3End, line4Start, line4End);
+    assert(intersection2 === null, "Test failed: Parallel lines should not intersect");
 
+    // Coincident lines (overlapping, infinite intersections)
+    const line5Start = { x: 1, y: 1 };
+    const line5End = { x: 3, y: 3 };
+    const line6Start = { x: 2, y: 2 };
+    const line6End = { x: 4, y: 4 };
+    const intersection3 = GeometryUtils.getLineIntersectionPoint(line5Start, line5End, line6Start, line6End);
+    assert(intersection3 === null, "Test failed: Overlapping segments should not return a single intersection point");
+
+    // T-junction (one line ends on another)
+    const line7Start = { x: 1, y: 1 };
+    const line7End = { x: 3, y: 3 };
+    const line8Start = { x: 2, y: 3 };
+    const line8End = { x: 2, y: 1 };
+    const intersection4 = GeometryUtils.getLineIntersectionPoint(line7Start, line7End, line8Start, line8End);
+    assert(intersection4 !== null, "Test failed: Lines should intersect at a T-junction");
+    assert(Math.abs(intersection4.x - 2) < 1e-10 && Math.abs(intersection4.y - 2) < 1e-10, "Test failed: Incorrect intersection point at T-junction");
+
+    // Intersection outside of segments (but would intersect if extended)
+    const line9Start = { x: 0, y: 0 };
+    const line9End = { x: 1, y: 1 };
+    const line10Start = { x: 2, y: 2 };
+    const line10End = { x: 3, y: 3 };
+    const intersection5 = GeometryUtils.getLineIntersectionPoint(line9Start, line9End, line10Start, line10End);
+    assert(intersection5 === null, "Test failed: Lines would intersect if extended, but segments do not overlap");
     // Test triangleArea
     const trianglePoint1 = { x: 0, y: 0 };
     const trianglePoint2 = { x: 5, y: 0 };

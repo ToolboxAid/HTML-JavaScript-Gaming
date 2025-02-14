@@ -10,8 +10,7 @@
 import CanvasUtils from "../scripts/canvas.js";
 
 class ObjectStatic {
-    static gameAreaWidth = CanvasUtils.getWidth();
-    static gameAreaHeight = CanvasUtils.getHeight();
+
     /**
      * Creates an instance of ObjectStatic.
      * @param {number} x - The X position of the object.
@@ -20,9 +19,6 @@ class ObjectStatic {
      * @param {number} height - The height of the object.
      */
     constructor(x = 0, y = 0, width = 0, height = 0) {
-        if (ObjectStatic.gameAreaWidth <= 0 || ObjectStatic.gameAreaHeight <= 0) {
-            throw new Error('gameAreaWidth and gameAreaHeight must be positive numbers.');
-        }
         if (width <= 0 || height <= 0) {
             throw new Error('Width and height must be positive numbers.');
         }        
