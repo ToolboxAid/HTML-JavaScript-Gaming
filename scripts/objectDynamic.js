@@ -24,9 +24,6 @@ class ObjectDynamic extends ObjectStatic {
         super(x, y, width, height); // Call the parent constructor
         this.velocityX = velocityX; // Velocity in X direction
         this.velocityY = velocityY; // Velocity in Y direction
-
-        this.gameAreaWidth = CanvasUtils.getWidth();
-        this.gameAreaHeight = CanvasUtils.getHeight();
     }
 
     /** Future methods */
@@ -86,112 +83,6 @@ class ObjectDynamic extends ObjectStatic {
     setVelocity(velocityX, velocityY) {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
-    }
-
-    /**
-     * Checks if this object is fully contained within the specified container object.
-     * @param {Object} container - The container object with x, y, width, and height properties.
-     * @returns {boolean} - True if this object is fully inside the container, false otherwise.
-     */
-    isContainedWithin(container) {
-        return (
-            this.x >= container.x &&
-            this.y >= container.y &&
-            this.x + this.width <= container.x + container.width &&
-            this.y + this.height <= container.y + container.height
-        );
-    }
-
-    isCollidingWith(object) {
-        return (
-            this.x + this.width >= object.x &&
-            this.x <= object.x + object.width &&
-            this.y + this.height >= object.y &&
-            this.y <= object.y + object.height
-        );
-    }
-
-    isCollidingWithSides(object) {
-        let collisions = [];
-
-        if (this.isCollidingWith(object)) {
-            // Check for collisions
-            if (this.x + this.width >= object.x && this.x < object.x) {
-                collisions.push('right'); // This object's right edge collides with the other object's left edge
-            }
-            if (this.x <= object.x + object.width && this.x + this.width > object.x + object.width) {
-                collisions.push('left'); // This object's left edge collides with the other object's right edge
-            }
-            if (this.y + this.height >= object.y && this.y < object.y) {
-                collisions.push('bottom'); // This object's bottom edge collides with the other object's top edge
-            }
-            if (this.y <= object.y + object.height && this.y + this.height > object.y + object.height) {
-                collisions.push('top'); // This object's top edge collides with the other object's bottom edge
-            }
-        }
-        // Return false if no collisions, otherwise return collisions
-        return collisions;
-    }
-
-
-    /**
- * Checks the object's position against the specified boundaries and adjusts if necessary.
- * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
- * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
- */
-    checkGameBounds(offset = 0) {
-        if (this.radius) {
-            throw new Error("object has 'this.radius' use checkGameBoundsCircle.");
-        }
-        let boundariesHit = [];
-
-        // top and bottom
-        if (this.y + offset <= 0) {
-            boundariesHit.push('top');
-        } else if (this.y + this.height - offset >= this.gameAreaHeight) {
-            boundariesHit.push('bottom');
-        }
-
-        // left & right
-        if (this.x + offset <= 0) {
-            boundariesHit.push('left');
-        } else if (this.x + this.width - offset >= this.gameAreaWidth) {
-            boundariesHit.push('right');
-        }
-
-        return boundariesHit;
-    }
-
-    /** Checks the circle's position against the specified boundaries and adjusts if necessary.
-     * Returns an array of boundaries hit ('left', 'right', 'top', 'bottom') or an empty array if no boundary was hit.
-     * @returns {string[]} - The boundaries hit or an empty array if no boundary was hit.
-     */
-    checkGameBoundsCircle() {
-        if (!this.radius) {
-            throw new Error("object requires a 'this.radius' that is not null, undefined, or empty.");
-        }
-
-        let boundariesHit = [];
-
-        // Check for collision with the top boundary
-        if (this.y - this.radius <= 0) {
-            boundariesHit.push('top');
-        }
-        // Check for collision with the bottom boundary
-        else if (this.y + this.radius >= this.gameAreaHeight) {
-            boundariesHit.push('bottom');
-        }
-
-        // Check for collision with the left boundary
-        if (this.x - this.radius <= 0) {
-            boundariesHit.push('left');
-        }
-        // Check for collision with the right boundary
-        else if (this.x + this.radius >= this.gameAreaWidth) {
-            boundariesHit.push('right');
-        }
-
-        return boundariesHit;
     }
 
     destroy() {

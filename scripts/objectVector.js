@@ -7,6 +7,8 @@ import ObjectKillable from './objectKillable.js';
 import CanvasUtils from './canvas.js';
 
 import AngleUtils from '../scripts/math/angleUtils.js';
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
+
 
 class ObjectVector extends ObjectKillable {
     constructor(x, y, vectorMap, velocityX, velocityY) {
@@ -183,32 +185,20 @@ class ObjectVector extends ObjectKillable {
 
         // Check if any point of the object is inside the asteroid
         for (let [pointX, pointY] of objectPoints) {
-            if (this.isPointInsidePolygon(pointX, pointY, asteroidPoints)) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, asteroidPoints)) {
                 return true; // Collision detected
             }
         }
 
         // Check if any point of the asteroid is inside the object (optional for mutual collision)
         for (let [pointX, pointY] of asteroidPoints) {
-            if (this.isPointInsidePolygon(pointX, pointY, objectPoints)) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectPoints)) {
                 return true; // Collision detected
             }
         }
         return false; // No collision
     }
 
-    isPointInsidePolygon(x, y, polygon) {// Helper method: Point-in-Polygon test using ray-casting algorithm
-        let inside = false;
-        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-            const [xi, yi] = polygon[i];
-            const [xj, yj] = polygon[j];
-            const intersect =
-                yi > y !== yj > y &&
-                x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-            if (intersect) inside = !inside;
-        }
-        return inside;
-    }
 
 }
 

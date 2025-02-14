@@ -75,7 +75,7 @@ class GameUtils{
             if (allOut) {
                 console.log("All players are out of lives. Game Over!");
                 setGameState("gameOver"); // Trigger game over state
-                return { updatedPlayer: undefined, updatedLives: playerLives }; // Return undefined for player
+                return { updatedPlayer: 0, updatedLives: playerLives }; // Return undefined for player
             }
         }
     

@@ -128,5 +128,5 @@ export function testGameUtils(assert) {
     });
 
     assert(swapGameOver.updatedLives.every(life => life === 0), "swapPlayer did not correctly update all player lives to 0");
-    assert(swapGameOver.updatedPlayer !== 0, "swapPlayer did not handle all players out of lives correctly");
+    assert(swapGameOver.updatedPlayer === 0, "reset player 0 for swapPlayer did not handle all players out of lives correctly");
 }

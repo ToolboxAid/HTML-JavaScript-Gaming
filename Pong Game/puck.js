@@ -6,16 +6,13 @@
 import { canvasConfig, puckConfig } from './global.js'; // Import puck & canvas configuration
 
 import CanvasUtils from '../scripts/canvas.js';
-
 import ObjectDynamic from '../scripts/objectDynamic.js';
-
 import AngleUtils from '../scripts/math/angleUtils.js';
-
 import RandomUtils from '../scripts/math/randomUtils.js';
-
 import Timer from '../scripts/utils/timer.js';
 
 import AudioFrequency from '../scripts/output/audioFrequency.js';
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
 
 class Puck extends ObjectDynamic {
 
@@ -59,7 +56,7 @@ class Puck extends ObjectDynamic {
             return;
         }
 
-        const sides = this.isCollidingWithSides(paddle);
+        const sides = CollisionUtils.isCollidingWithSides(this, paddle);
 
         // Check if the paddle is within the paddle's bounds
         if (sides.length !== 0) {
@@ -185,14 +182,14 @@ class Puck extends ObjectDynamic {
         }
     }
 
-    checkGameAreaBoundary(leftPaddle, rightPaddle) { // score or bounce
-        const boundariesHit = this.checkGameBounds();
-
-        // Top/Bottom  - adjust Y direction
+    checkGameAreaBoundary(leftPaddle, rightPaddle) {
+        const boundariesHit = CollisionUtils.checkGameBoundsSides(this); // Call from CollisionUtils
+    
+        // Top/Bottom - Adjust Y direction
         if (boundariesHit.includes('top') || boundariesHit.includes('bottom')) {
             this.velocityY *= -1; // Reverse direction            
             this.playBounceSound();
-
+    
             if (boundariesHit.includes('top')) {
                 this.y = 0; // Prevent moving out of bounds at the top
             }
@@ -200,14 +197,17 @@ class Puck extends ObjectDynamic {
                 this.y = canvasConfig.height - this.height; // Prevent moving out of bounds at the bottom
             }
         }
+    
         // Adjust scores for left & right
         if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
             this.speedScore++;
+    
             // Left Paddle
             if (boundariesHit.includes('left')) {
                 rightPaddle.incrementScore();
                 this.reset(-(this.leftMin), this.leftMin);
             }
+    
             // Right Paddle
             if (boundariesHit.includes('right')) {
                 leftPaddle.incrementScore();
@@ -215,6 +215,7 @@ class Puck extends ObjectDynamic {
             }
         }
     }
+    
 
     static doUpdate = true;
     reset(min, max) {// Place puck at center of screen and move tward loser.

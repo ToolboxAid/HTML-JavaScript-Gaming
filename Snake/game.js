@@ -10,6 +10,16 @@ import CanvasUtils from '../scripts/canvas.js';
 import KeyboardInput from '../scripts/input/keyboard.js';
 
 import AttractScreen from './attract.js';
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
+
+class SnakeHead {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.width = 0;
+    this.height = 0;
+  }
+}
 
 class Game extends GameBase {
   constructor() {
@@ -30,9 +40,16 @@ class Game extends GameBase {
     this.gameSpeed = 100;
     this.lastMoveTime = 0;
 
-
     // Initialize AttractScreen
     this.attractScreen = new AttractScreen();
+
+    this.snakeHead = new SnakeHead();
+    this.snakeHead.width = this.tileSize;
+    this.snakeHead.height = this.tileSize;
+
+    this.snakeSegment = new SnakeHead();
+    this.snakeSegment.width = this.tileSize;
+    this.snakeSegment.height = this.tileSize;
   }
 
   gameLoop(deltaTime) {
@@ -74,7 +91,7 @@ class Game extends GameBase {
 
   initGame() {
     // Initialize Snake
-    this.snake = [{ x: 100, y: 100 }, { x: 80, y: 100 }, { x: 60, y: 100 }];
+    this.snake = [{ x: 100, y: 100 }, { x: 80, y: 100 }, { x: 60, y: 100 }, { x: 40, y: 100 }, { x: 20, y: 100 }, { x: 0, y: 100 }];
     this.direction = 'right';
     this.spawnFood();
     this.score = 0;
@@ -132,24 +149,23 @@ class Game extends GameBase {
   }
 
   checkCollision() {
-    const head = this.snake[0];
-
     // Check collision with walls
-    if (
-      head.x < 0 ||
-      head.y < 0 ||
-      head.x >= canvasConfig.width ||
-      head.y >= canvasConfig.height
-    ) {
+    this.snakeHead.x = this.snake[0].x;
+    this.snakeHead.y = this.snake[0].y;
+    if (CollisionUtils.checkGameBounds(this.snakeHead)) {// required to pass object with x, y, width, height
       this.gameState = "gameOver";
+      console.log("gameOver bounds", this.snakeHead, CollisionUtils.checkGameBoundsSides(this.snakeHead));
     }
 
     // Check collision with self
-    for (let i = 1; i < this.snake.length; i++) {
-      if (head.x === this.snake[i].x && head.y === this.snake[i].y) {
+    this.snake.slice(1).forEach(segment => {
+      this.snakeSegment.x = segment.x;
+      this.snakeSegment.y = segment.y;
+      if (CollisionUtils.isCollidingWith(this.snakeHead, this.snakeSegment)) {
         this.gameState = "gameOver";
+        console.log("gameOver self", this.snakeHead, CollisionUtils.checkGameBoundsSides(this.snakeHead));
       }
-    }
+    });
   }
 
   drawGame() {

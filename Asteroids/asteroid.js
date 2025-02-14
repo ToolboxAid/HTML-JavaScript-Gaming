@@ -6,6 +6,7 @@
 import ObjectVector from '../scripts/objectVector.js';
 
 import RandomUtils from '../scripts/math/randomUtils.js';
+import CollisionUtils from '../scripts/physics/collisionUtils.js'; // do not delete, part of below test
 
 class Asteroid extends ObjectVector {
   constructor(x, y, size = 'large') {

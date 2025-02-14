@@ -8,7 +8,7 @@ import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
 import CanvasUtils from '../scripts/canvas.js';
 
 import RandomUtils from '../scripts/math/randomUtils.js';
-
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
 /**
  * Represents a dynamic circle object in a game.
  */
@@ -34,11 +34,12 @@ class Circle extends ObjectDynamic {
         // }
         super.update(deltaTime);
         // Call the checkGameBoundsCircle function
-        const boundariesHit = this.checkGameBoundsCircle();
+        const boundariesHit = CollisionUtils.checkGameBoundsCircle(this);
 
-        if (boundariesHit.length > 0) {
+        if (boundariesHit) {
             // Pass boundariesHit to updateCirclePosition
-            this.updateCircle(boundariesHit);
+            const boundariesSide = CollisionUtils.checkGameBoundsCircleSides(this);
+            this.updateCircle(boundariesSide);
         }
     }
 
@@ -47,8 +48,8 @@ class Circle extends ObjectDynamic {
      * @param {string|null} [borderColor=null] - The border color of the circle.
      * @param {number} [borderWidth=0] - The width of the border.
      */
-    draw(fillColor = 'white', borderColor = null, borderWidth = 0) {
-        CanvasUtils.drawCircle2(this.x, this.y, this.radius, fillColor, borderColor, borderColor);
+    draw(fillColor = 'white', borderColor = 'red', borderWidth = 2) {
+        CanvasUtils.drawCircle2(this.x, this.y, this.radius, fillColor, borderColor, borderWidth);
     }
 
     updateCircle(boundariesHit) {

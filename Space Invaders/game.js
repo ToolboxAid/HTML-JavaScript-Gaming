@@ -8,10 +8,16 @@ import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenC
 import GameBase from '../scripts/gamebase.js';
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
-import SystemUtils from '../scripts/utils/systemUtils.js';
-    import GameUtils from '../scripts/game/gameUtils.js';
-
+import GameUtils from '../scripts/game/gameUtils.js';
+import AudioPlayer from '../scripts/output/audioPlayer.js';
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
+import Cookies from '../scripts/cookies.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
+import Sprite from '../scripts/sprite.js';
+import SystemUtils from '../scripts/utils/systemUtils.js';
+
+import AttractMode from './attractMode.js';
+
 import Player from './player.js';
 import Shield from './shield.js';
 import Laser from './laser.js';
@@ -31,12 +37,6 @@ import EnemyBomb1 from './enemyBomb1.js';
 import EnemyBomb2 from './enemyBomb2.js';
 import EnemyBomb3 from './enemyBomb3.js';
 
-import AudioPlayer from '../scripts/output/audioPlayer.js';
-import Cookies from '../scripts/cookies.js';
-
-import AttractMode from './attractMode.js';
-
-import Sprite from '../scripts/sprite.js';
 
 class Game extends GameBase {
 
@@ -352,7 +352,7 @@ class Game extends GameBase {
             let hitDetected = false;
             this.gameEnemies.forEach((enemy, key) => {
                 if (enemy.isAlive()) {
-                    if (enemy.isCollidingWith(this.laser)) {
+                    if (CollisionUtils.isCollidingWith(enemy, this.laser)) {
                         this.updatePlayerScore(enemy.value);
                         enemy.setHit();
                         hitDetected = true;
@@ -362,9 +362,8 @@ class Game extends GameBase {
             });
 
             if (hitDetected) { // Delete the laser
-                this.laser = SystemUtils.destroy(this.laser);
+                this.destroyLaser();
             }
-
         }
     }
 
@@ -373,7 +372,7 @@ class Game extends GameBase {
             // Check for collisions and remove hit laser and bomb
             let hitBomb = false;
             this.enemyBombs.forEach(enemyBomb => {
-                if (enemyBomb.isCollidingWith(this.laser)) {
+                if (CollisionUtils.isCollidingWith(enemyBomb, this.laser)) {
                     hitBomb = true;
                     if (enemyBomb.constructor.name !== "EnemyBomb3") {
                         enemyBomb.setIsDying();
@@ -382,7 +381,7 @@ class Game extends GameBase {
                 }
             });
             if (hitBomb) {
-                this.laser = SystemUtils.destroy(this.laser);
+                this.destroyLaser();
             }
         }
     }
@@ -390,7 +389,7 @@ class Game extends GameBase {
     checkLaserShieldCollision() {
         let hit = false;
         this.shields.forEach(shield => {
-            if (this.laser.isCollidingWith(shield)) {
+            if (CollisionUtils.isCollidingWith(shield, this.laser)) {
                 if (shield.applyBigBoom(this.laser, true, -5)) {
                     hit = true;
                 }
@@ -414,14 +413,14 @@ class Game extends GameBase {
         if (value > 0) {
             Game.audioPlayer.playAudio('ufo_lowpitch.wav');
             this.updatePlayerScore(value);
-            this.laser = SystemUtils.destroy(this.laser);
+            this.destroyLaser();
         }
     }
 
     checkBombShieldCollision() {
         this.enemyBombs.forEach(enemyBomb => {
             this.shields.forEach(shield => {
-                if (enemyBomb.isCollidingWith(shield)) {
+                if (CollisionUtils.isCollidingWith(enemyBomb, shield)) {
                     if (shield.applyBigBoom(enemyBomb, true, 6)) {
                         if (enemyBomb.isAlive()) {
                             enemyBomb.setIsDying();
@@ -436,7 +435,7 @@ class Game extends GameBase {
     checkEnemyShieldCollision() {
         this.gameEnemies.forEach((enemy, key) => {
             this.shields.forEach(shield => {
-                if (enemy.isCollidingWith(shield)) {
+                if (CollisionUtils.isCollidingWith(enemy, shield)) {
                     if (shield.applyBigBoom(enemy, false)) {
                     }
                 }
@@ -446,7 +445,7 @@ class Game extends GameBase {
 
     checkEnemyPlayerCollision() {
         this.gameEnemies.forEach((enemy, key) => {
-            if (enemy.isCollidingWith(this.player)) {
+            if (CollisionUtils.isCollidingWith(enemy, this.player)) {
                 if (enemy.isAlive()) {
                     // Deal with enemy
                     enemy.setHit();
@@ -463,8 +462,7 @@ class Game extends GameBase {
     checkBombGroundCollision() {
         this.enemyBombs.forEach(enemyBomb => {
             this.grounds.forEach(ground => {
-                const colliding = enemyBomb.isCollidingWith(ground);
-                if (colliding) {
+                if (CollisionUtils.isCollidingWith(enemyBomb, ground)) {
                     if (enemyBomb.isAlive()) {
                         enemyBomb.setIsDying();
                         enemyBomb.x -= 12;
@@ -517,8 +515,7 @@ class Game extends GameBase {
     checkBombPlayerCollision() {
         this.enemyBombs.forEach(enemyBomb => {
             if (enemyBomb.isAlive() && this.player.isAlive()) {
-                const colliding = this.player.isCollidingWith(enemyBomb);
-                if (colliding) {
+                if (CollisionUtils.isCollidingWith(this.player, enemyBomb)) {
                     console.log("playerhit");
                     Game.audioPlayer.playAudio('explosion.wav');
 
@@ -541,10 +538,10 @@ class Game extends GameBase {
             }
         } else {
             if (this.laser.update(deltaTime)) { // Update laser position
-                this.laser = SystemUtils.destroy(this.laser); //laser out of bounds (off screen), delete it
+                this.destroyLaser();
             } else {
                 if (this.checkLaserShieldCollision()) {
-                    this.laser = SystemUtils.destroy(this.laser);
+                    this.destroyLaser();
                 }
             }
         }
@@ -875,7 +872,7 @@ class Game extends GameBase {
         this.enemyShip.setIsDead();
 
         SystemUtils.cleanupArray(this.enemyBombs);
-        this.laser = SystemUtils.destroy(this.laser);
+        this.destroyLaser();
 
         const x = spriteConfig.playerX;
         const y = spriteConfig.playerY;
@@ -1042,7 +1039,7 @@ class Game extends GameBase {
         //this.enemyBombs = [];
         SystemUtils.cleanupArray(this.enemyBombs);
 
-        this.laser = SystemUtils.destroy(this.laser);
+        this.destroyLaser();
 
         Enemy.unsetEnemiesInitialized();
 
@@ -1050,6 +1047,14 @@ class Game extends GameBase {
         this.gameState = "attract";
     }
 
+    destroyLaser() {
+        if (this.laser) {
+            if (!SystemUtils.destroy(this.laser)) {
+                SystemUtils.showStackTrace(`Laser not destroued ${this.laser}`);
+            }
+            this.laser = null;
+        }
+    }
 
 }
 

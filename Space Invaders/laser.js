@@ -6,6 +6,7 @@
 import ObjectDynamic from '../scripts/objectDynamic.js';
 import { canvasConfig, spriteConfig } from './global.js';
 
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import CanvasUtils from '../scripts/canvas.js';
 import Sprite from '../scripts/sprite.js';
 class Laser extends ObjectDynamic {
@@ -43,13 +44,10 @@ class Laser extends ObjectDynamic {
     update(deltaTime = 1) {
         super.update(deltaTime);
 
-        //canvasConfig.width
-        console
-        if (this.y <= 0 || this.y > canvasConfig.height ||
-            this.x <= 0 || this.x > canvasConfig.width
-        ) {
+        if (CollisionUtils.checkGameBounds(this)){
             return true;
         }
+
         return false;
     }
 
