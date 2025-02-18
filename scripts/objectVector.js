@@ -156,10 +156,10 @@ class ObjectVector extends ObjectKillable {
     }
 
     wrapAround() {// Screen wrapping object logic
-        if (this.x > CanvasUtils.getCanvasWidth()) this.x = this.width * -1;
-        if (this.x + this.width < 0) this.x = CanvasUtils.getCanvasWidth();
-        if (this.y > CanvasUtils.getCanvasHeight()) this.y = this.height * -1;
-        if (this.y + this.height < 0) this.y = CanvasUtils.getCanvasHeight();
+        if (this.x > CanvasUtils.getConfigWidth()) this.x = this.width * -1;
+        if (this.x + this.width < 0) this.x = CanvasUtils.getConfigWidth();
+        if (this.y > CanvasUtils.getConfigHeight()) this.y = this.height * -1;
+        if (this.y + this.height < 0) this.y = CanvasUtils.getConfigHeight();
     }
 
     collisionDetection(object, debug = false) {

@@ -25,8 +25,23 @@ class Asteroid extends ObjectVector {
     super(x, y, vectorMap, velocityX, velocityY);  // Pass vectorMap here
 
     this.size = size;
-
+    this.rotationAngle = 0;
     this.velocityRotation = (Math.random() - 0.5) * 8;
+
+    // Calculate radius based on vectorMap
+    this.radius = this.calculateRadius();
+  }
+
+  // Helper method to calculate radius
+  calculateRadius() {
+    let maxDistance = 0;
+    for (const [x, y] of this.vectorMap) {
+      const distance = Math.sqrt(x * x + y * y);
+      if (distance > maxDistance) {
+        maxDistance = distance;
+      }
+    }
+    return maxDistance;
   }
 
   static randomRange(size) {
@@ -34,7 +49,7 @@ class Asteroid extends ObjectVector {
     // Random velocity
     let min = 0.25;
     let max = 0.50;
-    
+
     switch (size) {
       case 'small':
         min *= 2;
@@ -42,16 +57,16 @@ class Asteroid extends ObjectVector {
         break;
       case 'medium':
         min *= 1.5;
-        max *= 2; 
+        max *= 2;
         break;
       case 'large':
         min *= 1;
-        max *= 1; 
+        max *= 1;
         break;
       default:
         console.error("Invalid size. Use 'small', 'medium', or 'large'.");
         min *= 0;
-        max *= 0; 
+        max *= 0;
         break;
     }
 

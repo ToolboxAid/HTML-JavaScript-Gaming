@@ -4,6 +4,7 @@
 // collisionUtils.js
 
 import CanvasUtils from "../../scripts/canvas.js"
+import AngleUtils from "../math/angleUtils.js";
 import SystemUtils from "../utils/systemUtils.js";
 import GeometryUtils from "../math/geometryUtils.js"
 export default class CollisionUtils {
@@ -15,18 +16,134 @@ export default class CollisionUtils {
         throw new Error("'CollisionUtils' has only static methods.");
     }
 
-    static isPointInsidePolygon(x, y, polygon) { // ray-casting algorithm for point-in-polygon detection
-        if (this.DEBUG) {
-            console.assert(
-                Array.isArray(polygon) && polygon.length >= 3,
-                `Invalid polygon: Expected an array with at least 3 points, got ${JSON.stringify(polygon)}`
-            );
-            console.assert(
-                typeof x === 'number' && typeof y === 'number',
-                `Invalid point coordinates: x=${x}, y=${y}`
-            );
+    static transformPoints(vectorMap, x, y, rotationAngle) {
+        const angleInRadians = (rotationAngle * Math.PI) / 180;
+        const cos = Math.cos(angleInRadians);
+        const sin = Math.sin(angleInRadians);
+
+        // Find the center of the object (average of all points)
+        const centerX = vectorMap.reduce((sum, [px]) => sum + px, 0) / vectorMap.length;
+        const centerY = vectorMap.reduce((sum, [, py]) => sum + py, 0) / vectorMap.length;
+
+        const transformedPoints = vectorMap.map(([px, py]) => {
+            // Translate points to origin (relative to the center)
+            const translatedX = px - centerX;
+            const translatedY = py - centerY;
+
+            // Apply rotation
+            const rotatedX = translatedX * cos - translatedY * sin;
+            const rotatedY = translatedX * sin + translatedY * cos;
+
+            // Translate back to the object's correct world position
+            const finalX = centerX + rotatedX + (x - centerX);
+            const finalY = centerY + rotatedY + (y - centerY);
+
+            return [finalX, finalY];
+        });
+
+        if (false && this.DEBUG) { // this gets spammed, "false" is on purpose
+            const formattedPoints = transformedPoints.map(([x, y]) => [
+                parseFloat(x.toFixed(3)),
+                parseFloat(y.toFixed(3))
+            ]);
+            console.log("Transformed Points:", formattedPoints);
         }
 
+        return transformedPoints;
+    }
+
+    static boundingBoxCollision(objectA, objectB) {
+        if (this.DEBUG) {
+            console.log("radius", objectA.radius, objectB.radius);
+        }
+        const aLeft = objectA.x - objectA.radius;
+        const aRight = objectA.x + objectA.radius;
+        const aTop = objectA.y - objectA.radius;
+        const aBottom = objectA.y + objectA.radius;
+
+        const bLeft = objectB.x - objectB.radius;
+        const bRight = objectB.x + objectB.radius;
+        const bTop = objectB.y - objectB.radius;
+        const bBottom = objectB.y + objectB.radius;
+
+        return !(aRight < bLeft || aLeft > bRight || aBottom < bTop || aTop > bBottom);
+    }
+
+
+    static vectorCollisionDetection(objectA, objectB) {
+        if (!objectA || !objectB || !objectA.vectorMap || !objectB.vectorMap) {
+            console.warn(objectA.vectorMap, objectB.vectorMap);
+            if (this.DEBUG) {
+                console.error("Invalid objects passed to vectorCollisionDetection", objectA, objectB);
+            }
+            return false;
+        }
+
+        let rotationAngleA = objectA.rotationAngle ?? 0;
+        let rotationAngleB = objectB.rotationAngle ?? 0;
+
+        // Skip bounding box check if either object is rotated
+        if (rotationAngleA === 0 && rotationAngleB === 0) {
+            if (!this.boundingBoxCollision(objectA, objectB)) {
+                return false;
+            }
+        }
+
+        // Transform points for both objects
+        const objectAPoints = this.transformPoints(objectA.vectorMap, objectA.x, objectA.y, rotationAngleA);
+        const objectBPoints = this.transformPoints(objectB.vectorMap, objectB.x, objectB.y, rotationAngleB);
+
+        // Check if any point of objectB is inside objectA
+        for (let [pointX, pointY] of objectBPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectAPoints)) {
+                if (this.DEBUG) {
+                    console.log("objectBPoints point");
+                }
+                return true;
+            }
+        }
+
+        // Check if any point of objectA is inside objectB
+        for (let [pointX, pointY] of objectAPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectBPoints)) {
+                if (this.DEBUG) {
+                    console.log("objectAPoints point");
+                }
+                return true;
+            }
+        }
+
+        // Check if any edges intersect
+        for (let i = 0; i < objectAPoints.length; i++) {
+            let a1 = objectAPoints[i];
+            let a2 = objectAPoints[(i + 1) % objectAPoints.length];
+
+            for (let j = 0; j < objectBPoints.length; j++) {
+                let b1 = objectBPoints[j];
+                let b2 = objectBPoints[(j + 1) % objectBPoints.length];
+
+                if (CollisionUtils.doEdgesIntersect(a1, a2, b1, b2)) {
+                    if (this.DEBUG) {
+                        console.log(" edgesIntersect ");
+                    }
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    static doEdgesIntersect(A, B, C, D) {
+        const det = (B[0] - A[0]) * (D[1] - C[1]) - (B[1] - A[1]) * (D[0] - C[0]);
+        if (Math.abs(det) < 1e-6) return false; // Parallel lines
+
+        const t = ((C[0] - A[0]) * (D[1] - C[1]) - (C[1] - A[1]) * (D[0] - C[0])) / det;
+        const u = ((C[0] - A[0]) * (B[1] - A[1]) - (C[1] - A[1]) * (B[0] - A[0])) / det;
+
+        return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+    }
+
+    static isPointInsidePolygon(x, y, polygon) {
         if (!Array.isArray(polygon) || polygon.length < 3) return false;
         if (typeof x !== 'number' || typeof y !== 'number') return false;
 
@@ -35,72 +152,53 @@ export default class CollisionUtils {
             const [xi, yi] = polygon[i];
             const [xj, yj] = polygon[j];
 
-            // Check if point is exactly on a vertex
-            if ((x === xi && y === yi) || (x === xj && y === yj)) {
+            // Check if the point is on a vertex
+            if (x === xi && y === yi) {
+                if (this.DEBUG) {
+                    console.log("Point is on a vertex:", x, y, polygon);
+                }
                 return true;
             }
 
-            // Check if the point is on the edge
-            if (
-                y >= Math.min(yi, yj) &&
-                y <= Math.max(yi, yj) &&
+            // Check if the point is on an edge (improved precision)
+            const edgeSlope = (xj - xi) * (y - yi) - (yj - yi) * (x - xi);
+
+            // Calculate the length of the edge
+            const edgeLength = Math.sqrt((xj - xi) ** 2 + (yj - yi) ** 2);
+
+            // Use a scaled tolerance based on the edge length
+            const tolerance = 1e-6 * edgeLength;
+
+            // Check if the point lies within the bounding box of the edge
+            const withinBoundingBox = (
                 x >= Math.min(xi, xj) &&
-                x <= Math.max(xi, xj)
-            ) {
-                const edgeSlope = (xj !== xi) ? (yj - yi) / (xj - xi) : Infinity;
-                const pointSlope = (x !== xi) ? (y - yi) / (x - xi) : Infinity;
-                if (edgeSlope === pointSlope) {
-                    return true;
+                x <= Math.max(xi, xj) &&
+                y >= Math.min(yi, yj) &&
+                y <= Math.max(yi, yj)
+            );
+
+            if (Math.abs(edgeSlope) < tolerance && withinBoundingBox) {
+                if (this.DEBUG) {
+                    console.log("Point is on an edge:", x, y, polygon);
                 }
+                return true;
             }
 
-            // Ray-casting logic
-            const intersect =
-                yi > y !== yj > y &&
-                x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-            if (intersect) inside = !inside;
+            // Ray-casting method
+            const intersect = ((yi > y) !== (yj > y)) &&
+                (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) {
+                inside = !inside;
+            }
+        }
+
+        if (inside && this.DEBUG) {
+            console.log("Ray intersects edge:", x, y, polygon);
         }
 
         return inside;
     }
 
-    static arePolygonsOverlapping(polygon1, polygon2) {
-        if (!Array.isArray(polygon1) || polygon1.length < 3 ||
-            !Array.isArray(polygon2) || polygon2.length < 3) {
-            return false;
-        }
-
-        // Check if any point of polygon1 is inside polygon2
-        for (const [x, y] of polygon1) {
-            if (this.isPointInsidePolygon(x, y, polygon2)) {
-                return true;
-            }
-        }
-
-        // Check if any point of polygon2 is inside polygon1
-        for (const [x, y] of polygon2) {
-            if (this.isPointInsidePolygon(x, y, polygon1)) {
-                return true;
-            }
-        }
-
-        // Check if any edges of polygon1 intersect with edges of polygon2
-        for (let i = 0; i < polygon1.length; i++) {
-            let p1 = polygon1[i];
-            let p2 = polygon1[(i + 1) % polygon1.length]; // Wrap around
-
-            for (let j = 0; j < polygon2.length; j++) {
-                let q1 = polygon2[j];
-                let q2 = polygon2[(j + 1) % polygon2.length]; // Wrap around
-
-                if (GeometryUtils.doLinesIntersectByPoints(p1, p2, q1, q2)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 
     static isContainedWithin(object, container) {
         if (this.DEBUG) {
@@ -205,8 +303,8 @@ export default class CollisionUtils {
         return (
             object.x + offset <= 0 ||
             object.y + offset <= 0 ||
-            object.x + object.width - offset >= CanvasUtils.getCanvasWidth() ||
-            object.y + object.height - offset >= CanvasUtils.getCanvasHeight()
+            object.x + object.width - offset >= CanvasUtils.getConfigWidth() ||
+            object.y + object.height - offset >= CanvasUtils.getConfigHeight()
         );
     }
     static checkGameBoundsSides(object, offset = 0) {
@@ -222,7 +320,7 @@ export default class CollisionUtils {
             );
         }
 
-        if (!this.checkGameBounds(object, offset = 0)) {
+        if (!this.checkGameBounds(object, offset)) {
             return [];  // Return empty array instead of undefined
         }
 
@@ -232,14 +330,18 @@ export default class CollisionUtils {
         if (object.y + offset <= 0) {
             boundariesHit.push('top');
         }
-        if (object.y + object.height - offset >= CanvasUtils.getCanvasHeight()) {
+        if (object.y + object.height - offset >= CanvasUtils.getConfigHeight()) {
             boundariesHit.push('bottom');
         }
         if (object.x + offset <= 0) {
             boundariesHit.push('left');
         }
-        if (object.x + object.width - offset >= CanvasUtils.getCanvasWidth()) {
+        if (object.x + object.width - offset >= CanvasUtils.getConfigWidth()) {
             boundariesHit.push('right');
+        }
+
+        if (this.DEBUG) {
+            console.log("checkGameBoundsSides", CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesHit);
         }
 
         return boundariesHit;
@@ -255,8 +357,8 @@ export default class CollisionUtils {
         }
         return object.x - object.radius <= 0 ||
             object.y - object.radius <= 0 ||
-            object.x + object.radius >= CanvasUtils.getCanvasWidth() ||
-            object.y + object.radius >= CanvasUtils.getCanvasHeight();
+            object.x + object.radius >= CanvasUtils.getConfigWidth() ||
+            object.y + object.radius >= CanvasUtils.getConfigHeight();
     }
     static checkGameBoundsCircleSides(object) {
         if (this.DEBUG) {
@@ -278,7 +380,7 @@ export default class CollisionUtils {
             boundariesHit.push('top');
         }
         // Check for collision with the bottom boundary
-        if (object.y + object.radius >= CanvasUtils.getCanvasHeight()) {
+        if (object.y + object.radius >= CanvasUtils.getConfigHeight()) {
             boundariesHit.push('bottom');
         }
 
@@ -287,7 +389,7 @@ export default class CollisionUtils {
             boundariesHit.push('left');
         }
         // Check for collision with the right boundary
-        if (object.x + object.radius >= CanvasUtils.getCanvasWidth()) {
+        if (object.x + object.radius >= CanvasUtils.getConfigWidth()) {
             boundariesHit.push('right');
         }
 

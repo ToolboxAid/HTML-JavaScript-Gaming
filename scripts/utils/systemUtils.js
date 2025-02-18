@@ -47,7 +47,10 @@ class SystemUtils {
             return false;
         }
 
-        console.log(`Validating '${name}' Config: `, '\n', config, schema);
+        if (this.DEBUG) {
+            console.log(`Validating '${name}' Config: `, '\n', config, schema);
+        }
+        
         const failures = [];
 
         // Check all required fields

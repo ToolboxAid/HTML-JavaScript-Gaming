@@ -34,10 +34,12 @@ class CanvasUtils {
         if (canvas && canvas.getContext) {
             this.ctx = canvas.getContext('2d');
 
-                // Get the width and height of the canvas
-    const width = canvas.width;
-    const height = canvas.height;
-    console.log(`${canvas}, ${this.canvas}, Canvas width: ${width}, Canvas height: ${height}`);
+            // Get the width and height of the canvas
+            const width = canvas.width;
+            const height = canvas.height;
+            if (this.DEBUG) {
+                console.log(`${canvas}, ${this.canvas}, Canvas width: ${width}, Canvas height: ${height}`);
+            }
         } else {
             alert('You need a modern browser to see this.');
             throw new Error('You need a modern browser to see this.');

@@ -23,39 +23,106 @@ export function testCollisionUtils(assert) {
     assert(CollisionUtils.isPointInsidePolygon(pointInside.x, pointInside.y, polygon), "Point should be inside the polygon");
     assert(!CollisionUtils.isPointInsidePolygon(pointOutside.x, pointOutside.y, polygon), "Point should be outside the polygon");
 
-    // Test: arePolygonsOverlapping
-    const polygon1 = [
-        [0, 0],
-        [4, 0],
-        [4, 4],
-        [0, 4]
-    ];
+    // Test: vectorCollisionDetection
+    const objectA = {
+        x: 10,
+        y: 10,
+        rotationAngle: 0,
+        vectorMap: [
+            [0, 0],
+            [4, 0],
+            [4, 4],
+            [0, 4]
+        ],
+        radius: 2.83 // Approximate radius for a 4x4 square (diagonal distance)
+    };
 
-    const polygon2 = [
-        [2, 2],
-        [6, 2],
-        [6, 6],
-        [2, 6]
-    ];
+    const objectB = {
+        x: 12,
+        y: 12,
+        rotationAngle: 0,
+        vectorMap: [
+            [0, 0],
+            [4, 0],
+            [4, 4],
+            [0, 4]
+        ],
+        radius: 2.83
+    };
 
-    const polygon3 = [
-        [5, 5],
-        [9, 5],
-        [9, 9],
-        [5, 9]
-    ];
+    const objectC = {
+        x: 15,
+        y: 15,
+        rotationAngle: 0,
+        vectorMap: [
+            [0, 0],
+            [4, 0],
+            [4, 4],
+            [0, 4]
+        ],
+        radius: 2.83
+    };
 
-    assert(CollisionUtils.arePolygonsOverlapping(polygon1, polygon2), "Polygons should overlap");
-    assert(!CollisionUtils.arePolygonsOverlapping(polygon1, polygon3), "Polygons should NOT overlap");
+    // Test overlapping objects
+    assert(CollisionUtils.vectorCollisionDetection(objectA, objectB), "Objects A and B should collide (overlapping)");
+
+    // Test non-overlapping objects
+    assert(!CollisionUtils.vectorCollisionDetection(objectA, objectC), "Objects A and C should not collide (non-overlapping)");
+
+    // Test rotated objects (45 degrees)
+    const objectD = {
+        x: 0,
+        y: 0,
+        rotationAngle: 45,
+        vectorMap: [
+            [0, 0],
+            [4, 0],
+            [4, 4],
+            [0, 4]
+        ],
+        radius: 2.83 // Approximate radius for a 4x4 square (diagonal distance)
+    };
+    
+    const objectE = {
+        x: 3,
+        y: 3,
+        rotationAngle: 45,
+        vectorMap: [
+            [0, 0],
+            [5, 0],
+            [5, 5],
+            [0, 5]
+        ],
+        radius: 3.54
+    };
+    
+    assert(CollisionUtils.vectorCollisionDetection(objectD, objectE), "Objects D and E should collide (rotated and overlapping)");
+
+    // Test edge case: objects touching but not overlapping
+    const objectF = {
+        x: 4,
+        y: 0,
+        rotationAngle: 0,
+        vectorMap: [
+            [0, 0],
+            [4, 0],
+            [4, 4],
+            [0, 4]
+        ],
+        radius: 2.83
+    };
+
+    assert(!CollisionUtils.vectorCollisionDetection(objectA, objectF), "Objects A and F should not collide (touching edges)");
+
 
     // Test: isContainedWithin
-    const objectA = { x: 1, y: 1, width: 2, height: 2 };
+    const objectG = { x: 1, y: 1, width: 2, height: 2 };
     const container = { x: 0, y: 0, width: 4, height: 4 };
 
-    const objectB = { x: 4, y: 4, width: 2, height: 2 };
+    const objectH = { x: 4, y: 4, width: 2, height: 2 };
 
-    assert(CollisionUtils.isContainedWithin(objectA, container), "Object A should be contained within the container");
-    assert(!CollisionUtils.isContainedWithin(objectB, container), "Object B should not be contained within the container");
+    assert(CollisionUtils.isContainedWithin(objectG, container), "Object A should be contained within the container");
+    assert(!CollisionUtils.isContainedWithin(objectH, container), "Object B should not be contained within the container");
 
     // Test: isCollidingWith
     const object1 = { x: 1, y: 1, width: 2, height: 2 };
@@ -75,8 +142,8 @@ export function testCollisionUtils(assert) {
 
     // Initialize CanvasUtils
     const config = {
-        width: 1024,
-        height: 768,
+        width: 300,
+        height: 200,
         scale: 1.0,
         backgroundColor: "#222222",
         borderColor: "red",
@@ -84,12 +151,11 @@ export function testCollisionUtils(assert) {
     };
     CanvasUtils.init(config);  // Use static method directly
 
-    console.log("Config Width x Height:",CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight());
-    console.log("Canvas Width x Height:",CanvasUtils.getCanvasWidth(), CanvasUtils.getCanvasHeight());
+    //console.log("Canvas Width x Height:",CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight());
 
     // Test: checkGameBounds (Test with object near bounds)
     const objectNearBounds = { x: 200, y: 50, width: 50, height: 50 }; // Assuming canvas size of 500x500
-    assert(!CollisionUtils.checkGameBounds(objectNearBounds), "Object should in game bounds");
+    assert(!CollisionUtils.checkGameBounds(objectNearBounds), "Object should be in game bounds");
 
     // Test: checkGameBoundsSides (Test if boundary sides are hit)
     const objectFarBounds = { x: 275, y: 125, width: 50, height: 50 }; // Assuming canvas size of 500x500

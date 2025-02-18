@@ -8,9 +8,16 @@ import { canvasConfig } from './global.js';
 import ObjectVector from '../scripts/objectVector.js';
 
 import AngleUtils from '../scripts/math/angleUtils.js';
+import CanvasUtils from '../scripts/canvas.js';
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 
 class UFO extends ObjectVector {
+
+  // Play your game normally: game.html
+  // Enable debug mode: game.html?ufo
+  static DEBUG = new URLSearchParams(window.location.search).has('ufo');
+
   static vectorMap = [
     [-14, 3], [14, 3], [9, 9], [-9, 9], [-14, 3], [-9, -3],
     [-5, -3], [-5, -6], [-2, -9], [2, -9], [5, -6], [5, -3], [-5, -3],
@@ -52,22 +59,29 @@ class UFO extends ObjectVector {
     // Update super position based on velocity
     super.update(deltaTime);
 
-    // // If the ufo exceeds bounds, mark it for removal
-    // const boundariesHit = this.checkGameBounds(this );
+    // If the ufo exceeds bounds, mark it for removal
 
-    // if (!this.isDead()) {
-    //   if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
-    //     console.log(boundariesHit);
-    //     this.setIsDead();
-    //     console.log("ufo dead");
-    //   }
-    // }
+    // *** left/right***
+    if (!this.isDead()) {
+      const boundariesHit = CollisionUtils.checkGameBoundsSides(this, UFO.offset);
+
+      if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
+        this.setIsDead();
+      }
+
+      // *** top/bottom ***
+      if (boundariesHit.includes('top')) {
+        this.y = CanvasUtils.getConfigHeight() + (UFO.offset / 2);
+      }
+      if (boundariesHit.includes('bottom')) {
+        this.y = -(UFO.offset / 2);
+      }
+    }
   }
 
   changeDirections() {
     this.directionCnt = 0;
     this.getDelay();
-    console.log("directionDelay", this.directionDelay);
 
     if (this.velocityX) {
       this.velocityY = this.velocityX;
@@ -78,6 +92,9 @@ class UFO extends ObjectVector {
 
   getDelay() {
     this.directionDelay = RandomUtils.randomRange(100, 200);
+    if (UFO.DEBUG) {
+      console.log("directionDelay:", this.directionDelay);
+    }
     return this.directionDelay;
   }
 

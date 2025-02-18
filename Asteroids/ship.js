@@ -8,13 +8,18 @@ import ObjectVector from '../scripts/objectVector.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 import AngleUtils from '../scripts/math/angleUtils.js';
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
+import Timer from '../scripts/utils/timer.js';
+import UFO from './ufo.js';
 
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
-import UFO from './ufo.js';
 
 class Ship extends ObjectVector {
+    // Play your game normally: game.html
+    // Enable debug mode: game.html?systemUtils
+    static DEBUG = new URLSearchParams(window.location.search).has('ship');
 
     static maxSpeed = 800; // Set a maximum velocity cap (adjust as needed)
 
@@ -58,6 +63,9 @@ class Ship extends ObjectVector {
 
         // ufo's
         this.ufo = new UFO();
+        this.ufoTimer = new Timer(10000);
+        this.ufoTimer.start();
+        console.log(this.ufoTimer);
 
         // value is used to add to score
         this.value = 0;
@@ -118,7 +126,6 @@ class Ship extends ObjectVector {
             const angle = angleStep * i;
             const d1 = canvasConfig.width / 4;
             const d2 = canvasConfig.width / 3;
-            //            console.log(d1, d2);
             const distance = RandomUtils.randomRange(d1, d2);
             const position = AngleUtils.calculateOrbitalPosition(
                 canvasConfig.width / 2, canvasConfig.height / 2, angle, distance);
@@ -195,7 +202,9 @@ class Ship extends ObjectVector {
     updateAsteroid(deltaTime) {
         this.asteroids.forEach((asteroid, key) => {
             asteroid.update(deltaTime);
-            if (asteroid.collisionDetection(this)) {
+            //if (asteroid.collisionDetection(this)) {
+            if (CollisionUtils.vectorCollisionDetection(this, asteroid)) {
+                console.log("setShipHit", CollisionUtils.vectorCollisionDetection(this, asteroid), this, asteroid);
                 this.setShipHit();
             }
         });
@@ -254,12 +263,14 @@ class Ship extends ObjectVector {
         if (this.ufo) {
             this.ufo.update(deltaTime);
         }
-        // this.asteroids.forEach((asteroid, key) => {
-        //     asteroid.update(deltaTime);
-        //     if (asteroid.collisionDetection(this)) {
-        //         this.setShipHit();
-        //     }
-        // });
+
+        this.asteroids.forEach((asteroid, key) => {
+            if (CollisionUtils.vectorCollisionDetection(this.ufo, asteroid)) {
+                console.log(this.ufo.vectorMap, asteroid.vectorMap);
+                console.log("ufo hit asteroid");
+                this.ufo.setIsDead();
+            }
+        });
     }
 
     draw() {
@@ -270,7 +281,7 @@ class Ship extends ObjectVector {
         // Draw all game objects
         this.bullets.forEach(bullet => bullet.draw());
         this.asteroids.forEach(asteroid => asteroid.draw());
-        if (this.ufo) {
+        if (this.ufo && this.ufo.isAlive()) {
             this.ufo.draw();
         }
     }

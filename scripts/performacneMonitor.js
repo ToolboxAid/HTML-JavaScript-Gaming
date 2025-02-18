@@ -96,21 +96,34 @@ class PerformanceMonitor {
         this.frameCount = 0;
     }
 
-    static updateMetrics() { // this needs to be in the animation draw loop: this.updateMetrics(); if you wish to use.
-        // Memory
-        const memory = window.performance.memory;
-        this.metrics.memory = {
-            used: (memory.usedJSHeapSize / 1048576).toFixed(2),
-            total: (memory.totalJSHeapSize / 1048576).toFixed(2),
-            limit: (memory.jsHeapSizeLimit / 1048576).toFixed(2),
-            percent: ((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100).toFixed(2)
-        };
+    static updateMetrics() {
+        if (!this.metrics) this.metrics = {}; // Ensure metrics object exists
 
-        // Frame time
+        // Memory Usage (only works in Chrome-based browsers)
+        if (window.performance && window.performance.memory) {
+            const memory = window.performance.memory;
+            this.metrics.memory = {
+                used: (memory.usedJSHeapSize / 1048576).toFixed(2),
+                total: (memory.totalJSHeapSize / 1048576).toFixed(2),
+                limit: (memory.jsHeapSizeLimit / 1048576).toFixed(2),
+                percent: ((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100).toFixed(2)
+            };
+        } else {
+            this.metrics.memory = {
+                used: "N/A",
+                total: "N/A",
+                limit: "N/A",
+                percent: "N/A"
+            };
+        }
+
+        // Frame Time Calculation
         const now = performance.now();
-        this.metrics.frameTime = now - this.lastFrame;
+        if (!this.lastFrame) this.lastFrame = now; // Ensure lastFrame is initialized
+        this.metrics.frameTime = (now - this.lastFrame).toFixed(2);
         this.lastFrame = now;
     }
+
 
     static draw(ctx) {
         this.updateMetrics();
@@ -120,9 +133,9 @@ class PerformanceMonitor {
 
         //this.dimentions
         const width = this.dimentions.width;
-        const height = this.dimentions.height + (this.dimentions.height/5);
+        const height = this.dimentions.height + (this.dimentions.height / 5);
 
-        let newY = this.performanceConfig.y ;
+        let newY = this.performanceConfig.y;
         const lines = 5;
         const padding = 5;
 
@@ -154,7 +167,7 @@ class PerformanceMonitor {
 
         // Frame
         ctx.fillStyle = this.performanceConfig.colorLow;
-        ctx.fillText(`Frame: ${this.metrics.frameTime.toFixed(2)}ms`, this.performanceConfig.x, newY);
+        ctx.fillText(`Frame: ${this.metrics.frameTime}ms`, this.performanceConfig.x, newY);
         newY += height;
 
         // GFX
