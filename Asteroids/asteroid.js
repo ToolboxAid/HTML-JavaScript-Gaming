@@ -6,12 +6,13 @@
 import ObjectVector from '../scripts/objectVector.js';
 
 import RandomUtils from '../scripts/math/randomUtils.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js'; // do not delete, part of below test
+import CollisionUtils from '../scripts/physics/collisionUtils.js';
+import CanvasUtils from '../scripts/canvas.js';
 
 class Asteroid extends ObjectVector {
   constructor(x, y, size = 'large') {
     const vectorMap = Asteroid.generateVectorMap(size);
-    const vectorMap1 = [[10, 40], [50, 20], [45, 5], [25, -10], [50, -35], [30, -45], [10, -38], [-20, -45], [-43, -18], [-43, 20], [-25, 20], [-25, 40],];
+    //    const vectorMap1 = [[10, 40], [50, 20], [45, 5], [25, -10], [50, -35], [30, -45], [10, -38], [-20, -45], [-43, -18], [-43, 20], [-25, 20], [-25, 40],];
     const speed = 100;
     // Ensure the vectorMap has at least three points
     if (vectorMap.length < 3) {
@@ -78,7 +79,31 @@ class Asteroid extends ObjectVector {
   update(deltaTime) {
     this.rotationAngle += this.velocityRotation;
     super.update(deltaTime);
-    this.wrapAround();
+    this.checkWrapAround();
+  }
+
+  checkWrapAround() {// Screen wrapping object logic
+    const boundaries = CollisionUtils.checkGameOutBoundsSides(this);
+    const div = 4;
+
+    if (boundaries.includes('left')) {
+      const width = this.boundWidth / div ?? this.radiusdiv ?? this.width / div;
+      this.x = CanvasUtils.getConfigWidth() + width;
+    }
+    if (boundaries.includes('right')) {
+      const width = this.boundWidth / div ?? this.radius / div ?? this.width / div;
+      this.x = (this.boundWidth * -1) - width;
+    }
+
+    if (boundaries.includes('top')) {
+      const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
+      this.y = CanvasUtils.getConfigHeight() + height;
+    }
+    if (boundaries.includes('bottom')) {
+      const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
+      this.y = this.boundHeight * -1;//-height;
+    }
+
   }
 
   static generateVectorMap(size) {
@@ -104,37 +129,24 @@ class Asteroid extends ObjectVector {
 
       points.push([x, y]);
     }
-    //points.push([0, 0]);
 
-    return points;
-  }
-
-  static generateVectorMap1(size) {// old generate vectorMap based on the asteroid size
-    const sizeFactor = Asteroid.getSizeFactor(size);
-
-    // Random number of points between 7 and 10
-    const numPoints = Math.floor(Math.random() * 3) + 7;
-    const points = [];
-
-    // Generate random jagged points for the asteroid vectorMap
-    for (let i = 0; i < numPoints; i++) {
-      const angle = (i / numPoints) * Math.PI * 2; // Divide the circle evenly
-
-      // Increase the variability of the radius to make it more jagged
-      const radius = sizeFactor + (Math.random() * sizeFactor * 0.6); // Adding more variation
-
-      // Apply additional random variance to make the vectorMap more jagged
-      const randomOffsetX = (Math.random() - 0.5) * sizeFactor * 0.2; // Small random offset on the X axis
-      const randomOffsetY = (Math.random() - 0.5) * sizeFactor * 0.2; // Small random offset on the Y axis
-
-      // Calculate X and Y positions with added random offsets
-      const x = Math.cos(angle) * radius + randomOffsetX;
-      const y = Math.sin(angle) * radius + randomOffsetY;
-
-      points.push([x, y]);
+    // Calculate the centroid using the average of all points
+    let sumX = 0;
+    let sumY = 0;
+    for (const [x, y] of points) {
+      sumX += x;
+      sumY += y;
     }
+    const centroidX = sumX / numPoints;
+    const centroidY = sumY / numPoints;
 
-    return points;
+    // Adjust points to center them around the centroid (0, 0)
+    const centeredPoints = points.map(([x, y]) => [x - centroidX, y - centroidY]);
+
+    // Close the shape by connecting the last point to the first point
+    centeredPoints.push(centeredPoints[0]);
+
+    return centeredPoints;
   }
 
   static getSizeFactor(size) {  // Determine size factor based on asteroid size

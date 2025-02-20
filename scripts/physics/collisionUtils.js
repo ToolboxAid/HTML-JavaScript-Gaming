@@ -3,10 +3,8 @@
 // 02/14/2025
 // collisionUtils.js
 
-import CanvasUtils from "../../scripts/canvas.js"
-import AngleUtils from "../math/angleUtils.js";
+import CanvasUtils from "../../scripts/canvas.js";
 import SystemUtils from "../utils/systemUtils.js";
-import GeometryUtils from "../math/geometryUtils.js"
 export default class CollisionUtils {
     // Play your game normally: game.html
     // Enable debug mode: game.html?collisionUtils
@@ -69,10 +67,9 @@ export default class CollisionUtils {
         return !(aRight < bLeft || aLeft > bRight || aBottom < bTop || aTop > bBottom);
     }
 
-
     static vectorCollisionDetection(objectA, objectB) {
         if (!objectA || !objectB || !objectA.vectorMap || !objectB.vectorMap) {
-            console.warn(objectA.vectorMap, objectB.vectorMap);
+            console.warn(objectA, objectB);
             if (this.DEBUG) {
                 console.error("Invalid objects passed to vectorCollisionDetection", objectA, objectB);
             }
@@ -299,7 +296,62 @@ export default class CollisionUtils {
         return collisions; // Returns array of collision sides
     }
 
-    static checkGameBounds(object, offset = 0) {
+    static checkGameOutBounds(object, offset = 0) {
+        return (
+            object.x - object.width + offset <= 0 ||
+            object.y - object.height + offset <= 0 ||
+            object.x + object.width - offset >= CanvasUtils.getConfigWidth() ||
+            object.y + object.height - offset >= CanvasUtils.getConfigHeight()
+        );
+    }    
+    static checkGameOutBoundsSides(object, offset = 0) {
+        if (this.DEBUG) {
+            console.assert(
+                object && typeof object.x === 'number' && typeof object.y === 'number' &&
+                typeof object.width === 'number' && typeof object.height === 'number',
+                `checkGameOutBoundsSides invalid object: ${JSON.stringify(object)}, ${SystemUtils.getObjectType(object)}`
+            );
+            // console.assert(
+            //     !object.radius,
+            //     `Object has 'radius'. Use checkGameOutBoundsCircle instead. ${JSON.stringify(object)}`
+            // );
+        }
+    
+        // If the object is not out of bounds, return an empty array.
+        if (!this.checkGameOutBounds(object, offset)) {
+            return [];
+        }
+    
+        // Determine which boundaries the object is out of.
+        let boundariesOut = [];
+
+        const width = object.boundWidth/2 ?? this.radius/2 ?? this.width/2;
+        const height = object.boundHeight/2 ?? this.radius/2 ?? this.height/2;
+
+        if (object.velocityX < 0 && object.x + width + offset <= 0) {
+            boundariesOut.push('left');
+        }
+        if (object.velocityX >= 0 && object.x - width - offset >= CanvasUtils.getConfigWidth()) {
+            boundariesOut.push('right');
+        }
+
+        if (object.velocityY < 0 &&  object.y + height + offset <= 0) {
+            boundariesOut.push('top');
+        }
+        if (object.velocityY >= 0 && object.y - height - offset >= CanvasUtils.getConfigHeight()) {
+            boundariesOut.push('bottom');
+        }
+
+    
+        if (this.DEBUG) {
+            console.log("checkGameOutBoundsSides", CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesOut);
+        }
+    
+        return boundariesOut;
+    }
+    
+
+    static checkGameAtBounds(object, offset = 0) {
         return (
             object.x + offset <= 0 ||
             object.y + offset <= 0 ||
@@ -307,26 +359,27 @@ export default class CollisionUtils {
             object.y + object.height - offset >= CanvasUtils.getConfigHeight()
         );
     }
-    static checkGameBoundsSides(object, offset = 0) {
+    static checkGameAtBoundsSides(object, offset = 0) {
         if (this.DEBUG) {
             console.assert(
                 object && typeof object.x === 'number' && typeof object.y === 'number' &&
                 typeof object.width === 'number' && typeof object.height === 'number',
-                `checkGameBoundsSides invalid object: ${JSON.stringify(object)}, ${SystemUtils.getObjectType(object)}`
+                `checkGameAtBoundsSides invalid object: ${JSON.stringify(object)}, ${SystemUtils.getObjectType(object)}`
             );
             console.assert(
                 !object.radius,
-                "Object has 'radius'. Use checkGameBoundsCircle instead."
+                "Object has 'radius'. Use checkGameAtBoundsCircle instead."
             );
         }
 
-        if (!this.checkGameBounds(object, offset)) {
+        // **Avoid checking bounds twice!** If checkGameAtBounds returns empty array, the boundaries will be determined below.
+        if (!this.checkGameAtBounds(object, offset)) {
             return [];  // Return empty array instead of undefined
         }
 
+        // We have a hit, determine where.
         let boundariesHit = [];
 
-        // **Avoid checking bounds twice!** If checkGameBounds returns true, the boundaries will be determined below.
         if (object.y + offset <= 0) {
             boundariesHit.push('top');
         }
@@ -341,18 +394,18 @@ export default class CollisionUtils {
         }
 
         if (this.DEBUG) {
-            console.log("checkGameBoundsSides", CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesHit);
+            console.log("checkGameAtBoundsSides", CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesHit);
         }
 
         return boundariesHit;
     }
 
-    static checkGameBoundsCircle(object) {
+    static checkGameAtBoundsCircle(object) {
         if (this.DEBUG) {
             console.assert(
                 object && typeof object.x === 'number' && typeof object.y === 'number' &&
                 typeof object.radius === 'number',
-                `checkGameBoundsCircle requires an object with a valid 'radius', 'x', and 'y'.`
+                `checkGameAtBoundsCircle requires an object with a valid 'radius', 'x', and 'y'.`
             );
         }
         return object.x - object.radius <= 0 ||
@@ -360,16 +413,16 @@ export default class CollisionUtils {
             object.x + object.radius >= CanvasUtils.getConfigWidth() ||
             object.y + object.radius >= CanvasUtils.getConfigHeight();
     }
-    static checkGameBoundsCircleSides(object) {
+    static checkGameAtBoundsCircleSides(object) {
         if (this.DEBUG) {
             console.assert(
                 object && typeof object.x === 'number' && typeof object.y === 'number' &&
                 typeof object.radius === 'number',
-                `checkGameBoundsCircle requires an object with a valid 'radius', 'x', and 'y'.`
+                `checkGameAtBoundsCircle requires an object with a valid 'radius', 'x', and 'y'.`
             );
         }
 
-        if (!this.checkGameBoundsCircle(object)) {
+        if (!this.checkGameAtBoundsCircle(object)) {
             return [];  // Return empty array instead of undefined
         }
 

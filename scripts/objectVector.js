@@ -8,26 +8,19 @@ import CanvasUtils from './canvas.js';
 
 import AngleUtils from '../scripts/math/angleUtils.js';
 import CollisionUtils from '../scripts/physics/collisionUtils.js';
+import SystemUtils from './utils/systemUtils.js';
 
 
 class ObjectVector extends ObjectKillable {
     constructor(x, y, vectorMap, velocityX, velocityY) {
         // Validate that vectorMap is a single array of point pairs
-        if (!Array.isArray(vectorMap) || !vectorMap.every(point => Array.isArray(point) && point.length === 2)) {
-            throw new Error("vectorMap must be an array of point pairs (e.g., [[x, y], [x, y], ...]).");
+        if (!vectorMap || !Array.isArray(vectorMap) || !vectorMap.every(point => Array.isArray(point) && point.length === 2)) {
+            throw new Error("vectorMap must be present and an array of point pairs (e.g., [[x, y], [x, y], ...]).");
         }
-        // if (!this.vectorMap || !Array.isArray(this.vectorMap)) {
-        //     console.error("No valid frame to draw:", this.vectorMap);
-        //     return;
-        // }
 
-        const posNum = 1;
-        super(x, y, posNum, posNum, velocityX, velocityY);
-
-        // Store the vector map (frame data)
-        this.vectorMap = vectorMap;
-
-        this.calculateObjectBounds();
+        const width = 99;
+        const height = 99;
+        super(x, y, width, height, velocityX, velocityY);
 
         this.currentFrameIndex = 0; // For animation frame tracking
         this.delayCounter = 0;
@@ -37,7 +30,24 @@ class ObjectVector extends ObjectKillable {
 
         this.rotationAngle = 0;
 
+        // Store the vector map (frame data)
+        this.vectorMap = vectorMap;
+
+        // Set the bounds of the object
         this.drawBounds = false;
+
+        this.boundX = 0;
+        this.boundY = 0;
+        this.boundWidth = 0;
+        this.boundHeight = 0;
+
+        // Store rotated points for collision detection
+        this.rotatedPoints = [];
+
+        this.calculateObjectBounds();
+
+        this.width = this.boundWidth;
+        this.height = this.boundHeight;
     }
 
     setRotationAngle(angle) {
@@ -50,7 +60,7 @@ class ObjectVector extends ObjectKillable {
     }
 
     calculateObjectBounds() {
-        // Calculate the geometric center of the vectorMap
+        // Calculate the actual geometric center of the vectorMap
         const centerX = this.vectorMap.reduce((sum, [vx]) => sum + vx, 0) / this.vectorMap.length;
         const centerY = this.vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / this.vectorMap.length;
 
@@ -68,30 +78,33 @@ class ObjectVector extends ObjectKillable {
             // Apply rotation formula
             const rotatedPoint = AngleUtils.applyRotationToPoint(dx, dy, this.rotationAngle);
 
-            // Translate back to the center
-            const finalX = rotatedPoint.rotatedX + centerX;
-            const finalY = rotatedPoint.rotatedY + centerY;
+            // Translate back and add object's position
+            const finalX = rotatedPoint.rotatedX + this.x;
+            const finalY = rotatedPoint.rotatedY + this.y;
 
-            // Update bounding box calculations
-            if (finalX < minX) minX = finalX;
-            if (finalX > maxX) maxX = finalX;
-            if (finalY < minY) minY = finalY;
-            if (finalY > maxY) maxY = finalY;
-
-            // Update bounding box calculations
-            minX = Math.floor(Math.min(minX, finalX));
-            maxX = Math.ceil(Math.max(maxX, finalX));
-            minY = Math.floor(Math.min(minY, finalY));
-            maxY = Math.ceil(Math.max(maxY, finalY));
+            // Update bounding box calculations (only need one set)
+            minX = Math.min(minX, finalX);
+            maxX = Math.max(maxX, finalX);
+            minY = Math.min(minY, finalY);
+            maxY = Math.max(maxY, finalY);
 
             return [finalX, finalY];
         });
 
-        // Set the bounds of the object on screen
-        this.boundX = this.x + minX - centerX;
-        this.boundY = this.y + minY - centerY;
-        this.boundWidth = maxX - minX + 1;
-        this.boundHeight = maxY - minY + 1;
+        // Set the bounds of the object
+        this.boundX = minX;
+        this.boundY = minY;
+        this.boundWidth = maxX - minX;
+        this.boundHeight = maxY - minY;
+
+        // Store rotated points for collision detection
+        this.rotatedPoints = rotatedPoints;
+
+        // console.log("calculateObjectBounds",
+        //     this.boundX,this.boundY,
+        //     this.boundWidth, this.boundHeight,
+        //     this.rotatedPoints
+        // );
     }
 
     setDrawBounds() {
@@ -100,66 +113,50 @@ class ObjectVector extends ObjectKillable {
 
     draw(lineWidth = 1, offsetX = 0, offsetY = 0) {
         try {
-            const newX = this.x + offsetX;
-            const newY = this.y + offsetY;
-
-            // Ensure width and height are defined (fallback to default values if not)
-            const width = this.width || 0;
-            const height = this.height || 0;
-
-            // Calculate the center of the object (bounding box center)
-            const centerX = newX + (width / 2);
-            const centerY = newY + (height / 2);
-
             // Begin drawing
             CanvasUtils.ctx.beginPath();
             CanvasUtils.ctx.strokeStyle = this.color;
             CanvasUtils.ctx.lineWidth = lineWidth;
 
-            this.vectorMap.forEach(([px, py], index) => {
-                if (!Array.isArray([px, py]) || [px, py].length !== 2) {
-                    console.error("Invalid point in frame:", [px, py]);
-                    return;
-                }
+            // Use the pre-calculated rotated points
+            if (!this.rotatedPoints || this.rotatedPoints.length === 0) {
+                console.error("Rotated points are not available.");
+                return;
+            }
 
-                // Apply rotation formula
-                const rotatedPoint = AngleUtils.applyRotationToPoint(px, py, this.rotationAngle);
-
-                // Draw the path
+            // Draw using the pre-calculated rotated points
+            this.rotatedPoints.forEach(([rx, ry], index) => {
                 if (index === 0) {
-                    CanvasUtils.ctx.moveTo(rotatedPoint.rotatedX + centerX, rotatedPoint.rotatedY + centerY);
+                    CanvasUtils.ctx.moveTo(rx + offsetX, ry + offsetY);
                 } else {
-                    CanvasUtils.ctx.lineTo(rotatedPoint.rotatedX + centerX, rotatedPoint.rotatedY + centerY);
+                    CanvasUtils.ctx.lineTo(rx + offsetX, ry + offsetY);
                 }
             });
 
-            // Finish drawing
+            // Finish shape
             CanvasUtils.ctx.closePath();
             CanvasUtils.ctx.stroke();
 
+            // Draw bounds if enabled
             if (this.drawBounds) {
-                // Draw center point
-                CanvasUtils.drawCircle2(this.x, this.y, 2, "white");
+                // Draw center point at object's position
+                CanvasUtils.drawCircle2(this.x + offsetX, this.y + offsetY, 2, "white");
+
+                // Draw bounding box
                 CanvasUtils.drawBounds(
-                    this.boundX,
-                    this.boundY,
+                    this.boundX + offsetX,
+                    this.boundY + offsetY,
                     this.boundWidth,
                     this.boundHeight,
-                    "white", lineWidth);
+                    "white",
+                    lineWidth
+                );
             }
 
         } catch (error) {
             console.error("Error occurred while drawing:", error.message);
-            console.error("Stack trace:", error.stack);
             console.log("Object state:", this);
         }
-    }
-
-    wrapAround() {// Screen wrapping object logic
-        if (this.x > CanvasUtils.getConfigWidth()) this.x = this.width * -1;
-        if (this.x + this.width < 0) this.x = CanvasUtils.getConfigWidth();
-        if (this.y > CanvasUtils.getConfigHeight()) this.y = this.height * -1;
-        if (this.y + this.height < 0) this.y = CanvasUtils.getConfigHeight();
     }
 
     collisionDetection(object, debug = false) {
@@ -167,39 +164,47 @@ class ObjectVector extends ObjectKillable {
             console.log(object);
         }
 
-        // Rotate and translate the asteroid's vectorMap based on its rotationAngle and position
-        const asteroidPoints = this.vectorMap.map(([px, py]) => {
-            const angleInRadians = (this.rotationAngle * Math.PI) / 180;
-            const rotatedX = this.x + px * Math.cos(angleInRadians) - py * Math.sin(angleInRadians);
-            const rotatedY = this.y + px * Math.sin(angleInRadians) + py * Math.cos(angleInRadians);
-            return [rotatedX, rotatedY]; // return values to asteroidPoints
-        });
-
-        // Rotate and translate the object's vectorMap based on its rotationAngle and position
-        const objectPoints = object.vectorMap.map(([px, py]) => {
-            const angleInRadians = (object.rotationAngle * Math.PI) / 180;
-            const rotatedX = object.x + px * Math.cos(angleInRadians) - py * Math.sin(angleInRadians);
-            const rotatedY = object.y + px * Math.sin(angleInRadians) + py * Math.cos(angleInRadians);
-            return [rotatedX, rotatedY]; // return values to objectPoints
-        });
-
-        // Check if any point of the object is inside the asteroid
-        for (let [pointX, pointY] of objectPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, asteroidPoints)) {
+        // Check if any point of the object is inside the objectPoints
+        for (let [pointX, pointY] of object.rotatedPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, this.rotatedPoints)) {
                 return true; // Collision detected
             }
         }
 
-        // Check if any point of the asteroid is inside the object (optional for mutual collision)
-        for (let [pointX, pointY] of asteroidPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectPoints)) {
+        // Check if any point of the vectorPoints is inside the object (optional for mutual collision)
+        for (let [pointX, pointY] of this.rotatedPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, object.rotatedPoints)) {
                 return true; // Collision detected
             }
         }
         return false; // No collision
     }
 
+    destory() {
+        super.destroy();
 
+        this.currentFrameIndex = null;
+        this.delayCounter = null;
+
+        // Default properties
+        this.color = null; // Default color for vector shapes
+
+        this.rotationAngle = null;
+
+        // Store the vector map (frame data)
+        this.vectorMap = null;
+
+        // Set the bounds of the object
+        this.drawBounds = null;
+
+        this.boundX = null;
+        this.boundY = null;
+        this.boundWidth = null;
+        this.boundHeight = null;
+
+        // Store rotated points for collision detection
+        this.rotatedPoints = null;
+    }
 }
 
 export default ObjectVector;

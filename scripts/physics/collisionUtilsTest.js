@@ -153,13 +153,13 @@ export function testCollisionUtils(assert) {
 
     //console.log("Canvas Width x Height:",CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight());
 
-    // Test: checkGameBounds (Test with object near bounds)
+    // Test: checkGameAtBounds (Test with object near bounds)
     const objectNearBounds = { x: 200, y: 50, width: 50, height: 50 }; // Assuming canvas size of 500x500
-    assert(!CollisionUtils.checkGameBounds(objectNearBounds), "Object should be in game bounds");
+    assert(!CollisionUtils.checkGameAtBounds(objectNearBounds), "Object should be in game bounds");
 
-    // Test: checkGameBoundsSides (Test if boundary sides are hit)
+    // Test: checkGameAtBoundsSides (Test if boundary sides are hit)
     const objectFarBounds = { x: 275, y: 125, width: 50, height: 50 }; // Assuming canvas size of 500x500
-    const boundaryHits = CollisionUtils.checkGameBoundsSides(objectFarBounds);
+    const boundaryHits = CollisionUtils.checkGameAtBoundsSides(objectFarBounds);
     assert(boundaryHits.length > 0, "Should detect boundaries hit");
 }
 

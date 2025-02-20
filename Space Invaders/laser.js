@@ -44,7 +44,7 @@ class Laser extends ObjectDynamic {
     update(deltaTime = 1) {
         super.update(deltaTime);
 
-        if (CollisionUtils.checkGameBounds(this)){
+        if (CollisionUtils.checkGameAtBounds(this)){
             return true;
         }
 

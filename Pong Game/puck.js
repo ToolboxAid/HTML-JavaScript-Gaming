@@ -183,7 +183,7 @@ class Puck extends ObjectDynamic {
     }
 
     checkGameAreaBoundary(leftPaddle, rightPaddle) {
-        const boundariesHit = CollisionUtils.checkGameBoundsSides(this); // Call from CollisionUtils
+        const boundariesHit = CollisionUtils.checkGameAtBoundsSides(this); // Call from CollisionUtils
     
         // Top/Bottom - Adjust Y direction
         if (boundariesHit.includes('top') || boundariesHit.includes('bottom')) {

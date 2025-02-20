@@ -15,6 +15,7 @@ import UFO from './ufo.js';
 
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
+import SystemUtils from '../scripts/utils/systemUtils.js';
 
 class Ship extends ObjectVector {
     // Play your game normally: game.html
@@ -62,10 +63,9 @@ class Ship extends ObjectVector {
         this.bulletsUFO = [];
 
         // ufo's
-        this.ufo = new UFO();
+        this.ufo = null;//new UFO();
         this.ufoTimer = new Timer(10000);
         this.ufoTimer.start();
-        console.log(this.ufoTimer);
 
         // value is used to add to score
         this.value = 0;
@@ -140,6 +140,18 @@ class Ship extends ObjectVector {
         this.asteroids.set(key, asteroid);
     }
 
+    setDeadUFO() {
+        if (Ship.DEBUG) {
+            console.log("setDeadUFO", this.ufo, this.ufoTimer);
+        }
+        this.ufo.setIsDead();
+
+        this.ufoTimer.reset();
+        this.ufoTimer.start();
+        this.ufo.destroy();
+        this.ufo = null;
+    }
+
     update(deltaTime, keyboardInput) {
         this.updateShip(deltaTime, keyboardInput);
         this.updateBullet(deltaTime);
@@ -189,25 +201,48 @@ class Ship extends ObjectVector {
 
         // Update position based on velocity
         super.update(deltaTime);
-        this.wrapAround();
+        this.checkWrapAround();
 
         // Shoot bullets
         if (keyboardInput.getkeysPressed().includes('Space') &&
             this.bullets.length < this.maxBullets) {
             this.shootBullet();
-            this.ufo = new UFO();
         }
     }
 
     updateAsteroid(deltaTime) {
         this.asteroids.forEach((asteroid, key) => {
             asteroid.update(deltaTime);
-            //if (asteroid.collisionDetection(this)) {
             if (CollisionUtils.vectorCollisionDetection(this, asteroid)) {
-                console.log("setShipHit", CollisionUtils.vectorCollisionDetection(this, asteroid), this, asteroid);
-                this.setShipHit();
+                if (Ship.DEBUG) {
+                    console.log("setShipHit", CollisionUtils.vectorCollisionDetection(this, asteroid), this, asteroid);
+                }
+//                this.setShipHit();
             }
         });
+    }
+
+    checkWrapAround() {// Screen wrapping object logic
+        const boundaries = CollisionUtils.checkGameOutBoundsSides(this);
+        const div = 4;
+
+        if (boundaries.includes('left')) {
+            const width = this.boundWidth / div ?? this.radiusdiv ?? this.width / div;
+            this.x = CanvasUtils.getConfigWidth() + width;
+        }
+        if (boundaries.includes('right')) {
+            const width = this.boundWidth / div ?? this.radius / div ?? this.width / div;
+            this.x = (this.boundWidth * -1) - width;
+        }
+
+        if (boundaries.includes('top')) {
+            const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
+            this.y = CanvasUtils.getConfigHeight() + height;
+        }
+        if (boundaries.includes('bottom')) {
+            const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
+            this.y = this.boundHeight * -1;//-height;
+        }
     }
 
     updateBullet(deltaTime) {
@@ -231,9 +266,12 @@ class Ship extends ObjectVector {
                     break;
                 }
                 // check collusion with UFO
-
-
             }
+            if (this.ufo && bullet.collisionDetection(this.ufo)) {
+                bullet.setIsDead();
+                this.setDeadUFO();
+            }
+
             if (bullet.isDead()) {
                 this.bullets.splice(i, 1); // Remove the bullet if it's "dead"
                 break;
@@ -242,35 +280,38 @@ class Ship extends ObjectVector {
     }
 
     shootBullet() {
-        const angleInRadians = this.rotationAngle * (Math.PI / 180); // Convert rotation angle from degrees to radians
-
-        // Calculate the nose offset in world space (taking into account ship's rotation)
-        const noseX = Math.cos(angleInRadians) * 24;  // Rotate the x-component of the nose vector
-        const noseY = Math.sin(angleInRadians) * 24;  // Rotate the y-component of the nose vector
-
-        // Bullet position is the ship's position plus the rotated nose offset
-        const bulletX = this.x + noseX + ((this.width / 2) - 1);
-        const bulletY = this.y + noseY + ((this.height / 2) - 1);
-
-        // Create the bullet at the calculated position
-        const bullet = new Bullet(bulletX, bulletY, angleInRadians);  // Bullet angle is the same as the ship's rotation
-        //const bullet = new Bullet(bulletX, bulletY, this.rotationAngle);  // Bullet angle is the same as the ship's rotation
-        bullet.rotationAngle = this.rotationAngle;
+        const bullet = new Bullet(this.x, this.y, this.rotationAngle);  // Bullet angle is the same as the ship's rotation
         this.bullets.push(bullet);
     }
 
     updateUFO(deltaTime) {
         if (this.ufo) {
-            this.ufo.update(deltaTime);
+            if (this.ufo.isAlive()) {
+                this.ufo.update(deltaTime);
+                if (Ship.DEBUG) {
+                    console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
+                }
+                this.asteroids.forEach((asteroid, asteroidKey) => {
+                    if (CollisionUtils.vectorCollisionDetection(this.ufo, asteroid)) {
+                        if (Ship.DEBUG) {
+                            console.log("ufo hit asteroid");
+                        }
+                        this.setAsteroidHit(asteroid, asteroidKey);
+                        this.setDeadUFO();
+                    }
+                });
+            }
+            if (this.ufo && this.ufo.isDead()) {
+                this.setDeadUFO();
+            }
+        } else if (this.ufoTimer.isComplete() && !this.ufoTimer.isPaused) {
+            this.ufoTimer.pause();
+            this.ufo = new UFO();
+            if (Ship.DEBUG) {
+                console.log("new UFO", this.ufo, this.ufoTimer);
+            }
         }
 
-        this.asteroids.forEach((asteroid, key) => {
-            if (CollisionUtils.vectorCollisionDetection(this.ufo, asteroid)) {
-                console.log(this.ufo.vectorMap, asteroid.vectorMap);
-                console.log("ufo hit asteroid");
-                this.ufo.setIsDead();
-            }
-        });
     }
 
     draw() {
@@ -300,9 +341,3 @@ class Ship extends ObjectVector {
 }
 
 export default Ship;
-
-// Example usage
-if (false) {
-    const ship = new Ship(100, 100);
-    console.log('Ship:', ship);
-}

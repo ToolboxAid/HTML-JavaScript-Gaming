@@ -152,9 +152,9 @@ class Game extends GameBase {
     // Check collision with walls
     this.snakeHead.x = this.snake[0].x;
     this.snakeHead.y = this.snake[0].y;
-    if (CollisionUtils.checkGameBounds(this.snakeHead)) {// required to pass object with x, y, width, height
+    if (CollisionUtils.checkGameAtBounds(this.snakeHead)) {// required to pass object with x, y, width, height
       this.gameState = "gameOver";
-      console.log("gameOver bounds", this.snakeHead, CollisionUtils.checkGameBoundsSides(this.snakeHead));
+      console.log("gameOver bounds", this.snakeHead, CollisionUtils.checkGameAtBoundsSides(this.snakeHead));
     }
 
     // Check collision with self
@@ -163,7 +163,7 @@ class Game extends GameBase {
       this.snakeSegment.y = segment.y;
       if (CollisionUtils.isCollidingWith(this.snakeHead, this.snakeSegment)) {
         this.gameState = "gameOver";
-        console.log("gameOver self", this.snakeHead, CollisionUtils.checkGameBoundsSides(this.snakeHead));
+        console.log("gameOver self", this.snakeHead, CollisionUtils.checkGameAtBoundsSides(this.snakeHead));
       }
     });
   }

@@ -33,12 +33,12 @@ class Circle extends ObjectDynamic {
         //     throw new Error("deltaTime");
         // }
         super.update(deltaTime);
-        // Call the checkGameBoundsCircle function
-        const boundariesHit = CollisionUtils.checkGameBoundsCircle(this);
+        // Call the checkGameAtBoundsCircle function
+        const boundariesHit = CollisionUtils.checkGameAtBoundsCircle(this);
 
         if (boundariesHit) {
             // Pass boundariesHit to updateCirclePosition
-            const boundariesSide = CollisionUtils.checkGameBoundsCircleSides(this);
+            const boundariesSide = CollisionUtils.checkGameAtBoundsCircleSides(this);
             this.updateCircle(boundariesSide);
         }
     }

@@ -80,6 +80,9 @@ class Timer {
     }
 
     isComplete() {
+        if(Timer.DEBUG){
+            console.log("Timer complete",this.getElapsed() >= this.durationMs, this.isPaused);
+        }
         return this.getElapsed() >= this.durationMs;
     }
 

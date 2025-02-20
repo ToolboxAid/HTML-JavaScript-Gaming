@@ -25,7 +25,7 @@ class UFO extends ObjectVector {
   ];
 
   static speed = 100;
-  static offset = 50;
+  static offset = 0;
 
   constructor() {
     let x = canvasConfig.width + UFO.offset;
@@ -33,6 +33,7 @@ class UFO extends ObjectVector {
 
     let angle = 180;// left
     const dir = RandomUtils.randomBoolean();
+    console.log(dir);
     if (dir) {// 0 is left , 1 is right.
       angle = 0;//right
       x = -UFO.offset;
@@ -52,22 +53,16 @@ class UFO extends ObjectVector {
   }
 
   update(deltaTime) {
-    if (this.directionCnt++ > this.directionDelay) {
-      this.changeDirections();
-    }
-
-    // Update super position based on velocity
-    super.update(deltaTime);
-
-    // If the ufo exceeds bounds, mark it for removal
-
-    // *** left/right***
-    if (!this.isDead()) {
-      const boundariesHit = CollisionUtils.checkGameBoundsSides(this, UFO.offset);
-
-      if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
-        this.setIsDead();
+    if (this.isAlive()) {
+      if (this.directionCnt++ > this.directionDelay) {
+        this.changeDirections();
       }
+
+      // Update super position based on velocity
+      super.update(deltaTime);
+
+      // get bounds sides hit
+      const boundariesHit = CollisionUtils.checkGameAtBoundsSides(this, UFO.offset);
 
       // *** top/bottom ***
       if (boundariesHit.includes('top')) {
@@ -76,6 +71,17 @@ class UFO extends ObjectVector {
       if (boundariesHit.includes('bottom')) {
         this.y = -(UFO.offset / 2);
       }
+
+      // If the ufo exceeds left/right bounds, mark it for removal
+      if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
+
+        this.setIsDead();
+        if (UFO.DEBUG) {
+          console.log("UFO out of bounds:", this, this.isAlive(), boundariesHit);
+        }
+        console.log("UFO out of bounds:", this, this.isAlive(), boundariesHit);
+      }
+
     }
   }
 
@@ -96,6 +102,14 @@ class UFO extends ObjectVector {
       console.log("directionDelay:", this.directionDelay);
     }
     return this.directionDelay;
+  }
+
+  destroy(){
+    super.destroy();
+
+    this.direction = null;
+    this.directionCnt = null;
+    this.directionDelay = null;
   }
 
 }
