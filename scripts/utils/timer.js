@@ -4,7 +4,7 @@
 // timer.js
 
 class Timer {
-    
+
     // Play your game normally: game.html
     // Enable debug mode: game.html?timer
     static DEBUG = new URLSearchParams(window.location.search).has('timer');
@@ -18,7 +18,7 @@ class Timer {
         this.isActive = false;
         this.isPaused = false;
         this.pauseTime = null;
-        
+
         if (Timer.DEBUG) console.log(`Timer created: duration ${durationMs}ms`);
     }
 
@@ -80,9 +80,10 @@ class Timer {
     }
 
     isComplete() {
-        if(Timer.DEBUG){
-            console.log("Timer complete",this.getElapsed() >= this.durationMs, this.isPaused);
+        if (Timer.DEBUG) {
+            console.log("Timer complete", this.getElapsed() >= this.durationMs, this.isPaused);
         }
+        
         return this.getElapsed() >= this.durationMs;
     }
 

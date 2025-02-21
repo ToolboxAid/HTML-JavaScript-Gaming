@@ -98,6 +98,7 @@ class SystemUtils {
         trace = null;
     }
 
+    // TODO: This needs to be a private method. extern should call .destroy() directly.
     /** Memory cleanup (anytime keyword 'new' is used) */
     static destroy(element) {
         if (element && typeof element.destroy === "function") {
@@ -105,10 +106,11 @@ class SystemUtils {
                 element.destroy();
                 return true; // Explicitly return true on success
             } catch (error) {
-                console.error("Error during destroy:", error);
+                console.error(`Error during destroy: ${SystemUtils.getObjectType(element)}`, element, error);
                 return false; // Explicitly return false on failure
             }
         }
+        SystemUtils.showStackTrace(`Not able to destroy element ${element}`);  
         return false; // Return false if no destroy method exists
     }
 

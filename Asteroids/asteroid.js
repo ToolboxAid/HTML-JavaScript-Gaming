@@ -119,6 +119,38 @@ class Asteroid extends ObjectVector {
         return 16; // Default to medium
     }
   }
+
+  /** 
+   * Destroys the asteroid and cleans up resources.
+   * @returns {boolean} True if cleanup was successful
+   */
+  destroy() {
+    try {
+      // Call parent destroy first
+      const parentDestroyed = super.destroy();
+      if (!parentDestroyed) {
+        return false;
+      }
+
+      // Validate object state before destruction
+      if (this.size === null) {
+        return false; // Already destroyed
+      }
+
+      // Cleanup asteroid-specific properties
+      this.size = null;
+      this.rotationAngle = null;
+      this.velocityRotation = null;
+
+      return true; // Successful cleanup
+
+    } catch (error) {
+      console.error('Error during Asteroid destruction:', error);
+      return false;
+    }
+  }
+
+
 }
 
 export default Asteroid;

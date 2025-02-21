@@ -15,6 +15,7 @@ import UFO from './ufo.js';
 
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
+import SystemUtils from '../scripts/utils/systemUtils.js';
 
 class Ship extends ObjectVector {
     // Play your game normally: game.html
@@ -59,7 +60,6 @@ class Ship extends ObjectVector {
         // bullets
         this.bullets = [];
         this.maxBullets = 5;
-        this.bulletsUFO = [];
 
         // ufo's
         this.ufo = null;//new UFO();
@@ -89,6 +89,9 @@ class Ship extends ObjectVector {
 
     setShipHit() {
         this.setIsDead();
+
+        SystemUtils.cleanupArray(this.bullets);
+        this.bullets = null;
         this.bullets = [];
     }
 
@@ -146,9 +149,10 @@ class Ship extends ObjectVector {
         }
         this.ufo.setIsDead();
 
+        this.ufo.destroy();
+
         this.ufoTimer.reset();
         this.ufoTimer.start();
-        this.ufo.destroy();
     }
 
     update(deltaTime, keyboardInput) {
@@ -216,6 +220,7 @@ class Ship extends ObjectVector {
                 if (Ship.DEBUG) {
                     console.log("setShipHit", CollisionUtils.vectorCollisionDetection(this, asteroid), this, asteroid);
                 }
+                // TODO: Uncomment me
                 // this.setShipHit();
             }
         });
@@ -245,7 +250,7 @@ class Ship extends ObjectVector {
             }
             if (this.ufo && bullet.collisionDetection(this.ufo)) {
                 bullet.setIsDead();
-                this.ufo.setIsDead();
+                this.ufo.setIsDying();
                 if (Ship.DEBUG) {
                     console.log("----------UFO hit bullet");
                 }
@@ -265,9 +270,8 @@ class Ship extends ObjectVector {
 
     updateUFO(deltaTime) {
         if (this.ufo) {
+            this.ufo.update(deltaTime, this);
             if (this.ufo.isAlive()) {
-                this.ufo.update(deltaTime);
-// TODO: need bullet timer
                 if (Ship.DEBUG && !this.ufo) {
                     console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
                 }
@@ -275,7 +279,7 @@ class Ship extends ObjectVector {
                     if (CollisionUtils.vectorCollisionDetection(this.ufo, asteroid)) {
                         this.setAsteroidHit(asteroid, asteroidKey);
                         //this.setDeadUFO();
-                        this.ufo.setIsDead();
+                        this.ufo.setIsDying();
                         if (Ship.DEBUG) {
                             console.log("----------ufo hit asteroid");
                         }
@@ -290,6 +294,7 @@ class Ship extends ObjectVector {
                 }
             }
         } else if (this.ufoTimer.isComplete() && !this.ufoTimer.isPaused) {
+            // Create a new UFO
             this.ufoTimer.pause();
             this.ufo = new UFO();
             if (Ship.DEBUG) {
@@ -304,18 +309,26 @@ class Ship extends ObjectVector {
         super.draw();
 
         // Debug info?
-        if (!Ship.DEBUG) {
+        if (Ship.DEBUG) {
             this.drawShipDebug(CanvasUtils.ctx);
         }
 
         // Draw all game objects
         // Bullets
         this.bullets.forEach(bullet => bullet.draw());
+
         // Asteroids
         this.asteroids.forEach(asteroid => asteroid.draw());
+
         // UFO
-        if (this.ufo && this.ufo.isAlive()) {
-            this.ufo.draw();
+        if (this.ufo) {
+            // Draw bullets
+            this.ufo.bullets.forEach(bullet => bullet.draw());
+
+            // Draw UFO if alive
+            if (this.ufo.isAlive()) {
+                this.ufo.draw();
+            }
         }
     }
 

@@ -27,7 +27,7 @@ class ObjectVector extends ObjectKillable {
         if (!vectorMap || !Array.isArray(vectorMap) ||
             !vectorMap.every(point => Array.isArray(point) && point.length === 2 &&
                 point.every(coord => typeof coord === 'number' && Number.isFinite(coord)))) {
-            throw new Error("vectorMap must be an array of point pairs with valid coordinates.");
+            throw new Error(`vectorMap must be an array of point pairs with valid coordinates: ${vectorMap}`);
         }
 
         // Calculate initial bounds from vectorMap

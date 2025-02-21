@@ -7,9 +7,12 @@
 import ObjectVector from '../scripts/objectVector.js';
 
 import AngleUtils from '../scripts/math/angleUtils.js';
+import Bullet from './bullet.js';
 import CanvasUtils from '../scripts/canvas.js';
 import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
+import SystemUtils from '../scripts/utils/systemUtils.js';
+import Timer from '../scripts/utils/timer.js';
 
 class UFO extends ObjectVector {
 
@@ -66,12 +69,18 @@ class UFO extends ObjectVector {
     this.directionCnt = 0;
     this.directionDelay = this.getDelay();
 
+    this.bullets = [];
+    this.bulletTimer = new Timer(1000);
+    this.bulletTimer.start();
+
     if (this.DEBUG) {
       console.log(`UFO - string: ${JSON.stringify(this)} dir: ${dir} conf width ${CanvasUtils.getConfigWidth()}, conf height ${CanvasUtils.getConfigHeight()}`);
     }
   }
 
-  update(deltaTime) {
+  update(deltaTime, ship) {
+    this.bulletUpdateUFO(deltaTime);
+
     if (this.isAlive()) {
       if (this.directionCnt++ > this.directionDelay) {
         this.changeDirections();
@@ -99,14 +108,48 @@ class UFO extends ObjectVector {
 
       // If the ufo exceeds left/right bounds, mark it for removal
       if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
-        this.setIsDead();
+        this.setIsDying();
         if (this.DEBUG) {
           console.log("l/r:", this.x);
         }
       }
+
+      // update bullets
+      this.shootBullet(ship);
+
+
+    } else {
+      if (this.isDying()) {
+
+        // Check if all bullets exausted.
+        if (UFO.DEBUG) {
+          console.log("UFO isDying - check bullets");
+        }
+        this.hasBullets();
+      }
     }
   }
+  bulletUpdateUFO(deltaTime) {
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+      const bullet = this.bullets[i];
+      bullet.update(deltaTime);
 
+      if (bullet.isDead()) {  // Check if dead, don't set it
+        bullet.destroy();    // Destroy the bullet
+        this.bullets.splice(i, 1); // Remove from array
+        // Don't break - continue checking other bullets
+        continue;
+      }
+
+      if (UFO.DEBUG) {
+        console.log(`Bullet ${i} status:`, {
+          position: { x: bullet.x, y: bullet.y },
+          status: bullet.status,
+          timer: { time: bullet.timeAlive, life: Bullet.lifespan },
+        });
+      }
+    }
+  }
   // Using switch (more readable for this case)
   changeDirections() {
     this.directionCnt = 0;
@@ -143,8 +186,45 @@ class UFO extends ObjectVector {
     return this.directionDelay;
   }
 
+  shootBullet(ship) {
+    if (this.bulletTimer.isComplete()) {
+      // Bullet angle is the same as the ship's rotation
+      if (this.isSmall) {
+        // sho0t at ship
+        const rotationAngle = AngleUtils.getAngleBetweenObjects(this, ship);
+        const bullet = new Bullet(this.x, this.y, rotationAngle);
+        this.bullets.push(bullet);
+      } else {
+        // shoot randomly
+        const rotationAngle = RandomUtils.randomRange(0, 360, true);
+        const bullet = new Bullet(this.x, this.y, rotationAngle);
+        this.bullets.push(bullet);
+      }
+
+      this.bulletTimer.reset();
+      this.bulletTimer.start();
+      if (UFO.DEBUG) {
+        console.log("shootBullets", this.bullets);
+      }
+    }
+  }
+
+  setHit() {
+    //console.log("setHit", this.bullets);
+    this.setIsDying(); // until all bullets gone.
+    this.bulletTimer.pause();
+  }
+
+  hasBullets() {
+    console.log("hasBullets", this.bullets);
+    if (this.bullets.length > 0) {
+      return;
+    }
+    this.setIsDead();
+  }
+
   destroy() {
-    if (UFO.DEBUG) {
+    if (this.DEBUG) {
       console.log(`UFO destroy start:, ${JSON.stringify(this)}`);
     }
 
@@ -153,6 +233,11 @@ class UFO extends ObjectVector {
     this.directionCnt = null;
     this.directionDelay = null;
     this.isSmall = null;
+
+    SystemUtils.cleanupArray(this.bullets);
+    this.bullets = null;
+
+    this.bulletTimer = null;
 
     if (UFO.DEBUG) {
       console.log(`UFO destroy end:, ${JSON.stringify(this)}`);
