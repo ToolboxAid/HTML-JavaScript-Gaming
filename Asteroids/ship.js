@@ -15,7 +15,6 @@ import UFO from './ufo.js';
 
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
-import SystemUtils from '../scripts/utils/systemUtils.js';
 
 class Ship extends ObjectVector {
     // Play your game normally: game.html
@@ -64,7 +63,8 @@ class Ship extends ObjectVector {
 
         // ufo's
         this.ufo = null;//new UFO();
-        this.ufoTimer = new Timer(10000);
+        //this.ufoTimer = new Timer(10000);
+        this.ufoTimer = new Timer(1000);
         this.ufoTimer.start();
 
         // value is used to add to score
@@ -149,7 +149,6 @@ class Ship extends ObjectVector {
         this.ufoTimer.reset();
         this.ufoTimer.start();
         this.ufo.destroy();
-        this.ufo = null;
     }
 
     update(deltaTime, keyboardInput) {
@@ -217,32 +216,9 @@ class Ship extends ObjectVector {
                 if (Ship.DEBUG) {
                     console.log("setShipHit", CollisionUtils.vectorCollisionDetection(this, asteroid), this, asteroid);
                 }
-//                this.setShipHit();
+                // this.setShipHit();
             }
         });
-    }
-
-    checkWrapAround() {// Screen wrapping object logic
-        const boundaries = CollisionUtils.checkGameOutBoundsSides(this);
-        const div = 4;
-
-        if (boundaries.includes('left')) {
-            const width = this.boundWidth / div ?? this.radiusdiv ?? this.width / div;
-            this.x = CanvasUtils.getConfigWidth() + width;
-        }
-        if (boundaries.includes('right')) {
-            const width = this.boundWidth / div ?? this.radius / div ?? this.width / div;
-            this.x = (this.boundWidth * -1) - width;
-        }
-
-        if (boundaries.includes('top')) {
-            const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
-            this.y = CanvasUtils.getConfigHeight() + height;
-        }
-        if (boundaries.includes('bottom')) {
-            const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
-            this.y = this.boundHeight * -1;//-height;
-        }
     }
 
     updateBullet(deltaTime) {
@@ -269,7 +245,10 @@ class Ship extends ObjectVector {
             }
             if (this.ufo && bullet.collisionDetection(this.ufo)) {
                 bullet.setIsDead();
-                this.setDeadUFO();
+                this.ufo.setIsDead();
+                if (Ship.DEBUG) {
+                    console.log("----------UFO hit bullet");
+                }
             }
 
             if (bullet.isDead()) {
@@ -288,21 +267,26 @@ class Ship extends ObjectVector {
         if (this.ufo) {
             if (this.ufo.isAlive()) {
                 this.ufo.update(deltaTime);
-                if (Ship.DEBUG) {
+                if (Ship.DEBUG && !this.ufo) {
                     console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
                 }
                 this.asteroids.forEach((asteroid, asteroidKey) => {
                     if (CollisionUtils.vectorCollisionDetection(this.ufo, asteroid)) {
-                        if (Ship.DEBUG) {
-                            console.log("ufo hit asteroid");
-                        }
                         this.setAsteroidHit(asteroid, asteroidKey);
-                        this.setDeadUFO();
+                        //this.setDeadUFO();
+                        this.ufo.setIsDead();
+                        if (Ship.DEBUG) {
+                            console.log("----------ufo hit asteroid");
+                        }
                     }
                 });
             }
             if (this.ufo && this.ufo.isDead()) {
                 this.setDeadUFO();
+                this.ufo = null;
+                if (Ship.DEBUG) {
+                    console.log("this.ufo.isDead");
+                }
             }
         } else if (this.ufoTimer.isComplete() && !this.ufoTimer.isPaused) {
             this.ufoTimer.pause();
@@ -317,11 +301,18 @@ class Ship extends ObjectVector {
     draw() {
         // Draw ship
         super.draw();
-        this.drawShipDebug(CanvasUtils.ctx);
+
+        // Debug info?
+        if (!Ship.DEBUG) {
+            this.drawShipDebug(CanvasUtils.ctx);
+        }
 
         // Draw all game objects
+        // Bullets
         this.bullets.forEach(bullet => bullet.draw());
+        // Asteroids
         this.asteroids.forEach(asteroid => asteroid.draw());
+        // UFO
         if (this.ufo && this.ufo.isAlive()) {
             this.ufo.draw();
         }

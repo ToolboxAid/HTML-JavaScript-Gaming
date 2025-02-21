@@ -4,22 +4,46 @@
 // objectKillable.js
 
 import ObjectDynamic from './objectDynamic.js';
-import CanvasUtils from './canvas.js';
 
 class ObjectKillable extends ObjectDynamic {
-    static Status = Object.freeze({
-        ALIVE: 'alive',
-        DYING: 'dying',
-        OTHER: 'other',
-        DEAD: 'dead'
-    });
+/**
+     * Enumeration of possible object states
+     * @readonly
+     * @enum {string}
+     */
+static Status = Object.freeze({
+    ALIVE: 'alive',
+    DYING: 'dying',
+    OTHER: 'other',
+    DEAD: 'dead'
+});
 
-    constructor(x, y, width, height, velocityX, velocityY) {
+/**
+ * Creates an instance of ObjectKillable.
+ * @param {number} x - The X position of the object.
+ * @param {number} y - The Y position of the object.
+ * @param {number} width - The width of the object.
+ * @param {number} height - The height of the object.
+ * @param {number} [velocityX=0] - The initial velocity in the X direction.
+ * @param {number} [velocityY=0] - The initial velocity in the Y direction.
+ * @throws {Error} If parameters are invalid or status is invalid
+ */
+constructor(x, y, width, height, velocityX = 0, velocityY = 0) {
+    // Call parent constructor
+    super(x, y, width, height, velocityX, velocityY);
 
-        super(x, y, width, height, velocityX, velocityY);
+    // Initialize status
+    this.status = ObjectKillable.Status.ALIVE;
+    
+    // Initialize animation-related properties
+    this.currentFrameIndex = 0;
+    this.delayCounter = 0;
 
-        this.status = ObjectKillable.Status.ALIVE;
+    // Validate initial status
+    if (!Object.values(ObjectKillable.Status).includes(this.status)) {
+        throw new Error('Invalid initial status.');
     }
+}
 
     update(deltaTime, incFrame = false) {
         switch (this.status) {
@@ -94,9 +118,35 @@ class ObjectKillable extends ObjectDynamic {
         this.delayCounter = 0;
     }
 
+    /**
+     * Destroys the object and cleans up resources.
+     * @returns {boolean} True if cleanup was successful
+     */
     destroy() {
-        super.destroy();
-        this.status = null;
+        try {
+            // Call parent destroy first
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                return false;
+            }
+
+            // Validate object state before destruction
+            if (this.status === null) {
+                return false; // Already destroyed
+            }
+
+            // Cleanup animation properties
+            this.currentFrameIndex = null;
+            this.delayCounter = null;
+
+            // Cleanup status
+            this.status = null;
+
+            return true; // Successful cleanup
+        } catch (error) {
+            console.error('Error during ObjectKillable destruction:', error);
+            return false;
+        }
     }
 }
 

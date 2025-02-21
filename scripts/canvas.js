@@ -61,7 +61,10 @@ class CanvasUtils {
         if (validation) {
             this.config = config;
         }
-        console.log(`CanvasUtils.init complete.`);
+
+        if (CanvasUtils.DEBUG) {
+            console.log(`CanvasUtils.init complete. `, canvas, this.config);
+        }
     }
 
     static getCanvasWidth() {

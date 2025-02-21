@@ -3,8 +3,7 @@
 // 10/16/2024
 // objectDynamic.js
 
-import ObjectStatic from '../scripts/objectStatic.js'; // Import ObjectStatic
-import CanvasUtils from "../scripts/canvas.js";
+import ObjectStatic from '../scripts/objectStatic.js';
 
 /**
  * Represents a dynamic object in a game that can move based on velocity.
@@ -19,11 +18,23 @@ class ObjectDynamic extends ObjectStatic {
      * @param {number} height - The height of the object.
      * @param {number} [velocityX=0] - The initial velocity in the X direction.
      * @param {number} [velocityY=0] - The initial velocity in the Y direction.
+     * @throws {Error} If parameters are invalid
      */
     constructor(x, y, width, height, velocityX = 0, velocityY = 0) {
-        super(x, y, width, height); // Call the parent constructor
-        this.velocityX = velocityX; // Velocity in X direction
-        this.velocityY = velocityY; // Velocity in Y direction
+        // Call parent constructor first
+        super(x, y, width, height);
+
+        // Validate velocity parameters
+        if (typeof velocityX !== 'number' || typeof velocityY !== 'number') {
+            throw new Error('Velocity parameters must be numbers.');
+        }
+
+        if (!Number.isFinite(velocityX) || !Number.isFinite(velocityY)) {
+            throw new Error('Velocity values must be finite numbers.');
+        }
+
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
     }
 
     /** Future methods */
@@ -85,10 +96,32 @@ class ObjectDynamic extends ObjectStatic {
         this.velocityY = velocityY;
     }
 
+    /**
+     * Destroys the object and cleans up resources.
+     * @returns {boolean} True if cleanup was successful
+     */
     destroy() {
-        super.destroy();
-        this.velocityX = null;
-        this.velocityY = null;
+        try {
+            // Call parent destroy first
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                return false;
+            }
+
+            // Validate object state before destruction
+            if (this.velocityX === null || this.velocityY === null) {
+                return false; // Already destroyed
+            }
+
+            // Nullify velocity properties
+            this.velocityX = null;
+            this.velocityY = null;
+
+            return true; // Successful cleanup
+        } catch (error) {
+            console.error('Error during ObjectDynamic destruction:', error);
+            return false;
+        }
     }
 
 }

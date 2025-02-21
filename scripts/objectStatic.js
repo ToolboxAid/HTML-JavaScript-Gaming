@@ -17,11 +17,25 @@ class ObjectStatic {
      * @param {number} y - The Y position of the object.
      * @param {number} width - The width of the object.
      * @param {number} height - The height of the object.
+     * @throws {Error} If parameters are invalid
      */
     constructor(x = 0, y = 0, width = 0, height = 0) {
+        // Validate types
+        if (typeof x !== 'number' || typeof y !== 'number' ||
+            typeof width !== 'number' || typeof height !== 'number') {
+            throw new Error('All parameters must be numbers.');
+        }
+
+        // Validate dimensions
         if (width <= 0 || height <= 0) {
             throw new Error('Width and height must be positive numbers.');
-        }        
+        }
+
+        // Validate position
+        if (!Number.isFinite(x) || !Number.isFinite(y)) {
+            throw new Error('Position coordinates must be finite numbers.');
+        }
+
         this.x = x;
         this.y = y;
         this.width = width;
@@ -75,13 +89,30 @@ class ObjectStatic {
             CanvasUtils.ctx.strokeRect(this.x, this.y, this.width, this.height);
         }
     }
-    
+
+    /**
+     * Destroys the object and cleans up resources.
+     * @returns {boolean} True if cleanup was successful
+     */
     destroy() {
-        //super.destroy();
-        this.x = null;
-        this.y = null;
-        this.width = null;
-        this.height = null;
+        try {
+            // Validate object state before destruction
+            if (this.x === null || this.y === null || 
+                this.width === null || this.height === null) {
+                return false; // Already destroyed
+            }
+
+            // Nullify all properties
+            this.x = null;
+            this.y = null;
+            this.width = null;
+            this.height = null;
+
+            return true; // Successful cleanup
+        } catch (error) {
+            console.error('Error during destruction:', error);
+            return false;
+        }
     }
 
 }

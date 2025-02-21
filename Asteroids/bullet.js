@@ -4,14 +4,13 @@
 // 11/20/2024
 // bullet.js
 
-import CanvasUtils from '../scripts/canvas.js';
 import ObjectVector from '../scripts/objectVector.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js';
+import AngleUtils from '../scripts/math/angleUtils.js';
 
 class Bullet extends ObjectVector {
 
   // Define a simple vector map for a bullet, typically a small line or dot
-  static vectorMap = [[-1, 0], [1, 0.75], [1, -0.75]];
+  static vectorMap = [[-2, 0], [2, 0.5], [2, -0.5]];
   static speed = 350;
   static lifespan = 1.75; // Time in seconds before the bullet disappears
 
@@ -28,19 +27,19 @@ class Bullet extends ObjectVector {
     const bulletY = y + noseY;
 
     // Calculate velocity based on angle and speed
-    const velocityX = Math.cos(angleInRadians) * Bullet.speed;
+    const velocityX = Math.cos(angleInRadians) * Bullet.speed; 
     const velocityY = Math.sin(angleInRadians) * Bullet.speed;
 
     // Initialize the parent class with the bullet vector map and velocity
     super(bulletX, bulletY, Bullet.vectorMap, velocityX, velocityY);
-    this.angle = angle;
+    this.rotationAngle = angle;//AngleUtils.toDegrees(angle);
     this.timeAlive = 0; // Time the bullet has existed
   }
 
   update(deltaTime) {
     // Update position based on velocity
     super.update(deltaTime);
-
+    
     // Track how long the bullet has been alive
     this.timeAlive += deltaTime;
 
@@ -50,14 +49,6 @@ class Bullet extends ObjectVector {
     }
 
     this.checkWrapAround();
-  }
-
-  checkWrapAround() {// Screen wrapping object logic
-    const boundaries = CollisionUtils.checkGameOutBoundsSides(this);
-    if (boundaries.includes('right')) this.x = this.width * -1;
-    if (boundaries.includes('left')) this.x = CanvasUtils.getConfigWidth();
-    if (boundaries.includes('bottom')) this.y = this.height * -1;
-    if (boundaries.includes('top')) this.y = CanvasUtils.getConfigHeight();
   }
 
 }

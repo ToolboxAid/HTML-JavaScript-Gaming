@@ -4,10 +4,7 @@
 // asteroid.js
 
 import ObjectVector from '../scripts/objectVector.js';
-
 import RandomUtils from '../scripts/math/randomUtils.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js';
-import CanvasUtils from '../scripts/canvas.js';
 
 class Asteroid extends ObjectVector {
   constructor(x, y, size = 'large') {
@@ -28,21 +25,6 @@ class Asteroid extends ObjectVector {
     this.size = size;
     this.rotationAngle = 0;
     this.velocityRotation = (Math.random() - 0.5) * 8;
-
-    // Calculate radius based on vectorMap
-    this.radius = this.calculateRadius();
-  }
-
-  // Helper method to calculate radius
-  calculateRadius() {
-    let maxDistance = 0;
-    for (const [x, y] of this.vectorMap) {
-      const distance = Math.sqrt(x * x + y * y);
-      if (distance > maxDistance) {
-        maxDistance = distance;
-      }
-    }
-    return maxDistance;
   }
 
   static randomRange(size) {
@@ -80,30 +62,6 @@ class Asteroid extends ObjectVector {
     this.rotationAngle += this.velocityRotation;
     super.update(deltaTime);
     this.checkWrapAround();
-  }
-
-  checkWrapAround() {// Screen wrapping object logic
-    const boundaries = CollisionUtils.checkGameOutBoundsSides(this);
-    const div = 4;
-
-    if (boundaries.includes('left')) {
-      const width = this.boundWidth / div ?? this.radiusdiv ?? this.width / div;
-      this.x = CanvasUtils.getConfigWidth() + width;
-    }
-    if (boundaries.includes('right')) {
-      const width = this.boundWidth / div ?? this.radius / div ?? this.width / div;
-      this.x = (this.boundWidth * -1) - width;
-    }
-
-    if (boundaries.includes('top')) {
-      const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
-      this.y = CanvasUtils.getConfigHeight() + height;
-    }
-    if (boundaries.includes('bottom')) {
-      const height = this.boundHeight / div ?? this.radius / div ?? this.height / div;
-      this.y = this.boundHeight * -1;//-height;
-    }
-
   }
 
   static generateVectorMap(size) {

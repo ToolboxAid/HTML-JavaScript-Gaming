@@ -5,6 +5,7 @@
 
 import CanvasUtils from "../../scripts/canvas.js";
 import SystemUtils from "../utils/systemUtils.js";
+
 export default class CollisionUtils {
     // Play your game normally: game.html
     // Enable debug mode: game.html?collisionUtils
@@ -50,26 +51,9 @@ export default class CollisionUtils {
         return transformedPoints;
     }
 
-    static boundingBoxCollision(objectA, objectB) {
-        if (this.DEBUG) {
-            console.log("radius", objectA.radius, objectB.radius);
-        }
-        const aLeft = objectA.x - objectA.radius;
-        const aRight = objectA.x + objectA.radius;
-        const aTop = objectA.y - objectA.radius;
-        const aBottom = objectA.y + objectA.radius;
-
-        const bLeft = objectB.x - objectB.radius;
-        const bRight = objectB.x + objectB.radius;
-        const bTop = objectB.y - objectB.radius;
-        const bBottom = objectB.y + objectB.radius;
-
-        return !(aRight < bLeft || aLeft > bRight || aBottom < bTop || aTop > bBottom);
-    }
-
     static vectorCollisionDetection(objectA, objectB) {
-        if (!objectA || !objectB || !objectA.vectorMap || !objectB.vectorMap) {
-            console.warn(objectA, objectB);
+        if (!objectA || !objectB || !objectA.vectorMap || !objectB.vectorMap || !objectA.rotatedPoints || !objectB.rotatedPoints) {
+            console.warn("objectA:", objectA, "\nobjectB:", objectB);
             if (this.DEBUG) {
                 console.error("Invalid objects passed to vectorCollisionDetection", objectA, objectB);
             }
@@ -81,43 +65,39 @@ export default class CollisionUtils {
 
         // Skip bounding box check if either object is rotated
         if (rotationAngleA === 0 && rotationAngleB === 0) {
-            if (!this.boundingBoxCollision(objectA, objectB)) {
+            if (!this.isCollidingWith(objectA, objectB)) {
                 return false;
             }
         }
 
-        // Transform points for both objects
-        const objectAPoints = this.transformPoints(objectA.vectorMap, objectA.x, objectA.y, rotationAngleA);
-        const objectBPoints = this.transformPoints(objectB.vectorMap, objectB.x, objectB.y, rotationAngleB);
-
         // Check if any point of objectB is inside objectA
-        for (let [pointX, pointY] of objectBPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectAPoints)) {
+        for (let [pointX, pointY] of objectB.rotatedPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectA.rotatedPoints)) {
                 if (this.DEBUG) {
-                    console.log("objectBPoints point");
+                    console.log("objectB.rotatedPoints point", pointX, pointY, objectA.rotatedPoints);
                 }
                 return true;
             }
         }
 
         // Check if any point of objectA is inside objectB
-        for (let [pointX, pointY] of objectAPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectBPoints)) {
+        for (let [pointX, pointY] of objectA.rotatedPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectB.rotatedPoints)) {
                 if (this.DEBUG) {
-                    console.log("objectAPoints point");
+                    console.log("objectAPoints point", pointX, pointY, objectB.rotatedPoints);
                 }
                 return true;
             }
         }
 
         // Check if any edges intersect
-        for (let i = 0; i < objectAPoints.length; i++) {
-            let a1 = objectAPoints[i];
-            let a2 = objectAPoints[(i + 1) % objectAPoints.length];
+        for (let i = 0; i < objectA.rotatedPoints.length; i++) {
+            let a1 = objectA.rotatedPoints[i];
+            let a2 = objectA.rotatedPoints[(i + 1) % objectA.rotatedPoints.length];
 
-            for (let j = 0; j < objectBPoints.length; j++) {
-                let b1 = objectBPoints[j];
-                let b2 = objectBPoints[(j + 1) % objectBPoints.length];
+            for (let j = 0; j < objectB.rotatedPoints.length; j++) {
+                let b1 = objectB.rotatedPoints[j];
+                let b2 = objectB.rotatedPoints[(j + 1) % objectB.rotatedPoints.length];
 
                 if (CollisionUtils.doEdgesIntersect(a1, a2, b1, b2)) {
                     if (this.DEBUG) {
@@ -196,7 +176,6 @@ export default class CollisionUtils {
         return inside;
     }
 
-
     static isContainedWithin(object, container) {
         if (this.DEBUG) {
             console.assert(
@@ -223,10 +202,6 @@ export default class CollisionUtils {
 
     static isCollidingWith(objectA, objectB) {
         if (this.DEBUG) {
-            if (objectB === true) {
-                console.log(objectB);
-                SystemUtils.showStackTrace("isCollidingWith");
-            }
             console.assert(
                 objectA && objectB &&
                 typeof objectA.x === 'number' && typeof objectA.y === 'number' &&
@@ -296,101 +271,122 @@ export default class CollisionUtils {
         return collisions; // Returns array of collision sides
     }
 
-    static checkGameOutBounds(object, offset = 0) {
-        return (
-            object.x - object.width + offset <= 0 ||
-            object.y - object.height + offset <= 0 ||
-            object.x + object.width - offset >= CanvasUtils.getConfigWidth() ||
-            object.y + object.height - offset >= CanvasUtils.getConfigHeight()
-        );
-    }    
-    static checkGameOutBoundsSides(object, offset = 0) {
-        if (this.DEBUG) {
-            console.assert(
-                object && typeof object.x === 'number' && typeof object.y === 'number' &&
-                typeof object.width === 'number' && typeof object.height === 'number',
-                `checkGameOutBoundsSides invalid object: ${JSON.stringify(object)}, ${SystemUtils.getObjectType(object)}`
-            );
-            // console.assert(
-            //     !object.radius,
-            //     `Object has 'radius'. Use checkGameOutBoundsCircle instead. ${JSON.stringify(object)}`
-            // );
+    /** Checks if an object is completely outside the game boundaries
+ * @param {Object} object - The object to check
+ * @param {number} [margin=0] - Additional margin around the boundaries
+ * @returns {boolean} True if object is completely outside game boundaries
+ */
+static isCompletelyOffScreen(object, margin = 0) {
+    // Calculate half dimensions
+    const halfWidth = (object.boundWidth ?? object.width) / 2;
+    const halfHeight = (object.boundHeight ?? object.height) / 2;
+
+    return (
+        object.velocityX < 0 && object.x + halfWidth + margin <= 0 ||              // Off left edge
+        object.velocityX >= 0 && object.x - halfWidth - margin >= CanvasUtils.getConfigWidth() ||  // Off right edge
+        object.velocityY < 0 && object.y + halfHeight + margin <= 0 ||             // Off top edge
+        object.velocityY >= 0 && object.y - halfHeight - margin >= CanvasUtils.getConfigHeight()   // Off bottom edge
+    );
+}
+    /** Checks which sides of the game boundaries an object has crossed based on its velocity
+     * @param {Object} object - The object to check
+     * @param {number} [margin=0] - Additional margin around the boundaries (positive shrinks play area)
+     * @returns {Array<string>} Array of sides ('left', 'right', 'top', 'bottom') that the object has crossed
+     * @throws {Error} If object properties are invalid
+     */
+    static getCompletelyOffScreenBoundaries(object, margin = 0) {
+        // Validate object properties
+        if (!object || typeof object.x !== 'number' || typeof object.y !== 'number') {
+            throw new Error('Invalid object: missing or invalid position properties');
         }
     
-        // If the object is not out of bounds, return an empty array.
-        if (!this.checkGameOutBounds(object, offset)) {
+        // Early return if object is not off screen
+        if (!this.isCompletelyOffScreen(object, margin)) {
             return [];
         }
     
-        // Determine which boundaries the object is out of.
-        let boundariesOut = [];
-
-        const width = object.boundWidth/2 ?? this.radius/2 ?? this.width/2;
-        const height = object.boundHeight/2 ?? this.radius/2 ?? this.height/2;
-
-        if (object.velocityX < 0 && object.x + width + offset <= 0) {
-            boundariesOut.push('left');
-        }
-        if (object.velocityX >= 0 && object.x - width - offset >= CanvasUtils.getConfigWidth()) {
-            boundariesOut.push('right');
-        }
-
-        if (object.velocityY < 0 &&  object.y + height + offset <= 0) {
-            boundariesOut.push('top');
-        }
-        if (object.velocityY >= 0 && object.y - height - offset >= CanvasUtils.getConfigHeight()) {
-            boundariesOut.push('bottom');
-        }
-
+        // Calculate half dimensions
+        const halfWidth = (object.boundWidth ?? object.width) / 2;
+        const halfHeight = (object.boundHeight ?? object.height) / 2;
     
-        if (this.DEBUG) {
-            console.log("checkGameOutBoundsSides", CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesOut);
+        // Document the sides
+        const boundariesCrossed = [];
+    
+        // Check left boundary crossing (moving left)
+        if (object.velocityX < 0 && object.x + halfWidth + margin <= 0) {
+            boundariesCrossed.push('left');
+        }
+        // Check right boundary crossing (moving right)
+        if (object.velocityX >= 0 && object.x - halfWidth - margin >= CanvasUtils.getConfigWidth()) {
+            boundariesCrossed.push('right');
+        }
+        // Check top boundary crossing (moving up)
+        if (object.velocityY < 0 && object.y + halfHeight + margin <= 0) {
+            boundariesCrossed.push('top');
+        }
+        // Check bottom boundary crossing (moving down)
+        if (object.velocityY >= 0 && object.y - halfHeight - margin >= CanvasUtils.getConfigHeight()) {
+            boundariesCrossed.push('bottom');
         }
     
-        return boundariesOut;
+        if (this.DEBUG && boundariesCrossed.includes('right')) {
+            console.log("Boundaries crossed:", {
+                boundaries: boundariesCrossed,
+                object: {
+                    x: object.x,
+                    y: object.y,
+                    w2: halfWidth,
+                    h2: halfHeight,
+                    m: margin
+                },
+                canvas: {
+                    width: CanvasUtils.getConfigWidth(),
+                    height: CanvasUtils.getConfigHeight()
+                }
+            });
+        }
+    
+        return boundariesCrossed;
     }
-    
-
-    static checkGameAtBounds(object, offset = 0) {
+    static checkGameAtBounds(object, margin = 0) {
         return (
-            object.x + offset <= 0 ||
-            object.y + offset <= 0 ||
-            object.x + object.width - offset >= CanvasUtils.getConfigWidth() ||
-            object.y + object.height - offset >= CanvasUtils.getConfigHeight()
+            object.x + margin <= 0 ||
+            object.y + margin <= 0 ||
+            object.x + object.width - margin >= CanvasUtils.getConfigWidth() ||
+            object.y + object.height - margin >= CanvasUtils.getConfigHeight()
         );
     }
-    static checkGameAtBoundsSides(object, offset = 0) {
+    static checkGameAtBoundsSides(object, margin = 0) {
         if (this.DEBUG) {
             console.assert(
                 object && typeof object.x === 'number' && typeof object.y === 'number' &&
                 typeof object.width === 'number' && typeof object.height === 'number',
-                `checkGameAtBoundsSides invalid object: ${JSON.stringify(object)}, ${SystemUtils.getObjectType(object)}`
+                `Object '${SystemUtils.getObjectType(object)} ' is invalid: ${JSON.stringify(object)}`
             );
             console.assert(
                 !object.radius,
-                "Object has 'radius'. Use checkGameAtBoundsCircle instead."
+                `Object '${SystemUtils.getObjectType(object)}' has 'radius'. Use checkGameAtBoundsCircle instead: ${JSON.stringify(object)} `
             );
         }
 
         // **Avoid checking bounds twice!** If checkGameAtBounds returns empty array, the boundaries will be determined below.
-        if (!this.checkGameAtBounds(object, offset)) {
+        if (!this.checkGameAtBounds(object, margin)) {
             return [];  // Return empty array instead of undefined
         }
 
         // We have a hit, determine where.
         let boundariesHit = [];
-
-        if (object.y + offset <= 0) {
-            boundariesHit.push('top');
-        }
-        if (object.y + object.height - offset >= CanvasUtils.getConfigHeight()) {
-            boundariesHit.push('bottom');
-        }
-        if (object.x + offset <= 0) {
+        if (object.x + margin <= 0) {
             boundariesHit.push('left');
         }
-        if (object.x + object.width - offset >= CanvasUtils.getConfigWidth()) {
+        if (object.y + margin <= 0) {
+            boundariesHit.push('top');
+        }
+        if (object.x + object.width - margin >= CanvasUtils.getConfigWidth()) {
             boundariesHit.push('right');
+        }
+        if (object.y + object.height - margin >= CanvasUtils.getConfigHeight()) {
+            boundariesHit.push('bottom');
         }
 
         if (this.DEBUG) {
