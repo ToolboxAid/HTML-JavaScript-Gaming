@@ -48,6 +48,8 @@ class Ship extends ObjectVector {
         this.velocityX = 0;
         this.velocityY = 0;
 
+        this.score = 0;
+
         this.asteroidManager = new AsteroidManager();
 
         // bullets
@@ -55,8 +57,6 @@ class Ship extends ObjectVector {
 
         // ufo's
         this.ufoManager = new UFOManager;
-
-        this.score = 0;
 
         this.reset();
 
@@ -85,14 +85,13 @@ class Ship extends ObjectVector {
     }
 
     update(deltaTime, keyboardInput) {
-        this.updateShip(deltaTime, keyboardInput);
+        this.moveShip(deltaTime, keyboardInput);
 
-        this.bulletManager.update(deltaTime, this);
-
-        this.ufoManager.update(deltaTime, this);
         this.asteroidManager.update(deltaTime);
-        this.asteroidManager.checkShip(this);
+        this.bulletManager.update(deltaTime, this);
+        this.ufoManager.update(deltaTime, this);
 
+        this.asteroidManager.checkShip(this);
         this.asteroidManager.checkUFO(this.ufo);
 
         if (!this.ufo && this.isDying()) {
@@ -100,10 +99,9 @@ class Ship extends ObjectVector {
                 this.setShipHit();
             }
         }
-
     }
 
-    updateShip(deltaTime, keyboardInput) {
+    moveShip(deltaTime, keyboardInput) {
         // Rotate the ship
         if (keyboardInput.isKeyDown('ArrowLeft')) {
             AngleUtils.applyRotation(this, deltaTime, -1)
