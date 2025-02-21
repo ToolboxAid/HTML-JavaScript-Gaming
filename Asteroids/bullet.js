@@ -51,7 +51,6 @@ class Bullet extends ObjectVector {
     this.timeAlive += deltaTime;
 
     // If the bullet exceeds its lifespan, mark it for removal
-    console.log(this.timeAlive, Bullet.lifespan);
     if (this.timeAlive > Bullet.lifespan) {
       this.setIsDead();
       if (Bullet.DEBUG) {

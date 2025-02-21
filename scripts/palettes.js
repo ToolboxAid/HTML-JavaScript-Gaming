@@ -41,7 +41,7 @@ class Palettes {
     static setCustom(theCustomPalette) {
         this.activeName = 'custom';
         this.palettes.custom = theCustomPalette;
-        // TODO: need to validate valid palette format
+        // TODO: need to validate if palette is valid format
     }
 
     // Get the length of the current palette

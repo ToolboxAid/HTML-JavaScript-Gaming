@@ -16,6 +16,7 @@ import UFO from './ufo.js';
 import Asteroid from './asteroid.js';
 import Bullet from './bullet.js';
 import SystemUtils from '../scripts/utils/systemUtils.js';
+import GeometryUtils from '../scripts/math/geometryUtils.js';
 
 class Ship extends ObjectVector {
     // Play your game normally: game.html
@@ -88,6 +89,8 @@ class Ship extends ObjectVector {
     }
 
     setShipHit() {
+        // TODO:  fix this.
+        this.setIsDying();
         this.setIsDead();
 
         SystemUtils.cleanupArray(this.bullets);
@@ -186,7 +189,6 @@ class Ship extends ObjectVector {
         // Apply thrust (acceleration) when ArrowUp is held down
         if (keyboardInput.isKeyDown('ArrowUp')) {
             const vectorDirection = AngleUtils.angleToVector(this.rotationAngle);
-
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
         } else { // Apply decelleration with friction (only if no thrust)
@@ -220,8 +222,8 @@ class Ship extends ObjectVector {
                 if (Ship.DEBUG) {
                     console.log("setShipHit", CollisionUtils.vectorCollisionDetection(this, asteroid), this, asteroid);
                 }
-                // TODO: Uncomment me
-                // this.setShipHit();
+
+                this.setShipHit();
             }
         });
     }
@@ -271,6 +273,7 @@ class Ship extends ObjectVector {
     updateUFO(deltaTime) {
         if (this.ufo) {
             this.ufo.update(deltaTime, this);
+
             if (this.ufo.isAlive()) {
                 if (Ship.DEBUG && !this.ufo) {
                     console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
@@ -278,7 +281,6 @@ class Ship extends ObjectVector {
                 this.asteroids.forEach((asteroid, asteroidKey) => {
                     if (CollisionUtils.vectorCollisionDetection(this.ufo, asteroid)) {
                         this.setAsteroidHit(asteroid, asteroidKey);
-                        //this.setDeadUFO();
                         this.ufo.setIsDying();
                         if (Ship.DEBUG) {
                             console.log("----------ufo hit asteroid");
@@ -286,14 +288,14 @@ class Ship extends ObjectVector {
                     }
                 });
             }
-            if (this.ufo && this.ufo.isDead()) {
+            if (this.ufo.isDead()) {
                 this.setDeadUFO();
                 this.ufo = null;
                 if (Ship.DEBUG) {
                     console.log("this.ufo.isDead");
                 }
             }
-        } else if (this.ufoTimer.isComplete() && !this.ufoTimer.isPaused) {
+        } else if ( !this.isDying() && this.ufoTimer.isComplete() && !this.ufoTimer.isPaused) {
             // Create a new UFO
             this.ufoTimer.pause();
             this.ufo = new UFO();
@@ -302,11 +304,27 @@ class Ship extends ObjectVector {
             }
         }
 
+        if (!this.ufo && this.isDying()) {
+            let safeSpawn = true;
+            this.asteroids.forEach((asteroid, key) => {
+                console.log(GeometryUtils.getDistanceObjects(this,asteroid));
+                if (GeometryUtils.getDistanceObjects(this,asteroid) < 200) {
+                    safeSpawn = false;
+                }
+            });
+
+            if (safeSpawn) {
+                this.setShipHit();
+            }
+        }
+
     }
 
     draw() {
         // Draw ship
-        super.draw();
+        if (this.isAlive()) {
+            super.draw();
+        }
 
         // Debug info?
         if (Ship.DEBUG) {

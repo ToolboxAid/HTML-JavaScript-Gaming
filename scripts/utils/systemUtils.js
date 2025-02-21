@@ -98,21 +98,31 @@ class SystemUtils {
         trace = null;
     }
 
-    // TODO: This needs to be a private method. extern should call .destroy() directly.
+    // TODO: All destroy() methods should use this to take advantage of error trapping
     /** Memory cleanup (anytime keyword 'new' is used) */
     static destroy(element) {
-        if (element && typeof element.destroy === "function") {
-            try {
-                element.destroy();
-                return true; // Explicitly return true on success
-            } catch (error) {
-                console.error(`Error during destroy: ${SystemUtils.getObjectType(element)}`, element, error);
-                return false; // Explicitly return false on failure
-            }
+        // Check if element exists
+        if (!element) {
+            SystemUtils.showStackTrace(`Element is null or undefined`);
+            return false;
         }
-        SystemUtils.showStackTrace(`Not able to destroy element ${element}`);  
-        return false; // Return false if no destroy method exists
+    
+        // Check if destroy method exists
+        if (typeof element.destroy !== "function") {
+            SystemUtils.showStackTrace(`Element ${SystemUtils.getObjectType(element)} has no destroy method`);
+            return false;
+        }
+    
+        // Attempt to destroy
+        try {
+            element.destroy();
+            return true;
+        } catch (error) {
+            SystemUtils.showStackTrace(`Error destroying ${SystemUtils.getObjectType(element)}:`, error);
+            return false;
+        }
     }
+
 
     static cleanupArray(array) {
         let success = true;

@@ -79,7 +79,7 @@ class UFO extends ObjectVector {
   }
 
   update(deltaTime, ship) {
-    this.bulletUpdateUFO(deltaTime);
+    this.bulletUpdateUFO(deltaTime, ship);
 
     if (this.isAlive()) {
       if (this.directionCnt++ > this.directionDelay) {
@@ -89,30 +89,7 @@ class UFO extends ObjectVector {
       // Update super position based on velocity
       super.update(deltaTime);
 
-      // get bounds sides hit
-      const boundariesHit = CollisionUtils.getCompletelyOffScreenBoundaries(this, this.margin);
-      // *** top/bottom ***
-      if (boundariesHit.includes('top')) {
-        this.y = CanvasUtils.getConfigHeight();
-        if (this.DEBUG) {
-          console.log("top:", this.y);
-        }
-
-      }
-      if (boundariesHit.includes('bottom')) {
-        this.y = this.height * -1;
-        if (this.DEBUG) {
-          console.log("bottom:", this.y);
-        }
-      }
-
-      // If the ufo exceeds left/right bounds, mark it for removal
-      if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
-        this.setIsDying();
-        if (this.DEBUG) {
-          console.log("l/r:", this.x);
-        }
-      }
+      this.checkMyBoundaries();
 
       // update bullets
       this.shootBullet(ship);
@@ -129,15 +106,48 @@ class UFO extends ObjectVector {
       }
     }
   }
-  bulletUpdateUFO(deltaTime) {
+  checkMyBoundaries(){
+      // get bounds sides hit
+      const boundariesHit = CollisionUtils.getCompletelyOffScreenBoundaries(this, this.margin);
+
+      // *** top/bottom ***
+      if (boundariesHit.includes('top')) {
+        this.y = CanvasUtils.getConfigHeight();
+        if (this.DEBUG) {
+          console.log("top:", this.y);
+        }
+      }
+      if (boundariesHit.includes('bottom')) {
+        this.y = -(this.height);
+        if (this.DEBUG) {
+          console.log("bottom:", this.y);
+        }
+      }
+
+      // If the ufo exceeds left/right bounds, mark it for removal
+      if (boundariesHit.includes('left') || boundariesHit.includes('right')) {
+        this.setIsDying();
+        if (this.DEBUG) {
+          console.log("l/r:", this.x);
+        }
+      }
+
+  }
+  bulletUpdateUFO(deltaTime, ship) {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const bullet = this.bullets[i];
       bullet.update(deltaTime);
 
+      if(CollisionUtils.vectorCollisionDetection(bullet, ship)){
+        console.log("UFO bullet hit ship");
+        ship.setIsDying();
+        bullet.setIsDead();
+      }
+
       if (bullet.isDead()) {  // Check if dead, don't set it
         bullet.destroy();    // Destroy the bullet
         this.bullets.splice(i, 1); // Remove from array
-        // Don't break - continue checking other bullets
+        // Continue checking other bullets
         continue;
       }
 
@@ -152,29 +162,41 @@ class UFO extends ObjectVector {
   }
   // Using switch (more readable for this case)
   changeDirections() {
+    // Don't change directions if at top or bottom
+    const withIn = 20;
+    if (this.y > CanvasUtils.getConfigHeight - this.height - withIn || this.y <= withIn) {
+      if (UFO.DEBUG) {
+        warn.log("Don't get me stuck hidden top/bottom");
+      }
+      return;
+    }
+
     this.directionCnt = 0;
     this.directionDelay = this.getDelay();
 
     const direction = RandomUtils.randomRange(0, 6, true);
 
-    if (UFO.DEBUG) {
-      console.log("UFO direction:", direction);
-    }
-
     switch (direction) {
-      case 0:  // Move diagonally down
+      case 0:
       case 1:
+        // Move diagonally down
         this.velocityY = this.velocityX;
         break;
-      case 2:  // Move horizontally
+      case 2:
       case 3:
       case 4:
+        // Move horizontally
         this.velocityY = 0;
         break;
-      case 5:  // Move diagonally up
+      case 5:
       case 6:
+        // Move diagonally up
         this.velocityY = -this.velocityX;
         break;
+    }
+
+    if (UFO.DEBUG) {
+      console.log("UFO direction:", direction);
     }
   }
 
@@ -210,16 +232,22 @@ class UFO extends ObjectVector {
   }
 
   setHit() {
-    //console.log("setHit", this.bullets);
+    if (this.DEBUG) {
+      console.log("setHit", this.bullets);
+    }
     this.setIsDying(); // until all bullets gone.
     this.bulletTimer.pause();
   }
 
   hasBullets() {
-    console.log("hasBullets", this.bullets);
+    if (this.DEBUG) {
+      console.log("hasBullets", this.bullets);
+    }
     if (this.bullets.length > 0) {
       return;
     }
+
+    // no more bullets, UFO is dead
     this.setIsDead();
   }
 

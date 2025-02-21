@@ -1,5 +1,10 @@
 class GeometryUtils {
 
+    static getDistanceObjects(objectA, objectB){
+        const pointA = {x: objectA.x, y: objectA.y};
+        const pointB = {x: objectB.x, y: objectB.y};
+        return this.getDistance(pointA, pointB);
+    }
     // Distance between two points
     static getDistance(startPoint, endPoint, debug = false) {
         const dx = endPoint.x - startPoint.x;
