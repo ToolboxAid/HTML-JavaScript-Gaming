@@ -119,7 +119,8 @@ class Game extends GameBase {
     this.gamePauseCheck();
 
     this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
-    this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
+    //TODO: fix score
+    //this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
 
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();

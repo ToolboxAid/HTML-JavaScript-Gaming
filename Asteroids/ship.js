@@ -4,13 +4,13 @@
 // ship.js
 
 import { canvasConfig } from './global.js';
-import ObjectVector from '../scripts/objectVector.js';
-import CanvasUtils from '../scripts/canvas.js';
 import AngleUtils from '../scripts/math/angleUtils.js';
+import CanvasUtils from '../scripts/canvas.js';
+import ObjectVector from '../scripts/objectVector.js';
+
 import AsteroidManager from './asteroidManager.js';
+import BulletManager from './bulletManager.js';
 import UFOManager from './ufoManager.js';
-import Bullet from './bullet.js';
-import SystemUtils from '../scripts/utils/systemUtils.js';
 
 class Ship extends ObjectVector {
     // Play your game normally: game.html
@@ -51,8 +51,7 @@ class Ship extends ObjectVector {
         this.asteroidManager = new AsteroidManager();
 
         // bullets
-        this.bullets = [];
-        this.maxBullets = 5;
+        this.bulletManager = new BulletManager();
 
         // ufo's
         this.ufoManager = new UFOManager;
@@ -81,14 +80,14 @@ class Ship extends ObjectVector {
         this.setIsDying();
         this.setIsDead();
 
-        SystemUtils.cleanupArray(this.bullets);
-        this.bullets = null;
-        this.bullets = [];
+        this.bulletManager.reset();
+
     }
 
     update(deltaTime, keyboardInput) {
         this.updateShip(deltaTime, keyboardInput);
-        this.updateBullet(deltaTime);
+
+        this.bulletManager.update(deltaTime, this);
 
         this.ufoManager.update(deltaTime, this);
         this.asteroidManager.update(deltaTime);
@@ -143,44 +142,9 @@ class Ship extends ObjectVector {
         this.checkWrapAround();
 
         // Shoot bullets
-        if (keyboardInput.getkeysPressed().includes('Space') &&
-            this.isAlive() && 
-            this.bullets.length < this.maxBullets) {
-            this.shootBullet();
+        if (keyboardInput.getkeysPressed().includes('Space') && this.isAlive()) {
+            this.bulletManager.shootBullet(this);
         }
-    }
-
-    updateBullet(deltaTime) {
-        for (let i = this.bullets.length - 1; i >= 0; i--) {
-            const bullet = this.bullets[i];
-            bullet.update(deltaTime);
-
-            // check against SHIP
-            if (bullet.isAlive()) {
-                this.score += this.asteroidManager.checkBullet(bullet);
-
-                // check collusion with ship (hit myself, dumb ass)
-                if (bullet.collisionDetection(this)) {
-                    bullet.setIsDead();
-                    this.setShipHit();
-                    break;
-                }
-                // check collusion with UFO
-            }
-
-            // check against UFO
-            this.ufoManager.checkBullet(bullet);
-
-            if (bullet.isDead()) {
-                this.bullets.splice(i, 1); // Remove the bullet if it's "dead"
-                break;
-            }
-        }
-    }
-
-    shootBullet() {
-        const bullet = new Bullet(this.x, this.y, this.rotationAngle);  // Bullet angle is the same as the ship's rotation
-        this.bullets.push(bullet);
     }
 
     draw() {
@@ -191,7 +155,7 @@ class Ship extends ObjectVector {
 
         // Draw all game objects
         // Bullets
-        this.bullets.forEach(bullet => bullet.draw());
+        this.bulletManager.draw();
 
         // Asteroids
         this.asteroidManager.draw();
