@@ -13,7 +13,7 @@ import RandomUtils from '../scripts/math/randomUtils.js';
 import Timer from '../scripts/utils/timer.js';
 import UFO from './ufo.js';
 
-import Asteroid from './asteroid.js';
+import AsteroidManager from './asteroidManager.js';
 import Bullet from './bullet.js';
 import SystemUtils from '../scripts/utils/systemUtils.js';
 import GeometryUtils from '../scripts/math/geometryUtils.js';
@@ -54,9 +54,7 @@ class Ship extends ObjectVector {
         this.velocityX = 0;
         this.velocityY = 0;
 
-        // asteroids
-        this.asteroids = new Map();
-        this.asteroidID = 0;
+        this.asteroidManager = new AsteroidManager();
 
         // bullets
         this.bullets = [];
@@ -68,11 +66,10 @@ class Ship extends ObjectVector {
         this.ufoTimer = new Timer(1000);
         this.ufoTimer.start();
 
-        // value is used to add to score
-        this.value = 0;
+        this.score = 0;
 
         this.reset();
-        this.initAsteroids();
+
     }
 
     reset() { // called before player plays
@@ -98,54 +95,6 @@ class Ship extends ObjectVector {
         this.bullets = [];
     }
 
-    setAsteroidHit(asteroid, asteroidKey) {
-        if (asteroid.size === 'large') {
-            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
-            this.createAsteroid(asteroid.x, asteroid.y, 'medium');
-            this.setValue(100);
-        }
-        if (asteroid.size === 'medium') {
-            this.createAsteroid(asteroid.x, asteroid.y, 'small');
-            this.createAsteroid(asteroid.x, asteroid.y, 'small');
-            this.setValue(50);
-        }
-        if (asteroid.size === 'small') {
-            this.setValue(10);
-        }
-        this.asteroids.delete(asteroidKey);
-    }
-
-    setValue(value) {
-        this.value = value;
-    }
-
-    getValue() {
-        const value = this.value;
-        this.value = 0;
-        return value;
-    }
-
-    initAsteroids() {
-        const maxAsteroids = 3 + (this.level * 2);
-        let angleStep = 360 / maxAsteroids;
-        for (let i = 0; i < maxAsteroids; i++) {
-            const angle = angleStep * i;
-            const d1 = canvasConfig.width / 4;
-            const d2 = canvasConfig.width / 3;
-            const distance = RandomUtils.randomRange(d1, d2);
-            const position = AngleUtils.calculateOrbitalPosition(
-                canvasConfig.width / 2, canvasConfig.height / 2, angle, distance);
-
-            this.createAsteroid(position.x, position.y, "large");
-        }
-    }
-
-    createAsteroid(x, y, size) {
-        const key = size + "-" + this.asteroidID++;
-        const asteroid = new Asteroid(x, y, size);
-        this.asteroids.set(key, asteroid);
-    }
-
     setDeadUFO() {
         if (Ship.DEBUG) {
             console.log("setDeadUFO", this.ufo, this.ufoTimer);
@@ -161,13 +110,9 @@ class Ship extends ObjectVector {
     update(deltaTime, keyboardInput) {
         this.updateShip(deltaTime, keyboardInput);
         this.updateBullet(deltaTime);
-        this.updateAsteroid(deltaTime);
         this.updateUFO(deltaTime);
-
-        if (this.asteroids.size === 0) {
-            this.level += 1;
-            this.initAsteroids();
-        }
+        this.asteroidManager.update(deltaTime);
+        this.asteroidManager.checkShip(this);
     }
 
     updateShip(deltaTime, keyboardInput) {
@@ -215,32 +160,13 @@ class Ship extends ObjectVector {
         }
     }
 
-    updateAsteroid(deltaTime) {
-        this.asteroids.forEach((asteroid, key) => {
-            asteroid.update(deltaTime);
-            if (CollisionUtils.vectorCollisionDetection(this, asteroid)) {
-                if (Ship.DEBUG) {
-                    console.log("setShipHit", CollisionUtils.vectorCollisionDetection(this, asteroid), this, asteroid);
-                }
-
-                this.setShipHit();
-            }
-        });
-    }
-
     updateBullet(deltaTime) {
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i];
             bullet.update(deltaTime);
 
             if (bullet.isAlive()) {
-                // check collusion with asteroids
-                this.asteroids.forEach((asteroid, asteroidKey) => {
-                    if (bullet.collisionDetection(asteroid)) {
-                        bullet.setIsDead();
-                        this.setAsteroidHit(asteroid, asteroidKey);
-                    }
-                });
+                this.score += this.asteroidManager.checkBullet(bullet);
 
                 // check collusion with ship (hit myself, dumb ass)
                 if (bullet.collisionDetection(this)) {
@@ -278,15 +204,7 @@ class Ship extends ObjectVector {
                 if (Ship.DEBUG && !this.ufo) {
                     console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
                 }
-                this.asteroids.forEach((asteroid, asteroidKey) => {
-                    if (CollisionUtils.vectorCollisionDetection(this.ufo, asteroid)) {
-                        this.setAsteroidHit(asteroid, asteroidKey);
-                        this.ufo.setIsDying();
-                        if (Ship.DEBUG) {
-                            console.log("----------ufo hit asteroid");
-                        }
-                    }
-                });
+                this.asteroidManager.checkUFO(this.ufo);
             }
             if (this.ufo.isDead()) {
                 this.setDeadUFO();
@@ -295,7 +213,7 @@ class Ship extends ObjectVector {
                     console.log("this.ufo.isDead");
                 }
             }
-        } else if ( !this.isDying() && this.ufoTimer.isComplete() && !this.ufoTimer.isPaused) {
+        } else if (!this.isDying() && this.ufoTimer.isComplete() && !this.ufoTimer.isPaused) {
             // Create a new UFO
             this.ufoTimer.pause();
             this.ufo = new UFO();
@@ -305,15 +223,7 @@ class Ship extends ObjectVector {
         }
 
         if (!this.ufo && this.isDying()) {
-            let safeSpawn = true;
-            this.asteroids.forEach((asteroid, key) => {
-                console.log(GeometryUtils.getDistanceObjects(this,asteroid));
-                if (GeometryUtils.getDistanceObjects(this,asteroid) < 200) {
-                    safeSpawn = false;
-                }
-            });
-
-            if (safeSpawn) {
+            if (this.asteroidManager.safeSpawn(this)) {
                 this.setShipHit();
             }
         }
@@ -336,7 +246,7 @@ class Ship extends ObjectVector {
         this.bullets.forEach(bullet => bullet.draw());
 
         // Asteroids
-        this.asteroids.forEach(asteroid => asteroid.draw());
+        this.asteroidManager.draw();
 
         // UFO
         if (this.ufo) {

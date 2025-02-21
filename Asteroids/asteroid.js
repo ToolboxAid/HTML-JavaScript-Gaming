@@ -120,8 +120,7 @@ class Asteroid extends ObjectVector {
     }
   }
 
-  /** 
-   * Destroys the asteroid and cleans up resources.
+  /** Destroys the asteroid and cleans up resources.
    * @returns {boolean} True if cleanup was successful
    */
   destroy() {

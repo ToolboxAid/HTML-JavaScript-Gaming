@@ -53,9 +53,9 @@ export default class CollisionUtils {
 
     static vectorCollisionDetection(objectA, objectB) {
         if (!objectA || !objectB || !objectA.vectorMap || !objectB.vectorMap || !objectA.rotatedPoints || !objectB.rotatedPoints) {
-            console.warn("objectA:", objectA, "\nobjectB:", objectB);
+            console.warn("\nobjectA:", objectA, "\nobjectB:", objectB);
             if (this.DEBUG) {
-                console.error("Invalid objects passed to vectorCollisionDetection", objectA, objectB);
+                console.error("Invalid objects passed to vectorCollisionDetection", objectA, objectB, SystemUtils.showStackTrace());
             }
             return false;
         }
