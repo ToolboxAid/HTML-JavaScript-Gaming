@@ -90,16 +90,22 @@ class AsteroidManager {
     }
 
     checkUFO(ufo) {
-        this.asteroids.forEach((asteroid, asteroidKey) => {
-            if (CollisionUtils.vectorCollisionDetection(ufo, asteroid)) {
-                this.setAsteroidHit(asteroid, asteroidKey);
-                ufo.setIsDying();
-
-                if (AsteroidManager.DEBUG) {
-                    console.log("UFO hit asteroid");
-                }
+        if (this.ufo && this.ufo.isAlive()) {
+            if (AsteroidManager.DEBUG) {
+                console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
             }
-        });
+
+            this.asteroids.forEach((asteroid, asteroidKey) => {
+                if (CollisionUtils.vectorCollisionDetection(ufo, asteroid)) {
+                    this.setAsteroidHit(asteroid, asteroidKey);
+                    ufo.setIsDying();
+
+                    if (AsteroidManager.DEBUG) {
+                        console.log("UFO hit asteroid");
+                    }
+                }
+            });
+        }
     }
 
     checkBullet(bullet) {

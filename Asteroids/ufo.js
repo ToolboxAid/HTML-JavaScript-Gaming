@@ -93,8 +93,6 @@ class UFO extends ObjectVector {
 
       // update bullets
       this.shootBullet(ship);
-
-
     } else {
       if (this.isDying()) {
 
@@ -212,7 +210,7 @@ class UFO extends ObjectVector {
     if (this.bulletTimer.isComplete()) {
       // Bullet angle is the same as the ship's rotation
       if (this.isSmall) {
-        // sho0t at ship
+        // shoot at ship
         const rotationAngle = AngleUtils.getAngleBetweenObjects(this, ship);
         const bullet = new Bullet(this.x, this.y, rotationAngle);
         this.bullets.push(bullet);

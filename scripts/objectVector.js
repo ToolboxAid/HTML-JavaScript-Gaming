@@ -160,6 +160,7 @@ class ObjectVector extends ObjectKillable {
     }
 
     draw(lineWidth = 1.25, offsetX = 0, offsetY = 0) {
+        if (!this.isAlive()) return;
         try {
             // Begin drawing
             CanvasUtils.ctx.beginPath();
