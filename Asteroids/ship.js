@@ -267,6 +267,7 @@ class Ship extends ObjectVector {
         if (this.ufo) {
             if (this.ufo.isAlive()) {
                 this.ufo.update(deltaTime);
+// TODO: need bullet timer
                 if (Ship.DEBUG && !this.ufo) {
                     console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
                 }

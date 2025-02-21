@@ -138,16 +138,16 @@ Now the UFO, most challenging:
 ------------------------------------------------------------
 
  UFO Mechanics:
-[ ] Random UFO appearance  
+[x] Random UFO appearance  
   UFOs should randomly spawn at the edges of the screen at set intervals or after certain milestones (e.g., a specific score threshold or destroyed asteroid count).
 
-[ ] Two types of UFOs  
+[x] Two types of UFOs  
   Include large UFOs (less accurate, more points) and small UFOs (more accurate, fewer points).
 
-[ ] UFO movement across the screen  
+[x] UFO movement across the screen  
   UFOs should move horizontally across the screen (left-to-right or right-to-left) and can slightly adjust their vertical position over time.
 
-[ ] UFOs wrap around the screen  
+[x] UFOs wrap around the screen  
   If a UFO goes off one edge, it should reappear on the opposite edge (similar to the ship).
 
 ------------------------------------------------------------
@@ -162,7 +162,7 @@ Now the UFO, most challenging:
 [ ] Bullets fire randomly (large UFO)  
   Large UFOs fire bullets in random directions, making them less accurate.
 
-[ ] Bullet lifespan  
+[x] Bullet lifespan  
   UFO bullets should have a limited range or lifespan, disappearing after traveling a certain distance.
 
 ------------------------------------------------------------

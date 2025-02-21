@@ -107,14 +107,31 @@ class UFO extends ObjectVector {
     }
   }
 
+  // Using switch (more readable for this case)
   changeDirections() {
     this.directionCnt = 0;
-    this.getDelay();
+    this.directionDelay = this.getDelay();
 
-    if (this.velocityX) {
-      this.velocityY = this.velocityX;
-    } else {
-      this.velocityY = this.velocityX;
+    const direction = RandomUtils.randomRange(0, 6, true);
+
+    if (UFO.DEBUG) {
+      console.log("UFO direction:", direction);
+    }
+
+    switch (direction) {
+      case 0:  // Move diagonally down
+      case 1:
+        this.velocityY = this.velocityX;
+        break;
+      case 2:  // Move horizontally
+      case 3:
+      case 4:
+        this.velocityY = 0;
+        break;
+      case 5:  // Move diagonally up
+      case 6:
+        this.velocityY = -this.velocityX;
+        break;
     }
   }
 
