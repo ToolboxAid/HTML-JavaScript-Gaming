@@ -67,7 +67,7 @@ class Game extends GameBase {
       case "flashScore":
         this.flashScore(deltaTime);
         break;
-        
+
       case "safeSpawn":
         this.safeSpawn(deltaTime);
         break;
@@ -114,14 +114,119 @@ class Game extends GameBase {
     this.score = [0, 0, 0, 0]; // Reset score
     this.currentPlayer = 0;
 
-    //this.gameState = "playGame";
+
+    this.drawLivesScores();
+
     this.gameState = "flashScore";
   }
 
-  flashScore(){
-    this.gameState = "safeSpawn";
+  static FLASH_INTERVAL = 200; // Flash every 250ms
+  static FLASH_DURATION = 3000; // Total flash duration in ms
+  static SCORE_POSITIONS = {
+    LIVES: { x: 200, y: 30 },
+    SCORE: { x: 200, y: 70 }
+  };
+
+  drawShipLives(offsetX, offsetY, vectorMap, lineWidth = 1.25) {
+    try {
+      // Begin drawing
+      CanvasUtils.ctx.beginPath();
+      CanvasUtils.ctx.strokeStyle = "white";
+      CanvasUtils.ctx.lineWidth = lineWidth;
+
+      // Draw using the pre-calculated rotated points
+      vectorMap.forEach(([rx, ry], index) => {
+        if (index === 0) {
+          CanvasUtils.ctx.moveTo(rx + offsetX, ry + offsetY);
+        } else {
+          CanvasUtils.ctx.lineTo(rx + offsetX, ry + offsetY);
+        }
+      });
+
+      // Finish shape
+      CanvasUtils.ctx.closePath();
+      CanvasUtils.ctx.stroke();
+
+    } catch (error) {
+      console.error("Error occurred while drawing:", error.message);
+      console.log("Object state:", this);
+    }
   }
 
+  drawLivesScores() {
+    const { LIVES, SCORE } = Game.SCORE_POSITIONS;
+    const ctx = CanvasUtils.ctx;
+
+    // Configure text settings
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'left';
+
+    // During flash state, only current player's score flashes
+    for (let player = 0; player < this.playerCount; player++) {
+      ctx.font = '20px "Vector Battle"';
+
+      // Skip drawing current player's score if flashing and flashOff is true
+      if (player === this.currentPlayer && this.flashOff) {
+        continue;
+      }
+
+      // Draw lives and score for each player
+      const xOffset = player * 460; // Space between player scores
+      ctx.fillText(
+        `${this.score[player]}`,
+        SCORE.x + xOffset,
+        SCORE.y
+      );
+
+      // Draw ship icons for remaining lives
+      const SHIP_SPACING = 20; // Space between each ship icon
+      for (let life = 0; life < this.playerLives[player]; life++) {
+        const xOffset2 = life * SHIP_SPACING;
+        this.drawShipLives(
+          LIVES.x + xOffset + xOffset2,
+          LIVES.y,
+          Ship.VECTOR_MAPS.LIVES
+        );
+      }
+      if (Game.DEBUG) {
+        console.log(`Drawing P${player + 1}:`, {
+          lives: this.playerLives[player],
+          score: this.score[player],
+          isCurrentPlayer: player === this.currentPlayer,
+          flashOff: this.flashOff
+        });
+      }
+    }
+
+    ctx.font = '15px "Vector Battle"';
+
+    const highScore = 1000;
+    ctx.fillText(
+      `${highScore}`,
+      SCORE.x + 200,
+      SCORE.y
+    );
+  }
+
+  flashScore() {
+    if (!this.flashStartTime) {
+      this.flashStartTime = Date.now();
+      this.flashOff = false;
+      console.log('Flash Started:', { startTime: this.flashStartTime });
+    }
+
+    const elapsedTime = Date.now() - this.flashStartTime;
+    this.flashOff = Math.floor(elapsedTime / Game.FLASH_INTERVAL) % 2 === 0;
+
+    this.drawLivesScores();
+
+    if (elapsedTime >= Game.FLASH_DURATION) {
+      console.log('Flash Complete');
+      this.flashStartTime = null;
+      this.flashOff = false; // Ensure text is visible when moving to safeSpawn
+      this.gameState = "safeSpawn";
+    }
+  }
 
   safeSpawn(deltaTime) {
     const safe = this.ships[this.currentPlayer].safeSpawn(deltaTime);
@@ -133,12 +238,6 @@ class Game extends GameBase {
     this.drawLivesScores();
 
     console.log("============================safeSpawn");
-  }
-
-  drawLivesScores() {
-    // Display scores and lives
-    CanvasUtils.drawText(20, 220, `Lives: ${this.playerLives}`, 2, "white");
-    CanvasUtils.drawText(20, 250, `Score: ${this.score}`, 2, "white");
   }
 
   playGame(deltaTime) {

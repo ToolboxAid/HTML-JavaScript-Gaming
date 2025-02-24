@@ -21,7 +21,8 @@ class Ship extends ObjectVector {
     static VECTOR_MAPS = {
         LARGE:  [[24, 0], [-24, -18], [-18, 0], [-24, 18]],
         MEDIUM: [[18, 0], [-18, -14], [-13, 0], [-18, 14]],
-        SMALL:  [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]]
+        SMALL:  [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]],
+        LIVES:  [[0, -14], [-8, 10], [-3, 6], [3, 6], [8, 10], [0, -14]],
     };
 
     // Debug mode enabled via URL parameter: game.html?ship

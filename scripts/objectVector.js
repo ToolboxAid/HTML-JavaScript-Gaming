@@ -10,7 +10,6 @@ import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import SystemUtils from './utils/systemUtils.js';
 
 class ObjectVector extends ObjectKillable {
-    // Play your game normally: game.html
     // Enable debug mode: game.html?objectVector
     static DEBUG = new URLSearchParams(window.location.search).has('objectVector');
 

@@ -22,3 +22,9 @@ canvas {
     background-color: #888888;
     cursor: none; /* Hide the cursor */
 }
+
+/**  Add @font-face to your CSS first */
+@font-face {
+    font-family: 'Vector Battle';
+    src: url('./fonts/vector_battle.ttf') format('truetype');
+}
