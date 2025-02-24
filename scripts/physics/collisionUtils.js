@@ -11,8 +11,17 @@ export default class CollisionUtils {
     // Enable debug mode: game.html?collisionUtils
     static DEBUG = new URLSearchParams(window.location.search).has('collisionUtils');
 
+    /** Constructor for CollisionUtils class.
+    * @throws {Error} Always throws error as this is a utility class with only static methods.
+    * @example
+    * ❌ Don't do this:
+    * const collisionUtils = new CollisionUtils(); // Throws Error
+    * 
+    * ✅ Do this:
+    * CollisionUtils.transformPoints(...); // Use static methods directly
+    */
     constructor() {
-        throw new Error("'CollisionUtils' has only static methods.");
+        throw new Error('CollisionUtils is a utility class with only static methods. Do not instantiate.');
     }
 
     static transformPoints(vectorMap, x, y, rotationAngle) {
@@ -276,18 +285,18 @@ export default class CollisionUtils {
  * @param {number} [margin=0] - Additional margin around the boundaries
  * @returns {boolean} True if object is completely outside game boundaries
  */
-static isCompletelyOffScreen(object, margin = 0) {
-    // Calculate half dimensions
-    const halfWidth = (object.boundWidth ?? object.width) / 2;
-    const halfHeight = (object.boundHeight ?? object.height) / 2;
+    static isCompletelyOffScreen(object, margin = 0) {
+        // Calculate half dimensions
+        const halfWidth = (object.boundWidth ?? object.width) / 2;
+        const halfHeight = (object.boundHeight ?? object.height) / 2;
 
-    return (
-        object.velocityX < 0 && object.x + halfWidth + margin <= 0 ||              // Off left edge
-        object.velocityX >= 0 && object.x - halfWidth - margin >= CanvasUtils.getConfigWidth() ||  // Off right edge
-        object.velocityY < 0 && object.y + halfHeight + margin <= 0 ||             // Off top edge
-        object.velocityY >= 0 && object.y - halfHeight - margin >= CanvasUtils.getConfigHeight()   // Off bottom edge
-    );
-}
+        return (
+            object.velocityX < 0 && object.x + halfWidth + margin <= 0 ||              // Off left edge
+            object.velocityX >= 0 && object.x - halfWidth - margin >= CanvasUtils.getConfigWidth() ||  // Off right edge
+            object.velocityY < 0 && object.y + halfHeight + margin <= 0 ||             // Off top edge
+            object.velocityY >= 0 && object.y - halfHeight - margin >= CanvasUtils.getConfigHeight()   // Off bottom edge
+        );
+    }
     /** Checks which sides of the game boundaries an object has crossed based on its velocity
      * @param {Object} object - The object to check
      * @param {number} [margin=0] - Additional margin around the boundaries (positive shrinks play area)
@@ -299,19 +308,19 @@ static isCompletelyOffScreen(object, margin = 0) {
         if (!object || typeof object.x !== 'number' || typeof object.y !== 'number') {
             throw new Error('Invalid object: missing or invalid position properties');
         }
-    
+
         // Early return if object is not off screen
         if (!this.isCompletelyOffScreen(object, margin)) {
             return [];
         }
-    
+
         // Calculate half dimensions
         const halfWidth = (object.boundWidth ?? object.width) / 2;
         const halfHeight = (object.boundHeight ?? object.height) / 2;
-    
+
         // Document the sides
         const boundariesCrossed = [];
-    
+
         // Check left boundary crossing (moving left)
         if (object.velocityX < 0 && object.x + halfWidth + margin <= 0) {
             boundariesCrossed.push('left');
@@ -328,7 +337,7 @@ static isCompletelyOffScreen(object, margin = 0) {
         if (object.velocityY >= 0 && object.y - halfHeight - margin >= CanvasUtils.getConfigHeight()) {
             boundariesCrossed.push('bottom');
         }
-    
+
         if (this.DEBUG && boundariesCrossed.includes('right')) {
             console.log("Boundaries crossed:", {
                 boundaries: boundariesCrossed,
@@ -345,7 +354,7 @@ static isCompletelyOffScreen(object, margin = 0) {
                 }
             });
         }
-    
+
         return boundariesCrossed;
     }
     static checkGameAtBounds(object, margin = 0) {

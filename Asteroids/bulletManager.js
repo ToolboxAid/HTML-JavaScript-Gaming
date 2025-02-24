@@ -1,48 +1,54 @@
 // ToolboxAid.com 
 // David Quesenberry
 // asteroids
-// 11/20/2024
+// 01/20/2025
 // bulletManager.js
 
+import AngleUtils from "../scripts/math/angleUtils.js";
 import Bullet from "./bullet.js";
+import RandomUtils from "../scripts/math/randomUtils.js";
 import SystemUtils from "../scripts/utils/systemUtils.js";
 
+/**
+ * Manages bullet creation, updates, and cleanup for ship and UFO
+ */
 class BulletManager {
+  // Constants
+  static SHIP_MAX_BULLETS = 5;
 
-  // Play your game normally: game.html
-  // Enable debug mode: game.html?bullet
+  // Debug mode enabled via URL parameter: game.html?bulletManager
   static DEBUG = new URLSearchParams(window.location.search).has('bulletManager');
 
-
   constructor() {
-    // bullets
     this.bullets = [];
-    this.maxBullets = 5;
+    this.shipMaxBullets = BulletManager.SHIP_MAX_BULLETS;
   }
 
   update(deltaTime, ship) {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const bullet = this.bullets[i];
+
       bullet.update(deltaTime);
 
-      // check against SHIP
-      if (bullet.isAlive()) {
-//TODO        this.score += this.asteroidManager.checkBullet(bullet);
-
-        // check collusion with ship (hit myself, dumb ass)
-        if (bullet.collisionDetection(ship)) {
-          bullet.setIsDead();
-//TODO          this.setShipHit();
-          break;
-        }
-        // check collusion with UFO
-      }
-
-      // check against UFO
-//TODO      this.ufoManager.checkBullet(bullet);
-
       if (bullet.isDead()) {
-        this.bullets.splice(i, 1); // Remove the bullet if it's "dead"
+        bullet.destroy();
+        this.bullets.splice(i, 1);
+      }
+    }
+  }
+
+  check(ship) {
+    if (!ship.isAlive()) return;
+
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+      const bullet = this.bullets[i];
+
+      if (!bullet.isAlive()) continue;
+
+      if (bullet.collisionDetection(ship)) {
+        bullet.setIsDead();
+        bullet.destroy();
+        ship.setIsDying();
         break;
       }
     }
@@ -52,44 +58,77 @@ class BulletManager {
     this.bullets.forEach(bullet => bullet.draw());
   }
 
-  shootBullet(ship) {
-    if (this.bullets.length < this.maxBullets) {
-      // Bullet angle is the same as the ship's rotation
-      const bullet = new Bullet(ship.x, ship.y, ship.rotationAngle);
-      this.bullets.push(bullet);
+  shipShootBullet(ship) {
+    if (!this.canShipShoot()) return;
+
+    const bullet = new Bullet(ship.x, ship.y, ship.rotationAngle);
+    this.bullets.push(bullet);
+
+    if (BulletManager.DEBUG) {
+      console.log("Ship bullet fired:", {
+        angle: ship.rotationAngle,
+        total: this.bullets.length
+      });
     }
   }
 
-  reset() {
-    SystemUtils.cleanupArray(this.bullets);
-    this.bullets = null;
-    this.bullets = [];
+  canShipShoot() {
+    return this.bullets.length < this.shipMaxBullets;
   }
 
-  /** Destroys the bullet and cleans up resources.
-  * @returns {boolean} True if cleanup was successful
-  */
+  ufoShootBullet(ufo, ship) {
+    if (!ufo.isAlive()) return;
+
+    const rotationAngle = this.getBulletAngle(ufo, ship);
+    const bullet = new Bullet(ufo.x, ufo.y, rotationAngle);
+    this.bullets.push(bullet);
+
+    if (BulletManager.DEBUG) {
+      console.log("UFO bullet fired:", {
+        angle: rotationAngle,
+        total: this.bullets.length
+      });
+    }
+  }
+
+  getBulletAngle(ufo, ship) {
+    if (ufo.isSmall && ship.isAlive()) {
+      return AngleUtils.getAngleBetweenObjects(ufo, ship);
+    }
+    return RandomUtils.randomRange(0, 360, true);
+  }
+
+  hasActiveBullets() {
+    return this.bullets.length > 0;
+  }
+
+  getBulletCount() {
+    return this.bullets.length;
+  }
+
+  /** Destroys bullets array and cleans up resources
+   * @returns {boolean} True if cleanup was successful
+   */
   destroy() {
     try {
-      if (Bullet.DEBUG) {
-        console.log(`bullet destroy ${JSON.stringify(this)}`);
+      if (BulletManager.DEBUG) {
+        console.log("BulletManager destroy:", {
+          bulletCount: this.bullets.length
+        });
       }
 
-      // Call parent destroy first
-      const parentDestroyed = super.destroy();
-      if (!parentDestroyed) {
-        return false;
-      }
+      SystemUtils.cleanupArray(this.bullets);
+      this.bullets = [];
+      this.bullets = null;
+      this.shipMaxBullets = null;
 
-
-      return true; // Successful cleanup
+      return true;
 
     } catch (error) {
-      console.error('Error during Bullet destruction:', error);
+      console.error('Error during BulletManager destruction:', error);
       return false;
     }
   }
-
 }
 
 export default BulletManager;

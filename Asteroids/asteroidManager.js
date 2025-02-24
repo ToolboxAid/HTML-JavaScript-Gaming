@@ -74,7 +74,7 @@ class AsteroidManager {
                 isSafe = false;
             }
         });
-
+        console.log("#########################isSafe:", isSafe);
         return isSafe;
     }
 
@@ -84,7 +84,7 @@ class AsteroidManager {
                 if (AsteroidManager.DEBUG) {
                     console.log("Ship hit:", { ship, asteroid });
                 }
-                ship.setShipHit();
+                ship.setIsDying();
             }
         });
     }

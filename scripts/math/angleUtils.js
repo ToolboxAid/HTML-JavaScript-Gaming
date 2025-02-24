@@ -1,4 +1,3 @@
-
 // ToolboxAid.com
 // David Quesenberry
 // 02/12/2025
@@ -8,6 +7,19 @@ class AngleUtils {
 
     static DEG_TO_RAD = Math.PI / 180;
     static RAD_TO_DEG = 180 / Math.PI;
+
+    /** Constructor for AngleUtils class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const angleUtils = new AngleUtils(); // Throws Error
+     * 
+     * ✅ Do this:
+     * AngleUtils.toDegrees(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('AngleUtils is a utility class with only static methods. Do not instantiate.');
+    }
 
     static toDegrees(radians) {
         return radians * this.RAD_TO_DEG;
@@ -62,10 +74,10 @@ class AngleUtils {
         // Calculate direction vector
         const dx = target.x - source.x;
         const dy = target.y - source.y;
-        
+
         // Calculate angle in radians using atan2
         const angleRadians = Math.atan2(dy, dx);
-        
+
         // Convert to degrees and normalize to 0-360
         return this.normalizeAngle(angleRadians * this.RAD_TO_DEG);
     }
@@ -85,7 +97,7 @@ class AngleUtils {
             y: centerY + radius * Math.sin(radians)
         };
     }
-    
+
 }
 
 export default AngleUtils;

@@ -13,7 +13,7 @@ class Bullet extends ObjectVector {
   static DEBUG = new URLSearchParams(window.location.search).has('bullet');
 
   // Define a simple vector map for a bullet, typically a small line or dot
-  static getVectorMap() { return [[-2, 0], [2, 0.5], [2, -0.5]] };
+  static getVectorMap() { return [[-4, 0], [4, 1], [4, -1]] };
   static speed = 350;
   static lifespan = 1.75; // Time in seconds before the bullet disappears
 

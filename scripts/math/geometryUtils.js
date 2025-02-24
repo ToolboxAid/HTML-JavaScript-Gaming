@@ -1,8 +1,26 @@
+// ToolboxAid.com
+// David Quesenberry
+// 02/12/2025
+// angleUtils.js
+
 class GeometryUtils {
 
-    static getDistanceObjects(objectA, objectB){
-        const pointA = {x: objectA.x, y: objectA.y};
-        const pointB = {x: objectB.x, y: objectB.y};
+    /** Constructor for GeometryUtils class.
+    * @throws {Error} Always throws error as this is a utility class with only static methods.
+    * @example
+    * ❌ Don't do this:
+    * const geometryUtils = new GeometryUtils(); // Throws Error
+    * 
+    * ✅ Do this:
+    * GeometryUtils.getDistanceObjects(...); // Use static methods directly
+    */
+    constructor() {
+        throw new Error('GeometryUtils is a utility class with only static methods. Do not instantiate.');
+    }
+
+    static getDistanceObjects(objectA, objectB) {
+        const pointA = { x: objectA.x, y: objectA.y };
+        const pointB = { x: objectB.x, y: objectB.y };
         return this.getDistance(pointA, pointB);
     }
     // Distance between two points

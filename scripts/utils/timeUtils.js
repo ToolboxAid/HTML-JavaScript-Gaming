@@ -5,6 +5,18 @@
 
 class TimeUtils {
 
+    /** Constructor for TimeUtils class.
+    * @throws {Error} Always throws error as this is a utility class with only static methods.
+    * @example
+    * ❌ Don't do this:
+    * const timeUtils = new TimeUtils(); // Throws Error
+    * 
+    * ✅ Do this:
+    * TimeUtils.delay(...); // Use static methods directly
+    */
+    constructor() {
+        throw new Error('TimeUtils is a utility class with only static methods. Do not instantiate.');
+    }
 
     /** time */
     /**

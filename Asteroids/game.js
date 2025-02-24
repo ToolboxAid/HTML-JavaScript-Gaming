@@ -42,7 +42,7 @@ class Game extends GameBase {
 
   gameLoop(deltaTime) {
 
-    console.log(this.gameState);
+    console.log(`this.gameState: '${this.gameState}'`);
 
     this.keyboardInput.update();
 
@@ -62,6 +62,14 @@ class Game extends GameBase {
 
       case "initGame":
         this.initGame();
+        break;
+
+      case "flashScore":
+        this.flashScore(deltaTime);
+        break;
+        
+      case "safeSpawn":
+        this.safeSpawn(deltaTime);
         break;
 
       case "playGame":
@@ -106,7 +114,25 @@ class Game extends GameBase {
     this.score = [0, 0, 0, 0]; // Reset score
     this.currentPlayer = 0;
 
-    this.gameState = "playGame";
+    //this.gameState = "playGame";
+    this.gameState = "flashScore";
+  }
+
+  flashScore(){
+    this.gameState = "safeSpawn";
+  }
+
+
+  safeSpawn(deltaTime) {
+    const safe = this.ships[this.currentPlayer].safeSpawn(deltaTime);
+    if (safe) {
+      this.gameState = "playGame";
+    }
+    this.ships[this.currentPlayer].safeDraw();
+
+    this.drawLivesScores();
+
+    console.log("============================safeSpawn");
   }
 
   drawLivesScores() {
@@ -124,13 +150,17 @@ class Game extends GameBase {
 
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
+      console.log("----------pre", this.gameState);
       const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
         this.playerCount,
         (newState) => { this.gameState = newState; }
       );
-
+      if (this.gameState === "playGame") {
+        this.gameState = "flashScore";
+      }
+      console.log("----------post", this.gameState, result);
       // Update the current player and 
       // lives based on the result from swapPlayer
       this.currentPlayer = result.updatedPlayer;

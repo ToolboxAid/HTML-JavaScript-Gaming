@@ -3,8 +3,22 @@
 // 02/12/2025
 // gameUtils.js
 
-class GameUtils{
-    /**  Player information
+class GameUtils {
+
+    /** Constructor for GameUtils class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const gameUtils = new GameUtils(); // Throws Error
+     * 
+     * ✅ Do this:
+     * GameUtils.selectNumberOfPlayers(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('GameUtils is a utility class with only static methods. Do not instantiate.');
+    }
+
+    /**  Player select information
     */
     static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput, gameControllers) {
         ctx.fillStyle = canvasConfig.backgroundColor + 'AA'; // Semi-transparent
@@ -36,12 +50,12 @@ class GameUtils{
         }
 
         // ---------------------
-        if (gameControllers){ // GameController Input
-        ctx.fillText('GameController Select Player(s)', x, y + 150);
-        ctx.fillText('`Left Bumper` 1 player', (canvasConfig.width / 2) - 200, y + 200);
-        ctx.fillText('`Right Bumper` 2 players', (canvasConfig.width / 2) - 200, y + 250);
+        if (gameControllers) { // GameController Input
+            ctx.fillText('GameController Select Player(s)', x, y + 150);
+            ctx.fillText('`Left Bumper` 1 player', (canvasConfig.width / 2) - 200, y + 200);
+            ctx.fillText('`Right Bumper` 2 players', (canvasConfig.width / 2) - 200, y + 250);
         }
-        
+
         if (gameControllers) {
             console.warn('GameController currently supports 2 players');
             if (gameControllers.isButtonIndexDown(0, 4)) {
@@ -65,11 +79,11 @@ class GameUtils{
         // Decrease the current player's life
         playerLives[currentPlayer] -= 1;
         console.log(`Player ${currentPlayer + 1} lost a life!`);
-    
+
         // Check if the current player is out of lives
         if (playerLives[currentPlayer] <= 0) {
             console.log(`Player ${currentPlayer + 1} is out of lives.`);
-    
+
             // Check if all players are out of lives
             const allOut = playerLives.every(lives => lives <= 0);
             if (allOut) {
@@ -78,17 +92,17 @@ class GameUtils{
                 return { updatedPlayer: 0, updatedLives: playerLives }; // Return undefined for player
             }
         }
-    
+
         // Find the next player with lives left
         let nextPlayer = currentPlayer;
         do {
             nextPlayer = (nextPlayer + 1) % playerCount; // Cycle to the next player
         } while (playerLives[nextPlayer] <= 0 && nextPlayer !== currentPlayer); // Ensure not stuck in infinite loop
-    
+
         // Set the next player as the current player
         console.log(`Swapping to Player ${nextPlayer + 1}.`);
         return { updatedPlayer: nextPlayer, updatedLives: playerLives };
-    }    
+    }
 
 }
 

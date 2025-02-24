@@ -8,8 +8,17 @@ export default class PhysicsUtils {
     // Enable debug mode: game.html?physicsUtils
     static DEBUG = new URLSearchParams(window.location.search).has('physicsUtils');
 
+    /** Constructor for PhysicsUtils class.
+    * @throws {Error} Always throws error as this is a utility class with only static methods.
+    * @example
+    * ❌ Don't do this:
+    * const physicsUtils = new PhysicsUtils(); // Throws Error
+    * 
+    * ✅ Do this:
+    * PhysicsUtils.applyGravity(...); // Use static methods directly
+    */
     constructor() {
-        throw new Error("'PhysicsUtils' has only static methods.");
+        throw new Error('PhysicsUtils is a utility class with only static methods. Do not instantiate.');
     }
 
     // Apply gravity to the object (e.g., spaceship) using the PhysicsUtils class

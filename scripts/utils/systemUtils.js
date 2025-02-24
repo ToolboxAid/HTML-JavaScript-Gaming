@@ -7,6 +7,19 @@ class SystemUtils {
     // Play your game normally: game.html
     // Enable debug mode: game.html?systemUtils
     static DEBUG = new URLSearchParams(window.location.search).has('systemUtils');
+    
+    /** Constructor for SystemUtils class.
+    * @throws {Error} Always throws error as this is a utility class with only static methods.
+    * @example
+    * ❌ Don't do this:
+    * const systemUtils = new SystemUtils(); // Throws Error
+    * 
+    * ✅ Do this:
+    * SystemUtils.toCamelCase(...); // Use static methods directly
+    */
+    constructor() {
+        throw new Error('SystemUtils is a utility class with only static methods. Do not instantiate.');
+    }
 
     /** Misc */
     static toCamelCase(...args) {
