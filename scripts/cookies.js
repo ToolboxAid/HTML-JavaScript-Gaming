@@ -17,6 +17,22 @@ const currentDir = window.location.pathname.substring(0, window.location.pathnam
  */
 class Cookies {
 
+    // Enable debug mode: game.html?cookies
+    static DEBUG = new URLSearchParams(window.location.search).has('cookies');
+
+    /** Constructor for Cookies class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const cookies = new Cookies(); // Throws Error
+     * 
+     * ✅ Do this:
+     * Cookies.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('Cookies is a utility class with only static methods. Do not instantiate.');
+    }
+
     /**
      * Set a cookie with a specified name, value, and optional settings.
      * @param {string} name - The name of the cookie.

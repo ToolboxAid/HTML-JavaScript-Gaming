@@ -7,7 +7,6 @@ import CanvasUtils from "../../scripts/canvas.js";
 import SystemUtils from "../utils/systemUtils.js";
 
 export default class CollisionUtils {
-    // Play your game normally: game.html
     // Enable debug mode: game.html?collisionUtils
     static DEBUG = new URLSearchParams(window.location.search).has('collisionUtils');
 

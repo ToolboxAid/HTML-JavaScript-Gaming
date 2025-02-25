@@ -9,6 +9,22 @@ import palettesList from "./palettesList.js";
 
 class Palettes {
 
+    // Enable debug mode: game.html?palettes
+    static DEBUG = new URLSearchParams(window.location.search).has('palettes');
+
+    /** Constructor for Palettes class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const palettes = new Palettes(); // Throws Error
+     * 
+     * ✅ Do this:
+     * Palettes.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('Palettes is a utility class with only static methods. Do not instantiate.');
+    }
+
     // --------------------------------------------------------
     // Palette methods
     // --------------------------------------------------------
@@ -68,7 +84,7 @@ class Palettes {
     }
 
     // Get random color
-    static getRandomColor(){
+    static getRandomColor() {
         const randomColor = Colors.getRandomColor();
         let randomResult = { symbol: 'Ø', hex: randomColor, name: 'Transparent' };
         return randomResult;

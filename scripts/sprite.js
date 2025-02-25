@@ -7,8 +7,23 @@ import Palettes from './palettes.js';
 import SystemUtils from './utils/systemUtils.js';
 import Font5x6 from './font5x6.js';
 
-
 class Sprite {
+
+    // Enable debug mode: game.html?sprite
+    static DEBUG = new URLSearchParams(window.location.search).has('sprite');
+
+    /** Constructor for Sprite class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const sprite = new Sprite(); // Throws Error
+     * 
+     * ✅ Do this:
+     * Sprite.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('Sprite is a utility class with only static methods. Do not instantiate.');
+    }
 
     /**
      *  Sprite methods
@@ -213,7 +228,7 @@ class Sprite {
         } else {
             //if (layerData && Array.isArray(layerData) && Array.isArray(layerData[0]) && pixelSize >= 1) {
             if (layerData
-                && SystemUtils.getObjectType(layerData) === 'Array' 
+                && SystemUtils.getObjectType(layerData) === 'Array'
                 && SystemUtils.getObjectType(layerData[0]) === 'Array'
                 && pixelSize >= 1) {
                 let rowCount = layerData.length;

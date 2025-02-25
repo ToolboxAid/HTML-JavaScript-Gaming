@@ -4,6 +4,22 @@
 // font5x6.js
 
 class Font5x6 {
+    // Enable debug mode: game.html?canvasUtils
+    static DEBUG = new URLSearchParams(window.location.search).has('canvasUtils');
+
+    /** Constructor for CollisionUtils class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const collisionUtils = new CollisionUtils(); // Throws Error
+     * 
+     * ✅ Do this:
+     * CollisionUtils.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('CollisionUtils is a utility class with only static methods. Do not instantiate.');
+    }
+    
     static font5x6 = {
         // A-Z
         // A-Z
@@ -369,7 +385,7 @@ class Font5x6 {
             "10110",
             "11001",
             "10001",
-            "10001",            
+            "10001",
             "10001"
             ,
             "00000",],
@@ -596,7 +612,7 @@ class Font5x6 {
             "00000",
             "00000",
             "00000"
-        ],        
+        ],
         '!': [
             "00100",
             "00100",
@@ -714,7 +730,7 @@ class Font5x6 {
         ]
     };
 
-    
+
     static font5x6Sprite = {
         "metadata": {
             "sprite": "Font 5x6",

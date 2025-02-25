@@ -10,6 +10,22 @@ import CanvasUtils from "./canvas.js";
 
 class PerformanceMonitor {
 
+    // Enable debug mode: game.html?performanceMonitor
+    static DEBUG = new URLSearchParams(window.location.search).has('performanceMonitor');
+
+    /** Constructor for PerformanceMonitor class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const performanceMonitor = new PerformanceMonitor(); // Throws Error
+     * 
+     * ✅ Do this:
+     * PerformanceMonitor.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('PerformanceMonitor is a utility class with only static methods. Do not instantiate.');
+    }
+
     static metrics = {
         memory: {},
         cpu: 0,

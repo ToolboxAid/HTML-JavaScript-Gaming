@@ -28,6 +28,21 @@ import RandomUtils from "./math/randomUtils.js";
     }; */
 
 export class Colors {
+    // Enable debug mode: game.html?colors
+    static DEBUG = new URLSearchParams(window.location.search).has('colors');
+
+    /** Constructor for Colors class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const colors = new Colors(); // Throws Error
+     * 
+     * ✅ Do this:
+     * Colors.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('Colors is a utility class with only static methods. Do not instantiate.');
+    }
 
     static randomColor;
 
@@ -178,7 +193,7 @@ export class Colors {
     // Methods for generate a random color in format #RRGGBB
     static generateRandomColor() {
 
-        const random = RandomUtils.randomRange(0,255);
+        const random = RandomUtils.randomRange(0, 255);
         const randomHex = () => Math.floor(random).toString(16).padStart(2, '0');
         this.randomColor = `#${randomHex()}${randomHex()}${randomHex()}`;
         return this.randomColor;

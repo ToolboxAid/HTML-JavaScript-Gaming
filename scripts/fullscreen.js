@@ -6,6 +6,23 @@
 import SystemUtils from "./utils/systemUtils.js";
 
 class Fullscreen {
+
+    // Enable debug mode: game.html?fullscreen
+    static DEBUG = new URLSearchParams(window.location.search).has('fullscreen');
+
+    /** Constructor for Fullscreen class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const fullscreen = new Fullscreen(); // Throws Error
+     * 
+     * ✅ Do this:
+     * Fullscreen.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('Fullscreen is a utility class with only static methods. Do not instantiate.');
+    }
+
     static gameFullScaleScreen = 1.0;
     static isFullScreen = false;
 
@@ -69,7 +86,7 @@ class Fullscreen {
         document.addEventListener('fullscreenchange', () => {
             Fullscreen.isFullScreen = !!document.fullscreenElement;
         });
-        
+
         console.log(`FullScreen.init complete.`);
     }
 

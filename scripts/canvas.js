@@ -10,9 +10,22 @@ import Colors from './colors.js';
 import Sprite from './sprite.js';
 
 class CanvasUtils {
-    // Play your game normally: game.html
     // Enable debug mode: game.html?canvasUtils
     static DEBUG = new URLSearchParams(window.location.search).has('canvasUtils');
+
+    /** Constructor for CanvasUtils class.
+     * @throws {Error} Always throws error as this is a utility class with only static methods.
+     * @example
+     * ❌ Don't do this:
+     * const canvasUtils = new CanvasUtils(); // Throws Error
+     * 
+     * ✅ Do this:
+     * CanvasUtils.transformPoints(...); // Use static methods directly
+     */
+    constructor() {
+        throw new Error('CanvasUtils is a utility class with only static methods. Do not instantiate.');
+    }
+
 
     static canvas = null;
     static ctx = null;
