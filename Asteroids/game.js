@@ -14,6 +14,8 @@ import Ship from './ship.js';
 
 import GameAttract from './gameAttract.js';
 
+import AudioPlayer from '../scripts/output/audioPlayer.js';
+
 class Game extends GameBase {
 
   static gameAttract = null;
@@ -22,8 +24,23 @@ class Game extends GameBase {
     super(canvasConfig, performanceConfig, fullscreenConfig);
   }
 
-  async onInitialize() {
+  static audioPlayer = new AudioPlayer('./assets/effects');
 
+  // List of audio files to be loaded
+  static audioFiles = [
+    'bangLarge.wav',
+    'bangMedium.wav',
+    'bangSmall.wav',
+    'beat1.wav',
+    'beat2.wav',
+    'extraShip.wav',
+    'fire.wav',
+    'saucerBig.wav',
+    'saucerSmall.wav',
+    'thrust.wav',
+  ];
+
+  async onInitialize() {
     console.log("onInit");
     this.keyboardInput = new KeyboardInput();
 
@@ -38,10 +55,15 @@ class Game extends GameBase {
 
     this.backToAttract = 180;
     this.backToAttractCounter = 0;
+
+    // Load audio files
+    await AudioPlayer.loadAllAudioFiles(Game.audioFiles, Game.audioPlayer);
+    if (Game.DEBUG) {
+      console.log("All audio files have been loaded and cached.");
+    }
   }
 
   gameLoop(deltaTime) {
-
     console.log(`this.gameState: '${this.gameState}'`);
 
     this.keyboardInput.update();
@@ -108,7 +130,7 @@ class Game extends GameBase {
 
   initGame() {
     for (let i = 0; i <= 3; i++) {
-      this.ships[i] = new Ship();
+      this.ships[i] = new Ship(Game.audioPlayer);
     }
 
     this.score = [0, 0, 0, 0]; // Reset score

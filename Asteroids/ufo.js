@@ -81,7 +81,9 @@ class UFO extends ObjectVector {
         ];
     }
 
-    constructor() {
+    static audioPlayer = null;
+
+    constructor(audioPlayer) {
         const isSmall = RandomUtils.randomBoolean();
         const direction = RandomUtils.randomBoolean();
         const angle = direction ? UFO.DIRECTION.RIGHT : UFO.DIRECTION.LEFT;
@@ -96,6 +98,7 @@ class UFO extends ObjectVector {
             velocity.y * UFO.SPEED
         );
 
+        UFO.audioPlayer = audioPlayer;
         this.setupUFO(isSmall, velocity, direction);
     }
 
@@ -113,6 +116,9 @@ class UFO extends ObjectVector {
                 velocity.x * UFO.SPEED * UFO.SMALL_SPEED_MULTIPLIER,
                 velocity.y * UFO.SPEED * UFO.SMALL_SPEED_MULTIPLIER
             );
+            UFO.audioPlayer.playAudio('saucerSmall.wav', 0.5, true); // 50% volume
+        } else {
+            UFO.audioPlayer.playAudio('saucerBig.wav', 0.5, true); // 50% volume
         }
 
         this.initializeProperties();
@@ -162,6 +168,12 @@ class UFO extends ObjectVector {
         if (UFO.DEBUG) {
             console.log("UFO isDying - bullets:", this.bulletManager.getBulletCount());
         }
+
+        if (this.isSmall) {
+            UFO.audioPlayer.stopLooping('saucerSmall.wav');
+        } else {
+            UFO.audioPlayer.stopLooping('saucerBig.wav');
+        }
     }
 
     checkBoundaries() {
@@ -173,7 +185,7 @@ class UFO extends ObjectVector {
         if (boundariesHit.includes(UFO.BOUNDARY.BOTTOM)) {
             this.y = -(this.height);
         }
-        if (boundariesHit.includes(UFO.BOUNDARY.LEFT) || 
+        if (boundariesHit.includes(UFO.BOUNDARY.LEFT) ||
             boundariesHit.includes(UFO.BOUNDARY.RIGHT)) {
             this.setIsDying();
         }

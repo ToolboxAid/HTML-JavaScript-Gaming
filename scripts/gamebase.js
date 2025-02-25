@@ -13,19 +13,6 @@ class GameBase {
     // Enable debug mode: game.html?gameBase
     static DEBUG = new URLSearchParams(window.location.search).has('gameBase');
 
-    /** Constructor for GameBase class.
-     * @throws {Error} Always throws error as this is a utility class with only static methods.
-     * @example
-     * ❌ Don't do this:
-     * const gameBase = new GameBase(); // Throws Error
-     * 
-     * ✅ Do this:
-     * GameBase.transformPoints(...); // Use static methods directly
-     */
-    constructor() {
-        throw new Error('GameBase is a utility class with only static methods. Do not instantiate.');
-    }
-
     static isInitialized = false;
 
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {

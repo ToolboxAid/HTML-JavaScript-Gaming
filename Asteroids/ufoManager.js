@@ -18,13 +18,16 @@ class UFOManager {
 
     // Debug mode enabled via URL parameter: game.html?ufoManager
     static DEBUG = new URLSearchParams(window.location.search).has('ufoManager');
+    static audioPlayer = null;
 
-    constructor() {
+    constructor(audioPlayer) {
         this.ufo = null;
         this.ufoTimer = new Timer(
             UFOManager.DEBUG ? UFOManager.DEBUG_SPAWN_INTERVAL : UFOManager.UFO_SPAWN_INTERVAL
         );
         this.ufoTimer.start();
+
+        UFOManager.audioPlayer = audioPlayer;
     }
 
     update(deltaTime, ship) {
@@ -51,8 +54,9 @@ class UFOManager {
 
     spawnNewUFO() {
         this.ufoTimer.pause();
-        this.ufo = new UFO();
-        
+        console.log(UFOManager.audioPlayer);
+        this.ufo = new UFO(UFOManager.audioPlayer); // 50% volume);
+
         if (UFOManager.DEBUG) {
             console.log("New UFO spawned:", {
                 ufo: this.ufo,

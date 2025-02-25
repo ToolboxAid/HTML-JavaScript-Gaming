@@ -19,16 +19,17 @@ class Ship extends ObjectVector {
     static THRUST = 150;
     static FRICTION = 0.995;
     static VECTOR_MAPS = {
-        LARGE:  [[24, 0], [-24, -18], [-18, 0], [-24, 18]],
+        LARGE: [[24, 0], [-24, -18], [-18, 0], [-24, 18]],
         MEDIUM: [[18, 0], [-18, -14], [-13, 0], [-18, 14]],
-        SMALL:  [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]],
-        LIVES:  [[0, -14], [-8, 10], [-3, 6], [3, 6], [8, 10], [0, -14]],
+        SMALL: [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]],
+        LIVES: [[0, -14], [-8, 10], [-3, 6], [3, 6], [8, 10], [0, -14]],
     };
 
     // Debug mode enabled via URL parameter: game.html?ship
     static DEBUG = new URLSearchParams(window.location.search).has('ship');
 
-    constructor() {
+    static audioPlayer = null;
+    constructor(audioPlayer) {
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
@@ -37,6 +38,11 @@ class Ship extends ObjectVector {
         this.initializeProperties();
         this.initializeManagers();
         this.reset();
+
+        //TODO: still need flame
+        this.applyThrust = false;
+
+        Ship.audioPlayer = audioPlayer;
     }
 
     initializeProperties() {
@@ -55,7 +61,7 @@ class Ship extends ObjectVector {
     initializeManagers() {
         this.asteroidManager = new AsteroidManager();
         this.bulletManager = new BulletManager();
-        this.ufoManager = new UFOManager();
+        this.ufoManager = new UFOManager(Ship.audioPlayer);
     }
 
     safeSpawn(deltaTime) {
@@ -86,9 +92,9 @@ class Ship extends ObjectVector {
             if (Ship.DEBUG) {
                 console.log("Ship death confirmed - UFO destroyed");
             }
-            if (!this.bulletManager.hasActiveBullets()){
-            this.setShipDead();
-        }
+            if (!this.bulletManager.hasActiveBullets()) {
+                this.setShipDead();
+            }
         }
     }
 
@@ -118,9 +124,13 @@ class Ship extends ObjectVector {
             const vectorDirection = AngleUtils.angleToVector(this.rotationAngle);
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
+            this.applyThrust = true;
+            Ship.audioPlayer.playAudio('thrust.wav', 0.5); // 50% volume
+
         } else {
             this.velocityX *= this.friction;
             this.velocityY *= this.friction;
+            this.applyThrust = false;
         }
     }
 
@@ -130,7 +140,7 @@ class Ship extends ObjectVector {
     }
 
     capVelocity(velocity) {
-        return Math.abs(velocity) > Ship.MAX_SPEED ? 
+        return Math.abs(velocity) > Ship.MAX_SPEED ?
             Ship.MAX_SPEED * Math.sign(velocity) : velocity;
     }
 
@@ -203,7 +213,7 @@ class Ship extends ObjectVector {
         const ctx = CanvasUtils.ctx;
         ctx.font = '16px Arial';
         ctx.fillStyle = 'white';
-        
+
         debugInfo.forEach((info, index) => {
             ctx.fillText(info, 10, 20 * (index + 1));
         });

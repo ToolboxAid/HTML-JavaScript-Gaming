@@ -26,5 +26,5 @@ canvas {
 /**  Add @font-face to your CSS first */
 @font-face {
     font-family: 'Vector Battle';
-    src: url('./fonts/vector_battle.ttf') format('truetype');
+    src: url('./assets/fonts/vector_battle.ttf') format('truetype');
 }

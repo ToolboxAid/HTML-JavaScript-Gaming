@@ -60,18 +60,6 @@ class Game extends GameBase {
         'ufo_lowpitch.wav'
     ];
 
-    // Method to load all audio files
-    async loadAllAudioFiles() {
-        for (const filename of Game.audioFiles) {
-            try {
-                await Game.audioPlayer.loadAudio(filename);
-                console.log(`Sound cached: ${filename}`);
-            } catch (error) {
-                console.error(`Error loading ${filename}:`, error);
-            }
-        }
-    }
-
     constructor() {
         super(canvasConfig, performanceConfig, fullscreenConfig);
     }
@@ -84,7 +72,7 @@ class Game extends GameBase {
             Game.initText();
 
             // Load audio files
-            await this.loadAllAudioFiles();
+            await AudioPlayer.loadAllAudioFiles(Game.audioFiles, Game.audioPlayer);
             console.log("All audio files have been loaded and cached.");
         } catch (error) {
             console.warn("Audio cache state:", Game.audioPlayer.audioCache);
