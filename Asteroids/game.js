@@ -16,9 +16,14 @@ import GameAttract from './gameAttract.js';
 
 import AudioPlayer from '../scripts/output/audioPlayer.js';
 
+import ParticleExplosion from '../scripts/gfx/particleExplosion.js';
+
 class Game extends GameBase {
 
   static gameAttract = null;
+
+  // Enable debug mode: game.html?game
+  static DEBUG = new URLSearchParams(window.location.search).has('game');
 
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);
@@ -61,9 +66,45 @@ class Game extends GameBase {
     if (Game.DEBUG) {
       console.log("All audio files have been loaded and cached.");
     }
+    this.particleExplosion = null;
+  }
+
+  // Create an explosion when an asteroid is hit
+  static explosions = [];
+
+  // Modified to add new explosion to array
+  static newParticleExplosion(x = 200, y = 200, size = 50) {
+    const explosion = new ParticleExplosion(
+      x,              // x position
+      y,              // y position
+      0,              // start radius
+      size,           // end radius
+      1.5,            // duration in seconds
+      size / 2        // number of particles
+    );
+    Game.explosions.push(explosion);
   }
 
   gameLoop(deltaTime) {
+
+    // Update and draw all explosions
+    Game.explosions = Game.explosions.filter(explosion => {
+      if (explosion.update(deltaTime)) {
+        explosion.destroy();
+        return false; // Remove from array
+      }
+      explosion.draw();
+      return true; // Keep in array
+    });
+
+    // Test: Create new explosion every 2 seconds at random position
+    if (Game.DEBUG && Math.random() < 0.01) { // 1% chance each frame
+      Game.newParticleExplosion(
+        Math.random() * canvasConfig.width,
+        Math.random() * canvasConfig.height
+      );
+    }
+
     console.log(`this.gameState: '${this.gameState}'`);
 
     this.keyboardInput.update();
@@ -111,6 +152,9 @@ class Game extends GameBase {
   displayGameAttract(deltaTime) {
     Game.gameAttract.update(deltaTime);
     Game.gameAttract.draw();
+    if (this.particleExplosion) {
+      this.particleExplosion.draw();
+    }
 
     if (this.keyboardInput.getkeysPressed().includes('Enter')) {
       this.gameState = "playerSelect";
@@ -334,6 +378,11 @@ class Game extends GameBase {
   }
 
   resetGame() {
+    // Clear all explosions
+    Game.explosions.forEach(explosion => explosion.destroy());
+    Game.explosions = [];
+
+    // ...existing reset code...
     this.gameState = "initAttract";
     this.backToAttractCounter = 0;
   }

@@ -131,14 +131,17 @@ class AsteroidManager {
                 this.createAsteroid(asteroid.x, asteroid.y, 'medium');
                 this.createAsteroid(asteroid.x, asteroid.y, 'medium');
                 score = 100;
+                Ship.audioPlayer.playAudio('bangLarge.wav', 0.5); // 50% volume
                 break;
             case 'medium':
                 this.createAsteroid(asteroid.x, asteroid.y, 'small');
                 this.createAsteroid(asteroid.x, asteroid.y, 'small');
+                Ship.audioPlayer.playAudio('bangMedium.wav', 0.5); // 50% volume
                 score = 50;
                 break;
             case 'small':
                 score = 10;
+                Ship.audioPlayer.playAudio('bangSmall.wav', 0.5); // 50% volume
                 break;
             default:
                 console.error('Invalid asteroid size:', asteroid.size);

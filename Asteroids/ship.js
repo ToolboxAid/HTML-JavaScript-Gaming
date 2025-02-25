@@ -40,7 +40,7 @@ class Ship extends ObjectVector {
         this.reset();
 
         //TODO: still need flame
-        this.applyThrust = false;
+        this.showThrustFlame = false;
 
         Ship.audioPlayer = audioPlayer;
     }
@@ -124,13 +124,13 @@ class Ship extends ObjectVector {
             const vectorDirection = AngleUtils.angleToVector(this.rotationAngle);
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
-            this.applyThrust = true;
-            Ship.audioPlayer.playAudio('thrust.wav', 0.5); // 50% volume
+            this.showThrustFlame = true;
+            Ship.audioPlayer.playAudio('thrust.wav', 0.75); // 50% volume
 
         } else {
             this.velocityX *= this.friction;
             this.velocityY *= this.friction;
-            this.applyThrust = false;
+            this.showThrustFlame = false;
         }
     }
 
@@ -152,6 +152,7 @@ class Ship extends ObjectVector {
     handleShooting(keyboardInput) {
         if (keyboardInput.getkeysPressed().includes('Space') && this.isAlive()) {
             this.bulletManager.shipShootBullet(this);
+            Ship.audioPlayer.playAudio('fire.wav', 0.5); // 50% volume
         }
     }
 
