@@ -73,36 +73,50 @@ class Game extends GameBase {
   static explosions = [];
 
   // Modified to add new explosion to array
-  static newParticleExplosion(x = 200, y = 200, size = 50) {
+  static newParticleExplosion(x = 500, y = 500, size = 50, particleRadius = 5.0) {
     const explosion = new ParticleExplosion(
-      x,              // x position
-      y,              // y position
-      0,              // start radius
-      size,           // end radius
-      1.5,            // duration in seconds
-      size / 2        // number of particles
+      x,               // x position
+      y,               // y position
+      0,               // start radius
+      size,            // end radius
+      1.35,            // duration in seconds
+      size / 4,        // number of particles
+      particleRadius,  // Particle Radius
     );
     Game.explosions.push(explosion);
   }
 
-  gameLoop(deltaTime) {
+  static lastExplosionTime = 0;
+  static EXPLOSION_INTERVAL = 100; // 5 seconds in milliseconds
 
-    // Update and draw all explosions
+  gameLoop(deltaTime) {
+    // Update and draw all explosions with proper cleanup
     Game.explosions = Game.explosions.filter(explosion => {
+      if (!explosion || explosion.isDone) {
+        if (explosion) {
+          explosion.destroy();
+        }
+        return false;
+      }
+
       if (explosion.update(deltaTime)) {
         explosion.destroy();
-        return false; // Remove from array
+        return false;
       }
       explosion.draw();
-      return true; // Keep in array
+      return true;
     });
 
-    // Test: Create new explosion every 2 seconds at random position
-    if (Game.DEBUG && Math.random() < 0.01) { // 1% chance each frame
-      Game.newParticleExplosion(
-        Math.random() * canvasConfig.width,
-        Math.random() * canvasConfig.height
-      );
+    // Test: Create new explosion every 5 seconds
+    if (Game.DEBUG) {
+      const currentTime = Date.now();
+      if (currentTime - Game.lastExplosionTime > Game.EXPLOSION_INTERVAL) {
+        Game.newParticleExplosion(
+          Math.random() * canvasConfig.width,
+          Math.random() * canvasConfig.height
+        );
+        Game.lastExplosionTime = currentTime;
+      }
     }
 
     console.log(`this.gameState: '${this.gameState}'`);
@@ -378,11 +392,15 @@ class Game extends GameBase {
   }
 
   resetGame() {
-    // Clear all explosions
-    Game.explosions.forEach(explosion => explosion.destroy());
+    // Clear all explosions with proper cleanup
+    while (Game.explosions.length > 0) {
+      const explosion = Game.explosions.pop();
+      if (explosion) {
+        explosion.destroy();
+      }
+    }
     Game.explosions = [];
 
-    // ...existing reset code...
     this.gameState = "initAttract";
     this.backToAttractCounter = 0;
   }

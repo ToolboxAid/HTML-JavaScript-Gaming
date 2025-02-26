@@ -7,7 +7,7 @@ class SystemUtils {
     // Play your game normally: game.html
     // Enable debug mode: game.html?systemUtils
     static DEBUG = new URLSearchParams(window.location.search).has('systemUtils');
-    
+
     /** Constructor for SystemUtils class.
     * @throws {Error} Always throws error as this is a utility class with only static methods.
     * @example
@@ -63,7 +63,7 @@ class SystemUtils {
         if (this.DEBUG) {
             console.log(`Validating '${name}' Config: `, '\n', config, schema);
         }
-        
+
         const failures = [];
 
         // Check all required fields
@@ -119,13 +119,13 @@ class SystemUtils {
             SystemUtils.showStackTrace(`Element is null or undefined`);
             return false;
         }
-    
+
         // Check if destroy method exists
         if (typeof element.destroy !== "function") {
             SystemUtils.showStackTrace(`Element ${SystemUtils.getObjectType(element)} has no destroy method`);
             return false;
         }
-    
+
         // Attempt to destroy
         try {
             element.destroy();
@@ -136,14 +136,13 @@ class SystemUtils {
         }
     }
 
-
     static cleanupArray(array) {
-        let success = true;
-
         if (!Array.isArray(array)) {
             console.warn(`Not an array:`, array);
             return false;
         }
+
+        let success = true;
 
         try {
             for (let i = array.length - 1; i >= 0; i--) {
