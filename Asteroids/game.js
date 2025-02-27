@@ -73,21 +73,21 @@ class Game extends GameBase {
   static explosions = [];
 
   // Modified to add new explosion to array
-  static newParticleExplosion(x = 500, y = 500, size = 50, particleRadius = 5.0) {
+  static newParticleExplosion(x = 300, y = 300, radius = 250, particleRadius = 2.0) {
     const explosion = new ParticleExplosion(
       x,               // x position
       y,               // y position
       0,               // start radius
-      size,            // end radius
-      1.35,            // duration in seconds
-      size / 4,        // number of particles
+      radius,            // end radius
+      10.0,            // duration in seconds
+      radius / 4,        // number of particles
       particleRadius,  // Particle Radius
     );
     Game.explosions.push(explosion);
   }
 
   static lastExplosionTime = 0;
-  static EXPLOSION_INTERVAL = 100; // 5 seconds in milliseconds
+  static EXPLOSION_INTERVAL = 500; // 5 seconds in milliseconds
 
   gameLoop(deltaTime) {
     // Update and draw all explosions with proper cleanup
@@ -111,10 +111,10 @@ class Game extends GameBase {
     if (Game.DEBUG) {
       const currentTime = Date.now();
       if (currentTime - Game.lastExplosionTime > Game.EXPLOSION_INTERVAL) {
-        Game.newParticleExplosion(
-          Math.random() * canvasConfig.width,
-          Math.random() * canvasConfig.height
-        );
+        Game.newParticleExplosion();
+        //   Math.random() * canvasConfig.width,
+        //   Math.random() * canvasConfig.height
+        // );
         Game.lastExplosionTime = currentTime;
       }
     }
