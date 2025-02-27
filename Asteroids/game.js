@@ -73,13 +73,13 @@ class Game extends GameBase {
   static explosions = [];
 
   // Modified to add new explosion to array
-  static newParticleExplosion(x = 300, y = 300, radius = 250, particleRadius = 2.0) {
+  static newParticleExplosion(x = 1024 / 4, y = 768 / 4, radius = 768 / 4, particleRadius = 3.5) {
     const explosion = new ParticleExplosion(
       x,               // x position
       y,               // y position
       0,               // start radius
       radius,            // end radius
-      10.0,            // duration in seconds
+      1.5,            // duration in seconds
       radius / 4,        // number of particles
       particleRadius,  // Particle Radius
     );
@@ -87,7 +87,7 @@ class Game extends GameBase {
   }
 
   static lastExplosionTime = 0;
-  static EXPLOSION_INTERVAL = 500; // 5 seconds in milliseconds
+  static EXPLOSION_INTERVAL = 5000; // 5 seconds in milliseconds
 
   gameLoop(deltaTime) {
     // Update and draw all explosions with proper cleanup

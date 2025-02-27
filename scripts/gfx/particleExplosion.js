@@ -43,10 +43,10 @@ class ParticleExplosion {
                 speed: Math.random() * 1.0 + 0.3, // Faster initial speed
 
                 drawRadius: drawRadius,
-                initRadius: drawRadius,
+                initDrawRadius: drawRadius,
 
                 travelDistance: 0, // Current distance from explosion center
-                maxTravelDistance: this.endRadius * (Math.random() * 0.4 + 0.6), // Max travel distance               
+                maxTravelDistance: this.endRadius * (Math.random() * 0.7 + 0.3), // Max travel distance               
 
                 // Controls how quickly particles slow down as they move outward from the explosion center.
                 // speedDecay: Math.random() * 0.2 + 0.85,  // Quick decay (0.85 to 1.05)
@@ -57,12 +57,11 @@ class ParticleExplosion {
 
                 // Controls when particles begin to fade out during their lifecycle.
                 // fadeStart: Math.random() * 0.1 + 0.2, // Earlier fade (20-30% of max radius)
-                //fadeStart: Math.random() * 0.1 + 0.3, // Earlier fade (30-40% of max radius)
-                // fadeStart: Math.random() * 0.1 + 0.4, // Earlier fade (40-50% of max radius)
+                // fadeStart: Math.random() * 0.1 + 0.3, // Earlier fade (30-40% of max radius)
+                fadeStart: Math.random() * 0.1 + 0.4, // Earlier fade (40-50% of max radius)
                 // fadeStart: Math.random() * 0.1 + 0.5, // Middle fade (50-60% of max radius)
                 // fadeStart: Math.random() * 0.1 + 0.6, // Start fading between 60-70% of max radius
                 // fadeStart: Math.random() * 0.1 + 0.7, // Later fade (70-80% of max radius)
-                fadeStart: Math.random() * 0.1 + 0.3,
             });
         }
 
@@ -82,35 +81,49 @@ class ParticleExplosion {
         let allParticlesDone = true;
 
         this.particles.forEach(particle => {
-            // Calculate movement - continues throughout entire duration
-            //const speedDelta = particle.speed * deltaTime * 20;
-            // const speedDelta = particle.speed * deltaTime * 25;// Half speed
-            const speedDelta = particle.speed * deltaTime * 50;// regular speed
-            // const speedDelta = particle.speed * deltaTime * 100;// Double speed
-            // const speedDelta = particle.speed * deltaTime * 75;        
-            // const speedDelta = particle.speed * deltaTime * 60;                
+            // // Calculate movement - continues throughout entire duration
+            // //const speedDelta = particle.speed * deltaTime * 20;
+            // // const speedDelta = particle.speed * deltaTime * 25;// Half speed
+            // const speedDelta = particle.speed * deltaTime * 50;// regular speed
+            // // const speedDelta = particle.speed * deltaTime * 100;// Double speed
+            // // const speedDelta = particle.speed * deltaTime * 75;        
+            // // const speedDelta = particle.speed * deltaTime * 60;                
+            // const newTravelDistance = particle.travelDistance + speedDelta;
+
+            // // Limit travel distance to maxTravelDistance
+            // particle.travelDistance = newTravelDistance;
+
+            // // Update particle position using travel distance
+            // particle.x = this.x + Math.cos(particle.angle) * particle.travelDistance;
+            // particle.y = this.y + Math.sin(particle.angle) * particle.travelDistance;
+            // Calculate ideal speed based on maxTravelDistance and duration
+            // This ensures particles reach their max distance over the full duration
+            const targetSpeed = particle.maxTravelDistance / this.duration;
+
+            // Scale speed based on particle's initial speed variation
+            const adjustedSpeed = targetSpeed * particle.speed;
+
+            // Calculate movement delta
+            const speedDelta = adjustedSpeed * deltaTime;
             const newTravelDistance = particle.travelDistance + speedDelta;
 
-            // Limit travel distance to maxTravelDistance
+            // Update travel distance
             particle.travelDistance = Math.min(newTravelDistance, particle.maxTravelDistance);
 
             // Update particle position using travel distance
             particle.x = this.x + Math.cos(particle.angle) * particle.travelDistance;
             particle.y = this.y + Math.sin(particle.angle) * particle.travelDistance;
 
-            // Fade and shrink starts at fadeStart
-            if (timeProgress >= 0.5) {
-                const fadeProgress = Math.min(1.0, (timeProgress - 0.5) / 0.5);
-                const fadeAmount = Math.pow(1.0 - fadeProgress, 1.5);
-                particle.alpha = Math.max(0, fadeAmount);
 
-                // Reduce visual size during fade
-                //particle.drawRadius = this.particleRadius * Math.pow(1.0 - fadeProgress, 2);
-                particle.drawRadius = particle.initRadius * particle.alpha;
-            }
+// Fade and shrink starts at particle's fadeStart
+if (timeProgress >= particle.fadeStart) {
+    const fadeProgress = Math.min(1.0, (timeProgress - particle.fadeStart) / (1.0 - particle.fadeStart));
+    const fadeAmount = Math.pow(1.0 - fadeProgress, 2.0);
+    particle.alpha = Math.max(0, fadeAmount);
 
-            // Gradual speed reduction - less aggressive decay
-            particle.speed *= Math.pow(particle.speedDecay, deltaTime * 15);
+    // Reduce visual size during fade
+    particle.drawRadius = particle.initDrawRadius * particle.alpha;
+}
 
             // Cleanup check based on time and visibility
             if ((particle.alpha <= 0.01 || timeProgress >= 1.0) && particle.drawRadius < 1) {
@@ -162,12 +175,13 @@ class ParticleExplosion {
         // Force cleanup of any remaining particles
         this.particles.forEach(particle => {
             // Clear all particle properties
-            particle.alpha = null;
             particle.angle = null;
             particle.x = null;
             particle.y = null;
+            particle.alpha = null;
             particle.speed = null;
             particle.drawRadius = null;
+            particle.initDrawRadius = null;
             particle.travelDistance = null;
             particle.maxTravelDistance = null;
             particle.speedDecay = null;
@@ -178,9 +192,7 @@ class ParticleExplosion {
         SystemUtils.cleanupArray(this.particles);
         this.particles = null;
 
-        // Reset all instance properties
-        this.elapsedTime = null;
-        this.isDone = null;
+        // Reset all instance properties in same order as constructor
         this.x = null;
         this.y = null;
         this.startRadius = null;
@@ -188,6 +200,8 @@ class ParticleExplosion {
         this.duration = null;
         this.particleCount = null;
         this.particleRadius = null;
+        this.elapsedTime = null;
+        this.isDone = null;
     }
 }
 
