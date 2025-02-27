@@ -22,6 +22,7 @@ class ParticleExplosion {
         this.particles = []; // array list containing particals
         this.elapsedTime = 0; // elapsed time since created
         this.isDone = false; // animation is complete
+        this.shape = "circle";
         this.createParticles();
     }
 
@@ -34,10 +35,14 @@ class ParticleExplosion {
             // Calculate initial draw adius first
             const drawRadius = (Math.random() * 0.8 + 0.2) * this.particleRadius;
 
+            // Calculate initial position using startRadius
+            const startX = this.x + Math.cos(angle) * this.startRadius;
+            const startY = this.y + Math.sin(angle) * this.startRadius;
+
             this.particles.push({
                 angle: angle + (Math.random() * 0.2 - 0.1), // Slight angle variation
-                x: this.x,
-                y: this.y,
+                x: startX,
+                y: startY,
                 alpha: 1.0, // transparency
                 // speed: Math.random() * 0.8 + 0.6, // Faster initial speed
                 speed: Math.random() * 1.0 + 0.3, // Faster initial speed
@@ -46,7 +51,8 @@ class ParticleExplosion {
                 initDrawRadius: drawRadius,
 
                 travelDistance: 0, // Current distance from explosion center
-                maxTravelDistance: this.endRadius * (Math.random() * 0.7 + 0.3), // Max travel distance               
+                //maxTravelDistance: this.endRadius * (Math.random() * 0.7 + 0.3), // Max travel distance               
+                maxTravelDistance: (this.endRadius - this.startRadius) * (Math.random() * 0.7 + 0.3),
 
                 // Controls how quickly particles slow down as they move outward from the explosion center.
                 // speedDecay: Math.random() * 0.2 + 0.85,  // Quick decay (0.85 to 1.05)
@@ -64,12 +70,6 @@ class ParticleExplosion {
                 // fadeStart: Math.random() * 0.1 + 0.7, // Later fade (70-80% of max radius)
             });
         }
-
-        // let rads = "";
-        // for (let i = 0; i < this.particleCount; i++) {
-        //     rads += this.particles[i].radius.toFixed(1) + ", ";
-        // }
-        // console.log(rads);
     }
 
     update(deltaTime) {
@@ -111,19 +111,19 @@ class ParticleExplosion {
             particle.travelDistance = Math.min(newTravelDistance, particle.maxTravelDistance);
 
             // Update particle position using travel distance
-            particle.x = this.x + Math.cos(particle.angle) * particle.travelDistance;
-            particle.y = this.y + Math.sin(particle.angle) * particle.travelDistance;
+            const totalRadius = this.startRadius + particle.travelDistance;
+            particle.x = this.x + Math.cos(particle.angle) * totalRadius;
+            particle.y = this.y + Math.sin(particle.angle) * totalRadius;
 
+            // Fade and shrink starts at particle's fadeStart
+            if (timeProgress >= particle.fadeStart) {
+                const fadeProgress = Math.min(1.0, (timeProgress - particle.fadeStart) / (1.0 - particle.fadeStart));
+                const fadeAmount = Math.pow(1.0 - fadeProgress, 2.0);
+                particle.alpha = Math.max(0, fadeAmount);
 
-// Fade and shrink starts at particle's fadeStart
-if (timeProgress >= particle.fadeStart) {
-    const fadeProgress = Math.min(1.0, (timeProgress - particle.fadeStart) / (1.0 - particle.fadeStart));
-    const fadeAmount = Math.pow(1.0 - fadeProgress, 2.0);
-    particle.alpha = Math.max(0, fadeAmount);
-
-    // Reduce visual size during fade
-    particle.drawRadius = particle.initDrawRadius * particle.alpha;
-}
+                // Reduce visual size during fade
+                particle.drawRadius = particle.initDrawRadius * particle.alpha;
+            }
 
             // Cleanup check based on time and visibility
             if ((particle.alpha <= 0.01 || timeProgress >= 1.0) && particle.drawRadius < 1) {
@@ -145,7 +145,10 @@ if (timeProgress >= particle.fadeStart) {
         return this.isDone;
     }
 
-    static shape = "circle";
+    setShapeSquare() {
+        this.shape = "square";
+    }
+
     draw() {
         if (this.isDone) return;
 
@@ -153,7 +156,7 @@ if (timeProgress >= particle.fadeStart) {
 
         this.particles.forEach(particle => {
             if (particle.alpha > 0 && particle.drawRadius > 0) {
-                if (ParticleExplosion.shape === "circle") {
+                if (this.shape === "circle") {
                     ctx.beginPath();
                     ctx.arc(particle.x, particle.y, particle.drawRadius, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;

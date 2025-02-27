@@ -1,0 +1,15 @@
+ToolboxAid.com
+David Quesenberry
+10/16/2024
+requirements.txt
+
+- is a todo
+> is in progress
+x is complete
+! is cancel/don't do
+-----------------------------------------------
+x access to global variables
+x access to reusable canvas methods
+x ability to switch between fullscreen and window
+x reusable game loop with context and deltaTime
+x ability to display fps
