@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sample Synthesizer</title>
     <link rel="stylesheet" href="./synth.css">
-    <script src="./synth.js" defer></script>
+    <script type="module" src="./synth.js" defer></script>
+    <script type="module" src="../scripts/output/synthesizer.js" defer></script>
 </head>
+
 <body>
+    <h1>Sample Synthesizer</h1>
+    <a href="https://codepen.io/BretCameron/pen/MWmyWeo">Original Sample</a>
+    <a href="https://css-tricks.com/how-to-code-a-playable-synth-keyboard/">Original Tutorial</a>
     <ul id="keyboard">
         <li note="C" class="white">A</li>
         <li note="C#" class="black">W</li>
@@ -28,4 +34,5 @@
         <li note="E2" class="white offset">;</li>
     </ul>
 </body>
+
 </html>

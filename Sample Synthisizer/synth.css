@@ -13,10 +13,18 @@ html {
   body {
     margin: 0;
     height: 100vh;
-    display: flex;
+    display: block;
     align-items: center;
   }
   
+  a, p, h1{
+    color: rgb(84, 0, 84); /* Converted from hsl(300, 100%, 16%) */
+    text-decoration: none;
+    text-align: center; /* Align text to center */
+    display: block; /* Make the element a block-level element */
+    margin: 0 auto; /* Center the element horizontally */
+  }
+
   :root {
     --keyboard: hsl(300, 100%, 16%);
     --keyboard-shadow: hsla(19, 50%, 66%, 0.2);
@@ -114,4 +122,3 @@ html {
     box-shadow: 0 0 50px var(--black-50) inset, 0 1px var(--keyboard-shadow) inset,
       0 5px 15px var(--black-50);
   }
-  
