@@ -24,7 +24,7 @@ class BulletManager {
     this.shipMaxBullets = BulletManager.SHIP_MAX_BULLETS;
   }
 
-  update(deltaTime, ship) {
+  update(deltaTime) {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const bullet = this.bullets[i];
 
@@ -37,22 +37,37 @@ class BulletManager {
     }
   }
 
-  check(ship) {
-    if (!ship.isAlive()) return;
+  /** TODO: where should this go?
+       // // Clear all explosions with proper cleanup
+    // while (Game.explosions.length > 0) {
+    //   const explosion = Game.explosions.pop();
+    //   if (explosion) {
+    //     explosion.destroy();
+    //   }
+    // }
+    // Game.explosions = [];
+   */
 
-    for (let i = this.bullets.length - 1; i >= 0; i--) {
-      const bullet = this.bullets[i];
+  // check(ship) {
+  //   if (!ship.isAlive()) return;
 
-      if (!bullet.isAlive()) continue;
+  //   for (let i = this.bullets.length - 1; i >= 0; i--) {
+  //     const bullet = this.bullets[i];
 
-      if (bullet.collisionDetection(ship)) {
-        bullet.setIsDead();
-        bullet.destroy();
-        ship.setIsDying();
-        break;
-      }
-    }
-  }
+  //     // if (SystemUtils.getObjectType(this) === 'Bullet') {
+  //     //   console.log(`bullet vectorMap for '${SystemUtils.getObjectType(this)}', ${JSON.stringify(bullet.vectorMap)}`);
+  //     // }
+
+  //     if (!bullet.isAlive()) continue;
+
+  //     if (bullet.collisionDetection(ship)) {
+  //       bullet.setIsDead();
+  //       bullet.destroy();
+  //       ship.setIsDying();
+  //       break;
+  //     }
+  //   }
+  // }
 
   draw() {
     this.bullets.forEach(bullet => bullet.draw());
@@ -69,6 +84,7 @@ class BulletManager {
         angle: ship.rotationAngle,
         total: this.bullets.length
       });
+      console.log("Ship bullet fired:", bullet);
     }
   }
 

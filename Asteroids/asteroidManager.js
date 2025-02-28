@@ -11,15 +11,20 @@ import GeometryUtils from '../scripts/math/geometryUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 import SystemUtils from '../scripts/utils/systemUtils.js';
 
+import ParticleExplosion from '../scripts/gfx/particleExplosion.js';
+
 class AsteroidManager {
     // Enable debug mode: game.html?asteroidManager
     static DEBUG = new URLSearchParams(window.location.search).has('asteroidManager');
 
-    constructor() {
+    static audioPlayer = null;
+    constructor(audioPlayer) {
         this.asteroids = new Map();
         this.asteroidID = 0;
         this.level = 1;
         this.initAsteroids();
+
+        AsteroidManager.audioPlayer = audioPlayer;
     }
 
     getLevel() {
@@ -46,6 +51,71 @@ class AsteroidManager {
         }
     }
 
+    // Create an explosion when an asteroid is hit
+    static explosions = [];
+    static lastExplosionTime = 0;
+    static EXPLOSION_INTERVAL = 500; // 5 seconds in milliseconds
+
+    // Test: Create new explosion every 0.5 seconds
+    static newParticleExplosion(x, y, radius, particleRadius = 3.5) {
+        const explosion = new ParticleExplosion(
+            x,               // x position
+            y,               // y position
+            0,               // start radius
+            radius,          // end radius
+            1.0,             // duration in seconds
+            radius / 4,      // number of particles
+            particleRadius,  // Particle Radius
+        );
+
+        AsteroidManager.explosions.push(explosion);
+
+        if (AsteroidManager.DEBUG) {
+            console.log(`explosion:${JSON.stringify(explosion)}`);
+        }
+    }
+
+    createExplosion(object) {
+        AsteroidManager.newParticleExplosion(
+            object.x,
+            object.y,
+            object.explosionRadius,
+            1.5
+        );
+
+        if (AsteroidManager.DEBUG) {
+            console.log(`AsteroidManager.explosions:
+                ${JSON.stringify(object.x)}
+                ${JSON.stringify(object.y)}
+                ${JSON.stringify(object.size)}
+                ${JSON.stringify(AsteroidManager.explosions)}`
+            );
+        }
+    }
+
+    hasActiveExplosions() {
+        return AsteroidManager.explosions.length;
+    }
+
+
+    updateParticleExplosion(deltaTime) {
+        AsteroidManager.explosions = AsteroidManager.explosions.filter(explosion => {
+            if (!explosion || explosion.isDone) {
+                if (explosion) {
+                    explosion.destroy();
+                }
+                return false;
+            }
+
+            if (explosion.update(deltaTime)) {
+                explosion.destroy();
+                return false;
+            }
+            explosion.draw();
+            return true;
+        });
+    }
+
     createAsteroid(x, y, size) {
         const key = `${size}-${this.asteroidID++}`;
         const asteroid = new Asteroid(x, y, size);
@@ -59,6 +129,7 @@ class AsteroidManager {
             this.level++;
             this.initAsteroids();
         }
+        this.updateParticleExplosion(deltaTime);
     }
 
     draw() {
@@ -79,40 +150,52 @@ class AsteroidManager {
     }
 
     checkShip(ship) {
-        this.asteroids.forEach(asteroid => {
-            if (CollisionUtils.vectorCollisionDetection(ship, asteroid)) {
-                if (AsteroidManager.DEBUG) {
-                    console.log("Ship hit:", { ship, asteroid });
-                }
-                ship.setIsDying();
-            }
-        });
-    }
-
-    checkUFO(ufo) {
-        if (this.ufo && this.ufo.isAlive()) {
-            if (AsteroidManager.DEBUG) {
-                console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
-            }
-
+        if (ship && ship.isAlive()) {
             this.asteroids.forEach((asteroid, asteroidKey) => {
-                if (CollisionUtils.vectorCollisionDetection(ufo, asteroid)) {
-                    this.setAsteroidHit(asteroid, asteroidKey);
-                    ufo.setIsDying();
-
+                if (CollisionUtils.vectorCollisionDetection(ship, asteroid)) {
                     if (AsteroidManager.DEBUG) {
-                        console.log("UFO hit asteroid");
+                        console.log("Ship hit:", { ship, asteroid, asteroidKey });
                     }
+                    ship.setIsDying();
+                    this.createExplosion(ship);
                 }
             });
         }
     }
+
+    // checkUFO(ufo) {
+    //     if (this.ufo && this.ufo.isAlive()) {
+    //         if (AsteroidManager.DEBUG) {
+    //             console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
+    //         }
+
+    //         this.asteroids.forEach((asteroid, asteroidKey) => {
+    //             if (CollisionUtils.vectorCollisionDetection(ufo, asteroid)) {
+    //                 this.setAsteroidHit(asteroid, asteroidKey);
+    //                 ufo.setIsDying();
+
+    //                 if (AsteroidManager.DEBUG) {
+    //                     console.log("UFO hit asteroid");
+    //                 }
+    //             }
+    //         });
+    //     }
+    // }
 
     checkBullet(bullet) {
         let score = 0;
         this.asteroids.forEach((asteroid, asteroidKey) => {
             if (bullet.collisionDetection(asteroid)) {
                 bullet.setIsDead();
+
+                this.createExplosion(asteroid);
+
+                if (AsteroidManager.DEBUG) {
+                    console.log(`Bullet hit asteroid: \n
+                        Bullet: ${JSON.stringify(bullet)} \n
+                        Asteroird: ${JSON.stringify(asteroid)} \n`);
+                }
+
                 score = this.setAsteroidHit(asteroid, asteroidKey);
             }
         });
@@ -131,17 +214,26 @@ class AsteroidManager {
                 this.createAsteroid(asteroid.x, asteroid.y, 'medium');
                 this.createAsteroid(asteroid.x, asteroid.y, 'medium');
                 score = 100;
-                Ship.audioPlayer.playAudio('bangLarge.wav', 0.5); // 50% volume
+                AsteroidManager.audioPlayer.playAudio('bangLarge.wav', 0.5); // 50% volume
+
+                this.createExplosion(asteroid);
+
                 break;
             case 'medium':
                 this.createAsteroid(asteroid.x, asteroid.y, 'small');
                 this.createAsteroid(asteroid.x, asteroid.y, 'small');
-                Ship.audioPlayer.playAudio('bangMedium.wav', 0.5); // 50% volume
+                AsteroidManager.audioPlayer.playAudio('bangMedium.wav', 0.5); // 50% volume
                 score = 50;
+
+                this.createExplosion(asteroid);
+
                 break;
             case 'small':
                 score = 10;
-                Ship.audioPlayer.playAudio('bangSmall.wav', 0.5); // 50% volume
+                AsteroidManager.audioPlayer.playAudio('bangSmall.wav', 0.5); // 50% volume
+
+                this.createExplosion(asteroid);
+
                 break;
             default:
                 console.error('Invalid asteroid size:', asteroid.size);

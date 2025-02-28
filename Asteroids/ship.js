@@ -59,7 +59,7 @@ class Ship extends ObjectVector {
     }
 
     initializeManagers() {
-        this.asteroidManager = new AsteroidManager();
+        this.asteroidManager = new AsteroidManager(Ship.audioPlayer);
         this.bulletManager = new BulletManager();
         this.ufoManager = new UFOManager(Ship.audioPlayer);
     }
@@ -84,11 +84,19 @@ class Ship extends ObjectVector {
 
     checkCollisions() {
         this.asteroidManager.checkShip(this);
+
+        this.bulletManager.bullets.forEach(bullet => {
+            this.asteroidManager.checkBullet(bullet);
+        }
+        );
+
+        //this.bulletManager.check(this);
         this.ufoManager.check(this);
     }
 
     checkShipDeath() {
-        if (!this.ufoManager.ufo && this.isDying()) {
+        if (!this.ufoManager.ufo && this.isDying() && !this.bulletManager.hasActiveBullets()
+            && !this.asteroidManager.hasActiveExplosions()) {
             if (Ship.DEBUG) {
                 console.log("Ship death confirmed - UFO destroyed");
             }
@@ -117,6 +125,7 @@ class Ship extends ObjectVector {
     }
 
     handleThrust(deltaTime, keyboardInput) {
+        //TODO: add thrust flame
         this.accelerationX = 0;
         this.accelerationY = 0;
 
@@ -179,7 +188,9 @@ class Ship extends ObjectVector {
     }
 
     draw() {
-        super.draw();
+        if (this.isAlive()) {
+            super.draw();
+        }
         if (Ship.DEBUG) {
             this.drawShipDebug();
         }

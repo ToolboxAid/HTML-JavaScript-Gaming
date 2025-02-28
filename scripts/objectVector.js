@@ -33,15 +33,19 @@ class ObjectVector extends ObjectKillable {
         const bounds = ObjectVector.calculateInitialBounds(vectorMap);
         super(x, y, bounds.width, bounds.height, velocityX, velocityY);
 
-        // Initialize animation properties
-        this.currentFrameIndex = 0;
-        this.delayCounter = 0;
-
         // Initialize vector properties
         this.color = "white";
         this.rotationAngle = 0;
         this.vectorMap = vectorMap;
         this.drawBounds = false;
+
+        if (SystemUtils.getObjectType(this) === 'Bullet') {
+            console.log(`this.vectorMap for '${SystemUtils.getObjectType(this)}', ${JSON.stringify(this.vectorMap)}`);
+        }
+
+        // Initialize animation properties
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
 
         // Initialize bounds
         this.boundX = 0;
@@ -58,6 +62,8 @@ class ObjectVector extends ObjectKillable {
         this.height = this.boundHeight;
 
         this.margin = this.width * 0.1; // 10%
+
+        this.explosionRadius = ((this.width + this.height) / 2) * 2;
 
         if (this.DEBUG) {
             console.log(this, x, y, bounds, this.width, this.height);

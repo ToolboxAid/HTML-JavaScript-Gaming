@@ -4,6 +4,7 @@
 // objectKillable.js
 
 import ObjectDynamic from './objectDynamic.js';
+import SystemUtils from './utils/systemUtils.js';
 
 class ObjectKillable extends ObjectDynamic {
 /**
@@ -60,7 +61,7 @@ constructor(x, y, width, height, velocityX = 0, velocityY = 0) {
                 this.handleDeadStatus(deltaTime);
                 break;
             default:  // Handle OOPS - Handle unknown status
-                console.error("OOPS : Unknown status:", this.status);
+                SystemUtils.showStackTrace(`OOPS : Unknown status: ${this.status}`)
                 break;
         }
     }

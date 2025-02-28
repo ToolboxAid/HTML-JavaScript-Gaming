@@ -149,7 +149,6 @@ class Asteroid extends ObjectVector {
     }
   }
 
-
 }
 
 export default Asteroid;

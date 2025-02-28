@@ -22,8 +22,9 @@ class Bullet extends ObjectVector {
     const angleInRadians = angleInDegrees * (Math.PI / 180);
 
     // Calculate the nose offset in world space (taking into account ship's rotation)
-    const noseX = Math.cos(angleInRadians) * 12;  // Rotate the x-component of the nose vector
-    const noseY = Math.sin(angleInRadians) * 12;  // Rotate the y-component of the nose vector
+    const noseDistance = 14; // Distance from ship center to nose
+    const noseX = Math.cos(angleInRadians) * noseDistance;  // Rotate the x-component of the nose vector
+    const noseY = Math.sin(angleInRadians) * noseDistance;  // Rotate the y-component of the nose vector
 
     // Bullet position is the ship's position plus the rotated nose offset
     const bulletX = x + noseX;
@@ -45,7 +46,10 @@ class Bullet extends ObjectVector {
 
   update(deltaTime) {
     // Update position based on velocity
-    super.update(deltaTime);
+    if (this.isAlive()) {
+      super.update(deltaTime);
+      this.checkWrapAround();
+    }
 
     // Track how long the bullet has been alive
     this.timeAlive += deltaTime;
@@ -58,7 +62,6 @@ class Bullet extends ObjectVector {
       }
     }
 
-    this.checkWrapAround();
   }
 
   /** Destroys the bullet and cleans up resources.
