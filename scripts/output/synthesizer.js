@@ -1,8 +1,7 @@
 class Synthesizer {
-  constructor(audioContext, keys) {
+  constructor(audioContext) {
     this.audioContext = audioContext;
     this.pressedNotes = new Map();
-    this.keys = keys;
   }
 
   getHz(note = "A", octave = 4) {
@@ -56,11 +55,12 @@ class Synthesizer {
     return A4 * Math.pow(2, N / 12);
   }
 
-  playKey(key, keyData) {
-    if (!keyData) {
+  playKey(note, duration) {
+    if (!note || !duration) {
       return;
     }
 
+    console.log("playKey", note, duration);
     const osc = this.audioContext.createOscillator();
     const noteGainNode = this.audioContext.createGain();
     noteGainNode.connect(this.audioContext.destination);
@@ -92,37 +92,39 @@ class Synthesizer {
     setRelease();
 
     osc.connect(noteGainNode);
-    osc.type = "triangle";
+    osc.type = "sine";
 
-    const freq = this.getHz(keyData.note, (keyData.octaveOffset || 0) + 3);
-
+    const freq = this.getHz(note.note, (note.octaveOffset || 0) + 3);
     if (Number.isFinite(freq)) {
       osc.frequency.value = freq;
     }
 
-    keyData.element.classList.add("pressed");
-    this.pressedNotes.set(key, osc);
-    this.pressedNotes.get(key).start();
+    note.element.classList.add("pressed");
+    this.pressedNotes.set(note, osc);
+    this.pressedNotes.get(note).start();
+
+    setTimeout(() => {
+      this.stopKey(note);
+    }, duration);
   }
 
-  stopKey(key) {
-    if (!this.pressedNotes.has(key)) {
+  stopKey(note) {
+    if (!this.pressedNotes.has(note)) {
       return;
     }
 
-    const osc = this.pressedNotes.get(key);
+    const osc = this.pressedNotes.get(note);
 
     if (osc) {
       setTimeout(() => {
         osc.stop();
       }, 2000);
 
-      this.pressedNotes.delete(key);
+      this.pressedNotes.delete(note);
     }
 
-    const keyData = this.keys[key];
-    if (keyData && keyData.element) {
-      keyData.element.classList.remove("pressed");
+    if (note.element) {
+      note.element.classList.remove("pressed");
     }
   }
 

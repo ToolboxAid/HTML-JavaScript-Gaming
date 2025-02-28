@@ -31,7 +31,7 @@ const keys = {
        { element: getElementByNote("E2"), note: "E", octaveOffset: octaveOffsetB }
 };
 
-const synthesizer = new Synthesizer(audioContext, keys);
+const synthesizer = new Synthesizer(audioContext);
 let clickedKey = "";
 
 const playSampleFroggerSong = () => {
@@ -84,10 +84,7 @@ const playSampleFroggerSong = () => {
 
     song.forEach(note => {
         setTimeout(() => {
-            synthesizer.playKey(note.key, keys[note.key]);
-            setTimeout(() => {
-                synthesizer.stopKey(note.key);
-            }, note.duration);
+            synthesizer.playKey(keys[note.key], note.duration);
         }, currentTime);
         currentTime += note.duration;
     });
@@ -144,10 +141,7 @@ const playSampleMountainSong = () => {
 
     song.forEach(note => {
         setTimeout(() => {
-            synthesizer.playKey(note.key, keys[note.key]);
-            setTimeout(() => {
-                synthesizer.stopKey(note.key);
-            }, note.duration);
+            synthesizer.playKey(keys[note.key], note.duration);
         }, currentTime);
         currentTime += note.duration;
     });
@@ -160,10 +154,10 @@ document.addEventListener("keydown", (e) => {
     const eventKey = e.key.toUpperCase();
     const key = eventKey === ";" ? "semicolon" : eventKey;
 
-    if (!key || synthesizer.isKeyPressed(key)) {
+    if (!key || synthesizer.isKeyPressed(keys[key])) {
         return;
     }
-    synthesizer.playKey(key, keys[key]);
+    synthesizer.playKey(keys[key], 1000); // Default duration
 });
 
 document.addEventListener("keyup", (e) => {
@@ -173,17 +167,17 @@ document.addEventListener("keyup", (e) => {
     if (!key) {
         return;
     }
-    synthesizer.stopKey(key);
+    synthesizer.stopKey(keys[key]);
 });
 
 for (const [key, { element }] of Object.entries(keys)) {
     element.addEventListener("mousedown", () => {
-        synthesizer.playKey(key, keys[key]);
+        synthesizer.playKey(keys[key], 1000); // Default duration
         clickedKey = key;
     });
 }
 
 document.addEventListener("mouseup", () => {
-    synthesizer.stopKey(clickedKey);
+    synthesizer.stopKey(keys[clickedKey]);
     clickedKey = "";
 });
