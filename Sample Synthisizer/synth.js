@@ -1,6 +1,5 @@
 import Synthesizer from '../scripts/output/synthesizer.js';
-
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+import { froggerSong, mountainSong, twinkleTwinkleNotes } from './songs.js';
 
 const getElementByNote = (note) =>
     note && document.querySelector(`[note="${note}"]`);
@@ -28,156 +27,91 @@ const keys = {
     L: { element: getElementByNote("D2"), note: "D", octaveOffset: octaveOffsetB },
     P: { element: getElementByNote("D#2"), note: "D#", octaveOffset: octaveOffsetB },
     semicolon:
-       { element: getElementByNote("E2"), note: "E", octaveOffset: octaveOffsetB }
+        { element: getElementByNote("E2"), note: "E", octaveOffset: octaveOffsetB }
 };
 
-const synthesizer = new Synthesizer(audioContext);
+const synthesizer = new Synthesizer();
+const pressedNotes = new Map();
 let clickedKey = "";
 
-const playSampleFroggerSong = () => {
-    const duration = 225;
-    const song = [ // "Inu No Omawarisan" by Kikuo
-        { key: 'A', duration: duration }, // C
-        { key: 'A', duration: duration }, // C
-        { key: 'E', duration: duration }, // D#
-        { key: 'E', duration: duration }, // D#
-        { key: 'G', duration: duration }, // G
-        { key: 'G', duration: duration }, // G
-        { key: 'E', duration: duration * 2 }, // D#
-        { key: 'D', duration: duration }, // D
-        { key: 'D', duration: duration }, // D
-        { key: 'C', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'A', duration: duration }, // C
-        { key: 'A', duration: duration }, // C
-        { key: 'C', duration: duration * 2 }, // C
-        { key: 'E', duration: duration }, // D#
-        { key: 'E', duration: duration }, // D#
-        { key: 'G', duration: duration }, // G
-        { key: 'G', duration: duration }, // G
-        { key: 'E', duration: duration }, // D#
-        { key: 'E', duration: duration }, // D#
-        { key: 'D', duration: duration * 2 }, // D
-        { key: 'C', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'A', duration: duration }, // C
-        { key: 'A', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'A', duration: duration * 2 },  // C
-        { key: 'G', duration: duration }, // G
-        { key: 'G', duration: duration }, // G
-        { key: 'E', duration: duration }, // D#
-        { key: 'E', duration: duration }, // D#
-        { key: 'D', duration: duration }, // D
-        { key: 'D', duration: duration }, // D
-        { key: 'C', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'A', duration: duration }, // C
-        { key: 'A', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'A', duration: duration * 2 }  // C
-    ];
+// Add controls to set the time signature and tempo
+document.getElementById('time-signature').addEventListener('change', (e) => {
+    const [beatsPerMeasure, beatUnit] = e.target.value.split('/').map(Number);
+    synthesizer.setTimeSignature(beatsPerMeasure, beatUnit);
+    updateTextboxes();
+});
 
-    let currentTime = 0;
+document.getElementById('tempo').addEventListener('change', (e) => {
+    const tempo = parseInt(e.target.value, 10);
+    synthesizer.setTempo(tempo);
+    updateTextboxes();
+});
 
-    song.forEach(note => {
-        setTimeout(() => {
-            synthesizer.playKey(keys[note.key], note.duration);
-        }, currentTime);
-        currentTime += note.duration;
-    });
+function updateTextboxes() {
+    const tempoTextbox = document.getElementById('tempo');
+    if (tempoTextbox) {
+        tempoTextbox.value = synthesizer.tempo;
+    }
+
+    const timeSignatureTextbox = document.getElementById('time-signature');
+    if (timeSignatureTextbox) {
+        timeSignatureTextbox.value = `${synthesizer.timeSignature.beatsPerMeasure}/${synthesizer.timeSignature.beatUnit}`;
+    }
+}
+
+function playSampleFroggerSong() {
+    synthesizer.playNotes(froggerSong);
 };
 
-const playSampleMountainSong = () => {
-    const duration = 250;
-    const song = [
-        { key: 'C', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'G', duration: duration }, // G
-        { key: 'G', duration: duration }, // G
-        { key: 'A', duration: duration }, // A
-        { key: 'A', duration: duration }, // A
-        { key: 'G', duration: duration * 2 }, // G
-        { key: 'F', duration: duration }, // F
-        { key: 'F', duration: duration }, // F
-        { key: 'E', duration: duration }, // E
-        { key: 'E', duration: duration }, // E
-        { key: 'D', duration: duration }, // D
-        { key: 'D', duration: duration }, // D
-        { key: 'C', duration: duration * 2 }, // C
-        { key: 'G', duration: duration }, // G
-        { key: 'G', duration: duration }, // G
-        { key: 'F', duration: duration }, // F
-        { key: 'F', duration: duration }, // F
-        { key: 'E', duration: duration }, // E
-        { key: 'E', duration: duration }, // E
-        { key: 'D', duration: duration * 2 }, // D
-        { key: 'G', duration: duration }, // G
-        { key: 'G', duration: duration }, // G
-        { key: 'F', duration: duration }, // F
-        { key: 'F', duration: duration }, // F
-        { key: 'E', duration: duration }, // E
-        { key: 'E', duration: duration }, // E
-        { key: 'D', duration: duration * 2 }, // D
-        { key: 'C', duration: duration }, // C
-        { key: 'C', duration: duration }, // C
-        { key: 'G', duration: duration }, // G
-        { key: 'G', duration: duration }, // G
-        { key: 'A', duration: duration }, // A
-        { key: 'A', duration: duration }, // A
-        { key: 'G', duration: duration * 2 }, // G
-        { key: 'F', duration: duration }, // F
-        { key: 'F', duration: duration }, // F
-        { key: 'E', duration: duration }, // E
-        { key: 'E', duration: duration }, // E
-        { key: 'D', duration: duration }, // D
-        { key: 'D', duration: duration }, // D
-        { key: 'C', duration: duration * 2 }  // C
-    ];
-
-    let currentTime = 0;
-
-    song.forEach(note => {
-        setTimeout(() => {
-            synthesizer.playKey(keys[note.key], note.duration);
-        }, currentTime);
-        currentTime += note.duration;
-    });
+function playSampleMountainSong() {
+    synthesizer.playNotes(mountainSong);
 };
+
+function playTwinkleTwinkle() {
+    synthesizer.playNotes(twinkleTwinkleNotes);
+}
 
 document.getElementById('play-frogger-music').addEventListener('click', playSampleFroggerSong);
 document.getElementById('play-mountain-music').addEventListener('click', playSampleMountainSong);
+document.getElementById('play-twinkle-music').addEventListener('click', playTwinkleTwinkle);
 
 document.addEventListener("keydown", (e) => {
     const eventKey = e.key.toUpperCase();
     const key = eventKey === ";" ? "semicolon" : eventKey;
 
-    if (!key || synthesizer.isKeyPressed(keys[key])) {
+    if (!keys[key] || pressedNotes.has(keys[key])) {
         return;
     }
-    synthesizer.playKey(keys[key], 1000); // Default duration
+    keys[key].element.classList.add("pressed");
+    synthesizer.playNoteDirectly(keys[key].note, '4n'); // Default note type
+    pressedNotes.set(keys[key], true);
 });
 
 document.addEventListener("keyup", (e) => {
     const eventKey = e.key.toUpperCase();
     const key = eventKey === ";" ? "semicolon" : eventKey;
 
-    if (!key) {
+    if (!keys[key]) {
         return;
     }
-    synthesizer.stopKey(keys[key]);
+    keys[key].element.classList.remove("pressed");
+    pressedNotes.delete(keys[key]);
+});
+
+document.addEventListener("mouseup", () => {
+    if (clickedKey && keys[clickedKey]) {
+        keys[clickedKey].element.classList.remove("pressed");
+        pressedNotes.delete(keys[clickedKey]);
+        clickedKey = "";
+    }
 });
 
 for (const [key, { element }] of Object.entries(keys)) {
     element.addEventListener("mousedown", () => {
-        synthesizer.playKey(keys[key], 1000); // Default duration
+        element.classList.add("pressed");
+        synthesizer.playNoteDirectly(keys[key].note, '4n'); // Default note type
+        pressedNotes.set(keys[key], true);
         clickedKey = key;
     });
 }
 
-document.addEventListener("mouseup", () => {
-    synthesizer.stopKey(keys[clickedKey]);
-    clickedKey = "";
-});

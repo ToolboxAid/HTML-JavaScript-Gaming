@@ -1,7 +1,43 @@
 class Synthesizer {
-  constructor(audioContext) {
-    this.audioContext = audioContext;
-    this.pressedNotes = new Map();
+
+  // Enable debug mode: game.html?synthesizer
+  static DEBUG = new URLSearchParams(window.location.search).has('synthesizer');
+
+  constructor() {
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    this.timeSignature = { beatsPerMeasure: 4, beatUnit: 4 }; // Default time signature 4/4
+    this.tempo = 120; // Default tempo in BPM
+  }
+
+  setTimeSignature(beatsPerMeasure, beatUnit) {
+    this.timeSignature = { beatsPerMeasure, beatUnit };
+    if (Synthesizer.DEBUG) {
+      console.log(`Updated time signature to ${this.timeSignature.beatsPerMeasure}/${this.timeSignature.beatUnit} ::: tempo set to ${this.tempo} BPM`);
+    }
+  }
+
+  setTempo(tempo) { // tempo in BPM
+    this.tempo = tempo;
+    if (Synthesizer.DEBUG) {
+      console.log(`Updated tempo to ${this.tempo} BPM ::: time signature set to ${this.timeSignature.beatsPerMeasure}/${this.timeSignature.beatUnit}`);
+    }
+  }
+
+  getNoteDuration(noteType) {
+    const noteDurations = {
+      '1n': 4, // whole note
+      '2n': 2, // half note
+      '4n': 1, // quarter note
+      '8n': 0.5, // eighth note
+      '16n': 0.25, // sixteenth note
+      '32n': 0.125, // thirty-second note
+      '64n': 0.0625 // sixty-fourth note
+    };
+    const beatsPerMeasure = this.timeSignature.beatsPerMeasure;
+    const beatUnit = this.timeSignature.beatUnit;
+    const beatDuration = 60 / this.tempo; // duration of one beat in seconds
+
+    return (noteDurations[noteType] || 1) * (4 / beatUnit) * beatDuration; // adjust for time signature
   }
 
   getHz(note = "A", octave = 4) {
@@ -55,12 +91,31 @@ class Synthesizer {
     return A4 * Math.pow(2, N / 12);
   }
 
-  playKey(note, duration) {
-    if (!note || !duration) {
-      return;
-    }
+  /** Other valid values for note durations include:
+1n for a whole note
+2n for a half note
+4n for a quarter note
+8n for an eighth note
+16n for a sixteenth note
+32n for a thirty-second note
+64n for a sixty-fourth note
+} notes 
+ */
+  playNotes(notes) {
+    let currentTime = 0;
 
-    console.log("playKey", note, duration);
+    notes.forEach(note => {
+      setTimeout(() => {
+        this.playNoteDirectly(note.note, note.duration);
+      }, currentTime);
+      currentTime += this.getNoteDuration(note.duration) * 1000; // Convert to milliseconds
+    });
+  }
+
+  playNoteDirectly(note, duration) {
+    // if (!note || !noteType) {
+    //   return;
+    // }  
     const osc = this.audioContext.createOscillator();
     const noteGainNode = this.audioContext.createGain();
     noteGainNode.connect(this.audioContext.destination);
@@ -92,45 +147,54 @@ class Synthesizer {
     setRelease();
 
     osc.connect(noteGainNode);
-    osc.type = "sine";
 
-    const freq = this.getHz(note.note, (note.octaveOffset || 0) + 3);
+    /*
+    osc.type = "sine", "square", "sawtooth", "triangle", "custom"; // Custom waveform (requires a PeriodicWave object)
+    */
+    osc.type = "triangle";
+
+    const freq = this.getHz(note, 3); // Default to octave 4
     if (Number.isFinite(freq)) {
       osc.frequency.value = freq;
     }
 
-    note.element.classList.add("pressed");
-    this.pressedNotes.set(note, osc);
-    this.pressedNotes.get(note).start();
-
+    osc.start();
     setTimeout(() => {
-      this.stopKey(note);
-    }, duration);
+      osc.stop();
+    }, this.getNoteDuration(duration) * 1000); // Convert duration to milliseconds
   }
 
-  stopKey(note) {
-    if (!this.pressedNotes.has(note)) {
-      return;
-    }
+  static bpmToSignature(bpm, beatsPerMeasure, noteValue) {
+    // Convert BPM to quarter note beats per minute
+    let quarterNoteBpm = (noteValue === 4) ? bpm : bpm * (noteValue / 4);
 
-    const osc = this.pressedNotes.get(note);
+    // Measure duration in seconds
+    let measureDuration = (beatsPerMeasure / quarterNoteBpm) * 60;
 
-    if (osc) {
-      setTimeout(() => {
-        osc.stop();
-      }, 2000);
-
-      this.pressedNotes.delete(note);
-    }
-
-    if (note.element) {
-      note.element.classList.remove("pressed");
-    }
+    return {
+      measureDuration: measureDuration.toFixed(2),
+      timeSignature: `${beatsPerMeasure}/${noteValue}`
+    };
   }
 
-  isKeyPressed(key) {
-    return this.pressedNotes.has(key);
+  static signatureToBpm(measureDuration, beatsPerMeasure, noteValue) {
+    // Calculate quarter note BPM
+    let quarterNoteBpm = (beatsPerMeasure * 60) / measureDuration;
+
+    // Adjust BPM based on note value
+    let bpm = (noteValue === 4) ? quarterNoteBpm : quarterNoteBpm / (noteValue / 4);
+
+    return Math.round(bpm);
   }
+
 }
 
 export default Synthesizer;
+
+if (Synthesizer.DEBUG) {
+  // Example usage:
+  console.log(Synthesizer.bpmToSignature(100, 4, 4));  // { measureDuration: '2.40', timeSignature: '4/4' }
+  console.log(Synthesizer.bpmToSignature(120, 6, 8));  // { measureDuration: '3.00', timeSignature: '6/8' }
+  console.log(Synthesizer.signatureToBpm(2.4, 4, 4));  // 100
+  console.log(Synthesizer.signatureToBpm(3.0, 6, 8));  // 120
+}
