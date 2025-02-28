@@ -129,12 +129,12 @@ class Ship extends ObjectVector {
         this.accelerationX = 0;
         this.accelerationY = 0;
 
-        if (keyboardInput.isKeyDown('ArrowUp')) {
+        if (keyboardInput.isKeyDown('ArrowUp') && this.isAlive()) {
             const vectorDirection = AngleUtils.angleToVector(this.rotationAngle);
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
             this.showThrustFlame = true;
-            Ship.audioPlayer.playAudio('thrust.wav', 0.75); // 50% volume
+            Ship.audioPlayer.playAudio('thrust.wav', 0.75); // 75% volume
 
         } else {
             this.velocityX *= this.friction;
