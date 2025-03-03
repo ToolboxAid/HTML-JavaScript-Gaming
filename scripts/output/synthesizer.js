@@ -91,56 +91,54 @@ class Synthesizer {
     return A4 * Math.pow(2, N / 12);
   }
 
-  /** Other valid values for note durations include:
-1n for a whole note
-2n for a half note
-4n for a quarter note
-8n for an eighth note
-16n for a sixteenth note
-32n for a thirty-second note
-64n for a sixty-fourth note
-} notes 
- */
-  playNotes(notes) {
-    let currentTime = 0;
+  playNotes(noteObject) {
+    const startTime = this.audioContext.currentTime;
+    const measureDuration = this.getMeasureDuration();
 
-    notes.forEach(note => {
-      setTimeout(() => {
-        this.playNoteDirectly(note.note, note.duration);
-      }, currentTime);
-      currentTime += this.getNoteDuration(note.duration) * 1000; // Convert to milliseconds
-    });
+    const playHand = (notes) => {
+      notes.forEach(noteObj => {
+        const duration = this.getNoteDuration(noteObj.duration);
+        const noteStartTime = startTime + noteObj.beat * measureDuration / this.timeSignature.beatsPerMeasure;
+        this.playNoteDirectly(noteObj.note, noteObj.duration, noteObj.octave, noteStartTime - startTime);
+      });
+    };
+
+    if (noteObject.leftHand) {
+      playHand(noteObject.leftHand);
+    }
+    if (noteObject.rightHand) {
+      playHand(noteObject.rightHand);
+    }
   }
 
-  playNoteDirectly(note, duration) {
-    // if (!note || !noteType) {
-    //   return;
-    // }  
+  getMeasureDuration() {
+    return (60 / this.tempo) * this.timeSignature.beatsPerMeasure;
+  }
+
+  playNoteDirectly(note, duration,
+    octave = 3,
+    startTime = 0,
+    oscType = "triangle",  // Use "triangle" or "sawtooth" for a richer sound
+    vibrato = { frequency: 5, depth: 5 },  // Add vibrato for a more dynamic sound
+    delay = { time: 0.2, feedback: 0.5, amount: 0.2 },
+    envelope = { attack: 0.01, decay: 0.1, sustain: 0.8, release: 0.5 }) {
+
+      if (Synthesizer.DEBUG) {
+        console.log(`Playing note ${note}${octave} for ${duration} seconds starting at ${startTime} seconds`);
+      }
+
     const osc = this.audioContext.createOscillator();
     const noteGainNode = this.audioContext.createGain();
     noteGainNode.connect(this.audioContext.destination);
 
     const zeroGain = 0.00001;
-    const maxGain = 0.5;
-    const sustainedGain = 0.001;
+    const maxGain = 0.6;
 
     noteGainNode.gain.value = zeroGain;
 
-    const setAttack = () =>
-      noteGainNode.gain.exponentialRampToValueAtTime(
-        maxGain,
-        this.audioContext.currentTime + 0.01
-      );
-    const setDecay = () =>
-      noteGainNode.gain.exponentialRampToValueAtTime(
-        sustainedGain,
-        this.audioContext.currentTime + 1
-      );
-    const setRelease = () =>
-      noteGainNode.gain.exponentialRampToValueAtTime(
-        zeroGain,
-        this.audioContext.currentTime + 2
-      );
+    const setAttack = () => noteGainNode.gain.exponentialRampToValueAtTime(maxGain, this.audioContext.currentTime + startTime + envelope.attack);
+    const setDecay = () => noteGainNode.gain.exponentialRampToValueAtTime(maxGain * envelope.sustain, this.audioContext.currentTime + startTime + envelope.attack + envelope.decay);
+    const setRelease = () => noteGainNode.gain.exponentialRampToValueAtTime(zeroGain, this.audioContext.currentTime + startTime + envelope.attack + envelope.decay + this.getNoteDuration(duration) + envelope.release);
 
     setAttack();
     setDecay();
@@ -148,20 +146,45 @@ class Synthesizer {
 
     osc.connect(noteGainNode);
 
-    /*
-    osc.type = "sine", "square", "sawtooth", "triangle", "custom"; // Custom waveform (requires a PeriodicWave object)
-    */
-    osc.type = "triangle";
+    osc.type = oscType; // Set oscillator type
 
-    const freq = this.getHz(note, 3); // Default to octave 4
+    const freq = this.getHz(note, octave);
     if (Number.isFinite(freq)) {
       osc.frequency.value = freq;
     }
 
-    osc.start();
-    setTimeout(() => {
-      osc.stop();
-    }, this.getNoteDuration(duration) * 1000); // Convert duration to milliseconds
+    // Create LFO for vibrato
+    const lfo = this.audioContext.createOscillator();
+    const lfoGain = this.audioContext.createGain();
+    lfo.frequency.value = vibrato.frequency; // Vibrato frequency (min: 0, max: 20, recommended 1-10 Hz)
+    lfoGain.gain.value = vibrato.depth; // Vibrato depth (min: 0, max: 100, recommended 1-50)
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+
+    // Create delay effect
+    const delayNode = this.audioContext.createDelay();
+    const delayAmountGain = this.audioContext.createGain();
+    const feedbackGain = this.audioContext.createGain();
+    delayNode.delayTime.value = delay.time; // Delay time (min: 0, max: 5, recommended 0.1-1)
+    feedbackGain.gain.value = delay.feedback; // Delay feedback (min: 0, max: 0.9, recommended 0.3-0.7)
+    delayAmountGain.gain.value = delay.amount; // Delay amount (min: 0, max: 1, recommended 0.1-0.5)
+    noteGainNode.connect(delayAmountGain);
+    delayAmountGain.connect(delayNode);
+    delayNode.connect(feedbackGain);
+    feedbackGain.connect(delayNode);
+    delayNode.connect(this.audioContext.destination);
+
+    // Add reverb effect
+    const reverbNode = this.audioContext.createConvolver();
+    // Assuming you have a reverb impulse response buffer loaded as `reverbBuffer`
+    // reverbNode.buffer = reverbBuffer;
+    noteGainNode.connect(reverbNode);
+    reverbNode.connect(this.audioContext.destination);
+
+    lfo.start(this.audioContext.currentTime + startTime);
+    osc.start(this.audioContext.currentTime + startTime);
+    osc.stop(this.audioContext.currentTime + startTime + this.getNoteDuration(duration));
+    lfo.stop(this.audioContext.currentTime + startTime + this.getNoteDuration(duration));
   }
 
   static bpmToSignature(bpm, beatsPerMeasure, noteValue) {

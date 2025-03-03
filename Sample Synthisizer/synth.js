@@ -1,10 +1,10 @@
 import Synthesizer from '../scripts/output/synthesizer.js';
-import { froggerSong, mountainSong, twinkleTwinkleNotes } from './songs.js';
+import { froggerSong, shellBeSongComingAroundMountain, twinkleTwinkle} from './songs.js';
 
 const getElementByNote = (note) =>
     note && document.querySelector(`[note="${note}"]`);
 
-const octaveOffsetA = 0; // Audiable values are -3 to 3 octaves below middle C
+const octaveOffsetA = 3; // Audiable values are -3 to 3 octaves below middle C
 const octaveOffsetB = octaveOffsetA + 1;
 const keys = {
     // octaveOffsetA
@@ -64,16 +64,24 @@ function playSampleFroggerSong() {
 };
 
 function playSampleMountainSong() {
-    synthesizer.playNotes(mountainSong);
+    synthesizer.playNotes(shellBeSongComingAroundMountain);
 };
 
 function playTwinkleTwinkle() {
-    synthesizer.playNotes(twinkleTwinkleNotes);
+    synthesizer.playNotes(twinkleTwinkle);
+}
+
+function playSamplePianoSong() {
+    // 🎵 Play Both Hands
+    console.log('Playing Piano Song');
+    synthesizer.playNotes({ leftHand, rightHand });
+    console.log('Finished Playing Piano Song');
 }
 
 document.getElementById('play-frogger-music').addEventListener('click', playSampleFroggerSong);
 document.getElementById('play-mountain-music').addEventListener('click', playSampleMountainSong);
 document.getElementById('play-twinkle-music').addEventListener('click', playTwinkleTwinkle);
+document.getElementById('play-piano-music').addEventListener('click', playSamplePianoSong);
 
 document.addEventListener("keydown", (e) => {
     const eventKey = e.key.toUpperCase();
@@ -83,7 +91,7 @@ document.addEventListener("keydown", (e) => {
         return;
     }
     keys[key].element.classList.add("pressed");
-    synthesizer.playNoteDirectly(keys[key].note, '4n'); // Default note type
+    synthesizer.playNoteDirectly(keys[key].note, '4n', keys[key].octaveOffset); // Default note type
     pressedNotes.set(keys[key], true);
 });
 
@@ -109,7 +117,7 @@ document.addEventListener("mouseup", () => {
 for (const [key, { element }] of Object.entries(keys)) {
     element.addEventListener("mousedown", () => {
         element.classList.add("pressed");
-        synthesizer.playNoteDirectly(keys[key].note, '4n'); // Default note type
+        synthesizer.playNoteDirectly(keys[key].note, '4n', keys[key].octaveOffset); // Default note type
         pressedNotes.set(keys[key], true);
         clickedKey = key;
     });

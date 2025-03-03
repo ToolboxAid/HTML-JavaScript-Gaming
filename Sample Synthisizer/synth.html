@@ -7,6 +7,8 @@
     <title>Sample Synthesizer</title>
     <link rel="stylesheet" href="./synth.css">
     <script type="module" src="./synth.js" defer></script>
+
+    <script type="module" src="./pianoPlayer.js" defer></script>
 </head>
 
 <body>
@@ -38,11 +40,12 @@
         <label for="time-signature">Time Signature:</label>
         <input type="text" id="time-signature" value="4/4">
         <label for="tempo">Tempo (BPM):</label>
-        <input type="number" id="tempo" value="120" step="1" min="30" max="300">
+        <input type="number" id="tempo" value="290" step="1" min="30" max="300">
 
         <button id="play-frogger-music">Play 'Frogger' Music</button>
         <button id="play-mountain-music">Play 'Comming around the mountain' Music</button>
         <button id="play-twinkle-music">Play 'Twinkle Twinkle Little Star' Music</button>
+        <button id="play-piano-music">Play 'Piano' Music</button>
     </p>
 </body>
 
