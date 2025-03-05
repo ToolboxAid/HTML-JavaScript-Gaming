@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDI Player Example</title>
+</head>
+<body>
+    <h1>MIDI Player Example</h1>
+    <div id='cntls'>
+        <p>
+            <input type="file" id="filesinput" name="filesarr[]" accept=".mid,.midi,.kar" />
+            <button type="button" id="play-button">Play</button>
+            <button type="button" id="pause-button">Pause</button>
+            <button type="button" id="stop-button">Stop</button>
+            <input id="position" type="range" min="0" max="100" value="0">
+            <input type="checkbox" id="autoplay" checked>Autoplay
+        </p>
+    </div>
+    <script type="module">
+        import MidiPlayer from '../scripts/output/midiPlayer.js';
+
+        const midiPlayer = new MidiPlayer('filesinput');
+
+        document.getElementById('play-button').addEventListener('click', () => midiPlayer.play());
+        document.getElementById('pause-button').addEventListener('click', () => midiPlayer.pause());
+        document.getElementById('stop-button').addEventListener('click', () => midiPlayer.stop());
+        document.getElementById('autoplay').addEventListener('change', (e) => midiPlayer.setAutoplay(e.target.checked));
+    </script>
+</body>
+</html>

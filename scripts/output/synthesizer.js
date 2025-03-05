@@ -23,6 +23,11 @@ class Synthesizer {
     }
   }
 
+  getMeasureDuration() {
+    console.log(this.tempo, this.timeSignature.beatsPerMeasure);
+    return (60 / this.tempo) * this.timeSignature.beatsPerMeasure;
+  }
+
   getNoteDuration(noteType) {
     const noteDurations = {
       '1n': 4, // whole note
@@ -33,15 +38,14 @@ class Synthesizer {
       '32n': 0.125, // thirty-second note
       '64n': 0.0625 // sixty-fourth note
     };
-    const beatsPerMeasure = this.timeSignature.beatsPerMeasure;
     const beatUnit = this.timeSignature.beatUnit;
     const beatDuration = 60 / this.tempo; // duration of one beat in seconds
 
     return (noteDurations[noteType] || 1) * (4 / beatUnit) * beatDuration; // adjust for time signature
   }
 
-  getHz(note = "A", octave = 4) {
-    const A4 = 440;
+  getNoteHz(note = "A", octave = 4) {
+    const A4 = 440; // Frequency of A4
     let N = 0;
     switch (note) {
       default:
@@ -87,8 +91,8 @@ class Synthesizer {
         N = 11;
         break;
     }
-    N += 12 * (octave - 4);
-    return A4 * Math.pow(2, N / 12);
+    N += 12 * (octave - 4); // Adjust N based on the octave
+    return A4 * Math.pow(2, N / 12); // Calculate the frequency
   }
 
   playNotes(noteObject) {
@@ -111,21 +115,16 @@ class Synthesizer {
     }
   }
 
-  getMeasureDuration() {
-    return (60 / this.tempo) * this.timeSignature.beatsPerMeasure;
-  }
 
   playNoteDirectly(note, duration,
-    octave = 3,
+    octave = 3, // Valid values for octave: 0 to 8
     startTime = 0,
     oscType = "triangle",  // Use "triangle" or "sawtooth" for a richer sound
     vibrato = { frequency: 5, depth: 5 },  // Add vibrato for a more dynamic sound
     delay = { time: 0.2, feedback: 0.5, amount: 0.2 },
     envelope = { attack: 0.01, decay: 0.1, sustain: 0.8, release: 0.5 }) {
 
-      if (Synthesizer.DEBUG) {
-        console.log(`Playing note ${note}${octave} for ${duration} seconds starting at ${startTime} seconds`);
-      }
+    if (Synthesizer.DEBUG) { console.log(`Playing note ${note}${octave} for ${duration} seconds starting at ${startTime} seconds`); }
 
     const osc = this.audioContext.createOscillator();
     const noteGainNode = this.audioContext.createGain();
@@ -148,7 +147,7 @@ class Synthesizer {
 
     osc.type = oscType; // Set oscillator type
 
-    const freq = this.getHz(note, octave);
+    const freq = this.getNoteHz(note, octave);
     if (Number.isFinite(freq)) {
       osc.frequency.value = freq;
     }

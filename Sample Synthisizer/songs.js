@@ -2,7 +2,42 @@
 // Duration valid values: 1n, 2n, 4n, 8n, 16n, 32n, 64n
 // Octave valid values: 0 to 8n
 
-// 🎼 Right Hand (Melody - Treble Clef)
+/**
+Frogger Theme (Inu No Omawarisan) is a exuberant song by Video Game Players 
+with a tempo of 130 BPM. It can also be used half-time at 65 BPM 
+or double-time at 260 BPM. The track runs 37 seconds long with a B key and
+ a major mode. It has average energy and is very danceable with 
+ a time signature of 4 beats per bar .
+
+Song Metrics
+Key B
+Duration 0:37
+Tempo (BPM) 130
+
+Oh, poor stray little kitty
+Does she know where her home is?
+She doesn't know her address
+She doesn't even know her name
+Meow-meow meow-meow
+Meow-meow meow-meow
+She's just crying and crying
+The dog policeman
+He has no idea what to do
+Bow-wow bow-wow
+Bow-wow bow-wow
+
+Oh, poor stray little kitty
+Does anyone know where her home is?
+The crow doesn't know her address
+The sparrow doesn't know it either
+Meow-meow meow-meow
+Meow-meow meow-meow
+She's just crying and crying
+The dog policeman
+He has no idea what to do
+Bow-wow bow-wow
+Bow-wow bow-wow
+ */
 export const froggerSong = {
     // 🎶 Left Hand (Accompaniment - Bass Clef)
     leftHand: [
