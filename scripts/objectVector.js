@@ -39,10 +39,6 @@ class ObjectVector extends ObjectKillable {
         this.vectorMap = vectorMap;
         this.drawBounds = false;
 
-        if (SystemUtils.getObjectType(this) === 'Bullet') {
-            console.log(`this.vectorMap for '${SystemUtils.getObjectType(this)}', ${JSON.stringify(this.vectorMap)}`);
-        }
-
         // Initialize animation properties
         this.currentFrameIndex = 0;
         this.delayCounter = 0;

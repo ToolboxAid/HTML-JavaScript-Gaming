@@ -7,11 +7,12 @@
 import Timer from '../scripts/utils/timer.js';
 import UFO from './ufo.js';
 import CollisionUtils from '../scripts/physics/collisionUtils.js';
+import CanExplode from '../scripts/utils/canExplode.js';
 
 /**
  * Manages UFO creation, updates, and cleanup
  */
-class UFOManager {
+class UFOManager extends CanExplode {
     // Constants
     static UFO_SPAWN_INTERVAL = 25000; // 25 seconds
     static DEBUG_SPAWN_INTERVAL = 3000; // 3 seconds for testing
@@ -21,6 +22,7 @@ class UFOManager {
     static audioPlayer = null;
 
     constructor(audioPlayer) {
+        super();
         this.ufo = null;
         this.ufoTimer = new Timer(
             UFOManager.DEBUG ? UFOManager.DEBUG_SPAWN_INTERVAL : UFOManager.UFO_SPAWN_INTERVAL
@@ -36,6 +38,8 @@ class UFOManager {
         } else if (this.canSpawnNewUFO()) {
             this.spawnNewUFO();
         }
+
+        this.updateParticleExplosion(deltaTime);
     }
 
     updateExistingUFO(deltaTime, ship) {
@@ -72,12 +76,7 @@ class UFOManager {
     }
 
     check(ship) {
-        if (!ship?.isAlive()) return;
-        this.checkShipCollision(ship);
-    }
-
-    checkShipCollision(ship) {
-        if (!this.ufo?.isAlive()) return;
+        if (!ship?.isAlive() || !this.ufo) return;
 
         const collision = CollisionUtils.vectorCollisionDetection(this.ufo, ship);
         if (collision) {
@@ -86,15 +85,18 @@ class UFOManager {
     }
 
     handleShipCollision(ship) {
-        ship.setIsDying();
-        this.ufo.setHit();
-
         if (UFOManager.DEBUG) {
-            console.log("Ship collision detected:", {
+            console.log("Ship/UFO collision detected:", {
                 ship: ship,
                 ufo: this.ufo
             });
         }
+
+        ship.setIsDying();
+        this.createExplosion(ship);
+
+        this.ufo.setHit();
+        this.createExplosion(this.ufo);
     }
 
     destroyDeadUFO() {

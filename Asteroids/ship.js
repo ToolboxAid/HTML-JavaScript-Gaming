@@ -83,14 +83,43 @@ class Ship extends ObjectVector {
     }
 
     checkCollisions() {
+        // Check if ship hits asteroids
         this.asteroidManager.checkShip(this);
 
+        // Check if UFO hits ship
+        this.asteroidManager.checkShip(this.ufoManager.ufo);
+
+        // Check if bullets hit asteroids
         this.bulletManager.bullets.forEach(bullet => {
             this.asteroidManager.checkBullet(bullet);
-        }
-        );
+        });
 
-        //this.bulletManager.check(this);
+        // Check if UFO bullets hit asteroid
+        this.ufoManager.ufo?.bulletManager.bullets.forEach(bullet => {
+            this.asteroidManager.checkBullet(bullet);
+        });
+
+        // Check if UFO hit by ship bullets
+        this.bulletManager.bullets.forEach(bullet => {
+            if (this.ufoManager.ufo && bullet.collisionDetection(this.ufoManager.ufo)) {
+                bullet.setIsDead();
+                this.ufoManager.ufo.setIsDying();
+                this.ufoManager.createExplosion(this.ufoManager.ufo);
+            }
+        });
+
+        // Check if ship hit by UFO bullets
+        if (this.isAlive()) {
+            this.ufoManager.ufo?.bulletManager.bullets.forEach(bullet => {
+                if (bullet.collisionDetection(this)) {
+                    bullet.setIsDead();
+                    this.setShipHit();
+                    this.ufoManager.createExplosion(this);
+                }
+            });
+        }
+
+        // Check if ship hits UFO
         this.ufoManager.check(this);
     }
 
@@ -230,6 +259,7 @@ class Ship extends ObjectVector {
             ctx.fillText(info, 10, 20 * (index + 1));
         });
     }
+
 }
 
 export default Ship;

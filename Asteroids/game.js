@@ -262,8 +262,6 @@ class Game extends GameBase {
     this.ships[this.currentPlayer].safeDraw();
 
     this.drawLivesScores();
-
-    console.log("============================safeSpawn");
   }
 
   playGame(deltaTime) {

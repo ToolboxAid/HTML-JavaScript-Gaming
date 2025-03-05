@@ -10,15 +10,15 @@ import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import GeometryUtils from '../scripts/math/geometryUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 import SystemUtils from '../scripts/utils/systemUtils.js';
+import CanExplode from '../scripts/utils/canExplode.js';
 
-import ParticleExplosion from '../scripts/gfx/particleExplosion.js';
-
-class AsteroidManager {
+class AsteroidManager extends CanExplode {
     // Enable debug mode: game.html?asteroidManager
     static DEBUG = new URLSearchParams(window.location.search).has('asteroidManager');
 
     static audioPlayer = null;
     constructor(audioPlayer) {
+        super();
         this.asteroids = new Map();
         this.asteroidID = 0;
         this.level = 1;
@@ -51,71 +51,6 @@ class AsteroidManager {
         }
     }
 
-    // Create an explosion when an asteroid is hit
-    static explosions = [];
-    static lastExplosionTime = 0;
-    static EXPLOSION_INTERVAL = 500; // 5 seconds in milliseconds
-
-    // Test: Create new explosion every 0.5 seconds
-    static newParticleExplosion(x, y, radius, particleRadius = 3.5) {
-        const explosion = new ParticleExplosion(
-            x,               // x position
-            y,               // y position
-            0,               // start radius
-            radius,          // end radius
-            1.0,             // duration in seconds
-            radius / 4,      // number of particles
-            particleRadius,  // Particle Radius
-        );
-
-        AsteroidManager.explosions.push(explosion);
-
-        if (AsteroidManager.DEBUG) {
-            console.log(`explosion:${JSON.stringify(explosion)}`);
-        }
-    }
-
-    createExplosion(object) {
-        AsteroidManager.newParticleExplosion(
-            object.x,
-            object.y,
-            object.explosionRadius,
-            1.5
-        );
-
-        if (AsteroidManager.DEBUG) {
-            console.log(`AsteroidManager.explosions:
-                ${JSON.stringify(object.x)}
-                ${JSON.stringify(object.y)}
-                ${JSON.stringify(object.size)}
-                ${JSON.stringify(AsteroidManager.explosions)}`
-            );
-        }
-    }
-
-    hasActiveExplosions() {
-        return AsteroidManager.explosions.length;
-    }
-
-
-    updateParticleExplosion(deltaTime) {
-        AsteroidManager.explosions = AsteroidManager.explosions.filter(explosion => {
-            if (!explosion || explosion.isDone) {
-                if (explosion) {
-                    explosion.destroy();
-                }
-                return false;
-            }
-
-            if (explosion.update(deltaTime)) {
-                explosion.destroy();
-                return false;
-            }
-            explosion.draw();
-            return true;
-        });
-    }
-
     createAsteroid(x, y, size) {
         const key = `${size}-${this.asteroidID++}`;
         const asteroid = new Asteroid(x, y, size);
@@ -143,44 +78,29 @@ class AsteroidManager {
         this.asteroids.forEach(asteroid => {
             if (GeometryUtils.getDistanceObjects(ship, asteroid) < SAFE_DISTANCE) {
                 isSafe = false;
+                if (AsteroidManager.DEBUG) {
+                    console.log("#########################isSafe:", GeometryUtils.getDistanceObjects(ship, asteroid), isSafe, ship, asteroid);
+                }
             }
         });
-        console.log("#########################isSafe:", isSafe);
         return isSafe;
     }
 
-    checkShip(ship) {
-        if (ship && ship.isAlive()) {
+    checkShip(object) {
+        if (object && object.isAlive()) {
             this.asteroids.forEach((asteroid, asteroidKey) => {
-                if (CollisionUtils.vectorCollisionDetection(ship, asteroid)) {
+                if (CollisionUtils.vectorCollisionDetection(object, asteroid)) {
                     if (AsteroidManager.DEBUG) {
-                        console.log("Ship hit:", { ship, asteroid, asteroidKey });
+                        console.log("Ship hit:", { object, asteroid, asteroidKey });
                     }
-                    ship.setIsDying();
-                    this.createExplosion(ship);
+                    object.setIsDying();
+                    this.createExplosion(object);
+
+                    this.setAsteroidHit(asteroid, asteroidKey);
                 }
             });
         }
     }
-
-    // checkUFO(ufo) {
-    //     if (this.ufo && this.ufo.isAlive()) {
-    //         if (AsteroidManager.DEBUG) {
-    //             console.log("UFO update", "ufoTimer.getProgress", this.ufo, this.ufoTimer.getProgress(), this.ufoTimer);
-    //         }
-
-    //         this.asteroids.forEach((asteroid, asteroidKey) => {
-    //             if (CollisionUtils.vectorCollisionDetection(ufo, asteroid)) {
-    //                 this.setAsteroidHit(asteroid, asteroidKey);
-    //                 ufo.setIsDying();
-
-    //                 if (AsteroidManager.DEBUG) {
-    //                     console.log("UFO hit asteroid");
-    //                 }
-    //             }
-    //         });
-    //     }
-    // }
 
     checkBullet(bullet) {
         let score = 0;
