@@ -22,7 +22,7 @@ class Bullet extends ObjectVector {
     const angleInRadians = angleInDegrees * (Math.PI / 180);
 
     // Calculate the nose offset in world space (taking into account ship's rotation)
-    const noseDistance = 14; // Distance from ship center to nose
+    const noseDistance = 15; // Distance from ship center to nose
     const noseX = Math.cos(angleInRadians) * noseDistance;  // Rotate the x-component of the nose vector
     const noseY = Math.sin(angleInRadians) * noseDistance;  // Rotate the y-component of the nose vector
 

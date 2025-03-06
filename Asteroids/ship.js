@@ -39,7 +39,6 @@ class Ship extends ObjectVector {
         this.initializeManagers();
         this.reset();
 
-        //TODO: still need flame
         this.showThrustFlame = false;
 
         Ship.audioPlayer = audioPlayer;
@@ -119,6 +118,17 @@ class Ship extends ObjectVector {
             });
         }
 
+        // Check if ship hit by Ship bullets (hit myself)
+        if (this.isAlive()) {
+            this.bulletManager.bullets.forEach(bullet => {
+                if (bullet.collisionDetection(this)) {
+                    bullet.setIsDead();
+                    this.setShipHit();
+                    this.asteroidManager.createExplosion(this);
+                }
+            });
+        }
+
         // Check if ship hits UFO
         this.ufoManager.check(this);
     }
@@ -154,7 +164,6 @@ class Ship extends ObjectVector {
     }
 
     handleThrust(deltaTime, keyboardInput) {
-        //TODO: add thrust flame
         this.accelerationX = 0;
         this.accelerationY = 0;
 
@@ -219,6 +228,9 @@ class Ship extends ObjectVector {
     draw() {
         if (this.isAlive()) {
             super.draw();
+            if (this.showThrustFlame) {
+                //this.drawThrustFlame(); //TODO: still need flame
+            }
         }
         if (Ship.DEBUG) {
             this.drawShipDebug();
