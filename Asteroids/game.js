@@ -268,12 +268,10 @@ class Game extends GameBase {
     this.gamePauseCheck();
 
     this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
-    //TODO: fix score
-    //this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
+    this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
 
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
-      console.log("----------pre", this.gameState);
       const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
@@ -283,7 +281,6 @@ class Game extends GameBase {
       if (this.gameState === "playGame") {
         this.gameState = "flashScore";
       }
-      console.log("----------post", this.gameState, result);
       // Update the current player and 
       // lives based on the result from swapPlayer
       this.currentPlayer = result.updatedPlayer;

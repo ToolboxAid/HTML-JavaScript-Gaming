@@ -108,7 +108,7 @@ class Ship extends ObjectVector {
 
         // Check if bullets hit asteroids
         this.bulletManager.bullets.forEach(bullet => {
-            this.asteroidManager.checkBullet(bullet);
+            this.score += this.asteroidManager.checkBullet(bullet);
         });
 
         // Check if UFO bullets hit asteroid
@@ -122,6 +122,7 @@ class Ship extends ObjectVector {
                 bullet.setIsDead();
                 this.ufoManager.ufo.setIsDying();
                 this.ufoManager.createExplosion(this.ufoManager.ufo);
+                this.score += this.ufoManager.ufo.getValue();
             }
         });
 
@@ -212,6 +213,12 @@ class Ship extends ObjectVector {
     updatePosition(deltaTime) {
         super.update(deltaTime);
         this.checkWrapAround();
+    }
+
+    getValue() {
+        const score = this.score;
+        this.score = 0;
+        return score;
     }
 
     handleShooting(keyboardInput) {

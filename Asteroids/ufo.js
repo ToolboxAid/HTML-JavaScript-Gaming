@@ -240,6 +240,10 @@ class UFO extends ObjectVector {
         return UFO.MOVEMENT.STRAIGHT;
     }
 
+    getValue(){
+        return this.isSmall ? 200 : 100;
+    }
+
     isAtVerticalBoundary() {
         return this.y > CanvasUtils.getConfigHeight() - this.height - UFO.BOUNDARY_MARGIN ||
             this.y <= UFO.BOUNDARY_MARGIN;
