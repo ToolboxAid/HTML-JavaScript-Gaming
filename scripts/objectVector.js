@@ -51,7 +51,7 @@ class ObjectVector extends ObjectKillable {
         this.rotatedPoints = [];
 
         // Calculate initial object bounds
-        this.calculateObjectBounds();
+        this.calculateObjectBounds(this.vectorMap);
 
         // Update dimensions based on calculated bounds
         this.width = this.boundWidth;
@@ -105,10 +105,10 @@ class ObjectVector extends ObjectKillable {
         };
     }
 
-    calculateObjectBounds() {
+    calculateObjectBounds(vectorMap) {
         // Calculate the actual geometric center of the vectorMap
-        const centerX = Math.ceil(this.vectorMap.reduce((sum, [vx]) => sum + vx, 0) / this.vectorMap.length);
-        const centerY = Math.ceil(this.vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / this.vectorMap.length);
+        const centerX = Math.ceil(vectorMap.reduce((sum, [vx]) => sum + vx, 0) / vectorMap.length);
+        const centerY = Math.ceil(vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / vectorMap.length);
 
         // Rotate points and compute bounding box
         let minX = Infinity;
@@ -116,7 +116,7 @@ class ObjectVector extends ObjectKillable {
         let minY = Infinity;
         let maxY = -Infinity;
 
-        const rotatedPoints = this.vectorMap.map(([vx, vy]) => {
+        const rotatedPoints = vectorMap.map(([vx, vy]) => {
             // Translate to origin (relative to center)
             const dx = vx - centerX;
             const dy = vy - centerY;
@@ -153,14 +153,14 @@ class ObjectVector extends ObjectKillable {
 
     update(deltaTime) {
         super.update(deltaTime);
-        this.calculateObjectBounds();
+        this.calculateObjectBounds(this.vectorMap);
     }
 
     setDrawBounds() {
         this.drawBounds = true;
     }
 
-    draw(lineWidth = 1.25, offsetX = 0, offsetY = 0) {
+    draw(lineWidth = 1.25, offsetX = 0, offsetY = 0, objectVector = null) {
         if (!this.isAlive()) return;
         try {
             // Begin drawing
@@ -173,6 +173,16 @@ class ObjectVector extends ObjectKillable {
                 console.error("Rotated points are not available.");
                 return;
             }
+
+            // if (objectVector) {
+            //     if (objectVector.length > 0) {
+            //         this.rotatedPoints = this.calculateObjectBounds(objectVector);
+
+            //     } else {
+            //         console.error("objectVector must be array.");
+            //         return;
+            //     }
+            // }
 
             // Draw using the pre-calculated rotated points
             this.rotatedPoints.forEach(([rx, ry], index) => {

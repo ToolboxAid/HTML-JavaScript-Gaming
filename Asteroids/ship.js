@@ -11,6 +11,8 @@ import ObjectVector from '../scripts/objectVector.js';
 import AsteroidManager from './asteroidManager.js';
 import BulletManager from './bulletManager.js';
 import UFOManager from './ufoManager.js';
+import SystemUtils from '../scripts/utils/systemUtils.js';
+import RandomUtils from '../scripts/math/randomUtils.js';
 
 class Ship extends ObjectVector {
     // Constants
@@ -21,7 +23,23 @@ class Ship extends ObjectVector {
     static VECTOR_MAPS = {
         LARGE: [[24, 0], [-24, -18], [-18, 0], [-24, 18]],
         MEDIUM: [[18, 0], [-18, -14], [-13, 0], [-18, 14]],
-        SMALL: [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]],
+        SMALL: [[14, 0], [-10, -8], [-6, -3],
+        // Flame will be here
+        [-6, 3], [-10, 8], [14, 0]],
+        SMALLFLAME1: [[14, 0], [-10, -8], [-6, -3],
+        // Flame
+        [-8, 0],
+        // Reset
+        [-6, 3], [-6, -3],
+        // continue
+        [-6, 3], [-10, 8], [14, 0]],
+        SMALLFLAME2: [[14, 0], [-10, -8], [-6, -3],
+        // Flame
+        [-10, 0],
+        // Reset
+        [-6, 3], [-6, -3],
+        // continue
+        [-6, 3], [-10, 8], [14, 0]],
         LIVES: [[0, -14], [-8, 10], [-3, 6], [3, 6], [8, 10], [0, -14]],
     };
 
@@ -227,10 +245,14 @@ class Ship extends ObjectVector {
 
     draw() {
         if (this.isAlive()) {
-            super.draw();
             if (this.showThrustFlame) {
-                //this.drawThrustFlame(); //TODO: still need flame
+                if (RandomUtils.randomBoolean()) {
+                    this.calculateObjectBounds(Ship.VECTOR_MAPS.SMALLFLAME1);
+                } else {
+                    this.calculateObjectBounds(Ship.VECTOR_MAPS.SMALLFLAME2);
+                }
             }
+            super.draw();
         }
         if (Ship.DEBUG) {
             this.drawShipDebug();
