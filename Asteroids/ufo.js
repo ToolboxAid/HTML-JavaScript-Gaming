@@ -273,6 +273,8 @@ class UFO extends ObjectVector {
     setHit() {
         this.setIsDying();
         this.bulletTimer.pause();
+        UFO.audioPlayer.playAudio('bangLarge.wav', 0.5); // 50% volume
+        
         if (UFO.DEBUG) {
             console.log("UFO hit, dying with bullets:", this.bulletManager.getBulletCount());
         }

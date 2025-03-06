@@ -120,7 +120,7 @@ class Ship extends ObjectVector {
         this.bulletManager.bullets.forEach(bullet => {
             if (this.ufoManager.ufo && bullet.collisionDetection(this.ufoManager.ufo)) {
                 bullet.setIsDead();
-                this.ufoManager.ufo.setIsDying();
+                this.ufoManager.ufo.setHit();
                 this.ufoManager.createExplosion(this.ufoManager.ufo);
                 this.score += this.ufoManager.ufo.getValue();
             }
