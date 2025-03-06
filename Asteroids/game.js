@@ -15,6 +15,7 @@ import Ship from './ship.js';
 import GameAttract from './gameAttract.js';
 
 import AudioPlayer from '../scripts/output/audioPlayer.js';
+import Cookies from '../scripts/cookies.js';
 
 class Game extends GameBase {
 
@@ -25,6 +26,14 @@ class Game extends GameBase {
 
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);
+
+    // Static cookie name & path for consistency
+    // Use current directory as name
+    const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+
+    this.cookieName = Cookies.sanitizeCookieName(currentDir);
+    this.cookiePath = "/";
+    this.getHighScoreCookie();
   }
 
   static audioPlayer = new AudioPlayer('./assets/effects');
@@ -226,9 +235,8 @@ class Game extends GameBase {
 
     ctx.font = '15px "Vector Battle"';
 
-    const highScore = 1000;
     ctx.fillText(
-      `${highScore}`,
+      `${this.highScore}`,
       SCORE.x + 200,
       SCORE.y
     );
@@ -264,12 +272,59 @@ class Game extends GameBase {
     this.drawLivesScores();
   }
 
+  // Method to get the high score cookie
+  getHighScoreCookie(initScore = 0) {
+    // Try to get the cookie value
+    let cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
+    console.log("Retrieved cookie:", cookie);
+
+    if (cookie === null) {
+      // Set the high score cookie if it doesn't exist
+      this.setHighScoreCookie(initScore);
+
+      // Immediate retrieval to ensure the cookie is accessible
+      cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
+      if (cookie === null) {
+        console.error("Failed to set the cookie!", this.cookieName, this.cookiePath);
+      } else {
+        console.log("Set new cookie:", cookie);
+      }
+    } else {
+      console.log("Cookie found:", cookie);
+    }
+
+    // Convert the cookie to a number and store it as the high score
+    if (cookie !== null) {
+      this.highScore = parseInt(cookie, 10);
+      if (isNaN(this.highScore)) {
+        console.error("Error: Cookie value is not a valid number");
+        this.highScore = 0; // Default fallback
+      } else {
+        console.log("Parsed high score:", this.highScore);
+      }
+    } else {
+      this.highScore = 0; // Default fallback for null
+    }
+  }
+
+  // Method to set the high score cookie
+  setHighScoreCookie(score) {
+    if (score > this.highScore) {
+      this.highScore = score;
+      Cookies.set(this.cookieName, score, {
+        expires: 7, // Expires in 7 days
+        path: this.cookiePath // Root path for simplicity
+      });
+      console.log(`Cookie set: ${this.cookieName}=${score}`);
+    }
+  }
+
   playGame(deltaTime) {
     this.gamePauseCheck();
 
     this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
     this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
-
+    this.setHighScoreCookie(this.score[this.currentPlayer]);
     if (this.ships[this.currentPlayer].isDead()) {
       this.ships[this.currentPlayer].setIsAlive();
       const result = GameUtils.swapPlayer(
@@ -320,7 +375,7 @@ class Game extends GameBase {
     }
   }
 
-  displayGameOver() {
+  displayGameOver1() {
     CanvasUtils.ctx.fillStyle = "red";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
@@ -331,6 +386,35 @@ class Game extends GameBase {
       this.resetGame();
     }
   }
+
+  displayGameOver() {
+    const ctx = CanvasUtils.ctx;
+
+    // Configure text settings
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'left';
+
+    // During flash state, only current player's score flashes
+    ctx.font = '20px "Vector Battle"';
+
+    // Draw lives and score for each player
+    const xOffset = CanvasUtils.getConfigWidth() / 2 - 200; // Space between player scores
+    ctx.fillText(
+      `Game Over`,
+      xOffset + 110,
+      250
+    );
+    ctx.fillText(
+      "Press `Enter` to Restart",
+      xOffset,
+      300);
+
+    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
+      this.backToAttractCounter++ > this.backToAttract) {
+      this.resetGame();
+    }
+  }
+
 
   resetGame() {
     this.gameState = "initAttract";

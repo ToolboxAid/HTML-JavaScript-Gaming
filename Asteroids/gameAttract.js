@@ -5,9 +5,7 @@
 
 import { canvasConfig } from './global.js';
 import CanvasUtils from '../scripts/canvas.js';
-import Fullscreen from '../scripts/fullscreen.js';
 import Asteroid from './asteroid.js';
-
 import RandomUtils from '../scripts/math/randomUtils.js';
 
 class GameAttract {
@@ -27,16 +25,41 @@ class GameAttract {
         this.asteroids.forEach((asteroid, key) => {
             asteroid.draw();
         });
-        if (show){
-        this.displayAttract();
+        if (show) {
+            this.displayAttract();
         }
     }
 
+    static count = 0;
     displayAttract() {
-        CanvasUtils.ctx.fillStyle = "white";
-        CanvasUtils.ctx.font = "30px Arial";
-        CanvasUtils.ctx.fillText("Welcome to Asteroids!", 250, 200);
-        CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
+        const ctx = CanvasUtils.ctx;
+
+        // Configure text settings
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+
+        // During flash state, only current player's score flashes
+        ctx.font = '20px "Vector Battle"';
+
+        // Draw lives and score for each player
+        const xOffset = CanvasUtils.getConfigWidth() / 2 - 200; // Space between player scores
+        ctx.fillText(
+            `Welcome to 'Asteroids'!`,
+            xOffset,
+            250
+        );
+        const duration = 35;
+        if (GameAttract.count++ < duration) {
+
+            ctx.fillText(
+                "Press `Enter` to Start",
+                xOffset,
+                300);
+        } else {
+            if (GameAttract.count > duration * 2) {
+                GameAttract.count = 0;
+            }
+        }
     }
 
     initAsteroids() {

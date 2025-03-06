@@ -91,7 +91,6 @@ class Game extends GameBase {
         this.backToAttractCounter = 0;
 
         // Static cookie name & path for consistency
-
         // Use current directory as name
         const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 
