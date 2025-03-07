@@ -174,16 +174,6 @@ class ObjectVector extends ObjectKillable {
                 return;
             }
 
-            // if (objectVector) {
-            //     if (objectVector.length > 0) {
-            //         this.rotatedPoints = this.calculateObjectBounds(objectVector);
-
-            //     } else {
-            //         console.error("objectVector must be array.");
-            //         return;
-            //     }
-            // }
-
             // Draw using the pre-calculated rotated points
             this.rotatedPoints.forEach(([rx, ry], index) => {
                 if (index === 0) {

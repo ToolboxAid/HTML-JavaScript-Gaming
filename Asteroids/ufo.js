@@ -83,6 +83,13 @@ class UFO extends ObjectVector {
 
     static audioPlayer = null;
 
+    static calculateInitialPosition(direction) {
+        return {
+            x: direction ? -UFO.OFFSET : CanvasUtils.getConfigWidth(),
+            y: RandomUtils.randomRange(UFO.OFFSET, CanvasUtils.getConfigHeight() - UFO.OFFSET, true)
+        };
+    }
+
     constructor(audioPlayer) {
         const isSmall = RandomUtils.randomBoolean();
         const direction = RandomUtils.randomBoolean();
@@ -100,13 +107,6 @@ class UFO extends ObjectVector {
 
         UFO.audioPlayer = audioPlayer;
         this.setupUFO(isSmall, velocity, direction);
-    }
-
-    static calculateInitialPosition(direction) {
-        return {
-            x: direction ? -UFO.OFFSET : CanvasUtils.getConfigWidth(),
-            y: RandomUtils.randomRange(UFO.OFFSET, CanvasUtils.getConfigHeight() - UFO.OFFSET, true)
-        };
     }
 
     setupUFO(isSmall, velocity, direction) {

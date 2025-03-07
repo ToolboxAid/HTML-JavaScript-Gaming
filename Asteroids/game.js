@@ -15,7 +15,7 @@ import Ship from './ship.js';
 import GameAttract from './gameAttract.js';
 
 import AudioPlayer from '../scripts/output/audioPlayer.js';
-import Cookies from '../scripts/cookies.js';
+import Cookies from '../scripts/misc/cookies.js';
 
 class Game extends GameBase {
 

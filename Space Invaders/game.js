@@ -11,7 +11,7 @@ import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas o
 import GameUtils from '../scripts/game/gameUtils.js';
 import AudioPlayer from '../scripts/output/audioPlayer.js';
 import CollisionUtils from '../scripts/physics/collisionUtils.js';
-import Cookies from '../scripts/cookies.js';
+import Cookies from '../scripts/misc/cookies.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 import Sprite from '../scripts/sprite.js';
 import SystemUtils from '../scripts/utils/systemUtils.js';
