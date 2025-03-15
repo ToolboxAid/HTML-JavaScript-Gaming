@@ -23,21 +23,28 @@ class GeometryUtils {
         const pointB = { x: objectB.x, y: objectB.y };
         return this.getDistance(pointA, pointB);
     }
+
     // Distance between two points
-    static getDistance(startPoint, endPoint, debug = false) {
+    static getDistance(startPoint, endPoint) {
         const dx = endPoint.x - startPoint.x;
         const dy = endPoint.y - startPoint.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
+    static getDistanceSquared(x1, y1, x2, y2) { // Faster than getDistance, no sqrt
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        return dx * dx + dy * dy;
+    }
+
     // Check if two lines intersect (defined by points)
     static doLinesIntersectByPoints(p1, p2, p3, p4) {
         return this.getLineIntersectionPoint(p1, p2, p3, p4) !== null;
     }
 
-    // Check if two lines intersect (defined as objects)
-    static doLinesIntersect(line1, line2) {
-        return this.getLinesIntersection(line1, line2) !== null;
-    }
+    // // Check if two lines intersect (defined as objects)
+    // static doLinesIntersect(line1, line2) {
+    //     return this.getLinesIntersection(line1, line2) !== null;
+    // }
 
     // Get the intersection point of two lines (defined as objects)
     static getLinesIntersection(line1, line2) {
@@ -90,6 +97,9 @@ class GeometryUtils {
         );
     }
 
+    /**
+     * Circle & Arc Functions
+    */
     // Check if a point is inside a circle
     static pointInCircle(point, center, radius) {
         const dx = point.x - center.x;
@@ -97,6 +107,24 @@ class GeometryUtils {
         return dx * dx + dy * dy <= radius * radius;
     }
 
+    // TODO: complete these
+// Check If a Point Is Inside a Circle
+// static isPointInsideCircle(point, circleCenter, radius) { ... }
+
+// Intersection Between a Line and a Circle
+// static getLineCircleIntersections(lineStart, lineEnd, circleCenter, radius) { ... }
+
+// Check If Two Circles Intersect
+// static doCirclesIntersect(center1, radius1, center2, radius2) { ... }
+
+// Find the Tangent Points From a Point to a Circle
+// static getTangentsFromPointToCircle(point, circleCenter, radius) { ... }
+
+
+
+    /**
+     * Transformations & Utility Functions
+     */
     // Rotate a point around another point
     static rotatePoint(point, center, angle) {
         const radians = (angle * Math.PI) / 180;
@@ -110,5 +138,16 @@ class GeometryUtils {
         };
     }
 }
+
+// TODO: complete these
+// Translate a Point by a Vector
+// static translatePoint(point, vector) { ... }
+
+// Scale a Point Relative to an Origin
+// static scalePoint(point, origin, scaleFactor) { ... }
+
+// Mirror a Point Across a Line
+// static mirrorPointAcrossLine(point, lineStart, lineEnd) { ... }
+
 
 export default GeometryUtils;

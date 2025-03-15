@@ -4,7 +4,7 @@
 // AudioPlayer.js
 
 class AudioPlayer {
-    // Debug mode enabled via URL parameter: game.html?ship
+    // Debug mode enabled via URL parameter: game.html?audioPlayer
     static DEBUG = new URLSearchParams(window.location.search).has('audioPlayer');
 
     constructor(basePath) {

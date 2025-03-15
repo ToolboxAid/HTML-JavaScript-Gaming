@@ -82,6 +82,13 @@ class AngleUtils {
         return this.normalizeAngle(angleRadians * this.RAD_TO_DEG);
     }
 
+    static getSlope(point1, point2) {
+        if (point2.x - point1.x === 0) {
+            return Infinity; // Avoid division by zero (vertical line)
+        }
+        return (point2.y - point1.y) / (point2.x - point1.x);
+    }
+    
     static calculateOrbitalPosition(centerX, centerY, angle, distance) {
         const radian = this.toRadians(angle);
         return {

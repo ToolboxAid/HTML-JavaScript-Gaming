@@ -68,8 +68,10 @@ class GameUtils {
             if (gameControllers.isButtonIndexDown(0, 5)) {
                 const i = 2;
                 return {
-                    playerCount: i, playerLives: Array.from({ length: maxPlayers },
-                        (_, index) => (index < i ? lives : 0)), gameState: "initGame"
+                    playerCount: i, 
+                    playerLives: Array.from({ length: maxPlayers },
+                    (_, index) => (index < i ? lives : 0)),
+                    gameState: "initGame"
                 };
             }
         }

@@ -22,8 +22,8 @@ export class ImageScale {
         if (typeof value === 'number' && !isNaN(value)) {
 
             this.value += value;
-            if (this.value > 10.0) {
-                this.value = 10.0;
+            if (this.value > 20.0) {
+                this.value = 20.0;
                 Message.add(`Max image scale reached: ${this.value}`);
             } else if (this.value < 0.01) {
                 this.value = 0.01;
