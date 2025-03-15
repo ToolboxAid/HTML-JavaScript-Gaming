@@ -84,7 +84,7 @@ class Game extends GameBase {
   displayAttractMode() {
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
+    CanvasUtils.ctx.fillText("Welcome to the Box Drop!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
     if (this.keyboardInput.getkeysPressed().includes('Enter') ||
@@ -104,6 +104,8 @@ class Game extends GameBase {
   }
 
   displayGameOver() {
+    this.drawScoreLives();
+
     CanvasUtils.ctx.fillStyle = "red";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
@@ -151,12 +153,11 @@ class Game extends GameBase {
 
   static playerX = canvasConfig.width / 2;
 
-  static enemyX = canvasConfig.width / 2;
-  static enemyY = canvasConfig.height + 1;
   static enemySize = 150;
+  static enemyX = canvasConfig.width / 2;
+  static enemyY = -(Game.enemySize);
   playGame() {
     this.gamePauseCheck();
-
     // Enemy code
     const enemySpeed = 5 + (this.score[this.currentPlayer] * 0.25)
     Game.enemyY += enemySpeed;
@@ -207,7 +208,10 @@ class Game extends GameBase {
       Game.enemyX = RandomUtils.randomInt(0, canvasConfig.width - Game.enemySize);
       Game.enemyY = -Game.enemySize;
     }
+    this.drawScoreLives();
+  }
 
+  drawScoreLives() {
     // draw score and lives
     CanvasUtils.drawText(50, 50, `Score ${this.score[0]} Lives ${this.playerLives[0]}`, 3.5, "white");
     CanvasUtils.drawText(650, 50, `Score ${this.score[1]} Lives ${this.playerLives[1]}`, 3.5, "white");
