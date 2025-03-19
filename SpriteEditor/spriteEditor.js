@@ -208,7 +208,6 @@ export class SpriteEditor {
         this.ctxImage = this.canvasImage.getContext("2d");
 
         Message.add(`Canvas Image initialized @ ${this.canvasImage.width}x${this.canvasImage.height}.`);
-
     }
 
     // ------------------------------------------
@@ -275,13 +274,13 @@ export class SpriteEditor {
     }
     static loadPaletteFromTextarea() {
         // Get the value from the textarea
-        const paletteTextarea = document.getElementById("paletteID").value;
+        const paletteTextarea = document.getElementById("paletteIgD").value;
 
         // Step 1: Remove comments
-        const withoutComments = paletteTextarea.replace(/\/\/.*$/gm, '');
+        const removeComments = paletteTextarea.replace(/\/\/.*$/gm, '');
 
         // Step 2: Remove `custom:` and trim whitespace
-        const withoutCustomKey = withoutComments.replace(/custom:\s*/, '').trim();
+        const withoutCustomKey = removeComments.replace(/custom:\s*/, '').trim();
 
         // Step 3: Convert to valid JSON:
         const validJSON = withoutCustomKey
@@ -511,7 +510,7 @@ export class SpriteEditor {
     static setSpritePixelSize(spritePixelSize) {
         if (typeof spritePixelSize === 'number' && !isNaN(spritePixelSize)) {
             this.spritePixelSize = 0;
-            this.updateSpritePixelSize(spritePixelSize);
+            this.updateSpritePixelSize(Math.floor(spritePixelSize));
         } else {
             Message.add("spriteGridSize is not a valid number:", spritePixelSize);
         }
@@ -569,20 +568,20 @@ export class SpriteEditor {
         this.drawSelectedColor();
         this.drawSpriteImage();
     }
-    static drawSpriteImage() {
-        const fillColor = "#888888";
-        const offset = 2;
 
+    static backgroundColor = "#888888";
+    static drawSpriteOffset = 2;
+    static drawSpriteImage() {
         // Clear the canvas and set background fillColor
         this.ctxImage.clearRect(0, 0, this.canvasImage.width, this.canvasImage.height);
-        this.ctxImage.fillStyle = fillColor;
+        this.ctxImage.fillStyle = SpriteEditor.backgroundColor;//fillColor;
         this.ctxImage.fillRect(0, 0, this.canvasImage.width, this.canvasImage.height);
 
         // Sprite image
         for (var x = 0; x < this.gridCellWidth; x++) {
             for (var y = 0; y < this.gridCellHeight; y++) {
-                const gridCellPosX = x * this.spritePixelSize + offset;
-                const gridCellPosY = y * this.spritePixelSize + offset;
+                const gridCellPosX = x * this.spritePixelSize + SpriteEditor.drawSpriteOffset;
+                const gridCellPosY = y * this.spritePixelSize + SpriteEditor.drawSpriteOffset;
 
                 // Update sprite color
                 const result = Palettes.getBySymbol(this.spriteIndex[x][y]);
@@ -1228,6 +1227,93 @@ export class SpriteEditor {
         }
     }
 
+    // Function to download PNG
+    static downloadPNG() {
+        const currentFrame = this.currentFrame;
+        const frames = SpriteEditor.jsonSprite.layers.length;
+        const width = this.gridCellWidth * this.spritePixelSize;
+        const height = this.gridCellHeight * this.spritePixelSize;
+
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+        tempCanvas.width = width * frames;
+        tempCanvas.height = height;
+
+        // Set canvas background to be transparent
+        tempCtx.clearRect(0, 0, width * frames, height);
+
+        // Copy the region, preserving transparency
+        for (let frame = 0; frame < frames; frame++) {
+            this.setCurrentFrameLayer(frame);
+            this.drawSpriteImage();
+
+            tempCtx.drawImage(
+                // source
+                this.canvasImage,
+                this.drawSpriteOffset, this.drawSpriteOffset,
+                width, height,
+                // destination
+                frame * width, 0,
+                width, height
+            );
+        }
+
+        // Convert #888888 to RGB
+        const colorsRGB = Colors.hexToRgb(SpriteEditor.backgroundColor);
+        const r = colorsRGB.r;
+        const g = colorsRGB.g;
+        const b = colorsRGB.b;
+
+        // Get image data to process background color
+        const imageData = tempCtx.getImageData(0, 0, width * frames, height);
+        const data = imageData.data;
+
+        // Make background color transparent
+        for (let i = 0; i < data.length; i += 4) {
+            if (data[i] === r && data[i + 1] === g && data[i + 2] === b) {
+                // Set color to #00000000 #RRGGBBAA
+                data[i + 0] = 0; // Set R to 0
+                data[i + 1] = 0; // Set G to 0
+                data[i + 2] = 0; // Set B to 0
+                data[i + 3] = 0; // Set alpha to 0
+            }
+        }
+
+        // Put modified image data back
+        tempCtx.putImageData(imageData, 0, 0);
+
+        // Export as PNG with transparency
+        const image = tempCanvas.toDataURL('image/png');
+
+        // Download
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `${this.jsonSprite.metadata.sprite}_sprite_${width}w_${height}h_${frames}f.png`;
+        link.click();
+
+        this.setCurrentFrameLayer(currentFrame);
+    }
+
+    // Function to download JSON
+    static downloadJSON() {
+        // Get the current sprite data
+        const jsonString = JSON.stringify(this.jsonSprite, null, 2);
+    
+        // Create blob with JSON data
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${this.jsonSprite.metadata.sprite}.json`;
+        
+        // Trigger download
+        link.click();
+        
+        // Cleanup
+        URL.revokeObjectURL(link.href);
+    }
+
     // ------------------------------------------
     /** the game loop  */
     static gameLoop() {
@@ -1264,6 +1350,16 @@ window.onload = () => {
 
 // --------------------------------------------------------------------------
 // JavaScript to handle dropdown selection and call Palettes.setPalette
+// Add event listener for download PNG
+document.getElementById('downloadPNG').addEventListener('click', () => {
+    SpriteEditor.downloadPNG();
+});
+
+// Add event listener for JSON download
+document.getElementById('downloadJSON').addEventListener('click', () => {
+    SpriteEditor.downloadJSON();
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById('paletteDropdown');
 
@@ -1281,7 +1377,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('paletteDropdown not found.');
     }
 });
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById('animationDropdown');

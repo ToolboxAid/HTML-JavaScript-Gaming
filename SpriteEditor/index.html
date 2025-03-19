@@ -171,8 +171,10 @@
 					<canvas id="spriteImage"></canvas><br>
 					<!-- <p>Zoom</p> -->
 					<button onclick="SpriteEditor.updateSpritePixelSize(-1.0)">-1.0</button>
+					<!--
 					<button onclick="SpriteEditor.updateSpritePixelSize(-0.1)">-0.1</button>
 					<button onclick="SpriteEditor.updateSpritePixelSize(+0.1)">+0.1</button>
+					-->
 					<button onclick="SpriteEditor.updateSpritePixelSize(+1.0)">+1.0</button>
 				</div>
 				<div class="inner">
@@ -189,6 +191,11 @@
 					<button class="frames" onclick="SpriteEditor.addLayer(1)">Add After</button>
 
 				</div>
+
+				<div class="inner">
+					<button id="downloadPNG">Download Sprite Sheet PNG</button>
+				</div>
+
 			</div>
 		</div>
 		<div class="box box2">
@@ -241,7 +248,9 @@
 			<div class="inner">
 				<h3>Sprite JSON</h3>
 				<textarea id="spriteID"></textarea>
-
+				<div class="inner">
+					<button id="downloadJSON">Download JSON Data</button>
+				</div>
 			</div>
 
 			<div class="inner">
