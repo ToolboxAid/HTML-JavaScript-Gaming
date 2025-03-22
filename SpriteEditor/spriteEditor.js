@@ -16,6 +16,9 @@ import { Message } from './message.js';
 //-------------------------------------------
 export class SpriteEditor {
 
+    // Enable debug mode: game.html?spriteEditor
+    static DEBUG = new URLSearchParams(window.location.search).has('spriteEditor');
+
     // Canvas Editor
     static canvasEditor = null;
     static ctxEditor = null;
@@ -150,7 +153,8 @@ export class SpriteEditor {
 
         // Setup our mouse
         this.mouse = new MouseInput(this.canvasEditor);
-
+        this.updatePageScroll();
+        
         // set paletteName on load
         this.updatePaletteDD();
 
@@ -165,6 +169,10 @@ export class SpriteEditor {
         this.loadSpriteFromTextarea();
         this.generateFrameLayerButtons();
         this.populateAnimationDropdown();
+        // Add scroll event listener to window instead of container
+        window.addEventListener('scroll', () => {
+            this.updatePageScroll();
+        });
     }
     static initializeArrays() {
         for (let x = 0; x < this.maxGrid; x++) {
@@ -1152,22 +1160,38 @@ export class SpriteEditor {
 
     // ------------------------------------------
     /** canvas click methods*/
-    static getMousePositionOncanvas(canvas, event) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
+    // Update updatePageScroll method
+    static updatePageScroll() {
+        // Get window scroll position
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        const x = (event.clientX - rect.left) * scaleX;
-        const y = (event.clientY - rect.top) * scaleY;
+        // Update pageScroll based on window scroll position
+        this.pageScroll = scrollTop;
 
-        return { x, y };
+
+        if (SpriteEditor.DEBUG) {
+            console.log("Window scroll:", scrollTop);
+            console.log("Page scroll:", this.pageScroll);
+            console.log("pageYOffset", window.pageYOffset);
+            console.log(".scrollTop", document.documentElement.scrollTop);
+        }
     }
+
+    // static getMousePositionOncanvas(canvas, event) {
+    //     const rect = canvas.getBoundingClientRect();
+    //     const scaleX = canvas.width / rect.width;
+    //     const scaleY = canvas.height / rect.height;
+
+    //     const x = (event.clientX - rect.left) * scaleX;
+    //     const y = ((event.clientY - rect.top) * scaleY);
+
+    //     return { x, y };
+    // }
     static handleCanvasLeftClick(mouse) {
         if (mouse.mouseX > (this.spriteGridSize * this.paletteAcrossCnt) * this.paletteScale) {
             // Determine which sprite cell clicked
             this.selectedCellX = Math.floor((mouse.mouseX - this.gridX) / this.spriteGridSize);
-            this.selectedCellY = Math.floor((mouse.mouseY - this.gridY) / this.spriteGridSize);
-
+            this.selectedCellY = Math.floor((mouse.mouseY - this.gridY + this.pageScroll) / this.spriteGridSize);
             if (this.selectedCellX < 0 || this.selectedCellX > this.gridCellWidth - 1 ||
                 this.selectedCellY < 0 || this.selectedCellY > this.gridCellHeight - 1) {
                 return;
@@ -1183,12 +1207,10 @@ export class SpriteEditor {
             this.saveModifiedSprite();
 
             this.outputJsonData();
-
-
         } else {
             // Determine which palette color was clicked
             const clickedPaletteX = Math.floor(mouse.mouseX / this.paletteSize);
-            const clickedPaletteY = Math.floor(mouse.mouseY / this.paletteSize);
+            const clickedPaletteY = Math.floor((mouse.mouseY + this.pageScroll) / this.paletteSize);
             const clickedPaletteIndex = clickedPaletteX + clickedPaletteY * this.paletteAcrossCnt;
 
             if (clickedPaletteIndex > Palettes.getLength() - 1) {
@@ -1205,7 +1227,7 @@ export class SpriteEditor {
         if (mouse.mouseX > (this.spriteGridSize * this.paletteAcrossCnt) * this.paletteScale) {
             // Determine which sprite cell clicked
             this.selectedCellX = Math.floor((mouse.mouseX - this.gridX) / this.spriteGridSize);
-            this.selectedCellY = Math.floor((mouse.mouseY - this.gridY) / this.spriteGridSize);
+            this.selectedCellY = Math.floor((mouse.mouseY - this.gridY  + this.pageScroll) / this.spriteGridSize);
 
             if (this.selectedCellX < 0 || this.selectedCellX > this.gridCellWidth - 1 ||
                 this.selectedCellY < 0 || this.selectedCellY > this.gridCellHeight - 1) {
@@ -1298,18 +1320,18 @@ export class SpriteEditor {
     static downloadJSON() {
         // Get the current sprite data
         const jsonString = JSON.stringify(this.jsonSprite, null, 2);
-    
+
         // Create blob with JSON data
         const blob = new Blob([jsonString], { type: 'application/json' });
-        
+
         // Create download link
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `${this.jsonSprite.metadata.sprite}.json`;
-        
+
         // Trigger download
         link.click();
-        
+
         // Cleanup
         URL.revokeObjectURL(link.href);
     }
@@ -1335,6 +1357,9 @@ export class SpriteEditor {
 }
 
 window.onload = () => {
+    // Force scroll to top of page
+    window.scrollTo(0, 0);
+        
     // Call initialize after canvasEditor is assigned
     SpriteEditor.initialize();
 
