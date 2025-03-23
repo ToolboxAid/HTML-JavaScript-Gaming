@@ -1,0 +1,55 @@
+{
+  "log.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAc0AAACBCAYAAACiqOG+AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAOQSURBVHhe7dyxbRNhAIbhC1IaGnbIBpkgGyCUEjEBTSgYg4I0TIAoEWIDJsgs1EiBmpND3gv+bZ/9POVfkNyPjxc339k0Tb8nAOBRz+YHAMBmogkAkWgCQCSaABCJJgBEogkAkWgCQCSaABCJJgBEZ2taBLq7uZ4fMXN5+3V+tNFa7vLYnufYnOrfz6k+94ubz/Ojnbm4eD4/2gvfNAEgEk0AiEQTACLRBIBINAEgEk0AiEQTACLRBIBINAEgGroIdGxrGFVdzfh5+2Z+tGr1uacjfHb4X/X9GfHu1J+9BqOXg3zTBIBINAEgEk0AiEQTACLRBIBINAEgEk0AiEQTACLRBIBINAEgWtWM3oippxGTVLAr3gm2oX6O9vnZqL+jGT0AOBCiCQCRaAJAJJoAEIkmAESiCQCRaAJAJJoAEIkmAESLF4G2vfIDh6oukOxzJeXY1Duf3PtW1Xvf553X33GJp6wH+aYJAJFoAkAkmgAQiSYARKIJAJFoAkAkmgAQiSYARKIJAJFFoBM1Yl1jn2shwN+WvOPH9O4ueW6LQAAwkGgCQCSaABCJJgBEogkAkWgCQCSaABCJJgBEogkAkWgCQHQQM3pLZo+qNcxCLXnuNTzPCPWOTvV+4CH13ZkGvD9r+dlm9ABgINEEgEg0ASASTQCIRBMAItEEgEg0ASASTQCIRBMAooNYBDpVS5Yrtr2awelZ8nnbtmP7/I64y3pHI352NeJ3HPFnVhaBAGAg0QSASDQBIBJNAIhEEwAi0QSASDQBIBJNAIhEEwAi0QSAaPGM3hIm9/7t8vbr/OhBH9++mh9t9PL9l/nRRt8/vJ4fsUJX56f7/94fv+7nRzxR/XejTt6NUGf0njKNt8TpvnEAsJBoAkAkmgAQiSYARKIJAJFoAkAkmgAQiSYARKIJANHQRaBtq6s40zRN7z59mx9ttOTP5DjU9ZMRLDFxiOo7MWIRqC79VBaBAOBAiCYARKIJAJFoAkAkmgAQiSYARKIJAJFoAkAkmgAQHcQi0N3N9fxoZ378up8f7UxdLZosFz3KXW6Pu9yPeu/7vPOr8/Y9a9srP9MOln6qdgMAgGgCQCWaABCJJgBEogkAkWgCQCSaABCJJgBEogkAkWgCQHQQM3oAsAa+aQJAJJoAEIkmAESiCQCRaAJAJJoAEIkmAESiCQCRaAJAJJoAEIkmAESiCQCRaAJAJJoAEP0BQxSZ68eZtUQAAAAASUVORK5CYII="
+}
+
+{
+  "metadata": {
+    "sprite": "log",
+    "spriteGridSize": 30,
+    "spritePixelSize": 3,
+    "palette": "default",
+    "framesPerSprite": "18"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": 53,
+        "imageY": 1,
+        "imageScale": 2.879999999999998
+      },
+      "data": [
+        "ØØØ<<<Ø<<<Ø<<<<Ø<<<<",
+        "Ø<<<<<<}<<<<<}<<<<<<",
+        "Ø<<}}<<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<}<",
+        "<<<<<<<<<<<}}<<<<<<<",
+        "<<}}<<<<}<<<<<<}<<<<",
+        "<<<<<<<<}<<<<<<<<<<<",
+        "Ø<<<<<<<3<}=========",
+        "ØØØ=3============}}}",
+        "ØØ<<<===Ø=======Ø==="
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -175,
+        "imageY": 1,
+        "imageScale": 2.879999999999998
+      },
+      "data": [
+        "<<<Ø<<<<<Ø<<<<<}}}ØØ",
+        "<<<<<<<<<<<}<<}}}}}Ø",
+        "}}<<<<<<<<<<<<}<<<}Ø",
+        "<<<<<}<<<<<<<<}<<<}}",
+        "<<<<<<<<<<<<<}<<<<<}",
+        "<<<<<<<<<<<<<}<<}<<}",
+        "<}}}<<<<<}}<}}}<}<}}",
+        "<<<<<<=====:==}<<<}Ø",
+        "==============}<<}}Ø",
+        "==Ø========Ø===<}ØØØ"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "frog-die.png": "data:image/png;base64,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"
+}
+
+{
+  "metadata": {
+    "sprite": "frog-die",
+    "spriteGridSize": 32,
+    "spritePixelSize": 3,
+    "palette": "default",
+    "framesPerSprite": "12"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": -1696,
+        "imageY": -11,
+        "imageScale": 2.7
+      },
+      "data": [
+        "ØØWWWØØØØØWWWØØ",
+        "ØWWWØ¾¾¾¾¾ØWWWØ",
+        "WWW¾¾¾¾¾¾¾¾¾WWW",
+        "WØ¾¾WWW¾WWW¾¾ØW",
+        "ØØ¾WWWW¾WWWW¾ØØ",
+        "ØØ¾#WWW¾¾WW#¾ØØ",
+        "ØØ¾##W¾¾¾W##¾ØØ",
+        "ØØ¾¾¾¾¾¾¾¾¾¾¾ØØ",
+        "ØØ¾¾¾¾¾¾¾¾¾¾¾ØØ",
+        "ØØ¾¾¾¾¾¾¾¾¾¾¾ØØ",
+        "ØØ¾W¾¾¾¾¾¾¾¾¾ØØ",
+        "ØW¾¾W¾¾¾¾¾¾¾¾WW",
+        "ØWW¾¾¾¾¾¾¾¾¾WWW",
+        "ØØWWØ¾¾¾¾¾ØWWØØ",
+        "ØØWWWØØØØØWWWØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": -1432,
+        "imageY": 0,
+        "imageScale": 2.7
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØWWØØ¾¾¾ØØWWØØ",
+        "ØWWW¾W¾¾¾¾¾WWWØ",
+        "ØWW¾WWW¾¾WW¾WWØ",
+        "ØØØ¾ÎÎW¾¾ÎÎ¾ØØØ",
+        "ØØ¾WÎWW¾¾WÎW¾ØØ",
+        "ØØ¾WWW¾¾¾WWW¾ØØ",
+        "ØØ¾WW¾¾¾¾¾W¾¾ØØ",
+        "ØØ¾¾W¾¾¾¾¾¾¾¾ØØ",
+        "ØØØ¾W¾¾¾¾¾¾¾ØØØ",
+        "ØWWW¾W¾¾¾¾¾WWWØ",
+        "ØWWWW¾¾¾¾¾WWWWØ",
+        "ØØØWWØØØØØWWØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": -1178,
+        "imageY": -12,
+        "imageScale": 2.7
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØWØØØØØWØØØØØ",
+        "ØØWWWØØØWWWØØØØ",
+        "ØWWW¾¾¾¾¾WWWØØØ",
+        "ØØW¾ÎÎ¾ÎÎ¾WØØØØ",
+        "ØØØ¾ÎÎ¾ÎÎ¾ØØØØØ",
+        "ØØ¾WWW¾WWW¾ØØØØ",
+        "ØØ¾WW¾¾¾WW¾ØØØØ",
+        "ØØÎ¾¾¾¾¾¾¾¾ØØØØ",
+        "ØØÎÎW¾¾¾¾¾¾ØØØØ",
+        "ØØØ¾W¾¾¾¾¾ØØØØØ",
+        "ØØWW¾¾¾¾¾WWWØØØ",
+        "ØØØWWWØØWWWØØØØ",
+        "ØØØØWØØØØWØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": -815,
+        "imageY": -11,
+        "imageScale": 2.7
+      },
+      "data": [
+        "ØØØØØWØØØWØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØWØØØØØØØØØWØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØWØØØWØØØØØ",
+        "WØØØØØØØØØØØØØW",
+        "ØØØØWØØ¿ØØWØØØØ",
+        "ØØØØØØ¿¿¿ØØØØØØ",
+        "ØØØØWØØ¿ØØWØØØØ",
+        "WØØØØØØØØØØØØØW",
+        "ØØØØØWØØØWØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØWØØØØØØØØØWØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØWØØØWØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": -552,
+        "imageY": -10,
+        "imageScale": 2.89
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØWØWWWØØØØØ",
+        "ØØØWØØØØØØØWØØØ",
+        "ØØWØØØØØØØØØWØØ",
+        "ØØØØØØØWØØØØØØØ",
+        "ØØWØØWØ¾¾WØØWØØ",
+        "ØØØØØØ¾¾¾¾ØØØØØ",
+        "ØWØØW¾¾¾¾¾WØØWØ",
+        "ØWØØW¾¾¾¾¾WØØWØ",
+        "ØØØØØW¾¾¾WØØØØØ",
+        "ØØWØØØØWØØØØWØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØWØØØØØØØØØWØØ",
+        "ØØØWØØØØØØØWØØØ",
+        "ØØØØØWØWØWØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": -289,
+        "imageY": -10,
+        "imageScale": 2.89
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØWØWØØØØØØ",
+        "ØØØØWØØØØØWØØØØ",
+        "ØØØWØØØ¾ØØØWØØØ",
+        "ØØØØØ¾¾¾¾¾ØØØØØ",
+        "ØØWØØ¾¾¾¾¾ØØWØØ",
+        "ØØØØ¾¾¾¾¾¾¾ØØØØ",
+        "ØØØØØ¾¾¾¾¾ØØØØØ",
+        "ØØWØØ¾¾¾¾¾ØØWØØ",
+        "ØØØØØØ¾¾¾ØØØØØØ",
+        "ØØØWØØØØØØØWØØØ",
+        "ØØØØWØØØØØWØØØØ",
+        "ØØØØØØWØWØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": 1,
+        "imageY": 6,
+        "imageScale": 2.9000000000000004
+      },
+      "data": [
+        "ØØØØØWWWWWØØØØØ",
+        "ØØØØWWWWWWWØØØØ",
+        "ØØØWWØWWWØWWØØØ",
+        "ØØØWØWWWWWØWØØØ",
+        "WWØWWWWWWWWWØWW",
+        "WWØØØWWWWWØØØWW",
+        "ØØØWØØØØØØØWØØØ",
+        "ØØWØØØWWWØØØWØØ",
+        "ØØØØWØØØØØWØØØØ",
+        "ØØØØØWØØØWØØØØØ",
+        "ØØØØØØWØWØØØØØØ",
+        "ØØØØØØØWØØØØØØØ",
+        "ØØØØØØWØWØØØØØØ",
+        "ØØØØØWØØØWØØØØØ",
+        "ØØØWWØØØØØWWØØØ",
+        "ØØØWWØØØØØWWØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": 1,
+        "imageY": 7,
+        "imageScale": 2.9000000000000004
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": 1,
+        "imageY": 8,
+        "imageScale": 2.9000000000000004
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": 1,
+        "imageY": 9,
+        "imageScale": 2.9000000000000004
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "frog-die.png",
+        "imageX": 1,
+        "imageY": 7,
+        "imageScale": 2.9000000000000004
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    }
+  ]
+}

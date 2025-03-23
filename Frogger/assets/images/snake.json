@@ -1,0 +1,99 @@
+{
+  "snake.png": "data:image/png;base64,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"
+}
+
+{
+  "metadata": {
+    "sprite": "snake",
+    "spriteGridSize": 30,
+    "spritePixelSize": 3,
+    "palette": "default",
+    "framesPerSprite": "18"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "snake.png",
+        "imageX": 35,
+        "imageY": 2,
+        "imageScale": 2.879999999999998
+      },
+      "data": [
+        "ØØØÇbbØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØbbbbbØØØØØØØØØØØØØØØØØØØØØ",
+        "ØbbbbbbbØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØØbbbbØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØÇabb¦bØØØØØØØØØØØØØØØØØØØ",
+        "ØØÇaaaaaaØØØØØØØØØØØØØØØØØØØ",
+        "ØÇaØØØØaaaØØØØaaaaaØØØØØØØØØ",
+        "ÇØØØØØØa¦aaØØaa¦aa¦aØØØØØØØØ",
+        "ØØØØØØØØaaaaa¦aaØØaaaØØØØØØa",
+        "ØØØØØØØØØa¦aaaaØØØØa¦aØØØØ¦Ø",
+        "ØØØØØØØØØØaa¦aØØØØØØaaa¦aaØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "snake.png",
+        "imageX": -379,
+        "imageY": 2,
+        "imageScale": 2.879999999999998
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØÇbbØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØaaabbØØØØØØØØØØØØØØØØØØØØØØ",
+        "aaaaabbØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØaaaaaØØØØØØØØØØØØØØØØØØØØ",
+        "ÇÇÇaa¦aaaØØØØØØØØaa¦aaØØØØØØ",
+        "ØaaaØaaa¦aaØØaa¦¦aaaa¦aaØØØØ",
+        "ØØØØØØa¦aaaa¦¦aaaaØØØØØaa¦ØØ",
+        "ØØØØØØØØa¦¦aaaaaØØØØØØØØØaaØ",
+        "ØØØØØØØØØØaa¦aØØØØØØØØØØØØØa"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "snake.png",
+        "imageX": -785,
+        "imageY": 2,
+        "imageScale": 2.879999999999998
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØÇaaØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØaaaaaØØØØØØaa¦aØØØØØØØØØØa¦",
+        "aaaaaaaØØØaaaaa¦aØØØØØØØ¦aaØ",
+        "ØØØaa¦aaaaaa¦ØØa¦aaØØØaaaØØØ",
+        "Øaaaaaaaa¦aaØØØØaa¦aaaaØØØØØ",
+        "ØØØØØaa¦aaØØØØØØØØaaa¦ØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "snake.png",
+        "imageX": -379,
+        "imageY": 2,
+        "imageScale": 2.879999999999998
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØÇbbØØØØØØØØØØØØØØØØØØØØØØØ",
+        "ØaaabbØØØØØØØØØØØØØØØØØØØØØØ",
+        "aaaaabbØØØØØØØØØØØØØØØØØØØØØ",
+        "ØØØaaaaaØØØØØØØØØØØØØØØØØØØØ",
+        "ÇÇÇaa¦aaaØØØØØØØØaa¦aaØØØØØØ",
+        "ØaaaØaaa¦aaØØaa¦¦aaaa¦aaØØØØ",
+        "ØØØØØØa¦aaaa¦¦aaaaØØØØØaa¦ØØ",
+        "ØØØØØØØØa¦¦aaaaaØØØØØØØØØaaØ",
+        "ØØØØØØØØØØaa¦aØØØØØØØØØØØØØa"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "timer_lives.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABC8AAABaCAYAAACYEXxcAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQLSURBVHhe7doxbhNRGIXRN2lxh1jBuCX07IJVWNkDJXuwvAp2QU9oPStAdKHF1Hmy4xmcMXf8zpFo/s7i6kX6NF0p5VAAgKvY7Pv6xD/arYf6RJBWt26X7VnC1u2SS82x86m7vKsPAAAAAEm6qV9e/Hz/uz5dzbsfb+oTCzS22k0pcWN3+fbxY3066tf9t/p00thdzvG7geUZ+xZwnvcyW6tbt8v2LGHrdsml5tj51F368gIAAACIJl4AAAAA0cQLAAAAIJp4AQAAAEQTLwAAAIBo4gUAAAAQTbwAAAAAookXAAAAQDTxAgAAAIgmXgAAAADRulLKoT6+ZLPv69NRXz491qejPn+9r08n7dZDfWKBxm5o26/q06I9DE/16Sg7h9s29g3kPO9ltla3bpftWcLW7ZJLzbHzqbv05QUAAAAQTbwAAAAAookXAAAAQDTxAgAAAIgmXgAAAADRxAsAAAAgmngBAAAARBMvAAAAgGjiBQAAABCtK6UcNvu+vi/abj3UJxboz+FDfVq0u+57fQIadGt/c/8nf++ztbp1u2zPErZul1xqjp1P3aUvLwAAAIBo4gUAAAAQTbwAAAAAookXAAAAQDTxAgAAAIgmXgAAAADRxAsAAAAgmngBAAAARBMvAAAAgGiT48W2X436BwAAAPAaJscLAAAAgGsSLwAAAIBo4gUAAAAQTbwAAAAAookXAAAAQDTxAgAAAIgmXgAAAADRxAsAAAAgmngBAAAARBMvAAAAgGhdKeWw2ff1/aRtv6pPRz0MT/XpanbroT4RZMrexhq7yzm89tbtF27bHG9gq7yX2Vrdul22Zwlbt0suNcfOp+7SlxcAAABANPECAAAAiCZeAAAAANHECwAAACCaeAEAAABEEy8AAACAaOIFAAAAEE28AAAAAKKJFwAAAEC0rpRyqI8v2ez7+nTUtl/Vp6Mehqf6dNJuPdQnFmjshm7t/7vV3w08N/Yt4DzvZbZWt26X7VnC1u2SS82x86m79OUFAAAAEE28AAAAAKKJFwAAAEA08QIAAACIJl4AAAAA0cQLAAAAIJp4AQAAAEQTLwAAAIBo4gUAAAAQrSulHOojzGmz7+vTUbv1UJ8WrdXfDTw39i3gPO9ltla3bpftWcLW7ZJLzbHzqbv05QUAAAAQTbwAAAAAookXAAAAQDTxAgAAAIgmXgAAAADRxAsAAAAgmngBAAAARBMvAAAAgGjiBQAAABBNvAAAAACidaWUQ30EAAAASOHLCwAAACCaeAEAAABEEy8AAACAaOIFAAAAEE28AAAAAKKJFwAAAEA08QIAAACIJl4AAAAA0cQLAAAAIJp4AQAAAEQTLwAAAIBo4gUAAAAQTbwAAAAAookXAAAAQLS/RPKjYeMzobYAAAAASUVORK5CYII="
+}
+
+{
+  "metadata": {
+    "sprite": "timer_lives",
+    "spriteGridSize": 30,
+    "spritePixelSize": 3,
+    "palette": "default",
+    "framesPerSprite": "18"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "timer_lives.png",
+        "imageX": 64,
+        "imageY": 8,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "Ø¿¿¿ØØØØ",
+        "Øb¿bØØØØ",
+        "bbbbbØØØ",
+        "bWbbbØØØ",
+        "bWbbbØØØ",
+        "ØbWbØØØØ",
+        "ØØØØØØØØ",
+        "ØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "timer_lives.png",
+        "imageX": -91,
+        "imageY": 8,
+        "imageScale": 2.879999999999998
+      },
+      "data": [
+        "bØ¿W¿ØbØ",
+        "bWWWWWbØ",
+        "ØWWWWWØØ",
+        "ØWWWWWØØ",
+        "bbWWWbbØ",
+        "bØØØØØbØ",
+        "bØØØØØbØ",
+        "ØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "timer_lives.png",
+        "imageX": -413,
+        "imageY": 10,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "bbbbbbbb",
+        "bbbbbbbb",
+        "bbbbbbbb",
+        "bbbbbbbb",
+        "bbbbbbbb",
+        "bbbbbbbb",
+        "bbbbbbbb",
+        "ØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "timer_lives.png",
+        "imageX": -601,
+        "imageY": 10,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "bbbbbbØØ",
+        "bbbbbbØØ",
+        "bbbbbbØØ",
+        "bbbbbbØØ",
+        "bbbbbbØØ",
+        "bbbbbbØØ",
+        "bbbbbbØØ",
+        "ØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "timer_lives.png",
+        "imageX": -787,
+        "imageY": 10,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "bbbbØØØØ",
+        "bbbbØØØØ",
+        "bbbbØØØØ",
+        "bbbbØØØØ",
+        "bbbbØØØØ",
+        "bbbbØØØØ",
+        "bbbbØØØØ",
+        "ØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "timer_lives.png",
+        "imageX": -974,
+        "imageY": 10,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "bbØØØØØØ",
+        "bbØØØØØØ",
+        "bbØØØØØØ",
+        "bbØØØØØØ",
+        "bbØØØØØØ",
+        "bbØØØØØØ",
+        "bbØØØØØØ",
+        "ØØØØØØØØ"
+      ]
+    }
+  ]
+}

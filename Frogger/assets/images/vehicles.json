@@ -1,0 +1,159 @@
+{
+  "vehicles.png": "data:image/png;base64,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"
+}
+
+{
+  "metadata": {
+    "sprite": "vehicles",
+    "spriteGridSize": 30,
+    "spritePixelSize": 3,
+    "palette": "default",
+    "framesPerSprite": "18"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "vehicles.png",
+        "imageX": 65,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "Ø88888ØØØØØØØØØØ",
+        "Ø88888ØØØ88888ØØ",
+        "Ø88888ØØØ88888ØØ",
+        "ØØØ¿ØØØØØØØ¿ØØØØ",
+        "ØØWWWWWWWWWWWWØØ",
+        "¿¿¿¿¿¿WW¿¿¿WWWWØ",
+        "ØW8W8W8WW¿¿¿WWWW",
+        "ØW8W8W8WW¿¿¿WWWW",
+        "¿¿¿¿¿¿WW¿¿¿WWWWØ",
+        "ØØWWWWWWWWWWWWØØ",
+        "ØØØ¿ØØØØØØØ¿ØØØØ",
+        "Ø88888ØØØ88888ØØ",
+        "Ø88888ØØØ88888ØØ",
+        "Ø88888ØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "vehicles.png",
+        "imageX": -183,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØ",
+        "Ø88ÌÌ8ÌØØØØØÌÌÌØ",
+        "Ø88ÌÌ8ÌØØØØØÌ8ØØ",
+        "ØØØ¿ØØØØØbbbÌÌÌØ",
+        "ØØÌÌÌÌÌÌÌÌØØÌ8ØØ",
+        "ØÌÌÌÌÌbbÌbØØÌÌÌØ",
+        "ØÌÌbbb8bÌÌØØÌ8ØØ",
+        "ØÌÌbbW8bÌÌØØÌ8ØØ",
+        "ØÌÌÌÌÌbbÌbØØÌÌÌØ",
+        "ØØÌÌÌÌÌÌÌÌØØÌ8ØØ",
+        "ØØbØØØbØØbbbÌÌÌØ",
+        "ØÌ8Ì8Ì8ÌØØØØÌ8ØØ",
+        "ØÌ8Ì8Ì8ÌØØØØÌÌÌØ",
+        "ØØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "vehicles.png",
+        "imageX": -463,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØbbbbØbbbbØØØØ",
+        "Ø8ÌÌÌÌØÌÌÌÌÌÌÌÌÌ",
+        "8ÌÌÌÌÌØÌÌÌÌÌÌÌÌÌ",
+        "8ÌÌÌÌÌ8ÌÌÌÌÌÌÌÌÌ",
+        "8ÌÌÌÌÌ8ÌÌÌÌÌÌÌÌÌ",
+        "8ÌÌÌÌÌ8ÌÌÌÌÌÌÌÌÌ",
+        "8ÌÌÌÌÌ8ÌÌÌÌÌÌÌÌÌ",
+        "8ÌÌÌÌÌØÌÌÌÌÌÌÌÌÌ",
+        "Ø8ÌÌÌÌØÌÌÌÌÌÌÌÌÌ",
+        "ØØØbbbØØbbbØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "vehicles.png",
+        "imageX": -577,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "bØØØØØØØØØØØbbbØ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌÌ",
+        "ØØØØØØØØØØØØbbbØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "vehicles.png",
+        "imageX": -857,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØbbØØØØØbbbØØØ",
+        "Ø§ÃÃÃÃÃØØÃÃÃÃÃØØ",
+        "§ÃÃÃÃ§§Ã§ÃÃÃÃÃ§Ø",
+        "§bÃÃ§§ÃÃÃÃ§§§ÃØØ",
+        "§ÃÃÃ§§ÃÃÃÃ§§§ÃØØ",
+        "§ÃÃÃ§§ÃÃÃÃ§§§ÃØØ",
+        "§bÃÃ§§ÃÃÃÃ§§§ÃØØ",
+        "§ÃÃÃÃ§§Ã§ÃÃÃÃÃ§Ø",
+        "Ø§ÃÃÃÃÃØØÃÃÃÃÃØØ",
+        "ØØØbbØØØØØbbbØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "vehicles.png",
+        "imageX": -1094,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "Ø88888ØØØØØØØØØØ",
+        "Ø88888ØØØ88888ØØ",
+        "Ø88888ØØØ88888ØØ",
+        "ØØØbØØØØØØØbØØØØ",
+        "ØÌÌÌÌÌÌÌÌÌÌÌÌÌØØ",
+        "bbbbbbÌÌbbÌÌÌÌÌØ",
+        "ØØ8Ì838ÌÌbbbÌÌÌÌ",
+        "ØÌ8Ì8Ì8ÌÌbbbÌÌÌÌ",
+        "bbbbbbÌÌbbbÌÌÌÌØ",
+        "ØÌÌÌÌÌÌÌÌÌÌÌÌÌØØ",
+        "ØØØbØØØØØØØbØØØØ",
+        "Ø88888ØØØ88888ØØ",
+        "Ø88888ØØØ88888ØØ",
+        "Ø88888ØØØØØØØØØØ"
+      ]
+    }
+  ]
+}

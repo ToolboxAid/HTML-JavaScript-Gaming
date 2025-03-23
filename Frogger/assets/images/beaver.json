@@ -1,0 +1,67 @@
+{
+  "beaver.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAdgAAAC8CAYAAADby79hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAASLSURBVHhe7d2xddtKAEVB2aES9cAO3Ipj9cBa2INit+IO2IMSpXYOS/KCxBVIYCbcQP4HJHjPJu9/e3h4+PMAACzq+/QAALiewAJAQGABICCwABAQWAAICCwABAQWAAICCwABgQWAgMACQEBgASAgsAAQEFgACHzzf9MB2Ibfx5/Toy/z4/RrerR7brAAEBBYAAgILAAEBBYAAgILAAGBBYCAwAJAQGABICCwABAQWAAImEoEuHFLTyA+HV+mR1d7PT1Pj961p0lFN1gACAgsAAQEFgACAgsAAYEFgIDAAkBAYAEgILAAEBBYAAhYcgK4cUsvOd2Le199coMFgIDAAkBAYAEgILAAEBBYAAgILAAEBBYAAgILAAGBBYCAJSeAFex1nWkOS04AwD8EFgACAgsAAYEFgIDAAkBAYAEgILAAEBBYAAgILAAEBBYAAqYSAVaw5lTi0/FlevShw+FxevSu8/ltevSu0b+3BW6wABAQWAAICCwABAQWAAICCwABgQWAgMACQEBgASAgsAAQsOS0I2sux/w4/ZoewSat+Z4VvLuXc4MFgIDAAkBAYAEgILAAEBBYAAgILAAEBBYAAgILAAGBBYCAJacNKJZjno4v06OrvJ6ep0cfshzDVynenb3y3v7LDRYAAgILAAGBBYCAwAJAQGABICCwABAQWAAICCwABAQWAAICCwABU4k3yoTb/43OOR4Oj9MjLnQ+v02Prjb6+Xgn1mEC8XJusAAQEFgACAgsAAQEFgACAgsAAYEFgIDAAkBAYAEgILAAELDkdKOs1izHEs1t812/bd6fy7nBAkBAYAEgILAAEBBYAAgILAAEBBYAAgILAAGBBYCAwAJAQGABIGAq8YuNzsI9HV+mR1d7PT1Pj+6aCbfbNvpdZzmjvxtzfgu8Z5dzgwWAgMACQEBgASAgsAAQEFgACAgsAAQEFgACAgsAAYEFgIAlp09sbYlmdOVljtFFGGsw23A+v02PPjT63dia0fdszvNZ+m+O/r05DofH6dHuucECQEBgASAgsAAQEFgACAgsAAQEFgACAgsAAYEFgIDAAkBgtSWnra0k7dXoQtOcBSCLMPsy57uxpr1+L0c/n70+n8+4wQJAQGABICCwABAQWAAICCwABAQWAAICCwABgQWAgMACQEBgASCw6FTi6KTWHFub3yqeUWHN5z76jNb8b4SPjH5/78XS79mc57P0v/3V3GABICCwABAQWAAICCwABAQWAAICCwABgQWAgMACQEBgASCw6JLT2uYshCzt3hdHanM+G89yG+Z85vfA9/Jzo5/3np6jGywABAQWAAICCwABgQWAgMACQEBgASAgsAAQEFgACAgsAAQ2teTE50aXVgp7Wm+BtXjHb4sbLAAEBBYAAgILAAGBBYCAwAJAQGABICCwABAQWAAICCwABAQWAAKrTSWa9ALWtubv0Bx+s+6TGywABAQWAAICCwABgQWAgMACQEBgASAgsAAQEFgACAgsAARWW3ICgC1zgwWAgMACQEBgASAgsAAQEFgACAgsAAQEFgACfwFUJpdVSYlatgAAAABJRU5ErkJggg=="
+}
+
+{
+  "metadata": {
+    "sprite": "beaver",
+    "spriteGridSize": 30,
+    "spritePixelSize": 3,
+    "palette": "default",
+    "framesPerSprite": "45"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "beaver.png",
+        "imageX": 47,
+        "imageY": -3,
+        "imageScale": 2.8699999999999983
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØØØØØØØ",
+        "ØØØØØØØØØØ666ØØØ",
+        "ØØØØØØØØØ66&&6ØØ",
+        "ØØØØØØØØ6666666&",
+        "ØØØØØØØØ66666666",
+        "ØØØØØØØ6&&66666Ø",
+        "ØØØØØ66666&&6ØØØ",
+        "Ø66666666666Ø&ØØ",
+        "&&ØØØØØ&&&&ØØØ&Ø",
+        "ØØØ&&&ØØØØØØØ&ØØ",
+        "ØØØØØØØØØØ&&&ØØØ",
+        "Ø&&&ØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "beaver.png",
+        "imageX": -202,
+        "imageY": -3,
+        "imageScale": 2.8699999999999983
+      },
+      "data": [
+        "ØØØØØØØØØØ666ØØØ",
+        "ØØØØØØØØØ66&&6ØØ",
+        "ØØØØØØØØØ666666Ø",
+        "ØØØØØØØØ6666666Ø",
+        "ØØØØØØØØ666&Ø&ØØ",
+        "ØØØØØØØ66666ØØØØ",
+        "ØØØØØ66666666ØØØ",
+        "&&Ø666666666ØØØØ",
+        "ØØ6666666666ØØØØ",
+        "Ø666666666&6ØØØØ",
+        "&666666&6&6&&ØØØ",
+        "ØØ&&&&ØØØØØØ&ØØØ",
+        "ØØØØØØØ&&&&&ØØ&Ø",
+        "Ø&&&&&ØØØØØØØ&ØØ",
+        "ØØØØØØØØØØ&&&ØØØ",
+        "ØØØØØ&&&&&ØØØØØØ"
+      ]
+    }
+  ]
+}

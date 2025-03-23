@@ -1,0 +1,120 @@
+{
+  "turtle.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAr0AAABxCAYAAADYkRs+AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAR/SURBVHhe7d1BTiMxFARQM7s5BrnKnJurhGPMklnMBoXvCCvdxq68t+wFmPYHlSzKeWmtfTQAAAj26/YBAACkEXoBAIgn9AIAEE/oBQAgntALAEA8oRcAgHhCLwAA8YReAADiCb0AAMQTegEAiCf0AgAQT+gFACCe0AsAQDyhFwCAeEIvAADxhF4AAOIJvQAAxBN6AQCIJ/QCABBP6AUAIJ7QCwBAPKEXAIB4Qi8AAPGEXgAA4gm9AADEE3oBAIj30lr7uH0IAECG6/Xv7aOuy+X37aMYTnoBAIgn9AIAEE/oBQAgntALAEA8oRcAgHhub2A7r9fbJ629X26frGO39SarGsyzm8orrIG1VTPSzAk8zEkvAADxhF4AAOIJvQAAxBN6AQCIt22RrSoHtckFoRXWkKz3fkfM3Ivd1ptsZC/e2jmlod4aet+v8ugaWF9VWlt533dbL3zmpBcAgHhCLwAA8YReAADiCb0AAMQTegEAiLfF7Q29FnTlOrH9fhlYl1b+uXozssI82Pv5zAPPojfrjxqZ0+pGh+ZWh9NV7/2Id37W112Bk14AAOIJvQAAxBN6AQCIJ/QCABBviyJbZeVFv9w+4HTmgc/MA4nOKq2NGCm4cYyqWNYml8tWWMMRnPQCABBP6AUAIJ7QCwBAPKEXAIB4Qi8AAPGWur2h1w583awdWNHYvq/a+z+t3veZHyV7lpF56DW2k1vU5oFn1vudX1Xy36IjVH/Pzrr14IjZmbmf1btpJ74fJ70AAMQTegEAiCf0AgAQT+gFACDejxXZRv7ZOqGo0nMp3sPMfyKfbWTfe8xDDvNw37PNA/8d8XvxqLdWF4yqQqmZvK8qax1R1Jo5J2ftcfVu2kHvp+KkFwCAeEIvAADxhF4AAOIJvQAAxBN6AQCI92O3N1R6Lb5VP4b4fWC9Pmb0vmrvq5ZwW7itbx6OYx76eo3ts9rVrKO395Xe7Qvf1ft9M2drO2JGzro5YQVOegEAiCf0AgAQT+gFACCe0AsAQLylimwjeouuyiNVcWTUyNcdKaVwDPPAZ+aBZzFSXBqhsLaOqtjbJhfOVljDEZz0AgAQT+gFACCe0AsAQDyhFwCAeEIvAADxtri9YaSdWn0kadWsHlU1sS8D69KEPVdvRlaYB3s/n3lgF1UrfrdGfPUztA1/jt1U7/2Id37W112Bk14AAOIJvQAAxBN6AQCIJ/QCABBviyJbpVdUmVkSWWENyXrvd8TMvdhtvclG9uKtfS1ttAOKG7019L5f5dE1sKeqSNQWmYdqbSusC77DSS8AAPGEXgAA4gm9AADEE3oBAIgn9AIAEG/b2xt4XlUrfuVbD3Zbb7IVmucrrAHgGTnpBQAgntALAEA8oRcAgHhCLwAA8RTZAACCVQXanuRirZNeAADiCb0AAMQTegEAiCf0AgAQT+gFACCe2xsAAIjnpBcAgHhCLwAA8YReAADiCb0AAMQTegEAiCf0AgAQT+gFACCe0AsAQDyhFwCAeEIvAADxhF4AAOIJvQAAxBN6AQCI9w/i0QDUXqMBKgAAAABJRU5ErkJggg=="
+}
+
+{
+  "metadata": {
+    "sprite": "turtle",
+    "spriteGridSize": 45,
+    "spritePixelSize": 3,
+    "palette": "default",
+    "framesPerSprite": "19"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "turtle.png",
+        "imageX": -2,
+        "imageY": -30,
+        "imageScale": 8.3
+      },
+      "data": [
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØdØØØØØdØØØØ",
+        "ØØØdd#####ddØØØ",
+        "ØØØØ#######ØØØØ",
+        "ØØ(#########ØØØ",
+        "Ødd##########dØ",
+        "ØØ(#######(#ØØØ",
+        "ØØØØ#(###(#ØØØØ",
+        "ØØØdd#(((#ddØØØ",
+        "ØØØØdØØØØØdØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "turtle.png",
+        "imageX": -134,
+        "imageY": -30,
+        "imageScale": 8.3
+      },
+      "data": [
+        "ØØØbØØØØØØØbØØØ",
+        "ØØbbbØØØØØbbbØØ",
+        "ØØØØb#####bØØØØ",
+        "ØØØØ#######ØØØØ",
+        "Ø©b#########ØØb",
+        "bbb##########bØ",
+        "Ø©b#######©#ØØØ",
+        "ØØØØ#©###©#ØØØØ",
+        "ØØØØb#©©©#bØØØØ",
+        "ØØbbbØØØØØbbbØØ",
+        "ØØØbØØØØØØØbØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "turtle.png",
+        "imageX": -266,
+        "imageY": -29,
+        "imageScale": 8.3
+      },
+      "data": [
+        "ØØØØØ(ØØØØØ(ØØØ",
+        "ØØØØbb(ØØØb((ØØ",
+        "ØØØØb#####bØØØØ",
+        "ØØØØ#######ØØØØ",
+        "Ø(b#########ØØØ",
+        "bbb##########bØ",
+        "Ø(b#######(#ØØb",
+        "ØØØØ#(###(#ØØØØ",
+        "ØØØbb#(((#bØØØØ",
+        "ØØØØbb(ØØØb((ØØ",
+        "ØØØØØ(ØØØØØ(ØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "turtle.png",
+        "imageX": -448,
+        "imageY": -29,
+        "imageScale": 8.3
+      },
+      "data": [
+        "ØØØ©ØØØØØØØØØØØ",
+        "ØØ©ØØØØØØØ©ØØØØ",
+        "ØØØØØddddØØ©ØØØ",
+        "ØØØØddddddØØØØØ",
+        "ØØØddddddddØØØØ",
+        "ØØØdddddd©dØØØØ",
+        "ØØØØdd©©©dØØØØØ",
+        "ØØØØØddddØØØØØØ",
+        "ØØ©ØØØØØØØØ©ØØØ",
+        "ØØØ©ØØØØØØ©ØØØØ",
+        "ØØØØØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "turtle.png",
+        "imageX": -580,
+        "imageY": -30,
+        "imageScale": 8.3
+      },
+      "data": [
+        "ØØØØØØ©©ØØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØ©ØØØ©ØØØØØØ",
+        "ØØØ©ØØØØØ©ØØØØØ",
+        "©ØØØØdddØØØØØ©Ø",
+        "©ØØØdddddØØØØ©Ø",
+        "ØØØØØdd©ØØØØØØØ",
+        "ØØØ©ØØØØØ©ØØØØØ",
+        "ØØØØ©ØØØ©ØØØØØØ",
+        "ØØØØØØØØØØØØØØØ",
+        "ØØØØØØ©©ØØØØØØØ"
+      ]
+    }
+  ]
+}

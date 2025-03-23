@@ -1,5 +1,10 @@
+# Ignore any folder named 'ignore' anywhere in the repository
+**/ignore/
+**/ignore/**
+
 # Ignore log files
 .env.development
+.DS_Store
 *.log
 
 # Ignore the docs directory

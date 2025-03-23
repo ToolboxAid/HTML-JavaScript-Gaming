@@ -1,0 +1,140 @@
+{
+  "froge.png": "data:image/png;base64,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"
+}
+
+{
+  "metadata": {
+    "sprite": "froge",
+    "spriteGridSize": 30,
+    "spritePixelSize": 6,
+    "palette": "default",
+    "framesPerSprite": "18"
+  },
+  "layers": [
+    {
+      "metadata": {
+        "spriteimage": "froge.png",
+        "imageX": 57,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "Øbbbbbbbbbbbbbb",
+        "¿bbbbbbbbbbbbbb",
+        "¿bbbbWWWWWWWWWØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbbbbbbbbbØØ",
+        "¿bbbbbbbbbbbbØØ",
+        "¿bbbbWWWWWWbØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "WWWWØØØØØØØØØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "froge.png",
+        "imageX": -191,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØbbbbbbbbbbbbØØ",
+        "¿bbbbbbbbbbbbbb",
+        "¿bbbbWWWWW¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØbbbbbb",
+        "¿bbbbØØØ¿bbbbbb",
+        "¿bbbbbbbbbbWWWØ",
+        "¿bbbbbbbbbbØØØØ",
+        "¿bbbbbbbbbbbbØØ",
+        "¿bbbbbbbbbbbbØØ",
+        "¿bbbbWWW¿bbbbbb",
+        "¿bbbbØØØ¿bbbbbb",
+        "WWWWØØØØWWWWWWØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "froge.png",
+        "imageX": -441,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØØØbbbbbbbbbbØØ",
+        "ØØ¿bbbbbbbbbbØØ",
+        "ØbbbbWWWWW¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "WW¿bbbbbbbbbbWØ",
+        "ØØ¿bbbbbbbbbbØØ",
+        "ØØWWWWWWWWWWØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "froge.png",
+        "imageX": -689,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØØØØØbbbbbbbbbb",
+        "ØØØØ¿bbbbbbbbbb",
+        "ØØØbbbbWWWWWWWØ",
+        "ØØ¿bbbbØØØØØØØØ",
+        "ØbbbbWØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØbbbbbb",
+        "¿bbbbØØØ¿bbbbbb",
+        "¿bbbbØØØWW¿bbbb",
+        "¿bbbbØØØØØ¿bbbb",
+        "WW¿bbbbØØØ¿bbbb",
+        "ØØ¿bbbbØØØ¿bbbb",
+        "ØØWW¿bbbbbbbbbb",
+        "ØØØØ¿bbbbbbbbbb",
+        "ØØØØWWWWWWWWWWØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "froge.png",
+        "imageX": -959,
+        "imageY": 5,
+        "imageScale": 2.9099999999999975
+      },
+      "data": [
+        "ØbbbbbbbbbbbbØØ",
+        "¿bbbbbbbbbbbbØØ",
+        "¿bbbbWWWWWWWØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbbbbbbbØØØØ",
+        "¿bbbbbbbbbbØØØØ",
+        "¿bbbbWWWWWØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbØØØØØØØØØØ",
+        "¿bbbbbbbbbbbbØØ",
+        "¿bbbbbbbbbbbbØØ",
+        "WWWWWWWWWWWWØØØ"
+      ]
+    }
+  ]
+}
