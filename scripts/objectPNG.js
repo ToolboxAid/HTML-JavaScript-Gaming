@@ -13,108 +13,162 @@ class ObjectPNG extends ObjectKillable {
     // Debug mode enabled via URL parameter: game.html?objectPNG
     static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');
 
-    constructor(x, y, spritePath, spriteX, spriteY, spriteWidth, spriteHeight, pixelSize = 1, transparentColor = 'black') {
-        if (!spriteWidth || !spriteHeight) {
-            throw new Error("Sprite dimensions must be non-zero");
-        }
-
-        console.warn("ObjectPNG constructor", x, y, spriteX, spriteY, spriteWidth, spriteHeight);
-
+    constructor(x, y, spritePath, spriteX, spriteY, spriteWidth = 10, spriteHeight = 10, pixelSize = 16, transparentColor = 'black') {
         super(x, y, spriteWidth, spriteHeight);
 
+        // Initialize properties
         this.spriteX = spriteX;
         this.spriteY = spriteY;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
-        this.transparentColor = transparentColor;
         this.pixelSize = pixelSize;
-
-        // Initialize sprite loading
-        this.png = new Image();
         this.isLoaded = false;
 
-        this.png.onload = () => {
-            if (ObjectPNG.DEBUG) {
-                console.warn("ObjectPNG png.onload");
-            }
-            if (this.png.width === 0 || this.png.height === 0) {
-                console.error("Loaded image has invalid dimensions");
-                return;
-            }
-
-            // Process transparency
-            this.setTransparentBackground();
-
-            if (ObjectPNG.DEBUG) {
-                console.warn(`Sprite loaded: ${spritePath}`,
-                    `Size: ${this.spriteWidth}x${this.spriteHeight}`,
-                    `Position: ${this.x},${this.y}`);
-            }
-            this.isLoaded = true;
-        };
-
-        this.png.onerror = (error) => {
-            console.error(`Error loading sprite: ${spritePath}`, error);
-        };
-
-        this.png.src = spritePath;
+        // Load sprite
+        ObjectPNG.loadSprite(spritePath, transparentColor)
+            .then(png => {
+                this.png = png;
+                this.isLoaded = true;
+            })
+            .catch(error => {
+                console.error("Failed to load sprite:", error);
+            });
 
         this.rotation = AngleUtils.toRadians(0);
 
         // Set src AFTER setting up onload handler
         if (ObjectPNG.DEBUG) {
-            console.warn("ObjectPNG constructor", this.png.src);
-            console.warn("ObjectPNG exit", this.png.src);
+            console.warn("ObjectPNG exit", spritePath);
         }
     }
 
-    setTransparentBackground() {
-        // Create temporary canvas to analyze image
+    static async loadSprite(spritePath, transparentColor = 'black') {
+        return new Promise((resolve, reject) => {
+            console.log("loadSprite", spritePath);
+            const png = new Image();
+
+            png.onload = () => {
+                if (ObjectPNG.DEBUG) {
+                    console.warn("ObjectPNG loadSprite.onload");
+                }
+
+                if (png.width === 0 || png.height === 0) {
+                    const error = new Error("Loaded image has invalid dimensions");
+                    console.error(error);
+                    reject(error);
+                    return;
+                }
+
+                // Process transparency
+                const transparentPng = ObjectPNG.makeTransparent(png, transparentColor);
+
+                if (ObjectPNG.DEBUG) {
+                    console.warn(`Sprite loaded: ${spritePath}`,
+                        `Size: ${png.width}x${png.height}`);
+                }
+
+                resolve(transparentPng);
+
+                console.log("loadSprite exit 1", spritePath);
+            };
+
+            png.onerror = (error) => {
+                console.error(`Error loading sprite: ${spritePath}`, error);
+                reject(error);
+
+                console.log("loadSprite exit 2", spritePath);
+            };
+
+            png.src = spritePath;
+            console.log("loadSprite exit 3", spritePath);
+        });
+    }
+
+    static makeTransparent(png, transparentColor) {
+        // Create temporary canvas
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = this.png.width;
-        tempCanvas.height = this.png.height;
+        tempCanvas.width = png.width;
+        tempCanvas.height = png.height;
         const tempCtx = tempCanvas.getContext('2d');
 
-        // Draw image to temporary canvas
-        tempCtx.drawImage(this.png, 0, 0);
+        // Draw image
+        tempCtx.drawImage(png, 0, 0);
 
         // Get image data
-        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const imageData = tempCtx.getImageData(0, 0, png.width, png.height);
         const data = imageData.data;
 
-        // Convert transparentColor to RGB
+        // Convert color to RGB
         const tempDiv = document.createElement('div');
-        tempDiv.style.backgroundColor = this.transparentColor;
+        tempDiv.style.backgroundColor = transparentColor;
         document.body.appendChild(tempDiv);
         const colorStyle = window.getComputedStyle(tempDiv).backgroundColor;
         document.body.removeChild(tempDiv);
         const [r, g, b] = colorStyle.match(/\d+/g).map(Number);
 
-        // Set alpha to 0 for pixels matching transparentColor
+        // Set transparency
         for (let i = 0; i < data.length; i += 4) {
-//            const offset = 402*4;
-            const offset = 0*4;
-            if (ObjectPNG.DEBUG && i > offset && i < offset+25) {
-                console.log("i:", i, "PRE: data[i]:", data[i], "data[i+1]:", data[i + 1], "data[i+2]:", data[i + 2], "data[i+3]:", data[i + 3]);
-            }
             if (data[i] === r && data[i + 1] === g && data[i + 2] === b) {
-                data[i + 3] = 0; // Set alpha channel to 0
-            }
-            if (ObjectPNG.DEBUG && i > offset && i < offset+25) {
-                console.log("i:", i, "POST: data[i]:", data[i], "data[i+1]:", data[i + 1], "data[i+2]:", data[i + 2], "data[i+3]:", data[i + 3]);
+                data[i + 3] = 0;
             }
         }
 
-        // Put modified image data back
+        // Update canvas with transparent image
         tempCtx.putImageData(imageData, 0, 0);
 
-        // Create new image with transparency
+        // Create new image
         const transparentImage = new Image();
         transparentImage.src = tempCanvas.toDataURL();
-
-        // Replace original image with transparent version
-        this.png = transparentImage;
+        return transparentImage;
     }
+
+    // setTransparentBackground() {
+    //     // Create temporary canvas to analyze image
+    //     const tempCanvas = document.createElement('canvas');
+    //     tempCanvas.width = this.png.width;
+    //     tempCanvas.height = this.png.height;
+    //     const tempCtx = tempCanvas.getContext('2d');
+
+    //     // Draw image to temporary canvas
+    //     tempCtx.drawImage(this.png, 0, 0);
+
+    //     // Get image data
+    //     const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    //     const data = imageData.data;
+
+    //     // Convert transparentColor to RGB
+    //     const tempDiv = document.createElement('div');
+    //     tempDiv.style.backgroundColor = this.transparentColor;
+    //     document.body.appendChild(tempDiv);
+    //     const colorStyle = window.getComputedStyle(tempDiv).backgroundColor;
+    //     document.body.removeChild(tempDiv);
+    //     const [r, g, b] = colorStyle.match(/\d+/g).map(Number);
+
+    //     // Set alpha to 0 for pixels matching transparentColor
+    //     for (let i = 0; i < data.length; i += 4) {
+    //         //            const offset = 402*4;
+    //         const offset = 0 * 4;
+    //         if (ObjectPNG.DEBUG && i > offset && i < offset + 25) {
+    //             console.log("i:", i, "PRE: data[i]:", data[i], "data[i+1]:", data[i + 1], "data[i+2]:", data[i + 2], "data[i+3]:", data[i + 3]);
+    //         }
+    //         if (data[i] === r && data[i + 1] === g && data[i + 2] === b) {
+    //             data[i + 3] = 0; // Set alpha channel to 0
+    //         }
+    //         if (ObjectPNG.DEBUG && i > offset && i < offset + 25) {
+    //             console.log("i:", i, "POST: data[i]:", data[i], "data[i+1]:", data[i + 1], "data[i+2]:", data[i + 2], "data[i+3]:", data[i + 3]);
+    //         }
+    //     }
+
+    //     // Put modified image data back
+    //     tempCtx.putImageData(imageData, 0, 0);
+
+    //     // Create new image with transparency
+    //     const transparentImage = new Image();
+    //     transparentImage.src = tempCanvas.toDataURL();
+
+    //     // Replace original image with transparent version
+    //     this.png = transparentImage;
+    // }
 
     handleAliveStatus(deltaTime, incFrame) { // Handle ALIVE status
         super.handleAliveStatus(deltaTime, incFrame);
@@ -313,6 +367,8 @@ class ObjectPNG extends ObjectKillable {
         super.destroy();
 
         // Clean up PNG-specific properties
+        this.png.onload = null;
+        this.png.onerror = null;
         this.png = null;
         this.pixelSize = null;
         this.currentFrameIndex = null;
@@ -320,8 +376,6 @@ class ObjectPNG extends ObjectKillable {
         this.transparentColor = null;
         this.frameCount = null;
 
-        this.png.onload = null;
-        this.png.onerror = null;
         this.isLoaded = null;
         super.destroy();
     }

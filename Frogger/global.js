@@ -6,12 +6,13 @@
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
-  width: 1024, // Game area width
-  height: 768, // Game area height
+  //224x256
+  width: 896, // Game area width
+  height: 1024, // Game area height
   scale: 0.35,
   backgroundColor: "#333333",
-  borderColor: "white",
-  borderSize: 15,
+  borderColor: "yellow",
+  borderSize: 1,
 };
 
 export const fullscreenConfig = {
@@ -23,7 +24,7 @@ export const fullscreenConfig = {
 };
 
 export const performanceConfig = {
-  show: true,
+  show: false,
   size: 30,
   font: "monospace",
   colorLow: "green",

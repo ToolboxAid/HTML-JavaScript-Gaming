@@ -140,8 +140,9 @@ class PerformanceMonitor {
         this.lastFrame = now;
     }
 
-
     static draw(ctx) {
+        if (!this.performanceConfig.show) return;
+
         this.updateMetrics();
 
         // {width: 126, height: 24} console.log(CanvasUtils.calculateTextMetrics("FPS: 60", 30, "monospace")); 

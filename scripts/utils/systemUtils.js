@@ -104,6 +104,23 @@ class SystemUtils {
         return true;
     }
 
+    static numberToString(number, leadingCount = 5, leadingChar = '0') {
+        // Convert number to string
+        const numberStr = number.toString();
+        if (numberStr.length > leadingCount) {
+            leadingCount = numberStr.length;
+        }
+        const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
+        const text = leadingChar.repeat(leadingLength) + numberStr; // Create text with leading characters
+
+        return text;
+        // // Ensure text length is exactly 5
+        // const formattedText = text.padStart(leadingCount, leadingChar).slice(-leadingCount);
+        // this.drawText(x, y, formattedText, pixelSize, color);
+
+    }
+
+
     /** StackTrace Dump */
     static showStackTrace(text = '') {
         let trace = new Error(`'${text}':`);

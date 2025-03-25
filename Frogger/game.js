@@ -12,6 +12,8 @@ import GameUtils from '../scripts/game/gameUtils.js';
 import KeyboardInput from '../scripts/input/keyboard.js';
 import Frog from './frog.js';
 
+import Level from './level.js';
+
 class Game extends GameBase {
 
   constructor() {
@@ -19,9 +21,11 @@ class Game extends GameBase {
     this.frog = new Frog(
       CanvasUtils.getConfigWidth() / 2,    // Center X
       CanvasUtils.getCanvasHeight() - 48,  // Bottom Y
-      './assets/images/frog-sprites.png',  // Sprite path
+      './assets/images/frog_sprite_60w_70h_3f.png',  // Sprite path
       4                                    // Pixel size
   );
+
+  this.level = new Level();
 }
 
   async onInitialize() {
@@ -92,13 +96,15 @@ class Game extends GameBase {
   displayAttractMode() {
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
+    CanvasUtils.ctx.fillText("Welcome to Frogger!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
     if (this.keyboardInput.getkeysPressed().includes('Enter') ||
       this.keyboardInput.getkeysPressed().includes('NumpadEnter')) {
       this.gameState = "playerSelect";
     }
+    this.level.update();
+    this.level.draw(CanvasUtils.ctx);
   }
 
   displayPlayerSelect(deltaTime) {

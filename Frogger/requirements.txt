@@ -1,6 +1,6 @@
 ToolboxAid.com
 David Quesenberry
-10/16/2024
+03/24/2025
 requirements.txt
 
 - is a todo
@@ -8,8 +8,51 @@ requirements.txt
 x is complete
 ! is cancel/don't do
 -----------------------------------------------
-x access to global variables
-x access to reusable canvas methods
-x ability to switch between fullscreen and window
-x reusable game loop with context and deltaTime
-x ability to display fps
+Core Game Requirements
+Game World
+[ ] Canvas Size: 224x256 pixels (original arcade)
+[ ] Frame Rate: 60 FPS
+[ ] Grid Size: Each cell 16x16 pixels
+[ ] Sprite System: Support for multiple animation frames
+[ ] Collision System: Pixel-perfect or hitbox-based
+[ ] Audio System: Support for multiple sound effects
+[ ] High Score: Local storage for top scores
+[ ] 13x14 grid layout
+[ ] 5 safe zones (start, 3 middle strips, goal area)
+[ ] Water zone with logs/turtles
+[ ] Road zone with vehicles
+[ ] 5 goal spots at top
+[ ] Player Mechanics
+
+[ ] Frog moves up, down, left, right
+[ ] One grid square per move
+[ ] Limited time per level
+[ ] 3 lives per game
+[ ] Points for forward progress
+[ ] Bonus points for reaching home
+[ ] Death on collision with vehicles/water
+
+Obstacles
+[ ] Vehicles (different speeds/directions)
+[ ] Water hazards
+[ ] Time limit
+[ ] Moving platforms (logs/turtles)
+[ ] Diving turtles
+[ ] Snake in home area (later levels)
+[ ] Scoring System
+
+[ ] 10 points forward movement
+[ ] 50 points reaching home
+[ ] 200 points all homes filled
+[ ] Time bonus
+[ ] Fly bonus
+
+Ten points are also awarded per each unused ½ second of time. 
+Guiding a lady frog home or eating a fly scores 200 points each, 
+and when all five frogs reach home to end the level 
+the player earns 1,000 points. 
+
+A single bonus frog is given at 
+20,000 points. 99,990 points is the maximum high score that can be 
+achieved on an original arcade cabinet. Players may exceed this score, 
+but the game "rolls over" and only keeps the last 5 digits.
