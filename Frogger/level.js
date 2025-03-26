@@ -306,34 +306,33 @@ class Level {
             const size = 24;
             // ---------------------------------------
             // Level
-            const col = 12;
             const row = 14;
             for (let level = 0; level < 15; level++) {
                 CanvasUtils.ctx.drawImage(
                     Level.timerLivesSprite,
                     0, 0, // Source x,y (first frame)
                     size, size,      // Source width,height
-                    770 - level * 26 + Level.MARGIN_X + 12,  // Destination x
-                    Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
-                    Level.GRID_SIZE * 2, // Destination width
-                    Level.GRID_SIZE * 2  // Destination height
-                );
-            }
-            // ---------------------------------------
-            // Lives
-            for (let lives = 0; lives < 7; lives++) {
-                CanvasUtils.ctx.drawImage(
-                    Level.timerLivesSprite,
-                    size, 0, // Source x,y (first frame)
-                    size-1, size,      // Source width,height
-                    lives * 34 + Level.MARGIN_X,  // Destination x
+                    770 - level * 24 + Level.MARGIN_X + 12,  // Destination x
                     Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
                     Level.GRID_SIZE * 2, // Destination width
                     Level.GRID_SIZE * 2  // Destination height
                 );
             }
 
-            // Time Bar section in drawTimerLives method
+            // ---------------------------------------
+            // Lives
+            for (let lives = 0; lives < 7; lives++) {
+                CanvasUtils.ctx.drawImage(
+                    Level.timerLivesSprite,
+                    size, 0, // Source x,y (first frame)
+                    size - 1, size,      // Source width,height
+                    lives * 34 + Level.MARGIN_X+10,  // Destination x
+                    Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
+                    Level.GRID_SIZE * 2, // Destination width
+                    Level.GRID_SIZE * 2  // Destination height
+                );
+            }
+
             // ---------------------------------------
             // Time Bar
             if (Level.spritesLoaded && Level.timerLivesSprite) {
@@ -366,7 +365,7 @@ class Level {
                         Level.timerLivesSprite,
                         modFrame * size, 0, // Source x,y (frames 2-5)
                         size, size,         // Source width (varies), height
-                        lastPosX - 24,      // Destination x (right-aligned)
+                        lastPosX - size,      // Destination x (right-aligned)
                         posY,
                         size,               // Destination width
                         size                // Destination height
@@ -403,7 +402,7 @@ class Level {
             Level.timer = 0;
             Level.timerDirection = 1;
         }
-        Level.seconds = Math.floor(Level.timer/2);
+        Level.seconds = Math.floor(Level.timer / 2);
     }
 
     draw() {
@@ -412,7 +411,6 @@ class Level {
         CanvasUtils.ctx.fillRect(
             Level.MARGIN_X,
             0,
-            //Level.MARGIN_TOP + 32,
             this.playFieldWidth,
             this.playFieldHeightHalf + 32 + Level.MARGIN_TOP + 32);
 
@@ -421,7 +419,7 @@ class Level {
         CanvasUtils.ctx.fillRect(Level.MARGIN_X,
             Level.MARGIN_TOP + this.playFieldHeightHalf + 32,
             this.playFieldWidth,
-            this.playFieldHeightHalf - 32);
+            this.playFieldHeightHalf + Level.MARGIN_TOP - 16);
 
         // Draw players and High score
         // Draw score at top of screen
@@ -438,7 +436,7 @@ class Level {
         Level.drawText(up_2, 680 - 24, 16 + 32, Level.alphaNumRedSprite, 1);
 
         // Draw larger Game Over text
-        Level.drawText('GAME OVER', 200, 300, Level.alphaNumWhiteSprite, 2);
+        Level.drawText('GAME OVER', 240, 300, Level.alphaNumWhiteSprite, 2);
 
 
         // Draw sprites for top row (home spots) only if sprites are loaded
@@ -452,7 +450,7 @@ class Level {
         this.drawTimerLives();
 
         // Draw text for start and time
-        Level.drawText(' start ', 350, 542, Level.alphaNumRedSprite, 1, "black");
+        Level.drawText(' start ', 375, 542, Level.alphaNumRedSprite, 1, "black");
         Level.drawText('time', 765, 998, Level.alphaNumYellowSprite, 1, "black");
 
         if (Level.DEBUG) {
