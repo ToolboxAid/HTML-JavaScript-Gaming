@@ -303,6 +303,7 @@ class Level {
     drawTimerLives() {  //timer_lives_sprite_24w_24h_6f
         if (Level.spritesLoaded && Level.timerLivesSprite) {
 
+            const size = 24;
             // ---------------------------------------
             // Level
             const col = 12;
@@ -311,7 +312,7 @@ class Level {
                 CanvasUtils.ctx.drawImage(
                     Level.timerLivesSprite,
                     0, 0, // Source x,y (first frame)
-                    24 - 1, 24 - 1,      // Source width,height
+                    size - 1, size - 1,      // Source width,height
                     770 - level * 26 + Level.MARGIN_X + 12,  // Destination x
                     Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
                     Level.GRID_SIZE * 2, // Destination width
@@ -323,8 +324,8 @@ class Level {
             for (let lives = 0; lives < 7; lives++) {
                 CanvasUtils.ctx.drawImage(
                     Level.timerLivesSprite,
-                    24, 0, // Source x,y (first frame)
-                    24 - 1, 24 - 1,      // Source width,height
+                    size, 0, // Source x,y (first frame)
+                    size, size,      // Source width,height
                     lives * 34 + Level.MARGIN_X,  // Destination x
                     Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
                     Level.GRID_SIZE * 2, // Destination width
@@ -337,80 +338,72 @@ class Level {
             // Time Bar
             if (Level.spritesLoaded && Level.timerLivesSprite) {
                 // Frame data for timer sprites (frames 2-5)
-                const timerFrames = [
-                    { sourceX: 24 * 2, width: 24 },  // Frame 2
-                    { sourceX: 24 * 3, width: 18 },  // Frame 3
-                    { sourceX: 24 * 4, width: 12 },  // Frame 4
-                    { sourceX: 24 * 5, width: 6 }    // Frame 5
-                ];
+                const divTimer = Math.floor(Level.timer / 4);
+                const modTimer = Math.floor(Level.timer % 4); // 2,3,4,5
 
-                const divTimer = Math.floor(Level.timer / 5);
-                const modTimer = Math.floor(Level.timer % 5); // 2,3,4,5
-
-                const rightAlignedX1 = 485;  // Start from right side
-                const framex = (2 + modTimer) * 24;
-                // // Calculate which frame to use based on remaining time
-                // const frameIndex = Math.floor((time / Level.timerMax) * timerFrames.length);
-                // const frame = timerFrames[Math.min(frameIndex, timerFrames.length - 1)];                
-
-                let lastPosX = 685 + 26;
+                const frame2pos = size * 2;
+                const basedPosX = Level.MARGIN_X + 698;
+                let lastPosX = basedPosX + (1 * size);
+                const posY = Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 44;
                 for (let time = 0; time < divTimer; time++) {
-                    // // Calculate which frame to use based on remaining time
-                    const frameIndex = Math.floor((time / Level.timerMax) * timerFrames.length);
-                    const frame = timerFrames[Math.min(frameIndex, timerFrames.length - 1)];
-
-                    const rightAlignedX = 685 - time * 26;  // Start from right side
+                    const rightAlignedX = basedPosX - (time * size);  // Start from right side
                     lastPosX = rightAlignedX;
                     CanvasUtils.ctx.drawImage(
                         Level.timerLivesSprite,
-                        frame.sourceX, 0,                    // Source x,y (frames 2-5)
-                        frame.width, 24 - 1,                 // Source width (varies), height
-                        rightAlignedX + Level.MARGIN_X,      // Destination x (right-aligned)
-                        Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 40, // Destination y
-                        Level.GRID_SIZE * 2,                 // Destination width
-                        Level.GRID_SIZE * 2                  // Destination height
+                        frame2pos, 0,                    // Source x,y (frames 2-5)
+                        size, size,                 // Source width (varies), height
+                        rightAlignedX,      // Destination x (right-aligned)
+                        posY,
+                        size,                 // Destination width
+                        size                   // Destination height
                     );
                 }
 
-                CanvasUtils.ctx.drawImage(
-                    Level.timerLivesSprite,
-                    framex, 0,                    // Source x,y (frames 2-5)
-                    24, 24 - 1,                 // Source width (varies), height
-                    lastPosX,      // Destination x (right-aligned)
-                    Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 40 - 20, // Destination y
-                    //400,
-                    Level.GRID_SIZE * 2,                 // Destination width
-                    Level.GRID_SIZE * 2                  // Destination height
-                );
+                const modFrame = (5 - modTimer);
+                if (Level.timer > 0) {
+                    // Calculate which frame to use based on remaining time
+                    CanvasUtils.ctx.drawImage(
+                        Level.timerLivesSprite,
+                        modFrame * size, 0, // Source x,y (frames 2-5)
+                        size, size,         // Source width (varies), height
+                        lastPosX - 24,      // Destination x (right-aligned)
+                        posY,
+                        size,               // Destination width
+                        size                // Destination height
+                    );
+                }
 
                 // Draw debug timer values
                 if (Level.DEBUG1) {
-                    const timerText = `DIV:${divTimer}   MOD:${modTimer}   Timer:${Math.floor(Level.timer)}    MAX:${Level.timerMax}`;
                     CanvasUtils.ctx.fillStyle = 'white';
                     CanvasUtils.ctx.font = '16px Arial';
+
+                    const timerText = `DIV:${divTimer}   MOD:${modTimer}   Timer:${Math.floor(Level.timer)}    MAX:${Level.timerMax}`;
                     CanvasUtils.ctx.fillText(timerText, 400, 450);
 
                     // Draw frame indicators
-                    const frameInfo = `Frame: ${2 + modTimer} (${framex}px)`;
+                    const frameInfo = `modFrame: ${modFrame} Seconds: ${Level.seconds}`;
                     CanvasUtils.ctx.fillText(frameInfo, 400, 470);
                 }
             }
         }
     }
 
-    static timer = 0;
-    static timerMax = 90;
-    static timerSpeed = 0.025;//0.05;
+    static timer = 91;
+    static timerMax = 91;
+    static timerSpeed = 0.03; //0.0325;// ~45 second
     static timerDirection = 1;
+    static seconds = 0;
     timerUpdate() {
         Level.timer += Level.timerSpeed * Level.timerDirection;
         if (Level.timer >= Level.timerMax) {
             Level.timer = Level.timerMax;
             Level.timerDirection = -1;
-        } else if (Level.timer <= 0) {
+        } else if (Level.timer <= -1) {
             Level.timer = 0;
             Level.timerDirection = 1;
         }
+        Level.seconds = Math.floor(Level.timer/2);
     }
 
     draw() {
