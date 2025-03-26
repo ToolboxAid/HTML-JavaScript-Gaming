@@ -12,6 +12,7 @@ class Level {
 
     // Debug mode enabled via URL parameter: game.html?level
     static DEBUG = new URLSearchParams(window.location.search).has('level');
+    static DEBUG1 = new URLSearchParams(window.location.search).has('level1');
 
     // Frame Rate: 60 FPS
     // Canvas Size: 224x256 pixels (original arcade)
@@ -151,7 +152,7 @@ class Level {
                 CanvasUtils.ctx.drawImage(
                     alphaNum,
                     charIndex * CHAR_WIDTH, 0,     // Source x,y
-                    CHAR_WIDTH-1, CHAR_HEIGHT-1,       // Source dimensions
+                    CHAR_WIDTH - 1, CHAR_HEIGHT - 1,       // Source dimensions
                     x + (i * CHAR_WIDTH * scale),  // Destination x
                     y,                             // Destination y
                     CHAR_WIDTH * scale,            // Destination width
@@ -311,7 +312,7 @@ class Level {
                     Level.timerLivesSprite,
                     0, 0, // Source x,y (first frame)
                     24 - 1, 24 - 1,      // Source width,height
-                    770-level * 26 + Level.MARGIN_X + 12,  // Destination x
+                    770 - level * 26 + Level.MARGIN_X + 12,  // Destination x
                     Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
                     Level.GRID_SIZE * 2, // Destination width
                     Level.GRID_SIZE * 2  // Destination height
@@ -331,56 +332,75 @@ class Level {
                 );
             }
 
+            // Time Bar section in drawTimerLives method
             // ---------------------------------------
             // Time Bar
-            // for (let time = 0; time < Level.timer; time++) {
-            //     const rightAlignedX = 685 - time * 26;  // Start from right side
-            //     CanvasUtils.ctx.drawImage(
-            //         Level.timerLivesSprite,
-            //         24 * 2, 0,             //2-5        // Source x,y (first frame)
-            //         24 - 1, 24 - 1,                     // Source width,height
-            //         rightAlignedX + Level.MARGIN_X,     // Destination x (right-aligned)
-            //         Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 40, // Destination y
-            //         Level.GRID_SIZE * 2,                // Destination width
-            //         Level.GRID_SIZE * 2                 // Destination height
-            //     );
-            // }
+            if (Level.spritesLoaded && Level.timerLivesSprite) {
+                // Frame data for timer sprites (frames 2-5)
+                const timerFrames = [
+                    { sourceX: 24 * 2, width: 24 },  // Frame 2
+                    { sourceX: 24 * 3, width: 18 },  // Frame 3
+                    { sourceX: 24 * 4, width: 12 },  // Frame 4
+                    { sourceX: 24 * 5, width: 6 }    // Frame 5
+                ];
 
-// Time Bar section in drawTimerLives method
-// ---------------------------------------
-// Time Bar
-if (Level.spritesLoaded && Level.timerLivesSprite) {
-    // Frame data for timer sprites (frames 2-5)
-    const timerFrames = [
-        { sourceX: 24 * 2, width: 24 },  // Frame 2
-        { sourceX: 24 * 3, width: 18 },  // Frame 3
-        { sourceX: 24 * 4, width: 12 },  // Frame 4
-        { sourceX: 24 * 5, width: 6 }    // Frame 5
-    ];
-    
-    for (let time = 0; time < Level.timer; time++) {
-        // Calculate which frame to use based on remaining time
-        const frameIndex = Math.floor((time / Level.timerMax) * timerFrames.length);
-        const frame = timerFrames[Math.min(frameIndex, timerFrames.length - 1)];
-        
-        const rightAlignedX = 685 - time * 26;  // Start from right side
-        CanvasUtils.ctx.drawImage(
-            Level.timerLivesSprite,
-            frame.sourceX, 0,                    // Source x,y (frames 2-5)
-            frame.width, 24 - 1,                 // Source width (varies), height
-            rightAlignedX + Level.MARGIN_X,      // Destination x (right-aligned)
-            Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 40, // Destination y
-            Level.GRID_SIZE * 2,                 // Destination width
-            Level.GRID_SIZE * 2                  // Destination height
-        );
-    }
-}           
+                const divTimer = Math.floor(Level.timer / 5);
+                const modTimer = Math.floor(Level.timer % 5); // 2,3,4,5
+
+                const rightAlignedX1 = 485;  // Start from right side
+                const framex = (2 + modTimer) * 24;
+                // // Calculate which frame to use based on remaining time
+                // const frameIndex = Math.floor((time / Level.timerMax) * timerFrames.length);
+                // const frame = timerFrames[Math.min(frameIndex, timerFrames.length - 1)];                
+
+                let lastPosX = 685 + 26;
+                for (let time = 0; time < divTimer; time++) {
+                    // // Calculate which frame to use based on remaining time
+                    const frameIndex = Math.floor((time / Level.timerMax) * timerFrames.length);
+                    const frame = timerFrames[Math.min(frameIndex, timerFrames.length - 1)];
+
+                    const rightAlignedX = 685 - time * 26;  // Start from right side
+                    lastPosX = rightAlignedX;
+                    CanvasUtils.ctx.drawImage(
+                        Level.timerLivesSprite,
+                        frame.sourceX, 0,                    // Source x,y (frames 2-5)
+                        frame.width, 24 - 1,                 // Source width (varies), height
+                        rightAlignedX + Level.MARGIN_X,      // Destination x (right-aligned)
+                        Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 40, // Destination y
+                        Level.GRID_SIZE * 2,                 // Destination width
+                        Level.GRID_SIZE * 2                  // Destination height
+                    );
+                }
+
+                CanvasUtils.ctx.drawImage(
+                    Level.timerLivesSprite,
+                    framex, 0,                    // Source x,y (frames 2-5)
+                    24, 24 - 1,                 // Source width (varies), height
+                    lastPosX,      // Destination x (right-aligned)
+                    Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 40 - 20, // Destination y
+                    //400,
+                    Level.GRID_SIZE * 2,                 // Destination width
+                    Level.GRID_SIZE * 2                  // Destination height
+                );
+
+                // Draw debug timer values
+                if (Level.DEBUG1) {
+                    const timerText = `DIV:${divTimer}   MOD:${modTimer}   Timer:${Math.floor(Level.timer)}    MAX:${Level.timerMax}`;
+                    CanvasUtils.ctx.fillStyle = 'white';
+                    CanvasUtils.ctx.font = '16px Arial';
+                    CanvasUtils.ctx.fillText(timerText, 400, 450);
+
+                    // Draw frame indicators
+                    const frameInfo = `Frame: ${2 + modTimer} (${framex}px)`;
+                    CanvasUtils.ctx.fillText(frameInfo, 400, 470);
+                }
+            }
         }
     }
 
     static timer = 0;
-    static timerMax = 20;
-    static timerSpeed = 0.05;
+    static timerMax = 90;
+    static timerSpeed = 0.025;//0.05;
     static timerDirection = 1;
     timerUpdate() {
         Level.timer += Level.timerSpeed * Level.timerDirection;
