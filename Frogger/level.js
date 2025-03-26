@@ -312,7 +312,7 @@ class Level {
                 CanvasUtils.ctx.drawImage(
                     Level.timerLivesSprite,
                     0, 0, // Source x,y (first frame)
-                    size - 1, size - 1,      // Source width,height
+                    size, size,      // Source width,height
                     770 - level * 26 + Level.MARGIN_X + 12,  // Destination x
                     Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
                     Level.GRID_SIZE * 2, // Destination width
@@ -325,7 +325,7 @@ class Level {
                 CanvasUtils.ctx.drawImage(
                     Level.timerLivesSprite,
                     size, 0, // Source x,y (first frame)
-                    size, size,      // Source width,height
+                    size-1, size,      // Source width,height
                     lives * 34 + Level.MARGIN_X,  // Destination x
                     Level.MARGIN_TOP + row * Level.GRID_SIZE * 4 + 6, // Destination y
                     Level.GRID_SIZE * 2, // Destination width
