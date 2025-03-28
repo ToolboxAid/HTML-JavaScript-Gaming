@@ -12,6 +12,7 @@ import GameUtils from '../scripts/game/gameUtils.js';
 import KeyboardInput from '../scripts/input/keyboard.js';
 import Frog from './frog.js';
 
+import AttractMode from './attractMode.js';
 import Level from './level.js';
 
 class Game extends GameBase {
@@ -25,7 +26,8 @@ class Game extends GameBase {
       4                                    // Pixel size
   );
 
-  this.level = new Level();
+    this.attractMode = new AttractMode();
+  //this.level = new Level();
 }
 
   async onInitialize() {
@@ -103,8 +105,9 @@ class Game extends GameBase {
       this.keyboardInput.getkeysPressed().includes('NumpadEnter')) {
       this.gameState = "playerSelect";
     }
-    this.level.update();
-    this.level.draw(CanvasUtils.ctx);
+
+    this.attractMode.update();
+    this.attractMode.draw(CanvasUtils.ctx);
   }
 
   displayPlayerSelect(deltaTime) {

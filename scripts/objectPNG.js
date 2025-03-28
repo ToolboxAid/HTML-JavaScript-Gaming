@@ -23,12 +23,16 @@ class ObjectPNG extends ObjectKillable {
         this.spriteHeight = spriteHeight;
         this.pixelSize = pixelSize;
         this.isLoaded = false;
+        this.spritePath = spritePath;
 
         // Load sprite
         ObjectPNG.loadSprite(spritePath, transparentColor)
             .then(png => {
                 this.png = png;
                 this.isLoaded = true;
+                if (SystemUtils.getObjectType(this) === "Vehicle"){
+                console.log(this.png)
+                }
             })
             .catch(error => {
                 console.error("Failed to load sprite:", error);
@@ -279,11 +283,90 @@ class ObjectPNG extends ObjectKillable {
         super.update(deltaTime);
     }
 
+
+    drawInfo(){
+        let cnt = 0;
+        const ctx = CanvasUtils.ctx;
+        if (cnt++ === 0) {
+            const rightMargin = 20;
+            const canvasWidth = CanvasUtils.getCanvasWidth();
+            const startX = 20;//canvasWidth - 300 - rightMargin;  // 300px wide debug panel
+            
+            ctx.textAlign = 'left';
+            ctx.font = '14px Arial';
+            ctx.fillStyle = 'yellow';
+    
+            // Basic properties
+            const basicProps = [
+                `Type: ${this.vehicleType}`,
+                `Position: (${Math.floor(this.x)}, ${Math.floor(this.y)})`,
+                `Direction: ${this.direction}`,
+                `Speed: ${this.speed}`,
+                `Size: ${this.width}x${this.height}`
+            ];
+    
+            // Draw basic properties
+            basicProps.forEach((prop, index) => {
+                ctx.fillText(prop, startX, 40 + (index * 20));
+            });
+    
+            // Sprite loading status
+            ctx.fillStyle = this.isLoaded ? '#0F0' : '#F00';
+            ctx.fillText(`Sprite Loaded: ${this.isLoaded}`, startX, 140);
+            
+            // PNG Data section
+            ctx.fillStyle = '#8F8';
+            const yPos = 180;
+            ctx.fillText('PNG Data:', startX, yPos);
+    
+            if (this.png) {
+                let lineY = yPos + 20;
+                
+                // Core Image properties
+                const imageProps = [
+                    `complete: ${this.png.complete}`,
+                    `naturalWidth: ${this.png.naturalWidth}`,
+                    `naturalHeight: ${this.png.naturalHeight}`,
+                    `width: ${this.png.width}`,
+                    `height: ${this.png.height}`,
+                    `src: ${this.png.src.split('/').pop()}`
+                ];
+    
+                imageProps.forEach(prop => {
+                    ctx.fillText(prop, startX + 20, lineY);
+                    lineY += 20;
+                });
+    
+                // Sprite properties
+                ctx.fillText('Sprite Properties:', startX, lineY + 20);
+                lineY += 40;
+                
+                const spriteProps = [
+                    `spriteX: ${this.spriteX}`,
+                    `spriteY: ${this.spriteY}`,
+                    `spriteWidth: ${this.spriteWidth}`,
+                    `spriteHeight: ${this.spriteHeight}`,
+                    `pixelSize: ${this.pixelSize}`
+                ];
+    
+                spriteProps.forEach(prop => {
+                    ctx.fillText(prop, startX + 20, lineY);
+                    lineY += 20;
+                });
+            } else {
+                ctx.fillText('PNG not loaded', startX + 20, yPos + 20);
+            }
+        }
+    
+    }
+
     static spamCntr = 0;
     draw(offsetX = 0, offsetY = 0) {
         if (!this.isLoaded || !this.png.complete) {
+            console.warn(    "Sprite not loaded or incomplete");
             return;
         }
+        this.drawInfo();
 
         try {
             const { x, y, png, pixelSize, spriteX, spriteY, spriteWidth, spriteHeight, rotation } = this;
@@ -302,16 +385,77 @@ class ObjectPNG extends ObjectKillable {
             CanvasUtils.ctx.rotate(rotation);
 
             // Draw sprite centered at origin
+            // CanvasUtils.ctx.drawImage(
+            //     png,
+            //     Math.floor(spriteX), Math.floor(spriteY),
+            //     spriteWidth, spriteHeight,
+            //     -scaledWidth / 2, -scaledHeight / 2,  // Center the sprite
+            //     scaledWidth, scaledHeight
+            // );
+
+            const spacing = 60;
+            const startY = 585;
+            const scale = 2.25;
             CanvasUtils.ctx.drawImage(
                 png,
-                Math.floor(spriteX), Math.floor(spriteY),
-                spriteWidth, spriteHeight,
-                -scaledWidth / 2, -scaledHeight / 2,  // Center the sprite
-                scaledWidth, scaledHeight
+                0, 0,
+                48,42,
+                x, y,  // Center the sprite
+                24*scale, 24*scale
             );
+
+
+            CanvasUtils.ctx.textAlign = 'left';
+            CanvasUtils.ctx.font = '14px Arial';
+            CanvasUtils.ctx.fillStyle = 'yellow';            
+            CanvasUtils.ctx.fillText(spriteX, 600, 600);
+            CanvasUtils.ctx.fillText(spriteY, 600, 620);
+            CanvasUtils.ctx.fillText(spriteWidth, 600, 640);
+            CanvasUtils.ctx.fillText(scaledHeight, 600, 660);
+            CanvasUtils.ctx.fillText(scaledWidth, 600, 680);
+            CanvasUtils.ctx.fillText(scaledHeight, 600, 700);
+            // const spacing = 60;
+            // const startY = 585;
+            // const scale = 2.25;
+            // CanvasUtils.ctx.drawImage(
+            //     png,
+            //     0, 0,
+            //     48,42,
+            //     x, startY,  // Center the sprite
+            //     24*scale, 24*scale
+            // );
+            // CanvasUtils.ctx.drawImage(
+            //     png,
+            //     48, 0,
+            //     48,42,
+            //     x, startY+(1*spacing),  // Center the sprite
+            //     24*scale, 24*scale
+            // );
+            // CanvasUtils.ctx.drawImage(
+            //     png,
+            //     48*2, 0,
+            //     48*2,42,
+            //     x, startY+(2*spacing),  // Center the sprite
+            //     48*scale, 24*scale
+            // );
+            // CanvasUtils.ctx.drawImage(
+            //     png,
+            //     48*4, 0,
+            //     48,42,
+            //     x, startY+(3*spacing),  // Center the sprite
+            //     24*scale, 24*scale
+            // );
+            // CanvasUtils.ctx.drawImage(
+            //     png,
+            //     48*5, 0,
+            //     48,42,
+            //     x, startY+(4*spacing),  // Center the sprite
+            //     24*scale, 24*scale
+            // );
 
             // Restore context
             CanvasUtils.ctx.restore();
+
 
             if (ObjectPNG.DEBUG) {
                 // Draw rotation debug info
