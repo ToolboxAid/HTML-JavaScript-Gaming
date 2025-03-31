@@ -7,7 +7,7 @@
 // Configuration for the canvas
 export const canvasConfig = {
   //224x256
-  width: 896, // Game area width
+  width: 896-32-32, // Game area width
   height: 1024, // Game area height
   scale: 0.35,
   backgroundColor: "#333333",

@@ -38,7 +38,7 @@ class Level {
     static GRID_SIZE = 16;        // Size of each cell
     static GRID_WIDTH = 13;       // Number of cells across
     static GRID_HEIGHT = 14; //s/b 14;// Number of cells down
-    static MARGIN_X = 32;          // Left/right margins
+    static MARGIN_X = 0;//32;          // Left/right margins
     static MARGIN_TOP = 32 * 2 - 8;       // Top margin is reserved for score
     static MARGIN_BOTTOM = 0;     // Bottom margin
 

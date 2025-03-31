@@ -1,5 +1,5 @@
 {
-  "log.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAc0AAACBCAYAAACiqOG+AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAOQSURBVHhe7dyxbRNhAIbhC1IaGnbIBpkgGyCUEjEBTSgYg4I0TIAoEWIDJsgs1EiBmpND3gv+bZ/9POVfkNyPjxc339k0Tb8nAOBRz+YHAMBmogkAkWgCQCSaABCJJgBEogkAkWgCQCSaABCJJgBEZ2taBLq7uZ4fMXN5+3V+tNFa7vLYnufYnOrfz6k+94ubz/Ojnbm4eD4/2gvfNAEgEk0AiEQTACLRBIBINAEgEk0AiEQTACLRBIBINAEgGroIdGxrGFVdzfh5+2Z+tGr1uacjfHb4X/X9GfHu1J+9BqOXg3zTBIBINAEgEk0AiEQTACLRBIBINAEgEk0AiEQTACLRBIBINAEgWtWM3oippxGTVLAr3gm2oX6O9vnZqL+jGT0AOBCiCQCRaAJAJJoAEIkmAESiCQCRaAJAJJoAEIkmAESLF4G2vfIDh6oukOxzJeXY1Duf3PtW1Xvf553X33GJp6wH+aYJAJFoAkAkmgAQiSYARKIJAJFoAkAkmgAQiSYARKIJAJFFoBM1Yl1jn2shwN+WvOPH9O4ueW6LQAAwkGgCQCSaABCJJgBEogkAkWgCQCSaABCJJgBEogkAkWgCQHQQM3pLZo+qNcxCLXnuNTzPCPWOTvV+4CH13ZkGvD9r+dlm9ABgINEEgEg0ASASTQCIRBMAItEEgEg0ASASTQCIRBMAooNYBDpVS5Yrtr2awelZ8nnbtmP7/I64y3pHI352NeJ3HPFnVhaBAGAg0QSASDQBIBJNAIhEEwAi0QSASDQBIBJNAIhEEwAi0QSAaPGM3hIm9/7t8vbr/OhBH9++mh9t9PL9l/nRRt8/vJ4fsUJX56f7/94fv+7nRzxR/XejTt6NUGf0njKNt8TpvnEAsJBoAkAkmgAQiSYARKIJAJFoAkAkmgAQiSYARKIJANHQRaBtq6s40zRN7z59mx9ttOTP5DjU9ZMRLDFxiOo7MWIRqC79VBaBAOBAiCYARKIJAJFoAkAkmgAQiSYARKIJAJFoAkAkmgAQHcQi0N3N9fxoZ378up8f7UxdLZosFz3KXW6Pu9yPeu/7vPOr8/Y9a9srP9MOln6qdgMAgGgCQCWaABCJJgBEogkAkWgCQCSaABCJJgBEogkAkWgCQHQQM3oAsAa+aQJAJJoAEIkmAESiCQCRaAJAJJoAEIkmAESiCQCRaAJAJJoAEIkmAESiCQCRaAJAJJoAEP0BQxSZ68eZtUQAAAAASUVORK5CYII="
+  "log.png": "data:image/png;base64,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"
 }
 
 {
@@ -14,9 +14,9 @@
     {
       "metadata": {
         "spriteimage": "log.png",
-        "imageX": 53,
-        "imageY": 1,
-        "imageScale": 2.879999999999998
+        "imageX": 19,
+        "imageY": 3,
+        "imageScale": 9.879999999999999
       },
       "data": [
         "ØØØ<<<Ø<<<Ø<<<<Ø<<<<",
@@ -34,9 +34,9 @@
     {
       "metadata": {
         "spriteimage": "log.png",
-        "imageX": -175,
-        "imageY": 1,
-        "imageScale": 2.879999999999998
+        "imageX": -41,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
       },
       "data": [
         "<<<Ø<<<<<Ø<<<<<}}}ØØ",
@@ -49,6 +49,166 @@
         "<<<<<<=====:==}<<<}Ø",
         "==============}<<}}Ø",
         "==Ø========Ø===<}ØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -101,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "ØØØ<<<Ø<<<Ø<<<<Ø<<<<",
+        "Ø<<<<<<}<<<<<}<<<<<<",
+        "Ø<<}}<<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<}<",
+        "<<<<<<<<<<<}}<<<<<<<",
+        "<<}}<<<<}<<<<<<}<<<<",
+        "<<<<<<<<}<<<<<<<<<<<",
+        "Ø<<<<<<<3<}=========",
+        "ØØØ=3============}}}",
+        "ØØ<<<===Ø=======Ø==="
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -161,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "<<<Ø<<<<<Ø<<<<<<<<<<",
+        "<<<<<<<<<<<}<<<<<<<<",
+        "}}<<<<<<<<<<<<<<<<<<",
+        "<<<<<}<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<<<",
+        "<}}}<<<<<}}<}<<<<<<<",
+        "<<<<<<=====:==<<<<<<",
+        "==============<===<<",
+        "==Ø========Ø=======Ø"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -221,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "<<<Ø<<<<<Ø<<<<<}}}ØØ",
+        "<<<<<<<<<<<}<<}}}}}Ø",
+        "}}<<<<<<<<<<<<}<<<}Ø",
+        "<<<<<}<<<<<<<<}<<<}}",
+        "<<<<<<<<<<<<<}<<<<<}",
+        "<<<<<<<<<<<<<}<<}<<}",
+        "<}}}<<<<<}}<}}}<}<}}",
+        "<<<<<<=====:==}<<<}Ø",
+        "==============}<<}}Ø",
+        "==Ø========Ø===<}ØØØ"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -281,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "ØØØ<<<Ø<<<Ø<<<<Ø<<<<",
+        "Ø<<<<<<}<<<<<}<<<<<<",
+        "Ø<<}}<<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<}<",
+        "<<<<<<<<<<<}}<<<<<<<",
+        "<<}}<<<<}<<<<<<}<<<<",
+        "<<<<<<<<}<<<<<<<<<<<",
+        "Ø<<<<<<<3<}=========",
+        "ØØØ=3============}}}",
+        "ØØ<<<===Ø=======Ø==="
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -341,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "<<<<<<Ø<<<Ø<<<<Ø<<<<",
+        "<<<<<<<}<<<<<}<<<<<<",
+        "<<<}}<<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<}<",
+        "<<<<<<<<<<<}}<<<<<<<",
+        "<<}}<<<<}<<<<<<}<<<<",
+        "<<<<<<<<}<<<<<<<<<<<",
+        "<<<<<<<<3<}=========",
+        "<<<=3============}}}",
+        "=<======Ø=======Ø==="
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -401,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "<<<Ø<<<<<Ø<<<<<<<<<<",
+        "<<<<<<<<<<<}<<<<<<<<",
+        "}}<<<<<<<<<<<<<<<<<<",
+        "<<<<<}<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<}<<}",
+        "<}}}<<<<<}}<<<<<}<<<",
+        "<<<<<<=====:==<<<<<<",
+        "==============<===<<",
+        "==Ø========Ø=======<"
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -461,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "<<<<<<Ø<<<Ø<<<<Ø<<<<",
+        "<<<<<<<}<<<<<}<<<<<<",
+        "<<<}}<<<<<<<<<<<<<<<",
+        "<<<<<<<<<<<<<<<<<<}<",
+        "<<<<<<<<<<<}}<<<<<<<",
+        "<<}}<<<<}<<<<<<}<<<<",
+        "<<<<<<<<}<<<<<<<<<<<",
+        "<<<<<<<<3<}=========",
+        "====3============}}}",
+        "==<<====Ø=======Ø==="
+      ]
+    },
+    {
+      "metadata": {
+        "spriteimage": "log.png",
+        "imageX": -521,
+        "imageY": 3,
+        "imageScale": 9.980000000000002
+      },
+      "data": [
+        "<<<Ø<<<<<Ø<<<<<}}}ØØ",
+        "<<<<<<<<<<<}<<}}}}}Ø",
+        "}}<<<<<<<<<<<<}<<<}Ø",
+        "<<<<<}<<<<<<<<}<<<}}",
+        "<<<<<<<<<<<<<}<<<<<}",
+        "<<<<<<<<<<<<<}<<}<<}",
+        "<}}}<<<<<}}<}}}<}<}}",
+        "<<<<<<=====:==}<<<}Ø",
+        "==============}<<}}Ø",
+        "==Ø========Ø===<}}ØØ"
       ]
     }
   ]
