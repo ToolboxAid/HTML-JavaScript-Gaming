@@ -1,29 +1,30 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// beaver.js
+// snake.js
 
-import objectPNG from '../scripts/objectPNG.js';
+import GameObject from './gameObject.js';
 
-class Beaver extends objectPNG {
-    // - Type (beaver)
+class Snake extends GameObject {
+    // - Type (snake)
     // - Speed/direction
     // - Sprite management
     // - Position updates
+
     constructor(x, y, width, height, speed) {
         super(x, y, width, height, speed);
-        this.type = 'beaver';
+        this.type = 'snake';
     }
     update() {
         this.x += this.speed;
         if (this.x > canvas.width) {
             this.x = -this.width;
         }
-    }   
+    }
     draw() {
-        ctx.fillStyle = 'brown';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    }   
+        ctx.fillStyle = 'green';
+        ctx.fillRect(this.x, this.y, this.width+100, this.height);
+    }
 }
 
-export default Beaver;
+export default Snake;

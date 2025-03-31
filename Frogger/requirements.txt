@@ -20,7 +20,7 @@ Game World
 [ ] 13x14 grid layout
 [ ] 5 safe zones (start, 3 middle strips, goal area)
 [ ] Water zone with logs/turtles
-[ ] Road zone with vehicles
+[ ] Road zone with gameObjects
 [ ] 5 goal spots at top
 [ ] Player Mechanics
 
@@ -30,10 +30,10 @@ Game World
 [ ] 3 lives per game
 [ ] Points for forward progress
 [ ] Bonus points for reaching home
-[ ] Death on collision with vehicles/water
+[ ] Death on collision with gameObjects/water
 
 Obstacles
-[ ] Vehicles (different speeds/directions)
+[ ] GameObjects (different speeds/directions)
 [ ] Water hazards
 [ ] Time limit
 [ ] Moving platforms (logs/turtles)

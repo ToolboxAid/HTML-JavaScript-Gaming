@@ -1,18 +1,18 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// vehicleManager.js
+// gameObjectManager.js
 
-import Vehicle from './vehicle.js';
-class VehicleManager {
-    static DEBUG = new URLSearchParams(window.location.search).has('vehicles');
+import GameObject from './gameObject.js';
+class GameObjectManager {
+    static DEBUG = new URLSearchParams(window.location.search).has('gameObjects');
 
     constructor() {
-        // List of active vehicles
-        this.activeVehicles = [];
+        // List of active gameObjects
+        this.activeGameObjects = [];
 
-        // Vehicle types and their properties
-        this.vehicleTypes = {
+        // GameObject types and their properties
+        this.gameObjectTypes = {
             car1: {
                 sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
                 spriteX: 0,
@@ -133,51 +133,51 @@ class VehicleManager {
             },                        
         };
 
-        if (VehicleManager.DEBUG) {
-            console.log('Vehicles manager initialized');
+        if (GameObjectManager.DEBUG) {
+            console.log('GameObjects manager initialized');
         }
     }
 
-    // Add a new vehicle
-    addVehicle(vehicleType, x, y, direction) {
-        const vehicleConfig = this.vehicleTypes[vehicleType];
-        if (!vehicleConfig) {
-            console.error(`Invalid vehicle vehicleType: ${vehicleType}`);
+    // Add a new gameObject
+    addGameObject(gameObjectType, x, y, direction) {
+        const gameObjectConfig = this.gameObjectTypes[gameObjectType];
+        if (!gameObjectConfig) {
+            console.error(`Invalid gameObject gameObjectType: ${gameObjectType}`);
             return null;
         }
 
-        // Create a new vehicle instance
-        const vehicle = new Vehicle(
+        // Create a new gameObject instance
+        const gameObject = new GameObject(
             x, y,            
-            vehicleConfig.sprite,
-            vehicleConfig.spriteX, vehicleConfig.spriteY,
-            vehicleConfig.width, vehicleConfig.height,
+            gameObjectConfig.sprite,
+            gameObjectConfig.spriteX, gameObjectConfig.spriteY,
+            gameObjectConfig.width, gameObjectConfig.height,
             1.5, // Pixel size
             'black',
-            vehicleType,
+            gameObjectType,
             direction,
-            vehicleConfig.speed
+            gameObjectConfig.speed
         );
 
-        this.activeVehicles.push(vehicle);
+        this.activeGameObjects.push(gameObject);
         
-        if (VehicleManager.DEBUG) {
-            console.log(`Added ${vehicleType} vehicle at (${x},${y})`);
+        if (GameObjectManager.DEBUG) {
+            console.log(`Added ${gameObjectType} gameObject at (${x},${y})`);
         }
 
-        return vehicle;
+        return gameObject;
     }
 
-    // Remove a vehicle
-    removeVehicle(vehicle) {
-        const index = this.activeVehicles.indexOf(vehicle);
+    // Remove a gameObject
+    removeGameObject(gameObject) {
+        const index = this.activeGameObjects.indexOf(gameObject);
         if (index > -1) {
-            this.activeVehicles.splice(index, 1);
-            if (VehicleManagerVehicleManager.DEBUG) {
-                console.log(`Removed vehicle at index ${index}`);
+            this.activeGameObjects.splice(index, 1);
+            if (GameObjectManagerGameObjectManager.DEBUG) {
+                console.log(`Removed gameObject at index ${index}`);
             }
         }
     }
 }
 
-export default VehicleManager;
+export default GameObjectManager;

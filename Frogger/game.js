@@ -10,7 +10,7 @@ import CanvasUtils from '../scripts/canvas.js';
 import GameUtils from '../scripts/game/gameUtils.js';
 
 import KeyboardInput from '../scripts/input/keyboard.js';
-import Frog from './frog.js';
+import Frog from './gameObjects/frog.js';
 
 import AttractMode from './attractMode.js';
 import Level from './level.js';

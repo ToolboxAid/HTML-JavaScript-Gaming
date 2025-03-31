@@ -1,6 +1,6 @@
 import { canvasConfig } from './global.js';
 import Level from './level.js';
-import VehicleManager from './vehicleManager.js';
+import GameObjectManager from './gameObjects/gameObjectManager.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 class AttractMode {
@@ -9,84 +9,84 @@ class AttractMode {
     constructor() {
         // Initialize game components
         this.level = new Level();
-        this.vehicleManager = new VehicleManager();
+        this.gameObjectManager = new GameObjectManager();
 
         // Attract mode state
         this.isActive = true;
         this.demoTimer = 0;
         this.maxDemoTime = 30 * 60; // 30 seconds at 60fps
 
-        // Initialize vehicles for demo
-        this.initializeVehicles();
+        // Initialize gameObjects for demo
+        this.initializeGameObjects();
 
         if (AttractMode.DEBUG) {
             console.log('Attract mode initialized');
         }
     }
 
-    initializeVehicles() {
-        const spacing = 63; // sprite is 56 px height
+    initializeGameObjects() {
+        const spacing = 63;
         const offsetYwater = 579;
         const offsetYroad = 571;
-        const offsetYaligator = offsetYwater-18;
-        const offsetYbeaver = offsetYwater-24;
-        const offsetYsnake = offsetYwater-5;
-        const offsetYbonus = offsetYwater-5;
+        const offsetYaligator = offsetYwater - 18;
+        const offsetYbeaver = offsetYwater - 24;
+        const offsetYsnake = offsetYwater - 5;
+        const offsetYbonus = offsetYwater - 5;
 
         // Water hazard
         // Row 10: Logs moving right
-        this.vehicleManager.addVehicle('logMed', 0, offsetYwater + (spacing * -6), 1);
-        this.vehicleManager.addVehicle('aligator', -300, offsetYaligator + (spacing * -6), 1);
-        this.vehicleManager.addVehicle('beaver', 250, offsetYbeaver + (spacing * -6), 1);
+        this.gameObjectManager.addGameObject('logMed', 0, offsetYwater + (spacing * -6), 1);
+        this.gameObjectManager.addGameObject('aligator', -300, offsetYaligator + (spacing * -6), 1);
+        this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -6), 1);
 
         // Row 9: Logs moving left
-        this.vehicleManager.addVehicle('turtle', 0, offsetYwater + (spacing * -5), -1);
-        this.vehicleManager.addVehicle('beaver', 250, offsetYbeaver + (spacing * -5), -1);
+        this.gameObjectManager.addGameObject('turtle', 0, offsetYwater + (spacing * -5), -1);
+        this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -5), -1);
 
         // Row 8: Logs moving right
-        this.vehicleManager.addVehicle('logLrg', 0, offsetYwater + (spacing * -4), 1);
-        this.vehicleManager.addVehicle('beaver', 250, offsetYbeaver + (spacing * -4), 1);
-        this.vehicleManager.addVehicle('snake', 500, offsetYsnake + (spacing * -4), 1);
+        this.gameObjectManager.addGameObject('logLrg', 0, offsetYwater + (spacing * -4), 1);
+        this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -4), 1);
+        this.gameObjectManager.addGameObject('snake', 500, offsetYsnake + (spacing * -4), 1);
 
         // Row 7: Logs moving right
-        this.vehicleManager.addVehicle('logSm', 0, offsetYwater + (spacing * -3), 1);
-        this.vehicleManager.addVehicle('beaver', 400, offsetYbeaver + (spacing * -3), 1);
-        this.vehicleManager.addVehicle('bonus', 600, offsetYbonus + (spacing * -3), 1);
+        this.gameObjectManager.addGameObject('logSm', 0, offsetYwater + (spacing * -3), 1);
+        this.gameObjectManager.addGameObject('beaver', 400, offsetYbeaver + (spacing * -3), 1);
+        this.gameObjectManager.addGameObject('bonus', 600, offsetYbonus + (spacing * -3), 1);
 
         // Row 6: Logs moving left
-        this.vehicleManager.addVehicle('turtleSink', 0, offsetYwater + (spacing * -2), -1);
-        this.vehicleManager.addVehicle('beaver', 200, offsetYbeaver + (spacing * -2), -1);
+        this.gameObjectManager.addGameObject('turtleSink', 0, offsetYwater + (spacing * -2), -1);
+        this.gameObjectManager.addGameObject('beaver', 200, offsetYbeaver + (spacing * -2), -1);
 
         // safety zone
-        this.vehicleManager.addVehicle('snake', 500, offsetYsnake + (spacing * -1), -1);
+        this.gameObjectManager.addGameObject('snake', 500, offsetYsnake + (spacing * -1), -1);
 
         // vihicles
         // Row 5: Trucks moving left
-        this.vehicleManager.addVehicle('truck', 0, offsetYroad + (spacing * 0), -1);
-        this.vehicleManager.addVehicle('truck', 200, offsetYroad + (spacing * 0), -1);
+        this.gameObjectManager.addGameObject('truck', 0, offsetYroad + (spacing * 0), -1);
+        this.gameObjectManager.addGameObject('truck', 200, offsetYroad + (spacing * 0), -1);
 
         // Row 4: White cars moving right
-        this.vehicleManager.addVehicle('car3', 700, offsetYroad + (spacing * 1), 1);
-        this.vehicleManager.addVehicle('car3', 600, offsetYroad + (spacing * 1), 1);
+        this.gameObjectManager.addGameObject('car3', 700, offsetYroad + (spacing * 1), 1);
+        this.gameObjectManager.addGameObject('car3', 600, offsetYroad + (spacing * 1), 1);
 
 
         // Row 3: Pink cars moving left
-        this.vehicleManager.addVehicle('car2', 200, offsetYroad + (spacing * 2), -1);
-        this.vehicleManager.addVehicle('car2', 500, offsetYroad + (spacing * 2), -1);
+        this.gameObjectManager.addGameObject('car2', 200, offsetYroad + (spacing * 2), -1);
+        this.gameObjectManager.addGameObject('car2', 500, offsetYroad + (spacing * 2), -1);
 
         // Row 2: Bulldozers moving Right
-        this.vehicleManager.addVehicle('bulldozer', 200, offsetYroad + (spacing * 3), 1);
-        this.vehicleManager.addVehicle('bulldozer', 400, offsetYroad + (spacing * 3), 1);
+        this.gameObjectManager.addGameObject('bulldozer', 200, offsetYroad + (spacing * 3), 1);
+        this.gameObjectManager.addGameObject('bulldozer', 400, offsetYroad + (spacing * 3), 1);
 
         // Row 1: Cars moving left
-        this.vehicleManager.addVehicle('car1', 100, offsetYroad + (spacing * 4), -1);
-        this.vehicleManager.addVehicle('car1', 300, offsetYroad + (spacing * 4), -1);
+        this.gameObjectManager.addGameObject('car1', 100, offsetYroad + (spacing * 4), -1);
+        this.gameObjectManager.addGameObject('car1', 300, offsetYroad + (spacing * 4), -1);
 
 
         if (AttractMode.DEBUG) {
-            console.log(`Vehicles: ${this.vehicleManager.activeVehicles.length}`);
-            for (const vehicle of this.vehicleManager.activeVehicles) {
-                console.log(`Vehicle: ${vehicle.vehicleType}, Position: (${vehicle.x}, ${vehicle.y}), Direction: ${vehicle.direction}`);
+            console.log(`GameObjects: ${this.gameObjectManager.activeGameObjects.length}`);
+            for (const gameObject of this.gameObjectManager.activeGameObjects) {
+                console.log(`GameObject: ${gameObject.gameObjectType}, Position: (${gameObject.x}, ${gameObject.y}), Direction: ${gameObject.direction}`);
             }
         }
     }
@@ -102,16 +102,16 @@ class AttractMode {
         }
 
 
-        // Update all vehicles
-        for (const vehicle of this.vehicleManager.activeVehicles) {
-            // Move vehicle
-            vehicle.x += vehicle.speed * vehicle.direction;
+        // Update all gameObjects
+        for (const gameObject of this.gameObjectManager.activeGameObjects) {
+            // Move gameObject
+            gameObject.x += gameObject.speed * gameObject.direction;
 
             // Wrap around screen
-            if (vehicle.direction > 0 && vehicle.x > CanvasUtils.getConfigWidth() + vehicle.width) {
-                vehicle.x = -vehicle.width;
-            } else if (vehicle.direction < 0 && vehicle.x < -vehicle.width * 2) {
-                vehicle.x = CanvasUtils.getConfigWidth() + vehicle.width;
+            if (gameObject.direction > 0 && gameObject.x > CanvasUtils.getConfigWidth() + gameObject.width) {
+                gameObject.x = -gameObject.width;
+            } else if (gameObject.direction < 0 && gameObject.x < -gameObject.width * 2) {
+                gameObject.x = CanvasUtils.getConfigWidth() + gameObject.width;
             }
         }
 
@@ -121,9 +121,9 @@ class AttractMode {
         // Draw level
         this.level.draw();
 
-        // Draw vehicles
-        for (const vehicle of this.vehicleManager.activeVehicles) {
-            vehicle.draw();
+        // Draw gameObjects
+        for (const gameObject of this.gameObjectManager.activeGameObjects) {
+            gameObject.draw();
         }
 
     }

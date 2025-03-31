@@ -3,11 +3,11 @@
 // 03/24/2025
 // frog.js
 
-import objectPNG from '../scripts/objectPNG.js';
-import CanvasUtils from '../scripts/canvas.js';
+import ObjectPNG from '../../scripts/objectPNG.js';
+import CanvasUtils from '../../scripts/canvas.js';
 
-class Vehicle extends objectPNG {
-    static DEBUG = new URLSearchParams(window.location.search).has('vehicle');
+class GameObject extends ObjectPNG {
+    static DEBUG = new URLSearchParams(window.location.search).has('gameObject');
 
     constructor(x, y, 
         spritePath, 
@@ -15,7 +15,7 @@ class Vehicle extends objectPNG {
         spriteWidth, spriteHeight,
         pixelSize,
         transparentColor,
-        vehicleType, direction, speed) {
+        gameObjectType, direction, speed) {
 
         // Call parent constructor with sprite details
         super(x, y, 
@@ -26,15 +26,15 @@ class Vehicle extends objectPNG {
             transparentColor
             );
 
-        // Vehicle properties
-        this.type = 'vehicle';
-        this.vehicleType = vehicleType;  // 'car', 'truck', 'bulldozer', etc.
+        // GameObject properties
+        this.type = 'gameObject';
+        this.gameObjectType = gameObjectType;  // 'car', 'truck', 'bulldozer', etc.
         this.direction = direction;       // 1 for right, -1 for left
         this.speed = speed;              // Pixels per frame
         this.isActive = true;            // Flag for active/inactive state
 
-        if (Vehicle.DEBUG) {
-            console.log(`Vehicle created: ${this.vehicleType} at (${x},${y}) moving ${direction > 0 ? 'right' : 'left'} at ${speed}px/frame`);
+        if (GameObject.DEBUG) {
+            console.log(`GameObject created: ${this.gameObjectType} at (${x},${y}) moving ${direction > 0 ? 'right' : 'left'} at ${speed}px/frame`);
         }
     }
 
@@ -43,4 +43,4 @@ class Vehicle extends objectPNG {
     }
     
 }
-export default Vehicle;
+export default GameObject;

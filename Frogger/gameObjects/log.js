@@ -1,18 +1,18 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// fly.js
+// log.js
 
-import objectPNG from '../scripts/objectPNG.js';
+import ObjectPNG from '../../scripts/objectPNG.js';
 
-class Fly extends objectPNG {
-    // - Type (fly)
+class Log extends ObjectPNG {
+    // - Type (beaver)
     // - Speed/direction
     // - Sprite management
     // - Position updates
     constructor(x, y, width, height, speed) {
         super(x, y, width, height, speed);
-        this.type = 'fly';
+        this.type = 'log';
     }
     update() {
         this.x += this.speed;
@@ -22,8 +22,8 @@ class Fly extends objectPNG {
 
     }
     draw() {
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = 'brown';
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
-export default Fly;
+export default Log;

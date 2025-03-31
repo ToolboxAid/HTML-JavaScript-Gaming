@@ -31,7 +31,7 @@ class Level {
     // - Water zone with logs/turtles
     //   -  3 lanes of logs/turtles
     // - Safe zone
-    // - Road zone with vehicles
+    // - Road zone with gameObjects
     //   - 3 lanes of traffic
     // - Grass zone with player
 
@@ -93,7 +93,6 @@ class Level {
                 ObjectPNG.loadSprite('./assets/images/ground_home_sprite_24w_24h_8f.png', 'black'),
                 ObjectPNG.loadSprite('./assets/images/ground_sprite_48w_48h_1f.png', 'black')
             ]);
-            //timer_lives_sprite_24w_24h_6f
 
             // Assign loaded sprites to static properties
             Level.alphaNumWhiteSprite = alphaNum;
@@ -195,7 +194,7 @@ class Level {
             ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],//6
             // Row 6 - Safe zone (grass)
             ['S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S'],//7
-            // Rows 7-11 - Road with vehicles
+            // Rows 7-11 - Road with gameObjects
             ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'],//8
             ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'],//9
             ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'],//10
@@ -405,6 +404,7 @@ class Level {
         Level.seconds = Math.floor(Level.timer / 2);
     }
 
+    static score = 0;
     draw() {
         // Draw background water
         CanvasUtils.ctx.fillStyle = 'navy';
@@ -428,7 +428,7 @@ class Level {
         Level.drawText('2-UP', 680, 16, Level.alphaNumWhiteSprite);
 
         // Draw scores
-        const up_1 = SystemUtils.numberToString(0, 5, ' ');
+        const up_1 = SystemUtils.numberToString(Level.score++, 5, ' ');
         const high = SystemUtils.numberToString(999, 5, ' ');
         const up_2 = SystemUtils.numberToString(99999, 5, ' ');
         Level.drawText(up_1, 100 - 24, 16 + 32, Level.alphaNumRedSprite);
@@ -466,10 +466,6 @@ class Level {
                 Level.GRID_WIDTH * Level.GRID_SIZE * 4 - Level.MARGIN_X + 32,
                 Level.GRID_HEIGHT * Level.GRID_SIZE * 4
             );
-            // 48 128 736 832
-            //console.log(Level.MARGIN_X, Level.MARGIN_TOP, 
-            // Level.GRID_WIDTH * Level.GRID_SIZE * 4 - Level.MARGIN_X *2, Level.GRID_HEIGHT * Level.GRID_SIZE * 4); 
-
         }
 
     }

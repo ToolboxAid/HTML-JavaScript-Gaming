@@ -36,7 +36,7 @@ class ObjectPNG extends ObjectKillable {
             .then(png => {
                 this.png = png;
                 this.isLoaded = true;
-                if (SystemUtils.getObjectType(this) === "Vehicle") {
+                if (SystemUtils.getObjectType(this) === "GameObject") {
                     console.log(this.png)
                 }
             })
