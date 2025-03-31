@@ -16,12 +16,19 @@ class ObjectPNG extends ObjectKillable {
     constructor(x, y,
         spritePath,
         spriteX, spriteY,
-        spriteWidth = 10,
-        spriteHeight = 10,
-        pixelSize = 16,
-        transparentColor = 'black') {
-        super(x, y, spriteWidth, spriteHeight);
+        spriteWidth = 50,
+        spriteHeight = 50,
+        pixelSize = 4,
+        transparentColor = 'black',
+        //rotation=90
+        velocityX, velocityY        
+    ) {
 
+
+        super(x, y, spriteWidth, spriteHeight,velocityX, velocityY);
+        if (SystemUtils.getObjectType(this) === "Snake") {
+            console.log("object PNG con", this.x, this.y);
+        }
         // Initialize properties
         this.spriteX = spriteX;
         this.spriteY = spriteY;
@@ -30,21 +37,20 @@ class ObjectPNG extends ObjectKillable {
         this.pixelSize = pixelSize;
         this.isLoaded = false;
         this.spritePath = spritePath;
+        //this.rotation = AngleUtils.toRadians(rotation);
 
         // Load sprite
         ObjectPNG.loadSprite(spritePath, transparentColor)
             .then(png => {
                 this.png = png;
                 this.isLoaded = true;
-                if (SystemUtils.getObjectType(this) === "GameObject") {
+                if (SystemUtils.getObjectType(this) === "Snake") {
                     console.log(this.png)
                 }
             })
             .catch(error => {
                 console.error("Failed to load sprite:", error);
             });
-
-        this.rotation = AngleUtils.toRadians(0);
 
         // Set src AFTER setting up onload handler
         if (ObjectPNG.DEBUG) {
@@ -241,210 +247,217 @@ class ObjectPNG extends ObjectKillable {
     }
 
     static spamCntr = 0;
-    draw2(offsetX = 0, offsetY = 0) {
-        if (!this.isLoaded || !this.png.complete) {
-            console.warn("Sprite not loaded or incomplete");
-            return;
-        }
-        try {
-            const { x, y, png, pixelSize, 
-                spriteX, spriteY, 
-                spriteWidth, spriteHeight, 
-                rotation } = this;
+    // draw2(offsetX = 0, offsetY = 0) {
+    //     if (!this.isLoaded || !this.png.complete) {
+    //         console.warn("Sprite not loaded or incomplete");
+    //         return;
+    //     }
+    //     try {
+    //         const { x, y, png, pixelSize,
+    //             spriteX, spriteY,
+    //             spriteWidth, spriteHeight,
+    //             rotation } = this;
 
-            // Calculate positions and dimensions
-            const newX = Math.floor(x + offsetX);
-            const newY = Math.floor(y + offsetY);
-            const scaledWidth = Math.max(1, Math.floor(spriteWidth * pixelSize));
-            const scaledHeight = Math.max(1, Math.floor(spriteHeight * pixelSize));
+    //         // Calculate positions and dimensions
+    //         const newX = Math.floor(x + offsetX);
+    //         const newY = Math.floor(y + offsetY);
+    //         const scaledWidth = Math.max(1, Math.floor(spriteWidth * pixelSize));
+    //         const scaledHeight = Math.max(1, Math.floor(spriteHeight * pixelSize));
 
-            // Save context state
-            CanvasUtils.ctx.save();
+    //         // Save context state
+    //         CanvasUtils.ctx.save();
 
-            // Move to center point for rotation
-            CanvasUtils.ctx.translate(newX + scaledWidth / 2, newY + scaledHeight / 2);
-            CanvasUtils.ctx.rotate(rotation);
-
-
-            // Draw sprite centered at origin
-            CanvasUtils.ctx.drawImage(
-                png,
-                0, spriteY,
-                spriteWidth, spriteHeight,
-                x, y,
-                scaledWidth, scaledHeight
-            );
-
-            console.log("draw", png, spriteX, spriteY, spriteWidth, spriteHeight, x, y, scaledWidth, scaledHeight);
-            // Draw debug info
-            /* ****************************************************************/
-            if (ObjectPNG.DEBUG) {
-                CanvasUtils.ctx.textAlign = 'left';
-                CanvasUtils.ctx.font = '11px Arial';
+    //         // Move to center point for rotation
+    //         CanvasUtils.ctx.translate(newX + scaledWidth / 2, newY + scaledHeight / 2);
+    //         CanvasUtils.ctx.rotate(rotation);
 
 
-                CanvasUtils.ctx.fillRect(x, this.y, this.spriteWidth, this.spriteHeight);
+    //         // Draw sprite centered at origin
+    //         CanvasUtils.ctx.drawImage(
+    //             png,
+    //             0, spriteY,
+    //             spriteWidth, spriteHeight,
+    //             x, y,
+    //             scaledWidth, scaledHeight
+    //         );
 
-                CanvasUtils.ctx.fillStyle = 'black';
-                CanvasUtils.ctx.fillText(x, x, y + 20);
-                CanvasUtils.ctx.fillText(newX1, x, y + 40);
-
-            }
-
-            // Restore context
-            CanvasUtils.ctx.restore();
+    //         console.log("draw", png, spriteX, spriteY, spriteWidth, spriteHeight, x, y, scaledWidth, scaledHeight);
+    //         // Draw debug info
+    //         /* ****************************************************************/
+    //         if (ObjectPNG.DEBUG) {
+    //             CanvasUtils.ctx.textAlign = 'left';
+    //             CanvasUtils.ctx.font = '11px Arial';
 
 
-            if (ObjectPNG.DEBUG) {
-                // Draw rotation debug info
-                this.drawDebugRotation(newX, newY, scaledWidth, scaledHeight);
-            }
+    //             CanvasUtils.ctx.fillRect(x, this.y, this.spriteWidth, this.spriteHeight);
 
-        } catch (error) {
-            if (ObjectPNG.spamCntr++ < 5) {
-                const errorDetails = {
-                    message: error.message,
-                    sprite: {
-                        loaded: this.isLoaded,
-                        complete: this.png?.complete,
-                        dimensions: {
-                            spriteX: this.spriteX,
-                            spriteY: this.spriteY,
-                            width: this.spriteWidth,
-                            height: this.spriteHeight,
-                            scale: this.pixelSize
-                        }
-                    }
-                };
-                ObjectPNG.DEBUG && console.warn("Sprite state during error:", errorDetails);
-                SystemUtils.showStackTrace(`Error drawing sprite: ${error.message}`, error, errorDetails);
-            }
-        }
-    }
-    draw3(offsetX = 0, offsetY = 0) {
-        if (!this.isLoaded || !this.png.complete) {
-            console.warn("Sprite not loaded or incomplete");
-            return;
-        }
-    
-        try {
-            const { x, y, png, pixelSize, spriteX, spriteY, spriteWidth, spriteHeight, rotation } = this;
-    
-            // Calculate positions and dimensions
-            const newX = Math.floor(x + offsetX);
-            const newY = Math.floor(y + offsetY);
-            const scaledWidth = Math.max(1, Math.floor(spriteWidth * pixelSize));
-            const scaledHeight = Math.max(1, Math.floor(spriteHeight * pixelSize));
-    
-            // Save context state
-            CanvasUtils.ctx.save();
-    
-            // Draw sprite without rotation first
-            CanvasUtils.ctx.drawImage(
-                png,
-                spriteX, spriteY,            // Source x,y
-                spriteWidth, spriteHeight,    // Source width,height
-                newX, newY,                   // Destination x,y
-                scaledWidth, scaledHeight     // Destination width,height
-            );
-    
-            if (ObjectPNG.DEBUG) {
-                // Draw bounding box
-                CanvasUtils.ctx.strokeStyle = 'red';
-                CanvasUtils.ctx.strokeRect(newX, newY, scaledWidth, scaledHeight);
-    
-                // Draw debug text
-                CanvasUtils.ctx.fillStyle = 'yellow';
-                CanvasUtils.ctx.font = '12px Arial';
-                CanvasUtils.ctx.textAlign = 'left';
-                
-                const debugText = [
-                    `Pos: (${newX}, ${newY})`,
-                    `Size: ${scaledWidth}x${scaledHeight}`,
-                    `Sprite: (${spriteX}, ${spriteY})`,
-                    `Scale: ${pixelSize}x`
-                ];
-    
-                debugText.forEach((text, i) => {
-                    CanvasUtils.ctx.fillText(text, newX, newY + scaledHeight + 15 + (i * 15));
-                });
-            }
-    
-            // Restore context
-            CanvasUtils.ctx.restore();
-    
-        } catch (error) {
-            console.error("Draw error:", error);
-        }
-    }
-    drawObjectDetails(centerX, centerY,rotation, newX, newY, scaledWidth, scaledHeight){
+    //             CanvasUtils.ctx.fillStyle = 'black';
+    //             CanvasUtils.ctx.fillText(x, x, y + 20);
+    //             CanvasUtils.ctx.fillText(newX1, x, y + 40);
 
-                // Reset transform for debug overlay
-                CanvasUtils.ctx.restore();
-                CanvasUtils.ctx.save();
-    
-                // Draw rotation center point
-                CanvasUtils.ctx.fillStyle = 'yellow';
-                CanvasUtils.ctx.beginPath();
-                CanvasUtils.ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
-                CanvasUtils.ctx.fill();
-    
-                // Draw rotation direction indicator
-                CanvasUtils.ctx.strokeStyle = 'lime';
-                CanvasUtils.ctx.beginPath();
-                CanvasUtils.ctx.moveTo(centerX, centerY);
-                CanvasUtils.ctx.lineTo(
-                    centerX + Math.cos(rotation) * 20,
-                    centerY + Math.sin(rotation) * 20
-                );
-                CanvasUtils.ctx.stroke();
-    
-                // Draw bounding box (unrotated for reference)
-                CanvasUtils.ctx.strokeStyle = 'red';
-                CanvasUtils.ctx.strokeRect(newX, newY, scaledWidth, scaledHeight);
-    
-                // Draw debug text
-                CanvasUtils.ctx.fillStyle = 'yellow';
-                CanvasUtils.ctx.font = '12px Arial';
-                CanvasUtils.ctx.textAlign = 'left';
-                
-                const debugText = [
-                    `Pos: (${newX}, ${newY})`,
-                    `Size: ${scaledWidth}x${scaledHeight}`,
-                    `Rotation: ${Math.round(rotation * 180 / Math.PI)}°`,
-                    `Center: (${Math.round(centerX)}, ${Math.round(centerY)})`
-                ];
-    
-                debugText.forEach((text, i) => {
-                    CanvasUtils.ctx.fillText(text, newX + scaledWidth + 15, newY + (i * 15)+15);
-                });
+    //         }
+
+    //         // Restore context
+    //         CanvasUtils.ctx.restore();
+
+
+    //         if (ObjectPNG.DEBUG) {
+    //             // Draw rotation debug info
+    //             this.drawDebugRotation(newX, newY, scaledWidth, scaledHeight);
+    //         }
+
+    //     } catch (error) {
+    //         if (ObjectPNG.spamCntr++ < 5) {
+    //             const errorDetails = {
+    //                 message: error.message,
+    //                 sprite: {
+    //                     loaded: this.isLoaded,
+    //                     complete: this.png?.complete,
+    //                     dimensions: {
+    //                         spriteX: this.spriteX,
+    //                         spriteY: this.spriteY,
+    //                         width: this.spriteWidth,
+    //                         height: this.spriteHeight,
+    //                         scale: this.pixelSize
+    //                     }
+    //                 }
+    //             };
+    //             ObjectPNG.DEBUG && console.warn("Sprite state during error:", errorDetails);
+    //             SystemUtils.showStackTrace(`Error drawing sprite: ${error.message}`, error, errorDetails);
+    //         }
+    //     }
+    // }
+    // draw3(offsetX = 0, offsetY = 0) {
+    //     if (!this.isLoaded || !this.png.complete) {
+    //         console.warn("Sprite not loaded or incomplete");
+    //         return;
+    //     }
+
+    //     try {
+    //         const { x, y, png, pixelSize, spriteX, spriteY, spriteWidth, spriteHeight, rotation } = this;
+
+    //         // Calculate positions and dimensions
+    //         const newX = Math.floor(x + offsetX);
+    //         const newY = Math.floor(y + offsetY);
+    //         const scaledWidth = Math.max(1, Math.floor(spriteWidth * pixelSize));
+    //         const scaledHeight = Math.max(1, Math.floor(spriteHeight * pixelSize));
+
+    //         // Save context state
+    //         CanvasUtils.ctx.save();
+
+    //         // Draw sprite without rotation first
+    //         CanvasUtils.ctx.drawImage(
+    //             png,
+    //             spriteX, spriteY,            // Source x,y
+    //             spriteWidth, spriteHeight,    // Source width,height
+    //             newX, newY,                   // Destination x,y
+    //             scaledWidth, scaledHeight     // Destination width,height
+    //         );
+
+    //         if (ObjectPNG.DEBUG) {
+    //             // Draw bounding box
+    //             CanvasUtils.ctx.strokeStyle = 'red';
+    //             CanvasUtils.ctx.strokeRect(newX, newY, scaledWidth, scaledHeight);
+
+    //             // Draw debug text
+    //             CanvasUtils.ctx.fillStyle = 'yellow';
+    //             CanvasUtils.ctx.font = '12px Arial';
+    //             CanvasUtils.ctx.textAlign = 'left';
+
+    //             const debugText = [
+    //                 `Pos: (${newX}, ${newY})`,
+    //                 `Size: ${scaledWidth}x${scaledHeight}`,
+    //                 `Sprite: (${spriteX}, ${spriteY})`,
+    //                 `Scale: ${pixelSize}x`
+    //             ];
+
+    //             debugText.forEach((text, i) => {
+    //                 CanvasUtils.ctx.fillText(text, newX, newY + scaledHeight + 15 + (i * 15));
+    //             });
+    //         }
+
+    //         // Restore context
+    //         CanvasUtils.ctx.restore();
+
+    //     } catch (error) {
+    //         console.error("Draw error:", error);
+    //     }
+    // }
+    drawObjectDetails(centerX, centerY, rotation, newX, newY, scaledWidth, scaledHeight) {
+
+        // Reset transform for debug overlay
+        CanvasUtils.ctx.restore();
+        CanvasUtils.ctx.save();
+
+        // Draw rotation center point
+        CanvasUtils.ctx.fillStyle = 'yellow';
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
+        CanvasUtils.ctx.fill();
+
+        // Draw rotation direction indicator
+        CanvasUtils.ctx.strokeStyle = 'lime';
+        CanvasUtils.ctx.beginPath();
+        CanvasUtils.ctx.moveTo(centerX, centerY);
+        CanvasUtils.ctx.lineTo(
+            centerX + Math.cos(rotation) * 20,
+            centerY + Math.sin(rotation) * 20
+        );
+        CanvasUtils.ctx.stroke();
+
+        // Draw bounding box (unrotated for reference)
+        CanvasUtils.ctx.strokeStyle = 'red';
+        CanvasUtils.ctx.strokeRect(newX, newY, scaledWidth, scaledHeight);
+
+        // Draw debug text
+        CanvasUtils.ctx.fillStyle = 'yellow';
+        CanvasUtils.ctx.font = '12px Arial';
+        CanvasUtils.ctx.textAlign = 'left';
+
+        const debugText = [
+            `Pos: (${newX}, ${newY})`,
+            `Size: ${scaledWidth}x${scaledHeight}`,
+            `Rotation: ${Math.round(rotation * 180 / Math.PI)}°`,
+            `Center: (${Math.round(centerX)}, ${Math.round(centerY)})`,
+            `frameCnt: ${this.counter} frame ${this.frame}`
+        ];
+
+        debugText.forEach((text, i) => {
+            CanvasUtils.ctx.fillText(text, newX + scaledWidth + 15, newY + (i * 15) + 15);
+        });
     }
     draw(offsetX = 0, offsetY = 0) {
         if (!this.isLoaded || !this.png.complete) {
             console.warn("Sprite not loaded or incomplete");
             return;
         }
-    
+
         try {
             const { x, y, png, pixelSize, spriteX, spriteY, spriteWidth, spriteHeight, rotation } = this;
-    
+
+            if (SystemUtils.getObjectType(this) === "Snake") {
+
+                if (Number.isNaN(this.x)) {
+                    this.x = 400;
+                }
+            }
             // Calculate positions and dimensions
             const newX = Math.floor(x + offsetX);
             const newY = Math.floor(y + offsetY);
             const scaledWidth = Math.max(1, Math.floor(spriteWidth * pixelSize));
             const scaledHeight = Math.max(1, Math.floor(spriteHeight * pixelSize));
-    
+
             // Save context state
             CanvasUtils.ctx.save();
-    
+
             // Move to sprite center for rotation
             const centerX = newX + scaledWidth / 2;
             const centerY = newY + scaledHeight / 2;
             CanvasUtils.ctx.translate(centerX, centerY);
-            
+
             const rotationRad = rotation * Math.PI / 180;
             CanvasUtils.ctx.rotate(rotationRad);
-    
+
             // Draw sprite centered at transformed origin
             CanvasUtils.ctx.drawImage(
                 png,
@@ -454,14 +467,27 @@ class ObjectPNG extends ObjectKillable {
                 -scaledHeight / 2,            // Destination y (centered)
                 scaledWidth, scaledHeight     // Destination width,height
             );
-    
+
             if (ObjectPNG.DEBUG) {
-                this.drawObjectDetails(centerX, centerY,rotation,newX, newY, scaledWidth, scaledHeight);
+                this.drawObjectDetails(centerX, centerY, rotation, newX, newY, scaledWidth, scaledHeight);
             }
-    
+
+            if (SystemUtils.getObjectType(this) === "Snake") {
+                if (this.x === 400) {
+                    this.x = 400;
+                    console.warn('X coordinate was NaN, resetting to ',
+                        this.x, this.y, offsetX, offsetY,
+                        spriteWidth, spriteHeight, pixelSize,
+                        this.velocityX, this.velocityY, 
+                        this.direction);
+                    CanvasUtils.ctx.fillStyle = 'yellow';
+                    CanvasUtils.ctx.fillRect(100, this.y, 50, 50);//this.x
+
+                }
+            }
             // Restore context
             CanvasUtils.ctx.restore();
-    
+
         } catch (error) {
             console.error("Draw error:", error);
         }

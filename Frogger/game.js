@@ -13,7 +13,6 @@ import KeyboardInput from '../scripts/input/keyboard.js';
 import Frog from './gameObjects/frog.js';
 
 import AttractMode from './attractMode.js';
-import Level from './level.js';
 
 class Game extends GameBase {
 
@@ -58,7 +57,7 @@ class Game extends GameBase {
   gameLoop(deltaTime) {
     this.keyboardInput.update();
 
-    console.log(this.gameState);
+   // console.log(this.gameState);
 
     // Update game state with deltaTime
     switch (this.gameState) {

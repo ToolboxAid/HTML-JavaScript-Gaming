@@ -3,6 +3,9 @@ import Level from './level.js';
 import GameObjectManager from './gameObjects/gameObjectManager.js';
 import CanvasUtils from '../scripts/canvas.js';
 
+// Game Objects
+import Snake from './gameObjects/snake.js';
+
 class AttractMode {
     static DEBUG = new URLSearchParams(window.location.search).has('attract');
 
@@ -57,8 +60,28 @@ class AttractMode {
         this.gameObjectManager.addGameObject('turtleSink', 0, offsetYwater + (spacing * -2), -1);
         this.gameObjectManager.addGameObject('beaver', 200, offsetYbeaver + (spacing * -2), -1);
 
-        // safety zone
-        this.gameObjectManager.addGameObject('snake', 500, offsetYsnake + (spacing * -1), -1);
+        //
+        //
+        //
+        //        // safety zone
+
+        this.gameObjectManager.addGameObject2(new Snake(
+            500, // x
+            offsetYsnake + (spacing * -1), // y
+            2.0,  // speed
+            -1,         // direction
+            -10,//velocityX, 
+            0 //velocityY 
+        ));
+        this.gameObjectManager.addGameObject2(new Snake(
+            500, // x
+            offsetYsnake + (spacing * -1), // y
+            2.0,  // speed
+            -1,         // direction
+            10,//velocityX, 
+            0 //velocityY 
+        ));
+
 
         // vihicles
         // Row 5: Trucks moving left
@@ -84,7 +107,8 @@ class AttractMode {
 
 
         if (AttractMode.DEBUG) {
-            console.log(`GameObjects: ${this.gameObjectManager.activeGameObjects.length}`);
+            console.log(`GameObjects: ${this.gameObjectManager.activeGameObjects.length}
+                ${this.gameObjectManager.activeGameObjects}`);
             for (const gameObject of this.gameObjectManager.activeGameObjects) {
                 console.log(`GameObject: ${gameObject.gameObjectType}, Position: (${gameObject.x}, ${gameObject.y}), Direction: ${gameObject.direction}`);
             }
@@ -105,6 +129,7 @@ class AttractMode {
         // Update all gameObjects
         for (const gameObject of this.gameObjectManager.activeGameObjects) {
             // Move gameObject
+            gameObject.update();
             gameObject.x += gameObject.speed * gameObject.direction;
 
             // Wrap around screen
