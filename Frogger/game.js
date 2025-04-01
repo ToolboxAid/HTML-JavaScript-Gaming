@@ -61,7 +61,7 @@ class Game extends GameBase {
     // Update game state with deltaTime
     switch (this.gameState) {
       case "attract":
-        this.displayAttractMode();
+        this.displayAttractMode(deltaTime);
         break;
 
       case "playerSelect":
@@ -93,7 +93,7 @@ class Game extends GameBase {
   }
 
   // Display 
-  displayAttractMode() {
+  displayAttractMode(deltaTime) {
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Welcome to Frogger!", 250, 200);
@@ -104,7 +104,7 @@ class Game extends GameBase {
       this.gameState = "playerSelect";
     }
 
-    this.attractMode.update();
+    this.attractMode.update(deltaTime);
     this.attractMode.draw(CanvasUtils.ctx);
   }
 

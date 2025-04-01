@@ -7,15 +7,13 @@ import ObjectPNG from '../../scripts/objectPNG.js';
 
 class Fly extends ObjectPNG {
     // - Type (fly)
-    // - Speed/direction
     // - Sprite management
     // - Position updates
-    constructor(x, y, width, height, speed) {
-        super(x, y, width, height, speed);
+    constructor(x, y, width, height) {
+        super(x, y, width, height);
         this.type = 'fly';
     }
     update() {
-        this.x += this.speed;
         if (this.x > canvas.width) {
             this.x = -this.width;
         }

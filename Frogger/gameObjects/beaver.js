@@ -7,15 +7,15 @@ import ObjectPNG from '../../scripts/objectPNG.js';
 
 class Beaver extends ObjectPNG {
     // - Type (beaver)
-    // - Speed/direction
+
     // - Sprite management
     // - Position updates
-    constructor(x, y, width, height, speed) {
-        super(x, y, width, height, speed);
+    constructor(x, y, width, height) {
+        super(x, y, width, height);
         this.type = 'beaver';
     }
     update() {
-        this.x += this.speed;
+        super.update(1);
         if (this.x > canvas.width) {
             this.x = -this.width;
         }

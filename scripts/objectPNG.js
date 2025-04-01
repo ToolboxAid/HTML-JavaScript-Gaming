@@ -13,6 +13,13 @@ class ObjectPNG extends ObjectKillable {
     // Debug mode enabled via URL parameter: game.html?objectPNG
     static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');
 
+    static Flip = Object.freeze({
+        NONE: 'none',
+        HORIZONTAL: 'horizontal', // left & right
+        VERTICAL: 'vertial',      // top & bottom
+        BOTH: 'both'
+    })
+
     constructor(x, y,
         spritePath,
         spriteX, spriteY,
@@ -58,11 +65,21 @@ class ObjectPNG extends ObjectKillable {
         }
     }
 
-    setHorizontalFlip() {
-        this.horizontalFlip = true;
-    }
-    setVerticalFlip() {
-        this.verticalFlip = true;
+    setFlip(flipType = 'none') {
+        // Ensure flipType is lowercase for case-insensitive comparison
+        flipType = flipType.toLowerCase();
+
+        // Validate and set the flip enum value
+        if (Object.values(ObjectPNG.Flip).includes(flipType)) {
+            this.flip = flipType;
+        } else {
+            console.warn(`Invalid flip type: ${flipType}. Using 'none' instead.`);
+            this.flip = ObjectPNG.Flip.NONE;
+        }
+
+        if (ObjectPNG.DEBUG) {
+            console.log(`Flip set to '${this.flip}' (scale: ${this.scale})`);
+        }
     }
     setRotaion(rotation) {
         this.rotation = AngleUtils.toRadians(rotation);
@@ -494,13 +511,20 @@ class ObjectPNG extends ObjectKillable {
             const centerY = newY + scaledHeight / 2;
             CanvasUtils.ctx.translate(centerX, centerY);
 
-            // Apply horizontal flip
-            if (this.horizontalFlip) {
-                CanvasUtils.ctx.scale(-1, 1);
-            }
-            // Apply vertical flip
-            if (this.verticalFlip) {
-                CanvasUtils.ctx.scale(1, -1);
+            // Set rendering flags based on flip type
+            switch (this.flip) {
+                case ObjectPNG.Flip.HORIZONTAL:
+                    CanvasUtils.ctx.scale(-1, 1);
+                    break;
+                case ObjectPNG.Flip.VERTICAL:
+                    CanvasUtils.ctx.scale(1, -1);
+                    break;
+                case ObjectPNG.Flip.BOTH:
+                    CanvasUtils.ctx.scale(-1, -1);
+                    break;
+                case ObjectPNG.Flip.NONE:
+                default:
+                    break;
             }
 
             const rotationRad = rotation * Math.PI / 180;

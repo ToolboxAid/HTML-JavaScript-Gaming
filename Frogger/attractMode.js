@@ -60,27 +60,21 @@ class AttractMode {
         this.gameObjectManager.addGameObject('turtleSink', 0, offsetYwater + (spacing * -2), -1);
         this.gameObjectManager.addGameObject('beaver', 200, offsetYbeaver + (spacing * -2), -1);
 
-        //
-        //
-        //
-        //        // safety zone
+// safety zone snake(s)
+        const snake1X = 500;
+        const snake1Y = offsetYsnake + (spacing * -1);
+        const snake1VX = -50;
+        const snake1VY = 0;
+        const snake1 = new Snake(snake1X,snake1Y,snake1VX,snake1VY);
+        this.gameObjectManager.addGameObject2(snake1);
 
-        this.gameObjectManager.addGameObject2(new Snake(
-            500, // x
-            offsetYsnake + (spacing * -1), // y
-            2.0,  // speed
-            -1,         // direction
-            -10,//velocityX, 
-            0 //velocityY 
-        ));
-        this.gameObjectManager.addGameObject2(new Snake(
-            500, // x
-            offsetYsnake + (spacing * -1), // y
-            2.0,  // speed
-            -1,         // direction
-            10,//velocityX, 
-            0 //velocityY 
-        ));
+        const snake2X = 500;
+        const snake2Y = offsetYsnake + (spacing * -1);
+        const snake2VX = 50;
+        const snake2VY = 0;
+        const snake2 = new Snake(snake2X, snake2Y, snake2VX, snake2VY);
+        snake2.setFlip('horizontal');
+        this.gameObjectManager.addGameObject2(snake2);
 
         // vihicles
         // Row 5: Trucks moving left
@@ -109,14 +103,14 @@ class AttractMode {
             console.log(`GameObjects: ${this.gameObjectManager.activeGameObjects.length}
                 ${this.gameObjectManager.activeGameObjects}`);
             for (const gameObject of this.gameObjectManager.activeGameObjects) {
-                console.log(`GameObject: ${gameObject.gameObjectType}, Position: (${gameObject.x}, ${gameObject.y}), Direction: ${gameObject.direction}`);
+                console.log(`GameObject: ${gameObject.gameObjectType}, Position: (${gameObject.x}, ${gameObject.y}), VelocityX: ${gameObject.velocityX}`);
             }
         }
     }
 
-    update() {
+    update(deltaTime) {
         //if (!this.isActive) return;
-        this.level.update();
+        this.level.update(deltaTime);
 
         // Update demo timer
         this.demoTimer++;
@@ -124,17 +118,15 @@ class AttractMode {
             this.isActive = false;
         }
 
-
         // Update all gameObjects
         for (const gameObject of this.gameObjectManager.activeGameObjects) {
             // Move gameObject
-            gameObject.update();
-            gameObject.x += gameObject.speed * gameObject.direction;
+            gameObject.update(deltaTime);
 
             // Wrap around screen
-            if (gameObject.direction > 0 && gameObject.x > CanvasUtils.getConfigWidth() + gameObject.width) {
+            if (gameObject.velocityX > 0 && gameObject.x > CanvasUtils.getConfigWidth() + gameObject.width) {
                 gameObject.x = -gameObject.width;
-            } else if (gameObject.direction < 0 && gameObject.x < -gameObject.width * 2) {
+            } else if (gameObject.velocityX < 0 && gameObject.x < -gameObject.width * 2) {
                 gameObject.x = CanvasUtils.getConfigWidth() + gameObject.width;
             }
         }

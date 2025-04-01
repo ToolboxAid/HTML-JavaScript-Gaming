@@ -15,7 +15,7 @@ class GameObject extends ObjectPNG {
         spriteWidth, spriteHeight,
         pixelSize,
         transparentColor,
-        gameObjectType, direction, speed,
+        gameObjectType,
         velocityX, velocityY
     ) {
         // Call parent constructor with sprite details
@@ -31,14 +31,10 @@ class GameObject extends ObjectPNG {
         // GameObject properties
         this.type = 'gameObject';
         this.gameObjectType = gameObjectType;  // 'car', 'truck', 'bulldozer', etc.
-        this.direction = direction;       // 1 for right, -1 for left
-        this.speed = speed;              // Pixels per frame
         this.isActive = true;            // Flag for active/inactive state
 
         if (GameObject.DEBUG) {
-            console.log(`GameObject created: ${JSON.stringify(this)}  objectType ${this.gameObjectType} 
-                at (${x},${y}) moving ${direction}
-                at ${speed}px/frame`);
+            console.log(`GameObject created: ${JSON.stringify(this)}`            );
         }
     }
 

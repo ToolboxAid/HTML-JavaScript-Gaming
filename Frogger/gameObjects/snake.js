@@ -8,31 +8,11 @@ import CanvasUtils from '../../scripts/canvas.js';
 
 class Snake extends GameObject {
     // - Type (snake)
-    // - Speed/direction
     // - Sprite management
     // - Position updates
 
-    constructor(x, y, speed, direction, velocityX, velocityY,) {
-        // x, y, 
-        // spritePath, 
-        // spriteX, spriteY,
-        // spriteWidth, spriteHeight,
-        // pixelSize,
-        // transparentColor,
-        // gameObjectType, direction, speed
-
-        /*
-                    snake: {
-                offsetY: -15,
-                sprite: './assets/images/snake_sprite_84w_33h_4f.png',
-                spriteX: 0,
-                spriteY: 0,
-                width: 84,
-                height: 33,
-                speed: 2
-            },
-            */
-
+    constructor(x, y, 
+        velocityX, velocityY) {
         const width = 84;
         const height = 33;
 
@@ -43,19 +23,16 @@ class Snake extends GameObject {
             1.5,//pixelSize,
             'black',//transparentColor,
             'snake',//gameObjectType, 
-            direction,
-            0,//speed,            
             velocityX, velocityY
         );
 
         this.type = 'snake';
-        this.frame = 0;
+        this.frame = Math.floor(Math.random() * 4);
         this.counter = 0;
     }
 
-    update() {
-        super.update(0.1);
-        this.x += this.speed;
+    update(deltaTime) {
+        super.update(deltaTime);
 
         if (this.velocityX < 0) {// moving left
             if (this.x + (this.width * this.pixelSize) < 0) {
@@ -76,6 +53,7 @@ class Snake extends GameObject {
             this.spriteX = this.width * this.frame;
         }
     }
+
     draw() {
         super.draw();
     }

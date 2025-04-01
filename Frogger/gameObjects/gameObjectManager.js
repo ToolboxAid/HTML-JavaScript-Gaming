@@ -140,7 +140,7 @@ class GameObjectManager {
     }
 
     // Add a new gameObject
-    addGameObject(gameObjectType, x, y, direction) {
+    addGameObject(gameObjectType, x, y) {
         const gameObjectConfig = this.gameObjectTypes[gameObjectType];
         console.log("gameObjectConfig", gameObjectConfig);
         if (!gameObjectConfig) {
@@ -157,8 +157,8 @@ class GameObjectManager {
             1.5, // Pixel size
             'black',
             gameObjectType,
-            direction,
-            gameObjectConfig.speed
+            Math.random() < 0.5 ? -10 : 10,  // 50% chance of -1 or 1 -- velocityX
+            0 // velocityY
         );
 
         this.activeGameObjects.push(gameObject);
@@ -170,33 +170,14 @@ class GameObjectManager {
         return gameObject;
     }
 
-    addGameObject2(gameObjectType, x, y, direction) {
-        // // Create a new gameObject instance
-        // const gameObject = new GameObject(
-        //     x, y,            
-        //     gameObjectConfig.sprite,
-        //     gameObjectConfig.spriteX, gameObjectConfig.spriteY,
-        //     gameObjectConfig.width, gameObjectConfig.height,
-        //     1.5, // Pixel size
-        //     'black',
-        //     gameObjectType,
-        //     direction,
-        //     gameObjectConfig.speed
-        // );
-
-        this.activeGameObjects.push(gameObjectType);
+    addGameObject2(gameObject, x, y) {
+        this.activeGameObjects.push(gameObject);
 
         if (GameObjectManager.DEBUG) {
-            console.log(`Added ${gameObjectType} gameObject at (${x},${y})`);
+            console.log(`Added ${gameObject} gameObject at (${x},${y})`);
         }
 
-        if (SystemUtils.getObjectType(this) === "Snake") {
-            console.log("object manager", this.x, this.y);
-            CanvasUtils.ctx.fillStyle = 'yellow';
-            CanvasUtils.ctx.fillRect(100, this.y, 50, 50);//this.x
-        }
-
-        return gameObjectType;
+        return gameObject;
     }
 
 
