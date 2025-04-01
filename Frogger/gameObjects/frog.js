@@ -62,7 +62,7 @@ class Frog extends ObjectPNG {
         const spriteWidth = 12;
         const spriteHeight = 12;
 
-        super(x, y, spriteSheet, spriteX, spriteY, spriteWidth, spriteHeight, pixelSize);
+        super(x, y,spriteSheet, spriteX, spriteY, spriteWidth, spriteHeight, pixelSize, 0,0);
      // super(x, y, spriteSheet, spriteX, spriteY, spriteWidth, spriteHeight, pixelSize, '#000047FF');
 
         // Frog state

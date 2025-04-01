@@ -82,7 +82,6 @@ class AttractMode {
             0 //velocityY 
         ));
 
-
         // vihicles
         // Row 5: Trucks moving left
         this.gameObjectManager.addGameObject('truck', 0, offsetYroad + (spacing * 0), -1);

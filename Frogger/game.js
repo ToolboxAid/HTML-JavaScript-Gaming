@@ -26,7 +26,6 @@ class Game extends GameBase {
   );
 
     this.attractMode = new AttractMode();
-  //this.level = new Level();
 }
 
   async onInitialize() {

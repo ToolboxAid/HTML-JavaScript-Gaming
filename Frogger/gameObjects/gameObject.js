@@ -16,13 +16,8 @@ class GameObject extends ObjectPNG {
         pixelSize,
         transparentColor,
         gameObjectType, direction, speed,
-    
-        velocityX, velocityY ) {
-
-        if (isNaN(direction)) {
-            direction = 15;
-            SystemUtils.showStackTrace("invalid direction");
-        }
+        velocityX, velocityY
+    ) {
         // Call parent constructor with sprite details
         super(x, y,
             spritePath,
@@ -30,8 +25,7 @@ class GameObject extends ObjectPNG {
             spriteWidth, spriteHeight,
             pixelSize,
             transparentColor,
-            
-        velocityX, velocityY 
+            velocityX, velocityY,
         );
 
         // GameObject properties
@@ -49,9 +43,6 @@ class GameObject extends ObjectPNG {
     }
 
     draw() {
-        // if (SystemUtils.getObjectType(this) === "Snake"){
-        // console.log("gameObject draw");
-        // }
         super.draw();
     }
 

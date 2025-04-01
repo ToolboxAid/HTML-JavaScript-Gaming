@@ -18,14 +18,11 @@ class ObjectPNG extends ObjectKillable {
         spriteX, spriteY,
         spriteWidth = 50,
         spriteHeight = 50,
-        pixelSize = 4,
+        pixelSize = 1,
         transparentColor = 'black',
-        //rotation=90
-        velocityX, velocityY        
+        velocityX, velocityY
     ) {
-
-
-        super(x, y, spriteWidth, spriteHeight,velocityX, velocityY);
+        super(x, y, spriteWidth, spriteHeight, velocityX, velocityY);
         if (SystemUtils.getObjectType(this) === "Snake") {
             console.log("object PNG con", this.x, this.y);
         }
@@ -37,7 +34,10 @@ class ObjectPNG extends ObjectKillable {
         this.pixelSize = pixelSize;
         this.isLoaded = false;
         this.spritePath = spritePath;
-        //this.rotation = AngleUtils.toRadians(rotation);
+
+        this.horizontalFlip = false;
+        this.verticalFlip = false;
+        this.rotation = AngleUtils.toRadians(0);
 
         // Load sprite
         ObjectPNG.loadSprite(spritePath, transparentColor)
@@ -56,6 +56,16 @@ class ObjectPNG extends ObjectKillable {
         if (ObjectPNG.DEBUG) {
             console.warn("ObjectPNG exit", spritePath);
         }
+    }
+
+    setHorizontalFlip() {
+        this.horizontalFlip = true;
+    }
+    setVerticalFlip() {
+        this.verticalFlip = true;
+    }
+    setRotaion(rotation) {
+        this.rotation = AngleUtils.toRadians(rotation);
     }
 
     static async loadSprite(spritePath, transparentColor = 'black') {
@@ -435,12 +445,41 @@ class ObjectPNG extends ObjectKillable {
         try {
             const { x, y, png, pixelSize, spriteX, spriteY, spriteWidth, spriteHeight, rotation } = this;
 
-            if (SystemUtils.getObjectType(this) === "Snake") {
+            // Debug validation of numeric properties
+            if (ObjectPNG.DEBUG) {
+                const numericProps = {
+                    x, y, pixelSize, spriteX, spriteY,
+                    spriteWidth, spriteHeight, rotation
+                };
 
-                if (Number.isNaN(this.x)) {
-                    this.x = 400;
+                const invalidProps = Object.entries(numericProps)
+                    .filter(([key, value]) =>
+                        typeof value !== 'number' || Number.isNaN(value))
+                    .map(([key, value]) => ({
+                        property: key,
+                        value: value,
+                        type: typeof value
+                    }));
+
+                if (invalidProps.length > 0) {
+                    SystemUtils.showStackTrace(
+                        'Invalid numeric properties detected in ObjectPNG.draw',
+                        new Error('Property validation failed'),
+                        {
+                            invalidProperties: invalidProps,
+                            objectType: SystemUtils.getObjectType(this),
+                            position: { x, y },
+                            sprite: {
+                                dimensions: { spriteWidth, spriteHeight },
+                                position: { spriteX, spriteY },
+                                scale: pixelSize,
+                                rotation: rotation
+                            }
+                        }
+                    );
                 }
             }
+
             // Calculate positions and dimensions
             const newX = Math.floor(x + offsetX);
             const newY = Math.floor(y + offsetY);
@@ -454,6 +493,15 @@ class ObjectPNG extends ObjectKillable {
             const centerX = newX + scaledWidth / 2;
             const centerY = newY + scaledHeight / 2;
             CanvasUtils.ctx.translate(centerX, centerY);
+
+            // Apply horizontal flip
+            if (this.horizontalFlip) {
+                CanvasUtils.ctx.scale(-1, 1);
+            }
+            // Apply vertical flip
+            if (this.verticalFlip) {
+                CanvasUtils.ctx.scale(1, -1);
+            }
 
             const rotationRad = rotation * Math.PI / 180;
             CanvasUtils.ctx.rotate(rotationRad);
@@ -472,19 +520,6 @@ class ObjectPNG extends ObjectKillable {
                 this.drawObjectDetails(centerX, centerY, rotation, newX, newY, scaledWidth, scaledHeight);
             }
 
-            if (SystemUtils.getObjectType(this) === "Snake") {
-                if (this.x === 400) {
-                    this.x = 400;
-                    console.warn('X coordinate was NaN, resetting to ',
-                        this.x, this.y, offsetX, offsetY,
-                        spriteWidth, spriteHeight, pixelSize,
-                        this.velocityX, this.velocityY, 
-                        this.direction);
-                    CanvasUtils.ctx.fillStyle = 'yellow';
-                    CanvasUtils.ctx.fillRect(100, this.y, 50, 50);//this.x
-
-                }
-            }
             // Restore context
             CanvasUtils.ctx.restore();
 

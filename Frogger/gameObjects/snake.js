@@ -12,7 +12,7 @@ class Snake extends GameObject {
     // - Sprite management
     // - Position updates
 
-    constructor(x, y, speed, direction, velocityX, velocityY) {
+    constructor(x, y, speed, direction, velocityX, velocityY,) {
         // x, y, 
         // spritePath, 
         // spriteX, spriteY,
