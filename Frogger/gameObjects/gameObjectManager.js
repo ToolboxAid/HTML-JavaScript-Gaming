@@ -19,16 +19,14 @@ class GameObjectManager {
                 spriteX: 0,
                 spriteY: 0,
                 width: 48,
-                height: 42,
-                speed: 2
+                height: 42
             },
             bulldozer: {
                 sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
                 spriteX: 48,
                 spriteY: 0,
                 width: 48,
-                height: 42,
-                speed: 1
+                height: 42
             },
 
             truck: {
@@ -36,24 +34,21 @@ class GameObjectManager {
                 spriteX: 48 * 2,
                 spriteY: 0,
                 width: 48 * 2,
-                height: 42,
-                speed: 1.5
+                height: 42
             },
             car2: {
                 sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
                 spriteX: 48 * 4,
                 spriteY: 0,
                 width: 48,
-                height: 42,
-                speed: 2
+                height: 42
             },
             car3: {
                 sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
                 spriteX: 48 * 5,
                 spriteY: 0,
                 width: 48,
-                height: 42,
-                speed: 2
+                height: 42
             },
 
             logSm: {
@@ -61,40 +56,35 @@ class GameObjectManager {
                 spriteX: 0,
                 spriteY: 0,
                 width: 60 * 2,
-                height: 30,
-                speed: 2
+                height: 30
             },
             logMed: {
                 sprite: './assets/images/log_sprite_60w_30h_10f.png',
                 spriteX: 60 * 2,
                 spriteY: 0,
                 width: 60 * 3,
-                height: 30,
-                speed: 2
+                height: 30
             },
             logLrg: {
                 sprite: './assets/images/log_sprite_60w_30h_10f.png',
                 spriteX: 60 * 5,
                 spriteY: 0,
                 width: 60 * 5,
-                height: 30,
-                speed: 2
+                height: 30
             },
             turtle: {
                 sprite: './assets/images/turtle_sprite_45w_33h_5f.png',
                 spriteX: 0,
                 spriteY: 0,
                 width: 45 * 3,
-                height: 30,
-                speed: 2
+                height: 30
             },
             turtleSink: {
                 sprite: './assets/images/turtle_sprite_45w_33h_5f.png',
                 spriteX: 45 * 2,
                 spriteY: 0,
                 width: 45 * 3,
-                height: 30,
-                speed: 2
+                height: 30
             },
             aligator: {
                 offsetY: -10,
@@ -102,8 +92,7 @@ class GameObjectManager {
                 spriteX: 0,
                 spriteY: 0,
                 width: 48 * 3,
-                height: 48,
-                speed: 2
+                height: 48
             },
             beaver: {
                 offsetY: -10,
@@ -111,8 +100,7 @@ class GameObjectManager {
                 spriteX: 0,
                 spriteY: 0,
                 width: 48,
-                height: 48,
-                speed: 2
+                height: 48
             },
             snake: {
                 offsetY: -15,
@@ -120,8 +108,7 @@ class GameObjectManager {
                 spriteX: 0,
                 spriteY: 0,
                 width: 84,
-                height: 33,
-                speed: 2
+                height: 33
             },
             bonus: {
                 offsetY: 0,
@@ -129,8 +116,7 @@ class GameObjectManager {
                 spriteX: 36 * 2,
                 spriteY: 0,
                 width: 36,
-                height: 42,
-                speed: 2
+                height: 42
             },
         };
 

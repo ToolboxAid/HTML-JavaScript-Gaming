@@ -68,7 +68,7 @@ class AttractMode {
         const snake1 = new Snake(snake1X,snake1Y,snake1VX,snake1VY);
         this.gameObjectManager.addGameObject2(snake1);
 
-        const snake2X = 500;
+        const snake2X = 75;
         const snake2Y = offsetYsnake + (spacing * -1);
         const snake2VX = 50;
         const snake2VY = 0;
