@@ -11,6 +11,12 @@ import CanvasUtils from "../scripts/canvas.js";
 
 class ObjectStatic {
 
+        // Static counter for unique IDs
+        static #nextId = 0;
+        static getNextId() {
+            return this.#nextId++;
+        }
+
     /**
      * Creates an instance of ObjectStatic.
      * @param {number} x - The X position of the object.
@@ -35,6 +41,8 @@ class ObjectStatic {
         if (!Number.isFinite(x) || !Number.isFinite(y)) {
             throw new Error('Position coordinates must be finite numbers.');
         }
+
+        this.ID = ObjectStatic.getNextId(); // Unique ID for each object
 
         this.x = x;
         this.y = y;

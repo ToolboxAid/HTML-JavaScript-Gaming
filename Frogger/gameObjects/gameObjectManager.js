@@ -14,78 +14,7 @@ class GameObjectManager {
 
         // GameObject types and their properties
         this.gameObjectTypes = {
-            car1: {
-                sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
-                spriteX: 0,
-                spriteY: 0,
-                width: 48,
-                height: 42
-            },
-            bulldozer: {
-                sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
-                spriteX: 48,
-                spriteY: 0,
-                width: 48,
-                height: 42
-            },
 
-            truck: {
-                sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
-                spriteX: 48 * 2,
-                spriteY: 0,
-                width: 48 * 2,
-                height: 42
-            },
-            car2: {
-                sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
-                spriteX: 48 * 4,
-                spriteY: 0,
-                width: 48,
-                height: 42
-            },
-            car3: {
-                sprite: './assets/images/vehicles_sprite_48w_42h_6f.png',
-                spriteX: 48 * 5,
-                spriteY: 0,
-                width: 48,
-                height: 42
-            },
-
-            logSm: {
-                sprite: './assets/images/log_sprite_60w_30h_10f.png',
-                spriteX: 0,
-                spriteY: 0,
-                width: 60 * 2,
-                height: 30
-            },
-            logMed: {
-                sprite: './assets/images/log_sprite_60w_30h_10f.png',
-                spriteX: 60 * 2,
-                spriteY: 0,
-                width: 60 * 3,
-                height: 30
-            },
-            logLrg: {
-                sprite: './assets/images/log_sprite_60w_30h_10f.png',
-                spriteX: 60 * 5,
-                spriteY: 0,
-                width: 60 * 5,
-                height: 30
-            },
-            turtle: {
-                sprite: './assets/images/turtle_sprite_45w_33h_5f.png',
-                spriteX: 0,
-                spriteY: 0,
-                width: 45 * 3,
-                height: 30
-            },
-            turtleSink: {
-                sprite: './assets/images/turtle_sprite_45w_33h_5f.png',
-                spriteX: 45 * 2,
-                spriteY: 0,
-                width: 45 * 3,
-                height: 30
-            },
             aligator: {
                 offsetY: -10,
                 sprite: './assets/images/aligator_sprite_48w_48h_4f.png',
@@ -102,14 +31,7 @@ class GameObjectManager {
                 width: 48,
                 height: 48
             },
-            snake: {
-                offsetY: -15,
-                sprite: './assets/images/snake_sprite_84w_33h_4f.png',
-                spriteX: 0,
-                spriteY: 0,
-                width: 84,
-                height: 33
-            },
+
             bonus: {
                 offsetY: 0,
                 sprite: './assets/images/bonus_sprite_36w_42h_6f.png',
@@ -156,16 +78,28 @@ class GameObjectManager {
         return gameObject;
     }
 
-    addGameObject2(gameObject, x, y) {
+    addGameObject2(gameObject) {
         this.activeGameObjects.push(gameObject);
-
-        if (GameObjectManager.DEBUG) {
-            console.log(`Added ${gameObject} gameObject at (${x},${y})`);
-        }
 
         return gameObject;
     }
 
+    // this.findGameObjectByID(gameObject.ID); // Tested and working
+    findGameObjectByID(gameObjectID) {
+        // Change obj.id to obj.objectID to match the property name
+        const gameObject = this.activeGameObjects.find(obj => obj.ID === gameObjectID);
+
+        if (GameObjectManager.DEBUG) {
+            console.log(`Finding gameObject with ID: ${gameObjectID}`);
+            if (gameObject) {
+                console.log(`Found gameObject with ID ${gameObjectID}:`, gameObject);
+            } else {
+                console.warn(`No gameObject with ID ${gameObjectID} found in ${this.activeGameObjects.length} objects`);
+            }
+        }
+
+        return gameObject;
+    }
 
     // Remove a gameObject
     removeGameObject(gameObject) {

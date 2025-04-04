@@ -1,34 +1,35 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// snake.js
+// Car0.js
 
 import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
-class Snake extends GameObject {
-    // - Type (snake)
+class Car0 extends GameObject {
+    // - Type (Car0)
     // - Sprite management
     // - Position updates
 
     constructor(x, y, 
         velocityX, velocityY) {
-        const width = 84;
-        const height = 33;
-
+        const width = 48;
+        const height = 42;
+        const spriteX = 48 * 4;
+        const spriteY = 0;
+      
         super(x, y,
-            './assets/images/snake_sprite_84w_33h_4f.png',//spritePath
-            0, 0,//spriteX, spriteY,
+            './assets/images/vehicles_sprite_48w_42h_6f.png',//spritePath
+            spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
             1.5,//pixelSize,
             'black',//transparentColor,
-            'snake',//gameObjectType, 
+            'Car0',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'snake';
-        this.frame = Math.floor(Math.random() * 4);
-        this.counter = 0;
+        this.type = 'Car0';
+        this.frame = 0;
     }
 
     update(deltaTime) {
@@ -43,20 +44,12 @@ class Snake extends GameObject {
                 this.x = -(this.width * this.pixelSize);
             }
         }
-
-        if (this.counter++ > 8) {
-            this.counter = 0;
-            this.frame++;
-            if (this.frame > 3) {
-                this.frame = 0;
-            }
-            this.spriteX = this.width * this.frame;
-        }
     }
 
-    // draw() {
-    //     super.draw();
-    // }
+    draw() {
+        super.draw();
+    } 
+
 }
 
-export default Snake;
+export default Car0;

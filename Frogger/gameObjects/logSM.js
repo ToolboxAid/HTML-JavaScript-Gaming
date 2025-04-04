@@ -1,34 +1,35 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// snake.js
+// LogSM.js
 
 import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
-class Snake extends GameObject {
-    // - Type (snake)
+class LogSM extends GameObject {
+    // - Type (LogSM)
     // - Sprite management
     // - Position updates
 
     constructor(x, y, 
         velocityX, velocityY) {
-        const width = 84;
-        const height = 33;
-
+        const width = 60*2;
+        const height = 30;
+        const spriteX = 0;
+        const spriteY = 0;
+      
         super(x, y,
-            './assets/images/snake_sprite_84w_33h_4f.png',//spritePath
-            0, 0,//spriteX, spriteY,
+            './assets/images/log_sprite_60w_30h_10f.png',//spritePath
+            spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
             1.5,//pixelSize,
             'black',//transparentColor,
-            'snake',//gameObjectType, 
+            'LogSM',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'snake';
-        this.frame = Math.floor(Math.random() * 4);
-        this.counter = 0;
+        this.type = 'LogSM';
+        this.frame = 0;
     }
 
     update(deltaTime) {
@@ -43,20 +44,12 @@ class Snake extends GameObject {
                 this.x = -(this.width * this.pixelSize);
             }
         }
-
-        if (this.counter++ > 8) {
-            this.counter = 0;
-            this.frame++;
-            if (this.frame > 3) {
-                this.frame = 0;
-            }
-            this.spriteX = this.width * this.frame;
-        }
     }
 
-    // draw() {
-    //     super.draw();
-    // }
+    draw() {
+        super.draw();
+    } 
+
 }
 
-export default Snake;
+export default LogSM;

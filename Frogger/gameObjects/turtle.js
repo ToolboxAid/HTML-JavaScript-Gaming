@@ -1,33 +1,34 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// snake.js
+// turtle.js
 
 import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
-class Snake extends GameObject {
-    // - Type (snake)
+class Turtle extends GameObject {
+    // - Type (turtle)
     // - Sprite management
     // - Position updates
 
-    constructor(x, y, 
+    constructor(x, y,
         velocityX, velocityY) {
-        const width = 84;
-        const height = 33;
+        const width = 45;
+        const height = 30;
 
         super(x, y,
-            './assets/images/snake_sprite_84w_33h_4f.png',//spritePath
+            './assets/images/turtle_sprite_45w_33h_5f.png',//spritePath
             0, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
             1.5,//pixelSize,
             'black',//transparentColor,
-            'snake',//gameObjectType, 
+            'turtle',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'snake';
-        this.frame = Math.floor(Math.random() * 4);
+        this.type = 'turtle';
+
+        this.frame = 0;
         this.counter = 0;
     }
 
@@ -44,19 +45,16 @@ class Snake extends GameObject {
             }
         }
 
-        if (this.counter++ > 8) {
+        if (this.counter++ > 20) {
             this.counter = 0;
             this.frame++;
-            if (this.frame > 3) {
-                this.frame = 0;
-            }
+                if (this.frame > 2) {
+                    this.frame = 0;
+                }
             this.spriteX = this.width * this.frame;
         }
     }
 
-    // draw() {
-    //     super.draw();
-    // }
 }
 
-export default Snake;
+export default Turtle;
