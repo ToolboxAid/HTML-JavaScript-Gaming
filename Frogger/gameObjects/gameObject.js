@@ -1,10 +1,9 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// frog.js
+// gameObject.js
 
 import ObjectPNG from '../../scripts/objectPNG.js';
-import SystemUtils from '../../scripts/utils/systemUtils.js';
 
 class GameObject extends ObjectPNG {
     static DEBUG = new URLSearchParams(window.location.search).has('gameObject');
@@ -28,6 +27,7 @@ class GameObject extends ObjectPNG {
             velocityX, velocityY,
         );
 
+
         // GameObject properties
         this.type = 'gameObject';
         this.gameObjectType = gameObjectType;  // 'car', 'truck', 'bulldozer', etc.
@@ -36,10 +36,6 @@ class GameObject extends ObjectPNG {
         if (GameObject.DEBUG) {
             console.log(`GameObject created: ${JSON.stringify(this)}`            );
         }
-    }
-
-    draw() {
-        super.draw();
     }
 
 }

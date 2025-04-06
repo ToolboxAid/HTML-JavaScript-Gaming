@@ -67,7 +67,7 @@ class ObjectVector extends ObjectKillable {
     }
 
     checkWrapAround() {// Screen wrapping object logic
-        const boundaries = CollisionUtils.getCompletelyOffScreenBoundaries(this, this.margin);
+        const boundaries = CollisionUtils.getSpriteCompletelyOffScreenSides(this, this.margin);
 
         if (boundaries.length === 0) {
             return

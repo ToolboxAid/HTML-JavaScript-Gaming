@@ -177,7 +177,7 @@ class UFO extends ObjectVector {
     }
 
     checkBoundaries() {
-        const boundariesHit = CollisionUtils.getCompletelyOffScreenBoundaries(this, this.margin);
+        const boundariesHit = CollisionUtils.getSpriteCompletelyOffScreenSides(this, this.margin);
 
         if (boundariesHit.includes(UFO.BOUNDARY.TOP)) {
             this.y = CanvasUtils.getConfigHeight();

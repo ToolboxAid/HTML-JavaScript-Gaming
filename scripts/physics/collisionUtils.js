@@ -284,15 +284,92 @@ export default class CollisionUtils {
  * @param {number} [margin=0] - Additional margin around the boundaries
  * @returns {boolean} True if object is completely outside game boundaries
  */
-    static isCompletelyOffScreen(object, margin = 0) {
+    static isObjectCompletelyOffScreen(object, margin = 0) {
+        // Calculate half dimensions
+        const width = (object.boundWidth ?? object.width) / 2;
+        const height = (object.boundHeight ?? object.height) / 2;
+
+        return (
+            object.velocityX < 0 && object.x + width + margin <= 0 ||                              // Off left edge
+            object.velocityX >= 0 && object.x - width - margin >= CanvasUtils.getConfigWidth() ||  // Off right edge
+            object.velocityY < 0 && object.y + height + margin <= 0 ||                             // Off top edge
+            object.velocityY >= 0 && object.y - height - margin >= CanvasUtils.getConfigHeight()   // Off bottom edge
+        );
+    }
+    /** Checks which sides of the game boundaries an object has crossed based on its velocity
+     * @param {Object} object - The object to check
+     * @param {number} [margin=0] - Additional margin around the boundaries (positive shrinks play area)
+     * @returns {Array<string>} Array of sides ('left', 'right', 'top', 'bottom') that the object has crossed
+     * @throws {Error} If object properties are invalid
+     */
+    
+    /* this method is not tested yet */
+    /* this method is not tested yet */
+    /* this method is not tested yet */
+    static getObjectCompletelyOffScreenSides(object, margin = 0) {
+        // Validate object properties
+        if (!object || typeof object.x !== 'number' || typeof object.y !== 'number') {
+            throw new Error('Invalid object: missing or invalid position properties');
+        }
+
+        // Early return if object is not off screen
+        if (!this.isSpriteCompletelyOffScreen(object, margin)) {
+            return [];
+        }
+
+        // Calculate half dimensions
+        const width = (object.boundWidth ?? object.width) / 2;
+        const height = (object.boundHeight ?? object.height) / 2;
+
+        // Document the sides
+        const boundariesCrossed = [];
+
+        // Check left boundary crossing (moving left)
+        if (object.velocityX < 0 && object.x + width + margin <= 0) {
+            boundariesCrossed.push('left');
+        }
+        // Check right boundary crossing (moving right)
+        if (object.velocityX >= 0 && object.x - width - margin >= CanvasUtils.getConfigWidth()) {
+            boundariesCrossed.push('right');
+        }
+        // Check top boundary crossing (moving up)
+        if (object.velocityY < 0 && object.y + height + margin <= 0) {
+            boundariesCrossed.push('top');
+        }
+        // Check bottom boundary crossing (moving down)
+        if (object.velocityY >= 0 && object.y - height - margin >= CanvasUtils.getConfigHeight()) {
+            boundariesCrossed.push('bottom');
+        }
+
+        if (this.DEBUG && boundariesCrossed.includes('right')) {
+            console.log("Boundaries crossed:", {
+                boundaries: boundariesCrossed,
+                object: {
+                    x: object.x,
+                    y: object.y,
+                    w2: width,
+                    h2: height,
+                    m: margin
+                },
+                canvas: {
+                    width: CanvasUtils.getConfigWidth(),
+                    height: CanvasUtils.getConfigHeight()
+                }
+            });
+        }
+
+        return boundariesCrossed;
+    }
+
+    static isSpriteCompletelyOffScreen(object, margin = 0) {
         // Calculate half dimensions
         const halfWidth = (object.boundWidth ?? object.width) / 2;
         const halfHeight = (object.boundHeight ?? object.height) / 2;
 
         return (
-            object.velocityX < 0 && object.x + halfWidth + margin <= 0 ||              // Off left edge
+            object.velocityX < 0 && object.x + halfWidth + margin <= 0 ||                              // Off left edge
             object.velocityX >= 0 && object.x - halfWidth - margin >= CanvasUtils.getConfigWidth() ||  // Off right edge
-            object.velocityY < 0 && object.y + halfHeight + margin <= 0 ||             // Off top edge
+            object.velocityY < 0 && object.y + halfHeight + margin <= 0 ||                             // Off top edge
             object.velocityY >= 0 && object.y - halfHeight - margin >= CanvasUtils.getConfigHeight()   // Off bottom edge
         );
     }
@@ -302,14 +379,14 @@ export default class CollisionUtils {
      * @returns {Array<string>} Array of sides ('left', 'right', 'top', 'bottom') that the object has crossed
      * @throws {Error} If object properties are invalid
      */
-    static getCompletelyOffScreenBoundaries(object, margin = 0) {
+    static getSpriteCompletelyOffScreenSides(object, margin = 0) {
         // Validate object properties
         if (!object || typeof object.x !== 'number' || typeof object.y !== 'number') {
             throw new Error('Invalid object: missing or invalid position properties');
         }
 
         // Early return if object is not off screen
-        if (!this.isCompletelyOffScreen(object, margin)) {
+        if (!this.isSpriteCompletelyOffScreen(object, margin)) {
             return [];
         }
 

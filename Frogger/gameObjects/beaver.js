@@ -8,26 +8,27 @@ import CanvasUtils from '../../scripts/canvas.js';
 
 class Beaver extends GameObject {
     // - Type (beaver)
-
     // - Sprite management
     // - Position updates
-    constructor(x, y, 
+
+    constructor(x, y,
         velocityX, velocityY) {
-        const width = 84;
-        const height = 33;
+        const width = 48;
+        const height = 48;
 
         super(x, y,
-            './assets/images/snake_sprite_84w_33h_4f.png',//spritePath
+            './assets/images/beaver_sprite_48w_48h_2f.png',//spritePath
             0, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
             1.5,//pixelSize,
             'black',//transparentColor,
-            'snake',//gameObjectType, 
+            'beaver',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'snake';
-        this.frame = Math.floor(Math.random() * 4);
+        this.type = 'beaver';
+
+        this.frame = 0;
         this.counter = 0;
     }
 
@@ -44,15 +45,16 @@ class Beaver extends GameObject {
             }
         }
 
-        if (this.counter++ > 8) {
+        if (this.counter++ > 40) {
             this.counter = 0;
             this.frame++;
-            if (this.frame > 3) {
-                this.frame = 0;
-            }
+                if (this.frame > 1) {
+                    this.frame = 0;
+                }
             this.spriteX = this.width * this.frame;
         }
     }
+
 }
 
 export default Beaver;

@@ -11,12 +11,15 @@ import LogLRG from './gameObjects/logLRG.js';
 import LogSM from './gameObjects/logSM.js';
 import Turtle from './gameObjects/turtle.js';
 import TurtleSink from './gameObjects/turtleSink.js';
+import Beaver from './gameObjects/beaver.js';
+import Snake from './gameObjects/snake.js';
+import Bonus from './gameObjects/bonus.js';
+
 // Road hazard
 import Car0 from './gameObjects/car0.js';
 import Car1 from './gameObjects/car1.js';
 import Car2 from './gameObjects/car2.js';
 import Dozer from './gameObjects/dozer.js';
-import Snake from './gameObjects/snake.js';
 import Truck from './gameObjects/truck.js';
 
 class AttractMode {
@@ -24,23 +27,8 @@ class AttractMode {
 
     // Base Y positions
     static BASE = Object.freeze({
-        WATER: 579,
-        ROAD: 571,
+        WATER: 570,
         SPACING: 63,
-        VELOCITYY: 0,
-    });
-
-    // static SPACING = Object.freeze(63);  // Makes it immutable 
-    // //static get SPACING() { return 63; }
-
-    // Derived offsets from BASE.WATER
-    static OFFSET = Object.freeze({
-        get WATER() { return AttractMode.BASE.WATER; },
-        get ROAD() { return AttractMode.BASE.ROAD; },
-        get ALIGATOR() { return AttractMode.BASE.WATER - 18; },
-        get BEAVER() { return AttractMode.BASE.WATER - 24; },
-        get BONUS() { return AttractMode.BASE.WATER - 5; },
-        get SNAKE() { return AttractMode.BASE.WATER - 5; }
     });
 
     constructor() {
@@ -63,7 +51,7 @@ class AttractMode {
 
     // Water hazard
     createLogMED = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const logMED = new LogMED(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -75,11 +63,10 @@ class AttractMode {
             logMED.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(logMED);
+        return this.gameObjectManager.addGameObject(logMED);
     };
-
     createLogLRG = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const logLRG = new LogLRG(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -91,11 +78,10 @@ class AttractMode {
             logLRG.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(logLRG);
+        return this.gameObjectManager.addGameObject(logLRG);
     };
-
     createLogSM = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const logSM = new LogSM(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -107,11 +93,10 @@ class AttractMode {
             logSM.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(logSM);
+        return this.gameObjectManager.addGameObject(logSM);
     };
-
     createTurtle = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const turtle = new Turtle(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -123,10 +108,10 @@ class AttractMode {
             turtle.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(turtle);
-    }; 
+        return this.gameObjectManager.addGameObject(turtle);
+    };
     createTurtleSink = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const turtleSink = new TurtleSink(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -138,8 +123,40 @@ class AttractMode {
             turtleSink.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(turtleSink);
-    };    
+        return this.gameObjectManager.addGameObject(turtleSink);
+    };
+    createBeaverSink = (x, row, velocityX, flip = false) => {
+        const offsetY = AttractMode.BASE.WATER;
+        const beaver = new Beaver(
+            x,
+            offsetY + (AttractMode.BASE.SPACING * row),
+            velocityX,
+            AttractMode.BASE.VELOCITYY
+        );
+
+        if (flip) {
+            beaver.setFlip('horizontal');
+        }
+
+        return this.gameObjectManager.addGameObject(beaver);
+    };
+
+    createBonus = (x, row, velocityX, flip = false) => {
+        const offsetY = AttractMode.BASE.WATER;
+        const bonus = new Bonus(
+            x,
+            offsetY + (AttractMode.BASE.SPACING * row),
+            velocityX,
+            AttractMode.BASE.VELOCITYY
+        );
+
+        if (flip) {
+            bonus.setFlip('horizontal');
+        }
+
+        return this.gameObjectManager.addGameObject(bonus);
+    };
+
     // Safety zone snakes
     createSnake = (x, row, velocityX, flip = false) => {
         const offsetYwater = 579;
@@ -155,13 +172,12 @@ class AttractMode {
             snake.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(snake);
+        return this.gameObjectManager.addGameObject(snake);
     };
 
     // Road
-
     createCar0 = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const car0 = new Car0(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -173,10 +189,10 @@ class AttractMode {
             car0.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(car0);
+        return this.gameObjectManager.addGameObject(car0);
     };
     createCar1 = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const car1 = new Car1(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -188,10 +204,10 @@ class AttractMode {
             car1.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(car1);
+        return this.gameObjectManager.addGameObject(car1);
     };
     createCar2 = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const car2 = new Car2(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -203,10 +219,10 @@ class AttractMode {
             car2.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(car2);
+        return this.gameObjectManager.addGameObject(car2);
     };
     createDozer = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const dozer = new Dozer(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -218,10 +234,10 @@ class AttractMode {
             dozer.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(dozer);
+        return this.gameObjectManager.addGameObject(dozer);
     };
     createTruck = (x, row, velocityX, flip = false) => {
-        const offsetY = AttractMode.OFFSET.WATER - 5;
+        const offsetY = AttractMode.BASE.WATER;
         const truck = new Truck(
             x,
             offsetY + (AttractMode.BASE.SPACING * row),
@@ -233,50 +249,52 @@ class AttractMode {
             truck.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject2(truck);
+        return this.gameObjectManager.addGameObject(truck);
     };
 
     initializeGameObjects() {
-        const spacing = 63;
-        const offsetYwater = 579;
-        const offsetYroad = 571;
-        const offsetYaligator = offsetYwater - 18;
-        const offsetYbeaver = offsetYwater - 24;
-        const offsetYbonus = offsetYwater - 5;
+
+        let objectLog = null;
+        let objectSnake = null;
+        let objectBonus = null;
 
         // Water hazard
         // Row 10: Logs moving right
-        //        this.gameObjectManager.addGameObject('logMed', 0, offsetYwater + (spacing * -6), 1);
-        this.createLogMED(300, -6, 200);
-        this.gameObjectManager.addGameObject('aligator', -300, offsetYaligator + (spacing * -6), 1);
+
+        objectLog = this.createLogMED(300, -6, 200);
+        objectSnake = this.createSnake(500, -4, 50, true);
+        objectSnake.attachedToObject(objectLog);
+        // objectBonus = this.createBonus(400, -3, 36);
+        // objectBonus.attachedToObject(objectLog);        
+        //        this.gameObjectManager.addGameObject('aligator', -300, offsetYaligator + (spacing * -6), 1);
         //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -6), 1);
+        this.createBeaverSink(300, -6, 200);
 
         // Row 9: Logs moving left
-//        this.gameObjectManager.addGameObject('turtle', 0, offsetYwater + (spacing * -5), -1);
         //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -5), -1);
         this.createTurtleSink(640, -5, -200);
         this.createTurtleSink(710, -5, -200);
         this.createTurtleSink(780, -5, -200);
 
         // Row 8: Logs moving right
-        this.createLogLRG(300, -4, 200);
-        this.createSnake(500, -4, 50, true);
+        objectLog = this.createLogLRG(100, -4, 150);
+        objectBonus = this.createBonus(400, -3, 36);
+        objectBonus.attachedToObject(objectLog);
 
         //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -4), 1);
-        // Row 7: Logs moving right
-        this.createLogSM(300, -3, 200);
 
-        //this.gameObjectManager.addGameObject('logSm', 0, offsetYwater + (spacing * -3), 1);
+        // Row 7: Logs moving right
+        objectLog = this.createLogSM(300, -3, 250);
+        objectSnake = this.createSnake(500, -4, 50, true);
+        objectSnake.attachedToObject(objectLog);
+        // objectBonus = this.createBonus(400, -3, 36);
+        // objectBonus.attachedToObject(objectLog);
         //this.gameObjectManager.addGameObject('beaver', 400, offsetYbeaver + (spacing * -3), 1);
-        this.gameObjectManager.addGameObject('bonus', 600, offsetYbonus + (spacing * -3), 1);
 
         // Row 6: Turtle moving left
         this.createTurtle(300, -2, -200);
         this.createTurtle(370, -2, -200);
         this.createTurtle(440, -2, -200);
-
-
-        //this.gameObjectManager.addGameObject('turtleSink', 0, offsetYwater + (spacing * -2), -1);
         //this.gameObjectManager.addGameObject('beaver', 200, offsetYbeaver + (spacing * -2), -1);
 
         // safety zone snake(s)
@@ -314,7 +332,6 @@ class AttractMode {
     }
 
     update(deltaTime) {
-        //if (!this.isActive) return;
         this.level.update(deltaTime);
 
         // Update demo timer

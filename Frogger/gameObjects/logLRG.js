@@ -11,13 +11,13 @@ class LogLRG extends GameObject {
     // - Sprite management
     // - Position updates
 
-    constructor(x, y, 
+    constructor(x, y,
         velocityX, velocityY) {
-        const width = 60*5;
-        const height = 30;
         const spriteX = 60 * 5;
         const spriteY = 0;
-      
+        const width = 60 * 5;
+        const height = 30;
+
         super(x, y,
             './assets/images/log_sprite_60w_30h_10f.png',//spritePath
             spriteX, spriteY,
@@ -45,10 +45,6 @@ class LogLRG extends GameObject {
             }
         }
     }
-
-    draw() {
-        super.draw();
-    } 
 
 }
 
