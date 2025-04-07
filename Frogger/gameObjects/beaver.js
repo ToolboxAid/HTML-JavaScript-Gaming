@@ -31,15 +31,13 @@ class Beaver extends GameObject {
             './assets/images/beaver_sprite_48w_48h_2f.png',//spritePath
             0, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'beaver',//gameObjectType, 
             velocityX, velocityY
         );
 
         this.activeGameObjects = activeGameObjects;
-
-        this.type = 'beaver';
 
         this.frame = 0;
         this.counter = 0;
@@ -102,6 +100,44 @@ class Beaver extends GameObject {
 
         if (this.checkLogCollision()) {
             this.x = -this.boundWidth * 2; // off screen to the left
+        }
+    }
+
+    destroy() {
+        try {
+            if (Beaver.DEBUG) {
+                console.log(`Destroying Beaver`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    activeObjects: this.activeGameObjects?.length
+                });
+            }
+    
+            // Clean up Beaver-specific properties
+            this.frame = null;
+            this.counter = null;
+            this.activeGameObjects = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during Beaver destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
         }
     }
 

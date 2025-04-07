@@ -43,7 +43,7 @@ class AttractMode {
         this.gameObjectManager = new GameObjectManager();
 
         // Attract mode state
-        this.isActive = true;
+        this.demoActive = true;
         this.demoTimer = 0;
         this.maxDemoTime = 30 * 60; // 30 seconds at 60fps
 
@@ -418,10 +418,9 @@ class AttractMode {
         this.createCar0(300, 4, -200);
 
         if (AttractMode.DEBUG) {
-            console.log(`GameObjects: ${this.gameObjectManager.activeGameObjects.length}
-                ${this.gameObjectManager.activeGameObjects}`);
-            for (const gameObject of this.gameObjectManager.activeGameObjects) {
-                console.log(`GameObject: ${gameObject.gameObjectType}, Position: (${gameObject.x}, ${gameObject.y}), VelocityX: ${gameObject.velocityX}`);
+            console.log(`GameObjects: ${this.gameObjectManager.getActiveGameObjects().length}`);
+            for (const gameObject of this.gameObjectManager.getActiveGameObjects()) {
+                console.log(`GameObject: ${gameObject.type}, Position: (${gameObject.x}, ${gameObject.y}), VelocityX: ${gameObject.velocityX}`);
             }
         }
     }
@@ -432,11 +431,11 @@ class AttractMode {
         // Update demo timer
         this.demoTimer++;
         if (this.demoTimer >= this.maxDemoTime) {
-            this.isActive = false;
+            this.demoActive = false;
         }
 
         // Update all gameObjects
-        for (const gameObject of this.gameObjectManager.activeGameObjects) {
+        for (const gameObject of this.gameObjectManager.getActiveGameObjects()) {
             // Move gameObject
             gameObject.update(deltaTime);
 
@@ -446,8 +445,16 @@ class AttractMode {
             } else if (gameObject.velocityX < 0 && gameObject.x < -gameObject.width * 2) {
                 gameObject.x = CanvasUtils.getConfigWidth() + gameObject.width;
             }
-        }
 
+            // Check if gameObject is dead
+            if (gameObject.isDead()) {
+                console.log(`GameObject is dead: ${gameObject.type}, 
+                    Position: (${gameObject.x}, ${gameObject.y}), 
+                    VelocityX: ${gameObject.velocityX},
+                    ID: ${gameObject.ID}`);
+                this.gameObjectManager.removeGameObject(gameObject);
+            }
+        }
     }
 
     draw() {
@@ -455,15 +462,18 @@ class AttractMode {
         this.level.draw();
 
         // Draw gameObjects
-        for (const gameObject of this.gameObjectManager.activeGameObjects) {
-            gameObject.draw();
+        console.log(this.gameObjectManager.getActiveGameObjects().length);
+        for (const gameObject of this.gameObjectManager.getActiveGameObjects()) {
+            if (!gameObject.isDead()) {
+                gameObject.draw();
+            }            
         }
-
     }
 
     isComplete() {
-        return !this.isActive;
+        return !this.demoActive;
     }
+
 }
 
 export default AttractMode;

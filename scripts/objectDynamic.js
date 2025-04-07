@@ -4,11 +4,14 @@
 // objectDynamic.js
 
 import ObjectStatic from '../scripts/objectStatic.js';
+import SystemUtils from "../scripts/utils/systemUtils.js";
+
 
 /**
  * Represents a dynamic object in a game that can move based on velocity.
  */
 class ObjectDynamic extends ObjectStatic {
+    static DEBUG = new URLSearchParams(window.location.search).has('objectDynamic');
 
     /**
      * Creates an instance of ObjectDynamic.
@@ -101,27 +104,47 @@ class ObjectDynamic extends ObjectStatic {
      * @returns {boolean} True if cleanup was successful
      */
     destroy() {
-        try {
-            // Call parent destroy first
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                return false;
+        if (ObjectDynamic.DEBUG) {
+            console.log(`Destroying ${SystemUtils.getObjectType(this)}`, {
+                position: { x: this.x, y: this.y },
+                velocity: { x: this.velocityX, y: this.velocityY },
+                state: {
+                    hasPosition: this.x !== null && this.y !== null,
+                    hasVelocity: this.velocityX !== null && this.velocityY !== null
+                }
+            });
+        }
+
+        // Validate object state before destruction
+        if (this.velocityX === null || this.velocityY === null) {
+            if (ObjectDynamic.DEBUG) {
+                console.warn('Object already destroyed');
             }
-
-            // Validate object state before destruction
-            if (this.velocityX === null || this.velocityY === null) {
-                return false; // Already destroyed
-            }
-
-            // Nullify velocity properties
-            this.velocityX = null;
-            this.velocityY = null;
-
-            return true; // Successful cleanup
-        } catch (error) {
-            console.error('Error during ObjectDynamic destruction:', error);
             return false;
         }
+
+        // Store values for final logging
+        const finalState = {
+            position: { x: this.x, y: this.y },
+            velocity: { x: this.velocityX, y: this.velocityY }
+        };
+
+        // Call parent destroy first
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent destruction failed');
+            return false;
+        }
+
+        // Clean up movement properties
+        this.velocityX = null;
+        this.velocityY = null;
+
+        if (ObjectDynamic.DEBUG) {
+            console.log(`Successfully destroyed ${SystemUtils.getObjectType(this)}`, finalState);
+        }
+
+        return true;
     }
 
 }

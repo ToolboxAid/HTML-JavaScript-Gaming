@@ -124,7 +124,7 @@ class SystemUtils {
     /** StackTrace Dump */
     static showStackTrace(text = '') {
         let trace = new Error(`'${text}':`);
-        console.log(trace);
+        console.warn(trace);
         trace = null;
     }
 
@@ -145,10 +145,16 @@ class SystemUtils {
 
         // Attempt to destroy
         try {
-            element.destroy();
+            if (!element.destroy()) {
+                if (SystemUtils.DEBUG) {
+                    SystemUtils.showStackTrace(`try - Failed to destroy "${SystemUtils.getObjectType(element)}" `);
+                }
+                return false;
+            }
+
             return true;
         } catch (error) {
-            SystemUtils.showStackTrace(`Error destroying ${SystemUtils.getObjectType(element)}:`, error);
+            SystemUtils.showStackTrace(`catch - Error destroying "${SystemUtils.getObjectType(element)}": `, error);
             return false;
         }
     }

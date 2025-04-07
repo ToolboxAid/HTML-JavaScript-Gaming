@@ -7,6 +7,8 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class Truck extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('truck');
+
     // - Type (Truck)
     // - Sprite management
     // - Position updates
@@ -22,13 +24,12 @@ class Truck extends GameObject {
             './assets/images/vehicles_sprite_48w_42h_6f.png',//spritePath
             spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'Truck',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'Truck';
         this.frame = 0;
     }
 
@@ -46,9 +47,49 @@ class Truck extends GameObject {
         }
     }
 
-    draw() {
-        super.draw();
-    } 
+    destroy() {
+        try {
+            if (Snake.DEBUG) {
+                console.log(`Destroying Snake`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    attached: {
+                        to: this.attachedTo?.type,
+                        x: this.attachedX,
+                        direction: this.direction
+                    }
+                });
+            }
+    
+            // Clean up Snake-specific properties
+            this.frame = null;
+            this.counter = null;
+            this.attachedTo = null;
+            this.attachedX = null;
+            this.direction = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during Snake destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
 
 }
 

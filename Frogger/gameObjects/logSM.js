@@ -7,6 +7,8 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class LogSM extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('LogSM');
+
     // - Type (LogSM)
     // - Sprite management
     // - Position updates
@@ -22,13 +24,12 @@ class LogSM extends GameObject {
             './assets/images/log_sprite_60w_30h_10f.png',//spritePath
             spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'LogSM',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'LogSM';
         this.frame = 0;
     }
 
@@ -46,6 +47,42 @@ class LogSM extends GameObject {
         }
     }
 
+    destroy() {
+        try {
+            if (LogSM.DEBUG) {
+                console.log(`Destroying LogSM`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    velocity: { x: this.velocityX, y: this.velocityY }
+                });
+            }
+    
+            // Clean up LogSM-specific properties
+            this.frame = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during LogSM destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
+    
 }
 
 export default LogSM;

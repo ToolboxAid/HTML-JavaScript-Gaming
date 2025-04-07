@@ -7,44 +7,46 @@ import ObjectDynamic from './objectDynamic.js';
 import SystemUtils from './utils/systemUtils.js';
 
 class ObjectKillable extends ObjectDynamic {
-/**
-     * Enumeration of possible object states
-     * @readonly
-     * @enum {string}
+    static DEBUG = new URLSearchParams(window.location.search).has('objectKillable');
+
+    /**
+         * Enumeration of possible object states
+         * @readonly
+         * @enum {string}
+         */
+    static Status = Object.freeze({
+        ALIVE: 'alive',
+        DYING: 'dying',
+        OTHER: 'other',
+        DEAD: 'dead'
+    });
+
+    /**
+     * Creates an instance of ObjectKillable.
+     * @param {number} x - The X position of the object.
+     * @param {number} y - The Y position of the object.
+     * @param {number} width - The width of the object.
+     * @param {number} height - The height of the object.
+     * @param {number} [velocityX=0] - The initial velocity in the X direction.
+     * @param {number} [velocityY=0] - The initial velocity in the Y direction.
+     * @throws {Error} If parameters are invalid or status is invalid
      */
-static Status = Object.freeze({
-    ALIVE: 'alive',
-    DYING: 'dying',
-    OTHER: 'other',
-    DEAD: 'dead'
-});
+    constructor(x, y, width, height, velocityX = 0, velocityY = 0) {
+        // Call parent constructor
+        super(x, y, width, height, velocityX, velocityY);
 
-/**
- * Creates an instance of ObjectKillable.
- * @param {number} x - The X position of the object.
- * @param {number} y - The Y position of the object.
- * @param {number} width - The width of the object.
- * @param {number} height - The height of the object.
- * @param {number} [velocityX=0] - The initial velocity in the X direction.
- * @param {number} [velocityY=0] - The initial velocity in the Y direction.
- * @throws {Error} If parameters are invalid or status is invalid
- */
-constructor(x, y, width, height, velocityX = 0, velocityY = 0) {
-    // Call parent constructor
-    super(x, y, width, height, velocityX, velocityY);
+        // Initialize status
+        this.status = ObjectKillable.Status.ALIVE;
 
-    // Initialize status
-    this.status = ObjectKillable.Status.ALIVE;
-    
-    // Initialize animation-related properties
-    this.currentFrameIndex = 0;
-    this.delayCounter = 0;
+        // Initialize animation-related properties
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
 
-    // Validate initial status
-    if (!Object.values(ObjectKillable.Status).includes(this.status)) {
-        throw new Error('Invalid initial status.');
+        // Validate initial status
+        if (!Object.values(ObjectKillable.Status).includes(this.status)) {
+            throw new Error('Invalid initial status.');
+        }
     }
-}
 
     update(deltaTime, incFrame = false) {
         switch (this.status) {
@@ -124,31 +126,55 @@ constructor(x, y, width, height, velocityX = 0, velocityY = 0) {
      * @returns {boolean} True if cleanup was successful
      */
     destroy() {
-        try {
-            // Call parent destroy first
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                return false;
+        if (ObjectKillable.DEBUG) {
+            console.log(`Destroying ${SystemUtils.getObjectType(this)}`, {
+                status: this.status,
+                animation: {
+                    frame: this.currentFrameIndex,
+                    delay: this.delayCounter
+                }
+            });
+        }
+
+        // Validate object state before destruction
+        if (this.status === null) {
+            if (ObjectKillable.DEBUG) {
+                console.warn('ObjectKillable already destroyed');
             }
-
-            // Validate object state before destruction
-            if (this.status === null) {
-                return false; // Already destroyed
-            }
-
-            // Cleanup animation properties
-            this.currentFrameIndex = null;
-            this.delayCounter = null;
-
-            // Cleanup status
-            this.status = null;
-
-            return true; // Successful cleanup
-        } catch (error) {
-            console.error('Error during ObjectKillable destruction:', error);
             return false;
         }
+
+        // Store values for final logging
+        const finalState = {
+            status: this.status,
+            frame: this.currentFrameIndex,
+            delay: this.delayCounter
+        };
+
+        // Set final status before cleanup
+        this.status = ObjectKillable.Status.DEAD;
+
+        // Call parent destroy
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent ObjectDynamic destruction failed');
+            return false;
+        }
+
+        // Cleanup animation properties
+        this.currentFrameIndex = null;
+        this.delayCounter = null;
+
+        // Cleanup status last
+        this.status = null;
+
+        if (ObjectKillable.DEBUG) {
+            console.log(`Successfully destroyed ${SystemUtils.getObjectType(this)}`, finalState);
+        }
+
+        return true;
     }
+
 }
 
 export default ObjectKillable;

@@ -6,7 +6,6 @@
 import CanvasUtils from '../scripts/canvas.js';
 import ObjectPNG from '../scripts/objectPNG.js';
 import SystemUtils from '../scripts/utils/systemUtils.js';
-import { canvasConfig } from './global.js';
 
 class Level {
 

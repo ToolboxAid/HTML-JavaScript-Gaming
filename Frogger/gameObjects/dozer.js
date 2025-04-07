@@ -7,6 +7,8 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class Dozer extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('dozer');
+
     // - Type (Dozer)
     // - Sprite management
     // - Position updates
@@ -22,13 +24,12 @@ class Dozer extends GameObject {
             './assets/images/vehicles_sprite_48w_42h_6f.png',//spritePath
             spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'Dozer',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'Dozer';
         this.frame = 0;
     }
 
@@ -46,9 +47,41 @@ class Dozer extends GameObject {
         }
     }
 
-    draw() {
-        super.draw();
-    } 
+    destroy() {
+        try {
+            if (Dozer.DEBUG) {
+                console.log(`Destroying Dozer`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    velocity: { x: this.velocityX, y: this.velocityY }
+                });
+            }
+    
+            // Clean up Dozer-specific properties
+            this.frame = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during Dozer destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
 
 }
 

@@ -7,6 +7,8 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class LogLRG extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('logLRG');
+
     // - Type (LogLRG)
     // - Sprite management
     // - Position updates
@@ -22,13 +24,11 @@ class LogLRG extends GameObject {
             './assets/images/log_sprite_60w_30h_10f.png',//spritePath
             spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'LogLRG',//gameObjectType, 
             velocityX, velocityY
         );
-
-        this.type = 'LogLRG';
         this.frame = 0;
     }
 
@@ -46,6 +46,42 @@ class LogLRG extends GameObject {
         }
     }
 
+    destroy() {
+        try {
+            if (LogLRG.DEBUG) {
+                console.log(`Destroying LogLRG`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    velocity: { x: this.velocityX, y: this.velocityY }
+                });
+            }
+    
+            // Clean up LogLRG-specific properties
+            this.frame = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during LogLRG destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
+    
 }
 
 export default LogLRG;

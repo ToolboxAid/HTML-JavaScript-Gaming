@@ -7,6 +7,8 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class TurtleSink extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('turtleSink');
+
     // - Type (turtleSink)
     // - Sprite management
     // - Position updates
@@ -20,13 +22,11 @@ class TurtleSink extends GameObject {
             './assets/images/turtle_sprite_45w_33h_5f.png',//spritePath
             0, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'turtleSink',//gameObjectType, 
             velocityX, velocityY
         );
-
-        this.type = 'turtleSink';
 
         this.frame = 0;
         this.frameDirection = 1;
@@ -64,6 +64,46 @@ class TurtleSink extends GameObject {
         }
     }
 
+    destroy() {
+        try {
+            if (TurtleSink.DEBUG) {
+                console.log(`Destroying TurtleSink`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    frameDirection: this.frameDirection,
+                    counter: this.counter,
+                    velocity: { x: this.velocityX, y: this.velocityY }
+                });
+            }
+    
+            // Clean up TurtleSink-specific properties
+            this.frame = null;
+            this.frameDirection = null;
+            this.counter = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during TurtleSink destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
+    
 }
 
 export default TurtleSink;

@@ -6,6 +6,8 @@
 import GameObject from './gameObject.js';
 
 class HomeFrog extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('homeFrog');
+
     // - Type (homeFrog)
     // - Sprite management
     // - Position updates
@@ -19,18 +21,13 @@ class HomeFrog extends GameObject {
             './assets/images/home_danger_sprite_48w_48h_5f.png',//spritePath
             width*2, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.25,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'homeFrog',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'homeFrog';
-        //this.frame = Math.floor(Math.random() * 4);
         this.counter = 0;
-
-        //this.attachedTo = null;
-        //console.error('HomeFrog created: ' + JSON.stringify(this));
     }
 
     setBite(){
@@ -41,6 +38,42 @@ class HomeFrog extends GameObject {
 
     }
 
+    destroy() {
+        try {
+            if (HomeFrog.DEBUG) {
+                console.log(`Destroying HomeFrog`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    sprite: { x: this.spriteX, y: this.spriteY },
+                    counter: this.counter
+                });
+            }
+    
+            // Clean up HomeFrog-specific properties
+            this.counter = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during HomeFrog destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
+    
 }
 
 export default HomeFrog;

@@ -9,8 +9,6 @@ import SystemUtils from './utils/systemUtils.js';
 import AngleUtils from './math/angleUtils.js';
 
 class ObjectPNG extends ObjectKillable {
-
-    // Debug mode enabled via URL parameter: game.html?objectPNG
     static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');
 
     static Flip = Object.freeze({
@@ -45,7 +43,7 @@ class ObjectPNG extends ObjectKillable {
 
         this.boundWidth = this.width * this.pixelSize;
         this.boundHeight = this.height * this.pixelSize;
-        
+
         this.horizontalFlip = false;
         this.verticalFlip = false;
         this.setRotation(0);
@@ -82,7 +80,7 @@ class ObjectPNG extends ObjectKillable {
         }
 
         if (ObjectPNG.DEBUG) {
-            console.log(`Flip set to '${this.flip}' (scale: ${this.scale})`);
+            console.log(`Flip set to '${this.flip}' (scale: ${this.pixelSize})`);
         }
     }
     setRotation(rotation) {
@@ -402,9 +400,44 @@ class ObjectPNG extends ObjectKillable {
         ctx.stroke();
     }
 
+    /**
+     * Destroys the object and cleans up resources.
+     * @returns {boolean} True if cleanup was successful
+     */
     destroy() {
-        // Call parent destructor first
-        super.destroy();
+        if (ObjectPNG.DEBUG) {
+            console.log(`Destroying ${SystemUtils.getObjectType(this)}`, {
+                position: { x: this.x, y: this.y },
+                sprite: {
+                    path: this.spritePath,
+                    loaded: this.isLoaded,
+                    size: this.pixelSize
+                }
+            });
+        }
+
+        // Check if already destroyed
+        if (!this.isLoaded && this.png === null) {
+            if (ObjectPNG.DEBUG) {
+                console.warn('ObjectPNG already destroyed');
+            }
+            return false;
+        }
+
+        // Store values for final logging
+        const finalState = {
+            path: this.spritePath,
+            frame: this.currentFrameIndex,
+            pixelSize: this.pixelSize,
+            isLoaded: this.isLoaded
+        };
+
+        // Call parent destroy first
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent ObjectKillable destruction failed');
+            return false;
+        }
 
         // Clean up PNG-specific properties
         this.png.onload = null;
@@ -415,9 +448,13 @@ class ObjectPNG extends ObjectKillable {
         this.delayCounter = null;
         this.transparentColor = null;
         this.frameCount = null;
-
         this.isLoaded = null;
-        super.destroy();
+
+        if (ObjectPNG.DEBUG) {
+            console.log(`Successfully destroyed ${SystemUtils.getObjectType(this)}`, finalState);
+        }
+
+        return true;
     }
 
 }

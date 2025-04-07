@@ -8,6 +8,8 @@ import CanvasUtils from '../../scripts/canvas.js';
 import CollisionUtils from '../../scripts/physics/collisionUtils.js';
 
 class Snake extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('snake');
+
     // - Type (snake)
     // - Sprite management
     // - Position updates
@@ -21,13 +23,12 @@ class Snake extends GameObject {
             './assets/images/snake_sprite_84w_33h_4f.png',//spritePath
             0, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'snake',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'snake';
         this.frame = Math.floor(Math.random() * 4);
         this.counter = 0;
 
@@ -111,6 +112,50 @@ class Snake extends GameObject {
         super.draw();
     }
 
+    destroy() {
+        try {
+            if (Snake.DEBUG) {
+                console.log(`Destroying Snake`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    attached: {
+                        to: this.attachedTo?.type,
+                        x: this.attachedX,
+                        direction: this.direction
+                    }
+                });
+            }
+    
+            // Clean up Snake-specific properties
+            this.frame = null;
+            this.counter = null;
+            this.attachedTo = null;
+            this.attachedX = null;
+            this.direction = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during Snake destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
+    
 }
 
 export default Snake;

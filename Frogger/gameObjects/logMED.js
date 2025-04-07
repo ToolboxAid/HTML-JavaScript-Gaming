@@ -7,6 +7,8 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class LogMED extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('LogMED');
+
     // - Type (LogMED)
     // - Sprite management
     // - Position updates
@@ -23,13 +25,12 @@ class LogMED extends GameObject {
             './assets/images/log_sprite_60w_30h_10f.png',//spritePath
             spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'LogMED',//gameObjectType, 
             velocityX, velocityY
         );
 
-        this.type = 'LogMED';
         this.frame = 0;
     }
 
@@ -47,6 +48,41 @@ class LogMED extends GameObject {
         }
     }
 
+    destroy() {
+        try {
+            if (LogMED.DEBUG) {
+                console.log(`Destroying LogMED`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    velocity: { x: this.velocityX, y: this.velocityY }
+                });
+            }
+    
+            // Clean up LogMED-specific properties
+            this.frame = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during LogMED destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
 
 }
 

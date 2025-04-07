@@ -10,6 +10,8 @@ import SystemUtils from '../../scripts/utils/systemUtils.js';
 import AngleUtils from '../../scripts/math/angleUtils.js';
 
 class Bonus extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('bonus');
+
     // - Type (bonus)
     // - Sprite management
     // - Position updates
@@ -32,7 +34,7 @@ class Bonus extends GameObject {
             './assets/images/bonus_sprite_36w_42h_6f.png',//spritePath
             0, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'bonus',//gameObjectType, 
             velocityX, velocityY
@@ -48,7 +50,6 @@ class Bonus extends GameObject {
         this.state = Bonus.State.IDLE;
 
         this.rotation = AngleUtils.toRadians(270);
-        //console.error('Bonus created: ' + JSON.stringify(this));
     }
 
     attachedToObject(gameObject) {
@@ -191,6 +192,50 @@ class Bonus extends GameObject {
             return;
         }
         super.draw();
+    }
+
+    destroy() {
+        try {
+            if (Bonus.DEBUG) {
+                console.log(`Destroying Bonus`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    state: this.state,
+                    frame: this.frame,
+                    attachedTo: this.attachedTo?.type
+                });
+            }
+    
+            // Clean up Bonus-specific properties
+            this.frame = null;
+            this.frameOffset = null;
+            this.counter = null;
+            this.attachedTo = null;
+            this.attachedX = null;
+            this.direction = null;
+            this.state = null;
+            this.rotation = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during Bonus destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
     }
 
 }

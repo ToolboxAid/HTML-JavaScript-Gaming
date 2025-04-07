@@ -10,12 +10,13 @@
 import CanvasUtils from "../scripts/canvas.js";
 
 class ObjectStatic {
+    static DEBUG = new URLSearchParams(window.location.search).has('objectStatic');
 
-        // Static counter for unique IDs
-        static #nextId = 0;
-        static getNextId() {
-            return this.#nextId++;
-        }
+    // Static counter for unique IDs
+    static #nextId = 0;
+    static getNextId() {
+        return this.#nextId++;
+    }
 
     /**
      * Creates an instance of ObjectStatic.
@@ -103,24 +104,47 @@ class ObjectStatic {
      * @returns {boolean} True if cleanup was successful
      */
     destroy() {
-        try {
-            // Validate object state before destruction
-            if (this.x === null || this.y === null || 
-                this.width === null || this.height === null) {
-                return false; // Already destroyed
+        if (ObjectStatic.DEBUG) {
+            console.log(`Destroying ObjectStatic #${this.ID}`, {
+                position: { x: this.x, y: this.y },
+                dimensions: { width: this.width, height: this.height },
+                state: {
+                    isDestroyed: !this.ID,
+                    hasPosition: this.x !== null && this.y !== null,
+                    hasDimensions: this.width !== null && this.height !== null
+                }
+            });
+        }
+
+        // Check if already destroyed
+        if (!this.ID) {
+            if (ObjectStatic.DEBUG) {
+                console.warn('ObjectStatic already destroyed');
             }
-
-            // Nullify all properties
-            this.x = null;
-            this.y = null;
-            this.width = null;
-            this.height = null;
-
-            return true; // Successful cleanup
-        } catch (error) {
-            console.error('Error during destruction:', error);
             return false;
         }
+
+        // Store values for final logging
+        const finalState = {
+            id: this.ID,
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height
+        };
+
+        // Clean up properties in specific order
+        this.width = null;  // Dimensions first
+        this.height = null;
+        this.x = null;      // Position second
+        this.y = null;
+        this.ID = null;     // ID last
+
+        if (ObjectStatic.DEBUG) {
+            console.log(`Successfully destroyed ObjectStatic`, finalState);
+        }
+
+        return true;
     }
 
 }

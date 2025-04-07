@@ -146,14 +146,47 @@ class Frog extends ObjectPNG {
     }
 
     destroy() {
-        this.homeSpots = null;
-        this.direction = null;
-        this.isMoving = null;
-        this.moveDistance = null;
-        this.lives = null;
-        this.score = null;
-        super.destroy();
+        try {
+            if (Frog.DEBUG) {
+                console.log(`Destroying Frog`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    lives: this.lives,
+                    score: this.score,
+                    homeSpots: [...this.homeSpots]
+                });
+            }
+    
+            // Clean up Frog-specific properties
+            this.homeSpots = null;
+            this.direction = null;
+            this.isMoving = null;
+            this.moveDistance = null;
+            this.lives = null;
+            this.score = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent ObjectPNG destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during Frog destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
     }
+    
 }
 
 export default Frog;

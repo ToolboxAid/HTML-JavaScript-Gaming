@@ -7,6 +7,8 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class Turtle extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('turtle');
+
     // - Type (turtle)
     // - Sprite management
     // - Position updates
@@ -20,13 +22,11 @@ class Turtle extends GameObject {
             './assets/images/turtle_sprite_45w_33h_5f.png',//spritePath
             0, 0,//spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
-            1.5,//pixelSize,
+            1.35,//pixelSize,
             'black',//transparentColor,
             'turtle',//gameObjectType, 
             velocityX, velocityY
         );
-
-        this.type = 'turtle';
 
         this.frame = 0;
         this.counter = 0;
@@ -55,6 +55,44 @@ class Turtle extends GameObject {
         }
     }
 
+    destroy() {
+        try {
+            if (Turtle.DEBUG) {
+                console.log(`Destroying Turtle`, {
+                    id: this.ID,
+                    position: { x: this.x, y: this.y },
+                    frame: this.frame,
+                    counter: this.counter,
+                    velocity: { x: this.velocityX, y: this.velocityY }
+                });
+            }
+    
+            // Clean up Turtle-specific properties
+            this.frame = null;
+            this.counter = null;
+    
+            // Call parent destroy
+            const parentDestroyed = super.destroy();
+            if (!parentDestroyed) {
+                console.error('Parent GameObject destruction failed:', {
+                    id: this.ID,
+                    type: this.type
+                });
+                return false;
+            }
+    
+            return true;
+    
+        } catch (error) {
+            console.error('Error during Turtle destruction:', {
+                error: error.message,
+                stack: error.stack,
+                id: this.ID
+            });
+            return false;
+        }
+    }
+    
 }
 
 export default Turtle;
