@@ -4,7 +4,7 @@
 
 {
   "metadata": {
-    "sprite": "home danger",
+    "sprite": "home_danger",
     "spriteGridSize": 28.6,
     "spritePixelSize": 3,
     "palette": "default",

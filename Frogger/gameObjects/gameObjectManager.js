@@ -31,6 +31,10 @@ class GameObjectManager {
         }
     }
 
+    getActiveGameObjects() {
+        return this.activeGameObjects;
+    }
+    
     addGameObject(gameObject) {
         this.activeGameObjects.push(gameObject);
 

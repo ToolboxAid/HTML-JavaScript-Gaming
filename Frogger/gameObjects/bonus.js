@@ -40,6 +40,7 @@ class Bonus extends GameObject {
 
         this.type = 'bonus';
         this.frame = 0;//Math.floor(Math.random() * 4);
+        this.frameOffset = 0;
         this.counter = 0;
 
         this.attachedTo = null;
@@ -132,6 +133,12 @@ class Bonus extends GameObject {
                     const angle1 = this.direction === 1 ? 90 : 270;
                     this.setRotation(angle1);
                     this.setState(Bonus.State.IDLE);
+
+                    if (this.frameOffset === 0) {
+                        this.frameOffset = 3;
+                    }                    else {
+                        this.frameOffset = 0;
+                    }
                 }
                 break;
 
@@ -144,7 +151,7 @@ class Bonus extends GameObject {
         this.x = this.attachedX + this.attachedTo.x;
 
         // For attached bonus, check both bonus and attached object
-        if (this.attachedTo && CollisionUtils.isObjectCompletelyOffScreen(this)) {
+        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this)) {
             this.x = -this.boundWidth;
             return;
         }
@@ -174,14 +181,13 @@ class Bonus extends GameObject {
         }
 
         // Update sprite position based on frame
-        this.spriteX = this.width * this.frame;
+        this.spriteX = this.width * (this.frame+this.frameOffset);
     }
 
     draw() {
         // For attached bonus, check both bonus and attached object
         if (this.attachedTo &&
-            //CollisionUtils.isSpriteCompletelyOffScreen(this) &&
-            CollisionUtils.isObjectCompletelyOffScreen(this.attachedTo)) {
+            CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
             return;
         }
         super.draw();

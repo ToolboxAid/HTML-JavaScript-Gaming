@@ -4,8 +4,14 @@ import GameObjectManager from './gameObjects/gameObjectManager.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 // Game Objects
+// Home
+import HomeAligator from './gameObjects/home_aligator.js';
+import HomeFly from './gameObjects/home_fly.js';
+import HomeFrog from './gameObjects/home_frog.js';
+
 
 // Water hazard
+import Aligator from './gameObjects/aligator.js';
 import LogMED from './gameObjects/logMED.js';
 import LogLRG from './gameObjects/logLRG.js';
 import LogSM from './gameObjects/logSM.js';
@@ -49,7 +55,68 @@ class AttractMode {
         }
     }
 
+    // Home
+    createHomeAligator = (x, row, velocityX, flip = false) => {
+        const offsetY = AttractMode.BASE.WATER;
+        const homeAligator = new HomeAligator(
+            x - 5,
+            offsetY + (AttractMode.BASE.SPACING * row) - 9,
+            velocityX,
+            AttractMode.BASE.VELOCITYY
+        );
+
+        if (flip) {
+            homeAligator.setFlip('horizontal');
+        }
+
+        return this.gameObjectManager.addGameObject(homeAligator);
+    };
+    createHomeFly = (x, row, velocityX, flip = false) => {
+        const offsetY = AttractMode.BASE.WATER;
+        const homeFly = new HomeFly(
+            x,
+            offsetY + (AttractMode.BASE.SPACING * row),
+            velocityX,
+            AttractMode.BASE.VELOCITYY
+        );
+
+        if (flip) {
+            homeFly.setFlip('horizontal');
+        }
+
+        return this.gameObjectManager.addGameObject(homeFly);
+    };
+    createHomeFrog = (x, row, velocityX, flip = false) => {
+        const offsetY = AttractMode.BASE.WATER;
+        const homeFrog = new HomeFrog(
+            x - 5,
+            offsetY + (AttractMode.BASE.SPACING * row) - 10,
+            velocityX,
+            AttractMode.BASE.VELOCITYY
+        );
+
+        if (flip) {
+            homeFrog.setFlip('horizontal');
+        }
+
+        return this.gameObjectManager.addGameObject(homeFrog);
+    };
     // Water hazard
+    createAligator = (x, row, velocityX, flip = false) => {
+        const offsetY = AttractMode.BASE.WATER;
+        const aligator = new Aligator(
+            x,
+            offsetY + (AttractMode.BASE.SPACING * row) - 15,
+            velocityX,
+            AttractMode.BASE.VELOCITYY
+        );
+
+        if (flip) {
+            aligator.setFlip('horizontal');
+        }
+
+        return this.gameObjectManager.addGameObject(aligator);
+    };
     createLogMED = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const logMED = new LogMED(
@@ -125,13 +192,14 @@ class AttractMode {
 
         return this.gameObjectManager.addGameObject(turtleSink);
     };
-    createBeaverSink = (x, row, velocityX, flip = false) => {
+    createBeaver = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const beaver = new Beaver(
             x,
-            offsetY + (AttractMode.BASE.SPACING * row),
+            offsetY + (AttractMode.BASE.SPACING * row) - 10,
             velocityX,
-            AttractMode.BASE.VELOCITYY
+            AttractMode.BASE.VELOCITYY,
+            this.gameObjectManager.getActiveGameObjects()
         );
 
         if (flip) {
@@ -256,10 +324,37 @@ class AttractMode {
 
         let objectLog = null;
         let objectSnake = null;
+        let objectBeaver = null;
         let objectBonus = null;
+        let objectHomeAligator = null;
+        let objectHomeFrog = null;
+
+        const homeY = 70;
+        const homeOffsetX = 230 - 70;
+
+        // Row 11: Home
+        objectHomeFrog = this.createHomeFrog(homeY + homeOffsetX * 1, -7, 0);
+        objectHomeFrog = this.createHomeFrog(homeY + homeOffsetX * 2, -7, 0);
+        objectHomeFrog.setWink();
+        // objectHomeFrog = this.createHomeFrog(homeY+homeOffsetX*3, -7, 0);
+        // objectHomeFrog = this.createHomeFrog(homeY+homeOffsetX*4, -7, 0);
+        // objectHomeFrog.setWink();
+
+        objectHomeAligator = this.createHomeAligator(homeY + homeOffsetX * 3, -7, 0);
+        objectHomeAligator = this.createHomeAligator(homeY + homeOffsetX * 4, -7, 0);
+        objectHomeAligator.setBite();
+
+        this.createHomeFly(homeY, -7, 0);
+        // this.createHomeFly(homeY+homeOffsetX*1, -7, 0);
+        // this.createHomeFly(homeY+homeOffsetX*2, -7, 0);
+        // this.createHomeFly(homeY+homeOffsetX*3, -7, 0);
+        //this.createHomeFly(homeY+homeOffsetX*4, -7, 0);
+
+
 
         // Water hazard
         // Row 10: Logs moving right
+        this.createAligator(0, -6, 200);
 
         objectLog = this.createLogMED(300, -6, 200);
         objectSnake = this.createSnake(500, -4, 50, true);
@@ -268,7 +363,7 @@ class AttractMode {
         // objectBonus.attachedToObject(objectLog);        
         //        this.gameObjectManager.addGameObject('aligator', -300, offsetYaligator + (spacing * -6), 1);
         //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -6), 1);
-        this.createBeaverSink(300, -6, 200);
+        objectBeaver = this.createBeaver(300, -6, 300);
 
         // Row 9: Logs moving left
         //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -5), -1);

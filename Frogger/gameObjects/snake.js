@@ -74,7 +74,7 @@ class Snake extends GameObject {
 
         // For attached snake, check both snake and attached object
         if (this.attachedTo &&
-            CollisionUtils.isObjectCompletelyOffScreen(this)) {
+            CollisionUtils.isCompletelyOffScreen(this)) {
                 this.x = -this.boundWidth;
             return;
         }        
@@ -104,8 +104,8 @@ class Snake extends GameObject {
     draw() {
         // For attached snake, check both snake and attached object
         if (this.attachedTo &&
-            //CollisionUtils.isSpriteCompletelyOffScreen(this) &&
-            CollisionUtils.isObjectCompletelyOffScreen(this.attachedTo)) {
+            //CollisionUtils.isCompletelyOffScreen(this) &&
+            CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
             return;
         }
         super.draw();

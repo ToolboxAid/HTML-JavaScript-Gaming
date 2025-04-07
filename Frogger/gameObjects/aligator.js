@@ -1,41 +1,64 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// frog.js
+// aligator.js
 
-import ObjectPNG from '../../scripts/objectPNG.js';
+import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
-class GameObject extends ObjectPNG {
-    static DEBUG = new URLSearchParams(window.location.search).has('gameObject');
+class Aligator extends GameObject {
+    // - Type (aligator)
+    // - Sprite management
+    // - Position updates
 
-    constructor(x, y, 
-        spritePath, 
-        spriteX, spriteY,
-        spriteWidth, spriteHeight,
-        pixelSize,
-        transparentColor,
-        gameObjectType) {
+    constructor(x, y,
+        velocityX, velocityY) {
+        const width = 48*3;
+        const height = 48;
 
-        // Call parent constructor with sprite details
-        super(x, y, 
-            spritePath, 
-            spriteX, spriteY,
-            spriteWidth, spriteHeight,
-            pixelSize,
-            transparentColor
-            );
+        super(x, y,
+            './assets/images/aligator_sprite_48w_48h_6f.png',//spritePath
+            0, 0,//spriteX, spriteY,
+            width, height,//spriteWidth, spriteHeight,
+            1.5,//pixelSize,
+            'black',//transparentColor,
+            'aligator',//gameObjectType, 
+            velocityX, velocityY
+        );
 
-        // GameObject properties
-        this.type = 'gameObject';
-        this.gameObjectType = gameObjectType;  // 'car', 'truck', 'bulldozer', etc.
-        this.isActive = true;            // Flag for active/inactive state
+        this.type = 'aligator';
 
+        this.frame = 0;
+        this.counter = 0;
     }
 
-    draw() {
-        super.draw();
+    setBite(){
+        this.spriteX += this.width*3;
     }
-    
+
+    update(deltaTime) {
+        super.update(deltaTime);
+
+        if (this.velocityX < 0) {// moving left
+            if (this.x + (this.width * this.pixelSize) < 0) {
+                this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
+            }
+        } else {// moving right
+            if (this.x > CanvasUtils.getConfigWidth()) {
+                this.x = -(this.width * this.pixelSize);
+            }
+        }
+
+        if (this.counter++ > 40) {
+            this.counter = 0;
+            this.frame++;
+                if (this.frame > 1) {
+                    this.frame = 0;
+                }
+            this.spriteX = this.width * this.frame;
+        }
+    }
+
 }
-export default GameObject;
+
+export default Aligator;
