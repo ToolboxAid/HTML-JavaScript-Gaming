@@ -1,5 +1,5 @@
 import { canvasConfig } from './global.js';
-import Level from './level.js';
+import GameUI from './gameUI.js';
 import GameObjectManager from './gameObjects/gameObjectManager.js';
 import CanvasUtils from '../scripts/canvas.js';
 
@@ -8,7 +8,6 @@ import CanvasUtils from '../scripts/canvas.js';
 import HomeAligator from './gameObjects/home_aligator.js';
 import HomeFly from './gameObjects/home_fly.js';
 import HomeFrog from './gameObjects/home_frog.js';
-
 
 // Water hazard
 import Aligator from './gameObjects/aligator.js';
@@ -39,7 +38,7 @@ class AttractMode {
 
     constructor() {
         // Initialize game components
-        this.level = new Level();
+        this.gameUI = new GameUI();
         this.gameObjectManager = new GameObjectManager();
 
         // Attract mode state
@@ -426,7 +425,7 @@ class AttractMode {
     }
 
     update(deltaTime) {
-        this.level.update(deltaTime);
+        this.gameUI.update(deltaTime);
 
         // Update demo timer
         this.demoTimer++;
@@ -458,8 +457,8 @@ class AttractMode {
     }
 
     draw() {
-        // Draw level
-        this.level.draw();
+        // Draw gameUI
+        this.gameUI.draw();
 
         // Draw gameObjects
         console.log(this.gameObjectManager.getActiveGameObjects().length);
