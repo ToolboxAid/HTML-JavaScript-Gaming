@@ -37,8 +37,8 @@ class Car1 extends GameObject {
         super.update(deltaTime);
 
         if (this.x + (this.width * this.pixelSize) < 0) {
-            this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
-            //this.setIsDead();
+            //this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
+            this.setIsDead();
         }
     }
 

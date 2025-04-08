@@ -1,4 +1,7 @@
 import { canvasConfig } from './global.js';
+
+import LevelManager from './levelManager.js';
+
 import GameUI from './gameUI.js';
 import GameObjectManager from './gameObjects/gameObjectManager.js';
 import CanvasUtils from '../scripts/canvas.js';
@@ -41,6 +44,9 @@ class AttractMode {
         this.gameUI = new GameUI();
         this.gameObjectManager = new GameObjectManager();
 
+        this.levelManager = new LevelManager(this);
+        this.levelManager.initializeLevel(1);
+   
         // Attract mode state
         this.demoActive = true;
         this.demoTimer = 0;
@@ -427,6 +433,8 @@ class AttractMode {
     update(deltaTime) {
         this.gameUI.update(deltaTime);
 
+        this.levelManager.update();
+        
         // Update demo timer
         this.demoTimer++;
         if (this.demoTimer >= this.maxDemoTime) {
