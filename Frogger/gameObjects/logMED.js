@@ -37,51 +37,48 @@ class LogMED extends GameObject {
     update(deltaTime) {
         super.update(deltaTime);
 
-        if (this.velocityX < 0) {// moving left
-            if (this.x + (this.width * this.pixelSize) < 0) {
-                this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
-            }
-        } else {// moving right
-            if (this.x > CanvasUtils.getConfigWidth()) {
-                this.x = -(this.width * this.pixelSize);
-            }
+        // moving right
+        if (this.x > CanvasUtils.getConfigWidth()) {
+            this.setIsDead();
         }
     }
 
     destroy() {
-        try {
-            if (LogMED.DEBUG) {
-                console.log(`Destroying LogMED`, {
-                    id: this.ID,
-                    position: { x: this.x, y: this.y },
-                    frame: this.frame,
-                    velocity: { x: this.velocityX, y: this.velocityY }
-                });
-            }
+        if (LogMED.DEBUG) {
+            console.log(`Destroying LogMED`, {
+                id: this.ID,
+                position: { x: this.x, y: this.y },
+                frame: this.frame,
+                velocity: { x: this.velocityX, y: this.velocityY }
+            });
+        }
     
-            // Clean up LogMED-specific properties
-            this.frame = null;
+        // Store values for final logging
+        const finalState = {
+            id: this.ID,
+            type: this.type,
+            position: { x: this.x, y: this.y },
+            frame: this.frame
+        };
     
-            // Call parent destroy
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                console.error('Parent GameObject destruction failed:', {
-                    id: this.ID,
-                    type: this.type
-                });
-                return false;
-            }
+        // Clean up LogMED-specific properties
+        this.frame = null;
     
-            return true;
-    
-        } catch (error) {
-            console.error('Error during LogMED destruction:', {
-                error: error.message,
-                stack: error.stack,
-                id: this.ID
+        // Call parent destroy
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent GameObject destruction failed:', {
+                id: this.ID,
+                type: this.type
             });
             return false;
         }
+    
+        if (LogMED.DEBUG) {
+            console.log(`Successfully destroyed LogMED`, finalState);
+        }
+    
+        return true;
     }
 
 }

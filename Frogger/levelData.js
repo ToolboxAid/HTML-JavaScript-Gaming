@@ -2,57 +2,96 @@ class LevelData {
     static DEBUG = new URLSearchParams(window.location.search).has('levelData');
 
     static Lanes = Object.freeze({
-        HOME: 0,
+        HOME: -7,
 
-        Water1: -1,
-        Water2: 1,
-        Water3: 2,
-        Water4: 3,
-        Water5: 4,
+        Water1: -6,
+        Water2: -5,
+        Water3: -4,
+        Water4: -3,
+        Water5: -2,
 
-        SAFETY2: 1,
-        SAFETY1: 7,
+        SAFETY1: -1,
 
-        ROAD1: 6,
-        ROAD2: 5,
-        ROAD3: 4,
-        ROAD4: 3,
-        ROAD5: 2,
+        ROAD1: 4,
+        ROAD2: 3,
+        ROAD3: 2,
+        ROAD4: 1,
+        ROAD5: 0,
 
-        STARTING: 8,
+        START: 5,
     });
 
     static Levels = {
         LEVEL1: [
             {
+                rowId: LevelData.Lanes.Water1,
+                objectType: 'LogMED',
+                count: 3,
+                spawnDelay: 0,
+                velocityX: 70,
+                resetDelay: 15500,
+                startX: -250,
+                spacing: 896/2.5,
+                flip: false
+            },
+
+
+
+            
+            {
                 rowId: LevelData.Lanes.ROAD1,
                 objectType: 'Car0',
-                count: 3,
-                spawnDelay: 250,
-                velocityX: -200,
-                resetDelay: 10000,
-                startX: 1024,
-                spacing: 30
+                count: 4,
+                spawnDelay: 0,
+                velocityX: -50,
+                resetDelay: 25500,
+                startX: 896,
+                spacing: 896/3.25,
+                flip: false
+            },
+            {
+                rowId: LevelData.Lanes.ROAD2,
+                objectType: 'Dozer',
+                count: 2,
+                spawnDelay: 0,
+                velocityX: 50,
+                resetDelay: 25500,
+                startX: -50,
+                spacing: 896/3.25,
+                flip: false                
             },
             {
                 rowId: LevelData.Lanes.ROAD3,
-                objectType: 'Truck',
-                count: 2,
-                spawnDelay: 3000,
-                velocityX: 250,
-                resetDelay: 7000,
-                startX: 0,
-                spacing: 400
-            },
+                objectType: 'Car1',
+                count: 3,
+                spawnDelay: 0,
+                velocityX: -70,
+                resetDelay: 14500,
+                startX: 896,
+                spacing: 896/3.25,
+                flip: false
+            }, 
+            {
+                rowId: LevelData.Lanes.ROAD4,
+                objectType: 'Car2',
+                count: 1,
+                spawnDelay: 0,
+                velocityX: 70,
+                resetDelay: 12500,
+                startX: -50,
+                spacing: 896/3.25,
+                flip: false
+            },                        
             {
                 rowId: LevelData.Lanes.ROAD5,
-                objectType: 'Dozer',
-                count: 3,
-                spawnDelay: 2500,
-                velocityX: -180,
+                objectType: 'Truck',
+                count: 2,
+                spawnDelay: 0,
+                velocityX: -150,
                 resetDelay: 8000,
-                startX: 200,
-                spacing: 250
+                startX: 1024,
+                spacing: 896/2.25,
+                flip: false
             }
         ],
 
@@ -142,16 +181,41 @@ class LevelData {
             console.error('Configuration must be an array');
             return false;
         }
-
+    
         const required = ['rowId', 'objectType', 'count', 'spawnDelay', 
-                         'velocityX', 'resetDelay', 'startX', 'spacing'];
+                         'velocityX', 'resetDelay', 'startX',
+                         'spacing', 'flip'];
         
         return config.every(row => {
+            // Check all required properties exist
             const hasAllProps = required.every(prop => row[prop] !== undefined);
-            const validRow = row.rowId >= 0 && row.rowId <= 8;
+    
+            // Check row is within valid lane range
+            const validRow = row.rowId >= LevelData.Lanes.HOME 
+                            && row.rowId <= LevelData.Lanes.START;
             
             if (!hasAllProps || !validRow) {
-                console.error('Invalid row configuration:', row);
+                if (LevelData.DEBUG) {
+                    console.log('Validation details:', {
+                        rowId: row.rowId,
+                        hasAllProperties: hasAllProps,
+                        isValidRow: validRow,
+                        validRange: {
+                            min: LevelData.Lanes.HOME,
+                            max: LevelData.Lanes.START
+                        }
+                    });
+                }
+                
+                if (!validRow) {
+                    console.error(`Invalid row ID: ${row.rowId}. Must be between ${LevelData.Lanes.HOME} and ${LevelData.Lanes.START}`);
+                }
+                if (!hasAllProps) {
+                    console.error(`Missing required properties in configuration:`, {
+                        row: row.rowId,
+                        missing: required.filter(prop => row[prop] === undefined)
+                    });
+                }
                 return false;
             }
             return true;

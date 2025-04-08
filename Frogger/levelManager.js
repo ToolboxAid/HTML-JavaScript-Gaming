@@ -52,15 +52,20 @@ class LevelManager {
             return null;
         }
 
-        const x = config.startX + (currentCount * config.spacing);
-        const flip = config.velocityX < 0;
-        const createMethod = `create${config.objectType}`;
+        let x = 0;
+        if (config.velocityX > 0) {
+            x = config.startX - (currentCount * config.spacing);
+        } else {
+            x = config.startX + (currentCount * config.spacing);
+        }
 
+        const flip = config.flip;//config.velocityX > 0;
+        const createMethod = `create${config.objectType}`;
         if (typeof this.attractMode[createMethod] === 'function') {
             const gameObject = this.attractMode[createMethod](
-                x, 
-                config.rowId, 
-                config.velocityX, 
+                x,
+                config.rowId,
+                config.velocityX,
                 flip
             );
 

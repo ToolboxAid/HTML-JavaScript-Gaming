@@ -53,7 +53,7 @@ class AttractMode {
         this.maxDemoTime = 30 * 60; // 30 seconds at 60fps
 
         // Initialize gameObjects for demo
-        this.initializeGameObjects();
+        //this.initializeGameObjects();
 
         if (AttractMode.DEBUG) {
             console.log('Attract mode initialized');
@@ -326,101 +326,21 @@ class AttractMode {
     };
 
     initializeGameObjects() {
+        // // Row 11: Home
+        // objectHomeFrog = this.createHomeFrog(homeY + homeOffsetX * 2, -7, 0);
 
-        let objectLog = null;
-        let objectSnake = null;
-        let objectBeaver = null;
-        let objectBonus = null;
-        let objectHomeAligator = null;
-        let objectHomeFrog = null;
-
-        const homeY = 70;
-        const homeOffsetX = 230 - 70;
-
-        // Row 11: Home
-        objectHomeFrog = this.createHomeFrog(homeY + homeOffsetX * 1, -7, 0);
-        objectHomeFrog = this.createHomeFrog(homeY + homeOffsetX * 2, -7, 0);
-        objectHomeFrog.setWink();
-        // objectHomeFrog = this.createHomeFrog(homeY+homeOffsetX*3, -7, 0);
-        // objectHomeFrog = this.createHomeFrog(homeY+homeOffsetX*4, -7, 0);
-        // objectHomeFrog.setWink();
-
-        objectHomeAligator = this.createHomeAligator(homeY + homeOffsetX * 3, -7, 0);
-        objectHomeAligator = this.createHomeAligator(homeY + homeOffsetX * 4, -7, 0);
-        objectHomeAligator.setBite();
-
-        this.createHomeFly(homeY, -7, 0);
-        // this.createHomeFly(homeY+homeOffsetX*1, -7, 0);
-        // this.createHomeFly(homeY+homeOffsetX*2, -7, 0);
-        // this.createHomeFly(homeY+homeOffsetX*3, -7, 0);
-        //this.createHomeFly(homeY+homeOffsetX*4, -7, 0);
+        // objectHomeAligator = this.createHomeAligator(homeY + homeOffsetX * 4, -7, 0);
+        // objectHomeAligator.setBite();
 
 
+        // objectSnake = this.createSnake(500, -4, 50, true);
+        // objectSnake.attachedToObject(objectLog);
 
-        // Water hazard
-        // Row 10: Logs moving right
-        this.createAligator(0, -6, 200);
-
-        objectLog = this.createLogMED(300, -6, 200);
-        objectSnake = this.createSnake(500, -4, 50, true);
-        objectSnake.attachedToObject(objectLog);
         // objectBonus = this.createBonus(400, -3, 36);
         // objectBonus.attachedToObject(objectLog);        
-        //        this.gameObjectManager.addGameObject('aligator', -300, offsetYaligator + (spacing * -6), 1);
-        //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -6), 1);
-        objectBeaver = this.createBeaver(300, -6, 300);
+        
+        // objectBeaver = this.createBeaver(300, -6, 300);
 
-        // Row 9: Logs moving left
-        //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -5), -1);
-        this.createTurtleSink(640, -5, -200);
-        this.createTurtleSink(710, -5, -200);
-        this.createTurtleSink(780, -5, -200);
-
-        // Row 8: Logs moving right
-        objectLog = this.createLogLRG(100, -4, 150);
-        objectBonus = this.createBonus(400, -3, 36);
-        objectBonus.attachedToObject(objectLog);
-
-        //this.gameObjectManager.addGameObject('beaver', 250, offsetYbeaver + (spacing * -4), 1);
-
-        // Row 7: Logs moving right
-        objectLog = this.createLogSM(300, -3, 250);
-        objectSnake = this.createSnake(500, -4, 50, true);
-        objectSnake.attachedToObject(objectLog);
-        // objectBonus = this.createBonus(400, -3, 36);
-        // objectBonus.attachedToObject(objectLog);
-        //this.gameObjectManager.addGameObject('beaver', 400, offsetYbeaver + (spacing * -3), 1);
-
-        // Row 6: Turtle moving left
-        this.createTurtle(300, -2, -200);
-        this.createTurtle(370, -2, -200);
-        this.createTurtle(440, -2, -200);
-        //this.gameObjectManager.addGameObject('beaver', 200, offsetYbeaver + (spacing * -2), -1);
-
-        // safety zone snake(s)
-        this.createSnake(500, -1, -50);
-        this.createSnake(75, -1, 50, true);
-
-        // vihicles
-        // Row 5: Trucks moving left
-        this.createTruck(300, 0, -200);
-        this.createTruck(500, 0, -200);
-
-        // Row 4: White cars moving right
-        this.createCar2(300, 1, 200);
-        this.createCar2(500, 1, 200);
-
-        // Row 3: Pink cars moving left
-        this.createCar1(300, 2, -200);
-        this.createCar1(500, 2, -200);
-
-        // Row 2: Bulldozers moving Right
-        this.createDozer(100, 3, 200);
-        this.createDozer(300, 3, 200);
-
-        // Row 1: Cars moving left
-        this.createCar0(100, 4, -200);
-        this.createCar0(300, 4, -200);
 
         if (AttractMode.DEBUG) {
             console.log(`GameObjects: ${this.gameObjectManager.getActiveGameObjects().length}`);
@@ -434,7 +354,7 @@ class AttractMode {
         this.gameUI.update(deltaTime);
 
         this.levelManager.update();
-        
+
         // Update demo timer
         this.demoTimer++;
         if (this.demoTimer >= this.maxDemoTime) {

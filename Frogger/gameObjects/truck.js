@@ -38,57 +38,47 @@ class Truck extends GameObject {
 
         if (this.velocityX < 0) {// moving left
             if (this.x + (this.width * this.pixelSize) < 0) {
-                this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
+                this.setIsDead();
             }
-        } else {// moving right
-            if (this.x > CanvasUtils.getConfigWidth()) {
-                this.x = -(this.width * this.pixelSize);
-            }
-        }
+        } 
     }
 
     destroy() {
-        try {
-            if (Snake.DEBUG) {
-                console.log(`Destroying Snake`, {
-                    id: this.ID,
-                    position: { x: this.x, y: this.y },
-                    frame: this.frame,
-                    attached: {
-                        to: this.attachedTo?.type,
-                        x: this.attachedX,
-                        direction: this.direction
-                    }
-                });
-            }
+        if (Truck.DEBUG) {
+            console.log(`Destroying Truck`, {
+                id: this.ID,
+                position: { x: this.x, y: this.y },
+                frame: this.frame,
+                velocity: { x: this.velocityX, y: this.velocityY }
+            });
+        }
     
-            // Clean up Snake-specific properties
-            this.frame = null;
-            this.counter = null;
-            this.attachedTo = null;
-            this.attachedX = null;
-            this.direction = null;
+        // Store values for final logging
+        const finalState = {
+            id: this.ID,
+            type: this.type,
+            position: { x: this.x, y: this.y },
+            frame: this.frame
+        };
     
-            // Call parent destroy
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                console.error('Parent GameObject destruction failed:', {
-                    id: this.ID,
-                    type: this.type
-                });
-                return false;
-            }
+        // Clean up Truck-specific properties
+        this.frame = null;
     
-            return true;
-    
-        } catch (error) {
-            console.error('Error during Snake destruction:', {
-                error: error.message,
-                stack: error.stack,
-                id: this.ID
+        // Call parent destroy
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent GameObject destruction failed:', {
+                id: this.ID,
+                type: this.type
             });
             return false;
         }
+    
+        if (Truck.DEBUG) {
+            console.log(`Successfully destroyed Truck`, finalState);
+        }
+    
+        return true;
     }
 
 }
