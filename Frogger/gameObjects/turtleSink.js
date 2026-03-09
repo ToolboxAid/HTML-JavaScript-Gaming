@@ -38,11 +38,7 @@ class TurtleSink extends GameObject {
 
         if (this.velocityX < 0) {// moving left
             if (this.x + (this.width * this.pixelSize) < 0) {
-                this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
-            }
-        } else {// moving right
-            if (this.x > CanvasUtils.getConfigWidth()) {
-                this.x = -(this.width * this.pixelSize);
+             this.setIsDead();
             }
         }
         
@@ -65,43 +61,47 @@ class TurtleSink extends GameObject {
     }
 
     destroy() {
-        try {
-            if (TurtleSink.DEBUG) {
-                console.log(`Destroying TurtleSink`, {
-                    id: this.ID,
-                    position: { x: this.x, y: this.y },
-                    frame: this.frame,
-                    frameDirection: this.frameDirection,
-                    counter: this.counter,
-                    velocity: { x: this.velocityX, y: this.velocityY }
-                });
-            }
+        if (TurtleSink.DEBUG) {
+            console.log(`Destroying TurtleSink`, {
+                id: this.ID,
+                position: { x: this.x, y: this.y },
+                frame: this.frame,
+                frameDirection: this.frameDirection,
+                counter: this.counter,
+                velocity: { x: this.velocityX, y: this.velocityY }
+            });
+        }
     
-            // Clean up TurtleSink-specific properties
-            this.frame = null;
-            this.frameDirection = null;
-            this.counter = null;
+        // Store values for final logging
+        const finalState = {
+            id: this.ID,
+            type: this.type,
+            position: { x: this.x, y: this.y },
+            frame: this.frame,
+            frameDirection: this.frameDirection,
+            counter: this.counter
+        };
     
-            // Call parent destroy
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                console.error('Parent GameObject destruction failed:', {
-                    id: this.ID,
-                    type: this.type
-                });
-                return false;
-            }
+        // Clean up TurtleSink-specific properties
+        this.frame = null;
+        this.frameDirection = null;
+        this.counter = null;
     
-            return true;
-    
-        } catch (error) {
-            console.error('Error during TurtleSink destruction:', {
-                error: error.message,
-                stack: error.stack,
-                id: this.ID
+        // Call parent destroy
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent GameObject destruction failed:', {
+                id: this.ID,
+                type: this.type
             });
             return false;
         }
+    
+        if (TurtleSink.DEBUG) {
+            console.log(`Successfully destroyed TurtleSink`, finalState);
+        }
+    
+        return true;
     }
     
 }

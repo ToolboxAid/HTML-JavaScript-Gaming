@@ -45,8 +45,8 @@ class AttractMode {
         this.gameObjectManager = new GameObjectManager();
 
         this.levelManager = new LevelManager(this);
-        this.levelManager.initializeLevel(1);
-   
+        this.levelManager.initializeLevel(2);
+
         // Attract mode state
         this.demoActive = true;
         this.demoTimer = 0;
@@ -338,7 +338,7 @@ class AttractMode {
 
         // objectBonus = this.createBonus(400, -3, 36);
         // objectBonus.attachedToObject(objectLog);        
-        
+
         // objectBeaver = this.createBeaver(300, -6, 300);
 
 
@@ -375,10 +375,12 @@ class AttractMode {
 
             // Check if gameObject is dead
             if (gameObject.isDead()) {
-                console.log(`GameObject is dead: ${gameObject.type}, 
-                    Position: (${gameObject.x}, ${gameObject.y}), 
-                    VelocityX: ${gameObject.velocityX},
-                    ID: ${gameObject.ID}`);
+                if (AttractMode.DEBUG) {
+                    console.log(`GameObject is dead: ${gameObject.type}, 
+                        Position: (${gameObject.x}, ${gameObject.y}), 
+                        VelocityX: ${gameObject.velocityX},
+                        ID: ${gameObject.ID}`);
+                }
                 this.gameObjectManager.removeGameObject(gameObject);
             }
         }
@@ -389,11 +391,11 @@ class AttractMode {
         this.gameUI.draw();
 
         // Draw gameObjects
-        console.log(this.gameObjectManager.getActiveGameObjects().length);
+        //console.log(this.gameObjectManager.getActiveGameObjects().length);
         for (const gameObject of this.gameObjectManager.getActiveGameObjects()) {
             if (!gameObject.isDead()) {
                 gameObject.draw();
-            }            
+            }
         }
     }
 

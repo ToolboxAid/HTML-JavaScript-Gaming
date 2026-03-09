@@ -34,7 +34,9 @@ class LevelManager {
             this.lastSpawnTime.set(key, 0);
 
             // Create first object immediately
-            this.spawnObject(rowConfig);
+            for (let index = 0; index < rowConfig.setOf; index++) {
+                this.spawnObject(rowConfig, index);
+            }
         });
 
         if (LevelManager.DEBUG) {
@@ -44,19 +46,33 @@ class LevelManager {
         return true;
     }
 
-    spawnObject(config) {
+    /*
+
+    */
+    spawnObject(config, index) {
         const key = `${config.rowId}_${config.objectType}`;
         const currentCount = this.objectCounts.get(key);
 
-        if (currentCount >= config.count) {
+        //const newCount = Math.floor(currentCount / index);
+        const newCount = 0 ? 0 : Math.floor(currentCount / config.setOf);
+
+
+        if (newCount >= config.count) {
             return null;
         }
 
         let x = 0;
         if (config.velocityX > 0) {
-            x = config.startX - (currentCount * config.spacing);
+            // Moving right
+            x = config.startX
+                - (currentCount * config.spacing)
+                - (index * config.setSpacing);
+
         } else {
-            x = config.startX + (currentCount * config.spacing);
+            // Moving left
+            x = config.startX
+                + (newCount * config.spacing)
+                + (index * config.setSpacing);
         }
 
         const flip = config.flip;//config.velocityX > 0;
@@ -99,8 +115,11 @@ class LevelManager {
 
             // Check spawn timer
             if (now - lastSpawn >= rowConfig.spawnDelay) {
-                this.spawnObject(rowConfig);
+                for (let index = 0; index < rowConfig.setOf; index++) {
+                    this.spawnObject(rowConfig, index);
+                }
             }
+
 
             // Check reset timer
             if (now - timer >= rowConfig.resetDelay) {

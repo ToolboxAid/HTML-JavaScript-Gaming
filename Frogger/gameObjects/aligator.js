@@ -39,15 +39,11 @@ class Aligator extends GameObject {
     update(deltaTime) {
         super.update(deltaTime);
 
-        if (this.velocityX < 0) {// moving left
-            if (this.x + (this.width * this.pixelSize) < 0) {
-                this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
-            }
-        } else {// moving right
-            if (this.x > CanvasUtils.getConfigWidth()) {
-                this.x = -(this.width * this.pixelSize);
-            }
+        // moving right
+        if (this.x > CanvasUtils.getConfigWidth()) {
+            this.setIsDead();
         }
+
 
         if (this.counter++ > 40) {
             this.counter = 0;
@@ -60,40 +56,44 @@ class Aligator extends GameObject {
     }
 
     destroy() {
-        try {
-            if (Aligator.DEBUG) {
-                console.log(`Destroying Aligator`, {
-                    id: this.ID,
-                    position: { x: this.x, y: this.y },
-                    frame: this.frame,
-                    sprite: { x: this.spriteX, width: this.width }
-                });
-            }
-
-            // Clean up Aligator-specific properties
-            this.frame = null;
-            this.counter = null;
-
-            // Call parent destroy
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                console.error('Parent GameObject destruction failed:', {
-                    id: this.ID,
-                    type: this.type
-                });
-                return false;
-            }
-
-            return true;
-
-        } catch (error) {
-            console.error('Error during Aligator destruction:', {
-                error: error.message,
-                stack: error.stack,
-                id: this.ID
+        if (Aligator.DEBUG) {
+            console.log(`Destroying Aligator`, {
+                id: this.ID,
+                position: { x: this.x, y: this.y },
+                frame: this.frame,
+                counter: this.counter,
+                sprite: { x: this.spriteX, width: this.width }
+            });
+        }
+    
+        // Store values for final logging
+        const finalState = {
+            id: this.ID,
+            type: this.type,
+            position: { x: this.x, y: this.y },
+            frame: this.frame,
+            counter: this.counter
+        };
+    
+        // Clean up Aligator-specific properties
+        this.frame = null;
+        this.counter = null;
+    
+        // Call parent destroy
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent GameObject destruction failed:', {
+                id: this.ID,
+                type: this.type
             });
             return false;
         }
+    
+        if (Aligator.DEBUG) {
+            console.log(`Successfully destroyed Aligator`, finalState);
+        }
+    
+        return true;
     }
 
 }

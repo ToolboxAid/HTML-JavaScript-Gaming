@@ -17,10 +17,11 @@ class Turtle extends GameObject {
         velocityX, velocityY) {
         const width = 45;
         const height = 30;
-
+        const spriteX = 0;
+        const spriteY = 0;
         super(x, y,
             './assets/images/turtle_sprite_45w_33h_5f.png',//spritePath
-            0, 0,//spriteX, spriteY,
+            spriteX, spriteY,
             width, height,//spriteWidth, spriteHeight,
             1.35,//pixelSize,
             'black',//transparentColor,
@@ -37,11 +38,7 @@ class Turtle extends GameObject {
 
         if (this.velocityX < 0) {// moving left
             if (this.x + (this.width * this.pixelSize) < 0) {
-                this.x = CanvasUtils.getConfigWidth() + (this.width * this.pixelSize);
-            }
-        } else {// moving right
-            if (this.x > CanvasUtils.getConfigWidth()) {
-                this.x = -(this.width * this.pixelSize);
+                this.setIsDead();
             }
         }
 
@@ -56,41 +53,44 @@ class Turtle extends GameObject {
     }
 
     destroy() {
-        try {
-            if (Turtle.DEBUG) {
-                console.log(`Destroying Turtle`, {
-                    id: this.ID,
-                    position: { x: this.x, y: this.y },
-                    frame: this.frame,
-                    counter: this.counter,
-                    velocity: { x: this.velocityX, y: this.velocityY }
-                });
-            }
+        if (Turtle.DEBUG) {
+            console.log(`Destroying Turtle`, {
+                id: this.ID,
+                position: { x: this.x, y: this.y },
+                frame: this.frame,
+                counter: this.counter,
+                velocity: { x: this.velocityX, y: this.velocityY }
+            });
+        }
     
-            // Clean up Turtle-specific properties
-            this.frame = null;
-            this.counter = null;
+        // Store values for final logging
+        const finalState = {
+            id: this.ID,
+            type: this.type,
+            position: { x: this.x, y: this.y },
+            frame: this.frame,
+            counter: this.counter
+        };
     
-            // Call parent destroy
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                console.error('Parent GameObject destruction failed:', {
-                    id: this.ID,
-                    type: this.type
-                });
-                return false;
-            }
+        // Clean up Turtle-specific properties
+        this.frame = null;
+        this.counter = null;
     
-            return true;
-    
-        } catch (error) {
-            console.error('Error during Turtle destruction:', {
-                error: error.message,
-                stack: error.stack,
-                id: this.ID
+        // Call parent destroy
+        const parentDestroyed = super.destroy();
+        if (!parentDestroyed) {
+            console.error('Parent GameObject destruction failed:', {
+                id: this.ID,
+                type: this.type
             });
             return false;
         }
+    
+        if (Turtle.DEBUG) {
+            console.log(`Successfully destroyed Turtle`, finalState);
+        }
+    
+        return true;
     }
     
 }

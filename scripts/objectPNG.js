@@ -28,9 +28,6 @@ class ObjectPNG extends ObjectKillable {
         velocityX, velocityY
     ) {
         super(x, y, spriteWidth, spriteHeight, velocityX, velocityY);
-        if (SystemUtils.getObjectType(this) === "Snake") {
-            console.log("object PNG con", this.x, this.y);
-        }
 
         // Initialize properties
         this.spriteX = spriteX;
@@ -53,9 +50,6 @@ class ObjectPNG extends ObjectKillable {
             .then(png => {
                 this.png = png;
                 this.isLoaded = true;
-                if (SystemUtils.getObjectType(this) === "Snake") {
-                    console.log(this.png)
-                }
             })
             .catch(error => {
                 console.error("Failed to load sprite:", error);
@@ -89,7 +83,6 @@ class ObjectPNG extends ObjectKillable {
 
     static async loadSprite(spritePath, transparentColor = 'black') {
         return new Promise((resolve, reject) => {
-            console.log("loadSprite", spritePath);
             const png = new Image();
 
             png.onload = () => {
@@ -113,19 +106,15 @@ class ObjectPNG extends ObjectKillable {
                 }
 
                 resolve(transparentPng);
-
-                console.log("loadSprite exit 1", spritePath);
             };
 
             png.onerror = (error) => {
                 console.error(`Error loading sprite: ${spritePath}`, error);
                 reject(error);
 
-                console.log("loadSprite exit 2", spritePath);
             };
 
             png.src = spritePath;
-            console.log("loadSprite exit 3", spritePath);
         });
     }
 
