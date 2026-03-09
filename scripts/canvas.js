@@ -46,6 +46,7 @@ class CanvasUtils {
 
         if (canvas && canvas.getContext) {
             this.ctx = canvas.getContext('2d');
+            this.ctx.imageSmoothingEnabled = false;
 
             // Get the width and height of the canvas
             const width = canvas.width;
@@ -163,7 +164,8 @@ class CanvasUtils {
         }
 
         if (drawBounds) {
-            let dimensions = Sprite.getWidthHeight(frame, pixelSize);
+            //let dimensions = Sprite.getWidthHeight(frame, pixelSize);
+            let dimensions = Sprite.getLayerDimensions(frame, pixelSize);
             this.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
     }

@@ -8,181 +8,232 @@ import Colors from './colors.js';
 import ObjectKillable from './objectKillable.js';
 import SystemUtils from './utils/systemUtils.js';
 import Sprite from './sprite.js';
+import ObjectValidation from './utils/objectValidation.js';
+import ObjectCleanup from './utils/objectCleanup.js';
+import ObjectDebug from './utils/objectDebug.js';
 
 class ObjectSprite extends ObjectKillable {
+    static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
 
-    constructor(x, y, livingFrames, dyingFrames, pixelSize, palette) {
-        // Ensure livingFrames is provided and is not empty
-        if (!livingFrames || livingFrames.length === 0) {
-            throw new Error("livingFrames must be provided.");
+    constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palette = null) {
+        if (!livingFrames || (Array.isArray(livingFrames) && livingFrames.length === 0)) {
+            throw new Error('livingFrames must be provided.');
         }
 
-        // Calculate dimensions based on the first living frame
+        let frameType = ObjectSprite.getFrameType(livingFrames);
         let spritePixelSize = pixelSize;
         let dimensions = null;
-        let livingArray = livingFrames;
-        let livingDelay = 30;
-        let livingFrameCount = livingFrames.length;
-        // Assumes living, dying, other are all the same frameType
-        const frameType = ObjectSprite.getFrameType(livingFrames);
 
-        let dyingArray = dyingFrames;
+        let normalizedLivingFrames = livingFrames;
+        let normalizedDyingFrames = dyingFrames;
+
+        let livingDelay = 30;
         let dyingDelay = 7;
+
+        let livingFrameCount = 0;
         let dyingFrameCount = 0;
 
         switch (frameType) {
-            case 'json':
-                //console.log('Handling an object');
+            case 'json': {
                 Sprite.validateJsonFormat(livingFrames);
+
                 spritePixelSize = livingFrames.metadata.spritePixelSize;
                 dimensions = Sprite.getLayerDimensions(livingFrames, spritePixelSize);
 
-                // Living
                 livingFrameCount = livingFrames.layers.length;
-                livingDelay = livingFrames.metadata.framesPerSprite;
+                livingDelay = livingFrames.metadata.framesPerSprite ?? 30;
 
                 let paletteArray = null;
                 if (palette) {
                     paletteArray = ObjectSprite.extractArray(palette);
                 }
-                livingArray = Sprite.convert2RGB(livingFrames, paletteArray);
 
-                // Dying
+                normalizedLivingFrames = Sprite.convert2RGB(livingFrames, paletteArray);
+
                 if (dyingFrames) {
+                    Sprite.validateJsonFormat(dyingFrames);
+                    dyingDelay = dyingFrames.metadata.framesPerSprite ?? 7;
+                    normalizedDyingFrames = Sprite.convert2RGB(dyingFrames, paletteArray);
                     dyingFrameCount = dyingFrames.layers.length;
-                    dyingDelay = dyingFrames.metadata.framesPerSprite;
+                }
+                break;
+            }
 
-                    dyingArray = Sprite.convert2RGB(dyingFrames, paletteArray);
+            case 'array': {
+                ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
+                //dimensions = Sprite.getWidthHeight(livingFrames, spritePixelSize);
+                dimensions = Sprite.getLayerDimensions(frame, pixelSize);
+                livingFrameCount = 1;
+
+                if (dyingFrames) {
+                    dyingFrameCount = 1;
                 }
                 break;
-            case 'array':
-                //console.log('Handling an array');
-                if (pixelSize <= 0 || typeof pixelSize !== 'number') {
-                    throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
+            }
+
+            case 'doubleArray': {
+                ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
+                //dimensions = Sprite.getWidthHeight(livingFrames[0], spritePixelSize);
+                dimensions = Sprite.getLayerDimensions(frame, pixelSize);
+                livingFrameCount = livingFrames.length;
+
+                if (dyingFrames) {
+                    dyingFrameCount = Array.isArray(dyingFrames) ? dyingFrames.length : 0;
                 }
-                dimensions = Sprite.getWidthHeight(livingFrames, spritePixelSize);
                 break;
-            case 'doubleArray':
-                if (pixelSize <= 0 || typeof pixelSize !== 'number') {
-                    throw new Error("Invalid pixelSize: It must be a positive number. Current value:", pixelSize);
-                }
-                //console.log('Handling a double array');
-                dimensions = Sprite.getWidthHeight(livingFrames[0], spritePixelSize);
-                break;
+            }
+
             default:
-                console.error(`Unknown value: ${ObjectSprite.getFrameType(livingFrames)}`);
-                break;
+                throw new Error(`Unsupported frame type: ${frameType}`);
         }
 
         super(x, y, dimensions.width, dimensions.height);
 
         this.frameType = frameType;
-
         this.pixelSize = spritePixelSize;
 
-        this.currentFrameIndex = 0;
-        this.delayCounter = 0;
-
-        // Initialize living frames
         this.livingDelay = livingDelay;
-        this.livingFrames = livingArray;
+        this.livingFrames = normalizedLivingFrames;
         this.livingFrameCount = livingFrameCount;
 
-        // Initialize dying frames
         this.dyingDelay = dyingDelay;
-        this.dyingFrames = dyingArray;
-        this.dyingFrameCount = this.dyingFrames ? this.dyingFrames.length : 0;
+        this.dyingFrames = normalizedDyingFrames;
+        this.dyingFrameCount = dyingFrameCount;
 
-        // Other frames
         this.otherDelay = 0;
         this.otherFrame = null;
 
-        // More properties
-        this.spriteColor = "white";
+        this.spriteColor = 'white';
     }
 
     static getFrameType(object) {
-        if (object) {
-            if (SystemUtils.getObjectType(object) === "Object") {
-                // Json data
-                return "json";
-            } else if (Array.isArray(object) && Array.isArray(object[0])) {
-                // Multi-dimensional array (each element is an array, implying rows of frames)
-                return "doubleArray";
-            } else if (Array.isArray(object)) {
-                // Single-dimensional array (likely one frame as an array of strings or characters)
-                return "array";
-            } else if (SystemUtils.getObjectType(object) === "String") {
-                // String data
-                return "string";
-            } else {
-                console.log(SystemUtils.getObjectType(object));
-            }
-        } else {
-            return "null";
+        if (!object) {
+            return 'null';
         }
+
+        if (SystemUtils.getObjectType(object) === 'Object') {
+            return 'json';
+        }
+
+        if (Array.isArray(object) && Array.isArray(object[0]) && Array.isArray(object[0][0])) {
+            return 'doubleArray';
+        }
+
+        if (Array.isArray(object) && Array.isArray(object[0])) {
+            return 'array';
+        }
+
+        if (SystemUtils.getObjectType(object) === 'String') {
+            return 'string';
+        }
+
+        return 'unknown';
     }
 
     static extractArray(obj) {
-        const values = Object.values(obj);
-        for (const value of values) {
+        for (const value of Object.values(obj)) {
             if (Array.isArray(value)) {
                 return value;
             }
         }
-        throw new Error("No array found in the object.");
+
+        throw new Error('No array found in the object.');
     }
 
-    handleAliveStatus(deltaTime, incFrame) { // Handle ALIVE status
-        super.handleAliveStatus(deltaTime, incFrame);
+    getCurrentLivingFrame() {
+        if (this.frameType === 'array') {
+            return this.livingFrames;
+        }
+
+        return this.livingFrames?.[this.currentFrameIndex] ?? null;
+    }
+
+    getCurrentDyingFrame() {
+        if (!this.dyingFrames) {
+            return null;
+        }
+
+        if (this.frameType === 'array') {
+            return this.dyingFrames;
+        }
+
+        return this.dyingFrames?.[this.currentFrameIndex] ?? null;
+    }
+
+    advanceFrame(frameCount) {
+        if (!frameCount || frameCount <= 0) {
+            return;
+        }
+
+        this.currentFrameIndex++;
+        if (this.currentFrameIndex >= frameCount) {
+            this.currentFrameIndex = 0;
+        }
+    }
+
+    handleAliveStatus(deltaTime, incFrame = false) {
+        super.update(deltaTime);
+
+        if (this.livingFrameCount <= 1) {
+            return;
+        }
+
+        if (incFrame) {
+            this.advanceFrame(this.livingFrameCount);
+            this.delayCounter = 0;
+            return;
+        }
+
+        this.delayCounter++;
+        if (this.delayCounter >= this.livingDelay) {
+            this.delayCounter = 0;
+            this.advanceFrame(this.livingFrameCount);
+        }
+    }
+
+    handleDyingStatus(deltaTime, incFrame = false) {
+        if (!this.dyingFrames || this.dyingFrameCount <= 0) {
+            this.setIsDead();
+            return;
+        }
+
         if (incFrame) {
             this.currentFrameIndex++;
-            if (this.currentFrameIndex >= this.livingFrameCount) {
-                this.currentFrameIndex = 0;
-            }
         } else {
             this.delayCounter++;
-            if (this.delayCounter >= this.livingDelay) {
+            if (this.delayCounter >= this.dyingDelay) {
                 this.delayCounter = 0;
                 this.currentFrameIndex++;
-                if (this.currentFrameIndex >= this.livingFrameCount) {
-                    this.currentFrameIndex = 0;
-                }
             }
         }
-    }
 
-    handleDyingStatus() {
-        super.handleDyingStatus();
-        // Check if the delay count reached the threshold set by dyingDelay
-        if (this.delayCounter++ >= this.dyingDelay) {
-            // Reset the delay count
-            this.delayCounter = 0;
-
-            // Move to the next frame
-
-            this.currentFrameIndex++;
-
-            // If all frames have been displayed, transition to 'Other' status
-            if (this.currentFrameIndex >= this.dyingFrameCount) {
+        if (this.currentFrameIndex >= this.dyingFrameCount) {
+            if (this.otherFrame) {
                 this.setIsOther();
+            } else {
+                this.setIsDead();
             }
         }
     }
 
-    handleOtherStatus() { // Custom logic for OTHER status
-        super.handleOtherStatus();
-        if (this.delayCounter++ >= this.otherDelay) {
+    handleOtherStatus(deltaTime, incFrame = false) {
+        if (!this.otherFrame) {
+            this.setIsDead();
+            return;
+        }
+
+        this.delayCounter++;
+        if (this.delayCounter >= this.otherDelay) {
             this.setIsDead();
         }
     }
 
-    handleDeadStatus() { // Custom logic for DEAD status
-        super.handleDeadStatus();
+    handleDeadStatus(deltaTime, incFrame = false) {
+        // Intentionally no-op
     }
 
     setHit() {
-        if (this.dyingFrames) {
+        if (this.dyingFrames && this.dyingFrameCount > 0) {
             this.setIsDying();
         } else if (this.otherFrame) {
             this.setIsOther();
@@ -192,147 +243,132 @@ class ObjectSprite extends ObjectKillable {
     }
 
     setSpriteColor(spriteColor) {
-        if (this.frameType === "json") {
-            console.log('spriteColor nave valid for json');
+        ObjectValidation.nonEmptyString(spriteColor, 'spriteColor');
+
+        if (this.frameType === 'json') {
+            ObjectDebug.warn(ObjectSprite.DEBUG, 'setSpriteColor is not used for json/RGB sprite data.');
             return;
         }
-        
-        // Check if the color is a valid named color in the color map, ignoring case
-        const isValidSymbol = Colors.isValidSymbol(spriteColor);
 
-        // Check if the color is a valid hexadecimal color code
+        const isValidSymbol = Colors.isValidSymbol(spriteColor);
         const isHexColor = Colors.isValidHexColor(spriteColor);
 
         if (isValidSymbol || isHexColor) {
             this.spriteColor = spriteColor;
-        } else {
-            try {
-                throw new Error("Invalid color:", spriteColor);
-            } catch (e) {
-                console.log(e.stack);
-            }
-            this.spriteColor = Colors.getRandomColor();// 'white'; // Default to white
+            return;
         }
+
+        ObjectDebug.warn(ObjectSprite.DEBUG, `Invalid sprite color: ${spriteColor}`);
+        this.spriteColor = Colors.getRandomColor();
     }
 
-    setOtherFrame(otherDelay, otherFrame) { // Other properties        
+    setOtherFrame(otherDelay, otherFrame) {
+        ObjectValidation.finiteNumber(otherDelay, 'otherDelay');
+        if (otherDelay < 0) {
+            throw new Error('otherDelay must be 0 or greater.');
+        }
+
         this.otherDelay = otherDelay;
         this.otherFrame = otherFrame;
     }
 
     draw(offsetX = 0, offsetY = 0) {
-        if (this.frameType === "json") {
+        if (this.isDead() || this.isDestroyed) {
+            return;
+        }
+
+        if (this.frameType === 'json') {
             this.drawRGB(offsetX, offsetY);
             return;
         }
+
+        const newX = this.x + offsetX;
+        const newY = this.y + offsetY;
+
         try {
-            const { x, y, currentFrameIndex, spriteColor, livingFrames, dyingFrames, otherFrame, pixelSize } = this;
-
-            const newX = x + offsetX;
-            const newY = y + offsetY;
-
             if (this.isAlive()) {
-                if (livingFrames?.[currentFrameIndex]) {
-                    CanvasUtils.drawSprite(newX, newY, livingFrames[currentFrameIndex], pixelSize, spriteColor);
+                const frame = this.getCurrentLivingFrame();
+                if (frame) {
+                    CanvasUtils.drawSprite(newX, newY, frame, this.pixelSize, this.spriteColor);
                 }
                 return;
             }
 
             if (this.isDying()) {
-                if (dyingFrames?.[currentFrameIndex]) {
-                    CanvasUtils.drawSprite(newX, newY, dyingFrames[currentFrameIndex], pixelSize, spriteColor);
+                const frame = this.getCurrentDyingFrame();
+                if (frame) {
+                    CanvasUtils.drawSprite(newX, newY, frame, this.pixelSize, this.spriteColor);
                 }
                 return;
             }
 
-            if (this.isOther()) {
-                if (this.otherFrame) {
-                    CanvasUtils.drawSprite(newX, newY, otherFrame, pixelSize, spriteColor);
-                }
-                return;
+            if (this.isOther() && this.otherFrame) {
+                CanvasUtils.drawSprite(newX, newY, this.otherFrame, this.pixelSize, this.spriteColor);
             }
-            if (this.isDead()) {
-                return;
-            }
-
-            //this.setIsOther()
-            console.log("No valid frame to draw for current status: ", this.status, this);
         } catch (error) {
-            console.error("Error occurred:", error.message);
-            console.error("Stack trace:", error.stack);
-            console.log("Object state:", this);
+            console.error('Error drawing ObjectSprite:', error.message);
+            console.error(error.stack);
+            console.log('Object state:', this);
         }
     }
 
     drawRGB(offsetX = 0, offsetY = 0) {
+        if (this.isDead() || this.isDestroyed) {
+            return;
+        }
+
+        const newX = this.x + offsetX;
+        const newY = this.y + offsetY;
+
         try {
-            const { x, y, currentFrameIndex, livingFrames, dyingFrames, otherFrame, pixelSize } = this;
-
-            const newX = x + offsetX;
-            const newY = y + offsetY;
-
             if (this.isAlive()) {
-                if (livingFrames.layers[this.currentFrameIndex].data) {
-                    const frame = livingFrames.layers[this.currentFrameIndex].data;
-                    if (frame) {
-                        CanvasUtils.drawSpriteRGB(newX, newY, frame, pixelSize);
-                    } else {
-                        // no frame to draw (do something random)
-                        CanvasUtils.drawSpriteRGB(newX, newY, livingFrames[currentFrameIndex], pixelSize);
-                    }
-
+                const frame = this.getCurrentLivingFrame();
+                if (frame) {
+                    CanvasUtils.drawSpriteRGB(newX, newY, frame, this.pixelSize);
                 }
                 return;
             }
 
             if (this.isDying()) {
-                console.log("Status: Dying");
-                if (dyingFrames?.[currentFrameIndex]) {
-                    console.log("Drawing dying frame:", dyingFrames[currentFrameIndex]);
-                    CanvasUtils.drawSpriteRGB(newX, newY, dyingFrames[currentFrameIndex], pixelSize);
+                const frame = this.getCurrentDyingFrame();
+                if (frame) {
+                    CanvasUtils.drawSpriteRGB(newX, newY, frame, this.pixelSize);
                 }
                 return;
             }
 
-            if (this.isOther()) {
-                console.log("Status: Other");
-                if (otherFrame) {
-                    const otherX = Math.max(25, Math.min(newX, CanvasUtils.getConfigWidth()))
-                    console.log("Drawing other frame:", otherFrame);
-                    CanvasUtils.drawSpriteRGB(otherX, newY, otherFrame, pixelSize);
-                }
-                return;
+            if (this.isOther() && this.otherFrame) {
+                CanvasUtils.drawSpriteRGB(newX, newY, this.otherFrame, this.pixelSize);
             }
-            if (this.isDead()) {
-                console.log("Status: Dead");
-                return;
-            }
-
-            console.log("No valid frame to draw for current status:", this.status);
         } catch (error) {
-            console.error("Error occurred:", error.message);
-            console.error("Stack trace:", error.stack);
-            console.log("Object state:", this);
+            console.error('Error drawing RGB sprite:', error.message);
+            console.error(error.stack);
+            console.log('Object state:', this);
         }
     }
 
     destroy() {
-        super.destroy();
-        this.frameType = null;
-        this.pixelSize = null;
-        this.currentFrameIndex = null;
-        this.delayCounter = null;
-        this.livingDelay = null;
-        this.livingFrames = null;
-        this.livingFrameCount = null;
-        this.dyingDelay = null;
-        this.dyingFrames = null;
-        this.dyingFramesCount = null;
-        this.otherDelay = null;
-        this.otherFrame = null;
-        this.spriteColor = null;
-    }
+        if (this.isDestroyed) {
+            return false;
+        }
 
+        ObjectCleanup.cleanupAndNullifyArray(this, 'livingFrames');
+        ObjectCleanup.cleanupAndNullifyArray(this, 'dyingFrames');
+
+        this.destroyProperties([
+            'frameType',
+            'pixelSize',
+            'livingDelay',
+            'livingFrameCount',
+            'dyingDelay',
+            'dyingFrameCount',
+            'otherDelay',
+            'otherFrame',
+            'spriteColor'
+        ]);
+
+        return super.destroy();
+    }
 }
 
 export default ObjectSprite;

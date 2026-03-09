@@ -8,97 +8,61 @@ import CanvasUtils from './canvas.js';
 import AngleUtils from '../scripts/math/angleUtils.js';
 import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import SystemUtils from './utils/systemUtils.js';
+import ObjectValidation from './utils/objectValidation.js';
+import ObjectCleanup from './utils/objectCleanup.js';
+import ObjectDebug from './utils/objectDebug.js';
 
 class ObjectVector extends ObjectKillable {
-    // Enable debug mode: game.html?objectVector
     static DEBUG = new URLSearchParams(window.location.search).has('objectVector');
 
-    /** Creates an instance of ObjectVector.
-     * @param {number} x - The X position of the object.
-     * @param {number} y - The Y position of the object.
-     * @param {Array<Array<number>>} vectorMap - Array of point pairs defining the vector shape.
-     * @param {number} [velocityX=0] - The initial velocity in the X direction.
-     * @param {number} [velocityY=0] - The initial velocity in the Y direction.
-     * @throws {Error} If vectorMap is invalid or missing
-     */
-    constructor(x, y, vectorMap, velocityX = 0, velocityY = 0) {
-        // Validate vectorMap
-        if (!vectorMap || !Array.isArray(vectorMap) ||
-            !vectorMap.every(point => Array.isArray(point) && point.length === 2 &&
-                point.every(coord => typeof coord === 'number' && Number.isFinite(coord)))) {
-            throw new Error(`vectorMap must be an array of point pairs with valid coordinates: ${vectorMap}`);
-        }
+    constructor(x = 0, y = 0, vectorMap, velocityX = 0, velocityY = 0) {
+        ObjectValidation.pointArray(vectorMap, 'vectorMap');
 
-        // Calculate initial bounds from vectorMap
         const bounds = ObjectVector.calculateInitialBounds(vectorMap);
-        super(x, y, bounds.width, bounds.height, velocityX, velocityY);
 
-        // Initialize vector properties
-        this.color = "white";
+        super(
+            x,
+            y,
+            Math.max(1, bounds.width),
+            Math.max(1, bounds.height),
+            velocityX,
+            velocityY
+        );
+
+        this.color = 'white';
         this.rotationAngle = 0;
-        this.vectorMap = vectorMap;
+        this.vectorMap = vectorMap.map(([vx, vy]) => [vx, vy]);
+
         this.drawBounds = false;
 
-        // Initialize animation properties
-        this.currentFrameIndex = 0;
-        this.delayCounter = 0;
-
-        // Initialize bounds
         this.boundX = 0;
         this.boundY = 0;
         this.boundWidth = 0;
         this.boundHeight = 0;
+
         this.rotatedPoints = [];
 
-        // Calculate initial object bounds
         this.calculateObjectBounds(this.vectorMap);
 
-        // Update dimensions based on calculated bounds
-        this.width = this.boundWidth;
-        this.height = this.boundHeight;
+        this.width = Math.max(1, this.boundWidth);
+        this.height = Math.max(1, this.boundHeight);
 
-        this.margin = this.width * 0.1; // 10%
-
+        this.margin = Math.max(this.width, this.height) * 0.1;
         this.explosionRadius = ((this.width + this.height) / 2) * 2;
 
-        if (this.DEBUG) {
-            console.log(this, x, y, bounds, this.width, this.height);
-        }
+        ObjectDebug.log(ObjectVector.DEBUG, 'Created ObjectVector', {
+            x,
+            y,
+            bounds,
+            width: this.width,
+            height: this.height
+        });
     }
 
-    checkWrapAround() {// Screen wrapping object logic
-        const boundaries = CollisionUtils.getCompletelyOffScreenSides(this, this.margin);
-
-        if (boundaries.length === 0) {
-            return
-        }
-
-        // Calculate half dimensions (vectors have a center point [-20,20])
-        const halfWidth = (this.boundWidth ?? this.width) / 2;
-        const halfHeight = (this.boundHeight ?? this.height) / 2;
-
-        if (boundaries.includes('left')) { // off left - move to right
-            this.x = CanvasUtils.getConfigWidth() + halfWidth;
-        }
-        if (boundaries.includes('right')) { // off right - move left
-            this.x = -(halfWidth);
-        }
-
-        if (boundaries.includes('top')) { // off top - move bottom
-            this.y = CanvasUtils.getConfigHeight() + halfHeight;
-        }
-        if (boundaries.includes('bottom')) { // off bottom - move top
-            this.y = -(halfHeight);
-        }
-    }
-
-    /** Helper function to calculate initial bounds from vectorMap
-     * @param {Array<Array<number>>} vectorMap - Array of point pairs
-     * @returns {{width: number, height: number}} Initial bounds
-     */
     static calculateInitialBounds(vectorMap) {
         const xs = vectorMap.map(([x]) => x);
         const ys = vectorMap.map(([, y]) => y);
+
         return {
             width: Math.max(...xs) - Math.min(...xs),
             height: Math.max(...ys) - Math.min(...ys)
@@ -106,29 +70,27 @@ class ObjectVector extends ObjectKillable {
     }
 
     calculateObjectBounds(vectorMap) {
-        // Calculate the actual geometric center of the vectorMap
-        const centerX = Math.ceil(vectorMap.reduce((sum, [vx]) => sum + vx, 0) / vectorMap.length);
-        const centerY = Math.ceil(vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / vectorMap.length);
+        if (!vectorMap || vectorMap.length === 0) {
+            throw new Error('vectorMap is required to calculate object bounds.');
+        }
 
-        // Rotate points and compute bounding box
+        const centerX = vectorMap.reduce((sum, [vx]) => sum + vx, 0) / vectorMap.length;
+        const centerY = vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / vectorMap.length;
+
         let minX = Infinity;
         let maxX = -Infinity;
         let minY = Infinity;
         let maxY = -Infinity;
 
         const rotatedPoints = vectorMap.map(([vx, vy]) => {
-            // Translate to origin (relative to center)
             const dx = vx - centerX;
             const dy = vy - centerY;
 
-            // Apply rotation formula
             const rotatedPoint = AngleUtils.applyRotationToPoint(dx, dy, this.rotationAngle);
 
-            // Translate back and add object's position
             const finalX = rotatedPoint.rotatedX + this.x;
             const finalY = rotatedPoint.rotatedY + this.y;
 
-            // Update bounding box calculations (only need one set)
             minX = Math.min(minX, finalX);
             maxX = Math.max(maxX, finalX);
             minY = Math.min(minY, finalY);
@@ -137,44 +99,77 @@ class ObjectVector extends ObjectKillable {
             return [finalX, finalY];
         });
 
-        // Set the bounds of the object (rounded up)
-        this.boundX = Math.ceil(minX);
-        this.boundY = Math.ceil(minY);
-        this.boundWidth = Math.ceil(maxX - minX);
-        this.boundHeight = Math.ceil(maxY - minY);
-
-        // Store rotated points for collision detection
+        this.boundX = Math.floor(minX);
+        this.boundY = Math.floor(minY);
+        this.boundWidth = Math.max(1, Math.ceil(maxX - minX));
+        this.boundHeight = Math.max(1, Math.ceil(maxY - minY));
         this.rotatedPoints = rotatedPoints;
     }
 
     setRotationAngle(angle) {
+        ObjectValidation.finiteNumber(angle, 'angle');
         this.rotationAngle = angle;
-    }
-
-    update(deltaTime) {
-        super.update(deltaTime);
         this.calculateObjectBounds(this.vectorMap);
     }
 
-    setDrawBounds() {
-        this.drawBounds = true;
+    setColor(color) {
+        ObjectValidation.nonEmptyString(color, 'color');
+        this.color = color;
     }
 
-    draw(lineWidth = 1.25, offsetX = 0, offsetY = 0, objectVector = null) {
-        if (!this.isAlive()) return;
+    setDrawBounds(enabled = true) {
+        this.drawBounds = Boolean(enabled);
+    }
+
+    checkWrapAround() {
+        const boundaries = CollisionUtils.getCompletelyOffScreenSides(this, this.margin);
+
+        if (!boundaries || boundaries.length === 0) {
+            return;
+        }
+
+        const halfWidth = (this.boundWidth ?? this.width) / 2;
+        const halfHeight = (this.boundHeight ?? this.height) / 2;
+
+        if (boundaries.includes('left')) {
+            this.x = CanvasUtils.getConfigWidth() + halfWidth;
+        }
+
+        if (boundaries.includes('right')) {
+            this.x = -halfWidth;
+        }
+
+        if (boundaries.includes('top')) {
+            this.y = CanvasUtils.getConfigHeight() + halfHeight;
+        }
+
+        if (boundaries.includes('bottom')) {
+            this.y = -halfHeight;
+        }
+
+        this.calculateObjectBounds(this.vectorMap);
+    }
+
+    update(deltaTime = 1, incFrame = false) {
+        super.update(deltaTime, incFrame);
+        this.calculateObjectBounds(this.vectorMap);
+    }
+
+    draw(lineWidth = 1.25, offsetX = 0, offsetY = 0) {
+        if (this.isDestroyed || !this.isAlive()) {
+            return;
+        }
+
         try {
-            // Begin drawing
+            if (!this.rotatedPoints || this.rotatedPoints.length === 0) {
+                console.error('Rotated points are not available.');
+                return;
+            }
+
             CanvasUtils.ctx.beginPath();
             CanvasUtils.ctx.strokeStyle = this.color;
             CanvasUtils.ctx.lineWidth = lineWidth;
 
-            // Use the pre-calculated rotated points
-            if (!this.rotatedPoints || this.rotatedPoints.length === 0) {
-                console.error("Rotated points are not available.");
-                return;
-            }
-
-            // Draw using the pre-calculated rotated points
             this.rotatedPoints.forEach(([rx, ry], index) => {
                 if (index === 0) {
                     CanvasUtils.ctx.moveTo(rx + offsetX, ry + offsetY);
@@ -183,104 +178,71 @@ class ObjectVector extends ObjectKillable {
                 }
             });
 
-            // Finish shape
             CanvasUtils.ctx.closePath();
             CanvasUtils.ctx.stroke();
 
-            // Draw bounds if enabled
             if (this.drawBounds) {
-                // Draw center point at object's position
-                CanvasUtils.drawCircle2(this.x + offsetX, this.y + offsetY, 2, "white");
-
-                // Draw bounding box
+                CanvasUtils.drawCircle2(this.x + offsetX, this.y + offsetY, 2, 'white');
                 CanvasUtils.drawBounds(
                     this.boundX + offsetX,
                     this.boundY + offsetY,
                     this.boundWidth,
                     this.boundHeight,
-                    "white",
+                    'white',
                     lineWidth
                 );
             }
-
         } catch (error) {
-            console.error("Error occurred while drawing:", error.message);
-            console.log("Object state:", this);
+            console.error('Error occurred while drawing:', error.message);
+            console.log('Object state:', this);
         }
     }
 
     collisionDetection(object, debug = false) {
-        if (debug && object) {
+        if (!object || !Array.isArray(object.rotatedPoints) || !Array.isArray(this.rotatedPoints)) {
+            return false;
+        }
+
+        if (debug) {
             console.log(object);
         }
 
-        // Check if any point of the object is inside the objectPoints
-        for (let [pointX, pointY] of object.rotatedPoints) {
+        for (const [pointX, pointY] of object.rotatedPoints) {
             if (CollisionUtils.isPointInsidePolygon(pointX, pointY, this.rotatedPoints)) {
-                return true; // Collision detected
+                return true;
             }
         }
 
-        // Check if any point of the vectorPoints is inside the object (optional for mutual collision)
-        for (let [pointX, pointY] of this.rotatedPoints) {
+        for (const [pointX, pointY] of this.rotatedPoints) {
             if (CollisionUtils.isPointInsidePolygon(pointX, pointY, object.rotatedPoints)) {
-                return true; // Collision detected
+                return true;
             }
         }
-        return false; // No collision
+
+        return false;
     }
 
-    /** Destroys the object and cleans up resources.
-       * @returns {boolean} True if cleanup was successful
-       */
     destroy() {
-        try {
-            // Call parent destroy first
-            const parentDestroyed = super.destroy();
-            if (!parentDestroyed) {
-                return false;
-            }
-
-            // Validate object state before destruction
-            if (this.vectorMap === null) {
-                return false; // Already destroyed
-            }
-
-            // Cleanup animation properties
-            this.currentFrameIndex = null;
-            this.delayCounter = null;
-
-            // Cleanup vector properties
-            this.color = null;
-            this.rotationAngle = null;
-
-            // Cleanup vector map
-            if (this.vectorMap) {
-                SystemUtils.cleanupArray(this.vectorMap);
-                this.vectorMap = null;
-            }
-
-            // Cleanup bounds
-            this.drawBounds = null;
-            this.boundX = null;
-            this.boundY = null;
-            this.boundWidth = null;
-            this.boundHeight = null;
-
-            this.margin = null;
-
-            // Cleanup rotated points
-            if (this.rotatedPoints) {
-                SystemUtils.cleanupArray(this.rotatedPoints);
-                this.rotatedPoints = null;
-            }
-
-            return true; // Successful cleanup
-
-        } catch (error) {
-            console.error('Error during ObjectVector destruction:', error);
+        if (this.isDestroyed) {
             return false;
         }
+
+        ObjectCleanup.cleanupAndNullifyArray(this, 'vectorMap');
+        ObjectCleanup.cleanupAndNullifyArray(this, 'rotatedPoints');
+
+        this.destroyProperties([
+            'color',
+            'rotationAngle',
+            'drawBounds',
+            'boundX',
+            'boundY',
+            'boundWidth',
+            'boundHeight',
+            'margin',
+            'explosionRadius'
+        ]);
+
+        return super.destroy();
     }
 }
 

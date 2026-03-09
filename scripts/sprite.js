@@ -212,6 +212,7 @@ class Sprite {
 
     // accepts JSON object and a 2D frame array
     static getLayerDimensions(layerData, pixelSize) { // layerData is the Sprite Editor Json Sprite data.
+        
         if (layerData && SystemUtils.getObjectType(layerData) === 'Object' && pixelSize >= 1) {
             const layer = layerData.layers[0]; // Only process the first layer
             const data = layer.data;

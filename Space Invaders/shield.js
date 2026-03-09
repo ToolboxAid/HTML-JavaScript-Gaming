@@ -70,7 +70,8 @@ class Shield extends ObjectStatic {
      */
     constructor(shieldNum) {
         const pixelSize = spriteConfig.pixelSize || 1;
-        const dimensions = Sprite.getWidthHeight(Shield.frame, pixelSize);
+        //const dimensions = Sprite.getWidthHeight(Shield.frame, pixelSize);
+        const dimensions = Sprite.getLayerDimensions(Shield.livingFrames, pixelSize);
         let shieldCount = shieldConfig?.count ?? 1;
         const shieldSpacing = (canvasConfig.width - shieldCount * dimensions.width) / (shieldCount + 1);
         const x = shieldSpacing + shieldNum * (dimensions.width + shieldSpacing);

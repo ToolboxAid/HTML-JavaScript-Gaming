@@ -28,7 +28,9 @@ class Laser extends ObjectDynamic {
 
     constructor(x, y) {
         const pixelSize = spriteConfig.pixelSize || 1;
-        const dimensions = Sprite.getWidthHeight(Laser.livingFrames, pixelSize);
+        //const dimensions = Sprite.getWidthHeight(Laser.livingFrames, pixelSize);
+        const dimensions = Sprite.getLayerDimensions(Laser.livingFrames, pixelSize);
+        
         super(x, y, dimensions.width, dimensions.height);
         this.setVelocity(0, -spriteConfig.laserVelocityY);
         this.score = 0;

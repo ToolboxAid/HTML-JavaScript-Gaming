@@ -3,17 +3,18 @@
 // 10/16/2024
 // objectStatic.js
 
-/** 
+import CanvasUtils from "../scripts/canvas.js";
+import ObjectValidation from "../scripts/utils/objectValidation.js";
+import ObjectCleanup from "../scripts/utils/objectCleanup.js";
+import ObjectDebug from "../scripts/utils/objectDebug.js";
+
+/**
  * Represents a static object in a game that cannot move.
  */
-
-import CanvasUtils from "../scripts/canvas.js";
-
 class ObjectStatic {
     static DEBUG = new URLSearchParams(window.location.search).has('objectStatic');
+    static #nextId = 1;
 
-    // Static counter for unique IDs
-    static #nextId = 0;
     static getNextId() {
         return this.#nextId++;
     }
@@ -24,31 +25,19 @@ class ObjectStatic {
      * @param {number} y - The Y position of the object.
      * @param {number} width - The width of the object.
      * @param {number} height - The height of the object.
-     * @throws {Error} If parameters are invalid
      */
-    constructor(x = 0, y = 0, width = 0, height = 0) {
-        // Validate types
-        if (typeof x !== 'number' || typeof y !== 'number' ||
-            typeof width !== 'number' || typeof height !== 'number') {
-            throw new Error('All parameters must be numbers.');
-        }
+    constructor(x = 0, y = 0, width = 1, height = 1) {
+        ObjectValidation.finiteNumber(x, 'x');
+        ObjectValidation.finiteNumber(y, 'y');
+        ObjectValidation.positiveNumber(width, 'width');
+        ObjectValidation.positiveNumber(height, 'height');
 
-        // Validate dimensions
-        if (width <= 0 || height <= 0) {
-            throw new Error('Width and height must be positive numbers.');
-        }
-
-        // Validate position
-        if (!Number.isFinite(x) || !Number.isFinite(y)) {
-            throw new Error('Position coordinates must be finite numbers.');
-        }
-
-        this.ID = ObjectStatic.getNextId(); // Unique ID for each object
-
+        this.ID = ObjectStatic.getNextId();
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.isDestroyed = false;
     }
 
     getCenterPoint() {
@@ -77,18 +66,32 @@ class ObjectStatic {
      * @param {number} newY - The new Y position.
      */
     setPosition(newX, newY) {
+        ObjectValidation.finiteNumber(newX, 'newX');
+        ObjectValidation.finiteNumber(newY, 'newY');
+
         this.x = newX;
         this.y = newY;
     }
 
     /**
+     * Shared helper for subclasses.
+     * @param {string[]} propertyNames
+     */
+    destroyProperties(propertyNames = []) {
+        ObjectCleanup.nullifyProperties(this, propertyNames);
+    }
+
+    /**
      * Draws the object on the canvas.
-     * @param {CanvasRenderingContext2D} ctx - The drawing context.
-     * @param {string} [fillColor='black'] - The fill color of the object.
+     * @param {string} [fillColor='gray'] - The fill color of the object.
      * @param {string|null} [borderColor=null] - The border color of the object.
      * @param {number} [borderWidth=0] - The width of the border.
      */
     draw(fillColor = 'gray', borderColor = null, borderWidth = 0) {
+        if (this.isDestroyed) {
+            return;
+        }
+
         CanvasUtils.ctx.fillStyle = fillColor;
         CanvasUtils.ctx.fillRect(this.x, this.y, this.width, this.height);
 
@@ -101,30 +104,22 @@ class ObjectStatic {
 
     /**
      * Destroys the object and cleans up resources.
-     * @returns {boolean} True if cleanup was successful
+     * @returns {boolean} True if cleanup was successful.
      */
     destroy() {
-        if (ObjectStatic.DEBUG) {
-            console.log(`Destroying ObjectStatic #${this.ID}`, {
-                position: { x: this.x, y: this.y },
-                dimensions: { width: this.width, height: this.height },
-                state: {
-                    isDestroyed: !this.ID,
-                    hasPosition: this.x !== null && this.y !== null,
-                    hasDimensions: this.width !== null && this.height !== null
-                }
-            });
-        }
-
-        // Check if already destroyed
-        if (!this.ID) {
-            if (ObjectStatic.DEBUG) {
-                console.warn('ObjectStatic already destroyed');
+        ObjectDebug.log(ObjectStatic.DEBUG, `Destroying ObjectStatic #${this.ID}`, {
+            position: { x: this.x, y: this.y },
+            dimensions: { width: this.width, height: this.height },
+            state: {
+                isDestroyed: this.isDestroyed
             }
+        });
+
+        if (this.isDestroyed || this.ID === null) {
+            ObjectDebug.warn(ObjectStatic.DEBUG, 'ObjectStatic already destroyed');
             return false;
         }
 
-        // Store values for final logging
         const finalState = {
             id: this.ID,
             x: this.x,
@@ -133,20 +128,19 @@ class ObjectStatic {
             height: this.height
         };
 
-        // Clean up properties in specific order
-        this.width = null;  // Dimensions first
-        this.height = null;
-        this.x = null;      // Position second
-        this.y = null;
-        this.ID = null;     // ID last
+        this.isDestroyed = true;
 
-        if (ObjectStatic.DEBUG) {
-            console.log(`Successfully destroyed ObjectStatic`, finalState);
-        }
+        this.destroyProperties([
+            'width',
+            'height',
+            'x',
+            'y',
+            'ID'
+        ]);
 
+        ObjectDebug.log(ObjectStatic.DEBUG, 'Successfully destroyed ObjectStatic', finalState);
         return true;
     }
-
 }
 
 export default ObjectStatic;

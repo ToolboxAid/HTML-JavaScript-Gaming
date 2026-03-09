@@ -76,7 +76,8 @@ class Enemy extends ObjectSprite {
 
     constructor(livingFrames, playerLevel) {
         const pixelSize = spriteConfig.pixelSize || 1;
-        const frameWidth = Sprite.getWidthHeight(livingFrames[0], pixelSize);
+        //const frameWidth = Sprite.getWidthHeight(livingFrames[0], pixelSize);
+        const frameWidth = Sprite.getLayerDimensions(livingFrames[0], pixelSize);
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
         const y = enemyConfig.yPosition - (Enemy.enemyRow * enemyConfig.ySpacing);
 
