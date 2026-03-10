@@ -28,14 +28,14 @@ class GameObjectSystem {
 
         if (!this.manager.addGameObject(gameObject)) {
             ObjectDebug.warn(this.debug, 'Failed to add GameObject to manager', {
-                id: gameObject.objectId ?? gameObject.ID
+                id: gameObject.ID
             });
             return false;
         }
 
         if (!this.registry.register(gameObject)) {
             ObjectDebug.error(this.debug, 'Failed to register GameObject, rolling back manager add', {
-                id: gameObject.objectId ?? gameObject.ID
+                id: gameObject.ID
             });
 
             this.manager.removeGameObject(gameObject);
@@ -43,7 +43,7 @@ class GameObjectSystem {
         }
 
         ObjectDebug.log(this.debug, 'GameObject added to system', {
-            id: gameObject.objectId ?? gameObject.ID,
+            id: gameObject.ID,
             type: gameObject.type
         });
 
@@ -54,15 +54,10 @@ class GameObjectSystem {
 
         ObjectValidation.instanceOf(gameObject, 'gameObject', GameObject);
 
-        if (!this.manager.hasGameObject(gameObject)) {
-            ObjectDebug.warn(this.debug, 'GameObject not found in manager', {
-                id: gameObject.ID
-            });
-            return false;
-        }
+        const unregistered = this.registry.unregister(gameObject);
 
-        if (!this.registry.unregister(gameObject)) {
-            ObjectDebug.warn(this.debug, 'GameObject not found in registry', {
+        if (!unregistered) {
+            ObjectDebug.warn(this.debug, 'GameObject was not registered', {
                 id: gameObject.ID
             });
         }
@@ -71,6 +66,11 @@ class GameObjectSystem {
             ObjectDebug.error(this.debug, 'Failed to remove GameObject from manager', {
                 id: gameObject.ID
             });
+
+            if (unregistered) {
+                this.registry.register(gameObject);
+            }
+
             return false;
         }
 
@@ -82,16 +82,10 @@ class GameObjectSystem {
     }
 
     getGameObjectById(id) {
-
-        ObjectValidation.nonEmptyString(id, 'id');
-
         return this.registry.getById(id);
     }
 
     hasGameObjectById(id) {
-
-        ObjectValidation.nonEmptyString(id, 'id');
-
         return this.registry.hasId(id);
     }
 
@@ -122,12 +116,7 @@ class GameObjectSystem {
     }
 
     destroy() {
-
-        this.clear();
-
-        ObjectDebug.log(this.debug, 'GameObjectSystem destroyed');
-
-        return true;
+        return this.clear();
     }
 }
 
