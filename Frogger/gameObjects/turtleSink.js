@@ -23,7 +23,7 @@ class TurtleSink extends GameObject {
             velocityX, velocityY,
             5, // frameCount
             5, // framesPerRow
-            6
+            30 // frameDelay
         );
 
         this.frame = 0;
@@ -40,7 +40,7 @@ class TurtleSink extends GameObject {
             return;
         }
 
-        if (this.counter++ > 20) {
+        if (this.counter++ > this.frameDelay) {
             this.counter = 0;
             this.frame += this.frameDirection;
 
