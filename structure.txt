@@ -1,0 +1,484 @@
+Folder PATH listing for volume OS - 1T SSD
+Volume serial number is 1E17-8D1A
+C:.
+|   .gitignore
+|   LICENSE
+|   README.md
+|   structure.txt
+|   todo tree.txt
+|   
++---.vscode
+|       settings.json
+|       
++---2D side scroll tile map
+|       game.js
+|       gameAttract.js
+|       global.js
+|       hero.js
+|       index.html
+|       requirements.txt
+|       styles.css
+|       todo.txt
+|       
++---Asteroids
+|   |   asteroid.js
+|   |   asteroidManager.js
+|   |   bullet.js
+|   |   bulletManager.js
+|   |   game.js
+|   |   gameAttract.js
+|   |   global.js
+|   |   index.html
+|   |   requirements.txt
+|   |   ship.js
+|   |   styles.css
+|   |   ufo.js
+|   |   ufoManager.js
+|   |   
+|   \---assets
+|       +---artwork
+|       |       download.png
+|       |       
+|       +---effects
+|       |       asteroids sounds.url
+|       |       bangLarge.wav
+|       |       bangMedium.wav
+|       |       bangSmall.wav
+|       |       beat1.wav
+|       |       beat2.wav
+|       |       extraShip.wav
+|       |       fire.wav
+|       |       saucerBig.wav
+|       |       saucerSmall.wav
+|       |       thrust.wav
+|       |       
+|       \---fonts
+|               vector_battle.ttf
+|               vector_battle.zip
+|               
++---Box Drop
+|       game.js
+|       global.js
+|       index.html
+|       requirements.txt
+|       styles.css
+|       todo.txt
+|       
++---Break Out
++---Connect 4
+|       game.js
+|       global.js
+|       index.html
+|       requirements.txt
+|       styles.css
+|       todo.txt
+|       
++---docs
+|   |   objectPNG.js
+|   |   
+|   +---assets
+|   |   \---png
+|   |           blocks.png
+|   |           enemies.png
+|   |           mario-8-bitdiagram.jpg
+|   |           
+|   \---frogger
+|           01_-_Frogger_-_GB_-_Title.ogg
+|           Frogger Music - Vizzed.com GamePlay.mp3
+|           Frogger_-_ARC_-_Title_Screen.png
+|           SpessaSynth-master.zip
+|           
++---Draw Shapes
+|       game.js
+|       global.js
+|       index.html
+|       styles.css
+|       
++---Frogger
+|   |   attractMode.js
+|   |   game.js
+|   |   gameUI.js
+|   |   global.js
+|   |   index.html
+|   |   levelData.js
+|   |   levelManager.js
+|   |   requirements.txt
+|   |   styles.css
+|   |   
+|   +---assets
+|   |   +---images
+|   |   |   |   aligator.json
+|   |   |   |   aligator_sprite_48w_48h_6f.png
+|   |   |   |   alpha_num.json
+|   |   |   |   alpha_num_cyan_sprite_24w_24h_40f.png
+|   |   |   |   alpha_num_fuchsia_sprite_24w_24h_40f.png
+|   |   |   |   alpha_num_red_sprite_24w_24h_40f.png
+|   |   |   |   alpha_num_white_sprite_24w_24h_40f.png
+|   |   |   |   alpha_num_yellow_sprite_24w_24h_40f.png
+|   |   |   |   beaver.json
+|   |   |   |   beaver_sprite_48w_48h_2f.png
+|   |   |   |   bonus.json
+|   |   |   |   bonus_sprite_36w_42h_6f.png
+|   |   |   |   frog-die.json
+|   |   |   |   frog-die_sprite_45w_48h_11f.png
+|   |   |   |   frog.json
+|   |   |   |   froge.json
+|   |   |   |   froge_sprite_90w_90h_5f.png
+|   |   |   |   frog_sprite_60w_70h_3f.png
+|   |   |   |   ground.json
+|   |   |   |   ground_home.json
+|   |   |   |   ground_home_sprite_24w_24h_8f.png
+|   |   |   |   ground_sprite_48w_48h_1f.png
+|   |   |   |   home_danger.json
+|   |   |   |   home_danger_sprite_48w_48h_5f.png
+|   |   |   |   log.json
+|   |   |   |   log_sprite_60w_30h_10f.png
+|   |   |   |   snake.json
+|   |   |   |   snake_sprite_84w_33h_4f.png
+|   |   |   |   timer_lives.json
+|   |   |   |   timer_lives_sprite_24w_24h_6f.png
+|   |   |   |   turtle.json
+|   |   |   |   turtle_sprite_45w_33h_5f.png
+|   |   |   |   turtle_sprite_45w_33h_6f.png
+|   |   |   |   vehicles.json
+|   |   |   |   vehicles_sprite_48w_42h_6f.png
+|   |   |   |   
+|   |   |   \---ignore
+|   |   |           alagator.png
+|   |   |           beaver.png
+|   |   |           bonus.png
+|   |   |           frog-die.png
+|   |   |           froge.png
+|   |   |           Frogger tutorial part 1.url
+|   |   |           ground.png
+|   |   |           ground_home.png
+|   |   |           home_danger.png
+|   |   |           log.png
+|   |   |           num_alfpha.png
+|   |   |           snake.png
+|   |   |           timer_lives.png
+|   |   |           turtle.png
+|   |   |           vehicles.png
+|   |   |           _frog-sprite-sheet.png
+|   |   |           
+|   |   \---mp3
+|   |       |   dieRoad.mp3
+|   |       |   dieWater.mp3
+|   |       |   freeLife.mp3
+|   |       |   hop.mp3
+|   |       |   insertCoin.mp3
+|   |       |   landingSafe.mp3
+|   |       |   pickUpMate.mp3
+|   |       |   raceCar.mp3
+|   |       |   runningOutOfTime.mp3
+|   |       |   snakeOnGround.mp3
+|   |       |   
+|   |       \---music
+|   |               songGameOver.mp3
+|   |               songIntroAndMain.mp3
+|   |               songIntroAndMain_fix.mp3
+|   |               songLevelComplete.mp3
+|   |               songRespawn.mp3
+|   |               songzHome01.mp3
+|   |               songzHome02.mp3
+|   |               songzHome03.mp3
+|   |               songzHome04.mp3
+|   |               songzHome05.mp3
+|   |               songzHome06.mp3
+|   |               songzHome07.mp3
+|   |               songzHome08.mp3
+|   |               songzHome09.mp3
+|   |               songzHome10.mp3
+|   |               songzHome11.mp3
+|   |               songzHome12.mp3
+|   |               songzHome13.mp3
+|   |               songzHome14.mp3
+|   |               songzHome15.mp3
+|   |               songzHome16.mp3
+|   |               songzHome17.mp3
+|   |               songzHome18.mp3
+|   |               songzHome19.mp3
+|   |               songzHome20.mp3
+|   |               
+|   \---gameObjects
+|           aligator.js
+|           beaver.js
+|           bonus.js
+|           car0.js
+|           car1.js
+|           car2.js
+|           dozer.js
+|           frog.js
+|           gameObject.js
+|           gameObjectManager.js
+|           home_alligator.js
+|           home_fly.js
+|           home_frog.js
+|           logLRG.js
+|           logMED.js
+|           logSM.js
+|           snake.js
+|           truck.js
+|           turtle.js
+|           turtleSink.js
+|           
++---Full Screen Gaming
+|       extra.js
+|       fullscreen.js
+|       global.js
+|       index.html
+|       styles.css
+|       
++---Move Objects
+|       circle.js
+|       game.js
+|       global.js
+|       index.html
+|       styles.css
+|       
++---Pong Game
+|       font5x3.js
+|       game.js
+|       global.js
+|       index.html
+|       paddle.js
+|       puck.js
+|       requirements.txt
+|       styles.css
+|       test_paddle.html
+|       test_puck.html
+|       
++---Sample Audio
+|   |   index.html
+|   |   requirements.txt
+|   |   
+|   \---fx
+|           Alesis-Sanctuary.wav
+|           elemental-magic.mp3
+|           Ouch-6.wav
+|           relaxing-guitar-loop.mp3
+|           
++---Sample GameControllers
+|       game.js
+|       index.html
+|       styles.css
+|       
++---Sample Keyboard
+|       game.js
+|       global.js
+|       index.html
+|       styles.css
+|       
++---Sample midi Player
+|       Inu_No_Omawari-san__Misc_Children.mid
+|       Inu_No_Omawari-san__Misc_Children_2.mid
+|       midiPlayerExample.html
+|       
++---Sample Mouse
+|       game.js
+|       index.html
+|       styles.css
+|       
++---Sample Particle
+|       game.js
+|       global.js
+|       index.html
+|       requirements.txt
+|       styles.css
+|       todo.txt
+|       
++---Sample Synthisizer
+|       songs.js
+|       synth.css
+|       synth.html
+|       synth.js
+|       
++---scripts
+|   |   canvas.js
+|   |   colors.js
+|   |   font5x6.js
+|   |   fullscreen.js
+|   |   gamebase.js
+|   |   objectDynamic.js
+|   |   objectKillable.js
+|   |   objectPNG.js
+|   |   objectSprite.js
+|   |   objectStatic.js
+|   |   objectVector.js
+|   |   palettes.js
+|   |   palettesList.js
+|   |   performacneMonitor.js
+|   |   requirements.txt
+|   |   runTest.js
+|   |   sprite.js
+|   |   tileMap.js
+|   |   
+|   +---ai
+|   |       pathfindingUtils.js
+|   |       
+|   +---game
+|   |       gameUtils.js
+|   |       gameUtilsTest.js
+|   |       
+|   +---gfx
+|   |       canvas
+|   |       colors
+|   |       palette stuff
+|   |       particleExplosion.js
+|   |       
+|   +---input
+|   |   |   keyboard.js
+|   |   |   keyboardTest.js
+|   |   |   mouse.js
+|   |   |   mouseTest.js
+|   |   |   
+|   |   \---controller
+|   |           gameControllerMap.js
+|   |           gameControllers.js
+|   |           gamepadDebugger.js
+|   |           gamepadEnums.js
+|   |           gamepadManager.js
+|   |           gamepadMapper.js
+|   |           gamepadState.js
+|   |           
+|   +---math
+|   |       angleUtils.js
+|   |       angleUtilsTest.js
+|   |       geometryUtils.js
+|   |       geometryUtilsTest.js
+|   |       randomUtils.js
+|   |       randomUtilsTest.js
+|   |       vectorUtils.js
+|   |       
+|   +---messages
+|   |       eventBus.js
+|   |       receiver.js
+|   |       sender.js
+|   |       testReceiver.js
+|   |       testSender.js
+|   |       
+|   +---misc
+|   |       cookies.js
+|   |       misc.js
+|   |       storageUtils.js
+|   |       
+|   +---output
+|   |       audioFrequency.js
+|   |       audioPlayer.js
+|   |       midiPlayer.js
+|   |       synthesizer.js
+|   |       
+|   +---physics
+|   |       collisionUtils.js
+|   |       collisionUtilsTest.js
+|   |       physicsUtils.js
+|   |       physicsUtilsTest.js
+|   |       
+|   +---timeUtils
+|   \---utils
+|           canExplode.js
+|           objectCleanup.js
+|           objectDebug.js
+|           objectValidation.js
+|           systemUtils.js
+|           systemUtilsTest.js
+|           timer.js
+|           timeUtils.js
+|           
++---Snake
+|       attract.js
+|       game.js
+|       global.js
+|       index.html
+|       requirements.txt
+|       styles.css
+|       todo.txt
+|       
++---Solar System
+|       game.js
+|       global.js
+|       index.html
+|       styles.css
+|       
++---Solar System - w-classes
+|       celestialBody.js
+|       game.js
+|       global.js
+|       index.html
+|       styles.css
+|       todo.txt
+|       
++---Space Invaders
+|   |   attractMode.js
+|   |   enemy.js
+|   |   enemyBomb.js
+|   |   enemyBomb1.js
+|   |   enemyBomb2.js
+|   |   enemyBomb3.js
+|   |   enemyCrab.js
+|   |   enemyOctopus.js
+|   |   enemyShip.js
+|   |   enemySquid.js
+|   |   game.js
+|   |   global.js
+|   |   ground.js
+|   |   index.html
+|   |   laser.js
+|   |   levelFrames.js
+|   |   player.js
+|   |   players guide.url
+|   |   requirements.txt
+|   |   shield.js
+|   |   styles.css
+|   |   
+|   +---assets
+|   |   |   mygame.png
+|   |   |   orig2.png
+|   |   |   original.png
+|   |   |   space-invaders-deluxe-34104.jpg
+|   |   |   
+|   |   +---effects
+|   |   |       explosion.wav
+|   |   |       fastinvader1.wav
+|   |   |       fastinvader2.wav
+|   |   |       fastinvader3.wav
+|   |   |       fastinvader4.wav
+|   |   |       invaderkilled.wav
+|   |   |       shoot.wav
+|   |   |       ufo_highpitch.wav
+|   |   |       ufo_lowpitch.wav
+|   |   |       
+|   |   \---sprites
+|   \---docs
++---SpriteEditor
+|       8bit tiles.jpg
+|       favicon.ico
+|       imageScale.js
+|       index.html
+|       message.js
+|       samples.js
+|       showHide.js
+|       spriteEditor.css
+|       spriteEditor.js
+|       
++---Tank w-pathfind
+|   \---ignore
++---Template Game Engine
+|       game.js
+|       global.js
+|       index.html
+|       requirements.txt
+|       styles.css
+|       todo.txt
+|       
+\---Tic-Tac-Toe
+        attractMode.js
+        board.js
+        game.js
+        global.js
+        index.html
+        player.js
+        requirements.txt
+        styles.css
+        todo.txt
+        
