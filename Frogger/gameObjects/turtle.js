@@ -3,7 +3,7 @@
 // 03/24/2025
 // turtle.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 
 class Turtle extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('turtle');

@@ -4,6 +4,7 @@
 // objectValidation.js
 
 class ObjectValidation {
+
     static finiteNumber(value, name = 'value') {
         if (typeof value !== 'number' || !Number.isFinite(value)) {
             throw new Error(`${name} must be a finite number.`);
@@ -57,6 +58,16 @@ class ObjectValidation {
 
         if (!validValues.includes(value)) {
             throw new Error(`${name} must be one of: ${validValues.join(', ')}`);
+        }
+    }
+
+    static instanceOf(value, name = 'value', expectedType) {
+        if (typeof expectedType !== 'function') {
+            throw new Error(`expectedType must be a class or constructor.`);
+        }
+
+        if (!(value instanceof expectedType)) {
+            throw new Error(`${name} must be an instance of ${expectedType.name}.`);
         }
     }
 }

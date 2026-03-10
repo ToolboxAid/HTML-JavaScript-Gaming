@@ -4,7 +4,7 @@
 // 03/24/2025
 // Dozer.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class Dozer extends GameObject {

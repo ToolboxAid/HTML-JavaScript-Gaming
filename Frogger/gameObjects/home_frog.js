@@ -4,7 +4,7 @@
 // 03/24/2025
 // home_frog.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 
 class HomeFrog extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('homeFrog');

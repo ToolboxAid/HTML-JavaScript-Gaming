@@ -3,7 +3,7 @@
 // 03/24/2025
 // aligator.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class Aligator extends GameObject {

@@ -4,7 +4,7 @@
 // 03/24/2025
 // LogMED.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class LogMED extends GameObject {

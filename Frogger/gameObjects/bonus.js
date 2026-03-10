@@ -3,7 +3,7 @@
 // 03/24/2025
 // bonus.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 import CollisionUtils from '../../scripts/physics/collisionUtils.js';
 import SystemUtils from '../../scripts/utils/systemUtils.js';

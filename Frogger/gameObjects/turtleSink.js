@@ -3,7 +3,7 @@
 // 03/24/2025
 // turtleSink.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 
 class TurtleSink extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('turtleSink');
@@ -59,7 +59,7 @@ class TurtleSink extends GameObject {
 
             this.setFrame(this.frame);
 
-            console.log(  `TurtleSink ${this.ID} - Frame: ${this.frame}, Dir: ${this.frameDirection}, Counter: ${this.counter}`);
+            //console.log(  `TurtleSink ${this.ID} - Frame: ${this.frame}, Dir: ${this.frameDirection}, Counter: ${this.counter}`);
         }
     }
 

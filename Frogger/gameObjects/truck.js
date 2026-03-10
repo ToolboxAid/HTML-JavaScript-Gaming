@@ -4,7 +4,7 @@
 // 03/24/2025
 // Truck.js
 
-import GameObject from './gameObject.js';
+import GameObject from '../../scripts/gameObject.js';
 
 class Truck extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('truck');
