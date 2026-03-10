@@ -3,7 +3,7 @@ import { canvasConfig } from './global.js';
 import LevelManager from './levelManager.js';
 
 import GameUI from './gameUI.js';
-import GameObjectManager from '../scripts/gameObjectManager.js';
+import GameObjectSystem from '../scripts/gameObjectSystem.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 // Game Objects
@@ -42,7 +42,7 @@ class AttractMode {
     constructor() {
         // Initialize game components
         this.gameUI = new GameUI();
-        this.gameObjectManager = new GameObjectManager();
+        this.gameObjectSystem = new GameObjectSystem(AttractMode.DEBUG);
 
         this.levelManager = new LevelManager(this);
         this.levelManager.initializeLevel(2);
@@ -74,8 +74,9 @@ class AttractMode {
             homeAlligator.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(homeAlligator);
+        return this.gameObjectSystem.addGameObject(homeAlligator);
     };
+
     createHomeFly = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const homeFly = new HomeFly(
@@ -89,8 +90,9 @@ class AttractMode {
             homeFly.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(homeFly);
+        return this.gameObjectSystem.addGameObject(homeFly);
     };
+
     createHomeFrog = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const homeFrog = new HomeFrog(
@@ -104,8 +106,9 @@ class AttractMode {
             homeFrog.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(homeFrog);
+        return this.gameObjectSystem.addGameObject(homeFrog);
     };
+
     // Water hazard
     createAligator = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
@@ -120,8 +123,9 @@ class AttractMode {
             aligator.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(aligator);
+        return this.gameObjectSystem.addGameObject(aligator);
     };
+
     createLogMED = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const logMED = new LogMED(
@@ -135,8 +139,9 @@ class AttractMode {
             logMED.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(logMED);
+        return this.gameObjectSystem.addGameObject(logMED);
     };
+
     createLogLRG = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const logLRG = new LogLRG(
@@ -150,8 +155,9 @@ class AttractMode {
             logLRG.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(logLRG);
+        return this.gameObjectSystem.addGameObject(logLRG);
     };
+
     createLogSM = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const logSM = new LogSM(
@@ -165,8 +171,9 @@ class AttractMode {
             logSM.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(logSM);
+        return this.gameObjectSystem.addGameObject(logSM);
     };
+
     createTurtle = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const turtle = new Turtle(
@@ -180,8 +187,9 @@ class AttractMode {
             turtle.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(turtle);
+        return this.gameObjectSystem.addGameObject(turtle);
     };
+
     createTurtleSink = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const turtleSink = new TurtleSink(
@@ -195,8 +203,9 @@ class AttractMode {
             turtleSink.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(turtleSink);
+        return this.gameObjectSystem.addGameObject(turtleSink);
     };
+
     createBeaver = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const beaver = new Beaver(
@@ -204,14 +213,14 @@ class AttractMode {
             offsetY + (AttractMode.BASE.SPACING * row) - 10,
             velocityX,
             AttractMode.BASE.VELOCITYY,
-            this.gameObjectManager.getActiveGameObjects()
+            this.gameObjectSystem.getActiveGameObjects()
         );
 
         if (flip) {
             beaver.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(beaver);
+        return this.gameObjectSystem.addGameObject(beaver);
     };
 
     createBonus = (x, row, velocityX, flip = false) => {
@@ -227,10 +236,9 @@ class AttractMode {
             bonus.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(bonus);
+        return this.gameObjectSystem.addGameObject(bonus);
     };
 
-    // Safety zone snakes
     createSnake = (x, row, velocityX, flip = false) => {
         const offsetYwater = 579;
         const offsetY = offsetYwater - 5;
@@ -245,10 +253,9 @@ class AttractMode {
             snake.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(snake);
+        return this.gameObjectSystem.addGameObject(snake);
     };
 
-    // Road
     createCar0 = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const car0 = new Car0(
@@ -262,8 +269,9 @@ class AttractMode {
             car0.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(car0);
+        return this.gameObjectSystem.addGameObject(car0);
     };
+
     createCar1 = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const car1 = new Car1(
@@ -277,8 +285,9 @@ class AttractMode {
             car1.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(car1);
+        return this.gameObjectSystem.addGameObject(car1);
     };
+
     createCar2 = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const car2 = new Car2(
@@ -292,8 +301,9 @@ class AttractMode {
             car2.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(car2);
+        return this.gameObjectSystem.addGameObject(car2);
     };
+
     createDozer = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const dozer = new Dozer(
@@ -307,8 +317,9 @@ class AttractMode {
             dozer.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(dozer);
+        return this.gameObjectSystem.addGameObject(dozer);
     };
+
     createTruck = (x, row, velocityX, flip = false) => {
         const offsetY = AttractMode.BASE.WATER;
         const truck = new Truck(
@@ -322,29 +333,13 @@ class AttractMode {
             truck.setFlip('horizontal');
         }
 
-        return this.gameObjectManager.addGameObject(truck);
+        return this.gameObjectSystem.addGameObject(truck);
     };
 
     initializeGameObjects() {
-        // // Row 11: Home
-        // objectHomeFrog = this.createHomeFrog(homeY + homeOffsetX * 2, -7, 0);
-
-        // objectHomeAlligator = this.createHomeAlligator(homeY + homeOffsetX * 4, -7, 0);
-        // objectHomeAlligator.setBite();
-
-
-        // objectSnake = this.createSnake(500, -4, 50, true);
-        // objectSnake.attachedToObject(objectLog);
-
-        // objectBonus = this.createBonus(400, -3, 36);
-        // objectBonus.attachedToObject(objectLog);        
-
-        // objectBeaver = this.createBeaver(300, -6, 300);
-
-
         if (AttractMode.DEBUG) {
-            console.log(`GameObjects: ${this.gameObjectManager.getActiveGameObjects().length}`);
-            for (const gameObject of this.gameObjectManager.getActiveGameObjects()) {
+            console.log(`GameObjects: ${this.gameObjectSystem.getActiveGameObjects().length}`);
+            for (const gameObject of this.gameObjectSystem.getActiveGameObjects()) {
                 console.log(`GameObject: ${gameObject.type}, Position: (${gameObject.x}, ${gameObject.y}), VelocityX: ${gameObject.velocityX}`);
             }
         }
@@ -355,25 +350,20 @@ class AttractMode {
 
         this.levelManager.update();
 
-        // Update demo timer
         this.demoTimer++;
         if (this.demoTimer >= this.maxDemoTime) {
             this.demoActive = false;
         }
 
-        // Update all gameObjects
-        for (const gameObject of this.gameObjectManager.getActiveGameObjects()) {
-            // Move gameObject
+        for (const gameObject of this.gameObjectSystem.getActiveGameObjects()) {
             gameObject.update(deltaTime);
 
-            // Wrap around screen
             if (gameObject.velocityX > 0 && gameObject.x > CanvasUtils.getConfigWidth() + gameObject.width) {
                 gameObject.x = -gameObject.width;
             } else if (gameObject.velocityX < 0 && gameObject.x < -gameObject.width * 2) {
                 gameObject.x = CanvasUtils.getConfigWidth() + gameObject.width;
             }
 
-            // Check if gameObject is dead
             if (gameObject.isDead()) {
                 if (AttractMode.DEBUG) {
                     console.log(`GameObject is dead: ${gameObject.type}, 
@@ -381,18 +371,15 @@ class AttractMode {
                         VelocityX: ${gameObject.velocityX},
                         ID: ${gameObject.ID}`);
                 }
-                this.gameObjectManager.removeGameObject(gameObject);
+                this.gameObjectSystem.removeGameObject(gameObject);
             }
         }
     }
 
     draw() {
-        // Draw gameUI
         this.gameUI.draw();
 
-        // Draw gameObjects
-        //console.log(this.gameObjectManager.getActiveGameObjects().length);
-        for (const gameObject of this.gameObjectManager.getActiveGameObjects()) {
+        for (const gameObject of this.gameObjectSystem.getActiveGameObjects()) {
             if (!gameObject.isDead()) {
                 gameObject.draw();
             }
@@ -402,7 +389,6 @@ class AttractMode {
     isComplete() {
         return !this.demoActive;
     }
-
 }
 
 export default AttractMode;

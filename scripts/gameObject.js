@@ -35,6 +35,7 @@ class GameObject extends ObjectPNG {
         ObjectValidation.positiveNumber(spriteWidth, 'spriteWidth');
         ObjectValidation.positiveNumber(spriteHeight, 'spriteHeight');
         ObjectValidation.nonEmptyString(type, 'type');
+        ObjectValidation.boolean(debug, 'debug');
 
         super(
             x,
