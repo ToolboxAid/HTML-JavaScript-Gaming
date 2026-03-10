@@ -1,16 +1,17 @@
-// home_fly.js
+// home_alligator.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
-// home_fly.js
+// home_alligator.js
 
 import GameObject from './gameObject.js';
 
-class HomeFly extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('homeFly');
+class HomeAlligator extends GameObject {
+    static DEBUG = new URLSearchParams(window.location.search).has('homeAlligator');
 
     static Frames = Object.freeze({
-        IDLE: 4
+        IDLE: 2,
+        BITE: 3
     });
 
     constructor(x, y, velocityX = 0, velocityY = 0) {
@@ -24,19 +25,27 @@ class HomeFly extends GameObject {
             width, height,
             1.35,
             'black',
-            'homeFly',
+            'homeAlligator',
             velocityX, velocityY,
             5, // frameCount
             5, // framesPerRow
             6  // frameDelay
         );
 
-        this.setFrame(HomeFly.Frames.IDLE);
+        this.setIdle();
+    }
+
+    setIdle() {
+        this.setFrame(HomeAlligator.Frames.IDLE);
+    }
+
+    setBite() {
+        this.setFrame(HomeAlligator.Frames.BITE);
     }
 
     destroy() {
-        if (HomeFly.DEBUG) {
-            console.log('Destroying HomeFly', {
+        if (HomeAlligator.DEBUG) {
+            console.log('Destroying HomeAlligator', {
                 id: this.ID,
                 position: { x: this.x, y: this.y },
                 frame: this.currentFrameIndex
@@ -56,4 +65,4 @@ class HomeFly extends GameObject {
     }
 }
 
-export default HomeFly;
+export default HomeAlligator;

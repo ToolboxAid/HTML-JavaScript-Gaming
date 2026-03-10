@@ -10,30 +10,32 @@ import CollisionUtils from '../../scripts/physics/collisionUtils.js';
 class Snake extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('snake');
 
-    // - Type (snake)
-    // - Sprite management
-    // - Position updates
-
-    constructor(x, y,
-        velocityX, velocityY) {
+    constructor(x, y, velocityX, velocityY) {
         const width = 84;
         const height = 33;
 
-        super(x, y,
-            './assets/images/snake_sprite_84w_33h_4f.png',//spritePath
-            0, 0,//spriteX, spriteY,
-            width, height,//spriteWidth, spriteHeight,
-            1.35,//pixelSize,
-            'black',//transparentColor,
-            'snake',//gameObjectType, 
-            velocityX, velocityY
+        super(
+            x, y,
+            './assets/images/snake_sprite_84w_33h_4f.png',
+            0, 0,
+            width, height,
+            1.35,
+            'black',
+            'snake',
+            velocityX, velocityY,
+            4, // frameCount
+            4, // framesPerRow
+            8  // frameDelay (manual timing still used below)
         );
 
         this.frame = Math.floor(Math.random() * 4);
         this.counter = 0;
 
         this.attachedTo = null;
-        //console.error('Snake created: ' + JSON.stringify(this));
+        this.attachedX = 0;
+        this.direction = 1;
+
+        this.setFrame(this.frame);
     }
 
     attachedToObject(gameObject) {
@@ -41,6 +43,7 @@ class Snake extends GameObject {
         this.attachedX = 0;
         this.direction = 1;
     }
+
     detachedFromObject() {
         this.attachedTo = null;
     }
@@ -49,53 +52,53 @@ class Snake extends GameObject {
         if (this.counter++ > 8) {
             this.counter = 0;
             this.frame++;
+
             if (this.frame > 3) {
                 this.frame = 0;
             }
-            this.spriteX = this.width * this.frame;
+
+            this.setFrame(this.frame);
         }
     }
 
     updateAttached(deltaTime) {
-
         this.attachedX += this.velocityX * deltaTime * this.direction;
         this.y = this.attachedTo.y - 7;
 
         if (this.attachedX + this.boundWidth > this.attachedTo.boundWidth) {
             this.direction = -1;
             this.setFlip('none');
-        } else {
-            if (this.attachedX < 0) {
-                this.direction = 1;
-                this.setFlip('horizontal');
-            }
+        } else if (this.attachedX < 0) {
+            this.direction = 1;
+            this.setFlip('horizontal');
         }
 
         this.x = this.attachedX + this.attachedTo.x;
 
-        // For attached snake, check both snake and attached object
-        if (this.attachedTo &&
-            CollisionUtils.isCompletelyOffScreen(this)) {
-                this.x = -this.boundWidth;
+        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this)) {
+            this.x = -this.boundWidth;
             return;
-        }        
+        }
     }
+
     updateDetached(deltaTime) {
-        super.update(deltaTime);
-        if (this.velocityX < 0) {// moving left
+        super.update(deltaTime, false);
+
+        if (this.velocityX < 0) {
             if (this.x + this.boundWidth < 0) {
                 this.x = CanvasUtils.getConfigWidth() + this.boundWidth;
             }
-        } else {// moving right
+        } else {
             if (this.x > CanvasUtils.getConfigWidth()) {
                 this.x = -this.boundWidth;
             }
         }
     }
+
     update(deltaTime) {
-        if (this.attachedTo) { // Attached to another object
+        if (this.attachedTo) {
             this.updateAttached(deltaTime);
-        } else { // Free form
+        } else {
             this.updateDetached(deltaTime);
         }
 
@@ -103,19 +106,17 @@ class Snake extends GameObject {
     }
 
     draw() {
-        // For attached snake, check both snake and attached object
-        if (this.attachedTo &&
-            //CollisionUtils.isCompletelyOffScreen(this) &&
-            CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
+        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
             return;
         }
+
         super.draw();
     }
 
     destroy() {
         try {
             if (Snake.DEBUG) {
-                console.log(`Destroying Snake`, {
+                console.log('Destroying Snake', {
                     id: this.ID,
                     position: { x: this.x, y: this.y },
                     frame: this.frame,
@@ -126,15 +127,13 @@ class Snake extends GameObject {
                     }
                 });
             }
-    
-            // Clean up Snake-specific properties
+
             this.frame = null;
             this.counter = null;
             this.attachedTo = null;
             this.attachedX = null;
             this.direction = null;
-    
-            // Call parent destroy
+
             const parentDestroyed = super.destroy();
             if (!parentDestroyed) {
                 console.error('Parent GameObject destruction failed:', {
@@ -143,9 +142,8 @@ class Snake extends GameObject {
                 });
                 return false;
             }
-    
+
             return true;
-    
         } catch (error) {
             console.error('Error during Snake destruction:', {
                 error: error.message,
@@ -155,7 +153,6 @@ class Snake extends GameObject {
             return false;
         }
     }
-    
 }
 
 export default Snake;

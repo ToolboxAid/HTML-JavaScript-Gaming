@@ -1,36 +1,30 @@
+// car1.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // Car1.js
 
 import GameObject from './gameObject.js';
-import CanvasUtils from '../../scripts/canvas.js';
 
 class Car1 extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('car1');
 
-    // - Type (Car1)
-    // - Sprite management
-    // - Position updates
-
-    constructor(x, y,
-        velocityX, velocityY) {
+    constructor(x, y, velocityX, velocityY) {
         const width = 48;
         const height = 42;
         const spriteX = 48 * 4;
         const spriteY = 0;
 
-        super(x, y,
-            './assets/images/vehicles_sprite_48w_42h_6f.png',//spritePath
+        super(
+            x, y,
+            './assets/images/vehicles_sprite_48w_42h_6f.png',
             spriteX, spriteY,
-            width, height,//spriteWidth, spriteHeight,
-            1.35,//pixelSize,
-            'black',//transparentColor,
-            'Car1',//gameObjectType, 
+            width, height,
+            1.35,
+            'black',
+            'Car1',
             velocityX, velocityY
         );
-
-        this.frame = 0;
     }
 
     update(deltaTime) {
@@ -42,18 +36,16 @@ class Car1 extends GameObject {
     }
 
     destroy() {
-        // Log destruction if debug is enabled
         if (Car1.DEBUG) {
-            console.log(`Destroying Car1 at position (${this.x}, ${this.y}, ${this.ID})`);
+            console.log('Destroying Car1', {
+                id: this.ID,
+                position: { x: this.x, y: this.y },
+                velocity: { x: this.velocityX, y: this.velocityY }
+            });
         }
 
-        // Reset Car1-specific properties
-        this.frame = null;
-
-        // Call parent destructor
         return super.destroy();
     }
-
 }
 
 export default Car1;

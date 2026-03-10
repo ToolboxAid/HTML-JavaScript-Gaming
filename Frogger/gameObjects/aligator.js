@@ -9,77 +9,87 @@ import CanvasUtils from '../../scripts/canvas.js';
 class Aligator extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('aligator');
 
-    // - Type (aligator)
-    // - Sprite management
-    // - Position updates
-
-    constructor(x, y,
-        velocityX, velocityY) {
+    constructor(x, y, velocityX, velocityY) {
         const width = 48 * 3;
         const height = 48;
 
-        super(x, y,
-            './assets/images/aligator_sprite_48w_48h_6f.png',//spritePath
-            0, 0,//spriteX, spriteY,
-            width, height,//spriteWidth, spriteHeight,
-            1.35,//pixelSize,
-            'black',//transparentColor,
-            'aligator',//gameObjectType, 
-            velocityX, velocityY
+        super(
+            x, y,
+            './assets/images/aligator_sprite_48w_48h_6f.png',
+            0, 0,
+            width, height,
+            1.35,
+            'black',
+            'aligator',
+            velocityX, velocityY,
+            2, // two wide strips: normal and alt
+            2, // one row with two composite frames
+            40
         );
 
         this.frame = 0;
         this.counter = 0;
+        this.biteMode = false;
+
+        this.setFrame(0);
     }
 
     setBite() {
-        this.spriteX += this.width * 3;
+        this.biteMode = true;
+        this.frame = 1;
+        this.setFrame(1);
+    }
+
+    clearBite() {
+        this.biteMode = false;
+        this.frame = 0;
+        this.setFrame(0);
     }
 
     update(deltaTime) {
-        super.update(deltaTime);
+        super.update(deltaTime, false);
 
-        // moving right
         if (this.x > CanvasUtils.getConfigWidth()) {
             this.setIsDead();
+            return;
         }
 
-
-        if (this.counter++ > 40) {
+        if (!this.biteMode && this.counter++ > 40) {
             this.counter = 0;
             this.frame++;
+
             if (this.frame > 1) {
                 this.frame = 0;
             }
-            this.spriteX = this.width * this.frame;
+
+            this.setFrame(this.frame);
         }
     }
 
     destroy() {
         if (Aligator.DEBUG) {
-            console.log(`Destroying Aligator`, {
+            console.log('Destroying Aligator', {
                 id: this.ID,
                 position: { x: this.x, y: this.y },
                 frame: this.frame,
                 counter: this.counter,
-                sprite: { x: this.spriteX, width: this.width }
+                biteMode: this.biteMode
             });
         }
-    
-        // Store values for final logging
+
         const finalState = {
             id: this.ID,
             type: this.type,
             position: { x: this.x, y: this.y },
             frame: this.frame,
-            counter: this.counter
+            counter: this.counter,
+            biteMode: this.biteMode
         };
-    
-        // Clean up Aligator-specific properties
+
         this.frame = null;
         this.counter = null;
-    
-        // Call parent destroy
+        this.biteMode = null;
+
         const parentDestroyed = super.destroy();
         if (!parentDestroyed) {
             console.error('Parent GameObject destruction failed:', {
@@ -88,14 +98,13 @@ class Aligator extends GameObject {
             });
             return false;
         }
-    
+
         if (Aligator.DEBUG) {
-            console.log(`Successfully destroyed Aligator`, finalState);
+            console.log('Successfully destroyed Aligator', finalState);
         }
-    
+
         return true;
     }
-
 }
 
 export default Aligator;

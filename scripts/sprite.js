@@ -79,7 +79,6 @@ class Sprite {
             const char = text[i];
             const frame = Font5x6.getLayerDataByKey(char) || Font5x6.getLayerDataByKey(' ');
 
-            // Add each line of the character frame to the sprite
             for (let row = 0; row < charHeight; row++) {
                 sprite[row] += frame[row] + emptyRow;
             }

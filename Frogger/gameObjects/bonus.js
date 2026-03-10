@@ -7,15 +7,10 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 import CollisionUtils from '../../scripts/physics/collisionUtils.js';
 import SystemUtils from '../../scripts/utils/systemUtils.js';
-import AngleUtils from '../../scripts/math/angleUtils.js';
 
 class Bonus extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('bonus');
 
-    // - Type (bonus)
-    // - Sprite management
-    // - Position updates
-    // Add static enum for states
     static State = Object.freeze({
         IDLE: 'idle',
         JUMPING0: 'jumping0',
@@ -25,31 +20,40 @@ class Bonus extends GameObject {
         TURNING1: 'turning1',
     });
 
-    constructor(x, y,
-        velocityX, velocityY) {
+    static moveIdle = 60;
+    static moveDelay = 3;
+    static moveSize = 30;
+
+    constructor(x, y, velocityX, velocityY) {
         const width = 36;
         const height = 42;
 
-        super(x, y,
-            './assets/images/bonus_sprite_36w_42h_6f.png',//spritePath
-            0, 0,//spriteX, spriteY,
-            width, height,//spriteWidth, spriteHeight,
-            1.35,//pixelSize,
-            'black',//transparentColor,
-            'bonus',//gameObjectType, 
-            velocityX, velocityY
+        super(
+            x, y,
+            './assets/images/bonus_sprite_36w_42h_6f.png',
+            0, 0,
+            width, height,
+            1.35,
+            'black',
+            'bonus',
+            velocityX, velocityY,
+            6, // frameCount
+            6, // framesPerRow
+            6  // frameDelay (manual state timing still used below)
         );
 
-        this.type = 'bonus';
-        this.frame = 0;//Math.floor(Math.random() * 4);
-        this.frameOffset = 0;
+        this.frame = 0;
+        this.animationBank = 0; // 0 or 3
         this.counter = 0;
 
         this.attachedTo = null;
+        this.attachedX = 0;
+        this.direction = 1;
 
         this.state = Bonus.State.IDLE;
 
-        this.rotation = AngleUtils.toRadians(270);
+        this.setRotation(270);
+        this.setBonusFrame(2);
     }
 
     attachedToObject(gameObject) {
@@ -60,15 +64,28 @@ class Bonus extends GameObject {
 
     detachedFromObject() {
         this.attachedTo = null;
+        this.attachedX = 0;
     }
 
     setState(state) {
         this.state = state;
     }
 
-    static moveIdle = 60;
-    static moveDelay = 3;
-    static moveSize = 30;//36;//
+    setAnimationBank(bankStart = 0) {
+        this.animationBank = bankStart;
+        this.setBonusFrame(this.frame);
+    }
+
+    toggleAnimationBank() {
+        this.animationBank = this.animationBank === 0 ? 3 : 0;
+        this.setBonusFrame(this.frame);
+    }
+
+    setBonusFrame(localFrame = 0) {
+        this.frame = localFrame;
+        this.setFrame(this.animationBank + this.frame);
+    }
+
     updateAttached(deltaTime) {
         this.y = this.attachedTo.y - 7;
 
@@ -76,16 +93,18 @@ class Bonus extends GameObject {
             case Bonus.State.IDLE:
                 if (this.counter++ > Bonus.moveIdle) {
                     this.counter = 0;
-                    this.frame = 2;
+                    this.setBonusFrame(2);
+
                     const angle = this.direction === 1 ? 90 : 270;
                     this.setRotation(angle);
+
                     this.setState(Bonus.State.JUMPING0);
                 }
                 break;
 
             case Bonus.State.JUMPING0:
-                this.frame = 1;
-                this.attachedX += Bonus.moveSize/Bonus.moveDelay/2 * this.direction;
+                this.setBonusFrame(1);
+                this.attachedX += (Bonus.moveSize / Bonus.moveDelay / 2) * this.direction;
 
                 if (this.counter++ > Bonus.moveDelay) {
                     this.counter = 0;
@@ -94,8 +113,8 @@ class Bonus extends GameObject {
                 break;
 
             case Bonus.State.JUMPING1:
-                this.frame = 0;
-                this.attachedX += Bonus.moveSize/Bonus.moveDelay/2 * this.direction;
+                this.setBonusFrame(0);
+                this.attachedX += (Bonus.moveSize / Bonus.moveDelay / 2) * this.direction;
 
                 if (this.counter++ > Bonus.moveDelay) {
                     this.counter = 0;
@@ -104,24 +123,22 @@ class Bonus extends GameObject {
                 break;
 
             case Bonus.State.JUMPING2:
-                this.frame = 2;
+                this.setBonusFrame(2);
                 this.setState(Bonus.State.IDLE);
 
-                if (this.attachedX + (this.boundWidth*1.5) >= this.attachedTo.boundWidth) {
+                if (this.attachedX + (this.boundWidth * 1.5) >= this.attachedTo.boundWidth) {
                     this.direction = -1;
-                    this.state = Bonus.State.TURNING0;
-                } else {
-                    if (this.attachedX <= 0) {
-                        this.direction = 1;
-                        this.state = Bonus.State.TURNING0;
-                    }
+                    this.setState(Bonus.State.TURNING0);
+                } else if (this.attachedX <= 0) {
+                    this.direction = 1;
+                    this.setState(Bonus.State.TURNING0);
                 }
                 break;
 
             case Bonus.State.TURNING0:
                 if (this.counter++ > Bonus.moveIdle) {
                     this.counter = 0;
-                    this.frame = 2;
+                    this.setBonusFrame(2);
                     this.setRotation(0);
                     this.setState(Bonus.State.TURNING1);
                 }
@@ -130,93 +147,84 @@ class Bonus extends GameObject {
             case Bonus.State.TURNING1:
                 if (this.counter++ > Bonus.moveIdle) {
                     this.counter = 0;
-                    this.frame = 2;
-                    const angle1 = this.direction === 1 ? 90 : 270;
-                    this.setRotation(angle1);
-                    this.setState(Bonus.State.IDLE);
+                    this.setBonusFrame(2);
 
-                    if (this.frameOffset === 0) {
-                        this.frameOffset = 3;
-                    }                    else {
-                        this.frameOffset = 0;
-                    }
+                    const angle = this.direction === 1 ? 90 : 270;
+                    this.setRotation(angle);
+
+                    this.toggleAnimationBank();
+                    this.setState(Bonus.State.IDLE);
                 }
                 break;
 
             default:
                 console.warn(`Unknown bonus state: ${this.state}`);
                 this.setState(Bonus.State.IDLE);
+                this.setBonusFrame(2);
         }
-
 
         this.x = this.attachedX + this.attachedTo.x;
 
-        // For attached bonus, check both bonus and attached object
         if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this)) {
             this.x = -this.boundWidth;
             return;
         }
     }
+
     updateDetached(deltaTime) {
-        super.update(deltaTime);
-        if (this.velocityX < 0) {// moving left
+        super.update(deltaTime, false);
+
+        if (this.velocityX < 0) {
             if (this.x + this.boundWidth < 0) {
                 this.x = CanvasUtils.getConfigWidth() + this.boundWidth;
             }
-        } else {// moving right
+        } else {
             if (this.x > CanvasUtils.getConfigWidth()) {
                 this.x = -this.boundWidth;
             }
         }
     }
+
     update(deltaTime) {
-        // Handle attachment state first
         if (SystemUtils.getObjectType(this) === 'frog') {
             this.attachedTo = null;
             this.setState(Bonus.State.IDLE);
-            console.error('Detached from frog: ' + JSON.stringify(this));
         } else if (this.attachedTo) {
             this.updateAttached(deltaTime);
         } else {
             this.updateDetached(deltaTime);
         }
-
-        // Update sprite position based on frame
-        this.spriteX = this.width * (this.frame+this.frameOffset);
     }
 
     draw() {
-        // For attached bonus, check both bonus and attached object
-        if (this.attachedTo &&
-            CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
+        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
             return;
         }
+
         super.draw();
     }
 
     destroy() {
         try {
             if (Bonus.DEBUG) {
-                console.log(`Destroying Bonus`, {
+                console.log('Destroying Bonus', {
                     id: this.ID,
                     position: { x: this.x, y: this.y },
                     state: this.state,
                     frame: this.frame,
+                    animationBank: this.animationBank,
                     attachedTo: this.attachedTo?.type
                 });
             }
-    
-            // Clean up Bonus-specific properties
+
             this.frame = null;
-            this.frameOffset = null;
+            this.animationBank = null;
             this.counter = null;
             this.attachedTo = null;
             this.attachedX = null;
             this.direction = null;
             this.state = null;
-            this.rotation = null;
-    
-            // Call parent destroy
+
             const parentDestroyed = super.destroy();
             if (!parentDestroyed) {
                 console.error('Parent GameObject destruction failed:', {
@@ -225,9 +233,8 @@ class Bonus extends GameObject {
                 });
                 return false;
             }
-    
+
             return true;
-    
         } catch (error) {
             console.error('Error during Bonus destruction:', {
                 error: error.message,
@@ -237,7 +244,6 @@ class Bonus extends GameObject {
             return false;
         }
     }
-
 }
 
 export default Bonus;

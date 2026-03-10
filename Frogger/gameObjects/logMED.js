@@ -1,3 +1,4 @@
+// logMED.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
@@ -7,37 +8,29 @@ import GameObject from './gameObject.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 class LogMED extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('LogMED');
+    static DEBUG = new URLSearchParams(window.location.search).has('logMED');
 
-    // - Type (LogMED)
-    // - Sprite management
-    // - Position updates
-
-    constructor(x, y,
-        velocityX, velocityY) {
+    constructor(x, y, velocityX, velocityY) {
         const spriteX = 60 * 2;
         const spriteY = 0;
         const width = 60 * 3;
         const height = 30;
 
-
-        super(x, y,
-            './assets/images/log_sprite_60w_30h_10f.png',//spritePath
+        super(
+            x, y,
+            './assets/images/log_sprite_60w_30h_10f.png',
             spriteX, spriteY,
-            width, height,//spriteWidth, spriteHeight,
-            1.35,//pixelSize,
-            'black',//transparentColor,
-            'LogMED',//gameObjectType, 
+            width, height,
+            1.35,
+            'black',
+            'LogMED',
             velocityX, velocityY
         );
-
-        this.frame = 0;
     }
 
     update(deltaTime) {
         super.update(deltaTime);
 
-        // moving right
         if (this.x > CanvasUtils.getConfigWidth()) {
             this.setIsDead();
         }
@@ -45,26 +38,13 @@ class LogMED extends GameObject {
 
     destroy() {
         if (LogMED.DEBUG) {
-            console.log(`Destroying LogMED`, {
+            console.log('Destroying LogMED', {
                 id: this.ID,
                 position: { x: this.x, y: this.y },
-                frame: this.frame,
                 velocity: { x: this.velocityX, y: this.velocityY }
             });
         }
-    
-        // Store values for final logging
-        const finalState = {
-            id: this.ID,
-            type: this.type,
-            position: { x: this.x, y: this.y },
-            frame: this.frame
-        };
-    
-        // Clean up LogMED-specific properties
-        this.frame = null;
-    
-        // Call parent destroy
+
         const parentDestroyed = super.destroy();
         if (!parentDestroyed) {
             console.error('Parent GameObject destruction failed:', {
@@ -73,14 +53,9 @@ class LogMED extends GameObject {
             });
             return false;
         }
-    
-        if (LogMED.DEBUG) {
-            console.log(`Successfully destroyed LogMED`, finalState);
-        }
-    
+
         return true;
     }
-
 }
 
 export default LogMED;
