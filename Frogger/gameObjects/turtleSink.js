@@ -14,15 +14,15 @@ class TurtleSink extends GameObject {
 
         super(
             x, y,
-            './assets/images/turtle_sprite_45w_33h_5f.png',
+            './assets/images/turtle_sprite_45w_33h_6f.png',
             0, 0,
             width, height,
             1.35,
             'black',
             'turtleSink',
             velocityX, velocityY,
-            5, // frameCount
-            5, // framesPerRow
+            6, // frameCount
+            6, // framesPerRow
             30 // frameDelay
         );
 
@@ -40,23 +40,26 @@ class TurtleSink extends GameObject {
             return;
         }
 
-        if (this.counter++ > this.frameDelay) {
+        if (this.counter++ >= this.frameDelay) {
             this.counter = 0;
             this.frame += this.frameDirection;
 
             if (this.frameDirection > 0) {
-                if (this.frame > 4) {
-                    this.frame = 4;
+                const lastFrameIndex = this.frameCount - 1;
+                if (this.frame >= lastFrameIndex) {
+                    this.frame = lastFrameIndex;
                     this.frameDirection = -1;
                 }
             } else {
-                if (this.frame < 3) {
+                if (this.frame <= 0) {
                     this.frame = 0;
                     this.frameDirection = 1;
                 }
             }
 
             this.setFrame(this.frame);
+
+            console.log(  `TurtleSink ${this.ID} - Frame: ${this.frame}, Dir: ${this.frameDirection}, Counter: ${this.counter}`);
         }
     }
 
