@@ -4,79 +4,47 @@
 // turtle.js
 
 import GameObject from './gameObject.js';
-import CanvasUtils from '../../scripts/canvas.js';
 
 class Turtle extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('turtle');
 
-    // - Type (turtle)
-    // - Sprite management
-    // - Position updates
-
-    constructor(x, y,
-        velocityX, velocityY) {
+    constructor(x, y, velocityX, velocityY) {
         const width = 45;
-        const height = 30;
-        const spriteX = 0;
-        const spriteY = 0;
-        super(x, y,
-            './assets/images/turtle_sprite_45w_33h_5f.png',//spritePath
-            spriteX, spriteY,
-            width, height,//spriteWidth, spriteHeight,
-            1.35,//pixelSize,
-            'black',//transparentColor,
-            'turtle',//gameObjectType, 
-            velocityX, velocityY
-        );
+        const height = 33;
 
-        this.frame = 0;
-        this.counter = 0;
+        super(
+            x, y,
+            './assets/images/turtle_sprite_45w_33h_5f.png',
+            0, 0,
+            width, height,
+            1.35,
+            'black',
+            'turtle',
+            velocityX, velocityY,
+            3, // frameCount
+            3, // framesPerRow
+            20 // frameDelay
+        );
     }
 
     update(deltaTime) {
         super.update(deltaTime);
 
-        if (this.velocityX < 0) {// moving left
-            if (this.x + (this.width * this.pixelSize) < 0) {
-                this.setIsDead();
-            }
-        }
-
-        if (this.counter++ > 20) {
-            this.counter = 0;
-            this.frame++;
-                if (this.frame > 2) {
-                    this.frame = 0;
-                }
-            this.spriteX = this.width * this.frame;
+        if (this.velocityX < 0 && this.x + (this.width * this.pixelSize) < 0) {
+            this.setIsDead();
         }
     }
 
     destroy() {
         if (Turtle.DEBUG) {
-            console.log(`Destroying Turtle`, {
+            console.log('Destroying Turtle', {
                 id: this.ID,
                 position: { x: this.x, y: this.y },
-                frame: this.frame,
-                counter: this.counter,
-                velocity: { x: this.velocityX, y: this.velocityY }
+                velocity: { x: this.velocityX, y: this.velocityY },
+                frame: this.currentFrameIndex
             });
         }
-    
-        // Store values for final logging
-        const finalState = {
-            id: this.ID,
-            type: this.type,
-            position: { x: this.x, y: this.y },
-            frame: this.frame,
-            counter: this.counter
-        };
-    
-        // Clean up Turtle-specific properties
-        this.frame = null;
-        this.counter = null;
-    
-        // Call parent destroy
+
         const parentDestroyed = super.destroy();
         if (!parentDestroyed) {
             console.error('Parent GameObject destruction failed:', {
@@ -85,14 +53,9 @@ class Turtle extends GameObject {
             });
             return false;
         }
-    
-        if (Turtle.DEBUG) {
-            console.log(`Successfully destroyed Turtle`, finalState);
-        }
-    
+
         return true;
     }
-    
 }
 
 export default Turtle;

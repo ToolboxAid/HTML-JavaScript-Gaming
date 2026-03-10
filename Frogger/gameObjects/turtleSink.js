@@ -14,27 +14,30 @@ class TurtleSink extends GameObject {
 
         super(
             x, y,
-            './assets/images/turtle_sprite_45w_33h_5f.png', // spritePath
-            0, 0,                                           // spriteX, spriteY
-            width, height,                                  // spriteWidth, spriteHeight
-            1.35,                                           // pixelSize
-            'black',                                        // transparentColor
-            'turtleSink',                                   // gameObjectType
-            velocityX, velocityY
+            './assets/images/turtle_sprite_45w_33h_5f.png',
+            0, 0,
+            width, height,
+            1.35,
+            'black',
+            'turtleSink',
+            velocityX, velocityY,
+            5, // frameCount
+            5, // framesPerRow
+            6
         );
 
         this.frame = 0;
         this.frameDirection = 1;
         this.counter = 0;
+        this.setFrame(0);
     }
 
     update(deltaTime) {
-        super.update(deltaTime);
+        super.update(deltaTime, false);
 
-        if (this.velocityX < 0) {
-            if (this.x + (this.width * this.pixelSize) < 0) {
-                this.setIsDead();
-            }
+        if (this.velocityX < 0 && this.x + (this.width * this.pixelSize) < 0) {
+            this.setIsDead();
+            return;
         }
 
         if (this.counter++ > 20) {
@@ -43,6 +46,7 @@ class TurtleSink extends GameObject {
 
             if (this.frameDirection > 0) {
                 if (this.frame > 4) {
+                    this.frame = 4;
                     this.frameDirection = -1;
                 }
             } else {
@@ -52,8 +56,7 @@ class TurtleSink extends GameObject {
                 }
             }
 
-            // Manual sprite-sheet animation
-            this.spriteX = this.width * this.frame;
+            this.setFrame(this.frame);
         }
     }
 
@@ -69,15 +72,6 @@ class TurtleSink extends GameObject {
             });
         }
 
-        const finalState = {
-            id: this.ID,
-            type: this.type,
-            position: { x: this.x, y: this.y },
-            frame: this.frame,
-            frameDirection: this.frameDirection,
-            counter: this.counter
-        };
-
         this.frame = null;
         this.frameDirection = null;
         this.counter = null;
@@ -89,10 +83,6 @@ class TurtleSink extends GameObject {
                 type: this.type
             });
             return false;
-        }
-
-        if (TurtleSink.DEBUG) {
-            console.log('Successfully destroyed TurtleSink', finalState);
         }
 
         return true;

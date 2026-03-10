@@ -365,6 +365,13 @@ class ObjectPNG extends ObjectKillable {
             return;
         }
 
+        console.log('drawSheetPreview rect', {
+            frameWidth: this.frameWidth,
+            frameHeight: this.frameHeight,
+            spritePath: this.spritePath,
+            type: this.type
+        });
+
         const sheetW = this.png.width * scale;
         const sheetH = this.png.height * scale;
 
@@ -374,10 +381,7 @@ class ObjectPNG extends ObjectKillable {
             ? Math.floor(this.spriteX / this.frameWidth)
             : 0;
 
-        const sx = this.spriteX;
-        const sy = this.spriteY;
-        const sw = this.frameWidth;
-        const sh = this.frameHeight;
+        const { sx, sy, sw, sh } = this.getCurrentSourceRect();
 
         CanvasUtils.ctx.save();
 
@@ -418,8 +422,8 @@ class ObjectPNG extends ObjectKillable {
         }
 
         try {
-            const scaledWidth = this.frameWidth * this.pixelSize;
-            const scaledHeight = this.frameHeight * this.pixelSize;
+            const scaledWidth = Math.round(this.frameWidth * this.pixelSize);
+            const scaledHeight = Math.round(this.frameHeight * this.pixelSize);
 
             const frameOffset = this.getFrameOffset(this.currentFrameIndex);
 
@@ -428,10 +432,7 @@ class ObjectPNG extends ObjectKillable {
 
             // Manual sprite-sheet mode:
             // draw uses spriteX/spriteY directly
-            const sx = this.spriteX;
-            const sy = this.spriteY;
-            const sw = this.frameWidth;
-            const sh = this.frameHeight;
+            const { sx, sy, sw, sh } = this.getCurrentSourceRect();
 
             ObjectDebug.log(ObjectPNG.DEBUG, 'ObjectPNG frame debug', {
                 spritePath: this.spritePath,
@@ -491,11 +492,11 @@ class ObjectPNG extends ObjectKillable {
                     sx,
                     sy,
                     sw,
-                    sh+5,
+                    sh,
                     -scaledWidth / 2,
                     -scaledHeight / 2,
                     scaledWidth,
-                    scaledHeight+5
+                    scaledHeight
                 );
             }
 

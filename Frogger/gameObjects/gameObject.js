@@ -16,7 +16,11 @@ class GameObject extends ObjectPNG {
         pixelSize,
         transparentColor,
         gameObjectType,
-        velocityX, velocityY
+        velocityX = 0, velocityY = 0,
+        frameCount = 1,
+        framesPerRow = 1,
+        frameDelay = 6,
+        frameOffsets = null
     ) {
         super(
             x, y,
@@ -25,7 +29,11 @@ class GameObject extends ObjectPNG {
             spriteWidth, spriteHeight,
             pixelSize,
             transparentColor,
-            velocityX, velocityY
+            velocityX, velocityY,
+            frameCount,
+            framesPerRow,
+            frameDelay,
+            frameOffsets
         );
 
         this.type = gameObjectType;
@@ -41,6 +49,9 @@ class GameObject extends ObjectPNG {
                     spriteY: this.spriteY,
                     frameWidth: this.frameWidth,
                     frameHeight: this.frameHeight,
+                    frameCount: this.frameCount,
+                    framesPerRow: this.framesPerRow,
+                    frameDelay: this.frameDelay,
                     pixelSize: this.pixelSize
                 }
             });
