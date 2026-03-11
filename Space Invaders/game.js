@@ -5,7 +5,7 @@
 
 import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenConfig, playerSelect, shieldConfig } from './global.js'; // Assuming these contain canvas and sprite details
 
-import GameBase from '../scripts/gamebase.js';
+import GameBase from '../scripts/gameBase.js';
 
 import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import GameUtils from '../scripts/game/gameUtils.js';

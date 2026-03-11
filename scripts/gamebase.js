@@ -3,10 +3,10 @@
 // 01/31/2025
 // gameBase.js
 
-import CanvasUtils from "../scripts/canvas.js";
-import Colors from "../scripts/colors.js";
+import CanvasUtils from "./canvas.js";
+import Colors from "./colors.js";
 import Fullscreen from "./fullscreen.js";
-import PerformanceMonitor from "../scripts/performacneMonitor.js";
+import PerformanceMonitor from "./performacneMonitor.js";
 
 class GameBase {
 

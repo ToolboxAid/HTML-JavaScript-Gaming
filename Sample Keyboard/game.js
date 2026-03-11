@@ -4,7 +4,7 @@
 // game.js - Sample Keyboard
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
-import GameBase from '../scripts/gamebase.js';
+import GameBase from '../scripts/gameBase.js';
 
 import KeyboardInput from '../scripts/input/keyboard.js';
 import CanvasUtils from '../scripts/canvas.js';

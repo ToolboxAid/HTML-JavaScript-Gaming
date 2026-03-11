@@ -4,7 +4,7 @@
 // game.js - Template Game Engine
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
-import GameBase from '../scripts/gamebase.js';
+import GameBase from '../scripts/gameBase.js';
 
 import ParticleExplosion from '../scripts/gfx/particleExplosion.js';
 
