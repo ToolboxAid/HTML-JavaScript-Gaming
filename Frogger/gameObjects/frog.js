@@ -1,4 +1,4 @@
-import ObjectPNG from '../../scripts/objectPNG.js';
+import ObjectPNG from '../../scripts/objects/objectPNG.js';
 import CanvasUtils from '../../scripts/canvas.js';
 
 /*

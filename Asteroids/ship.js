@@ -6,7 +6,7 @@
 import { canvasConfig } from './global.js';
 import AngleUtils from '../scripts/math/angleUtils.js';
 import CanvasUtils from '../scripts/canvas.js';
-import ObjectVector from '../scripts/objectVector.js';
+import ObjectVector from '../scripts/objects/objectVector.js';
 
 import AsteroidManager from './asteroidManager.js';
 import BulletManager from './bulletManager.js';

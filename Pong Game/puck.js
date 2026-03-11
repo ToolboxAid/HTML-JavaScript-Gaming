@@ -6,7 +6,7 @@
 import { canvasConfig, puckConfig } from './global.js'; // Import puck & canvas configuration
 
 import CanvasUtils from '../scripts/canvas.js';
-import ObjectDynamic from '../scripts/objectDynamic.js';
+import ObjectDynamic from '../scripts/objects/objectDynamic.js';
 import AngleUtils from '../scripts/math/angleUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 import Timer from '../scripts/utils/timer.js';

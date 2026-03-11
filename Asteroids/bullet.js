@@ -4,7 +4,7 @@
 // 11/20/2024
 // bullet.js
 
-import ObjectVector from '../scripts/objectVector.js';
+import ObjectVector from '../scripts/objects/objectVector.js';
 
 class Bullet extends ObjectVector {
 

@@ -3,7 +3,7 @@
 // Global Game Object
 // 03/2026
 
-import ObjectPNG from './objectPNG.js';
+import ObjectPNG from './objects/objectPNG.js';
 import ObjectDebug from './utils/objectDebug.js';
 import ObjectValidation from './utils/objectValidation.js';
 

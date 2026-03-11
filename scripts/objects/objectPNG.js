@@ -3,12 +3,12 @@
 // 10/24/2024
 // objectPNG.js
 
-import CanvasUtils from './canvas.js';
+import CanvasUtils from '../canvas.js';
 import ObjectKillable from './objectKillable.js';
-import SystemUtils from './utils/systemUtils.js';
-import AngleUtils from './math/angleUtils.js';
-import ObjectValidation from './utils/objectValidation.js';
-import ObjectDebug from './utils/objectDebug.js';
+import SystemUtils from '../utils/systemUtils.js';
+import AngleUtils from '../math/angleUtils.js';
+import ObjectValidation from '../utils/objectValidation.js';
+import ObjectDebug from '../utils/objectDebug.js';
 
 class ObjectPNG extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');

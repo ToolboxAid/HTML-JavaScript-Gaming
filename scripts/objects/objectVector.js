@@ -4,13 +4,13 @@
 // objectVector.js
 
 import ObjectKillable from './objectKillable.js';
-import CanvasUtils from './canvas.js';
-import AngleUtils from '../scripts/math/angleUtils.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js';
-import SystemUtils from './utils/systemUtils.js';
-import ObjectValidation from './utils/objectValidation.js';
-import ObjectCleanup from './utils/objectCleanup.js';
-import ObjectDebug from './utils/objectDebug.js';
+import CanvasUtils from '../canvas.js';
+import AngleUtils from '../math/angleUtils.js';
+import CollisionUtils from '../physics/collisionUtils.js';
+import SystemUtils from '../utils/systemUtils.js';
+import ObjectValidation from '../utils/objectValidation.js';
+import ObjectCleanup from '../utils/objectCleanup.js';
+import ObjectDebug from '../utils/objectDebug.js';
 
 class ObjectVector extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectVector');

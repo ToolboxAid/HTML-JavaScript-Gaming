@@ -3,10 +3,10 @@
 // 10/16/2024
 // objectDynamic.js
 
-import ObjectStatic from '../scripts/objectStatic.js';
-import SystemUtils from "../scripts/utils/systemUtils.js";
-import ObjectValidation from "../scripts/utils/objectValidation.js";
-import ObjectDebug from "../scripts/utils/objectDebug.js";
+import ObjectStatic from './objectStatic.js';
+import SystemUtils from "../utils/systemUtils.js";
+import ObjectValidation from "../utils/objectValidation.js";
+import ObjectDebug from "../utils/objectDebug.js";
 
 /**
  * Represents a dynamic object in a game that can move based on velocity.

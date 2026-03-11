@@ -4,7 +4,7 @@
 // 11/20/2024
 // ufo.js
 
-import ObjectVector from '../scripts/objectVector.js';
+import ObjectVector from '../scripts/objects/objectVector.js';
 import AngleUtils from '../scripts/math/angleUtils.js';
 import BulletManager from './bulletManager.js';
 import CanvasUtils from '../scripts/canvas.js';

@@ -7,7 +7,7 @@ import { canvasConfig, enemyConfig, spriteConfig } from './global.js';
 
 import RandomUtils from '../scripts/math/randomUtils.js';
 
-import ObjectSprite from '../scripts/objectSprite.js';
+import ObjectSprite from '../scripts/objects/objectSprite.js';
 import Sprite from '../scripts/sprite.js';
 
 class Enemy extends ObjectSprite {

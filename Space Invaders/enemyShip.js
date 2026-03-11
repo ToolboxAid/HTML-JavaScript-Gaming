@@ -8,7 +8,7 @@ import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 
 
-import ObjectSprite from '../scripts/objectSprite.js';
+import ObjectSprite from '../scripts/objects/objectSprite.js';
 import Sprite from '../scripts/sprite.js';
 import Timer from '../scripts/utils/timer.js';
 

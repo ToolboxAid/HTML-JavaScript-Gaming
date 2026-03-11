@@ -3,7 +3,7 @@
 // 11/19/2024
 // asteroid.js
 
-import ObjectVector from '../scripts/objectVector.js';
+import ObjectVector from '../scripts/objects/objectVector.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 
 class Asteroid extends ObjectVector {

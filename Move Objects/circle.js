@@ -4,7 +4,7 @@
 // 10/16/2024
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
-import ObjectDynamic from '../scripts/objectDynamic.js'; // Import ObjectDynamic
+import ObjectDynamic from '../scripts/objects/objectDynamic.js'; // Import ObjectDynamic
 import CanvasUtils from '../scripts/canvas.js';
 
 import RandomUtils from '../scripts/math/randomUtils.js';

@@ -4,9 +4,9 @@
 // objectKillable.js
 
 import ObjectDynamic from './objectDynamic.js';
-import SystemUtils from './utils/systemUtils.js';
-import ObjectValidation from './utils/objectValidation.js';
-import ObjectDebug from './utils/objectDebug.js';
+import SystemUtils from '../utils/systemUtils.js';
+import ObjectValidation from '../utils/objectValidation.js';
+import ObjectDebug from '../utils/objectDebug.js';
 
 class ObjectKillable extends ObjectDynamic {
     static DEBUG = new URLSearchParams(window.location.search).has('objectKillable');

@@ -3,10 +3,10 @@
 // 10/16/2024
 // objectStatic.js
 
-import CanvasUtils from "../scripts/canvas.js";
-import ObjectValidation from "../scripts/utils/objectValidation.js";
-import ObjectCleanup from "../scripts/utils/objectCleanup.js";
-import ObjectDebug from "../scripts/utils/objectDebug.js";
+import CanvasUtils from "../canvas.js";
+import ObjectValidation from "../utils/objectValidation.js";
+import ObjectCleanup from "../utils/objectCleanup.js";
+import ObjectDebug from "../utils/objectDebug.js";
 
 /**
  * Represents a static object in a game that cannot move.

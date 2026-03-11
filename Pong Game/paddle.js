@@ -4,7 +4,7 @@
 // paddle.js
 
 import { canvasConfig, paddleConfig } from './global.js';
-import ObjectStatic from '../scripts/objectStatic.js';
+import ObjectStatic from '../scripts/objects/objectStatic.js';
 import AudioFrequency from '../scripts/output/audioFrequency.js';
 import CanvasUtils from '../scripts/canvas.js';
 

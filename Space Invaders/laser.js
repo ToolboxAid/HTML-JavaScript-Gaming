@@ -3,7 +3,7 @@
 // 10/24/2024
 // laser.js
 
-import ObjectDynamic from '../scripts/objectDynamic.js';
+import ObjectDynamic from '../scripts/objects/objectDynamic.js';
 import { canvasConfig, spriteConfig } from './global.js';
 
 import CollisionUtils from '../scripts/physics/collisionUtils.js';

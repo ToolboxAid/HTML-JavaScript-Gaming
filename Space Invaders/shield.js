@@ -5,7 +5,7 @@
 
 import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
 
-import ObjectStatic from '../scripts/objectStatic.js';
+import ObjectStatic from '../scripts/objects/objectStatic.js';
 import CanvasUtils from '../scripts/canvas.js';
 
 import RandomUtils from '../scripts/math/randomUtils.js';
