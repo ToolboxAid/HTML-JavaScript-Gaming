@@ -15,95 +15,73 @@ import ObjectDebug from './utils/objectDebug.js';
 class ObjectSprite extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
 
-    constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palette = null) {
-        if (!livingFrames || (Array.isArray(livingFrames) && livingFrames.length === 0)) {
-            throw new Error('livingFrames must be provided.');
+    constructor(x, y, livingFrames, dyingFrames = [], spritePixelSize = 1) {
+
+        if (!livingFrames) {
+            throw new Error("livingFrames must be provided.");
         }
 
-        let frameType = ObjectSprite.getFrameType(livingFrames);
-        let spritePixelSize = pixelSize;
+        ObjectValidation.positiveNumber(spritePixelSize, "pixelSize");
+
         let dimensions = null;
-
-        let normalizedLivingFrames = livingFrames;
-        let normalizedDyingFrames = dyingFrames;
-
-        let livingDelay = 30;
-        let dyingDelay = 7;
-
         let livingFrameCount = 0;
         let dyingFrameCount = 0;
 
-        switch (frameType) {
-            case 'json': {
-                Sprite.validateJsonFormat(livingFrames);
+        // ---- Determine frame structure ----
 
-                spritePixelSize = livingFrames.metadata.spritePixelSize;
-                dimensions = Sprite.getLayerDimensions(livingFrames, spritePixelSize);
+        const isSingleFrame =
+            Array.isArray(livingFrames) &&
+            livingFrames.length > 0 &&
+            typeof livingFrames[0] === "string";
 
-                livingFrameCount = livingFrames.layers.length;
-                livingDelay = livingFrames.metadata.framesPerSprite ?? 30;
+        const isMultiFrame =
+            Array.isArray(livingFrames) &&
+            livingFrames.length > 0 &&
+            Array.isArray(livingFrames[0]) &&
+            livingFrames[0].length > 0 &&
+            typeof livingFrames[0][0] === "string";
 
-                let paletteArray = null;
-                if (palette) {
-                    paletteArray = ObjectSprite.extractArray(palette);
-                }
+        if (isSingleFrame) {
 
-                normalizedLivingFrames = Sprite.convert2RGB(livingFrames, paletteArray);
+            dimensions = Sprite.getLayerDimensions(livingFrames, spritePixelSize);
 
-                if (dyingFrames) {
-                    Sprite.validateJsonFormat(dyingFrames);
-                    dyingDelay = dyingFrames.metadata.framesPerSprite ?? 7;
-                    normalizedDyingFrames = Sprite.convert2RGB(dyingFrames, paletteArray);
-                    dyingFrameCount = dyingFrames.layers.length;
-                }
-                break;
-            }
+            livingFrameCount = 1;
+            dyingFrameCount = Array.isArray(dyingFrames) ? dyingFrames.length : 0;
 
-            case 'array': {
-                ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
-                //dimensions = Sprite.getWidthHeight(livingFrames, spritePixelSize);
-                dimensions = Sprite.getLayerDimensions(frame, pixelSize);
-                livingFrameCount = 1;
+        } else if (isMultiFrame) {
 
-                if (dyingFrames) {
-                    dyingFrameCount = 1;
-                }
-                break;
-            }
+            dimensions = Sprite.getLayerDimensions(livingFrames[0], spritePixelSize);
 
-            case 'doubleArray': {
-                ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
-                //dimensions = Sprite.getWidthHeight(livingFrames[0], spritePixelSize);
-                dimensions = Sprite.getLayerDimensions(frame, pixelSize);
-                livingFrameCount = livingFrames.length;
+            livingFrameCount = livingFrames.length;
+            dyingFrameCount = Array.isArray(dyingFrames) ? dyingFrames.length : 0;
 
-                if (dyingFrames) {
-                    dyingFrameCount = Array.isArray(dyingFrames) ? dyingFrames.length : 0;
-                }
-                break;
-            }
+        } else {
 
-            default:
-                throw new Error(`Unsupported frame type: ${frameType}`);
+            throw new Error("Invalid sprite frame structure.");
+
         }
+
+        // ---- Initialize base object ----
 
         super(x, y, dimensions.width, dimensions.height);
 
-        this.frameType = frameType;
+        // ---- Store sprite data ----
+
         this.pixelSize = spritePixelSize;
 
-        this.livingDelay = livingDelay;
-        this.livingFrames = normalizedLivingFrames;
-        this.livingFrameCount = livingFrameCount;
+        this.livingFrames = livingFrames;
+        this.dyingFrames = dyingFrames;
 
-        this.dyingDelay = dyingDelay;
-        this.dyingFrames = normalizedDyingFrames;
+        this.livingFrameCount = livingFrameCount;
         this.dyingFrameCount = dyingFrameCount;
 
-        this.otherDelay = 0;
-        this.otherFrame = null;
+        this.livingFrameIndex = 0;
+        this.dyingFrameIndex = 0;
 
-        this.spriteColor = 'white';
+        this.livingDelay = 6;
+        this.livingDelayCounter = 0;
+
+        this.spriteColor = "white";
     }
 
     static getFrameType(object) {
@@ -172,7 +150,7 @@ class ObjectSprite extends ObjectKillable {
     }
 
     handleAliveStatus(deltaTime, incFrame = false) {
-        super.update(deltaTime);
+        super.handleAliveStatus(deltaTime, incFrame);
 
         if (this.livingFrameCount <= 1) {
             return;
@@ -190,26 +168,33 @@ class ObjectSprite extends ObjectKillable {
             this.advanceFrame(this.livingFrameCount);
         }
     }
-
+    
     handleDyingStatus(deltaTime, incFrame = false) {
-        if (!this.dyingFrames || this.dyingFrameCount <= 0) {
+        super.handleDyingStatus(deltaTime, incFrame);
+
+        if (this.dyingFrameCount <= 0) {
             this.setIsDead();
             return;
         }
 
         if (incFrame) {
-            this.currentFrameIndex++;
-        } else {
-            this.delayCounter++;
-            if (this.delayCounter >= this.dyingDelay) {
-                this.delayCounter = 0;
-                this.currentFrameIndex++;
+            this.advanceFrame(this.dyingFrameCount, true);
+            this.delayCounter = 0;
+
+            if (this.dyingFrameIndex >= this.dyingFrameCount - 1) {
+                this.setIsDead();
             }
+
+            return;
         }
 
-        if (this.currentFrameIndex >= this.dyingFrameCount) {
-            if (this.otherFrame) {
-                this.setIsOther();
+        this.delayCounter++;
+
+        if (this.delayCounter >= this.dyingDelay) {
+            this.delayCounter = 0;
+
+            if (this.dyingFrameIndex < this.dyingFrameCount - 1) {
+                this.dyingFrameIndex++;
             } else {
                 this.setIsDead();
             }

@@ -59,7 +59,7 @@ class EnemyBomb3 extends EnemyBomb {
 
   constructor(x, y) {
     super(x, y, EnemyBomb3.livingFrames, spriteConfig.bomb3VelocityY);
-    this.spriteColor = spriteConfig.bomb3Color;
+    this.setSpriteColor(spriteConfig.bomb3Color);
   }
 
   destroy() {

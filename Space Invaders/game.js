@@ -131,6 +131,7 @@ class Game extends GameBase {
     savePlayersEnemiesStatic(player) {
         this.playersEnemiesStatic[player] =
             [
+                Enemy.speed,
                 Enemy.enemyID,
                 Enemy.nextID,
                 Enemy.remainingEnemies,
@@ -143,10 +144,11 @@ class Game extends GameBase {
                 Enemy.prepMoveDown,
                 Enemy.doMoveDown,
                 Enemy.reorgID
-            ]
+            ];
     }
     restorePlayersEnemiesStatic(player) {
         [
+            Enemy.speed,
             Enemy.enemyID,
             Enemy.nextID,
             Enemy.remainingEnemies,
@@ -207,15 +209,16 @@ class Game extends GameBase {
     }
 
     setGameEnemiesBottom(column) {
-        this.gameEnemiesBottom[column] = SystemUtils.destroy(this.gameEnemiesBottom[column]);
+        this.gameEnemiesBottom[column] = null;
+
         for (let row = enemyConfig.rowSize - 1; row >= 0; row--) {
+
             const key = `${row}x${column}`;
             const enemy = this.gameEnemies.get(key);
 
             if (enemy) {
                 this.gameEnemiesBottom[column] = key;
-            } else {
-                //console.log("not found",key);
+                break;
             }
         }
     }
@@ -535,8 +538,10 @@ class Game extends GameBase {
     }
 
     findBottom() {
-        for (let column = 0; column < enemyConfig.colSize; column++) {
-            this.setGameEnemiesBottom(column);
+        const cols = enemyConfig.colSize;
+
+        for (let col = 0; col < cols; col++) {
+            this.setGameEnemiesBottom(col);
         }
     }
 
@@ -758,34 +763,67 @@ class Game extends GameBase {
 
     // Draw Game
     drawGame() {
+
+        console.log("player", {
+            dead: this.player?.isDead?.(),
+            x: this.player?.x,
+            y: this.player?.y,
+            width: this.player?.width,
+            height: this.player?.height,
+            color: this.player?.spriteColor,
+            status: this.player?.status,
+            frames: this.player?.livingFrames,
+            enemyCount: this.gameEnemies?.size,
+            bombCount: this.enemyBombs?.length
+        });
+
         // Draw scores
         this.drawScore();
         this.drawLevel(this.player);
 
         // Draw enemy ship
-        this.enemyShip.draw();
+        if (this.enemyShip) {
+            this.enemyShip.draw();
+        }
 
         // Draw all bombs
-        this.enemyBombs.forEach(enemyBomb => enemyBomb.draw());
+        this.enemyBombs.forEach(enemyBomb => {
+            if (enemyBomb) {
+                enemyBomb.draw();
+            }
+        });
 
+        // TEMP DEBUG: force enemy colors before drawing
+        for (const enemy of this.gameEnemies.values()) {
+            if (enemy && enemy.isAlive()) {
+                enemy.setSpriteColor(enemy.spriteColor || "red");
+            }
+        }
+
+        // Draw enemies
         this.drawEnemies();
 
         // Draw shields
-        this.shields.forEach(shield => { shield.draw(); });
+        this.shields.forEach(shield => {
+            if (shield) {
+                shield.draw();
+            }
+        });
 
-        // Draw Laser
+        // Draw laser
         if (this.laser) {
             this.laser.draw();
         }
 
-        // Draw player
-        this.player.draw();
+        // TEMP DEBUG: force player color before drawing
+        if (this.player) {
+            this.player.setSpriteColor("white");
+            this.player.draw();
+        }
 
         this.drawGround();
-
         this.drawLives(this.player);
     }
-
     // Game loop function
     playGameLogic(deltaTime) {
         this.removeDeadEnemy();
@@ -856,28 +894,30 @@ class Game extends GameBase {
 
     // Initialize player based on current player index
     resetCurrentPlayer() {
-        this.enemyShip.setIsDead();
+        if (this.enemyShip) {
+            this.enemyShip.setIsDead();
+        }
 
         SystemUtils.cleanupArray(this.enemyBombs);
+        this.enemyBombs = [];
+
         this.destroyLaser();
 
-        const x = spriteConfig.playerX;
-        const y = spriteConfig.playerY;
+        const currentPlayer = this.currentPlayer - 1;
 
-        this.player.setPosition(x, y);
-        this.player.setIsAlive();
-
-        // Set current player as the active player in the array
-        const currentPlayer = this.currentPlayer - 1; //this.currentPlayer is 1 or 2, array is 0 or 1
-
-        this.restorePlayersEnemiesStatic(currentPlayer)
+        this.restorePlayersEnemiesStatic(currentPlayer);
 
         this.player = this.players[currentPlayer];
-
         this.gameEnemies = this.playersEnimies[currentPlayer];
         this.gameEnemiesBottom = this.playersEnemiesBottom[currentPlayer];
         this.shields = this.playersShields[currentPlayer];
         this.grounds = this.playersGrounds[currentPlayer];
+
+        this.enemyShip = EnemyShip.getInstance();
+
+        this.player.setPosition(spriteConfig.playerX, spriteConfig.playerY);
+        this.player.setSpriteColor(spriteConfig.playerColor);
+        this.player.setIsAlive();
     }
 
     static scoreTextFrame = null;
@@ -931,6 +971,7 @@ class Game extends GameBase {
             // Decrease current player's life
             this.player.decrementLives();
             SystemUtils.cleanupArray(this.enemyBombs);
+            this.enemyBombs = [];
             console.log(`Player ${this.currentPlayer} lost a life!`);
 
             // Check if current player is out of lives
@@ -977,7 +1018,8 @@ class Game extends GameBase {
                 // reset player field
                 this.player.incLevel();
                 SystemUtils.cleanupArray(this.enemyBombs);
-                Enemy.unsetEnemiesInitialized()
+                Enemy.reset();
+                Enemy.unsetEnemiesInitialized();
                 this.initializeGameShields();
                 this.initializeGameGround();
                 this.initializeGameEnemy();
@@ -994,41 +1036,57 @@ class Game extends GameBase {
         console.log("Resetting Game...");
 
         this.backToAttractCounter = 0;
+        this.playerCount = 1;
+        this.currentPlayer = 1;
 
-        // Initialize players as an array of player instances
-        this.players[0] = SystemUtils.destroy(this.players[0]);
-        this.players[1] = SystemUtils.destroy(this.players[1]);
-        this.players = [new Player(), new Player()]; // Array holding player1 and player2
-        this.player = this.players[0]; // Current player
+        if (this.players?.[0]) {
+            SystemUtils.destroy(this.players[0]);
+        }
+        if (this.players?.[1]) {
+            SystemUtils.destroy(this.players[1]);
+        }
 
-        // Need to destroy objects        
-        // Items to move into the player
-        //this.playersEnimies = [new Map(), new Map()];
         SystemUtils.cleanupMap(this.playersEnimies[0]);
         SystemUtils.cleanupMap(this.playersEnimies[1]);
-        this.gameEnemies = this.playersEnimies[0];
 
-        //this.playersEnemiesBottom = [new Array(enemyConfig.colSize).fill(null), new Array(enemyConfig.colSize).fill(null)];
-        SystemUtils.cleanupArray(this.playersEnemiesBottom[0]);
-        SystemUtils.cleanupArray(this.playersEnemiesBottom[1]);
-        this.gameEnemiesBottom = this.playersEnemiesBottom[0];
-
-        //this.playersShields = [[], []];
         SystemUtils.cleanupArray(this.playersShields[0]);
         SystemUtils.cleanupArray(this.playersShields[1]);
-        this.shields = this.playersShields[0];
 
-        //this.playersGrounds = [[], []];
         SystemUtils.cleanupArray(this.playersGrounds[0]);
         SystemUtils.cleanupArray(this.playersGrounds[1]);
-        this.grounds = this.playersGrounds[0];
 
-        //this.enemyBombs = [];
         SystemUtils.cleanupArray(this.enemyBombs);
+        this.enemyBombs = [];
 
         this.destroyLaser();
 
+        Enemy.reset();
         Enemy.unsetEnemiesInitialized();
+
+        this.players = [new Player(), new Player()];
+        this.player = this.players[0];
+
+        this.playersEnimies = [new Map(), new Map()];
+        this.gameEnemies = this.playersEnimies[0];
+
+        this.playersEnemiesBottom = [
+            new Array(enemyConfig.colSize).fill(null),
+            new Array(enemyConfig.colSize).fill(null)
+        ];
+        this.gameEnemiesBottom = this.playersEnemiesBottom[0];
+
+        this.playersShields = [[], []];
+        this.shields = this.playersShields[0];
+
+        this.playersGrounds = [[], []];
+        this.grounds = this.playersGrounds[0];
+
+        this.playersEnemiesStatic = [[], []];
+        this.savePlayersEnemiesStatic(0);
+        this.savePlayersEnemiesStatic(1);
+
+        this.enemyShip = EnemyShip.getInstance();
+        this.enemyShip.setIsDead();
 
         this.attractMode.reset();
         this.gameState = "attract";

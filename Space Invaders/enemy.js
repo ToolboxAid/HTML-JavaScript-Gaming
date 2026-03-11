@@ -57,10 +57,8 @@ class Enemy extends ObjectSprite {
     static nextID = 0;
 
     static remainingEnemies = 54;
-    
     static newSpeed = (Enemy.getMaxCount() - Enemy.remainingEnemies);
 
-    // Enemy configurations for octopus, squid, and crab
     static enemyRow = 0;
     static enemyCol = 0;
 
@@ -74,20 +72,41 @@ class Enemy extends ObjectSprite {
 
     static reorgID = 0;
 
+    static #savedStates = [[], []];
+
+    static cloneFrames(frames) {
+        if (!Array.isArray(frames)) {
+            return frames;
+        }
+
+        return frames.map(frame => {
+            if (!Array.isArray(frame)) {
+                return frame;
+            }
+            return frame.map(row => Array.isArray(row) ? [...row] : row);
+        });
+    }
+
     constructor(livingFrames, playerLevel) {
         const pixelSize = spriteConfig.pixelSize || 1;
-        //const frameWidth = Sprite.getWidthHeight(livingFrames[0], pixelSize);
-        const frameWidth = Sprite.getLayerDimensions(livingFrames[0], pixelSize);
+
+        const safeLivingFrames = Enemy.cloneFrames(livingFrames);
+        const safeDyingFrames = Enemy.cloneFrames(Enemy.dyingFrames);
+
+        const firstFrame = Array.isArray(safeLivingFrames[0]) ? safeLivingFrames[0] : safeLivingFrames;
+        const frameWidth = Sprite.getLayerDimensions(firstFrame, pixelSize);
+
         const x = enemyConfig.xPosition + (Enemy.enemyCol * enemyConfig.xSpacing) - (frameWidth.width / 2);
         const y = enemyConfig.yPosition - (Enemy.enemyRow * enemyConfig.ySpacing);
 
-        super(x, y, livingFrames, Enemy.dyingFrames, pixelSize);
+        super(x, y, safeLivingFrames, safeDyingFrames, pixelSize);
 
-        this.key = Enemy.getKey(Enemy.enemyRow, Enemy.enemyCol);
+        const row = Enemy.enemyRow;
+        const col = Enemy.enemyCol;
 
+        this.key = Enemy.getKey(row, col);
         this.playerLevel = playerLevel;
-        this.playerLevel = 1;
-        this.bombAggression = 30 + (this.playerLevel * 5);  // 35% to 80% chance to drop bomb 
+        this.bombAggression = 30 + (this.playerLevel * 5);
         this.bombDelay = RandomUtils.randomRange(50, 350, true);
         this.bombDelayCnt = 0;
         this.velocityX = 250;
@@ -101,11 +120,11 @@ class Enemy extends ObjectSprite {
         }
     }
 
-    static #savedStates = [[], []];
-    
     static saveState(index) {
-        if (index !== 0 && index !== 1) return;
-        
+        if (index !== 0 && index !== 1) {
+            return;
+        }
+
         this.#savedStates[index] = [
             this.speed,
             this.enemyID,
@@ -122,26 +141,16 @@ class Enemy extends ObjectSprite {
             this.reorgID
         ];
     }
-    static reset(){
-        Enemy.speed = 0;
-        Enemy.enemyID = 0;
-        Enemy.nextID =0;
-        Enemy.remainingEnemies = 54;
-        Enemy.enemiesInitialized = false;
 
-        // Enemy.enemyRow = 0;
-        // Enemy.enemyCol = 0;
-
-        Enemy.prepSpeed = false;
-        Enemy.doSpeed = false;
-        Enemy.prepMoveDown = false;
-        Enemy.doMoveDown = false;
-        Enemy.reorgID = 0;
-    }    
     static restoreState(index) {
-        if (index !== 0 && index !== 1) return;
-        if (!this.#savedStates[index].length) return;
-        
+        if (index !== 0 && index !== 1) {
+            return;
+        }
+
+        if (!this.#savedStates[index].length) {
+            return;
+        }
+
         [
             this.speed,
             this.enemyID,
@@ -158,11 +167,28 @@ class Enemy extends ObjectSprite {
             this.reorgID
         ] = this.#savedStates[index];
     }
-    
-    static getMaxCount(){
-        const maximumEnemies = 54;
-        return maximumEnemies;
-    }    
+
+    static reset() {
+        Enemy.speed = 0;
+        Enemy.enemyID = 0;
+        Enemy.nextID = 0;
+        Enemy.remainingEnemies = 54;
+        Enemy.newSpeed = (Enemy.getMaxCount() - Enemy.remainingEnemies);
+
+        Enemy.enemyRow = 0;
+        Enemy.enemyCol = 0;
+        Enemy.enemiesInitialized = false;
+
+        Enemy.prepSpeed = false;
+        Enemy.doSpeed = false;
+        Enemy.prepMoveDown = false;
+        Enemy.doMoveDown = false;
+        Enemy.reorgID = 0;
+    }
+
+    static getMaxCount() {
+        return 54;
+    }
 
     static getRow() {
         return Enemy.enemyRow;
@@ -175,16 +201,14 @@ class Enemy extends ObjectSprite {
     static unsetEnemiesInitialized() {
         Enemy.enemyID = 0;
         Enemy.nextID = 0;
-
-        // Enemy configurations for octopus, squid, and crab
         Enemy.enemyRow = 0;
         Enemy.enemyCol = 0;
-
         Enemy.enemiesInitialized = false;
     }
 
     static setNextID() {
         Enemy.doSpeed = false;
+
         if (Enemy.remainingEnemies > Enemy.nextID) {
             Enemy.nextID++;
         } else {
@@ -217,11 +241,10 @@ class Enemy extends ObjectSprite {
     }
 
     static getKey(row, column) {
-        return Enemy.enemyRow + "x" + Enemy.enemyCol;
+        return row + "x" + column;
     }
 
     adjustSpeed(deltaTime) {
-        // Increase speed 
         if (this.velocityX > 0) {
             this.velocityX += Enemy.newSpeed;
         } else {
@@ -234,6 +257,7 @@ class Enemy extends ObjectSprite {
             if (Enemy.doSpeed) {
                 this.adjustSpeed(deltaTime);
             }
+
             if (this.enemyID === Enemy.nextID) {
                 if (Enemy.doMoveDown) {
                     this.velocityX *= -1;
@@ -253,7 +277,8 @@ class Enemy extends ObjectSprite {
 
     atBounds() {
         let changeDir = false;
-        if (!(Enemy.preMoveDown || Enemy.doMoveDown)) {
+
+        if (!(Enemy.prepMoveDown || Enemy.doMoveDown)) {
             if (this.velocityX > 0) {
                 const width = canvasConfig?.width ?? 40;
                 changeDir = this.x + (this.width * 1.45) + Enemy.speed > width;
@@ -261,55 +286,58 @@ class Enemy extends ObjectSprite {
                 changeDir = this.x - Enemy.speed < (this.width * 0.45);
             }
         }
+
         return changeDir;
     }
 
-    setDelay(){
-        let multiplier = 9 - this.playerLevel; // multiplier 1 to 8
+    setDelay() {
+        let multiplier = 9 - this.playerLevel;
         if (multiplier < 1) {
             multiplier = 1;
         }
+
         const ms = 10;
-        this.bombDelay = RandomUtils.randomRange(ms * multiplier, ms * (multiplier+5), true);
+        this.bombDelay = RandomUtils.randomRange(ms * multiplier, ms * (multiplier + 5), true);
     }
 
     isDropBombTime() {
         if (this.bombDelayCnt++ < this.bombDelay) {
-            return false
+            return false;
         } else {
             this.bombDelayCnt = 0;
         }
 
         this.setDelay();
 
-        const randomNumber = RandomUtils.randomRange(this.playerLevel*5, 100, true); 
-
+        const randomNumber = RandomUtils.randomRange(this.playerLevel * 5, 100, true);
         return (randomNumber <= this.bombAggression);
     }
 
-    destroy() {
-        super.destroy();
-        this.playerLevel = null;
-        this.playerLevel = null;
-        this.bombAggression = null;
-        this.bombDelay = null;
-        this.bombDelayCnt = null;
-        this.velocityX = null;
-        this.enemyID = null;
-    }
+destroy() {
+
+    super.destroy();
+
+    this.key = null;
+    this.playerLevel = null;
+    this.bombAggression = null;
+    this.bombDelay = null;
+    this.bombDelayCnt = null;
+    this.velocityX = null;
+    this.enemyID = null;
+
+}
 
     toString(from = "default: ") {
         console.log(`
             ${from},
             NextID: ${Enemy.nextID},
             EnemyID: ${Enemy.enemyID},
-            Key: ${this.key}, 
+            Key: ${this.key},
             ID: ${this.enemyID},
             Status: ${this.status},
-            velocityX ${this.velocityX},            
-            `);
+            velocityX ${this.velocityX},
+        `);
     }
-
 }
 
 export default Enemy;

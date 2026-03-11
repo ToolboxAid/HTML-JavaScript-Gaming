@@ -4,12 +4,11 @@
 // player.js
 
 import { canvasConfig, spriteConfig, playerSelect } from './global.js';
-import ObjectSprite from '../scripts/objectSprite.js'
+import ObjectSprite from '../scripts/objectSprite.js';
 import GameControllerMap from '../scripts/input/controller/gameControllerMap.js';
 
 class Player extends ObjectSprite {
 
-    // New 22x16 pixel image (single frame)
     static frame = [[
         "00000000100000000",
         "00000001110000000",
@@ -22,7 +21,7 @@ class Player extends ObjectSprite {
         "11111111111111111",
         "11111111111111111",
         "11111111111111111",
-    ],];
+    ]];
 
     static dyingFrames = [
         [
@@ -107,12 +106,29 @@ class Player extends ObjectSprite {
 
     static playerID = 0;
 
+    static cloneFrames(frames) {
+        if (!Array.isArray(frames)) {
+            return frames;
+        }
+
+        return frames.map(frame => {
+            if (!Array.isArray(frame)) {
+                return frame;
+            }
+            return frame.map(row => Array.isArray(row) ? [...row] : row);
+        });
+    }
+
     constructor() {
         const x = spriteConfig.playerX;
         const y = spriteConfig.playerY;
-
         const pixelSize = spriteConfig.pixelSize || 1;
-        super(x, y, Player.frame, Player.dyingFrames, pixelSize);
+
+        const livingFrames = Player.cloneFrames(Player.frame);
+        const dyingFrames = Player.cloneFrames(Player.dyingFrames);
+
+        super(x, y, livingFrames, dyingFrames, pixelSize);
+
         this.playerID = Player.playerID++;
         this.level = 1;
         this.score = 0;
@@ -128,6 +144,7 @@ class Player extends ObjectSprite {
     decrementLives() {
         this.lives -= 1;
     }
+
     updateScore(score) {
         this.score += score;
         if (this.score > this.nextBonus) {
@@ -148,44 +165,62 @@ class Player extends ObjectSprite {
         this.level = 0;
     }
 
-    update(keysDown, keyPressed, gameControllers) {
-        super.update(1);
-        const speed = 4;
+update(keysDown, keyPressed, gameControllers) {
 
-        // Keyboard
-        if (keysDown.includes('ArrowLeft')) {
-            if (this.x - speed > 0) {
-                this.x -= speed;
-            }
-        }
-        if (keysDown.includes('ArrowRight')) {
-            if (this.x < canvasConfig.width - this.width - speed) {
-                this.x += speed;
-            }
-        }
-        if (keyPressed.includes('Space')) {
-            let laserPoint = { x: this.x + (this.width / 2), y: this.y };
-            return laserPoint;
-        }
+    super.update(1);
 
-        // GameController
-        if (gameControllers.getAxisByIndex(0, 0)) {
-            // -1 left, 0 no move, 1 right
-            const direction = gameControllers.getAxisByIndex(0, 0);  // -1 left, 0 no move, 1 right
+    const speed = 4;
 
-            if (this.x + (direction * speed) > 0 &&
-                this.x < canvasConfig.width - this.width - (direction * speed)) {
-                this.x += speed * direction;
-            }
-        }
-
-        if (gameControllers.wasButtonNamePressed(0, "A")
-            || gameControllers.wasButtonNamePressed(0, "B")) {
-            let laserPoint = { x: this.x + (this.width / 2), y: this.y };
-            return laserPoint;
-        }
-        return;
+    if (keysDown.includes('ArrowLeft')) {
+        this.x = Math.max(0, this.x - speed);
     }
+
+    if (keysDown.includes('ArrowRight')) {
+        this.x = Math.min(canvasConfig.width - this.width, this.x + speed);
+    }
+
+    if (keyPressed.includes('Space')) {
+
+        const laserWidth = 3 * (spriteConfig.pixelSize || 1);
+
+        return {
+            x: this.x + (this.width / 2) - (laserWidth / 2),
+            y: this.y
+        };
+    }
+
+    const axis = gameControllers.getAxisByIndex(0, 0);
+
+    if (axis) {
+
+        this.x += speed * axis;
+
+        if (this.x < 0) {
+            this.x = 0;
+        }
+
+        if (this.x > canvasConfig.width - this.width) {
+            this.x = canvasConfig.width - this.width;
+        }
+
+    }
+
+    if (
+        gameControllers.wasButtonNamePressed(0, "A") ||
+        gameControllers.wasButtonNamePressed(0, "B")
+    ) {
+
+        const laserWidth = 3 * (spriteConfig.pixelSize || 1);
+
+        return {
+            x: this.x + (this.width / 2) - (laserWidth / 2),
+            y: this.y
+        };
+    }
+
+    return;
+
+}
 
     destroy() {
         super.destroy();
@@ -197,7 +232,6 @@ class Player extends ObjectSprite {
         this.bonus = null;
         this.nextBonus = null;
     }
-
 }
 
 export default Player;

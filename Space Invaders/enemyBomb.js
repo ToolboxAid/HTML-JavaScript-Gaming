@@ -1,11 +1,4 @@
-// ToolboxAid.com
-// David Quesenberry
-// 10/24/2024
-// enemyBomb.js
-
 import { canvasConfig, spriteConfig } from './global.js';
-import CanvasUtils from '../scripts/canvas.js';
-
 import ObjectSprite from '../scripts/objectSprite.js';
 
 class EnemyBomb extends ObjectSprite {
@@ -49,20 +42,38 @@ class EnemyBomb extends ObjectSprite {
         ],
     ];
 
+    static cloneFrames(frames) {
+        if (!Array.isArray(frames)) {
+            return frames;
+        }
+
+        return frames.map(frame => {
+            if (!Array.isArray(frame)) {
+                return frame;
+            }
+            return frame.map(row => Array.isArray(row) ? [...row] : row);
+        });
+    }
+
     constructor(x, y, frames, velocityY = 150) {
         const pixelSize = spriteConfig.pixelSize || 1;
-        y += spriteConfig.bombYoffset;
-        super(x, y, frames, EnemyBomb.dyingFrames, pixelSize);
-        this.setVelocity(0, velocityY);
+        const safeLivingFrames = EnemyBomb.cloneFrames(frames);
+        const safeDyingFrames = EnemyBomb.cloneFrames(EnemyBomb.dyingFrames);
 
+        y += spriteConfig.bombYoffset;
+        super(x, y, safeLivingFrames, safeDyingFrames, pixelSize);
+
+        this.setVelocity(0, velocityY);
         this.livingDelay = 6;
     }
 
     update(deltaTime = 1) {
         super.update(deltaTime);
 
-        if (this.x <= 0 || this.x > canvasConfig.width ||
-            this.y <= 0 || this.y > canvasConfig.height) {
+        if (
+            this.x <= 0 || this.x > canvasConfig.width ||
+            this.y <= 0 || this.y > canvasConfig.height
+        ) {
             this.setIsDead();
         }
     }
@@ -71,7 +82,6 @@ class EnemyBomb extends ObjectSprite {
         super.destroy();
         this.livingDelay = null;
     }
-
 }
 
 export default EnemyBomb;

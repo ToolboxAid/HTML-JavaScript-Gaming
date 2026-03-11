@@ -159,36 +159,49 @@ class SystemUtils {
         }
     }
 
-    static cleanupArray(array) {
-        if (!Array.isArray(array)) {
-            console.warn(`Not an array:`, array);
-            return false;
-        }
-
-        let success = true;
-
-        try {
-            for (let i = array.length - 1; i >= 0; i--) {
-                const element = array[i];
-
-                if (element !== null && typeof element.destroy === "function") {
-                    if (!SystemUtils.destroy(element)) {
-                        console.warn(`Failed to destroy element at index ${i}:`, element);
-                        success = false;
-                    }
-                }
-
-                array[i] = null; // Nullify to help garbage collection
-            }
-
-            array.length = 0;
-        } catch (error) {
-            console.error("Error in cleanupArray:", error);
-            success = false;
-        }
-
-        return success;
+static cleanupArray(array) {
+    if (!Array.isArray(array)) {
+        return false;
     }
+
+    let success = true;
+
+    for (let i = array.length - 1; i >= 0; i--) {
+        const element = array[i];
+
+        if (element == null) {
+            array[i] = null;
+            continue;
+        }
+
+        // already destroyed / already nulled object
+        if (
+            element.ID === null ||
+            element.x === null ||
+            element.y === null ||
+            element.width === null ||
+            element.height === null ||
+            element.isDestroyed === true
+        ) {
+            array[i] = null;
+            continue;
+        }
+
+        if (typeof element.destroy === "function") {
+            try {
+                element.destroy();
+            } catch (error) {
+                console.warn(`Failed to destroy element at index ${i}:`, element);
+                success = false;
+            }
+        }
+
+        array[i] = null;
+    }
+
+    array.length = 0;
+    return success;
+}
 
     static cleanupMap(map) {
         if (!(map instanceof Map)) {
