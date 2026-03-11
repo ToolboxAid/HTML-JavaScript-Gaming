@@ -170,7 +170,10 @@ update(keysDown, keyPressed, gameControllers) {
     super.update(1);
 
     const speed = 4;
+    const laserHalfWidth = (spriteConfig.pixelSize || 1) / 2;
+    const laserStartY = this.y - (spriteConfig.pixelSize || 1);
 
+    // Keyboard
     if (keysDown.includes('ArrowLeft')) {
         this.x = Math.max(0, this.x - speed);
     }
@@ -180,20 +183,17 @@ update(keysDown, keyPressed, gameControllers) {
     }
 
     if (keyPressed.includes('Space')) {
-
-        const laserWidth = 3 * (spriteConfig.pixelSize || 1);
-
         return {
-            x: this.x + (this.width / 2) - (laserWidth / 2),
-            y: this.y
+            x: this.x + (this.width / 2) - laserHalfWidth,
+            y: laserStartY
         };
     }
 
-    const axis = gameControllers.getAxisByIndex(0, 0);
+    // GameController
+    const direction = gameControllers.getAxisByIndex(0, 0);
 
-    if (axis) {
-
-        this.x += speed * axis;
+    if (direction) {
+        this.x += speed * direction;
 
         if (this.x < 0) {
             this.x = 0;
@@ -202,24 +202,19 @@ update(keysDown, keyPressed, gameControllers) {
         if (this.x > canvasConfig.width - this.width) {
             this.x = canvasConfig.width - this.width;
         }
-
     }
 
     if (
         gameControllers.wasButtonNamePressed(0, "A") ||
         gameControllers.wasButtonNamePressed(0, "B")
     ) {
-
-        const laserWidth = 3 * (spriteConfig.pixelSize || 1);
-
         return {
-            x: this.x + (this.width / 2) - (laserWidth / 2),
-            y: this.y
+            x: this.x + (this.width / 2) - laserHalfWidth,
+            y: laserStartY
         };
     }
 
     return;
-
 }
 
     destroy() {

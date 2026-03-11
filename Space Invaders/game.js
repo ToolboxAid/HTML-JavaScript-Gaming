@@ -337,25 +337,30 @@ class Game extends GameBase {
         }
     }
 
-    checkLaserEnemyCollision() {
-        if (this.laser) {
-            let hitDetected = false;
-            this.gameEnemies.forEach((enemy, key) => {
-                if (enemy.isAlive()) {
-                    if (CollisionUtils.isCollidingWith(enemy, this.laser)) {
-                        this.updatePlayerScore(enemy.value);
-                        enemy.setHit();
-                        hitDetected = true;
-                        Game.audioPlayer.playAudio('invaderkilled.wav');
-                    }
-                }
-            });
-
-            if (hitDetected) { // Delete the laser
-                this.destroyLaser();
-            }
-        }
+checkLaserEnemyCollision() {
+    if (!this.laser) {
+        return;
     }
+
+    let hitDetected = false;
+
+    this.gameEnemies.forEach((enemy) => {
+        if (!enemy || !enemy.isAlive()) {
+            return;
+        }
+
+        if (CollisionUtils.isCollidingWith(enemy, this.laser)) {
+            this.updatePlayerScore(enemy.value);
+            enemy.setHit();
+            hitDetected = true;
+            Game.audioPlayer.playAudio('invaderkilled.wav');
+        }
+    });
+
+    if (hitDetected) {
+        this.destroyLaser();
+    }
+}
 
     checkLaserBombCollision() {
         if (this.laser) {
@@ -464,43 +469,48 @@ class Game extends GameBase {
         });
     }
 
-    removeDeadEnemy() {
-        let foundDead = false;
-        let foundID = -1;
+removeDeadEnemy() {
+    let foundDead = false;
+    let foundID = -1;
+
+    this.gameEnemies.forEach((enemy) => {
+        if (enemy && enemy.isDead()) {
+            foundID = enemy.enemyID;
+            SystemUtils.destroy(enemy);
+            foundDead = this.gameEnemies.delete(enemy.key);
+        }
+    });
+
+    if (foundDead) {
+        Enemy.remainingEnemies = this.gameEnemies.size;
+        Enemy.reorgID = 0;
+
+        if (foundID < Enemy.nextID) {
+            Enemy.nextID--;
+
+            if (Enemy.nextID < 0) {
+                Enemy.nextID = Enemy.remainingEnemies;
+            }
+        }
+
         this.gameEnemies.forEach((enemy) => {
-            if (enemy.isDead()) {
-                foundID = enemy.enemyID;
-                SystemUtils.destroy(enemy);
-                foundDead = this.gameEnemies.delete(enemy.key);
-            }
+            enemy.reorgID();
         });
-        if (foundDead) {
-            Enemy.remainingEnemies = this.gameEnemies.size;
-            Enemy.reorgID = 0;
-            if (foundID < Enemy.nextID) {
-                Enemy.nextID--;
-                if (Enemy.nextID < 0) {
-                    Enemy.nextID = Enemy.remainingEnemies;
-                }
-            }
-            //Enemy.nextID--;
-            this.gameEnemies.forEach((enemy) => {
-                enemy.reorgID();
-            });
-            this.findBottom();
+
+        this.findBottom();
+    }
+}
+
+removeDeadBomb() {
+    for (let i = this.enemyBombs.length - 1; i >= 0; i--) {
+        const enemyBomb = this.enemyBombs[i];
+
+        if (enemyBomb && enemyBomb.isDead()) {
+            SystemUtils.destroy(enemyBomb);
+            this.enemyBombs.splice(i, 1);
         }
     }
-
-    removeDeadBomb() {    // Check for dead enemyBomb and remove
-        [this.enemyBombs].forEach(enemyBombArray => {
-            for (let i = enemyBombArray.length - 1; i >= 0; i--) {
-                const enemyBomb = enemyBombArray[i];
-                if (enemyBomb.isDead()) {
-                    enemyBombArray.splice(i, 1); // Remove the bomb at index i
-                }
-            }
-        });
-    }
+}
 
     checkBombPlayerCollision() {
         this.enemyBombs.forEach(enemyBomb => {
@@ -519,23 +529,29 @@ class Game extends GameBase {
         });
     }
 
-    checkLaser(deltaTime, laserFirePoint) {
-        if (!this.laser) {
-            if (laserFirePoint) {
-                this.laser = new Laser(laserFirePoint.x, laserFirePoint.y - 10);
-                Game.audioPlayer.playAudio('shoot.wav');
-                //Game.o3 = new ObjectStatic(this.laser.x, this.laser.y, this.laser.width, this.laser.height);
-            }
-        } else {
-            if (this.laser.update(deltaTime)) { // Update laser position
-                this.destroyLaser();
-            } else {
-                if (this.checkLaserShieldCollision()) {
-                    this.destroyLaser();
-                }
-            }
+checkLaser(deltaTime, laserFirePoint) {
+    if (!this.laser) {
+        if (laserFirePoint) {
+            this.laser = new Laser(laserFirePoint.x, laserFirePoint.y - 10);
+            Game.audioPlayer.playAudio('shoot.wav');
         }
+        return;
     }
+
+    if (this.laser.isDead && this.laser.isDead()) {
+        this.destroyLaser();
+        return;
+    }
+
+    if (this.laser.update(deltaTime)) {
+        this.destroyLaser();
+        return;
+    }
+
+    if (this.checkLaserShieldCollision()) {
+        this.destroyLaser();
+    }
+}
 
     findBottom() {
         const cols = enemyConfig.colSize;
@@ -1092,14 +1108,33 @@ class Game extends GameBase {
         this.gameState = "attract";
     }
 
-    destroyLaser() {
-        if (this.laser) {
-            if (!SystemUtils.destroy(this.laser)) {
-                SystemUtils.showStackTrace(`Laser not destroued ${this.laser}`);
-            }
-            this.laser = null;
+destroyLaser() {
+    if (!this.laser) {
+        return;
+    }
+
+    const laser = this.laser;
+    this.laser = null;
+
+    if (
+        laser.ID === null ||
+        laser.x === null ||
+        laser.y === null ||
+        laser.width === null ||
+        laser.height === null ||
+        laser.isDestroyed === true
+    ) {
+        return;
+    }
+
+    if (typeof laser.destroy === "function") {
+        try {
+            laser.destroy();
+        } catch (error) {
+            console.warn("Laser destroy failed, clearing reference anyway.", laser, error);
         }
     }
+}
 
 }
 

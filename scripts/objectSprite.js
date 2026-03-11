@@ -15,98 +15,159 @@ import ObjectDebug from './utils/objectDebug.js';
 class ObjectSprite extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
 
-    constructor(x, y, livingFrames, dyingFrames = [], spritePixelSize = 1) {
+constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palette = null) {
 
-        if (!livingFrames) {
-            throw new Error("livingFrames must be provided.");
-        }
-
-        ObjectValidation.positiveNumber(spritePixelSize, "pixelSize");
-
-        let dimensions = null;
-        let livingFrameCount = 0;
-        let dyingFrameCount = 0;
-
-        // ---- Determine frame structure ----
-
-        const isSingleFrame =
-            Array.isArray(livingFrames) &&
-            livingFrames.length > 0 &&
-            typeof livingFrames[0] === "string";
-
-        const isMultiFrame =
-            Array.isArray(livingFrames) &&
-            livingFrames.length > 0 &&
-            Array.isArray(livingFrames[0]) &&
-            livingFrames[0].length > 0 &&
-            typeof livingFrames[0][0] === "string";
-
-        if (isSingleFrame) {
-
-            dimensions = Sprite.getLayerDimensions(livingFrames, spritePixelSize);
-
-            livingFrameCount = 1;
-            dyingFrameCount = Array.isArray(dyingFrames) ? dyingFrames.length : 0;
-
-        } else if (isMultiFrame) {
-
-            dimensions = Sprite.getLayerDimensions(livingFrames[0], spritePixelSize);
-
-            livingFrameCount = livingFrames.length;
-            dyingFrameCount = Array.isArray(dyingFrames) ? dyingFrames.length : 0;
-
-        } else {
-
-            throw new Error("Invalid sprite frame structure.");
-
-        }
-
-        // ---- Initialize base object ----
-
-        super(x, y, dimensions.width, dimensions.height);
-
-        // ---- Store sprite data ----
-
-        this.pixelSize = spritePixelSize;
-
-        this.livingFrames = livingFrames;
-        this.dyingFrames = dyingFrames;
-
-        this.livingFrameCount = livingFrameCount;
-        this.dyingFrameCount = dyingFrameCount;
-
-        this.livingFrameIndex = 0;
-        this.dyingFrameIndex = 0;
-
-        this.livingDelay = 6;
-        this.livingDelayCounter = 0;
-
-        this.spriteColor = "white";
+    if (!livingFrames || (Array.isArray(livingFrames) && livingFrames.length === 0)) {
+        throw new Error('livingFrames must be provided.');
     }
 
-    static getFrameType(object) {
-        if (!object) {
-            return 'null';
+    let frameType = ObjectSprite.getFrameType(livingFrames);
+    let spritePixelSize = pixelSize;
+    let dimensions = null;
+
+    let normalizedLivingFrames = null;
+    let normalizedDyingFrames = null;
+
+    let livingDelay = 30;
+    let dyingDelay = 7;
+
+    let livingFrameCount = 0;
+    let dyingFrameCount = 0;
+
+    switch (frameType) {
+
+        case 'json': {
+            Sprite.validateJsonFormat(livingFrames);
+
+            spritePixelSize = livingFrames.metadata.spritePixelSize;
+            livingDelay = livingFrames.metadata.framesPerSprite ?? 30;
+
+            let paletteArray = null;
+            if (palette) {
+                paletteArray = ObjectSprite.extractArray(palette);
+            }
+
+            normalizedLivingFrames = Sprite.convert2RGB(livingFrames, paletteArray);
+            dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);
+            livingFrameCount = normalizedLivingFrames.length;
+
+            if (dyingFrames) {
+                Sprite.validateJsonFormat(dyingFrames);
+
+                dyingDelay = dyingFrames.metadata.framesPerSprite ?? 7;
+                normalizedDyingFrames = Sprite.convert2RGB(dyingFrames, paletteArray);
+                dyingFrameCount = normalizedDyingFrames.length;
+            } else {
+                normalizedDyingFrames = null;
+                dyingFrameCount = 0;
+            }
+
+            break;
         }
 
-        if (SystemUtils.getObjectType(object) === 'Object') {
-            return 'json';
+        case 'singleFrame': {
+            ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
+
+            normalizedLivingFrames = ObjectSprite.normalizeFrames(livingFrames, frameType);
+            dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);
+            livingFrameCount = normalizedLivingFrames.length;
+
+            if (dyingFrames) {
+                const dyingFrameType = ObjectSprite.getFrameType(dyingFrames);
+                normalizedDyingFrames = ObjectSprite.normalizeFrames(dyingFrames, dyingFrameType);
+                dyingFrameCount = normalizedDyingFrames.length;
+            } else {
+                normalizedDyingFrames = null;
+                dyingFrameCount = 0;
+            }
+
+            break;
         }
 
-        if (Array.isArray(object) && Array.isArray(object[0]) && Array.isArray(object[0][0])) {
-            return 'doubleArray';
+        case 'multiFrame': {
+            ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
+
+            normalizedLivingFrames = ObjectSprite.normalizeFrames(livingFrames, frameType);
+            dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);
+            livingFrameCount = normalizedLivingFrames.length;
+
+            if (dyingFrames) {
+                const dyingFrameType = ObjectSprite.getFrameType(dyingFrames);
+                normalizedDyingFrames = ObjectSprite.normalizeFrames(dyingFrames, dyingFrameType);
+                dyingFrameCount = normalizedDyingFrames.length;
+            } else {
+                normalizedDyingFrames = null;
+                dyingFrameCount = 0;
+            }
+
+            break;
         }
 
-        if (Array.isArray(object) && Array.isArray(object[0])) {
-            return 'array';
-        }
-
-        if (SystemUtils.getObjectType(object) === 'String') {
-            return 'string';
-        }
-
-        return 'unknown';
+        default:
+            throw new Error(`Unsupported frame type: ${frameType}`);
     }
+
+    super(x, y, dimensions.width, dimensions.height);
+
+    this.frameType = frameType;
+    this.pixelSize = spritePixelSize;
+
+    this.livingDelay = livingDelay;
+    this.livingFrames = normalizedLivingFrames;
+    this.livingFrameCount = livingFrameCount;
+
+    this.dyingDelay = dyingDelay;
+    this.dyingFrames = normalizedDyingFrames;
+    this.dyingFrameCount = dyingFrameCount;
+
+    this.otherDelay = 0;
+    this.otherFrame = null;
+    this.spriteColor = 'white';
+}
+
+static getFrameType(object) {
+    if (!object) {
+        return 'null';
+    }
+
+    if (SystemUtils.getObjectType(object) === 'Object') {
+        return 'json';
+    }
+
+    // Single frame:
+    // [
+    //   "00100",
+    //   "01110"
+    // ]
+    if (
+        Array.isArray(object) &&
+        object.length > 0 &&
+        typeof object[0] === 'string'
+    ) {
+        return 'singleFrame';
+    }
+
+    // Multi frame:
+    // [
+    //   ["00100", "01110"],
+    //   ["00000", "00100"]
+    // ]
+    if (
+        Array.isArray(object) &&
+        object.length > 0 &&
+        Array.isArray(object[0]) &&
+        object[0].length > 0 &&
+        typeof object[0][0] === 'string'
+    ) {
+        return 'multiFrame';
+    }
+
+    if (SystemUtils.getObjectType(object) === 'String') {
+        return 'string';
+    }
+
+    return 'unknown';
+}
 
     static extractArray(obj) {
         for (const value of Object.values(obj)) {
@@ -117,26 +178,41 @@ class ObjectSprite extends ObjectKillable {
 
         throw new Error('No array found in the object.');
     }
-
-    getCurrentLivingFrame() {
-        if (this.frameType === 'array') {
-            return this.livingFrames;
-        }
-
-        return this.livingFrames?.[this.currentFrameIndex] ?? null;
+static normalizeFrames(frames, frameType) {
+    if (!frames) {
+        return null;
     }
 
-    getCurrentDyingFrame() {
-        if (!this.dyingFrames) {
-            return null;
-        }
-
-        if (this.frameType === 'array') {
-            return this.dyingFrames;
-        }
-
-        return this.dyingFrames?.[this.currentFrameIndex] ?? null;
+    if (frameType === 'json') {
+        return frames;
     }
+
+    if (frameType === 'singleFrame') {
+        return [frames];
+    }
+
+    if (frameType === 'multiFrame') {
+        return frames;
+    }
+
+    throw new Error(`Unsupported frame type for normalization: ${frameType}`);
+}
+
+getCurrentLivingFrame() {
+    if (!this.livingFrames || this.livingFrameCount <= 0) {
+        return null;
+    }
+
+    return this.livingFrames[this.currentFrameIndex] ?? null;
+}
+
+getCurrentDyingFrame() {
+    if (!this.dyingFrames || this.dyingFrameCount <= 0) {
+        return null;
+    }
+
+    return this.dyingFrames[this.currentFrameIndex] ?? null;
+}
 
     advanceFrame(frameCount) {
         if (!frameCount || frameCount <= 0) {
@@ -149,57 +225,55 @@ class ObjectSprite extends ObjectKillable {
         }
     }
 
-    handleAliveStatus(deltaTime, incFrame = false) {
-        super.handleAliveStatus(deltaTime, incFrame);
+handleAliveStatus(deltaTime, incFrame = false) {
+    super.handleAliveStatus(deltaTime, incFrame);
 
-        if (this.livingFrameCount <= 1) {
-            return;
-        }
-
-        if (incFrame) {
-            this.advanceFrame(this.livingFrameCount);
-            this.delayCounter = 0;
-            return;
-        }
-
-        this.delayCounter++;
-        if (this.delayCounter >= this.livingDelay) {
-            this.delayCounter = 0;
-            this.advanceFrame(this.livingFrameCount);
-        }
+    if (this.livingFrameCount <= 1) {
+        return;
     }
+
+    if (incFrame) {
+        this.advanceFrame(this.livingFrameCount);
+        this.delayCounter = 0;
+        return;
+    }
+
+    this.delayCounter++;
+
+    if (this.delayCounter >= this.livingDelay) {
+        this.delayCounter = 0;
+        this.advanceFrame(this.livingFrameCount);
+    }
+}
     
-    handleDyingStatus(deltaTime, incFrame = false) {
-        super.handleDyingStatus(deltaTime, incFrame);
+handleDyingStatus(deltaTime, incFrame = false) {
+    if (!this.dyingFrames || this.dyingFrameCount <= 0) {
+        this.setIsDead();
+        return;
+    }
 
-        if (this.dyingFrameCount <= 0) {
-            this.setIsDead();
-            return;
-        }
-
-        if (incFrame) {
-            this.advanceFrame(this.dyingFrameCount, true);
-            this.delayCounter = 0;
-
-            if (this.dyingFrameIndex >= this.dyingFrameCount - 1) {
-                this.setIsDead();
-            }
-
-            return;
-        }
-
+    if (incFrame) {
+        this.currentFrameIndex++;
+        this.delayCounter = 0;
+    } else {
         this.delayCounter++;
 
         if (this.delayCounter >= this.dyingDelay) {
             this.delayCounter = 0;
-
-            if (this.dyingFrameIndex < this.dyingFrameCount - 1) {
-                this.dyingFrameIndex++;
-            } else {
-                this.setIsDead();
-            }
+            this.currentFrameIndex++;
         }
     }
+
+    if (this.currentFrameIndex >= this.dyingFrameCount) {
+        if (this.otherFrame) {
+            this.currentFrameIndex = 0;
+            this.delayCounter = 0;
+            this.setIsOther();
+        } else {
+            this.setIsDead();
+        }
+    }
+}
 
     handleOtherStatus(deltaTime, incFrame = false) {
         if (!this.otherFrame) {
@@ -217,15 +291,18 @@ class ObjectSprite extends ObjectKillable {
         // Intentionally no-op
     }
 
-    setHit() {
-        if (this.dyingFrames && this.dyingFrameCount > 0) {
-            this.setIsDying();
-        } else if (this.otherFrame) {
-            this.setIsOther();
-        } else {
-            this.setIsDead();
-        }
+setHit() {
+    this.currentFrameIndex = 0;
+    this.delayCounter = 0;
+
+    if (this.dyingFrames && this.dyingFrameCount > 0) {
+        this.setIsDying();
+    } else if (this.otherFrame) {
+        this.setIsOther();
+    } else {
+        this.setIsDead();
     }
+}
 
     setSpriteColor(spriteColor) {
         ObjectValidation.nonEmptyString(spriteColor, 'spriteColor');
