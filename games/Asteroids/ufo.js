@@ -252,18 +252,10 @@ class UFO extends ObjectVector {
     shootBullet(ship) {
         if (!this.bulletTimer.isComplete()) return;
 
-        const rotationAngle = this.getBulletAngle(ship);
-        this.bulletManager.ufoShootBullet(this, ship, rotationAngle);
+        this.bulletManager.ufoShootBullet(this, ship);
 
         this.bulletTimer.reset();
         this.bulletTimer.start();
-    }
-
-    getBulletAngle(ship) {
-        if (this.isSmall && ship.isAlive()) {
-            return AngleUtils.getAngleBetweenObjects(this, ship);
-        }
-        return RandomUtils.randomRange(0, UFO.ROTATION_MAX, true);
     }
 
     getDelay() {

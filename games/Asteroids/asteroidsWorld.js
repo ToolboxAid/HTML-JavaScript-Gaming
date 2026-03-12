@@ -71,7 +71,7 @@ class AsteroidsWorld {
 
         if (ship.isAlive()) {
             ufoBullets.forEach((bullet) => {
-                if (bullet.collisionDetection(ship)) {
+                if (bullet.team !== 'player' && bullet.collisionDetection(ship)) {
                     bullet.setIsDead();
                     ship.setShipHit();
                     this.ufoManager.createExplosion(ship);
@@ -81,7 +81,7 @@ class AsteroidsWorld {
 
         if (ship.isAlive()) {
             this.bulletManager.bullets.forEach((bullet) => {
-                if (bullet.collisionDetection(ship)) {
+                if (bullet.ownerId !== ship.ID && bullet.collisionDetection(ship)) {
                     bullet.setIsDead();
                     ship.setShipHit();
                     this.asteroidManager.createExplosion(ship);

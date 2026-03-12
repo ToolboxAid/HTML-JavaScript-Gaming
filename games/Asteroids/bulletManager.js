@@ -4,10 +4,8 @@
 // 01/20/2025
 // bulletManager.js
 
-import AngleUtils from "../../engine/math/angleUtils.js";
-import Bullet from "./bullet.js";
-import RandomUtils from "../../engine/math/randomUtils.js";
 import SystemUtils from "../../engine/utils/systemUtils.js";
+import AsteroidsBulletFactory from "./asteroidsBulletFactory.js";
 
 /**
  * Manages bullet creation, updates, and cleanup for ship and UFO
@@ -76,7 +74,7 @@ class BulletManager {
   shipShootBullet(ship) {
     if (!this.canShipShoot()) return;
 
-    const bullet = new Bullet(ship.x, ship.y, ship.rotationAngle);
+    const bullet = AsteroidsBulletFactory.createShipBullet(ship);
     this.bullets.push(bullet);
 
     if (BulletManager.DEBUG) {
@@ -95,23 +93,15 @@ class BulletManager {
   ufoShootBullet(ufo, ship) {
     if (!ufo.isAlive()) return;
 
-    const rotationAngle = this.getBulletAngle(ufo, ship);
-    const bullet = new Bullet(ufo.x, ufo.y, rotationAngle);
+    const bullet = AsteroidsBulletFactory.createUfoBullet(ufo, ship);
     this.bullets.push(bullet);
 
     if (BulletManager.DEBUG) {
       console.log("UFO bullet fired:", {
-        angle: rotationAngle,
+        angle: bullet.rotationAngle,
         total: this.bullets.length
       });
     }
-  }
-
-  getBulletAngle(ufo, ship) {
-    if (ufo.isSmall && ship.isAlive()) {
-      return AngleUtils.getAngleBetweenObjects(ufo, ship);
-    }
-    return RandomUtils.randomRange(0, 360, true);
   }
 
   hasActiveBullets() {

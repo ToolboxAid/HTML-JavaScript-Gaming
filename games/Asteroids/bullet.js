@@ -17,27 +17,34 @@ class Bullet extends ObjectVector {
   static speed = 350;
   static lifespan = 1.75; // Time in seconds before the bullet disappears
 
-  constructor(x, y, angleInDegrees) {
-    // Create the bullet at the calculated position based on the nose of the ship
-    const angleInRadians = angleInDegrees * (Math.PI / 180);
+  constructor(configOrX, y, angleInDegrees) {
+    const config = typeof configOrX === 'object' && configOrX !== null
+      ? configOrX
+      : { x: configOrX, y, angleInDegrees };
 
-    // Calculate the nose offset in world space (taking into account ship's rotation)
-    const noseDistance = 15; // Distance from ship center to nose
-    const noseX = Math.cos(angleInRadians) * noseDistance;  // Rotate the x-component of the nose vector
-    const noseY = Math.sin(angleInRadians) * noseDistance;  // Rotate the y-component of the nose vector
+    const bulletX = config.x;
+    const bulletY = config.y;
+    const bulletAngle = config.angleInDegrees;
+    const angleInRadians = bulletAngle * (Math.PI / 180);
 
-    // Bullet position is the ship's position plus the rotated nose offset
-    const bulletX = x + noseX;
-    const bulletY = y + noseY;
+    const inheritedVelocityX = Number.isFinite(config.inheritedVelocityX) ? config.inheritedVelocityX : 0;
+    const inheritedVelocityY = Number.isFinite(config.inheritedVelocityY) ? config.inheritedVelocityY : 0;
 
-    // Calculate velocity based on angle and speed
     const velocityX = Math.cos(angleInRadians) * Bullet.speed;
     const velocityY = Math.sin(angleInRadians) * Bullet.speed;
 
-    // Initialize the parent class with the bullet vector map and velocity
-    super(bulletX, bulletY, Bullet.getVectorMap(), velocityX, velocityY);
-    this.rotationAngle = angleInDegrees;
+    super(
+      bulletX,
+      bulletY,
+      Bullet.getVectorMap(),
+      velocityX + inheritedVelocityX,
+      velocityY + inheritedVelocityY
+    );
+    this.rotationAngle = bulletAngle;
     this.timeAlive = 0; // Time the bullet has existed
+    this.ownerId = config.ownerId ?? null;
+    this.ownerType = config.ownerType ?? null;
+    this.team = config.team ?? null;
 
     if (Bullet.DEBUG) {
       console.log(`bullet construct ${JSON.stringify(this)}`);
@@ -87,6 +94,9 @@ class Bullet extends ObjectVector {
       // Cleanup bullet-specific properties
       this.timeAlive = null;
       this.rotationAngle = null;
+      this.ownerId = null;
+      this.ownerType = null;
+      this.team = null;
 
       return true; // Successful cleanup
 
