@@ -75,7 +75,7 @@ class Ship extends ObjectVector {
 
     update(deltaTime, keyboardInput) {
         this.moveShip(deltaTime, keyboardInput);
-        this.world.update(this, deltaTime);
+        this.world.update(this, deltaTime, keyboardInput);
         this.checkShipDeath();
     }
 
@@ -99,7 +99,6 @@ class Ship extends ObjectVector {
         this.handleThrust(deltaTime, keyboardInput);
         this.updateVelocity();
         this.updatePosition(deltaTime);
-        this.handleShooting(keyboardInput);
         this.updateThrustVisual();
     }
 
@@ -167,16 +166,6 @@ class Ship extends ObjectVector {
         const score = this.score + this.world.consumeScore();
         this.score = 0;
         return score;
-    }
-
-    handleShooting(keyboardInput) {
-        if (keyboardInput.getkeysPressed().includes('Space') && this.isAlive()) {
-            this.world.bulletManager.shipShootBullet(this);
-
-            if (Ship.audioPlayer) {
-                Ship.audioPlayer.playAudio('fire.wav', 0.5);
-            }
-        }
     }
 
     reset() {

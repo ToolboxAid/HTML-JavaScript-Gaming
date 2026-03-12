@@ -11,7 +11,6 @@ import CanvasUtils from '../../engine/canvas.js';
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 import SystemUtils from '../../engine/utils/systemUtils.js';
-import Timer from '../../engine/utils/timer.js';
 
 /**
  * UFO class representing an enemy spacecraft that can shoot at the player
@@ -132,8 +131,6 @@ class UFO extends ObjectVector {
         this.directionCnt = 0;
         this.directionDelay = this.getDelay();
         this.bulletManager = new BulletManager();
-        this.bulletTimer = new Timer(UFO.BULLET_INTERVAL);
-        this.bulletTimer.start();
     }
 
     update(deltaTime, ship) {
@@ -158,7 +155,6 @@ class UFO extends ObjectVector {
         }
         super.update(deltaTime);
         this.checkBoundaries();
-        this.shootBullet(ship);
     }
 
     updateDying() {
@@ -249,22 +245,12 @@ class UFO extends ObjectVector {
             this.y <= UFO.BOUNDARY_MARGIN;
     }
 
-    shootBullet(ship) {
-        if (!this.bulletTimer.isComplete()) return;
-
-        this.bulletManager.ufoShootBullet(this, ship);
-
-        this.bulletTimer.reset();
-        this.bulletTimer.start();
-    }
-
     getDelay() {
         return RandomUtils.randomRange(UFO.DIRECTION_MIN_DELAY, UFO.DIRECTION_MAX_DELAY);
     }
 
     setHit() {
         this.setIsDying();
-        this.bulletTimer.pause();
         UFO.audioPlayer.playAudio('bangLarge.wav', 0.5); // 50% volume
         
         if (UFO.DEBUG) {
@@ -300,9 +286,6 @@ class UFO extends ObjectVector {
             this.bulletManager = null;
         }
 
-        if (this.bulletTimer) {
-            this.bulletTimer = null;
-        }
     }
 
     logDebugInfo(direction) {

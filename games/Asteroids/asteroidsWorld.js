@@ -7,12 +7,14 @@ import AsteroidManager from './asteroidManager.js';
 import BulletManager from './bulletManager.js';
 import AsteroidsCollisionSystem from './asteroidsCollisionSystem.js';
 import UFOManager from './ufoManager.js';
+import AsteroidsWeaponSystem from './asteroidsWeaponSystem.js';
 
 class AsteroidsWorld {
     constructor(audioPlayer) {
         this.asteroidManager = new AsteroidManager(audioPlayer);
         this.bulletManager = new BulletManager();
         this.ufoManager = new UFOManager(audioPlayer);
+        this.weaponSystem = new AsteroidsWeaponSystem(audioPlayer);
         this.pendingScore = 0;
     }
 
@@ -21,8 +23,9 @@ class AsteroidsWorld {
         return this.asteroidManager.safeSpawn(ship);
     }
 
-    update(ship, deltaTime) {
+    update(ship, deltaTime, keyboardInput = null) {
         this.updateManagers(deltaTime, ship);
+        this.weaponSystem.update(this, ship, keyboardInput);
         this.pendingScore += AsteroidsCollisionSystem.resolve(this, ship);
     }
 
@@ -62,6 +65,7 @@ class AsteroidsWorld {
 
     reset() {
         this.pendingScore = 0;
+        this.weaponSystem.reset();
     }
 }
 
