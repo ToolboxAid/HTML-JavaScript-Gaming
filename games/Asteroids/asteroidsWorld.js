@@ -5,6 +5,7 @@
 
 import AsteroidManager from './asteroidManager.js';
 import BulletManager from './bulletManager.js';
+import AsteroidsCollisionSystem from './asteroidsCollisionSystem.js';
 import UFOManager from './ufoManager.js';
 
 class AsteroidsWorld {
@@ -22,64 +23,13 @@ class AsteroidsWorld {
 
     update(ship, deltaTime) {
         this.updateManagers(deltaTime, ship);
-        this.resolveCollisions(ship);
+        this.pendingScore += AsteroidsCollisionSystem.resolve(this, ship);
     }
 
     updateManagers(deltaTime, ship) {
         this.asteroidManager.update(deltaTime);
         this.bulletManager.update(deltaTime, ship);
         this.ufoManager.update(deltaTime, ship);
-    }
-
-    resolveCollisions(ship) {
-        const ufo = this.ufoManager.getUfo();
-
-        this.asteroidManager.checkShip(ship);
-
-        if (ufo && typeof ufo.isAlive === 'function') {
-            this.asteroidManager.checkShip(ufo);
-        }
-
-        this.bulletManager.bullets.forEach((bullet) => {
-            this.pendingScore += this.asteroidManager.checkBullet(bullet);
-        });
-
-        const ufoBullets = this.ufoManager.getActiveBullets();
-
-        ufoBullets.forEach((bullet) => {
-            this.asteroidManager.checkBullet(bullet);
-        });
-
-        this.bulletManager.bullets.forEach((bullet) => {
-            if (ufo && bullet.collisionDetection(ufo)) {
-                bullet.setIsDead();
-                ufo.setHit();
-                this.ufoManager.createExplosion(ufo);
-                this.pendingScore += ufo.getValue();
-            }
-        });
-
-        if (ship.isAlive()) {
-            ufoBullets.forEach((bullet) => {
-                if (bullet.team !== 'player' && bullet.collisionDetection(ship)) {
-                    bullet.setIsDead();
-                    ship.setShipHit();
-                    this.ufoManager.createExplosion(ship);
-                }
-            });
-        }
-
-        if (ship.isAlive()) {
-            this.bulletManager.bullets.forEach((bullet) => {
-                if (bullet.ownerId !== ship.ID && bullet.collisionDetection(ship)) {
-                    bullet.setIsDead();
-                    ship.setShipHit();
-                    this.asteroidManager.createExplosion(ship);
-                }
-            });
-        }
-
-        this.ufoManager.check(ship);
     }
 
     consumeScore() {
