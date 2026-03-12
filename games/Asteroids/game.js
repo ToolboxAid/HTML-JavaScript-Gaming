@@ -46,9 +46,6 @@ class Game extends GameBase {
 
         this.keyboardInput = new KeyboardInput();
 
-        this.playerCount = 0;
-        this.selectedPlayerLives = null;
-
         this.gameState = 'attract';
         this.enterAttract();
 
@@ -81,7 +78,7 @@ class Game extends GameBase {
     }
 
     enterFlashScore() {
-        this.app.sessionController.ensureSession(this.playerCount, this.selectedPlayerLives);
+        this.app.sessionController.ensureSession(this.app.playerSetup.playerCount, this.app.playerSetup.playerLives);
 
         AsteroidsHud.resetFlashState(this.app.hudFlashState);
     }
@@ -105,8 +102,7 @@ class Game extends GameBase {
     updatePlayerSelect(deltaTime) {
         const result = this.app.attractScreen.updatePlayerSelect(deltaTime, this.keyboardInput);
         if (result) {
-            this.playerCount = result.playerCount;
-            this.selectedPlayerLives = result.playerLives;
+            this.app.setPlayerSetup(result.playerCount, result.playerLives);
             this.app.sessionController.clearSession();
             this.setState('flashScore');
         }

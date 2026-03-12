@@ -17,11 +17,20 @@ class AsteroidsAppContext {
         this.hudFlashState = AsteroidsHud.createFlashState();
         this.gameOverState = AsteroidsScreens.createGameOverState();
         this.attractScreen = null;
+        this.playerSetup = {
+            playerCount: 0,
+            playerLives: null
+        };
     }
 
     createAttractScreen() {
         this.attractScreen = new AsteroidsAttractScreen();
         return this.attractScreen;
+    }
+
+    setPlayerSetup(playerCount, playerLives) {
+        this.playerSetup.playerCount = playerCount;
+        this.playerSetup.playerLives = playerLives;
     }
 }
 
