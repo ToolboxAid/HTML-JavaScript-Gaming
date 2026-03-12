@@ -12,6 +12,7 @@ import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import SpriteRenderer from '../renderers/spriteRenderer.js';
 import SpriteAnimationController from '../animation/spriteAnimationController.js';
+import AnimationStateUtils from '../animation/animationStateUtils.js';
 
 class ObjectSprite extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
@@ -214,7 +215,10 @@ getCurrentDyingFrame() {
 
 advanceFrame(frameCount) {
     const result = this.animation.advanceFrame(this.currentFrameIndex, frameCount);
-    this.currentFrameIndex = result.currentFrameIndex;
+    AnimationStateUtils.syncToObject(this, {
+        currentFrameIndex: result.currentFrameIndex,
+        delayCounter: this.delayCounter
+    });
     return result.looped;
 }
 stepLoopingFrame(frameCount, frameDelay, incFrame = false) {
@@ -225,8 +229,7 @@ stepLoopingFrame(frameCount, frameDelay, incFrame = false) {
         frameDelay,
         incFrame
     );
-    this.currentFrameIndex = result.currentFrameIndex;
-    this.delayCounter = result.delayCounter;
+    AnimationStateUtils.syncToObject(this, result);
     return result.looped;
 }
 stepFinalFrame(frameCount, frameDelay, incFrame = false) {
@@ -237,8 +240,7 @@ stepFinalFrame(frameCount, frameDelay, incFrame = false) {
         frameDelay,
         incFrame
     );
-    this.currentFrameIndex = result.currentFrameIndex;
-    this.delayCounter = result.delayCounter;
+    AnimationStateUtils.syncToObject(this, result);
     return result.finished;
 }
 handleAliveStatus(deltaTime, incFrame = false) {
@@ -326,15 +328,12 @@ setHit() {
             return false;
         }
 
-        if (this.animation) {
-            this.animation.destroy();
-        }
+        AnimationStateUtils.destroyAnimation(this, ['animation']);
 
         ObjectCleanup.cleanupAndNullifyArray(this, 'livingFrames');
         ObjectCleanup.cleanupAndNullifyArray(this, 'dyingFrames');
 
         this.destroyProperties([
-            'animation',
             'frameType',
             'pixelSize',
             'livingDelay',
