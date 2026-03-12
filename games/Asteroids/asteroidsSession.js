@@ -69,7 +69,7 @@ class AsteroidsSession {
         }
     }
 
-    handleCurrentPlayerDeath(setGameState) {
+    handleCurrentPlayerDeath(setState) {
         const ship = this.getCurrentShip();
 
         if (!ship || !ship.isDead()) {
@@ -82,7 +82,7 @@ class AsteroidsSession {
             this.playerLives,
             this.currentPlayer,
             this.playerCount,
-            setGameState
+            setState
         );
 
         this.currentPlayer = result.updatedPlayer;

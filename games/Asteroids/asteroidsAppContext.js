@@ -26,7 +26,6 @@ class AsteroidsAppContext {
 
     createAttractScreen() {
         this.attractScreen = new AsteroidsAttractScreen();
-        return this.attractScreen;
     }
 
     setPlayerSetup(playerCount, playerLives) {
@@ -36,7 +35,7 @@ class AsteroidsAppContext {
 
     beginSelectedGame(playerCount, playerLives) {
         this.setPlayerSetup(playerCount, playerLives);
-        this.resetSession();
+        this.clearSession();
     }
 
     enterAttract() {
@@ -119,7 +118,7 @@ class AsteroidsAppContext {
         return this.getSession().handleCurrentPlayerDeath((newState) => { setState(newState); });
     }
 
-    resetSession() {
+    clearSession() {
         this.sessionController.clearSession();
     }
 }

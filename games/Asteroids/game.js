@@ -173,7 +173,7 @@ class Game extends GameBase {
     }
 
     resetGame() {
-        this.app.resetSession();
+        this.app.clearSession();
         this.setState('attract');
     }
 }
