@@ -3,6 +3,8 @@
 // 03/12/2026
 // asteroidsCollisionSystem.js
 
+import AsteroidsHitResolver from './asteroidsHitResolver.js';
+
 class AsteroidsCollisionSystem {
     static resolve(world, ship) {
         const ufo = world.ufoManager.getUfo();
@@ -26,19 +28,14 @@ class AsteroidsCollisionSystem {
 
         world.bulletManager.bullets.forEach((bullet) => {
             if (ufo && bullet.collisionDetection(ufo)) {
-                bullet.setIsDead();
-                ufo.setHit();
-                world.ufoManager.createExplosion(ufo);
-                score += ufo.getValue();
+                score += AsteroidsHitResolver.hitUfo(world, bullet, ufo);
             }
         });
 
         if (ship.isAlive()) {
             ufoBullets.forEach((bullet) => {
                 if (bullet.team !== 'player' && bullet.collisionDetection(ship)) {
-                    bullet.setIsDead();
-                    ship.setShipHit();
-                    world.ufoManager.createExplosion(ship);
+                    AsteroidsHitResolver.hitShipByUfoBullet(world, bullet, ship);
                 }
             });
         }
@@ -46,9 +43,7 @@ class AsteroidsCollisionSystem {
         if (ship.isAlive()) {
             world.bulletManager.bullets.forEach((bullet) => {
                 if (bullet.ownerId !== ship.ID && bullet.collisionDetection(ship)) {
-                    bullet.setIsDead();
-                    ship.setShipHit();
-                    world.asteroidManager.createExplosion(ship);
+                    AsteroidsHitResolver.hitShipByPlayerBullet(world, bullet, ship);
                 }
             });
         }
