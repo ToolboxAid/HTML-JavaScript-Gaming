@@ -78,7 +78,7 @@ class Game extends GameBase {
     }
 
     setState(nextState) {
-        this.gameState = nextState;
+        return AsteroidsStateMachine.transition(this, nextState);
     }
 
     handleInitAttract() {

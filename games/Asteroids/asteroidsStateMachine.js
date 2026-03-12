@@ -4,6 +4,18 @@
 // asteroidsStateMachine.js
 
 class AsteroidsStateMachine {
+    static TRANSITIONS = {
+        initAttract: ['attract'],
+        attract: ['playerSelect'],
+        playerSelect: ['initGame'],
+        initGame: ['flashScore'],
+        flashScore: ['safeSpawn'],
+        safeSpawn: ['playGame'],
+        playGame: ['pauseGame', 'flashScore', 'gameOver'],
+        pauseGame: ['playGame'],
+        gameOver: ['initAttract']
+    };
+
     static UPDATE_HANDLERS = {
         initAttract: 'handleInitAttract',
         attract: 'updateAttract',
@@ -40,6 +52,27 @@ class AsteroidsStateMachine {
         }
 
         game[handlerName](deltaTime);
+    }
+
+    static canTransition(currentState, nextState) {
+        if (currentState === nextState) {
+            return true;
+        }
+
+        const validTransitions = this.TRANSITIONS[currentState] || [];
+        return validTransitions.includes(nextState);
+    }
+
+    static transition(game, nextState) {
+        const currentState = game.gameState;
+
+        if (this.canTransition(currentState, nextState)) {
+            game.gameState = nextState;
+            return true;
+        }
+
+        console.warn(`Invalid Asteroids state transition: '${currentState}' -> '${nextState}'`);
+        return false;
     }
 }
 
