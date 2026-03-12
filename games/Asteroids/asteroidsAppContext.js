@@ -6,6 +6,7 @@
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
 import AsteroidsAttractScreen from './asteroidsAttractScreen.js';
 import AsteroidsHud from './asteroidsHud.js';
+import AsteroidsRuntime from './asteroidsRuntime.js';
 import AsteroidsScreens from './asteroidsScreens.js';
 import AsteroidsSessionController from './asteroidsSessionController.js';
 
@@ -66,9 +67,32 @@ class AsteroidsAppContext {
         return this.highScore;
     }
 
+    getSession() {
+        return this.sessionController.getSession();
+    }
+
+    updateSafeSpawn(deltaTime) {
+        return AsteroidsRuntime.updateSafeSpawn(this.getSession(), deltaTime);
+    }
+
+    stepPlay(deltaTime, keyboardInput, debug = false) {
+        return AsteroidsRuntime.stepPlay(this.getSession(), deltaTime, keyboardInput, debug);
+    }
+
+    drawSafeSpawn() {
+        AsteroidsRuntime.drawSafeSpawn(this.getSession());
+    }
+
+    drawPlay() {
+        AsteroidsRuntime.drawPlay(this.getSession());
+    }
+
+    drawPause() {
+        AsteroidsRuntime.drawPause(this.getSession());
+    }
+
     handleCurrentPlayerDeath(setState) {
-        const session = this.sessionController.getSession();
-        return session.handleCurrentPlayerDeath((newState) => { setState(newState); });
+        return this.getSession().handleCurrentPlayerDeath((newState) => { setState(newState); });
     }
 
     resetSession() {

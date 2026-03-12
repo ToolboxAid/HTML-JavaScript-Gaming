@@ -9,7 +9,6 @@ import GameBase from '../../engine/gameBase.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
 import AsteroidsAppContext from './asteroidsAppContext.js';
-import AsteroidsRuntime from './asteroidsRuntime.js';
 import AsteroidsScreens from './asteroidsScreens.js';
 import AsteroidsStateMachine from './asteroidsStateMachine.js';
 
@@ -122,14 +121,14 @@ class Game extends GameBase {
     }
 
     updateSafeSpawn(deltaTime) {
-        const safe = AsteroidsRuntime.updateSafeSpawn(this.app.sessionController.getSession(), deltaTime);
+        const safe = this.app.updateSafeSpawn(deltaTime);
         if (safe) {
             this.setState('playGame');
         }
     }
 
     drawSafeSpawn() {
-        AsteroidsRuntime.drawSafeSpawn(this.app.sessionController.getSession());
+        this.app.drawSafeSpawn();
         this.drawLivesScores();
     }
 
@@ -139,8 +138,7 @@ class Game extends GameBase {
             return;
         }
 
-        const session = this.app.sessionController.getSession();
-        const score = AsteroidsRuntime.stepPlay(session, deltaTime, this.keyboardInput, Game.DEBUG);
+        const score = this.app.stepPlay(deltaTime, this.keyboardInput, Game.DEBUG);
         this.app.saveHighScore(score);
 
         if (this.app.handleCurrentPlayerDeath((newState) => { this.setState(newState); })) {
@@ -151,7 +149,7 @@ class Game extends GameBase {
     }
 
     drawPlayGame() {
-        AsteroidsRuntime.drawPlay(this.app.sessionController.getSession());
+        this.app.drawPlay();
         this.drawLivesScores();
     }
 
@@ -160,7 +158,7 @@ class Game extends GameBase {
     }
 
     drawPauseGame() {
-        AsteroidsRuntime.drawPause(this.app.sessionController.getSession());
+        this.app.drawPause();
         AsteroidsScreens.drawPauseOverlay();
     }
 
