@@ -90,10 +90,10 @@ class BulletManager {
     return this.bullets.length < this.shipMaxBullets;
   }
 
-  ufoShootBullet(ufo, ship) {
+  ufoShootBullet(ufo, ship, options = {}) {
     if (!ufo.isAlive()) return;
 
-    const bullet = BulletFactory.createUfoBullet(ufo, ship);
+    const bullet = BulletFactory.createUfoBullet(ufo, ship, options);
     this.bullets.push(bullet);
 
     if (BulletManager.DEBUG) {

@@ -36,7 +36,7 @@ class AsteroidsWorld {
     updateManagers(deltaTime, actor) {
         this.asteroidManager.update(deltaTime);
         this.bulletManager.update(deltaTime, actor);
-        this.ufoManager.update(deltaTime, actor);
+        this.ufoManager.update(deltaTime, actor, this.asteroidManager.getLevel());
     }
 
     consumeScore() {

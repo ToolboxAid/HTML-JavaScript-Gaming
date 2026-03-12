@@ -11,6 +11,7 @@ import GeometryUtils from '../../../engine/math/geometryUtils.js';
 import RandomUtils from '../../../engine/math/randomUtils.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
 import CanExplode from '../../../engine/utils/canExplode.js';
+import DifficultyProfile from '../systems/difficultyProfile.js';
 
 class AsteroidManager extends CanExplode {
     static DEBUG = new URLSearchParams(window.location.search).has('asteroidManager');
@@ -33,7 +34,7 @@ class AsteroidManager extends CanExplode {
     }
 
     initAsteroids() {
-        const maxAsteroids = 3 + (this.level * 2);
+        const maxAsteroids = DifficultyProfile.getWaveAsteroidCount(this.level);
         const angleStep = 360 / maxAsteroids;
 
         for (let i = 0; i < maxAsteroids; i++) {
@@ -55,7 +56,8 @@ class AsteroidManager extends CanExplode {
 
     createAsteroid(x, y, size) {
         const key = `${size}-${this.asteroidID++}`;
-        const asteroid = new Asteroid(x, y, size);
+        const speedMultiplier = DifficultyProfile.getAsteroidSpeedMultiplier(this.level, size);
+        const asteroid = new Asteroid(x, y, size, speedMultiplier);
 
         this.asteroids.set(key, asteroid);
 

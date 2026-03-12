@@ -4,13 +4,14 @@
 // weaponSystem.js
 
 import Timer from '../../../engine/utils/timer.js';
-import UFO from '../ufo.js';
+import DifficultyProfile from './difficultyProfile.js';
 
 class AsteroidsWeaponSystem {
     constructor(audioPlayer) {
         this.audioPlayer = audioPlayer;
         this.ufoBulletTimer = null;
         this.ufoTimerOwnerId = null;
+        this.ufoTimerInterval = null;
     }
 
     update(world, ship, keyboardInput) {
@@ -42,7 +43,7 @@ class AsteroidsWeaponSystem {
             return;
         }
 
-        this.ensureUfoTimer(ufo);
+        this.ensureUfoTimer(ufo, ufoManager.level);
 
         if (!this.ufoBulletTimer.isComplete()) {
             return;
@@ -53,19 +54,25 @@ class AsteroidsWeaponSystem {
         this.ufoBulletTimer.start();
     }
 
-    ensureUfoTimer(ufo) {
-        if (this.ufoTimerOwnerId === ufo.ID && this.ufoBulletTimer) {
+    ensureUfoTimer(ufo, level = 1) {
+        const interval = DifficultyProfile.getUfoFireInterval(level, ufo.isSmall);
+
+        if (this.ufoTimerOwnerId === ufo.ID &&
+            this.ufoBulletTimer &&
+            this.ufoTimerInterval === interval) {
             return;
         }
 
         this.ufoTimerOwnerId = ufo.ID;
-        this.ufoBulletTimer = new Timer(UFO.BULLET_INTERVAL);
+        this.ufoTimerInterval = interval;
+        this.ufoBulletTimer = new Timer(interval);
         this.ufoBulletTimer.start();
     }
 
     clearUfoTimer() {
         this.ufoTimerOwnerId = null;
         this.ufoBulletTimer = null;
+        this.ufoTimerInterval = null;
     }
 
     reset() {

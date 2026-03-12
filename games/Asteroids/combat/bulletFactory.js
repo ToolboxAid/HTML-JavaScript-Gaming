@@ -37,8 +37,8 @@ class AsteroidsBulletFactory {
         });
     }
 
-    static createUfoBullet(ufo, ship) {
-        const angleInDegrees = this.getUfoBulletAngle(ufo, ship);
+    static createUfoBullet(ufo, ship, options = {}) {
+        const angleInDegrees = this.getUfoBulletAngle(ufo, ship, options);
         const spawnPosition = this.getSpawnPosition(ufo, angleInDegrees);
 
         return new Bullet({
@@ -53,9 +53,13 @@ class AsteroidsBulletFactory {
         });
     }
 
-    static getUfoBulletAngle(ufo, ship) {
+    static getUfoBulletAngle(ufo, ship, options = {}) {
         if (ufo.isSmall && ship.isAlive()) {
-            return AngleUtils.getAngleBetweenObjects(ufo, ship);
+            const aimErrorDegrees = Number.isFinite(options.aimErrorDegrees)
+                ? options.aimErrorDegrees
+                : 0;
+            const baseAngle = AngleUtils.getAngleBetweenObjects(ufo, ship);
+            return baseAngle + RandomUtils.randomRange(-aimErrorDegrees, aimErrorDegrees);
         }
 
         return RandomUtils.randomRange(0, 360, true);

@@ -9,6 +9,7 @@ import UFO from '../ufo.js';
 import BulletManager from '../combat/bulletManager.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 import CanExplode from '../../../engine/utils/canExplode.js';
+import DifficultyProfile from '../systems/difficultyProfile.js';
 
 class UFOManager extends CanExplode {
     static UFO_SPAWN_INTERVAL = 25000;
@@ -23,16 +24,17 @@ class UFOManager extends CanExplode {
         this.ufo = null;
         this.bulletManager = new BulletManager();
         this.pendingTimerReset = false;
-        this.ufoTimer = new Timer(
-            UFOManager.DEBUG ? UFOManager.DEBUG_SPAWN_INTERVAL : UFOManager.UFO_SPAWN_INTERVAL
-        );
+        this.level = 1;
+        this.ufoTimer = new Timer(this.getSpawnInterval());
         this.ufoTimer.start();
 
         UFOManager.audioPlayer = audioPlayer;
     }
 
-    update(deltaTime, ship) {
+    update(deltaTime, ship, level = 1) {
         try {
+            this.syncLevel(level);
+
             if (this.ufo) {
                 this.updateExistingUFO(deltaTime, ship);
             } else if (this.canSpawnNewUFO()) {
@@ -45,6 +47,10 @@ class UFOManager extends CanExplode {
         } catch (error) {
             console.error('UFOManager update error:', error, this);
         }
+    }
+
+    syncLevel(level) {
+        this.level = Math.max(1, level);
     }
 
     updateExistingUFO(deltaTime, ship) {
@@ -96,7 +102,9 @@ class UFOManager extends CanExplode {
         this.ufoTimer.pause();
 
         try {
-            this.ufo = new UFO(UFOManager.audioPlayer);
+            this.ufo = new UFO(UFOManager.audioPlayer, {
+                forceSmall: DifficultyProfile.shouldSpawnSmallUfo(this.level)
+            });
 
             if (UFOManager.DEBUG) {
                 console.log('New UFO spawned:', {
@@ -151,7 +159,9 @@ class UFOManager extends CanExplode {
             return;
         }
 
-        this.bulletManager.ufoShootBullet(ufo, ship);
+        this.bulletManager.ufoShootBullet(ufo, ship, {
+            aimErrorDegrees: DifficultyProfile.getSmallUfoAimError(this.level)
+        });
     }
 
     check(ship) {
@@ -250,8 +260,17 @@ class UFOManager extends CanExplode {
             return;
         }
 
+        this.ufoTimer.durationMs = this.getSpawnInterval();
         this.ufoTimer.reset();
         this.ufoTimer.start();
+    }
+
+    getSpawnInterval() {
+        if (UFOManager.DEBUG) {
+            return UFOManager.DEBUG_SPAWN_INTERVAL;
+        }
+
+        return DifficultyProfile.getUfoSpawnInterval(this.level);
     }
 
     destroy() {

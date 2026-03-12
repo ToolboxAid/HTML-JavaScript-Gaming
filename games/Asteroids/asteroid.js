@@ -7,7 +7,7 @@ import ObjectVector from '../../engine/objects/objectVector.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
 class Asteroid extends ObjectVector {
-  constructor(x, y, size = 'large') {
+  constructor(x, y, size = 'large', speedMultiplier = 1) {
     const vectorMap = Asteroid.generateVectorMap(size);
     //    const vectorMap1 = [[10, 40], [50, 20], [45, 5], [25, -10], [50, -35], [30, -45], [10, -38], [-20, -45], [-43, -18], [-43, 20], [-25, 20], [-25, 40],];
     const speed = 100;
@@ -16,8 +16,8 @@ class Asteroid extends ObjectVector {
       throw new Error("'vectorMap' frame must contain at least three points.");
     }
 
-    const velocityX = Asteroid.randomRange(size) * speed;
-    const velocityY = Asteroid.randomRange(size) * speed;
+    const velocityX = Asteroid.randomRange(size) * speed * speedMultiplier;
+    const velocityY = Asteroid.randomRange(size) * speed * speedMultiplier;
 
     // Initialize the parent class with the generated vectorMap
     super(x, y, vectorMap, velocityX, velocityY);  // Pass vectorMap here

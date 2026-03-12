@@ -87,8 +87,10 @@ class UFO extends ObjectVector {
         };
     }
 
-    constructor(audioPlayer) {
-        const isSmall = RandomUtils.randomBoolean();
+    constructor(audioPlayer, options = {}) {
+        const isSmall = typeof options.forceSmall === 'boolean'
+            ? options.forceSmall
+            : RandomUtils.randomBoolean();
         const direction = RandomUtils.randomBoolean();
         const angle = direction ? UFO.DIRECTION.RIGHT : UFO.DIRECTION.LEFT;
         const velocity = AngleUtils.angleToVector(angle);

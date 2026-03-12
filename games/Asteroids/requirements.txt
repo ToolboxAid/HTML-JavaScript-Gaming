@@ -188,7 +188,7 @@ Root:
 Known Gaps / Future Improvements
 --------------------------------
 [x] Add a formal Asteroids regression checklist document (`regression-checklist.txt`)
-[ ] Implement arcade-closer difficulty scaling across waves and UFO behavior
-[ ] Decide whether asteroid-to-asteroid collision should exist or remain intentionally omitted
-[ ] Consider moving additional gameplay helpers into folders only if it improves clarity, not just symmetry
+[x] Implement arcade-closer difficulty scaling across waves and UFO behavior
+[-] Decide whether asteroid-to-asteroid collision should exist or remain intentionally omitted
+[-] Consider moving additional gameplay helpers into folders only if it improves clarity, not just symmetry
 [ ] Add automated browser-level smoke coverage if the project gets a repeatable harness
