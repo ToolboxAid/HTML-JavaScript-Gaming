@@ -8,6 +8,7 @@ import BulletManager from './bulletManager.js';
 import AsteroidsCollisionSystem from './asteroidsCollisionSystem.js';
 import UFOManager from './ufoManager.js';
 import AsteroidsWeaponSystem from './asteroidsWeaponSystem.js';
+import AsteroidsScoreSystem from './asteroidsScoreSystem.js';
 
 class AsteroidsWorld {
     constructor(audioPlayer) {
@@ -15,7 +16,7 @@ class AsteroidsWorld {
         this.bulletManager = new BulletManager();
         this.ufoManager = new UFOManager(audioPlayer);
         this.weaponSystem = new AsteroidsWeaponSystem(audioPlayer);
-        this.pendingScore = 0;
+        this.scoreSystem = new AsteroidsScoreSystem();
     }
 
     safeSpawn(ship, deltaTime) {
@@ -26,7 +27,7 @@ class AsteroidsWorld {
     update(ship, deltaTime, keyboardInput = null) {
         this.updateManagers(deltaTime, ship);
         this.weaponSystem.update(this, ship, keyboardInput);
-        this.pendingScore += AsteroidsCollisionSystem.resolve(this, ship);
+        AsteroidsCollisionSystem.resolve(this, ship);
     }
 
     updateManagers(deltaTime, ship) {
@@ -36,9 +37,7 @@ class AsteroidsWorld {
     }
 
     consumeScore() {
-        const score = this.pendingScore;
-        this.pendingScore = 0;
-        return score;
+        return this.scoreSystem.consume();
     }
 
     hasActiveBullets() {
@@ -64,7 +63,7 @@ class AsteroidsWorld {
     }
 
     reset() {
-        this.pendingScore = 0;
+        this.scoreSystem.reset();
         this.weaponSystem.reset();
     }
 }

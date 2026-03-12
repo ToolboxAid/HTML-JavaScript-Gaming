@@ -8,24 +8,23 @@ import AsteroidsHitResolver from './asteroidsHitResolver.js';
 class AsteroidsCollisionSystem {
     static resolve(world, ship) {
         const ufo = world.ufoManager.getUfo();
-        let score = 0;
 
         const shipAsteroidCollision = world.asteroidManager.findCollisionWithObject(ship);
         if (shipAsteroidCollision) {
-            score += AsteroidsHitResolver.hitShipByAsteroid(world, ship, shipAsteroidCollision);
+            AsteroidsHitResolver.hitShipByAsteroid(world, ship, shipAsteroidCollision);
         }
 
         if (ufo && typeof ufo.isAlive === 'function') {
             const ufoAsteroidCollision = world.asteroidManager.findCollisionWithObject(ufo);
             if (ufoAsteroidCollision) {
-                score += AsteroidsHitResolver.hitUfoByAsteroid(world, ufo, ufoAsteroidCollision);
+                AsteroidsHitResolver.hitUfoByAsteroid(world, ufo, ufoAsteroidCollision);
             }
         }
 
         world.bulletManager.bullets.forEach((bullet) => {
             const collision = world.asteroidManager.findCollisionWithBullet(bullet);
             if (collision) {
-                score += AsteroidsHitResolver.hitAsteroidByBullet(world, bullet, collision);
+                AsteroidsHitResolver.hitAsteroidByBullet(world, bullet, collision);
             }
         });
 
@@ -40,7 +39,7 @@ class AsteroidsCollisionSystem {
 
         world.bulletManager.bullets.forEach((bullet) => {
             if (ufo && bullet.collisionDetection(ufo)) {
-                score += AsteroidsHitResolver.hitUfo(world, bullet, ufo);
+                AsteroidsHitResolver.hitUfo(world, bullet, ufo);
             }
         });
 
@@ -61,8 +60,6 @@ class AsteroidsCollisionSystem {
         }
 
         world.ufoManager.check(ship);
-
-        return score;
     }
 }
 

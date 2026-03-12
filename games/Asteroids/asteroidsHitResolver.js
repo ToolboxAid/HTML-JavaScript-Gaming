@@ -4,9 +4,17 @@
 // asteroidsHitResolver.js
 
 class AsteroidsHitResolver {
+    static awardScore(world, points) {
+        if (!world || !world.scoreSystem) {
+            return;
+        }
+
+        world.scoreSystem.add(points);
+    }
+
     static hitAsteroid(world, asteroidKey, asteroid) {
         if (!asteroid || !asteroidKey) {
-            return 0;
+            return;
         }
 
         let score = 0;
@@ -24,14 +32,13 @@ class AsteroidsHitResolver {
                 score = 10;
                 break;
             default:
-                return 0;
+                return;
         }
 
+        this.awardScore(world, score);
         world.asteroidManager.playHitAudio(asteroid.size);
         world.asteroidManager.createExplosion(asteroid);
         world.asteroidManager.removeAsteroid(asteroidKey);
-
-        return score;
     }
 
     static hitShipByAsteroid(world, ship, collision) {
@@ -41,7 +48,6 @@ class AsteroidsHitResolver {
 
         world.asteroidManager.createExplosion(ship);
         this.hitAsteroid(world, collision.asteroidKey, collision.asteroid);
-        return 0;
     }
 
     static hitUfoByAsteroid(world, ufo, collision) {
@@ -51,19 +57,18 @@ class AsteroidsHitResolver {
 
         world.asteroidManager.createExplosion(ufo);
         this.hitAsteroid(world, collision.asteroidKey, collision.asteroid);
-        return 0;
     }
 
     static hitAsteroidByBullet(world, bullet, collision) {
         bullet.setIsDead();
-        return this.hitAsteroid(world, collision.asteroidKey, collision.asteroid);
+        this.hitAsteroid(world, collision.asteroidKey, collision.asteroid);
     }
 
     static hitUfo(world, bullet, ufo) {
         bullet.setIsDead();
         ufo.setHit();
         world.ufoManager.createExplosion(ufo);
-        return ufo.getValue();
+        this.awardScore(world, ufo.getValue());
     }
 
     static hitShipByUfoBullet(world, bullet, ship) {
