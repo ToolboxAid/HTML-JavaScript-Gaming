@@ -3,7 +3,7 @@
 // 03/12/2026
 // asteroidsScreens.js
 
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../../engine/canvas.js';
 
 class AsteroidsScreens {
     static BACK_TO_ATTRACT = 180;

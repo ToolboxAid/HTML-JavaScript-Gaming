@@ -4,10 +4,10 @@
 // asteroidsAppContext.js
 
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
-import AsteroidsAttractScreen from './asteroidsAttractScreen.js';
-import AsteroidsHud from './asteroidsHud.js';
+import AsteroidsAttractScreen from './ui/asteroidsAttractScreen.js';
+import AsteroidsHud from './ui/asteroidsHud.js';
 import AsteroidsRuntime from './asteroidsRuntime.js';
-import AsteroidsScreens from './asteroidsScreens.js';
+import AsteroidsScreens from './ui/asteroidsScreens.js';
 import AsteroidsSessionController from './asteroidsSessionController.js';
 
 class AsteroidsAppContext {

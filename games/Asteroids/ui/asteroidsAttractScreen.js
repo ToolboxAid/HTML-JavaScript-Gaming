@@ -3,10 +3,10 @@
 // 03/12/2026
 // asteroidsAttractScreen.js
 
-import { canvasConfig, playerSelect } from './global.js';
-import CanvasUtils from '../../engine/canvas.js';
-import GameUtils from '../../engine/game/gameUtils.js';
-import GameAttract from './gameAttract.js';
+import { canvasConfig, playerSelect } from '../global.js';
+import CanvasUtils from '../../../engine/canvas.js';
+import GameUtils from '../../../engine/game/gameUtils.js';
+import GameAttract from '../gameAttract.js';
 
 class AsteroidsAttractScreen {
     constructor() {
