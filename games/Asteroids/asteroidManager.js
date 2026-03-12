@@ -159,8 +159,6 @@ class AsteroidManager extends CanExplode {
             }
 
             if (bullet.collisionDetection(asteroid)) {
-                bullet.setIsDead();
-
                 if (AsteroidManager.DEBUG) {
                     console.log(`Bullet hit asteroid:
                         Bullet: ${JSON.stringify(bullet)}
