@@ -39,9 +39,6 @@ class Game extends GameBase {
         'thrust.wav',
     ];
 
-    static FLASH_INTERVAL = 200;
-    static FLASH_DURATION = 3000;
-
     constructor() {
         super(canvasConfig, performanceConfig, fullscreenConfig);
 
@@ -66,8 +63,7 @@ class Game extends GameBase {
         this.backToAttract = 180;
         this.backToAttractCounter = 0;
 
-        this.flashStartTime = null;
-        this.flashOff = false;
+        this.hudFlashState = AsteroidsHud.createFlashState();
 
         await AudioPlayer.loadAllAudioFiles(Game.audioFiles, Game.audioPlayer);
 
@@ -201,23 +197,12 @@ class Game extends GameBase {
     }
 
     drawLivesScores() {
-        AsteroidsHud.draw(this.session, this.highScore, this.flashOff, Game.DEBUG);
+        AsteroidsHud.draw(this.session, this.highScore, this.hudFlashState.flashOff, Game.DEBUG);
     }
 
     updateFlashScore() {
-        if (!this.flashStartTime) {
-            this.flashStartTime = Date.now();
-            this.flashOff = false;
-            console.log('Flash Started:', { startTime: this.flashStartTime });
-        }
-
-        const elapsedTime = Date.now() - this.flashStartTime;
-        this.flashOff = Math.floor(elapsedTime / Game.FLASH_INTERVAL) % 2 === 0;
-
-        if (elapsedTime >= Game.FLASH_DURATION) {
-            console.log('Flash Complete');
-            this.flashStartTime = null;
-            this.flashOff = false;
+        const isComplete = AsteroidsHud.updateFlashState(this.hudFlashState, Game.DEBUG);
+        if (isComplete) {
             this.gameState = 'safeSpawn';
         }
     }

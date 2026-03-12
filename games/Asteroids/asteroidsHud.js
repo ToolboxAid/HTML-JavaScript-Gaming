@@ -6,10 +6,58 @@
 import CanvasUtils from '../../engine/canvas.js';
 
 class AsteroidsHud {
+    static FLASH_INTERVAL = 200;
+    static FLASH_DURATION = 3000;
+
     static SCORE_POSITIONS = {
         LIVES: { x: 200, y: 30 },
         SCORE: { x: 200, y: 70 }
     };
+
+    static createFlashState() {
+        return {
+            startTime: null,
+            flashOff: false
+        };
+    }
+
+    static resetFlashState(flashState) {
+        if (!flashState) {
+            return;
+        }
+
+        flashState.startTime = null;
+        flashState.flashOff = false;
+    }
+
+    static updateFlashState(flashState, debug = false) {
+        if (!flashState) {
+            return true;
+        }
+
+        if (!flashState.startTime) {
+            flashState.startTime = Date.now();
+            flashState.flashOff = false;
+
+            if (debug) {
+                console.log('Flash Started:', { startTime: flashState.startTime });
+            }
+        }
+
+        const elapsedTime = Date.now() - flashState.startTime;
+        flashState.flashOff = Math.floor(elapsedTime / AsteroidsHud.FLASH_INTERVAL) % 2 === 0;
+
+        if (elapsedTime < AsteroidsHud.FLASH_DURATION) {
+            return false;
+        }
+
+        if (debug) {
+            console.log('Flash Complete');
+        }
+
+        AsteroidsHud.resetFlashState(flashState);
+        return true;
+    }
 
     static drawShipLives(offsetX, offsetY, vectorMap, lineWidth = 1.25) {
         try {
@@ -32,7 +80,7 @@ class AsteroidsHud {
         }
     }
 
-    static draw(session, highScore, flashOff, debug = false) {
+    static draw(session, highScore, flashOff = false, debug = false) {
         if (!session) {
             return;
         }
