@@ -15,6 +15,7 @@ import KeyboardInput from '../../engine/input/keyboard.js';
 // Testing between here and 'class Game', can be deleted when move to new project
 import { testAngleUtils } from '../../engine/math/angleUtilsTest.js';
 import { testCollisionUtils } from '../../engine/physics/collisionUtilsTest.js';
+import { testGameObjectUtils } from '../../engine/game/gameObjectUtilsTest.js';
 import { testGameUtils } from '../../engine/game/gameUtilsTest.js';
 import { testGeometryUtils } from '../../engine/math/geometryUtilsTest.js';
 import { testKeyboardInput } from '../../engine/input/keyboardTest.js';
@@ -29,6 +30,7 @@ import { runTests } from '../../engine/runTest.js';
 // Run the tests
 runTests('AngleUtils', testAngleUtils);
 runTests('CollisionUtils',testCollisionUtils)
+runTests('GameObjectUtils', testGameObjectUtils);
 runTests('GameUtils', testGameUtils);
 runTests('GeometryUtils', testGeometryUtils);
 runTests('KeyboardInput',testKeyboardInput);

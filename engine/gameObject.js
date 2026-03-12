@@ -4,8 +4,8 @@
 // 03/2026
 
 import ObjectPNG from './objects/objectPNG.js';
+import GameObjectUtils from './game/gameObjectUtils.js';
 import ObjectDebug from './utils/objectDebug.js';
-import ObjectValidation from './utils/objectValidation.js';
 
 class GameObject extends ObjectPNG {
 
@@ -28,14 +28,15 @@ class GameObject extends ObjectPNG {
         frameOffsets = null,
         debug = false
     ) {
-
-        ObjectValidation.finiteNumber(x, 'x');
-        ObjectValidation.finiteNumber(y, 'y');
-        ObjectValidation.nonEmptyString(imagePath, 'imagePath');
-        ObjectValidation.positiveNumber(spriteWidth, 'spriteWidth');
-        ObjectValidation.positiveNumber(spriteHeight, 'spriteHeight');
-        ObjectValidation.nonEmptyString(type, 'type');
-        ObjectValidation.boolean(debug, 'debug');
+        GameObjectUtils.validateConstructorArgs({
+            x,
+            y,
+            imagePath,
+            spriteWidth,
+            spriteHeight,
+            type,
+            debug
+        });
 
         super(
             x,
@@ -55,9 +56,7 @@ class GameObject extends ObjectPNG {
             frameOffsets
         );
 
-        this.type = type;
-        this.debug = debug;
-        this.isDestroyed = false;
+        GameObjectUtils.initializeMetadata(this, { type, debug });
 
         ObjectDebug.log(this.debug, 'GameObject created', {
             id: this.ID,
@@ -87,7 +86,7 @@ class GameObject extends ObjectPNG {
         }
 
         this.isDestroyed = true;
-        this.type = null;
+        GameObjectUtils.destroyMetadata(this);
 
         ObjectDebug.log(this.debug, 'GameObject destroyed', {
             id: this.ID
