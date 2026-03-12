@@ -52,7 +52,7 @@ Asteroid Mechanics
 [x] Medium asteroids split into small asteroids
 [x] Small asteroids are destroyed without further splitting
 [x] A new wave starts when all asteroids are cleared
-[~] Asteroids do not bounce off each other; collision between asteroids is not part of the current simulation
+[-] Asteroids do not bounce off each other; collision between asteroids is not part of the current simulation
 
 UFO Mechanics
 -------------
@@ -64,9 +64,9 @@ UFO Mechanics
 [x] Small UFO shots target the player
 [x] UFO bullets use a limited lifespan
 [x] UFO bullets can persist briefly after UFO destruction
-[~] UFOs leave the screen and are destroyed rather than wrapping to the opposite side
-[ ] UFO frequency should increase with progression to better match the arcade game
-[ ] UFO behavior should scale with progression, especially small-UFO threat level
+[-] UFOs leave the screen and are destroyed rather than wrapping to the opposite side
+[~] UFO frequency increases with progression, but still needs more arcade-authentic tuning
+[x] UFO behavior scales with progression, especially small-UFO threat level, but still needs more tuning
 
 Collision Rules
 ---------------
@@ -89,11 +89,11 @@ Progression and Scoring
 [x] Player switching occurs after death when appropriate
 [x] Game over transitions back to attract mode
 [x] High score is persisted via cookie storage
-[ ] Difficulty scaling should more closely match the arcade game
-[ ] Later waves should increase pressure through stronger asteroid density and/or pace
-[ ] Small UFO accuracy should increase as progression advances
-[ ] UFO spawn timing should become more aggressive as progression advances
-[ ] Higher progression should create a noticeably more dangerous playfield than the opening wave
+[X] Difficulty scaling now increases across waves and UFO behavior, but does not yet fully match the arcade game
+[X] Later waves increase pressure through asteroid count, speed, and UFO pacing, but still need tuning
+[X] Small UFO accuracy increases as progression advances
+[X] UFO spawn timing becomes more aggressive as progression advances
+[X] Higher progression creates a more dangerous playfield than the opening wave
 
 Visual and Audio Requirements
 -----------------------------
@@ -187,8 +187,7 @@ Root:
 
 Known Gaps / Future Improvements
 --------------------------------
-[x] Add a formal Asteroids regression checklist document (`regression-checklist.txt`)
 [x] Implement arcade-closer difficulty scaling across waves and UFO behavior
 [-] Decide whether asteroid-to-asteroid collision should exist or remain intentionally omitted
 [-] Consider moving additional gameplay helpers into folders only if it improves clarity, not just symmetry
-[ ] Add automated browser-level smoke coverage if the project gets a repeatable harness
+[-] Add automated browser-level smoke coverage if the project gets a repeatable harness

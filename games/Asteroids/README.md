@@ -12,6 +12,7 @@ The current game supports:
 - vector-style ship, asteroid, and UFO rendering
 - ship thrust, rotation, wrap, and inertia
 - asteroid wave progression with large/medium/small splits
+- first-pass wave and UFO difficulty scaling
 - UFO spawning, firing, scoring, and audio
 - persistent high score storage via cookies
 - attract mode, flash-score transition, pause, game over, and restart flow
@@ -83,7 +84,7 @@ This makes Asteroids a good reference implementation for how to structure a larg
 
 A few areas are still intentionally marked as incomplete or approximate:
 
-- difficulty scaling does not yet fully match the arcade original
+- difficulty scaling now exists, but does not yet fully match the arcade original
 - asteroid-to-asteroid collision is intentionally omitted
 - screen shake / hit flash effects are not implemented
 - browser-level automated smoke coverage is not in place
