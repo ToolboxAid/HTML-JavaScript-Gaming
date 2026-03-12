@@ -1,8 +1,3 @@
-// ToolboxAid.com
-// David Quesenberry
-// 10/24/2024
-// objectKillable.js
-
 import ObjectDynamic from './objectDynamic.js';
 import SystemUtils from '../utils/systemUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
@@ -22,17 +17,14 @@ class ObjectKillable extends ObjectDynamic {
         super(x, y, width, height, velocityX, velocityY);
 
         this.status = ObjectKillable.Status.ALIVE;
-
-        // New standard names
-        this.frameIndex = 0;
-        this.frameTimer = 0;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
     }
 
     validateStatus(status) {
         ObjectValidation.oneOf(status, 'status', Object.values(ObjectKillable.Status));
     }
 
-    // A #privateMethod can only be called inside that exact class body, not from subclasses.
     #setStatus(status) {
         this.validateStatus(status);
 
@@ -41,12 +33,8 @@ class ObjectKillable extends ObjectDynamic {
         }
 
         this.status = status;
-        this.resetLifecycleState();
-    }
-
-    resetLifecycleState() {
-        this.frameIndex = 0;
-        this.frameTimer = 0;
+        this.currentFrameIndex = 0;
+        this.delayCounter = 0;
     }
 
     update(deltaTime = 1, incFrame = false) {
@@ -81,28 +69,18 @@ class ObjectKillable extends ObjectDynamic {
 
     handleAliveStatus(deltaTime, incFrame = false) {
         super.update(deltaTime);
-        this.updateLifecycleFrame(incFrame);
     }
 
     handleDyingStatus(deltaTime, incFrame = false) {
-        this.updateLifecycleFrame(incFrame);
+        // lifecycle only
     }
 
     handleOtherStatus(deltaTime, incFrame = false) {
-        this.updateLifecycleFrame(incFrame);
+        // lifecycle only
     }
 
     handleDeadStatus(deltaTime, incFrame = false) {
-        // Intentionally no-op
-    }
-
-    updateLifecycleFrame(incFrame = false) {
-        if (!incFrame) {
-            return;
-        }
-
-        this.frameIndex++;
-        this.frameTimer = 0;
+        // no-op
     }
 
     isAlive() {
@@ -121,62 +99,29 @@ class ObjectKillable extends ObjectDynamic {
         return this.status === ObjectKillable.Status.DEAD;
     }
 
-    setAlive() {
+    setIsAlive() {
         this.#setStatus(ObjectKillable.Status.ALIVE);
     }
 
-    setDying() {
+    setIsDying() {
         this.#setStatus(ObjectKillable.Status.DYING);
     }
 
-    setOther() {
+    setIsOther() {
         this.#setStatus(ObjectKillable.Status.OTHER);
     }
 
-    setDead() {
+    setIsDead() {
         this.#setStatus(ObjectKillable.Status.DEAD);
         this.stop();
-    }
-
-    // Backward compatibility
-    setIsAlive() {
-        this.setAlive();
-    }
-
-    setIsDying() {
-        this.setDying();
-    }
-
-    setIsOther() {
-        this.setOther();
-    }
-
-    setIsDead() {
-        this.setDead();
-    }
-
-    get currentFrameIndex() {
-        return this.frameIndex;
-    }
-
-    set currentFrameIndex(value) {
-        this.frameIndex = value;
-    }
-
-    get delayCounter() {
-        return this.frameTimer;
-    }
-
-    set delayCounter(value) {
-        this.frameTimer = value;
     }
 
     destroy() {
         ObjectDebug.log(ObjectKillable.DEBUG, `Destroying ${SystemUtils.getObjectType(this)}`, {
             status: this.status,
             animation: {
-                frame: this.frameIndex,
-                delay: this.frameTimer
+                frame: this.currentFrameIndex,
+                delay: this.delayCounter
             },
             state: {
                 isDestroyed: this.isDestroyed
@@ -190,16 +135,16 @@ class ObjectKillable extends ObjectDynamic {
 
         const finalState = {
             status: this.status,
-            frame: this.frameIndex,
-            delay: this.frameTimer
+            frame: this.currentFrameIndex,
+            delay: this.delayCounter
         };
 
         this.status = ObjectKillable.Status.DEAD;
         this.stop();
 
         this.destroyProperties([
-            'frameIndex',
-            'frameTimer'
+            'currentFrameIndex',
+            'delayCounter'
         ]);
 
         const parentDestroyed = super.destroy();

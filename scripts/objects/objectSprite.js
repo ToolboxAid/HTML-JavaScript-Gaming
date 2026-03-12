@@ -214,17 +214,58 @@ getCurrentDyingFrame() {
     return this.dyingFrames[this.currentFrameIndex] ?? null;
 }
 
-    advanceFrame(frameCount) {
-        if (!frameCount || frameCount <= 0) {
-            return;
-        }
-
-        this.currentFrameIndex++;
-        if (this.currentFrameIndex >= frameCount) {
-            this.currentFrameIndex = 0;
-        }
+advanceFrame(frameCount) {
+    if (!frameCount || frameCount <= 0) {
+        return false;
     }
 
+    this.currentFrameIndex++;
+
+    if (this.currentFrameIndex >= frameCount) {
+        this.currentFrameIndex = 0;
+        return true;
+    }
+
+    return false;
+}
+stepLoopingFrame(frameCount, frameDelay, incFrame = false) {
+    if (!frameCount || frameCount <= 1) {
+        return false;
+    }
+
+    if (!incFrame) {
+        return false;
+    }
+
+    this.delayCounter++;
+
+    if (this.delayCounter < frameDelay) {
+        return false;
+    }
+
+    this.delayCounter = 0;
+    return this.advanceFrame(frameCount);
+}
+stepFinalFrame(frameCount, frameDelay, incFrame = false) {
+    if (!frameCount || frameCount <= 0) {
+        return false;
+    }
+
+    if (!incFrame) {
+        return false;
+    }
+
+    this.delayCounter++;
+
+    if (this.delayCounter < frameDelay) {
+        return false;
+    }
+
+    this.delayCounter = 0;
+    this.currentFrameIndex++;
+
+    return this.currentFrameIndex >= frameCount;
+}
 handleAliveStatus(deltaTime, incFrame = false) {
     super.handleAliveStatus(deltaTime, incFrame);
 
@@ -232,39 +273,18 @@ handleAliveStatus(deltaTime, incFrame = false) {
         return;
     }
 
-    if (incFrame) {
-        this.advanceFrame(this.livingFrameCount);
-        this.delayCounter = 0;
-        return;
-    }
-
-    this.delayCounter++;
-
-    if (this.delayCounter >= this.livingDelay) {
-        this.delayCounter = 0;
-        this.advanceFrame(this.livingFrameCount);
-    }
+    this.stepLoopingFrame(this.livingFrameCount, this.livingDelay, incFrame);
 }
-    
+
 handleDyingStatus(deltaTime, incFrame = false) {
     if (!this.dyingFrames || this.dyingFrameCount <= 0) {
         this.setIsDead();
         return;
     }
 
-    if (incFrame) {
-        this.currentFrameIndex++;
-        this.delayCounter = 0;
-    } else {
-        this.delayCounter++;
+    const finished = this.stepFinalFrame(this.dyingFrameCount, this.dyingDelay, incFrame);
 
-        if (this.delayCounter >= this.dyingDelay) {
-            this.delayCounter = 0;
-            this.currentFrameIndex++;
-        }
-    }
-
-    if (this.currentFrameIndex >= this.dyingFrameCount) {
+    if (finished) {
         if (this.otherFrame) {
             this.currentFrameIndex = 0;
             this.delayCounter = 0;
@@ -275,21 +295,22 @@ handleDyingStatus(deltaTime, incFrame = false) {
     }
 }
 
-    handleOtherStatus(deltaTime, incFrame = false) {
-        if (!this.otherFrame) {
-            this.setIsDead();
-            return;
-        }
-
-        this.delayCounter++;
-        if (this.delayCounter >= this.otherDelay) {
-            this.setIsDead();
-        }
+handleOtherStatus(deltaTime, incFrame = false) {
+    if (!this.otherFrame) {
+        this.setIsDead();
+        return;
     }
 
-    handleDeadStatus(deltaTime, incFrame = false) {
-        // Intentionally no-op
+    if (!incFrame) {
+        return;
     }
+
+    this.delayCounter++;
+
+    if (this.delayCounter >= this.otherDelay) {
+        this.setIsDead();
+    }
+}
 
 setHit() {
     this.currentFrameIndex = 0;
@@ -303,6 +324,10 @@ setHit() {
         this.setIsDead();
     }
 }
+
+    handleDeadStatus(deltaTime, incFrame = false) {
+        // Intentionally no-op
+    }
 
     setSpriteColor(spriteColor) {
         ObjectValidation.nonEmptyString(spriteColor, 'spriteColor');

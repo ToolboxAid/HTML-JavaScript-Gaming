@@ -167,58 +167,62 @@ class ObjectPNG extends ObjectKillable {
         };
     }
 
-    advanceFrame() {
-        if (this.frameCount <= 1) {
-            return;
-        }
-
-        this.currentFrameIndex++;
-        if (this.currentFrameIndex >= this.frameCount) {
-            this.currentFrameIndex = 0;
-        }
+advanceFrame() {
+    if (this.frameCount <= 1) {
+        return false;
     }
 
-    handleAliveStatus(deltaTime, incFrame = false) {
-        this.x += this.velocityX * deltaTime;
-        this.y += this.velocityY * deltaTime;
+    this.currentFrameIndex++;
 
-        if (this.frameCount <= 1) {
-            return;
-        }
+    if (this.currentFrameIndex >= this.frameCount) {
+        this.currentFrameIndex = 0;
+        return true;
+    }
 
-        if (incFrame) {
-            this.advanceFrame();
-            this.delayCounter = 0;
-            return;
-        }
+    return false;
+}
+stepFrame(incFrame = false) {
+    if (this.frameCount <= 1) {
+        return false;
+    }
 
+    if (incFrame) {
         this.delayCounter++;
+
+        if (this.delayCounter < this.frameDelay) {
+            return false;
+        }
+
+        this.delayCounter = 0;
+        return this.advanceFrame();
+    }
+
+    return false;
+}
+handleAliveStatus(deltaTime, incFrame = false) {
+    super.handleAliveStatus(deltaTime, incFrame);
+    this.stepFrame(incFrame);
+}
+
+handleDyingStatus(deltaTime, incFrame = false) {
+    if (this.frameCount <= 1) {
+        this.setIsDead();
+        return;
+    }
+
+    if (incFrame) {
+        this.delayCounter++;
+
         if (this.delayCounter >= this.frameDelay) {
             this.delayCounter = 0;
-            this.advanceFrame();
-        }
-    }
-
-    handleDyingStatus(deltaTime, incFrame = false) {
-        if (this.frameCount <= 1) {
-            this.setIsDead();
-            return;
-        }
-
-        if (incFrame) {
             this.currentFrameIndex++;
-        } else {
-            this.delayCounter++;
-            if (this.delayCounter >= this.frameDelay) {
-                this.delayCounter = 0;
-                this.currentFrameIndex++;
-            }
-        }
-
-        if (this.currentFrameIndex >= this.frameCount) {
-            this.setIsDead();
         }
     }
+
+    if (this.currentFrameIndex >= this.frameCount) {
+        this.setIsDead();
+    }
+}
 
     handleOtherStatus(deltaTime, incFrame = false) {
         // no-op by default
