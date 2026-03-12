@@ -8,4 +8,5 @@
 *.log
 
 # Ignore the docs directory
-/docs/
+/docs/assets/
+/docs/frogger/
