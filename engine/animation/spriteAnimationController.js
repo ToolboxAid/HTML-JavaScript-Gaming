@@ -9,8 +9,6 @@ class SpriteAnimationController {
         this.dyingFrames = dyingFrames;
         this.livingDelay = livingDelay;
         this.dyingDelay = dyingDelay;
-        this.otherDelay = 0;
-        this.otherFrame = null;
     }
 
     get livingFrameCount() {
@@ -90,18 +88,11 @@ class SpriteAnimationController {
         };
     }
 
-    setOtherFrame(otherDelay, otherFrame) {
-        this.otherDelay = otherDelay;
-        this.otherFrame = otherFrame;
-    }
-
     destroy() {
         this.livingFrames = null;
         this.dyingFrames = null;
         this.livingDelay = null;
         this.dyingDelay = null;
-        this.otherDelay = null;
-        this.otherFrame = null;
     }
 }
 

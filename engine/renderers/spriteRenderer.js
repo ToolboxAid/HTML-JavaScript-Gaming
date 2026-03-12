@@ -29,10 +29,6 @@ class SpriteRenderer {
             }
             return;
         }
-
-        if (object.isOther() && object.otherFrame) {
-            CanvasUtils.drawSprite(newX, newY, object.otherFrame, object.pixelSize, object.spriteColor);
-        }
     }
 
     static drawRGB(object, newX, newY) {
@@ -50,10 +46,6 @@ class SpriteRenderer {
                 CanvasUtils.drawSpriteRGB(newX, newY, frame, object.pixelSize);
             }
             return;
-        }
-
-        if (object.isOther() && object.otherFrame) {
-            CanvasUtils.drawSpriteRGB(newX, newY, object.otherFrame, object.pixelSize);
         }
     }
 }

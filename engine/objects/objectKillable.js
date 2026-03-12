@@ -9,7 +9,6 @@ class ObjectKillable extends ObjectDynamic {
     static Status = Object.freeze({
         ALIVE: 'alive',
         DYING: 'dying',
-        OTHER: 'other',
         DEAD: 'dead'
     });
 
@@ -85,10 +84,6 @@ class ObjectKillable extends ObjectDynamic {
                 this.handleDyingStatus(deltaTime, incFrame);
                 break;
 
-            case ObjectKillable.Status.OTHER:
-                this.handleOtherStatus(deltaTime, incFrame);
-                break;
-
             case ObjectKillable.Status.DEAD:
                 this.handleDeadStatus(deltaTime, incFrame);
                 break;
@@ -107,10 +102,6 @@ class ObjectKillable extends ObjectDynamic {
         // lifecycle only
     }
 
-    handleOtherStatus(deltaTime, incFrame = false) {
-        // lifecycle only
-    }
-
     handleDeadStatus(deltaTime, incFrame = false) {
         // no-op
     }
@@ -123,10 +114,6 @@ class ObjectKillable extends ObjectDynamic {
         return this.status === ObjectKillable.Status.DYING;
     }
 
-    isOther() {
-        return this.status === ObjectKillable.Status.OTHER;
-    }
-
     isDead() {
         return this.status === ObjectKillable.Status.DEAD;
     }
@@ -137,10 +124,6 @@ class ObjectKillable extends ObjectDynamic {
 
     setIsDying() {
         this.setLifecycleStatus(ObjectKillable.Status.DYING);
-    }
-
-    setIsOther() {
-        this.setLifecycleStatus(ObjectKillable.Status.OTHER);
     }
 
     setIsDead() {

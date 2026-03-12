@@ -22,8 +22,4 @@ export function testSpriteAnimationController(assert) {
 
     result = controller.stepFinalFrame(1, 1, controller.dyingFrameCount, controller.dyingDelay, true);
     assert(result.finished === true, 'final frame should finish at end');
-
-    controller.setOtherFrame(60, ['z']);
-    assert(controller.otherDelay === 60, 'setOtherFrame delay failed');
-    assert(controller.otherFrame[0] === 'z', 'setOtherFrame frame failed');
 }

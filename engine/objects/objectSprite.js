@@ -128,8 +128,6 @@ constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palet
     this.dyingFrames = normalizedDyingFrames;
     this.dyingFrameCount = dyingFrameCount;
 
-    this.otherDelay = 0;
-    this.otherFrame = null;
     this.spriteColor = 'white';
 }
 
@@ -262,29 +260,6 @@ handleDyingStatus(deltaTime, incFrame = false) {
     const finished = this.stepFinalFrame(this.dyingFrameCount, this.dyingDelay, incFrame);
 
     if (finished) {
-        if (this.otherFrame) {
-            this.currentFrameIndex = 0;
-            this.delayCounter = 0;
-            this.setIsOther();
-        } else {
-            this.setIsDead();
-        }
-    }
-}
-
-handleOtherStatus(deltaTime, incFrame = false) {
-    if (!this.otherFrame) {
-        this.setIsDead();
-        return;
-    }
-
-    if (!incFrame) {
-        return;
-    }
-
-    this.delayCounter++;
-
-    if (this.delayCounter >= this.otherDelay) {
         this.setIsDead();
     }
 }
@@ -295,8 +270,6 @@ setHit() {
 
     if (this.dyingFrames && this.dyingFrameCount > 0) {
         this.setIsDying();
-    } else if (this.otherFrame) {
-        this.setIsOther();
     } else {
         this.setIsDead();
     }
@@ -324,17 +297,6 @@ setHit() {
 
         ObjectDebug.warn(ObjectSprite.DEBUG, `Invalid sprite color: ${spriteColor}`);
         this.spriteColor = Colors.getRandomColor();
-    }
-
-    setOtherFrame(otherDelay, otherFrame) {
-        ObjectValidation.finiteNumber(otherDelay, 'otherDelay');
-        if (otherDelay < 0) {
-            throw new Error('otherDelay must be 0 or greater.');
-        }
-
-        this.otherDelay = otherDelay;
-        this.otherFrame = otherFrame;
-        this.animation.setOtherFrame(otherDelay, otherFrame);
     }
 
     draw(offsetX = 0, offsetY = 0) {
@@ -379,8 +341,6 @@ setHit() {
             'livingFrameCount',
             'dyingDelay',
             'dyingFrameCount',
-            'otherDelay',
-            'otherFrame',
             'spriteColor'
         ]);
 
