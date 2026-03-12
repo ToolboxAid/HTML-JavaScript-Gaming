@@ -9,7 +9,6 @@ import GameBase from '../../engine/gameBase.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
 import AsteroidsAppContext from './asteroidsAppContext.js';
-import AsteroidsAttractScreen from './asteroidsAttractScreen.js';
 import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsRuntime from './asteroidsRuntime.js';
 import AsteroidsScreens from './asteroidsScreens.js';
@@ -47,7 +46,6 @@ class Game extends GameBase {
 
         this.keyboardInput = new KeyboardInput();
 
-        this.attractScreen = null;
         this.playerCount = 0;
         this.selectedPlayerLives = null;
 
@@ -77,7 +75,7 @@ class Game extends GameBase {
     }
 
     enterAttract() {
-        this.attractScreen = new AsteroidsAttractScreen();
+        this.app.createAttractScreen();
         AsteroidsHud.resetFlashState(this.app.hudFlashState);
         AsteroidsScreens.resetGameOverState(this.app.gameOverState);
     }
@@ -93,7 +91,7 @@ class Game extends GameBase {
     }
 
     updateAttract(deltaTime) {
-        this.attractScreen.update(deltaTime);
+        this.app.attractScreen.update(deltaTime);
 
         if (this.keyboardInput.getkeysPressed().includes('Enter')) {
             this.setState('playerSelect');
@@ -101,11 +99,11 @@ class Game extends GameBase {
     }
 
     drawAttract(deltaTime) {
-        this.attractScreen.draw();
+        this.app.attractScreen.draw();
     }
 
     updatePlayerSelect(deltaTime) {
-        const result = this.attractScreen.updatePlayerSelect(deltaTime, this.keyboardInput);
+        const result = this.app.attractScreen.updatePlayerSelect(deltaTime, this.keyboardInput);
         if (result) {
             this.playerCount = result.playerCount;
             this.selectedPlayerLives = result.playerLives;
@@ -115,7 +113,7 @@ class Game extends GameBase {
     }
 
     drawPlayerSelect(deltaTime) {
-        this.attractScreen.drawPlayerSelect();
+        this.app.attractScreen.drawPlayerSelect();
     }
 
     drawLivesScores() {

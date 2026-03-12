@@ -4,6 +4,7 @@
 // asteroidsAppContext.js
 
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
+import AsteroidsAttractScreen from './asteroidsAttractScreen.js';
 import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsScreens from './asteroidsScreens.js';
 import AsteroidsSessionController from './asteroidsSessionController.js';
@@ -15,6 +16,12 @@ class AsteroidsAppContext {
         this.highScore = this.highScoreStore.load();
         this.hudFlashState = AsteroidsHud.createFlashState();
         this.gameOverState = AsteroidsScreens.createGameOverState();
+        this.attractScreen = null;
+    }
+
+    createAttractScreen() {
+        this.attractScreen = new AsteroidsAttractScreen();
+        return this.attractScreen;
     }
 }
 
