@@ -4,6 +4,7 @@
 // collisionUtils.js
 
 import CanvasUtils from "../../engine/canvas.js";
+import CollisionShapeUtils from "./collisionShapeUtils.js";
 import SystemUtils from "../utils/systemUtils.js";
 
 export default class CollisionUtils {
@@ -64,7 +65,10 @@ export default class CollisionUtils {
     }
 
     static vectorIntersectsVector(objectA, objectB) {
-        if (!objectA || !objectB || !objectA.vectorMap || !objectB.vectorMap || !objectA.rotatedPoints || !objectB.rotatedPoints) {
+        const shapeA = CollisionShapeUtils.getVectorShape(objectA);
+        const shapeB = CollisionShapeUtils.getVectorShape(objectB);
+
+        if (!shapeA || !shapeB) {
             console.warn("\nobjectA:", objectA, "\nobjectB:", objectB);
             if (this.DEBUG) {
                 console.error("Invalid objects passed to vectorIntersectsVector", SystemUtils.showStackTrace(), objectA, objectB);
@@ -72,44 +76,44 @@ export default class CollisionUtils {
             return false;
         }
 
-        let rotationAngleA = objectA.rotationAngle ?? 0;
-        let rotationAngleB = objectB.rotationAngle ?? 0;
+        let rotationAngleA = shapeA.rotationAngle;
+        let rotationAngleB = shapeB.rotationAngle;
 
         // Skip bounding box check if either object is rotated
         if (rotationAngleA === 0 && rotationAngleB === 0) {
-            if (!this.isCollidingWith(objectA, objectB)) {
+            if (!this.isCollidingWith(shapeA.bounds, shapeB.bounds)) {
                 return false;
             }
         }
 
         // Check if any point of objectB is inside objectA
-        for (let [pointX, pointY] of objectB.rotatedPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectA.rotatedPoints)) {
+        for (let [pointX, pointY] of shapeB.rotatedPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, shapeA.rotatedPoints)) {
                 if (this.DEBUG) {
-                    console.log("objectB.rotatedPoints point", pointX, pointY, objectA.rotatedPoints);
+                    console.log("objectB.rotatedPoints point", pointX, pointY, shapeA.rotatedPoints);
                 }
                 return true;
             }
         }
 
         // Check if any point of objectA is inside objectB
-        for (let [pointX, pointY] of objectA.rotatedPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, objectB.rotatedPoints)) {
+        for (let [pointX, pointY] of shapeA.rotatedPoints) {
+            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, shapeB.rotatedPoints)) {
                 if (this.DEBUG) {
-                    console.log("objectAPoints point", pointX, pointY, objectB.rotatedPoints);
+                    console.log("objectAPoints point", pointX, pointY, shapeB.rotatedPoints);
                 }
                 return true;
             }
         }
 
         // Check if any edges intersect
-        for (let i = 0; i < objectA.rotatedPoints.length; i++) {
-            let a1 = objectA.rotatedPoints[i];
-            let a2 = objectA.rotatedPoints[(i + 1) % objectA.rotatedPoints.length];
+        for (let i = 0; i < shapeA.rotatedPoints.length; i++) {
+            let a1 = shapeA.rotatedPoints[i];
+            let a2 = shapeA.rotatedPoints[(i + 1) % shapeA.rotatedPoints.length];
 
-            for (let j = 0; j < objectB.rotatedPoints.length; j++) {
-                let b1 = objectB.rotatedPoints[j];
-                let b2 = objectB.rotatedPoints[(j + 1) % objectB.rotatedPoints.length];
+            for (let j = 0; j < shapeB.rotatedPoints.length; j++) {
+                let b1 = shapeB.rotatedPoints[j];
+                let b2 = shapeB.rotatedPoints[(j + 1) % shapeB.rotatedPoints.length];
 
                 if (CollisionUtils.doEdgesIntersect(a1, a2, b1, b2)) {
                     if (this.DEBUG) {
@@ -124,11 +128,15 @@ export default class CollisionUtils {
     }
 
     static boxIntersectsBox(objectA, objectB) {
-        return this.isCollidingWith(objectA, objectB);
+        const boxA = CollisionShapeUtils.getBoundingBox(objectA);
+        const boxB = CollisionShapeUtils.getBoundingBox(objectB);
+        return this.isCollidingWith(boxA, boxB);
     }
 
     static spriteBoundsIntersect(objectA, objectB) {
-        return this.boxIntersectsBox(objectA, objectB);
+        const boundsA = CollisionShapeUtils.getSpriteBounds(objectA);
+        const boundsB = CollisionShapeUtils.getSpriteBounds(objectB);
+        return this.isCollidingWith(boundsA, boundsB);
     }
 
     static pointInPolygon(x, y, polygon) {
@@ -136,24 +144,17 @@ export default class CollisionUtils {
     }
 
     static pointInBox(x, y, object) {
-        if (!object || typeof x !== 'number' || typeof y !== 'number') {
-            return false;
-        }
+        const box = CollisionShapeUtils.getBoundingBox(object);
 
-        if (
-            typeof object.x !== 'number' ||
-            typeof object.y !== 'number' ||
-            typeof object.width !== 'number' ||
-            typeof object.height !== 'number'
-        ) {
+        if (!box || typeof x !== 'number' || typeof y !== 'number') {
             return false;
         }
 
         return (
-            x >= object.x &&
-            x <= object.x + object.width &&
-            y >= object.y &&
-            y <= object.y + object.height
+            x >= box.x &&
+            x <= box.x + box.width &&
+            y >= box.y &&
+            y <= box.y + box.height
         );
     }
     static doEdgesIntersect(A, B, C, D) {
@@ -223,104 +224,109 @@ export default class CollisionUtils {
     }
 
     static isContainedWithin(object, container) {
+        const objectBounds = CollisionShapeUtils.getBoundingBox(object);
+        const containerBounds = CollisionShapeUtils.getBoundingBox(container);
+
         if (this.DEBUG) {
             console.assert(
-                object && container &&
-                typeof object.x === 'number' && typeof object.y === 'number' &&
-                typeof object.width === 'number' && typeof object.height === 'number' &&
-                typeof container.x === 'number' && typeof container.y === 'number' &&
-                typeof container.width === 'number' && typeof container.height === 'number',
+                objectBounds && containerBounds,
                 `isContainedWithin invalid input: object=${JSON.stringify(object)}, container=${JSON.stringify(container)}`
             );
         }
 
-        if (object.width <= 0 || object.height <= 0 || container.width <= 0 || container.height <= 0) {
+        if (!objectBounds || !containerBounds) {
+            return false;
+        }
+
+        if (objectBounds.width <= 0 || objectBounds.height <= 0 || containerBounds.width <= 0 || containerBounds.height <= 0) {
             return false; // Prevents invalid negative or zero-sized objects
         }
 
         return (
-            object.x >= container.x &&
-            object.y >= container.y &&
-            object.x + object.width <= container.x + container.width &&
-            object.y + object.height <= container.y + container.height
+            objectBounds.x >= containerBounds.x &&
+            objectBounds.y >= containerBounds.y &&
+            objectBounds.x + objectBounds.width <= containerBounds.x + containerBounds.width &&
+            objectBounds.y + objectBounds.height <= containerBounds.y + containerBounds.height
         );
     }
 
     static isCollidingWith(objectA, objectB) {
+        const boxA = CollisionShapeUtils.getBoundingBox(objectA);
+        const boxB = CollisionShapeUtils.getBoundingBox(objectB);
+
         if (this.DEBUG) {
             // Check for valid objects and dimensions
-            if (!objectA || !objectB) { // Check if either object is null or undefined
+            if (!boxA || !boxB) { // Check if either object is null or undefined
                 console.warn("isCollidingWith: One or both objects are null or undefined", objectA, objectB);
             }
 
             // Create simplified objects with only position and size properties
             const debugObjectA = {
                 type: SystemUtils.getObjectType(objectA),
-                x: objectA?.x,
-                y: objectA?.y,
-                width: objectA?.width,
-                height: objectA?.height
+                x: boxA?.x,
+                y: boxA?.y,
+                width: boxA?.width,
+                height: boxA?.height
             };
 
             const debugObjectB = {
                 type: SystemUtils.getObjectType(objectB),
-                x: objectB?.x,
-                y: objectB?.y,
-                width: objectB?.width,
-                height: objectB?.height
+                x: boxB?.x,
+                y: boxB?.y,
+                width: boxB?.width,
+                height: boxB?.height
             };
 
             console.assert(
-                objectA && objectB &&
-                typeof objectA.x === 'number' && typeof objectA.y === 'number' &&
-                typeof objectA.width === 'number' && typeof objectA.height === 'number' &&
-                typeof objectB.x === 'number' && typeof objectB.y === 'number' &&
-                typeof objectB.width === 'number' && typeof objectB.height === 'number',
+                boxA && boxB,
                 `Invalid object(s) passed to isCollidingWith: 
                 \nObject A (${debugObjectA.type}): ${JSON.stringify(debugObjectA)}
                 \nObject B (${debugObjectB.type}): ${JSON.stringify(debugObjectB)}`
             );
         }
 
+        if (!boxA || !boxB) {
+            return false;
+        }
+
         // Check for valid dimensions
         if (
-            objectA.width <= 0 || objectA.height <= 0 ||
-            objectB.width <= 0 || objectB.height <= 0
+            boxA.width <= 0 || boxA.height <= 0 ||
+            boxB.width <= 0 || boxB.height <= 0
         ) {
             return false;
         }
 
         // AABB Collision Detection
         return (
-            objectA.x < objectB.x + objectB.width &&
-            objectA.x + objectA.width > objectB.x &&
-            objectA.y < objectB.y + objectB.height &&
-            objectA.y + objectA.height > objectB.y
+            boxA.x < boxB.x + boxB.width &&
+            boxA.x + boxA.width > boxB.x &&
+            boxA.y < boxB.y + boxB.height &&
+            boxA.y + boxA.height > boxB.y
         );
     }
 
     static isCollidingWithSides(objectA, objectB) {
+        const boxA = CollisionShapeUtils.getBoundingBox(objectA);
+        const boxB = CollisionShapeUtils.getBoundingBox(objectB);
+
         if (this.DEBUG) {
             console.assert(
-                objectA && objectB &&
-                typeof objectA.x === 'number' && typeof objectA.y === 'number' &&
-                typeof objectA.width === 'number' && typeof objectA.height === 'number' &&
-                typeof objectB.x === 'number' && typeof objectB.y === 'number' &&
-                typeof objectB.width === 'number' && typeof objectB.height === 'number',
+                boxA && boxB,
                 `isCollidingWithSides invalid input: \nobjectA=${JSON.stringify(objectA)}, \nobjectB=${JSON.stringify(objectB)}`
             );
         }
 
         let collisions = [];
 
-        if (!this.isCollidingWith(objectA, objectB)) {
+        if (!boxA || !boxB || !this.isCollidingWith(boxA, boxB)) {
             return collisions; // Return empty array (no collision)
         }
 
-        const ax1 = objectA.x, ax2 = objectA.x + objectA.width;
-        const ay1 = objectA.y, ay2 = objectA.y + objectA.height;
-        const bx1 = objectB.x, bx2 = objectB.x + objectB.width;
-        const by1 = objectB.y, by2 = objectB.y + objectB.height;
+        const ax1 = boxA.x, ax2 = boxA.x + boxA.width;
+        const ay1 = boxA.y, ay2 = boxA.y + boxA.height;
+        const bx1 = boxB.x, bx2 = boxB.x + boxB.width;
+        const by1 = boxB.y, by2 = boxB.y + boxB.height;
 
         // Right collision (A’s right edge hits B’s left edge)
         if (ax2 >= bx1 && ax1 < bx1) {

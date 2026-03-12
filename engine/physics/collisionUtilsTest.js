@@ -5,6 +5,7 @@
 
 
 import CollisionUtils from "./collisionUtils.js";
+import CollisionShapeUtils from "./collisionShapeUtils.js";
 import CanvasUtils from "../canvas.js";
 
 export function testCollisionUtils(assert) {
@@ -144,6 +145,23 @@ export function testCollisionUtils(assert) {
 
     const noCollisions = CollisionUtils.isCollidingWithSides(object1, object3);
     assert(noCollisions.length === 0, "Should not detect any collision sides");
+
+    const scaledSprite1 = { x: 10, y: 10, width: 16, height: 16, boundWidth: 32, boundHeight: 32 };
+    const scaledSprite2 = { x: 35, y: 10, width: 16, height: 16, boundWidth: 32, boundHeight: 32 };
+    assert(CollisionUtils.spriteBoundsIntersect(scaledSprite1, scaledSprite2), "spriteBoundsIntersect should use scaled bounds");
+
+    const vectorBoundsObject = {
+        x: 10,
+        y: 10,
+        width: 4,
+        height: 4,
+        boundX: 8,
+        boundY: 8,
+        boundWidth: 8,
+        boundHeight: 8
+    };
+    const extractedBounds = CollisionShapeUtils.getBoundingBox(vectorBoundsObject);
+    assert(extractedBounds.x === 8 && extractedBounds.width === 8, "CollisionShapeUtils should prefer explicit vector bounds");
 
 
     // Initialize CanvasUtils
