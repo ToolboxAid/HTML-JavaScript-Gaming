@@ -10,6 +10,7 @@ import ObjectValidation from '../utils/objectValidation.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import PngRenderer from '../renderers/pngRenderer.js';
 import ImageAssetCache from '../utils/imageAssetCache.js';
+import PngAnimationController from '../animation/pngAnimationController.js';
 
 class ObjectPNG extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');
@@ -85,6 +86,7 @@ class ObjectPNG extends ObjectKillable {
         this.loadError = null;
 
         this.frameOffsets = Array.isArray(frameOffsets) ? frameOffsets : null;
+        this.animation = new PngAnimationController(this.frameCount, this.framesPerRow, this.frameDelay);
 
         ObjectPNG.loadSprite(spritePath, transparentColor)
             .then((png) => {
@@ -106,6 +108,30 @@ class ObjectPNG extends ObjectKillable {
             });
     }
 
+    get currentFrameIndex() {
+        return this.animation?.currentFrameIndex ?? super.currentFrameIndex;
+    }
+
+    set currentFrameIndex(value) {
+        if (this.animation) {
+            this.animation.currentFrameIndex = value;
+        }
+
+        super.currentFrameIndex = value;
+    }
+
+    get delayCounter() {
+        return this.animation?.delayCounter ?? super.delayCounter;
+    }
+
+    set delayCounter(value) {
+        if (this.animation) {
+            this.animation.delayCounter = value;
+        }
+
+        super.delayCounter = value;
+    }
+
     setFlip(flipType = ObjectPNG.Flip.NONE) {
         ObjectValidation.nonEmptyString(flipType, 'flipType');
 
@@ -121,18 +147,9 @@ class ObjectPNG extends ObjectKillable {
     }
 
     setFrame(frameIndex = 0) {
-        ObjectValidation.finiteNumber(frameIndex, 'frameIndex');
-
-        if (!Number.isInteger(frameIndex)) {
-            throw new Error('frameIndex must be an integer.');
-        }
-
-        if (frameIndex < 0 || frameIndex >= this.frameCount) {
-            throw new Error(`frameIndex out of range: ${frameIndex}`);
-        }
-
-        this.currentFrameIndex = frameIndex;
-        this.delayCounter = 0;
+        this.animation.setFrame(frameIndex);
+        this.currentFrameIndex = this.animation.currentFrameIndex;
+        this.delayCounter = this.animation.delayCounter;
     }
 
     setFrameOffsets(frameOffsets) {
@@ -156,74 +173,42 @@ class ObjectPNG extends ObjectKillable {
     }
 
     getCurrentSourceRect() {
-        const frameIndex = this.currentFrameIndex || 0;
-        const col = frameIndex % this.framesPerRow;
-        const row = Math.floor(frameIndex / this.framesPerRow);
-
-        return {
-            sx: this.spriteX + (col * this.frameWidth),
-            sy: this.spriteY + (row * this.frameHeight),
-            sw: this.frameWidth,
-            sh: this.frameHeight
-        };
+        return this.animation.getCurrentSourceRect(
+            this.spriteX,
+            this.spriteY,
+            this.frameWidth,
+            this.frameHeight
+        );
     }
 
-advanceFrame() {
-    if (this.frameCount <= 1) {
-        return false;
+    advanceFrame() {
+        const advanced = this.animation.advanceFrame();
+        this.currentFrameIndex = this.animation.currentFrameIndex;
+        this.delayCounter = this.animation.delayCounter;
+        return advanced;
     }
 
-    this.currentFrameIndex++;
-
-    if (this.currentFrameIndex >= this.frameCount) {
-        this.currentFrameIndex = 0;
-        return true;
+    stepFrame(incFrame = false) {
+        const stepped = this.animation.stepFrame(incFrame);
+        this.currentFrameIndex = this.animation.currentFrameIndex;
+        this.delayCounter = this.animation.delayCounter;
+        return stepped;
     }
 
-    return false;
-}
-stepFrame(incFrame = false) {
-    if (this.frameCount <= 1) {
-        return false;
+    handleAliveStatus(deltaTime, incFrame = false) {
+        super.handleAliveStatus(deltaTime, incFrame);
+        this.stepFrame(incFrame);
     }
 
-    if (incFrame) {
-        this.delayCounter++;
+    handleDyingStatus(deltaTime, incFrame = false) {
+        const finished = this.animation.stepDyingFrame(incFrame);
+        this.currentFrameIndex = this.animation.currentFrameIndex;
+        this.delayCounter = this.animation.delayCounter;
 
-        if (this.delayCounter < this.frameDelay) {
-            return false;
-        }
-
-        this.delayCounter = 0;
-        return this.advanceFrame();
-    }
-
-    return false;
-}
-handleAliveStatus(deltaTime, incFrame = false) {
-    super.handleAliveStatus(deltaTime, incFrame);
-    this.stepFrame(incFrame);
-}
-
-handleDyingStatus(deltaTime, incFrame = false) {
-    if (this.frameCount <= 1) {
-        this.setIsDead();
-        return;
-    }
-
-    if (incFrame) {
-        this.delayCounter++;
-
-        if (this.delayCounter >= this.frameDelay) {
-            this.delayCounter = 0;
-            this.currentFrameIndex++;
+        if (finished) {
+            this.setIsDead();
         }
     }
-
-    if (this.currentFrameIndex >= this.frameCount) {
-        this.setIsDead();
-    }
-}
 
     handleOtherStatus(deltaTime, incFrame = false) {
         // no-op by default
@@ -279,7 +264,12 @@ handleDyingStatus(deltaTime, incFrame = false) {
             this.png.onerror = null;
         }
 
+        if (this.animation) {
+            this.animation.destroy();
+        }
+
         this.destroyProperties([
+            'animation',
             'png',
             'isLoaded',
             'loadError',
