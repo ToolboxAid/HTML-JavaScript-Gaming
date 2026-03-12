@@ -81,8 +81,25 @@ class Game extends GameBase {
         return AsteroidsStateMachine.transition(this, nextState);
     }
 
-    handleInitAttract() {
+    enterInitAttract() {
+        this.attractScreen = null;
+        AsteroidsHud.resetFlashState(this.hudFlashState);
+        AsteroidsScreens.resetGameOverState(this.gameOverState);
+    }
+
+    enterAttract() {
         this.attractScreen = new AsteroidsAttractScreen();
+    }
+
+    enterFlashScore() {
+        AsteroidsHud.resetFlashState(this.hudFlashState);
+    }
+
+    enterGameOver() {
+        AsteroidsScreens.resetGameOverState(this.gameOverState);
+    }
+
+    handleInitAttract() {
         this.setState('attract');
     }
 
@@ -206,8 +223,6 @@ class Game extends GameBase {
 
     resetGame() {
         this.setState('initAttract');
-        this.attractScreen = null;
-        AsteroidsScreens.resetGameOverState(this.gameOverState);
     }
 }
 

@@ -38,6 +38,13 @@ class AsteroidsStateMachine {
         gameOver: 'drawGameOver'
     };
 
+    static ENTRY_HANDLERS = {
+        initAttract: 'enterInitAttract',
+        attract: 'enterAttract',
+        flashScore: 'enterFlashScore',
+        gameOver: 'enterGameOver'
+    };
+
     static update(game, deltaTime) {
         this.invoke(game, this.UPDATE_HANDLERS[game.gameState], deltaTime);
     }
@@ -66,13 +73,22 @@ class AsteroidsStateMachine {
     static transition(game, nextState) {
         const currentState = game.gameState;
 
+        if (currentState === nextState) {
+            return true;
+        }
+
         if (this.canTransition(currentState, nextState)) {
             game.gameState = nextState;
+            this.enter(game, nextState);
             return true;
         }
 
         console.warn(`Invalid Asteroids state transition: '${currentState}' -> '${nextState}'`);
         return false;
+    }
+
+    static enter(game, state) {
+        this.invoke(game, this.ENTRY_HANDLERS[state]);
     }
 }
 
