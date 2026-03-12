@@ -31,41 +31,31 @@ class AsteroidsWorld {
         this.ufoManager.update(deltaTime, ship);
     }
 
-    getUfoBullets() {
-        const ufo = this.ufoManager?.ufo;
-        const bulletManager = ufo?.bulletManager;
-        const bullets = bulletManager?.bullets;
-
-        if (!bullets || typeof bullets.forEach !== 'function') {
-            return [];
-        }
-
-        return bullets;
-    }
-
     resolveCollisions(ship) {
+        const ufo = this.ufoManager.getUfo();
+
         this.asteroidManager.checkShip(ship);
 
-        if (this.ufoManager.ufo && typeof this.ufoManager.ufo.isAlive === 'function') {
-            this.asteroidManager.checkShip(this.ufoManager.ufo);
+        if (ufo && typeof ufo.isAlive === 'function') {
+            this.asteroidManager.checkShip(ufo);
         }
 
         this.bulletManager.bullets.forEach((bullet) => {
             this.pendingScore += this.asteroidManager.checkBullet(bullet);
         });
 
-        const ufoBullets = this.getUfoBullets();
+        const ufoBullets = this.ufoManager.getActiveBullets();
 
         ufoBullets.forEach((bullet) => {
             this.asteroidManager.checkBullet(bullet);
         });
 
         this.bulletManager.bullets.forEach((bullet) => {
-            if (this.ufoManager.ufo && bullet.collisionDetection(this.ufoManager.ufo)) {
+            if (ufo && bullet.collisionDetection(ufo)) {
                 bullet.setIsDead();
-                this.ufoManager.ufo.setHit();
-                this.ufoManager.createExplosion(this.ufoManager.ufo);
-                this.pendingScore += this.ufoManager.ufo.getValue();
+                ufo.setHit();
+                this.ufoManager.createExplosion(ufo);
+                this.pendingScore += ufo.getValue();
             }
         });
 
@@ -104,6 +94,10 @@ class AsteroidsWorld {
 
     hasActiveExplosions() {
         return this.asteroidManager.hasActiveExplosions();
+    }
+
+    hasActiveUfo() {
+        return this.ufoManager.hasActiveUfo();
     }
 
     draw() {

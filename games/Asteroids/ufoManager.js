@@ -108,26 +108,48 @@ class UFOManager extends CanExplode {
         }
     }
 
+    hasActiveUfo() {
+        return Boolean(this.ufo && !this.ufo.isDestroyed);
+    }
+
+    getUfo() {
+        return this.hasActiveUfo() ? this.ufo : null;
+    }
+
+    getActiveBullets() {
+        const ufo = this.getUfo();
+        const bulletManager = ufo?.bulletManager;
+        const bullets = bulletManager?.bullets;
+
+        if (!bullets || typeof bullets.forEach !== 'function') {
+            return [];
+        }
+
+        return bullets;
+    }
+
     check(ship) {
+        const ufo = this.getUfo();
+
         if (!ship || typeof ship.isAlive !== 'function' || !ship.isAlive()) {
             return;
         }
 
-        if (!this.ufo || this.ufo.isDestroyed) {
+        if (!ufo) {
             return;
         }
 
-        if (typeof this.ufo.isAlive === 'function' && !this.ufo.isAlive()) {
+        if (typeof ufo.isAlive === 'function' && !ufo.isAlive()) {
             return;
         }
 
         let collision = false;
 
         try {
-            collision = CollisionUtils.vectorCollisionDetection(this.ufo, ship);
+            collision = CollisionUtils.vectorCollisionDetection(ufo, ship);
         } catch (error) {
             console.error('UFO collision check error:', error, {
-                ufo: this.ufo,
+                ufo,
                 ship
             });
             return;

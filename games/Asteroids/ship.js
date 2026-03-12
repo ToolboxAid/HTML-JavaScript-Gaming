@@ -81,7 +81,7 @@ class Ship extends ObjectVector {
 
     checkShipDeath() {
         if (
-            !this.world.ufoManager.ufo &&
+            !this.world.hasActiveUfo() &&
             this.isDying() &&
             !this.world.hasActiveBullets() &&
             !this.world.hasActiveExplosions()
