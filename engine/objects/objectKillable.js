@@ -1,7 +1,7 @@
 import ObjectDynamic from './objectDynamic.js';
 import SystemUtils from '../utils/systemUtils.js';
-import ObjectValidation from '../utils/objectValidation.js';
 import ObjectDebug from '../utils/objectDebug.js';
+import ObjectLifecycle from '../lifecycle/objectLifecycle.js';
 
 class ObjectKillable extends ObjectDynamic {
     static DEBUG = new URLSearchParams(window.location.search).has('objectKillable');
@@ -16,25 +16,57 @@ class ObjectKillable extends ObjectDynamic {
     constructor(x = 0, y = 0, width = 1, height = 1, velocityX = 0, velocityY = 0) {
         super(x, y, width, height, velocityX, velocityY);
 
-        this.status = ObjectKillable.Status.ALIVE;
-        this.currentFrameIndex = 0;
-        this.delayCounter = 0;
+        this.lifecycle = new ObjectLifecycle(
+            Object.values(ObjectKillable.Status),
+            ObjectKillable.Status.ALIVE
+        );
     }
 
     validateStatus(status) {
-        ObjectValidation.oneOf(status, 'status', Object.values(ObjectKillable.Status));
+        this.lifecycle.validateStatus(status);
     }
 
-    #setStatus(status) {
-        this.validateStatus(status);
+    get status() {
+        return this.lifecycle?.status ?? null;
+    }
 
-        if (this.status === status) {
+    set status(value) {
+        if (value === null) {
+            if (this.lifecycle) {
+                this.lifecycle.status = null;
+            }
             return;
         }
 
-        this.status = status;
-        this.currentFrameIndex = 0;
-        this.delayCounter = 0;
+        this.lifecycle?.setStatus(value, { resetCounters: false });
+    }
+
+    get currentFrameIndex() {
+        return this.lifecycle?.currentFrameIndex ?? null;
+    }
+
+    set currentFrameIndex(value) {
+        if (!this.lifecycle) {
+            return;
+        }
+
+        this.lifecycle.currentFrameIndex = value;
+    }
+
+    get delayCounter() {
+        return this.lifecycle?.delayCounter ?? null;
+    }
+
+    set delayCounter(value) {
+        if (!this.lifecycle) {
+            return;
+        }
+
+        this.lifecycle.delayCounter = value;
+    }
+
+    setLifecycleStatus(status) {
+        return this.lifecycle.setStatus(status);
     }
 
     update(deltaTime = 1, incFrame = false) {
@@ -100,19 +132,19 @@ class ObjectKillable extends ObjectDynamic {
     }
 
     setIsAlive() {
-        this.#setStatus(ObjectKillable.Status.ALIVE);
+        this.setLifecycleStatus(ObjectKillable.Status.ALIVE);
     }
 
     setIsDying() {
-        this.#setStatus(ObjectKillable.Status.DYING);
+        this.setLifecycleStatus(ObjectKillable.Status.DYING);
     }
 
     setIsOther() {
-        this.#setStatus(ObjectKillable.Status.OTHER);
+        this.setLifecycleStatus(ObjectKillable.Status.OTHER);
     }
 
     setIsDead() {
-        this.#setStatus(ObjectKillable.Status.DEAD);
+        this.setLifecycleStatus(ObjectKillable.Status.DEAD);
         this.stop();
     }
 
@@ -142,9 +174,14 @@ class ObjectKillable extends ObjectDynamic {
         this.status = ObjectKillable.Status.DEAD;
         this.stop();
 
+        if (this.lifecycle) {
+            this.lifecycle.destroy();
+        }
+
         this.destroyProperties([
             'currentFrameIndex',
-            'delayCounter'
+            'delayCounter',
+            'lifecycle'
         ]);
 
         const parentDestroyed = super.destroy();
