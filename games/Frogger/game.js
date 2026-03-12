@@ -4,13 +4,13 @@
 // game.js - Template Game Engine
 
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
-import GameBase from '../../engine/gameBase.js';
 
+import GameBase from '../../engine/gameBase.js';
 import CanvasUtils from '../../engine/canvas.js';
 import GameUtils from '../../engine/game/gameUtils.js';
-
 import KeyboardInput from '../../engine/input/keyboard.js';
-import Frog from '../../Frogger/gameObjects/frog.js';
+
+import Frog from './gameObjects/frog.js';
 
 import AttractMode from './attractMode.js';
 

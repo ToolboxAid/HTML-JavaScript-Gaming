@@ -4,8 +4,8 @@
 // 03/24/2025
 // LogSML.js
 
-import GameObject from '../../engine/gameObject.js';
-import CanvasUtils from '../../engine/canvas.js';
+import GameObject from '../../../engine/gameObject.js';
+import CanvasUtils from '../../../engine/canvas.js';
 
 class LogSML extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('logSML');

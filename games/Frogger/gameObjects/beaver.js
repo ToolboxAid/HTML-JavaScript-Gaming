@@ -3,9 +3,9 @@
 // 03/24/2025
 // beaver.js
 
-import GameObject from '../../engine/gameObject.js';
-import CanvasUtils from '../../engine/canvas.js';
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
+import GameObject from '../../../engine/gameObject.js';
+import CanvasUtils from '../../../engine/canvas.js';
+import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 
 class Beaver extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('beaver');

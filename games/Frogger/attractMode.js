@@ -1,35 +1,34 @@
 import { canvasConfig } from './global.js';
 
-import LevelManager from './levelManager.js';
-
-import GameUI from './gameUI.js';
 import GameObjectSystem from '../../engine/gameObjectSystem.js';
 import CanvasUtils from '../../engine/canvas.js';
 
 // Game Objects
+import GameUI from './gameUI.js';
+import LevelManager from './levelManager.js';
+
 // Home
-import HomeAlligator from '../../Frogger/gameObjects/home_alligator.js';
-import HomeFly from '../../Frogger/gameObjects/home_fly.js';
-import HomeFrog from '../../Frogger/gameObjects/home_frog.js';
+import HomeAlligator from './gameObjects/home_alligator.js';
+import HomeFly from './gameObjects/home_fly.js';
+import HomeFrog from './gameObjects/home_frog.js';
 
 // Water hazard
-//import Aligator from './gameObjects/aligator.js';
-import Aligator from '../../Frogger/gameObjects/aligator.js';
-import LogMED from '../../Frogger/gameObjects/logMED.js';
-import LogLRG from '../../Frogger/gameObjects/logLRG.js';
-import LogSM from '../../Frogger/gameObjects/logSM.js';
-import Turtle from '../../Frogger/gameObjects/turtle.js';
-import TurtleSink from '../../Frogger/gameObjects/turtleSink.js';
-import Beaver from '../../Frogger/gameObjects/beaver.js';
-import Snake from '../../Frogger/gameObjects/snake.js';
-import Bonus from '../../Frogger/gameObjects/bonus.js';
+import Aligator from './gameObjects/aligator.js';
+import LogMED from './gameObjects/logMED.js';
+import LogLRG from './gameObjects/logLRG.js';
+import LogSM from './gameObjects/logSML.js';
+import Turtle from './gameObjects/turtle.js';
+import TurtleSink from './gameObjects/turtleSink.js';
+import Beaver from './gameObjects/beaver.js';
+import Snake from './gameObjects/snake.js';
+import Bonus from './gameObjects/bonus.js';
 
 // Road hazard
-import Car0 from '../../Frogger/gameObjects/car0.js';
-import Car1 from '../../Frogger/gameObjects/car1.js';
-import Car2 from '../../Frogger/gameObjects/car2.js';
-import Dozer from '../../Frogger/gameObjects/dozer.js';
-import Truck from '../../Frogger/gameObjects/truck.js';
+import Car0 from './gameObjects/car0.js';
+import Car1 from './gameObjects/car1.js';
+import Car2 from './gameObjects/car2.js';
+import Dozer from './gameObjects/dozer.js';
+import Truck from './gameObjects/truck.js';
 
 class AttractMode {
     static DEBUG = new URLSearchParams(window.location.search).has('attract');

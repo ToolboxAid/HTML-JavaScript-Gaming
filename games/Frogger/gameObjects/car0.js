@@ -4,7 +4,7 @@
 // 03/24/2025
 // Car0.js
 
-import GameObject from '../../engine/gameObject.js';
+import GameObject from '../../../engine/gameObject.js';
 
 class Car0 extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('car0');

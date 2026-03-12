@@ -4,7 +4,7 @@
 // 03/24/2025
 // home_alligator.js
 
-import GameObject from '../../engine/gameObject.js';
+import GameObject from '../../../engine/gameObject.js';
 
 class HomeAlligator extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('homeAlligator');
