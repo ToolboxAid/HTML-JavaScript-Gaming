@@ -4,7 +4,6 @@ This repo is organized as a lightweight browser game framework with a clear spli
 
 ## Top-level architecture
 
-
 ```text
 index.html        Project launcher
 engine/           Shared framework code
