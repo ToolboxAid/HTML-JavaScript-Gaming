@@ -29,6 +29,19 @@ class AsteroidsRuntime {
 
         return session.addCurrentPlayerScore(world.consumeScore());
     }
+
+    static drawSafeSpawn(session) {
+        session.getCurrentWorld().drawSafeSpawn();
+    }
+
+    static drawPlay(session) {
+        session.getCurrentShip().draw();
+        session.getCurrentWorld().draw();
+    }
+
+    static drawPause(session) {
+        this.drawPlay(session);
+    }
 }
 
 export default AsteroidsRuntime;

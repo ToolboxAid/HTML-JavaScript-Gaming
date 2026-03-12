@@ -151,7 +151,7 @@ class Game extends GameBase {
     }
 
     drawSafeSpawn() {
-        this.session.getCurrentWorld().drawSafeSpawn();
+        AsteroidsRuntime.drawSafeSpawn(this.session);
         this.drawLivesScores();
     }
 
@@ -172,8 +172,7 @@ class Game extends GameBase {
     }
 
     drawPlayGame() {
-        this.session.getCurrentShip().draw();
-        this.session.getCurrentWorld().draw();
+        AsteroidsRuntime.drawPlay(this.session);
         this.drawLivesScores();
     }
 
@@ -182,8 +181,7 @@ class Game extends GameBase {
     }
 
     drawPauseGame() {
-        this.session.getCurrentShip().draw();
-        this.session.getCurrentWorld().draw();
+        AsteroidsRuntime.drawPause(this.session);
         AsteroidsScreens.drawPauseOverlay();
     }
 
