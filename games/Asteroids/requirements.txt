@@ -1,240 +1,194 @@
-To reverse engineer the 1979 Asteroids game and replicate its controls, mechanics, and overall behavior, you`d need to identify key features and interactions from the original game. Here’s a set of requirements to guide this process:
-
-------------------------------------------------------------
-
-Basic Controls:
-[x] Up arrow for thrust  
-  Accelerates the ship in the direction it is currently facing.
-  
-[x] Left arrow for counter-clockwise rotation  
-  Rotates the ship to the left (counter-clockwise) around its center.
-
-[x] Right arrow for clockwise rotation  
-  Rotates the ship to the right (clockwise) around its center.
-
-[x] Spacebar to fire bullets  
-  Fires a bullet from the ship’s current position and direction.
-
-[x] P key (or other key) for pause  
-  Pauses the game.
-
-------------------------------------------------------------
-
-Ship Mechanics:
-[x] Ship has a forward thrust force  
-  When the player holds the thrust key, the ship accelerates forward in the direction it`s facing.
-  
-[x] Ship has a maximum speed  
-  The ship’s speed should not exceed a certain limit, even when thrust is applied.
-
-[x] Ship rotates smoothly  
-  Rotation is continuous as long as the corresponding rotation key is pressed.
-
-[x] Ship is affected by inertia  
-  When the player stops applying thrust, the ship continues moving in its last direction with decreasing speed due to friction or drag.
-
-[x] Ship should wrap around the screen  
-  If the ship goes off one edge, it should appear on the opposite edge.
-
-------------------------------------------------------------
-
-Bullet Mechanics:
-[x] Bullets move in the direction the ship is facing  
-  Upon firing, the bullet should be shot from the ship’s current position and direction.
-  
-[x] Bullets have limited lifetime or range  
-  Bullets should disappear after traveling a certain distance or after a set amount of time.
-
-[x] Bullets should be destroyed on impact with asteroids/or any object.
-  When a bullet hits an asteroid, both the bullet and the asteroid should be destroyed.
-
-------------------------------------------------------------
-
-Asteroid Mechanics:
-[x] Asteroids spawn in random locations  
-  Asteroids should appear on the screen at random positions and velocities.
-
-[x] Asteroids break into smaller pieces  
-  When an asteroid is destroyed, it breaks into two 2 smaller asteroids two times.
-  Total of 7 asteroids (1 lrg, 2, med, 4 sml)
-
-[x] Asteroids move in a random direction  
-  Asteroids should move in random directions and may have a slight spin.
-
-[x] Asteroids should have a limited lifespan  
-  After is hit by bullet or ship, the asteroid should be removed from the screen.
-
-------------------------------------------------------------
-
-Collision Detection:
-[x] Ship collides with asteroids  
-  If the ship comes into contact with an asteroid, the ship should be destroyed or lose a life.
-
-[x] Bullets collide with asteroids  
-  Bullets should destroy asteroids when they make contact.
-
-[x] Asteroids collide with each other  
-  Asteroids should not pass through each other but instead bounce off one another.
-
-------------------------------------------------------------
-
-Game Progression:
-[x] Player has a limited number of lives  
-  The player starts with a set number of lives (e.g., 3), and when all are lost, the game ends.
-
-[x] Score is tracked  
-  The player earns points for destroying asteroids and other in-game actions.
-
-[x] Difficulty increases with progression  
-  As the player destroys more asteroids, the game should increase in difficulty (e.g., more asteroids, faster speed).
-
-[x] Game reset or new game option  
-  After losing all lives or completing the game, the player should be able to start a new game.
-
-------------------------------------------------------------
-
-Sound and Visual Effects:
-[x] Thrust sound effect when the ship accelerates  
-  A distinct sound should play when the ship moves forward.
-
-[X] Bullet sound effect when the ship fires  
-  A unique sound effect should play when the player shoots a bullet.
-
-[x] Asteroid destruction sound effect  
-  A specific sound should play when an asteroid is destroyed by a bullet.
-
-[x] Ship destruction sound effect  
-  A different sound should play when the ship collides with an asteroid.
-
-[!] Background music and ambient sound  
-  There should be a looping background track with space-like ambient sounds.
-
-------------------------------------------------------------
-
-Visuals:
-[x] Vector graphics for ship and asteroids  
-  The original game used simple, vector-based graphics for ship and asteroid rendering.
-
-[X] Simple explosions for ship and asteroid destruction  
-  When asteroids are destroyed or the ship is hit, an explosion animation should play.
-
-[!] Screen shake or flash when the ship is hit  
-  To show the ship has been hit, there could be a screen shake or visual effect.
-
-[x] HUD elements: score, lives, and level  
-  Display the player’s current score, number of remaining lives, and current level.
-
-------------------------------------------------------------
-
-Game Modes:
-[x] Single-player mode  
-  The game should support a single-player experience with one player controlling the ship.
-
-[x] No multiplayer required  
-  The original game is a single-player experience.
-
-------------------------------------------------------------
-Now the UFO, most challenging:
-------------------------------------------------------------
-
- UFO Mechanics:
-[x] Random UFO appearance  
-  UFOs should randomly spawn at the edges of the screen at set intervals or after certain milestones (e.g., a specific score threshold or destroyed asteroid count).
-
-[x] Two types of UFOs  
-  Include large UFOs (less accurate, more points) and small UFOs (more accurate, fewer points).
-
-[x] UFO movement across the screen  
-  UFOs should move horizontally across the screen (left-to-right or right-to-left) and can slightly adjust their vertical position over time.
-
-[x] UFOs wrap around the screen  
-  If a UFO goes off one edge, it should reappear on the opposite edge (similar to the ship).
-
-------------------------------------------------------------
-
- UFO Shooting Mechanics:
-[x] UFOs fire bullets randomly  
-  UFOs should fire bullets at random intervals (e.g., every 1-3 seconds).
-
-[x] Bullets target the player (small UFO)  
-  Small UFOs aim their bullets directly at the player’s ship with high accuracy.
-
-[x] Bullets fire randomly (large UFO)  
-  Large UFOs fire bullets in random directions, making them less accurate.
-
-[x] Bullet lifespan  
-  UFO bullets should have a limited range or lifespan, disappearing after traveling a certain distance.
-
-------------------------------------------------------------
-
- Collision Detection (UFOs):
-[x] UFOs are destroyed by player bullets  
-  If a player’s bullet hits a UFO, the UFO should be destroyed, awarding points to the player.
-
-[x] UFO bullets collide with the player’s ship  
-  If a UFO’s bullet hits the player’s ship, the ship should be destroyed or lose a life.
-
-[x] UFOs do not collide with asteroids  
-  UFOs should move through asteroids without interacting with them.
-
-------------------------------------------------------------
-
- Scoring for UFOs:
-[x] Higher points for smaller UFOs  
-  Small UFOs should award more points when destroyed (e.g., 1,000 points).
-
-[x] Lower points for larger UFOs  
-  Large UFOs should award fewer points when destroyed (e.g., 200-500 points).
-
-------------------------------------------------------------
-
- Sound Effects for UFOs:
-[x] Distinct UFO sound effect  
-  UFOs should have a recognizable sound effect when present, such as a continuous, ominous "whirring" or "beeping."
-
-[x] Unique firing sound  
-  UFO bullets should have a distinct sound effect different from the player`s bullets.
-
-[x] Explosion sound effect  
-  A unique sound should play when a UFO is destroyed.
-
-------------------------------------------------------------
-
- Game Progression with UFOs:
-[!] UFO frequency increases over time  
-  As the game progresses, UFOs should spawn more frequently and possibly fire faster or move more unpredictably.
-
-[x] UFOs as high-risk/high-reward targets  
-  While UFOs can provide significant points, they also increase the risk of losing a life due to their bullets.
-
-[x] Only one UFO at a time  
-  To maintain balance, there should only be one UFO on the screen at a time.
-
-------------------------------------------------------------
-
- Visual Design for UFOs:
-[x] Distinct vector-based UFO shapes  
-  Large UFOs and small UFOs should have distinct but simple designs to differentiate them visually.
-
-[x] UFO size difference  
-  Small UFOs should appear noticeably smaller than large UFOs.
-
-[x] UFO bullets are unique  
-  UFO bullets should have a different appearance from the player’s bullets to make them easy to identify.
-
-------------------------------------------------------------
-
- UFO Difficulty Scaling:
-[!] Small UFO accuracy increases over time  
-  As the game progresses, small UFOs should become more accurate in targeting the player.
-
-[!] Faster UFOs at higher levels  
-  UFOs should move more quickly as the game’s difficulty increases.
-
-[!] Variable bullet speed  
-  UFO bullets should gradually increase in speed at higher levels.
-
-------------------------------------------------------------
-
-This list provides a good starting point to reverse engineer 1979 Asteroids and create a 
-similar experience, whether you`re building from scratch or replicating the core mechanics.
+Asteroids Requirements and Status
+=================================
+
+Purpose
+-------
+This document tracks the intended gameplay, technical structure, and known gaps for the Asteroids game in this repository. It reflects the current refactored codebase, not just the original reverse-engineering notes.
+
+Status Key
+----------
+[x] Implemented
+[~] Implemented with known deviation or approximation
+[ ] Not implemented
+
+
+Gameplay Requirements
+---------------------
+
+Core Controls
+-------------
+[x] Up arrow applies forward thrust
+[x] Left arrow rotates the ship counter-clockwise
+[x] Right arrow rotates the ship clockwise
+[x] Space fires bullets
+[x] P toggles pause during gameplay
+[x] Enter starts from attract mode and restarts from game over
+
+Ship Mechanics
+--------------
+[x] Ship accelerates in the direction it is facing
+[x] Ship rotation is continuous while rotate keys are held
+[x] Ship movement uses inertia
+[~] Ship speed is practically constrained by movement tuning rather than a hard arcade-authentic cap
+[x] Ship wraps around screen edges
+[x] Ship has safe-spawn handling before play resumes
+[x] Ship death is delayed until active threats/effects are resolved
+
+Bullet Mechanics
+----------------
+[x] Ship bullets spawn from the ship nose
+[x] Bullet direction follows firing angle
+[x] Bullet velocity inherits source movement
+[x] Bullets expire after a limited lifespan
+[x] Bullets are removed on collision
+[x] Ship bullets and UFO bullets are tracked separately by ownership/team metadata
+
+Asteroid Mechanics
+------------------
+[x] Asteroids spawn at randomized positions around the playfield
+[x] Asteroids move in randomized directions
+[x] Asteroids wrap around the screen
+[x] Large asteroids split into medium asteroids
+[x] Medium asteroids split into small asteroids
+[x] Small asteroids are destroyed without further splitting
+[x] A new wave starts when all asteroids are cleared
+[~] Asteroids do not bounce off each other; collision between asteroids is not part of the current simulation
+
+UFO Mechanics
+-------------
+[x] UFOs spawn at timed intervals
+[x] Only one UFO can be active at a time
+[x] UFOs move across the screen with horizontal travel and vertical variation
+[x] Large and small UFO variants exist
+[x] Large UFO shots are inaccurate/random
+[x] Small UFO shots target the player
+[x] UFO bullets use a limited lifespan
+[x] UFO bullets can persist briefly after UFO destruction
+[~] UFOs leave the screen and are destroyed rather than wrapping to the opposite side
+[ ] UFO frequency should increase with progression to better match the arcade game
+[ ] UFO behavior should scale with progression, especially small-UFO threat level
+
+Collision Rules
+---------------
+[x] Ship collides with asteroids
+[x] Ship collides with UFOs
+[x] Ship can be hit by UFO bullets
+[x] Ship can be hit by non-owner player bullets
+[x] Player bullets destroy asteroids
+[x] Player bullets destroy UFOs
+[x] UFO bullets can destroy asteroids
+[x] Collision resolution is handled by a dedicated collision system and hit resolver
+
+Progression and Scoring
+-----------------------
+[x] The player has a limited number of lives
+[x] Supports one-player and two-player selection flow
+[x] Scores are tracked per player
+[x] Score is awarded for asteroid destruction by size
+[x] Score is awarded for UFO destruction
+[x] Player switching occurs after death when appropriate
+[x] Game over transitions back to attract mode
+[x] High score is persisted via cookie storage
+[ ] Difficulty scaling should more closely match the arcade game
+[ ] Later waves should increase pressure through stronger asteroid density and/or pace
+[ ] Small UFO accuracy should increase as progression advances
+[ ] UFO spawn timing should become more aggressive as progression advances
+[ ] Higher progression should create a noticeably more dangerous playfield than the opening wave
+
+Visual and Audio Requirements
+-----------------------------
+[x] Vector-style rendering for the ship, asteroids, and UFOs
+[x] HUD shows player scores, lives, and high score
+[x] Explosions play for ship, asteroid, and UFO destruction
+[x] Ship thrust sound plays during thrust
+[x] Bullet fire sound plays for the player
+[x] Asteroid hit sounds vary by asteroid size
+[x] UFO looping sound plays while the UFO is active
+[x] UFO looping sound stops when the UFO is destroyed or exits the screen
+[~] No separate background music system is used; the game relies on arcade-style effects instead
+[ ] Screen shake / hit flash effects are not currently implemented
+
+
+Architecture Requirements
+-------------------------
+
+Top-Level Layout
+----------------
+[x] `game.js` is the top-level game entry point and state handler
+[x] `global.js` holds Asteroids-specific configuration/constants
+[x] Root-level actor files remain easy to find:
+    `ship.js`, `ufo.js`, `asteroid.js`
+
+Folder Organization
+-------------------
+[x] `ui/` contains presentation helpers and attract-mode scene files
+[x] `runtime/` contains app/session/runtime coordination
+[x] `state/` contains state machine and persistent score storage
+[x] `systems/` contains gameplay systems and hit/collision/score orchestration
+[x] `combat/` contains bullet and bullet-factory logic
+[x] `world/` contains world and manager ownership for asteroid/UFO simulation
+
+Responsibility Boundaries
+-------------------------
+[x] `Ship` no longer owns world managers
+[x] World ownership is centralized in `world/world.js`
+[x] Collision resolution is separated from the world coordinator
+[x] Hit effects are separated from collision detection
+[x] Bullet spawn policy is separated from bullet storage
+[x] Score accumulation is separated from the world update loop
+[x] Session/player bookkeeping is separated from top-level game state
+[x] HUD and screen presentation are separated from active gameplay runtime
+[x] State transitions are centralized in the Asteroids state machine
+
+
+Current Folder Map
+------------------
+Root:
+- `game.js`
+- `global.js`
+- `index.html`
+- `styles.css`
+- `ship.js`
+- `ufo.js`
+- `asteroid.js`
+
+`ui/`:
+- `attractScene.js`
+- `attractScreen.js`
+- `hud.js`
+- `screens.js`
+
+`runtime/`:
+- `appContext.js`
+- `runtime.js`
+- `session.js`
+- `sessionController.js`
+
+`state/`:
+- `highScoreStore.js`
+- `stateMachine.js`
+
+`systems/`:
+- `collisionSystem.js`
+- `hitResolver.js`
+- `scoreSystem.js`
+- `weaponSystem.js`
+
+`combat/`:
+- `bullet.js`
+- `bulletFactory.js`
+- `bulletManager.js`
+
+`world/`:
+- `world.js`
+- `asteroidManager.js`
+- `ufoManager.js`
+
+
+Known Gaps / Future Improvements
+--------------------------------
+[x] Add a formal Asteroids regression checklist document (`regression-checklist.txt`)
+[ ] Implement arcade-closer difficulty scaling across waves and UFO behavior
+[ ] Decide whether asteroid-to-asteroid collision should exist or remain intentionally omitted
+[ ] Consider moving additional gameplay helpers into folders only if it improves clarity, not just symmetry
+[ ] Add automated browser-level smoke coverage if the project gets a repeatable harness
