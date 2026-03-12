@@ -5,8 +5,8 @@
 
 import ObjectKillable from './objectKillable.js';
 import CanvasUtils from '../canvas.js';
-import AngleUtils from '../math/angleUtils.js';
 import CollisionUtils from '../physics/collisionUtils.js';
+import VectorShapeUtils from '../physics/vectorShapeUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
@@ -60,13 +60,7 @@ class ObjectVector extends ObjectKillable {
     }
 
     static calculateInitialBounds(vectorMap) {
-        const xs = vectorMap.map(([x]) => x);
-        const ys = vectorMap.map(([, y]) => y);
-
-        return {
-            width: Math.max(...xs) - Math.min(...xs),
-            height: Math.max(...ys) - Math.min(...ys)
-        };
+        return VectorShapeUtils.calculateInitialBounds(vectorMap);
     }
 
     calculateObjectBounds(vectorMap) {
@@ -74,36 +68,18 @@ class ObjectVector extends ObjectKillable {
             throw new Error('vectorMap is required to calculate object bounds.');
         }
 
-        const centerX = vectorMap.reduce((sum, [vx]) => sum + vx, 0) / vectorMap.length;
-        const centerY = vectorMap.reduce((sum, [, vy]) => sum + vy, 0) / vectorMap.length;
+        const transformedShape = VectorShapeUtils.calculateTransformedShape(
+            vectorMap,
+            this.x,
+            this.y,
+            this.rotationAngle
+        );
 
-        let minX = Infinity;
-        let maxX = -Infinity;
-        let minY = Infinity;
-        let maxY = -Infinity;
-
-        const rotatedPoints = vectorMap.map(([vx, vy]) => {
-            const dx = vx - centerX;
-            const dy = vy - centerY;
-
-            const rotatedPoint = AngleUtils.applyRotationToPoint(dx, dy, this.rotationAngle);
-
-            const finalX = rotatedPoint.rotatedX + this.x;
-            const finalY = rotatedPoint.rotatedY + this.y;
-
-            minX = Math.min(minX, finalX);
-            maxX = Math.max(maxX, finalX);
-            minY = Math.min(minY, finalY);
-            maxY = Math.max(maxY, finalY);
-
-            return [finalX, finalY];
-        });
-
-        this.boundX = Math.floor(minX);
-        this.boundY = Math.floor(minY);
-        this.boundWidth = Math.max(1, Math.ceil(maxX - minX));
-        this.boundHeight = Math.max(1, Math.ceil(maxY - minY));
-        this.rotatedPoints = rotatedPoints;
+        this.boundX = transformedShape.bounds.x;
+        this.boundY = transformedShape.bounds.y;
+        this.boundWidth = transformedShape.bounds.width;
+        this.boundHeight = transformedShape.bounds.height;
+        this.rotatedPoints = transformedShape.rotatedPoints;
     }
 
     setRotationAngle(angle) {
