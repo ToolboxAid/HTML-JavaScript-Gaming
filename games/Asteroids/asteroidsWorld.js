@@ -52,6 +52,17 @@ class AsteroidsWorld {
         return this.ufoManager.hasActiveUfo();
     }
 
+    shouldFinalizeShipDeath(ship) {
+        return (
+            ship &&
+            typeof ship.isDying === 'function' &&
+            ship.isDying() &&
+            !this.hasActiveUfo() &&
+            !this.hasActiveBullets() &&
+            !this.hasActiveExplosions()
+        );
+    }
+
     draw() {
         this.bulletManager.draw();
         this.asteroidManager.draw();

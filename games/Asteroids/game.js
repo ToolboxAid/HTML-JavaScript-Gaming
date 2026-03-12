@@ -203,7 +203,7 @@ class Game extends GameBase {
     initGame() {
         for (let i = 0; i <= 3; i++) {
             this.worlds[i] = new AsteroidsWorld(Game.audioPlayer);
-            this.ships[i] = new Ship(Game.audioPlayer, this.worlds[i]);
+            this.ships[i] = new Ship(Game.audioPlayer);
         }
 
         this.score = [0, 0, 0, 0];
@@ -303,14 +303,16 @@ class Game extends GameBase {
     }
 
     updateSafeSpawn(deltaTime) {
-        const safe = this.ships[this.currentPlayer].safeSpawn(deltaTime);
+        const ship = this.ships[this.currentPlayer];
+        const world = this.worlds[this.currentPlayer];
+        const safe = world.safeSpawn(ship, deltaTime);
         if (safe) {
             this.gameState = 'playGame';
         }
     }
 
     drawSafeSpawn() {
-        this.ships[this.currentPlayer].safeDraw();
+        this.worlds[this.currentPlayer].drawSafeSpawn();
         this.drawLivesScores();
     }
 
@@ -358,12 +360,25 @@ class Game extends GameBase {
     updatePlayGame(deltaTime) {
         this.gamePauseCheck();
 
-        this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
-        this.score[this.currentPlayer] += this.worlds[this.currentPlayer].consumeScore();
+        const ship = this.ships[this.currentPlayer];
+        const world = this.worlds[this.currentPlayer];
+
+        ship.update(deltaTime, this.keyboardInput);
+        world.update(ship, deltaTime, this.keyboardInput);
+
+        if (world.shouldFinalizeShipDeath(ship)) {
+            if (Game.DEBUG) {
+                console.log('Ship death confirmed - UFO destroyed');
+            }
+
+            ship.setShipDead();
+        }
+
+        this.score[this.currentPlayer] += world.consumeScore();
         this.setHighScoreCookie(this.score[this.currentPlayer]);
 
-        if (this.ships[this.currentPlayer].isDead()) {
-            this.ships[this.currentPlayer].setIsAlive();
+        if (ship.isDead()) {
+            ship.setIsAlive();
 
             const result = GameUtils.swapPlayer(
                 this.playerLives,
@@ -378,12 +393,14 @@ class Game extends GameBase {
 
             this.currentPlayer = result.updatedPlayer;
             this.playerLives = result.updatedLives;
+            this.worlds[this.currentPlayer].reset();
             this.ships[this.currentPlayer].reset();
         }
     }
 
     drawPlayGame() {
         this.ships[this.currentPlayer].draw();
+        this.worlds[this.currentPlayer].draw();
         this.drawLivesScores();
     }
 
@@ -393,6 +410,7 @@ class Game extends GameBase {
 
     drawPauseGame() {
         this.ships[this.currentPlayer].draw();
+        this.worlds[this.currentPlayer].draw();
         CanvasUtils.drawText(150, 200, 'Game Paused.', 3.5, 'white');
         CanvasUtils.drawText(150, 250, 'Press `P` to unpause game', 3.5, 'white');
     }

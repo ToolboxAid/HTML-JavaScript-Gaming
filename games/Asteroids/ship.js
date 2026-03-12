@@ -8,7 +8,6 @@ import AngleUtils from '../../engine/math/angleUtils.js';
 import CanvasUtils from '../../engine/canvas.js';
 import ObjectVector from '../../engine/objects/objectVector.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
-import AsteroidsWorld from './asteroidsWorld.js';
 
 class Ship extends ObjectVector {
     static MAX_SPEED = 800;
@@ -38,14 +37,13 @@ class Ship extends ObjectVector {
     static DEBUG = new URLSearchParams(window.location.search).has('ship');
     static audioPlayer = null;
 
-    constructor(audioPlayer, world = null) {
+    constructor(audioPlayer) {
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
         super(x, y, Ship.VECTOR_MAPS.SMALL);
 
         Ship.audioPlayer = audioPlayer;
-        this.world = world || new AsteroidsWorld(audioPlayer);
 
         this.initializeProperties();
         this.reset();
@@ -68,29 +66,8 @@ class Ship extends ObjectVector {
         this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
     }
 
-    safeSpawn(deltaTime) {
-        return this.world.safeSpawn(this, deltaTime);
-    }
-
     update(deltaTime, keyboardInput) {
         this.moveShip(deltaTime, keyboardInput);
-        this.world.update(this, deltaTime, keyboardInput);
-        this.checkShipDeath();
-    }
-
-    checkShipDeath() {
-        if (
-            !this.world.hasActiveUfo() &&
-            this.isDying() &&
-            !this.world.hasActiveBullets() &&
-            !this.world.hasActiveExplosions()
-        ) {
-            if (Ship.DEBUG) {
-                console.log('Ship death confirmed - UFO destroyed');
-            }
-
-            this.setShipDead();
-        }
     }
 
     moveShip(deltaTime, keyboardInput) {
@@ -169,7 +146,6 @@ class Ship extends ObjectVector {
         this.showThrustFlame = false;
         this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
         this.resetMovement();
-        this.world.reset();
         this.calculateObjectBounds(Ship.VECTOR_MAPS.SMALL);
     }
 
@@ -202,30 +178,8 @@ class Ship extends ObjectVector {
             if (Ship.DEBUG) {
                 this.drawShipDebug();
             }
-
-            this.drawGameObjects();
         } catch (error) {
             console.error('Ship draw error:', error, this);
-        }
-    }
-
-    safeDraw() {
-        try {
-            if (Ship.DEBUG) {
-                this.drawShipDebug();
-            }
-
-            this.world.drawSafeSpawn();
-        } catch (error) {
-            console.error('Ship safeDraw error:', error, this);
-        }
-    }
-
-    drawGameObjects() {
-        try {
-            this.world.draw();
-        } catch (error) {
-            console.error('AsteroidsWorld draw error:', error);
         }
     }
 
