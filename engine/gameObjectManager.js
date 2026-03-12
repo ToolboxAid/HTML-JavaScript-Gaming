@@ -3,7 +3,7 @@
 // Global Game Object Manager
 // 03/2026
 
-import GameObject from './gameObject.js';
+import GameObjectUtils from './game/gameObjectUtils.js';
 import ObjectDebug from './utils/objectDebug.js';
 import ObjectValidation from './utils/objectValidation.js';
 import SystemUtils from './utils/systemUtils.js';
@@ -35,8 +35,7 @@ class GameObjectManager {
     }
 
     addGameObject(gameObject) {
-
-        ObjectValidation.instanceOf(gameObject, 'gameObject', GameObject);
+        GameObjectUtils.validateGameObject(gameObject);
 
         if (this.#activeGameObjects.includes(gameObject)) {
             ObjectDebug.warn(this.debug, 'GameObject already managed', {
@@ -56,8 +55,7 @@ class GameObjectManager {
     }
 
     findGameObjectById(id) {
-
-        ObjectValidation.nonEmptyString(id, 'id');
+        GameObjectUtils.validateId(id);
 
         const obj = this.#activeGameObjects.find(
             gameObject => gameObject.ID === id
@@ -67,8 +65,7 @@ class GameObjectManager {
     }
 
     removeGameObject(gameObject) {
-
-        ObjectValidation.instanceOf(gameObject, 'gameObject', GameObject);
+        GameObjectUtils.validateGameObject(gameObject);
 
         const index = this.#activeGameObjects.indexOf(gameObject);
 

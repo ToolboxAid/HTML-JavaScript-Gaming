@@ -5,6 +5,7 @@
 
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectValidation from '../utils/objectValidation.js';
+import GameObject from '../gameObject.js';
 
 class GameObjectUtils {
     constructor() {
@@ -44,6 +45,27 @@ class GameObjectUtils {
         }
 
         ObjectCleanup.nullifyProperties(target, ['type']);
+    }
+
+    static validateGameObject(gameObject, name = 'gameObject') {
+        ObjectValidation.instanceOf(gameObject, name, GameObject);
+    }
+
+    static validateId(id, name = 'id') {
+        const isValidString = typeof id === 'string' && id.trim() !== '';
+        const isValidNumber = typeof id === 'number' && Number.isFinite(id);
+
+        if (!isValidString && !isValidNumber) {
+            throw new Error(`${name} must be a non-empty string or finite number.`);
+        }
+    }
+
+    static getObjectId(gameObject) {
+        this.validateGameObject(gameObject);
+
+        const id = gameObject.ID;
+        this.validateId(id, 'gameObject.ID');
+        return id;
     }
 }
 

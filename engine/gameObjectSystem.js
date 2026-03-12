@@ -3,7 +3,7 @@
 // Global Game Object System
 // 03/2026
 
-import GameObject from './gameObject.js';
+import GameObjectUtils from './game/gameObjectUtils.js';
 import GameObjectManager from './gameObjectManager.js';
 import GameObjectRegistry from './gameObjectRegistry.js';
 import ObjectDebug from './utils/objectDebug.js';
@@ -23,8 +23,7 @@ class GameObjectSystem {
     }
 
     addGameObject(gameObject) {
-
-        ObjectValidation.instanceOf(gameObject, 'gameObject', GameObject);
+        GameObjectUtils.validateGameObject(gameObject);
 
         if (!this.manager.addGameObject(gameObject)) {
             ObjectDebug.warn(this.debug, 'Failed to add GameObject to manager', {
@@ -51,8 +50,7 @@ class GameObjectSystem {
     }
 
     removeGameObject(gameObject) {
-
-        ObjectValidation.instanceOf(gameObject, 'gameObject', GameObject);
+        GameObjectUtils.validateGameObject(gameObject);
 
         const unregistered = this.registry.unregister(gameObject);
 
@@ -90,8 +88,7 @@ class GameObjectSystem {
     }
 
     hasGameObject(gameObject) {
-
-        ObjectValidation.instanceOf(gameObject, 'gameObject', GameObject);
+        GameObjectUtils.validateGameObject(gameObject);
 
         return this.manager.hasGameObject(gameObject);
     }

@@ -4,6 +4,7 @@
 // gameObjectUtilsTest.js
 
 import GameObjectUtils from './gameObjectUtils.js';
+import GameObject from '../gameObject.js';
 
 export function testGameObjectUtils(assert) {
     GameObjectUtils.validateConstructorArgs({
@@ -41,4 +42,22 @@ export function testGameObjectUtils(assert) {
     GameObjectUtils.destroyMetadata(target);
     assert(target.type === null, 'destroyMetadata should clear type');
     assert(target.debug === true, 'destroyMetadata should preserve debug');
+
+    const mockGameObject = { ID: 42 };
+    Object.setPrototypeOf(mockGameObject, GameObject.prototype);
+
+    GameObjectUtils.validateGameObject(mockGameObject);
+    assert(GameObjectUtils.getObjectId(mockGameObject) === 42, 'getObjectId should return the game object ID');
+
+    GameObjectUtils.validateId('player-1');
+    GameObjectUtils.validateId(7);
+
+    threw = false;
+    try {
+        GameObjectUtils.validateId('');
+    } catch (error) {
+        threw = true;
+    }
+
+    assert(threw, 'validateId should reject an empty string');
 }

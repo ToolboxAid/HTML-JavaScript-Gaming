@@ -3,7 +3,7 @@
 // Global Game Object Registry
 // 03/2026
 
-import GameObject from './gameObject.js';
+import GameObjectUtils from './game/gameObjectUtils.js';
 import ObjectDebug from './utils/objectDebug.js';
 import ObjectValidation from './utils/objectValidation.js';
 
@@ -22,18 +22,7 @@ class GameObjectRegistry {
     }
 
     getObjectId(gameObject) {
-        ObjectValidation.instanceOf(gameObject, 'gameObject', GameObject);
-
-        const id = gameObject.ID;
-
-        if (
-            (typeof id !== 'string' || id.trim() === '') &&
-            (typeof id !== 'number' || !Number.isFinite(id))
-        ) {
-            throw new Error('gameObject.ID must be a non-empty string or finite number.');
-        }
-
-        return id;
+        return GameObjectUtils.getObjectId(gameObject);
     }
 
     register(gameObject) {
@@ -75,7 +64,7 @@ class GameObjectRegistry {
     }
 
     validateId(id) {
-        ObjectValidation.finiteNumber(id, 'id');
+        GameObjectUtils.validateId(id);
     }
 
     getById(id) {
