@@ -3,14 +3,12 @@
 // 11/15/2024
 // game.js - asteroids
 
-import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/gameBase.js';
 
-import CanvasUtils from '../../engine/canvas.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
-import GameUtils from '../../engine/game/gameUtils.js';
 
-import GameAttract from './gameAttract.js';
+import AsteroidsAttractScreen from './asteroidsAttractScreen.js';
 import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
 import AsteroidsScreens from './asteroidsScreens.js';
@@ -19,8 +17,6 @@ import AsteroidsSession from './asteroidsSession.js';
 import AudioPlayer from '../../engine/output/audioPlayer.js';
 
 class Game extends GameBase {
-    static gameAttract = null;
-
     // Enable debug mode: game.html?game
     static DEBUG = new URLSearchParams(window.location.search).has('game');
 
@@ -53,6 +49,7 @@ class Game extends GameBase {
         this.keyboardInput = new KeyboardInput();
 
         this.session = null;
+        this.attractScreen = null;
         this.playerCount = 0;
         this.selectedPlayerLives = null;
 
@@ -82,7 +79,7 @@ class Game extends GameBase {
     updateCurrentState(deltaTime) {
         switch (this.gameState) {
             case 'initAttract':
-                Game.gameAttract = new GameAttract();
+                this.attractScreen = new AsteroidsAttractScreen();
                 this.gameState = 'attract';
                 break;
 
@@ -153,7 +150,7 @@ class Game extends GameBase {
     }
 
     updateAttract(deltaTime) {
-        Game.gameAttract.update(deltaTime);
+        this.attractScreen.update(deltaTime);
 
         if (this.keyboardInput.getkeysPressed().includes('Enter')) {
             this.gameState = 'playerSelect';
@@ -161,19 +158,11 @@ class Game extends GameBase {
     }
 
     drawAttract(deltaTime) {
-        Game.gameAttract.draw();
+        this.attractScreen.draw();
     }
 
     updatePlayerSelect(deltaTime) {
-        Game.gameAttract.update(deltaTime);
-
-        const result = GameUtils.selectNumberOfPlayers(
-            CanvasUtils.ctx,
-            canvasConfig,
-            playerSelect,
-            this.keyboardInput
-        );
-
+        const result = this.attractScreen.updatePlayerSelect(deltaTime, this.keyboardInput);
         if (result) {
             this.playerCount = result.playerCount;
             this.selectedPlayerLives = result.playerLives;
@@ -182,7 +171,7 @@ class Game extends GameBase {
     }
 
     drawPlayerSelect(deltaTime) {
-        Game.gameAttract.draw(false);
+        this.attractScreen.drawPlayerSelect();
     }
 
     initGame() {
@@ -283,6 +272,7 @@ class Game extends GameBase {
 
     resetGame() {
         this.gameState = 'initAttract';
+        this.attractScreen = null;
         AsteroidsScreens.resetGameOverState(this.gameOverState);
     }
 }
