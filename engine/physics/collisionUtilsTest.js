@@ -22,6 +22,7 @@ export function testCollisionUtils(assert) {
 
     assert(CollisionUtils.isPointInsidePolygon(pointInside.x, pointInside.y, polygon), "Point should be inside the polygon");
     assert(!CollisionUtils.isPointInsidePolygon(pointOutside.x, pointOutside.y, polygon), "Point should be outside the polygon");
+    assert(CollisionUtils.pointInPolygon(pointInside.x, pointInside.y, polygon), "pointInPolygon alias should be inside the polygon");
 
     // Test: vectorCollisionDetection
     const objectA = {
@@ -65,6 +66,7 @@ export function testCollisionUtils(assert) {
 
     // Test overlapping objects
     assert(CollisionUtils.vectorCollisionDetection(objectA, objectB), "Objects A and B should collide (overlapping)");
+    assert(CollisionUtils.vectorIntersectsVector(objectA, objectB), "vectorIntersectsVector should detect vector overlap");
 
     // Test non-overlapping objects
     assert(!CollisionUtils.vectorCollisionDetection(objectA, objectC), "Objects A and C should not collide (non-overlapping)");
@@ -131,6 +133,10 @@ export function testCollisionUtils(assert) {
 
     assert(CollisionUtils.isCollidingWith(object1, object2), "Objects should collide");
     assert(!CollisionUtils.isCollidingWith(object1, object3), "Objects should not collide");
+    assert(CollisionUtils.boxIntersectsBox(object1, object2), "boxIntersectsBox should detect overlap");
+    assert(CollisionUtils.spriteBoundsIntersect(object1, object2), "spriteBoundsIntersect should detect overlap");
+    assert(CollisionUtils.pointInBox(2, 2, object1), "pointInBox should detect a point inside the box");
+    assert(!CollisionUtils.pointInBox(10, 10, object1), "pointInBox should reject a point outside the box");
 
     // Test: isCollidingWithSides (Check for side collision)
     const collisions = CollisionUtils.isCollidingWithSides(object1, object2);

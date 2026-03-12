@@ -60,10 +60,14 @@ export default class CollisionUtils {
     }
 
     static vectorCollisionDetection(objectA, objectB) {
+        return this.vectorIntersectsVector(objectA, objectB);
+    }
+
+    static vectorIntersectsVector(objectA, objectB) {
         if (!objectA || !objectB || !objectA.vectorMap || !objectB.vectorMap || !objectA.rotatedPoints || !objectB.rotatedPoints) {
             console.warn("\nobjectA:", objectA, "\nobjectB:", objectB);
             if (this.DEBUG) {
-                console.error("Invalid objects passed to vectorCollisionDetection", SystemUtils.showStackTrace(), objectA, objectB);
+                console.error("Invalid objects passed to vectorIntersectsVector", SystemUtils.showStackTrace(), objectA, objectB);
             }
             return false;
         }
@@ -117,6 +121,40 @@ export default class CollisionUtils {
         }
 
         return false;
+    }
+
+    static boxIntersectsBox(objectA, objectB) {
+        return this.isCollidingWith(objectA, objectB);
+    }
+
+    static spriteBoundsIntersect(objectA, objectB) {
+        return this.boxIntersectsBox(objectA, objectB);
+    }
+
+    static pointInPolygon(x, y, polygon) {
+        return this.isPointInsidePolygon(x, y, polygon);
+    }
+
+    static pointInBox(x, y, object) {
+        if (!object || typeof x !== 'number' || typeof y !== 'number') {
+            return false;
+        }
+
+        if (
+            typeof object.x !== 'number' ||
+            typeof object.y !== 'number' ||
+            typeof object.width !== 'number' ||
+            typeof object.height !== 'number'
+        ) {
+            return false;
+        }
+
+        return (
+            x >= object.x &&
+            x <= object.x + object.width &&
+            y >= object.y &&
+            y <= object.y + object.height
+        );
     }
     static doEdgesIntersect(A, B, C, D) {
         const det = (B[0] - A[0]) * (D[1] - C[1]) - (B[1] - A[1]) * (D[0] - C[0]);
@@ -260,6 +298,7 @@ export default class CollisionUtils {
             objectA.y + objectA.height > objectB.y
         );
     }
+
     static isCollidingWithSides(objectA, objectB) {
         if (this.DEBUG) {
             console.assert(

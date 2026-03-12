@@ -165,27 +165,11 @@ class ObjectVector extends ObjectKillable {
     }
 
     collisionDetection(object, debug = false) {
-        if (!object || !Array.isArray(object.rotatedPoints) || !Array.isArray(this.rotatedPoints)) {
-            return false;
-        }
-
         if (debug) {
             console.log(object);
         }
 
-        for (const [pointX, pointY] of object.rotatedPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, this.rotatedPoints)) {
-                return true;
-            }
-        }
-
-        for (const [pointX, pointY] of this.rotatedPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, object.rotatedPoints)) {
-                return true;
-            }
-        }
-
-        return false;
+        return CollisionUtils.vectorIntersectsVector(this, object);
     }
 
     destroy() {
