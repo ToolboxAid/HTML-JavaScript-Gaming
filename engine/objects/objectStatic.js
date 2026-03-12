@@ -3,10 +3,11 @@
 // 10/16/2024
 // objectStatic.js
 
-import CanvasUtils from "../canvas.js";
+import GeometryUtils from "../math/geometryUtils.js";
 import ObjectValidation from "../utils/objectValidation.js";
 import ObjectCleanup from "../utils/objectCleanup.js";
 import ObjectDebug from "../utils/objectDebug.js";
+import BoxRenderer from "../renderers/boxRenderer.js";
 
 /**
  * Represents a static object in a game that cannot move.
@@ -41,23 +42,23 @@ class ObjectStatic {
     }
 
     getCenterPoint() {
-        return { x: this.x + (this.width / 2), y: this.y + (this.height / 2) };
+        return GeometryUtils.getRectangleCenterPoint(this);
     }
 
     getTopLeftPoint() {
-        return { x: this.x, y: this.y };
+        return GeometryUtils.getRectangleTopLeftPoint(this);
     }
 
     getTopRightPoint() {
-        return { x: this.x + this.width, y: this.y };
+        return GeometryUtils.getRectangleTopRightPoint(this);
     }
 
     getBottomLeftPoint() {
-        return { x: this.x, y: this.y + this.height };
+        return GeometryUtils.getRectangleBottomLeftPoint(this);
     }
 
     getBottomRightPoint() {
-        return { x: this.x + this.width, y: this.y + this.height };
+        return GeometryUtils.getRectangleBottomRightPoint(this);
     }
 
     /**
@@ -88,18 +89,7 @@ class ObjectStatic {
      * @param {number} [borderWidth=0] - The width of the border.
      */
     draw(fillColor = 'gray', borderColor = null, borderWidth = 0) {
-        if (this.isDestroyed) {
-            return;
-        }
-
-        CanvasUtils.ctx.fillStyle = fillColor;
-        CanvasUtils.ctx.fillRect(this.x, this.y, this.width, this.height);
-
-        if (borderColor && borderWidth > 0) {
-            CanvasUtils.ctx.strokeStyle = borderColor;
-            CanvasUtils.ctx.lineWidth = borderWidth;
-            CanvasUtils.ctx.strokeRect(this.x, this.y, this.width, this.height);
-        }
+        BoxRenderer.draw(this, fillColor, borderColor, borderWidth);
     }
 
     /**

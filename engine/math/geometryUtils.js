@@ -24,6 +24,29 @@ class GeometryUtils {
         return this.getDistance(pointA, pointB);
     }
 
+    static getRectangleCenterPoint(object) {
+        return {
+            x: object.x + (object.width / 2),
+            y: object.y + (object.height / 2)
+        };
+    }
+
+    static getRectangleTopLeftPoint(object) {
+        return { x: object.x, y: object.y };
+    }
+
+    static getRectangleTopRightPoint(object) {
+        return { x: object.x + object.width, y: object.y };
+    }
+
+    static getRectangleBottomLeftPoint(object) {
+        return { x: object.x, y: object.y + object.height };
+    }
+
+    static getRectangleBottomRightPoint(object) {
+        return { x: object.x + object.width, y: object.y + object.height };
+    }
+
     // Distance between two points
     static getDistance(startPoint, endPoint) {
         const dx = endPoint.x - startPoint.x;

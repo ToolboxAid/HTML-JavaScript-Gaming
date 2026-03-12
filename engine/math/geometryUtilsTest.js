@@ -8,6 +8,18 @@
 import GeometryUtils from './geometryUtils.js';
 
 export function testGeometryUtils(assert) {
+    const rect = { x: 10, y: 20, width: 8, height: 6 };
+    let point = GeometryUtils.getRectangleCenterPoint(rect);
+    assert(point.x === 14 && point.y === 23, "getRectangleCenterPoint failed");
+    point = GeometryUtils.getRectangleTopLeftPoint(rect);
+    assert(point.x === 10 && point.y === 20, "getRectangleTopLeftPoint failed");
+    point = GeometryUtils.getRectangleTopRightPoint(rect);
+    assert(point.x === 18 && point.y === 20, "getRectangleTopRightPoint failed");
+    point = GeometryUtils.getRectangleBottomLeftPoint(rect);
+    assert(point.x === 10 && point.y === 26, "getRectangleBottomLeftPoint failed");
+    point = GeometryUtils.getRectangleBottomRightPoint(rect);
+    assert(point.x === 18 && point.y === 26, "getRectangleBottomRightPoint failed");
+
     // Test getDistance
     const point1 = { x: 0, y: 0 };
     const point2 = { x: 3, y: 4 };
