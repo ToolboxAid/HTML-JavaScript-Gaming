@@ -37,6 +37,11 @@ class AsteroidsSession {
         return this.ships[this.currentPlayer];
     }
 
+    getLivesVectorMap() {
+        const currentShip = this.getCurrentShip();
+        return currentShip ? currentShip.constructor.VECTOR_MAPS.LIVES : [];
+    }
+
     getCurrentWorld() {
         return this.worlds[this.currentPlayer];
     }

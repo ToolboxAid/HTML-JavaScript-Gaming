@@ -23,7 +23,7 @@ export const fullscreenConfig = {
 
 export const performanceConfig = {  
   show: true,
-  size: 10,
+  size: 20,
   font: "monospace",
   colorLow: "green",
   colorMed: "yellow",
@@ -31,7 +31,7 @@ export const performanceConfig = {
   backgroundColor: "#AAAAAABB",
 
   x: 20,
-  y: 700,
+  y: 500,
 }
 
 export const playerSelect = {

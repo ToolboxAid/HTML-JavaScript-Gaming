@@ -11,6 +11,7 @@ import KeyboardInput from '../../engine/input/keyboard.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 
 import GameAttract from './gameAttract.js';
+import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsSession from './asteroidsSession.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
@@ -40,11 +41,6 @@ class Game extends GameBase {
 
     static FLASH_INTERVAL = 200;
     static FLASH_DURATION = 3000;
-
-    static SCORE_POSITIONS = {
-        LIVES: { x: 200, y: 30 },
-        SCORE: { x: 200, y: 70 }
-    };
 
     constructor() {
         super(canvasConfig, performanceConfig, fullscreenConfig);
@@ -204,72 +200,8 @@ class Game extends GameBase {
         this.gameState = 'flashScore';
     }
 
-    drawShipLives(offsetX, offsetY, vectorMap, lineWidth = 1.25) {
-        try {
-            CanvasUtils.ctx.beginPath();
-            CanvasUtils.ctx.strokeStyle = 'white';
-            CanvasUtils.ctx.lineWidth = lineWidth;
-
-            vectorMap.forEach(([rx, ry], index) => {
-                if (index === 0) {
-                    CanvasUtils.ctx.moveTo(rx + offsetX, ry + offsetY);
-                } else {
-                    CanvasUtils.ctx.lineTo(rx + offsetX, ry + offsetY);
-                }
-            });
-
-            CanvasUtils.ctx.closePath();
-            CanvasUtils.ctx.stroke();
-        } catch (error) {
-            console.error('Error occurred while drawing:', error.message);
-            console.log('Object state:', this);
-        }
-    }
-
     drawLivesScores() {
-        const { LIVES, SCORE } = Game.SCORE_POSITIONS;
-        const ctx = CanvasUtils.ctx;
-
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'left';
-
-        this.session.forEachPlayer((player) => {
-            ctx.font = '20px "Vector Battle"';
-
-            if (this.session.isCurrentPlayer(player) && this.flashOff) {
-                return;
-            }
-
-            const xOffset = player * 460;
-
-            ctx.fillText(
-                `${this.session.getScore(player)}`,
-                SCORE.x + xOffset,
-                SCORE.y
-            );
-
-            const SHIP_SPACING = 20;
-            for (let life = 0; life < this.session.getLives(player); life++) {
-                const xOffset2 = life * SHIP_SPACING;
-                this.drawShipLives(
-                    LIVES.x + xOffset + xOffset2,
-                    LIVES.y,
-                    this.session.getCurrentShip().constructor.VECTOR_MAPS.LIVES
-                );
-            }
-
-            if (Game.DEBUG) {
-                console.log(`Drawing P${player + 1}:`, {
-                    lives: this.session.getLives(player),
-                    score: this.session.getScore(player),
-                    isCurrentPlayer: this.session.isCurrentPlayer(player),
-                    flashOff: this.flashOff
-                });
-            }
-        });
-
-        ctx.font = '15px "Vector Battle"';
-        ctx.fillText(`${this.highScore}`, SCORE.x + 200, SCORE.y);
+        AsteroidsHud.draw(this.session, this.highScore, this.flashOff, Game.DEBUG);
     }
 
     updateFlashScore() {
