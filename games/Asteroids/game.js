@@ -11,6 +11,7 @@ import KeyboardInput from '../../engine/input/keyboard.js';
 import AsteroidsAttractScreen from './asteroidsAttractScreen.js';
 import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
+import AsteroidsRuntime from './asteroidsRuntime.js';
 import AsteroidsScreens from './asteroidsScreens.js';
 import AsteroidsSession from './asteroidsSession.js';
 import AsteroidsStateMachine from './asteroidsStateMachine.js';
@@ -143,10 +144,7 @@ class Game extends GameBase {
     }
 
     updateSafeSpawn(deltaTime) {
-        const ship = this.session.getCurrentShip();
-        const world = this.session.getCurrentWorld();
-        world.stepForSpawn(deltaTime, ship);
-        const safe = world.isSafeSpawn(ship);
+        const safe = AsteroidsRuntime.updateSafeSpawn(this.session, deltaTime);
         if (safe) {
             this.setState('playGame');
         }
@@ -163,21 +161,7 @@ class Game extends GameBase {
             return;
         }
 
-        const ship = this.session.getCurrentShip();
-        const world = this.session.getCurrentWorld();
-
-        ship.update(deltaTime, this.keyboardInput);
-        world.step(deltaTime, ship, this.keyboardInput);
-
-        if (ship.isDying() && world.canFinalizeActorDeath()) {
-            if (Game.DEBUG) {
-                console.log('Ship death confirmed - UFO destroyed');
-            }
-
-            ship.setShipDead();
-        }
-
-        const score = this.session.addCurrentPlayerScore(world.consumeScore());
+        const score = AsteroidsRuntime.stepPlay(this.session, deltaTime, this.keyboardInput, Game.DEBUG);
         this.highScore = this.highScoreStore.saveIfHigher(score, this.highScore);
 
         if (this.session.handleCurrentPlayerDeath((newState) => { this.setState(newState); })) {
