@@ -4,7 +4,7 @@
 // asteroidsWorld.js
 
 import AsteroidManager from './asteroidManager.js';
-import BulletManager from './bulletManager.js';
+import BulletManager from './combat/bulletManager.js';
 import AsteroidsCollisionSystem from './systems/collisionSystem.js';
 import UFOManager from './ufoManager.js';
 import AsteroidsWeaponSystem from './systems/weaponSystem.js';

@@ -4,8 +4,8 @@
 // 01/20/2025
 // bulletManager.js
 
-import SystemUtils from "../../engine/utils/systemUtils.js";
-import AsteroidsBulletFactory from "./asteroidsBulletFactory.js";
+import SystemUtils from "../../../engine/utils/systemUtils.js";
+import BulletFactory from "./bulletFactory.js";
 
 /**
  * Manages bullet creation, updates, and cleanup for ship and UFO
@@ -74,7 +74,7 @@ class BulletManager {
   shipShootBullet(ship) {
     if (!this.canShipShoot()) return;
 
-    const bullet = AsteroidsBulletFactory.createShipBullet(ship);
+    const bullet = BulletFactory.createShipBullet(ship);
     this.bullets.push(bullet);
 
     if (BulletManager.DEBUG) {
@@ -93,7 +93,7 @@ class BulletManager {
   ufoShootBullet(ufo, ship) {
     if (!ufo.isAlive()) return;
 
-    const bullet = AsteroidsBulletFactory.createUfoBullet(ufo, ship);
+    const bullet = BulletFactory.createUfoBullet(ufo, ship);
     this.bullets.push(bullet);
 
     if (BulletManager.DEBUG) {

@@ -1,10 +1,10 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsBulletFactory.js
+// bulletFactory.js
 
-import AngleUtils from "../../engine/math/angleUtils.js";
-import RandomUtils from "../../engine/math/randomUtils.js";
+import AngleUtils from "../../../engine/math/angleUtils.js";
+import RandomUtils from "../../../engine/math/randomUtils.js";
 import Bullet from "./bullet.js";
 
 class AsteroidsBulletFactory {

@@ -6,7 +6,7 @@
 
 import Timer from '../../engine/utils/timer.js';
 import UFO from './ufo.js';
-import BulletManager from './bulletManager.js';
+import BulletManager from './combat/bulletManager.js';
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import CanExplode from '../../engine/utils/canExplode.js';
 
