@@ -25,6 +25,7 @@ import { testKeyboardInput } from '../../engine/input/keyboardTest.js';
 import { testMouseInput } from '../../engine/input/mouseTest.js';
 import { testPhysicsUtils } from '../../engine/physics/physicsUtilsTest.js';
 import { testRandomUtils } from '../../engine/math/randomUtilsTest.js';
+import { testPngAssetState } from '../../engine/utils/pngAssetStateTest.js';
 import { testSystemUtils } from '../../engine/utils/systemUtilsTest.js';
 
 // Run all tests
@@ -42,6 +43,7 @@ runTests('GeometryUtils', testGeometryUtils);
 runTests('KeyboardInput',testKeyboardInput);
 runTests('MouseInput', testMouseInput);
 runTests('PhysicsUtils', testPhysicsUtils);
+runTests('PngAssetState', testPngAssetState);
 runTests('RandomUtils', testRandomUtils);
 runTests('System Utils', testSystemUtils);
 

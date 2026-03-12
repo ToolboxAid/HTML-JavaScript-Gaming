@@ -10,6 +10,7 @@ import ObjectValidation from '../utils/objectValidation.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import PngRenderer from '../renderers/pngRenderer.js';
 import ImageAssetCache from '../utils/imageAssetCache.js';
+import PngAssetState from '../utils/pngAssetState.js';
 import PngAnimationController from '../animation/pngAnimationController.js';
 import AnimationStateUtils from '../animation/animationStateUtils.js';
 
@@ -82,17 +83,16 @@ class ObjectPNG extends ObjectKillable {
         this.flip = ObjectPNG.Flip.NONE;
         this.rotation = 0;
 
-        this.png = null;
-        this.isLoaded = false;
-        this.loadError = null;
+        this.assetState = new PngAssetState();
+        this.assetState.applyTo(this);
 
         this.frameOffsets = Array.isArray(frameOffsets) ? frameOffsets : null;
         this.animation = new PngAnimationController(this.frameCount, this.framesPerRow, this.frameDelay);
 
         ObjectPNG.loadSprite(spritePath, transparentColor)
             .then((png) => {
-                this.png = png;
-                this.isLoaded = true;
+                this.assetState.setLoaded(png);
+                this.assetState.applyTo(this);
 
                 ObjectDebug.log(ObjectPNG.DEBUG, 'Loaded PNG sprite', {
                     path: spritePath,
@@ -103,8 +103,8 @@ class ObjectPNG extends ObjectKillable {
                 });
             })
             .catch((error) => {
-                this.loadError = error;
-                this.isLoaded = false;
+                this.assetState.setError(error);
+                this.assetState.applyTo(this);
                 console.error(`Failed to load sprite: ${spritePath}`, error);
             });
     }
@@ -256,13 +256,11 @@ class ObjectPNG extends ObjectKillable {
             }
         });
 
-        if (this.png) {
-            this.png.onload = null;
-            this.png.onerror = null;
-        }
+        this.assetState?.destroy(this);
 
         AnimationStateUtils.destroyAnimation(this, [
             'animation',
+            'assetState',
             'png',
             'isLoaded',
             'loadError',
