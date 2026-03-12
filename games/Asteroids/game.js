@@ -77,16 +77,20 @@ class Game extends GameBase {
         AsteroidsStateMachine.draw(this, deltaTime);
     }
 
+    setState(nextState) {
+        this.gameState = nextState;
+    }
+
     handleInitAttract() {
         this.attractScreen = new AsteroidsAttractScreen();
-        this.gameState = 'attract';
+        this.setState('attract');
     }
 
     updateAttract(deltaTime) {
         this.attractScreen.update(deltaTime);
 
         if (this.keyboardInput.getkeysPressed().includes('Enter')) {
-            this.gameState = 'playerSelect';
+            this.setState('playerSelect');
         }
     }
 
@@ -99,7 +103,7 @@ class Game extends GameBase {
         if (result) {
             this.playerCount = result.playerCount;
             this.selectedPlayerLives = result.playerLives;
-            this.gameState = 'initGame';
+            this.setState('initGame');
         }
     }
 
@@ -111,7 +115,7 @@ class Game extends GameBase {
         this.session = new AsteroidsSession(Game.audioPlayer);
         this.session.initialize(this.playerCount, this.selectedPlayerLives);
 
-        this.gameState = 'flashScore';
+        this.setState('flashScore');
     }
 
     drawLivesScores() {
@@ -121,7 +125,7 @@ class Game extends GameBase {
     updateFlashScore() {
         const isComplete = AsteroidsHud.updateFlashState(this.hudFlashState, Game.DEBUG);
         if (isComplete) {
-            this.gameState = 'safeSpawn';
+            this.setState('safeSpawn');
         }
     }
 
@@ -135,7 +139,7 @@ class Game extends GameBase {
         world.stepForSpawn(deltaTime, ship);
         const safe = world.isSafeSpawn(ship);
         if (safe) {
-            this.gameState = 'playGame';
+            this.setState('playGame');
         }
     }
 
@@ -145,7 +149,7 @@ class Game extends GameBase {
     }
 
     updatePlayGame(deltaTime) {
-        this.gameState = AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput);
+        this.setState(AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput));
         if (this.gameState !== 'playGame') {
             return;
         }
@@ -167,9 +171,9 @@ class Game extends GameBase {
         const score = this.session.addCurrentPlayerScore(world.consumeScore());
         this.highScore = this.highScoreStore.saveIfHigher(score, this.highScore);
 
-        if (this.session.handleCurrentPlayerDeath((newState) => { this.gameState = newState; })) {
+        if (this.session.handleCurrentPlayerDeath((newState) => { this.setState(newState); })) {
             if (this.gameState === 'playGame') {
-                this.gameState = 'flashScore';
+                this.setState('flashScore');
             }
         }
     }
@@ -181,7 +185,7 @@ class Game extends GameBase {
     }
 
     updatePauseGame(deltaTime) {
-        this.gameState = AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput);
+        this.setState(AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput));
     }
 
     drawPauseGame() {
@@ -201,7 +205,7 @@ class Game extends GameBase {
     }
 
     resetGame() {
-        this.gameState = 'initAttract';
+        this.setState('initAttract');
         this.attractScreen = null;
         AsteroidsScreens.resetGameOverState(this.gameOverState);
     }
