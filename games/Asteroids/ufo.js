@@ -154,12 +154,7 @@ class UFO extends ObjectVector {
 
     updateDying() {
         this.setIsDead();
-
-        if (this.isSmall) {
-            UFO.audioPlayer.stopLooping('saucerSmall.wav');
-        } else {
-            UFO.audioPlayer.stopLooping('saucerBig.wav');
-        }
+        this.stopSaucerAudio();
     }
 
     checkBoundaries() {
@@ -263,9 +258,23 @@ class UFO extends ObjectVector {
     }
 
     cleanup() {
+        this.stopSaucerAudio();
         this.directionCnt = null;
         this.directionDelay = null;
         this.isSmall = null;
+    }
+
+    stopSaucerAudio() {
+        if (!UFO.audioPlayer) {
+            return;
+        }
+
+        if (this.isSmall) {
+            UFO.audioPlayer.stopLooping('saucerSmall.wav');
+            return;
+        }
+
+        UFO.audioPlayer.stopLooping('saucerBig.wav');
     }
 
     logDebugInfo(direction) {
