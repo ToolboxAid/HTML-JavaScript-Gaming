@@ -126,9 +126,9 @@ class AsteroidManager extends CanExplode {
         return isSafe;
     }
 
-    checkShip(object) {
+    findCollisionWithObject(object) {
         if (!object || typeof object.isAlive !== 'function' || !object.isAlive()) {
-            return;
+            return null;
         }
 
         for (const [asteroidKey, asteroid] of this.asteroids.entries()) {
@@ -141,23 +141,17 @@ class AsteroidManager extends CanExplode {
                     console.log('Ship hit:', { object, asteroid, asteroidKey });
                 }
 
-                if (typeof object.setIsDying === 'function') {
-                    object.setIsDying();
-                }
-
-                this.createExplosion(object);
-                this.setAsteroidHit(asteroid, asteroidKey);
-                return;
+                return { asteroidKey, asteroid };
             }
         }
+
+        return null;
     }
 
-    checkBullet(bullet) {
+    findCollisionWithBullet(bullet) {
         if (!bullet || bullet.isDead()) {
-            return 0;
+            return null;
         }
-
-        let score = 0;
 
         for (const [asteroidKey, asteroid] of this.asteroids.entries()) {
             if (!asteroid || asteroid.isDestroyed) {
@@ -174,69 +168,53 @@ class AsteroidManager extends CanExplode {
                     `);
                 }
 
-                score = this.setAsteroidHit(asteroid, asteroidKey);
-                break;
+                return { asteroidKey, asteroid };
             }
         }
 
-        return score;
+        return null;
     }
 
-    setAsteroidHit(asteroid, asteroidKey) {
-        if (!asteroid || !asteroidKey || !this.asteroids.has(asteroidKey)) {
-            console.error('Invalid asteroid or key:', asteroidKey);
-            return 0;
+    spawnChildAsteroids(asteroid, size, count = 2) {
+        for (let i = 0; i < count; i++) {
+            this.createAsteroid(asteroid.x, asteroid.y, size);
+        }
+    }
+
+    playHitAudio(size) {
+        if (!AsteroidManager.audioPlayer) {
+            return;
         }
 
-        let score = 0;
-
-        switch (asteroid.size) {
+        switch (size) {
             case 'large':
-                this.createAsteroid(asteroid.x, asteroid.y, 'medium');
-                this.createAsteroid(asteroid.x, asteroid.y, 'medium');
-                score = 100;
-
-                if (AsteroidManager.audioPlayer) {
-                    AsteroidManager.audioPlayer.playAudio('bangLarge.wav', 0.5);
-                }
-
-                this.createExplosion(asteroid);
+                AsteroidManager.audioPlayer.playAudio('bangLarge.wav', 0.5);
                 break;
-
             case 'medium':
-                this.createAsteroid(asteroid.x, asteroid.y, 'small');
-                this.createAsteroid(asteroid.x, asteroid.y, 'small');
-                score = 50;
-
-                if (AsteroidManager.audioPlayer) {
-                    AsteroidManager.audioPlayer.playAudio('bangMedium.wav', 0.5);
-                }
-
-                this.createExplosion(asteroid);
+                AsteroidManager.audioPlayer.playAudio('bangMedium.wav', 0.5);
                 break;
-
             case 'small':
-                score = 10;
-
-                if (AsteroidManager.audioPlayer) {
-                    AsteroidManager.audioPlayer.playAudio('bangSmall.wav', 0.5);
-                }
-
-                this.createExplosion(asteroid);
+                AsteroidManager.audioPlayer.playAudio('bangSmall.wav', 0.5);
                 break;
-
             default:
-                console.error('Invalid asteroid size:', asteroid.size);
-                return 0;
+                break;
+        }
+    }
+
+    removeAsteroid(asteroidKey) {
+        if (!asteroidKey || !this.asteroids.has(asteroidKey)) {
+            console.error('Invalid asteroid or key:', asteroidKey);
+            return false;
         }
 
+        const asteroid = this.asteroids.get(asteroidKey);
         if (!SystemUtils.destroy(asteroid)) {
             console.error('Failed to destroy asteroid:', asteroidKey);
+            return false;
         }
 
         this.asteroids.delete(asteroidKey);
-
-        return score;
+        return true;
     }
 
     destroy() {

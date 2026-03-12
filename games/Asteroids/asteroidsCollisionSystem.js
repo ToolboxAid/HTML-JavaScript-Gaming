@@ -10,20 +10,32 @@ class AsteroidsCollisionSystem {
         const ufo = world.ufoManager.getUfo();
         let score = 0;
 
-        world.asteroidManager.checkShip(ship);
+        const shipAsteroidCollision = world.asteroidManager.findCollisionWithObject(ship);
+        if (shipAsteroidCollision) {
+            score += AsteroidsHitResolver.hitShipByAsteroid(world, ship, shipAsteroidCollision);
+        }
 
         if (ufo && typeof ufo.isAlive === 'function') {
-            world.asteroidManager.checkShip(ufo);
+            const ufoAsteroidCollision = world.asteroidManager.findCollisionWithObject(ufo);
+            if (ufoAsteroidCollision) {
+                score += AsteroidsHitResolver.hitUfoByAsteroid(world, ufo, ufoAsteroidCollision);
+            }
         }
 
         world.bulletManager.bullets.forEach((bullet) => {
-            score += world.asteroidManager.checkBullet(bullet);
+            const collision = world.asteroidManager.findCollisionWithBullet(bullet);
+            if (collision) {
+                score += AsteroidsHitResolver.hitAsteroidByBullet(world, bullet, collision);
+            }
         });
 
         const ufoBullets = world.ufoManager.getActiveBullets();
 
         ufoBullets.forEach((bullet) => {
-            world.asteroidManager.checkBullet(bullet);
+            const collision = world.asteroidManager.findCollisionWithBullet(bullet);
+            if (collision) {
+                AsteroidsHitResolver.hitAsteroidByBullet(world, bullet, collision);
+            }
         });
 
         world.bulletManager.bullets.forEach((bullet) => {
