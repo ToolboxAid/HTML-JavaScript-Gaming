@@ -5,22 +5,18 @@
 
 class AsteroidsStateMachine {
     static TRANSITIONS = {
-        initAttract: ['attract'],
         attract: ['playerSelect'],
-        playerSelect: ['initGame'],
-        initGame: ['flashScore'],
+        playerSelect: ['flashScore'],
         flashScore: ['safeSpawn'],
         safeSpawn: ['playGame'],
         playGame: ['pauseGame', 'flashScore', 'gameOver'],
         pauseGame: ['playGame'],
-        gameOver: ['initAttract']
+        gameOver: ['attract']
     };
 
     static UPDATE_HANDLERS = {
-        initAttract: 'handleInitAttract',
         attract: 'updateAttract',
         playerSelect: 'updatePlayerSelect',
-        initGame: 'initGame',
         flashScore: 'updateFlashScore',
         safeSpawn: 'updateSafeSpawn',
         playGame: 'updatePlayGame',
@@ -39,7 +35,6 @@ class AsteroidsStateMachine {
     };
 
     static ENTRY_HANDLERS = {
-        initAttract: 'enterInitAttract',
         attract: 'enterAttract',
         flashScore: 'enterFlashScore',
         gameOver: 'enterGameOver'

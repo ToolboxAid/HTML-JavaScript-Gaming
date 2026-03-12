@@ -54,10 +54,11 @@ class Game extends GameBase {
         this.playerCount = 0;
         this.selectedPlayerLives = null;
 
-        this.gameState = 'initAttract';
+        this.gameState = 'attract';
 
         this.hudFlashState = AsteroidsHud.createFlashState();
         this.gameOverState = AsteroidsScreens.createGameOverState();
+        this.enterAttract();
 
         await AudioPlayer.loadAllAudioFiles(Game.audioFiles, Game.audioPlayer);
 
@@ -81,26 +82,23 @@ class Game extends GameBase {
         return AsteroidsStateMachine.transition(this, nextState);
     }
 
-    enterInitAttract() {
-        this.attractScreen = null;
+    enterAttract() {
+        this.attractScreen = new AsteroidsAttractScreen();
         AsteroidsHud.resetFlashState(this.hudFlashState);
         AsteroidsScreens.resetGameOverState(this.gameOverState);
     }
 
-    enterAttract() {
-        this.attractScreen = new AsteroidsAttractScreen();
-    }
-
     enterFlashScore() {
+        if (!this.session && this.playerCount > 0 && this.selectedPlayerLives) {
+            this.session = new AsteroidsSession(Game.audioPlayer);
+            this.session.initialize(this.playerCount, this.selectedPlayerLives);
+        }
+
         AsteroidsHud.resetFlashState(this.hudFlashState);
     }
 
     enterGameOver() {
         AsteroidsScreens.resetGameOverState(this.gameOverState);
-    }
-
-    handleInitAttract() {
-        this.setState('attract');
     }
 
     updateAttract(deltaTime) {
@@ -120,19 +118,13 @@ class Game extends GameBase {
         if (result) {
             this.playerCount = result.playerCount;
             this.selectedPlayerLives = result.playerLives;
-            this.setState('initGame');
+            this.session = null;
+            this.setState('flashScore');
         }
     }
 
     drawPlayerSelect(deltaTime) {
         this.attractScreen.drawPlayerSelect();
-    }
-
-    initGame() {
-        this.session = new AsteroidsSession(Game.audioPlayer);
-        this.session.initialize(this.playerCount, this.selectedPlayerLives);
-
-        this.setState('flashScore');
     }
 
     drawLivesScores() {
@@ -222,7 +214,8 @@ class Game extends GameBase {
     }
 
     resetGame() {
-        this.setState('initAttract');
+        this.session = null;
+        this.setState('attract');
     }
 }
 
