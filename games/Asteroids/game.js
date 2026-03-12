@@ -13,6 +13,7 @@ import GameUtils from '../../engine/game/gameUtils.js';
 import GameAttract from './gameAttract.js';
 import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
+import AsteroidsScreens from './asteroidsScreens.js';
 import AsteroidsSession from './asteroidsSession.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
@@ -57,10 +58,8 @@ class Game extends GameBase {
 
         this.gameState = 'initAttract';
 
-        this.backToAttract = 180;
-        this.backToAttractCounter = 0;
-
         this.hudFlashState = AsteroidsHud.createFlashState();
+        this.gameOverState = AsteroidsScreens.createGameOverState();
 
         await AudioPlayer.loadAllAudioFiles(Game.audioFiles, Game.audioPlayer);
 
@@ -263,8 +262,7 @@ class Game extends GameBase {
     drawPauseGame() {
         this.session.getCurrentShip().draw();
         this.session.getCurrentWorld().draw();
-        CanvasUtils.drawText(150, 200, 'Game Paused.', 3.5, 'white');
-        CanvasUtils.drawText(150, 250, 'Press `P` to unpause game', 3.5, 'white');
+        AsteroidsScreens.drawPauseOverlay();
     }
 
     gamePauseCheck() {
@@ -274,30 +272,18 @@ class Game extends GameBase {
     }
 
     updateGameOver(deltaTime) {
-        if (
-            this.keyboardInput.getkeysPressed().includes('Enter') ||
-            this.backToAttractCounter++ > this.backToAttract
-        ) {
+        if (AsteroidsScreens.shouldReturnToAttract(this.gameOverState, this.keyboardInput)) {
             this.resetGame();
         }
     }
 
     drawGameOver() {
-        const ctx = CanvasUtils.ctx;
-
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'left';
-        ctx.font = '20px "Vector Battle"';
-
-        const xOffset = CanvasUtils.getConfigWidth() / 2 - 200;
-
-        ctx.fillText('Game Over', xOffset + 110, 250);
-        ctx.fillText('Press `Enter` to Restart', xOffset, 300);
+        AsteroidsScreens.drawGameOver();
     }
 
     resetGame() {
         this.gameState = 'initAttract';
-        this.backToAttractCounter = 0;
+        AsteroidsScreens.resetGameOverState(this.gameOverState);
     }
 }
 
