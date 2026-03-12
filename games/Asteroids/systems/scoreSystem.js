@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsScoreSystem.js
+// scoreSystem.js
 
 class AsteroidsScoreSystem {
     constructor() {

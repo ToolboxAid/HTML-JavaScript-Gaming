@@ -5,10 +5,10 @@
 
 import AsteroidManager from './asteroidManager.js';
 import BulletManager from './bulletManager.js';
-import AsteroidsCollisionSystem from './asteroidsCollisionSystem.js';
+import AsteroidsCollisionSystem from './systems/collisionSystem.js';
 import UFOManager from './ufoManager.js';
-import AsteroidsWeaponSystem from './asteroidsWeaponSystem.js';
-import AsteroidsScoreSystem from './asteroidsScoreSystem.js';
+import AsteroidsWeaponSystem from './systems/weaponSystem.js';
+import AsteroidsScoreSystem from './systems/scoreSystem.js';
 
 class AsteroidsWorld {
     constructor(audioPlayer) {

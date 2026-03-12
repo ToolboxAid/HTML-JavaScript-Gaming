@@ -1,9 +1,9 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsCollisionSystem.js
+// collisionSystem.js
 
-import AsteroidsHitResolver from './asteroidsHitResolver.js';
+import AsteroidsHitResolver from './hitResolver.js';
 
 class AsteroidsCollisionSystem {
     static resolve(world, ship) {

@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsHitResolver.js
+// hitResolver.js
 
 class AsteroidsHitResolver {
     static awardScore(world, points) {

@@ -1,10 +1,10 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsWeaponSystem.js
+// weaponSystem.js
 
-import Timer from '../../engine/utils/timer.js';
-import UFO from './ufo.js';
+import Timer from '../../../engine/utils/timer.js';
+import UFO from '../ufo.js';
 
 class AsteroidsWeaponSystem {
     constructor(audioPlayer) {
