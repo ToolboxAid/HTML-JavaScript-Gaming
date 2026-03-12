@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML JavaScript Gaming Launcher</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0f172a;
+            --panel: #111827;
+            --panel-2: #1f2937;
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --line: #334155;
+            --accent: #38bdf8;
+            --accent-2: #22c55e;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(180deg, #020617 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        header {
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 2.2rem;
+        }
+
+        .sub {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+            max-width: 850px;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 24px 0 32px;
+        }
+
+        .search {
+            flex: 1 1 320px;
+            min-width: 260px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .pillbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--text);
+            padding: 10px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .pill.active {
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        section {
+            margin-top: 32px;
+        }
+
+        h2 {
+            margin: 0 0 14px;
+            font-size: 1.4rem;
+        }
+
+        .section-note {
+            color: var(--muted);
+            margin: 0 0 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            background: linear-gradient(180deg, rgba(31, 41, 55, 0.95), rgba(15, 23, 42, 0.98));
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            min-height: 150px;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+        }
+
+        .eyebrow {
+            display: inline-block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-2);
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 1.08rem;
+            line-height: 1.3;
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.45;
+            font-size: 0.95rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        code {
+            background: rgba(15, 23, 42, 0.85);
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <h1>HTML JavaScript Gaming</h1>
+            <p class="sub">
+                Central launcher for games, samples, tools, and documentation. Start here when running the repo from a local web server.
+            </p>
+        </header>
+
+        <div class="toolbar">
+            <input id="search" class="search" type="search" placeholder="Search games, samples, tools, or docs..." aria-label="Search launcher entries">
+            <div class="pillbar">
+                <button class="pill active" data-filter="all">All</button>
+                <button class="pill" data-filter="games">Games</button>
+                <button class="pill" data-filter="samples">Samples</button>
+                <button class="pill" data-filter="tools">Tools</button>
+                <button class="pill" data-filter="docs">Docs</button>
+            </div>
+        </div>
+
+        <section data-section="games">
+            <h2>Games</h2>
+            <p class="section-note">Playable projects built on the shared engine.</p>
+            <div class="grid">
+                <a class="card" data-type="games" data-search="2d side scroll tile map parallax scrolling hero map" href="games/2D%20side%20scroll%20tile%20map/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>2D Side Scroll Tile Map</h3>
+                    <p>Layered side-scrolling tile-map demo with camera-style movement foundations.</p>
+                </a>
+                <a class="card" data-type="games" data-search="asteroids arcade space ship bullets rocks" href="games/Asteroids/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Asteroids</h3>
+                    <p>Arcade-style ship movement, projectiles, collisions, and survival gameplay.</p>
+                </a>
+                <a class="card" data-type="games" data-search="box drop falling objects arcade" href="games/Box%20Drop/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Box Drop</h3>
+                    <p>Compact gameplay testbed centered on falling-object behavior.</p>
+                </a>
+                <a class="card" data-type="games" data-search="connect 4 board game" href="games/Connect%204/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Connect 4</h3>
+                    <p>Classic grid-based board game implementation for turn-based logic.</p>
+                </a>
+                <a class="card" data-type="games" data-search="draw shapes canvas primitives" href="games/Draw%20Shapes/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Draw Shapes</h3>
+                    <p>Simple drawing-focused project useful for canvas rendering experiments.</p>
+                </a>
+                <a class="card" data-type="games" data-search="frogger arcade crossing traffic river" href="games/Frogger/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Frogger</h3>
+                    <p>Lane-based arcade movement with hazards, timing, and level-like structure.</p>
+                </a>
+                <a class="card" data-type="games" data-search="full screen gaming fullscreen browser canvas" href="games/Full%20Screen%20Gaming/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Full Screen Gaming</h3>
+                    <p>Fullscreen-oriented browser gameplay setup and display testing.</p>
+                </a>
+                <a class="card" data-type="games" data-search="move objects movement collision sandbox" href="games/Move%20Objects/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Move Objects</h3>
+                    <p>Movement experiments useful for object positioning and update logic.</p>
+                </a>
+                <a class="card" data-type="games" data-search="pong game paddle puck arcade" href="games/Pong%20Game/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Pong Game</h3>
+                    <p>Paddles, puck physics, score tracking, and classic arcade behavior.</p>
+                </a>
+                <a class="card" data-type="games" data-search="snake arcade grid movement" href="games/Snake/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Snake</h3>
+                    <p>Grid-based movement and growth mechanics in a compact arcade format.</p>
+                </a>
+                <a class="card" data-type="games" data-search="solar system classes orbit astronomy" href="games/Solar%20System%20-%20w-classes/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Solar System - w-classes</h3>
+                    <p>Object-oriented version of the solar system simulation.</p>
+                </a>
+                <a class="card" data-type="games" data-search="solar system orbit astronomy" href="games/Solar%20System/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Solar System</h3>
+                    <p>Orbital and motion experiments in a simpler simulation layout.</p>
+                </a>
+                <a class="card" data-type="games" data-search="space invaders arcade enemies bullets" href="games/Space%20Invaders/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Space Invaders</h3>
+                    <p>Enemy waves, projectile interactions, and arcade-screen action.</p>
+                </a>
+                <a class="card" data-type="games" data-search="tic tac toe board game" href="games/Tic-Tac-Toe/index.html">
+                    <span class="eyebrow">Game</span>
+                    <h3>Tic-Tac-Toe</h3>
+                    <p>Simple turn-based game for input and game-state control patterns.</p>
+                </a>
+            </div>
+        </section>
+
+        <section data-section="samples">
+            <h2>Samples</h2>
+            <p class="section-note">Focused demos for individual subsystems and experiments.</p>
+            <div class="grid">
+                <a class="card" data-type="samples" data-search="sample audio sound output" href="samples/Sample%20Audio/index.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample Audio</h3>
+                    <p>Audio output experiments for browser-based game sound.</p>
+                </a>
+                <a class="card" data-type="samples" data-search="sample game engine engine bootstrap" href="samples/Sample%20Game%20Engine/index.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample Game Engine</h3>
+                    <p>Focused example for studying engine bootstrapping and shared runtime ideas.</p>
+                </a>
+                <a class="card" data-type="samples" data-search="sample gamecontrollers controller input" href="samples/Sample%20GameControllers/index.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample GameControllers</h3>
+                    <p>Controller input experiments and device handling examples.</p>
+                </a>
+                <a class="card" data-type="samples" data-search="sample keyboard input keys" href="samples/Sample%20Keyboard/index.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample Keyboard</h3>
+                    <p>Keyboard input testing and frame-based key state behavior.</p>
+                </a>
+                <a class="card" data-type="samples" data-search="sample mouse input cursor click" href="samples/Sample%20Mouse/index.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample Mouse</h3>
+                    <p>Mouse input testing for position, click, and interaction patterns.</p>
+                </a>
+                <a class="card" data-type="samples" data-search="sample particle particles explosion effects" href="samples/Sample%20Particle/index.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample Particle</h3>
+                    <p>Particle and visual-effect behavior for explosions and feedback.</p>
+                </a>
+                <a class="card" data-type="samples" data-search="sample synthesizer synth audio" href="samples/Sample%20Synthisizer/synth.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample Synthisizer</h3>
+                    <p>Synthesizer experimentation for generated audio output.</p>
+                </a>
+                <a class="card" data-type="samples" data-search="sample midi player midi audio music" href="samples/Sample%20midi%20Player/midiPlayerExample.html">
+                    <span class="eyebrow">Sample</span>
+                    <h3>Sample MIDI Player</h3>
+                    <p>MIDI playback experiments for music and engine output work.</p>
+                </a>
+            </div>
+        </section>
+
+        <section data-section="tools">
+            <h2>Tools</h2>
+            <p class="section-note">Development utilities that support asset creation and experimentation.</p>
+            <div class="grid">
+                <a class="card" data-type="tools" data-search="sprite editor tool assets palettes" href="tools/SpriteEditor/index.html">
+                    <span class="eyebrow">Tool</span>
+                    <h3>Sprite Editor</h3>
+                    <p>Create and refine sprite artwork as part of the retro-style asset workflow.</p>
+                </a>
+            </div>
+        </section>
+
+        <section data-section="docs">
+            <h2>Docs</h2>
+            <p class="section-note">Project documentation for bootstrapping, architecture, and sprite workflows.</p>
+            <div class="grid">
+                <a class="card" data-type="docs" data-search="docs getting started setup" href="docs/getting-started.md">
+                    <span class="eyebrow">Docs</span>
+                    <h3>Getting Started</h3>
+                    <p>How to run the repo, where to begin, and how the top-level folders fit together.</p>
+                </a>
+                <a class="card" data-type="docs" data-search="docs game engine architecture engine object system" href="docs/game-engine-architecture.md">
+                    <span class="eyebrow">Docs</span>
+                    <h3>Game Engine Architecture</h3>
+                    <p>Overview of the current engine layers, runtime flow, and next architectural steps.</p>
+                </a>
+                <a class="card" data-type="docs" data-search="docs sprite system sprite editor palettes animation" href="docs/sprite-system.md">
+                    <span class="eyebrow">Docs</span>
+                    <h3>Sprite System</h3>
+                    <p>How sprite-related files fit together and how the sprite pipeline should evolve.</p>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            Run the repo from a local web server for ES module support. A simple option is <code>python -m http.server 8000</code>, then open <code>http://localhost:8000/</code>.
+        </footer>
+    </div>
+
+    <script>
+        const search = document.getElementById('search');
+        const pills = Array.from(document.querySelectorAll('.pill'));
+        const cards = Array.from(document.querySelectorAll('.card'));
+        const sections = Array.from(document.querySelectorAll('section[data-section]'));
+        let activeFilter = 'all';
+
+        function applyFilters() {
+            const query = search.value.trim().toLowerCase();
+
+            cards.forEach(card => {
+                const type = card.dataset.type;
+                const haystack = (card.dataset.search + ' ' + card.textContent).toLowerCase();
+                const matchesType = activeFilter === 'all' || type === activeFilter;
+                const matchesQuery = !query || haystack.includes(query);
+                card.classList.toggle('hidden', !(matchesType && matchesQuery));
+            });
+
+            sections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.card:not(.hidden)');
+                section.classList.toggle('hidden', visibleCards.length === 0);
+            });
+        }
+
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                activeFilter = pill.dataset.filter;
+                pills.forEach(btn => btn.classList.toggle('active', btn === pill));
+                applyFilters();
+            });
+        });
+
+        search.addEventListener('input', applyFilters);
+        applyFilters();
+    </script>
+</body>
+</html>
