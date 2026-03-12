@@ -6,6 +6,7 @@
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
+import CanvasUtils from '../../engine/canvas.js';
 
 
 import ObjectSprite from '../../engine/objects/objectSprite.js';
@@ -98,6 +99,10 @@ class EnemyShip extends ObjectSprite {
         this.setIsDead();
 
         this.value = 0;
+        this.scorePopupFrame = null;
+        this.scorePopupFramesRemaining = 0;
+        this.scorePopupDelay = 0;
+        this.pendingRespawnTimerReset = false;
 
         this.startAudio = false;
         this.stopAudio = false;
@@ -106,6 +111,10 @@ class EnemyShip extends ObjectSprite {
     }
 
     isCreationTime() {
+        if (this.scorePopupFramesRemaining > 0 || this.pendingRespawnTimerReset) {
+            return;
+        }
+
         if (this.isDead() && this.nextShipTimer.isComplete()) {
             this.setIsAlive();
         }
@@ -168,7 +177,27 @@ class EnemyShip extends ObjectSprite {
                 }
             }
         } else {
+            this.updateScorePopup();
             this.isCreationTime();
+        }
+    }
+
+    updateScorePopup() {
+        if (this.scorePopupFramesRemaining <= 0) {
+            return;
+        }
+
+        this.scorePopupFramesRemaining--;
+
+        if (this.scorePopupFramesRemaining > 0) {
+            return;
+        }
+
+        this.scorePopupFrame = null;
+
+        if (this.pendingRespawnTimerReset) {
+            this.nextShipTimer.reset();
+            this.pendingRespawnTimerReset = false;
         }
     }
 
@@ -176,20 +205,35 @@ class EnemyShip extends ObjectSprite {
         this.stopAudio = true;
         const width = canvasConfig?.width ?? 40;
         this.x = Math.max(25, Math.min(this.x, width - 100));
-        this.setValue()
+        this.setValue();
         const shipValue = `${this.value}`;
         const spacing = 2;
-        const someFrame = Sprite.getText(shipValue, spacing);
-        //        const someOther = Sprite.getFromText(shipValue, spacing);
-        //console.log(someFrame,someOther);
-        const displayFrames = 60;
-        this.setOtherFrame(displayFrames, someFrame);
-        super.setHit();
+        this.scorePopupFrame = Sprite.getText(shipValue, spacing);
+        this.scorePopupDelay = 120;
+        this.scorePopupFramesRemaining = this.scorePopupDelay;
+        this.pendingRespawnTimerReset = true;
+        this.setIsDead();
+    }
+
+    draw() {
+        if (this.isAlive()) {
+            super.draw();
+            return;
+        }
+
+        if (this.scorePopupFrame && this.scorePopupFramesRemaining > 0) {
+            const popupX = this.x;
+            const popupY = this.y - 10;
+            CanvasUtils.drawSprite(popupX, popupY, this.scorePopupFrame, this.pixelSize, this.spriteColor);
+        }
     }
 
     setIsAlive() {
         super.setIsAlive();        
         this.startAudio = true;
+        this.scorePopupFrame = null;
+        this.scorePopupFramesRemaining = 0;
+        this.pendingRespawnTimerReset = false;
 
         // place off left screen the width of ship moving right
         this.x = -(this.width);
@@ -205,6 +249,12 @@ class EnemyShip extends ObjectSprite {
     setIsDead() {
         super.setIsDead();
         this.stopAudio = true;
+
+        if (this.scorePopupFramesRemaining > 0) {
+            this.pendingRespawnTimerReset = true;
+            return;
+        }
+
         this.nextShipTimer.reset();
     }
 
