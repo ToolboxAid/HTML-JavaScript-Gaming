@@ -19,13 +19,13 @@ class Ship extends ObjectVector {
         LARGE: [[24, 0], [-24, -18], [-18, 0], [-24, 18]],
         MEDIUM: [[18, 0], [-18, -14], [-13, 0], [-18, 14]],
         SMALL: [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]],
-        SMALLFLAME1: [
+        SMALLFLAME1_RAW: [
             [14, 0], [-10, -8], [-6, -3],
             [-8, 0],
             [-6, 3], [-6, -3],
             [-6, 3], [-10, 8], [14, 0]
         ],
-        SMALLFLAME2: [
+        SMALLFLAME2_RAW: [
             [14, 0], [-10, -8], [-6, -3],
             [-10, 0],
             [-6, 3], [-6, -3],
@@ -33,6 +33,35 @@ class Ship extends ObjectVector {
         ],
         LIVES: [[0, -14], [-8, 10], [-3, 6], [3, 6], [8, 10], [0, -14]],
     };
+
+    static getVectorMapCenter(vectorMap) {
+        const total = vectorMap.reduce((sum, [x, y]) => ({
+            x: sum.x + x,
+            y: sum.y + y
+        }), { x: 0, y: 0 });
+
+        return {
+            x: total.x / vectorMap.length,
+            y: total.y / vectorMap.length
+        };
+    }
+
+    static centerVectorMap(vectorMap, targetCenter) {
+        const center = Ship.getVectorMapCenter(vectorMap);
+        const deltaX = targetCenter.x - center.x;
+        const deltaY = targetCenter.y - center.y;
+
+        return vectorMap.map(([x, y]) => [x + deltaX, y + deltaY]);
+    }
+
+    static getThrustFlameMaps() {
+        const targetCenter = Ship.getVectorMapCenter(Ship.VECTOR_MAPS.SMALL);
+
+        return {
+            flame1: Ship.centerVectorMap(Ship.VECTOR_MAPS.SMALLFLAME1_RAW, targetCenter),
+            flame2: Ship.centerVectorMap(Ship.VECTOR_MAPS.SMALLFLAME2_RAW, targetCenter)
+        };
+    }
 
     static DEBUG = new URLSearchParams(window.location.search).has('ship');
     static audioPlayer = null;
@@ -117,9 +146,11 @@ class Ship extends ObjectVector {
             return;
         }
 
+        const flameMaps = Ship.getThrustFlameMaps();
+
         this.thrustFlameMap = RandomUtils.randomBoolean()
-            ? Ship.VECTOR_MAPS.SMALLFLAME1
-            : Ship.VECTOR_MAPS.SMALLFLAME2;
+            ? flameMaps.flame1
+            : flameMaps.flame2;
     }
 
     updateVelocity() {
