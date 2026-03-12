@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<!--
+ ToolboxAid.com
+ David Quesenberry
+ 10/16/2024
+ index.html
+-->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player Example</title>
+    <script type="module">
+        // Import the AudioPlayer class
+        import AudioPlayer from '../../engine/output/audioPlayer.js';
+
+        // Initialize AudioPlayer with the base path of the audio files
+        const audioPlayer = new AudioPlayer('./fx');
+
+        // Load audio files
+        async function loadAudioFiles() {
+            await audioPlayer.loadAudio('elemental-magic.mp3');
+            await audioPlayer.loadAudio('relaxing-guitar-loop.mp3');
+            await audioPlayer.loadAudio('Alesis-Sanctuary.wav');
+            await audioPlayer.loadAudio('Ouch-6.wav');
+        }
+
+        // Play audio when button is clicked
+        function playAudio(filename) {
+//            audioPlayer.resume();  // Ensure the AudioContext is resumed
+            audioPlayer.playAudio(filename);
+        }
+
+        // Create buttons and add event listeners
+        function setupButtons() {
+            document.getElementById('play-sample1').addEventListener('click', () => playAudio('elemental-magic.mp3'));
+            document.getElementById('play-sample2').addEventListener('click', () => playAudio('relaxing-guitar-loop.mp3'));
+            document.getElementById('play-sample3').addEventListener('click', () => playAudio('Alesis-Sanctuary.wav'));
+            document.getElementById('play-sample4').addEventListener('click', () => playAudio('Ouch-6.wav'));
+        }
+
+        // Load audio files and setup buttons when the window loads
+        window.onload = async () => {
+            await loadAudioFiles();
+            setupButtons();
+        };
+    </script>
+</head>
+<body>
+    <h1>Audio Player Example</h1>
+    <div>
+        <button id="play-sample1">Play Sample 1</button>
+        <button id="play-sample2">Play Sample 2</button>
+        <button id="play-sample3">Play Sample 3</button>
+        <button id="play-sample4">Play Sample 4</button>
+    </div>
+</body>
+</html>
