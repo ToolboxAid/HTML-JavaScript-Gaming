@@ -79,4 +79,44 @@ export function testPhysicsUtils(assert) {
     PhysicsUtils.applyKinematics(object, 2);
     assert(object.x === 6, "applyKinematics failed on x");
     assert(object.y === -4, "applyKinematics failed on y");
+
+    // Future-point helpers
+    object.width = 10;
+    object.height = 6;
+    object.x = 5;
+    object.y = 7;
+    object.xVelocity = 3;
+    object.yVelocity = -2;
+
+    let point = PhysicsUtils.getFutureCenterPoint(object, 2);
+    assert(point.x === 16, "getFutureCenterPoint failed on x");
+    assert(point.y === 6, "getFutureCenterPoint failed on y");
+
+    point = PhysicsUtils.getFutureTopLeftPoint(object, 2);
+    assert(point.x === 11, "getFutureTopLeftPoint failed on x");
+    assert(point.y === 3, "getFutureTopLeftPoint failed on y");
+
+    point = PhysicsUtils.getFutureTopRightPoint(object, 2);
+    assert(point.x === 21, "getFutureTopRightPoint failed on x");
+    assert(point.y === 3, "getFutureTopRightPoint failed on y");
+
+    point = PhysicsUtils.getFutureBottomLeftPoint(object, 2);
+    assert(point.x === 11, "getFutureBottomLeftPoint failed on x");
+    assert(point.y === 9, "getFutureBottomLeftPoint failed on y");
+
+    point = PhysicsUtils.getFutureBottomRightPoint(object, 2);
+    assert(point.x === 21, "getFutureBottomRightPoint failed on x");
+    assert(point.y === 9, "getFutureBottomRightPoint failed on y");
+
+    const direction = PhysicsUtils.getDirectionFromVelocity(-1, 5);
+    assert(direction.x === 'left', "getDirectionFromVelocity failed on x");
+    assert(direction.y === 'down', "getDirectionFromVelocity failed on y");
+
+    PhysicsUtils.setVelocity(object, 9, 4);
+    assert(object.xVelocity === 9, "setVelocity failed on xVelocity");
+    assert(object.yVelocity === 4, "setVelocity failed on yVelocity");
+
+    PhysicsUtils.stop(object);
+    assert(object.xVelocity === 0, "stop failed on xVelocity");
+    assert(object.yVelocity === 0, "stop failed on yVelocity");
 }

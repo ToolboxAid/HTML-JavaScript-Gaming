@@ -7,6 +7,7 @@ import ObjectStatic from './objectStatic.js';
 import SystemUtils from "../utils/systemUtils.js";
 import ObjectValidation from "../utils/objectValidation.js";
 import ObjectDebug from "../utils/objectDebug.js";
+import PhysicsUtils from '../physics/physicsUtils.js';
 
 /**
  * Represents a dynamic object in a game that can move based on velocity.
@@ -48,47 +49,27 @@ class ObjectDynamic extends ObjectStatic {
      */
     getFutureCenterPoint(deltaTime = 1) {
         this.validateDeltaTime(deltaTime);
-
-        return {
-            x: this.x + (this.width / 2) + (this.velocityX * deltaTime),
-            y: this.y + (this.height / 2) + (this.velocityY * deltaTime)
-        };
+        return PhysicsUtils.getFutureCenterPoint(this, deltaTime);
     }
 
     getFutureTopLeftPoint(deltaTime = 1) {
         this.validateDeltaTime(deltaTime);
-
-        return {
-            x: this.x + (this.velocityX * deltaTime),
-            y: this.y + (this.velocityY * deltaTime)
-        };
+        return PhysicsUtils.getFutureTopLeftPoint(this, deltaTime);
     }
 
     getFutureTopRightPoint(deltaTime = 1) {
         this.validateDeltaTime(deltaTime);
-
-        return {
-            x: this.x + this.width + (this.velocityX * deltaTime),
-            y: this.y + (this.velocityY * deltaTime)
-        };
+        return PhysicsUtils.getFutureTopRightPoint(this, deltaTime);
     }
 
     getFutureBottomLeftPoint(deltaTime = 1) {
         this.validateDeltaTime(deltaTime);
-
-        return {
-            x: this.x + (this.velocityX * deltaTime),
-            y: this.y + this.height + (this.velocityY * deltaTime)
-        };
+        return PhysicsUtils.getFutureBottomLeftPoint(this, deltaTime);
     }
 
     getFutureBottomRightPoint(deltaTime = 1) {
         this.validateDeltaTime(deltaTime);
-
-        return {
-            x: this.x + this.width + (this.velocityX * deltaTime),
-            y: this.y + this.height + (this.velocityY * deltaTime)
-        };
+        return PhysicsUtils.getFutureBottomRightPoint(this, deltaTime);
     }
 
     /**
@@ -102,8 +83,7 @@ class ObjectDynamic extends ObjectStatic {
             return;
         }
 
-        this.x += this.velocityX * deltaTime;
-        this.y += this.velocityY * deltaTime;
+        PhysicsUtils.applyKinematics(this, deltaTime);
     }
 
     /**
@@ -111,10 +91,7 @@ class ObjectDynamic extends ObjectStatic {
      * @returns {{x:string, y:string}}
      */
     getDirection() {
-        return {
-            x: this.velocityX > 0 ? 'right' : this.velocityX < 0 ? 'left' : 'none',
-            y: this.velocityY > 0 ? 'down' : this.velocityY < 0 ? 'up' : 'none'
-        };
+        return PhysicsUtils.getDirectionFromVelocity(this.velocityX, this.velocityY);
     }
 
     /**
@@ -126,16 +103,14 @@ class ObjectDynamic extends ObjectStatic {
         ObjectValidation.finiteNumber(velocityX, 'velocityX');
         ObjectValidation.finiteNumber(velocityY, 'velocityY');
 
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
+        PhysicsUtils.setVelocity(this, velocityX, velocityY);
     }
 
     /**
      * Stops all movement.
      */
     stop() {
-        this.velocityX = 0;
-        this.velocityY = 0;
+        PhysicsUtils.stop(this);
     }
 
     /**
