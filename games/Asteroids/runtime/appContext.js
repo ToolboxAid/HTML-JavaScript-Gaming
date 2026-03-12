@@ -1,14 +1,14 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsAppContext.js
+// appContext.js
 
-import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
-import AsteroidsAttractScreen from './ui/asteroidsAttractScreen.js';
-import AsteroidsHud from './ui/asteroidsHud.js';
-import AsteroidsRuntime from './asteroidsRuntime.js';
-import AsteroidsScreens from './ui/asteroidsScreens.js';
-import AsteroidsSessionController from './asteroidsSessionController.js';
+import AsteroidsHighScoreStore from '../state/highScoreStore.js';
+import AsteroidsAttractScreen from '../ui/attractScreen.js';
+import AsteroidsHud from '../ui/hud.js';
+import AsteroidsRuntime from './runtime.js';
+import AsteroidsScreens from '../ui/screens.js';
+import AsteroidsSessionController from './sessionController.js';
 
 class AsteroidsAppContext {
     constructor(audioPlayer) {

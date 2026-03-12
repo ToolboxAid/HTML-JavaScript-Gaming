@@ -1,9 +1,9 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsHighScoreStore.js
+// highScoreStore.js
 
-import Cookies from '../../engine/misc/cookies.js';
+import Cookies from '../../../engine/misc/cookies.js';
 
 class AsteroidsHighScoreStore {
     constructor() {

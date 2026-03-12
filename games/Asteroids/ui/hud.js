@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsHud.js
+// hud.js
 
 import CanvasUtils from '../../../engine/canvas.js';
 

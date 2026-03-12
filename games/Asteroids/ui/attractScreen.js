@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsAttractScreen.js
+// attractScreen.js
 
 import { canvasConfig, playerSelect } from '../global.js';
 import CanvasUtils from '../../../engine/canvas.js';

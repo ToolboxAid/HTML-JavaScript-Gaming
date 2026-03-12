@@ -1,9 +1,9 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsSessionController.js
+// sessionController.js
 
-import AsteroidsSession from './asteroidsSession.js';
+import AsteroidsSession from './session.js';
 
 class AsteroidsSessionController {
     constructor(audioPlayer) {

@@ -1,11 +1,11 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsSession.js
+// session.js
 
-import GameUtils from '../../engine/game/gameUtils.js';
-import Ship from './ship.js';
-import AsteroidsWorld from './asteroidsWorld.js';
+import GameUtils from '../../../engine/game/gameUtils.js';
+import Ship from '../ship.js';
+import AsteroidsWorld from '../asteroidsWorld.js';
 
 class AsteroidsSession {
     constructor(audioPlayer, maxPlayers = 4) {

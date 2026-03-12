@@ -8,9 +8,9 @@ import GameBase from '../../engine/gameBase.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
 
-import AsteroidsAppContext from './asteroidsAppContext.js';
-import AsteroidsScreens from './ui/asteroidsScreens.js';
-import AsteroidsStateMachine from './asteroidsStateMachine.js';
+import AsteroidsAppContext from './runtime/appContext.js';
+import AsteroidsScreens from './ui/screens.js';
+import AsteroidsStateMachine from './state/stateMachine.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
 
