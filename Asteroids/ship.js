@@ -4,14 +4,14 @@
 // ship.js
 
 import { canvasConfig } from './global.js';
-import AngleUtils from '../scripts/math/angleUtils.js';
-import CanvasUtils from '../scripts/canvas.js';
-import ObjectVector from '../scripts/objects/objectVector.js';
+import AngleUtils from '../engine/math/angleUtils.js';
+import CanvasUtils from '../engine/canvas.js';
+import ObjectVector from '../engine/objects/objectVector.js';
 
 import AsteroidManager from './asteroidManager.js';
 import BulletManager from './bulletManager.js';
 import UFOManager from './ufoManager.js';
-import RandomUtils from '../scripts/math/randomUtils.js';
+import RandomUtils from '../engine/math/randomUtils.js';
 
 class Ship extends ObjectVector {
     static MAX_SPEED = 800;

@@ -5,11 +5,11 @@
 // game.js - Tic Tac Toe
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
-import GameBase from '../scripts/gameBase.js';
+import GameBase from '../engine/gameBase.js';
 
 
-import CanvasUtils from '../scripts/canvas.js';
-import KeyboardInput from '../scripts/input/keyboard.js';
+import CanvasUtils from '../engine/canvas.js';
+import KeyboardInput from '../engine/input/keyboard.js';
 import AttractMode from './attractMode.js';
 
 class Game extends GameBase {

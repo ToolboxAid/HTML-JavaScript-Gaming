@@ -1,4 +1,4 @@
-import Synthesizer from '../scripts/output/synthesizer.js';
+import Synthesizer from '../engine/output/synthesizer.js';
 import { froggerSong, shellBeSongComingAroundMountain, twinkleTwinkle} from './songs.js';
 
 const getElementByNote = (note) =>

@@ -3,9 +3,9 @@
 // 03/24/2025
 // gameUI.js
 
-import CanvasUtils from '../scripts/canvas.js';
-import ObjectPNG from '../scripts/objects/objectPNG.js';
-import SystemUtils from '../scripts/utils/systemUtils.js';
+import CanvasUtils from '../engine/canvas.js';
+import ObjectPNG from '../engine/objects/objectPNG.js';
+import SystemUtils from '../engine/utils/systemUtils.js';
 
 class GameUI {
 

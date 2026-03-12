@@ -5,11 +5,11 @@
 
 import { font5x3 } from './global.js'; // Import canvasConfig
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
-import GameBase from '../scripts/gameBase.js';
-import CanvasUtils from '../scripts/canvas.js';
+import GameBase from '../engine/gameBase.js';
+import CanvasUtils from '../engine/canvas.js';
 
-import KeyboardInput from '../scripts/input/keyboard.js';
-import GameControllers from '../scripts/input/controller/gameControllers.js';
+import KeyboardInput from '../engine/input/keyboard.js';
+import GameControllers from '../engine/input/controller/gameControllers.js';
 
 import Font5x3 from './font5x3.js';
 import Paddle from './paddle.js';

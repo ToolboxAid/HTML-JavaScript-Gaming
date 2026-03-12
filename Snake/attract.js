@@ -3,7 +3,7 @@
 // 11/15/2024
 // attract.js
 
-import CanvasUtils from '../scripts/canvas.js';
+import CanvasUtils from '../engine/canvas.js';
 import { canvasConfig } from './global.js';
 
 class AttractScreen {

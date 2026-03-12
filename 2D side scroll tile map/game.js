@@ -5,13 +5,13 @@
 // game.js - Template Game Engine
 
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
-import GameBase from '../scripts/gameBase.js';
+import GameBase from '../engine/gameBase.js';
 
-import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import CanvasUtils from '../engine/canvas.js'; // Required for dynamic canvas operations, used in animate()
 
-import GameUtils from '../scripts/game/gameUtils.js';
+import GameUtils from '../engine/game/gameUtils.js';
 
-import KeyboardInput from '../scripts/input/keyboard.js';
+import KeyboardInput from '../engine/input/keyboard.js';
 
 import GameAttract from './gameAttract.js';
 

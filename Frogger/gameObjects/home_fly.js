@@ -4,7 +4,7 @@
 // 03/24/2025
 // home_fly.js
 
-import GameObject from '../../scripts/gameObject.js';
+import GameObject from '../../engine/gameObject.js';
 
 class HomeFly extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('homeFly');

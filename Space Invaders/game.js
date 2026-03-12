@@ -5,16 +5,16 @@
 
 import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenConfig, playerSelect, shieldConfig } from './global.js'; // Assuming these contain canvas and sprite details
 
-import GameBase from '../scripts/gameBase.js';
+import GameBase from '../engine/gameBase.js';
 
-import CanvasUtils from '../scripts/canvas.js'; // Required for dynamic canvas operations, used in animate()
-import GameUtils from '../scripts/game/gameUtils.js';
-import AudioPlayer from '../scripts/output/audioPlayer.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js';
-import Cookies from '../scripts/misc/cookies.js';
-import RandomUtils from '../scripts/math/randomUtils.js';
-import Sprite from '../scripts/sprite.js';
-import SystemUtils from '../scripts/utils/systemUtils.js';
+import CanvasUtils from '../engine/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import GameUtils from '../engine/game/gameUtils.js';
+import AudioPlayer from '../engine/output/audioPlayer.js';
+import CollisionUtils from '../engine/physics/collisionUtils.js';
+import Cookies from '../engine/misc/cookies.js';
+import RandomUtils from '../engine/math/randomUtils.js';
+import Sprite from '../engine/sprite.js';
+import SystemUtils from '../engine/utils/systemUtils.js';
 
 import AttractMode from './attractMode.js';
 
@@ -25,8 +25,8 @@ import Ground from './ground.js';
 
 import LevelFrames from './levelFrames.js';
 
-import KeyboardInput from '../scripts/input/keyboard.js';
-import GameControllers from '../scripts/input/controller/gameControllers.js';
+import KeyboardInput from '../engine/input/keyboard.js';
+import GameControllers from '../engine/input/controller/gameControllers.js';
 
 import Enemy from './enemy.js';
 import EnemySquid from './enemySquid.js';

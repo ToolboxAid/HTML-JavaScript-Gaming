@@ -4,11 +4,11 @@
 // 10/16/2024
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
-import ObjectDynamic from '../scripts/objects/objectDynamic.js'; // Import ObjectDynamic
-import CanvasUtils from '../scripts/canvas.js';
+import ObjectDynamic from '../engine/objects/objectDynamic.js'; // Import ObjectDynamic
+import CanvasUtils from '../engine/canvas.js';
 
-import RandomUtils from '../scripts/math/randomUtils.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js';
+import RandomUtils from '../engine/math/randomUtils.js';
+import CollisionUtils from '../engine/physics/collisionUtils.js';
 /**
  * Represents a dynamic circle object in a game.
  */

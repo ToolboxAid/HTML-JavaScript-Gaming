@@ -1,5 +1,5 @@
 import { canvasConfig, spriteConfig } from './global.js';
-import ObjectSprite from '../scripts/objects/objectSprite.js';
+import ObjectSprite from '../engine/objects/objectSprite.js';
 
 class EnemyBomb extends ObjectSprite {
 

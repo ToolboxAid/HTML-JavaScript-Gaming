@@ -3,12 +3,12 @@
 // 12/28/2024
 // spriteEditor.js
 
-import Colors from "../scripts/colors.js";
-import Palettes from "../scripts/palettes.js";
-import MouseInput from '../scripts/input/mouse.js';
+import Colors from "../engine/colors.js";
+import Palettes from "../engine/palettes.js";
+import MouseInput from '../engine/input/mouse.js';
 import Samples from "./samples.js";
 
-import SystemUtils from "../scripts/utils/systemUtils.js";
+import SystemUtils from "../engine/utils/systemUtils.js";
 
 import { ImageScale } from "./imageScale.js";
 import { Message } from './message.js';

@@ -4,9 +4,9 @@
 // paddle.js
 
 import { canvasConfig, paddleConfig } from './global.js';
-import ObjectStatic from '../scripts/objects/objectStatic.js';
-import AudioFrequency from '../scripts/output/audioFrequency.js';
-import CanvasUtils from '../scripts/canvas.js';
+import ObjectStatic from '../engine/objects/objectStatic.js';
+import AudioFrequency from '../engine/output/audioFrequency.js';
+import CanvasUtils from '../engine/canvas.js';
 
 class Paddle extends ObjectStatic {
 

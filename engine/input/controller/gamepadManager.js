@@ -5,8 +5,8 @@
 
 import GameControllerMap from "./gameControllerMap.js";
 
-import Sender from '../../../scripts/messages/sender.js';
-import EventBus from '../../../scripts/messages/eventBus.js';
+import Sender from '../../../engine/messages/sender.js';
+import EventBus from '../../../engine/messages/eventBus.js';
 
 export const GAMEPAD_EVENT = 'controllerChange';
 

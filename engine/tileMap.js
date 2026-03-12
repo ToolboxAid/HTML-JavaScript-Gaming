@@ -3,7 +3,7 @@
 // 10/24/2024
 // tileMap.js
 
-import CanvasUtils from '../scripts/canvas.js';
+import CanvasUtils from '../engine/canvas.js';
 
 // The given tileMap data
 const tileMapLevel1 = [

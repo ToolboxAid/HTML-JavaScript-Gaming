@@ -3,9 +3,9 @@
 // 03/24/2025
 // snake.js
 
-import GameObject from '../../scripts/gameObject.js';
-import CanvasUtils from '../../scripts/canvas.js';
-import CollisionUtils from '../../scripts/physics/collisionUtils.js';
+import GameObject from '../../engine/gameObject.js';
+import CanvasUtils from '../../engine/canvas.js';
+import CollisionUtils from '../../engine/physics/collisionUtils.js';
 
 class Snake extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('snake');

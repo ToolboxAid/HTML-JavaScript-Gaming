@@ -5,7 +5,7 @@
 
 import { canvasConfig, spriteConfig, shieldConfig } from "./global.js";
 
-import CanvasUtils from "../scripts/canvas.js";
+import CanvasUtils from "../engine/canvas.js";
 import Enemy from "./enemy.js";
 
 import EnemyCrab from "./enemyCrab.js";
@@ -13,7 +13,7 @@ import EnemySquid from "./enemySquid.js";
 import EnemyOctopus from "./enemyOctopus.js"
 import Shield from "./shield.js";
 import Ground from "./ground.js";
-import SystemUtils from "../scripts/utils/systemUtils.js";
+import SystemUtils from "../engine/utils/systemUtils.js";
 
 export default class AttractMode {
     static delayCounter = 0;

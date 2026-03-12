@@ -4,8 +4,8 @@
 // 03/24/2025
 // Car2.js
 
-import GameObject from '../../scripts/gameObject.js';
-import CanvasUtils from '../../scripts/canvas.js';
+import GameObject from '../../engine/gameObject.js';
+import CanvasUtils from '../../engine/canvas.js';
 
 class Car2 extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('car2');

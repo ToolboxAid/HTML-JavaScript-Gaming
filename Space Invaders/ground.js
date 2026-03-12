@@ -4,8 +4,8 @@
 // Ground.js
 
 import { canvasConfig, spriteConfig } from './global.js';
-import CanvasUtils from '../scripts/canvas.js';
-import ObjectStatic from '../scripts/objects/objectStatic.js'; // Ensure the class is capitalized
+import CanvasUtils from '../engine/canvas.js';
+import ObjectStatic from '../engine/objects/objectStatic.js'; // Ensure the class is capitalized
 
 
 class Ground extends ObjectStatic {

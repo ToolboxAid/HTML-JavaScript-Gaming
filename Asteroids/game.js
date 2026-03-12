@@ -4,17 +4,17 @@
 // game.js - asteroids
 
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
-import GameBase from '../scripts/gameBase.js';
+import GameBase from '../engine/gameBase.js';
 
-import CanvasUtils from '../scripts/canvas.js';
-import KeyboardInput from '../scripts/input/keyboard.js';
-import GameUtils from '../scripts/game/gameUtils.js';
+import CanvasUtils from '../engine/canvas.js';
+import KeyboardInput from '../engine/input/keyboard.js';
+import GameUtils from '../engine/game/gameUtils.js';
 
 import Ship from './ship.js';
 import GameAttract from './gameAttract.js';
 
-import AudioPlayer from '../scripts/output/audioPlayer.js';
-import Cookies from '../scripts/misc/cookies.js';
+import AudioPlayer from '../engine/output/audioPlayer.js';
+import Cookies from '../engine/misc/cookies.js';
 
 class Game extends GameBase {
     static gameAttract = null;

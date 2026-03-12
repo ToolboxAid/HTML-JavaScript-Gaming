@@ -3,7 +3,7 @@
 // 03/24/2025
 // turtleSink.js
 
-import GameObject from '../../scripts/gameObject.js';
+import GameObject from '../../engine/gameObject.js';
 
 class TurtleSink extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('turtleSink');

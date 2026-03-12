@@ -4,7 +4,7 @@
 // 10/16/2024
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
-import GameBase from '../scripts/gameBase.js';
+import GameBase from '../engine/gameBase.js';
 import Circle from './circle.js';
 
 class Game  extends GameBase {

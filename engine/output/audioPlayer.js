@@ -151,7 +151,7 @@ export default AudioPlayer;
 
 /** Usage:
 
-    import AudioPlayer from '../scripts/output/audioPlayer.js';
+    import AudioPlayer from '../engine/output/audioPlayer.js';
 
     Inside class {   
 

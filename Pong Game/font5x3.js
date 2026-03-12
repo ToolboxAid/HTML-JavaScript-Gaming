@@ -5,7 +5,7 @@
 
 
 import { font5x3 } from './global.js';
-import CanvasUtils from '../scripts/canvas.js';
+import CanvasUtils from '../engine/canvas.js';
 
 class Font5x3 {
     static font = {
@@ -100,7 +100,7 @@ class Font5x3 {
         return number.toString().padStart(digits, '0'); // Format number to 2 digits
     }
 
-     // TODO: this is specific to PONG, needs to use ./scripts/font5x3.js
+     // TODO: this is specific to PONG, needs to use ./engine/font5x3.js
     static drawNumber(x, y, number, digits) {
         const formattedNumber = this.#formatNumber(number, digits);
 

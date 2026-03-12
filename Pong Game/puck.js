@@ -5,14 +5,14 @@
 
 import { canvasConfig, puckConfig } from './global.js'; // Import puck & canvas configuration
 
-import CanvasUtils from '../scripts/canvas.js';
-import ObjectDynamic from '../scripts/objects/objectDynamic.js';
-import AngleUtils from '../scripts/math/angleUtils.js';
-import RandomUtils from '../scripts/math/randomUtils.js';
-import Timer from '../scripts/utils/timer.js';
+import CanvasUtils from '../engine/canvas.js';
+import ObjectDynamic from '../engine/objects/objectDynamic.js';
+import AngleUtils from '../engine/math/angleUtils.js';
+import RandomUtils from '../engine/math/randomUtils.js';
+import Timer from '../engine/utils/timer.js';
 
-import AudioFrequency from '../scripts/output/audioFrequency.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js';
+import AudioFrequency from '../engine/output/audioFrequency.js';
+import CollisionUtils from '../engine/physics/collisionUtils.js';
 
 class Puck extends ObjectDynamic {
 

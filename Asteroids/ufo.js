@@ -4,14 +4,14 @@
 // 11/20/2024
 // ufo.js
 
-import ObjectVector from '../scripts/objects/objectVector.js';
-import AngleUtils from '../scripts/math/angleUtils.js';
+import ObjectVector from '../engine/objects/objectVector.js';
+import AngleUtils from '../engine/math/angleUtils.js';
 import BulletManager from './bulletManager.js';
-import CanvasUtils from '../scripts/canvas.js';
-import CollisionUtils from '../scripts/physics/collisionUtils.js';
-import RandomUtils from '../scripts/math/randomUtils.js';
-import SystemUtils from '../scripts/utils/systemUtils.js';
-import Timer from '../scripts/utils/timer.js';
+import CanvasUtils from '../engine/canvas.js';
+import CollisionUtils from '../engine/physics/collisionUtils.js';
+import RandomUtils from '../engine/math/randomUtils.js';
+import SystemUtils from '../engine/utils/systemUtils.js';
+import Timer from '../engine/utils/timer.js';
 
 /**
  * UFO class representing an enemy spacecraft that can shoot at the player

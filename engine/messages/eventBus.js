@@ -3,7 +3,7 @@
 // 02/10/2025
 // .js
 
-import Sender from '../../scripts/messages/sender.js';
+import Sender from '../../engine/messages/sender.js';
 
 class EventBus {
     static instance = null;

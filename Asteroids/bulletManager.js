@@ -4,10 +4,10 @@
 // 01/20/2025
 // bulletManager.js
 
-import AngleUtils from "../scripts/math/angleUtils.js";
+import AngleUtils from "../engine/math/angleUtils.js";
 import Bullet from "./bullet.js";
-import RandomUtils from "../scripts/math/randomUtils.js";
-import SystemUtils from "../scripts/utils/systemUtils.js";
+import RandomUtils from "../engine/math/randomUtils.js";
+import SystemUtils from "../engine/utils/systemUtils.js";
 
 /**
  * Manages bullet creation, updates, and cleanup for ship and UFO

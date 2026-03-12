@@ -4,27 +4,27 @@
 // game.js - Template Game Engine
 
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
-import GameBase from '../scripts/gameBase.js';
+import GameBase from '../engine/gameBase.js';
 
-import CanvasUtils from '../scripts/canvas.js';
-import GameUtils from '../scripts/game/gameUtils.js';
+import CanvasUtils from '../engine/canvas.js';
+import GameUtils from '../engine/game/gameUtils.js';
 
-import KeyboardInput from '../scripts/input/keyboard.js';
+import KeyboardInput from '../engine/input/keyboard.js';
 
 
 // Testing between here and 'class Game', can be deleted when move to new project
-import { testAngleUtils } from '../scripts/math/angleUtilsTest.js';
-import { testCollisionUtils } from '../scripts/physics/collisionUtilsTest.js';
-import { testGameUtils } from '../scripts/game/gameUtilsTest.js';
-import { testGeometryUtils } from '../scripts/math/geometryUtilsTest.js';
-import { testKeyboardInput } from '../scripts/input/keyboardTest.js';
-import { testMouseInput } from '../scripts/input/mouseTest.js';
-import { testPhysicsUtils } from '../scripts/physics/physicsUtilsTest.js';
-import { testRandomUtils } from '../scripts/math/randomUtilsTest.js';
-import { testSystemUtils } from '../scripts/utils/systemUtilsTest.js';
+import { testAngleUtils } from '../engine/math/angleUtilsTest.js';
+import { testCollisionUtils } from '../engine/physics/collisionUtilsTest.js';
+import { testGameUtils } from '../engine/game/gameUtilsTest.js';
+import { testGeometryUtils } from '../engine/math/geometryUtilsTest.js';
+import { testKeyboardInput } from '../engine/input/keyboardTest.js';
+import { testMouseInput } from '../engine/input/mouseTest.js';
+import { testPhysicsUtils } from '../engine/physics/physicsUtilsTest.js';
+import { testRandomUtils } from '../engine/math/randomUtilsTest.js';
+import { testSystemUtils } from '../engine/utils/systemUtilsTest.js';
 
 // Run all tests
-import { runTests } from '../scripts/runTest.js';
+import { runTests } from '../engine/runTest.js';
 
 // Run the tests
 runTests('AngleUtils', testAngleUtils);

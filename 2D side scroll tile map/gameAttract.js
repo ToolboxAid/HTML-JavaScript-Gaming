@@ -4,10 +4,10 @@
 // gameAttract.js - 2D tile map
 
 import { canvasConfig } from './global.js';
-import CanvasUtils from '../scripts/canvas.js';
+import CanvasUtils from '../engine/canvas.js';
 
 import Hero from './hero.js';
-import TileMap from '../scripts/tileMap.js';
+import TileMap from '../engine/tileMap.js';
 
 class GameAttract {
     constructor() {

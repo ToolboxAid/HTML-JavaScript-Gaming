@@ -3,8 +3,8 @@ import { canvasConfig } from './global.js';
 import LevelManager from './levelManager.js';
 
 import GameUI from './gameUI.js';
-import GameObjectSystem from '../scripts/gameObjectSystem.js';
-import CanvasUtils from '../scripts/canvas.js';
+import GameObjectSystem from '../engine/gameObjectSystem.js';
+import CanvasUtils from '../engine/canvas.js';
 
 // Game Objects
 // Home

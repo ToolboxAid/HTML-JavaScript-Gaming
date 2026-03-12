@@ -4,9 +4,9 @@
 // gameAttract.js - asteroids
 
 import { canvasConfig } from './global.js';
-import CanvasUtils from '../scripts/canvas.js';
+import CanvasUtils from '../engine/canvas.js';
 import Asteroid from './asteroid.js';
-import RandomUtils from '../scripts/math/randomUtils.js';
+import RandomUtils from '../engine/math/randomUtils.js';
 
 class GameAttract {
     constructor() {

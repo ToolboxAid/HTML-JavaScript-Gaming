@@ -10,7 +10,7 @@ import {
   solarSystemConfig
 } from './global.js';
 import CelestialBody from './celestialBody.js';
-import GameBase from '../scripts/gameBase.js';
+import GameBase from '../engine/gameBase.js';
 
 // Celestial bodies array (as defined previously)
 const celestialBodies = [

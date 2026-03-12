@@ -4,7 +4,7 @@
 // objectSprite.js
 
 import CanvasUtils from '../canvas.js';
-import Colors from '../../scripts/colors.js';
+import Colors from '../../engine/colors.js';
 import ObjectKillable from './objectKillable.js';
 import SystemUtils from '../utils/systemUtils.js';
 import Sprite from '../sprite.js';

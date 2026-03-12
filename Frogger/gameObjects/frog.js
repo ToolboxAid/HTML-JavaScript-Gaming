@@ -1,5 +1,5 @@
-import ObjectPNG from '../../scripts/objects/objectPNG.js';
-import CanvasUtils from '../../scripts/canvas.js';
+import ObjectPNG from '../../engine/objects/objectPNG.js';
+import CanvasUtils from '../../engine/canvas.js';
 
 /*
 {
