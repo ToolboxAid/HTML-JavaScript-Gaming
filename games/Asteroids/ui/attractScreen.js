@@ -6,7 +6,7 @@
 import { canvasConfig, playerSelect } from '../global.js';
 import CanvasUtils from '../../../engine/canvas.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
-import GameAttract from '../gameAttract.js';
+import GameAttract from './attractScene.js';
 
 class AsteroidsAttractScreen {
     constructor() {

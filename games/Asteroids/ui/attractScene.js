@@ -1,12 +1,12 @@
 // ToolboxAid.com
 // David Quesenberry
 // 11/15/2024
-// gameAttract.js - asteroids
+// attractScene.js
 
-import { canvasConfig } from './global.js';
-import CanvasUtils from '../../engine/canvas.js';
-import Asteroid from './asteroid.js';
-import RandomUtils from '../../engine/math/randomUtils.js';
+import { canvasConfig } from '../global.js';
+import CanvasUtils from '../../../engine/canvas.js';
+import Asteroid from '../asteroid.js';
+import RandomUtils from '../../../engine/math/randomUtils.js';
 
 class GameAttract {
     constructor() {
