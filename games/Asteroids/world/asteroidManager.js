@@ -3,14 +3,14 @@
 // 11/19/2024
 // asteroidManager.js
 
-import { canvasConfig } from './global.js';
-import Asteroid from './asteroid.js';
-import AngleUtils from '../../engine/math/angleUtils.js';
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
-import GeometryUtils from '../../engine/math/geometryUtils.js';
-import RandomUtils from '../../engine/math/randomUtils.js';
-import SystemUtils from '../../engine/utils/systemUtils.js';
-import CanExplode from '../../engine/utils/canExplode.js';
+import { canvasConfig } from '../global.js';
+import Asteroid from '../asteroid.js';
+import AngleUtils from '../../../engine/math/angleUtils.js';
+import CollisionUtils from '../../../engine/physics/collisionUtils.js';
+import GeometryUtils from '../../../engine/math/geometryUtils.js';
+import RandomUtils from '../../../engine/math/randomUtils.js';
+import SystemUtils from '../../../engine/utils/systemUtils.js';
+import CanExplode from '../../../engine/utils/canExplode.js';
 
 class AsteroidManager extends CanExplode {
     static DEBUG = new URLSearchParams(window.location.search).has('asteroidManager');

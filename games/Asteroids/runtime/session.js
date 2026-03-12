@@ -5,7 +5,7 @@
 
 import GameUtils from '../../../engine/game/gameUtils.js';
 import Ship from '../ship.js';
-import AsteroidsWorld from '../asteroidsWorld.js';
+import AsteroidsWorld from '../world/world.js';
 
 class AsteroidsSession {
     constructor(audioPlayer, maxPlayers = 4) {

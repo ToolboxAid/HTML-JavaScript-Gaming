@@ -1,14 +1,14 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// asteroidsWorld.js
+// world.js
 
 import AsteroidManager from './asteroidManager.js';
-import BulletManager from './combat/bulletManager.js';
-import AsteroidsCollisionSystem from './systems/collisionSystem.js';
+import BulletManager from '../combat/bulletManager.js';
+import AsteroidsCollisionSystem from '../systems/collisionSystem.js';
 import UFOManager from './ufoManager.js';
-import AsteroidsWeaponSystem from './systems/weaponSystem.js';
-import AsteroidsScoreSystem from './systems/scoreSystem.js';
+import AsteroidsWeaponSystem from '../systems/weaponSystem.js';
+import AsteroidsScoreSystem from '../systems/scoreSystem.js';
 
 class AsteroidsWorld {
     constructor(audioPlayer) {

@@ -4,11 +4,11 @@
 // 11/20/2024
 // ufoManager.js
 
-import Timer from '../../engine/utils/timer.js';
-import UFO from './ufo.js';
-import BulletManager from './combat/bulletManager.js';
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
-import CanExplode from '../../engine/utils/canExplode.js';
+import Timer from '../../../engine/utils/timer.js';
+import UFO from '../ufo.js';
+import BulletManager from '../combat/bulletManager.js';
+import CollisionUtils from '../../../engine/physics/collisionUtils.js';
+import CanExplode from '../../../engine/utils/canExplode.js';
 
 class UFOManager extends CanExplode {
     static UFO_SPAWN_INTERVAL = 25000;
