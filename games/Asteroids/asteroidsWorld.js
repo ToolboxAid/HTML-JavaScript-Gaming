@@ -19,21 +19,24 @@ class AsteroidsWorld {
         this.scoreSystem = new AsteroidsScoreSystem();
     }
 
-    safeSpawn(ship, deltaTime) {
-        this.updateManagers(deltaTime, ship);
-        return this.asteroidManager.safeSpawn(ship);
+    stepForSpawn(deltaTime, actor) {
+        this.updateManagers(deltaTime, actor);
     }
 
-    update(ship, deltaTime, keyboardInput = null) {
-        this.updateManagers(deltaTime, ship);
-        this.weaponSystem.update(this, ship, keyboardInput);
-        AsteroidsCollisionSystem.resolve(this, ship);
+    isSafeSpawn(actor) {
+        return this.asteroidManager.safeSpawn(actor);
     }
 
-    updateManagers(deltaTime, ship) {
+    step(deltaTime, actor, keyboardInput = null) {
+        this.updateManagers(deltaTime, actor);
+        this.weaponSystem.update(this, actor, keyboardInput);
+        AsteroidsCollisionSystem.resolve(this, actor);
+    }
+
+    updateManagers(deltaTime, actor) {
         this.asteroidManager.update(deltaTime);
-        this.bulletManager.update(deltaTime, ship);
-        this.ufoManager.update(deltaTime, ship);
+        this.bulletManager.update(deltaTime, actor);
+        this.ufoManager.update(deltaTime, actor);
     }
 
     consumeScore() {
@@ -52,15 +55,10 @@ class AsteroidsWorld {
         return this.ufoManager.hasActiveUfo();
     }
 
-    shouldFinalizeShipDeath(ship) {
-        return (
-            ship &&
-            typeof ship.isDying === 'function' &&
-            ship.isDying() &&
-            !this.hasActiveUfo() &&
+    canFinalizeActorDeath() {
+        return !this.hasActiveUfo() &&
             !this.hasActiveBullets() &&
-            !this.hasActiveExplosions()
-        );
+            !this.hasActiveExplosions();
     }
 
     draw() {

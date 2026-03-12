@@ -305,7 +305,8 @@ class Game extends GameBase {
     updateSafeSpawn(deltaTime) {
         const ship = this.ships[this.currentPlayer];
         const world = this.worlds[this.currentPlayer];
-        const safe = world.safeSpawn(ship, deltaTime);
+        world.stepForSpawn(deltaTime, ship);
+        const safe = world.isSafeSpawn(ship);
         if (safe) {
             this.gameState = 'playGame';
         }
@@ -364,9 +365,9 @@ class Game extends GameBase {
         const world = this.worlds[this.currentPlayer];
 
         ship.update(deltaTime, this.keyboardInput);
-        world.update(ship, deltaTime, this.keyboardInput);
+        world.step(deltaTime, ship, this.keyboardInput);
 
-        if (world.shouldFinalizeShipDeath(ship)) {
+        if (ship.isDying() && world.canFinalizeActorDeath()) {
             if (Game.DEBUG) {
                 console.log('Ship death confirmed - UFO destroyed');
             }
