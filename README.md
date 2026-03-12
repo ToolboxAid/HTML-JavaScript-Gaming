@@ -38,9 +38,9 @@ The [`games/`](./games/) folder contains complete browser games and gameplay pro
 - Full Screen Gaming
 - Solar System
 - Solar System - w-classes
-- 2D side scroll tile map
-- Break Out
-- Tank w-pathfind
+- 2D side scroll tile map (not complete)
+- Break Out (not complete)
+- Tank w-pathfind (not complete)
 
 Each game usually includes its own `index.html`, `game.js`, `global.js`, styles, and game-specific classes/assets.
 
