@@ -1,4 +1,4 @@
-// ToolboxAid.com 
+// ToolboxAid.com
 // David Quesenberry
 // asteroids
 // 11/20/2024
@@ -9,20 +9,16 @@ import UFO from './ufo.js';
 import CollisionUtils from '../scripts/physics/collisionUtils.js';
 import CanExplode from '../scripts/utils/canExplode.js';
 
-/**
- * Manages UFO creation, updates, and cleanup
- */
 class UFOManager extends CanExplode {
-    // Constants
-    static UFO_SPAWN_INTERVAL = 25000; // 25 seconds
-    static DEBUG_SPAWN_INTERVAL = 3000; // 3 seconds for testing
+    static UFO_SPAWN_INTERVAL = 25000;
+    static DEBUG_SPAWN_INTERVAL = 3000;
 
-    // Debug mode enabled via URL parameter: game.html?ufoManager
     static DEBUG = new URLSearchParams(window.location.search).has('ufoManager');
     static audioPlayer = null;
 
     constructor(audioPlayer) {
         super();
+
         this.ufo = null;
         this.ufoTimer = new Timer(
             UFOManager.DEBUG ? UFOManager.DEBUG_SPAWN_INTERVAL : UFOManager.UFO_SPAWN_INTERVAL
@@ -33,116 +29,197 @@ class UFOManager extends CanExplode {
     }
 
     update(deltaTime, ship) {
-        if (this.ufo) {
-            this.updateExistingUFO(deltaTime, ship);
-        } else if (this.canSpawnNewUFO()) {
-            this.spawnNewUFO();
-        }
+        try {
+            if (this.ufo) {
+                this.updateExistingUFO(deltaTime, ship);
+            } else if (this.canSpawnNewUFO()) {
+                this.spawnNewUFO();
+            }
 
-        this.updateParticleExplosion(deltaTime);
+            this.updateParticleExplosion(deltaTime);
+        } catch (error) {
+            console.error('UFOManager update error:', error, this);
+        }
     }
 
     updateExistingUFO(deltaTime, ship) {
-        this.ufo.update(deltaTime, ship);
-        if (this.ufo.isDead()) {
+        if (!this.ufo || this.ufo.isDestroyed) {
+            this.destroyDeadUFO();
+            return;
+        }
+
+        try {
+            this.ufo.update(deltaTime, ship);
+        } catch (error) {
+            console.error('UFO update error:', error, this.ufo);
+            this.destroyDeadUFO();
+            return;
+        }
+
+        if (typeof this.ufo.isDead === 'function' && this.ufo.isDead()) {
             if (UFOManager.DEBUG) {
-                console.log("UFO destroyed");
+                console.log('UFO destroyed');
             }
+
+            this.destroyDeadUFO();
+            return;
+        }
+
+        if (typeof this.ufo.isAlive === 'function' && !this.ufo.isAlive()) {
             this.destroyDeadUFO();
         }
     }
 
     canSpawnNewUFO() {
-        return this.ufoTimer.isComplete() && !this.ufoTimer.isPaused;
+        return this.ufoTimer && this.ufoTimer.isComplete() && !this.ufoTimer.isPaused;
     }
 
     spawnNewUFO() {
-        this.ufoTimer.pause();
-        console.log(UFOManager.audioPlayer);
-        this.ufo = new UFO(UFOManager.audioPlayer); // 50% volume);
+        if (!this.ufoTimer) {
+            return;
+        }
 
-        if (UFOManager.DEBUG) {
-            console.log("New UFO spawned:", {
-                ufo: this.ufo,
-                timer: this.ufoTimer
-            });
+        this.ufoTimer.pause();
+
+        try {
+            this.ufo = new UFO(UFOManager.audioPlayer);
+
+            if (UFOManager.DEBUG) {
+                console.log('New UFO spawned:', {
+                    ufo: this.ufo,
+                    timer: this.ufoTimer
+                });
+            }
+        } catch (error) {
+            console.error('Failed to spawn UFO:', error);
+            this.resetTimer();
         }
     }
 
     draw() {
-        if (this.ufo) {
+        if (!this.ufo || typeof this.ufo.draw !== 'function') {
+            return;
+        }
+
+        try {
             this.ufo.draw();
+        } catch (error) {
+            console.error('UFO draw error:', error, this.ufo);
         }
     }
 
     check(ship) {
-        if (!ship?.isAlive() || !this.ufo) return;
+        if (!ship || typeof ship.isAlive !== 'function' || !ship.isAlive()) {
+            return;
+        }
 
-        const collision = CollisionUtils.vectorCollisionDetection(this.ufo, ship);
+        if (!this.ufo || this.ufo.isDestroyed) {
+            return;
+        }
+
+        if (typeof this.ufo.isAlive === 'function' && !this.ufo.isAlive()) {
+            return;
+        }
+
+        let collision = false;
+
+        try {
+            collision = CollisionUtils.vectorCollisionDetection(this.ufo, ship);
+        } catch (error) {
+            console.error('UFO collision check error:', error, {
+                ufo: this.ufo,
+                ship
+            });
+            return;
+        }
+
         if (collision) {
             this.handleShipCollision(ship);
         }
     }
 
     handleShipCollision(ship) {
+        if (!ship || !this.ufo) {
+            return;
+        }
+
+        if (typeof ship.isAlive !== 'function' || !ship.isAlive()) {
+            return;
+        }
+
+        if (typeof this.ufo.isAlive === 'function' && !this.ufo.isAlive()) {
+            return;
+        }
+
         if (UFOManager.DEBUG) {
-            console.log("Ship/UFO collision detected:", {
-                ship: ship,
+            console.log('Ship/UFO collision detected:', {
+                ship,
                 ufo: this.ufo
             });
         }
 
-        ship.setIsDying();
-        this.createExplosion(ship);
+        if (typeof ship.setIsDying === 'function') {
+            ship.setIsDying();
+            this.createExplosion(ship);
+        }
 
-        this.ufo.setHit();
-        this.createExplosion(this.ufo);
+        if (typeof this.ufo.setHit === 'function') {
+            this.ufo.setHit();
+            this.createExplosion(this.ufo);
+        }
     }
 
     destroyDeadUFO() {
         if (UFOManager.DEBUG) {
-            console.log("Destroying UFO:", {
+            console.log('Destroying UFO:', {
                 ufo: this.ufo,
                 timer: this.ufoTimer
             });
         }
 
-        this.ufo.destroy();
+        if (this.ufo) {
+            try {
+                if (typeof this.ufo.destroy === 'function') {
+                    this.ufo.destroy();
+                }
+            } catch (error) {
+                console.error('Error destroying UFO:', error, this.ufo);
+            }
+        }
+
         this.ufo = null;
         this.resetTimer();
     }
 
     resetTimer() {
+        if (!this.ufoTimer) {
+            return;
+        }
+
         this.ufoTimer.reset();
         this.ufoTimer.start();
     }
 
-    /**
-     * Destroys the UFO manager and cleans up resources
-     * @returns {boolean} True if cleanup was successful
-     */
     destroy() {
         try {
-            if (UFOManager.DEBUG) {
-                console.log("UFOManager destruction started");
-            }
-
             if (this.ufo) {
-                this.ufo.destroy();
+                try {
+                    if (typeof this.ufo.destroy === 'function') {
+                        this.ufo.destroy();
+                    }
+                } catch (error) {
+                    console.error('Error destroying UFO during manager cleanup:', error);
+                }
+
                 this.ufo = null;
             }
 
-            if (this.ufoTimer) {
-                this.ufoTimer = null;
-            }
-
-            if (UFOManager.DEBUG) {
-                console.log("UFOManager destruction completed");
-            }
+            this.ufoTimer = null;
+            this.explosions = [];
 
             return true;
         } catch (error) {
-            console.error("Error during UFOManager destruction:", error);
+            console.error('Error during UFOManager destruction:', error);
             return false;
         }
     }

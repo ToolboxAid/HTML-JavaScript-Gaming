@@ -96,10 +96,22 @@ class Ship extends ObjectVector {
         this.ufoManager.update(deltaTime, ship);
     }
 
+    getUfoBullets() {
+        const ufo = this.ufoManager?.ufo;
+        const bulletManager = ufo?.bulletManager;
+        const bullets = bulletManager?.bullets;
+
+        if (!bullets || typeof bullets.forEach !== 'function') {
+            return [];
+        }
+
+        return bullets;
+    }
+
     checkCollisions() {
         this.asteroidManager.checkShip(this);
 
-        if (this.ufoManager.ufo) {
+        if (this.ufoManager.ufo && typeof this.ufoManager.ufo.isAlive === 'function') {
             this.asteroidManager.checkShip(this.ufoManager.ufo);
         }
 
@@ -107,7 +119,9 @@ class Ship extends ObjectVector {
             this.score += this.asteroidManager.checkBullet(bullet);
         });
 
-        this.ufoManager.ufo?.bulletManager.bullets.forEach(bullet => {
+        const ufoBullets = this.getUfoBullets();
+
+        ufoBullets.forEach(bullet => {
             this.asteroidManager.checkBullet(bullet);
         });
 
@@ -121,7 +135,7 @@ class Ship extends ObjectVector {
         });
 
         if (this.isAlive()) {
-            this.ufoManager.ufo?.bulletManager.bullets.forEach(bullet => {
+            ufoBullets.forEach(bullet => {
                 if (bullet.collisionDetection(this)) {
                     bullet.setIsDead();
                     this.setShipHit();

@@ -13,9 +13,7 @@ import SystemUtils from '../scripts/utils/systemUtils.js';
 import CanExplode from '../scripts/utils/canExplode.js';
 
 class AsteroidManager extends CanExplode {
-    // Enable debug mode: game.html?asteroidManager
     static DEBUG = new URLSearchParams(window.location.search).has('asteroidManager');
-
     static audioPlayer = null;
 
     constructor(audioPlayer) {
@@ -129,7 +127,7 @@ class AsteroidManager extends CanExplode {
     }
 
     checkShip(object) {
-        if (!object || !object.isAlive()) {
+        if (!object || typeof object.isAlive !== 'function' || !object.isAlive()) {
             return;
         }
 
@@ -143,9 +141,11 @@ class AsteroidManager extends CanExplode {
                     console.log('Ship hit:', { object, asteroid, asteroidKey });
                 }
 
-                object.setIsDying();
-                this.createExplosion(object);
+                if (typeof object.setIsDying === 'function') {
+                    object.setIsDying();
+                }
 
+                this.createExplosion(object);
                 this.setAsteroidHit(asteroid, asteroidKey);
                 return;
             }
