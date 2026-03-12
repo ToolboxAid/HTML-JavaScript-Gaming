@@ -9,7 +9,6 @@ import GameBase from '../../engine/gameBase.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
 import AsteroidsAppContext from './asteroidsAppContext.js';
-import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsRuntime from './asteroidsRuntime.js';
 import AsteroidsScreens from './asteroidsScreens.js';
 import AsteroidsStateMachine from './asteroidsStateMachine.js';
@@ -72,19 +71,15 @@ class Game extends GameBase {
     }
 
     enterAttract() {
-        this.app.createAttractScreen();
-        AsteroidsHud.resetFlashState(this.app.hudFlashState);
-        AsteroidsScreens.resetGameOverState(this.app.gameOverState);
+        this.app.enterAttract();
     }
 
     enterFlashScore() {
-        this.app.sessionController.ensureSession(this.app.playerSetup.playerCount, this.app.playerSetup.playerLives);
-
-        AsteroidsHud.resetFlashState(this.app.hudFlashState);
+        this.app.enterFlashScore();
     }
 
     enterGameOver() {
-        AsteroidsScreens.resetGameOverState(this.app.gameOverState);
+        this.app.enterGameOver();
     }
 
     updateAttract(deltaTime) {
@@ -102,8 +97,7 @@ class Game extends GameBase {
     updatePlayerSelect(deltaTime) {
         const result = this.app.attractScreen.updatePlayerSelect(deltaTime, this.keyboardInput);
         if (result) {
-            this.app.setPlayerSetup(result.playerCount, result.playerLives);
-            this.app.sessionController.clearSession();
+            this.app.beginSelectedGame(result.playerCount, result.playerLives);
             this.setState('flashScore');
         }
     }
@@ -113,11 +107,11 @@ class Game extends GameBase {
     }
 
     drawLivesScores() {
-        AsteroidsHud.draw(this.app.sessionController.getSession(), this.app.highScore, this.app.hudFlashState.flashOff, Game.DEBUG);
+        this.app.drawHud(Game.DEBUG);
     }
 
     updateFlashScore() {
-        const isComplete = AsteroidsHud.updateFlashState(this.app.hudFlashState, Game.DEBUG);
+        const isComplete = this.app.updateFlashScore(Game.DEBUG);
         if (isComplete) {
             this.setState('safeSpawn');
         }
@@ -147,9 +141,9 @@ class Game extends GameBase {
 
         const session = this.app.sessionController.getSession();
         const score = AsteroidsRuntime.stepPlay(session, deltaTime, this.keyboardInput, Game.DEBUG);
-        this.app.highScore = this.app.highScoreStore.saveIfHigher(score, this.app.highScore);
+        this.app.saveHighScore(score);
 
-        if (session.handleCurrentPlayerDeath((newState) => { this.setState(newState); })) {
+        if (this.app.handleCurrentPlayerDeath((newState) => { this.setState(newState); })) {
             if (this.gameState === 'playGame') {
                 this.setState('flashScore');
             }
@@ -181,7 +175,7 @@ class Game extends GameBase {
     }
 
     resetGame() {
-        this.app.sessionController.clearSession();
+        this.app.resetSession();
         this.setState('attract');
     }
 }

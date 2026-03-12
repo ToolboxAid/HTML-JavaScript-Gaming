@@ -32,6 +32,48 @@ class AsteroidsAppContext {
         this.playerSetup.playerCount = playerCount;
         this.playerSetup.playerLives = playerLives;
     }
+
+    beginSelectedGame(playerCount, playerLives) {
+        this.setPlayerSetup(playerCount, playerLives);
+        this.resetSession();
+    }
+
+    enterAttract() {
+        this.createAttractScreen();
+        AsteroidsHud.resetFlashState(this.hudFlashState);
+        AsteroidsScreens.resetGameOverState(this.gameOverState);
+    }
+
+    enterFlashScore() {
+        this.sessionController.ensureSession(this.playerSetup.playerCount, this.playerSetup.playerLives);
+        AsteroidsHud.resetFlashState(this.hudFlashState);
+    }
+
+    enterGameOver() {
+        AsteroidsScreens.resetGameOverState(this.gameOverState);
+    }
+
+    drawHud(debug = false) {
+        AsteroidsHud.draw(this.sessionController.getSession(), this.highScore, this.hudFlashState.flashOff, debug);
+    }
+
+    updateFlashScore(debug = false) {
+        return AsteroidsHud.updateFlashState(this.hudFlashState, debug);
+    }
+
+    saveHighScore(score) {
+        this.highScore = this.highScoreStore.saveIfHigher(score, this.highScore);
+        return this.highScore;
+    }
+
+    handleCurrentPlayerDeath(setState) {
+        const session = this.sessionController.getSession();
+        return session.handleCurrentPlayerDeath((newState) => { setState(newState); });
+    }
+
+    resetSession() {
+        this.sessionController.clearSession();
+    }
 }
 
 export default AsteroidsAppContext;
