@@ -1,169 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML JavaScript Gaming Launcher</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML JavaScript Gaming</title>
+    <link rel="icon" href="favicon.ico" />
     <style>
-        :root {
-            color-scheme: dark;
-            --bg: #0f172a;
-            --panel: #111827;
-            --panel-2: #1f2937;
-            --text: #e5e7eb;
-            --muted: #94a3b8;
-            --line: #334155;
-            --accent: #38bdf8;
-            --accent-2: #22c55e;
+        :root{
+            --bg:#0f1115;
+            --panel:#171a21;
+            --panel2:#1d2230;
+            --text:#eef2f7;
+            --muted:#a9b3c3;
+            --line:#2b3242;
+            --accent:#6cb8ff;
+            --accent2:#8df0c8;
+            --game:#2f9e44;
+            --demo:#1971c2;
+            --tool:#9c36b5;
+            --docs:#6c757d;
+            --playable:#2b8a3e;
+            --experimental:#e0a800;
+            --wip:#d6336c;
         }
 
-        * { box-sizing: border-box; }
+        *{ box-sizing:border-box; }
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(180deg, #020617 0%, var(--bg) 100%);
-            color: var(--text);
+        body{
+            margin:0;
+            font-family:Arial, Helvetica, sans-serif;
+            background:linear-gradient(180deg, #0d1015 0%, #131722 100%);
+            color:var(--text);
         }
 
-        .wrap {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 20px 56px;
+        .wrap{
+            max-width:1300px;
+            margin:0 auto;
+            padding:32px 24px 64px;
         }
 
-        header {
-            margin-bottom: 28px;
+        header{
+            margin-bottom:28px;
         }
 
-        h1 {
-            margin: 0 0 10px;
-            font-size: 2.2rem;
+        h1{
+            margin:0 0 8px;
+            font-size:2.2rem;
+            line-height:1.1;
         }
 
-        .sub {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.5;
-            max-width: 850px;
+        .subtitle{
+            color:var(--muted);
+            max-width:900px;
+            line-height:1.5;
         }
 
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 24px 0 32px;
+        .toolbar{
+            display:flex;
+            flex-wrap:wrap;
+            gap:12px;
+            margin:28px 0 10px;
+            align-items:center;
         }
 
-        .search {
-            flex: 1 1 320px;
-            min-width: 260px;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--line);
-            background: rgba(15, 23, 42, 0.9);
-            color: var(--text);
-            font-size: 1rem;
+        .search{
+            flex:1 1 340px;
+            min-width:240px;
         }
 
-        .pillbar {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        .search input{
+            width:100%;
+            padding:12px 14px;
+            border-radius:10px;
+            border:1px solid var(--line);
+            background:#0f1420;
+            color:var(--text);
+            outline:none;
+            font-size:15px;
         }
 
-        .pill {
-            border: 1px solid var(--line);
-            background: var(--panel);
-            color: var(--text);
-            padding: 10px 14px;
-            border-radius: 999px;
-            cursor: pointer;
+        .search input:focus{
+            border-color:var(--accent);
+            box-shadow:0 0 0 3px rgba(108,184,255,0.14);
         }
 
-        .pill.active {
-            border-color: var(--accent);
-            color: #ffffff;
+        .filters{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
         }
 
-        section {
-            margin-top: 32px;
+        .filter-btn{
+            border:1px solid var(--line);
+            background:var(--panel);
+            color:var(--text);
+            padding:10px 12px;
+            border-radius:999px;
+            cursor:pointer;
+            font-size:14px;
         }
 
-        h2 {
-            margin: 0 0 14px;
-            font-size: 1.4rem;
+        .filter-btn.active,
+        .filter-btn:hover{
+            border-color:var(--accent);
+            color:#fff;
         }
 
-        .section-note {
-            color: var(--muted);
-            margin: 0 0 18px;
+        .section{
+            margin-top:36px;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 16px;
+        .section h2{
+            margin:0 0 8px;
+            font-size:1.35rem;
         }
 
-        .card {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            background: linear-gradient(180deg, rgba(31, 41, 55, 0.95), rgba(15, 23, 42, 0.98));
-            border: 1px solid var(--line);
-            border-radius: 18px;
-            padding: 18px;
-            min-height: 150px;
-            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        .section p{
+            margin:0 0 18px;
+            color:var(--muted);
+            line-height:1.5;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+            gap:18px;
         }
 
-        .eyebrow {
-            display: inline-block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--accent-2);
-            margin-bottom: 10px;
+        .card{
+            background:linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+            border:1px solid var(--line);
+            border-radius:16px;
+            padding:18px;
+            transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
         }
 
-        .card h3 {
-            margin: 0 0 10px;
-            font-size: 1.08rem;
-            line-height: 1.3;
+        .card:hover{
+            transform:translateY(-2px);
+            border-color:#4d638c;
+            box-shadow:0 8px 24px rgba(0,0,0,.22);
         }
 
-        .card p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.45;
-            font-size: 0.95rem;
+        .card.hidden{
+            display:none;
         }
 
-        .hidden {
-            display: none !important;
+        .title-row{
+            display:flex;
+            justify-content:space-between;
+            gap:12px;
+            align-items:flex-start;
+            margin-bottom:8px;
         }
 
-        footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--line);
-            color: var(--muted);
-            font-size: 0.95rem;
+        .card h3{
+            margin:0;
+            font-size:1.05rem;
+            line-height:1.35;
         }
 
-        code {
-            background: rgba(15, 23, 42, 0.85);
-            padding: 2px 6px;
-            border-radius: 6px;
-            border: 1px solid var(--line);
+        .card a{
+            color:var(--accent);
+            text-decoration:none;
+        }
+
+        .card a:hover{
+            text-decoration:underline;
+        }
+
+        .desc{
+            color:var(--muted);
+            font-size:14px;
+            line-height:1.5;
+            min-height:64px;
+            margin-bottom:12px;
+        }
+
+        .path{
+            font-family:Consolas, monospace;
+            font-size:12px;
+            color:#8f9bb0;
+            background:#101521;
+            border:1px solid #253047;
+            border-radius:8px;
+            padding:7px 9px;
+            margin-bottom:12px;
+            word-break:break-all;
+        }
+
+        .badges{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+
+        .badge{
+            display:inline-block;
+            font-size:11px;
+            line-height:1;
+            padding:6px 8px;
+            border-radius:999px;
+            color:#fff;
+            font-weight:bold;
+            letter-spacing:.2px;
+        }
+
+        .game{ background:var(--game); }
+        .demo{ background:var(--demo); }
+        .tool{ background:var(--tool); }
+        .docs{ background:var(--docs); }
+
+        .playable{ background:var(--playable); }
+        .experimental{ background:#9a6b00; }
+        .wip{ background:var(--wip); }
+
+        .footer-note{
+            margin-top:42px;
+            color:var(--muted);
+            font-size:14px;
+            line-height:1.6;
+            border-top:1px solid var(--line);
+            padding-top:20px;
+        }
+
+        .count{
+            color:var(--muted);
+            font-size:14px;
+            margin:12px 0 0;
+        }
+
+        @media (max-width: 640px){
+            .wrap{
+                padding:24px 16px 48px;
+            }
+
+            h1{
+                font-size:1.8rem;
+            }
         }
     </style>
 </head>
@@ -171,219 +244,402 @@
     <div class="wrap">
         <header>
             <h1>HTML JavaScript Gaming</h1>
-            <p class="sub">
-                Central launcher for games, samples, tools, and documentation. Start here when running the repo from a local web server.
-            </p>
+            <div class="subtitle">
+                A 2D JavaScript game engine playground with playable games, learning demos, tools, and engine documentation.
+            </div>
+
+            <div class="toolbar">
+                <div class="search">
+                    <input id="searchInput" type="text" placeholder="Search games, demos, tools, and docs..." />
+                </div>
+
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="game">Games</button>
+                    <button class="filter-btn" data-filter="demo">Learning Labs</button>
+                    <button class="filter-btn" data-filter="tool">Tools</button>
+                    <button class="filter-btn" data-filter="docs">Docs</button>
+                </div>
+            </div>
+
+            <div id="resultCount" class="count"></div>
         </header>
 
-        <div class="toolbar">
-            <input id="search" class="search" type="search" placeholder="Search games, samples, tools, or docs..." aria-label="Search launcher entries">
-            <div class="pillbar">
-                <button class="pill active" data-filter="all">All</button>
-                <button class="pill" data-filter="games">Games</button>
-                <button class="pill" data-filter="samples">Samples</button>
-                <button class="pill" data-filter="tools">Tools</button>
-                <button class="pill" data-filter="docs">Docs</button>
+        <section class="section">
+            <h2>⭐ Featured</h2>
+            <p>Start here if you want a quick tour of the repo.</p>
+            <div class="grid">
+                <article class="card item" data-type="game" data-search="asteroids classic arcade shooter playable game">
+                    <div class="title-row">
+                        <h3><a href="games/Asteroids/index.html">Asteroids</a></h3>
+                    </div>
+                    <div class="desc">Classic arcade-style asteroid shooter built on the shared engine structure.</div>
+                    <div class="path">games/Asteroids/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge playable">Playable</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="frogger traffic river crossing playable game">
+                    <div class="title-row">
+                        <h3><a href="games/Frogger/index.html">Frogger</a></h3>
+                    </div>
+                    <div class="desc">Arcade crossing game with lanes, hazards, level logic, and UI systems.</div>
+                    <div class="path">games/Frogger/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge playable">Playable</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="tool" data-search="sprite editor pixel art tool sprites">
+                    <div class="title-row">
+                        <h3><a href="tools/SpriteEditor/index.html">SpriteEditor</a></h3>
+                    </div>
+                    <div class="desc">Pixel and sprite editing tool for creating art and experimenting with sprite workflows.</div>
+                    <div class="path">tools/SpriteEditor/index.html</div>
+                    <div class="badges">
+                        <span class="badge tool">Tool</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="2d side scroll tile map camera scrolling engine demo">
+                    <div class="title-row">
+                        <h3><a href="games/2D%20side%20scroll%20tile%20map/index.html">2D Side Scroll Tile Map</a></h3>
+                    </div>
+                    <div class="desc">Tile map, scrolling, and side-view movement demo for engine and level experimentation.</div>
+                    <div class="path">games/2D side scroll tile map/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                        <span class="badge experimental">Experimental</span>
+                    </div>
+                </article>
             </div>
+        </section>
+
+        <section class="section">
+            <h2>🎮 Playable Games</h2>
+            <p>These are game-style projects intended to be played rather than just studied.</p>
+            <div class="grid">
+                <article class="card item" data-type="game" data-search="asteroids game arcade shooter">
+                    <h3><a href="games/Asteroids/index.html">Asteroids</a></h3>
+                    <div class="desc">Ship, bullets, asteroids, UFOs, and arcade gameplay flow.</div>
+                    <div class="path">games/Asteroids/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge playable">Playable</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="frogger game crossing">
+                    <h3><a href="games/Frogger/index.html">Frogger</a></h3>
+                    <div class="desc">Cross roads and hazards using timing, positioning, and collision logic.</div>
+                    <div class="path">games/Frogger/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge playable">Playable</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="pong game paddle puck">
+                    <h3><a href="games/Pong%20Game/index.html">Pong Game</a></h3>
+                    <div class="desc">Paddles, puck movement, score handling, and classic arcade loop.</div>
+                    <div class="path">games/Pong Game/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge playable">Playable</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="snake game grid movement">
+                    <h3><a href="games/Snake/index.html">Snake</a></h3>
+                    <div class="desc">Grid-based movement, growth logic, and classic score-chasing gameplay.</div>
+                    <div class="path">games/Snake/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge playable">Playable</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="space invaders game shooter waves enemies">
+                    <h3><a href="games/Space%20Invaders/index.html">Space Invaders</a></h3>
+                    <div class="desc">Enemy waves, lasers, shields, and arcade shooter progression.</div>
+                    <div class="path">games/Space Invaders/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge experimental">Experimental</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="tic tac toe board strategy game">
+                    <h3><a href="games/Tic-Tac-Toe/index.html">Tic-Tac-Toe</a></h3>
+                    <div class="desc">Turn-based board game with players, board logic, and game state handling.</div>
+                    <div class="path">games/Tic-Tac-Toe/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge playable">Playable</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="connect 4 board game">
+                    <h3><a href="games/Connect%204/index.html">Connect 4</a></h3>
+                    <div class="desc">Grid-based connection game for experimenting with board and win logic.</div>
+                    <div class="path">games/Connect 4/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge experimental">Experimental</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="game" data-search="box drop physics game">
+                    <h3><a href="games/Box%20Drop/index.html">Box Drop</a></h3>
+                    <div class="desc">Small game experiment focused on motion and object interaction.</div>
+                    <div class="path">games/Box Drop/index.html</div>
+                    <div class="badges">
+                        <span class="badge game">Game</span>
+                        <span class="badge experimental">Experimental</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🧪 Learning Labs / Tech Demos</h2>
+            <p>Focused experiments for learning mechanics, engine features, rendering, input, and simulation.</p>
+            <div class="grid">
+                <article class="card item" data-type="demo" data-search="tile map side scroll camera demo">
+                    <h3><a href="games/2D%20side%20scroll%20tile%20map/index.html">2D Side Scroll Tile Map</a></h3>
+                    <div class="desc">Scrolling map and hero movement demo for level and camera work.</div>
+                    <div class="path">games/2D side scroll tile map/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                        <span class="badge experimental">Experimental</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="draw shapes canvas demo">
+                    <h3><a href="games/Draw%20Shapes/index.html">Draw Shapes</a></h3>
+                    <div class="desc">Canvas drawing practice for basic rendering primitives and layout.</div>
+                    <div class="path">games/Draw Shapes/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="move objects motion demo">
+                    <h3><a href="games/Move%20Objects/index.html">Move Objects</a></h3>
+                    <div class="desc">Movement and object update demo for experimenting with motion logic.</div>
+                    <div class="path">games/Move Objects/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="full screen gaming fullscreen demo">
+                    <h3><a href="games/Full%20Screen%20Gaming/index.html">Full Screen Gaming</a></h3>
+                    <div class="desc">Fullscreen behavior and browser display testing for game presentation.</div>
+                    <div class="path">games/Full Screen Gaming/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="solar system classes orbit demo">
+                    <h3><a href="games/Solar%20System%20-%20w-classes/index.html">Solar System - w-classes</a></h3>
+                    <div class="desc">Class-based orbital simulation and object modeling experiment.</div>
+                    <div class="path">games/Solar System - w-classes/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="solar system orbit demo">
+                    <h3><a href="games/Solar%20System/index.html">Solar System</a></h3>
+                    <div class="desc">Space simulation experiment for motion, rendering, and object behavior.</div>
+                    <div class="path">games/Solar System/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample game engine learning demo">
+                    <h3><a href="samples/Sample%20Game%20Engine/index.html">Sample Game Engine</a></h3>
+                    <div class="desc">Learning example showing the engine template and project structure.</div>
+                    <div class="path">samples/Sample Game Engine/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample keyboard input demo">
+                    <h3><a href="samples/Sample%20Keyboard/index.html">Sample Keyboard</a></h3>
+                    <div class="desc">Keyboard input handling and interaction demo.</div>
+                    <div class="path">samples/Sample Keyboard/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample mouse input demo">
+                    <h3><a href="samples/Sample%20Mouse/index.html">Sample Mouse</a></h3>
+                    <div class="desc">Mouse input testing and interaction demo.</div>
+                    <div class="path">samples/Sample Mouse/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample gamecontrollers controller demo">
+                    <h3><a href="samples/Sample%20GameControllers/index.html">Sample GameControllers</a></h3>
+                    <div class="desc">Controller and gamepad input experimentation.</div>
+                    <div class="path">samples/Sample GameControllers/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample particle particle system demo">
+                    <h3><a href="samples/Sample%20Particle/index.html">Sample Particle</a></h3>
+                    <div class="desc">Particle effect experiments for explosions, sparks, and visual feedback.</div>
+                    <div class="path">samples/Sample Particle/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample audio sound demo">
+                    <h3><a href="samples/Sample%20Audio/index.html">Sample Audio</a></h3>
+                    <div class="desc">Audio playback and sound experimentation.</div>
+                    <div class="path">samples/Sample Audio/index.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample synthesizer synth music demo">
+                    <h3><a href="samples/Sample%20Synthisizer/synth.html">Sample Synthisizer</a></h3>
+                    <div class="desc">Synth and sound-generation demo for music and audio experimentation.</div>
+                    <div class="path">samples/Sample Synthisizer/synth.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="demo" data-search="sample midi player midi demo">
+                    <h3><a href="samples/Sample%20midi%20Player/midiPlayerExample.html">Sample MIDI Player</a></h3>
+                    <div class="desc">MIDI playback experiment for engine audio capabilities.</div>
+                    <div class="path">samples/Sample midi Player/midiPlayerExample.html</div>
+                    <div class="badges">
+                        <span class="badge demo">Demo</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🛠 Tools</h2>
+            <p>Development helpers and utilities used alongside the games and demos.</p>
+            <div class="grid">
+                <article class="card item" data-type="tool" data-search="sprite editor tool pixel art">
+                    <h3><a href="tools/SpriteEditor/index.html">SpriteEditor</a></h3>
+                    <div class="desc">Sprite and pixel-art editing tool for building game visuals and testing workflows.</div>
+                    <div class="path">tools/SpriteEditor/index.html</div>
+                    <div class="badges">
+                        <span class="badge tool">Tool</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📚 Documentation</h2>
+            <p>Project docs for setup, architecture, and sprite-related engine usage.</p>
+            <div class="grid">
+                <article class="card item" data-type="docs" data-search="getting started docs setup">
+                    <h3><a href="docs/getting-started.md">Getting Started</a></h3>
+                    <div class="desc">How to run the repo, explore the engine, and open the projects.</div>
+                    <div class="path">docs/getting-started.md</div>
+                    <div class="badges">
+                        <span class="badge docs">Docs</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="docs" data-search="game engine architecture docs engine structure">
+                    <h3><a href="docs/game-engine-architecture.md">Game Engine Architecture</a></h3>
+                    <div class="desc">Overview of the engine layout, shared systems, and project direction.</div>
+                    <div class="path">docs/game-engine-architecture.md</div>
+                    <div class="badges">
+                        <span class="badge docs">Docs</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="docs" data-search="sprite system docs animation rendering">
+                    <h3><a href="docs/sprite-system.md">Sprite System</a></h3>
+                    <div class="desc">Notes on sprite usage, rendering, and animation concepts in the repo.</div>
+                    <div class="path">docs/sprite-system.md</div>
+                    <div class="badges">
+                        <span class="badge docs">Docs</span>
+                    </div>
+                </article>
+
+                <article class="card item" data-type="docs" data-search="readme docs overview">
+                    <h3><a href="README.md">README</a></h3>
+                    <div class="desc">Top-level project overview and repository notes.</div>
+                    <div class="path">README.md</div>
+                    <div class="badges">
+                        <span class="badge docs">Docs</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <div class="footer-note">
+            Open this repo through a local web server for the best results. Some browsers restrict module loading and asset access when opening files directly with <code>file:///</code>.
         </div>
-
-        <section data-section="games">
-            <h2>Games</h2>
-            <p class="section-note">Playable projects built on the shared engine.</p>
-            <div class="grid">
-                <a class="card" data-type="games" data-search="2d side scroll tile map parallax scrolling hero map" href="games/2D%20side%20scroll%20tile%20map/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>2D Side Scroll Tile Map</h3>
-                    <p>Layered side-scrolling tile-map demo with camera-style movement foundations.</p>
-                </a>
-                <a class="card" data-type="games" data-search="asteroids arcade space ship bullets rocks" href="games/Asteroids/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Asteroids</h3>
-                    <p>Arcade-style ship movement, projectiles, collisions, and survival gameplay.</p>
-                </a>
-                <a class="card" data-type="games" data-search="box drop falling objects arcade" href="games/Box%20Drop/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Box Drop</h3>
-                    <p>Compact gameplay testbed centered on falling-object behavior.</p>
-                </a>
-                <a class="card" data-type="games" data-search="connect 4 board game" href="games/Connect%204/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Connect 4</h3>
-                    <p>Classic grid-based board game implementation for turn-based logic.</p>
-                </a>
-                <a class="card" data-type="games" data-search="draw shapes canvas primitives" href="games/Draw%20Shapes/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Draw Shapes</h3>
-                    <p>Simple drawing-focused project useful for canvas rendering experiments.</p>
-                </a>
-                <a class="card" data-type="games" data-search="frogger arcade crossing traffic river" href="games/Frogger/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Frogger</h3>
-                    <p>Lane-based arcade movement with hazards, timing, and level-like structure.</p>
-                </a>
-                <a class="card" data-type="games" data-search="full screen gaming fullscreen browser canvas" href="games/Full%20Screen%20Gaming/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Full Screen Gaming</h3>
-                    <p>Fullscreen-oriented browser gameplay setup and display testing.</p>
-                </a>
-                <a class="card" data-type="games" data-search="move objects movement collision sandbox" href="games/Move%20Objects/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Move Objects</h3>
-                    <p>Movement experiments useful for object positioning and update logic.</p>
-                </a>
-                <a class="card" data-type="games" data-search="pong game paddle puck arcade" href="games/Pong%20Game/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Pong Game</h3>
-                    <p>Paddles, puck physics, score tracking, and classic arcade behavior.</p>
-                </a>
-                <a class="card" data-type="games" data-search="snake arcade grid movement" href="games/Snake/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Snake</h3>
-                    <p>Grid-based movement and growth mechanics in a compact arcade format.</p>
-                </a>
-                <a class="card" data-type="games" data-search="solar system classes orbit astronomy" href="games/Solar%20System%20-%20w-classes/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Solar System - w-classes</h3>
-                    <p>Object-oriented version of the solar system simulation.</p>
-                </a>
-                <a class="card" data-type="games" data-search="solar system orbit astronomy" href="games/Solar%20System/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Solar System</h3>
-                    <p>Orbital and motion experiments in a simpler simulation layout.</p>
-                </a>
-                <a class="card" data-type="games" data-search="space invaders arcade enemies bullets" href="games/Space%20Invaders/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Space Invaders</h3>
-                    <p>Enemy waves, projectile interactions, and arcade-screen action.</p>
-                </a>
-                <a class="card" data-type="games" data-search="tic tac toe board game" href="games/Tic-Tac-Toe/index.html">
-                    <span class="eyebrow">Game</span>
-                    <h3>Tic-Tac-Toe</h3>
-                    <p>Simple turn-based game for input and game-state control patterns.</p>
-                </a>
-            </div>
-        </section>
-
-        <section data-section="samples">
-            <h2>Samples</h2>
-            <p class="section-note">Focused demos for individual subsystems and experiments.</p>
-            <div class="grid">
-                <a class="card" data-type="samples" data-search="sample audio sound output" href="samples/Sample%20Audio/index.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample Audio</h3>
-                    <p>Audio output experiments for browser-based game sound.</p>
-                </a>
-                <a class="card" data-type="samples" data-search="sample game engine engine bootstrap" href="samples/Sample%20Game%20Engine/index.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample Game Engine</h3>
-                    <p>Focused example for studying engine bootstrapping and shared runtime ideas.</p>
-                </a>
-                <a class="card" data-type="samples" data-search="sample gamecontrollers controller input" href="samples/Sample%20GameControllers/index.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample GameControllers</h3>
-                    <p>Controller input experiments and device handling examples.</p>
-                </a>
-                <a class="card" data-type="samples" data-search="sample keyboard input keys" href="samples/Sample%20Keyboard/index.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample Keyboard</h3>
-                    <p>Keyboard input testing and frame-based key state behavior.</p>
-                </a>
-                <a class="card" data-type="samples" data-search="sample mouse input cursor click" href="samples/Sample%20Mouse/index.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample Mouse</h3>
-                    <p>Mouse input testing for position, click, and interaction patterns.</p>
-                </a>
-                <a class="card" data-type="samples" data-search="sample particle particles explosion effects" href="samples/Sample%20Particle/index.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample Particle</h3>
-                    <p>Particle and visual-effect behavior for explosions and feedback.</p>
-                </a>
-                <a class="card" data-type="samples" data-search="sample synthesizer synth audio" href="samples/Sample%20Synthisizer/synth.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample Synthisizer</h3>
-                    <p>Synthesizer experimentation for generated audio output.</p>
-                </a>
-                <a class="card" data-type="samples" data-search="sample midi player midi audio music" href="samples/Sample%20midi%20Player/midiPlayerExample.html">
-                    <span class="eyebrow">Sample</span>
-                    <h3>Sample MIDI Player</h3>
-                    <p>MIDI playback experiments for music and engine output work.</p>
-                </a>
-            </div>
-        </section>
-
-        <section data-section="tools">
-            <h2>Tools</h2>
-            <p class="section-note">Development utilities that support asset creation and experimentation.</p>
-            <div class="grid">
-                <a class="card" data-type="tools" data-search="sprite editor tool assets palettes" href="tools/SpriteEditor/index.html">
-                    <span class="eyebrow">Tool</span>
-                    <h3>Sprite Editor</h3>
-                    <p>Create and refine sprite artwork as part of the retro-style asset workflow.</p>
-                </a>
-            </div>
-        </section>
-
-        <section data-section="docs">
-            <h2>Docs</h2>
-            <p class="section-note">Project documentation for bootstrapping, architecture, and sprite workflows.</p>
-            <div class="grid">
-                <a class="card" data-type="docs" data-search="docs getting started setup" href="docs/getting-started.md">
-                    <span class="eyebrow">Docs</span>
-                    <h3>Getting Started</h3>
-                    <p>How to run the repo, where to begin, and how the top-level folders fit together.</p>
-                </a>
-                <a class="card" data-type="docs" data-search="docs game engine architecture engine object system" href="docs/game-engine-architecture.md">
-                    <span class="eyebrow">Docs</span>
-                    <h3>Game Engine Architecture</h3>
-                    <p>Overview of the current engine layers, runtime flow, and next architectural steps.</p>
-                </a>
-                <a class="card" data-type="docs" data-search="docs sprite system sprite editor palettes animation" href="docs/sprite-system.md">
-                    <span class="eyebrow">Docs</span>
-                    <h3>Sprite System</h3>
-                    <p>How sprite-related files fit together and how the sprite pipeline should evolve.</p>
-                </a>
-            </div>
-        </section>
-
-        <footer>
-            Run the repo from a local web server for ES module support. A simple option is <code>python -m http.server 8000</code>, then open <code>http://localhost:8000/</code>.
-        </footer>
     </div>
 
     <script>
-        const search = document.getElementById('search');
-        const pills = Array.from(document.querySelectorAll('.pill'));
-        const cards = Array.from(document.querySelectorAll('.card'));
-        const sections = Array.from(document.querySelectorAll('section[data-section]'));
+        const searchInput = document.getElementById('searchInput');
+        const buttons = document.querySelectorAll('.filter-btn');
+        const items = document.querySelectorAll('.item');
+        const resultCount = document.getElementById('resultCount');
+
         let activeFilter = 'all';
 
-        function applyFilters() {
-            const query = search.value.trim().toLowerCase();
+        function updateResults() {
+            const query = searchInput.value.trim().toLowerCase();
+            let visible = 0;
 
-            cards.forEach(card => {
-                const type = card.dataset.type;
-                const haystack = (card.dataset.search + ' ' + card.textContent).toLowerCase();
-                const matchesType = activeFilter === 'all' || type === activeFilter;
-                const matchesQuery = !query || haystack.includes(query);
-                card.classList.toggle('hidden', !(matchesType && matchesQuery));
+            items.forEach(item => {
+                const type = item.dataset.type || '';
+                const text = item.dataset.search || '';
+                const filterMatch = activeFilter === 'all' || type === activeFilter;
+                const searchMatch = !query || text.includes(query);
+
+                if (filterMatch && searchMatch) {
+                    item.classList.remove('hidden');
+                    visible++;
+                } else {
+                    item.classList.add('hidden');
+                }
             });
 
-            sections.forEach(section => {
-                const visibleCards = section.querySelectorAll('.card:not(.hidden)');
-                section.classList.toggle('hidden', visibleCards.length === 0);
-            });
+            resultCount.textContent = visible + ' item' + (visible === 1 ? '' : 's') + ' shown';
         }
 
-        pills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                activeFilter = pill.dataset.filter;
-                pills.forEach(btn => btn.classList.toggle('active', btn === pill));
-                applyFilters();
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                buttons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                activeFilter = button.dataset.filter;
+                updateResults();
             });
         });
 
-        search.addEventListener('input', applyFilters);
-        applyFilters();
+        searchInput.addEventListener('input', updateResults);
+
+        updateResults();
     </script>
 </body>
 </html>
