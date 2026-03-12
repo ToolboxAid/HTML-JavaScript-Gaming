@@ -71,6 +71,30 @@ class AsteroidsAppContext {
         return this.sessionController.getSession();
     }
 
+    updateAttract(deltaTime) {
+        this.attractScreen.update(deltaTime);
+    }
+
+    drawAttract() {
+        this.attractScreen.draw();
+    }
+
+    updatePlayerSelect(deltaTime, keyboardInput) {
+        return this.attractScreen.updatePlayerSelect(deltaTime, keyboardInput);
+    }
+
+    drawPlayerSelect() {
+        this.attractScreen.drawPlayerSelect();
+    }
+
+    getPauseToggledState(currentState, keyboardInput) {
+        return AsteroidsScreens.getPauseToggledState(currentState, keyboardInput);
+    }
+
+    shouldReturnToAttract(keyboardInput) {
+        return AsteroidsScreens.shouldReturnToAttract(this.gameOverState, keyboardInput);
+    }
+
     updateSafeSpawn(deltaTime) {
         return AsteroidsRuntime.updateSafeSpawn(this.getSession(), deltaTime);
     }

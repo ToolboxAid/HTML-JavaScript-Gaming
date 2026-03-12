@@ -82,7 +82,7 @@ class Game extends GameBase {
     }
 
     updateAttract(deltaTime) {
-        this.app.attractScreen.update(deltaTime);
+        this.app.updateAttract(deltaTime);
 
         if (this.keyboardInput.getkeysPressed().includes('Enter')) {
             this.setState('playerSelect');
@@ -90,11 +90,11 @@ class Game extends GameBase {
     }
 
     drawAttract(deltaTime) {
-        this.app.attractScreen.draw();
+        this.app.drawAttract();
     }
 
     updatePlayerSelect(deltaTime) {
-        const result = this.app.attractScreen.updatePlayerSelect(deltaTime, this.keyboardInput);
+        const result = this.app.updatePlayerSelect(deltaTime, this.keyboardInput);
         if (result) {
             this.app.beginSelectedGame(result.playerCount, result.playerLives);
             this.setState('flashScore');
@@ -102,7 +102,7 @@ class Game extends GameBase {
     }
 
     drawPlayerSelect(deltaTime) {
-        this.app.attractScreen.drawPlayerSelect();
+        this.app.drawPlayerSelect();
     }
 
     drawLivesScores() {
@@ -133,7 +133,7 @@ class Game extends GameBase {
     }
 
     updatePlayGame(deltaTime) {
-        this.setState(AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput));
+        this.setState(this.app.getPauseToggledState(this.gameState, this.keyboardInput));
         if (this.gameState !== 'playGame') {
             return;
         }
@@ -154,7 +154,7 @@ class Game extends GameBase {
     }
 
     updatePauseGame(deltaTime) {
-        this.setState(AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput));
+        this.setState(this.app.getPauseToggledState(this.gameState, this.keyboardInput));
     }
 
     drawPauseGame() {
@@ -163,7 +163,7 @@ class Game extends GameBase {
     }
 
     updateGameOver(deltaTime) {
-        if (AsteroidsScreens.shouldReturnToAttract(this.app.gameOverState, this.keyboardInput)) {
+        if (this.app.shouldReturnToAttract(this.keyboardInput)) {
             this.resetGame();
         }
     }
