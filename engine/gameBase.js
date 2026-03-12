@@ -14,8 +14,14 @@ class GameBase {
     static DEBUG = new URLSearchParams(window.location.search).has('gameBase');
 
     static isInitialized = false;
+    static lastTimestamp = performance.now();
+    static showTextMetrics = false;
 
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {
+        this.isPageHidden = document.hidden;
+        this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+        document.addEventListener('visibilitychange', this.handleVisibilityChange);
+
         this.initializeGame(canvasConfig, performanceConfig, fullscreenConfig)
             .then(() => {
                 console.log('*** Game initialization complete ***');
@@ -47,10 +53,21 @@ class GameBase {
         await this.onInitialize();
     }
 
-    static lastTimestamp = performance.now();
-    static showTextMetrics = false;
+    handleVisibilityChange() {
+        this.isPageHidden = document.hidden;
+
+        if (!this.isPageHidden) {
+            GameBase.lastTimestamp = performance.now();
+        }
+    }
+
     async animate(timestamp) {
         try {
+            if (this.isPageHidden) {
+                requestAnimationFrame(this.animate);
+                return;
+            }
+
             Colors.generateRandomColor();
 
             // Calculate delta time
