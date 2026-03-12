@@ -28,7 +28,7 @@ class Turtle extends GameObject {
     }
 
     update(deltaTime) {
-        super.update(deltaTime);
+        super.update(deltaTime, true);
 
         if (this.velocityX < 0 && this.x + (this.width * this.pixelSize) < 0) {
             this.setIsDead();
