@@ -6,6 +6,7 @@
 
 import Timer from '../../engine/utils/timer.js';
 import UFO from './ufo.js';
+import BulletManager from './bulletManager.js';
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import CanExplode from '../../engine/utils/canExplode.js';
 
@@ -20,6 +21,8 @@ class UFOManager extends CanExplode {
         super();
 
         this.ufo = null;
+        this.bulletManager = new BulletManager();
+        this.pendingTimerReset = false;
         this.ufoTimer = new Timer(
             UFOManager.DEBUG ? UFOManager.DEBUG_SPAWN_INTERVAL : UFOManager.UFO_SPAWN_INTERVAL
         );
@@ -36,6 +39,8 @@ class UFOManager extends CanExplode {
                 this.spawnNewUFO();
             }
 
+            this.bulletManager.update(deltaTime, ship);
+            this.updateSpawnTimerState();
             this.updateParticleExplosion(deltaTime);
         } catch (error) {
             console.error('UFOManager update error:', error, this);
@@ -71,7 +76,16 @@ class UFOManager extends CanExplode {
     }
 
     canSpawnNewUFO() {
-        return this.ufoTimer && this.ufoTimer.isComplete() && !this.ufoTimer.isPaused;
+        return this.ufoTimer && this.ufoTimer.isComplete() && !this.ufoTimer.isPaused && !this.pendingTimerReset;
+    }
+
+    updateSpawnTimerState() {
+        if (!this.pendingTimerReset || this.hasActiveBullets()) {
+            return;
+        }
+
+        this.pendingTimerReset = false;
+        this.resetTimer();
     }
 
     spawnNewUFO() {
@@ -97,14 +111,14 @@ class UFOManager extends CanExplode {
     }
 
     draw() {
-        if (!this.ufo || typeof this.ufo.draw !== 'function') {
-            return;
-        }
-
         try {
-            this.ufo.draw();
+            this.bulletManager.draw();
+
+            if (this.ufo && typeof this.ufo.draw === 'function') {
+                this.ufo.draw();
+            }
         } catch (error) {
-            console.error('UFO draw error:', error, this.ufo);
+            console.error('UFOManager draw error:', error, this.ufo);
         }
     }
 
@@ -117,15 +131,27 @@ class UFOManager extends CanExplode {
     }
 
     getActiveBullets() {
-        const ufo = this.getUfo();
-        const bulletManager = ufo?.bulletManager;
-        const bullets = bulletManager?.bullets;
+        const bullets = this.bulletManager?.bullets;
 
         if (!bullets || typeof bullets.forEach !== 'function') {
             return [];
         }
 
         return bullets;
+    }
+
+    hasActiveBullets() {
+        return Boolean(this.bulletManager && this.bulletManager.hasActiveBullets());
+    }
+
+    fireBullet(ship) {
+        const ufo = this.getUfo();
+
+        if (!ufo || typeof ufo.isAlive !== 'function' || !ufo.isAlive()) {
+            return;
+        }
+
+        this.bulletManager.ufoShootBullet(ufo, ship);
     }
 
     check(ship) {
@@ -210,6 +236,12 @@ class UFOManager extends CanExplode {
         }
 
         this.ufo = null;
+
+        if (this.hasActiveBullets()) {
+            this.pendingTimerReset = true;
+            return;
+        }
+
         this.resetTimer();
     }
 
@@ -236,6 +268,12 @@ class UFOManager extends CanExplode {
                 this.ufo = null;
             }
 
+            if (this.bulletManager) {
+                this.bulletManager.destroy();
+                this.bulletManager = null;
+            }
+
+            this.pendingTimerReset = null;
             this.ufoTimer = null;
             this.explosions = [];
 

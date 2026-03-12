@@ -48,7 +48,7 @@ class AsteroidsWeaponSystem {
             return;
         }
 
-        ufo.bulletManager.ufoShootBullet(ufo, ship);
+        ufoManager.fireBullet(ship);
         this.ufoBulletTimer.reset();
         this.ufoBulletTimer.start();
     }

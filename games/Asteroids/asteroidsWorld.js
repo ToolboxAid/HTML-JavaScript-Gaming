@@ -42,7 +42,7 @@ class AsteroidsWorld {
     }
 
     hasActiveBullets() {
-        return this.bulletManager.hasActiveBullets();
+        return this.bulletManager.hasActiveBullets() || this.ufoManager.hasActiveBullets();
     }
 
     hasActiveExplosions() {

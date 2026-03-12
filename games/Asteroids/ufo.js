@@ -6,11 +6,9 @@
 
 import ObjectVector from '../../engine/objects/objectVector.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
-import BulletManager from './bulletManager.js';
 import CanvasUtils from '../../engine/canvas.js';
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
-import SystemUtils from '../../engine/utils/systemUtils.js';
 
 /**
  * UFO class representing an enemy spacecraft that can shoot at the player
@@ -130,7 +128,6 @@ class UFO extends ObjectVector {
     initializeProperties() {
         this.directionCnt = 0;
         this.directionDelay = this.getDelay();
-        this.bulletManager = new BulletManager();
     }
 
     update(deltaTime, ship) {
@@ -139,11 +136,9 @@ class UFO extends ObjectVector {
         } else if (this.isDying()) {
             this.updateDying();
         }
-        this.bulletManager.update(deltaTime, ship);
     }
 
     draw() {
-        this.bulletManager.draw();
         if (this.isAlive()) {
             super.draw();
         }
@@ -158,12 +153,7 @@ class UFO extends ObjectVector {
     }
 
     updateDying() {
-        if (!this.bulletManager.hasActiveBullets()) {
-            this.setIsDead();
-        }
-        if (UFO.DEBUG) {
-            console.log("UFO isDying - bullets:", this.bulletManager.getBulletCount());
-        }
+        this.setIsDead();
 
         if (this.isSmall) {
             UFO.audioPlayer.stopLooping('saucerSmall.wav');
@@ -252,10 +242,6 @@ class UFO extends ObjectVector {
     setHit() {
         this.setIsDying();
         UFO.audioPlayer.playAudio('bangLarge.wav', 0.5); // 50% volume
-        
-        if (UFO.DEBUG) {
-            console.log("UFO hit, dying with bullets:", this.bulletManager.getBulletCount());
-        }
     }
 
     /** @override */
@@ -280,12 +266,6 @@ class UFO extends ObjectVector {
         this.directionCnt = null;
         this.directionDelay = null;
         this.isSmall = null;
-
-        if (this.bulletManager) {
-            SystemUtils.destroy(this.bulletManager);
-            this.bulletManager = null;
-        }
-
     }
 
     logDebugInfo(direction) {
