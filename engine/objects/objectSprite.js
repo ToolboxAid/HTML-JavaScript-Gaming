@@ -11,6 +11,7 @@ import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import SpriteRenderer from '../renderers/spriteRenderer.js';
+import SpriteAnimationController from '../animation/spriteAnimationController.js';
 
 class ObjectSprite extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
@@ -112,6 +113,13 @@ constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palet
     this.frameType = frameType;
     this.pixelSize = spritePixelSize;
 
+    this.animation = new SpriteAnimationController({
+        livingFrames: normalizedLivingFrames,
+        dyingFrames: normalizedDyingFrames,
+        livingDelay,
+        dyingDelay
+    });
+
     this.livingDelay = livingDelay;
     this.livingFrames = normalizedLivingFrames;
     this.livingFrameCount = livingFrameCount;
@@ -199,72 +207,41 @@ static normalizeFrames(frames, frameType) {
 }
 
 getCurrentLivingFrame() {
-    if (!this.livingFrames || this.livingFrameCount <= 0) {
-        return null;
-    }
-
-    return this.livingFrames[this.currentFrameIndex] ?? null;
+    return this.animation.getCurrentLivingFrame(this.currentFrameIndex);
 }
 
 getCurrentDyingFrame() {
-    if (!this.dyingFrames || this.dyingFrameCount <= 0) {
-        return null;
-    }
-
-    return this.dyingFrames[this.currentFrameIndex] ?? null;
+    return this.animation.getCurrentDyingFrame(this.currentFrameIndex);
 }
 
 advanceFrame(frameCount) {
-    if (!frameCount || frameCount <= 0) {
-        return false;
-    }
-
-    this.currentFrameIndex++;
-
-    if (this.currentFrameIndex >= frameCount) {
-        this.currentFrameIndex = 0;
-        return true;
-    }
-
-    return false;
+    const result = this.animation.advanceFrame(this.currentFrameIndex, frameCount);
+    this.currentFrameIndex = result.currentFrameIndex;
+    return result.looped;
 }
 stepLoopingFrame(frameCount, frameDelay, incFrame = false) {
-    if (!frameCount || frameCount <= 1) {
-        return false;
-    }
-
-    if (!incFrame) {
-        return false;
-    }
-
-    this.delayCounter++;
-
-    if (this.delayCounter < frameDelay) {
-        return false;
-    }
-
-    this.delayCounter = 0;
-    return this.advanceFrame(frameCount);
+    const result = this.animation.stepLoopingFrame(
+        this.currentFrameIndex,
+        this.delayCounter,
+        frameCount,
+        frameDelay,
+        incFrame
+    );
+    this.currentFrameIndex = result.currentFrameIndex;
+    this.delayCounter = result.delayCounter;
+    return result.looped;
 }
 stepFinalFrame(frameCount, frameDelay, incFrame = false) {
-    if (!frameCount || frameCount <= 0) {
-        return false;
-    }
-
-    if (!incFrame) {
-        return false;
-    }
-
-    this.delayCounter++;
-
-    if (this.delayCounter < frameDelay) {
-        return false;
-    }
-
-    this.delayCounter = 0;
-    this.currentFrameIndex++;
-
-    return this.currentFrameIndex >= frameCount;
+    const result = this.animation.stepFinalFrame(
+        this.currentFrameIndex,
+        this.delayCounter,
+        frameCount,
+        frameDelay,
+        incFrame
+    );
+    this.currentFrameIndex = result.currentFrameIndex;
+    this.delayCounter = result.delayCounter;
+    return result.finished;
 }
 handleAliveStatus(deltaTime, incFrame = false) {
     super.handleAliveStatus(deltaTime, incFrame);
@@ -357,6 +334,7 @@ setHit() {
 
         this.otherDelay = otherDelay;
         this.otherFrame = otherFrame;
+        this.animation.setOtherFrame(otherDelay, otherFrame);
     }
 
     draw(offsetX = 0, offsetY = 0) {
@@ -386,10 +364,15 @@ setHit() {
             return false;
         }
 
+        if (this.animation) {
+            this.animation.destroy();
+        }
+
         ObjectCleanup.cleanupAndNullifyArray(this, 'livingFrames');
         ObjectCleanup.cleanupAndNullifyArray(this, 'dyingFrames');
 
         this.destroyProperties([
+            'animation',
             'frameType',
             'pixelSize',
             'livingDelay',
