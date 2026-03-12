@@ -10,9 +10,8 @@ import CanvasUtils from '../../engine/canvas.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 
-import Ship from './ship.js';
-import AsteroidsWorld from './asteroidsWorld.js';
 import GameAttract from './gameAttract.js';
+import AsteroidsSession from './asteroidsSession.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
 import Cookies from '../../engine/misc/cookies.js';
@@ -62,11 +61,9 @@ class Game extends GameBase {
 
         this.keyboardInput = new KeyboardInput();
 
-        this.ships = [];
-        this.worlds = [];
-        this.currentPlayer = 0;
-        this.playerLives = null;
-        this.score = null;
+        this.session = null;
+        this.playerCount = 0;
+        this.selectedPlayerLives = null;
 
         this.gameState = 'initAttract';
 
@@ -191,7 +188,7 @@ class Game extends GameBase {
 
         if (result) {
             this.playerCount = result.playerCount;
-            this.playerLives = result.playerLives;
+            this.selectedPlayerLives = result.playerLives;
             this.gameState = 'initGame';
         }
     }
@@ -201,13 +198,8 @@ class Game extends GameBase {
     }
 
     initGame() {
-        for (let i = 0; i <= 3; i++) {
-            this.worlds[i] = new AsteroidsWorld(Game.audioPlayer);
-            this.ships[i] = new Ship(Game.audioPlayer);
-        }
-
-        this.score = [0, 0, 0, 0];
-        this.currentPlayer = 0;
+        this.session = new AsteroidsSession(Game.audioPlayer);
+        this.session.initialize(this.playerCount, this.selectedPlayerLives);
 
         this.gameState = 'flashScore';
     }
@@ -241,40 +233,40 @@ class Game extends GameBase {
         ctx.fillStyle = 'white';
         ctx.textAlign = 'left';
 
-        for (let player = 0; player < this.playerCount; player++) {
+        this.session.forEachPlayer((player) => {
             ctx.font = '20px "Vector Battle"';
 
-            if (player === this.currentPlayer && this.flashOff) {
-                continue;
+            if (this.session.isCurrentPlayer(player) && this.flashOff) {
+                return;
             }
 
             const xOffset = player * 460;
 
             ctx.fillText(
-                `${this.score[player]}`,
+                `${this.session.getScore(player)}`,
                 SCORE.x + xOffset,
                 SCORE.y
             );
 
             const SHIP_SPACING = 20;
-            for (let life = 0; life < this.playerLives[player]; life++) {
+            for (let life = 0; life < this.session.getLives(player); life++) {
                 const xOffset2 = life * SHIP_SPACING;
                 this.drawShipLives(
                     LIVES.x + xOffset + xOffset2,
                     LIVES.y,
-                    Ship.VECTOR_MAPS.LIVES
+                    this.session.getCurrentShip().constructor.VECTOR_MAPS.LIVES
                 );
             }
 
             if (Game.DEBUG) {
                 console.log(`Drawing P${player + 1}:`, {
-                    lives: this.playerLives[player],
-                    score: this.score[player],
-                    isCurrentPlayer: player === this.currentPlayer,
+                    lives: this.session.getLives(player),
+                    score: this.session.getScore(player),
+                    isCurrentPlayer: this.session.isCurrentPlayer(player),
                     flashOff: this.flashOff
                 });
             }
-        }
+        });
 
         ctx.font = '15px "Vector Battle"';
         ctx.fillText(`${this.highScore}`, SCORE.x + 200, SCORE.y);
@@ -303,8 +295,8 @@ class Game extends GameBase {
     }
 
     updateSafeSpawn(deltaTime) {
-        const ship = this.ships[this.currentPlayer];
-        const world = this.worlds[this.currentPlayer];
+        const ship = this.session.getCurrentShip();
+        const world = this.session.getCurrentWorld();
         world.stepForSpawn(deltaTime, ship);
         const safe = world.isSafeSpawn(ship);
         if (safe) {
@@ -313,7 +305,7 @@ class Game extends GameBase {
     }
 
     drawSafeSpawn() {
-        this.worlds[this.currentPlayer].drawSafeSpawn();
+        this.session.getCurrentWorld().drawSafeSpawn();
         this.drawLivesScores();
     }
 
@@ -361,8 +353,8 @@ class Game extends GameBase {
     updatePlayGame(deltaTime) {
         this.gamePauseCheck();
 
-        const ship = this.ships[this.currentPlayer];
-        const world = this.worlds[this.currentPlayer];
+        const ship = this.session.getCurrentShip();
+        const world = this.session.getCurrentWorld();
 
         ship.update(deltaTime, this.keyboardInput);
         world.step(deltaTime, ship, this.keyboardInput);
@@ -375,33 +367,19 @@ class Game extends GameBase {
             ship.setShipDead();
         }
 
-        this.score[this.currentPlayer] += world.consumeScore();
-        this.setHighScoreCookie(this.score[this.currentPlayer]);
+        const score = this.session.addCurrentPlayerScore(world.consumeScore());
+        this.setHighScoreCookie(score);
 
-        if (ship.isDead()) {
-            ship.setIsAlive();
-
-            const result = GameUtils.swapPlayer(
-                this.playerLives,
-                this.currentPlayer,
-                this.playerCount,
-                (newState) => { this.gameState = newState; }
-            );
-
+        if (this.session.handleCurrentPlayerDeath((newState) => { this.gameState = newState; })) {
             if (this.gameState === 'playGame') {
                 this.gameState = 'flashScore';
             }
-
-            this.currentPlayer = result.updatedPlayer;
-            this.playerLives = result.updatedLives;
-            this.worlds[this.currentPlayer].reset();
-            this.ships[this.currentPlayer].reset();
         }
     }
 
     drawPlayGame() {
-        this.ships[this.currentPlayer].draw();
-        this.worlds[this.currentPlayer].draw();
+        this.session.getCurrentShip().draw();
+        this.session.getCurrentWorld().draw();
         this.drawLivesScores();
     }
 
@@ -410,8 +388,8 @@ class Game extends GameBase {
     }
 
     drawPauseGame() {
-        this.ships[this.currentPlayer].draw();
-        this.worlds[this.currentPlayer].draw();
+        this.session.getCurrentShip().draw();
+        this.session.getCurrentWorld().draw();
         CanvasUtils.drawText(150, 200, 'Game Paused.', 3.5, 'white');
         CanvasUtils.drawText(150, 250, 'Press `P` to unpause game', 3.5, 'white');
     }
