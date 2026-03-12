@@ -13,7 +13,7 @@ import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
 import AsteroidsRuntime from './asteroidsRuntime.js';
 import AsteroidsScreens from './asteroidsScreens.js';
-import AsteroidsSession from './asteroidsSession.js';
+import AsteroidsSessionController from './asteroidsSessionController.js';
 import AsteroidsStateMachine from './asteroidsStateMachine.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
@@ -50,7 +50,7 @@ class Game extends GameBase {
 
         this.keyboardInput = new KeyboardInput();
 
-        this.session = null;
+        this.sessionController = new AsteroidsSessionController(Game.audioPlayer);
         this.attractScreen = null;
         this.playerCount = 0;
         this.selectedPlayerLives = null;
@@ -90,10 +90,7 @@ class Game extends GameBase {
     }
 
     enterFlashScore() {
-        if (!this.session && this.playerCount > 0 && this.selectedPlayerLives) {
-            this.session = new AsteroidsSession(Game.audioPlayer);
-            this.session.initialize(this.playerCount, this.selectedPlayerLives);
-        }
+        this.sessionController.ensureSession(this.playerCount, this.selectedPlayerLives);
 
         AsteroidsHud.resetFlashState(this.hudFlashState);
     }
@@ -119,7 +116,7 @@ class Game extends GameBase {
         if (result) {
             this.playerCount = result.playerCount;
             this.selectedPlayerLives = result.playerLives;
-            this.session = null;
+            this.sessionController.clearSession();
             this.setState('flashScore');
         }
     }
@@ -129,7 +126,7 @@ class Game extends GameBase {
     }
 
     drawLivesScores() {
-        AsteroidsHud.draw(this.session, this.highScore, this.hudFlashState.flashOff, Game.DEBUG);
+        AsteroidsHud.draw(this.sessionController.getSession(), this.highScore, this.hudFlashState.flashOff, Game.DEBUG);
     }
 
     updateFlashScore() {
@@ -144,14 +141,14 @@ class Game extends GameBase {
     }
 
     updateSafeSpawn(deltaTime) {
-        const safe = AsteroidsRuntime.updateSafeSpawn(this.session, deltaTime);
+        const safe = AsteroidsRuntime.updateSafeSpawn(this.sessionController.getSession(), deltaTime);
         if (safe) {
             this.setState('playGame');
         }
     }
 
     drawSafeSpawn() {
-        AsteroidsRuntime.drawSafeSpawn(this.session);
+        AsteroidsRuntime.drawSafeSpawn(this.sessionController.getSession());
         this.drawLivesScores();
     }
 
@@ -161,10 +158,11 @@ class Game extends GameBase {
             return;
         }
 
-        const score = AsteroidsRuntime.stepPlay(this.session, deltaTime, this.keyboardInput, Game.DEBUG);
+        const session = this.sessionController.getSession();
+        const score = AsteroidsRuntime.stepPlay(session, deltaTime, this.keyboardInput, Game.DEBUG);
         this.highScore = this.highScoreStore.saveIfHigher(score, this.highScore);
 
-        if (this.session.handleCurrentPlayerDeath((newState) => { this.setState(newState); })) {
+        if (session.handleCurrentPlayerDeath((newState) => { this.setState(newState); })) {
             if (this.gameState === 'playGame') {
                 this.setState('flashScore');
             }
@@ -172,7 +170,7 @@ class Game extends GameBase {
     }
 
     drawPlayGame() {
-        AsteroidsRuntime.drawPlay(this.session);
+        AsteroidsRuntime.drawPlay(this.sessionController.getSession());
         this.drawLivesScores();
     }
 
@@ -181,7 +179,7 @@ class Game extends GameBase {
     }
 
     drawPauseGame() {
-        AsteroidsRuntime.drawPause(this.session);
+        AsteroidsRuntime.drawPause(this.sessionController.getSession());
         AsteroidsScreens.drawPauseOverlay();
     }
 
@@ -196,7 +194,7 @@ class Game extends GameBase {
     }
 
     resetGame() {
-        this.session = null;
+        this.sessionController.clearSession();
         this.setState('attract');
     }
 }
