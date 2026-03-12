@@ -164,9 +164,6 @@ class PngRenderer {
 
         const sheetW = object.png.width * scale;
         const sheetH = object.png.height * scale;
-        const debugFrameIndex = object.frameWidth > 0
-            ? Math.floor(object.spriteX / object.frameWidth)
-            : 0;
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
         CanvasUtils.ctx.save();
@@ -182,7 +179,7 @@ class PngRenderer {
 
         CanvasUtils.ctx.fillStyle = 'white';
         CanvasUtils.ctx.font = '12px Arial';
-        CanvasUtils.ctx.fillText(`sheet frame=${debugFrameIndex}`, previewX, previewY - 6);
+        CanvasUtils.ctx.fillText(`sheet frame=${object.currentFrameIndex}`, previewX, previewY - 6);
         CanvasUtils.ctx.restore();
     }
 }

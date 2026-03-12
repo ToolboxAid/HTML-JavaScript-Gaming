@@ -7,6 +7,7 @@ import GameObject from '../../../engine/gameObject.js';
 
 class TurtleSink extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('turtleSink');
+    static FRAME_SEQUENCE = [0, 1, 2, 1, 2, 3, 4, 5, 4, 3, 2, 1];
 
     constructor(x, y, velocityX, velocityY) {
         const width = 45;
@@ -23,13 +24,12 @@ class TurtleSink extends GameObject {
             velocityX, velocityY,
             6, // frameCount
             6, // framesPerRow
-            30 // frameDelay
+            20 // frameDelay
         );
 
-        this.frame = 0;
-        this.frameDirection = 1;
+        this.sequenceIndex = 0;
         this.counter = 0;
-        this.setFrame(0);
+        this.setFrame(TurtleSink.FRAME_SEQUENCE[this.sequenceIndex]);
     }
 
     update(deltaTime) {
@@ -42,24 +42,8 @@ class TurtleSink extends GameObject {
 
         if (this.counter++ >= this.frameDelay) {
             this.counter = 0;
-            this.frame += this.frameDirection;
-
-            if (this.frameDirection > 0) {
-                const lastFrameIndex = this.frameCount - 1;
-                if (this.frame >= lastFrameIndex) {
-                    this.frame = lastFrameIndex;
-                    this.frameDirection = -1;
-                }
-            } else {
-                if (this.frame <= 0) {
-                    this.frame = 0;
-                    this.frameDirection = 1;
-                }
-            }
-
-            this.setFrame(this.frame);
-
-            //console.log(  `TurtleSink ${this.ID} - Frame: ${this.frame}, Dir: ${this.frameDirection}, Counter: ${this.counter}`);
+            this.sequenceIndex = (this.sequenceIndex + 1) % TurtleSink.FRAME_SEQUENCE.length;
+            this.setFrame(TurtleSink.FRAME_SEQUENCE[this.sequenceIndex]);
         }
     }
 
@@ -68,15 +52,14 @@ class TurtleSink extends GameObject {
             console.log('Destroying TurtleSink', {
                 id: this.ID,
                 position: { x: this.x, y: this.y },
-                frame: this.frame,
-                frameDirection: this.frameDirection,
+                frame: TurtleSink.FRAME_SEQUENCE[this.sequenceIndex],
+                sequenceIndex: this.sequenceIndex,
                 counter: this.counter,
                 velocity: { x: this.velocityX, y: this.velocityY }
             });
         }
 
-        this.frame = null;
-        this.frameDirection = null;
+        this.sequenceIndex = null;
         this.counter = null;
 
         const parentDestroyed = super.destroy();
