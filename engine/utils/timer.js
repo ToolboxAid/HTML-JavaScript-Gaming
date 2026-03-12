@@ -8,6 +8,7 @@ class Timer {
     // Play your game normally: game.html
     // Enable debug mode: game.html?timer
     static DEBUG = new URLSearchParams(window.location.search).has('timer');
+    static timers = new Set();
 
     constructor(durationMs) {
         if (!durationMs || durationMs <= 0) {
@@ -18,8 +19,23 @@ class Timer {
         this.isActive = false;
         this.isPaused = false;
         this.pauseTime = null;
+        this.wasVisibilityPaused = false;
+
+        Timer.timers.add(this);
 
         if (Timer.DEBUG) console.log(`Timer created: duration ${durationMs}ms`);
+    }
+
+    static pauseAllForVisibility() {
+        this.timers.forEach((timer) => {
+            timer.pauseForVisibility();
+        });
+    }
+
+    static resumeAllFromVisibility() {
+        this.timers.forEach((timer) => {
+            timer.resumeFromVisibility();
+        });
     }
 
     start() {
@@ -41,6 +57,16 @@ class Timer {
         return this;
     }
 
+    pauseForVisibility() {
+        if (!this.isActive || this.isPaused) {
+            this.wasVisibilityPaused = false;
+            return this;
+        }
+
+        this.wasVisibilityPaused = true;
+        return this.pause();
+    }
+
     resume() {
         if (this.isPaused) {
             const pauseDuration = performance.now() - this.pauseTime;
@@ -52,9 +78,20 @@ class Timer {
         return this;
     }
 
+    resumeFromVisibility() {
+        if (!this.wasVisibilityPaused) {
+            return this;
+        }
+
+        this.wasVisibilityPaused = false;
+        return this.resume();
+    }
+
     stop() {
         this.isActive = false;
         this.isPaused = false;
+        this.pauseTime = null;
+        this.wasVisibilityPaused = false;
         if (Timer.DEBUG) console.log('Timer stopped');
         return this;
     }
@@ -63,6 +100,7 @@ class Timer {
         this.startTime = performance.now();
         this.isPaused = false;
         this.pauseTime = null;
+        this.wasVisibilityPaused = false;
         if (Timer.DEBUG) console.log('Timer reset');
         return this;
     }

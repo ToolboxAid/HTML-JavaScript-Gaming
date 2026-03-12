@@ -7,6 +7,7 @@ import CanvasUtils from "./canvas.js";
 import Colors from "./colors.js";
 import Fullscreen from "./fullscreen.js";
 import PerformanceMonitor from "./performacneMonitor.js";
+import Timer from "./utils/timer.js";
 
 class GameBase {
 
@@ -56,9 +57,14 @@ class GameBase {
     handleVisibilityChange() {
         this.isPageHidden = document.hidden;
 
-        if (!this.isPageHidden) {
-            GameBase.lastTimestamp = performance.now();
+        if (this.isPageHidden) {
+            Timer.pauseAllForVisibility();
+            return;
         }
+
+        Timer.resumeAllFromVisibility();
+
+        GameBase.lastTimestamp = performance.now();
     }
 
     async animate(timestamp) {
