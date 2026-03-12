@@ -13,6 +13,7 @@ import AsteroidsHud from './asteroidsHud.js';
 import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
 import AsteroidsScreens from './asteroidsScreens.js';
 import AsteroidsSession from './asteroidsSession.js';
+import AsteroidsStateMachine from './asteroidsStateMachine.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
 
@@ -72,81 +73,13 @@ class Game extends GameBase {
 
         this.keyboardInput.update();
 
-        this.updateCurrentState(deltaTime);
-        this.drawCurrentState(deltaTime);
+        AsteroidsStateMachine.update(this, deltaTime);
+        AsteroidsStateMachine.draw(this, deltaTime);
     }
 
-    updateCurrentState(deltaTime) {
-        switch (this.gameState) {
-            case 'initAttract':
-                this.attractScreen = new AsteroidsAttractScreen();
-                this.gameState = 'attract';
-                break;
-
-            case 'attract':
-                this.updateAttract(deltaTime);
-                break;
-
-            case 'playerSelect':
-                this.updatePlayerSelect(deltaTime);
-                break;
-
-            case 'initGame':
-                this.initGame();
-                break;
-
-            case 'flashScore':
-                this.updateFlashScore(deltaTime);
-                break;
-
-            case 'safeSpawn':
-                this.updateSafeSpawn(deltaTime);
-                break;
-
-            case 'playGame':
-                this.updatePlayGame(deltaTime);
-                break;
-
-            case 'pauseGame':
-                this.updatePauseGame(deltaTime);
-                break;
-
-            case 'gameOver':
-                this.updateGameOver(deltaTime);
-                break;
-        }
-    }
-
-    drawCurrentState(deltaTime) {
-        switch (this.gameState) {
-            case 'attract':
-                this.drawAttract(deltaTime);
-                break;
-
-            case 'playerSelect':
-                this.drawPlayerSelect(deltaTime);
-                break;
-
-            case 'flashScore':
-                this.drawFlashScore();
-                break;
-
-            case 'safeSpawn':
-                this.drawSafeSpawn();
-                break;
-
-            case 'playGame':
-                this.drawPlayGame();
-                break;
-
-            case 'pauseGame':
-                this.drawPauseGame();
-                break;
-
-            case 'gameOver':
-                this.drawGameOver();
-                break;
-        }
+    handleInitAttract() {
+        this.attractScreen = new AsteroidsAttractScreen();
+        this.gameState = 'attract';
     }
 
     updateAttract(deltaTime) {
