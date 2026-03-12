@@ -1,37 +1,136 @@
 # HTML-JavaScript-Gaming
 
-A collection of classic games built using HTML5 Canvas and Vanilla JavaScript. These projects are designed to be lightweight, easy to understand, and a great starting point for anyone looking to learn game development with web technologies.
+A browser-based 2D game development repository built with HTML5 Canvas, vanilla JavaScript, and reusable engine modules.
 
-## 🎮 Included Games
+This repo is organized around a shared `engine/` plus a set of playable `games/`, focused `samples/`, utility `tools/`, and supporting `docs/`.
 
-This repository contains several game implementations:
+## What is in this repo
 
-*   **[Snake](https://github.com)**: The classic arcade game where you control a growing snake.
-*   **[Breakout](https://github.com)**: Use a paddle to bounce a ball and break bricks.
-*   **[Tetris](https://github.com)**: The legendary puzzle game about fitting falling blocks together.
-*   **[Space Invaders](https://github.com)**: Defend the Earth from waves of descending aliens.
+### Shared engine
 
-## 🚀 Getting Started
+The [`engine/`](./engine/) folder contains the reusable framework code used across the projects in this repository, including:
 
-To run any of these games locally:
+- game bootstrapping and animation loop
+- canvas helpers and rendering utilities
+- keyboard, mouse, and controller input
+- math and physics helpers
+- sprites and tile-map support
+- game object classes and object lifecycle helpers
+- event messaging
+- audio, MIDI, and synthesizer output
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com
-    ```
-2.  **Navigate to a game folder:**
-    ```bash
-    cd HTML-JavaScript-Gaming/Snake
-    ```
-3.  **Open the HTML file:** 
-    Simply open the `index.html` file in any modern web browser.
+The main runtime entry point is [`engine/gameBase.js`](./engine/gameBase.js).
 
-## 🛠️ Built With
+### Playable games
 
-*   **HTML5 Canvas**: Used for rendering the game graphics.
-*   **JavaScript**: For game logic, physics, and input handling.
-*   **CSS**: For basic styling and layout.
+The [`games/`](./games/) folder contains complete browser games and gameplay prototypes, including:
 
-## 📜 License
+- Asteroids
+- Frogger
+- Snake
+- Space Invaders
+- Pong Game
+- Connect 4
+- Tic-Tac-Toe
+- Box Drop
+- Draw Shapes
+- Move Objects
+- Full Screen Gaming
+- Solar System
+- Solar System - w-classes
+- 2D side scroll tile map
+- Break Out
+- Tank w-pathfind
 
-This project is open-source. Please check the individual folders for specific license details if applicable.
+Each game usually includes its own `index.html`, `game.js`, `global.js`, styles, and game-specific classes/assets.
+
+### Samples
+
+The [`samples/`](./samples/) folder contains focused demos for individual engine features, such as:
+
+- keyboard input
+- mouse input
+- controllers
+- audio
+- MIDI playback
+- particles
+- synthesizer output
+- a sample engine-based game shell
+
+### Tools
+
+The [`tools/`](./tools/) folder contains utility projects. The main tool currently in the repo is:
+
+- [`tools/SpriteEditor/`](./tools/SpriteEditor/) for sprite editing and sprite workflow experiments
+
+### Documentation
+
+The [`docs/`](./docs/) folder contains project documentation, including:
+
+- [`docs/getting-started.md`](./docs/getting-started.md)
+- [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md)
+- [`docs/sprite-system.md`](./docs/sprite-system.md)
+
+## Repository layout
+
+```text
+index.html        Root launcher page
+engine/           Shared framework code
+games/            Full game implementations
+samples/          Focused demos for individual subsystems
+tools/            Utility applications
+docs/             Documentation
+```
+
+## Running the project
+
+Because the repo uses JavaScript modules, run it through a local web server instead of opening files directly with `file:///`.
+
+### Option 1: VS Code Live Server
+
+1. Open the repository in VS Code.
+2. Install the Live Server extension if needed.
+3. Open [`index.html`](./index.html) with Live Server.
+
+### Option 2: Python
+
+From the repository root:
+
+```bash
+python -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000/
+```
+
+## Recommended starting points
+
+Start with the root [`index.html`](./index.html) launcher page. From there, good entry points are:
+
+- [`games/Asteroids/`](./games/Asteroids/)
+- [`games/Frogger/`](./games/Frogger/)
+- [`games/2D%20side%20scroll%20tile%20map/`](./games/2D%20side%20scroll%20tile%20map/)
+- [`samples/Sample%20Game%20Engine/`](./samples/Sample%20Game%20Engine/)
+- [`tools/SpriteEditor/`](./tools/SpriteEditor/)
+
+## Typical project flow
+
+Most game folders follow this pattern:
+
+1. `index.html` loads a game-specific `game.js` module.
+2. `game.js` imports shared code from `engine/`.
+3. A game class extends `GameBase`.
+4. The engine runs the update/render loop on the canvas.
+
+## Built with
+
+- HTML5 Canvas
+- Vanilla JavaScript (ES modules)
+- CSS
+
+## License
+
+This repository is licensed under the terms of the [`LICENSE`](./LICENSE) file.
