@@ -3,7 +3,6 @@
 // 10/24/2024
 // objectSprite.js
 
-import CanvasUtils from '../canvas.js';
 import Colors from '../../engine/colors.js';
 import ObjectKillable from './objectKillable.js';
 import SystemUtils from '../utils/systemUtils.js';
@@ -11,6 +10,7 @@ import Sprite from '../sprite.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
+import SpriteRenderer from '../renderers/spriteRenderer.js';
 
 class ObjectSprite extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
@@ -360,38 +360,8 @@ setHit() {
     }
 
     draw(offsetX = 0, offsetY = 0) {
-        if (this.isDead() || this.isDestroyed) {
-            return;
-        }
-
-        if (this.frameType === 'json') {
-            this.drawRGB(offsetX, offsetY);
-            return;
-        }
-
-        const newX = this.x + offsetX;
-        const newY = this.y + offsetY;
-
         try {
-            if (this.isAlive()) {
-                const frame = this.getCurrentLivingFrame();
-                if (frame) {
-                    CanvasUtils.drawSprite(newX, newY, frame, this.pixelSize, this.spriteColor);
-                }
-                return;
-            }
-
-            if (this.isDying()) {
-                const frame = this.getCurrentDyingFrame();
-                if (frame) {
-                    CanvasUtils.drawSprite(newX, newY, frame, this.pixelSize, this.spriteColor);
-                }
-                return;
-            }
-
-            if (this.isOther() && this.otherFrame) {
-                CanvasUtils.drawSprite(newX, newY, this.otherFrame, this.pixelSize, this.spriteColor);
-            }
+            SpriteRenderer.draw(this, offsetX, offsetY);
         } catch (error) {
             console.error('Error drawing ObjectSprite:', error.message);
             console.error(error.stack);
@@ -400,33 +370,10 @@ setHit() {
     }
 
     drawRGB(offsetX = 0, offsetY = 0) {
-        if (this.isDead() || this.isDestroyed) {
-            return;
-        }
-
-        const newX = this.x + offsetX;
-        const newY = this.y + offsetY;
-
         try {
-            if (this.isAlive()) {
-                const frame = this.getCurrentLivingFrame();
-                if (frame) {
-                    CanvasUtils.drawSpriteRGB(newX, newY, frame, this.pixelSize);
-                }
-                return;
-            }
-
-            if (this.isDying()) {
-                const frame = this.getCurrentDyingFrame();
-                if (frame) {
-                    CanvasUtils.drawSpriteRGB(newX, newY, frame, this.pixelSize);
-                }
-                return;
-            }
-
-            if (this.isOther() && this.otherFrame) {
-                CanvasUtils.drawSpriteRGB(newX, newY, this.otherFrame, this.pixelSize);
-            }
+            const newX = this.x + offsetX;
+            const newY = this.y + offsetY;
+            SpriteRenderer.drawRGB(this, newX, newY);
         } catch (error) {
             console.error('Error drawing RGB sprite:', error.message);
             console.error(error.stack);
