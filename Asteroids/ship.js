@@ -11,68 +11,65 @@ import ObjectVector from '../scripts/objects/objectVector.js';
 import AsteroidManager from './asteroidManager.js';
 import BulletManager from './bulletManager.js';
 import UFOManager from './ufoManager.js';
-import SystemUtils from '../scripts/utils/systemUtils.js';
 import RandomUtils from '../scripts/math/randomUtils.js';
 
 class Ship extends ObjectVector {
-    // Constants
     static MAX_SPEED = 800;
     static ROTATION_SPEED = 180;
     static THRUST = 150;
     static FRICTION = 0.995;
+
     static VECTOR_MAPS = {
         LARGE: [[24, 0], [-24, -18], [-18, 0], [-24, 18]],
         MEDIUM: [[18, 0], [-18, -14], [-13, 0], [-18, 14]],
-        SMALL: [[14, 0], [-10, -8], [-6, -3],
-        // Flame will be here
-        [-6, 3], [-10, 8], [14, 0]],
-        SMALLFLAME1: [[14, 0], [-10, -8], [-6, -3],
-        // Flame
-        [-8, 0],
-        // Reset
-        [-6, 3], [-6, -3],
-        // continue
-        [-6, 3], [-10, 8], [14, 0]],
-        SMALLFLAME2: [[14, 0], [-10, -8], [-6, -3],
-        // Flame
-        [-10, 0],
-        // Reset
-        [-6, 3], [-6, -3],
-        // continue
-        [-6, 3], [-10, 8], [14, 0]],
+        SMALL: [[14, 0], [-10, -8], [-6, -3], [-6, 3], [-10, 8], [14, 0]],
+        SMALLFLAME1: [
+            [14, 0], [-10, -8], [-6, -3],
+            [-8, 0],
+            [-6, 3], [-6, -3],
+            [-6, 3], [-10, 8], [14, 0]
+        ],
+        SMALLFLAME2: [
+            [14, 0], [-10, -8], [-6, -3],
+            [-10, 0],
+            [-6, 3], [-6, -3],
+            [-6, 3], [-10, 8], [14, 0]
+        ],
         LIVES: [[0, -14], [-8, 10], [-3, 6], [3, 6], [8, 10], [0, -14]],
     };
 
-    // Debug mode enabled via URL parameter: game.html?ship
     static DEBUG = new URLSearchParams(window.location.search).has('ship');
-
     static audioPlayer = null;
+
     constructor(audioPlayer) {
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
         super(x, y, Ship.VECTOR_MAPS.SMALL);
 
+        Ship.audioPlayer = audioPlayer;
+
         this.initializeProperties();
         this.initializeManagers();
         this.reset();
-
-        this.showThrustFlame = false;
-
-        Ship.audioPlayer = audioPlayer;
     }
 
     initializeProperties() {
         this.level = 1;
         this.score = 0;
+
         this.rotationAngle = 0;
         this.rotationSpeed = Ship.ROTATION_SPEED;
         this.thrust = Ship.THRUST;
         this.friction = Ship.FRICTION;
+
         this.accelerationX = 0;
         this.accelerationY = 0;
         this.velocityX = 0;
         this.velocityY = 0;
+
+        this.showThrustFlame = false;
+        this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
     }
 
     initializeManagers() {
@@ -100,23 +97,20 @@ class Ship extends ObjectVector {
     }
 
     checkCollisions() {
-        // Check if ship hits asteroids
         this.asteroidManager.checkShip(this);
 
-        // Check if UFO hits ship
-        this.asteroidManager.checkShip(this.ufoManager.ufo);
+        if (this.ufoManager.ufo) {
+            this.asteroidManager.checkShip(this.ufoManager.ufo);
+        }
 
-        // Check if bullets hit asteroids
         this.bulletManager.bullets.forEach(bullet => {
             this.score += this.asteroidManager.checkBullet(bullet);
         });
 
-        // Check if UFO bullets hit asteroid
         this.ufoManager.ufo?.bulletManager.bullets.forEach(bullet => {
             this.asteroidManager.checkBullet(bullet);
         });
 
-        // Check if UFO hit by ship bullets
         this.bulletManager.bullets.forEach(bullet => {
             if (this.ufoManager.ufo && bullet.collisionDetection(this.ufoManager.ufo)) {
                 bullet.setIsDead();
@@ -126,7 +120,6 @@ class Ship extends ObjectVector {
             }
         });
 
-        // Check if ship hit by UFO bullets
         if (this.isAlive()) {
             this.ufoManager.ufo?.bulletManager.bullets.forEach(bullet => {
                 if (bullet.collisionDetection(this)) {
@@ -137,7 +130,6 @@ class Ship extends ObjectVector {
             });
         }
 
-        // Check if ship hit by Ship bullets (hit myself)
         if (this.isAlive()) {
             this.bulletManager.bullets.forEach(bullet => {
                 if (bullet.collisionDetection(this)) {
@@ -148,19 +140,21 @@ class Ship extends ObjectVector {
             });
         }
 
-        // Check if ship hits UFO
         this.ufoManager.check(this);
     }
 
     checkShipDeath() {
-        if (!this.ufoManager.ufo && this.isDying() && !this.bulletManager.hasActiveBullets()
-            && !this.asteroidManager.hasActiveExplosions()) {
+        if (
+            !this.ufoManager.ufo &&
+            this.isDying() &&
+            !this.bulletManager.hasActiveBullets() &&
+            !this.asteroidManager.hasActiveExplosions()
+        ) {
             if (Ship.DEBUG) {
-                console.log("Ship death confirmed - UFO destroyed");
+                console.log('Ship death confirmed - UFO destroyed');
             }
-            if (!this.bulletManager.hasActiveBullets()) {
-                this.setShipDead();
-            }
+
+            this.setShipDead();
         }
     }
 
@@ -170,15 +164,18 @@ class Ship extends ObjectVector {
         this.updateVelocity();
         this.updatePosition(deltaTime);
         this.handleShooting(keyboardInput);
+        this.updateThrustVisual();
     }
 
     handleRotation(deltaTime, keyboardInput) {
         if (keyboardInput.isKeyDown('ArrowLeft')) {
             AngleUtils.applyRotation(this, deltaTime, -1);
         }
+
         if (keyboardInput.isKeyDown('ArrowRight')) {
             AngleUtils.applyRotation(this, deltaTime, 1);
         }
+
         this.rotationAngle = AngleUtils.normalizeAngle(this.rotationAngle);
     }
 
@@ -188,16 +185,30 @@ class Ship extends ObjectVector {
 
         if (keyboardInput.isKeyDown('ArrowUp') && this.isAlive()) {
             const vectorDirection = AngleUtils.angleToVector(this.rotationAngle);
+
             this.accelerationX = vectorDirection.x * this.thrust * deltaTime;
             this.accelerationY = vectorDirection.y * this.thrust * deltaTime;
             this.showThrustFlame = true;
-            Ship.audioPlayer.playAudio('thrust.wav', 0.75); // 75% volume
 
+            if (Ship.audioPlayer) {
+                Ship.audioPlayer.playAudio('thrust.wav', 0.75);
+            }
         } else {
             this.velocityX *= this.friction;
             this.velocityY *= this.friction;
             this.showThrustFlame = false;
         }
+    }
+
+    updateThrustVisual() {
+        if (!this.isAlive() || !this.showThrustFlame) {
+            this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
+            return;
+        }
+
+        this.thrustFlameMap = RandomUtils.randomBoolean()
+            ? Ship.VECTOR_MAPS.SMALLFLAME1
+            : Ship.VECTOR_MAPS.SMALLFLAME2;
     }
 
     updateVelocity() {
@@ -206,8 +217,9 @@ class Ship extends ObjectVector {
     }
 
     capVelocity(velocity) {
-        return Math.abs(velocity) > Ship.MAX_SPEED ?
-            Ship.MAX_SPEED * Math.sign(velocity) : velocity;
+        return Math.abs(velocity) > Ship.MAX_SPEED
+            ? Ship.MAX_SPEED * Math.sign(velocity)
+            : velocity;
     }
 
     updatePosition(deltaTime) {
@@ -224,7 +236,10 @@ class Ship extends ObjectVector {
     handleShooting(keyboardInput) {
         if (keyboardInput.getkeysPressed().includes('Space') && this.isAlive()) {
             this.bulletManager.shipShootBullet(this);
-            Ship.audioPlayer.playAudio('fire.wav', 0.5); // 50% volume
+
+            if (Ship.audioPlayer) {
+                Ship.audioPlayer.playAudio('fire.wav', 0.5);
+            }
         }
     }
 
@@ -232,7 +247,11 @@ class Ship extends ObjectVector {
         this.setIsAlive();
         this.x = canvasConfig.width / 2;
         this.y = canvasConfig.height / 2;
+        this.rotationAngle = 0;
+        this.showThrustFlame = false;
+        this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
         this.resetMovement();
+        this.calculateObjectBounds(Ship.VECTOR_MAPS.SMALL);
     }
 
     resetMovement() {
@@ -244,44 +263,69 @@ class Ship extends ObjectVector {
 
     setShipHit() {
         this.setIsDying();
+        this.showThrustFlame = false;
+        this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
     }
 
     setShipDead() {
         this.setIsDead();
+        this.showThrustFlame = false;
+        this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
     }
 
     draw() {
-        if (this.isAlive()) {
-            if (this.showThrustFlame) {
-                if (RandomUtils.randomBoolean()) {
-                    this.calculateObjectBounds(Ship.VECTOR_MAPS.SMALLFLAME1);
-                } else {
-                    this.calculateObjectBounds(Ship.VECTOR_MAPS.SMALLFLAME2);
-                }
+        try {
+            if (this.isAlive()) {
+                this.calculateObjectBounds(this.thrustFlameMap);
+                super.draw();
             }
-            super.draw();
+
+            if (Ship.DEBUG) {
+                this.drawShipDebug();
+            }
+
+            this.drawGameObjects();
+        } catch (error) {
+            console.error('Ship draw error:', error, this);
         }
-        if (Ship.DEBUG) {
-            this.drawShipDebug();
-        }
-        this.drawGameObjects();
     }
 
     safeDraw() {
-        if (Ship.DEBUG) {
-            this.drawShipDebug();
+        try {
+            if (Ship.DEBUG) {
+                this.drawShipDebug();
+            }
+
+            this.asteroidManager.draw();
+        } catch (error) {
+            console.error('Ship safeDraw error:', error, this);
         }
-        this.asteroidManager.draw();
     }
 
     drawGameObjects() {
-        this.bulletManager.draw();
-        this.asteroidManager.draw();
-        this.ufoManager.draw();
+        try {
+            this.bulletManager.draw();
+        } catch (error) {
+            console.error('BulletManager draw error:', error);
+        }
+
+        try {
+            this.asteroidManager.draw();
+        } catch (error) {
+            console.error('AsteroidManager draw error:', error);
+        }
+
+        try {
+            this.ufoManager.draw();
+        } catch (error) {
+            console.error('UFOManager draw error:', error);
+        }
     }
 
     drawShipDebug() {
-        if (!this.isAlive()) return;
+        if (!this.isAlive()) {
+            return;
+        }
 
         const debugInfo = [
             `Velocity X: ${this.velocityX.toFixed(2)}`,
@@ -300,7 +344,6 @@ class Ship extends ObjectVector {
             ctx.fillText(info, 10, 20 * (index + 1));
         });
     }
-
 }
 
 export default Ship;
