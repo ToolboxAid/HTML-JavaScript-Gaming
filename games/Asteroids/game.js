@@ -359,7 +359,7 @@ class Game extends GameBase {
         this.gamePauseCheck();
 
         this.ships[this.currentPlayer].update(deltaTime, this.keyboardInput);
-        this.score[this.currentPlayer] += this.ships[this.currentPlayer].getValue();
+        this.score[this.currentPlayer] += this.worlds[this.currentPlayer].consumeScore();
         this.setHighScoreCookie(this.score[this.currentPlayer]);
 
         if (this.ships[this.currentPlayer].isDead()) {

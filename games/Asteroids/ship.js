@@ -53,7 +53,6 @@ class Ship extends ObjectVector {
 
     initializeProperties() {
         this.level = 1;
-        this.score = 0;
 
         this.rotationAngle = 0;
         this.rotationSpeed = Ship.ROTATION_SPEED;
@@ -160,12 +159,6 @@ class Ship extends ObjectVector {
     updatePosition(deltaTime) {
         super.update(deltaTime);
         this.checkWrapAround();
-    }
-
-    getValue() {
-        const score = this.score + this.world.consumeScore();
-        this.score = 0;
-        return score;
     }
 
     reset() {
