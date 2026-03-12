@@ -348,7 +348,7 @@ class AttractMode {
     update(deltaTime) {
         this.gameUI.update(deltaTime);
 
-        this.levelManager.update();
+        this.levelManager.update(deltaTime);
 
         this.demoTimer++;
         if (this.demoTimer >= this.maxDemoTime) {

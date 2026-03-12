@@ -10,6 +10,7 @@ class LevelManager {
         this.objectCounts = new Map();
         this.lastSpawnTime = new Map();
         this.levelConfig = null;
+        this.elapsedMs = 0;
     }
 
     initializeLevel(levelNumber) {
@@ -25,11 +26,12 @@ class LevelManager {
         this.spawnTimers.clear();
         this.objectCounts.clear();
         this.lastSpawnTime.clear();
+        this.elapsedMs = 0;
 
         // Initialize each row
         this.levelConfig.forEach(rowConfig => {
             const key = `${rowConfig.rowId}_${rowConfig.objectType}`;
-            this.spawnTimers.set(key, Date.now());
+            this.spawnTimers.set(key, this.elapsedMs);
             this.objectCounts.set(key, 0);
             this.lastSpawnTime.set(key, 0);
 
@@ -87,7 +89,7 @@ class LevelManager {
 
             if (gameObject) {
                 this.objectCounts.set(key, currentCount + 1);
-                this.lastSpawnTime.set(key, Date.now());
+                this.lastSpawnTime.set(key, this.elapsedMs);
 
                 if (LevelManager.DEBUG) {
                     console.log(`Spawned ${config.objectType}`, {
@@ -103,10 +105,11 @@ class LevelManager {
         return null;
     }
 
-    update() {
+    update(deltaTime = 0) {
         if (!this.levelConfig) return;
 
-        const now = Date.now();
+        this.elapsedMs += deltaTime * 1000;
+        const now = this.elapsedMs;
 
         this.levelConfig.forEach(rowConfig => {
             const key = `${rowConfig.rowId}_${rowConfig.objectType}`;
