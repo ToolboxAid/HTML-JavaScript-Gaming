@@ -7,11 +7,8 @@ import { canvasConfig } from './global.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
 import CanvasUtils from '../../engine/canvas.js';
 import ObjectVector from '../../engine/objects/objectVector.js';
-
-import AsteroidManager from './asteroidManager.js';
-import BulletManager from './bulletManager.js';
-import UFOManager from './ufoManager.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
+import AsteroidsWorld from './asteroidsWorld.js';
 
 class Ship extends ObjectVector {
     static MAX_SPEED = 800;
@@ -41,16 +38,16 @@ class Ship extends ObjectVector {
     static DEBUG = new URLSearchParams(window.location.search).has('ship');
     static audioPlayer = null;
 
-    constructor(audioPlayer) {
+    constructor(audioPlayer, world = null) {
         const x = canvasConfig.width / 2;
         const y = canvasConfig.height / 2;
 
         super(x, y, Ship.VECTOR_MAPS.SMALL);
 
         Ship.audioPlayer = audioPlayer;
+        this.world = world || new AsteroidsWorld(audioPlayer);
 
         this.initializeProperties();
-        this.initializeManagers();
         this.reset();
     }
 
@@ -72,97 +69,22 @@ class Ship extends ObjectVector {
         this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
     }
 
-    initializeManagers() {
-        this.asteroidManager = new AsteroidManager(Ship.audioPlayer);
-        this.bulletManager = new BulletManager();
-        this.ufoManager = new UFOManager(Ship.audioPlayer);
-    }
-
     safeSpawn(deltaTime) {
-        this.updateManagers(deltaTime, this);
-        return this.asteroidManager.safeSpawn(this);
+        return this.world.safeSpawn(this, deltaTime);
     }
 
     update(deltaTime, keyboardInput) {
         this.moveShip(deltaTime, keyboardInput);
-        this.updateManagers(deltaTime, this);
-        this.checkCollisions();
+        this.world.update(this, deltaTime);
         this.checkShipDeath();
-    }
-
-    updateManagers(deltaTime, ship) {
-        this.asteroidManager.update(deltaTime);
-        this.bulletManager.update(deltaTime, ship);
-        this.ufoManager.update(deltaTime, ship);
-    }
-
-    getUfoBullets() {
-        const ufo = this.ufoManager?.ufo;
-        const bulletManager = ufo?.bulletManager;
-        const bullets = bulletManager?.bullets;
-
-        if (!bullets || typeof bullets.forEach !== 'function') {
-            return [];
-        }
-
-        return bullets;
-    }
-
-    checkCollisions() {
-        this.asteroidManager.checkShip(this);
-
-        if (this.ufoManager.ufo && typeof this.ufoManager.ufo.isAlive === 'function') {
-            this.asteroidManager.checkShip(this.ufoManager.ufo);
-        }
-
-        this.bulletManager.bullets.forEach(bullet => {
-            this.score += this.asteroidManager.checkBullet(bullet);
-        });
-
-        const ufoBullets = this.getUfoBullets();
-
-        ufoBullets.forEach(bullet => {
-            this.asteroidManager.checkBullet(bullet);
-        });
-
-        this.bulletManager.bullets.forEach(bullet => {
-            if (this.ufoManager.ufo && bullet.collisionDetection(this.ufoManager.ufo)) {
-                bullet.setIsDead();
-                this.ufoManager.ufo.setHit();
-                this.ufoManager.createExplosion(this.ufoManager.ufo);
-                this.score += this.ufoManager.ufo.getValue();
-            }
-        });
-
-        if (this.isAlive()) {
-            ufoBullets.forEach(bullet => {
-                if (bullet.collisionDetection(this)) {
-                    bullet.setIsDead();
-                    this.setShipHit();
-                    this.ufoManager.createExplosion(this);
-                }
-            });
-        }
-
-        if (this.isAlive()) {
-            this.bulletManager.bullets.forEach(bullet => {
-                if (bullet.collisionDetection(this)) {
-                    bullet.setIsDead();
-                    this.setShipHit();
-                    this.asteroidManager.createExplosion(this);
-                }
-            });
-        }
-
-        this.ufoManager.check(this);
     }
 
     checkShipDeath() {
         if (
-            !this.ufoManager.ufo &&
+            !this.world.ufoManager.ufo &&
             this.isDying() &&
-            !this.bulletManager.hasActiveBullets() &&
-            !this.asteroidManager.hasActiveExplosions()
+            !this.world.hasActiveBullets() &&
+            !this.world.hasActiveExplosions()
         ) {
             if (Ship.DEBUG) {
                 console.log('Ship death confirmed - UFO destroyed');
@@ -242,14 +164,14 @@ class Ship extends ObjectVector {
     }
 
     getValue() {
-        const score = this.score;
+        const score = this.score + this.world.consumeScore();
         this.score = 0;
         return score;
     }
 
     handleShooting(keyboardInput) {
         if (keyboardInput.getkeysPressed().includes('Space') && this.isAlive()) {
-            this.bulletManager.shipShootBullet(this);
+            this.world.bulletManager.shipShootBullet(this);
 
             if (Ship.audioPlayer) {
                 Ship.audioPlayer.playAudio('fire.wav', 0.5);
@@ -265,6 +187,7 @@ class Ship extends ObjectVector {
         this.showThrustFlame = false;
         this.thrustFlameMap = Ship.VECTOR_MAPS.SMALL;
         this.resetMovement();
+        this.world.reset();
         this.calculateObjectBounds(Ship.VECTOR_MAPS.SMALL);
     }
 
@@ -310,7 +233,7 @@ class Ship extends ObjectVector {
                 this.drawShipDebug();
             }
 
-            this.asteroidManager.draw();
+            this.world.drawSafeSpawn();
         } catch (error) {
             console.error('Ship safeDraw error:', error, this);
         }
@@ -318,21 +241,9 @@ class Ship extends ObjectVector {
 
     drawGameObjects() {
         try {
-            this.bulletManager.draw();
+            this.world.draw();
         } catch (error) {
-            console.error('BulletManager draw error:', error);
-        }
-
-        try {
-            this.asteroidManager.draw();
-        } catch (error) {
-            console.error('AsteroidManager draw error:', error);
-        }
-
-        try {
-            this.ufoManager.draw();
-        } catch (error) {
-            console.error('UFOManager draw error:', error);
+            console.error('AsteroidsWorld draw error:', error);
         }
     }
 

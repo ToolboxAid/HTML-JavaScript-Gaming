@@ -11,6 +11,7 @@ import KeyboardInput from '../../engine/input/keyboard.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 
 import Ship from './ship.js';
+import AsteroidsWorld from './asteroidsWorld.js';
 import GameAttract from './gameAttract.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
@@ -62,6 +63,7 @@ class Game extends GameBase {
         this.keyboardInput = new KeyboardInput();
 
         this.ships = [];
+        this.worlds = [];
         this.currentPlayer = 0;
         this.playerLives = null;
         this.score = null;
@@ -200,7 +202,8 @@ class Game extends GameBase {
 
     initGame() {
         for (let i = 0; i <= 3; i++) {
-            this.ships[i] = new Ship(Game.audioPlayer);
+            this.worlds[i] = new AsteroidsWorld(Game.audioPlayer);
+            this.ships[i] = new Ship(Game.audioPlayer, this.worlds[i]);
         }
 
         this.score = [0, 0, 0, 0];
