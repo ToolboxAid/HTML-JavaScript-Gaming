@@ -12,10 +12,10 @@ import GameUtils from '../../engine/game/gameUtils.js';
 
 import GameAttract from './gameAttract.js';
 import AsteroidsHud from './asteroidsHud.js';
+import AsteroidsHighScoreStore from './asteroidsHighScoreStore.js';
 import AsteroidsSession from './asteroidsSession.js';
 
 import AudioPlayer from '../../engine/output/audioPlayer.js';
-import Cookies from '../../engine/misc/cookies.js';
 
 class Game extends GameBase {
     static gameAttract = null;
@@ -42,11 +42,8 @@ class Game extends GameBase {
     constructor() {
         super(canvasConfig, performanceConfig, fullscreenConfig);
 
-        const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-
-        this.cookieName = Cookies.sanitizeCookieName(currentDir);
-        this.cookiePath = '/';
-        this.getHighScoreCookie();
+        this.highScoreStore = new AsteroidsHighScoreStore();
+        this.highScore = this.highScoreStore.load();
     }
 
     async onInitialize() {
@@ -226,47 +223,6 @@ class Game extends GameBase {
         this.drawLivesScores();
     }
 
-    getHighScoreCookie(initScore = 0) {
-        let cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
-        console.log('Retrieved cookie:', cookie);
-
-        if (cookie === null) {
-            this.setHighScoreCookie(initScore);
-
-            cookie = Cookies.get(this.cookieName, { path: this.cookiePath });
-            if (cookie === null) {
-                console.error('Failed to set the cookie!', this.cookieName, this.cookiePath);
-            } else {
-                console.log('Set new cookie:', cookie);
-            }
-        } else {
-            console.log('Cookie found:', cookie);
-        }
-
-        if (cookie !== null) {
-            this.highScore = parseInt(cookie, 10);
-            if (isNaN(this.highScore)) {
-                console.error('Error: Cookie value is not a valid number');
-                this.highScore = 0;
-            } else {
-                console.log('Parsed high score:', this.highScore);
-            }
-        } else {
-            this.highScore = 0;
-        }
-    }
-
-    setHighScoreCookie(score) {
-        if (score > this.highScore) {
-            this.highScore = score;
-            Cookies.set(this.cookieName, score, {
-                expires: 7,
-                path: this.cookiePath
-            });
-            console.log(`Cookie set: ${this.cookieName}=${score}`);
-        }
-    }
-
     updatePlayGame(deltaTime) {
         this.gamePauseCheck();
 
@@ -285,7 +241,7 @@ class Game extends GameBase {
         }
 
         const score = this.session.addCurrentPlayerScore(world.consumeScore());
-        this.setHighScoreCookie(score);
+        this.highScore = this.highScoreStore.saveIfHigher(score, this.highScore);
 
         if (this.session.handleCurrentPlayerDeath((newState) => { this.gameState = newState; })) {
             if (this.gameState === 'playGame') {
