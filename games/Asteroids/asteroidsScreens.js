@@ -35,6 +35,14 @@ class AsteroidsScreens {
         return gameOverState.counter > AsteroidsScreens.BACK_TO_ATTRACT;
     }
 
+    static getPauseToggledState(currentState, keyboardInput) {
+        if (!keyboardInput.getkeysPressed().includes('KeyP')) {
+            return currentState;
+        }
+
+        return currentState === 'playGame' ? 'pauseGame' : 'playGame';
+    }
+
     static drawPauseOverlay() {
         CanvasUtils.drawText(150, 200, 'Game Paused.', 3.5, 'white');
         CanvasUtils.drawText(150, 250, 'Press `P` to unpause game', 3.5, 'white');

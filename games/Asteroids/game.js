@@ -212,7 +212,10 @@ class Game extends GameBase {
     }
 
     updatePlayGame(deltaTime) {
-        this.gamePauseCheck();
+        this.gameState = AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput);
+        if (this.gameState !== 'playGame') {
+            return;
+        }
 
         const ship = this.session.getCurrentShip();
         const world = this.session.getCurrentWorld();
@@ -245,19 +248,13 @@ class Game extends GameBase {
     }
 
     updatePauseGame(deltaTime) {
-        this.gamePauseCheck();
+        this.gameState = AsteroidsScreens.getPauseToggledState(this.gameState, this.keyboardInput);
     }
 
     drawPauseGame() {
         this.session.getCurrentShip().draw();
         this.session.getCurrentWorld().draw();
         AsteroidsScreens.drawPauseOverlay();
-    }
-
-    gamePauseCheck() {
-        if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
-            this.gameState = this.gameState === 'playGame' ? 'pauseGame' : 'playGame';
-        }
     }
 
     updateGameOver(deltaTime) {
