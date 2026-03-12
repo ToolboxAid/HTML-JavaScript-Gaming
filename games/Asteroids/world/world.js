@@ -68,7 +68,9 @@ class AsteroidsWorld {
     }
 
     drawSafeSpawn() {
+        this.bulletManager.draw();
         this.asteroidManager.draw();
+        this.ufoManager.draw();
     }
 
     reset() {

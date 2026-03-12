@@ -22,6 +22,24 @@ class AsteroidsBulletFactory {
         };
     }
 
+    static getAimPoint(object) {
+        if (object && typeof object.getCenterPoint === 'function') {
+            return object.getCenterPoint();
+        }
+
+        return {
+            x: object?.x ?? 0,
+            y: object?.y ?? 0
+        };
+    }
+
+    static getAngleBetweenCenters(source, target) {
+        const sourcePoint = this.getAimPoint(source);
+        const targetPoint = this.getAimPoint(target);
+
+        return AngleUtils.getAngleBetweenObjects(sourcePoint, targetPoint);
+    }
+
     static createShipBullet(ship) {
         const spawnPosition = this.getSpawnPosition(ship, ship.rotationAngle);
 
@@ -58,7 +76,7 @@ class AsteroidsBulletFactory {
             const aimErrorDegrees = Number.isFinite(options.aimErrorDegrees)
                 ? options.aimErrorDegrees
                 : 0;
-            const baseAngle = AngleUtils.getAngleBetweenObjects(ufo, ship);
+            const baseAngle = this.getAngleBetweenCenters(ufo, ship);
             return baseAngle + RandomUtils.randomRange(-aimErrorDegrees, aimErrorDegrees);
         }
 

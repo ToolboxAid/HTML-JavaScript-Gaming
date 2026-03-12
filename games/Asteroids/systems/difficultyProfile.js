@@ -37,6 +37,18 @@ class DifficultyProfile {
         return randomValue < this.getSmallUfoSpawnChance(level);
     }
 
+    static shouldForceSmallUfo(level = 1, spawnCount = 1) {
+        if (level >= 6) {
+            return spawnCount % 2 === 0;
+        }
+
+        if (level >= 3) {
+            return spawnCount % 3 === 0;
+        }
+
+        return false;
+    }
+
     static getSmallUfoAimError(level = 1) {
         return this.clamp(18 - ((level - 1) * 2), 2, 18);
     }

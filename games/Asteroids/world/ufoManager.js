@@ -25,6 +25,7 @@ class UFOManager extends CanExplode {
         this.bulletManager = new BulletManager();
         this.pendingTimerReset = false;
         this.level = 1;
+        this.spawnCount = 0;
         this.ufoTimer = new Timer(this.getSpawnInterval());
         this.ufoTimer.start();
 
@@ -102,8 +103,12 @@ class UFOManager extends CanExplode {
         this.ufoTimer.pause();
 
         try {
+            this.spawnCount += 1;
+            const forceSmall = DifficultyProfile.shouldForceSmallUfo(this.level, this.spawnCount) ||
+                DifficultyProfile.shouldSpawnSmallUfo(this.level);
+
             this.ufo = new UFO(UFOManager.audioPlayer, {
-                forceSmall: DifficultyProfile.shouldSpawnSmallUfo(this.level)
+                forceSmall
             });
 
             if (UFOManager.DEBUG) {
@@ -293,6 +298,7 @@ class UFOManager extends CanExplode {
             }
 
             this.pendingTimerReset = null;
+            this.spawnCount = null;
             this.ufoTimer = null;
             this.explosions = [];
 
