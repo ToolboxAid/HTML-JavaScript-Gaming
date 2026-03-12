@@ -5,6 +5,7 @@
 
 
 import CollisionUtils from "./collisionUtils.js";
+import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
 import CanvasUtils from "../canvas.js";
 
@@ -185,5 +186,6 @@ export function testCollisionUtils(assert) {
     const objectFarBounds = { x: 275, y: 125, width: 50, height: 50 }; // Assuming canvas size of 500x500
     const boundaryHits = CollisionUtils.checkGameAtBoundsSides(objectFarBounds);
     assert(boundaryHits.length > 0, "Should detect boundaries hit");
+    assert(BoundaryUtils.checkGameAtBounds(objectFarBounds), "BoundaryUtils should detect bounds hit");
 }
 

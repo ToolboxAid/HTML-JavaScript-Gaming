@@ -4,6 +4,7 @@
 // collisionUtils.js
 
 import CanvasUtils from "../../engine/canvas.js";
+import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
 import SystemUtils from "../utils/systemUtils.js";
 
@@ -354,16 +355,7 @@ export default class CollisionUtils {
      * @returns {boolean} True if object is completely outside game boundaries
      */
     static isCompletelyOffScreen(object, margin = 0) {
-        // Calculate half dimensions
-        const width = (object.boundWidth ?? object.width) / 2;
-        const height = (object.boundHeight ?? object.height) / 2;
-
-        return (
-            object.velocityX < 0 && object.x + width + margin <= 0 ||                              // Off left edge
-            object.velocityX >= 0 && object.x - width - margin >= CanvasUtils.getConfigWidth() ||  // Off right edge
-            object.velocityY < 0 && object.y + height + margin <= 0 ||                             // Off top edge
-            object.velocityY >= 0 && object.y - height - margin >= CanvasUtils.getConfigHeight()   // Off bottom edge
-        );
+        return BoundaryUtils.isCompletelyOffScreen(object, margin);
     }
 
     /** Checks which sides of the game boundaries an object has crossed based on its velocity
@@ -373,48 +365,17 @@ export default class CollisionUtils {
      * @throws {Error} If object properties are invalid
      */
     static getCompletelyOffScreenSides(object, margin = 0) {
-        // Validate object properties
-        if (!object || typeof object.x !== 'number' || typeof object.y !== 'number') {
-            throw new Error('Invalid object: missing or invalid position properties');
-        }
-
-        // Early return if object is not off screen
-        if (!this.isCompletelyOffScreen(object, margin)) {
-            return [];
-        }
-
-        // Calculate half dimensions
-        const width = (object.boundWidth ?? object.width) / 2;
-        const height = (object.boundHeight ?? object.height) / 2;
-
-        // Document the sides
-        const boundariesCrossed = [];
-
-        // Check left boundary crossing (moving left)
-        if (object.velocityX < 0 && object.x + width + margin <= 0) {
-            boundariesCrossed.push('left');
-        }
-        // Check right boundary crossing (moving right)
-        if (object.velocityX >= 0 && object.x - width - margin >= CanvasUtils.getConfigWidth()) {
-            boundariesCrossed.push('right');
-        }
-        // Check top boundary crossing (moving up)
-        if (object.velocityY < 0 && object.y + height + margin <= 0) {
-            boundariesCrossed.push('top');
-        }
-        // Check bottom boundary crossing (moving down)
-        if (object.velocityY >= 0 && object.y - height - margin >= CanvasUtils.getConfigHeight()) {
-            boundariesCrossed.push('bottom');
-        }
+        const boundariesCrossed = BoundaryUtils.getCompletelyOffScreenSides(object, margin);
 
         if (this.DEBUG && boundariesCrossed.includes('right')) {
+            const halfDimensions = BoundaryUtils.getHalfDimensions(object);
             console.log("Boundaries crossed:", {
                 boundaries: boundariesCrossed,
                 object: {
                     x: object.x,
                     y: object.y,
-                    w2: width,
-                    h2: height,
+                    w2: halfDimensions.width,
+                    h2: halfDimensions.height,
                     m: margin
                 },
                 canvas: {
@@ -428,12 +389,7 @@ export default class CollisionUtils {
     }
 
     static checkGameAtBounds(object, margin = 0) {
-        return (
-            object.x + margin <= 0 ||
-            object.y + margin <= 0 ||
-            object.x + object.width - margin >= CanvasUtils.getConfigWidth() ||
-            object.y + object.height - margin >= CanvasUtils.getConfigHeight()
-        );
+        return BoundaryUtils.checkGameAtBounds(object, margin);
     }
     static checkGameAtBoundsSides(object, margin = 0) {
         if (this.DEBUG) {
@@ -448,25 +404,7 @@ export default class CollisionUtils {
             );
         }
 
-        // **Avoid checking bounds twice!** If checkGameAtBounds returns empty array, the boundaries will be determined below.
-        if (!this.checkGameAtBounds(object, margin)) {
-            return [];  // Return empty array instead of undefined
-        }
-
-        // We have a hit, determine where.
-        let boundariesHit = [];
-        if (object.x + margin <= 0) {
-            boundariesHit.push('left');
-        }
-        if (object.y + margin <= 0) {
-            boundariesHit.push('top');
-        }
-        if (object.x + object.width - margin >= CanvasUtils.getConfigWidth()) {
-            boundariesHit.push('right');
-        }
-        if (object.y + object.height - margin >= CanvasUtils.getConfigHeight()) {
-            boundariesHit.push('bottom');
-        }
+        const boundariesHit = BoundaryUtils.checkGameAtBoundsSides(object, margin);
 
         if (this.DEBUG) {
             console.log("checkGameAtBoundsSides", CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesHit);
@@ -483,10 +421,7 @@ export default class CollisionUtils {
                 `checkGameAtBoundsCircle requires an object with a valid 'radius', 'x', and 'y'.`
             );
         }
-        return object.x - object.radius <= 0 ||
-            object.y - object.radius <= 0 ||
-            object.x + object.radius >= CanvasUtils.getConfigWidth() ||
-            object.y + object.radius >= CanvasUtils.getConfigHeight();
+        return BoundaryUtils.checkGameAtBoundsCircle(object);
     }
     static checkGameAtBoundsCircleSides(object) {
         if (this.DEBUG) {
@@ -497,31 +432,7 @@ export default class CollisionUtils {
             );
         }
 
-        if (!this.checkGameAtBoundsCircle(object)) {
-            return [];  // Return empty array instead of undefined
-        }
-
-        let boundariesHit = [];
-
-        // Check for collision with the top boundary
-        if (object.y - object.radius <= 0) {
-            boundariesHit.push('top');
-        }
-        // Check for collision with the bottom boundary
-        if (object.y + object.radius >= CanvasUtils.getConfigHeight()) {
-            boundariesHit.push('bottom');
-        }
-
-        // Check for collision with the left boundary
-        if (object.x - object.radius <= 0) {
-            boundariesHit.push('left');
-        }
-        // Check for collision with the right boundary
-        if (object.x + object.radius >= CanvasUtils.getConfigWidth()) {
-            boundariesHit.push('right');
-        }
-
-        return boundariesHit;
+        return BoundaryUtils.checkGameAtBoundsCircleSides(object);
     }
 
 }

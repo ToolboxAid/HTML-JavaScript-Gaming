@@ -4,7 +4,7 @@
 // objectVector.js
 
 import ObjectKillable from './objectKillable.js';
-import CanvasUtils from '../canvas.js';
+import BoundaryUtils from '../physics/boundaryUtils.js';
 import CollisionUtils from '../physics/collisionUtils.js';
 import VectorShapeUtils from '../physics/vectorShapeUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
@@ -98,29 +98,10 @@ class ObjectVector extends ObjectKillable {
     }
 
     checkWrapAround() {
-        const boundaries = CollisionUtils.getCompletelyOffScreenSides(this, this.margin);
+        const wrapped = BoundaryUtils.applyWrapAround(this, this.margin);
 
-        if (!boundaries || boundaries.length === 0) {
+        if (!wrapped) {
             return;
-        }
-
-        const halfWidth = (this.boundWidth ?? this.width) / 2;
-        const halfHeight = (this.boundHeight ?? this.height) / 2;
-
-        if (boundaries.includes('left')) {
-            this.x = CanvasUtils.getConfigWidth() + halfWidth;
-        }
-
-        if (boundaries.includes('right')) {
-            this.x = -halfWidth;
-        }
-
-        if (boundaries.includes('top')) {
-            this.y = CanvasUtils.getConfigHeight() + halfHeight;
-        }
-
-        if (boundaries.includes('bottom')) {
-            this.y = -halfHeight;
         }
 
         this.calculateObjectBounds(this.vectorMap);
