@@ -35,4 +35,32 @@ export function testSpriteController(assert) {
     result = controller.stepFinalFrame(Number.NaN, Number.NaN, controller.dyingFrameCount, controller.dyingDelay, true);
     assert(Number.isFinite(result.currentFrameIndex), 'final frame should normalize non-finite frame index');
     assert(Number.isFinite(result.delayCounter), 'final frame should normalize non-finite delay counter');
+
+    assertThrows(() => new SpriteController({ livingDelay: 1.5 }), 'livingDelay must be an integer.');
+    assertThrows(() => new SpriteController({ dyingDelay: 2.5 }), 'dyingDelay must be an integer.');
+    assertThrows(() => new SpriteController({ livingFrames: 'invalid' }), 'livingFrames must be an array or null.');
+
+    controller.destroy();
+    controller.destroy();
+    assert(controller.livingFrames === null, 'destroy should be idempotent for livingFrames');
+    assert(controller.dyingFrames === null, 'destroy should be idempotent for dyingFrames');
+}
+
+function assertThrows(fn, expectedMessage) {
+    let threw = false;
+
+    try {
+        fn();
+    } catch (error) {
+        threw = true;
+        if (expectedMessage) {
+            if (!String(error.message).includes(expectedMessage)) {
+                throw new Error(`Expected error message to include "${expectedMessage}", got "${error.message}".`);
+            }
+        }
+    }
+
+    if (!threw) {
+        throw new Error('Expected function to throw.');
+    }
 }

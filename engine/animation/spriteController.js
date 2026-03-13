@@ -3,6 +3,8 @@
 // 03/13/2026
 // spriteController.js
 
+import ObjectValidation from '../utils/objectValidation.js';
+
 class SpriteController {
     constructor({
         livingFrames = null,
@@ -10,10 +12,30 @@ class SpriteController {
         livingDelay = 30,
         dyingDelay = 7
     } = {}) {
+        SpriteController.validateFrames(livingFrames, 'livingFrames');
+        SpriteController.validateFrames(dyingFrames, 'dyingFrames');
+
+        ObjectValidation.positiveNumber(livingDelay, 'livingDelay');
+        ObjectValidation.positiveNumber(dyingDelay, 'dyingDelay');
+
+        if (!Number.isInteger(livingDelay)) {
+            throw new Error('livingDelay must be an integer.');
+        }
+
+        if (!Number.isInteger(dyingDelay)) {
+            throw new Error('dyingDelay must be an integer.');
+        }
+
         this.livingFrames = livingFrames;
         this.dyingFrames = dyingFrames;
         this.livingDelay = livingDelay;
         this.dyingDelay = dyingDelay;
+    }
+
+    static validateFrames(value, name) {
+        if (value !== null && !Array.isArray(value)) {
+            throw new Error(`${name} must be an array or null.`);
+        }
     }
 
     get livingFrameCount() {

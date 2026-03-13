@@ -44,4 +44,32 @@ export function testPngController(assert) {
 
     animation.delayCounter = Number.NaN;
     assert(animation.stepFrame(true) === false, 'stepFrame should normalize non-finite delay counter safely');
+
+    assertThrows(() => new PngController(3.2, 2, 3), 'frameCount must be an integer.');
+    assertThrows(() => new PngController(3, 2.2, 3), 'framesPerRow must be an integer.');
+    assertThrows(() => new PngController(3, 2, 3.5), 'frameDelay must be an integer.');
+
+    animation.destroy();
+    animation.destroy();
+    assert(animation.frameCount === null, 'destroy should be idempotent for frameCount');
+    assert(animation.currentFrameIndex === null, 'destroy should be idempotent for currentFrameIndex');
+}
+
+function assertThrows(fn, expectedMessage) {
+    let threw = false;
+
+    try {
+        fn();
+    } catch (error) {
+        threw = true;
+        if (expectedMessage) {
+            if (!String(error.message).includes(expectedMessage)) {
+                throw new Error(`Expected error message to include "${expectedMessage}", got "${error.message}".`);
+            }
+        }
+    }
+
+    if (!threw) {
+        throw new Error('Expected function to throw.');
+    }
 }

@@ -11,11 +11,31 @@ class PngController {
         ObjectValidation.positiveNumber(framesPerRow, 'framesPerRow');
         ObjectValidation.positiveNumber(frameDelay, 'frameDelay');
 
-        this.frameCount = Math.floor(frameCount);
-        this.framesPerRow = Math.floor(framesPerRow);
-        this.frameDelay = Math.floor(frameDelay);
+        if (!Number.isInteger(frameCount)) {
+            throw new Error('frameCount must be an integer.');
+        }
+
+        if (!Number.isInteger(framesPerRow)) {
+            throw new Error('framesPerRow must be an integer.');
+        }
+
+        if (!Number.isInteger(frameDelay)) {
+            throw new Error('frameDelay must be an integer.');
+        }
+
+        this.frameCount = frameCount;
+        this.framesPerRow = framesPerRow;
+        this.frameDelay = frameDelay;
         this.currentFrameIndex = 0;
         this.delayCounter = 0;
+    }
+
+    static normalizeNonNegativeInteger(value, fallback = 0) {
+        if (!Number.isFinite(value)) {
+            return fallback;
+        }
+
+        return Math.max(0, Math.floor(value));
     }
 
     setFrame(frameIndex = 0) {
@@ -34,9 +54,7 @@ class PngController {
     }
 
     getCurrentSourceRect(spriteX = 0, spriteY = 0, frameWidth = 0, frameHeight = 0) {
-        const frameIndex = Number.isFinite(this.currentFrameIndex)
-            ? Math.max(0, Math.floor(this.currentFrameIndex))
-            : 0;
+        const frameIndex = PngController.normalizeNonNegativeInteger(this.currentFrameIndex, 0);
         const col = frameIndex % this.framesPerRow;
         const row = Math.floor(frameIndex / this.framesPerRow);
 
@@ -53,11 +71,7 @@ class PngController {
             return false;
         }
 
-        if (!Number.isFinite(this.currentFrameIndex)) {
-            this.currentFrameIndex = 0;
-        }
-
-        this.currentFrameIndex++;
+        this.currentFrameIndex = PngController.normalizeNonNegativeInteger(this.currentFrameIndex, 0) + 1;
 
         if (this.currentFrameIndex >= this.frameCount) {
             this.currentFrameIndex = 0;
@@ -72,11 +86,7 @@ class PngController {
             return false;
         }
 
-        if (!Number.isFinite(this.delayCounter)) {
-            this.delayCounter = 0;
-        }
-
-        this.delayCounter++;
+        this.delayCounter = PngController.normalizeNonNegativeInteger(this.delayCounter, 0) + 1;
 
         if (this.delayCounter < this.frameDelay) {
             return false;
@@ -91,13 +101,8 @@ class PngController {
             return true;
         }
 
-        if (!Number.isFinite(this.currentFrameIndex)) {
-            this.currentFrameIndex = 0;
-        }
-
-        if (!Number.isFinite(this.delayCounter)) {
-            this.delayCounter = 0;
-        }
+        this.currentFrameIndex = PngController.normalizeNonNegativeInteger(this.currentFrameIndex, 0);
+        this.delayCounter = PngController.normalizeNonNegativeInteger(this.delayCounter, 0);
 
         if (incFrame) {
             this.delayCounter++;
