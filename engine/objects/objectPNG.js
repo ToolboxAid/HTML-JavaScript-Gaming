@@ -13,6 +13,7 @@ import ImageAssetCache from '../utils/imageAssetCache.js';
 import PngAssetState from '../utils/pngAssetState.js';
 import PngController from '../animation/pngController.js';
 import StateUtils from '../animation/stateUtils.js';
+import AnimationStateBridge from '../animation/animationStateBridge.js';
 
 class ObjectPNG extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');
@@ -88,6 +89,7 @@ class ObjectPNG extends ObjectKillable {
 
         this.frameOffsets = Array.isArray(frameOffsets) ? frameOffsets : null;
         this.animation = new PngController(this.frameCount, this.framesPerRow, this.frameDelay);
+        AnimationStateBridge.installMirroredCounters(this);
 
         ObjectPNG.loadSprite(spritePath, transparentColor)
             .then((png) => {
@@ -117,30 +119,6 @@ class ObjectPNG extends ObjectKillable {
             });
     }
 
-    get currentFrameIndex() {
-        return this.animation?.currentFrameIndex ?? super.currentFrameIndex;
-    }
-
-    set currentFrameIndex(value) {
-        if (this.animation) {
-            this.animation.currentFrameIndex = value;
-        }
-
-        super.currentFrameIndex = value;
-    }
-
-    get delayCounter() {
-        return this.animation?.delayCounter ?? super.delayCounter;
-    }
-
-    set delayCounter(value) {
-        if (this.animation) {
-            this.animation.delayCounter = value;
-        }
-
-        super.delayCounter = value;
-    }
-
     setFlip(flipType = ObjectPNG.Flip.NONE) {
         ObjectValidation.nonEmptyString(flipType, 'flipType');
 
@@ -157,7 +135,7 @@ class ObjectPNG extends ObjectKillable {
 
     setFrame(frameIndex = 0) {
         this.animation.setFrame(frameIndex);
-        StateUtils.syncToObject(this, this.animation);
+        AnimationStateBridge.syncFromAnimation(this, this.animation);
     }
 
     setFrameOffsets(frameOffsets) {
@@ -191,13 +169,13 @@ class ObjectPNG extends ObjectKillable {
 
     advanceFrame() {
         const advanced = this.animation.advanceFrame();
-        StateUtils.syncToObject(this, this.animation);
+        AnimationStateBridge.syncFromAnimation(this, this.animation);
         return advanced;
     }
 
     stepFrame(incFrame = false) {
         const stepped = this.animation.stepFrame(incFrame);
-        StateUtils.syncToObject(this, this.animation);
+        AnimationStateBridge.syncFromAnimation(this, this.animation);
         return stepped;
     }
 
@@ -208,7 +186,7 @@ class ObjectPNG extends ObjectKillable {
 
     handleDyingStatus(deltaTime, incFrame = false) {
         const finished = this.animation.stepDyingFrame(incFrame);
-        StateUtils.syncToObject(this, this.animation);
+        AnimationStateBridge.syncFromAnimation(this, this.animation);
 
         if (finished) {
             this.setIsDead();

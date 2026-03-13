@@ -5,204 +5,57 @@
 
 import Colors from '../../engine/colors.js';
 import ObjectKillable from './objectKillable.js';
-import SystemUtils from '../utils/systemUtils.js';
-import Sprite from '../sprite.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import SpriteRenderer from '../renderers/spriteRenderer.js';
 import SpriteController from '../animation/spriteController.js';
 import StateUtils from '../animation/stateUtils.js';
+import ObjectSpriteFrameConfig from './objectSpriteFrameConfig.js';
 
 class ObjectSprite extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
 
 constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palette = null) {
+    const frameConfig = ObjectSpriteFrameConfig.create(
+        livingFrames,
+        dyingFrames,
+        pixelSize,
+        palette
+    );
 
-    if (!livingFrames || (Array.isArray(livingFrames) && livingFrames.length === 0)) {
-        throw new Error('livingFrames must be provided.');
-    }
+    super(x, y, frameConfig.dimensions.width, frameConfig.dimensions.height);
 
-    let frameType = ObjectSprite.getFrameType(livingFrames);
-    let spritePixelSize = pixelSize;
-    let dimensions = null;
-
-    let normalizedLivingFrames = null;
-    let normalizedDyingFrames = null;
-
-    let livingDelay = 30;
-    let dyingDelay = 7;
-
-    let livingFrameCount = 0;
-    let dyingFrameCount = 0;
-
-    switch (frameType) {
-
-        case 'json': {
-            Sprite.validateJsonFormat(livingFrames);
-
-            spritePixelSize = livingFrames.metadata.spritePixelSize;
-            livingDelay = livingFrames.metadata.framesPerSprite ?? 30;
-
-            let paletteArray = null;
-            if (palette) {
-                paletteArray = ObjectSprite.extractArray(palette);
-            }
-
-            normalizedLivingFrames = Sprite.convert2RGB(livingFrames, paletteArray);
-            dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);
-            livingFrameCount = normalizedLivingFrames.length;
-
-            if (dyingFrames) {
-                Sprite.validateJsonFormat(dyingFrames);
-
-                dyingDelay = dyingFrames.metadata.framesPerSprite ?? 7;
-                normalizedDyingFrames = Sprite.convert2RGB(dyingFrames, paletteArray);
-                dyingFrameCount = normalizedDyingFrames.length;
-            } else {
-                normalizedDyingFrames = null;
-                dyingFrameCount = 0;
-            }
-
-            break;
-        }
-
-        case 'singleFrame': {
-            ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
-
-            normalizedLivingFrames = ObjectSprite.normalizeFrames(livingFrames, frameType);
-            dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);
-            livingFrameCount = normalizedLivingFrames.length;
-
-            if (dyingFrames) {
-                const dyingFrameType = ObjectSprite.getFrameType(dyingFrames);
-                normalizedDyingFrames = ObjectSprite.normalizeFrames(dyingFrames, dyingFrameType);
-                dyingFrameCount = normalizedDyingFrames.length;
-            } else {
-                normalizedDyingFrames = null;
-                dyingFrameCount = 0;
-            }
-
-            break;
-        }
-
-        case 'multiFrame': {
-            ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
-
-            normalizedLivingFrames = ObjectSprite.normalizeFrames(livingFrames, frameType);
-            dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);
-            livingFrameCount = normalizedLivingFrames.length;
-
-            if (dyingFrames) {
-                const dyingFrameType = ObjectSprite.getFrameType(dyingFrames);
-                normalizedDyingFrames = ObjectSprite.normalizeFrames(dyingFrames, dyingFrameType);
-                dyingFrameCount = normalizedDyingFrames.length;
-            } else {
-                normalizedDyingFrames = null;
-                dyingFrameCount = 0;
-            }
-
-            break;
-        }
-
-        default:
-            throw new Error(`Unsupported frame type: ${frameType}`);
-    }
-
-    super(x, y, dimensions.width, dimensions.height);
-
-    this.frameType = frameType;
-    this.pixelSize = spritePixelSize;
+    this.frameType = frameConfig.frameType;
+    this.pixelSize = frameConfig.pixelSize;
 
     this.animation = new SpriteController({
-        livingFrames: normalizedLivingFrames,
-        dyingFrames: normalizedDyingFrames,
-        livingDelay,
-        dyingDelay
+        livingFrames: frameConfig.livingFrames,
+        dyingFrames: frameConfig.dyingFrames,
+        livingDelay: frameConfig.livingDelay,
+        dyingDelay: frameConfig.dyingDelay
     });
 
-    this.livingDelay = livingDelay;
-    this.livingFrames = normalizedLivingFrames;
-    this.livingFrameCount = livingFrameCount;
+    this.livingDelay = frameConfig.livingDelay;
+    this.livingFrames = frameConfig.livingFrames;
+    this.livingFrameCount = frameConfig.livingFrameCount;
 
-    this.dyingDelay = dyingDelay;
-    this.dyingFrames = normalizedDyingFrames;
-    this.dyingFrameCount = dyingFrameCount;
+    this.dyingDelay = frameConfig.dyingDelay;
+    this.dyingFrames = frameConfig.dyingFrames;
+    this.dyingFrameCount = frameConfig.dyingFrameCount;
 
     this.spriteColor = 'white';
 }
 
 static getFrameType(object) {
-    if (!object) {
-        return 'null';
-    }
-
-    if (SystemUtils.getObjectType(object) === 'Object') {
-        return 'json';
-    }
-
-    // Single frame:
-    // [
-    //   "00100",
-    //   "01110"
-    // ]
-    if (
-        Array.isArray(object) &&
-        object.length > 0 &&
-        typeof object[0] === 'string'
-    ) {
-        return 'singleFrame';
-    }
-
-    // Multi frame:
-    // [
-    //   ["00100", "01110"],
-    //   ["00000", "00100"]
-    // ]
-    if (
-        Array.isArray(object) &&
-        object.length > 0 &&
-        Array.isArray(object[0]) &&
-        object[0].length > 0 &&
-        typeof object[0][0] === 'string'
-    ) {
-        return 'multiFrame';
-    }
-
-    if (SystemUtils.getObjectType(object) === 'String') {
-        return 'string';
-    }
-
-    return 'unknown';
+    return ObjectSpriteFrameConfig.getFrameType(object);
 }
 
     static extractArray(obj) {
-        for (const value of Object.values(obj)) {
-            if (Array.isArray(value)) {
-                return value;
-            }
-        }
-
-        throw new Error('No array found in the object.');
+        return ObjectSpriteFrameConfig.extractArray(obj);
     }
 static normalizeFrames(frames, frameType) {
-    if (!frames) {
-        return null;
-    }
-
-    if (frameType === 'json') {
-        return frames;
-    }
-
-    if (frameType === 'singleFrame') {
-        return [frames];
-    }
-
-    if (frameType === 'multiFrame') {
-        return frames;
-    }
-
-    throw new Error(`Unsupported frame type for normalization: ${frameType}`);
+    return ObjectSpriteFrameConfig.normalizeFrames(frames, frameType);
 }
 
 getCurrentLivingFrame() {
