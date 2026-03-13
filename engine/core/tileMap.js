@@ -1,6 +1,6 @@
 // ToolboxAid.com
 // David Quesenberry
-// 10/24/2024
+// 2024-10-24
 // tileMap.js
 
 import CanvasUtils from './canvas.js';
@@ -180,10 +180,10 @@ class TileMap {
             case 0:  // Transparent (air)
                 CanvasUtils.ctx.fillStyle = "rgb(0, 0, 0, 0)";
                 break;
-            case 1: // Barrier (not passible)
+            case 1: // Barrier (not passable)
                 CanvasUtils.ctx.fillStyle = "rgb(255, 0, 0)";
                 break;
-            case 2: // Barrier (not passible)
+            case 2: // Barrier (not passable)
                 CanvasUtils.ctx.fillStyle = "rgb(0, 255, 0 )";
                 break;
             case 3: // other
@@ -236,3 +236,4 @@ class TileMap {
 }
 
 export default TileMap;
+

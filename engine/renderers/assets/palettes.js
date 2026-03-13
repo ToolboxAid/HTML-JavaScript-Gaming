@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// 12/28/2024
-// spritePalettes.js
+// 2024-12-28
+// palettes.js
 
 import Colors from "./colors.js";
 import SystemUtils from "../../utils/systemUtils.js";
@@ -14,22 +14,20 @@ class Palettes {
     // Enable debug mode: game.html?palettes
     static DEBUG = DebugFlag.has('palettes');
 
-    /** Constructor for Palettes class.
-     * @throws {Error} Always throws error as this is a utility class with only static methods.
+    /**
+     * Utility-only class.
+     * @throws {Error} Always throws because this class should not be instantiated.
      * @example
-     * ❌ Don't do this:
-     * const palettes = new Palettes(); // Throws Error
-     * 
-     * ✅ Do this:
-     * Palettes.transformPoints(...); // Use static methods directly
+     * // Don't do this:
+     * new Palettes();
+     *
+     * // Do this:
+     * Palettes.getBySymbol('R');
      */
     constructor() {
         throw new Error('Palettes is a utility class with only static methods. Do not instantiate.');
     }
-
-    // --------------------------------------------------------
-    // Palette methods
-    // --------------------------------------------------------
+    // Palette helpers.
     static activeName = 'default';
     static transparent = "#00000000";
     static errorResult = { symbol: 'Ø', hex: '#00000000', name: 'Transparent' };
@@ -217,3 +215,4 @@ class Palettes {
 }
 
 export default Palettes;
+

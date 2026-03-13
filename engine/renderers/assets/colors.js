@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// 12/28/2024
-// spritePalettes.js
+// 2024-12-28
+// colors.js
 
 import RandomUtils from "../../math/randomUtils.js";
 import DebugFlag from "../../utils/debugFlag.js";
@@ -16,31 +16,20 @@ import DebugLog from "../../utils/debugLog.js";
  * 
  */
 
-/* The hue range for each color in the visible spectrum (ROYGBIV) within the HSL
-     (Hue, Saturation, Lightness) model is generally as follows: 
-      const colorRanges = {
-        Red:    ['#FF0000', '#FF6347'], // 0°–30° and 330°–360°    Red rgb(255, 0, 0)
-        Orange: ['#FFA500', '#FF8C00'], // 30°–60°              Orange rgb(255, 127, 0)
-        Yellow: ['#FFFF00', '#FFD700'], // 60°–90°              Yellow rgb(255, 255, 0)
-        Green:  ['#00FF00', '#32CD32'], // 90°–150°              Green rgb(0, 255, 0)
-        Blue:   ['#0000FF', '#1E90FF'], // 180°–240°              Blue rgb(0, 0, 255)
-        Indigo: ['#4B0082', '#6A5ACD'], // 240°–270°            Indigo rgb(75, 0, 130)
-        Violet: ['#EE82EE', '#9400D3'], // 270°–330°            Violet rgb(238, 130, 238)
-                                        // 330°–360° see 0°–30°    Red rgb(255,0,0)
-    }; */
 
 export class Colors {
     // Enable debug mode: game.html?colors
     static DEBUG = DebugFlag.has('colors');
 
-    /** Constructor for Colors class.
-     * @throws {Error} Always throws error as this is a utility class with only static methods.
+    /**
+     * Utility-only class.
+     * @throws {Error} Always throws because this class should not be instantiated.
      * @example
-     * ❌ Don't do this:
-     * const colors = new Colors(); // Throws Error
-     * 
-     * ✅ Do this:
-     * Colors.transformPoints(...); // Use static methods directly
+     * // Don't do this:
+     * new Colors();
+     *
+     * // Do this:
+     * Colors.hexToRgb('#FF0000');
      */
     constructor() {
         throw new Error('Colors is a utility class with only static methods. Do not instantiate.');
@@ -392,4 +381,5 @@ export class Colors {
 export default Colors;
 
 Colors.generateRandomColor();
+
 

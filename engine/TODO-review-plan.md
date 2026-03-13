@@ -89,13 +89,14 @@ Objective:
 - [x] Remove dead code and obvious duplication where low risk.
 - [x] Improve naming and readability where safe.
 - [x] Add guard clauses and validation where needed.
-- [ ] Normalize comment style and lightweight documentation where helpful.
+- [x] Normalize comment style and lightweight documentation where helpful.
 - [ ] Make small refactors that improve clarity without changing behavior.
 
 Basic improvements progress:
 
 - Improved naming/readability in active modules (`TileMap` debug overlay variable naming and cleaner `Palettes.getBySymbol` flow).
 - Added guard/validation hardening (`PerformanceMonitor` browser-memory guards, draw context/dimensions guards, and explicit `getMetrics` helper used by `logPerformance`).
+- Normalized lightweight documentation style in active modules (`PerformanceMonitor`, `TileMap`, `Palettes`, and `Colors`) by standardizing headers and utility-class constructor docs.
 
 
 ## Unit test audit

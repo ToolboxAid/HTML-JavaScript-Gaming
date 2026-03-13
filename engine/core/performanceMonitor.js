@@ -1,9 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
-// 01/30/2025
+// 2025-01-30
 // performanceMonitor.js
-
-//** Javascript usages */
 
 import SystemUtils from "../utils/systemUtils.js";
 import DebugFlag from "../utils/debugFlag.js";
@@ -15,14 +13,15 @@ class PerformanceMonitor {
     // Enable debug mode: game.html?performanceMonitor
     static DEBUG = DebugFlag.has('performanceMonitor');
 
-    /** Constructor for PerformanceMonitor class.
-     * @throws {Error} Always throws error as this is a utility class with only static methods.
+    /**
+     * Utility-only class.
+     * @throws {Error} Always throws because this class should not be instantiated.
      * @example
-     * ❌ Don't do this:
-     * const performanceMonitor = new PerformanceMonitor(); // Throws Error
-     * 
-     * ✅ Do this:
-     * PerformanceMonitor.transformPoints(...); // Use static methods directly
+     * // Don't do this:
+     * new PerformanceMonitor();
+     *
+     * // Do this:
+     * PerformanceMonitor.update(8.5);
      */
     constructor() {
         throw new Error('PerformanceMonitor is a utility class with only static methods. Do not instantiate.');
@@ -35,7 +34,8 @@ class PerformanceMonitor {
         samples: []
     };
 
-    static performanceConfig = {// Let's give some defaults
+    // Default on-screen monitor configuration.
+    static performanceConfig = {
         show: true,
         size: 30,
         font: 'monospace',
@@ -73,18 +73,18 @@ class PerformanceMonitor {
         return false;
     }
 
-    /* This method should be called once per second. */
+    // Call once per second.
     static oncePerSecond() {
         this.calcFPS();
         this.calcGFX();
     }
-    /** This method should be called every animation loop. */
+    // Call once per animation frame.
     static update(timeSpentMs) {
         this.updateFPS();
         this.updateGFX(timeSpentMs);
     }
 
-    /** Animation GFX / percent of available frame time (16.67ms for 60 FPS) */
+    // Animation GFX: percent of available frame time (16.67ms at 60 FPS).
     static availableTimeMs = 1000 / 60; // Time per frame in milliseconds (16.67ms)
     static timeSpentMs = 0.0; // Time spent in the current frame
     static totalTimeSpentMs = 0.0; // Sum of all time spent to be averaged into gfxPercentUsage
@@ -102,7 +102,7 @@ class PerformanceMonitor {
         this.totalTimeSpentMs = 0;
     }
 
-    /** FPS */
+    // FPS metrics.
     static frameCount = 0;
     static fps = 0;
     static updateFPS() { // Update FPS counter every second
@@ -281,4 +281,5 @@ class PerformanceMonitor {
 export default PerformanceMonitor
 
 setInterval(() => PerformanceMonitor.oncePerSecond(), 1000); // every second
+
 
