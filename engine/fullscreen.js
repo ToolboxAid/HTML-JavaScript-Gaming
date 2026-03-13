@@ -27,8 +27,12 @@ class Fullscreen {
     static gameFullScaleScreen = 1.0;
     static isFullScreen = false;
 
-    static canvas = document.getElementById("gameArea");
-    static ctx = Fullscreen.canvas.getContext('2d');
+    static canvas = typeof document !== 'undefined'
+        ? document.getElementById("gameArea")
+        : null;
+    static ctx = Fullscreen.canvas?.getContext
+        ? Fullscreen.canvas.getContext('2d')
+        : null;
 
     static canvasWidth = 0;  // window.gameAreaWidth = canvasConfig.width;        
     static canvasHeight = 0; // window.gameAreaHeight = canvasConfig.height;

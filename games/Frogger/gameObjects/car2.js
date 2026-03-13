@@ -5,12 +5,12 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // Car2.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../../engine/gameObject.js';
 import CanvasUtils from '../../../../engine/core/canvas.js';
 
 class Car2 extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('car2');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 48;

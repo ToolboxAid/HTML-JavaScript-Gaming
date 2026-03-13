@@ -4,7 +4,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 // 12/28/2024
 // spriteEditor.js
 
-import DebugFlag from '';
+
 import Colors from "../../engine/renderers/assets/colors.js";
 import Palettes from "../../engine/renderers/assets/palettes.js";
 import MouseInput from '../../engine/input/mouse.js';
@@ -19,7 +19,7 @@ import { Message } from './message.js';
 export class SpriteEditor {
 
     // Enable debug mode: game.html?spriteEditor
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('spriteEditor');
 
     // Canvas Editor
     static canvasEditor = null;

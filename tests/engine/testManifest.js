@@ -5,6 +5,7 @@ export const engineTestEntries = [
   { name: 'stateUtils', modulePath: './animation/stateUtilsTest.js', exportName: 'testStateUtils' },
   { name: 'spriteController', modulePath: './animation/spriteControllerTest.js', exportName: 'testSpriteController' },
   { name: 'pngController', modulePath: './animation/pngControllerTest.js', exportName: 'testPngController' },
+  { name: 'runtimeContext', modulePath: './core/runtimeContextTest.js', exportName: 'testRuntimeContext' },
   { name: 'objectBaseClass', modulePath: './objects/objectBaseClassTest.js', exportName: 'testObjectBaseClass' },
   { name: 'objectLifecycle', modulePath: './objects/objectLifecycleTest.js', exportName: 'testObjectLifecycle' },
   { name: 'rendererSafety', modulePath: './renderers/rendererSafetyTest.js', exportName: 'testRendererSafety' },

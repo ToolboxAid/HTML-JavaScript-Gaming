@@ -5,11 +5,11 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // home_frog.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../engine/gameObject.js';
 
 class HomeFrog extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('homeFrog');
 
     static Frames = Object.freeze({
         IDLE: 0,

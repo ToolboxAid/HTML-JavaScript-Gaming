@@ -1,7 +1,7 @@
 import DebugFlag from '../../engine/utils/debugFlag.js';
-import DebugFlag from '';
+
 class LevelData {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('levelData');
 
     static Lanes = Object.freeze({
         HOME: -7,

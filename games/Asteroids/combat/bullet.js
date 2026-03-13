@@ -5,14 +5,14 @@
 // bullet.js
 
 import DebugFlag from '../../../engine/utils/debugFlag.js';
-import DebugFlag from '';
+
 import ObjectVector from '../../../engine/objects/objectVector.js';
 
 class Bullet extends ObjectVector {
 
   // Play your game normally: game.html
   // Enable debug mode: game.html?bullet
-  static DEBUG = DebugFlag.has('');
+  static DEBUG = DebugFlag.has('bullet');
 
   // Define a simple vector map for a bullet, typically a small line or dot
   static getVectorMap() { return [[-4, 0], [4, 1], [4, -1]] };

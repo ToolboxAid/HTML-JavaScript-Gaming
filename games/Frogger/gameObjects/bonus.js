@@ -4,14 +4,14 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // bonus.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
 
 class Bonus extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('bonus');
 
     static State = Object.freeze({
         IDLE: 'idle',

@@ -5,11 +5,11 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // Truck.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../engine/gameObject.js';
 
 class Truck extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('truck');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 48 * 2;

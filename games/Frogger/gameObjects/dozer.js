@@ -5,12 +5,12 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // Dozer.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
 class Dozer extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('dozer');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 48;

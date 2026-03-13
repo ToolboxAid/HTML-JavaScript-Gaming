@@ -1,5 +1,5 @@
 import DebugFlag from '../../engine/utils/debugFlag.js';
-import DebugFlag from '';
+
 import { canvasConfig } from './global.js';
 
 import GameObjectSystem from '../../engine/gameObjectSystem.js';
@@ -33,7 +33,7 @@ import Dozer from './gameObjects/dozer.js';
 import Truck from './gameObjects/truck.js';
 
 class AttractMode {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('attract');
 
     // Base Y positions
     static BASE = Object.freeze({

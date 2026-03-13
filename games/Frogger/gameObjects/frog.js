@@ -1,5 +1,5 @@
 import DebugFlag from '../../../engine/utils/debugFlag.js';
-import DebugFlag from '';
+
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
@@ -45,7 +45,7 @@ import CanvasUtils from '../../../engine/core/canvas.js';
 class Frog extends ObjectPNG {
 
     // Debug mode enabled via URL parameter: game.html?frog
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('frog');
 
     constructor(x, y, spriteSheet, pixelSize) {
         // Define sprite dimensions and initial position in sprite sheet

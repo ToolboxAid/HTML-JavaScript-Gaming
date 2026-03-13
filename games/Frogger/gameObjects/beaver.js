@@ -4,13 +4,13 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // beaver.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 
 class Beaver extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('beaver');
 
     constructor(x, y, velocityX, velocityY, activeGameObjects) {
         if (!Array.isArray(activeGameObjects)) {

@@ -4,11 +4,11 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // turtle.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../engine/gameObject.js';
 
 class Turtle extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('turtle');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 45;

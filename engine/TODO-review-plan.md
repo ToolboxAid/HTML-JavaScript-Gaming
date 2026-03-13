@@ -73,8 +73,7 @@ Objective:
 - [x] Capture candidate engine additions separately from bugs so feature gaps stay visible.
 
 Engine surface review results:
-  - Added lightweight engine API conventions doc: `docs/engine-api-conventions.md` (`init/update/draw/destroy/start/stop`).
-  - Optional world/runtime context object to reduce static singleton coupling.
+  - Added optional runtime context wrapper: `engine/core/runtimeContext.js`, now exposed as `this.runtimeContext` in `GameBase` and passed into `onInitialize(...)`/`gameLoop(...)`.
   - Implemented canonical collision/bounds facade: `engine/game/gameCollision.js`, exposed via `GameObjectSystem.collision` plus convenience delegation methods.
 
 ## Security and safety review

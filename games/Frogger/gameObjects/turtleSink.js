@@ -4,11 +4,11 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // 03/24/2025
 // turtleSink.js
 
-import DebugFlag from '';
+
 import GameObject from '../../../engine/gameObject.js';
 
 class TurtleSink extends GameObject {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('turtleSink');
     static FRAME_SEQUENCE = [0, 1, 2, 1, 2, 3, 4, 5, 4, 3, 2, 1];
 
     constructor(x, y, velocityX, velocityY) {

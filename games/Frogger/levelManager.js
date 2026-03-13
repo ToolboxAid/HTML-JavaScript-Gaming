@@ -1,9 +1,9 @@
 import DebugFlag from '../../engine/utils/debugFlag.js';
-import DebugFlag from '';
+
 import LevelData from './levelData.js';
 
 class LevelManager {
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('levelManager');
 
     constructor(attractMode) {
         this.attractMode = attractMode;

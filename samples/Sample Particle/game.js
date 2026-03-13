@@ -4,7 +4,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 // 10/16/2024
 // game.js - Template Game Engine
 
-import DebugFlag from '';
+
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/core/gameBase.js';
 
@@ -13,7 +13,7 @@ import ParticleExplosion from '../../engine/renderers/particleExplosion.js';
 class Game extends GameBase {
 
   // Enable debug mode: game.html?game
-  static DEBUG = DebugFlag.has('');
+  static DEBUG = DebugFlag.has('game');
 
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);

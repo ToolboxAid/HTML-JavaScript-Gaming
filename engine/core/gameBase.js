@@ -3,12 +3,9 @@
 // 01/31/2025
 // gameBase.js
 
-import CanvasUtils from "./canvas.js";
 import Colors from "../renderers/assets/colors.js";
-import Fullscreen from "../fullscreen.js";
-import PerformanceMonitor from "./performanceMonitor.js";
 import DebugFlag from "../utils/debugFlag.js";
-import Timer from "../utils/timer.js";
+import RuntimeContext from "./runtimeContext.js";
 
 class GameBase {
 
@@ -22,6 +19,7 @@ class GameBase {
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {
         this.isDestroyed = false;
         this.isPageHidden = document.hidden;
+        this.runtimeContext = new RuntimeContext();
         this.animate = this.animate.bind(this);// bind once
         this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
         this.handlePageHide = this.handlePageHide.bind(this);
@@ -53,23 +51,21 @@ class GameBase {
         if (!canvasConfig || !performanceConfig || !fullscreenConfig) {
             throw new Error('Missing required configuration');
         }
-        await CanvasUtils.init(canvasConfig);
-        await Fullscreen.init(fullscreenConfig, canvasConfig);
-        await PerformanceMonitor.init(performanceConfig);
+        await this.runtimeContext.initialize(canvasConfig, performanceConfig, fullscreenConfig);
 
         // Initialize inheriting (child) class (game.js)
-        await this.onInitialize();
+        await this.onInitialize(this.runtimeContext);
     }
 
     handleVisibilityChange() {
         this.isPageHidden = document.hidden;
 
         if (this.isPageHidden) {
-            Timer.pauseAllForVisibility();
+            this.runtimeContext.onPageHidden();
             return;
         }
 
-        Timer.resumeAllFromVisibility();
+        this.runtimeContext.onPageVisible();
 
         GameBase.lastTimestamp = performance.now();
     }
@@ -91,26 +87,26 @@ class GameBase {
             const deltaTime = (timestamp - GameBase.lastTimestamp) / 1000;
             GameBase.lastTimestamp = timestamp;
 
-            if (CanvasUtils.ctx && this.gameLoop) {
+            if (this.runtimeContext.getContext() && this.gameLoop) {
                 // start performance timer
                 const startTimeMs = Date.now();
-                CanvasUtils.canvasClear();
+                this.runtimeContext.clearCanvas();
 
                 // Call game loop implementation (code and draw)
-                await this.gameLoop(deltaTime); // call game.js (the inheriting class)
+                await this.gameLoop(deltaTime, this.runtimeContext); // call game.js (the inheriting class)
 
                 // Update performance data
                 const timeSpentMs = Date.now() - startTimeMs; // end performance timer
-                PerformanceMonitor.update(timeSpentMs);
+                this.runtimeContext.updatePerformance(timeSpentMs);
 
                 // Draw border
-                CanvasUtils.drawBorder();
+                this.runtimeContext.drawBorder();
 
                 // Draw click full screen
-                Fullscreen.draw(CanvasUtils.ctx);
+                this.runtimeContext.drawFullscreenOverlay();
 
                 // Draw Performance data
-                PerformanceMonitor.draw(CanvasUtils.ctx);
+                this.runtimeContext.drawPerformanceOverlay();
 
                 // this will proved the {width, height} of text data;
                 if (GameBase.showTextMetrics) {
@@ -118,7 +114,7 @@ class GameBase {
                     const textData = `"=====================MEM: 30.66/33.08MB"`;
                     const sizePX = 30;
                     const font = "monospace";
-                    console.log(CanvasUtils.calculateTextMetrics(textData, sizePX, font));
+                    console.log(this.runtimeContext.calculateTextMetrics(textData, sizePX, font));
                 }
             }
             // Continue animation
@@ -131,7 +127,7 @@ class GameBase {
     async onInitialize() {
         throw new Error('onInitialize() must be implemented by inheriting child class');
     }
-    async gameLoop(deltaTime) {
+    async gameLoop(deltaTime, runtimeContext = this.runtimeContext) {
         throw new Error('gameLoop must be implemented by inheriting child class');
     }
 

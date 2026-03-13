@@ -5,7 +5,7 @@
 // bulletManager.js
 
 import DebugFlag from '../../../engine/utils/debugFlag.js';
-import DebugFlag from '';
+
 import SystemUtils from "../../../engine/utils/systemUtils.js";
 import BulletFactory from "./bulletFactory.js";
 
@@ -17,7 +17,7 @@ class BulletManager {
   static SHIP_MAX_BULLETS = 5;
 
   // Debug mode enabled via URL parameter: game.html?bulletManager
-  static DEBUG = DebugFlag.has('');
+  static DEBUG = DebugFlag.has('bulletManager');
 
   constructor() {
     this.bullets = [];

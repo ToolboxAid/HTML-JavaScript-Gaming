@@ -4,7 +4,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 // 03/24/2025
 // gameUI.js
 
-import DebugFlag from '';
+
 import CanvasUtils from '../../../engine/core/canvas.js';
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
@@ -12,8 +12,8 @@ import SystemUtils from '../../../engine/utils/systemUtils.js';
 class GameUI {
 
     // Debug mode enabled via URL parameter: game.html?gameUI
-    static DEBUG = DebugFlag.has('');
-    static DEBUG1 = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('gameUI');
+    static DEBUG1 = DebugFlag.has('gameUI1');
 
     // Frame Rate: 60 FPS
     // Canvas Size: 224x256 pixels (original arcade)

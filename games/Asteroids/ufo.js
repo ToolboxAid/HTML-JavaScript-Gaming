@@ -5,7 +5,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 // 11/20/2024
 // ufo.js
 
-import DebugFlag from '';
+
 import ObjectVector from '../../engine/objects/objectVector.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
 import CanvasUtils from '../../engine/core/canvas.js';
@@ -52,7 +52,7 @@ class UFO extends ObjectVector {
     };
 
     // Debug mode enabled via URL parameter: game.html?ufo
-    static DEBUG = DebugFlag.has('');
+    static DEBUG = DebugFlag.has('ufo');
 
     // Constants
     static SPEED = 80;
