@@ -7,12 +7,15 @@ This repo supports both shape-driven and sprite-driven rendering. The sprite-rel
 The main files and folders tied to sprite work are:
 
 - `engine/core/sprite.js`
+- `engine/core/spriteFrameUtils.js`
 - `engine/objects/objectSprite.js`
 - `engine/objects/objectPNG.js`
 - `tools/SpriteEditor/`
 - `engine/renderers/assets/palettes.js`
 - `engine/renderers/assets/palettesList.js`
 - `engine/renderers/assets/colors.js`
+- `engine/animation/spriteController.js`
+- `engine/animation/pngController.js`
 
 Together, these suggest a flexible path that supports:
 
@@ -26,6 +29,9 @@ Together, these suggest a flexible path that supports:
 ### `engine/core/sprite.js`
 A shared sprite utility layer.
 
+### `engine/core/spriteFrameUtils.js`
+Shared frame/JSON conversion helpers used by sprite workflows.
+
 ### `engine/objects/objectSprite.js`
 An object type designed for sprite-backed entities.
 
@@ -34,6 +40,9 @@ A useful option for image-based entities that rely on PNG assets.
 
 ### `tools/SpriteEditor/`
 The authoring side of the workflow. This is where sprite design and iteration can become faster and more consistent.
+
+### `engine/animation/*Controller.js`
+Animation state and frame progression controllers for sprite and PNG object flows.
 
 ## Conceptual sprite pipeline
 
@@ -192,6 +201,23 @@ For larger characters or repeated animations, sprite-sheet support can reduce pe
 
 ### 5. Let the Sprite Editor define more of the pipeline
 The more consistent the editor output becomes, the easier every game becomes to maintain.
+
+## Testing the sprite system
+
+Sprite and animation behavior is covered by Node-safe engine tests in:
+
+- `tests/engine/animation/spriteControllerTest.js`
+- `tests/engine/animation/pngControllerTest.js`
+- `tests/engine/animation/animationStateBridgeTest.js`
+- `tests/engine/objects/objectSpriteFrameConfigTest.js`
+
+Run all default engine tests from the repository root:
+
+```bash
+npm test
+```
+
+The test runner loads entries from `tests/engine/testManifest.js`.
 
 ## Bottom line
 
