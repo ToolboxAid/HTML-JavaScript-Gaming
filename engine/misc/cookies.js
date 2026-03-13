@@ -21,8 +21,30 @@ class Cookies {
         throw new Error('Cookies is a utility class with only static methods. Do not instantiate.');
     }
 
+    static ensureDocument() {
+        if (typeof document === 'undefined') {
+            throw new Error('Cookies requires a browser document.');
+        }
+    }
+
+    static getCookiePairs() {
+        this.ensureDocument();
+
+        if (!document.cookie || document.cookie.trim() === '') {
+            return [];
+        }
+
+        return document.cookie.split('; ');
+    }
+
     /** Set a cookie with a specified name, value, and optional settings. */
     static set(name, value, options = {}) {
+        this.ensureDocument();
+
+        if (typeof name !== 'string' || name.trim() === '') {
+            throw new Error('name must be a non-empty string.');
+        }
+
         let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 
         if (options.expires) {
@@ -53,14 +75,26 @@ class Cookies {
         }
 
         document.cookie = cookieString;
-        console.log(`Cookie set: ${cookieString}`);
+        if (Cookies.DEBUG) {
+            console.log(`Cookie set: ${cookieString}`);
+        }
     }
 
     /** Get the value of a cookie by name. */
-    static get(name) {
-        const cookies = document.cookie.split('; ');
+    static get(name, options = {}) {
+        if (typeof name !== 'string' || name.trim() === '') {
+            throw new Error('name must be a non-empty string.');
+        }
+
+        const cookies = this.getCookiePairs();
         for (const cookie of cookies) {
-            const [key, value] = cookie.split('=');
+            const separatorIndex = cookie.indexOf('=');
+            if (separatorIndex < 0) {
+                continue;
+            }
+
+            const key = cookie.slice(0, separatorIndex);
+            const value = cookie.slice(separatorIndex + 1);
             if (decodeURIComponent(key) === name) {
                 return decodeURIComponent(value);
             }
@@ -71,20 +105,34 @@ class Cookies {
     /** Delete a cookie by name. */
     static delete(name, options = {}) {
         this.set(name, '', { ...options, expires: -1 });
-        console.log(`Cookie deleted: ${name}`);
+        if (Cookies.DEBUG) {
+            console.log(`Cookie deleted: ${name}`);
+        }
     }
 
     /** Get all cookies as an object. */
     static getAll() {
+        const pairs = this.getCookiePairs();
         const cookies = {};
-        document.cookie.split('; ').forEach(cookie => {
-            const [key, value] = cookie.split('=');
+
+        pairs.forEach((cookie) => {
+            const separatorIndex = cookie.indexOf('=');
+            if (separatorIndex < 0) {
+                return;
+            }
+
+            const key = cookie.slice(0, separatorIndex);
+            const value = cookie.slice(separatorIndex + 1);
             cookies[decodeURIComponent(key)] = decodeURIComponent(value);
         });
         return cookies;
     }
 
     static sanitizeCookieName(name) {
+        if (typeof name !== 'string' || name.length === 0) {
+            throw new Error('name must be a non-empty string.');
+        }
+
         return name
             .replace(/%[0-9A-Fa-f]{2}/g, match => '-')
             .replace(/\//g, '');

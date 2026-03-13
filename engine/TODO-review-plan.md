@@ -26,7 +26,7 @@ Objective:
 - [x] Review `engine/input`.
 - [x] Review `engine/messages`.
 - [x] Review `engine/lifecycle`.
-- [ ] Review `engine/misc`.
+- [x] Review `engine/misc`.
 - [ ] Review `engine/output`.
 - [ ] Review `engine/animation`.
 - [ ] Review top-level engine files such as `canvas.js`, `gameBase.js`, `gameObject.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameObjectSystem.js`, `sprite.js`, and `tileMap.js`.
