@@ -29,7 +29,7 @@ Objective:
 - [x] Review `engine/misc`.
 - [x] Review `engine/output`.
 - [x] Review `engine/animation`.
-- [ ] Review top-level engine files such as `canvas.js`, `gameBase.js`, `gameObject.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameObjectSystem.js`, `sprite.js`, and `tileMap.js`.
+- [x] Review top-level engine files such as `canvas.js`, `gameBase.js`, `gameObject.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameObjectSystem.js`, `sprite.js`, and `tileMap.js`.
 
 ## Folder and naming review
 

@@ -10,7 +10,9 @@ import Font5x6 from './font5x6.js';
 class Sprite {
 
     // Enable debug mode: game.html?sprite
-    static DEBUG = new URLSearchParams(window.location.search).has('sprite');
+    static DEBUG = typeof window !== 'undefined'
+        && window.location
+        && new URLSearchParams(window.location.search).has('sprite');
 
     /** Constructor for Sprite class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.

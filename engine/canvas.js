@@ -11,7 +11,9 @@ import Sprite from './sprite.js';
 
 class CanvasUtils {
     // Enable debug mode: game.html?canvasUtils
-    static DEBUG = new URLSearchParams(window.location.search).has('canvasUtils');
+    static DEBUG = typeof window !== 'undefined'
+        && window.location
+        && new URLSearchParams(window.location.search).has('canvasUtils');
 
     /** Constructor for CanvasUtils class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.
@@ -29,7 +31,6 @@ class CanvasUtils {
 
     static canvas = null;
     static ctx = null;
-    static config = null;
 
     static config = {
         width: 1024,
@@ -60,7 +61,7 @@ class CanvasUtils {
         }
 
         if (!config) {
-            console.error("No 'canvaseConfig' provided");
+            console.error("No 'canvasConfig' provided");
         }
         const schema = {
             width: 'number',           // Game area width
@@ -82,16 +83,16 @@ class CanvasUtils {
     }
 
     static getCanvasWidth() {
-        return this.canvas.width;
+        return this.canvas?.width ?? 0;
     }
     static getCanvasHeight() {
-        return this.canvas.height;
+        return this.canvas?.height ?? 0;
     }
     static getConfigWidth() {
-        return this.config.width;
+        return this.config?.width ?? 0;
     }
     static getConfigHeight() {
-        return this.config.height;
+        return this.config?.height ?? 0;
     }
 
     /**

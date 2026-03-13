@@ -12,7 +12,9 @@ import Timer from "./utils/timer.js";
 class GameBase {
 
     // Enable debug mode: game.html?gameBase
-    static DEBUG = new URLSearchParams(window.location.search).has('gameBase');
+    static DEBUG = typeof window !== 'undefined'
+        && window.location
+        && new URLSearchParams(window.location.search).has('gameBase');
 
     static isInitialized = false;
     static lastTimestamp = performance.now();
@@ -21,6 +23,7 @@ class GameBase {
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {
         this.isDestroyed = false;
         this.isPageHidden = document.hidden;
+        this.animate = this.animate.bind(this);// bind once
         this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
         this.handlePageHide = this.handlePageHide.bind(this);
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
@@ -41,8 +44,6 @@ class GameBase {
                 this.constructor.isInitialized = false;
             });
 
-        // Bind animation method to instance
-        this.animate = this.animate.bind(this);// bind once
     }
 
     handlePageHide() {
@@ -126,11 +127,6 @@ class GameBase {
         } catch (error) {
             console.error('Animation error:', error);
         }
-    }
-
-    // Abstract method
-    async gameLoop() {
-        throw new Error('gameLoop must be implemented');
     }
 
     async onInitialize() {

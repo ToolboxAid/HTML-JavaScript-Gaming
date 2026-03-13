@@ -32,9 +32,12 @@ class GameObjectSystem {
             return false;
         }
 
-        if (!this.registry.register(gameObject)) {
+        try {
+            this.registry.register(gameObject);
+        } catch (error) {
             ObjectDebug.error(this.debug, 'Failed to register GameObject, rolling back manager add', {
-                id: gameObject.ID
+                id: gameObject.ID,
+                error: error.message
             });
 
             this.manager.removeGameObject(gameObject);
