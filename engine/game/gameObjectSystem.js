@@ -5,6 +5,7 @@
 
 import GameObjectUtils from './gameObjectUtils.js';
 import GameObjectManager from './gameObjectManager.js';
+import GameCollision from './gameCollision.js';
 import GameObjectRegistry from './gameObjectRegistry.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import ObjectValidation from '../utils/objectValidation.js';
@@ -18,6 +19,7 @@ class GameObjectSystem {
         this.debug = debug;
         this.manager = new GameObjectManager(debug);
         this.registry = new GameObjectRegistry(debug);
+        this.collision = GameCollision;
 
         ObjectDebug.log(this.debug, 'GameObjectSystem created');
     }
@@ -102,6 +104,22 @@ class GameObjectSystem {
 
     getCount() {
         return this.manager.getCount();
+    }
+
+    intersects(objectA, objectB) {
+        return this.collision.intersects(objectA, objectB);
+    }
+
+    intersectsSides(objectA, objectB) {
+        return this.collision.intersectsSides(objectA, objectB);
+    }
+
+    isOutOfBounds(object, margin = 0) {
+        return this.collision.isOutOfBounds(object, margin);
+    }
+
+    getOutOfBoundsSides(object, margin = 0) {
+        return this.collision.getOutOfBoundsSides(object, margin);
     }
 
     clear() {

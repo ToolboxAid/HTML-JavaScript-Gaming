@@ -74,14 +74,12 @@ Objective:
 
 Engine surface review results:
 
-- Applied first API consistency pass for input/gamepad lifecycle: standardized `GameControllers` orchestration on `start/stop/destroy` and retained `GamepadManager.disconnect()` as a backward-compatible alias to `stop()`.
 
-- Noted discoverability gap: bounds/collision helpers are split across object methods plus `BoundaryUtils`/`CollisionUtils`; adding a documented canonical entry point would improve ergonomics.
 - Duplication candidate: repeated debug-query static patterns and repeated destroy-guard/cleanup boilerplate across objects; both are good targets for shared helper extraction later.
 - Candidate additions captured for follow-up (feature gap, not bug):
   - Lightweight engine API conventions doc for `init/update/draw/destroy/start/stop`.
   - Optional world/runtime context object to reduce static singleton coupling.
-  - Canonical collision/bounds facade at game-system level to simplify call-site discovery.
+  - Implemented canonical collision/bounds facade: `engine/game/gameCollision.js`, exposed via `GameObjectSystem.collision` plus convenience delegation methods.
 
 ## Security and safety review
 

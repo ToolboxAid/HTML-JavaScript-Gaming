@@ -15,6 +15,7 @@ export const engineTestEntries = [
   { name: 'cookies', modulePath: './misc/cookiesTest.js', exportName: 'testCookies' },
   { name: 'outputCore', modulePath: './output/outputCoreTest.js', exportName: 'testOutputCore' },
   { name: 'gameObjectSystem', modulePath: './game/gameObjectSystemTest.js', exportName: 'testGameObjectSystem' },
+  { name: 'gameCollision', modulePath: './game/gameCollisionTest.js', exportName: 'testGameCollision' },
   { name: 'gameObjectUtils', modulePath: './game/gameObjectUtilsTest.js', exportName: 'testGameObjectUtils' },
   { name: 'gameUtils', modulePath: './game/gameUtilsTest.js', exportName: 'testGameUtils' },
   { name: 'angleUtils', modulePath: './math/angleUtilsTest.js', exportName: 'testAngleUtils' },
