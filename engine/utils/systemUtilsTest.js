@@ -67,6 +67,10 @@ export function testSystemUtils(assert) {
     assert(SystemUtils.cleanupArray(arr), "cleanupArray failed for valid array");
     assert(arr.length === 0, "cleanupArray did not empty array");
 
+    let mixedArr = [null, { foo: 'bar' }, { destroy: () => true }];
+    assert(SystemUtils.cleanupArray(mixedArr), "cleanupArray failed for mixed array contents");
+    assert(mixedArr.length === 0, "cleanupArray did not empty mixed array");
+
     // Test cleanupMap
     let map = new Map();
     map.set("key1", { destroy: () => { } });

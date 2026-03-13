@@ -166,49 +166,29 @@ class SystemUtils {
         }
     }
 
-static cleanupArray(array) {
-    if (!Array.isArray(array)) {
-        return false;
-    }
-
-    let success = true;
-
-    for (let i = array.length - 1; i >= 0; i--) {
-        const element = array[i];
-
-        if (element == null) {
-            array[i] = null;
-            continue;
+    static cleanupArray(array) {
+        if (!Array.isArray(array)) {
+            return false;
         }
 
-        // already destroyed / already nulled object
-        if (
-            element.ID === null ||
-            element.x === null ||
-            element.y === null ||
-            element.width === null ||
-            element.height === null ||
-            element.isDestroyed === true
-        ) {
-            array[i] = null;
-            continue;
-        }
+        let success = true;
 
-        if (typeof element.destroy === "function") {
-            try {
-                element.destroy();
-            } catch (error) {
-                console.warn(`Failed to destroy element at index ${i}:`, element);
-                success = false;
+        for (let i = array.length - 1; i >= 0; i--) {
+            const element = array[i];
+
+            if (element != null && typeof element.destroy === "function") {
+                if (!SystemUtils.destroy(element)) {
+                    console.warn(`Failed to destroy element at index ${i}:`, element);
+                    success = false;
+                }
             }
+
+            array[i] = null;
         }
 
-        array[i] = null;
+        array.length = 0;
+        return success;
     }
-
-    array.length = 0;
-    return success;
-}
 
     static cleanupMap(map) {
         if (!(map instanceof Map)) {
