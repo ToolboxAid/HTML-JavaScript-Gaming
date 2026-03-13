@@ -77,24 +77,15 @@ class ImageAssetCache {
         tempCanvas.height = png.height;
 
         const tempCtx = tempCanvas.getContext('2d');
+        if (!tempCtx) {
+            throw new Error('Unable to create 2D canvas context for image transparency processing.');
+        }
+
         tempCtx.drawImage(png, 0, 0);
 
         const imageData = tempCtx.getImageData(0, 0, png.width, png.height);
         const data = imageData.data;
-
-        const tempDiv = document.createElement('div');
-        tempDiv.style.backgroundColor = transparentColor;
-        document.body.appendChild(tempDiv);
-
-        const colorStyle = window.getComputedStyle(tempDiv).backgroundColor;
-        document.body.removeChild(tempDiv);
-
-        const matches = colorStyle.match(/\d+/g);
-        if (!matches || matches.length < 3) {
-            throw new Error(`Unable to parse transparent color: ${transparentColor}`);
-        }
-
-        const [r, g, b] = matches.map(Number);
+        const [r, g, b] = this.resolveColorChannels(transparentColor);
 
         for (let i = 0; i < data.length; i += 4) {
             if (data[i] === r && data[i + 1] === g && data[i + 2] === b) {
@@ -108,6 +99,24 @@ class ImageAssetCache {
         transparentImage.src = tempCanvas.toDataURL();
 
         return transparentImage;
+    }
+
+    static resolveColorChannels(color) {
+        const colorCanvas = document.createElement('canvas');
+        colorCanvas.width = 1;
+        colorCanvas.height = 1;
+
+        const colorCtx = colorCanvas.getContext('2d');
+        if (!colorCtx) {
+            throw new Error('Unable to create 2D canvas context for color resolution.');
+        }
+
+        colorCtx.clearRect(0, 0, 1, 1);
+        colorCtx.fillStyle = color;
+        colorCtx.fillRect(0, 0, 1, 1);
+
+        const pixel = colorCtx.getImageData(0, 0, 1, 1).data;
+        return [pixel[0], pixel[1], pixel[2]];
     }
 }
 
