@@ -3,7 +3,7 @@
 // 02/14/2025
 // collisionUtils.js
 
-import CanvasUtils from "../../engine/core/canvas.js";
+import CanvasUtils from "../core/canvas.js";
 import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
 import VectorShapeUtils from "./vectorShapeUtils.js";

@@ -5,7 +5,7 @@
 
 import GameControllerMap from "./gameControllerMap.js";
 
-import EventBus from '../../../engine/messages/eventBus.js';
+import EventBus from '../../messages/eventBus.js';
 
 export const GAMEPAD_EVENT = 'controllerChange';
 

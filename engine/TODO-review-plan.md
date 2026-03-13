@@ -38,47 +38,41 @@ Objective:
 - [x] Identify modules that should be moved closer to related systems or utilities.
 - [x] Review naming consistency across folders, files, classes, methods, and variables.
 - [x] Identify ambiguous, outdated, or misleading names.
-- [ ] Check whether singular vs plural naming is used consistently.
+- [x] Check whether singular vs plural naming is used consistently.
 - [x] Review whether folder boundaries encourage good reuse or create confusion.
 - [x] Identify top-level files that should move into a more specific engine subfolder.
 
-File placement review results:
-
-- Kept top-level compatibility re-export shims for `engine/gameObject*.js` to preserve existing game imports.
-- Updated game-domain test imports to target canonical `engine/game/` module locations.
-- Moved render asset modules (`colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js`) into `engine/renderers/assets/` and removed top-level compatibility shims after updating consumers.
-
-Naming consistency review results:
-
-- Normalized typo/casing hotspots in core modules (`dimensions`, `currentScrollPosX`, `spamSprite2RGB`, and inheriting wording in abstract errors).
-- Verified keyboard input API call sites now consistently use `getKeysPressed`.
-- File/class casing style is mostly consistent (`camelCase.js` file names with PascalCase classes for class modules).
-- Remaining naming candidates (separate pass): evaluate whether `misc` should become a more specific domain name.
-
-Ambiguous/outdated/misleading name review results:
-
-- Renamed message example scripts from ambiguous `testSender.js`/`testReceiver.js` to explicit `messages/examples/senderExample.js` and `messages/examples/receiverExample.js`.
-- Fixed stale/overly verbose import paths in `messages/eventBus.js` and `messages/receiver.js` to direct local imports.
-- Corrected misleading header comment in `messages/eventBus.js` (`.js` -> `eventBus.js`).
-- Remaining ambiguous names for dedicated rename pass: `misc` folder scope, `runTest.js` filename vs exported `runTests`, and legacy sprite metadata keys like `spriteimage`/`framesPerSprite` used by editor JSON schema.
-
 ## Architecture review
 
-- [ ] Evaluate module boundaries and shared abstractions.
-- [ ] Check for circular dependencies and hidden coupling.
-- [ ] Review naming consistency and API ergonomics.
-- [ ] Evaluate separation of concerns across engine layers.
-- [ ] Review inheritance vs composition choices.
-- [ ] Verify inheritance chains are shallow, intentional, and not carrying unrelated responsibilities.
-- [ ] Check whether subclasses truly satisfy parent contracts without surprising behavior.
-- [ ] Review ownership of data and state across modules, classes, and systems.
-- [ ] Verify that each piece of mutable state has a clear owner.
-- [ ] Identify shared mutable objects that should be isolated, copied, or encapsulated.
-- [ ] Review where state should live: object instance, manager, system, config, or runtime context.
-- [ ] Check lifecycle ownership for created resources such as listeners, timers, assets, and child objects.
-- [ ] Verify destroy/cleanup responsibilities are clearly owned and consistently enforced.
-- [ ] Review whether APIs expose too much internal state or allow unsafe mutation.
-- [ ] Identify unstable or overly broad engine APIs.
+- [x] Evaluate module boundaries and shared abstractions.
+- [x] Check for circular dependencies and hidden coupling.
+- [x] Review naming consistency and API ergonomics.
+- [x] Evaluate separation of concerns across engine layers.
+- [x] Review inheritance vs composition choices.
+- [x] Verify inheritance chains are shallow, intentional, and not carrying unrelated responsibilities.
+- [x] Check whether subclasses truly satisfy parent contracts without surprising behavior.
+- [x] Review ownership of data and state across modules, classes, and systems.
+- [x] Verify that each piece of mutable state has a clear owner.
+- [x] Identify shared mutable objects that should be isolated, copied, or encapsulated.
+- [x] Review where state should live: object instance, manager, system, config, or runtime context.
+- [x] Check lifecycle ownership for created resources such as listeners, timers, assets, and child objects.
+- [x] Verify destroy/cleanup responsibilities are clearly owned and consistently enforced.
+- [x] Review whether APIs expose too much internal state or allow unsafe mutation.
+- [x] Identify unstable or overly broad engine APIs.
+
+Architecture review results:
+
+- Module boundaries are mostly clear by domain (`core`, `objects`, `renderers`, `input`, `messages`, `game`), with shared validation/debug helpers reused consistently.
+- Import-hygiene fixes applied for boundary clarity: normalized legacy root-coupled imports in `physics` and `input/controller` to local domain-relative paths.
+- Static-import pass found no direct circular import loops in current `engine/*.js` modules.
+- Primary hidden coupling remains: `physics/boundaryUtils` and `physics/collisionUtils` depend on `core/canvas` dimensions, which mixes simulation logic with render/runtime globals.
+- Inheritance chain (`ObjectStatic -> ObjectDynamic -> ObjectKillable -> ObjectSprite/ObjectPNG/ObjectVector`) is intentional and currently manageable, but still carries broad responsibilities in middle layers (`ObjectKillable` + lifecycle/animation adapters).
+- Subclass contracts are mostly explicit (`handleAliveStatus`/`handleDyingStatus`/`handleDeadStatus`, `destroy` chaining). No major contract break detected in reviewed object classes.
+- State ownership is generally clear: object-local mutable state on instances, collection state in managers/registries, and animation counters centralized in lifecycle/controller helpers.
+- Shared mutable singletons that remain architecture pressure points: `CanvasUtils` static canvas/context/config, `EventBus` singleton instance, and static ID allocation in `ObjectStatic`.
+- Lifecycle ownership is mostly enforced: input/gamepad listeners support `start`/`stop`/`destroy`, receiver unsubscribes cleanly, and object destroy paths consistently cascade with guard checks.
+- API surface is mostly defensive, but broad static utility classes (`CanvasUtils`, `CollisionUtils`, `SystemUtils`) still expose wide cross-domain access and should be split gradually by responsibility.
+- Unstable/broad API candidates to track: sprite JSON metadata shape (`spriteimage`, `framesPerSprite`) and engine-global debug/query-param statics used across many modules.
 
 ## Engine surface review
 
