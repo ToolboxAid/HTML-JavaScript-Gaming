@@ -72,7 +72,7 @@ class BulletManager {
   }
 
   shipShootBullet(ship) {
-    if (!this.canShipShoot()) return;
+    if (!this.canShipShoot()) return null;
 
     const bullet = BulletFactory.createShipBullet(ship);
     this.bullets.push(bullet);
@@ -84,6 +84,8 @@ class BulletManager {
       });
       console.log("Ship bullet fired:", bullet);
     }
+
+    return bullet;
   }
 
   canShipShoot() {
@@ -91,7 +93,7 @@ class BulletManager {
   }
 
   ufoShootBullet(ufo, ship, options = {}) {
-    if (!ufo.isAlive()) return;
+    if (!ufo.isAlive()) return null;
 
     const bullet = BulletFactory.createUfoBullet(ufo, ship, options);
     this.bullets.push(bullet);
@@ -102,6 +104,8 @@ class BulletManager {
         total: this.bullets.length
       });
     }
+
+    return bullet;
   }
 
   hasActiveBullets() {

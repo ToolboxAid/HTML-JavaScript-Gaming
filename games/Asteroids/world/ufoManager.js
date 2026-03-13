@@ -161,10 +161,10 @@ class UFOManager extends CanExplode {
         const ufo = this.getUfo();
 
         if (!ufo || typeof ufo.isAlive !== 'function' || !ufo.isAlive()) {
-            return;
+            return null;
         }
 
-        this.bulletManager.ufoShootBullet(ufo, ship, {
+        return this.bulletManager.ufoShootBullet(ufo, ship, {
             aimErrorDegrees: DifficultyProfile.getSmallUfoAimError(this.level)
         });
     }

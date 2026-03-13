@@ -28,7 +28,11 @@ class AsteroidsWeaponSystem {
             return;
         }
 
-        world.bulletManager.shipShootBullet(ship);
+        const bullet = world.bulletManager.shipShootBullet(ship);
+
+        if (!bullet) {
+            return;
+        }
 
         if (this.audioPlayer) {
             this.audioPlayer.playAudio('fire.wav', 0.5);
@@ -49,7 +53,12 @@ class AsteroidsWeaponSystem {
             return;
         }
 
-        ufoManager.fireBullet(ship);
+        const bullet = ufoManager.fireBullet(ship);
+
+        if (!bullet) {
+            return;
+        }
+
         this.ufoBulletTimer.reset();
         this.ufoBulletTimer.start();
     }
