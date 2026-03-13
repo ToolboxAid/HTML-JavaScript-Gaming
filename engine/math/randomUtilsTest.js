@@ -6,18 +6,21 @@
 import RandomUtils from './randomUtils.js';
 
 export function testRandomUtils(assert) {
-    if (false) {
-        // Test randomBoolean: It should return either true or false
-        let trueCount = 0;
-        let falseCount = 0;
-        for (let i = 0; i < 1000; i++) {
-            const result = RandomUtils.randomBoolean();
-            assert(result === true || result === false, `randomBoolean failed on iteration ${i}`);
-            if (result) trueCount++;
-            else falseCount++;
+    // Test randomBoolean: It should return either true or false
+    let sawTrue = false;
+    let sawFalse = false;
+    for (let i = 0; i < 1000; i++) {
+        const result = RandomUtils.randomBoolean();
+        assert(result === true || result === false, `randomBoolean failed on iteration ${i}`);
+        if (result) {
+            sawTrue = true;
+        } else {
+            sawFalse = true;
         }
-        console.log(`randomBoolean results: True: ${trueCount}, False: ${falseCount}`);
     }
+    assert(sawTrue, "randomBoolean never returned true");
+    assert(sawFalse, "randomBoolean never returned false");
+
     // Test randomRange: Integer values should be within the expected range
     for (let i = 0; i < 1000; i++) {
         const randomInt = RandomUtils.randomInt(1, 10);
