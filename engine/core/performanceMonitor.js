@@ -63,8 +63,8 @@ class PerformanceMonitor {
         const validation = SystemUtils.validateConfig("PerformanceMonitor", config, schema);
         if (validation) {
             this.performanceConfig = config;
-            this.dimentions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
-            //console.log(this.dimentions);
+            this.dimensions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
+            //console.log(this.dimensions);
             console.log(`PerformanceMonitor.init complete.`);
             return true;
         }
@@ -148,9 +148,9 @@ class PerformanceMonitor {
         // {width: 126, height: 24} console.log(CanvasUtils.calculateTextMetrics("FPS: 60", 30, "monospace")); 
         // {width: 307, height: 29} console.log(CanvasUtils.calculateTextMetrics("MEM: 30.66/33.08MB", 30, "monospace")); 
 
-        //this.dimentions
-        const width = this.dimentions.width;
-        const height = this.dimentions.height + (this.dimentions.height / 5);
+        //this.dimensions
+        const width = this.dimensions.width;
+        const height = this.dimensions.height + (this.dimensions.height / 5);
 
         let newY = this.performanceConfig.y;
         const lines = 5;

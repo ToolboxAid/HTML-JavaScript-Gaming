@@ -130,10 +130,10 @@ class GameBase {
     }
 
     async onInitialize() {
-        throw new Error('onInitialize() must be implemented by inheritting child class');
+        throw new Error('onInitialize() must be implemented by inheriting child class');
     }
     async gameLoop(deltaTime) {
-        throw new Error('gameLoop must be implemented by inheritting child class');
+        throw new Error('gameLoop must be implemented by inheriting child class');
     }
 
     destroy() {

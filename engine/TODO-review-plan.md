@@ -36,7 +36,7 @@ Objective:
 - [x] Review whether folders reflect clear engine concepts and responsibilities.
 - [x] Check whether files are located in the most appropriate folder.
 - [x] Identify modules that should be moved closer to related systems or utilities.
-- [ ] Review naming consistency across folders, files, classes, methods, and variables.
+- [x] Review naming consistency across folders, files, classes, methods, and variables.
 - [ ] Identify ambiguous, outdated, or misleading names.
 - [ ] Check whether singular vs plural naming is used consistently.
 - [x] Review whether folder boundaries encourage good reuse or create confusion.
@@ -48,6 +48,13 @@ File placement review results:
 - Kept top-level compatibility re-export shims for `engine/gameObject*.js` to preserve existing game imports.
 - Updated game-domain test imports to target canonical `engine/game/` module locations.
 - Remaining candidate moves (defer to naming pass): `colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js` closer to `core`/render assets grouping.
+
+Naming consistency review results:
+
+- Normalized typo/casing hotspots in core modules (`dimensions`, `currentScrollPosX`, `spamSprite2RGB`, and inheriting wording in abstract errors).
+- Verified keyboard input API call sites now consistently use `getKeysPressed`.
+- File/class casing style is mostly consistent (`camelCase.js` file names with PascalCase classes for class modules).
+- Remaining naming candidates (separate pass): clarify asset-module grouping names (`colors`, `font5x6`, `palettes`, `palettesList`) and evaluate whether `misc` should become a more specific domain name.
 
 ## Architecture review
 

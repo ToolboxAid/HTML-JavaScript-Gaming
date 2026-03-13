@@ -98,7 +98,7 @@ class TileMap {
         this.canvasMidPoint = 0;
         this.scrollMax = 0;
 
-        this.currentscrollPosX = 0;
+        this.currentScrollPosX = 0;
     }
 
     setTileMapInfo(scrollPosX = 0, tileSize = 40) {
@@ -154,7 +154,7 @@ class TileMap {
             this.scrollPosX = this.scrollMax;
         }
 
-        this.currentscrollPosX = this.scrollPosX + hero.x;
+        this.currentScrollPosX = this.scrollPosX + hero.x;
 
         if (false) {
             CanvasUtils.ctx.fillStyle = "white";
@@ -166,10 +166,10 @@ class TileMap {
             CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), accross, 70);
             CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), accross, 80);
             CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), accross, 90);
-            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentscrollPosX), accross, 100);
-            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentscrollPosX + hero.width), accross, 110);
+            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentScrollPosX), accross, 100);
+            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentScrollPosX + hero.width), accross, 110);
 
-            //console.log("Cur Scroll X:", this.currentscrollPosX, "% x travel:", (this.currentscrollPosX / this.tileSetWidth));
+            //console.log("Cur Scroll X:", this.currentScrollPosX, "% x travel:", (this.currentScrollPosX / this.tileSetWidth));
             //console.log("--------------------------------------");
 
 
@@ -206,7 +206,7 @@ class TileMap {
             // Iterate over each column in a row
             for (let col = 0; col < currentRow.length; col++) {
                 this.setTileColor(currentRow[col]);
-                let offset = this.currentscrollPosX * layerSpeeds[layer];
+                let offset = this.currentScrollPosX * layerSpeeds[layer];
                 if (layer === heroLayer) {
                     offset = (this.scrollPosX * layerSpeeds[layer])
                 }

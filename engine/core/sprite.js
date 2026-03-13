@@ -177,7 +177,7 @@ class Sprite {
         }
     }
 
-    static spamSprit2RGB = 2;
+    static spamSprite2RGB = 2;
     static convert2RGB(jsonSprite, paletteArray = null) {
         let paletteName = jsonSprite.metadata.palette;
         if (paletteName === 'custom') {
@@ -191,15 +191,15 @@ class Sprite {
             for (let i = 0; i < jsonSprite.layers.length; i++) {
                 const layerData = Sprite.getLayerData(jsonSprite, i);
 
-                if (Sprite.spamSprit2RGB++ < 2) {
-                    console.log(`${Sprite.spamSprit2RGB}-1) ${JSON.stringify(layerData)}`);
-                    console.log(`${Sprite.spamSprit2RGB}-2) ${paletteName}, ${JSON.stringify(Palettes.get())}`);
+                if (Sprite.spamSprite2RGB++ < 2) {
+                    console.log(`${Sprite.spamSprite2RGB}-1) ${JSON.stringify(layerData)}`);
+                    console.log(`${Sprite.spamSprite2RGB}-2) ${paletteName}, ${JSON.stringify(Palettes.get())}`);
                 }
 
                 Sprite.updateLayerData(layerData);
 
-                if (Sprite.spamSprit2RGB < 2) {
-                    console.log(`${Sprite.spamSprit2RGB}-3) ${JSON.stringify(jsonSprite)}`);
+                if (Sprite.spamSprite2RGB < 2) {
+                    console.log(`${Sprite.spamSprite2RGB}-3) ${JSON.stringify(jsonSprite)}`);
                 }
 
                 Sprite.setLayerData(jsonSprite, layerData, i);
