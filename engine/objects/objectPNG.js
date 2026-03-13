@@ -7,7 +7,7 @@ import ObjectKillable from './objectKillable.js';
 import SystemUtils from '../utils/systemUtils.js';
 import AngleUtils from '../math/angleUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
 import PngRenderer from '../renderers/pngRenderer.js';
@@ -102,7 +102,7 @@ class ObjectPNG extends ObjectKillable {
                 this.assetState.setLoaded(png);
                 this.assetState.applyTo(this);
 
-                ObjectDebug.log(ObjectPNG.DEBUG, 'Loaded PNG sprite', {
+                DebugLog.log(ObjectPNG.DEBUG, null, 'Loaded PNG sprite', {
                     path: spritePath,
                     imageWidth: png.width,
                     imageHeight: png.height,
@@ -232,7 +232,7 @@ class ObjectPNG extends ObjectKillable {
             return false;
         }
 
-        ObjectDebug.log(ObjectPNG.DEBUG, `Destroying ${SystemUtils.getObjectType(this)}`, {
+        DebugLog.log(ObjectPNG.DEBUG, null, `Destroying ${SystemUtils.getObjectType(this)}`, {
             position: { x: this.x, y: this.y },
             sprite: {
                 path: this.spritePath,
@@ -273,3 +273,4 @@ class ObjectPNG extends ObjectKillable {
 }
 
 export default ObjectPNG;
+

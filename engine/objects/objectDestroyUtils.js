@@ -3,7 +3,7 @@
 // 03/13/2026
 // objectDestroyUtils.js
 
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 
 class ObjectDestroyUtils {
     constructor() {
@@ -16,7 +16,7 @@ class ObjectDestroyUtils {
         }
 
         if (target.isDestroyed || extraInvalid) {
-            ObjectDebug.warn(debugEnabled, `${label} already destroyed`);
+            DebugLog.warn(debugEnabled, null, `${label} already destroyed`);
             return true;
         }
 
@@ -25,3 +25,4 @@ class ObjectDestroyUtils {
 }
 
 export default ObjectDestroyUtils;
+

@@ -5,6 +5,7 @@
 
 import SystemUtils from '../utils/systemUtils.js';
 import DebugFlag from '../utils/debugFlag.js';
+import DebugLog from '../utils/debugLog.js';
 
 import CanvasText from './canvasText.js';
 import Colors from '../renderers/assets/colors.js';
@@ -55,16 +56,14 @@ class CanvasUtils {
             // Get the width and height of the canvas
             const width = canvas.width;
             const height = canvas.height;
-            if (this.DEBUG) {
-                console.log(`${canvas}, ${this.canvas}, Canvas width: ${width}, Canvas height: ${height}`);
-            }
+            DebugLog.log(this.DEBUG, 'CanvasUtils', `${canvas}, ${this.canvas}, Canvas width: ${width}, Canvas height: ${height}`);
         } else {
             alert('You need a modern browser to see this.');
             throw new Error('You need a modern browser to see this.');
         }
 
         if (!config) {
-            console.error("No 'canvasConfig' provided");
+            DebugLog.error('CanvasUtils', "No 'canvasConfig' provided");
         }
         const schema = {
             width: 'number',           // Game area width
@@ -80,9 +79,7 @@ class CanvasUtils {
             this.config = config;
         }
 
-        if (CanvasUtils.DEBUG) {
-            console.log(`CanvasUtils.init complete. `, canvas, this.config);
-        }
+        DebugLog.log(CanvasUtils.DEBUG, 'CanvasUtils', 'CanvasUtils.init complete.', canvas, this.config);
     }
 
     static getCanvasWidth() {

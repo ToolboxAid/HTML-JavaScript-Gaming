@@ -1,5 +1,5 @@
 import CanvasUtils from '../core/canvas.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import RendererGuards from './rendererGuards.js';
 
 class PngRenderer {
@@ -24,7 +24,7 @@ class PngRenderer {
         const newY = Math.round(object.y + normalizedOffsetY + (frameOffset.y * object.pixelSize));
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
-        ObjectDebug.log(object.constructor?.DEBUG, 'ObjectPNG frame debug', {
+        DebugLog.log(object.constructor?.DEBUG, null, 'ObjectPNG frame debug', {
             spritePath: object.spritePath,
             spriteX: object.spriteX,
             spriteY: object.spriteY,
@@ -197,4 +197,5 @@ class PngRenderer {
 }
 
 export default PngRenderer;
+
 

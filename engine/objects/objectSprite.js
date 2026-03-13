@@ -7,7 +7,7 @@ import Colors from '../renderers/assets/colors.js';
 import ObjectKillable from './objectKillable.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
 import SpriteRenderer from '../renderers/spriteRenderer.js';
@@ -129,7 +129,7 @@ setHit() {
         ObjectValidation.nonEmptyString(spriteColor, 'spriteColor');
 
         if (this.frameType === 'json') {
-            ObjectDebug.warn(ObjectSprite.DEBUG, 'setSpriteColor is not used for json/RGB sprite data.');
+            DebugLog.warn(ObjectSprite.DEBUG, null, 'setSpriteColor is not used for json/RGB sprite data.');
             return;
         }
 
@@ -141,7 +141,7 @@ setHit() {
             return;
         }
 
-        ObjectDebug.warn(ObjectSprite.DEBUG, `Invalid sprite color: ${spriteColor}`);
+        DebugLog.warn(ObjectSprite.DEBUG, null, `Invalid sprite color: ${spriteColor}`);
         this.spriteColor = Colors.getRandomColor();
     }
 
@@ -192,3 +192,4 @@ setHit() {
 }
 
 export default ObjectSprite;
+

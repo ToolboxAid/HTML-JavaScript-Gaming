@@ -4,7 +4,7 @@
 // 03/2026
 
 import GameObjectUtils from './gameObjectUtils.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import SystemUtils from '../utils/systemUtils.js';
 
@@ -19,7 +19,7 @@ class GameObjectManager {
         this.debug = debug;
         this.#activeGameObjects = [];
 
-        ObjectDebug.log(this.debug, 'GameObjectManager created');
+        DebugLog.log(this.debug, null, 'GameObjectManager created');
     }
 
     getActiveGameObjects() {
@@ -38,7 +38,7 @@ class GameObjectManager {
         GameObjectUtils.validateGameObject(gameObject);
 
         if (this.#activeGameObjects.includes(gameObject)) {
-            ObjectDebug.warn(this.debug, 'GameObject already managed', {
+            DebugLog.warn(this.debug, null, 'GameObject already managed', {
                 id: gameObject.ID
             });
             return false;
@@ -46,7 +46,7 @@ class GameObjectManager {
 
         this.#activeGameObjects.push(gameObject);
 
-        ObjectDebug.log(this.debug, 'GameObject added', {
+        DebugLog.log(this.debug, null, 'GameObject added', {
             id: gameObject.ID,
             type: gameObject.type
         });
@@ -70,7 +70,7 @@ class GameObjectManager {
         const index = this.#activeGameObjects.indexOf(gameObject);
 
         if (index === -1) {
-            ObjectDebug.warn(this.debug, 'GameObject not found in manager', {
+            DebugLog.warn(this.debug, null, 'GameObject not found in manager', {
                 id: gameObject.ID
             });
             return false;
@@ -79,7 +79,7 @@ class GameObjectManager {
         const destroyed = SystemUtils.destroy(gameObject);
 
         if (!destroyed) {
-            ObjectDebug.error(this.debug, 'GameObject destroy failed', {
+            DebugLog.error(this.debug, null, 'GameObject destroy failed', {
                 id: gameObject.ID
             });
             return false;
@@ -87,7 +87,7 @@ class GameObjectManager {
 
         this.#activeGameObjects.splice(index, 1);
 
-        ObjectDebug.log(this.debug, 'GameObject removed', {
+        DebugLog.log(this.debug, null, 'GameObject removed', {
             id: gameObject.ID
         });
 
@@ -102,10 +102,11 @@ class GameObjectManager {
 
         this.#activeGameObjects = [];
 
-        ObjectDebug.log(this.debug, 'GameObjectManager destroyed');
+        DebugLog.log(this.debug, null, 'GameObjectManager destroyed');
 
         return true;
     }
 }
 
 export default GameObjectManager;
+

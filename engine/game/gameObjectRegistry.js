@@ -4,7 +4,7 @@
 // 03/2026
 
 import GameObjectUtils from './gameObjectUtils.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import ObjectValidation from '../utils/objectValidation.js';
 
 class GameObjectRegistry {
@@ -18,7 +18,7 @@ class GameObjectRegistry {
         this.debug = debug;
         this.#objectsById = new Map();
 
-        ObjectDebug.log(this.debug, 'GameObjectRegistry created');
+        DebugLog.log(this.debug, null, 'GameObjectRegistry created');
     }
 
     getObjectId(gameObject) {
@@ -35,7 +35,7 @@ class GameObjectRegistry {
 
         this.#objectsById.set(id, gameObject);
 
-        ObjectDebug.log(this.debug, 'GameObject registered', {
+        DebugLog.log(this.debug, null, 'GameObject registered', {
             id: id,
             type: gameObject.type
         });
@@ -48,7 +48,7 @@ class GameObjectRegistry {
         const id = this.getObjectId(gameObject);
 
         if (!this.#objectsById.has(id)) {
-            ObjectDebug.warn(this.debug, 'GameObject not found in registry', {
+            DebugLog.warn(this.debug, null, 'GameObject not found in registry', {
                 id: id
             });
             return false;
@@ -56,7 +56,7 @@ class GameObjectRegistry {
 
         this.#objectsById.delete(id);
 
-        ObjectDebug.log(this.debug, 'GameObject unregistered', {
+        DebugLog.log(this.debug, null, 'GameObject unregistered', {
             id: id
         });
 
@@ -85,7 +85,7 @@ class GameObjectRegistry {
 
         this.#objectsById.clear();
 
-        ObjectDebug.log(this.debug, 'GameObjectRegistry cleared');
+        DebugLog.log(this.debug, null, 'GameObjectRegistry cleared');
     }
 
     getCount() {
@@ -94,3 +94,4 @@ class GameObjectRegistry {
 }
 
 export default GameObjectRegistry;
+

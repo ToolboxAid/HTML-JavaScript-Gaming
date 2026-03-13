@@ -84,7 +84,7 @@ Objective:
 
 ## Basic improvements
 
-- [ ] Centralize debug logging policy across engine modules (not just renderers)
+- [x] Centralize debug logging policy across engine modules (not just renderers)
 - [x] static DEBUG = DebugFlag.has('gamepadManager');
 - [ ] Remove dead code and obvious duplication where low risk.
 - [ ] Improve naming and readability where safe.
@@ -98,6 +98,7 @@ Basic improvements progress:
 - Added browser-runtime guard clause to `CanvasUtils.init(...)` for clearer failure mode outside DOM environments.
 - Added safety guards to `GamepadManager` for missing `window`/`navigator.getGamepads` environments.
 - Converted noisy fullscreen lifecycle logs to debug-gated logging (`Fullscreen.DEBUG`).
+- Centralized shared debug output policy via `engine/utils/debugLog.js` and wired core modules (`fullscreen`, `canvas`, `gameBase`, `gamepadManager`) plus `objectDebug` delegation.
 
 ## Unit test audit
 

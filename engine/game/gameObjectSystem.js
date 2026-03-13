@@ -7,7 +7,7 @@ import GameObjectUtils from './gameObjectUtils.js';
 import GameObjectManager from './gameObjectManager.js';
 import GameCollision from './gameCollision.js';
 import GameObjectRegistry from './gameObjectRegistry.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import ObjectValidation from '../utils/objectValidation.js';
 
 class GameObjectSystem {
@@ -21,14 +21,14 @@ class GameObjectSystem {
         this.registry = new GameObjectRegistry(debug);
         this.collision = GameCollision;
 
-        ObjectDebug.log(this.debug, 'GameObjectSystem created');
+        DebugLog.log(this.debug, null, 'GameObjectSystem created');
     }
 
     addGameObject(gameObject) {
         GameObjectUtils.validateGameObject(gameObject);
 
         if (!this.manager.addGameObject(gameObject)) {
-            ObjectDebug.warn(this.debug, 'Failed to add GameObject to manager', {
+            DebugLog.warn(this.debug, null, 'Failed to add GameObject to manager', {
                 id: gameObject.ID
             });
             return false;
@@ -37,7 +37,7 @@ class GameObjectSystem {
         try {
             this.registry.register(gameObject);
         } catch (error) {
-            ObjectDebug.error(this.debug, 'Failed to register GameObject, rolling back manager add', {
+            DebugLog.error(this.debug, null, 'Failed to register GameObject, rolling back manager add', {
                 id: gameObject.ID,
                 error: error.message
             });
@@ -46,7 +46,7 @@ class GameObjectSystem {
             return false;
         }
 
-        ObjectDebug.log(this.debug, 'GameObject added to system', {
+        DebugLog.log(this.debug, null, 'GameObject added to system', {
             id: gameObject.ID,
             type: gameObject.type
         });
@@ -60,13 +60,13 @@ class GameObjectSystem {
         const unregistered = this.registry.unregister(gameObject);
 
         if (!unregistered) {
-            ObjectDebug.warn(this.debug, 'GameObject was not registered', {
+            DebugLog.warn(this.debug, null, 'GameObject was not registered', {
                 id: gameObject.ID
             });
         }
 
         if (!this.manager.removeGameObject(gameObject)) {
-            ObjectDebug.error(this.debug, 'Failed to remove GameObject from manager', {
+            DebugLog.error(this.debug, null, 'Failed to remove GameObject from manager', {
                 id: gameObject.ID
             });
 
@@ -77,7 +77,7 @@ class GameObjectSystem {
             return false;
         }
 
-        ObjectDebug.log(this.debug, 'GameObject removed from system', {
+        DebugLog.log(this.debug, null, 'GameObject removed from system', {
             id: gameObject.ID
         });
 
@@ -128,7 +128,7 @@ class GameObjectSystem {
             this.removeGameObject(gameObject);
         }
 
-        ObjectDebug.log(this.debug, 'GameObjectSystem cleared');
+        DebugLog.log(this.debug, null, 'GameObjectSystem cleared');
 
         return true;
     }
@@ -139,3 +139,4 @@ class GameObjectSystem {
 }
 
 export default GameObjectSystem;
+

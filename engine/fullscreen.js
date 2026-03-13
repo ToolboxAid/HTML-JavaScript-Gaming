@@ -5,6 +5,7 @@
 
 import SystemUtils from "./utils/systemUtils.js";
 import DebugFlag from './utils/debugFlag.js';
+import DebugLog from './utils/debugLog.js';
 
 class Fullscreen {
 
@@ -76,7 +77,7 @@ class Fullscreen {
         }
 
         if (!config) {
-            console.error("No 'fullscreenConfig' provided");
+            DebugLog.error('Fullscreen', "No 'fullscreenConfig' provided");
         }
         const schema = {
             color: 'string',     // Text color
@@ -91,7 +92,7 @@ class Fullscreen {
         }
 
         if (!canvasConfig) {
-            console.error("'canvasConfig' not provided.");
+            DebugLog.error('Fullscreen', "'canvasConfig' not provided.");
         }
         const { width = 1024, height = 768, scale = 0.25 } = canvasConfig || {};
         this.canvasWidth = width;
@@ -112,9 +113,7 @@ class Fullscreen {
             Fullscreen.canvasClickBound = Fullscreen.toggleFullscreen.bind(Fullscreen);
             Fullscreen.fullscreenChangeBound = () => {
                 Fullscreen.syncFullscreenState();
-                if (Fullscreen.DEBUG) {
-                    console.log(`fullscreenchange: isFullScreen=${Fullscreen.isFullScreen}`);
-                }
+                DebugLog.log(Fullscreen.DEBUG, 'Fullscreen', `fullscreenchange: isFullScreen=${Fullscreen.isFullScreen}`);
             };
 
             window.addEventListener("resize", Fullscreen.resizeBound);
@@ -126,9 +125,7 @@ class Fullscreen {
             Fullscreen.listenersRegistered = true;
         }
 
-        if (Fullscreen.DEBUG) {
-            console.log(`FullScreen.init complete.`);
-        }
+        DebugLog.log(Fullscreen.DEBUG, 'Fullscreen', 'FullScreen.init complete.');
     }
 
     static openFullscreen() {
@@ -136,9 +133,7 @@ class Fullscreen {
             const request = Fullscreen.canvas.requestFullscreen();
             if (request && typeof request.catch === 'function') {
                 request.catch((error) => {
-                    if (Fullscreen.DEBUG) {
-                        console.warn('requestFullscreen failed:', error);
-                    }
+                    DebugLog.warn(Fullscreen.DEBUG, 'Fullscreen', 'requestFullscreen failed:', error);
                 });
             }
         } else if (Fullscreen.canvas.webkitRequestFullscreen) {
@@ -153,9 +148,7 @@ class Fullscreen {
             const exit = document.exitFullscreen();
             if (exit && typeof exit.catch === 'function') {
                 exit.catch((error) => {
-                    if (Fullscreen.DEBUG) {
-                        console.warn('exitFullscreen failed:', error);
-                    }
+                    DebugLog.warn(Fullscreen.DEBUG, 'Fullscreen', 'exitFullscreen failed:', error);
                 });
             }
         } else if (document.webkitExitFullscreen) {
@@ -179,9 +172,7 @@ class Fullscreen {
 
         if (Fullscreen.isFullScreen) {
             Fullscreen.setCanvasSize(Fullscreen.gameFullScaleScreen);
-            if (Fullscreen.DEBUG) {
-                console.log("Fullscreen mode activated.");
-            }
+            DebugLog.log(Fullscreen.DEBUG, 'Fullscreen', 'Fullscreen mode activated.');
         } else {
             Fullscreen.setCanvasSize(Fullscreen.scale);
         }

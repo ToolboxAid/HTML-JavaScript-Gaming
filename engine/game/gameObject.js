@@ -5,7 +5,7 @@
 
 import ObjectPNG from '../objects/objectPNG.js';
 import GameObjectUtils from './gameObjectUtils.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 
 class GameObject extends ObjectPNG {
 
@@ -58,7 +58,7 @@ class GameObject extends ObjectPNG {
 
         GameObjectUtils.initializeMetadata(this, { type, debug });
 
-        ObjectDebug.log(this.debug, 'GameObject created', {
+        DebugLog.log(this.debug, null, 'GameObject created', {
             id: this.ID,
             type: this.type,
             x: this.x,
@@ -69,7 +69,7 @@ class GameObject extends ObjectPNG {
     destroy() {
 
         if (this.isDestroyed) {
-            ObjectDebug.warn(this.debug, 'GameObject already destroyed', {
+            DebugLog.warn(this.debug, null, 'GameObject already destroyed', {
                 id: this.ID,
                 type: this.type
             });
@@ -79,7 +79,7 @@ class GameObject extends ObjectPNG {
         const parentDestroyed = super.destroy();
 
         if (!parentDestroyed) {
-            ObjectDebug.error(this.debug, 'Parent destroy failed', {
+            DebugLog.error(this.debug, null, 'Parent destroy failed', {
                 id: this.ID
             });
             return false;
@@ -88,7 +88,7 @@ class GameObject extends ObjectPNG {
         this.isDestroyed = true;
         GameObjectUtils.destroyMetadata(this);
 
-        ObjectDebug.log(this.debug, 'GameObject destroyed', {
+        DebugLog.log(this.debug, null, 'GameObject destroyed', {
             id: this.ID
         });
 
@@ -97,3 +97,4 @@ class GameObject extends ObjectPNG {
 }
 
 export default GameObject;
+

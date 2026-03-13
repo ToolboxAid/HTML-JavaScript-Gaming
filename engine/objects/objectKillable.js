@@ -1,6 +1,6 @@
 import ObjectDynamic from './objectDynamic.js';
 import SystemUtils from '../utils/systemUtils.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
 import ObjectLifecycle from '../lifecycle/objectLifecycle.js';
@@ -134,7 +134,7 @@ class ObjectKillable extends ObjectDynamic {
     }
 
     destroy() {
-        ObjectDebug.log(ObjectKillable.DEBUG, `Destroying ${SystemUtils.getObjectType(this)}`, {
+        DebugLog.log(ObjectKillable.DEBUG, null, `Destroying ${SystemUtils.getObjectType(this)}`, {
             status: this.status,
             animation: {
                 frame: this.currentFrameIndex,
@@ -170,15 +170,16 @@ class ObjectKillable extends ObjectDynamic {
 
         const parentDestroyed = super.destroy();
         if (!parentDestroyed) {
-            ObjectDebug.error(ObjectKillable.DEBUG, 'Parent ObjectDynamic destruction failed');
+            DebugLog.error(ObjectKillable.DEBUG, null, 'Parent ObjectDynamic destruction failed');
             return false;
         }
 
         this.status = null;
 
-        ObjectDebug.log(ObjectKillable.DEBUG, `Successfully destroyed ${SystemUtils.getObjectType(this)}`, finalState);
+        DebugLog.log(ObjectKillable.DEBUG, null, `Successfully destroyed ${SystemUtils.getObjectType(this)}`, finalState);
         return true;
     }
 }
 
 export default ObjectKillable;
+

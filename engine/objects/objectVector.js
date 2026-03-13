@@ -9,7 +9,7 @@ import CollisionUtils from '../physics/collisionUtils.js';
 import VectorShapeUtils from '../physics/vectorShapeUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
-import ObjectDebug from '../utils/objectDebug.js';
+import DebugLog from '../utils/debugLog.js';
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
 import VectorRenderer from '../renderers/vectorRenderer.js';
@@ -52,7 +52,7 @@ class ObjectVector extends ObjectKillable {
         this.margin = Math.max(this.width, this.height) * 0.1;
         this.explosionRadius = ((this.width + this.height) / 2) * 2;
 
-        ObjectDebug.log(ObjectVector.DEBUG, 'Created ObjectVector', {
+        DebugLog.log(ObjectVector.DEBUG, null, 'Created ObjectVector', {
             x,
             y,
             bounds,
@@ -161,3 +161,4 @@ class ObjectVector extends ObjectKillable {
 }
 
 export default ObjectVector;
+

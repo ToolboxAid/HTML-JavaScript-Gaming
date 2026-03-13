@@ -5,6 +5,7 @@
 
 import Colors from "../renderers/assets/colors.js";
 import DebugFlag from "../utils/debugFlag.js";
+import DebugLog from "../utils/debugLog.js";
 import RuntimeContext from "./runtimeContext.js";
 
 class GameBase {
@@ -28,7 +29,7 @@ class GameBase {
 
         this.initializeGame(canvasConfig, performanceConfig, fullscreenConfig)
             .then(() => {
-                console.log('*** Game initialization complete ***');
+                DebugLog.log(GameBase.DEBUG, 'GameBase', '*** Game initialization complete ***');
 
                 this.constructor.isInitialized = true;
 
@@ -37,7 +38,7 @@ class GameBase {
                 //requestAnimationFrame(this.animate.bind(this)); // bind each call
             })
             .catch(error => {
-                console.error('Game initialization failed:', error);
+                DebugLog.error('GameBase', 'Game initialization failed:', error);
                 this.constructor.isInitialized = false;
             });
 
@@ -114,13 +115,13 @@ class GameBase {
                     const textData = `"=====================MEM: 30.66/33.08MB"`;
                     const sizePX = 30;
                     const font = "monospace";
-                    console.log(this.runtimeContext.calculateTextMetrics(textData, sizePX, font));
+                    DebugLog.log(GameBase.DEBUG, 'GameBase', this.runtimeContext.calculateTextMetrics(textData, sizePX, font));
                 }
             }
             // Continue animation
             requestAnimationFrame(this.animate);
         } catch (error) {
-            console.error('Animation error:', error);
+            DebugLog.error('GameBase', 'Animation error:', error);
         }
     }
 
@@ -145,7 +146,7 @@ class GameBase {
             try {
                 this.onDestroy();
             } catch (error) {
-                console.warn('onDestroy hook failed:', error);
+                DebugLog.warn(true, 'GameBase', 'onDestroy hook failed:', error);
             }
         }
 

@@ -6,7 +6,7 @@
 import ObjectStatic from './objectStatic.js';
 import SystemUtils from "../utils/systemUtils.js";
 import ObjectValidation from "../utils/objectValidation.js";
-import ObjectDebug from "../utils/objectDebug.js";
+import DebugLog from "../utils/debugLog.js";
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
 import PhysicsUtils from '../physics/physicsUtils.js';
@@ -88,7 +88,7 @@ class ObjectDynamic extends ObjectStatic {
 
     /** Destroys the object and cleans up resources. */
     destroy() {
-        ObjectDebug.log(ObjectDynamic.DEBUG, `Destroying ${SystemUtils.getObjectType(this)}`, {
+        DebugLog.log(ObjectDynamic.DEBUG, null, `Destroying ${SystemUtils.getObjectType(this)}`, {
             position: { x: this.x, y: this.y },
             velocity: { x: this.velocityX, y: this.velocityY },
             state: {
@@ -113,13 +113,14 @@ class ObjectDynamic extends ObjectStatic {
 
         const parentDestroyed = super.destroy();
         if (!parentDestroyed) {
-            ObjectDebug.error(ObjectDynamic.DEBUG, 'Parent destruction failed');
+            DebugLog.error(ObjectDynamic.DEBUG, null, 'Parent destruction failed');
             return false;
         }
 
-        ObjectDebug.log(ObjectDynamic.DEBUG, `Successfully destroyed ${SystemUtils.getObjectType(this)}`, finalState);
+        DebugLog.log(ObjectDynamic.DEBUG, null, `Successfully destroyed ${SystemUtils.getObjectType(this)}`, finalState);
         return true;
     }
 }
 
 export default ObjectDynamic;
+

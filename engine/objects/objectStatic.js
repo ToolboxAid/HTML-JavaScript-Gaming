@@ -6,7 +6,7 @@
 import GeometryUtils from "../math/geometryUtils.js";
 import ObjectValidation from "../utils/objectValidation.js";
 import ObjectCleanup from "../utils/objectCleanup.js";
-import ObjectDebug from "../utils/objectDebug.js";
+import DebugLog from "../utils/debugLog.js";
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
 import BoxRenderer from "../renderers/boxRenderer.js";
@@ -76,7 +76,7 @@ class ObjectStatic {
 
     /** Destroys the object and cleans up resources. */
     destroy() {
-        ObjectDebug.log(ObjectStatic.DEBUG, `Destroying ObjectStatic #${this.ID}`, {
+        DebugLog.log(ObjectStatic.DEBUG, null, `Destroying ObjectStatic #${this.ID}`, {
             position: { x: this.x, y: this.y },
             dimensions: { width: this.width, height: this.height },
             state: {
@@ -106,9 +106,10 @@ class ObjectStatic {
             'ID'
         ]);
 
-        ObjectDebug.log(ObjectStatic.DEBUG, 'Successfully destroyed ObjectStatic', finalState);
+        DebugLog.log(ObjectStatic.DEBUG, null, 'Successfully destroyed ObjectStatic', finalState);
         return true;
     }
 }
 
 export default ObjectStatic;
+
