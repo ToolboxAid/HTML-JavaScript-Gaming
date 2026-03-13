@@ -74,11 +74,8 @@ Objective:
 
 Engine surface review results:
 
-- Reduced facade breadth with non-breaking delegation splits:
-  - `CanvasUtils` text/metrics responsibilities extracted to `core/canvasText.js`.
-  - `Sprite` frame/json responsibilities extracted to `core/spriteFrameUtils.js`.
-  - `CollisionUtils` polygon math extracted to `physics/polygonCollision.js`.
-- Noted API consistency gap: several modules use `start/stop/disconnect/destroy` with overlapping semantics (for example input/gamepad classes), suggesting a future `start/stop/destroy` convention pass.
+- Applied first API consistency pass for input/gamepad lifecycle: standardized `GameControllers` orchestration on `start/stop/destroy` and retained `GamepadManager.disconnect()` as a backward-compatible alias to `stop()`.
+
 - Noted discoverability gap: bounds/collision helpers are split across object methods plus `BoundaryUtils`/`CollisionUtils`; adding a documented canonical entry point would improve ergonomics.
 - Duplication candidate: repeated debug-query static patterns and repeated destroy-guard/cleanup boilerplate across objects; both are good targets for shared helper extraction later.
 - Candidate additions captured for follow-up (feature gap, not bug):

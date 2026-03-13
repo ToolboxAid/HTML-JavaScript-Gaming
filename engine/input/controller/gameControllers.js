@@ -35,11 +35,30 @@ class GameControllers {
         this.gamepadStates = Array.from({ length: 4 }, () => new GamepadState());
         this.gamepadMappers = Array.from({ length: 4 }, () => null);
         this.controllerChangeBound = this.controllerChange.bind(this);
+        this.isListening = false;
+
+        this.start();
+    }
+
+    start() {
+        if (this.isListening) {
+            return;
+        }
 
         // Register the controllerChange method as the event handler
         GameControllers.sender.addEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
-
         this.gamepadManager.start();
+        this.isListening = true;
+    }
+
+    stop() {
+        if (!this.isListening) {
+            return;
+        }
+
+        GameControllers.sender.removeEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
+        this.gamepadManager.stop();
+        this.isListening = false;
     }
 
     getConnectedGamepads() {
@@ -252,9 +271,8 @@ class GameControllers {
     }
 
     destroy() {
-        GameControllers.sender.removeEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
+        this.stop();
         this.controllerChangeBound = null;
-        this.gamepadManager.disconnect();
     }
 }
 

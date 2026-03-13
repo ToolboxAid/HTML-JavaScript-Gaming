@@ -73,7 +73,7 @@ class GamepadManager {
         this.gameControllers = Array.from(gameControllers).map(gameController => gameController || null);
     }
 
-    disconnect() {
+    stop() {
         if (!this.isRunning) {
             return;
         }
@@ -83,6 +83,11 @@ class GamepadManager {
         clearInterval(this.pollInterval);
         this.pollInterval = null;
         this.isRunning = false;
+    }
+
+    // Backward compatibility alias.
+    disconnect() {
+        this.stop();
     }
 }
 
