@@ -106,10 +106,6 @@ Objective:
 - [x] Add missing regression tests for bugs found during review.
 - [x] Keep the default test suite green after each batch of changes.
 
-Unit test improvement progress:
-
-- Added lifecycle regression assertions in input tests to verify `destroy()` stops listener-driven state updates.
-
 ## Verification and reporting
 
 - [x] Run relevant tests after each folder review and fix batch.
