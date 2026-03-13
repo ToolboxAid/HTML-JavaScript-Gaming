@@ -5,7 +5,6 @@
 
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectValidation from '../utils/objectValidation.js';
-import GameObject from '../gameObject.js';
 
 class GameObjectUtils {
     constructor() {
@@ -48,7 +47,15 @@ class GameObjectUtils {
     }
 
     static validateGameObject(gameObject, name = 'gameObject') {
-        ObjectValidation.instanceOf(gameObject, name, GameObject);
+        if (!gameObject || typeof gameObject !== 'object') {
+            throw new Error(`${name} must be an object.`);
+        }
+
+        if (typeof gameObject.destroy !== 'function') {
+            throw new Error(`${name} must define a destroy() method.`);
+        }
+
+        this.validateId(gameObject.ID, `${name}.ID`);
     }
 
     static validateId(id, name = 'id') {
@@ -62,10 +69,7 @@ class GameObjectUtils {
 
     static getObjectId(gameObject) {
         this.validateGameObject(gameObject);
-
-        const id = gameObject.ID;
-        this.validateId(id, 'gameObject.ID');
-        return id;
+        return gameObject.ID;
     }
 }
 

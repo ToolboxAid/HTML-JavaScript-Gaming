@@ -4,7 +4,6 @@
 // gameObjectUtilsTest.js
 
 import GameObjectUtils from './gameObjectUtils.js';
-import GameObject from '../gameObject.js';
 
 export function testGameObjectUtils(assert) {
     GameObjectUtils.validateConstructorArgs({
@@ -43,11 +42,24 @@ export function testGameObjectUtils(assert) {
     assert(target.type === null, 'destroyMetadata should clear type');
     assert(target.debug === true, 'destroyMetadata should preserve debug');
 
-    const mockGameObject = { ID: 42 };
-    Object.setPrototypeOf(mockGameObject, GameObject.prototype);
+    const mockGameObject = {
+        ID: 42,
+        destroy() {
+            return true;
+        }
+    };
 
     GameObjectUtils.validateGameObject(mockGameObject);
     assert(GameObjectUtils.getObjectId(mockGameObject) === 42, 'getObjectId should return the game object ID');
+
+    threw = false;
+    try {
+        GameObjectUtils.validateGameObject({ ID: 42 });
+    } catch (error) {
+        threw = true;
+    }
+
+    assert(threw, 'validateGameObject should reject objects without destroy()');
 
     GameObjectUtils.validateId('player-1');
     GameObjectUtils.validateId(7);
