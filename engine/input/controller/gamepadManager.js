@@ -28,6 +28,9 @@ class GamepadManager {
         if (this.isRunning) {
             return;
         }
+        if (typeof window === 'undefined') {
+            throw new Error('GamepadManager.start requires a browser window.');
+        }
 
         window.addEventListener("gamepadconnected", this.handleGamepadConnectedBound);
         window.addEventListener("gamepaddisconnected", this.handleGamepadDisconnectedBound);
@@ -69,6 +72,10 @@ class GamepadManager {
     }
 
     pollGameControllers() { // Stop polling gameControllers before the page unloads
+        if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') {
+            return;
+        }
+
         const gameControllers = navigator.getGamepads();
         if (!gameControllers) return;
         this.gameControllers = Array.from(gameControllers).map(gameController => gameController || null);

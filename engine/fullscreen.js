@@ -54,7 +54,22 @@ class Fullscreen {
     static resizeBound = null;
     static fullscreenChangeBound = null;
 
-    //static firstTime = true;
+    static isFullscreenActive() {
+        if (typeof document === 'undefined') {
+            return false;
+        }
+
+        return !!(
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.msFullscreenElement
+        );
+    }
+
+    static syncFullscreenState() {
+        Fullscreen.isFullScreen = Fullscreen.isFullscreenActive();
+    }
+
     static async init(config, canvasConfig) {
         if (typeof window === 'undefined' || typeof document === 'undefined') {
             throw new Error('Fullscreen requires a browser window/document.');
@@ -75,10 +90,7 @@ class Fullscreen {
             this.config = config;
         }
 
-        //if (!canvasConfig && !Fullscreen.firstTime) {
         if (!canvasConfig) {
-            Fullscreen.firstTime = false;
-            SystemUtils.showStackTrace("")
             console.error("'canvasConfig' not provided.");
         }
         const { width = 1024, height = 768, scale = 0.25 } = canvasConfig || {};
@@ -99,22 +111,36 @@ class Fullscreen {
             Fullscreen.resizeBound = Fullscreen.resizeCanvas.bind(Fullscreen);
             Fullscreen.canvasClickBound = Fullscreen.toggleFullscreen.bind(Fullscreen);
             Fullscreen.fullscreenChangeBound = () => {
-                Fullscreen.isFullScreen = !!document.fullscreenElement;
+                Fullscreen.syncFullscreenState();
+                if (Fullscreen.DEBUG) {
+                    console.log(`fullscreenchange: isFullScreen=${Fullscreen.isFullScreen}`);
+                }
             };
 
             window.addEventListener("resize", Fullscreen.resizeBound);
             window.addEventListener('orientationchange', Fullscreen.resizeBound);
             Fullscreen.canvas.addEventListener('click', Fullscreen.canvasClickBound);
             document.addEventListener('fullscreenchange', Fullscreen.fullscreenChangeBound);
+            document.addEventListener('webkitfullscreenchange', Fullscreen.fullscreenChangeBound);
+            document.addEventListener('msfullscreenchange', Fullscreen.fullscreenChangeBound);
             Fullscreen.listenersRegistered = true;
         }
 
-        console.log(`FullScreen.init complete.`);
+        if (Fullscreen.DEBUG) {
+            console.log(`FullScreen.init complete.`);
+        }
     }
 
     static openFullscreen() {
         if (Fullscreen.canvas.requestFullscreen) {
-            Fullscreen.canvas.requestFullscreen();
+            const request = Fullscreen.canvas.requestFullscreen();
+            if (request && typeof request.catch === 'function') {
+                request.catch((error) => {
+                    if (Fullscreen.DEBUG) {
+                        console.warn('requestFullscreen failed:', error);
+                    }
+                });
+            }
         } else if (Fullscreen.canvas.webkitRequestFullscreen) {
             Fullscreen.canvas.webkitRequestFullscreen();
         } else if (Fullscreen.canvas.msRequestFullscreen) {
@@ -124,7 +150,14 @@ class Fullscreen {
 
     static closeFullscreen() {
         if (document.exitFullscreen) {
-            document.exitFullscreen();
+            const exit = document.exitFullscreen();
+            if (exit && typeof exit.catch === 'function') {
+                exit.catch((error) => {
+                    if (Fullscreen.DEBUG) {
+                        console.warn('exitFullscreen failed:', error);
+                    }
+                });
+            }
         } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
         } else if (document.msExitFullscreen) {
@@ -133,6 +166,7 @@ class Fullscreen {
     }
 
     static toggleFullscreen() {
+        Fullscreen.syncFullscreenState();
         Fullscreen.isFullScreen ? Fullscreen.closeFullscreen() : Fullscreen.openFullscreen();
     }
 
@@ -141,12 +175,14 @@ class Fullscreen {
             return;
         }
 
-        if (window.innerHeight === screen.height && !Fullscreen.isFullScreen) {
-            Fullscreen.isFullScreen = true;
+        Fullscreen.syncFullscreenState();
+
+        if (Fullscreen.isFullScreen) {
             Fullscreen.setCanvasSize(Fullscreen.gameFullScaleScreen);
-            console.log("Fullscreen mode activated.");
-        } else if (Fullscreen.isFullScreen) {
-            Fullscreen.isFullScreen = false;
+            if (Fullscreen.DEBUG) {
+                console.log("Fullscreen mode activated.");
+            }
+        } else {
             Fullscreen.setCanvasSize(Fullscreen.scale);
         }
 
@@ -190,6 +226,8 @@ class Fullscreen {
         window.removeEventListener('orientationchange', Fullscreen.resizeBound);
         Fullscreen.canvas?.removeEventListener('click', Fullscreen.canvasClickBound);
         document.removeEventListener('fullscreenchange', Fullscreen.fullscreenChangeBound);
+        document.removeEventListener('webkitfullscreenchange', Fullscreen.fullscreenChangeBound);
+        document.removeEventListener('msfullscreenchange', Fullscreen.fullscreenChangeBound);
 
         Fullscreen.resizeBound = null;
         Fullscreen.canvasClickBound = null;

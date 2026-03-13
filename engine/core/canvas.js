@@ -41,6 +41,10 @@ class CanvasUtils {
     };
 
     static async init(config) {
+        if (typeof document === 'undefined') {
+            throw new Error('CanvasUtils.init requires a browser document.');
+        }
+
         const canvas = document.getElementById('gameArea');
         this.canvas = canvas;
 

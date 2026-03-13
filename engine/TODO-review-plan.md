@@ -82,7 +82,6 @@ Objective:
 - [x] Verify input validation and defensive guards.
 - [x] Identify browser/runtime failure risks that should fail safely.
 
-
 ## Basic improvements
 
 - [ ] Centralize debug logging policy across engine modules (not just renderers)
@@ -92,7 +91,13 @@ Objective:
 - [ ] Add guard clauses and validation where needed.
 - [ ] Normalize comment style and lightweight documentation where helpful.
 - [ ] Make small refactors that improve clarity without changing behavior.
-- [ ] Centralize debug logging policy across engine modules (not just renderers).
+
+Basic improvements progress:
+
+- Removed low-value/dead code remnants in `engine/fullscreen.js` (`firstTime` leftover path and unconditional stack trace noise).
+- Added browser-runtime guard clause to `CanvasUtils.init(...)` for clearer failure mode outside DOM environments.
+- Added safety guards to `GamepadManager` for missing `window`/`navigator.getGamepads` environments.
+- Converted noisy fullscreen lifecycle logs to debug-gated logging (`Fullscreen.DEBUG`).
 
 ## Unit test audit
 
