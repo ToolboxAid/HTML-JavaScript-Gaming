@@ -7,11 +7,12 @@ import GamepadManager from "./gamepadManager.js";
 import GamepadState from "./gamepadState.js";
 import GamepadMapper from "./gamepadMapper.js";
 import EventBus from '../../messages/eventBus.js';
+import DebugFlag from '../../utils/debugFlag.js';
 import { DPadType } from "./gamepadEnums.js";
 import { GAMEPAD_EVENT } from './gamepadManager.js';
 
 class GameControllers {
-    static DEBUG = new URLSearchParams(window.location.search).has('gameControllers');
+    static DEBUG = DebugFlag.has('gameControllers');
 
     // Use shared EventBus
     static sender = EventBus.getInstance();

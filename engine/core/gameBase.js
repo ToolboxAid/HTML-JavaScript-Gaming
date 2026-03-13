@@ -7,14 +7,13 @@ import CanvasUtils from "./canvas.js";
 import Colors from "../renderers/assets/colors.js";
 import Fullscreen from "../fullscreen.js";
 import PerformanceMonitor from "./performanceMonitor.js";
+import DebugFlag from "../utils/debugFlag.js";
 import Timer from "../utils/timer.js";
 
 class GameBase {
 
     // Enable debug mode: game.html?gameBase
-    static DEBUG = typeof window !== 'undefined'
-        && window.location
-        && new URLSearchParams(window.location.search).has('gameBase');
+    static DEBUG = DebugFlag.has('gameBase');
 
     static isInitialized = false;
     static lastTimestamp = performance.now();

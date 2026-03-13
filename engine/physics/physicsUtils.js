@@ -3,10 +3,12 @@
 // 10/16/2024
 // physicsUtils.js
 
+import DebugFlag from "../utils/debugFlag.js";
+
 export default class PhysicsUtils {
     // Play your game normally: game.html
     // Enable debug mode: game.html?physicsUtils
-    static DEBUG = new URLSearchParams(window.location.search).has('physicsUtils');
+    static DEBUG = DebugFlag.has('physicsUtils');
 
     /** Constructor for PhysicsUtils class.
     * @throws {Error} Always throws error as this is a utility class with only static methods.

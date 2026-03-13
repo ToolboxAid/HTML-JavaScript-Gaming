@@ -8,11 +8,12 @@ import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
 import PolygonCollision from './polygonCollision.js';
 import VectorShapeUtils from "./vectorShapeUtils.js";
+import DebugFlag from "../utils/debugFlag.js";
 import SystemUtils from "../utils/systemUtils.js";
 
 export default class CollisionUtils {
     // Enable debug mode: game.html?collisionUtils
-    static DEBUG = new URLSearchParams(window.location.search).has('collisionUtils');
+    static DEBUG = DebugFlag.has('collisionUtils');
 
     /** Constructor for CollisionUtils class.
     * @throws {Error} Always throws error as this is a utility class with only static methods.

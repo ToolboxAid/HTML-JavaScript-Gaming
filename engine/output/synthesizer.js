@@ -1,7 +1,9 @@
+import DebugFlag from "../utils/debugFlag.js";
+
 class Synthesizer {
 
   // Enable debug mode: game.html?synthesizer
-  static DEBUG = new URLSearchParams(window.location.search).has('synthesizer');
+  static DEBUG = DebugFlag.has('synthesizer');
 
   constructor() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;

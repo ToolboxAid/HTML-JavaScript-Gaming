@@ -4,6 +4,7 @@
 // canvas.js
 
 import SystemUtils from '../utils/systemUtils.js';
+import DebugFlag from '../utils/debugFlag.js';
 
 import CanvasText from './canvasText.js';
 import Colors from '../renderers/assets/colors.js';
@@ -11,9 +12,7 @@ import Sprite from './sprite.js';
 
 class CanvasUtils {
     // Enable debug mode: game.html?canvasUtils
-    static DEBUG = typeof window !== 'undefined'
-        && window.location
-        && new URLSearchParams(window.location.search).has('canvasUtils');
+    static DEBUG = DebugFlag.has('canvasUtils');
 
     /** Constructor for CanvasUtils class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.

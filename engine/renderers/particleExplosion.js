@@ -4,14 +4,13 @@
 // particleExplosion.js
 
 import CanvasUtils from "../core/canvas.js";
+import DebugFlag from "../utils/debugFlag.js";
 import SystemUtils from "../utils/systemUtils.js";
 
 class ParticleExplosion {
 
     // Enable debug mode: game.html?particleExplosion
-    static DEBUG = typeof window !== 'undefined'
-        && window.location
-        && new URLSearchParams(window.location.search).has('particleExplosion');
+    static DEBUG = DebugFlag.has('particleExplosion');
 
     constructor(x, y, startRadius, endRadius, duration, particleCount, particleRadius = 3.0) {
         this.x = x;

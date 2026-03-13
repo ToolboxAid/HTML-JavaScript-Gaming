@@ -3,9 +3,11 @@
 // 10/16/2024
 // AudioPlayer.js
 
+import DebugFlag from "../utils/debugFlag.js";
+
 class AudioPlayer {
     // Debug mode enabled via URL parameter: game.html?audioPlayer
-    static DEBUG = new URLSearchParams(window.location.search).has('audioPlayer');
+    static DEBUG = DebugFlag.has('audioPlayer');
 
     static getAudioContextClass() {
         return window.AudioContext || window.webkitAudioContext;

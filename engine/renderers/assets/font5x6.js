@@ -3,9 +3,11 @@
 // 10/16/2024
 // font5x6.js
 
+import DebugFlag from "../../utils/debugFlag.js";
+
 class Font5x6 {
     // Enable debug mode: game.html?canvasUtils
-    static DEBUG = new URLSearchParams(window.location.search).has('canvasUtils');
+    static DEBUG = DebugFlag.has('canvasUtils');
 
     /** Constructor for CollisionUtils class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.

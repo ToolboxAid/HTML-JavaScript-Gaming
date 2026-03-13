@@ -4,11 +4,12 @@
 // fullscreen.js
 
 import SystemUtils from "./utils/systemUtils.js";
+import DebugFlag from './utils/debugFlag.js';
 
 class Fullscreen {
 
     // Enable debug mode: game.html?fullscreen
-    static DEBUG = new URLSearchParams(window.location.search).has('fullscreen');
+    static DEBUG = DebugFlag.has('fullscreen');
 
     /** Constructor for Fullscreen class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.

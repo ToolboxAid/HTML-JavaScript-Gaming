@@ -5,9 +5,10 @@
 
 import { DPadType } from "./gamepadEnums.js";
 import GameControllerMap from "./gameControllerMap.js";
+import DebugFlag from "../../utils/debugFlag.js";
 
 class GamepadMapper {
-    static DEBUG = new URLSearchParams(window.location.search).has('gamepadMapper');
+    static DEBUG = DebugFlag.has('gamepadMapper');
 
     constructor(gameControllerIndex, gamepadId) {
         this.gameControllerIndex = gameControllerIndex;

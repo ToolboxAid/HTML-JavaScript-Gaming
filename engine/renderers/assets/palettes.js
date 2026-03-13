@@ -5,12 +5,13 @@
 
 import Colors from "./colors.js";
 import SystemUtils from "../../utils/systemUtils.js";
+import DebugFlag from "../../utils/debugFlag.js";
 import palettesList from "./palettesList.js";
 
 class Palettes {
 
     // Enable debug mode: game.html?palettes
-    static DEBUG = new URLSearchParams(window.location.search).has('palettes');
+    static DEBUG = DebugFlag.has('palettes');
 
     /** Constructor for Palettes class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.

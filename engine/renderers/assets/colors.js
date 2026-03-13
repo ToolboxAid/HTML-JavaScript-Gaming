@@ -4,6 +4,7 @@
 // spritePalettes.js
 
 import RandomUtils from "../../math/randomUtils.js";
+import DebugFlag from "../../utils/debugFlag.js";
 
 /** Reference colors
  * Crayola Colors
@@ -29,7 +30,7 @@ import RandomUtils from "../../math/randomUtils.js";
 
 export class Colors {
     // Enable debug mode: game.html?colors
-    static DEBUG = new URLSearchParams(window.location.search).has('colors');
+    static DEBUG = DebugFlag.has('colors');
 
     /** Constructor for Colors class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.

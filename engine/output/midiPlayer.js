@@ -1,5 +1,7 @@
+import DebugFlag from "../utils/debugFlag.js";
+
 class MidiPlayer {
-    static DEBUG = new URLSearchParams(window.location.search).has('midiPlayer');
+    static DEBUG = DebugFlag.has('midiPlayer');
 
     constructor(fileInputId) {
         if (typeof document === 'undefined') {

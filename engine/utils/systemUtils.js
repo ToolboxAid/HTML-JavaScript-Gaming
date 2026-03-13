@@ -3,10 +3,12 @@
 // 02/14/2025
 // systemUtils.js
 
+import DebugFlag from "./debugFlag.js";
+
 class SystemUtils {
     // Play your game normally: game.html
     // Enable debug mode: game.html?systemUtils
-    static DEBUG = new URLSearchParams(window.location.search).has('systemUtils');
+    static DEBUG = DebugFlag.has('systemUtils');
 
     /** Constructor for SystemUtils class.
     * @throws {Error} Always throws error as this is a utility class with only static methods.

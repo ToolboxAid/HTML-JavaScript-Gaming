@@ -6,12 +6,13 @@
 //** Javascript usages */
 
 import SystemUtils from "../utils/systemUtils.js";
+import DebugFlag from "../utils/debugFlag.js";
 import CanvasUtils from "./canvas.js";
 
 class PerformanceMonitor {
 
     // Enable debug mode: game.html?performanceMonitor
-    static DEBUG = new URLSearchParams(window.location.search).has('performanceMonitor');
+    static DEBUG = DebugFlag.has('performanceMonitor');
 
     /** Constructor for PerformanceMonitor class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.

@@ -11,10 +11,12 @@ Cookies.set('username', 'david', { expires: 7, path: '/', secure: true });
 Cookies.set('session_id', '12345', { sameSite: 'Strict', path: '/' });
 */
 
+import DebugFlag from '../utils/debugFlag.js';
+
 class Cookies {
 
     // Enable debug mode: game.html?cookies
-    static DEBUG = new URLSearchParams(window.location.search).has('cookies');
+    static DEBUG = DebugFlag.has('cookies');
 
     /** Constructor for Cookies class. */
     constructor() {

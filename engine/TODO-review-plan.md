@@ -93,7 +93,7 @@ Engine surface review results:
 ## Basic improvements
 
 - [ ] Centralize debug logging policy across engine modules (not just renderers)
-- [ ] static DEBUG = new URLSearchParams(window.location.search).has('gamepadManager');
+- [x] static DEBUG = DebugFlag.has('gamepadManager');
 - [ ] Remove dead code and obvious duplication where low risk.
 - [ ] Improve naming and readability where safe.
 - [ ] Add guard clauses and validation where needed.

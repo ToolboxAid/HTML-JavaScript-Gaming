@@ -1,11 +1,10 @@
 import ParticleExplosion from '../renderers/particleExplosion.js';
+import DebugFlag from './debugFlag.js';
 
 class CanExplode {
 
     // Enable debug mode: game.html?canExplode
-    static DEBUG = typeof window !== 'undefined'
-        && window.location
-        && new URLSearchParams(window.location.search).has('canExplode');
+    static DEBUG = DebugFlag.has('canExplode');
 
     constructor() {
         this.explosions = [];

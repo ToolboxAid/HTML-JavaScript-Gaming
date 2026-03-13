@@ -6,11 +6,12 @@
 import GameControllerMap from "./gameControllerMap.js";
 
 import EventBus from '../../messages/eventBus.js';
+import DebugFlag from "../../utils/debugFlag.js";
 
 export const GAMEPAD_EVENT = 'controllerChange';
 
 class GamepadManager {
-    static DEBUG = new URLSearchParams(window.location.search).has('gamepadManager');
+    static DEBUG = DebugFlag.has('gamepadManager');
 
     constructor() {
         this.gameControllers = [];

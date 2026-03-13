@@ -3,11 +3,13 @@
 // 02/03/2025
 // timer.js
 
+import DebugFlag from "./debugFlag.js";
+
 class Timer {
 
     // Play your game normally: game.html
     // Enable debug mode: game.html?timer
-    static DEBUG = new URLSearchParams(window.location.search).has('timer');
+    static DEBUG = DebugFlag.has('timer');
     static timers = new Set();
 
     constructor(durationMs) {
