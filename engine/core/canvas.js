@@ -5,7 +5,7 @@
 
 import SystemUtils from '../utils/systemUtils.js';
 
-import Font5x6 from '../renderers/assets/font5x6.js';
+import CanvasText from './canvasText.js';
 import Colors from '../renderers/assets/colors.js';
 import Sprite from './sprite.js';
 
@@ -99,50 +99,25 @@ class CanvasUtils {
      * Draw text and numbers 
      */
     static drawNumber(x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
-        const numberStr = number.toString();
-        if (numberStr.length > leadingCount) {
-            leadingCount = numberStr.length;
-        }
-        const leadingLength = Math.max(0, leadingCount - numberStr.length); // Calculate number of leading characters needed
-        const text = leadingChar.repeat(leadingLength) + numberStr; // Create text with leading characters
-
-        // Ensure text length is exactly 5
-        const formattedText = text.padStart(leadingCount, leadingChar).slice(-leadingCount);
-        this.drawText(x, y, formattedText, pixelSize, color);
+        CanvasText.drawNumber(
+            this.drawText.bind(this),
+            x,
+            y,
+            number,
+            pixelSize,
+            color,
+            leadingCount,
+            leadingChar
+        );
     }
 
     static drawText(x, y, text, pixelSize, color = 'white') {
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            const frame = Font5x6.font5x6[char];
-
-            if (frame) {
-                // Assuming each character has a fixed width, you can adjust the space here
-                const charWidth = frame[0].length; // Get the width from the frame
-                this.drawSprite(x + i * (charWidth * pixelSize + 5), y, frame, pixelSize, color);
-            }
-        }
+        CanvasText.drawText(this.drawSprite.bind(this), x, y, text, pixelSize, color);
     }
 
     // get text width & height based on size & font w/padding
     static calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
-        // Set font
-        this.ctx.font = `${fontSize}px ${font}`;
-
-        // Measure text
-        const metrics = this.ctx.measureText(text);
-        const width = Math.ceil(metrics.width);
-
-        // Get height using font metrics
-        const height = Math.ceil(
-            metrics.actualBoundingBoxAscent +
-            metrics.actualBoundingBoxDescent
-        );
-
-        return {
-            width: width,
-            height: height
-        };
+        return CanvasText.calculateTextMetrics(this.ctx, text, fontSize, font);
     }
 
     // Method to draw the current frame

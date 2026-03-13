@@ -60,31 +60,31 @@ Objective:
 - [x] Review whether APIs expose too much internal state or allow unsafe mutation.
 - [x] Identify unstable or overly broad engine APIs.
 
-Architecture review results:
-
-- Module boundaries are mostly clear by domain (`core`, `objects`, `renderers`, `input`, `messages`, `game`), with shared validation/debug helpers reused consistently.
-- Import-hygiene fixes applied for boundary clarity: normalized legacy root-coupled imports in `physics` and `input/controller` to local domain-relative paths.
-- Static-import pass found no direct circular import loops in current `engine/*.js` modules.
-- Primary hidden coupling remains: `physics/boundaryUtils` and `physics/collisionUtils` depend on `core/canvas` dimensions, which mixes simulation logic with render/runtime globals.
-- Inheritance chain (`ObjectStatic -> ObjectDynamic -> ObjectKillable -> ObjectSprite/ObjectPNG/ObjectVector`) is intentional and currently manageable, but still carries broad responsibilities in middle layers (`ObjectKillable` + lifecycle/animation adapters).
-- Subclass contracts are mostly explicit (`handleAliveStatus`/`handleDyingStatus`/`handleDeadStatus`, `destroy` chaining). No major contract break detected in reviewed object classes.
-- State ownership is generally clear: object-local mutable state on instances, collection state in managers/registries, and animation counters centralized in lifecycle/controller helpers.
-- Shared mutable singletons that remain architecture pressure points: `CanvasUtils` static canvas/context/config, `EventBus` singleton instance, and static ID allocation in `ObjectStatic`.
-- Lifecycle ownership is mostly enforced: input/gamepad listeners support `start`/`stop`/`destroy`, receiver unsubscribes cleanly, and object destroy paths consistently cascade with guard checks.
-- API surface is mostly defensive, but broad static utility classes (`CanvasUtils`, `CollisionUtils`, `SystemUtils`) still expose wide cross-domain access and should be split gradually by responsibility.
-- Unstable/broad API candidates to track: sprite JSON metadata shape (`spriteimage`, `framesPerSprite`) and engine-global debug/query-param statics used across many modules.
-
 ## Engine surface review
 
-- [ ] Identify which core engine classes should exist and whether any are missing.
-- [ ] Review whether current engine classes have clear responsibilities and useful boundaries.
-- [ ] Identify methods that should exist on core classes for consistency and usability.
-- [ ] Check for duplicated behavior that should be promoted into shared engine classes or helpers.
-- [ ] Review whether base classes define the right default lifecycle methods such as `init`, `update`, `draw`, `destroy`, `reset`, or `validate`.
-- [ ] Check whether managers and systems expose the right orchestration methods and whether any are missing.
-- [ ] Review whether object classes expose the right movement, bounds, collision, and state access methods.
-- [ ] Identify APIs that are hard to discover and may need better naming or standardization.
-- [ ] Capture candidate engine additions separately from bugs so feature gaps stay visible.
+- [x] Identify which core engine classes should exist and whether any are missing.
+- [x] Review whether current engine classes have clear responsibilities and useful boundaries.
+- [x] Identify methods that should exist on core classes for consistency and usability.
+- [x] Check for duplicated behavior that should be promoted into shared engine classes or helpers.
+- [x] Review whether base classes define the right default lifecycle methods such as `init`, `update`, `draw`, `destroy`, `reset`, or `validate`.
+- [x] Check whether managers and systems expose the right orchestration methods and whether any are missing.
+- [x] Review whether object classes expose the right movement, bounds, collision, and state access methods.
+- [x] Identify APIs that are hard to discover and may need better naming or standardization.
+- [x] Capture candidate engine additions separately from bugs so feature gaps stay visible.
+
+Engine surface review results:
+
+- Reduced facade breadth with non-breaking delegation splits:
+  - `CanvasUtils` text/metrics responsibilities extracted to `core/canvasText.js`.
+  - `Sprite` frame/json responsibilities extracted to `core/spriteFrameUtils.js`.
+  - `CollisionUtils` polygon math extracted to `physics/polygonCollision.js`.
+- Noted API consistency gap: several modules use `start/stop/disconnect/destroy` with overlapping semantics (for example input/gamepad classes), suggesting a future `start/stop/destroy` convention pass.
+- Noted discoverability gap: bounds/collision helpers are split across object methods plus `BoundaryUtils`/`CollisionUtils`; adding a documented canonical entry point would improve ergonomics.
+- Duplication candidate: repeated debug-query static patterns and repeated destroy-guard/cleanup boilerplate across objects; both are good targets for shared helper extraction later.
+- Candidate additions captured for follow-up (feature gap, not bug):
+  - Lightweight engine API conventions doc for `init/update/draw/destroy/start/stop`.
+  - Optional world/runtime context object to reduce static singleton coupling.
+  - Canonical collision/bounds facade at game-system level to simplify call-site discovery.
 
 ## Security and safety review
 

@@ -4,8 +4,8 @@
 // sprite.js
 
 import Palettes from '../renderers/assets/palettes.js';
-import SystemUtils from '../utils/systemUtils.js';
 import Font5x6 from '../renderers/assets/font5x6.js';
+import SpriteFrameUtils from './spriteFrameUtils.js';
 
 class Sprite {
 
@@ -112,45 +112,11 @@ class Sprite {
     }
 
     static validateJsonFormat(jsonSprite) {
-        const requiredMetadataFields = ["sprite", "spriteGridSize", "spritePixelSize", "palette", "framesPerSprite"];
-        const requiredLayerFields = ["spriteimage", "imageX", "imageY", "imageScale"];
-
-        if (!jsonSprite.metadata || !jsonSprite.layers) {
-            console.error(`jsonSprite.metadata ||  jsonSprite.layers missing\njsonSprite ${JSON.stringify(jsonSprite)}`);
-            return false;
-        }
-
-        for (const field of requiredMetadataFields) {
-            if (!(field in jsonSprite.metadata)) {
-                console.error(`jsonSprite requiredMetadataFields missing field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);
-                return false;
-            }
-        }
-
-        for (const layer of jsonSprite.layers) {
-            if (!layer.metadata || !layer.data) {
-                console.error(`jsonSprite missing: layer.metadata || layer.data`);
-                return false;
-            }
-
-            for (const field of requiredLayerFields) {
-                if (!(field in layer.metadata)) {
-                    console.error(`jsonSprite requiredLayerFields missing  field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return SpriteFrameUtils.validateJsonFormat(jsonSprite);
     }
 
     static getLayerData(jsonSprite, frameIndex) {
-        if (jsonSprite && jsonSprite.layers && jsonSprite.layers[frameIndex] && jsonSprite.layers[frameIndex].data) {
-            return jsonSprite.layers[frameIndex].data;
-        } else {
-            console.error("Invalid layer data or index:", jsonSprite);
-            return null;
-        }
+        return SpriteFrameUtils.getLayerData(jsonSprite, frameIndex);
     }
     static noSpamUpdate = 0;
     static updateLayerData(layerData) {
@@ -170,11 +136,7 @@ class Sprite {
         }
     }
     static setLayerData(jsonSprite, layerData, frameIndex) {
-        if (jsonSprite && jsonSprite.layers && jsonSprite.layers[frameIndex]) {
-            jsonSprite.layers[frameIndex].data = layerData;
-        } else {
-            console.error("Invalid layer data or index:", jsonSprite, frameIndex);
-        }
+        SpriteFrameUtils.setLayerData(jsonSprite, layerData, frameIndex);
     }
 
     static spamSprite2RGB = 2;
@@ -213,40 +175,7 @@ class Sprite {
 
     // accepts JSON object and a 2D frame array
     static getLayerDimensions(layerData, pixelSize) { // layerData is the Sprite Editor Json Sprite data.
-        
-        if (layerData && SystemUtils.getObjectType(layerData) === 'Object' && pixelSize >= 1) {
-            const layer = layerData.layers[0]; // Only process the first layer
-            const data = layer.data;
-            let rowCount = data.length;
-            let colCount = data[0].length;
-
-            rowCount *= pixelSize;
-            colCount *= pixelSize;
-
-            rowCount = Math.ceil(rowCount);
-            colCount = Math.ceil(colCount);
-
-            return { width: colCount, height: rowCount };
-        } else {
-            //if (layerData && Array.isArray(layerData) && Array.isArray(layerData[0]) && pixelSize >= 1) {
-            if (layerData
-                && SystemUtils.getObjectType(layerData) === 'Array'
-                && SystemUtils.getObjectType(layerData[0]) === 'Array'
-                && pixelSize >= 1) {
-                let rowCount = layerData.length;
-                let colCount = layerData[0].length;
-
-                rowCount *= pixelSize;
-                colCount *= pixelSize;
-
-                rowCount = Math.ceil(rowCount);
-                colCount = Math.ceil(colCount);
-
-                return { width: colCount, height: rowCount };
-            }
-        }
-
-        return { width: 10, height: 10, failure: true };
+        return SpriteFrameUtils.getLayerDimensions(layerData, pixelSize);
     }
 
     /**
@@ -257,36 +186,7 @@ class Sprite {
             Sprite.doOnce = false;
             console.warn('getWidthHeight is deprecated. Use json data and getLayerDimensions instead.');
         }
-        let width, height;
-
-        if (Array.isArray(object) && Array.isArray(object[0])) {
-            // Multi-dimensional array (each element is an array, implying rows of frames)
-            let frame = object.map(row => Array.from(row));
-            height = frame.length; // Number of rows
-            width = frame[0]?.length || 0; // Length of each row (assuming uniform row lengths)
-
-            if (debug) {
-                console.log(`Multi-dimensional array detected. Width: ${width}, Height: ${height}`);
-                console.log(frame); // Display the actual frame for verification
-            }
-        } else if (Array.isArray(object)) {
-            // Single-dimensional array (likely one frame as an array of strings or characters)
-            let frame = Array.from(object); // Create a copy for manipulation
-            height = frame.length; // Number of elements (lines or rows)
-            width = frame[0]?.length || 1; // Length of each line or character    
-            if (debug) {
-                console.log(`Single-dimensional array detected. Width: ${width}, Height: ${height}`);
-                console.log(frame); // Display the actual frame for verification
-            }
-        } else {
-            console.error("Invalid object format:", object);
-            return { width: 0, height: 0 };
-        }
-
-        width = Math.round(width * pixelSize);
-        height = Math.round(height * pixelSize);
-
-        return { width: width, height: height };
+        return SpriteFrameUtils.getWidthHeight(object, pixelSize, debug);
     }
 
     static getTextRGB(text, palette) {
@@ -297,13 +197,7 @@ class Sprite {
     }
 
     static extractArray(obj) {
-        const values = Object.values(obj);
-        for (const value of values) {
-            if (Array.isArray(value)) {
-                return value;
-            }
-        }
-        throw new Error("No array found in the object.");
+        return SpriteFrameUtils.extractArray(obj);
     }
 
 }

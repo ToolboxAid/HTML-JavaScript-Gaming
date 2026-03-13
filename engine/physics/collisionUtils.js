@@ -6,6 +6,7 @@
 import CanvasUtils from "../core/canvas.js";
 import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
+import PolygonCollision from './polygonCollision.js';
 import VectorShapeUtils from "./vectorShapeUtils.js";
 import SystemUtils from "../utils/systemUtils.js";
 
@@ -68,7 +69,7 @@ export default class CollisionUtils {
 
         // Check if any point of objectB is inside objectA
         for (let [pointX, pointY] of shapeB.rotatedPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, shapeA.rotatedPoints)) {
+            if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeA.rotatedPoints, this.DEBUG)) {
                 if (this.DEBUG) {
                     console.log("objectB.rotatedPoints point", pointX, pointY, shapeA.rotatedPoints);
                 }
@@ -78,7 +79,7 @@ export default class CollisionUtils {
 
         // Check if any point of objectA is inside objectB
         for (let [pointX, pointY] of shapeA.rotatedPoints) {
-            if (CollisionUtils.isPointInsidePolygon(pointX, pointY, shapeB.rotatedPoints)) {
+            if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeB.rotatedPoints, this.DEBUG)) {
                 if (this.DEBUG) {
                     console.log("objectAPoints point", pointX, pointY, shapeB.rotatedPoints);
                 }
@@ -95,7 +96,7 @@ export default class CollisionUtils {
                 let b1 = shapeB.rotatedPoints[j];
                 let b2 = shapeB.rotatedPoints[(j + 1) % shapeB.rotatedPoints.length];
 
-                if (CollisionUtils.doEdgesIntersect(a1, a2, b1, b2)) {
+                if (PolygonCollision.doEdgesIntersect(a1, a2, b1, b2)) {
                     if (this.DEBUG) {
                         console.log(" edgesIntersect ");
                     }
@@ -120,7 +121,7 @@ export default class CollisionUtils {
     }
 
     static pointInPolygon(x, y, polygon) {
-        return this.isPointInsidePolygon(x, y, polygon);
+        return PolygonCollision.isPointInsidePolygon(x, y, polygon, this.DEBUG);
     }
 
     static pointInBox(x, y, object) {
@@ -138,69 +139,11 @@ export default class CollisionUtils {
         );
     }
     static doEdgesIntersect(A, B, C, D) {
-        const det = (B[0] - A[0]) * (D[1] - C[1]) - (B[1] - A[1]) * (D[0] - C[0]);
-        if (Math.abs(det) < 1e-6) return false; // Parallel lines
-
-        const t = ((C[0] - A[0]) * (D[1] - C[1]) - (C[1] - A[1]) * (D[0] - C[0])) / det;
-        const u = ((C[0] - A[0]) * (B[1] - A[1]) - (C[1] - A[1]) * (B[0] - A[0])) / det;
-
-        return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+        return PolygonCollision.doEdgesIntersect(A, B, C, D);
     }
 
     static isPointInsidePolygon(x, y, polygon) {
-        if (!Array.isArray(polygon) || polygon.length < 3) return false;
-        if (typeof x !== 'number' || typeof y !== 'number') return false;
-
-        let inside = false;
-        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-            const [xi, yi] = polygon[i];
-            const [xj, yj] = polygon[j];
-
-            // Check if the point is on a vertex
-            if (x === xi && y === yi) {
-                if (this.DEBUG) {
-                    console.log("Point is on a vertex:", x, y, polygon);
-                }
-                return true;
-            }
-
-            // Check if the point is on an edge (improved precision)
-            const edgeSlope = (xj - xi) * (y - yi) - (yj - yi) * (x - xi);
-
-            // Calculate the length of the edge
-            const edgeLength = Math.sqrt((xj - xi) ** 2 + (yj - yi) ** 2);
-
-            // Use a scaled tolerance based on the edge length
-            const tolerance = 1e-6 * edgeLength;
-
-            // Check if the point lies within the bounding box of the edge
-            const withinBoundingBox = (
-                x >= Math.min(xi, xj) &&
-                x <= Math.max(xi, xj) &&
-                y >= Math.min(yi, yj) &&
-                y <= Math.max(yi, yj)
-            );
-
-            if (Math.abs(edgeSlope) < tolerance && withinBoundingBox) {
-                if (this.DEBUG) {
-                    console.log("Point is on an edge:", x, y, polygon);
-                }
-                return true;
-            }
-
-            // Ray-casting method
-            const intersect = ((yi > y) !== (yj > y)) &&
-                (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-            if (intersect) {
-                inside = !inside;
-            }
-        }
-
-        if (inside && this.DEBUG) {
-            console.log("Ray intersects edge:", x, y, polygon);
-        }
-
-        return inside;
+        return PolygonCollision.isPointInsidePolygon(x, y, polygon, this.DEBUG);
     }
 
     static isContainedWithin(object, container) {
