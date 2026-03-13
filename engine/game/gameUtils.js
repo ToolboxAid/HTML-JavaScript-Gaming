@@ -83,20 +83,22 @@ class GameUtils {
     }
 
     static swapPlayer(playerLives, currentPlayer, playerCount, setGameState) {
+        const updatedLives = [...playerLives];
+
         // Decrease the current player's life
-        playerLives[currentPlayer] -= 1;
+        updatedLives[currentPlayer] -= 1;
         console.log(`Player ${currentPlayer + 1} lost a life!`);
 
         // Check if the current player is out of lives
-        if (playerLives[currentPlayer] <= 0) {
+        if (updatedLives[currentPlayer] <= 0) {
             console.log(`Player ${currentPlayer + 1} is out of lives.`);
 
             // Check if all players are out of lives
-            const allOut = playerLives.every(lives => lives <= 0);
+            const allOut = updatedLives.every(lives => lives <= 0);
             if (allOut) {
                 console.log("All players are out of lives. Game Over!");
                 setGameState("gameOver"); // Trigger game over state
-                return { updatedPlayer: 0, updatedLives: playerLives }; // Return undefined for player
+                return { updatedPlayer: 0, updatedLives };
             }
         }
 
@@ -104,11 +106,11 @@ class GameUtils {
         let nextPlayer = currentPlayer;
         do {
             nextPlayer = (nextPlayer + 1) % playerCount; // Cycle to the next player
-        } while (playerLives[nextPlayer] <= 0 && nextPlayer !== currentPlayer); // Ensure not stuck in infinite loop
+        } while (updatedLives[nextPlayer] <= 0 && nextPlayer !== currentPlayer); // Ensure not stuck in infinite loop
 
         // Set the next player as the current player
         console.log(`Swapping to Player ${nextPlayer + 1}.`);
-        return { updatedPlayer: nextPlayer, updatedLives: playerLives };
+        return { updatedPlayer: nextPlayer, updatedLives };
     }
 
 }

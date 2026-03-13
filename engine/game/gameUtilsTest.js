@@ -101,6 +101,7 @@ export function testGameUtils(assert) {
     const swap1 = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount, (gameState) => { /* No-op for this test */ });
     assert(swap1.updatedPlayer === 1, "swapPlayer failed to swap to player 2");
     assert(swap1.updatedLives[0] === 2, "swapPlayer failed to decrease player 1's life");
+    assert(playerLives[0] === 3, "swapPlayer should not mutate the input lives array");
 
     // Simulate player 2 losing a life
     playerLives = swap1.updatedLives;
