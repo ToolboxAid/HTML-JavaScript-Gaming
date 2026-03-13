@@ -6,6 +6,7 @@
 import { canvasConfig } from '../Solar System - w-classes/global.js'; // Import canvasConfig
 import CanvasUtils from '../../engine/canvas.js';
 import ObjectDynamic from '../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
+ 
 
 /**
  * Represents a celestial body in a solar system, such as a planet or star/sun.
