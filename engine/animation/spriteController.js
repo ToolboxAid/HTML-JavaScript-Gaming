@@ -1,4 +1,4 @@
-class SpriteAnimationController {
+class SpriteController {
     constructor({
         livingFrames = null,
         dyingFrames = null,
@@ -96,4 +96,4 @@ class SpriteAnimationController {
     }
 }
 
-export default SpriteAnimationController;
+export default SpriteController;

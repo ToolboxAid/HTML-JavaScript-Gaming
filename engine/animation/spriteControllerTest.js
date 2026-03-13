@@ -1,7 +1,7 @@
-import SpriteAnimationController from './spriteAnimationController.js';
+import SpriteController from './spriteController.js';
 
-export function testSpriteAnimationController(assert) {
-    const controller = new SpriteAnimationController({
+export function testSpriteController(assert) {
+    const controller = new SpriteController({
         livingFrames: [['a'], ['b']],
         dyingFrames: [['x'], ['y']],
         livingDelay: 3,

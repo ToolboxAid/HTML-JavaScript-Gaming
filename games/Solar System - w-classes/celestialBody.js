@@ -3,10 +3,9 @@
 // 10/16/2024
 // celestialBody.js
 
-import { canvasConfig } from '../Solar System - w-classes/global.js'; // Import canvasConfig
+import { canvasConfig } from './global.js'; // Import canvasConfig
 import CanvasUtils from '../../engine/canvas.js';
 import ObjectDynamic from '../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
- 
 
 /**
  * Represents a celestial body in a solar system, such as a planet or star/sun.
@@ -73,9 +72,9 @@ class CelestialBody extends ObjectDynamic {
         // Draw the orbit path for the planet
         ctx.beginPath();
         ctx.arc(centerX, centerY, this.distance, 0, Math.PI * 2); // Orbit path is a circle with radius equal to distance from center
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)'; // Light color for the orbit path (adjust transparency if needed)
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 20]); // Set the line dash pattern
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)'; // Brighter white for better visibility
+        ctx.lineWidth = 1; // Back to thinner line for cleaner look
+        ctx.setLineDash([10, 15]); // More pronounced dashed orbit line
         ctx.stroke();
         ctx.closePath();
 

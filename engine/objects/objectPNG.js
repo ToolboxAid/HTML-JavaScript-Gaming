@@ -11,7 +11,7 @@ import ObjectDebug from '../utils/objectDebug.js';
 import PngRenderer from '../renderers/pngRenderer.js';
 import ImageAssetCache from '../utils/imageAssetCache.js';
 import PngAssetState from '../utils/pngAssetState.js';
-import PngAnimationController from '../animation/pngAnimationController.js';
+import PngController from '../animation/pngController.js';
 import AnimationStateUtils from '../animation/animationStateUtils.js';
 
 class ObjectPNG extends ObjectKillable {
@@ -87,7 +87,7 @@ class ObjectPNG extends ObjectKillable {
         this.assetState.applyTo(this);
 
         this.frameOffsets = Array.isArray(frameOffsets) ? frameOffsets : null;
-        this.animation = new PngAnimationController(this.frameCount, this.framesPerRow, this.frameDelay);
+        this.animation = new PngController(this.frameCount, this.framesPerRow, this.frameDelay);
 
         ObjectPNG.loadSprite(spritePath, transparentColor)
             .then((png) => {

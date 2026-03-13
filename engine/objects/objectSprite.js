@@ -11,7 +11,7 @@ import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import SpriteRenderer from '../renderers/spriteRenderer.js';
-import SpriteAnimationController from '../animation/spriteAnimationController.js';
+import SpriteController from '../animation/spriteController.js';
 import AnimationStateUtils from '../animation/animationStateUtils.js';
 
 class ObjectSprite extends ObjectKillable {
@@ -114,7 +114,7 @@ constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palet
     this.frameType = frameType;
     this.pixelSize = spritePixelSize;
 
-    this.animation = new SpriteAnimationController({
+    this.animation = new SpriteController({
         livingFrames: normalizedLivingFrames,
         dyingFrames: normalizedDyingFrames,
         livingDelay,

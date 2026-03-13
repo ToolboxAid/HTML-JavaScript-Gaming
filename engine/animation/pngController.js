@@ -1,6 +1,6 @@
 import ObjectValidation from '../utils/objectValidation.js';
 
-class PngAnimationController {
+class PngController {
     constructor(frameCount = 1, framesPerRow = 1, frameDelay = 6) {
         ObjectValidation.positiveNumber(frameCount, 'frameCount');
         ObjectValidation.positiveNumber(framesPerRow, 'framesPerRow');
@@ -97,4 +97,4 @@ class PngAnimationController {
     }
 }
 
-export default PngAnimationController;
+export default PngController;

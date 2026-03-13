@@ -1,7 +1,7 @@
-import PngAnimationController from './pngAnimationController.js';
+import PngController from './pngController.js';
 
-export function testPngAnimationController(assert) {
-    const animation = new PngAnimationController(4, 2, 3);
+export function testPngController(assert) {
+    const animation = new PngController(4, 2, 3);
 
     let sourceRect = animation.getCurrentSourceRect(10, 20, 8, 6);
     assert(sourceRect.sx === 10, 'initial source rect x failed');
