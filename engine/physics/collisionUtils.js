@@ -32,7 +32,7 @@ export default class CollisionUtils {
     static transformPoints(vectorMap, x, y, rotationAngle) {
         const transformedPoints = VectorShapeUtils.getRotatedPoints(vectorMap, x, y, rotationAngle);
 
-        if (false && this.DEBUG) { // this gets spammed, "false" is on purpose
+        if (CollisionUtils.DEBUG) {
             const formattedPoints = transformedPoints.map(([pointX, pointY]) => [
                 parseFloat(pointX.toFixed(3)),
                 parseFloat(pointY.toFixed(3))
@@ -53,7 +53,7 @@ export default class CollisionUtils {
 
         if (!shapeA || !shapeB) {
             DebugLog.warn(true, 'CollisionUtils', '\nobjectA:', objectA, '\nobjectB:', objectB);
-            if (this.DEBUG) {
+            if (CollisionUtils.DEBUG) {
                 DebugLog.error(true, 'CollisionUtils', 'Invalid objects passed to vectorIntersectsVector', SystemUtils.showStackTrace(), objectA, objectB);
             }
             return false;
@@ -71,8 +71,8 @@ export default class CollisionUtils {
 
         // Check if any point of objectB is inside objectA
         for (let [pointX, pointY] of shapeB.rotatedPoints) {
-            if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeA.rotatedPoints, this.DEBUG)) {
-                if (this.DEBUG) {
+            if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeA.rotatedPoints, CollisionUtils.DEBUG)) {
+                if (CollisionUtils.DEBUG) {
                     DebugLog.log(true, 'CollisionUtils', 'objectB.rotatedPoints point', pointX, pointY, shapeA.rotatedPoints);
                 }
                 return true;
@@ -81,8 +81,8 @@ export default class CollisionUtils {
 
         // Check if any point of objectA is inside objectB
         for (let [pointX, pointY] of shapeA.rotatedPoints) {
-            if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeB.rotatedPoints, this.DEBUG)) {
-                if (this.DEBUG) {
+            if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeB.rotatedPoints, CollisionUtils.DEBUG)) {
+                if (CollisionUtils.DEBUG) {
                     DebugLog.log(true, 'CollisionUtils', 'objectAPoints point', pointX, pointY, shapeB.rotatedPoints);
                 }
                 return true;
@@ -99,7 +99,7 @@ export default class CollisionUtils {
                 let b2 = shapeB.rotatedPoints[(j + 1) % shapeB.rotatedPoints.length];
 
                 if (PolygonCollision.doEdgesIntersect(a1, a2, b1, b2)) {
-                    if (this.DEBUG) {
+                    if (CollisionUtils.DEBUG) {
                         DebugLog.log(true, 'CollisionUtils', ' edgesIntersect ');
                     }
                     return true;
@@ -123,7 +123,7 @@ export default class CollisionUtils {
     }
 
     static pointInPolygon(x, y, polygon) {
-        return PolygonCollision.isPointInsidePolygon(x, y, polygon, this.DEBUG);
+        return PolygonCollision.isPointInsidePolygon(x, y, polygon, CollisionUtils.DEBUG);
     }
 
     static pointInBox(x, y, object) {
@@ -145,14 +145,14 @@ export default class CollisionUtils {
     }
 
     static isPointInsidePolygon(x, y, polygon) {
-        return PolygonCollision.isPointInsidePolygon(x, y, polygon, this.DEBUG);
+        return PolygonCollision.isPointInsidePolygon(x, y, polygon, CollisionUtils.DEBUG);
     }
 
     static isContainedWithin(object, container) {
         const objectBounds = CollisionShapeUtils.getBoundingBox(object);
         const containerBounds = CollisionShapeUtils.getBoundingBox(container);
 
-        if (this.DEBUG) {
+        if (CollisionUtils.DEBUG) {
             console.assert(
                 objectBounds && containerBounds,
                 `isContainedWithin invalid input: object=${JSON.stringify(object)}, container=${JSON.stringify(container)}`
@@ -179,7 +179,7 @@ export default class CollisionUtils {
         const boxA = CollisionShapeUtils.getBoundingBox(objectA);
         const boxB = CollisionShapeUtils.getBoundingBox(objectB);
 
-        if (this.DEBUG) {
+        if (CollisionUtils.DEBUG) {
             // Check for valid objects and dimensions
             if (!boxA || !boxB) { // Check if either object is null or undefined
                 DebugLog.warn(true, 'CollisionUtils', 'isCollidingWith: One or both objects are null or undefined', objectA, objectB);
@@ -235,7 +235,7 @@ export default class CollisionUtils {
         const boxA = CollisionShapeUtils.getBoundingBox(objectA);
         const boxB = CollisionShapeUtils.getBoundingBox(objectB);
 
-        if (this.DEBUG) {
+        if (CollisionUtils.DEBUG) {
             console.assert(
                 boxA && boxB,
                 `isCollidingWithSides invalid input: \nobjectA=${JSON.stringify(objectA)}, \nobjectB=${JSON.stringify(objectB)}`
@@ -287,7 +287,7 @@ export default class CollisionUtils {
     static getCompletelyOffScreenSides(object, margin = 0) {
         const boundariesCrossed = BoundaryUtils.getCompletelyOffScreenSides(object, margin);
 
-        if (this.DEBUG && boundariesCrossed.includes('right')) {
+        if (CollisionUtils.DEBUG && boundariesCrossed.includes('right')) {
             const halfDimensions = BoundaryUtils.getHalfDimensions(object);
             DebugLog.log(true, 'CollisionUtils', 'Boundaries crossed:', {
                 boundaries: boundariesCrossed,
@@ -312,7 +312,7 @@ export default class CollisionUtils {
         return BoundaryUtils.checkGameAtBounds(object, margin);
     }
     static checkGameAtBoundsSides(object, margin = 0) {
-        if (this.DEBUG) {
+        if (CollisionUtils.DEBUG) {
             console.assert(
                 object && typeof object.x === 'number' && typeof object.y === 'number' &&
                 typeof object.width === 'number' && typeof object.height === 'number',
@@ -326,7 +326,7 @@ export default class CollisionUtils {
 
         const boundariesHit = BoundaryUtils.checkGameAtBoundsSides(object, margin);
 
-        if (this.DEBUG) {
+        if (CollisionUtils.DEBUG) {
             DebugLog.log(true, 'CollisionUtils', 'checkGameAtBoundsSides', CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesHit);
         }
 
@@ -334,7 +334,7 @@ export default class CollisionUtils {
     }
 
     static checkGameAtBoundsCircle(object) {
-        if (this.DEBUG) {
+        if (CollisionUtils.DEBUG) {
             console.assert(
                 object && typeof object.x === 'number' && typeof object.y === 'number' &&
                 typeof object.radius === 'number',
@@ -344,7 +344,7 @@ export default class CollisionUtils {
         return BoundaryUtils.checkGameAtBoundsCircle(object);
     }
     static checkGameAtBoundsCircleSides(object) {
-        if (this.DEBUG) {
+        if (CollisionUtils.DEBUG) {
             console.assert(
                 object && typeof object.x === 'number' && typeof object.y === 'number' &&
                 typeof object.radius === 'number',

@@ -66,8 +66,7 @@ class PerformanceMonitor {
         if (validation) {
             this.performanceConfig = config;
             this.dimensions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
-            //console.log(this.dimensions);
-            DebugLog.log(this.DEBUG, 'PerformanceMonitor', 'PerformanceMonitor.init complete.');
+            DebugLog.log(PerformanceMonitor.DEBUG, 'PerformanceMonitor', 'PerformanceMonitor.init complete.');
             return true;
         }
 
@@ -147,10 +146,6 @@ class PerformanceMonitor {
 
         this.updateMetrics();
 
-        // {width: 126, height: 24} console.log(CanvasUtils.calculateTextMetrics("FPS: 60", 30, "monospace")); 
-        // {width: 307, height: 29} console.log(CanvasUtils.calculateTextMetrics("MEM: 30.66/33.08MB", 30, "monospace")); 
-
-        //this.dimensions
         const width = this.dimensions.width;
         const height = this.dimensions.height + (this.dimensions.height / 5);
 
@@ -212,6 +207,10 @@ class PerformanceMonitor {
     }
 
     static logMemoryStats() {
+        if (!PerformanceMonitor.DEBUG) {
+            return;
+        }
+
         const memory = window.performance.memory;
         console.table({
             'Heap Limit': `${(memory.jsHeapSizeLimit / 1048576).toFixed(2)} MB`,
@@ -222,6 +221,10 @@ class PerformanceMonitor {
     }
 
     static logPerformance() {
+        if (!PerformanceMonitor.DEBUG) {
+            return;
+        }
+
         const metrics = this.getMetrics();
         const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
 

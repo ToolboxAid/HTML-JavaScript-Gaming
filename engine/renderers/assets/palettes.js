@@ -109,7 +109,7 @@ class Palettes {
         let result = '';
         // Validate that symbol is a non-empty string and a single ASCII character
         if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
-            DebugLog.warn(this.DEBUG, 'Palettes', 'Invalid symbol provided:', symbol);
+            DebugLog.warn(Palettes.DEBUG, 'Palettes', 'Invalid symbol provided:', symbol);
             result = this.errorResult;
         }
 
@@ -137,7 +137,7 @@ class Palettes {
 
     static setSortByOrder(arg) {
         if (arg !== 'hue' && arg !== 'saturation' & arg !== 'lightness') {
-            DebugLog.log(this.DEBUG, 'Palettes', `Invalid sort by '${arg}'. No change.`);
+            DebugLog.log(Palettes.DEBUG, 'Palettes', `Invalid sort by '${arg}'. No change.`);
             return;
         }
         this.sortByOrder = arg;
@@ -171,8 +171,8 @@ class Palettes {
             } else if (this.sortByOrder === 'lightness') {
                 return hslA.l - hslB.l; // Sort by lightness
             } else {
-                DebugLog.log(this.DEBUG, 'Palettes', 'this.sortByOrder:', this.sortByOrder); // Debug log to check the value
-                DebugLog.warn(this.DEBUG, 'Palettes', ` --- Invalid this.sortByOrder value:'${this.sortByOrder}'. Defaulting to 'hue'. ---`);
+                DebugLog.log(Palettes.DEBUG, 'Palettes', 'this.sortByOrder:', this.sortByOrder); // Debug log to check the value
+                DebugLog.warn(Palettes.DEBUG, 'Palettes', ` --- Invalid this.sortByOrder value:'${this.sortByOrder}'. Defaulting to 'hue'. ---`);
                 return hslA.h - hslB.h; // Default to sorting by hue
             }
         });
@@ -190,9 +190,9 @@ class Palettes {
             }
 
             // Iterate through the palette and display all details
-            DebugLog.log(this.DEBUG, 'Palettes', `Details of "${paletteName}" palette:`);
+            DebugLog.log(Palettes.DEBUG, 'Palettes', `Details of "${paletteName}" palette:`);
             palette.forEach((item, index) => {
-                DebugLog.log(this.DEBUG, 'Palettes', `Index: ${index}, Symbol: ${item.symbol}, Hex: ${item.hex}, Name: ${item.name}`);
+                DebugLog.log(Palettes.DEBUG, 'Palettes', `Index: ${index}, Symbol: ${item.symbol}, Hex: ${item.hex}, Name: ${item.name}`);
             });
 
         } catch (error) {
@@ -200,67 +200,24 @@ class Palettes {
         }
     }
 
+    // Debug helper: log sorted palette preview without DOM mutation.
+    static dumpSorted(sortBy = 'saturation') {
+        const previousSort = this.sortByOrder;
+        this.setSortByOrder(sortBy);
+
+        const sortedColors = this.sortColors();
+        DebugLog.log(Palettes.DEBUG, 'Palettes', `Sorted Color Palette '${this.activeName}' by '${sortBy}'`);
+        sortedColors.forEach((color, index) => {
+            DebugLog.log(
+                Palettes.DEBUG,
+                'Palettes',
+                `#${String(index + 1).padStart(3, '0')} ${color.symbol} ${color.hex} ${color.name}`
+            );
+        });
+
+        this.sortByOrder = previousSort;
+    }
+
 }
 
 export default Palettes;
-
-//---------------------------------------------------
-//---------------------------------------------------
-//---------------------------------------------------
-// Sorted Color Palette 'x' by 'y'
-if (false) {  // sort colors and put on editor screen.
-    Palettes.set("default");
-    var sortBy = "saturation"; // hue, saturation, lightness
-
-    let value = `<h1>Sorted Color Palette '${Palettes.activeName}' by '${sortBy}'</h1>`;
-    value += '<p>Options are: hue, saturation, & lightness</p>';
-    value += '<textarea id="orderedColor" rows="35" cols="150" style="height: 35%;">';
-
-    // colors to Sort 
-    var sortedColors = Palettes.sortColors();
-
-    let colorNumber = 0;
-    let asciiINumber = 32;
-
-    sortedColors.forEach(function (color) {
-        colorNumber++;
-        asciiINumber++;
-
-        if (asciiINumber === 39 || asciiINumber === 92) {
-            asciiINumber++;
-        }
-        if (asciiINumber === 127) {
-            asciiINumber = 161;
-        }
-
-        var rgb = Colors.hexToRgb(color.hex);
-        let hsl = Colors.rgbToHsl(rgb.r, rgb.g, rgb.b);
-
-        if (false) {// show HSL and Color details}
-            // Append formatted color object to .value as a string
-            if (isNaN(hsl.h)) {
-                DebugLog.error('Palettes', 'Invalid hue value:', hsl.h);
-                value += `Invalid hue value:`, '${hsl.h}';
-            } else {
-                let hue = Number(hsl.h);
-                value += `/* {h: '${hue.toFixed(3).padStart(7, ' ')}', s: '${hsl.s}', l: '${hsl.l},'} `;
-            }
-            value += `- color # ${colorNumber.toFixed(0).padStart(3, '0')} ascii'${asciiINumber}'*/  `;
-        }
-        const symbol = String.fromCharCode(asciiINumber);
-        value += `{symbol: '${symbol}', hex: '${color.hex}', name: '${color.name}'},\n`;
-    });
-
-    value += '</textarea>';
-
-    // Output the sorted colors
-    const orderedColorDiv = document.getElementById("orderedColorDiv");  // Ensure the div element exists
-    if (!orderedColorDiv) {
-        alert("orderedColorDiv not found.");
-    } else {
-        orderedColorDiv.innerHTML = value;
-    }
-}
-//---------------------------------------------------
-//---------------------------------------------------
-//---------------------------------------------------

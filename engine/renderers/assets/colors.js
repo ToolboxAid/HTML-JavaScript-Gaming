@@ -206,6 +206,19 @@ export class Colors {
         return this.randomColor;
     }
 
+    // Debug helper: preview evenly spaced HSL colors.
+    static generateHSLColors(step = 30) {
+        const colors = [];
+        for (let h = 0; h <= 360; h += step) {
+            colors.push(`hsl(${h}, 100%, 50%)`);
+        }
+        return colors;
+    }
+
+    static logHSLColors(step = 30) {
+        DebugLog.log(Colors.DEBUG, 'Colors', this.generateHSLColors(step));
+    }
+
     // Move the color map / or remove
 
     static namedColorMap = {
@@ -379,40 +392,4 @@ export class Colors {
 export default Colors;
 
 Colors.generateRandomColor();
-//---------------------------------------------------
-//---------------------------------------------------
-//---------------------------------------------------
-// Sorted Color Palette 'xxxx' by 'yyyy'
-if (false) {  // sort colors and put on editor screen.
-
-    function generateHSLColors() { // Step 30°
-        const colors = [];
-        for (let h = 0; h <= 360; h += 30) {
-            // Create a color with full saturation and lightness at 50%
-            const color = `hsl(${h}, 100%, 50%)`;
-            colors.push(color);
-        }
-        return colors;
-        /* [
-        "hsl(0,   100%, 50%)",  // Red
-        "hsl(30,  100%, 50%)",  // Orange
-        "hsl(60,  100%, 50%)",  // Yellow
-        "hsl(90,  100%, 50%)",  // Green
-        "hsl(120, 100%, 50%)",  // Light Green
-        "hsl(150, 100%, 50%)",  // Chartreuse
-        "hsl(180, 100%, 50%)",  // Cyan
-        "hsl(210, 100%, 50%)",  // Light Blue
-        "hsl(240, 100%, 50%)",  // Blue
-        "hsl(270, 100%, 50%)",  // Violet
-        "hsl(300, 100%, 50%)",  // Purple
-        "hsl(330, 100%, 50%)",  // Deep Red
-        "hsl(360, 100%, 50%)"   // Red (Back to 0°)
-        ] */
-    }
-    DebugLog.log(Colors.DEBUG, 'Colors', generateHSLColors());
-
-}
-//---------------------------------------------------
-//---------------------------------------------------
-//---------------------------------------------------
 

@@ -86,7 +86,7 @@ Objective:
 
 - [x] Centralize debug logging policy across engine modules (not just renderers)
 - [x] static DEBUG = DebugFlag.has('gamepadManager');
-- [ ] Remove dead code and obvious duplication where low risk.
+- [x] Remove dead code and obvious duplication where low risk.
 - [ ] Improve naming and readability where safe.
 - [ ] Add guard clauses and validation where needed.
 - [ ] Normalize comment style and lightweight documentation where helpful.
@@ -99,6 +99,7 @@ Basic improvements progress:
 - Added safety guards to `GamepadManager` for missing `window`/`navigator.getGamepads` environments.
 - Converted noisy fullscreen lifecycle logs to debug-gated logging (`Fullscreen.DEBUG`).
 - Centralized shared debug output policy via `engine/utils/debugLog.js` and wired core modules (`fullscreen`, `canvas`, `gameBase`, `gamepadManager`) plus `objectDebug` delegation.
+- Removed low-risk dead code blocks (`if (false)` debug helpers) from `tileMap`, `collisionUtils`, `colors`, and `palettes`, and trimmed stale commented debug snippets.
 
 ## Unit test audit
 

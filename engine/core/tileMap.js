@@ -159,7 +159,7 @@ class TileMap {
 
         this.currentScrollPosX = this.scrollPosX + hero.x;
 
-        if (false) {
+        if (TileMap.DEBUG) {
             CanvasUtils.ctx.fillStyle = "white";
             CanvasUtils.ctx.font = "10px Arial";
 
@@ -171,12 +171,8 @@ class TileMap {
             CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), accross, 90);
             CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentScrollPosX), accross, 100);
             CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentScrollPosX + hero.width), accross, 110);
-
-            //console.log("Cur Scroll X:", this.currentScrollPosX, "% x travel:", (this.currentScrollPosX / this.tileSetWidth));
-            //console.log("--------------------------------------");
-
-
         }
+
     }
 
     setTileColor(currentColor) {
@@ -197,7 +193,6 @@ class TileMap {
                 CanvasUtils.ctx.fillStyle = "rgb(255 ,255, 0)";
                 break;
             default: // oops
-                //console.log("Current row " + row + ", col " + col + ": has an unknown value: " + value);
                 CanvasUtils.ctx.fillStyle = "rgb(255, 255 , 255)";
         }
     }
