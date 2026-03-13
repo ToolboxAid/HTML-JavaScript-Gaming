@@ -1,11 +1,11 @@
 // ToolboxAid.com
 // David Quesenberry
 // 02/10/2025
-// testReceiver.js
+// receiverExample.js
 
-import EventBus from './eventBus.js';
-import { Receiver } from './receiver.js';
-import { GAMEPAD_EVENT } from './gamepadManager.js';
+import EventBus from '../eventBus.js';
+import Receiver from '../receiver.js';
+import { GAMEPAD_EVENT } from '../../input/controller/gamepadManager.js';
 
 // Get the shared EventBus instance
 const sender = EventBus.getInstance();

@@ -1,10 +1,10 @@
 // ToolboxAid.com
 // David Quesenberry
 // 02/10/2025
-// testSender.js
+// senderExample.js
 
-import EventBus from './eventBus.js';
-import { GAMEPAD_EVENT } from '../gamepadEnums.js';
+import EventBus from '../eventBus.js';
+import { GAMEPAD_EVENT } from '../../input/controller/gamepadManager.js';
 
 // Get the shared EventBus instance
 const sender = EventBus.getInstance();

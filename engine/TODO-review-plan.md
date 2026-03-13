@@ -37,14 +37,13 @@ Objective:
 - [x] Check whether files are located in the most appropriate folder.
 - [x] Identify modules that should be moved closer to related systems or utilities.
 - [x] Review naming consistency across folders, files, classes, methods, and variables.
-- [ ] Identify ambiguous, outdated, or misleading names.
+- [x] Identify ambiguous, outdated, or misleading names.
 - [ ] Check whether singular vs plural naming is used consistently.
 - [x] Review whether folder boundaries encourage good reuse or create confusion.
 - [x] Identify top-level files that should move into a more specific engine subfolder.
 
 File placement review results:
 
-- Moved canonical `GameObject`, `GameObjectManager`, `GameObjectRegistry`, and `GameObjectSystem` implementations into `engine/game/`.
 - Kept top-level compatibility re-export shims for `engine/gameObject*.js` to preserve existing game imports.
 - Updated game-domain test imports to target canonical `engine/game/` module locations.
 - Remaining candidate moves (defer to naming pass): `colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js` closer to `core`/render assets grouping.
@@ -55,6 +54,13 @@ Naming consistency review results:
 - Verified keyboard input API call sites now consistently use `getKeysPressed`.
 - File/class casing style is mostly consistent (`camelCase.js` file names with PascalCase classes for class modules).
 - Remaining naming candidates (separate pass): clarify asset-module grouping names (`colors`, `font5x6`, `palettes`, `palettesList`) and evaluate whether `misc` should become a more specific domain name.
+
+Ambiguous/outdated/misleading name review results:
+
+- Renamed message example scripts from ambiguous `testSender.js`/`testReceiver.js` to explicit `messages/examples/senderExample.js` and `messages/examples/receiverExample.js`.
+- Fixed stale/overly verbose import paths in `messages/eventBus.js` and `messages/receiver.js` to direct local imports.
+- Corrected misleading header comment in `messages/eventBus.js` (`.js` -> `eventBus.js`).
+- Remaining ambiguous names for dedicated rename pass: `misc` folder scope, `runTest.js` filename vs exported `runTests`, and legacy sprite metadata keys like `spriteimage`/`framesPerSprite` used by editor JSON schema.
 
 ## Architecture review
 

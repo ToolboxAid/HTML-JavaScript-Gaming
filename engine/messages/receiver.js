@@ -3,7 +3,7 @@
 // 02/10/2025
 // receiver.js
 
-import EventBus from '../../engine/messages/eventBus.js';
+import EventBus from './eventBus.js';
 
 class Receiver {
     constructor(sender = EventBus.getInstance(), eventName) {
