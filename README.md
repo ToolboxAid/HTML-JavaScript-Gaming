@@ -11,15 +11,18 @@ This repo is organized around a shared `engine/` plus a set of playable `games/`
 The [`engine/`](./engine/) folder contains the reusable framework code used across the projects in this repository, including:
 
 - game bootstrapping and animation loop
+- shared runtime orchestration through `GameBase` and `RuntimeContext`
 - canvas helpers and rendering utilities
 - keyboard, mouse, and controller input
+- animation helpers for sprite and PNG workflows
+- game-facing object, registry, collision, and system APIs under `engine/game/`
+- shared object classes and lifecycle helpers
 - math and physics helpers
-- sprites and tile-map support
-- game object classes and object lifecycle helpers
+- sprite, PNG sprite-sheet, and tile-map support
 - event messaging
 - audio, MIDI, and synthesizer output
 
-The main runtime entry point is [`engine/core/gameBase.js`](./engine/core/gameBase.js).
+The main runtime entry point is [`engine/core/gameBase.js`](./engine/core/gameBase.js), working with [`engine/core/runtimeContext.js`](./engine/core/runtimeContext.js).
 
 ### Playable games
 
@@ -39,8 +42,6 @@ The [`games/`](./games/) folder contains complete browser games and gameplay pro
 - Solar System (outdated)
 - Solar System - w-classes
 - 2D side scroll tile map (not complete)
-- Break Out (not complete)
-- Tank w-pathfind (not complete)
 
 Each game usually includes its own `index.html`, `game.js`, `global.js`, styles, and game-specific classes/assets.
 
@@ -69,6 +70,7 @@ The [`docs/`](./docs/) folder contains project documentation, including:
 
 - [`docs/getting-started.md`](./docs/getting-started.md)
 - [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md)
+- [`docs/engine-api-conventions.md`](./docs/engine-api-conventions.md)
 - [`docs/sprite-system.md`](./docs/sprite-system.md)
 
 ## Repository layout
@@ -80,6 +82,8 @@ games/            Full game implementations
 samples/          Focused demos for individual subsystems
 tools/            Utility applications
 docs/             Documentation
+scripts/          Repository automation scripts
+tests/            Engine test suite and manifest
 ```
 
 ## Running the project
@@ -117,9 +121,11 @@ npm test
 `npm test` runs `scripts/run-node-tests.mjs`, which executes the shared test manifest at `tests/engine/testManifest.js`.
 The default suite is Node-safe and includes engine tests across animation, core, game, input, lifecycle, math, messages, misc, objects, output, physics, renderers, and utils.
 
-## Recommended starting points
+## Recommended first run
 
-Start with the root [`index.html`](./index.html) launcher page. From there, good entry points are:
+Start with the root [`index.html`](./index.html) launcher page. It gives you one place to open games, samples, tools, and docs.
+
+Good first stops are:
 
 - [`games/Asteroids/`](./games/Asteroids/)
 - [`games/Frogger/`](./games/Frogger/)
@@ -127,14 +133,56 @@ Start with the root [`index.html`](./index.html) launcher page. From there, good
 - [`samples/Sample%20Game%20Engine/`](./samples/Sample%20Game%20Engine/)
 - [`tools/SpriteEditor/`](./tools/SpriteEditor/)
 
+If you want a quick orientation path:
+
+1. Open the root launcher page.
+2. Run [`samples/Sample%20Game%20Engine/`](./samples/Sample%20Game%20Engine/).
+3. Read [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md).
+4. Open [`games/Asteroids/`](./games/Asteroids/).
+
 ## Typical project flow
 
 Most game folders follow this pattern:
 
 1. `index.html` loads a game-specific `game.js` module.
-2. `game.js` imports shared code from `engine/`.
-3. A game class extends `GameBase`.
-4. The engine runs the update/render loop on the canvas.
+2. `game.js` imports shared code from `engine/` and usually extends `GameBase`.
+3. `GameBase` initializes shared services through `RuntimeContext`.
+4. `onInitialize(runtimeContext)` loads game-specific state, assets, and input.
+5. `gameLoop(deltaTime, runtimeContext)` updates and draws gameplay each animation frame.
+
+## Engine overview
+
+The engine is organized into a few clear layers:
+
+- `engine/core/` for the runtime shell, canvas helpers, and tile-map support
+- `engine/game/` for canonical game-facing object, registry, collision, and system APIs
+- `engine/animation/` for sprite and PNG animation controllers
+- `engine/input/` for keyboard, mouse, and controller input
+- `engine/objects/` for reusable object types like static, dynamic, killable, sprite, PNG, and vector objects
+- `engine/math/` and `engine/physics/` for low-level helpers
+- `engine/renderers/` for box, sprite, PNG, vector, and particle rendering
+- `engine/messages/` for event-style communication
+- `engine/output/` for audio, MIDI, and synthesizer support
+
+## Sprite workflows
+
+The repo currently supports two main sprite paths:
+
+- `ObjectSprite` for frame-array or JSON/palette sprites
+- `ObjectPNG` for PNG sprite-sheet rendering
+
+The current game-facing `GameObject` facade extends `ObjectPNG`, so PNG-backed sprite sheets are the default path in the newer `engine/game/` layer.
+
+For more detail, see [`docs/sprite-system.md`](./docs/sprite-system.md).
+
+## Documentation
+
+If you are exploring or contributing, these are the best docs to read first:
+
+- [`docs/getting-started.md`](./docs/getting-started.md)
+- [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md)
+- [`docs/engine-api-conventions.md`](./docs/engine-api-conventions.md)
+- [`docs/sprite-system.md`](./docs/sprite-system.md)
 
 ## Built with
 

@@ -18,7 +18,7 @@ tests/    Engine test suite and manifest
 
 The codebase is organized around a reusable engine and a growing set of examples.
 
-- `engine/` contains the shared runtime pieces such as `gameBase.js`, input handlers, rendering helpers, object classes, math utilities, physics helpers, messaging, audio output, and tile-map support.
+- `engine/` contains the shared runtime pieces such as `gameBase.js`, `runtimeContext.js`, input handlers, game-facing object APIs, rendering helpers, animation helpers, object classes, math utilities, physics helpers, messaging, audio output, and tile-map support.
 - `games/` contains complete browser games like Asteroids, Frogger, Pong, Snake, Space Invaders, and a side-scrolling tile-map demo.
 - `samples/` contains smaller testbeds for keyboard, mouse, controllers, audio, MIDI, particles, and the sample game engine.
 - `tools/` currently includes the Sprite Editor.
@@ -76,24 +76,41 @@ After that, good first stops are:
 - `samples/Sample Game Engine/`
 - `tools/SpriteEditor/`
 
+If you want the quickest orientation path, use this order:
+
+1. Open the root launcher page.
+2. Launch `samples/Sample Game Engine/`.
+3. Read `docs/game-engine-architecture.md`.
+4. Open `games/Asteroids/` to see a more complete engine-driven game.
+
 ## Core runtime flow
 
 Most game projects follow the same pattern:
 
 1. An `index.html` page loads a game-specific `game.js` module.
-2. The game bootstraps canvas and runtime setup.
-3. The game builds or updates its objects.
-4. The game renders to the canvas every animation frame.
+2. `game.js` imports shared engine modules and usually extends `GameBase`.
+3. `GameBase` initializes shared services through `RuntimeContext`.
+4. `onInitialize(runtimeContext)` wires up game-specific assets, input, and state.
+5. `gameLoop(deltaTime, runtimeContext)` updates and draws gameplay each animation frame.
 
-At the center of that flow is `engine/core/gameBase.js`, which initializes the canvas, fullscreen support, and performance monitor, then runs the animation loop.
+At the center of that flow is `engine/core/gameBase.js`, working with `engine/core/runtimeContext.js` to initialize canvas, fullscreen support, performance monitoring, and shared timer visibility handling before the main animation loop begins.
 
 ## Engine areas to know first
 
 ### `engine/core/gameBase.js`
 Base class for bootstrapping a game and running the animation loop.
 
+### `engine/core/runtimeContext.js`
+Facade around shared engine services such as canvas, fullscreen, performance, and timer visibility integration.
+
+### `engine/game/`
+Canonical game-facing object, collision, registry, and system APIs.
+
 ### `engine/input/`
-Keyboard and mouse input handling.
+Keyboard, mouse, and controller input handling.
+
+### `engine/animation/`
+Sprite and PNG animation controllers plus state-bridge helpers.
 
 ### `engine/objects/`
 Shared object classes such as static, dynamic, sprite, PNG, vector, and killable object types.
@@ -102,7 +119,7 @@ Shared object classes such as static, dynamic, sprite, PNG, vector, and killable
 Collision and movement helpers.
 
 ### `engine/math/`
-Geometry, angles, random helpers, and vector utilities.
+Geometry, angles, and random helpers.
 
 ### `engine/messages/`
 Event-bus style messaging and sender/receiver helpers.
@@ -117,11 +134,13 @@ Tile-map and side-scrolling support.
 
 If you are new to this repo, work through it in this order:
 
-1. Read `docs/game-engine-architecture.md`.
-2. Run `samples/Sample Game Engine/`.
-3. Open `games/Asteroids/` to see a compact arcade-style implementation.
-4. Open `games/2D side scroll tile map/` to study map scrolling.
-5. Read `docs/sprite-system.md` before expanding sprite-heavy projects.
+1. Run the root `index.html` launcher.
+2. Read `docs/game-engine-architecture.md`.
+3. Run `samples/Sample Game Engine/`.
+4. Open `games/Asteroids/` to see a compact arcade-style implementation.
+5. Open `games/Frogger/` for a larger project with more systems and assets.
+6. Open `games/2D side scroll tile map/` to study map scrolling.
+7. Read `docs/sprite-system.md` before expanding sprite-heavy projects.
 
 ## Adding a new game
 
@@ -133,7 +152,9 @@ A practical way to add a new game is:
 4. Reuse engine code instead of duplicating utilities.
 5. Add the game to the root launcher page.
 
+In practice, the smoothest starting point is often `samples/Sample Game Engine/` or another small existing project rather than starting from an empty folder.
+
 ## Current direction of the repo
 
-This project has moved beyond isolated experiments. The current structure supports the next step: treating `engine/` as the shared framework layer and keeping `games/`, `samples/`, and `tools/` as clean consumers of that framework.
+This project has moved beyond isolated experiments. The current structure supports the next step: treating `engine/` as the shared framework layer, using `engine/game/` as the canonical game-facing API surface, and keeping `games/`, `samples/`, and `tools/` as clean consumers of that framework.
 
