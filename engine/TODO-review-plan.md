@@ -2,6 +2,14 @@
 
 ## Review workflow
 
+- [ ] I
+- [.] I
+- [!] I
+- [-] I
+- [x] I
+- [X] I
+
+
 - [ ] Inventory the engine surface area.
 - [ ] Map responsibilities, entry points, shared utilities, browser dependencies, and current test coverage.
 - [ ] Establish a consistent review checklist for correctness, API clarity, coupling, state management, lifecycle cleanup, error handling, security, and testability.
