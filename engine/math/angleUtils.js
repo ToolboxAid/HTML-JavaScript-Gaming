@@ -97,13 +97,10 @@ class AngleUtils {
             y: centerY + distance * Math.sin(radian)
         };
     }
-    // Calculate the position of an object in a circular orbit
+
+    // Compatibility alias for calculateOrbitalPosition
     static getOrbitalPosition(centerX, centerY, angle, radius) {
-        const radians = angle * this.DEG_TO_RAD;
-        return {
-            x: centerX + radius * Math.cos(radians),
-            y: centerY + radius * Math.sin(radians)
-        };
+        return this.calculateOrbitalPosition(centerX, centerY, angle, radius);
     }
 
 }

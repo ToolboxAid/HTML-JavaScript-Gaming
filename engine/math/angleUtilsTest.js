@@ -42,4 +42,8 @@ export function testAngleUtils(assert) {
     const orbit = AngleUtils.calculateOrbitalPosition(0, 0, 90, 10);
     assert(Math.abs(orbit.x) < 1e-10, "calculateOrbitalPosition X failed");
     assert(Math.abs(orbit.y - 10) < 1e-10, "calculateOrbitalPosition Y failed");
+
+    const orbitAlias = AngleUtils.getOrbitalPosition(0, 0, 90, 10);
+    assert(Math.abs(orbitAlias.x) < 1e-10, "getOrbitalPosition X failed");
+    assert(Math.abs(orbitAlias.y - 10) < 1e-10, "getOrbitalPosition Y failed");
 }
