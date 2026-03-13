@@ -21,8 +21,8 @@ Objective:
 - [x] Review `engine/math`.
 - [x] Review `engine/physics`.
 - [x] Review `engine/game`.
-- [.] Review `engine/objects`.
-- [ ] Review `engine/renderers`.
+- [x] Review `engine/objects`.
+- [.] Review `engine/renderers`.
 - [ ] Review `engine/input`.
 - [ ] Review `engine/messages`.
 - [ ] Review `engine/lifecycle`.

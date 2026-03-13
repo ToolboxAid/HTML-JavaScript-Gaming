@@ -91,6 +91,10 @@ class ObjectPNG extends ObjectKillable {
 
         ObjectPNG.loadSprite(spritePath, transparentColor)
             .then((png) => {
+                if (this.isDestroyed || !this.assetState) {
+                    return;
+                }
+
                 this.assetState.setLoaded(png);
                 this.assetState.applyTo(this);
 
@@ -103,6 +107,10 @@ class ObjectPNG extends ObjectKillable {
                 });
             })
             .catch((error) => {
+                if (this.isDestroyed || !this.assetState) {
+                    return;
+                }
+
                 this.assetState.setError(error);
                 this.assetState.applyTo(this);
                 console.error(`Failed to load sprite: ${spritePath}`, error);
