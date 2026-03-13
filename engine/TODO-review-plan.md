@@ -35,7 +35,7 @@ Objective:
 
 - [x] Review whether folders reflect clear engine concepts and responsibilities.
 - [x] Check whether files are located in the most appropriate folder.
-- [ ] Identify modules that should be moved closer to related systems or utilities.
+- [x] Identify modules that should be moved closer to related systems or utilities.
 - [ ] Review naming consistency across folders, files, classes, methods, and variables.
 - [ ] Identify ambiguous, outdated, or misleading names.
 - [ ] Check whether singular vs plural naming is used consistently.
@@ -44,10 +44,10 @@ Objective:
 
 File placement review results:
 
-- Moved `PerformanceMonitor` implementation to `engine/core/performanceMonitor.js` (runtime concern belongs with other core runtime modules).
-- Removed deprecated `engine/performacneMonitor.js` shim after import migration.
-- Moved engine tests into mirrored `tests/engine/**` hierarchy (separate from runtime source folders).
-- Kept `gameObject*.js` runtime classes at top-level for now to avoid a broad public-import break across games; candidate for a compatibility-first move in a dedicated pass.
+- Moved canonical `GameObject`, `GameObjectManager`, `GameObjectRegistry`, and `GameObjectSystem` implementations into `engine/game/`.
+- Kept top-level compatibility re-export shims for `engine/gameObject*.js` to preserve existing game imports.
+- Updated game-domain test imports to target canonical `engine/game/` module locations.
+- Remaining candidate moves (defer to naming pass): `colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js` closer to `core`/render assets grouping.
 
 ## Architecture review
 
