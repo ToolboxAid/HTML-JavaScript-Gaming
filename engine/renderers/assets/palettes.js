@@ -86,7 +86,11 @@ class Palettes {
     // Get random color
     static getRandomColor() {
         const randomColor = Colors.getRandomColor();
-        let randomResult = { symbol: 'Ø', hex: randomColor, name: 'Transparent' };
+        const randomResult = {
+            symbol: this.errorResult.symbol,
+            hex: randomColor,
+            name: this.errorResult.name
+        };
         return randomResult;
     }
 
@@ -112,10 +116,7 @@ class Palettes {
 
         // Search the palette for the symbol
         const result = palette.find(item => item.symbol === symbol);
-        if (!result) {
-            return this.errorResult;
-        }
-        return result;
+        return result || this.errorResult;
     }
 
     // Get an item by its hex value
@@ -150,12 +151,12 @@ class Palettes {
             }
 
             // Convert hex to RGB
-            let rgbA = Colors.hexToRgb(a.hex);
-            let rgbB = Colors.hexToRgb(b.hex);
+            const rgbA = Colors.hexToRgb(a.hex);
+            const rgbB = Colors.hexToRgb(b.hex);
 
             // Convert RGB to HSL
-            let hslA = Colors.rgbToHsl(rgbA.r, rgbA.g, rgbA.b);
-            let hslB = Colors.rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
+            const hslA = Colors.rgbToHsl(rgbA.r, rgbA.g, rgbA.b);
+            const hslB = Colors.rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
 
             // Sort based on the selected criterion
             if (this.sortByOrder === 'hue') {
@@ -215,4 +216,5 @@ class Palettes {
 }
 
 export default Palettes;
+
 

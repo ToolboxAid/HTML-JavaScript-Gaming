@@ -51,11 +51,7 @@ export class Colors {
 
     static isValidNamedColor(color) {
         if (typeof color !== 'string') return false;
-
-        // Check if it's a valid named color
-        if (Colors.namedColorMap[color.toLowerCase()]) return true;
-
-        return false;
+        return Boolean(Colors.namedColorMap[color.toLowerCase()]);
     }
 
     // Helper function to return the transparency percentage as a decimal (0 to 1)
@@ -63,7 +59,7 @@ export class Colors {
         // Assuming the color is in #RRGGBBAA format
         if (this.isValidHexColor(hex)) {
             // Extract the alpha channel (last 2 characters) and convert from hex to decimal (0 to 255)
-            let alpha = parseInt(hex.slice(7, 9), 16) / 255;
+            const alpha = parseInt(hex.slice(7, 9), 16) / 255;
             return alpha; // Returns a value between 0 (fully transparent) and 1 (fully opaque)
         }
         return 1; // If not in #RRGGBBAA format, assume fully opaque
@@ -155,11 +151,7 @@ export class Colors {
         g = Math.round(g * 255);
         b = Math.round(b * 255);
 
-        return {
-            r: r,
-            g: g,
-            b: b
-        };
+        return { r, g, b };
     }
 
     // Convert RGB (and optional Alpha) to Hex

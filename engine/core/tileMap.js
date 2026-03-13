@@ -214,8 +214,6 @@ class TileMap {
                 // Draw only tiles within the gameArea
                 if (x > -this.tileSize && x < this.canvasWidth + this.tileSize) {
                     CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
-                } else {
-                    //CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
                 }
             }
         }

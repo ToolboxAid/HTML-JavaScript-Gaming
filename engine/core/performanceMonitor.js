@@ -191,10 +191,8 @@ class PerformanceMonitor {
         ctx.fillStyle = this.colorLow;
         if (this.fps < 57 || this.fps > 63) {
             ctx.fillStyle = this.performanceConfig.colorHigh;
-        } else {
-            if (this.fps < 59 || this.fps > 61) {
-                ctx.fillStyle = this.performanceConfig.colorMed;
-            }
+        } else if (this.fps < 59 || this.fps > 61) {
+            ctx.fillStyle = this.performanceConfig.colorMed;
         }
         ctx.fillText(`FPS  : ${this.fps || 0}`, this.performanceConfig.x, newY);
         newY += height;
@@ -208,10 +206,8 @@ class PerformanceMonitor {
         //ctx.fillStyle = this.colorLow;
         if (this.gfxPercentUsage > 80) {
             ctx.fillStyle = this.performanceConfig.colorHigh;
-        } else {
-            if (this.gfxPercentUsage > 60) {
-                ctx.fillStyle = this.performanceConfig.colorMed;
-            }
+        } else if (this.gfxPercentUsage > 60) {
+            ctx.fillStyle = this.performanceConfig.colorMed;
         }
         ctx.fillText(`GFX  : ${this.gfxPercentUsage.toFixed(2)}%`, this.performanceConfig.x, newY);
     }

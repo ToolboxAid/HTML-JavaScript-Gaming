@@ -90,13 +90,14 @@ Objective:
 - [x] Improve naming and readability where safe.
 - [x] Add guard clauses and validation where needed.
 - [x] Normalize comment style and lightweight documentation where helpful.
-- [ ] Make small refactors that improve clarity without changing behavior.
+- [x] Make small refactors that improve clarity without changing behavior.
 
 Basic improvements progress:
 
 - Improved naming/readability in active modules (`TileMap` debug overlay variable naming and cleaner `Palettes.getBySymbol` flow).
 - Added guard/validation hardening (`PerformanceMonitor` browser-memory guards, draw context/dimensions guards, and explicit `getMetrics` helper used by `logPerformance`).
 - Normalized lightweight documentation style in active modules (`PerformanceMonitor`, `TileMap`, `Palettes`, and `Colors`) by standardizing headers and utility-class constructor docs.
+- Applied no-behavior clarity refactors in active modules (flattened conditional branches in `PerformanceMonitor.draw`, removed redundant temp/return paths in `Palettes`, and simplified small helper returns in `Colors`/`TileMap`).
 
 
 ## Unit test audit
