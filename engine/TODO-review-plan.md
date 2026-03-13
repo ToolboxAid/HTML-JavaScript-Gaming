@@ -46,7 +46,7 @@ File placement review results:
 
 - Kept top-level compatibility re-export shims for `engine/gameObject*.js` to preserve existing game imports.
 - Updated game-domain test imports to target canonical `engine/game/` module locations.
-- Moved render asset modules (`colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js`) into `engine/renderers/assets/` and kept top-level compatibility shims.
+- Moved render asset modules (`colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js`) into `engine/renderers/assets/` and removed top-level compatibility shims after updating consumers.
 
 Naming consistency review results:
 

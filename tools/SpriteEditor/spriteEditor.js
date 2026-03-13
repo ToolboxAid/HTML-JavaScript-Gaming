@@ -3,8 +3,8 @@
 // 12/28/2024
 // spriteEditor.js
 
-import Colors from "../../engine/colors.js";
-import Palettes from "../../engine/palettes.js";
+import Colors from "../../engine/renderers/assets/colors.js";
+import Palettes from "../../engine/renderers/assets/palettes.js";
 import MouseInput from '../../engine/input/mouse.js';
 import Samples from "./samples.js";
 

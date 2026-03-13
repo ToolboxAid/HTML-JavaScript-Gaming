@@ -10,9 +10,9 @@ The main files and folders tied to sprite work are:
 - `engine/objects/objectSprite.js`
 - `engine/objects/objectPNG.js`
 - `tools/SpriteEditor/`
-- `engine/palettes.js`
-- `engine/palettesList.js`
-- `engine/gfx/`
+- `engine/renderers/assets/palettes.js`
+- `engine/renderers/assets/palettesList.js`
+- `engine/renderers/assets/colors.js`
 
 Together, these suggest a flexible path that supports:
 
