@@ -47,17 +47,6 @@ constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palet
     this.spriteColor = 'white';
 }
 
-static getFrameType(object) {
-    return ObjectSpriteFrameConfig.getFrameType(object);
-}
-
-    static extractArray(obj) {
-        return ObjectSpriteFrameConfig.extractArray(obj);
-    }
-static normalizeFrames(frames, frameType) {
-    return ObjectSpriteFrameConfig.normalizeFrames(frames, frameType);
-}
-
 getCurrentLivingFrame() {
     return this.animation.getCurrentLivingFrame(this.currentFrameIndex);
 }

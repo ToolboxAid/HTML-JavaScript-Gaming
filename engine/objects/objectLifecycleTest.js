@@ -42,6 +42,15 @@ function testObjectVectorLifecycle(assert) {
         () => vector.update(1, true),
         'ObjectVector update should no-op after destroy'
     );
+
+    const chainVector = new ObjectVector(1, 1, triangle, 1, 0);
+    assert(chainVector.isAlive(), 'ObjectVector should start alive');
+    chainVector.setIsDying();
+    assert(chainVector.isDying(), 'ObjectVector should enter dying status');
+    chainVector.update(1, true);
+    chainVector.setIsDead();
+    assert(chainVector.isDead(), 'ObjectVector should enter dead status');
+    assert(chainVector.destroy() === true, 'ObjectVector lifecycle chain should end with successful destroy');
 }
 
 function testObjectSpriteLifecycle(assert) {
@@ -78,6 +87,16 @@ function testObjectSpriteLifecycle(assert) {
         () => spriteWithDeath.update(1, true),
         'ObjectSprite update should no-op after destroy'
     );
+
+    const chainSprite = new ObjectSprite(0, 0, livingFrame, dyingFrames, 2);
+    assert(chainSprite.isAlive(), 'ObjectSprite should start alive');
+    chainSprite.setHit();
+    assert(chainSprite.isDying(), 'ObjectSprite lifecycle chain should enter dying');
+    while (!chainSprite.isDead()) {
+        chainSprite.update(1, true);
+    }
+    assert(chainSprite.isDead(), 'ObjectSprite lifecycle chain should reach dead');
+    assert(chainSprite.destroy() === true, 'ObjectSprite lifecycle chain should end with successful destroy');
 }
 
 function testObjectPngLifecycle(assert) {
@@ -125,6 +144,32 @@ function testObjectPngLifecycle(assert) {
             () => pngObject.update(1, true),
             'ObjectPNG update should no-op after destroy'
         );
+
+        const chainPng = new ObjectPNG(
+            5,
+            6,
+            'fake/path.png',
+            0,
+            0,
+            16,
+            16,
+            2,
+            'black',
+            0,
+            0,
+            3,
+            2,
+            1
+        );
+
+        assert(chainPng.isAlive(), 'ObjectPNG should start alive');
+        chainPng.setIsDying();
+        assert(chainPng.isDying(), 'ObjectPNG lifecycle chain should enter dying');
+        while (!chainPng.isDead()) {
+            chainPng.update(1, true);
+        }
+        assert(chainPng.isDead(), 'ObjectPNG lifecycle chain should reach dead');
+        assert(chainPng.destroy() === true, 'ObjectPNG lifecycle chain should end with successful destroy');
     } finally {
         ObjectPNG.loadSprite = originalLoadSprite;
     }

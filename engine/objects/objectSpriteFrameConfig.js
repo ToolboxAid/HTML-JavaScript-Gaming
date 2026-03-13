@@ -61,14 +61,22 @@ class ObjectSpriteFrameConfig {
         }
 
         if (frameType === 'singleFrame') {
-            return [frames];
+            return [ObjectSpriteFrameConfig.cloneFrame(frames)];
         }
 
         if (frameType === 'multiFrame') {
-            return frames;
+            return frames.map((frame) => ObjectSpriteFrameConfig.cloneFrame(frame));
         }
 
         throw new Error(`Unsupported frame type for normalization: ${frameType}`);
+    }
+
+    static cloneFrame(frame) {
+        if (!Array.isArray(frame)) {
+            throw new Error('frame must be an array.');
+        }
+
+        return frame.slice();
     }
 
     static create(livingFrames, dyingFrames = null, pixelSize = 1, palette = null) {
