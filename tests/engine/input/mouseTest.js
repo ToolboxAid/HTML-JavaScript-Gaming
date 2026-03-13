@@ -1,117 +1,108 @@
 import MouseInput, { LEFT, MIDDLE, RIGHT } from "../../../engine/input/mouse.js";
 
 export function testMouseInput(assert) {
-    // Reference an existing canvas element (assuming it's already in the DOM)
-    let createdCanvas = false;
+    const originalHTMLElement = globalThis.HTMLElement;
 
-    let canvas = document.getElementById('gameArea');
-    //canvas = null;
+    class MockHTMLElement {}
+    class MockCanvas extends MockHTMLElement {
+        constructor() {
+            super();
+            this.width = 1024;
+            this.height = 768;
+            this.listeners = new Map();
+            this.rect = { left: 0, top: 0, width: 1024, height: 768 };
+        }
 
-    if (!canvas) {
-        // If no canvas exists, create one for testing purposes
-        console.warn("No canvas found. Creating a new canvas element for testing.");
-        canvas = document.createElement("canvas");
+        getBoundingClientRect() {
+            return this.rect;
+        }
 
-        canvas.id = 'gameAreaTest'; // Assign an ID for consistency
-        canvas.width = 1024;
-        canvas.height = 768;
+        addEventListener(eventName, listener) {
+            if (!this.listeners.has(eventName)) {
+                this.listeners.set(eventName, new Set());
+            }
+            this.listeners.get(eventName).add(listener);
+        }
 
-        // Insert the canvas at the top of the body
-        document.body.insertBefore(canvas, document.body.firstChild);
-        createdCanvas = true;
+        removeEventListener(eventName, listener) {
+            this.listeners.get(eventName)?.delete(listener);
+        }
+
+        dispatchEvent(event) {
+            this.listeners.get(event.type)?.forEach((listener) => listener(event));
+        }
     }
 
-    // Create an instance of MouseInput
-    const mouse = new MouseInput(canvas);
+    globalThis.HTMLElement = MockHTMLElement;
 
-    // Log canvas dimensions for debugging
-    const rect = canvas.getBoundingClientRect();
+    try {
+        const canvas = new MockCanvas();
+        const mouse = new MouseInput(canvas);
+        const rect = canvas.getBoundingClientRect();
 
+        const triggerMouseDown = (button) => canvas.dispatchEvent({ type: "mousedown", button });
+        const triggerMouseUp = (button) => canvas.dispatchEvent({ type: "mouseup", button });
+        const triggerMouseMove = (x, y) => canvas.dispatchEvent({ type: "mousemove", clientX: x, clientY: y });
+        const triggerWheel = (deltaY) => canvas.dispatchEvent({ type: "wheel", deltaY });
 
-    // Helper functions to mock mouse events
-    function triggerMouseDown(button) {
-        canvas.dispatchEvent(new MouseEvent("mousedown", { button }));
-    }
+        function assertState(pressed, down, released, message) {
+            assert(mouse.getButtonsPressed().length === pressed, `${message}: buttonsPressed should have ${pressed} items`);
+            assert(mouse.getButtonsDown().length === down, `${message}: buttonsDown should have ${down} items`);
+            assert(mouse.getButtonsReleased().length === released, `${message}: buttonsReleased should have ${released} items`);
+        }
 
-    function triggerMouseUp(button) {
-        canvas.dispatchEvent(new MouseEvent("mouseup", { button }));
-    }
+        assertState(0, 0, 0, "Initial state");
 
-    function triggerMouseMove(x, y) {
-        canvas.dispatchEvent(new MouseEvent("mousemove", { clientX: x, clientY: y }));
-    }
+        triggerMouseDown(LEFT);
+        mouse.update();
+        assert(mouse.wasButtonIndexPressed(LEFT), "LEFT button should be registered as pressed");
+        assert(mouse.isButtonIndexDown(LEFT), "LEFT button should be in buttonsDown");
+        assert(!mouse.wasButtonIndexReleased(LEFT), "LEFT button should not be in buttonsReleased");
 
-    function triggerWheel(deltaY) {
-        canvas.dispatchEvent(new WheelEvent("wheel", { deltaY }));
-    }
+        mouse.update();
+        assert(!mouse.wasButtonIndexPressed(LEFT), "LEFT button should not be in buttonsPressed after update");
+        assert(mouse.isButtonIndexDown(LEFT), "LEFT button should still be in buttonsDown");
 
-    // Helper function for assertions
-    function assertState(pressed, down, released, message) {
-        assert(mouse.getButtonsPressed().length === pressed, `${message}: buttonsPressed should have ${pressed} items`);
-        assert(mouse.getButtonsDown().length === down, `${message}: buttonsDown should have ${down} items`);
-        assert(mouse.getButtonsReleased().length === released, `${message}: buttonsReleased should have ${released} items`);
-    }
+        triggerMouseUp(LEFT);
+        mouse.update();
+        assert(!mouse.isButtonIndexDown(LEFT), "LEFT button should not be in buttonsDown after release");
+        assert(mouse.wasButtonIndexReleased(LEFT), "LEFT button should be in buttonsReleased");
 
-    // Test 1: Initial state should have no buttons pressed, down, or released
-    assertState(0, 0, 0, "Initial state");
+        mouse.update();
+        assert(!mouse.wasButtonIndexReleased(LEFT), "LEFT button should not be in buttonsReleased after second update");
 
-    // Test 2: Pressing a button should register as pressed and down
-    triggerMouseDown(LEFT);
-    mouse.update();
-    assert(mouse.wasButtonIndexPressed(LEFT), "LEFT button should be registered as pressed");
-    assert(mouse.isButtonIndexDown(LEFT), "LEFT button should be in buttonsDown");
-    assert(!mouse.wasButtonIndexReleased(LEFT), "LEFT button should not be in buttonsReleased");
+        triggerMouseDown(MIDDLE);
+        triggerMouseDown(RIGHT);
+        mouse.update();
+        assert(mouse.wasButtonIndexPressed(MIDDLE), "MIDDLE button should be registered as pressed");
+        assert(mouse.wasButtonIndexPressed(RIGHT), "RIGHT button should be registered as pressed");
+        assert(mouse.isButtonIndexDown(MIDDLE), "MIDDLE button should be in buttonsDown");
+        assert(mouse.isButtonIndexDown(RIGHT), "RIGHT button should be in buttonsDown");
 
-    // Test 3: Holding the button should not count as a new press
-    mouse.update();
-    assert(!mouse.wasButtonIndexPressed(LEFT), "LEFT button should not be in buttonsPressed after update");
-    assert(mouse.isButtonIndexDown(LEFT), "LEFT button should still be in buttonsDown");
+        triggerMouseUp(MIDDLE);
+        triggerMouseUp(RIGHT);
+        mouse.update();
+        assert(!mouse.isButtonIndexDown(MIDDLE), "MIDDLE button should not be in buttonsDown after release");
+        assert(!mouse.isButtonIndexDown(RIGHT), "RIGHT button should not be in buttonsDown after release");
+        assert(mouse.wasButtonIndexReleased(MIDDLE), "MIDDLE button should be in buttonsReleased");
+        assert(mouse.wasButtonIndexReleased(RIGHT), "RIGHT button should be in buttonsReleased");
 
-    // Test 4: Releasing a button should register as released
-    triggerMouseUp(LEFT);
-    mouse.update();
-    assert(!mouse.isButtonIndexDown(LEFT), "LEFT button should not be in buttonsDown after release");
-    assert(mouse.wasButtonIndexReleased(LEFT), "LEFT button should be in buttonsReleased");
+        const left = 200;
+        const top = 100;
+        triggerMouseMove(left, top);
+        assert(mouse.getPosition().x === (left - rect.x) && mouse.getPosition().y === (top - rect.y), "Mouse position should be updated correctly");
 
-    // Test 5: Buttons released should reset after update
-    mouse.update();
-    assert(!mouse.wasButtonIndexReleased(LEFT), "LEFT button should not be in buttonsReleased after second update");
+        triggerMouseMove(250, 150);
+        assert(mouse.getMouseDelta().x === 50 && mouse.getMouseDelta().y === 50, "Mouse delta should be calculated correctly");
 
-    // Test 6: Multiple buttons pressed
-    triggerMouseDown(MIDDLE);
-    triggerMouseDown(RIGHT);
-    mouse.update();
-    assert(mouse.wasButtonIndexPressed(MIDDLE), "MIDDLE button should be registered as pressed");
-    assert(mouse.wasButtonIndexPressed(RIGHT), "RIGHT button should be registered as pressed");
-    assert(mouse.isButtonIndexDown(MIDDLE), "MIDDLE button should be in buttonsDown");
-    assert(mouse.isButtonIndexDown(RIGHT), "RIGHT button should be in buttonsDown");
+        triggerWheel(-100);
+        assert(mouse.wheel === -100, "Mouse wheel movement should be registered correctly");
 
-    // Test 7: Releasing multiple buttons
-    triggerMouseUp(MIDDLE);
-    triggerMouseUp(RIGHT);
-    mouse.update();
-    assert(!mouse.isButtonIndexDown(MIDDLE), "MIDDLE button should not be in buttonsDown after release");
-    assert(!mouse.isButtonIndexDown(RIGHT), "RIGHT button should not be in buttonsDown after release");
-    assert(mouse.wasButtonIndexReleased(MIDDLE), "MIDDLE button should be in buttonsReleased");
-    assert(mouse.wasButtonIndexReleased(RIGHT), "RIGHT button should be in buttonsReleased");
-
-    // // Test 8: Mouse movement tracking
-    const left = 200;  // need to remove left offset.
-    const top = 100;  // need to remove top offset.
-    triggerMouseMove(left, top);
-    assert(mouse.getPosition().x === (left - rect.x) && mouse.getPosition().y === (top - rect.y), "Mouse position should be updated correctly");
-
-    // // Test 9: Mouse delta tracking
-    triggerMouseMove(250, 150);
-    assert(mouse.getMouseDelta().x === 50 && mouse.getMouseDelta().y === 50, "Mouse delta should be calculated correctly");
-
-    // Test 10: Mouse wheel movement
-    triggerWheel(-100);
-    assert(mouse.wheel === -100, "Mouse wheel movement should be registered correctly");
-
-    // Cleanup: Remove the canvas if it was created for testing
-    if (createdCanvas) {
-        console.log("Removing dynamically created 'gameAreaTest'.");
-        document.body.removeChild(canvas);
+        mouse.destroy();
+        triggerMouseDown(LEFT);
+        mouse.update();
+        assert(!mouse.isButtonIndexDown(LEFT), "destroy should stop mouse listeners");
+    } finally {
+        globalThis.HTMLElement = originalHTMLElement;
     }
 }

@@ -11,6 +11,8 @@ import VectorShapeUtils from "../../../engine/physics/vectorShapeUtils.js";
 import CanvasUtils from "../../../engine/core/canvas.js";
 
 export function testCollisionUtils(assert) {
+    const originalConfig = CanvasUtils.config;
+
     function createVectorObject(x, y, vectorMap, rotationAngle = 0) {
         const transformedShape = VectorShapeUtils.calculateTransformedShape(vectorMap, x, y, rotationAngle);
 
@@ -125,8 +127,8 @@ export function testCollisionUtils(assert) {
     assert(extractedBounds.x === 8 && extractedBounds.width === 8, "CollisionShapeUtils should prefer explicit vector bounds");
 
 
-    // Initialize CanvasUtils
-    const config = {
+    // Provide game bounds without requiring DOM canvas initialization.
+    CanvasUtils.config = {
         width: 300,
         height: 200,
         scale: 1.0,
@@ -134,19 +136,20 @@ export function testCollisionUtils(assert) {
         borderColor: "red",
         borderSize: 15,
     };
-    CanvasUtils.init(config);  // Use static method directly
 
-    //console.log("Canvas Width x Height:",CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight());
+    try {
+        // Test: checkGameAtBounds (Test with object near bounds)
+        const objectNearBounds = { x: 200, y: 50, width: 50, height: 50 };
+        assert(!CollisionUtils.checkGameAtBounds(objectNearBounds), "Object should be in game bounds");
 
-    // Test: checkGameAtBounds (Test with object near bounds)
-    const objectNearBounds = { x: 200, y: 50, width: 50, height: 50 }; // Assuming canvas size of 500x500
-    assert(!CollisionUtils.checkGameAtBounds(objectNearBounds), "Object should be in game bounds");
-
-    // Test: checkGameAtBoundsSides (Test if boundary sides are hit)
-    const objectFarBounds = { x: 275, y: 125, width: 50, height: 50 }; // Assuming canvas size of 500x500
-    const boundaryHits = CollisionUtils.checkGameAtBoundsSides(objectFarBounds);
-    assert(boundaryHits.length > 0, "Should detect boundaries hit");
-    assert(BoundaryUtils.checkGameAtBounds(objectFarBounds), "BoundaryUtils should detect bounds hit");
+        // Test: checkGameAtBoundsSides (Test if boundary sides are hit)
+        const objectFarBounds = { x: 275, y: 125, width: 50, height: 50 };
+        const boundaryHits = CollisionUtils.checkGameAtBoundsSides(objectFarBounds);
+        assert(boundaryHits.length > 0, "Should detect boundaries hit");
+        assert(BoundaryUtils.checkGameAtBounds(objectFarBounds), "BoundaryUtils should detect bounds hit");
+    } finally {
+        CanvasUtils.config = originalConfig;
+    }
 }
 
 

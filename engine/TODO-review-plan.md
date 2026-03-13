@@ -92,27 +92,35 @@ Objective:
 - [x] Normalize comment style and lightweight documentation where helpful.
 - [x] Make small refactors that improve clarity without changing behavior.
 
-Basic improvements progress:
-
-- Improved naming/readability in active modules (`TileMap` debug overlay variable naming and cleaner `Palettes.getBySymbol` flow).
-- Added guard/validation hardening (`PerformanceMonitor` browser-memory guards, draw context/dimensions guards, and explicit `getMetrics` helper used by `logPerformance`).
-- Normalized lightweight documentation style in active modules (`PerformanceMonitor`, `TileMap`, `Palettes`, and `Colors`) by standardizing headers and utility-class constructor docs.
-- Applied no-behavior clarity refactors in active modules (flattened conditional branches in `PerformanceMonitor.draw`, removed redundant temp/return paths in `Palettes`, and simplified small helper returns in `Colors`/`TileMap`).
-
-
 ## Unit test audit
 
-- [ ] Inventory all existing test files in `engine`.
-- [ ] Classify tests as Node-safe or browser-dependent.
-- [ ] Verify current `npm test` coverage against the engine folders.
-- [ ] Document missing test coverage by folder and module.
+- [x] Inventory all existing test files in `engine`.
+- [x] Classify tests as Node-safe or browser-dependent.
+- [x] Verify current `npm test` coverage against the engine folders.
+- [x] Document missing test coverage by folder and module.
+
+Unit test audit results:
+
+- Test files are centralized under `tests/engine/` (31 total `*Test.js` files); engine folders are no longer storing test files directly.
+- `npm test` runs `node ./scripts/run-node-tests.mjs`, which executes manifest-driven tests from `tests/engine/testManifest.js` (25 entries).
+- Node-safe/default-suite coverage: all 25 manifest tests are intended for the Node runner (with lightweight runtime shims where needed).
+- Browser-dependent or currently excluded from default `npm test` (6 files): `tests/engine/input/keyboardTest.js`, `tests/engine/input/mouseTest.js`, `tests/engine/physics/boundaryUtilsTest.js`, `tests/engine/physics/collisionShapeUtilsTest.js`, `tests/engine/physics/collisionUtilsTest.js`, `tests/engine/physics/vectorShapeUtilsTest.js`.
+- Folder coverage in current manifest includes: `animation`, `core`, `game`, `input`, `lifecycle`, `math`, `messages`, `misc`, `objects`, `output`, `physics`, `renderers`, and `utils`.
+- Notable gap: `physics` has multiple extra tests present but only `physicsUtilsTest` is in the default manifest; direct keyboard/mouse tests also exist but are excluded from default execution.
 
 ## Unit test improvements
 
-- [ ] Create or repair unit tests for pure logic modules first.
-- [ ] Separate browser-only tests from default unit tests where needed.
-- [ ] Add missing regression tests for bugs found during review.
+- [x] Create or repair unit tests for pure logic modules first.
+- [x] Separate browser-only tests from default unit tests where needed.
+- [x] Add missing regression tests for bugs found during review.
 - [ ] Keep the default test suite green after each batch of changes.
+
+Unit test improvement progress:
+
+- Repaired previously excluded tests to run in Node-safe mode by using lightweight event/canvas harnesses and avoiding DOM-only constructors where possible (`keyboardTest`, `mouseTest`).
+- Removed DOM-dependent `CanvasUtils.init(...)` usage from physics boundary/collision tests by setting and restoring `CanvasUtils.config` directly in test scope (`boundaryUtilsTest`, `collisionUtilsTest`).
+- Expanded default `npm test` manifest coverage by adding existing but previously excluded tests: `input/keyboardTest`, `input/mouseTest`, `physics/boundaryUtilsTest`, `physics/collisionShapeUtilsTest`, `physics/collisionUtilsTest`, `physics/vectorShapeUtilsTest`.
+- Added lifecycle regression assertions in input tests to verify `destroy()` stops listener-driven state updates.
 
 ## Verification and reporting
 
