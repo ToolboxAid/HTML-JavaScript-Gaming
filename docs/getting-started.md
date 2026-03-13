@@ -10,6 +10,8 @@ games/    Playable game projects built on the engine
 samples/  Small focused demos for a single subsystem or feature
 tools/    Utility apps such as the sprite editor
 docs/     Project documentation
+scripts/  Repository automation scripts (including test runner)
+tests/    Engine test suite and manifest
 ```
 
 ## What is in the repo
@@ -55,6 +57,7 @@ npm test
 ```
 
 This runs `scripts/run-node-tests.mjs`, which loads test entries from `tests/engine/testManifest.js`.
+The default suite is Node-safe and covers engine domains across animation, core, game, input, lifecycle, math, messages, misc, objects, output, physics, renderers, and utils.
 
 ## Recommended first run
 
