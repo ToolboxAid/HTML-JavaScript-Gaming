@@ -10,7 +10,7 @@ class MockKeyboardInput {
     constructor(keysPressed = []) {
         this.keysPressed = keysPressed;
     }
-    getkeysPressed() {
+    getKeysPressed() {
         return this.keysPressed;
     }
 }

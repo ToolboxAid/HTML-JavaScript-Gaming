@@ -91,7 +91,7 @@ class Game extends GameBase {
     this.gameAttract.update(deltaTime, keyboardInput);
     this.gameAttract.draw();
 
-    if (keyboardInput.getkeysPressed().includes('Enter')) {
+    if (keyboardInput.getKeysPressed().includes('Enter')) {
       this.gameState = "playerSelect";
     }
   }
@@ -111,7 +111,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
-    if (keyboardInput.getkeysPressed().includes('Enter') ||
+    if (keyboardInput.getKeysPressed().includes('Enter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -136,7 +136,7 @@ class Game extends GameBase {
   }
 
   gamePauseCheck() {
-    if (keyboardInput.getkeysPressed().includes('KeyP')) {
+    if (keyboardInput.getKeysPressed().includes('KeyP')) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -161,13 +161,13 @@ class Game extends GameBase {
     CanvasUtils.drawText(100, 300, "Press `S` for score", 3.5, "white");
     CanvasUtils.drawText(100, 350, "Press `P` to pause game", 3.5, "white");
 
-    if (keyboardInput.getkeysPressed().includes('KeyS')) {
+    if (keyboardInput.getKeysPressed().includes('KeyS')) {
       this.score[this.currentPlayer] += 100;
       console.log("score");
     }
 
     // Check if `D` key was just pressed, simulate losing a life
-    if (keyboardInput.getkeysPressed().includes('KeyD')) {
+    if (keyboardInput.getKeysPressed().includes('KeyD')) {
       const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,

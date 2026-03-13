@@ -84,7 +84,7 @@ class Game extends GameBase {
     updateAttract(deltaTime) {
         this.app.updateAttract(deltaTime);
 
-        if (this.keyboardInput.getkeysPressed().includes('Enter')) {
+        if (this.keyboardInput.getKeysPressed().includes('Enter')) {
             this.setState('playerSelect');
         }
     }

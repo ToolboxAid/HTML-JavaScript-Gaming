@@ -27,7 +27,7 @@ class AsteroidsScreens {
             return true;
         }
 
-        if (keyboardInput.getkeysPressed().includes('Enter')) {
+        if (keyboardInput.getKeysPressed().includes('Enter')) {
             return true;
         }
 
@@ -36,7 +36,7 @@ class AsteroidsScreens {
     }
 
     static getPauseToggledState(currentState, keyboardInput) {
-        if (!keyboardInput.getkeysPressed().includes('KeyP')) {
+        if (!keyboardInput.getKeysPressed().includes('KeyP')) {
             return currentState;
         }
 

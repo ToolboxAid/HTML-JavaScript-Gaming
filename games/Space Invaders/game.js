@@ -640,8 +640,8 @@ checkLaser(deltaTime, laserFirePoint) {
         CanvasUtils.drawNumber(acr, dwn, 0, pixelSize, color, 2, '0');
         CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
 
-        if (this.keyboardInput.getkeysPressed().includes('Enter') ||
-            this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
+        if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+            this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
             this.gameControllers.wasButtonIndexPressed(0, 9)) {
             AttractMode.count = 0;
             this.resetPlayers();
@@ -686,8 +686,8 @@ checkLaser(deltaTime, laserFirePoint) {
         CanvasUtils.drawText(x - 300, y + 60, "Press Keyboard `Enter` to Restart", 3.5, "#ffffffff");
         CanvasUtils.drawText(x - 350, y + 90, "Press GameController `Start` to Restart", 3.5, "#ffffffff");
 
-        if (this.keyboardInput.getkeysPressed().includes('Enter') ||
-            this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
+        if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+            this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
             this.gameControllers.wasButtonIndexPressed(0, 9) ||
             this.backToAttractCounter++ > this.backToAttract) {
             this.gameState = "resetPlayers";
@@ -859,7 +859,7 @@ checkLaser(deltaTime, laserFirePoint) {
 
         const laserFirePoint = this.player.update(
             this.keyboardInput.getKeysDown(),
-            this.keyboardInput.getkeysPressed(),
+            this.keyboardInput.getKeysPressed(),
             this.gameControllers);
         this.checkLaser(deltaTime, laserFirePoint);
         this.checkLaserEnemyCollision(this.player);
@@ -869,7 +869,7 @@ checkLaser(deltaTime, laserFirePoint) {
     }
     checkGamePause() {
         // Keyboard input
-        if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
+        if (this.keyboardInput.getKeysPressed().includes('KeyP')) {
             if (this.gameState === "playGame") {
                 this.gameState = "pauseGame";
                 Game.audioPlayer.stopAllLooping();
@@ -1043,7 +1043,7 @@ checkLaser(deltaTime, laserFirePoint) {
         }
 
         // Easter Egg
-        if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
+        if (this.keyboardInput.getKeysPressed().includes('KeyD')) {
             SystemUtils.cleanupArray(this.enemyBombs);
         }
     }

@@ -83,7 +83,7 @@ class Game extends GameBase {
     this.attractScreen.update(deltaTime);
 
     // Check for player input to start the game
-    if (this.keyboardInput.getkeysPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.resetGame();
       this.gameState = "initGame";
     }
@@ -200,7 +200,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText(`Score: ${this.score}`, 220, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 250);
 
-    if (this.keyboardInput.getkeysPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.resetGame();
     }
   }

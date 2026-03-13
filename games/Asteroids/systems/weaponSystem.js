@@ -24,7 +24,7 @@ class AsteroidsWeaponSystem {
             return;
         }
 
-        if (!keyboardInput.getkeysPressed().includes('Space')) {
+        if (!keyboardInput.getKeysPressed().includes('Space')) {
             return;
         }
 
