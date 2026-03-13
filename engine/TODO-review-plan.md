@@ -2,21 +2,22 @@
 
 ## Review workflow
 
-- [ ] I
-- [.] I
-- [!] I
-- [-] I
-- [x] I
-- [X] I
+- [ ] Todo
+- [.] In progress
+- [!] Blocker
+- [-] Don't do
+- [x] Complete
+- [X] Complete
 
+Objective:
 
-- [ ] Inventory the engine surface area.
-- [ ] Map responsibilities, entry points, shared utilities, browser dependencies, and current test coverage.
-- [ ] Establish a consistent review checklist for correctness, API clarity, coupling, state management, lifecycle cleanup, error handling, security, and testability.
+- Inventory the engine surface area.
+- Map responsibilities, entry points, shared utilities, browser dependencies, and current test coverage.
+- Establish a consistent review checklist for correctness, API clarity, coupling, state management, lifecycle cleanup, error handling, security, and testability.
 
 ## Folder-by-folder code review
 
-- [ ] Review `engine/utils`.
+- [.] Review `engine/utils`.
 - [ ] Review `engine/math`.
 - [ ] Review `engine/physics`.
 - [ ] Review `engine/game`.

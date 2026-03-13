@@ -299,6 +299,9 @@ class UFOManager extends CanExplode {
 
             this.pendingTimerReset = null;
             this.spawnCount = null;
+            if (this.ufoTimer) {
+                this.ufoTimer.destroy();
+            }
             this.ufoTimer = null;
             this.explosions = [];
 

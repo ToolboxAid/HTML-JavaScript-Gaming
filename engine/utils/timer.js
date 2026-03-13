@@ -96,6 +96,17 @@ class Timer {
         return this;
     }
 
+    destroy() {
+        this.stop();
+        Timer.timers.delete(this);
+        this.durationMs = null;
+        this.startTime = null;
+        this.pauseTime = null;
+        this.wasVisibilityPaused = false;
+        if (Timer.DEBUG) console.log('Timer destroyed');
+        return this;
+    }
+
     reset() {
         this.startTime = performance.now();
         this.isPaused = false;

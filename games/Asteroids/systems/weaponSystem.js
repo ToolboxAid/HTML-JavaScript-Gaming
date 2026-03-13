@@ -65,11 +65,17 @@ class AsteroidsWeaponSystem {
 
         this.ufoTimerOwnerId = ufo.ID;
         this.ufoTimerInterval = interval;
+        if (this.ufoBulletTimer) {
+            this.ufoBulletTimer.destroy();
+        }
         this.ufoBulletTimer = new Timer(interval);
         this.ufoBulletTimer.start();
     }
 
     clearUfoTimer() {
+        if (this.ufoBulletTimer) {
+            this.ufoBulletTimer.destroy();
+        }
         this.ufoTimerOwnerId = null;
         this.ufoBulletTimer = null;
         this.ufoTimerInterval = null;
