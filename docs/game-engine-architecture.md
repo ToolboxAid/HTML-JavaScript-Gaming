@@ -36,7 +36,7 @@ Game index.html
 
 ### 1. Boot and loop
 
-`engine/gameBase.js` is the entry point for frame-based runtime behavior.
+`engine/core/gameBase.js` is the entry point for frame-based runtime behavior.
 
 Responsibilities:
 
@@ -190,7 +190,7 @@ This is a strong sign that the repo is evolving from a graphics-only sandbox int
 
 ## 9. Tile-map support
 
-`engine/tileMap.js` shows the engine already supports a scrolling map model.
+`engine/core/tileMap.js` shows the engine already supports a scrolling map model.
 
 The current tile-map implementation includes:
 
@@ -268,3 +268,4 @@ tools/
 ```
 
 That is a strong and scalable direction for the repo.
+

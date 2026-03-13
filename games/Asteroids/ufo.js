@@ -6,7 +6,7 @@
 
 import ObjectVector from '../../engine/objects/objectVector.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
@@ -290,3 +290,4 @@ class UFO extends ObjectVector {
 }
 
 export default UFO;
+

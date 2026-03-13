@@ -4,7 +4,7 @@
 // game.js - asteroids
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
-import GameBase from '../../engine/gameBase.js';
+import GameBase from '../../engine/core/gameBase.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
 
@@ -181,3 +181,4 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+

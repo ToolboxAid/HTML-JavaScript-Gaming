@@ -4,7 +4,7 @@
 // game.js - Template Game Engine
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
-import GameBase from '../../engine/gameBase.js';
+import GameBase from '../../engine/core/gameBase.js';
 
 import ParticleExplosion from '../../engine/renderers/particleExplosion.js';
 
@@ -81,3 +81,4 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+

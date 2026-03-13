@@ -8,7 +8,7 @@ import { canvasConfig, enemyConfig, spriteConfig } from './global.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
 import ObjectSprite from '../../engine/objects/objectSprite.js';
-import Sprite from '../../engine/sprite.js';
+import Sprite from '../../engine/core/sprite.js';
 
 class Enemy extends ObjectSprite {
 

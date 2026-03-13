@@ -6,11 +6,11 @@
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 
 
 import ObjectSprite from '../../engine/objects/objectSprite.js';
-import Sprite from '../../engine/sprite.js';
+import Sprite from '../../engine/core/sprite.js';
 import Timer from '../../engine/utils/timer.js';
 
 class EnemyShip extends ObjectSprite {
@@ -262,3 +262,4 @@ class EnemyShip extends ObjectSprite {
 }
 
 export default EnemyShip;
+

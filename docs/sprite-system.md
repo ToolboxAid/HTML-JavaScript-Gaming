@@ -6,7 +6,7 @@ This repo supports both shape-driven and sprite-driven rendering. The sprite-rel
 
 The main files and folders tied to sprite work are:
 
-- `engine/sprite.js`
+- `engine/core/sprite.js`
 - `engine/objects/objectSprite.js`
 - `engine/objects/objectPNG.js`
 - `tools/SpriteEditor/`
@@ -23,7 +23,7 @@ Together, these suggest a flexible path that supports:
 
 ## Sprite roles in the repo
 
-### `engine/sprite.js`
+### `engine/core/sprite.js`
 A shared sprite utility layer.
 
 ### `engine/objects/objectSprite.js`
@@ -196,3 +196,4 @@ The more consistent the editor output becomes, the easier every game becomes to 
 ## Bottom line
 
 The repo already has the pieces for a practical 2D sprite pipeline. The next step is to make those pieces consistent across games so sprites, animation states, palettes, and editor output all work together as one system.
+

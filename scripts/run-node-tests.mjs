@@ -28,7 +28,8 @@ const testModules = await Promise.all([
     import('../engine/math/randomUtilsTest.js'),
     import('../engine/physics/physicsUtilsTest.js'),
     import('../engine/utils/pngAssetStateTest.js'),
-    import('../engine/utils/systemUtilsTest.js')
+    import('../engine/utils/systemUtilsTest.js'),
+    import('../engine/objects/objectSpriteFrameConfigTest.js')
 ]);
 
 const tests = [
@@ -53,7 +54,8 @@ const tests = [
     ['randomUtils', testModules[18].testRandomUtils],
     ['physicsUtils', testModules[19].testPhysicsUtils],
     ['pngAssetState', testModules[20].testPngAssetState],
-    ['systemUtils', testModules[21].testSystemUtils]
+    ['systemUtils', testModules[21].testSystemUtils],
+    ['objectSpriteFrameConfig', testModules[22].testObjectSpriteFrameConfig]
 ];
 
 let passedCount = 0;

@@ -4,7 +4,7 @@
 // beaver.js
 
 import GameObject from '../../../engine/gameObject.js';
-import CanvasUtils from '../../../engine/canvas.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 
 class Beaver extends GameObject {

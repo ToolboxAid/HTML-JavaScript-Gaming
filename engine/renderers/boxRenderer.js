@@ -3,7 +3,7 @@
 // 03/12/2026
 // boxRenderer.js
 
-import CanvasUtils from '../canvas.js';
+import CanvasUtils from '../core/canvas.js';
 import RendererGuards from './rendererGuards.js';
 
 class BoxRenderer {
@@ -24,3 +24,4 @@ class BoxRenderer {
 }
 
 export default BoxRenderer;
+

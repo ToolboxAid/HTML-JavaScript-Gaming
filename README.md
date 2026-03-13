@@ -19,7 +19,7 @@ The [`engine/`](./engine/) folder contains the reusable framework code used acro
 - event messaging
 - audio, MIDI, and synthesizer output
 
-The main runtime entry point is [`engine/gameBase.js`](./engine/gameBase.js).
+The main runtime entry point is [`engine/core/gameBase.js`](./engine/core/gameBase.js).
 
 ### Playable games
 
@@ -134,3 +134,4 @@ Most game folders follow this pattern:
 ## License
 
 This repository is licensed under the terms of the [`LICENSE`](./LICENSE) file.
+

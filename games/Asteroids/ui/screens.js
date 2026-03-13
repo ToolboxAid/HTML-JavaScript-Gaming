@@ -3,7 +3,7 @@
 // 03/12/2026
 // screens.js
 
-import CanvasUtils from '../../../engine/canvas.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
 
 class AsteroidsScreens {
     static BACK_TO_ATTRACT = 180;
@@ -63,3 +63,4 @@ class AsteroidsScreens {
 }
 
 export default AsteroidsScreens;
+

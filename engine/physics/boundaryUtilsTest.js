@@ -4,7 +4,7 @@
 // boundaryUtilsTest.js
 
 import BoundaryUtils from './boundaryUtils.js';
-import CanvasUtils from '../canvas.js';
+import CanvasUtils from '../core/canvas.js';
 
 export function testBoundaryUtils(assert) {
     CanvasUtils.init({
@@ -74,3 +74,4 @@ export function testBoundaryUtils(assert) {
     assert(BoundaryUtils.checkGameAtBoundsCircle(circleObject), 'checkGameAtBoundsCircle should detect circle bounds');
     assert(BoundaryUtils.checkGameAtBoundsCircleSides(circleObject).includes('right'), 'checkGameAtBoundsCircleSides should report right');
 }
+

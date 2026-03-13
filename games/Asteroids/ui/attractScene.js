@@ -4,7 +4,7 @@
 // attractScene.js
 
 import { canvasConfig } from '../global.js';
-import CanvasUtils from '../../../engine/canvas.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
 import Asteroid from '../asteroid.js';
 import RandomUtils from '../../../engine/math/randomUtils.js';
 
@@ -81,4 +81,5 @@ class GameAttract {
 }
 
 export default GameAttract;
+
 

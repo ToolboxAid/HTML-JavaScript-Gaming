@@ -6,7 +6,7 @@
 //** Javascript usages */
 
 import SystemUtils from "./utils/systemUtils.js";
-import CanvasUtils from "./canvas.js";
+import CanvasUtils from "./core/canvas.js";
 
 class PerformanceMonitor {
 
@@ -242,3 +242,4 @@ class PerformanceMonitor {
 export default PerformanceMonitor
 
 setInterval(() => PerformanceMonitor.oncePerSecond(), 1000); // every second
+

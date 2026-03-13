@@ -5,15 +5,15 @@
 
 import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenConfig, playerSelect, shieldConfig } from './global.js'; // Assuming these contain canvas and sprite details
 
-import GameBase from '../../engine/gameBase.js';
+import GameBase from '../../engine/core/gameBase.js';
 
-import CanvasUtils from '../../engine/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import CanvasUtils from '../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import GameUtils from '../../engine/game/gameUtils.js';
 import AudioPlayer from '../../engine/output/audioPlayer.js';
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import Cookies from '../../engine/misc/cookies.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
-import Sprite from '../../engine/sprite.js';
+import Sprite from '../../engine/core/sprite.js';
 import SystemUtils from '../../engine/utils/systemUtils.js';
 
 import AttractMode from './attractMode.js';
@@ -1141,3 +1141,4 @@ destroyLaser() {
 export default Game;
 
 const game = new Game();
+

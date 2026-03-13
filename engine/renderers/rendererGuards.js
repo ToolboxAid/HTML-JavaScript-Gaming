@@ -1,4 +1,4 @@
-import CanvasUtils from '../canvas.js';
+import CanvasUtils from '../core/canvas.js';
 
 class RendererGuards {
     static canRenderObject(object, { allowDead = false, requireAlive = false } = {}) {
@@ -31,3 +31,4 @@ class RendererGuards {
 }
 
 export default RendererGuards;
+

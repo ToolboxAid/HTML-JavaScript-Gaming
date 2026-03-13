@@ -6,8 +6,8 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
 
-import GameBase from '../../engine/gameBase.js';
-import CanvasUtils from '../../engine/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import GameBase from '../../engine/core/gameBase.js';
+import CanvasUtils from '../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import GameUtils from '../../engine/game/gameUtils.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
@@ -197,3 +197,4 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+

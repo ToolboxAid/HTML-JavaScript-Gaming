@@ -4,10 +4,10 @@
 // game.js - Sample Keyboard
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
-import GameBase from '../../engine/gameBase.js';
+import GameBase from '../../engine/core/gameBase.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 
 class Game extends GameBase{
     constructor() {
@@ -87,3 +87,4 @@ class Game extends GameBase{
 export default Game;
 
 const game = new Game();
+

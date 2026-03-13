@@ -6,10 +6,10 @@
 import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
 
 import ObjectStatic from '../../engine/objects/objectStatic.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 
 import RandomUtils from '../../engine/math/randomUtils.js';
-import Sprite from '../../engine/sprite.js';
+import Sprite from '../../engine/core/sprite.js';
 
 /**
  * Represents a shield object in the game.
@@ -216,3 +216,4 @@ class Shield extends ObjectStatic {
 }
 
 export default Shield;
+

@@ -5,7 +5,7 @@
 
 import { canvasConfig } from './global.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 import ObjectVector from '../../engine/objects/objectVector.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
@@ -239,3 +239,4 @@ class Ship extends ObjectVector {
 }
 
 export default Ship;
+

@@ -1,4 +1,4 @@
-import CanvasUtils from '../canvas.js';
+import CanvasUtils from '../core/canvas.js';
 import BoxRenderer from './boxRenderer.js';
 import SpriteRenderer from './spriteRenderer.js';
 import VectorRenderer from './vectorRenderer.js';
@@ -216,3 +216,4 @@ export function testRendererSafety(assert) {
     testRenderersGuardOnMissingContext(assert);
     testRenderersDrawWithMockContext(assert);
 }
+

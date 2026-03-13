@@ -4,9 +4,9 @@
 // game.js - Snack
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from '../Snake/global.js'; // Import canvasConfig
-import GameBase from '../../engine/gameBase.js';
+import GameBase from '../../engine/core/gameBase.js';
 
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
 import AttractScreen from './attract.js';
@@ -215,5 +215,6 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
 
 

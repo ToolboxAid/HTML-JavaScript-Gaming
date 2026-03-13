@@ -8,7 +8,7 @@ import CollisionUtils from "./collisionUtils.js";
 import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
 import VectorShapeUtils from "./vectorShapeUtils.js";
-import CanvasUtils from "../canvas.js";
+import CanvasUtils from "../core/canvas.js";
 
 export function testCollisionUtils(assert) {
     function createVectorObject(x, y, vectorMap, rotationAngle = 0) {
@@ -148,4 +148,5 @@ export function testCollisionUtils(assert) {
     assert(boundaryHits.length > 0, "Should detect boundaries hit");
     assert(BoundaryUtils.checkGameAtBounds(objectFarBounds), "BoundaryUtils should detect bounds hit");
 }
+
 

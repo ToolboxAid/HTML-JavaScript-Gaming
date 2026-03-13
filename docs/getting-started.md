@@ -72,11 +72,11 @@ Most game projects follow the same pattern:
 3. The game builds or updates its objects.
 4. The game renders to the canvas every animation frame.
 
-At the center of that flow is `engine/gameBase.js`, which initializes the canvas, fullscreen support, and performance monitor, then runs the animation loop.
+At the center of that flow is `engine/core/gameBase.js`, which initializes the canvas, fullscreen support, and performance monitor, then runs the animation loop.
 
 ## Engine areas to know first
 
-### `engine/gameBase.js`
+### `engine/core/gameBase.js`
 Base class for bootstrapping a game and running the animation loop.
 
 ### `engine/input/`
@@ -97,7 +97,7 @@ Event-bus style messaging and sender/receiver helpers.
 ### `engine/output/`
 Audio, MIDI, and synthesizer support.
 
-### `engine/tileMap.js`
+### `engine/core/tileMap.js`
 Tile-map and side-scrolling support.
 
 ## Suggested learning path
@@ -123,3 +123,4 @@ A practical way to add a new game is:
 ## Current direction of the repo
 
 This project has moved beyond isolated experiments. The current structure supports the next step: treating `engine/` as the shared framework layer and keeping `games/`, `samples/`, and `tools/` as clean consumers of that framework.
+

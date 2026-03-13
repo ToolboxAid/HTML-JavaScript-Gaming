@@ -3,10 +3,10 @@
 // 10/16/2024
 // canvas.js
 
-import SystemUtils from './utils/systemUtils.js';
+import SystemUtils from '../utils/systemUtils.js';
 
-import Font5x6 from './font5x6.js';
-import Colors from './colors.js';
+import Font5x6 from '../font5x6.js';
+import Colors from '../colors.js';
 import Sprite from './sprite.js';
 
 class CanvasUtils {

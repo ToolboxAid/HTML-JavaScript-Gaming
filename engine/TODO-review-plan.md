@@ -40,18 +40,11 @@ Objective:
 - [ ] Identify ambiguous, outdated, or misleading names.
 - [ ] Check whether singular vs plural naming is used consistently.
 - [x] Review whether folder boundaries encourage good reuse or create confusion.
-- [ ] Identify top-level files that should move into a more specific engine subfolder.
+- [x] Identify top-level files that should move into a more specific engine subfolder.
 
 Folder responsibility findings (item 1):
 
-- `timeUtils` as a folder name is less clear than the dominant domain naming style; likely better aligned under `utils` or a `time` domain.
-- Core runtime entry files remain at top-level (`canvas.js`, `gameBase.js`, `sprite.js`, `tileMap.js`), which is workable but creates mixed boundaries with subfolders.
-
-Boundary cleanup applied:
-
-- Consolidated `ParticleExplosion` into canonical module `engine/renderers/particleExplosion.js`.
-- Removed legacy `engine/gfx` placeholder files/folder after updating remaining imports.
-- Updated `engine/utils/canExplode.js` to import from `engine/renderers`.
+- Core runtime entry files were moved into `engine/core` (`canvas.js`, `gameBase.js`, `sprite.js`, `tileMap.js`) to reduce top-level boundary mixing.
 
 ## Architecture review
 

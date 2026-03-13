@@ -5,7 +5,7 @@
 // LogMED.js
 
 import GameObject from '../../../../engine/gameObject.js';
-import CanvasUtils from '../../../../engine/canvas.js';
+import CanvasUtils from '../../../../engine/core/canvas.js';
 
 class LogMED extends GameObject {
     static DEBUG = new URLSearchParams(window.location.search).has('logMED');

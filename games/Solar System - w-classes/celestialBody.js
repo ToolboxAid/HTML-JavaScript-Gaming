@@ -4,7 +4,7 @@
 // celestialBody.js
 
 import { canvasConfig } from './global.js'; // Import canvasConfig
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 import ObjectDynamic from '../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
 
 /**
@@ -100,3 +100,4 @@ class CelestialBody extends ObjectDynamic {
 }
 
 export default CelestialBody; // Export the class for use in other modules
+

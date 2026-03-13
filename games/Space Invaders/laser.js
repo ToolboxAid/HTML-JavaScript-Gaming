@@ -7,8 +7,8 @@ import ObjectDynamic from '../../engine/objects/objectDynamic.js';
 import { canvasConfig, spriteConfig } from './global.js';
 
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
-import CanvasUtils from '../../engine/canvas.js';
-import Sprite from '../../engine/sprite.js';
+import CanvasUtils from '../../engine/core/canvas.js';
+import Sprite from '../../engine/core/sprite.js';
 class Laser extends ObjectDynamic {
 
 
@@ -64,3 +64,4 @@ class Laser extends ObjectDynamic {
 }
 
 export default Laser;
+

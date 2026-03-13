@@ -3,7 +3,7 @@
 // 11/19/2024
 // particleExplosion.js
 
-import CanvasUtils from "../canvas.js";
+import CanvasUtils from "../core/canvas.js";
 import SystemUtils from "../utils/systemUtils.js";
 
 class ParticleExplosion {
@@ -179,3 +179,4 @@ class ParticleExplosion {
 }
 
 export default ParticleExplosion;
+

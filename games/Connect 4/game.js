@@ -5,8 +5,8 @@
 // 11/15/2024
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
-import GameBase from '../../engine/gameBase.js';
-import CanvasUtils from '../../engine/canvas.js';
+import GameBase from '../../engine/core/gameBase.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
@@ -275,3 +275,4 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+

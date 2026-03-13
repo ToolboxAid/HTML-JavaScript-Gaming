@@ -1,7 +1,7 @@
 import { canvasConfig } from './global.js';
 
 import GameObjectSystem from '../../engine/gameObjectSystem.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 
 // Game Objects
 import GameUI from './gameUI.js';
@@ -392,3 +392,4 @@ class AttractMode {
 }
 
 export default AttractMode;
+

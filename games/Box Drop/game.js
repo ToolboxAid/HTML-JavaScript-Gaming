@@ -4,9 +4,9 @@
 // game.js - Template Game Engine
 
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
-import GameBase from '../../engine/gameBase.js';
+import GameBase from '../../engine/core/gameBase.js';
 
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
@@ -229,3 +229,4 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+

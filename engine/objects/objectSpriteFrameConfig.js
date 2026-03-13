@@ -1,5 +1,5 @@
 import SystemUtils from '../utils/systemUtils.js';
-import Sprite from '../sprite.js';
+import Sprite from '../core/sprite.js';
 import ObjectValidation from '../utils/objectValidation.js';
 
 class ObjectSpriteFrameConfig {
@@ -71,6 +71,16 @@ class ObjectSpriteFrameConfig {
         throw new Error(`Unsupported frame type for normalization: ${frameType}`);
     }
 
+    static extractLayerFrames(jsonSprite) {
+        if (!jsonSprite || !Array.isArray(jsonSprite.layers)) {
+            throw new Error('jsonSprite.layers must be an array.');
+        }
+
+        return jsonSprite.layers
+            .map((layer) => layer?.data ?? null)
+            .filter((frame) => Array.isArray(frame));
+    }
+
     static cloneFrame(frame) {
         if (!Array.isArray(frame)) {
             throw new Error('frame must be an array.');
@@ -110,7 +120,8 @@ class ObjectSpriteFrameConfig {
                     paletteArray = ObjectSpriteFrameConfig.extractArray(palette);
                 }
 
-                normalizedLivingFrames = Sprite.convert2RGB(livingFrames, paletteArray);
+                const convertedLivingSprite = Sprite.convert2RGB(livingFrames, paletteArray);
+                normalizedLivingFrames = ObjectSpriteFrameConfig.extractLayerFrames(convertedLivingSprite);
                 dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);
                 livingFrameCount = normalizedLivingFrames.length;
 
@@ -118,7 +129,8 @@ class ObjectSpriteFrameConfig {
                     Sprite.validateJsonFormat(dyingFrames);
 
                     dyingDelay = dyingFrames.metadata.framesPerSprite ?? 7;
-                    normalizedDyingFrames = Sprite.convert2RGB(dyingFrames, paletteArray);
+                    const convertedDyingSprite = Sprite.convert2RGB(dyingFrames, paletteArray);
+                    normalizedDyingFrames = ObjectSpriteFrameConfig.extractLayerFrames(convertedDyingSprite);
                     dyingFrameCount = normalizedDyingFrames.length;
                 }
 
@@ -161,3 +173,4 @@ class ObjectSpriteFrameConfig {
 }
 
 export default ObjectSpriteFrameConfig;
+

@@ -1,4 +1,4 @@
-import CanvasUtils from '../canvas.js';
+import CanvasUtils from '../core/canvas.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import RendererGuards from './rendererGuards.js';
 
@@ -197,3 +197,4 @@ class PngRenderer {
 }
 
 export default PngRenderer;
+

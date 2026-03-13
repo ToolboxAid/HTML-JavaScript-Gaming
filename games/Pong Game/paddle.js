@@ -6,7 +6,7 @@
 import { canvasConfig, paddleConfig } from './global.js';
 import ObjectStatic from '../../engine/objects/objectStatic.js';
 import AudioFrequency from '../../engine/output/audioFrequency.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 
 class Paddle extends ObjectStatic {
 
@@ -138,3 +138,4 @@ class Paddle extends ObjectStatic {
 }
 
 export default Paddle;
+

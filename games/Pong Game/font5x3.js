@@ -5,7 +5,7 @@
 
 
 import { font5x3 } from './global.js';
-import CanvasUtils from '../../engine/canvas.js';
+import CanvasUtils from '../../engine/core/canvas.js';
 
 class Font5x3 {
     static font = {
@@ -121,3 +121,4 @@ class Font5x3 {
 
 // Export the Font5x3 class
 export default Font5x3;
+
