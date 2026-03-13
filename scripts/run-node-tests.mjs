@@ -11,6 +11,7 @@ const testModules = await Promise.all([
     import('../engine/animation/stateUtilsTest.js'),
     import('../engine/animation/spriteControllerTest.js'),
     import('../engine/animation/pngControllerTest.js'),
+    import('../engine/objects/objectLifecycleTest.js'),
     import('../engine/game/gameObjectUtilsTest.js'),
     import('../engine/game/gameUtilsTest.js'),
     import('../engine/math/angleUtilsTest.js'),
@@ -26,14 +27,15 @@ const tests = [
     ['stateUtils', testModules[1].testStateUtils],
     ['spriteController', testModules[2].testSpriteController],
     ['pngController', testModules[3].testPngController],
-    ['gameObjectUtils', testModules[4].testGameObjectUtils],
-    ['gameUtils', testModules[5].testGameUtils],
-    ['angleUtils', testModules[6].testAngleUtils],
-    ['geometryUtils', testModules[7].testGeometryUtils],
-    ['randomUtils', testModules[8].testRandomUtils],
-    ['physicsUtils', testModules[9].testPhysicsUtils],
-    ['pngAssetState', testModules[10].testPngAssetState],
-    ['systemUtils', testModules[11].testSystemUtils]
+    ['objectLifecycle', testModules[4].testObjectLifecycle],
+    ['gameObjectUtils', testModules[5].testGameObjectUtils],
+    ['gameUtils', testModules[6].testGameUtils],
+    ['angleUtils', testModules[7].testAngleUtils],
+    ['geometryUtils', testModules[8].testGeometryUtils],
+    ['randomUtils', testModules[9].testRandomUtils],
+    ['physicsUtils', testModules[10].testPhysicsUtils],
+    ['pngAssetState', testModules[11].testPngAssetState],
+    ['systemUtils', testModules[12].testSystemUtils]
 ];
 
 let passedCount = 0;
