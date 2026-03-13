@@ -7,11 +7,13 @@ import ObjectStatic from './objectStatic.js';
 import SystemUtils from "../utils/systemUtils.js";
 import ObjectValidation from "../utils/objectValidation.js";
 import ObjectDebug from "../utils/objectDebug.js";
+import DebugFlag from '../utils/debugFlag.js';
+import ObjectDestroyUtils from './objectDestroyUtils.js';
 import PhysicsUtils from '../physics/physicsUtils.js';
 
 /** Represents a dynamic object in a game that can move based on velocity. */
 class ObjectDynamic extends ObjectStatic {
-    static DEBUG = new URLSearchParams(window.location.search).has('objectDynamic');
+    static DEBUG = DebugFlag.has('objectDynamic');
 
     /** Creates an instance of ObjectDynamic. */
     constructor(x = 0, y = 0, width = 1, height = 1, velocityX = 0, velocityY = 0) {
@@ -94,8 +96,8 @@ class ObjectDynamic extends ObjectStatic {
             }
         });
 
-        if (this.isDestroyed || this.velocityX === null || this.velocityY === null) {
-            ObjectDebug.warn(ObjectDynamic.DEBUG, 'ObjectDynamic already destroyed');
+        const invalidVelocity = this.velocityX === null || this.velocityY === null;
+        if (ObjectDestroyUtils.shouldSkipDestroy(this, ObjectDynamic.DEBUG, 'ObjectDynamic', invalidVelocity)) {
             return false;
         }
 

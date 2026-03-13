@@ -8,6 +8,8 @@ import SystemUtils from '../utils/systemUtils.js';
 import AngleUtils from '../math/angleUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectDebug from '../utils/objectDebug.js';
+import DebugFlag from '../utils/debugFlag.js';
+import ObjectDestroyUtils from './objectDestroyUtils.js';
 import PngRenderer from '../renderers/pngRenderer.js';
 import ImageAssetCache from '../utils/imageAssetCache.js';
 import PngAssetState from '../utils/pngAssetState.js';
@@ -16,7 +18,7 @@ import StateUtils from '../animation/stateUtils.js';
 import AnimationStateBridge from '../animation/animationStateBridge.js';
 
 class ObjectPNG extends ObjectKillable {
-    static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');
+    static DEBUG = DebugFlag.has('objectPNG');
 
     static Flip = Object.freeze({
         NONE: 'none',
@@ -226,8 +228,7 @@ class ObjectPNG extends ObjectKillable {
     }
 
     destroy() {
-        if (this.isDestroyed) {
-            ObjectDebug.warn(ObjectPNG.DEBUG, 'ObjectPNG already destroyed');
+        if (ObjectDestroyUtils.shouldSkipDestroy(this, ObjectPNG.DEBUG, 'ObjectPNG')) {
             return false;
         }
 

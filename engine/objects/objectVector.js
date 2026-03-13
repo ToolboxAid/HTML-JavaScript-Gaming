@@ -10,10 +10,12 @@ import VectorShapeUtils from '../physics/vectorShapeUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
+import DebugFlag from '../utils/debugFlag.js';
+import ObjectDestroyUtils from './objectDestroyUtils.js';
 import VectorRenderer from '../renderers/vectorRenderer.js';
 
 class ObjectVector extends ObjectKillable {
-    static DEBUG = new URLSearchParams(window.location.search).has('objectVector');
+    static DEBUG = DebugFlag.has('objectVector');
 
     constructor(x = 0, y = 0, vectorMap, velocityX = 0, velocityY = 0) {
         ObjectValidation.pointArray(vectorMap, 'vectorMap');
@@ -135,7 +137,7 @@ class ObjectVector extends ObjectKillable {
     }
 
     destroy() {
-        if (this.isDestroyed) {
+        if (ObjectDestroyUtils.shouldSkipDestroy(this, ObjectVector.DEBUG, 'ObjectVector')) {
             return false;
         }
 

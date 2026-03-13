@@ -74,8 +74,7 @@ Objective:
 
 Engine surface review results:
 
-
-- Duplication candidate: repeated debug-query static patterns and repeated destroy-guard/cleanup boilerplate across objects; both are good targets for shared helper extraction later.
+- Applied first shared-helper extraction pass: added `utils/debugFlag.js` for query-flag checks and `objects/objectDestroyUtils.js` for common destroy-guard logic, then wired core object classes to use both.
 - Candidate additions captured for follow-up (feature gap, not bug):
   - Lightweight engine API conventions doc for `init/update/draw/destroy/start/stop`.
   - Optional world/runtime context object to reduce static singleton coupling.

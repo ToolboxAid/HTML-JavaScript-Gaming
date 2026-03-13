@@ -8,13 +8,15 @@ import ObjectKillable from './objectKillable.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
+import DebugFlag from '../utils/debugFlag.js';
+import ObjectDestroyUtils from './objectDestroyUtils.js';
 import SpriteRenderer from '../renderers/spriteRenderer.js';
 import SpriteController from '../animation/spriteController.js';
 import StateUtils from '../animation/stateUtils.js';
 import ObjectSpriteFrameConfig from './objectSpriteFrameConfig.js';
 
 class ObjectSprite extends ObjectKillable {
-    static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
+    static DEBUG = DebugFlag.has('objectSprite');
 
 constructor(x = 0, y = 0, livingFrames, dyingFrames = null, pixelSize = 1, palette = null) {
     const frameConfig = ObjectSpriteFrameConfig.create(
@@ -166,7 +168,7 @@ setHit() {
     }
 
     destroy() {
-        if (this.isDestroyed) {
+        if (ObjectDestroyUtils.shouldSkipDestroy(this, ObjectSprite.DEBUG, 'ObjectSprite')) {
             return false;
         }
 

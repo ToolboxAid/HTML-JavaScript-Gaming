@@ -1,10 +1,12 @@
 import ObjectDynamic from './objectDynamic.js';
 import SystemUtils from '../utils/systemUtils.js';
 import ObjectDebug from '../utils/objectDebug.js';
+import DebugFlag from '../utils/debugFlag.js';
+import ObjectDestroyUtils from './objectDestroyUtils.js';
 import ObjectLifecycle from '../lifecycle/objectLifecycle.js';
 
 class ObjectKillable extends ObjectDynamic {
-    static DEBUG = new URLSearchParams(window.location.search).has('objectKillable');
+    static DEBUG = DebugFlag.has('objectKillable');
 
     static Status = Object.freeze({
         ALIVE: 'alive',
@@ -143,8 +145,7 @@ class ObjectKillable extends ObjectDynamic {
             }
         });
 
-        if (this.isDestroyed || this.status === null) {
-            ObjectDebug.warn(ObjectKillable.DEBUG, 'ObjectKillable already destroyed');
+        if (ObjectDestroyUtils.shouldSkipDestroy(this, ObjectKillable.DEBUG, 'ObjectKillable', this.status === null)) {
             return false;
         }
 

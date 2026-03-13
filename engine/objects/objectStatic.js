@@ -7,11 +7,13 @@ import GeometryUtils from "../math/geometryUtils.js";
 import ObjectValidation from "../utils/objectValidation.js";
 import ObjectCleanup from "../utils/objectCleanup.js";
 import ObjectDebug from "../utils/objectDebug.js";
+import DebugFlag from '../utils/debugFlag.js';
+import ObjectDestroyUtils from './objectDestroyUtils.js';
 import BoxRenderer from "../renderers/boxRenderer.js";
 
 /** Represents a static object in a game that cannot move. */
 class ObjectStatic {
-    static DEBUG = new URLSearchParams(window.location.search).has('objectStatic');
+    static DEBUG = DebugFlag.has('objectStatic');
     static #nextId = 1;
 
     static getNextId() {
@@ -82,8 +84,7 @@ class ObjectStatic {
             }
         });
 
-        if (this.isDestroyed || this.ID === null) {
-            ObjectDebug.warn(ObjectStatic.DEBUG, 'ObjectStatic already destroyed');
+        if (ObjectDestroyUtils.shouldSkipDestroy(this, ObjectStatic.DEBUG, 'ObjectStatic', this.ID === null)) {
             return false;
         }
 
