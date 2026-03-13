@@ -109,6 +109,11 @@ class ObjectVector extends ObjectKillable {
 
     update(deltaTime = 1, incFrame = false) {
         super.update(deltaTime, incFrame);
+
+        if (this.isDestroyed || !this.vectorMap) {
+            return;
+        }
+
         this.calculateObjectBounds(this.vectorMap);
     }
 
