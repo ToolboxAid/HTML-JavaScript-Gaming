@@ -162,6 +162,10 @@ class GameBase {
             this.gameControllers.destroy();
         }
 
+        if (typeof Fullscreen.destroy === 'function') {
+            Fullscreen.destroy();
+        }
+
         return true;
     }
 

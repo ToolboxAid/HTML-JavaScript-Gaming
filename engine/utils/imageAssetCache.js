@@ -47,6 +47,10 @@ class ImageAssetCache {
     }
 
     static #loadImage(spritePath) {
+        if (typeof Image === 'undefined') {
+            throw new Error('ImageAssetCache.loadImage requires a browser Image implementation.');
+        }
+
         return new Promise((resolve, reject) => {
             const png = new Image();
 
@@ -72,6 +76,10 @@ class ImageAssetCache {
     }
 
     static makeTransparent(png, transparentColor) {
+        if (typeof document === 'undefined' || typeof Image === 'undefined') {
+            throw new Error('ImageAssetCache.makeTransparent requires browser canvas and Image support.');
+        }
+
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = png.width;
         tempCanvas.height = png.height;
@@ -102,6 +110,10 @@ class ImageAssetCache {
     }
 
     static resolveColorChannels(color) {
+        if (typeof document === 'undefined') {
+            throw new Error('ImageAssetCache.resolveColorChannels requires browser canvas support.');
+        }
+
         const colorCanvas = document.createElement('canvas');
         colorCanvas.width = 1;
         colorCanvas.height = 1;

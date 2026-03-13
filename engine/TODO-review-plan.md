@@ -72,19 +72,16 @@ Objective:
 - [x] Identify APIs that are hard to discover and may need better naming or standardization.
 - [x] Capture candidate engine additions separately from bugs so feature gaps stay visible.
 
-Engine surface review results:
-  - Added optional runtime context wrapper: `engine/core/runtimeContext.js`, now exposed as `this.runtimeContext` in `GameBase` and passed into `onInitialize(...)`/`gameLoop(...)`.
-  - Implemented canonical collision/bounds facade: `engine/game/gameCollision.js`, exposed via `GameObjectSystem.collision` plus convenience delegation methods.
-
 ## Security and safety review
 
-- [ ] Check DOM interaction patterns for unsafe assumptions.
-- [ ] Review URL and query parameter usage.
-- [ ] Review asset loading and external resource assumptions.
-- [ ] Check event listener lifecycle and cleanup.
-- [ ] Review mutation of shared globals and static state.
-- [ ] Verify input validation and defensive guards.
-- [ ] Identify browser/runtime failure risks that should fail safely.
+- [x] Check DOM interaction patterns for unsafe assumptions.
+- [x] Review URL and query parameter usage.
+- [x] Review asset loading and external resource assumptions.
+- [x] Check event listener lifecycle and cleanup.
+- [x] Review mutation of shared globals and static state.
+- [x] Verify input validation and defensive guards.
+- [x] Identify browser/runtime failure risks that should fail safely.
+
 
 ## Basic improvements
 

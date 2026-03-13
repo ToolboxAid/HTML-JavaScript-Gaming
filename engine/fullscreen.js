@@ -49,8 +49,17 @@ class Fullscreen {
         y: 300
     };
 
+    static listenersRegistered = false;
+    static canvasClickBound = null;
+    static resizeBound = null;
+    static fullscreenChangeBound = null;
+
     //static firstTime = true;
     static async init(config, canvasConfig) {
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+            throw new Error('Fullscreen requires a browser window/document.');
+        }
+
         if (!config) {
             console.error("No 'fullscreenConfig' provided");
         }
@@ -76,21 +85,29 @@ class Fullscreen {
         this.canvasWidth = width;
         this.canvasHeight = height;
         this.scale = scale;
+        this.canvas = document.getElementById("gameArea");
+        this.ctx = this.canvas?.getContext ? this.canvas.getContext('2d') : null;
+
+        if (!this.canvas || !this.ctx) {
+            throw new Error('Fullscreen requires #gameArea canvas with a 2D context.');
+        }
 
         Fullscreen.setCanvasSize(Fullscreen.scale);
         Fullscreen.updateCanvasTransform();
 
-        // Event listeners
-        window.addEventListener("resize", Fullscreen.resizeCanvas);
-        window.addEventListener('orientationchange', Fullscreen.resizeCanvas);
-        document.addEventListener('DOMContentLoaded', () => {
-            Fullscreen.canvas.addEventListener('click', Fullscreen.toggleFullscreen);
-        });
+        if (!Fullscreen.listenersRegistered) {
+            Fullscreen.resizeBound = Fullscreen.resizeCanvas.bind(Fullscreen);
+            Fullscreen.canvasClickBound = Fullscreen.toggleFullscreen.bind(Fullscreen);
+            Fullscreen.fullscreenChangeBound = () => {
+                Fullscreen.isFullScreen = !!document.fullscreenElement;
+            };
 
-        // Update fullscreen status on change
-        document.addEventListener('fullscreenchange', () => {
-            Fullscreen.isFullScreen = !!document.fullscreenElement;
-        });
+            window.addEventListener("resize", Fullscreen.resizeBound);
+            window.addEventListener('orientationchange', Fullscreen.resizeBound);
+            Fullscreen.canvas.addEventListener('click', Fullscreen.canvasClickBound);
+            document.addEventListener('fullscreenchange', Fullscreen.fullscreenChangeBound);
+            Fullscreen.listenersRegistered = true;
+        }
 
         console.log(`FullScreen.init complete.`);
     }
@@ -120,6 +137,10 @@ class Fullscreen {
     }
 
     static resizeCanvas() {
+        if (!Fullscreen.canvas || !Fullscreen.ctx) {
+            return;
+        }
+
         if (window.innerHeight === screen.height && !Fullscreen.isFullScreen) {
             Fullscreen.isFullScreen = true;
             Fullscreen.setCanvasSize(Fullscreen.gameFullScaleScreen);
@@ -134,11 +155,17 @@ class Fullscreen {
     }
 
     static setCanvasSize(scale) {
+        if (!Fullscreen.canvas) {
+            return;
+        }
         Fullscreen.canvas.width = Fullscreen.canvasWidth * scale;
         Fullscreen.canvas.height = Fullscreen.canvasHeight * scale;
     }
 
     static updateCanvasTransform() {
+        if (!Fullscreen.ctx) {
+            return;
+        }
         Fullscreen.ctx.setTransform(
             (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : Fullscreen.scale), 0, 0,
             (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : Fullscreen.scale), 0, 0 // No offset for centering
@@ -152,6 +179,23 @@ class Fullscreen {
             ctx.textAlign = 'start';
             ctx.fillText(this.config.text, this.config.x, this.config.y);
         }
+    }
+
+    static destroy() {
+        if (!Fullscreen.listenersRegistered || typeof window === 'undefined' || typeof document === 'undefined') {
+            return false;
+        }
+
+        window.removeEventListener("resize", Fullscreen.resizeBound);
+        window.removeEventListener('orientationchange', Fullscreen.resizeBound);
+        Fullscreen.canvas?.removeEventListener('click', Fullscreen.canvasClickBound);
+        document.removeEventListener('fullscreenchange', Fullscreen.fullscreenChangeBound);
+
+        Fullscreen.resizeBound = null;
+        Fullscreen.canvasClickBound = null;
+        Fullscreen.fullscreenChangeBound = null;
+        Fullscreen.listenersRegistered = false;
+        return true;
     }
 
 }
