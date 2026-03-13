@@ -7,8 +7,21 @@ class AudioPlayer {
     // Debug mode enabled via URL parameter: game.html?audioPlayer
     static DEBUG = new URLSearchParams(window.location.search).has('audioPlayer');
 
+    static getAudioContextClass() {
+        return window.AudioContext || window.webkitAudioContext;
+    }
+
     constructor(basePath) {
-        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (typeof basePath !== 'string' || basePath.trim() === '') {
+            throw new Error('basePath must be a non-empty string.');
+        }
+
+        const AudioContextClass = AudioPlayer.getAudioContextClass();
+        if (!AudioContextClass) {
+            throw new Error('Web Audio API is not available in this environment.');
+        }
+
+        this.audioContext = new AudioContextClass();
         this.audioCache = {};
         this.basePath = basePath;
         this.loopingSources = {};
@@ -32,6 +45,10 @@ class AudioPlayer {
 
     // Load and cache the audio file
     async loadAudio(filename) {
+        if (typeof filename !== 'string' || filename.trim() === '') {
+            throw new Error('filename must be a non-empty string.');
+        }
+
         const url = `${this.basePath}/${filename}`;
 
         if (this.audioCache[url]) {
@@ -43,6 +60,9 @@ class AudioPlayer {
 
         try {
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status} while loading ${url}`);
+            }
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
             this.audioCache[url] = audioBuffer;
@@ -51,11 +71,16 @@ class AudioPlayer {
             }
         } catch (error) {
             console.error(`Failed to load audio: ${url}`, error);
+            throw error;
         }
     }
 
     // Add method to set volume for a specific file
     setVolume(filename, volume) {
+        if (!Number.isFinite(volume)) {
+            throw new Error('volume must be a finite number.');
+        }
+
         if (this.gainNodes.has(filename)) {
             // Clamp volume between 0 and 1
             const clampedVolume = Math.max(0, Math.min(1, volume));
@@ -68,6 +93,14 @@ class AudioPlayer {
 
     // Play a sound (with optional looping)
     playAudio(filename, volume = 1.0, loop = false) {
+        if (typeof filename !== 'string' || filename.trim() === '') {
+            throw new Error('filename must be a non-empty string.');
+        }
+
+        if (!Number.isFinite(volume)) {
+            throw new Error('volume must be a finite number.');
+        }
+
         const url = `${this.basePath}/${filename}`;
 
         if (!this.audioCache[url]) {
@@ -84,6 +117,12 @@ class AudioPlayer {
                 }
                 return;
             }
+        }
+
+        if (this.audioContext.state === 'suspended' && typeof this.audioContext.resume === 'function') {
+            this.audioContext.resume().catch(() => {
+                // Ignore resume failures so gameplay audio calls stay non-blocking.
+            });
         }
 
         // Create a new source and gain node
@@ -129,6 +168,8 @@ class AudioPlayer {
         if (this.loopingSources[filename]) {
             this.loopingSources[filename].stop(); // Stop the looping sound
             delete this.loopingSources[filename]; // Remove from the looping sources map
+            this.activeSources.delete(filename);
+            this.gainNodes.delete(filename);
             if (AudioPlayer.DEBUG) {
                 console.log(`Stopped looping sound: ${filename}`);
             }
@@ -137,13 +178,39 @@ class AudioPlayer {
 
     // Stop all looping sounds
     stopAllLooping() {
-        for (let filename in this.loopingSources) {
+        for (const filename of Object.keys(this.loopingSources)) {
             this.loopingSources[filename].stop();
             delete this.loopingSources[filename];
+            this.activeSources.delete(filename);
+            this.gainNodes.delete(filename);
             if (AudioPlayer.DEBUG) {
                 console.log(`Stopped all looping sounds`);
             }
         }
+    }
+
+    destroy() {
+        this.stopAllLooping();
+
+        for (const source of this.activeSources.values()) {
+            try {
+                source.stop();
+            } catch (error) {
+                // Ignore stop errors for already-finished sources.
+            }
+        }
+
+        this.activeSources.clear();
+        this.gainNodes.clear();
+        this.audioCache = {};
+
+        if (this.audioContext && typeof this.audioContext.close === 'function') {
+            this.audioContext.close().catch(() => {
+                // Ignore close errors during teardown.
+            });
+        }
+
+        this.audioContext = null;
     }
 }
 

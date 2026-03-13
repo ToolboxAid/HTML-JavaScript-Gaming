@@ -19,10 +19,28 @@ class AudioFrequency {
     }
 
     static play(frequency, duration) {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (!Number.isFinite(frequency) || frequency <= 0) {
+            throw new Error('frequency must be a positive finite number.');
+        }
+
+        if (!Number.isFinite(duration) || duration <= 0) {
+            throw new Error('duration must be a positive finite number.');
+        }
+
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) {
+            throw new Error('Web Audio API is not available in this environment.');
+        }
+
+        const audioContext = new AudioContextClass();
         const oscillator = audioContext.createOscillator();
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
         oscillator.connect(audioContext.destination);
+        oscillator.onended = () => {
+            if (typeof audioContext.close === 'function') {
+                audioContext.close().catch(() => {});
+            }
+        };
         oscillator.start();
         oscillator.stop(audioContext.currentTime + duration);
     }

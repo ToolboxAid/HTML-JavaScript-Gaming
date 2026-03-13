@@ -1,8 +1,24 @@
 class MidiPlayer {
+    static DEBUG = new URLSearchParams(window.location.search).has('midiPlayer');
+
     constructor(fileInputId) {
+        if (typeof document === 'undefined') {
+            throw new Error('MidiPlayer requires a browser document.');
+        }
+
+        if (typeof fileInputId !== 'string' || fileInputId.trim() === '') {
+            throw new Error('fileInputId must be a non-empty string.');
+        }
+
         this.fileInput = document.getElementById(fileInputId);
+        if (!this.fileInput) {
+            throw new Error(`File input element not found: ${fileInputId}`);
+        }
+
         this.autoplay = true;
         this.player = null;
+        this.handleBlur = this.handleBlur.bind(this);
+        this.isInitialized = false;
         this.init();
     }
 
@@ -23,7 +39,10 @@ class MidiPlayer {
             await this.loadScript('https://fraigo.github.io/javascript-midi-player/midiplayer/MIDIPlayer.js');
             this.player = new MIDIPlayer(this.fileInput.id);
             this.setupPlayer();
-            console.log('MIDI player initialized.');
+            this.isInitialized = true;
+            if (MidiPlayer.DEBUG) {
+                console.log('MIDI player initialized.');
+            }
         } catch (error) {
             console.error('Failed to load MIDI player scripts:', error);
         }
@@ -44,13 +63,20 @@ class MidiPlayer {
         };
 
         this.player.onend = () => {
-            console.log("End", new Date());
+            if (MidiPlayer.DEBUG) {
+                console.log("End", new Date());
+            }
         };
 
-        window.onblur = () => {
+        window.addEventListener('blur', this.handleBlur);
+    }
+
+    handleBlur() {
+        if (MidiPlayer.DEBUG) {
             console.log("Blur", new Date());
-            this.player.pause();
-        };
+        }
+
+        this.player?.pause?.();
     }
 
     play() {
@@ -73,6 +99,14 @@ class MidiPlayer {
 
     setAutoplay(autoplay) {
         this.autoplay = autoplay;
+    }
+
+    destroy() {
+        window.removeEventListener('blur', this.handleBlur);
+        this.stop();
+        this.player = null;
+        this.fileInput = null;
+        this.isInitialized = false;
     }
 }
 

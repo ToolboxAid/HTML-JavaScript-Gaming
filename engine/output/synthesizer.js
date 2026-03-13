@@ -4,12 +4,25 @@ class Synthesizer {
   static DEBUG = new URLSearchParams(window.location.search).has('synthesizer');
 
   constructor() {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+      throw new Error('Web Audio API is not available in this environment.');
+    }
+
+    this.audioContext = new AudioContextClass();
     this.timeSignature = { beatsPerMeasure: 4, beatUnit: 4 }; // Default time signature 4/4
     this.tempo = 120; // Default tempo in BPM
   }
 
   setTimeSignature(beatsPerMeasure, beatUnit) {
+    if (!Number.isFinite(beatsPerMeasure) || beatsPerMeasure <= 0) {
+      throw new Error('beatsPerMeasure must be a positive finite number.');
+    }
+
+    if (!Number.isFinite(beatUnit) || beatUnit <= 0) {
+      throw new Error('beatUnit must be a positive finite number.');
+    }
+
     this.timeSignature = { beatsPerMeasure, beatUnit };
     if (Synthesizer.DEBUG) {
       console.log(`Updated time signature to ${this.timeSignature.beatsPerMeasure}/${this.timeSignature.beatUnit} ::: tempo set to ${this.tempo} BPM`);
@@ -17,6 +30,10 @@ class Synthesizer {
   }
 
   setTempo(tempo) { // tempo in BPM
+    if (!Number.isFinite(tempo) || tempo <= 0) {
+      throw new Error('tempo must be a positive finite number.');
+    }
+
     this.tempo = tempo;
     if (Synthesizer.DEBUG) {
       console.log(`Updated tempo to ${this.tempo} BPM ::: time signature set to ${this.timeSignature.beatsPerMeasure}/${this.timeSignature.beatUnit}`);
@@ -24,7 +41,9 @@ class Synthesizer {
   }
 
   getMeasureDuration() {
-    console.log(this.tempo, this.timeSignature.beatsPerMeasure);
+    if (Synthesizer.DEBUG) {
+      console.log(this.tempo, this.timeSignature.beatsPerMeasure);
+    }
     return (60 / this.tempo) * this.timeSignature.beatsPerMeasure;
   }
 
