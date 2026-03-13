@@ -24,7 +24,7 @@ Objective:
 - [x] Review `engine/objects`.
 - [x] Review `engine/renderers`.
 - [x] Review `engine/input`.
-- [ ] Review `engine/messages`.
+- [x] Review `engine/messages`.
 - [ ] Review `engine/lifecycle`.
 - [ ] Review `engine/misc`.
 - [ ] Review `engine/output`.

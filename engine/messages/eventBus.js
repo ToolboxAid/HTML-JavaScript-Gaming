@@ -14,6 +14,10 @@ class EventBus {
         }
         return EventBus.instance;
     }
+
+    static resetInstance() {
+        EventBus.instance = null;
+    }
 }
 
 export default EventBus;
