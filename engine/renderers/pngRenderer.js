@@ -1,9 +1,10 @@
 import CanvasUtils from '../canvas.js';
 import ObjectDebug from '../utils/objectDebug.js';
+import RendererGuards from './rendererGuards.js';
 
 class PngRenderer {
     static draw(object, offsetX = 0, offsetY = 0) {
-        if (!object || object.isDestroyed || object.isDead() || !CanvasUtils.ctx) {
+        if (!RendererGuards.canRenderObject(object)) {
             return;
         }
 
@@ -14,11 +15,13 @@ class PngRenderer {
             return;
         }
 
+        const normalizedOffsetX = RendererGuards.normalizeOffset(offsetX);
+        const normalizedOffsetY = RendererGuards.normalizeOffset(offsetY);
         const scaledWidth = Math.round(object.frameWidth * object.pixelSize);
         const scaledHeight = Math.round(object.frameHeight * object.pixelSize);
         const frameOffset = object.getFrameOffset(object.currentFrameIndex);
-        const newX = Math.round(object.x + offsetX + (frameOffset.x * object.pixelSize));
-        const newY = Math.round(object.y + offsetY + (frameOffset.y * object.pixelSize));
+        const newX = Math.round(object.x + normalizedOffsetX + (frameOffset.x * object.pixelSize));
+        const newY = Math.round(object.y + normalizedOffsetY + (frameOffset.y * object.pixelSize));
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
         ObjectDebug.log(object.constructor?.DEBUG, 'ObjectPNG frame debug', {
@@ -99,11 +102,16 @@ class PngRenderer {
             return;
         }
 
+        const normalizedScale = RendererGuards.normalizePositiveNumber(scale, 2);
+        const normalizedPadding = RendererGuards.normalizePositiveNumber(padding, 4);
+        const normalizedPreviewX = RendererGuards.normalizeOffset(previewX);
+        const normalizedPreviewY = RendererGuards.normalizeOffset(previewY);
+
         const totalFrames = object.frameCount || 1;
         const cols = object.framesPerRow || 1;
         const rows = Math.ceil(totalFrames / cols);
-        const cellW = object.frameWidth * scale;
-        const cellH = object.frameHeight * scale;
+        const cellW = object.frameWidth * normalizedScale;
+        const cellH = object.frameHeight * normalizedScale;
 
         CanvasUtils.ctx.save();
 
@@ -114,8 +122,8 @@ class PngRenderer {
             const sy = object.spriteY + (srcRow * object.frameHeight);
             const drawCol = frameIndex % cols;
             const drawRow = Math.floor(frameIndex / cols);
-            const dx = previewX + drawCol * (cellW + padding);
-            const dy = previewY + drawRow * (cellH + padding);
+            const dx = normalizedPreviewX + drawCol * (cellW + normalizedPadding);
+            const dy = normalizedPreviewY + drawRow * (cellH + normalizedPadding);
 
             CanvasUtils.ctx.drawImage(
                 object.png,
@@ -150,8 +158,8 @@ class PngRenderer {
         CanvasUtils.ctx.textAlign = 'left';
         CanvasUtils.ctx.fillText(
             `PNG Frames: current=${object.currentFrameIndex}`,
-            previewX,
-            previewY + rows * (cellH + padding) + 14
+            normalizedPreviewX,
+            normalizedPreviewY + rows * (cellH + normalizedPadding) + 14
         );
 
         CanvasUtils.ctx.restore();
@@ -162,24 +170,28 @@ class PngRenderer {
             return;
         }
 
-        const sheetW = object.png.width * scale;
-        const sheetH = object.png.height * scale;
+        const normalizedScale = RendererGuards.normalizePositiveNumber(scale, 1);
+        const normalizedPreviewX = RendererGuards.normalizeOffset(previewX);
+        const normalizedPreviewY = RendererGuards.normalizeOffset(previewY);
+
+        const sheetW = object.png.width * normalizedScale;
+        const sheetH = object.png.height * normalizedScale;
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
         CanvasUtils.ctx.save();
-        CanvasUtils.ctx.drawImage(object.png, previewX, previewY, sheetW, sheetH);
+        CanvasUtils.ctx.drawImage(object.png, normalizedPreviewX, normalizedPreviewY, sheetW, sheetH);
         CanvasUtils.ctx.strokeStyle = 'yellow';
         CanvasUtils.ctx.lineWidth = 2;
         CanvasUtils.ctx.strokeRect(
-            previewX + sx * scale,
-            previewY + sy * scale,
-            sw * scale,
-            sh * scale
+            normalizedPreviewX + sx * normalizedScale,
+            normalizedPreviewY + sy * normalizedScale,
+            sw * normalizedScale,
+            sh * normalizedScale
         );
 
         CanvasUtils.ctx.fillStyle = 'white';
         CanvasUtils.ctx.font = '12px Arial';
-        CanvasUtils.ctx.fillText(`sheet frame=${object.currentFrameIndex}`, previewX, previewY - 6);
+        CanvasUtils.ctx.fillText(`sheet frame=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY - 6);
         CanvasUtils.ctx.restore();
     }
 }

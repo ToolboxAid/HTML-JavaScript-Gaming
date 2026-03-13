@@ -1,13 +1,16 @@
 import CanvasUtils from '../canvas.js';
+import RendererGuards from './rendererGuards.js';
 
 class SpriteRenderer {
     static draw(object, offsetX = 0, offsetY = 0) {
-        if (!object || object.isDead() || object.isDestroyed || !CanvasUtils.ctx) {
+        if (!RendererGuards.canRenderObject(object)) {
             return;
         }
 
-        const newX = object.x + offsetX;
-        const newY = object.y + offsetY;
+        const normalizedOffsetX = RendererGuards.normalizeOffset(offsetX);
+        const normalizedOffsetY = RendererGuards.normalizeOffset(offsetY);
+        const newX = object.x + normalizedOffsetX;
+        const newY = object.y + normalizedOffsetY;
 
         if (object.frameType === 'json') {
             this.drawRGB(object, newX, newY);
@@ -32,7 +35,7 @@ class SpriteRenderer {
     }
 
     static drawRGB(object, newX, newY) {
-        if (!object || !CanvasUtils.ctx) {
+        if (!RendererGuards.canRenderObject(object)) {
             return;
         }
 

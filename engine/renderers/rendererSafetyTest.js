@@ -97,11 +97,11 @@ function testRenderersGuardOnMissingContext(assert) {
         };
 
         assertNoThrow(assert, () => BoxRenderer.draw({ x: 0, y: 0, width: 10, height: 10, isDestroyed: false }), 'BoxRenderer should no-op without context');
-        assertNoThrow(assert, () => SpriteRenderer.draw(spriteLike), 'SpriteRenderer should no-op without context');
-        assertNoThrow(assert, () => VectorRenderer.draw(vectorLike), 'VectorRenderer should no-op without context');
-        assertNoThrow(assert, () => PngRenderer.draw(pngLike), 'PngRenderer should no-op without context');
-        assertNoThrow(assert, () => PngRenderer.drawAllFramesPreview(pngLike), 'PngRenderer frame preview should no-op without context');
-        assertNoThrow(assert, () => PngRenderer.drawSheetPreview(pngLike), 'PngRenderer sheet preview should no-op without context');
+        assertNoThrow(assert, () => SpriteRenderer.draw(spriteLike, Number.NaN, Number.NaN), 'SpriteRenderer should no-op without context');
+        assertNoThrow(assert, () => VectorRenderer.draw(vectorLike, Number.NaN, Number.NaN, Number.NaN), 'VectorRenderer should no-op without context');
+        assertNoThrow(assert, () => PngRenderer.draw(pngLike, Number.NaN, Number.NaN), 'PngRenderer should no-op without context');
+        assertNoThrow(assert, () => PngRenderer.drawAllFramesPreview(pngLike, Number.NaN, Number.NaN, Number.NaN, Number.NaN), 'PngRenderer frame preview should no-op without context');
+        assertNoThrow(assert, () => PngRenderer.drawSheetPreview(pngLike, Number.NaN, Number.NaN, Number.NaN), 'PngRenderer sheet preview should no-op without context');
     } finally {
         CanvasUtils.ctx = originalCtx;
         CanvasUtils.drawSprite = originalDrawSprite;
@@ -149,8 +149,8 @@ function testRenderersDrawWithMockContext(assert) {
             frameType: 'json'
         };
 
-        SpriteRenderer.draw(spriteLiving);
-        SpriteRenderer.draw(spriteRgb);
+        SpriteRenderer.draw(spriteLiving, Number.NaN, Number.NaN);
+        SpriteRenderer.draw(spriteRgb, Number.NaN, Number.NaN);
 
         const vectorLike = {
             isAlive: () => true,
@@ -165,7 +165,7 @@ function testRenderersDrawWithMockContext(assert) {
             boundWidth: 2,
             boundHeight: 2
         };
-        VectorRenderer.draw(vectorLike);
+        VectorRenderer.draw(vectorLike, Number.NaN, Number.NaN, Number.NaN);
 
         const pngLike = {
             isDead: () => false,
@@ -197,7 +197,9 @@ function testRenderersDrawWithMockContext(assert) {
             spriteY: 0
         };
 
-        PngRenderer.draw(pngLike);
+        PngRenderer.draw(pngLike, Number.NaN, Number.NaN);
+        PngRenderer.drawAllFramesPreview(pngLike, Number.NaN, Number.NaN, Number.NaN, Number.NaN);
+        PngRenderer.drawSheetPreview(pngLike, Number.NaN, Number.NaN, Number.NaN);
 
         assert(drawSpriteCalls === 1, 'SpriteRenderer should call drawSprite for non-json frames');
         assert(drawSpriteRgbCalls === 1, 'SpriteRenderer should call drawSpriteRGB for json frames');

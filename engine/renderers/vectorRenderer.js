@@ -1,25 +1,32 @@
 import CanvasUtils from '../canvas.js';
+import RendererGuards from './rendererGuards.js';
 
 class VectorRenderer {
     static draw(object, lineWidth = 1.25, offsetX = 0, offsetY = 0) {
-        if (!object || object.isDestroyed || !object.isAlive() || !CanvasUtils.ctx) {
+        if (!RendererGuards.canRenderObject(object, { requireAlive: true })) {
             return;
         }
 
         if (!Array.isArray(object.rotatedPoints) || object.rotatedPoints.length === 0) {
-            console.error('Rotated points are not available.');
+            if (object.constructor?.DEBUG) {
+                console.warn('VectorRenderer skipped draw: rotatedPoints are not available.');
+            }
             return;
         }
 
+        const normalizedLineWidth = RendererGuards.normalizeLineWidth(lineWidth, 1.25);
+        const normalizedOffsetX = RendererGuards.normalizeOffset(offsetX);
+        const normalizedOffsetY = RendererGuards.normalizeOffset(offsetY);
+
         CanvasUtils.ctx.beginPath();
         CanvasUtils.ctx.strokeStyle = object.color;
-        CanvasUtils.ctx.lineWidth = lineWidth;
+        CanvasUtils.ctx.lineWidth = normalizedLineWidth;
 
         object.rotatedPoints.forEach(([rx, ry], index) => {
             if (index === 0) {
-                CanvasUtils.ctx.moveTo(rx + offsetX, ry + offsetY);
+                CanvasUtils.ctx.moveTo(rx + normalizedOffsetX, ry + normalizedOffsetY);
             } else {
-                CanvasUtils.ctx.lineTo(rx + offsetX, ry + offsetY);
+                CanvasUtils.ctx.lineTo(rx + normalizedOffsetX, ry + normalizedOffsetY);
             }
         });
 
@@ -27,14 +34,14 @@ class VectorRenderer {
         CanvasUtils.ctx.stroke();
 
         if (object.drawBounds) {
-            CanvasUtils.drawCircle2(object.x + offsetX, object.y + offsetY, 2, 'white');
+            CanvasUtils.drawCircle2(object.x + normalizedOffsetX, object.y + normalizedOffsetY, 2, 'white');
             CanvasUtils.drawBounds(
-                object.boundX + offsetX,
-                object.boundY + offsetY,
+                object.boundX + normalizedOffsetX,
+                object.boundY + normalizedOffsetY,
                 object.boundWidth,
                 object.boundHeight,
                 'white',
-                lineWidth
+                normalizedLineWidth
             );
         }
     }

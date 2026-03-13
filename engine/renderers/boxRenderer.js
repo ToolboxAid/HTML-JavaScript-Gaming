@@ -4,10 +4,11 @@
 // boxRenderer.js
 
 import CanvasUtils from '../canvas.js';
+import RendererGuards from './rendererGuards.js';
 
 class BoxRenderer {
     static draw(object, fillColor = 'gray', borderColor = null, borderWidth = 0) {
-        if (!object || object.isDestroyed || !CanvasUtils.ctx) {
+        if (!RendererGuards.canRenderObject(object, { allowDead: true })) {
             return;
         }
 
