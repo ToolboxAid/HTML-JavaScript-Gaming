@@ -62,11 +62,18 @@ class AngleUtils {
         return this.normalizeAngle(angleInRadians * this.RAD_TO_DEG);
     }
     // Convert an angle in degrees to velocity components (x, y)
-    static angleToVelocity(angle, precision = 4) {
+    static angleToVelocity(angle, precision = null) {
         const radians = angle * this.DEG_TO_RAD;
+        const x = Math.cos(radians);
+        const y = Math.sin(radians);
+
+        if (!Number.isInteger(precision) || precision < 0) {
+            return { x, y };
+        }
+
         return {
-            x: parseFloat(Math.cos(radians).toFixed(precision)),
-            y: parseFloat(Math.sin(radians).toFixed(precision))
+            x: parseFloat(x.toFixed(precision)),
+            y: parseFloat(y.toFixed(precision))
         };
     }
 

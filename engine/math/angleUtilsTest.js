@@ -38,6 +38,14 @@ export function testAngleUtils(assert) {
     assert(Math.abs(angleVector.x + 1) < 1e-10, "angleToVelocity X failed");
     assert(Math.abs(angleVector.y) < 1e-10, "angleToVelocity Y failed");
 
+    const preciseAngleVector = AngleUtils.angleToVelocity(45);
+    assert(Math.abs(preciseAngleVector.x - Math.SQRT1_2) < 1e-10, "angleToVelocity should not round by default");
+    assert(Math.abs(preciseAngleVector.y - Math.SQRT1_2) < 1e-10, "angleToVelocity should not round by default");
+
+    const roundedAngleVector = AngleUtils.angleToVelocity(45, 4);
+    assert(roundedAngleVector.x === 0.7071, "angleToVelocity explicit precision X failed");
+    assert(roundedAngleVector.y === 0.7071, "angleToVelocity explicit precision Y failed");
+
     // Test calculateOrbitalPosition
     const orbit = AngleUtils.calculateOrbitalPosition(0, 0, 90, 10);
     assert(Math.abs(orbit.x) < 1e-10, "calculateOrbitalPosition X failed");
