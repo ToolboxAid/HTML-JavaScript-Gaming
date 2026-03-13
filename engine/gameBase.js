@@ -19,9 +19,12 @@ class GameBase {
     static showTextMetrics = false;
 
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {
+        this.isDestroyed = false;
         this.isPageHidden = document.hidden;
         this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+        this.handlePageHide = this.handlePageHide.bind(this);
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
+        window.addEventListener('pagehide', this.handlePageHide);
 
         this.initializeGame(canvasConfig, performanceConfig, fullscreenConfig)
             .then(() => {
@@ -40,6 +43,10 @@ class GameBase {
 
         // Bind animation method to instance
         this.animate = this.animate.bind(this);// bind once
+    }
+
+    handlePageHide() {
+        this.destroy();
     }
 
     async initializeGame(canvasConfig, performanceConfig, fullscreenConfig) {
@@ -69,6 +76,10 @@ class GameBase {
 
     async animate(timestamp) {
         try {
+            if (this.isDestroyed) {
+                return;
+            }
+
             if (this.isPageHidden) {
                 requestAnimationFrame(this.animate);
                 return;
@@ -127,6 +138,40 @@ class GameBase {
     }
     async gameLoop(deltaTime) {
         throw new Error('gameLoop must be implemented by inheritting child class');
+    }
+
+    destroy() {
+        if (this.isDestroyed) {
+            return false;
+        }
+
+        this.isDestroyed = true;
+
+        document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+        window.removeEventListener('pagehide', this.handlePageHide);
+
+        if (typeof this.onDestroy === 'function') {
+            try {
+                this.onDestroy();
+            } catch (error) {
+                console.warn('onDestroy hook failed:', error);
+            }
+        }
+
+        // Common input ownership convention across games.
+        if (this.keyboardInput?.destroy) {
+            this.keyboardInput.destroy();
+        }
+
+        if (this.mouseInput?.destroy) {
+            this.mouseInput.destroy();
+        }
+
+        if (this.gameControllers?.destroy) {
+            this.gameControllers.destroy();
+        }
+
+        return true;
     }
 
 }

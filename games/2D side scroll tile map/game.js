@@ -13,8 +13,6 @@ import KeyboardInput from '../../engine/input/keyboard.js';
 
 import GameAttract from './gameAttract.js';
 
-const keyboardInput = new KeyboardInput();
-
 class Game extends GameBase {
 
   constructor() {
@@ -24,6 +22,7 @@ class Game extends GameBase {
   async onInitialize() {
 
     console.log("onInit");
+    this.keyboardInput = new KeyboardInput();
 
     // Game State Variables
     this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
@@ -43,7 +42,7 @@ class Game extends GameBase {
 
   // Example: object.position += object.velocity * deltaTime;
   gameLoop(deltaTime) {
-    keyboardInput.update();
+    this.keyboardInput.update();
 
     //console.log(this.gameState);
 
@@ -88,16 +87,16 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Welcome to the `2D` Game!", 145, 170);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 190, 205);
 
-    this.gameAttract.update(deltaTime, keyboardInput);
+    this.gameAttract.update(deltaTime, this.keyboardInput);
     this.gameAttract.draw();
 
-    if (keyboardInput.getKeysPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.gameState = "playerSelect";
     }
   }
 
   displayPlayerSelect(deltaTime) {
-    const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, keyboardInput);
+    const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;
@@ -111,7 +110,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
-    if (keyboardInput.getKeysPressed().includes('Enter') ||
+    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -136,7 +135,7 @@ class Game extends GameBase {
   }
 
   gamePauseCheck() {
-    if (keyboardInput.getKeysPressed().includes('KeyP')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyP')) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -161,13 +160,13 @@ class Game extends GameBase {
     CanvasUtils.drawText(100, 300, "Press `S` for score", 3.5, "white");
     CanvasUtils.drawText(100, 350, "Press `P` to pause game", 3.5, "white");
 
-    if (keyboardInput.getKeysPressed().includes('KeyS')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyS')) {
       this.score[this.currentPlayer] += 100;
       console.log("score");
     }
 
     // Check if `D` key was just pressed, simulate losing a life
-    if (keyboardInput.getKeysPressed().includes('KeyD')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyD')) {
       const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
@@ -187,6 +186,10 @@ class Game extends GameBase {
     this.gameInitialized = false;
     this.enemyInitialized = false;
     this.backToAttractCounter = 0;
+  }
+
+  onDestroy() {
+    this.keyboardInput?.destroy?.();
   }
 
 }

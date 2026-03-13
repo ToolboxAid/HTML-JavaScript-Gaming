@@ -11,6 +11,8 @@ import EventBus from '../../../engine/messages/eventBus.js';
 export const GAMEPAD_EVENT = 'controllerChange';
 
 class GamepadManager {
+    static DEBUG = new URLSearchParams(window.location.search).has('gamepadManager');
+
     constructor() {
         this.gameControllers = [];
         this.pollInterval = null;
@@ -39,7 +41,7 @@ class GamepadManager {
 
         // Look up the controller configuration using the gamepad's ID
         const controllerConfig = GameControllerMap.controllerConfigs[gameController.id] || GameControllerMap.controllerConfigs["default"];
-        if (controllerConfig.shortName === "default") {
+        if (controllerConfig.shortName === "default" && GamepadManager.DEBUG) {
             console.warn(`Controller mapping not found for '${gameController.id}', using default mapping.`);
         }
 
@@ -61,7 +63,9 @@ class GamepadManager {
         const args = ['disconnected', gameController.index, gameController.id];
         this.sender.triggerEvent(GAMEPAD_EVENT, args);
 
-        console.warn(`GameController '${gameController.id}' disconnected from index '${gameController.index}' and event trigger args '${args}'`);
+        if (GamepadManager.DEBUG) {
+            console.warn(`GameController '${gameController.id}' disconnected from index '${gameController.index}' and event trigger args '${args}'`);
+        }
     }
 
     pollGameControllers() { // Stop polling gameControllers before the page unloads
