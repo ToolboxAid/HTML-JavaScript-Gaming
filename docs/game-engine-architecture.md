@@ -11,6 +11,8 @@ games/            Full game implementations
 samples/          Narrow feature demos and experiments
 tools/            Utility applications
 docs/             Documentation
+scripts/          Repository automation scripts (including test runner)
+tests/            Engine test suite and manifest
 ```
 
 The design goal is simple: put reusable systems in `engine/`, and keep each game focused on rules, assets, and behavior.
@@ -267,4 +269,17 @@ tools/
 ```
 
 That is a strong and scalable direction for the repo.
+
+## Testing architecture
+
+The default automated engine suite is manifest-driven:
+
+```text
+npm test
+  -> scripts/run-node-tests.mjs
+    -> tests/engine/testManifest.js
+      -> tests/engine/*Test.js entries
+```
+
+This keeps test execution centralized while allowing coverage across engine domains without coupling tests to browser-only runtime behavior.
 
