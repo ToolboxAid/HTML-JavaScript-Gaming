@@ -106,4 +106,28 @@ export function testGeometryUtils(assert) {
         5
     );
     assert(noSegmentIntersections.length === 0, "getLineCircleIntersections should ignore intersections outside the segment");
+
+    // Test getTangentsFromPointToCircle
+    const tangentPoint = { x: 10, y: 0 };
+    const tangentCircleCenter = { x: 0, y: 0 };
+    const tangentRadius = 5;
+    const tangents = GeometryUtils.getTangentsFromPointToCircle(
+        tangentPoint,
+        tangentCircleCenter,
+        tangentRadius
+    );
+
+    assert(tangents.length === 2, "getTangentsFromPointToCircle should return two tangents for an external point");
+
+    for (const tangent of tangents) {
+        const radiusDx = tangent.x - tangentCircleCenter.x;
+        const radiusDy = tangent.y - tangentCircleCenter.y;
+        const tangentDx = tangentPoint.x - tangent.x;
+        const tangentDy = tangentPoint.y - tangent.y;
+        const radiusLength = Math.sqrt(radiusDx * radiusDx + radiusDy * radiusDy);
+        const perpendicularDot = (radiusDx * tangentDx) + (radiusDy * tangentDy);
+
+        assert(Math.abs(radiusLength - tangentRadius) < 1e-10, "getTangentsFromPointToCircle tangent should lie on the circle");
+        assert(Math.abs(perpendicularDot) < 1e-10, "getTangentsFromPointToCircle tangent should be perpendicular to the radius");
+    }
 }

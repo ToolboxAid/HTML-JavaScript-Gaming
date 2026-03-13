@@ -209,7 +209,7 @@ class GeometryUtils {
         }
 
         const angle = Math.atan2(dy, dx);
-        const alpha = Math.asin(radius / distance);
+        const alpha = Math.acos(radius / distance);
         const theta1 = angle + alpha;
         const theta2 = angle - alpha;
 
