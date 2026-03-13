@@ -151,25 +151,30 @@ class GeometryUtils {
 
         if (discriminant === 0) {
             const t = -b / (2 * a);
-            intersections.push({
-                x: lineStart.x + t * dx,
-                y: lineStart.y + t * dy
-            });
+            if (t >= 0 && t <= 1) {
+                intersections.push({
+                    x: lineStart.x + t * dx,
+                    y: lineStart.y + t * dy
+                });
+            }
         } else {
             const sqrtD = Math.sqrt(discriminant);
             const t1 = (-b - sqrtD) / (2 * a);
             const t2 = (-b + sqrtD) / (2 * a);
 
-            intersections.push(
-                {
+            if (t1 >= 0 && t1 <= 1) {
+                intersections.push({
                     x: lineStart.x + t1 * dx,
                     y: lineStart.y + t1 * dy
-                },
-                {
+                });
+            }
+
+            if (t2 >= 0 && t2 <= 1) {
+                intersections.push({
                     x: lineStart.x + t2 * dx,
                     y: lineStart.y + t2 * dy
-                }
-            );
+                });
+            }
         }
 
         return intersections;

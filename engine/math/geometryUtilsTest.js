@@ -86,4 +86,24 @@ export function testGeometryUtils(assert) {
     const centerPoint = { x: 0, y: 0 };
     const rotatedPoint = GeometryUtils.rotatePoint(pointToRotate, centerPoint, 90);
     assert(Math.abs(rotatedPoint.x) < 1e-10 && Math.abs(rotatedPoint.y - 1) < 1e-10, "rotatePoint failed");
+
+    // Test getLineCircleIntersections for a segment crossing the circle
+    const lineCircleIntersections = GeometryUtils.getLineCircleIntersections(
+        { x: -10, y: 0 },
+        { x: 10, y: 0 },
+        { x: 0, y: 0 },
+        5
+    );
+    assert(lineCircleIntersections.length === 2, "getLineCircleIntersections should return two segment intersections");
+    assert(Math.abs(lineCircleIntersections[0].x + 5) < 1e-10, "getLineCircleIntersections first x failed");
+    assert(Math.abs(lineCircleIntersections[1].x - 5) < 1e-10, "getLineCircleIntersections second x failed");
+
+    // Test getLineCircleIntersections excludes infinite-line intersections outside the segment
+    const noSegmentIntersections = GeometryUtils.getLineCircleIntersections(
+        { x: 6, y: 0 },
+        { x: 10, y: 0 },
+        { x: 0, y: 0 },
+        5
+    );
+    assert(noSegmentIntersections.length === 0, "getLineCircleIntersections should ignore intersections outside the segment");
 }

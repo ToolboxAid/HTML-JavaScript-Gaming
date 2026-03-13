@@ -17,9 +17,9 @@ Objective:
 
 ## Folder-by-folder code review
 
-- [.] Review `engine/utils`.
-- [ ] Review `engine/math`.
-- [ ] Review `engine/physics`.
+- [x] Review `engine/utils`.
+- [x] Review `engine/math`.
+- [.] Review `engine/physics`.
 - [ ] Review `engine/game`.
 - [ ] Review `engine/objects`.
 - [ ] Review `engine/renderers`.
