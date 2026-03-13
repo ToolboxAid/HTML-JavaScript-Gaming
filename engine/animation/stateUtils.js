@@ -1,11 +1,11 @@
 // ToolboxAid.com
 // David Quesenberry
 // 03/12/2026
-// animationStateUtils.js
+// stateUtils.js
 
-class AnimationStateUtils {
+class StateUtils {
     constructor() {
-        throw new Error('AnimationStateUtils is a utility class with only static methods. Do not instantiate.');
+        throw new Error('StateUtils is a utility class with only static methods. Do not instantiate.');
     }
 
     static syncToObject(target, animation) {
@@ -36,4 +36,4 @@ class AnimationStateUtils {
     }
 }
 
-export default AnimationStateUtils;
+export default StateUtils;

@@ -12,7 +12,7 @@ import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectDebug from '../utils/objectDebug.js';
 import SpriteRenderer from '../renderers/spriteRenderer.js';
 import SpriteController from '../animation/spriteController.js';
-import AnimationStateUtils from '../animation/animationStateUtils.js';
+import StateUtils from '../animation/stateUtils.js';
 
 class ObjectSprite extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectSprite');
@@ -215,7 +215,7 @@ getCurrentDyingFrame() {
 
 advanceFrame(frameCount) {
     const result = this.animation.advanceFrame(this.currentFrameIndex, frameCount);
-    AnimationStateUtils.syncToObject(this, {
+    StateUtils.syncToObject(this, {
         currentFrameIndex: result.currentFrameIndex,
         delayCounter: this.delayCounter
     });
@@ -229,7 +229,7 @@ stepLoopingFrame(frameCount, frameDelay, incFrame = false) {
         frameDelay,
         incFrame
     );
-    AnimationStateUtils.syncToObject(this, result);
+    StateUtils.syncToObject(this, result);
     return result.looped;
 }
 stepFinalFrame(frameCount, frameDelay, incFrame = false) {
@@ -240,7 +240,7 @@ stepFinalFrame(frameCount, frameDelay, incFrame = false) {
         frameDelay,
         incFrame
     );
-    AnimationStateUtils.syncToObject(this, result);
+    StateUtils.syncToObject(this, result);
     return result.finished;
 }
 handleAliveStatus(deltaTime, incFrame = false) {
@@ -328,7 +328,7 @@ setHit() {
             return false;
         }
 
-        AnimationStateUtils.destroyAnimation(this, ['animation']);
+        StateUtils.destroyAnimation(this, ['animation']);
 
         ObjectCleanup.cleanupAndNullifyArray(this, 'livingFrames');
         ObjectCleanup.cleanupAndNullifyArray(this, 'dyingFrames');

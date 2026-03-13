@@ -12,7 +12,7 @@ import PngRenderer from '../renderers/pngRenderer.js';
 import ImageAssetCache from '../utils/imageAssetCache.js';
 import PngAssetState from '../utils/pngAssetState.js';
 import PngController from '../animation/pngController.js';
-import AnimationStateUtils from '../animation/animationStateUtils.js';
+import StateUtils from '../animation/stateUtils.js';
 
 class ObjectPNG extends ObjectKillable {
     static DEBUG = new URLSearchParams(window.location.search).has('objectPNG');
@@ -149,7 +149,7 @@ class ObjectPNG extends ObjectKillable {
 
     setFrame(frameIndex = 0) {
         this.animation.setFrame(frameIndex);
-        AnimationStateUtils.syncToObject(this, this.animation);
+        StateUtils.syncToObject(this, this.animation);
     }
 
     setFrameOffsets(frameOffsets) {
@@ -183,13 +183,13 @@ class ObjectPNG extends ObjectKillable {
 
     advanceFrame() {
         const advanced = this.animation.advanceFrame();
-        AnimationStateUtils.syncToObject(this, this.animation);
+        StateUtils.syncToObject(this, this.animation);
         return advanced;
     }
 
     stepFrame(incFrame = false) {
         const stepped = this.animation.stepFrame(incFrame);
-        AnimationStateUtils.syncToObject(this, this.animation);
+        StateUtils.syncToObject(this, this.animation);
         return stepped;
     }
 
@@ -200,7 +200,7 @@ class ObjectPNG extends ObjectKillable {
 
     handleDyingStatus(deltaTime, incFrame = false) {
         const finished = this.animation.stepDyingFrame(incFrame);
-        AnimationStateUtils.syncToObject(this, this.animation);
+        StateUtils.syncToObject(this, this.animation);
 
         if (finished) {
             this.setIsDead();
@@ -258,7 +258,7 @@ class ObjectPNG extends ObjectKillable {
 
         this.assetState?.destroy(this);
 
-        AnimationStateUtils.destroyAnimation(this, [
+        StateUtils.destroyAnimation(this, [
             'animation',
             'assetState',
             'png',
