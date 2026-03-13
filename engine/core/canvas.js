@@ -5,8 +5,8 @@
 
 import SystemUtils from '../utils/systemUtils.js';
 
-import Font5x6 from '../font5x6.js';
-import Colors from '../colors.js';
+import Font5x6 from '../renderers/assets/font5x6.js';
+import Colors from '../renderers/assets/colors.js';
 import Sprite from './sprite.js';
 
 class CanvasUtils {

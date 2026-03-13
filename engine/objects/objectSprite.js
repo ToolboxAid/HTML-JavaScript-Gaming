@@ -3,7 +3,7 @@
 // 10/24/2024
 // objectSprite.js
 
-import Colors from '../../engine/colors.js';
+import Colors from '../renderers/assets/colors.js';
 import ObjectKillable from './objectKillable.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';

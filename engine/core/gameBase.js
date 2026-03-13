@@ -4,7 +4,7 @@
 // gameBase.js
 
 import CanvasUtils from "./canvas.js";
-import Colors from "../colors.js";
+import Colors from "../renderers/assets/colors.js";
 import Fullscreen from "../fullscreen.js";
 import PerformanceMonitor from "./performanceMonitor.js";
 import Timer from "../utils/timer.js";

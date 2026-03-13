@@ -46,14 +46,14 @@ File placement review results:
 
 - Kept top-level compatibility re-export shims for `engine/gameObject*.js` to preserve existing game imports.
 - Updated game-domain test imports to target canonical `engine/game/` module locations.
-- Remaining candidate moves (defer to naming pass): `colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js` closer to `core`/render assets grouping.
+- Moved render asset modules (`colors.js`, `font5x6.js`, `palettes.js`, `palettesList.js`) into `engine/renderers/assets/` and kept top-level compatibility shims.
 
 Naming consistency review results:
 
 - Normalized typo/casing hotspots in core modules (`dimensions`, `currentScrollPosX`, `spamSprite2RGB`, and inheriting wording in abstract errors).
 - Verified keyboard input API call sites now consistently use `getKeysPressed`.
 - File/class casing style is mostly consistent (`camelCase.js` file names with PascalCase classes for class modules).
-- Remaining naming candidates (separate pass): clarify asset-module grouping names (`colors`, `font5x6`, `palettes`, `palettesList`) and evaluate whether `misc` should become a more specific domain name.
+- Remaining naming candidates (separate pass): evaluate whether `misc` should become a more specific domain name.
 
 Ambiguous/outdated/misleading name review results:
 

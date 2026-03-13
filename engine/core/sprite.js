@@ -3,9 +3,9 @@
 // 01/27/2024
 // sprite.js
 
-import Palettes from '../palettes.js';
+import Palettes from '../renderers/assets/palettes.js';
 import SystemUtils from '../utils/systemUtils.js';
-import Font5x6 from '../font5x6.js';
+import Font5x6 from '../renderers/assets/font5x6.js';
 
 class Sprite {
 
