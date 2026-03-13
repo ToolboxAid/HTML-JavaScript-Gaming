@@ -46,6 +46,16 @@ Then open:
 http://localhost:8000/
 ```
 
+## Running tests
+
+From the project root:
+
+```bash
+npm test
+```
+
+This runs `scripts/run-node-tests.mjs`, which loads test entries from `tests/engine/testManifest.js`.
+
 ## Recommended first run
 
 Start with the root `index.html` launcher page. It gives you one place to open:

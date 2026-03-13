@@ -58,6 +58,7 @@ Current focus:
 
 - `keyboard.js`
 - `mouse.js`
+- `controller/` (gamepad manager, mapper, and state)
 
 The keyboard handler tracks three useful states:
 
@@ -142,17 +143,15 @@ This is a good design choice because it keeps low-level logic reusable across mu
 
 ## 6. Rendering and graphics
 
-Rendering responsibilities are spread across a few files and folders.
+Rendering responsibilities are centered in `engine/core` and `engine/renderers`.
 
 Key files include:
 
-- `canvas.js`
-- `colors.js`
-- `sprite.js`
-- `tileMap.js`
-- `render/`
-- `renderers/`
-- `gfx/`
+- `engine/core/canvas.js`
+- `engine/core/sprite.js`
+- `engine/core/tileMap.js`
+- `engine/renderers/`
+- `engine/renderers/assets/`
 
 At a practical level, the engine already supports:
 
@@ -161,7 +160,7 @@ At a practical level, the engine already supports:
 - sprite-based rendering
 - tile-map rendering
 - parallax-style scrolling logic in the tile-map demo
-- particle effects in some supporting utilities and samples
+- renderer safety guards and shared debug-gated logging
 
 ## 7. Messaging and decoupling
 
@@ -234,7 +233,7 @@ engine/game/
 ```
 
 ### Add a world layer
-`GameObjectSystem` is already close to this. A clearer `World` abstraction would provide a home for active entities, collision passes, cleanup, and queries.
+`GameObjectSystem` now acts as the main world-facing facade for object orchestration and collision access. A future explicit `World` abstraction can still improve scene-level composition.
 
 ### Standardize update vs render
 Long-term, game code becomes easier to maintain when logic update and visual render are clearly separated.

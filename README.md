@@ -106,6 +106,17 @@ Then open:
 http://localhost:8000/
 ```
 
+## Running tests
+
+From the repository root:
+
+```bash
+npm test
+```
+
+`npm test` runs `scripts/run-node-tests.mjs`, which executes the shared test manifest at `tests/engine/testManifest.js`.
+The default suite is Node-safe and includes engine tests across animation, core, game, input, lifecycle, math, messages, misc, objects, output, physics, renderers, and utils.
+
 ## Recommended starting points
 
 Start with the root [`index.html`](./index.html) launcher page. From there, good entry points are:

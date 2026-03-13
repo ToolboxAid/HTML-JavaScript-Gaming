@@ -45,3 +45,8 @@ This document defines lightweight, shared method conventions used across the eng
 When renaming lifecycle methods for consistency:
 - Keep a compatibility alias for at least one transition phase.
 - Update internal call sites to the canonical name first (`start/stop/destroy`).
+
+## Testing Convention
+
+- Default automated engine tests should remain Node-safe and run through `npm test`.
+- Browser-only behavior should use lightweight harnesses/mocks where practical so tests can stay in the default manifest.
