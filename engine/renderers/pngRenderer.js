@@ -3,7 +3,7 @@ import ObjectDebug from '../utils/objectDebug.js';
 
 class PngRenderer {
     static draw(object, offsetX = 0, offsetY = 0) {
-        if (!object || object.isDestroyed || object.isDead()) {
+        if (!object || object.isDestroyed || object.isDead() || !CanvasUtils.ctx) {
             return;
         }
 
@@ -95,7 +95,7 @@ class PngRenderer {
     }
 
     static drawAllFramesPreview(object, previewX = 10, previewY = 10, scale = 2, padding = 4) {
-        if (!object.png || !object.isLoaded) {
+        if (!object || !object.png || !object.isLoaded || !CanvasUtils.ctx) {
             return;
         }
 
@@ -158,7 +158,7 @@ class PngRenderer {
     }
 
     static drawSheetPreview(object, previewX = 10, previewY = 150, scale = 1) {
-        if (!object.png || !object.isLoaded) {
+        if (!object || !object.png || !object.isLoaded || !CanvasUtils.ctx) {
             return;
         }
 

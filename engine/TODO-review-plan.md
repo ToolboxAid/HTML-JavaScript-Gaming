@@ -22,7 +22,7 @@ Objective:
 - [x] Review `engine/physics`.
 - [x] Review `engine/game`.
 - [x] Review `engine/objects`.
-- [.] Review `engine/renderers`.
+- [x] Review `engine/renderers`.
 - [ ] Review `engine/input`.
 - [ ] Review `engine/messages`.
 - [ ] Review `engine/lifecycle`.

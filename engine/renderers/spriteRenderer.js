@@ -2,7 +2,7 @@ import CanvasUtils from '../canvas.js';
 
 class SpriteRenderer {
     static draw(object, offsetX = 0, offsetY = 0) {
-        if (!object || object.isDead() || object.isDestroyed) {
+        if (!object || object.isDead() || object.isDestroyed || !CanvasUtils.ctx) {
             return;
         }
 
@@ -32,6 +32,10 @@ class SpriteRenderer {
     }
 
     static drawRGB(object, newX, newY) {
+        if (!object || !CanvasUtils.ctx) {
+            return;
+        }
+
         if (object.isAlive()) {
             const frame = object.getCurrentLivingFrame();
             if (frame) {

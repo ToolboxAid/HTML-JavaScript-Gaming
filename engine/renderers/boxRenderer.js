@@ -7,7 +7,7 @@ import CanvasUtils from '../canvas.js';
 
 class BoxRenderer {
     static draw(object, fillColor = 'gray', borderColor = null, borderWidth = 0) {
-        if (!object || object.isDestroyed) {
+        if (!object || object.isDestroyed || !CanvasUtils.ctx) {
             return;
         }
 

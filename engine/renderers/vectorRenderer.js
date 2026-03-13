@@ -2,7 +2,7 @@ import CanvasUtils from '../canvas.js';
 
 class VectorRenderer {
     static draw(object, lineWidth = 1.25, offsetX = 0, offsetY = 0) {
-        if (!object || object.isDestroyed || !object.isAlive()) {
+        if (!object || object.isDestroyed || !object.isAlive() || !CanvasUtils.ctx) {
             return;
         }
 
