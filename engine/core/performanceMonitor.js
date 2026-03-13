@@ -141,10 +141,30 @@ class PerformanceMonitor {
         this.lastFrame = now;
     }
 
+    static getMetrics() {
+        const memoryStats = this.getMemoryStats();
+        return {
+            usedHeapSize: memoryStats.usedHeapSize,
+            totalHeapSize: memoryStats.totalHeapSize,
+            heapLimit: memoryStats.heapLimit,
+            usage: memoryStats.usage
+        };
+    }
+
     static draw(ctx) {
-        if (!this.performanceConfig.show) return;
+        if (!this.performanceConfig.show || !ctx) {
+            return;
+        }
 
         this.updateMetrics();
+
+        if (!this.dimensions || typeof this.dimensions.width !== 'number' || typeof this.dimensions.height !== 'number') {
+            this.dimensions = CanvasUtils.calculateTextMetrics(
+                "MEM: 00.00/00.00MB ",
+                this.performanceConfig.size,
+                this.performanceConfig.font
+            );
+        }
 
         const width = this.dimensions.width;
         const height = this.dimensions.height + (this.dimensions.height / 5);
@@ -197,6 +217,15 @@ class PerformanceMonitor {
     }
 
     static getMemoryStats() {
+        if (typeof window === 'undefined' || !window.performance || !window.performance.memory) {
+            return {
+                usedHeapSize: "N/A",
+                totalHeapSize: "N/A",
+                heapLimit: "N/A",
+                usage: "N/A"
+            };
+        }
+
         const memory = window.performance.memory;
         return {
             usedHeapSize: (memory.usedJSHeapSize / 1048576).toFixed(2), // MB
@@ -208,6 +237,11 @@ class PerformanceMonitor {
 
     static logMemoryStats() {
         if (!PerformanceMonitor.DEBUG) {
+            return;
+        }
+
+        if (typeof window === 'undefined' || !window.performance || !window.performance.memory) {
+            DebugLog.warn(true, 'PerformanceMonitor', 'Memory stats are unavailable in this runtime.');
             return;
         }
 

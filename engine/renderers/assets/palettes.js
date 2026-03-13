@@ -106,21 +106,17 @@ class Palettes {
     static getBySymbol(symbol) {
         const palette = this.get(); // Use current palette
 
-        let result = '';
         // Validate that symbol is a non-empty string and a single ASCII character
         if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
             DebugLog.warn(Palettes.DEBUG, 'Palettes', 'Invalid symbol provided:', symbol);
-            result = this.errorResult;
+            return this.errorResult;
         }
 
         // Search the palette for the symbol
-        result = palette.find(item => item.symbol === symbol);
-
+        const result = palette.find(item => item.symbol === symbol);
         if (!result) {
-            //console.warn(`Symbol not found:'${symbol}'`);
-            result = this.errorResult;
+            return this.errorResult;
         }
-
         return result;
     }
 
@@ -136,7 +132,7 @@ class Palettes {
     }
 
     static setSortByOrder(arg) {
-        if (arg !== 'hue' && arg !== 'saturation' & arg !== 'lightness') {
+        if (arg !== 'hue' && arg !== 'saturation' && arg !== 'lightness') {
             DebugLog.log(Palettes.DEBUG, 'Palettes', `Invalid sort by '${arg}'. No change.`);
             return;
         }

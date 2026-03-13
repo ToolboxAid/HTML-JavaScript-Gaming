@@ -163,14 +163,14 @@ class TileMap {
             CanvasUtils.ctx.fillStyle = "white";
             CanvasUtils.ctx.font = "10px Arial";
 
-            const accross = 250;
-            CanvasUtils.ctx.fillText("Hero X   :" + Math.round(hero.x), accross, 0);
-            CanvasUtils.ctx.fillText("Scrl PosX:" + Math.round(this.scrollPosX), accross, 60);
-            CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), accross, 70);
-            CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), accross, 80);
-            CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), accross, 90);
-            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentScrollPosX), accross, 100);
-            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentScrollPosX + hero.width), accross, 110);
+            const across = 250;
+            CanvasUtils.ctx.fillText("Hero X   :" + Math.round(hero.x), across, 0);
+            CanvasUtils.ctx.fillText("Scrl PosX:" + Math.round(this.scrollPosX), across, 60);
+            CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), across, 70);
+            CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), across, 80);
+            CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), across, 90);
+            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentScrollPosX), across, 100);
+            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentScrollPosX + hero.width), across, 110);
         }
 
     }
