@@ -8,24 +8,23 @@ export function runTests(moduleName, testFunction) {
 
     let logged = false;
     try {
-        // Create a simple assert function
         const assert = (condition, message) => {
             if (!condition) {
                 const error = new Error(message);
-                console.error(`%c❌'${moduleName}' failed test '${message}' \n ${error.stack}`, 'color: red');
+                console.error(`'${moduleName}' failed test '${message}'\n${error.stack}`);
                 logged = true;
-                throw error; // skip "passed" log.
+                throw error;
             }
         };
 
-        // Run the test function with assert passed as an argument
         testFunction(assert);
-        console.log(`%c✅${moduleName} passed! `, 'color: green');
+        console.log(`${moduleName} passed!`);
+        return true;
     } catch (error) {
-        // Catch non-test/assert thrown and output the error details
         if (!logged) {
-            console.error(`%c❌'${moduleName}' exception: '${error.message}' \n ${error.stack}`, 'color: red');
+            console.error(`'${moduleName}' exception: '${error.message}'\n${error.stack}`);
         }
+        return false;
     }
 }
 

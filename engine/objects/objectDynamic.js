@@ -9,21 +9,11 @@ import ObjectValidation from "../utils/objectValidation.js";
 import ObjectDebug from "../utils/objectDebug.js";
 import PhysicsUtils from '../physics/physicsUtils.js';
 
-/**
- * Represents a dynamic object in a game that can move based on velocity.
- */
+/** Represents a dynamic object in a game that can move based on velocity. */
 class ObjectDynamic extends ObjectStatic {
     static DEBUG = new URLSearchParams(window.location.search).has('objectDynamic');
 
-    /**
-     * Creates an instance of ObjectDynamic.
-     * @param {number} x - The X position of the object.
-     * @param {number} y - The Y position of the object.
-     * @param {number} width - The width of the object.
-     * @param {number} height - The height of the object.
-     * @param {number} [velocityX=0] - The initial velocity in the X direction.
-     * @param {number} [velocityY=0] - The initial velocity in the Y direction.
-     */
+    /** Creates an instance of ObjectDynamic. */
     constructor(x = 0, y = 0, width = 1, height = 1, velocityX = 0, velocityY = 0) {
         super(x, y, width, height);
 
@@ -34,19 +24,12 @@ class ObjectDynamic extends ObjectStatic {
         this.velocityY = velocityY;
     }
 
-    /**
-     * Validates delta time input.
-     * @param {number} deltaTime - The elapsed time.
-     */
+    /** Validates delta time input. */
     validateDeltaTime(deltaTime) {
         ObjectValidation.finiteNumber(deltaTime, 'deltaTime');
     }
 
-    /**
-     * Returns the future center point after movement.
-     * @param {number} [deltaTime=1] - The elapsed time.
-     * @returns {{x:number, y:number}}
-     */
+    /** Returns the future center point after movement. */
     getFutureCenterPoint(deltaTime = 1) {
         this.validateDeltaTime(deltaTime);
         return PhysicsUtils.getFutureCenterPoint(this, deltaTime);
@@ -72,10 +55,7 @@ class ObjectDynamic extends ObjectStatic {
         return PhysicsUtils.getFutureBottomRightPoint(this, deltaTime);
     }
 
-    /**
-     * Updates the position of the object based on its velocity and delta time.
-     * @param {number} [deltaTime=1] - The time elapsed since the last update.
-     */
+    /** Updates the position of the object based on its velocity and delta time. */
     update(deltaTime = 1) {
         this.validateDeltaTime(deltaTime);
 
@@ -86,19 +66,12 @@ class ObjectDynamic extends ObjectStatic {
         PhysicsUtils.applyKinematics(this, deltaTime);
     }
 
-    /**
-     * Gets the current movement direction based on velocity.
-     * @returns {{x:string, y:string}}
-     */
+    /** Gets the current movement direction based on velocity. */
     getDirection() {
         return PhysicsUtils.getDirectionFromVelocity(this.velocityX, this.velocityY);
     }
 
-    /**
-     * Changes the velocity of the object.
-     * @param {number} velocityX - The new velocity in the X direction.
-     * @param {number} velocityY - The new velocity in the Y direction.
-     */
+    /** Changes the velocity of the object. */
     setVelocity(velocityX, velocityY) {
         ObjectValidation.finiteNumber(velocityX, 'velocityX');
         ObjectValidation.finiteNumber(velocityY, 'velocityY');
@@ -106,17 +79,12 @@ class ObjectDynamic extends ObjectStatic {
         PhysicsUtils.setVelocity(this, velocityX, velocityY);
     }
 
-    /**
-     * Stops all movement.
-     */
+    /** Stops all movement. */
     stop() {
         PhysicsUtils.stop(this);
     }
 
-    /**
-     * Destroys the object and cleans up resources.
-     * @returns {boolean} True if cleanup was successful.
-     */
+    /** Destroys the object and cleans up resources. */
     destroy() {
         ObjectDebug.log(ObjectDynamic.DEBUG, `Destroying ${SystemUtils.getObjectType(this)}`, {
             position: { x: this.x, y: this.y },

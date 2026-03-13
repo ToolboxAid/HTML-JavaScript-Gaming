@@ -21,22 +21,27 @@ class AngleUtils {
         throw new Error('AngleUtils is a utility class with only static methods. Do not instantiate.');
     }
 
+    // Convert radians to degrees
     static toDegrees(radians) {
         return radians * this.RAD_TO_DEG;
     }
 
+    // Convert degrees to radians
     static toRadians(degrees) {
         return degrees * this.DEG_TO_RAD;
     }
 
-    static normalizeAngle(angle) {// Normalize an angle to be within 0-360 degrees
+    // Normalize an angle to be within 0-360 degrees
+    static normalizeAngle(angle) {
         return ((angle % 360) + 360) % 360; // Ensures angle is within [0, 360)
     }
 
+    // Apply rotation to an object
     static applyRotation(object, deltaTime, direction) {
         object.rotationAngle += (object.rotationSpeed * direction) * deltaTime;
     }
 
+    // Apply rotation to a point around origin
     static applyRotationToPoint(x, y, rotationAngle) {
         const radians = (rotationAngle * Math.PI) / 180;
         return {
@@ -65,11 +70,7 @@ class AngleUtils {
         };
     }
 
-    /** Calculates the angle in degrees from source object to target object
-     * @param {Object} source - Source object with x,y coordinates
-     * @param {Object} target - Target object with x,y coordinates
-     * @returns {number} Angle in degrees (0-360)
-     */
+    // Calculates the angle in degrees from source object to target object
     static getAngleBetweenObjects(source, target) {
         // Calculate direction vector
         const dx = target.x - source.x;

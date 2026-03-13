@@ -145,7 +145,8 @@ class SystemUtils {
 
         // Attempt to destroy
         try {
-            if (!element.destroy()) {
+            const destroyResult = element.destroy();
+            if (destroyResult === false) {
                 if (SystemUtils.DEBUG) {
                     SystemUtils.showStackTrace(`try - Failed to destroy "${SystemUtils.getObjectType(element)}" `);
                 }

@@ -5,15 +5,7 @@
 
 class RandomUtils {
 
-    /** Constructor for RandomUtils class.
-    * @throws {Error} Always throws error as this is a utility class with only static methods.
-    * @example
-    * ❌ Don't do this:
-    * const randomUtils = new RandomUtils(); // Throws Error
-    * 
-    * ✅ Do this:
-    * RandomUtils.randomBoolean(...); // Use static methods directly
-    */
+    /** Constructor for RandomUtils class. */
     constructor() {
         throw new Error('RandomUtils is a utility class with only static methods. Do not instantiate.');
     }
@@ -23,8 +15,7 @@ class RandomUtils {
         return Math.random() < 0.5;
     }
 
-    /** Returns a random number between min (inclusive) and max (inclusive).
-     * If isInteger is true, returns an integer; otherwise, returns a floating-point number. */
+    /** Returns a random number between min (inclusive) and max (inclusive). */
     static randomRange(min, max, isInteger = true) {
         if (typeof min !== 'number' || typeof max !== 'number' || min > max) {
             throw new Error('Invalid input: min and max must be numbers, and min must be less than or equal to max.');

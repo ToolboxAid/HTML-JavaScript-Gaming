@@ -43,11 +43,7 @@ class Circle extends ObjectDynamic {
         }
     }
 
-    /** Draws the circle on the canvas.
-     * @param {string} [fillColor='black'] - The fill color of the circle.
-     * @param {string|null} [borderColor=null] - The border color of the circle.
-     * @param {number} [borderWidth=0] - The width of the border.
-     */
+    /** Draws the circle on the canvas. */
     draw(fillColor = 'white', borderColor = 'red', borderWidth = 2) {
         CanvasUtils.drawCircle2(this.x, this.y, this.radius, fillColor, borderColor, borderWidth);
     }

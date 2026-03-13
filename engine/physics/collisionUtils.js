@@ -350,8 +350,6 @@ export default class CollisionUtils {
     }
 
     /** Checks if an object is completely outside the game boundaries
-     * @param {Object} object - The object to check
-     * @param {number} [margin=0] - Additional margin around the boundaries
      * @returns {boolean} True if object is completely outside game boundaries
      */
     static isCompletelyOffScreen(object, margin = 0) {
@@ -359,8 +357,6 @@ export default class CollisionUtils {
     }
 
     /** Checks which sides of the game boundaries an object has crossed based on its velocity
-     * @param {Object} object - The object to check
-     * @param {number} [margin=0] - Additional margin around the boundaries (positive shrinks play area)
      * @returns {Array<string>} Array of sides ('left', 'right', 'top', 'bottom') that the object has crossed
      * @throws {Error} If object properties are invalid
      */

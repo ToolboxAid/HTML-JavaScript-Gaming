@@ -14,14 +14,6 @@ class CelestialBody extends ObjectDynamic {
 
     /**
      * Creates an instance of CelestialBody.
-     * @param {string} name - The name of the celestial body.
-     * @param {number} radius - The radius of the celestial body.
-     * @param {number} distance - The distance from the sun (or central body).
-     * @param {string} color - The color of the celestial body.
-     * @param {number} angle - The initial angle in radians for orbital position.
-     * @param {number} speed - The speed of the celestial body in its orbit.
-     * @param {Array} moons - An array of moons, each represented as an object.
-     * @param {Object} [ring=null] - An optional ring object containing radius, and color.
      */
     constructor(name, radius, distance, color, angle, speed, moons = [], ring = null) {
         // Calculate initial position based on distance and angle
@@ -41,7 +33,6 @@ class CelestialBody extends ObjectDynamic {
 
     /**
      * Updates the position of the celestial body in its orbit.
-     * @param {number} deltaTime - The time elapsed since the last update, in seconds.
      */
     update(deltaTime) {
         // Update the angle of the planet based on its speed

@@ -66,7 +66,6 @@ class Shield extends ObjectStatic {
 
     /**
      * Creates a new Shield instance.
-     * @param {number} shieldNum - The index of the shield, used for positioning.
      */
     constructor(shieldNum) {
         const pixelSize = spriteConfig.pixelSize || 1;
@@ -97,13 +96,7 @@ class Shield extends ObjectStatic {
     /**
      * Applies damage from a bomb overlay to the shield.
      * Replaces overlapping '1's in the shield frame with '0's.
-     * 
-     * @param {Object} distructiveObject - The bomb object causing the damage.
-     * @param {number} distructiveObject.x - The x-coordinate of the bomb.
-     * @param {number} distructiveObject.y - The y-coordinate of the bomb.
-     * @param {number} distructiveObject.currentFrameIndex - The current frame index of the bomb animation.
-     * @param {string[][]} [distructiveObject.livingFrames] - Optional frames of the bomb animation.
-     * @param {boolean} [doExplode=true] - Whether to apply random additional destruction.
+     *
      * @returns {boolean} - Returns true if any part of the shield was hit.
      */
     applyBigBoom(distructiveObject, doExplode = true, adjY = 0) {

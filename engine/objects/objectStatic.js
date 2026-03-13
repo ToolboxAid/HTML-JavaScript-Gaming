@@ -9,9 +9,7 @@ import ObjectCleanup from "../utils/objectCleanup.js";
 import ObjectDebug from "../utils/objectDebug.js";
 import BoxRenderer from "../renderers/boxRenderer.js";
 
-/**
- * Represents a static object in a game that cannot move.
- */
+/** Represents a static object in a game that cannot move. */
 class ObjectStatic {
     static DEBUG = new URLSearchParams(window.location.search).has('objectStatic');
     static #nextId = 1;
@@ -20,13 +18,7 @@ class ObjectStatic {
         return this.#nextId++;
     }
 
-    /**
-     * Creates an instance of ObjectStatic.
-     * @param {number} x - The X position of the object.
-     * @param {number} y - The Y position of the object.
-     * @param {number} width - The width of the object.
-     * @param {number} height - The height of the object.
-     */
+    /** Creates an instance of ObjectStatic. */
     constructor(x = 0, y = 0, width = 1, height = 1) {
         ObjectValidation.finiteNumber(x, 'x');
         ObjectValidation.finiteNumber(y, 'y');
@@ -61,11 +53,7 @@ class ObjectStatic {
         return GeometryUtils.getRectangleBottomRightPoint(this);
     }
 
-    /**
-     * Updates the position of the object.
-     * @param {number} newX - The new X position.
-     * @param {number} newY - The new Y position.
-     */
+    /** Updates the position of the object. */
     setPosition(newX, newY) {
         ObjectValidation.finiteNumber(newX, 'newX');
         ObjectValidation.finiteNumber(newY, 'newY');
@@ -74,28 +62,17 @@ class ObjectStatic {
         this.y = newY;
     }
 
-    /**
-     * Shared helper for subclasses.
-     * @param {string[]} propertyNames
-     */
+    /** Shared helper for subclasses. */
     destroyProperties(propertyNames = []) {
         ObjectCleanup.nullifyProperties(this, propertyNames);
     }
 
-    /**
-     * Draws the object on the canvas.
-     * @param {string} [fillColor='gray'] - The fill color of the object.
-     * @param {string|null} [borderColor=null] - The border color of the object.
-     * @param {number} [borderWidth=0] - The width of the border.
-     */
+    /** Draws the object on the canvas. */
     draw(fillColor = 'gray', borderColor = null, borderWidth = 0) {
         BoxRenderer.draw(this, fillColor, borderColor, borderWidth);
     }
 
-    /**
-     * Destroys the object and cleans up resources.
-     * @returns {boolean} True if cleanup was successful.
-     */
+    /** Destroys the object and cleans up resources. */
     destroy() {
         ObjectDebug.log(ObjectStatic.DEBUG, `Destroying ObjectStatic #${this.ID}`, {
             position: { x: this.x, y: this.y },

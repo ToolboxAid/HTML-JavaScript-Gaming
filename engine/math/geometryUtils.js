@@ -1,29 +1,23 @@
 // ToolboxAid.com
 // David Quesenberry
 // 02/12/2025
-// angleUtils.js
+// geometryUtils.js
 
 class GeometryUtils {
 
-    /** Constructor for GeometryUtils class.
-    * @throws {Error} Always throws error as this is a utility class with only static methods.
-    * @example
-    * ❌ Don't do this:
-    * const geometryUtils = new GeometryUtils(); // Throws Error
-    * 
-    * ✅ Do this:
-    * GeometryUtils.getDistanceObjects(...); // Use static methods directly
-    */
+    /** Constructor for GeometryUtils class. */
     constructor() {
         throw new Error('GeometryUtils is a utility class with only static methods. Do not instantiate.');
     }
 
+    /** Get distance between two objects with x,y coordinates. */
     static getDistanceObjects(objectA, objectB) {
         const pointA = { x: objectA.x, y: objectA.y };
         const pointB = { x: objectB.x, y: objectB.y };
         return this.getDistance(pointA, pointB);
     }
 
+    /** Get center point of a rectangle object. */
     static getRectangleCenterPoint(object) {
         return {
             x: object.x + (object.width / 2),
@@ -31,29 +25,35 @@ class GeometryUtils {
         };
     }
 
+    /** Get top-left corner of a rectangle object. */
     static getRectangleTopLeftPoint(object) {
         return { x: object.x, y: object.y };
     }
 
+    /** Get top-right corner of a rectangle object. */
     static getRectangleTopRightPoint(object) {
         return { x: object.x + object.width, y: object.y };
     }
 
+    /** Get bottom-left corner of a rectangle object. */
     static getRectangleBottomLeftPoint(object) {
         return { x: object.x, y: object.y + object.height };
     }
 
+    /** Get bottom-right corner of a rectangle object. */
     static getRectangleBottomRightPoint(object) {
         return { x: object.x + object.width, y: object.y + object.height };
     }
 
-    // Distance between two points
+    /** Calculate distance between two points. */
     static getDistance(startPoint, endPoint) {
         const dx = endPoint.x - startPoint.x;
         const dy = endPoint.y - startPoint.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
-    static getDistanceSquared(x1, y1, x2, y2) { // Faster than getDistance, no sqrt
+
+    /** Calculate squared distance between two points (faster, no square root). */
+    static getDistanceSquared(x1, y1, x2, y2) {
         let dx = x2 - x1;
         let dy = y2 - y1;
         return dx * dx + dy * dy;
@@ -76,13 +76,11 @@ class GeometryUtils {
 
     // Get the intersection point of two lines (defined by points)
     static getLineIntersectionPoint(p1, p2, p3, p4) {
-        // Convert arrays to objects if necessary
         if (Array.isArray(p1)) p1 = { x: p1[0], y: p1[1] };
         if (Array.isArray(p2)) p2 = { x: p2[0], y: p2[1] };
         if (Array.isArray(p3)) p3 = { x: p3[0], y: p3[1] };
         if (Array.isArray(p4)) p4 = { x: p4[0], y: p4[1] };
 
-        // Validate that each point is an object with 'x' and 'y' properties
         if (!p1 || !p2 || !p3 || !p4 ||
             typeof p1.x === 'undefined' || typeof p1.y === 'undefined' ||
             typeof p2.x === 'undefined' || typeof p2.y === 'undefined' ||
@@ -98,7 +96,7 @@ class GeometryUtils {
 
         const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 
-        if (denominator === 0) return null; // Lines are parallel or coincident
+        if (denominator === 0) return null;
 
         const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
         const u = ((x1 - x3) * (y1 - y2) - (y1 - y3) * (x1 - x2)) / denominator;
@@ -110,7 +108,7 @@ class GeometryUtils {
             };
         }
 
-        return null; // Intersection is outside the line segments
+        return null;
     }
 
     // Calculate the area of a triangle
@@ -120,34 +118,108 @@ class GeometryUtils {
         );
     }
 
-    /**
-     * Circle & Arc Functions
-    */
-    // Check if a point is inside a circle
+    /** Check if a point is inside a circle. */
     static pointInCircle(point, center, radius) {
         const dx = point.x - center.x;
         const dy = point.y - center.y;
         return dx * dx + dy * dy <= radius * radius;
     }
 
-    // TODO: complete these
-// Check If a Point Is Inside a Circle
-// static isPointInsideCircle(point, circleCenter, radius) { ... }
+    /** Check if a point is inside a circle (alias for pointInCircle). */
+    static isPointInsideCircle(point, circleCenter, radius) {
+        return this.pointInCircle(point, circleCenter, radius);
+    }
 
-// Intersection Between a Line and a Circle
-// static getLineCircleIntersections(lineStart, lineEnd, circleCenter, radius) { ... }
+    /** Get intersection points between a line segment and a circle. */
+    static getLineCircleIntersections(lineStart, lineEnd, circleCenter, radius) {
+        const dx = lineEnd.x - lineStart.x;
+        const dy = lineEnd.y - lineStart.y;
+        const fx = lineStart.x - circleCenter.x;
+        const fy = lineStart.y - circleCenter.y;
 
-// Check If Two Circles Intersect
-// static doCirclesIntersect(center1, radius1, center2, radius2) { ... }
+        const a = dx * dx + dy * dy;
+        const b = 2 * (fx * dx + fy * dy);
+        const c = fx * fx + fy * fy - radius * radius;
 
-// Find the Tangent Points From a Point to a Circle
-// static getTangentsFromPointToCircle(point, circleCenter, radius) { ... }
+        const discriminant = b * b - 4 * a * c;
 
+        if (discriminant < 0) {
+            return [];
+        }
 
+        const intersections = [];
 
-    /**
-     * Transformations & Utility Functions
-     */
+        if (discriminant === 0) {
+            const t = -b / (2 * a);
+            intersections.push({
+                x: lineStart.x + t * dx,
+                y: lineStart.y + t * dy
+            });
+        } else {
+            const sqrtD = Math.sqrt(discriminant);
+            const t1 = (-b - sqrtD) / (2 * a);
+            const t2 = (-b + sqrtD) / (2 * a);
+
+            intersections.push(
+                {
+                    x: lineStart.x + t1 * dx,
+                    y: lineStart.y + t1 * dy
+                },
+                {
+                    x: lineStart.x + t2 * dx,
+                    y: lineStart.y + t2 * dy
+                }
+            );
+        }
+
+        return intersections;
+    }
+
+    /** Check if two circles intersect or touch. */
+    static doCirclesIntersect(center1, radius1, center2, radius2) {
+        const dx = center2.x - center1.x;
+        const dy = center2.y - center1.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const sumRadii = radius1 + radius2;
+        const diffRadii = Math.abs(radius1 - radius2);
+
+        return distance <= sumRadii && distance >= diffRadii;
+    }
+
+    /** Get tangent points from a point to a circle. */
+    static getTangentsFromPointToCircle(point, circleCenter, radius) {
+        const dx = point.x - circleCenter.x;
+        const dy = point.y - circleCenter.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < radius) {
+            return [];
+        }
+
+        if (Math.abs(distance - radius) < 1e-10) {
+            return [{
+                x: point.x,
+                y: point.y
+            }];
+        }
+
+        const angle = Math.atan2(dy, dx);
+        const alpha = Math.asin(radius / distance);
+        const theta1 = angle + alpha;
+        const theta2 = angle - alpha;
+
+        return [
+            {
+                x: circleCenter.x + radius * Math.cos(theta1),
+                y: circleCenter.y + radius * Math.sin(theta1)
+            },
+            {
+                x: circleCenter.x + radius * Math.cos(theta2),
+                y: circleCenter.y + radius * Math.sin(theta2)
+            }
+        ];
+    }
+
     // Rotate a point around another point
     static rotatePoint(point, center, angle) {
         const radians = (angle * Math.PI) / 180;
@@ -171,6 +243,5 @@ class GeometryUtils {
 
 // Mirror a Point Across a Line
 // static mirrorPointAcrossLine(point, lineStart, lineEnd) { ... }
-
 
 export default GeometryUtils;

@@ -11,40 +11,22 @@ Cookies.set('username', 'david', { expires: 7, path: '/', secure: true });
 Cookies.set('session_id', '12345', { sameSite: 'Strict', path: '/' });
 */
 
-/**
- * In most cases, you want to use part of the URL path
-const currentDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
- */
 class Cookies {
 
     // Enable debug mode: game.html?cookies
     static DEBUG = new URLSearchParams(window.location.search).has('cookies');
 
-    /** Constructor for Cookies class.
-     * @throws {Error} Always throws error as this is a utility class with only static methods.
-     * @example
-     * ❌ Don't do this:
-     * const cookies = new Cookies(); // Throws Error
-     * 
-     * ✅ Do this:
-     * Cookies.transformPoints(...); // Use static methods directly
-     */
+    /** Constructor for Cookies class. */
     constructor() {
         throw new Error('Cookies is a utility class with only static methods. Do not instantiate.');
     }
 
-    /**
-     * Set a cookie with a specified name, value, and optional settings.
-     * @param {string} name - The name of the cookie.
-     * @param {string} value - The value of the cookie.
-     * @param {Object} options - Optional settings (e.g., expires, path, domain, secure).
-     */
+    /** Set a cookie with a specified name, value, and optional settings. */
     static set(name, value, options = {}) {
         let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 
         if (options.expires) {
             if (typeof options.expires === 'number') {
-                // Convert days to a UTC string
                 let date = new Date();
                 date.setTime(date.getTime() + options.expires * 24 * 60 * 60 * 1000);
                 cookieString += `; expires=${date.toUTCString()}`;
@@ -74,11 +56,7 @@ class Cookies {
         console.log(`Cookie set: ${cookieString}`);
     }
 
-    /**
-     * Get the value of a cookie by name.
-     * @param {string} name - The name of the cookie to retrieve.
-     * @returns {string|null} - The value of the cookie or null if not found.
-     */
+    /** Get the value of a cookie by name. */
     static get(name) {
         const cookies = document.cookie.split('; ');
         for (const cookie of cookies) {
@@ -90,20 +68,13 @@ class Cookies {
         return null;
     }
 
-    /**
-     * Delete a cookie by name.
-     * @param {string} name - The name of the cookie to delete.
-     * @param {Object} options - Optional settings (e.g., path, domain).
-     */
+    /** Delete a cookie by name. */
     static delete(name, options = {}) {
         this.set(name, '', { ...options, expires: -1 });
         console.log(`Cookie deleted: ${name}`);
     }
 
-    /**
-     * Get all cookies as an object.
-     * @returns {Object} - An object containing all cookies as key-value pairs.
-     */
+    /** Get all cookies as an object. */
     static getAll() {
         const cookies = {};
         document.cookie.split('; ').forEach(cookie => {
@@ -114,10 +85,9 @@ class Cookies {
     }
 
     static sanitizeCookieName(name) {
-        // Replace % followed by two hexadecimal digits with a hyphen
         return name
             .replace(/%[0-9A-Fa-f]{2}/g, match => '-')
-            .replace(/\//g, ''); // Remove all '/' characters
+            .replace(/\//g, '');
     }
 
 }
