@@ -12,40 +12,17 @@ import GameUtils from '../../engine/game/gameUtils.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
 
-// Testing between here and 'class Game', can be deleted when move to new project
-import { testAngleUtils } from '../../engine/math/angleUtilsTest.js';
-import { testStateUtils } from '../../engine/animation/stateUtilsTest.js';
-import { testBoundaryUtils } from '../../engine/physics/boundaryUtilsTest.js';
-import { testCollisionShapeUtils } from '../../engine/physics/collisionShapeUtilsTest.js';
-import { testCollisionUtils } from '../../engine/physics/collisionUtilsTest.js';
-import { testGameObjectUtils } from '../../engine/game/gameObjectUtilsTest.js';
-import { testGameUtils } from '../../engine/game/gameUtilsTest.js';
-import { testGeometryUtils } from '../../engine/math/geometryUtilsTest.js';
-import { testKeyboardInput } from '../../engine/input/keyboardTest.js';
-import { testMouseInput } from '../../engine/input/mouseTest.js';
-import { testPhysicsUtils } from '../../engine/physics/physicsUtilsTest.js';
-import { testRandomUtils } from '../../engine/math/randomUtilsTest.js';
-import { testPngAssetState } from '../../engine/utils/pngAssetStateTest.js';
-import { testSystemUtils } from '../../engine/utils/systemUtilsTest.js';
-
-// Run all tests
 import { runTests } from '../../engine/runTest.js';
+import { engineTestEntries } from '../../tests/engine/testManifest.js';
 
-// Run the tests
-runTests('AngleUtils', testAngleUtils);
-runTests('StateUtils', testStateUtils);
-runTests('BoundaryUtils', testBoundaryUtils);
-runTests('CollisionShapeUtils', testCollisionShapeUtils);
-runTests('CollisionUtils',testCollisionUtils)
-runTests('GameObjectUtils', testGameObjectUtils);
-runTests('GameUtils', testGameUtils);
-runTests('GeometryUtils', testGeometryUtils);
-runTests('KeyboardInput',testKeyboardInput);
-runTests('MouseInput', testMouseInput);
-runTests('PhysicsUtils', testPhysicsUtils);
-runTests('PngAssetState', testPngAssetState);
-runTests('RandomUtils', testRandomUtils);
-runTests('System Utils', testSystemUtils);
+async function runSampleEngineTests() {
+  for (const entry of engineTestEntries) {
+    const testModule = await import(`../../tests/engine/${entry.modulePath.slice(2)}`);
+    runTests(entry.name, testModule[entry.exportName]);
+  }
+}
+
+runSampleEngineTests();
 
 class Game extends GameBase {
 

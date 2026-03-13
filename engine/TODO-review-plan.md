@@ -45,8 +45,8 @@ Objective:
 File placement review results:
 
 - Moved `PerformanceMonitor` implementation to `engine/core/performanceMonitor.js` (runtime concern belongs with other core runtime modules).
-- Kept compatibility shim at `engine/performacneMonitor.js` to avoid breaking old imports while naming cleanup proceeds.
-- Moved `gameObjectSystemTest.js` to `engine/game/` so tests live next to related game-domain utilities/tests.
+- Removed deprecated `engine/performacneMonitor.js` shim after import migration.
+- Moved engine tests into mirrored `tests/engine/**` hierarchy (separate from runtime source folders).
 - Kept `gameObject*.js` runtime classes at top-level for now to avoid a broad public-import break across games; candidate for a compatibility-first move in a dedicated pass.
 
 ## Architecture review
