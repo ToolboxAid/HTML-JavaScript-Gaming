@@ -22,6 +22,17 @@
 - [ ] Review `engine/animation`.
 - [ ] Review top-level engine files such as `canvas.js`, `gameBase.js`, `gameObject.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameObjectSystem.js`, `sprite.js`, and `tileMap.js`.
 
+## Folder and naming review
+
+- [ ] Review whether folders reflect clear engine concepts and responsibilities.
+- [ ] Check whether files are located in the most appropriate folder.
+- [ ] Identify modules that should be moved closer to related systems or utilities.
+- [ ] Review naming consistency across folders, files, classes, methods, and variables.
+- [ ] Identify ambiguous, outdated, or misleading names.
+- [ ] Check whether singular vs plural naming is used consistently.
+- [ ] Review whether folder boundaries encourage good reuse or create confusion.
+- [ ] Identify top-level files that should move into a more specific engine subfolder.
+
 ## Architecture review
 
 - [ ] Evaluate module boundaries and shared abstractions.
