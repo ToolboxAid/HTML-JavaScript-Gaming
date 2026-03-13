@@ -13,7 +13,17 @@ class GamepadState {
     }
 
     update(gameController) {
-        if (!gameController) return;
+        if (!gameController) {
+            this.buttonsPressed.clear();
+            this.buttonsReleased.clear();
+
+            this.buttonsDown.forEach((buttonIndex) => {
+                this.buttonsReleased.add(buttonIndex);
+            });
+            this.buttonsDown.clear();
+            this.axisData = [];
+            return;
+        }
 
         this.axisData = gameController.axes;
 

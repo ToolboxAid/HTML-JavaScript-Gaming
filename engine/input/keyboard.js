@@ -12,9 +12,30 @@ class KeyboardInput {
         this.tempKeysDown = new Set();     // Keys temporarily stored during keydown events
         this.tempKeysUp = new Set();        // Keys temporarily stored during keyup events
 
-        // Bind event listeners for keydown and keyup events
-        window.addEventListener('keydown', this.handleKeyDown.bind(this));
-        window.addEventListener('keyup', this.handleKeyUp.bind(this));
+        this.handleKeyDownBound = this.handleKeyDown.bind(this);
+        this.handleKeyUpBound = this.handleKeyUp.bind(this);
+        this.isListening = false;
+        this.start();
+    }
+
+    start() {
+        if (this.isListening) {
+            return;
+        }
+
+        window.addEventListener('keydown', this.handleKeyDownBound);
+        window.addEventListener('keyup', this.handleKeyUpBound);
+        this.isListening = true;
+    }
+
+    stop() {
+        if (!this.isListening) {
+            return;
+        }
+
+        window.removeEventListener('keydown', this.handleKeyDownBound);
+        window.removeEventListener('keyup', this.handleKeyUpBound);
+        this.isListening = false;
     }
 
     handleKeyDown(event) {
@@ -78,6 +99,15 @@ class KeyboardInput {
 
     isKeyReleased(key) {
         return this.keysReleased.has(key);
+    }
+
+    destroy() {
+        this.stop();
+        this.keysPressed.clear();
+        this.keysDown.clear();
+        this.keysReleased.clear();
+        this.tempKeysDown.clear();
+        this.tempKeysUp.clear();
     }
 }
 

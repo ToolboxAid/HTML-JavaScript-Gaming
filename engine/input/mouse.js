@@ -32,16 +32,21 @@ class MouseInput {
         this.scaleX = this.canvas.width / this.rect.width;
         this.scaleY = this.canvas.height / this.rect.height;
 
-        this.start();
-    }
-
-    start() {
         // Bind event handlers to the class instance
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleWheel = this.handleWheel.bind(this);
         this.handleContextMenu = this.handleContextMenu.bind(this);
+        this.isListening = false;
+
+        this.start();
+    }
+
+    start() {
+        if (this.isListening) {
+            return;
+        }
 
         // Attach event listeners
         this.canvas.addEventListener('mousedown', this.handleMouseDown);
@@ -50,6 +55,26 @@ class MouseInput {
         this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
         // Prevent right-click context menu
         this.canvas.addEventListener('contextmenu', this.handleContextMenu);
+        this.isListening = true;
+    }
+
+    stop() {
+        if (!this.isListening) {
+            return;
+        }
+
+        this.canvas.removeEventListener('mousedown', this.handleMouseDown);
+        this.canvas.removeEventListener('mouseup', this.handleMouseUp);
+        this.canvas.removeEventListener('mousemove', this.handleMouseMove);
+        this.canvas.removeEventListener('wheel', this.handleWheel);
+        this.canvas.removeEventListener('contextmenu', this.handleContextMenu);
+        this.isListening = false;
+    }
+
+    refreshScale() {
+        this.rect = this.canvas.getBoundingClientRect();
+        this.scaleX = this.canvas.width / this.rect.width;
+        this.scaleY = this.canvas.height / this.rect.height;
     }
 
     handleMouseDown(event) {
@@ -65,6 +90,8 @@ class MouseInput {
     }
 
     handleMouseMove(event) {
+        this.refreshScale();
+
         // Calculate mouse position relative to the canvas
         const offsetX = event.clientX - this.rect.left;
         const offsetY = event.clientY - this.rect.top;
@@ -140,6 +167,15 @@ class MouseInput {
 
     wasButtonIndexReleased(buttonIndex) {
         return this.buttonsReleased.has(buttonIndex);
+    }
+
+    destroy() {
+        this.stop();
+        this.buttonsPressed.clear();
+        this.buttonsDown.clear();
+        this.buttonsReleased.clear();
+        this.tempButtonsDown.clear();
+        this.tempButtonsUp.clear();
     }
 }
 

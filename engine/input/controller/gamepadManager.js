@@ -14,14 +14,23 @@ class GamepadManager {
     constructor() {
         this.gameControllers = [];
         this.pollInterval = null;
+        this.isRunning = false;
 
         this.sender = EventBus.getInstance();  // Use shared EventBus
+        this.handleGamepadConnectedBound = this.handleGamepadConnected.bind(this);
+        this.handleGamepadDisconnectedBound = this.handleGamepadDisconnected.bind(this);
+        this.pollGameControllersBound = this.pollGameControllers.bind(this);
     }
 
     start() { // Add listeners and start polling
-        window.addEventListener("gamepadconnected", this.handleGamepadConnected.bind(this));
-        window.addEventListener("gamepaddisconnected", this.handleGamepadDisconnected.bind(this));
-        this.pollInterval = setInterval(this.pollGameControllers.bind(this), 16);  // 0.016 seconds or 60 fps
+        if (this.isRunning) {
+            return;
+        }
+
+        window.addEventListener("gamepadconnected", this.handleGamepadConnectedBound);
+        window.addEventListener("gamepaddisconnected", this.handleGamepadDisconnectedBound);
+        this.pollInterval = setInterval(this.pollGameControllersBound, 16);  // 0.016 seconds or 60 fps
+        this.isRunning = true;
     }
 
     handleGamepadConnected(event) {
@@ -62,7 +71,15 @@ class GamepadManager {
     }
 
     disconnect() {
+        if (!this.isRunning) {
+            return;
+        }
+
+        window.removeEventListener("gamepadconnected", this.handleGamepadConnectedBound);
+        window.removeEventListener("gamepaddisconnected", this.handleGamepadDisconnectedBound);
         clearInterval(this.pollInterval);
+        this.pollInterval = null;
+        this.isRunning = false;
     }
 }
 

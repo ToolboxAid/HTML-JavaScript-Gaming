@@ -6,17 +6,15 @@
 import GamepadManager from "./gamepadManager.js";
 import GamepadState from "./gamepadState.js";
 import GamepadMapper from "./gamepadMapper.js";
-import Receiver from '../../../engine/messages/receiver.js';
 import EventBus from '../../../engine/messages/eventBus.js';
 import { DPadType } from "./gamepadEnums.js";
 import { GAMEPAD_EVENT } from './gamepadManager.js';
 
-import GamepadDebugger from "./gamepadDebugger.js";
-
 class GameControllers {
+    static DEBUG = new URLSearchParams(window.location.search).has('gameControllers');
+
     // Use shared EventBus
     static sender = EventBus.getInstance();
-    static receiver = new Receiver(GameControllers.sender, GAMEPAD_EVENT);
 
     static count = 0; // this is used to prevent spamming not founds.
     static showMessage = true;
@@ -36,9 +34,10 @@ class GameControllers {
         this.gamepadManager = new GamepadManager();
         this.gamepadStates = Array.from({ length: 4 }, () => new GamepadState());
         this.gamepadMappers = Array.from({ length: 4 }, () => null);
+        this.controllerChangeBound = this.controllerChange.bind(this);
 
         // Register the controllerChange method as the event handler
-        GameControllers.sender.addEventListener(GAMEPAD_EVENT, this.controllerChange.bind(this));
+        GameControllers.sender.addEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
 
         this.gamepadManager.start();
     }
@@ -54,14 +53,18 @@ class GameControllers {
         if (action === 'connected') {
             // Create new mapper with gamepad ID for config lookup
             this.gamepadMappers[index] = new GamepadMapper(index, id);
-            console.log(this.gamepadMappers[index]);
+            if (GameControllers.DEBUG) {
+                console.log(this.gamepadMappers[index]);
+            }
         } else if (action === 'disconnected') {
             this.gamepadMappers[index] = null;
         } else {
-            console.Error("'controllerChange' - What do you want me to do?");
+            console.error("'controllerChange' - Unknown action.");
         }
 
-        console.log(`Controller action: ${action} - Index: ${index}, ID: ${id}, details:`, this);
+        if (GameControllers.DEBUG) {
+            console.log(`Controller action: ${action} - Index: ${index}, ID: ${id}, details:`, this);
+        }
     }
 
     update() {
@@ -246,6 +249,12 @@ class GameControllers {
         const filteredValue = Math.abs(axisValue) < deadzone ? 0 : axisValue;
 
         return filteredValue;
+    }
+
+    destroy() {
+        GameControllers.sender.removeEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
+        this.controllerChangeBound = null;
+        this.gamepadManager.disconnect();
     }
 }
 

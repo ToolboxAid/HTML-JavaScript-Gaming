@@ -23,7 +23,7 @@ Objective:
 - [x] Review `engine/game`.
 - [x] Review `engine/objects`.
 - [x] Review `engine/renderers`.
-- [ ] Review `engine/input`.
+- [x] Review `engine/input`.
 - [ ] Review `engine/messages`.
 - [ ] Review `engine/lifecycle`.
 - [ ] Review `engine/misc`.
@@ -84,11 +84,13 @@ Objective:
 
 ## Basic improvements
 
+- [ ] Centralize debug logging policy across engine modules (not just renderers)
 - [ ] Remove dead code and obvious duplication where low risk.
 - [ ] Improve naming and readability where safe.
 - [ ] Add guard clauses and validation where needed.
 - [ ] Normalize comment style and lightweight documentation where helpful.
 - [ ] Make small refactors that improve clarity without changing behavior.
+- [ ] Centralize debug logging policy across engine modules (not just renderers).
 
 ## Unit test audit
 
