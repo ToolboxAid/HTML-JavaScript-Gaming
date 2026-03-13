@@ -6,6 +6,7 @@
 import CanvasUtils from "../../engine/canvas.js";
 import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
+import VectorShapeUtils from "./vectorShapeUtils.js";
 import SystemUtils from "../utils/systemUtils.js";
 
 export default class CollisionUtils {
@@ -26,34 +27,12 @@ export default class CollisionUtils {
     }
 
     static transformPoints(vectorMap, x, y, rotationAngle) {
-        const angleInRadians = (rotationAngle * Math.PI) / 180;
-        const cos = Math.cos(angleInRadians);
-        const sin = Math.sin(angleInRadians);
-
-        // Find the center of the object (average of all points)
-        const centerX = vectorMap.reduce((sum, [px]) => sum + px, 0) / vectorMap.length;
-        const centerY = vectorMap.reduce((sum, [, py]) => sum + py, 0) / vectorMap.length;
-
-        const transformedPoints = vectorMap.map(([px, py]) => {
-            // Translate points to origin (relative to the center)
-            const translatedX = px - centerX;
-            const translatedY = py - centerY;
-
-            // Apply rotation
-            const rotatedX = translatedX * cos - translatedY * sin;
-            const rotatedY = translatedX * sin + translatedY * cos;
-
-            // Translate back to the object's correct world position
-            const finalX = centerX + rotatedX + (x - centerX);
-            const finalY = centerY + rotatedY + (y - centerY);
-
-            return [finalX, finalY];
-        });
+        const transformedPoints = VectorShapeUtils.getRotatedPoints(vectorMap, x, y, rotationAngle);
 
         if (false && this.DEBUG) { // this gets spammed, "false" is on purpose
-            const formattedPoints = transformedPoints.map(([x, y]) => [
-                parseFloat(x.toFixed(3)),
-                parseFloat(y.toFixed(3))
+            const formattedPoints = transformedPoints.map(([pointX, pointY]) => [
+                parseFloat(pointX.toFixed(3)),
+                parseFloat(pointY.toFixed(3))
             ]);
             console.log("Transformed Points:", formattedPoints);
         }

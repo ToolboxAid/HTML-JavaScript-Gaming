@@ -7,9 +7,25 @@
 import CollisionUtils from "./collisionUtils.js";
 import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
+import VectorShapeUtils from "./vectorShapeUtils.js";
 import CanvasUtils from "../canvas.js";
 
 export function testCollisionUtils(assert) {
+    function createVectorObject(x, y, vectorMap, rotationAngle = 0) {
+        const transformedShape = VectorShapeUtils.calculateTransformedShape(vectorMap, x, y, rotationAngle);
+
+        return {
+            x,
+            y,
+            rotationAngle,
+            vectorMap,
+            rotatedPoints: transformedShape.rotatedPoints,
+            boundX: transformedShape.bounds.x,
+            boundY: transformedShape.bounds.y,
+            boundWidth: transformedShape.bounds.width,
+            boundHeight: transformedShape.bounds.height
+        };
+    }
 
     // Test: isPointInsidePolygon
     const polygon = [
@@ -27,44 +43,22 @@ export function testCollisionUtils(assert) {
     assert(CollisionUtils.pointInPolygon(pointInside.x, pointInside.y, polygon), "pointInPolygon alias should be inside the polygon");
 
     // Test: vectorCollisionDetection
-    const objectA = {
-        x: 10,
-        y: 10,
-        rotationAngle: 0,
-        vectorMap: [
-            [0, 0],
-            [4, 0],
-            [4, 4],
-            [0, 4]
-        ],
-        radius: 2.83 // Approximate radius for a 4x4 square (diagonal distance)
-    };
+    const square4 = [
+        [0, 0],
+        [4, 0],
+        [4, 4],
+        [0, 4]
+    ];
+    const square5 = [
+        [0, 0],
+        [5, 0],
+        [5, 5],
+        [0, 5]
+    ];
 
-    const objectB = {
-        x: 12,
-        y: 12,
-        rotationAngle: 0,
-        vectorMap: [
-            [0, 0],
-            [4, 0],
-            [4, 4],
-            [0, 4]
-        ],
-        radius: 2.83
-    };
-
-    const objectC = {
-        x: 15,
-        y: 15,
-        rotationAngle: 0,
-        vectorMap: [
-            [0, 0],
-            [4, 0],
-            [4, 4],
-            [0, 4]
-        ],
-        radius: 2.83
-    };
+    const objectA = createVectorObject(10, 10, square4, 0);
+    const objectB = createVectorObject(12, 12, square4, 0);
+    const objectC = createVectorObject(15, 15, square4, 0);
 
     // Test overlapping objects
     assert(CollisionUtils.vectorCollisionDetection(objectA, objectB), "Objects A and B should collide (overlapping)");
@@ -74,47 +68,13 @@ export function testCollisionUtils(assert) {
     assert(!CollisionUtils.vectorCollisionDetection(objectA, objectC), "Objects A and C should not collide (non-overlapping)");
 
     // Test rotated objects (45 degrees)
-    const objectD = {
-        x: 0,
-        y: 0,
-        rotationAngle: 45,
-        vectorMap: [
-            [0, 0],
-            [4, 0],
-            [4, 4],
-            [0, 4]
-        ],
-        radius: 2.83 // Approximate radius for a 4x4 square (diagonal distance)
-    };
-    
-    const objectE = {
-        x: 3,
-        y: 3,
-        rotationAngle: 45,
-        vectorMap: [
-            [0, 0],
-            [5, 0],
-            [5, 5],
-            [0, 5]
-        ],
-        radius: 3.54
-    };
+    const objectD = createVectorObject(0, 0, square4, 45);
+    const objectE = createVectorObject(3, 3, square5, 45);
     
     assert(CollisionUtils.vectorCollisionDetection(objectD, objectE), "Objects D and E should collide (rotated and overlapping)");
 
     // Test edge case: objects touching but not overlapping
-    const objectF = {
-        x: 4,
-        y: 0,
-        rotationAngle: 0,
-        vectorMap: [
-            [0, 0],
-            [4, 0],
-            [4, 4],
-            [0, 4]
-        ],
-        radius: 2.83
-    };
+    const objectF = createVectorObject(4, 0, square4, 0);
 
     assert(!CollisionUtils.vectorCollisionDetection(objectA, objectF), "Objects A and F should not collide (touching edges)");
 
