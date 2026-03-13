@@ -5,8 +5,8 @@
 
 //** Javascript usages */
 
-import SystemUtils from "./utils/systemUtils.js";
-import CanvasUtils from "./core/canvas.js";
+import SystemUtils from "../utils/systemUtils.js";
+import CanvasUtils from "./canvas.js";
 
 class PerformanceMonitor {
 

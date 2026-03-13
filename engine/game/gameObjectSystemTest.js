@@ -3,9 +3,9 @@
 // 03/13/2026
 // gameObjectSystemTest.js
 
-import GameObjectManager from './gameObjectManager.js';
-import GameObjectRegistry from './gameObjectRegistry.js';
-import GameObjectSystem from './gameObjectSystem.js';
+import GameObjectManager from '../gameObjectManager.js';
+import GameObjectRegistry from '../gameObjectRegistry.js';
+import GameObjectSystem from '../gameObjectSystem.js';
 
 export function testGameObjectSystem(assert) {
     testManager(assert);

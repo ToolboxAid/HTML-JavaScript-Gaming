@@ -34,7 +34,7 @@ Objective:
 ## Folder and naming review
 
 - [x] Review whether folders reflect clear engine concepts and responsibilities.
-- [ ] Check whether files are located in the most appropriate folder.
+- [x] Check whether files are located in the most appropriate folder.
 - [ ] Identify modules that should be moved closer to related systems or utilities.
 - [ ] Review naming consistency across folders, files, classes, methods, and variables.
 - [ ] Identify ambiguous, outdated, or misleading names.
@@ -42,9 +42,12 @@ Objective:
 - [x] Review whether folder boundaries encourage good reuse or create confusion.
 - [x] Identify top-level files that should move into a more specific engine subfolder.
 
-Folder responsibility findings (item 1):
+File placement review results:
 
-- Core runtime entry files were moved into `engine/core` (`canvas.js`, `gameBase.js`, `sprite.js`, `tileMap.js`) to reduce top-level boundary mixing.
+- Moved `PerformanceMonitor` implementation to `engine/core/performanceMonitor.js` (runtime concern belongs with other core runtime modules).
+- Kept compatibility shim at `engine/performacneMonitor.js` to avoid breaking old imports while naming cleanup proceeds.
+- Moved `gameObjectSystemTest.js` to `engine/game/` so tests live next to related game-domain utilities/tests.
+- Kept `gameObject*.js` runtime classes at top-level for now to avoid a broad public-import break across games; candidate for a compatibility-first move in a dedicated pass.
 
 ## Architecture review
 

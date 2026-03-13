@@ -20,7 +20,7 @@ const testModules = await Promise.all([
     import('../engine/lifecycle/objectLifecycleTest.js'),
     import('../engine/misc/cookiesTest.js'),
     import('../engine/output/outputCoreTest.js'),
-    import('../engine/gameObjectSystemTest.js'),
+    import('../engine/game/gameObjectSystemTest.js'),
     import('../engine/game/gameObjectUtilsTest.js'),
     import('../engine/game/gameUtilsTest.js'),
     import('../engine/math/angleUtilsTest.js'),

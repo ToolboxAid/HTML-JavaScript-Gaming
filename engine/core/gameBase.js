@@ -6,7 +6,7 @@
 import CanvasUtils from "./canvas.js";
 import Colors from "../colors.js";
 import Fullscreen from "../fullscreen.js";
-import PerformanceMonitor from "../performacneMonitor.js";
+import PerformanceMonitor from "./performanceMonitor.js";
 import Timer from "../utils/timer.js";
 
 class GameBase {
