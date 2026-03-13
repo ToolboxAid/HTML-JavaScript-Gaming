@@ -1,8 +1,10 @@
+import DebugFlag from '../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // gameUI.js
 
+import DebugFlag from '';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
@@ -10,8 +12,8 @@ import SystemUtils from '../../../engine/utils/systemUtils.js';
 class GameUI {
 
     // Debug mode enabled via URL parameter: game.html?gameUI
-    static DEBUG = new URLSearchParams(window.location.search).has('gameUI');
-    static DEBUG1 = new URLSearchParams(window.location.search).has('gameUI1');
+    static DEBUG = DebugFlag.has('');
+    static DEBUG1 = DebugFlag.has('');
 
     // Frame Rate: 60 FPS
     // Canvas Size: 224x256 pixels (original arcade)
@@ -471,3 +473,4 @@ class GameUI {
 }
 
 export default GameUI;
+

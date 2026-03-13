@@ -1,13 +1,15 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // aligator.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
 class Aligator extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('aligator');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 48 * 3;
@@ -108,3 +110,4 @@ class Aligator extends GameObject {
 }
 
 export default Aligator;
+

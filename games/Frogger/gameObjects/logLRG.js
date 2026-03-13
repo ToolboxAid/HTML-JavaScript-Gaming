@@ -1,14 +1,16 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // logLRG.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // LogLRG.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
 class LogLRG extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('logLRG');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const spriteX = 60 * 5;
@@ -59,3 +61,4 @@ class LogLRG extends GameObject {
 }
 
 export default LogLRG;
+

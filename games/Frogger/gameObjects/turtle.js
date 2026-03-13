@@ -1,12 +1,14 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // turtle.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 
 class Turtle extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('turtle');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 45;
@@ -59,3 +61,4 @@ class Turtle extends GameObject {
 }
 
 export default Turtle;
+

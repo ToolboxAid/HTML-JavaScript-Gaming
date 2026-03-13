@@ -1,9 +1,11 @@
+import DebugFlag from '../../engine/utils/debugFlag.js';
 // ToolboxAid.com 
 // David Quesenberry
 // asteroids
 // 11/20/2024
 // ufo.js
 
+import DebugFlag from '';
 import ObjectVector from '../../engine/objects/objectVector.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
 import CanvasUtils from '../../engine/core/canvas.js';
@@ -50,7 +52,7 @@ class UFO extends ObjectVector {
     };
 
     // Debug mode enabled via URL parameter: game.html?ufo
-    static DEBUG = new URLSearchParams(window.location.search).has('ufo');
+    static DEBUG = DebugFlag.has('');
 
     // Constants
     static SPEED = 80;
@@ -290,4 +292,5 @@ class UFO extends ObjectVector {
 }
 
 export default UFO;
+
 

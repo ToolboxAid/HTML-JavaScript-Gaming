@@ -1,13 +1,15 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // home_alligator.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // home_alligator.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 
 class HomeAlligator extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('homeAlligator');
+    static DEBUG = DebugFlag.has('');
 
     static Frames = Object.freeze({
         IDLE: 2,

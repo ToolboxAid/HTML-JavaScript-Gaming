@@ -1,13 +1,15 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // home_fly.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // home_fly.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 
 class HomeFly extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('homeFly');
+    static DEBUG = DebugFlag.has('');
 
     static Frames = Object.freeze({
         IDLE: 4

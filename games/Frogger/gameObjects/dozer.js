@@ -1,14 +1,16 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // dozer.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // Dozer.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
 class Dozer extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('dozer');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 48;
@@ -69,3 +71,4 @@ class Dozer extends GameObject {
 }
 
 export default Dozer;
+

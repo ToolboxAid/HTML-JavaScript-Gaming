@@ -1,7 +1,9 @@
+import DebugFlag from '../../engine/utils/debugFlag.js';
+import DebugFlag from '';
 import LevelData from './levelData.js';
 
 class LevelManager {
-    static DEBUG = new URLSearchParams(window.location.search).has('levelManager');
+    static DEBUG = DebugFlag.has('');
 
     constructor(attractMode) {
         this.attractMode = attractMode;
@@ -141,3 +143,4 @@ class LevelManager {
 }
 
 export default LevelManager;
+

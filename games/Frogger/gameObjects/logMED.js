@@ -1,14 +1,16 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // logMED.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // LogMED.js
 
+import DebugFlag from '';
 import GameObject from '../../../../engine/gameObject.js';
 import CanvasUtils from '../../../../engine/core/canvas.js';
 
 class LogMED extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('logMED');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const spriteX = 60 * 2;
@@ -59,3 +61,4 @@ class LogMED extends GameObject {
 }
 
 export default LogMED;
+

@@ -1,14 +1,16 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // snake.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 
 class Snake extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('snake');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 84;
@@ -156,3 +158,4 @@ class Snake extends GameObject {
 }
 
 export default Snake;
+

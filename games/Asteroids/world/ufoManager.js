@@ -4,6 +4,8 @@
 // 11/20/2024
 // ufoManager.js
 
+import DebugFlag from '../../../engine/utils/debugFlag.js';
+import DebugFlag from '';
 import Timer from '../../../engine/utils/timer.js';
 import UFO from '../ufo.js';
 import BulletManager from '../combat/bulletManager.js';
@@ -15,7 +17,7 @@ class UFOManager extends CanExplode {
     static UFO_SPAWN_INTERVAL = 25000;
     static DEBUG_SPAWN_INTERVAL = 3000;
 
-    static DEBUG = new URLSearchParams(window.location.search).has('ufoManager');
+    static DEBUG = DebugFlag.has('');
     static audioPlayer = null;
 
     constructor(audioPlayer) {
@@ -314,3 +316,4 @@ class UFOManager extends CanExplode {
 }
 
 export default UFOManager;
+

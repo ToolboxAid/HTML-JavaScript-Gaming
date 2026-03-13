@@ -1,14 +1,16 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // beaver.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 
 class Beaver extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('beaver');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY, activeGameObjects) {
         if (!Array.isArray(activeGameObjects)) {
@@ -135,3 +137,4 @@ class Beaver extends GameObject {
 }
 
 export default Beaver;
+

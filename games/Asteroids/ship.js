@@ -1,8 +1,10 @@
+import DebugFlag from '../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 11/19/2024
 // ship.js
 
+import DebugFlag from '';
 import { canvasConfig } from './global.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
 import CanvasUtils from '../../engine/core/canvas.js';
@@ -63,7 +65,7 @@ class Ship extends ObjectVector {
         };
     }
 
-    static DEBUG = new URLSearchParams(window.location.search).has('ship');
+    static DEBUG = DebugFlag.has('');
     static audioPlayer = null;
 
     constructor(audioPlayer) {
@@ -239,4 +241,5 @@ class Ship extends ObjectVector {
 }
 
 export default Ship;
+
 

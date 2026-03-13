@@ -1,8 +1,10 @@
+import DebugFlag from '../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 10/16/2024
 // game.js - Template Game Engine
 
+import DebugFlag from '';
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/core/gameBase.js';
 
@@ -11,7 +13,7 @@ import ParticleExplosion from '../../engine/renderers/particleExplosion.js';
 class Game extends GameBase {
 
   // Enable debug mode: game.html?game
-  static DEBUG = new URLSearchParams(window.location.search).has('game');
+  static DEBUG = DebugFlag.has('');
 
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);
@@ -81,4 +83,5 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
 

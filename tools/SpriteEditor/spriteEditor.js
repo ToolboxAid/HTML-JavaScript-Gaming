@@ -1,8 +1,10 @@
+import DebugFlag from '../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 12/28/2024
 // spriteEditor.js
 
+import DebugFlag from '';
 import Colors from "../../engine/renderers/assets/colors.js";
 import Palettes from "../../engine/renderers/assets/palettes.js";
 import MouseInput from '../../engine/input/mouse.js';
@@ -17,7 +19,7 @@ import { Message } from './message.js';
 export class SpriteEditor {
 
     // Enable debug mode: game.html?spriteEditor
-    static DEBUG = new URLSearchParams(window.location.search).has('spriteEditor');
+    static DEBUG = DebugFlag.has('');
 
     // Canvas Editor
     static canvasEditor = null;
@@ -1509,3 +1511,4 @@ textareaImages.addEventListener('input', (event) => {
     Message.add(`Image JSON data changed.`);
     SpriteEditor.loadImageFromTextarea();
 });
+

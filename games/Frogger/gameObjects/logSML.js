@@ -1,14 +1,16 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // logSM.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // LogSML.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
 class LogSML extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('logSML');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const spriteX = 0;
@@ -59,3 +61,4 @@ class LogSML extends GameObject {
 }
 
 export default LogSML;
+

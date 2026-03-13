@@ -3,6 +3,8 @@
 // 11/19/2024
 // asteroidManager.js
 
+import DebugFlag from '../../../engine/utils/debugFlag.js';
+import DebugFlag from '';
 import { canvasConfig } from '../global.js';
 import Asteroid from '../asteroid.js';
 import AngleUtils from '../../../engine/math/angleUtils.js';
@@ -14,7 +16,7 @@ import CanExplode from '../../../engine/utils/canExplode.js';
 import DifficultyProfile from '../systems/difficultyProfile.js';
 
 class AsteroidManager extends CanExplode {
-    static DEBUG = new URLSearchParams(window.location.search).has('asteroidManager');
+    static DEBUG = DebugFlag.has('');
     static audioPlayer = null;
 
     constructor(audioPlayer) {
@@ -234,3 +236,4 @@ class AsteroidManager extends CanExplode {
 }
 
 export default AsteroidManager;
+

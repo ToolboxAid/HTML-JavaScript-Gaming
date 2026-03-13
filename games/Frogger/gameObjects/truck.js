@@ -1,13 +1,15 @@
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // truck.js
 // ToolboxAid.com
 // David Quesenberry
 // 03/24/2025
 // Truck.js
 
+import DebugFlag from '';
 import GameObject from '../../../engine/gameObject.js';
 
 class Truck extends GameObject {
-    static DEBUG = new URLSearchParams(window.location.search).has('truck');
+    static DEBUG = DebugFlag.has('');
 
     constructor(x, y, velocityX, velocityY) {
         const width = 48 * 2;
