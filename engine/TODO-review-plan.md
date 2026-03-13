@@ -20,8 +20,8 @@ Objective:
 - [x] Review `engine/utils`.
 - [x] Review `engine/math`.
 - [x] Review `engine/physics`.
-- [.] Review `engine/game`.
-- [ ] Review `engine/objects`.
+- [x] Review `engine/game`.
+- [.] Review `engine/objects`.
 - [ ] Review `engine/renderers`.
 - [ ] Review `engine/input`.
 - [ ] Review `engine/messages`.

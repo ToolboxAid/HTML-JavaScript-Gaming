@@ -4,6 +4,7 @@
 // gameUtils.js
 
 class GameUtils {
+    static hasWarnedAboutControllerLimit = false;
 
     /** Constructor for GameUtils class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.
@@ -56,8 +57,12 @@ class GameUtils {
             ctx.fillText('`Right Bumper` 2 players', (canvasConfig.width / 2) - 200, y + 250);
         }
 
-        if (gameControllers) {
+        if (gameControllers && !this.hasWarnedAboutControllerLimit) {
             console.warn('GameController currently supports 2 players');
+            this.hasWarnedAboutControllerLimit = true;
+        }
+
+        if (gameControllers) {
             if (gameControllers.isButtonIndexDown(0, 4)) {
                 const i = 1;
                 return {
