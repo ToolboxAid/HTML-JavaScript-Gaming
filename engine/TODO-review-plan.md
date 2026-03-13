@@ -50,7 +50,7 @@ Folder responsibility findings (item 1):
 Boundary cleanup applied:
 
 - Consolidated `ParticleExplosion` into canonical module `engine/renderers/particleExplosion.js`.
-- Kept `engine/gfx/particleExplosion.js` as a compatibility re-export to avoid breaking legacy imports.
+- Removed legacy `engine/gfx` placeholder files/folder after updating remaining imports.
 - Updated `engine/utils/canExplode.js` to import from `engine/renderers`.
 
 ## Architecture review

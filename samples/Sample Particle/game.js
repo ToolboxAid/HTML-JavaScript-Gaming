@@ -6,7 +6,7 @@
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/gameBase.js';
 
-import ParticleExplosion from '../../engine/gfx/particleExplosion.js';
+import ParticleExplosion from '../../engine/renderers/particleExplosion.js';
 
 class Game extends GameBase {
 
