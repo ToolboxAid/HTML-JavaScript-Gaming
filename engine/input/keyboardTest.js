@@ -14,7 +14,7 @@ export function testKeyboardInput(assert) {
     }
 
     // Test: Initial state should have no keys pressed, down, or released
-    assert(keyboard.getkeysPressed().length === 0, "Initial keysPressed should be empty");
+    assert(keyboard.getKeysPressed().length === 0, "Initial keysPressed should be empty");
     assert(keyboard.getKeysDown().length === 0, "Initial keysDown should be empty");
     assert(keyboard.getKeysReleased().length === 0, "Initial keysReleased should be empty");
 

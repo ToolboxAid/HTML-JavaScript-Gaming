@@ -22,7 +22,7 @@ class Game extends GameBase{
 
     getKeyStates() {
         // Retrieve keys from the KeyboardInput instance
-        const keysPressed = this.keyboardInput.getkeysPressed();
+        const keysPressed = this.keyboardInput.getKeysPressed();
         const keysDown = this.keyboardInput.getKeysDown();
         const keysReleased = this.keyboardInput.getKeysReleased();
         return { keysPressed, keysDown, keysReleased };

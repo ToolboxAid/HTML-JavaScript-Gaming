@@ -124,8 +124,8 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
-    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
-      this.keyboardInput.getkeysPressed().includes('NumpadEnter')) {
+    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+      this.keyboardInput.getKeysPressed().includes('NumpadEnter')) {
       this.gameState = "playerSelect";
     }
   }

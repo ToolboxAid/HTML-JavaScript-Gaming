@@ -43,8 +43,8 @@ class GameUtils {
         }
         // Loop through potential player counts
         for (let i = 1; i <= maxPlayers; i++) {
-            if (keyboardInput.getkeysPressed().includes(`Digit${i}`) ||
-                keyboardInput.getkeysPressed().includes(`Numpad${i}`)) {
+            if (keyboardInput.getKeysPressed().includes(`Digit${i}`) ||
+                keyboardInput.getKeysPressed().includes(`Numpad${i}`)) {
                 return { playerCount: i, playerLives: Array.from({ length: maxPlayers }, (_, index) => (index < i ? lives : 0)), gameState: "initGame" };
             }
         }

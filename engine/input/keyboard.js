@@ -56,7 +56,7 @@ class KeyboardInput {
     }
 
     // Utility methods
-    getkeysPressed() {
+    getKeysPressed() {
         return Array.from(this.keysPressed);
     }
 
