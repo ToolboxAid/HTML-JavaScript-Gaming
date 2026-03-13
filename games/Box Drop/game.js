@@ -87,8 +87,8 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Welcome to the Box Drop!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
-    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
-      this.keyboardInput.getkeysPressed().includes('NumpadEnter')) {
+    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+      this.keyboardInput.getKeysPressed().includes('NumpadEnter')) {
       this.gameState = "playerSelect";
     }
   }
@@ -111,8 +111,8 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
-    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
-      this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
+    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+      this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -136,7 +136,7 @@ class Game extends GameBase {
   }
 
   gamePauseCheck() {
-    if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyP')) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {

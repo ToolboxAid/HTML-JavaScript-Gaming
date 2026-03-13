@@ -2,14 +2,34 @@ import ObjectValidation from './objectValidation.js';
 
 class ImageAssetCache {
     static #transparentImagePromises = new Map();
+    static #rawImagePromises = new Map();
 
     static getKey(spritePath, transparentColor = 'black') {
         return `${spritePath}::${transparentColor}`;
     }
 
+    static loadImage(spritePath) {
+        ObjectValidation.nonEmptyString(spritePath, 'spritePath');
+
+        if (!this.#rawImagePromises.has(spritePath)) {
+            const promise = this.#loadImage(spritePath)
+                .catch((error) => {
+                    this.#rawImagePromises.delete(spritePath);
+                    throw error;
+                });
+
+            this.#rawImagePromises.set(spritePath, promise);
+        }
+
+        return this.#rawImagePromises.get(spritePath);
+    }
+
     static loadTransparentSprite(spritePath, transparentColor = 'black') {
         ObjectValidation.nonEmptyString(spritePath, 'spritePath');
-        ObjectValidation.nonEmptyString(transparentColor, 'transparentColor');
+
+        if (typeof transparentColor !== 'string' || transparentColor.trim() === '') {
+            return this.loadImage(spritePath);
+        }
 
         const cacheKey = this.getKey(spritePath, transparentColor);
 
@@ -26,7 +46,7 @@ class ImageAssetCache {
         return this.#transparentImagePromises.get(cacheKey);
     }
 
-    static #loadTransparentSprite(spritePath, transparentColor) {
+    static #loadImage(spritePath) {
         return new Promise((resolve, reject) => {
             const png = new Image();
 
@@ -36,11 +56,7 @@ class ImageAssetCache {
                     return;
                 }
 
-                try {
-                    resolve(this.makeTransparent(png, transparentColor));
-                } catch (error) {
-                    reject(error);
-                }
+                resolve(png);
             };
 
             png.onerror = () => {
@@ -49,6 +65,10 @@ class ImageAssetCache {
 
             png.src = spritePath;
         });
+    }
+
+    static #loadTransparentSprite(spritePath, transparentColor) {
+        return this.#loadImage(spritePath).then((png) => this.makeTransparent(png, transparentColor));
     }
 
     static makeTransparent(png, transparentColor) {

@@ -99,8 +99,8 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Welcome to Frogger!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
-    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
-      this.keyboardInput.getkeysPressed().includes('NumpadEnter')) {
+    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+      this.keyboardInput.getKeysPressed().includes('NumpadEnter')) {
       this.gameState = "playerSelect";
     }
 
@@ -124,8 +124,8 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
-    if (this.keyboardInput.getkeysPressed().includes('Enter') ||
-      this.keyboardInput.getkeysPressed().includes('NumpadEnter') ||
+    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+      this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -150,7 +150,7 @@ class Game extends GameBase {
   }
 
   gamePauseCheck() {
-    if (this.keyboardInput.getkeysPressed().includes('KeyP')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyP')) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -175,7 +175,7 @@ class Game extends GameBase {
     CanvasUtils.drawText(100, 300, "Press `S` for score", 3.5, "white");
     CanvasUtils.drawText(100, 350, "Press `P` to pause game", 3.5, "white");
 
-    if (this.keyboardInput.getkeysPressed().includes('KeyS')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyS')) {
       this.score[this.currentPlayer] += 100;
       console.log("score", this.score[this.currentPlayer]);
     }
@@ -207,13 +207,13 @@ class Game extends GameBase {
     // Update and draw frog
     if (this.frog) {
         // Handle keyboard input for frog movement
-        if (this.keyboardInput.getkeysPressed().includes('ArrowUp')) {
+        if (this.keyboardInput.getKeysPressed().includes('ArrowUp')) {
             this.frog.move('up');
-        } else if (this.keyboardInput.getkeysPressed().includes('ArrowDown')) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowDown')) {
             this.frog.move('down');
-        } else if (this.keyboardInput.getkeysPressed().includes('ArrowLeft')) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowLeft')) {
             this.frog.move('left');
-        } else if (this.keyboardInput.getkeysPressed().includes('ArrowRight')) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowRight')) {
             this.frog.move('right');
         }
 
@@ -224,7 +224,7 @@ class Game extends GameBase {
         this.frog.draw();
 
         // Check for frog death (temporary for testing)
-        if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
+        if (this.keyboardInput.getKeysPressed().includes('KeyD')) {
             this.frog.loseLife();
             if (!this.frog.isAlive()) {
                 const result = GameUtils.swapPlayer(
