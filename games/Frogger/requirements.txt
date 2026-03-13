@@ -3,10 +3,12 @@ David Quesenberry
 03/24/2025
 requirements.txt
 
-- is a todo
-> is in progress
-x is complete
-! is cancel/don't do
+- [ ] Todo
+- [.] In progress
+- [!] Blocker
+- [-] Don't do
+- [x] Complete
+- [X] Complete
 -----------------------------------------------
 Core Game Requirements
 Game World

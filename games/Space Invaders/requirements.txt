@@ -7,10 +7,12 @@ requirements.txt
 Game Play
 https://www.google.com/search?q=space+invaders+game+play&rlz=1C1CHBF_enUS787US787&oq=space+invaders+game+play&gs_lcrp=EgZjaHJvbWUyDggAEEUYJxg5GIAEGIoFMgcIARAAGIAEMggIAhAAGBYYHjIKCAMQABgPGBYYHjIICAQQABgWGB4yBggFEEUYPTIGCAYQRRg8MgYIBxBFGDzSAQg4MjQxajBqN6gCCLACAQ&sourceid=chrome&ie=UTF-8#fpstate=ive&vld=cid:88903f23,vid:3XBVhoeKb8M,st:0
 
-- is a todo
-> is in progress
-x is complete
-! is cancel/don't do
+- [ ] Todo
+- [.] In progress
+- [!] Blocker
+- [-] Don't do
+- [x] Complete
+- [X] Complete
 -----------------------------------------------
 x access to global variables
 x access to reusable canvas methods

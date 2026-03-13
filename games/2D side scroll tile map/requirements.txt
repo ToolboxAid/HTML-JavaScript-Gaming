@@ -3,10 +3,13 @@ David Quesenberry
 10/16/2024
 requirements.txt
 
-- is a todo
-> is in progress
-x is complete
-! is cancel/don't do
+- [ ] Todo
+- [.] In progress
+- [!] Blocker
+- [-] Don't do
+- [x] Complete
+- [X] Complete
+
 -----------------------------------------------
 x access to global variables
 x access to reusable canvas methods
