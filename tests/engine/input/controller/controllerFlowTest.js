@@ -6,7 +6,6 @@ function installWindowHarness() {
     const originalRemoveEventListener = window.removeEventListener;
     const originalSetInterval = globalThis.setInterval;
     const originalClearInterval = globalThis.clearInterval;
-    const originalNavigator = globalThis.navigator;
 
     let intervalId = 0;
     const intervalCallbacks = new Map();
@@ -32,12 +31,6 @@ function installWindowHarness() {
         intervalCallbacks.delete(id);
     };
 
-    globalThis.navigator = {
-        getGamepads() {
-            return [];
-        }
-    };
-
     return {
         triggerWindowEvent(eventName, payload) {
             listeners.get(eventName)?.forEach((listener) => listener(payload));
@@ -47,7 +40,6 @@ function installWindowHarness() {
             window.removeEventListener = originalRemoveEventListener;
             globalThis.setInterval = originalSetInterval;
             globalThis.clearInterval = originalClearInterval;
-            globalThis.navigator = originalNavigator;
         }
     };
 }
