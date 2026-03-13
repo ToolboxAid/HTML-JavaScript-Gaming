@@ -91,7 +91,7 @@ function testAudioPlayerLifecycle(assert) {
 
     try {
         const player = new AudioPlayer('/audio');
-        player.audioCache['/audio/test.wav'] = { decoded: true };
+        player.audioCache.set('/audio/test.wav', { decoded: true });
         player.playAudio('test.wav', 0.5, true);
         player.stopLooping('test.wav');
         player.destroy();

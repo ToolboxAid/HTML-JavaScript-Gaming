@@ -22,9 +22,9 @@ class AudioPlayer {
         }
 
         this.audioContext = new AudioContextClass();
-        this.audioCache = {};
+        this.audioCache = new Map();
         this.basePath = basePath;
-        this.loopingSources = {};
+        this.loopingSources = new Map();
         this.activeSources = new Map();
         this.gainNodes = new Map();
     }
@@ -51,7 +51,7 @@ class AudioPlayer {
 
         const url = `${this.basePath}/${filename}`;
 
-        if (this.audioCache[url]) {
+        if (this.audioCache.has(url)) {
             if (AudioPlayer.DEBUG) {
                 console.log(`Loaded from cache: ${url}`);
             }
@@ -65,7 +65,7 @@ class AudioPlayer {
             }
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-            this.audioCache[url] = audioBuffer;
+            this.audioCache.set(url, audioBuffer);
             if (AudioPlayer.DEBUG) {
                 console.log(`Loaded: ${url}`);
             }
@@ -103,7 +103,7 @@ class AudioPlayer {
 
         const url = `${this.basePath}/${filename}`;
 
-        if (!this.audioCache[url]) {
+        if (!this.audioCache.has(url)) {
             console.error(`Audio file not loaded: ${filename}`);
             return;
         }
@@ -133,7 +133,7 @@ class AudioPlayer {
         gainNode.gain.value = Math.max(0, Math.min(1, volume));
 
         // Connect nodes: source -> gain -> destination
-        source.buffer = this.audioCache[url];
+        source.buffer = this.audioCache.get(url);
         source.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
 
@@ -142,7 +142,7 @@ class AudioPlayer {
 
         if (loop) {
             source.loop = true;
-            this.loopingSources[filename] = source;
+            this.loopingSources.set(filename, source);
         }
 
         source.isFinished = false;
@@ -165,9 +165,9 @@ class AudioPlayer {
 
     // Stop the looping sound by filename
     stopLooping(filename) {
-        if (this.loopingSources[filename]) {
-            this.loopingSources[filename].stop(); // Stop the looping sound
-            delete this.loopingSources[filename]; // Remove from the looping sources map
+        if (this.loopingSources.has(filename)) {
+            this.loopingSources.get(filename).stop(); // Stop the looping sound
+            this.loopingSources.delete(filename); // Remove from the looping sources map
             this.activeSources.delete(filename);
             this.gainNodes.delete(filename);
             if (AudioPlayer.DEBUG) {
@@ -178,9 +178,9 @@ class AudioPlayer {
 
     // Stop all looping sounds
     stopAllLooping() {
-        for (const filename of Object.keys(this.loopingSources)) {
-            this.loopingSources[filename].stop();
-            delete this.loopingSources[filename];
+        for (const [filename, source] of this.loopingSources.entries()) {
+            source.stop();
+            this.loopingSources.delete(filename);
             this.activeSources.delete(filename);
             this.gainNodes.delete(filename);
             if (AudioPlayer.DEBUG) {
@@ -202,7 +202,8 @@ class AudioPlayer {
 
         this.activeSources.clear();
         this.gainNodes.clear();
-        this.audioCache = {};
+        this.loopingSources.clear();
+        this.audioCache.clear();
 
         if (this.audioContext && typeof this.audioContext.close === 'function') {
             this.audioContext.close().catch(() => {
