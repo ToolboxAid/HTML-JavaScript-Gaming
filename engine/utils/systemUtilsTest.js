@@ -30,6 +30,25 @@ export function testSystemUtils(assert) {
     assert(!SystemUtils.validateConfig("UserConfig", { name: "John", age: "30", active: true }, schema), "validateConfig failed to detect wrong type");
     assert(!SystemUtils.validateConfig("UserConfig", { name: "John", active: true }, schema), "validateConfig failed to detect missing field");
 
+    // Test showStackTrace
+    const originalWarn = console.warn;
+    const warnCalls = [];
+    console.warn = (...args) => warnCalls.push(args);
+
+    const generatedTrace = SystemUtils.showStackTrace("system utils test");
+    assert(generatedTrace instanceof Error, "showStackTrace should return a generated Error when no original error is provided");
+    assert(warnCalls.length === 1, "showStackTrace should log once for generated trace");
+    assert(warnCalls[0][0] instanceof Error, "showStackTrace should log the generated Error");
+
+    const originalError = new Error("original system utils error");
+    const returnedError = SystemUtils.showStackTrace("system utils test with original error", originalError);
+    assert(returnedError === originalError, "showStackTrace should return the original error when provided");
+    assert(warnCalls.length === 2, "showStackTrace should log again when original error is provided");
+    assert(warnCalls[1][0] instanceof Error, "showStackTrace should still generate a stack trace Error");
+    assert(warnCalls[1][1] === originalError, "showStackTrace should preserve the original error in logging");
+
+    console.warn = originalWarn;
+
     // Test destroy
     const objWithDestroy = {
         destroy: () => {

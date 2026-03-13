@@ -122,10 +122,16 @@ class SystemUtils {
 
 
     /** StackTrace Dump */
-    static showStackTrace(text = '') {
-        let trace = new Error(`'${text}':`);
+    static showStackTrace(text = '', originalError = null) {
+        const trace = new Error(`'${text}':`);
+
+        if (originalError) {
+            console.warn(trace, originalError);
+            return originalError;
+        }
+
         console.warn(trace);
-        trace = null;
+        return trace;
     }
 
     // TODO: All destroy() methods should use this to take advantage of error trapping
