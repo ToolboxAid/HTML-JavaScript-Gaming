@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 03/13/2026
+// pngControllerTest.js
+
 import PngController from './pngController.js';
 
 export function testPngController(assert) {
@@ -32,4 +37,11 @@ export function testPngController(assert) {
     const finished = animation.stepDyingFrame(true);
     assert(finished === false, 'dying animation should not finish on first frame advance');
     assert(animation.currentFrameIndex === 1, 'dying animation should increment frame');
+
+    animation.currentFrameIndex = Number.NaN;
+    sourceRect = animation.getCurrentSourceRect(10, 20, 8, 6);
+    assert(sourceRect.sx === 10, 'getCurrentSourceRect should normalize non-finite frame index');
+
+    animation.delayCounter = Number.NaN;
+    assert(animation.stepFrame(true) === false, 'stepFrame should normalize non-finite delay counter safely');
 }

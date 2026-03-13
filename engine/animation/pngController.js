@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 03/13/2026
+// pngController.js
+
 import ObjectValidation from '../utils/objectValidation.js';
 
 class PngController {
@@ -29,7 +34,9 @@ class PngController {
     }
 
     getCurrentSourceRect(spriteX = 0, spriteY = 0, frameWidth = 0, frameHeight = 0) {
-        const frameIndex = this.currentFrameIndex || 0;
+        const frameIndex = Number.isFinite(this.currentFrameIndex)
+            ? Math.max(0, Math.floor(this.currentFrameIndex))
+            : 0;
         const col = frameIndex % this.framesPerRow;
         const row = Math.floor(frameIndex / this.framesPerRow);
 
@@ -44,6 +51,10 @@ class PngController {
     advanceFrame() {
         if (this.frameCount <= 1) {
             return false;
+        }
+
+        if (!Number.isFinite(this.currentFrameIndex)) {
+            this.currentFrameIndex = 0;
         }
 
         this.currentFrameIndex++;
@@ -61,6 +72,10 @@ class PngController {
             return false;
         }
 
+        if (!Number.isFinite(this.delayCounter)) {
+            this.delayCounter = 0;
+        }
+
         this.delayCounter++;
 
         if (this.delayCounter < this.frameDelay) {
@@ -74,6 +89,14 @@ class PngController {
     stepDyingFrame(incFrame = false) {
         if (this.frameCount <= 1) {
             return true;
+        }
+
+        if (!Number.isFinite(this.currentFrameIndex)) {
+            this.currentFrameIndex = 0;
+        }
+
+        if (!Number.isFinite(this.delayCounter)) {
+            this.delayCounter = 0;
         }
 
         if (incFrame) {

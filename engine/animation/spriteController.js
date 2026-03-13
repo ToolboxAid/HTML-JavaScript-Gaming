@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 03/13/2026
+// spriteController.js
+
 class SpriteController {
     constructor({
         livingFrames = null,
@@ -35,14 +40,25 @@ class SpriteController {
         return this.dyingFrames[currentFrameIndex] ?? null;
     }
 
-    advanceFrame(currentFrameIndex, frameCount) {
-        if (!frameCount || frameCount <= 0) {
-            return { currentFrameIndex, looped: false };
+    static normalizeNonNegativeInteger(value, fallback = 0) {
+        if (!Number.isFinite(value)) {
+            return fallback;
         }
 
-        const nextFrameIndex = currentFrameIndex + 1;
+        return Math.max(0, Math.floor(value));
+    }
 
-        if (nextFrameIndex >= frameCount) {
+    advanceFrame(currentFrameIndex, frameCount) {
+        const normalizedFrameCount = SpriteController.normalizeNonNegativeInteger(frameCount, 0);
+        const normalizedCurrentFrameIndex = SpriteController.normalizeNonNegativeInteger(currentFrameIndex, 0);
+
+        if (!normalizedFrameCount || normalizedFrameCount <= 0) {
+            return { currentFrameIndex: normalizedCurrentFrameIndex, looped: false };
+        }
+
+        const nextFrameIndex = normalizedCurrentFrameIndex + 1;
+
+        if (nextFrameIndex >= normalizedFrameCount) {
             return { currentFrameIndex: 0, looped: true };
         }
 
@@ -50,17 +66,22 @@ class SpriteController {
     }
 
     stepLoopingFrame(currentFrameIndex, delayCounter, frameCount, frameDelay, incFrame = false) {
-        if (!frameCount || frameCount <= 1 || !incFrame) {
-            return { currentFrameIndex, delayCounter, looped: false };
+        const normalizedFrameCount = SpriteController.normalizeNonNegativeInteger(frameCount, 0);
+        const normalizedFrameDelay = SpriteController.normalizeNonNegativeInteger(frameDelay, 0);
+        const normalizedCurrentFrameIndex = SpriteController.normalizeNonNegativeInteger(currentFrameIndex, 0);
+        const normalizedDelayCounter = SpriteController.normalizeNonNegativeInteger(delayCounter, 0);
+
+        if (!normalizedFrameCount || normalizedFrameCount <= 1 || !incFrame) {
+            return { currentFrameIndex: normalizedCurrentFrameIndex, delayCounter: normalizedDelayCounter, looped: false };
         }
 
-        const nextDelayCounter = delayCounter + 1;
+        const nextDelayCounter = normalizedDelayCounter + 1;
 
-        if (nextDelayCounter < frameDelay) {
-            return { currentFrameIndex, delayCounter: nextDelayCounter, looped: false };
+        if (nextDelayCounter < normalizedFrameDelay) {
+            return { currentFrameIndex: normalizedCurrentFrameIndex, delayCounter: nextDelayCounter, looped: false };
         }
 
-        const result = this.advanceFrame(currentFrameIndex, frameCount);
+        const result = this.advanceFrame(normalizedCurrentFrameIndex, normalizedFrameCount);
         return {
             currentFrameIndex: result.currentFrameIndex,
             delayCounter: 0,
@@ -69,22 +90,27 @@ class SpriteController {
     }
 
     stepFinalFrame(currentFrameIndex, delayCounter, frameCount, frameDelay, incFrame = false) {
-        if (!frameCount || frameCount <= 0 || !incFrame) {
-            return { currentFrameIndex, delayCounter, finished: false };
+        const normalizedFrameCount = SpriteController.normalizeNonNegativeInteger(frameCount, 0);
+        const normalizedFrameDelay = SpriteController.normalizeNonNegativeInteger(frameDelay, 0);
+        const normalizedCurrentFrameIndex = SpriteController.normalizeNonNegativeInteger(currentFrameIndex, 0);
+        const normalizedDelayCounter = SpriteController.normalizeNonNegativeInteger(delayCounter, 0);
+
+        if (!normalizedFrameCount || normalizedFrameCount <= 0 || !incFrame) {
+            return { currentFrameIndex: normalizedCurrentFrameIndex, delayCounter: normalizedDelayCounter, finished: false };
         }
 
-        const nextDelayCounter = delayCounter + 1;
+        const nextDelayCounter = normalizedDelayCounter + 1;
 
-        if (nextDelayCounter < frameDelay) {
-            return { currentFrameIndex, delayCounter: nextDelayCounter, finished: false };
+        if (nextDelayCounter < normalizedFrameDelay) {
+            return { currentFrameIndex: normalizedCurrentFrameIndex, delayCounter: nextDelayCounter, finished: false };
         }
 
-        const nextFrameIndex = currentFrameIndex + 1;
+        const nextFrameIndex = normalizedCurrentFrameIndex + 1;
 
         return {
             currentFrameIndex: nextFrameIndex,
             delayCounter: 0,
-            finished: nextFrameIndex >= frameCount
+            finished: nextFrameIndex >= normalizedFrameCount
         };
     }
 

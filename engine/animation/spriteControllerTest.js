@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 03/13/2026
+// spriteControllerTest.js
+
 import SpriteController from './spriteController.js';
 
 export function testSpriteController(assert) {
@@ -22,4 +27,12 @@ export function testSpriteController(assert) {
 
     result = controller.stepFinalFrame(1, 1, controller.dyingFrameCount, controller.dyingDelay, true);
     assert(result.finished === true, 'final frame should finish at end');
+
+    result = controller.stepLoopingFrame(Number.NaN, Number.NaN, controller.livingFrameCount, controller.livingDelay, true);
+    assert(Number.isFinite(result.currentFrameIndex), 'looping frame should normalize non-finite frame index');
+    assert(Number.isFinite(result.delayCounter), 'looping frame should normalize non-finite delay counter');
+
+    result = controller.stepFinalFrame(Number.NaN, Number.NaN, controller.dyingFrameCount, controller.dyingDelay, true);
+    assert(Number.isFinite(result.currentFrameIndex), 'final frame should normalize non-finite frame index');
+    assert(Number.isFinite(result.delayCounter), 'final frame should normalize non-finite delay counter');
 }
