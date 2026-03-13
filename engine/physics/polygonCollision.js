@@ -3,6 +3,8 @@
 // 03/13/2026
 // polygonCollision.js
 
+import DebugLog from '../utils/debugLog.js';
+
 class PolygonCollision {
     constructor() {
         throw new Error('PolygonCollision is a utility class with only static methods. Do not instantiate.');
@@ -34,7 +36,7 @@ class PolygonCollision {
 
             if (x === xi && y === yi) {
                 if (debug) {
-                    console.log('Point is on a vertex:', x, y, polygon);
+                    DebugLog.log(true, 'PolygonCollision', 'Point is on a vertex:', x, y, polygon);
                 }
                 return true;
             }
@@ -51,7 +53,7 @@ class PolygonCollision {
 
             if (Math.abs(edgeSlope) < tolerance && withinBoundingBox) {
                 if (debug) {
-                    console.log('Point is on an edge:', x, y, polygon);
+                    DebugLog.log(true, 'PolygonCollision', 'Point is on an edge:', x, y, polygon);
                 }
                 return true;
             }
@@ -64,7 +66,7 @@ class PolygonCollision {
         }
 
         if (inside && debug) {
-            console.log('Ray intersects edge:', x, y, polygon);
+            DebugLog.log(true, 'PolygonCollision', 'Ray intersects edge:', x, y, polygon);
         }
 
         return inside;

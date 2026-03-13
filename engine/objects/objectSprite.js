@@ -149,9 +149,9 @@ setHit() {
         try {
             SpriteRenderer.draw(this, offsetX, offsetY);
         } catch (error) {
-            console.error('Error drawing ObjectSprite:', error.message);
-            console.error(error.stack);
-            console.log('Object state:', this);
+            DebugLog.error('ObjectSprite', 'Error drawing ObjectSprite:', error.message);
+            DebugLog.error(ObjectSprite.DEBUG, 'ObjectSprite', error.stack);
+            DebugLog.log(ObjectSprite.DEBUG, 'ObjectSprite', 'Object state:', this);
         }
     }
 
@@ -161,9 +161,9 @@ setHit() {
             const newY = this.y + offsetY;
             SpriteRenderer.drawRGB(this, newX, newY);
         } catch (error) {
-            console.error('Error drawing RGB sprite:', error.message);
-            console.error(error.stack);
-            console.log('Object state:', this);
+            DebugLog.error('ObjectSprite', 'Error drawing RGB sprite:', error.message);
+            DebugLog.error(ObjectSprite.DEBUG, 'ObjectSprite', error.stack);
+            DebugLog.log(ObjectSprite.DEBUG, 'ObjectSprite', 'Object state:', this);
         }
     }
 

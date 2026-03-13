@@ -5,6 +5,7 @@
 
 import RandomUtils from "../../math/randomUtils.js";
 import DebugFlag from "../../utils/debugFlag.js";
+import DebugLog from "../../utils/debugLog.js";
 
 /** Reference colors
  * Crayola Colors
@@ -408,7 +409,7 @@ if (false) {  // sort colors and put on editor screen.
         "hsl(360, 100%, 50%)"   // Red (Back to 0°)
         ] */
     }
-    console.log(generateHSLColors());
+    DebugLog.log(Colors.DEBUG, 'Colors', generateHSLColors());
 
 }
 //---------------------------------------------------

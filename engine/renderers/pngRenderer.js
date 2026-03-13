@@ -10,7 +10,7 @@ class PngRenderer {
 
         if (!object.isLoaded || !object.png || !object.png.complete) {
             if (object.constructor?.DEBUG && object.loadError) {
-                console.warn('Sprite failed to load:', object.loadError);
+                DebugLog.warn(true, 'PngRenderer', 'Sprite failed to load:', object.loadError);
             }
             return;
         }

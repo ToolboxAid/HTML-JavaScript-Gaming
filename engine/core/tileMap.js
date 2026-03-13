@@ -4,6 +4,8 @@
 // tileMap.js
 
 import CanvasUtils from './canvas.js';
+import DebugFlag from '../utils/debugFlag.js';
+import DebugLog from '../utils/debugLog.js';
 
 // The given tileMap data
 const tileMapLevel1 = [
@@ -86,6 +88,7 @@ const heroLayer = 3;
 const layerSpeeds = [0.25, 0.50, 0.75, 1.0, 1.25]; // layers speeds per level
 
 class TileMap {
+    static DEBUG = DebugFlag.has('tileMap');
 
     constructor(width, height) {
         this.canvasWidth = width;
@@ -118,17 +121,17 @@ class TileMap {
             this.scrollMax = 0;
         }
 
-        if (false) {
-            console.log("Number of layers:", this.numberOfSets);
-            console.log("Number of rows in the first layer:", this.numberOfRowsInFirstSet);
-            console.log("Length of a row in the first layer:", this.lengthOfFirstRowInFirstSet);
-            console.log("Tile Set Width:", this.tileSetWidth);
-            console.log("Canvas Mid Point:", this.canvasMidPoint);
-            console.log("Scroll Max:", this.scrollMax);
+        if (TileMap.DEBUG) {
+            DebugLog.log(true, 'TileMap', 'Number of layers:', this.numberOfSets);
+            DebugLog.log(true, 'TileMap', 'Number of rows in the first layer:', this.numberOfRowsInFirstSet);
+            DebugLog.log(true, 'TileMap', 'Length of a row in the first layer:', this.lengthOfFirstRowInFirstSet);
+            DebugLog.log(true, 'TileMap', 'Tile Set Width:', this.tileSetWidth);
+            DebugLog.log(true, 'TileMap', 'Canvas Mid Point:', this.canvasMidPoint);
+            DebugLog.log(true, 'TileMap', 'Scroll Max:', this.scrollMax);
 
-            console.log("Canvas width: ", this.canvasWidth, "Canvas Height: ", this.canvasHeight, "Tile Size: ", this.tileSize);
-            console.log("Number of 'X' Tiles: ", this.canvasWidth / this.tileSize);
-            console.log("Number of 'Y' Tiles: ", this.canvasHeight / this.tileSize);
+            DebugLog.log(true, 'TileMap', 'Canvas width: ', this.canvasWidth, 'Canvas Height: ', this.canvasHeight, 'Tile Size: ', this.tileSize);
+            DebugLog.log(true, 'TileMap', "Number of 'X' Tiles: ", this.canvasWidth / this.tileSize);
+            DebugLog.log(true, 'TileMap', "Number of 'Y' Tiles: ", this.canvasHeight / this.tileSize);
         }
     }
 

@@ -6,6 +6,7 @@
 import { DPadType } from "./gamepadEnums.js";
 import GameControllerMap from "./gameControllerMap.js";
 import DebugFlag from "../../utils/debugFlag.js";
+import DebugLog from "../../utils/debugLog.js";
 
 class GamepadMapper {
     static DEBUG = DebugFlag.has('gamepadMapper');
@@ -22,9 +23,7 @@ class GamepadMapper {
         this.axisNames = config.axisNames;
         this.axisDeadzone = config.axisDeadzone;
         this.DPadType = this.getDPadType();
-        if (GamepadMapper.DEBUG) {
-            console.log(this);
-        }
+        DebugLog.log(GamepadMapper.DEBUG, 'GamepadMapper', this);
     }
 
     // Allow override from game

@@ -4,6 +4,7 @@
 // spriteFrameUtils.js
 
 import SystemUtils from '../utils/systemUtils.js';
+import DebugLog from '../utils/debugLog.js';
 
 class SpriteFrameUtils {
     constructor() {
@@ -15,26 +16,26 @@ class SpriteFrameUtils {
         const requiredLayerFields = ['spriteimage', 'imageX', 'imageY', 'imageScale'];
 
         if (!jsonSprite.metadata || !jsonSprite.layers) {
-            console.error(`jsonSprite.metadata || jsonSprite.layers missing\njsonSprite ${JSON.stringify(jsonSprite)}`);
+            DebugLog.error('SpriteFrameUtils', `jsonSprite.metadata || jsonSprite.layers missing\njsonSprite ${JSON.stringify(jsonSprite)}`);
             return false;
         }
 
         for (const field of requiredMetadataFields) {
             if (!(field in jsonSprite.metadata)) {
-                console.error(`jsonSprite requiredMetadataFields missing field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);
+                DebugLog.error('SpriteFrameUtils', `jsonSprite requiredMetadataFields missing field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);
                 return false;
             }
         }
 
         for (const layer of jsonSprite.layers) {
             if (!layer.metadata || !layer.data) {
-                console.error('jsonSprite missing: layer.metadata || layer.data');
+                DebugLog.error('SpriteFrameUtils', 'jsonSprite missing: layer.metadata || layer.data');
                 return false;
             }
 
             for (const field of requiredLayerFields) {
                 if (!(field in layer.metadata)) {
-                    console.error(`jsonSprite requiredLayerFields missing field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);
+                    DebugLog.error('SpriteFrameUtils', `jsonSprite requiredLayerFields missing field: ${field}, \njsonSprite ${JSON.stringify(jsonSprite)}`);
                     return false;
                 }
             }
@@ -48,7 +49,7 @@ class SpriteFrameUtils {
             return jsonSprite.layers[frameIndex].data;
         }
 
-        console.error('Invalid layer data or index:', jsonSprite);
+        DebugLog.error('SpriteFrameUtils', 'Invalid layer data or index:', jsonSprite);
         return null;
     }
 
@@ -58,7 +59,7 @@ class SpriteFrameUtils {
             return;
         }
 
-        console.error('Invalid layer data or index:', jsonSprite, frameIndex);
+        DebugLog.error('SpriteFrameUtils', 'Invalid layer data or index:', jsonSprite, frameIndex);
     }
 
     static getLayerDimensions(layerData, pixelSize) {
@@ -91,8 +92,8 @@ class SpriteFrameUtils {
             width = frame[0]?.length || 0;
 
             if (debug) {
-                console.log(`Multi-dimensional array detected. Width: ${width}, Height: ${height}`);
-                console.log(frame);
+                DebugLog.log(true, 'SpriteFrameUtils', `Multi-dimensional array detected. Width: ${width}, Height: ${height}`);
+                DebugLog.log(true, 'SpriteFrameUtils', frame);
             }
         } else if (Array.isArray(object)) {
             const frame = Array.from(object);
@@ -100,11 +101,11 @@ class SpriteFrameUtils {
             width = frame[0]?.length || 1;
 
             if (debug) {
-                console.log(`Single-dimensional array detected. Width: ${width}, Height: ${height}`);
-                console.log(frame);
+                DebugLog.log(true, 'SpriteFrameUtils', `Single-dimensional array detected. Width: ${width}, Height: ${height}`);
+                DebugLog.log(true, 'SpriteFrameUtils', frame);
             }
         } else {
-            console.error('Invalid object format:', object);
+            DebugLog.error('SpriteFrameUtils', 'Invalid object format:', object);
             return { width: 0, height: 0 };
         }
 

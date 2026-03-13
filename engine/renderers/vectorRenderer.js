@@ -1,4 +1,5 @@
 import CanvasUtils from '../core/canvas.js';
+import DebugLog from '../utils/debugLog.js';
 import RendererGuards from './rendererGuards.js';
 
 class VectorRenderer {
@@ -9,7 +10,7 @@ class VectorRenderer {
 
         if (!Array.isArray(object.rotatedPoints) || object.rotatedPoints.length === 0) {
             if (object.constructor?.DEBUG) {
-                console.warn('VectorRenderer skipped draw: rotatedPoints are not available.');
+                DebugLog.warn(true, 'VectorRenderer', 'VectorRenderer skipped draw: rotatedPoints are not available.');
             }
             return;
         }

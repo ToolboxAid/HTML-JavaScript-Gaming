@@ -6,6 +6,7 @@
 import Colors from "./colors.js";
 import SystemUtils from "../../utils/systemUtils.js";
 import DebugFlag from "../../utils/debugFlag.js";
+import DebugLog from "../../utils/debugLog.js";
 import palettesList from "./palettesList.js";
 
 class Palettes {
@@ -108,7 +109,7 @@ class Palettes {
         let result = '';
         // Validate that symbol is a non-empty string and a single ASCII character
         if (!symbol || typeof symbol !== 'string' || symbol.trim() === '') {
-            console.warn("Invalid symbol provided:", symbol);
+            DebugLog.warn(this.DEBUG, 'Palettes', 'Invalid symbol provided:', symbol);
             result = this.errorResult;
         }
 
@@ -136,7 +137,7 @@ class Palettes {
 
     static setSortByOrder(arg) {
         if (arg !== 'hue' && arg !== 'saturation' & arg !== 'lightness') {
-            console.log(`Invalid sort by '${arg}'. No change.`);
+            DebugLog.log(this.DEBUG, 'Palettes', `Invalid sort by '${arg}'. No change.`);
             return;
         }
         this.sortByOrder = arg;
@@ -170,8 +171,8 @@ class Palettes {
             } else if (this.sortByOrder === 'lightness') {
                 return hslA.l - hslB.l; // Sort by lightness
             } else {
-                console.log('this.sortByOrder:', this.sortByOrder); // Debug log to check the value
-                console.warn(` --- Invalid this.sortByOrder value:'${this.sortByOrder}'. Defaulting to 'hue'. ---`);
+                DebugLog.log(this.DEBUG, 'Palettes', 'this.sortByOrder:', this.sortByOrder); // Debug log to check the value
+                DebugLog.warn(this.DEBUG, 'Palettes', ` --- Invalid this.sortByOrder value:'${this.sortByOrder}'. Defaulting to 'hue'. ---`);
                 return hslA.h - hslB.h; // Default to sorting by hue
             }
         });
@@ -189,9 +190,9 @@ class Palettes {
             }
 
             // Iterate through the palette and display all details
-            console.log(`Details of "${paletteName}" palette:`);
+            DebugLog.log(this.DEBUG, 'Palettes', `Details of "${paletteName}" palette:`);
             palette.forEach((item, index) => {
-                console.log(`Index: ${index}, Symbol: ${item.symbol}, Hex: ${item.hex}, Name: ${item.name}`);
+                DebugLog.log(this.DEBUG, 'Palettes', `Index: ${index}, Symbol: ${item.symbol}, Hex: ${item.hex}, Name: ${item.name}`);
             });
 
         } catch (error) {
@@ -238,7 +239,7 @@ if (false) {  // sort colors and put on editor screen.
         if (false) {// show HSL and Color details}
             // Append formatted color object to .value as a string
             if (isNaN(hsl.h)) {
-                console.error("Invalid hue value:", hsl.h);
+                DebugLog.error('Palettes', 'Invalid hue value:', hsl.h);
                 value += `Invalid hue value:`, '${hsl.h}';
             } else {
                 let hue = Number(hsl.h);

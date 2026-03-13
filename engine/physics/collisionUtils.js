@@ -9,6 +9,7 @@ import CollisionShapeUtils from "./collisionShapeUtils.js";
 import PolygonCollision from './polygonCollision.js';
 import VectorShapeUtils from "./vectorShapeUtils.js";
 import DebugFlag from "../utils/debugFlag.js";
+import DebugLog from "../utils/debugLog.js";
 import SystemUtils from "../utils/systemUtils.js";
 
 export default class CollisionUtils {
@@ -36,7 +37,7 @@ export default class CollisionUtils {
                 parseFloat(pointX.toFixed(3)),
                 parseFloat(pointY.toFixed(3))
             ]);
-            console.log("Transformed Points:", formattedPoints);
+            DebugLog.log(true, 'CollisionUtils', 'Transformed Points:', formattedPoints);
         }
 
         return transformedPoints;
@@ -51,9 +52,9 @@ export default class CollisionUtils {
         const shapeB = CollisionShapeUtils.getVectorShape(objectB);
 
         if (!shapeA || !shapeB) {
-            console.warn("\nobjectA:", objectA, "\nobjectB:", objectB);
+            DebugLog.warn(true, 'CollisionUtils', '\nobjectA:', objectA, '\nobjectB:', objectB);
             if (this.DEBUG) {
-                console.error("Invalid objects passed to vectorIntersectsVector", SystemUtils.showStackTrace(), objectA, objectB);
+                DebugLog.error(true, 'CollisionUtils', 'Invalid objects passed to vectorIntersectsVector', SystemUtils.showStackTrace(), objectA, objectB);
             }
             return false;
         }
@@ -72,7 +73,7 @@ export default class CollisionUtils {
         for (let [pointX, pointY] of shapeB.rotatedPoints) {
             if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeA.rotatedPoints, this.DEBUG)) {
                 if (this.DEBUG) {
-                    console.log("objectB.rotatedPoints point", pointX, pointY, shapeA.rotatedPoints);
+                    DebugLog.log(true, 'CollisionUtils', 'objectB.rotatedPoints point', pointX, pointY, shapeA.rotatedPoints);
                 }
                 return true;
             }
@@ -82,7 +83,7 @@ export default class CollisionUtils {
         for (let [pointX, pointY] of shapeA.rotatedPoints) {
             if (PolygonCollision.isPointInsidePolygon(pointX, pointY, shapeB.rotatedPoints, this.DEBUG)) {
                 if (this.DEBUG) {
-                    console.log("objectAPoints point", pointX, pointY, shapeB.rotatedPoints);
+                    DebugLog.log(true, 'CollisionUtils', 'objectAPoints point', pointX, pointY, shapeB.rotatedPoints);
                 }
                 return true;
             }
@@ -99,7 +100,7 @@ export default class CollisionUtils {
 
                 if (PolygonCollision.doEdgesIntersect(a1, a2, b1, b2)) {
                     if (this.DEBUG) {
-                        console.log(" edgesIntersect ");
+                        DebugLog.log(true, 'CollisionUtils', ' edgesIntersect ');
                     }
                     return true;
                 }
@@ -181,7 +182,7 @@ export default class CollisionUtils {
         if (this.DEBUG) {
             // Check for valid objects and dimensions
             if (!boxA || !boxB) { // Check if either object is null or undefined
-                console.warn("isCollidingWith: One or both objects are null or undefined", objectA, objectB);
+                DebugLog.warn(true, 'CollisionUtils', 'isCollidingWith: One or both objects are null or undefined', objectA, objectB);
             }
 
             // Create simplified objects with only position and size properties
@@ -288,7 +289,7 @@ export default class CollisionUtils {
 
         if (this.DEBUG && boundariesCrossed.includes('right')) {
             const halfDimensions = BoundaryUtils.getHalfDimensions(object);
-            console.log("Boundaries crossed:", {
+            DebugLog.log(true, 'CollisionUtils', 'Boundaries crossed:', {
                 boundaries: boundariesCrossed,
                 object: {
                     x: object.x,
@@ -326,7 +327,7 @@ export default class CollisionUtils {
         const boundariesHit = BoundaryUtils.checkGameAtBoundsSides(object, margin);
 
         if (this.DEBUG) {
-            console.log("checkGameAtBoundsSides", CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesHit);
+            DebugLog.log(true, 'CollisionUtils', 'checkGameAtBoundsSides', CanvasUtils.getConfigWidth(), CanvasUtils.getConfigHeight(), boundariesHit);
         }
 
         return boundariesHit;

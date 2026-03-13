@@ -117,7 +117,7 @@ class ObjectPNG extends ObjectKillable {
 
                 this.assetState.setError(error);
                 this.assetState.applyTo(this);
-                console.error(`Failed to load sprite: ${spritePath}`, error);
+                DebugLog.error('ObjectPNG', `Failed to load sprite: ${spritePath}`, error);
             });
     }
 
@@ -223,7 +223,7 @@ class ObjectPNG extends ObjectKillable {
         try {
             PngRenderer.draw(this, offsetX, offsetY);
         } catch (error) {
-            console.error('Draw error:', error);
+            DebugLog.error('ObjectPNG', 'Draw error:', error);
         }
     }
 

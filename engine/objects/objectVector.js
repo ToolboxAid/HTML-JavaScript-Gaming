@@ -123,14 +123,14 @@ class ObjectVector extends ObjectKillable {
         try {
             VectorRenderer.draw(this, lineWidth, offsetX, offsetY);
         } catch (error) {
-            console.error('Error occurred while drawing:', error.message);
-            console.log('Object state:', this);
+            DebugLog.error('ObjectVector', 'Error occurred while drawing:', error.message);
+            DebugLog.log(ObjectVector.DEBUG, 'ObjectVector', 'Object state:', this);
         }
     }
 
     collisionDetection(object, debug = false) {
         if (debug) {
-            console.log(object);
+            DebugLog.log(true, 'ObjectVector', object);
         }
 
         return CollisionUtils.vectorIntersectsVector(this, object);

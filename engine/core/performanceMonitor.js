@@ -7,6 +7,7 @@
 
 import SystemUtils from "../utils/systemUtils.js";
 import DebugFlag from "../utils/debugFlag.js";
+import DebugLog from "../utils/debugLog.js";
 import CanvasUtils from "./canvas.js";
 
 class PerformanceMonitor {
@@ -47,7 +48,7 @@ class PerformanceMonitor {
     };
     static async init(config) {
         if (!config) {
-            console.error("No 'config' provided");
+            DebugLog.error('PerformanceMonitor', "No 'config' provided");
         }
         const schema = {
             show: 'boolean',
@@ -66,7 +67,7 @@ class PerformanceMonitor {
             this.performanceConfig = config;
             this.dimensions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
             //console.log(this.dimensions);
-            console.log(`PerformanceMonitor.init complete.`);
+            DebugLog.log(this.DEBUG, 'PerformanceMonitor', 'PerformanceMonitor.init complete.');
             return true;
         }
 
@@ -225,16 +226,16 @@ class PerformanceMonitor {
         const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
 
         console.group(`Performance Stats [${timestamp}]`);
-        console.log('%cMemory Usage', 'color: #4CAF50');
-        console.log(`  Used: ${metrics.usedHeapSize}MB`);
-        console.log(`  Total: ${metrics.totalHeapSize}MB`);
-        console.log(`  Limit: ${metrics.heapLimit}MB`);
-        console.log(`  Usage: ${metrics.usage}%`);
+        DebugLog.log(true, 'PerformanceMonitor', '%cMemory Usage', 'color: #4CAF50');
+        DebugLog.log(true, 'PerformanceMonitor', `  Used: ${metrics.usedHeapSize}MB`);
+        DebugLog.log(true, 'PerformanceMonitor', `  Total: ${metrics.totalHeapSize}MB`);
+        DebugLog.log(true, 'PerformanceMonitor', `  Limit: ${metrics.heapLimit}MB`);
+        DebugLog.log(true, 'PerformanceMonitor', `  Usage: ${metrics.usage}%`);
 
-        console.log('%cFrame Stats', 'color: #2196F3');
-        console.log(`  FPS: ${this.fps || 0}`);
-        console.log(`  Frame Time: ${window.frameTime?.toFixed(2) || 0}ms`);
-        console.log(`  GFX Usage: ${this.gfxPercentUsage?.toFixed(2) || 0}%`);
+        DebugLog.log(true, 'PerformanceMonitor', '%cFrame Stats', 'color: #2196F3');
+        DebugLog.log(true, 'PerformanceMonitor', `  FPS: ${this.fps || 0}`);
+        DebugLog.log(true, 'PerformanceMonitor', `  Frame Time: ${window.frameTime?.toFixed(2) || 0}ms`);
+        DebugLog.log(true, 'PerformanceMonitor', `  GFX Usage: ${this.gfxPercentUsage?.toFixed(2) || 0}%`);
         console.groupEnd();
     }
 

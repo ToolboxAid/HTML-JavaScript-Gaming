@@ -3,18 +3,22 @@
 // 02/10/2025
 // gamepadDebugger.js
 
+import DebugFlag from "../../utils/debugFlag.js";
+import DebugLog from "../../utils/debugLog.js";
+
 class GamepadDebugger {
+    static DEBUG = DebugFlag.has('gamepadDebugger');
+
     static logGameController(gameController) {
-        console.group(`GameController [${gameController.index}]`);
-        console.log('ID:', gameController.id);
-        console.log('Buttons:', gameController.buttons.length);
-        console.log('Axes:', gameController.axes.length);
-        console.groupEnd();
+        DebugLog.log(this.DEBUG, 'GamepadDebugger', `GameController [${gameController.index}]`);
+        DebugLog.log(this.DEBUG, 'GamepadDebugger', 'ID:', gameController.id);
+        DebugLog.log(this.DEBUG, 'GamepadDebugger', 'Buttons:', gameController.buttons.length);
+        DebugLog.log(this.DEBUG, 'GamepadDebugger', 'Axes:', gameController.axes.length);
     }
 
     static logPressedButtons(buttonsPressed, buttonNames) {
         buttonsPressed.forEach((buttonIndex) => {
-            console.log(`Button Index: ${buttonIndex}, Name: ${buttonNames[buttonIndex]}`);
+            DebugLog.log(this.DEBUG, 'GamepadDebugger', `Button Index: ${buttonIndex}, Name: ${buttonNames[buttonIndex]}`);
         });
     }
 }
