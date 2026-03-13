@@ -73,10 +73,7 @@ Objective:
 - [x] Capture candidate engine additions separately from bugs so feature gaps stay visible.
 
 Engine surface review results:
-
-- Applied first shared-helper extraction pass: added `utils/debugFlag.js` for query-flag checks and `objects/objectDestroyUtils.js` for common destroy-guard logic, then wired core object classes to use both.
-- Candidate additions captured for follow-up (feature gap, not bug):
-  - Lightweight engine API conventions doc for `init/update/draw/destroy/start/stop`.
+  - Added lightweight engine API conventions doc: `docs/engine-api-conventions.md` (`init/update/draw/destroy/start/stop`).
   - Optional world/runtime context object to reduce static singleton coupling.
   - Implemented canonical collision/bounds facade: `engine/game/gameCollision.js`, exposed via `GameObjectSystem.collision` plus convenience delegation methods.
 
