@@ -1,5 +1,6 @@
 import AudioPlayer from '../../../engine/output/audioPlayer.js';
 import AudioFrequency from '../../../engine/output/audioFrequency.js';
+import AudioPlaybackController from '../../../engine/output/audioPlaybackController.js';
 import Synthesizer from '../../../engine/synthesizer/synthesizer.js';
 
 function installAudioContextMock() {
@@ -110,6 +111,25 @@ function testAudioPlayerLifecycle(assert) {
     }
 }
 
+function testAudioPlaybackControllerAllowlist(assert) {
+    const originalAudioContext = window.AudioContext;
+    const originalWebkitAudioContext = window.webkitAudioContext;
+
+    const MockAudioContext = installAudioContextMock();
+    window.AudioContext = MockAudioContext;
+    window.webkitAudioContext = null;
+
+    try {
+        const controller = new AudioPlaybackController('/audio', ['valid.wav']);
+        const invalidSelection = controller.setSelectedFile('invalid.wav');
+        assert(invalidSelection.ok === false, 'AudioPlaybackController should reject non-allowlisted audio selections');
+        controller.destroy();
+    } finally {
+        window.AudioContext = originalAudioContext;
+        window.webkitAudioContext = originalWebkitAudioContext;
+    }
+}
+
 function testAudioFrequencyValidation(assert) {
     let threw = false;
     try {
@@ -147,5 +167,6 @@ export function testOutputCore(assert) {
     testSynthesizerStatics(assert);
     testSynthesizerRepeatedStopSafety(assert);
     testAudioPlayerLifecycle(assert);
+    testAudioPlaybackControllerAllowlist(assert);
     testAudioFrequencyValidation(assert);
 }

@@ -20,7 +20,10 @@ Local checklist:
 [x] Fix stop control to stop all active playback
 [x] Validate dropdown selection against a strict allowlist before playback
 [x] Anything need to move to the engine for reusable
-[x] Seperation of concerns for data, methods, etc
+[x] Separation of concerns for data, methods, etc
+[x] Fix typo
+[x] Add/validate unit test(s)
+[x] Verify destroy()
 
 Focused review checklist:
 [x] Security: keep user-facing errors sanitized and concise

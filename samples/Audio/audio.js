@@ -86,3 +86,7 @@ window.addEventListener('load', async () => {
     setupControls();
     await loadAudioFiles();
 });
+
+window.addEventListener('beforeunload', () => {
+    orchestrator.destroy();
+});

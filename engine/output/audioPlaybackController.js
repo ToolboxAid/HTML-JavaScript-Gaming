@@ -81,7 +81,12 @@ class AudioPlaybackController {
             };
         }
     }
+
+    destroy() {
+        if (this.audioPlayer && typeof this.audioPlayer.destroy === 'function') {
+            this.audioPlayer.destroy();
+        }
+    }
 }
 
 export default AudioPlaybackController;
-
