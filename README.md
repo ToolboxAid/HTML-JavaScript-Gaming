@@ -39,7 +39,7 @@ The [`games/`](./games/) folder contains complete browser games and gameplay pro
 - Draw Shapes
 - Move Objects
 - Full Screen Gaming
-- Solar System - w-classes
+- Solar System Sample
 - 2D side scroll tile map (not complete)
 
 Each game usually includes its own `index.html`, `game.js`, `global.js`, styles, and game-specific classes/assets.
@@ -128,6 +128,7 @@ Good first stops are:
 
 - [`games/Asteroids/`](./games/Asteroids/)
 - [`games/Frogger/`](./games/Frogger/)
+- [`games/Solar%20System/`](./games/Solar%20System/)
 - [`games/2D%20side%20scroll%20tile%20map/`](./games/2D%20side%20scroll%20tile%20map/)
 - [`samples/Sample%20Game%20Engine/`](./samples/Sample%20Game%20Engine/)
 - [`tools/SpriteEditor/`](./tools/SpriteEditor/)
@@ -136,8 +137,9 @@ If you want a quick orientation path:
 
 1. Open the root launcher page.
 2. Run [`samples/Sample%20Game%20Engine/`](./samples/Sample%20Game%20Engine/).
-3. Read [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md).
-4. Open [`games/Asteroids/`](./games/Asteroids/).
+3. Open [`games/Solar%20System/`](./games/Solar%20System/) to compare a small engine-driven sample with a real project folder.
+4. Read [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md).
+5. Open [`games/Asteroids/`](./games/Asteroids/).
 
 ## Typical project flow
 

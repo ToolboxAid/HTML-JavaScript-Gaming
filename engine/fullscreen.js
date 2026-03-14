@@ -185,6 +185,8 @@ class Fullscreen {
         if (!Fullscreen.canvas) {
             return;
         }
+        // Keep the backing canvas at full resolution and scale only the displayed size.
+        // That preserves sharp rendering in the default windowed view.
         Fullscreen.canvas.width = Fullscreen.canvasWidth;
         Fullscreen.canvas.height = Fullscreen.canvasHeight;
         Fullscreen.canvas.style.width = `${Fullscreen.canvasWidth * scale}px`;
