@@ -37,6 +37,12 @@ const synthesizer = new Synthesizer();
 const pressedNotes = new Map();
 let clickedKey = "";
 
+async function ensureAudioReady() {
+    if (synthesizer.audioContext.state === 'suspended') {
+        await synthesizer.audioContext.resume();
+    }
+}
+
 function updateSoundProfile() {
     const oscType = document.getElementById('osc-type')?.value || 'triangle';
     const attack = parseFloat(document.getElementById('attack')?.value || '0.01');
@@ -103,23 +109,25 @@ function updateTextboxes() {
     }
 }
 
-function playSampleFroggerSong() {
+async function playSampleFroggerSong() {
+    await ensureAudioReady();
     synthesizer.playNotes(froggerSong);
 };
 
-function playSampleMountainSong() {
+async function playSampleMountainSong() {
+    await ensureAudioReady();
     synthesizer.playNotes(shellBeSongComingAroundMountain);
 };
 
-function playTwinkleTwinkle() {
+async function playTwinkleTwinkle() {
+    await ensureAudioReady();
     synthesizer.playNotes(twinkleTwinkle);
 }
 
-function playSamplePianoSong() {
+async function playSamplePianoSong() {
     // Play both hands from the sample piano arrangement.
-    console.log('Playing Piano Song');
+    await ensureAudioReady();
     synthesizer.playNotes(loveStoryInspiredPiano);
-    console.log('Finished Playing Piano Song');
 }
 
 document.getElementById('play-frogger-music').addEventListener('click', playSampleFroggerSong);
@@ -127,13 +135,14 @@ document.getElementById('play-mountain-music').addEventListener('click', playSam
 document.getElementById('play-twinkle-music').addEventListener('click', playTwinkleTwinkle);
 document.getElementById('play-piano-music').addEventListener('click', playSamplePianoSong);
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", async (e) => {
     const eventKey = e.key.toUpperCase();
     const key = eventKey === ";" ? "semicolon" : eventKey;
 
     if (!keys[key] || pressedNotes.has(keys[key])) {
         return;
     }
+    await ensureAudioReady();
     keys[key].element.classList.add("pressed");
     synthesizer.playNoteDirectly(keys[key].note, '4n', keys[key].octaveOffset); // Default note type
     pressedNotes.set(keys[key], true);
@@ -159,7 +168,8 @@ document.addEventListener("mouseup", () => {
 });
 
 for (const [key, { element }] of Object.entries(keys)) {
-    element.addEventListener("mousedown", () => {
+    element.addEventListener("mousedown", async () => {
+        await ensureAudioReady();
         element.classList.add("pressed");
         synthesizer.playNoteDirectly(keys[key].note, '4n', keys[key].octaveOffset); // Default note type
         pressedNotes.set(keys[key], true);
