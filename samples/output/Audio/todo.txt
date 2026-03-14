@@ -34,3 +34,15 @@ Focused review checklist:
 [x] Safety: verify rapid clicking does not leave stale playback state
 
 [X] Run browser smoke pass for each sample selection and stop behavior
+
+Smoke pass steps:
+1. Load `samples/output/Audio/index.html`.
+2. Select each available audio entry and confirm status updates are user-safe and clear.
+3. Click `Play` repeatedly and verify playback starts without stale overlaps.
+4. Click `Stop` during active playback and verify all active playback halts.
+5. Repeat rapid play/stop interactions and confirm no console errors.
+
+Decision notes:
+- UI wiring remains sample-local while playback orchestration is delegated through engine output helpers.
+- Input validation uses a strict allowlist for file selection and sanitized user-facing status/error text.
+- Reusable playback control logic was moved to engine where it improves cross-sample reuse.

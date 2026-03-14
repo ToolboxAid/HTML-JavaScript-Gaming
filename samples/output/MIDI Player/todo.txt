@@ -44,3 +44,10 @@ Decision notes:
 
 Final:
 [x] Run browser smoke pass for load, play, pause, seek, and stop
+
+Smoke pass steps:
+1. Load `samples/output/MIDI Player/index.html`.
+2. Choose a valid `.mid`/`.midi`/`.kar` file and verify status updates to loaded state.
+3. Run `Play`, `Pause`, `Seek`, and `Stop` in sequence and verify expected transport behavior.
+4. Toggle `Autoplay` and verify load behavior changes accordingly.
+5. Reload/navigate away and confirm no console errors related to lifecycle cleanup.

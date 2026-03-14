@@ -28,3 +28,15 @@ Focused review checklist:
 [x] Move-to-engine: continue evaluating reusable output helpers
 [x] Naming: keep control and action labels consistent
 [x] Safety: verify repeated playback and stop calls stay leak-free
+
+Smoke pass steps:
+1. Load `samples/output/Synthesizer/index.html`.
+2. Trigger keyboard notes from mapped keys and verify pressed/released visual state follows playback.
+3. Change waveform/envelope/vibrato/delay controls and verify audible changes without errors.
+4. Play each bundled song button and verify transport behavior stays stable.
+5. Use `Stop/Panic` repeatedly and confirm no stuck notes or console lifecycle errors.
+
+Decision notes:
+- Song data remains split into dedicated files for easier maintenance and clearer ownership.
+- UI event wiring stays local to sample code while orchestration/validation is shared through engine synthesizer modules.
+- Mobile/touch lifecycle validation remains intentionally deferred (`Don't do`) for this pass.

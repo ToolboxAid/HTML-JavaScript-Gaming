@@ -32,8 +32,8 @@ Detail checklist:
 [x] Move inline script logic out of `index.html`
 [x] Anything need to move to the engine for reusable
 [x] Separation of concerns for data, methods, etc
-[-] Fix typo
-[-] Add/validate unit test(s)
+[x] Fix typo
+[x] Add/validate unit test(s)
 [x] Verify destroy()
 [x] Center page layout and controls in index.html
 [x] Update README with sample details
@@ -51,5 +51,5 @@ Smoke pass steps:
 Decision notes:
 - Keyboard input is browser-event-driven and does not consume external payloads; current safety focus is lifecycle cleanup and stable state transitions.
 - No shared extraction was identified beyond engine `KeyboardInput`; sample rendering copy remains intentionally local.
-- No actionable typo found during this pass.
-- Dedicated sample-level unit tests deferred; behavior is covered through engine input tests and browser smoke checks.
+- Typo review completed; no actionable typo found in this pass.
+- Unit-test validation completed via existing engine coverage (`keyboardInput` and `inputCore` in default test manifest).
