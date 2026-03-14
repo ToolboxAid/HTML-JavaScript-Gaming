@@ -72,7 +72,7 @@ After that, good first stops are:
 
 - `games/Asteroids/`
 - `games/Frogger/`
-- `games/Solar System/`
+- `samples/Solar System/`
 - `games/2D side scroll tile map/`
 - `samples/Sample Game Engine/`
 - `tools/SpriteEditor/`
@@ -81,7 +81,7 @@ If you want the quickest orientation path, use this order:
 
 1. Open the root launcher page.
 2. Launch `samples/Sample Game Engine/`.
-3. Launch `games/Solar System/` to see a compact engine-driven sample with states, input, zoom, focus, and `GameObjectSystem` ownership.
+3. Launch `samples/Solar System/` to see a compact engine-driven sample with states, input, zoom, focus, and `GameObjectSystem` ownership.
 4. Read `docs/game-engine-architecture.md`.
 5. Open `games/Asteroids/` to see a more complete engine-driven game.
 
@@ -139,7 +139,7 @@ If you are new to this repo, work through it in this order:
 1. Run the root `index.html` launcher.
 2. Read `docs/game-engine-architecture.md`.
 3. Run `samples/Sample Game Engine/`.
-4. Open `games/Solar System/` to see a small engine sample inside a real game folder.
+4. Open `samples/Solar System/` to see a small engine sample inside a real project folder.
 5. Open `games/Asteroids/` to see a compact arcade-style implementation.
 6. Open `games/Frogger/` for a larger project with more systems and assets.
 7. Open `games/2D side scroll tile map/` to study map scrolling.
