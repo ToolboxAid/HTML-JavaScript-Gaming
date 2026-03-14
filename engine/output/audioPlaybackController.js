@@ -1,21 +1,20 @@
-import AudioPlayer from '../../engine/output/audioPlayer.js';
+// Reusable audio playback controller for sample/game UI orchestration.
+import AudioPlayer from './audioPlayer.js';
 
-const AUDIO_FILES = Object.freeze([
-    'elemental-magic.mp3',
-    'relaxing-guitar-loop.mp3',
-    'Alesis-Sanctuary.wav',
-    'Ouch-6.wav'
-]);
+class AudioPlaybackController {
+    constructor(basePath, audioFiles = []) {
+        if (!Array.isArray(audioFiles) || audioFiles.length === 0) {
+            throw new Error('audioFiles must be a non-empty array.');
+        }
 
-class AudioOrchestrator {
-    constructor(basePath = './fx') {
         this.audioPlayer = new AudioPlayer(basePath);
-        this.allowedAudioFiles = new Set(AUDIO_FILES);
-        this.selectedFile = AUDIO_FILES[0];
+        this.audioFiles = Object.freeze([...audioFiles]);
+        this.allowedAudioFiles = new Set(this.audioFiles);
+        this.selectedFile = this.audioFiles[0];
     }
 
     getAudioFiles() {
-        return [...AUDIO_FILES];
+        return [...this.audioFiles];
     }
 
     setSelectedFile(filename) {
@@ -35,7 +34,7 @@ class AudioOrchestrator {
 
     async loadAudioFiles() {
         try {
-            await AudioPlayer.loadAllAudioFiles(AUDIO_FILES, this.audioPlayer);
+            await AudioPlayer.loadAllAudioFiles(this.audioFiles, this.audioPlayer);
             return {
                 ok: true
             };
@@ -84,5 +83,5 @@ class AudioOrchestrator {
     }
 }
 
-export default AudioOrchestrator;
+export default AudioPlaybackController;
 

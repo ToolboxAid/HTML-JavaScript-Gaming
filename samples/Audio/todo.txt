@@ -19,13 +19,14 @@ Local checklist:
 [x] Add README with controls and file list
 [x] Fix stop control to stop all active playback
 [x] Validate dropdown selection against a strict allowlist before playback
-[ ] Anything need to move to the engine for reusable
+[x] Anything need to move to the engine for reusable
+[ ] Seperation of concerns for data, methods, etc
 
 Focused review checklist:
 [x] Security: keep user-facing errors sanitized and concise
 [x] Architecture: keep UI wiring separate from playback orchestration
-[ ] Move-to-engine: evaluate reusable sample status/error helper
+[x] Move-to-engine: evaluate reusable sample status/error helper
 [x] Naming: keep control/button labels consistent with other output samples
-[.] Safety: verify rapid clicking does not leave stale playback state
+[x] Safety: verify rapid clicking does not leave stale playback state
 
 [ ] Run browser smoke pass for each sample selection and stop behavior

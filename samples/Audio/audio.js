@@ -1,6 +1,13 @@
-import AudioOrchestrator from './audioOrchestrator.js';
+import AudioPlaybackController from '../../engine/output/audioPlaybackController.js';
 
-const orchestrator = new AudioOrchestrator('./fx');
+const AUDIO_FILES = Object.freeze([
+    'elemental-magic.mp3',
+    'relaxing-guitar-loop.mp3',
+    'Alesis-Sanctuary.wav',
+    'Ouch-6.wav'
+]);
+
+const orchestrator = new AudioPlaybackController('./fx', AUDIO_FILES);
 
 function setStatus(message) {
     const status = document.getElementById('status');
