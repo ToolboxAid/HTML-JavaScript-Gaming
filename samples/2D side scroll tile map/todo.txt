@@ -9,20 +9,21 @@ Status legend:
 2D Side Scroll Tile Map local plan
 
 Goal:
-Keep this as the scrolling/tile-map reference sample with clear camera, map, and gameplay boundaries.
+Keep this sample focused on scrolling, tile-map gameplay, and camera behavior with clear boundaries.
 
 Local checklist:
-[ ] Confirm `GameBase` lifecycle usage is current (`onInitialize`, `gameLoop`, `destroy`)
-[ ] Keep camera/scroll ownership explicit (player-follow vs manual offsets)
-[ ] Separate tile-map logic from player/enemy gameplay logic where helpful
-[ ] Verify map bounds and collision behavior stay stable at edges
-[ ] Remove sample-only startup/debug logging noise
-[ ] Add or update README notes for controls and map behavior
-[ ] Run browser smoke pass (attract/start/play/reset)
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep map/camera logic separated from player/gameplay logic
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with controls and map behavior notes
+[ ] Evaluate whether shared map/camera helpers should move to engine
+[ ] Verify naming consistency for map/camera/scroll methods and variables
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for load, movement, and edge-of-map behavior
 
 Focused review checklist:
-[ ] Security: validate any URL/query/config-driven values before use
-[ ] Architecture: keep map/render/update responsibilities separated
-[ ] Move-to-engine: identify reusable scrolling/tile helpers worth extracting
-[ ] Naming: keep camera/scroll/tile naming consistent across files
-[ ] Safety: ensure repeated restart does not leak listeners/timers
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from map/game orchestration
+[ ] Move-to-engine: identify reusable map/camera helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

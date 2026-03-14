@@ -9,19 +9,21 @@ Status legend:
 Mouse local plan
 
 Goal:
-Keep this sample as the main mouse-input reference with clear lifecycle behavior.
+Keep this sample focused on mouse input tracking and interaction state.
 
 Local checklist:
-[ ] Confirm runtime path (`GameBase` or intentional DOM loop) is explicit
-[ ] Keep mouse ownership and update flow centralized
-[ ] Verify click/drag/move state transitions are easy to follow
-[ ] Remove sample-only startup/debug log noise
-[ ] Add/update README for controls and expected behavior
-[ ] Run browser smoke pass for move/click/drag and restart behavior
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep pointer state handling separated from rendering/UI updates
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with click/move/drag behavior notes
+[ ] Evaluate whether shared pointer helpers should move to engine
+[ ] Verify naming consistency for pointer coordinates and actions
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for pointer movement and interaction flow
 
 Focused review checklist:
-[ ] Security: validate any dynamic text output derived from pointer data
-[ ] Architecture: separate pointer state updates from draw logic
-[ ] Move-to-engine: extract reusable pointer display helper only if shared
-[ ] Naming: normalize pointer/mouse coordinate naming
-[ ] Safety: ensure destroy removes listeners cleanly
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from mouse orchestration
+[ ] Move-to-engine: identify reusable pointer helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

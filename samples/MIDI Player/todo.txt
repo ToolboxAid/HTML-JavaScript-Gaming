@@ -9,19 +9,21 @@ Status legend:
 MIDI Player local plan
 
 Goal:
-Keep this sample focused on MIDI playback control and timing behavior.
+Keep this sample focused on MIDI playback controls and transport behavior.
 
 Local checklist:
-[ ] Confirm runtime boundary (DOM-driven vs engine-shell) is intentional
-[ ] Keep play/pause/stop/seek controls consistent and predictable
-[ ] Validate tempo/position inputs with friendly error messaging
-[ ] Document browser/runtime MIDI and audio constraints in README
-[ ] Remove sample-only startup/debug log noise
-[ ] Run browser smoke pass for playback flow and edge interactions
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with MIDI constraints and control behavior
+[ ] Evaluate whether shared MIDI transport helpers should move to engine
+[ ] Verify naming consistency for play/pause/stop/seek actions
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for load, play, pause, seek, and stop
 
 Focused review checklist:
-[ ] Security: validate file/track selection and position inputs
-[ ] Architecture: separate transport controls from rendering/UI updates
-[ ] Move-to-engine: extract reusable MIDI transport helper only if shared
-[ ] Naming: align transport naming with other output samples
-[ ] Safety: ensure stop/destroy clears scheduled playback state
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from MIDI orchestration
+[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

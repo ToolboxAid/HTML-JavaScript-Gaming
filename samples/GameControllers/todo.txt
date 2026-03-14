@@ -9,20 +9,21 @@ Status legend:
 GameControllers local plan
 
 Goal:
-Keep this sample as the clear controller-input reference with reliable lifecycle handling.
+Keep this sample focused on gamepad/controller input mapping and lifecycle behavior.
 
 Local checklist:
-[ ] Confirm runtime path (`GameBase` or intentional DOM loop) is explicit
-[ ] Keep controller ownership in one place (class/module) with clear start/stop
-[ ] Verify connect/disconnect behavior is reflected in UI state
-[ ] Validate deadzone/mapping behavior for common controller layouts
-[ ] Remove sample-only startup/debug log noise
-[ ] Add/update README with mapping expectations and controls
-[ ] Run browser/device smoke pass with connect/disconnect + input polling
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep input polling/mapping separated from UI display logic
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with controller support and mapping notes
+[ ] Evaluate whether shared controller display helpers should move to engine
+[ ] Verify naming consistency for buttons, axes, and actions
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for connect/disconnect and input updates
 
 Focused review checklist:
-[ ] Security: validate controller-derived values before rendering/logging
-[ ] Architecture: separate polling, mapping, and display responsibilities
-[ ] Move-to-engine: extract reusable controller display helpers if shared
-[ ] Naming: normalize controller/button/axis naming
-[ ] Safety: ensure listener/polling cleanup on destroy/restart
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from controller orchestration
+[ ] Move-to-engine: identify reusable controller helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

@@ -9,19 +9,21 @@ Status legend:
 Move Objects local plan
 
 Goal:
-Keep this as a simple object-motion sample with clean update/render boundaries.
+Keep this sample focused on movement/update fundamentals with clear state transitions.
 
 Local checklist:
-[ ] Verify motion uses clear, deterministic update logic
-[ ] Keep update and draw responsibilities separate
-[ ] Keep object setup/config easy to read for beginners
-[ ] Remove sample-only startup/debug log noise
-[ ] Add/update README with movement behavior and controls
-[ ] Run browser smoke pass for motion correctness and resets
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep object data separated from movement/update methods
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with movement behavior notes
+[ ] Evaluate whether shared movement helpers should move to engine
+[ ] Verify naming consistency for position/velocity/action methods
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for movement and reset behavior
 
 Focused review checklist:
-[ ] Security: validate any user-driven motion parameters
-[ ] Architecture: keep object state ownership explicit
-[ ] Move-to-engine: extract reusable motion helpers only if shared
-[ ] Naming: normalize velocity/position naming
-[ ] Safety: ensure restart does not duplicate intervals/timers
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from movement orchestration
+[ ] Move-to-engine: identify reusable movement helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

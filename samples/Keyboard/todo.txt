@@ -9,19 +9,21 @@ Status legend:
 Keyboard local plan
 
 Goal:
-Keep this as the clearest keyboard-input sample.
+Keep this sample focused on keyboard input state and lifecycle behavior.
 
 Local checklist:
-[ ] Confirm current keyboard API usage (`getKeysPressed` and lifecycle cleanup)
-[ ] Keep key-state rendering simple and readable
-[ ] Separate input polling from drawing concerns
-[ ] Remove sample-only startup/debug log noise
-[ ] Add/update README with key behavior and any focus caveats
-[ ] Run browser smoke pass for key down/up transitions and reset behavior
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep key-state tracking separated from display/render logic
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with key behavior and focus notes
+[ ] Evaluate whether shared key-state display helpers should move to engine
+[ ] Verify naming consistency for keys, states, and actions
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for keydown/keyup and focus transitions
 
 Focused review checklist:
-[ ] Security: avoid trusting raw key text in dynamic HTML output
-[ ] Architecture: keep input state ownership explicit
-[ ] Move-to-engine: extract shared key-display helper only if reused
-[ ] Naming: keep key/state variable names consistent
-[ ] Safety: ensure destroy stops listener-driven updates
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from keyboard orchestration
+[ ] Move-to-engine: identify reusable keyboard helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

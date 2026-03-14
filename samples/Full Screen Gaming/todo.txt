@@ -9,19 +9,21 @@ Status legend:
 Full Screen Gaming local plan
 
 Goal:
-Keep this sample centered on fullscreen behavior and canvas scaling quality.
+Keep this sample focused on fullscreen behavior, transitions, and rendering quality.
 
 Local checklist:
-[ ] Verify fullscreen enter/exit flow across repeated toggles
-[ ] Confirm crisp rendering in both windowed and fullscreen modes
-[ ] Verify fallback behavior when fullscreen APIs are unavailable
-[ ] Keep sample focused on fullscreen behavior (avoid unrelated game complexity)
-[ ] Add/update README with fullscreen usage and browser notes
-[ ] Run browser smoke pass (toggle sequence + resize interactions)
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep fullscreen orchestration separated from core rendering logic
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with fullscreen usage and browser constraints
+[ ] Evaluate whether shared fullscreen UI helpers should move to engine
+[ ] Verify naming consistency for fullscreen controls and methods
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for enter/exit fullscreen and resize behavior
 
 Focused review checklist:
-[ ] Security: avoid exposing internals in fullscreen error messages
-[ ] Architecture: keep fullscreen orchestration separate from rendering logic
-[ ] Move-to-engine: extract reusable fullscreen UI helper only if reused elsewhere
-[ ] Naming: keep fullscreen/state labels and methods consistent
-[ ] Safety: ensure listener cleanup on destroy/restart
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from fullscreen orchestration
+[ ] Move-to-engine: identify reusable fullscreen helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

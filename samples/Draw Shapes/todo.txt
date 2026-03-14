@@ -9,19 +9,21 @@ Status legend:
 Draw Shapes local plan
 
 Goal:
-Keep this as the simplest shape-rendering sample for early learning.
+Keep this sample focused on basic rendering primitives and clean draw flow.
 
 Local checklist:
-[ ] Keep draw logic minimal and easy to scan
-[ ] Separate reusable shape helpers from frame orchestration
-[ ] Verify color/palette usage remains intentional and documented
-[ ] Remove sample-only startup/debug logging noise
-[ ] Add or refresh README with shape examples and controls (if any)
-[ ] Run browser smoke pass for shape rendering correctness
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep shape data/config separated from drawing methods
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with shape examples and usage notes
+[ ] Evaluate whether shared draw helpers should move to engine
+[ ] Verify naming consistency for shape methods and variables
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for shape rendering and resize behavior
 
 Focused review checklist:
-[ ] Security: validate any user-provided shape parameters if present
-[ ] Architecture: keep setup/update/draw boundaries clean
-[ ] Move-to-engine: extract reusable draw helpers only if used by multiple samples
-[ ] Naming: normalize shape/helper names for readability
-[ ] Safety: ensure repeated reruns do not accumulate timers/listeners
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from draw orchestration
+[ ] Move-to-engine: identify reusable draw helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

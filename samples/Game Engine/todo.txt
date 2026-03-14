@@ -6,22 +6,24 @@ Status legend:
 - [x] Complete
 - [X] Complete
 
-Game Engine sample local plan
+Game Engine local plan
 
 Goal:
-Keep this as the canonical template-style sample for current engine runtime usage.
+Keep this sample as the canonical engine template for lifecycle and game flow.
 
 Local checklist:
-[ ] Align lifecycle methods with current engine conventions
-[ ] Remove outdated scaffolding and sample-only log noise
-[ ] Keep state flow and attract/start/play transitions easy to follow
-[ ] Confirm input ownership and cleanup are game-class owned
-[ ] Update README to reflect current template guidance
-[ ] Run browser smoke pass for full flow (init -> play -> restart)
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep runtime lifecycle and game state flow clearly separated
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with architecture and flow notes
+[ ] Evaluate whether shared template helpers should move to engine
+[ ] Verify naming consistency for game state and lifecycle methods
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for init, play, pause/stop, and restart
 
 Focused review checklist:
-[ ] Security: validate externally supplied config/query inputs
-[ ] Architecture: keep template boundaries clear (runtime/state/render)
-[ ] Move-to-engine: extract only truly reusable template helpers
-[ ] Naming: keep starter template naming aligned with docs
-[ ] Safety: verify repeated game restarts do not leak state
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from game orchestration
+[ ] Move-to-engine: identify reusable template helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

@@ -9,19 +9,21 @@ Status legend:
 Particle local plan
 
 Goal:
-Keep this as the focused particle/effects sample with clear performance boundaries.
+Keep this sample focused on particle effects and lifecycle behavior.
 
 Local checklist:
-[ ] Keep emitter setup and particle lifecycle easy to inspect
-[ ] Separate effect config from update/render loops
-[ ] Review allocation patterns to avoid avoidable per-frame churn
-[ ] Remove sample-only startup/debug log noise
-[ ] Add/update README with emitter controls and expected effect behavior
-[ ] Run browser smoke pass under repeated effect triggers
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep particle config/data separated from emission/update methods
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with emitter/effect notes
+[ ] Evaluate whether shared particle helpers should move to engine
+[ ] Verify naming consistency for emitter and particle actions
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for repeated emission and cleanup
 
 Focused review checklist:
-[ ] Security: validate effect parameters before applying them
-[ ] Architecture: separate emitter logic, particle state, and draw pipeline
-[ ] Move-to-engine: extract reusable particle helpers only if broadly reused
-[ ] Naming: keep emitter/particle naming consistent
-[ ] Safety: verify destroy/restart clears emitters and timers
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from particle orchestration
+[ ] Move-to-engine: identify reusable particle helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free

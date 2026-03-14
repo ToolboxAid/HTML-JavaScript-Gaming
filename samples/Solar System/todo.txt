@@ -9,19 +9,21 @@ Status legend:
 Solar System local plan
 
 Goal:
-Keep this as the strongest engine-driven sample for `GameObjectSystem`, world state, and camera/focus behavior.
+Keep this sample focused on world/state orchestration and GameObjectSystem ownership.
 
 Local checklist:
-[ ] Preserve clear `GameObjectSystem` ownership boundaries
-[ ] Keep zoom/focus controls and HUD/state updates consistent
-[ ] Keep config/data separation clean (`global` and content data)
-[ ] Remove sample-only startup/debug log noise
-[ ] Update README with controls and sample architecture notes
-[ ] Run browser smoke pass for focus/zoom/reset + performance sanity
+[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[ ] Keep world/state/camera concerns separated from UI wiring
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Add or update README with controls and architecture notes
+[ ] Evaluate whether shared world/camera helpers should move to engine
+[ ] Verify naming consistency for world objects, systems, and actions
+[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Run browser smoke pass for focus, zoom, and reset behavior
 
 Focused review checklist:
-[ ] Security: validate query/config-driven values before applying
-[ ] Architecture: keep world/state/ui responsibilities separated
-[ ] Move-to-engine: extract reusable camera/focus helpers only if reused
-[ ] Naming: align planet/body/manager naming conventions
-[ ] Safety: ensure reset/destroy does not leak objects/listeners
+[ ] Security: validate external/config-driven inputs before use
+[ ] Architecture: keep UI wiring separate from world orchestration
+[ ] Move-to-engine: identify reusable world/camera helpers for engine extraction
+[ ] Naming: keep control/action labels and identifiers consistent
+[ ] Safety: verify repeated interaction stays leak-free
