@@ -1,59 +1,27 @@
 <!DOCTYPE HTML>
-<!--
- ToolboxAid.com
- David Quesenberry
- 10/16/2024
- index.html
--->
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Player Example</title>
-    <script type="module">
-        // Import the AudioPlayer class
-        import AudioPlayer from '../../engine/output/audioPlayer.js';
-
-        // Initialize AudioPlayer with the base path of the audio files
-        const audioPlayer = new AudioPlayer('./fx');
-
-        // Load audio files
-        async function loadAudioFiles() {
-            await audioPlayer.loadAudio('elemental-magic.mp3');
-            await audioPlayer.loadAudio('relaxing-guitar-loop.mp3');
-            await audioPlayer.loadAudio('Alesis-Sanctuary.wav');
-            await audioPlayer.loadAudio('Ouch-6.wav');
-        }
-
-        // Play audio when button is clicked
-        function playAudio(filename) {
-//            audioPlayer.resume();  // Ensure the AudioContext is resumed
-            audioPlayer.playAudio(filename);
-        }
-
-        // Create buttons and add event listeners
-        function setupButtons() {
-            document.getElementById('play-sample1').addEventListener('click', () => playAudio('elemental-magic.mp3'));
-            document.getElementById('play-sample2').addEventListener('click', () => playAudio('relaxing-guitar-loop.mp3'));
-            document.getElementById('play-sample3').addEventListener('click', () => playAudio('Alesis-Sanctuary.wav'));
-            document.getElementById('play-sample4').addEventListener('click', () => playAudio('Ouch-6.wav'));
-        }
-
-        // Load audio files and setup buttons when the window loads
-        window.onload = async () => {
-            await loadAudioFiles();
-            setupButtons();
-        };
-    </script>
+    <script type="module" src="./audio.js" defer></script>
 </head>
 <body>
     <h1>Audio Player Example</h1>
+    <p>Browser audio may require one click before sound starts.</p>
+    <p id="status" role="status" aria-live="polite">Waiting for audio initialization...</p>
+    <p id="error" role="alert" aria-live="assertive"></p>
     <div>
-        <button id="play-sample1">Play Sample 1</button>
-        <button id="play-sample2">Play Sample 2</button>
-        <button id="play-sample3">Play Sample 3</button>
-        <button id="play-sample4">Play Sample 4</button>
+        <label for="selected-audio">Audio sample:</label>
+        <select id="selected-audio">
+            <option value="elemental-magic.mp3">elemental-magic.mp3</option>
+            <option value="relaxing-guitar-loop.mp3">relaxing-guitar-loop.mp3</option>
+            <option value="Alesis-Sanctuary.wav">Alesis-Sanctuary.wav</option>
+            <option value="Ouch-6.wav">Ouch-6.wav</option>
+        </select>
+        <button id="play-selected">Play Selected</button>
+        <button id="stop-looping">Stop Looping</button>
     </div>
 </body>
 </html>
