@@ -39,7 +39,6 @@ The [`games/`](./games/) folder contains complete browser games and gameplay pro
 - Draw Shapes
 - Move Objects
 - Full Screen Gaming
-- Solar System (outdated)
 - Solar System - w-classes
 - 2D side scroll tile map (not complete)
 
