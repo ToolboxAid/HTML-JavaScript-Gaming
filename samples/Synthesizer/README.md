@@ -33,11 +33,11 @@ Physical keys mapped to notes:
 
 ## Song Buttons
 
-- Play `Frogger` music
-- Play `Comming around the mountain` music
-- Play `Twinkle Twinkle Little Star`
-- Play `Piano` arrangement (`loveStoryInspiredPiano`)
-- `Stop / Panic` to immediately stop active/scheduled notes
+- `Play Frogger Song`
+- `Play Coming Around the Mountain Song`
+- `Play Twinkle Twinkle Little Star Song`
+- `Play Piano Song` (uses `loveStoryInspiredPiano`)
+- `Stop All Notes` to immediately stop active/scheduled notes
 
 ## Song Data Modules
 

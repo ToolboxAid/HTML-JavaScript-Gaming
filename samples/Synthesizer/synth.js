@@ -113,10 +113,10 @@ async function playSamplePianoSong() {
     await orchestrator.playSong(loveStoryInspiredPiano);
 }
 
-document.getElementById('play-frogger-music').addEventListener('click', playSampleFroggerSong);
-document.getElementById('play-mountain-music').addEventListener('click', playSampleMountainSong);
-document.getElementById('play-twinkle-music').addEventListener('click', playTwinkleTwinkle);
-document.getElementById('play-piano-music').addEventListener('click', playSamplePianoSong);
+document.getElementById('play-frogger-song').addEventListener('click', playSampleFroggerSong);
+document.getElementById('play-mountain-song').addEventListener('click', playSampleMountainSong);
+document.getElementById('play-twinkle-song').addEventListener('click', playTwinkleTwinkle);
+document.getElementById('play-piano-song').addEventListener('click', playSamplePianoSong);
 document.getElementById('stop-all-notes').addEventListener('click', () => {
     orchestrator.stopAll();
     setControlError('');

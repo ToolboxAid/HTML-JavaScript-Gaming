@@ -25,7 +25,7 @@ Focused review checklist:
 [x] Security: validate control inputs and keep messages user-safe
 [x] Architecture: keep UI wiring separate from synth orchestration
 [x] Move-to-engine: continue evaluating reusable output helpers
-[ ] Naming: keep control and action labels consistent
+[x] Naming: keep control and action labels consistent
 [ ] Safety: verify repeated playback and stop calls stay leak-free
 
 [ ] Validate mobile/touch interactions and pressed-key lifecycle
