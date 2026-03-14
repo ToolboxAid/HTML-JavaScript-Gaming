@@ -2,6 +2,33 @@ import MidiPlayer from '../../../engine/output/midiPlayer.js';
 
 const ALLOWED_EXTENSIONS = new Set(['mid', 'midi', 'kar']);
 const midiPlayer = new MidiPlayer('filesinput', { positionInputId: 'position' });
+let isDestroyed = false;
+
+// Transport orchestration is intentionally separated from DOM wiring.
+const transport = {
+    play() {
+        midiPlayer.play();
+    },
+    pause() {
+        midiPlayer.pause();
+    },
+    stop() {
+        midiPlayer.stop();
+    },
+    setAutoplay(enabled) {
+        midiPlayer.setAutoplay(Boolean(enabled));
+    },
+    seek(positionTenths) {
+        return midiPlayer.setPosition(positionTenths);
+    },
+    destroy() {
+        if (isDestroyed) {
+            return;
+        }
+        isDestroyed = true;
+        midiPlayer.destroy();
+    }
+};
 
 function setStatus(message) {
     const status = document.getElementById('status');
@@ -27,26 +54,26 @@ function isAllowedMidiFile(file) {
 }
 
 function handlePlay() {
-    midiPlayer.play();
+    transport.play();
     setStatus('Playing MIDI file...');
     setError('');
 }
 
 function handlePause() {
-    midiPlayer.pause();
+    transport.pause();
     setStatus('Playback paused.');
     setError('');
 }
 
 function handleStop() {
-    midiPlayer.stop();
+    transport.stop();
     setStatus('Playback stopped.');
     setError('');
 }
 
 function handlePositionChange(event) {
     const positionValue = Number(event.target.value);
-    const success = midiPlayer.setPosition(positionValue);
+    const success = transport.seek(positionValue);
     if (!success) {
         setError('Position seek is not available for this MIDI runtime.');
     } else {
@@ -89,11 +116,11 @@ function setupControls() {
     playButton.addEventListener('click', handlePlay);
     pauseButton.addEventListener('click', handlePause);
     stopButton.addEventListener('click', handleStop);
-    autoplay.addEventListener('change', (event) => midiPlayer.setAutoplay(event.target.checked));
+    autoplay.addEventListener('change', (event) => transport.setAutoplay(event.target.checked));
     position.addEventListener('input', handlePositionChange);
 
     setStatus('Select a MIDI file, then press Play.');
 }
 
 window.addEventListener('load', setupControls);
-window.addEventListener('beforeunload', () => midiPlayer.destroy());
+window.addEventListener('beforeunload', () => transport.destroy());

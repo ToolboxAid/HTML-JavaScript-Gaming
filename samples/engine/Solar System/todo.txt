@@ -19,6 +19,7 @@ Local checklist:
 [ ] Evaluate whether shared MIDI transport helpers should move to engine
 [ ] Verify naming consistency for play/pause/stop/seek actions
 [ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use

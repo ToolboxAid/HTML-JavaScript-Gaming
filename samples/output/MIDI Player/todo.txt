@@ -16,9 +16,10 @@ Local checklist:
 [x] Keep transport orchestration separated from UI control wiring
 [x] Keep status/error/debug output minimal and user-safe
 [x] Add or update README with MIDI constraints and control behavior
-[x] Evaluate whether shared MIDI transport helpers should move to engine
+[ ] Evaluate whether shared MIDI transport helpers should move to engine
 [x] Verify naming consistency for play/pause/stop/seek actions
 [x] Verify repeated restart/play flow does not leak state/listeners
+[ ] Verify headers are in place
 
 Focused review checklist:
 [x] Security: validate external/config-driven inputs before use
@@ -31,11 +32,11 @@ Detail checklist:
 [x] Move inline script logic out of `index.html`
 [x] Anything need to move to the engine for reusable
 [x] Separation of concerns for data, methods, etc
-[x] Fix typo
+[ ] Fix typo
 [x] Add/validate unit test(s)
 [x] Verify destroy()
 [x] Center page layout and controls in index.html
 [x] Update README with service details
 
 Final:
-[x] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for load, play, pause, seek, and stop
