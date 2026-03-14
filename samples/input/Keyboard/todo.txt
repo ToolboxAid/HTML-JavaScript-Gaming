@@ -13,17 +13,29 @@ Keep this sample focused on keyboard input state and lifecycle behavior.
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep key-state tracking separated from display/render logic
+[ ] Keep transport orchestration separated from UI control wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with key behavior and focus notes
-[ ] Evaluate whether shared key-state display helpers should move to engine
-[ ] Verify naming consistency for keys, states, and actions
+[ ] Add or update README with MIDI constraints and control behavior
+[ ] Evaluate whether shared MIDI transport helpers should move to engine
+[ ] Verify naming consistency for play/pause/stop/seek actions
 [ ] Verify repeated restart/play flow does not leak state/listeners
-[ ] Run browser smoke pass for keydown/keyup and focus transitions
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from keyboard orchestration
-[ ] Move-to-engine: identify reusable keyboard helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from MIDI orchestration
+[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+
+Detail checklist:
+[ ] Move inline script logic out of `index.html`
+[ ] Anything need to move to the engine for reusable
+[ ] Separation of concerns for data, methods, etc
+[ ] Fix typo
+[ ] Add/validate unit test(s)
+[ ] Verify destroy()
+[ ] Center page layout and controls in index.html
+[ ] Update README with service details
+
+Final:
+[ ] Run browser smoke pass for load, play, pause, seek, and stop

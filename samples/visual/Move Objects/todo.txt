@@ -13,17 +13,29 @@ Keep this sample focused on movement/update fundamentals with clear state transi
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep object data separated from movement/update methods
+[ ] Keep transport orchestration separated from UI control wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with movement behavior notes
-[ ] Evaluate whether shared movement helpers should move to engine
-[ ] Verify naming consistency for position/velocity/action methods
+[ ] Add or update README with MIDI constraints and control behavior
+[ ] Evaluate whether shared MIDI transport helpers should move to engine
+[ ] Verify naming consistency for play/pause/stop/seek actions
 [ ] Verify repeated restart/play flow does not leak state/listeners
-[ ] Run browser smoke pass for movement and reset behavior
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from movement orchestration
-[ ] Move-to-engine: identify reusable movement helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from MIDI orchestration
+[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+
+Detail checklist:
+[ ] Move inline script logic out of `index.html`
+[ ] Anything need to move to the engine for reusable
+[ ] Separation of concerns for data, methods, etc
+[ ] Fix typo
+[ ] Add/validate unit test(s)
+[ ] Verify destroy()
+[ ] Center page layout and controls in index.html
+[ ] Update README with service details
+
+Final:
+[ ] Run browser smoke pass for load, play, pause, seek, and stop

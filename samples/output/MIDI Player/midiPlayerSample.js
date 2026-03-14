@@ -81,7 +81,7 @@ function setupControls() {
     const position = document.getElementById('position');
 
     if (!fileInput || !playButton || !pauseButton || !stopButton || !autoplay || !position) {
-        setError('MIDI controls are missing from midiPlayerExample.html.');
+        setError('MIDI controls are missing from index.html.');
         return;
     }
 
@@ -97,4 +97,3 @@ function setupControls() {
 
 window.addEventListener('load', setupControls);
 window.addEventListener('beforeunload', () => midiPlayer.destroy());
-

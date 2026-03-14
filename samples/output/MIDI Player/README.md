@@ -2,12 +2,12 @@
 
 This sample demonstrates browser MIDI playback using:
 - `engine/output/midiPlayer.js`
-- a simple UI in `midiPlayerExample.html`
+- a simple UI in `index.html`
 - sample control wiring in `midiPlayerSample.js`
 
 ## Files
 
-- `midiPlayerExample.html`: sample page and controls
+- `index.html`: sample page and controls
 - `midiPlayerSample.js`: UI/event wiring, validation, and status messaging
 - `midi/Inu_No_Omawari-san__Misc_Children.mid`: bundled sample MIDI file
 - `midi/Inu_No_Omawari-san__Misc_Children_2.mid`: bundled sample MIDI file

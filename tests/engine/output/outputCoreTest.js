@@ -1,6 +1,7 @@
 import AudioPlayer from '../../../engine/output/audioPlayer.js';
 import AudioFrequency from '../../../engine/output/audioFrequency.js';
 import AudioPlaybackController from '../../../engine/output/audioPlaybackController.js';
+import MidiPlayer from '../../../engine/output/midiPlayer.js';
 import Synthesizer from '../../../engine/synthesizer/synthesizer.js';
 
 function installAudioContextMock() {
@@ -130,6 +131,36 @@ function testAudioPlaybackControllerAllowlist(assert) {
     }
 }
 
+function testMidiPlayerPositionSet(assert) {
+    const originalInit = MidiPlayer.prototype.init;
+
+    const fileInput = document.createElement('input');
+    fileInput.id = 'midi-test-input';
+    document.body.appendChild(fileInput);
+
+    MidiPlayer.prototype.init = function initMock() {
+        this.player = {
+            setPosition(position) {
+                this.position = position;
+            },
+            pause() {},
+            stop() {}
+        };
+        this.isInitialized = true;
+    };
+
+    try {
+        const midiPlayer = new MidiPlayer('midi-test-input');
+        const success = midiPlayer.setPosition(25);
+        assert(success === true, 'MidiPlayer.setPosition should return true when runtime supports setPosition');
+        assert(midiPlayer.player.position === 2.5, 'MidiPlayer.setPosition should convert slider tenths to seconds');
+        midiPlayer.destroy();
+    } finally {
+        MidiPlayer.prototype.init = originalInit;
+        fileInput.remove();
+    }
+}
+
 function testAudioFrequencyValidation(assert) {
     let threw = false;
     try {
@@ -168,5 +199,6 @@ export function testOutputCore(assert) {
     testSynthesizerRepeatedStopSafety(assert);
     testAudioPlayerLifecycle(assert);
     testAudioPlaybackControllerAllowlist(assert);
+    testMidiPlayerPositionSet(assert);
     testAudioFrequencyValidation(assert);
 }
