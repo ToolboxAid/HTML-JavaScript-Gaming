@@ -46,7 +46,7 @@ export const solarSystemConfig = {
     sunRadius: 30,
     speedMultiplier: 1,
     minSpeedMultiplier: 0.25,
-    maxSpeedMultiplier: 4,
+    maxSpeedMultiplier: 5,
     speedStep: 0.25,
     zoomDefault: 1,
     minZoom: 0.5,
