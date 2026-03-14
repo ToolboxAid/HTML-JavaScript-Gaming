@@ -43,19 +43,10 @@ Each game usually includes its own `index.html`, `game.js`, `global.js`, styles,
 
 The [`samples/`](./samples/) folder contains focused demos for individual engine features, such as:
 
-- 2D side scroll tile map
-- Draw Shapes
-- Move Objects
-- Full Screen Gaming
-- Solar System
-- keyboard input
-- mouse input
-- controllers
-- audio
-- MIDI playback
-- particles
-- synthesizer output
-- a sample engine-based game shell
+- [`samples/input/`](./samples/input/) for input-focused demos (`Keyboard`, `Mouse`, `GameControllers`)
+- [`samples/output/`](./samples/output/) for audio/output demos (`Audio`, `MIDI Player`, `Synthesizer`)
+- [`samples/visual/`](./samples/visual/) for rendering/visual demos (`Draw Shapes`, `Move Objects`, `Particle`, `Full Screen Gaming`)
+- [`samples/engine/`](./samples/engine/) for engine-shell/system demos (`Game Engine`, `Solar System`, `2D side scroll tile map`)
 
 ### Tools
 

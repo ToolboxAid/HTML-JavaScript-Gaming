@@ -20,7 +20,11 @@ The codebase is organized around a reusable engine and a growing set of examples
 
 - `engine/` contains the shared runtime pieces such as `gameBase.js`, `runtimeContext.js`, input handlers, game-facing object APIs, rendering helpers, animation helpers, object classes, math utilities, physics helpers, messaging, audio output, and tile-map support.
 - `games/` contains complete browser games like Asteroids, Frogger, Pong, Snake, Space Invaders, and a side-scrolling tile-map demo.
-- `samples/` contains smaller testbeds for keyboard, mouse, controllers, audio, MIDI, particles, and the sample game engine.
+- `samples/` is capability-grouped:
+  - `samples/input/` for keyboard, mouse, and controller demos
+  - `samples/output/` for audio, MIDI, and synthesizer demos
+  - `samples/visual/` for drawing, movement, particle, and fullscreen demos
+  - `samples/engine/` for engine-shell and system-oriented demos
 - `tools/` currently includes the Sprite Editor.
 
 ## Running the project

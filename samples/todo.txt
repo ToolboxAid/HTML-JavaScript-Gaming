@@ -12,17 +12,25 @@ Goal:
 Use this file as the top-level checklist for `samples/` directory cleanup and alignment. Keep project-specific detail inside each sample folder's own `todo.txt`.
 
 Per-folder status:
-[ ] samples/engine/2D side scroll tile map/
-[.] samples/output/Audio/
-[ ] samples/visual/Draw Shapes/
-[ ] samples/visual/Full Screen Gaming/
-[ ] samples/engine/Game Engine/
+
+input:
+[ ] samples/input/Mouse/
 [ ] samples/input/GameControllers/
 [ ] samples/input/Keyboard/
+
+output:
+[x] samples/output/Audio/
 [ ] samples/output/MIDI Player/
-[ ] samples/input/Mouse/
-[ ] samples/visual/Move Objects/
-[ ] samples/visual/Particle/
-[ ] samples/engine/Solar System/
 [x] samples/output/Synthesizer/
 
+visual:
+[ ] samples/visual/Draw Shapes/
+[ ] samples/visual/Full Screen Gaming/
+[ ] samples/visual/Move Objects/
+[ ] samples/visual/Particle/
+
+
+engine:
+[ ] samples/engine/Solar System/
+[ ] samples/engine/Game Engine/
+[ ] samples/engine/2D side scroll tile map/

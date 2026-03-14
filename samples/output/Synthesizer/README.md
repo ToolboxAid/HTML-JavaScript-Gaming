@@ -8,7 +8,8 @@ This sample demonstrates browser-based sound synthesis with:
 ## Files
 
 - `index.html`: page + control/button layout
-- `synth.js`: input handling, UI wiring, playback triggers
+- `synth.js`: UI wiring and DOM event handlers
+- `synthOrchestrator.js`: sample orchestration for synth controls and playback flow
 - `synth.css`: keyboard and control styling
 - `pianoPlayer.js`: piano arrangement data
 - `songs/`: song data modules

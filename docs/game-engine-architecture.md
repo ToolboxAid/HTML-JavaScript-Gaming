@@ -19,6 +19,13 @@ The design goal is simple: put reusable systems in `engine/`, and keep each game
 
 One good current example is `samples/engine/Solar System/`, which now runs as an engine-driven sample using `GameBase`, engine-owned keyboard input, and `GameObjectSystem` ownership for its active celestial bodies.
 
+The `samples/` directory is now grouped by capability:
+
+- `samples/input/`
+- `samples/output/`
+- `samples/visual/`
+- `samples/engine/`
+
 ## High-level runtime model
 
 The current runtime centers around `GameBase` plus `RuntimeContext`.
