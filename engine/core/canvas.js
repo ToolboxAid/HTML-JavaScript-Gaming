@@ -31,6 +31,8 @@ class CanvasUtils {
 
     static canvas = null;
     static ctx = null;
+    static drawTextCallback = (...args) => CanvasUtils.drawText(...args);
+    static drawSpriteCallback = (...args) => CanvasUtils.drawSprite(...args);
 
     static config = {
         width: 1024,
@@ -100,7 +102,7 @@ class CanvasUtils {
      */
     static drawNumber(x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         CanvasText.drawNumber(
-            this.drawText.bind(this),
+            this.drawTextCallback,
             x,
             y,
             number,
@@ -112,7 +114,7 @@ class CanvasUtils {
     }
 
     static drawText(x, y, text, pixelSize, color = 'white') {
-        CanvasText.drawText(this.drawSprite.bind(this), x, y, text, pixelSize, color);
+        CanvasText.drawText(this.drawSpriteCallback, x, y, text, pixelSize, color);
     }
 
     // get text width & height based on size & font w/padding

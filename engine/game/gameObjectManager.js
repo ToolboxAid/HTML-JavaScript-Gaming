@@ -22,8 +22,11 @@ class GameObjectManager {
         DebugLog.log(this.debug, null, 'GameObjectManager created');
     }
 
-    getActiveGameObjects() {
-        return [...this.#activeGameObjects];
+    getActiveGameObjects(useSnapshot = true) {
+        if (useSnapshot) {
+            return [...this.#activeGameObjects];
+        }
+        return this.#activeGameObjects;
     }
 
     getCount() {
@@ -95,9 +98,8 @@ class GameObjectManager {
     }
 
     destroy() {
-
-        for (const gameObject of [...this.#activeGameObjects]) {
-            this.removeGameObject(gameObject);
+        for (let i = this.#activeGameObjects.length - 1; i >= 0; i -= 1) {
+            this.removeGameObject(this.#activeGameObjects[i]);
         }
 
         this.#activeGameObjects = [];

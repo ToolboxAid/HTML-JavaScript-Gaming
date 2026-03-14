@@ -123,9 +123,12 @@ class GameObjectSystem {
     }
 
     clear() {
-
-        for (const gameObject of this.manager.getActiveGameObjects()) {
-            this.removeGameObject(gameObject);
+        const activeGameObjects = this.manager.getActiveGameObjects(false);
+        while (activeGameObjects.length > 0) {
+            const gameObject = activeGameObjects[activeGameObjects.length - 1];
+            if (!this.removeGameObject(gameObject)) {
+                return false;
+            }
         }
 
         DebugLog.log(this.debug, null, 'GameObjectSystem cleared');

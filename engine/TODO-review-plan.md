@@ -82,6 +82,33 @@ Objective:
 - [x] Verify input validation and defensive guards.
 - [x] Identify browser/runtime failure risks that should fail safely.
 
+## Performance review
+
+- [x] Add a performance plan with prioritized hotspots and success criteria.
+- [x] Remove avoidable work from hot loops (`gameBase.animate`, renderers, collision paths).
+- [x] Reduce avoidable allocations in frame/tick paths (object snapshots, polling arrays, debug payloads).
+- [x] Replace coarse timing in frame metrics with high-resolution timing where appropriate.
+- [.] Validate behavior remains unchanged after perf edits (syntax + smoke checks).
+- [x] Document perf changes, expected impact, and deferred items.
+
+Performance review priorities:
+
+- P1: Hot-loop overhead in `engine/core/gameBase.js` (`await` frame path, per-frame random color generation, timing source).
+- P1: Debug payload allocation in `engine/renderers/pngRenderer.js` during draw.
+- P2: Allocation churn from object list snapshots in `engine/game/gameObjectManager.js` / `engine/game/gameObjectSystem.js`.
+- P2: Allocation churn in `engine/input/controller/gamepadManager.js` polling.
+- P3: Minor per-call binds and helper allocations in `engine/core/canvas.js`.
+
+Performance review progress:
+
+- P1 `gameBase` hot loop: removed per-frame `Colors.generateRandomColor()` work, switched frame timing from `Date.now()` to `performance.now()`, and removed unconditional `await` from the RAF path by handling async `gameLoop` only when it returns a promise.
+- P1 `pngRenderer` debug path: avoided per-frame debug object construction when debug mode is off.
+- P2 object system allocations: reduced snapshot churn by adding optional non-snapshot access in `GameObjectManager.getActiveGameObjects(useSnapshot)` and using in-place iteration in `GameObjectSystem.clear()`.
+- P2 gamepad polling allocations: replaced `Array.from(...).map(...)` with in-place indexed updates of `this.gameControllers`.
+- P3 canvas helper allocations: replaced per-call `.bind(this)` closures in `CanvasUtils.drawNumber/drawText` with stable static callback references.
+- Validation completed so far: `node --check` passed for all modified performance-target files (`gameBase`, `pngRenderer`, `gameObjectManager`, `gameObjectSystem`, `gamepadManager`, `canvas`).
+- Deferred for follow-up: browser smoke/perf profiling pass (frame-time comparison in at least one real game scene such as Asteroids attract/gameplay).
+
 ## Basic improvements
 
 - [x] Centralize debug logging policy across engine modules (not just renderers)

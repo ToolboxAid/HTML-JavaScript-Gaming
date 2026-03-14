@@ -83,7 +83,14 @@ class GamepadManager {
 
         const gameControllers = navigator.getGamepads();
         if (!gameControllers) return;
-        this.gameControllers = Array.from(gameControllers).map(gameController => gameController || null);
+
+        if (this.gameControllers.length !== gameControllers.length) {
+            this.gameControllers.length = gameControllers.length;
+        }
+
+        for (let index = 0; index < gameControllers.length; index += 1) {
+            this.gameControllers[index] = gameControllers[index] || null;
+        }
     }
 
     stop() {

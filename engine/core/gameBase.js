@@ -3,7 +3,6 @@
 // 01/31/2025
 // gameBase.js
 
-import Colors from "../renderers/assets/colors.js";
 import DebugFlag from "../utils/debugFlag.js";
 import DebugLog from "../utils/debugLog.js";
 import RuntimeContext from "./runtimeContext.js";
@@ -71,7 +70,7 @@ class GameBase {
         GameBase.lastTimestamp = performance.now();
     }
 
-    async animate(timestamp) {
+    animate(timestamp) {
         try {
             if (this.isDestroyed) {
                 return;
@@ -82,46 +81,58 @@ class GameBase {
                 return;
             }
 
-            Colors.generateRandomColor();
-
             // Calculate delta time
             const deltaTime = (timestamp - GameBase.lastTimestamp) / 1000;
             GameBase.lastTimestamp = timestamp;
 
             if (this.runtimeContext.getContext() && this.gameLoop) {
                 // start performance timer
-                const startTimeMs = Date.now();
+                const startTimeMs = performance.now();
                 this.runtimeContext.clearCanvas();
 
                 // Call game loop implementation (code and draw)
-                await this.gameLoop(deltaTime, this.runtimeContext); // call game.js (the inheriting class)
-
-                // Update performance data
-                const timeSpentMs = Date.now() - startTimeMs; // end performance timer
-                this.runtimeContext.updatePerformance(timeSpentMs);
-
-                // Draw border
-                this.runtimeContext.drawBorder();
-
-                // Draw click full screen
-                this.runtimeContext.drawFullscreenOverlay();
-
-                // Draw Performance data
-                this.runtimeContext.drawPerformanceOverlay();
-
-                // this will proved the {width, height} of text data;
-                if (GameBase.showTextMetrics) {
-                    GameBase.showTextMetrics = false;
-                    const textData = `"=====================MEM: 30.66/33.08MB"`;
-                    const sizePX = 30;
-                    const font = "monospace";
-                    DebugLog.log(GameBase.DEBUG, 'GameBase', this.runtimeContext.calculateTextMetrics(textData, sizePX, font));
+                const gameLoopResult = this.gameLoop(deltaTime, this.runtimeContext); // call game.js (the inheriting class)
+                if (gameLoopResult && typeof gameLoopResult.then === 'function') {
+                    gameLoopResult.then(() => {
+                        this.completeFrame(startTimeMs);
+                        requestAnimationFrame(this.animate);
+                    }).catch((error) => {
+                        DebugLog.error('GameBase', 'Animation error:', error);
+                        requestAnimationFrame(this.animate);
+                    });
+                    return;
                 }
+
+                this.completeFrame(startTimeMs);
             }
             // Continue animation
             requestAnimationFrame(this.animate);
         } catch (error) {
             DebugLog.error('GameBase', 'Animation error:', error);
+        }
+    }
+
+    completeFrame(startTimeMs) {
+        // Update performance data
+        const timeSpentMs = performance.now() - startTimeMs; // end performance timer
+        this.runtimeContext.updatePerformance(timeSpentMs);
+
+        // Draw border
+        this.runtimeContext.drawBorder();
+
+        // Draw click full screen
+        this.runtimeContext.drawFullscreenOverlay();
+
+        // Draw Performance data
+        this.runtimeContext.drawPerformanceOverlay();
+
+        // this will proved the {width, height} of text data;
+        if (GameBase.showTextMetrics) {
+            GameBase.showTextMetrics = false;
+            const textData = `"=====================MEM: 30.66/33.08MB"`;
+            const sizePX = 30;
+            const font = "monospace";
+            DebugLog.log(GameBase.DEBUG, 'GameBase', this.runtimeContext.calculateTextMetrics(textData, sizePX, font));
         }
     }
 

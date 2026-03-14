@@ -24,22 +24,24 @@ class PngRenderer {
         const newY = Math.round(object.y + normalizedOffsetY + (frameOffset.y * object.pixelSize));
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
-        DebugLog.log(object.constructor?.DEBUG, null, 'ObjectPNG frame debug', {
-            spritePath: object.spritePath,
-            spriteX: object.spriteX,
-            spriteY: object.spriteY,
-            frameWidth: object.frameWidth,
-            frameHeight: object.frameHeight,
-            currentFrameIndex: object.currentFrameIndex,
-            sourceRect: { sx, sy, sw, sh },
-            destRect: {
-                x: newX,
-                y: newY,
-                width: scaledWidth,
-                height: scaledHeight
-            },
-            frameOffset
-        });
+        if (object.constructor?.DEBUG) {
+            DebugLog.log(true, null, 'ObjectPNG frame debug', {
+                spritePath: object.spritePath,
+                spriteX: object.spriteX,
+                spriteY: object.spriteY,
+                frameWidth: object.frameWidth,
+                frameHeight: object.frameHeight,
+                currentFrameIndex: object.currentFrameIndex,
+                sourceRect: { sx, sy, sw, sh },
+                destRect: {
+                    x: newX,
+                    y: newY,
+                    width: scaledWidth,
+                    height: scaledHeight
+                },
+                frameOffset
+            });
+        }
 
         CanvasUtils.ctx.save();
 
