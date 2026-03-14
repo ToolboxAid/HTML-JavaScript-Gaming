@@ -145,6 +145,33 @@ If you are new to this repo, work through it in this order:
 7. Open `samples/2D side scroll tile map/` to study map scrolling.
 8. Read `docs/sprite-system.md` before expanding sprite-heavy projects.
 
+## Sample Order by Inheritance
+
+If you want to learn the engine from the bottom up, the sample folders make the most sense in an inheritance-first order:
+
+1. `samples/Draw Shapes/`
+   Start with basic drawing through the shared game shell.
+2. `samples/Move Objects/`
+   Add simple update-loop behavior and object motion.
+3. `samples/Keyboard/`
+   Learn engine-owned keyboard input and frame-based key states.
+4. `samples/Mouse/`
+   Add mouse input concepts, even though this sample is less aligned with `GameBase`.
+5. `samples/GameControllers/`
+   Extend that input path into controller and gamepad support.
+6. `samples/Game Engine/`
+   Study the fuller engine shell once drawing, movement, and input basics are familiar.
+7. `samples/Solar System/`
+   See a more complete engine-driven sample with state, config-driven setup, and `GameObjectSystem` ownership.
+8. `samples/2D side scroll tile map/`
+   Move into larger structure with attract flow, scrolling, and map-oriented behavior.
+9. `samples/Particle/`
+   Explore specialized rendering and effects after the main runtime model is clear.
+10. `samples/Audio/`
+11. `samples/MIDI Player/`
+12. `samples/Synthisizer/`
+   Treat the output/audio samples as later-stage subsystem study rather than the core engine path.
+
 ## Adding a new game
 
 A practical way to add a new game is:
