@@ -13,30 +13,43 @@ Keep this sample focused on mouse input tracking and interaction state.
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep mouse state orchestration separated from UI/render wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
+[ ] Add or update README with mouse controls and behavior
+[ ] Evaluate whether shared mouse sample helpers should move to engine
+[ ] Verify naming consistency for mouse state methods and labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
 [ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from mouse orchestration
+[ ] Move-to-engine: identify reusable mouse helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+[ ] Center on HTML page
 
 Detail checklist:
-[ ] Move inline script logic out of `index.html`
+[x] Move inline script logic out of `index.html`
 [ ] Anything need to move to the engine for reusable
 [ ] Separation of concerns for data, methods, etc
 [ ] Fix typo
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
 [ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[ ] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for mouse move/press/release and cleanup
+
+Smoke pass steps:
+1. Load `samples/input/Mouse/index.html`.
+2. Move mouse across canvas and verify drawing follows cursor position.
+3. Press/hold/release left, middle, and right mouse buttons and verify color/state behavior updates.
+4. Click rapidly and confirm no stuck button states after release.
+5. Reload/navigate away and confirm no console errors related to mouse listener lifecycle.
+
+Decision notes:
+- Sample is currently DOM-driven and directly binds mouse input to canvas rendering.
+- Reusable mouse primitives already exist in engine `MouseInput`; extra helper extraction should be justified by a second consumer.
+- Logging behavior should be reviewed for debug-gating before final completion.
