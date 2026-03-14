@@ -16,7 +16,7 @@ This sample demonstrates basic audio loading and playback through:
 
 - `Audio sample` dropdown: choose which clip to play
 - `Play Selected`: play the chosen clip
-- `Stop Looping`: stop any looping audio managed by `AudioPlayer`
+- `Stop All`: stop active playback managed by `AudioPlayer`
 
 ## Included Audio
 
@@ -29,5 +29,4 @@ This sample demonstrates basic audio loading and playback through:
 
 Some browsers block audio output until the first user interaction.  
 If no sound plays initially, click `Play Selected` once to unlock audio.
-
 

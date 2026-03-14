@@ -28,4 +28,4 @@ Focused review checklist:
 [x] Naming: keep control and action labels consistent
 [x] Safety: verify repeated playback and stop calls stay leak-free
 
-[ ] Validate mobile/touch interactions and pressed-key lifecycle
+[-] Validate mobile/touch interactions and pressed-key lifecycle

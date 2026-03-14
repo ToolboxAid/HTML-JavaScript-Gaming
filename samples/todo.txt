@@ -24,4 +24,4 @@ Per-folder status:
 [ ] samples/Move Objects/
 [ ] samples/Particle/
 [ ] samples/Solar System/
-[.] samples/Synthesizer/
+[x] samples/Synthesizer/

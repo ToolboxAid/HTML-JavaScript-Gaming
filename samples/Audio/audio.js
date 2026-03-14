@@ -1,14 +1,6 @@
-import AudioPlayer from '../../engine/output/audioPlayer.js';
+import AudioOrchestrator from './audioOrchestrator.js';
 
-const AUDIO_FILES = [
-    'elemental-magic.mp3',
-    'relaxing-guitar-loop.mp3',
-    'Alesis-Sanctuary.wav',
-    'Ouch-6.wav'
-];
-
-const audioPlayer = new AudioPlayer('./fx');
-let selectedFile = AUDIO_FILES[0];
+const orchestrator = new AudioOrchestrator('./fx');
 
 function setStatus(message) {
     const status = document.getElementById('status');
@@ -27,29 +19,34 @@ function setError(message = '') {
 async function loadAudioFiles() {
     setStatus('Loading audio samples...');
 
-    try {
-        await AudioPlayer.loadAllAudioFiles(AUDIO_FILES, audioPlayer);
+    const result = await orchestrator.loadAudioFiles();
+    if (result.ok) {
         setStatus('Audio samples loaded. Click Play to hear a sample.');
         setError('');
-    } catch (error) {
-        setError(error.message);
-        setStatus('Failed to load one or more audio samples.');
+    } else {
+        setError(result.error);
+        setStatus(result.error);
     }
 }
 
-async function playSelected() {
-    try {
-        audioPlayer.playAudio(selectedFile);
-        setStatus(`Playing: ${selectedFile}`);
+function playSelected() {
+    const result = orchestrator.playSelected();
+    if (result.ok) {
+        setStatus(`Playing: ${result.selectedFile}`);
         setError('');
-    } catch (error) {
-        setError(error.message);
+    } else {
+        setError(result.error);
     }
 }
 
 function stopAllAudio() {
-    audioPlayer.stopAllAudio();
-    setStatus('Stopped all active audio.');
+    const result = orchestrator.stopAll();
+    if (result.ok) {
+        setStatus('Stopped all active audio.');
+        setError('');
+    } else {
+        setError(result.error);
+    }
 }
 
 function setupControls() {
@@ -63,8 +60,13 @@ function setupControls() {
     }
 
     selected.addEventListener('change', (event) => {
-        selectedFile = event.target.value;
-        setStatus(`Selected: ${selectedFile}`);
+        const result = orchestrator.setSelectedFile(event.target.value);
+        if (result.ok) {
+            setStatus(`Selected: ${result.selectedFile}`);
+            setError('');
+        } else {
+            setError(result.error);
+        }
     });
 
     playButton.addEventListener('click', playSelected);
