@@ -15,8 +15,13 @@ function installAudioContextMock() {
             return {
                 frequency: { setValueAtTime() {}, value: 0 },
                 connect() {},
+                disconnect() {},
                 start() {},
-                stop() {},
+                stop() {
+                    if (typeof this.onended === 'function') {
+                        this.onended();
+                    }
+                },
                 onended: null,
                 type: 'sine'
             };
@@ -37,20 +42,23 @@ function installAudioContextMock() {
         createGain() {
             return {
                 gain: { value: 1 },
-                connect() {}
+                connect() {},
+                disconnect() {}
             };
         }
 
         createDelay() {
             return {
                 delayTime: { value: 0 },
-                connect() {}
+                connect() {},
+                disconnect() {}
             };
         }
 
         createConvolver() {
             return {
-                connect() {}
+                connect() {},
+                disconnect() {}
             };
         }
 
@@ -112,8 +120,32 @@ function testAudioFrequencyValidation(assert) {
     assert(threw, 'AudioFrequency should validate frequency input');
 }
 
+function testSynthesizerRepeatedStopSafety(assert) {
+    const originalAudioContext = window.AudioContext;
+    const originalWebkitAudioContext = window.webkitAudioContext;
+
+    const MockAudioContext = installAudioContextMock();
+    window.AudioContext = MockAudioContext;
+    window.webkitAudioContext = null;
+
+    try {
+        const synthesizer = new Synthesizer();
+
+        for (let i = 0; i < 10; i += 1) {
+            synthesizer.playNoteDirectly('C', '4n', 3);
+            synthesizer.stopAllNotes();
+        }
+
+        assert(synthesizer.activeNodes.size === 0, 'Synthesizer stopAllNotes should not leak active audio nodes after repeated calls');
+    } finally {
+        window.AudioContext = originalAudioContext;
+        window.webkitAudioContext = originalWebkitAudioContext;
+    }
+}
+
 export function testOutputCore(assert) {
     testSynthesizerStatics(assert);
+    testSynthesizerRepeatedStopSafety(assert);
     testAudioPlayerLifecycle(assert);
     testAudioFrequencyValidation(assert);
 }

@@ -27,7 +27,12 @@ class Synthesizer {
     }
 
     this.activeNodes.add(node);
+
+    const existingOnEnded = node.onended;
     node.onended = () => {
+      if (typeof existingOnEnded === 'function') {
+        existingOnEnded();
+      }
       this.activeNodes.delete(node);
     };
   }
@@ -236,6 +241,26 @@ class Synthesizer {
     // reverbNode.buffer = reverbBuffer;
     noteGainNode.connect(reverbNode);
     reverbNode.connect(this.audioContext.destination);
+
+    let cleanedUp = false;
+    const cleanupAudioGraph = () => {
+      if (cleanedUp) {
+        return;
+      }
+
+      cleanedUp = true;
+      [lfoGain, delayAmountGain, feedbackGain, reverbNode, delayNode, noteGainNode, lfo, osc].forEach((node) => {
+        if (node && typeof node.disconnect === 'function') {
+          try {
+            node.disconnect();
+          } catch (error) {
+            // Ignore disconnect errors during graph teardown.
+          }
+        }
+      });
+    };
+
+    osc.onended = cleanupAudioGraph;
 
     lfo.start(this.audioContext.currentTime + startTime);
     osc.start(this.audioContext.currentTime + startTime);
