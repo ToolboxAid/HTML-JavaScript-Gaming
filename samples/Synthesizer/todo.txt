@@ -20,11 +20,12 @@ Local checklist:
 [x] Add local README with controls, key mappings, and songs
 [x] Normalize sample naming (`Synthesizer`)
 [x] Run browser smoke pass for keyboard play and song buttons
-[ ] Validate mobile/touch interactions and pressed-key lifecycle
 
 Focused review checklist:
 [x] Security: validate control inputs and keep messages user-safe
-[ ] Architecture: keep UI wiring separate from synth orchestration
+[x] Architecture: keep UI wiring separate from synth orchestration
 [x] Move-to-engine: continue evaluating reusable output helpers
 [ ] Naming: keep control and action labels consistent
 [ ] Safety: verify repeated playback and stop calls stay leak-free
+
+[ ] Validate mobile/touch interactions and pressed-key lifecycle

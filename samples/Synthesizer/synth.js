@@ -1,8 +1,4 @@
-import Synthesizer from '../../engine/synthesizer/synthesizer.js';
-import { sanitizeSoundProfileInput } from '../../engine/synthesizer/synthSoundProfile.js';
-import SynthTransport from '../../engine/synthesizer/synthTransport.js';
-import { createSynthKeyboardMap, normalizeSynthKeyboardKey } from '../../engine/synthesizer/synthKeyboardMap.js';
-import { parseTimeSignatureInput } from '../../engine/synthesizer/synthTimeSignature.js';
+import SynthOrchestrator from './synthOrchestrator.js';
 import { froggerSong } from './songs/froggerSong.js';
 import { shellBeSongComingAroundMountain } from './songs/comingAroundMountainSong.js';
 import { twinkleTwinkle } from './songs/twinkleTwinkleSong.js';
@@ -11,9 +7,8 @@ import { loveStoryInspiredPiano } from './pianoPlayer.js';
 const getElementByNote = (note) =>
     note && document.querySelector(`[note="${note}"]`);
 
-const synthesizer = new Synthesizer();
-const synthTransport = new SynthTransport(synthesizer);
-const keys = createSynthKeyboardMap(getElementByNote, 3);
+const orchestrator = new SynthOrchestrator(getElementByNote, 3);
+const keys = orchestrator.getKeyMap();
 const pressedNotes = new Map();
 let clickedKey = "";
 
@@ -25,7 +20,7 @@ function setControlError(message = '') {
 }
 
 function updateSoundProfile() {
-    const { profilePatch, normalizedValues } = sanitizeSoundProfileInput({
+    const { ok, error, normalizedValues } = orchestrator.applySoundProfileInput({
         oscType: document.getElementById('osc-type')?.value,
         attack: document.getElementById('attack')?.value,
         release: document.getElementById('release')?.value,
@@ -33,12 +28,10 @@ function updateSoundProfile() {
         delayAmount: document.getElementById('delay-amount')?.value
     });
 
-    try {
-        synthesizer.setSoundProfile(profilePatch);
+    if (ok) {
         setControlError('');
-    } catch (error) {
-        // Keep user-facing errors generic and safe.
-        setControlError('Invalid sound controls were ignored. Using safe values.');
+    } else {
+        setControlError(error);
     }
 
     const attackValue = document.getElementById('attack-value');
@@ -70,29 +63,23 @@ updateSoundProfile();
 
 // Add controls to set the time signature and tempo
 document.getElementById('time-signature').addEventListener('change', (e) => {
-    const parsed = parseTimeSignatureInput(e.target.value);
-    if (!parsed.ok) {
-        setControlError(parsed.error);
+    const result = orchestrator.applyTimeSignatureInput(e.target.value);
+    if (!result.ok) {
+        setControlError(result.error);
         updateTextboxes();
         return;
     }
 
-    try {
-        synthesizer.setTimeSignature(parsed.beatsPerMeasure, parsed.beatUnit);
-        setControlError('');
-    } catch (error) {
-        setControlError('Time signature must be positive values like 4/4.');
-    }
+    setControlError('');
     updateTextboxes();
 });
 
 document.getElementById('tempo').addEventListener('change', (e) => {
-    const tempo = parseInt(e.target.value, 10);
-    try {
-        synthesizer.setTempo(tempo);
+    const result = orchestrator.applyTempoInput(e.target.value);
+    if (result.ok) {
         setControlError('');
-    } catch (error) {
-        setControlError('Tempo must be a positive number.');
+    } else {
+        setControlError(result.error);
     }
     updateTextboxes();
 });
@@ -100,30 +87,30 @@ document.getElementById('tempo').addEventListener('change', (e) => {
 function updateTextboxes() {
     const tempoTextbox = document.getElementById('tempo');
     if (tempoTextbox) {
-        tempoTextbox.value = synthesizer.tempo;
+        tempoTextbox.value = orchestrator.getTempo();
     }
 
     const timeSignatureTextbox = document.getElementById('time-signature');
     if (timeSignatureTextbox) {
-        timeSignatureTextbox.value = `${synthesizer.timeSignature.beatsPerMeasure}/${synthesizer.timeSignature.beatUnit}`;
+        timeSignatureTextbox.value = orchestrator.getTimeSignatureText();
     }
 }
 
 async function playSampleFroggerSong() {
-    await synthTransport.playSong(froggerSong);
+    await orchestrator.playSong(froggerSong);
 };
 
 async function playSampleMountainSong() {
-    await synthTransport.playSong(shellBeSongComingAroundMountain);
+    await orchestrator.playSong(shellBeSongComingAroundMountain);
 };
 
 async function playTwinkleTwinkle() {
-    await synthTransport.playSong(twinkleTwinkle);
+    await orchestrator.playSong(twinkleTwinkle);
 }
 
 async function playSamplePianoSong() {
     // Play both hands from the sample piano arrangement.
-    await synthTransport.playSong(loveStoryInspiredPiano);
+    await orchestrator.playSong(loveStoryInspiredPiano);
 }
 
 document.getElementById('play-frogger-music').addEventListener('click', playSampleFroggerSong);
@@ -131,23 +118,23 @@ document.getElementById('play-mountain-music').addEventListener('click', playSam
 document.getElementById('play-twinkle-music').addEventListener('click', playTwinkleTwinkle);
 document.getElementById('play-piano-music').addEventListener('click', playSamplePianoSong);
 document.getElementById('stop-all-notes').addEventListener('click', () => {
-    synthTransport.stopAll();
+    orchestrator.stopAll();
     setControlError('');
 });
 
 document.addEventListener("keydown", async (e) => {
-    const key = normalizeSynthKeyboardKey(e.key);
+    const key = orchestrator.normalizeKey(e.key);
 
     if (!keys[key] || pressedNotes.has(keys[key])) {
         return;
     }
     keys[key].element.classList.add("pressed");
-    await synthTransport.playKeyboardNote(keys[key].note, '4n', keys[key].octaveOffset);
+    await orchestrator.playKeyboardNoteByKey(key, '4n');
     pressedNotes.set(keys[key], true);
 });
 
 document.addEventListener("keyup", (e) => {
-    const key = normalizeSynthKeyboardKey(e.key);
+    const key = orchestrator.normalizeKey(e.key);
 
     if (!keys[key]) {
         return;
@@ -167,7 +154,7 @@ document.addEventListener("mouseup", () => {
 for (const [key, { element }] of Object.entries(keys)) {
     element.addEventListener("mousedown", async () => {
         element.classList.add("pressed");
-        await synthTransport.playKeyboardNote(keys[key].note, '4n', keys[key].octaveOffset);
+        await orchestrator.playKeyboardNoteByKey(key, '4n');
         pressedNotes.set(keys[key], true);
         clickedKey = key;
     });
