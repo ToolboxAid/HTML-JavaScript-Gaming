@@ -11,11 +11,11 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Tighten `global.js` and group config by simulation, display, and controls
 [x] Remove debug `console.log` startup noise from `game.js`
 
-[ ] Phase 2: align runtime structure with the engine
-[ ] Keep `game.js` focused on engine-style orchestration: setup, input, update, and draw flow
-[ ] Stop double-advancing orbit angles in `game.js` and `celestialBody.js`
-[ ] Make runtime flow explicit: engine boot -> onInitialize -> input update -> simulation update -> render
-[ ] Follow current engine API conventions for `onInitialize(...)`, `gameLoop(...)`, and owned cleanup
+[x] Phase 2: align runtime structure with the engine
+[x] Keep `game.js` focused on engine-style orchestration: setup, input, update, and draw flow
+[x] Stop double-advancing orbit angles in `game.js` and `celestialBody.js`
+[x] Make runtime flow explicit: engine boot -> onInitialize -> input update -> simulation update -> render
+[x] Follow current engine API conventions for `onInitialize(...)`, `gameLoop(...)`, and owned cleanup
 
 [ ] Phase 3: choose the correct engine object model
 [ ] Decide whether `CelestialBody` should stay on `ObjectDynamic`, move to `GameObject`, or use a lighter engine-compatible object shape

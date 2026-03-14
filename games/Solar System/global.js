@@ -41,7 +41,7 @@ export const solarSystemConfig = {
     sunRadius: 30
   },
   display: {
-    orbitStroke: "rgba(255, 255, 255, 0.75)",
+    orbitStroke: "rgba(170, 180, 200, 0.35)",
     moonColor: "white"
   }
 };
