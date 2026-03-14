@@ -161,6 +161,7 @@ class SolarSystemSample extends GameBase {
     const centerY = canvasConfig.height / 2;
     const focusedBody = this.getFocusedBody();
 
+    // Keep the selected body centered while preserving zoom/toggle settings.
     if (!focusedBody) {
       return {
         centerX,
@@ -267,6 +268,8 @@ class SolarSystemSample extends GameBase {
     this.runtimeContext = runtimeContext;
     this.updateInput();
 
+    // The sample keeps state handling in the game shell so input/update/render flow
+    // stays easy to compare with the general GameBase pattern used elsewhere.
     switch (this.gameState) {
       case solarSystemConfig.states.attract:
         this.updateAttractState();

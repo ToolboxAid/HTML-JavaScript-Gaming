@@ -185,18 +185,17 @@ class Fullscreen {
         if (!Fullscreen.canvas) {
             return;
         }
-        Fullscreen.canvas.width = Fullscreen.canvasWidth * scale;
-        Fullscreen.canvas.height = Fullscreen.canvasHeight * scale;
+        Fullscreen.canvas.width = Fullscreen.canvasWidth;
+        Fullscreen.canvas.height = Fullscreen.canvasHeight;
+        Fullscreen.canvas.style.width = `${Fullscreen.canvasWidth * scale}px`;
+        Fullscreen.canvas.style.height = `${Fullscreen.canvasHeight * scale}px`;
     }
 
     static updateCanvasTransform() {
         if (!Fullscreen.ctx) {
             return;
         }
-        Fullscreen.ctx.setTransform(
-            (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : Fullscreen.scale), 0, 0,
-            (Fullscreen.isFullScreen ? Fullscreen.gameFullScaleScreen : Fullscreen.scale), 0, 0 // No offset for centering
-        );
+        Fullscreen.ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
     static draw(ctx) {

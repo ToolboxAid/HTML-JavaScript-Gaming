@@ -6,7 +6,7 @@
 export const canvasConfig = {
   width: 1024,
   height: 768,
-  scale: 0.35,
+  scale: ((200 / 1024) * 0.25) * 2,
   backgroundColor: "#000000",
   borderColor: "white",
   borderSize: 15,

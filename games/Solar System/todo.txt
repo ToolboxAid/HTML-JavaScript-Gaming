@@ -1,4 +1,4 @@
-Solar System - w-classes upgrade plan
+Solar System sample upgrade plan
 
 Goal:
 Use the shared game engine to execute the Solar System project, so this folder becomes a real engine-driven game/sample instead of a mostly standalone demo.
@@ -47,11 +47,11 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Keep object ownership and cross-object coordination aligned with current engine docs
 [x] Use shared helpers/utilities where they improve clarity instead of custom one-off code
 
-[ ] Phase 8: polish for teaching value
-[ ] Add concise comments only where the flow is not obvious
-[ ] Keep naming consistent with current engine conventions
-[ ] Make the sample easy to compare with `samples/Sample Game Engine/`
-[ ] Update launcher text/description if the sample direction changes
+[x] Phase 8: polish for teaching value
+[x] Add concise comments only where the flow is not obvious
+[x] Keep naming consistent with current engine conventions
+[x] Make the sample easy to compare with `samples/Sample Game Engine/`
+[x] Update launcher text/description if the sample direction changes
 
 [ ] Phase 9: verification
 [ ] Run the sample in browser and verify no broken behavior
