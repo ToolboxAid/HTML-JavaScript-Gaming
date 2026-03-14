@@ -22,6 +22,7 @@ class CelestialBody extends ObjectStatic {
         super(x, y, radius * 2, radius * 2);
 
         this.name = name;
+        this.type = 'celestialBody';
         this.visual = {
             radius,
             color,

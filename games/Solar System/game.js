@@ -12,6 +12,7 @@ import {
 import CelestialBody from './celestialBody.js';
 import { solarSystemBodies } from './solarSystemData.js';
 import GameBase from '../../engine/core/gameBase.js';
+import GameObjectSystem from '../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import CanvasUtils from '../../engine/core/canvas.js';
 
@@ -37,7 +38,7 @@ class SolarSystemSample extends GameBase {
     this.runtimeContext = runtimeContext;
     this.keyboardInput = new KeyboardInput();
     this.gameState = solarSystemConfig.states.attract;
-    this.celestialBodies = [];
+    this.gameObjectSystem = new GameObjectSystem(false);
     this.simulationSpeed = solarSystemConfig.simulation.speedMultiplier;
     this.showOrbits = true;
     this.showLabels = false;
@@ -47,7 +48,18 @@ class SolarSystemSample extends GameBase {
   }
 
   resetSimulation() {
-    this.celestialBodies = createCelestialBodies(solarSystemBodies);
+    if (this.gameObjectSystem) {
+      this.gameObjectSystem.clear();
+    }
+
+    const celestialBodies = createCelestialBodies(solarSystemBodies);
+    celestialBodies.forEach((body) => {
+      this.gameObjectSystem.addGameObject(body);
+    });
+  }
+
+  getActiveBodies() {
+    return this.gameObjectSystem?.getActiveGameObjects() ?? [];
   }
 
   wasAnyKeyPressed(keyCodes = []) {
@@ -63,7 +75,7 @@ class SolarSystemSample extends GameBase {
   }
 
   cycleFocus(step) {
-    const maxIndex = this.celestialBodies.length - 1;
+    const maxIndex = this.getActiveBodies().length - 1;
 
     if (this.focusIndex === -1 && step > 0) {
       this.focusIndex = 0;
@@ -135,11 +147,13 @@ class SolarSystemSample extends GameBase {
   }
 
   getFocusedBody() {
-    if (this.focusIndex < 0 || this.focusIndex >= this.celestialBodies.length) {
+    const activeBodies = this.getActiveBodies();
+
+    if (this.focusIndex < 0 || this.focusIndex >= activeBodies.length) {
       return null;
     }
 
-    return this.celestialBodies[this.focusIndex];
+    return activeBodies[this.focusIndex];
   }
 
   getRenderOptions() {
@@ -178,7 +192,7 @@ class SolarSystemSample extends GameBase {
   }
 
   updateSimulation(deltaTime) {
-    this.celestialBodies.forEach(body => {
+    this.getActiveBodies().forEach(body => {
       body.update(deltaTime);
     });
   }
@@ -213,7 +227,7 @@ class SolarSystemSample extends GameBase {
 
   renderSimulation() {
     const renderOptions = this.getRenderOptions();
-    this.celestialBodies.forEach(body => {
+    this.getActiveBodies().forEach(body => {
       body.draw(renderOptions);
     });
   }

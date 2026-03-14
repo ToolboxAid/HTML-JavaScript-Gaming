@@ -42,10 +42,10 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Toggle labels or debug info
 [x] Optional zoom or planet focus
 
-[ ] Phase 7: integrate with current engine-facing architecture
-[ ] Evaluate whether a `GameObjectSystem` should own the active celestial bodies
-[ ] Keep object ownership and cross-object coordination aligned with current engine docs
-[ ] Use shared helpers/utilities where they improve clarity instead of custom one-off code
+[x] Phase 7: integrate with current engine-facing architecture
+[x] Evaluate whether a `GameObjectSystem` should own the active celestial bodies
+[x] Keep object ownership and cross-object coordination aligned with current engine docs
+[x] Use shared helpers/utilities where they improve clarity instead of custom one-off code
 
 [ ] Phase 8: polish for teaching value
 [ ] Add concise comments only where the flow is not obvious
