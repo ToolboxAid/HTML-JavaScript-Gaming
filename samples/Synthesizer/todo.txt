@@ -6,7 +6,7 @@ Status legend:
 - [x] Complete
 - [X] Complete
 
-Synthisizer local upgrade plan
+Synthesizer local upgrade plan
 
 Goal:
 Keep this sample focused on synthesizer/output concepts while staying clean and easy to maintain.
@@ -20,7 +20,7 @@ Local checklist:
 [x] Center and clean up Sound Controls layout
 [x] Extract reusable sound-profile logic into `engine/output/synthSoundProfile.js`
 [x] Extract reusable score validation into `engine/output/synthScoreValidation.js`
-[ ] Normalize naming and local titles for consistency (`Synthisizer` -> `Synthesizer`, optional)
+[x] Normalize naming and local titles for consistency
 [x] Add local notes for browser audio restrictions (autoplay/user-gesture requirements)
 [x] Remove remaining sample-only debug `console.log` noise where not needed
 [ ] Add a short sample README with controls, key mappings, and song list

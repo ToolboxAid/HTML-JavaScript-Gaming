@@ -156,7 +156,7 @@ If you want to learn the engine from the bottom up, the samples make the most se
 9. [`samples/Particle/`](./samples/Particle/)
 10. [`samples/Audio/`](./samples/Audio/)
 11. [`samples/MIDI%20Player/`](./samples/MIDI%20Player/)
-12. [`samples/Synthisizer/`](./samples/Synthisizer/)
+12. [`samples/Synthesizer/`](./samples/Synthesizer/)
 
 ## Typical project flow
 

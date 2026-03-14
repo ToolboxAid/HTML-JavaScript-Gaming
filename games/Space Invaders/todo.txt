@@ -94,7 +94,7 @@ Ideas taken from the current `games/` directory:
 [ ] Tier 2: `Keyboard`, `Mouse`, `GameControllers`
 [ ] Tier 3: `Game Engine`, `Solar System`
 [ ] Tier 4: `2D side scroll tile map`, `Particle`
-[ ] Tier 5: `Audio`, `MIDI Player`, `Synthisizer`
+[ ] Tier 5: `Audio`, `MIDI Player`, `Synthesizer`
 [ ] Make this order visible in sample-facing documentation
 
 [ ] Phase 6: improve sample-facing documentation

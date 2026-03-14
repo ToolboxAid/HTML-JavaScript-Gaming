@@ -169,7 +169,7 @@ If you want to learn the engine from the bottom up, the sample folders make the 
    Explore specialized rendering and effects after the main runtime model is clear.
 10. `samples/Audio/`
 11. `samples/MIDI Player/`
-12. `samples/Synthisizer/`
+12. `samples/Synthesizer/`
    Treat the output/audio samples as later-stage subsystem study rather than the core engine path.
 
 ## Adding a new game
