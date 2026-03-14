@@ -11,11 +11,17 @@ Samples directory update list
 Goal:
 Use this file as the top-level checklist for `samples/` directory cleanup and alignment. Keep project-specific detail inside each sample folder's own `todo.txt`.
 
-[ ] Normalize sample naming and launcher/docs references
-[ ] Align core engine-path samples with current `GameBase` conventions
-[ ] Convert standalone input demos to engine-driven samples where appropriate
-[ ] Standardize common sample structure and config usage where it helps
-[ ] Keep the inheritance-first learning order visible in docs
-[ ] Add or refine per-sample `todo.txt` plans using this directory checklist as the baseline
-[ ] Review which samples should stay lightweight DOM/output demos instead of being forced into the engine shell
-[ ] Run a browser pass across the highest-priority samples after cleanup
+Per-folder status:
+[ ] samples/2D side scroll tile map/
+[ ] samples/Audio/
+[ ] samples/Draw Shapes/
+[ ] samples/Full Screen Gaming/
+[ ] samples/Game Engine/
+[ ] samples/GameControllers/
+[ ] samples/Keyboard/
+[ ] samples/MIDI Player/
+[ ] samples/Mouse/
+[ ] samples/Move Objects/
+[ ] samples/Particle/
+[ ] samples/Solar System/
+[x] samples/Synthesizer/
