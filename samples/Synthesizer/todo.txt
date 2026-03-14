@@ -23,5 +23,5 @@ Local checklist:
 [x] Normalize naming and local titles for consistency
 [x] Add local notes for browser audio restrictions (autoplay/user-gesture requirements)
 [x] Remove remaining sample-only debug `console.log` noise where not needed
-[ ] Add a short sample README with controls, key mappings, and song list
+[x] Add a short sample README with controls, key mappings, and song list
 [ ] Run browser smoke pass for keyboard play + each song button
