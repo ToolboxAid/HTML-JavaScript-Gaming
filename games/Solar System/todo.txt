@@ -24,10 +24,10 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Split orbit data, visual data, and moon data into clearer properties
 [x] Add helper methods for center point, orbit update, and moon update
 
-[ ] Phase 4: make the project data-driven through engine-friendly content setup
-[ ] Extract solar system body definitions into structured config data
-[ ] Keep construction logic separate from raw planet/moon definitions
-[ ] Make it easy to add or remove planets without editing loop logic
+[x] Phase 4: make the project data-driven through engine-friendly content setup
+[x] Extract solar system body definitions into structured config data
+[x] Keep construction logic separate from raw planet/moon definitions
+[x] Make it easy to add or remove planets without editing loop logic
 
 [ ] Phase 5: use engine input and game state patterns
 [ ] Add engine-owned input instances on the game class
