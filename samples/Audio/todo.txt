@@ -16,7 +16,6 @@ Local checklist:
 [x] Move inline script logic out of `index.html`
 [x] Add status/error messaging for load/playback flow
 [x] Add browser autoplay/user-interaction note
-[x] Add README with controls and file list
 [x] Fix stop control to stop all active playback
 [x] Validate dropdown selection against a strict allowlist before playback
 [x] Anything need to move to the engine for reusable
@@ -24,6 +23,8 @@ Local checklist:
 [x] Fix typo
 [x] Add/validate unit test(s)
 [x] Verify destroy()
+[x] Center page layout and controls in index.html
+[x] Update README with service details
 
 Focused review checklist:
 [x] Security: keep user-facing errors sanitized and concise
@@ -32,4 +33,4 @@ Focused review checklist:
 [x] Naming: keep control/button labels consistent with other output samples
 [x] Safety: verify rapid clicking does not leave stale playback state
 
-[ ] Run browser smoke pass for each sample selection and stop behavior
+[X] Run browser smoke pass for each sample selection and stop behavior
