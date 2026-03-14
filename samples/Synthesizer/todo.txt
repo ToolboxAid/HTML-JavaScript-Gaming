@@ -6,22 +6,25 @@ Status legend:
 - [x] Complete
 - [X] Complete
 
-Synthesizer local upgrade plan
+Synthesizer local plan
 
 Goal:
-Keep this sample focused on synthesizer/output concepts while staying clean and easy to maintain.
+Keep this sample focused on synthesis/output controls with clean UX and stable playback behavior.
 
 Local checklist:
-[x] Review whether this sample should remain DOM-driven or gain a minimal engine shell
-[x] Keep synth controls and music examples focused on output concepts
-[x] Split song data into dedicated files under `songs/`
-[x] Remove re-export barrel for songs to reduce import indirection
-[x] Add sound controls for waveform/envelope/vibrato/delay
-[x] Center and clean up Sound Controls layout
-[x] Extract reusable sound-profile logic into `engine/output/synthSoundProfile.js`
-[x] Extract reusable score validation into `engine/output/synthScoreValidation.js`
-[x] Normalize naming and local titles for consistency
-[x] Add local notes for browser audio restrictions (autoplay/user-gesture requirements)
-[x] Remove remaining sample-only debug `console.log` noise where not needed
-[x] Add a short sample README with controls, key mappings, and song list
-[x] Run browser smoke pass for keyboard play + each song button
+[x] Keep sample DOM-driven with focused module structure
+[x] Split song data into dedicated files
+[x] Remove barrel re-export for songs to reduce indirection
+[x] Add live sound controls (waveform/envelope/vibrato/delay)
+[x] Add Stop/Panic behavior and inline validation feedback
+[x] Add local README with controls, key mappings, and songs
+[x] Normalize sample naming (`Synthesizer`)
+[x] Run browser smoke pass for keyboard play and song buttons
+[ ] Validate mobile/touch interactions and pressed-key lifecycle
+
+Focused review checklist:
+[ ] Security: validate control inputs and keep messages user-safe
+[ ] Architecture: keep UI wiring separate from synth orchestration
+[ ] Move-to-engine: continue evaluating reusable output helpers
+[ ] Naming: keep control and action labels consistent
+[ ] Safety: verify repeated playback and stop calls stay leak-free

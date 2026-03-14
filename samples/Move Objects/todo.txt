@@ -5,106 +5,23 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Move Objects sample engine upgrade plan
+
+Move Objects local plan
 
 Goal:
-Keep this sample as a simple object-update example while aligning it with current engine conventions and sample structure.
+Keep this as a simple object-motion sample with clean update/render boundaries.
 
-Project-specific checklist:
-[ ] Update `onInitialize(runtimeContext)` and `gameLoop(deltaTime, runtimeContext)` signatures if needed
-[ ] Remove startup/debug logging noise
-[ ] Keep object update and draw responsibilities easy to follow
-[ ] Review whether helper objects should move into an `objects/` folder or remain flat for teaching clarity
+Local checklist:
+[ ] Verify motion uses clear, deterministic update logic
+[ ] Keep update and draw responsibilities separate
+[ ] Keep object setup/config easy to read for beginners
+[ ] Remove sample-only startup/debug log noise
+[ ] Add/update README with movement behavior and controls
+[ ] Run browser smoke pass for motion correctness and resets
 
-Shared engine alignment reference:
-
-Target project structure for both `samples/` and `games/`:
-
-```text
-Project Name/
-  index.html
-  styles.css               # optional, only when page-level styling is needed
-  global.js
-  game.js
-  data/                    # optional structured content/config data
-  objects/                 # optional project-specific object/entity classes
-  systems/                 # optional project-specific systems/managers
-  state/                   # optional state machines, stores, and transition helpers
-  runtime/                 # optional app/session/bootstrap helpers for larger games
-  world/                   # optional world orchestration, spawning, collision groups
-  combat/                  # optional weapons, bullets, attack logic
-  scenes/                  # optional scene/state modules for larger projects
-  ui/                      # optional HUD/menu/canvas UI helpers
-  assets/                  # optional images, audio, maps, sprite sheets, etc.
-  README.md                # optional per-project notes when the project teaches something specific
-  todo.txt                 # optional local upgrade/review plan
-```
-
-Directory structure guidelines:
-
-[ ] Keep `index.html` minimal and focused on bootstrapping the module entry point
-[ ] Keep `game.js` as the runtime shell: setup, owned input, state flow, update, and render orchestration
-[ ] Keep `global.js` for shared project config only
-[ ] Put raw content and definitions in `data/` instead of mixing large config blocks into `game.js`
-[ ] Put project-specific entities in `objects/`
-[ ] Put project-specific coordination logic in `systems/` only when it improves clarity
-[ ] Use `state/` when state transitions, save data, or high-score stores deserve their own boundary
-[ ] Use `runtime/` when app/session/bootstrap concerns should be separated from the main game shell
-[ ] Use `world/` when gameplay objects, spawning, and world-level coordination need their own layer
-[ ] Use `combat/` when weapons, bullets, or attack interactions become large enough to separate cleanly
-[ ] Add `scenes/` only when the project has enough state complexity to justify scene modules
-[ ] Keep UI and HUD helpers under `ui/` when canvas presentation becomes large enough to separate
-[ ] Use `assets/` for project-owned resources instead of scattering them across the root folder
-[ ] Avoid adding folders that do not teach or simplify anything for small samples
-
-Ideas taken from the current `games/` directory:
-
-[ ] `games/Asteroids/` shows good larger-project boundaries with `runtime/`, `state/`, `systems/`, `ui/`, `world/`, and `combat/`
-[ ] `games/Frogger/` shows the value of dedicated object folders plus content/config helpers such as `gameObjects/`, `levelData.js`, and `levelManager.js`
-[ ] Smaller games such as `Pong Game/`, `Tic-Tac-Toe/`, and `Connect 4/` show that not every project needs subfolders if a flat structure is still readable
-[ ] The right rule is not “use every folder”; it is “add a folder when it creates a clearer teaching or maintenance boundary”
-
-[ ] Phase 1: normalize the shared sample shell
-[ ] Align sample entry points around `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)`
-[ ] Standardize common file structure where practical: `index.html`, `game.js`, `global.js`, and optional helper files
-[ ] Standardize config exports around `canvasConfig`, `performanceConfig`, `fullscreenConfig`, and a sample-specific config object
-[ ] Remove avoidable startup `console.log` noise from teaching samples
-
-[ ] Phase 2: bring input samples onto the engine runtime path
-[ ] Convert `samples/Mouse/` from a standalone animation loop to a `GameBase` sample
-[ ] Convert `samples/GameControllers/` from a standalone loop to a `GameBase` sample
-[ ] Keep input instances owned by the game class instead of loose top-level module state
-[ ] Verify input cleanup follows normal engine destroy conventions
-
-[ ] Phase 3: standardize update and render flow
-[ ] Separate input update, simulation update, and render responsibilities in each sample
-[ ] Reduce mixed logic inside `gameLoop(...)` where a small helper method would make the sample easier to learn
-[ ] Keep draw code easy to compare across early samples such as `Draw Shapes`, `Move Objects`, and `Keyboard`
-
-[ ] Phase 4: align samples with the object and game-facing engine layers
-[ ] Review whether each sample should remain canvas-only, use shared object classes, or use `engine/game/` helpers
-[ ] Keep `samples/Solar System/` as the main example of `GameObjectSystem` ownership
-[ ] Review `samples/2D side scroll tile map/` as the larger scrolling/map example
-[ ] Use shared helpers where they improve clarity instead of one-off sample logic
-
-[ ] Phase 5: define the teaching progression explicitly
-[ ] Group samples by learning tier instead of only by feature name
-[ ] Recommended progression:
-[ ] Tier 1: `Draw Shapes`, `Move Objects`
-[ ] Tier 2: `Keyboard`, `Mouse`, `GameControllers`
-[ ] Tier 3: `Game Engine`, `Solar System`
-[ ] Tier 4: `2D side scroll tile map`, `Particle`
-[ ] Tier 5: `Audio`, `MIDI Player`, `Synthesizer`
-[ ] Make this order visible in sample-facing documentation
-
-[ ] Phase 6: improve sample-facing documentation
-[ ] Add a `samples/README.md` that explains what each sample teaches
-[ ] Include the inheritance-first learning order used in `docs/getting-started.md`
-[ ] Call out which samples are core engine path examples versus specialized subsystem demos
-[ ] Keep naming and wording consistent with the root launcher and repo docs
-
-[ ] Phase 7: final cleanup and verification
-[ ] Review `index.html`, `README.md`, and `docs/getting-started.md` after sample cleanup
-[ ] Remove stale `Sample ...` wording that no longer matches folder names
-[ ] Run a browser pass across the highest-priority samples
-[ ] Confirm moved/renamed samples still load correctly from the launcher
+Focused review checklist:
+[ ] Security: validate any user-driven motion parameters
+[ ] Architecture: keep object state ownership explicit
+[ ] Move-to-engine: extract reusable motion helpers only if shared
+[ ] Naming: normalize velocity/position naming
+[ ] Safety: ensure restart does not duplicate intervals/timers

@@ -47,15 +47,15 @@ async function playSelected() {
     }
 }
 
-function stopLooping() {
-    audioPlayer.stopAllLooping();
-    setStatus('Stopped all looping audio.');
+function stopAllAudio() {
+    audioPlayer.stopAllAudio();
+    setStatus('Stopped all active audio.');
 }
 
 function setupControls() {
     const selected = document.getElementById('selected-audio');
     const playButton = document.getElementById('play-selected');
-    const stopButton = document.getElementById('stop-looping');
+    const stopButton = document.getElementById('stop-all');
 
     if (!selected || !playButton || !stopButton) {
         setError('Audio controls are missing from index.html.');
@@ -68,7 +68,7 @@ function setupControls() {
     });
 
     playButton.addEventListener('click', playSelected);
-    stopButton.addEventListener('click', stopLooping);
+    stopButton.addEventListener('click', stopAllAudio);
 }
 
 window.addEventListener('load', async () => {

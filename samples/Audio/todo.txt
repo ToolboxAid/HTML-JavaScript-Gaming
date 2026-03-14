@@ -6,16 +6,24 @@ Status legend:
 - [x] Complete
 - [X] Complete
 
-Audio local upgrade plan
+Audio local plan
 
 Goal:
-Keep this sample focused on output/audio basics with a clean, easy-to-follow structure.
+Keep this sample focused on basic audio loading/playback with clear UX and minimal complexity.
 
 Local checklist:
-[x] Review whether this sample should stay DOM-driven or gain a minimal engine shell
-[x] Keep audio loading and playback examples small and easy to follow
-[x] Move inline script logic into a dedicated module entry (`audio.js`)
-[x] Add status/error messaging for loading and playback flow
-[x] Add browser autoplay/user-gesture note in UI
-[x] Add a short sample README with controls and included audio files
-[ ] Run browser smoke pass for load + each sample selection
+[x] Keep sample DOM-driven with a focused module entry (`audio.js`)
+[x] Move inline script logic out of `index.html`
+[x] Add status/error messaging for load/playback flow
+[x] Add browser autoplay/user-interaction note
+[x] Add README with controls and file list
+[x] Fix stop control to stop all active playback
+[ ] Validate dropdown selection against a strict allowlist before playback
+[ ] Run browser smoke pass for each sample selection and stop behavior
+
+Focused review checklist:
+[ ] Security: keep user-facing errors sanitized and concise
+[ ] Architecture: keep UI wiring separate from playback orchestration
+[ ] Move-to-engine: evaluate reusable sample status/error helper
+[ ] Naming: keep control/button labels consistent with other output samples
+[ ] Safety: verify rapid clicking does not leave stale playback state

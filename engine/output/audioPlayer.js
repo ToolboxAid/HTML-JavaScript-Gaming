@@ -180,14 +180,41 @@ class AudioPlayer {
 
     // Stop all looping sounds
     stopAllLooping() {
-        for (const [filename, source] of this.loopingSources.entries()) {
+        const loopingFilenames = [...this.loopingSources.keys()];
+        for (const filename of loopingFilenames) {
+            this.stopAudio(filename);
+        }
+    }
+
+    stopAudio(filename) {
+        if (!this.activeSources.has(filename)) {
+            return;
+        }
+
+        const source = this.activeSources.get(filename);
+        try {
             source.stop();
-            this.loopingSources.delete(filename);
-            this.activeSources.delete(filename);
-            this.gainNodes.delete(filename);
-            if (AudioPlayer.DEBUG) {
-                console.log(`Stopped all looping sounds`);
-            }
+        } catch (error) {
+            // Ignore stop errors for already-finished sources.
+        }
+
+        this.loopingSources.delete(filename);
+        this.activeSources.delete(filename);
+        this.gainNodes.delete(filename);
+
+        if (AudioPlayer.DEBUG) {
+            console.log(`Stopped sound: ${filename}`);
+        }
+    }
+
+    stopAllAudio() {
+        const activeFilenames = [...this.activeSources.keys()];
+        for (const filename of activeFilenames) {
+            this.stopAudio(filename);
+        }
+
+        if (AudioPlayer.DEBUG) {
+            console.log('Stopped all active sounds');
         }
     }
 
