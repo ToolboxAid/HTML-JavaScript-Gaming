@@ -1,3 +1,8 @@
+// ToolboxAid.com
+// David Quesenberry
+// 03/14/2026
+// midiPlayerSample.js
+
 import MidiPlayer from '../../../engine/output/midiPlayer.js';
 
 const ALLOWED_EXTENSIONS = new Set(['mid', 'midi', 'kar']);
