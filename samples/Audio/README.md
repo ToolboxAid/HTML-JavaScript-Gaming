@@ -25,8 +25,12 @@ This sample demonstrates basic audio loading and playback through:
 - `Alesis-Sanctuary.wav`
 - `Ouch-6.wav`
 
+## Audio File Types
+
+- Current sample uses: `.mp3`, `.wav`
+- `AudioPlayer` relies on browser decode support (`AudioContext.decodeAudioData`), so playable types can vary by browser
+
 ## Browser Audio Note
 
 Some browsers block audio output until the first user interaction.  
 If no sound plays initially, click `Play Selected` once to unlock audio.
-
