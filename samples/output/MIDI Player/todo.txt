@@ -43,4 +43,4 @@ Decision notes:
 - Revisit engine extraction when a second sample or game needs the same play/pause/stop/seek orchestration contract.
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[x] Run browser smoke pass for load, play, pause, seek, and stop
