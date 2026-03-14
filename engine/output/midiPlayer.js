@@ -3,7 +3,7 @@ import DebugFlag from "../utils/debugFlag.js";
 class MidiPlayer {
     static DEBUG = DebugFlag.has('midiPlayer');
 
-    constructor(fileInputId) {
+    constructor(fileInputId, options = {}) {
         if (typeof document === 'undefined') {
             throw new Error('MidiPlayer requires a browser document.');
         }
@@ -17,6 +17,9 @@ class MidiPlayer {
             throw new Error(`File input element not found: ${fileInputId}`);
         }
 
+        this.positionInputId = typeof options.positionInputId === 'string' && options.positionInputId.trim() !== ''
+            ? options.positionInputId
+            : 'position';
         this.autoplay = true;
         this.player = null;
         this.handleBlur = this.handleBlur.bind(this);
@@ -55,12 +58,12 @@ class MidiPlayer {
             if (this.autoplay) {
                 this.player.play();
             }
-            const pos = document.getElementById("position");
+            const pos = this.getPositionElement();
             pos.setAttribute("max", Math.round(song.duration * 10));
         };
 
         this.player.ontick = (song, position) => {
-            const pos = document.getElementById("position");
+            const pos = this.getPositionElement();
             pos.value = Math.round(position * 10);
         };
 
@@ -70,7 +73,22 @@ class MidiPlayer {
             }
         };
 
-        window.addEventListener('blur', this.handleBlur);
+        if (typeof window !== 'undefined') {
+            window.addEventListener('blur', this.handleBlur);
+        }
+    }
+
+    getPositionElement() {
+        if (typeof document === 'undefined') {
+            throw new Error('MidiPlayer requires a browser document.');
+        }
+
+        const pos = document.getElementById(this.positionInputId);
+        if (!pos) {
+            throw new Error(`Position element not found: ${this.positionInputId}`);
+        }
+
+        return pos;
     }
 
     handleBlur() {
@@ -103,8 +121,33 @@ class MidiPlayer {
         this.autoplay = autoplay;
     }
 
+    setPosition(positionTenths) {
+        if (!Number.isFinite(positionTenths) || positionTenths < 0) {
+            return false;
+        }
+
+        if (!this.player) {
+            return false;
+        }
+
+        const position = positionTenths / 10;
+        if (typeof this.player.setPosition === 'function') {
+            this.player.setPosition(position);
+            return true;
+        }
+
+        if ('position' in this.player) {
+            this.player.position = position;
+            return true;
+        }
+
+        return false;
+    }
+
     destroy() {
-        window.removeEventListener('blur', this.handleBlur);
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('blur', this.handleBlur);
+        }
         this.stop();
         this.player = null;
         this.fileInput = null;

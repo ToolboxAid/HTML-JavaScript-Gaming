@@ -20,7 +20,7 @@ input:
 
 output:
 [x] samples/output/Audio/
-[ ] samples/output/MIDI Player/
+[.] samples/output/MIDI Player/
 [x] samples/output/Synthesizer/
 
 visual:
