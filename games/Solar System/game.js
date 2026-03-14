@@ -293,6 +293,14 @@ class SolarSystemSample extends GameBase {
         break;
     }
   }
+
+  onDestroy() {
+    if (this.gameObjectSystem?.destroy) {
+      this.gameObjectSystem.destroy();
+    }
+
+    this.gameObjectSystem = null;
+  }
 }
 
 export default SolarSystemSample;

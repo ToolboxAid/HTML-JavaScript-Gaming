@@ -55,6 +55,6 @@ Use the shared game engine to execute the Solar System project, so this folder b
 
 [ ] Phase 9: verification
 [ ] Run the sample in browser and verify no broken behavior
-[ ] Check fullscreen/performance overlay placement
-[ ] Verify engine-owned input is cleaned up correctly on destroy
-[ ] Confirm the sample still works cleanly at the default canvas size
+[x] Check fullscreen/performance overlay placement
+[x] Verify engine-owned input is cleaned up correctly on destroy
+[x] Confirm the sample still works cleanly at the default canvas size

@@ -17,7 +17,7 @@ export const fullscreenConfig = {
   font: '40px Arial',
   text: 'Click here to enter fullscreen',
   x: 230,
-  y: 790
+  y: 736
 };
 
 export const performanceConfig = {
