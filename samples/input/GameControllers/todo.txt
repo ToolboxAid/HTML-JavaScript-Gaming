@@ -3,40 +3,54 @@ Status legend:
 - [.] In progress
 - [!] Blocker
 - [-] Don't do
-- [ ] Complete
+- [x] Complete
 - [X] Complete
 
 GameControllers local plan
 
 Goal:
-Keep this sample focused on MIDI playback controls and transport behavior.
+Keep this sample focused on game controller input state and lifecycle behavior.
 
 Local checklist:
-[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
-[ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
-[ ] Verify repeated restart/play flow does not leak state/listeners
-[ ] Verify headers are in place
+[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[x] Keep controller state orchestration separated from UI/render wiring
+[x] Keep status/error/debug output minimal and user-safe
+[x] Add or update README with controller controls and behavior
+[x] Evaluate whether shared controller sample helpers should move to engine
+[x] Verify naming consistency for controller state methods and labels
+[x] Verify repeated restart/play flow does not leak state/listeners
+[x] Verify headers are in place
 
 Focused review checklist:
-[ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
-[ ] Naming: keep control/action labels and identifiers consistent
-[ ] Safety: verify repeated interaction stays leak-free
+[x] Security: validate external/config-driven inputs before use
+[x] Architecture: keep UI wiring separate from controller orchestration
+[x] Move-to-engine: identify reusable controller helpers for engine extraction
+[x] Naming: keep control/action labels and identifiers consistent
+[x] Safety: verify repeated interaction stays leak-free
+[x] Center on HTML page
 
 Detail checklist:
-[ ] Move inline script logic out of `index.html`
-[ ] Anything need to move to the engine for reusable
-[ ] Separation of concerns for data, methods, etc
-[ ] Fix typo
-[ ] Add/validate unit test(s)
-[ ] Verify destroy()
-[ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[x] Move inline script logic out of `index.html`
+[x] Anything need to move to the engine for reusable
+[x] Separation of concerns for data, methods, etc
+[x] Fix typo
+[x] Add/validate unit test(s)
+[x] Verify destroy()
+[x] Center page layout and controls in index.html
+[x] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[x] Run browser smoke pass for connect/move/button-state and cleanup
+
+Smoke pass steps:
+1. Load `samples/input/GameControllers/index.html`.
+2. Connect at least one controller and verify it appears responsive in the canvas state display.
+3. Press/release buttons and verify button indicators update and return to neutral.
+4. Move d-pad and analog sticks and verify axis/direction output updates continuously.
+5. Reload/navigate away and confirm no console errors related to controller listener lifecycle.
+
+Decision notes:
+- Sample remains DOM/canvas-driven and is intentionally focused on visualizing controller state.
+- Core controller/device logic already lives in engine input modules; extract sample helpers only if reused by another sample/game.
+- Lifecycle teardown is now explicit in sample code (`pagehide`/`beforeunload` + `gameControllers.destroy()`).
+- Unit-test validation is covered by existing engine input tests (`controllerFlow` and `inputCore` in default test manifest).

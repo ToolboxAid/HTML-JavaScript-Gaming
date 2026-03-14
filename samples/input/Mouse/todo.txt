@@ -40,7 +40,7 @@ Detail checklist:
 [x] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for mouse move/press/release and cleanup
+[x] Run browser smoke pass for mouse move/press/release and cleanup
 
 Smoke pass steps:
 1. Load `samples/input/Mouse/index.html`.
