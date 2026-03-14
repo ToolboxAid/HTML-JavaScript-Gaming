@@ -15,7 +15,6 @@ class Game extends GameBase{
     }
 
     async onInitialize() {
-        console.log("onInit");
         // Create an instance of KeyboardInput
         this.keyboardInput = new KeyboardInput();
     }
@@ -67,7 +66,7 @@ class Game extends GameBase{
     }
 
     gameLoop() {
-        let ctx = CanvasUtils.ctx;
+        const ctx = CanvasUtils.ctx;
 
         // Call update to manage key states
         this.keyboardInput.update();
