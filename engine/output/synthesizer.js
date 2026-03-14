@@ -1,4 +1,6 @@
 import DebugFlag from "../utils/debugFlag.js";
+import { cloneDefaultSoundProfile, mergeSoundProfile } from "./synthSoundProfile.js";
+import { validateSynthScore } from "./synthScoreValidation.js";
 
 class Synthesizer {
 
@@ -14,35 +16,11 @@ class Synthesizer {
     this.audioContext = new AudioContextClass();
     this.timeSignature = { beatsPerMeasure: 4, beatUnit: 4 }; // Default time signature 4/4
     this.tempo = 120; // Default tempo in BPM
-    this.soundProfile = {
-      oscType: 'triangle',
-      vibrato: { frequency: 5, depth: 5 },
-      delay: { time: 0.2, feedback: 0.5, amount: 0.2 },
-      envelope: { attack: 0.01, decay: 0.1, sustain: 0.8, release: 0.5 }
-    };
+    this.soundProfile = cloneDefaultSoundProfile();
   }
 
   setSoundProfile(profile = {}) {
-    if (!profile || typeof profile !== 'object') {
-      return;
-    }
-
-    this.soundProfile = {
-      ...this.soundProfile,
-      ...profile,
-      vibrato: {
-        ...this.soundProfile.vibrato,
-        ...(profile.vibrato || {})
-      },
-      delay: {
-        ...this.soundProfile.delay,
-        ...(profile.delay || {})
-      },
-      envelope: {
-        ...this.soundProfile.envelope,
-        ...(profile.envelope || {})
-      }
-    };
+    this.soundProfile = mergeSoundProfile(this.soundProfile, profile);
   }
 
   setTimeSignature(beatsPerMeasure, beatUnit) {
@@ -146,6 +124,8 @@ class Synthesizer {
   }
 
   playNotes(noteObject) {
+    validateSynthScore(noteObject);
+
     const startTime = this.audioContext.currentTime;
     const measureDuration = this.getMeasureDuration();
 
