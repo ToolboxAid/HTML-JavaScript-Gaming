@@ -17,6 +17,32 @@ class Synthesizer {
     this.timeSignature = { beatsPerMeasure: 4, beatUnit: 4 }; // Default time signature 4/4
     this.tempo = 120; // Default tempo in BPM
     this.soundProfile = cloneDefaultSoundProfile();
+    this.activeNodes = new Set();
+  }
+
+  trackAudioNode(node) {
+    if (!node) {
+      return;
+    }
+
+    this.activeNodes.add(node);
+    node.onended = () => {
+      this.activeNodes.delete(node);
+    };
+  }
+
+  stopAllNotes() {
+    const now = this.audioContext.currentTime;
+    this.activeNodes.forEach((node) => {
+      if (typeof node.stop === 'function') {
+        try {
+          node.stop(now);
+        } catch (error) {
+          // Ignore nodes that are already stopped.
+        }
+      }
+    });
+    this.activeNodes.clear();
   }
 
   setSoundProfile(profile = {}) {
@@ -214,6 +240,8 @@ class Synthesizer {
     osc.start(this.audioContext.currentTime + startTime);
     osc.stop(this.audioContext.currentTime + startTime + this.getNoteDuration(duration));
     lfo.stop(this.audioContext.currentTime + startTime + this.getNoteDuration(duration));
+    this.trackAudioNode(osc);
+    this.trackAudioNode(lfo);
   }
 
   static bpmToSignature(bpm, beatsPerMeasure, noteValue) {

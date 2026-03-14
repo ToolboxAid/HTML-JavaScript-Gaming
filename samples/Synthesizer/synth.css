@@ -137,3 +137,9 @@ html {
     margin: 0 0 0.5rem 0;
     color: rgb(84, 0, 84);
   }
+
+  #control-error {
+    min-height: 1.25rem;
+    color: #8a1f11;
+    font-weight: 600;
+  }

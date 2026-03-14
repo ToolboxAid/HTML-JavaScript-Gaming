@@ -37,6 +37,7 @@ Physical keys mapped to notes:
 - Play `Comming around the mountain` music
 - Play `Twinkle Twinkle Little Star`
 - Play `Piano` arrangement (`loveStoryInspiredPiano`)
+- `Stop / Panic` to immediately stop active/scheduled notes
 
 ## Song Data Modules
 
@@ -49,3 +50,5 @@ Physical keys mapped to notes:
 
 Some browsers require user interaction before audio can start.  
 Click a button or press a key once if sound is muted on first load.
+
+Invalid tempo or time-signature input is shown inline and the previous valid values are retained.

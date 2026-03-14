@@ -43,6 +43,13 @@ async function ensureAudioReady() {
     }
 }
 
+function setControlError(message = '') {
+    const controlError = document.getElementById('control-error');
+    if (controlError) {
+        controlError.textContent = message;
+    }
+}
+
 function updateSoundProfile() {
     const oscType = document.getElementById('osc-type')?.value || 'triangle';
     const attack = parseFloat(document.getElementById('attack')?.value || '0.01');
@@ -86,14 +93,33 @@ updateSoundProfile();
 
 // Add controls to set the time signature and tempo
 document.getElementById('time-signature').addEventListener('change', (e) => {
-    const [beatsPerMeasure, beatUnit] = e.target.value.split('/').map(Number);
-    synthesizer.setTimeSignature(beatsPerMeasure, beatUnit);
+    const rawValue = String(e.target.value || '').trim();
+    const match = rawValue.match(/^(\d+)\s*\/\s*(\d+)$/);
+    if (!match) {
+        setControlError('Time signature must use the format x/y (example: 4/4).');
+        updateTextboxes();
+        return;
+    }
+
+    const beatsPerMeasure = Number(match[1]);
+    const beatUnit = Number(match[2]);
+    try {
+        synthesizer.setTimeSignature(beatsPerMeasure, beatUnit);
+        setControlError('');
+    } catch (error) {
+        setControlError(error.message);
+    }
     updateTextboxes();
 });
 
 document.getElementById('tempo').addEventListener('change', (e) => {
     const tempo = parseInt(e.target.value, 10);
-    synthesizer.setTempo(tempo);
+    try {
+        synthesizer.setTempo(tempo);
+        setControlError('');
+    } catch (error) {
+        setControlError(error.message);
+    }
     updateTextboxes();
 });
 
@@ -111,22 +137,26 @@ function updateTextboxes() {
 
 async function playSampleFroggerSong() {
     await ensureAudioReady();
+    synthesizer.stopAllNotes();
     synthesizer.playNotes(froggerSong);
 };
 
 async function playSampleMountainSong() {
     await ensureAudioReady();
+    synthesizer.stopAllNotes();
     synthesizer.playNotes(shellBeSongComingAroundMountain);
 };
 
 async function playTwinkleTwinkle() {
     await ensureAudioReady();
+    synthesizer.stopAllNotes();
     synthesizer.playNotes(twinkleTwinkle);
 }
 
 async function playSamplePianoSong() {
     // Play both hands from the sample piano arrangement.
     await ensureAudioReady();
+    synthesizer.stopAllNotes();
     synthesizer.playNotes(loveStoryInspiredPiano);
 }
 
@@ -134,6 +164,10 @@ document.getElementById('play-frogger-music').addEventListener('click', playSamp
 document.getElementById('play-mountain-music').addEventListener('click', playSampleMountainSong);
 document.getElementById('play-twinkle-music').addEventListener('click', playTwinkleTwinkle);
 document.getElementById('play-piano-music').addEventListener('click', playSamplePianoSong);
+document.getElementById('stop-all-notes').addEventListener('click', () => {
+    synthesizer.stopAllNotes();
+    setControlError('');
+});
 
 document.addEventListener("keydown", async (e) => {
     const eventKey = e.key.toUpperCase();

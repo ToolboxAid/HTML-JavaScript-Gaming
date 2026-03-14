@@ -24,4 +24,4 @@ Local checklist:
 [x] Add local notes for browser audio restrictions (autoplay/user-gesture requirements)
 [x] Remove remaining sample-only debug `console.log` noise where not needed
 [x] Add a short sample README with controls, key mappings, and song list
-[ ] Run browser smoke pass for keyboard play + each song button
+[x] Run browser smoke pass for keyboard play + each song button
