@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+Mouse sample engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Convert this sample into a cleaner mouse-input example that follows the shared engine runtime path.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Convert the sample from a standalone animation loop to `GameBase`
+[ ] Move mouse ownership onto the game class
+[ ] Add `global.js` if needed so canvas/fullscreen/performance config matches other samples
+[ ] Verify mouse cleanup follows engine destroy conventions
 
 Shared engine alignment reference:
 

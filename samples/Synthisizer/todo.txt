@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+Synthisizer sample engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Keep this as a focused synthesizer/output sample while aligning naming and project structure with the rest of the repo.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Review whether this sample should remain DOM-driven or gain a minimal engine shell
+[ ] Keep synth controls and music examples focused on output concepts
+[ ] Normalize naming and local titles if needed for consistency
+[ ] Add local notes if browser audio restrictions should be documented
 
 Shared engine alignment reference:
 

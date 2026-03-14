@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+Space Invaders engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Keep Space Invaders as a sprite-heavy engine game and continue aligning it with current engine architecture and folder structure.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Review object organization and decide whether enemy, projectile, and level files should be grouped into clearer folders
+[ ] Review sprite/game-object usage against the current engine object and renderer conventions
+[ ] Improve state, level, and gameplay coordination boundaries where helpful
+[ ] Verify input, object lifecycle, and asset loading patterns follow current engine expectations
 
 Shared engine alignment reference:
 

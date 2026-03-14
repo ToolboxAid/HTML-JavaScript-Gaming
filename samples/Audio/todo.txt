@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+Audio sample engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Keep this project as a focused audio-output sample while aligning it with the shared engine structure where that improves clarity.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Review whether this sample should stay DOM-driven or gain a minimal `GameBase` shell
+[ ] Add `global.js` if shared canvas/fullscreen/performance config becomes useful
+[ ] Keep audio loading and playback examples small and easy to follow
+[ ] Avoid page-level complexity that does not help teach engine output usage
 
 Shared engine alignment reference:
 

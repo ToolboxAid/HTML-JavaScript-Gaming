@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+MIDI Player sample engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Keep this as a focused MIDI output sample while aligning structure and naming with the rest of the repo.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Review whether this sample should stay DOM-driven or gain a minimal engine shell
+[ ] Keep MIDI controls focused on loading, playback, pause, stop, and position behavior
+[ ] Add local project notes if MIDI browser/runtime constraints need explanation
+[ ] Keep naming and launcher/docs references aligned with the current sample naming
 
 Shared engine alignment reference:
 

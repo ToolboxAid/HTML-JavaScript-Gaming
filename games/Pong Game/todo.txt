@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+Pong Game engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Keep Pong as a compact engine game while aligning it more clearly with current engine conventions and project structure.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
+[ ] Review `GameBase` usage and current lifecycle conventions
 [ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Review whether `paddle.js`, `puck.js`, and UI/font helpers should remain flat or move into small folders
+[ ] Keep input, score, update, and draw flow easy to compare with other engine games
 
 Shared engine alignment reference:
 

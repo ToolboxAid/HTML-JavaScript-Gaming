@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+Move Objects sample engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Keep this sample as a simple object-update example while aligning it with current engine conventions and sample structure.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Update `onInitialize(runtimeContext)` and `gameLoop(deltaTime, runtimeContext)` signatures if needed
+[ ] Remove startup/debug logging noise
+[ ] Keep object update and draw responsibilities easy to follow
+[ ] Review whether helper objects should move into an `objects/` folder or remain flat for teaching clarity
 
 Shared engine alignment reference:
 

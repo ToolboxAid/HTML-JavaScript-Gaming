@@ -5,16 +5,16 @@ Status legend:
 - [-] Don't do
 - [x] Complete
 - [X] Complete
-Box Drop engine upgrade plan
+Asteroids engine upgrade plan
 
 Goal:
-Keep Box Drop as a compact engine game while aligning it with the current runtime conventions and making it a cleaner small-project example.
+Keep Asteroids as a flagship engine game while continuing to align it with the current shared engine architecture.
 
 Project-specific checklist:
-[ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
-[ ] Keep attract, player select, game, and game-over flow clear and easy to follow
-[ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[ ] Review runtime flow against current `GameBase` and `RuntimeContext` conventions
+[ ] Keep `runtime/`, `state/`, `systems/`, `ui/`, `world/`, and `combat/` boundaries intentional and well-named
+[ ] Review older compatibility imports and move toward canonical `engine/game/` usage where helpful
+[ ] Verify input, audio, and object lifecycle cleanup paths are consistent
 
 Shared engine alignment reference:
 
