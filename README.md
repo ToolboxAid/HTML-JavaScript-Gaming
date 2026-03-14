@@ -36,7 +36,6 @@ The [`games/`](./games/) folder contains complete browser games and gameplay pro
 - Connect 4
 - Tic-Tac-Toe
 - Box Drop
-- Solar System Sample
 
 Each game usually includes its own `index.html`, `game.js`, `global.js`, styles, and game-specific classes/assets.
 
@@ -141,6 +140,23 @@ If you want a quick orientation path:
 3. Open [`samples/Solar%20System/`](./samples/Solar%20System/) to compare a small engine-driven sample with a real project folder.
 4. Read [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md).
 5. Open [`games/Asteroids/`](./games/Asteroids/).
+
+## Sample Learning Order
+
+If you want to learn the engine from the bottom up, the samples make the most sense in an inheritance-first order:
+
+1. [`samples/Draw%20Shapes/`](./samples/Draw%20Shapes/)
+2. [`samples/Move%20Objects/`](./samples/Move%20Objects/)
+3. [`samples/Keyboard/`](./samples/Keyboard/)
+4. [`samples/Mouse/`](./samples/Mouse/)
+5. [`samples/GameControllers/`](./samples/GameControllers/)
+6. [`samples/Game%20Engine/`](./samples/Game%20Engine/)
+7. [`samples/Solar%20System/`](./samples/Solar%20System/)
+8. [`samples/2D%20side%20scroll%20tile%20map/`](./samples/2D%20side%20scroll%20tile%20map/)
+9. [`samples/Particle/`](./samples/Particle/)
+10. [`samples/Audio/`](./samples/Audio/)
+11. [`samples/MIDI%20Player/`](./samples/MIDI%20Player/)
+12. [`samples/Synthisizer/`](./samples/Synthisizer/)
 
 ## Typical project flow
 
