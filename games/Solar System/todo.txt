@@ -17,12 +17,12 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Make runtime flow explicit: engine boot -> onInitialize -> input update -> simulation update -> render
 [x] Follow current engine API conventions for `onInitialize(...)`, `gameLoop(...)`, and owned cleanup
 
-[ ] Phase 3: choose the correct engine object model
-[ ] Decide whether `CelestialBody` should stay on `ObjectDynamic`, move to `GameObject`, or use a lighter engine-compatible object shape
-[ ] Prefer a model that works with the shared engine rather than bypassing it
-[ ] Remove duplicated motion concepts that do not help orbital simulation
-[ ] Split orbit data, visual data, and moon data into clearer properties
-[ ] Add helper methods for center point, orbit update, and moon update
+[x] Phase 3: choose the correct engine object model
+[x] Decide whether `CelestialBody` should stay on `ObjectDynamic`, move to `GameObject`, or use a lighter engine-compatible object shape
+[x] Prefer a model that works with the shared engine rather than bypassing it
+[x] Remove duplicated motion concepts that do not help orbital simulation
+[x] Split orbit data, visual data, and moon data into clearer properties
+[x] Add helper methods for center point, orbit update, and moon update
 
 [ ] Phase 4: make the project data-driven through engine-friendly content setup
 [ ] Extract solar system body definitions into structured config data
