@@ -9,6 +9,7 @@ This sample demonstrates basic audio loading and playback through:
 
 - `index.html`: sample page and controls
 - `audio.js`: sample initialization, loading, and event handling
+- `audioData.js`: sample audio catalog data used by the UI/controller
 - `fx/`: bundled audio clips used by the sample
 - `requirements.txt`: source attributions/requirements
 

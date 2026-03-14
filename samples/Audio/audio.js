@@ -1,11 +1,5 @@
 import AudioPlaybackController from '../../engine/output/audioPlaybackController.js';
-
-const AUDIO_FILES = Object.freeze([
-    'elemental-magic.mp3',
-    'relaxing-guitar-loop.mp3',
-    'Alesis-Sanctuary.wav',
-    'Ouch-6.wav'
-]);
+import { AUDIO_FILES } from './audioData.js';
 
 const orchestrator = new AudioPlaybackController('./fx', AUDIO_FILES);
 
@@ -65,6 +59,14 @@ function setupControls() {
         setError('Audio controls are missing from index.html.');
         return;
     }
+
+    selected.innerHTML = '';
+    orchestrator.getAudioFiles().forEach((filename) => {
+        const option = document.createElement('option');
+        option.value = filename;
+        option.textContent = filename;
+        selected.appendChild(option);
+    });
 
     selected.addEventListener('change', (event) => {
         const result = orchestrator.setSelectedFile(event.target.value);
