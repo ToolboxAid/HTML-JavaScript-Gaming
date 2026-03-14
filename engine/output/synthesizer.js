@@ -14,6 +14,35 @@ class Synthesizer {
     this.audioContext = new AudioContextClass();
     this.timeSignature = { beatsPerMeasure: 4, beatUnit: 4 }; // Default time signature 4/4
     this.tempo = 120; // Default tempo in BPM
+    this.soundProfile = {
+      oscType: 'triangle',
+      vibrato: { frequency: 5, depth: 5 },
+      delay: { time: 0.2, feedback: 0.5, amount: 0.2 },
+      envelope: { attack: 0.01, decay: 0.1, sustain: 0.8, release: 0.5 }
+    };
+  }
+
+  setSoundProfile(profile = {}) {
+    if (!profile || typeof profile !== 'object') {
+      return;
+    }
+
+    this.soundProfile = {
+      ...this.soundProfile,
+      ...profile,
+      vibrato: {
+        ...this.soundProfile.vibrato,
+        ...(profile.vibrato || {})
+      },
+      delay: {
+        ...this.soundProfile.delay,
+        ...(profile.delay || {})
+      },
+      envelope: {
+        ...this.soundProfile.envelope,
+        ...(profile.envelope || {})
+      }
+    };
   }
 
   setTimeSignature(beatsPerMeasure, beatUnit) {
@@ -140,10 +169,10 @@ class Synthesizer {
   playNoteDirectly(note, duration,
     octave = 3, // Valid values for octave: 0 to 8
     startTime = 0,
-    oscType = "triangle",  // Use "triangle" or "sawtooth" for a richer sound
-    vibrato = { frequency: 5, depth: 5 },  // Add vibrato for a more dynamic sound
-    delay = { time: 0.2, feedback: 0.5, amount: 0.2 },
-    envelope = { attack: 0.01, decay: 0.1, sustain: 0.8, release: 0.5 }) {
+    oscType = this.soundProfile.oscType,
+    vibrato = this.soundProfile.vibrato,
+    delay = this.soundProfile.delay,
+    envelope = this.soundProfile.envelope) {
 
     if (Synthesizer.DEBUG) { console.log(`Playing note ${note}${octave} for ${duration} seconds starting at ${startTime} seconds`); }
 

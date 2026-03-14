@@ -1,5 +1,7 @@
 import Synthesizer from '../../engine/output/synthesizer.js';
-import { froggerSong, shellBeSongComingAroundMountain, twinkleTwinkle} from './songs/index.js';
+import { froggerSong } from './songs/froggerSong.js';
+import { shellBeSongComingAroundMountain } from './songs/comingAroundMountainSong.js';
+import { twinkleTwinkle } from './songs/twinkleTwinkleSong.js';
 import { loveStoryInspiredPiano } from './pianoPlayer.js';
 
 const getElementByNote = (note) =>
@@ -34,6 +36,47 @@ const keys = {
 const synthesizer = new Synthesizer();
 const pressedNotes = new Map();
 let clickedKey = "";
+
+function updateSoundProfile() {
+    const oscType = document.getElementById('osc-type')?.value || 'triangle';
+    const attack = parseFloat(document.getElementById('attack')?.value || '0.01');
+    const release = parseFloat(document.getElementById('release')?.value || '0.5');
+    const vibratoDepth = parseFloat(document.getElementById('vibrato-depth')?.value || '5');
+    const delayAmount = parseFloat(document.getElementById('delay-amount')?.value || '0.2');
+
+    synthesizer.setSoundProfile({
+        oscType,
+        vibrato: { depth: vibratoDepth },
+        delay: { amount: delayAmount },
+        envelope: { attack, release }
+    });
+
+    const attackValue = document.getElementById('attack-value');
+    if (attackValue) {
+        attackValue.textContent = attack.toFixed(3);
+    }
+
+    const releaseValue = document.getElementById('release-value');
+    if (releaseValue) {
+        releaseValue.textContent = release.toFixed(2);
+    }
+
+    const vibratoDepthValue = document.getElementById('vibrato-depth-value');
+    if (vibratoDepthValue) {
+        vibratoDepthValue.textContent = vibratoDepth.toFixed(1);
+    }
+
+    const delayAmountValue = document.getElementById('delay-amount-value');
+    if (delayAmountValue) {
+        delayAmountValue.textContent = delayAmount.toFixed(2);
+    }
+}
+
+['osc-type', 'attack', 'release', 'vibrato-depth', 'delay-amount'].forEach((id) => {
+    document.getElementById(id)?.addEventListener('input', updateSoundProfile);
+});
+
+updateSoundProfile();
 
 // Add controls to set the time signature and tempo
 document.getElementById('time-signature').addEventListener('change', (e) => {
