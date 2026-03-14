@@ -1,8 +1,8 @@
-import Synthesizer from '../../engine/synthesizer/synthesizer.js';
-import { sanitizeSoundProfileInput } from '../../engine/synthesizer/synthSoundProfile.js';
-import SynthTransport from '../../engine/synthesizer/synthTransport.js';
-import { createSynthKeyboardMap, normalizeSynthKeyboardKey } from '../../engine/synthesizer/synthKeyboardMap.js';
-import { parseTimeSignatureInput } from '../../engine/synthesizer/synthTimeSignature.js';
+import Synthesizer from '../../../engine/synthesizer/synthesizer.js';
+import { sanitizeSoundProfileInput } from '../../../engine/synthesizer/synthSoundProfile.js';
+import SynthTransport from '../../../engine/synthesizer/synthTransport.js';
+import { createSynthKeyboardMap, normalizeSynthKeyboardKey } from '../../../engine/synthesizer/synthKeyboardMap.js';
+import { parseTimeSignatureInput } from '../../../engine/synthesizer/synthTimeSignature.js';
 
 class SynthOrchestrator {
     constructor(getElementByNote, baseOctaveOffset = 3) {
@@ -86,4 +86,5 @@ class SynthOrchestrator {
 }
 
 export default SynthOrchestrator;
+
 

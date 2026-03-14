@@ -1,28 +1,17 @@
 // ToolboxAid.com
 // David Quesenberry
+
 // 10/16/2024
 // game.js - Template Game Engine
 
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
-import GameBase from '../../engine/core/gameBase.js';
 
-import CanvasUtils from '../../engine/core/canvas.js';
-import GameUtils from '../../engine/game/gameUtils.js';
+import GameBase from '../../../engine/core/gameBase.js';
+import CanvasUtils from '../../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import GameUtils from '../../../engine/game/gameUtils.js';
+import KeyboardInput from '../../../engine/input/keyboard.js';
 
-import KeyboardInput from '../../engine/input/keyboard.js';
-
-
-import { runTests } from '../../engine/runTest.js';
-import { engineTestEntries } from '../../tests/engine/testManifest.js';
-
-async function runSampleEngineTests() {
-  for (const entry of engineTestEntries) {
-    const testModule = await import(`../../tests/engine/${entry.modulePath.slice(2)}`);
-    runTests(entry.name, testModule[entry.exportName]);
-  }
-}
-
-runSampleEngineTests();
+import GameAttract from './gameAttract.js';
 
 class Game extends GameBase {
 
@@ -33,9 +22,6 @@ class Game extends GameBase {
   async onInitialize() {
 
     console.log("onInit");
-
-    this.playerSelect = playerSelect;
-
     this.keyboardInput = new KeyboardInput();
 
     // Game State Variables
@@ -51,19 +37,19 @@ class Game extends GameBase {
     this.backToAttract = 600;
     this.backToAttractCounter = 0;
 
-
+    this.gameAttract = new GameAttract();
   }
 
   // Example: object.position += object.velocity * deltaTime;
   gameLoop(deltaTime) {
     this.keyboardInput.update();
 
-    console.log(this.gameState);
+    //console.log(this.gameState);
 
     // Update game state with deltaTime
     switch (this.gameState) {
       case "attract":
-        this.displayAttractMode();
+        this.displayAttractMode(deltaTime);
         break;
 
       case "playerSelect":
@@ -94,22 +80,23 @@ class Game extends GameBase {
     }
   }
 
-  // Display 
-  displayAttractMode() {
+  // Display
+  displayAttractMode(deltaTime) {
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to the Game!", 250, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
+    CanvasUtils.ctx.fillText("Welcome to the `2D` Game!", 145, 170);
+    CanvasUtils.ctx.fillText("Press `Enter` to Start", 190, 205);
 
-    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
-      this.keyboardInput.getKeysPressed().includes('NumpadEnter')) {
+    this.gameAttract.update(deltaTime, this.keyboardInput);
+    this.gameAttract.draw();
+
+    if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.gameState = "playerSelect";
     }
   }
 
   displayPlayerSelect(deltaTime) {
-    const gameController = null; // no controller instance - for clarity
-    const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput, gameController);
+    const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect, this.keyboardInput);
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;
@@ -124,13 +111,12 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
-      this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
   }
 
-  // Game Logic 
+  // Game Logic
   initGame() {
     this.gameInitialized = true;
     this.onetime = true;
@@ -202,9 +188,14 @@ class Game extends GameBase {
     this.backToAttractCounter = 0;
   }
 
+  onDestroy() {
+    this.keyboardInput?.destroy?.();
+  }
+
 }
 
 export default Game;
 
 const game = new Game();
+
 

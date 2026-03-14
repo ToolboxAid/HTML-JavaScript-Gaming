@@ -1,4 +1,4 @@
-import AudioPlaybackController from '../../engine/output/audioPlaybackController.js';
+import AudioPlaybackController from '../../../engine/output/audioPlaybackController.js';
 import { AUDIO_FILES } from './audioData.js';
 
 const orchestrator = new AudioPlaybackController('./fx', AUDIO_FILES);
@@ -90,3 +90,4 @@ window.addEventListener('load', async () => {
 window.addEventListener('beforeunload', () => {
     orchestrator.destroy();
 });
+

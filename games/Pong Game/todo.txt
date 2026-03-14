@@ -71,8 +71,8 @@ Ideas taken from the current `games/` directory:
 [ ] Remove avoidable startup `console.log` noise from teaching samples
 
 [ ] Phase 2: bring input samples onto the engine runtime path
-[ ] Convert `samples/Mouse/` from a standalone animation loop to a `GameBase` sample
-[ ] Convert `samples/GameControllers/` from a standalone loop to a `GameBase` sample
+[ ] Convert `samples/input/Mouse/` from a standalone animation loop to a `GameBase` sample
+[ ] Convert `samples/input/GameControllers/` from a standalone loop to a `GameBase` sample
 [ ] Keep input instances owned by the game class instead of loose top-level module state
 [ ] Verify input cleanup follows normal engine destroy conventions
 
@@ -83,8 +83,8 @@ Ideas taken from the current `games/` directory:
 
 [ ] Phase 4: align samples with the object and game-facing engine layers
 [ ] Review whether each sample should remain canvas-only, use shared object classes, or use `engine/game/` helpers
-[ ] Keep `samples/Solar System/` as the main example of `GameObjectSystem` ownership
-[ ] Review `samples/2D side scroll tile map/` as the larger scrolling/map example
+[ ] Keep `samples/engine/Solar System/` as the main example of `GameObjectSystem` ownership
+[ ] Review `samples/engine/2D side scroll tile map/` as the larger scrolling/map example
 [ ] Use shared helpers where they improve clarity instead of one-off sample logic
 
 [ ] Phase 5: define the teaching progression explicitly

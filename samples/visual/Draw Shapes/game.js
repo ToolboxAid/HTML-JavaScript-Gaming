@@ -4,8 +4,8 @@
 // 10/16/2024
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
-import GameBase from '../../engine/core/gameBase.js';
-import CanvasUtils from '../../engine/core/canvas.js';
+import GameBase from '../../../engine/core/gameBase.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
 
 // Define the Game class
 class Game extends GameBase {
@@ -109,4 +109,5 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
 

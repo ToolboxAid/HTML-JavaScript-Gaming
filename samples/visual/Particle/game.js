@@ -1,4 +1,4 @@
-import DebugFlag from '../../engine/utils/debugFlag.js';
+import DebugFlag from '../../../engine/utils/debugFlag.js';
 // ToolboxAid.com
 // David Quesenberry
 // 10/16/2024
@@ -6,9 +6,9 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
-import GameBase from '../../engine/core/gameBase.js';
+import GameBase from '../../../engine/core/gameBase.js';
 
-import ParticleExplosion from '../../engine/renderers/particleExplosion.js';
+import ParticleExplosion from '../../../engine/renderers/particleExplosion.js';
 
 class Game extends GameBase {
 
@@ -83,5 +83,6 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
 
 

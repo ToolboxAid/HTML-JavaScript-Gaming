@@ -11,10 +11,10 @@ import {
 } from './global.js';
 import CelestialBody from './celestialBody.js';
 import { solarSystemBodies } from './solarSystemData.js';
-import GameBase from '../../engine/core/gameBase.js';
-import GameObjectSystem from '../../engine/game/gameObjectSystem.js';
-import KeyboardInput from '../../engine/input/keyboard.js';
-import CanvasUtils from '../../engine/core/canvas.js';
+import GameBase from '../../../engine/core/gameBase.js';
+import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
+import KeyboardInput from '../../../engine/input/keyboard.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
 
 function createCelestialBodies(bodyDefinitions) {
   return bodyDefinitions.map((body) => new CelestialBody(
@@ -306,4 +306,5 @@ class SolarSystemSample extends GameBase {
 export default SolarSystemSample;
 
 const solarSystemSample = new SolarSystemSample();
+
 

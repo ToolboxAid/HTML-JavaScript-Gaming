@@ -128,16 +128,16 @@ Good first stops are:
 
 - [`games/Asteroids/`](./games/Asteroids/)
 - [`games/Frogger/`](./games/Frogger/)
-- [`samples/Solar%20System/`](./samples/Solar%20System/)
-- [`samples/2D%20side%20scroll%20tile%20map/`](./samples/2D%20side%20scroll%20tile%20map/)
-- [`samples/Game%20Engine/`](./samples/Game%20Engine/)
+- [`samples/engine/Solar%20System/`](./samples/engine/Solar%20System/)
+- [`samples/engine/2D%20side%20scroll%20tile%20map/`](./samples/engine/2D%20side%20scroll%20tile%20map/)
+- [`samples/engine/Game%20Engine/`](./samples/engine/Game%20Engine/)
 - [`tools/SpriteEditor/`](./tools/SpriteEditor/)
 
 If you want a quick orientation path:
 
 1. Open the root launcher page.
-2. Run [`samples/Game%20Engine/`](./samples/Game%20Engine/).
-3. Open [`samples/Solar%20System/`](./samples/Solar%20System/) to compare a small engine-driven sample with a real project folder.
+2. Run [`samples/engine/Game%20Engine/`](./samples/engine/Game%20Engine/).
+3. Open [`samples/engine/Solar%20System/`](./samples/engine/Solar%20System/) to compare a small engine-driven sample with a real project folder.
 4. Read [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md).
 5. Open [`games/Asteroids/`](./games/Asteroids/).
 
@@ -145,18 +145,18 @@ If you want a quick orientation path:
 
 If you want to learn the engine from the bottom up, the samples make the most sense in an inheritance-first order:
 
-1. [`samples/Draw%20Shapes/`](./samples/Draw%20Shapes/)
-2. [`samples/Move%20Objects/`](./samples/Move%20Objects/)
-3. [`samples/Keyboard/`](./samples/Keyboard/)
-4. [`samples/Mouse/`](./samples/Mouse/)
-5. [`samples/GameControllers/`](./samples/GameControllers/)
-6. [`samples/Game%20Engine/`](./samples/Game%20Engine/)
-7. [`samples/Solar%20System/`](./samples/Solar%20System/)
-8. [`samples/2D%20side%20scroll%20tile%20map/`](./samples/2D%20side%20scroll%20tile%20map/)
-9. [`samples/Particle/`](./samples/Particle/)
-10. [`samples/Audio/`](./samples/Audio/)
-11. [`samples/MIDI%20Player/`](./samples/MIDI%20Player/)
-12. [`samples/Synthesizer/`](./samples/Synthesizer/)
+1. [`samples/visual/Draw%20Shapes/`](./samples/visual/Draw%20Shapes/)
+2. [`samples/visual/Move%20Objects/`](./samples/visual/Move%20Objects/)
+3. [`samples/input/Keyboard/`](./samples/input/Keyboard/)
+4. [`samples/input/Mouse/`](./samples/input/Mouse/)
+5. [`samples/input/GameControllers/`](./samples/input/GameControllers/)
+6. [`samples/engine/Game%20Engine/`](./samples/engine/Game%20Engine/)
+7. [`samples/engine/Solar%20System/`](./samples/engine/Solar%20System/)
+8. [`samples/engine/2D%20side%20scroll%20tile%20map/`](./samples/engine/2D%20side%20scroll%20tile%20map/)
+9. [`samples/visual/Particle/`](./samples/visual/Particle/)
+10. [`samples/output/Audio/`](./samples/output/Audio/)
+11. [`samples/output/MIDI%20Player/`](./samples/output/MIDI%20Player/)
+12. [`samples/output/Synthesizer/`](./samples/output/Synthesizer/)
 
 ## Typical project flow
 
@@ -211,4 +211,6 @@ If you are exploring or contributing, these are the best docs to read first:
 ## License
 
 This repository is licensed under the terms of the [`LICENSE`](./LICENSE) file.
+
+
 

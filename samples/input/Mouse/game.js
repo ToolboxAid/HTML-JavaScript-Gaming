@@ -3,8 +3,8 @@
 // 10/16/2024
 // game.js - Mouse
 
-import MouseInput from '../../engine/input/mouse.js';
-import { LEFT, MIDDLE, RIGHT } from '../../engine/input/mouse.js';
+import MouseInput from '../../../engine/input/mouse.js';
+import { LEFT, MIDDLE, RIGHT } from '../../../engine/input/mouse.js';
 
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
@@ -59,3 +59,4 @@ function gameLoop() {
 }
 
 gameLoop();
+

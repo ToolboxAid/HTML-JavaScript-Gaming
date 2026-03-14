@@ -4,8 +4,8 @@
 // celestialBody.js
 
 import { canvasConfig, solarSystemConfig } from './global.js';
-import CanvasUtils from '../../engine/core/canvas.js';
-import ObjectStatic from '../../engine/objects/objectStatic.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
+import ObjectStatic from '../../../engine/objects/objectStatic.js';
 
 /**
  * Represents a celestial body in a solar system, such as a planet or star/sun.
@@ -167,4 +167,5 @@ class CelestialBody extends ObjectStatic {
 }
 
 export default CelestialBody; // Export the class for use in other modules
+
 

@@ -4,7 +4,7 @@
 // hero.js
 
 import { canvasConfig, spriteConfig } from './global.js';
-import ObjectSprite from '../../engine/objects/objectSprite.js'
+import ObjectSprite from '../../../engine/objects/objectSprite.js'
 
 class Hero extends ObjectSprite {
 
@@ -340,3 +340,4 @@ class Hero extends ObjectSprite {
 }
 
 export default Hero;
+

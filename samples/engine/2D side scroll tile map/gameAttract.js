@@ -5,8 +5,8 @@
 
 import { canvasConfig } from './global.js';
 
-import CanvasUtils from '../../engine/core/canvas.js';
-import TileMap from '../../engine/core/tileMap.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
+import TileMap from '../../../engine/core/tileMap.js';
 
 import Hero from './hero.js';
 
@@ -36,4 +36,5 @@ class GameAttract {
 }
 
 export default GameAttract;
+
 

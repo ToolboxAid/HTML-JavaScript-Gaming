@@ -72,16 +72,16 @@ After that, good first stops are:
 
 - `games/Asteroids/`
 - `games/Frogger/`
-- `samples/Solar System/`
-- `samples/2D side scroll tile map/`
-- `samples/Game Engine/`
+- `samples/engine/Solar System/`
+- `samples/engine/2D side scroll tile map/`
+- `samples/engine/Game Engine/`
 - `tools/SpriteEditor/`
 
 If you want the quickest orientation path, use this order:
 
 1. Open the root launcher page.
-2. Launch `samples/Game Engine/`.
-3. Launch `samples/Solar System/` to see a compact engine-driven sample with states, input, zoom, focus, and `GameObjectSystem` ownership.
+2. Launch `samples/engine/Game Engine/`.
+3. Launch `samples/engine/Solar System/` to see a compact engine-driven sample with states, input, zoom, focus, and `GameObjectSystem` ownership.
 4. Read `docs/game-engine-architecture.md`.
 5. Open `games/Asteroids/` to see a more complete engine-driven game.
 
@@ -138,38 +138,38 @@ If you are new to this repo, work through it in this order:
 
 1. Run the root `index.html` launcher.
 2. Read `docs/game-engine-architecture.md`.
-3. Run `samples/Game Engine/`.
-4. Open `samples/Solar System/` to see a small engine sample inside a real project folder.
+3. Run `samples/engine/Game Engine/`.
+4. Open `samples/engine/Solar System/` to see a small engine sample inside a real project folder.
 5. Open `games/Asteroids/` to see a compact arcade-style implementation.
 6. Open `games/Frogger/` for a larger project with more systems and assets.
-7. Open `samples/2D side scroll tile map/` to study map scrolling.
+7. Open `samples/engine/2D side scroll tile map/` to study map scrolling.
 8. Read `docs/sprite-system.md` before expanding sprite-heavy projects.
 
 ## Sample Order by Inheritance
 
 If you want to learn the engine from the bottom up, the sample folders make the most sense in an inheritance-first order:
 
-1. `samples/Draw Shapes/`
+1. `samples/visual/Draw Shapes/`
    Start with basic drawing through the shared game shell.
-2. `samples/Move Objects/`
+2. `samples/visual/Move Objects/`
    Add simple update-loop behavior and object motion.
-3. `samples/Keyboard/`
+3. `samples/input/Keyboard/`
    Learn engine-owned keyboard input and frame-based key states.
-4. `samples/Mouse/`
+4. `samples/input/Mouse/`
    Add mouse input concepts, even though this sample is less aligned with `GameBase`.
-5. `samples/GameControllers/`
+5. `samples/input/GameControllers/`
    Extend that input path into controller and gamepad support.
-6. `samples/Game Engine/`
+6. `samples/engine/Game Engine/`
    Study the fuller engine shell once drawing, movement, and input basics are familiar.
-7. `samples/Solar System/`
+7. `samples/engine/Solar System/`
    See a more complete engine-driven sample with state, config-driven setup, and `GameObjectSystem` ownership.
-8. `samples/2D side scroll tile map/`
+8. `samples/engine/2D side scroll tile map/`
    Move into larger structure with attract flow, scrolling, and map-oriented behavior.
-9. `samples/Particle/`
+9. `samples/visual/Particle/`
    Explore specialized rendering and effects after the main runtime model is clear.
-10. `samples/Audio/`
-11. `samples/MIDI Player/`
-12. `samples/Synthesizer/`
+10. `samples/output/Audio/`
+11. `samples/output/MIDI Player/`
+12. `samples/output/Synthesizer/`
    Treat the output/audio samples as later-stage subsystem study rather than the core engine path.
 
 ## Adding a new game
@@ -182,9 +182,10 @@ A practical way to add a new game is:
 4. Reuse engine code instead of duplicating utilities.
 5. Add the game to the root launcher page.
 
-In practice, the smoothest starting point is often `samples/Game Engine/` or another small existing project rather than starting from an empty folder.
+In practice, the smoothest starting point is often `samples/engine/Game Engine/` or another small existing project rather than starting from an empty folder.
 
 ## Current direction of the repo
 
 This project has moved beyond isolated experiments. The current structure supports the next step: treating `engine/` as the shared framework layer, using `engine/game/` as the canonical game-facing API surface, and keeping `games/`, `samples/`, and `tools/` as clean consumers of that framework.
+
 
