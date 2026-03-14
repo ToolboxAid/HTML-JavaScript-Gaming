@@ -53,8 +53,8 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Make the sample easy to compare with `samples/Sample Game Engine/`
 [x] Update launcher text/description if the sample direction changes
 
-[ ] Phase 9: verification
-[ ] Run the sample in browser and verify no broken behavior
+[x] Phase 9: verification
+[x] Run the sample in browser and verify no broken behavior
 [x] Check fullscreen/performance overlay placement
 [x] Verify engine-owned input is cleaned up correctly on destroy
 [x] Confirm the sample still works cleanly at the default canvas size
