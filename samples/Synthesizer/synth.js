@@ -1,4 +1,5 @@
 import Synthesizer from '../../engine/output/synthesizer.js';
+import { sanitizeSoundProfileInput } from '../../engine/output/synthSoundProfile.js';
 import { froggerSong } from './songs/froggerSong.js';
 import { shellBeSongComingAroundMountain } from './songs/comingAroundMountainSong.js';
 import { twinkleTwinkle } from './songs/twinkleTwinkleSong.js';
@@ -51,37 +52,40 @@ function setControlError(message = '') {
 }
 
 function updateSoundProfile() {
-    const oscType = document.getElementById('osc-type')?.value || 'triangle';
-    const attack = parseFloat(document.getElementById('attack')?.value || '0.01');
-    const release = parseFloat(document.getElementById('release')?.value || '0.5');
-    const vibratoDepth = parseFloat(document.getElementById('vibrato-depth')?.value || '5');
-    const delayAmount = parseFloat(document.getElementById('delay-amount')?.value || '0.2');
-
-    synthesizer.setSoundProfile({
-        oscType,
-        vibrato: { depth: vibratoDepth },
-        delay: { amount: delayAmount },
-        envelope: { attack, release }
+    const { profilePatch, normalizedValues } = sanitizeSoundProfileInput({
+        oscType: document.getElementById('osc-type')?.value,
+        attack: document.getElementById('attack')?.value,
+        release: document.getElementById('release')?.value,
+        vibratoDepth: document.getElementById('vibrato-depth')?.value,
+        delayAmount: document.getElementById('delay-amount')?.value
     });
+
+    try {
+        synthesizer.setSoundProfile(profilePatch);
+        setControlError('');
+    } catch (error) {
+        // Keep user-facing errors generic and safe.
+        setControlError('Invalid sound controls were ignored. Using safe values.');
+    }
 
     const attackValue = document.getElementById('attack-value');
     if (attackValue) {
-        attackValue.textContent = attack.toFixed(3);
+        attackValue.textContent = normalizedValues.attack.toFixed(3);
     }
 
     const releaseValue = document.getElementById('release-value');
     if (releaseValue) {
-        releaseValue.textContent = release.toFixed(2);
+        releaseValue.textContent = normalizedValues.release.toFixed(2);
     }
 
     const vibratoDepthValue = document.getElementById('vibrato-depth-value');
     if (vibratoDepthValue) {
-        vibratoDepthValue.textContent = vibratoDepth.toFixed(1);
+        vibratoDepthValue.textContent = normalizedValues.vibratoDepth.toFixed(1);
     }
 
     const delayAmountValue = document.getElementById('delay-amount-value');
     if (delayAmountValue) {
-        delayAmountValue.textContent = delayAmount.toFixed(2);
+        delayAmountValue.textContent = normalizedValues.delayAmount.toFixed(2);
     }
 }
 
@@ -107,7 +111,7 @@ document.getElementById('time-signature').addEventListener('change', (e) => {
         synthesizer.setTimeSignature(beatsPerMeasure, beatUnit);
         setControlError('');
     } catch (error) {
-        setControlError(error.message);
+        setControlError('Time signature must be positive values like 4/4.');
     }
     updateTextboxes();
 });
@@ -118,7 +122,7 @@ document.getElementById('tempo').addEventListener('change', (e) => {
         synthesizer.setTempo(tempo);
         setControlError('');
     } catch (error) {
-        setControlError(error.message);
+        setControlError('Tempo must be a positive number.');
     }
     updateTextboxes();
 });

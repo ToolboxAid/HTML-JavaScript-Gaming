@@ -22,6 +22,18 @@ function validateFinite(name, value, min = 0, max = Number.POSITIVE_INFINITY) {
   }
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function boundedNumber(rawValue, limits) {
+  const numericValue = Number(rawValue);
+  if (!Number.isFinite(numericValue)) {
+    return limits.fallback;
+  }
+  return clamp(numericValue, limits.min, limits.max);
+}
+
 function validateSoundProfile(profile) {
   if (!VALID_OSC_TYPES.has(profile.oscType)) {
     throw new Error('oscType must be one of: sine, square, triangle, sawtooth.');
@@ -64,5 +76,36 @@ function mergeSoundProfile(currentProfile, patch = {}) {
   return nextProfile;
 }
 
-export { DEFAULT_SYNTH_SOUND_PROFILE, cloneDefaultSoundProfile, mergeSoundProfile, validateSoundProfile };
+function sanitizeSoundProfileInput(input = {}) {
+  const limits = {
+    attack: { min: 0.001, max: 1, fallback: DEFAULT_SYNTH_SOUND_PROFILE.envelope.attack },
+    release: { min: 0.05, max: 2, fallback: DEFAULT_SYNTH_SOUND_PROFILE.envelope.release },
+    vibratoDepth: { min: 0, max: 20, fallback: DEFAULT_SYNTH_SOUND_PROFILE.vibrato.depth },
+    delayAmount: { min: 0, max: 0.8, fallback: DEFAULT_SYNTH_SOUND_PROFILE.delay.amount }
+  };
 
+  const selectedOscType = typeof input.oscType === 'string' ? input.oscType : DEFAULT_SYNTH_SOUND_PROFILE.oscType;
+  const oscType = VALID_OSC_TYPES.has(selectedOscType) ? selectedOscType : DEFAULT_SYNTH_SOUND_PROFILE.oscType;
+  const attack = boundedNumber(input.attack, limits.attack);
+  const release = boundedNumber(input.release, limits.release);
+  const vibratoDepth = boundedNumber(input.vibratoDepth, limits.vibratoDepth);
+  const delayAmount = boundedNumber(input.delayAmount, limits.delayAmount);
+
+  return {
+    profilePatch: {
+      oscType,
+      vibrato: { depth: vibratoDepth },
+      delay: { amount: delayAmount },
+      envelope: { attack, release }
+    },
+    normalizedValues: {
+      oscType,
+      attack,
+      release,
+      vibratoDepth,
+      delayAmount
+    }
+  };
+}
+
+export { DEFAULT_SYNTH_SOUND_PROFILE, cloneDefaultSoundProfile, mergeSoundProfile, sanitizeSoundProfileInput, validateSoundProfile };

@@ -23,8 +23,8 @@ Local checklist:
 [ ] Validate mobile/touch interactions and pressed-key lifecycle
 
 Focused review checklist:
-[ ] Security: validate control inputs and keep messages user-safe
+[x] Security: validate control inputs and keep messages user-safe
 [ ] Architecture: keep UI wiring separate from synth orchestration
-[ ] Move-to-engine: continue evaluating reusable output helpers
+[.] Move-to-engine: continue evaluating reusable output helpers
 [ ] Naming: keep control and action labels consistent
 [ ] Safety: verify repeated playback and stop calls stay leak-free
