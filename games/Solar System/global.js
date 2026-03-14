@@ -37,11 +37,24 @@ export const solarSystemConfig = {
     title: "Solar System Sample",
     subtitle: "Orbit simulation built with engine classes"
   },
+  states: {
+    attract: "attract",
+    simulation: "simulation",
+    paused: "paused"
+  },
   simulation: {
     sunRadius: 30
   },
+  controls: {
+    startKeys: ["Enter", "NumpadEnter", "Space"],
+    pauseKeys: ["KeyP"],
+    resetKeys: ["KeyR"]
+  },
   display: {
     orbitStroke: "rgba(170, 180, 200, 0.35)",
-    moonColor: "white"
+    moonColor: "white",
+    hudColor: "#dfe7f5",
+    hudAccentColor: "#8ec5ff",
+    hudMutedColor: "#9fb0c9"
   }
 };

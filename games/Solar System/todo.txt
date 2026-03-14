@@ -29,11 +29,11 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Keep construction logic separate from raw planet/moon definitions
 [x] Make it easy to add or remove planets without editing loop logic
 
-[ ] Phase 5: use engine input and game state patterns
-[ ] Add engine-owned input instances on the game class
-[ ] Add `attract`, `simulation`, and `paused` states
-[ ] Add a simple HUD with title, controls, and current simulation speed
-[ ] Add restart/reset behavior
+[x] Phase 5: use engine input and game state patterns
+[x] Add engine-owned input instances on the game class
+[x] Add `attract`, `simulation`, and `paused` states
+[x] Add a simple HUD with title, controls, and current simulation speed
+[x] Add restart/reset behavior
 
 [ ] Phase 6: add controls through the engine input layer
 [ ] Keyboard pause/resume
