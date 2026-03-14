@@ -1,3 +1,4 @@
+// Synthesizer domain module.
 import DebugFlag from "../utils/debugFlag.js";
 import { cloneDefaultSoundProfile, mergeSoundProfile } from "./synthSoundProfile.js";
 import { validateSynthScore } from "./synthScoreValidation.js";

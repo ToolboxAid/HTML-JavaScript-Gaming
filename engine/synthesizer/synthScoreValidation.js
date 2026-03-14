@@ -1,3 +1,4 @@
+// Shared validation for synth score/song structures.
 function validateNote(note, handName, index) {
   if (!note || typeof note !== 'object') {
     throw new Error(`${handName}[${index}] must be an object.`);
@@ -46,4 +47,3 @@ function validateSynthScore(noteObject) {
 }
 
 export { validateSynthScore };
-

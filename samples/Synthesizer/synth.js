@@ -1,5 +1,8 @@
-import Synthesizer from '../../engine/output/synthesizer.js';
-import { sanitizeSoundProfileInput } from '../../engine/output/synthSoundProfile.js';
+import Synthesizer from '../../engine/synthesizer/synthesizer.js';
+import { sanitizeSoundProfileInput } from '../../engine/synthesizer/synthSoundProfile.js';
+import SynthTransport from '../../engine/synthesizer/synthTransport.js';
+import { createSynthKeyboardMap, normalizeSynthKeyboardKey } from '../../engine/synthesizer/synthKeyboardMap.js';
+import { parseTimeSignatureInput } from '../../engine/synthesizer/synthTimeSignature.js';
 import { froggerSong } from './songs/froggerSong.js';
 import { shellBeSongComingAroundMountain } from './songs/comingAroundMountainSong.js';
 import { twinkleTwinkle } from './songs/twinkleTwinkleSong.js';
@@ -8,41 +11,11 @@ import { loveStoryInspiredPiano } from './pianoPlayer.js';
 const getElementByNote = (note) =>
     note && document.querySelector(`[note="${note}"]`);
 
-const octaveOffsetA = 3; // Audiable values are -3 to 3 octaves below middle C
-const octaveOffsetB = octaveOffsetA + 1;
-const keys = {
-    // octaveOffsetA
-    A: { element: getElementByNote("C"), note: "C", octaveOffset: octaveOffsetA },
-    W: { element: getElementByNote("C#"), note: "C#", octaveOffset: octaveOffsetA },
-    S: { element: getElementByNote("D"), note: "D", octaveOffset: octaveOffsetA },
-    E: { element: getElementByNote("D#"), note: "D#", octaveOffset: octaveOffsetA },
-    D: { element: getElementByNote("E"), note: "E", octaveOffset: octaveOffsetA },
-    F: { element: getElementByNote("F"), note: "F", octaveOffset: octaveOffsetA },
-    T: { element: getElementByNote("F#"), note: "F#", octaveOffset: octaveOffsetA },
-    G: { element: getElementByNote("G"), note: "G", octaveOffset: octaveOffsetA },
-    Y: { element: getElementByNote("G#"), note: "G#", octaveOffset: octaveOffsetA },
-    // octaveOffsetB
-    H: { element: getElementByNote("A"), note: "A", octaveOffset: octaveOffsetB },
-    U: { element: getElementByNote("A#"), note: "A#", octaveOffset: octaveOffsetB },
-    J: { element: getElementByNote("B"), note: "B", octaveOffset: octaveOffsetB },
-    // octaveOffsetB restart at C
-    K: { element: getElementByNote("C2"), note: "C", octaveOffset: octaveOffsetB },
-    O: { element: getElementByNote("C#2"), note: "C#", octaveOffset: octaveOffsetB },
-    L: { element: getElementByNote("D2"), note: "D", octaveOffset: octaveOffsetB },
-    P: { element: getElementByNote("D#2"), note: "D#", octaveOffset: octaveOffsetB },
-    semicolon:
-        { element: getElementByNote("E2"), note: "E", octaveOffset: octaveOffsetB }
-};
-
 const synthesizer = new Synthesizer();
+const synthTransport = new SynthTransport(synthesizer);
+const keys = createSynthKeyboardMap(getElementByNote, 3);
 const pressedNotes = new Map();
 let clickedKey = "";
-
-async function ensureAudioReady() {
-    if (synthesizer.audioContext.state === 'suspended') {
-        await synthesizer.audioContext.resume();
-    }
-}
 
 function setControlError(message = '') {
     const controlError = document.getElementById('control-error');
@@ -97,18 +70,15 @@ updateSoundProfile();
 
 // Add controls to set the time signature and tempo
 document.getElementById('time-signature').addEventListener('change', (e) => {
-    const rawValue = String(e.target.value || '').trim();
-    const match = rawValue.match(/^(\d+)\s*\/\s*(\d+)$/);
-    if (!match) {
-        setControlError('Time signature must use the format x/y (example: 4/4).');
+    const parsed = parseTimeSignatureInput(e.target.value);
+    if (!parsed.ok) {
+        setControlError(parsed.error);
         updateTextboxes();
         return;
     }
 
-    const beatsPerMeasure = Number(match[1]);
-    const beatUnit = Number(match[2]);
     try {
-        synthesizer.setTimeSignature(beatsPerMeasure, beatUnit);
+        synthesizer.setTimeSignature(parsed.beatsPerMeasure, parsed.beatUnit);
         setControlError('');
     } catch (error) {
         setControlError('Time signature must be positive values like 4/4.');
@@ -140,28 +110,20 @@ function updateTextboxes() {
 }
 
 async function playSampleFroggerSong() {
-    await ensureAudioReady();
-    synthesizer.stopAllNotes();
-    synthesizer.playNotes(froggerSong);
+    await synthTransport.playSong(froggerSong);
 };
 
 async function playSampleMountainSong() {
-    await ensureAudioReady();
-    synthesizer.stopAllNotes();
-    synthesizer.playNotes(shellBeSongComingAroundMountain);
+    await synthTransport.playSong(shellBeSongComingAroundMountain);
 };
 
 async function playTwinkleTwinkle() {
-    await ensureAudioReady();
-    synthesizer.stopAllNotes();
-    synthesizer.playNotes(twinkleTwinkle);
+    await synthTransport.playSong(twinkleTwinkle);
 }
 
 async function playSamplePianoSong() {
     // Play both hands from the sample piano arrangement.
-    await ensureAudioReady();
-    synthesizer.stopAllNotes();
-    synthesizer.playNotes(loveStoryInspiredPiano);
+    await synthTransport.playSong(loveStoryInspiredPiano);
 }
 
 document.getElementById('play-frogger-music').addEventListener('click', playSampleFroggerSong);
@@ -169,26 +131,23 @@ document.getElementById('play-mountain-music').addEventListener('click', playSam
 document.getElementById('play-twinkle-music').addEventListener('click', playTwinkleTwinkle);
 document.getElementById('play-piano-music').addEventListener('click', playSamplePianoSong);
 document.getElementById('stop-all-notes').addEventListener('click', () => {
-    synthesizer.stopAllNotes();
+    synthTransport.stopAll();
     setControlError('');
 });
 
 document.addEventListener("keydown", async (e) => {
-    const eventKey = e.key.toUpperCase();
-    const key = eventKey === ";" ? "semicolon" : eventKey;
+    const key = normalizeSynthKeyboardKey(e.key);
 
     if (!keys[key] || pressedNotes.has(keys[key])) {
         return;
     }
-    await ensureAudioReady();
     keys[key].element.classList.add("pressed");
-    synthesizer.playNoteDirectly(keys[key].note, '4n', keys[key].octaveOffset); // Default note type
+    await synthTransport.playKeyboardNote(keys[key].note, '4n', keys[key].octaveOffset);
     pressedNotes.set(keys[key], true);
 });
 
 document.addEventListener("keyup", (e) => {
-    const eventKey = e.key.toUpperCase();
-    const key = eventKey === ";" ? "semicolon" : eventKey;
+    const key = normalizeSynthKeyboardKey(e.key);
 
     if (!keys[key]) {
         return;
@@ -207,9 +166,8 @@ document.addEventListener("mouseup", () => {
 
 for (const [key, { element }] of Object.entries(keys)) {
     element.addEventListener("mousedown", async () => {
-        await ensureAudioReady();
         element.classList.add("pressed");
-        synthesizer.playNoteDirectly(keys[key].note, '4n', keys[key].octaveOffset); // Default note type
+        await synthTransport.playKeyboardNote(keys[key].note, '4n', keys[key].octaveOffset);
         pressedNotes.set(keys[key], true);
         clickedKey = key;
     });

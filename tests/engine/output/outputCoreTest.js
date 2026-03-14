@@ -1,6 +1,6 @@
 import AudioPlayer from '../../../engine/output/audioPlayer.js';
 import AudioFrequency from '../../../engine/output/audioFrequency.js';
-import Synthesizer from '../../../engine/output/synthesizer.js';
+import Synthesizer from '../../../engine/synthesizer/synthesizer.js';
 
 function installAudioContextMock() {
     class MockAudioContext {

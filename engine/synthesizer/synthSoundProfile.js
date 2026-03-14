@@ -1,3 +1,4 @@
+// Shared synth sound-profile defaults, validation, and sanitization helpers.
 const VALID_OSC_TYPES = new Set(['sine', 'square', 'triangle', 'sawtooth']);
 
 const DEFAULT_SYNTH_SOUND_PROFILE = Object.freeze({
