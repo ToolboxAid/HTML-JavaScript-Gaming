@@ -6,7 +6,14 @@
 */
 body {
     margin: 0;
-    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #111111;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
 }
 
 canvas {
@@ -16,6 +23,10 @@ canvas {
 
 #gameAreaContainer {
     position: relative;
+}
+
+#Keyboard h1 {
+    margin: 0 0 0.75rem 0;
 }
 
 #gameArea {

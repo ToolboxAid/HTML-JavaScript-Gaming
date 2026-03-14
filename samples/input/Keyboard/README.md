@@ -5,6 +5,8 @@ This sample demonstrates live keyboard input state tracking using:
 - render/update loop via `engine/core/gameBase.js`
 - canvas drawing via `engine/core/canvas.js`
 
+Design choice: this sample is intentionally DOM-driven at the page level, with keyboard state orchestration in `game.js`.
+
 ## Files
 
 - `index.html`: sample page shell
@@ -25,3 +27,5 @@ This sample demonstrates live keyboard input state tracking using:
 
 - Keyboard rollover differs by hardware; some key combinations may not register together.
 - This sample uses browser keyboard events and is intended for desktop keyboard testing.
+- Lifecycle cleanup follows engine ownership conventions via `GameBase.destroy()` and `KeyboardInput.destroy()`.
+- No reusable keyboard helper extraction is needed right now; this sample logic is specific to this visualization.

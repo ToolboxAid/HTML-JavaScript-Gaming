@@ -80,6 +80,10 @@ class Game extends GameBase{
         // Draw key states on the canvas
         this.drawKeyStates(ctx, keysPressed, keysDown, keysReleased);
     }
+
+    onDestroy() {
+        this.keyboardInput = null;
+    }
 }
 
 // Export the GameLoop class
