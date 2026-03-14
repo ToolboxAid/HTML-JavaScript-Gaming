@@ -8,13 +8,12 @@ import {
   performanceConfig,
   fullscreenConfig,
   solarSystemConfig
-} from './global.js'; // Import global configurations
+} from './global.js';
 import CelestialBody from './celestialBody.js';
 import GameBase from '../../engine/core/gameBase.js';
 
-// Celestial bodies array (as defined previously)
 const celestialBodies = [
-  new CelestialBody("Sun", solarSystemConfig.sunRadius, 0.01, "yellow", 0.01, 0.01),
+  new CelestialBody("Sun", solarSystemConfig.simulation.sunRadius, 0.01, "yellow", 0.01, 0.01),
   new CelestialBody("Mercury", 3, 50, "gray", Math.random() * Math.PI * 2, 0.02, [
     { radius: 0.5, distance: 5, angle: Math.random() * Math.PI * 2, speed: 5.0 }
   ]),
@@ -48,13 +47,12 @@ const celestialBodies = [
   ], { ringRadius: 14, color: "rgba(100, 120, 140, 0.5)" }),
 ];
 
-class SolarSystem extends GameBase {
+class SolarSystemSample extends GameBase {
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);
   }
 
   async onInitialize() {
-    console.log("onInit");
     this.celestialBodies = celestialBodies;
   }
 
@@ -78,7 +76,7 @@ class SolarSystem extends GameBase {
   }
 }
 
-export default SolarSystem;
+export default SolarSystemSample;
 
-const solarSystem = new SolarSystem();
+const solarSystemSample = new SolarSystemSample();
 

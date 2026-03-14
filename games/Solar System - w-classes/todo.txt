@@ -1,2 +1,60 @@
-x innerRadius/outerRadius, replace with ringRadius
-x remove dash border
+Solar System - w-classes upgrade plan
+
+Goal:
+Use the shared game engine to execute the Solar System project, so this folder becomes a real engine-driven game/sample instead of a mostly standalone demo.
+
+[x] innerRadius/outerRadius, replace with ringRadius
+[x] remove dash border
+
+[x] Phase 1: normalize the sample shell
+[x] Rename class/file labels where needed so the sample reads cleanly as a modern engine example
+[x] Tighten `global.js` and group config by simulation, display, and controls
+[x] Remove debug `console.log` startup noise from `game.js`
+
+[ ] Phase 2: align runtime structure with the engine
+[ ] Keep `game.js` focused on engine-style orchestration: setup, input, update, and draw flow
+[ ] Stop double-advancing orbit angles in `game.js` and `celestialBody.js`
+[ ] Make runtime flow explicit: engine boot -> onInitialize -> input update -> simulation update -> render
+[ ] Follow current engine API conventions for `onInitialize(...)`, `gameLoop(...)`, and owned cleanup
+
+[ ] Phase 3: choose the correct engine object model
+[ ] Decide whether `CelestialBody` should stay on `ObjectDynamic`, move to `GameObject`, or use a lighter engine-compatible object shape
+[ ] Prefer a model that works with the shared engine rather than bypassing it
+[ ] Remove duplicated motion concepts that do not help orbital simulation
+[ ] Split orbit data, visual data, and moon data into clearer properties
+[ ] Add helper methods for center point, orbit update, and moon update
+
+[ ] Phase 4: make the project data-driven through engine-friendly content setup
+[ ] Extract solar system body definitions into structured config data
+[ ] Keep construction logic separate from raw planet/moon definitions
+[ ] Make it easy to add or remove planets without editing loop logic
+
+[ ] Phase 5: use engine input and game state patterns
+[ ] Add engine-owned input instances on the game class
+[ ] Add `attract`, `simulation`, and `paused` states
+[ ] Add a simple HUD with title, controls, and current simulation speed
+[ ] Add restart/reset behavior
+
+[ ] Phase 6: add controls through the engine input layer
+[ ] Keyboard pause/resume
+[ ] Speed up / slow down simulation
+[ ] Toggle orbit lines
+[ ] Toggle labels or debug info
+[ ] Optional zoom or planet focus
+
+[ ] Phase 7: integrate with current engine-facing architecture
+[ ] Evaluate whether a `GameObjectSystem` should own the active celestial bodies
+[ ] Keep object ownership and cross-object coordination aligned with current engine docs
+[ ] Use shared helpers/utilities where they improve clarity instead of custom one-off code
+
+[ ] Phase 8: polish for teaching value
+[ ] Add concise comments only where the flow is not obvious
+[ ] Keep naming consistent with current engine conventions
+[ ] Make the sample easy to compare with `samples/Sample Game Engine/`
+[ ] Update launcher text/description if the sample direction changes
+
+[ ] Phase 9: verification
+[ ] Run the sample in browser and verify no broken behavior
+[ ] Check fullscreen/performance overlay placement
+[ ] Verify engine-owned input is cleaned up correctly on destroy
+[ ] Confirm the sample still works cleanly at the default canvas size

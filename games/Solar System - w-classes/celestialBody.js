@@ -3,9 +3,9 @@
 // 10/16/2024
 // celestialBody.js
 
-import { canvasConfig } from './global.js'; // Import canvasConfig
+import { canvasConfig, solarSystemConfig } from './global.js';
 import CanvasUtils from '../../engine/core/canvas.js';
-import ObjectDynamic from '../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
+import ObjectDynamic from '../../engine/objects/objectDynamic.js';
 
 /**
  * Represents a celestial body in a solar system, such as a planet or star/sun.
@@ -63,7 +63,7 @@ class CelestialBody extends ObjectDynamic {
         // Draw the orbit path for the planet
         ctx.beginPath();
         ctx.arc(centerX, centerY, this.distance, 0, Math.PI * 2); // Orbit path is a circle with radius equal to distance from center
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)'; // Brighter white for better visibility
+        ctx.strokeStyle = solarSystemConfig.display.orbitStroke;
         ctx.lineWidth = 1; // Back to thinner line for cleaner look
         ctx.setLineDash([10, 15]); // More pronounced dashed orbit line
         ctx.stroke();
@@ -91,7 +91,7 @@ class CelestialBody extends ObjectDynamic {
         this.moons.forEach(moon => {
             ctx.beginPath();
             ctx.arc(moon.x + centerX, moon.y + centerY, moon.radius, 0, Math.PI * 2);
-            ctx.fillStyle = "white"; // Assuming moons are white for simplicity
+            ctx.fillStyle = solarSystemConfig.display.moonColor;
             ctx.fill();
             ctx.closePath();
         });

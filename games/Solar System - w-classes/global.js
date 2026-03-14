@@ -3,11 +3,9 @@
 // global.js
 // 10/16/2024
 
-// Set global variables for local classes (same directory)
-// Configuration for the canvas
 export const canvasConfig = {
-  width: 1024, // Game area width
-  height: 768, // Game area height
+  width: 1024,
+  height: 768,
   scale: 0.35,
   backgroundColor: "#000000",
   borderColor: "white",
@@ -32,8 +30,18 @@ export const performanceConfig = {
   backgroundColor: "#AAAAAABB",
   x: 11,
   y: 7,
-}
+};
 
 export const solarSystemConfig = {
-  sunRadius: 30,
-}
+  meta: {
+    title: "Solar System Sample",
+    subtitle: "Orbit simulation built with engine classes"
+  },
+  simulation: {
+    sunRadius: 30
+  },
+  display: {
+    orbitStroke: "rgba(255, 255, 255, 0.75)",
+    moonColor: "white"
+  }
+};
