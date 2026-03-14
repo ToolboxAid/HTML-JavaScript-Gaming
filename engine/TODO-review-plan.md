@@ -106,7 +106,9 @@ Performance review progress:
 - P2 object system allocations: reduced snapshot churn by adding optional non-snapshot access in `GameObjectManager.getActiveGameObjects(useSnapshot)` and using in-place iteration in `GameObjectSystem.clear()`.
 - P2 gamepad polling allocations: replaced `Array.from(...).map(...)` with in-place indexed updates of `this.gameControllers`.
 - P3 canvas helper allocations: replaced per-call `.bind(this)` closures in `CanvasUtils.drawNumber/drawText` with stable static callback references.
-- Validation completed so far: `node --check` passed for all modified performance-target files (`gameBase`, `pngRenderer`, `gameObjectManager`, `gameObjectSystem`, `gamepadManager`, `canvas`).
+- Collision path micro-opt: removed per-edge `Math.sqrt(...)` from polygon edge checks by using squared tolerance comparison in `PolygonCollision.isPointInsidePolygon`.
+- Vector render path micro-opt: replaced per-draw `forEach` callback allocation with indexed loop in `VectorRenderer.draw`.
+- Validation completed so far: `node --check` passed for all modified performance-target files (`gameBase`, `pngRenderer`, `gameObjectManager`, `gameObjectSystem`, `gamepadManager`, `canvas`, `polygonCollision`, `vectorRenderer`).
 - Deferred for follow-up: browser smoke/perf profiling pass (frame-time comparison in at least one real game scene such as Asteroids attract/gameplay).
 
 ## Basic improvements

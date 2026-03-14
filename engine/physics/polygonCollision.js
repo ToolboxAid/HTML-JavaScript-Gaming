@@ -42,8 +42,8 @@ class PolygonCollision {
             }
 
             const edgeSlope = (xj - xi) * (y - yi) - (yj - yi) * (x - xi);
-            const edgeLength = Math.sqrt((xj - xi) ** 2 + (yj - yi) ** 2);
-            const tolerance = 1e-6 * edgeLength;
+            const edgeLengthSquared = ((xj - xi) ** 2) + ((yj - yi) ** 2);
+            const toleranceSquared = (1e-12 * edgeLengthSquared);
             const withinBoundingBox = (
                 x >= Math.min(xi, xj) &&
                 x <= Math.max(xi, xj) &&
@@ -51,7 +51,7 @@ class PolygonCollision {
                 y <= Math.max(yi, yj)
             );
 
-            if (Math.abs(edgeSlope) < tolerance && withinBoundingBox) {
+            if ((edgeSlope * edgeSlope) < toleranceSquared && withinBoundingBox) {
                 if (debug) {
                     DebugLog.log(true, 'PolygonCollision', 'Point is on an edge:', x, y, polygon);
                 }

@@ -1,5 +1,6 @@
 import Synthesizer from '../../engine/output/synthesizer.js';
-import { froggerSong, shellBeSongComingAroundMountain, twinkleTwinkle} from './songs.js';
+import { froggerSong, shellBeSongComingAroundMountain, twinkleTwinkle} from './songs/index.js';
+import { loveStoryInspiredPiano } from './pianoPlayer.js';
 
 const getElementByNote = (note) =>
     note && document.querySelector(`[note="${note}"]`);
@@ -72,9 +73,9 @@ function playTwinkleTwinkle() {
 }
 
 function playSamplePianoSong() {
-    // 🎵 Play Both Hands
+    // Play both hands from the sample piano arrangement.
     console.log('Playing Piano Song');
-    synthesizer.playNotes({ leftHand, rightHand });
+    synthesizer.playNotes(loveStoryInspiredPiano);
     console.log('Finished Playing Piano Song');
 }
 
@@ -122,4 +123,5 @@ for (const [key, { element }] of Object.entries(keys)) {
         clickedKey = key;
     });
 }
+
 

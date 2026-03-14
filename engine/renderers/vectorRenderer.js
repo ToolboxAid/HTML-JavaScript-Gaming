@@ -23,13 +23,14 @@ class VectorRenderer {
         CanvasUtils.ctx.strokeStyle = object.color;
         CanvasUtils.ctx.lineWidth = normalizedLineWidth;
 
-        object.rotatedPoints.forEach(([rx, ry], index) => {
+        for (let index = 0; index < object.rotatedPoints.length; index += 1) {
+            const [rx, ry] = object.rotatedPoints[index];
             if (index === 0) {
                 CanvasUtils.ctx.moveTo(rx + normalizedOffsetX, ry + normalizedOffsetY);
             } else {
                 CanvasUtils.ctx.lineTo(rx + normalizedOffsetX, ry + normalizedOffsetY);
             }
-        });
+        }
 
         CanvasUtils.ctx.closePath();
         CanvasUtils.ctx.stroke();
