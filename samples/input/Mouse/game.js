@@ -8,30 +8,20 @@ import { LEFT, MIDDLE, RIGHT } from '../../../engine/input/mouse.js';
 
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
-
 const mouse = new MouseInput(canvas);
+let animationFrameId = null;
+let isDestroyed = false;
 
-// Update the mouse state and log interactions
+function syncCanvasSizeToDisplay() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+}
+
+// Update mouse state and draw a small color-coded cursor trail.
 function gameUpdate() {
-    mouse.update(); // Update the mouse state
-
-    // Log mouse position relative to the canvas
-    //console.log('Mouse position relative to canvas:', mouse.getPosition());
-
-    if (mouse.wasButtonIndexPressed(0)) {
-        console.log('Left mouse button just pressed at:', mouse.getPosition());
-    }
-
-    if (mouse.wasButtonIndexReleased(1)) {
-        console.log('Middle mouse button just released at:', mouse.getPosition());
-    }
-
-    if (mouse.wasButtonIndexReleased(2)) {
-        console.log('Right mouse button just released at:', mouse.getPosition());
-    }
-
+    mouse.update();
     const position = mouse.getPosition();
-    //console.log('Mouse movement delta:', mouse.getMouseDelta());
     drawDot(position.x, position.y);
 }
 
@@ -54,9 +44,31 @@ function drawDot(x, y) {
 
 // Start the game loop
 function gameLoop() {
+    if (isDestroyed) {
+        return;
+    }
+
     gameUpdate();
-    requestAnimationFrame(gameLoop);
+    animationFrameId = requestAnimationFrame(gameLoop);
 }
 
+function destroy() {
+    if (isDestroyed) {
+        return;
+    }
+
+    isDestroyed = true;
+
+    if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
+    mouse.destroy();
+}
+
+syncCanvasSizeToDisplay();
+window.addEventListener('resize', syncCanvasSizeToDisplay);
+window.addEventListener('pagehide', destroy);
+window.addEventListener('beforeunload', destroy);
 gameLoop();
 
