@@ -36,11 +36,7 @@ The [`games/`](./games/) folder contains complete browser games and gameplay pro
 - Connect 4
 - Tic-Tac-Toe
 - Box Drop
-- Draw Shapes
-- Move Objects
-- Full Screen Gaming
 - Solar System Sample
-- 2D side scroll tile map (not complete)
 
 Each game usually includes its own `index.html`, `game.js`, `global.js`, styles, and game-specific classes/assets.
 
@@ -48,6 +44,11 @@ Each game usually includes its own `index.html`, `game.js`, `global.js`, styles,
 
 The [`samples/`](./samples/) folder contains focused demos for individual engine features, such as:
 
+- 2D side scroll tile map
+- Draw Shapes
+- Move Objects
+- Full Screen Gaming
+- Solar System
 - keyboard input
 - mouse input
 - controllers
@@ -129,14 +130,14 @@ Good first stops are:
 - [`games/Asteroids/`](./games/Asteroids/)
 - [`games/Frogger/`](./games/Frogger/)
 - [`samples/Solar%20System/`](./samples/Solar%20System/)
-- [`games/2D%20side%20scroll%20tile%20map/`](./games/2D%20side%20scroll%20tile%20map/)
-- [`samples/Sample%20Game%20Engine/`](./samples/Sample%20Game%20Engine/)
+- [`samples/2D%20side%20scroll%20tile%20map/`](./samples/2D%20side%20scroll%20tile%20map/)
+- [`samples/Game%20Engine/`](./samples/Game%20Engine/)
 - [`tools/SpriteEditor/`](./tools/SpriteEditor/)
 
 If you want a quick orientation path:
 
 1. Open the root launcher page.
-2. Run [`samples/Sample%20Game%20Engine/`](./samples/Sample%20Game%20Engine/).
+2. Run [`samples/Game%20Engine/`](./samples/Game%20Engine/).
 3. Open [`samples/Solar%20System/`](./samples/Solar%20System/) to compare a small engine-driven sample with a real project folder.
 4. Read [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md).
 5. Open [`games/Asteroids/`](./games/Asteroids/).

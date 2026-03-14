@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 10/16/2024
-// game.js - Sample Keyboard
+// game.js - Keyboard
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import GameBase from '../../engine/core/gameBase.js';

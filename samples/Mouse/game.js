@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 10/16/2024
-// game.js - Sample Mouse
+// game.js - Mouse
 
 import MouseInput from '../../engine/input/mouse.js';
 import { LEFT, MIDDLE, RIGHT } from '../../engine/input/mouse.js';

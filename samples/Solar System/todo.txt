@@ -50,7 +50,7 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Phase 8: polish for teaching value
 [x] Add concise comments only where the flow is not obvious
 [x] Keep naming consistent with current engine conventions
-[x] Make the sample easy to compare with `samples/Sample Game Engine/`
+[x] Make the sample easy to compare with `samples/Game Engine/`
 [x] Update launcher text/description if the sample direction changes
 
 [x] Phase 9: verification

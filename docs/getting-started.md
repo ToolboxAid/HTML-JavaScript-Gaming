@@ -73,14 +73,14 @@ After that, good first stops are:
 - `games/Asteroids/`
 - `games/Frogger/`
 - `samples/Solar System/`
-- `games/2D side scroll tile map/`
-- `samples/Sample Game Engine/`
+- `samples/2D side scroll tile map/`
+- `samples/Game Engine/`
 - `tools/SpriteEditor/`
 
 If you want the quickest orientation path, use this order:
 
 1. Open the root launcher page.
-2. Launch `samples/Sample Game Engine/`.
+2. Launch `samples/Game Engine/`.
 3. Launch `samples/Solar System/` to see a compact engine-driven sample with states, input, zoom, focus, and `GameObjectSystem` ownership.
 4. Read `docs/game-engine-architecture.md`.
 5. Open `games/Asteroids/` to see a more complete engine-driven game.
@@ -138,11 +138,11 @@ If you are new to this repo, work through it in this order:
 
 1. Run the root `index.html` launcher.
 2. Read `docs/game-engine-architecture.md`.
-3. Run `samples/Sample Game Engine/`.
+3. Run `samples/Game Engine/`.
 4. Open `samples/Solar System/` to see a small engine sample inside a real project folder.
 5. Open `games/Asteroids/` to see a compact arcade-style implementation.
 6. Open `games/Frogger/` for a larger project with more systems and assets.
-7. Open `games/2D side scroll tile map/` to study map scrolling.
+7. Open `samples/2D side scroll tile map/` to study map scrolling.
 8. Read `docs/sprite-system.md` before expanding sprite-heavy projects.
 
 ## Adding a new game
@@ -155,7 +155,7 @@ A practical way to add a new game is:
 4. Reuse engine code instead of duplicating utilities.
 5. Add the game to the root launcher page.
 
-In practice, the smoothest starting point is often `samples/Sample Game Engine/` or another small existing project rather than starting from an empty folder.
+In practice, the smoothest starting point is often `samples/Game Engine/` or another small existing project rather than starting from an empty folder.
 
 ## Current direction of the repo
 
