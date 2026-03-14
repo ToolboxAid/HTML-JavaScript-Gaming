@@ -29,7 +29,7 @@ export const performanceConfig = {
   colorHigh: "red",
   backgroundColor: "#AAAAAABB",
   x: 11,
-  y: 7,
+  y: 300,
 };
 
 export const solarSystemConfig = {
@@ -43,18 +43,35 @@ export const solarSystemConfig = {
     paused: "paused"
   },
   simulation: {
-    sunRadius: 30
+    sunRadius: 30,
+    speedMultiplier: 1,
+    minSpeedMultiplier: 0.25,
+    maxSpeedMultiplier: 4,
+    speedStep: 0.25,
+    zoomDefault: 1,
+    minZoom: 0.5,
+    maxZoom: 2.5,
+    zoomStep: 0.1
   },
   controls: {
     startKeys: ["Enter", "NumpadEnter", "Space"],
     pauseKeys: ["KeyP"],
-    resetKeys: ["KeyR"]
+    resetKeys: ["KeyR"],
+    speedUpKeys: ["Equal", "NumpadAdd"],
+    speedDownKeys: ["Minus", "NumpadSubtract"],
+    toggleOrbitKeys: ["KeyO"],
+    toggleLabelKeys: ["KeyL"],
+    zoomInKeys: ["BracketRight"],
+    zoomOutKeys: ["BracketLeft"],
+    focusNextKeys: ["Period"],
+    focusPrevKeys: ["Comma"]
   },
   display: {
     orbitStroke: "rgba(170, 180, 200, 0.35)",
     moonColor: "white",
     hudColor: "#dfe7f5",
     hudAccentColor: "#8ec5ff",
-    hudMutedColor: "#9fb0c9"
+    hudMutedColor: "#9fb0c9",
+    labelColor: "#f7f3b2"
   }
 };

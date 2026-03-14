@@ -35,12 +35,12 @@ Use the shared game engine to execute the Solar System project, so this folder b
 [x] Add a simple HUD with title, controls, and current simulation speed
 [x] Add restart/reset behavior
 
-[ ] Phase 6: add controls through the engine input layer
-[ ] Keyboard pause/resume
-[ ] Speed up / slow down simulation
-[ ] Toggle orbit lines
-[ ] Toggle labels or debug info
-[ ] Optional zoom or planet focus
+[x] Phase 6: add controls through the engine input layer
+[x] Keyboard pause/resume
+[x] Speed up / slow down simulation
+[x] Toggle orbit lines
+[x] Toggle labels or debug info
+[x] Optional zoom or planet focus
 
 [ ] Phase 7: integrate with current engine-facing architecture
 [ ] Evaluate whether a `GameObjectSystem` should own the active celestial bodies

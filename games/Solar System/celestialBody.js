@@ -104,41 +104,63 @@ class CelestialBody extends ObjectStatic {
         this.updateMoons(deltaTime);
     }
 
-    draw() {
+    draw({
+        centerX = this.getSystemCenter().x,
+        centerY = this.getSystemCenter().y,
+        zoom = 1,
+        showOrbits = true,
+        showLabels = false
+    } = {}) {
         const ctx = CanvasUtils.ctx;
-        const { x: centerX, y: centerY } = this.getSystemCenter();
+        const scaledRadius = this.radius * zoom;
+        const drawX = centerX + (this.x * zoom);
+        const drawY = centerY + (this.y * zoom);
 
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, this.orbit.distance, 0, Math.PI * 2);
-        ctx.strokeStyle = solarSystemConfig.display.orbitStroke;
-        ctx.lineWidth = 1;
-        ctx.setLineDash([10, 15]);
-        ctx.stroke();
-        ctx.closePath();
+        if (showOrbits) {
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, this.orbit.distance * zoom, 0, Math.PI * 2);
+            ctx.strokeStyle = solarSystemConfig.display.orbitStroke;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([10, 15]);
+            ctx.stroke();
+            ctx.closePath();
+        }
 
         ctx.setLineDash([0, 0]);
 
         if (this.ring) {
             ctx.beginPath();
-            ctx.ellipse(this.x + centerX, this.y + centerY, this.ring.ringRadius, this.ring.ringRadius, 0, 0, Math.PI * 2);
+            ctx.ellipse(drawX, drawY, this.ring.ringRadius * zoom, this.ring.ringRadius * zoom, 0, 0, Math.PI * 2);
             ctx.fillStyle = this.ring.color;
             ctx.fill();
             ctx.closePath();
         }
 
         ctx.beginPath();
-        ctx.arc(this.x + centerX, this.y + centerY, this.radius, 0, Math.PI * 2);
+        ctx.arc(drawX, drawY, scaledRadius, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
         ctx.closePath();
 
         this.moons.forEach(moon => {
             ctx.beginPath();
-            ctx.arc(moon.x + centerX, moon.y + centerY, moon.visual.radius, 0, Math.PI * 2);
+            ctx.arc(
+                centerX + (moon.x * zoom),
+                centerY + (moon.y * zoom),
+                moon.visual.radius * zoom,
+                0,
+                Math.PI * 2
+            );
             ctx.fillStyle = moon.visual.color;
             ctx.fill();
             ctx.closePath();
         });
+
+        if (showLabels) {
+            ctx.fillStyle = solarSystemConfig.display.labelColor;
+            ctx.font = `${Math.max(12, Math.round(14 * zoom))}px Arial`;
+            ctx.fillText(this.name, drawX + scaledRadius + 6, drawY - scaledRadius - 4);
+        }
     }
 
 }
