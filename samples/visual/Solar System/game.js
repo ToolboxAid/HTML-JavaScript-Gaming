@@ -15,10 +15,10 @@ import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
   createInitialSimulationState,
-  createCelestialBodies,
   getFocusedBody,
   getFocusLabel,
-  getRenderOptions,
+  populateGameObjectSystem,
+  renderBodies,
   updateAttractGameState,
   updatePausedGameState,
   updateSimulationGameState
@@ -59,10 +59,7 @@ class Game extends GameBase {
       this.gameObjectSystem.clear();
     }
 
-    const celestialBodies = createCelestialBodies(solarSystemBodies);
-    celestialBodies.forEach((body) => {
-      this.gameObjectSystem.addGameObject(body);
-    });
+    populateGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
   }
 
   getActiveBodies() {
@@ -83,10 +80,6 @@ class Game extends GameBase {
 
   getFocusedBody() {
     return getFocusedBody(this.getActiveBodies(), this.focusIndex);
-  }
-
-  getRenderOptions() {
-    return getRenderOptions(this.getFocusedBody(), this.zoom, this.showOrbits, this.showLabels);
   }
 
   getFocusLabel() {
@@ -111,10 +104,7 @@ class Game extends GameBase {
   }
 
   renderSimulation() {
-    const renderOptions = this.getRenderOptions();
-    this.getActiveBodies().forEach(body => {
-      body.draw(renderOptions);
-    });
+    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
   }
 
   runAttractState() {
@@ -179,4 +169,3 @@ class Game extends GameBase {
 
 export default Game;
 const game = new Game();
-

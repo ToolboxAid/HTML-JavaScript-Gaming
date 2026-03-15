@@ -19,6 +19,13 @@ export function createCelestialBodies(bodyDefinitions) {
   ));
 }
 
+export function populateGameObjectSystem(gameObjectSystem, bodyDefinitions) {
+  const celestialBodies = createCelestialBodies(bodyDefinitions);
+  celestialBodies.forEach((body) => {
+    gameObjectSystem.addGameObject(body);
+  });
+}
+
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
@@ -95,6 +102,15 @@ export function getRenderOptions(focusedBody, zoom, showOrbits, showLabels) {
 
 export function getFocusLabel(focusedBody) {
   return focusedBody ? focusedBody.name : 'System Center';
+}
+
+export function renderBodies(activeBodies, focusIndex, zoom, showOrbits, showLabels) {
+  const focusedBody = getFocusedBody(activeBodies, focusIndex);
+  const renderOptions = getRenderOptions(focusedBody, zoom, showOrbits, showLabels);
+
+  activeBodies.forEach((body) => {
+    body.draw(renderOptions);
+  });
 }
 
 export function updateBodies(activeBodies, deltaTime) {
