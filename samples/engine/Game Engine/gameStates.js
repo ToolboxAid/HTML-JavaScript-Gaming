@@ -86,14 +86,14 @@ export function initializeEnemy(game) {
 /** @param {GameContext} game */
 export function pauseGame(game) {
     renderScreen(gameUi.screens.pause);
-    gamePauseCheck(game);
+    togglePauseState(game);
 }
 
 /** @param {GameContext} game */
 export function playGame(game) {
     const screen = gameUi.screens.play;
     drawStyledStage(screen.panelColor, screen.borderColor);
-    gamePauseCheck(game);
+    togglePauseState(game);
 
     const playerInfo = `Player ${game.currentPlayer + 1} - Lives: ${game.playerLives[game.currentPlayer]} - Score: ${game.score[game.currentPlayer]}`;
     renderCenteredText(playerInfo, screen.infoY, {
@@ -138,7 +138,7 @@ export function resetGame(game) {
 }
 
 /** @param {GameContext} game */
-function gamePauseCheck(game) {
+function togglePauseState(game) {
     if (!isPauseTogglePressed(game.keyboardInput)) {
         return;
     }

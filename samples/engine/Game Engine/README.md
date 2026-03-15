@@ -46,7 +46,7 @@ Attract-state preview of the current starter layout and theme.
 - `gameInput.js` contains shared input checks for state handlers.
 - `CanvasUtils` provides canvas primitives and safe-area guides.
 - `CanvasText` owns text metrics plus centered/multiline text rendering.
-- Quick theme tuning lives in `global.js` under `gameUi.theme`, `gameUi.performance`, `performanceConfig`, and `playerSelect`.
+- Quick theme tuning lives in `global.js` under `gameUi.theme`, `gameUi.screens`, `gameUi.performance`, and `playerSelect`.
 - Reusable flow helpers stay in `engine/game/gameUtils.js`.
 - Lifecycle cleanup is owned by `GameBase.destroy()` plus the sample `onDestroy()` reset.
 
