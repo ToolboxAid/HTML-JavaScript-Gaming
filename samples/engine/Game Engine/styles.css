@@ -62,8 +62,7 @@ canvas {
 }
 
 #gameArea {
-    background-color: #1f0b57;
-    cursor: none; /* Hide the cursor */
+    cursor: none;
 }
 
 @media (max-width: 840px) {
