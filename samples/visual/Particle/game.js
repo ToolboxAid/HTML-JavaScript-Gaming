@@ -55,7 +55,7 @@ class Game extends GameBase {
         this.explosions.push(explosion);
     }
 
-    updateAndDrawExplosions(deltaTime) {
+    updateExplosions(deltaTime) {
         this.explosions = this.explosions.filter((explosion) => {
             if (!explosion || explosion.isDone) {
                 if (explosion) {
@@ -68,9 +68,13 @@ class Game extends GameBase {
                 explosion.destroy();
                 return false;
             }
-
-            explosion.draw();
             return true;
+        });
+    }
+
+    drawExplosions() {
+        this.explosions.forEach((explosion) => {
+            explosion.draw();
         });
     }
 
@@ -93,15 +97,31 @@ class Game extends GameBase {
 
     drawCanvasHeader() {
         const { title, subtitle, help, titleY, subtitleY, helpY, colors } = particleSampleUi.canvasText;
-        renderCenteredText(title, titleY, 34, uiFont.display, colors.textPrimary);
-        renderCenteredText(subtitle, subtitleY, 20, uiFont.ui, colors.textSecondary);
-        renderCenteredText(help, helpY, 17, uiFont.ui, colors.muted);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, title, titleY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 34,
+            fontFamily: uiFont.display,
+            color: colors.textPrimary
+        });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, subtitle, subtitleY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 20,
+            fontFamily: uiFont.ui,
+            color: colors.textSecondary
+        });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, help, helpY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 17,
+            fontFamily: uiFont.ui,
+            color: colors.muted
+        });
     }
 
     gameLoop(deltaTime) {
         this.drawStage();
         this.drawCanvasHeader();
-        this.updateAndDrawExplosions(deltaTime);
+        this.updateExplosions(deltaTime);
+        this.drawExplosions();
 
         const currentTimeMs = Date.now();
         if (currentTimeMs - this.lastExplosionTimeMs > Game.EXPLOSION_INTERVAL_MS) {
@@ -124,14 +144,3 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
-
-function renderCenteredText(text, y, fontSize, fontFamily, color) {
-    CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
-        defaultCenterX: canvasConfig.width / 2,
-        fontSize,
-        fontFamily,
-        color
-    });
-}
-
-
