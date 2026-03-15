@@ -88,19 +88,14 @@ export const gameUi = {
   attract: {
     color: '#ffffff',
     font: `46px ${uiFont.display}`,
-    titleX: 200,
     titleY: 230,
-    promptX: 230,
     promptY: 300,
-    subtitleX: 230,
     subtitleY: 350
   },
   playerSelect: {
-    titleX: 210,
     titleY: 190,
     titleColor: '#ffffff',
     titleFont: `42px ${uiFont.display}`,
-    subtitleX: 210,
     subtitleY: 235,
     subtitleColor: '#d7f7ff',
     subtitleFont: `24px ${uiFont.ui}`
@@ -108,34 +103,22 @@ export const gameUi = {
   gameOver: {
     color: '#ff5a5a',
     font: `52px ${uiFont.display}`,
-    titleX: 290,
     titleY: 250,
-    promptX: 230,
     promptY: 320,
-    subtitleX: 250,
     subtitleY: 370
   },
   pause: {
-    textX: 250,
     textY: 270,
-    promptX: 215,
     promptY: 330,
     scale: 3.5,
     color: '#ffffff',
-    subtitleX: 230,
     subtitleY: 385,
     subtitleScale: 2.2,
     subtitleColor: '#d7f7ff'
   },
   play: {
-    infoX: 120,
     infoY: 170,
-    deathPromptX: 120,
     deathPromptY: 250,
-    scorePromptX: 120,
-    scorePromptY: 300,
-    pausePromptX: 120,
-    pausePromptY: 350,
     scale: 3.2,
     color: '#ffffff',
     labelScale: 2.2,

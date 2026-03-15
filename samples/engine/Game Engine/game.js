@@ -64,12 +64,13 @@ class Game extends GameBase {
     }
 
     resetRuntimeState() {
+        const playerSlots = Math.max(1, this.playerSelect.maxPlayers);
         this.gameState = Game.STATES.ATTRACT;
         this.lastLoggedState = null;
         this.playerCount = 1;
         this.currentPlayer = 0;
-        this.playerLives = [3, 3, 3, 3];
-        this.score = [0, 0, 0, 0];
+        this.playerLives = Array(playerSlots).fill(this.playerSelect.lives);
+        this.score = Array(playerSlots).fill(0);
         this.gameInitialized = false;
         this.enemyInitialized = false;
         this.backToAttractCounter = 0;
@@ -99,7 +100,6 @@ class Game extends GameBase {
 
     onDestroy() {
         this.resetRuntimeState();
-        this.keyboardInput = null;
     }
 }
 
