@@ -28,11 +28,10 @@ visual:
 [x] samples/visual/Draw Shapes/
 [x] samples/visual/Move Objects/
 [x] samples/visual/Particle/
-
+[ ] samples/engine/Solar System/
 
 engine:
 [x] samples/engine/Game Engine/
-[ ] samples/engine/Solar System/
 [ ] samples/engine/2D side scroll tile map/
 
 Additional reviews:

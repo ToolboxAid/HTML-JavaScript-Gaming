@@ -3,7 +3,7 @@
 This sample is the engine template reference for lifecycle flow and state transitions.
 
 ## Template Metadata
-- Template version: `1.0.0`
+- Template version: `1.1.0`
 - Last updated: `2026-03-15`
 - Change log: [`CHANGELOG.md`](./CHANGELOG.md)
 
@@ -16,6 +16,7 @@ This sample is the engine template reference for lifecycle flow and state transi
 
 ## Preview
 ![Game Engine Template Preview](./assets/template-preview.svg)
+Attract-state preview of the current starter layout and theme.
 
 ## Controls
 - `Enter`: start from attract or restart from game over.
