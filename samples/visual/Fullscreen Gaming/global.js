@@ -70,10 +70,10 @@ export const performanceConfig = {
     show: true,
     size: 15,
     font: uiFont.mono,
-    colorLow: 'green',
+    colorLow: '#7bd389',
     colorMed: '#ed9700',
     colorHigh: '#ff5f57',
-    backgroundColor: '#999999cc',
+    backgroundColor: '#222222cc',
     x: 120,
     y: 450,
 };

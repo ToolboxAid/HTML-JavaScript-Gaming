@@ -3,12 +3,11 @@
 // game.js
 // 03/15/2026
 
-import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig, fullscreenSampleUi, uiFont } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import { getMetricsElements, updateMetricsPanel } from './gameDom.js';
-import { fullscreenSampleUi, uiFont } from './global.js';
 
 class Game extends GameBase {
     static STATES = Object.freeze({
