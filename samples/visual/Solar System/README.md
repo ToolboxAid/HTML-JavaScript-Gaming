@@ -41,3 +41,4 @@ This sample is an engine-driven orbit simulation that now lives under `samples/v
 - This sample is intended to stay small and readable so it can serve as an engine example rather than a full game.
 - `GameObjectSystem` owns the active bodies, while the sample shell stays focused on input, state, update, and render flow.
 - Orbit math and body rendering remain sample-local for now; nothing here is shared widely enough to justify moving it into `engine/` yet.
+- The moon layout is intentionally simplified, but it now follows the broad real-world pattern more closely: Mercury and Venus have no moons, Earth has one, Mars has two, and the outer planets show a few representative major moons.
