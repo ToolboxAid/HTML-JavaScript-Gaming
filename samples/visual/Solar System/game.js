@@ -16,6 +16,7 @@ import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
   createInitialSimulationState,
   destroyGameObjectSystem,
+  getActiveBodies,
   getFocusedBody,
   getFocusLabel,
   renderBodies,
@@ -41,7 +42,7 @@ class Game extends GameBase {
       [solarSystemConfig.states.simulation]: (deltaTime) => this.runSimulationState(deltaTime),
       [solarSystemConfig.states.paused]: () => this.runPausedState()
     };
-    this.isAnyKeyPressed = (keyCodes) => this.wasAnyKeyPressed(keyCodes);
+    this.isAnyKeyPressed = (keyCodes) => keyCodes.some((code) => this.keyboardInput.isKeyPressed(code));
     this.resetBodies = () => this.resetSimulation();
   }
 
@@ -61,35 +62,25 @@ class Game extends GameBase {
     resetGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
   }
 
-  getActiveBodies() {
-    return this.gameObjectSystem?.getActiveGameObjects() ?? [];
-  }
-
-  wasAnyKeyPressed(keyCodes = []) {
-    return keyCodes.some((code) => this.keyboardInput.isKeyPressed(code));
-  }
-
-  updateInput() {
-    this.keyboardInput.update();
-  }
-
   runAttractState() {
     updateAttractGameState(this, this.isAnyKeyPressed);
-    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
+    renderBodies(getActiveBodies(this.gameObjectSystem), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
     renderAttractHud();
   }
 
   runSimulationState(deltaTime) {
+    const activeBodies = getActiveBodies(this.gameObjectSystem);
+
     updateSimulationGameState(
       this,
       this.isAnyKeyPressed,
       this.resetBodies,
       deltaTime
     );
-    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
+    renderBodies(activeBodies, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
     renderSimulationHud(
       this.simulationSpeed,
-      getFocusLabel(getFocusedBody(this.getActiveBodies(), this.focusIndex)),
+      getFocusLabel(getFocusedBody(activeBodies, this.focusIndex)),
       this.zoom,
       this.showOrbits,
       this.showLabels
@@ -97,14 +88,16 @@ class Game extends GameBase {
   }
 
   runPausedState() {
+    const activeBodies = getActiveBodies(this.gameObjectSystem);
+
     updatePausedGameState(this, this.isAnyKeyPressed, this.resetBodies);
-    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
+    renderBodies(activeBodies, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
     renderPausedHud();
   }
 
   gameLoop(deltaTime, runtimeContext = this.runtimeContext) {
     this.runtimeContext = runtimeContext;
-    this.updateInput();
+    this.keyboardInput.update();
 
     const handler = this.stateHandlers[this.gameState];
     if (typeof handler === 'function') {
