@@ -33,13 +33,34 @@ class Game extends GameBase {
     this.keyboardInput = null;
     this.gameObjectSystem = null;
     Object.assign(this, createInitialSimulationState());
-    this.stateHandlers = {
-      [solarSystemConfig.states.attract]: (deltaTime) => this.runAttractState(deltaTime),
-      [solarSystemConfig.states.simulation]: (deltaTime) => this.runSimulationState(deltaTime),
-      [solarSystemConfig.states.paused]: () => this.runPausedState()
-    };
     this.isAnyKeyPressed = (keyCodes) => keyCodes.some((code) => this.keyboardInput.isKeyPressed(code));
     this.resetBodies = () => this.resetSimulation();
+    this.stateHandlers = {
+      [solarSystemConfig.states.attract]: () => {
+        updateAttractGameState(this, this.isAnyKeyPressed);
+        renderAttractScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
+      },
+      [solarSystemConfig.states.simulation]: (deltaTime) => {
+        updateSimulationGameState(
+          this,
+          this.isAnyKeyPressed,
+          this.resetBodies,
+          deltaTime
+        );
+        renderSimulationScreen(
+          this.gameObjectSystem,
+          this.simulationSpeed,
+          this.focusIndex,
+          this.zoom,
+          this.showOrbits,
+          this.showLabels
+        );
+      },
+      [solarSystemConfig.states.paused]: () => {
+        updatePausedGameState(this, this.isAnyKeyPressed, this.resetBodies);
+        renderPausedScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
+      }
+    };
   }
 
   async onInitialize(runtimeContext = this.runtimeContext) {
@@ -58,33 +79,6 @@ class Game extends GameBase {
     resetGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
   }
 
-  runAttractState() {
-    updateAttractGameState(this, this.isAnyKeyPressed);
-    renderAttractScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-  }
-
-  runSimulationState(deltaTime) {
-    updateSimulationGameState(
-      this,
-      this.isAnyKeyPressed,
-      this.resetBodies,
-      deltaTime
-    );
-    renderSimulationScreen(
-      this.gameObjectSystem,
-      this.simulationSpeed,
-      this.focusIndex,
-      this.zoom,
-      this.showOrbits,
-      this.showLabels
-    );
-  }
-
-  runPausedState() {
-    updatePausedGameState(this, this.isAnyKeyPressed, this.resetBodies);
-    renderPausedScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-  }
-
   gameLoop(deltaTime, runtimeContext = this.runtimeContext) {
     this.runtimeContext = runtimeContext;
     this.keyboardInput.update();
@@ -96,7 +90,7 @@ class Game extends GameBase {
     }
 
     this.gameState = solarSystemConfig.states.attract;
-    this.runAttractState();
+    this.stateHandlers[this.gameState]();
   }
 
   onDestroy() {
