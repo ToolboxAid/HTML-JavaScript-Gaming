@@ -10,21 +10,6 @@ import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
-import { runTests } from '../../../engine/runTest.js';
-import { engineTestEntries } from '../../../tests/engine/testManifest.js';
-
-const shouldRunSampleTests = DebugFlag.has('runTests');
-
-async function runSampleEngineTests() {
-    for (const entry of engineTestEntries) {
-        const testModule = await import(`../../../tests/engine/${entry.modulePath.slice(2)}`);
-        runTests(entry.name, testModule[entry.exportName]);
-    }
-}
-
-if (shouldRunSampleTests) {
-    runSampleEngineTests();
-}
 
 class Game extends GameBase {
     // Enable debug mode: game.html?game

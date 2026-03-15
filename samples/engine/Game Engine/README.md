@@ -16,7 +16,10 @@ This sample is the engine template reference for lifecycle flow and state transi
 
 ## Optional Query Flags
 - `?game` enables sample debug logging.
-- `?runTests` runs the engine browser test manifest.
+
+## Test Runner
+- Open `tests/testRunner.html` to run the engine browser test manifest in isolation from game runtime.
+- Keep `index.html` focused on gameplay/lifecycle behavior without test-side singleton mutations.
 
 ## Notes
 - Sample orchestration remains in `game.js`; reusable flow helpers stay in `engine/game/gameUtils.js`.

@@ -53,4 +53,4 @@ Decision notes:
 - This sample should stay minimal and serve as a reference implementation for engine lifecycle patterns.
 - Reusable helpers should only move into engine when they improve multiple samples/games.
 - Final pass should confirm destroy ownership and avoid hidden coupling in template code.
-- Browser tests are opt-in (`?runTests`) to avoid mutating singleton runtime state during normal sample usage.
+- Browser tests run from dedicated `tests/testRunner.html` to avoid mutating singleton runtime state during normal sample usage.
