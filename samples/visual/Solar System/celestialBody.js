@@ -5,11 +5,11 @@
 
 import ObjectStatic from '../../../engine/objects/objectStatic.js';
 import {
-    drawCelestialBody,
     getInitialBodyPosition,
     initializeCelestialBody,
     updateCelestialBody
-} from './celestialBodyHelpers.js';
+} from './celestialBodyState.js';
+import { drawCelestialBody } from './celestialBodyRender.js';
 
 /**
  * Represents a celestial body in a solar system, such as a planet or star/sun.
