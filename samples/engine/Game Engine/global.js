@@ -35,12 +35,6 @@ export const fullscreenConfig = {
 export const playerSelect = {
     maxPlayers: 2,
     lives: 3,
-
-    fillStyle: '#ed9700',
-    font: `25px ${uiFont.ui}`,
-    fillText: 'Select Player(s)',
-
-    optionBaseX: 250,
     optionBaseY: 300,
     optionSpacing: 40
 };

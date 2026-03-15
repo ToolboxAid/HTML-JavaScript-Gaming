@@ -11,33 +11,12 @@ Game Engine local plan
 Goal:
 Keep this sample as the canonical engine template for lifecycle and game flow.
 
-Local checklist:
-[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[x] Keep game flow orchestration separated from UI/render wiring
-[x] Keep status/error/debug output minimal and user-safe
-[x] Add or update README with lifecycle controls and behavior
-[x] Evaluate whether shared template helpers should move to engine
-[x] Verify naming consistency for lifecycle/update/render labels
-[x] Verify repeated restart/play flow does not leak state/listeners
-[x] Verify headers are in place
-
-Focused review checklist:
-[x] Security: validate external/config-driven inputs before use
-[x] Architecture: keep UI wiring separate from engine flow orchestration
-[x] Move-to-engine: identify reusable template helpers for engine extraction
-[x] Naming: keep control/action labels and identifiers consistent
-[x] Safety: verify repeated interaction stays leak-free
-[x] Center on HTML page
-
-Detail checklist:
-[x] Move inline script logic out of `index.html`
-[x] Anything need to move to the engine for reusable
-[x] Separation of concerns for data, methods, etc
-[x] Fix typo
-[x] Add/validate unit test(s)
-[x] Verify destroy()
-[x] Center page layout and controls in index.html
-[x] Update README with sample details
+Completed:
+[x] Keep sample structure and docs aligned with the canonical engine template
+[x] Keep lifecycle orchestration separate from UI/render wiring
+[x] Verify naming, cleanup, restart flow, and page layout
+[x] Review reusable helper candidates without moving template-only code into engine
+[x] Update README and related starter docs
 
 Final:
 [x] Run browser smoke pass for lifecycle/update/render and cleanup

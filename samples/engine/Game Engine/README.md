@@ -31,7 +31,6 @@ Attract-state preview of the current starter layout and theme.
 
 ## Test Runner
 - Open `tests/testRunner.html` to run the engine browser test manifest in isolation from game runtime.
-- Keep `index.html` focused on gameplay/lifecycle behavior without test-side singleton mutations.
 
 ## Commands
 - Node test suite: `npm test`
@@ -70,6 +69,4 @@ Example copy command:
 - PowerShell: `Copy-Item TODO-template.txt todo.txt`
 - Bash: `cp TODO-template.txt todo.txt`
 
-Use [`STARTER_CHECKLIST.md`](./STARTER_CHECKLIST.md) as the final handoff checklist for each new game.
-Use [`TODO-template.txt`](./TODO-template.txt) as the starting todo for each copied game.
-Use [`VISUAL_REGRESSION_CHECKLIST.md`](./VISUAL_REGRESSION_CHECKLIST.md) when updating canvas visuals.
+Use [`STARTER_CHECKLIST.md`](./STARTER_CHECKLIST.md) for handoff, [`TODO-template.txt`](./TODO-template.txt) to start local work, and [`VISUAL_REGRESSION_CHECKLIST.md`](./VISUAL_REGRESSION_CHECKLIST.md) for canvas updates.
