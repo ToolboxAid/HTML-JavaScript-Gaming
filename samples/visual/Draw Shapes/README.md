@@ -11,7 +11,8 @@ It uses:
 
 - `index.html`: module boot shell and sample header
 - `global.js`: canvas, fullscreen, performance, and sample UI config
-- `game.js`: `GameBase` lifecycle shell, state routing, and shape drawing methods
+- `game.js`: `GameBase` lifecycle shell, state routing, and stage rendering
+- `drawShapesArt.js`: shape gallery drawing helpers
 - `styles.css`: centered sample layout and stage presentation
 
 ## Behavior
