@@ -3,7 +3,7 @@
 This sample is the engine template reference for lifecycle flow and state transitions.
 
 ## Template Metadata
-- Template version: `1.1.0`
+- Template version: `1.2.0`
 - Last updated: `2026-03-15`
 - Change log: [`CHANGELOG.md`](./CHANGELOG.md)
 
@@ -45,7 +45,7 @@ Attract-state preview of the current starter layout and theme.
 - `gameInput.js` contains shared input checks for state handlers.
 - `CanvasUtils` provides canvas primitives and safe-area guides.
 - `CanvasText` owns text metrics plus centered/multiline text rendering.
-- Quick theme tuning lives in `global.js` under `gameUi.theme`, `gameUi.screens`, `gameUi.performance`, and `playerSelect`.
+- Quick theme tuning lives in `global.js` under `gameUi.theme`, `gameUi.screens`, `gameUi.performance`, and the minimal `playerSelect` config.
 - Reusable flow helpers stay in `engine/game/gameUtils.js`.
 - Lifecycle cleanup is owned by `GameBase.destroy()` plus the sample `onDestroy()` reset.
 

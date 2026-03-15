@@ -1,5 +1,11 @@
 # Game Engine Template Changelog
 
+## 1.2.0 - 2026-03-15
+- Slimmed the sample shell, runtime wiring, config, README, and local todo notes.
+- Removed template-stale player-select config from the sample and kept play-screen styling config centralized in `global.js`.
+- Simplified state-handler wiring in `game.js` and tightened helper usage in `gameStates.js`.
+- Removed noisy `swapPlayer()` console logging from shared `engine/game/gameUtils.js`.
+
 ## 1.1.0 - 2026-03-15
 - Centralized sample UI theme, font, safe-area, and performance settings in `global.js`.
 - Restyled state screens with themed panels, typography, and aligned stage layout helpers.

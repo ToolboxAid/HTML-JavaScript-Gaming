@@ -41,12 +41,7 @@ export function displayPlayerSelect(game) {
     renderScreen(screen);
 
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, game.playerSelect);
-    renderCenteredMultilineText(screen.options.lines, config.y + config.spacing, {
-        fontSize: screen.options.fontSize,
-        lineHeight: screen.options.lineHeight,
-        fontFamily: screen.options.fontFamily,
-        color: screen.options.color
-    });
+    renderPlayerSelectOptions(screen, config);
     const result = GameUtils.getKeyboardPlayerSelection(game.keyboardInput, config);
 
     if (!result) {
@@ -169,6 +164,15 @@ function renderScreen(screen) {
     drawStyledStage(screen.panelColor, screen.borderColor);
     screen.lines.forEach(({ text, y, ...options }) => {
         renderCenteredText(text, y, options);
+    });
+}
+
+function renderPlayerSelectOptions(screen, config) {
+    renderCenteredMultilineText(screen.options.lines, config.y + config.spacing, {
+        fontSize: screen.options.fontSize,
+        lineHeight: screen.options.lineHeight,
+        fontFamily: screen.options.fontFamily,
+        color: screen.options.color
     });
 }
 
