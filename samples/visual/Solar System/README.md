@@ -25,6 +25,7 @@ This sample is an engine-driven orbit simulation that now lives under `samples/v
 - `game.js`: sample shell, state flow, input handling, and update loop orchestration.
 - `global.js`: canvas, fullscreen, performance, control, and display config.
 - `celestialBody.js`: simulation object model and draw/update behavior.
+- `celestialBodyHelpers.js`: sample-local orbit, moon, and body rendering helpers used by `CelestialBody`.
 - `solarSystemData.js`: body definitions for the sample system.
 - `solarSystemRuntime.js`: sample-local simulation helpers for world setup/teardown, system reset, body creation, focus, body rendering, and render math.
 - `solarSystemHud.js`: sample-local HUD drawing and full screen-render composition helpers.
