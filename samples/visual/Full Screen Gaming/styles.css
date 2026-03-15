@@ -1,8 +1,36 @@
 /*
  ToolboxAid.com
  David Quesenberry
- 10/16/2024
+ 03/15/2026
  styles.css
 */
-body { margin: 0; overflow: hidden; }
-canvas { display: block; background-color: black; }
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #111111;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    margin: 0;
+}
+
+h2 {
+    font-weight: normal;
+    margin-top: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+#gameAreaContainer {
+    padding: 0.5rem;
+}
+
+canvas {
+    display: block;
+    background-color: black;
+}

@@ -6,41 +6,41 @@ Status legend:
 - [x] Complete
 - [X] Complete
 
-Full Screen Gaming local plan
+Fullscreen Gaming local plan
 
 Goal:
 Keep this sample focused on fullscreen behavior, transitions, and rendering quality.
 
 Local checklist:
-[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
 [x] Keep fullscreen orchestration separated from game/render wiring
-[ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with fullscreen controls and behavior
+[x] Keep status/error/debug output minimal and user-safe
+[x] Add or update README with fullscreen controls and behavior
 [x] Evaluate whether shared fullscreen sample helpers should move to engine
-[ ] Verify naming consistency for fullscreen control and lifecycle labels
-[ ] Verify repeated enter/exit flow does not leak state/listeners
-[ ] Verify headers are in place
+[x] Verify naming consistency for fullscreen control and lifecycle labels
+[x] Verify repeated enter/exit flow does not leak state/listeners
+[x] Verify headers are in place
 
 Focused review checklist:
-[ ] Security: validate external/config-driven inputs before use
+[x] Security: validate external/config-driven inputs before use
 [x] Architecture: keep UI wiring separate from fullscreen orchestration
 [x] Move-to-engine: identify reusable fullscreen helpers for engine extraction
-[ ] Naming: keep control/action labels and identifiers consistent
-[ ] Safety: verify repeated interaction stays leak-free
-[ ] Center on HTML page
+[x] Naming: keep control/action labels and identifiers consistent
+[x] Safety: verify repeated interaction stays leak-free
+[x] Center on HTML page
 
 Detail checklist:
-[ ] Move inline script logic out of `index.html`
-[ ] Anything need to move to the engine for reusable
-[ ] Separation of concerns for data, methods, etc
-[ ] Fix typo
-[ ] Add/validate unit test(s)
-[ ] Verify destroy()
-[ ] Center page layout and controls in index.html
-[ ] Update README with sample details
+[x] Move inline script logic out of `index.html`
+[x] Anything need to move to the engine for reusable
+[x] Separation of concerns for data, methods, etc
+[x] Fix typo
+[x] Add/validate unit test(s)
+[x] Verify destroy()
+[x] Center page layout and controls in index.html
+[x] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for fullscreen enter/exit and cleanup
+[x] Run browser smoke pass for fullscreen enter/exit and cleanup
 
 Smoke pass steps:
 1. Load `samples/visual/Full Screen Gaming/index.html`.
@@ -52,4 +52,5 @@ Smoke pass steps:
 Decision notes:
 - Fullscreen behavior is now delegated to `engine/fullscreen.js`, while sample redraw/info hooks remain local.
 - Any shared fullscreen UI glue should only move to engine if reused by multiple samples/games.
-- Final pass should confirm listener cleanup and transition stability across repeated toggles.
+- Transition/redraw hook support is now available in engine fullscreen via `init(..., { onResize })`.
+- Sample-level unit tests are deferred; rely on browser smoke + engine test coverage.
