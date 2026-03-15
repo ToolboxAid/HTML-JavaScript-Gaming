@@ -3,9 +3,9 @@
 // 10/16/2024
 // fullscreen.js
 
-import SystemUtils from "./utils/systemUtils.js";
-import DebugFlag from './utils/debugFlag.js';
-import DebugLog from './utils/debugLog.js';
+import SystemUtils from "../utils/systemUtils.js";
+import DebugFlag from '../utils/debugFlag.js';
+import DebugLog from '../utils/debugLog.js';
 
 class Fullscreen {
 
@@ -35,9 +35,9 @@ class Fullscreen {
         ? Fullscreen.canvas.getContext('2d')
         : null;
 
-    static canvasWidth = 0;  // window.gameAreaWidth = canvasConfig.width;        
-    static canvasHeight = 0; // window.gameAreaHeight = canvasConfig.height;
-    static scale = 0;        // window.gameScaleWindow = canvasConfig.scale;
+    static canvasWidth = 0;
+    static canvasHeight = 0;
+    static scale = 0;
 
     static config = {
         width: 1024,
@@ -81,11 +81,11 @@ class Fullscreen {
             DebugLog.error('Fullscreen', "No 'fullscreenConfig' provided");
         }
         const schema = {
-            color: 'string',     // Text color
-            font: 'string',      // Font style and size
-            text: 'string',      // Display text
-            x: 'number',         // X position
-            y: 'number'          // Y position
+            color: 'string',
+            font: 'string',
+            text: 'string',
+            x: 'number',
+            y: 'number'
         };
         const validation = SystemUtils.validateConfig("FullScreen", config, schema);
         if (validation) {
@@ -209,8 +209,6 @@ class Fullscreen {
         if (!Fullscreen.canvas) {
             return;
         }
-        // Keep the backing canvas at full resolution and scale only the displayed size.
-        // That preserves sharp rendering in the default windowed view.
         Fullscreen.canvas.width = Fullscreen.canvasWidth;
         Fullscreen.canvas.height = Fullscreen.canvasHeight;
         Fullscreen.canvas.style.width = `${Fullscreen.canvasWidth * scale}px`;
@@ -255,5 +253,4 @@ class Fullscreen {
 
 }
 
-// Export the class
 export default Fullscreen;

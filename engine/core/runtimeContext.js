@@ -4,7 +4,7 @@
 // 03/13/2026
 
 import CanvasUtils from './canvas.js';
-import Fullscreen from '../fullscreen.js';
+import Fullscreen from './fullscreen.js';
 import PerformanceMonitor from './performanceMonitor.js';
 import Timer from '../utils/timer.js';
 
