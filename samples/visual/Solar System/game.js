@@ -7,7 +7,8 @@ import {
   canvasConfig,
   performanceConfig,
   fullscreenConfig,
-  solarSystemConfig
+  solarSystemConfig,
+  uiFont
 } from './global.js';
 import CelestialBody from './celestialBody.js';
 import { solarSystemBodies } from './solarSystemData.js';
@@ -32,13 +33,30 @@ function createCelestialBodies(bodyDefinitions) {
 class SolarSystemSample extends GameBase {
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);
+    this.keyboardInput = null;
+    this.gameObjectSystem = null;
+    this.gameState = solarSystemConfig.states.attract;
+    this.simulationSpeed = solarSystemConfig.simulation.speedMultiplier;
+    this.showOrbits = true;
+    this.showLabels = false;
+    this.zoom = solarSystemConfig.simulation.zoomDefault;
+    this.focusIndex = -1;
+    this.stateHandlers = {
+      [solarSystemConfig.states.attract]: (deltaTime) => this.runAttractState(deltaTime),
+      [solarSystemConfig.states.simulation]: (deltaTime) => this.runSimulationState(deltaTime),
+      [solarSystemConfig.states.paused]: () => this.runPausedState()
+    };
   }
 
   async onInitialize(runtimeContext = this.runtimeContext) {
     this.runtimeContext = runtimeContext;
     this.keyboardInput = new KeyboardInput();
-    this.gameState = solarSystemConfig.states.attract;
     this.gameObjectSystem = new GameObjectSystem(false);
+    this.resetRuntimeState();
+  }
+
+  resetRuntimeState() {
+    this.gameState = solarSystemConfig.states.attract;
     this.simulationSpeed = solarSystemConfig.simulation.speedMultiplier;
     this.showOrbits = true;
     this.showLabels = false;
@@ -192,6 +210,14 @@ class SolarSystemSample extends GameBase {
     }
   }
 
+  updateSharedControls() {
+    this.updateInteractiveControls();
+
+    if (this.wasAnyKeyPressed(solarSystemConfig.controls.resetKeys)) {
+      this.resetSimulation();
+    }
+  }
+
   updateSimulation(deltaTime) {
     this.getActiveBodies().forEach(body => {
       body.update(deltaTime);
@@ -204,25 +230,16 @@ class SolarSystemSample extends GameBase {
       return;
     }
 
-    this.updateInteractiveControls();
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.resetKeys)) {
-      this.resetSimulation();
-    }
-
+    this.updateSharedControls();
     this.updateSimulation(deltaTime * this.simulationSpeed);
   }
 
   updatePausedState() {
-    this.updateInteractiveControls();
+    this.updateSharedControls();
 
     if (this.wasAnyKeyPressed(solarSystemConfig.controls.pauseKeys)) {
       this.gameState = solarSystemConfig.states.simulation;
       return;
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.resetKeys)) {
-      this.resetSimulation();
     }
   }
 
@@ -236,12 +253,11 @@ class SolarSystemSample extends GameBase {
   drawHudLine(text, x, y, color = solarSystemConfig.display.hudColor, size = 24) {
     const ctx = CanvasUtils.ctx;
     ctx.fillStyle = color;
-    ctx.font = `${size}px Arial`;
+    ctx.font = `${size}px ${uiFont.ui}`;
     ctx.fillText(text, x, y);
   }
 
-  renderAttractState() {
-    this.renderSimulation();
+  renderAttractHud() {
     this.drawHudLine(solarSystemConfig.meta.title, 28, 44, solarSystemConfig.display.hudAccentColor, 30);
     this.drawHudLine(solarSystemConfig.meta.subtitle, 28, 76, solarSystemConfig.display.hudMutedColor, 18);
     this.drawHudLine("Press Enter or Space to start the simulation", 28, 122);
@@ -249,11 +265,36 @@ class SolarSystemSample extends GameBase {
     this.drawHudLine("O: orbits  L: labels  [ ]: zoom  < >: focus", 28, 178, solarSystemConfig.display.hudMutedColor, 18);
   }
 
-  renderPausedState() {
-    this.renderSimulation();
+  renderPausedHud() {
     this.drawHudLine("Paused", 28, 44, solarSystemConfig.display.hudAccentColor, 30);
     this.drawHudLine("Press P to resume", 28, 80);
     this.drawHudLine("R: reset  +/-: speed  O: orbits  L: labels", 28, 110, solarSystemConfig.display.hudMutedColor, 18);
+  }
+
+  runAttractState() {
+    this.updateAttractState();
+    this.renderAttractState();
+  }
+
+  runSimulationState(deltaTime) {
+    this.updateSimulationState(deltaTime);
+    this.renderSimulation();
+    this.renderSimulationHud();
+  }
+
+  runPausedState() {
+    this.updatePausedState();
+    this.renderPausedState();
+  }
+
+  renderAttractState() {
+    this.renderSimulation();
+    this.renderAttractHud();
+  }
+
+  renderPausedState() {
+    this.renderSimulation();
+    this.renderPausedHud();
   }
 
   renderSimulationHud() {
@@ -268,30 +309,14 @@ class SolarSystemSample extends GameBase {
     this.runtimeContext = runtimeContext;
     this.updateInput();
 
-    // The sample keeps state handling in the game shell so input/update/render flow
-    // stays easy to compare with the general GameBase pattern used elsewhere.
-    switch (this.gameState) {
-      case solarSystemConfig.states.attract:
-        this.updateAttractState();
-        this.renderAttractState();
-        break;
-
-      case solarSystemConfig.states.simulation:
-        this.updateSimulationState(deltaTime);
-        this.renderSimulation();
-        this.renderSimulationHud();
-        break;
-
-      case solarSystemConfig.states.paused:
-        this.updatePausedState();
-        this.renderPausedState();
-        break;
-
-      default:
-        this.gameState = solarSystemConfig.states.attract;
-        this.renderAttractState();
-        break;
+    const handler = this.stateHandlers[this.gameState];
+    if (typeof handler === 'function') {
+      handler(deltaTime);
+      return;
     }
+
+    this.gameState = solarSystemConfig.states.attract;
+    this.runAttractState();
   }
 
   onDestroy() {
@@ -300,6 +325,7 @@ class SolarSystemSample extends GameBase {
     }
 
     this.gameObjectSystem = null;
+    this.focusIndex = -1;
   }
 }
 

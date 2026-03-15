@@ -12,31 +12,31 @@ Goal:
 Keep this sample focused on world/state orchestration and `GameObjectSystem` ownership.
 
 Local checklist:
-[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep world/system orchestration separated from UI/render wiring
-[ ] Keep status/error/debug output minimal and user-safe
+[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[x] Keep world/system orchestration separated from UI/render wiring
+[x] Keep status/error/debug output minimal and user-safe
 [x] Add or update README with simulation controls and behavior
 [ ] Evaluate whether shared world/simulation helpers should move to engine
 [ ] Verify naming consistency for entities/systems/orbits/state labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
-[ ] Verify headers are in place
+[x] Verify headers are in place
 
 Focused review checklist:
-[ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from world/system orchestration
+[x] Security: validate external/config-driven inputs before use
+[x] Architecture: keep UI wiring separate from world/system orchestration
 [ ] Move-to-engine: identify reusable simulation helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
-[ ] Center on HTML page
+[x] Center on HTML page
 
 Detail checklist:
-[ ] Move inline script logic out of `index.html`
-[ ] Anything need to move to the engine for reusable
-[ ] Separation of concerns for data, methods, etc
-[ ] Fix typo
+[x] Move inline script logic out of `index.html`
+[ ] Anything need to move to the engine for reuse
+[x] Separation of concerns for data, methods, etc
+[x] Fix typo
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
-[ ] Center page layout and controls in index.html
+[x] Center page layout and controls in index.html
 [x] Update README with sample details
 
 Final:
