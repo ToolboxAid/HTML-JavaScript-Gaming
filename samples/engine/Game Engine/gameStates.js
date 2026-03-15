@@ -167,11 +167,7 @@ function drawStyledStage(panelColor = gameUi.theme.panelColor, borderColor = gam
 
 function renderScreen(screen) {
     drawStyledStage(screen.panelColor, screen.borderColor);
-    renderLines(screen.lines);
-}
-
-function renderLines(lines) {
-    lines.forEach(({ text, y, ...options }) => {
+    screen.lines.forEach(({ text, y, ...options }) => {
         renderCenteredText(text, y, options);
     });
 }
