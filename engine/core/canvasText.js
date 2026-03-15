@@ -43,6 +43,92 @@ class CanvasText {
             height: Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent)
         };
     }
+
+    static getDevicePixelRatio() {
+        if (typeof window === 'undefined') {
+            return 1;
+        }
+
+        const dpr = window.devicePixelRatio;
+        if (!Number.isFinite(dpr) || dpr <= 0) {
+            return 1;
+        }
+
+        return dpr;
+    }
+
+    static normalizeFontSizeForDpr(fontSize, maxScale = 1.25) {
+        const size = Number.isFinite(fontSize) ? fontSize : 20;
+        const scale = Math.min(this.getDevicePixelRatio(), maxScale);
+        return Math.round(size * scale * 100) / 100;
+    }
+
+    static renderCenteredText(ctx, text, y, {
+        centerX = null,
+        fontSize = 20,
+        fontFamily = 'Arial',
+        color = 'white',
+        useDpr = true,
+        maxDprScale = 1.25,
+        defaultCenterX = null
+    } = {}) {
+        if (!ctx || typeof text !== 'string') {
+            return null;
+        }
+
+        const resolvedFontSize = useDpr
+            ? this.normalizeFontSizeForDpr(fontSize, maxDprScale)
+            : fontSize;
+        const resolvedCenterX = Number.isFinite(centerX)
+            ? centerX
+            : (Number.isFinite(defaultCenterX) ? defaultCenterX : ((ctx.canvas?.width || 0) / 2));
+        const dimensions = this.calculateTextMetrics(ctx, text, resolvedFontSize, fontFamily);
+        const x = Math.round(resolvedCenterX - (dimensions.width / 2));
+
+        ctx.fillStyle = color;
+        ctx.font = `${resolvedFontSize}px ${fontFamily}`;
+        ctx.fillText(text, x, y);
+
+        return { x, y, width: dimensions.width, height: dimensions.height, fontSize: resolvedFontSize };
+    }
+
+    static renderCenteredMultilineText(ctx, lines, startY, {
+        centerX = null,
+        fontSize = 20,
+        lineHeight = null,
+        fontFamily = 'Arial',
+        color = 'white',
+        useDpr = true,
+        maxDprScale = 1.25,
+        defaultCenterX = null
+    } = {}) {
+        if (!ctx || !Array.isArray(lines) || lines.length === 0) {
+            return [];
+        }
+
+        const resolvedFontSize = useDpr
+            ? this.normalizeFontSizeForDpr(fontSize, maxDprScale)
+            : fontSize;
+        const resolvedLineHeight = Number.isFinite(lineHeight)
+            ? lineHeight
+            : Math.round(resolvedFontSize * 1.35);
+        const drawResults = [];
+
+        for (let i = 0; i < lines.length; i += 1) {
+            drawResults.push(
+                this.renderCenteredText(ctx, lines[i], startY + (i * resolvedLineHeight), {
+                    centerX,
+                    fontSize: resolvedFontSize,
+                    fontFamily,
+                    color,
+                    useDpr: false,
+                    defaultCenterX
+                })
+            );
+        }
+
+        return drawResults;
+    }
 }
 
 export default CanvasText;

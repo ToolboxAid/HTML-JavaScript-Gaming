@@ -22,5 +22,6 @@ Use this checklist after copying the Game Engine sample into a new game folder.
 ## Validation
 - [ ] Run browser smoke pass (load, input, pause/resume, restart)
 - [ ] Run browser tests from `tests/testRunner.html` when needed
+- [ ] Run visual-regression checklist for state screens after UI changes
 - [ ] Confirm no unexpected console errors/warnings
 - [ ] Confirm debug logs are opt-in only

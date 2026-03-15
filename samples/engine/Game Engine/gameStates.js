@@ -4,9 +4,10 @@
 // gameStates.js
 
 import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import DebugLog from '../../../engine/utils/debugLog.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
-import { canvasConfig, gameUi } from './global.js';
+import { canvasConfig, gameUi, safeArea, uiFont } from './global.js';
 import { isPauseTogglePressed, isPlayerDeathPressed, isScorePressed, isStartPressed } from './gameInput.js';
 
 /**
@@ -28,9 +29,21 @@ import { isPauseTogglePressed, isPlayerDeathPressed, isScorePressed, isStartPres
 /** @param {GameContext} game */
 export function displayAttractMode(game) {
     drawStyledStage();
-    drawCenteredText('Welcome to the Game!', gameUi.attract.titleY, gameUi.attract.font, gameUi.attract.color);
-    drawCenteredText('Press `Enter` to Start', gameUi.attract.promptY, '30px Segoe UI', gameUi.attract.color);
-    drawCenteredText('Starter template ready for your game logic', gameUi.attract.subtitleY, '24px Segoe UI', gameUi.theme.subtitleColor);
+    renderCenteredText('Welcome to the Game!', gameUi.attract.titleY, {
+        fontSize: 46,
+        fontFamily: uiFont.display,
+        color: gameUi.attract.color
+    });
+    renderCenteredText('Press `Enter` to Start', gameUi.attract.promptY, {
+        fontSize: 30,
+        fontFamily: uiFont.ui,
+        color: gameUi.attract.color
+    });
+    renderCenteredText('Starter template ready for your game logic', gameUi.attract.subtitleY, {
+        fontSize: 24,
+        fontFamily: uiFont.ui,
+        color: gameUi.theme.subtitleColor
+    });
 
     if (isStartPressed(game.keyboardInput)) {
         game.gameState = game.constructor.STATES.PLAYER_SELECT;
@@ -40,12 +53,28 @@ export function displayAttractMode(game) {
 /** @param {GameContext} game */
 export function displayPlayerSelect(game) {
     drawStyledStage();
-    drawCenteredText('Select Players', gameUi.playerSelect.titleY, gameUi.playerSelect.titleFont, gameUi.playerSelect.titleColor);
-    drawCenteredText('Press 1 or 2 to begin', gameUi.playerSelect.subtitleY, gameUi.playerSelect.subtitleFont, gameUi.playerSelect.subtitleColor);
+    renderCenteredText('Select Players', gameUi.playerSelect.titleY, {
+        fontSize: 42,
+        fontFamily: uiFont.display,
+        color: gameUi.playerSelect.titleColor
+    });
+    renderCenteredText('Press 1 or 2 to begin', gameUi.playerSelect.subtitleY, {
+        fontSize: 24,
+        fontFamily: uiFont.ui,
+        color: gameUi.playerSelect.subtitleColor
+    });
 
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, game.playerSelect);
-    drawCenteredText('Keyboard `1` for 1 Player', config.y + config.spacing, '26px Segoe UI', gameUi.theme.subtitleColor);
-    drawCenteredText('Keyboard `2` for 2 Players', config.y + (2 * config.spacing), '26px Segoe UI', gameUi.theme.subtitleColor);
+    renderCenteredMultilineText(
+        ['Keyboard `1` for 1 Player', 'Keyboard `2` for 2 Players'],
+        config.y + config.spacing,
+        {
+            fontSize: 26,
+            lineHeight: 54,
+            fontFamily: uiFont.ui,
+            color: gameUi.theme.subtitleColor
+        }
+    );
     const result = GameUtils.getKeyboardPlayerSelection(game.keyboardInput, config);
 
     if (!result) {
@@ -59,10 +88,22 @@ export function displayPlayerSelect(game) {
 
 /** @param {GameContext} game */
 export function displayGameOver(game) {
-    drawStyledStage('#2d0f18cc', '#ff5a5a');
-    drawCenteredText('Game Over', gameUi.gameOver.titleY, gameUi.gameOver.font, gameUi.gameOver.color);
-    drawCenteredText('Press `Enter` to Restart', gameUi.gameOver.promptY, '30px Segoe UI', gameUi.gameOver.color);
-    drawCenteredText('Restarting returns to attract mode', gameUi.gameOver.subtitleY, '22px Segoe UI', gameUi.theme.subtitleColor);
+    drawStyledStage(gameUi.theme.colors.panelDanger, gameUi.theme.colors.danger);
+    renderCenteredText('Game Over', gameUi.gameOver.titleY, {
+        fontSize: 52,
+        fontFamily: uiFont.display,
+        color: gameUi.gameOver.color
+    });
+    renderCenteredText('Press `Enter` to Restart', gameUi.gameOver.promptY, {
+        fontSize: 30,
+        fontFamily: uiFont.ui,
+        color: gameUi.gameOver.color
+    });
+    renderCenteredText('Restarting returns to attract mode', gameUi.gameOver.subtitleY, {
+        fontSize: 22,
+        fontFamily: uiFont.ui,
+        color: gameUi.theme.subtitleColor
+    });
 
     if (isStartPressed(game.keyboardInput) ||
         game.backToAttractCounter++ > game.backToAttractFrames) {
@@ -87,23 +128,46 @@ export function initializeEnemy(game) {
 
 /** @param {GameContext} game */
 export function pauseGame(game) {
-    drawStyledStage('#0c1e22cc', '#77f0ff');
+    drawStyledStage(gameUi.theme.colors.panelPause, '#77f0ff');
     gamePauseCheck(game);
-    drawCenteredText('Game Paused.', gameUi.pause.textY, '46px Segoe UI', gameUi.pause.color);
-    drawCenteredText('Press `P` to unpause game', gameUi.pause.promptY, '34px Segoe UI', gameUi.pause.color);
-    drawCenteredText('State and timers remain preserved', gameUi.pause.subtitleY, '22px Segoe UI', gameUi.pause.subtitleColor);
+    renderCenteredText('Game Paused.', gameUi.pause.textY, {
+        fontSize: 46,
+        fontFamily: uiFont.display,
+        color: gameUi.pause.color
+    });
+    renderCenteredText('Press `P` to unpause game', gameUi.pause.promptY, {
+        fontSize: 34,
+        fontFamily: uiFont.ui,
+        color: gameUi.pause.color
+    });
+    renderCenteredText('State and timers remain preserved', gameUi.pause.subtitleY, {
+        fontSize: 22,
+        fontFamily: uiFont.ui,
+        color: gameUi.pause.subtitleColor
+    });
 }
 
 /** @param {GameContext} game */
 export function playGame(game) {
-    drawStyledStage('#0f1f33cc', '#66d9ff');
+    drawStyledStage(gameUi.theme.colors.panelPlay, gameUi.theme.colors.accent);
     gamePauseCheck(game);
 
     const playerInfo = `Player ${game.currentPlayer + 1} - Lives: ${game.playerLives[game.currentPlayer]} - Score: ${game.score[game.currentPlayer]}`;
-    drawCenteredText(playerInfo, gameUi.play.infoY, '34px Segoe UI', gameUi.play.color);
-    drawCenteredText('Press `D` for player death', gameUi.play.deathPromptY, '24px Segoe UI', gameUi.play.labelColor);
-    drawCenteredText('Press `S` for score', gameUi.play.scorePromptY, '24px Segoe UI', gameUi.play.labelColor);
-    drawCenteredText('Press `P` to pause game', gameUi.play.pausePromptY, '24px Segoe UI', gameUi.play.labelColor);
+    renderCenteredText(playerInfo, gameUi.play.infoY, {
+        fontSize: 34,
+        fontFamily: uiFont.ui,
+        color: gameUi.play.color
+    });
+    renderCenteredMultilineText(
+        ['Press `D` for player death', 'Press `S` for score', 'Press `P` to pause game'],
+        gameUi.play.deathPromptY,
+        {
+            fontSize: 24,
+            lineHeight: 50,
+            fontFamily: uiFont.ui,
+            color: gameUi.play.labelColor
+        }
+    );
 
     if (isScorePressed(game.keyboardInput)) {
         game.score[game.currentPlayer] += 100;
@@ -148,18 +212,34 @@ function gamePauseCheck(game) {
 function drawStyledStage(panelColor = gameUi.theme.panelColor, borderColor = gameUi.theme.panelBorderColor) {
     const { panelX, panelY, panelWidth, panelHeight, panelBorderSize } = gameUi.theme;
 
-    CanvasUtils.drawRect(panelX - 16, panelY - 16, panelWidth + 32, panelHeight + 32, '#07101fcc');
+    const inset = 16;
+    const headerOffsetY = 70;
+    CanvasUtils.drawRect(panelX - inset, panelY - inset, panelWidth + (inset * 2), panelHeight + (inset * 2), gameUi.theme.colors.panelBackdrop);
     CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
     CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
-    CanvasUtils.drawLine(panelX, panelY + 70, panelX + panelWidth, panelY + 70, 2, borderColor);
+    CanvasUtils.drawLine(panelX, panelY + headerOffsetY, panelX + panelWidth, panelY + headerOffsetY, 2, borderColor);
+    drawPulseAccent(panelX, panelY + headerOffsetY + 6, panelWidth, gameUi.theme.accentColor);
+    CanvasUtils.drawSafeAreaGuides(Math.min(safeArea.x, safeArea.y), `${gameUi.theme.accentColor}99`);
 }
 
-function drawCenteredText(text, y, font, color) {
-    const ctx = CanvasUtils.ctx;
-    const centerX = canvasConfig.width / 2;
+function drawPulseAccent(x, y, width, accentColor) {
+    const pulse = (Math.sin(Date.now() * 0.004) + 1) / 2;
+    const alpha = 0.25 + (pulse * 0.45);
+    const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0');
+    const colorWithAlpha = accentColor.length === 7 ? `${accentColor}${alphaHex}` : accentColor;
+    CanvasUtils.drawLine(x + 24, y, x + width - 24, y, 3, colorWithAlpha);
+}
 
-    ctx.font = font;
-    ctx.fillStyle = color;
-    const width = ctx.measureText(text).width;
-    ctx.fillText(text, Math.round(centerX - (width / 2)), y);
+function renderCenteredText(text, y, options = {}) {
+    return CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
+        ...options,
+        defaultCenterX: canvasConfig.width / 2
+    });
+}
+
+function renderCenteredMultilineText(lines, startY, options = {}) {
+    return CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, lines, startY, {
+        ...options,
+        defaultCenterX: canvasConfig.width / 2
+    });
 }

@@ -14,6 +14,7 @@ import Sprite from './sprite.js';
 class CanvasUtils {
     // Enable debug mode: game.html?canvasUtils
     static DEBUG = DebugFlag.has('canvasUtils');
+    static LAYOUT_DEBUG = DebugFlag.has('layout');
 
     /** Constructor for CanvasUtils class.
      * @throws {Error} Always throws error as this is a utility class with only static methods.
@@ -120,6 +121,35 @@ class CanvasUtils {
     // get text width & height based on size & font w/padding
     static calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
         return CanvasText.calculateTextMetrics(this.ctx, text, fontSize, font);
+    }
+
+    static drawSafeAreaGuides(margin = 16, color = '#66d9ff99') {
+        if (!CanvasUtils.LAYOUT_DEBUG || !this.ctx) {
+            return false;
+        }
+
+        const width = this.getConfigWidth();
+        const height = this.getConfigHeight();
+        const x = margin;
+        const y = margin;
+        const safeWidth = Math.max(0, width - (margin * 2));
+        const safeHeight = Math.max(0, height - (margin * 2));
+
+        this.ctx.save();
+        this.ctx.setLineDash([8, 6]);
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(x, y, safeWidth, safeHeight);
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(width / 2, y);
+        this.ctx.lineTo(width / 2, y + safeHeight);
+        this.ctx.moveTo(x, height / 2);
+        this.ctx.lineTo(x + safeWidth, height / 2);
+        this.ctx.stroke();
+        this.ctx.restore();
+
+        return true;
     }
 
     // Method to draw the current frame

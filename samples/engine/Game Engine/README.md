@@ -26,6 +26,7 @@ This sample is the engine template reference for lifecycle flow and state transi
 ## Optional Query Flags
 - `?game` enables sample debug logging.
 - `?perf` enables the performance overlay.
+- `?layout` enables safe-area layout guides.
 
 ## Test Runner
 - Open `tests/testRunner.html` to run the engine browser test manifest in isolation from game runtime.
@@ -35,12 +36,15 @@ This sample is the engine template reference for lifecycle flow and state transi
 - Node test suite: `npm test`
 - Browser test suite: start a local web server, then open `/tests/testRunner.html`
 - Optional sample debug: open `samples/engine/Game Engine/index.html?game`
+- Optional layout debug: open `samples/engine/Game Engine/index.html?layout`
 
 ## Notes
 - `game.js` owns lifecycle wiring and state switching.
 - `game.js` uses a `stateHandlers` map to route the active state to its handler.
 - `gameStates.js` contains state-specific render/update handlers.
 - `gameInput.js` contains shared input checks for state handlers.
+- `CanvasUtils` provides canvas primitives and safe-area guides.
+- `CanvasText` owns text metrics plus centered/multiline text rendering.
 - Quick theme tuning lives in `global.js` under `gameUi.theme`, `gameUi.performance`, and `performanceConfig`.
 - Reusable flow helpers stay in `engine/game/gameUtils.js`.
 - Lifecycle cleanup is owned by `GameBase.destroy()` plus the sample `onDestroy()` reset.
@@ -67,3 +71,4 @@ Example copy command:
 
 Use [`STARTER_CHECKLIST.md`](./STARTER_CHECKLIST.md) as the final handoff checklist for each new game.
 Use [`TODO-template.txt`](./TODO-template.txt) as the starting todo for each copied game.
+Use [`VISUAL_REGRESSION_CHECKLIST.md`](./VISUAL_REGRESSION_CHECKLIST.md) when updating canvas visuals.

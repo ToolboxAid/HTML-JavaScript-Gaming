@@ -50,6 +50,17 @@ export const playerSelect = {
 
 export const gameUi = {
   theme: {
+    colors: {
+      textPrimary: '#ffffff',
+      textSecondary: '#d7f7ff',
+      accent: '#66d9ff',
+      danger: '#ff5a5a',
+      panel: '#101a2fcc',
+      panelBackdrop: '#07101fcc',
+      panelDanger: '#2d0f18cc',
+      panelPause: '#0c1e22cc',
+      panelPlay: '#0f1f33cc'
+    },
     panelX: 120,
     panelY: 120,
     panelWidth: 784,
@@ -131,6 +142,19 @@ export const gameUi = {
     labelColor: '#d7f7ff'
   }
 };
+
+gameUi.theme.panelColor = gameUi.theme.colors.panel;
+gameUi.theme.panelBorderColor = gameUi.theme.colors.accent;
+gameUi.theme.accentColor = gameUi.theme.colors.accent;
+gameUi.theme.subtitleColor = gameUi.theme.colors.textSecondary;
+gameUi.attract.color = gameUi.theme.colors.textPrimary;
+gameUi.playerSelect.titleColor = gameUi.theme.colors.textPrimary;
+gameUi.playerSelect.subtitleColor = gameUi.theme.colors.textSecondary;
+gameUi.gameOver.color = gameUi.theme.colors.danger;
+gameUi.pause.color = gameUi.theme.colors.textPrimary;
+gameUi.pause.subtitleColor = gameUi.theme.colors.textSecondary;
+gameUi.play.color = gameUi.theme.colors.textPrimary;
+gameUi.play.labelColor = gameUi.theme.colors.textSecondary;
 
 export const performanceConfig = {
   show: gameUi.performance.show,
