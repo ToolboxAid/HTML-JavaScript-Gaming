@@ -6,6 +6,10 @@ This sample demonstrates live mouse input tracking using:
 
 Design choice: this sample is intentionally DOM-driven with rendering and mouse orchestration kept in one focused module.
 
+## Preview
+
+![Mouse Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: sample page shell

@@ -8,6 +8,10 @@ This sample demonstrates timed particle explosion waves using the engine `Partic
 - Automatic particle lifecycle cleanup after each explosion.
 - A cleaner visual sample shell consistent with the other refreshed visual examples.
 
+## Preview
+
+![Particle Sample Preview](./assets/template-preview.svg)
+
 ## Run
 1. Open `samples/visual/Particle/index.html` in a browser.
 2. Watch timed explosion waves render in the canvas.

@@ -6,6 +6,10 @@ This sample demonstrates basic audio loading and playback through:
 - a small DOM control surface in `index.html`
 - a focused module entry in `audio.js`
 
+## Preview
+
+![Audio Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: sample page and controls

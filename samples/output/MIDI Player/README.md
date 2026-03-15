@@ -7,6 +7,10 @@ This sample demonstrates browser MIDI playback using:
 
 Design choice: this sample is intentionally DOM-driven at the page level, while transport actions are routed through a small orchestration layer in `midiPlayerSample.js`.
 
+## Preview
+
+![MIDI Player Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: sample page and controls

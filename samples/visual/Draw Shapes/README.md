@@ -8,6 +8,10 @@ It uses:
 - `engine/core/canvasText.js`
 - sample state routing and rendering in `game.js`
 
+## Preview
+
+![Draw Shapes Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: module boot shell and sample header

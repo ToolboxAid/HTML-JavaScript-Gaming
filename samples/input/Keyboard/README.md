@@ -7,6 +7,10 @@ This sample demonstrates live keyboard input state tracking using:
 
 Design choice: this sample is intentionally DOM-driven at the page level, with keyboard state orchestration in `game.js`.
 
+## Preview
+
+![Keyboard Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: sample page shell

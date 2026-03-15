@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Game controllers sample preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4c22d0" />
+      <stop offset="38%" stop-color="#240a72" />
+      <stop offset="100%" stop-color="#11042f" />
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)" />
+  <rect x="156" y="84" width="648" height="372" rx="20" fill="#13072c" stroke="#ed9700" stroke-width="4" />
+  <rect x="186" y="118" width="588" height="304" rx="16" fill="#3600af" fill-opacity="0.34" stroke="#ed9700" stroke-opacity="0.55" />
+  <line x1="186" y1="182" x2="774" y2="182" stroke="#ed9700" stroke-width="2" />
+  <text x="480" y="66" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="28" fill="#ffffff">Input Sample</text>
+  <text x="480" y="162" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="34" fill="#ffffff">GameControllers</text>
+  <text x="480" y="222" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#f3d8ab">Controller detection, buttons, and analog stick input</text>
+  <text x="480" y="258" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="18" fill="#d9c8ff">Sample preview asset placeholder</text>
+  <path d="M360 378c-20 0-33-15-44-38-8-18-6-44 10-56 12-9 30-7 46 0l28 12h160l28-12c16-7 34-9 46 0 16 12 18 38 10 56-11 23-24 38-44 38-14 0-28-8-40-18l-22-18H422l-22 18c-12 10-26 18-40 18Z" fill="#20104f" stroke="#ed9700" stroke-width="4"/>
+  <circle cx="418" cy="328" r="12" fill="#ed9700" />
+  <circle cx="548" cy="318" r="8" fill="#ed9700" />
+  <circle cx="576" cy="340" r="8" fill="#ed9700" />
+</svg>

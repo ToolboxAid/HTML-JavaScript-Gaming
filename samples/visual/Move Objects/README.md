@@ -8,6 +8,10 @@ It uses:
 - `engine/objects/objectDynamic.js`
 - `engine/physics/collisionUtils.js`
 
+## Preview
+
+![Move Objects Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: module boot shell and sample header

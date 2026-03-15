@@ -6,6 +6,10 @@ This sample demonstrates gamepad/controller input visualization using:
 
 Design choice: this sample is intentionally DOM/canvas-driven and focused on showing real-time controller state.
 
+## Preview
+
+![Game Controllers Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: sample page shell

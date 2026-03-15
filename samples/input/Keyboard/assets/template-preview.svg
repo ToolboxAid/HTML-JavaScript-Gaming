@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Keyboard sample preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4c22d0" />
+      <stop offset="38%" stop-color="#240a72" />
+      <stop offset="100%" stop-color="#11042f" />
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)" />
+  <rect x="156" y="84" width="648" height="372" rx="20" fill="#13072c" stroke="#ed9700" stroke-width="4" />
+  <rect x="186" y="118" width="588" height="304" rx="16" fill="#3600af" fill-opacity="0.34" stroke="#ed9700" stroke-opacity="0.55" />
+  <line x1="186" y1="182" x2="774" y2="182" stroke="#ed9700" stroke-width="2" />
+  <text x="480" y="66" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="28" fill="#ffffff">Input Sample</text>
+  <text x="480" y="162" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="34" fill="#ffffff">Keyboard</text>
+  <text x="480" y="222" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#f3d8ab">Key state polling, pressed keys, and sample input flow</text>
+  <text x="480" y="258" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="18" fill="#d9c8ff">Sample preview asset placeholder</text>
+  <rect x="344" y="302" width="272" height="82" rx="12" fill="#20104f" stroke="#ed9700" stroke-width="3" />
+  <rect x="368" y="320" width="44" height="28" rx="6" fill="#ed9700" fill-opacity="0.30" stroke="#ed9700" />
+  <rect x="424" y="320" width="44" height="28" rx="6" fill="#ed9700" fill-opacity="0.18" stroke="#ed9700" />
+  <rect x="480" y="320" width="44" height="28" rx="6" fill="#ed9700" fill-opacity="0.30" stroke="#ed9700" />
+  <rect x="536" y="320" width="56" height="28" rx="6" fill="#ed9700" fill-opacity="0.18" stroke="#ed9700" />
+</svg>

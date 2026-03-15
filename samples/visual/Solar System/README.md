@@ -10,6 +10,10 @@ This sample is an engine-driven orbit simulation that now lives under `samples/v
 - Camera-style focus and zoom behavior without adding a separate camera abstraction.
 - A cleaner visual sample shell around an engine-driven simulation.
 
+## Preview
+
+![Solar System Sample Preview](./assets/template-preview.svg)
+
 ## Controls
 - `Enter` or `Space`: start the simulation from attract mode.
 - `P`: pause or resume.

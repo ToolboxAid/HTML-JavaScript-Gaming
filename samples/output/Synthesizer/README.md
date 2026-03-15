@@ -5,6 +5,10 @@ This sample demonstrates browser-based sound synthesis with:
 - Song playback buttons
 - Real-time sound shaping controls
 
+## Preview
+
+![Synthesizer Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: page + control/button layout

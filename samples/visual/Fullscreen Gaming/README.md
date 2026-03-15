@@ -8,6 +8,10 @@ It uses:
 - sample state routing in `game.js`
 - DOM diagnostics and metrics ownership in `gameDom.js`
 
+## Preview
+
+![Fullscreen Gaming Sample Preview](./assets/template-preview.svg)
+
 ## Files
 
 - `index.html`: module boot, canvas container, and diagnostics panel markup
