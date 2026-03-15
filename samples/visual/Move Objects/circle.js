@@ -23,8 +23,8 @@ class Circle extends ObjectDynamic {
      */
     constructor(canvasConfig) {
         const radius = 25;
-        const velocityX = RandomUtils.randomRange(150.0, 350.0);
-        const velocityY = RandomUtils.randomRange(150.0, 350.0);
+        const velocityX = RandomUtils.randomRange(2.0, 5.0);
+        const velocityY = RandomUtils.randomRange(2.0, 5.0);
 
         // Call ObjectDynamic constructor, passing the radius as both width and height
         super(100, 100, radius, radius, velocityX, velocityY);
