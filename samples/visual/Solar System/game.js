@@ -330,7 +330,6 @@ class SolarSystemSample extends GameBase {
 }
 
 export default SolarSystemSample;
-
-const solarSystemSample = new SolarSystemSample();
+new SolarSystemSample();
 
 
