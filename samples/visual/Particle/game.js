@@ -5,8 +5,10 @@
 
 import DebugFlag from '../../../engine/utils/debugFlag.js';
 import DebugLog from '../../../engine/utils/debugLog.js';
-import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig, particleSampleUi, uiFont } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
+import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import ParticleExplosion from '../../../engine/renderers/particleExplosion.js';
 
 class Game extends GameBase {
@@ -47,7 +49,7 @@ class Game extends GameBase {
         const safeEndRadius = Game.sanitizePositive(endRadius, 24);
         const safeDuration = Game.sanitizePositive(durationSeconds, 1.75);
         const safeParticleRadius = Game.sanitizePositive(particleRadius, 3.5);
-        const particleCount = Math.max(8, Math.round(safeEndRadius / 4));
+        const particleCount = Math.max(16, Math.round(safeEndRadius / 2));
 
         const explosion = new ParticleExplosion(
             safeX,
@@ -86,15 +88,32 @@ class Game extends GameBase {
     }
 
     spawnWave() {
-        this.createParticleExplosion(50, 100, 0, 50, 1.5);
-        this.createParticleExplosion(150, 100, 0, 50, 3.5, 1.5);
-        this.createParticleExplosion(350, 100, 0, 10, 1.5, 1.5);
-        this.createParticleExplosion(500, 100, 10, 60, 4.5, 2.5, 'square');
-        this.createParticleExplosion(300, 300, 2, 100, 1.5, 2.5);
-        this.createParticleExplosion(600, 400, 4, 200, 1.5, 1.5);
+        this.createParticleExplosion(200, 350, 0, 50, 1.5);
+        this.createParticleExplosion(300, 350, 0, 50, 3.5, 1.5);
+        this.createParticleExplosion(500, 350, 0, 10, 1.5, 1.5);
+        this.createParticleExplosion(600, 350, 10, 60, 4.5, 2.5, 'square');
+        this.createParticleExplosion(400, 450, 2, 100, 1.5, 2.5);
+        this.createParticleExplosion(700, 550, 4, 200, 1.5, 1.5);
+    }
+
+    drawStage() {
+        const { panelX, panelY, panelWidth, panelHeight, panelBorderSize, panelColor, panelBorderColor, panelBackdrop } = particleSampleUi.theme;
+        CanvasUtils.drawRect(panelX - 18, panelY - 18, panelWidth + 36, panelHeight + 36, panelBackdrop);
+        CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
+        CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, panelBorderColor, panelBorderSize);
+        CanvasUtils.drawLine(panelX, panelY + 84, panelX + panelWidth, panelY + 84, 2, panelBorderColor);
+    }
+
+    drawCanvasHeader() {
+        const { title, subtitle, help, titleY, subtitleY, helpY, colors } = particleSampleUi.canvasText;
+        renderCenteredText(title, titleY, 34, uiFont.display, colors.textPrimary);
+        renderCenteredText(subtitle, subtitleY, 20, uiFont.ui, colors.textSecondary);
+        renderCenteredText(help, helpY, 17, uiFont.ui, colors.muted);
     }
 
     gameLoop(deltaTime) {
+        this.drawStage();
+        this.drawCanvasHeader();
         this.updateAndDrawExplosions(deltaTime);
 
         const currentTimeMs = Date.now();
@@ -118,6 +137,15 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
+function renderCenteredText(text, y, fontSize, fontFamily, color) {
+    CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
+        defaultCenterX: canvasConfig.width / 2,
+        fontSize,
+        fontFamily,
+        color
+    });
+}
 
 
 

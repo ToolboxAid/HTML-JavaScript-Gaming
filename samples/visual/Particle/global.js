@@ -34,14 +34,37 @@ export const performanceConfig = {
   colorMed: '#ed9700',
   colorHigh: '#ff5f57',
   backgroundColor: '#999999cc',
-  x: 14,
-  y: 300,
+  x: 50,
+  y: 600,
 };
 
 export const particleSampleUi = {
   page: {
     title: 'Particle',
     subtitle: 'Timed explosion waves using the engine particle renderer in a refreshed sample shell.'
+  },
+  theme: {
+    panelX: 36,
+    panelY: 36,
+    panelWidth: 952,
+    panelHeight: 696,
+    panelBorderSize: 4,
+    panelColor: '#2b1658',
+    panelBorderColor: '#ed9700',
+    panelBackdrop: '#140826'
+  },
+  canvasText: {
+    title: 'Particle Waves',
+    subtitle: 'Repeating circle and square explosions driven by the engine renderer.',
+    help: 'Wave timing is automatic. Watch particle size, spread, and cleanup.',
+    titleY: 103,
+    subtitleY: 148,
+    helpY: 174,
+    colors: {
+      textPrimary: '#ffffff',
+      textSecondary: '#f3d8ab',
+      muted: '#cdbbe9'
+    }
   }
 };
 
