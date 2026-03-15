@@ -14,11 +14,13 @@ import GameBase from '../../../engine/core/gameBase.js';
 import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
-  clamp,
+  applyInteractiveControls,
+  createInitialSimulationState,
   createCelestialBodies,
-  cycleFocusIndex,
   getFocusedBody,
-  getRenderOptions
+  getFocusLabel,
+  getRenderOptions,
+  updateBodies
 } from './solarSystemRuntime.js';
 import {
   renderAttractHud,
@@ -31,12 +33,7 @@ class SolarSystemSample extends GameBase {
     super(canvasConfig, performanceConfig, fullscreenConfig);
     this.keyboardInput = null;
     this.gameObjectSystem = null;
-    this.gameState = solarSystemConfig.states.attract;
-    this.simulationSpeed = solarSystemConfig.simulation.speedMultiplier;
-    this.showOrbits = true;
-    this.showLabels = false;
-    this.zoom = solarSystemConfig.simulation.zoomDefault;
-    this.focusIndex = -1;
+    Object.assign(this, createInitialSimulationState());
     this.stateHandlers = {
       [solarSystemConfig.states.attract]: (deltaTime) => this.runAttractState(deltaTime),
       [solarSystemConfig.states.simulation]: (deltaTime) => this.runSimulationState(deltaTime),
@@ -52,12 +49,7 @@ class SolarSystemSample extends GameBase {
   }
 
   resetRuntimeState() {
-    this.gameState = solarSystemConfig.states.attract;
-    this.simulationSpeed = solarSystemConfig.simulation.speedMultiplier;
-    this.showOrbits = true;
-    this.showLabels = false;
-    this.zoom = solarSystemConfig.simulation.zoomDefault;
-    this.focusIndex = -1;
+    Object.assign(this, createInitialSimulationState());
     this.resetSimulation();
   }
 
@@ -84,58 +76,8 @@ class SolarSystemSample extends GameBase {
     this.keyboardInput.update();
   }
 
-  cycleFocus(step) {
-    this.focusIndex = cycleFocusIndex(this.focusIndex, this.getActiveBodies().length, step);
-  }
-
   updateInteractiveControls() {
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.speedUpKeys)) {
-      this.simulationSpeed = clamp(
-        this.simulationSpeed + solarSystemConfig.simulation.speedStep,
-        solarSystemConfig.simulation.minSpeedMultiplier,
-        solarSystemConfig.simulation.maxSpeedMultiplier
-      );
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.speedDownKeys)) {
-      this.simulationSpeed = clamp(
-        this.simulationSpeed - solarSystemConfig.simulation.speedStep,
-        solarSystemConfig.simulation.minSpeedMultiplier,
-        solarSystemConfig.simulation.maxSpeedMultiplier
-      );
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.toggleOrbitKeys)) {
-      this.showOrbits = !this.showOrbits;
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.toggleLabelKeys)) {
-      this.showLabels = !this.showLabels;
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.zoomInKeys)) {
-      this.zoom = clamp(
-        this.zoom + solarSystemConfig.simulation.zoomStep,
-        solarSystemConfig.simulation.minZoom,
-        solarSystemConfig.simulation.maxZoom
-      );
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.zoomOutKeys)) {
-      this.zoom = clamp(
-        this.zoom - solarSystemConfig.simulation.zoomStep,
-        solarSystemConfig.simulation.minZoom,
-        solarSystemConfig.simulation.maxZoom
-      );
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.focusNextKeys)) {
-      this.cycleFocus(1);
-    }
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.focusPrevKeys)) {
-      this.cycleFocus(-1);
-    }
+    applyInteractiveControls(this, (keyCodes) => this.wasAnyKeyPressed(keyCodes));
   }
 
   getFocusedBody() {
@@ -147,8 +89,7 @@ class SolarSystemSample extends GameBase {
   }
 
   getFocusLabel() {
-    const focusedBody = this.getFocusedBody();
-    return focusedBody ? focusedBody.name : "System Center";
+    return getFocusLabel(this.getFocusedBody());
   }
 
   updateAttractState() {
@@ -166,9 +107,7 @@ class SolarSystemSample extends GameBase {
   }
 
   updateSimulation(deltaTime) {
-    this.getActiveBodies().forEach(body => {
-      body.update(deltaTime);
-    });
+    updateBodies(this.getActiveBodies(), deltaTime);
   }
 
   updateSimulationState(deltaTime) {

@@ -3,7 +3,7 @@
 // solarSystemRuntime.js
 // 03/15/2026
 
-import { canvasConfig } from './global.js';
+import { canvasConfig, solarSystemConfig } from './global.js';
 import CelestialBody from './celestialBody.js';
 
 export function createCelestialBodies(bodyDefinitions) {
@@ -21,6 +21,17 @@ export function createCelestialBodies(bodyDefinitions) {
 
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+export function createInitialSimulationState() {
+  return {
+    gameState: solarSystemConfig.states.attract,
+    simulationSpeed: solarSystemConfig.simulation.speedMultiplier,
+    showOrbits: true,
+    showLabels: false,
+    zoom: solarSystemConfig.simulation.zoomDefault,
+    focusIndex: -1
+  };
 }
 
 export function cycleFocusIndex(currentIndex, bodyCount, step) {
@@ -80,4 +91,64 @@ export function getRenderOptions(focusedBody, zoom, showOrbits, showLabels) {
     showOrbits,
     showLabels
   };
+}
+
+export function getFocusLabel(focusedBody) {
+  return focusedBody ? focusedBody.name : 'System Center';
+}
+
+export function updateBodies(activeBodies, deltaTime) {
+  activeBodies.forEach((body) => {
+    body.update(deltaTime);
+  });
+}
+
+export function applyInteractiveControls(sample, wasAnyKeyPressed) {
+  if (wasAnyKeyPressed(solarSystemConfig.controls.speedUpKeys)) {
+    sample.simulationSpeed = clamp(
+      sample.simulationSpeed + solarSystemConfig.simulation.speedStep,
+      solarSystemConfig.simulation.minSpeedMultiplier,
+      solarSystemConfig.simulation.maxSpeedMultiplier
+    );
+  }
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.speedDownKeys)) {
+    sample.simulationSpeed = clamp(
+      sample.simulationSpeed - solarSystemConfig.simulation.speedStep,
+      solarSystemConfig.simulation.minSpeedMultiplier,
+      solarSystemConfig.simulation.maxSpeedMultiplier
+    );
+  }
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.toggleOrbitKeys)) {
+    sample.showOrbits = !sample.showOrbits;
+  }
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.toggleLabelKeys)) {
+    sample.showLabels = !sample.showLabels;
+  }
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.zoomInKeys)) {
+    sample.zoom = clamp(
+      sample.zoom + solarSystemConfig.simulation.zoomStep,
+      solarSystemConfig.simulation.minZoom,
+      solarSystemConfig.simulation.maxZoom
+    );
+  }
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.zoomOutKeys)) {
+    sample.zoom = clamp(
+      sample.zoom - solarSystemConfig.simulation.zoomStep,
+      solarSystemConfig.simulation.minZoom,
+      solarSystemConfig.simulation.maxZoom
+    );
+  }
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.focusNextKeys)) {
+    sample.focusIndex = cycleFocusIndex(sample.focusIndex, sample.getActiveBodies().length, 1);
+  }
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.focusPrevKeys)) {
+    sample.focusIndex = cycleFocusIndex(sample.focusIndex, sample.getActiveBodies().length, -1);
+  }
 }
