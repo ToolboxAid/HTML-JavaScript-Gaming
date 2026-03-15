@@ -29,7 +29,7 @@ import {
   renderSimulationHud
 } from './solarSystemHud.js';
 
-class SolarSystemSample extends GameBase {
+class Game extends GameBase {
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);
     this.keyboardInput = null;
@@ -177,7 +177,6 @@ class SolarSystemSample extends GameBase {
   }
 }
 
-export default SolarSystemSample;
-new SolarSystemSample();
-
+export default Game;
+const game = new Game();
 
