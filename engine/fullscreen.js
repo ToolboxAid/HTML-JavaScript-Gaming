@@ -54,6 +54,7 @@ class Fullscreen {
     static canvasClickBound = null;
     static resizeBound = null;
     static fullscreenChangeBound = null;
+    static onResizeHook = null;
 
     static isFullscreenActive() {
         if (typeof document === 'undefined') {
@@ -71,7 +72,7 @@ class Fullscreen {
         Fullscreen.isFullScreen = Fullscreen.isFullscreenActive();
     }
 
-    static async init(config, canvasConfig) {
+    static async init(config, canvasConfig, hooks = {}) {
         if (typeof window === 'undefined' || typeof document === 'undefined') {
             throw new Error('Fullscreen requires a browser window/document.');
         }
@@ -105,6 +106,8 @@ class Fullscreen {
             throw new Error('Fullscreen requires #gameArea canvas with a 2D context.');
         }
 
+        Fullscreen.onResizeHook = typeof hooks.onResize === 'function' ? hooks.onResize : null;
+
         Fullscreen.setCanvasSize(Fullscreen.scale);
         Fullscreen.updateCanvasTransform();
 
@@ -114,6 +117,7 @@ class Fullscreen {
             Fullscreen.fullscreenChangeBound = () => {
                 Fullscreen.syncFullscreenState();
                 DebugLog.log(Fullscreen.DEBUG, 'Fullscreen', `fullscreenchange: isFullScreen=${Fullscreen.isFullScreen}`);
+                Fullscreen.resizeCanvas('fullscreenchange');
             };
 
             window.addEventListener("resize", Fullscreen.resizeBound);
@@ -124,6 +128,8 @@ class Fullscreen {
             document.addEventListener('msfullscreenchange', Fullscreen.fullscreenChangeBound);
             Fullscreen.listenersRegistered = true;
         }
+
+        Fullscreen.notifyResizeHook('init');
 
         DebugLog.log(Fullscreen.DEBUG, 'Fullscreen', 'FullScreen.init complete.');
     }
@@ -163,7 +169,7 @@ class Fullscreen {
         Fullscreen.isFullScreen ? Fullscreen.closeFullscreen() : Fullscreen.openFullscreen();
     }
 
-    static resizeCanvas() {
+    static resizeCanvas(reason = 'resize') {
         if (!Fullscreen.canvas || !Fullscreen.ctx) {
             return;
         }
@@ -179,6 +185,24 @@ class Fullscreen {
 
         Fullscreen.updateCanvasTransform();
         Fullscreen.ctx.clearRect(0, 0, Fullscreen.canvas.width, Fullscreen.canvas.height);
+        Fullscreen.notifyResizeHook(reason);
+    }
+
+    static notifyResizeHook(reason = 'resize') {
+        if (typeof Fullscreen.onResizeHook !== 'function') {
+            return;
+        }
+
+        try {
+            Fullscreen.onResizeHook({
+                reason,
+                isFullScreen: Fullscreen.isFullScreen,
+                canvas: Fullscreen.canvas,
+                ctx: Fullscreen.ctx
+            });
+        } catch (error) {
+            DebugLog.warn(Fullscreen.DEBUG, 'Fullscreen', 'onResize hook failed:', error);
+        }
     }
 
     static setCanvasSize(scale) {
@@ -224,6 +248,7 @@ class Fullscreen {
         Fullscreen.resizeBound = null;
         Fullscreen.canvasClickBound = null;
         Fullscreen.fullscreenChangeBound = null;
+        Fullscreen.onResizeHook = null;
         Fullscreen.listenersRegistered = false;
         return true;
     }

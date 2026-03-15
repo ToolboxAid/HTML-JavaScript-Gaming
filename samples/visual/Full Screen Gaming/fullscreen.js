@@ -36,16 +36,11 @@ function redrawSample() {
 }
 
 async function initFullscreenSample() {
-    await Fullscreen.init(fullscreenConfig, canvasConfig);
-    redrawSample();
+    await Fullscreen.init(fullscreenConfig, canvasConfig, {
+        onResize: () => redrawSample()
+    });
 }
 
-const refreshBound = () => redrawSample();
-window.addEventListener('resize', refreshBound);
-window.addEventListener('orientationchange', refreshBound);
-document.addEventListener('fullscreenchange', refreshBound);
-document.addEventListener('webkitfullscreenchange', refreshBound);
-document.addEventListener('msfullscreenchange', refreshBound);
 window.addEventListener('beforeunload', () => {
     Fullscreen.destroy();
 });
