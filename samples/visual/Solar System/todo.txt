@@ -43,7 +43,7 @@ Final:
 [ ] Run browser smoke pass for world update/render behavior and cleanup
 
 Smoke pass steps:
-1. Load `samples/engine/Solar System/index.html`.
+1. Load `samples/visual/Solar System/index.html`.
 2. Verify bodies/entities spawn and render with expected positions and motion.
 3. Verify update loop behavior remains stable over time (no runaway drift/jitter beyond design).
 4. Restart/reload and confirm state resets cleanly.

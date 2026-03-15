@@ -1,6 +1,6 @@
 # Solar System Sample
 
-This sample is an engine-driven orbit simulation that now lives under `samples/engine/` as a reference for `GameBase` state flow and `GameObjectSystem` ownership.
+This sample is an engine-driven orbit simulation that now lives under `samples/visual/` as a reference for `GameBase` state flow and `GameObjectSystem` ownership.
 
 ## What It Shows
 - `GameBase` lifecycle setup for a compact engine sample.
@@ -27,8 +27,8 @@ This sample is an engine-driven orbit simulation that now lives under `samples/e
 - `solarSystemData.js`: body definitions for the sample system.
 
 ## Run It
-- Open `samples/engine/Solar System/index.html` from the repo launcher, or
-- Start a local web server from the repo root and browse to `/samples/engine/Solar System/`.
+- Open `samples/visual/Solar System/index.html` from the repo launcher, or
+- Start a local web server from the repo root and browse to `/samples/visual/Solar System/`.
 
 ## Notes
 - This sample is intended to stay small and readable so it can serve as an engine example rather than a full game.

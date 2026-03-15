@@ -83,7 +83,7 @@ Ideas taken from the current `games/` directory:
 
 [ ] Phase 4: align samples with the object and game-facing engine layers
 [ ] Review whether each sample should remain canvas-only, use shared object classes, or use `engine/game/` helpers
-[ ] Keep `samples/engine/Solar System/` as the main example of `GameObjectSystem` ownership
+[ ] Keep `samples/visual/Solar System/` as the main example of `GameObjectSystem` ownership
 [ ] Review `samples/engine/2D side scroll tile map/` as the larger scrolling/map example
 [ ] Use shared helpers where they improve clarity instead of one-off sample logic
 

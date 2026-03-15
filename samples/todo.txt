@@ -26,9 +26,9 @@ output:
 visual:
 [x] samples/visual/Fullscreen Gaming/
 [x] samples/visual/Draw Shapes/
-[ ] samples/visual/Move Objects/
+[x] samples/visual/Move Objects/
+[ ] samples/visual/Solar System/
 [ ] samples/visual/Particle/
-[ ] samples/engine/Solar System/
 
 engine:
 [x] samples/engine/Game Engine/

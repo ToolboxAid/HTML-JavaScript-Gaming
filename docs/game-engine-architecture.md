@@ -17,7 +17,7 @@ tests/            Engine test suite and manifest
 
 The design goal is simple: put reusable systems in `engine/`, and keep each game focused on rules, assets, and behavior.
 
-One good current example is `samples/engine/Solar System/`, which now runs as an engine-driven sample using `GameBase`, engine-owned keyboard input, and `GameObjectSystem` ownership for its active celestial bodies.
+One good current example is `samples/visual/Solar System/`, which now runs as an engine-driven sample using `GameBase`, engine-owned keyboard input, and `GameObjectSystem` ownership for its active celestial bodies.
 
 The `samples/` directory is now grouped by capability:
 
@@ -147,7 +147,7 @@ Provides the canonical game-level collision and bounds API on top of the lower-l
 
 Architecturally, this is the bridge from ad hoc object arrays toward a cleaner world/entity system.
 
-`samples/engine/Solar System/` is a concrete example of this direction: the sample uses `GameObjectSystem` to own active simulation objects while keeping the game shell focused on input, state, update, and render flow.
+`samples/visual/Solar System/` is a concrete example of this direction: the sample uses `GameObjectSystem` to own active simulation objects while keeping the game shell focused on input, state, update, and render flow.
 
 Related lifecycle support also exists in `engine/lifecycle/objectLifecycle.js`, which centralizes status-based object state used by killable objects and animation flows.
 
