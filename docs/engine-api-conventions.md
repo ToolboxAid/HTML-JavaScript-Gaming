@@ -65,7 +65,6 @@ This document defines lightweight, shared method conventions used across the eng
 
 When renaming lifecycle methods for consistency:
 - Keep a compatibility alias for at least one transition phase.
-- Keep thin compatibility re-exports when module paths move (for example `engine/gameObjectSystem.js` forwarding to `engine/game/gameObjectSystem.js`).
 - Update internal call sites to the canonical name first (`initialize`, `start`, `stop`, `destroy`).
 - Current example: `GamepadManager.disconnect()` is a compatibility alias that forwards to `stop()`.
 

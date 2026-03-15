@@ -6,7 +6,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // home_frog.js
 
 
-import GameObject from '../../../engine/gameObject.js';
+import GameObject from '../../../engine/game/gameObject.js';
 
 class HomeFrog extends GameObject {
     static DEBUG = DebugFlag.has('homeFrog');

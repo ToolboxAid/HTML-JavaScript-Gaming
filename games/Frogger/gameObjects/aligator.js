@@ -5,7 +5,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // aligator.js
 
 
-import GameObject from '../../../engine/gameObject.js';
+import GameObject from '../../../engine/game/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
 class Aligator extends GameObject {

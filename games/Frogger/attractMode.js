@@ -2,7 +2,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 
 import { canvasConfig } from './global.js';
 
-import GameObjectSystem from '../../engine/gameObjectSystem.js';
+import GameObjectSystem from '../../engine/game/gameObjectSystem.js';
 import CanvasUtils from '../../engine/core/canvas.js';
 
 // Game Objects

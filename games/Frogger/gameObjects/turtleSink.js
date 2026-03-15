@@ -5,7 +5,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // turtleSink.js
 
 
-import GameObject from '../../../engine/gameObject.js';
+import GameObject from '../../../engine/game/gameObject.js';
 
 class TurtleSink extends GameObject {
     static DEBUG = DebugFlag.has('turtleSink');

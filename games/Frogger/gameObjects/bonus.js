@@ -5,7 +5,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // bonus.js
 
 
-import GameObject from '../../../engine/gameObject.js';
+import GameObject from '../../../engine/game/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';

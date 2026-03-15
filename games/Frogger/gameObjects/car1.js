@@ -6,7 +6,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // Car1.js
 
 
-import GameObject from '../../../engine/gameObject.js';
+import GameObject from '../../../engine/game/gameObject.js';
 
 class Car1 extends GameObject {
     static DEBUG = DebugFlag.has('car1');

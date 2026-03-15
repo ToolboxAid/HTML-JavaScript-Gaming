@@ -6,7 +6,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 // LogLRG.js
 
 
-import GameObject from '../../../engine/gameObject.js';
+import GameObject from '../../../engine/game/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 
 class LogLRG extends GameObject {
