@@ -14,13 +14,14 @@ import GameBase from '../../../engine/core/gameBase.js';
 import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
-  applyInteractiveControls,
   createInitialSimulationState,
   createCelestialBodies,
   getFocusedBody,
   getFocusLabel,
   getRenderOptions,
-  updateBodies
+  updateAttractGameState,
+  updatePausedGameState,
+  updateSimulationGameState
 } from './solarSystemRuntime.js';
 import {
   renderAttractHud,
@@ -76,8 +77,8 @@ class SolarSystemSample extends GameBase {
     this.keyboardInput.update();
   }
 
-  updateInteractiveControls() {
-    applyInteractiveControls(this, (keyCodes) => this.wasAnyKeyPressed(keyCodes));
+  isAnyKeyPressed(keyCodes = []) {
+    return this.wasAnyKeyPressed(keyCodes);
   }
 
   getFocusedBody() {
@@ -93,40 +94,20 @@ class SolarSystemSample extends GameBase {
   }
 
   updateAttractState() {
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.startKeys)) {
-      this.gameState = solarSystemConfig.states.simulation;
-    }
-  }
-
-  updateSharedControls() {
-    this.updateInteractiveControls();
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.resetKeys)) {
-      this.resetSimulation();
-    }
-  }
-
-  updateSimulation(deltaTime) {
-    updateBodies(this.getActiveBodies(), deltaTime);
+    updateAttractGameState(this, (keyCodes) => this.isAnyKeyPressed(keyCodes));
   }
 
   updateSimulationState(deltaTime) {
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.pauseKeys)) {
-      this.gameState = solarSystemConfig.states.paused;
-      return;
-    }
-
-    this.updateSharedControls();
-    this.updateSimulation(deltaTime * this.simulationSpeed);
+    updateSimulationGameState(
+      this,
+      (keyCodes) => this.isAnyKeyPressed(keyCodes),
+      () => this.resetSimulation(),
+      deltaTime
+    );
   }
 
   updatePausedState() {
-    this.updateSharedControls();
-
-    if (this.wasAnyKeyPressed(solarSystemConfig.controls.pauseKeys)) {
-      this.gameState = solarSystemConfig.states.simulation;
-      return;
-    }
+    updatePausedGameState(this, (keyCodes) => this.isAnyKeyPressed(keyCodes), () => this.resetSimulation());
   }
 
   renderSimulation() {

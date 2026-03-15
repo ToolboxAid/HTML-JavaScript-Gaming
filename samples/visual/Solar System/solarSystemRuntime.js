@@ -103,6 +103,12 @@ export function updateBodies(activeBodies, deltaTime) {
   });
 }
 
+export function updateAttractGameState(sample, wasAnyKeyPressed) {
+  if (wasAnyKeyPressed(solarSystemConfig.controls.startKeys)) {
+    sample.gameState = solarSystemConfig.states.simulation;
+  }
+}
+
 export function applyInteractiveControls(sample, wasAnyKeyPressed) {
   if (wasAnyKeyPressed(solarSystemConfig.controls.speedUpKeys)) {
     sample.simulationSpeed = clamp(
@@ -150,5 +156,31 @@ export function applyInteractiveControls(sample, wasAnyKeyPressed) {
 
   if (wasAnyKeyPressed(solarSystemConfig.controls.focusPrevKeys)) {
     sample.focusIndex = cycleFocusIndex(sample.focusIndex, sample.getActiveBodies().length, -1);
+  }
+}
+
+export function applySharedControls(sample, wasAnyKeyPressed, resetSimulation) {
+  applyInteractiveControls(sample, wasAnyKeyPressed);
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.resetKeys)) {
+    resetSimulation();
+  }
+}
+
+export function updateSimulationGameState(sample, wasAnyKeyPressed, resetSimulation, deltaTime) {
+  if (wasAnyKeyPressed(solarSystemConfig.controls.pauseKeys)) {
+    sample.gameState = solarSystemConfig.states.paused;
+    return;
+  }
+
+  applySharedControls(sample, wasAnyKeyPressed, resetSimulation);
+  updateBodies(sample.getActiveBodies(), deltaTime * sample.simulationSpeed);
+}
+
+export function updatePausedGameState(sample, wasAnyKeyPressed, resetSimulation) {
+  applySharedControls(sample, wasAnyKeyPressed, resetSimulation);
+
+  if (wasAnyKeyPressed(solarSystemConfig.controls.pauseKeys)) {
+    sample.gameState = solarSystemConfig.states.simulation;
   }
 }
