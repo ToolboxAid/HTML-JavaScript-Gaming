@@ -22,6 +22,13 @@ export function createMoon(moon) {
     };
 }
 
+export function getInitialBodyPosition(distance, angle) {
+    return {
+        x: distance * Math.cos(angle),
+        y: distance * Math.sin(angle)
+    };
+}
+
 export function createBodyVisual(radius, color, ring) {
     return {
         radius,
@@ -38,7 +45,9 @@ export function createBodyOrbit(distance, angle, speed) {
     };
 }
 
-export function initializeCelestialBody(body, moons) {
+export function initializeCelestialBody(body, { radius, color, ring, distance, angle, speed, moons }) {
+    body.visual = createBodyVisual(radius, color, ring);
+    body.orbit = createBodyOrbit(distance, angle, speed);
     body.moons = moons.map(createMoon);
     updatePositionFromOrbit(body);
     updateMoons(body, 0);
