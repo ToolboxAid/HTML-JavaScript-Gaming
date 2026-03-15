@@ -13,10 +13,9 @@ import {
     displayGameOver,
     displayPlayerSelect,
     initGame,
-    initializeEnemy,
+    initializeEnemyIfNeeded,
     pauseGame,
-    playGame,
-    resetGame
+    playGame
 } from './gameStates.js';
 
 class Game extends GameBase {
@@ -38,13 +37,13 @@ class Game extends GameBase {
         this.keyboardInput = null;
         this.backToAttractFrames = 600;
         this.stateHandlers = {
-            [Game.STATES.ATTRACT]: () => displayAttractMode(this),
-            [Game.STATES.PLAYER_SELECT]: () => displayPlayerSelect(this),
-            [Game.STATES.INIT_GAME]: () => initGame(this),
-            [Game.STATES.INIT_ENEMY]: () => this.runInitEnemy(),
-            [Game.STATES.PLAY_GAME]: () => playGame(this),
-            [Game.STATES.PAUSE_GAME]: () => pauseGame(this),
-            [Game.STATES.GAME_OVER]: () => displayGameOver(this)
+            [Game.STATES.ATTRACT]: displayAttractMode,
+            [Game.STATES.PLAYER_SELECT]: displayPlayerSelect,
+            [Game.STATES.INIT_GAME]: initGame,
+            [Game.STATES.INIT_ENEMY]: initializeEnemyIfNeeded,
+            [Game.STATES.PLAY_GAME]: playGame,
+            [Game.STATES.PAUSE_GAME]: pauseGame,
+            [Game.STATES.GAME_OVER]: displayGameOver
         };
         this.applyRuntimeState(this.createRuntimeState());
     }
@@ -75,12 +74,6 @@ class Game extends GameBase {
         DebugLog.log(Game.DEBUG, 'Game', `State: ${this.gameState}`);
     }
 
-    runInitEnemy() {
-        if (!this.enemyInitialized) {
-            initializeEnemy(this);
-        }
-    }
-
     createRuntimeState(playerSlots = Math.max(1, this.playerSelect.maxPlayers)) {
         return {
             gameState: Game.STATES.ATTRACT,
@@ -102,7 +95,7 @@ class Game extends GameBase {
     runStateHandler() {
         const handler = this.stateHandlers[this.gameState];
         if (typeof handler === 'function') {
-            handler();
+            handler(this);
             return;
         }
 

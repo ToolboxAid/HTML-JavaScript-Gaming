@@ -84,6 +84,13 @@ export function initializeEnemy(game) {
 }
 
 /** @param {GameContext} game */
+export function initializeEnemyIfNeeded(game) {
+    if (!game.enemyInitialized) {
+        initializeEnemy(game);
+    }
+}
+
+/** @param {GameContext} game */
 export function pauseGame(game) {
     renderScreen(gameUi.screens.pause);
     togglePauseState(game);
