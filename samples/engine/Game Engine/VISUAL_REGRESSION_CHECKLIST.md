@@ -7,11 +7,7 @@ Catch accidental visual drift in starter template screens.
 
 ## Capture Flow
 1. Open `samples/engine/Game Engine/index.html`.
-2. Capture screenshot at `attract` state.
-3. Capture screenshot at `playerSelect` state.
-4. Capture screenshot at `playGame` state.
-5. Capture screenshot at `pauseGame` state.
-6. Capture screenshot at `gameOver` state.
+2. Capture screenshots for `attract`, `playerSelect`, `playGame`, `pauseGame`, and `gameOver`.
 
 ## Suggested Naming
 - `visual-baseline-attract.png`
