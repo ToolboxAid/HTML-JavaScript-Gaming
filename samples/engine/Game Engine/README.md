@@ -23,7 +23,10 @@ This sample is the engine template reference for lifecycle flow and state transi
 - Keep `index.html` focused on gameplay/lifecycle behavior without test-side singleton mutations.
 
 ## Notes
-- Sample orchestration remains in `game.js`; reusable flow helpers stay in `engine/game/gameUtils.js`.
+- `game.js` owns lifecycle wiring and state switching.
+- `gameStates.js` contains state-specific render/update handlers.
+- `gameInput.js` contains shared input checks for state handlers.
+- Reusable flow helpers stay in `engine/game/gameUtils.js`.
 - Lifecycle cleanup is owned by `GameBase.destroy()` plus the sample `onDestroy()` reset.
 
 ## Start A New Game From This Template
