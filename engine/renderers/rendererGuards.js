@@ -25,6 +25,10 @@ class RendererGuards {
         return Number.isFinite(value) && value > 0 ? value : fallback;
     }
 
+    static normalizeNonNegativeNumber(value, fallback = 0) {
+        return Number.isFinite(value) && value >= 0 ? value : fallback;
+    }
+
     static normalizePositiveNumber(value, fallback) {
         return Number.isFinite(value) && value > 0 ? value : fallback;
     }

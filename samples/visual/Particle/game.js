@@ -10,6 +10,7 @@ import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import ParticleExplosion from '../../../engine/renderers/particleExplosion.js';
+import RendererGuards from '../../../engine/renderers/rendererGuards.js';
 
 class Game extends GameBase {
     // Enable debug mode: game.html?particle
@@ -28,27 +29,13 @@ class Game extends GameBase {
         DebugLog.info(Game.DEBUG, 'Particle', 'Particle sample initialized');
     }
 
-    static sanitizePositive(value, fallback) {
-        if (!Number.isFinite(value) || value <= 0) {
-            return fallback;
-        }
-        return value;
-    }
-
-    static sanitizeNonNegative(value, fallback) {
-        if (!Number.isFinite(value) || value < 0) {
-            return fallback;
-        }
-        return value;
-    }
-
     createParticleExplosion(x, y, startRadius, endRadius, durationSeconds = 1.75, particleRadius = 3.5, shape = 'circle') {
-        const safeX = Game.sanitizeNonNegative(x, 0);
-        const safeY = Game.sanitizeNonNegative(y, 0);
-        const safeStartRadius = Game.sanitizeNonNegative(startRadius, 0);
-        const safeEndRadius = Game.sanitizePositive(endRadius, 24);
-        const safeDuration = Game.sanitizePositive(durationSeconds, 1.75);
-        const safeParticleRadius = Game.sanitizePositive(particleRadius, 3.5);
+        const safeX = RendererGuards.normalizeNonNegativeNumber(x, 0);
+        const safeY = RendererGuards.normalizeNonNegativeNumber(y, 0);
+        const safeStartRadius = RendererGuards.normalizeNonNegativeNumber(startRadius, 0);
+        const safeEndRadius = RendererGuards.normalizePositiveNumber(endRadius, 24);
+        const safeDuration = RendererGuards.normalizePositiveNumber(durationSeconds, 1.75);
+        const safeParticleRadius = RendererGuards.normalizePositiveNumber(particleRadius, 3.5);
         const particleCount = Math.max(16, Math.round(safeEndRadius / 2));
 
         const explosion = new ParticleExplosion(
@@ -146,6 +133,5 @@ function renderCenteredText(text, y, fontSize, fontFamily, color) {
         color
     });
 }
-
 
 
