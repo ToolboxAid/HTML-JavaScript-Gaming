@@ -5,6 +5,7 @@ This sample demonstrates engine-driven canvas shape rendering primitives inside 
 It uses:
 - `engine/core/gameBase.js`
 - `engine/core/canvas.js`
+- `engine/core/canvasText.js`
 - sample state routing and rendering in `game.js`
 
 ## Files

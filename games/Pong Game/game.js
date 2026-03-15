@@ -15,31 +15,33 @@ import Font5x3 from './font5x3.js';
 import Paddle from './paddle.js';
 import Puck from './puck.js';
 
+/*
+Sounds in Original Pong
+Ball Bounce Sound:
+ 
+Frequency: Approximately 400 Hz
+Duration: Around 100 milliseconds
+Description: A short beep sound that played whenever the ball hit the paddles or the walls.
+Paddle Hit Sound:
+ 
+Frequency: Similar to the ball bounce sound, around 400 Hz
+Duration: Also about 100 milliseconds
+Description: A distinct sound effect that played when the ball collided with a paddle.
+Score Sound:
+ 
+Frequency: Approximately 300 Hz to 400 Hz (varied based on the version)
+Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
+Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
+*/
+
 class Game extends GameBase {
     constructor() {
         super(canvasConfig, performanceConfig, fullscreenConfig);
     }
 
+
     async onInitialize() {
         console.log("onInit");
-        /*
-        Sounds in Original Pong
-        Ball Bounce Sound:
-        
-        Frequency: Approximately 400 Hz
-        Duration: Around 100 milliseconds
-        Description: A short beep sound that played whenever the ball hit the paddles or the walls.
-        Paddle Hit Sound:
-        
-        Frequency: Similar to the ball bounce sound, around 400 Hz
-        Duration: Also about 100 milliseconds
-        Description: A distinct sound effect that played when the ball collided with a paddle.
-        Score Sound:
-        
-        Frequency: Approximately 300 Hz to 400 Hz (varied based on the version)
-        Duration: Usually longer than the bounce sounds, around 200-500 milliseconds
-        Description: A sound indicating a score was made, usually more pronounced than the bounce sound.
-        */
 
         this.keyboardInput = new KeyboardInput();
         this.gameControllers = new GameControllers();

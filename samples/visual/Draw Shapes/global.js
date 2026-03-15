@@ -60,7 +60,9 @@ export const drawShapesUi = {
     play: {
         titleY: 148,
         subtitleY: 200,
-        promptY: 228
+        promptY: 228,
+        subtitle: 'Click the canvas to toggle fullscreen.',
+        prompt: 'Press Enter again to return to the intro screen.'
     }
 };
 

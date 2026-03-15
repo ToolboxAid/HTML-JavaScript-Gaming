@@ -44,17 +44,52 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(drawShapesUi.theme.panelColor, drawShapesUi.theme.panelBorderColor);
-        this.drawCenteredText(drawShapesUi.attract.title, drawShapesUi.attract.titleY, 42, drawShapesUi.theme.colors.textPrimary, uiFont.display);
-        this.drawCenteredText(drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, 26, drawShapesUi.theme.colors.textPrimary, uiFont.ui);
-        this.drawCenteredText(drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, 20, drawShapesUi.theme.colors.textSecondary, uiFont.ui);
-        this.drawCenteredText(drawShapesUi.attract.help, drawShapesUi.attract.helpY, 18, drawShapesUi.theme.colors.muted, uiFont.ui);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.title, drawShapesUi.attract.titleY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 42,
+            fontFamily: uiFont.display,
+            color: drawShapesUi.theme.colors.textPrimary
+        });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 26,
+            fontFamily: uiFont.ui,
+            color: drawShapesUi.theme.colors.textPrimary
+        });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 20,
+            fontFamily: uiFont.ui,
+            color: drawShapesUi.theme.colors.textSecondary
+        });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.help, drawShapesUi.attract.helpY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 18,
+            fontFamily: uiFont.ui,
+            color: drawShapesUi.theme.colors.muted
+        });
     }
 
     playGame() {
         this.drawStage(drawShapesUi.theme.playPanelColor, drawShapesUi.theme.accentColor);
-        this.drawCenteredText('Canvas Shape Gallery', drawShapesUi.play.titleY, 36, drawShapesUi.theme.colors.textPrimary, uiFont.display);
-        this.drawCenteredText(fullscreenConfig.text, drawShapesUi.play.subtitleY, 22, drawShapesUi.theme.colors.textSecondary, uiFont.ui);
-        this.drawCenteredText('Press Enter again to return to the intro screen.', drawShapesUi.play.promptY, 18, drawShapesUi.theme.colors.muted, uiFont.ui);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Canvas Shape Gallery', drawShapesUi.play.titleY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 36,
+            fontFamily: uiFont.display,
+            color: drawShapesUi.theme.colors.textPrimary
+        });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.subtitle, drawShapesUi.play.subtitleY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 22,
+            fontFamily: uiFont.ui,
+            color: drawShapesUi.theme.colors.textSecondary
+        });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.prompt, drawShapesUi.play.promptY, {
+            defaultCenterX: canvasConfig.width / 2,
+            fontSize: 18,
+            fontFamily: uiFont.ui,
+            color: drawShapesUi.theme.colors.muted
+        });
         drawShapeGallery(canvasConfig);
     }
 
@@ -64,15 +99,6 @@ class Game extends GameBase {
         CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
         CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
         CanvasUtils.drawLine(panelX, panelY + 74, panelX + panelWidth, panelY + 74, 2, borderColor);
-    }
-
-    drawCenteredText(text, y, fontSize, color, fontFamily) {
-        CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize,
-            fontFamily,
-            color
-        });
     }
 
     gameLoop() {
