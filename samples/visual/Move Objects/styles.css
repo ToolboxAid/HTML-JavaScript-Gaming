@@ -1,12 +1,19 @@
 /*
  ToolboxAid.com
  David Quesenberry
- 10/16/2024
+ 03/15/2026
  styles.css
 */
 body {
     margin: 0;
-    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #111111;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
 }
 
 canvas {
@@ -16,9 +23,9 @@ canvas {
 
 #gameAreaContainer {
     position: relative;
+    padding: 0.5rem;
 }
 
 #gameArea {
     background-color: #888888;
-    cursor: none; /* Hide the cursor */
 }

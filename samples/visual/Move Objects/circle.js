@@ -9,10 +9,15 @@ import CanvasUtils from '../../../engine/core/canvas.js';
 
 import RandomUtils from '../../../engine/math/randomUtils.js';
 import CollisionUtils from '../../../engine/physics/collisionUtils.js';
+import DebugFlag from '../../../engine/utils/debugFlag.js';
+import DebugLog from '../../../engine/utils/debugLog.js';
 /**
  * Represents a dynamic circle object in a game.
  */
 class Circle extends ObjectDynamic {
+    // Enable debug mode: game.html?circle
+    static DEBUG = DebugFlag.has('circle');
+
     /** Creates an instance of Circle.
      * 
      */
@@ -49,7 +54,8 @@ class Circle extends ObjectDynamic {
     }
 
     updateCircle(boundariesHit) {
-        console.log("Boundaries hit:", boundariesHit);
+        
+        DebugLog.log(Circle.DEBUG, 'Circle', 'Boundaries hit:', boundariesHit);
 
         if (boundariesHit.includes('top')) {
             this.y = this.radius; // Prevent moving out of bounds at the top

@@ -3,7 +3,7 @@
 // game.js
 // 10/16/2024
 
-import { canvasConfig, performanceConfig, fullscreenConfig } from '../Move Objects/global.js'; // Import canvasConfig
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
 import Circle from './circle.js';
 
@@ -12,20 +12,18 @@ class Game  extends GameBase {
         super(canvasConfig, performanceConfig, fullscreenConfig);
     }
 
-    static circle = null;
     async onInitialize() {
-        // Create our circle
         this.circle = new Circle(canvasConfig);
-        console.log("Game 'onInitialize' is complete");
     }
 
 
     gameLoop(deltaTime) {
-        // Update circle position
         this.circle.update(deltaTime);
-    
-        // Call the drawing function
         this.circle.draw();
+    }
+
+    onDestroy() {
+        this.circle = null;
     }
 }
 

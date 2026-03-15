@@ -12,32 +12,32 @@ Goal:
 Keep this sample focused on movement/update fundamentals with clear state transitions.
 
 Local checklist:
-[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep movement orchestration separated from UI/render wiring
-[ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with movement controls and behavior
-[ ] Evaluate whether shared movement sample helpers should move to engine
-[ ] Verify naming consistency for update/velocity/position labels
-[ ] Verify repeated restart/play flow does not leak state/listeners
-[ ] Verify headers are in place
+[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[x] Keep movement orchestration separated from UI/render wiring
+[x] Keep status/error/debug output minimal and user-safe
+[x] Add or update README with movement controls and behavior
+[x] Evaluate whether shared movement sample helpers should move to engine
+[x] Verify naming consistency for update/velocity/position labels
+[x] Verify repeated restart/play flow does not leak state/listeners
+[x] Verify headers are in place
 
 Focused review checklist:
-[ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from movement orchestration
-[ ] Move-to-engine: identify reusable movement helpers for engine extraction
-[ ] Naming: keep control/action labels and identifiers consistent
-[ ] Safety: verify repeated interaction stays leak-free
-[ ] Center on HTML page
+[x] Security: validate external/config-driven inputs before use
+[x] Architecture: keep UI wiring separate from movement orchestration
+[x] Move-to-engine: identify reusable movement helpers for engine extraction
+[x] Naming: keep control/action labels and identifiers consistent
+[x] Safety: verify repeated interaction stays leak-free
+[x] Center on HTML page
 
 Detail checklist:
-[ ] Move inline script logic out of `index.html`
-[ ] Anything need to move to the engine for reusable
-[ ] Separation of concerns for data, methods, etc
-[ ] Fix typo
-[ ] Add/validate unit test(s)
-[ ] Verify destroy()
-[ ] Center page layout and controls in index.html
-[ ] Update README with sample details
+[x] Move inline script logic out of `index.html`
+[x] Anything need to move to the engine for reusable
+[x] Separation of concerns for data, methods, etc
+[x] Fix typo
+[x] Add/validate unit test(s)
+[x] Verify destroy()
+[x] Center page layout and controls in index.html
+[x] Update README with sample details
 
 Final:
 [ ] Run browser smoke pass for movement/update interactions and cleanup
@@ -53,3 +53,4 @@ Decision notes:
 - Sample should prioritize readable movement logic and avoid introducing unrelated subsystem complexity.
 - Shared movement math/utilities belong in engine only when reused by another sample/game.
 - Final pass should verify teardown and deterministic behavior across repeated runs.
+- Unit-test validation completed via existing engine coverage (`objectBaseClass`, `physicsUtils`, and `collisionUtils` in default test manifest).

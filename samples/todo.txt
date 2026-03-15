@@ -26,7 +26,7 @@ output:
 visual:
 [x] samples/visual/Fullscreen Gaming/
 [.] samples/visual/Draw Shapes/
-[ ] samples/visual/Move Objects/
+[.] samples/visual/Move Objects/
 [ ] samples/visual/Particle/
 
 
