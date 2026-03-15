@@ -7,28 +7,24 @@ import {
   canvasConfig,
   performanceConfig,
   fullscreenConfig,
-  solarSystemConfig,
-  uiFont
+  solarSystemConfig
 } from './global.js';
-import CelestialBody from './celestialBody.js';
 import { solarSystemBodies } from './solarSystemData.js';
 import GameBase from '../../../engine/core/gameBase.js';
 import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
-
-function createCelestialBodies(bodyDefinitions) {
-  return bodyDefinitions.map((body) => new CelestialBody(
-    body.name,
-    body.radius,
-    body.distance,
-    body.color,
-    body.angle,
-    body.speed,
-    body.moons ?? [],
-    body.ring ?? null
-  ));
-}
+import {
+  clamp,
+  createCelestialBodies,
+  cycleFocusIndex,
+  getFocusedBody,
+  getRenderOptions
+} from './solarSystemRuntime.js';
+import {
+  renderAttractHud,
+  renderPausedHud,
+  renderSimulationHud
+} from './solarSystemHud.js';
 
 class SolarSystemSample extends GameBase {
   constructor() {
@@ -88,35 +84,13 @@ class SolarSystemSample extends GameBase {
     this.keyboardInput.update();
   }
 
-  clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
-
   cycleFocus(step) {
-    const maxIndex = this.getActiveBodies().length - 1;
-
-    if (this.focusIndex === -1 && step > 0) {
-      this.focusIndex = 0;
-      return;
-    }
-
-    if (this.focusIndex === -1 && step < 0) {
-      this.focusIndex = maxIndex;
-      return;
-    }
-
-    this.focusIndex += step;
-
-    if (this.focusIndex > maxIndex) {
-      this.focusIndex = -1;
-    } else if (this.focusIndex < -1) {
-      this.focusIndex = maxIndex;
-    }
+    this.focusIndex = cycleFocusIndex(this.focusIndex, this.getActiveBodies().length, step);
   }
 
   updateInteractiveControls() {
     if (this.wasAnyKeyPressed(solarSystemConfig.controls.speedUpKeys)) {
-      this.simulationSpeed = this.clamp(
+      this.simulationSpeed = clamp(
         this.simulationSpeed + solarSystemConfig.simulation.speedStep,
         solarSystemConfig.simulation.minSpeedMultiplier,
         solarSystemConfig.simulation.maxSpeedMultiplier
@@ -124,7 +98,7 @@ class SolarSystemSample extends GameBase {
     }
 
     if (this.wasAnyKeyPressed(solarSystemConfig.controls.speedDownKeys)) {
-      this.simulationSpeed = this.clamp(
+      this.simulationSpeed = clamp(
         this.simulationSpeed - solarSystemConfig.simulation.speedStep,
         solarSystemConfig.simulation.minSpeedMultiplier,
         solarSystemConfig.simulation.maxSpeedMultiplier
@@ -140,7 +114,7 @@ class SolarSystemSample extends GameBase {
     }
 
     if (this.wasAnyKeyPressed(solarSystemConfig.controls.zoomInKeys)) {
-      this.zoom = this.clamp(
+      this.zoom = clamp(
         this.zoom + solarSystemConfig.simulation.zoomStep,
         solarSystemConfig.simulation.minZoom,
         solarSystemConfig.simulation.maxZoom
@@ -148,7 +122,7 @@ class SolarSystemSample extends GameBase {
     }
 
     if (this.wasAnyKeyPressed(solarSystemConfig.controls.zoomOutKeys)) {
-      this.zoom = this.clamp(
+      this.zoom = clamp(
         this.zoom - solarSystemConfig.simulation.zoomStep,
         solarSystemConfig.simulation.minZoom,
         solarSystemConfig.simulation.maxZoom
@@ -165,38 +139,11 @@ class SolarSystemSample extends GameBase {
   }
 
   getFocusedBody() {
-    const activeBodies = this.getActiveBodies();
-
-    if (this.focusIndex < 0 || this.focusIndex >= activeBodies.length) {
-      return null;
-    }
-
-    return activeBodies[this.focusIndex];
+    return getFocusedBody(this.getActiveBodies(), this.focusIndex);
   }
 
   getRenderOptions() {
-    const centerX = canvasConfig.width / 2;
-    const centerY = canvasConfig.height / 2;
-    const focusedBody = this.getFocusedBody();
-
-    // Keep the selected body centered while preserving zoom/toggle settings.
-    if (!focusedBody) {
-      return {
-        centerX,
-        centerY,
-        zoom: this.zoom,
-        showOrbits: this.showOrbits,
-        showLabels: this.showLabels
-      };
-    }
-
-    return {
-      centerX: centerX - (focusedBody.x * this.zoom),
-      centerY: centerY - (focusedBody.y * this.zoom),
-      zoom: this.zoom,
-      showOrbits: this.showOrbits,
-      showLabels: this.showLabels
-    };
+    return getRenderOptions(this.getFocusedBody(), this.zoom, this.showOrbits, this.showLabels);
   }
 
   getFocusLabel() {
@@ -250,27 +197,6 @@ class SolarSystemSample extends GameBase {
     });
   }
 
-  drawHudLine(text, x, y, color = solarSystemConfig.display.hudColor, size = 24) {
-    const ctx = CanvasUtils.ctx;
-    ctx.fillStyle = color;
-    ctx.font = `${size}px ${uiFont.ui}`;
-    ctx.fillText(text, x, y);
-  }
-
-  renderAttractHud() {
-    this.drawHudLine(solarSystemConfig.meta.title, 28, 44, solarSystemConfig.display.hudAccentColor, 30);
-    this.drawHudLine(solarSystemConfig.meta.subtitle, 28, 76, solarSystemConfig.display.hudMutedColor, 18);
-    this.drawHudLine("Press Enter or Space to start the simulation", 28, 122);
-    this.drawHudLine("Press P to pause once running", 28, 152, solarSystemConfig.display.hudMutedColor, 18);
-    this.drawHudLine("O: orbits  L: labels  [ ]: zoom  < >: focus", 28, 178, solarSystemConfig.display.hudMutedColor, 18);
-  }
-
-  renderPausedHud() {
-    this.drawHudLine("Paused", 28, 44, solarSystemConfig.display.hudAccentColor, 30);
-    this.drawHudLine("Press P to resume", 28, 80);
-    this.drawHudLine("R: reset  +/-: speed  O: orbits  L: labels", 28, 110, solarSystemConfig.display.hudMutedColor, 18);
-  }
-
   runAttractState() {
     this.updateAttractState();
     this.renderAttractState();
@@ -289,20 +215,22 @@ class SolarSystemSample extends GameBase {
 
   renderAttractState() {
     this.renderSimulation();
-    this.renderAttractHud();
+    renderAttractHud();
   }
 
   renderPausedState() {
     this.renderSimulation();
-    this.renderPausedHud();
+    renderPausedHud();
   }
 
   renderSimulationHud() {
-    this.drawHudLine("Simulation running", 28, 38, solarSystemConfig.display.hudAccentColor, 22);
-    this.drawHudLine(`Speed: ${this.simulationSpeed.toFixed(2)}x`, 28, 66, solarSystemConfig.display.hudMutedColor, 16);
-    this.drawHudLine(`Focus: ${this.getFocusLabel()}  Zoom: ${this.zoom.toFixed(2)}x`, 28, 88, solarSystemConfig.display.hudMutedColor, 16);
-    this.drawHudLine(`Orbits: ${this.showOrbits ? 'on' : 'off'}  Labels: ${this.showLabels ? 'on' : 'off'}`, 28, 110, solarSystemConfig.display.hudMutedColor, 16);
-    this.drawHudLine("P: pause  R: reset  +/-: speed  O: orbits  L: labels  [ ]: zoom  < >: focus", 28, 132, solarSystemConfig.display.hudMutedColor, 14);
+    renderSimulationHud(
+      this.simulationSpeed,
+      this.getFocusLabel(),
+      this.zoom,
+      this.showOrbits,
+      this.showLabels
+    );
   }
 
   gameLoop(deltaTime, runtimeContext = this.runtimeContext) {

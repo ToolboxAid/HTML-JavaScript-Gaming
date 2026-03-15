@@ -22,10 +22,12 @@ This sample is an engine-driven orbit simulation that now lives under `samples/v
 - `,` and `.`: cycle focus backward or forward.
 
 ## Files
-- `game.js`: sample shell, state flow, input handling, update loop, and HUD rendering.
+- `game.js`: sample shell, state flow, input handling, and update loop orchestration.
 - `global.js`: canvas, fullscreen, performance, control, and display config.
 - `celestialBody.js`: simulation object model and draw/update behavior.
 - `solarSystemData.js`: body definitions for the sample system.
+- `solarSystemRuntime.js`: sample-local simulation helpers for focus and render options.
+- `solarSystemHud.js`: sample-local HUD drawing helpers.
 
 ## Run It
 - Open `samples/visual/Solar System/index.html` from the repo launcher, or
