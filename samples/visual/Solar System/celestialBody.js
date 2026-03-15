@@ -5,10 +5,11 @@
 
 import ObjectStatic from '../../../engine/objects/objectStatic.js';
 import {
-    createMoon,
+    createBodyOrbit,
+    createBodyVisual,
     drawCelestialBody,
-    updateMoons,
-    updatePositionFromOrbit
+    initializeCelestialBody,
+    updateCelestialBody
 } from './celestialBodyHelpers.js';
 
 /**
@@ -27,26 +28,13 @@ class CelestialBody extends ObjectStatic {
 
         this.name = name;
         this.type = 'celestialBody';
-        this.visual = {
-            radius,
-            color,
-            ring
-        };
-        this.orbit = {
-            distance,
-            angle,
-            speed
-        };
-        this.moons = moons.map(createMoon);
-
-        updatePositionFromOrbit(this);
-        updateMoons(this, 0);
+        this.visual = createBodyVisual(radius, color, ring);
+        this.orbit = createBodyOrbit(distance, angle, speed);
+        initializeCelestialBody(this, moons);
     }
 
     update(deltaTime) {
-        this.orbit.angle += this.orbit.speed * deltaTime;
-        updatePositionFromOrbit(this);
-        updateMoons(this, deltaTime);
+        updateCelestialBody(this, deltaTime);
     }
 
     draw(renderOptions = {}) {

@@ -22,6 +22,28 @@ export function createMoon(moon) {
     };
 }
 
+export function createBodyVisual(radius, color, ring) {
+    return {
+        radius,
+        color,
+        ring
+    };
+}
+
+export function createBodyOrbit(distance, angle, speed) {
+    return {
+        distance,
+        angle,
+        speed
+    };
+}
+
+export function initializeCelestialBody(body, moons) {
+    body.moons = moons.map(createMoon);
+    updatePositionFromOrbit(body);
+    updateMoons(body, 0);
+}
+
 export function updatePositionFromOrbit(body) {
     body.x = body.orbit.distance * Math.cos(body.orbit.angle);
     body.y = body.orbit.distance * Math.sin(body.orbit.angle);
@@ -33,6 +55,12 @@ export function updateMoons(body, deltaTime) {
         moon.x = body.x + moon.orbit.distance * Math.cos(moon.orbit.angle);
         moon.y = body.y + moon.orbit.distance * Math.sin(moon.orbit.angle);
     });
+}
+
+export function updateCelestialBody(body, deltaTime) {
+    body.orbit.angle += body.orbit.speed * deltaTime;
+    updatePositionFromOrbit(body);
+    updateMoons(body, deltaTime);
 }
 
 function getSystemCenter() {
