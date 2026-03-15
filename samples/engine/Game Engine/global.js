@@ -136,14 +136,4 @@ export const gameUi = {
     }
 };
 
-export const performanceConfig = {
-    show: gameUi.performance.show,
-    size: gameUi.performance.size,
-    font: gameUi.performance.font,
-    colorLow: gameUi.performance.colorLow,
-    colorMed: gameUi.performance.colorMed,
-    colorHigh: gameUi.performance.colorHigh,
-    backgroundColor: gameUi.performance.backgroundColor,
-    x: gameUi.performance.x,
-    y: gameUi.performance.y
-};
+export const performanceConfig = gameUi.performance;

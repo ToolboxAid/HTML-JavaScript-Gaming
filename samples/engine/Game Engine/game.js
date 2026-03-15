@@ -36,16 +36,7 @@ class Game extends GameBase {
         super(canvasConfig, performanceConfig, fullscreenConfig);
         this.playerSelect = playerSelect;
         this.keyboardInput = null;
-        this.gameState = Game.STATES.ATTRACT;
-        this.lastLoggedState = null;
-        this.playerCount = 1;
-        this.currentPlayer = 0;
-        this.playerLives = [];
-        this.score = [];
-        this.gameInitialized = false;
-        this.enemyInitialized = false;
         this.backToAttractFrames = 600;
-        this.backToAttractCounter = 0;
         this.stateHandlers = {
             [Game.STATES.ATTRACT]: () => displayAttractMode(this),
             [Game.STATES.PLAYER_SELECT]: () => displayPlayerSelect(this),
@@ -55,6 +46,7 @@ class Game extends GameBase {
             [Game.STATES.PAUSE_GAME]: () => pauseGame(this),
             [Game.STATES.GAME_OVER]: () => displayGameOver(this)
         };
+        this.applyRuntimeState(this.createRuntimeState());
     }
 
     async onInitialize() {
@@ -65,28 +57,13 @@ class Game extends GameBase {
 
     resetRuntimeState() {
         const playerSlots = Math.max(1, this.playerSelect.maxPlayers);
-        this.gameState = Game.STATES.ATTRACT;
-        this.lastLoggedState = null;
-        this.playerCount = 1;
-        this.currentPlayer = 0;
-        this.playerLives = Array(playerSlots).fill(this.playerSelect.lives);
-        this.score = Array(playerSlots).fill(0);
-        this.gameInitialized = false;
-        this.enemyInitialized = false;
-        this.backToAttractCounter = 0;
+        this.applyRuntimeState(this.createRuntimeState(playerSlots));
     }
 
     gameLoop() {
         this.keyboardInput.update();
         this.logStateIfChanged();
-
-        const handler = this.stateHandlers[this.gameState];
-        if (typeof handler === 'function') {
-            handler();
-            return;
-        }
-
-        this.gameState = Game.STATES.ATTRACT;
+        this.runStateHandler();
     }
 
     logStateIfChanged() {
@@ -102,6 +79,34 @@ class Game extends GameBase {
         if (!this.enemyInitialized) {
             initializeEnemy(this);
         }
+    }
+
+    createRuntimeState(playerSlots = Math.max(1, this.playerSelect.maxPlayers)) {
+        return {
+            gameState: Game.STATES.ATTRACT,
+            lastLoggedState: null,
+            playerCount: 1,
+            currentPlayer: 0,
+            playerLives: Array(playerSlots).fill(this.playerSelect.lives),
+            score: Array(playerSlots).fill(0),
+            gameInitialized: false,
+            enemyInitialized: false,
+            backToAttractCounter: 0
+        };
+    }
+
+    applyRuntimeState(state) {
+        Object.assign(this, state);
+    }
+
+    runStateHandler() {
+        const handler = this.stateHandlers[this.gameState];
+        if (typeof handler === 'function') {
+            handler();
+            return;
+        }
+
+        this.gameState = Game.STATES.ATTRACT;
     }
 
     onDestroy() {
