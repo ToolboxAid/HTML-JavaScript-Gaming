@@ -24,16 +24,16 @@ export const fullscreenConfig = {
 
 export const performanceConfig = {
   show: true,
-  size: 30,
+  size: 24,
   font: "monospace",
-  colorLow: "green",
-  colorMed: "yellow",
-  colorHigh: "red",
-  backgroundColor: "#AAAAAABB",
+  colorLow: "#72f1b8",
+  colorMed: "#ffd166",
+  colorHigh: "#ff6b6b",
+  backgroundColor: "#0a1626cc",
 
-  x: 700,
-  y: 15,
-}
+  x: 680,
+  y: 590,
+};
 
 export const playerSelect = {
   maxPlayers: 2,
@@ -117,4 +117,3 @@ export const gameUi = {
     labelColor: '#d7f7ff'
   }
 };
-
