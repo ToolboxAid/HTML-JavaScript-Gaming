@@ -3,6 +3,8 @@
 // global.js
 // 10/16/2024
 
+import DebugFlag from '../../../engine/utils/debugFlag.js';
+
 // Set global variables for local classes (same directory)
 // Configuration for the canvas
 export const canvasConfig = {
@@ -14,25 +16,23 @@ export const canvasConfig = {
   borderSize: 15,
 };
 
+export const uiFont = Object.freeze({
+  display: 'Segoe UI',
+  ui: 'Segoe UI',
+  mono: 'monospace'
+});
+
+export const safeArea = Object.freeze({
+  x: 20,
+  y: 20
+});
+
 export const fullscreenConfig = {
   color: 'yellow',
   font: '40px Arial',
   text: 'Click here to enter fullscreen',
   x: 230,
   y: 790
-};
-
-export const performanceConfig = {
-  show: true,
-  size: 24,
-  font: "monospace",
-  colorLow: "#72f1b8",
-  colorMed: "#ffd166",
-  colorHigh: "#ff6b6b",
-  backgroundColor: "#0a1626cc",
-
-  x: 680,
-  y: 590,
 };
 
 export const playerSelect = {
@@ -58,11 +58,25 @@ export const gameUi = {
     panelBorderColor: '#66d9ff',
     panelBorderSize: 3,
     accentColor: '#66d9ff',
-    subtitleColor: '#d7f7ff'
+    subtitleColor: '#d7f7ff',
+    fontDisplay: uiFont.display,
+    fontUi: uiFont.ui,
+    fontMono: uiFont.mono
+  },
+  performance: {
+    show: DebugFlag.has('perf'),
+    size: 24,
+    font: uiFont.mono,
+    colorLow: '#72f1b8',
+    colorMed: '#ffd166',
+    colorHigh: '#ff6b6b',
+    backgroundColor: '#0a1626cc',
+    x: canvasConfig.width - 344,
+    y: canvasConfig.height - 178
   },
   attract: {
     color: '#ffffff',
-    font: '46px Segoe UI',
+    font: `46px ${uiFont.display}`,
     titleX: 200,
     titleY: 230,
     promptX: 230,
@@ -74,15 +88,15 @@ export const gameUi = {
     titleX: 210,
     titleY: 190,
     titleColor: '#ffffff',
-    titleFont: '42px Segoe UI',
+    titleFont: `42px ${uiFont.display}`,
     subtitleX: 210,
     subtitleY: 235,
     subtitleColor: '#d7f7ff',
-    subtitleFont: '24px Segoe UI'
+    subtitleFont: `24px ${uiFont.ui}`
   },
   gameOver: {
     color: '#ff5a5a',
-    font: '52px Segoe UI',
+    font: `52px ${uiFont.display}`,
     titleX: 290,
     titleY: 250,
     promptX: 230,
@@ -116,4 +130,16 @@ export const gameUi = {
     labelScale: 2.2,
     labelColor: '#d7f7ff'
   }
+};
+
+export const performanceConfig = {
+  show: gameUi.performance.show,
+  size: gameUi.performance.size,
+  font: gameUi.performance.font,
+  colorLow: gameUi.performance.colorLow,
+  colorMed: gameUi.performance.colorMed,
+  colorHigh: gameUi.performance.colorHigh,
+  backgroundColor: gameUi.performance.backgroundColor,
+  x: gameUi.performance.x,
+  y: gameUi.performance.y
 };

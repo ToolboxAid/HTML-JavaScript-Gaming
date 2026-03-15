@@ -25,6 +25,7 @@ This sample is the engine template reference for lifecycle flow and state transi
 
 ## Optional Query Flags
 - `?game` enables sample debug logging.
+- `?perf` enables the performance overlay.
 
 ## Test Runner
 - Open `tests/testRunner.html` to run the engine browser test manifest in isolation from game runtime.
@@ -40,6 +41,7 @@ This sample is the engine template reference for lifecycle flow and state transi
 - `game.js` uses a `stateHandlers` map to route the active state to its handler.
 - `gameStates.js` contains state-specific render/update handlers.
 - `gameInput.js` contains shared input checks for state handlers.
+- Quick theme tuning lives in `global.js` under `gameUi.theme`, `gameUi.performance`, and `performanceConfig`.
 - Reusable flow helpers stay in `engine/game/gameUtils.js`.
 - Lifecycle cleanup is owned by `GameBase.destroy()` plus the sample `onDestroy()` reset.
 
