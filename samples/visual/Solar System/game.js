@@ -74,73 +74,33 @@ class Game extends GameBase {
     this.keyboardInput.update();
   }
 
-  isAnyKeyPressed(keyCodes = []) {
-    return this.wasAnyKeyPressed(keyCodes);
-  }
-
-  getFocusedBody() {
-    return getFocusedBody(this.getActiveBodies(), this.focusIndex);
-  }
-
-  getFocusLabel() {
-    return getFocusLabel(this.getFocusedBody());
-  }
-
-  updateAttractState() {
-    updateAttractGameState(this, (keyCodes) => this.isAnyKeyPressed(keyCodes));
-  }
-
-  updateSimulationState(deltaTime) {
-    updateSimulationGameState(
-      this,
-      (keyCodes) => this.isAnyKeyPressed(keyCodes),
-      () => this.resetSimulation(),
-      deltaTime
-    );
-  }
-
-  updatePausedState() {
-    updatePausedGameState(this, (keyCodes) => this.isAnyKeyPressed(keyCodes), () => this.resetSimulation());
-  }
-
-  renderSimulation() {
-    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-  }
-
   runAttractState() {
-    this.updateAttractState();
-    this.renderAttractState();
-  }
-
-  runSimulationState(deltaTime) {
-    this.updateSimulationState(deltaTime);
-    this.renderSimulation();
-    this.renderSimulationHud();
-  }
-
-  runPausedState() {
-    this.updatePausedState();
-    this.renderPausedState();
-  }
-
-  renderAttractState() {
-    this.renderSimulation();
+    updateAttractGameState(this, (keyCodes) => this.wasAnyKeyPressed(keyCodes));
+    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
     renderAttractHud();
   }
 
-  renderPausedState() {
-    this.renderSimulation();
-    renderPausedHud();
-  }
-
-  renderSimulationHud() {
+  runSimulationState(deltaTime) {
+    updateSimulationGameState(
+      this,
+      (keyCodes) => this.wasAnyKeyPressed(keyCodes),
+      () => this.resetSimulation(),
+      deltaTime
+    );
+    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
     renderSimulationHud(
       this.simulationSpeed,
-      this.getFocusLabel(),
+      getFocusLabel(getFocusedBody(this.getActiveBodies(), this.focusIndex)),
       this.zoom,
       this.showOrbits,
       this.showLabels
     );
+  }
+
+  runPausedState() {
+    updatePausedGameState(this, (keyCodes) => this.wasAnyKeyPressed(keyCodes), () => this.resetSimulation());
+    renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
+    renderPausedHud();
   }
 
   gameLoop(deltaTime, runtimeContext = this.runtimeContext) {
