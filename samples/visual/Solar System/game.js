@@ -34,7 +34,7 @@ class Game extends GameBase {
     this.gameObjectSystem = null;
     applyInitialSimulationState(this);
     this.isAnyKeyPressed = (keyCodes) => keyCodes.some((code) => this.keyboardInput.isKeyPressed(code));
-    this.resetBodies = () => this.resetSimulation();
+    this.resetBodies = () => resetGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
     this.stateHandlers = {
       [solarSystemConfig.states.attract]: () => {
         updateAttractGameState(this, this.isAnyKeyPressed);
@@ -68,11 +68,7 @@ class Game extends GameBase {
     this.keyboardInput = new KeyboardInput();
     this.gameObjectSystem = new GameObjectSystem(false);
     applyInitialSimulationState(this);
-    this.resetSimulation();
-  }
-
-  resetSimulation() {
-    resetGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
+    this.resetBodies();
   }
 
   gameLoop(deltaTime, runtimeContext = this.runtimeContext) {
