@@ -45,7 +45,7 @@ The [`samples/`](./samples/) folder contains focused demos for individual engine
 
 - [`samples/input/`](./samples/input/) for input-focused demos (`Keyboard`, `Mouse`, `GameControllers`)
 - [`samples/output/`](./samples/output/) for audio/output demos (`Audio`, `MIDI Player`, `Synthesizer`)
-- [`samples/visual/`](./samples/visual/) for rendering/visual demos (`Draw Shapes`, `Move Objects`, `Particle`, `Full Screen Gaming`)
+- [`samples/visual/`](./samples/visual/) for rendering/visual demos (`Draw Shapes`, `Move Objects`, `Particle`, `Fullscreen Gaming`)
 - [`samples/engine/`](./samples/engine/) for engine-shell/system demos (`Game Engine`, `Solar System`, `2D side scroll tile map`)
 
 ### Tools

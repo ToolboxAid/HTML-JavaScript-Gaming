@@ -43,7 +43,7 @@ Final:
 [x] Run browser smoke pass for fullscreen enter/exit and cleanup
 
 Smoke pass steps:
-1. Load `samples/visual/Full Screen Gaming/index.html`.
+1. Load `samples/visual/Fullscreen Gaming/index.html`.
 2. Enter fullscreen using provided control and verify canvas/layout scales correctly.
 3. Exit fullscreen (Esc or control) and verify layout/state returns cleanly.
 4. Repeat enter/exit multiple times and verify no stuck UI state or missed transitions.

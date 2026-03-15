@@ -24,7 +24,7 @@ output:
 [x] samples/output/Synthesizer/
 
 visual:
-[ ] samples/visual/Full Screen Gaming/
+[x] samples/visual/Fullscreen Gaming/
 [ ] samples/visual/Draw Shapes/
 [ ] samples/visual/Move Objects/
 [ ] samples/visual/Particle/
