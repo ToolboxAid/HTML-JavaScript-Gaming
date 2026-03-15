@@ -90,7 +90,7 @@ export function testMouseInput(assert) {
         const left = 200;
         const top = 100;
         triggerMouseMove(left, top);
-        assert(mouse.getPosition().x === (left - rect.x) && mouse.getPosition().y === (top - rect.y), "Mouse position should be updated correctly");
+        assert(mouse.getPosition().x === (left - rect.left) && mouse.getPosition().y === (top - rect.top), "Mouse position should be updated correctly");
 
         triggerMouseMove(250, 150);
         assert(mouse.getMouseDelta().x === 50 && mouse.getMouseDelta().y === 50, "Mouse delta should be calculated correctly");

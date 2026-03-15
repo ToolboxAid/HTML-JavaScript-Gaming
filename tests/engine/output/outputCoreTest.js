@@ -43,7 +43,13 @@ function installAudioContextMock() {
 
         createGain() {
             return {
-                gain: { value: 1 },
+                gain: {
+                    value: 1,
+                    setValueAtTime() {},
+                    cancelScheduledValues() {},
+                    linearRampToValueAtTime() {},
+                    exponentialRampToValueAtTime() {}
+                },
                 connect() {},
                 disconnect() {}
             };

@@ -6,19 +6,11 @@
 import Fullscreen from '../../../engine/fullscreen.js';
 
 export function testFullscreen(assert) {
-    const originalWindow = globalThis.window;
-    const originalDocument = globalThis.document;
-
     const removedWindowEvents = [];
     const removedDocumentEvents = [];
-
-    const windowStub = {
-        location: { search: '' },
-        addEventListener() {},
-        removeEventListener(eventName) {
-            removedWindowEvents.push(eventName);
-        }
-    };
+    const originalWindowRemoveEventListener = window.removeEventListener;
+    const originalDocumentRemoveEventListener = document.removeEventListener;
+    const originalIsFullscreenActive = Fullscreen.isFullscreenActive;
 
     const ctx = {
         clearRect() {},
@@ -36,21 +28,12 @@ export function testFullscreen(assert) {
         }
     };
 
-    const documentStub = {
-        fullscreenElement: null,
-        webkitFullscreenElement: null,
-        msFullscreenElement: null,
-        addEventListener() {},
-        removeEventListener(eventName) {
-            removedDocumentEvents.push(eventName);
-        },
-        getElementById(id) {
-            return id === 'gameArea' ? canvas : null;
-        }
+    window.removeEventListener = (eventName) => {
+        removedWindowEvents.push(eventName);
     };
-
-    globalThis.window = windowStub;
-    globalThis.document = documentStub;
+    document.removeEventListener = (eventName) => {
+        removedDocumentEvents.push(eventName);
+    };
 
     try {
         const hookCalls = [];
@@ -61,6 +44,7 @@ export function testFullscreen(assert) {
         Fullscreen.scale = 0.5;
         Fullscreen.onResizeHook = (payload) => hookCalls.push(payload);
 
+        Fullscreen.isFullscreenActive = () => false;
         Fullscreen.resizeCanvas('unit');
         assert(canvas.width === 800, 'Fullscreen.resizeCanvas should keep backing width at canvasConfig width');
         assert(canvas.height === 600, 'Fullscreen.resizeCanvas should keep backing height at canvasConfig height');
@@ -68,7 +52,7 @@ export function testFullscreen(assert) {
         assert(canvas.style.height === '300px', 'Fullscreen.resizeCanvas should scale displayed height in windowed mode');
         assert(hookCalls.some((call) => call.reason === 'unit'), 'Fullscreen.resizeCanvas should notify onResize hook with reason');
 
-        documentStub.fullscreenElement = canvas;
+        Fullscreen.isFullscreenActive = () => true;
         Fullscreen.resizeCanvas('fullscreenchange');
         assert(canvas.style.width === '800px', 'Fullscreen.resizeCanvas should use full scale width in fullscreen mode');
         assert(canvas.style.height === '600px', 'Fullscreen.resizeCanvas should use full scale height in fullscreen mode');
@@ -87,8 +71,9 @@ export function testFullscreen(assert) {
         assert(removedWindowEvents.includes('resize'), 'Fullscreen.destroy should unbind resize listener');
         assert(removedDocumentEvents.includes('fullscreenchange'), 'Fullscreen.destroy should unbind fullscreenchange listener');
     } finally {
-        globalThis.window = originalWindow;
-        globalThis.document = originalDocument;
+        window.removeEventListener = originalWindowRemoveEventListener;
+        document.removeEventListener = originalDocumentRemoveEventListener;
+        Fullscreen.isFullscreenActive = originalIsFullscreenActive;
         Fullscreen.listenersRegistered = false;
         Fullscreen.resizeBound = null;
         Fullscreen.canvasClickBound = null;

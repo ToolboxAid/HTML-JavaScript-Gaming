@@ -13,11 +13,11 @@ import KeyboardInput from '../../../engine/input/keyboard.js';
 
 
 import { runTests } from '../../../engine/runTest.js';
-import { engineTestEntries } from '../../tests/engine/testManifest.js';
+import { engineTestEntries } from '../../../tests/engine/testManifest.js';
 
 async function runSampleEngineTests() {
   for (const entry of engineTestEntries) {
-    const testModule = await import(`../../tests/engine/${entry.modulePath.slice(2)}`);
+    const testModule = await import(`../../../tests/engine/${entry.modulePath.slice(2)}`);
     runTests(entry.name, testModule[entry.exportName]);
   }
 }

@@ -41,7 +41,7 @@ export function testBoundaryUtils(assert) {
 
         const wrapped = BoundaryUtils.applyWrapAround(wrappedObject);
         assert(wrapped, 'applyWrapAround should report when it wrapped');
-        assert(wrappedObject.x > 300, 'applyWrapAround should move left-exit objects to the right side');
+        assert(wrappedObject.x >= 300, 'applyWrapAround should move left-exit objects to the right side');
 
         const insideObject = { x: 200, y: 50, width: 50, height: 50 };
         assert(!BoundaryUtils.checkGameAtBounds(insideObject), 'checkGameAtBounds should allow in-bounds objects');

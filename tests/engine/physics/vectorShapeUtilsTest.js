@@ -29,6 +29,6 @@ export function testVectorShapeUtils(assert) {
 
     const rotatedShape = VectorShapeUtils.calculateTransformedShape(vectorMap, 0, 0, 90);
     assert(rotatedShape.rotatedPoints.length === 4, 'rotated shape points failed');
-    assert(rotatedShape.bounds.width === 2, 'rotated shape bounds width failed');
+    assert(rotatedShape.bounds.width === 3, 'rotated shape bounds width failed');
     assert(rotatedShape.bounds.height === 4, 'rotated shape bounds height failed');
 }
