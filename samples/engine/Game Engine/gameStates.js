@@ -28,22 +28,7 @@ import { isPauseTogglePressed, isPlayerDeathPressed, isScorePressed, isStartPres
 
 /** @param {GameContext} game */
 export function displayAttractMode(game) {
-    drawStyledStage();
-    renderCenteredText('Welcome to the Game!', gameUi.attract.titleY, {
-        fontSize: 46,
-        fontFamily: uiFont.display,
-        color: gameUi.attract.color
-    });
-    renderCenteredText('Press `Enter` to Start', gameUi.attract.promptY, {
-        fontSize: 30,
-        fontFamily: uiFont.ui,
-        color: gameUi.attract.color
-    });
-    renderCenteredText('Starter template ready for your game logic', gameUi.attract.subtitleY, {
-        fontSize: 24,
-        fontFamily: uiFont.ui,
-        color: gameUi.theme.subtitleColor
-    });
+    renderScreen(gameUi.screens.attract);
 
     if (isStartPressed(game.keyboardInput)) {
         game.gameState = game.constructor.STATES.PLAYER_SELECT;
@@ -52,29 +37,16 @@ export function displayAttractMode(game) {
 
 /** @param {GameContext} game */
 export function displayPlayerSelect(game) {
-    drawStyledStage();
-    renderCenteredText('Select Players', gameUi.playerSelect.titleY, {
-        fontSize: 42,
-        fontFamily: uiFont.display,
-        color: gameUi.playerSelect.titleColor
-    });
-    renderCenteredText('Press 1 or 2 to begin', gameUi.playerSelect.subtitleY, {
-        fontSize: 24,
-        fontFamily: uiFont.ui,
-        color: gameUi.playerSelect.subtitleColor
-    });
+    const screen = gameUi.screens.playerSelect;
+    renderScreen(screen);
 
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, game.playerSelect);
-    renderCenteredMultilineText(
-        ['Keyboard `1` for 1 Player', 'Keyboard `2` for 2 Players'],
-        config.y + config.spacing,
-        {
-            fontSize: 26,
-            lineHeight: 54,
-            fontFamily: uiFont.ui,
-            color: gameUi.theme.subtitleColor
-        }
-    );
+    renderCenteredMultilineText(screen.options.lines, config.y + config.spacing, {
+        fontSize: screen.options.fontSize,
+        lineHeight: screen.options.lineHeight,
+        fontFamily: screen.options.fontFamily,
+        color: screen.options.color
+    });
     const result = GameUtils.getKeyboardPlayerSelection(game.keyboardInput, config);
 
     if (!result) {
@@ -88,22 +60,7 @@ export function displayPlayerSelect(game) {
 
 /** @param {GameContext} game */
 export function displayGameOver(game) {
-    drawStyledStage(gameUi.theme.colors.panelDanger, gameUi.theme.colors.danger);
-    renderCenteredText('Game Over', gameUi.gameOver.titleY, {
-        fontSize: 52,
-        fontFamily: uiFont.display,
-        color: gameUi.gameOver.color
-    });
-    renderCenteredText('Press `Enter` to Restart', gameUi.gameOver.promptY, {
-        fontSize: 30,
-        fontFamily: uiFont.ui,
-        color: gameUi.gameOver.color
-    });
-    renderCenteredText('Restarting returns to attract mode', gameUi.gameOver.subtitleY, {
-        fontSize: 22,
-        fontFamily: uiFont.ui,
-        color: gameUi.theme.subtitleColor
-    });
+    renderScreen(gameUi.screens.gameOver);
 
     if (isStartPressed(game.keyboardInput) ||
         game.backToAttractCounter++ > game.backToAttractFrames) {
@@ -128,46 +85,28 @@ export function initializeEnemy(game) {
 
 /** @param {GameContext} game */
 export function pauseGame(game) {
-    drawStyledStage(gameUi.theme.colors.panelPause, '#77f0ff');
+    renderScreen(gameUi.screens.pause);
     gamePauseCheck(game);
-    renderCenteredText('Game Paused.', gameUi.pause.textY, {
-        fontSize: 46,
-        fontFamily: uiFont.display,
-        color: gameUi.pause.color
-    });
-    renderCenteredText('Press `P` to unpause game', gameUi.pause.promptY, {
-        fontSize: 34,
-        fontFamily: uiFont.ui,
-        color: gameUi.pause.color
-    });
-    renderCenteredText('State and timers remain preserved', gameUi.pause.subtitleY, {
-        fontSize: 22,
-        fontFamily: uiFont.ui,
-        color: gameUi.pause.subtitleColor
-    });
 }
 
 /** @param {GameContext} game */
 export function playGame(game) {
-    drawStyledStage(gameUi.theme.colors.panelPlay, gameUi.theme.colors.accent);
+    const screen = gameUi.screens.play;
+    drawStyledStage(screen.panelColor, screen.borderColor);
     gamePauseCheck(game);
 
     const playerInfo = `Player ${game.currentPlayer + 1} - Lives: ${game.playerLives[game.currentPlayer]} - Score: ${game.score[game.currentPlayer]}`;
-    renderCenteredText(playerInfo, gameUi.play.infoY, {
-        fontSize: 34,
+    renderCenteredText(playerInfo, screen.infoY, {
+        fontSize: screen.infoFontSize,
         fontFamily: uiFont.ui,
-        color: gameUi.play.color
+        color: screen.infoColor
     });
-    renderCenteredMultilineText(
-        ['Press `D` for player death', 'Press `S` for score', 'Press `P` to pause game'],
-        gameUi.play.deathPromptY,
-        {
-            fontSize: 24,
-            lineHeight: 50,
-            fontFamily: uiFont.ui,
-            color: gameUi.play.labelColor
-        }
-    );
+    renderCenteredMultilineText(screen.prompts, screen.promptsY, {
+        fontSize: screen.promptFontSize,
+        lineHeight: screen.promptLineHeight,
+        fontFamily: uiFont.ui,
+        color: screen.promptColor
+    });
 
     if (isScorePressed(game.keyboardInput)) {
         game.score[game.currentPlayer] += 100;
@@ -220,6 +159,17 @@ function drawStyledStage(panelColor = gameUi.theme.panelColor, borderColor = gam
     CanvasUtils.drawLine(panelX, panelY + headerOffsetY, panelX + panelWidth, panelY + headerOffsetY, 2, borderColor);
     drawPulseAccent(panelX, panelY + headerOffsetY + 6, panelWidth, gameUi.theme.accentColor);
     CanvasUtils.drawSafeAreaGuides(Math.min(safeArea.x, safeArea.y), `${gameUi.theme.accentColor}99`);
+}
+
+function renderScreen(screen) {
+    drawStyledStage(screen.panelColor, screen.borderColor);
+    renderLines(screen.lines);
+}
+
+function renderLines(lines) {
+    lines.forEach(({ text, y, ...options }) => {
+        renderCenteredText(text, y, options);
+    });
 }
 
 function drawPulseAccent(x, y, width, accentColor) {
