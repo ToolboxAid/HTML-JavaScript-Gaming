@@ -19,5 +19,6 @@ This sample demonstrates timed particle explosion waves using the engine `Partic
 
 ## Notes
 - The sample keeps orchestration in `game.js` and uses engine-renderer behavior for particle internals.
-- `global.js` owns canvas/fullscreen/performance config plus page shell copy.
+- `global.js` owns canvas/fullscreen/performance config, page shell copy, and the current wave layout data.
 - Inputs are sanitized before creating explosions to avoid invalid config values.
+- Wave timing is updated before drawing, so newly spawned explosions render in the same frame they are created.

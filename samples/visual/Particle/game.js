@@ -5,7 +5,14 @@
 
 import DebugFlag from '../../../engine/utils/debugFlag.js';
 import DebugLog from '../../../engine/utils/debugLog.js';
-import { canvasConfig, performanceConfig, fullscreenConfig, particleSampleUi, uiFont } from './global.js';
+import {
+    canvasConfig,
+    performanceConfig,
+    fullscreenConfig,
+    particleSampleConfig,
+    particleSampleUi,
+    uiFont
+} from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import CanvasText from '../../../engine/core/canvasText.js';
@@ -15,7 +22,6 @@ import RendererGuards from '../../../engine/renderers/rendererGuards.js';
 class Game extends GameBase {
     // Enable debug mode: game.html?particle
     static DEBUG = DebugFlag.has('particle');
-    static EXPLOSION_INTERVAL_MS = 5000;
 
     constructor() {
         super(canvasConfig, performanceConfig, fullscreenConfig);
@@ -79,12 +85,17 @@ class Game extends GameBase {
     }
 
     spawnWave() {
-        this.createParticleExplosion(200, 350, 0, 50, 1.5);
-        this.createParticleExplosion(300, 350, 0, 50, 3.5, 1.5);
-        this.createParticleExplosion(500, 350, 0, 10, 1.5, 1.5);
-        this.createParticleExplosion(600, 350, 10, 60, 4.5, 2.5, 'square');
-        this.createParticleExplosion(400, 450, 2, 100, 1.5, 2.5);
-        this.createParticleExplosion(700, 550, 4, 200, 1.5, 1.5);
+        particleSampleUi.wave.forEach((explosion) => {
+            this.createParticleExplosion(
+                explosion.x,
+                explosion.y,
+                explosion.startRadius,
+                explosion.endRadius,
+                explosion.durationSeconds,
+                explosion.particleRadius,
+                explosion.shape
+            );
+        });
     }
 
     drawStage() {
@@ -118,16 +129,17 @@ class Game extends GameBase {
     }
 
     gameLoop(deltaTime) {
-        this.drawStage();
-        this.drawCanvasHeader();
         this.updateExplosions(deltaTime);
-        this.drawExplosions();
 
         const currentTimeMs = Date.now();
-        if (currentTimeMs - this.lastExplosionTimeMs > Game.EXPLOSION_INTERVAL_MS) {
+        if (currentTimeMs - this.lastExplosionTimeMs > particleSampleConfig.explosionIntervalMs) {
             this.spawnWave();
             this.lastExplosionTimeMs = currentTimeMs;
         }
+
+        this.drawStage();
+        this.drawCanvasHeader();
+        this.drawExplosions();
     }
 
     onDestroy() {

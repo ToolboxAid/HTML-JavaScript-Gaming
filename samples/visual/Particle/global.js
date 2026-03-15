@@ -65,6 +65,18 @@ export const particleSampleUi = {
       textSecondary: '#f3d8ab',
       muted: '#cdbbe9'
     }
-  }
+  },
+  wave: [
+    { x: 200, y: 350, startRadius: 0, endRadius: 50, durationSeconds: 1.5 },
+    { x: 300, y: 350, startRadius: 0, endRadius: 50, durationSeconds: 3.5, particleRadius: 1.5 },
+    { x: 500, y: 350, startRadius: 0, endRadius: 10, durationSeconds: 1.5, particleRadius: 1.5 },
+    { x: 600, y: 350, startRadius: 10, endRadius: 60, durationSeconds: 4.5, particleRadius: 2.5, shape: 'square' },
+    { x: 750, y: 350, startRadius: 8, endRadius: 110, durationSeconds: 2.4, particleRadius: 2.0 },
+    { x: 400, y: 450, startRadius: 2, endRadius: 100, durationSeconds: 1.5, particleRadius: 2.5 },
+    { x: 700, y: 550, startRadius: 4, endRadius: 200, durationSeconds: 1.5, particleRadius: 1.5 }
+  ]
 };
 
+export const particleSampleConfig = {
+  explosionIntervalMs: 4000
+};
