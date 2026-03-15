@@ -25,9 +25,7 @@ export const solarSystemBodies = [
         color: "gray",
         angle: randomAngle(),
         speed: 0.16,
-        moons: [
-            { radius: 0.5, distance: 5, angle: randomAngle(), speed: 1.0 }
-        ]
+        moons: []
     },
     {
         name: "Venus",
@@ -36,9 +34,7 @@ export const solarSystemBodies = [
         color: "orange",
         angle: randomAngle(),
         speed: 0.12,
-        moons: [
-            { radius: 1, distance: 10, angle: randomAngle(), speed: 0.75 }
-        ]
+        moons: []
     },
     {
         name: "Earth",
@@ -59,8 +55,8 @@ export const solarSystemBodies = [
         angle: randomAngle(),
         speed: 0.064,
         moons: [
-            { radius: 0.8, distance: 10, angle: randomAngle(), speed: 0.5 },
-            { radius: 0.5, distance: 3, angle: randomAngle(), speed: 0.8 }
+            { radius: 0.8, distance: 8, angle: randomAngle(), speed: 0.5 },
+            { radius: 0.5, distance: 11, angle: randomAngle(), speed: 0.8 }
         ]
     },
     {
@@ -71,9 +67,10 @@ export const solarSystemBodies = [
         angle: randomAngle(),
         speed: 0.04,
         moons: [
-            { radius: 2.5, distance: 28, angle: randomAngle(), speed: 0.3 },
-            { radius: 2, distance: 23, angle: randomAngle(), speed: 0.4 },
-            { radius: 1.5, distance: 18, angle: randomAngle(), speed: 0.6 }
+            { radius: 1.6, distance: 18, angle: randomAngle(), speed: 0.70 },
+            { radius: 1.9, distance: 21, angle: randomAngle(), speed: 0.52 },
+            { radius: 2.4, distance: 24, angle: randomAngle(), speed: 0.38 },
+            { radius: 2.1, distance: 27, angle: randomAngle(), speed: 0.24 }
         ]
     },
     {
@@ -84,9 +81,10 @@ export const solarSystemBodies = [
         angle: randomAngle(),
         speed: 0.024,
         moons: [
-            { radius: 2, distance: 20, angle: randomAngle(), speed: 0.2 },
-            { radius: 1.5, distance: 17, angle: randomAngle(), speed: 0.3 },
-            { radius: 1, distance: 15, angle: randomAngle(), speed: 0.4 }
+            { radius: 1.0, distance: 15, angle: randomAngle(), speed: 0.55 },
+            { radius: 1.3, distance: 18, angle: randomAngle(), speed: 0.38 },
+            { radius: 2.2, distance: 21, angle: randomAngle(), speed: 0.20 },
+            { radius: 1.1, distance: 24, angle: randomAngle(), speed: 0.12 }
         ],
         ring: { ringRadius: 21, color: "rgba(220, 220, 220, 0.5)" }
     },
@@ -98,8 +96,9 @@ export const solarSystemBodies = [
         angle: randomAngle(),
         speed: 0.016,
         moons: [
-            { radius: 1.2, distance: 18, angle: randomAngle(), speed: 0.2 },
-            { radius: 0.8, distance: 14, angle: randomAngle(), speed: 0.3 }
+            { radius: 1.0, distance: 11, angle: randomAngle(), speed: 0.34 },
+            { radius: 1.1, distance: 13, angle: randomAngle(), speed: 0.24 },
+            { radius: 1.3, distance: 15, angle: randomAngle(), speed: 0.16 }
         ],
         ring: { ringRadius: 14, color: "rgba(150, 170, 190, 0.5)" }
     },
@@ -111,8 +110,8 @@ export const solarSystemBodies = [
         angle: randomAngle(),
         speed: 0.008,
         moons: [
-            { radius: 1, distance: 22, angle: randomAngle(), speed: 0.2 },
-            { radius: 0.7, distance: 18, angle: randomAngle(), speed: 0.4 }
+            { radius: 2.0, distance: 11, angle: randomAngle(), speed: 0.22 },
+            { radius: 0.8, distance: 15, angle: randomAngle(), speed: 0.08 }
         ],
         ring: { ringRadius: 14, color: "rgba(100, 120, 140, 0.5)" }
     }
