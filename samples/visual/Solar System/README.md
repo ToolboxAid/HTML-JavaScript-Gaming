@@ -1,6 +1,6 @@
 # Solar System Sample
 
-This sample is an engine-driven orbit simulation that now lives under `samples/visual/` as a reference for `GameBase` state flow and `GameObjectSystem` ownership.
+This sample is an engine-driven orbit simulation that now lives under `samples/visual/` as a reference for `GameBase` state flow, `GameObjectSystem` ownership, and camera-style focus behavior.
 
 ## What It Shows
 - `GameBase` lifecycle setup for a compact engine sample.
@@ -8,6 +8,7 @@ This sample is an engine-driven orbit simulation that now lives under `samples/v
 - `GameObjectSystem` ownership for active celestial bodies.
 - Simple state flow: `attract` -> `simulation` -> `paused`.
 - Camera-style focus and zoom behavior without adding a separate camera abstraction.
+- A cleaner visual sample shell around an engine-driven simulation.
 
 ## Controls
 - `Enter` or `Space`: start the simulation from attract mode.

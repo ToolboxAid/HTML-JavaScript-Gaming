@@ -1,35 +1,47 @@
 // ToolboxAid.com
 // David Quesenberry
 // global.js
-// 10/16/2024
+// 03/15/2026
 
 export const canvasConfig = {
   width: 1024,
   height: 768,
-  //scale: ((200 / 1024) * 0.25) * 2,
-  scale: (400/1024),
-  backgroundColor: "#000000",
-  borderColor: "white",
-  borderSize: 15,
+  scale: 400 / 1024,
+  backgroundColor: '#030611',
+  borderColor: '#ed9700',
+  borderSize: 10,
 };
 
+export const uiFont = Object.freeze({
+  display: 'Segoe UI',
+  ui: 'Segoe UI',
+  mono: 'monospace'
+});
+
 export const fullscreenConfig = {
-  color: 'yellow',
-  font: '40px Arial',
-  text: 'Click here to enter fullscreen',
-  x: 230,
-  y: 736
+  color: '#ed9700',
+  font: `28px ${uiFont.ui}`,
+  text: 'Click the canvas to toggle fullscreen.',
+  x: 210,
+  y: 730
+};
+
+export const solarSystemUi = {
+  page: {
+    title: 'Solar System',
+    subtitle: 'Orbit simulation, camera focus, and engine-driven state flow in one sample shell.'
+  }
 };
 
 export const performanceConfig = {
   show: true,
   size: 18,
-  font: "monospace",
-  colorLow: "green",
-  colorMed: "yellow",
-  colorHigh: "red",
-  backgroundColor: "#AAAAAABB",
-  x: 11,
+  font: uiFont.mono,
+  colorLow: 'green',
+  colorMed: '#ed9700',
+  colorHigh: '#ff5f57',
+  backgroundColor: '#999999cc',
+  x: 14,
   y: 300,
 };
 
