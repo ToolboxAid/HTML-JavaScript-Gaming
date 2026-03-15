@@ -1,0 +1,32 @@
+Status legend:
+- [ ] Todo
+- [.] In progress
+- [!] Blocker
+- [-] Don't do
+- [x] Complete
+- [X] Complete
+
+Goal:
+Copy starter template files and get a new game running in browser.
+
+Setup checklist:
+[ ] Copy starter files into the new game folder
+Done when: `index.html`, `game.js`, `gameStates.js`, `gameInput.js`, `global.js`, `styles.css`, `README.md`, and `todo.txt` are present.
+[ ] Rename folder and page labels
+Done when: folder name, `index.html` `<title>`, and `<h1>` match the new game name.
+[ ] Update config in `global.js`
+Done when: canvas size/scale, fullscreen text, and performance overlay values are intentional.
+[ ] Replace starter gameplay/state text
+Done when: `gameStates.js` no longer shows starter placeholder messaging.
+[ ] Set debug flag key in `game.js`
+Done when: debug logs are enabled only through a game-specific query flag.
+[ ] Update `README.md` for this game
+Done when: controls, run steps, and any known limitations are documented.
+
+Browser smoke pass:
+[ ] Run browser smoke pass
+Done when:
+1. Load `index.html` and verify init + stable loop.
+2. Exercise core controls and verify expected state changes.
+3. Reload and verify clean reset (no stale state).
+4. Verify no blocking console errors.

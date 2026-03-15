@@ -27,10 +27,10 @@ import { isPauseTogglePressed, isPlayerDeathPressed, isScorePressed, isStartPres
 
 /** @param {GameContext} game */
 export function displayAttractMode(game) {
-    CanvasUtils.ctx.fillStyle = gameUi.attract.color;
-    CanvasUtils.ctx.font = gameUi.attract.font;
-    CanvasUtils.ctx.fillText('Welcome to the Game!', gameUi.attract.titleX, gameUi.attract.titleY);
-    CanvasUtils.ctx.fillText('Press `Enter` to Start', gameUi.attract.promptX, gameUi.attract.promptY);
+    drawStyledStage();
+    drawCenteredText('Welcome to the Game!', gameUi.attract.titleY, gameUi.attract.font, gameUi.attract.color);
+    drawCenteredText('Press `Enter` to Start', gameUi.attract.promptY, '30px Segoe UI', gameUi.attract.color);
+    drawCenteredText('Starter template ready for your game logic', gameUi.attract.subtitleY, '24px Segoe UI', gameUi.theme.subtitleColor);
 
     if (isStartPressed(game.keyboardInput)) {
         game.gameState = game.constructor.STATES.PLAYER_SELECT;
@@ -39,14 +39,14 @@ export function displayAttractMode(game) {
 
 /** @param {GameContext} game */
 export function displayPlayerSelect(game) {
-    const gameController = null;
-    const result = GameUtils.selectNumberOfPlayers(
-        CanvasUtils.ctx,
-        canvasConfig,
-        game.playerSelect,
-        game.keyboardInput,
-        gameController
-    );
+    drawStyledStage();
+    drawCenteredText('Select Players', gameUi.playerSelect.titleY, gameUi.playerSelect.titleFont, gameUi.playerSelect.titleColor);
+    drawCenteredText('Press 1 or 2 to begin', gameUi.playerSelect.subtitleY, gameUi.playerSelect.subtitleFont, gameUi.playerSelect.subtitleColor);
+
+    const config = GameUtils.getPlayerSelectConfig(canvasConfig, game.playerSelect);
+    drawCenteredText('Keyboard `1` for 1 Player', config.y + config.spacing, '26px Segoe UI', gameUi.theme.subtitleColor);
+    drawCenteredText('Keyboard `2` for 2 Players', config.y + (2 * config.spacing), '26px Segoe UI', gameUi.theme.subtitleColor);
+    const result = GameUtils.getKeyboardPlayerSelection(game.keyboardInput, config);
 
     if (!result) {
         return;
@@ -59,10 +59,10 @@ export function displayPlayerSelect(game) {
 
 /** @param {GameContext} game */
 export function displayGameOver(game) {
-    CanvasUtils.ctx.fillStyle = gameUi.gameOver.color;
-    CanvasUtils.ctx.font = gameUi.gameOver.font;
-    CanvasUtils.ctx.fillText('Game Over', gameUi.gameOver.titleX, gameUi.gameOver.titleY);
-    CanvasUtils.ctx.fillText('Press `Enter` to Restart', gameUi.gameOver.promptX, gameUi.gameOver.promptY);
+    drawStyledStage('#2d0f18cc', '#ff5a5a');
+    drawCenteredText('Game Over', gameUi.gameOver.titleY, gameUi.gameOver.font, gameUi.gameOver.color);
+    drawCenteredText('Press `Enter` to Restart', gameUi.gameOver.promptY, '30px Segoe UI', gameUi.gameOver.color);
+    drawCenteredText('Restarting returns to attract mode', gameUi.gameOver.subtitleY, '22px Segoe UI', gameUi.theme.subtitleColor);
 
     if (isStartPressed(game.keyboardInput) ||
         game.backToAttractCounter++ > game.backToAttractFrames) {
@@ -87,20 +87,23 @@ export function initializeEnemy(game) {
 
 /** @param {GameContext} game */
 export function pauseGame(game) {
+    drawStyledStage('#0c1e22cc', '#77f0ff');
     gamePauseCheck(game);
-    CanvasUtils.drawText(gameUi.pause.textX, gameUi.pause.textY, 'Game Paused.', gameUi.pause.scale, gameUi.pause.color);
-    CanvasUtils.drawText(gameUi.pause.promptX, gameUi.pause.promptY, 'Press `P` to unpause game', gameUi.pause.scale, gameUi.pause.color);
+    drawCenteredText('Game Paused.', gameUi.pause.textY, '46px Segoe UI', gameUi.pause.color);
+    drawCenteredText('Press `P` to unpause game', gameUi.pause.promptY, '34px Segoe UI', gameUi.pause.color);
+    drawCenteredText('State and timers remain preserved', gameUi.pause.subtitleY, '22px Segoe UI', gameUi.pause.subtitleColor);
 }
 
 /** @param {GameContext} game */
 export function playGame(game) {
+    drawStyledStage('#0f1f33cc', '#66d9ff');
     gamePauseCheck(game);
 
     const playerInfo = `Player ${game.currentPlayer + 1} - Lives: ${game.playerLives[game.currentPlayer]} - Score: ${game.score[game.currentPlayer]}`;
-    CanvasUtils.drawText(gameUi.play.infoX, gameUi.play.infoY, playerInfo, gameUi.play.scale, gameUi.play.color);
-    CanvasUtils.drawText(gameUi.play.deathPromptX, gameUi.play.deathPromptY, 'Press `D` for player death', gameUi.play.scale, gameUi.play.color);
-    CanvasUtils.drawText(gameUi.play.scorePromptX, gameUi.play.scorePromptY, 'Press `S` for score', gameUi.play.scale, gameUi.play.color);
-    CanvasUtils.drawText(gameUi.play.pausePromptX, gameUi.play.pausePromptY, 'Press `P` to pause game', gameUi.play.scale, gameUi.play.color);
+    drawCenteredText(playerInfo, gameUi.play.infoY, '34px Segoe UI', gameUi.play.color);
+    drawCenteredText('Press `D` for player death', gameUi.play.deathPromptY, '24px Segoe UI', gameUi.play.labelColor);
+    drawCenteredText('Press `S` for score', gameUi.play.scorePromptY, '24px Segoe UI', gameUi.play.labelColor);
+    drawCenteredText('Press `P` to pause game', gameUi.play.pausePromptY, '24px Segoe UI', gameUi.play.labelColor);
 
     if (isScorePressed(game.keyboardInput)) {
         game.score[game.currentPlayer] += 100;
@@ -140,4 +143,23 @@ function gamePauseCheck(game) {
     game.gameState = game.gameState === game.constructor.STATES.PLAY_GAME
         ? game.constructor.STATES.PAUSE_GAME
         : game.constructor.STATES.PLAY_GAME;
+}
+
+function drawStyledStage(panelColor = gameUi.theme.panelColor, borderColor = gameUi.theme.panelBorderColor) {
+    const { panelX, panelY, panelWidth, panelHeight, panelBorderSize } = gameUi.theme;
+
+    CanvasUtils.drawRect(panelX - 16, panelY - 16, panelWidth + 32, panelHeight + 32, '#07101fcc');
+    CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
+    CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
+    CanvasUtils.drawLine(panelX, panelY + 70, panelX + panelWidth, panelY + 70, 2, borderColor);
+}
+
+function drawCenteredText(text, y, font, color) {
+    const ctx = CanvasUtils.ctx;
+    const centerX = canvasConfig.width / 2;
+
+    ctx.font = font;
+    ctx.fillStyle = color;
+    const width = ctx.measureText(text).width;
+    ctx.fillText(text, Math.round(centerX - (width / 2)), y);
 }

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Game engine template preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2f2f2f" />
+      <stop offset="100%" stop-color="#121212" />
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)" />
+  <rect x="155" y="70" width="650" height="420" rx="12" ry="12" fill="#888888" stroke="#f5f5f5" stroke-width="4" />
+  <text x="480" y="130" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="32" fill="#ffffff">Game Engine Template</text>
+  <text x="480" y="245" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="24" fill="#ffffff">Welcome to the Game!</text>
+  <text x="480" y="285" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#ffffff">Press Enter to Start</text>
+  <rect x="645" y="90" width="140" height="60" rx="8" ry="8" fill="#AAAAAABB" />
+  <text x="715" y="122" text-anchor="middle" font-family="monospace" font-size="16" fill="#222222">FPS 60</text>
+  <text x="715" y="140" text-anchor="middle" font-family="monospace" font-size="12" fill="#222222">MEM 31MB</text>
+</svg>

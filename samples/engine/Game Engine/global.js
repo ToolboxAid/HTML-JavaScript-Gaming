@@ -49,41 +49,72 @@ export const playerSelect = {
 };
 
 export const gameUi = {
+  theme: {
+    panelX: 120,
+    panelY: 120,
+    panelWidth: 784,
+    panelHeight: 430,
+    panelColor: '#101a2fcc',
+    panelBorderColor: '#66d9ff',
+    panelBorderSize: 3,
+    accentColor: '#66d9ff',
+    subtitleColor: '#d7f7ff'
+  },
   attract: {
-    color: 'white',
-    font: '30px Arial',
-    titleX: 250,
-    titleY: 200,
-    promptX: 250,
-    promptY: 300
+    color: '#ffffff',
+    font: '46px Segoe UI',
+    titleX: 200,
+    titleY: 230,
+    promptX: 230,
+    promptY: 300,
+    subtitleX: 230,
+    subtitleY: 350
+  },
+  playerSelect: {
+    titleX: 210,
+    titleY: 190,
+    titleColor: '#ffffff',
+    titleFont: '42px Segoe UI',
+    subtitleX: 210,
+    subtitleY: 235,
+    subtitleColor: '#d7f7ff',
+    subtitleFont: '24px Segoe UI'
   },
   gameOver: {
-    color: 'red',
-    font: '30px Arial',
-    titleX: 300,
-    titleY: 200,
-    promptX: 250,
-    promptY: 300
+    color: '#ff5a5a',
+    font: '52px Segoe UI',
+    titleX: 290,
+    titleY: 250,
+    promptX: 230,
+    promptY: 320,
+    subtitleX: 250,
+    subtitleY: 370
   },
   pause: {
-    textX: 150,
-    textY: 200,
-    promptX: 150,
-    promptY: 250,
+    textX: 250,
+    textY: 270,
+    promptX: 215,
+    promptY: 330,
     scale: 3.5,
-    color: 'white'
+    color: '#ffffff',
+    subtitleX: 230,
+    subtitleY: 385,
+    subtitleScale: 2.2,
+    subtitleColor: '#d7f7ff'
   },
   play: {
-    infoX: 100,
-    infoY: 200,
-    deathPromptX: 100,
+    infoX: 120,
+    infoY: 170,
+    deathPromptX: 120,
     deathPromptY: 250,
-    scorePromptX: 100,
+    scorePromptX: 120,
     scorePromptY: 300,
-    pausePromptX: 100,
+    pausePromptX: 120,
     pausePromptY: 350,
-    scale: 3.5,
-    color: 'white'
+    scale: 3.2,
+    color: '#ffffff',
+    labelScale: 2.2,
+    labelColor: '#d7f7ff'
   }
 };
 
