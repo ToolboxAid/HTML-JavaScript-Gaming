@@ -6,14 +6,14 @@ It uses:
 - `engine/core/gameBase.js`
 - `engine/fullscreen.js`
 - sample state routing in `game.js`
-- DOM diagnostics ownership in `gameDom.js`
+- DOM diagnostics and metrics ownership in `gameDom.js`
 
 ## Files
 
 - `index.html`: module boot, canvas container, and diagnostics panel markup
 - `global.js`: canvas, fullscreen, performance, and sample UI configs
 - `game.js`: `GameBase` lifecycle shell, state routing, canvas rendering, input, and cleanup
-- `gameDom.js`: DOM metrics lookup and text updates
+- `gameDom.js`: DOM metrics lookup, metrics collection, and text updates
 - `styles.css`: page layout and diagnostics presentation
 
 ## Controls

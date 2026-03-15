@@ -7,7 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig, fullscreenSampleUi, 
 import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
-import { getMetricsElements, updateMetricsPanel } from './gameDom.js';
+import { collectMetrics, createEmptyMetrics, getMetricsElements, updateMetricsPanel } from './gameDom.js';
 
 class Game extends GameBase {
     static STATES = Object.freeze({
@@ -20,7 +20,10 @@ class Game extends GameBase {
         this.keyboardInput = null;
         this.metricsElements = {};
         this.gameState = Game.STATES.ATTRACT;
-        this.lastMetrics = this.createEmptyMetrics();
+        this.lastMetrics = createEmptyMetrics({
+            gameScale: canvasConfig.scale,
+            sampleState: Game.STATES.ATTRACT
+        });
         this.stateHandlers = {
             [Game.STATES.ATTRACT]: () => this.displayAttractMode(),
             [Game.STATES.PLAY_GAME]: () => this.playGame()
@@ -30,52 +33,18 @@ class Game extends GameBase {
     async onInitialize() {
         this.keyboardInput = new KeyboardInput();
         this.metricsElements = getMetricsElements();
-        this.lastMetrics = this.collectMetrics();
+        this.lastMetrics = collectMetrics({
+            gameScale: canvasConfig.scale,
+            sampleState: this.gameState
+        });
         this.updateMetricsPanel();
     }
 
-    createEmptyMetrics() {
-        return {
-            canvasWidth: 0,
-            canvasHeight: 0,
-            containerWidth: 0,
-            containerHeight: 0,
-            documentWidth: 0,
-            documentHeight: 0,
-            windowWidth: 0,
-            windowHeight: 0,
-            screenWidth: 0,
-            screenHeight: 0,
-            gameScale: canvasConfig.scale,
-            fullscreenActive: false,
-            sampleState: Game.STATES.ATTRACT
-        };
-    }
-
-    collectMetrics() {
-        const canvas = document.getElementById('gameArea');
-        const container = document.getElementById('gameAreaContainer');
-        const containerBounds = container?.getBoundingClientRect();
-
-        return {
-            canvasWidth: canvas?.clientWidth ?? 0,
-            canvasHeight: canvas?.clientHeight ?? 0,
-            containerWidth: Math.round(containerBounds?.width ?? 0),
-            containerHeight: Math.round(containerBounds?.height ?? 0),
-            documentWidth: document.documentElement.clientWidth,
-            documentHeight: document.documentElement.clientHeight,
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight,
-            screenWidth: screen.width,
-            screenHeight: screen.height,
-            gameScale: canvasConfig.scale,
-            fullscreenActive: Boolean(document.fullscreenElement),
-            sampleState: this.gameState
-        };
-    }
-
     updateMetrics() {
-        this.lastMetrics = this.collectMetrics();
+        this.lastMetrics = collectMetrics({
+            gameScale: canvasConfig.scale,
+            sampleState: this.gameState
+        });
         this.updateMetricsPanel();
     }
 
@@ -164,7 +133,10 @@ class Game extends GameBase {
     onDestroy() {
         this.keyboardInput = null;
         this.metricsElements = {};
-        this.lastMetrics = this.createEmptyMetrics();
+        this.lastMetrics = createEmptyMetrics({
+            gameScale: canvasConfig.scale,
+            sampleState: Game.STATES.ATTRACT
+        });
     }
 }
 
