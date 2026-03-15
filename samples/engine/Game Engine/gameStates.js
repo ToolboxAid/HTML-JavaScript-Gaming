@@ -77,17 +77,14 @@ export function initGame(game) {
 }
 
 /** @param {GameContext} game */
-export function initializeEnemy(game) {
+export function initializeEnemyIfNeeded(game) {
+    if (game.enemyInitialized) {
+        return;
+    }
+
     DebugLog.log(game.constructor.DEBUG, 'Game', 'Initializing enemy');
     game.enemyInitialized = true;
     game.gameState = game.constructor.STATES.PLAY_GAME;
-}
-
-/** @param {GameContext} game */
-export function initializeEnemyIfNeeded(game) {
-    if (!game.enemyInitialized) {
-        initializeEnemy(game);
-    }
 }
 
 /** @param {GameContext} game */
