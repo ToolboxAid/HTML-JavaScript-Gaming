@@ -19,6 +19,7 @@ It uses:
 ## Behavior
 
 - Starts on an attract screen, then toggles into the movement demo with `Enter` or `Space`.
+- Keeps the sample shell in `game.js` while the moving object owns its own motion and bounce behavior in `circle.js`.
 - A circle moves with randomized initial velocity.
 - On boundary hit, velocity reflects and position clamps to remain in-bounds.
 - Fullscreen and performance overlays are provided by engine runtime integration.

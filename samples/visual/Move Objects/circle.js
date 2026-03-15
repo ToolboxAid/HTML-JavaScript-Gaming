@@ -3,7 +3,6 @@
 // circle.js
 // 10/16/2024
 
-import { canvasConfig } from './global.js'; // Import canvasConfig
 import ObjectDynamic from '../../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
 import CanvasUtils from '../../../engine/core/canvas.js';
 
@@ -62,7 +61,7 @@ class Circle extends ObjectDynamic {
             this.velocityY *= -1; // Reverse direction
         }
         if (boundariesHit.includes('bottom')) {
-            this.y = canvasConfig.height - this.radius; // Prevent moving out of bounds at the bottom
+            this.y = this.canvasHeight - this.radius; // Prevent moving out of bounds at the bottom
             this.velocityY *= -1; // Reverse direction
         }
         if (boundariesHit.includes('left')) {
@@ -70,7 +69,7 @@ class Circle extends ObjectDynamic {
             this.velocityX *= -1; // Reverse direction
         }
         if (boundariesHit.includes('right')) {
-            this.x = canvasConfig.width - this.radius; // Prevent moving out of bounds on the right
+            this.x = this.canvasWidth - this.radius; // Prevent moving out of bounds on the right
             this.velocityX *= -1; // Reverse direction
         }
     }

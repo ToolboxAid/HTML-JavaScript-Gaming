@@ -57,8 +57,7 @@ class Game extends GameBase {
         renderCenteredText('Movement Demo', moveObjectsUi.play.titleY, 36, uiFont.display, moveObjectsUi.theme.colors.textPrimary);
         renderCenteredText(moveObjectsUi.play.subtitle, moveObjectsUi.play.subtitleY, 22, uiFont.ui, moveObjectsUi.theme.colors.textSecondary);
         renderCenteredText(moveObjectsUi.play.prompt, moveObjectsUi.play.promptY, 18, uiFont.ui, moveObjectsUi.theme.colors.muted);
-        this.circle.update(deltaTime);
-        this.circle.draw();
+        this.runMovementDemo(deltaTime);
     }
 
     drawStage(panelColor, borderColor) {
@@ -67,6 +66,11 @@ class Game extends GameBase {
         CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
         CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
         CanvasUtils.drawLine(panelX, panelY + 74, panelX + panelWidth, panelY + 74, 2, borderColor);
+    }
+
+    runMovementDemo(deltaTime) {
+        this.circle.update(deltaTime);
+        this.circle.draw();
     }
 
     gameLoop(deltaTime) {
@@ -99,5 +103,3 @@ function renderCenteredText(text, y, fontSize, fontFamily, color) {
 export default Game;
 
 const game = new Game();
-
-
