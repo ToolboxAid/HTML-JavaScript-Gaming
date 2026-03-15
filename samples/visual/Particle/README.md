@@ -1,11 +1,12 @@
 # Particle Sample
 
-This sample demonstrates timed particle explosion waves using the engine `ParticleExplosion` renderer.
+This sample demonstrates timed particle explosion waves using the engine `ParticleExplosion` renderer inside the updated visual-sample shell.
 
 ## What It Shows
 - Engine-driven sample (`GameBase`) with a standard game loop.
 - Repeating explosion waves with circle and square particle modes.
 - Automatic particle lifecycle cleanup after each explosion.
+- A cleaner visual sample shell consistent with the other refreshed visual examples.
 
 ## Run
 1. Open `samples/visual/Particle/index.html` in a browser.
@@ -18,4 +19,5 @@ This sample demonstrates timed particle explosion waves using the engine `Partic
 
 ## Notes
 - The sample keeps orchestration in `game.js` and uses engine-renderer behavior for particle internals.
+- `global.js` owns canvas/fullscreen/performance config plus page shell copy.
 - Inputs are sanitized before creating explosions to avoid invalid config values.

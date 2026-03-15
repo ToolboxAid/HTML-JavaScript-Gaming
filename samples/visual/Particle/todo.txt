@@ -54,3 +54,4 @@ Decision notes:
 - Use engine utilities for common math/render safety rather than duplicating logic in sample code.
 - Final pass should verify teardown and that particle arrays/state do not persist unexpectedly across restarts.
 - Unit tests are intentionally deferred for this sample; engine-level renderer and lifecycle tests remain the primary safety net.
+- Page shell/layout is now aligned with the refreshed visual sample presentation pattern.
