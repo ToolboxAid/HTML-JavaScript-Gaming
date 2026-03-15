@@ -1,15 +1,13 @@
 // ToolboxAid.com
 // David Quesenberry
 // global.js
-// 10/16/2024
+// 03/15/2026
 
 import DebugFlag from '../../../engine/utils/debugFlag.js';
 
-// Set global variables for local classes (same directory)
-// Configuration for the canvas
 export const canvasConfig = {
-  width: 1024, // Game area width
-  height: 768, // Game area height
+  width: 1024,
+  height: 768,
   scale: 0.35,
   backgroundColor: '#1f0b57',
   borderColor: '#ed9700',

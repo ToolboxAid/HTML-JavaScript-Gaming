@@ -2,25 +2,32 @@
 <!--
  ToolboxAid.com
  David Quesenberry
- 10/16/2024
+ 03/15/2026
  index.html
 -->
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Engine Template</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 
-    <!-- game specific code -->
     <script type="module" src="./game.js" defer></script>
 </head>
 
-<body id="Game Engine Template">
-    <h1>Game Engine Template</h1>
-    <div id="gameAreaContainer">
-        <canvas id="gameArea"></canvas>
-    </div>
+<body id="gameEngineTemplate">
+    <main class="sample-shell">
+        <header class="sample-header">
+            <h1>Game Engine Template</h1>
+            <p>Starter lifecycle flow for attract, player select, init, play, pause, and game over state transitions.</p>
+        </header>
+        <div class="stage-shell">
+            <div id="gameAreaContainer">
+                <canvas id="gameArea"></canvas>
+            </div>
+        </div>
+    </main>
 </body>
 
 </html>
