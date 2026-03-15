@@ -3,18 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Draw Shapes</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-
-    <!-- game specific code -->
-    <script type="module"  src="./game.js" defer></script>
+    <script type="module" src="./game.js" defer></script>
 </head>
 
 <body id="DrawShapes">
-    <h1>Draw Shapes - reusable components</h1>
-    <div id="gameAreaContainer">      
-        <canvas id="gameArea" style="background-color:#0000FF;"></canvas>    
-    </div>
+    <main class="sample-shell">
+        <header class="sample-header">
+            <h1>Draw Shapes</h1>
+            <p>Canvas primitives, outlines, layering, and composition in a cleaner sample shell.</p>
+        </header>
+        <div class="stage-shell">
+            <div id="gameAreaContainer">
+                <canvas id="gameArea"></canvas>
+            </div>
+        </div>
+    </main>
 </body>
 </html>

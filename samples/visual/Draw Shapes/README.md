@@ -1,22 +1,23 @@
 # Draw Shapes Sample
 
-This sample demonstrates engine-driven canvas shape rendering primitives.
+This sample demonstrates engine-driven canvas shape rendering primitives inside a cleaner sample shell similar to the updated `Fullscreen Gaming` example.
 
 It uses:
 - `engine/core/gameBase.js`
 - `engine/core/canvas.js`
-- sample rendering logic in `game.js`
+- sample state routing and rendering in `game.js`
 
 ## Files
 
-- `index.html`: module boot shell
-- `global.js`: canvas/fullscreen/performance config
-- `game.js`: shape drawing methods and frame loop
-- `styles.css`: centered sample layout
+- `index.html`: module boot shell and sample header
+- `global.js`: canvas, fullscreen, performance, and sample UI config
+- `game.js`: `GameBase` lifecycle shell, state routing, and shape drawing methods
+- `styles.css`: centered sample layout and stage presentation
 
 ## Behavior
 
-- Draws circles, squares, triangle, oval, grid lines, and layered rectangles each frame.
+- Starts on an attract screen, then toggles into the shape gallery with `Enter` or `Space`.
+- Draws circles, squares, triangle, oval, grid lines, and layered rectangles in the gallery view.
 - Uses engine fullscreen and performance overlays via `GameBase` runtime integration.
 
 ## Notes
