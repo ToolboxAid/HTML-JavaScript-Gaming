@@ -69,6 +69,10 @@ class Game extends GameBase {
     }
 
     runMovementDemo(deltaTime) {
+        if (!this.circle) {
+            return;
+        }
+
         this.circle.update(deltaTime);
         this.circle.draw();
     }
