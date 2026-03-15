@@ -27,7 +27,7 @@ visual:
 [x] samples/visual/Fullscreen Gaming/
 [x] samples/visual/Draw Shapes/
 [x] samples/visual/Move Objects/
-[.] samples/visual/Solar System/
+[x] samples/visual/Solar System/
 [ ] samples/visual/Particle/
 
 engine:
