@@ -9,23 +9,34 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fullscreen Demo</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="module" src="./game.js" defer></script>
 </head>
 <body id="FullscreenDemo">
-    <h1>Fullscreen Gaming</h1>
-    <h2>Engine Fullscreen + Sample Diagnostics</h2>
-    <div id="gameAreaContainer" style="background-color:#555555;">      
-        <canvas id="gameArea" style="background-color:#0000FF;"></canvas>    
-    </div>
-    <div id="pDiv">      
-        <p id="canW">can width: w x h</p>
-        <p id="divW">div width: w x h</p>
-        <p id="docW">document width: w x h</p>
-        <p id="wdowW">window width: w x h</p>
-        <p id="scrnW">screen width: w x h</p>
-        <p id="gameScaleWindow">screen width: w x h</p>
-    </div>
+    <main class="sample-shell">
+        <header class="sample-header">
+            <h1>Fullscreen Gaming</h1>
+            <p>Engine fullscreen behavior with a template-style sample shell and live diagnostics.</p>
+        </header>
+        <div class="stage-shell">
+            <div id="gameAreaContainer">
+                <canvas id="gameArea"></canvas>
+            </div>
+            <section id="pDiv" class="metrics-panel" aria-label="Fullscreen diagnostics">
+                <ul class="metrics-list">
+                    <li><span class="metric-label">canvas</span><span id="canW" class="metric-value">0 x 0</span></li>
+                    <li><span class="metric-label">container</span><span id="divW" class="metric-value">0 x 0</span></li>
+                    <li><span class="metric-label">document</span><span id="docW" class="metric-value">0 x 0</span></li>
+                    <li><span class="metric-label">window</span><span id="wdowW" class="metric-value">0 x 0</span></li>
+                    <li><span class="metric-label">screen</span><span id="scrnW" class="metric-value">0 x 0</span></li>
+                    <li><span class="metric-label">game scale</span><span id="gameScaleWindow" class="metric-value">0</span></li>
+                    <li><span class="metric-label">fullscreen</span><span id="fullscreenState" class="metric-value">off</span></li>
+                    <li><span class="metric-label">sample state</span><span id="sampleState" class="metric-value">attract</span></li>
+                </ul>
+            </section>
+        </div>
+    </main>
 </body>
 </html>

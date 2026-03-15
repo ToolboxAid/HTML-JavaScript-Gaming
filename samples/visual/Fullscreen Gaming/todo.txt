@@ -9,48 +9,51 @@ Status legend:
 Fullscreen Gaming local plan
 
 Goal:
-Keep this sample focused on fullscreen behavior, transitions, and rendering quality.
+Refactor this sample to follow the `Game Engine` template structure while keeping it focused on fullscreen behavior and diagnostics.
 
 Local checklist:
-[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[x] Keep fullscreen orchestration separated from game/render wiring
-[x] Keep status/error/debug output minimal and user-safe
-[x] Add or update README with fullscreen controls and behavior
-[x] Evaluate whether shared fullscreen sample helpers should move to engine
-[x] Verify naming consistency for fullscreen control and lifecycle labels
-[x] Verify repeated enter/exit flow does not leak state/listeners
-[x] Verify headers are in place
+[x] Keep the sample purpose narrow: fullscreen behavior first, template structure second
+[x] Decide whether diagnostics stay DOM-based or move onto canvas, and document that choice
+[x] Mirror the `Game Engine` template structure without adding fake gameplay concepts
+[x] Keep fullscreen orchestration separated from diagnostics/render wiring
+[ ] Keep status/error/debug output minimal and user-safe
+[ ] Verify repeated enter/exit flow does not leak state/listeners
+[x] Verify headers and sample docs stay in place after the refactor
 
 Focused review checklist:
-[x] Security: validate external/config-driven inputs before use
-[x] Architecture: keep UI wiring separate from fullscreen orchestration
-[x] Move-to-engine: identify reusable fullscreen helpers for engine extraction
-[x] Naming: keep control/action labels and identifiers consistent
-[x] Safety: verify repeated interaction stays leak-free
-[x] Center on HTML page
+[x] Architecture: turn `game.js` into a lifecycle shell with state routing only
+[x] Architecture: keep render/update work in the smallest number of modules the sample needs
+[x] Architecture: isolate DOM metrics ownership from core loop logic
+[ ] Move-to-engine: identify reusable fullscreen or diagnostics helpers for engine extraction
+[ ] Naming: keep state labels, metric labels, and control text consistent
+[ ] Safety: verify repeated interaction stays leak-free
+[ ] Center the sample layout cleanly on the page
 
 Detail checklist:
-[x] Move inline script logic out of `index.html`
-[x] Anything need to move to the engine for reusable
-[x] Separation of concerns for data, methods, etc
-[x] Fix typo
-[x] Add/validate unit test(s)
-[x] Verify destroy()
-[x] Center page layout and controls in index.html
-[x] Update README with sample details
+[x] Move all sample configuration into `global.js` using template-style config objects
+[x] Add explicit sample states such as `attract` and `playGame`
+[x] Create a `stateHandlers` map in `game.js` like the `Game Engine` template
+[x] Keep attract/render/diagnostics behavior in `game.js` after confirming `gameStates.js` is unnecessary
+[x] Add `gameMetrics.js` or `gameDom.js` if DOM querying/updating needs its own module
+[x] Remove inline styles from `index.html`
+[x] Update `styles.css` to own layout and diagnostics presentation
+[ ] Verify `destroy()` still leaves no dangling references
+[x] Update README with the refactored file structure and controls
+[ ] Add/validate tests only if the refactor introduces logic worth isolating
 
 Final:
-[x] Run browser smoke pass for fullscreen enter/exit and cleanup
+[ ] Run browser smoke pass for fullscreen enter/exit, diagnostics updates, and cleanup
 
 Smoke pass steps:
 1. Load `samples/visual/Fullscreen Gaming/index.html`.
-2. Enter fullscreen using provided control and verify canvas/layout scales correctly.
-3. Exit fullscreen (Esc or control) and verify layout/state returns cleanly.
-4. Repeat enter/exit multiple times and verify no stuck UI state or missed transitions.
-5. Reload/navigate away and confirm no console errors related to fullscreen lifecycle cleanup.
+2. Verify the attract/default state renders correctly before entering fullscreen.
+3. Enter fullscreen using the provided control and verify canvas/layout scales correctly.
+4. Exit fullscreen (`Esc` or control) and verify layout/state returns cleanly.
+5. Repeat enter/exit multiple times and verify no stuck UI state or missed transitions.
+6. Reload/navigate away and confirm no console errors related to fullscreen lifecycle cleanup.
 
 Decision notes:
-- Fullscreen behavior is now delegated to `engine/fullscreen.js`, while sample redraw/info hooks remain local.
+- Follow the `Game Engine` template structure, but keep this sample simpler than the template where gameplay-specific concepts do not help.
+- Prefer DOM diagnostics unless there is a strong reason to move metrics onto the canvas.
 - Any shared fullscreen UI glue should only move to engine if reused by multiple samples/games.
-- Transition/redraw hook support is now available in engine fullscreen via `init(..., { onResize })`.
-- Sample-level unit tests are deferred; rely on browser smoke + engine test coverage.
+- Sample-level unit tests are optional; prefer browser smoke coverage unless new reusable logic is extracted.
