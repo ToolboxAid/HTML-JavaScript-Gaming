@@ -24,6 +24,7 @@ This sample is the engine template reference for lifecycle flow and state transi
 
 ## Notes
 - `game.js` owns lifecycle wiring and state switching.
+- `game.js` uses a `stateHandlers` map to route the active state to its handler.
 - `gameStates.js` contains state-specific render/update handlers.
 - `gameInput.js` contains shared input checks for state handlers.
 - Reusable flow helpers stay in `engine/game/gameUtils.js`.

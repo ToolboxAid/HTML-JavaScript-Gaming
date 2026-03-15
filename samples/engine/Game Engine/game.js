@@ -46,6 +46,19 @@ class Game extends GameBase {
         this.enemyInitialized = false;
         this.backToAttractFrames = 600;
         this.backToAttractCounter = 0;
+        this.stateHandlers = {
+            [Game.STATES.ATTRACT]: () => displayAttractMode(this),
+            [Game.STATES.PLAYER_SELECT]: () => displayPlayerSelect(this),
+            [Game.STATES.INIT_GAME]: () => initGame(this),
+            [Game.STATES.INIT_ENEMY]: () => {
+                if (!this.enemyInitialized) {
+                    initializeEnemy(this);
+                }
+            },
+            [Game.STATES.PLAY_GAME]: () => playGame(this),
+            [Game.STATES.PAUSE_GAME]: () => pauseGame(this),
+            [Game.STATES.GAME_OVER]: () => displayGameOver(this)
+        };
     }
 
     async onInitialize() {
@@ -70,34 +83,13 @@ class Game extends GameBase {
         this.keyboardInput.update();
         this.logStateIfChanged();
 
-        switch (this.gameState) {
-            case Game.STATES.ATTRACT:
-                displayAttractMode(this);
-                break;
-            case Game.STATES.PLAYER_SELECT:
-                displayPlayerSelect(this);
-                break;
-            case Game.STATES.INIT_GAME:
-                initGame(this);
-                break;
-            case Game.STATES.INIT_ENEMY:
-                if (!this.enemyInitialized) {
-                    initializeEnemy(this);
-                }
-                break;
-            case Game.STATES.PLAY_GAME:
-                playGame(this);
-                break;
-            case Game.STATES.PAUSE_GAME:
-                pauseGame(this);
-                break;
-            case Game.STATES.GAME_OVER:
-                displayGameOver(this);
-                break;
-            default:
-                this.gameState = Game.STATES.ATTRACT;
-                break;
+        const handler = this.stateHandlers[this.gameState];
+        if (typeof handler === 'function') {
+            handler();
+            return;
         }
+
+        this.gameState = Game.STATES.ATTRACT;
     }
 
     logStateIfChanged() {

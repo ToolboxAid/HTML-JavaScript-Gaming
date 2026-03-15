@@ -46,5 +46,44 @@ export const playerSelect = {
   optionBaseX: 250,
   optionBaseY: 300,
   optionSpacing: 40
-}
+};
+
+export const gameUi = {
+  attract: {
+    color: 'white',
+    font: '30px Arial',
+    titleX: 250,
+    titleY: 200,
+    promptX: 250,
+    promptY: 300
+  },
+  gameOver: {
+    color: 'red',
+    font: '30px Arial',
+    titleX: 300,
+    titleY: 200,
+    promptX: 250,
+    promptY: 300
+  },
+  pause: {
+    textX: 150,
+    textY: 200,
+    promptX: 150,
+    promptY: 250,
+    scale: 3.5,
+    color: 'white'
+  },
+  play: {
+    infoX: 100,
+    infoY: 200,
+    deathPromptX: 100,
+    deathPromptY: 250,
+    scorePromptX: 100,
+    scorePromptY: 300,
+    pausePromptX: 100,
+    pausePromptY: 350,
+    scale: 3.5,
+    color: 'white'
+  }
+};
 
