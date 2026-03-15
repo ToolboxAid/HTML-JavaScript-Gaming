@@ -60,6 +60,10 @@ export function createInitialSimulationState() {
   };
 }
 
+export function applyInitialSimulationState(sample) {
+  Object.assign(sample, createInitialSimulationState());
+}
+
 export function cycleFocusIndex(currentIndex, bodyCount, step) {
   const maxIndex = bodyCount - 1;
 

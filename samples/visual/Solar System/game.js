@@ -14,7 +14,7 @@ import GameBase from '../../../engine/core/gameBase.js';
 import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
-  createInitialSimulationState,
+  applyInitialSimulationState,
   destroyGameObjectSystem,
   resetGameObjectSystem,
   updateAttractGameState,
@@ -32,7 +32,7 @@ class Game extends GameBase {
     super(canvasConfig, performanceConfig, fullscreenConfig);
     this.keyboardInput = null;
     this.gameObjectSystem = null;
-    Object.assign(this, createInitialSimulationState());
+    applyInitialSimulationState(this);
     this.isAnyKeyPressed = (keyCodes) => keyCodes.some((code) => this.keyboardInput.isKeyPressed(code));
     this.resetBodies = () => this.resetSimulation();
     this.stateHandlers = {
@@ -67,11 +67,7 @@ class Game extends GameBase {
     this.runtimeContext = runtimeContext;
     this.keyboardInput = new KeyboardInput();
     this.gameObjectSystem = new GameObjectSystem(false);
-    this.resetRuntimeState();
-  }
-
-  resetRuntimeState() {
-    Object.assign(this, createInitialSimulationState());
+    applyInitialSimulationState(this);
     this.resetSimulation();
   }
 
