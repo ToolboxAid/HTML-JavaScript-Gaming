@@ -14,12 +14,21 @@ import KeyboardInput from '../../../engine/input/keyboard.js';
 class Game extends GameBase {
     // Enable debug mode: game.html?game
     static DEBUG = DebugFlag.has('game');
+    static STATES = Object.freeze({
+        ATTRACT: 'attract',
+        PLAYER_SELECT: 'playerSelect',
+        INIT_GAME: 'initGame',
+        INIT_ENEMY: 'initEnemy',
+        PLAY_GAME: 'playGame',
+        PAUSE_GAME: 'pauseGame',
+        GAME_OVER: 'gameOver'
+    });
 
     constructor() {
         super(canvasConfig, performanceConfig, fullscreenConfig);
         this.playerSelect = playerSelect;
         this.keyboardInput = null;
-        this.gameState = 'attract';
+        this.gameState = Game.STATES.ATTRACT;
         this.lastLoggedState = null;
         this.playerCount = 1;
         this.currentPlayer = 0;
@@ -38,7 +47,7 @@ class Game extends GameBase {
     }
 
     resetRuntimeState() {
-        this.gameState = 'attract';
+        this.gameState = Game.STATES.ATTRACT;
         this.lastLoggedState = null;
         this.playerCount = 1;
         this.currentPlayer = 0;
@@ -54,31 +63,31 @@ class Game extends GameBase {
         this.logStateIfChanged();
 
         switch (this.gameState) {
-            case 'attract':
+            case Game.STATES.ATTRACT:
                 this.displayAttractMode();
                 break;
-            case 'playerSelect':
+            case Game.STATES.PLAYER_SELECT:
                 this.displayPlayerSelect();
                 break;
-            case 'initGame':
+            case Game.STATES.INIT_GAME:
                 this.initGame();
                 break;
-            case 'initEnemy':
+            case Game.STATES.INIT_ENEMY:
                 if (!this.enemyInitialized) {
                     this.initializeEnemy();
                 }
                 break;
-            case 'playGame':
+            case Game.STATES.PLAY_GAME:
                 this.playGame();
                 break;
-            case 'pauseGame':
+            case Game.STATES.PAUSE_GAME:
                 this.pauseGame();
                 break;
-            case 'gameOver':
+            case Game.STATES.GAME_OVER:
                 this.displayGameOver();
                 break;
             default:
-                this.gameState = 'attract';
+                this.gameState = Game.STATES.ATTRACT;
                 break;
         }
     }
@@ -98,9 +107,8 @@ class Game extends GameBase {
         CanvasUtils.ctx.fillText('Welcome to the Game!', 250, 200);
         CanvasUtils.ctx.fillText('Press `Enter` to Start', 250, 300);
 
-        if (this.keyboardInput.getKeysPressed().includes('Enter') ||
-            this.keyboardInput.getKeysPressed().includes('NumpadEnter')) {
-            this.gameState = 'playerSelect';
+        if (this.isStartPressed()) {
+            this.gameState = Game.STATES.PLAYER_SELECT;
         }
     }
 
@@ -117,7 +125,7 @@ class Game extends GameBase {
         if (result) {
             this.playerCount = Number.isInteger(result.playerCount) ? result.playerCount : 1;
             this.playerLives = Array.isArray(result.playerLives) ? result.playerLives : [3, 3, 3, 3];
-            this.gameState = 'initGame';
+            this.gameState = Game.STATES.INIT_GAME;
         }
     }
 
@@ -127,8 +135,7 @@ class Game extends GameBase {
         CanvasUtils.ctx.fillText('Game Over', 300, 200);
         CanvasUtils.ctx.fillText('Press `Enter` to Restart', 250, 300);
 
-        if (this.keyboardInput.getKeysPressed().includes('Enter') ||
-            this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
+        if (this.isStartPressed() ||
             this.backToAttractCounter++ > this.backToAttractFrames) {
             this.resetGame();
         }
@@ -138,18 +145,18 @@ class Game extends GameBase {
         this.gameInitialized = true;
         this.score = [0, 0, 0, 0];
         this.currentPlayer = 0;
-        this.gameState = 'initEnemy';
+        this.gameState = Game.STATES.INIT_ENEMY;
     }
 
     initializeEnemy() {
         DebugLog.log(Game.DEBUG, 'Game', 'Initializing enemy');
         this.enemyInitialized = true;
-        this.gameState = 'playGame';
+        this.gameState = Game.STATES.PLAY_GAME;
     }
 
     gamePauseCheck() {
         if (this.keyboardInput.getKeysPressed().includes('KeyP')) {
-            this.gameState = this.gameState === 'playGame' ? 'pauseGame' : 'playGame';
+            this.gameState = this.gameState === Game.STATES.PLAY_GAME ? Game.STATES.PAUSE_GAME : Game.STATES.PLAY_GAME;
         }
     }
 
@@ -188,10 +195,15 @@ class Game extends GameBase {
     }
 
     resetGame() {
-        this.gameState = 'attract';
+        this.gameState = Game.STATES.ATTRACT;
         this.gameInitialized = false;
         this.enemyInitialized = false;
         this.backToAttractCounter = 0;
+    }
+
+    isStartPressed() {
+        const keysPressed = this.keyboardInput.getKeysPressed();
+        return keysPressed.includes('Enter') || keysPressed.includes('NumpadEnter');
     }
 
     onDestroy() {

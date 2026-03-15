@@ -1,0 +1,23 @@
+# Game Starter Checklist
+
+Use this checklist after copying the Game Engine sample into a new game folder.
+
+## Setup
+- [ ] Rename page title and on-screen header in `index.html`
+- [ ] Update canvas/fullscreen/perf config in `global.js`
+- [ ] Set a game-specific debug flag in `game.js`
+
+## Architecture
+- [ ] Keep state constants and handlers organized in `game.js`
+- [ ] Keep UI rendering separate from state transitions where practical
+- [ ] Keep reusable helpers in engine modules, not per-game copies
+
+## Safety and Lifecycle
+- [ ] Initialize owned resources in `onInitialize()`
+- [ ] Release owned resources in `onDestroy()`
+- [ ] Verify restart/reset clears state deterministically
+
+## Validation
+- [ ] Run browser smoke pass (load, input, pause/resume, restart)
+- [ ] Confirm no unexpected console errors/warnings
+- [ ] Confirm debug logs are opt-in only
