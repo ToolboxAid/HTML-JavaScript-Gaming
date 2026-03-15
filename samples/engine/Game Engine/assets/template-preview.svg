@@ -1,45 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Game engine template attract screen preview">
   <defs>
     <linearGradient id="pageBg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#343434" />
-      <stop offset="60%" stop-color="#1d1f24" />
-      <stop offset="100%" stop-color="#111317" />
+      <stop offset="0%" stop-color="#4c22d0"/>
+      <stop offset="38%" stop-color="#240a72"/>
+      <stop offset="100%" stop-color="#11042f"/>
     </linearGradient>
-    <radialGradient id="stageGlow" cx="50%" cy="25%" r="70%">
-      <stop offset="0%" stop-color="#173458" />
-      <stop offset="100%" stop-color="#0a1220" />
-    </radialGradient>
-    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000000" flood-opacity="0.45" />
-    </filter>
+    <linearGradient id="stageFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a106e"/>
+      <stop offset="100%" stop-color="#16073e"/>
+    </linearGradient>
   </defs>
 
-  <rect width="960" height="540" fill="url(#pageBg)" />
-  <circle cx="480" cy="120" r="260" fill="#66d9ff" opacity="0.08" />
-  <circle cx="760" cy="420" r="180" fill="#66d9ff" opacity="0.05" />
+  <rect width="960" height="540" fill="url(#pageBg)"/>
+  <circle cx="480" cy="108" r="250" fill="#ed9700" opacity="0.08"/>
+  <circle cx="760" cy="420" r="180" fill="#ffffff" opacity="0.04"/>
 
-  <text x="480" y="32" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="28" fill="#f3f7fb">Game Engine Template</text>
+  <text x="480" y="34" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="28" fill="#ffffff">Game Engine Template</text>
 
-  <g transform="translate(158 92)" filter="url(#softShadow)">
-    <rect x="0" y="0" width="644" height="382" rx="8" fill="#8d939f" stroke="#f5f5f5" stroke-width="2" />
-    <rect x="20" y="20" width="604" height="342" rx="18" fill="url(#stageGlow)" />
-    <rect x="104" y="70" width="436" height="210" rx="18" fill="#07101fcc" />
-    <rect x="120" y="86" width="404" height="178" rx="14" fill="#101a2fcc" stroke="#66d9ff" stroke-width="3" />
-    <line x1="120" y1="156" x2="524" y2="156" stroke="#66d9ff" stroke-width="2" />
-    <line x1="144" y1="162" x2="500" y2="162" stroke="#66d9ff" stroke-width="3" stroke-opacity="0.55" />
+  <g transform="translate(158 92)">
+    <rect x="6" y="12" width="644" height="382" rx="22" fill="#000000" opacity="0.24"/>
+    <rect x="0" y="0" width="644" height="382" rx="22" fill="#13072c" stroke="#ed9700" stroke-width="4"/>
+    <rect x="20" y="20" width="604" height="342" rx="18" fill="url(#stageFill)"/>
 
-    <rect x="442" y="258" width="132" height="72" rx="10" fill="#0a1626dd" stroke="#5bd8ff" stroke-width="2" />
+    <line x1="38" y1="38" x2="606" y2="38" stroke="#ed9700" stroke-width="1.5" stroke-dasharray="8 10" opacity="0.28"/>
+    <line x1="38" y1="344" x2="606" y2="344" stroke="#ed9700" stroke-width="1.5" stroke-dasharray="8 10" opacity="0.28"/>
+    <line x1="38" y1="38" x2="38" y2="344" stroke="#ed9700" stroke-width="1.5" stroke-dasharray="8 10" opacity="0.28"/>
+    <line x1="606" y1="38" x2="606" y2="344" stroke="#ed9700" stroke-width="1.5" stroke-dasharray="8 10" opacity="0.28"/>
+
+    <rect x="104" y="70" width="436" height="210" rx="18" fill="#120629" opacity="0.9"/>
+    <rect x="120" y="86" width="404" height="178" rx="14" fill="#200c5a" opacity="0.92" stroke="#ed9700" stroke-width="3"/>
+    <line x1="120" y1="156" x2="524" y2="156" stroke="#ed9700" stroke-width="2"/>
+    <line x1="144" y1="162" x2="500" y2="162" stroke="#ed9700" stroke-width="3" opacity="0.55"/>
+
+    <rect x="442" y="258" width="132" height="72" rx="10" fill="#20104f" opacity="0.92" stroke="#ed9700" stroke-width="2"/>
     <text x="508" y="284" text-anchor="middle" font-family="Consolas, monospace" font-size="16" fill="#72f1b8">FPS 60</text>
-    <text x="508" y="306" text-anchor="middle" font-family="Consolas, monospace" font-size="14" fill="#d7f7ff">Frame 16.7ms</text>
-    <text x="508" y="324" text-anchor="middle" font-family="Consolas, monospace" font-size="14" fill="#d7f7ff">Heap 31MB</text>
-
-    <line x1="38" y1="38" x2="606" y2="38" stroke="#66d9ff" stroke-width="1.5" stroke-dasharray="8 10" stroke-opacity="0.35" />
-    <line x1="38" y1="344" x2="606" y2="344" stroke="#66d9ff" stroke-width="1.5" stroke-dasharray="8 10" stroke-opacity="0.35" />
-    <line x1="38" y1="38" x2="38" y2="344" stroke="#66d9ff" stroke-width="1.5" stroke-dasharray="8 10" stroke-opacity="0.35" />
-    <line x1="606" y1="38" x2="606" y2="344" stroke="#66d9ff" stroke-width="1.5" stroke-dasharray="8 10" stroke-opacity="0.35" />
+    <text x="508" y="306" text-anchor="middle" font-family="Consolas, monospace" font-size="14" fill="#f3d8ab">Frame 16.7ms</text>
+    <text x="508" y="324" text-anchor="middle" font-family="Consolas, monospace" font-size="14" fill="#f3d8ab">Heap 31MB</text>
 
     <text x="322" y="142" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="31" fill="#ffffff">Welcome to the Game!</text>
-    <text x="322" y="204" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="22" fill="#ffffff">Press `Enter` to Start</text>
-    <text x="322" y="243" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="17" fill="#d7f7ff">Starter template ready for your game logic</text>
+    <text x="322" y="204" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="22" fill="#ffffff">Press Enter to Start</text>
+    <text x="322" y="243" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="17" fill="#f3d8ab">Starter template ready for your game logic</text>
   </g>
 </svg>
