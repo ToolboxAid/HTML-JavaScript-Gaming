@@ -1,101 +1,57 @@
 // ToolboxAid.com
 // David Quesenberry
 // fullscreen.js
-// 10/16/2024
+// 03/15/2026
 
-const gameFullScaleScreen = 1.0;
-// Populated by global.js
-const referenceResolution = { width: gameAreaWidth, height: gameAreaHeight, scale: gameScaleWindow };
-var isFullScreen = false;
+import Fullscreen from '../../../engine/fullscreen.js';
 
-function openFullscreen() {
-    var elem = document.getElementById("gameArea");
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-    }
-}
+const fullscreenConfig = {
+    color: 'yellow',
+    font: '32px Arial',
+    text: 'Click canvas to toggle fullscreen',
+    x: 130,
+    y: 560
+};
 
-function closeFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-    }
-}
+const canvasConfig = {
+    width: gameAreaWidth,
+    height: gameAreaHeight,
+    scale: gameScaleWindow
+};
 
-function toggleFullscreen() {
-    if (!isFullScreen) {
-        openFullscreen();
-    } else {
-        closeFullscreen();
-    }
-}
-
-function resizeCanvas() {
-    var canvas = document.getElementById('gameArea');
-    var ctx = canvas.getContext('2d');
-
-    if (window.innerHeight == screen.height) {
-        if (!isFullScreen) {
-            isFullScreen = true;
-            canvas.width = gameAreaWidth * gameFullScaleScreen;
-            canvas.height = gameAreaHeight * gameFullScaleScreen;
-            console.log("Fullscreen mode activated.");
-        }
-    } else {
-        if (isFullScreen) {
-            isFullScreen = false;
-            canvas.width = gameAreaWidth * gameScaleWindow;
-            canvas.height = gameAreaHeight * gameScaleWindow;
-            console.log("Windowed mode activated.");
-        }
+function redrawSample() {
+    const canvas = document.getElementById('gameArea');
+    const ctx = canvas?.getContext?.('2d');
+    if (!canvas || !ctx) {
+        return;
     }
 
-    // Set transformation after resizing
-    ctx.setTransform(
-        (isFullScreen ? gameFullScaleScreen : gameScaleWindow), 0, 0,
-        (isFullScreen ? gameFullScaleScreen : gameScaleWindow),
-        0, 0 // No offset for centering
-    );
-
-    // Optionally, clear the canvas and redraw shapes
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawShape(); // Call your drawing function here
-
-    // comment these to hide div updates
-    setDivs();
+    if (typeof window.drawShape === 'function') {
+        window.drawShape();
+    }
+    if (typeof window.setDivs === 'function') {
+        window.setDivs();
+    }
 }
 
-// listeners below this line
-window.addEventListener("resize", resizeCanvas);
-window.addEventListener('orientationchange', resizeCanvas, false);
+async function initFullscreenSample() {
+    await Fullscreen.init(fullscreenConfig, canvasConfig);
+    redrawSample();
+}
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    var canvas = document.getElementById('gameArea');
-    var ctx = canvas.getContext('2d');
+const refreshBound = () => redrawSample();
+window.addEventListener('resize', refreshBound);
+window.addEventListener('orientationchange', refreshBound);
+document.addEventListener('fullscreenchange', refreshBound);
+document.addEventListener('webkitfullscreenchange', refreshBound);
+document.addEventListener('msfullscreenchange', refreshBound);
+window.addEventListener('beforeunload', () => {
+    Fullscreen.destroy();
+});
 
-    // Set initial canvas size
-    canvas.width = gameAreaWidth * gameScaleWindow;
-    canvas.height = gameAreaHeight * gameScaleWindow;
-
-    // Set the initial transformation
-    ctx.setTransform(
-        gameScaleWindow, 0, 0,
-        gameScaleWindow,
-        0, 0 // Center the drawing
-    );
-
-    // Bind click event to canvas for toggling fullscreen
-    canvas.addEventListener('click', toggleFullscreen);
-
-    // comment out to hide graphics
-    drawShape();
-    // comment out to hide div updates
-    setDivs();
+document.addEventListener('DOMContentLoaded', () => {
+    initFullscreenSample().catch((error) => {
+        console.error('Fullscreen sample initialization failed:', error);
+    });
 });

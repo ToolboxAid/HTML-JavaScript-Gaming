@@ -15,7 +15,7 @@ Per-folder status:
 
 input:
 [x] samples/input/Mouse/
-[.] samples/input/GameControllers/
+[x] samples/input/GameControllers/
 [x] samples/input/Keyboard/
 
 output:
@@ -24,8 +24,8 @@ output:
 [x] samples/output/Synthesizer/
 
 visual:
-[ ] samples/visual/Draw Shapes/
 [ ] samples/visual/Full Screen Gaming/
+[ ] samples/visual/Draw Shapes/
 [ ] samples/visual/Move Objects/
 [ ] samples/visual/Particle/
 
