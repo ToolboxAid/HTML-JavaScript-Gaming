@@ -7,7 +7,7 @@ import CanvasUtils from '../../../engine/core/canvas.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import DebugLog from '../../../engine/utils/debugLog.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
-import { canvasConfig, gameUi, safeArea, uiFont } from './global.js';
+import { canvasConfig, gameUi, safeArea } from './global.js';
 import { isPauseTogglePressed, isPlayerDeathPressed, isScorePressed, isStartPressed } from './gameInput.js';
 
 /**
@@ -105,13 +105,13 @@ export function playGame(game) {
     const playerInfo = `Player ${game.currentPlayer + 1} - Lives: ${game.playerLives[game.currentPlayer]} - Score: ${game.score[game.currentPlayer]}`;
     renderCenteredText(playerInfo, screen.infoY, {
         fontSize: screen.infoFontSize,
-        fontFamily: uiFont.ui,
+        fontFamily: screen.infoFontFamily,
         color: screen.infoColor
     });
     renderCenteredMultilineText(screen.prompts, screen.promptsY, {
         fontSize: screen.promptFontSize,
         lineHeight: screen.promptLineHeight,
-        fontFamily: uiFont.ui,
+        fontFamily: screen.promptFontFamily,
         color: screen.promptColor
     });
 
