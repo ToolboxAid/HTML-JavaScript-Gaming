@@ -32,5 +32,5 @@ visual:
 
 engine:
 [ ] samples/engine/Solar System/
-[ ] samples/engine/Game Engine/
+[x] samples/engine/Game Engine/
 [ ] samples/engine/2D side scroll tile map/
