@@ -13,20 +13,21 @@ Keep this sample focused on particle effects and lifecycle behavior.
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep particle orchestration separated from UI/render wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
+[ ] Add or update README with particle controls and behavior
+[ ] Evaluate whether shared particle sample helpers should move to engine
+[ ] Verify naming consistency for emitter/particle lifecycle labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
 [ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from particle orchestration
+[ ] Move-to-engine: identify reusable particle helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+[ ] Center on HTML page
 
 Detail checklist:
 [ ] Move inline script logic out of `index.html`
@@ -36,7 +37,19 @@ Detail checklist:
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
 [ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[ ] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for particle effects and cleanup
+
+Smoke pass steps:
+1. Load `samples/visual/Particle/index.html`.
+2. Trigger particle emission and verify expected color/size/lifetime behavior.
+3. Repeat emissions rapidly and verify no runaway growth or severe frame drops.
+4. Verify particle cleanup/removal once lifetime ends.
+5. Reload/navigate away and confirm no console errors related to lifecycle cleanup.
+
+Decision notes:
+- Keep sample logic focused on particle visualization; shared emitter internals should move only when reused.
+- Use engine utilities for common math/render safety rather than duplicating logic in sample code.
+- Final pass should verify teardown and that particle arrays/state do not persist unexpectedly across restarts.

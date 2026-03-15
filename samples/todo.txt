@@ -14,13 +14,13 @@ Use this file as the top-level checklist for `samples/` directory cleanup and al
 Per-folder status:
 
 input:
-[ ] samples/input/Mouse/
-[ ] samples/input/GameControllers/
-[ ] samples/input/Keyboard/
+[x] samples/input/Mouse/
+[.] samples/input/GameControllers/
+[x] samples/input/Keyboard/
 
 output:
 [x] samples/output/Audio/
-[.] samples/output/MIDI Player/
+[x] samples/output/MIDI Player/
 [x] samples/output/Synthesizer/
 
 visual:

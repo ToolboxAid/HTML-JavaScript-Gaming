@@ -13,20 +13,21 @@ Keep this sample focused on scrolling, tile-map gameplay, and camera behavior wi
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep scrolling/camera orchestration separated from UI/render wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
+[ ] Add or update README with controls and tile-map behavior
+[ ] Evaluate whether shared side-scroll helpers should move to engine
+[ ] Verify naming consistency for camera/tile/player state labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
 [ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from camera/world orchestration
+[ ] Move-to-engine: identify reusable tile/camera helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+[ ] Center on HTML page
 
 Detail checklist:
 [ ] Move inline script logic out of `index.html`
@@ -36,7 +37,19 @@ Detail checklist:
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
 [ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[ ] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for scroll/camera/gameplay flow and cleanup
+
+Smoke pass steps:
+1. Load `samples/engine/2D side scroll tile map/index.html`.
+2. Move player and verify camera scroll follows expected rules.
+3. Verify tile collision and world bounds behavior remain stable.
+4. Restart/reload and confirm position/state reset cleanly.
+5. Navigate away and confirm no console errors related to lifecycle cleanup.
+
+Decision notes:
+- Keep sample code focused on demonstrating tile-map and camera integration patterns.
+- Shared camera/tile helpers should move into engine only when reused by multiple games/samples.
+- Final pass should verify teardown and prevent stale runtime state after repeated restarts.

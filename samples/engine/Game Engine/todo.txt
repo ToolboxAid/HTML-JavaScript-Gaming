@@ -13,20 +13,21 @@ Keep this sample as the canonical engine template for lifecycle and game flow.
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep game flow orchestration separated from UI/render wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
+[ ] Add or update README with lifecycle controls and behavior
+[ ] Evaluate whether shared template helpers should move to engine
+[ ] Verify naming consistency for lifecycle/update/render labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
 [ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from engine flow orchestration
+[ ] Move-to-engine: identify reusable template helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+[ ] Center on HTML page
 
 Detail checklist:
 [ ] Move inline script logic out of `index.html`
@@ -36,7 +37,19 @@ Detail checklist:
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
 [ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[ ] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for lifecycle/update/render and cleanup
+
+Smoke pass steps:
+1. Load `samples/engine/Game Engine/index.html`.
+2. Verify initialization path completes and sample enters steady game loop.
+3. Verify expected update/render behavior and any sample controls.
+4. Restart/reload and confirm lifecycle state resets cleanly.
+5. Navigate away and confirm no console errors related to listener/resource cleanup.
+
+Decision notes:
+- This sample should stay minimal and serve as a reference implementation for engine lifecycle patterns.
+- Reusable helpers should only move into engine when they improve multiple samples/games.
+- Final pass should confirm destroy ownership and avoid hidden coupling in template code.

@@ -13,20 +13,21 @@ Keep this sample focused on basic rendering primitives and clean draw flow.
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep shape rendering orchestration separated from UI control wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
+[ ] Add or update README with shape controls and behavior
+[ ] Evaluate whether shared shape sample helpers should move to engine
+[ ] Verify naming consistency for draw helpers and state labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
 [ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from render orchestration
+[ ] Move-to-engine: identify reusable shape helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+[ ] Center on HTML page
 
 Detail checklist:
 [ ] Move inline script logic out of `index.html`
@@ -36,7 +37,19 @@ Detail checklist:
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
 [ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[ ] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for shape rendering interactions and cleanup
+
+Smoke pass steps:
+1. Load `samples/visual/Draw Shapes/index.html`.
+2. Verify each intended shape renders with expected size/color/position.
+3. Trigger any available interactions and confirm redraw behavior is stable.
+4. Repeat interactions rapidly and verify no visual artifacts or stuck state.
+5. Reload/navigate away and confirm no console errors related to lifecycle cleanup.
+
+Decision notes:
+- Sample should remain visual-first and avoid unrelated input/output orchestration complexity.
+- Reusable drawing primitives should move to engine only when another sample/game needs them.
+- Final pass should verify cleanup (`destroy`) and frame-loop stability.

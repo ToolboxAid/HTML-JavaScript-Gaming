@@ -13,20 +13,21 @@ Keep this sample focused on fullscreen behavior, transitions, and rendering qual
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep fullscreen orchestration separated from game/render wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
-[ ] Verify repeated restart/play flow does not leak state/listeners
+[ ] Add or update README with fullscreen controls and behavior
+[ ] Evaluate whether shared fullscreen sample helpers should move to engine
+[ ] Verify naming consistency for fullscreen control and lifecycle labels
+[ ] Verify repeated enter/exit flow does not leak state/listeners
 [ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from fullscreen orchestration
+[ ] Move-to-engine: identify reusable fullscreen helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+[ ] Center on HTML page
 
 Detail checklist:
 [ ] Move inline script logic out of `index.html`
@@ -36,7 +37,19 @@ Detail checklist:
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
 [ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[ ] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for fullscreen enter/exit and cleanup
+
+Smoke pass steps:
+1. Load `samples/visual/Full Screen Gaming/index.html`.
+2. Enter fullscreen using provided control and verify canvas/layout scales correctly.
+3. Exit fullscreen (Esc or control) and verify layout/state returns cleanly.
+4. Repeat enter/exit multiple times and verify no stuck UI state or missed transitions.
+5. Reload/navigate away and confirm no console errors related to fullscreen lifecycle cleanup.
+
+Decision notes:
+- Fullscreen state handling should stay lightweight in sample code and rely on engine fullscreen behavior where possible.
+- Any shared fullscreen UI glue should only move to engine if reused by multiple samples/games.
+- Final pass should confirm listener cleanup and transition stability across repeated toggles.

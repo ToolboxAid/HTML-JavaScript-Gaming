@@ -9,24 +9,25 @@ Status legend:
 Solar System local plan
 
 Goal:
-Keep this sample focused on world/state orchestration and GameObjectSystem ownership.
+Keep this sample focused on world/state orchestration and `GameObjectSystem` ownership.
 
 Local checklist:
 [ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep transport orchestration separated from UI control wiring
+[ ] Keep world/system orchestration separated from UI/render wiring
 [ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with MIDI constraints and control behavior
-[ ] Evaluate whether shared MIDI transport helpers should move to engine
-[ ] Verify naming consistency for play/pause/stop/seek actions
+[ ] Add or update README with simulation controls and behavior
+[ ] Evaluate whether shared world/simulation helpers should move to engine
+[ ] Verify naming consistency for entities/systems/orbits/state labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
 [ ] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from MIDI orchestration
-[ ] Move-to-engine: identify reusable MIDI helpers for engine extraction
+[ ] Architecture: keep UI wiring separate from world/system orchestration
+[ ] Move-to-engine: identify reusable simulation helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
+[ ] Center on HTML page
 
 Detail checklist:
 [ ] Move inline script logic out of `index.html`
@@ -36,7 +37,19 @@ Detail checklist:
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
 [ ] Center page layout and controls in index.html
-[ ] Update README with service details
+[ ] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for load, play, pause, seek, and stop
+[ ] Run browser smoke pass for world update/render behavior and cleanup
+
+Smoke pass steps:
+1. Load `samples/engine/Solar System/index.html`.
+2. Verify bodies/entities spawn and render with expected positions and motion.
+3. Verify update loop behavior remains stable over time (no runaway drift/jitter beyond design).
+4. Restart/reload and confirm state resets cleanly.
+5. Navigate away and confirm no console errors related to lifecycle cleanup.
+
+Decision notes:
+- Keep sample logic centered on engine-system usage patterns and avoid adding unrelated subsystem complexity.
+- Shared orbit/world math should move into engine only when reused by another game/sample.
+- Final pass should verify teardown (`destroy`) and stable runtime ownership boundaries.
