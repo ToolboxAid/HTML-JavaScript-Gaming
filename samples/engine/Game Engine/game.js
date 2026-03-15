@@ -55,8 +55,7 @@ class Game extends GameBase {
     }
 
     resetRuntimeState() {
-        const playerSlots = Math.max(1, this.playerSelect.maxPlayers);
-        this.applyRuntimeState(this.createRuntimeState(playerSlots));
+        this.applyRuntimeState(this.createRuntimeState());
     }
 
     gameLoop() {
