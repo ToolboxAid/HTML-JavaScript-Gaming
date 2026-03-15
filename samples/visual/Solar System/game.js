@@ -16,16 +16,9 @@ import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
   applyInitialSimulationState,
   destroyGameObjectSystem,
-  resetGameObjectSystem,
-  updateAttractGameState,
-  updatePausedGameState,
-  updateSimulationGameState
+  resetGameObjectSystem
 } from './solarSystemRuntime.js';
-import {
-  renderAttractScreen,
-  renderPausedScreen,
-  renderSimulationScreen
-} from './solarSystemHud.js';
+import { createStateHandlers } from './solarSystemStateHandlers.js';
 
 class Game extends GameBase {
   constructor() {
@@ -35,44 +28,17 @@ class Game extends GameBase {
     applyInitialSimulationState(this);
     this.isAnyKeyPressed = (keyCodes) => keyCodes.some((code) => this.keyboardInput.isKeyPressed(code));
     this.resetBodies = () => resetGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
-    this.stateHandlers = {
-      [solarSystemConfig.states.attract]: () => {
-        updateAttractGameState(this, this.isAnyKeyPressed);
-        renderAttractScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-      },
-      [solarSystemConfig.states.simulation]: (deltaTime) => {
-        updateSimulationGameState(
-          this,
-          this.isAnyKeyPressed,
-          this.resetBodies,
-          deltaTime
-        );
-        renderSimulationScreen(
-          this.gameObjectSystem,
-          this.simulationSpeed,
-          this.focusIndex,
-          this.zoom,
-          this.showOrbits,
-          this.showLabels
-        );
-      },
-      [solarSystemConfig.states.paused]: () => {
-        updatePausedGameState(this, this.isAnyKeyPressed, this.resetBodies);
-        renderPausedScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-      }
-    };
+    this.stateHandlers = createStateHandlers(this);
   }
 
-  async onInitialize(runtimeContext = this.runtimeContext) {
-    this.runtimeContext = runtimeContext;
+  async onInitialize() {
     this.keyboardInput = new KeyboardInput();
     this.gameObjectSystem = new GameObjectSystem(false);
     applyInitialSimulationState(this);
     this.resetBodies();
   }
 
-  gameLoop(deltaTime, runtimeContext = this.runtimeContext) {
-    this.runtimeContext = runtimeContext;
+  gameLoop(deltaTime) {
     this.keyboardInput.update();
 
     const handler = this.stateHandlers[this.gameState];
