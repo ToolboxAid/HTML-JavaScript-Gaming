@@ -11,11 +11,11 @@ import {
 } from './global.js';
 import { solarSystemBodies } from './solarSystemData.js';
 import GameBase from '../../../engine/core/gameBase.js';
-import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
   applyInitialSimulationState,
-  destroyGameObjectSystem,
+  destroySimulationWorld,
+  initializeSimulationWorld,
   resetGameObjectSystem
 } from './solarSystemRuntime.js';
 import { createStateHandlers } from './solarSystemStateHandlers.js';
@@ -33,9 +33,7 @@ class Game extends GameBase {
 
   async onInitialize() {
     this.keyboardInput = new KeyboardInput();
-    this.gameObjectSystem = new GameObjectSystem(false);
-    applyInitialSimulationState(this);
-    this.resetBodies();
+    initializeSimulationWorld(this, solarSystemBodies);
   }
 
   gameLoop(deltaTime) {
@@ -52,9 +50,7 @@ class Game extends GameBase {
   }
 
   onDestroy() {
-    destroyGameObjectSystem(this.gameObjectSystem);
-    this.gameObjectSystem = null;
-    this.focusIndex = -1;
+    destroySimulationWorld(this);
   }
 }
 

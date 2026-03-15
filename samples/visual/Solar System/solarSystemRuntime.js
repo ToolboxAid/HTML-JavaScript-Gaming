@@ -5,6 +5,7 @@
 
 import { canvasConfig, solarSystemConfig } from './global.js';
 import CelestialBody from './celestialBody.js';
+import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 
 export function createCelestialBodies(bodyDefinitions) {
   return bodyDefinitions.map((body) => new CelestialBody(
@@ -39,6 +40,18 @@ export function destroyGameObjectSystem(gameObjectSystem) {
   if (gameObjectSystem?.destroy) {
     gameObjectSystem.destroy();
   }
+}
+
+export function initializeSimulationWorld(sample, bodyDefinitions) {
+  sample.gameObjectSystem = new GameObjectSystem(false);
+  applyInitialSimulationState(sample);
+  resetGameObjectSystem(sample.gameObjectSystem, bodyDefinitions);
+}
+
+export function destroySimulationWorld(sample) {
+  destroyGameObjectSystem(sample.gameObjectSystem);
+  sample.gameObjectSystem = null;
+  sample.focusIndex = -1;
 }
 
 export function getActiveBodies(gameObjectSystem) {
