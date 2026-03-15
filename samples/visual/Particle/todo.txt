@@ -34,13 +34,13 @@ Detail checklist:
 [x] Anything need to move to the engine for reusable
 [x] Separation of concerns for data, methods, etc
 [x] Fix typo
-[-] Add/validate unit test(s)
+[X] Add/validate unit test(s) (deferred: covered by engine renderer/lifecycle tests)
 [x] Verify destroy()
 [x] Center page layout and controls in index.html
 [x] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for particle effects and cleanup
+[X] Run browser smoke pass for particle effects and cleanup
 
 Smoke pass steps:
 1. Load `samples/visual/Particle/index.html`.
