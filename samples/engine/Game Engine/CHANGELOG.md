@@ -1,5 +1,12 @@
 # Game Engine Template Changelog
 
+## 1.1.0 - 2026-03-15
+- Centralized sample UI theme, font, safe-area, and performance settings in `global.js`.
+- Restyled state screens with themed panels, typography, and aligned stage layout helpers.
+- Made the performance overlay opt-in via `?perf`.
+- Added safe-area layout debug guides via `?layout`.
+- Documented the visual regression and layout-debug workflow.
+
 ## 1.0.0 - 2026-03-15
 - Split starter logic into `game.js`, `gameStates.js`, and `gameInput.js`.
 - Replaced state `switch` branching with a `stateHandlers` map.
