@@ -11,6 +11,19 @@ export function testFullscreen(assert) {
     const originalWindowRemoveEventListener = window.removeEventListener;
     const originalDocumentRemoveEventListener = document.removeEventListener;
     const originalIsFullscreenActive = Fullscreen.isFullscreenActive;
+    const originalFullscreenState = {
+        canvas: Fullscreen.canvas,
+        ctx: Fullscreen.ctx,
+        canvasWidth: Fullscreen.canvasWidth,
+        canvasHeight: Fullscreen.canvasHeight,
+        scale: Fullscreen.scale,
+        isFullScreen: Fullscreen.isFullScreen,
+        listenersRegistered: Fullscreen.listenersRegistered,
+        resizeBound: Fullscreen.resizeBound,
+        canvasClickBound: Fullscreen.canvasClickBound,
+        fullscreenChangeBound: Fullscreen.fullscreenChangeBound,
+        onResizeHook: Fullscreen.onResizeHook
+    };
 
     const ctx = {
         clearRect() {},
@@ -74,10 +87,16 @@ export function testFullscreen(assert) {
         window.removeEventListener = originalWindowRemoveEventListener;
         document.removeEventListener = originalDocumentRemoveEventListener;
         Fullscreen.isFullscreenActive = originalIsFullscreenActive;
-        Fullscreen.listenersRegistered = false;
-        Fullscreen.resizeBound = null;
-        Fullscreen.canvasClickBound = null;
-        Fullscreen.fullscreenChangeBound = null;
-        Fullscreen.onResizeHook = null;
+        Fullscreen.canvas = originalFullscreenState.canvas;
+        Fullscreen.ctx = originalFullscreenState.ctx;
+        Fullscreen.canvasWidth = originalFullscreenState.canvasWidth;
+        Fullscreen.canvasHeight = originalFullscreenState.canvasHeight;
+        Fullscreen.scale = originalFullscreenState.scale;
+        Fullscreen.isFullScreen = originalFullscreenState.isFullScreen;
+        Fullscreen.listenersRegistered = originalFullscreenState.listenersRegistered;
+        Fullscreen.resizeBound = originalFullscreenState.resizeBound;
+        Fullscreen.canvasClickBound = originalFullscreenState.canvasClickBound;
+        Fullscreen.fullscreenChangeBound = originalFullscreenState.fullscreenChangeBound;
+        Fullscreen.onResizeHook = originalFullscreenState.onResizeHook;
     }
 }
