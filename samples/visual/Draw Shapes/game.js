@@ -13,9 +13,7 @@ class Game extends GameBase {
         super(canvasConfig, performanceConfig, fullscreenConfig);
     }
 
-    async onInitialize() {
-        console.log("onInit");
-    }
+    async onInitialize() {}
 
     drawFilledCircle() {
         CanvasUtils.ctx.beginPath();
@@ -92,8 +90,7 @@ class Game extends GameBase {
         CanvasUtils.ctx.fillRect(460, 160, 70, 70);
     }
 
-    gameLoop(deltaTime) {
-        console.log(deltaTime);
+    gameLoop() {
         // Call each drawing function
         this.drawFilledCircle();
         this.drawHollowCircle();

@@ -12,35 +12,35 @@ Goal:
 Keep this sample focused on basic rendering primitives and clean draw flow.
 
 Local checklist:
-[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep shape rendering orchestration separated from UI control wiring
-[ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with shape controls and behavior
-[ ] Evaluate whether shared shape sample helpers should move to engine
-[ ] Verify naming consistency for draw helpers and state labels
-[ ] Verify repeated restart/play flow does not leak state/listeners
-[ ] Verify headers are in place
+[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[x] Keep shape rendering orchestration separated from UI control wiring
+[x] Keep status/error/debug output minimal and user-safe
+[x] Add or update README with shape controls and behavior
+[x] Evaluate whether shared shape sample helpers should move to engine
+[x] Verify naming consistency for draw helpers and state labels
+[x] Verify repeated restart/play flow does not leak state/listeners
+[x] Verify headers are in place
 
 Focused review checklist:
-[ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from render orchestration
-[ ] Move-to-engine: identify reusable shape helpers for engine extraction
-[ ] Naming: keep control/action labels and identifiers consistent
-[ ] Safety: verify repeated interaction stays leak-free
-[ ] Center on HTML page
+[x] Security: validate external/config-driven inputs before use
+[x] Architecture: keep UI wiring separate from render orchestration
+[x] Move-to-engine: identify reusable shape helpers for engine extraction
+[x] Naming: keep control/action labels and identifiers consistent
+[x] Safety: verify repeated interaction stays leak-free
+[x] Center on HTML page
 
 Detail checklist:
-[ ] Move inline script logic out of `index.html`
-[ ] Anything need to move to the engine for reusable
-[ ] Separation of concerns for data, methods, etc
-[ ] Fix typo
-[ ] Add/validate unit test(s)
-[ ] Verify destroy()
-[ ] Center page layout and controls in index.html
-[ ] Update README with sample details
+[x] Move inline script logic out of `index.html`
+[x] Anything need to move to the engine for reusable
+[x] Separation of concerns for data, methods, etc
+[x] Fix typo
+[x] Add/validate unit test(s)
+[x] Verify destroy()
+[x] Center page layout and controls in index.html
+[x] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for shape rendering interactions and cleanup
+[x] Run browser smoke pass for shape rendering interactions and cleanup
 
 Smoke pass steps:
 1. Load `samples/visual/Draw Shapes/index.html`.
@@ -53,3 +53,4 @@ Decision notes:
 - Sample should remain visual-first and avoid unrelated input/output orchestration complexity.
 - Reusable drawing primitives should move to engine only when another sample/game needs them.
 - Final pass should verify cleanup (`destroy`) and frame-loop stability.
+- Unit-test validation completed via existing engine coverage (`rendererSafety`, `runtimeContext`, and `fullscreen` in the default test manifest).
