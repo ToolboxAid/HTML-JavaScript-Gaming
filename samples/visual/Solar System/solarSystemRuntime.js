@@ -26,6 +26,21 @@ export function populateGameObjectSystem(gameObjectSystem, bodyDefinitions) {
   });
 }
 
+export function resetGameObjectSystem(gameObjectSystem, bodyDefinitions) {
+  if (!gameObjectSystem) {
+    return;
+  }
+
+  gameObjectSystem.clear();
+  populateGameObjectSystem(gameObjectSystem, bodyDefinitions);
+}
+
+export function destroyGameObjectSystem(gameObjectSystem) {
+  if (gameObjectSystem?.destroy) {
+    gameObjectSystem.destroy();
+  }
+}
+
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }

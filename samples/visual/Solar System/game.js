@@ -15,10 +15,11 @@ import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
   createInitialSimulationState,
+  destroyGameObjectSystem,
   getFocusedBody,
   getFocusLabel,
-  populateGameObjectSystem,
   renderBodies,
+  resetGameObjectSystem,
   updateAttractGameState,
   updatePausedGameState,
   updateSimulationGameState
@@ -40,6 +41,8 @@ class Game extends GameBase {
       [solarSystemConfig.states.simulation]: (deltaTime) => this.runSimulationState(deltaTime),
       [solarSystemConfig.states.paused]: () => this.runPausedState()
     };
+    this.isAnyKeyPressed = (keyCodes) => this.wasAnyKeyPressed(keyCodes);
+    this.resetBodies = () => this.resetSimulation();
   }
 
   async onInitialize(runtimeContext = this.runtimeContext) {
@@ -55,11 +58,7 @@ class Game extends GameBase {
   }
 
   resetSimulation() {
-    if (this.gameObjectSystem) {
-      this.gameObjectSystem.clear();
-    }
-
-    populateGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
+    resetGameObjectSystem(this.gameObjectSystem, solarSystemBodies);
   }
 
   getActiveBodies() {
@@ -75,7 +74,7 @@ class Game extends GameBase {
   }
 
   runAttractState() {
-    updateAttractGameState(this, (keyCodes) => this.wasAnyKeyPressed(keyCodes));
+    updateAttractGameState(this, this.isAnyKeyPressed);
     renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
     renderAttractHud();
   }
@@ -83,8 +82,8 @@ class Game extends GameBase {
   runSimulationState(deltaTime) {
     updateSimulationGameState(
       this,
-      (keyCodes) => this.wasAnyKeyPressed(keyCodes),
-      () => this.resetSimulation(),
+      this.isAnyKeyPressed,
+      this.resetBodies,
       deltaTime
     );
     renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
@@ -98,7 +97,7 @@ class Game extends GameBase {
   }
 
   runPausedState() {
-    updatePausedGameState(this, (keyCodes) => this.wasAnyKeyPressed(keyCodes), () => this.resetSimulation());
+    updatePausedGameState(this, this.isAnyKeyPressed, this.resetBodies);
     renderBodies(this.getActiveBodies(), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
     renderPausedHud();
   }
@@ -118,10 +117,7 @@ class Game extends GameBase {
   }
 
   onDestroy() {
-    if (this.gameObjectSystem?.destroy) {
-      this.gameObjectSystem.destroy();
-    }
-
+    destroyGameObjectSystem(this.gameObjectSystem);
     this.gameObjectSystem = null;
     this.focusIndex = -1;
   }
