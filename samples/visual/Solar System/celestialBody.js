@@ -3,7 +3,7 @@
 // 10/16/2024
 // celestialBody.js
 
-import { canvasConfig, solarSystemConfig } from './global.js';
+import { canvasConfig, solarSystemConfig, uiFont } from './global.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
 import ObjectStatic from '../../../engine/objects/objectStatic.js';
 
@@ -159,7 +159,7 @@ class CelestialBody extends ObjectStatic {
 
         if (showLabels) {
             ctx.fillStyle = solarSystemConfig.display.labelColor;
-            ctx.font = `${Math.max(12, Math.round(14 * zoom))}px Arial`;
+            ctx.font = `${Math.max(12, Math.round(14 * zoom))}px ${uiFont.ui}`;
             ctx.fillText(this.name, drawX + scaledRadius + 6, drawY - scaledRadius - 4);
         }
     }
