@@ -16,19 +16,15 @@ import KeyboardInput from '../../../engine/input/keyboard.js';
 import {
   createInitialSimulationState,
   destroyGameObjectSystem,
-  getActiveBodies,
-  getFocusedBody,
-  getFocusLabel,
-  renderBodies,
   resetGameObjectSystem,
   updateAttractGameState,
   updatePausedGameState,
   updateSimulationGameState
 } from './solarSystemRuntime.js';
 import {
-  renderAttractHud,
-  renderPausedHud,
-  renderSimulationHud
+  renderAttractScreen,
+  renderPausedScreen,
+  renderSimulationScreen
 } from './solarSystemHud.js';
 
 class Game extends GameBase {
@@ -64,23 +60,20 @@ class Game extends GameBase {
 
   runAttractState() {
     updateAttractGameState(this, this.isAnyKeyPressed);
-    renderBodies(getActiveBodies(this.gameObjectSystem), this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-    renderAttractHud();
+    renderAttractScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
   }
 
   runSimulationState(deltaTime) {
-    const activeBodies = getActiveBodies(this.gameObjectSystem);
-
     updateSimulationGameState(
       this,
       this.isAnyKeyPressed,
       this.resetBodies,
       deltaTime
     );
-    renderBodies(activeBodies, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-    renderSimulationHud(
+    renderSimulationScreen(
+      this.gameObjectSystem,
       this.simulationSpeed,
-      getFocusLabel(getFocusedBody(activeBodies, this.focusIndex)),
+      this.focusIndex,
       this.zoom,
       this.showOrbits,
       this.showLabels
@@ -88,11 +81,8 @@ class Game extends GameBase {
   }
 
   runPausedState() {
-    const activeBodies = getActiveBodies(this.gameObjectSystem);
-
     updatePausedGameState(this, this.isAnyKeyPressed, this.resetBodies);
-    renderBodies(activeBodies, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
-    renderPausedHud();
+    renderPausedScreen(this.gameObjectSystem, this.focusIndex, this.zoom, this.showOrbits, this.showLabels);
   }
 
   gameLoop(deltaTime, runtimeContext = this.runtimeContext) {

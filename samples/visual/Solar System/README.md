@@ -27,7 +27,7 @@ This sample is an engine-driven orbit simulation that now lives under `samples/v
 - `celestialBody.js`: simulation object model and draw/update behavior.
 - `solarSystemData.js`: body definitions for the sample system.
 - `solarSystemRuntime.js`: sample-local simulation helpers for system reset, body creation, focus, body rendering, control-state math, and state transitions.
-- `solarSystemHud.js`: sample-local HUD drawing helpers.
+- `solarSystemHud.js`: sample-local HUD drawing and full screen-render composition helpers.
 
 ## Run It
 - Open `samples/visual/Solar System/index.html` from the repo launcher, or

@@ -5,6 +5,7 @@
 
 import CanvasUtils from '../../../engine/core/canvas.js';
 import { solarSystemConfig, uiFont } from './global.js';
+import { getActiveBodies, getFocusedBody, getFocusLabel, renderBodies } from './solarSystemRuntime.js';
 
 export function drawHudLine(text, x, y, color = solarSystemConfig.display.hudColor, size = 24) {
   const ctx = CanvasUtils.ctx;
@@ -33,4 +34,31 @@ export function renderSimulationHud(simulationSpeed, focusLabel, zoom, showOrbit
   drawHudLine(`Focus: ${focusLabel}  Zoom: ${zoom.toFixed(2)}x`, 28, 88, solarSystemConfig.display.hudMutedColor, 16);
   drawHudLine(`Orbits: ${showOrbits ? 'on' : 'off'}  Labels: ${showLabels ? 'on' : 'off'}`, 28, 110, solarSystemConfig.display.hudMutedColor, 16);
   drawHudLine('P: pause  R: reset  +/-: speed  O: orbits  L: labels  [ ]: zoom  < >: focus', 28, 132, solarSystemConfig.display.hudMutedColor, 14);
+}
+
+function renderScene(gameObjectSystem, focusIndex, zoom, showOrbits, showLabels) {
+  const activeBodies = getActiveBodies(gameObjectSystem);
+  renderBodies(activeBodies, focusIndex, zoom, showOrbits, showLabels);
+  return activeBodies;
+}
+
+export function renderAttractScreen(gameObjectSystem, focusIndex, zoom, showOrbits, showLabels) {
+  renderScene(gameObjectSystem, focusIndex, zoom, showOrbits, showLabels);
+  renderAttractHud();
+}
+
+export function renderPausedScreen(gameObjectSystem, focusIndex, zoom, showOrbits, showLabels) {
+  renderScene(gameObjectSystem, focusIndex, zoom, showOrbits, showLabels);
+  renderPausedHud();
+}
+
+export function renderSimulationScreen(gameObjectSystem, simulationSpeed, focusIndex, zoom, showOrbits, showLabels) {
+  const activeBodies = renderScene(gameObjectSystem, focusIndex, zoom, showOrbits, showLabels);
+  renderSimulationHud(
+    simulationSpeed,
+    getFocusLabel(getFocusedBody(activeBodies, focusIndex)),
+    zoom,
+    showOrbits,
+    showLabels
+  );
 }
