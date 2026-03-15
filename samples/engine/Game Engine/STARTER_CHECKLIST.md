@@ -10,8 +10,8 @@ Use this checklist after copying the Game Engine sample into a new game folder.
 - [ ] Copy `TODO-template.txt` to your local `todo.txt` and adapt items
 
 ## Architecture
-- [ ] Keep state constants and handlers organized in `game.js`
-- [ ] Keep UI rendering separate from state transitions where practical
+- [ ] Keep state constants/handlers organized in `game.js`
+- [ ] Keep UI rendering separate from state transitions
 - [ ] Keep reusable helpers in engine modules, not per-game copies
 
 ## Safety and Lifecycle
@@ -22,6 +22,6 @@ Use this checklist after copying the Game Engine sample into a new game folder.
 ## Validation
 - [ ] Run browser smoke pass (load, input, pause/resume, restart)
 - [ ] Run browser tests from `tests/testRunner.html` when needed
-- [ ] Run visual-regression checklist for state screens after UI changes
+- [ ] Run visual-regression checks after state-screen UI changes
 - [ ] Confirm no unexpected console errors/warnings
 - [ ] Confirm debug logs are opt-in only

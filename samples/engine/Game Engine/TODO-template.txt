@@ -29,4 +29,4 @@ Done when:
 1. Load `index.html` and verify init + stable loop.
 2. Exercise core controls and verify expected state changes.
 3. Reload and verify clean reset (no stale state).
-4. Verify no blocking console errors.
+4. Confirm no blocking console errors.
