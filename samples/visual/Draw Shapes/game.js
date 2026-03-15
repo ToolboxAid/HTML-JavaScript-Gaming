@@ -44,52 +44,17 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(drawShapesUi.theme.panelColor, drawShapesUi.theme.panelBorderColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.title, drawShapesUi.attract.titleY, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize: 42,
-            fontFamily: uiFont.display,
-            color: drawShapesUi.theme.colors.textPrimary
-        });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize: 26,
-            fontFamily: uiFont.ui,
-            color: drawShapesUi.theme.colors.textPrimary
-        });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize: 20,
-            fontFamily: uiFont.ui,
-            color: drawShapesUi.theme.colors.textSecondary
-        });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.help, drawShapesUi.attract.helpY, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize: 18,
-            fontFamily: uiFont.ui,
-            color: drawShapesUi.theme.colors.muted
-        });
+        renderCenteredText(drawShapesUi.attract.title, drawShapesUi.attract.titleY, 42, uiFont.display, drawShapesUi.theme.colors.textPrimary);
+        renderCenteredText(drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, 26, uiFont.ui, drawShapesUi.theme.colors.textPrimary);
+        renderCenteredText(drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, 20, uiFont.ui, drawShapesUi.theme.colors.textSecondary);
+        renderCenteredText(drawShapesUi.attract.help, drawShapesUi.attract.helpY, 18, uiFont.ui, drawShapesUi.theme.colors.muted);
     }
 
     playGame() {
         this.drawStage(drawShapesUi.theme.playPanelColor, drawShapesUi.theme.accentColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Canvas Shape Gallery', drawShapesUi.play.titleY, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize: 36,
-            fontFamily: uiFont.display,
-            color: drawShapesUi.theme.colors.textPrimary
-        });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.subtitle, drawShapesUi.play.subtitleY, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize: 22,
-            fontFamily: uiFont.ui,
-            color: drawShapesUi.theme.colors.textSecondary
-        });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.prompt, drawShapesUi.play.promptY, {
-            defaultCenterX: canvasConfig.width / 2,
-            fontSize: 18,
-            fontFamily: uiFont.ui,
-            color: drawShapesUi.theme.colors.muted
-        });
+        renderCenteredText('Canvas Shape Gallery', drawShapesUi.play.titleY, 36, uiFont.display, drawShapesUi.theme.colors.textPrimary);
+        renderCenteredText(drawShapesUi.play.subtitle, drawShapesUi.play.subtitleY, 22, uiFont.ui, drawShapesUi.theme.colors.textSecondary);
+        renderCenteredText(drawShapesUi.play.prompt, drawShapesUi.play.promptY, 18, uiFont.ui, drawShapesUi.theme.colors.muted);
         drawShapeGallery(canvasConfig);
     }
 
@@ -115,8 +80,17 @@ class Game extends GameBase {
     }
 
     onDestroy() {
-        this.keyboardInput = null;
+        // GameBase owns shared input cleanup after onDestroy runs.
     }
+}
+
+function renderCenteredText(text, y, fontSize, fontFamily, color) {
+    CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
+        defaultCenterX: canvasConfig.width / 2,
+        fontSize,
+        fontFamily,
+        color
+    });
 }
 
 export default Game;
