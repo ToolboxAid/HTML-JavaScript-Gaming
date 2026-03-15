@@ -6,6 +6,7 @@
 import DebugFlag from "../utils/debugFlag.js";
 import DebugLog from "../utils/debugLog.js";
 import RuntimeContext from "./runtimeContext.js";
+import Fullscreen from "../fullscreen.js";
 
 class GameBase {
 
