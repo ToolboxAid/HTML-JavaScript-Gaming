@@ -11,8 +11,8 @@ export const canvasConfig = {
   width: 1024, // Game area width
   height: 768, // Game area height
   scale: 0.35,
-  backgroundColor: "#333333",
-  borderColor: "white",
+  backgroundColor: '#1f0b57',
+  borderColor: '#ed9700',
   borderSize: 15,
 };
 
@@ -28,20 +28,20 @@ export const safeArea = Object.freeze({
 });
 
 export const fullscreenConfig = {
-  color: 'yellow',
-  font: '40px Arial',
-  text: 'Click here to enter fullscreen',
-  x: 230,
-  y: 790
+  color: '#ed9700',
+  font: `28px ${uiFont.ui}`,
+  text: 'Click the canvas to toggle fullscreen.',
+  x: 220,
+  y: 730
 };
 
 export const playerSelect = {
   maxPlayers: 2,
   lives: 3,
 
-  fillStyle: "yellow",
-  font: "25px Arial",
-  fillText: "Select Player(s)",
+  fillStyle: '#ed9700',
+  font: `25px ${uiFont.ui}`,
+  fillText: 'Select Player(s)',
 
   optionBaseX: 250,
   optionBaseY: 300,
@@ -52,24 +52,24 @@ export const gameUi = {
   theme: {
     colors: {
       textPrimary: '#ffffff',
-      textSecondary: '#d7f7ff',
-      accent: '#66d9ff',
-      danger: '#ff5a5a',
-      panel: '#101a2fcc',
-      panelBackdrop: '#07101fcc',
-      panelDanger: '#2d0f18cc',
-      panelPause: '#0c1e22cc',
-      panelPlay: '#0f1f33cc'
+      textSecondary: '#f3d8ab',
+      accent: '#ed9700',
+      danger: '#ff845f',
+      panel: '#200c5acc',
+      panelBackdrop: '#120629cc',
+      panelDanger: '#3a1220cc',
+      panelPause: '#24104acc',
+      panelPlay: '#1b0a4ccc'
     },
     panelX: 120,
     panelY: 120,
     panelWidth: 784,
     panelHeight: 430,
-    panelColor: '#101a2fcc',
-    panelBorderColor: '#66d9ff',
+    panelColor: '#200c5acc',
+    panelBorderColor: '#ed9700',
     panelBorderSize: 3,
-    accentColor: '#66d9ff',
-    subtitleColor: '#d7f7ff',
+    accentColor: '#ed9700',
+    subtitleColor: '#f3d8ab',
     fontDisplay: uiFont.display,
     fontUi: uiFont.ui,
     fontMono: uiFont.mono
@@ -79,33 +79,33 @@ export const gameUi = {
     size: 24,
     font: uiFont.mono,
     colorLow: '#72f1b8',
-    colorMed: '#ffd166',
+    colorMed: '#ed9700',
     colorHigh: '#ff6b6b',
-    backgroundColor: '#0a1626cc',
+    backgroundColor: '#20104fcc',
     x: canvasConfig.width - 344,
     y: canvasConfig.height - 178
   },
   attract: {
     color: '#ffffff',
     font: `46px ${uiFont.display}`,
-    titleY: 230,
-    promptY: 300,
-    subtitleY: 350
+    titleY: 180,
+    promptY: 275,
+    subtitleY: 325
   },
   playerSelect: {
-    titleY: 190,
+    titleY: 170,
     titleColor: '#ffffff',
     titleFont: `42px ${uiFont.display}`,
-    subtitleY: 235,
+    subtitleY: 262,
     subtitleColor: '#d7f7ff',
     subtitleFont: `24px ${uiFont.ui}`
   },
   gameOver: {
     color: '#ff5a5a',
     font: `52px ${uiFont.display}`,
-    titleY: 250,
-    promptY: 320,
-    subtitleY: 370
+    titleY: 185,
+    promptY: 280,
+    subtitleY: 330
   },
   pause: {
     textY: 270,
