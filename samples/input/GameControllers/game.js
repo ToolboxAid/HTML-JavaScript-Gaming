@@ -41,35 +41,38 @@ function resetPlayerButtons(player) {
 function gameUpdate() {
     gameControllers.update();
 
-    gameControllers.getConnectedGamepads().forEach((gameController, playerIndex) => {
-        if (gameController) {
-            if (!players[playerIndex]) {
-                createPlayer(playerIndex);
-            }
-
-            const player = players[playerIndex];
-            resetPlayerButtons(player);
-            const buttonsDown = gameControllers.gamepadStates[playerIndex].getButtonsDown();
-            buttonsDown.forEach((button) => {
-                if (button >= 0 && button < MAX_BUTTONS) {
-                    player.buttonColors[button] = player.color;
-                }
-            });
-
-            let moveX = 0;
-            let moveY = 0;
-            player.dPad = gameControllers.getDPad(playerIndex);
-            if (player.dPad.left) moveX = -1;
-            if (player.dPad.right) moveX = 1;
-            if (player.dPad.up) moveY = -1;
-            if (player.dPad.down) moveY = 1;
-
-            player.x += moveX;
-            player.y += moveY;
-
-            player.x = Math.max(-6, Math.min(canvas.width - player.width, player.x));
-            player.y = Math.max(10, Math.min(canvas.height - player.height, player.y));
+    gameControllers.gamepadManager.gameControllers.forEach((gameController, playerIndex) => {
+        if (!gameController) {
+            players[playerIndex] = null;
+            return;
         }
+
+        if (!players[playerIndex]) {
+            createPlayer(playerIndex);
+        }
+
+        const player = players[playerIndex];
+        resetPlayerButtons(player);
+        const buttonsDown = gameControllers.gamepadStates[playerIndex].getButtonsDown();
+        buttonsDown.forEach((button) => {
+            if (button >= 0 && button < MAX_BUTTONS) {
+                player.buttonColors[button] = player.color;
+            }
+        });
+
+        let moveX = 0;
+        let moveY = 0;
+        player.dPad = gameControllers.getDPad(playerIndex);
+        if (player.dPad.left) moveX = -1;
+        if (player.dPad.right) moveX = 1;
+        if (player.dPad.up) moveY = -1;
+        if (player.dPad.down) moveY = 1;
+
+        player.x += moveX;
+        player.y += moveY;
+
+        player.x = Math.max(-6, Math.min(canvas.width - player.width, player.x));
+        player.y = Math.max(10, Math.min(canvas.height - player.height, player.y));
     });
 }
 

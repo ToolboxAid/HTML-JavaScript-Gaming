@@ -41,6 +41,7 @@ Detail checklist:
 
 Final:
 [x] Run browser smoke pass for connect/move/button-state and cleanup
+[x] Bug, the controller continues to show after it is unplugged
 
 Smoke pass steps:
 1. Load `samples/input/GameControllers/index.html`.
