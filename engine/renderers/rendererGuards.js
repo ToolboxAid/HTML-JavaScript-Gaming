@@ -1,4 +1,5 @@
 import CanvasUtils from '../core/canvasUtils.js';
+import NumberUtils from '../math/numberUtils.js';
 
 class RendererGuards {
     static canRenderObject(object, { allowDead = false, requireAlive = false } = {}) {
@@ -18,19 +19,19 @@ class RendererGuards {
     }
 
     static normalizeOffset(value) {
-        return Number.isFinite(value) ? value : 0;
+        return NumberUtils.isFiniteNumber(value) ? value : 0;
     }
 
     static normalizeLineWidth(value, fallback = 1.25) {
-        return Number.isFinite(value) && value > 0 ? value : fallback;
+        return NumberUtils.isPositiveFinite(value) ? value : fallback;
     }
 
     static normalizeNonNegativeNumber(value, fallback = 0) {
-        return Number.isFinite(value) && value >= 0 ? value : fallback;
+        return NumberUtils.isNonNegativeFinite(value) ? value : fallback;
     }
 
     static normalizePositiveNumber(value, fallback) {
-        return Number.isFinite(value) && value > 0 ? value : fallback;
+        return NumberUtils.isPositiveFinite(value) ? value : fallback;
     }
 }
 

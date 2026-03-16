@@ -4,6 +4,7 @@
 // primitiveRenderer.js
 
 import CanvasUtils from '../core/canvasUtils.js';
+import NumberUtils from '../math/numberUtils.js';
 import RendererGuards from './rendererGuards.js';
 
 class PrimitiveRenderer {
@@ -253,26 +254,12 @@ class PrimitiveRenderer {
         return Array.isArray(point) ? point[1] : point.y;
     }
 
-    static isFiniteNumber(value) {
-        return Number.isFinite(value);
-    }
-
     static isRenderablePoint(point) {
         if (!point) {
             return false;
         }
 
-        return this.isFiniteNumber(this.getPointX(point)) && this.isFiniteNumber(this.getPointY(point));
-    }
-
-    static areFiniteNumbers(values = []) {
-        for (let index = 0; index < values.length; index++) {
-            if (!this.isFiniteNumber(values[index])) {
-                return false;
-            }
-        }
-
-        return true;
+        return NumberUtils.isFiniteNumber(this.getPointX(point)) && NumberUtils.isFiniteNumber(this.getPointY(point));
     }
 
     static hasMinimumPointCount(points, minimumCount) {
@@ -327,7 +314,7 @@ class PrimitiveRenderer {
     }
 
     static withValidatedNumbers(values, options = {}, drawFn) {
-        return this.withValidatedInput(this.areFiniteNumbers(values), options, drawFn);
+        return this.withValidatedInput(NumberUtils.areFiniteNumbers(values), options, drawFn);
     }
 
     static withValidatedPoints(points, minimumCount, options = {}, drawFn) {
