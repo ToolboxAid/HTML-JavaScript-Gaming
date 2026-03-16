@@ -67,7 +67,7 @@ class PrimitiveRenderer {
     }
 
     static drawPolygon(points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
-        if (!Array.isArray(points) || points.length < 3) {
+        if (!this.hasMinimumPointCount(points, 3)) {
             return false;
         }
 
@@ -77,7 +77,7 @@ class PrimitiveRenderer {
     }
 
     static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0, options = {}) {
-        if (!Array.isArray(points) || points.length < 3) {
+        if (!this.hasMinimumPointCount(points, 3)) {
             return false;
         }
 
@@ -94,7 +94,7 @@ class PrimitiveRenderer {
         lineDash = null,
         ctx = null
     } = {}) {
-        if (!Array.isArray(points) || points.length < 2) {
+        if (!this.hasMinimumPointCount(points, 2)) {
             return false;
         }
 
@@ -210,6 +210,10 @@ class PrimitiveRenderer {
         return Array.isArray(point)
             ? { x: point[0], y: point[1] }
             : { x: point.x, y: point.y };
+    }
+
+    static hasMinimumPointCount(points, minimumCount) {
+        return Array.isArray(points) && points.length >= minimumCount;
     }
 
     static withContext(options = {}, drawFn) {
