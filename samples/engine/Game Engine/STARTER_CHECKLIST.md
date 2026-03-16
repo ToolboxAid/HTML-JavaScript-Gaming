@@ -11,6 +11,7 @@ Use this checklist after copying the Game Engine sample into a new game folder.
 
 ## Architecture
 - [ ] Keep state constants/handlers organized in `game.js`
+- [ ] Keep shared state-screen rendering in `gameStateUi.js`
 - [ ] Keep UI rendering separate from state transitions
 - [ ] Keep reusable helpers in engine modules, not per-game copies
 

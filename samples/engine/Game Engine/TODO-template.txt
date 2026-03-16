@@ -11,13 +11,13 @@ Copy starter template files and get a new game running in browser.
 
 Setup checklist:
 [ ] Copy starter files into the new game folder
-Done when: `index.html`, `game.js`, `gameStates.js`, `gameInput.js`, `global.js`, `styles.css`, `README.md`, and `todo.txt` are present.
+Done when: `index.html`, `game.js`, `gameStates.js`, `gameStateUi.js`, `gameInput.js`, `global.js`, `styles.css`, `README.md`, and `todo.txt` are present.
 [ ] Rename folder and page labels
 Done when: folder name, `index.html` `<title>`, and `<h1>` match the new game name.
 [ ] Update config in `global.js`
 Done when: canvas size/scale, fullscreen text, and performance overlay values are intentional.
 [ ] Replace starter gameplay/state text
-Done when: `gameStates.js` no longer shows starter placeholder messaging.
+Done when: `gameStates.js` and `gameStateUi.js` no longer show starter placeholder messaging.
 [ ] Set debug flag key in `game.js`
 Done when: debug logs are enabled only through a game-specific query flag.
 [ ] Update `README.md` for this game

@@ -39,6 +39,7 @@ Attract-state preview of the current starter layout and theme.
 - `game.js` owns lifecycle wiring and state switching.
 - `game.js` uses a `stateHandlers` map to route the active state to its handler.
 - `gameStates.js` contains state-specific render/update handlers.
+- `gameStateUi.js` contains shared canvas screen-render helpers for state handlers.
 - `gameInput.js` contains shared input checks for state handlers.
 - `CanvasUtils` provides canvas primitives and safe-area guides.
 - `CanvasText` owns text metrics plus centered/multiline text rendering.
@@ -49,7 +50,7 @@ Attract-state preview of the current starter layout and theme.
 ## Start A New Game From This Template
 1. Copy this folder and rename it to your new game name.
 2. Update `index.html` title/header and `global.js` config values.
-3. Replace state handlers in `game.js` (`displayAttractMode`, `playGame`, etc.) with game-specific logic.
+3. Replace state handlers in `game.js` and UI helpers in `gameStateUi.js` with game-specific logic.
 4. Keep `onInitialize()` and `onDestroy()` ownership clear for listeners/resources.
 5. Keep runtime debug behind `?yourGameFlag` and avoid unconditional `console.*` calls.
 6. Run smoke pass on load, input flow, pause/resume, restart, and cleanup.
