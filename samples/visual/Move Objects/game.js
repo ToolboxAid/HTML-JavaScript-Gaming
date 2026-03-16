@@ -24,7 +24,7 @@ class Game extends GameBase {
         this.gameState = Game.STATES.ATTRACT;
         this.stateHandlers = {
             [Game.STATES.ATTRACT]: () => this.displayAttractMode(),
-            [Game.STATES.PLAY_GAME]: () => this.playGame()
+            [Game.STATES.PLAY_GAME]: (deltaTime) => this.playGame(deltaTime)
         };
     }
 

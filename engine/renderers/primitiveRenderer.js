@@ -170,26 +170,10 @@ class PrimitiveRenderer {
         }
 
         return this.withContext({ ctx }, (renderCtx) => {
-            for (let row = 0; row < matrix.length; row++) {
-                for (let col = 0; col < matrix[row].length; col++) {
-                    if (matrix[row][col] !== 1) {
-                        continue;
-                    }
-
-                    this.renderRect(
-                        renderCtx,
-                        x + (col * pixelWidth),
-                        y + (row * pixelHeight),
-                        pixelWidth + extraWidth,
-                        pixelHeight + extraHeight,
-                        fillColor,
-                        null,
-                        0,
-                        1,
-                        { ctx }
-                    );
-                }
-            }
+            this.renderPixelMatrix(renderCtx, matrix, x, y, pixelWidth, pixelHeight, fillColor, {
+                extraWidth,
+                extraHeight
+            });
         });
     }
 
@@ -398,6 +382,31 @@ class PrimitiveRenderer {
 
     static renderMarker(ctx, x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
         this.renderCircle(ctx, x, y, radius, fillColor, null, 0, alpha, options);
+    }
+
+    static renderPixelMatrix(ctx, matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
+        extraWidth = 0,
+        extraHeight = 0
+    } = {}) {
+        for (let row = 0; row < matrix.length; row++) {
+            for (let col = 0; col < matrix[row].length; col++) {
+                if (matrix[row][col] !== 1) {
+                    continue;
+                }
+
+                this.renderRect(
+                    ctx,
+                    x + (col * pixelWidth),
+                    y + (row * pixelHeight),
+                    pixelWidth + extraWidth,
+                    pixelHeight + extraHeight,
+                    fillColor,
+                    null,
+                    0,
+                    1
+                );
+            }
+        }
     }
 
     static renderDebugBounds(ctx, x, y, width, height, {
