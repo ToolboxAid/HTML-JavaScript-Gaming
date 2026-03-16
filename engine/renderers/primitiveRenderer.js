@@ -22,7 +22,9 @@ class PrimitiveRenderer {
     }
 
     static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
-        return this.drawRect(x, y, width, height, null, borderColor, borderWidth, alpha, options);
+        return this.withContext(options, (ctx) => {
+            this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha, options);
+        });
     }
 
     static drawPanel(x, y, width, height, {
@@ -312,7 +314,7 @@ class PrimitiveRenderer {
         this.renderRect(ctx, x, y, width, height, fillColor, null, 0, 1);
 
         if (borderColor && borderWidth > 0) {
-            this.renderRect(ctx, x, y, width, height, null, borderColor, borderWidth, 1);
+            this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, 1);
         }
 
         if (Number.isFinite(headerY)) {
@@ -336,7 +338,7 @@ class PrimitiveRenderer {
             lineDash: [8, 6]
         };
 
-        this.renderRect(ctx, x, y, safeWidth, safeHeight, null, strokeColor, lineWidth, 1, guideOptions);
+        this.renderBounds(ctx, x, y, safeWidth, safeHeight, strokeColor, lineWidth, 1, guideOptions);
         this.renderLine(ctx, centerX, y, centerX, y + safeHeight, strokeColor, lineWidth, 1, guideOptions);
         this.renderLine(ctx, x, centerY, x + safeWidth, centerY, strokeColor, lineWidth, 1, guideOptions);
     }
@@ -356,6 +358,10 @@ class PrimitiveRenderer {
             const lineY = y + (row * stepY);
             this.renderLine(ctx, x, lineY, x + width, lineY, strokeColor, lineWidth, 1, options);
         }
+    }
+
+    static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
+        this.renderRect(ctx, x, y, width, height, null, borderColor, borderWidth, alpha, options);
     }
 
     static renderFillAndStroke(ctx, fillColor = null, borderColor = null, borderWidth = 0) {
@@ -419,7 +425,7 @@ class PrimitiveRenderer {
         markerColor = borderColor,
         markerAlpha = alpha
     } = {}) {
-        this.renderRect(ctx, x, y, width, height, null, borderColor, borderWidth, alpha);
+        this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha);
 
         if (Number.isFinite(markerX) && Number.isFinite(markerY)) {
             this.renderMarker(ctx, markerX, markerY, markerRadius, markerColor, markerAlpha);
