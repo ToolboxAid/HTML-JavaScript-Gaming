@@ -48,6 +48,12 @@ class NumberUtils {
         }
     }
 
+    static finiteNumberInRange(value, min = 0, max = Number.POSITIVE_INFINITY, name = 'value') {
+        if (!this.isFiniteNumber(value) || value < min || value > max) {
+            throw new Error(`${name} must be a finite number between ${min} and ${max}.`);
+        }
+    }
+
     static nonNegativeInteger(value, name = 'value') {
         if (!this.isNonNegativeInteger(value)) {
             throw new Error(`${name} must be a non-negative integer.`);
@@ -74,6 +80,15 @@ class NumberUtils {
 
     static clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
+    }
+
+    static boundedNumber(rawValue, { min = 0, max = Number.POSITIVE_INFINITY, fallback = 0 } = {}) {
+        const numericValue = Number(rawValue);
+        if (!this.isFiniteNumber(numericValue)) {
+            return fallback;
+        }
+
+        return this.clamp(numericValue, min, max);
     }
 
     static areFiniteNumbers(values = []) {

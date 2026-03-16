@@ -19,34 +19,20 @@ function cloneDefaultSoundProfile() {
   };
 }
 
-function validateFinite(name, value, min = 0, max = Number.POSITIVE_INFINITY) {
-  if (!NumberUtils.isFiniteNumber(value) || value < min || value > max) {
-    throw new Error(`${name} must be a finite number between ${min} and ${max}.`);
-  }
-}
-
-function boundedNumber(rawValue, limits) {
-  const numericValue = Number(rawValue);
-  if (!NumberUtils.isFiniteNumber(numericValue)) {
-    return limits.fallback;
-  }
-  return NumberUtils.clamp(numericValue, limits.min, limits.max);
-}
-
 function validateSoundProfile(profile) {
   if (!VALID_OSC_TYPES.has(profile.oscType)) {
     throw new Error('oscType must be one of: sine, square, triangle, sawtooth.');
   }
 
-  validateFinite('vibrato.frequency', profile.vibrato.frequency, 0, 20);
-  validateFinite('vibrato.depth', profile.vibrato.depth, 0, 100);
-  validateFinite('delay.time', profile.delay.time, 0, 5);
-  validateFinite('delay.feedback', profile.delay.feedback, 0, 0.95);
-  validateFinite('delay.amount', profile.delay.amount, 0, 1);
-  validateFinite('envelope.attack', profile.envelope.attack, 0.001, 5);
-  validateFinite('envelope.decay', profile.envelope.decay, 0, 5);
-  validateFinite('envelope.sustain', profile.envelope.sustain, 0, 1);
-  validateFinite('envelope.release', profile.envelope.release, 0, 10);
+  NumberUtils.finiteNumberInRange(profile.vibrato.frequency, 0, 20, 'vibrato.frequency');
+  NumberUtils.finiteNumberInRange(profile.vibrato.depth, 0, 100, 'vibrato.depth');
+  NumberUtils.finiteNumberInRange(profile.delay.time, 0, 5, 'delay.time');
+  NumberUtils.finiteNumberInRange(profile.delay.feedback, 0, 0.95, 'delay.feedback');
+  NumberUtils.finiteNumberInRange(profile.delay.amount, 0, 1, 'delay.amount');
+  NumberUtils.finiteNumberInRange(profile.envelope.attack, 0.001, 5, 'envelope.attack');
+  NumberUtils.finiteNumberInRange(profile.envelope.decay, 0, 5, 'envelope.decay');
+  NumberUtils.finiteNumberInRange(profile.envelope.sustain, 0, 1, 'envelope.sustain');
+  NumberUtils.finiteNumberInRange(profile.envelope.release, 0, 10, 'envelope.release');
 }
 
 function mergeSoundProfile(currentProfile, patch = {}) {
@@ -85,10 +71,10 @@ function sanitizeSoundProfileInput(input = {}) {
 
   const selectedOscType = typeof input.oscType === 'string' ? input.oscType : DEFAULT_SYNTH_SOUND_PROFILE.oscType;
   const oscType = VALID_OSC_TYPES.has(selectedOscType) ? selectedOscType : DEFAULT_SYNTH_SOUND_PROFILE.oscType;
-  const attack = boundedNumber(input.attack, limits.attack);
-  const release = boundedNumber(input.release, limits.release);
-  const vibratoDepth = boundedNumber(input.vibratoDepth, limits.vibratoDepth);
-  const delayAmount = boundedNumber(input.delayAmount, limits.delayAmount);
+  const attack = NumberUtils.boundedNumber(input.attack, limits.attack);
+  const release = NumberUtils.boundedNumber(input.release, limits.release);
+  const vibratoDepth = NumberUtils.boundedNumber(input.vibratoDepth, limits.vibratoDepth);
+  const delayAmount = NumberUtils.boundedNumber(input.delayAmount, limits.delayAmount);
 
   return {
     profilePatch: {
