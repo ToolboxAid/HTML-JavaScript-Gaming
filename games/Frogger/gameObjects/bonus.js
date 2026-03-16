@@ -7,7 +7,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 import GameObject from '../../../engine/game/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
-import CollisionUtils from '../../../engine/physics/collisionUtils.js';
+import GameCollision from '../../../engine/game/gameCollision.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
 
 class Bonus extends GameObject {
@@ -167,7 +167,7 @@ class Bonus extends GameObject {
 
         this.x = this.attachedX + this.attachedTo.x;
 
-        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this)) {
+        if (this.attachedTo && GameCollision.isCompletelyOffScreen(this)) {
             this.x = -this.boundWidth;
             return;
         }
@@ -199,7 +199,7 @@ class Bonus extends GameObject {
     }
 
     draw() {
-        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
+        if (this.attachedTo && GameCollision.isCompletelyOffScreen(this.attachedTo)) {
             return;
         }
 

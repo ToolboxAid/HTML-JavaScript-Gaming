@@ -5,9 +5,9 @@
 
 import ObjectDynamic from '../../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
 import CanvasUtils from '../../../engine/core/canvas.js';
+import GameCollision from '../../../engine/game/gameCollision.js';
 
 import RandomUtils from '../../../engine/math/randomUtils.js';
-import CollisionUtils from '../../../engine/physics/collisionUtils.js';
 import DebugFlag from '../../../engine/utils/debugFlag.js';
 import DebugLog from '../../../engine/utils/debugLog.js';
 /**
@@ -38,11 +38,11 @@ class Circle extends ObjectDynamic {
         // }
         super.update(deltaTime);
         // Call the checkGameAtBoundsCircle function
-        const boundariesHit = CollisionUtils.checkGameAtBoundsCircle(this);
+        const boundariesHit = GameCollision.isOutOfBoundsCircle(this);
 
         if (boundariesHit) {
             // Pass boundariesHit to updateCirclePosition
-            const boundariesSide = CollisionUtils.checkGameAtBoundsCircleSides(this);
+            const boundariesSide = GameCollision.getOutOfBoundsCircleSides(this);
             this.updateCircle(boundariesSide);
         }
     }

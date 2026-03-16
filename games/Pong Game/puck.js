@@ -6,13 +6,13 @@
 import { canvasConfig, puckConfig } from './global.js'; // Import puck & canvas configuration
 
 import CanvasUtils from '../../engine/core/canvas.js';
+import GameCollision from '../../engine/game/gameCollision.js';
 import ObjectDynamic from '../../engine/objects/objectDynamic.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 import Timer from '../../engine/utils/timer.js';
 
 import AudioFrequency from '../../engine/output/audioFrequency.js';
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
 
 class Puck extends ObjectDynamic {
 
@@ -56,7 +56,7 @@ class Puck extends ObjectDynamic {
             return;
         }
 
-        const sides = CollisionUtils.isCollidingWithSides(this, paddle);
+        const sides = GameCollision.intersectsSides(this, paddle);
 
         // Check if the paddle is within the paddle's bounds
         if (sides.length !== 0) {
@@ -183,7 +183,7 @@ class Puck extends ObjectDynamic {
     }
 
     checkGameAreaBoundary(leftPaddle, rightPaddle) {
-        const boundariesHit = CollisionUtils.checkGameAtBoundsSides(this); // Call from CollisionUtils
+        const boundariesHit = GameCollision.getOutOfBoundsSides(this);
     
         // Top/Bottom - Adjust Y direction
         if (boundariesHit.includes('top') || boundariesHit.includes('bottom')) {

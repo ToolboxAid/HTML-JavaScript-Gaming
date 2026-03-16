@@ -7,7 +7,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 import GameObject from '../../../engine/game/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
-import CollisionUtils from '../../../engine/physics/collisionUtils.js';
+import GameCollision from '../../../engine/game/gameCollision.js';
 
 class Snake extends GameObject {
     static DEBUG = DebugFlag.has('snake');
@@ -77,7 +77,7 @@ class Snake extends GameObject {
 
         this.x = this.attachedX + this.attachedTo.x;
 
-        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this)) {
+        if (this.attachedTo && GameCollision.isCompletelyOffScreen(this)) {
             this.x = -this.boundWidth;
             return;
         }
@@ -108,7 +108,7 @@ class Snake extends GameObject {
     }
 
     draw() {
-        if (this.attachedTo && CollisionUtils.isCompletelyOffScreen(this.attachedTo)) {
+        if (this.attachedTo && GameCollision.isCompletelyOffScreen(this.attachedTo)) {
             return;
         }
 

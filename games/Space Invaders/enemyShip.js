@@ -4,7 +4,7 @@
 // enemyShip.js
 
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
+import GameCollision from '../../engine/game/gameCollision.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 import CanvasUtils from '../../engine/core/canvas.js';
 
@@ -160,7 +160,7 @@ class EnemyShip extends ObjectSprite {
         super.update(deltaTime);
         if (this.isAlive()) {
             if (laser) {
-                if (CollisionUtils.isCollidingWith(this, laser)) {
+                if (GameCollision.intersects(this, laser)) {
                     this.setHit();
                     this.stopAudio = true;
                 }

@@ -6,8 +6,8 @@
 import ObjectDynamic from '../../engine/objects/objectDynamic.js';
 import { canvasConfig, spriteConfig } from './global.js';
 
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import CanvasUtils from '../../engine/core/canvas.js';
+import GameCollision from '../../engine/game/gameCollision.js';
 import Sprite from '../../engine/core/sprite.js';
 class Laser extends ObjectDynamic {
 
@@ -46,7 +46,7 @@ class Laser extends ObjectDynamic {
     update(deltaTime = 1) {
         super.update(deltaTime);
 
-        if (CollisionUtils.checkGameAtBounds(this)){
+        if (GameCollision.isOutOfBounds(this)){
             return true;
         }
 

@@ -9,9 +9,9 @@ import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
+import GameCollision from '../../engine/game/gameCollision.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 import AudioPlayer from '../../engine/output/audioPlayer.js';
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
 import Cookies from '../../engine/misc/cookies.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 import Sprite from '../../engine/core/sprite.js';
@@ -350,7 +350,7 @@ checkLaserEnemyCollision() {
             return;
         }
 
-        if (CollisionUtils.isCollidingWith(enemy, this.laser)) {
+        if (GameCollision.intersects(enemy, this.laser)) {
             this.updatePlayerScore(enemy.value);
             enemy.setHit();
             hitDetected = true;
@@ -368,7 +368,7 @@ checkLaserEnemyCollision() {
             // Check for collisions and remove hit laser and bomb
             let hitBomb = false;
             this.enemyBombs.forEach(enemyBomb => {
-                if (CollisionUtils.isCollidingWith(enemyBomb, this.laser)) {
+                if (GameCollision.intersects(enemyBomb, this.laser)) {
                     hitBomb = true;
                     if (enemyBomb.constructor.name !== "EnemyBomb3") {
                         enemyBomb.setIsDying();
@@ -385,7 +385,7 @@ checkLaserEnemyCollision() {
     checkLaserShieldCollision() {
         let hit = false;
         this.shields.forEach(shield => {
-            if (CollisionUtils.isCollidingWith(shield, this.laser)) {
+            if (GameCollision.intersects(shield, this.laser)) {
                 if (shield.applyBigBoom(this.laser, true, -5)) {
                     hit = true;
                 }
@@ -416,7 +416,7 @@ checkLaserEnemyCollision() {
     checkBombShieldCollision() {
         this.enemyBombs.forEach(enemyBomb => {
             this.shields.forEach(shield => {
-                if (CollisionUtils.isCollidingWith(enemyBomb, shield)) {
+                if (GameCollision.intersects(enemyBomb, shield)) {
                     if (shield.applyBigBoom(enemyBomb, true, 6)) {
                         if (enemyBomb.isAlive()) {
                             enemyBomb.setIsDying();
@@ -431,7 +431,7 @@ checkLaserEnemyCollision() {
     checkEnemyShieldCollision() {
         this.gameEnemies.forEach((enemy, key) => {
             this.shields.forEach(shield => {
-                if (CollisionUtils.isCollidingWith(enemy, shield)) {
+                if (GameCollision.intersects(enemy, shield)) {
                     if (shield.applyBigBoom(enemy, false)) {
                     }
                 }
@@ -441,7 +441,7 @@ checkLaserEnemyCollision() {
 
     checkEnemyPlayerCollision() {
         this.gameEnemies.forEach((enemy, key) => {
-            if (CollisionUtils.isCollidingWith(enemy, this.player)) {
+            if (GameCollision.intersects(enemy, this.player)) {
                 if (enemy.isAlive()) {
                     // Deal with enemy
                     enemy.setHit();
@@ -458,7 +458,7 @@ checkLaserEnemyCollision() {
     checkBombGroundCollision() {
         this.enemyBombs.forEach(enemyBomb => {
             this.grounds.forEach(ground => {
-                if (CollisionUtils.isCollidingWith(enemyBomb, ground)) {
+                if (GameCollision.intersects(enemyBomb, ground)) {
                     if (enemyBomb.isAlive()) {
                         enemyBomb.setIsDying();
                         enemyBomb.x -= 12;
@@ -516,7 +516,7 @@ removeDeadBomb() {
     checkBombPlayerCollision() {
         this.enemyBombs.forEach(enemyBomb => {
             if (enemyBomb.isAlive() && this.player.isAlive()) {
-                if (CollisionUtils.isCollidingWith(this.player, enemyBomb)) {
+                if (GameCollision.intersects(this.player, enemyBomb)) {
                     console.log("playerhit");
                     Game.audioPlayer.playAudio('explosion.wav');
 

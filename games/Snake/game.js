@@ -7,10 +7,10 @@ import { canvasConfig, performanceConfig, fullscreenConfig } from '../Snake/glob
 import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvas.js';
+import GameCollision from '../../engine/game/gameCollision.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
 import AttractScreen from './attract.js';
-import CollisionUtils from '../../engine/physics/collisionUtils.js';
 
 class SnakeHead {
   constructor() {
@@ -152,18 +152,18 @@ class Game extends GameBase {
     // Check collision with walls
     this.snakeHead.x = this.snake[0].x;
     this.snakeHead.y = this.snake[0].y;
-    if (CollisionUtils.checkGameAtBounds(this.snakeHead)) {// required to pass object with x, y, width, height
+    if (GameCollision.isOutOfBounds(this.snakeHead)) {// required to pass object with x, y, width, height
       this.gameState = "gameOver";
-      console.log("gameOver bounds", this.snakeHead, CollisionUtils.checkGameAtBoundsSides(this.snakeHead));
+      console.log("gameOver bounds", this.snakeHead, GameCollision.getOutOfBoundsSides(this.snakeHead));
     }
 
     // Check collision with self
     this.snake.slice(1).forEach(segment => {
       this.snakeSegment.x = segment.x;
       this.snakeSegment.y = segment.y;
-      if (CollisionUtils.isCollidingWith(this.snakeHead, this.snakeSegment)) {
+      if (GameCollision.intersects(this.snakeHead, this.snakeSegment)) {
         this.gameState = "gameOver";
-        console.log("gameOver self", this.snakeHead, CollisionUtils.checkGameAtBoundsSides(this.snakeHead));
+        console.log("gameOver self", this.snakeHead, GameCollision.getOutOfBoundsSides(this.snakeHead));
       }
     });
   }

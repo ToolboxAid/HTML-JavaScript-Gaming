@@ -7,7 +7,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 import GameObject from '../../../engine/game/gameObject.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
-import CollisionUtils from '../../../engine/physics/collisionUtils.js';
+import GameCollision from '../../../engine/game/gameCollision.js';
 
 class Beaver extends GameObject {
     static DEBUG = DebugFlag.has('beaver');
@@ -57,7 +57,7 @@ class Beaver extends GameObject {
                 continue;
             }
 
-            if (CollisionUtils.isCollidingWith(this, gameObject)) {
+            if (GameCollision.intersects(this, gameObject)) {
                 if (Beaver.DEBUG) {
                     console.log('Beaver collided with log:', {
                         beaverPos: { x: this.x, y: this.y },
