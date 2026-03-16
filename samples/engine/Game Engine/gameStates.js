@@ -30,7 +30,7 @@ import { renderPlayScreen, renderPlayerSelectOptions, renderScreen } from './gam
 export function displayAttractMode(game) {
     renderScreen(gameUi.screens.attract);
 
-    if (isStartPressed(game.keyboardInput)) {
+    if (isStartPressed(game.keyboardInput, game.gameControllers)) {
         game.gameState = game.constructor.STATES.PLAYER_SELECT;
     }
 }
@@ -57,7 +57,7 @@ export function displayPlayerSelect(game) {
 export function displayGameOver(game) {
     renderScreen(gameUi.screens.gameOver);
 
-    if (isStartPressed(game.keyboardInput) ||
+    if (isStartPressed(game.keyboardInput, game.gameControllers) ||
         game.backToAttractCounter++ > game.backToAttractFrames) {
         resetGame(game);
     }
@@ -127,7 +127,7 @@ export function resetGame(game) {
 
 /** @param {GameContext} game */
 function togglePauseState(game) {
-    if (!isPauseTogglePressed(game.keyboardInput)) {
+    if (!isPauseTogglePressed(game.keyboardInput, game.gameControllers)) {
         return;
     }
 

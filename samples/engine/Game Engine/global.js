@@ -73,7 +73,7 @@ export const gameUi = {
         attract: {
             lines: [
                 { text: 'Welcome to the Game!', y: 180, fontSize: 46, fontFamily: uiFont.display, color: themeColors.textPrimary },
-                { text: 'Press `Enter` to Start', y: 275, fontSize: 30, fontFamily: uiFont.ui, color: themeColors.textPrimary },
+                { text: 'Press `Enter` or `Start` to Begin', y: 275, fontSize: 30, fontFamily: uiFont.ui, color: themeColors.textPrimary },
                 { text: 'Starter template ready for your game logic', y: 325, fontSize: 24, fontFamily: uiFont.ui, color: themeColors.textSecondary }
             ]
         },
@@ -96,7 +96,7 @@ export const gameUi = {
             borderColor: themeColors.danger,
             lines: [
                 { text: 'Game Over', y: 185, fontSize: 52, fontFamily: uiFont.display, color: themeColors.danger },
-                { text: 'Press `Enter` to Restart', y: 280, fontSize: 30, fontFamily: uiFont.ui, color: themeColors.danger },
+                { text: 'Press `Enter` or `Start` to Restart', y: 280, fontSize: 30, fontFamily: uiFont.ui, color: themeColors.danger },
                 { text: 'Restarting returns to attract mode', y: 330, fontSize: 22, fontFamily: uiFont.ui, color: themeColors.textSecondary }
             ]
         },
@@ -105,7 +105,7 @@ export const gameUi = {
             borderColor: themeColors.pauseBorder,
             lines: [
                 { text: 'Game Paused.', y: 270, fontSize: 46, fontFamily: uiFont.display, color: themeColors.textPrimary },
-                { text: 'Press `P` to unpause game', y: 330, fontSize: 34, fontFamily: uiFont.ui, color: themeColors.textPrimary },
+                { text: 'Press `P` or `Select` to unpause', y: 330, fontSize: 34, fontFamily: uiFont.ui, color: themeColors.textPrimary },
                 { text: 'State and timers remain preserved', y: 385, fontSize: 22, fontFamily: uiFont.ui, color: themeColors.textSecondary }
             ]
         },
