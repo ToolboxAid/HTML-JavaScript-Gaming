@@ -12,19 +12,19 @@ class PrimitiveRenderer {
             return;
         }
 
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderRect(ctx, object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
         });
     }
 
     static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderRect(ctx, x, y, width, height, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha, options);
         });
     }
@@ -40,7 +40,7 @@ class PrimitiveRenderer {
         headerWidth = 2,
         ctx = null
     } = {}) {
-        return this.withContext({ ctx }, (renderCtx) => {
+        return this.renderWithContext({ ctx }, (renderCtx) => {
             this.renderPanel(renderCtx, x, y, width, height, {
                 fillColor,
                 borderColor,
@@ -55,13 +55,13 @@ class PrimitiveRenderer {
     }
 
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderCircle(ctx, x, y, radius, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderEllipse(ctx, x, y, radiusX, radiusY, fillColor, borderColor, borderWidth, rotation, alpha, options);
         });
     }
@@ -98,37 +98,37 @@ class PrimitiveRenderer {
     }
 
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderLine(ctx, x1, y1, x2, y2, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawGridLines(x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor, lineWidth, options);
         });
     }
 
     static drawOverlay(width, height, fillColor = 'black', alpha = 0.5, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderOverlay(ctx, width, height, fillColor, alpha, options);
         });
     }
 
     static drawSafeAreaGuides(width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderSafeAreaGuides(ctx, width, height, margin, strokeColor, lineWidth, options);
         });
     }
 
     static drawCrosshair(centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderCrosshair(ctx, centerX, centerY, size, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawMarker(x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.renderWithContext(options, (ctx) => {
             this.renderMarker(ctx, x, y, radius, fillColor, alpha, options);
         });
     }
@@ -144,7 +144,7 @@ class PrimitiveRenderer {
         markerAlpha = alpha,
         ctx = null
     } = {}) {
-        return this.withContext({ ctx }, (renderCtx) => {
+        return this.renderWithContext({ ctx }, (renderCtx) => {
             this.renderDebugBounds(renderCtx, x, y, width, height, {
                 borderColor,
                 borderWidth,
@@ -167,7 +167,7 @@ class PrimitiveRenderer {
             return false;
         }
 
-        return this.withContext({ ctx }, (renderCtx) => {
+        return this.renderWithContext({ ctx }, (renderCtx) => {
             this.renderPixelMatrix(renderCtx, matrix, x, y, pixelWidth, pixelHeight, fillColor, {
                 extraWidth,
                 extraHeight
@@ -219,12 +219,16 @@ class PrimitiveRenderer {
         return true;
     }
 
+    static renderWithContext(options = {}, renderFn) {
+        return this.withContext(options, renderFn);
+    }
+
     static withValidatedPoints(points, minimumCount, options = {}, drawFn) {
         if (!this.hasMinimumPointCount(points, minimumCount)) {
             return false;
         }
 
-        return this.withContext(options, drawFn);
+        return this.renderWithContext(options, drawFn);
     }
 
     static resolveContext(options = {}) {
