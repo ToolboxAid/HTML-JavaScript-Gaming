@@ -211,6 +211,12 @@ class PrimitiveRenderer {
         }
     }
 
+    static traceLine(ctx, x1, y1, x2, y2) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+    }
+
     static getPointX(point) {
         return Array.isArray(point) ? point[0] : point.x;
     }
@@ -299,9 +305,7 @@ class PrimitiveRenderer {
         this.renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => this.traceSegments(ctx, [
-                { x1, y1, x2, y2 }
-            ])
+            trace: () => this.traceLine(ctx, x1, y1, x2, y2)
         });
     }
 
