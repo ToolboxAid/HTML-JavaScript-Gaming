@@ -107,6 +107,7 @@ class Fullscreen {
         }
 
         Fullscreen.onResizeHook = typeof hooks.onResize === 'function' ? hooks.onResize : null;
+        Fullscreen.syncFullscreenState();
 
         Fullscreen.setCanvasSize(Fullscreen.scale);
         Fullscreen.updateCanvasTransform();
@@ -247,6 +248,7 @@ class Fullscreen {
         Fullscreen.canvasClickBound = null;
         Fullscreen.fullscreenChangeBound = null;
         Fullscreen.onResizeHook = null;
+        Fullscreen.isFullScreen = false;
         Fullscreen.listenersRegistered = false;
         return true;
     }
