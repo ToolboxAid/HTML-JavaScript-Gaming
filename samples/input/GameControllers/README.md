@@ -13,7 +13,7 @@ Design choice: this sample is intentionally DOM/canvas-driven and focused on sho
 ## Files
 
 - `index.html`: sample page shell
-- `styles.css`: page and canvas styling
+- `styles.css`: centered template-style page shell and canvas styling
 - `game.js`: controller lifecycle, per-frame updates, and rendering through the public `GameControllers` API
 
 ## Controls

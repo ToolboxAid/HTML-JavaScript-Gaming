@@ -9,18 +9,22 @@
 
 <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Controllers</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-    
-    <!-- game specific code -->
-    <script type="module"  src="./game.js" defer></script>
+
+    <script type="module" src="./game.js" defer></script>
 </head>
 
-<body id="GameControllers">
-    <h1>Game Controllers</h1>
-    <div id="gameAreaContainer">      
-        <canvas id="gameArea"></canvas>    
-    </div>
+<body>
+    <main class="sample-shell">
+        <header class="sample-header">
+            <h1>Game Controllers</h1>
+            <p>Live controller input visualization for connection state, button presses, d-pad movement, and analog axis activity.</p>
+        </header>
+        <div id="gameAreaContainer">
+            <canvas id="gameArea"></canvas>
+        </div>
+    </main>
 </body>
 </html>

@@ -20,6 +20,7 @@ Local checklist:
 [x] Verify naming consistency for controller state methods and labels
 [x] Verify repeated restart/play flow does not leak state/listeners
 [x] Verify headers are in place
+[x] Align page shell with current sample template layout
 
 Focused review checklist:
 [x] Security: validate external/config-driven inputs before use
