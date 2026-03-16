@@ -8,11 +8,11 @@ import DebugLog from '../utils/debugLog.js';
 const DEFAULT_PLAYER_SELECT_CONFIG = Object.freeze({
     maxPlayers: 4,
     lives: 3,
-    fillText: 'Select Player Mode',
+    title: 'Select Player Mode',
     x: 100,
     y: 100,
     spacing: 50,
-    fillStyle: 'white',
+    color: 'white',
     font: '30px Arial'
 });
 
@@ -23,11 +23,11 @@ class GameUtils {
         return {
             maxPlayers: playerSelect.maxPlayers ?? DEFAULT_PLAYER_SELECT_CONFIG.maxPlayers,
             lives: playerSelect.lives ?? DEFAULT_PLAYER_SELECT_CONFIG.lives,
-            fillText: playerSelect.title ?? DEFAULT_PLAYER_SELECT_CONFIG.fillText,
+            title: playerSelect.title ?? DEFAULT_PLAYER_SELECT_CONFIG.title,
             x: playerSelect.x ?? DEFAULT_PLAYER_SELECT_CONFIG.x,
             y: playerSelect.y ?? DEFAULT_PLAYER_SELECT_CONFIG.y,
             spacing: playerSelect.spacing ?? DEFAULT_PLAYER_SELECT_CONFIG.spacing,
-            fillStyle: playerSelect.color ?? DEFAULT_PLAYER_SELECT_CONFIG.fillStyle,
+            color: playerSelect.color ?? DEFAULT_PLAYER_SELECT_CONFIG.color,
             font: playerSelect.font ?? DEFAULT_PLAYER_SELECT_CONFIG.font,
             canvasWidth: canvasConfig.width,
             canvasHeight: canvasConfig.height,
@@ -46,9 +46,9 @@ class GameUtils {
     static drawPlayerSelectOverlay(ctx, config) {
         ctx.fillStyle = config.backgroundColor + 'AA';
         ctx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
-        ctx.fillStyle = config.fillStyle;
+        ctx.fillStyle = config.color;
         ctx.font = config.font;
-        ctx.fillText(config.fillText, config.x, config.y);
+        ctx.fillText(config.title, config.x, config.y);
     }
 
     static drawKeyboardPlayerOptions(ctx, config) {

@@ -69,11 +69,11 @@ export function testGameUtils(assert) {
         spacing: 56,
         color: 'cyan'
     });
-    assert(aliasConfig.fillText === 'Choose Players', "getPlayerSelectConfig should use title");
+    assert(aliasConfig.title === 'Choose Players', "getPlayerSelectConfig should use title");
     assert(aliasConfig.x === 12, "getPlayerSelectConfig should use x");
     assert(aliasConfig.y === 34, "getPlayerSelectConfig should use y");
     assert(aliasConfig.spacing === 56, "getPlayerSelectConfig should use spacing");
-    assert(aliasConfig.fillStyle === 'cyan', "getPlayerSelectConfig should use color");
+    assert(aliasConfig.color === 'cyan', "getPlayerSelectConfig should use color");
 
     const keyboard1Player = new MockKeyboardInput(['Digit1']);
     const result1Player = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard1Player, null);
