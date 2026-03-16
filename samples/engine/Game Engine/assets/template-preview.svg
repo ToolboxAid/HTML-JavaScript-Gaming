@@ -38,7 +38,7 @@
     <text x="508" y="324" text-anchor="middle" font-family="Consolas, monospace" font-size="14" fill="#f3d8ab">Heap 31MB</text>
 
     <text x="322" y="142" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="31" fill="#ffffff">Welcome to the Game!</text>
-    <text x="322" y="204" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="22" fill="#ffffff">Press Enter to Start</text>
+    <text x="322" y="204" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="22" fill="#ffffff">Press Enter or Start to Begin</text>
     <text x="322" y="243" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="17" fill="#f3d8ab">Starter template ready for your game logic</text>
   </g>
 </svg>

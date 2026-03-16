@@ -1,5 +1,9 @@
 # Game Engine Template Changelog
 
+## 1.3.1 - 2026-03-15
+- Added controller `Start`/`Select` support to the starter attract, game-over, and pause flow.
+- Updated starter copy and docs to reflect the controller-capable template flow.
+
 ## 1.3.0 - 2026-03-15
 - Extracted shared state-screen rendering helpers into `gameStateUi.js`.
 - Updated starter docs/checklists to include the `gameStateUi.js` split.
