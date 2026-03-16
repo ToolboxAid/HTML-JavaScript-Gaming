@@ -36,31 +36,31 @@ class RuntimeContext {
     }
 
     getContext() {
-        return this.canvas.ctx;
+        return this.canvas?.ctx ?? null;
     }
 
     clearCanvas() {
-        this.canvas.canvasClear();
+        this.canvas?.canvasClear?.();
     }
 
     drawBorder() {
-        this.canvas.drawBorder();
+        this.canvas?.drawBorder?.();
     }
 
     updatePerformance(timeSpentMs) {
-        this.performance.update(timeSpentMs);
+        this.performance?.update?.(timeSpentMs);
     }
 
     drawFullscreenOverlay(ctx = this.getContext()) {
-        this.fullscreen.draw(ctx);
+        this.fullscreen?.draw?.(ctx);
     }
 
     drawPerformanceOverlay(ctx = this.getContext()) {
-        this.performance.draw(ctx);
+        this.performance?.draw?.(ctx);
     }
 
     calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
-        return this.canvas.calculateTextMetrics(text, fontSize, font);
+        return this.canvas?.calculateTextMetrics?.(text, fontSize, font) ?? { width: 0, height: 0 };
     }
 
     destroy() {

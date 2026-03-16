@@ -61,4 +61,20 @@ export async function testRuntimeContext(assert) {
 
     runtime.destroy();
     assert(calls.some(call => call[0] === 'performance.stop'), 'RuntimeContext.destroy should stop performance monitoring');
+
+    const sparseRuntime = new RuntimeContext({
+        canvas: { ctx: null },
+        fullscreen: {},
+        performance: {},
+        timer: fakeTimer
+    });
+
+    assert(sparseRuntime.getContext() === null, 'RuntimeContext.getContext should return null when canvas context is unavailable');
+    sparseRuntime.clearCanvas();
+    sparseRuntime.drawBorder();
+    sparseRuntime.updatePerformance(1.5);
+    sparseRuntime.drawFullscreenOverlay();
+    sparseRuntime.drawPerformanceOverlay();
+    const fallbackMetrics = sparseRuntime.calculateTextMetrics('hi');
+    assert(fallbackMetrics.width === 0 && fallbackMetrics.height === 0, 'RuntimeContext.calculateTextMetrics should fall back when canvas metrics are unavailable');
 }
