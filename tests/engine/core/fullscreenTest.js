@@ -5,7 +5,7 @@
 
 import Fullscreen from '../../../engine/core/fullscreen.js';
 
-export function testFullscreen(assert) {
+export async function testFullscreen(assert) {
     const removedWindowEvents = [];
     const removedDocumentEvents = [];
     const originalWindowRemoveEventListener = window.removeEventListener;
@@ -14,6 +14,7 @@ export function testFullscreen(assert) {
     const originalFullscreenState = {
         canvas: Fullscreen.canvas,
         ctx: Fullscreen.ctx,
+        listenerCanvas: Fullscreen.listenerCanvas,
         canvasWidth: Fullscreen.canvasWidth,
         canvasHeight: Fullscreen.canvasHeight,
         scale: Fullscreen.scale,
@@ -43,12 +44,16 @@ export function testFullscreen(assert) {
         width: 0,
         height: 0,
         style: {},
+        addedEvents: [],
+        removedEvents: [],
         addEventListener() {},
         removeEventListener() {},
         getContext() {
             return ctx;
         }
     };
+    canvas.addEventListener = (eventName) => { canvas.addedEvents.push(eventName); };
+    canvas.removeEventListener = (eventName) => { canvas.removedEvents.push(eventName); };
 
     window.removeEventListener = (eventName) => {
         removedWindowEvents.push(eventName);
@@ -87,6 +92,32 @@ export function testFullscreen(assert) {
         assert(canvas.style.height === '600px', 'Fullscreen.resizeCanvas should use full scale height in fullscreen mode');
         assert(hookCalls.some((call) => call.reason === 'fullscreenchange' && call.isFullScreen === true), 'Fullscreen hook payload should include fullscreen state');
 
+        const replacementCanvas = {
+            width: 0,
+            height: 0,
+            style: {},
+            addedEvents: [],
+            removedEvents: [],
+            addEventListener(eventName) { this.addedEvents.push(eventName); },
+            removeEventListener(eventName) { this.removedEvents.push(eventName); },
+            getContext() {
+                return ctx;
+            }
+        };
+
+        const originalGetElementById = document.getElementById;
+        document.getElementById = () => replacementCanvas;
+        try {
+            Fullscreen.listenersRegistered = true;
+            Fullscreen.canvasClickBound = () => {};
+            Fullscreen.listenerCanvas = canvas;
+            await Fullscreen.init({ color: '#fff', font: '12px monospace', text: 'toggle', x: 10, y: 20 }, { width: 800, height: 600, scale: 0.5 });
+            assert(canvas.removedEvents.includes('click'), 'Fullscreen.init should unbind click listener from the old canvas when the canvas changes');
+            assert(replacementCanvas.addedEvents.includes('click'), 'Fullscreen.init should bind click listener to the new canvas when the canvas changes');
+        } finally {
+            document.getElementById = originalGetElementById;
+        }
+
         Fullscreen.listenersRegistered = true;
         Fullscreen.resizeBound = () => {};
         Fullscreen.canvasClickBound = () => {};
@@ -109,6 +140,7 @@ export function testFullscreen(assert) {
         Fullscreen.isFullscreenActive = originalIsFullscreenActive;
         Fullscreen.canvas = originalFullscreenState.canvas;
         Fullscreen.ctx = originalFullscreenState.ctx;
+        Fullscreen.listenerCanvas = originalFullscreenState.listenerCanvas;
         Fullscreen.canvasWidth = originalFullscreenState.canvasWidth;
         Fullscreen.canvasHeight = originalFullscreenState.canvasHeight;
         Fullscreen.scale = originalFullscreenState.scale;

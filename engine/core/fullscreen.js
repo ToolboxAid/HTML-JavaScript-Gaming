@@ -55,6 +55,7 @@ class Fullscreen {
     static resizeBound = null;
     static fullscreenChangeBound = null;
     static onResizeHook = null;
+    static listenerCanvas = null;
 
     static isFullscreenActive() {
         if (typeof document === 'undefined') {
@@ -99,6 +100,7 @@ class Fullscreen {
         this.canvasWidth = width;
         this.canvasHeight = height;
         this.scale = scale;
+        const previousCanvas = Fullscreen.listenerCanvas;
         this.canvas = document.getElementById("gameArea");
         this.ctx = this.canvas?.getContext ? this.canvas.getContext('2d') : null;
 
@@ -128,6 +130,11 @@ class Fullscreen {
             document.addEventListener('webkitfullscreenchange', Fullscreen.fullscreenChangeBound);
             document.addEventListener('msfullscreenchange', Fullscreen.fullscreenChangeBound);
             Fullscreen.listenersRegistered = true;
+            Fullscreen.listenerCanvas = Fullscreen.canvas;
+        } else if (previousCanvas !== Fullscreen.canvas) {
+            previousCanvas?.removeEventListener('click', Fullscreen.canvasClickBound);
+            Fullscreen.canvas.addEventListener('click', Fullscreen.canvasClickBound);
+            Fullscreen.listenerCanvas = Fullscreen.canvas;
         }
 
         Fullscreen.notifyResizeHook('init');
@@ -245,7 +252,7 @@ class Fullscreen {
 
         window.removeEventListener("resize", Fullscreen.resizeBound);
         window.removeEventListener('orientationchange', Fullscreen.resizeBound);
-        Fullscreen.canvas?.removeEventListener('click', Fullscreen.canvasClickBound);
+        Fullscreen.listenerCanvas?.removeEventListener('click', Fullscreen.canvasClickBound);
         document.removeEventListener('fullscreenchange', Fullscreen.fullscreenChangeBound);
         document.removeEventListener('webkitfullscreenchange', Fullscreen.fullscreenChangeBound);
         document.removeEventListener('msfullscreenchange', Fullscreen.fullscreenChangeBound);
@@ -254,6 +261,7 @@ class Fullscreen {
         Fullscreen.canvasClickBound = null;
         Fullscreen.fullscreenChangeBound = null;
         Fullscreen.onResizeHook = null;
+        Fullscreen.listenerCanvas = null;
         Fullscreen.canvas = null;
         Fullscreen.ctx = null;
         Fullscreen.isFullScreen = false;
