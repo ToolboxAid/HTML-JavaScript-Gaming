@@ -8,7 +8,7 @@ import GamepadState from "./gamepadState.js";
 import GamepadMapper from "./gamepadMapper.js";
 import EventBus from '../../messages/eventBus.js';
 import DebugFlag from '../../utils/debugFlag.js';
-import { D_PAD_AXIS_NAMES, D_PAD_BUTTON_NAMES, DPadType } from "./gamepadEnums.js";
+import { D_PAD_AXIS_NAMES, D_PAD_BUTTON_NAMES, DPadType, GAMEPAD_BUTTON_NAMES } from "./gamepadEnums.js";
 import { GAMEPAD_EVENT } from './gamepadManager.js';
 
 class GameControllers {
@@ -225,6 +225,31 @@ class GameControllers {
         }
 
         return this.wasButtonIndexReleased(gameControllerIndex, buttonIndex);
+    }
+
+    wasPrimaryActionPressed(gameControllerIndex = 0) {
+        return this.wasButtonNamePressed(gameControllerIndex, GAMEPAD_BUTTON_NAMES.primary);
+    }
+
+    wasSecondaryActionPressed(gameControllerIndex = 0) {
+        return this.wasButtonNamePressed(gameControllerIndex, GAMEPAD_BUTTON_NAMES.secondary);
+    }
+
+    wasSelectPressed(gameControllerIndex = 0) {
+        return this.wasButtonNamePressed(gameControllerIndex, GAMEPAD_BUTTON_NAMES.select);
+    }
+
+    wasStartPressed(gameControllerIndex = 0) {
+        return this.wasButtonNamePressed(gameControllerIndex, GAMEPAD_BUTTON_NAMES.start);
+    }
+
+    wasDPadDirectionPressed(direction, gameControllerIndex = 0) {
+        const buttonName = D_PAD_BUTTON_NAMES[direction];
+        if (!buttonName) {
+            return false;
+        }
+
+        return this.wasButtonNamePressed(gameControllerIndex, buttonName);
     }
 
     // --------------------------------------------

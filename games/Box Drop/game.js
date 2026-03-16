@@ -8,7 +8,6 @@ import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvas.js';
 import GameUtils from '../../engine/game/gameUtils.js';
-import { getDPadState, wasSelectPressed, wasStartPressed } from '../../engine/input/controller/gameControllerButtons.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
@@ -89,7 +88,7 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      wasStartPressed(this.gameControllers)) {
+      this.gameControllers?.wasStartPressed()) {
       this.gameState = "playerSelect";
     }
   }
@@ -119,7 +118,7 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      wasStartPressed(this.gameControllers) ||
+      this.gameControllers?.wasStartPressed() ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -143,7 +142,7 @@ class Game extends GameBase {
 
   gamePauseCheck() {
     if (this.keyboardInput.getKeysPressed().includes('KeyP') ||
-      wasSelectPressed(this.gameControllers)) {
+      this.gameControllers?.wasSelectPressed()) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -171,7 +170,7 @@ class Game extends GameBase {
     CanvasUtils.drawRect(Game.enemyX, Game.enemyY, Game.enemySize, Game.enemySize, "red");
 
     // Player code
-    const dPad = getDPadState(this.gameControllers);
+    const dPad = this.gameControllers?.getDPad(0);
     const moveRight = this.keyboardInput.getKeysDown().includes('ArrowRight') || dPad?.right;
     const moveLeft = this.keyboardInput.getKeysDown().includes('ArrowLeft') || dPad?.left;
 

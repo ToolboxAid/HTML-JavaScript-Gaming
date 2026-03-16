@@ -4,7 +4,6 @@
 // hero.js
 
 import { canvasConfig, spriteConfig } from './global.js';
-import { getDPadState } from '../../../engine/input/controller/gameControllerButtons.js';
 import ObjectSprite from '../../../engine/objects/objectSprite.js'
 
 class Hero extends ObjectSprite {
@@ -316,7 +315,7 @@ class Hero extends ObjectSprite {
     update(deltaTime, keyboardInput, tileMap, gameControllers = null) {
         super.update(deltaTime);
 
-        const dPad = getDPadState(gameControllers);
+        const dPad = gameControllers?.getDPad(0);
         const moveLeft = keyboardInput.isKeyDown('ArrowLeft') || dPad?.left;
         const moveRight = keyboardInput.isKeyDown('ArrowRight') || dPad?.right;
 
