@@ -176,7 +176,8 @@ class PrimitiveRenderer {
 
         for (let index = 0; index < points.length; index++) {
             const point = points[index];
-            const { x, y } = this.getPointCoordinates(point);
+            const x = this.getPointX(point);
+            const y = this.getPointY(point);
 
             if (index === 0) {
                 ctx.moveTo(x + offsetX, y + offsetY);
@@ -210,10 +211,12 @@ class PrimitiveRenderer {
         }
     }
 
-    static getPointCoordinates(point) {
-        return Array.isArray(point)
-            ? { x: point[0], y: point[1] }
-            : { x: point.x, y: point.y };
+    static getPointX(point) {
+        return Array.isArray(point) ? point[0] : point.x;
+    }
+
+    static getPointY(point) {
+        return Array.isArray(point) ? point[1] : point.y;
     }
 
     static hasMinimumPointCount(points, minimumCount) {
