@@ -1,5 +1,5 @@
 import PerformanceMonitor from '../../../engine/core/performanceMonitor.js';
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 
 export function testPerformanceMonitor(assert) {
     const originalState = {
@@ -17,7 +17,7 @@ export function testPerformanceMonitor(assert) {
     };
     const originalSetInterval = globalThis.setInterval;
     const originalClearInterval = globalThis.clearInterval;
-    const originalCalculateTextMetrics = CanvasUtils.calculateTextMetrics;
+    const originalCalculateTextMetrics = CanvasText.calculateTextMetrics;
     const originalWindow = globalThis.window;
 
     try {
@@ -70,7 +70,7 @@ export function testPerformanceMonitor(assert) {
         PerformanceMonitor.frameSampleCount = 3;
         PerformanceMonitor.gfxPercentUsage = 99;
         PerformanceMonitor.lastFrame = 12345;
-        CanvasUtils.calculateTextMetrics = () => ({ width: 10, height: 5 });
+        CanvasText.calculateTextMetrics = () => ({ width: 10, height: 5 });
         await PerformanceMonitor.init({
             show: true,
             size: 20,
@@ -114,7 +114,7 @@ export function testPerformanceMonitor(assert) {
         PerformanceMonitor.performanceConfig = originalState.performanceConfig;
         PerformanceMonitor.metrics = originalState.metrics;
         PerformanceMonitor.layoutCache = originalState.layoutCache;
-        CanvasUtils.calculateTextMetrics = originalCalculateTextMetrics;
+        CanvasText.calculateTextMetrics = originalCalculateTextMetrics;
         globalThis.window = originalWindow;
         globalThis.setInterval = originalSetInterval;
         globalThis.clearInterval = originalClearInterval;
