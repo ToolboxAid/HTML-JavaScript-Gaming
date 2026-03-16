@@ -25,6 +25,7 @@ Local checklist:
 [x] Restore shared fullscreen behavior after shell/layout cleanup
 [x] Show mapped button labels and named axis values through public controller helpers
 [x] Add an empty-state prompt when no controller is connected
+[x] Arrange multi-controller panels in a stable readable grid
 
 Focused review checklist:
 [x] Security: validate external/config-driven inputs before use

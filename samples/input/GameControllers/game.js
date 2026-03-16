@@ -31,20 +31,37 @@ const MAX_BUTTONS = 10;
 const MAX_AXIS_ROWS = 4;
 const TITLE_FONT = 'bold 9px Segoe UI';
 const LABEL_FONT = '8px Segoe UI';
+const PANEL_LAYOUT = Object.freeze({
+    columns: 2,
+    startX: 18,
+    startY: 62,
+    gapX: 230,
+    gapY: 118
+});
 const players = [];
 let animationFrameId = null;
 let isDestroyed = false;
 
 const gameControllers = new GameControllers();
 
+function getPlayerPanelPosition(gameControllerIndex) {
+    const column = gameControllerIndex % PANEL_LAYOUT.columns;
+    const row = Math.floor(gameControllerIndex / PANEL_LAYOUT.columns);
+
+    return {
+        x: PANEL_LAYOUT.startX + (column * PANEL_LAYOUT.gapX),
+        y: PANEL_LAYOUT.startY + (row * PANEL_LAYOUT.gapY)
+    };
+}
+
 function createPlayer(gameControllerIndex) {
     const color = PLAYER_COLORS[gameControllerIndex % PLAYER_COLORS.length];
+    const position = getPlayerPanelPosition(gameControllerIndex);
 
     players[gameControllerIndex] = {
         color,
-        x: gameControllerIndex * 25,
-        y: gameControllerIndex * 25,
-        speed: 2,
+        x: position.x,
+        y: position.y,
         size: 8,
         width: 140,
         height: 36,
