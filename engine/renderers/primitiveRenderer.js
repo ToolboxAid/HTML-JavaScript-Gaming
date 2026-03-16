@@ -468,8 +468,7 @@ class PrimitiveRenderer {
         lineDash = null,
         trace
     } = {}) {
-        this.applyRenderState(ctx, alpha, lineDash);
-        trace?.();
+        this.renderTracedShape(ctx, { alpha, lineDash, trace });
         this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
     }
 
@@ -478,9 +477,17 @@ class PrimitiveRenderer {
         lineDash = null,
         trace
     } = {}) {
+        this.renderTracedShape(ctx, { alpha, lineDash, trace });
+        this.renderStroke(ctx, strokeColor, lineWidth);
+    }
+
+    static renderTracedShape(ctx, {
+        alpha = 1,
+        lineDash = null,
+        trace
+    } = {}) {
         this.applyRenderState(ctx, alpha, lineDash);
         trace?.();
-        this.renderStroke(ctx, strokeColor, lineWidth);
     }
 
     static renderStroke(ctx, strokeColor = 'white', lineWidth = 1) {
