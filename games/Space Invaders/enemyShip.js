@@ -6,7 +6,7 @@
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 import GameCollision from '../../engine/game/gameCollision.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
-import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasSprite from '../../engine/core/canvasSprite.js';
 
 
 import ObjectSprite from '../../engine/objects/objectSprite.js';
@@ -224,7 +224,7 @@ class EnemyShip extends ObjectSprite {
         if (this.scorePopupFrame && this.scorePopupFramesRemaining > 0) {
             const popupX = this.x;
             const popupY = this.y - 10;
-            CanvasUtils.drawSprite(popupX, popupY, this.scorePopupFrame, this.pixelSize, this.spriteColor);
+            CanvasSprite.drawSprite(popupX, popupY, this.scorePopupFrame, this.pixelSize, this.spriteColor);
         }
     }
 

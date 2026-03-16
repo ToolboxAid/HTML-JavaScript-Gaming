@@ -6,6 +6,7 @@
 import { canvasConfig, spriteConfig, shieldConfig } from "./global.js";
 
 import CanvasUtils from "../../engine/core/canvasUtils.js";
+import CanvasSprite from "../../engine/core/canvasSprite.js";
 import CanvasText from "../../engine/core/canvasText.js";
 import SystemUtils from "../../engine/utils/systemUtils.js";
 
@@ -16,7 +17,7 @@ import EnemyOctopus from "./enemyOctopus.js"
 import Shield from "./shield.js";
 import Ground from "./ground.js";
 
-const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
 
 export default class AttractMode {
     static delayCounter = 0;

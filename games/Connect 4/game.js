@@ -6,14 +6,14 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/core/gameBase.js';
-import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasSprite from '../../engine/core/canvasSprite.js';
 import CanvasText from '../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
-const drawPixelNumber = CanvasText.bindDrawNumber(CanvasUtils.drawSprite.bind(CanvasUtils));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelNumber = CanvasText.bindDrawNumber(CanvasSprite.drawSprite.bind(CanvasSprite));
 
 class Game extends GameBase {
   constructor() {

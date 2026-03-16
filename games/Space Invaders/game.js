@@ -8,6 +8,7 @@ import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenC
 import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvasUtils.js'; // Required for dynamic canvas operations, used in animate()
+import CanvasSprite from '../../engine/core/canvasSprite.js';
 import CanvasText from '../../engine/core/canvasText.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameCollision from '../../engine/game/gameCollision.js';
@@ -19,8 +20,8 @@ import RandomUtils from '../../engine/math/randomUtils.js';
 import Sprite from '../../engine/core/sprite.js';
 import SystemUtils from '../../engine/utils/systemUtils.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
-const drawPixelNumber = CanvasText.bindDrawNumber(CanvasUtils.drawSprite.bind(CanvasUtils));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelNumber = CanvasText.bindDrawNumber(CanvasSprite.drawSprite.bind(CanvasSprite));
 
 import AttractMode from './attractMode.js';
 
@@ -279,7 +280,7 @@ class Game extends GameBase {
         const pixelSize = 5;
 
         // Draw score text labels
-        CanvasUtils.drawSpriteRGB(30, 30, Game.scoreTextFrame.layers[0].data, pixelSize);
+        CanvasSprite.drawSpriteRGB(30, 30, Game.scoreTextFrame.layers[0].data, pixelSize);
 
         // Display Player 1's score if Game.scoreOn is true and current player is 1
         if (Game.scoreOnPlayer1) {
@@ -301,13 +302,13 @@ class Game extends GameBase {
         const color = spriteConfig.livesColor || 'red';
         const pixelSize = 5;
         drawPixelNumber(acr, dwn, player.lives, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
+        CanvasSprite.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
     }
 
     drawLevel(player) {
         const acr = spriteConfig.levelX;
         const dwn = spriteConfig.levelY;
-        CanvasUtils.drawSprite(acr, dwn, LevelFrames.frames[player.level - 1], 2.0); // current 0-9
+        CanvasSprite.drawSprite(acr, dwn, LevelFrames.frames[player.level - 1], 2.0); // current 0-9
     }
 
     drawGround() {
@@ -637,14 +638,14 @@ checkLaser(deltaTime, laserFirePoint) {
         const x = spriteConfig.playerX;
         const y = spriteConfig.playerY;
         // -20 because of offset in x and height elsewhere
-        CanvasUtils.drawSprite(x, y - 20, Player.frame[0], spriteConfig.pixelSize);
+        CanvasSprite.drawSprite(x, y - 20, Player.frame[0], spriteConfig.pixelSize);
 
         const acr = spriteConfig.livesX;
         const dwn = spriteConfig.livesY;
         const color = spriteConfig.livesColor;
         const pixelSize = 5;
         drawPixelNumber(acr, dwn, 0, pixelSize, color, 2, '0');
-        CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
+        CanvasSprite.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
 
         if (this.keyboardInput.getKeysPressed().includes('Enter') ||
             this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
@@ -909,7 +910,7 @@ checkLaser(deltaTime, laserFirePoint) {
         const y2 = canvasConfig.height - 40;
 
         drawPixelText(x1, y1, "Game Paused.", 3.5, "white");
-        CanvasUtils.drawSpriteRGB(x2, y2, Game.upauseFrame.layers[0].data, 3.5);
+        CanvasSprite.drawSpriteRGB(x2, y2, Game.upauseFrame.layers[0].data, 3.5);
     }
 
     // Initialize player based on current player index
@@ -980,7 +981,7 @@ checkLaser(deltaTime, laserFirePoint) {
         // // Display current player status using Player class properties
         const x = canvasConfig.width / 5 - 170;
         const y = canvasConfig.height - 40;
-        CanvasUtils.drawSpriteRGB(x, y, Game.pauseFrame.layers[0].data, 3.5);
+        CanvasSprite.drawSpriteRGB(x, y, Game.pauseFrame.layers[0].data, 3.5);
 
         // Simulate losing a life with 'D' key
         if (this.player.isDead()) {

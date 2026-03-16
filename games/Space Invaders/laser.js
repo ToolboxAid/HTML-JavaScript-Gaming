@@ -6,7 +6,7 @@
 import ObjectDynamic from '../../engine/objects/objectDynamic.js';
 import { canvasConfig, spriteConfig } from './global.js';
 
-import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasSprite from '../../engine/core/canvasSprite.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import Sprite from '../../engine/core/sprite.js';
 class Laser extends ObjectDynamic {
@@ -40,7 +40,7 @@ class Laser extends ObjectDynamic {
     }
 
     draw() {
-        CanvasUtils.drawSprite(this.x, this.y, this.livingFrames, this.pixelSize, spriteConfig.laserColor);  // no [0] for single dimension arrays
+        CanvasSprite.drawSprite(this.x, this.y, this.livingFrames, this.pixelSize, spriteConfig.laserColor);  // no [0] for single dimension arrays
     }
 
     update(deltaTime = 1) {

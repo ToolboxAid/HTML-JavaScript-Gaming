@@ -1,5 +1,6 @@
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
+import CanvasSprite from '../../../engine/core/canvasSprite.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import SpriteRenderer from '../../../engine/renderers/spriteRenderer.js';
 import VectorRenderer from '../../../engine/renderers/vectorRenderer.js';
@@ -60,8 +61,8 @@ function testCanvasUtilsGuardOnMissingContext(assert) {
     try {
         CanvasUtils.ctx = null;
 
-        assertNoThrow(assert, () => CanvasUtils.drawSprite(0, 0, ['1'], 1, 'white'), 'CanvasUtils.drawSprite should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawSpriteRGB(0, 0, [['#fff']], 1), 'CanvasUtils.drawSpriteRGB should no-op without context');
+        assertNoThrow(assert, () => CanvasSprite.drawSprite(0, 0, ['1'], 1, 'white'), 'CanvasSprite.drawSprite should no-op without context');
+        assertNoThrow(assert, () => CanvasSprite.drawSpriteRGB(0, 0, [['#fff']], 1), 'CanvasSprite.drawSpriteRGB should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.canvasClear(), 'CanvasUtils.canvasClear should no-op without context');
 
         const dimensions = CanvasText.calculateTextMetrics(null, 'hello');
@@ -73,13 +74,13 @@ function testCanvasUtilsGuardOnMissingContext(assert) {
 
 function testRenderersGuardOnMissingContext(assert) {
     const originalCtx = CanvasUtils.ctx;
-    const originalDrawSprite = CanvasUtils.drawSprite;
-    const originalDrawSpriteRGB = CanvasUtils.drawSpriteRGB;
+    const originalDrawSprite = CanvasSprite.drawSprite;
+    const originalDrawSpriteRGB = CanvasSprite.drawSpriteRGB;
 
     try {
         CanvasUtils.ctx = null;
-        CanvasUtils.drawSprite = () => {};
-        CanvasUtils.drawSpriteRGB = () => {};
+        CanvasSprite.drawSprite = () => {};
+        CanvasSprite.drawSpriteRGB = () => {};
 
         const spriteLike = {
             isDead: () => false,
@@ -158,15 +159,15 @@ function testRenderersGuardOnMissingContext(assert) {
         assertNoThrow(assert, () => new ParticleExplosion(0, 0, 1, 5, 1, 3).draw(), 'ParticleExplosion should no-op without context');
     } finally {
         CanvasUtils.ctx = originalCtx;
-        CanvasUtils.drawSprite = originalDrawSprite;
-        CanvasUtils.drawSpriteRGB = originalDrawSpriteRGB;
+        CanvasSprite.drawSprite = originalDrawSprite;
+        CanvasSprite.drawSpriteRGB = originalDrawSpriteRGB;
     }
 }
 
 function testRenderersDrawWithMockContext(assert) {
     const originalCtx = CanvasUtils.ctx;
-    const originalDrawSprite = CanvasUtils.drawSprite;
-    const originalDrawSpriteRGB = CanvasUtils.drawSpriteRGB;
+    const originalDrawSprite = CanvasSprite.drawSprite;
+    const originalDrawSpriteRGB = CanvasSprite.drawSpriteRGB;
 
     let drawSpriteCalls = 0;
     let drawSpriteRgbCalls = 0;
@@ -175,8 +176,8 @@ function testRenderersDrawWithMockContext(assert) {
     try {
         mockCtx = createMockCtx();
         CanvasUtils.ctx = mockCtx;
-        CanvasUtils.drawSprite = () => { drawSpriteCalls += 1; };
-        CanvasUtils.drawSpriteRGB = () => { drawSpriteRgbCalls += 1; };
+        CanvasSprite.drawSprite = () => { drawSpriteCalls += 1; };
+        CanvasSprite.drawSpriteRGB = () => { drawSpriteRgbCalls += 1; };
 
         PrimitiveRenderer.draw({ x: 1, y: 2, width: 3, height: 4, isDestroyed: false }, 'white', 'red', 1);
         PrimitiveRenderer.drawRect(5, 6, 7, 8, 'white', 'red', 1);
@@ -275,8 +276,8 @@ function testRenderersDrawWithMockContext(assert) {
         assert(mockCtx.saveCalls === mockCtx.restoreCalls, 'Renderers should balance canvas save and restore calls');
     } finally {
         CanvasUtils.ctx = originalCtx;
-        CanvasUtils.drawSprite = originalDrawSprite;
-        CanvasUtils.drawSpriteRGB = originalDrawSpriteRGB;
+        CanvasSprite.drawSprite = originalDrawSprite;
+        CanvasSprite.drawSpriteRGB = originalDrawSpriteRGB;
     }
 }
 

@@ -1,4 +1,4 @@
-import CanvasUtils from '../core/canvasUtils.js';
+import CanvasSprite from '../core/canvasSprite.js';
 import RendererGuards from './rendererGuards.js';
 
 class SpriteRenderer {
@@ -18,11 +18,11 @@ class SpriteRenderer {
         }
 
         if (object.frameType === 'json') {
-            CanvasUtils.drawSpriteRGB(newX, newY, frame, object.pixelSize);
+            CanvasSprite.drawSpriteRGB(newX, newY, frame, object.pixelSize);
             return;
         }
 
-        CanvasUtils.drawSprite(newX, newY, frame, object.pixelSize, object.spriteColor);
+        CanvasSprite.drawSprite(newX, newY, frame, object.pixelSize, object.spriteColor);
     }
 
     static drawRGB(object, newX, newY) {
@@ -35,7 +35,7 @@ class SpriteRenderer {
             return;
         }
 
-        CanvasUtils.drawSpriteRGB(newX, newY, frame, object.pixelSize);
+        CanvasSprite.drawSpriteRGB(newX, newY, frame, object.pixelSize);
     }
 
     static getRenderableFrame(object) {

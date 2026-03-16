@@ -7,6 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 
 import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasSprite from '../../engine/core/canvasSprite.js';
 import CanvasText from '../../engine/core/canvasText.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../engine/game/gameUtils.js';
@@ -17,7 +18,7 @@ import Frog from './gameObjects/frog.js';
 
 import AttractMode from './attractMode.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
 
 class Game extends GameBase {
 

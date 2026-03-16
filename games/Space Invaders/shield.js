@@ -6,7 +6,7 @@
 import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
 
 import ObjectStatic from '../../engine/objects/objectStatic.js';
-import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasSprite from '../../engine/core/canvasSprite.js';
 
 import RandomUtils from '../../engine/math/randomUtils.js';
 import Sprite from '../../engine/core/sprite.js';
@@ -90,7 +90,7 @@ class Shield extends ObjectStatic {
      * Draws the shield on the canvas.
      */
     draw() {
-        CanvasUtils.drawSprite(this.x, this.y, this.frame, this.pixelSize, shieldConfig.color);
+        CanvasSprite.drawSprite(this.x, this.y, this.frame, this.pixelSize, shieldConfig.color);
     }
 
     /**

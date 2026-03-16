@@ -3,10 +3,10 @@
 // 03/12/2026
 // screens.js
 
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasSprite from '../../../engine/core/canvasSprite.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
 
 class AsteroidsScreens {
     static BACK_TO_ATTRACT = 180;

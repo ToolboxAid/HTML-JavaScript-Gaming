@@ -6,9 +6,7 @@
 import SystemUtils from '../utils/systemUtils.js';
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
-import CanvasText from './canvasText.js';
 import Colors from '../renderers/assets/colors.js';
-import Sprite from './sprite.js';
 
 class CanvasUtils {
     // Enable debug mode: game.html?canvasUtils
@@ -95,65 +93,6 @@ class CanvasUtils {
 
     static hasContext() {
         return !!this.ctx;
-    }
-
-    // Method to draw the current frame
-    static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
-        if (!this.ctx || !Array.isArray(frame)) {
-            return false;
-        }
-
-        for (let row = 0; row < frame.length; row++) {
-            for (let col = 0; col < frame[row].length; col++) {
-                const pixel = frame[row][col];
-                let color = Colors.symbolColorMap[pixel] || '#00000000'; // transparent';
-
-                // Replace white with spriteColor if present
-                if (pixel === '1' && spriteColor) {
-                    color = spriteColor; // Use sprite color instead of white
-                }
-                this.ctx.fillStyle = color;
-                let ceilX = Math.ceil((col * pixelSize) + x);
-                let ceilY = Math.ceil((row * pixelSize) + y);
-                let ceilPixelSize = Math.ceil(pixelSize);
-                this.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
-            }
-        }
-
-        if (drawBounds) {
-            let dimensions = Sprite.getLayerDimensions(frame, pixelSize);
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = spriteColor;
-            this.ctx.strokeRect(x, y, dimensions.width, dimensions.height);
-        }
-
-        return true;
-    }
-
-    // Method to draw the current frame
-    static drawSpriteRGB(x, y, frame, pixelSize, drawBounds = false) {
-        if (!this.ctx || !Array.isArray(frame)) {
-            return false;
-        }
-
-        for (let row = 0; row < frame.length; row++) {
-            for (let col = 0; col < frame[row].length; col++) {
-                this.ctx.fillStyle = frame[row][col];
-                let ceilX = Math.ceil((col * pixelSize) + x);
-                let ceilY = Math.ceil((row * pixelSize) + y);
-                let ceilPixelSize = Math.ceil(pixelSize);
-                this.ctx.fillRect(ceilX, ceilY, ceilPixelSize, ceilPixelSize);
-            }
-        }
-
-        if (drawBounds) {
-            const dimensions = Sprite.getLayerDimensions(frame, pixelSize);
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = 'white';
-            this.ctx.strokeRect(x, y, dimensions.width, dimensions.height);
-        }
-
-        return true;
     }
 
     /**
