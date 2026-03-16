@@ -7,6 +7,7 @@ import { font5x3 } from './global.js'; // Import canvasConfig
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
@@ -58,7 +59,9 @@ class Game extends GameBase {
     drawDashedLine() {
         const dashPattern = [19, 19]; // Define your dash pattern
         const centerX = canvasConfig.width / 2; // Middle of the canvas
-        CanvasUtils.drawDashLine(centerX, 0, centerX, canvasConfig.height, 8, 'white', dashPattern); // Draw a dashed line
+        PrimitiveRenderer.drawLine(centerX, 0, centerX, canvasConfig.height, 'white', 8, 1, {
+            lineDash: dashPattern
+        });
     }
 
     gameLoop(deltaTime) {
