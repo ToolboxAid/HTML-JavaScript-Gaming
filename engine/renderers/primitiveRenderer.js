@@ -118,23 +118,8 @@ class PrimitiveRenderer {
     }
 
     static drawSafeAreaGuides(width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
-        const x = margin;
-        const y = margin;
-        const safeWidth = Math.max(0, width - (margin * 2));
-        const safeHeight = Math.max(0, height - (margin * 2));
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const lineDash = [8, 6];
-
         return this.withContext(options, (ctx) => {
-            const guideOptions = {
-                ...options,
-                lineDash
-            };
-
-            this.renderRect(ctx, x, y, safeWidth, safeHeight, null, strokeColor, lineWidth, 1, guideOptions);
-            this.renderLine(ctx, centerX, y, centerX, y + safeHeight, strokeColor, lineWidth, 1, guideOptions);
-            this.renderLine(ctx, x, centerY, x + safeWidth, centerY, strokeColor, lineWidth, 1, guideOptions);
+            this.renderSafeAreaGuides(ctx, width, height, margin, strokeColor, lineWidth, options);
         });
     }
 
@@ -162,11 +147,16 @@ class PrimitiveRenderer {
         ctx = null
     } = {}) {
         return this.withContext({ ctx }, (renderCtx) => {
-            this.renderRect(renderCtx, x, y, width, height, null, borderColor, borderWidth, alpha);
-
-            if (Number.isFinite(markerX) && Number.isFinite(markerY)) {
-                this.renderMarker(renderCtx, markerX, markerY, markerRadius, markerColor, markerAlpha);
-            }
+            this.renderDebugBounds(renderCtx, x, y, width, height, {
+                borderColor,
+                borderWidth,
+                alpha,
+                markerX,
+                markerY,
+                markerRadius,
+                markerColor,
+                markerAlpha
+            });
         });
     }
 
@@ -350,6 +340,23 @@ class PrimitiveRenderer {
         this.renderRect(ctx, 0, 0, width, height, fillColor, null, 0, alpha, options);
     }
 
+    static renderSafeAreaGuides(ctx, width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
+        const x = margin;
+        const y = margin;
+        const safeWidth = Math.max(0, width - (margin * 2));
+        const safeHeight = Math.max(0, height - (margin * 2));
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const guideOptions = {
+            ...options,
+            lineDash: [8, 6]
+        };
+
+        this.renderRect(ctx, x, y, safeWidth, safeHeight, null, strokeColor, lineWidth, 1, guideOptions);
+        this.renderLine(ctx, centerX, y, centerX, y + safeHeight, strokeColor, lineWidth, 1, guideOptions);
+        this.renderLine(ctx, x, centerY, x + safeWidth, centerY, strokeColor, lineWidth, 1, guideOptions);
+    }
+
     static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
         const normalizedColumns = Math.max(0, Math.floor(columns));
         const normalizedRows = Math.max(0, Math.floor(rows));
@@ -391,6 +398,23 @@ class PrimitiveRenderer {
 
     static renderMarker(ctx, x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
         this.renderCircle(ctx, x, y, radius, fillColor, null, 0, alpha, options);
+    }
+
+    static renderDebugBounds(ctx, x, y, width, height, {
+        borderColor = 'white',
+        borderWidth = 1,
+        alpha = 1,
+        markerX = null,
+        markerY = null,
+        markerRadius = 2,
+        markerColor = borderColor,
+        markerAlpha = alpha
+    } = {}) {
+        this.renderRect(ctx, x, y, width, height, null, borderColor, borderWidth, alpha);
+
+        if (Number.isFinite(markerX) && Number.isFinite(markerY)) {
+            this.renderMarker(ctx, markerX, markerY, markerRadius, markerColor, markerAlpha);
+        }
     }
 }
 
