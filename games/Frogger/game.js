@@ -9,6 +9,7 @@ import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvas.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
+import GameControllers from '../../engine/input/controller/gameControllers.js';
 
 import Frog from './gameObjects/frog.js';
 
@@ -32,6 +33,7 @@ class Game extends GameBase {
     this.playerSelect = playerSelect;
 
     this.keyboardInput = new KeyboardInput();
+    this.gameControllers = new GameControllers();
 
     // Game State Variables
     this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
@@ -52,6 +54,7 @@ class Game extends GameBase {
   // Example: object.position += object.velocity * deltaTime;
   gameLoop(deltaTime) {
     this.keyboardInput.update();
+    this.gameControllers?.update();
 
    // console.log(this.gameState);
 
@@ -106,7 +109,13 @@ class Game extends GameBase {
   }
 
   displayPlayerSelect() {
-    const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput, null);
+    const result = GameUtils.selectNumberOfPlayers(
+      CanvasUtils.ctx,
+      canvasConfig,
+      this.playerSelect,
+      this.keyboardInput,
+      this.gameControllers
+    );
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;
