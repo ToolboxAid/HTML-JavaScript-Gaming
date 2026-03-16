@@ -97,8 +97,14 @@ export function testGameUtils(assert) {
     const resolvedKeyboardSelection = GameUtils.resolvePlayerSelection(new MockKeyboardInput(['Digit3']), null, { maxPlayers: 4, lives: 2 });
     assert(resolvedKeyboardSelection.playerCount === 3, "resolvePlayerSelection should return keyboard selection first");
 
+    const resolvedWithoutKeyboard = GameUtils.resolvePlayerSelection(null, null, { maxPlayers: 4, lives: 2 });
+    assert(resolvedWithoutKeyboard === null, "resolvePlayerSelection should handle missing keyboard input");
+
     const resolvedControllerSelection = GameUtils.resolvePlayerSelection(new MockKeyboardInput([]), new MockGameControllers([5]), { maxPlayers: 4, lives: 2 });
     assert(resolvedControllerSelection.playerCount === 2, "resolvePlayerSelection should fall back to controller selection");
+
+    const keyboardSelectionWithoutInput = GameUtils.getKeyboardPlayerSelection(null, { maxPlayers: 4, lives: 2 });
+    assert(keyboardSelectionWithoutInput === null, "getKeyboardPlayerSelection should return null when keyboard input is missing");
 
     let playerLives = [3, 3, 3, 3];
     let currentPlayer = 0;

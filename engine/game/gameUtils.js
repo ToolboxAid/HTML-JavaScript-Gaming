@@ -5,6 +5,11 @@
 
 import DebugLog from '../utils/debugLog.js';
 
+const CONTROLLER_PLAYER_SELECT_BUTTONS = Object.freeze({
+    onePlayer: 4,
+    twoPlayers: 5
+});
+
 const DEFAULT_PLAYER_SELECT_CONFIG = Object.freeze({
     maxPlayers: 4,
     lives: 3,
@@ -62,6 +67,10 @@ class GameUtils {
     }
 
     static getKeyboardPlayerSelection(keyboardInput, config) {
+        if (!keyboardInput || typeof keyboardInput.getKeysPressed !== 'function') {
+            return null;
+        }
+
         const keysPressed = new Set(keyboardInput.getKeysPressed());
 
         for (let i = 1; i <= config.maxPlayers; i++) {
@@ -95,11 +104,11 @@ class GameUtils {
 
         this.warnAboutControllerLimit();
 
-        if (gameControllers.isButtonIndexDown(0, 4)) {
+        if (gameControllers.isButtonIndexDown(0, CONTROLLER_PLAYER_SELECT_BUTTONS.onePlayer)) {
             return this.buildPlayerSelectionResult(1, config.maxPlayers, config.lives);
         }
 
-        if (gameControllers.isButtonIndexDown(0, 5)) {
+        if (gameControllers.isButtonIndexDown(0, CONTROLLER_PLAYER_SELECT_BUTTONS.twoPlayers)) {
             return this.buildPlayerSelectionResult(2, config.maxPlayers, config.lives);
         }
 
