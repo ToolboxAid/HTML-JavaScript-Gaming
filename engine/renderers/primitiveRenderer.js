@@ -272,23 +272,32 @@ class PrimitiveRenderer {
     }
 
     static renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        this.applyRenderState(ctx, alpha, options.lineDash);
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
+        this.renderShape(ctx, fillColor, borderColor, borderWidth, {
+            alpha,
+            lineDash: options.lineDash,
+            trace: () => {
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+            }
+        });
     }
 
     static renderEllipse(ctx, x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
-        this.applyRenderState(ctx, alpha, options.lineDash);
-        ctx.beginPath();
-        ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
-        this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
+        this.renderShape(ctx, fillColor, borderColor, borderWidth, {
+            alpha,
+            lineDash: options.lineDash,
+            trace: () => {
+                ctx.beginPath();
+                ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
+            }
+        });
     }
 
     static renderPolygon(ctx, points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
-        this.applyLineDash(ctx, options.lineDash);
-        this.tracePath(ctx, points, { closePath: true });
-        this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
+        this.renderShape(ctx, fillColor, borderColor, borderWidth, {
+            lineDash: options.lineDash,
+            trace: () => this.tracePath(ctx, points, { closePath: true })
+        });
     }
 
     static renderPath(ctx, points, strokeColor = 'white', lineWidth = 1, {
@@ -389,6 +398,16 @@ class PrimitiveRenderer {
         if (borderColor && borderWidth > 0) {
             this.renderStroke(ctx, borderColor, borderWidth);
         }
+    }
+
+    static renderShape(ctx, fillColor = null, borderColor = null, borderWidth = 0, {
+        alpha = 1,
+        lineDash = null,
+        trace
+    } = {}) {
+        this.applyRenderState(ctx, alpha, lineDash);
+        trace?.();
+        this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
     }
 
     static renderStroke(ctx, strokeColor = 'white', lineWidth = 1) {
