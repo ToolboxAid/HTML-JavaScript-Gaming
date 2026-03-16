@@ -17,7 +17,7 @@ import EnemyOctopus from "./enemyOctopus.js"
 import Shield from "./shield.js";
 import Ground from "./ground.js";
 
-const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.bindDrawSprite());
 
 export default class AttractMode {
     static delayCounter = 0;

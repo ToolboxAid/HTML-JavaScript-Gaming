@@ -20,8 +20,8 @@ import RandomUtils from '../../engine/math/randomUtils.js';
 import Sprite from '../../engine/core/sprite.js';
 import SystemUtils from '../../engine/utils/systemUtils.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
-const drawPixelNumber = CanvasText.bindDrawNumber(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.bindDrawSprite());
+const drawPixelNumber = CanvasText.bindDrawNumber(CanvasSprite.bindDrawSprite());
 
 import AttractMode from './attractMode.js';
 

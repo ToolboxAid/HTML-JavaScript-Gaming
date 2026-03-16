@@ -14,7 +14,7 @@ import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import AttractMode from './attractMode.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.bindDrawSprite());
 
 class Game extends GameBase {
 

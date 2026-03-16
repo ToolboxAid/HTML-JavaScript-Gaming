@@ -12,6 +12,14 @@ class CanvasSprite {
         throw new Error('CanvasSprite is a utility class with only static methods. Do not instantiate.');
     }
 
+    static bindDrawSprite() {
+        return (...args) => this.drawSprite(...args);
+    }
+
+    static bindDrawSpriteRGB() {
+        return (...args) => this.drawSpriteRGB(...args);
+    }
+
     static resolveContext(ctx = null) {
         return ctx || CanvasUtils.ctx || null;
     }

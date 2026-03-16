@@ -12,8 +12,8 @@ import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
-const drawPixelNumber = CanvasText.bindDrawNumber(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.bindDrawSprite());
+const drawPixelNumber = CanvasText.bindDrawNumber(CanvasSprite.bindDrawSprite());
 
 class Game extends GameBase {
   constructor() {

@@ -6,7 +6,7 @@
 import CanvasSprite from '../../../engine/core/canvasSprite.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.bindDrawSprite());
 
 class AsteroidsScreens {
     static BACK_TO_ATTRACT = 180;

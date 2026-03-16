@@ -17,7 +17,7 @@ import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
-const drawPixelText = CanvasText.bindDrawText(CanvasSprite.drawSprite.bind(CanvasSprite));
+const drawPixelText = CanvasText.bindDrawText(CanvasSprite.bindDrawSprite());
 
 class Game extends GameBase {
 
