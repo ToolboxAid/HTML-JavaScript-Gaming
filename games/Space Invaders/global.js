@@ -26,13 +26,13 @@ export const playerSelect = {
     maxPlayers: 2,
     lives: 3,
 
-    fillStyle: "yellow",
+    color: "yellow",
     font: "25px Arial",
-    fillText: "Keyboard Select Player(s)",
+    title: "Keyboard Select Player(s)",
 
-    optionBaseX: 250,
-    optionBaseY: 50,
-    optionSpacing: 40
+    x: 250,
+    y: 50,
+    spacing: 40
 }
 
 export const spriteConfig = {

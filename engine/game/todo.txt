@@ -14,7 +14,7 @@ Simplify `engine/game/gameUtils.js` without breaking games that depend on shared
 Cleanup targets:
 [x] Identify which `gameUtils.js` methods are actively used by current games/samples
 [.] Separate shared game-flow helpers from older overlay/render assumptions
-[.] Remove dead or redundant config fields where compatibility allows
+[x] Remove dead or redundant config fields where compatibility allows
 [x] Keep console/debug output intentional and opt-in
 [x] Ensure logging uses the engine debugLog
 [ ] Update affected docs/tests when shared behavior changes

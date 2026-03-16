@@ -46,7 +46,7 @@ class MockCanvasContext {
 export function testGameUtils(assert) {
     const mockCtx = new MockCanvasContext();
     const canvasConfig = { width: 800, height: 600, backgroundColor: '#000000' };
-    const playerSelect = { maxPlayers: 4, lives: 3, optionBaseX: 100, optionBaseY: 100, optionSpacing: 50 };
+    const playerSelect = { maxPlayers: 4, lives: 3, x: 100, y: 100, spacing: 50 };
 
     const keyboardInput = new MockKeyboardInput(['Digit1']);
     const gameControllers = null;
@@ -56,11 +56,11 @@ export function testGameUtils(assert) {
     assert(mockCtx.fillRectCalls.length === 1, "selectNumberOfPlayers should draw the background overlay once");
     assert(mockCtx.fillTextCalls.length >= 5, "selectNumberOfPlayers should draw heading plus keyboard option text");
 
-    const config = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 0, lives: 0, optionBaseY: 0, optionSpacing: 0 });
+    const config = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 0, lives: 0, y: 0, spacing: 0 });
     assert(config.maxPlayers === 0, "getPlayerSelectConfig should preserve explicit zero maxPlayers");
     assert(config.lives === 0, "getPlayerSelectConfig should preserve explicit zero lives");
-    assert(config.y === 0, "getPlayerSelectConfig should preserve explicit zero optionBaseY");
-    assert(config.spacing === 0, "getPlayerSelectConfig should preserve explicit zero optionSpacing");
+    assert(config.y === 0, "getPlayerSelectConfig should preserve explicit zero y");
+    assert(config.spacing === 0, "getPlayerSelectConfig should preserve explicit zero spacing");
 
     const aliasConfig = GameUtils.getPlayerSelectConfig(canvasConfig, {
         title: 'Choose Players',
@@ -69,11 +69,11 @@ export function testGameUtils(assert) {
         spacing: 56,
         color: 'cyan'
     });
-    assert(aliasConfig.fillText === 'Choose Players', "getPlayerSelectConfig should accept title alias");
-    assert(aliasConfig.x === 12, "getPlayerSelectConfig should accept x alias");
-    assert(aliasConfig.y === 34, "getPlayerSelectConfig should accept y alias");
-    assert(aliasConfig.spacing === 56, "getPlayerSelectConfig should accept spacing alias");
-    assert(aliasConfig.fillStyle === 'cyan', "getPlayerSelectConfig should accept color alias");
+    assert(aliasConfig.fillText === 'Choose Players', "getPlayerSelectConfig should use title");
+    assert(aliasConfig.x === 12, "getPlayerSelectConfig should use x");
+    assert(aliasConfig.y === 34, "getPlayerSelectConfig should use y");
+    assert(aliasConfig.spacing === 56, "getPlayerSelectConfig should use spacing");
+    assert(aliasConfig.fillStyle === 'cyan', "getPlayerSelectConfig should use color");
 
     const keyboard1Player = new MockKeyboardInput(['Digit1']);
     const result1Player = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard1Player, null);
