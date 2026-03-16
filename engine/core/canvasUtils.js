@@ -153,9 +153,10 @@ class CanvasUtils {
         }
 
         if (drawBounds) {
-            //let dimensions = Sprite.getWidthHeight(frame, pixelSize);
             let dimensions = Sprite.getLayerDimensions(frame, pixelSize);
-            this.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = spriteColor;
+            this.ctx.strokeRect(x, y, dimensions.width, dimensions.height);
         }
 
         return true;
@@ -179,75 +180,9 @@ class CanvasUtils {
 
         if (drawBounds) {
             const dimensions = Sprite.getLayerDimensions(frame, pixelSize);
-            this.drawBounds(x, y, dimensions.width, dimensions.height, "white", 2);
-        }
-
-        return true;
-    }
-
-    /**
-     * Legacy primitive compatibility wrappers.
-     * New line/shape work should live in PrimitiveRenderer.
-     */
-    static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
-        if (!this.ctx) {
-            return false;
-        }
-
-        if (w <= 0) {
-            w = 10;
-        }
-        if (h <= 0) {
-            h = 10;
-        }
-        this.ctx.lineWidth = lineSize;
-        this.ctx.strokeStyle = color;
-        this.ctx.strokeRect(x, y, w, h);
-
-        return true;
-    }
-
-    static drawRect(x, y, width, height, color) {
-        if (!this.ctx) {
-            return false;
-        }
-
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(x, y, width, height);
-
-        return true;
-    }
-
-    /**
-     * Legacy primitive compatibility wrappers.
-     */
-    static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
-        if (!this.ctx) {
-            return false;
-        }
-
-        this.ctx.beginPath();
-        this.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
-        this.ctx.fillStyle = color;
-        this.ctx.fill();
-
-        return true;
-    }
-
-    static drawCircle2(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        if (!this.ctx) {
-            return false;
-        }
-
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
-        this.ctx.fillStyle = fillColor;
-        this.ctx.fill();
-
-        if (borderColor && borderWidth > 0) {
-            this.ctx.strokeStyle = borderColor;
-            this.ctx.lineWidth = borderWidth;
-            this.ctx.stroke();
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = 'white';
+            this.ctx.strokeRect(x, y, dimensions.width, dimensions.height);
         }
 
         return true;

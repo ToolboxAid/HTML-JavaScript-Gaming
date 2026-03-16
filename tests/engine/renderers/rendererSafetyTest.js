@@ -61,10 +61,6 @@ function testCanvasUtilsGuardOnMissingContext(assert) {
 
         assertNoThrow(assert, () => CanvasUtils.drawSprite(0, 0, ['1'], 1, 'white'), 'CanvasUtils.drawSprite should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.drawSpriteRGB(0, 0, [['#fff']], 1), 'CanvasUtils.drawSpriteRGB should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawBounds(0, 0, 1, 1), 'CanvasUtils.drawBounds should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawRect(0, 0, 1, 1, 'white'), 'CanvasUtils.drawRect should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawCircle({ x: 0, y: 0 }), 'CanvasUtils.drawCircle should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawCircle2(0, 0, 1), 'CanvasUtils.drawCircle2 should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.canvasClear(), 'CanvasUtils.canvasClear should no-op without context');
 
         const dimensions = CanvasUtils.calculateTextMetrics('hello');
@@ -78,15 +74,11 @@ function testRenderersGuardOnMissingContext(assert) {
     const originalCtx = CanvasUtils.ctx;
     const originalDrawSprite = CanvasUtils.drawSprite;
     const originalDrawSpriteRGB = CanvasUtils.drawSpriteRGB;
-    const originalDrawBounds = CanvasUtils.drawBounds;
-    const originalDrawCircle2 = CanvasUtils.drawCircle2;
 
     try {
         CanvasUtils.ctx = null;
         CanvasUtils.drawSprite = () => {};
         CanvasUtils.drawSpriteRGB = () => {};
-        CanvasUtils.drawBounds = () => {};
-        CanvasUtils.drawCircle2 = () => {};
 
         const spriteLike = {
             isDead: () => false,
@@ -161,8 +153,6 @@ function testRenderersGuardOnMissingContext(assert) {
         CanvasUtils.ctx = originalCtx;
         CanvasUtils.drawSprite = originalDrawSprite;
         CanvasUtils.drawSpriteRGB = originalDrawSpriteRGB;
-        CanvasUtils.drawBounds = originalDrawBounds;
-        CanvasUtils.drawCircle2 = originalDrawCircle2;
     }
 }
 
@@ -170,8 +160,6 @@ function testRenderersDrawWithMockContext(assert) {
     const originalCtx = CanvasUtils.ctx;
     const originalDrawSprite = CanvasUtils.drawSprite;
     const originalDrawSpriteRGB = CanvasUtils.drawSpriteRGB;
-    const originalDrawBounds = CanvasUtils.drawBounds;
-    const originalDrawCircle2 = CanvasUtils.drawCircle2;
 
     let drawSpriteCalls = 0;
     let drawSpriteRgbCalls = 0;
@@ -182,8 +170,6 @@ function testRenderersDrawWithMockContext(assert) {
         CanvasUtils.ctx = mockCtx;
         CanvasUtils.drawSprite = () => { drawSpriteCalls += 1; };
         CanvasUtils.drawSpriteRGB = () => { drawSpriteRgbCalls += 1; };
-        CanvasUtils.drawBounds = () => {};
-        CanvasUtils.drawCircle2 = () => {};
 
         PrimitiveRenderer.draw({ x: 1, y: 2, width: 3, height: 4, isDestroyed: false }, 'white', 'red', 1);
         PrimitiveRenderer.drawRect(5, 6, 7, 8, 'white', 'red', 1);
@@ -284,8 +270,6 @@ function testRenderersDrawWithMockContext(assert) {
         CanvasUtils.ctx = originalCtx;
         CanvasUtils.drawSprite = originalDrawSprite;
         CanvasUtils.drawSpriteRGB = originalDrawSpriteRGB;
-        CanvasUtils.drawBounds = originalDrawBounds;
-        CanvasUtils.drawCircle2 = originalDrawCircle2;
     }
 }
 
