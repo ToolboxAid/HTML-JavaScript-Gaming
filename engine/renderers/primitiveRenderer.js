@@ -376,14 +376,24 @@ class PrimitiveRenderer {
         const safeHeight = Math.max(0, height - (margin * 2));
         const centerX = width / 2;
         const centerY = height / 2;
-        const guideOptions = {
-            ...options,
-            lineDash: [8, 6]
-        };
+        const lineDash = [8, 6];
 
-        this.renderBounds(ctx, x, y, safeWidth, safeHeight, strokeColor, lineWidth, 1, guideOptions);
-        this.renderLine(ctx, centerX, y, centerX, y + safeHeight, strokeColor, lineWidth, 1, guideOptions);
-        this.renderLine(ctx, x, centerY, x + safeWidth, centerY, strokeColor, lineWidth, 1, guideOptions);
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha: 1,
+            lineDash,
+            trace: () => {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + safeWidth, y);
+                ctx.lineTo(x + safeWidth, y + safeHeight);
+                ctx.lineTo(x, y + safeHeight);
+                ctx.lineTo(x, y);
+                ctx.moveTo(centerX, y);
+                ctx.lineTo(centerX, y + safeHeight);
+                ctx.moveTo(x, centerY);
+                ctx.lineTo(x + safeWidth, centerY);
+            }
+        });
     }
 
     static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
