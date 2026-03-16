@@ -17,18 +17,7 @@ class PrimitiveRenderer {
 
     static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
-            ctx.globalAlpha = alpha;
-
-            if (fillColor) {
-                ctx.fillStyle = fillColor;
-                ctx.fillRect(x, y, width, height);
-            }
-
-            if (borderColor && borderWidth > 0) {
-                ctx.strokeStyle = borderColor;
-                ctx.lineWidth = borderWidth;
-                ctx.strokeRect(x, y, width, height);
-            }
+            this.renderRect(ctx, x, y, width, height, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
@@ -74,21 +63,7 @@ class PrimitiveRenderer {
 
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
-            ctx.globalAlpha = alpha;
-            this.applyLineDash(ctx, options.lineDash);
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-
-            if (fillColor) {
-                ctx.fillStyle = fillColor;
-                ctx.fill();
-            }
-
-            if (borderColor && borderWidth > 0) {
-                ctx.strokeStyle = borderColor;
-                ctx.lineWidth = borderWidth;
-                ctx.stroke();
-            }
+            this.renderCircle(ctx, x, y, radius, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
@@ -162,14 +137,7 @@ class PrimitiveRenderer {
 
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
-            ctx.globalAlpha = alpha;
-            this.applyLineDash(ctx, options.lineDash);
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = lineWidth;
-            ctx.stroke();
+            this.renderLine(ctx, x1, y1, x2, y2, strokeColor, lineWidth, alpha, options);
         });
     }
 
@@ -179,21 +147,23 @@ class PrimitiveRenderer {
         const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
         const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
 
-        for (let column = 0; column <= normalizedColumns; column++) {
-            const lineX = x + (column * stepX);
-            this.drawLine(lineX, y, lineX, y + height, strokeColor, lineWidth, 1, options);
-        }
+        return this.withContext(options, (ctx) => {
+            for (let column = 0; column <= normalizedColumns; column++) {
+                const lineX = x + (column * stepX);
+                this.renderLine(ctx, lineX, y, lineX, y + height, strokeColor, lineWidth, 1, options);
+            }
 
-        for (let row = 0; row <= normalizedRows; row++) {
-            const lineY = y + (row * stepY);
-            this.drawLine(x, lineY, x + width, lineY, strokeColor, lineWidth, 1, options);
-        }
-
-        return true;
+            for (let row = 0; row <= normalizedRows; row++) {
+                const lineY = y + (row * stepY);
+                this.renderLine(ctx, x, lineY, x + width, lineY, strokeColor, lineWidth, 1, options);
+            }
+        });
     }
 
     static drawOverlay(width, height, fillColor = 'black', alpha = 0.5, options = {}) {
-        return this.drawRect(0, 0, width, height, fillColor, null, 0, alpha, options);
+        return this.withContext(options, (ctx) => {
+            this.renderRect(ctx, 0, 0, width, height, fillColor, null, 0, alpha, options);
+        });
     }
 
     static drawSafeAreaGuides(width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
@@ -205,20 +175,16 @@ class PrimitiveRenderer {
         const centerY = height / 2;
         const lineDash = [8, 6];
 
-        this.drawBounds(x, y, safeWidth, safeHeight, strokeColor, lineWidth, 1, {
-            ...options,
-            lineDash
-        });
-        this.drawLine(centerX, y, centerX, y + safeHeight, strokeColor, lineWidth, 1, {
-            ...options,
-            lineDash
-        });
-        this.drawLine(x, centerY, x + safeWidth, centerY, strokeColor, lineWidth, 1, {
-            ...options,
-            lineDash
-        });
+        return this.withContext(options, (ctx) => {
+            const guideOptions = {
+                ...options,
+                lineDash
+            };
 
-        return true;
+            this.renderRect(ctx, x, y, safeWidth, safeHeight, null, strokeColor, lineWidth, 1, guideOptions);
+            this.renderLine(ctx, centerX, y, centerX, y + safeHeight, strokeColor, lineWidth, 1, guideOptions);
+            this.renderLine(ctx, x, centerY, x + safeWidth, centerY, strokeColor, lineWidth, 1, guideOptions);
+        });
     }
 
     static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
@@ -230,14 +196,15 @@ class PrimitiveRenderer {
             return false;
         }
 
-        return this.withContext({ ctx }, () => {
+        return this.withContext({ ctx }, (renderCtx) => {
             for (let row = 0; row < matrix.length; row++) {
                 for (let col = 0; col < matrix[row].length; col++) {
                     if (matrix[row][col] !== 1) {
                         continue;
                     }
 
-                    this.drawRect(
+                    this.renderRect(
+                        renderCtx,
                         x + (col * pixelWidth),
                         y + (row * pixelHeight),
                         pixelWidth + extraWidth,
@@ -299,6 +266,51 @@ class PrimitiveRenderer {
         }
 
         ctx.setLineDash(lineDash);
+    }
+
+    static renderRect(ctx, x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+        ctx.globalAlpha = alpha;
+        this.applyLineDash(ctx, options.lineDash);
+
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fillRect(x, y, width, height);
+        }
+
+        if (borderColor && borderWidth > 0) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+            ctx.strokeRect(x, y, width, height);
+        }
+    }
+
+    static renderLine(ctx, x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
+        ctx.globalAlpha = alpha;
+        this.applyLineDash(ctx, options.lineDash);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+    }
+
+    static renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+        ctx.globalAlpha = alpha;
+        this.applyLineDash(ctx, options.lineDash);
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+
+        if (borderColor && borderWidth > 0) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+            ctx.stroke();
+        }
     }
 }
 
