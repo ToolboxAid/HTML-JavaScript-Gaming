@@ -40,7 +40,7 @@ Detail checklist:
 [x] Update README with sample details
 
 Final:
-[ ] Run browser smoke pass for scroll/camera/gameplay flow and cleanup
+[x] Run browser smoke pass for scroll/camera/gameplay flow and cleanup
 
 Smoke pass steps:
 1. Load `samples/engine/2D side scroll tile map/index.html`.

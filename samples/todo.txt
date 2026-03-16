@@ -32,7 +32,7 @@ visual:
 
 engine:
 [x] samples/engine/Game Engine/
-[ ] samples/engine/2D side scroll tile map/
+[x] samples/engine/2D side scroll tile map/
 
 Additional reviews:
 [ ] Engine dedupe review: unify shared frame-step logic between `engine/animation/spriteController.js` and `engine/animation/pngController.js`
