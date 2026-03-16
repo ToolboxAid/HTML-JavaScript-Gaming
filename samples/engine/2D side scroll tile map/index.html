@@ -9,17 +9,21 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D side scroll tile map</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-    
-    <!-- game specific code -->
-    <script type="module"  src="./game.js" defer></script>
+    <script type="module" src="./game.js" defer></script>
 </head>
 
-<body id="2D side scroll tile map">
-    <h1>2D side scroll tile map</h1>
-    <div id="gameAreaContainer">      
-        <canvas id="gameArea" style="background-color:#0000FF;"></canvas>    
-    </div>
+<body>
+    <main class="sample-shell">
+        <header class="sample-header">
+            <h1>2D Side Scroll Tile Map</h1>
+            <p>Scrolling tile-map sample with keyboard/controller attract flow, shared player select, and camera follow behavior.</p>
+        </header>
+        <div id="gameAreaContainer">
+            <canvas id="gameArea"></canvas>
+        </div>
+    </main>
 </body>
 </html>

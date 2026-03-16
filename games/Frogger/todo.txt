@@ -15,6 +15,7 @@ Project-specific checklist:
 [ ] Review attract mode, level management, and UI boundaries for clearer ownership
 [ ] Move toward canonical `engine/game/` imports where practical
 [ ] Verify sprite/object lifecycle and input ownership follow current conventions
+[x] Add local `README.md` with current controls and sample scope
 
 Shared engine alignment reference:
 

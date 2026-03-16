@@ -12,14 +12,14 @@ Goal:
 Keep this sample focused on scrolling, tile-map gameplay, and camera behavior with clear boundaries.
 
 Local checklist:
-[ ] Keep sample DOM-driven or engine-driven by explicit design (document choice)
+[x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
 [ ] Keep scrolling/camera orchestration separated from UI/render wiring
-[ ] Keep status/error/debug output minimal and user-safe
-[ ] Add or update README with controls and tile-map behavior
+[x] Keep status/error/debug output minimal and user-safe
+[x] Add or update README with controls and tile-map behavior
 [ ] Evaluate whether shared side-scroll helpers should move to engine
 [ ] Verify naming consistency for camera/tile/player state labels
 [ ] Verify repeated restart/play flow does not leak state/listeners
-[ ] Verify headers are in place
+[x] Verify headers are in place
 
 Focused review checklist:
 [ ] Security: validate external/config-driven inputs before use
@@ -27,7 +27,7 @@ Focused review checklist:
 [ ] Move-to-engine: identify reusable tile/camera helpers for engine extraction
 [ ] Naming: keep control/action labels and identifiers consistent
 [ ] Safety: verify repeated interaction stays leak-free
-[ ] Center on HTML page
+[x] Center on HTML page
 
 Detail checklist:
 [ ] Move inline script logic out of `index.html`
@@ -36,8 +36,8 @@ Detail checklist:
 [ ] Fix typo
 [ ] Add/validate unit test(s)
 [ ] Verify destroy()
-[ ] Center page layout and controls in index.html
-[ ] Update README with sample details
+[x] Center page layout and controls in index.html
+[x] Update README with sample details
 
 Final:
 [ ] Run browser smoke pass for scroll/camera/gameplay flow and cleanup

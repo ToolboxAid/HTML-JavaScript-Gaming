@@ -4,21 +4,77 @@
  10/16/2024
  styles.css
 */
-body {
-    margin: 0;
-    overflow: hidden;
+:root {
+    color-scheme: dark;
+    --page-bg-top: #263d89;
+    --page-bg-bottom: #09112e;
+    --panel-bg: rgba(10, 16, 38, 0.76);
+    --panel-border: #8bd3ff;
+    --text-main: #ffffff;
+    --text-muted: #d5e7ff;
 }
 
-canvas {
-    display: block;
-    background-color: black;
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: linear-gradient(180deg, var(--page-bg-top), var(--page-bg-bottom));
+    color: var(--text-main);
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+.sample-shell {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+}
+
+.sample-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sample-header h1 {
+    margin: 0 0 10px;
+    font-size: clamp(2rem, 3vw, 2.75rem);
+}
+
+.sample-header p {
+    margin: 0 auto;
+    max-width: 780px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 #gameAreaContainer {
     position: relative;
+    max-width: 100%;
+    padding: 16px;
+    border: 2px solid var(--panel-border);
+    border-radius: 20px;
+    background: var(--panel-bg);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
 
 #gameArea {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto;
     background-color: #888888;
-   /* cursor: none;  Hide the cursor */
+}
+
+@media (max-width: 700px) {
+    .sample-shell {
+        padding-inline: 12px;
+    }
+
+    #gameAreaContainer {
+        padding: 10px;
+        border-radius: 14px;
+    }
 }

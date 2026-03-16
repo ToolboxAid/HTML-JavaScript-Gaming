@@ -12,9 +12,10 @@ Keep Box Drop as a compact engine game while aligning it with the current runtim
 
 Project-specific checklist:
 [ ] Review `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)` against current engine conventions
-[ ] Remove avoidable startup/debug logging noise
+[x] Remove avoidable startup/debug logging noise
 [ ] Keep attract, player select, game, and game-over flow clear and easy to follow
 [ ] Review whether player/enemy logic should remain in `game.js` or move into helper files
+[x] Add local `README.md` with current controls and sample scope
 
 Shared engine alignment reference:
 
@@ -68,7 +69,7 @@ Ideas taken from the current `games/` directory:
 [ ] Align sample entry points around `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)`
 [ ] Standardize common file structure where practical: `index.html`, `game.js`, `global.js`, and optional helper files
 [ ] Standardize config exports around `canvasConfig`, `performanceConfig`, `fullscreenConfig`, and a sample-specific config object
-[ ] Remove avoidable startup `console.log` noise from teaching samples
+[x] Remove avoidable startup `console.log` noise from teaching samples
 
 [ ] Phase 2: bring input samples onto the engine runtime path
 [ ] Convert `samples/input/Mouse/` from a standalone animation loop to a `GameBase` sample
