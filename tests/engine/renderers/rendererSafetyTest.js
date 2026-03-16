@@ -340,12 +340,37 @@ function testPrimitiveRendererWithExplicitContext(assert) {
     }
 }
 
+function testPrimitiveRendererRestoresContextOnThrow(assert) {
+    const originalCtx = CanvasUtils.ctx;
+    const mockCtx = createMockCtx();
+
+    try {
+        CanvasUtils.ctx = mockCtx;
+
+        assertNoThrow(assert, () => {
+            try {
+                PrimitiveRenderer.withContext({}, () => {
+                    throw new Error('intentional');
+                });
+            } catch (error) {
+                // expected for this safety test
+            }
+        }, 'PrimitiveRenderer.withContext throw path should still restore canvas state');
+
+        assert(mockCtx.saveCalls === 1, 'PrimitiveRenderer.withContext should save before invoking drawFn');
+        assert(mockCtx.restoreCalls === 1, 'PrimitiveRenderer.withContext should restore even when drawFn throws');
+    } finally {
+        CanvasUtils.ctx = originalCtx;
+    }
+}
+
 export function testRendererSafety(assert) {
     testCanvasUtilsGuardOnMissingContext(assert);
     testRenderersGuardOnMissingContext(assert);
     testRenderersDrawWithMockContext(assert);
     testPrimitiveRendererWithMockContext(assert);
     testPrimitiveRendererWithExplicitContext(assert);
+    testPrimitiveRendererRestoresContextOnThrow(assert);
 }
 
 

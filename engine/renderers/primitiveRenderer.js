@@ -206,8 +206,11 @@ class PrimitiveRenderer {
         }
 
         ctx.save();
-        drawFn(ctx);
-        ctx.restore();
+        try {
+            drawFn(ctx);
+        } finally {
+            ctx.restore();
+        }
         return true;
     }
 
