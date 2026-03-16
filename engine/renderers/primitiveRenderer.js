@@ -218,6 +218,15 @@ class PrimitiveRenderer {
         ctx.lineTo(x2, y2);
     }
 
+    static getRectOutlineSegments(x, y, width, height) {
+        return [
+            { x1: x, y1: y, x2: x + width, y2: y },
+            { x1: x + width, y1: y, x2: x + width, y2: y + height },
+            { x1: x + width, y1: y + height, x2: x, y2: y + height },
+            { x1: x, y1: y + height, x2: x, y2: y }
+        ];
+    }
+
     static getPointX(point) {
         return Array.isArray(point) ? point[0] : point.x;
     }
@@ -383,10 +392,7 @@ class PrimitiveRenderer {
 
         if (canCombineBorderAndHeader) {
             this.renderSegments(ctx, [
-                { x1: x, y1: y, x2: x + width, y2: y },
-                { x1: x + width, y1: y, x2: x + width, y2: y + height },
-                { x1: x + width, y1: y + height, x2: x, y2: y + height },
-                { x1: x, y1: y + height, x2: x, y2: y },
+                ...this.getRectOutlineSegments(x, y, width, height),
                 { x1: x, y1: headerY, x2: x + width, y2: headerY }
             ], borderColor, borderWidth, { alpha: 1 });
             return;
@@ -416,10 +422,7 @@ class PrimitiveRenderer {
         const lineDash = [8, 6];
 
         this.renderSegments(ctx, [
-            { x1: x, y1: y, x2: x + safeWidth, y2: y },
-            { x1: x + safeWidth, y1: y, x2: x + safeWidth, y2: y + safeHeight },
-            { x1: x + safeWidth, y1: y + safeHeight, x2: x, y2: y + safeHeight },
-            { x1: x, y1: y + safeHeight, x2: x, y2: y },
+            ...this.getRectOutlineSegments(x, y, safeWidth, safeHeight),
             { x1: centerX, y1: y, x2: centerX, y2: y + safeHeight },
             { x1: x, y1: centerY, x2: x + safeWidth, y2: centerY }
         ], strokeColor, lineWidth, { alpha: 1, lineDash });
