@@ -41,10 +41,11 @@ function resetPlayerButtons(player) {
 function gameUpdate() {
     gameControllers.update();
 
-    gameControllers.gamepadManager.gameControllers.forEach((gameController, playerIndex) => {
-        if (!gameController) {
+    const maxControllers = gameControllers.gamepadStates.length;
+    for (let playerIndex = 0; playerIndex < maxControllers; playerIndex += 1) {
+        if (!gameControllers.isConnected(playerIndex)) {
             players[playerIndex] = null;
-            return;
+            continue;
         }
 
         if (!players[playerIndex]) {
@@ -53,7 +54,7 @@ function gameUpdate() {
 
         const player = players[playerIndex];
         resetPlayerButtons(player);
-        const buttonsDown = gameControllers.gamepadStates[playerIndex].getButtonsDown();
+        const buttonsDown = gameControllers.getButtonsDown(playerIndex);
         buttonsDown.forEach((button) => {
             if (button >= 0 && button < MAX_BUTTONS) {
                 player.buttonColors[button] = player.color;
@@ -73,7 +74,7 @@ function gameUpdate() {
 
         player.x = Math.max(-6, Math.min(canvas.width - player.width, player.x));
         player.y = Math.max(10, Math.min(canvas.height - player.height, player.y));
-    });
+    }
 }
 
 function gameRender() {

@@ -26,5 +26,6 @@ Design choice: this sample is intentionally DOM/canvas-driven and focused on sho
 ## Behavior Notes
 
 - The sample updates controller state each animation frame and renders compact per-controller panels.
+- It now reads button/down connection state through `GameControllers` helper methods instead of reaching into controller internals directly.
 - Cleanup is handled on `pagehide`/`beforeunload` and calls `gameControllers.destroy()`.
 - Device mapping support and deadzone filtering come from engine controller modules.

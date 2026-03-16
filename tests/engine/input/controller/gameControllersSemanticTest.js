@@ -8,6 +8,9 @@ import GamepadMapper from '../../../../engine/input/controller/gamepadMapper.js'
 
 function createControllers() {
     const controllers = Object.create(GameControllers.prototype);
+    controllers.gamepadManager = {
+        gameControllers: [{ id: 'Pad 0' }]
+    };
     controllers.gamepadStates = [
         {
             buttonsPressed: new Set([1, 2, 8, 9, 14, 12]),
@@ -61,8 +64,16 @@ export function testGameControllersSemantic(assert) {
 
     const dPad = controllers.getDPad(0);
     assert(dPad.left === true && dPad.up === true, 'GameControllers should preserve d-pad state lookup');
+    assert(controllers.isConnected(0) === true, 'GameControllers should report connected pads through isConnected');
+    assert(controllers.isConnected(1) === false, 'GameControllers should report missing pads as disconnected');
+    assert(controllers.getButtonsDown(0).includes(14), 'GameControllers should expose buttonsDown through a read-only helper');
+    assert(controllers.getButtonsPressed(0).includes(1), 'GameControllers should expose buttonsPressed through a read-only helper');
+    assert(Array.isArray(controllers.getButtonsReleased(0)), 'GameControllers should expose buttonsReleased through a read-only helper');
 
     const emptyControllers = Object.create(GameControllers.prototype);
+    emptyControllers.gamepadManager = {
+        gameControllers: []
+    };
     emptyControllers.gamepadStates = [];
     emptyControllers.gamepadMappers = [];
     emptyControllers.messageError = () => {};

@@ -66,6 +66,26 @@ class GameControllers {
         return this.gamepadManager.gameControllers.filter(controller => controller !== null);
     }
 
+    isConnected(gameControllerIndex) {
+        return this.gamepadManager.gameControllers[gameControllerIndex] !== null &&
+            typeof this.gamepadManager.gameControllers[gameControllerIndex] !== 'undefined';
+    }
+
+    getButtonsPressed(gameControllerIndex) {
+        const buttonsPressed = this.getStateSet(gameControllerIndex, 'buttonsPressed');
+        return buttonsPressed ? Array.from(buttonsPressed) : [];
+    }
+
+    getButtonsDown(gameControllerIndex) {
+        const buttonsDown = this.getStateSet(gameControllerIndex, 'buttonsDown');
+        return buttonsDown ? Array.from(buttonsDown) : [];
+    }
+
+    getButtonsReleased(gameControllerIndex) {
+        const buttonsReleased = this.getStateSet(gameControllerIndex, 'buttonsReleased');
+        return buttonsReleased ? Array.from(buttonsReleased) : [];
+    }
+
     ensureMapper(gameControllerIndex, gamepadId = 'default') {
         if (!this.gamepadMappers[gameControllerIndex]) {
             this.gamepadMappers[gameControllerIndex] = new GamepadMapper(gameControllerIndex, gamepadId);
