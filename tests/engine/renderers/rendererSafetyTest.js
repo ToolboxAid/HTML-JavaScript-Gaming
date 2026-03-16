@@ -147,6 +147,7 @@ function testRenderersGuardOnMissingContext(assert) {
         assertNoThrow(assert, () => PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5), 'PrimitiveRenderer.drawLine should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawBounds(0, 0, 10, 10, 'white', 1, 0.5), 'PrimitiveRenderer.drawBounds should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawPanel(0, 0, 10, 10, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 4 }), 'PrimitiveRenderer.drawPanel should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawPath([[0, 0], [1, 1], [1, 0]], 'white', 1, { closePath: true }), 'PrimitiveRenderer.drawPath should no-op without context');
         assertNoThrow(assert, () => SpriteRenderer.draw(spriteLike, Number.NaN, Number.NaN), 'SpriteRenderer should no-op without context');
         assertNoThrow(assert, () => VectorRenderer.draw(vectorLike, Number.NaN, Number.NaN, Number.NaN), 'VectorRenderer should no-op without context');
         assertNoThrow(assert, () => PngRenderer.draw(pngLike, Number.NaN, Number.NaN), 'PngRenderer should no-op without context');
@@ -190,6 +191,7 @@ function testRenderersDrawWithMockContext(assert) {
         PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5);
         PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5);
         PrimitiveRenderer.drawPanel(0, 0, 30, 30, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 12, headerColor: 'yellow' });
+        PrimitiveRenderer.drawPath([[0, 0], [5, 5], [8, 0]], 'white', 1, { closePath: true, offsetX: 2, offsetY: 3 });
 
         const spriteLiving = {
             isDead: () => false,

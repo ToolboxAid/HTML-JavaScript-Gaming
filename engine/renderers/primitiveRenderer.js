@@ -109,14 +109,7 @@ class PrimitiveRenderer {
         }
 
         return this.withContext((ctx) => {
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-
-            for (let index = 1; index < points.length; index += 1) {
-                ctx.lineTo(points[index].x, points[index].y);
-            }
-
-            ctx.closePath();
+            this.tracePath(ctx, points, { closePath: true });
 
             if (fillColor) {
                 ctx.fillStyle = fillColor;
@@ -135,6 +128,25 @@ class PrimitiveRenderer {
         return this.drawPolygon(points, fillColor, borderColor, borderWidth);
     }
 
+    static drawPath(points, strokeColor = 'white', lineWidth = 1, {
+        offsetX = 0,
+        offsetY = 0,
+        closePath = false,
+        alpha = 1
+    } = {}) {
+        if (!Array.isArray(points) || points.length < 2) {
+            return false;
+        }
+
+        return this.withContext((ctx) => {
+            ctx.globalAlpha = alpha;
+            this.tracePath(ctx, points, { offsetX, offsetY, closePath });
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+        });
+    }
+
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1) {
         return this.withContext((ctx) => {
             ctx.globalAlpha = alpha;
@@ -145,6 +157,26 @@ class PrimitiveRenderer {
             ctx.lineWidth = lineWidth;
             ctx.stroke();
         });
+    }
+
+    static tracePath(ctx, points, { offsetX = 0, offsetY = 0, closePath = false } = {}) {
+        ctx.beginPath();
+
+        points.forEach((point, index) => {
+            const x = Array.isArray(point) ? point[0] : point.x;
+            const y = Array.isArray(point) ? point[1] : point.y;
+
+            if (index === 0) {
+                ctx.moveTo(x + offsetX, y + offsetY);
+                return;
+            }
+
+            ctx.lineTo(x + offsetX, y + offsetY);
+        });
+
+        if (closePath) {
+            ctx.closePath();
+        }
     }
 
     static withContext(drawFn) {

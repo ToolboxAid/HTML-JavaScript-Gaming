@@ -1,4 +1,3 @@
-import CanvasUtils from '../core/canvasUtils.js';
 import DebugLog from '../utils/debugLog.js';
 import PrimitiveRenderer from './primitiveRenderer.js';
 import RendererGuards from './rendererGuards.js';
@@ -20,22 +19,11 @@ class VectorRenderer {
         const normalizedOffsetX = RendererGuards.normalizeOffset(offsetX);
         const normalizedOffsetY = RendererGuards.normalizeOffset(offsetY);
 
-        CanvasUtils.ctx.save();
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.strokeStyle = object.color;
-        CanvasUtils.ctx.lineWidth = normalizedLineWidth;
-
-        for (let index = 0; index < object.rotatedPoints.length; index += 1) {
-            const [rx, ry] = object.rotatedPoints[index];
-            if (index === 0) {
-                CanvasUtils.ctx.moveTo(rx + normalizedOffsetX, ry + normalizedOffsetY);
-            } else {
-                CanvasUtils.ctx.lineTo(rx + normalizedOffsetX, ry + normalizedOffsetY);
-            }
-        }
-
-        CanvasUtils.ctx.closePath();
-        CanvasUtils.ctx.stroke();
+        PrimitiveRenderer.drawPath(object.rotatedPoints, object.color, normalizedLineWidth, {
+            offsetX: normalizedOffsetX,
+            offsetY: normalizedOffsetY,
+            closePath: true
+        });
 
         if (object.drawBounds) {
             PrimitiveRenderer.drawCircle(object.x + normalizedOffsetX, object.y + normalizedOffsetY, 2, 'white');
@@ -48,8 +36,6 @@ class VectorRenderer {
                 normalizedLineWidth
             );
         }
-
-        CanvasUtils.ctx.restore();
     }
 }
 

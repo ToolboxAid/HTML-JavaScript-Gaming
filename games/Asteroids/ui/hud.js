@@ -4,6 +4,7 @@
 // hud.js
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 class AsteroidsHud {
     static FLASH_INTERVAL = 200;
@@ -61,20 +62,11 @@ class AsteroidsHud {
 
     static drawShipLives(offsetX, offsetY, vectorMap, lineWidth = 1.25) {
         try {
-            CanvasUtils.ctx.beginPath();
-            CanvasUtils.ctx.strokeStyle = 'white';
-            CanvasUtils.ctx.lineWidth = lineWidth;
-
-            vectorMap.forEach(([rx, ry], index) => {
-                if (index === 0) {
-                    CanvasUtils.ctx.moveTo(rx + offsetX, ry + offsetY);
-                } else {
-                    CanvasUtils.ctx.lineTo(rx + offsetX, ry + offsetY);
-                }
+            PrimitiveRenderer.drawPath(vectorMap, 'white', lineWidth, {
+                offsetX,
+                offsetY,
+                closePath: true
             });
-
-            CanvasUtils.ctx.closePath();
-            CanvasUtils.ctx.stroke();
         } catch (error) {
             console.error('Error occurred while drawing HUD ship lives:', error.message);
         }
