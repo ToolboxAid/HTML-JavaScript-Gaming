@@ -86,8 +86,8 @@ class AsteroidsSession {
 
         this.currentPlayer = result.updatedPlayer;
         this.playerLives = result.updatedLives;
-        if (result.nextGameState) {
-            setState(result.nextGameState);
+        if (result.isGameOver) {
+            setState('gameOver');
         }
         this.getCurrentWorld().reset();
         this.getCurrentShip().reset();

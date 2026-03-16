@@ -213,8 +213,8 @@ class Game extends GameBase {
       // lives based on the result from swapPlayer
       this.currentPlayer = result.updatedPlayer;
       this.playerLives = result.updatedLives;
-      if (result.nextGameState) {
-        this.gameState = result.nextGameState;
+      if (result.isGameOver) {
+        this.gameState = "gameOver";
       }
       Game.enemyX = RandomUtils.randomInt(0, canvasConfig.width - Game.enemySize);
       Game.enemyY = -Game.enemySize;

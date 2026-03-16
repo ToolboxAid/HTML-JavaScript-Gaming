@@ -114,21 +114,21 @@ export function testGameUtils(assert) {
     assert(swap1.updatedPlayer === 1, "swapPlayer failed to swap to player 2");
     assert(swap1.updatedLives[0] === 2, "swapPlayer failed to decrease player 1's life");
     assert(playerLives[0] === 3, "swapPlayer should not mutate the input lives array");
-    assert(swap1.nextGameState === null, "swapPlayer should not set game over when players remain");
+    assert(swap1.isGameOver === false, "swapPlayer should not set game over when players remain");
 
     playerLives = swap1.updatedLives;
     currentPlayer = 1;
     const swap2 = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount);
     assert(swap2.updatedPlayer === 2, "swapPlayer failed to swap to player 3");
     assert(swap2.updatedLives[1] === 2, "swapPlayer failed to decrease player 2's life");
-    assert(swap2.nextGameState === null, "swapPlayer should keep play flow active while tracked players remain");
+    assert(swap2.isGameOver === false, "swapPlayer should keep play flow active while tracked players remain");
 
     playerLives = [0, 2, 0, 3];
     currentPlayer = 3;
     const swap3 = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount);
     assert(swap3.updatedPlayer === 1, "swapPlayer failed to swap to player 1 after player 3 lost all lives");
     assert(swap3.updatedLives[3] === 2, "swapPlayer failed to decrease player 4's life");
-    assert(swap3.nextGameState === null, "swapPlayer should keep play flow active when another tracked player has lives");
+    assert(swap3.isGameOver === false, "swapPlayer should keep play flow active when another tracked player has lives");
 
     playerLives = [1, 0, 0, 0];
     currentPlayer = 0;
@@ -136,9 +136,9 @@ export function testGameUtils(assert) {
     const swapGameOver = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount);
     assert(swapGameOver.updatedLives.every(life => life === 0), "swapPlayer did not correctly update all player lives to 0");
     assert(swapGameOver.updatedPlayer === 0, "reset player 0 for swapPlayer did not handle all players out of lives correctly");
-    assert(swapGameOver.nextGameState === 'gameOver', "swapPlayer should report game over when tracked players are out");
+    assert(swapGameOver.isGameOver === true, "swapPlayer should report game over when tracked players are out");
 
     const swapTrackedGameOver = GameUtils.swapPlayer([1, 0, 5], 0, 2);
-    assert(swapTrackedGameOver.nextGameState === 'gameOver', "swapPlayer should only consider tracked players for game over");
+    assert(swapTrackedGameOver.isGameOver === true, "swapPlayer should only consider tracked players for game over");
     assert(swapTrackedGameOver.updatedPlayer === 0, "swapPlayer should reset to player 0 when tracked players are out");
 }

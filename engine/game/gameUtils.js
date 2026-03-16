@@ -180,7 +180,7 @@ class GameUtils {
                 return {
                     updatedPlayer: 0,
                     updatedLives,
-                    nextGameState: "gameOver"
+                    isGameOver: true
                 };
             }
         }
@@ -188,7 +188,7 @@ class GameUtils {
         return {
             updatedPlayer: this.findNextActivePlayer(updatedLives, currentPlayer, playerCount),
             updatedLives,
-            nextGameState: null
+            isGameOver: false
         };
     }
 

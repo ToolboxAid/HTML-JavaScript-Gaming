@@ -217,8 +217,8 @@ class Game extends GameBase {
                 );
                 this.currentPlayer = result.updatedPlayer;
                 this.playerLives = result.updatedLives;
-                if (result.nextGameState) {
-                    this.gameState = result.nextGameState;
+                if (result.isGameOver) {
+                    this.gameState = 'gameOver';
                 }
             }
         }

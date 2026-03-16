@@ -140,8 +140,8 @@ export function playGame(game) {
 
     game.currentPlayer = result.updatedPlayer;
     game.playerLives = result.updatedLives;
-    if (result.nextGameState) {
-        game.gameState = result.nextGameState;
+    if (result.isGameOver) {
+        game.gameState = game.constructor.STATES.GAME_OVER;
     }
 }
 
