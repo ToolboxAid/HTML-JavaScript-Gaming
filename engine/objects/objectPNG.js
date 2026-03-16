@@ -46,16 +46,16 @@ class ObjectPNG extends ObjectKillable {
         frameOffsets = null
     ) {
         ObjectValidation.nonEmptyString(spritePath, 'spritePath');
-        ObjectValidation.finiteNumber(spriteX, 'spriteX');
-        ObjectValidation.finiteNumber(spriteY, 'spriteY');
-        ObjectValidation.positiveNumber(frameWidth, 'frameWidth');
-        ObjectValidation.positiveNumber(frameHeight, 'frameHeight');
-        ObjectValidation.positiveNumber(pixelSize, 'pixelSize');
-        ObjectValidation.finiteNumber(velocityX, 'velocityX');
-        ObjectValidation.finiteNumber(velocityY, 'velocityY');
-        ObjectValidation.positiveNumber(frameCount, 'frameCount');
-        ObjectValidation.positiveNumber(framesPerRow, 'framesPerRow');
-        ObjectValidation.positiveNumber(frameDelay, 'frameDelay');
+        NumberUtils.finiteNumber(spriteX, 'spriteX');
+        NumberUtils.finiteNumber(spriteY, 'spriteY');
+        NumberUtils.positiveNumber(frameWidth, 'frameWidth');
+        NumberUtils.positiveNumber(frameHeight, 'frameHeight');
+        NumberUtils.positiveNumber(pixelSize, 'pixelSize');
+        NumberUtils.finiteNumber(velocityX, 'velocityX');
+        NumberUtils.finiteNumber(velocityY, 'velocityY');
+        NumberUtils.positiveNumber(frameCount, 'frameCount');
+        NumberUtils.positiveNumber(framesPerRow, 'framesPerRow');
+        NumberUtils.positiveNumber(frameDelay, 'frameDelay');
 
         // Keep inherited width/height as raw frame dimensions
         super(
@@ -132,7 +132,7 @@ class ObjectPNG extends ObjectKillable {
     }
 
     setRotation(rotationDegrees = 0) {
-        ObjectValidation.finiteNumber(rotationDegrees, 'rotationDegrees');
+        NumberUtils.finiteNumber(rotationDegrees, 'rotationDegrees');
         this.rotation = AngleUtils.toRadians(rotationDegrees);
     }
 

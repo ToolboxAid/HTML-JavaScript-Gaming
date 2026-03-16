@@ -4,8 +4,8 @@
 // gameObjectUtils.js
 
 import ObjectCleanup from '../utils/objectCleanup.js';
-import ObjectValidation from '../utils/objectValidation.js';
 import NumberUtils from '../math/numberUtils.js';
+import ObjectValidation from '../utils/objectValidation.js';
 
 class GameObjectUtils {
     constructor() {
@@ -21,11 +21,11 @@ class GameObjectUtils {
         type,
         debug
     }) {
-        ObjectValidation.finiteNumber(x, 'x');
-        ObjectValidation.finiteNumber(y, 'y');
+        NumberUtils.finiteNumber(x, 'x');
+        NumberUtils.finiteNumber(y, 'y');
         ObjectValidation.nonEmptyString(imagePath, 'imagePath');
-        ObjectValidation.positiveNumber(spriteWidth, 'spriteWidth');
-        ObjectValidation.positiveNumber(spriteHeight, 'spriteHeight');
+        NumberUtils.positiveNumber(spriteWidth, 'spriteWidth');
+        NumberUtils.positiveNumber(spriteHeight, 'spriteHeight');
         ObjectValidation.nonEmptyString(type, 'type');
         ObjectValidation.boolean(debug, 'debug');
     }

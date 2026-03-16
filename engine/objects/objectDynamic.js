@@ -4,8 +4,8 @@
 // objectDynamic.js
 
 import ObjectStatic from './objectStatic.js';
+import NumberUtils from "../math/numberUtils.js";
 import SystemUtils from "../utils/systemUtils.js";
-import ObjectValidation from "../utils/objectValidation.js";
 import DebugLog from "../utils/debugLog.js";
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
@@ -19,8 +19,8 @@ class ObjectDynamic extends ObjectStatic {
     constructor(x = 0, y = 0, width = 1, height = 1, velocityX = 0, velocityY = 0) {
         super(x, y, width, height);
 
-        ObjectValidation.finiteNumber(velocityX, 'velocityX');
-        ObjectValidation.finiteNumber(velocityY, 'velocityY');
+        NumberUtils.finiteNumber(velocityX, 'velocityX');
+        NumberUtils.finiteNumber(velocityY, 'velocityY');
 
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -28,7 +28,7 @@ class ObjectDynamic extends ObjectStatic {
 
     /** Validates delta time input. */
     validateDeltaTime(deltaTime) {
-        ObjectValidation.finiteNumber(deltaTime, 'deltaTime');
+        NumberUtils.finiteNumber(deltaTime, 'deltaTime');
     }
 
     /** Returns the future center point after movement. */
@@ -75,8 +75,8 @@ class ObjectDynamic extends ObjectStatic {
 
     /** Changes the velocity of the object. */
     setVelocity(velocityX, velocityY) {
-        ObjectValidation.finiteNumber(velocityX, 'velocityX');
-        ObjectValidation.finiteNumber(velocityY, 'velocityY');
+        NumberUtils.finiteNumber(velocityX, 'velocityX');
+        NumberUtils.finiteNumber(velocityY, 'velocityY');
 
         PhysicsUtils.setVelocity(this, velocityX, velocityY);
     }

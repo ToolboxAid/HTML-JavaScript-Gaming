@@ -7,6 +7,7 @@ import ObjectKillable from './objectKillable.js';
 import BoundaryUtils from '../physics/boundaryUtils.js';
 import CollisionUtils from '../physics/collisionUtils.js';
 import VectorShapeUtils from '../physics/vectorShapeUtils.js';
+import NumberUtils from '../math/numberUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import DebugLog from '../utils/debugLog.js';
@@ -85,7 +86,7 @@ class ObjectVector extends ObjectKillable {
     }
 
     setRotationAngle(angle) {
-        ObjectValidation.finiteNumber(angle, 'angle');
+        NumberUtils.finiteNumber(angle, 'angle');
         this.rotationAngle = angle;
         this.calculateObjectBounds(this.vectorMap);
     }

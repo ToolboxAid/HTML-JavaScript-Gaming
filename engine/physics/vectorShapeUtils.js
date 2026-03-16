@@ -1,4 +1,5 @@
 import AngleUtils from '../math/angleUtils.js';
+import NumberUtils from '../math/numberUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
 
 class VectorShapeUtils {
@@ -29,9 +30,9 @@ class VectorShapeUtils {
 
     static getRotatedPoints(vectorMap, x = 0, y = 0, rotationAngle = 0) {
         ObjectValidation.pointArray(vectorMap, 'vectorMap');
-        ObjectValidation.finiteNumber(x, 'x');
-        ObjectValidation.finiteNumber(y, 'y');
-        ObjectValidation.finiteNumber(rotationAngle, 'rotationAngle');
+        NumberUtils.finiteNumber(x, 'x');
+        NumberUtils.finiteNumber(y, 'y');
+        NumberUtils.finiteNumber(rotationAngle, 'rotationAngle');
 
         const center = this.getCenterPoint(vectorMap);
 

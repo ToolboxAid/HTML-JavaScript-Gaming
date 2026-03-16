@@ -3,14 +3,14 @@
 // 03/13/2026
 // pngController.js
 
-import ObjectValidation from '../utils/objectValidation.js';
 import AnimationFrameStepper from './animationFrameStepper.js';
+import NumberUtils from '../math/numberUtils.js';
 
 class PngController {
     constructor(frameCount = 1, framesPerRow = 1, frameDelay = 6) {
-        ObjectValidation.positiveNumber(frameCount, 'frameCount');
-        ObjectValidation.positiveNumber(framesPerRow, 'framesPerRow');
-        ObjectValidation.positiveNumber(frameDelay, 'frameDelay');
+        NumberUtils.positiveNumber(frameCount, 'frameCount');
+        NumberUtils.positiveNumber(framesPerRow, 'framesPerRow');
+        NumberUtils.positiveNumber(frameDelay, 'frameDelay');
 
         if (!Number.isInteger(frameCount)) {
             throw new Error('frameCount must be an integer.');
@@ -32,7 +32,7 @@ class PngController {
     }
 
     setFrame(frameIndex = 0) {
-        ObjectValidation.finiteNumber(frameIndex, 'frameIndex');
+        NumberUtils.finiteNumber(frameIndex, 'frameIndex');
 
         if (!Number.isInteger(frameIndex)) {
             throw new Error('frameIndex must be an integer.');

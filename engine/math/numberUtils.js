@@ -8,12 +8,26 @@ class NumberUtils {
         return Number.isFinite(value);
     }
 
+    static finiteNumber(value, name = 'value') {
+        if (!this.isFiniteNumber(value)) {
+            throw new Error(`${name} must be a finite number.`);
+        }
+    }
+
     static isNonNegativeFinite(value) {
         return Number.isFinite(value) && value >= 0;
     }
 
     static isPositiveFinite(value) {
         return Number.isFinite(value) && value > 0;
+    }
+
+    static positiveNumber(value, name = 'value') {
+        this.finiteNumber(value, name);
+
+        if (value <= 0) {
+            throw new Error(`${name} must be a positive number.`);
+        }
     }
 
     static areFiniteNumbers(values = []) {

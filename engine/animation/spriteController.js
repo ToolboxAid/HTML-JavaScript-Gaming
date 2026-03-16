@@ -3,8 +3,8 @@
 // 03/13/2026
 // spriteController.js
 
-import ObjectValidation from '../utils/objectValidation.js';
 import AnimationFrameStepper from './animationFrameStepper.js';
+import NumberUtils from '../math/numberUtils.js';
 
 class SpriteController {
     constructor({
@@ -16,8 +16,8 @@ class SpriteController {
         SpriteController.validateFrames(livingFrames, 'livingFrames');
         SpriteController.validateFrames(dyingFrames, 'dyingFrames');
 
-        ObjectValidation.positiveNumber(livingDelay, 'livingDelay');
-        ObjectValidation.positiveNumber(dyingDelay, 'dyingDelay');
+        NumberUtils.positiveNumber(livingDelay, 'livingDelay');
+        NumberUtils.positiveNumber(dyingDelay, 'dyingDelay');
 
         if (!Number.isInteger(livingDelay)) {
             throw new Error('livingDelay must be an integer.');

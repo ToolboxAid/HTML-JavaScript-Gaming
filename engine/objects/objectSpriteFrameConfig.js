@@ -1,6 +1,6 @@
 import SystemUtils from '../utils/systemUtils.js';
 import Sprite from '../core/sprite.js';
-import ObjectValidation from '../utils/objectValidation.js';
+import NumberUtils from '../math/numberUtils.js';
 
 class ObjectSpriteFrameConfig {
     constructor() {
@@ -139,7 +139,7 @@ class ObjectSpriteFrameConfig {
 
             case 'singleFrame':
             case 'multiFrame': {
-                ObjectValidation.positiveNumber(spritePixelSize, 'pixelSize');
+                NumberUtils.positiveNumber(spritePixelSize, 'pixelSize');
 
                 normalizedLivingFrames = ObjectSpriteFrameConfig.normalizeFrames(livingFrames, frameType);
                 dimensions = Sprite.getLayerDimensions(normalizedLivingFrames[0], spritePixelSize);

@@ -4,7 +4,7 @@
 // objectStatic.js
 
 import GeometryUtils from "../math/geometryUtils.js";
-import ObjectValidation from "../utils/objectValidation.js";
+import NumberUtils from "../math/numberUtils.js";
 import ObjectCleanup from "../utils/objectCleanup.js";
 import DebugLog from "../utils/debugLog.js";
 import DebugFlag from '../utils/debugFlag.js';
@@ -22,10 +22,10 @@ class ObjectStatic {
 
     /** Creates an instance of ObjectStatic. */
     constructor(x = 0, y = 0, width = 1, height = 1) {
-        ObjectValidation.finiteNumber(x, 'x');
-        ObjectValidation.finiteNumber(y, 'y');
-        ObjectValidation.positiveNumber(width, 'width');
-        ObjectValidation.positiveNumber(height, 'height');
+        NumberUtils.finiteNumber(x, 'x');
+        NumberUtils.finiteNumber(y, 'y');
+        NumberUtils.positiveNumber(width, 'width');
+        NumberUtils.positiveNumber(height, 'height');
 
         this.ID = ObjectStatic.getNextId();
         this.x = x;
@@ -57,8 +57,8 @@ class ObjectStatic {
 
     /** Updates the position of the object. */
     setPosition(newX, newY) {
-        ObjectValidation.finiteNumber(newX, 'newX');
-        ObjectValidation.finiteNumber(newY, 'newY');
+        NumberUtils.finiteNumber(newX, 'newX');
+        NumberUtils.finiteNumber(newY, 'newY');
 
         this.x = newX;
         this.y = newY;
