@@ -300,11 +300,44 @@ function testPrimitiveRendererWithMockContext(assert) {
     }
 }
 
+function testPrimitiveRendererWithExplicitContext(assert) {
+    const originalCtx = CanvasUtils.ctx;
+    const mockCtx = createMockCtx();
+
+    try {
+        CanvasUtils.ctx = null;
+
+        PrimitiveRenderer.drawRect(5, 6, 7, 8, 'white', 'red', 1, 1, { ctx: mockCtx });
+        PrimitiveRenderer.drawCircle(20, 20, 4, 'white', 'red', 1, 1, { ctx: mockCtx });
+        PrimitiveRenderer.drawEllipse(25, 25, 6, 3, null, 'white', 1, 0, 1, { ctx: mockCtx });
+        PrimitiveRenderer.drawPolygon([{ x: 0, y: 0 }, { x: 3, y: 5 }, { x: 5, y: 0 }], '#fff', 'red', 1, { ctx: mockCtx });
+        PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 3, y: 5 }, { x: 5, y: 0 }], '#fff', 'red', 1, { ctx: mockCtx });
+        PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5, { ctx: mockCtx });
+        PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5, { ctx: mockCtx });
+        PrimitiveRenderer.drawPanel(0, 0, 30, 30, {
+            fillColor: 'white',
+            borderColor: 'red',
+            borderWidth: 1,
+            backdropColor: 'black',
+            backdropInset: 2,
+            headerY: 12,
+            headerColor: 'yellow',
+            ctx: mockCtx
+        });
+        PrimitiveRenderer.drawPath([[0, 0], [5, 5], [8, 0]], 'white', 1, { closePath: true, offsetX: 2, offsetY: 3, ctx: mockCtx });
+
+        assert(mockCtx.saveCalls === mockCtx.restoreCalls, 'PrimitiveRenderer should balance save and restore with an explicit context');
+    } finally {
+        CanvasUtils.ctx = originalCtx;
+    }
+}
+
 export function testRendererSafety(assert) {
     testCanvasUtilsGuardOnMissingContext(assert);
     testRenderersGuardOnMissingContext(assert);
     testRenderersDrawWithMockContext(assert);
     testPrimitiveRendererWithMockContext(assert);
+    testPrimitiveRendererWithExplicitContext(assert);
 }
 
 

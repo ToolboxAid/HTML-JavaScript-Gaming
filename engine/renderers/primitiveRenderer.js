@@ -7,16 +7,16 @@ import CanvasUtils from '../core/canvasUtils.js';
 import RendererGuards from './rendererGuards.js';
 
 class PrimitiveRenderer {
-    static draw(object, fillColor = 'gray', borderColor = null, borderWidth = 0) {
+    static draw(object, fillColor = 'gray', borderColor = null, borderWidth = 0, options = {}) {
         if (!RendererGuards.canRenderObject(object, { allowDead: true })) {
             return;
         }
 
-        this.drawRect(object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth);
+        this.drawRect(object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
     }
 
-    static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1) {
-        return this.withContext((ctx) => {
+    static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+        return this.withContext(options, (ctx) => {
             ctx.globalAlpha = alpha;
 
             if (fillColor) {
@@ -32,8 +32,8 @@ class PrimitiveRenderer {
         });
     }
 
-    static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1) {
-        return this.drawRect(x, y, width, height, null, borderColor, borderWidth, alpha);
+    static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
+        return this.drawRect(x, y, width, height, null, borderColor, borderWidth, alpha, options);
     }
 
     static drawPanel(x, y, width, height, {
@@ -44,7 +44,8 @@ class PrimitiveRenderer {
         backdropInset = 0,
         headerY = null,
         headerColor = null,
-        headerWidth = 2
+        headerWidth = 2,
+        ctx = null
     } = {}) {
         if (backdropColor && backdropInset > 0) {
             this.drawRect(
@@ -52,23 +53,27 @@ class PrimitiveRenderer {
                 y - backdropInset,
                 width + (backdropInset * 2),
                 height + (backdropInset * 2),
-                backdropColor
+                backdropColor,
+                null,
+                0,
+                1,
+                { ctx }
             );
         }
 
-        this.drawRect(x, y, width, height, fillColor);
+        this.drawRect(x, y, width, height, fillColor, null, 0, 1, { ctx });
 
         if (borderColor && borderWidth > 0) {
-            this.drawBounds(x, y, width, height, borderColor, borderWidth);
+            this.drawBounds(x, y, width, height, borderColor, borderWidth, 1, { ctx });
         }
 
         if (Number.isFinite(headerY)) {
-            this.drawLine(x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth);
+            this.drawLine(x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth, 1, { ctx });
         }
     }
 
-    static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1) {
-        return this.withContext((ctx) => {
+    static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+        return this.withContext(options, (ctx) => {
             ctx.globalAlpha = alpha;
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -86,8 +91,8 @@ class PrimitiveRenderer {
         });
     }
 
-    static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1) {
-        return this.withContext((ctx) => {
+    static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
+        return this.withContext(options, (ctx) => {
             ctx.globalAlpha = alpha;
             ctx.beginPath();
             ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
@@ -105,12 +110,12 @@ class PrimitiveRenderer {
         });
     }
 
-    static drawPolygon(points, fillColor = null, borderColor = null, borderWidth = 0) {
+    static drawPolygon(points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
         if (!Array.isArray(points) || points.length < 3) {
             return false;
         }
 
-        return this.withContext((ctx) => {
+        return this.withContext(options, (ctx) => {
             this.tracePath(ctx, points, { closePath: true });
 
             if (fillColor) {
@@ -126,31 +131,32 @@ class PrimitiveRenderer {
         });
     }
 
-    static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        return this.drawPolygon(points, fillColor, borderColor, borderWidth);
+    static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0, options = {}) {
+        return this.drawPolygon(points, fillColor, borderColor, borderWidth, options);
     }
 
     static drawPath(points, strokeColor = 'white', lineWidth = 1, {
         offsetX = 0,
         offsetY = 0,
         closePath = false,
-        alpha = 1
+        alpha = 1,
+        ctx = null
     } = {}) {
         if (!Array.isArray(points) || points.length < 2) {
             return false;
         }
 
-        return this.withContext((ctx) => {
-            ctx.globalAlpha = alpha;
-            this.tracePath(ctx, points, { offsetX, offsetY, closePath });
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = lineWidth;
-            ctx.stroke();
+        return this.withContext({ ctx }, (renderCtx) => {
+            renderCtx.globalAlpha = alpha;
+            this.tracePath(renderCtx, points, { offsetX, offsetY, closePath });
+            renderCtx.strokeStyle = strokeColor;
+            renderCtx.lineWidth = lineWidth;
+            renderCtx.stroke();
         });
     }
 
-    static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1) {
-        return this.withContext((ctx) => {
+    static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
+        return this.withContext(options, (ctx) => {
             ctx.globalAlpha = alpha;
             ctx.beginPath();
             ctx.moveTo(x1, y1);
@@ -181,15 +187,24 @@ class PrimitiveRenderer {
         }
     }
 
-    static withContext(drawFn) {
-        if (!CanvasUtils.ctx) {
+    static withContext(options = {}, drawFn) {
+        const ctx = this.resolveContext(options);
+        if (!ctx) {
             return false;
         }
 
-        CanvasUtils.ctx.save();
-        drawFn(CanvasUtils.ctx);
-        CanvasUtils.ctx.restore();
+        ctx.save();
+        drawFn(ctx);
+        ctx.restore();
         return true;
+    }
+
+    static resolveContext(options = {}) {
+        if (options?.ctx) {
+            return options.ctx;
+        }
+
+        return CanvasUtils.ctx || null;
     }
 }
 

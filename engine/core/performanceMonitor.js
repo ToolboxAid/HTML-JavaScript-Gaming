@@ -7,6 +7,7 @@ import SystemUtils from "../utils/systemUtils.js";
 import DebugFlag from "../utils/debugFlag.js";
 import DebugLog from "../utils/debugLog.js";
 import CanvasUtils from "./canvasUtils.js";
+import PrimitiveRenderer from "../renderers/primitiveRenderer.js";
 
 class PerformanceMonitor {
 
@@ -281,8 +282,17 @@ class PerformanceMonitor {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        ctx.fillStyle = this.performanceConfig.backgroundColor;
-        ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+        PrimitiveRenderer.drawRect(
+            panelX,
+            panelY,
+            panelWidth,
+            panelHeight,
+            this.performanceConfig.backgroundColor,
+            null,
+            0,
+            1,
+            { ctx }
+        );
 
         textLines.forEach(({ text, color }, index) => {
             ctx.fillStyle = color;

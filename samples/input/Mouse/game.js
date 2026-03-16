@@ -5,6 +5,7 @@
 
 import MouseInput from '../../../engine/input/mouse.js';
 import { LEFT, MIDDLE, RIGHT } from '../../../engine/input/mouse.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
@@ -26,20 +27,18 @@ function gameUpdate() {
 }
 
 function drawDot(x, y) {
-    ctx.beginPath();
-    ctx.arc(x, y, 2, 0, 2 * Math.PI);
-    ctx.fillStyle = 'red';
+    let fillColor = 'red';
     if (mouse.isButtonIndexDown(LEFT)) {
-        ctx.fillStyle = 'orange';
+        fillColor = 'orange';
     }
     if (mouse.isButtonIndexDown(MIDDLE)) {
-        ctx.fillStyle = 'yellow';
+        fillColor = 'yellow';
     }
     if (mouse.isButtonIndexDown(RIGHT)) {
-        ctx.fillStyle = 'green';
+        fillColor = 'green';
     }
-    ctx.fill();
-    ctx.closePath();
+
+    PrimitiveRenderer.drawCircle(x, y, 2, fillColor, null, 0, 1, { ctx });
 }
 
 // Start the game loop
