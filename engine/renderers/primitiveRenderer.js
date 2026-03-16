@@ -163,11 +163,7 @@ class PrimitiveRenderer {
         extraHeight = 0,
         ctx = null
     } = {}) {
-        if (!Array.isArray(matrix) || matrix.length === 0) {
-            return false;
-        }
-
-        return this.renderWithContext({ ctx }, (renderCtx) => {
+        return this.withValidatedMatrix(matrix, { ctx }, (renderCtx) => {
             this.renderPixelMatrix(renderCtx, matrix, x, y, pixelWidth, pixelHeight, fillColor, {
                 extraWidth,
                 extraHeight
@@ -204,6 +200,10 @@ class PrimitiveRenderer {
         return Array.isArray(points) && points.length >= minimumCount;
     }
 
+    static hasMatrixRows(matrix) {
+        return Array.isArray(matrix) && matrix.length > 0;
+    }
+
     static withContext(options = {}, drawFn) {
         const ctx = this.resolveContext(options);
         if (!ctx) {
@@ -223,12 +223,20 @@ class PrimitiveRenderer {
         return this.withContext(options, renderFn);
     }
 
-    static withValidatedPoints(points, minimumCount, options = {}, drawFn) {
-        if (!this.hasMinimumPointCount(points, minimumCount)) {
+    static withValidatedInput(isValid, options = {}, drawFn) {
+        if (!isValid) {
             return false;
         }
 
         return this.renderWithContext(options, drawFn);
+    }
+
+    static withValidatedPoints(points, minimumCount, options = {}, drawFn) {
+        return this.withValidatedInput(this.hasMinimumPointCount(points, minimumCount), options, drawFn);
+    }
+
+    static withValidatedMatrix(matrix, options = {}, drawFn) {
+        return this.withValidatedInput(this.hasMatrixRows(matrix), options, drawFn);
     }
 
     static resolveContext(options = {}) {
