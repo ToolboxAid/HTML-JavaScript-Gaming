@@ -38,7 +38,7 @@ function drawDot(x, y) {
     if (mouse.isButtonIndexDown(RIGHT)) {
         ctx.fillStyle = 'green';
     }
-    ctx.fill(); // Fill the circle
+    ctx.fill();
     ctx.closePath();
 }
 

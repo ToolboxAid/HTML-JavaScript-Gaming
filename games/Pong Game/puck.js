@@ -8,6 +8,7 @@ import { canvasConfig, puckConfig } from './global.js'; // Import puck & canvas 
 import CanvasUtils from '../../engine/core/canvasUtils.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import ObjectDynamic from '../../engine/objects/objectDynamic.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 import Timer from '../../engine/utils/timer.js';
@@ -175,10 +176,16 @@ class Puck extends ObjectDynamic {
         // Draw the tail
         for (let i = 0; i < this.previousPositions.length; i++) {
             const pos = this.previousPositions[i];
-            CanvasUtils.ctx.fillStyle = `rgba(255, 255, 255, ${(1 - ((this.tailLength - i) / this.tailLength)) * 0.15})`; // Fade effect
-            CanvasUtils.ctx.beginPath();
-            CanvasUtils.ctx.fillRect(pos.x, pos.y, this.width, this.height);
-            CanvasUtils.ctx.fill();
+            PrimitiveRenderer.drawRect(
+                pos.x,
+                pos.y,
+                this.width,
+                this.height,
+                'white',
+                null,
+                0,
+                (1 - ((this.tailLength - i) / this.tailLength)) * 0.15
+            );
         }
     }
 

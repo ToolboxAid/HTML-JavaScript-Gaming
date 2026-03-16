@@ -6,7 +6,7 @@
 import { canvasConfig, paddleConfig } from './global.js';
 import ObjectStatic from '../../engine/objects/objectStatic.js';
 import AudioFrequency from '../../engine/output/audioFrequency.js';
-import CanvasUtils from '../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
 class Paddle extends ObjectStatic {
 
@@ -129,8 +129,7 @@ class Paddle extends ObjectStatic {
         for (let i = 0; i < this.previousPositions.length; i++) {
             const pos = this.previousPositions[i];
             const opacity = this.tailOpacities[i];
-            CanvasUtils.ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.15})`; // Fade effect
-            CanvasUtils.ctx.fillRect(pos.x, pos.y, this.width, this.height);
+            PrimitiveRenderer.drawRect(pos.x, pos.y, this.width, this.height, 'white', null, 0, opacity * 0.15);
         }
 
         super.draw(this.color);

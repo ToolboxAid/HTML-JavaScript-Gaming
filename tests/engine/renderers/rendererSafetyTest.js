@@ -140,8 +140,8 @@ function testRenderersGuardOnMissingContext(assert) {
 
         assertNoThrow(assert, () => PrimitiveRenderer.draw({ x: 0, y: 0, width: 10, height: 10, isDestroyed: false }), 'PrimitiveRenderer should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawRect(0, 0, 10, 10, 'white'), 'PrimitiveRenderer.drawRect should no-op without context');
-        assertNoThrow(assert, () => PrimitiveRenderer.drawCircle(5, 5, 3, 'white'), 'PrimitiveRenderer.drawCircle should no-op without context');
-        assertNoThrow(assert, () => PrimitiveRenderer.drawEllipse(5, 5, 3, 2, null, 'white', 1), 'PrimitiveRenderer.drawEllipse should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawCircle(5, 5, 3, 'white', null, 0, 0.5), 'PrimitiveRenderer.drawCircle should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawEllipse(5, 5, 3, 2, null, 'white', 1, 0, 0.5), 'PrimitiveRenderer.drawEllipse should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawPolygon([{ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 1, y: 0 }], 'white', 'red', 1), 'PrimitiveRenderer.drawPolygon should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 1, y: 0 }], 'white'), 'PrimitiveRenderer.drawTriangle should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5), 'PrimitiveRenderer.drawLine should no-op without context');
@@ -184,8 +184,8 @@ function testRenderersDrawWithMockContext(assert) {
 
         PrimitiveRenderer.draw({ x: 1, y: 2, width: 3, height: 4, isDestroyed: false }, 'white', 'red', 1);
         PrimitiveRenderer.drawRect(5, 6, 7, 8, 'white', 'red', 1);
-        PrimitiveRenderer.drawCircle(20, 20, 4, 'white', 'red', 1);
-        PrimitiveRenderer.drawEllipse(25, 25, 6, 3, null, 'white', 1);
+        PrimitiveRenderer.drawCircle(20, 20, 4, 'white', 'red', 1, 0.5);
+        PrimitiveRenderer.drawEllipse(25, 25, 6, 3, null, 'white', 1, 0, 0.5);
         PrimitiveRenderer.drawPolygon([{ x: 0, y: 0 }, { x: 3, y: 5 }, { x: 5, y: 0 }], '#fff', 'red', 1);
         PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 3, y: 5 }, { x: 5, y: 0 }], '#fff', 'red', 1);
         PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5);

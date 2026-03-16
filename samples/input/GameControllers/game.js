@@ -5,6 +5,7 @@
 
 import Fullscreen from '../../../engine/core/fullscreen.js';
 import GameControllers from '../../../engine/input/controller/gameControllers.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
@@ -184,11 +185,7 @@ function gameRender() {
             const panelHeight = 64;
             const textX = panelX + 8;
             ctx.textAlign = 'start';
-            ctx.fillStyle = 'rgba(14, 7, 40, 0.82)';
-            ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-            ctx.strokeStyle = player.color;
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+            PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgb(14, 7, 40)', player.color, 1.5, 0.82);
 
             ctx.font = TITLE_FONT;
             ctx.fillStyle = player.color;
@@ -201,12 +198,7 @@ function gameRender() {
                 const buttonX = player.x + player.size + 6 + (buttonIndex % buttonsAcross) * (buttonSize + 2);
                 const buttonY = player.y + 7 + Math.floor(buttonIndex / buttonsAcross) * (buttonSize + 2);
 
-                ctx.beginPath();
-                ctx.arc(buttonX, buttonY, buttonSize / 2, 0, 2 * Math.PI);
-                ctx.fillStyle = color;
-                ctx.fill();
-                ctx.strokeStyle = player.color;
-                ctx.stroke();
+                PrimitiveRenderer.drawCircle(buttonX, buttonY, buttonSize / 2, color, player.color, 1);
 
                 ctx.fillStyle = 'white';
                 const buttonLabel = player.buttonLabels[buttonIndex] || buttonIndex;

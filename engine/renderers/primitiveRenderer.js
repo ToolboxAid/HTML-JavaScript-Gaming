@@ -67,8 +67,9 @@ class PrimitiveRenderer {
         }
     }
 
-    static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
+    static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1) {
         return this.withContext((ctx) => {
+            ctx.globalAlpha = alpha;
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
 
@@ -85,8 +86,9 @@ class PrimitiveRenderer {
         });
     }
 
-    static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0) {
+    static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1) {
         return this.withContext((ctx) => {
+            ctx.globalAlpha = alpha;
             ctx.beginPath();
             ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
 
