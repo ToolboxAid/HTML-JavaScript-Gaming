@@ -87,8 +87,9 @@ class Game extends GameBase {
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Welcome to the `2D` Game!", 145, 170);
     CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Begin", 120, 205);
+    CanvasUtils.ctx.fillText("Move with Arrow Keys or D-pad", 150, 245);
 
-    this.gameAttract.update(deltaTime, this.keyboardInput);
+    this.gameAttract.update(deltaTime, this.keyboardInput, this.gameControllers);
     this.gameAttract.draw();
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||

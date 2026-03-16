@@ -84,6 +84,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Welcome to the Box Drop!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Begin", 190, 300);
+    CanvasUtils.ctx.fillText("Move with Arrow Keys or D-pad", 205, 360);
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
@@ -169,14 +170,18 @@ class Game extends GameBase {
     CanvasUtils.drawRect(Game.enemyX, Game.enemyY, Game.enemySize, Game.enemySize, "red");
 
     // Player code
-    if (this.keyboardInput.getKeysDown().includes('ArrowRight')) {
+    const dPad = this.gameControllers?.getDPad(0);
+    const moveRight = this.keyboardInput.getKeysDown().includes('ArrowRight') || dPad?.right;
+    const moveLeft = this.keyboardInput.getKeysDown().includes('ArrowLeft') || dPad?.left;
+
+    if (moveRight) {
       Game.playerX += 5;
     }
     if (Game.playerX > canvasConfig.width - this.playerWidth[this.currentPlayer]) {
       Game.playerX = canvasConfig.width - this.playerWidth[this.currentPlayer];
     }
 
-    if (this.keyboardInput.getKeysDown().includes('ArrowLeft')) {
+    if (moveLeft) {
       Game.playerX -= 5;
       if (Game.playerX < 0) {
         Game.playerX = 0;

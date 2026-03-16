@@ -312,12 +312,16 @@ class Hero extends ObjectSprite {
         this.level = 0;
     }
 
-    update(deltaTime, keyboardInput, tileMap) {
+    update(deltaTime, keyboardInput, tileMap, gameControllers = null) {
         super.update(deltaTime);
 
-        if (keyboardInput.isKeyDown('ArrowLeft')) {
+        const dPad = gameControllers?.getDPad?.(0);
+        const moveLeft = keyboardInput.isKeyDown('ArrowLeft') || dPad?.left;
+        const moveRight = keyboardInput.isKeyDown('ArrowRight') || dPad?.right;
+
+        if (moveLeft) {
             this.velocityX = -this.speed;
-        } else if (keyboardInput.isKeyDown('ArrowRight')) {
+        } else if (moveRight) {
             this.velocityX = this.speed;
         } else {
             this.velocityX = 0;

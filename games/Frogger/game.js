@@ -98,6 +98,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Welcome to Frogger!", 250, 200);
     CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Begin", 185, 300);
+    CanvasUtils.ctx.fillText("Move with Arrow Keys or D-pad", 205, 360);
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
@@ -182,14 +183,16 @@ class Game extends GameBase {
 
     // Update and draw frog
     if (this.frog) {
+        const dPad = this.gameControllers?.getDPad(0);
+
         // Handle keyboard input for frog movement
-        if (this.keyboardInput.getKeysPressed().includes('ArrowUp')) {
+        if (this.keyboardInput.getKeysPressed().includes('ArrowUp') || dPad?.up) {
             this.frog.move('up');
-        } else if (this.keyboardInput.getKeysPressed().includes('ArrowDown')) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowDown') || dPad?.down) {
             this.frog.move('down');
-        } else if (this.keyboardInput.getKeysPressed().includes('ArrowLeft')) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowLeft') || dPad?.left) {
             this.frog.move('left');
-        } else if (this.keyboardInput.getKeysPressed().includes('ArrowRight')) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowRight') || dPad?.right) {
             this.frog.move('right');
         }
 

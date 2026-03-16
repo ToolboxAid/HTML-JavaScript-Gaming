@@ -17,8 +17,8 @@ class GameAttract {
         this.tileMap.setTileMapInfo(0);
     }
 
-    update(deltaTime, keyboardInput) {
-        this.hero.update(deltaTime, keyboardInput, this.tileMap);
+    update(deltaTime, keyboardInput, gameControllers = null) {
+        this.hero.update(deltaTime, keyboardInput, this.tileMap, gameControllers);
     }
 
     draw(show = true) {
