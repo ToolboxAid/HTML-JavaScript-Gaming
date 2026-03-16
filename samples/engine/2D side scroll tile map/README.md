@@ -2,6 +2,10 @@
 
 This sample demonstrates a simple side-scrolling tile map with a player character, camera follow behavior, and a lightweight state flow built on the shared engine runtime.
 
+## Preview
+
+![2D Side Scroll Tile Map Preview](./assets/template-preview.svg)
+
 ## What It Shows
 - `GameBase` lifecycle with attract, player select, play, pause, and game-over states.
 - Tile-map and camera integration through `TileMap` and the sample `Hero`.

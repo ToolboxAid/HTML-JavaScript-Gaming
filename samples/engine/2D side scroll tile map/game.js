@@ -132,8 +132,7 @@ class Game extends GameBase {
   initGame() {
     this.gameInitialized = true;
     this.onetime = true;
-    // this.playerLives = [3, 3, 4, 3]; // Reset lives
-    this.score = [0, 0, 0, 0]; // Reset score
+    this.score = Array(playerSelect.maxPlayers).fill(0);
     this.currentPlayer = 0;
 
     this.gameState = "initEnemy";
@@ -199,10 +198,6 @@ class Game extends GameBase {
     this.gameInitialized = false;
     this.enemyInitialized = false;
     this.backToAttractCounter = 0;
-  }
-
-  onDestroy() {
-    this.keyboardInput?.destroy?.();
   }
 
 }

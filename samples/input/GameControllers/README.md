@@ -8,7 +8,7 @@ Design choice: this sample is intentionally DOM/canvas-driven and focused on sho
 
 ## Preview
 
-![Game Controllers Sample Preview](./assets/template-preview-v2.svg)
+![Game Controllers Sample Preview](./assets/template-preview.svg)
 
 ## Files
 
