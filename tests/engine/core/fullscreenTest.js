@@ -3,7 +3,7 @@
 // 03/15/2026
 // fullscreenTest.js
 
-import Fullscreen from '../../../engine/fullscreen.js';
+import Fullscreen from '../../../engine/core/fullscreen.js';
 
 export function testFullscreen(assert) {
     const removedWindowEvents = [];

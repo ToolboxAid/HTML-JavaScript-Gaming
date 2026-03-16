@@ -4,7 +4,7 @@ This sample demonstrates engine-managed fullscreen behavior with a template-styl
 
 It uses:
 - `engine/core/gameBase.js`
-- `engine/fullscreen.js`
+- `engine/core/fullscreen.js`
 - sample state routing in `game.js`
 - DOM diagnostics and metrics ownership in `gameDom.js`
 

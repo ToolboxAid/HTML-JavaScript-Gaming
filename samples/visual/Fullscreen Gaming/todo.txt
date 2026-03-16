@@ -60,5 +60,5 @@ Decision notes:
 - Any shared fullscreen UI glue should only move to engine if reused by multiple samples/games.
 - The reusable starter/template stays under `samples/engine/`, not in the shared `engine/` runtime.
 - Sample-level unit tests are optional; prefer browser smoke coverage unless new reusable logic is extracted.
-- Repeated fullscreen enter/exit was verified by code inspection: `engine/fullscreen.js` registers listeners once and reuses them across toggles.
+- Repeated fullscreen enter/exit was verified by code inspection: `engine/core/fullscreen.js` registers listeners once and reuses them across toggles.
 - Cleanup verification now includes the `GameBase.destroy()` path importing and calling `Fullscreen.destroy()` correctly.
