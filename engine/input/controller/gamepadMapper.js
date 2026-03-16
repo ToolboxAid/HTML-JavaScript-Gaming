@@ -19,6 +19,7 @@ class GamepadMapper {
                        GameControllerMap.controllerConfigs["default"];
 
         // Set properties from config
+        this.shortName = config.shortName;
         this.buttonNames = config.buttonNames;
         this.axisNames = config.axisNames;
         this.axisDeadzone = config.axisDeadzone;

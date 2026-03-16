@@ -8,11 +8,13 @@ import { D_PAD_AXIS_NAMES, D_PAD_BUTTON_NAMES, DPadType, GAMEPAD_BUTTON_NAMES } 
 
 export function testGamepadMapper(assert) {
     const defaultMapper = new GamepadMapper(0, 'unknown controller');
+    assert(defaultMapper.shortName === 'default', 'GamepadMapper should preserve the default shortName');
     assert(defaultMapper.getButtonIndex(GAMEPAD_BUTTON_NAMES.primary) === 0, 'GamepadMapper should fall back to default button mapping');
     assert(defaultMapper.getAxisIndex('LeftStickX') === 0, 'GamepadMapper should fall back to default axis mapping');
     assert(defaultMapper.getDPadType() === DPadType.NONE, 'GamepadMapper default mapping should not report a d-pad');
 
     const axisMapper = new GamepadMapper(0, 'USB gamepad (Vendor: 081f Product: e401)');
+    assert(axisMapper.shortName === 'USB gamepad', 'GamepadMapper should preserve mapped controller shortName');
     assert(axisMapper.getButtonIndex(GAMEPAD_BUTTON_NAMES.primary) === 1, 'GamepadMapper should use mapped A button index');
     assert(axisMapper.getButtonIndex(GAMEPAD_BUTTON_NAMES.start) === 9, 'GamepadMapper should use mapped Start button index');
     assert(axisMapper.getAxisIndex(D_PAD_AXIS_NAMES.x) === 0, 'GamepadMapper should use mapped DPadX axis index');

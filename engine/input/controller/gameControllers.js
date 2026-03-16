@@ -66,6 +66,10 @@ class GameControllers {
         return this.gamepadManager.gameControllers.filter(controller => controller !== null);
     }
 
+    getControllerDevice(gameControllerIndex) {
+        return this.gamepadManager.gameControllers[gameControllerIndex] || null;
+    }
+
     getTrackedControllerIndices() {
         return this.gamepadManager.gameControllers
             .map((_, index) => index)
@@ -118,8 +122,12 @@ class GameControllers {
             return null;
         }
 
+        const device = this.getControllerDevice(gameControllerIndex);
+        const mapper = this.getMapper(gameControllerIndex);
         return {
             index: gameControllerIndex,
+            id: device?.id || null,
+            shortName: mapper?.shortName || null,
             buttonsDown: this.getButtonsDown(gameControllerIndex),
             buttonEntries: this.getButtonEntries(gameControllerIndex),
             dPad: this.getDPad(gameControllerIndex),

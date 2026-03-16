@@ -48,6 +48,7 @@ function createPlayer(gameControllerIndex) {
         height: 36,
         buttonColors: Array(MAX_BUTTONS).fill('gray'),
         buttonLabels: Array(MAX_BUTTONS).fill(''),
+        title: `P${gameControllerIndex + 1}`,
         dPad: { left: false, right: false, up: false, down: false },
         axisValues: [],
     };
@@ -80,6 +81,9 @@ function gameUpdate() {
 
         const player = players[playerIndex];
         resetPlayerButtons(player);
+        player.title = controller.shortName
+            ? `P${playerIndex + 1} ${controller.shortName}`
+            : `P${playerIndex + 1}`;
         controller.buttonEntries.forEach((buttonEntry) => {
             if (buttonEntry.index >= 0 && buttonEntry.index < MAX_BUTTONS) {
                 player.buttonLabels[buttonEntry.index] = buttonEntry.name;
@@ -117,6 +121,7 @@ function gameRender() {
             const buttonSize = 12;
             ctx.font = '8px Arial';
             ctx.fillStyle = 'black';
+            ctx.fillText(player.title, player.x, player.y - 10);
 
             player.buttonColors.forEach((color, buttonIndex) => {
                 const buttonX = player.x + player.size + 6 + (buttonIndex % buttonsAcross) * (buttonSize + 2);

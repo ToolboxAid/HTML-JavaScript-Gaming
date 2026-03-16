@@ -24,6 +24,7 @@ function createControllers() {
     controllers.gamepadMappers = [
         {
             axisDeadzone: 0.1,
+            shortName: 'Test Pad',
             buttonNames: ['', 'A', 'B', '', '', '', '', '', 'Select', 'Start', '', '', 'DPadUP', 'DPadDOWN', 'DPadLEFT', 'DPadRIGHT'],
             axisNames: ['DPadX', 'DPadY'],
             getButtonIndex(buttonName) {
@@ -82,6 +83,8 @@ export function testGameControllersSemantic(assert) {
         'GameControllers should expose named axis values through a read-only helper');
     const snapshot = controllers.getControllerSnapshot(0);
     assert(snapshot !== null && snapshot.index === 0, 'GameControllers should expose a controller snapshot for connected pads');
+    assert(snapshot.id === 'Pad 0', 'GameControllers controller snapshots should include the device id');
+    assert(snapshot.shortName === 'Test Pad', 'GameControllers controller snapshots should include the mapper shortName');
     assert(snapshot.buttonsDown.includes(14), 'GameControllers controller snapshots should include buttonsDown');
     assert(snapshot.dPad.left === true, 'GameControllers controller snapshots should include d-pad state');
     assert(snapshot.axisValues.some((axisEntry) => axisEntry.name === 'DPadX'), 'GameControllers controller snapshots should include named axis values');
