@@ -30,7 +30,7 @@ Focused review checklist:
 [x] Center on HTML page
 
 Detail checklist:
-[ ] Move inline script logic out of `index.html`
+[x] Move inline script logic out of `index.html`
 [ ] Anything need to move to the engine for reusable
 [ ] Separation of concerns for data, methods, etc
 [ ] Fix typo

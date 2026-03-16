@@ -43,7 +43,7 @@ Project Name/
 
 Directory structure guidelines:
 
-[ ] Keep `index.html` minimal and focused on bootstrapping the module entry point
+[x] Keep `index.html` minimal and focused on bootstrapping the module entry point
 [ ] Keep `game.js` as the runtime shell: setup, owned input, state flow, update, and render orchestration
 [ ] Keep `global.js` for shared project config only
 [ ] Put raw content and definitions in `data/` instead of mixing large config blocks into `game.js`
@@ -69,7 +69,7 @@ Ideas taken from the current `games/` directory:
 [ ] Align sample entry points around `GameBase`, `onInitialize(runtimeContext)`, and `gameLoop(deltaTime, runtimeContext)`
 [ ] Standardize common file structure where practical: `index.html`, `game.js`, `global.js`, and optional helper files
 [ ] Standardize config exports around `canvasConfig`, `performanceConfig`, `fullscreenConfig`, and a sample-specific config object
-[ ] Remove avoidable startup `console.log` noise from teaching samples
+[x] Remove avoidable startup `console.log` noise from teaching samples
 
 [ ] Phase 2: bring input samples onto the engine runtime path
 [ ] Convert `samples/input/Mouse/` from a standalone animation loop to a `GameBase` sample
