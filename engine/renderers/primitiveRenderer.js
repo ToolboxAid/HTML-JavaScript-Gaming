@@ -417,7 +417,8 @@ class PrimitiveRenderer {
     }
 
     static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
-        this.renderRect(ctx, x, y, width, height, null, borderColor, borderWidth, alpha, options);
+        this.applyRenderState(ctx, alpha, options.lineDash);
+        this.renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth);
     }
 
     static renderFillAndStroke(ctx, fillColor = null, borderColor = null, borderWidth = 0) {
@@ -472,22 +473,20 @@ class PrimitiveRenderer {
         extraWidth = 0,
         extraHeight = 0
     } = {}) {
+        this.applyRenderState(ctx, 1, null);
+        ctx.fillStyle = fillColor;
+
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col] !== 1) {
                     continue;
                 }
 
-                this.renderRect(
-                    ctx,
+                ctx.fillRect(
                     x + (col * pixelWidth),
                     y + (row * pixelHeight),
                     pixelWidth + extraWidth,
-                    pixelHeight + extraHeight,
-                    fillColor,
-                    null,
-                    0,
-                    1
+                    pixelHeight + extraHeight
                 );
             }
         }
