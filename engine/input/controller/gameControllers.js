@@ -130,31 +130,11 @@ class GameControllers {
     }
 
     getButtonIndexByName(gameControllerIndex, buttonName) {
-        const mapper = this.getMapper(gameControllerIndex);
-        if (!mapper) {
-            return -1;
-        }
-
-        const buttonIndex = mapper.getButtonIndex(buttonName);
-        if (buttonIndex === -1) {
-            this.messageError(`Button name "${buttonName}" not found for game controller at index ${gameControllerIndex}`);
-        }
-
-        return buttonIndex;
+        return this.getMappedIndex(gameControllerIndex, buttonName, 'button');
     }
 
     getAxisIndexByName(gameControllerIndex, axisName) {
-        const mapper = this.getMapper(gameControllerIndex);
-        if (!mapper) {
-            return -1;
-        }
-
-        const axisIndex = mapper.getAxisIndex(axisName);
-        if (axisIndex === -1) {
-            this.messageError(`Axis name "${axisName}" not found for game controller at index ${gameControllerIndex}`);
-        }
-
-        return axisIndex;
+        return this.getMappedIndex(gameControllerIndex, axisName, 'axis');
     }
 
     getDPadType(gameControllerIndex) {
@@ -203,6 +183,30 @@ class GameControllers {
 
     mapAxisNames(gameControllerIndex, axisNames) {
         this.ensureMapper(gameControllerIndex).mapAxisNames(axisNames);
+    }
+
+    getMappedIndex(gameControllerIndex, inputName, inputType) {
+        const mapper = this.getMapper(gameControllerIndex);
+        if (!mapper) {
+            return -1;
+        }
+
+        const getIndex = inputType === 'button' ? mapper.getButtonIndex.bind(mapper) : mapper.getAxisIndex.bind(mapper);
+        const inputIndex = getIndex(inputName);
+        if (inputIndex === -1) {
+            this.messageError(`${inputType === 'button' ? 'Button' : 'Axis'} name "${inputName}" not found for game controller at index ${gameControllerIndex}`);
+        }
+
+        return inputIndex;
+    }
+
+    getStateSet(gameControllerIndex, stateKey) {
+        const gamepadState = this.getGamepadState(gameControllerIndex);
+        if (!gamepadState) {
+            return null;
+        }
+
+        return gamepadState[stateKey];
     }
 
     // --------------------------------------------
@@ -262,25 +266,25 @@ class GameControllers {
     // Look up a button value by index
     // --------------------------------------------
     wasButtonIndexPressed(gameControllerIndex, buttonIndex) {
-        const gamepadState = this.getGamepadState(gameControllerIndex);
-        if (!gamepadState) {
+        const buttonsPressed = this.getStateSet(gameControllerIndex, 'buttonsPressed');
+        if (!buttonsPressed) {
             return false;
         }
-        return gamepadState.buttonsPressed.has(buttonIndex);
+        return buttonsPressed.has(buttonIndex);
     }
     isButtonIndexDown(gameControllerIndex, buttonIndex) {
-        const gamepadState = this.getGamepadState(gameControllerIndex);
-        if (!gamepadState) {
+        const buttonsDown = this.getStateSet(gameControllerIndex, 'buttonsDown');
+        if (!buttonsDown) {
             return false;
         }
-        return gamepadState.buttonsDown.has(buttonIndex);
+        return buttonsDown.has(buttonIndex);
     }
     wasButtonIndexReleased(gameControllerIndex, buttonIndex) {
-        const gamepadState = this.getGamepadState(gameControllerIndex);
-        if (!gamepadState) {
+        const buttonsReleased = this.getStateSet(gameControllerIndex, 'buttonsReleased');
+        if (!buttonsReleased) {
             return false;
         }
-        return gamepadState.buttonsReleased.has(buttonIndex);
+        return buttonsReleased.has(buttonIndex);
     }
 
     // Look up an axis value by name
