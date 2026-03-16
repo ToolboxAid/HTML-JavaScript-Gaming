@@ -9,6 +9,7 @@ import GamepadMapper from "./gamepadMapper.js";
 import EventBus from '../../messages/eventBus.js';
 import DebugFlag from '../../utils/debugFlag.js';
 import DebugLog from '../../utils/debugLog.js';
+import InputLifecycle from '../inputLifecycle.js';
 import { D_PAD_AXIS_NAMES, D_PAD_BUTTON_NAMES, DPadType, GAMEPAD_BUTTON_NAMES } from "./gamepadEnums.js";
 import { GAMEPAD_EVENT } from './gamepadManager.js';
 
@@ -36,30 +37,26 @@ class GameControllers {
         this.gamepadStates = Array.from({ length: 4 }, () => new GamepadState());
         this.gamepadMappers = Array.from({ length: 4 }, () => null);
         this.controllerChangeBound = this.controllerChange.bind(this);
-        this.isListening = false;
+        this.lifecycle = new InputLifecycle(
+            () => {
+                GameControllers.sender.addEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
+                this.gamepadManager.start();
+            },
+            () => {
+                GameControllers.sender.removeEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
+                this.gamepadManager.stop();
+            }
+        );
 
         this.start();
     }
 
     start() {
-        if (this.isListening) {
-            return;
-        }
-
-        // Register the controllerChange method as the event handler
-        GameControllers.sender.addEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
-        this.gamepadManager.start();
-        this.isListening = true;
+        this.lifecycle.start();
     }
 
     stop() {
-        if (!this.isListening) {
-            return;
-        }
-
-        GameControllers.sender.removeEventListener(GAMEPAD_EVENT, this.controllerChangeBound);
-        this.gamepadManager.stop();
-        this.isListening = false;
+        this.lifecycle.stop();
     }
 
     getConnectedGamepads() {
@@ -379,8 +376,9 @@ class GameControllers {
     }
 
     destroy() {
-        this.stop();
-        this.controllerChangeBound = null;
+        this.lifecycle.destroy(() => {
+            this.controllerChangeBound = null;
+        });
     }
 }
 

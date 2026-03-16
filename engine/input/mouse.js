@@ -2,6 +2,8 @@
 // David Quesenberry
 // 10/16/2024
 // mouse.js
+import InputFrameState from './inputFrameState.js';
+import InputLifecycle from './inputLifecycle.js';
 
 export const LEFT = 0;
 export const MIDDLE = 1;
@@ -14,18 +16,12 @@ class MouseInput {
         }
 
         this.canvas = canvas;
-        this.buttonsPressed = new Set();
-        this.buttonsDown = new Set();
-        this.buttonsReleased = new Set();
+        this.buttonState = new InputFrameState();
         this.mouseX = 0;
         this.mouseY = 0;
         this.prevX = 0;
         this.prevY = 0;
         this.wheel = 0;
-
-        // Temporary sets for tracking button state changes
-        this.tempButtonsDown = new Set();
-        this.tempButtonsUp = new Set();
 
         // Cache canvas dimensions and scaling factors
         this.rect = this.canvas.getBoundingClientRect();
@@ -38,37 +34,32 @@ class MouseInput {
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleWheel = this.handleWheel.bind(this);
         this.handleContextMenu = this.handleContextMenu.bind(this);
-        this.isListening = false;
+        this.lifecycle = new InputLifecycle(
+            () => {
+                this.canvas.addEventListener('mousedown', this.handleMouseDown);
+                this.canvas.addEventListener('mouseup', this.handleMouseUp);
+                this.canvas.addEventListener('mousemove', this.handleMouseMove);
+                this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
+                this.canvas.addEventListener('contextmenu', this.handleContextMenu);
+            },
+            () => {
+                this.canvas.removeEventListener('mousedown', this.handleMouseDown);
+                this.canvas.removeEventListener('mouseup', this.handleMouseUp);
+                this.canvas.removeEventListener('mousemove', this.handleMouseMove);
+                this.canvas.removeEventListener('wheel', this.handleWheel);
+                this.canvas.removeEventListener('contextmenu', this.handleContextMenu);
+            }
+        );
 
         this.start();
     }
 
     start() {
-        if (this.isListening) {
-            return;
-        }
-
-        // Attach event listeners
-        this.canvas.addEventListener('mousedown', this.handleMouseDown);
-        this.canvas.addEventListener('mouseup', this.handleMouseUp);
-        this.canvas.addEventListener('mousemove', this.handleMouseMove);
-        this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
-        // Prevent right-click context menu
-        this.canvas.addEventListener('contextmenu', this.handleContextMenu);
-        this.isListening = true;
+        this.lifecycle.start();
     }
 
     stop() {
-        if (!this.isListening) {
-            return;
-        }
-
-        this.canvas.removeEventListener('mousedown', this.handleMouseDown);
-        this.canvas.removeEventListener('mouseup', this.handleMouseUp);
-        this.canvas.removeEventListener('mousemove', this.handleMouseMove);
-        this.canvas.removeEventListener('wheel', this.handleWheel);
-        this.canvas.removeEventListener('contextmenu', this.handleContextMenu);
-        this.isListening = false;
+        this.lifecycle.stop();
     }
 
     refreshScale() {
@@ -78,15 +69,11 @@ class MouseInput {
     }
 
     handleMouseDown(event) {
-        if (!this.buttonsDown.has(event.button)) {
-            this.tempButtonsDown.add(event.button); // Track newly pressed buttons
-        }
+        this.buttonState.queueDown(event.button);
     }
 
     handleMouseUp(event) {
-        if (this.buttonsDown.has(event.button)) {
-            this.tempButtonsUp.add(event.button); // Track newly released buttons
-        }
+        this.buttonState.queueUp(event.button);
     }
 
     handleMouseMove(event) {
@@ -114,23 +101,7 @@ class MouseInput {
     }
 
     update() {
-        // Clear previous state
-        this.buttonsPressed.clear();
-        this.buttonsReleased.clear();
-
-        // Process newly pressed buttons
-        this.tempButtonsDown.forEach(button => {
-            this.buttonsPressed.add(button);
-            this.buttonsDown.add(button);
-        });
-        this.tempButtonsDown.clear();
-
-        // Process newly released buttons
-        this.tempButtonsUp.forEach(button => {
-            this.buttonsReleased.add(button);
-            this.buttonsDown.delete(button);
-        });
-        this.tempButtonsUp.clear();
+        this.buttonState.update();
     }
 
     // Get the current mouse position
@@ -145,37 +116,34 @@ class MouseInput {
 
     // Get lists of buttons pressed, down, or released
     getButtonsPressed() {
-        return Array.from(this.buttonsPressed);
+        return Array.from(this.buttonState.pressed);
     }
 
     getButtonsDown() {
-        return Array.from(this.buttonsDown);
+        return Array.from(this.buttonState.down);
     }
 
     getButtonsReleased() {
-        return Array.from(this.buttonsReleased);
+        return Array.from(this.buttonState.released);
     }
 
     // Check the state of a specific button
     wasButtonIndexPressed(buttonIndex) {
-        return this.buttonsPressed.has(buttonIndex);
+        return this.buttonState.pressed.has(buttonIndex);
     }
 
     isButtonIndexDown(buttonIndex) {
-        return this.buttonsDown.has(buttonIndex);
+        return this.buttonState.down.has(buttonIndex);
     }
 
     wasButtonIndexReleased(buttonIndex) {
-        return this.buttonsReleased.has(buttonIndex);
+        return this.buttonState.released.has(buttonIndex);
     }
 
     destroy() {
-        this.stop();
-        this.buttonsPressed.clear();
-        this.buttonsDown.clear();
-        this.buttonsReleased.clear();
-        this.tempButtonsDown.clear();
-        this.tempButtonsUp.clear();
+        this.lifecycle.destroy(() => {
+            this.buttonState.clearAll();
+        });
     }
 }
 

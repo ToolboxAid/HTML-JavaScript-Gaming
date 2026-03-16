@@ -2,112 +2,79 @@
 // David Quesenberry
 // 10/16/2024
 // keyboard.js
+import InputFrameState from './inputFrameState.js';
+import InputLifecycle from './inputLifecycle.js';
+
 class KeyboardInput {
     constructor() {
-        this.keysPressed = new Set();  // Keys pressed this frame
-        this.keysDown = new Set();         // Keys currently pressed
-        this.keysReleased = new Set();     // Keys released this frame
-
-        // Temporary storage to avoid race conditions
-        this.tempKeysDown = new Set();     // Keys temporarily stored during keydown events
-        this.tempKeysUp = new Set();        // Keys temporarily stored during keyup events
+        this.keyState = new InputFrameState();
 
         this.handleKeyDownBound = this.handleKeyDown.bind(this);
         this.handleKeyUpBound = this.handleKeyUp.bind(this);
-        this.isListening = false;
+        this.lifecycle = new InputLifecycle(
+            () => {
+                window.addEventListener('keydown', this.handleKeyDownBound);
+                window.addEventListener('keyup', this.handleKeyUpBound);
+            },
+            () => {
+                window.removeEventListener('keydown', this.handleKeyDownBound);
+                window.removeEventListener('keyup', this.handleKeyUpBound);
+            }
+        );
         this.start();
     }
 
     start() {
-        if (this.isListening) {
-            return;
-        }
-
-        window.addEventListener('keydown', this.handleKeyDownBound);
-        window.addEventListener('keyup', this.handleKeyUpBound);
-        this.isListening = true;
+        this.lifecycle.start();
     }
 
     stop() {
-        if (!this.isListening) {
-            return;
-        }
-
-        window.removeEventListener('keydown', this.handleKeyDownBound);
-        window.removeEventListener('keyup', this.handleKeyUpBound);
-        this.isListening = false;
+        this.lifecycle.stop();
     }
 
     handleKeyDown(event) {
         const key = event.code;
-        // Add to tempKeysDown only if it's not already in keysDown
-        if (!this.keysDown.has(key)) {
-            this.tempKeysDown.add(key);
-        }
+        this.keyState.queueDown(key);
     }
 
     handleKeyUp(event) {
         const key = event.code;
-        // Add to tempKeysUp only if it's currently in keysDown
-        if (this.keysDown.has(key)) {
-            this.tempKeysUp.add(key);
-        }
+        this.keyState.queueUp(key);
     }
 
     update() {
-        // Clear previous frame states
-        this.keysPressed.clear();
-        this.keysReleased.clear();
-
-        // Process new keydown events
-        this.tempKeysDown.forEach(key => {
-            if (!this.keysDown.has(key)) {
-                this.keysPressed.add(key);
-            }
-            this.keysDown.add(key);
-        });
-        this.tempKeysDown.clear(); // Clear after processing
-
-        // Process keyup events
-        this.tempKeysUp.forEach(key => {
-            this.keysReleased.add(key);
-            this.keysDown.delete(key);
-        });
-        this.tempKeysUp.clear(); // Clear after processing
+        this.keyState.update();
     }
 
     // Utility methods
     getKeysPressed() {
-        return Array.from(this.keysPressed);
+        return Array.from(this.keyState.pressed);
     }
 
     getKeysDown() {
-        return Array.from(this.keysDown);
+        return Array.from(this.keyState.down);
     }
 
     getKeysReleased() {
-        return Array.from(this.keysReleased);
+        return Array.from(this.keyState.released);
     }
 
     isKeyPressed(key) {
-        return this.keysPressed.has(key);
+        return this.keyState.pressed.has(key);
     }
 
     isKeyDown(key) {
-        return this.keysDown.has(key);
+        return this.keyState.down.has(key);
     }
 
     isKeyReleased(key) {
-        return this.keysReleased.has(key);
+        return this.keyState.released.has(key);
     }
 
     destroy() {
-        this.stop();
-        this.keysPressed.clear();
-        this.keysDown.clear();
-        this.keysReleased.clear();
-        this.tempKeysDown.clear();
-        this.tempKeysUp.clear();
+        this.lifecycle.destroy(() => {
+            this.keyState.clearAll();
+        });
     }
 }
 
