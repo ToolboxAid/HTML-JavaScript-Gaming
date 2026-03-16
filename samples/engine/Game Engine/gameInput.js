@@ -14,10 +14,12 @@ export function isPauseTogglePressed(keyboardInput, gameControllers = null) {
         gameControllers?.wasButtonIndexPressed(0, 8);
 }
 
-export function isScorePressed(keyboardInput) {
-    return keyboardInput.isKeyPressed('KeyS');
+export function isScorePressed(keyboardInput, gameControllers = null) {
+    return keyboardInput.isKeyPressed('KeyS') ||
+        gameControllers?.wasButtonIndexPressed(0, 0);
 }
 
-export function isPlayerDeathPressed(keyboardInput) {
-    return keyboardInput.isKeyPressed('KeyD');
+export function isPlayerDeathPressed(keyboardInput, gameControllers = null) {
+    return keyboardInput.isKeyPressed('KeyD') ||
+        gameControllers?.wasButtonIndexPressed(0, 1);
 }

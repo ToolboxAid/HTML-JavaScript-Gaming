@@ -96,11 +96,11 @@ export function playGame(game) {
     const playerInfo = `Player ${game.currentPlayer + 1} - Lives: ${game.playerLives[game.currentPlayer]} - Score: ${game.score[game.currentPlayer]}`;
     renderPlayScreen(screen, playerInfo);
 
-    if (isScorePressed(game.keyboardInput)) {
+    if (isScorePressed(game.keyboardInput, game.gameControllers)) {
         game.score[game.currentPlayer] += 100;
     }
 
-    if (!isPlayerDeathPressed(game.keyboardInput)) {
+    if (!isPlayerDeathPressed(game.keyboardInput, game.gameControllers)) {
         return;
     }
 

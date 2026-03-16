@@ -117,7 +117,11 @@ export const gameUi = {
             infoFontFamily: uiFont.ui,
             infoColor: themeColors.textPrimary,
             promptsY: 250,
-            prompts: ['Press `D` for player death', 'Press `S` for score', 'Press `P` to pause game'],
+            prompts: [
+                'Press `D` or `B` for player death',
+                'Press `S` or `A` for score',
+                'Press `P` or `Select` to pause'
+            ],
             promptFontSize: 24,
             promptLineHeight: 50,
             promptFontFamily: uiFont.ui,
