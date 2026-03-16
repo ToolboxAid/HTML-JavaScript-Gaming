@@ -48,6 +48,22 @@ class GameUtils {
         };
     }
 
+    static areTrackedPlayersOut(playerLives, playerCount) {
+        return playerLives
+            .slice(0, playerCount)
+            .every(lives => lives <= 0);
+    }
+
+    static findNextActivePlayer(playerLives, currentPlayer, playerCount) {
+        let nextPlayer = currentPlayer;
+
+        do {
+            nextPlayer = (nextPlayer + 1) % playerCount;
+        } while (playerLives[nextPlayer] <= 0 && nextPlayer !== currentPlayer);
+
+        return nextPlayer;
+    }
+
     static drawPlayerSelectOverlay(ctx, config) {
         ctx.fillStyle = config.backgroundColor + 'AA';
         ctx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
@@ -160,19 +176,16 @@ class GameUtils {
         updatedLives[currentPlayer] -= 1;
 
         if (updatedLives[currentPlayer] <= 0) {
-            const allOut = updatedLives.every(lives => lives <= 0);
-            if (allOut) {
+            if (this.areTrackedPlayersOut(updatedLives, playerCount)) {
                 setGameState("gameOver");
                 return { updatedPlayer: 0, updatedLives };
             }
         }
 
-        let nextPlayer = currentPlayer;
-        do {
-            nextPlayer = (nextPlayer + 1) % playerCount;
-        } while (updatedLives[nextPlayer] <= 0 && nextPlayer !== currentPlayer);
-
-        return { updatedPlayer: nextPlayer, updatedLives };
+        return {
+            updatedPlayer: this.findNextActivePlayer(updatedLives, currentPlayer, playerCount),
+            updatedLives
+        };
     }
 
 }

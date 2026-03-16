@@ -136,4 +136,11 @@ export function testGameUtils(assert) {
 
     assert(swapGameOver.updatedLives.every(life => life === 0), "swapPlayer did not correctly update all player lives to 0");
     assert(swapGameOver.updatedPlayer === 0, "reset player 0 for swapPlayer did not handle all players out of lives correctly");
+
+    let trackedGameOverTriggered = false;
+    const swapTrackedGameOver = GameUtils.swapPlayer([1, 0, 5], 0, 2, (gameState) => {
+        trackedGameOverTriggered = gameState === 'gameOver';
+    });
+    assert(trackedGameOverTriggered, "swapPlayer should only consider tracked players for game over");
+    assert(swapTrackedGameOver.updatedPlayer === 0, "swapPlayer should reset to player 0 when tracked players are out");
 }
