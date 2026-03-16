@@ -230,9 +230,13 @@ class PrimitiveRenderer {
         ctx.setLineDash(lineDash);
     }
 
-    static renderRect(ctx, x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+    static applyRenderState(ctx, alpha = 1, lineDash = null) {
         ctx.globalAlpha = alpha;
-        this.applyLineDash(ctx, options.lineDash);
+        this.applyLineDash(ctx, lineDash);
+    }
+
+    static renderRect(ctx, x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+        this.applyRenderState(ctx, alpha, options.lineDash);
 
         if (fillColor) {
             ctx.fillStyle = fillColor;
@@ -247,8 +251,7 @@ class PrimitiveRenderer {
     }
 
     static renderLine(ctx, x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        ctx.globalAlpha = alpha;
-        this.applyLineDash(ctx, options.lineDash);
+        this.applyRenderState(ctx, alpha, options.lineDash);
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -256,16 +259,14 @@ class PrimitiveRenderer {
     }
 
     static renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        ctx.globalAlpha = alpha;
-        this.applyLineDash(ctx, options.lineDash);
+        this.applyRenderState(ctx, alpha, options.lineDash);
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
     }
 
     static renderEllipse(ctx, x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
-        ctx.globalAlpha = alpha;
-        this.applyLineDash(ctx, options.lineDash);
+        this.applyRenderState(ctx, alpha, options.lineDash);
         ctx.beginPath();
         ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
         this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
@@ -284,8 +285,7 @@ class PrimitiveRenderer {
         alpha = 1,
         lineDash = null
     } = {}) {
-        ctx.globalAlpha = alpha;
-        this.applyLineDash(ctx, lineDash);
+        this.applyRenderState(ctx, alpha, lineDash);
         this.tracePath(ctx, points, { offsetX, offsetY, closePath });
         this.renderStroke(ctx, strokeColor, lineWidth);
     }
