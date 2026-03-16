@@ -36,7 +36,7 @@ engine:
 
 Additional reviews:
 [ ] Engine dedupe review: unify shared frame-step logic between `engine/animation/spriteController.js` and `engine/animation/pngController.js`
-[ ] Engine dedupe review: choose a canonical collision facade between `engine/game/gameCollision.js`, `engine/physics/collisionUtils.js`, and `engine/physics/boundaryUtils.js`
+[x] Engine dedupe review: choose a canonical collision facade between `engine/game/gameCollision.js`, `engine/physics/collisionUtils.js`, and `engine/physics/boundaryUtils.js`
 [x] Engine dedupe review: reduce overlapping game-object ID and lookup responsibilities across `engine/game/gameObjectManager.js`, `engine/game/gameObjectRegistry.js`, and `engine/game/gameObjectUtils.js`
 [x] Engine dedupe review: evaluate extracting shared input listener/update lifecycle helpers from `engine/input/keyboard.js`, `engine/input/mouse.js`, and `engine/input/controller/gameControllers.js`
 [ ] Engine naming review: find a clearer filename than `engine/core/canvas.js` for the `CanvasUtils` wrapper/module role
