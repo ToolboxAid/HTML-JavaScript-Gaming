@@ -4,6 +4,7 @@
 // AudioPlayer.js
 
 import DebugFlag from "../utils/debugFlag.js";
+import NumberUtils from "../math/numberUtils.js";
 
 class AudioPlayer {
     // Debug mode enabled via URL parameter: game.html?audioPlayer
@@ -79,7 +80,7 @@ class AudioPlayer {
 
     // Add method to set volume for a specific file
     setVolume(filename, volume) {
-        if (!Number.isFinite(volume)) {
+        if (!NumberUtils.isFiniteNumber(volume)) {
             throw new Error('volume must be a finite number.');
         }
 
@@ -105,7 +106,7 @@ class AudioPlayer {
             volume = 1.0;
         }
 
-        if (!Number.isFinite(volume)) {
+        if (!NumberUtils.isFiniteNumber(volume)) {
             throw new Error('volume must be a finite number.');
         }
 

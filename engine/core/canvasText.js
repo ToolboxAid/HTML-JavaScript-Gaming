@@ -3,6 +3,7 @@
 // 03/13/2026
 // canvasText.js
 
+import NumberUtils from '../math/numberUtils.js';
 import Font5x6 from '../renderers/assets/font5x6.js';
 
 class CanvasText {
@@ -50,7 +51,7 @@ class CanvasText {
         }
 
         const dpr = window.devicePixelRatio;
-        if (!Number.isFinite(dpr) || dpr <= 0) {
+        if (!NumberUtils.isPositiveFinite(dpr)) {
             return 1;
         }
 
@@ -58,7 +59,7 @@ class CanvasText {
     }
 
     static normalizeFontSizeForDpr(fontSize, maxScale = 1.25) {
-        const size = Number.isFinite(fontSize) ? fontSize : 20;
+        const size = NumberUtils.isFiniteNumber(fontSize) ? fontSize : 20;
         const scale = Math.min(this.getDevicePixelRatio(), maxScale);
         return Math.round(size * scale * 100) / 100;
     }
@@ -79,9 +80,9 @@ class CanvasText {
         const resolvedFontSize = useDpr
             ? this.normalizeFontSizeForDpr(fontSize, maxDprScale)
             : fontSize;
-        const resolvedCenterX = Number.isFinite(centerX)
+        const resolvedCenterX = NumberUtils.isFiniteNumber(centerX)
             ? centerX
-            : (Number.isFinite(defaultCenterX) ? defaultCenterX : ((ctx.canvas?.width || 0) / 2));
+            : (NumberUtils.isFiniteNumber(defaultCenterX) ? defaultCenterX : ((ctx.canvas?.width || 0) / 2));
         const dimensions = this.calculateTextMetrics(ctx, text, resolvedFontSize, fontFamily);
         const x = Math.round(resolvedCenterX - (dimensions.width / 2));
 
@@ -109,7 +110,7 @@ class CanvasText {
         const resolvedFontSize = useDpr
             ? this.normalizeFontSizeForDpr(fontSize, maxDprScale)
             : fontSize;
-        const resolvedLineHeight = Number.isFinite(lineHeight)
+        const resolvedLineHeight = NumberUtils.isFiniteNumber(lineHeight)
             ? lineHeight
             : Math.round(resolvedFontSize * 1.35);
         const drawResults = [];

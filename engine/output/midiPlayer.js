@@ -1,4 +1,5 @@
 import DebugFlag from "../utils/debugFlag.js";
+import NumberUtils from "../math/numberUtils.js";
 
 class MidiPlayer {
     static DEBUG = DebugFlag.has('midiPlayer');
@@ -122,7 +123,7 @@ class MidiPlayer {
     }
 
     setPosition(positionTenths) {
-        if (!Number.isFinite(positionTenths) || positionTenths < 0) {
+        if (!NumberUtils.isNonNegativeFinite(positionTenths)) {
             return false;
         }
 

@@ -1,4 +1,6 @@
 // Shared validation for synth score/song structures.
+import NumberUtils from '../math/numberUtils.js';
+
 function validateNote(note, handName, index) {
   if (!note || typeof note !== 'object') {
     throw new Error(`${handName}[${index}] must be an object.`);
@@ -12,11 +14,11 @@ function validateNote(note, handName, index) {
     throw new Error(`${handName}[${index}].duration must be a non-empty string.`);
   }
 
-  if (!Number.isFinite(note.beat) || note.beat < 0) {
+  if (!NumberUtils.isNonNegativeFinite(note.beat)) {
     throw new Error(`${handName}[${index}].beat must be a non-negative number.`);
   }
 
-  if (note.octave !== undefined && (!Number.isFinite(note.octave) || note.octave < 0 || note.octave > 8)) {
+  if (note.octave !== undefined && (!NumberUtils.isNonNegativeFinite(note.octave) || note.octave > 8)) {
     throw new Error(`${handName}[${index}].octave must be a number between 0 and 8 when provided.`);
   }
 }

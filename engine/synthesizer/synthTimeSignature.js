@@ -1,4 +1,6 @@
 // Shared parsing for user-entered synth time signature values.
+import NumberUtils from '../math/numberUtils.js';
+
 function parseTimeSignatureInput(rawValue) {
   const normalized = String(rawValue || '').trim();
   const match = normalized.match(/^(\d+)\s*\/\s*(\d+)$/);
@@ -12,7 +14,7 @@ function parseTimeSignatureInput(rawValue) {
 
   const beatsPerMeasure = Number(match[1]);
   const beatUnit = Number(match[2]);
-  if (!Number.isFinite(beatsPerMeasure) || !Number.isFinite(beatUnit) || beatsPerMeasure <= 0 || beatUnit <= 0) {
+  if (!NumberUtils.isPositiveFinite(beatsPerMeasure) || !NumberUtils.isPositiveFinite(beatUnit)) {
     return {
       ok: false,
       error: 'Time signature must be positive values like 4/4.'

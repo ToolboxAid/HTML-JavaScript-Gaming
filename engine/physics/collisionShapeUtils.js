@@ -3,13 +3,15 @@
 // 03/12/2026
 // collisionShapeUtils.js
 
+import NumberUtils from '../math/numberUtils.js';
+
 class CollisionShapeUtils {
     constructor() {
         throw new Error('CollisionShapeUtils is a utility class with only static methods. Do not instantiate.');
     }
 
     static hasFiniteNumber(value) {
-        return typeof value === 'number' && Number.isFinite(value);
+        return NumberUtils.isFiniteNumber(value);
     }
 
     static getBoundingBox(object) {

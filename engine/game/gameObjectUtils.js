@@ -5,6 +5,7 @@
 
 import ObjectCleanup from '../utils/objectCleanup.js';
 import ObjectValidation from '../utils/objectValidation.js';
+import NumberUtils from '../math/numberUtils.js';
 
 class GameObjectUtils {
     constructor() {
@@ -60,7 +61,7 @@ class GameObjectUtils {
 
     static validateId(id, name = 'id') {
         const isValidString = typeof id === 'string' && id.trim() !== '';
-        const isValidNumber = typeof id === 'number' && Number.isFinite(id);
+        const isValidNumber = NumberUtils.isFiniteNumber(id);
 
         if (!isValidString && !isValidNumber) {
             throw new Error(`${name} must be a non-empty string or finite number.`);

@@ -3,13 +3,15 @@
 // 03/16/2026
 // animationFrameStepper.js
 
+import NumberUtils from '../math/numberUtils.js';
+
 class AnimationFrameStepper {
     constructor() {
         throw new Error('AnimationFrameStepper is a utility class with only static methods. Do not instantiate.');
     }
 
     static normalizeNonNegativeInteger(value, fallback = 0) {
-        if (!Number.isFinite(value)) {
+        if (!NumberUtils.isFiniteNumber(value)) {
             return fallback;
         }
 

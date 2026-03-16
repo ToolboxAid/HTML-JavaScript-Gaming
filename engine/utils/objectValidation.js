@@ -3,10 +3,12 @@
 // 03/08/2026
 // objectValidation.js
 
+import NumberUtils from '../math/numberUtils.js';
+
 class ObjectValidation {
 
     static finiteNumber(value, name = 'value') {
-        if (typeof value !== 'number' || !Number.isFinite(value)) {
+        if (!NumberUtils.isFiniteNumber(value)) {
             throw new Error(`${name} must be a finite number.`);
         }
     }
@@ -43,7 +45,7 @@ class ObjectValidation {
         const isValid = value.every(point =>
             Array.isArray(point) &&
             point.length === 2 &&
-            point.every(coord => typeof coord === 'number' && Number.isFinite(coord))
+            point.every(coord => NumberUtils.isFiniteNumber(coord))
         );
 
         if (!isValid) {

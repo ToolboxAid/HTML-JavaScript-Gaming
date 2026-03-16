@@ -1,4 +1,6 @@
 // Shared synth sound-profile defaults, validation, and sanitization helpers.
+import NumberUtils from '../math/numberUtils.js';
+
 const VALID_OSC_TYPES = new Set(['sine', 'square', 'triangle', 'sawtooth']);
 
 const DEFAULT_SYNTH_SOUND_PROFILE = Object.freeze({
@@ -18,7 +20,7 @@ function cloneDefaultSoundProfile() {
 }
 
 function validateFinite(name, value, min = 0, max = Number.POSITIVE_INFINITY) {
-  if (!Number.isFinite(value) || value < min || value > max) {
+  if (!NumberUtils.isFiniteNumber(value) || value < min || value > max) {
     throw new Error(`${name} must be a finite number between ${min} and ${max}.`);
   }
 }
@@ -29,7 +31,7 @@ function clamp(value, min, max) {
 
 function boundedNumber(rawValue, limits) {
   const numericValue = Number(rawValue);
-  if (!Number.isFinite(numericValue)) {
+  if (!NumberUtils.isFiniteNumber(numericValue)) {
     return limits.fallback;
   }
   return clamp(numericValue, limits.min, limits.max);

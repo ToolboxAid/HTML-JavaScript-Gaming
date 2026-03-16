@@ -1,5 +1,6 @@
 // Synthesizer domain module.
 import DebugFlag from "../utils/debugFlag.js";
+import NumberUtils from "../math/numberUtils.js";
 import { cloneDefaultSoundProfile, mergeSoundProfile } from "./synthSoundProfile.js";
 import { validateSynthScore } from "./synthScoreValidation.js";
 
@@ -56,11 +57,11 @@ class Synthesizer {
   }
 
   setTimeSignature(beatsPerMeasure, beatUnit) {
-    if (!Number.isFinite(beatsPerMeasure) || beatsPerMeasure <= 0) {
+    if (!NumberUtils.isPositiveFinite(beatsPerMeasure)) {
       throw new Error('beatsPerMeasure must be a positive finite number.');
     }
 
-    if (!Number.isFinite(beatUnit) || beatUnit <= 0) {
+    if (!NumberUtils.isPositiveFinite(beatUnit)) {
       throw new Error('beatUnit must be a positive finite number.');
     }
 
@@ -71,7 +72,7 @@ class Synthesizer {
   }
 
   setTempo(tempo) { // tempo in BPM
-    if (!Number.isFinite(tempo) || tempo <= 0) {
+    if (!NumberUtils.isPositiveFinite(tempo)) {
       throw new Error('tempo must be a positive finite number.');
     }
 
@@ -210,7 +211,7 @@ class Synthesizer {
     osc.type = oscType; // Set oscillator type
 
     const freq = this.getNoteHz(note, octave);
-    if (Number.isFinite(freq)) {
+    if (NumberUtils.isFiniteNumber(freq)) {
       osc.frequency.value = freq;
     }
 

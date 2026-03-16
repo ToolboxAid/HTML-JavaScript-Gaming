@@ -3,6 +3,8 @@
 // 10/16/2024
 // frequency.js
 
+import NumberUtils from '../math/numberUtils.js';
+
 class AudioFrequency {
 
     /** Constructor for AudioFrequency class.
@@ -19,11 +21,11 @@ class AudioFrequency {
     }
 
     static play(frequency, duration) {
-        if (!Number.isFinite(frequency) || frequency <= 0) {
+        if (!NumberUtils.isPositiveFinite(frequency)) {
             throw new Error('frequency must be a positive finite number.');
         }
 
-        if (!Number.isFinite(duration) || duration <= 0) {
+        if (!NumberUtils.isPositiveFinite(duration)) {
             throw new Error('duration must be a positive finite number.');
         }
 

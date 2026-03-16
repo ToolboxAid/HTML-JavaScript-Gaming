@@ -432,7 +432,7 @@ class PrimitiveRenderer {
         const canCombineBorderAndHeader = (
             borderColor &&
             borderWidth > 0 &&
-            Number.isFinite(headerY) &&
+            NumberUtils.isFiniteNumber(headerY) &&
             resolvedHeaderColor === borderColor &&
             headerWidth === borderWidth
         );
@@ -454,7 +454,7 @@ class PrimitiveRenderer {
             this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, 1);
         }
 
-        if (Number.isFinite(headerY)) {
+        if (NumberUtils.isFiniteNumber(headerY)) {
             this.renderLine(ctx, x, headerY, x + width, headerY, resolvedHeaderColor, headerWidth, 1);
         }
     }
@@ -620,7 +620,7 @@ class PrimitiveRenderer {
     } = {}) {
         this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha);
 
-        if (Number.isFinite(markerX) && Number.isFinite(markerY)) {
+        if (NumberUtils.isFiniteNumber(markerX) && NumberUtils.isFiniteNumber(markerY)) {
             this.renderMarker(ctx, markerX, markerY, markerRadius, markerColor, markerAlpha);
         }
     }

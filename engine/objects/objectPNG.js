@@ -16,6 +16,7 @@ import PngAssetState from '../utils/pngAssetState.js';
 import PngController from '../animation/pngController.js';
 import StateUtils from '../animation/stateUtils.js';
 import AnimationStateBridge from '../animation/animationStateBridge.js';
+import NumberUtils from '../math/numberUtils.js';
 
 class ObjectPNG extends ObjectKillable {
     static DEBUG = DebugFlag.has('objectPNG');
@@ -154,8 +155,8 @@ class ObjectPNG extends ObjectKillable {
         }
 
         const offset = this.frameOffsets[frameIndex];
-        const offsetX = Number.isFinite(offset?.x) ? offset.x : 0;
-        const offsetY = Number.isFinite(offset?.y) ? offset.y : 0;
+        const offsetX = NumberUtils.isFiniteNumber(offset?.x) ? offset.x : 0;
+        const offsetY = NumberUtils.isFiniteNumber(offset?.y) ? offset.y : 0;
 
         return { x: offsetX, y: offsetY };
     }
