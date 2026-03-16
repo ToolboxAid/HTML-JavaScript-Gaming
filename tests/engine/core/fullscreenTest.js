@@ -97,6 +97,8 @@ export function testFullscreen(assert) {
         assert(destroyResult === true, 'Fullscreen.destroy should succeed when listeners are registered');
         assert(Fullscreen.listenersRegistered === false, 'Fullscreen.destroy should clear listener registration state');
         assert(Fullscreen.onResizeHook === null, 'Fullscreen.destroy should clear onResize hook');
+        assert(Fullscreen.canvas === null, 'Fullscreen.destroy should clear cached canvas reference');
+        assert(Fullscreen.ctx === null, 'Fullscreen.destroy should clear cached context reference');
         assert(Fullscreen.isFullScreen === false, 'Fullscreen.destroy should reset fullscreen state');
         assert(removedWindowEvents.includes('resize'), 'Fullscreen.destroy should unbind resize listener');
         assert(removedDocumentEvents.includes('fullscreenchange'), 'Fullscreen.destroy should unbind fullscreenchange listener');

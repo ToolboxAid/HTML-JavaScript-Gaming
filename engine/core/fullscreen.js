@@ -250,6 +250,8 @@ class Fullscreen {
         Fullscreen.canvasClickBound = null;
         Fullscreen.fullscreenChangeBound = null;
         Fullscreen.onResizeHook = null;
+        Fullscreen.canvas = null;
+        Fullscreen.ctx = null;
         Fullscreen.isFullScreen = false;
         Fullscreen.listenersRegistered = false;
         return true;
