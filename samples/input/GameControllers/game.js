@@ -3,12 +3,28 @@
 // 11/21/2024
 // game.js - GameController Integration with Button States on Canvas
 
+import Fullscreen from '../../../engine/core/fullscreen.js';
 import GameControllers from '../../../engine/input/controller/gameControllers.js';
 
 const canvas = document.getElementById('gameArea');
-canvas.width = 480;
-canvas.height = 320;
 const ctx = canvas.getContext('2d');
+
+const canvasConfig = {
+    width: 480,
+    height: 320,
+    scale: 4 / 3,
+};
+
+const fullscreenConfig = {
+    color: '#ed9700',
+    font: '20px Segoe UI',
+    text: 'Click the canvas to toggle fullscreen.',
+    x: 92,
+    y: 300
+};
+
+canvas.width = canvasConfig.width;
+canvas.height = canvasConfig.height;
 
 const PLAYER_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
 const MAX_BUTTONS = 10;
@@ -134,6 +150,8 @@ function gameRender() {
             });
         }
     });
+
+    Fullscreen.draw(ctx);
 }
 
 function gameLoop() {
@@ -158,9 +176,12 @@ function destroy() {
     }
 
     gameControllers.destroy();
+    Fullscreen.destroy();
 }
 
 window.addEventListener('pagehide', destroy);
 window.addEventListener('beforeunload', destroy);
+
+await Fullscreen.init(fullscreenConfig, canvasConfig);
 gameLoop();
 
