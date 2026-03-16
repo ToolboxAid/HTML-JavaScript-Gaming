@@ -40,15 +40,9 @@ body {
     line-height: 1.5;
 }
 
-.stage-shell {
-    display: grid;
-    justify-items: center;
-    width: fit-content;
-    max-width: 100%;
-}
-
 #gameAreaContainer {
     position: relative;
+    max-width: 100%;
     padding: 12px;
     border-radius: 20px;
     background: linear-gradient(180deg, rgba(237, 151, 0, 0.24), rgba(54, 0, 175, 0.16));
@@ -79,9 +73,5 @@ canvas {
         width: 100%;
         overflow-x: auto;
         box-sizing: border-box;
-    }
-
-    .stage-shell {
-        width: 100%;
     }
 }
