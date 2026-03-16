@@ -18,16 +18,15 @@ class GameControllers {
     // Use shared EventBus
     static sender = EventBus.getInstance();
 
-    static count = 0; // this is used to prevent spamming not founds.
     static showMessage = true;
 
     messageWarn(message) {
-        if (this.showMessage) {
+        if (GameControllers.showMessage) {
             DebugLog.warn(true, 'GameControllers', message);
         }
     }
     messageError(message) {
-        if (this.showMessage) {
+        if (GameControllers.showMessage) {
             DebugLog.error('GameControllers', message);
         }
     }
@@ -100,10 +99,6 @@ class GameControllers {
     }
 
     update() {
-        if (GameControllers.count++ > 60) {
-            GameControllers.count = 0;
-        }
-
         this.gamepadManager.gameControllers.forEach((gameController, index) => {
             this.gamepadStates[index].update(gameController);
         });

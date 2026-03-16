@@ -81,4 +81,30 @@ export function testGameControllersSemantic(assert) {
     assert(emptyControllers.gamepadMappers[1] instanceof GamepadMapper, 'handleConnectedController should create a mapper for the connected pad');
     emptyControllers.handleDisconnectedController(1);
     assert(emptyControllers.gamepadMappers[1] === null, 'handleDisconnectedController should clear the mapper');
+
+    const loggingControllers = Object.create(GameControllers.prototype);
+    const originalShowMessage = GameControllers.showMessage;
+    let warnCount = 0;
+    let errorCount = 0;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+
+    console.warn = () => { warnCount += 1; };
+    console.error = () => { errorCount += 1; };
+
+    try {
+        GameControllers.showMessage = false;
+        loggingControllers.messageWarn('hidden warn');
+        loggingControllers.messageError('hidden error');
+        assert(warnCount === 0 && errorCount === 0, 'GameControllers should honor the static showMessage mute flag');
+
+        GameControllers.showMessage = true;
+        loggingControllers.messageWarn('visible warn');
+        loggingControllers.messageError('visible error');
+        assert(warnCount + errorCount > 0, 'GameControllers should emit logs when the static showMessage flag is enabled');
+    } finally {
+        GameControllers.showMessage = originalShowMessage;
+        console.warn = originalWarn;
+        console.error = originalError;
+    }
 }
