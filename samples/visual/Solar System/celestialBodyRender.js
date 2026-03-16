@@ -5,6 +5,7 @@
 
 import { canvasConfig, solarSystemConfig, uiFont } from './global.js';
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 function getSystemCenter() {
     return {
@@ -14,36 +15,39 @@ function getSystemCenter() {
 }
 
 function drawOrbit(ctx, centerX, centerY, distance, zoom) {
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, distance * zoom, 0, Math.PI * 2);
-    ctx.strokeStyle = solarSystemConfig.display.orbitStroke;
-    ctx.lineWidth = 1;
-    ctx.setLineDash([10, 15]);
-    ctx.stroke();
-    ctx.closePath();
+    PrimitiveRenderer.drawCircle(centerX, centerY, distance * zoom, null, solarSystemConfig.display.orbitStroke, 1, 1, {
+        ctx,
+        lineDash: [10, 15]
+    });
 }
 
 function drawRing(ctx, drawX, drawY, ring, zoom) {
-    ctx.beginPath();
-    ctx.ellipse(drawX, drawY, ring.ringRadius * zoom, ring.ringRadius * zoom, 0, 0, Math.PI * 2);
-    ctx.fillStyle = ring.color;
-    ctx.fill();
-    ctx.closePath();
+    PrimitiveRenderer.drawEllipse(
+        drawX,
+        drawY,
+        ring.ringRadius * zoom,
+        ring.ringRadius * zoom,
+        ring.color,
+        null,
+        0,
+        0,
+        1,
+        { ctx }
+    );
 }
 
 function drawMoons(ctx, moons, centerX, centerY, zoom) {
     moons.forEach((moon) => {
-        ctx.beginPath();
-        ctx.arc(
+        PrimitiveRenderer.drawCircle(
             centerX + (moon.x * zoom),
             centerY + (moon.y * zoom),
             moon.visual.radius * zoom,
+            moon.visual.color,
+            null,
             0,
-            Math.PI * 2
+            1,
+            { ctx }
         );
-        ctx.fillStyle = moon.visual.color;
-        ctx.fill();
-        ctx.closePath();
     });
 }
 
@@ -69,17 +73,11 @@ export function drawCelestialBody(body, {
         drawOrbit(ctx, centerX, centerY, body.orbit.distance, zoom);
     }
 
-    ctx.setLineDash([0, 0]);
-
     if (body.visual.ring) {
         drawRing(ctx, drawX, drawY, body.visual.ring, zoom);
     }
 
-    ctx.beginPath();
-    ctx.arc(drawX, drawY, scaledRadius, 0, Math.PI * 2);
-    ctx.fillStyle = body.visual.color;
-    ctx.fill();
-    ctx.closePath();
+    PrimitiveRenderer.drawCircle(drawX, drawY, scaledRadius, body.visual.color, null, 0, 1, { ctx });
 
     drawMoons(ctx, body.moons, centerX, centerY, zoom);
 

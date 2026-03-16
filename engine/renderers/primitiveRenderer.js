@@ -75,6 +75,7 @@ class PrimitiveRenderer {
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
             ctx.globalAlpha = alpha;
+            this.applyLineDash(ctx, options.lineDash);
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
 
@@ -94,6 +95,7 @@ class PrimitiveRenderer {
     static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
             ctx.globalAlpha = alpha;
+            this.applyLineDash(ctx, options.lineDash);
             ctx.beginPath();
             ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
 
@@ -116,6 +118,7 @@ class PrimitiveRenderer {
         }
 
         return this.withContext(options, (ctx) => {
+            this.applyLineDash(ctx, options.lineDash);
             this.tracePath(ctx, points, { closePath: true });
 
             if (fillColor) {
@@ -140,6 +143,7 @@ class PrimitiveRenderer {
         offsetY = 0,
         closePath = false,
         alpha = 1,
+        lineDash = null,
         ctx = null
     } = {}) {
         if (!Array.isArray(points) || points.length < 2) {
@@ -148,6 +152,7 @@ class PrimitiveRenderer {
 
         return this.withContext({ ctx }, (renderCtx) => {
             renderCtx.globalAlpha = alpha;
+            this.applyLineDash(renderCtx, lineDash);
             this.tracePath(renderCtx, points, { offsetX, offsetY, closePath });
             renderCtx.strokeStyle = strokeColor;
             renderCtx.lineWidth = lineWidth;
@@ -158,6 +163,7 @@ class PrimitiveRenderer {
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
             ctx.globalAlpha = alpha;
+            this.applyLineDash(ctx, options.lineDash);
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
@@ -237,6 +243,14 @@ class PrimitiveRenderer {
         }
 
         return CanvasUtils.ctx || null;
+    }
+
+    static applyLineDash(ctx, lineDash) {
+        if (!Array.isArray(lineDash) || typeof ctx.setLineDash !== 'function') {
+            return;
+        }
+
+        ctx.setLineDash(lineDash);
     }
 }
 
