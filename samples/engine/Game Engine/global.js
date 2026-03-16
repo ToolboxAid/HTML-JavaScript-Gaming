@@ -59,19 +59,15 @@ export const gameUi = {
         panelY: 120,
         panelWidth: 784,
         panelHeight: 430,
-        panelBorderSize: 3,
-        panelColor: themeColors.panel,
-        panelBorderColor: themeColors.accent,
-        accentColor: themeColors.accent,
-        subtitleColor: themeColors.textSecondary
+        panelBorderSize: 3
     },
     performance: {
         show: DebugFlag.has('perf'),
-        size: 24,
+        size: 18,
         font: uiFont.mono,
-        colorLow: '#72f1b8',
+        colorLow: 'green',
         colorMed: themeColors.accent,
-        colorHigh: '#ff6b6b',
+        colorHigh: '#ff5f57',
         backgroundColor: '#999999cc',
         x: canvasConfig.width - 344,
         y: canvasConfig.height - 178

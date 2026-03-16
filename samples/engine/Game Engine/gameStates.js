@@ -152,7 +152,7 @@ function togglePauseState(game) {
         : game.constructor.STATES.PLAY_GAME;
 }
 
-function drawStyledStage(panelColor = gameUi.theme.panelColor, borderColor = gameUi.theme.panelBorderColor) {
+function drawStyledStage(panelColor = gameUi.theme.colors.panel, borderColor = gameUi.theme.colors.accent) {
     const { panelX, panelY, panelWidth, panelHeight, panelBorderSize } = gameUi.theme;
 
     const inset = 16;
@@ -161,8 +161,8 @@ function drawStyledStage(panelColor = gameUi.theme.panelColor, borderColor = gam
     CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
     CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
     CanvasUtils.drawLine(panelX, panelY + headerOffsetY, panelX + panelWidth, panelY + headerOffsetY, 2, borderColor);
-    drawPulseAccent(panelX, panelY + headerOffsetY + 6, panelWidth, gameUi.theme.accentColor);
-    CanvasUtils.drawSafeAreaGuides(Math.min(safeArea.x, safeArea.y), `${gameUi.theme.accentColor}99`);
+    drawPulseAccent(panelX, panelY + headerOffsetY + 6, panelWidth, gameUi.theme.colors.accent);
+    CanvasUtils.drawSafeAreaGuides(Math.min(safeArea.x, safeArea.y), `${gameUi.theme.colors.accent}99`);
 }
 
 function renderScreen(screen) {
