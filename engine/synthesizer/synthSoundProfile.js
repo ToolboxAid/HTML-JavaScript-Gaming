@@ -25,16 +25,12 @@ function validateFinite(name, value, min = 0, max = Number.POSITIVE_INFINITY) {
   }
 }
 
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
 function boundedNumber(rawValue, limits) {
   const numericValue = Number(rawValue);
   if (!NumberUtils.isFiniteNumber(numericValue)) {
     return limits.fallback;
   }
-  return clamp(numericValue, limits.min, limits.max);
+  return NumberUtils.clamp(numericValue, limits.min, limits.max);
 }
 
 function validateSoundProfile(profile) {

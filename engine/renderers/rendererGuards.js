@@ -19,7 +19,7 @@ class RendererGuards {
     }
 
     static normalizeOffset(value) {
-        return NumberUtils.isFiniteNumber(value) ? value : 0;
+        return NumberUtils.normalizeFinite(value, 0);
     }
 
     static normalizeLineWidth(value, fallback = 1.25) {
@@ -27,11 +27,11 @@ class RendererGuards {
     }
 
     static normalizeNonNegativeNumber(value, fallback = 0) {
-        return NumberUtils.isNonNegativeFinite(value) ? value : fallback;
+        return NumberUtils.normalizeNonNegative(value, fallback);
     }
 
     static normalizePositiveNumber(value, fallback) {
-        return NumberUtils.isPositiveFinite(value) ? value : fallback;
+        return NumberUtils.normalizePositive(value, fallback);
     }
 }
 

@@ -8,21 +8,9 @@ import NumberUtils from '../math/numberUtils.js';
 
 class PngController {
     constructor(frameCount = 1, framesPerRow = 1, frameDelay = 6) {
-        NumberUtils.positiveNumber(frameCount, 'frameCount');
-        NumberUtils.positiveNumber(framesPerRow, 'framesPerRow');
-        NumberUtils.positiveNumber(frameDelay, 'frameDelay');
-
-        if (!Number.isInteger(frameCount)) {
-            throw new Error('frameCount must be an integer.');
-        }
-
-        if (!Number.isInteger(framesPerRow)) {
-            throw new Error('framesPerRow must be an integer.');
-        }
-
-        if (!Number.isInteger(frameDelay)) {
-            throw new Error('frameDelay must be an integer.');
-        }
+        NumberUtils.positiveInteger(frameCount, 'frameCount');
+        NumberUtils.positiveInteger(framesPerRow, 'framesPerRow');
+        NumberUtils.positiveInteger(frameDelay, 'frameDelay');
 
         this.frameCount = frameCount;
         this.framesPerRow = framesPerRow;
@@ -32,11 +20,7 @@ class PngController {
     }
 
     setFrame(frameIndex = 0) {
-        NumberUtils.finiteNumber(frameIndex, 'frameIndex');
-
-        if (!Number.isInteger(frameIndex)) {
-            throw new Error('frameIndex must be an integer.');
-        }
+        NumberUtils.integer(frameIndex, 'frameIndex');
 
         if (frameIndex < 0 || frameIndex >= this.frameCount) {
             throw new Error(`frameIndex out of range: ${frameIndex}`);

@@ -172,6 +172,10 @@ class GameControllers {
     }
 
     getMapper(gameControllerIndex) {
+        if (!this.isConnected(gameControllerIndex)) {
+            return null;
+        }
+
         const mapper = this.gamepadMappers[gameControllerIndex];
         if (!mapper) {
             this.messageError(`Gamepad mapper not found for index ${gameControllerIndex}`);
@@ -182,6 +186,10 @@ class GameControllers {
     }
 
     getGamepadState(gameControllerIndex) {
+        if (!this.isConnected(gameControllerIndex)) {
+            return null;
+        }
+
         const gamepadState = this.gamepadStates[gameControllerIndex];
         if (!gamepadState) {
             this.messageError(`Gamepad state not found for index ${gameControllerIndex}`);

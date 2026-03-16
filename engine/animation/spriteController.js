@@ -16,16 +16,8 @@ class SpriteController {
         SpriteController.validateFrames(livingFrames, 'livingFrames');
         SpriteController.validateFrames(dyingFrames, 'dyingFrames');
 
-        NumberUtils.positiveNumber(livingDelay, 'livingDelay');
-        NumberUtils.positiveNumber(dyingDelay, 'dyingDelay');
-
-        if (!Number.isInteger(livingDelay)) {
-            throw new Error('livingDelay must be an integer.');
-        }
-
-        if (!Number.isInteger(dyingDelay)) {
-            throw new Error('dyingDelay must be an integer.');
-        }
+        NumberUtils.positiveInteger(livingDelay, 'livingDelay');
+        NumberUtils.positiveInteger(dyingDelay, 'dyingDelay');
 
         this.livingFrames = livingFrames;
         this.dyingFrames = dyingFrames;

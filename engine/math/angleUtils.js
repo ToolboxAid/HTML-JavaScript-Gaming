@@ -3,6 +3,8 @@
 // 02/12/2025
 // angleUtils.js
 
+import NumberUtils from './numberUtils.js';
+
 class AngleUtils {
 
     static DEG_TO_RAD = Math.PI / 180;
@@ -67,7 +69,7 @@ class AngleUtils {
         const x = Math.cos(radians);
         const y = Math.sin(radians);
 
-        if (!Number.isInteger(precision) || precision < 0) {
+        if (!NumberUtils.isNonNegativeInteger(precision)) {
             return { x, y };
         }
 
