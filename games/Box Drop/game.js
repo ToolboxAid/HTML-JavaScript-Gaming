@@ -19,9 +19,6 @@ class Game extends GameBase {
   }
 
   async onInitialize() {
-
-    console.log("onInit");
-
     this.playerSelect = playerSelect;
 
     this.keyboardInput = new KeyboardInput();
@@ -43,8 +40,6 @@ class Game extends GameBase {
   // Example: object.position += object.velocity * deltaTime;
   gameLoop(deltaTime) {
     this.keyboardInput.update();
-
-    console.log(this.gameState);
 
     // Update game state with deltaTime
     switch (this.gameState) {
@@ -129,7 +124,6 @@ class Game extends GameBase {
   }
 
   initializeEnemy() {
-    console.log("Initializing Enemy...");
     this.enemyInitialized = true;
 
     this.gameState = "playGame";
@@ -204,7 +198,6 @@ class Game extends GameBase {
       // lives based on the result from swapPlayer
       this.currentPlayer = result.updatedPlayer;
       this.playerLives = result.updatedLives;
-      console.log(`Player ${this.currentPlayer + 1} lost a life!`);
       Game.enemyX = RandomUtils.randomInt(0, canvasConfig.width - Game.enemySize);
       Game.enemyY = -Game.enemySize;
     }
