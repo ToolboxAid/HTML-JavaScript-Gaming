@@ -12,26 +12,17 @@ class SpriteRenderer {
         const newX = object.x + normalizedOffsetX;
         const newY = object.y + normalizedOffsetY;
 
+        const frame = this.getRenderableFrame(object);
+        if (!frame) {
+            return;
+        }
+
         if (object.frameType === 'json') {
-            this.drawRGB(object, newX, newY);
+            CanvasUtils.drawSpriteRGB(newX, newY, frame, object.pixelSize);
             return;
         }
 
-        if (object.isAlive()) {
-            const frame = object.getCurrentLivingFrame();
-            if (frame) {
-                CanvasUtils.drawSprite(newX, newY, frame, object.pixelSize, object.spriteColor);
-            }
-            return;
-        }
-
-        if (object.isDying()) {
-            const frame = object.getCurrentDyingFrame();
-            if (frame) {
-                CanvasUtils.drawSprite(newX, newY, frame, object.pixelSize, object.spriteColor);
-            }
-            return;
-        }
+        CanvasUtils.drawSprite(newX, newY, frame, object.pixelSize, object.spriteColor);
     }
 
     static drawRGB(object, newX, newY) {
@@ -39,21 +30,24 @@ class SpriteRenderer {
             return;
         }
 
-        if (object.isAlive()) {
-            const frame = object.getCurrentLivingFrame();
-            if (frame) {
-                CanvasUtils.drawSpriteRGB(newX, newY, frame, object.pixelSize);
-            }
+        const frame = this.getRenderableFrame(object);
+        if (!frame) {
             return;
         }
 
-        if (object.isDying()) {
-            const frame = object.getCurrentDyingFrame();
-            if (frame) {
-                CanvasUtils.drawSpriteRGB(newX, newY, frame, object.pixelSize);
-            }
-            return;
+        CanvasUtils.drawSpriteRGB(newX, newY, frame, object.pixelSize);
+    }
+
+    static getRenderableFrame(object) {
+        if (object.isAlive()) {
+            return object.getCurrentLivingFrame();
         }
+
+        if (object.isDying()) {
+            return object.getCurrentDyingFrame();
+        }
+
+        return null;
     }
 }
 

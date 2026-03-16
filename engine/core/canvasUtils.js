@@ -61,7 +61,6 @@ class CanvasUtils {
             const height = canvas.height;
             DebugLog.log(this.DEBUG, 'CanvasUtils', `${canvas}, ${this.canvas}, Canvas width: ${width}, Canvas height: ${height}`);
         } else {
-            alert('You need a modern browser to see this.');
             throw new Error('You need a modern browser to see this.');
         }
 
@@ -98,6 +97,10 @@ class CanvasUtils {
         return this.config?.height ?? 0;
     }
 
+    static hasContext() {
+        return !!this.ctx;
+    }
+
     /**
      * Draw text and numbers 
      */
@@ -120,6 +123,9 @@ class CanvasUtils {
 
     // get text width & height based on size & font w/padding
     static calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
+        if (!this.ctx) {
+            return { width: 0, height: 0 };
+        }
         return CanvasText.calculateTextMetrics(this.ctx, text, fontSize, font);
     }
 
@@ -154,6 +160,10 @@ class CanvasUtils {
 
     // Method to draw the current frame
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
+        if (!this.ctx || !Array.isArray(frame)) {
+            return false;
+        }
+
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
@@ -176,10 +186,16 @@ class CanvasUtils {
             let dimensions = Sprite.getLayerDimensions(frame, pixelSize);
             this.drawBounds(x, y, dimensions.width, dimensions.height, spriteColor, 2);
         }
+
+        return true;
     }
 
     // Method to draw the current frame
     static drawSpriteRGB(x, y, frame, pixelSize, drawBounds = false) {
+        if (!this.ctx || !Array.isArray(frame)) {
+            return false;
+        }
+
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 this.ctx.fillStyle = frame[row][col];
@@ -194,12 +210,18 @@ class CanvasUtils {
             const dimensions = Sprite.getLayerDimensions(frame, pixelSize);
             this.drawBounds(x, y, dimensions.width, dimensions.height, "white", 2);
         }
+
+        return true;
     }
 
     /**
      * Line methods
      */
     static drawLine(x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
+        if (!this.ctx) {
+            return false;
+        }
+
         this.ctx.lineWidth = lineWidth;
         this.ctx.strokeStyle = strokeColor;
 
@@ -207,6 +229,8 @@ class CanvasUtils {
         this.ctx.moveTo(x1, y1); // Start point
         this.ctx.lineTo(x2, y2); // End point
         this.ctx.stroke(); // Draw the line
+
+        return true;
     }
 
     static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
@@ -216,6 +240,10 @@ class CanvasUtils {
     }
 
     static drawDashLine(x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
+        if (!this.ctx) {
+            return false;
+        }
+
         /* ctx.setLineDash
              ([5, 15]);        - Short dashes with longer gaps
              ([15, 5]);        - Long dashes with short gaps
@@ -225,9 +253,15 @@ class CanvasUtils {
         this.ctx.setLineDash(dashPattern);
         this.drawLine(x1, y1, x2, y2, lineWidth, strokeColor);
         this.ctx.setLineDash([]); // Reset to solid line
+
+        return true;
     }
 
     static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
+        if (!this.ctx) {
+            return false;
+        }
+
         if (w <= 0) {
             w = 10;
         }
@@ -237,30 +271,54 @@ class CanvasUtils {
         this.ctx.lineWidth = lineSize;
         this.ctx.strokeStyle = color;
         this.ctx.strokeRect(x, y, w, h);
+
+        return true;
     }
 
     static drawRect(x, y, width, height, color) {
+        if (!this.ctx) {
+            return false;
+        }
+
         this.ctx.fillStyle = color;
         this.ctx.fillRect(x, y, width, height);
+
+        return true;
     }
 
     static drawBorder() {
+        if (!this.ctx) {
+            return false;
+        }
+
         this.ctx.lineWidth = this.config.borderSize;
         this.ctx.strokeStyle = this.config.borderColor;
         this.ctx.strokeRect(0, 0, this.config.width, this.config.height);
+
+        return true;
     }
 
     /**
      * Circle methods
      */
     static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
+        if (!this.ctx) {
+            return false;
+        }
+
         this.ctx.beginPath();
         this.ctx.arc(point.x, point.y, size, startAngle, endAngle); // Draw a small circle
         this.ctx.fillStyle = color;
         this.ctx.fill();
+
+        return true;
     }
 
     static drawCircle2(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
+        if (!this.ctx) {
+            return false;
+        }
+
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw circle
         this.ctx.fillStyle = fillColor;
@@ -271,14 +329,22 @@ class CanvasUtils {
             this.ctx.lineWidth = borderWidth;
             this.ctx.stroke();
         }
+
+        return true;
     }
 
     /**
      *  Canvas Init Methods
      */
     static canvasClear() {
+        if (!this.ctx) {
+            return false;
+        }
+
         this.ctx.fillStyle = this.config.backgroundColor || Colors.getRandomColor();
         this.ctx.fillRect(0, 0, this.config.width, this.config.height);
+
+        return true;
     }
 
 }

@@ -23,6 +23,7 @@ function createMockCtx() {
         moveTo() {},
         lineTo() {},
         stroke() {},
+        fill() {},
         fillRect() {},
         strokeRect() {},
         drawImage() {},
@@ -31,8 +32,41 @@ function createMockCtx() {
         restore() {},
         translate() {},
         rotate() {},
-        scale() {}
+        scale() {},
+        setLineDash() {},
+        arc() {},
+        measureText() {
+            return {
+                width: 10,
+                actualBoundingBoxAscent: 7,
+                actualBoundingBoxDescent: 3
+            };
+        }
     };
+}
+
+function testCanvasUtilsGuardOnMissingContext(assert) {
+    const originalCtx = CanvasUtils.ctx;
+
+    try {
+        CanvasUtils.ctx = null;
+
+        assertNoThrow(assert, () => CanvasUtils.drawSprite(0, 0, ['1'], 1, 'white'), 'CanvasUtils.drawSprite should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawSpriteRGB(0, 0, [['#fff']], 1), 'CanvasUtils.drawSpriteRGB should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawLine(0, 0, 1, 1), 'CanvasUtils.drawLine should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawDashLine(0, 0, 1, 1, 1), 'CanvasUtils.drawDashLine should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawBounds(0, 0, 1, 1), 'CanvasUtils.drawBounds should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawRect(0, 0, 1, 1, 'white'), 'CanvasUtils.drawRect should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawBorder(), 'CanvasUtils.drawBorder should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawCircle({ x: 0, y: 0 }), 'CanvasUtils.drawCircle should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.drawCircle2(0, 0, 1), 'CanvasUtils.drawCircle2 should no-op without context');
+        assertNoThrow(assert, () => CanvasUtils.canvasClear(), 'CanvasUtils.canvasClear should no-op without context');
+
+        const dimensions = CanvasUtils.calculateTextMetrics('hello');
+        assert(dimensions.width === 0 && dimensions.height === 0, 'CanvasUtils.calculateTextMetrics should fall back to zero dimensions without context');
+    } finally {
+        CanvasUtils.ctx = originalCtx;
+    }
 }
 
 function testRenderersGuardOnMissingContext(assert) {
@@ -213,6 +247,7 @@ function testRenderersDrawWithMockContext(assert) {
 }
 
 export function testRendererSafety(assert) {
+    testCanvasUtilsGuardOnMissingContext(assert);
     testRenderersGuardOnMissingContext(assert);
     testRenderersDrawWithMockContext(assert);
 }
