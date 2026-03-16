@@ -29,100 +29,87 @@ class MockCanvasContext {
     constructor() {
         this.fillStyle = '';
         this.font = '';
+        this.fillRectCalls = [];
+        this.fillTextCalls = [];
     }
 
-    // Mock fillStyle and fillRect
     fillRect(x, y, width, height) {
-        //console.log(`fillRect called with args: x=${x}, y=${y}, width=${width}, height=${height}`);
+        this.fillRectCalls.push({ x, y, width, height, fillStyle: this.fillStyle });
     }
 
-    // Mock fillText
     fillText(text, x, y) {
-        //console.log(`fillText called with text: '${text}', x=${x}, y=${y}`);
+        this.fillTextCalls.push({ text, x, y, fillStyle: this.fillStyle, font: this.font });
     }
 }
 
 
 export function testGameUtils(assert) {
-    // ----------------------
-    // Test selectNumberOfPlayers (Keyboard Input Simulation)
-    // ----------------------
-
-    // Set up the mock ctx object
     const mockCtx = new MockCanvasContext();
-
-    // Mock input data
     const canvasConfig = { width: 800, height: 600, backgroundColor: '#000000' };
     const playerSelect = { maxPlayers: 4, lives: 3, optionBaseX: 100, optionBaseY: 100, optionSpacing: 50 };
 
-    // Mock keyboard input
     const keyboardInput = new MockKeyboardInput(['Digit1']);
-    const gameControllers = null; // No controllers used
+    const gameControllers = null;
 
-    // Call the selectNumberOfPlayers function
     const result = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, playerSelect, keyboardInput, gameControllers);
+    assert(result.playerCount === 1, "selectNumberOfPlayers failed for direct 1-player keyboard selection");
+    assert(mockCtx.fillRectCalls.length === 1, "selectNumberOfPlayers should draw the background overlay once");
+    assert(mockCtx.fillTextCalls.length >= 5, "selectNumberOfPlayers should draw heading plus keyboard option text");
 
-    // Test for selecting 1 player using keyboard input (pressing 'Digit1')
+    const config = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 0, lives: 0, optionBaseY: 0, optionSpacing: 0 });
+    assert(config.maxPlayers === 0, "getPlayerSelectConfig should preserve explicit zero maxPlayers");
+    assert(config.lives === 0, "getPlayerSelectConfig should preserve explicit zero lives");
+    assert(config.y === 0, "getPlayerSelectConfig should preserve explicit zero optionBaseY");
+    assert(config.spacing === 0, "getPlayerSelectConfig should preserve explicit zero optionSpacing");
+
     const keyboard1Player = new MockKeyboardInput(['Digit1']);
     const result1Player = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard1Player, null);
     assert(result1Player.playerCount === 1, "selectNumberOfPlayers failed for 1 player with keyboard input");
     assert(result1Player.playerLives[0] === 3, "selectNumberOfPlayers player lives incorrect for 1 player");
 
-    // Test for selecting 2 players using keyboard input (pressing 'Digit2')
     const keyboard2Players = new MockKeyboardInput(['Digit2']);
     const result2Players = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard2Players, null);
     assert(result2Players.playerCount === 2, "selectNumberOfPlayers failed for 2 players with keyboard input");
     assert(result2Players.playerLives[0] === 3 && result2Players.playerLives[1] === 3, "selectNumberOfPlayers player lives incorrect for 2 players");
 
-    // ----------------------
-    // Test selectNumberOfPlayers (Game Controller Input Simulation)
-    // ----------------------
-
-    // Simulate game controller input for 1 player (Left Bumper)
     const keyboard3 = new MockKeyboardInput();
-    const controller1Player = new MockGameControllers([4]); // Left Bumper
+    const controller1Player = new MockGameControllers([4]);
     const resultGameController1Player = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard3, controller1Player);
     assert(resultGameController1Player.playerCount === 1, "selectNumberOfPlayers failed for 1 player with game controller input");
 
-    // Simulate game controller input for 2 players (Right Bumper)
-    const controller2Players = new MockGameControllers([5]); // Right Bumper
+    const controller2Players = new MockGameControllers([5]);
     const resultGameController2Players = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard3, controller2Players);
     assert(resultGameController2Players.playerCount === 2, "selectNumberOfPlayers failed for 2 players with game controller input");
 
-    // ----------------------
-    // Test swapPlayer (Player Losing Lives)
-    // ----------------------
+    const resolvedKeyboardSelection = GameUtils.resolvePlayerSelection(new MockKeyboardInput(['Digit3']), null, { maxPlayers: 4, lives: 2 });
+    assert(resolvedKeyboardSelection.playerCount === 3, "resolvePlayerSelection should return keyboard selection first");
 
-    let playerLives = [3, 3, 3, 3]; // 4 players with 3 lives each
-    let currentPlayer = 0; // Starting with player 1
+    const resolvedControllerSelection = GameUtils.resolvePlayerSelection(new MockKeyboardInput([]), new MockGameControllers([5]), { maxPlayers: 4, lives: 2 });
+    assert(resolvedControllerSelection.playerCount === 2, "resolvePlayerSelection should fall back to controller selection");
+
+    let playerLives = [3, 3, 3, 3];
+    let currentPlayer = 0;
     let playerCount = 4;
 
-    // Simulate player 1 losing a life
     const swap1 = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount, (gameState) => { /* No-op for this test */ });
     assert(swap1.updatedPlayer === 1, "swapPlayer failed to swap to player 2");
     assert(swap1.updatedLives[0] === 2, "swapPlayer failed to decrease player 1's life");
     assert(playerLives[0] === 3, "swapPlayer should not mutate the input lives array");
 
-    // Simulate player 2 losing a life
     playerLives = swap1.updatedLives;
-    currentPlayer = 1; // Now player 2
+    currentPlayer = 1;
     const swap2 = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount, (gameState) => { /* No-op for this test */ });
     assert(swap2.updatedPlayer === 2, "swapPlayer failed to swap to player 3");
     assert(swap2.updatedLives[1] === 2, "swapPlayer failed to decrease player 2's life");
 
-    // Simulate player 3 losing all lives and player 4 being next
-    playerLives = [0, 2, 0, 3]; // Player 3 is out of lives
-    currentPlayer = 3; // Starting with player 4
+    playerLives = [0, 2, 0, 3];
+    currentPlayer = 3;
     const swap3 = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount, (gameState) => { /* No-op for this test */ });
     assert(swap3.updatedPlayer === 1, "swapPlayer failed to swap to player 1 after player 3 lost all lives");
     assert(swap3.updatedLives[3] === 2, "swapPlayer failed to decrease player 4's life");
 
-    // ----------------------
-    // Test swapPlayer (Game Over)
-    // ----------------------
-    // Simulate all players losing all their lives
     playerLives = [1, 0, 0, 0];
-    currentPlayer = 0; // Any player
+    currentPlayer = 0;
 
     const swapGameOver = GameUtils.swapPlayer(playerLives, currentPlayer, playerCount, (gameState) => {
         assert(gameState === 'gameOver', "swapPlayer did not trigger 'gameOver' state");

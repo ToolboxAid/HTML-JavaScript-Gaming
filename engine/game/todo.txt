@@ -12,10 +12,11 @@ Goal:
 Simplify `engine/game/gameUtils.js` without breaking games that depend on shared player-select and player-swap helpers.
 
 Cleanup targets:
-[ ] Identify which `gameUtils.js` methods are actively used by current games/samples
-[ ] Separate shared game-flow helpers from older overlay/render assumptions
+[x] Identify which `gameUtils.js` methods are actively used by current games/samples
+[.] Separate shared game-flow helpers from older overlay/render assumptions
 [ ] Remove dead or redundant config fields where compatibility allows
-[ ] Keep console/debug output intentional and opt-in
+[x] Keep console/debug output intentional and opt-in
+[x] Ensure logging uses the engine debugLog
 [ ] Update affected docs/tests when shared behavior changes
 
 Risk check:
@@ -33,5 +34,5 @@ Likely affected:
 - `tests/engine/game/gameUtilsTest.js`
 
 Verification:
-[ ] Run targeted tests for `engine/game/gameUtils.js`
+[x] Run targeted tests for `engine/game/gameUtils.js`
 [ ] Smoke-test at least one player-select consumer and one swap-player consumer

@@ -3,19 +3,32 @@
 // 02/12/2025
 // gameUtils.js
 
+import DebugLog from '../utils/debugLog.js';
+
+const DEFAULT_PLAYER_SELECT_CONFIG = Object.freeze({
+    maxPlayers: 4,
+    lives: 3,
+    fillText: 'Select Player Mode',
+    x: 100,
+    y: 100,
+    spacing: 50,
+    fillStyle: 'white',
+    font: '30px Arial'
+});
+
 class GameUtils {
     static hasWarnedAboutControllerLimit = false;
 
     static getPlayerSelectConfig(canvasConfig, playerSelect = {}) {
         return {
-            maxPlayers: playerSelect.maxPlayers || 4,
-            lives: playerSelect.lives || 3,
-            fillText: playerSelect.fillText || "Select Player Mode",
-            x: playerSelect.optionBaseX || 100,
-            y: playerSelect.optionBaseY || 100,
-            spacing: playerSelect.optionSpacing || 50,
-            fillStyle: playerSelect.fillStyle || "white",
-            font: playerSelect.font || "30px Arial",
+            maxPlayers: playerSelect.maxPlayers ?? DEFAULT_PLAYER_SELECT_CONFIG.maxPlayers,
+            lives: playerSelect.lives ?? DEFAULT_PLAYER_SELECT_CONFIG.lives,
+            fillText: playerSelect.fillText ?? DEFAULT_PLAYER_SELECT_CONFIG.fillText,
+            x: playerSelect.optionBaseX ?? DEFAULT_PLAYER_SELECT_CONFIG.x,
+            y: playerSelect.optionBaseY ?? DEFAULT_PLAYER_SELECT_CONFIG.y,
+            spacing: playerSelect.optionSpacing ?? DEFAULT_PLAYER_SELECT_CONFIG.spacing,
+            fillStyle: playerSelect.fillStyle ?? DEFAULT_PLAYER_SELECT_CONFIG.fillStyle,
+            font: playerSelect.font ?? DEFAULT_PLAYER_SELECT_CONFIG.font,
             canvasWidth: canvasConfig.width,
             canvasHeight: canvasConfig.height,
             backgroundColor: canvasConfig.backgroundColor
@@ -49,9 +62,10 @@ class GameUtils {
     }
 
     static getKeyboardPlayerSelection(keyboardInput, config) {
+        const keysPressed = new Set(keyboardInput.getKeysPressed());
+
         for (let i = 1; i <= config.maxPlayers; i++) {
-            if (keyboardInput.getKeysPressed().includes(`Digit${i}`) ||
-                keyboardInput.getKeysPressed().includes(`Numpad${i}`)) {
+            if (keysPressed.has(`Digit${i}`) || keysPressed.has(`Numpad${i}`)) {
                 return this.buildPlayerSelectionResult(i, config.maxPlayers, config.lives);
             }
         }
@@ -65,15 +79,21 @@ class GameUtils {
         ctx.fillText('`Right Bumper` 2 players', (config.canvasWidth / 2) - 200, config.y + 250);
     }
 
+    static drawPlayerSelection(ctx, config, gameControllers) {
+        this.drawPlayerSelectOverlay(ctx, config);
+        this.drawKeyboardPlayerOptions(ctx, config);
+
+        if (gameControllers) {
+            this.drawControllerPlayerOptions(ctx, config);
+        }
+    }
+
     static getControllerPlayerSelection(gameControllers, config) {
         if (!gameControllers) {
             return null;
         }
 
-        if (!this.hasWarnedAboutControllerLimit) {
-            console.warn('GameController currently supports 2 players');
-            this.hasWarnedAboutControllerLimit = true;
-        }
+        this.warnAboutControllerLimit();
 
         if (gameControllers.isButtonIndexDown(0, 4)) {
             return this.buildPlayerSelectionResult(1, config.maxPlayers, config.lives);
@@ -84,6 +104,24 @@ class GameUtils {
         }
 
         return null;
+    }
+
+    static warnAboutControllerLimit() {
+        if (this.hasWarnedAboutControllerLimit) {
+            return;
+        }
+
+        DebugLog.warn(true, 'GameUtils', 'GameController currently supports 2 players');
+        this.hasWarnedAboutControllerLimit = true;
+    }
+
+    static resolvePlayerSelection(keyboardInput, gameControllers, config) {
+        const keyboardSelection = this.getKeyboardPlayerSelection(keyboardInput, config);
+        if (keyboardSelection) {
+            return keyboardSelection;
+        }
+
+        return this.getControllerPlayerSelection(gameControllers, config);
     }
 
     /** Constructor for GameUtils class.
@@ -103,20 +141,8 @@ class GameUtils {
     */
     static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput, gameControllers) {
         const config = this.getPlayerSelectConfig(canvasConfig, playerSelect);
-
-        this.drawPlayerSelectOverlay(ctx, config);
-        this.drawKeyboardPlayerOptions(ctx, config);
-
-        const keyboardSelection = this.getKeyboardPlayerSelection(keyboardInput, config);
-        if (keyboardSelection) {
-            return keyboardSelection;
-        }
-
-        if (gameControllers) {
-            this.drawControllerPlayerOptions(ctx, config);
-        }
-
-        return this.getControllerPlayerSelection(gameControllers, config);
+        this.drawPlayerSelection(ctx, config, gameControllers);
+        return this.resolvePlayerSelection(keyboardInput, gameControllers, config);
     }
 
     static swapPlayer(playerLives, currentPlayer, playerCount, setGameState) {
