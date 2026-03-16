@@ -6,6 +6,7 @@
 import CanvasUtils from './canvasUtils.js';
 import Fullscreen from './fullscreen.js';
 import PerformanceMonitor from './performanceMonitor.js';
+import PrimitiveRenderer from '../renderers/primitiveRenderer.js';
 import Timer from '../utils/timer.js';
 
 class RuntimeContext {
@@ -13,11 +14,13 @@ class RuntimeContext {
         canvas = CanvasUtils,
         fullscreen = Fullscreen,
         performance = PerformanceMonitor,
+        primitive = PrimitiveRenderer,
         timer = Timer
     } = {}) {
         this.canvas = canvas;
         this.fullscreen = fullscreen;
         this.performance = performance;
+        this.primitive = primitive;
         this.timer = timer;
     }
 
@@ -44,7 +47,13 @@ class RuntimeContext {
     }
 
     drawBorder() {
-        this.canvas?.drawBorder?.();
+        const ctx = this.getContext();
+        const width = this.canvas?.getConfigWidth?.() ?? this.canvas?.config?.width ?? 0;
+        const height = this.canvas?.getConfigHeight?.() ?? this.canvas?.config?.height ?? 0;
+        const borderColor = this.canvas?.config?.borderColor ?? 'red';
+        const borderSize = this.canvas?.config?.borderSize ?? 1;
+
+        this.primitive?.drawBounds?.(0, 0, width, height, borderColor, borderSize, 1, { ctx });
     }
 
     updatePerformance(timeSpentMs) {

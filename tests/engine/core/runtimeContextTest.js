@@ -5,9 +5,16 @@ export async function testRuntimeContext(assert) {
 
     const fakeCanvas = {
         ctx: { tag: 'ctx' },
+        config: {
+            width: 100,
+            height: 50,
+            borderColor: 'cyan',
+            borderSize: 3
+        },
         async init(config) { calls.push(['canvas.init', config]); },
         canvasClear() { calls.push(['canvas.clear']); },
-        drawBorder() { calls.push(['canvas.border']); },
+        getConfigWidth() { return this.config.width; },
+        getConfigHeight() { return this.config.height; },
         calculateTextMetrics(text, fontSize, font) {
             calls.push(['canvas.metrics', text, fontSize, font]);
             return { width: 10, height: 5 };
@@ -27,6 +34,12 @@ export async function testRuntimeContext(assert) {
         stopMonitoring() { calls.push(['performance.stop']); }
     };
 
+    const fakePrimitive = {
+        drawBounds(x, y, width, height, color, lineSize, alpha, options = {}) {
+            calls.push(['primitive.bounds', x, y, width, height, color, lineSize, alpha, options.ctx?.tag || null]);
+        }
+    };
+
     const fakeTimer = {
         pauseAllForVisibility() { calls.push(['timer.pause']); },
         resumeAllFromVisibility() { calls.push(['timer.resume']); }
@@ -36,6 +49,7 @@ export async function testRuntimeContext(assert) {
         canvas: fakeCanvas,
         fullscreen: fakeFullscreen,
         performance: fakePerformance,
+        primitive: fakePrimitive,
         timer: fakeTimer
     });
 
@@ -58,6 +72,7 @@ export async function testRuntimeContext(assert) {
 
     assert(metrics.width === 10 && metrics.height === 5, 'RuntimeContext should proxy text metrics');
     assert(calls.some(call => call[0] === 'canvas.clear'), 'RuntimeContext should proxy clearCanvas');
+    assert(calls.some(call => call[0] === 'primitive.bounds' && call[4] === 50 && call[8] === 'ctx'), 'RuntimeContext should draw borders through the primitive renderer');
     assert(calls.some(call => call[0] === 'performance.update' && call[1] === 4.5), 'RuntimeContext should proxy performance updates');
 
     runtime.destroy();
@@ -65,9 +80,10 @@ export async function testRuntimeContext(assert) {
     assert(calls.some(call => call[0] === 'fullscreen.destroy'), 'RuntimeContext.destroy should destroy fullscreen runtime services');
 
     const sparseRuntime = new RuntimeContext({
-        canvas: { ctx: null },
+        canvas: { ctx: null, config: {} },
         fullscreen: {},
         performance: {},
+        primitive: {},
         timer: {}
     });
 
