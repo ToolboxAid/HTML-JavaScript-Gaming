@@ -50,12 +50,8 @@ class Game extends GameBase {
 
     async onInitialize() {
         this.keyboardInput = new KeyboardInput();
-        this.resetRuntimeState();
-        DebugLog.info(Game.DEBUG, 'Game', 'Sample initialized');
-    }
-
-    resetRuntimeState() {
         this.applyRuntimeState(this.createRuntimeState());
+        DebugLog.info(Game.DEBUG, 'Game', 'Sample initialized');
     }
 
     gameLoop() {
@@ -102,7 +98,7 @@ class Game extends GameBase {
     }
 
     onDestroy() {
-        this.resetRuntimeState();
+        this.applyRuntimeState(this.createRuntimeState());
     }
 }
 
