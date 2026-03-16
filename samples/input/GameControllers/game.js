@@ -44,6 +44,22 @@ let isDestroyed = false;
 
 const gameControllers = new GameControllers();
 
+function formatControllerSubtitle(controller) {
+    if (!controller?.id) {
+        return 'Controller detected';
+    }
+
+    const vendorMatch = controller.id.match(/Vendor:\s*([0-9a-f]+)/i);
+    const productMatch = controller.id.match(/Product:\s*([0-9a-f]+)/i);
+    if (vendorMatch && productMatch) {
+        return `Vendor ${vendorMatch[1]} Product ${productMatch[1]}`;
+    }
+
+    return controller.id.length > 30
+        ? `${controller.id.slice(0, 27)}...`
+        : controller.id;
+}
+
 function getPlayerPanelPosition(gameControllerIndex) {
     const column = gameControllerIndex % PANEL_LAYOUT.columns;
     const row = Math.floor(gameControllerIndex / PANEL_LAYOUT.columns);
@@ -105,7 +121,7 @@ function gameUpdate() {
         player.title = controller.shortName
             ? `P${playerIndex + 1} ${controller.shortName}`
             : `P${playerIndex + 1}`;
-        player.subtitle = controller.id || '';
+        player.subtitle = formatControllerSubtitle(controller);
         player.dPadType = controller.dPadType || 'none';
         controller.buttonEntries.forEach((buttonEntry) => {
             if (buttonEntry.index >= 0 && buttonEntry.index < MAX_BUTTONS) {

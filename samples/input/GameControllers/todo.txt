@@ -31,6 +31,7 @@ Local checklist:
 [x] Show live connected-controller count in the canvas legend
 [x] Show per-controller d-pad mapping type in each panel
 [x] Sync preview asset with controller count and d-pad type readouts
+[x] Compact long controller identity text inside panel headers
 
 Focused review checklist:
 [x] Security: validate external/config-driven inputs before use

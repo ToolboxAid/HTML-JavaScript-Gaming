@@ -29,7 +29,7 @@ Design choice: this sample is intentionally DOM/canvas-driven and focused on sho
 - The sample updates controller state each animation frame and renders compact per-controller panels.
 - Connected controllers are arranged into a stable 2x2 panel grid so multi-controller state stays readable.
 - It now reads connection and button state through `GameControllers` helper methods instead of reaching into controller internals directly.
-- It renders labeled per-controller panels with mapper-based button labels, d-pad type, named axis values, and device identity text.
+- It renders labeled per-controller panels with mapper-based button labels, d-pad type, named axis values, and compact device identity text.
 - A compact legend at the top of the canvas explains the panel readout before any controller interaction begins.
 - The top legend also shows the current connected-controller count.
 - When no controllers are connected, the canvas shows a centered empty-state prompt instead of a blank screen.
