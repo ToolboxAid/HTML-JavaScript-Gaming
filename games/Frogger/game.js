@@ -97,7 +97,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillStyle = "white";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Welcome to Frogger!", 250, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
+    CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Begin", 185, 300);
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
@@ -128,7 +128,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillStyle = "red";
     CanvasUtils.ctx.font = "30px Arial";
     CanvasUtils.ctx.fillText("Game Over", 300, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
+    CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Restart", 160, 300);
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
@@ -169,7 +169,7 @@ class Game extends GameBase {
   pauseGame() {
     this.gamePauseCheck();
     CanvasUtils.drawText(150, 200, "Game Paused.", 3.5, "white");
-    CanvasUtils.drawText(150, 250, "Press `P` to unpause game", 3.5, "white");
+    CanvasUtils.drawText(115, 250, "Press `P` or `Select` to unpause", 3.5, "white");
   }
 
   playGame(deltaTime) {

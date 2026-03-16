@@ -396,7 +396,7 @@ checkLaserEnemyCollision() {
     checkEnemyShip(deltaTime) {
         this.enemyShip.update(deltaTime, this.laser);
         if (this.enemyShip.getStartAudio()) {
-            Game.audioPlayer.playAudio('ufo_highpitch.wav', true);
+            Game.audioPlayer.playAudio('ufo_highpitch.wav', 1.0, true);
         }
 
         if (this.enemyShip.getStopAudio()) {
