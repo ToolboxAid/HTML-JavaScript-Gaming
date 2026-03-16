@@ -68,10 +68,12 @@ export async function testRuntimeContext(assert) {
         canvas: { ctx: null },
         fullscreen: {},
         performance: {},
-        timer: fakeTimer
+        timer: {}
     });
 
     assert(sparseRuntime.getContext() === null, 'RuntimeContext.getContext should return null when canvas context is unavailable');
+    sparseRuntime.onPageHidden();
+    sparseRuntime.onPageVisible();
     sparseRuntime.clearCanvas();
     sparseRuntime.drawBorder();
     sparseRuntime.updatePerformance(1.5);

@@ -28,11 +28,11 @@ class RuntimeContext {
     }
 
     onPageHidden() {
-        this.timer.pauseAllForVisibility();
+        this.timer?.pauseAllForVisibility?.();
     }
 
     onPageVisible() {
-        this.timer.resumeAllFromVisibility();
+        this.timer?.resumeAllFromVisibility?.();
     }
 
     getContext() {
