@@ -16,7 +16,8 @@ export async function testRuntimeContext(assert) {
 
     const fakeFullscreen = {
         async init(config, canvasConfig) { calls.push(['fullscreen.init', config, canvasConfig]); },
-        draw(ctx) { calls.push(['fullscreen.draw', ctx?.tag || null]); }
+        draw(ctx) { calls.push(['fullscreen.draw', ctx?.tag || null]); },
+        destroy() { calls.push(['fullscreen.destroy']); }
     };
 
     const fakePerformance = {
@@ -61,6 +62,7 @@ export async function testRuntimeContext(assert) {
 
     runtime.destroy();
     assert(calls.some(call => call[0] === 'performance.stop'), 'RuntimeContext.destroy should stop performance monitoring');
+    assert(calls.some(call => call[0] === 'fullscreen.destroy'), 'RuntimeContext.destroy should destroy fullscreen runtime services');
 
     const sparseRuntime = new RuntimeContext({
         canvas: { ctx: null },

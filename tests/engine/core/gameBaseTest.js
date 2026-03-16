@@ -1,5 +1,4 @@
 import GameBase from '../../../engine/core/gameBase.js';
-import Fullscreen from '../../../engine/core/fullscreen.js';
 
 function installDocumentHarness() {
     const listeners = new Map();
@@ -59,7 +58,6 @@ export async function testGameBase(assert) {
     const restoreDocument = installDocumentHarness();
     const restoreWindow = installWindowHarness();
     const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
-    const originalFullscreenDestroy = Fullscreen.destroy;
     const rafCalls = [];
     globalThis.requestAnimationFrame = (callback) => {
         rafCalls.push(callback);
@@ -67,12 +65,6 @@ export async function testGameBase(assert) {
     };
 
     try {
-        let fullscreenDestroyCalls = 0;
-        Fullscreen.destroy = () => {
-            fullscreenDestroyCalls += 1;
-            return true;
-        };
-
         class TestGame extends GameBase {
             constructor() {
                 super(
@@ -101,10 +93,23 @@ export async function testGameBase(assert) {
                 this.keyboardDestroyed = 0;
                 this.mouseDestroyed = 0;
                 this.controllerDestroyed = 0;
+                this.runtimeDestroyed = 0;
 
                 this.keyboardInput = { destroy: () => { this.keyboardDestroyed += 1; } };
                 this.mouseInput = { destroy: () => { this.mouseDestroyed += 1; } };
                 this.gameControllers = { destroy: () => { this.controllerDestroyed += 1; } };
+                this.runtimeContext = {
+                    onPageHidden() {},
+                    onPageVisible() {},
+                    getContext() { return null; },
+                    clearCanvas() {},
+                    drawBorder() {},
+                    updatePerformance() {},
+                    drawFullscreenOverlay() {},
+                    drawPerformanceOverlay() {},
+                    calculateTextMetrics() { return { width: 0, height: 0 }; },
+                    destroy: () => { this.runtimeDestroyed += 1; }
+                };
             }
 
             onDestroy() {
@@ -128,7 +133,7 @@ export async function testGameBase(assert) {
         assert(game.keyboardDestroyed === 1, 'GameBase.destroy should clean up cached keyboard input even if onDestroy clears the field');
         assert(game.mouseDestroyed === 1, 'GameBase.destroy should clean up cached mouse input even if onDestroy clears the field');
         assert(game.controllerDestroyed === 1, 'GameBase.destroy should clean up cached controllers even if onDestroy clears the field');
-        assert(fullscreenDestroyCalls === 1, 'GameBase.destroy should forward fullscreen cleanup once');
+        assert(game.runtimeDestroyed === 1, 'GameBase.destroy should forward shared runtime cleanup once');
         assert(game.destroy() === false, 'GameBase.destroy should be idempotent');
 
         class FailingGame extends GameBase {
@@ -234,7 +239,6 @@ export async function testGameBase(assert) {
         await Promise.resolve();
         assert(rafCalls.length === rafCountBeforeAsyncDestroy, 'GameBase should not schedule another frame when async gameLoop resolves after destroy');
     } finally {
-        Fullscreen.destroy = originalFullscreenDestroy;
         globalThis.requestAnimationFrame = originalRequestAnimationFrame;
         restoreDocument();
         restoreWindow();

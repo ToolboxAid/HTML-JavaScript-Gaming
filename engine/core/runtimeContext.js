@@ -67,6 +67,10 @@ class RuntimeContext {
         if (typeof this.performance?.stopMonitoring === 'function') {
             this.performance.stopMonitoring();
         }
+
+        if (typeof this.fullscreen?.destroy === 'function') {
+            this.fullscreen.destroy();
+        }
     }
 }
 

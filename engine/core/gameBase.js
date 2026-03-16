@@ -6,7 +6,6 @@
 import DebugFlag from "../utils/debugFlag.js";
 import DebugLog from "../utils/debugLog.js";
 import RuntimeContext from "./runtimeContext.js";
-import Fullscreen from "./fullscreen.js";
 
 class GameBase {
 
@@ -192,10 +191,6 @@ class GameBase {
 
         if (typeof this.runtimeContext?.destroy === 'function') {
             this.runtimeContext.destroy();
-        }
-
-        if (typeof Fullscreen.destroy === 'function') {
-            Fullscreen.destroy();
         }
 
         return true;
