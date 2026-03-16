@@ -215,7 +215,9 @@ class CanvasUtils {
     }
 
     /**
-     * Line methods
+     * Primitive compatibility wrappers.
+     * Prefer PrimitiveRenderer for new line/shape drawing so CanvasUtils can stay
+     * focused on lower-level canvas ownership and sprite/text plumbing.
      */
     static drawLine(x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
         if (!this.ctx) {
@@ -299,7 +301,7 @@ class CanvasUtils {
     }
 
     /**
-     * Circle methods
+     * Primitive compatibility wrappers.
      */
     static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
         if (!this.ctx) {

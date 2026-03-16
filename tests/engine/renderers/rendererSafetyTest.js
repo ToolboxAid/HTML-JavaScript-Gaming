@@ -275,10 +275,32 @@ function testRenderersDrawWithMockContext(assert) {
     }
 }
 
+function testPrimitiveRendererWithMockContext(assert) {
+    const originalCtx = CanvasUtils.ctx;
+    const mockCtx = createMockCtx();
+
+    try {
+        CanvasUtils.ctx = mockCtx;
+
+        PrimitiveRenderer.drawRect(5, 6, 7, 8, 'white', 'red', 1);
+        PrimitiveRenderer.drawCircle(20, 20, 4, 'white', 'red', 1);
+        PrimitiveRenderer.drawEllipse(25, 25, 6, 3, null, 'white', 1);
+        PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 3, y: 5 }, { x: 5, y: 0 }], '#fff', 'red', 1);
+        PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5);
+        PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5);
+        PrimitiveRenderer.drawPanel(0, 0, 30, 30, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 12, headerColor: 'yellow' });
+
+        assert(mockCtx.saveCalls === mockCtx.restoreCalls, 'PrimitiveRenderer should balance canvas save and restore calls');
+    } finally {
+        CanvasUtils.ctx = originalCtx;
+    }
+}
+
 export function testRendererSafety(assert) {
     testCanvasUtilsGuardOnMissingContext(assert);
     testRenderersGuardOnMissingContext(assert);
     testRenderersDrawWithMockContext(assert);
+    testPrimitiveRendererWithMockContext(assert);
 }
 
 
