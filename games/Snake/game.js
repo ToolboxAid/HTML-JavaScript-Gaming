@@ -7,6 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig } from '../Snake/glob
 import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
@@ -179,9 +180,10 @@ class Game extends GameBase {
     PrimitiveRenderer.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
 
     // Draw Score
-    CanvasUtils.ctx.fillStyle = 'white';
-    CanvasUtils.ctx.font = "20px Arial";
-    CanvasUtils.ctx.fillText(`Score: ${this.score}`, 10, 20);
+    CanvasText.renderText(CanvasUtils.ctx, `Score: ${this.score}`, 10, 20, {
+      fontSize: 20,
+      useDpr: false
+    });
   }
 
   spawnFood() {
@@ -195,11 +197,14 @@ class Game extends GameBase {
   }
 
   displayGameOver() {
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Game Over!", 200, 150);
-    CanvasUtils.ctx.fillText(`Score: ${this.score}`, 220, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 250);
+    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+      "Game Over!",
+      `Score: ${this.score}`,
+      "Press `Enter` to Restart"
+    ], 150, 150, {
+      fontSize: 30,
+      useDpr: false
+    });
 
     if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.resetGame();

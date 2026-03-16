@@ -8,6 +8,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/core/gameBase.js';
 
 
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 import CanvasSprite from '../../engine/core/canvasSprite.js';
 import CanvasText from '../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
@@ -72,11 +73,15 @@ class Game extends GameBase {
     this.attractMode.update(deltaTime);
 
     // Display attract text
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
     const gridSize = canvasConfig.width / 3;
-    CanvasUtils.ctx.fillText("Welcome to Tic-Tac-Toe", 150, gridSize - 10);
-    CanvasUtils.ctx.fillText("Press `Enter` to Start", 150, gridSize * 2 - 10);
+    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+      "Welcome to Tic-Tac-Toe",
+      "Press `Enter` to Start"
+    ], 150, gridSize - 10, {
+      fontSize: 30,
+      lineHeight: gridSize,
+      useDpr: false
+    });
 
     if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.resetGame();
@@ -113,8 +118,6 @@ class Game extends GameBase {
 
   drawBoard() {
     const gridSize = canvasConfig.width / 3;
-    CanvasUtils.ctx.font = "50px Arial";
-
     for (let i = 0; i < 9; i++) {
       const x = (i % 3) * gridSize + 45;
       const y = Math.floor(i / 3) * gridSize + 40;
@@ -167,17 +170,23 @@ class Game extends GameBase {
     this.drawGrid();
     this.drawBoard();
 
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-
     if (this.winner === "Draw") {
-      CanvasUtils.ctx.fillText("It's a Draw!", 225, 200);
+      CanvasText.renderText(CanvasUtils.ctx, "It's a Draw!", 225, 200, {
+        fontSize: 30,
+        useDpr: false
+      });
     } else {
       const winner = this.winner;
-      CanvasUtils.ctx.fillText("Player `" + winner + "` Wins!", 200, 200);
+      CanvasText.renderText(CanvasUtils.ctx, "Player `" + winner + "` Wins!", 200, 200, {
+        fontSize: 30,
+        useDpr: false
+      });
     }
 
-    CanvasUtils.ctx.fillText("Press `Enter` to Restart", 150, 400);
+    CanvasText.renderText(CanvasUtils.ctx, "Press `Enter` to Restart", 150, 400, {
+      fontSize: 30,
+      useDpr: false
+    });
     if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.resetGame();
     }

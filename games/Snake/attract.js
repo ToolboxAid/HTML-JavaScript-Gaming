@@ -4,6 +4,7 @@
 // attract.js
 
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import { canvasConfig } from './global.js';
 
@@ -112,10 +113,14 @@ class AttractScreen {
     PrimitiveRenderer.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
 
     // Draw Attract Mode Text
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to Snake Game", 150, 150);
-    CanvasUtils.ctx.fillText("Press `Enter` to Start", 150, 250);
+    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+      "Welcome to Snake Game",
+      "Press `Enter` to Start"
+    ], 150, 150, {
+      fontSize: 30,
+      lineHeight: 100,
+      useDpr: false
+    });
   }
 }
 

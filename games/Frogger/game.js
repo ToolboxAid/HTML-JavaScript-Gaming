@@ -99,11 +99,14 @@ class Game extends GameBase {
 
   // Display 
   displayAttractMode(deltaTime) {
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to Frogger!", 250, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Begin", 185, 300);
-    CanvasUtils.ctx.fillText("Move with Arrow Keys or D-pad", 205, 360);
+    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+      "Welcome to Frogger!",
+      "Press `Enter` or `Start` to Begin",
+      "Move with Arrow Keys or D-pad"
+    ], 185, 200, {
+      fontSize: 30,
+      useDpr: false
+    });
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
@@ -127,10 +130,15 @@ class Game extends GameBase {
   }
 
   displayGameOver() {
-    CanvasUtils.ctx.fillStyle = "red";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Game Over", 300, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Restart", 160, 300);
+    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+      "Game Over",
+      "Press `Enter` or `Start` to Restart"
+    ], 160, 200, {
+      fontSize: 30,
+      color: "red",
+      lineHeight: 100,
+      useDpr: false
+    });
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||

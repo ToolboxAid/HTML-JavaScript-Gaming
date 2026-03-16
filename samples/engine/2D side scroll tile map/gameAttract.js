@@ -6,6 +6,7 @@
 import { canvasConfig } from './global.js';
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import TileMap from '../../../engine/core/tileMap.js';
 
 import Hero from './hero.js';
@@ -27,10 +28,14 @@ class GameAttract {
     }
 
     displayAttract() {
-        CanvasUtils.ctx.fillStyle = "white";
-        CanvasUtils.ctx.font = "30px Arial";
-        CanvasUtils.ctx.fillText("Welcome to Scrolling Tile Map!", 250, 200);
-        CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
+        CanvasText.renderMultilineText(CanvasUtils.ctx, [
+            "Welcome to Scrolling Tile Map!",
+            "Press `Enter` to Start"
+        ], 250, 200, {
+            fontSize: 30,
+            lineHeight: 100,
+            useDpr: false
+        });
     }
 
 }

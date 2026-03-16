@@ -58,6 +58,72 @@ class CanvasText {
         };
     }
 
+    static renderText(ctx, text, x, y, {
+        fontSize = 20,
+        fontFamily = 'Arial',
+        color = 'white',
+        textAlign = 'left',
+        textBaseline = 'alphabetic',
+        useDpr = true,
+        maxDprScale = 1.25
+    } = {}) {
+        if (!ctx || typeof text !== 'string') {
+            return null;
+        }
+
+        const resolvedFontSize = useDpr
+            ? this.normalizeFontSizeForDpr(fontSize, maxDprScale)
+            : fontSize;
+
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.font = `${resolvedFontSize}px ${fontFamily}`;
+        ctx.textAlign = textAlign;
+        ctx.textBaseline = textBaseline;
+        ctx.fillText(text, x, y);
+        ctx.restore();
+
+        return { x, y, fontSize: resolvedFontSize };
+    }
+
+    static renderMultilineText(ctx, lines, x, startY, {
+        fontSize = 20,
+        lineHeight = null,
+        fontFamily = 'Arial',
+        color = 'white',
+        textAlign = 'left',
+        textBaseline = 'alphabetic',
+        useDpr = true,
+        maxDprScale = 1.25
+    } = {}) {
+        if (!ctx || !Array.isArray(lines) || lines.length === 0) {
+            return [];
+        }
+
+        const resolvedFontSize = useDpr
+            ? this.normalizeFontSizeForDpr(fontSize, maxDprScale)
+            : fontSize;
+        const resolvedLineHeight = NumberUtils.isFiniteNumber(lineHeight)
+            ? lineHeight
+            : Math.round(resolvedFontSize * 1.35);
+        const drawResults = [];
+
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.font = `${resolvedFontSize}px ${fontFamily}`;
+        ctx.textAlign = textAlign;
+        ctx.textBaseline = textBaseline;
+
+        for (let i = 0; i < lines.length; i += 1) {
+            const y = startY + (i * resolvedLineHeight);
+            ctx.fillText(lines[i], x, y);
+            drawResults.push({ x, y, fontSize: resolvedFontSize });
+        }
+
+        ctx.restore();
+        return drawResults;
+    }
+
     static getDevicePixelRatio() {
         if (typeof window === 'undefined') {
             return 1;
