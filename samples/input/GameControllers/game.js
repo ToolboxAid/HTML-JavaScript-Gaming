@@ -61,11 +61,17 @@ function resetPlayerButtons(player) {
 function gameUpdate() {
     gameControllers.update();
 
-    const maxControllers = gameControllers.gamepadStates.length;
-    for (let playerIndex = 0; playerIndex < maxControllers; playerIndex += 1) {
+    players.forEach((_, playerIndex) => {
         if (!gameControllers.isConnected(playerIndex)) {
             players[playerIndex] = null;
-            continue;
+        }
+    });
+
+    gameControllers.getTrackedControllerIndices().forEach((playerIndex) => {
+        const controller = gameControllers.getControllerSnapshot(playerIndex);
+        if (!controller) {
+            players[playerIndex] = null;
+            return;
         }
 
         if (!players[playerIndex]) {
@@ -74,14 +80,12 @@ function gameUpdate() {
 
         const player = players[playerIndex];
         resetPlayerButtons(player);
-        const buttonEntries = gameControllers.getButtonEntries(playerIndex);
-        const buttonsDown = gameControllers.getButtonsDown(playerIndex);
-        buttonEntries.forEach((buttonEntry) => {
+        controller.buttonEntries.forEach((buttonEntry) => {
             if (buttonEntry.index >= 0 && buttonEntry.index < MAX_BUTTONS) {
                 player.buttonLabels[buttonEntry.index] = buttonEntry.name;
             }
         });
-        buttonsDown.forEach((button) => {
+        controller.buttonsDown.forEach((button) => {
             if (button >= 0 && button < MAX_BUTTONS) {
                 player.buttonColors[button] = player.color;
             }
@@ -89,8 +93,8 @@ function gameUpdate() {
 
         let moveX = 0;
         let moveY = 0;
-        player.dPad = gameControllers.getDPad(playerIndex);
-        player.axisValues = gameControllers.getNamedAxisValues(playerIndex).slice(0, MAX_AXIS_ROWS);
+        player.dPad = controller.dPad;
+        player.axisValues = controller.axisValues.slice(0, MAX_AXIS_ROWS);
         if (player.dPad.left) moveX = -1;
         if (player.dPad.right) moveX = 1;
         if (player.dPad.up) moveY = -1;
@@ -101,7 +105,7 @@ function gameUpdate() {
 
         player.x = Math.max(-6, Math.min(canvas.width - player.width, player.x));
         player.y = Math.max(10, Math.min(canvas.height - player.height, player.y));
-    }
+    });
 }
 
 function gameRender() {

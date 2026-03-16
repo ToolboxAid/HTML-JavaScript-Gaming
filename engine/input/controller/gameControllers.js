@@ -66,6 +66,12 @@ class GameControllers {
         return this.gamepadManager.gameControllers.filter(controller => controller !== null);
     }
 
+    getTrackedControllerIndices() {
+        return this.gamepadManager.gameControllers
+            .map((_, index) => index)
+            .filter((index) => this.isConnected(index));
+    }
+
     isConnected(gameControllerIndex) {
         return this.gamepadManager.gameControllers[gameControllerIndex] !== null &&
             typeof this.gamepadManager.gameControllers[gameControllerIndex] !== 'undefined';
@@ -105,6 +111,20 @@ class GameControllers {
             name: axisName,
             value: this.getAxisByName(gameControllerIndex, axisName)
         }));
+    }
+
+    getControllerSnapshot(gameControllerIndex) {
+        if (!this.isConnected(gameControllerIndex)) {
+            return null;
+        }
+
+        return {
+            index: gameControllerIndex,
+            buttonsDown: this.getButtonsDown(gameControllerIndex),
+            buttonEntries: this.getButtonEntries(gameControllerIndex),
+            dPad: this.getDPad(gameControllerIndex),
+            axisValues: this.getNamedAxisValues(gameControllerIndex)
+        };
     }
 
     ensureMapper(gameControllerIndex, gamepadId = 'default') {

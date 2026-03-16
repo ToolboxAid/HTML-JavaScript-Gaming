@@ -74,11 +74,18 @@ export function testGameControllersSemantic(assert) {
     assert(controllers.getButtonsDown(0).includes(14), 'GameControllers should expose buttonsDown through a read-only helper');
     assert(controllers.getButtonsPressed(0).includes(1), 'GameControllers should expose buttonsPressed through a read-only helper');
     assert(Array.isArray(controllers.getButtonsReleased(0)), 'GameControllers should expose buttonsReleased through a read-only helper');
+    assert(controllers.getTrackedControllerIndices().includes(0), 'GameControllers should expose tracked connected controller indices');
     assert(controllers.getButtonEntries(0).some((buttonEntry) => buttonEntry.index === 14 && buttonEntry.name === 'DPadLEFT'),
         'GameControllers should expose mapped button names with their original indices');
     assert(controllers.getAxisNames(0).includes('DPadX'), 'GameControllers should expose mapped axis names');
     assert(controllers.getNamedAxisValues(0).some((axisEntry) => axisEntry.name === 'DPadX' && axisEntry.value === 0),
         'GameControllers should expose named axis values through a read-only helper');
+    const snapshot = controllers.getControllerSnapshot(0);
+    assert(snapshot !== null && snapshot.index === 0, 'GameControllers should expose a controller snapshot for connected pads');
+    assert(snapshot.buttonsDown.includes(14), 'GameControllers controller snapshots should include buttonsDown');
+    assert(snapshot.dPad.left === true, 'GameControllers controller snapshots should include d-pad state');
+    assert(snapshot.axisValues.some((axisEntry) => axisEntry.name === 'DPadX'), 'GameControllers controller snapshots should include named axis values');
+    assert(controllers.getControllerSnapshot(1) === null, 'GameControllers should return null snapshots for disconnected pads');
 
     const emptyControllers = Object.create(GameControllers.prototype);
     emptyControllers.gamepadManager = {

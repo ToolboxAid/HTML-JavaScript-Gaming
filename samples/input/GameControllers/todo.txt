@@ -22,6 +22,8 @@ Local checklist:
 [x] Verify headers are in place
 [x] Align page shell with current sample template layout
 [x] Sync preview asset copy with current shell and sample focus
+[x] Restore shared fullscreen behavior after shell/layout cleanup
+[x] Show mapped button labels and named axis values through public controller helpers
 
 Focused review checklist:
 [x] Security: validate external/config-driven inputs before use
@@ -55,5 +57,5 @@ Smoke pass steps:
 Decision notes:
 - Sample remains DOM/canvas-driven and is intentionally focused on visualizing controller state.
 - Core controller/device logic already lives in engine input modules; shared read-only connection/button access now goes through `GameControllers` helper methods instead of sample-only internal reads.
-- Lifecycle teardown is now explicit in sample code (`pagehide`/`beforeunload` + `gameControllers.destroy()`).
+- Lifecycle teardown is now explicit in sample code (`pagehide`/`beforeunload` + `gameControllers.destroy()` + `Fullscreen.destroy()`).
 - Unit-test validation is covered by existing engine input tests (`controllerFlow` and `inputCore` in default test manifest).

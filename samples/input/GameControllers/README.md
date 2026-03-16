@@ -21,11 +21,13 @@ Design choice: this sample is intentionally DOM/canvas-driven and focused on sho
 - Connect one or more controllers/gamepads.
 - Press controller buttons to highlight button indicators.
 - Use d-pad to move each player marker.
-- Move analog sticks to observe axis values (`StickLeftX/Y`, `StickRightX/Y`).
+- Move analog sticks or mapped d-pad axes to observe live named axis values.
+- Click the canvas to toggle fullscreen.
 
 ## Behavior Notes
 
 - The sample updates controller state each animation frame and renders compact per-controller panels.
 - It now reads connection and button state through `GameControllers` helper methods instead of reaching into controller internals directly.
-- Cleanup is handled on `pagehide`/`beforeunload` and calls `gameControllers.destroy()`.
+- It renders mapped button labels and named axis values based on the current controller mapper.
+- Cleanup is handled on `pagehide`/`beforeunload` and calls `gameControllers.destroy()` plus `Fullscreen.destroy()`.
 - Device mapping support and deadzone filtering come from engine controller modules.
