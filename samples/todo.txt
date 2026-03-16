@@ -31,7 +31,7 @@ visual:
 [x] samples/visual/Particle/
 
 engine:
-[ ] samples/engine/Game Engine/
+[x] samples/engine/Game Engine/
 [ ] samples/engine/2D side scroll tile map/
 
 Additional reviews:

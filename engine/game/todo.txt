@@ -1,0 +1,37 @@
+Status legend:
+- [ ] Todo
+- [.] In progress
+- [!] Blocker
+- [-] Don't do
+- [x] Complete
+- [X] Complete
+
+Game Utils cleanup plan
+
+Goal:
+Simplify `engine/game/gameUtils.js` without breaking games that depend on shared player-select and player-swap helpers.
+
+Cleanup targets:
+[ ] Identify which `gameUtils.js` methods are actively used by current games/samples
+[ ] Separate shared game-flow helpers from older overlay/render assumptions
+[ ] Remove dead or redundant config fields where compatibility allows
+[ ] Keep console/debug output intentional and opt-in
+[ ] Update affected docs/tests when shared behavior changes
+
+Risk check:
+[ ] Verify games using `selectNumberOfPlayers()` still render/select correctly
+[ ] Verify games using `swapPlayer()` still transition and rotate players correctly
+[ ] Confirm no browser/runtime regressions in shared engine consumers
+
+Likely affected:
+- `games/Box Drop`
+- `games/Frogger`
+- `games/Space Invaders`
+- `games/Asteroids`
+- `samples/engine/2D side scroll tile map`
+- `samples/engine/Game Engine`
+- `tests/engine/game/gameUtilsTest.js`
+
+Verification:
+[ ] Run targeted tests for `engine/game/gameUtils.js`
+[ ] Smoke-test at least one player-select consumer and one swap-player consumer
