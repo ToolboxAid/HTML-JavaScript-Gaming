@@ -1,5 +1,6 @@
 import CanvasUtils from '../core/canvasUtils.js';
 import DebugLog from '../utils/debugLog.js';
+import PrimitiveRenderer from './primitiveRenderer.js';
 import RendererGuards from './rendererGuards.js';
 
 class PngRenderer {
@@ -139,9 +140,7 @@ class PngRenderer {
                 cellH
             );
 
-            CanvasUtils.ctx.strokeStyle = '#666666';
-            CanvasUtils.ctx.lineWidth = 1;
-            CanvasUtils.ctx.strokeRect(dx, dy, cellW, cellH);
+            PrimitiveRenderer.drawBounds(dx, dy, cellW, cellH, '#666666', 1);
 
             CanvasUtils.ctx.fillStyle = 'white';
             CanvasUtils.ctx.font = '10px Arial';
@@ -149,9 +148,7 @@ class PngRenderer {
             CanvasUtils.ctx.fillText(`${frameIndex}`, dx + 2, dy + 11);
 
             if (frameIndex === object.currentFrameIndex) {
-                CanvasUtils.ctx.strokeStyle = 'yellow';
-                CanvasUtils.ctx.lineWidth = 2;
-                CanvasUtils.ctx.strokeRect(dx - 1, dy - 1, cellW + 2, cellH + 2);
+                PrimitiveRenderer.drawBounds(dx - 1, dy - 1, cellW + 2, cellH + 2, 'yellow', 2);
             }
         }
 
@@ -182,13 +179,13 @@ class PngRenderer {
 
         CanvasUtils.ctx.save();
         CanvasUtils.ctx.drawImage(object.png, normalizedPreviewX, normalizedPreviewY, sheetW, sheetH);
-        CanvasUtils.ctx.strokeStyle = 'yellow';
-        CanvasUtils.ctx.lineWidth = 2;
-        CanvasUtils.ctx.strokeRect(
+        PrimitiveRenderer.drawBounds(
             normalizedPreviewX + sx * normalizedScale,
             normalizedPreviewY + sy * normalizedScale,
             sw * normalizedScale,
-            sh * normalizedScale
+            sh * normalizedScale,
+            'yellow',
+            2
         );
 
         CanvasUtils.ctx.fillStyle = 'white';

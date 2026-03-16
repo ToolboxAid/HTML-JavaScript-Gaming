@@ -679,8 +679,7 @@ checkLaser(deltaTime, laserFirePoint) {
 
         // Set the fill style to black with 50% alpha
         const alpha = "88";
-        CanvasUtils.ctx.fillStyle = canvasConfig.backgroundColor + alpha;
-        CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
+        PrimitiveRenderer.drawRect(0, 0, canvasConfig.width, canvasConfig.height, canvasConfig.backgroundColor + alpha);
 
         const x = canvasConfig.width / 2 - 100;
         const y = canvasConfig.height / 2 - 100;
@@ -898,8 +897,7 @@ checkLaser(deltaTime, laserFirePoint) {
         this.drawGame();
 
         // Set the fill style to black with 50% alpha
-        CanvasUtils.ctx.fillStyle = canvasConfig.backgroundColor + "88";
-        CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height); // Adjust the position and size as needed
+        PrimitiveRenderer.drawRect(0, 0, canvasConfig.width, canvasConfig.height, canvasConfig.backgroundColor + "88");
 
         const x1 = canvasConfig.width / 5;
         const y1 = canvasConfig.height - 120 + 35;

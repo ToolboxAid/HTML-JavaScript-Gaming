@@ -8,6 +8,7 @@ import GameBase from '../../../engine/core/gameBase.js';
 
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 class Game extends GameBase{
     constructor() {
@@ -29,18 +30,15 @@ class Game extends GameBase{
 
     drawRectangles(ctx, keysDown) {
         // outline where colors will be
-        ctx.fillStyle = '#888888'; // Change color
-        ctx.fillRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100); // Draw red rectangle
+        PrimitiveRenderer.drawRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100, '#888888', null, 0, 1, { ctx });
 
         // Example: Change the rectangle color based on key presses
         if (keysDown.includes('KeyR')) {
-            ctx.fillStyle = 'red'; // Change color to red if 'R' is pressed
-            ctx.fillRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 100, 100); // Draw red rectangle
+            PrimitiveRenderer.drawRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 100, 100, 'red', null, 0, 1, { ctx });
         }
 
         if (keysDown.includes('KeyG')) {
-            ctx.fillStyle = 'green'; // Change color to green if 'G' is pressed
-            ctx.fillRect((canvasConfig.width / 2), (canvasConfig.height / 2) - 50, 100, 100); // Draw green rectangle
+            PrimitiveRenderer.drawRect((canvasConfig.width / 2), (canvasConfig.height / 2) - 50, 100, 100, 'green', null, 0, 1, { ctx });
         }
     }
 

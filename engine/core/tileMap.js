@@ -6,6 +6,7 @@
 import CanvasUtils from './canvasUtils.js';
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
+import PrimitiveRenderer from '../renderers/primitiveRenderer.js';
 
 // The given tileMap data
 const tileMapLevel1 = [
@@ -175,25 +176,20 @@ class TileMap {
 
     }
 
-    setTileColor(currentColor) {
+    getTileColor(currentColor) {
         switch (currentColor) {
             case 0:  // Transparent (air)
-                CanvasUtils.ctx.fillStyle = "rgb(0, 0, 0, 0)";
-                break;
+                return "rgb(0, 0, 0, 0)";
             case 1: // Barrier (not passable)
-                CanvasUtils.ctx.fillStyle = "rgb(255, 0, 0)";
-                break;
+                return "rgb(255, 0, 0)";
             case 2: // Barrier (not passable)
-                CanvasUtils.ctx.fillStyle = "rgb(0, 255, 0 )";
-                break;
+                return "rgb(0, 255, 0 )";
             case 3: // other
-                CanvasUtils.ctx.fillStyle = "rgb(0 , 0, 255)";
-                break;
+                return "rgb(0 , 0, 255)";
             case 4: // other
-                CanvasUtils.ctx.fillStyle = "rgb(255 ,255, 0)";
-                break;
+                return "rgb(255 ,255, 0)";
             default: // oops
-                CanvasUtils.ctx.fillStyle = "rgb(255, 255 , 255)";
+                return "rgb(255, 255 , 255)";
         }
     }
 
@@ -203,7 +199,6 @@ class TileMap {
             const currentRow = currentMap[row];
             // Iterate over each column in a row
             for (let col = 0; col < currentRow.length; col++) {
-                this.setTileColor(currentRow[col]);
                 let offset = this.currentScrollPosX * layerSpeeds[layer];
                 if (layer === heroLayer) {
                     offset = (this.scrollPosX * layerSpeeds[layer])
@@ -213,7 +208,7 @@ class TileMap {
 
                 // Draw only tiles within the gameArea
                 if (x > -this.tileSize && x < this.canvasWidth + this.tileSize) {
-                    CanvasUtils.ctx.fillRect(x, y, this.tileSize, this.tileSize);
+                    PrimitiveRenderer.drawRect(x, y, this.tileSize, this.tileSize, this.getTileColor(currentRow[col]));
                 }
             }
         }
