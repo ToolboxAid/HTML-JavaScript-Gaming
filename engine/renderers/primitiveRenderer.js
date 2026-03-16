@@ -200,6 +200,15 @@ class PrimitiveRenderer {
         ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
     }
 
+    static traceSegments(ctx, segments) {
+        ctx.beginPath();
+
+        for (const segment of segments) {
+            ctx.moveTo(segment.x1, segment.y1);
+            ctx.lineTo(segment.x2, segment.y2);
+        }
+    }
+
     static getPointCoordinates(point) {
         return Array.isArray(point)
             ? { x: point[0], y: point[1] }
@@ -286,11 +295,9 @@ class PrimitiveRenderer {
         this.renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => {
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-            }
+            trace: () => this.traceSegments(ctx, [
+                { x1, y1, x2, y2 }
+            ])
         });
     }
 
@@ -504,14 +511,7 @@ class PrimitiveRenderer {
         this.renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash,
-            trace: () => {
-                ctx.beginPath();
-
-                for (const segment of segments) {
-                    ctx.moveTo(segment.x1, segment.y1);
-                    ctx.lineTo(segment.x2, segment.y2);
-                }
-            }
+            trace: () => this.traceSegments(ctx, segments)
         });
     }
 
