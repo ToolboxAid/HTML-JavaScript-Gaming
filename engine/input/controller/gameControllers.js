@@ -8,6 +8,7 @@ import GamepadState from "./gamepadState.js";
 import GamepadMapper from "./gamepadMapper.js";
 import EventBus from '../../messages/eventBus.js';
 import DebugFlag from '../../utils/debugFlag.js';
+import DebugLog from '../../utils/debugLog.js';
 import { D_PAD_AXIS_NAMES, D_PAD_BUTTON_NAMES, DPadType, GAMEPAD_BUTTON_NAMES } from "./gamepadEnums.js";
 import { GAMEPAD_EVENT } from './gamepadManager.js';
 
@@ -22,12 +23,12 @@ class GameControllers {
 
     messageWarn(message) {
         if (this.showMessage) {
-            console.warn(message);
+            DebugLog.warn(true, 'GameControllers', message);
         }
     }
     messageError(message) {
         if (this.showMessage) {
-            console.error(message);
+            DebugLog.error('GameControllers', message);
         }
     }
 
@@ -66,25 +67,36 @@ class GameControllers {
         return this.gamepadManager.gameControllers.filter(controller => controller !== null);
     }
 
+    ensureMapper(gameControllerIndex, gamepadId = 'default') {
+        if (!this.gamepadMappers[gameControllerIndex]) {
+            this.gamepadMappers[gameControllerIndex] = new GamepadMapper(gameControllerIndex, gamepadId);
+        }
+
+        return this.gamepadMappers[gameControllerIndex];
+    }
+
+    handleConnectedController(index, id) {
+        const mapper = this.ensureMapper(index, id);
+        DebugLog.log(GameControllers.DEBUG, 'GameControllers', 'Mapped controller', mapper);
+    }
+
+    handleDisconnectedController(index) {
+        this.gamepadMappers[index] = null;
+    }
+
     // Method to handle the controller change event
     controllerChange(data) {
         const [action, index, id] = data;
 
         if (action === 'connected') {
-            // Create new mapper with gamepad ID for config lookup
-            this.gamepadMappers[index] = new GamepadMapper(index, id);
-            if (GameControllers.DEBUG) {
-                console.log(this.gamepadMappers[index]);
-            }
+            this.handleConnectedController(index, id);
         } else if (action === 'disconnected') {
-            this.gamepadMappers[index] = null;
+            this.handleDisconnectedController(index);
         } else {
-            console.error("'controllerChange' - Unknown action.");
+            DebugLog.error('GameControllers', "'controllerChange' - Unknown action.");
         }
 
-        if (GameControllers.DEBUG) {
-            console.log(`Controller action: ${action} - Index: ${index}, ID: ${id}, details:`, this);
-        }
+        DebugLog.log(GameControllers.DEBUG, 'GameControllers', `Controller action: ${action} - Index: ${index}, ID: ${id}`, this);
     }
 
     update() {
@@ -186,17 +198,11 @@ class GameControllers {
 
     // Map button and axis names for a specific game controller
     mapButtonNames(gameControllerIndex, buttonNames) {
-        if (!this.gamepadMappers[gameControllerIndex]) {
-            this.gamepadMappers[gameControllerIndex] = new GamepadMapper(gameControllerIndex);
-        }
-        this.gamepadMappers[gameControllerIndex].buttonNames = buttonNames;
+        this.ensureMapper(gameControllerIndex).mapButtonNames(buttonNames);
     }
 
     mapAxisNames(gameControllerIndex, axisNames) {
-        if (!this.gamepadMappers[gameControllerIndex]) {
-            this.gamepadMappers[gameControllerIndex] = new GamepadMapper(gameControllerIndex);
-        }
-        this.gamepadMappers[gameControllerIndex].axisNames = axisNames;
+        this.ensureMapper(gameControllerIndex).mapAxisNames(axisNames);
     }
 
     // --------------------------------------------

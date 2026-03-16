@@ -4,6 +4,7 @@
 // gameControllersSemanticTest.js
 
 import GameControllers from '../../../../engine/input/controller/gameControllers.js';
+import GamepadMapper from '../../../../engine/input/controller/gamepadMapper.js';
 
 function createControllers() {
     const controllers = Object.create(GameControllers.prototype);
@@ -41,6 +42,7 @@ function createControllers() {
         }
     ];
     controllers.messageError = () => {};
+    controllers.messageWarn = () => {};
     return controllers;
 }
 
@@ -59,4 +61,24 @@ export function testGameControllersSemantic(assert) {
 
     const dPad = controllers.getDPad(0);
     assert(dPad.left === true && dPad.up === true, 'GameControllers should preserve d-pad state lookup');
+
+    const emptyControllers = Object.create(GameControllers.prototype);
+    emptyControllers.gamepadStates = [];
+    emptyControllers.gamepadMappers = [];
+    emptyControllers.messageError = () => {};
+    emptyControllers.messageWarn = () => {};
+
+    const mappedButtonNames = ['Start', 'Select', 'DPadLEFT'];
+    const mappedAxisNames = ['DPadX', 'DPadY'];
+    emptyControllers.mapButtonNames(0, mappedButtonNames);
+    emptyControllers.mapAxisNames(0, mappedAxisNames);
+
+    assert(emptyControllers.gamepadMappers[0] instanceof GamepadMapper, 'mapButtonNames should create a default mapper when missing');
+    assert(emptyControllers.gamepadMappers[0].buttonNames === mappedButtonNames, 'mapButtonNames should delegate to the mapper override API');
+    assert(emptyControllers.gamepadMappers[0].axisNames === mappedAxisNames, 'mapAxisNames should delegate to the mapper override API');
+
+    emptyControllers.handleConnectedController(1, 'USB gamepad (Vendor: 081f Product: e401)');
+    assert(emptyControllers.gamepadMappers[1] instanceof GamepadMapper, 'handleConnectedController should create a mapper for the connected pad');
+    emptyControllers.handleDisconnectedController(1);
+    assert(emptyControllers.gamepadMappers[1] === null, 'handleDisconnectedController should clear the mapper');
 }
