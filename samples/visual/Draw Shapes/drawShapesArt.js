@@ -3,7 +3,6 @@
 // 03/15/2026
 // drawShapesArt.js
 
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 export function drawShapeGallery(canvasConfig) {
@@ -47,33 +46,17 @@ function drawHollowOval() {
 
 function drawGridLines(canvasConfig) {
     for (let row = 0; row <= canvasConfig.height; row += 100) {
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.moveTo(0, row);
-        CanvasUtils.ctx.lineTo(canvasConfig.width, row);
-        CanvasUtils.ctx.lineWidth = 2;
-        CanvasUtils.ctx.strokeStyle = '#3600af';
-        CanvasUtils.ctx.stroke();
+        PrimitiveRenderer.drawLine(0, row, canvasConfig.width, row, '#3600af', 2);
     }
 
     for (let col = 0; col <= canvasConfig.width; col += 100) {
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.moveTo(col, 0);
-        CanvasUtils.ctx.lineTo(col, canvasConfig.height);
-        CanvasUtils.ctx.lineWidth = 2;
-        CanvasUtils.ctx.strokeStyle = '#ed970044';
-        CanvasUtils.ctx.stroke();
+        PrimitiveRenderer.drawLine(col, 0, col, canvasConfig.height, '#ed9700', 2, 0.27);
     }
 }
 
 function drawOverlappingRectangles() {
-    CanvasUtils.ctx.fillStyle = '#ed9700';
-    CanvasUtils.ctx.fillRect(605, 235, 110, 110);
-    CanvasUtils.ctx.fillStyle = '#ffffff';
-    CanvasUtils.ctx.globalAlpha = 0.35;
-    CanvasUtils.ctx.fillRect(625, 255, 90, 90);
-    CanvasUtils.ctx.fillStyle = '#3600af';
-    CanvasUtils.ctx.globalAlpha = 0.65;
-    CanvasUtils.ctx.fillRect(645, 275, 70, 70);
-    CanvasUtils.ctx.globalAlpha = 1;
+    PrimitiveRenderer.drawRect(605, 235, 110, 110, '#ed9700');
+    PrimitiveRenderer.drawRect(625, 255, 90, 90, '#ffffff', null, 0, 0.35);
+    PrimitiveRenderer.drawRect(645, 275, 70, 70, '#3600af', null, 0, 0.65);
 }
 

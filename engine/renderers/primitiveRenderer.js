@@ -15,97 +15,108 @@ class PrimitiveRenderer {
         this.drawRect(object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth);
     }
 
-    static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0) {
-        if (!CanvasUtils.ctx) {
-            return;
-        }
+    static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1) {
+        return this.withContext((ctx) => {
+            ctx.globalAlpha = alpha;
 
-        CanvasUtils.ctx.save();
-        CanvasUtils.ctx.fillStyle = fillColor;
-        CanvasUtils.ctx.fillRect(x, y, width, height);
+            if (fillColor) {
+                ctx.fillStyle = fillColor;
+                ctx.fillRect(x, y, width, height);
+            }
 
-        if (borderColor && borderWidth > 0) {
-            CanvasUtils.ctx.strokeStyle = borderColor;
-            CanvasUtils.ctx.lineWidth = borderWidth;
-            CanvasUtils.ctx.strokeRect(x, y, width, height);
-        }
-
-        CanvasUtils.ctx.restore();
+            if (borderColor && borderWidth > 0) {
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = borderWidth;
+                ctx.strokeRect(x, y, width, height);
+            }
+        });
     }
 
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        if (!CanvasUtils.ctx) {
-            return;
-        }
+        return this.withContext((ctx) => {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
 
-        CanvasUtils.ctx.save();
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.arc(x, y, radius, 0, Math.PI * 2);
+            if (fillColor) {
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+            }
 
-        if (fillColor) {
-            CanvasUtils.ctx.fillStyle = fillColor;
-            CanvasUtils.ctx.fill();
-        }
-
-        if (borderColor && borderWidth > 0) {
-            CanvasUtils.ctx.strokeStyle = borderColor;
-            CanvasUtils.ctx.lineWidth = borderWidth;
-            CanvasUtils.ctx.stroke();
-        }
-
-        CanvasUtils.ctx.restore();
+            if (borderColor && borderWidth > 0) {
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = borderWidth;
+                ctx.stroke();
+            }
+        });
     }
 
     static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0) {
-        if (!CanvasUtils.ctx) {
-            return;
-        }
+        return this.withContext((ctx) => {
+            ctx.beginPath();
+            ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
 
-        CanvasUtils.ctx.save();
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
+            if (fillColor) {
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+            }
 
-        if (fillColor) {
-            CanvasUtils.ctx.fillStyle = fillColor;
-            CanvasUtils.ctx.fill();
-        }
-
-        if (borderColor && borderWidth > 0) {
-            CanvasUtils.ctx.strokeStyle = borderColor;
-            CanvasUtils.ctx.lineWidth = borderWidth;
-            CanvasUtils.ctx.stroke();
-        }
-
-        CanvasUtils.ctx.restore();
+            if (borderColor && borderWidth > 0) {
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = borderWidth;
+                ctx.stroke();
+            }
+        });
     }
 
     static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0) {
-        if (!CanvasUtils.ctx || !Array.isArray(points) || points.length < 3) {
+        if (!Array.isArray(points) || points.length < 3) {
             return;
         }
 
+        return this.withContext((ctx) => {
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+
+            for (let index = 1; index < points.length; index += 1) {
+                ctx.lineTo(points[index].x, points[index].y);
+            }
+
+            ctx.closePath();
+
+            if (fillColor) {
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+            }
+
+            if (borderColor && borderWidth > 0) {
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = borderWidth;
+                ctx.stroke();
+            }
+        });
+    }
+
+    static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1) {
+        return this.withContext((ctx) => {
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+        });
+    }
+
+    static withContext(drawFn) {
+        if (!CanvasUtils.ctx) {
+            return false;
+        }
+
         CanvasUtils.ctx.save();
-        CanvasUtils.ctx.beginPath();
-        CanvasUtils.ctx.moveTo(points[0].x, points[0].y);
-
-        for (let index = 1; index < points.length; index += 1) {
-            CanvasUtils.ctx.lineTo(points[index].x, points[index].y);
-        }
-
-        CanvasUtils.ctx.closePath();
-
-        if (fillColor) {
-            CanvasUtils.ctx.fillStyle = fillColor;
-            CanvasUtils.ctx.fill();
-        }
-
-        if (borderColor && borderWidth > 0) {
-            CanvasUtils.ctx.strokeStyle = borderColor;
-            CanvasUtils.ctx.lineWidth = borderWidth;
-            CanvasUtils.ctx.stroke();
-        }
-
+        drawFn(CanvasUtils.ctx);
         CanvasUtils.ctx.restore();
+        return true;
     }
 }
 

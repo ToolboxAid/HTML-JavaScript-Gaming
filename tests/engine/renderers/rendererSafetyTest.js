@@ -143,6 +143,7 @@ function testRenderersGuardOnMissingContext(assert) {
         assertNoThrow(assert, () => PrimitiveRenderer.drawCircle(5, 5, 3, 'white'), 'PrimitiveRenderer.drawCircle should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawEllipse(5, 5, 3, 2, null, 'white', 1), 'PrimitiveRenderer.drawEllipse should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 1, y: 0 }], 'white'), 'PrimitiveRenderer.drawTriangle should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5), 'PrimitiveRenderer.drawLine should no-op without context');
         assertNoThrow(assert, () => SpriteRenderer.draw(spriteLike, Number.NaN, Number.NaN), 'SpriteRenderer should no-op without context');
         assertNoThrow(assert, () => VectorRenderer.draw(vectorLike, Number.NaN, Number.NaN, Number.NaN), 'VectorRenderer should no-op without context');
         assertNoThrow(assert, () => PngRenderer.draw(pngLike, Number.NaN, Number.NaN), 'PngRenderer should no-op without context');
@@ -182,6 +183,7 @@ function testRenderersDrawWithMockContext(assert) {
         PrimitiveRenderer.drawCircle(20, 20, 4, 'white', 'red', 1);
         PrimitiveRenderer.drawEllipse(25, 25, 6, 3, null, 'white', 1);
         PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 3, y: 5 }, { x: 5, y: 0 }], '#fff', 'red', 1);
+        PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5);
 
         const spriteLiving = {
             isDead: () => false,
