@@ -26,14 +26,19 @@ class VectorRenderer {
         });
 
         if (object.drawBounds) {
-            PrimitiveRenderer.drawMarker(object.x + normalizedOffsetX, object.y + normalizedOffsetY, 2, 'white');
-            PrimitiveRenderer.drawBounds(
+            PrimitiveRenderer.drawDebugBounds(
                 object.boundX + normalizedOffsetX,
                 object.boundY + normalizedOffsetY,
                 object.boundWidth,
                 object.boundHeight,
-                'white',
-                normalizedLineWidth
+                {
+                    borderColor: 'white',
+                    borderWidth: normalizedLineWidth,
+                    markerX: object.x + normalizedOffsetX,
+                    markerY: object.y + normalizedOffsetY,
+                    markerRadius: 2,
+                    markerColor: 'white'
+                }
             );
         }
     }

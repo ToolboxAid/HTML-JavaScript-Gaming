@@ -200,6 +200,26 @@ class PrimitiveRenderer {
         });
     }
 
+    static drawDebugBounds(x, y, width, height, {
+        borderColor = 'white',
+        borderWidth = 1,
+        alpha = 1,
+        markerX = null,
+        markerY = null,
+        markerRadius = 2,
+        markerColor = borderColor,
+        markerAlpha = alpha,
+        ctx = null
+    } = {}) {
+        return this.withContext({ ctx }, (renderCtx) => {
+            this.renderRect(renderCtx, x, y, width, height, null, borderColor, borderWidth, alpha);
+
+            if (Number.isFinite(markerX) && Number.isFinite(markerY)) {
+                this.renderCircle(renderCtx, markerX, markerY, markerRadius, markerColor, null, 0, markerAlpha);
+            }
+        });
+    }
+
     static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
         extraWidth = 0,
         extraHeight = 0,
