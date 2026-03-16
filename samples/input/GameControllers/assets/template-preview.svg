@@ -9,17 +9,37 @@
   <rect width="960" height="540" fill="url(#bg)" />
   <rect x="156" y="84" width="648" height="372" rx="20" fill="#13072c" stroke="#ed9700" stroke-width="4" />
   <rect x="186" y="118" width="588" height="304" rx="16" fill="#3600af" fill-opacity="0.34" stroke="#ed9700" stroke-opacity="0.55" />
+  <text x="480" y="140" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="12" fill="#f3d8ab">Buttons highlight active inputs. Panels show mapped labels, d-pad state, and live axis values.</text>
   <line x1="186" y1="182" x2="774" y2="182" stroke="#ed9700" stroke-width="2" />
   <text x="480" y="66" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="28" fill="#ffffff">Input Sample</text>
   <text x="480" y="162" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="34" fill="#ffffff">Game Controllers</text>
-  <text x="480" y="218" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#f3d8ab">Live controller input visualization for connection state,</text>
-  <text x="480" y="246" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#f3d8ab">button presses, d-pad movement, and analog axis activity.</text>
-  <text x="480" y="282" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="18" fill="#d9c8ff">Centered template shell with public GameControllers API access</text>
-  <path d="M360 403c-20 0-33-15-44-38-8-18-6-44 10-56 12-9 30-7 46 0l28 12h160l28-12c16-7 34-9 46 0 16 12 18 38 10 56-11 23-24 38-44 38-14 0-28-8-40-18l-22-18H422l-22 18c-12 10-26 18-40 18Z" fill="#20104f" stroke="#ed9700" stroke-width="4"/>
-  <circle cx="354" cy="353" r="12" fill="#ed9700" />
+  <text x="480" y="218" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#f3d8ab">Live controller input visualization with labeled panels,</text>
+  <text x="480" y="246" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#f3d8ab">device identity, mapped buttons, d-pad state, and named axes.</text>
+  <text x="480" y="282" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="18" fill="#d9c8ff">Centered template shell with fullscreen and public GameControllers API access</text>
 
-  <circle cx="576" cy="351" r="8" fill="red" />
-  <circle cx="598" cy="373" r="8" fill="yellow" />
-  <circle cx="598" cy="329" r="8" fill="green" />
-  <circle cx="620" cy="351" r="8" fill="blue" />
+  <rect x="220" y="314" width="218" height="82" rx="12" fill="#140830" stroke="#ff5f57" stroke-width="2"/>
+  <text x="236" y="334" font-family="Segoe UI, Tahoma, sans-serif" font-size="11" fill="#ff5f57">P1 USB gamepad</text>
+  <text x="236" y="348" font-family="Segoe UI, Tahoma, sans-serif" font-size="9" fill="#f3d8ab">USB gamepad (Vendor: 081f Product: e401)</text>
+  <circle cx="246" cy="368" r="7" fill="#ff5f57" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="264" cy="368" r="7" fill="#666666" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="282" cy="368" r="7" fill="#666666" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="300" cy="368" r="7" fill="#ff5f57" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="318" cy="368" r="7" fill="#666666" stroke="#ffffff" stroke-width="1"/>
+  <text x="344" y="366" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#ff5f57">dPad:</text>
+  <text x="378" y="366" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#ffffff">Left</text>
+  <text x="344" y="382" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#ff5f57">DPadX:</text>
+  <text x="388" y="382" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#ffffff">-1.00</text>
+
+  <rect x="520" y="314" width="218" height="82" rx="12" fill="#140830" stroke="#4dd8ff" stroke-width="2"/>
+  <text x="536" y="334" font-family="Segoe UI, Tahoma, sans-serif" font-size="11" fill="#4dd8ff">P2 Logitech RumblePad 2</text>
+  <text x="536" y="348" font-family="Segoe UI, Tahoma, sans-serif" font-size="9" fill="#f3d8ab">STANDARD GAMEPAD Vendor: 046d Product: c218</text>
+  <circle cx="546" cy="368" r="7" fill="#666666" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="564" cy="368" r="7" fill="#4dd8ff" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="582" cy="368" r="7" fill="#666666" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="600" cy="368" r="7" fill="#666666" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="618" cy="368" r="7" fill="#4dd8ff" stroke="#ffffff" stroke-width="1"/>
+  <text x="644" y="366" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#4dd8ff">dPad:</text>
+  <text x="678" y="366" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#ffffff">Up</text>
+  <text x="644" y="382" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#4dd8ff">StickLeftX:</text>
+  <text x="710" y="382" font-family="Segoe UI, Tahoma, sans-serif" font-size="10" fill="#ffffff">0.42</text>
 </svg>

@@ -136,14 +136,21 @@ function gameUpdate() {
 function gameRender() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    ctx.fillStyle = '#f3d8ab';
+    ctx.font = 'bold 12px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText('Buttons highlight active inputs. Panels show mapped labels, d-pad state, and live axis values.', canvas.width / 2, 24);
+    ctx.font = '10px Segoe UI';
+    ctx.fillText('Each panel title uses the connected controller mapping name when available.', canvas.width / 2, 40);
+
     const hasVisiblePlayers = players.some(Boolean);
     if (!hasVisiblePlayers) {
         ctx.fillStyle = '#f3d8ab';
         ctx.font = 'bold 18px Segoe UI';
         ctx.textAlign = 'center';
-        ctx.fillText('Connect a controller to begin.', canvas.width / 2, 120);
+        ctx.fillText('Connect a controller to begin.', canvas.width / 2, 132);
         ctx.font = '14px Segoe UI';
-        ctx.fillText('Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 152);
+        ctx.fillText('Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 164);
         ctx.textAlign = 'start';
     }
 
@@ -205,6 +212,7 @@ function gameRender() {
         }
     });
 
+    ctx.textAlign = 'start';
     Fullscreen.draw(ctx);
 }
 
