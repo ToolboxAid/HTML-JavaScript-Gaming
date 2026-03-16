@@ -4,7 +4,7 @@
 // boundaryUtilsTest.js
 
 import BoundaryUtils from '../../../engine/physics/boundaryUtils.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 export function testBoundaryUtils(assert) {
     const originalConfig = CanvasUtils.config;
@@ -79,4 +79,5 @@ export function testBoundaryUtils(assert) {
         CanvasUtils.config = originalConfig;
     }
 }
+
 

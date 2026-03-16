@@ -4,7 +4,7 @@
 // 10/16/2024
 
 import ObjectDynamic from '../../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GameCollision from '../../../engine/game/gameCollision.js';
 
 import RandomUtils from '../../../engine/math/randomUtils.js';
@@ -77,5 +77,6 @@ class Circle extends ObjectDynamic {
 }
 
 export default Circle; // Export the class for use in other modules
+
 
 

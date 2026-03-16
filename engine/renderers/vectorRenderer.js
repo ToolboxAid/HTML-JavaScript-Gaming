@@ -1,4 +1,4 @@
-import CanvasUtils from '../core/canvas.js';
+import CanvasUtils from '../core/canvasUtils.js';
 import DebugLog from '../utils/debugLog.js';
 import RendererGuards from './rendererGuards.js';
 
@@ -50,4 +50,5 @@ class VectorRenderer {
 }
 
 export default VectorRenderer;
+
 

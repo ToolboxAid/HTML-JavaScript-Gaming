@@ -4,7 +4,7 @@ Update this file any time a change lands under `engine/`.
 
 ## 1.4.0 - 2026-03-15
 - Centralized centered and multiline text handling in `core/canvasText.js`.
-- Removed older centering passthroughs from `core/canvas.js`.
+- Removed older centering passthroughs from `core/canvasUtils.js`.
 - Polished debug logging defaults in `utils/debugLog.js` with compact caller context and cleaner trace behavior.
 - Added optional `onResize` support to `fullscreen.js` for callback-based redraw flows.
 
@@ -27,3 +27,4 @@ Update this file any time a change lands under `engine/`.
 
 ## 1.0.0 - 2026-03-11
 - Established the current shared engine structure used by games, samples, tests, and tools in this repository.
+

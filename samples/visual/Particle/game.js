@@ -14,7 +14,7 @@ import {
     uiFont
 } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import ParticleExplosion from '../../../engine/renderers/particleExplosion.js';
 import RendererGuards from '../../../engine/renderers/rendererGuards.js';
@@ -156,3 +156,4 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+

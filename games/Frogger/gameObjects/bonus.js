@@ -6,7 +6,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 
 import GameObject from '../../../engine/game/gameObject.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GameCollision from '../../../engine/game/gameCollision.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
 
@@ -249,4 +249,5 @@ class Bonus extends GameObject {
 }
 
 export default Bonus;
+
 

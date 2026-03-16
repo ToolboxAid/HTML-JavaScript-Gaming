@@ -3,7 +3,7 @@
 // 11/15/2024
 // attract.js
 
-import CanvasUtils from '../../engine/core/canvas.js';
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 import { canvasConfig } from './global.js';
 
 class AttractScreen {
@@ -120,4 +120,5 @@ class AttractScreen {
 }
 
 export default AttractScreen;
+
 

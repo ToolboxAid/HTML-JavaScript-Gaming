@@ -4,7 +4,7 @@
 // sideScrollStateHandlers.js
 
 import CanvasText from '../../../engine/core/canvasText.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GamePlayerSelectUi from '../../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import { canvasConfig, playerSelect, sideScrollUi } from './global.js';
@@ -148,3 +148,4 @@ export function resetGame(game) {
     game.enemyInitialized = false;
     game.backToAttractCounter = 0;
 }
+

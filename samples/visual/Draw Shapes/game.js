@@ -5,7 +5,7 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig, drawShapesUi, uiFont } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import { drawShapeGallery } from './drawShapesArt.js';
@@ -96,3 +96,4 @@ function renderCenteredText(text, y, fontSize, fontFamily, color) {
 export default Game;
 
 const game = new Game();
+

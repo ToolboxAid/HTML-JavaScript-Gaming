@@ -6,7 +6,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 
 import GameObject from '../../../engine/game/gameObject.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 class Aligator extends GameObject {
     static DEBUG = DebugFlag.has('aligator');
@@ -110,4 +110,5 @@ class Aligator extends GameObject {
 }
 
 export default Aligator;
+
 

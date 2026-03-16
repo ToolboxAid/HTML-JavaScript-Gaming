@@ -3,7 +3,7 @@
 // 03/12/2026
 // hud.js
 
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 class AsteroidsHud {
     static FLASH_INTERVAL = 200;
@@ -133,4 +133,5 @@ class AsteroidsHud {
 }
 
 export default AsteroidsHud;
+
 

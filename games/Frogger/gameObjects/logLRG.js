@@ -7,7 +7,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 
 import GameObject from '../../../engine/game/gameObject.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 class LogLRG extends GameObject {
     static DEBUG = DebugFlag.has('logLRG');
@@ -61,4 +61,5 @@ class LogLRG extends GameObject {
 }
 
 export default LogLRG;
+
 

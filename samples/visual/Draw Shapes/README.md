@@ -4,7 +4,7 @@ This sample demonstrates engine-driven canvas shape rendering primitives inside 
 
 It uses:
 - `engine/core/gameBase.js`
-- `engine/core/canvas.js`
+- `engine/core/canvasUtils.js`
 - `engine/core/canvasText.js`
 - sample state routing and rendering in `game.js`
 
@@ -30,3 +30,4 @@ It uses:
 
 - Shape methods are intentionally sample-local for readability.
 - Consider engine extraction only if these helpers are reused by other samples/games.
+

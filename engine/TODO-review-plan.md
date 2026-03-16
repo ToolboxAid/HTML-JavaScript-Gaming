@@ -29,7 +29,7 @@ Objective:
 - [x] Review `engine/misc`.
 - [x] Review `engine/output`.
 - [x] Review `engine/animation`.
-- [x] Review top-level engine files such as `canvas.js`, `gameBase.js`, `gameObject.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameObjectSystem.js`, `sprite.js`, and `tileMap.js`.
+- [x] Review top-level engine files such as `canvasUtils.js`, `gameBase.js`, `gameObject.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameObjectSystem.js`, `sprite.js`, and `tileMap.js`.
 
 ## Folder and naming review
 
@@ -97,7 +97,7 @@ Performance review priorities:
 - P1: Debug payload allocation in `engine/renderers/pngRenderer.js` during draw.
 - P2: Allocation churn from object list snapshots in `engine/game/gameObjectManager.js` / `engine/game/gameObjectSystem.js`.
 - P2: Allocation churn in `engine/input/controller/gamepadManager.js` polling.
-- P3: Minor per-call binds and helper allocations in `engine/core/canvas.js`.
+- P3: Minor per-call binds and helper allocations in `engine/core/canvasUtils.js`.
 
 Performance review progress:
 
@@ -141,3 +141,4 @@ Performance review progress:
 - [x] Record bugs, architectural risks, security findings, and test gaps by severity.
 - [x] Summarize completed fixes and recommended follow-up work.
 - [x] Update all documentation
+

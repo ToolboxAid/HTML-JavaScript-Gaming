@@ -3,7 +3,7 @@
 // solarSystemHud.js
 // 03/15/2026
 
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import { solarSystemConfig, uiFont } from './global.js';
 import { getActiveBodies, getFocusedBody, getFocusLabel, renderBodies } from './solarSystemRuntime.js';
 
@@ -62,3 +62,4 @@ export function renderSimulationScreen(gameObjectSystem, simulationSpeed, focusI
     showLabels
   );
 }
+

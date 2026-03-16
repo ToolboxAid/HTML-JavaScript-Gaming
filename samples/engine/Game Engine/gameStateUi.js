@@ -3,7 +3,7 @@
 // 03/15/2026
 // gameStateUi.js
 
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import { canvasConfig, gameUi, safeAreaInset } from './global.js';
 
@@ -76,3 +76,4 @@ function renderCenteredMultilineText(lines, startY, options = {}) {
         defaultCenterX: canvasConfig.width / 2
     });
 }
+

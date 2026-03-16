@@ -5,7 +5,7 @@
 
 import { canvasConfig, spriteConfig, shieldConfig } from "./global.js";
 
-import CanvasUtils from "../../engine/core/canvas.js";
+import CanvasUtils from "../../engine/core/canvasUtils.js";
 import SystemUtils from "../../engine/utils/systemUtils.js";
 
 import Enemy from "./enemy.js";
@@ -139,4 +139,5 @@ export default class AttractMode {
     static cntr = 0;
 
 }
+
 

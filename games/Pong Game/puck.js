@@ -5,7 +5,7 @@
 
 import { canvasConfig, puckConfig } from './global.js'; // Import puck & canvas configuration
 
-import CanvasUtils from '../../engine/core/canvas.js';
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import ObjectDynamic from '../../engine/objects/objectDynamic.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
@@ -248,4 +248,5 @@ class Puck extends ObjectDynamic {
 }
 
 export default Puck;
+
 

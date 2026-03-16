@@ -3,7 +3,7 @@
 // 03/12/2026
 // boundaryUtils.js
 
-import CanvasUtils from "../core/canvas.js";
+import CanvasUtils from "../core/canvasUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
 import PhysicsUtils from "./physicsUtils.js";
 
@@ -170,4 +170,5 @@ class BoundaryUtils {
 }
 
 export default BoundaryUtils;
+
 

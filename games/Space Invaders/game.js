@@ -7,7 +7,7 @@ import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenC
 
 import GameBase from '../../engine/core/gameBase.js';
 
-import CanvasUtils from '../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import CanvasUtils from '../../engine/core/canvasUtils.js'; // Required for dynamic canvas operations, used in animate()
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import GameUtils from '../../engine/game/gameUtils.js';
@@ -1143,4 +1143,5 @@ destroyLaser() {
 export default Game;
 
 const game = new Game();
+
 

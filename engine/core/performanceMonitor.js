@@ -6,7 +6,7 @@
 import SystemUtils from "../utils/systemUtils.js";
 import DebugFlag from "../utils/debugFlag.js";
 import DebugLog from "../utils/debugLog.js";
-import CanvasUtils from "./canvas.js";
+import CanvasUtils from "./canvasUtils.js";
 
 class PerformanceMonitor {
 
@@ -280,5 +280,6 @@ class PerformanceMonitor {
 export default PerformanceMonitor
 
 setInterval(() => PerformanceMonitor.oncePerSecond(), 1000); // every second
+
 
 

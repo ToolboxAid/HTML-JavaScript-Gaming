@@ -6,7 +6,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 
 import GameObject from '../../../engine/game/gameObject.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GameCollision from '../../../engine/game/gameCollision.js';
 
 class Snake extends GameObject {
@@ -158,4 +158,5 @@ class Snake extends GameObject {
 }
 
 export default Snake;
+
 

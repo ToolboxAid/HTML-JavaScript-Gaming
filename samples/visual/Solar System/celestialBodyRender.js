@@ -4,7 +4,7 @@
 // 03/15/2026
 
 import { canvasConfig, solarSystemConfig, uiFont } from './global.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 function getSystemCenter() {
     return {
@@ -87,3 +87,4 @@ export function drawCelestialBody(body, {
         drawLabel(ctx, body.name, drawX, drawY, scaledRadius, zoom);
     }
 }
+

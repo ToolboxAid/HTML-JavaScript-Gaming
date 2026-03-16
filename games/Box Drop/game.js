@@ -6,7 +6,7 @@
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
 import GameBase from '../../engine/core/gameBase.js';
 
-import CanvasUtils from '../../engine/core/canvas.js';
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 
@@ -237,4 +237,5 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
 

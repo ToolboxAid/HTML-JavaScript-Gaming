@@ -3,7 +3,7 @@
 // 02/14/2025
 // collisionUtils.js
 
-import CanvasUtils from "../core/canvas.js";
+import CanvasUtils from "../core/canvasUtils.js";
 import BoundaryUtils from "./boundaryUtils.js";
 import CollisionShapeUtils from "./collisionShapeUtils.js";
 import PolygonCollision from './polygonCollision.js';
@@ -356,4 +356,5 @@ export default class CollisionUtils {
     }
 
 }
+
 

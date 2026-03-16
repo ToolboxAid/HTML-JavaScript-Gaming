@@ -6,7 +6,7 @@
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
 import GameCollision from '../../engine/game/gameCollision.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
-import CanvasUtils from '../../engine/core/canvas.js';
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 
 
 import ObjectSprite from '../../engine/objects/objectSprite.js';
@@ -262,4 +262,5 @@ class EnemyShip extends ObjectSprite {
 }
 
 export default EnemyShip;
+
 

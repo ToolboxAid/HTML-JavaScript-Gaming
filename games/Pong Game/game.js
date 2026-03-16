@@ -6,7 +6,7 @@
 import { font5x3 } from './global.js'; // Import canvasConfig
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import GameBase from '../../engine/core/gameBase.js';
-import CanvasUtils from '../../engine/core/canvas.js';
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
@@ -134,4 +134,5 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
 

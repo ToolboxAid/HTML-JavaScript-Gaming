@@ -8,7 +8,7 @@ import CollisionUtils from "../../../engine/physics/collisionUtils.js";
 import BoundaryUtils from "../../../engine/physics/boundaryUtils.js";
 import CollisionShapeUtils from "../../../engine/physics/collisionShapeUtils.js";
 import VectorShapeUtils from "../../../engine/physics/vectorShapeUtils.js";
-import CanvasUtils from "../../../engine/core/canvas.js";
+import CanvasUtils from "../../../engine/core/canvasUtils.js";
 
 export function testCollisionUtils(assert) {
     const originalConfig = CanvasUtils.config;
@@ -151,5 +151,6 @@ export function testCollisionUtils(assert) {
         CanvasUtils.config = originalConfig;
     }
 }
+
 
 

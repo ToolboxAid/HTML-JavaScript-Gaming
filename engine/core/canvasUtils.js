@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 10/16/2024
-// canvas.js
+// canvasUtils.js
 
 import SystemUtils from '../utils/systemUtils.js';
 import DebugFlag from '../utils/debugFlag.js';
@@ -284,3 +284,4 @@ class CanvasUtils {
 }
 
 export default CanvasUtils;
+

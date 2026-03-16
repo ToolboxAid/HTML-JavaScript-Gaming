@@ -3,7 +3,7 @@
 // 03/15/2026
 // drawShapesArt.js
 
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 export function drawShapeGallery(canvasConfig) {
     drawGridLines(canvasConfig);
@@ -91,3 +91,4 @@ function drawOverlappingRectangles() {
     CanvasUtils.ctx.fillRect(645, 275, 70, 70);
     CanvasUtils.ctx.globalAlpha = 1;
 }
+

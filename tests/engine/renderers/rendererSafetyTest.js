@@ -1,4 +1,4 @@
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import BoxRenderer from '../../../engine/renderers/boxRenderer.js';
 import SpriteRenderer from '../../../engine/renderers/spriteRenderer.js';
 import VectorRenderer from '../../../engine/renderers/vectorRenderer.js';
@@ -216,4 +216,5 @@ export function testRendererSafety(assert) {
     testRenderersGuardOnMissingContext(assert);
     testRenderersDrawWithMockContext(assert);
 }
+
 

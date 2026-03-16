@@ -6,7 +6,7 @@
 import { canvasConfig, performanceConfig, fullscreenConfig } from '../Snake/global.js'; // Import canvasConfig
 import GameBase from '../../engine/core/gameBase.js';
 
-import CanvasUtils from '../../engine/core/canvas.js';
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 
@@ -215,6 +215,7 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
+
 
 
 

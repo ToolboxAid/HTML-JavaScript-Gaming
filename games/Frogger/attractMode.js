@@ -3,7 +3,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 import { canvasConfig } from './global.js';
 
 import GameObjectSystem from '../../engine/game/gameObjectSystem.js';
-import CanvasUtils from '../../engine/core/canvas.js';
+import CanvasUtils from '../../engine/core/canvasUtils.js';
 
 // Game Objects
 import GameUI from './gameUI.js';
@@ -394,5 +394,6 @@ class AttractMode {
 }
 
 export default AttractMode;
+
 
 

@@ -4,7 +4,7 @@
 // attractScreen.js
 
 import { canvasConfig, playerSelect } from '../global.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GamePlayerSelectUi from '../../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import GameAttract from './attractScene.js';
@@ -39,4 +39,5 @@ class AsteroidsAttractScreen {
 }
 
 export default AsteroidsAttractScreen;
+
 

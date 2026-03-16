@@ -5,7 +5,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 // gameUI.js
 
 
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
 
@@ -473,4 +473,5 @@ class GameUI {
 }
 
 export default GameUI;
+
 

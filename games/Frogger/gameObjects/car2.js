@@ -7,7 +7,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 
 import GameObject from '../../../../engine/game/gameObject.js';
-import CanvasUtils from '../../../../engine/core/canvas.js';
+import CanvasUtils from '../../../../engine/core/canvasUtils.js';
 
 class Car2 extends GameObject {
     static DEBUG = DebugFlag.has('car2');
@@ -52,4 +52,5 @@ class Car2 extends GameObject {
 }
 
 export default Car2;
+
 

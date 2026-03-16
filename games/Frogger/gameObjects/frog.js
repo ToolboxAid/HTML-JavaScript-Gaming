@@ -1,7 +1,7 @@
 import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 /*
 {
@@ -192,4 +192,5 @@ class Frog extends ObjectPNG {
 }
 
 export default Frog;
+
 

@@ -6,7 +6,7 @@ import DebugFlag from '../../../engine/utils/debugFlag.js';
 
 
 import GameObject from '../../../engine/game/gameObject.js';
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GameCollision from '../../../engine/game/gameCollision.js';
 
 class Beaver extends GameObject {
@@ -137,4 +137,5 @@ class Beaver extends GameObject {
 }
 
 export default Beaver;
+
 

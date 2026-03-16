@@ -3,7 +3,7 @@
 // 2024-10-24
 // tileMap.js
 
-import CanvasUtils from './canvas.js';
+import CanvasUtils from './canvasUtils.js';
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
 
@@ -234,4 +234,5 @@ class TileMap {
 }
 
 export default TileMap;
+
 

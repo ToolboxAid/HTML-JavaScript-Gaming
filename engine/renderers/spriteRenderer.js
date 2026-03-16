@@ -1,4 +1,4 @@
-import CanvasUtils from '../core/canvas.js';
+import CanvasUtils from '../core/canvasUtils.js';
 import RendererGuards from './rendererGuards.js';
 
 class SpriteRenderer {
@@ -58,4 +58,5 @@ class SpriteRenderer {
 }
 
 export default SpriteRenderer;
+
 

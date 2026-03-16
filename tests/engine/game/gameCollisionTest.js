@@ -3,7 +3,7 @@
 // 03/13/2026
 // gameCollisionTest.js
 
-import CanvasUtils from '../../../engine/core/canvas.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GameCollision from '../../../engine/game/gameCollision.js';
 import GameObjectSystem from '../../../engine/game/gameObjectSystem.js';
 
@@ -36,3 +36,4 @@ export function testGameCollision(assert) {
         CanvasUtils.config = previousConfig;
     }
 }
+

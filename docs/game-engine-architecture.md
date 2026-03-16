@@ -191,7 +191,7 @@ Rendering responsibilities are centered in `engine/core` and `engine/renderers`.
 
 Key files include:
 
-- `engine/core/canvas.js`
+- `engine/core/canvasUtils.js`
 - `engine/core/sprite.js`
 - `engine/core/tileMap.js`
 - `engine/renderers/boxRenderer.js`
@@ -346,5 +346,6 @@ npm test
 Current manifest coverage spans animation, core, game, input, lifecycle, math, messages, misc, objects, output, physics, renderers, and utils.
 
 This keeps test execution centralized while allowing coverage across engine domains without coupling tests to browser-only runtime behavior.
+
 
 
