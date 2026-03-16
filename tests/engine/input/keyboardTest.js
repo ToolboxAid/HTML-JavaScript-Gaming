@@ -81,6 +81,13 @@ export function testKeyboardInput(assert) {
         assert(keyboard.isKeyReleased("KeyB"), "KeyB should be in keysReleased");
         assert(keyboard.isKeyReleased("KeyC"), "KeyC should be in keysReleased");
 
+        triggerKeyDown("KeyX");
+        triggerKeyUp("KeyX");
+        keyboard.update();
+        assert(!keyboard.isKeyDown("KeyX"), "KeyX should not stay down when pressed and released before update");
+        assert(keyboard.isKeyPressed("KeyX"), "KeyX should still register as pressed for the frame");
+        assert(keyboard.isKeyReleased("KeyX"), "KeyX should register as released for the frame");
+
         keyboard.destroy();
         triggerKeyDown("KeyZ");
         keyboard.update();

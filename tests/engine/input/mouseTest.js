@@ -87,6 +87,13 @@ export function testMouseInput(assert) {
         assert(mouse.wasButtonIndexReleased(MIDDLE), "MIDDLE button should be in buttonsReleased");
         assert(mouse.wasButtonIndexReleased(RIGHT), "RIGHT button should be in buttonsReleased");
 
+        triggerMouseDown(LEFT);
+        triggerMouseUp(LEFT);
+        mouse.update();
+        assert(!mouse.isButtonIndexDown(LEFT), "LEFT button should not stay down when clicked and released before update");
+        assert(mouse.wasButtonIndexPressed(LEFT), "LEFT button should still register as pressed for the frame");
+        assert(mouse.wasButtonIndexReleased(LEFT), "LEFT button should register as released for the frame");
+
         const left = 200;
         const top = 100;
         triggerMouseMove(left, top);

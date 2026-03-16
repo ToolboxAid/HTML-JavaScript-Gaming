@@ -13,13 +13,15 @@ class InputFrameState {
     }
 
     queueDown(input) {
+        this.pendingUp.delete(input);
+
         if (!this.down.has(input)) {
             this.pendingDown.add(input);
         }
     }
 
     queueUp(input) {
-        if (this.down.has(input)) {
+        if (this.down.has(input) || this.pendingDown.has(input)) {
             this.pendingUp.add(input);
         }
     }
