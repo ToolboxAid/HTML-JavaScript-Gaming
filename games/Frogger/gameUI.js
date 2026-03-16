@@ -6,6 +6,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
 
@@ -141,12 +142,13 @@ class GameUI {
             if (charIndex !== -1) {
 
                 // background fill
-                CanvasUtils.ctx.fillStyle = background;
-                CanvasUtils.ctx.fillRect(
+                PrimitiveRenderer.drawRect(
                     x + (i * CHAR_WIDTH * scale) - 5,
                     y - 5,
                     GameUI.GRID_SIZE + 15,
-                    GameUI.GRID_SIZE + 15);
+                    GameUI.GRID_SIZE + 15,
+                    background
+                );
 
                 // Draw character
                 CanvasUtils.ctx.drawImage(
@@ -226,13 +228,10 @@ class GameUI {
 
                 const offset = GameUI.GRID_SIZE;
                 // Fill cell with zone color
-                CanvasUtils.ctx.fillStyle = GameUI.COLORS[cellType];
-                CanvasUtils.ctx.fillRect(x + offset, y + offset, GameUI.GRID_SIZE, GameUI.GRID_SIZE);
+                PrimitiveRenderer.drawRect(x + offset, y + offset, GameUI.GRID_SIZE, GameUI.GRID_SIZE, GameUI.COLORS[cellType]);
 
                 // Draw grid lines
-                CanvasUtils.ctx.lineWidth = 1;
-                CanvasUtils.ctx.strokeStyle = 'white';
-                CanvasUtils.ctx.strokeRect(x + offset, y + offset, GameUI.GRID_SIZE, GameUI.GRID_SIZE);
+                PrimitiveRenderer.drawBounds(x + offset, y + offset, GameUI.GRID_SIZE, GameUI.GRID_SIZE, 'white', 1);
 
                 // Debug: show cell types
                 CanvasUtils.ctx.fillStyle = '#FFF';
@@ -240,19 +239,13 @@ class GameUI {
                 CanvasUtils.ctx.fillText(cellType, x + 4 + offset, y + 12 + offset);
 
                 // Draw cell size indicator lines, actual cell size (16x16 scaled by 4)
-                CanvasUtils.ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)';  // Semi-transparent
-                CanvasUtils.ctx.strokeRect(x, y, GameUI.GRID_SIZE * 4, GameUI.GRID_SIZE * 4);
+                PrimitiveRenderer.drawBounds(x, y, GameUI.GRID_SIZE * 4, GameUI.GRID_SIZE * 4, 'yellow', 1, 0.5);
 
                 // Draw crosshair at cell center
                 const centerX = x + (GameUI.GRID_SIZE * 4) / 2;
                 const centerY = y + (GameUI.GRID_SIZE * 4) / 2;
-                CanvasUtils.ctx.beginPath();
-                CanvasUtils.ctx.moveTo(centerX - 10, centerY);
-                CanvasUtils.ctx.lineTo(centerX + 10, centerY);
-                CanvasUtils.ctx.moveTo(centerX, centerY - 10);
-                CanvasUtils.ctx.lineTo(centerX, centerY + 10);
-                CanvasUtils.ctx.strokeStyle = 'yellow';
-                CanvasUtils.ctx.stroke();
+                PrimitiveRenderer.drawPath([[centerX - 10, centerY], [centerX + 10, centerY]], 'yellow', 1);
+                PrimitiveRenderer.drawPath([[centerX, centerY - 10], [centerX, centerY + 10]], 'yellow', 1);
 
                 // Draw cell type and dimensions
                 CanvasUtils.ctx.fillStyle = '#FFF';
@@ -408,19 +401,21 @@ class GameUI {
     static score = 0;
     draw() {
         // Draw background water
-        CanvasUtils.ctx.fillStyle = 'navy';
-        CanvasUtils.ctx.fillRect(
+        PrimitiveRenderer.drawRect(
             GameUI.MARGIN_X,
             0,
             this.playFieldWidth,
-            this.playFieldHeightHalf + 32 + GameUI.MARGIN_TOP + 32);
+            this.playFieldHeightHalf + 32 + GameUI.MARGIN_TOP + 32,
+            'navy'
+        );
 
         // Draw background road            
-        CanvasUtils.ctx.fillStyle = 'black';
-        CanvasUtils.ctx.fillRect(GameUI.MARGIN_X,
+        PrimitiveRenderer.drawRect(GameUI.MARGIN_X,
             GameUI.MARGIN_TOP + this.playFieldHeightHalf + 32,
             this.playFieldWidth,
-            this.playFieldHeightHalf + GameUI.MARGIN_TOP - 16);
+            this.playFieldHeightHalf + GameUI.MARGIN_TOP - 16,
+            'black'
+        );
 
         // Draw players and High score
         // Draw score at top of screen
@@ -459,13 +454,13 @@ class GameUI {
             this.drawGrid();
 
             // Draw grid outline
-            CanvasUtils.ctx.strokeStyle = 'yellow';
-            CanvasUtils.ctx.lineWidth = 2;
-            CanvasUtils.ctx.strokeRect(
+            PrimitiveRenderer.drawBounds(
                 GameUI.MARGIN_X,
                 GameUI.MARGIN_TOP,
                 GameUI.GRID_WIDTH * GameUI.GRID_SIZE * 4 - GameUI.MARGIN_X + 32,
-                GameUI.GRID_HEIGHT * GameUI.GRID_SIZE * 4
+                GameUI.GRID_HEIGHT * GameUI.GRID_SIZE * 4,
+                'yellow',
+                2
             );
         }
 
