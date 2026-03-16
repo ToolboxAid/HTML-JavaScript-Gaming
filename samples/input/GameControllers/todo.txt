@@ -28,6 +28,8 @@ Local checklist:
 [x] Arrange multi-controller panels in a stable readable grid
 [x] Add a compact in-canvas legend for panel meaning
 [x] Refresh preview asset to reflect panel grid and legend-driven layout
+[x] Show live connected-controller count in the canvas legend
+[x] Show per-controller d-pad mapping type in each panel
 
 Focused review checklist:
 [x] Security: validate external/config-driven inputs before use

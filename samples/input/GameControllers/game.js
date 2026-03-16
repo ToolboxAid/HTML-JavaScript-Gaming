@@ -69,6 +69,7 @@ function createPlayer(gameControllerIndex) {
         buttonLabels: Array(MAX_BUTTONS).fill(''),
         title: `P${gameControllerIndex + 1}`,
         subtitle: '',
+        dPadType: '',
         dPad: { left: false, right: false, up: false, down: false },
         axisValues: [],
     };
@@ -105,6 +106,7 @@ function gameUpdate() {
             ? `P${playerIndex + 1} ${controller.shortName}`
             : `P${playerIndex + 1}`;
         player.subtitle = controller.id || '';
+        player.dPadType = controller.dPadType || 'none';
         controller.buttonEntries.forEach((buttonEntry) => {
             if (buttonEntry.index >= 0 && buttonEntry.index < MAX_BUTTONS) {
                 player.buttonLabels[buttonEntry.index] = buttonEntry.name;
@@ -135,22 +137,24 @@ function gameUpdate() {
 
 function gameRender() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const connectedCount = gameControllers.getTrackedControllerIndices().length;
 
     ctx.fillStyle = '#f3d8ab';
     ctx.font = 'bold 12px Segoe UI';
     ctx.textAlign = 'center';
-    ctx.fillText('Buttons highlight active inputs. Panels show mapped labels, d-pad state, and live axis values.', canvas.width / 2, 24);
+    ctx.fillText('Buttons highlight active inputs. Panels show mapped labels and live state.', canvas.width / 2, 24);
     ctx.font = '10px Segoe UI';
     ctx.fillText('Each panel title uses the connected controller mapping name when available.', canvas.width / 2, 40);
+    ctx.fillText(`Connected controllers: ${connectedCount}`, canvas.width / 2, 54);
 
     const hasVisiblePlayers = players.some(Boolean);
     if (!hasVisiblePlayers) {
         ctx.fillStyle = '#f3d8ab';
         ctx.font = 'bold 18px Segoe UI';
         ctx.textAlign = 'center';
-        ctx.fillText('Connect a controller to begin.', canvas.width / 2, 132);
+        ctx.fillText('Connect a controller to begin.', canvas.width / 2, 140);
         ctx.font = '14px Segoe UI';
-        ctx.fillText('Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 164);
+        ctx.fillText('Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 172);
         ctx.textAlign = 'start';
     }
 
@@ -162,6 +166,8 @@ function gameRender() {
             const panelY = player.y - 22;
             const panelWidth = 178;
             const panelHeight = 64;
+            const textX = panelX + 8;
+            ctx.textAlign = 'start';
             ctx.fillStyle = 'rgba(14, 7, 40, 0.82)';
             ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
             ctx.strokeStyle = player.color;
@@ -170,10 +176,10 @@ function gameRender() {
 
             ctx.font = TITLE_FONT;
             ctx.fillStyle = player.color;
-            ctx.fillText(player.title, player.x, player.y - 12);
+            ctx.fillText(player.title.slice(0, 22), textX, player.y - 12);
             ctx.font = LABEL_FONT;
             ctx.fillStyle = '#f3d8ab';
-            ctx.fillText(player.subtitle.slice(0, 26), player.x, player.y - 4);
+            ctx.fillText(player.subtitle.slice(0, 28), textX, player.y - 4);
 
             player.buttonColors.forEach((color, buttonIndex) => {
                 const buttonX = player.x + player.size + 6 + (buttonIndex % buttonsAcross) * (buttonSize + 2);
@@ -193,7 +199,7 @@ function gameRender() {
 
             ctx.fillStyle = player.color;
             const infoX = player.x + (buttonsAcross * (buttonSize + 2)) + 20;
-            ctx.fillText('dPad:', infoX, player.y + 10);
+            ctx.fillText(`dPad (${player.dPadType}):`, infoX, player.y + 6);
             const activeDirections = [];
             if (player.dPad.up) activeDirections.push('Up');
             if (player.dPad.down) activeDirections.push('Down');
@@ -201,11 +207,11 @@ function gameRender() {
             if (player.dPad.right) activeDirections.push('Right');
 
             const dPadState = activeDirections.length > 0 ? activeDirections.join(', ') : 'None';
-            ctx.fillText(dPadState, infoX + 22, player.y + 10);
+            ctx.fillText(dPadState, infoX, player.y + 14);
 
             const decimals = 2;
             player.axisValues.forEach((axisEntry, axisIndex) => {
-                const axisY = player.y + 18 + (axisIndex * 8);
+                const axisY = player.y + 24 + (axisIndex * 8);
                 ctx.fillText(`${axisEntry.name}:`, infoX, axisY);
                 ctx.fillText(axisEntry.value.toFixed(decimals), infoX + 42, axisY);
             });

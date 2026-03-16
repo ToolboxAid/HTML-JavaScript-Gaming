@@ -131,6 +131,7 @@ class GameControllers {
             buttonsDown: this.getButtonsDown(gameControllerIndex),
             buttonEntries: this.getButtonEntries(gameControllerIndex),
             dPad: this.getDPad(gameControllerIndex),
+            dPadType: this.getDPadType(gameControllerIndex),
             axisValues: this.getNamedAxisValues(gameControllerIndex)
         };
     }

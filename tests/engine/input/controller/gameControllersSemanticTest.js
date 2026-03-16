@@ -85,6 +85,7 @@ export function testGameControllersSemantic(assert) {
     assert(snapshot !== null && snapshot.index === 0, 'GameControllers should expose a controller snapshot for connected pads');
     assert(snapshot.id === 'Pad 0', 'GameControllers controller snapshots should include the device id');
     assert(snapshot.shortName === 'Test Pad', 'GameControllers controller snapshots should include the mapper shortName');
+    assert(snapshot.dPadType === 'button', 'GameControllers controller snapshots should include the d-pad type');
     assert(snapshot.buttonsDown.includes(14), 'GameControllers controller snapshots should include buttonsDown');
     assert(snapshot.dPad.left === true, 'GameControllers controller snapshots should include d-pad state');
     assert(snapshot.axisValues.some((axisEntry) => axisEntry.name === 'DPadX'), 'GameControllers controller snapshots should include named axis values');
