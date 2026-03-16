@@ -36,6 +36,37 @@ class PrimitiveRenderer {
         return this.drawRect(x, y, width, height, null, borderColor, borderWidth, alpha);
     }
 
+    static drawPanel(x, y, width, height, {
+        fillColor = 'gray',
+        borderColor = null,
+        borderWidth = 0,
+        backdropColor = null,
+        backdropInset = 0,
+        headerY = null,
+        headerColor = null,
+        headerWidth = 2
+    } = {}) {
+        if (backdropColor && backdropInset > 0) {
+            this.drawRect(
+                x - backdropInset,
+                y - backdropInset,
+                width + (backdropInset * 2),
+                height + (backdropInset * 2),
+                backdropColor
+            );
+        }
+
+        this.drawRect(x, y, width, height, fillColor);
+
+        if (borderColor && borderWidth > 0) {
+            this.drawBounds(x, y, width, height, borderColor, borderWidth);
+        }
+
+        if (Number.isFinite(headerY)) {
+            this.drawLine(x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth);
+        }
+    }
+
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
         return this.withContext((ctx) => {
             ctx.beginPath();

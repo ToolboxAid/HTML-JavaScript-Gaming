@@ -48,10 +48,16 @@ function drawStyledStage(panelColor = gameUi.theme.colors.panel, borderColor = g
 
     const inset = 16;
     const headerOffsetY = 70;
-    PrimitiveRenderer.drawRect(panelX - inset, panelY - inset, panelWidth + (inset * 2), panelHeight + (inset * 2), gameUi.theme.colors.panelBackdrop);
-    PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
-    PrimitiveRenderer.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
-    PrimitiveRenderer.drawLine(panelX, panelY + headerOffsetY, panelX + panelWidth, panelY + headerOffsetY, borderColor, 2);
+    PrimitiveRenderer.drawPanel(panelX, panelY, panelWidth, panelHeight, {
+        fillColor: panelColor,
+        borderColor,
+        borderWidth: panelBorderSize,
+        backdropColor: gameUi.theme.colors.panelBackdrop,
+        backdropInset: inset,
+        headerY: panelY + headerOffsetY,
+        headerColor: borderColor,
+        headerWidth: 2
+    });
     drawPulseAccent(panelX, panelY + headerOffsetY + 6, panelWidth, gameUi.theme.colors.accent);
     CanvasUtils.drawSafeAreaGuides(safeAreaInset, `${gameUi.theme.colors.accent}99`);
 }

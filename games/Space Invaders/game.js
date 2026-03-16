@@ -11,6 +11,7 @@ import CanvasUtils from '../../engine/core/canvasUtils.js'; // Required for dyna
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import GameUtils from '../../engine/game/gameUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import AudioPlayer from '../../engine/output/audioPlayer.js';
 import Cookies from '../../engine/misc/cookies.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
@@ -322,11 +323,11 @@ class Game extends GameBase {
     static o3 = null;
     drawCollision() {
         if (Game.o1) {
-            CanvasUtils.drawBounds(Game.o1.x, Game.o1.y, Game.o1.width, Game.o1.height, "red", 3);
-            CanvasUtils.drawBounds(Game.o2.x, Game.o2.y, Game.o2.width, Game.o2.height, "pink", 3);
+            PrimitiveRenderer.drawBounds(Game.o1.x, Game.o1.y, Game.o1.width, Game.o1.height, "red", 3);
+            PrimitiveRenderer.drawBounds(Game.o2.x, Game.o2.y, Game.o2.width, Game.o2.height, "pink", 3);
         }
         if (Game.o3) {
-            CanvasUtils.drawBounds(Game.o3.x, Game.o3.y, Game.o3.width, Game.o3.height, "orange", 3);
+            PrimitiveRenderer.drawBounds(Game.o3.x, Game.o3.y, Game.o3.width, Game.o3.height, "orange", 3);
         }
     }
 

@@ -61,10 +61,16 @@ class Game extends GameBase {
 
     drawStage(panelColor, borderColor) {
         const { panelX, panelY, panelWidth, panelHeight, panelBorderSize } = drawShapesUi.theme;
-        PrimitiveRenderer.drawRect(panelX - 18, panelY - 18, panelWidth + 36, panelHeight + 36, drawShapesUi.theme.colors.panelBackdrop);
-        PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
-        PrimitiveRenderer.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
-        PrimitiveRenderer.drawLine(panelX, panelY + 74, panelX + panelWidth, panelY + 74, borderColor, 2);
+        PrimitiveRenderer.drawPanel(panelX, panelY, panelWidth, panelHeight, {
+            fillColor: panelColor,
+            borderColor,
+            borderWidth: panelBorderSize,
+            backdropColor: drawShapesUi.theme.colors.panelBackdrop,
+            backdropInset: 18,
+            headerY: panelY + 74,
+            headerColor: borderColor,
+            headerWidth: 2
+        });
     }
 
     gameLoop() {

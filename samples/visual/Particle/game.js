@@ -101,10 +101,16 @@ class Game extends GameBase {
 
     drawStage() {
         const { panelX, panelY, panelWidth, panelHeight, panelBorderSize, panelColor, panelBorderColor, panelBackdrop } = particleSampleUi.theme;
-        PrimitiveRenderer.drawRect(panelX - 18, panelY - 18, panelWidth + 36, panelHeight + 36, panelBackdrop);
-        PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
-        PrimitiveRenderer.drawBounds(panelX, panelY, panelWidth, panelHeight, panelBorderColor, panelBorderSize);
-        PrimitiveRenderer.drawLine(panelX, panelY + 84, panelX + panelWidth, panelY + 84, panelBorderColor, 2);
+        PrimitiveRenderer.drawPanel(panelX, panelY, panelWidth, panelHeight, {
+            fillColor: panelColor,
+            borderColor: panelBorderColor,
+            borderWidth: panelBorderSize,
+            backdropColor: panelBackdrop,
+            backdropInset: 18,
+            headerY: panelY + 84,
+            headerColor: panelBorderColor,
+            headerWidth: 2
+        });
     }
 
     drawCanvasHeader() {
