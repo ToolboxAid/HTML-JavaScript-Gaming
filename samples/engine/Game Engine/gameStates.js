@@ -23,6 +23,7 @@ import { renderPlayScreen, renderPlayerSelectOptions, renderScreen } from './gam
  * @property {boolean} enemyInitialized
  * @property {object} playerSelect
  * @property {import('../../../engine/input/keyboard.js').default} keyboardInput
+ * @property {import('../../../engine/input/controller/gameControllers.js').default | null} gameControllers
  */
 
 /** @param {GameContext} game */
@@ -40,8 +41,8 @@ export function displayPlayerSelect(game) {
     renderScreen(screen);
 
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, game.playerSelect);
-    renderPlayerSelectOptions(screen, config);
-    const result = GameUtils.getKeyboardPlayerSelection(game.keyboardInput, config);
+    renderPlayerSelectOptions(screen, config, game.gameControllers);
+    const result = GameUtils.resolvePlayerSelection(game.keyboardInput, game.gameControllers, config);
 
     if (!result) {
         return;

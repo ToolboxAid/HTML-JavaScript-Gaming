@@ -80,10 +80,11 @@ export const gameUi = {
         playerSelect: {
             lines: [
                 { text: 'Select Players', y: 170, fontSize: 42, fontFamily: uiFont.display, color: themeColors.textPrimary },
-                { text: 'Press 1 or 2 to begin', y: 262, fontSize: 24, fontFamily: uiFont.ui, color: themeColors.textSecondary }
+                { text: 'Choose keyboard or controller to begin', y: 262, fontSize: 24, fontFamily: uiFont.ui, color: themeColors.textSecondary }
             ],
             options: {
                 lines: ['Keyboard `1` for 1 Player', 'Keyboard `2` for 2 Players'],
+                controllerLines: ['Controller `Left Bumper` for 1 Player', 'Controller `Right Bumper` for 2 Players'],
                 fontSize: 26,
                 lineHeight: 54,
                 fontFamily: uiFont.ui,

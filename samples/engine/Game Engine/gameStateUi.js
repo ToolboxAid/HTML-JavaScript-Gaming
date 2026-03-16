@@ -14,8 +14,12 @@ export function renderScreen(screen) {
     });
 }
 
-export function renderPlayerSelectOptions(screen, config) {
-    renderCenteredMultilineText(screen.options.lines, config.y + config.spacing, {
+export function renderPlayerSelectOptions(screen, config, gameControllers = null) {
+    const lines = gameControllers
+        ? [...screen.options.lines, ...screen.options.controllerLines]
+        : screen.options.lines;
+
+    renderCenteredMultilineText(lines, config.y + config.spacing, {
         fontSize: screen.options.fontSize,
         lineHeight: screen.options.lineHeight,
         fontFamily: screen.options.fontFamily,

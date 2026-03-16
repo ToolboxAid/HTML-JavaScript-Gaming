@@ -8,6 +8,7 @@ import DebugLog from '../../../engine/utils/debugLog.js';
 import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
+import GameControllers from '../../../engine/input/controller/gameControllers.js';
 import {
     displayAttractMode,
     displayGameOver,
@@ -35,6 +36,7 @@ class Game extends GameBase {
         super(canvasConfig, performanceConfig, fullscreenConfig);
         this.playerSelect = playerSelect;
         this.keyboardInput = null;
+        this.gameControllers = null;
         this.backToAttractFrames = 600;
         this.stateHandlers = {
             [Game.STATES.ATTRACT]: displayAttractMode,
@@ -50,12 +52,14 @@ class Game extends GameBase {
 
     async onInitialize() {
         this.keyboardInput = new KeyboardInput();
+        this.gameControllers = new GameControllers();
         this.applyRuntimeState(this.createRuntimeState());
         DebugLog.info(Game.DEBUG, 'Game', 'Sample initialized');
     }
 
     gameLoop() {
         this.keyboardInput.update();
+        this.gameControllers?.update();
         this.logStateIfChanged();
         this.runStateHandler();
     }
