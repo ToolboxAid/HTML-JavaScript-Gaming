@@ -174,16 +174,17 @@ class PrimitiveRenderer {
     static tracePath(ctx, points, { offsetX = 0, offsetY = 0, closePath = false } = {}) {
         ctx.beginPath();
 
-        points.forEach((point, index) => {
+        for (let index = 0; index < points.length; index++) {
+            const point = points[index];
             const { x, y } = this.getPointCoordinates(point);
 
             if (index === 0) {
                 ctx.moveTo(x + offsetX, y + offsetY);
-                return;
+                continue;
             }
 
             ctx.lineTo(x + offsetX, y + offsetY);
-        });
+        }
 
         if (closePath) {
             ctx.closePath();
@@ -474,8 +475,10 @@ class PrimitiveRenderer {
         ctx.fillStyle = fillColor;
 
         for (let row = 0; row < matrix.length; row++) {
-            for (let col = 0; col < matrix[row].length; col++) {
-                if (matrix[row][col] !== 1) {
+            const matrixRow = matrix[row];
+
+            for (let col = 0; col < matrixRow.length; col++) {
+                if (matrixRow[col] !== 1) {
                     continue;
                 }
 
