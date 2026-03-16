@@ -67,21 +67,13 @@ class PrimitiveRenderer {
     }
 
     static drawPolygon(points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
-        if (!this.hasMinimumPointCount(points, 3)) {
-            return false;
-        }
-
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedPoints(points, 3, options, (ctx) => {
             this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
         });
     }
 
     static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0, options = {}) {
-        if (!this.hasMinimumPointCount(points, 3)) {
-            return false;
-        }
-
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedPoints(points, 3, options, (ctx) => {
             this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
         });
     }
@@ -94,11 +86,7 @@ class PrimitiveRenderer {
         lineDash = null,
         ctx = null
     } = {}) {
-        if (!this.hasMinimumPointCount(points, 2)) {
-            return false;
-        }
-
-        return this.withContext({ ctx }, (renderCtx) => {
+        return this.withValidatedPoints(points, 2, { ctx }, (renderCtx) => {
             this.renderPath(renderCtx, points, strokeColor, lineWidth, {
                 offsetX,
                 offsetY,
@@ -229,6 +217,14 @@ class PrimitiveRenderer {
             ctx.restore();
         }
         return true;
+    }
+
+    static withValidatedPoints(points, minimumCount, options = {}, drawFn) {
+        if (!this.hasMinimumPointCount(points, minimumCount)) {
+            return false;
+        }
+
+        return this.withContext(options, drawFn);
     }
 
     static resolveContext(options = {}) {
