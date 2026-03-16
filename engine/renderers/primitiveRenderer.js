@@ -370,7 +370,6 @@ class PrimitiveRenderer {
     }
 
     static renderOverlay(ctx, width, height, fillColor = 'black', alpha = 0.5, options = {}) {
-        this.applyRenderState(ctx, alpha, options.lineDash);
         this.renderRectFill(ctx, 0, 0, width, height, fillColor, alpha, options.lineDash);
     }
 
@@ -414,7 +413,6 @@ class PrimitiveRenderer {
     }
 
     static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
-        this.applyRenderState(ctx, alpha, options.lineDash);
         this.renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth, alpha, options.lineDash);
     }
 
