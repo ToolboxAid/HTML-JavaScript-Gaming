@@ -33,6 +33,7 @@ class PerformanceMonitor {
         frameTime: 0,
         samples: []
     };
+    static layoutCache = null;
 
     // Default on-screen monitor configuration.
     static performanceConfig = {
@@ -67,6 +68,8 @@ class PerformanceMonitor {
         const validation = SystemUtils.validateConfig("PerformanceMonitor", config, schema);
         if (validation) {
             this.performanceConfig = config;
+            this.resetMonitoringState();
+            this.updateMemoryMetrics();
             this.dimensions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
             this.startMonitoring();
             DebugLog.log(PerformanceMonitor.DEBUG, 'PerformanceMonitor', 'PerformanceMonitor.init complete.');
@@ -92,13 +95,36 @@ class PerformanceMonitor {
 
         clearInterval(this.monitorIntervalId);
         this.monitorIntervalId = null;
+        this.resetMonitoringState();
         return true;
+    }
+
+    static resetMonitoringState() {
+        this.frameCount = 0;
+        this.fps = 0;
+        this.totalTimeSpentMs = 0;
+        this.frameSampleCount = 0;
+        this.gfxPercentUsage = 0;
+        this.lastFrame = null;
+        this.layoutCache = null;
+        this.metrics = {
+            memory: {
+                used: "N/A",
+                total: "N/A",
+                limit: "N/A",
+                percent: "N/A"
+            },
+            cpu: 0,
+            frameTime: 0,
+            samples: []
+        };
     }
 
     // Call once per second.
     static oncePerSecond() {
         this.calcFPS();
         this.calcGFX();
+        this.updateMemoryMetrics();
     }
     // Call once per animation frame.
     static update(timeSpentMs) {
@@ -139,12 +165,13 @@ class PerformanceMonitor {
         this.frameCount = 0;
     }
 
-    static updateMetrics() {
+    static updateMemoryMetrics() {
         if (!this.metrics) this.metrics = {}; // Ensure metrics object exists
 
         // Memory Usage (only works in Chrome-based browsers)
-        if (window.performance && window.performance.memory) {
-            const memory = window.performance.memory;
+        const runtimeWindow = typeof window !== 'undefined' ? window : null;
+        if (runtimeWindow?.performance?.memory) {
+            const memory = runtimeWindow.performance.memory;
             this.metrics.memory = {
                 used: (memory.usedJSHeapSize / 1048576).toFixed(2),
                 total: (memory.totalJSHeapSize / 1048576).toFixed(2),
@@ -159,12 +186,38 @@ class PerformanceMonitor {
                 percent: "N/A"
             };
         }
+    }
 
+    static updateFrameTimeMetric() {
+        if (!this.metrics) this.metrics = {}; // Ensure metrics object exists
         // Frame Time Calculation
         const now = performance.now();
         if (!this.lastFrame) this.lastFrame = now; // Ensure lastFrame is initialized
         this.metrics.frameTime = (now - this.lastFrame).toFixed(2);
         this.lastFrame = now;
+    }
+
+    static getPanelLayout(textLines, fontSize, fontFamily) {
+        const signature = JSON.stringify({
+            fontSize,
+            fontFamily,
+            texts: textLines.map(({ text }) => text)
+        });
+
+        if (this.layoutCache?.signature === signature) {
+            return this.layoutCache.layout;
+        }
+
+        const measurements = textLines.map(({ text }) =>
+            CanvasUtils.calculateTextMetrics(text, fontSize, fontFamily)
+        );
+        const layout = {
+            maxWidth: Math.max(...measurements.map(({ width }) => width)),
+            lineHeight: Math.max(...measurements.map(({ height }) => height)) * 1.2
+        };
+
+        this.layoutCache = { signature, layout };
+        return layout;
     }
 
     static getMetrics() {
@@ -182,7 +235,7 @@ class PerformanceMonitor {
             return;
         }
 
-        this.updateMetrics();
+        this.updateFrameTimeMetric();
         const fontSize = this.performanceConfig.size || 30;
         const fontFamily = this.performanceConfig.font || 'monospace';
         const textLines = [
@@ -191,7 +244,7 @@ class PerformanceMonitor {
                 color: this.performanceConfig.colorLow
             },
             {
-                text: `MEM% : ${this.metrics.memory.percent}%`,
+                text: `LIM% : ${this.metrics.memory.percent}%`,
                 color: this.performanceConfig.colorLow
             },
             {
@@ -212,11 +265,7 @@ class PerformanceMonitor {
             }
         ];
 
-        const measurements = textLines.map(({ text }) =>
-            CanvasUtils.calculateTextMetrics(text, fontSize, fontFamily)
-        );
-        const maxWidth = Math.max(...measurements.map(({ width }) => width));
-        const lineHeight = Math.max(...measurements.map(({ height }) => height)) * 1.2;
+        const { maxWidth, lineHeight } = this.getPanelLayout(textLines, fontSize, fontFamily);
         const paddingX = 12;
         const paddingY = 8;
         const panelX = this.performanceConfig.x;
