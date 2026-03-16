@@ -59,7 +59,12 @@ function drawStyledStage(panelColor = gameUi.theme.colors.panel, borderColor = g
         headerWidth: 2
     });
     drawPulseAccent(panelX, panelY + headerOffsetY + 6, panelWidth, gameUi.theme.colors.accent);
-    CanvasUtils.drawSafeAreaGuides(safeAreaInset, `${gameUi.theme.colors.accent}99`);
+    PrimitiveRenderer.drawSafeAreaGuides(
+        canvasConfig.width,
+        canvasConfig.height,
+        safeAreaInset,
+        `${gameUi.theme.colors.accent}99`
+    );
 }
 
 function drawPulseAccent(x, y, width, accentColor) {

@@ -196,6 +196,31 @@ class PrimitiveRenderer {
         return this.drawRect(0, 0, width, height, fillColor, null, 0, alpha, options);
     }
 
+    static drawSafeAreaGuides(width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
+        const x = margin;
+        const y = margin;
+        const safeWidth = Math.max(0, width - (margin * 2));
+        const safeHeight = Math.max(0, height - (margin * 2));
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const lineDash = [8, 6];
+
+        this.drawBounds(x, y, safeWidth, safeHeight, strokeColor, lineWidth, 1, {
+            ...options,
+            lineDash
+        });
+        this.drawLine(centerX, y, centerX, y + safeHeight, strokeColor, lineWidth, 1, {
+            ...options,
+            lineDash
+        });
+        this.drawLine(x, centerY, x + safeWidth, centerY, strokeColor, lineWidth, 1, {
+            ...options,
+            lineDash
+        });
+
+        return true;
+    }
+
     static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
         extraWidth = 0,
         extraHeight = 0,
