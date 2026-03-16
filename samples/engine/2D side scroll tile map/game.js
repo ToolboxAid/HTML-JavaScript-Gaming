@@ -8,6 +8,12 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 
 import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import {
+  wasPrimaryActionPressed,
+  wasSecondaryActionPressed,
+  wasSelectPressed,
+  wasStartPressed
+} from '../../../engine/input/controller/gameControllerButtons.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import GameControllers from '../../../engine/input/controller/gameControllers.js';
@@ -94,7 +100,7 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      this.gameControllers?.wasButtonIndexPressed(0, 9)) {
+      wasStartPressed(this.gameControllers)) {
       this.gameState = "playerSelect";
     }
   }
@@ -122,7 +128,7 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      this.gameControllers?.wasButtonIndexPressed(0, 9) ||
+      wasStartPressed(this.gameControllers) ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -147,7 +153,7 @@ class Game extends GameBase {
 
   gamePauseCheck() {
     if (this.keyboardInput.getKeysPressed().includes('KeyP') ||
-      this.gameControllers?.wasButtonIndexPressed(0, 8)) {
+      wasSelectPressed(this.gameControllers)) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -164,8 +170,8 @@ class Game extends GameBase {
 
   playGame() {
     this.gamePauseCheck();
-    const controllerScorePressed = this.gameControllers?.wasButtonIndexPressed(0, 0);
-    const controllerDeathPressed = this.gameControllers?.wasButtonIndexPressed(0, 1);
+    const controllerScorePressed = wasPrimaryActionPressed(this.gameControllers);
+    const controllerDeathPressed = wasSecondaryActionPressed(this.gameControllers);
 
     // Display current player status
     const playerInfo = `Player ${this.currentPlayer + 1} - Lives: ${this.playerLives[this.currentPlayer]} - Score: ${this.score[this.currentPlayer]}`;

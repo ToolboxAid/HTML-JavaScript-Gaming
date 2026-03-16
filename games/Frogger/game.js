@@ -8,6 +8,12 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvas.js';
 import GameUtils from '../../engine/game/gameUtils.js';
+import {
+  wasDPadDirectionPressed,
+  wasSecondaryActionPressed,
+  wasSelectPressed,
+  wasStartPressed
+} from '../../engine/input/controller/gameControllerButtons.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
 
@@ -102,7 +108,7 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      this.gameControllers?.wasButtonIndexPressed(0, 9)) {
+      wasStartPressed(this.gameControllers)) {
       this.gameState = "playerSelect";
     }
 
@@ -133,7 +139,7 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      this.gameControllers?.wasButtonIndexPressed(0, 9) ||
+      wasStartPressed(this.gameControllers) ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
@@ -158,7 +164,7 @@ class Game extends GameBase {
 
   gamePauseCheck() {
     if (this.keyboardInput.getKeysPressed().includes('KeyP') ||
-      this.gameControllers?.wasButtonIndexPressed(0, 8)) {
+      wasSelectPressed(this.gameControllers)) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
@@ -183,11 +189,11 @@ class Game extends GameBase {
 
     // Update and draw frog
     if (this.frog) {
-        const controllerUpPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadUP');
-        const controllerDownPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadDOWN');
-        const controllerLeftPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadLEFT');
-        const controllerRightPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadRIGHT');
-        const controllerDeathPressed = this.gameControllers?.wasButtonIndexPressed(0, 1);
+        const controllerUpPressed = wasDPadDirectionPressed(this.gameControllers, 'up');
+        const controllerDownPressed = wasDPadDirectionPressed(this.gameControllers, 'down');
+        const controllerLeftPressed = wasDPadDirectionPressed(this.gameControllers, 'left');
+        const controllerRightPressed = wasDPadDirectionPressed(this.gameControllers, 'right');
+        const controllerDeathPressed = wasSecondaryActionPressed(this.gameControllers);
 
         // Handle keyboard input for frog movement
         if (this.keyboardInput.getKeysPressed().includes('ArrowUp') || controllerUpPressed) {

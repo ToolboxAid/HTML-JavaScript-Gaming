@@ -3,23 +3,30 @@
 // 03/15/2026
 // gameInput.js
 
+import {
+    wasPrimaryActionPressed,
+    wasSecondaryActionPressed,
+    wasSelectPressed,
+    wasStartPressed as wasControllerStartPressed
+} from '../../../engine/input/controller/gameControllerButtons.js';
+
 export function isStartPressed(keyboardInput, gameControllers = null) {
     return keyboardInput.isKeyPressed('Enter') ||
         keyboardInput.isKeyPressed('NumpadEnter') ||
-        gameControllers?.wasButtonIndexPressed(0, 9);
+        wasControllerStartPressed(gameControllers);
 }
 
 export function isPauseTogglePressed(keyboardInput, gameControllers = null) {
     return keyboardInput.isKeyPressed('KeyP') ||
-        gameControllers?.wasButtonIndexPressed(0, 8);
+        wasSelectPressed(gameControllers);
 }
 
 export function isScorePressed(keyboardInput, gameControllers = null) {
     return keyboardInput.isKeyPressed('KeyS') ||
-        gameControllers?.wasButtonIndexPressed(0, 0);
+        wasPrimaryActionPressed(gameControllers);
 }
 
 export function isPlayerDeathPressed(keyboardInput, gameControllers = null) {
     return keyboardInput.isKeyPressed('KeyD') ||
-        gameControllers?.wasButtonIndexPressed(0, 1);
+        wasSecondaryActionPressed(gameControllers);
 }
