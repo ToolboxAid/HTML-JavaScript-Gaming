@@ -205,7 +205,8 @@ class PrimitiveRenderer {
     static traceSegments(ctx, segments) {
         ctx.beginPath();
 
-        for (const segment of segments) {
+        for (let index = 0; index < segments.length; index++) {
+            const segment = segments[index];
             ctx.moveTo(segment.x1, segment.y1);
             ctx.lineTo(segment.x2, segment.y2);
         }
