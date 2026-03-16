@@ -20,8 +20,6 @@ class Game extends GameBase {
   }
 
   async onInitialize() {
-
-    console.log("onInit");
     this.keyboardInput = new KeyboardInput();
 
     // Game State Variables
@@ -128,7 +126,6 @@ class Game extends GameBase {
   }
 
   initializeEnemy() {
-    console.log("Initializing Enemy...");
     this.enemyInitialized = true;
 
     this.gameState = "playGame";
@@ -162,7 +159,6 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('KeyS')) {
       this.score[this.currentPlayer] += 100;
-      console.log("score");
     }
 
     // Check if `D` key was just pressed, simulate losing a life
