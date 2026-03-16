@@ -4,18 +4,17 @@
 // gameInput.js
 
 export function isStartPressed(keyboardInput) {
-    const keysPressed = keyboardInput.getKeysPressed();
-    return keysPressed.includes('Enter') || keysPressed.includes('NumpadEnter');
+    return keyboardInput.isKeyPressed('Enter') || keyboardInput.isKeyPressed('NumpadEnter');
 }
 
 export function isPauseTogglePressed(keyboardInput) {
-    return keyboardInput.getKeysPressed().includes('KeyP');
+    return keyboardInput.isKeyPressed('KeyP');
 }
 
 export function isScorePressed(keyboardInput) {
-    return keyboardInput.getKeysPressed().includes('KeyS');
+    return keyboardInput.isKeyPressed('KeyS');
 }
 
 export function isPlayerDeathPressed(keyboardInput) {
-    return keyboardInput.getKeysPressed().includes('KeyD');
+    return keyboardInput.isKeyPressed('KeyD');
 }
