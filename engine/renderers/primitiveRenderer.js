@@ -36,29 +36,31 @@ class PrimitiveRenderer {
         headerWidth = 2,
         ctx = null
     } = {}) {
-        if (backdropColor && backdropInset > 0) {
-            this.drawRect(
-                x - backdropInset,
-                y - backdropInset,
-                width + (backdropInset * 2),
-                height + (backdropInset * 2),
-                backdropColor,
-                null,
-                0,
-                1,
-                { ctx }
-            );
-        }
+        return this.withContext({ ctx }, (renderCtx) => {
+            if (backdropColor && backdropInset > 0) {
+                this.renderRect(
+                    renderCtx,
+                    x - backdropInset,
+                    y - backdropInset,
+                    width + (backdropInset * 2),
+                    height + (backdropInset * 2),
+                    backdropColor,
+                    null,
+                    0,
+                    1
+                );
+            }
 
-        this.drawRect(x, y, width, height, fillColor, null, 0, 1, { ctx });
+            this.renderRect(renderCtx, x, y, width, height, fillColor, null, 0, 1);
 
-        if (borderColor && borderWidth > 0) {
-            this.drawBounds(x, y, width, height, borderColor, borderWidth, 1, { ctx });
-        }
+            if (borderColor && borderWidth > 0) {
+                this.renderRect(renderCtx, x, y, width, height, null, borderColor, borderWidth, 1);
+            }
 
-        if (Number.isFinite(headerY)) {
-            this.drawLine(x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth, 1, { ctx });
-        }
+            if (Number.isFinite(headerY)) {
+                this.renderLine(renderCtx, x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth, 1);
+            }
+        });
     }
 
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
