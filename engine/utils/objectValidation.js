@@ -3,7 +3,12 @@
 // 03/08/2026
 // objectValidation.js
 
+import NumberUtils from '../math/numberUtils.js';
+
 class ObjectValidation {
+    constructor() {
+        throw new Error('ObjectValidation is a utility class with only static methods. Do not instantiate.');
+    }
 
     static nonEmptyString(value, name = 'value') {
         if (typeof value !== 'string' || value.trim() === '') {
@@ -29,7 +34,7 @@ class ObjectValidation {
         const isValid = value.every(point =>
             Array.isArray(point) &&
             point.length === 2 &&
-            point.every(coord => typeof coord === 'number' && Number.isFinite(coord))
+            NumberUtils.areFiniteNumbers(point)
         );
 
         if (!isValid) {
@@ -38,7 +43,9 @@ class ObjectValidation {
     }
 
     static oneOf(value, name = 'value', validValues = []) {
-        if (!Array.isArray(validValues) || validValues.length === 0) {
+        this.array(validValues, 'validValues');
+
+        if (validValues.length === 0) {
             throw new Error(`validValues must be a non-empty array.`);
         }
 
