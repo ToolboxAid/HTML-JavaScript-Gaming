@@ -99,6 +99,12 @@ class AudioPlayer {
             throw new Error('filename must be a non-empty string.');
         }
 
+        // Support older call sites that passed `true`/`false` as the second argument for looping.
+        if (typeof volume === 'boolean' && loop === false) {
+            loop = volume;
+            volume = 1.0;
+        }
+
         if (!Number.isFinite(volume)) {
             throw new Error('volume must be a finite number.');
         }
