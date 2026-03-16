@@ -38,7 +38,7 @@ function drawDot(x, y) {
         fillColor = 'green';
     }
 
-    PrimitiveRenderer.drawCircle(x, y, 2, fillColor, null, 0, 1, { ctx });
+    PrimitiveRenderer.drawMarker(x, y, 2, fillColor, 1, { ctx });
 }
 
 // Start the game loop

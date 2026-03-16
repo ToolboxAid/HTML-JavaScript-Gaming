@@ -194,6 +194,12 @@ class PrimitiveRenderer {
         });
     }
 
+    static drawMarker(x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
+        return this.withContext(options, (ctx) => {
+            this.renderCircle(ctx, x, y, radius, fillColor, null, 0, alpha, options);
+        });
+    }
+
     static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
         extraWidth = 0,
         extraHeight = 0,

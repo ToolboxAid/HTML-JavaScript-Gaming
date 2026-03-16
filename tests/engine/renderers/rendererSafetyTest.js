@@ -146,6 +146,7 @@ function testRenderersGuardOnMissingContext(assert) {
         assertNoThrow(assert, () => PrimitiveRenderer.drawOverlay(20, 20, 'black', 0.5), 'PrimitiveRenderer.drawOverlay should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawSafeAreaGuides(20, 20, 2, 'white', 1), 'PrimitiveRenderer.drawSafeAreaGuides should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawCrosshair(10, 10, 4, 'white', 1), 'PrimitiveRenderer.drawCrosshair should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawMarker(10, 10, 2, 'white'), 'PrimitiveRenderer.drawMarker should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawBounds(0, 0, 10, 10, 'white', 1, 0.5), 'PrimitiveRenderer.drawBounds should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawPanel(0, 0, 10, 10, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 4 }), 'PrimitiveRenderer.drawPanel should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawPath([[0, 0], [1, 1], [1, 0]], 'white', 1, { closePath: true }), 'PrimitiveRenderer.drawPath should no-op without context');
@@ -194,6 +195,7 @@ function testRenderersDrawWithMockContext(assert) {
         PrimitiveRenderer.drawOverlay(20, 20, 'black', 0.5);
         PrimitiveRenderer.drawSafeAreaGuides(20, 20, 2, 'white', 1);
         PrimitiveRenderer.drawCrosshair(10, 10, 4, 'white', 1);
+        PrimitiveRenderer.drawMarker(10, 10, 2, 'white');
         PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5);
         PrimitiveRenderer.drawPanel(0, 0, 30, 30, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 12, headerColor: 'yellow' });
         PrimitiveRenderer.drawPath([[0, 0], [5, 5], [8, 0]], 'white', 1, { closePath: true, offsetX: 2, offsetY: 3, lineDash: [5, 3] });
@@ -301,6 +303,7 @@ function testPrimitiveRendererWithMockContext(assert) {
         PrimitiveRenderer.drawOverlay(20, 20, 'black', 0.5);
         PrimitiveRenderer.drawSafeAreaGuides(20, 20, 2, 'white', 1);
         PrimitiveRenderer.drawCrosshair(10, 10, 4, 'white', 1);
+        PrimitiveRenderer.drawMarker(10, 10, 2, 'white');
         PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5);
         PrimitiveRenderer.drawPanel(0, 0, 30, 30, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 12, headerColor: 'yellow' });
         PrimitiveRenderer.drawPixelMatrix([[1, 0], [0, 1]], 0, 0, 4, 4, 'white', { extraWidth: 1, extraHeight: 1 });
@@ -328,6 +331,7 @@ function testPrimitiveRendererWithExplicitContext(assert) {
         PrimitiveRenderer.drawOverlay(20, 20, 'black', 0.5, { ctx: mockCtx });
         PrimitiveRenderer.drawSafeAreaGuides(20, 20, 2, 'white', 1, { ctx: mockCtx });
         PrimitiveRenderer.drawCrosshair(10, 10, 4, 'white', 1, 1, { ctx: mockCtx });
+        PrimitiveRenderer.drawMarker(10, 10, 2, 'white', 1, { ctx: mockCtx });
         PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5, { ctx: mockCtx });
         PrimitiveRenderer.drawPanel(0, 0, 30, 30, {
             fillColor: 'white',

@@ -26,7 +26,7 @@ class VectorRenderer {
         });
 
         if (object.drawBounds) {
-            PrimitiveRenderer.drawCircle(object.x + normalizedOffsetX, object.y + normalizedOffsetY, 2, 'white');
+            PrimitiveRenderer.drawMarker(object.x + normalizedOffsetX, object.y + normalizedOffsetY, 2, 'white');
             PrimitiveRenderer.drawBounds(
                 object.boundX + normalizedOffsetX,
                 object.boundY + normalizedOffsetY,
