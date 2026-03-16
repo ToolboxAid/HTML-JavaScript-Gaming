@@ -1,4 +1,5 @@
 import KeyboardInput from '../../../engine/input/keyboard.js';
+import InputLifecycle from '../../../engine/input/inputLifecycle.js';
 import MouseInput, { LEFT } from '../../../engine/input/mouse.js';
 import GamepadState from '../../../engine/input/controller/gamepadState.js';
 
@@ -132,8 +133,30 @@ function testGamepadStateDisconnect(assert) {
     assert(state.getAxisRaw().length === 0, 'GamepadState should clear axis data when disconnected');
 }
 
+function testInputLifecycleDestroy(assert) {
+    let starts = 0;
+    let stops = 0;
+    let cleanups = 0;
+
+    const lifecycle = new InputLifecycle(
+        () => { starts += 1; },
+        () => { stops += 1; }
+    );
+
+    assert(lifecycle.start() === true, 'InputLifecycle should start once');
+    assert(starts === 1, 'InputLifecycle should invoke start callback');
+
+    lifecycle.destroy(() => { cleanups += 1; });
+    assert(stops === 1, 'InputLifecycle.destroy should stop active listeners');
+    assert(cleanups === 1, 'InputLifecycle.destroy should run cleanup callback');
+    assert(lifecycle.startFn === null, 'InputLifecycle.destroy should clear start callback');
+    assert(lifecycle.stopFn === null, 'InputLifecycle.destroy should clear stop callback');
+    assert(lifecycle.isListening === false, 'InputLifecycle.destroy should reset listening state');
+}
+
 export function testInputCore(assert) {
     testKeyboardLifecycle(assert);
     testMouseLifecycle(assert);
     testGamepadStateDisconnect(assert);
+    testInputLifecycleDestroy(assert);
 }

@@ -36,6 +36,10 @@ class InputLifecycle {
         if (typeof cleanupFn === 'function') {
             cleanupFn();
         }
+
+        this.startFn = null;
+        this.stopFn = null;
+        this.isListening = false;
     }
 }
 
