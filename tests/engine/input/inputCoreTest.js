@@ -152,6 +152,9 @@ function testInputLifecycleDestroy(assert) {
     assert(lifecycle.startFn === null, 'InputLifecycle.destroy should clear start callback');
     assert(lifecycle.stopFn === null, 'InputLifecycle.destroy should clear stop callback');
     assert(lifecycle.isListening === false, 'InputLifecycle.destroy should reset listening state');
+    assert(lifecycle.isDestroyed === true, 'InputLifecycle.destroy should mark the lifecycle destroyed');
+    assert(lifecycle.start() === false, 'InputLifecycle should not restart after destroy');
+    assert(lifecycle.stop() === false, 'InputLifecycle should no-op stop after destroy');
 }
 
 export function testInputCore(assert) {

@@ -8,10 +8,11 @@ class InputLifecycle {
         this.startFn = startFn;
         this.stopFn = stopFn;
         this.isListening = false;
+        this.isDestroyed = false;
     }
 
     start() {
-        if (this.isListening) {
+        if (this.isDestroyed || this.isListening || typeof this.startFn !== 'function') {
             return false;
         }
 
@@ -21,7 +22,7 @@ class InputLifecycle {
     }
 
     stop() {
-        if (!this.isListening) {
+        if (this.isDestroyed || !this.isListening || typeof this.stopFn !== 'function') {
             return false;
         }
 
@@ -40,6 +41,7 @@ class InputLifecycle {
         this.startFn = null;
         this.stopFn = null;
         this.isListening = false;
+        this.isDestroyed = true;
     }
 }
 
