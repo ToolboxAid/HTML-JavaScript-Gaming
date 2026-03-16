@@ -119,6 +119,10 @@ export async function testGameBase(assert) {
         const game = new TestGame();
         await Promise.resolve();
 
+        game.lastTimestamp = 123;
+        game.handleVisibilityChange();
+        assert(game.lastTimestamp !== 123, 'GameBase should reset the instance timestamp when visibility resumes');
+
         const destroyed = game.destroy();
         assert(destroyed === true, 'GameBase.destroy should succeed on first call');
         assert(game.keyboardDestroyed === 1, 'GameBase.destroy should clean up cached keyboard input even if onDestroy clears the field');

@@ -14,12 +14,12 @@ class GameBase {
     static DEBUG = DebugFlag.has('gameBase');
 
     static isInitialized = false;
-    static lastTimestamp = performance.now();
     static showTextMetrics = false;
 
     constructor(canvasConfig, performanceConfig, fullscreenConfig) {
         this.isDestroyed = false;
         this.isPageHidden = document.hidden;
+        this.lastTimestamp = performance.now();
         this.runtimeContext = new RuntimeContext();
         this.animate = this.animate.bind(this);// bind once
         this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
@@ -73,7 +73,7 @@ class GameBase {
 
         this.runtimeContext.onPageVisible();
 
-        GameBase.lastTimestamp = performance.now();
+        this.lastTimestamp = performance.now();
     }
 
     animate(timestamp) {
@@ -88,8 +88,8 @@ class GameBase {
             }
 
             // Calculate delta time
-            const deltaTime = (timestamp - GameBase.lastTimestamp) / 1000;
-            GameBase.lastTimestamp = timestamp;
+            const deltaTime = (timestamp - this.lastTimestamp) / 1000;
+            this.lastTimestamp = timestamp;
 
             if (this.runtimeContext.getContext() && this.gameLoop) {
                 // start performance timer
