@@ -19,10 +19,7 @@ export const uiFont = Object.freeze({
     mono: 'monospace'
 });
 
-export const safeArea = Object.freeze({
-    x: 20,
-    y: 20
-});
+export const safeAreaInset = 20;
 
 export const fullscreenConfig = {
     color: '#ed9700',

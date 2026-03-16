@@ -7,7 +7,7 @@ import CanvasUtils from '../../../engine/core/canvas.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import DebugLog from '../../../engine/utils/debugLog.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
-import { canvasConfig, gameUi, safeArea } from './global.js';
+import { canvasConfig, gameUi, safeAreaInset } from './global.js';
 import { isPauseTogglePressed, isPlayerDeathPressed, isScorePressed, isStartPressed } from './gameInput.js';
 
 /**
@@ -162,7 +162,7 @@ function drawStyledStage(panelColor = gameUi.theme.colors.panel, borderColor = g
     CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
     CanvasUtils.drawLine(panelX, panelY + headerOffsetY, panelX + panelWidth, panelY + headerOffsetY, 2, borderColor);
     drawPulseAccent(panelX, panelY + headerOffsetY + 6, panelWidth, gameUi.theme.colors.accent);
-    CanvasUtils.drawSafeAreaGuides(Math.min(safeArea.x, safeArea.y), `${gameUi.theme.colors.accent}99`);
+    CanvasUtils.drawSafeAreaGuides(safeAreaInset, `${gameUi.theme.colors.accent}99`);
 }
 
 function renderScreen(screen) {
