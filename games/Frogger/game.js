@@ -29,9 +29,6 @@ class Game extends GameBase {
 }
 
   async onInitialize() {
-
-    console.log("onInit");
-
     this.playerSelect = playerSelect;
 
     this.keyboardInput = new KeyboardInput();
@@ -143,7 +140,6 @@ class Game extends GameBase {
   }
 
   initializeEnemy() {
-    console.log("Initializing Enemy...");
     this.enemyInitialized = true;
 
     this.gameState = "playGame";
@@ -163,37 +159,6 @@ class Game extends GameBase {
     this.gamePauseCheck();
     CanvasUtils.drawText(150, 200, "Game Paused.", 3.5, "white");
     CanvasUtils.drawText(150, 250, "Press `P` to unpause game", 3.5, "white");
-  }
-
-  playGame1() {
-    this.gamePauseCheck();
-
-    // Display current player status
-    const playerInfo = `OLD - Player ${this.currentPlayer + 1} - Lives: ${this.playerLives[this.currentPlayer]} - Score: ${this.score[this.currentPlayer]}`;
-    CanvasUtils.drawText(100, 200, playerInfo, 3.5, "white");
-    CanvasUtils.drawText(100, 250, "Press `D` for player death", 3.5, "white");
-    CanvasUtils.drawText(100, 300, "Press `S` for score", 3.5, "white");
-    CanvasUtils.drawText(100, 350, "Press `P` to pause game", 3.5, "white");
-
-    if (this.keyboardInput.getKeysPressed().includes('KeyS')) {
-      this.score[this.currentPlayer] += 100;
-      console.log("score", this.score[this.currentPlayer]);
-    }
-
-    // // Check if `D` key was just pressed, simulate losing a life
-    // if (this.keyboardInput.getkeysPressed().includes('KeyD')) {
-    //   const result = GameUtils.swapPlayer(
-    //     this.playerLives,
-    //     this.currentPlayer,
-    //     this.playerCount,
-    //     (newState) => { this.gameState = newState; }
-    //   );
-
-    //   // Update the current player and 
-    //   //                                                       lives based on the result from swapPlayer
-    //   this.currentPlayer = result.updatedPlayer;
-    //   this.playerLives = result.updatedLives;
-    // }
   }
 
   playGame(deltaTime) {
