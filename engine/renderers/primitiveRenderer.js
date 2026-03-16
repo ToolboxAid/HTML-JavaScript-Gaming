@@ -310,17 +310,7 @@ class PrimitiveRenderer {
         this.applyLineDash(ctx, options.lineDash);
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
-
-        if (fillColor) {
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-        }
-
-        if (borderColor && borderWidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = borderWidth;
-            ctx.stroke();
-        }
+        this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
     }
 
     static renderEllipse(ctx, x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
@@ -328,33 +318,13 @@ class PrimitiveRenderer {
         this.applyLineDash(ctx, options.lineDash);
         ctx.beginPath();
         ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
-
-        if (fillColor) {
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-        }
-
-        if (borderColor && borderWidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = borderWidth;
-            ctx.stroke();
-        }
+        this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
     }
 
     static renderPolygon(ctx, points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
         this.applyLineDash(ctx, options.lineDash);
         this.tracePath(ctx, points, { closePath: true });
-
-        if (fillColor) {
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-        }
-
-        if (borderColor && borderWidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = borderWidth;
-            ctx.stroke();
-        }
+        this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
     }
 
     static renderPath(ctx, points, strokeColor = 'white', lineWidth = 1, {
@@ -370,6 +340,19 @@ class PrimitiveRenderer {
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = lineWidth;
         ctx.stroke();
+    }
+
+    static renderFillAndStroke(ctx, fillColor = null, borderColor = null, borderWidth = 0) {
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+
+        if (borderColor && borderWidth > 0) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+            ctx.stroke();
+        }
     }
 }
 
