@@ -32,8 +32,8 @@ export const fullscreenConfig = {
 export const playerSelect = {
     maxPlayers: 2,
     lives: 3,
-    optionBaseY: 300,
-    optionSpacing: 40
+    y: 300,
+    spacing: 40
 };
 
 const themeColors = Object.freeze({

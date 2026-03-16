@@ -40,13 +40,13 @@ export const playerSelect = {
   maxPlayers: 2,
   lives: 3,
 
-  fillStyle: "pink",
+  color: "pink",
   font: "25px Arial",
-  fillText: "Select Player(s)",
+  title: "Select Player(s)",
 
-  optionBaseX: 250,
-  optionBaseY: 300,
-  optionSpacing: 40
+  x: 250,
+  y: 300,
+  spacing: 40
 }
 
 export const spriteConfig = {
