@@ -3,7 +3,7 @@
 This sample is the engine template reference for lifecycle flow and state transitions.
 
 ## Template Metadata
-- Template version: `1.2.0`
+- Template version: `1.3.0`
 - Last updated: `2026-03-15`
 - Change log: [`CHANGELOG.md`](./CHANGELOG.md)
 
@@ -57,7 +57,7 @@ Attract-state preview of the current starter layout and theme.
 
 ## Rename Checklist
 1. Rename folder and update sample name in `README.md`.
-2. Update `index.html` `<title>`, `<h1>`, and body id.
+2. Update `index.html` `<title>` and `<h1>`.
 3. Set a new debug flag key in `game.js` (for example `?myNewGame`).
 4. Copy `TODO-template.txt` to `todo.txt` in your new game folder.
 5. Update local `todo.txt` and top-level `samples/todo.txt` entries to new folder name.

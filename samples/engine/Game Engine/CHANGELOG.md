@@ -1,5 +1,9 @@
 # Game Engine Template Changelog
 
+## 1.3.0 - 2026-03-15
+- Extracted shared state-screen rendering helpers into `gameStateUi.js`.
+- Updated starter docs/checklists to include the `gameStateUi.js` split.
+
 ## 1.2.0 - 2026-03-15
 - Slimmed the sample shell, runtime wiring, config, README, and local todo notes.
 - Removed template-stale player-select config and kept play-screen styling centralized in `global.js`.
