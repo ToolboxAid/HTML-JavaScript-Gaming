@@ -91,7 +91,8 @@ class Game extends GameBase {
     this.gameAttract.update(deltaTime, this.keyboardInput);
     this.gameAttract.draw();
 
-    if (this.keyboardInput.getKeysPressed().includes('Enter')) {
+    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+      this.gameControllers?.wasButtonIndexPressed(0, 9)) {
       this.gameState = "playerSelect";
     }
   }
@@ -118,6 +119,7 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Press `Enter` to Restart", 250, 300);
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
+      this.gameControllers?.wasButtonIndexPressed(0, 9) ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }

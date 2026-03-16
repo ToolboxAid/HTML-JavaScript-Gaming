@@ -86,7 +86,8 @@ class Game extends GameBase {
     CanvasUtils.ctx.fillText("Press `Enter` to Start", 250, 300);
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
-      this.keyboardInput.getKeysPressed().includes('NumpadEnter')) {
+      this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
+      this.gameControllers?.wasButtonIndexPressed(0, 9)) {
       this.gameState = "playerSelect";
     }
   }
@@ -116,6 +117,7 @@ class Game extends GameBase {
 
     if (this.keyboardInput.getKeysPressed().includes('Enter') ||
       this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
+      this.gameControllers?.wasButtonIndexPressed(0, 9) ||
       this.backToAttractCounter++ > this.backToAttract) {
       this.resetGame();
     }
