@@ -5,6 +5,7 @@
 
 import { canvasConfig, playerSelect } from '../global.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
+import GamePlayerSelectUi from '../../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import GameAttract from './attractScene.js';
 
@@ -27,13 +28,9 @@ class AsteroidsAttractScreen {
 
     updatePlayerSelect(deltaTime, keyboardInput) {
         this.gameAttract.update(deltaTime);
-
-        return GameUtils.selectNumberOfPlayers(
-            CanvasUtils.ctx,
-            canvasConfig,
-            playerSelect,
-            keyboardInput
-        );
+        const config = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
+        GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config);
+        return GameUtils.resolvePlayerSelection(keyboardInput, null, config);
     }
 
     drawPlayerSelect() {

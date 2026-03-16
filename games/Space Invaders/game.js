@@ -8,6 +8,7 @@ import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenC
 import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
+import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 import AudioPlayer from '../../engine/output/audioPlayer.js';
 import CollisionUtils from '../../engine/physics/collisionUtils.js';
@@ -659,8 +660,9 @@ checkLaser(deltaTime, laserFirePoint) {
         CanvasUtils.drawText(40, 640, "GameController <right D-bay> to move right.", 3.5, "yellow");
         CanvasUtils.drawText(40, 680, "GameController <A> to fire.", 3.5, "yellow");
 
-        const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, playerSelect,
-            this.keyboardInput, this.gameControllers);
+        const config = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
+        GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config, this.gameControllers);
+        const result = GameUtils.resolvePlayerSelection(this.keyboardInput, this.gameControllers, config);
         if (result) {
             this.playerCount = result.playerCount;
             this.gameState = "initGameShield";

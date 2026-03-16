@@ -43,8 +43,7 @@ class GameUtils {
     static buildPlayerSelectionResult(playerCount, maxPlayers, lives) {
         return {
             playerCount,
-            playerLives: Array.from({ length: maxPlayers }, (_, index) => (index < playerCount ? lives : 0)),
-            gameState: "initGame"
+            playerLives: Array.from({ length: maxPlayers }, (_, index) => (index < playerCount ? lives : 0))
         };
     }
 
@@ -64,24 +63,6 @@ class GameUtils {
         return nextPlayer;
     }
 
-    static drawPlayerSelectOverlay(ctx, config) {
-        ctx.fillStyle = config.backgroundColor + 'AA';
-        ctx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
-        ctx.fillStyle = config.color;
-        ctx.font = config.font;
-        ctx.fillText(config.title, config.x, config.y);
-    }
-
-    static drawKeyboardPlayerOptions(ctx, config) {
-        for (let i = 1; i <= config.maxPlayers; i++) {
-            ctx.fillText(
-                `Keyboard \`${i}\` for ${i} Player${i > 1 ? "s" : ""}`,
-                (config.canvasWidth / 2) - 200,
-                config.y + i * config.spacing
-            );
-        }
-    }
-
     static getKeyboardPlayerSelection(keyboardInput, config) {
         if (!keyboardInput || typeof keyboardInput.getKeysPressed !== 'function') {
             return null;
@@ -96,21 +77,6 @@ class GameUtils {
         }
 
         return null;
-    }
-
-    static drawControllerPlayerOptions(ctx, config) {
-        ctx.fillText('GameController Select Player(s)', config.x, config.y + 150);
-        ctx.fillText('`Left Bumper` 1 player', (config.canvasWidth / 2) - 200, config.y + 200);
-        ctx.fillText('`Right Bumper` 2 players', (config.canvasWidth / 2) - 200, config.y + 250);
-    }
-
-    static drawPlayerSelection(ctx, config, gameControllers) {
-        this.drawPlayerSelectOverlay(ctx, config);
-        this.drawKeyboardPlayerOptions(ctx, config);
-
-        if (gameControllers) {
-            this.drawControllerPlayerOptions(ctx, config);
-        }
     }
 
     static getControllerPlayerSelection(gameControllers, config) {
@@ -156,18 +122,10 @@ class GameUtils {
      * const gameUtils = new GameUtils(); // Throws Error
      * 
      * ✅ Do this:
-     * GameUtils.selectNumberOfPlayers(...); // Use static methods directly
+     * GameUtils.resolvePlayerSelection(...); // Use static methods directly
      */
     constructor() {
         throw new Error('GameUtils is a utility class with only static methods. Do not instantiate.');
-    }
-
-    /**  Player select information
-    */
-    static selectNumberOfPlayers(ctx, canvasConfig, playerSelect, keyboardInput, gameControllers) {
-        const config = this.getPlayerSelectConfig(canvasConfig, playerSelect);
-        this.drawPlayerSelection(ctx, config, gameControllers);
-        return this.resolvePlayerSelection(keyboardInput, gameControllers, config);
     }
 
     static swapPlayer(playerLives, currentPlayer, playerCount) {

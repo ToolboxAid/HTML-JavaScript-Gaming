@@ -5,6 +5,7 @@
 
 import CanvasText from '../../../engine/core/canvasText.js';
 import CanvasUtils from '../../../engine/core/canvas.js';
+import GamePlayerSelectUi from '../../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import { canvasConfig, playerSelect, sideScrollUi } from './global.js';
 
@@ -55,13 +56,9 @@ export function displayAttractMode(game, deltaTime) {
 }
 
 export function displayPlayerSelect(game) {
-    const result = GameUtils.selectNumberOfPlayers(
-        CanvasUtils.ctx,
-        canvasConfig,
-        playerSelect,
-        game.keyboardInput,
-        game.gameControllers
-    );
+    const config = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
+    GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config, game.gameControllers);
+    const result = GameUtils.resolvePlayerSelection(game.keyboardInput, game.gameControllers, config);
 
     if (!result) {
         return;

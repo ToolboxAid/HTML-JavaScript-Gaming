@@ -4,6 +4,7 @@
 // gameUtilsTest.js
 
 import GameUtils from '../../../engine/game/gameUtils.js';
+import GamePlayerSelectUi from '../../../engine/game/gamePlayerSelectUi.js';
 
 // Mocked version of keyboard input
 class MockKeyboardInput {
@@ -50,11 +51,13 @@ export function testGameUtils(assert) {
 
     const keyboardInput = new MockKeyboardInput(['Digit1']);
     const gameControllers = null;
+    const renderConfig = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
 
-    const result = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, playerSelect, keyboardInput, gameControllers);
-    assert(result.playerCount === 1, "selectNumberOfPlayers failed for direct 1-player keyboard selection");
-    assert(mockCtx.fillRectCalls.length === 1, "selectNumberOfPlayers should draw the background overlay once");
-    assert(mockCtx.fillTextCalls.length >= 5, "selectNumberOfPlayers should draw heading plus keyboard option text");
+    GamePlayerSelectUi.drawPlayerSelection(mockCtx, renderConfig, gameControllers);
+    const result = GameUtils.resolvePlayerSelection(keyboardInput, gameControllers, renderConfig);
+    assert(result.playerCount === 1, "resolvePlayerSelection failed for direct 1-player keyboard selection");
+    assert(mockCtx.fillRectCalls.length === 1, "drawPlayerSelection should draw the background overlay once");
+    assert(mockCtx.fillTextCalls.length >= 5, "drawPlayerSelection should draw heading plus keyboard option text");
 
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 0, lives: 0, y: 0, spacing: 0 });
     assert(config.maxPlayers === 0, "getPlayerSelectConfig should preserve explicit zero maxPlayers");
@@ -76,23 +79,27 @@ export function testGameUtils(assert) {
     assert(aliasConfig.color === 'cyan', "getPlayerSelectConfig should use color");
 
     const keyboard1Player = new MockKeyboardInput(['Digit1']);
-    const result1Player = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard1Player, null);
-    assert(result1Player.playerCount === 1, "selectNumberOfPlayers failed for 1 player with keyboard input");
-    assert(result1Player.playerLives[0] === 3, "selectNumberOfPlayers player lives incorrect for 1 player");
+    const config1Player = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 4, lives: 3 });
+    const result1Player = GameUtils.resolvePlayerSelection(keyboard1Player, null, config1Player);
+    assert(result1Player.playerCount === 1, "resolvePlayerSelection failed for 1 player with keyboard input");
+    assert(result1Player.playerLives[0] === 3, "resolvePlayerSelection player lives incorrect for 1 player");
 
     const keyboard2Players = new MockKeyboardInput(['Digit2']);
-    const result2Players = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard2Players, null);
-    assert(result2Players.playerCount === 2, "selectNumberOfPlayers failed for 2 players with keyboard input");
-    assert(result2Players.playerLives[0] === 3 && result2Players.playerLives[1] === 3, "selectNumberOfPlayers player lives incorrect for 2 players");
+    const config2Players = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 4, lives: 3 });
+    const result2Players = GameUtils.resolvePlayerSelection(keyboard2Players, null, config2Players);
+    assert(result2Players.playerCount === 2, "resolvePlayerSelection failed for 2 players with keyboard input");
+    assert(result2Players.playerLives[0] === 3 && result2Players.playerLives[1] === 3, "resolvePlayerSelection player lives incorrect for 2 players");
 
     const keyboard3 = new MockKeyboardInput();
     const controller1Player = new MockGameControllers([4]);
-    const resultGameController1Player = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard3, controller1Player);
-    assert(resultGameController1Player.playerCount === 1, "selectNumberOfPlayers failed for 1 player with game controller input");
+    const controllerConfig = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 4, lives: 3 });
+    GamePlayerSelectUi.drawPlayerSelection(mockCtx, controllerConfig, controller1Player);
+    const resultGameController1Player = GameUtils.resolvePlayerSelection(keyboard3, controller1Player, controllerConfig);
+    assert(resultGameController1Player.playerCount === 1, "resolvePlayerSelection failed for 1 player with game controller input");
 
     const controller2Players = new MockGameControllers([5]);
-    const resultGameController2Players = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard3, controller2Players);
-    assert(resultGameController2Players.playerCount === 2, "selectNumberOfPlayers failed for 2 players with game controller input");
+    const resultGameController2Players = GameUtils.resolvePlayerSelection(keyboard3, controller2Players, controllerConfig);
+    assert(resultGameController2Players.playerCount === 2, "resolvePlayerSelection failed for 2 players with game controller input");
 
     const resolvedKeyboardSelection = GameUtils.resolvePlayerSelection(new MockKeyboardInput(['Digit3']), null, { maxPlayers: 4, lives: 2 });
     assert(resolvedKeyboardSelection.playerCount === 3, "resolvePlayerSelection should return keyboard selection first");

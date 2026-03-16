@@ -7,6 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvas.js';
+import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
@@ -94,13 +95,9 @@ class Game extends GameBase {
   }
 
   displayPlayerSelect() {
-    const result = GameUtils.selectNumberOfPlayers(
-      CanvasUtils.ctx,
-      canvasConfig,
-      this.playerSelect,
-      this.keyboardInput,
-      this.gameControllers
-    );
+    const config = GameUtils.getPlayerSelectConfig(canvasConfig, this.playerSelect);
+    GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config, this.gameControllers);
+    const result = GameUtils.resolvePlayerSelection(this.keyboardInput, this.gameControllers, config);
     if (result) {
       this.playerCount = result.playerCount;
       this.playerLives = result.playerLives;

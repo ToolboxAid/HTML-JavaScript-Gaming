@@ -20,7 +20,7 @@ Cleanup targets:
 [x] Update affected docs/tests when shared behavior changes
 
 Risk check:
-[x] Verify games using `selectNumberOfPlayers()` still render/select correctly
+[x] Verify games using shared player-select render/resolve helpers still render/select correctly
 [x] Verify games using `swapPlayer()` still transition and rotate players correctly
 [.] Confirm no browser/runtime regressions in shared engine consumers
 
