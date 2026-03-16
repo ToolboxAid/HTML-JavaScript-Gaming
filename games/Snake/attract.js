@@ -4,6 +4,7 @@
 // attract.js
 
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import { canvasConfig } from './global.js';
 
 class AttractScreen {
@@ -105,11 +106,11 @@ class AttractScreen {
 
     // Draw Snake
     this.snake.forEach(segment => {
-      CanvasUtils.drawRect(segment.x, segment.y, this.tileSize, this.tileSize, 'green');
+      PrimitiveRenderer.drawRect(segment.x, segment.y, this.tileSize, this.tileSize, 'green');
     });
 
     // Draw Food
-    CanvasUtils.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
+    PrimitiveRenderer.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
 
     // Draw Attract Mode Text
     CanvasUtils.ctx.fillStyle = "white";

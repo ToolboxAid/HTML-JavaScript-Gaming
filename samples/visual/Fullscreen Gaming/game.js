@@ -7,6 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig, fullscreenSampleUi, 
 import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import { collectMetrics, createEmptyMetrics, getMetricsElements, updateMetricsPanel } from './gameDom.js';
 
 class Game extends GameBase {
@@ -85,10 +86,10 @@ class Game extends GameBase {
 
     drawStage(panelColor, borderColor) {
         const { panelX, panelY, panelWidth, panelHeight, panelBorderSize } = fullscreenSampleUi.theme;
-        CanvasUtils.drawRect(panelX - 18, panelY - 18, panelWidth + 36, panelHeight + 36, fullscreenSampleUi.theme.colors.panelBackdrop);
-        CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
-        CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
-        CanvasUtils.drawLine(panelX, panelY + 74, panelX + panelWidth, panelY + 74, 2, borderColor);
+        PrimitiveRenderer.drawRect(panelX - 18, panelY - 18, panelWidth + 36, panelHeight + 36, fullscreenSampleUi.theme.colors.panelBackdrop);
+        PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
+        PrimitiveRenderer.drawBounds(panelX, panelY, panelWidth, panelHeight, borderColor, panelBorderSize);
+        PrimitiveRenderer.drawLine(panelX, panelY + 74, panelX + panelWidth, panelY + 74, borderColor, 2);
     }
 
     drawMetricSummary() {

@@ -32,6 +32,10 @@ class PrimitiveRenderer {
         });
     }
 
+    static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1) {
+        return this.drawRect(x, y, width, height, null, borderColor, borderWidth, alpha);
+    }
+
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0) {
         return this.withContext((ctx) => {
             ctx.beginPath();

@@ -4,8 +4,8 @@
 // 10/16/2024
 
 import ObjectDynamic from '../../../engine/objects/objectDynamic.js'; // Import ObjectDynamic
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GameCollision from '../../../engine/game/gameCollision.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 import RandomUtils from '../../../engine/math/randomUtils.js';
 import DebugFlag from '../../../engine/utils/debugFlag.js';
@@ -49,7 +49,7 @@ class Circle extends ObjectDynamic {
 
     /** Draws the circle on the canvas. */
     draw(fillColor = 'white', borderColor = '#ed9700', borderWidth = 2) {
-        CanvasUtils.drawCircle2(this.x, this.y, this.radius, fillColor, borderColor, borderWidth);
+        PrimitiveRenderer.drawCircle(this.x, this.y, this.radius, fillColor, borderColor, borderWidth);
     }
 
     updateCircle(boundariesHit) {

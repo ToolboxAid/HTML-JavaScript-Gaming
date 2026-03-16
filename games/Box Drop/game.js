@@ -9,6 +9,7 @@ import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../engine/game/gameUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
@@ -164,7 +165,7 @@ class Game extends GameBase {
     // Enemy code
     const enemySpeed = 5 + (this.score[this.currentPlayer] * 0.25)
     Game.enemyY += enemySpeed;
-    CanvasUtils.drawRect(Game.enemyX, Game.enemyY, Game.enemySize, Game.enemySize, "red");
+    PrimitiveRenderer.drawRect(Game.enemyX, Game.enemyY, Game.enemySize, Game.enemySize, "red");
 
     // Player code
     const dPad = this.gameControllers?.getDPad(0);
@@ -185,7 +186,7 @@ class Game extends GameBase {
       }
     }
 
-    CanvasUtils.drawRect(Game.playerX,
+    PrimitiveRenderer.drawRect(Game.playerX,
       canvasConfig.height - 60,
       this.playerWidth[this.currentPlayer], 30, "yellow");
 

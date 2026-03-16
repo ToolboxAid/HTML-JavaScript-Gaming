@@ -1,5 +1,6 @@
 import CanvasUtils from '../core/canvasUtils.js';
 import DebugLog from '../utils/debugLog.js';
+import PrimitiveRenderer from './primitiveRenderer.js';
 import RendererGuards from './rendererGuards.js';
 
 class VectorRenderer {
@@ -37,8 +38,8 @@ class VectorRenderer {
         CanvasUtils.ctx.stroke();
 
         if (object.drawBounds) {
-            CanvasUtils.drawCircle2(object.x + normalizedOffsetX, object.y + normalizedOffsetY, 2, 'white');
-            CanvasUtils.drawBounds(
+            PrimitiveRenderer.drawCircle(object.x + normalizedOffsetX, object.y + normalizedOffsetY, 2, 'white');
+            PrimitiveRenderer.drawBounds(
                 object.boundX + normalizedOffsetX,
                 object.boundY + normalizedOffsetY,
                 object.boundWidth,

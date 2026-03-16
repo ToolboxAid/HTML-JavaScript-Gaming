@@ -7,6 +7,7 @@
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 
@@ -208,7 +209,7 @@ class Game extends GameBase {
         const x = col * this.cellWidth + offset;
         const y = row * this.cellHeight + offset;
         const symbol = this.board[col][row];
-        CanvasUtils.drawCircle2(x, y, 40, symbol === 'R' ? "red" : symbol === 'B' ? "black" : "yellow");
+        PrimitiveRenderer.drawCircle(x, y, 40, symbol === 'R' ? "red" : symbol === 'B' ? "black" : "yellow");
       }
     }
 

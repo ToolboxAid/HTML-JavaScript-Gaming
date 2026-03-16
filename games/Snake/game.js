@@ -9,6 +9,7 @@ import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
 import AttractScreen from './attract.js';
 
@@ -171,11 +172,11 @@ class Game extends GameBase {
   drawGame() {
     // Draw Snake
     this.snake.forEach(segment => {
-      CanvasUtils.drawRect(segment.x, segment.y, this.tileSize, this.tileSize, 'green');
+      PrimitiveRenderer.drawRect(segment.x, segment.y, this.tileSize, this.tileSize, 'green');
     });
 
     // Draw Food
-    CanvasUtils.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
+    PrimitiveRenderer.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
 
     // Draw Score
     CanvasUtils.ctx.fillStyle = 'white';

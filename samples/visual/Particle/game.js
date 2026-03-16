@@ -17,6 +17,7 @@ import GameBase from '../../../engine/core/gameBase.js';
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import ParticleExplosion from '../../../engine/renderers/particleExplosion.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import RendererGuards from '../../../engine/renderers/rendererGuards.js';
 
 class Game extends GameBase {
@@ -100,10 +101,10 @@ class Game extends GameBase {
 
     drawStage() {
         const { panelX, panelY, panelWidth, panelHeight, panelBorderSize, panelColor, panelBorderColor, panelBackdrop } = particleSampleUi.theme;
-        CanvasUtils.drawRect(panelX - 18, panelY - 18, panelWidth + 36, panelHeight + 36, panelBackdrop);
-        CanvasUtils.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
-        CanvasUtils.drawBounds(panelX, panelY, panelWidth, panelHeight, panelBorderColor, panelBorderSize);
-        CanvasUtils.drawLine(panelX, panelY + 84, panelX + panelWidth, panelY + 84, 2, panelBorderColor);
+        PrimitiveRenderer.drawRect(panelX - 18, panelY - 18, panelWidth + 36, panelHeight + 36, panelBackdrop);
+        PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, panelColor);
+        PrimitiveRenderer.drawBounds(panelX, panelY, panelWidth, panelHeight, panelBorderColor, panelBorderSize);
+        PrimitiveRenderer.drawLine(panelX, panelY + 84, panelX + panelWidth, panelY + 84, panelBorderColor, 2);
     }
 
     drawCanvasHeader() {
