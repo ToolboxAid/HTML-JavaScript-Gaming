@@ -7,6 +7,7 @@ export const engineTestEntries = [
   { name: 'pngController', modulePath: './animation/pngControllerTest.js', exportName: 'testPngController' },
   { name: 'runtimeContext', modulePath: './core/runtimeContextTest.js', exportName: 'testRuntimeContext' },
   { name: 'fullscreen', modulePath: './core/fullscreenTest.js', exportName: 'testFullscreen' },
+  { name: 'gameBase', modulePath: './core/gameBaseTest.js', exportName: 'testGameBase' },
   { name: 'performanceMonitor', modulePath: './core/performanceMonitorTest.js', exportName: 'testPerformanceMonitor' },
   { name: 'objectBaseClass', modulePath: './objects/objectBaseClassTest.js', exportName: 'testObjectBaseClass' },
   { name: 'objectLifecycle', modulePath: './objects/objectLifecycleTest.js', exportName: 'testObjectLifecycle' },

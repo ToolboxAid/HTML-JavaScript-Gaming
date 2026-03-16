@@ -150,6 +150,9 @@ class GameBase {
         }
 
         this.isDestroyed = true;
+        const keyboardInput = this.keyboardInput;
+        const mouseInput = this.mouseInput;
+        const gameControllers = this.gameControllers;
 
         document.removeEventListener('visibilitychange', this.handleVisibilityChange);
         window.removeEventListener('pagehide', this.handlePageHide);
@@ -163,16 +166,16 @@ class GameBase {
         }
 
         // Common input ownership convention across games.
-        if (this.keyboardInput?.destroy) {
-            this.keyboardInput.destroy();
+        if (keyboardInput?.destroy) {
+            keyboardInput.destroy();
         }
 
-        if (this.mouseInput?.destroy) {
-            this.mouseInput.destroy();
+        if (mouseInput?.destroy) {
+            mouseInput.destroy();
         }
 
-        if (this.gameControllers?.destroy) {
-            this.gameControllers.destroy();
+        if (gameControllers?.destroy) {
+            gameControllers.destroy();
         }
 
         if (typeof Fullscreen.destroy === 'function') {

@@ -1,0 +1,132 @@
+import GameBase from '../../../engine/core/gameBase.js';
+import Fullscreen from '../../../engine/core/fullscreen.js';
+
+function installDocumentHarness() {
+    const listeners = new Map();
+    const originalAddEventListener = document.addEventListener;
+    const originalRemoveEventListener = document.removeEventListener;
+    const originalHidden = document.hidden;
+
+    document.addEventListener = (eventName, listener) => {
+        if (!listeners.has(eventName)) {
+            listeners.set(eventName, new Set());
+        }
+        listeners.get(eventName).add(listener);
+    };
+
+    document.removeEventListener = (eventName, listener) => {
+        listeners.get(eventName)?.delete(listener);
+    };
+
+    Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        value: false
+    });
+
+    return () => {
+        document.addEventListener = originalAddEventListener;
+        document.removeEventListener = originalRemoveEventListener;
+        Object.defineProperty(document, 'hidden', {
+            configurable: true,
+            value: originalHidden
+        });
+    };
+}
+
+function installWindowHarness() {
+    const listeners = new Map();
+    const originalAddEventListener = window.addEventListener;
+    const originalRemoveEventListener = window.removeEventListener;
+
+    window.addEventListener = (eventName, listener) => {
+        if (!listeners.has(eventName)) {
+            listeners.set(eventName, new Set());
+        }
+        listeners.get(eventName).add(listener);
+    };
+
+    window.removeEventListener = (eventName, listener) => {
+        listeners.get(eventName)?.delete(listener);
+    };
+
+    return () => {
+        window.addEventListener = originalAddEventListener;
+        window.removeEventListener = originalRemoveEventListener;
+    };
+}
+
+export async function testGameBase(assert) {
+    const restoreDocument = installDocumentHarness();
+    const restoreWindow = installWindowHarness();
+    const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
+    const originalFullscreenDestroy = Fullscreen.destroy;
+
+    globalThis.requestAnimationFrame = () => 1;
+
+    try {
+        let fullscreenDestroyCalls = 0;
+        Fullscreen.destroy = () => {
+            fullscreenDestroyCalls += 1;
+            return true;
+        };
+
+        class TestGame extends GameBase {
+            constructor() {
+                super(
+                    { width: 100, height: 100, backgroundColor: '#000', borderColor: '#fff', borderSize: 1, scale: 1 },
+                    { show: false, size: 10, font: 'monospace', colorLow: '#0f0', colorMed: '#ff0', colorHigh: '#f00', backgroundColor: '#000', x: 0, y: 0 },
+                    { color: '#fff', font: '10px monospace', text: 'fs', x: 0, y: 0 }
+                );
+            }
+
+            async initializeGame() {
+                this.runtimeContext = {
+                    onPageHidden() {},
+                    onPageVisible() {},
+                    getContext() { return null; },
+                    clearCanvas() {},
+                    drawBorder() {},
+                    updatePerformance() {},
+                    drawFullscreenOverlay() {},
+                    drawPerformanceOverlay() {},
+                    calculateTextMetrics() { return { width: 0, height: 0 }; }
+                };
+                await this.onInitialize(this.runtimeContext);
+            }
+
+            async onInitialize() {
+                this.keyboardDestroyed = 0;
+                this.mouseDestroyed = 0;
+                this.controllerDestroyed = 0;
+
+                this.keyboardInput = { destroy: () => { this.keyboardDestroyed += 1; } };
+                this.mouseInput = { destroy: () => { this.mouseDestroyed += 1; } };
+                this.gameControllers = { destroy: () => { this.controllerDestroyed += 1; } };
+            }
+
+            onDestroy() {
+                this.keyboardInput = null;
+                this.mouseInput = null;
+                this.gameControllers = null;
+            }
+
+            gameLoop() {}
+        }
+
+        const game = new TestGame();
+        await Promise.resolve();
+
+        const destroyed = game.destroy();
+        assert(destroyed === true, 'GameBase.destroy should succeed on first call');
+        assert(game.keyboardDestroyed === 1, 'GameBase.destroy should clean up cached keyboard input even if onDestroy clears the field');
+        assert(game.mouseDestroyed === 1, 'GameBase.destroy should clean up cached mouse input even if onDestroy clears the field');
+        assert(game.controllerDestroyed === 1, 'GameBase.destroy should clean up cached controllers even if onDestroy clears the field');
+        assert(fullscreenDestroyCalls === 1, 'GameBase.destroy should forward fullscreen cleanup once');
+        assert(game.destroy() === false, 'GameBase.destroy should be idempotent');
+    } finally {
+        Fullscreen.destroy = originalFullscreenDestroy;
+        globalThis.requestAnimationFrame = originalRequestAnimationFrame;
+        restoreDocument();
+        restoreWindow();
+    }
+}
