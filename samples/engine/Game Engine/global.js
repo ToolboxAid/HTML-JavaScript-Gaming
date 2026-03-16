@@ -72,7 +72,7 @@ export const gameUi = {
         colorLow: '#72f1b8',
         colorMed: themeColors.accent,
         colorHigh: '#ff6b6b',
-        backgroundColor: '#20104fcc',
+        backgroundColor: '#999999cc',
         x: canvasConfig.width - 344,
         y: canvasConfig.height - 178
     },

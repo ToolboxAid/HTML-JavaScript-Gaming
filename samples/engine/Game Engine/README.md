@@ -29,9 +29,6 @@ Attract-state preview of the current starter layout and theme.
 - `?perf` enables the performance overlay.
 - `?layout` enables safe-area layout guides.
 
-## Test Runner
-- Open `tests/testRunner.html` to run the engine browser test manifest in isolation from game runtime.
-
 ## Commands
 - Node test suite: `npm test`
 - Browser test suite: start a local web server, then open `/tests/testRunner.html`
