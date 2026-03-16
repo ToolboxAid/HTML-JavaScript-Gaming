@@ -381,7 +381,8 @@ class PrimitiveRenderer {
     }
 
     static renderOverlay(ctx, width, height, fillColor = 'black', alpha = 0.5, options = {}) {
-        this.renderRectArea(ctx, 0, 0, width, height, fillColor, alpha, options.lineDash);
+        this.applyRenderState(ctx, alpha, options.lineDash);
+        this.fillRectArea(ctx, 0, 0, width, height, fillColor);
     }
 
     static renderSafeAreaGuides(ctx, width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
