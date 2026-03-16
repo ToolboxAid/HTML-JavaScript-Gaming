@@ -143,6 +143,12 @@ function testRenderersGuardOnMissingContext(assert) {
         assertNoThrow(assert, () => PrimitiveRenderer.drawBounds(0, 0, 10, 10, 'white', 1, 0.5), 'PrimitiveRenderer.drawBounds should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawPanel(0, 0, 10, 10, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 4 }), 'PrimitiveRenderer.drawPanel should no-op without context');
         assertNoThrow(assert, () => PrimitiveRenderer.drawPath([[0, 0], [1, 1], [1, 0]], 'white', 1, { closePath: true }), 'PrimitiveRenderer.drawPath should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawRect(0, 0, Number.NaN, 10, 'white'), 'PrimitiveRenderer.drawRect should no-op on malformed numbers');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawCircle(5, Number.NaN, 3, 'white'), 'PrimitiveRenderer.drawCircle should no-op on malformed numbers');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawLine(0, 0, Number.NaN, 10, 'white', 1), 'PrimitiveRenderer.drawLine should no-op on malformed numbers');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawPath([[0, 0], { x: Number.NaN, y: 1 }], 'white', 1), 'PrimitiveRenderer.drawPath should no-op on malformed points');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawPolygon([{ x: 0, y: 0 }, null, { x: 1, y: 0 }], 'white', 'red', 1), 'PrimitiveRenderer.drawPolygon should no-op on malformed points');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawPixelMatrix([null], 0, 0, 4, 4, 'white'), 'PrimitiveRenderer.drawPixelMatrix should no-op on malformed matrix rows');
         assertNoThrow(assert, () => SpriteRenderer.draw(spriteLike, Number.NaN, Number.NaN), 'SpriteRenderer should no-op without context');
         assertNoThrow(assert, () => VectorRenderer.draw(vectorLike, Number.NaN, Number.NaN, Number.NaN), 'VectorRenderer should no-op without context');
         assertNoThrow(assert, () => PngRenderer.draw(pngLike, Number.NaN, Number.NaN), 'PngRenderer should no-op without context');

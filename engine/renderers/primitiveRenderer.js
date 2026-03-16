@@ -18,13 +18,13 @@ class PrimitiveRenderer {
     }
 
     static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
             this.renderRect(ctx, x, y, width, height, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
             this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha, options);
         });
     }
@@ -55,13 +55,13 @@ class PrimitiveRenderer {
     }
 
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([x, y, radius, borderWidth, alpha], options, (ctx) => {
             this.renderCircle(ctx, x, y, radius, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([x, y, radiusX, radiusY, borderWidth, rotation, alpha], options, (ctx) => {
             this.renderEllipse(ctx, x, y, radiusX, radiusY, fillColor, borderColor, borderWidth, rotation, alpha, options);
         });
     }
@@ -98,37 +98,37 @@ class PrimitiveRenderer {
     }
 
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([x1, y1, x2, y2, lineWidth, alpha], options, (ctx) => {
             this.renderLine(ctx, x1, y1, x2, y2, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawGridLines(x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([x, y, width, height, columns, rows, lineWidth], options, (ctx) => {
             this.renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor, lineWidth, options);
         });
     }
 
     static drawOverlay(width, height, fillColor = 'black', alpha = 0.5, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([width, height, alpha], options, (ctx) => {
             this.renderOverlay(ctx, width, height, fillColor, alpha, options);
         });
     }
 
     static drawSafeAreaGuides(width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([width, height, margin, lineWidth], options, (ctx) => {
             this.renderSafeAreaGuides(ctx, width, height, margin, strokeColor, lineWidth, options);
         });
     }
 
     static drawCrosshair(centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([centerX, centerY, size, lineWidth, alpha], options, (ctx) => {
             this.renderCrosshair(ctx, centerX, centerY, size, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawMarker(x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
-        return this.withContext(options, (ctx) => {
+        return this.withValidatedNumbers([x, y, radius, alpha], options, (ctx) => {
             this.renderMarker(ctx, x, y, radius, fillColor, alpha, options);
         });
     }
@@ -253,12 +253,54 @@ class PrimitiveRenderer {
         return Array.isArray(point) ? point[1] : point.y;
     }
 
+    static isFiniteNumber(value) {
+        return Number.isFinite(value);
+    }
+
+    static isRenderablePoint(point) {
+        if (!point) {
+            return false;
+        }
+
+        return this.isFiniteNumber(this.getPointX(point)) && this.isFiniteNumber(this.getPointY(point));
+    }
+
+    static areFiniteNumbers(values = []) {
+        for (let index = 0; index < values.length; index++) {
+            if (!this.isFiniteNumber(values[index])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     static hasMinimumPointCount(points, minimumCount) {
-        return Array.isArray(points) && points.length >= minimumCount;
+        if (!Array.isArray(points) || points.length < minimumCount) {
+            return false;
+        }
+
+        for (let index = 0; index < points.length; index++) {
+            if (!this.isRenderablePoint(points[index])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     static hasMatrixRows(matrix) {
-        return Array.isArray(matrix) && matrix.length > 0;
+        if (!Array.isArray(matrix) || matrix.length === 0) {
+            return false;
+        }
+
+        for (let row = 0; row < matrix.length; row++) {
+            if (!Array.isArray(matrix[row])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     static withContext(options = {}, drawFn) {
@@ -282,6 +324,10 @@ class PrimitiveRenderer {
         }
 
         return this.withContext(options, drawFn);
+    }
+
+    static withValidatedNumbers(values, options = {}, drawFn) {
+        return this.withValidatedInput(this.areFiniteNumbers(values), options, drawFn);
     }
 
     static withValidatedPoints(points, minimumCount, options = {}, drawFn) {
