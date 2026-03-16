@@ -519,18 +519,22 @@ class PrimitiveRenderer {
         for (let row = 0; row < matrix.length; row++) {
             const matrixRow = matrix[row];
             const drawY = y + (row * pixelHeight);
+            let drawX = x;
 
             for (let col = 0; col < matrixRow.length; col++) {
                 if (matrixRow[col] !== 1) {
+                    drawX += pixelWidth;
                     continue;
                 }
 
                 ctx.fillRect(
-                    x + (col * pixelWidth),
+                    drawX,
                     drawY,
                     drawWidth,
                     drawHeight
                 );
+
+                drawX += pixelWidth;
             }
         }
     }
