@@ -103,9 +103,9 @@ class PrimitiveRenderer {
         });
     }
 
-    static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0) {
+    static drawPolygon(points, fillColor = null, borderColor = null, borderWidth = 0) {
         if (!Array.isArray(points) || points.length < 3) {
-            return;
+            return false;
         }
 
         return this.withContext((ctx) => {
@@ -129,6 +129,10 @@ class PrimitiveRenderer {
                 ctx.stroke();
             }
         });
+    }
+
+    static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0) {
+        return this.drawPolygon(points, fillColor, borderColor, borderWidth);
     }
 
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1) {
