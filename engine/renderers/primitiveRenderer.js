@@ -300,9 +300,7 @@ class PrimitiveRenderer {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = lineWidth;
-        ctx.stroke();
+        this.renderStroke(ctx, strokeColor, lineWidth);
     }
 
     static renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
@@ -337,9 +335,7 @@ class PrimitiveRenderer {
         ctx.globalAlpha = alpha;
         this.applyLineDash(ctx, lineDash);
         this.tracePath(ctx, points, { offsetX, offsetY, closePath });
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = lineWidth;
-        ctx.stroke();
+        this.renderStroke(ctx, strokeColor, lineWidth);
     }
 
     static renderFillAndStroke(ctx, fillColor = null, borderColor = null, borderWidth = 0) {
@@ -349,10 +345,14 @@ class PrimitiveRenderer {
         }
 
         if (borderColor && borderWidth > 0) {
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = borderWidth;
-            ctx.stroke();
+            this.renderStroke(ctx, borderColor, borderWidth);
         }
+    }
+
+    static renderStroke(ctx, strokeColor = 'white', lineWidth = 1) {
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
     }
 }
 
