@@ -119,6 +119,17 @@ function gameUpdate() {
 function gameRender() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const hasVisiblePlayers = players.some(Boolean);
+    if (!hasVisiblePlayers) {
+        ctx.fillStyle = '#f3d8ab';
+        ctx.font = 'bold 18px Segoe UI';
+        ctx.textAlign = 'center';
+        ctx.fillText('Connect a controller to begin.', canvas.width / 2, 120);
+        ctx.font = '14px Segoe UI';
+        ctx.fillText('Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 152);
+        ctx.textAlign = 'start';
+    }
+
     players.forEach((player, playerIndex) => {
         if (player) {
             const buttonsAcross = 5;

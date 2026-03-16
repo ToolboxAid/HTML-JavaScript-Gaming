@@ -24,6 +24,7 @@ Local checklist:
 [x] Sync preview asset copy with current shell and sample focus
 [x] Restore shared fullscreen behavior after shell/layout cleanup
 [x] Show mapped button labels and named axis values through public controller helpers
+[x] Add an empty-state prompt when no controller is connected
 
 Focused review checklist:
 [x] Security: validate external/config-driven inputs before use
