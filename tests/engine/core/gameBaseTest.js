@@ -60,8 +60,11 @@ export async function testGameBase(assert) {
     const restoreWindow = installWindowHarness();
     const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
     const originalFullscreenDestroy = Fullscreen.destroy;
-
-    globalThis.requestAnimationFrame = () => 1;
+    const rafCalls = [];
+    globalThis.requestAnimationFrame = (callback) => {
+        rafCalls.push(callback);
+        return rafCalls.length;
+    };
 
     try {
         let fullscreenDestroyCalls = 0;
@@ -123,6 +126,109 @@ export async function testGameBase(assert) {
         assert(game.controllerDestroyed === 1, 'GameBase.destroy should clean up cached controllers even if onDestroy clears the field');
         assert(fullscreenDestroyCalls === 1, 'GameBase.destroy should forward fullscreen cleanup once');
         assert(game.destroy() === false, 'GameBase.destroy should be idempotent');
+
+        class FailingGame extends GameBase {
+            constructor() {
+                super(
+                    { width: 100, height: 100, backgroundColor: '#000', borderColor: '#fff', borderSize: 1, scale: 1 },
+                    { show: false, size: 10, font: 'monospace', colorLow: '#0f0', colorMed: '#ff0', colorHigh: '#f00', backgroundColor: '#000', x: 0, y: 0 },
+                    { color: '#fff', font: '10px monospace', text: 'fs', x: 0, y: 0 }
+                );
+            }
+
+            async initializeGame() {
+                throw new Error('boot failed');
+            }
+        }
+
+        const failingGame = new FailingGame();
+        await Promise.resolve();
+        await Promise.resolve();
+        assert(failingGame.isDestroyed === true, 'GameBase should destroy itself when initialization fails');
+
+        class DeferredGame extends GameBase {
+            constructor() {
+                super(
+                    { width: 100, height: 100, backgroundColor: '#000', borderColor: '#fff', borderSize: 1, scale: 1 },
+                    { show: false, size: 10, font: 'monospace', colorLow: '#0f0', colorMed: '#ff0', colorHigh: '#f00', backgroundColor: '#000', x: 0, y: 0 },
+                    { color: '#fff', font: '10px monospace', text: 'fs', x: 0, y: 0 }
+                );
+            }
+
+            async initializeGame() {
+                await new Promise((resolve) => {
+                    this.resolveInit = resolve;
+                });
+
+                this.runtimeContext = {
+                    onPageHidden() {},
+                    onPageVisible() {},
+                    getContext() { return null; },
+                    clearCanvas() {},
+                    drawBorder() {},
+                    updatePerformance() {},
+                    drawFullscreenOverlay() {},
+                    drawPerformanceOverlay() {},
+                    calculateTextMetrics() { return { width: 0, height: 0 }; },
+                    destroy() {}
+                };
+            }
+        }
+
+        DeferredGame.isInitialized = false;
+        const deferredGame = new DeferredGame();
+        const rafCountBeforeDestroy = rafCalls.length;
+        deferredGame.destroy();
+        deferredGame.resolveInit();
+        await Promise.resolve();
+        await Promise.resolve();
+        assert(DeferredGame.isInitialized === false, 'GameBase should not mark a destroyed game initialized after async init resolves');
+        assert(rafCalls.length === rafCountBeforeDestroy, 'GameBase should not schedule animation after destroy during async init');
+
+        class AsyncLoopGame extends GameBase {
+            constructor() {
+                super(
+                    { width: 100, height: 100, backgroundColor: '#000', borderColor: '#fff', borderSize: 1, scale: 1 },
+                    { show: false, size: 10, font: 'monospace', colorLow: '#0f0', colorMed: '#ff0', colorHigh: '#f00', backgroundColor: '#000', x: 0, y: 0 },
+                    { color: '#fff', font: '10px monospace', text: 'fs', x: 0, y: 0 }
+                );
+            }
+
+            async initializeGame() {
+                this.runtimeContext = {
+                    onPageHidden() {},
+                    onPageVisible() {},
+                    getContext() { return { tag: 'ctx' }; },
+                    clearCanvas() {},
+                    drawBorder() {},
+                    updatePerformance() {},
+                    drawFullscreenOverlay() {},
+                    drawPerformanceOverlay() {},
+                    calculateTextMetrics() { return { width: 0, height: 0 }; },
+                    destroy() {}
+                };
+                await this.onInitialize(this.runtimeContext);
+            }
+
+            async onInitialize() {}
+
+            gameLoop() {
+                return new Promise((resolve) => {
+                    this.resolveLoop = resolve;
+                });
+            }
+        }
+
+        const asyncLoopGame = new AsyncLoopGame();
+        await Promise.resolve();
+        const scheduledAnimate = rafCalls[rafCalls.length - 1];
+        const rafCountBeforeAsyncDestroy = rafCalls.length;
+        scheduledAnimate(16);
+        asyncLoopGame.destroy();
+        asyncLoopGame.resolveLoop();
+        await Promise.resolve();
+        await Promise.resolve();
+        assert(rafCalls.length === rafCountBeforeAsyncDestroy, 'GameBase should not schedule another frame when async gameLoop resolves after destroy');
     } finally {
         Fullscreen.destroy = originalFullscreenDestroy;
         globalThis.requestAnimationFrame = originalRequestAnimationFrame;

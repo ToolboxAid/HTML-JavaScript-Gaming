@@ -224,6 +224,10 @@ class Fullscreen {
     }
 
     static draw(ctx) {
+        if (!ctx) {
+            return;
+        }
+
         if (!Fullscreen.isFullScreen) {
             ctx.save();
             ctx.fillStyle = this.config.color;

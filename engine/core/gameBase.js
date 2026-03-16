@@ -29,6 +29,10 @@ class GameBase {
 
         this.initializeGame(canvasConfig, performanceConfig, fullscreenConfig)
             .then(() => {
+                if (this.isDestroyed) {
+                    return;
+                }
+
                 DebugLog.log(GameBase.DEBUG, 'GameBase', '*** Game initialization complete ***');
 
                 this.constructor.isInitialized = true;
@@ -40,6 +44,7 @@ class GameBase {
             .catch(error => {
                 DebugLog.error('GameBase', 'Game initialization failed:', error);
                 this.constructor.isInitialized = false;
+                this.destroy();
             });
 
     }
@@ -95,11 +100,18 @@ class GameBase {
                 const gameLoopResult = this.gameLoop(deltaTime, this.runtimeContext); // call game.js (the inheriting class)
                 if (gameLoopResult && typeof gameLoopResult.then === 'function') {
                     gameLoopResult.then(() => {
+                        if (this.isDestroyed) {
+                            return;
+                        }
+
                         this.completeFrame(startTimeMs);
                         requestAnimationFrame(this.animate);
                     }).catch((error) => {
                         DebugLog.error('GameBase', 'Animation error:', error);
-                        requestAnimationFrame(this.animate);
+
+                        if (!this.isDestroyed) {
+                            requestAnimationFrame(this.animate);
+                        }
                     });
                     return;
                 }
