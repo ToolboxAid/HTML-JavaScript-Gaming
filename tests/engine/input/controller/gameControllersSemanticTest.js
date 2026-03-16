@@ -15,12 +15,17 @@ function createControllers() {
         {
             buttonsPressed: new Set([1, 2, 8, 9, 14, 12]),
             buttonsDown: new Set([14, 12]),
-            buttonsReleased: new Set()
+            buttonsReleased: new Set(),
+            getAxisByIndexRaw(axisIndex) {
+                return [0, 0][axisIndex] || 0;
+            }
         }
     ];
     controllers.gamepadMappers = [
         {
             axisDeadzone: 0.1,
+            buttonNames: ['', 'A', 'B', '', '', '', '', '', 'Select', 'Start', '', '', 'DPadUP', 'DPadDOWN', 'DPadLEFT', 'DPadRIGHT'],
+            axisNames: ['DPadX', 'DPadY'],
             getButtonIndex(buttonName) {
                 return {
                     A: 1,
@@ -69,6 +74,11 @@ export function testGameControllersSemantic(assert) {
     assert(controllers.getButtonsDown(0).includes(14), 'GameControllers should expose buttonsDown through a read-only helper');
     assert(controllers.getButtonsPressed(0).includes(1), 'GameControllers should expose buttonsPressed through a read-only helper');
     assert(Array.isArray(controllers.getButtonsReleased(0)), 'GameControllers should expose buttonsReleased through a read-only helper');
+    assert(controllers.getButtonEntries(0).some((buttonEntry) => buttonEntry.index === 14 && buttonEntry.name === 'DPadLEFT'),
+        'GameControllers should expose mapped button names with their original indices');
+    assert(controllers.getAxisNames(0).includes('DPadX'), 'GameControllers should expose mapped axis names');
+    assert(controllers.getNamedAxisValues(0).some((axisEntry) => axisEntry.name === 'DPadX' && axisEntry.value === 0),
+        'GameControllers should expose named axis values through a read-only helper');
 
     const emptyControllers = Object.create(GameControllers.prototype);
     emptyControllers.gamepadManager = {

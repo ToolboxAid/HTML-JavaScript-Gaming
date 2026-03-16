@@ -12,6 +12,7 @@ const ctx = canvas.getContext('2d');
 
 const PLAYER_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
 const MAX_BUTTONS = 10;
+const MAX_AXIS_ROWS = 4;
 const players = [];
 let animationFrameId = null;
 let isDestroyed = false;
@@ -30,12 +31,15 @@ function createPlayer(gameControllerIndex) {
         width: 140,
         height: 36,
         buttonColors: Array(MAX_BUTTONS).fill('gray'),
+        buttonLabels: Array(MAX_BUTTONS).fill(''),
         dPad: { left: false, right: false, up: false, down: false },
+        axisValues: [],
     };
 }
 
 function resetPlayerButtons(player) {
     player.buttonColors = Array(MAX_BUTTONS).fill('gray');
+    player.buttonLabels = Array(MAX_BUTTONS).fill('');
 }
 
 function gameUpdate() {
@@ -54,7 +58,13 @@ function gameUpdate() {
 
         const player = players[playerIndex];
         resetPlayerButtons(player);
+        const buttonEntries = gameControllers.getButtonEntries(playerIndex);
         const buttonsDown = gameControllers.getButtonsDown(playerIndex);
+        buttonEntries.forEach((buttonEntry) => {
+            if (buttonEntry.index >= 0 && buttonEntry.index < MAX_BUTTONS) {
+                player.buttonLabels[buttonEntry.index] = buttonEntry.name;
+            }
+        });
         buttonsDown.forEach((button) => {
             if (button >= 0 && button < MAX_BUTTONS) {
                 player.buttonColors[button] = player.color;
@@ -64,6 +74,7 @@ function gameUpdate() {
         let moveX = 0;
         let moveY = 0;
         player.dPad = gameControllers.getDPad(playerIndex);
+        player.axisValues = gameControllers.getNamedAxisValues(playerIndex).slice(0, MAX_AXIS_ROWS);
         if (player.dPad.left) moveX = -1;
         if (player.dPad.right) moveX = 1;
         if (player.dPad.up) moveY = -1;
@@ -99,7 +110,8 @@ function gameRender() {
                 ctx.stroke();
 
                 ctx.fillStyle = 'white';
-                ctx.fillText(buttonIndex, buttonX - 2.5, buttonY + 2.5);
+                const buttonLabel = player.buttonLabels[buttonIndex] || buttonIndex;
+                ctx.fillText(String(buttonLabel).slice(0, 3), buttonX - 4.5, buttonY + 2.5);
             });
 
             ctx.fillStyle = player.color;
@@ -115,14 +127,11 @@ function gameRender() {
             ctx.fillText(dPadState, panelX + 22, player.y + 0);
 
             const decimals = 2;
-            ctx.fillText('Axis0 X:', panelX, player.y + 8);
-            ctx.fillText(gameControllers.getAxisByName(playerIndex, 'StickLeftX').toFixed(decimals), panelX + 30, player.y + 8);
-            ctx.fillText('Axis0 Y:', panelX, player.y + 16);
-            ctx.fillText(gameControllers.getAxisByName(playerIndex, 'StickLeftY').toFixed(decimals), panelX + 30, player.y + 16);
-            ctx.fillText('Axis1 X:', panelX, player.y + 24);
-            ctx.fillText(gameControllers.getAxisByName(playerIndex, 'StickRightX').toFixed(decimals), panelX + 30, player.y + 24);
-            ctx.fillText('Axis1 Y:', panelX, player.y + 32);
-            ctx.fillText(gameControllers.getAxisByName(playerIndex, 'StickRightY').toFixed(decimals), panelX + 30, player.y + 32);
+            player.axisValues.forEach((axisEntry, axisIndex) => {
+                const axisY = player.y + 8 + (axisIndex * 8);
+                ctx.fillText(`${axisEntry.name}:`, panelX, axisY);
+                ctx.fillText(axisEntry.value.toFixed(decimals), panelX + 42, axisY);
+            });
         }
     });
 }

@@ -86,6 +86,27 @@ class GameControllers {
         return buttonsReleased ? Array.from(buttonsReleased) : [];
     }
 
+    getButtonEntries(gameControllerIndex) {
+        const mapper = this.getMapper(gameControllerIndex);
+        return mapper
+            ? mapper.buttonNames
+                .map((buttonName, buttonIndex) => ({ index: buttonIndex, name: buttonName }))
+                .filter((buttonEntry) => buttonEntry.name)
+            : [];
+    }
+
+    getAxisNames(gameControllerIndex) {
+        const mapper = this.getMapper(gameControllerIndex);
+        return mapper ? mapper.axisNames.filter(Boolean) : [];
+    }
+
+    getNamedAxisValues(gameControllerIndex) {
+        return this.getAxisNames(gameControllerIndex).map((axisName) => ({
+            name: axisName,
+            value: this.getAxisByName(gameControllerIndex, axisName)
+        }));
+    }
+
     ensureMapper(gameControllerIndex, gamepadId = 'default') {
         if (!this.gamepadMappers[gameControllerIndex]) {
             this.gamepadMappers[gameControllerIndex] = new GamepadMapper(gameControllerIndex, gamepadId);
