@@ -9,7 +9,7 @@ import ObjectCleanup from "../utils/objectCleanup.js";
 import DebugLog from "../utils/debugLog.js";
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
-import BoxRenderer from "../renderers/boxRenderer.js";
+import PrimitiveRenderer from "../renderers/primitiveRenderer.js";
 
 /** Represents a static object in a game that cannot move. */
 class ObjectStatic {
@@ -71,7 +71,7 @@ class ObjectStatic {
 
     /** Draws the object on the canvas. */
     draw(fillColor = 'gray', borderColor = null, borderWidth = 0) {
-        BoxRenderer.draw(this, fillColor, borderColor, borderWidth);
+        PrimitiveRenderer.draw(this, fillColor, borderColor, borderWidth);
     }
 
     /** Destroys the object and cleans up resources. */

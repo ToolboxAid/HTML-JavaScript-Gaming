@@ -19,6 +19,7 @@ class VectorRenderer {
         const normalizedOffsetX = RendererGuards.normalizeOffset(offsetX);
         const normalizedOffsetY = RendererGuards.normalizeOffset(offsetY);
 
+        CanvasUtils.ctx.save();
         CanvasUtils.ctx.beginPath();
         CanvasUtils.ctx.strokeStyle = object.color;
         CanvasUtils.ctx.lineWidth = normalizedLineWidth;
@@ -46,6 +47,8 @@ class VectorRenderer {
                 normalizedLineWidth
             );
         }
+
+        CanvasUtils.ctx.restore();
     }
 }
 

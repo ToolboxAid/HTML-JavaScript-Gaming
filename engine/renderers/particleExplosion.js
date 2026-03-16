@@ -124,9 +124,10 @@ class ParticleExplosion {
     }
 
     draw() {
-        if (this.isDone) return;
+        if (this.isDone || !CanvasUtils.ctx) return;
 
         const ctx = CanvasUtils.ctx;
+        ctx.save();
 
         this.particles.forEach(particle => {
             if (particle.alpha > 0 && particle.drawRadius > 0) {
@@ -145,6 +146,8 @@ class ParticleExplosion {
                 }
             }
         });
+
+        ctx.restore();
     }
 
     destroy() {

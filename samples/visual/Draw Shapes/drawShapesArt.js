@@ -4,6 +4,7 @@
 // drawShapesArt.js
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 export function drawShapeGallery(canvasConfig) {
     drawGridLines(canvasConfig);
@@ -17,47 +18,31 @@ export function drawShapeGallery(canvasConfig) {
 }
 
 function drawFilledCircle() {
-    CanvasUtils.ctx.beginPath();
-    CanvasUtils.ctx.arc(450, 510, 50, 0, Math.PI * 2);
-    CanvasUtils.ctx.fillStyle = '#ed9700';
-    CanvasUtils.ctx.fill();
+    PrimitiveRenderer.drawCircle(450, 510, 50, '#ed9700');
 }
 
 function drawHollowCircle() {
-    CanvasUtils.ctx.beginPath();
-    CanvasUtils.ctx.arc(550, 510, 50, 0, Math.PI * 2);
-    CanvasUtils.ctx.strokeStyle = '#ffffff';
-    CanvasUtils.ctx.lineWidth = 3;
-    CanvasUtils.ctx.stroke();
+    PrimitiveRenderer.drawCircle(550, 510, 50, null, '#ffffff', 3);
 }
 
 function drawFilledSquare() {
-    CanvasUtils.ctx.fillStyle = '#f5d7a4';
-    CanvasUtils.ctx.fillRect(350, 300, 100, 100);
+    PrimitiveRenderer.drawRect(350, 300, 100, 100, '#f5d7a4');
 }
 
 function drawHollowSquare() {
-    CanvasUtils.ctx.strokeStyle = '#ed9700';
-    CanvasUtils.ctx.lineWidth = 3;
-    CanvasUtils.ctx.strokeRect(480, 300, 100, 100);
+    PrimitiveRenderer.drawRect(480, 300, 100, 100, null, '#ed9700', 3);
 }
 
 function drawFilledTriangle() {
-    CanvasUtils.ctx.fillStyle = '#d6c4ff';
-    CanvasUtils.ctx.beginPath();
-    CanvasUtils.ctx.moveTo(140, 180);
-    CanvasUtils.ctx.lineTo(200, 320);
-    CanvasUtils.ctx.lineTo(80, 320);
-    CanvasUtils.ctx.closePath();
-    CanvasUtils.ctx.fill();
+    PrimitiveRenderer.drawTriangle([
+        { x: 140, y: 180 },
+        { x: 200, y: 320 },
+        { x: 80, y: 320 }
+    ], '#d6c4ff');
 }
 
 function drawHollowOval() {
-    CanvasUtils.ctx.strokeStyle = '#ed9700';
-    CanvasUtils.ctx.lineWidth = 3;
-    CanvasUtils.ctx.beginPath();
-    CanvasUtils.ctx.ellipse(255, 310, 85, 56, 0, 0, Math.PI * 2);
-    CanvasUtils.ctx.stroke();
+    PrimitiveRenderer.drawEllipse(255, 310, 85, 56, null, '#ed9700', 3);
 }
 
 function drawGridLines(canvasConfig) {

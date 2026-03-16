@@ -1,8 +1,9 @@
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
-import BoxRenderer from '../../../engine/renderers/boxRenderer.js';
+import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import SpriteRenderer from '../../../engine/renderers/spriteRenderer.js';
 import VectorRenderer from '../../../engine/renderers/vectorRenderer.js';
 import PngRenderer from '../../../engine/renderers/pngRenderer.js';
+import ParticleExplosion from '../../../engine/renderers/particleExplosion.js';
 
 function assertNoThrow(assert, fn, message) {
     let threw = false;
@@ -18,6 +19,8 @@ function assertNoThrow(assert, fn, message) {
 
 function createMockCtx() {
     return {
+        saveCalls: 0,
+        restoreCalls: 0,
         beginPath() {},
         closePath() {},
         moveTo() {},
@@ -28,13 +31,18 @@ function createMockCtx() {
         strokeRect() {},
         drawImage() {},
         fillText() {},
-        save() {},
-        restore() {},
+        save() {
+            this.saveCalls += 1;
+        },
+        restore() {
+            this.restoreCalls += 1;
+        },
         translate() {},
         rotate() {},
         scale() {},
         setLineDash() {},
         arc() {},
+        ellipse() {},
         measureText() {
             return {
                 width: 10,
@@ -130,12 +138,17 @@ function testRenderersGuardOnMissingContext(assert) {
             y: 0
         };
 
-        assertNoThrow(assert, () => BoxRenderer.draw({ x: 0, y: 0, width: 10, height: 10, isDestroyed: false }), 'BoxRenderer should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.draw({ x: 0, y: 0, width: 10, height: 10, isDestroyed: false }), 'PrimitiveRenderer should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawRect(0, 0, 10, 10, 'white'), 'PrimitiveRenderer.drawRect should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawCircle(5, 5, 3, 'white'), 'PrimitiveRenderer.drawCircle should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawEllipse(5, 5, 3, 2, null, 'white', 1), 'PrimitiveRenderer.drawEllipse should no-op without context');
+        assertNoThrow(assert, () => PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 1, y: 0 }], 'white'), 'PrimitiveRenderer.drawTriangle should no-op without context');
         assertNoThrow(assert, () => SpriteRenderer.draw(spriteLike, Number.NaN, Number.NaN), 'SpriteRenderer should no-op without context');
         assertNoThrow(assert, () => VectorRenderer.draw(vectorLike, Number.NaN, Number.NaN, Number.NaN), 'VectorRenderer should no-op without context');
         assertNoThrow(assert, () => PngRenderer.draw(pngLike, Number.NaN, Number.NaN), 'PngRenderer should no-op without context');
         assertNoThrow(assert, () => PngRenderer.drawAllFramesPreview(pngLike, Number.NaN, Number.NaN, Number.NaN, Number.NaN), 'PngRenderer frame preview should no-op without context');
         assertNoThrow(assert, () => PngRenderer.drawSheetPreview(pngLike, Number.NaN, Number.NaN, Number.NaN), 'PngRenderer sheet preview should no-op without context');
+        assertNoThrow(assert, () => new ParticleExplosion(0, 0, 1, 5, 1, 3).draw(), 'ParticleExplosion should no-op without context');
     } finally {
         CanvasUtils.ctx = originalCtx;
         CanvasUtils.drawSprite = originalDrawSprite;
@@ -154,15 +167,21 @@ function testRenderersDrawWithMockContext(assert) {
 
     let drawSpriteCalls = 0;
     let drawSpriteRgbCalls = 0;
+    let mockCtx = null;
 
     try {
-        CanvasUtils.ctx = createMockCtx();
+        mockCtx = createMockCtx();
+        CanvasUtils.ctx = mockCtx;
         CanvasUtils.drawSprite = () => { drawSpriteCalls += 1; };
         CanvasUtils.drawSpriteRGB = () => { drawSpriteRgbCalls += 1; };
         CanvasUtils.drawBounds = () => {};
         CanvasUtils.drawCircle2 = () => {};
 
-        BoxRenderer.draw({ x: 1, y: 2, width: 3, height: 4, isDestroyed: false }, 'white', 'red', 1);
+        PrimitiveRenderer.draw({ x: 1, y: 2, width: 3, height: 4, isDestroyed: false }, 'white', 'red', 1);
+        PrimitiveRenderer.drawRect(5, 6, 7, 8, 'white', 'red', 1);
+        PrimitiveRenderer.drawCircle(20, 20, 4, 'white', 'red', 1);
+        PrimitiveRenderer.drawEllipse(25, 25, 6, 3, null, 'white', 1);
+        PrimitiveRenderer.drawTriangle([{ x: 0, y: 0 }, { x: 3, y: 5 }, { x: 5, y: 0 }], '#fff', 'red', 1);
 
         const spriteLiving = {
             isDead: () => false,
@@ -235,8 +254,12 @@ function testRenderersDrawWithMockContext(assert) {
         PngRenderer.drawAllFramesPreview(pngLike, Number.NaN, Number.NaN, Number.NaN, Number.NaN);
         PngRenderer.drawSheetPreview(pngLike, Number.NaN, Number.NaN, Number.NaN);
 
+        const particleExplosion = new ParticleExplosion(0, 0, 1, 5, 1, 3);
+        particleExplosion.draw();
+
         assert(drawSpriteCalls === 1, 'SpriteRenderer should call drawSprite for non-json frames');
         assert(drawSpriteRgbCalls === 1, 'SpriteRenderer should call drawSpriteRGB for json frames');
+        assert(mockCtx.saveCalls === mockCtx.restoreCalls, 'Renderers should balance canvas save and restore calls');
     } finally {
         CanvasUtils.ctx = originalCtx;
         CanvasUtils.drawSprite = originalDrawSprite;
