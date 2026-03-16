@@ -356,19 +356,20 @@ class PrimitiveRenderer {
         headerColor = null,
         headerWidth = 2
     } = {}) {
+        this.applyRenderState(ctx, 1, null);
+
         if (backdropColor && backdropInset > 0) {
-            this.renderRectArea(
+            this.fillRectArea(
                 ctx,
                 x - backdropInset,
                 y - backdropInset,
                 width + (backdropInset * 2),
                 height + (backdropInset * 2),
-                backdropColor,
-                1
+                backdropColor
             );
         }
 
-        this.renderRectArea(ctx, x, y, width, height, fillColor, 1);
+        this.fillRectArea(ctx, x, y, width, height, fillColor);
 
         if (borderColor && borderWidth > 0) {
             this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, 1);
