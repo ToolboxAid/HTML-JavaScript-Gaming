@@ -3,7 +3,7 @@
 // 02/10/2025
 // gamepadMapper.js
 
-import { DPadType } from "./gamepadEnums.js";
+import { D_PAD_AXIS_NAMES, D_PAD_BUTTON_NAMES, DPadType } from "./gamepadEnums.js";
 import GameControllerMap from "./gameControllerMap.js";
 import DebugFlag from "../../utils/debugFlag.js";
 import DebugLog from "../../utils/debugLog.js";
@@ -29,11 +29,13 @@ class GamepadMapper {
     // Allow override from game
     mapButtonNames(buttonNames) {
         this.buttonNames = buttonNames;
+        this.DPadType = this.getDPadType();
     }
 
     // Allow override from game
     mapAxisNames(axisNames) {
         this.axisNames = axisNames;
+        this.DPadType = this.getDPadType();
     }
 
     // Get the index of a button by name
@@ -52,8 +54,8 @@ class GamepadMapper {
             return DPadType.NONE;
         }
 
-        const dPadButtonNames = ["DPadUP", "DPadDOWN", "DPadLEFT", "DPadRIGHT"];
-        const dPadAxisNames = ["DPadX", "DPadY"];
+        const dPadButtonNames = Object.values(D_PAD_BUTTON_NAMES);
+        const dPadAxisNames = Object.values(D_PAD_AXIS_NAMES);
 
         const isDPadButtons = dPadButtonNames.some(name => this.buttonNames.includes(name));
         const isDPadAxes = dPadAxisNames.some(name => this.axisNames.includes(name));

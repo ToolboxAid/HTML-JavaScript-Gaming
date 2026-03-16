@@ -4,8 +4,6 @@
 // gameControllerButtonsTest.js
 
 import {
-    D_PAD_BUTTON_NAMES,
-    GAMEPAD_BUTTON_NAMES,
     getDPadState,
     wasDPadDirectionPressed,
     wasPrimaryActionPressed,
@@ -13,6 +11,7 @@ import {
     wasSelectPressed,
     wasStartPressed
 } from '../../../../engine/input/controller/gameControllerButtons.js';
+import { D_PAD_BUTTON_NAMES, GAMEPAD_BUTTON_NAMES } from '../../../../engine/input/controller/gamepadEnums.js';
 
 class MockGameControllers {
     constructor({ pressedNames = [], dPadState = null } = {}) {

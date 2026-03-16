@@ -15,6 +15,7 @@ export const engineTestEntries = [
   { name: 'mouseInput', modulePath: './input/mouseTest.js', exportName: 'testMouseInput' },
   { name: 'controllerFlow', modulePath: './input/controller/controllerFlowTest.js', exportName: 'testControllerFlow' },
   { name: 'gameControllerButtons', modulePath: './input/controller/gameControllerButtonsTest.js', exportName: 'testGameControllerButtons' },
+  { name: 'gamepadMapper', modulePath: './input/controller/gamepadMapperTest.js', exportName: 'testGamepadMapper' },
   { name: 'messagesCore', modulePath: './messages/messagesCoreTest.js', exportName: 'testMessagesCore' },
   { name: 'objectLifecycleCore', modulePath: './lifecycle/objectLifecycleTest.js', exportName: 'testObjectLifecycleCore' },
   { name: 'cookies', modulePath: './misc/cookiesTest.js', exportName: 'testCookies' },

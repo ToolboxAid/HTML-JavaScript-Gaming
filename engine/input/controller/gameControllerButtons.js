@@ -3,19 +3,7 @@
 // 03/15/2026
 // gameControllerButtons.js
 
-export const GAMEPAD_BUTTON_NAMES = Object.freeze({
-    primary: 'A',
-    secondary: 'B',
-    select: 'Select',
-    start: 'Start'
-});
-
-export const D_PAD_BUTTON_NAMES = Object.freeze({
-    up: 'DPadUP',
-    down: 'DPadDOWN',
-    left: 'DPadLEFT',
-    right: 'DPadRIGHT'
-});
+import { D_PAD_BUTTON_NAMES, GAMEPAD_BUTTON_NAMES } from './gamepadEnums.js';
 
 function wasNamedButtonPressed(gameControllers, buttonName, controllerIndex = 0) {
     return gameControllers?.wasButtonNamePressed(controllerIndex, buttonName) || false;
