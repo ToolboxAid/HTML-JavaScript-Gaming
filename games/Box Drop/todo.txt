@@ -43,7 +43,7 @@ Project Name/
 
 Directory structure guidelines:
 
-[ ] Keep `index.html` minimal and focused on bootstrapping the module entry point
+[x] Keep `index.html` minimal and focused on bootstrapping the module entry point
 [ ] Keep `game.js` as the runtime shell: setup, owned input, state flow, update, and render orchestration
 [ ] Keep `global.js` for shared project config only
 [ ] Put raw content and definitions in `data/` instead of mixing large config blocks into `game.js`
