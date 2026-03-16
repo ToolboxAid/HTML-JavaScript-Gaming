@@ -191,8 +191,7 @@ class PrimitiveRenderer {
         ctx.beginPath();
 
         points.forEach((point, index) => {
-            const x = Array.isArray(point) ? point[0] : point.x;
-            const y = Array.isArray(point) ? point[1] : point.y;
+            const { x, y } = this.getPointCoordinates(point);
 
             if (index === 0) {
                 ctx.moveTo(x + offsetX, y + offsetY);
@@ -205,6 +204,12 @@ class PrimitiveRenderer {
         if (closePath) {
             ctx.closePath();
         }
+    }
+
+    static getPointCoordinates(point) {
+        return Array.isArray(point)
+            ? { x: point[0], y: point[1] }
+            : { x: point.x, y: point.y };
     }
 
     static withContext(options = {}, drawFn) {
