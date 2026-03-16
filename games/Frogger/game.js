@@ -7,6 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 
 import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
@@ -15,6 +16,8 @@ import GameControllers from '../../engine/input/controller/gameControllers.js';
 import Frog from './gameObjects/frog.js';
 
 import AttractMode from './attractMode.js';
+
+const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
 
 class Game extends GameBase {
 
@@ -166,8 +169,8 @@ class Game extends GameBase {
 
   pauseGame() {
     this.gamePauseCheck();
-    CanvasUtils.drawText(150, 200, "Game Paused.", 3.5, "white");
-    CanvasUtils.drawText(115, 250, "Press `P` or `Select` to unpause", 3.5, "white");
+    drawPixelText(150, 200, "Game Paused.", 3.5, "white");
+    drawPixelText(115, 250, "Press `P` or `Select` to unpause", 3.5, "white");
   }
 
   playGame(deltaTime) {
@@ -175,7 +178,7 @@ class Game extends GameBase {
 
     // Draw game info
     const playerInfo = `New Player ${this.currentPlayer + 1} - Lives: ${this.playerLives[this.currentPlayer]} - Score: ${this.score[this.currentPlayer]}`;
-    CanvasUtils.drawText(10, 20, playerInfo, 2, "white");
+    drawPixelText(10, 20, playerInfo, 2, "white");
 
 
     // Update and draw frog

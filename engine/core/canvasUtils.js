@@ -6,7 +6,6 @@
 import SystemUtils from '../utils/systemUtils.js';
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
-
 import CanvasText from './canvasText.js';
 import Colors from '../renderers/assets/colors.js';
 import Sprite from './sprite.js';
@@ -32,9 +31,6 @@ class CanvasUtils {
 
     static canvas = null;
     static ctx = null;
-    static drawTextCallback = (...args) => CanvasUtils.drawText(...args);
-    static drawSpriteCallback = (...args) => CanvasUtils.drawSprite(...args);
-
     static config = {
         width: 1024,
         height: 768,
@@ -99,26 +95,6 @@ class CanvasUtils {
 
     static hasContext() {
         return !!this.ctx;
-    }
-
-    /**
-     * Draw text and numbers 
-     */
-    static drawNumber(x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
-        CanvasText.drawNumber(
-            this.drawTextCallback,
-            x,
-            y,
-            number,
-            pixelSize,
-            color,
-            leadingCount,
-            leadingChar
-        );
-    }
-
-    static drawText(x, y, text, pixelSize, color = 'white') {
-        CanvasText.drawText(this.drawSpriteCallback, x, y, text, pixelSize, color);
     }
 
     // get text width & height based on size & font w/padding
@@ -205,4 +181,3 @@ class CanvasUtils {
 }
 
 export default CanvasUtils;
-

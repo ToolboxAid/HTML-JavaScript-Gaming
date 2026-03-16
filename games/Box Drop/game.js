@@ -7,6 +7,7 @@ import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from 
 import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
@@ -14,6 +15,8 @@ import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
+
+const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
 
 class Game extends GameBase {
 
@@ -151,8 +154,8 @@ class Game extends GameBase {
 
   pauseGame() {
     this.gamePauseCheck();
-    CanvasUtils.drawText(150, 200, "Game Paused.", 3.5, "white");
-    CanvasUtils.drawText(115, 250, "Press `P` or `Select` to unpause", 3.5, "white");
+    drawPixelText(150, 200, "Game Paused.", 3.5, "white");
+    drawPixelText(115, 250, "Press `P` or `Select` to unpause", 3.5, "white");
   }
 
   static playerX = canvasConfig.width / 2;
@@ -222,8 +225,8 @@ class Game extends GameBase {
 
   drawScoreLives() {
     // draw score and lives
-    CanvasUtils.drawText(50, 50, `Score ${this.score[0]} Lives ${this.playerLives[0]}`, 3.5, "white");
-    CanvasUtils.drawText(650, 50, `Score ${this.score[1]} Lives ${this.playerLives[1]}`, 3.5, "white");
+    drawPixelText(50, 50, `Score ${this.score[0]} Lives ${this.playerLives[0]}`, 3.5, "white");
+    drawPixelText(650, 50, `Score ${this.score[1]} Lives ${this.playerLives[1]}`, 3.5, "white");
   }
 
   resetGame() {

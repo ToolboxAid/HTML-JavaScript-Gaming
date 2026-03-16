@@ -7,9 +7,13 @@
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../engine/core/gameBase.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
+
+const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
+const drawPixelNumber = CanvasText.bindDrawNumber(CanvasUtils.drawSprite.bind(CanvasUtils));
 
 class Game extends GameBase {
   constructor() {
@@ -69,8 +73,8 @@ class Game extends GameBase {
 
     const y1 = this.cellHeight * 2 - 10;
     const y2 = this.cellHeight * 3 - 10;
-    CanvasUtils.drawText(250, y1, "Welcome to Connect 4!", 4, "blue");
-    CanvasUtils.drawText(300, y2, "Press `Enter` to Start", 3, "blue");
+    drawPixelText(250, y1, "Welcome to Connect 4!", 4, "blue");
+    drawPixelText(300, y2, "Press `Enter` to Start", 3, "blue");
 
     if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.resetBoard();
@@ -98,8 +102,8 @@ class Game extends GameBase {
 
   displayPlayerSelect() {
 
-    CanvasUtils.drawText(200, 50, "Select Player Mode", 4, "white");
-    CanvasUtils.drawText(200, 100, "Press `Enter` to Start", 3, "white");
+    drawPixelText(200, 50, "Select Player Mode", 4, "white");
+    drawPixelText(200, 100, "Press `Enter` to Start", 3, "white");
 
     if (this.keyboardInput.getKeysPressed().includes('Enter')) {
       this.resetBoard();
@@ -120,7 +124,7 @@ class Game extends GameBase {
 
   playGame() {
     this.renderBoard();
-    CanvasUtils.drawText(20, 20, `Player ${this.currentPlayer}'s Turn`, 3, "white");
+    drawPixelText(20, 20, `Player ${this.currentPlayer}'s Turn`, 3, "white");
 
     for (let i = 0; i < 7; i++) {
       if (this.keyboardInput.getKeysPressed().includes(`Digit${i + 1}`)) {
@@ -200,7 +204,7 @@ class Game extends GameBase {
     for (let col = 0; col < this.columns; col++) {
       const x = col * this.cellWidth + over;
       const y = 10;
-      CanvasUtils.drawNumber(x, y, col + 1, 5, "blue", 0)
+      drawPixelNumber(x, y, col + 1, 5, "blue", 0)
     }
 
     const offset = 65;
@@ -248,7 +252,7 @@ class Game extends GameBase {
     const y3 = this.cellHeight * 4 - 10;
 
     // Display "Game Over" text
-    CanvasUtils.drawText(400, y1, "Game Over", 4, "red");
+    drawPixelText(400, y1, "Game Over", 4, "red");
 
     // Blink the winner or draw message
     if (this.counter++ > 10) {
@@ -257,11 +261,11 @@ class Game extends GameBase {
     }
 
     if (this.blinkOn) {
-      CanvasUtils.drawText(x2, y2, message, 3, "blue");
+      drawPixelText(x2, y2, message, 3, "blue");
     }
 
     // Display restart message
-    CanvasUtils.drawText(280, y3, "Press `Enter` to Restart", 3, "blue");
+    drawPixelText(280, y3, "Press `Enter` to Restart", 3, "blue");
 
     // Check for restart input
     if (this.keyboardInput.getKeysPressed().includes('Enter')) {

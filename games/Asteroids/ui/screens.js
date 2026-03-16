@@ -4,6 +4,9 @@
 // screens.js
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasText from '../../../engine/core/canvasText.js';
+
+const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
 
 class AsteroidsScreens {
     static BACK_TO_ATTRACT = 180;
@@ -44,8 +47,8 @@ class AsteroidsScreens {
     }
 
     static drawPauseOverlay() {
-        CanvasUtils.drawText(150, 200, 'Game Paused.', 3.5, 'white');
-        CanvasUtils.drawText(150, 250, 'Press `P` to unpause game', 3.5, 'white');
+        drawPixelText(150, 200, 'Game Paused.', 3.5, 'white');
+        drawPixelText(150, 250, 'Press `P` to unpause game', 3.5, 'white');
     }
 
     static drawGameOver() {

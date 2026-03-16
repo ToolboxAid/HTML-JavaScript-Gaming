@@ -11,6 +11,15 @@ class CanvasText {
         throw new Error('CanvasText is a utility class with only static methods. Do not instantiate.');
     }
 
+    static bindDrawText(drawSpriteFn) {
+        return (...args) => this.drawText(drawSpriteFn, ...args);
+    }
+
+    static bindDrawNumber(drawSpriteFn) {
+        const drawTextFn = this.bindDrawText(drawSpriteFn);
+        return (...args) => this.drawNumber(drawTextFn, ...args);
+    }
+
     static drawNumber(drawTextFn, x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         const numberStr = number.toString();
         if (numberStr.length > leadingCount) {

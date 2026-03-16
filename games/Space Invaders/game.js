@@ -8,6 +8,7 @@ import { canvasConfig, spriteConfig, enemyConfig, performanceConfig, fullscreenC
 import GameBase from '../../engine/core/gameBase.js';
 
 import CanvasUtils from '../../engine/core/canvasUtils.js'; // Required for dynamic canvas operations, used in animate()
+import CanvasText from '../../engine/core/canvasText.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
 import GameCollision from '../../engine/game/gameCollision.js';
 import GameUtils from '../../engine/game/gameUtils.js';
@@ -17,6 +18,9 @@ import Cookies from '../../engine/misc/cookies.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
 import Sprite from '../../engine/core/sprite.js';
 import SystemUtils from '../../engine/utils/systemUtils.js';
+
+const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
+const drawPixelNumber = CanvasText.bindDrawNumber(CanvasUtils.drawSprite.bind(CanvasUtils));
 
 import AttractMode from './attractMode.js';
 
@@ -279,15 +283,15 @@ class Game extends GameBase {
 
         // Display Player 1's score if Game.scoreOn is true and current player is 1
         if (Game.scoreOnPlayer1) {
-            CanvasUtils.drawNumber(90, 80, this.players[0].score, pixelSize, color, 4, '0');
+            drawPixelNumber(90, 80, this.players[0].score, pixelSize, color, 4, '0');
         }
 
         // Display high score
-        CanvasUtils.drawNumber(410, 80, this.highScore, pixelSize, color, 4, '0');
+        drawPixelNumber(410, 80, this.highScore, pixelSize, color, 4, '0');
 
         // Display Player 2's score if Game.scoreOn is true and current player is 2
         if (Game.scoreOnPlayer2) {
-            CanvasUtils.drawNumber(750, 80, this.players[1].score, pixelSize, color, 4, '0');
+            drawPixelNumber(750, 80, this.players[1].score, pixelSize, color, 4, '0');
         }
     }
 
@@ -296,7 +300,7 @@ class Game extends GameBase {
         const dwn = spriteConfig.livesY;
         const color = spriteConfig.livesColor || 'red';
         const pixelSize = 5;
-        CanvasUtils.drawNumber(acr, dwn, player.lives, pixelSize, color, 2, '0');
+        drawPixelNumber(acr, dwn, player.lives, pixelSize, color, 2, '0');
         CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
     }
 
@@ -639,7 +643,7 @@ checkLaser(deltaTime, laserFirePoint) {
         const dwn = spriteConfig.livesY;
         const color = spriteConfig.livesColor;
         const pixelSize = 5;
-        CanvasUtils.drawNumber(acr, dwn, 0, pixelSize, color, 2, '0');
+        drawPixelNumber(acr, dwn, 0, pixelSize, color, 2, '0');
         CanvasUtils.drawSprite(acr + 80, dwn - 10, Player.frame[0], spriteConfig.pixelSize);
 
         if (this.keyboardInput.getKeysPressed().includes('Enter') ||
@@ -653,13 +657,13 @@ checkLaser(deltaTime, laserFirePoint) {
 
     displayPlayerSelect(deltaTime) {
         console.log("player select");
-        CanvasUtils.drawText(40, 400, "Keyboard <left arrow> key to move left.", 3.5, "yellow");
-        CanvasUtils.drawText(40, 440, "Keyboard <right arrow> key to move right.", 3.5, "yellow");
-        CanvasUtils.drawText(40, 480, "Keyboard <spacebar> to fire.", 3.5, "yellow");
-
-        CanvasUtils.drawText(40, 600, "GameController <left D-pad> to move left.", 3.5, "yellow");
-        CanvasUtils.drawText(40, 640, "GameController <right D-bay> to move right.", 3.5, "yellow");
-        CanvasUtils.drawText(40, 680, "GameController <A> to fire.", 3.5, "yellow");
+        drawPixelText(40, 400, "Keyboard <left arrow> key to move left.", 3.5, "yellow");
+        drawPixelText(40, 440, "Keyboard <right arrow> key to move right.", 3.5, "yellow");
+        drawPixelText(40, 480, "Keyboard <spacebar> to fire.", 3.5, "yellow");
+        
+        drawPixelText(40, 600, "GameController <left D-pad> to move left.", 3.5, "yellow");
+        drawPixelText(40, 640, "GameController <right D-bay> to move right.", 3.5, "yellow");
+        drawPixelText(40, 680, "GameController <A> to fire.", 3.5, "yellow");
 
         const config = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
         GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config, this.gameControllers);
@@ -683,9 +687,9 @@ checkLaser(deltaTime, laserFirePoint) {
         const x = canvasConfig.width / 2 - 100;
         const y = canvasConfig.height / 2 - 100;
 
-        CanvasUtils.drawText(x, y, "Game Over.", 3.5, "white");
-        CanvasUtils.drawText(x - 300, y + 60, "Press Keyboard `Enter` to Restart", 3.5, "#ffffffff");
-        CanvasUtils.drawText(x - 350, y + 90, "Press GameController `Start` to Restart", 3.5, "#ffffffff");
+        drawPixelText(x, y, "Game Over.", 3.5, "white");
+        drawPixelText(x - 300, y + 60, "Press Keyboard `Enter` to Restart", 3.5, "#ffffffff");
+        drawPixelText(x - 350, y + 90, "Press GameController `Start` to Restart", 3.5, "#ffffffff");
 
         if (this.keyboardInput.getKeysPressed().includes('Enter') ||
             this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
@@ -904,7 +908,7 @@ checkLaser(deltaTime, laserFirePoint) {
         const x2 = canvasConfig.width / 5 - 170;
         const y2 = canvasConfig.height - 40;
 
-        CanvasUtils.drawText(x1, y1, "Game Paused.", 3.5, "white");
+        drawPixelText(x1, y1, "Game Paused.", 3.5, "white");
         CanvasUtils.drawSpriteRGB(x2, y2, Game.upauseFrame.layers[0].data, 3.5);
     }
 

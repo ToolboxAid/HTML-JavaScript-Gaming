@@ -9,9 +9,12 @@ import GameBase from '../../engine/core/gameBase.js';
 
 
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import AttractMode from './attractMode.js';
+
+const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
 
 class Game extends GameBase {
 
@@ -104,7 +107,7 @@ class Game extends GameBase {
     for (let i = 0; i < 9; i++) {
       const x = (i % 3) * gridSize + 10;
       const y = Math.floor(i / 3) * gridSize + gridSize / 4;
-      CanvasUtils.drawText(x, y - 40, (i + 1).toString(), 4, 'white')
+      drawPixelText(x, y - 40, (i + 1).toString(), 4, 'white')
     }
   }
 
@@ -116,9 +119,9 @@ class Game extends GameBase {
       const x = (i % 3) * gridSize + 45;
       const y = Math.floor(i / 3) * gridSize + 40;
       if (this.board[i] === "X") {
-        CanvasUtils.drawText(x, y, "X", 22, "red");
+        drawPixelText(x, y, "X", 22, "red");
       } else if (this.board[i] === "O") {
-        CanvasUtils.drawText(x, y, "O", 22, "blue");
+        drawPixelText(x, y, "O", 22, "blue");
       }
     }
   }

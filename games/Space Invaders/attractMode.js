@@ -6,6 +6,7 @@
 import { canvasConfig, spriteConfig, shieldConfig } from "./global.js";
 
 import CanvasUtils from "../../engine/core/canvasUtils.js";
+import CanvasText from "../../engine/core/canvasText.js";
 import SystemUtils from "../../engine/utils/systemUtils.js";
 
 import Enemy from "./enemy.js";
@@ -14,6 +15,8 @@ import EnemySquid from "./enemySquid.js";
 import EnemyOctopus from "./enemyOctopus.js"
 import Shield from "./shield.js";
 import Ground from "./ground.js";
+
+const drawPixelText = CanvasText.bindDrawText(CanvasUtils.drawSprite.bind(CanvasUtils));
 
 export default class AttractMode {
     static delayCounter = 0;
@@ -116,9 +119,9 @@ export default class AttractMode {
     }
 
     draw() {
-        CanvasUtils.drawText(170, 200, "Welcome to Space Invaders!", 3.5, "white");
-        CanvasUtils.drawText(210, 280, "Press `Enter` to Start", 3.5, "white");
-        CanvasUtils.drawText(210, 320, "Press GameController `Start`", 3.5, "white");
+        drawPixelText(170, 200, "Welcome to Space Invaders!", 3.5, "white");
+        drawPixelText(210, 280, "Press `Enter` to Start", 3.5, "white");
+        drawPixelText(210, 320, "Press GameController `Start`", 3.5, "white");
 
         this.gameEnemies.forEach((enemy, key) => { enemy.draw(); });
         this.shields.forEach(shield => { shield.draw(); });
