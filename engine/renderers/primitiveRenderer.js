@@ -190,6 +190,16 @@ class PrimitiveRenderer {
         }
     }
 
+    static traceCircle(ctx, x, y, radius) {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+    }
+
+    static traceEllipse(ctx, x, y, radiusX, radiusY, rotation = 0) {
+        ctx.beginPath();
+        ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
+    }
+
     static getPointCoordinates(point) {
         return Array.isArray(point)
             ? { x: point[0], y: point[1] }
@@ -288,10 +298,7 @@ class PrimitiveRenderer {
         this.renderShape(ctx, fillColor, borderColor, borderWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => {
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2);
-            }
+            trace: () => this.traceCircle(ctx, x, y, radius)
         });
     }
 
@@ -299,10 +306,7 @@ class PrimitiveRenderer {
         this.renderShape(ctx, fillColor, borderColor, borderWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => {
-                ctx.beginPath();
-                ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
-            }
+            trace: () => this.traceEllipse(ctx, x, y, radiusX, radiusY, rotation)
         });
     }
 
