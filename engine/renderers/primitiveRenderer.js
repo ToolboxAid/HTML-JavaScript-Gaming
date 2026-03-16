@@ -372,12 +372,32 @@ class PrimitiveRenderer {
 
         this.fillRectArea(ctx, x, y, width, height, fillColor);
 
+        const resolvedHeaderColor = headerColor || borderColor || 'white';
+        const canCombineBorderAndHeader = (
+            borderColor &&
+            borderWidth > 0 &&
+            Number.isFinite(headerY) &&
+            resolvedHeaderColor === borderColor &&
+            headerWidth === borderWidth
+        );
+
+        if (canCombineBorderAndHeader) {
+            this.renderSegments(ctx, [
+                { x1: x, y1: y, x2: x + width, y2: y },
+                { x1: x + width, y1: y, x2: x + width, y2: y + height },
+                { x1: x + width, y1: y + height, x2: x, y2: y + height },
+                { x1: x, y1: y + height, x2: x, y2: y },
+                { x1: x, y1: headerY, x2: x + width, y2: headerY }
+            ], borderColor, borderWidth, { alpha: 1 });
+            return;
+        }
+
         if (borderColor && borderWidth > 0) {
             this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, 1);
         }
 
         if (Number.isFinite(headerY)) {
-            this.renderLine(ctx, x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth, 1);
+            this.renderLine(ctx, x, headerY, x + width, headerY, resolvedHeaderColor, headerWidth, 1);
         }
     }
 
