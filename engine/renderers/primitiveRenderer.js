@@ -71,21 +71,7 @@ class PrimitiveRenderer {
 
     static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
-            ctx.globalAlpha = alpha;
-            this.applyLineDash(ctx, options.lineDash);
-            ctx.beginPath();
-            ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
-
-            if (fillColor) {
-                ctx.fillStyle = fillColor;
-                ctx.fill();
-            }
-
-            if (borderColor && borderWidth > 0) {
-                ctx.strokeStyle = borderColor;
-                ctx.lineWidth = borderWidth;
-                ctx.stroke();
-            }
+            this.renderEllipse(ctx, x, y, radiusX, radiusY, fillColor, borderColor, borderWidth, rotation, alpha, options);
         });
     }
 
@@ -95,19 +81,7 @@ class PrimitiveRenderer {
         }
 
         return this.withContext(options, (ctx) => {
-            this.applyLineDash(ctx, options.lineDash);
-            this.tracePath(ctx, points, { closePath: true });
-
-            if (fillColor) {
-                ctx.fillStyle = fillColor;
-                ctx.fill();
-            }
-
-            if (borderColor && borderWidth > 0) {
-                ctx.strokeStyle = borderColor;
-                ctx.lineWidth = borderWidth;
-                ctx.stroke();
-            }
+            this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
         });
     }
 
@@ -128,12 +102,13 @@ class PrimitiveRenderer {
         }
 
         return this.withContext({ ctx }, (renderCtx) => {
-            renderCtx.globalAlpha = alpha;
-            this.applyLineDash(renderCtx, lineDash);
-            this.tracePath(renderCtx, points, { offsetX, offsetY, closePath });
-            renderCtx.strokeStyle = strokeColor;
-            renderCtx.lineWidth = lineWidth;
-            renderCtx.stroke();
+            this.renderPath(renderCtx, points, strokeColor, lineWidth, {
+                offsetX,
+                offsetY,
+                closePath,
+                alpha,
+                lineDash
+            });
         });
     }
 
@@ -346,6 +321,55 @@ class PrimitiveRenderer {
             ctx.lineWidth = borderWidth;
             ctx.stroke();
         }
+    }
+
+    static renderEllipse(ctx, x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
+        ctx.globalAlpha = alpha;
+        this.applyLineDash(ctx, options.lineDash);
+        ctx.beginPath();
+        ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
+
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+
+        if (borderColor && borderWidth > 0) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+            ctx.stroke();
+        }
+    }
+
+    static renderPolygon(ctx, points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
+        this.applyLineDash(ctx, options.lineDash);
+        this.tracePath(ctx, points, { closePath: true });
+
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+
+        if (borderColor && borderWidth > 0) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+            ctx.stroke();
+        }
+    }
+
+    static renderPath(ctx, points, strokeColor = 'white', lineWidth = 1, {
+        offsetX = 0,
+        offsetY = 0,
+        closePath = false,
+        alpha = 1,
+        lineDash = null
+    } = {}) {
+        ctx.globalAlpha = alpha;
+        this.applyLineDash(ctx, lineDash);
+        this.tracePath(ctx, points, { offsetX, offsetY, closePath });
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
     }
 }
 
