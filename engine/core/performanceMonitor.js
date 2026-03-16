@@ -70,7 +70,6 @@ class PerformanceMonitor {
             this.performanceConfig = config;
             this.resetMonitoringState();
             this.updateMemoryMetrics();
-            this.dimensions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
             this.startMonitoring();
             DebugLog.log(PerformanceMonitor.DEBUG, 'PerformanceMonitor', 'PerformanceMonitor.init complete.');
             return true;
