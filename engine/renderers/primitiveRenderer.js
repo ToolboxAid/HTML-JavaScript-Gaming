@@ -280,14 +280,12 @@ class PrimitiveRenderer {
     }
 
     static renderRect(ctx, x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        this.applyRenderState(ctx, alpha, options.lineDash);
-
         if (fillColor) {
-            this.renderRectFill(ctx, x, y, width, height, fillColor);
+            this.renderRectFill(ctx, x, y, width, height, fillColor, alpha, options.lineDash);
         }
 
         if (borderColor && borderWidth > 0) {
-            this.renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth);
+            this.renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth, alpha, options.lineDash);
         }
     }
 
@@ -349,19 +347,18 @@ class PrimitiveRenderer {
         headerWidth = 2
     } = {}) {
         if (backdropColor && backdropInset > 0) {
-            this.applyRenderState(ctx, 1);
             this.renderRectFill(
                 ctx,
                 x - backdropInset,
                 y - backdropInset,
                 width + (backdropInset * 2),
                 height + (backdropInset * 2),
-                backdropColor
+                backdropColor,
+                1
             );
         }
 
-        this.applyRenderState(ctx, 1);
-        this.renderRectFill(ctx, x, y, width, height, fillColor);
+        this.renderRectFill(ctx, x, y, width, height, fillColor, 1);
 
         if (borderColor && borderWidth > 0) {
             this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, 1);
@@ -374,7 +371,7 @@ class PrimitiveRenderer {
 
     static renderOverlay(ctx, width, height, fillColor = 'black', alpha = 0.5, options = {}) {
         this.applyRenderState(ctx, alpha, options.lineDash);
-        this.renderRectFill(ctx, 0, 0, width, height, fillColor);
+        this.renderRectFill(ctx, 0, 0, width, height, fillColor, alpha, options.lineDash);
     }
 
     static renderSafeAreaGuides(ctx, width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
@@ -418,7 +415,7 @@ class PrimitiveRenderer {
 
     static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
         this.applyRenderState(ctx, alpha, options.lineDash);
-        this.renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth);
+        this.renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth, alpha, options.lineDash);
     }
 
     static renderFillAndStroke(ctx, fillColor = null, borderColor = null, borderWidth = 0) {
@@ -492,12 +489,14 @@ class PrimitiveRenderer {
         }
     }
 
-    static renderRectFill(ctx, x, y, width, height, fillColor = 'gray') {
+    static renderRectFill(ctx, x, y, width, height, fillColor = 'gray', alpha = 1, lineDash = null) {
+        this.applyRenderState(ctx, alpha, lineDash);
         ctx.fillStyle = fillColor;
         ctx.fillRect(x, y, width, height);
     }
 
-    static renderRectStroke(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1) {
+    static renderRectStroke(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, lineDash = null) {
+        this.applyRenderState(ctx, alpha, lineDash);
         ctx.strokeStyle = borderColor;
         ctx.lineWidth = borderWidth;
         ctx.strokeRect(x, y, width, height);
