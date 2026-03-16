@@ -5,7 +5,7 @@
 
 import {
     D_PAD_BUTTON_NAMES,
-    GAMEPAD_BUTTONS,
+    GAMEPAD_BUTTON_NAMES,
     getDPadState,
     wasDPadDirectionPressed,
     wasPrimaryActionPressed,
@@ -15,14 +15,9 @@ import {
 } from '../../../../engine/input/controller/gameControllerButtons.js';
 
 class MockGameControllers {
-    constructor({ pressedIndexes = [], pressedNames = [], dPadState = null } = {}) {
-        this.pressedIndexes = new Set(pressedIndexes);
+    constructor({ pressedNames = [], dPadState = null } = {}) {
         this.pressedNames = new Set(pressedNames);
         this.dPadState = dPadState;
-    }
-
-    wasButtonIndexPressed(controllerIndex, buttonIndex) {
-        return controllerIndex === 0 && this.pressedIndexes.has(buttonIndex);
     }
 
     wasButtonNamePressed(controllerIndex, buttonName) {
@@ -35,10 +30,10 @@ class MockGameControllers {
 }
 
 export function testGameControllerButtons(assert) {
-    assert(GAMEPAD_BUTTONS.primary === 0, 'GAMEPAD_BUTTONS.primary should map to button 0');
-    assert(GAMEPAD_BUTTONS.secondary === 1, 'GAMEPAD_BUTTONS.secondary should map to button 1');
-    assert(GAMEPAD_BUTTONS.select === 8, 'GAMEPAD_BUTTONS.select should map to button 8');
-    assert(GAMEPAD_BUTTONS.start === 9, 'GAMEPAD_BUTTONS.start should map to button 9');
+    assert(GAMEPAD_BUTTON_NAMES.primary === 'A', 'GAMEPAD_BUTTON_NAMES.primary should map to A');
+    assert(GAMEPAD_BUTTON_NAMES.secondary === 'B', 'GAMEPAD_BUTTON_NAMES.secondary should map to B');
+    assert(GAMEPAD_BUTTON_NAMES.select === 'Select', 'GAMEPAD_BUTTON_NAMES.select should map to Select');
+    assert(GAMEPAD_BUTTON_NAMES.start === 'Start', 'GAMEPAD_BUTTON_NAMES.start should map to Start');
 
     assert(D_PAD_BUTTON_NAMES.up === 'DPadUP', 'D_PAD_BUTTON_NAMES.up should map to DPadUP');
     assert(D_PAD_BUTTON_NAMES.down === 'DPadDOWN', 'D_PAD_BUTTON_NAMES.down should map to DPadDOWN');
@@ -46,15 +41,14 @@ export function testGameControllerButtons(assert) {
     assert(D_PAD_BUTTON_NAMES.right === 'DPadRIGHT', 'D_PAD_BUTTON_NAMES.right should map to DPadRIGHT');
 
     const controllers = new MockGameControllers({
-        pressedIndexes: [0, 1, 8, 9],
-        pressedNames: ['DPadLEFT', 'DPadUP'],
+        pressedNames: ['A', 'B', 'Select', 'Start', 'DPadLEFT', 'DPadUP'],
         dPadState: { left: true, right: false, up: true, down: false }
     });
 
-    assert(wasPrimaryActionPressed(controllers), 'wasPrimaryActionPressed should detect button 0');
-    assert(wasSecondaryActionPressed(controllers), 'wasSecondaryActionPressed should detect button 1');
-    assert(wasSelectPressed(controllers), 'wasSelectPressed should detect button 8');
-    assert(wasStartPressed(controllers), 'wasStartPressed should detect button 9');
+    assert(wasPrimaryActionPressed(controllers), 'wasPrimaryActionPressed should detect A');
+    assert(wasSecondaryActionPressed(controllers), 'wasSecondaryActionPressed should detect B');
+    assert(wasSelectPressed(controllers), 'wasSelectPressed should detect Select');
+    assert(wasStartPressed(controllers), 'wasStartPressed should detect Start');
 
     assert(wasDPadDirectionPressed(controllers, 'left'), 'wasDPadDirectionPressed should detect DPadLEFT');
     assert(wasDPadDirectionPressed(controllers, 'up'), 'wasDPadDirectionPressed should detect DPadUP');

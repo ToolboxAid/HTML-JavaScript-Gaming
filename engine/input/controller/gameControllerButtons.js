@@ -3,11 +3,11 @@
 // 03/15/2026
 // gameControllerButtons.js
 
-export const GAMEPAD_BUTTONS = Object.freeze({
-    primary: 0,
-    secondary: 1,
-    select: 8,
-    start: 9
+export const GAMEPAD_BUTTON_NAMES = Object.freeze({
+    primary: 'A',
+    secondary: 'B',
+    select: 'Select',
+    start: 'Start'
 });
 
 export const D_PAD_BUTTON_NAMES = Object.freeze({
@@ -17,20 +17,24 @@ export const D_PAD_BUTTON_NAMES = Object.freeze({
     right: 'DPadRIGHT'
 });
 
+function wasNamedButtonPressed(gameControllers, buttonName, controllerIndex = 0) {
+    return gameControllers?.wasButtonNamePressed(controllerIndex, buttonName) || false;
+}
+
 export function wasPrimaryActionPressed(gameControllers, controllerIndex = 0) {
-    return gameControllers?.wasButtonIndexPressed(controllerIndex, GAMEPAD_BUTTONS.primary) || false;
+    return wasNamedButtonPressed(gameControllers, GAMEPAD_BUTTON_NAMES.primary, controllerIndex);
 }
 
 export function wasSecondaryActionPressed(gameControllers, controllerIndex = 0) {
-    return gameControllers?.wasButtonIndexPressed(controllerIndex, GAMEPAD_BUTTONS.secondary) || false;
+    return wasNamedButtonPressed(gameControllers, GAMEPAD_BUTTON_NAMES.secondary, controllerIndex);
 }
 
 export function wasSelectPressed(gameControllers, controllerIndex = 0) {
-    return gameControllers?.wasButtonIndexPressed(controllerIndex, GAMEPAD_BUTTONS.select) || false;
+    return wasNamedButtonPressed(gameControllers, GAMEPAD_BUTTON_NAMES.select, controllerIndex);
 }
 
 export function wasStartPressed(gameControllers, controllerIndex = 0) {
-    return gameControllers?.wasButtonIndexPressed(controllerIndex, GAMEPAD_BUTTONS.start) || false;
+    return wasNamedButtonPressed(gameControllers, GAMEPAD_BUTTON_NAMES.start, controllerIndex);
 }
 
 export function wasDPadDirectionPressed(gameControllers, direction, controllerIndex = 0) {
