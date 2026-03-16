@@ -21,7 +21,7 @@ Use this checklist after copying the Game Engine sample into a new game folder.
 - [ ] Verify restart/reset clears state deterministically
 
 ## Validation
-- [ ] Run browser smoke pass (load, input, pause/resume, restart)
+- [ ] Run browser smoke pass (load, keyboard/controller input, pause/resume, restart)
 - [ ] Run browser tests from `tests/testRunner.html` when needed
 - [ ] Run visual-regression checks after state-screen UI changes
 - [ ] Confirm no unexpected console errors/warnings

@@ -3,14 +3,14 @@
 This sample is the engine template reference for lifecycle flow and state transitions.
 
 ## Template Metadata
-- Template version: `1.3.0`
+- Template version: `1.3.1`
 - Last updated: `2026-03-15`
 - Change log: [`CHANGELOG.md`](./CHANGELOG.md)
 
 ## What It Shows
 - `GameBase` initialization and frame-loop lifecycle.
 - Basic game-state flow: `attract` -> `playerSelect` -> `initGame` -> `playGame` -> `gameOver`.
-- Keyboard/controller-driven pause plus keyboard-driven score and player-life flow.
+- Keyboard/controller-driven starter flow for pause, score, and player-life transitions.
 - Fullscreen and performance overlays via engine runtime context.
 - Debug state-transition logging (`?game`) for onboarding and troubleshooting.
 
