@@ -90,6 +90,11 @@ export function testPerformanceMonitor(assert) {
         assert(PerformanceMonitor.lastFrame === null, 'PerformanceMonitor.init should clear lastFrame');
         assert(PerformanceMonitor.layoutCache === null, 'PerformanceMonitor.init should clear cached layout measurements');
 
+        const panelLayout = PerformanceMonitor.getPanelLayout(20, 'monospace');
+        assert(panelLayout.maxWidth === 10, 'PerformanceMonitor.getPanelLayout should use cached template measurements');
+        assert(panelLayout.lineHeight === 6, 'PerformanceMonitor.getPanelLayout should derive line height from template measurements');
+        assert(PerformanceMonitor.layoutCache?.signature === '20|monospace', 'PerformanceMonitor layout cache should key off font settings');
+
         try {
             delete globalThis.window;
         } catch {

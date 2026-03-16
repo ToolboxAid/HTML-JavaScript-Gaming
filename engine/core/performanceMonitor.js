@@ -34,6 +34,13 @@ class PerformanceMonitor {
         samples: []
     };
     static layoutCache = null;
+    static layoutTemplates = Object.freeze([
+        'MEM: 000.00/000.00MB',
+        'LIM% : 100.00%',
+        'FPS  : 000',
+        'Frame: 000.00ms',
+        'GFX  : 100.00%'
+    ]);
 
     // Default on-screen monitor configuration.
     static performanceConfig = {
@@ -196,18 +203,14 @@ class PerformanceMonitor {
         this.lastFrame = now;
     }
 
-    static getPanelLayout(textLines, fontSize, fontFamily) {
-        const signature = JSON.stringify({
-            fontSize,
-            fontFamily,
-            texts: textLines.map(({ text }) => text)
-        });
+    static getPanelLayout(fontSize, fontFamily) {
+        const signature = `${fontSize}|${fontFamily}`;
 
         if (this.layoutCache?.signature === signature) {
             return this.layoutCache.layout;
         }
 
-        const measurements = textLines.map(({ text }) =>
+        const measurements = this.layoutTemplates.map((text) =>
             CanvasUtils.calculateTextMetrics(text, fontSize, fontFamily)
         );
         const layout = {
@@ -264,7 +267,7 @@ class PerformanceMonitor {
             }
         ];
 
-        const { maxWidth, lineHeight } = this.getPanelLayout(textLines, fontSize, fontFamily);
+        const { maxWidth, lineHeight } = this.getPanelLayout(fontSize, fontFamily);
         const paddingX = 12;
         const paddingY = 8;
         const panelX = this.performanceConfig.x;
