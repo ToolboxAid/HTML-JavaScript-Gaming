@@ -392,15 +392,25 @@ class PrimitiveRenderer {
         const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
         const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
 
-        for (let column = 0; column <= normalizedColumns; column++) {
-            const lineX = x + (column * stepX);
-            this.renderLine(ctx, lineX, y, lineX, y + height, strokeColor, lineWidth, 1, options);
-        }
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha: 1,
+            lineDash: options.lineDash,
+            trace: () => {
+                ctx.beginPath();
 
-        for (let row = 0; row <= normalizedRows; row++) {
-            const lineY = y + (row * stepY);
-            this.renderLine(ctx, x, lineY, x + width, lineY, strokeColor, lineWidth, 1, options);
-        }
+                for (let column = 0; column <= normalizedColumns; column++) {
+                    const lineX = x + (column * stepX);
+                    ctx.moveTo(lineX, y);
+                    ctx.lineTo(lineX, y + height);
+                }
+
+                for (let row = 0; row <= normalizedRows; row++) {
+                    const lineY = y + (row * stepY);
+                    ctx.moveTo(x, lineY);
+                    ctx.lineTo(x + width, lineY);
+                }
+            }
+        });
     }
 
     static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
