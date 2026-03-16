@@ -225,10 +225,12 @@ class Fullscreen {
 
     static draw(ctx) {
         if (!Fullscreen.isFullScreen) {
+            ctx.save();
             ctx.fillStyle = this.config.color;
             ctx.font = this.config.font;
             ctx.textAlign = 'start';
             ctx.fillText(this.config.text, this.config.x, this.config.y);
+            ctx.restore();
         }
     }
 

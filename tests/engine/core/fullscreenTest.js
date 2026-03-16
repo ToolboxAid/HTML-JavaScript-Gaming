@@ -26,8 +26,17 @@ export function testFullscreen(assert) {
     };
 
     const ctx = {
+        saveCalls: 0,
+        restoreCalls: 0,
+        textAlign: 'center',
+        fillTextCalls: [],
         clearRect() {},
-        setTransform() {}
+        setTransform() {},
+        save() { this.saveCalls += 1; },
+        restore() { this.restoreCalls += 1; },
+        fillText(text, x, y) {
+            this.fillTextCalls.push({ text, x, y });
+        }
     };
 
     const canvas = {
@@ -64,6 +73,12 @@ export function testFullscreen(assert) {
         assert(canvas.style.width === '400px', 'Fullscreen.resizeCanvas should scale displayed width in windowed mode');
         assert(canvas.style.height === '300px', 'Fullscreen.resizeCanvas should scale displayed height in windowed mode');
         assert(hookCalls.some((call) => call.reason === 'unit'), 'Fullscreen.resizeCanvas should notify onResize hook with reason');
+
+        Fullscreen.config = { color: '#fff', font: '12px monospace', text: 'toggle', x: 10, y: 20 };
+        Fullscreen.isFullScreen = false;
+        Fullscreen.draw(ctx);
+        assert(ctx.saveCalls === 1 && ctx.restoreCalls === 1, 'Fullscreen.draw should preserve canvas state with save/restore');
+        assert(ctx.fillTextCalls.length === 1, 'Fullscreen.draw should render prompt text in windowed mode');
 
         Fullscreen.isFullscreenActive = () => true;
         Fullscreen.resizeCanvas('fullscreenchange');
