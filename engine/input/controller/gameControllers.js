@@ -1,7 +1,7 @@
 // ToolboxAid.com
 // David Quesenberry
 // 02/10/2025
-// gameControllerMap.js
+// gameControllers.js
 
 import GamepadManager from "./gamepadManager.js";
 import GamepadState from "./gamepadState.js";

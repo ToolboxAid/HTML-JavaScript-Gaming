@@ -73,7 +73,7 @@ Current focus:
 
 - `keyboard.js`
 - `mouse.js`
-- `controller/` (gamepad manager, mapper, state, enums, debugger, and facade)
+- `controller/` (gamepad manager, mapper, state, enums, debugger, and the `GameControllers` facade/read-only helper layer)
 
 The keyboard handler tracks three useful states:
 

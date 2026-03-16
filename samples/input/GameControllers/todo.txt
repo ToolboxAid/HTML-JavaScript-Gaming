@@ -52,6 +52,6 @@ Smoke pass steps:
 
 Decision notes:
 - Sample remains DOM/canvas-driven and is intentionally focused on visualizing controller state.
-- Core controller/device logic already lives in engine input modules; shared read-only controller access now goes through `GameControllers` helper methods instead of sample-only internal reads.
+- Core controller/device logic already lives in engine input modules; shared read-only connection/button access now goes through `GameControllers` helper methods instead of sample-only internal reads.
 - Lifecycle teardown is now explicit in sample code (`pagehide`/`beforeunload` + `gameControllers.destroy()`).
 - Unit-test validation is covered by existing engine input tests (`controllerFlow` and `inputCore` in default test manifest).
