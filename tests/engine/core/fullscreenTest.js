@@ -134,6 +134,17 @@ export async function testFullscreen(assert) {
         assert(Fullscreen.isFullScreen === false, 'Fullscreen.destroy should reset fullscreen state');
         assert(removedWindowEvents.includes('resize'), 'Fullscreen.destroy should unbind resize listener');
         assert(removedDocumentEvents.includes('fullscreenchange'), 'Fullscreen.destroy should unbind fullscreenchange listener');
+
+        Fullscreen.canvas = replacementCanvas;
+        Fullscreen.ctx = ctx;
+        Fullscreen.onResizeHook = () => {};
+        Fullscreen.listenerCanvas = replacementCanvas;
+        Fullscreen.listenersRegistered = false;
+        const staleDestroyResult = Fullscreen.destroy();
+        assert(staleDestroyResult === false, 'Fullscreen.destroy should report false when no listeners were registered');
+        assert(Fullscreen.canvas === null, 'Fullscreen.destroy should still clear cached canvas when no listeners were registered');
+        assert(Fullscreen.ctx === null, 'Fullscreen.destroy should still clear cached context when no listeners were registered');
+        assert(Fullscreen.onResizeHook === null, 'Fullscreen.destroy should still clear the resize hook when no listeners were registered');
     } finally {
         window.removeEventListener = originalWindowRemoveEventListener;
         document.removeEventListener = originalDocumentRemoveEventListener;

@@ -246,16 +246,16 @@ class Fullscreen {
     }
 
     static destroy() {
-        if (!Fullscreen.listenersRegistered || typeof window === 'undefined' || typeof document === 'undefined') {
-            return false;
-        }
+        const hadListeners = Fullscreen.listenersRegistered;
 
-        window.removeEventListener("resize", Fullscreen.resizeBound);
-        window.removeEventListener('orientationchange', Fullscreen.resizeBound);
-        Fullscreen.listenerCanvas?.removeEventListener('click', Fullscreen.canvasClickBound);
-        document.removeEventListener('fullscreenchange', Fullscreen.fullscreenChangeBound);
-        document.removeEventListener('webkitfullscreenchange', Fullscreen.fullscreenChangeBound);
-        document.removeEventListener('msfullscreenchange', Fullscreen.fullscreenChangeBound);
+        if (Fullscreen.listenersRegistered && typeof window !== 'undefined' && typeof document !== 'undefined') {
+            window.removeEventListener("resize", Fullscreen.resizeBound);
+            window.removeEventListener('orientationchange', Fullscreen.resizeBound);
+            Fullscreen.listenerCanvas?.removeEventListener('click', Fullscreen.canvasClickBound);
+            document.removeEventListener('fullscreenchange', Fullscreen.fullscreenChangeBound);
+            document.removeEventListener('webkitfullscreenchange', Fullscreen.fullscreenChangeBound);
+            document.removeEventListener('msfullscreenchange', Fullscreen.fullscreenChangeBound);
+        }
 
         Fullscreen.resizeBound = null;
         Fullscreen.canvasClickBound = null;
@@ -266,7 +266,7 @@ class Fullscreen {
         Fullscreen.ctx = null;
         Fullscreen.isFullScreen = false;
         Fullscreen.listenersRegistered = false;
-        return true;
+        return hadListeners;
     }
 
 }
