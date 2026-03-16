@@ -95,7 +95,11 @@ class PerformanceMonitor {
         this.totalTimeSpentMs += timeSpentMs;
     }
     static calcGFX() {
-        this.frameSampleCount++;
+        if (this.frameSampleCount <= 0) {
+            this.gfxPercentUsage = 0;
+            return;
+        }
+
         const averageTimeMs = this.totalTimeSpentMs / this.frameSampleCount;
         this.gfxPercentUsage = (averageTimeMs / this.availableTimeMs) * 100;
         this.frameSampleCount = 0;
