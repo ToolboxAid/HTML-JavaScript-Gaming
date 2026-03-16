@@ -12,7 +12,9 @@ class PrimitiveRenderer {
             return;
         }
 
-        this.drawRect(object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
+        return this.withContext(options, (ctx) => {
+            this.renderRect(ctx, object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
+        });
     }
 
     static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
@@ -75,7 +77,13 @@ class PrimitiveRenderer {
     }
 
     static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0, options = {}) {
-        return this.drawPolygon(points, fillColor, borderColor, borderWidth, options);
+        if (!Array.isArray(points) || points.length < 3) {
+            return false;
+        }
+
+        return this.withContext(options, (ctx) => {
+            this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
+        });
     }
 
     static drawPath(points, strokeColor = 'white', lineWidth = 1, {
