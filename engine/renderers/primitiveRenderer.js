@@ -482,9 +482,12 @@ class PrimitiveRenderer {
     } = {}) {
         this.applyRenderState(ctx, 1, null);
         ctx.fillStyle = fillColor;
+        const drawWidth = pixelWidth + extraWidth;
+        const drawHeight = pixelHeight + extraHeight;
 
         for (let row = 0; row < matrix.length; row++) {
             const matrixRow = matrix[row];
+            const drawY = y + (row * pixelHeight);
 
             for (let col = 0; col < matrixRow.length; col++) {
                 if (matrixRow[col] !== 1) {
@@ -493,9 +496,9 @@ class PrimitiveRenderer {
 
                 ctx.fillRect(
                     x + (col * pixelWidth),
-                    y + (row * pixelHeight),
-                    pixelWidth + extraWidth,
-                    pixelHeight + extraHeight
+                    drawY,
+                    drawWidth,
+                    drawHeight
                 );
             }
         }
