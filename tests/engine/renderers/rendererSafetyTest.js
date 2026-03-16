@@ -61,11 +61,8 @@ function testCanvasUtilsGuardOnMissingContext(assert) {
 
         assertNoThrow(assert, () => CanvasUtils.drawSprite(0, 0, ['1'], 1, 'white'), 'CanvasUtils.drawSprite should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.drawSpriteRGB(0, 0, [['#fff']], 1), 'CanvasUtils.drawSpriteRGB should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawLine(0, 0, 1, 1), 'CanvasUtils.drawLine should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawDashLine(0, 0, 1, 1, 1), 'CanvasUtils.drawDashLine should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.drawBounds(0, 0, 1, 1), 'CanvasUtils.drawBounds should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.drawRect(0, 0, 1, 1, 'white'), 'CanvasUtils.drawRect should no-op without context');
-        assertNoThrow(assert, () => CanvasUtils.drawBorder(), 'CanvasUtils.drawBorder should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.drawCircle({ x: 0, y: 0 }), 'CanvasUtils.drawCircle should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.drawCircle2(0, 0, 1), 'CanvasUtils.drawCircle2 should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.canvasClear(), 'CanvasUtils.canvasClear should no-op without context');

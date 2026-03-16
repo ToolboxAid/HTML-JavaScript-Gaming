@@ -129,35 +129,6 @@ class CanvasUtils {
         return CanvasText.calculateTextMetrics(this.ctx, text, fontSize, font);
     }
 
-    static drawSafeAreaGuides(margin = 16, color = '#66d9ff99') {
-        if (!CanvasUtils.LAYOUT_DEBUG || !this.ctx) {
-            return false;
-        }
-
-        const width = this.getConfigWidth();
-        const height = this.getConfigHeight();
-        const x = margin;
-        const y = margin;
-        const safeWidth = Math.max(0, width - (margin * 2));
-        const safeHeight = Math.max(0, height - (margin * 2));
-
-        this.ctx.save();
-        this.ctx.setLineDash([8, 6]);
-        this.ctx.strokeStyle = color;
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(x, y, safeWidth, safeHeight);
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(width / 2, y);
-        this.ctx.lineTo(width / 2, y + safeHeight);
-        this.ctx.moveTo(x, height / 2);
-        this.ctx.lineTo(x + safeWidth, height / 2);
-        this.ctx.stroke();
-        this.ctx.restore();
-
-        return true;
-    }
-
     // Method to draw the current frame
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         if (!this.ctx || !Array.isArray(frame)) {
@@ -215,50 +186,9 @@ class CanvasUtils {
     }
 
     /**
-     * Primitive compatibility wrappers.
-     * Prefer PrimitiveRenderer for new line/shape drawing so CanvasUtils can stay
-     * focused on lower-level canvas ownership and sprite/text plumbing.
+     * Legacy primitive compatibility wrappers.
+     * New line/shape work should live in PrimitiveRenderer.
      */
-    static drawLine(x1, y1, x2, y2, lineWidth = 5, strokeColor = 'white') {
-        if (!this.ctx) {
-            return false;
-        }
-
-        this.ctx.lineWidth = lineWidth;
-        this.ctx.strokeStyle = strokeColor;
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(x1, y1); // Start point
-        this.ctx.lineTo(x2, y2); // End point
-        this.ctx.stroke(); // Draw the line
-
-        return true;
-    }
-
-    static drawLineFromPoints(start, end, lineWidth = 5, strokeColor = 'red') {
-        //   const start1 = { x: 0, y: 0 };
-        //   const end1   = { x: 500, y: 500 };
-        this.drawLine(start.x, start.y, end.x, end.y, lineWidth, strokeColor);
-    }
-
-    static drawDashLine(x1, y1, x2, y2, lineWidth, strokeColor = 'white', dashPattern = [10, 10]) {
-        if (!this.ctx) {
-            return false;
-        }
-
-        /* ctx.setLineDash
-             ([5, 15]);        - Short dashes with longer gaps
-             ([15, 5]);        - Long dashes with short gaps
-             ([15, 5, 5, 5]);  - Long dash, short gap, short dash, short gap
-             ([20, 5, 10, 5]); - Alternating long and medium dashes
-         */
-        this.ctx.setLineDash(dashPattern);
-        this.drawLine(x1, y1, x2, y2, lineWidth, strokeColor);
-        this.ctx.setLineDash([]); // Reset to solid line
-
-        return true;
-    }
-
     static drawBounds(x, y, w, h, color = 'red', lineSize = 1) {
         if (!this.ctx) {
             return false;
@@ -288,20 +218,8 @@ class CanvasUtils {
         return true;
     }
 
-    static drawBorder() {
-        if (!this.ctx) {
-            return false;
-        }
-
-        this.ctx.lineWidth = this.config.borderSize;
-        this.ctx.strokeStyle = this.config.borderColor;
-        this.ctx.strokeRect(0, 0, this.config.width, this.config.height);
-
-        return true;
-    }
-
     /**
-     * Primitive compatibility wrappers.
+     * Legacy primitive compatibility wrappers.
      */
     static drawCircle(point, color = 'red', size = 7, startAngle = 0, endAngle = Math.PI * 2) {
         if (!this.ctx) {
