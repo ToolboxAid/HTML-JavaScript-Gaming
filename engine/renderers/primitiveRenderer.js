@@ -173,6 +173,29 @@ class PrimitiveRenderer {
         });
     }
 
+    static drawGridLines(x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
+        const normalizedColumns = Math.max(0, Math.floor(columns));
+        const normalizedRows = Math.max(0, Math.floor(rows));
+        const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
+        const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
+
+        for (let column = 0; column <= normalizedColumns; column++) {
+            const lineX = x + (column * stepX);
+            this.drawLine(lineX, y, lineX, y + height, strokeColor, lineWidth, 1, options);
+        }
+
+        for (let row = 0; row <= normalizedRows; row++) {
+            const lineY = y + (row * stepY);
+            this.drawLine(x, lineY, x + width, lineY, strokeColor, lineWidth, 1, options);
+        }
+
+        return true;
+    }
+
+    static drawOverlay(width, height, fillColor = 'black', alpha = 0.5, options = {}) {
+        return this.drawRect(0, 0, width, height, fillColor, null, 0, alpha, options);
+    }
+
     static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
         extraWidth = 0,
         extraHeight = 0,

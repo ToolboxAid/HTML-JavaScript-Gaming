@@ -97,17 +97,7 @@ class Game extends GameBase {
     const lineWidth = 3;
     const gridSize = canvasConfig.width / 3;
 
-    for (let i = 1; i < 3; i++) {
-      // Vertical
-      const start1 = { x: i * gridSize, y: 0 };
-      const end1 = { x: i * gridSize, y: canvasConfig.height };
-      PrimitiveRenderer.drawLine(start1.x, start1.y, end1.x, end1.y, "green", lineWidth);
-
-      // Horizontal
-      const start2 = { x: 0, y: i * gridSize };
-      const end2 = { x: canvasConfig.width, y: i * gridSize };
-      PrimitiveRenderer.drawLine(start2.x, start2.y, end2.x, end2.y, "green", lineWidth);
-    }
+    PrimitiveRenderer.drawGridLines(0, 0, canvasConfig.width, canvasConfig.height, 3, 3, "green", lineWidth);
 
     // Draw numbers in each cell for player assistance
 

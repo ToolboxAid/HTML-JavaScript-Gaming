@@ -11,7 +11,7 @@ class GamePlayerSelectUi {
     }
 
     static drawPlayerSelectOverlay(ctx, config) {
-        PrimitiveRenderer.drawRect(0, 0, config.canvasWidth, config.canvasHeight, config.backgroundColor, null, 0, 0.67, { ctx });
+        PrimitiveRenderer.drawOverlay(config.canvasWidth, config.canvasHeight, config.backgroundColor, 0.67, { ctx });
         ctx.fillStyle = config.color;
         ctx.font = config.font;
         ctx.fillText(config.title, config.x, config.y);

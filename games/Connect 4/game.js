@@ -213,17 +213,16 @@ class Game extends GameBase {
       }
     }
 
-    for (let col = 0; col <= this.columns; col++) {
-      // Vertical lines
-      //const x = col * (canvasConfig.width / this.columns);
-      const x = col * this.cellWidth;
-      PrimitiveRenderer.drawLine(x, 0, x, canvasConfig.height, "#999999cc", this.lineWidth);
-    }
-    for (let row = 0; row <= this.rows; row++) {
-      // Horizontal lines
-      const y = row * this.cellHeight;
-      PrimitiveRenderer.drawLine(0, y, canvasConfig.width, y, "#999999cc", this.lineWidth);
-    }
+    PrimitiveRenderer.drawGridLines(
+      0,
+      0,
+      canvasConfig.width,
+      canvasConfig.height,
+      this.columns,
+      this.rows,
+      "#999999cc",
+      this.lineWidth
+    );
 
   }
 
