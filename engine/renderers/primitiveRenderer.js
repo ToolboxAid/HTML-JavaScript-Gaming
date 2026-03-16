@@ -378,22 +378,14 @@ class PrimitiveRenderer {
         const centerY = height / 2;
         const lineDash = [8, 6];
 
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
-            alpha: 1,
-            lineDash,
-            trace: () => {
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + safeWidth, y);
-                ctx.lineTo(x + safeWidth, y + safeHeight);
-                ctx.lineTo(x, y + safeHeight);
-                ctx.lineTo(x, y);
-                ctx.moveTo(centerX, y);
-                ctx.lineTo(centerX, y + safeHeight);
-                ctx.moveTo(x, centerY);
-                ctx.lineTo(x + safeWidth, centerY);
-            }
-        });
+        this.renderSegments(ctx, [
+            { x1: x, y1: y, x2: x + safeWidth, y2: y },
+            { x1: x + safeWidth, y1: y, x2: x + safeWidth, y2: y + safeHeight },
+            { x1: x + safeWidth, y1: y + safeHeight, x2: x, y2: y + safeHeight },
+            { x1: x, y1: y + safeHeight, x2: x, y2: y },
+            { x1: centerX, y1: y, x2: centerX, y2: y + safeHeight },
+            { x1: x, y1: centerY, x2: x + safeWidth, y2: centerY }
+        ], strokeColor, lineWidth, { alpha: 1, lineDash });
     }
 
     static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
@@ -401,26 +393,19 @@ class PrimitiveRenderer {
         const normalizedRows = Math.max(0, Math.floor(rows));
         const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
         const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
+        const segments = [];
 
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
-            alpha: 1,
-            lineDash: options.lineDash,
-            trace: () => {
-                ctx.beginPath();
+        for (let column = 0; column <= normalizedColumns; column++) {
+            const lineX = x + (column * stepX);
+            segments.push({ x1: lineX, y1: y, x2: lineX, y2: y + height });
+        }
 
-                for (let column = 0; column <= normalizedColumns; column++) {
-                    const lineX = x + (column * stepX);
-                    ctx.moveTo(lineX, y);
-                    ctx.lineTo(lineX, y + height);
-                }
+        for (let row = 0; row <= normalizedRows; row++) {
+            const lineY = y + (row * stepY);
+            segments.push({ x1: x, y1: lineY, x2: x + width, y2: lineY });
+        }
 
-                for (let row = 0; row <= normalizedRows; row++) {
-                    const lineY = y + (row * stepY);
-                    ctx.moveTo(x, lineY);
-                    ctx.lineTo(x + width, lineY);
-                }
-            }
-        });
+        this.renderSegments(ctx, segments, strokeColor, lineWidth, { alpha: 1, lineDash: options.lineDash });
     }
 
     static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
@@ -465,8 +450,10 @@ class PrimitiveRenderer {
     }
 
     static renderCrosshair(ctx, centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        this.renderLine(ctx, centerX - size, centerY, centerX + size, centerY, strokeColor, lineWidth, alpha, options);
-        this.renderLine(ctx, centerX, centerY - size, centerX, centerY + size, strokeColor, lineWidth, alpha, options);
+        this.renderSegments(ctx, [
+            { x1: centerX - size, y1: centerY, x2: centerX + size, y2: centerY },
+            { x1: centerX, y1: centerY - size, x2: centerX, y2: centerY + size }
+        ], strokeColor, lineWidth, { alpha, lineDash: options.lineDash });
     }
 
     static renderMarker(ctx, x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
@@ -496,6 +483,24 @@ class PrimitiveRenderer {
                 );
             }
         }
+    }
+
+    static renderSegments(ctx, segments, strokeColor = 'white', lineWidth = 1, {
+        alpha = 1,
+        lineDash = null
+    } = {}) {
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha,
+            lineDash,
+            trace: () => {
+                ctx.beginPath();
+
+                for (const segment of segments) {
+                    ctx.moveTo(segment.x1, segment.y1);
+                    ctx.lineTo(segment.x2, segment.y2);
+                }
+            }
+        });
     }
 
     static renderDebugBounds(ctx, x, y, width, height, {
