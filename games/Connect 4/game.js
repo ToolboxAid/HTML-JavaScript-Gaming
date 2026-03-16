@@ -217,12 +217,12 @@ class Game extends GameBase {
       // Vertical lines
       //const x = col * (canvasConfig.width / this.columns);
       const x = col * this.cellWidth;
-      CanvasUtils.drawLineFromPoints({ x, y: 0 }, { x, y: canvasConfig.height }, this.lineWidth, "yellow");
+      PrimitiveRenderer.drawLine(x, 0, x, canvasConfig.height, "#999999cc", this.lineWidth);
     }
     for (let row = 0; row <= this.rows; row++) {
       // Horizontal lines
       const y = row * this.cellHeight;
-      CanvasUtils.drawLineFromPoints({ x: 0, y }, { x: canvasConfig.width, y }, this.lineWidth, "yellow");
+      PrimitiveRenderer.drawLine(0, y, canvasConfig.width, y, "#999999cc", this.lineWidth);
     }
 
   }

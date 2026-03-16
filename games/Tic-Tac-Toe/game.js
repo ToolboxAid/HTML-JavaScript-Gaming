@@ -9,6 +9,7 @@ import GameBase from '../../engine/core/gameBase.js';
 
 
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import AttractMode from './attractMode.js';
 
@@ -100,12 +101,12 @@ class Game extends GameBase {
       // Vertical
       const start1 = { x: i * gridSize, y: 0 };
       const end1 = { x: i * gridSize, y: canvasConfig.height };
-      CanvasUtils.drawLineFromPoints(start1, end1, lineWidth, "green");
+      PrimitiveRenderer.drawLine(start1.x, start1.y, end1.x, end1.y, "green", lineWidth);
 
       // Horizontal
       const start2 = { x: 0, y: i * gridSize };
       const end2 = { x: canvasConfig.width, y: i * gridSize };
-      CanvasUtils.drawLineFromPoints(start2, end2, lineWidth, "green");
+      PrimitiveRenderer.drawLine(start2.x, start2.y, end2.x, end2.y, "green", lineWidth);
     }
 
     // Draw numbers in each cell for player assistance
