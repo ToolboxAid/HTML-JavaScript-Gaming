@@ -551,10 +551,6 @@ class PrimitiveRenderer {
     }
 
     static renderRectFill(ctx, x, y, width, height, fillColor = 'gray', alpha = 1, lineDash = null) {
-        this.renderRectArea(ctx, x, y, width, height, fillColor, alpha, lineDash);
-    }
-
-    static renderRectArea(ctx, x, y, width, height, fillColor = 'gray', alpha = 1, lineDash = null) {
         this.applyRenderState(ctx, alpha, lineDash);
         this.fillRectArea(ctx, x, y, width, height, fillColor);
     }
