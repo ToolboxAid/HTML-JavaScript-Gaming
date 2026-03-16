@@ -156,7 +156,8 @@ class Game extends GameBase {
   }
 
   gamePauseCheck() {
-    if (this.keyboardInput.getKeysPressed().includes('KeyP')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyP') ||
+      this.gameControllers?.wasButtonIndexPressed(0, 8)) {
       if (this.gameState === "playGame") {
         this.gameState = "pauseGame";
       } else if (this.gameState === "pauseGame") {
