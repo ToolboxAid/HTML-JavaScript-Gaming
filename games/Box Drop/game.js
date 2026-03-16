@@ -206,14 +206,16 @@ class Game extends GameBase {
       const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
-        this.playerCount,
-        (newState) => { this.gameState = newState; }
+        this.playerCount
       );
 
       // Update the current player and 
       // lives based on the result from swapPlayer
       this.currentPlayer = result.updatedPlayer;
       this.playerLives = result.updatedLives;
+      if (result.nextGameState) {
+        this.gameState = result.nextGameState;
+      }
       Game.enemyX = RandomUtils.randomInt(0, canvasConfig.width - Game.enemySize);
       Game.enemyY = -Game.enemySize;
     }

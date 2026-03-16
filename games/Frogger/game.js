@@ -213,11 +213,13 @@ class Game extends GameBase {
                 const result = GameUtils.swapPlayer(
                     this.playerLives,
                     this.currentPlayer,
-                    this.playerCount,
-                    (newState) => { this.gameState = newState; }
+                    this.playerCount
                 );
                 this.currentPlayer = result.updatedPlayer;
                 this.playerLives = result.updatedLives;
+                if (result.nextGameState) {
+                    this.gameState = result.nextGameState;
+                }
             }
         }
     }

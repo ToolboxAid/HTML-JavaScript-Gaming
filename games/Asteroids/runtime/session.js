@@ -81,12 +81,14 @@ class AsteroidsSession {
         const result = GameUtils.swapPlayer(
             this.playerLives,
             this.currentPlayer,
-            this.playerCount,
-            setState
+            this.playerCount
         );
 
         this.currentPlayer = result.updatedPlayer;
         this.playerLives = result.updatedLives;
+        if (result.nextGameState) {
+            setState(result.nextGameState);
+        }
         this.getCurrentWorld().reset();
         this.getCurrentShip().reset();
 

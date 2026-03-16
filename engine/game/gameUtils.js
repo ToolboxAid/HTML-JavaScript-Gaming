@@ -170,21 +170,25 @@ class GameUtils {
         return this.resolvePlayerSelection(keyboardInput, gameControllers, config);
     }
 
-    static swapPlayer(playerLives, currentPlayer, playerCount, setGameState) {
+    static swapPlayer(playerLives, currentPlayer, playerCount) {
         const updatedLives = [...playerLives];
 
         updatedLives[currentPlayer] -= 1;
 
         if (updatedLives[currentPlayer] <= 0) {
             if (this.areTrackedPlayersOut(updatedLives, playerCount)) {
-                setGameState("gameOver");
-                return { updatedPlayer: 0, updatedLives };
+                return {
+                    updatedPlayer: 0,
+                    updatedLives,
+                    nextGameState: "gameOver"
+                };
             }
         }
 
         return {
             updatedPlayer: this.findNextActivePlayer(updatedLives, currentPlayer, playerCount),
-            updatedLives
+            updatedLives,
+            nextGameState: null
         };
     }
 

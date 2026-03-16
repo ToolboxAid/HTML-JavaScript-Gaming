@@ -135,12 +135,14 @@ export function playGame(game) {
     const result = GameUtils.swapPlayer(
         game.playerLives,
         game.currentPlayer,
-        game.playerCount,
-        (newState) => { game.gameState = newState; }
+        game.playerCount
     );
 
     game.currentPlayer = result.updatedPlayer;
     game.playerLives = result.updatedLives;
+    if (result.nextGameState) {
+        game.gameState = result.nextGameState;
+    }
 }
 
 export function resetGame(game) {
