@@ -35,4 +35,4 @@ Likely affected:
 
 Verification:
 [x] Run targeted tests for `engine/game/gameUtils.js`
-[ ] Smoke-test at least one player-select consumer and one swap-player consumer
+[.] Smoke-test at least one player-select consumer and one swap-player consumer
