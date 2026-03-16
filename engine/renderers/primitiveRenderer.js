@@ -202,16 +202,6 @@ class PrimitiveRenderer {
         ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
     }
 
-    static traceSegments(ctx, segments) {
-        ctx.beginPath();
-
-        for (let index = 0; index < segments.length; index++) {
-            const segment = segments[index];
-            ctx.moveTo(segment.x1, segment.y1);
-            ctx.lineTo(segment.x2, segment.y2);
-        }
-    }
-
     static traceLine(ctx, x1, y1, x2, y2) {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
@@ -583,17 +573,6 @@ class PrimitiveRenderer {
         ctx.strokeStyle = borderColor;
         ctx.lineWidth = borderWidth;
         ctx.strokeRect(x, y, width, height);
-    }
-
-    static renderSegments(ctx, segments, strokeColor = 'white', lineWidth = 1, {
-        alpha = 1,
-        lineDash = null
-    } = {}) {
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
-            alpha,
-            lineDash,
-            trace: () => this.traceSegments(ctx, segments)
-        });
     }
 
     static renderDebugBounds(ctx, x, y, width, height, {
