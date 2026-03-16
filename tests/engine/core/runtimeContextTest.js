@@ -22,7 +22,8 @@ export async function testRuntimeContext(assert) {
     const fakePerformance = {
         async init(config) { calls.push(['performance.init', config]); },
         update(ms) { calls.push(['performance.update', ms]); },
-        draw(ctx) { calls.push(['performance.draw', ctx?.tag || null]); }
+        draw(ctx) { calls.push(['performance.draw', ctx?.tag || null]); },
+        stopMonitoring() { calls.push(['performance.stop']); }
     };
 
     const fakeTimer = {
@@ -57,4 +58,7 @@ export async function testRuntimeContext(assert) {
     assert(metrics.width === 10 && metrics.height === 5, 'RuntimeContext should proxy text metrics');
     assert(calls.some(call => call[0] === 'canvas.clear'), 'RuntimeContext should proxy clearCanvas');
     assert(calls.some(call => call[0] === 'performance.update' && call[1] === 4.5), 'RuntimeContext should proxy performance updates');
+
+    runtime.destroy();
+    assert(calls.some(call => call[0] === 'performance.stop'), 'RuntimeContext.destroy should stop performance monitoring');
 }

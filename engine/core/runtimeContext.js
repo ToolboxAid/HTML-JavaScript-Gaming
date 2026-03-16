@@ -62,6 +62,12 @@ class RuntimeContext {
     calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
         return this.canvas.calculateTextMetrics(text, fontSize, font);
     }
+
+    destroy() {
+        if (typeof this.performance?.stopMonitoring === 'function') {
+            this.performance.stopMonitoring();
+        }
+    }
 }
 
 export default RuntimeContext;

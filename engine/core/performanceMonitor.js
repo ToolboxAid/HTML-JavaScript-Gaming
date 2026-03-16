@@ -46,6 +46,8 @@ class PerformanceMonitor {
         x: 300,
         y: 300,
     };
+    static monitorIntervalId = null;
+
     static async init(config) {
         if (!config) {
             DebugLog.error('PerformanceMonitor', "No 'config' provided");
@@ -66,11 +68,31 @@ class PerformanceMonitor {
         if (validation) {
             this.performanceConfig = config;
             this.dimensions = CanvasUtils.calculateTextMetrics("MEM: 00.00/00.00MB ", this.performanceConfig.size, this.performanceConfig.font);
+            this.startMonitoring();
             DebugLog.log(PerformanceMonitor.DEBUG, 'PerformanceMonitor', 'PerformanceMonitor.init complete.');
             return true;
         }
 
         return false;
+    }
+
+    static startMonitoring() {
+        if (this.monitorIntervalId !== null || typeof setInterval !== 'function') {
+            return false;
+        }
+
+        this.monitorIntervalId = setInterval(() => PerformanceMonitor.oncePerSecond(), 1000);
+        return true;
+    }
+
+    static stopMonitoring() {
+        if (this.monitorIntervalId === null || typeof clearInterval !== 'function') {
+            return false;
+        }
+
+        clearInterval(this.monitorIntervalId);
+        this.monitorIntervalId = null;
+        return true;
     }
 
     // Call once per second.
@@ -282,8 +304,6 @@ class PerformanceMonitor {
 }
 
 export default PerformanceMonitor
-
-setInterval(() => PerformanceMonitor.oncePerSecond(), 1000); // every second
 
 
 

@@ -178,6 +178,10 @@ class GameBase {
             gameControllers.destroy();
         }
 
+        if (typeof this.runtimeContext?.destroy === 'function') {
+            this.runtimeContext.destroy();
+        }
+
         if (typeof Fullscreen.destroy === 'function') {
             Fullscreen.destroy();
         }
