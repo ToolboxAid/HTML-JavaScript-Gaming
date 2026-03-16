@@ -244,8 +244,7 @@ class GameUI {
                 // Draw crosshair at cell center
                 const centerX = x + (GameUI.GRID_SIZE * 4) / 2;
                 const centerY = y + (GameUI.GRID_SIZE * 4) / 2;
-                PrimitiveRenderer.drawPath([[centerX - 10, centerY], [centerX + 10, centerY]], 'yellow', 1);
-                PrimitiveRenderer.drawPath([[centerX, centerY - 10], [centerX, centerY + 10]], 'yellow', 1);
+                PrimitiveRenderer.drawCrosshair(centerX, centerY, 10, 'yellow', 1);
 
                 // Draw cell type and dimensions
                 CanvasUtils.ctx.fillStyle = '#FFF';

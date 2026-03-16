@@ -187,6 +187,13 @@ class PrimitiveRenderer {
         });
     }
 
+    static drawCrosshair(centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
+        return this.withContext(options, (ctx) => {
+            this.renderLine(ctx, centerX - size, centerY, centerX + size, centerY, strokeColor, lineWidth, alpha, options);
+            this.renderLine(ctx, centerX, centerY - size, centerX, centerY + size, strokeColor, lineWidth, alpha, options);
+        });
+    }
+
     static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
         extraWidth = 0,
         extraHeight = 0,
