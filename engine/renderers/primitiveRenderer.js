@@ -264,11 +264,15 @@ class PrimitiveRenderer {
     }
 
     static renderLine(ctx, x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        this.applyRenderState(ctx, alpha, options.lineDash);
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        this.renderStroke(ctx, strokeColor, lineWidth);
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha,
+            lineDash: options.lineDash,
+            trace: () => {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+            }
+        });
     }
 
     static renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
@@ -307,9 +311,11 @@ class PrimitiveRenderer {
         alpha = 1,
         lineDash = null
     } = {}) {
-        this.applyRenderState(ctx, alpha, lineDash);
-        this.tracePath(ctx, points, { offsetX, offsetY, closePath });
-        this.renderStroke(ctx, strokeColor, lineWidth);
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha,
+            lineDash,
+            trace: () => this.tracePath(ctx, points, { offsetX, offsetY, closePath })
+        });
     }
 
     static renderPanel(ctx, x, y, width, height, {
@@ -408,6 +414,16 @@ class PrimitiveRenderer {
         this.applyRenderState(ctx, alpha, lineDash);
         trace?.();
         this.renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
+    }
+
+    static renderStrokedShape(ctx, strokeColor = 'white', lineWidth = 1, {
+        alpha = 1,
+        lineDash = null,
+        trace
+    } = {}) {
+        this.applyRenderState(ctx, alpha, lineDash);
+        trace?.();
+        this.renderStroke(ctx, strokeColor, lineWidth);
     }
 
     static renderStroke(ctx, strokeColor = 'white', lineWidth = 1) {
