@@ -119,21 +119,8 @@ class PrimitiveRenderer {
     }
 
     static drawGridLines(x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
-        const normalizedColumns = Math.max(0, Math.floor(columns));
-        const normalizedRows = Math.max(0, Math.floor(rows));
-        const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
-        const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
-
         return this.withContext(options, (ctx) => {
-            for (let column = 0; column <= normalizedColumns; column++) {
-                const lineX = x + (column * stepX);
-                this.renderLine(ctx, lineX, y, lineX, y + height, strokeColor, lineWidth, 1, options);
-            }
-
-            for (let row = 0; row <= normalizedRows; row++) {
-                const lineY = y + (row * stepY);
-                this.renderLine(ctx, x, lineY, x + width, lineY, strokeColor, lineWidth, 1, options);
-            }
+            this.renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor, lineWidth, options);
         });
     }
 
@@ -166,14 +153,13 @@ class PrimitiveRenderer {
 
     static drawCrosshair(centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
-            this.renderLine(ctx, centerX - size, centerY, centerX + size, centerY, strokeColor, lineWidth, alpha, options);
-            this.renderLine(ctx, centerX, centerY - size, centerX, centerY + size, strokeColor, lineWidth, alpha, options);
+            this.renderCrosshair(ctx, centerX, centerY, size, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawMarker(x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
         return this.withContext(options, (ctx) => {
-            this.renderCircle(ctx, x, y, radius, fillColor, null, 0, alpha, options);
+            this.renderMarker(ctx, x, y, radius, fillColor, alpha, options);
         });
     }
 
@@ -192,7 +178,7 @@ class PrimitiveRenderer {
             this.renderRect(renderCtx, x, y, width, height, null, borderColor, borderWidth, alpha);
 
             if (Number.isFinite(markerX) && Number.isFinite(markerY)) {
-                this.renderCircle(renderCtx, markerX, markerY, markerRadius, markerColor, null, 0, markerAlpha);
+                this.renderMarker(renderCtx, markerX, markerY, markerRadius, markerColor, markerAlpha);
             }
         });
     }
@@ -338,6 +324,23 @@ class PrimitiveRenderer {
         this.renderStroke(ctx, strokeColor, lineWidth);
     }
 
+    static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
+        const normalizedColumns = Math.max(0, Math.floor(columns));
+        const normalizedRows = Math.max(0, Math.floor(rows));
+        const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
+        const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
+
+        for (let column = 0; column <= normalizedColumns; column++) {
+            const lineX = x + (column * stepX);
+            this.renderLine(ctx, lineX, y, lineX, y + height, strokeColor, lineWidth, 1, options);
+        }
+
+        for (let row = 0; row <= normalizedRows; row++) {
+            const lineY = y + (row * stepY);
+            this.renderLine(ctx, x, lineY, x + width, lineY, strokeColor, lineWidth, 1, options);
+        }
+    }
+
     static renderFillAndStroke(ctx, fillColor = null, borderColor = null, borderWidth = 0) {
         if (fillColor) {
             ctx.fillStyle = fillColor;
@@ -353,6 +356,15 @@ class PrimitiveRenderer {
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = lineWidth;
         ctx.stroke();
+    }
+
+    static renderCrosshair(ctx, centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
+        this.renderLine(ctx, centerX - size, centerY, centerX + size, centerY, strokeColor, lineWidth, alpha, options);
+        this.renderLine(ctx, centerX, centerY - size, centerX, centerY + size, strokeColor, lineWidth, alpha, options);
+    }
+
+    static renderMarker(ctx, x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
+        this.renderCircle(ctx, x, y, radius, fillColor, null, 0, alpha, options);
     }
 }
 
