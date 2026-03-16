@@ -4,6 +4,7 @@
 // particleExplosion.js
 
 import CanvasUtils from "../core/canvasUtils.js";
+import PrimitiveRenderer from "./primitiveRenderer.js";
 import DebugFlag from "../utils/debugFlag.js";
 import SystemUtils from "../utils/systemUtils.js";
 
@@ -126,28 +127,27 @@ class ParticleExplosion {
     draw() {
         if (this.isDone || !CanvasUtils.ctx) return;
 
-        const ctx = CanvasUtils.ctx;
-        ctx.save();
-
         this.particles.forEach(particle => {
             if (particle.alpha > 0 && particle.drawRadius > 0) {
                 if (this.shape === "circle") {
-                    ctx.beginPath();
-                    ctx.arc(particle.x, particle.y, particle.drawRadius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
-                    ctx.fill();
+                    PrimitiveRenderer.drawCircle(
+                        particle.x,
+                        particle.y,
+                        particle.drawRadius,
+                        'white',
+                        null,
+                        0,
+                        particle.alpha
+                    );
                 } else { // Convert radius to square size (diameter)
                     const size = particle.drawRadius * 2;
                     const x = particle.x - particle.drawRadius;
                     const y = particle.y - particle.drawRadius;
 
-                    ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
-                    ctx.fillRect(x, y, size, size);
+                    PrimitiveRenderer.drawRect(x, y, size, size, 'white', null, 0, particle.alpha);
                 }
             }
         });
-
-        ctx.restore();
     }
 
     destroy() {

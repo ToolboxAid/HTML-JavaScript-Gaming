@@ -101,8 +101,7 @@ class AttractScreen {
 
   drawAttractMode() {
     // Clear the canvas
-    CanvasUtils.ctx.fillStyle = "black";
-    CanvasUtils.ctx.fillRect(0, 0, canvasConfig.width, canvasConfig.height);
+    PrimitiveRenderer.drawRect(0, 0, canvasConfig.width, canvasConfig.height, 'black');
 
     // Draw Snake
     this.snake.forEach(segment => {

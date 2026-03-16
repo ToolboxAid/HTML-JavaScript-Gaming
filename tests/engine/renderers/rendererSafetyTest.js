@@ -192,6 +192,7 @@ function testRenderersDrawWithMockContext(assert) {
         PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5);
         PrimitiveRenderer.drawPanel(0, 0, 30, 30, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 12, headerColor: 'yellow' });
         PrimitiveRenderer.drawPath([[0, 0], [5, 5], [8, 0]], 'white', 1, { closePath: true, offsetX: 2, offsetY: 3 });
+        PrimitiveRenderer.drawPixelMatrix([[1, 0], [0, 1]], 0, 0, 4, 4, 'white', { extraWidth: 1, extraHeight: 1 });
 
         const spriteLiving = {
             isDead: () => false,
@@ -293,6 +294,7 @@ function testPrimitiveRendererWithMockContext(assert) {
         PrimitiveRenderer.drawLine(0, 0, 10, 10, 'white', 1, 0.5);
         PrimitiveRenderer.drawBounds(10, 10, 20, 20, 'white', 1, 0.5);
         PrimitiveRenderer.drawPanel(0, 0, 30, 30, { fillColor: 'white', borderColor: 'red', borderWidth: 1, backdropColor: 'black', backdropInset: 2, headerY: 12, headerColor: 'yellow' });
+        PrimitiveRenderer.drawPixelMatrix([[1, 0], [0, 1]], 0, 0, 4, 4, 'white', { extraWidth: 1, extraHeight: 1 });
 
         assert(mockCtx.saveCalls === mockCtx.restoreCalls, 'PrimitiveRenderer should balance canvas save and restore calls');
     } finally {
@@ -325,6 +327,7 @@ function testPrimitiveRendererWithExplicitContext(assert) {
             ctx: mockCtx
         });
         PrimitiveRenderer.drawPath([[0, 0], [5, 5], [8, 0]], 'white', 1, { closePath: true, offsetX: 2, offsetY: 3, ctx: mockCtx });
+        PrimitiveRenderer.drawPixelMatrix([[1, 0], [0, 1]], 0, 0, 4, 4, 'white', { extraWidth: 1, extraHeight: 1, ctx: mockCtx });
 
         assert(mockCtx.saveCalls === mockCtx.restoreCalls, 'PrimitiveRenderer should balance save and restore with an explicit context');
     } finally {

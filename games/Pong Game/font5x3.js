@@ -6,6 +6,7 @@
 
 import { font5x3 } from './global.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
+import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
 class Font5x3 {
     static font = {
@@ -85,15 +86,10 @@ class Font5x3 {
         const characterMatrix = Font5x3.font[char];
         if (!characterMatrix) return; // Ignore if character doesn't exist
 
-        CanvasUtils.ctx.fillStyle = font5x3.color;
-
-        for (let row = 0; row < characterMatrix.length; row++) {
-            for (let col = 0; col < characterMatrix[row].length; col++) {
-                if (characterMatrix[row][col] === 1) {
-                    CanvasUtils.ctx.fillRect(x + col * pixelWidth, y + row * pixelHeight, pixelWidth + 1, pixelHeight + 1);
-                }
-            }
-        }
+        PrimitiveRenderer.drawPixelMatrix(characterMatrix, x, y, pixelWidth, pixelHeight, font5x3.color, {
+            extraWidth: 1,
+            extraHeight: 1
+        });
     }
 
     static #formatNumber(number, digits) {

@@ -167,6 +167,38 @@ class PrimitiveRenderer {
         });
     }
 
+    static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
+        extraWidth = 0,
+        extraHeight = 0,
+        ctx = null
+    } = {}) {
+        if (!Array.isArray(matrix) || matrix.length === 0) {
+            return false;
+        }
+
+        return this.withContext({ ctx }, () => {
+            for (let row = 0; row < matrix.length; row++) {
+                for (let col = 0; col < matrix[row].length; col++) {
+                    if (matrix[row][col] !== 1) {
+                        continue;
+                    }
+
+                    this.drawRect(
+                        x + (col * pixelWidth),
+                        y + (row * pixelHeight),
+                        pixelWidth + extraWidth,
+                        pixelHeight + extraHeight,
+                        fillColor,
+                        null,
+                        0,
+                        1,
+                        { ctx }
+                    );
+                }
+            }
+        });
+    }
+
     static tracePath(ctx, points, { offsetX = 0, offsetY = 0, closePath = false } = {}) {
         ctx.beginPath();
 
