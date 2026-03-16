@@ -4,6 +4,7 @@
 // pngController.js
 
 import ObjectValidation from '../utils/objectValidation.js';
+import AnimationFrameStepper from './animationFrameStepper.js';
 
 class PngController {
     constructor(frameCount = 1, framesPerRow = 1, frameDelay = 6) {
@@ -30,14 +31,6 @@ class PngController {
         this.delayCounter = 0;
     }
 
-    static normalizeNonNegativeInteger(value, fallback = 0) {
-        if (!Number.isFinite(value)) {
-            return fallback;
-        }
-
-        return Math.max(0, Math.floor(value));
-    }
-
     setFrame(frameIndex = 0) {
         ObjectValidation.finiteNumber(frameIndex, 'frameIndex');
 
@@ -54,7 +47,7 @@ class PngController {
     }
 
     getCurrentSourceRect(spriteX = 0, spriteY = 0, frameWidth = 0, frameHeight = 0) {
-        const frameIndex = PngController.normalizeNonNegativeInteger(this.currentFrameIndex, 0);
+        const frameIndex = AnimationFrameStepper.normalizeNonNegativeInteger(this.currentFrameIndex, 0);
         const col = frameIndex % this.framesPerRow;
         const row = Math.floor(frameIndex / this.framesPerRow);
 
@@ -67,33 +60,23 @@ class PngController {
     }
 
     advanceFrame() {
-        if (this.frameCount <= 1) {
-            return false;
-        }
-
-        this.currentFrameIndex = PngController.normalizeNonNegativeInteger(this.currentFrameIndex, 0) + 1;
-
-        if (this.currentFrameIndex >= this.frameCount) {
-            this.currentFrameIndex = 0;
-            return true;
-        }
-
-        return false;
+        const result = AnimationFrameStepper.advanceFrame(this.currentFrameIndex, this.frameCount);
+        this.currentFrameIndex = result.currentFrameIndex;
+        return result.looped;
     }
 
     stepFrame(incFrame = false) {
-        if (this.frameCount <= 1 || !incFrame) {
-            return false;
-        }
+        const result = AnimationFrameStepper.stepLoopingFrame(
+            this.currentFrameIndex,
+            this.delayCounter,
+            this.frameCount,
+            this.frameDelay,
+            incFrame
+        );
 
-        this.delayCounter = PngController.normalizeNonNegativeInteger(this.delayCounter, 0) + 1;
-
-        if (this.delayCounter < this.frameDelay) {
-            return false;
-        }
-
-        this.delayCounter = 0;
-        return this.advanceFrame();
+        this.currentFrameIndex = result.currentFrameIndex;
+        this.delayCounter = result.delayCounter;
+        return result.looped;
     }
 
     stepDyingFrame(incFrame = false) {
@@ -101,19 +84,17 @@ class PngController {
             return true;
         }
 
-        this.currentFrameIndex = PngController.normalizeNonNegativeInteger(this.currentFrameIndex, 0);
-        this.delayCounter = PngController.normalizeNonNegativeInteger(this.delayCounter, 0);
+        const result = AnimationFrameStepper.stepFinalFrame(
+            this.currentFrameIndex,
+            this.delayCounter,
+            this.frameCount,
+            this.frameDelay,
+            incFrame
+        );
 
-        if (incFrame) {
-            this.delayCounter++;
-
-            if (this.delayCounter >= this.frameDelay) {
-                this.delayCounter = 0;
-                this.currentFrameIndex++;
-            }
-        }
-
-        return this.currentFrameIndex >= this.frameCount;
+        this.currentFrameIndex = result.currentFrameIndex;
+        this.delayCounter = result.delayCounter;
+        return result.finished;
     }
 
     destroy() {
