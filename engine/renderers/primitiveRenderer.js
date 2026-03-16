@@ -37,29 +37,16 @@ class PrimitiveRenderer {
         ctx = null
     } = {}) {
         return this.withContext({ ctx }, (renderCtx) => {
-            if (backdropColor && backdropInset > 0) {
-                this.renderRect(
-                    renderCtx,
-                    x - backdropInset,
-                    y - backdropInset,
-                    width + (backdropInset * 2),
-                    height + (backdropInset * 2),
-                    backdropColor,
-                    null,
-                    0,
-                    1
-                );
-            }
-
-            this.renderRect(renderCtx, x, y, width, height, fillColor, null, 0, 1);
-
-            if (borderColor && borderWidth > 0) {
-                this.renderRect(renderCtx, x, y, width, height, null, borderColor, borderWidth, 1);
-            }
-
-            if (Number.isFinite(headerY)) {
-                this.renderLine(renderCtx, x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth, 1);
-            }
+            this.renderPanel(renderCtx, x, y, width, height, {
+                fillColor,
+                borderColor,
+                borderWidth,
+                backdropColor,
+                backdropInset,
+                headerY,
+                headerColor,
+                headerWidth
+            });
         });
     }
 
@@ -126,7 +113,7 @@ class PrimitiveRenderer {
 
     static drawOverlay(width, height, fillColor = 'black', alpha = 0.5, options = {}) {
         return this.withContext(options, (ctx) => {
-            this.renderRect(ctx, 0, 0, width, height, fillColor, null, 0, alpha, options);
+            this.renderOverlay(ctx, width, height, fillColor, alpha, options);
         });
     }
 
@@ -322,6 +309,45 @@ class PrimitiveRenderer {
         this.applyLineDash(ctx, lineDash);
         this.tracePath(ctx, points, { offsetX, offsetY, closePath });
         this.renderStroke(ctx, strokeColor, lineWidth);
+    }
+
+    static renderPanel(ctx, x, y, width, height, {
+        fillColor = 'gray',
+        borderColor = null,
+        borderWidth = 0,
+        backdropColor = null,
+        backdropInset = 0,
+        headerY = null,
+        headerColor = null,
+        headerWidth = 2
+    } = {}) {
+        if (backdropColor && backdropInset > 0) {
+            this.renderRect(
+                ctx,
+                x - backdropInset,
+                y - backdropInset,
+                width + (backdropInset * 2),
+                height + (backdropInset * 2),
+                backdropColor,
+                null,
+                0,
+                1
+            );
+        }
+
+        this.renderRect(ctx, x, y, width, height, fillColor, null, 0, 1);
+
+        if (borderColor && borderWidth > 0) {
+            this.renderRect(ctx, x, y, width, height, null, borderColor, borderWidth, 1);
+        }
+
+        if (Number.isFinite(headerY)) {
+            this.renderLine(ctx, x, headerY, x + width, headerY, headerColor || borderColor || 'white', headerWidth, 1);
+        }
+    }
+
+    static renderOverlay(ctx, width, height, fillColor = 'black', alpha = 0.5, options = {}) {
+        this.renderRect(ctx, 0, 0, width, height, fillColor, null, 0, alpha, options);
     }
 
     static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
