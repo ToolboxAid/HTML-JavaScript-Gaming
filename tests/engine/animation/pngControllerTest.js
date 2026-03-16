@@ -38,6 +38,12 @@ export function testPngController(assert) {
     assert(finished === false, 'dying animation should not finish on first frame advance');
     assert(animation.currentFrameIndex === 1, 'dying animation should increment frame');
 
+    animation.setFrame(3);
+    animation.delayCounter = 2;
+    const finishedAtEnd = animation.stepDyingFrame(true);
+    assert(finishedAtEnd === true, 'dying animation should report finished on the last frame');
+    assert(animation.currentFrameIndex === 3, 'dying animation should stay on the last valid frame when finished');
+
     animation.currentFrameIndex = Number.NaN;
     sourceRect = animation.getCurrentSourceRect(10, 20, 8, 6);
     assert(sourceRect.sx === 10, 'getCurrentSourceRect should normalize non-finite frame index');

@@ -74,11 +74,13 @@ class AnimationFrameStepper {
         }
 
         const nextFrameIndex = normalizedCurrentFrameIndex + 1;
+        const lastFrameIndex = Math.max(0, normalizedFrameCount - 1);
+        const finished = nextFrameIndex >= normalizedFrameCount;
 
         return {
-            currentFrameIndex: nextFrameIndex,
+            currentFrameIndex: finished ? lastFrameIndex : nextFrameIndex,
             delayCounter: 0,
-            finished: nextFrameIndex >= normalizedFrameCount
+            finished
         };
     }
 }

@@ -27,6 +27,7 @@ export function testSpriteController(assert) {
 
     result = controller.stepFinalFrame(1, 1, controller.dyingFrameCount, controller.dyingDelay, true);
     assert(result.finished === true, 'final frame should finish at end');
+    assert(result.currentFrameIndex === 1, 'final frame should stay on the last valid frame when finished');
 
     result = controller.stepLoopingFrame(Number.NaN, Number.NaN, controller.livingFrameCount, controller.livingDelay, true);
     assert(Number.isFinite(result.currentFrameIndex), 'looping frame should normalize non-finite frame index');
