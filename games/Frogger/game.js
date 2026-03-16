@@ -105,7 +105,7 @@ class Game extends GameBase {
     this.attractMode.draw(CanvasUtils.ctx);
   }
 
-  displayPlayerSelect(deltaTime) {
+  displayPlayerSelect() {
     const result = GameUtils.selectNumberOfPlayers(CanvasUtils.ctx, canvasConfig, this.playerSelect, this.keyboardInput, null);
     if (result) {
       this.playerCount = result.playerCount;
