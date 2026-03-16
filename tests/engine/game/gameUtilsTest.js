@@ -62,6 +62,19 @@ export function testGameUtils(assert) {
     assert(config.y === 0, "getPlayerSelectConfig should preserve explicit zero optionBaseY");
     assert(config.spacing === 0, "getPlayerSelectConfig should preserve explicit zero optionSpacing");
 
+    const aliasConfig = GameUtils.getPlayerSelectConfig(canvasConfig, {
+        title: 'Choose Players',
+        x: 12,
+        y: 34,
+        spacing: 56,
+        color: 'cyan'
+    });
+    assert(aliasConfig.fillText === 'Choose Players', "getPlayerSelectConfig should accept title alias");
+    assert(aliasConfig.x === 12, "getPlayerSelectConfig should accept x alias");
+    assert(aliasConfig.y === 34, "getPlayerSelectConfig should accept y alias");
+    assert(aliasConfig.spacing === 56, "getPlayerSelectConfig should accept spacing alias");
+    assert(aliasConfig.fillStyle === 'cyan', "getPlayerSelectConfig should accept color alias");
+
     const keyboard1Player = new MockKeyboardInput(['Digit1']);
     const result1Player = GameUtils.selectNumberOfPlayers(mockCtx, canvasConfig, { maxPlayers: 4, lives: 3 }, keyboard1Player, null);
     assert(result1Player.playerCount === 1, "selectNumberOfPlayers failed for 1 player with keyboard input");
