@@ -17,6 +17,7 @@ import PngController from '../animation/pngController.js';
 import StateUtils from '../animation/stateUtils.js';
 import AnimationStateBridge from '../animation/animationStateBridge.js';
 import NumberUtils from '../math/numberUtils.js';
+import StringValidation from '../utils/stringValidation.js';
 
 class ObjectPNG extends ObjectKillable {
     static DEBUG = DebugFlag.has('objectPNG');
@@ -45,7 +46,7 @@ class ObjectPNG extends ObjectKillable {
         frameDelay = 6,
         frameOffsets = null
     ) {
-        ObjectValidation.nonEmptyString(spritePath, 'spritePath');
+        StringValidation.nonEmptyString(spritePath, 'spritePath');
         NumberUtils.finiteNumber(spriteX, 'spriteX');
         NumberUtils.finiteNumber(spriteY, 'spriteY');
         NumberUtils.positiveNumber(frameWidth, 'frameWidth');
@@ -123,7 +124,7 @@ class ObjectPNG extends ObjectKillable {
     }
 
     setFlip(flipType = ObjectPNG.Flip.NONE) {
-        ObjectValidation.nonEmptyString(flipType, 'flipType');
+        StringValidation.nonEmptyString(flipType, 'flipType');
 
         const normalized = flipType.toLowerCase();
         ObjectValidation.oneOf(normalized, 'flipType', Object.values(ObjectPNG.Flip));

@@ -9,6 +9,7 @@ import CollisionUtils from '../physics/collisionUtils.js';
 import VectorShapeUtils from '../physics/vectorShapeUtils.js';
 import NumberUtils from '../math/numberUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
+import StringValidation from '../utils/stringValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import DebugLog from '../utils/debugLog.js';
 import DebugFlag from '../utils/debugFlag.js';
@@ -92,7 +93,7 @@ class ObjectVector extends ObjectKillable {
     }
 
     setColor(color) {
-        ObjectValidation.nonEmptyString(color, 'color');
+        StringValidation.nonEmptyString(color, 'color');
         this.color = color;
     }
 

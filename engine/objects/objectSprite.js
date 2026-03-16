@@ -5,7 +5,7 @@
 
 import Colors from '../renderers/assets/colors.js';
 import ObjectKillable from './objectKillable.js';
-import ObjectValidation from '../utils/objectValidation.js';
+import StringValidation from '../utils/stringValidation.js';
 import ObjectCleanup from '../utils/objectCleanup.js';
 import DebugLog from '../utils/debugLog.js';
 import DebugFlag from '../utils/debugFlag.js';
@@ -126,7 +126,7 @@ setHit() {
     }
 
     setSpriteColor(spriteColor) {
-        ObjectValidation.nonEmptyString(spriteColor, 'spriteColor');
+        StringValidation.nonEmptyString(spriteColor, 'spriteColor');
 
         if (this.frameType === 'json') {
             DebugLog.warn(ObjectSprite.DEBUG, null, 'setSpriteColor is not used for json/RGB sprite data.');

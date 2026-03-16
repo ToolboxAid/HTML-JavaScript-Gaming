@@ -1,4 +1,4 @@
-import ObjectValidation from './objectValidation.js';
+import StringValidation from './stringValidation.js';
 
 class ImageAssetCache {
     static #transparentImagePromises = new Map();
@@ -9,7 +9,7 @@ class ImageAssetCache {
     }
 
     static loadImage(spritePath) {
-        ObjectValidation.nonEmptyString(spritePath, 'spritePath');
+        StringValidation.nonEmptyString(spritePath, 'spritePath');
 
         if (!this.#rawImagePromises.has(spritePath)) {
             const promise = this.#loadImage(spritePath)
@@ -25,7 +25,7 @@ class ImageAssetCache {
     }
 
     static loadTransparentSprite(spritePath, transparentColor = 'black') {
-        ObjectValidation.nonEmptyString(spritePath, 'spritePath');
+        StringValidation.nonEmptyString(spritePath, 'spritePath');
 
         if (typeof transparentColor !== 'string' || transparentColor.trim() === '') {
             return this.loadImage(spritePath);

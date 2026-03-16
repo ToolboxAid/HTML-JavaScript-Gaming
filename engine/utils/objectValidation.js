@@ -10,12 +10,6 @@ class ObjectValidation {
         throw new Error('ObjectValidation is a utility class with only static methods. Do not instantiate.');
     }
 
-    static nonEmptyString(value, name = 'value') {
-        if (typeof value !== 'string' || value.trim() === '') {
-            throw new Error(`${name} must be a non-empty string.`);
-        }
-    }
-
     static boolean(value, name = 'value') {
         if (typeof value !== 'boolean') {
             throw new Error(`${name} must be a boolean.`);
