@@ -29,6 +29,8 @@ canvas.height = canvasConfig.height;
 const PLAYER_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
 const MAX_BUTTONS = 10;
 const MAX_AXIS_ROWS = 4;
+const TITLE_FONT = 'bold 9px Segoe UI';
+const LABEL_FONT = '8px Segoe UI';
 const players = [];
 let animationFrameId = null;
 let isDestroyed = false;
@@ -49,6 +51,7 @@ function createPlayer(gameControllerIndex) {
         buttonColors: Array(MAX_BUTTONS).fill('gray'),
         buttonLabels: Array(MAX_BUTTONS).fill(''),
         title: `P${gameControllerIndex + 1}`,
+        subtitle: '',
         dPad: { left: false, right: false, up: false, down: false },
         axisValues: [],
     };
@@ -84,6 +87,7 @@ function gameUpdate() {
         player.title = controller.shortName
             ? `P${playerIndex + 1} ${controller.shortName}`
             : `P${playerIndex + 1}`;
+        player.subtitle = controller.id || '';
         controller.buttonEntries.forEach((buttonEntry) => {
             if (buttonEntry.index >= 0 && buttonEntry.index < MAX_BUTTONS) {
                 player.buttonLabels[buttonEntry.index] = buttonEntry.name;
@@ -119,13 +123,26 @@ function gameRender() {
         if (player) {
             const buttonsAcross = 5;
             const buttonSize = 12;
-            ctx.font = '8px Arial';
-            ctx.fillStyle = 'black';
-            ctx.fillText(player.title, player.x, player.y - 10);
+            const panelX = player.x - 8;
+            const panelY = player.y - 22;
+            const panelWidth = 178;
+            const panelHeight = 64;
+            ctx.fillStyle = 'rgba(14, 7, 40, 0.82)';
+            ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+            ctx.strokeStyle = player.color;
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+
+            ctx.font = TITLE_FONT;
+            ctx.fillStyle = player.color;
+            ctx.fillText(player.title, player.x, player.y - 12);
+            ctx.font = LABEL_FONT;
+            ctx.fillStyle = '#f3d8ab';
+            ctx.fillText(player.subtitle.slice(0, 26), player.x, player.y - 4);
 
             player.buttonColors.forEach((color, buttonIndex) => {
                 const buttonX = player.x + player.size + 6 + (buttonIndex % buttonsAcross) * (buttonSize + 2);
-                const buttonY = player.y - 3 + Math.floor(buttonIndex / buttonsAcross) * (buttonSize + 2);
+                const buttonY = player.y + 7 + Math.floor(buttonIndex / buttonsAcross) * (buttonSize + 2);
 
                 ctx.beginPath();
                 ctx.arc(buttonX, buttonY, buttonSize / 2, 0, 2 * Math.PI);
@@ -140,8 +157,8 @@ function gameRender() {
             });
 
             ctx.fillStyle = player.color;
-            const panelX = player.x + (buttonsAcross + 1.5) * buttonSize;
-            ctx.fillText('dPad:', panelX, player.y + 0);
+            const infoX = player.x + (buttonsAcross * (buttonSize + 2)) + 20;
+            ctx.fillText('dPad:', infoX, player.y + 10);
             const activeDirections = [];
             if (player.dPad.up) activeDirections.push('Up');
             if (player.dPad.down) activeDirections.push('Down');
@@ -149,13 +166,13 @@ function gameRender() {
             if (player.dPad.right) activeDirections.push('Right');
 
             const dPadState = activeDirections.length > 0 ? activeDirections.join(', ') : 'None';
-            ctx.fillText(dPadState, panelX + 22, player.y + 0);
+            ctx.fillText(dPadState, infoX + 22, player.y + 10);
 
             const decimals = 2;
             player.axisValues.forEach((axisEntry, axisIndex) => {
-                const axisY = player.y + 8 + (axisIndex * 8);
-                ctx.fillText(`${axisEntry.name}:`, panelX, axisY);
-                ctx.fillText(axisEntry.value.toFixed(decimals), panelX + 42, axisY);
+                const axisY = player.y + 18 + (axisIndex * 8);
+                ctx.fillText(`${axisEntry.name}:`, infoX, axisY);
+                ctx.fillText(axisEntry.value.toFixed(decimals), infoX + 42, axisY);
             });
         }
     });

@@ -28,6 +28,6 @@ Design choice: this sample is intentionally DOM/canvas-driven and focused on sho
 
 - The sample updates controller state each animation frame and renders compact per-controller panels.
 - It now reads connection and button state through `GameControllers` helper methods instead of reaching into controller internals directly.
-- It renders mapped button labels and named axis values based on the current controller mapper.
+- It renders labeled per-controller panels with mapper-based button labels, named axis values, and device identity text.
 - Cleanup is handled on `pagehide`/`beforeunload` and calls `gameControllers.destroy()` plus `Fullscreen.destroy()`.
 - Device mapping support and deadzone filtering come from engine controller modules.
