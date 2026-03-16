@@ -6,7 +6,6 @@
 import ObjectKillable from './objectKillable.js';
 import SystemUtils from '../utils/systemUtils.js';
 import AngleUtils from '../math/angleUtils.js';
-import ObjectValidation from '../utils/objectValidation.js';
 import DebugLog from '../utils/debugLog.js';
 import DebugFlag from '../utils/debugFlag.js';
 import ObjectDestroyUtils from './objectDestroyUtils.js';
@@ -127,7 +126,7 @@ class ObjectPNG extends ObjectKillable {
         StringValidation.nonEmptyString(flipType, 'flipType');
 
         const normalized = flipType.toLowerCase();
-        ObjectValidation.oneOf(normalized, 'flipType', Object.values(ObjectPNG.Flip));
+        StringValidation.oneOfString(normalized, 'flipType', Object.values(ObjectPNG.Flip));
 
         this.flip = normalized;
     }
