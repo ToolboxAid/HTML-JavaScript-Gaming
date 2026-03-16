@@ -15,6 +15,12 @@ export const canvasConfig = {
   borderSize: 15,
 };
 
+export const uiFont = Object.freeze({
+  display: 'Segoe UI',
+  ui: 'Segoe UI',
+  mono: 'monospace'
+});
+
 export const fullscreenConfig = {
   color: '#ed9700',
   font: '28px Segoe UI',
@@ -41,13 +47,53 @@ export const playerSelect = {
   lives: 3,
 
   color: "#ed9700",
-  font: "25px Segoe UI",
+  font: `25px ${uiFont.ui}`,
   title: "Select Player(s)",
 
   x: 250,
   y: 300,
   spacing: 40
 }
+
+export const sideScrollUi = {
+  screens: {
+    attract: {
+      lines: [
+        { text: 'Welcome to the 2D Tile Map!', y: 170, fontSize: 30, fontFamily: uiFont.display, color: '#ffffff' },
+        { text: 'Press Enter or Start to Begin', y: 205, fontSize: 30, fontFamily: uiFont.display, color: '#ffffff' },
+        { text: 'Move with Arrow Keys or D-pad', y: 245, fontSize: 30, fontFamily: uiFont.display, color: '#ffffff' }
+      ]
+    },
+    gameOver: {
+      lines: [
+        { text: 'Game Over', y: 200, fontSize: 30, fontFamily: uiFont.display, color: '#ff5f57' },
+        { text: 'Press Enter or Start to Restart', y: 300, fontSize: 30, fontFamily: uiFont.display, color: '#ff5f57' }
+      ]
+    },
+    pause: {
+      lines: [
+        { text: 'Game Paused.', y: 200, fontSize: 30, fontFamily: uiFont.display, color: '#ffffff' },
+        { text: 'Press P or Select to unpause', y: 250, fontSize: 30, fontFamily: uiFont.display, color: '#ffffff' }
+      ]
+    },
+    play: {
+      infoY: 200,
+      infoFontSize: 30,
+      infoFontFamily: uiFont.display,
+      infoColor: '#ffffff',
+      promptsY: 250,
+      prompts: [
+        'Press D or B for player death',
+        'Press S or A for score',
+        'Press P or Select to pause'
+      ],
+      promptFontSize: 30,
+      promptLineHeight: 50,
+      promptFontFamily: uiFont.display,
+      promptColor: '#ffffff'
+    }
+  }
+};
 
 export const spriteConfig = {
   pixelSize: 2.0,

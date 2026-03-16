@@ -13,29 +13,29 @@ Keep this sample focused on scrolling, tile-map gameplay, and camera behavior wi
 
 Local checklist:
 [x] Keep sample DOM-driven or engine-driven by explicit design (document choice)
-[ ] Keep scrolling/camera orchestration separated from UI/render wiring
+[x] Keep scrolling/camera orchestration separated from UI/render wiring
 [x] Keep status/error/debug output minimal and user-safe
 [x] Add or update README with controls and tile-map behavior
-[ ] Evaluate whether shared side-scroll helpers should move to engine
-[ ] Verify naming consistency for camera/tile/player state labels
-[ ] Verify repeated restart/play flow does not leak state/listeners
+[-] Evaluate whether shared side-scroll helpers should move to engine
+[x] Verify naming consistency for camera/tile/player state labels
+[x] Verify repeated restart/play flow does not leak state/listeners
 [x] Verify headers are in place
 
 Focused review checklist:
-[ ] Security: validate external/config-driven inputs before use
-[ ] Architecture: keep UI wiring separate from camera/world orchestration
-[ ] Move-to-engine: identify reusable tile/camera helpers for engine extraction
-[ ] Naming: keep control/action labels and identifiers consistent
-[ ] Safety: verify repeated interaction stays leak-free
+[x] Security: validate external/config-driven inputs before use
+[x] Architecture: keep UI wiring separate from camera/world orchestration
+[-] Move-to-engine: identify reusable tile/camera helpers for engine extraction
+[x] Naming: keep control/action labels and identifiers consistent
+[x] Safety: verify repeated interaction stays leak-free
 [x] Center on HTML page
 
 Detail checklist:
 [x] Move inline script logic out of `index.html`
-[ ] Anything need to move to the engine for reusable
-[ ] Separation of concerns for data, methods, etc
-[ ] Fix typo
-[ ] Add/validate unit test(s)
-[ ] Verify destroy()
+[-] Anything need to move to the engine for reusable
+[x] Separation of concerns for data, methods, etc
+[x] Fix typo
+[-] Add/validate unit test(s)
+[x] Verify destroy()
 [x] Center page layout and controls in index.html
 [x] Update README with sample details
 
@@ -52,4 +52,5 @@ Smoke pass steps:
 Decision notes:
 - Keep sample code focused on demonstrating tile-map and camera integration patterns.
 - Shared camera/tile helpers should move into engine only when reused by multiple games/samples.
+- Current teardown follows the shared `GameBase` ownership path; sample-local input destroy hooks are not needed.
 - Final pass should verify teardown and prevent stale runtime state after repeated restarts.

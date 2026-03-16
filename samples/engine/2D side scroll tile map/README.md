@@ -23,7 +23,9 @@ This sample demonstrates a simple side-scrolling tile map with a player characte
 
 ## Notes
 - This sample is engine-driven: `GameBase` owns the runtime loop and input lifecycle.
-- `game.js` owns state flow and runtime wiring.
+- `game.js` is now the runtime shell and state router.
+- `sideScrollStateHandlers.js` owns state-specific screen flow and player-select/play/pause/game-over behavior.
 - `gameAttract.js` owns the attract-scene world preview.
+- `global.js` owns screen copy plus shared sample config.
 - `hero.js` owns player movement used by the attract scene and tile map.
 - This sample is meant to teach scrolling/tile-map integration more than finished game rules.

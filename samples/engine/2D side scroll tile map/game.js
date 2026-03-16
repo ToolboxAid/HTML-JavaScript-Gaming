@@ -2,19 +2,35 @@
 // David Quesenberry
 
 // 10/16/2024
-// game.js - Template Game Engine
+// game.js - 2D side scroll tile map sample
 
-import { canvasConfig, performanceConfig, fullscreenConfig, playerSelect } from './global.js';
+import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 
 import GameBase from '../../../engine/core/gameBase.js';
-import CanvasUtils from '../../../engine/core/canvas.js'; // Required for dynamic canvas operations, used in animate()
-import GameUtils from '../../../engine/game/gameUtils.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import GameControllers from '../../../engine/input/controller/gameControllers.js';
 
 import GameAttract from './gameAttract.js';
+import {
+  displayAttractMode,
+  displayPlayerSelect,
+  displayGameOver,
+  initGame,
+  initializeEnemyIfNeeded,
+  pauseGame,
+  playGame
+} from './sideScrollStateHandlers.js';
 
 class Game extends GameBase {
+  static STATES = Object.freeze({
+    ATTRACT: 'attract',
+    PLAYER_SELECT: 'playerSelect',
+    INIT_GAME: 'initGame',
+    INIT_ENEMY: 'initEnemy',
+    PLAY_GAME: 'playGame',
+    PAUSE_GAME: 'pauseGame',
+    GAME_OVER: 'gameOver'
+  });
 
   constructor() {
     super(canvasConfig, performanceConfig, fullscreenConfig);
@@ -24,180 +40,36 @@ class Game extends GameBase {
     this.keyboardInput = new KeyboardInput();
     this.gameControllers = new GameControllers();
 
-    // Game State Variables
-    this.gameState = "attract"; // Possible states: attract, playerSelect, initGame, initEnemy, playGame, gameOver
+    this.resetRuntimeState();
+    this.gameAttract = new GameAttract();
+    this.stateHandlers = {
+      [Game.STATES.ATTRACT]: (deltaTime) => displayAttractMode(this, deltaTime),
+      [Game.STATES.PLAYER_SELECT]: () => displayPlayerSelect(this),
+      [Game.STATES.INIT_GAME]: () => initGame(this),
+      [Game.STATES.INIT_ENEMY]: () => initializeEnemyIfNeeded(this),
+      [Game.STATES.PLAY_GAME]: () => playGame(this),
+      [Game.STATES.PAUSE_GAME]: () => pauseGame(this),
+      [Game.STATES.GAME_OVER]: () => displayGameOver(this)
+    };
+  }
+
+  resetRuntimeState() {
+    this.gameState = Game.STATES.ATTRACT;
     this.playerCount = 1;
     this.currentPlayer = 0;
-    this.playerLives = null; // Player 1 - Player 4 lives
-    this.score = null; // Player 1 - Player 4 scores
+    this.playerLives = null;
+    this.score = null;
     this.gameInitialized = false;
     this.enemyInitialized = false;
     this.onetime = true;
-
     this.backToAttract = 600;
     this.backToAttractCounter = 0;
-
-    this.gameAttract = new GameAttract();
   }
 
-  // Example: object.position += object.velocity * deltaTime;
   gameLoop(deltaTime) {
     this.keyboardInput.update();
     this.gameControllers?.update();
-
-    //console.log(this.gameState);
-
-    // Update game state with deltaTime
-    switch (this.gameState) {
-      case "attract":
-        this.displayAttractMode(deltaTime);
-        break;
-
-      case "playerSelect":
-        this.displayPlayerSelect();
-        break;
-
-      case "initGame":
-        this.initGame();
-        break;
-
-      case "initEnemy":
-        if (!this.enemyInitialized) {
-          this.initializeEnemy();
-        }
-        break;
-
-      case "playGame":
-        this.playGame();
-        break;
-
-      case "pauseGame":
-        this.pauseGame();
-        break;
-
-      case "gameOver":
-        this.displayGameOver();
-        break;
-    }
-  }
-
-  // Display
-  displayAttractMode(deltaTime) {
-    CanvasUtils.ctx.fillStyle = "white";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Welcome to the `2D` Game!", 145, 170);
-    CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Begin", 120, 205);
-    CanvasUtils.ctx.fillText("Move with Arrow Keys or D-pad", 150, 245);
-
-    this.gameAttract.update(deltaTime, this.keyboardInput, this.gameControllers);
-    this.gameAttract.draw();
-
-    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
-      this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      this.gameControllers?.wasStartPressed()) {
-      this.gameState = "playerSelect";
-    }
-  }
-
-  displayPlayerSelect() {
-    const result = GameUtils.selectNumberOfPlayers(
-      CanvasUtils.ctx,
-      canvasConfig,
-      playerSelect,
-      this.keyboardInput,
-      this.gameControllers
-    );
-    if (result) {
-      this.playerCount = result.playerCount;
-      this.playerLives = result.playerLives;
-      this.gameState = "initGame";
-    }
-  }
-
-  displayGameOver() {
-    CanvasUtils.ctx.fillStyle = "red";
-    CanvasUtils.ctx.font = "30px Arial";
-    CanvasUtils.ctx.fillText("Game Over", 300, 200);
-    CanvasUtils.ctx.fillText("Press `Enter` or `Start` to Restart", 160, 300);
-
-    if (this.keyboardInput.getKeysPressed().includes('Enter') ||
-      this.keyboardInput.getKeysPressed().includes('NumpadEnter') ||
-      this.gameControllers?.wasStartPressed() ||
-      this.backToAttractCounter++ > this.backToAttract) {
-      this.resetGame();
-    }
-  }
-
-  // Game Logic
-  initGame() {
-    this.gameInitialized = true;
-    this.onetime = true;
-    this.score = Array(playerSelect.maxPlayers).fill(0);
-    this.currentPlayer = 0;
-
-    this.gameState = "initEnemy";
-  }
-
-  initializeEnemy() {
-    this.enemyInitialized = true;
-
-    this.gameState = "playGame";
-  }
-
-  gamePauseCheck() {
-    if (this.keyboardInput.getKeysPressed().includes('KeyP') ||
-      this.gameControllers?.wasSelectPressed()) {
-      if (this.gameState === "playGame") {
-        this.gameState = "pauseGame";
-      } else if (this.gameState === "pauseGame") {
-        this.gameState = "playGame";
-      }
-    }
-  }
-
-  pauseGame() {
-    this.gamePauseCheck();
-    CanvasUtils.drawText(150, 200, "Game Paused.", 3.5, "white");
-    CanvasUtils.drawText(115, 250, "Press `P` or `Select` to unpause", 3.5, "white");
-  }
-
-  playGame() {
-    this.gamePauseCheck();
-    const controllerScorePressed = this.gameControllers?.wasPrimaryActionPressed() || false;
-    const controllerDeathPressed = this.gameControllers?.wasSecondaryActionPressed() || false;
-
-    // Display current player status
-    const playerInfo = `Player ${this.currentPlayer + 1} - Lives: ${this.playerLives[this.currentPlayer]} - Score: ${this.score[this.currentPlayer]}`;
-    CanvasUtils.drawText(100, 200, playerInfo, 3.5, "white");
-    CanvasUtils.drawText(100, 250, "Press `D` or `B` for player death", 3.5, "white");
-    CanvasUtils.drawText(100, 300, "Press `S` or `A` for score", 3.5, "white");
-    CanvasUtils.drawText(100, 350, "Press `P` or `Select` to pause", 3.5, "white");
-
-    if (this.keyboardInput.getKeysPressed().includes('KeyS') || controllerScorePressed) {
-      this.score[this.currentPlayer] += 100;
-    }
-
-    // Check if `D` key was just pressed, simulate losing a life
-    if (this.keyboardInput.getKeysPressed().includes('KeyD') || controllerDeathPressed) {
-      const result = GameUtils.swapPlayer(
-        this.playerLives,
-        this.currentPlayer,
-        this.playerCount,
-        (newState) => { this.gameState = newState; }
-      );
-
-      // Update the current player and 
-      //                                                       lives based on the result from swapPlayer
-      this.currentPlayer = result.updatedPlayer;
-      this.playerLives = result.updatedLives;
-    }
-  }
-
-  resetGame() {
-    this.gameState = "attract";
-    this.gameInitialized = false;
-    this.enemyInitialized = false;
-    this.backToAttractCounter = 0;
+    this.stateHandlers[this.gameState]?.(deltaTime);
   }
 
 }
