@@ -60,6 +60,8 @@ This document defines lightweight, shared method conventions used across the eng
 - Runtime singletons/facades own shared browser services (`RuntimeContext` wraps canvas, fullscreen, performance, and timer integration).
 - Collection membership/indexing belongs in manager/registry/system classes.
 - Cross-object coordination belongs in systems/facades (for example `GameObjectSystem`, `GameCollision`).
+- Frame-state normalization belongs in shared helpers when multiple systems need identical semantics (for example `InputFrameState` and `AnimationFrameStepper`).
+- Shared engine UI renderers should stay config-driven and avoid owning game rules (`GamePlayerSelectUi` draws selection UI, while `GameUtils.resolvePlayerSelection(...)` resolves the chosen player count).
 
 ## Compatibility Rule
 

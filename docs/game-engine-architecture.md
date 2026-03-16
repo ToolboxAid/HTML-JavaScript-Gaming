@@ -85,6 +85,11 @@ That separation makes arcade-style controls easier to implement cleanly.
 
 The same frame-state pattern also shows up in mouse and controller input, which keeps gameplay code consistent across devices.
 
+Recent cleanup also extracted:
+
+- `inputFrameState.js` for shared pressed/down/released frame tracking
+- `inputLifecycle.js` for shared start/stop/destroy listener ownership
+
 ## 3. Object layer
 
 The repo uses shared object types under `engine/objects/`.
@@ -159,6 +164,7 @@ Key files include:
 
 - `spriteController.js`
 - `pngController.js`
+- `animationFrameStepper.js`
 - `animationStateBridge.js`
 - `stateUtils.js`
 
@@ -194,6 +200,7 @@ Key files include:
 - `engine/core/canvasUtils.js`
 - `engine/core/sprite.js`
 - `engine/core/tileMap.js`
+- `engine/core/fullscreen.js`
 - `engine/renderers/boxRenderer.js`
 - `engine/renderers/spriteRenderer.js`
 - `engine/renderers/pngRenderer.js`
@@ -212,6 +219,8 @@ At a practical level, the engine already supports:
 - particle effects
 - parallax-style scrolling logic in the tile-map support
 - renderer safety guards and shared debug-gated logging
+
+Game-facing shared UI that still belongs with engine helpers now also lives under `engine/game/`, such as `gamePlayerSelectUi.js`, while player-count resolution remains in `gameUtils.js`.
 
 ## 8. Messaging and decoupling
 

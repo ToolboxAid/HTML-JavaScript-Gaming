@@ -2,11 +2,18 @@
 
 Update this file any time a change lands under `engine/`.
 
+## 1.5.0 - 2026-03-16
+- Renamed `core/canvas.js` to `core/canvasUtils.js` and updated engine, game, sample, test, and doc references.
+- Extracted shared frame-step logic into `animation/animationFrameStepper.js` and clamped finished animations to the last valid frame.
+- Added shared input lifecycle and frame-state helpers in `input/inputLifecycle.js` and `input/inputFrameState.js`, including same-frame press/release safety.
+- Split shared player-select rendering into `game/gamePlayerSelectUi.js` and made it config-driven and canvas-state-safe.
+- Moved fullscreen ownership under `core/fullscreen.js` and updated runtime references to match.
+
 ## 1.4.0 - 2026-03-15
 - Centralized centered and multiline text handling in `core/canvasText.js`.
 - Removed older centering passthroughs from `core/canvasUtils.js`.
 - Polished debug logging defaults in `utils/debugLog.js` with compact caller context and cleaner trace behavior.
-- Added optional `onResize` support to `fullscreen.js` for callback-based redraw flows.
+- Added optional `onResize` support to `core/fullscreen.js` for callback-based redraw flows.
 
 ## 1.3.0 - 2026-03-14
 - Reduced hot-loop work and allocation churn across the game loop, renderer debug path, object system, gamepad polling, and canvas callbacks.
