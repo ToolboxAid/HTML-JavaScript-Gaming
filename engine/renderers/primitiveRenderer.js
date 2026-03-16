@@ -218,13 +218,12 @@ class PrimitiveRenderer {
         ctx.lineTo(x2, y2);
     }
 
-    static getRectOutlineSegments(x, y, width, height) {
-        return [
-            { x1: x, y1: y, x2: x + width, y2: y },
-            { x1: x + width, y1: y, x2: x + width, y2: y + height },
-            { x1: x + width, y1: y + height, x2: x, y2: y + height },
-            { x1: x, y1: y + height, x2: x, y2: y }
-        ];
+    static traceRectOutline(ctx, x, y, width, height) {
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + width, y);
+        ctx.lineTo(x + width, y + height);
+        ctx.lineTo(x, y + height);
+        ctx.lineTo(x, y);
     }
 
     static getPointX(point) {
@@ -391,10 +390,15 @@ class PrimitiveRenderer {
         );
 
         if (canCombineBorderAndHeader) {
-            this.renderSegments(ctx, [
-                ...this.getRectOutlineSegments(x, y, width, height),
-                { x1: x, y1: headerY, x2: x + width, y2: headerY }
-            ], borderColor, borderWidth, { alpha: 1 });
+            this.renderStrokedShape(ctx, borderColor, borderWidth, {
+                alpha: 1,
+                trace: () => {
+                    ctx.beginPath();
+                    this.traceRectOutline(ctx, x, y, width, height);
+                    ctx.moveTo(x, headerY);
+                    ctx.lineTo(x + width, headerY);
+                }
+            });
             return;
         }
 
@@ -421,11 +425,18 @@ class PrimitiveRenderer {
         const centerY = height / 2;
         const lineDash = [8, 6];
 
-        this.renderSegments(ctx, [
-            ...this.getRectOutlineSegments(x, y, safeWidth, safeHeight),
-            { x1: centerX, y1: y, x2: centerX, y2: y + safeHeight },
-            { x1: x, y1: centerY, x2: x + safeWidth, y2: centerY }
-        ], strokeColor, lineWidth, { alpha: 1, lineDash });
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha: 1,
+            lineDash,
+            trace: () => {
+                ctx.beginPath();
+                this.traceRectOutline(ctx, x, y, safeWidth, safeHeight);
+                ctx.moveTo(centerX, y);
+                ctx.lineTo(centerX, y + safeHeight);
+                ctx.moveTo(x, centerY);
+                ctx.lineTo(x + safeWidth, centerY);
+            }
+        });
     }
 
     static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
