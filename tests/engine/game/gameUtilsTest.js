@@ -30,8 +30,20 @@ class MockCanvasContext {
     constructor() {
         this.fillStyle = '';
         this.font = '';
+        this.textAlign = '';
+        this.textBaseline = '';
         this.fillRectCalls = [];
         this.fillTextCalls = [];
+        this.saveCalls = 0;
+        this.restoreCalls = 0;
+    }
+
+    save() {
+        this.saveCalls += 1;
+    }
+
+    restore() {
+        this.restoreCalls += 1;
     }
 
     fillRect(x, y, width, height) {
@@ -58,6 +70,7 @@ export function testGameUtils(assert) {
     assert(result.playerCount === 1, "resolvePlayerSelection failed for direct 1-player keyboard selection");
     assert(mockCtx.fillRectCalls.length === 1, "drawPlayerSelection should draw the background overlay once");
     assert(mockCtx.fillTextCalls.length >= 5, "drawPlayerSelection should draw heading plus keyboard option text");
+    assert(mockCtx.saveCalls === 1 && mockCtx.restoreCalls === 1, "drawPlayerSelection should preserve canvas text state with save/restore");
 
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, { maxPlayers: 0, lives: 0, y: 0, spacing: 0 });
     assert(config.maxPlayers === 0, "getPlayerSelectConfig should preserve explicit zero maxPlayers");
@@ -70,12 +83,20 @@ export function testGameUtils(assert) {
         x: 12,
         y: 34,
         spacing: 56,
+        optionX: 78,
+        controllerTitle: 'Controllers Ready',
+        controllerOffsetY: 144,
+        controllerLineSpacing: 66,
         color: 'cyan'
     });
     assert(aliasConfig.title === 'Choose Players', "getPlayerSelectConfig should use title");
     assert(aliasConfig.x === 12, "getPlayerSelectConfig should use x");
     assert(aliasConfig.y === 34, "getPlayerSelectConfig should use y");
     assert(aliasConfig.spacing === 56, "getPlayerSelectConfig should use spacing");
+    assert(aliasConfig.optionX === 78, "getPlayerSelectConfig should use optionX");
+    assert(aliasConfig.controllerTitle === 'Controllers Ready', "getPlayerSelectConfig should use controllerTitle");
+    assert(aliasConfig.controllerOffsetY === 144, "getPlayerSelectConfig should use controllerOffsetY");
+    assert(aliasConfig.controllerLineSpacing === 66, "getPlayerSelectConfig should use controllerLineSpacing");
     assert(aliasConfig.color === 'cyan', "getPlayerSelectConfig should use color");
 
     const keyboard1Player = new MockKeyboardInput(['Digit1']);

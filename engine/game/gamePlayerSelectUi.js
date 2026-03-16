@@ -20,25 +20,34 @@ class GamePlayerSelectUi {
         for (let i = 1; i <= config.maxPlayers; i++) {
             ctx.fillText(
                 `Keyboard \`${i}\` for ${i} Player${i > 1 ? 's' : ''}`,
-                (config.canvasWidth / 2) - 200,
+                config.optionX,
                 config.y + i * config.spacing
             );
         }
     }
 
     static drawControllerPlayerOptions(ctx, config) {
-        ctx.fillText('GameController Select Player(s)', config.x, config.y + 150);
-        ctx.fillText('`Left Bumper` 1 player', (config.canvasWidth / 2) - 200, config.y + 200);
-        ctx.fillText('`Right Bumper` 2 players', (config.canvasWidth / 2) - 200, config.y + 250);
+        const controllerTitleY = config.y + config.controllerOffsetY;
+        const firstOptionY = controllerTitleY + config.controllerLineSpacing;
+
+        ctx.fillText(config.controllerTitle, config.x, controllerTitleY);
+        ctx.fillText('`Left Bumper` 1 player', config.optionX, firstOptionY);
+        ctx.fillText('`Right Bumper` 2 players', config.optionX, firstOptionY + config.controllerLineSpacing);
     }
 
     static drawPlayerSelection(ctx, config, gameControllers = null) {
+        ctx.save();
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+
         this.drawPlayerSelectOverlay(ctx, config);
         this.drawKeyboardPlayerOptions(ctx, config);
 
         if (gameControllers) {
             this.drawControllerPlayerOptions(ctx, config);
         }
+
+        ctx.restore();
     }
 }
 

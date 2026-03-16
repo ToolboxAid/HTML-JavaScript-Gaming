@@ -17,6 +17,10 @@ const DEFAULT_PLAYER_SELECT_CONFIG = Object.freeze({
     x: 100,
     y: 100,
     spacing: 50,
+    optionX: null,
+    controllerTitle: 'GameController Select Player(s)',
+    controllerOffsetY: 150,
+    controllerLineSpacing: 50,
     color: 'white',
     font: '30px Arial'
 });
@@ -32,6 +36,10 @@ class GameUtils {
             x: playerSelect.x ?? DEFAULT_PLAYER_SELECT_CONFIG.x,
             y: playerSelect.y ?? DEFAULT_PLAYER_SELECT_CONFIG.y,
             spacing: playerSelect.spacing ?? DEFAULT_PLAYER_SELECT_CONFIG.spacing,
+            optionX: playerSelect.optionX ?? ((canvasConfig.width / 2) - 200),
+            controllerTitle: playerSelect.controllerTitle ?? DEFAULT_PLAYER_SELECT_CONFIG.controllerTitle,
+            controllerOffsetY: playerSelect.controllerOffsetY ?? DEFAULT_PLAYER_SELECT_CONFIG.controllerOffsetY,
+            controllerLineSpacing: playerSelect.controllerLineSpacing ?? DEFAULT_PLAYER_SELECT_CONFIG.controllerLineSpacing,
             color: playerSelect.color ?? DEFAULT_PLAYER_SELECT_CONFIG.color,
             font: playerSelect.font ?? DEFAULT_PLAYER_SELECT_CONFIG.font,
             canvasWidth: canvasConfig.width,
