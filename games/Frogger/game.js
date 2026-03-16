@@ -183,16 +183,20 @@ class Game extends GameBase {
 
     // Update and draw frog
     if (this.frog) {
-        const dPad = this.gameControllers?.getDPad(0);
+        const controllerUpPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadUP');
+        const controllerDownPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadDOWN');
+        const controllerLeftPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadLEFT');
+        const controllerRightPressed = this.gameControllers?.wasButtonNamePressed(0, 'DPadRIGHT');
+        const controllerDeathPressed = this.gameControllers?.wasButtonIndexPressed(0, 1);
 
         // Handle keyboard input for frog movement
-        if (this.keyboardInput.getKeysPressed().includes('ArrowUp') || dPad?.up) {
+        if (this.keyboardInput.getKeysPressed().includes('ArrowUp') || controllerUpPressed) {
             this.frog.move('up');
-        } else if (this.keyboardInput.getKeysPressed().includes('ArrowDown') || dPad?.down) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowDown') || controllerDownPressed) {
             this.frog.move('down');
-        } else if (this.keyboardInput.getKeysPressed().includes('ArrowLeft') || dPad?.left) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowLeft') || controllerLeftPressed) {
             this.frog.move('left');
-        } else if (this.keyboardInput.getKeysPressed().includes('ArrowRight') || dPad?.right) {
+        } else if (this.keyboardInput.getKeysPressed().includes('ArrowRight') || controllerRightPressed) {
             this.frog.move('right');
         }
 
@@ -203,7 +207,7 @@ class Game extends GameBase {
         this.frog.draw();
 
         // Check for frog death (temporary for testing)
-        if (this.keyboardInput.getKeysPressed().includes('KeyD')) {
+        if (this.keyboardInput.getKeysPressed().includes('KeyD') || controllerDeathPressed) {
             this.frog.loseLife();
             if (!this.frog.isAlive()) {
                 const result = GameUtils.swapPlayer(
