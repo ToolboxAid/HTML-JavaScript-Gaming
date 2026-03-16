@@ -162,20 +162,22 @@ class Game extends GameBase {
 
   playGame() {
     this.gamePauseCheck();
+    const controllerScorePressed = this.gameControllers?.wasButtonIndexPressed(0, 0);
+    const controllerDeathPressed = this.gameControllers?.wasButtonIndexPressed(0, 1);
 
     // Display current player status
     const playerInfo = `Player ${this.currentPlayer + 1} - Lives: ${this.playerLives[this.currentPlayer]} - Score: ${this.score[this.currentPlayer]}`;
     CanvasUtils.drawText(100, 200, playerInfo, 3.5, "white");
-    CanvasUtils.drawText(100, 250, "Press `D` for player death", 3.5, "white");
-    CanvasUtils.drawText(100, 300, "Press `S` for score", 3.5, "white");
-    CanvasUtils.drawText(100, 350, "Press `P` to pause game", 3.5, "white");
+    CanvasUtils.drawText(100, 250, "Press `D` or `B` for player death", 3.5, "white");
+    CanvasUtils.drawText(100, 300, "Press `S` or `A` for score", 3.5, "white");
+    CanvasUtils.drawText(100, 350, "Press `P` or `Select` to pause", 3.5, "white");
 
-    if (this.keyboardInput.getKeysPressed().includes('KeyS')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyS') || controllerScorePressed) {
       this.score[this.currentPlayer] += 100;
     }
 
     // Check if `D` key was just pressed, simulate losing a life
-    if (this.keyboardInput.getKeysPressed().includes('KeyD')) {
+    if (this.keyboardInput.getKeysPressed().includes('KeyD') || controllerDeathPressed) {
       const result = GameUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
