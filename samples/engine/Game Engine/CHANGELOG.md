@@ -2,6 +2,7 @@
 
 ## 1.3.1 - 2026-03-15
 - Added controller `Start`/`Select` support to the starter attract, game-over, and pause flow.
+- Added controller `A`/`B` support to the starter play-state score and player-death actions.
 - Updated starter copy and docs to reflect the controller-capable template flow.
 
 ## 1.3.0 - 2026-03-15

@@ -22,8 +22,8 @@ Attract-state preview of the current starter layout and theme.
 - `Enter` or controller `Start`: start from attract or restart from game over.
 - Player select: keyboard `1`/`2` or controller `Left Bumper`/`Right Bumper`.
 - `P` or controller `Select`: pause/unpause during gameplay.
-- `S`: add score to the current player.
-- `D`: trigger player death/swap flow.
+- `S` or controller `A`: add score to the current player.
+- `D` or controller `B`: trigger player death/swap flow.
 
 ## Optional Query Flags
 - `?game` enables sample debug logging.
