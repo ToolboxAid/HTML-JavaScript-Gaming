@@ -218,6 +218,35 @@ class PrimitiveRenderer {
         ctx.lineTo(x2, y2);
     }
 
+    static traceCrosshair(ctx, centerX, centerY, size = 10) {
+        ctx.beginPath();
+        ctx.moveTo(centerX - size, centerY);
+        ctx.lineTo(centerX + size, centerY);
+        ctx.moveTo(centerX, centerY - size);
+        ctx.lineTo(centerX, centerY + size);
+    }
+
+    static traceGridLines(ctx, x, y, width, height, columns, rows) {
+        const normalizedColumns = Math.max(0, Math.floor(columns));
+        const normalizedRows = Math.max(0, Math.floor(rows));
+        const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
+        const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
+
+        ctx.beginPath();
+
+        for (let column = 0; column <= normalizedColumns; column++) {
+            const lineX = x + (column * stepX);
+            ctx.moveTo(lineX, y);
+            ctx.lineTo(lineX, y + height);
+        }
+
+        for (let row = 0; row <= normalizedRows; row++) {
+            const lineY = y + (row * stepY);
+            ctx.moveTo(x, lineY);
+            ctx.lineTo(x + width, lineY);
+        }
+    }
+
     static traceRectOutline(ctx, x, y, width, height) {
         ctx.moveTo(x, y);
         ctx.lineTo(x + width, y);
@@ -436,23 +465,11 @@ class PrimitiveRenderer {
     }
 
     static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
-        const normalizedColumns = Math.max(0, Math.floor(columns));
-        const normalizedRows = Math.max(0, Math.floor(rows));
-        const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
-        const stepY = normalizedRows > 0 ? height / normalizedRows : 0;
-        const segments = [];
-
-        for (let column = 0; column <= normalizedColumns; column++) {
-            const lineX = x + (column * stepX);
-            segments.push({ x1: lineX, y1: y, x2: lineX, y2: y + height });
-        }
-
-        for (let row = 0; row <= normalizedRows; row++) {
-            const lineY = y + (row * stepY);
-            segments.push({ x1: x, y1: lineY, x2: x + width, y2: lineY });
-        }
-
-        this.renderSegments(ctx, segments, strokeColor, lineWidth, { alpha: 1, lineDash: options.lineDash });
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha: 1,
+            lineDash: options.lineDash,
+            trace: () => this.traceGridLines(ctx, x, y, width, height, columns, rows)
+        });
     }
 
     static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
@@ -504,10 +521,11 @@ class PrimitiveRenderer {
     }
 
     static renderCrosshair(ctx, centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        this.renderSegments(ctx, [
-            { x1: centerX - size, y1: centerY, x2: centerX + size, y2: centerY },
-            { x1: centerX, y1: centerY - size, x2: centerX, y2: centerY + size }
-        ], strokeColor, lineWidth, { alpha, lineDash: options.lineDash });
+        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+            alpha,
+            lineDash: options.lineDash,
+            trace: () => this.traceCrosshair(ctx, centerX, centerY, size)
+        });
     }
 
     static renderMarker(ctx, x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
