@@ -21,13 +21,8 @@ class GameObjectRegistry {
         DebugLog.log(this.debug, null, 'GameObjectRegistry created');
     }
 
-    getObjectId(gameObject) {
-        return GameObjectUtils.getObjectId(gameObject);
-    }
-
     register(gameObject) {
-
-        const id = this.getObjectId(gameObject);
+        const id = GameObjectUtils.getObjectId(gameObject);
 
         if (this.#objectsById.has(id)) {
             throw new Error(`Duplicate GameObject ID detected: ${id}`);
@@ -44,8 +39,7 @@ class GameObjectRegistry {
     }
 
     unregister(gameObject) {
-
-        const id = this.getObjectId(gameObject);
+        const id = GameObjectUtils.getObjectId(gameObject);
 
         if (!this.#objectsById.has(id)) {
             DebugLog.warn(this.debug, null, 'GameObject not found in registry', {
@@ -63,20 +57,14 @@ class GameObjectRegistry {
         return true;
     }
 
-    validateId(id) {
-        GameObjectUtils.validateId(id);
-    }
-
     getById(id) {
-
-        this.validateId(id);
+        GameObjectUtils.validateId(id);
 
         return this.#objectsById.get(id) || null;
     }
 
     hasId(id) {
-
-        this.validateId(id);
+        GameObjectUtils.validateId(id);
 
         return this.#objectsById.has(id);
     }

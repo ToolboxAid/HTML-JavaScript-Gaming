@@ -20,8 +20,8 @@ function testManager(assert) {
     assert(manager.getCount() === 0, 'manager should start empty');
     assert(manager.addGameObject(a) === true, 'manager should add object');
     assert(manager.getCount() === 1, 'manager count should increment');
+    assert(manager.hasGameObject(a) === true, 'manager should report object membership');
     assert(manager.addGameObject(a) === false, 'manager should reject duplicate object');
-    assert(manager.findGameObjectById('a') === a, 'manager should find object by id');
     assert(manager.removeGameObject(a) === true, 'manager should remove object');
     assert(a.destroyCalls === 1, 'manager remove should destroy object once');
     assert(manager.getCount() === 0, 'manager count should decrement');

@@ -57,16 +57,6 @@ class GameObjectManager {
         return true;
     }
 
-    findGameObjectById(id) {
-        GameObjectUtils.validateId(id);
-
-        const obj = this.#activeGameObjects.find(
-            gameObject => gameObject.ID === id
-        );
-
-        return obj || null;
-    }
-
     removeGameObject(gameObject) {
         GameObjectUtils.validateGameObject(gameObject);
 
