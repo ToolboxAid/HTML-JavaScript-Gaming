@@ -7,6 +7,7 @@ import SystemUtils from "../utils/systemUtils.js";
 import DebugFlag from "../utils/debugFlag.js";
 import DebugLog from "../utils/debugLog.js";
 import CanvasUtils from "./canvasUtils.js";
+import CanvasText from "./canvasText.js";
 import PrimitiveRenderer from "../renderers/primitiveRenderer.js";
 
 class PerformanceMonitor {
@@ -212,7 +213,7 @@ class PerformanceMonitor {
         }
 
         const measurements = this.layoutTemplates.map((text) =>
-            CanvasUtils.calculateTextMetrics(text, fontSize, fontFamily)
+            CanvasText.calculateTextMetrics(CanvasUtils.ctx, text, fontSize, fontFamily)
         );
         const layout = {
             maxWidth: Math.max(...measurements.map(({ width }) => width)),

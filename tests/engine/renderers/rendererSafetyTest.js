@@ -1,4 +1,5 @@
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import SpriteRenderer from '../../../engine/renderers/spriteRenderer.js';
 import VectorRenderer from '../../../engine/renderers/vectorRenderer.js';
@@ -63,8 +64,8 @@ function testCanvasUtilsGuardOnMissingContext(assert) {
         assertNoThrow(assert, () => CanvasUtils.drawSpriteRGB(0, 0, [['#fff']], 1), 'CanvasUtils.drawSpriteRGB should no-op without context');
         assertNoThrow(assert, () => CanvasUtils.canvasClear(), 'CanvasUtils.canvasClear should no-op without context');
 
-        const dimensions = CanvasUtils.calculateTextMetrics('hello');
-        assert(dimensions.width === 0 && dimensions.height === 0, 'CanvasUtils.calculateTextMetrics should fall back to zero dimensions without context');
+        const dimensions = CanvasText.calculateTextMetrics(null, 'hello');
+        assert(dimensions.width === 0 && dimensions.height === 0, 'CanvasText.calculateTextMetrics should fall back to zero dimensions without context');
     } finally {
         CanvasUtils.ctx = originalCtx;
     }

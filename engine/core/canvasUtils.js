@@ -97,14 +97,6 @@ class CanvasUtils {
         return !!this.ctx;
     }
 
-    // get text width & height based on size & font w/padding
-    static calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
-        if (!this.ctx) {
-            return { width: 0, height: 0 };
-        }
-        return CanvasText.calculateTextMetrics(this.ctx, text, fontSize, font);
-    }
-
     // Method to draw the current frame
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         if (!this.ctx || !Array.isArray(frame)) {

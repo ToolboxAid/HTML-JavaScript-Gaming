@@ -45,6 +45,10 @@ class CanvasText {
     }
 
     static calculateTextMetrics(ctx, text, fontSize = 20, font = 'Arial') {
+        if (!ctx) {
+            return { width: 0, height: 0 };
+        }
+
         ctx.font = `${fontSize}px ${font}`;
         const metrics = ctx.measureText(text);
 
