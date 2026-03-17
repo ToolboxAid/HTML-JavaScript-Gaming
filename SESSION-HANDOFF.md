@@ -1,5 +1,9 @@
 Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
 
+**Note**
+- this is the living handoff doc for current work state
+- stable long-term preferences live in `CODEX-PREFERENCES.md`
+
 **Current Direction**
 - keep game and shared-canvas sample code unaware of raw canvas context details
 - keep rendering behavior in engine/core/renderers
@@ -67,7 +71,6 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
 - `tests/engine/core/canvasTextTest.js` uses `CanvasText._*ToContext(...)`
 - `tests/engine/core/canvasSpriteTest.js` uses `CanvasSprite._*ToContext(...)`
 - `tests/engine/core/fullscreenTest.js` uses `Fullscreen._drawToContext(...)`
-- `samples/input/Mouse/game.js` still uses a local canvas context by design
 - image preprocessing helpers like `engine/utils/imageAssetCache.js` use local/offscreen contexts by design
 
 **Test Status**
@@ -87,12 +90,10 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
 - review the remaining intentional local/offscreen context cases and leave only the ones that are truly justified
 - likely next targets:
   - `engine/utils/imageAssetCache.js`
-  - `samples/input/Mouse/game.js`
   - `engine/renderers/pngRenderer.js`
 
 **Good Candidate Files To Review Next**
 - `engine/utils/imageAssetCache.js`
-- `samples/input/Mouse/game.js`
 - `engine/renderers/pngRenderer.js`
 - `engine/core/fullscreen.js`
 
