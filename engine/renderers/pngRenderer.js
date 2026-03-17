@@ -1,4 +1,6 @@
 import CanvasUtils from '../core/canvasUtils.js';
+import CanvasSprite from '../core/canvasSprite.js';
+import CanvasText from '../core/canvasText.js';
 import DebugLog from '../utils/debugLog.js';
 import PrimitiveRenderer from './primitiveRenderer.js';
 import RendererGuards from './rendererGuards.js';
@@ -47,7 +49,7 @@ class PngRenderer {
         CanvasUtils.ctx.save();
 
         if (object.rotation === 0 && object.flip === object.constructor.Flip.NONE) {
-            CanvasUtils.ctx.drawImage(
+            CanvasSprite.drawImageFrame(
                 object.png,
                 sx,
                 sy,
@@ -56,7 +58,8 @@ class PngRenderer {
                 newX,
                 newY,
                 scaledWidth,
-                scaledHeight
+                scaledHeight,
+                CanvasUtils.ctx
             );
         } else {
             const centerX = newX + scaledWidth / 2;
@@ -80,7 +83,7 @@ class PngRenderer {
 
             CanvasUtils.ctx.rotate(object.rotation);
 
-            CanvasUtils.ctx.drawImage(
+            CanvasSprite.drawImageFrame(
                 object.png,
                 sx,
                 sy,
@@ -89,7 +92,8 @@ class PngRenderer {
                 -scaledWidth / 2,
                 -scaledHeight / 2,
                 scaledWidth,
-                scaledHeight
+                scaledHeight,
+                CanvasUtils.ctx
             );
         }
 
@@ -128,7 +132,7 @@ class PngRenderer {
             const dx = normalizedPreviewX + drawCol * (cellW + normalizedPadding);
             const dy = normalizedPreviewY + drawRow * (cellH + normalizedPadding);
 
-            CanvasUtils.ctx.drawImage(
+            CanvasSprite.drawImageFrame(
                 object.png,
                 sx,
                 sy,
@@ -137,28 +141,33 @@ class PngRenderer {
                 dx,
                 dy,
                 cellW,
-                cellH
+                cellH,
+                CanvasUtils.ctx
             );
 
             PrimitiveRenderer.drawBounds(dx, dy, cellW, cellH, '#666666', 1);
 
-            CanvasUtils.ctx.fillStyle = 'white';
-            CanvasUtils.ctx.font = '10px Arial';
-            CanvasUtils.ctx.textAlign = 'left';
-            CanvasUtils.ctx.fillText(`${frameIndex}`, dx + 2, dy + 11);
+            CanvasText.renderText(CanvasUtils.ctx, `${frameIndex}`, dx + 2, dy + 11, {
+                fontSize: 10,
+                color: 'white',
+                useDpr: false
+            });
 
             if (frameIndex === object.currentFrameIndex) {
                 PrimitiveRenderer.drawBounds(dx - 1, dy - 1, cellW + 2, cellH + 2, 'yellow', 2);
             }
         }
 
-        CanvasUtils.ctx.fillStyle = 'white';
-        CanvasUtils.ctx.font = '12px Arial';
-        CanvasUtils.ctx.textAlign = 'left';
-        CanvasUtils.ctx.fillText(
+        CanvasText.renderText(
+            CanvasUtils.ctx,
             `PNG Frames: current=${object.currentFrameIndex}`,
             normalizedPreviewX,
-            normalizedPreviewY + rows * (cellH + normalizedPadding) + 14
+            normalizedPreviewY + rows * (cellH + normalizedPadding) + 14,
+            {
+                fontSize: 12,
+                color: 'white',
+                useDpr: false
+            }
         );
 
         CanvasUtils.ctx.restore();
@@ -178,7 +187,18 @@ class PngRenderer {
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
         CanvasUtils.ctx.save();
-        CanvasUtils.ctx.drawImage(object.png, normalizedPreviewX, normalizedPreviewY, sheetW, sheetH);
+        CanvasSprite.drawImageFrame(
+            object.png,
+            0,
+            0,
+            object.png.width,
+            object.png.height,
+            normalizedPreviewX,
+            normalizedPreviewY,
+            sheetW,
+            sheetH,
+            CanvasUtils.ctx
+        );
         PrimitiveRenderer.drawBounds(
             normalizedPreviewX + sx * normalizedScale,
             normalizedPreviewY + sy * normalizedScale,
@@ -188,9 +208,11 @@ class PngRenderer {
             2
         );
 
-        CanvasUtils.ctx.fillStyle = 'white';
-        CanvasUtils.ctx.font = '12px Arial';
-        CanvasUtils.ctx.fillText(`sheet frame=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY - 6);
+        CanvasText.renderText(CanvasUtils.ctx, `sheet frame=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY - 6, {
+            fontSize: 12,
+            color: 'white',
+            useDpr: false
+        });
         CanvasUtils.ctx.restore();
     }
 }
