@@ -194,7 +194,6 @@ function gameRender() {
             const panelWidth = 178;
             const panelHeight = 64;
             const textX = panelX + 8;
-            ctx.textAlign = 'start';
             PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgb(14, 7, 40)', player.color, 1.5, 0.82, { ctx });
 
             CanvasText.renderTextToContext(ctx, player.title.slice(0, 22), textX, player.y - 12, {
