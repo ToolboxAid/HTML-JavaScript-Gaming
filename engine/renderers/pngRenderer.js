@@ -110,7 +110,8 @@ class PngRenderer {
     }
 
     static drawAllFramesPreview(object, previewX = 10, previewY = 10, scale = 2, padding = 4) {
-        if (!object || !object.png || !object.isLoaded || !CanvasUtils.ctx) {
+        const ctx = CanvasUtils.ctx;
+        if (!object || !object.png || !object.isLoaded || !ctx) {
             return;
         }
 
@@ -125,7 +126,7 @@ class PngRenderer {
         const cellW = object.frameWidth * normalizedScale;
         const cellH = object.frameHeight * normalizedScale;
 
-        CanvasUtils.ctx.save();
+        ctx.save();
 
         for (let frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
             const srcCol = frameIndex % cols;
@@ -147,12 +148,12 @@ class PngRenderer {
                 dy,
                 cellW,
                 cellH,
-                CanvasUtils.ctx
+                ctx
             );
 
             PrimitiveRenderer.drawBounds(dx, dy, cellW, cellH, '#666666', 1);
 
-            CanvasText.renderTextToContext(CanvasUtils.ctx, `${frameIndex}`, dx + 2, dy + 11, {
+            CanvasText.renderTextToContext(ctx, `${frameIndex}`, dx + 2, dy + 11, {
                 fontSize: 10,
                 color: 'white',
                 useDpr: false
@@ -163,17 +164,18 @@ class PngRenderer {
             }
         }
 
-        CanvasText.renderTextToContext(CanvasUtils.ctx, `PNG Frames: current=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY + rows * (cellH + normalizedPadding) + 14, {
+        CanvasText.renderTextToContext(ctx, `PNG Frames: current=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY + rows * (cellH + normalizedPadding) + 14, {
             fontSize: 12,
             color: 'white',
             useDpr: false
         });
 
-        CanvasUtils.ctx.restore();
+        ctx.restore();
     }
 
     static drawSheetPreview(object, previewX = 10, previewY = 150, scale = 1) {
-        if (!object || !object.png || !object.isLoaded || !CanvasUtils.ctx) {
+        const ctx = CanvasUtils.ctx;
+        if (!object || !object.png || !object.isLoaded || !ctx) {
             return;
         }
 
@@ -185,7 +187,7 @@ class PngRenderer {
         const sheetH = object.png.height * normalizedScale;
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
-        CanvasUtils.ctx.save();
+        ctx.save();
         CanvasSprite.drawImageFrame(
             object.png,
             0,
@@ -196,7 +198,7 @@ class PngRenderer {
             normalizedPreviewY,
             sheetW,
             sheetH,
-            CanvasUtils.ctx
+            ctx
         );
         PrimitiveRenderer.drawBounds(
             normalizedPreviewX + sx * normalizedScale,
@@ -207,12 +209,12 @@ class PngRenderer {
             2
         );
 
-        CanvasText.renderTextToContext(CanvasUtils.ctx, `sheet frame=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY - 6, {
+        CanvasText.renderTextToContext(ctx, `sheet frame=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY - 6, {
             fontSize: 12,
             color: 'white',
             useDpr: false
         });
-        CanvasUtils.ctx.restore();
+        ctx.restore();
     }
 }
 
