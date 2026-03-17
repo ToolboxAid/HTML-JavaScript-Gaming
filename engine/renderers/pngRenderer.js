@@ -1,5 +1,4 @@
 import CanvasUtils from '../core/canvasUtils.js';
-import CanvasSprite from '../core/canvasSprite.js';
 import CanvasText from '../core/canvasText.js';
 import DebugLog from '../utils/debugLog.js';
 import PrimitiveRenderer from './primitiveRenderer.js';
@@ -54,8 +53,7 @@ class PngRenderer {
         ctx.save();
 
         if (object.rotation === 0 && object.flip === object.constructor.Flip.NONE) {
-            CanvasSprite._drawImageFrameToContext(
-                ctx,
+            ctx.drawImage(
                 object.png,
                 sx,
                 sy,
@@ -88,8 +86,7 @@ class PngRenderer {
 
             ctx.rotate(object.rotation);
 
-            CanvasSprite._drawImageFrameToContext(
-                ctx,
+            ctx.drawImage(
                 object.png,
                 sx,
                 sy,
@@ -138,8 +135,7 @@ class PngRenderer {
             const dx = normalizedPreviewX + drawCol * (cellW + normalizedPadding);
             const dy = normalizedPreviewY + drawRow * (cellH + normalizedPadding);
 
-            CanvasSprite._drawImageFrameToContext(
-                ctx,
+            ctx.drawImage(
                 object.png,
                 sx,
                 sy,
@@ -188,8 +184,7 @@ class PngRenderer {
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
         ctx.save();
-        CanvasSprite._drawImageFrameToContext(
-            ctx,
+        ctx.drawImage(
             object.png,
             0,
             0,

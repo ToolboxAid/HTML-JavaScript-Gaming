@@ -6,7 +6,6 @@
 import SystemUtils from "../utils/systemUtils.js";
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
-import CanvasText from './canvasText.js';
 
 class Fullscreen {
 
@@ -240,26 +239,15 @@ class Fullscreen {
         this.#renderPromptToContext(ctx);
     }
 
-    // Internal/test support only.
-    static _drawToContext(ctx) {
-        if (!ctx) {
-            return;
-        }
-
-        this.#renderPromptToContext(ctx);
-    }
-
     static #renderPromptToContext(ctx) {
         if (!Fullscreen.isFullScreen) {
-            const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
-
-            CanvasText._renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
-                fontSize,
-                fontFamily,
-                color: this.config.color,
-                textAlign: 'start',
-                useDpr: false
-            });
+            ctx.save();
+            ctx.fillStyle = this.config.color;
+            ctx.font = this.config.font;
+            ctx.textAlign = 'start';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText(this.config.text, this.config.x, this.config.y);
+            ctx.restore();
         }
     }
 

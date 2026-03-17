@@ -81,7 +81,9 @@ export async function testFullscreen(assert) {
 
         Fullscreen.config = { color: '#fff', font: '12px monospace', text: 'toggle', x: 10, y: 20 };
         Fullscreen.isFullScreen = false;
-        Fullscreen._drawToContext(null);
+        Fullscreen.ctx = null;
+        Fullscreen.draw();
+        Fullscreen.ctx = ctx;
         Fullscreen.draw();
         assert(ctx.saveCalls === 1 && ctx.restoreCalls === 1, 'Fullscreen.draw should preserve canvas state with save/restore');
         assert(ctx.fillTextCalls.length === 1, 'Fullscreen.draw should render prompt text in windowed mode');
