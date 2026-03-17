@@ -4,6 +4,7 @@
 // 03/13/2026
 
 import CanvasUtils from './canvasUtils.js';
+import CanvasText from './canvasText.js';
 import Fullscreen from './fullscreen.js';
 import PerformanceMonitor from './performanceMonitor.js';
 import PrimitiveRenderer from '../renderers/primitiveRenderer.js';
@@ -12,12 +13,14 @@ import Timer from '../utils/timer.js';
 class RuntimeContext {
     constructor({
         canvas = CanvasUtils,
+        text = CanvasText,
         fullscreen = Fullscreen,
         performance = PerformanceMonitor,
         primitive = PrimitiveRenderer,
         timer = Timer
     } = {}) {
         this.canvas = canvas;
+        this.text = text;
         this.fullscreen = fullscreen;
         this.performance = performance;
         this.primitive = primitive;
@@ -69,7 +72,7 @@ class RuntimeContext {
     }
 
     calculateTextMetrics(text, fontSize = 20, font = 'Arial') {
-        return this.canvas?.calculateTextMetrics?.(text, fontSize, font) ?? { width: 0, height: 0 };
+        return this.text?.calculateTextMetrics?.(this.getContext(), text, fontSize, font) ?? { width: 0, height: 0 };
     }
 
     destroy() {

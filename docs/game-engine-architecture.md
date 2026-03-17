@@ -198,6 +198,8 @@ Rendering responsibilities are centered in `engine/core` and `engine/renderers`.
 Key files include:
 
 - `engine/core/canvasUtils.js`
+- `engine/core/canvasText.js`
+- `engine/core/canvasSprite.js`
 - `engine/core/sprite.js`
 - `engine/core/tileMap.js`
 - `engine/core/fullscreen.js`
@@ -210,7 +212,9 @@ Key files include:
 
 At a practical level, the engine already supports:
 
-- canvas drawing
+- canvas lifecycle/config setup
+- shared text/metrics helpers
+- low-level sprite/frame blitting
 - color helpers
 - primitive shape rendering
 - sprite-based rendering
@@ -222,6 +226,12 @@ At a practical level, the engine already supports:
 - renderer safety guards and shared debug-gated logging
 
 Game-facing shared UI that still belongs with engine helpers now also lives under `engine/game/`, such as `gamePlayerSelectUi.js`, while player-count resolution remains in `gameUtils.js`.
+
+The canvas split is now more explicit than it was earlier in the repo:
+
+- `canvasUtils.js` owns canvas/context setup and clear behavior
+- `canvasText.js` owns raw canvas text helpers and text metrics
+- `canvasSprite.js` owns low-level sprite and image-frame drawing
 
 ## 8. Messaging and decoupling
 

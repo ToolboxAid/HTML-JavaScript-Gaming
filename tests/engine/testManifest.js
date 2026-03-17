@@ -8,6 +8,7 @@ export const engineTestEntries = [
   { name: 'runtimeContext', modulePath: './core/runtimeContextTest.js', exportName: 'testRuntimeContext' },
   { name: 'fullscreen', modulePath: './core/fullscreenTest.js', exportName: 'testFullscreen' },
   { name: 'canvasText', modulePath: './core/canvasTextTest.js', exportName: 'testCanvasText' },
+  { name: 'canvasSprite', modulePath: './core/canvasSpriteTest.js', exportName: 'testCanvasSprite' },
   { name: 'gameBase', modulePath: './core/gameBaseTest.js', exportName: 'testGameBase' },
   { name: 'performanceMonitor', modulePath: './core/performanceMonitorTest.js', exportName: 'testPerformanceMonitor' },
   { name: 'objectBaseClass', modulePath: './objects/objectBaseClassTest.js', exportName: 'testObjectBaseClass' },

@@ -14,9 +14,12 @@ export async function testRuntimeContext(assert) {
         async init(config) { calls.push(['canvas.init', config]); },
         canvasClear() { calls.push(['canvas.clear']); },
         getConfigWidth() { return this.config.width; },
-        getConfigHeight() { return this.config.height; },
-        calculateTextMetrics(text, fontSize, font) {
-            calls.push(['canvas.metrics', text, fontSize, font]);
+        getConfigHeight() { return this.config.height; }
+    };
+
+    const fakeText = {
+        calculateTextMetrics(ctx, text, fontSize, font) {
+            calls.push(['text.metrics', ctx?.tag || null, text, fontSize, font]);
             return { width: 10, height: 5 };
         }
     };
@@ -47,6 +50,7 @@ export async function testRuntimeContext(assert) {
 
     const runtime = new RuntimeContext({
         canvas: fakeCanvas,
+        text: fakeText,
         fullscreen: fakeFullscreen,
         performance: fakePerformance,
         primitive: fakePrimitive,
@@ -71,6 +75,7 @@ export async function testRuntimeContext(assert) {
     const metrics = runtime.calculateTextMetrics('hi', 12, 'monospace');
 
     assert(metrics.width === 10 && metrics.height === 5, 'RuntimeContext should proxy text metrics');
+    assert(calls.some(call => call[0] === 'text.metrics' && call[1] === 'ctx'), 'RuntimeContext should proxy text metrics through the text helper');
     assert(calls.some(call => call[0] === 'canvas.clear'), 'RuntimeContext should proxy clearCanvas');
     assert(calls.some(call => call[0] === 'primitive.bounds' && call[4] === 50 && call[8] === 'ctx'), 'RuntimeContext should draw borders through the primitive renderer');
     assert(calls.some(call => call[0] === 'performance.update' && call[1] === 4.5), 'RuntimeContext should proxy performance updates');
@@ -81,6 +86,7 @@ export async function testRuntimeContext(assert) {
 
     const sparseRuntime = new RuntimeContext({
         canvas: { ctx: null, config: {} },
+        text: {},
         fullscreen: {},
         performance: {},
         primitive: {},

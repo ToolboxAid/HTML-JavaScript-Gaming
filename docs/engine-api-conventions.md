@@ -58,6 +58,8 @@ This document defines lightweight, shared method conventions used across the eng
 
 - Object instance state belongs on the object (`x`, `y`, animation counters, loaded assets).
 - Runtime singletons/facades own shared browser services (`RuntimeContext` wraps canvas, fullscreen, performance, and timer integration).
+- Canvas helper ownership should stay narrow:
+  `CanvasUtils` owns canvas/context lifecycle, `CanvasText` owns text/metrics helpers, and `CanvasSprite` owns low-level sprite/frame blits.
 - Collection membership/indexing belongs in manager/registry/system classes.
 - Cross-object coordination belongs in systems/facades (for example `GameObjectSystem`, `GameCollision`).
 - Frame-state normalization belongs in shared helpers when multiple systems need identical semantics (for example `InputFrameState` and `AnimationFrameStepper`).

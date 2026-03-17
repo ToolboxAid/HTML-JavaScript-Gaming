@@ -4,6 +4,7 @@ Update this file any time a change lands under `engine/`.
 
 ## 1.5.0 - 2026-03-16
 - Renamed `core/canvas.js` to `core/canvasUtils.js` and updated engine, game, sample, test, and doc references.
+- Split canvas responsibilities further into `core/canvasText.js` and `core/canvasSprite.js`, moving text helpers, text metrics, sprite blits, and frame drawing out of `core/canvasUtils.js`.
 - Extracted shared frame-step logic into `animation/animationFrameStepper.js` and clamped finished animations to the last valid frame.
 - Added shared input lifecycle and frame-state helpers in `input/inputLifecycle.js` and `input/inputFrameState.js`, including same-frame press/release safety.
 - Split shared player-select rendering into `game/gamePlayerSelectUi.js` and made it config-driven and canvas-state-safe.
