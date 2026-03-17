@@ -5,6 +5,7 @@
 
 import { canvasConfig, solarSystemConfig, uiFont } from './global.js';
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 function getSystemCenter() {
@@ -52,9 +53,12 @@ function drawMoons(ctx, moons, centerX, centerY, zoom) {
 }
 
 function drawLabel(ctx, name, drawX, drawY, scaledRadius, zoom) {
-    ctx.fillStyle = solarSystemConfig.display.labelColor;
-    ctx.font = `${Math.max(12, Math.round(14 * zoom))}px ${uiFont.ui}`;
-    ctx.fillText(name, drawX + scaledRadius + 6, drawY - scaledRadius - 4);
+    CanvasText.renderText(ctx, name, drawX + scaledRadius + 6, drawY - scaledRadius - 4, {
+        fontSize: Math.max(12, Math.round(14 * zoom)),
+        fontFamily: uiFont.ui,
+        color: solarSystemConfig.display.labelColor,
+        useDpr: false
+    });
 }
 
 export function drawCelestialBody(body, {
