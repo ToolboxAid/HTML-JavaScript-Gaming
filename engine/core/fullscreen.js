@@ -237,17 +237,7 @@ class Fullscreen {
             return;
         }
 
-        if (!Fullscreen.isFullScreen) {
-            const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
-
-            CanvasText._renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
-                fontSize,
-                fontFamily,
-                color: this.config.color,
-                textAlign: 'start',
-                useDpr: false
-            });
-        }
+        this.renderPromptToContext(ctx);
     }
 
     // Internal/test support only.
@@ -256,6 +246,10 @@ class Fullscreen {
             return;
         }
 
+        this.renderPromptToContext(ctx);
+    }
+
+    static renderPromptToContext(ctx) {
         if (!Fullscreen.isFullScreen) {
             const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
 

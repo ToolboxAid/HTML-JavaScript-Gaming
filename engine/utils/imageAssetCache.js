@@ -75,19 +75,33 @@ class ImageAssetCache {
         return this.#loadImage(spritePath).then((png) => this.makeTransparent(png, transparentColor));
     }
 
+    static createCanvasContext(width, height, purpose) {
+        if (typeof document === 'undefined') {
+            throw new Error(`ImageAssetCache.${purpose} requires browser canvas support.`);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error(`Unable to create 2D canvas context for ${purpose}.`);
+        }
+
+        return { canvas, ctx };
+    }
+
     static makeTransparent(png, transparentColor) {
-        if (typeof document === 'undefined' || typeof Image === 'undefined') {
+        if (typeof Image === 'undefined') {
             throw new Error('ImageAssetCache.makeTransparent requires browser canvas and Image support.');
         }
 
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = png.width;
-        tempCanvas.height = png.height;
-
-        const tempCtx = tempCanvas.getContext('2d');
-        if (!tempCtx) {
-            throw new Error('Unable to create 2D canvas context for image transparency processing.');
-        }
+        const { canvas: tempCanvas, ctx: tempCtx } = this.createCanvasContext(
+            png.width,
+            png.height,
+            'image transparency processing'
+        );
 
         tempCtx.drawImage(png, 0, 0);
 
@@ -110,18 +124,7 @@ class ImageAssetCache {
     }
 
     static resolveColorChannels(color) {
-        if (typeof document === 'undefined') {
-            throw new Error('ImageAssetCache.resolveColorChannels requires browser canvas support.');
-        }
-
-        const colorCanvas = document.createElement('canvas');
-        colorCanvas.width = 1;
-        colorCanvas.height = 1;
-
-        const colorCtx = colorCanvas.getContext('2d');
-        if (!colorCtx) {
-            throw new Error('Unable to create 2D canvas context for color resolution.');
-        }
+        const { ctx: colorCtx } = this.createCanvasContext(1, 1, 'color resolution');
 
         colorCtx.clearRect(0, 0, 1, 1);
         colorCtx.fillStyle = color;
