@@ -231,7 +231,11 @@ class Fullscreen {
         Fullscreen.ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
-    static draw(ctx) {
+    static draw() {
+        return this.drawToContext(Fullscreen.ctx);
+    }
+
+    static drawToContext(ctx) {
         if (!ctx) {
             return;
         }
