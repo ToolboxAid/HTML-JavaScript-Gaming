@@ -278,11 +278,6 @@ class PerformanceMonitor {
         const panelHeight = (lineHeight * textLines.length) + (paddingY * 2);
         const textCenterX = panelX + (panelWidth / 2);
 
-        ctx.save();
-        ctx.font = `${fontSize}px ${fontFamily}`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
         PrimitiveRenderer.drawRect(
             panelX,
             panelY,
@@ -296,11 +291,16 @@ class PerformanceMonitor {
         );
 
         textLines.forEach(({ text, color }, index) => {
-            ctx.fillStyle = color;
             const textY = panelY + paddingY + (lineHeight * index) + (lineHeight / 2);
-            ctx.fillText(text, textCenterX, textY);
+            CanvasText.renderTextToContext(ctx, text, textCenterX, textY, {
+                fontSize,
+                fontFamily,
+                color,
+                textAlign: 'center',
+                textBaseline: 'middle',
+                useDpr: false
+            });
         });
-        ctx.restore();
     }
 
     static getMemoryStats() {
