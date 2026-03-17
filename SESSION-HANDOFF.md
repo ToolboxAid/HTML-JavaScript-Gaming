@@ -29,35 +29,50 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
   - `renderCenteredText(text, y, options)`
   - `renderCenteredMultilineText(lines, startY, options)`
   - `calculateTextMetrics(text, fontSize, fontFamily)`
-- explicit-context helpers still exist for tests:
-  - `renderTextToContext(...)`
-  - `renderMultilineTextToContext(...)`
-  - `renderCenteredTextToContext(...)`
-  - `renderCenteredMultilineTextToContext(...)`
-  - `calculateTextMetricsToContext(...)`
+- internal/test-support helpers still exist:
+  - `_renderTextToContext(...)`
+  - `_renderMultilineTextToContext(...)`
+  - `_renderCenteredTextToContext(...)`
+  - `_renderCenteredMultilineTextToContext(...)`
+  - `_calculateTextMetricsToContext(...)`
 - `parseFont(font, fallbackSize, fallbackFamily)` remains shared
 - `renderText(...)` supports optional raw `font` override
+
+**Current CanvasSprite Shape**
+- game-facing methods:
+  - `drawSprite(...)`
+  - `drawSpriteRGB(...)`
+  - `drawImageFrame(...)`
+- internal/test-support helpers:
+  - `_drawSpriteToContext(...)`
+  - `_drawSpriteRGBToContext(...)`
+  - `_drawImageFrameToContext(...)`
 
 **Recent Cleanup Completed**
 - games/samples no longer pass `CanvasUtils.ctx` into `CanvasText`
 - shared-canvas games/samples no longer read `CanvasUtils.ctx` directly
+- `CanvasText` explicit-context helpers were renamed to underscored internal/test-support methods
+- `CanvasSprite` now follows the same public/internal split
 - `GamePlayerSelectUi` callers were moved off `CanvasUtils.ctx`
 - `PerformanceMonitor` no longer depends on `CanvasUtils` for layout measurement
 - `RendererGuards` no longer depends on `CanvasUtils.ctx`
 - `PngRenderer` preview/debug helpers now normalize around local `ctx` variables
+- `ParticleExplosion` no longer depends on `CanvasUtils.ctx`
 - `GameControllers` sample now initializes through `CanvasUtils.init(...)`
 - `GameControllers` sample no longer uses local `ctx` for rendering
 - stale Pong winner-message `CanvasText` call was updated to current no-`ctx` API
 
 **Current Exceptions / Internal Support Paths**
-- `engine/core/fullscreen.js` still keeps `drawToContext(...)` for test/internal support
-- `tests/engine/core/canvasTextTest.js` uses `CanvasText.*ToContext(...)`
-- `tests/engine/core/fullscreenTest.js` uses `Fullscreen.drawToContext(...)`
+- `engine/core/fullscreen.js` still keeps `_drawToContext(...)` for test/internal support
+- `tests/engine/core/canvasTextTest.js` uses `CanvasText._*ToContext(...)`
+- `tests/engine/core/canvasSpriteTest.js` uses `CanvasSprite._*ToContext(...)`
+- `tests/engine/core/fullscreenTest.js` uses `Fullscreen._drawToContext(...)`
 - `samples/input/Mouse/game.js` still uses a local canvas context by design
 - image preprocessing helpers like `engine/utils/imageAssetCache.js` use local/offscreen contexts by design
 
 **Test Status**
 - focused `CanvasText` harness passes with `canvasText ok`
+- focused `CanvasSprite` harness is present in `tests/engine/core/canvasSpriteTest.js`
 - `tests/engine/core/canvasTextTest.js` covers:
   - `parseFont(...)`
   - `renderText(...)`
@@ -65,19 +80,21 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
   - `renderMultilineText(...)`
   - `renderCenteredText(...)`
   - `renderCenteredMultilineText(...)`
-  - explicit-context helpers
+  - internal/test-support helpers
 - `tests/engine/core/fullscreenTest.js` exists, but it expects browser globals and was not runnable in plain Node here
 
 **Likely Next Step**
-- review whether `CanvasSprite` should follow the same public/internal split vocabulary as `CanvasText` and `Fullscreen`
-- or pause and stabilize the current boundary work before doing more API shaping
+- review the remaining intentional local/offscreen context cases and leave only the ones that are truly justified
+- likely next targets:
+  - `engine/utils/imageAssetCache.js`
+  - `samples/input/Mouse/game.js`
+  - `engine/renderers/pngRenderer.js`
 
 **Good Candidate Files To Review Next**
-- `engine/core/canvasSprite.js`
-- `engine/renderers/pngRenderer.js`
-- `engine/core/fullscreen.js`
 - `engine/utils/imageAssetCache.js`
 - `samples/input/Mouse/game.js`
+- `engine/renderers/pngRenderer.js`
+- `engine/core/fullscreen.js`
 
 **Principle To Preserve**
 - core owns rendering behavior

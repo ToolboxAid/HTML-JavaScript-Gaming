@@ -3,7 +3,6 @@
 // 11/19/2024
 // particleExplosion.js
 
-import CanvasUtils from "../core/canvasUtils.js";
 import PrimitiveRenderer from "./primitiveRenderer.js";
 import DebugFlag from "../utils/debugFlag.js";
 import SystemUtils from "../utils/systemUtils.js";
@@ -125,7 +124,7 @@ class ParticleExplosion {
     }
 
     draw() {
-        if (this.isDone || !CanvasUtils.ctx) return;
+        if (this.isDone) return;
 
         this.particles.forEach(particle => {
             if (particle.alpha > 0 && particle.drawRadius > 0) {
