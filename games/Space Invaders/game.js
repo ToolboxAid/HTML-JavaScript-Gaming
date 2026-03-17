@@ -667,7 +667,7 @@ checkLaser(deltaTime, laserFirePoint) {
         drawPixelText(40, 680, "GameController <A> to fire.", 3.5, "yellow");
 
         const config = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
-        GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config, this.gameControllers);
+        GamePlayerSelectUi.drawPlayerSelection(config, this.gameControllers);
         const result = GameUtils.resolvePlayerSelection(this.keyboardInput, this.gameControllers, config);
         if (result) {
             this.playerCount = result.playerCount;

@@ -29,7 +29,7 @@ class AsteroidsAttractScreen {
     updatePlayerSelect(deltaTime, keyboardInput) {
         this.gameAttract.update(deltaTime);
         const config = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
-        GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config);
+        GamePlayerSelectUi.drawPlayerSelection(config);
         return GameUtils.resolvePlayerSelection(keyboardInput, null, config);
     }
 

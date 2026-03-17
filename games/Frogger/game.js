@@ -120,7 +120,7 @@ class Game extends GameBase {
 
   displayPlayerSelect() {
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, this.playerSelect);
-    GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config, this.gameControllers);
+    GamePlayerSelectUi.drawPlayerSelection(config, this.gameControllers);
     const result = GameUtils.resolvePlayerSelection(this.keyboardInput, this.gameControllers, config);
     if (result) {
       this.playerCount = result.playerCount;

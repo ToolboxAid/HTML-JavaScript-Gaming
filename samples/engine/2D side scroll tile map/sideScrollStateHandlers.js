@@ -4,7 +4,6 @@
 // sideScrollStateHandlers.js
 
 import CanvasText from '../../../engine/core/canvasText.js';
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import GamePlayerSelectUi from '../../../engine/game/gamePlayerSelectUi.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import { canvasConfig, playerSelect, sideScrollUi } from './global.js';
@@ -56,7 +55,7 @@ export function displayAttractMode(game, deltaTime) {
 
 export function displayPlayerSelect(game) {
     const config = GameUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
-    GamePlayerSelectUi.drawPlayerSelection(CanvasUtils.ctx, config, game.gameControllers);
+    GamePlayerSelectUi.drawPlayerSelection(config, game.gameControllers);
     const result = GameUtils.resolvePlayerSelection(game.keyboardInput, game.gameControllers, config);
 
     if (!result) {

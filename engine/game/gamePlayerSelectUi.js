@@ -3,6 +3,7 @@
 // 03/16/2026
 // gamePlayerSelectUi.js
 
+import CanvasUtils from '../core/canvasUtils.js';
 import CanvasText from '../core/canvasText.js';
 import PrimitiveRenderer from '../renderers/primitiveRenderer.js';
 
@@ -67,7 +68,11 @@ class GamePlayerSelectUi {
         });
     }
 
-    static drawPlayerSelection(ctx, config, gameControllers = null) {
+    static drawPlayerSelection(config, gameControllers = null) {
+        this.drawPlayerSelectionToContext(CanvasUtils.ctx, config, gameControllers);
+    }
+
+    static drawPlayerSelectionToContext(ctx, config, gameControllers = null) {
         this.drawPlayerSelectOverlay(ctx, config);
         this.drawKeyboardPlayerOptions(ctx, config);
 
