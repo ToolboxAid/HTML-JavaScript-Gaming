@@ -3,6 +3,7 @@
 // 03/15/2026
 // gameStateUi.js
 
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import { canvasConfig, gameUi, safeAreaInset } from './global.js';
@@ -10,7 +11,9 @@ import { canvasConfig, gameUi, safeAreaInset } from './global.js';
 export function renderScreen(screen) {
     drawStyledStage(screen.panelColor, screen.borderColor);
     screen.lines.forEach(({ text, y, ...options }) => {
-        renderCenteredText(text, y, options);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
+            ...options
+        });
     });
 }
 
@@ -19,7 +22,7 @@ export function renderPlayerSelectOptions(screen, config, gameControllers = null
         ? [...screen.options.lines, ...screen.options.controllerLines]
         : screen.options.lines;
 
-    renderCenteredMultilineText(lines, config.y + config.spacing, {
+    CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, lines, config.y + config.spacing, {
         fontSize: screen.options.fontSize,
         lineHeight: screen.options.lineHeight,
         fontFamily: screen.options.fontFamily,
@@ -29,12 +32,12 @@ export function renderPlayerSelectOptions(screen, config, gameControllers = null
 
 export function renderPlayScreen(screen, playerInfo) {
     drawStyledStage(screen.panelColor, screen.borderColor);
-    renderCenteredText(playerInfo, screen.infoY, {
+    CanvasText.renderCenteredText(CanvasUtils.ctx, playerInfo, screen.infoY, {
         fontSize: screen.infoFontSize,
         fontFamily: screen.infoFontFamily,
         color: screen.infoColor
     });
-    renderCenteredMultilineText(screen.prompts, screen.promptsY, {
+    CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, screen.prompts, screen.promptsY, {
         fontSize: screen.promptFontSize,
         lineHeight: screen.promptLineHeight,
         fontFamily: screen.promptFontFamily,
@@ -72,17 +75,5 @@ function drawPulseAccent(x, y, width, accentColor) {
     const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0');
     const colorWithAlpha = accentColor.length === 7 ? `${accentColor}${alphaHex}` : accentColor;
     PrimitiveRenderer.drawLine(x + 24, y, x + width - 24, y, colorWithAlpha, 3);
-}
-
-function renderCenteredText(text, y, options = {}) {
-    return CanvasText.renderCurrentCenteredText(text, y, {
-        ...options
-    });
-}
-
-function renderCenteredMultilineText(lines, startY, options = {}) {
-    return CanvasText.renderCurrentCenteredMultilineText(lines, startY, {
-        ...options
-    });
 }
 

@@ -5,6 +5,7 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig, fullscreenSampleUi, uiFont } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
@@ -68,18 +69,18 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(fullscreenSampleUi.theme.panelColor, fullscreenSampleUi.theme.panelBorderColor);
-        this.renderCenteredText(fullscreenSampleUi.attract.title, fullscreenSampleUi.attract.titleY, 42, fullscreenSampleUi.theme.colors.textPrimary, uiFont.display);
-        this.renderCenteredText(fullscreenSampleUi.attract.prompt, fullscreenSampleUi.attract.promptY, 26, fullscreenSampleUi.theme.colors.textPrimary, uiFont.ui);
-        this.renderCenteredText(fullscreenSampleUi.attract.subtitle, fullscreenSampleUi.attract.subtitleY, 20, fullscreenSampleUi.theme.colors.textSecondary, uiFont.ui);
-        this.renderCenteredText(fullscreenConfig.text, fullscreenSampleUi.attract.helpY, 18, fullscreenSampleUi.theme.colors.muted, uiFont.ui);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenSampleUi.attract.title, fullscreenSampleUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenSampleUi.attract.prompt, fullscreenSampleUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenSampleUi.attract.subtitle, fullscreenSampleUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textSecondary, useDpr: false });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenConfig.text, fullscreenSampleUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.muted, useDpr: false });
         this.updateMetrics();
     }
 
     playGame() {
         this.drawStage(fullscreenSampleUi.theme.playPanelColor, fullscreenSampleUi.theme.accentColor);
-        this.renderCenteredText('Live Fullscreen Diagnostics', fullscreenSampleUi.play.titleY, 36, fullscreenSampleUi.theme.colors.textPrimary, uiFont.display);
-        this.renderCenteredText(fullscreenConfig.text, fullscreenSampleUi.play.subtitleY, 22, fullscreenSampleUi.theme.colors.textSecondary, uiFont.ui);
-        this.renderCenteredText('Use the diagnostics list below to compare layout changes', fullscreenSampleUi.play.promptY, 18, fullscreenSampleUi.theme.colors.muted, uiFont.ui);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Live Fullscreen Diagnostics', fullscreenSampleUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenConfig.text, fullscreenSampleUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textSecondary, useDpr: false });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Use the diagnostics list below to compare layout changes', fullscreenSampleUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.muted, useDpr: false });
         this.updateMetrics();
         this.drawMetricSummary();
     }
@@ -111,17 +112,8 @@ class Game extends GameBase {
 
         let y = fullscreenSampleUi.play.metricsStartY;
         lines.forEach((line) => {
-            this.renderCenteredText(line, y, 18, fullscreenSampleUi.theme.colors.textPrimary, uiFont.mono);
+            CanvasText.renderCenteredText(CanvasUtils.ctx, line, y, { fontSize: 18, fontFamily: uiFont.mono, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
             y += fullscreenSampleUi.play.metricsLineHeight;
-        });
-    }
-
-    renderCenteredText(text, y, fontSize, color, fontFamily) {
-        CanvasText.renderCurrentCenteredText(text, y, {
-            fontSize,
-            fontFamily,
-            color,
-            useDpr: false
         });
     }
 

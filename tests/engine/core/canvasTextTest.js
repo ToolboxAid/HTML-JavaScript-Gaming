@@ -58,13 +58,19 @@ export function testCanvasText(assert) {
     assert(mockCtx.saveCalls === 1 && mockCtx.restoreCalls === 1, 'CanvasText.renderText should preserve canvas state');
     assert(mockCtx.fillTextCalls.length === 1, 'CanvasText.renderText should draw one line of text');
 
+    CanvasText.renderText(mockCtx, 'font-override', 12, 24, {
+        font: 'bold 18px Segoe UI',
+        useDpr: false
+    });
+    assert(mockCtx.font === 'bold 18px Segoe UI', 'CanvasText.renderText should allow a raw font override');
+
     const multiLine = CanvasText.renderMultilineText(mockCtx, ['line1', 'line2'], 15, 25, {
         fontSize: 12,
         lineHeight: 20,
         useDpr: false
     });
     assert(multiLine.length === 2, 'CanvasText.renderMultilineText should return one result per line');
-    assert(mockCtx.fillTextCalls.length === 3, 'CanvasText.renderMultilineText should draw all provided lines');
+    assert(mockCtx.fillTextCalls.length === 4, 'CanvasText.renderMultilineText should draw all provided lines');
 
     const centered = CanvasText.renderCenteredText(mockCtx, 'centered', 50, {
         centerX: 100,
@@ -72,7 +78,7 @@ export function testCanvasText(assert) {
         useDpr: false
     });
     assert(centered.x === 79, 'CanvasText.renderCenteredText should offset from center using measured width');
-    assert(mockCtx.saveCalls === 3 && mockCtx.restoreCalls === 3, 'CanvasText.renderCenteredText should preserve canvas state');
+    assert(mockCtx.saveCalls === 4 && mockCtx.restoreCalls === 4, 'CanvasText.renderCenteredText should preserve canvas state');
 
     const centeredLines = CanvasText.renderCenteredMultilineText(mockCtx, ['a', 'b'], 10, {
         centerX: 60,
@@ -83,13 +89,13 @@ export function testCanvasText(assert) {
     assert(centeredLines.length === 2, 'CanvasText.renderCenteredMultilineText should draw one result per centered line');
 
     CanvasUtils.ctx = mockCtx;
-    const sharedRender = CanvasText.renderCurrentText('shared', 5, 6, {
+    const sharedRender = CanvasText.renderText(CanvasUtils.ctx, 'shared', 5, 6, {
         fontSize: 12,
         useDpr: false
     });
     assert(sharedRender.x === 5 && sharedRender.y === 6, 'CanvasText.renderText should use the shared canvas context when one is available');
 
-    const sharedMetrics = CanvasText.calculateCurrentTextMetrics('shared', 12, 'Arial');
+    const sharedMetrics = CanvasText.calculateTextMetrics(CanvasUtils.ctx, 'shared', 12, 'Arial');
     assert(sharedMetrics.width === 42 && sharedMetrics.height === 10, 'CanvasText.calculateTextMetrics should use the shared canvas context when one is available');
 
     CanvasUtils.ctx = null;

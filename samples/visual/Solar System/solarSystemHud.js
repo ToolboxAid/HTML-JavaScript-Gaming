@@ -3,12 +3,13 @@
 // solarSystemHud.js
 // 03/15/2026
 
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import { solarSystemConfig, uiFont } from './global.js';
 import { getActiveBodies, getFocusedBody, getFocusLabel, renderBodies } from './solarSystemRuntime.js';
 
 export function drawHudLine(text, x, y, color = solarSystemConfig.display.hudColor, size = 24) {
-  CanvasText.renderCurrentText(text, x, y, {
+  CanvasText.renderText(CanvasUtils.ctx, text, x, y, {
     fontSize: size,
     fontFamily: uiFont.ui,
     color,

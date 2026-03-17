@@ -147,7 +147,7 @@ class PngRenderer {
 
             PrimitiveRenderer.drawBounds(dx, dy, cellW, cellH, '#666666', 1);
 
-            CanvasText.renderText(`${frameIndex}`, dx + 2, dy + 11, {
+            CanvasText.renderText(CanvasUtils.ctx, `${frameIndex}`, dx + 2, dy + 11, {
                 fontSize: 10,
                 color: 'white',
                 useDpr: false
@@ -158,7 +158,7 @@ class PngRenderer {
             }
         }
 
-        CanvasText.renderCurrentText(`PNG Frames: current=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY + rows * (cellH + normalizedPadding) + 14, {
+        CanvasText.renderText(CanvasUtils.ctx, `PNG Frames: current=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY + rows * (cellH + normalizedPadding) + 14, {
             fontSize: 12,
             color: 'white',
             useDpr: false
@@ -202,7 +202,7 @@ class PngRenderer {
             2
         );
 
-        CanvasText.renderText(`sheet frame=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY - 6, {
+        CanvasText.renderText(CanvasUtils.ctx, `sheet frame=${object.currentFrameIndex}`, normalizedPreviewX, normalizedPreviewY - 6, {
             fontSize: 12,
             color: 'white',
             useDpr: false

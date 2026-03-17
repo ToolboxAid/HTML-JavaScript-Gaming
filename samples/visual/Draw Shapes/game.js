@@ -5,6 +5,7 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig, drawShapesUi, uiFont } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
@@ -44,17 +45,17 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(drawShapesUi.theme.panelColor, drawShapesUi.theme.panelBorderColor);
-        renderCenteredText(drawShapesUi.attract.title, drawShapesUi.attract.titleY, 42, uiFont.display, drawShapesUi.theme.colors.textPrimary);
-        renderCenteredText(drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, 26, uiFont.ui, drawShapesUi.theme.colors.textPrimary);
-        renderCenteredText(drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, 20, uiFont.ui, drawShapesUi.theme.colors.textSecondary);
-        renderCenteredText(drawShapesUi.attract.help, drawShapesUi.attract.helpY, 18, uiFont.ui, drawShapesUi.theme.colors.muted);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.title, drawShapesUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: drawShapesUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.help, drawShapesUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.muted });
     }
 
     playGame() {
         this.drawStage(drawShapesUi.theme.playPanelColor, drawShapesUi.theme.accentColor);
-        renderCenteredText('Canvas Shape Gallery', drawShapesUi.play.titleY, 36, uiFont.display, drawShapesUi.theme.colors.textPrimary);
-        renderCenteredText(drawShapesUi.play.subtitle, drawShapesUi.play.subtitleY, 22, uiFont.ui, drawShapesUi.theme.colors.textSecondary);
-        renderCenteredText(drawShapesUi.play.prompt, drawShapesUi.play.promptY, 18, uiFont.ui, drawShapesUi.theme.colors.muted);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Canvas Shape Gallery', drawShapesUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: drawShapesUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.subtitle, drawShapesUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.prompt, drawShapesUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.muted });
         drawShapeGallery(canvasConfig);
     }
 
@@ -88,14 +89,6 @@ class Game extends GameBase {
     onDestroy() {
         // GameBase owns shared input cleanup after onDestroy runs.
     }
-}
-
-function renderCenteredText(text, y, fontSize, fontFamily, color) {
-    CanvasText.renderCurrentCenteredText(text, y, {
-        fontSize,
-        fontFamily,
-        color
-    });
 }
 
 export default Game;

@@ -5,6 +5,7 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig, moveObjectsUi, uiFont } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
@@ -46,17 +47,17 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(moveObjectsUi.theme.panelColor, moveObjectsUi.theme.panelBorderColor);
-        renderCenteredText(moveObjectsUi.attract.title, moveObjectsUi.attract.titleY, 42, uiFont.display, moveObjectsUi.theme.colors.textPrimary);
-        renderCenteredText(moveObjectsUi.attract.prompt, moveObjectsUi.attract.promptY, 26, uiFont.ui, moveObjectsUi.theme.colors.textPrimary);
-        renderCenteredText(moveObjectsUi.attract.subtitle, moveObjectsUi.attract.subtitleY, 20, uiFont.ui, moveObjectsUi.theme.colors.textSecondary);
-        renderCenteredText(moveObjectsUi.attract.help, moveObjectsUi.attract.helpY, 18, uiFont.ui, moveObjectsUi.theme.colors.muted);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.title, moveObjectsUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: moveObjectsUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.prompt, moveObjectsUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.subtitle, moveObjectsUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.help, moveObjectsUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.muted });
     }
 
     playGame(deltaTime) {
         this.drawStage(moveObjectsUi.theme.playPanelColor, moveObjectsUi.theme.accentColor);
-        renderCenteredText('Movement Demo', moveObjectsUi.play.titleY, 36, uiFont.display, moveObjectsUi.theme.colors.textPrimary);
-        renderCenteredText(moveObjectsUi.play.subtitle, moveObjectsUi.play.subtitleY, 22, uiFont.ui, moveObjectsUi.theme.colors.textSecondary);
-        renderCenteredText(moveObjectsUi.play.prompt, moveObjectsUi.play.promptY, 18, uiFont.ui, moveObjectsUi.theme.colors.muted);
+        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Movement Demo', moveObjectsUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: moveObjectsUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.play.subtitle, moveObjectsUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.play.prompt, moveObjectsUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.muted });
         this.runMovementDemo(deltaTime);
     }
 
@@ -99,14 +100,6 @@ class Game extends GameBase {
     onDestroy() {
         this.circle = null;
     }
-}
-
-function renderCenteredText(text, y, fontSize, fontFamily, color) {
-    CanvasText.renderCurrentCenteredText(text, y, {
-        fontSize,
-        fontFamily,
-        color
-    });
 }
 
 export default Game;
