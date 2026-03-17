@@ -54,7 +54,8 @@ class PngRenderer {
         ctx.save();
 
         if (object.rotation === 0 && object.flip === object.constructor.Flip.NONE) {
-            CanvasSprite.drawImageFrame(
+            CanvasSprite._drawImageFrameToContext(
+                ctx,
                 object.png,
                 sx,
                 sy,
@@ -63,8 +64,7 @@ class PngRenderer {
                 newX,
                 newY,
                 scaledWidth,
-                scaledHeight,
-                ctx
+                scaledHeight
             );
         } else {
             const centerX = newX + scaledWidth / 2;
@@ -88,7 +88,8 @@ class PngRenderer {
 
             ctx.rotate(object.rotation);
 
-            CanvasSprite.drawImageFrame(
+            CanvasSprite._drawImageFrameToContext(
+                ctx,
                 object.png,
                 sx,
                 sy,
@@ -97,8 +98,7 @@ class PngRenderer {
                 -scaledWidth / 2,
                 -scaledHeight / 2,
                 scaledWidth,
-                scaledHeight,
-                ctx
+                scaledHeight
             );
         }
 
@@ -138,7 +138,8 @@ class PngRenderer {
             const dx = normalizedPreviewX + drawCol * (cellW + normalizedPadding);
             const dy = normalizedPreviewY + drawRow * (cellH + normalizedPadding);
 
-            CanvasSprite.drawImageFrame(
+            CanvasSprite._drawImageFrameToContext(
+                ctx,
                 object.png,
                 sx,
                 sy,
@@ -147,8 +148,7 @@ class PngRenderer {
                 dx,
                 dy,
                 cellW,
-                cellH,
-                ctx
+                cellH
             );
 
             PrimitiveRenderer.drawBounds(dx, dy, cellW, cellH, '#666666', 1);
@@ -188,7 +188,8 @@ class PngRenderer {
         const { sx, sy, sw, sh } = object.getCurrentSourceRect();
 
         ctx.save();
-        CanvasSprite.drawImageFrame(
+        CanvasSprite._drawImageFrameToContext(
+            ctx,
             object.png,
             0,
             0,
@@ -197,8 +198,7 @@ class PngRenderer {
             normalizedPreviewX,
             normalizedPreviewY,
             sheetW,
-            sheetH,
-            ctx
+            sheetH
         );
         PrimitiveRenderer.drawBounds(
             normalizedPreviewX + sx * normalizedScale,
