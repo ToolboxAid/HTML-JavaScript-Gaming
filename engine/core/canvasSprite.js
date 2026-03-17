@@ -24,6 +24,16 @@ class CanvasSprite {
         return ctx || CanvasUtils.ctx || null;
     }
 
+    static drawImageFrame(image, sx, sy, sw, sh, dx, dy, dw, dh, ctx = null) {
+        const renderCtx = this.resolveContext(ctx);
+        if (!renderCtx || !image) {
+            return false;
+        }
+
+        renderCtx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+        return true;
+    }
+
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false, ctx = null) {
         const renderCtx = this.resolveContext(ctx);
         if (!renderCtx || !Array.isArray(frame)) {

@@ -6,6 +6,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasSprite from '../../../engine/core/canvasSprite.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
@@ -152,7 +153,7 @@ class GameUI {
                 );
 
                 // Draw character
-                CanvasUtils.ctx.drawImage(
+                CanvasSprite.drawImageFrame(
                     alphaNum,
                     charIndex * CHAR_WIDTH, 0,     // Source x,y
                     CHAR_WIDTH - 1, CHAR_HEIGHT - 1,       // Source dimensions
@@ -270,7 +271,7 @@ class GameUI {
         if (GameUI.spritesLoaded && GameUI.groundSprite) {
             for (let col = 0; col < GameUI.GRID_WIDTH; col++) {
                 // ground_sprite_48w_48h_1f.png
-                CanvasUtils.ctx.drawImage(
+                CanvasSprite.drawImageFrame(
                     GameUI.groundSprite,
                     0, 0,                    // Source x,y (first frame)
                     48, 48,                  // Source width,height
@@ -288,7 +289,7 @@ class GameUI {
         if (GameUI.spritesLoaded && GameUI.groundHomeSprite) {
             for (let row = 0; row < 4; row++) {
                 for (let col = 0; col < 28; col++) {
-                    CanvasUtils.ctx.drawImage(
+                    CanvasSprite.drawImageFrame(
                         GameUI.groundHomeSprite,
                         this.homeGrid[row][col] * 24, 0, // Source x,y (first frame)
                         24, 24,                          // Source width,height
@@ -309,7 +310,7 @@ class GameUI {
             // GameUI
             const row = 14;
             for (let gameUI = 0; gameUI < 15; gameUI++) {
-                CanvasUtils.ctx.drawImage(
+                CanvasSprite.drawImageFrame(
                     GameUI.timerLivesSprite,
                     0, 0, // Source x,y (first frame)
                     size, size,      // Source width,height
@@ -323,7 +324,7 @@ class GameUI {
             // ---------------------------------------
             // Lives
             for (let lives = 0; lives < 7; lives++) {
-                CanvasUtils.ctx.drawImage(
+                CanvasSprite.drawImageFrame(
                     GameUI.timerLivesSprite,
                     size, 0, // Source x,y (first frame)
                     size - 1, size,      // Source width,height
@@ -348,7 +349,7 @@ class GameUI {
                 for (let time = 0; time < divTimer; time++) {
                     const rightAlignedX = basedPosX - (time * size);  // Start from right side
                     lastPosX = rightAlignedX;
-                    CanvasUtils.ctx.drawImage(
+                    CanvasSprite.drawImageFrame(
                         GameUI.timerLivesSprite,
                         frame2pos, 0,                    // Source x,y (frames 2-5)
                         size, size,                 // Source width (varies), height
@@ -362,7 +363,7 @@ class GameUI {
                 const modFrame = (5 - modTimer);
                 if (GameUI.timer > 0) {
                     // Calculate which frame to use based on remaining time
-                    CanvasUtils.ctx.drawImage(
+                    CanvasSprite.drawImageFrame(
                         GameUI.timerLivesSprite,
                         modFrame * size, 0, // Source x,y (frames 2-5)
                         size, size,         // Source width (varies), height
