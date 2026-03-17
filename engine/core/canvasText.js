@@ -46,10 +46,11 @@ class CanvasText {
     }
 
     static calculateTextMetrics(text, fontSize = 20, fontFamily = 'Arial') {
-        return this.calculateTextMetricsToContext(CanvasUtils.ctx, text, fontSize, fontFamily);
+        return this._calculateTextMetricsToContext(CanvasUtils.ctx, text, fontSize, fontFamily);
     }
 
-    static calculateTextMetricsToContext(ctx, text, fontSize = 20, fontFamily = 'Arial') {
+    // Internal/test support only.
+    static _calculateTextMetricsToContext(ctx, text, fontSize = 20, fontFamily = 'Arial') {
         if (!ctx) {
             return { width: 0, height: 0 };
         }
@@ -81,10 +82,11 @@ class CanvasText {
     }
 
     static renderText(text, x, y, options = {}) {
-        return this.renderTextToContext(CanvasUtils.ctx, text, x, y, options);
+        return this._renderTextToContext(CanvasUtils.ctx, text, x, y, options);
     }
 
-    static renderTextToContext(ctx, text, x, y, {
+    // Internal/test support only.
+    static _renderTextToContext(ctx, text, x, y, {
         font = null,
         fontSize = 20,
         fontFamily = 'Arial',
@@ -116,10 +118,11 @@ class CanvasText {
     }
 
     static renderMultilineText(lines, x, startY, options = {}) {
-        return this.renderMultilineTextToContext(CanvasUtils.ctx, lines, x, startY, options);
+        return this._renderMultilineTextToContext(CanvasUtils.ctx, lines, x, startY, options);
     }
 
-    static renderMultilineTextToContext(ctx, lines, x, startY, {
+    // Internal/test support only.
+    static _renderMultilineTextToContext(ctx, lines, x, startY, {
         fontSize = 20,
         lineHeight = null,
         fontFamily = 'Arial',
@@ -177,10 +180,11 @@ class CanvasText {
     }
 
     static renderCenteredText(text, y, options = {}) {
-        return this.renderCenteredTextToContext(CanvasUtils.ctx, text, y, options);
+        return this._renderCenteredTextToContext(CanvasUtils.ctx, text, y, options);
     }
 
-    static renderCenteredTextToContext(ctx, text, y, {
+    // Internal/test support only.
+    static _renderCenteredTextToContext(ctx, text, y, {
         centerX = null,
         fontSize = 20,
         fontFamily = 'Arial',
@@ -199,7 +203,7 @@ class CanvasText {
         const resolvedCenterX = NumberUtils.isFiniteNumber(centerX)
             ? centerX
             : (NumberUtils.isFiniteNumber(defaultCenterX) ? defaultCenterX : ((ctx.canvas?.width || 0) / 2));
-        const dimensions = this.calculateTextMetricsToContext(ctx, text, resolvedFontSize, fontFamily);
+        const dimensions = this._calculateTextMetricsToContext(ctx, text, resolvedFontSize, fontFamily);
         const x = Math.round(resolvedCenterX - (dimensions.width / 2));
 
         ctx.save();
@@ -212,10 +216,11 @@ class CanvasText {
     }
 
     static renderCenteredMultilineText(lines, startY, options = {}) {
-        return this.renderCenteredMultilineTextToContext(CanvasUtils.ctx, lines, startY, options);
+        return this._renderCenteredMultilineTextToContext(CanvasUtils.ctx, lines, startY, options);
     }
 
-    static renderCenteredMultilineTextToContext(ctx, lines, startY, {
+    // Internal/test support only.
+    static _renderCenteredMultilineTextToContext(ctx, lines, startY, {
         centerX = null,
         fontSize = 20,
         lineHeight = null,
@@ -239,7 +244,7 @@ class CanvasText {
 
         for (let i = 0; i < lines.length; i += 1) {
             drawResults.push(
-                this.renderCenteredTextToContext(ctx, lines[i], startY + (i * resolvedLineHeight), {
+                this._renderCenteredTextToContext(ctx, lines[i], startY + (i * resolvedLineHeight), {
                     centerX,
                     fontSize: resolvedFontSize,
                     fontFamily,

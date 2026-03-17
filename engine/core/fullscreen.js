@@ -240,7 +240,7 @@ class Fullscreen {
         if (!Fullscreen.isFullScreen) {
             const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
 
-            CanvasText.renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
+            CanvasText._renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
                 fontSize,
                 fontFamily,
                 color: this.config.color,
@@ -250,7 +250,8 @@ class Fullscreen {
         }
     }
 
-    static drawToContext(ctx) {
+    // Internal/test support only.
+    static _drawToContext(ctx) {
         if (!ctx) {
             return;
         }
@@ -258,7 +259,7 @@ class Fullscreen {
         if (!Fullscreen.isFullScreen) {
             const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
 
-            CanvasText.renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
+            CanvasText._renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
                 fontSize,
                 fontFamily,
                 color: this.config.color,
