@@ -4,7 +4,6 @@
 // 03/15/2026
 
 import { canvasConfig, solarSystemConfig, uiFont } from './global.js';
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
@@ -15,14 +14,13 @@ function getSystemCenter() {
     };
 }
 
-function drawOrbit(ctx, centerX, centerY, distance, zoom) {
+function drawOrbit(centerX, centerY, distance, zoom) {
     PrimitiveRenderer.drawCircle(centerX, centerY, distance * zoom, null, solarSystemConfig.display.orbitStroke, 1, 1, {
-        ctx,
         lineDash: [10, 15]
     });
 }
 
-function drawRing(ctx, drawX, drawY, ring, zoom) {
+function drawRing(drawX, drawY, ring, zoom) {
     PrimitiveRenderer.drawEllipse(
         drawX,
         drawY,
@@ -32,12 +30,11 @@ function drawRing(ctx, drawX, drawY, ring, zoom) {
         null,
         0,
         0,
-        1,
-        { ctx }
+        1
     );
 }
 
-function drawMoons(ctx, moons, centerX, centerY, zoom) {
+function drawMoons(moons, centerX, centerY, zoom) {
     moons.forEach((moon) => {
         PrimitiveRenderer.drawCircle(
             centerX + (moon.x * zoom),
@@ -46,14 +43,13 @@ function drawMoons(ctx, moons, centerX, centerY, zoom) {
             moon.visual.color,
             null,
             0,
-            1,
-            { ctx }
+            1
         );
     });
 }
 
-function drawLabel(ctx, name, drawX, drawY, scaledRadius, zoom) {
-    CanvasText.renderTextToContext(ctx, name, drawX + scaledRadius + 6, drawY - scaledRadius - 4, {
+function drawLabel(name, drawX, drawY, scaledRadius, zoom) {
+    CanvasText.renderText(name, drawX + scaledRadius + 6, drawY - scaledRadius - 4, {
         fontSize: Math.max(12, Math.round(14 * zoom)),
         fontFamily: uiFont.ui,
         color: solarSystemConfig.display.labelColor,
@@ -68,25 +64,24 @@ export function drawCelestialBody(body, {
     showOrbits = true,
     showLabels = false
 } = {}) {
-    const ctx = CanvasUtils.ctx;
     const scaledRadius = body.visual.radius * zoom;
     const drawX = centerX + (body.x * zoom);
     const drawY = centerY + (body.y * zoom);
 
     if (showOrbits) {
-        drawOrbit(ctx, centerX, centerY, body.orbit.distance, zoom);
+        drawOrbit(centerX, centerY, body.orbit.distance, zoom);
     }
 
     if (body.visual.ring) {
-        drawRing(ctx, drawX, drawY, body.visual.ring, zoom);
+        drawRing(drawX, drawY, body.visual.ring, zoom);
     }
 
-    PrimitiveRenderer.drawCircle(drawX, drawY, scaledRadius, body.visual.color, null, 0, 1, { ctx });
+    PrimitiveRenderer.drawCircle(drawX, drawY, scaledRadius, body.visual.color, null, 0, 1);
 
-    drawMoons(ctx, body.moons, centerX, centerY, zoom);
+    drawMoons(body.moons, centerX, centerY, zoom);
 
     if (showLabels) {
-        drawLabel(ctx, body.name, drawX, drawY, scaledRadius, zoom);
+        drawLabel(body.name, drawX, drawY, scaledRadius, zoom);
     }
 }
 

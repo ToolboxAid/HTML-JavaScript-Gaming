@@ -115,7 +115,7 @@ class Game extends GameBase {
     }
 
     this.attractMode.update(deltaTime);
-    this.attractMode.draw(CanvasUtils.ctx);
+    this.attractMode.draw();
   }
 
   displayPlayerSelect() {

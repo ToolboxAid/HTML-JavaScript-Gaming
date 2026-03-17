@@ -7,7 +7,6 @@ import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
 
 import KeyboardInput from '../../../engine/input/keyboard.js';
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
@@ -29,59 +28,59 @@ class Game extends GameBase{
         return { keysPressed, keysDown, keysReleased };
     }
 
-    drawRectangles(ctx, keysDown) {
+    drawRectangles(keysDown) {
         // outline where colors will be
-        PrimitiveRenderer.drawRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100, '#888888', null, 0, 1, { ctx });
+        PrimitiveRenderer.drawRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 200, 100, '#888888');
 
         // Example: Change the rectangle color based on key presses
         if (keysDown.includes('KeyR')) {
-            PrimitiveRenderer.drawRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 100, 100, 'red', null, 0, 1, { ctx });
+            PrimitiveRenderer.drawRect((canvasConfig.width / 2) - 100, (canvasConfig.height / 2) - 50, 100, 100, 'red');
         }
 
         if (keysDown.includes('KeyG')) {
-            PrimitiveRenderer.drawRect((canvasConfig.width / 2), (canvasConfig.height / 2) - 50, 100, 100, 'green', null, 0, 1, { ctx });
+            PrimitiveRenderer.drawRect((canvasConfig.width / 2), (canvasConfig.height / 2) - 50, 100, 100, 'green');
         }
     }
 
-    drawKeyStates(ctx, keysPressed, keysDown, keysReleased) {
-        CanvasText.renderTextToContext(ctx, 'Keys Just Pressed: ' + (keysPressed.length > 0 ? keysPressed.join(', ') : 'None'), 10, 100, {
+    drawKeyStates(keysPressed, keysDown, keysReleased) {
+        CanvasText.renderText('Keys Just Pressed: ' + (keysPressed.length > 0 ? keysPressed.join(', ') : 'None'), 10, 100, {
             fontSize: 40,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, 'Keys Currently Pressed (' + keysDown.length + '):', 10, 140, {
+        CanvasText.renderText('Keys Currently Pressed (' + keysDown.length + '):', 10, 140, {
             fontSize: 40,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, 'Keys Just Released: ' + (keysReleased.length > 0 ? keysReleased.join(', ') : 'None'), 10, 220, {
+        CanvasText.renderText('Keys Just Released: ' + (keysReleased.length > 0 ? keysReleased.join(', ') : 'None'), 10, 220, {
             fontSize: 40,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, keysDown.length > 0 ? keysDown.join(', ') : 'None', 10, 175, {
+        CanvasText.renderText(keysDown.length > 0 ? keysDown.join(', ') : 'None', 10, 175, {
             fontSize: 20,
             color: 'white',
             useDpr: false
         });
 
-        CanvasText.renderTextToContext(ctx, 'Press `r` for RED', 275, 390, {
+        CanvasText.renderText('Press `r` for RED', 275, 390, {
             fontSize: 30,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, 'Press `g` for GREEN', 275, 425, {
+        CanvasText.renderText('Press `g` for GREEN', 275, 425, {
             fontSize: 30,
             color: 'white',
             useDpr: false
         });
 
-        CanvasText.renderTextToContext(ctx, 'Caution, some keyboards scan and cannot', 105, 540, {
+        CanvasText.renderText('Caution, some keyboards scan and cannot', 105, 540, {
             fontSize: 30,
             color: 'orange',
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, 'display all keys pressed: test your player keys.', 85, 575, {
+        CanvasText.renderText('display all keys pressed: test your player keys.', 85, 575, {
             fontSize: 30,
             color: 'orange',
             useDpr: false
@@ -89,8 +88,6 @@ class Game extends GameBase{
     }
 
     gameLoop() {
-        const ctx = CanvasUtils.ctx;
-
         // Call update to manage key states
         this.keyboardInput.update();
 
@@ -98,10 +95,10 @@ class Game extends GameBase{
         const { keysPressed, keysDown, keysReleased } = this.getKeyStates();
 
         // Draw rectangles based on key presses
-        this.drawRectangles(ctx, keysDown);
+        this.drawRectangles(keysDown);
 
         // Draw key states on the canvas
-        this.drawKeyStates(ctx, keysPressed, keysDown, keysReleased);
+        this.drawKeyStates(keysPressed, keysDown, keysReleased);
     }
 
     onDestroy() {
