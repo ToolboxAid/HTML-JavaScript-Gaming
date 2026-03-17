@@ -9,6 +9,7 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
 - keep game and shared sample code focused on game behavior, not raw canvas or browser internals
 - move rendering behavior into engine core and renderer layers
 - make engine boundaries clearer over time instead of adding convenience wrappers everywhere
+- high priority: make data ownership and visibility clear
 
 **Preferred End State**
 - game developers should not need to know about `ctx`
@@ -21,6 +22,8 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
 - `games/` and shared `samples/` should not read or pass `CanvasUtils.ctx`
 - renderer files may use `CanvasUtils.ctx` directly because that is part of their job
 - local/offscreen/test-only canvas handling should stay narrow and intentional
+- prefer designs where the owning class/module of data or behavior is obvious
+- prefer intentional visibility; do not expose internals unless there is a clear architectural or testing need
 - avoid solving architecture with getters alone when the real issue is ownership
 - avoid trying to wrap `CanvasUtils.ctx` in non-renderer classes; either use it directly in renderer-layer code or trust renderers
 
@@ -63,6 +66,7 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
 - avoid global-state mutation tricks just to reuse code
 - reduce public surface area when live code no longer depends on it
 - keep file intent obvious from reading the file
+- prefer refactors that improve ownership clarity and make visibility boundaries easier to understand
 
 **Things To Avoid**
 - games/samples creating mini rendering frameworks

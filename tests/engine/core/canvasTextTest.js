@@ -19,6 +19,16 @@ export function testCanvasText(assert) {
     assert(parsedQuoted.fontSize === 20, 'CanvasText.parseFont should preserve quoted font sizes');
     assert(parsedQuoted.fontFamily === '"Vector Battle"', 'CanvasText.parseFont should preserve quoted font families');
 
+    const drawSpriteCalls = [];
+    const drawPixelText = CanvasText.bindDrawText((...args) => drawSpriteCalls.push(args));
+    drawPixelText(10, 20, 'AB', 2, 'cyan');
+    assert(drawSpriteCalls.length === 2, 'CanvasText.bindDrawText should draw one sprite frame per glyph');
+
+    const drawPixelNumbers = [];
+    const drawPixelNumber = CanvasText.bindDrawNumber((...args) => drawPixelNumbers.push(args));
+    drawPixelNumber(5, 6, 42, 1, 'white', 4, '0');
+    assert(drawPixelNumbers.length === 4, 'CanvasText.bindDrawNumber should draw one sprite frame per padded digit');
+
     const nullRender = CanvasText._renderTextToContext(null, 'hello', 10, 20);
     assert(nullRender === null, 'CanvasText._renderTextToContext should return null without a context');
 

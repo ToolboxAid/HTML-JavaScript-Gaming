@@ -13,15 +13,15 @@ class CanvasText {
     }
 
     static bindDrawText(drawSpriteFn) {
-        return (...args) => this.drawText(drawSpriteFn, ...args);
+        return (...args) => this.#drawText(drawSpriteFn, ...args);
     }
 
     static bindDrawNumber(drawSpriteFn) {
         const drawTextFn = this.bindDrawText(drawSpriteFn);
-        return (...args) => this.drawNumber(drawTextFn, ...args);
+        return (...args) => this.#drawNumber(drawTextFn, ...args);
     }
 
-    static drawNumber(drawTextFn, x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
+    static #drawNumber(drawTextFn, x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
         const numberStr = number.toString();
         if (numberStr.length > leadingCount) {
             leadingCount = numberStr.length;
@@ -33,7 +33,7 @@ class CanvasText {
         drawTextFn(x, y, formattedText, pixelSize, color);
     }
 
-    static drawText(drawSpriteFn, x, y, text, pixelSize, color = 'white') {
+    static #drawText(drawSpriteFn, x, y, text, pixelSize, color = 'white') {
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
             const frame = Font5x6.font5x6[char];
