@@ -35,7 +35,9 @@ class CanvasSprite {
             return false;
         }
 
+        renderCtx.save();
         renderCtx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+        renderCtx.restore();
         return true;
     }
 
@@ -54,6 +56,7 @@ class CanvasSprite {
             return false;
         }
 
+        renderCtx.save();
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 const pixel = frame[row][col];
@@ -78,6 +81,7 @@ class CanvasSprite {
             renderCtx.strokeRect(x, y, dimensions.width, dimensions.height);
         }
 
+        renderCtx.restore();
         return true;
     }
 
@@ -96,6 +100,7 @@ class CanvasSprite {
             return false;
         }
 
+        renderCtx.save();
         for (let row = 0; row < frame.length; row++) {
             for (let col = 0; col < frame[row].length; col++) {
                 renderCtx.fillStyle = frame[row][col];
@@ -113,6 +118,7 @@ class CanvasSprite {
             renderCtx.strokeRect(x, y, dimensions.width, dimensions.height);
         }
 
+        renderCtx.restore();
         return true;
     }
 }
