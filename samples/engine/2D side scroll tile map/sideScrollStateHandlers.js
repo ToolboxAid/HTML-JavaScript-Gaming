@@ -10,7 +10,7 @@ import GameUtils from '../../../engine/game/gameUtils.js';
 import { canvasConfig, playerSelect, sideScrollUi } from './global.js';
 
 function renderCenteredLine(line) {
-    CanvasText.renderCenteredText(CanvasUtils.ctx, line.text, line.y, {
+    CanvasText.renderCurrentCenteredText(line.text, line.y, {
         fontSize: line.fontSize,
         fontFamily: line.fontFamily,
         color: line.color,
@@ -103,14 +103,14 @@ export function playGame(game) {
     const screen = sideScrollUi.screens.play;
     const playerInfo = `Player ${game.currentPlayer + 1} - Lives: ${game.playerLives[game.currentPlayer]} - Score: ${game.score[game.currentPlayer]}`;
 
-    CanvasText.renderCenteredText(CanvasUtils.ctx, playerInfo, screen.infoY, {
+    CanvasText.renderCurrentCenteredText(playerInfo, screen.infoY, {
         fontSize: screen.infoFontSize,
         fontFamily: screen.infoFontFamily,
         color: screen.infoColor,
         useDpr: false
     });
 
-    CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, screen.prompts, screen.promptsY, {
+    CanvasText.renderCurrentCenteredMultilineText(screen.prompts, screen.promptsY, {
         fontSize: screen.promptFontSize,
         lineHeight: screen.promptLineHeight,
         fontFamily: screen.promptFontFamily,

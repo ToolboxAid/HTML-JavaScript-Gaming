@@ -5,7 +5,6 @@
 
 import { canvasConfig, performanceConfig, fullscreenConfig, fullscreenSampleUi, uiFont } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import KeyboardInput from '../../../engine/input/keyboard.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
@@ -118,7 +117,7 @@ class Game extends GameBase {
     }
 
     renderCenteredText(text, y, fontSize, color, fontFamily) {
-        CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
+        CanvasText.renderCurrentCenteredText(text, y, {
             fontSize,
             fontFamily,
             color,

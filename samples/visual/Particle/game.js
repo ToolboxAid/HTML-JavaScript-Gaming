@@ -14,7 +14,6 @@ import {
     uiFont
 } from './global.js';
 import GameBase from '../../../engine/core/gameBase.js';
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import ParticleExplosion from '../../../engine/renderers/particleExplosion.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
@@ -115,17 +114,17 @@ class Game extends GameBase {
 
     drawCanvasHeader() {
         const { title, subtitle, help, titleY, subtitleY, helpY, colors } = particleSampleUi.canvasText;
-        CanvasText.renderCenteredText(CanvasUtils.ctx, title, titleY, {
+        CanvasText.renderCurrentCenteredText(title, titleY, {
             fontSize: 34,
             fontFamily: uiFont.display,
             color: colors.textPrimary
         });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, subtitle, subtitleY, {
+        CanvasText.renderCurrentCenteredText(subtitle, subtitleY, {
             fontSize: 20,
             fontFamily: uiFont.ui,
             color: colors.textSecondary
         });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, help, helpY, {
+        CanvasText.renderCurrentCenteredText(help, helpY, {
             fontSize: 17,
             fontFamily: uiFont.ui,
             color: colors.muted

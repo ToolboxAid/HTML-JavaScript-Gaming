@@ -3,7 +3,6 @@
 // 03/15/2026
 // gameStateUi.js
 
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import { canvasConfig, gameUi, safeAreaInset } from './global.js';
@@ -76,13 +75,13 @@ function drawPulseAccent(x, y, width, accentColor) {
 }
 
 function renderCenteredText(text, y, options = {}) {
-    return CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
+    return CanvasText.renderCurrentCenteredText(text, y, {
         ...options
     });
 }
 
 function renderCenteredMultilineText(lines, startY, options = {}) {
-    return CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, lines, startY, {
+    return CanvasText.renderCurrentCenteredMultilineText(lines, startY, {
         ...options
     });
 }

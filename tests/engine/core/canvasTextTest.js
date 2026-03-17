@@ -4,6 +4,7 @@
 // canvasTextTest.js
 
 import CanvasText from '../../../engine/core/canvasText.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 export function testCanvasText(assert) {
     const parsedDefault = CanvasText.parseFont(null);
@@ -71,7 +72,7 @@ export function testCanvasText(assert) {
         useDpr: false
     });
     assert(centered.x === 79, 'CanvasText.renderCenteredText should offset from center using measured width');
-    assert(mockCtx.saveCalls === 2 && mockCtx.restoreCalls === 2, 'CanvasText.renderCenteredText should preserve canvas state');
+    assert(mockCtx.saveCalls === 3 && mockCtx.restoreCalls === 3, 'CanvasText.renderCenteredText should preserve canvas state');
 
     const centeredLines = CanvasText.renderCenteredMultilineText(mockCtx, ['a', 'b'], 10, {
         centerX: 60,
@@ -80,4 +81,16 @@ export function testCanvasText(assert) {
         useDpr: false
     });
     assert(centeredLines.length === 2, 'CanvasText.renderCenteredMultilineText should draw one result per centered line');
+
+    CanvasUtils.ctx = mockCtx;
+    const sharedRender = CanvasText.renderCurrentText('shared', 5, 6, {
+        fontSize: 12,
+        useDpr: false
+    });
+    assert(sharedRender.x === 5 && sharedRender.y === 6, 'CanvasText.renderText should use the shared canvas context when one is available');
+
+    const sharedMetrics = CanvasText.calculateCurrentTextMetrics('shared', 12, 'Arial');
+    assert(sharedMetrics.width === 42 && sharedMetrics.height === 10, 'CanvasText.calculateTextMetrics should use the shared canvas context when one is available');
+
+    CanvasUtils.ctx = null;
 }

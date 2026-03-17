@@ -213,7 +213,7 @@ class PerformanceMonitor {
         }
 
         const measurements = this.layoutTemplates.map((text) =>
-            CanvasText.calculateTextMetrics(CanvasUtils.ctx, text, fontSize, fontFamily)
+            CanvasText.calculateCurrentTextMetrics(text, fontSize, fontFamily)
         );
         const layout = {
             maxWidth: Math.max(...measurements.map(({ width }) => width)),

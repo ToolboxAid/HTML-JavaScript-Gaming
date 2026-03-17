@@ -3,7 +3,6 @@
 // 2024-10-24
 // tileMap.js
 
-import CanvasUtils from './canvasUtils.js';
 import CanvasText from './canvasText.js';
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
@@ -163,7 +162,7 @@ class TileMap {
 
         if (TileMap.DEBUG) {
             const across = 250;
-            CanvasText.renderMultilineText(CanvasUtils.ctx, [
+            CanvasText.renderCurrentMultilineText([
                 "Hero X   :" + Math.round(hero.x),
                 "Scrl PosX:" + Math.round(this.scrollPosX),
                 "Scrl Max :" + Math.round(this.scrollMax),

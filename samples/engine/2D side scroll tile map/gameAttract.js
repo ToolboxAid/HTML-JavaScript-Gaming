@@ -4,8 +4,6 @@
 // gameAttract.js - 2D tile map
 
 import { canvasConfig } from './global.js';
-
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import TileMap from '../../../engine/core/tileMap.js';
 
@@ -28,7 +26,7 @@ class GameAttract {
     }
 
     displayAttract() {
-        CanvasText.renderMultilineText(CanvasUtils.ctx, [
+        CanvasText.renderCurrentMultilineText([
             "Welcome to Scrolling Tile Map!",
             "Press `Enter` to Start"
         ], 250, 200, {

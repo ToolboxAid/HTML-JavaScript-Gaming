@@ -3,6 +3,7 @@
 // 03/13/2026
 // canvasText.js
 
+import CanvasUtils from './canvasUtils.js';
 import NumberUtils from '../math/numberUtils.js';
 import Font5x6 from '../renderers/assets/font5x6.js';
 
@@ -18,6 +19,10 @@ class CanvasText {
     static bindDrawNumber(drawSpriteFn) {
         const drawTextFn = this.bindDrawText(drawSpriteFn);
         return (...args) => this.drawNumber(drawTextFn, ...args);
+    }
+
+    static resolveContext(ctx = null) {
+        return ctx || CanvasUtils.ctx || null;
     }
 
     static drawNumber(drawTextFn, x, y, number, pixelSize, color = 'white', leadingCount = 5, leadingChar = '0') {
@@ -44,18 +49,22 @@ class CanvasText {
         }
     }
 
-    static calculateTextMetrics(ctx, text, fontSize = 20, font = 'Arial') {
+    static calculateTextMetrics(ctx, text, fontSize = 20, fontFamily = 'Arial') {
         if (!ctx) {
             return { width: 0, height: 0 };
         }
 
-        ctx.font = `${fontSize}px ${font}`;
+        ctx.font = `${fontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(text);
 
         return {
             width: Math.ceil(metrics.width),
             height: Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent)
         };
+    }
+
+    static calculateCurrentTextMetrics(text, fontSize = 20, fontFamily = 'Arial') {
+        return this.calculateTextMetrics(this.resolveContext(), text, fontSize, fontFamily);
     }
 
     static parseFont(font, fallbackSize = 20, fallbackFamily = 'Arial') {
@@ -103,6 +112,10 @@ class CanvasText {
         return { x, y, fontSize: resolvedFontSize };
     }
 
+    static renderCurrentText(text, x, y, options = {}) {
+        return this.renderText(this.resolveContext(), text, x, y, options);
+    }
+
     static renderMultilineText(ctx, lines, x, startY, {
         fontSize = 20,
         lineHeight = null,
@@ -139,6 +152,10 @@ class CanvasText {
 
         ctx.restore();
         return drawResults;
+    }
+
+    static renderCurrentMultilineText(lines, x, startY, options = {}) {
+        return this.renderMultilineText(this.resolveContext(), lines, x, startY, options);
     }
 
     static getDevicePixelRatio() {
@@ -191,6 +208,10 @@ class CanvasText {
         return { x, y, width: dimensions.width, height: dimensions.height, fontSize: resolvedFontSize };
     }
 
+    static renderCurrentCenteredText(text, y, options = {}) {
+        return this.renderCenteredText(this.resolveContext(), text, y, options);
+    }
+
     static renderCenteredMultilineText(ctx, lines, startY, {
         centerX = null,
         fontSize = 20,
@@ -227,6 +248,10 @@ class CanvasText {
         }
 
         return drawResults;
+    }
+
+    static renderCurrentCenteredMultilineText(lines, startY, options = {}) {
+        return this.renderCenteredMultilineText(this.resolveContext(), lines, startY, options);
     }
 }
 
