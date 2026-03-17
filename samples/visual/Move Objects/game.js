@@ -104,7 +104,6 @@ class Game extends GameBase {
 
 function renderCenteredText(text, y, fontSize, fontFamily, color) {
     CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
-        defaultCenterX: canvasConfig.width / 2,
         fontSize,
         fontFamily,
         color

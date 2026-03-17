@@ -77,15 +77,13 @@ function drawPulseAccent(x, y, width, accentColor) {
 
 function renderCenteredText(text, y, options = {}) {
     return CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
-        ...options,
-        defaultCenterX: canvasConfig.width / 2
+        ...options
     });
 }
 
 function renderCenteredMultilineText(lines, startY, options = {}) {
     return CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, lines, startY, {
-        ...options,
-        defaultCenterX: canvasConfig.width / 2
+        ...options
     });
 }
 
