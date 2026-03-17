@@ -4,6 +4,7 @@
 // game.js - GameController Integration with Button States on Canvas
 
 import Fullscreen from '../../../engine/core/fullscreen.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import GameControllers from '../../../engine/input/controller/gameControllers.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
@@ -27,6 +28,9 @@ const fullscreenConfig = {
 
 canvas.width = canvasConfig.width;
 canvas.height = canvasConfig.height;
+CanvasUtils.canvas = canvas;
+CanvasUtils.ctx = ctx;
+CanvasUtils.config = { ...CanvasUtils.config, ...canvasConfig };
 
 const PLAYER_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
 const MAX_BUTTONS = 10;
@@ -157,28 +161,28 @@ function gameRender() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const connectedCount = gameControllers.getTrackedControllerIndices().length;
 
-    CanvasText.renderTextToContext(ctx, 'Buttons highlight active inputs. Panels show mapped labels and live state.', canvas.width / 2, 24, {
+    CanvasText.renderText('Buttons highlight active inputs. Panels show mapped labels and live state.', canvas.width / 2, 24, {
         font: 'bold 12px Segoe UI',
         textAlign: 'center',
         useDpr: false
     });
-    CanvasText.renderTextToContext(ctx, 'Each panel title uses the connected controller mapping name when available.', canvas.width / 2, 40, {
+    CanvasText.renderText('Each panel title uses the connected controller mapping name when available.', canvas.width / 2, 40, {
         textAlign: 'center',
         useDpr: false
     });
-    CanvasText.renderTextToContext(ctx, `Connected controllers: ${connectedCount}`, canvas.width / 2, 54, {
+    CanvasText.renderText(`Connected controllers: ${connectedCount}`, canvas.width / 2, 54, {
         textAlign: 'center',
         useDpr: false
     });
 
     const hasVisiblePlayers = players.some(Boolean);
     if (!hasVisiblePlayers) {
-        CanvasText.renderTextToContext(ctx, 'Connect a controller to begin.', canvas.width / 2, 140, {
+        CanvasText.renderText('Connect a controller to begin.', canvas.width / 2, 140, {
             font: 'bold 18px Segoe UI',
             textAlign: 'center',
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, 'Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 172, {
+        CanvasText.renderText('Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 172, {
             fontSize: 14,
             textAlign: 'center',
             useDpr: false
@@ -196,12 +200,12 @@ function gameRender() {
             const textX = panelX + 8;
             PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgb(14, 7, 40)', player.color, 1.5, 0.82, { ctx });
 
-            CanvasText.renderTextToContext(ctx, player.title.slice(0, 22), textX, player.y - 12, {
+            CanvasText.renderText(player.title.slice(0, 22), textX, player.y - 12, {
                 font: TITLE_FONT,
                 color: player.color,
                 useDpr: false
             });
-            CanvasText.renderTextToContext(ctx, player.subtitle.slice(0, 28), textX, player.y - 4, {
+            CanvasText.renderText(player.subtitle.slice(0, 28), textX, player.y - 4, {
                 font: LABEL_FONT,
                 useDpr: false
             });
@@ -213,7 +217,7 @@ function gameRender() {
                 PrimitiveRenderer.drawCircle(buttonX, buttonY, buttonSize / 2, color, player.color, 1, 1, { ctx });
 
                 const buttonLabel = player.buttonLabels[buttonIndex] || buttonIndex;
-                CanvasText.renderTextToContext(ctx, String(buttonLabel).slice(0, 3), buttonX - 4.5, buttonY + 2.5, {
+                CanvasText.renderText(String(buttonLabel).slice(0, 3), buttonX - 4.5, buttonY + 2.5, {
                     font: LABEL_FONT,
                     color: 'white',
                     useDpr: false
@@ -221,7 +225,7 @@ function gameRender() {
             });
 
             const infoX = player.x + (buttonsAcross * (buttonSize + 2)) + 20;
-            CanvasText.renderTextToContext(ctx, `dPad (${player.dPadType}):`, infoX, player.y + 6, {
+            CanvasText.renderText(`dPad (${player.dPadType}):`, infoX, player.y + 6, {
                 font: LABEL_FONT,
                 color: player.color,
                 useDpr: false
@@ -233,7 +237,7 @@ function gameRender() {
             if (player.dPad.right) activeDirections.push('Right');
 
             const dPadState = activeDirections.length > 0 ? activeDirections.join(', ') : 'None';
-            CanvasText.renderTextToContext(ctx, dPadState, infoX, player.y + 14, {
+            CanvasText.renderText(dPadState, infoX, player.y + 14, {
                 font: LABEL_FONT,
                 color: player.color,
                 useDpr: false
@@ -242,12 +246,12 @@ function gameRender() {
             const decimals = 2;
             player.axisValues.forEach((axisEntry, axisIndex) => {
                 const axisY = player.y + 24 + (axisIndex * 8);
-                CanvasText.renderTextToContext(ctx, `${axisEntry.name}:`, infoX, axisY, {
+                CanvasText.renderText(`${axisEntry.name}:`, infoX, axisY, {
                     font: LABEL_FONT,
                     color: player.color,
                     useDpr: false
                 });
-                CanvasText.renderTextToContext(ctx, axisEntry.value.toFixed(decimals), infoX + 42, axisY, {
+                CanvasText.renderText(axisEntry.value.toFixed(decimals), infoX + 42, axisY, {
                     font: LABEL_FONT,
                     color: player.color,
                     useDpr: false
