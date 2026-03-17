@@ -255,7 +255,7 @@ function gameRender() {
             });
         }
     });
-    Fullscreen.drawToContext(ctx);
+    Fullscreen.draw();
 }
 
 function gameLoop() {

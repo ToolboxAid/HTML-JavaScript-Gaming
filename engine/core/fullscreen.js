@@ -232,7 +232,22 @@ class Fullscreen {
     }
 
     static draw() {
-        return this.drawToContext(Fullscreen.ctx);
+        const ctx = Fullscreen.ctx;
+        if (!ctx) {
+            return;
+        }
+
+        if (!Fullscreen.isFullScreen) {
+            const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
+
+            CanvasText.renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
+                fontSize,
+                fontFamily,
+                color: this.config.color,
+                textAlign: 'start',
+                useDpr: false
+            });
+        }
     }
 
     static drawToContext(ctx) {

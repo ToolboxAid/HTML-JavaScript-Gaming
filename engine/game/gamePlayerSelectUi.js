@@ -3,7 +3,6 @@
 // 03/16/2026
 // gamePlayerSelectUi.js
 
-import CanvasUtils from '../core/canvasUtils.js';
 import CanvasText from '../core/canvasText.js';
 import PrimitiveRenderer from '../renderers/primitiveRenderer.js';
 
@@ -12,11 +11,11 @@ class GamePlayerSelectUi {
         throw new Error('GamePlayerSelectUi is a utility class with only static methods. Do not instantiate.');
     }
 
-    static drawPlayerSelectOverlay(ctx, config) {
-        PrimitiveRenderer.drawOverlay(config.canvasWidth, config.canvasHeight, config.backgroundColor, 0.67, { ctx });
+    static drawPlayerSelectOverlay(config) {
+        PrimitiveRenderer.drawOverlay(config.canvasWidth, config.canvasHeight, config.backgroundColor, 0.67);
         const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
-        CanvasText.renderTextToContext(ctx, config.title, config.x, config.y, {
+        CanvasText.renderText(config.title, config.x, config.y, {
             fontSize,
             fontFamily,
             color: config.color,
@@ -24,12 +23,11 @@ class GamePlayerSelectUi {
         });
     }
 
-    static drawKeyboardPlayerOptions(ctx, config) {
+    static drawKeyboardPlayerOptions(config) {
         const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
         for (let i = 1; i <= config.maxPlayers; i++) {
-            CanvasText.renderTextToContext(
-                ctx,
+            CanvasText.renderText(
                 `Keyboard \`${i}\` for ${i} Player${i > 1 ? 's' : ''}`,
                 config.optionX,
                 config.y + i * config.spacing,
@@ -43,24 +41,24 @@ class GamePlayerSelectUi {
         }
     }
 
-    static drawControllerPlayerOptions(ctx, config) {
+    static drawControllerPlayerOptions(config) {
         const controllerTitleY = config.y + config.controllerOffsetY;
         const firstOptionY = controllerTitleY + config.controllerLineSpacing;
         const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
-        CanvasText.renderTextToContext(ctx, config.controllerTitle, config.x, controllerTitleY, {
+        CanvasText.renderText(config.controllerTitle, config.x, controllerTitleY, {
             fontSize,
             fontFamily,
             color: config.color,
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, '`Left Bumper` 1 player', config.optionX, firstOptionY, {
+        CanvasText.renderText('`Left Bumper` 1 player', config.optionX, firstOptionY, {
             fontSize,
             fontFamily,
             color: config.color,
             useDpr: false
         });
-        CanvasText.renderTextToContext(ctx, '`Right Bumper` 2 players', config.optionX, firstOptionY + config.controllerLineSpacing, {
+        CanvasText.renderText('`Right Bumper` 2 players', config.optionX, firstOptionY + config.controllerLineSpacing, {
             fontSize,
             fontFamily,
             color: config.color,
@@ -69,15 +67,11 @@ class GamePlayerSelectUi {
     }
 
     static drawPlayerSelection(config, gameControllers = null) {
-        this.drawPlayerSelectionToContext(CanvasUtils.ctx, config, gameControllers);
-    }
-
-    static drawPlayerSelectionToContext(ctx, config, gameControllers = null) {
-        this.drawPlayerSelectOverlay(ctx, config);
-        this.drawKeyboardPlayerOptions(ctx, config);
+        this.drawPlayerSelectOverlay(config);
+        this.drawKeyboardPlayerOptions(config);
 
         if (gameControllers) {
-            this.drawControllerPlayerOptions(ctx, config);
+            this.drawControllerPlayerOptions(config);
         }
     }
 }

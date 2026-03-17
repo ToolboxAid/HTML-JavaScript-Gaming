@@ -116,7 +116,7 @@ class Game extends GameBase {
 
     // Function to draw the winner message on the canvas
     drawWinnerMessage() {
-        CanvasText.renderCenteredMultilineText(this.runtimeContext.getContext(), [
+        CanvasText.renderCenteredMultilineText([
             'We have a winner!',
             'Press any key to Play'
         ], (canvasConfig.height / 2) - 33, {
