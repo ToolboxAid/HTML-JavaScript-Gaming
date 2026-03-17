@@ -318,16 +318,16 @@ function testPrimitiveRendererRestoresContextOnThrow(assert) {
 
         assertNoThrow(assert, () => {
             try {
-                PrimitiveRenderer.withContext({}, () => {
+                PrimitiveRenderer.drawWithCanvasState(() => {
                     throw new Error('intentional');
                 });
             } catch (error) {
                 // expected for this safety test
             }
-        }, 'PrimitiveRenderer.withContext throw path should still restore canvas state');
+        }, 'PrimitiveRenderer.drawWithCanvasState throw path should still restore canvas state');
 
-        assert(mockCtx.saveCalls === 1, 'PrimitiveRenderer.withContext should save before invoking drawFn');
-        assert(mockCtx.restoreCalls === 1, 'PrimitiveRenderer.withContext should restore even when drawFn throws');
+        assert(mockCtx.saveCalls === 1, 'PrimitiveRenderer.drawWithCanvasState should save before invoking drawFn');
+        assert(mockCtx.restoreCalls === 1, 'PrimitiveRenderer.drawWithCanvasState should restore even when drawFn throws');
     } finally {
         CanvasUtils.ctx = originalCtx;
     }

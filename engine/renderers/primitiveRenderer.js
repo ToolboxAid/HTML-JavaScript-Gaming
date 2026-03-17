@@ -6,6 +6,7 @@
 import CanvasUtils from '../core/canvasUtils.js';
 import NumberUtils from '../math/numberUtils.js';
 import RendererGuards from './rendererGuards.js';
+import DebugLog from '../utils/debugLog.js';
 
 class PrimitiveRenderer {
     static draw(object, fillColor = 'gray', borderColor = null, borderWidth = 0, options = {}) {
@@ -13,7 +14,7 @@ class PrimitiveRenderer {
             return;
         }
 
-        return this.withContext(options, (ctx) => {
+        return this.drawWithCanvasState((ctx) => {
             this.renderRect(ctx, object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
         });
     }
@@ -38,10 +39,9 @@ class PrimitiveRenderer {
         backdropInset = 0,
         headerY = null,
         headerColor = null,
-        headerWidth = 2,
-        ctx = null
+        headerWidth = 2
     } = {}) {
-        return this.withContext({ ctx }, (renderCtx) => {
+        return this.drawWithCanvasState((renderCtx) => {
             this.renderPanel(renderCtx, x, y, width, height, {
                 fillColor,
                 borderColor,
@@ -84,10 +84,9 @@ class PrimitiveRenderer {
         offsetY = 0,
         closePath = false,
         alpha = 1,
-        lineDash = null,
-        ctx = null
+        lineDash = null
     } = {}) {
-        return this.withValidatedPoints(points, 2, { ctx }, (renderCtx) => {
+        return this.withValidatedPoints(points, 2, (renderCtx) => {
             this.renderPath(renderCtx, points, strokeColor, lineWidth, {
                 offsetX,
                 offsetY,
@@ -142,10 +141,9 @@ class PrimitiveRenderer {
         markerY = null,
         markerRadius = 2,
         markerColor = borderColor,
-        markerAlpha = alpha,
-        ctx = null
+        markerAlpha = alpha
     } = {}) {
-        return this.withContext({ ctx }, (renderCtx) => {
+        return this.drawWithCanvasState((renderCtx) => {
             this.renderDebugBounds(renderCtx, x, y, width, height, {
                 borderColor,
                 borderWidth,
@@ -161,10 +159,9 @@ class PrimitiveRenderer {
 
     static drawPixelMatrix(matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
         extraWidth = 0,
-        extraHeight = 0,
-        ctx = null
+        extraHeight = 0
     } = {}) {
-        return this.withValidatedMatrix(matrix, { ctx }, (renderCtx) => {
+        return this.withValidatedMatrix(matrix, (renderCtx) => {
             this.renderPixelMatrix(renderCtx, matrix, x, y, pixelWidth, pixelHeight, fillColor, {
                 extraWidth,
                 extraHeight
@@ -290,9 +287,10 @@ class PrimitiveRenderer {
         return true;
     }
 
-    static withContext(options = {}, drawFn) {
-        const ctx = this.resolveContext(options);
+    static drawWithCanvasState(drawFn) {
+        const ctx = CanvasUtils.ctx || null;
         if (!ctx) {
+            DebugLog.error('PrimitiveRenderer', 'Canvas context is not initialized.');
             return false;
         }
 
@@ -305,32 +303,24 @@ class PrimitiveRenderer {
         return true;
     }
 
-    static withValidatedInput(isValid, options = {}, drawFn) {
+    static withValidatedInput(isValid, drawFn) {
         if (!isValid) {
             return false;
         }
 
-        return this.withContext(options, drawFn);
+        return this.drawWithCanvasState(drawFn);
     }
 
     static withValidatedNumbers(values, options = {}, drawFn) {
-        return this.withValidatedInput(NumberUtils.areFiniteNumbers(values), options, drawFn);
+        return this.withValidatedInput(NumberUtils.areFiniteNumbers(values), drawFn);
     }
 
-    static withValidatedPoints(points, minimumCount, options = {}, drawFn) {
-        return this.withValidatedInput(this.hasMinimumPointCount(points, minimumCount), options, drawFn);
+    static withValidatedPoints(points, minimumCount, drawFn) {
+        return this.withValidatedInput(this.hasMinimumPointCount(points, minimumCount), drawFn);
     }
 
-    static withValidatedMatrix(matrix, options = {}, drawFn) {
-        return this.withValidatedInput(this.hasMatrixRows(matrix), options, drawFn);
-    }
-
-    static resolveContext(options = {}) {
-        if (options?.ctx) {
-            return options.ctx;
-        }
-
-        return CanvasUtils.ctx || null;
+    static withValidatedMatrix(matrix, drawFn) {
+        return this.withValidatedInput(this.hasMatrixRows(matrix), drawFn);
     }
 
     static applyLineDash(ctx, lineDash) {
