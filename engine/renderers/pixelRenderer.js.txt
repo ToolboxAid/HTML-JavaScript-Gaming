@@ -1,0 +1,24 @@
+// ToolboxAid.com
+// David Quesenberry
+// 03/16/2026
+// pixelRenderer.js.txt
+
+[ ] Future build-out note:
+Create a dedicated PixelRenderer for 8-bit artwork and retro sprite workflows.
+
+Goals:
+- support reusable 8-bit sprite and tile rendering helpers
+- separate retro/pixel-art rendering concerns from PNG sheet rendering
+- provide a clearer home for Space Invaders-style frame ideas and experiments
+- keep CanvasSprite as the low-level blit helper, not the high-level 8-bit renderer
+
+Possible scope:
+- palette-aware sprite rendering
+- tile and tile-strip helpers
+- 8-bit UI/icon rendering helpers
+- animation helpers for small retro frame sets
+- debug preview helpers for pixel-art assets
+
+Current status:
+- note only
+- no live module yet
