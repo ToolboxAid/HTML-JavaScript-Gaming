@@ -4,6 +4,7 @@
 // tileMap.js
 
 import CanvasUtils from './canvasUtils.js';
+import CanvasText from './canvasText.js';
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
 import PrimitiveRenderer from '../renderers/primitiveRenderer.js';
@@ -161,17 +162,21 @@ class TileMap {
         this.currentScrollPosX = this.scrollPosX + hero.x;
 
         if (TileMap.DEBUG) {
-            CanvasUtils.ctx.fillStyle = "white";
-            CanvasUtils.ctx.font = "10px Arial";
-
             const across = 250;
-            CanvasUtils.ctx.fillText("Hero X   :" + Math.round(hero.x), across, 0);
-            CanvasUtils.ctx.fillText("Scrl PosX:" + Math.round(this.scrollPosX), across, 60);
-            CanvasUtils.ctx.fillText("Scrl Max :" + Math.round(this.scrollMax), across, 70);
-            CanvasUtils.ctx.fillText("can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight), across, 80);
-            CanvasUtils.ctx.fillText("set Width:" + Math.round(this.tileSetWidth), across, 90);
-            CanvasUtils.ctx.fillText("cur Pos  :" + Math.round(this.currentScrollPosX), across, 100);
-            CanvasUtils.ctx.fillText("cur Pos+W:" + Math.round(this.currentScrollPosX + hero.width), across, 110);
+            CanvasText.renderMultilineText(CanvasUtils.ctx, [
+                "Hero X   :" + Math.round(hero.x),
+                "Scrl PosX:" + Math.round(this.scrollPosX),
+                "Scrl Max :" + Math.round(this.scrollMax),
+                "can Width:" + Math.round(this.canvasWidth) + "x" + Math.round(this.canvasHeight),
+                "set Width:" + Math.round(this.tileSetWidth),
+                "cur Pos  :" + Math.round(this.currentScrollPosX),
+                "cur Pos+W:" + Math.round(this.currentScrollPosX + hero.width)
+            ], across, 50, {
+                fontSize: 10,
+                color: 'white',
+                lineHeight: 10,
+                useDpr: false
+            });
         }
 
     }
