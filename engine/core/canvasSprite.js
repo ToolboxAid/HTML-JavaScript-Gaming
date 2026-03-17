@@ -20,12 +20,13 @@ class CanvasSprite {
         return (...args) => this.drawSpriteRGB(...args);
     }
 
-    static resolveContext(ctx = null) {
-        return ctx || CanvasUtils.ctx || null;
+    static drawImageFrame(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+        return this._drawImageFrameToContext(CanvasUtils.ctx, image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
-    static drawImageFrame(image, sx, sy, sw, sh, dx, dy, dw, dh, ctx = null) {
-        const renderCtx = this.resolveContext(ctx);
+    // Internal/test support only.
+    static _drawImageFrameToContext(ctx, image, sx, sy, sw, sh, dx, dy, dw, dh) {
+        const renderCtx = ctx || null;
         if (!renderCtx || !image) {
             return false;
         }
@@ -34,8 +35,13 @@ class CanvasSprite {
         return true;
     }
 
-    static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false, ctx = null) {
-        const renderCtx = this.resolveContext(ctx);
+    static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
+        return this._drawSpriteToContext(CanvasUtils.ctx, x, y, frame, pixelSize, spriteColor, drawBounds);
+    }
+
+    // Internal/test support only.
+    static _drawSpriteToContext(ctx, x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
+        const renderCtx = ctx || null;
         if (!renderCtx || !Array.isArray(frame)) {
             return false;
         }
@@ -67,8 +73,13 @@ class CanvasSprite {
         return true;
     }
 
-    static drawSpriteRGB(x, y, frame, pixelSize, drawBounds = false, ctx = null) {
-        const renderCtx = this.resolveContext(ctx);
+    static drawSpriteRGB(x, y, frame, pixelSize, drawBounds = false) {
+        return this._drawSpriteRGBToContext(CanvasUtils.ctx, x, y, frame, pixelSize, drawBounds);
+    }
+
+    // Internal/test support only.
+    static _drawSpriteRGBToContext(ctx, x, y, frame, pixelSize, drawBounds = false) {
+        const renderCtx = ctx || null;
         if (!renderCtx || !Array.isArray(frame)) {
             return false;
         }
