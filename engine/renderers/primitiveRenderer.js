@@ -20,13 +20,13 @@ class PrimitiveRenderer {
     }
 
     static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        return this.withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
             this.renderRect(ctx, x, y, width, height, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
-        return this.withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
             this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha, options);
         });
     }
@@ -56,25 +56,25 @@ class PrimitiveRenderer {
     }
 
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        return this.withValidatedNumbers([x, y, radius, borderWidth, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([x, y, radius, borderWidth, alpha], options, (ctx) => {
             this.renderCircle(ctx, x, y, radius, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
-        return this.withValidatedNumbers([x, y, radiusX, radiusY, borderWidth, rotation, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([x, y, radiusX, radiusY, borderWidth, rotation, alpha], options, (ctx) => {
             this.renderEllipse(ctx, x, y, radiusX, radiusY, fillColor, borderColor, borderWidth, rotation, alpha, options);
         });
     }
 
     static drawPolygon(points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
-        return this.withValidatedPoints(points, 3, options, (ctx) => {
+        return this.#withValidatedPoints(points, 3, options, (ctx) => {
             this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
         });
     }
 
     static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0, options = {}) {
-        return this.withValidatedPoints(points, 3, options, (ctx) => {
+        return this.#withValidatedPoints(points, 3, options, (ctx) => {
             this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
         });
     }
@@ -86,7 +86,7 @@ class PrimitiveRenderer {
         alpha = 1,
         lineDash = null
     } = {}) {
-        return this.withValidatedPoints(points, 2, (renderCtx) => {
+        return this.#withValidatedPoints(points, 2, (renderCtx) => {
             this.renderPath(renderCtx, points, strokeColor, lineWidth, {
                 offsetX,
                 offsetY,
@@ -98,37 +98,37 @@ class PrimitiveRenderer {
     }
 
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        return this.withValidatedNumbers([x1, y1, x2, y2, lineWidth, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([x1, y1, x2, y2, lineWidth, alpha], options, (ctx) => {
             this.renderLine(ctx, x1, y1, x2, y2, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawGridLines(x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
-        return this.withValidatedNumbers([x, y, width, height, columns, rows, lineWidth], options, (ctx) => {
+        return this.#withValidatedNumbers([x, y, width, height, columns, rows, lineWidth], options, (ctx) => {
             this.renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor, lineWidth, options);
         });
     }
 
     static drawOverlay(width, height, fillColor = 'black', alpha = 0.5, options = {}) {
-        return this.withValidatedNumbers([width, height, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([width, height, alpha], options, (ctx) => {
             this.renderOverlay(ctx, width, height, fillColor, alpha, options);
         });
     }
 
     static drawSafeAreaGuides(width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
-        return this.withValidatedNumbers([width, height, margin, lineWidth], options, (ctx) => {
+        return this.#withValidatedNumbers([width, height, margin, lineWidth], options, (ctx) => {
             this.renderSafeAreaGuides(ctx, width, height, margin, strokeColor, lineWidth, options);
         });
     }
 
     static drawCrosshair(centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        return this.withValidatedNumbers([centerX, centerY, size, lineWidth, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([centerX, centerY, size, lineWidth, alpha], options, (ctx) => {
             this.renderCrosshair(ctx, centerX, centerY, size, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawMarker(x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
-        return this.withValidatedNumbers([x, y, radius, alpha], options, (ctx) => {
+        return this.#withValidatedNumbers([x, y, radius, alpha], options, (ctx) => {
             this.renderMarker(ctx, x, y, radius, fillColor, alpha, options);
         });
     }
@@ -161,7 +161,7 @@ class PrimitiveRenderer {
         extraWidth = 0,
         extraHeight = 0
     } = {}) {
-        return this.withValidatedMatrix(matrix, (renderCtx) => {
+        return this.#withValidatedMatrix(matrix, (renderCtx) => {
             this.renderPixelMatrix(renderCtx, matrix, x, y, pixelWidth, pixelHeight, fillColor, {
                 extraWidth,
                 extraHeight
@@ -304,7 +304,7 @@ class PrimitiveRenderer {
         return true;
     }
 
-    static withValidatedInput(isValid, drawFn) {
+    static #withValidatedInput(isValid, drawFn) {
         if (!isValid) {
             return false;
         }
@@ -312,19 +312,19 @@ class PrimitiveRenderer {
         return this._drawWithCanvasState(drawFn);
     }
 
-    static withValidatedNumbers(values, optionsOrDrawFn, maybeDrawFn) {
+    static #withValidatedNumbers(values, optionsOrDrawFn, maybeDrawFn) {
         const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
-        return this.withValidatedInput(NumberUtils.areFiniteNumbers(values), drawFn);
+        return this.#withValidatedInput(NumberUtils.areFiniteNumbers(values), drawFn);
     }
 
-    static withValidatedPoints(points, minimumCount, optionsOrDrawFn, maybeDrawFn) {
+    static #withValidatedPoints(points, minimumCount, optionsOrDrawFn, maybeDrawFn) {
         const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
-        return this.withValidatedInput(this.#hasMinimumPointCount(points, minimumCount), drawFn);
+        return this.#withValidatedInput(this.#hasMinimumPointCount(points, minimumCount), drawFn);
     }
 
-    static withValidatedMatrix(matrix, optionsOrDrawFn, maybeDrawFn) {
+    static #withValidatedMatrix(matrix, optionsOrDrawFn, maybeDrawFn) {
         const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
-        return this.withValidatedInput(this.#hasMatrixRows(matrix), drawFn);
+        return this.#withValidatedInput(this.#hasMatrixRows(matrix), drawFn);
     }
 
     static #applyLineDash(ctx, lineDash) {
