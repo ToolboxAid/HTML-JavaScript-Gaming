@@ -103,8 +103,10 @@ class CanvasUtils {
             return false;
         }
 
+        this.ctx.save();
         this.ctx.fillStyle = this.config.backgroundColor || Colors.getRandomColor();
         this.ctx.fillRect(0, 0, this.config.width, this.config.height);
+        this.ctx.restore();
 
         return true;
     }

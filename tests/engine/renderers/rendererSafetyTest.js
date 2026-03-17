@@ -336,8 +336,33 @@ function testPrimitiveRendererRestoresContextOnThrow(assert) {
     }
 }
 
+function testCanvasUtilsClearPreservesContext(assert) {
+    const originalCtx = CanvasUtils.ctx;
+    const originalConfig = CanvasUtils.config;
+    const mockCtx = createMockCtx();
+
+    try {
+        CanvasUtils.ctx = mockCtx;
+        CanvasUtils.config = {
+            ...originalConfig,
+            width: 320,
+            height: 240,
+            backgroundColor: '#123456'
+        };
+
+        CanvasUtils.canvasClear();
+
+        assert(mockCtx.saveCalls === 1, 'CanvasUtils.canvasClear should save canvas state before clearing');
+        assert(mockCtx.restoreCalls === 1, 'CanvasUtils.canvasClear should restore canvas state after clearing');
+    } finally {
+        CanvasUtils.ctx = originalCtx;
+        CanvasUtils.config = originalConfig;
+    }
+}
+
 export function testRendererSafety(assert) {
     testCanvasUtilsGuardOnMissingContext(assert);
+    testCanvasUtilsClearPreservesContext(assert);
     testRenderersGuardOnMissingContext(assert);
     testRenderersDrawWithMockContext(assert);
     testPrimitiveRendererWithMockContext(assert);
