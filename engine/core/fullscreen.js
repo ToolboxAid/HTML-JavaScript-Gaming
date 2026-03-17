@@ -237,7 +237,7 @@ class Fullscreen {
             return;
         }
 
-        this.renderPromptToContext(ctx);
+        this.#renderPromptToContext(ctx);
     }
 
     // Internal/test support only.
@@ -246,10 +246,10 @@ class Fullscreen {
             return;
         }
 
-        this.renderPromptToContext(ctx);
+        this.#renderPromptToContext(ctx);
     }
 
-    static renderPromptToContext(ctx) {
+    static #renderPromptToContext(ctx) {
         if (!Fullscreen.isFullScreen) {
             const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
 
