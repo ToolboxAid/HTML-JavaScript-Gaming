@@ -71,6 +71,7 @@ export function testCanvasText(assert) {
         useDpr: false
     });
     assert(centered.x === 79, 'CanvasText.renderCenteredText should offset from center using measured width');
+    assert(mockCtx.saveCalls === 2 && mockCtx.restoreCalls === 2, 'CanvasText.renderCenteredText should preserve canvas state');
 
     const centeredLines = CanvasText.renderCenteredMultilineText(mockCtx, ['a', 'b'], 10, {
         centerX: 60,

@@ -182,9 +182,11 @@ class CanvasText {
         const dimensions = this.calculateTextMetrics(ctx, text, resolvedFontSize, fontFamily);
         const x = Math.round(resolvedCenterX - (dimensions.width / 2));
 
+        ctx.save();
         ctx.fillStyle = color;
         ctx.font = `${resolvedFontSize}px ${fontFamily}`;
         ctx.fillText(text, x, y);
+        ctx.restore();
 
         return { x, y, width: dimensions.width, height: dimensions.height, fontSize: resolvedFontSize };
     }
