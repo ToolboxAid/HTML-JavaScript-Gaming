@@ -83,3 +83,6 @@ Repo: `C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming`
 - when continuing in a new chat, use both docs:
   - `CODEX-PREFERENCES.md` for stable preferences
   - `SESSION-HANDOFF.md` for current work state
+
+**Model Choices**
+- when building a plan, include the model to be used (GPT, GPT-mini, or GPT-nano)
