@@ -14,7 +14,7 @@ class PrimitiveRenderer {
             return;
         }
 
-        return this.drawWithCanvasState((ctx) => {
+        return this._drawWithCanvasState((ctx) => {
             this.renderRect(ctx, object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
         });
     }
@@ -41,7 +41,7 @@ class PrimitiveRenderer {
         headerColor = null,
         headerWidth = 2
     } = {}) {
-        return this.drawWithCanvasState((renderCtx) => {
+        return this._drawWithCanvasState((renderCtx) => {
             this.renderPanel(renderCtx, x, y, width, height, {
                 fillColor,
                 borderColor,
@@ -143,7 +143,7 @@ class PrimitiveRenderer {
         markerColor = borderColor,
         markerAlpha = alpha
     } = {}) {
-        return this.drawWithCanvasState((renderCtx) => {
+        return this._drawWithCanvasState((renderCtx) => {
             this.renderDebugBounds(renderCtx, x, y, width, height, {
                 borderColor,
                 borderWidth,
@@ -287,7 +287,8 @@ class PrimitiveRenderer {
         return true;
     }
 
-    static drawWithCanvasState(drawFn) {
+    // Internal/test support only.
+    static _drawWithCanvasState(drawFn) {
         const ctx = CanvasUtils.ctx || null;
         if (!ctx) {
             DebugLog.error('PrimitiveRenderer', 'Canvas context is not initialized.');
@@ -308,7 +309,7 @@ class PrimitiveRenderer {
             return false;
         }
 
-        return this.drawWithCanvasState(drawFn);
+        return this._drawWithCanvasState(drawFn);
     }
 
     static withValidatedNumbers(values, optionsOrDrawFn, maybeDrawFn) {
