@@ -21,11 +21,15 @@ class CanvasSprite {
     }
 
     static drawImageFrame(image, sx, sy, sw, sh, dx, dy, dw, dh) {
-        return this._drawImageFrameToContext(CanvasUtils.ctx, image, sx, sy, sw, sh, dx, dy, dw, dh);
+        return this.#drawImageFrameInternal(CanvasUtils.ctx, image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
     // Internal/test support only.
     static _drawImageFrameToContext(ctx, image, sx, sy, sw, sh, dx, dy, dw, dh) {
+        return this.#drawImageFrameInternal(ctx, image, sx, sy, sw, sh, dx, dy, dw, dh);
+    }
+
+    static #drawImageFrameInternal(ctx, image, sx, sy, sw, sh, dx, dy, dw, dh) {
         const renderCtx = ctx || null;
         if (!renderCtx || !image) {
             return false;
@@ -36,11 +40,15 @@ class CanvasSprite {
     }
 
     static drawSprite(x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
-        return this._drawSpriteToContext(CanvasUtils.ctx, x, y, frame, pixelSize, spriteColor, drawBounds);
+        return this.#drawSpriteInternal(CanvasUtils.ctx, x, y, frame, pixelSize, spriteColor, drawBounds);
     }
 
     // Internal/test support only.
     static _drawSpriteToContext(ctx, x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
+        return this.#drawSpriteInternal(ctx, x, y, frame, pixelSize, spriteColor, drawBounds);
+    }
+
+    static #drawSpriteInternal(ctx, x, y, frame, pixelSize, spriteColor = 'white', drawBounds = false) {
         const renderCtx = ctx || null;
         if (!renderCtx || !Array.isArray(frame)) {
             return false;
@@ -74,11 +82,15 @@ class CanvasSprite {
     }
 
     static drawSpriteRGB(x, y, frame, pixelSize, drawBounds = false) {
-        return this._drawSpriteRGBToContext(CanvasUtils.ctx, x, y, frame, pixelSize, drawBounds);
+        return this.#drawSpriteRGBInternal(CanvasUtils.ctx, x, y, frame, pixelSize, drawBounds);
     }
 
     // Internal/test support only.
     static _drawSpriteRGBToContext(ctx, x, y, frame, pixelSize, drawBounds = false) {
+        return this.#drawSpriteRGBInternal(ctx, x, y, frame, pixelSize, drawBounds);
+    }
+
+    static #drawSpriteRGBInternal(ctx, x, y, frame, pixelSize, drawBounds = false) {
         const renderCtx = ctx || null;
         if (!renderCtx || !Array.isArray(frame)) {
             return false;
