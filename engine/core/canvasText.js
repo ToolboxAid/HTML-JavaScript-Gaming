@@ -59,8 +59,10 @@ class CanvasText {
             return { width: 0, height: 0 };
         }
 
+        ctx.save();
         ctx.font = `${fontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(text);
+        ctx.restore();
 
         return {
             width: Math.ceil(metrics.width),

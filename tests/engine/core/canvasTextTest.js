@@ -78,7 +78,7 @@ export function testCanvasText(assert) {
         useDpr: false
     });
     assert(centered.x === 79, 'CanvasText._renderCenteredTextToContext should offset from center using measured width');
-    assert(mockCtx.saveCalls === 4 && mockCtx.restoreCalls === 4, 'CanvasText._renderCenteredTextToContext should preserve canvas state');
+    assert(mockCtx.saveCalls === 5 && mockCtx.restoreCalls === 5, 'CanvasText._renderCenteredTextToContext should preserve canvas state');
 
     const centeredLines = CanvasText._renderCenteredMultilineTextToContext(mockCtx, ['a', 'b'], 10, {
         centerX: 60,
@@ -97,6 +97,7 @@ export function testCanvasText(assert) {
 
     const sharedMetrics = CanvasText.calculateTextMetrics('shared', 12, 'Arial');
     assert(sharedMetrics.width === 42 && sharedMetrics.height === 10, 'CanvasText.calculateTextMetrics should use the shared canvas context when one is available');
+    assert(mockCtx.saveCalls === 11 && mockCtx.restoreCalls === 11, 'CanvasText.calculateTextMetrics should preserve canvas state');
 
     CanvasUtils.ctx = null;
 }
