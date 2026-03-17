@@ -174,8 +174,8 @@ class PrimitiveRenderer {
 
         for (let index = 0; index < points.length; index++) {
             const point = points[index];
-            const x = this.getPointX(point);
-            const y = this.getPointY(point);
+            const x = this.#getPointX(point);
+            const y = this.#getPointY(point);
 
             if (index === 0) {
                 ctx.moveTo(x + offsetX, y + offsetY);
@@ -243,29 +243,29 @@ class PrimitiveRenderer {
         ctx.lineTo(x, y);
     }
 
-    static getPointX(point) {
+    static #getPointX(point) {
         return Array.isArray(point) ? point[0] : point.x;
     }
 
-    static getPointY(point) {
+    static #getPointY(point) {
         return Array.isArray(point) ? point[1] : point.y;
     }
 
-    static isRenderablePoint(point) {
+    static #isRenderablePoint(point) {
         if (!point) {
             return false;
         }
 
-        return NumberUtils.isFiniteNumber(this.getPointX(point)) && NumberUtils.isFiniteNumber(this.getPointY(point));
+        return NumberUtils.isFiniteNumber(this.#getPointX(point)) && NumberUtils.isFiniteNumber(this.#getPointY(point));
     }
 
-    static hasMinimumPointCount(points, minimumCount) {
+    static #hasMinimumPointCount(points, minimumCount) {
         if (!Array.isArray(points) || points.length < minimumCount) {
             return false;
         }
 
         for (let index = 0; index < points.length; index++) {
-            if (!this.isRenderablePoint(points[index])) {
+            if (!this.#isRenderablePoint(points[index])) {
                 return false;
             }
         }
@@ -273,7 +273,7 @@ class PrimitiveRenderer {
         return true;
     }
 
-    static hasMatrixRows(matrix) {
+    static #hasMatrixRows(matrix) {
         if (!Array.isArray(matrix) || matrix.length === 0) {
             return false;
         }
@@ -319,12 +319,12 @@ class PrimitiveRenderer {
 
     static withValidatedPoints(points, minimumCount, optionsOrDrawFn, maybeDrawFn) {
         const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
-        return this.withValidatedInput(this.hasMinimumPointCount(points, minimumCount), drawFn);
+        return this.withValidatedInput(this.#hasMinimumPointCount(points, minimumCount), drawFn);
     }
 
     static withValidatedMatrix(matrix, optionsOrDrawFn, maybeDrawFn) {
         const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
-        return this.withValidatedInput(this.hasMatrixRows(matrix), drawFn);
+        return this.withValidatedInput(this.#hasMatrixRows(matrix), drawFn);
     }
 
     static applyLineDash(ctx, lineDash) {
