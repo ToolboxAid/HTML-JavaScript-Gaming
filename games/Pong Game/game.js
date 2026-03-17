@@ -6,7 +6,7 @@
 import { font5x3 } from './global.js'; // Import canvasConfig
 import { canvasConfig, performanceConfig, fullscreenConfig } from './global.js'; // Import canvasConfig
 import GameBase from '../../engine/core/gameBase.js';
-import CanvasUtils from '../../engine/core/canvasUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
 import KeyboardInput from '../../engine/input/keyboard.js';
@@ -116,11 +116,15 @@ class Game extends GameBase {
 
     // Function to draw the winner message on the canvas
     drawWinnerMessage() {
-        CanvasUtils.ctx.fillStyle = 'white'; // Set text color
-        CanvasUtils.ctx.font = '55px Arial'; // Set font size and style
-        CanvasUtils.ctx.textAlign = 'center'; // Center the text
-        CanvasUtils.ctx.fillText("We have a winner!", canvasConfig.width / 2, (canvasConfig.height / 2) - 33); // Draw the message at the center of the canvas
-        CanvasUtils.ctx.fillText("Press any key to Play", canvasConfig.width / 2, (canvasConfig.height / 2) + 33); // Draw the message at the center of the canvas
+        CanvasText.renderCenteredMultilineText(this.runtimeContext.getContext(), [
+            'We have a winner!',
+            'Press any key to Play'
+        ], (canvasConfig.height / 2) - 33, {
+            centerX: canvasConfig.width / 2,
+            fontSize: 55,
+            lineHeight: 66,
+            useDpr: false
+        });
     }
 
     // Function to restart the game

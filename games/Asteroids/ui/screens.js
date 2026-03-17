@@ -5,6 +5,7 @@
 
 import CanvasSprite from '../../../engine/core/canvasSprite.js';
 import CanvasText from '../../../engine/core/canvasText.js';
+import CanvasUtils from '../../../engine/core/canvasUtils.js';
 
 const drawPixelText = CanvasText.bindDrawText(CanvasSprite.bindDrawSprite());
 
@@ -53,15 +54,17 @@ class AsteroidsScreens {
 
     static drawGameOver() {
         const ctx = CanvasUtils.ctx;
-
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'left';
-        ctx.font = '20px "Vector Battle"';
-
         const xOffset = CanvasUtils.getConfigWidth() / 2 - 200;
-
-        ctx.fillText('Game Over', xOffset + 110, 250);
-        ctx.fillText('Press `Enter` to Restart', xOffset, 300);
+        CanvasText.renderText(ctx, 'Game Over', xOffset + 110, 250, {
+            fontSize: 20,
+            fontFamily: '"Vector Battle"',
+            useDpr: false
+        });
+        CanvasText.renderText(ctx, 'Press `Enter` to Restart', xOffset, 300, {
+            fontSize: 20,
+            fontFamily: '"Vector Battle"',
+            useDpr: false
+        });
     }
 }
 
