@@ -82,11 +82,15 @@ class CanvasText {
     }
 
     static renderText(text, x, y, options = {}) {
-        return this._renderTextToContext(CanvasUtils.ctx, text, x, y, options);
+        return this.#renderTextInternal(CanvasUtils.ctx, text, x, y, options);
     }
 
     // Internal/test support only.
-    static _renderTextToContext(ctx, text, x, y, {
+    static _renderTextToContext(ctx, text, x, y, options = {}) {
+        return this.#renderTextInternal(ctx, text, x, y, options);
+    }
+
+    static #renderTextInternal(ctx, text, x, y, {
         font = null,
         fontSize = 20,
         fontFamily = 'Arial',

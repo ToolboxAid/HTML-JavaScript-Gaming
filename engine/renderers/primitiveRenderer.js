@@ -311,15 +311,18 @@ class PrimitiveRenderer {
         return this.drawWithCanvasState(drawFn);
     }
 
-    static withValidatedNumbers(values, options = {}, drawFn) {
+    static withValidatedNumbers(values, optionsOrDrawFn, maybeDrawFn) {
+        const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
         return this.withValidatedInput(NumberUtils.areFiniteNumbers(values), drawFn);
     }
 
-    static withValidatedPoints(points, minimumCount, drawFn) {
+    static withValidatedPoints(points, minimumCount, optionsOrDrawFn, maybeDrawFn) {
+        const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
         return this.withValidatedInput(this.hasMinimumPointCount(points, minimumCount), drawFn);
     }
 
-    static withValidatedMatrix(matrix, drawFn) {
+    static withValidatedMatrix(matrix, optionsOrDrawFn, maybeDrawFn) {
+        const drawFn = typeof optionsOrDrawFn === 'function' ? optionsOrDrawFn : maybeDrawFn;
         return this.withValidatedInput(this.hasMatrixRows(matrix), drawFn);
     }
 
