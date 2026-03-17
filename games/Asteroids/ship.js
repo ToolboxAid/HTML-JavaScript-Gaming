@@ -6,6 +6,7 @@
 import DebugFlag from '../../engine/utils/debugFlag.js';
 import { canvasConfig } from './global.js';
 import AngleUtils from '../../engine/math/angleUtils.js';
+import CanvasText from '../../engine/core/canvasText.js';
 import CanvasUtils from '../../engine/core/canvasUtils.js';
 import ObjectVector from '../../engine/objects/objectVector.js';
 import RandomUtils from '../../engine/math/randomUtils.js';
@@ -230,11 +231,13 @@ class Ship extends ObjectVector {
         ];
 
         const ctx = CanvasUtils.ctx;
-        ctx.font = '16px Arial';
-        ctx.fillStyle = 'white';
 
         debugInfo.forEach((info, index) => {
-            ctx.fillText(info, 10, 20 * (index + 1));
+            CanvasText.renderText(ctx, info, 10, 20 * (index + 1), {
+                fontSize: 16,
+                color: 'white',
+                useDpr: false
+            });
         });
     }
 }

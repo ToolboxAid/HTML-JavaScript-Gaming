@@ -4,6 +4,7 @@
 // attractScene.js
 
 import { canvasConfig } from '../global.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import Asteroid from '../asteroid.js';
 import RandomUtils from '../../../engine/math/randomUtils.js';
@@ -34,27 +35,23 @@ class GameAttract {
     displayAttract() {
         const ctx = CanvasUtils.ctx;
 
-        // Configure text settings
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'left';
-
-        // During flash state, only current player's score flashes
-        ctx.font = '20px "Vector Battle"';
-
         // Draw lives and score for each player
         const xOffset = CanvasUtils.getConfigWidth() / 2 - 200; // Space between player scores
-        ctx.fillText(
-            `Welcome to 'Asteroids'!`,
-            xOffset,
-            250
-        );
+        CanvasText.renderText(ctx, `Welcome to 'Asteroids'!`, xOffset, 250, {
+            fontSize: 20,
+            fontFamily: '"Vector Battle"',
+            color: 'white',
+            useDpr: false
+        });
         const duration = 35;
         if (GameAttract.count++ < duration) {
 
-            ctx.fillText(
-                "Press `Enter` to Start",
-                xOffset,
-                300);
+            CanvasText.renderText(ctx, "Press `Enter` to Start", xOffset, 300, {
+                fontSize: 20,
+                fontFamily: '"Vector Battle"',
+                color: 'white',
+                useDpr: false
+            });
         } else {
             if (GameAttract.count > duration * 2) {
                 GameAttract.count = 0;

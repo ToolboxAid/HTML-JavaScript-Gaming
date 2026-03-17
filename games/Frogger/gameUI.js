@@ -6,6 +6,7 @@ import DebugFlag from '../../engine/utils/debugFlag.js';
 
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 import ObjectPNG from '../../../engine/objects/objectPNG.js';
 import SystemUtils from '../../../engine/utils/systemUtils.js';
@@ -234,9 +235,11 @@ class GameUI {
                 PrimitiveRenderer.drawBounds(x + offset, y + offset, GameUI.GRID_SIZE, GameUI.GRID_SIZE, 'white', 1);
 
                 // Debug: show cell types
-                CanvasUtils.ctx.fillStyle = '#FFF';
-                CanvasUtils.ctx.font = '8px Arial';
-                CanvasUtils.ctx.fillText(cellType, x + 4 + offset, y + 12 + offset);
+                CanvasText.renderText(CanvasUtils.ctx, cellType, x + 4 + offset, y + 12 + offset, {
+                    fontSize: 8,
+                    color: '#FFF',
+                    useDpr: false
+                });
 
                 // Draw cell size indicator lines, actual cell size (16x16 scaled by 4)
                 PrimitiveRenderer.drawBounds(x, y, GameUI.GRID_SIZE * 4, GameUI.GRID_SIZE * 4, 'yellow', 1, 0.5);
@@ -247,10 +250,16 @@ class GameUI {
                 PrimitiveRenderer.drawCrosshair(centerX, centerY, 10, 'yellow', 1);
 
                 // Draw cell type and dimensions
-                CanvasUtils.ctx.fillStyle = '#FFF';
-                CanvasUtils.ctx.font = '8px Arial';
-                CanvasUtils.ctx.fillText(cellType, x + 4 + offset, y + 12 + offset);
-                CanvasUtils.ctx.fillText(`${GameUI.GRID_SIZE * 4}px`, x + 4, y + GameUI.GRID_SIZE * 4 - 4);
+                CanvasText.renderText(CanvasUtils.ctx, cellType, x + 4 + offset, y + 12 + offset, {
+                    fontSize: 8,
+                    color: '#FFF',
+                    useDpr: false
+                });
+                CanvasText.renderText(CanvasUtils.ctx, `${GameUI.GRID_SIZE * 4}px`, x + 4, y + GameUI.GRID_SIZE * 4 - 4, {
+                    fontSize: 8,
+                    color: '#FFF',
+                    useDpr: false
+                });
 
             }
         }
@@ -366,15 +375,20 @@ class GameUI {
 
                 // Draw debug timer values
                 if (GameUI.DEBUG1) {
-                    CanvasUtils.ctx.fillStyle = 'white';
-                    CanvasUtils.ctx.font = '16px Arial';
-
                     const timerText = `DIV:${divTimer}   MOD:${modTimer}   Timer:${Math.floor(GameUI.timer)}    MAX:${GameUI.timerMax}`;
-                    CanvasUtils.ctx.fillText(timerText, 400, 450);
+                    CanvasText.renderText(CanvasUtils.ctx, timerText, 400, 450, {
+                        fontSize: 16,
+                        color: 'white',
+                        useDpr: false
+                    });
 
                     // Draw frame indicators
                     const frameInfo = `modFrame: ${modFrame} Seconds: ${GameUI.seconds}`;
-                    CanvasUtils.ctx.fillText(frameInfo, 400, 470);
+                    CanvasText.renderText(CanvasUtils.ctx, frameInfo, 400, 470, {
+                        fontSize: 16,
+                        color: 'white',
+                        useDpr: false
+                    });
                 }
             }
         }

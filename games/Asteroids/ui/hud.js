@@ -4,6 +4,7 @@
 // hud.js
 
 import CanvasUtils from '../../../engine/core/canvasUtils.js';
+import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 class AsteroidsHud {
@@ -81,23 +82,19 @@ class AsteroidsHud {
         const ctx = CanvasUtils.ctx;
         const livesVectorMap = session.getLivesVectorMap();
 
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'left';
-
         session.forEachPlayer((player) => {
-            ctx.font = '20px "Vector Battle"';
-
             if (session.isCurrentPlayer(player) && flashOff) {
                 return;
             }
 
             const xOffset = player * 460;
 
-            ctx.fillText(
-                `${session.getScore(player)}`,
-                SCORE.x + xOffset,
-                SCORE.y
-            );
+            CanvasText.renderText(ctx, `${session.getScore(player)}`, SCORE.x + xOffset, SCORE.y, {
+                fontSize: 20,
+                fontFamily: '"Vector Battle"',
+                color: 'white',
+                useDpr: false
+            });
 
             const shipSpacing = 20;
             for (let life = 0; life < session.getLives(player); life++) {
@@ -119,8 +116,12 @@ class AsteroidsHud {
             }
         });
 
-        ctx.font = '15px "Vector Battle"';
-        ctx.fillText(`${highScore}`, SCORE.x + 200, SCORE.y);
+        CanvasText.renderText(ctx, `${highScore}`, SCORE.x + 200, SCORE.y, {
+            fontSize: 15,
+            fontFamily: '"Vector Battle"',
+            color: 'white',
+            useDpr: false
+        });
     }
 }
 
