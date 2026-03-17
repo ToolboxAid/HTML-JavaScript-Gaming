@@ -237,9 +237,7 @@ class Fullscreen {
         }
 
         if (!Fullscreen.isFullScreen) {
-            const fontParts = this.config.font.split(/\s+/);
-            const fontSize = Number.parseFloat(fontParts[0]) || 20;
-            const fontFamily = fontParts.slice(1).join(' ') || 'Arial';
+            const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
 
             CanvasText.renderText(ctx, this.config.text, this.config.x, this.config.y, {
                 fontSize,

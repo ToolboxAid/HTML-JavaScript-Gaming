@@ -58,6 +58,23 @@ class CanvasText {
         };
     }
 
+    static parseFont(font, fallbackSize = 20, fallbackFamily = 'Arial') {
+        if (typeof font !== 'string' || font.trim() === '') {
+            return {
+                fontSize: fallbackSize,
+                fontFamily: fallbackFamily
+            };
+        }
+
+        const fontParts = font.trim().split(/\s+/);
+        const parsedSize = Number.parseFloat(fontParts[0]);
+
+        return {
+            fontSize: NumberUtils.isFiniteNumber(parsedSize) ? parsedSize : fallbackSize,
+            fontFamily: fontParts.slice(1).join(' ') || fallbackFamily
+        };
+    }
+
     static renderText(ctx, text, x, y, {
         fontSize = 20,
         fontFamily = 'Arial',

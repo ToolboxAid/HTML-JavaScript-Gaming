@@ -13,9 +13,7 @@ class GamePlayerSelectUi {
 
     static drawPlayerSelectOverlay(ctx, config) {
         PrimitiveRenderer.drawOverlay(config.canvasWidth, config.canvasHeight, config.backgroundColor, 0.67, { ctx });
-        const fontParts = config.font.split(/\s+/);
-        const fontSize = Number.parseFloat(fontParts[0]) || 20;
-        const fontFamily = fontParts.slice(1).join(' ') || 'Arial';
+        const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
         CanvasText.renderText(ctx, config.title, config.x, config.y, {
             fontSize,
@@ -26,9 +24,7 @@ class GamePlayerSelectUi {
     }
 
     static drawKeyboardPlayerOptions(ctx, config) {
-        const fontParts = config.font.split(/\s+/);
-        const fontSize = Number.parseFloat(fontParts[0]) || 20;
-        const fontFamily = fontParts.slice(1).join(' ') || 'Arial';
+        const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
         for (let i = 1; i <= config.maxPlayers; i++) {
             CanvasText.renderText(
@@ -49,9 +45,7 @@ class GamePlayerSelectUi {
     static drawControllerPlayerOptions(ctx, config) {
         const controllerTitleY = config.y + config.controllerOffsetY;
         const firstOptionY = controllerTitleY + config.controllerLineSpacing;
-        const fontParts = config.font.split(/\s+/);
-        const fontSize = Number.parseFloat(fontParts[0]) || 20;
-        const fontFamily = fontParts.slice(1).join(' ') || 'Arial';
+        const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
         CanvasText.renderText(ctx, config.controllerTitle, config.x, controllerTitleY, {
             fontSize,
