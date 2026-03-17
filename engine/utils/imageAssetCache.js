@@ -75,7 +75,7 @@ class ImageAssetCache {
         return this.#loadImage(spritePath).then((png) => this.makeTransparent(png, transparentColor));
     }
 
-    static createCanvasContext(width, height, purpose) {
+    static #createCanvasContext(width, height, purpose) {
         if (typeof document === 'undefined') {
             throw new Error(`ImageAssetCache.${purpose} requires browser canvas support.`);
         }
@@ -97,7 +97,7 @@ class ImageAssetCache {
             throw new Error('ImageAssetCache.makeTransparent requires browser canvas and Image support.');
         }
 
-        const { canvas: tempCanvas, ctx: tempCtx } = this.createCanvasContext(
+        const { canvas: tempCanvas, ctx: tempCtx } = this.#createCanvasContext(
             png.width,
             png.height,
             'image transparency processing'
@@ -124,7 +124,7 @@ class ImageAssetCache {
     }
 
     static resolveColorChannels(color) {
-        const { ctx: colorCtx } = this.createCanvasContext(1, 1, 'color resolution');
+        const { ctx: colorCtx } = this.#createCanvasContext(1, 1, 'color resolution');
 
         colorCtx.clearRect(0, 0, 1, 1);
         colorCtx.fillStyle = color;
