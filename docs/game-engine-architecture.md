@@ -201,7 +201,7 @@ Key files include:
 - `engine/core/sprite.js`
 - `engine/core/tileMap.js`
 - `engine/core/fullscreen.js`
-- `engine/renderers/boxRenderer.js`
+- `engine/renderers/primitiveRenderer.js`
 - `engine/renderers/spriteRenderer.js`
 - `engine/renderers/pngRenderer.js`
 - `engine/renderers/vectorRenderer.js`
@@ -212,6 +212,7 @@ At a practical level, the engine already supports:
 
 - canvas drawing
 - color helpers
+- primitive shape rendering
 - sprite-based rendering
 - PNG sprite-sheet rendering
 - vector-style rendering

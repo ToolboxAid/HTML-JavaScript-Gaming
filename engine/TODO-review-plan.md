@@ -121,6 +121,10 @@ Performance review progress:
 - [x] Normalize comment style and lightweight documentation where helpful.
 - [x] Make small refactors that improve clarity without changing behavior.
 
+## Deferred renderer follow-up
+
+- [ ] Evaluate a future `PixelRenderer` for 8-bit artwork workflows so retro sprite/tile helpers have a clearer home above low-level `CanvasSprite` blits.
+
 ## Unit test audit
 
 - [x] Inventory all existing test files in `engine`.

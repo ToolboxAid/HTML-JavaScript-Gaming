@@ -169,7 +169,7 @@ The engine is organized into a few clear layers:
 - `engine/input/` for keyboard, mouse, and controller input
 - `engine/objects/` for reusable object types like static, dynamic, killable, sprite, PNG, and vector objects
 - `engine/math/` and `engine/physics/` for low-level helpers
-- `engine/renderers/` for box, sprite, PNG, vector, and particle rendering
+- `engine/renderers/` for primitive, sprite, PNG, vector, and particle rendering
 - `engine/messages/` for event-style communication
 - `engine/output/` for audio, MIDI, and synthesizer support
 
