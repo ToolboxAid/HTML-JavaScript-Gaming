@@ -10,11 +10,11 @@ import GameControllers from '../../../engine/input/controller/gameControllers.js
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
 const canvas = document.getElementById('gameArea');
-const ctx = canvas.getContext('2d');
 
 const canvasConfig = {
     width: 480,
     height: 320,
+    backgroundColor: '#000000',
     scale: 4 / 3,
 };
 
@@ -29,7 +29,7 @@ const fullscreenConfig = {
 canvas.width = canvasConfig.width;
 canvas.height = canvasConfig.height;
 CanvasUtils.canvas = canvas;
-CanvasUtils.ctx = ctx;
+CanvasUtils.ctx = canvas.getContext('2d');
 CanvasUtils.config = { ...CanvasUtils.config, ...canvasConfig };
 
 const PLAYER_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
@@ -158,7 +158,7 @@ function gameUpdate() {
 }
 
 function gameRender() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    CanvasUtils.canvasClear();
     const connectedCount = gameControllers.getTrackedControllerIndices().length;
 
     CanvasText.renderText('Buttons highlight active inputs. Panels show mapped labels and live state.', canvas.width / 2, 24, {
@@ -198,7 +198,7 @@ function gameRender() {
             const panelWidth = 178;
             const panelHeight = 64;
             const textX = panelX + 8;
-            PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgb(14, 7, 40)', player.color, 1.5, 0.82, { ctx });
+            PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgb(14, 7, 40)', player.color, 1.5, 0.82);
 
             CanvasText.renderText(player.title.slice(0, 22), textX, player.y - 12, {
                 font: TITLE_FONT,
@@ -214,7 +214,7 @@ function gameRender() {
                 const buttonX = player.x + player.size + 6 + (buttonIndex % buttonsAcross) * (buttonSize + 2);
                 const buttonY = player.y + 7 + Math.floor(buttonIndex / buttonsAcross) * (buttonSize + 2);
 
-                PrimitiveRenderer.drawCircle(buttonX, buttonY, buttonSize / 2, color, player.color, 1, 1, { ctx });
+                PrimitiveRenderer.drawCircle(buttonX, buttonY, buttonSize / 2, color, player.color, 1, 1);
 
                 const buttonLabel = player.buttonLabels[buttonIndex] || buttonIndex;
                 CanvasText.renderText(String(buttonLabel).slice(0, 3), buttonX - 4.5, buttonY + 2.5, {
