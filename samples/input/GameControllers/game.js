@@ -28,9 +28,6 @@ const fullscreenConfig = {
 
 canvas.width = canvasConfig.width;
 canvas.height = canvasConfig.height;
-CanvasUtils.canvas = canvas;
-CanvasUtils.ctx = canvas.getContext('2d');
-CanvasUtils.config = { ...CanvasUtils.config, ...canvasConfig };
 
 const PLAYER_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'cyan', 'brown', 'lime'];
 const MAX_BUTTONS = 10;
@@ -290,6 +287,7 @@ function destroy() {
 window.addEventListener('pagehide', destroy);
 window.addEventListener('beforeunload', destroy);
 
+await CanvasUtils.init(canvasConfig);
 await Fullscreen.init(fullscreenConfig, canvasConfig);
 gameLoop();
 
