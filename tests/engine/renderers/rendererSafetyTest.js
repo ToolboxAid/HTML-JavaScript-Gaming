@@ -312,23 +312,26 @@ function testPrimitiveRendererWithMockContext(assert) {
 function testPrimitiveRendererRestoresContextOnThrow(assert) {
     const originalCtx = CanvasUtils.ctx;
     const mockCtx = createMockCtx();
+    const originalFillRect = mockCtx.fillRect;
 
     try {
+        mockCtx.fillRect = () => {
+            throw new Error('intentional');
+        };
         CanvasUtils.ctx = mockCtx;
 
         assertNoThrow(assert, () => {
             try {
-                PrimitiveRenderer._drawWithCanvasState(() => {
-                    throw new Error('intentional');
-                });
+                PrimitiveRenderer.drawRect(0, 0, 10, 10, 'white');
             } catch (error) {
                 // expected for this safety test
             }
-        }, 'PrimitiveRenderer._drawWithCanvasState throw path should still restore canvas state');
+        }, 'PrimitiveRenderer draw throw path should still restore canvas state');
 
-        assert(mockCtx.saveCalls === 1, 'PrimitiveRenderer._drawWithCanvasState should save before invoking drawFn');
-        assert(mockCtx.restoreCalls === 1, 'PrimitiveRenderer._drawWithCanvasState should restore even when drawFn throws');
+        assert(mockCtx.saveCalls === 1, 'PrimitiveRenderer should save before invoking draw logic');
+        assert(mockCtx.restoreCalls === 1, 'PrimitiveRenderer should restore even when draw logic throws');
     } finally {
+        mockCtx.fillRect = originalFillRect;
         CanvasUtils.ctx = originalCtx;
     }
 }

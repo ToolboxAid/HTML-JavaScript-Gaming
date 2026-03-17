@@ -14,20 +14,20 @@ class PrimitiveRenderer {
             return;
         }
 
-        return this._drawWithCanvasState((ctx) => {
-            this.renderRect(ctx, object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
+        return this.#drawWithCanvasState((ctx) => {
+            this.#renderRect(ctx, object.x, object.y, object.width, object.height, fillColor, borderColor, borderWidth, 1, options);
         });
     }
 
     static drawRect(x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
         return this.#withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
-            this.renderRect(ctx, x, y, width, height, fillColor, borderColor, borderWidth, alpha, options);
+            this.#renderRect(ctx, x, y, width, height, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawBounds(x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
         return this.#withValidatedNumbers([x, y, width, height, borderWidth, alpha], options, (ctx) => {
-            this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha, options);
+            this.#renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha, options);
         });
     }
 
@@ -41,8 +41,8 @@ class PrimitiveRenderer {
         headerColor = null,
         headerWidth = 2
     } = {}) {
-        return this._drawWithCanvasState((renderCtx) => {
-            this.renderPanel(renderCtx, x, y, width, height, {
+        return this.#drawWithCanvasState((renderCtx) => {
+            this.#renderPanel(renderCtx, x, y, width, height, {
                 fillColor,
                 borderColor,
                 borderWidth,
@@ -57,25 +57,25 @@ class PrimitiveRenderer {
 
     static drawCircle(x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
         return this.#withValidatedNumbers([x, y, radius, borderWidth, alpha], options, (ctx) => {
-            this.renderCircle(ctx, x, y, radius, fillColor, borderColor, borderWidth, alpha, options);
+            this.#renderCircle(ctx, x, y, radius, fillColor, borderColor, borderWidth, alpha, options);
         });
     }
 
     static drawEllipse(x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
         return this.#withValidatedNumbers([x, y, radiusX, radiusY, borderWidth, rotation, alpha], options, (ctx) => {
-            this.renderEllipse(ctx, x, y, radiusX, radiusY, fillColor, borderColor, borderWidth, rotation, alpha, options);
+            this.#renderEllipse(ctx, x, y, radiusX, radiusY, fillColor, borderColor, borderWidth, rotation, alpha, options);
         });
     }
 
     static drawPolygon(points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
         return this.#withValidatedPoints(points, 3, options, (ctx) => {
-            this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
+            this.#renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
         });
     }
 
     static drawTriangle(points, fillColor = 'white', borderColor = null, borderWidth = 0, options = {}) {
         return this.#withValidatedPoints(points, 3, options, (ctx) => {
-            this.renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
+            this.#renderPolygon(ctx, points, fillColor, borderColor, borderWidth, options);
         });
     }
 
@@ -87,7 +87,7 @@ class PrimitiveRenderer {
         lineDash = null
     } = {}) {
         return this.#withValidatedPoints(points, 2, (renderCtx) => {
-            this.renderPath(renderCtx, points, strokeColor, lineWidth, {
+            this.#renderPath(renderCtx, points, strokeColor, lineWidth, {
                 offsetX,
                 offsetY,
                 closePath,
@@ -99,37 +99,37 @@ class PrimitiveRenderer {
 
     static drawLine(x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
         return this.#withValidatedNumbers([x1, y1, x2, y2, lineWidth, alpha], options, (ctx) => {
-            this.renderLine(ctx, x1, y1, x2, y2, strokeColor, lineWidth, alpha, options);
+            this.#renderLine(ctx, x1, y1, x2, y2, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawGridLines(x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
         return this.#withValidatedNumbers([x, y, width, height, columns, rows, lineWidth], options, (ctx) => {
-            this.renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor, lineWidth, options);
+            this.#renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor, lineWidth, options);
         });
     }
 
     static drawOverlay(width, height, fillColor = 'black', alpha = 0.5, options = {}) {
         return this.#withValidatedNumbers([width, height, alpha], options, (ctx) => {
-            this.renderOverlay(ctx, width, height, fillColor, alpha, options);
+            this.#renderOverlay(ctx, width, height, fillColor, alpha, options);
         });
     }
 
     static drawSafeAreaGuides(width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
         return this.#withValidatedNumbers([width, height, margin, lineWidth], options, (ctx) => {
-            this.renderSafeAreaGuides(ctx, width, height, margin, strokeColor, lineWidth, options);
+            this.#renderSafeAreaGuides(ctx, width, height, margin, strokeColor, lineWidth, options);
         });
     }
 
     static drawCrosshair(centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
         return this.#withValidatedNumbers([centerX, centerY, size, lineWidth, alpha], options, (ctx) => {
-            this.renderCrosshair(ctx, centerX, centerY, size, strokeColor, lineWidth, alpha, options);
+            this.#renderCrosshair(ctx, centerX, centerY, size, strokeColor, lineWidth, alpha, options);
         });
     }
 
     static drawMarker(x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
         return this.#withValidatedNumbers([x, y, radius, alpha], options, (ctx) => {
-            this.renderMarker(ctx, x, y, radius, fillColor, alpha, options);
+            this.#renderMarker(ctx, x, y, radius, fillColor, alpha, options);
         });
     }
 
@@ -143,8 +143,8 @@ class PrimitiveRenderer {
         markerColor = borderColor,
         markerAlpha = alpha
     } = {}) {
-        return this._drawWithCanvasState((renderCtx) => {
-            this.renderDebugBounds(renderCtx, x, y, width, height, {
+        return this.#drawWithCanvasState((renderCtx) => {
+            this.#renderDebugBounds(renderCtx, x, y, width, height, {
                 borderColor,
                 borderWidth,
                 alpha,
@@ -162,7 +162,7 @@ class PrimitiveRenderer {
         extraHeight = 0
     } = {}) {
         return this.#withValidatedMatrix(matrix, (renderCtx) => {
-            this.renderPixelMatrix(renderCtx, matrix, x, y, pixelWidth, pixelHeight, fillColor, {
+            this.#renderPixelMatrix(renderCtx, matrix, x, y, pixelWidth, pixelHeight, fillColor, {
                 extraWidth,
                 extraHeight
             });
@@ -287,8 +287,7 @@ class PrimitiveRenderer {
         return true;
     }
 
-    // Internal/test support only.
-    static _drawWithCanvasState(drawFn) {
+    static #drawWithCanvasState(drawFn) {
         const ctx = CanvasUtils.ctx || null;
         if (!ctx) {
             DebugLog.error('PrimitiveRenderer', 'Canvas context is not initialized.');
@@ -309,7 +308,7 @@ class PrimitiveRenderer {
             return false;
         }
 
-        return this._drawWithCanvasState(drawFn);
+        return this.#drawWithCanvasState(drawFn);
     }
 
     static #withValidatedNumbers(values, optionsOrDrawFn, maybeDrawFn) {
@@ -340,7 +339,7 @@ class PrimitiveRenderer {
         this.#applyLineDash(ctx, lineDash);
     }
 
-    static renderRect(ctx, x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+    static #renderRect(ctx, x, y, width, height, fillColor = 'gray', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
         this.#applyRenderState(ctx, alpha, options.lineDash);
 
         if (fillColor) {
@@ -352,7 +351,7 @@ class PrimitiveRenderer {
         }
     }
 
-    static renderLine(ctx, x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
+    static #renderLine(ctx, x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
         this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash: options.lineDash,
@@ -360,7 +359,7 @@ class PrimitiveRenderer {
         });
     }
 
-    static renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
+    static #renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
         this.#renderShape(ctx, fillColor, borderColor, borderWidth, {
             alpha,
             lineDash: options.lineDash,
@@ -368,7 +367,7 @@ class PrimitiveRenderer {
         });
     }
 
-    static renderEllipse(ctx, x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
+    static #renderEllipse(ctx, x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
         this.#renderShape(ctx, fillColor, borderColor, borderWidth, {
             alpha,
             lineDash: options.lineDash,
@@ -376,14 +375,14 @@ class PrimitiveRenderer {
         });
     }
 
-    static renderPolygon(ctx, points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
+    static #renderPolygon(ctx, points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
         this.#renderShape(ctx, fillColor, borderColor, borderWidth, {
             lineDash: options.lineDash,
             trace: () => this.#tracePath(ctx, points, { closePath: true })
         });
     }
 
-    static renderPath(ctx, points, strokeColor = 'white', lineWidth = 1, {
+    static #renderPath(ctx, points, strokeColor = 'white', lineWidth = 1, {
         offsetX = 0,
         offsetY = 0,
         closePath = false,
@@ -397,7 +396,7 @@ class PrimitiveRenderer {
         });
     }
 
-    static renderPanel(ctx, x, y, width, height, {
+    static #renderPanel(ctx, x, y, width, height, {
         fillColor = 'gray',
         borderColor = null,
         borderWidth = 0,
@@ -445,20 +444,20 @@ class PrimitiveRenderer {
         }
 
         if (borderColor && borderWidth > 0) {
-            this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, 1);
+            this.#renderBounds(ctx, x, y, width, height, borderColor, borderWidth, 1);
         }
 
         if (NumberUtils.isFiniteNumber(headerY)) {
-            this.renderLine(ctx, x, headerY, x + width, headerY, resolvedHeaderColor, headerWidth, 1);
+            this.#renderLine(ctx, x, headerY, x + width, headerY, resolvedHeaderColor, headerWidth, 1);
         }
     }
 
-    static renderOverlay(ctx, width, height, fillColor = 'black', alpha = 0.5, options = {}) {
+    static #renderOverlay(ctx, width, height, fillColor = 'black', alpha = 0.5, options = {}) {
         this.#applyRenderState(ctx, alpha, options.lineDash);
         this.#fillRectArea(ctx, 0, 0, width, height, fillColor);
     }
 
-    static renderSafeAreaGuides(ctx, width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
+    static #renderSafeAreaGuides(ctx, width, height, margin = 16, strokeColor = '#66d9ff99', lineWidth = 2, options = {}) {
         const x = margin;
         const y = margin;
         const safeWidth = Math.max(0, width - (margin * 2));
@@ -481,7 +480,7 @@ class PrimitiveRenderer {
         });
     }
 
-    static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
+    static #renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
         this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha: 1,
             lineDash: options.lineDash,
@@ -489,7 +488,7 @@ class PrimitiveRenderer {
         });
     }
 
-    static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
+    static #renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
         this.#renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth, alpha, options.lineDash);
     }
 
@@ -537,7 +536,7 @@ class PrimitiveRenderer {
         ctx.stroke();
     }
 
-    static renderCrosshair(ctx, centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
+    static #renderCrosshair(ctx, centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
         this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash: options.lineDash,
@@ -545,11 +544,11 @@ class PrimitiveRenderer {
         });
     }
 
-    static renderMarker(ctx, x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
-        this.renderCircle(ctx, x, y, radius, fillColor, null, 0, alpha, options);
+    static #renderMarker(ctx, x, y, radius = 2, fillColor = 'white', alpha = 1, options = {}) {
+        this.#renderCircle(ctx, x, y, radius, fillColor, null, 0, alpha, options);
     }
 
-    static renderPixelMatrix(ctx, matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
+    static #renderPixelMatrix(ctx, matrix, x, y, pixelWidth, pixelHeight, fillColor = 'white', {
         extraWidth = 0,
         extraHeight = 0
     } = {}) {
@@ -602,7 +601,7 @@ class PrimitiveRenderer {
         ctx.strokeRect(x, y, width, height);
     }
 
-    static renderDebugBounds(ctx, x, y, width, height, {
+    static #renderDebugBounds(ctx, x, y, width, height, {
         borderColor = 'white',
         borderWidth = 1,
         alpha = 1,
@@ -612,10 +611,10 @@ class PrimitiveRenderer {
         markerColor = borderColor,
         markerAlpha = alpha
     } = {}) {
-        this.renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha);
+        this.#renderBounds(ctx, x, y, width, height, borderColor, borderWidth, alpha);
 
         if (NumberUtils.isFiniteNumber(markerX) && NumberUtils.isFiniteNumber(markerY)) {
-            this.renderMarker(ctx, markerX, markerY, markerRadius, markerColor, markerAlpha);
+            this.#renderMarker(ctx, markerX, markerY, markerRadius, markerColor, markerAlpha);
         }
     }
 }
