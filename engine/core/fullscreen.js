@@ -239,7 +239,7 @@ class Fullscreen {
         if (!Fullscreen.isFullScreen) {
             const { fontSize, fontFamily } = CanvasText.parseFont(this.config.font);
 
-            CanvasText.renderText(ctx, this.config.text, this.config.x, this.config.y, {
+            CanvasText.renderTextToContext(ctx, this.config.text, this.config.x, this.config.y, {
                 fontSize,
                 fontFamily,
                 color: this.config.color,

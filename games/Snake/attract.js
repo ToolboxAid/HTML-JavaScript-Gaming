@@ -3,7 +3,6 @@
 // 11/15/2024
 // attract.js
 
-import CanvasUtils from '../../engine/core/canvasUtils.js';
 import CanvasText from '../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 import { canvasConfig } from './global.js';
@@ -113,7 +112,7 @@ class AttractScreen {
     PrimitiveRenderer.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
 
     // Draw Attract Mode Text
-    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+    CanvasText.renderMultilineText([
       "Welcome to Snake Game",
       "Press `Enter` to Start"
     ], 150, 150, {

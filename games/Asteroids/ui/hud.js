@@ -3,7 +3,6 @@
 // 03/12/2026
 // hud.js
 
-import CanvasUtils from '../../../engine/core/canvasUtils.js';
 import CanvasText from '../../../engine/core/canvasText.js';
 import PrimitiveRenderer from '../../../engine/renderers/primitiveRenderer.js';
 
@@ -79,7 +78,6 @@ class AsteroidsHud {
         }
 
         const { LIVES, SCORE } = AsteroidsHud.SCORE_POSITIONS;
-        const ctx = CanvasUtils.ctx;
         const livesVectorMap = session.getLivesVectorMap();
 
         session.forEachPlayer((player) => {
@@ -89,7 +87,7 @@ class AsteroidsHud {
 
             const xOffset = player * 460;
 
-            CanvasText.renderText(ctx, `${session.getScore(player)}`, SCORE.x + xOffset, SCORE.y, {
+            CanvasText.renderText(`${session.getScore(player)}`, SCORE.x + xOffset, SCORE.y, {
                 fontSize: 20,
                 fontFamily: '"Vector Battle"',
                 color: 'white',
@@ -116,7 +114,7 @@ class AsteroidsHud {
             }
         });
 
-        CanvasText.renderText(ctx, `${highScore}`, SCORE.x + 200, SCORE.y, {
+        CanvasText.renderText(`${highScore}`, SCORE.x + 200, SCORE.y, {
             fontSize: 15,
             fontFamily: '"Vector Battle"',
             color: 'white',

@@ -3,6 +3,7 @@
 // 03/13/2026
 // canvasText.js
 
+import CanvasUtils from './canvasUtils.js';
 import NumberUtils from '../math/numberUtils.js';
 import Font5x6 from '../renderers/assets/font5x6.js';
 
@@ -44,7 +45,11 @@ class CanvasText {
         }
     }
 
-    static calculateTextMetrics(ctx, text, fontSize = 20, fontFamily = 'Arial') {
+    static calculateTextMetrics(text, fontSize = 20, fontFamily = 'Arial') {
+        return this.calculateTextMetricsToContext(CanvasUtils.ctx, text, fontSize, fontFamily);
+    }
+
+    static calculateTextMetricsToContext(ctx, text, fontSize = 20, fontFamily = 'Arial') {
         if (!ctx) {
             return { width: 0, height: 0 };
         }
@@ -75,7 +80,11 @@ class CanvasText {
         };
     }
 
-    static renderText(ctx, text, x, y, {
+    static renderText(text, x, y, options = {}) {
+        return this.renderTextToContext(CanvasUtils.ctx, text, x, y, options);
+    }
+
+    static renderTextToContext(ctx, text, x, y, {
         font = null,
         fontSize = 20,
         fontFamily = 'Arial',
@@ -106,7 +115,11 @@ class CanvasText {
         return { x, y, fontSize: resolvedFontSize };
     }
 
-    static renderMultilineText(ctx, lines, x, startY, {
+    static renderMultilineText(lines, x, startY, options = {}) {
+        return this.renderMultilineTextToContext(CanvasUtils.ctx, lines, x, startY, options);
+    }
+
+    static renderMultilineTextToContext(ctx, lines, x, startY, {
         fontSize = 20,
         lineHeight = null,
         fontFamily = 'Arial',
@@ -163,7 +176,11 @@ class CanvasText {
         return Math.round(size * scale * 100) / 100;
     }
 
-    static renderCenteredText(ctx, text, y, {
+    static renderCenteredText(text, y, options = {}) {
+        return this.renderCenteredTextToContext(CanvasUtils.ctx, text, y, options);
+    }
+
+    static renderCenteredTextToContext(ctx, text, y, {
         centerX = null,
         fontSize = 20,
         fontFamily = 'Arial',
@@ -182,7 +199,7 @@ class CanvasText {
         const resolvedCenterX = NumberUtils.isFiniteNumber(centerX)
             ? centerX
             : (NumberUtils.isFiniteNumber(defaultCenterX) ? defaultCenterX : ((ctx.canvas?.width || 0) / 2));
-        const dimensions = this.calculateTextMetrics(ctx, text, resolvedFontSize, fontFamily);
+        const dimensions = this.calculateTextMetricsToContext(ctx, text, resolvedFontSize, fontFamily);
         const x = Math.round(resolvedCenterX - (dimensions.width / 2));
 
         ctx.save();
@@ -194,7 +211,11 @@ class CanvasText {
         return { x, y, width: dimensions.width, height: dimensions.height, fontSize: resolvedFontSize };
     }
 
-    static renderCenteredMultilineText(ctx, lines, startY, {
+    static renderCenteredMultilineText(lines, startY, options = {}) {
+        return this.renderCenteredMultilineTextToContext(CanvasUtils.ctx, lines, startY, options);
+    }
+
+    static renderCenteredMultilineTextToContext(ctx, lines, startY, {
         centerX = null,
         fontSize = 20,
         lineHeight = null,
@@ -218,7 +239,7 @@ class CanvasText {
 
         for (let i = 0; i < lines.length; i += 1) {
             drawResults.push(
-                this.renderCenteredText(ctx, lines[i], startY + (i * resolvedLineHeight), {
+                this.renderCenteredTextToContext(ctx, lines[i], startY + (i * resolvedLineHeight), {
                     centerX,
                     fontSize: resolvedFontSize,
                     fontFamily,

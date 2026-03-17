@@ -45,17 +45,17 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(drawShapesUi.theme.panelColor, drawShapesUi.theme.panelBorderColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.title, drawShapesUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: drawShapesUi.theme.colors.textPrimary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textPrimary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textSecondary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.attract.help, drawShapesUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.muted });
+        CanvasText.renderCenteredText(drawShapesUi.attract.title, drawShapesUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: drawShapesUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(drawShapesUi.attract.prompt, drawShapesUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(drawShapesUi.attract.subtitle, drawShapesUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(drawShapesUi.attract.help, drawShapesUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.muted });
     }
 
     playGame() {
         this.drawStage(drawShapesUi.theme.playPanelColor, drawShapesUi.theme.accentColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Canvas Shape Gallery', drawShapesUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: drawShapesUi.theme.colors.textPrimary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.subtitle, drawShapesUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textSecondary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, drawShapesUi.play.prompt, drawShapesUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.muted });
+        CanvasText.renderCenteredText('Canvas Shape Gallery', drawShapesUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: drawShapesUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(drawShapesUi.play.subtitle, drawShapesUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(drawShapesUi.play.prompt, drawShapesUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: drawShapesUi.theme.colors.muted });
         drawShapeGallery(canvasConfig);
     }
 

@@ -236,7 +236,7 @@ class GameUI {
                 PrimitiveRenderer.drawBounds(x + offset, y + offset, GameUI.GRID_SIZE, GameUI.GRID_SIZE, 'white', 1);
 
                 // Debug: show cell types
-                CanvasText.renderText(CanvasUtils.ctx, cellType, x + 4 + offset, y + 12 + offset, {
+                CanvasText.renderText(cellType, x + 4 + offset, y + 12 + offset, {
                     fontSize: 8,
                     color: '#FFF',
                     useDpr: false
@@ -251,12 +251,12 @@ class GameUI {
                 PrimitiveRenderer.drawCrosshair(centerX, centerY, 10, 'yellow', 1);
 
                 // Draw cell type and dimensions
-                CanvasText.renderText(CanvasUtils.ctx, cellType, x + 4 + offset, y + 12 + offset, {
+                CanvasText.renderText(cellType, x + 4 + offset, y + 12 + offset, {
                     fontSize: 8,
                     color: '#FFF',
                     useDpr: false
                 });
-                CanvasText.renderText(CanvasUtils.ctx, `${GameUI.GRID_SIZE * 4}px`, x + 4, y + GameUI.GRID_SIZE * 4 - 4, {
+                CanvasText.renderText(`${GameUI.GRID_SIZE * 4}px`, x + 4, y + GameUI.GRID_SIZE * 4 - 4, {
                     fontSize: 8,
                     color: '#FFF',
                     useDpr: false
@@ -377,7 +377,7 @@ class GameUI {
                 // Draw debug timer values
                 if (GameUI.DEBUG1) {
                     const timerText = `DIV:${divTimer}   MOD:${modTimer}   Timer:${Math.floor(GameUI.timer)}    MAX:${GameUI.timerMax}`;
-                    CanvasText.renderText(CanvasUtils.ctx, timerText, 400, 450, {
+                    CanvasText.renderText(timerText, 400, 450, {
                         fontSize: 16,
                         color: 'white',
                         useDpr: false
@@ -385,7 +385,7 @@ class GameUI {
 
                     // Draw frame indicators
                     const frameInfo = `modFrame: ${modFrame} Seconds: ${GameUI.seconds}`;
-                    CanvasText.renderText(CanvasUtils.ctx, frameInfo, 400, 470, {
+                    CanvasText.renderText(frameInfo, 400, 470, {
                         fontSize: 16,
                         color: 'white',
                         useDpr: false

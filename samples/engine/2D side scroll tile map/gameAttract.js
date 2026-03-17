@@ -27,7 +27,7 @@ class GameAttract {
     }
 
     displayAttract() {
-        CanvasText.renderMultilineText(CanvasUtils.ctx, [
+        CanvasText.renderMultilineText([
             "Welcome to Scrolling Tile Map!",
             "Press `Enter` to Start"
         ], 250, 200, {

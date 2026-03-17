@@ -163,7 +163,7 @@ class TileMap {
 
         if (TileMap.DEBUG) {
             const across = 250;
-            CanvasText.renderMultilineText(CanvasUtils.ctx, [
+            CanvasText.renderMultilineTextToContext(CanvasUtils.ctx, [
                 "Hero X   :" + Math.round(hero.x),
                 "Scrl PosX:" + Math.round(this.scrollPosX),
                 "Scrl Max :" + Math.round(this.scrollMax),

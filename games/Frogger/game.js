@@ -99,7 +99,7 @@ class Game extends GameBase {
 
   // Display 
   displayAttractMode(deltaTime) {
-    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+    CanvasText.renderMultilineText([
       "Welcome to Frogger!",
       "Press `Enter` or `Start` to Begin",
       "Move with Arrow Keys or D-pad"
@@ -130,7 +130,7 @@ class Game extends GameBase {
   }
 
   displayGameOver() {
-    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+    CanvasText.renderMultilineText([
       "Game Over",
       "Press `Enter` or `Start` to Restart"
     ], 160, 200, {

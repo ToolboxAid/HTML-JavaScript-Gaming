@@ -9,7 +9,7 @@ import { solarSystemConfig, uiFont } from './global.js';
 import { getActiveBodies, getFocusedBody, getFocusLabel, renderBodies } from './solarSystemRuntime.js';
 
 export function drawHudLine(text, x, y, color = solarSystemConfig.display.hudColor, size = 24) {
-  CanvasText.renderText(CanvasUtils.ctx, text, x, y, {
+  CanvasText.renderText(text, x, y, {
     fontSize: size,
     fontFamily: uiFont.ui,
     color,

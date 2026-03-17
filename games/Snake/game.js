@@ -180,7 +180,7 @@ class Game extends GameBase {
     PrimitiveRenderer.drawRect(this.food.x, this.food.y, this.tileSize, this.tileSize, 'red');
 
     // Draw Score
-    CanvasText.renderText(CanvasUtils.ctx, `Score: ${this.score}`, 10, 20, {
+    CanvasText.renderText(`Score: ${this.score}`, 10, 20, {
       fontSize: 20,
       useDpr: false
     });
@@ -197,7 +197,7 @@ class Game extends GameBase {
   }
 
   displayGameOver() {
-    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+    CanvasText.renderMultilineText([
       "Game Over!",
       `Score: ${this.score}`,
       "Press `Enter` to Restart"

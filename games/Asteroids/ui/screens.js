@@ -53,14 +53,13 @@ class AsteroidsScreens {
     }
 
     static drawGameOver() {
-        const ctx = CanvasUtils.ctx;
         const xOffset = CanvasUtils.getConfigWidth() / 2 - 200;
-        CanvasText.renderText(ctx, 'Game Over', xOffset + 110, 250, {
+        CanvasText.renderText('Game Over', xOffset + 110, 250, {
             fontSize: 20,
             fontFamily: '"Vector Battle"',
             useDpr: false
         });
-        CanvasText.renderText(ctx, 'Press `Enter` to Restart', xOffset, 300, {
+        CanvasText.renderText('Press `Enter` to Restart', xOffset, 300, {
             fontSize: 20,
             fontFamily: '"Vector Battle"',
             useDpr: false

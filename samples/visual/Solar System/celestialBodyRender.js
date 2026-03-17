@@ -53,7 +53,7 @@ function drawMoons(ctx, moons, centerX, centerY, zoom) {
 }
 
 function drawLabel(ctx, name, drawX, drawY, scaledRadius, zoom) {
-    CanvasText.renderText(ctx, name, drawX + scaledRadius + 6, drawY - scaledRadius - 4, {
+    CanvasText.renderTextToContext(ctx, name, drawX + scaledRadius + 6, drawY - scaledRadius - 4, {
         fontSize: Math.max(12, Math.round(14 * zoom)),
         fontFamily: uiFont.ui,
         color: solarSystemConfig.display.labelColor,

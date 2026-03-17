@@ -44,44 +44,44 @@ class Game extends GameBase{
     }
 
     drawKeyStates(ctx, keysPressed, keysDown, keysReleased) {
-        CanvasText.renderText(ctx, 'Keys Just Pressed: ' + (keysPressed.length > 0 ? keysPressed.join(', ') : 'None'), 10, 100, {
+        CanvasText.renderTextToContext(ctx, 'Keys Just Pressed: ' + (keysPressed.length > 0 ? keysPressed.join(', ') : 'None'), 10, 100, {
             fontSize: 40,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderText(ctx, 'Keys Currently Pressed (' + keysDown.length + '):', 10, 140, {
+        CanvasText.renderTextToContext(ctx, 'Keys Currently Pressed (' + keysDown.length + '):', 10, 140, {
             fontSize: 40,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderText(ctx, 'Keys Just Released: ' + (keysReleased.length > 0 ? keysReleased.join(', ') : 'None'), 10, 220, {
+        CanvasText.renderTextToContext(ctx, 'Keys Just Released: ' + (keysReleased.length > 0 ? keysReleased.join(', ') : 'None'), 10, 220, {
             fontSize: 40,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderText(ctx, keysDown.length > 0 ? keysDown.join(', ') : 'None', 10, 175, {
+        CanvasText.renderTextToContext(ctx, keysDown.length > 0 ? keysDown.join(', ') : 'None', 10, 175, {
             fontSize: 20,
             color: 'white',
             useDpr: false
         });
 
-        CanvasText.renderText(ctx, 'Press `r` for RED', 275, 390, {
+        CanvasText.renderTextToContext(ctx, 'Press `r` for RED', 275, 390, {
             fontSize: 30,
             color: 'white',
             useDpr: false
         });
-        CanvasText.renderText(ctx, 'Press `g` for GREEN', 275, 425, {
+        CanvasText.renderTextToContext(ctx, 'Press `g` for GREEN', 275, 425, {
             fontSize: 30,
             color: 'white',
             useDpr: false
         });
 
-        CanvasText.renderText(ctx, 'Caution, some keyboards scan and cannot', 105, 540, {
+        CanvasText.renderTextToContext(ctx, 'Caution, some keyboards scan and cannot', 105, 540, {
             fontSize: 30,
             color: 'orange',
             useDpr: false
         });
-        CanvasText.renderText(ctx, 'display all keys pressed: test your player keys.', 85, 575, {
+        CanvasText.renderTextToContext(ctx, 'display all keys pressed: test your player keys.', 85, 575, {
             fontSize: 30,
             color: 'orange',
             useDpr: false

@@ -157,28 +157,28 @@ function gameRender() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const connectedCount = gameControllers.getTrackedControllerIndices().length;
 
-    CanvasText.renderText(ctx, 'Buttons highlight active inputs. Panels show mapped labels and live state.', canvas.width / 2, 24, {
+    CanvasText.renderTextToContext(ctx, 'Buttons highlight active inputs. Panels show mapped labels and live state.', canvas.width / 2, 24, {
         font: 'bold 12px Segoe UI',
         textAlign: 'center',
         useDpr: false
     });
-    CanvasText.renderText(ctx, 'Each panel title uses the connected controller mapping name when available.', canvas.width / 2, 40, {
+    CanvasText.renderTextToContext(ctx, 'Each panel title uses the connected controller mapping name when available.', canvas.width / 2, 40, {
         textAlign: 'center',
         useDpr: false
     });
-    CanvasText.renderText(ctx, `Connected controllers: ${connectedCount}`, canvas.width / 2, 54, {
+    CanvasText.renderTextToContext(ctx, `Connected controllers: ${connectedCount}`, canvas.width / 2, 54, {
         textAlign: 'center',
         useDpr: false
     });
 
     const hasVisiblePlayers = players.some(Boolean);
     if (!hasVisiblePlayers) {
-        CanvasText.renderText(ctx, 'Connect a controller to begin.', canvas.width / 2, 140, {
+        CanvasText.renderTextToContext(ctx, 'Connect a controller to begin.', canvas.width / 2, 140, {
             font: 'bold 18px Segoe UI',
             textAlign: 'center',
             useDpr: false
         });
-        CanvasText.renderText(ctx, 'Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 172, {
+        CanvasText.renderTextToContext(ctx, 'Button presses, d-pad movement, and mapped axis values will appear here.', canvas.width / 2, 172, {
             fontSize: 14,
             textAlign: 'center',
             useDpr: false
@@ -197,12 +197,12 @@ function gameRender() {
             ctx.textAlign = 'start';
             PrimitiveRenderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgb(14, 7, 40)', player.color, 1.5, 0.82, { ctx });
 
-            CanvasText.renderText(ctx, player.title.slice(0, 22), textX, player.y - 12, {
+            CanvasText.renderTextToContext(ctx, player.title.slice(0, 22), textX, player.y - 12, {
                 font: TITLE_FONT,
                 color: player.color,
                 useDpr: false
             });
-            CanvasText.renderText(ctx, player.subtitle.slice(0, 28), textX, player.y - 4, {
+            CanvasText.renderTextToContext(ctx, player.subtitle.slice(0, 28), textX, player.y - 4, {
                 font: LABEL_FONT,
                 useDpr: false
             });
@@ -214,7 +214,7 @@ function gameRender() {
                 PrimitiveRenderer.drawCircle(buttonX, buttonY, buttonSize / 2, color, player.color, 1, 1, { ctx });
 
                 const buttonLabel = player.buttonLabels[buttonIndex] || buttonIndex;
-                CanvasText.renderText(ctx, String(buttonLabel).slice(0, 3), buttonX - 4.5, buttonY + 2.5, {
+                CanvasText.renderTextToContext(ctx, String(buttonLabel).slice(0, 3), buttonX - 4.5, buttonY + 2.5, {
                     font: LABEL_FONT,
                     color: 'white',
                     useDpr: false
@@ -222,7 +222,7 @@ function gameRender() {
             });
 
             const infoX = player.x + (buttonsAcross * (buttonSize + 2)) + 20;
-            CanvasText.renderText(ctx, `dPad (${player.dPadType}):`, infoX, player.y + 6, {
+            CanvasText.renderTextToContext(ctx, `dPad (${player.dPadType}):`, infoX, player.y + 6, {
                 font: LABEL_FONT,
                 color: player.color,
                 useDpr: false
@@ -234,7 +234,7 @@ function gameRender() {
             if (player.dPad.right) activeDirections.push('Right');
 
             const dPadState = activeDirections.length > 0 ? activeDirections.join(', ') : 'None';
-            CanvasText.renderText(ctx, dPadState, infoX, player.y + 14, {
+            CanvasText.renderTextToContext(ctx, dPadState, infoX, player.y + 14, {
                 font: LABEL_FONT,
                 color: player.color,
                 useDpr: false
@@ -243,12 +243,12 @@ function gameRender() {
             const decimals = 2;
             player.axisValues.forEach((axisEntry, axisIndex) => {
                 const axisY = player.y + 24 + (axisIndex * 8);
-                CanvasText.renderText(ctx, `${axisEntry.name}:`, infoX, axisY, {
+                CanvasText.renderTextToContext(ctx, `${axisEntry.name}:`, infoX, axisY, {
                     font: LABEL_FONT,
                     color: player.color,
                     useDpr: false
                 });
-                CanvasText.renderText(ctx, axisEntry.value.toFixed(decimals), infoX + 42, axisY, {
+                CanvasText.renderTextToContext(ctx, axisEntry.value.toFixed(decimals), infoX + 42, axisY, {
                     font: LABEL_FONT,
                     color: player.color,
                     useDpr: false

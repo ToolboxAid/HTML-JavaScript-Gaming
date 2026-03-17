@@ -47,17 +47,17 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(moveObjectsUi.theme.panelColor, moveObjectsUi.theme.panelBorderColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.title, moveObjectsUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: moveObjectsUi.theme.colors.textPrimary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.prompt, moveObjectsUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textPrimary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.subtitle, moveObjectsUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textSecondary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.attract.help, moveObjectsUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.muted });
+        CanvasText.renderCenteredText(moveObjectsUi.attract.title, moveObjectsUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: moveObjectsUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(moveObjectsUi.attract.prompt, moveObjectsUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(moveObjectsUi.attract.subtitle, moveObjectsUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(moveObjectsUi.attract.help, moveObjectsUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.muted });
     }
 
     playGame(deltaTime) {
         this.drawStage(moveObjectsUi.theme.playPanelColor, moveObjectsUi.theme.accentColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Movement Demo', moveObjectsUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: moveObjectsUi.theme.colors.textPrimary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.play.subtitle, moveObjectsUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textSecondary });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, moveObjectsUi.play.prompt, moveObjectsUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.muted });
+        CanvasText.renderCenteredText('Movement Demo', moveObjectsUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: moveObjectsUi.theme.colors.textPrimary });
+        CanvasText.renderCenteredText(moveObjectsUi.play.subtitle, moveObjectsUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.textSecondary });
+        CanvasText.renderCenteredText(moveObjectsUi.play.prompt, moveObjectsUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: moveObjectsUi.theme.colors.muted });
         this.runMovementDemo(deltaTime);
     }
 

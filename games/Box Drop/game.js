@@ -86,7 +86,7 @@ class Game extends GameBase {
 
   // Display 
   displayAttractMode() {
-    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+    CanvasText.renderMultilineText([
       "Welcome to the Box Drop!",
       "Press `Enter` or `Start` to Begin",
       "Move with Arrow Keys or D-pad"
@@ -116,7 +116,7 @@ class Game extends GameBase {
   displayGameOver() {
     this.drawScoreLives();
 
-    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+    CanvasText.renderMultilineText([
       "Game Over",
       "Press `Enter` or `Start` to Restart"
     ], 160, 200, {

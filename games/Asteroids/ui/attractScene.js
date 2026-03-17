@@ -33,11 +33,9 @@ class GameAttract {
 
     static count = 0;
     displayAttract() {
-        const ctx = CanvasUtils.ctx;
-
         // Draw lives and score for each player
         const xOffset = CanvasUtils.getConfigWidth() / 2 - 200; // Space between player scores
-        CanvasText.renderText(ctx, `Welcome to 'Asteroids'!`, xOffset, 250, {
+        CanvasText.renderText(`Welcome to 'Asteroids'!`, xOffset, 250, {
             fontSize: 20,
             fontFamily: '"Vector Battle"',
             color: 'white',
@@ -46,7 +44,7 @@ class GameAttract {
         const duration = 35;
         if (GameAttract.count++ < duration) {
 
-            CanvasText.renderText(ctx, "Press `Enter` to Start", xOffset, 300, {
+            CanvasText.renderText("Press `Enter` to Start", xOffset, 300, {
                 fontSize: 20,
                 fontFamily: '"Vector Battle"',
                 color: 'white',

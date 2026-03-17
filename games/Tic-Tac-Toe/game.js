@@ -74,7 +74,7 @@ class Game extends GameBase {
 
     // Display attract text
     const gridSize = canvasConfig.width / 3;
-    CanvasText.renderMultilineText(CanvasUtils.ctx, [
+    CanvasText.renderMultilineText([
       "Welcome to Tic-Tac-Toe",
       "Press `Enter` to Start"
     ], 150, gridSize - 10, {
@@ -171,19 +171,19 @@ class Game extends GameBase {
     this.drawBoard();
 
     if (this.winner === "Draw") {
-      CanvasText.renderText(CanvasUtils.ctx, "It's a Draw!", 225, 200, {
+      CanvasText.renderText("It's a Draw!", 225, 200, {
         fontSize: 30,
         useDpr: false
       });
     } else {
       const winner = this.winner;
-      CanvasText.renderText(CanvasUtils.ctx, "Player `" + winner + "` Wins!", 200, 200, {
+      CanvasText.renderText("Player `" + winner + "` Wins!", 200, 200, {
         fontSize: 30,
         useDpr: false
       });
     }
 
-    CanvasText.renderText(CanvasUtils.ctx, "Press `Enter` to Restart", 150, 400, {
+    CanvasText.renderText("Press `Enter` to Restart", 150, 400, {
       fontSize: 30,
       useDpr: false
     });

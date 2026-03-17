@@ -15,7 +15,7 @@ class GamePlayerSelectUi {
         PrimitiveRenderer.drawOverlay(config.canvasWidth, config.canvasHeight, config.backgroundColor, 0.67, { ctx });
         const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
-        CanvasText.renderText(ctx, config.title, config.x, config.y, {
+        CanvasText.renderTextToContext(ctx, config.title, config.x, config.y, {
             fontSize,
             fontFamily,
             color: config.color,
@@ -27,7 +27,7 @@ class GamePlayerSelectUi {
         const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
         for (let i = 1; i <= config.maxPlayers; i++) {
-            CanvasText.renderText(
+            CanvasText.renderTextToContext(
                 ctx,
                 `Keyboard \`${i}\` for ${i} Player${i > 1 ? 's' : ''}`,
                 config.optionX,
@@ -47,19 +47,19 @@ class GamePlayerSelectUi {
         const firstOptionY = controllerTitleY + config.controllerLineSpacing;
         const { fontSize, fontFamily } = CanvasText.parseFont(config.font);
 
-        CanvasText.renderText(ctx, config.controllerTitle, config.x, controllerTitleY, {
+        CanvasText.renderTextToContext(ctx, config.controllerTitle, config.x, controllerTitleY, {
             fontSize,
             fontFamily,
             color: config.color,
             useDpr: false
         });
-        CanvasText.renderText(ctx, '`Left Bumper` 1 player', config.optionX, firstOptionY, {
+        CanvasText.renderTextToContext(ctx, '`Left Bumper` 1 player', config.optionX, firstOptionY, {
             fontSize,
             fontFamily,
             color: config.color,
             useDpr: false
         });
-        CanvasText.renderText(ctx, '`Right Bumper` 2 players', config.optionX, firstOptionY + config.controllerLineSpacing, {
+        CanvasText.renderTextToContext(ctx, '`Right Bumper` 2 players', config.optionX, firstOptionY + config.controllerLineSpacing, {
             fontSize,
             fontFamily,
             color: config.color,

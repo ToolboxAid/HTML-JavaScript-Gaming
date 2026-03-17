@@ -115,17 +115,17 @@ class Game extends GameBase {
 
     drawCanvasHeader() {
         const { title, subtitle, help, titleY, subtitleY, helpY, colors } = particleSampleUi.canvasText;
-        CanvasText.renderCenteredText(CanvasUtils.ctx, title, titleY, {
+        CanvasText.renderCenteredText(title, titleY, {
             fontSize: 34,
             fontFamily: uiFont.display,
             color: colors.textPrimary
         });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, subtitle, subtitleY, {
+        CanvasText.renderCenteredText(subtitle, subtitleY, {
             fontSize: 20,
             fontFamily: uiFont.ui,
             color: colors.textSecondary
         });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, help, helpY, {
+        CanvasText.renderCenteredText(help, helpY, {
             fontSize: 17,
             fontFamily: uiFont.ui,
             color: colors.muted

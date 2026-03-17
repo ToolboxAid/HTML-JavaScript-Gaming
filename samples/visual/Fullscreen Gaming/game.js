@@ -69,18 +69,18 @@ class Game extends GameBase {
 
     displayAttractMode() {
         this.drawStage(fullscreenSampleUi.theme.panelColor, fullscreenSampleUi.theme.panelBorderColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenSampleUi.attract.title, fullscreenSampleUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenSampleUi.attract.prompt, fullscreenSampleUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenSampleUi.attract.subtitle, fullscreenSampleUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textSecondary, useDpr: false });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenConfig.text, fullscreenSampleUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.muted, useDpr: false });
+        CanvasText.renderCenteredText(fullscreenSampleUi.attract.title, fullscreenSampleUi.attract.titleY, { fontSize: 42, fontFamily: uiFont.display, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
+        CanvasText.renderCenteredText(fullscreenSampleUi.attract.prompt, fullscreenSampleUi.attract.promptY, { fontSize: 26, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
+        CanvasText.renderCenteredText(fullscreenSampleUi.attract.subtitle, fullscreenSampleUi.attract.subtitleY, { fontSize: 20, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textSecondary, useDpr: false });
+        CanvasText.renderCenteredText(fullscreenConfig.text, fullscreenSampleUi.attract.helpY, { fontSize: 18, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.muted, useDpr: false });
         this.updateMetrics();
     }
 
     playGame() {
         this.drawStage(fullscreenSampleUi.theme.playPanelColor, fullscreenSampleUi.theme.accentColor);
-        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Live Fullscreen Diagnostics', fullscreenSampleUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, fullscreenConfig.text, fullscreenSampleUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textSecondary, useDpr: false });
-        CanvasText.renderCenteredText(CanvasUtils.ctx, 'Use the diagnostics list below to compare layout changes', fullscreenSampleUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.muted, useDpr: false });
+        CanvasText.renderCenteredText('Live Fullscreen Diagnostics', fullscreenSampleUi.play.titleY, { fontSize: 36, fontFamily: uiFont.display, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
+        CanvasText.renderCenteredText(fullscreenConfig.text, fullscreenSampleUi.play.subtitleY, { fontSize: 22, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.textSecondary, useDpr: false });
+        CanvasText.renderCenteredText('Use the diagnostics list below to compare layout changes', fullscreenSampleUi.play.promptY, { fontSize: 18, fontFamily: uiFont.ui, color: fullscreenSampleUi.theme.colors.muted, useDpr: false });
         this.updateMetrics();
         this.drawMetricSummary();
     }
@@ -112,7 +112,7 @@ class Game extends GameBase {
 
         let y = fullscreenSampleUi.play.metricsStartY;
         lines.forEach((line) => {
-            CanvasText.renderCenteredText(CanvasUtils.ctx, line, y, { fontSize: 18, fontFamily: uiFont.mono, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
+            CanvasText.renderCenteredText(line, y, { fontSize: 18, fontFamily: uiFont.mono, color: fullscreenSampleUi.theme.colors.textPrimary, useDpr: false });
             y += fullscreenSampleUi.play.metricsLineHeight;
         });
     }

@@ -11,7 +11,7 @@ import { canvasConfig, gameUi, safeAreaInset } from './global.js';
 export function renderScreen(screen) {
     drawStyledStage(screen.panelColor, screen.borderColor);
     screen.lines.forEach(({ text, y, ...options }) => {
-        CanvasText.renderCenteredText(CanvasUtils.ctx, text, y, {
+        CanvasText.renderCenteredText(text, y, {
             ...options
         });
     });
@@ -22,7 +22,7 @@ export function renderPlayerSelectOptions(screen, config, gameControllers = null
         ? [...screen.options.lines, ...screen.options.controllerLines]
         : screen.options.lines;
 
-    CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, lines, config.y + config.spacing, {
+    CanvasText.renderCenteredMultilineText(lines, config.y + config.spacing, {
         fontSize: screen.options.fontSize,
         lineHeight: screen.options.lineHeight,
         fontFamily: screen.options.fontFamily,
@@ -32,12 +32,12 @@ export function renderPlayerSelectOptions(screen, config, gameControllers = null
 
 export function renderPlayScreen(screen, playerInfo) {
     drawStyledStage(screen.panelColor, screen.borderColor);
-    CanvasText.renderCenteredText(CanvasUtils.ctx, playerInfo, screen.infoY, {
+    CanvasText.renderCenteredText(playerInfo, screen.infoY, {
         fontSize: screen.infoFontSize,
         fontFamily: screen.infoFontFamily,
         color: screen.infoColor
     });
-    CanvasText.renderCenteredMultilineText(CanvasUtils.ctx, screen.prompts, screen.promptsY, {
+    CanvasText.renderCenteredMultilineText(screen.prompts, screen.promptsY, {
         fontSize: screen.promptFontSize,
         lineHeight: screen.promptLineHeight,
         fontFamily: screen.promptFontFamily,
