@@ -169,7 +169,7 @@ class PrimitiveRenderer {
         });
     }
 
-    static tracePath(ctx, points, { offsetX = 0, offsetY = 0, closePath = false } = {}) {
+    static #tracePath(ctx, points, { offsetX = 0, offsetY = 0, closePath = false } = {}) {
         ctx.beginPath();
 
         for (let index = 0; index < points.length; index++) {
@@ -190,23 +190,23 @@ class PrimitiveRenderer {
         }
     }
 
-    static traceCircle(ctx, x, y, radius) {
+    static #traceCircle(ctx, x, y, radius) {
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
     }
 
-    static traceEllipse(ctx, x, y, radiusX, radiusY, rotation = 0) {
+    static #traceEllipse(ctx, x, y, radiusX, radiusY, rotation = 0) {
         ctx.beginPath();
         ctx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
     }
 
-    static traceLine(ctx, x1, y1, x2, y2) {
+    static #traceLine(ctx, x1, y1, x2, y2) {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
     }
 
-    static traceCrosshair(ctx, centerX, centerY, size = 10) {
+    static #traceCrosshair(ctx, centerX, centerY, size = 10) {
         ctx.beginPath();
         ctx.moveTo(centerX - size, centerY);
         ctx.lineTo(centerX + size, centerY);
@@ -214,7 +214,7 @@ class PrimitiveRenderer {
         ctx.lineTo(centerX, centerY + size);
     }
 
-    static traceGridLines(ctx, x, y, width, height, columns, rows) {
+    static #traceGridLines(ctx, x, y, width, height, columns, rows) {
         const normalizedColumns = Math.max(0, Math.floor(columns));
         const normalizedRows = Math.max(0, Math.floor(rows));
         const stepX = normalizedColumns > 0 ? width / normalizedColumns : 0;
@@ -235,7 +235,7 @@ class PrimitiveRenderer {
         }
     }
 
-    static traceRectOutline(ctx, x, y, width, height) {
+    static #traceRectOutline(ctx, x, y, width, height) {
         ctx.moveTo(x, y);
         ctx.lineTo(x + width, y);
         ctx.lineTo(x + width, y + height);
@@ -353,33 +353,33 @@ class PrimitiveRenderer {
     }
 
     static renderLine(ctx, x1, y1, x2, y2, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+        this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => this.traceLine(ctx, x1, y1, x2, y2)
+            trace: () => this.#traceLine(ctx, x1, y1, x2, y2)
         });
     }
 
     static renderCircle(ctx, x, y, radius, fillColor = 'white', borderColor = null, borderWidth = 0, alpha = 1, options = {}) {
-        this.renderShape(ctx, fillColor, borderColor, borderWidth, {
+        this.#renderShape(ctx, fillColor, borderColor, borderWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => this.traceCircle(ctx, x, y, radius)
+            trace: () => this.#traceCircle(ctx, x, y, radius)
         });
     }
 
     static renderEllipse(ctx, x, y, radiusX, radiusY, fillColor = null, borderColor = null, borderWidth = 0, rotation = 0, alpha = 1, options = {}) {
-        this.renderShape(ctx, fillColor, borderColor, borderWidth, {
+        this.#renderShape(ctx, fillColor, borderColor, borderWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => this.traceEllipse(ctx, x, y, radiusX, radiusY, rotation)
+            trace: () => this.#traceEllipse(ctx, x, y, radiusX, radiusY, rotation)
         });
     }
 
     static renderPolygon(ctx, points, fillColor = null, borderColor = null, borderWidth = 0, options = {}) {
-        this.renderShape(ctx, fillColor, borderColor, borderWidth, {
+        this.#renderShape(ctx, fillColor, borderColor, borderWidth, {
             lineDash: options.lineDash,
-            trace: () => this.tracePath(ctx, points, { closePath: true })
+            trace: () => this.#tracePath(ctx, points, { closePath: true })
         });
     }
 
@@ -390,10 +390,10 @@ class PrimitiveRenderer {
         alpha = 1,
         lineDash = null
     } = {}) {
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+        this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash,
-            trace: () => this.tracePath(ctx, points, { offsetX, offsetY, closePath })
+            trace: () => this.#tracePath(ctx, points, { offsetX, offsetY, closePath })
         });
     }
 
@@ -432,11 +432,11 @@ class PrimitiveRenderer {
         );
 
         if (canCombineBorderAndHeader) {
-            this.renderStrokedShape(ctx, borderColor, borderWidth, {
+            this.#renderStrokedShape(ctx, borderColor, borderWidth, {
                 alpha: 1,
                 trace: () => {
                     ctx.beginPath();
-                    this.traceRectOutline(ctx, x, y, width, height);
+                    this.#traceRectOutline(ctx, x, y, width, height);
                     ctx.moveTo(x, headerY);
                     ctx.lineTo(x + width, headerY);
                 }
@@ -467,12 +467,12 @@ class PrimitiveRenderer {
         const centerY = height / 2;
         const lineDash = [8, 6];
 
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+        this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha: 1,
             lineDash,
             trace: () => {
                 ctx.beginPath();
-                this.traceRectOutline(ctx, x, y, safeWidth, safeHeight);
+                this.#traceRectOutline(ctx, x, y, safeWidth, safeHeight);
                 ctx.moveTo(centerX, y);
                 ctx.lineTo(centerX, y + safeHeight);
                 ctx.moveTo(x, centerY);
@@ -482,15 +482,15 @@ class PrimitiveRenderer {
     }
 
     static renderGridLines(ctx, x, y, width, height, columns, rows, strokeColor = 'white', lineWidth = 1, options = {}) {
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+        this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha: 1,
             lineDash: options.lineDash,
-            trace: () => this.traceGridLines(ctx, x, y, width, height, columns, rows)
+            trace: () => this.#traceGridLines(ctx, x, y, width, height, columns, rows)
         });
     }
 
     static renderBounds(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, options = {}) {
-        this.renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth, alpha, options.lineDash);
+        this.#renderRectStroke(ctx, x, y, width, height, borderColor, borderWidth, alpha, options.lineDash);
     }
 
     static #renderFillAndStroke(ctx, fillColor = null, borderColor = null, borderWidth = 0) {
@@ -504,7 +504,7 @@ class PrimitiveRenderer {
         }
     }
 
-    static renderShape(ctx, fillColor = null, borderColor = null, borderWidth = 0, {
+    static #renderShape(ctx, fillColor = null, borderColor = null, borderWidth = 0, {
         alpha = 1,
         lineDash = null,
         trace
@@ -513,7 +513,7 @@ class PrimitiveRenderer {
         this.#renderFillAndStroke(ctx, fillColor, borderColor, borderWidth);
     }
 
-    static renderStrokedShape(ctx, strokeColor = 'white', lineWidth = 1, {
+    static #renderStrokedShape(ctx, strokeColor = 'white', lineWidth = 1, {
         alpha = 1,
         lineDash = null,
         trace
@@ -538,10 +538,10 @@ class PrimitiveRenderer {
     }
 
     static renderCrosshair(ctx, centerX, centerY, size = 10, strokeColor = 'white', lineWidth = 1, alpha = 1, options = {}) {
-        this.renderStrokedShape(ctx, strokeColor, lineWidth, {
+        this.#renderStrokedShape(ctx, strokeColor, lineWidth, {
             alpha,
             lineDash: options.lineDash,
-            trace: () => this.traceCrosshair(ctx, centerX, centerY, size)
+            trace: () => this.#traceCrosshair(ctx, centerX, centerY, size)
         });
     }
 
@@ -581,7 +581,7 @@ class PrimitiveRenderer {
         }
     }
 
-    static renderRectFill(ctx, x, y, width, height, fillColor = 'gray', alpha = 1, lineDash = null) {
+    static #renderRectFill(ctx, x, y, width, height, fillColor = 'gray', alpha = 1, lineDash = null) {
         this.#applyRenderState(ctx, alpha, lineDash);
         this.#fillRectArea(ctx, x, y, width, height, fillColor);
     }
@@ -591,7 +591,7 @@ class PrimitiveRenderer {
         ctx.fillRect(x, y, width, height);
     }
 
-    static renderRectStroke(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, lineDash = null) {
+    static #renderRectStroke(ctx, x, y, width, height, borderColor = 'red', borderWidth = 1, alpha = 1, lineDash = null) {
         this.#applyRenderState(ctx, alpha, lineDash);
         this.#strokeRectArea(ctx, x, y, width, height, borderColor, borderWidth);
     }
