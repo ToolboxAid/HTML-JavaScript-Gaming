@@ -6,6 +6,7 @@
 import SystemUtils from "../utils/systemUtils.js";
 import DebugFlag from '../utils/debugFlag.js';
 import DebugLog from '../utils/debugLog.js';
+import CanvasText from './canvasText.js';
 
 class Fullscreen {
 
@@ -236,12 +237,17 @@ class Fullscreen {
         }
 
         if (!Fullscreen.isFullScreen) {
-            ctx.save();
-            ctx.fillStyle = this.config.color;
-            ctx.font = this.config.font;
-            ctx.textAlign = 'start';
-            ctx.fillText(this.config.text, this.config.x, this.config.y);
-            ctx.restore();
+            const fontParts = this.config.font.split(/\s+/);
+            const fontSize = Number.parseFloat(fontParts[0]) || 20;
+            const fontFamily = fontParts.slice(1).join(' ') || 'Arial';
+
+            CanvasText.renderText(ctx, this.config.text, this.config.x, this.config.y, {
+                fontSize,
+                fontFamily,
+                color: this.config.color,
+                textAlign: 'start',
+                useDpr: false
+            });
         }
     }
 
