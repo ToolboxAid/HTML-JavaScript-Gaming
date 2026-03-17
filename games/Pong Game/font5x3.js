@@ -5,7 +5,6 @@
 
 
 import { font5x3 } from './global.js';
-import CanvasUtils from '../../engine/core/canvasUtils.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
 class Font5x3 {
