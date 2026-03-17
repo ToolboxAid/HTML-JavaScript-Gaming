@@ -11,6 +11,11 @@ class PngRenderer {
             return;
         }
 
+        const ctx = CanvasUtils.ctx;
+        if (!ctx) {
+            return;
+        }
+
         if (!object.isLoaded || !object.png || !object.png.complete) {
             if (object.constructor?.DEBUG && object.loadError) {
                 DebugLog.warn(true, 'PngRenderer', 'Sprite failed to load:', object.loadError);
@@ -46,7 +51,7 @@ class PngRenderer {
             });
         }
 
-        CanvasUtils.ctx.save();
+        ctx.save();
 
         if (object.rotation === 0 && object.flip === object.constructor.Flip.NONE) {
             CanvasSprite.drawImageFrame(
@@ -59,29 +64,29 @@ class PngRenderer {
                 newY,
                 scaledWidth,
                 scaledHeight,
-                CanvasUtils.ctx
+                ctx
             );
         } else {
             const centerX = newX + scaledWidth / 2;
             const centerY = newY + scaledHeight / 2;
 
-            CanvasUtils.ctx.translate(centerX, centerY);
+            ctx.translate(centerX, centerY);
 
             switch (object.flip) {
                 case object.constructor.Flip.HORIZONTAL:
-                    CanvasUtils.ctx.scale(-1, 1);
+                    ctx.scale(-1, 1);
                     break;
                 case object.constructor.Flip.VERTICAL:
-                    CanvasUtils.ctx.scale(1, -1);
+                    ctx.scale(1, -1);
                     break;
                 case object.constructor.Flip.BOTH:
-                    CanvasUtils.ctx.scale(-1, -1);
+                    ctx.scale(-1, -1);
                     break;
                 default:
                     break;
             }
 
-            CanvasUtils.ctx.rotate(object.rotation);
+            ctx.rotate(object.rotation);
 
             CanvasSprite.drawImageFrame(
                 object.png,
@@ -93,7 +98,7 @@ class PngRenderer {
                 -scaledHeight / 2,
                 scaledWidth,
                 scaledHeight,
-                CanvasUtils.ctx
+                ctx
             );
         }
 
@@ -101,7 +106,7 @@ class PngRenderer {
             this.drawSheetPreview(object, 100, 350, 1);
         }
 
-        CanvasUtils.ctx.restore();
+        ctx.restore();
     }
 
     static drawAllFramesPreview(object, previewX = 10, previewY = 10, scale = 2, padding = 4) {

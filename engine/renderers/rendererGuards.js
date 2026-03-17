@@ -1,9 +1,8 @@
-import CanvasUtils from '../core/canvasUtils.js';
 import NumberUtils from '../math/numberUtils.js';
 
 class RendererGuards {
     static canRenderObject(object, { allowDead = false, requireAlive = false } = {}) {
-        if (!object || object.isDestroyed || !CanvasUtils.ctx) {
+        if (!object || object.isDestroyed) {
             return false;
         }
 
