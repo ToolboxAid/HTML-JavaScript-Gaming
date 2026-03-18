@@ -1,31 +1,42 @@
 # PR Roadmap
 
-## PR-046
-Title: Classify games by architecture maturity
-Scope: games, docs
-Risk: Low
-Status: pending
+## Status legend
 
-## PR-047
-Title: Promote Asteroids as canonical game architecture reference
-Scope: games/Asteroids, docs
-Risk: Low
-Status: pending
+- `pending`
+- `in-progress`
+- `done`
+- `deferred`
 
-## PR-048
-Title: Define allowed engine imports for games
-Scope: games, docs
-Risk: Low
-Status: pending
+## Planned PRs
 
-## PR-049
-Title: Extract shared gameplay helpers out of engine folders
-Scope: engine/game, games/shared, samples
-Risk: Medium
-Status: pending
+### PR-001
 
-## PR-050
-Title: Create migration plan for legacy games
-Scope: games, docs/reviews
-Risk: Medium
-Status: pending
+- **Title:** docs: consolidate review and PR workflow docs
+- **Scope:** `docs/`
+- **Risk:** Low
+- **Status:** pending
+- **Why:** establish a consistent operating system for future code-review and refactor work
+
+### PR-002
+
+- **Title:** docs: define engine API and boundary levels
+- **Scope:** `docs/ENGINE_API.md`, `docs/ENGINE_STANDARDS.md`
+- **Risk:** Low
+- **Status:** pending
+- **Why:** align review language around public/internal/private distinctions
+
+### PR-003
+
+- **Title:** docs: add performance review workflow
+- **Scope:** `docs/performance.md`
+- **Risk:** Low
+- **Status:** pending
+- **Why:** separate performance work from cleanup and architecture changes
+
+### PR-004
+
+- **Title:** review: record engine/core architecture findings
+- **Scope:** `docs/reviews/architecture-review-v1.md`
+- **Risk:** Low
+- **Status:** pending
+- **Why:** create traceable review artifacts before implementation PRs

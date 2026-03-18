@@ -100,3 +100,52 @@ During review, ask:
 - Does this hide ownership?
 - Does this make hot paths slower?
 - Is this consistent with existing engine patterns?
+
+## engine/core Runtime Boundary
+
+### Purpose
+`engine/core` is the runtime layer of the engine.
+
+It should own:
+- runtime bootstrapping
+- game loop ownership
+- runtime context coordination
+- browser/runtime integration such as fullscreen or performance overlays
+
+It should **not** become a catch-all folder for unrelated graphics, sprite, tile-map, or utility concerns.
+
+### Boundary Classification
+
+#### Public
+- `gameBase.js`
+
+#### Internal
+- `runtimeContext.js`
+- `fullscreen.js`
+- `performanceMonitor.js`
+
+#### Transitional / Candidate to Move
+- `canvasUtils.js`
+- `canvasText.js`
+- `canvasSprite.js`
+- `sprite.js`
+- `tileMap.js`
+- `spriteFrameUtils.js`
+
+### Consumer Guidance
+Games and samples should:
+- use `GameBase` as the main runtime entry point
+
+Games and samples should avoid direct imports from:
+- `runtimeContext.js`
+- `fullscreen.js`
+- `performanceMonitor.js`
+
+Low-level canvas and sprite helpers under `engine/core` are transitional and should not be treated as stable runtime APIs unless a sample or internal engine document explicitly says so.
+
+### Notes
+This boundary definition is documentation-only and does not change runtime behavior.
+Future PRs may:
+- introduce explicit runtime start semantics
+- narrow `RuntimeContext`
+- move transitional rendering/sprite/tile modules out of `engine/core`

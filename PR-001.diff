@@ -1,0 +1,166 @@
+--- docs/ENGINE_STANDARDS.md+++ docs/ENGINE_STANDARDS.md@@ -100,3 +100,52 @@ - Does this hide ownership?
+ - Does this make hot paths slower?
+ - Is this consistent with existing engine patterns?
++
++## engine/core Runtime Boundary
++
++### Purpose
++`engine/core` is the runtime layer of the engine.
++
++It should own:
++- runtime bootstrapping
++- game loop ownership
++- runtime context coordination
++- browser/runtime integration such as fullscreen or performance overlays
++
++It should **not** become a catch-all folder for unrelated graphics, sprite, tile-map, or utility concerns.
++
++### Boundary Classification
++
++#### Public
++- `gameBase.js`
++
++#### Internal
++- `runtimeContext.js`
++- `fullscreen.js`
++- `performanceMonitor.js`
++
++#### Transitional / Candidate to Move
++- `canvasUtils.js`
++- `canvasText.js`
++- `canvasSprite.js`
++- `sprite.js`
++- `tileMap.js`
++- `spriteFrameUtils.js`
++
++### Consumer Guidance
++Games and samples should:
++- use `GameBase` as the main runtime entry point
++
++Games and samples should avoid direct imports from:
++- `runtimeContext.js`
++- `fullscreen.js`
++- `performanceMonitor.js`
++
++Low-level canvas and sprite helpers under `engine/core` are transitional and should not be treated as stable runtime APIs unless a sample or internal engine document explicitly says so.
++
++### Notes
++This boundary definition is documentation-only and does not change runtime behavior.
++Future PRs may:
++- introduce explicit runtime start semantics
++- narrow `RuntimeContext`
++- move transitional rendering/sprite/tile modules out of `engine/core`
+
+
+--- docs/ENGINE_API.md+++ docs/ENGINE_API.md@@ -59,3 +59,38 @@ 2. decide whether to promote or isolate it
+ 3. add documentation or deprecation notes
+ 4. migrate consumers in small PRs
++
++## engine/core
++
++### Public API
++- `gameBase.js`
++  - Primary runtime entry point for games and engine-driven samples.
++
++### Internal API
++- `runtimeContext.js`
++  - Internal runtime façade for engine coordination.
++- `fullscreen.js`
++  - Internal fullscreen support.
++- `performanceMonitor.js`
++  - Internal performance overlay/service support.
++
++### Transitional Modules
++These modules currently live in `engine/core` but should not be treated as stable runtime APIs:
++
++- `canvasUtils.js`
++- `canvasText.js`
++- `canvasSprite.js`
++- `sprite.js`
++- `tileMap.js`
++- `spriteFrameUtils.js`
++
++### Consumer Import Guidance
++Approved consumer runtime entry:
++- `engine/core/gameBase.js`
++
++Avoid direct imports from runtime internals:
++- `engine/core/runtimeContext.js`
++- `engine/core/fullscreen.js`
++- `engine/core/performanceMonitor.js`
++
++Transitional modules may still be used by existing internal games or samples, but they are not the preferred long-term public runtime surface.
+
+
+--- docs/reviews/architecture-review-v1.md+++ docs/reviews/architecture-review-v1.md@@ -111,3 +111,21 @@ ## PR candidate log
+ 
+ Pending.
++
++## PR-001 update — engine/core boundary clarification
++
++This PR defines `engine/core` as the runtime layer and documents:
++- `GameBase` as the public runtime entry point
++- `RuntimeContext`, `fullscreen`, and `performanceMonitor` as internal runtime modules
++- canvas/sprite/tile helper modules as transitional candidates to move later
++
++This PR intentionally does **not**:
++- change runtime lifecycle behavior
++- refactor constructor startup
++- move files
++- convert static services to instance-backed services
++
++### Status
++- planned as a docs-first architecture PR
++- low risk
++- intended to reduce ambiguity before deeper core refactors
+
+
+--- docs/ENGINE_BOUNDARIES.md+++ docs/ENGINE_BOUNDARIES.md@@ -0,0 +1,25 @@+# Engine Boundaries
++
++## engine/core
++Runtime layer.
++
++### Public
++- `gameBase.js`
++
++### Internal
++- `runtimeContext.js`
++- `fullscreen.js`
++- `performanceMonitor.js`
++
++### Transitional
++- `canvasUtils.js`
++- `canvasText.js`
++- `canvasSprite.js`
++- `sprite.js`
++- `tileMap.js`
++- `spriteFrameUtils.js`
++
++### Guidance
++Use `GameBase` as the runtime entry point.
++Avoid direct imports from runtime internals.
++Treat transitional modules as unstable placement candidates.
+
+
+--- docs/prs/PR-001-engine-core-boundary.md+++ docs/prs/PR-001-engine-core-boundary.md@@ -0,0 +1,22 @@+# PR-001 — engine/core runtime boundary clarification
++
++## Title
++docs(architecture): define engine/core runtime boundaries and public API
++
++## Scope
++Documentation-only architecture PR for `engine/core`.
++
++## Summary
++Clarifies `engine/core` as the runtime layer and documents which modules are public, internal, or transitional.
++
++## In Scope
++- boundary documentation
++- public/internal/transitional classification
++- consumer import guidance
++- roadmap/update notes
++
++## Out of Scope
++- runtime behavior changes
++- lifecycle refactor
++- service instance conversion
++- moving files

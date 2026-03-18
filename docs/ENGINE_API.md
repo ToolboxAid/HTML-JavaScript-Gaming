@@ -59,3 +59,38 @@ When a current internal API is being treated as public by games or samples:
 2. decide whether to promote or isolate it
 3. add documentation or deprecation notes
 4. migrate consumers in small PRs
+
+## engine/core
+
+### Public API
+- `gameBase.js`
+  - Primary runtime entry point for games and engine-driven samples.
+
+### Internal API
+- `runtimeContext.js`
+  - Internal runtime façade for engine coordination.
+- `fullscreen.js`
+  - Internal fullscreen support.
+- `performanceMonitor.js`
+  - Internal performance overlay/service support.
+
+### Transitional Modules
+These modules currently live in `engine/core` but should not be treated as stable runtime APIs:
+
+- `canvasUtils.js`
+- `canvasText.js`
+- `canvasSprite.js`
+- `sprite.js`
+- `tileMap.js`
+- `spriteFrameUtils.js`
+
+### Consumer Import Guidance
+Approved consumer runtime entry:
+- `engine/core/gameBase.js`
+
+Avoid direct imports from runtime internals:
+- `engine/core/runtimeContext.js`
+- `engine/core/fullscreen.js`
+- `engine/core/performanceMonitor.js`
+
+Transitional modules may still be used by existing internal games or samples, but they are not the preferred long-term public runtime surface.
