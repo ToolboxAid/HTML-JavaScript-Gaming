@@ -1,195 +1,165 @@
 # Architecture Review v1
 
-## Status
-
-Active.
-
-## Scope
-
-Repository-wide architecture review with an engine-first approach.
-
-## Goals
-
-- identify public, internal, and private boundaries
-- map subsystem ownership
-- detect coupling and duplication
-- generate small, safe PR candidates
-
-## Initial review order
-
-1. `engine/core`
-2. `engine/game`
-3. lifecycle and object base classes
-4. `engine/animation`
-5. `engine/render`
-6. `engine/input`
-7. `engine/physics`
-8. `engine/math`
-9. `engine/messages`
-10. `engine/output`
-11. `engine/utils`
-12. `tests`
-13. `samples`
-14. `games`
-15. `tools`
-16. docs alignment
-
-## Boundary review standard
-
-For each reviewed area, answer:
-
-- What is public?
-- What is internal?
-- What is private?
-- Who owns state?
-- Who owns lifecycle?
-- Who depends on it?
-- What should it depend on?
-- Is it safe to change without breaking consumers?
-
-## Current findings
-
-### Repo-level review state
-
-Pending direct code review.
-
-### Cross-cutting issues
-
-Pending.
-
-## Risk map
-
-### High risk
-
-- runtime orchestration
-- object lifecycle ownership
-- collision and registry coordination
-
-### Medium risk
-
-- render subsystem
-- input subsystem
-- animation and physics sequencing
-
-### Lower risk
-
-- isolated utilities
-- docs-only changes
-- self-contained tools
-
-## Task lanes
-
-### A. Engine inventory
-
-- list all engine folders
-- classify boundary level
-- identify likely public surface
-
-### B. Core runtime review
-
-- identify entry points
-- identify update and render owners
-- evaluate runtime context / state ownership
-
-### C. Subsystem review
-
-- responsibility
-- dependencies
-- coupling
-- boundary classification
-
-### D. Consumer review
-
-- compare `samples/` and `games/`
-- detect engine API leakage or bypassing
-
-### E. Test alignment
-
-- map tests to public surfaces
-- identify hard-to-test architecture
-
-## PR candidate log
-
-Pending.
-
-
-## Reviewed area: `engine/core`
-
-### Review status
-
-Completed architecture pass from uploaded repository snapshot.
+## engine/game findings
 
 ### Findings
+1. `engine/game` currently mixes three architectural layers:
+   - reusable object-system infrastructure: `gameObjectSystem.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameCollision.js`
+   - entity model: `gameObject.js`, `gameObjectUtils.js`
+   - game-specific UX/helpers: `gamePlayerSelectUi.js`, `gameUtils.js`
 
-#### 1. `engine/core` mixes runtime orchestration with visual/content helpers
-`engine/core` currently contains true runtime code (`gameBase.js`, `runtimeContext.js`) alongside canvas, sprite, and tile helpers. This weakens boundary clarity and makes the folder look broader and more public than it should be.
+   This weakens the boundary of the folder. The object system looks engine-level and reusable, while the player-select UI and player-count helper logic look consumer/gameplay specific.
 
-#### 2. `GameBase` is the lifecycle owner, but cleanup relies on subclass field conventions
-`GameBase` owns initialization, animation-loop control, visibility handling, and teardown. That is a good runtime center. However, teardown reaches into consumer-owned fields such as keyboard, mouse, and controller members by name, which leaks subclass conventions into the base class.
+2. `GameObjectSystem` is a façade/composition root over:
+   - manager
+   - registry
+   - collision API
 
-#### 3. Constructor startup is too eager
-`GameBase` performs listener registration, async initialization, and runtime start from the constructor path. Construction and boot are fused, which makes subclassing and testing harder.
+   This is a good architectural center, but it exposes child components publicly as mutable properties:
+   - `this.manager`
+   - `this.registry`
+   - `this.collision`
 
-#### 4. `RuntimeContext` is narrow today, but built on globally stateful services
-`RuntimeContext` is still reasonably focused, which is positive. It proxies rendering, overlays, timers, and teardown concerns. However, its backing services are largely static/global utility classes, so the dependency-injection shape is only partial.
+   That means consumers can bypass the intended façade and couple directly to internals.
 
-#### 5. Public vs internal vs private boundaries are implied, not explicit
-A practical starting split is:
-- public: `gameBase.js`
-- internal: `runtimeContext.js`
-- internal/private: fullscreen, performance, canvas helpers
-- misplaced or needs reclassification: sprite/tile/canvas sprite files currently under `engine/core`
+3. `GameObjectManager` and `GameObjectRegistry` separate responsibilities cleanly:
+   - manager owns active collection + lifetime removal
+   - registry owns id lookup
+
+   That separation is good. The architecture issue is that destruction semantics are embedded in `GameObjectManager.removeGameObject()`, so “membership removal” and “object lifetime termination” are fused.
+
+4. `GameObjectSystem` rollback behavior is thoughtful:
+   - add to manager
+   - register
+   - rollback manager add on duplicate-id failure
+
+   This is good transactional thinking. But it also shows the system is coordinating two stores that can drift. The need for rollback indicates the manager/registry model is not truly unified.
+
+5. `GameObject` extends `ObjectPNG`, which means the default “game object” abstraction is tightly coupled to PNG-backed rendering. That is a significant architecture choice:
+   - all canonical game objects inherit rendering/image assumptions
+   - non-sprite domain objects become second-class
+   - object identity, motion, and rendering are not cleanly separated
+
+6. `gameCollision.js` is a thin canonical wrapper around physics/boundary utilities. This is good for public API consistency, but it is effectively an alias layer, not a game-domain collision policy layer.
+
+7. `gamePlayerSelectUi.js` and `gameUtils.js` do not fit the same abstraction level as the object system.
+   - `gamePlayerSelectUi.js` depends on canvas/core rendering concerns
+   - `gameUtils.js` contains player-select defaults, controller button conventions, and life-swapping logic
+
+   These look like gameplay/UI helpers, not engine-level object-system infrastructure.
+
+8. Public/internal/private boundaries are still implicit.
+   Likely public:
+   - `GameObject`
+   - `GameObjectSystem`
+   - `GameCollision`
+
+   Likely internal:
+   - `GameObjectManager`
+   - `GameObjectRegistry`
+   - `GameObjectUtils`
+
+   Likely misplaced or should move out of `engine/game`:
+   - `GamePlayerSelectUi`
+   - `GameUtils`
 
 ### Risks
-
 #### High
-- constructor-driven lifecycle
-- convention-based cleanup in the base class
-- globally stateful services behind an instance-style façade
+1. **Rendering-coupled base entity**
+   `GameObject` inheriting from `ObjectPNG` makes the engine’s base game-object abstraction image/rendering specific.
+
+2. **Façade bypass risk**
+   `GameObjectSystem` publishes `manager`, `registry`, and `collision` directly, allowing consumer code to depend on internal composition.
+
+3. **Folder boundary ambiguity**
+   `engine/game` is serving both engine infrastructure and game-specific UI/gameplay helper roles.
 
 #### Medium
-- `engine/core` scope is too broad
-- `RuntimeContext` can drift into a god object if not constrained
-- game-loop orchestration can spread into subclasses inconsistently
+4. **Lifetime and membership are fused**
+   Removing an object from `GameObjectManager` destroys it. That may be correct for some games, but it limits reuse for pooling, temporary deregistration, scene migration, or ownership transfer.
+
+5. **Dual-store coordination complexity**
+   The manager and registry are separate stores that require coordinated rollback paths.
+
+6. **Pseudo-domain collision layer**
+   `GameCollision` gives a stable API, but it does not yet encode game-domain policy; it mostly re-exports lower-level utilities.
 
 #### Lower
-- browser-global assumptions reduce portability
-- folder naming/layout blurs intended public API boundaries
+7. **Utility sprawl**
+   `gameObjectUtils.js` mixes constructor validation, metadata init, id validation, and destroy cleanup. It is manageable now but could grow into a grab-bag utility file.
 
-### PR candidates
+### PR Candidates
+#### PR-001 — Split `engine/game` into infrastructure vs gameplay helpers
+- Type: architecture
+- Risk: medium
+- Keep in `engine/game`:
+  - `gameObjectSystem.js`
+  - `gameObjectManager.js`
+  - `gameObjectRegistry.js`
+  - `gameCollision.js`
+  - `gameObject.js`
+  - `gameObjectUtils.js`
+- Move out:
+  - `gamePlayerSelectUi.js`
+  - `gameUtils.js`
+- Suggested destinations:
+  - `engine/ui/` or `engine/renderers/ui/`
+  - or `games/shared/` if they are really gameplay helpers
 
-#### PR-005
-- **Title:** refactor: split runtime and visual helpers out of `engine/core`
-- **Scope:** `engine/core`, destination folders under `engine/renderers`, `engine/utils`, or a new visual/assets area
-- **Risk:** Medium
-- **Status:** pending
-- **Why:** make `engine/core` mean runtime only
+#### PR-002 — Hide `GameObjectSystem` internals behind a true façade
+- Type: architecture/refactor
+- Risk: medium
+- Replace public mutable properties with private fields or documented internal accessors.
+- Keep external API on:
+  - `addGameObject`
+  - `removeGameObject`
+  - `getGameObjectById`
+  - `hasGameObjectById`
+  - `getActiveGameObjects`
+  - collision delegates
 
-#### PR-006
-- **Title:** refactor: introduce explicit runtime start for `GameBase`
-- **Scope:** `engine/core/gameBase.js`
-- **Risk:** High
-- **Status:** pending
-- **Why:** separate construction from boot and reduce subclass fragility
+#### PR-003 — Decouple base object identity/lifecycle from PNG rendering
+- Type: architecture/refactor
+- Risk: high
+- Introduce a render-agnostic base game entity, then make PNG-backed objects a specialization.
 
-#### PR-007
-- **Title:** refactor: replace subclass cleanup conventions with registered disposables
-- **Scope:** `engine/core/gameBase.js`, input/controller ownership points
-- **Risk:** Medium
-- **Status:** pending
-- **Why:** remove hidden field-name contracts from the base class
+#### PR-004 — Separate membership removal from destruction
+- Type: architecture/refactor
+- Risk: high
+- Add explicit lifecycle methods such as:
+  - detach / unregister
+  - destroy / dispose
+- Keep destruction as a higher-level policy, not always a side effect of removal.
 
-#### PR-008
-- **Title:** docs: classify `engine/core` public and internal APIs
-- **Scope:** `docs/ENGINE_API.md`, `docs/ENGINE_STANDARDS.md`
-- **Risk:** Low
-- **Status:** pending
-- **Why:** stop accidental consumer dependency on internals
+#### PR-005 — Document public/internal/private boundaries for `engine/game`
+- Type: docs/architecture
+- Risk: low
+- Public: `GameObjectSystem`, `GameObject`, `GameCollision`
+- Internal: `GameObjectManager`, `GameObjectRegistry`, `GameObjectUtils`
+- Reclassify/move: `GamePlayerSelectUi`, `GameUtils`
 
-#### PR-009
-- **Title:** refactor: move runtime services toward instance-backed ownership
-- **Scope:** `engine/core/fullscreen.js`, `engine/core/performanceMonitor.js`, `engine/core/runtimeContext.js`
-- **Risk:** High
-- **Status:** pending
-- **Why:** align service lifetime with runtime instances instead of globals
+## PR Roadmap Additions
 
+### PR-007
+Title: Split engine/game infrastructure from gameplay helpers
+Scope: engine/game
+Risk: Medium
+Status: pending
+
+### PR-008
+Title: Make GameObjectSystem a true façade
+Scope: engine/game
+Risk: Medium
+Status: pending
+
+### PR-009
+Title: Decouple GameObject from ObjectPNG
+Scope: engine/game, engine/objects, engine/renderers
+Risk: High
+Status: pending
+
+### PR-010
+Title: Separate deregistration from destruction
+Scope: engine/game
+Risk: High
+Status: pending
