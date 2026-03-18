@@ -1,31 +1,31 @@
 # PR Roadmap
 
-## PR-036
-Title: Normalize animation controller model
-Scope: engine/animation
-Risk: High
-Status: pending
-
-## PR-037
-Title: Define animation state ownership
-Scope: engine/animation, engine/lifecycle
-Risk: High
-Status: pending
-
-## PR-038
-Title: Clarify and reduce animation state sync helpers
-Scope: engine/animation
-Risk: Medium
-Status: pending
-
-## PR-039
-Title: Move cleanup behavior out of StateUtils
-Scope: engine/animation, engine/utils
-Risk: Medium
-Status: pending
-
-## PR-040
-Title: Define public and internal animation API boundaries
-Scope: engine/animation, docs
+## PR-041
+Title: Classify samples by architectural role
+Scope: samples, docs
 Risk: Low
+Status: pending
+
+## PR-042
+Title: Normalize input samples around a shared shell pattern
+Scope: samples/input
+Risk: Medium
+Status: pending
+
+## PR-043
+Title: Define sample import boundary rules
+Scope: samples, docs
+Risk: Low
+Status: pending
+
+## PR-044
+Title: Promote Game Engine sample as canonical starter template
+Scope: samples/engine/Game Engine, docs
+Risk: Low
+Status: pending
+
+## PR-045
+Title: Remove gameplay helper leakage from engine-driven samples
+Scope: samples/engine, engine/game
+Risk: Medium
 Status: pending
