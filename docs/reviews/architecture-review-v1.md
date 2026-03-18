@@ -1,184 +1,162 @@
 # Architecture Review v1
 
-## engine/utils findings
+## engine/animation findings
 
 ### Findings
-1. `engine/utils` is not a single coherent subsystem. It is currently a catch-all folder containing:
-   - debug helpers (`debugFlag.js`, `debugLog.js`)
-   - validation helpers (`objectValidation.js`, `stringValidation.js`)
-   - cleanup/state helpers (`objectCleanup.js`, `pngAssetState.js`)
-   - runtime/shared utilities (`systemUtils.js`, `timer.js`)
-   - asset loading/cache support (`imageAssetCache.js`)
-   - gameplay/effects mixin-like behavior (`canExplode.js`)
+1. `engine/animation` has a relatively tight folder boundary. The main modules are:
+   - `AnimationFrameStepper`
+   - `AnimationStateBridge`
+   - `PngController`
+   - `SpriteController`
+   - `StateUtils`
 
-   This is the biggest architectural issue in the folder.
+   That is one of the more coherent engine folders reviewed so far.
 
-2. Several files are strong narrow utilities:
-   - `DebugFlag` is a clean URL-query debug toggle helper.
-   - `StringValidation` and `ObjectValidation` are coherent validation primitives.
-   - `ObjectCleanup` is small and focused.
-   - `PngAssetState` is a focused state holder for image asset lifecycle.
+2. The subsystem is built around a strong shared primitive: `AnimationFrameStepper`.
+   It centralizes:
+   - frame index normalization
+   - looping frame progression
+   - final-frame progression
 
-   These have good local boundaries, but they do not belong to the same architectural layer.
+   Architecturally, this is a good core abstraction and prevents controller logic duplication.
 
-3. `Timer` is more than a utility. It is a stateful runtime service/object with:
-   - active timer instances
-   - global registry via `Timer.timers`
-   - visibility-wide pause/resume coordination
+3. `PngController` is a stateful animation controller with clear responsibility:
+   - own current frame state
+   - own delay counter
+   - calculate source rects
+   - step looping/final-frame animation
 
-   Architecturally, this fits better as a runtime/core service than a generic util.
+   Its boundary is understandable and focused.
 
-4. `SystemUtils` is a classic broad utility bucket. It includes:
-   - string/case helpers
-   - object-type helpers
-   - config validation
-   - general-purpose support methods
+4. `SpriteController` is less of a true controller and more of a frame-set plus stepping helper:
+   - it stores frame arrays and delays
+   - but it does not own current frame state
+   - instead it delegates state progression to callers
 
-   This creates “misc utility sink” risk. It is the least well-bounded file in the folder.
+   This creates a mismatch with `PngController`, which *does* own animation state.
 
-5. `ImageAssetCache` is a well-defined service, but it is not generic utility code. It is specifically:
-   - browser image loading
-   - transparent sprite caching
-   - asset/resource management
+5. That mismatch is the biggest architecture issue in this folder:
+   - `PngController` = stateful controller
+   - `SpriteController` = mostly stateless frame-definition helper
 
-   That makes it closer to an asset/resource subsystem than a util.
+   The names imply parallel abstractions, but the actual responsibilities are different.
 
-6. `CanExplode` is clearly misplaced in `engine/utils`. It is not a utility:
-   - it owns explosion state
-   - creates `ParticleExplosion` instances
-   - updates and destroys them
-   - behaves like a mixin/behavior object
+6. `AnimationStateBridge` exists to mirror `currentFrameIndex` and `delayCounter` between:
+   - `target.animation`
+   - `target.lifecycle`
 
-   This belongs closer to effects, behaviors, or gameplay object composition.
+   This is a useful compatibility tool, but architecturally it is also a signal that animation state and lifecycle state are split across two owners and need synchronization glue.
 
-7. `DebugLog` is useful, but it couples debug logging to:
-   - URL debug flags
-   - stack trace inspection
-   - console formatting
+7. `StateUtils.syncToObject()` and `AnimationStateBridge.installMirroredCounters()` overlap conceptually:
+   - both are solving animation-state synchronization
+   - one copies values
+   - one installs mirrored accessors
 
-   It is a coherent debug helper, but it should likely live in a debug/diagnostics boundary rather than general utils.
+   That suggests animation state ownership is not yet fully normalized.
 
-8. Public/internal/private boundaries are very unclear because `engine/utils` mixes unrelated layers.
+8. `StateUtils.destroyAnimation()` is not purely animation-state logic. It mixes:
+   - calling `animation.destroy()`
+   - destroying/nulling properties on the owner object
+
+   That makes it more of an object cleanup helper than an animation helper.
+
+9. Public/internal/private boundaries are still implicit.
 
    Best current classification:
    - public:
-     - `Timer`
-     - maybe `DebugFlag`
-     - maybe `StringValidation` / `ObjectValidation`
+     - `PngController`
+     - `SpriteController`
+     - `AnimationFrameStepper`
    - internal:
-     - `ObjectCleanup`
-     - `PngAssetState`
-     - `ImageAssetCache`
-     - `DebugLog`
-   - misplaced / should move:
-     - `CanExplode`
-     - `Timer` (to core/runtime)
-     - `ImageAssetCache` (to assets/resources)
-     - debug helpers (to diagnostics/debug)
+     - `AnimationStateBridge`
+     - `StateUtils`
+
+   The likely public API issue is that `SpriteController` and `PngController` present inconsistent controller models under similar names.
 
 ### Risks
 #### High
-1. **Catch-all utility bucket**
-   `engine/utils` is absorbing multiple unrelated concerns, which makes boundaries weak and future growth messy.
+1. **Controller model inconsistency**
+   `PngController` is stateful, while `SpriteController` is mostly stateless. This makes the animation API harder to reason about and harder to standardize.
 
-2. **Misplaced behavior object**
-   `CanExplode` is not a utility at all; it is stateful behavior/effects orchestration living in the wrong layer.
-
-3. **Stateful runtime service hidden as a util**
-   `Timer` has global coordination and active-instance ownership, so treating it as a generic utility understates its architectural role.
+2. **Animation state ownership split**
+   The existence of `AnimationStateBridge` indicates animation counters are living in more than one subsystem and require synchronization glue.
 
 #### Medium
-4. **`SystemUtils` sink risk**
-   It is broad enough to become the default dumping ground for unrelated helpers.
+3. **Bridge/utility overlap**
+   `AnimationStateBridge` and `StateUtils` both participate in state mirroring/sync, which increases duplication of concepts.
 
-5. **Asset/resource logic mixed into utils**
-   `ImageAssetCache` is a specialized subsystem concern, not generic helper code.
+4. **Cleanup logic inside animation utilities**
+   `StateUtils.destroyAnimation()` mixes animation concerns with property cleanup and owner-object destruction conventions.
 
-6. **Debug/diagnostics mixed into utils**
-   `DebugFlag` and `DebugLog` are coherent together, but not as part of a generic utils boundary.
+5. **Folder naming vs abstraction naming**
+   The subsystem is coherent, but the word “Controller” means different things in `PngController` and `SpriteController`.
 
 #### Lower
-7. **Public API ambiguity**
-   Because the folder mixes many concerns, consumers are likely to import internals directly.
+6. **Potential public API ambiguity**
+   Consumers may treat all modules as peer-level public APIs because internal boundaries are not documented.
 
 ### PR Candidates
-#### PR-030 — Split `engine/utils` into real subsystem boundaries
+#### PR-036 — Normalize animation controller model
+- Type: architecture/refactor
+- Risk: high
+- Goal: make `PngController` and `SpriteController` follow the same design model:
+  - both stateful controllers
+  - or both definition/stepping helpers with external state ownership
+
+#### PR-037 — Define animation state ownership
 - Type: architecture
-- Risk: medium
-- Goal: break the catch-all folder into:
-  - `engine/debug/` or `engine/diagnostics/`
-  - `engine/validation/`
-  - `engine/assets/` or `engine/resources/`
-  - `engine/runtime/` or move selected files into `engine/core`
-  - `engine/effects/` or `engine/behaviors/`
+- Risk: high
+- Goal: choose one authoritative owner for:
+  - `currentFrameIndex`
+  - `delayCounter`
+- Reduce the need for synchronization glue between animation and lifecycle
 
-#### PR-031 — Move `CanExplode` out of utils
-- Type: architecture/refactor
-- Risk: medium
-- Goal: relocate to a behavior/effects layer such as:
-  - `engine/effects/`
-  - `engine/behaviors/`
-  - `engine/objects/behaviors/`
-
-#### PR-032 — Move `Timer` into runtime/core boundary
-- Type: architecture/refactor
-- Risk: medium
-- Goal: reclassify `Timer` as a runtime service/object instead of generic utility
-
-#### PR-033 — Break up or constrain `SystemUtils`
+#### PR-038 — Merge or clearly separate state sync helpers
 - Type: architecture/refactor
 - Risk: medium
 - Goal: either:
-  - split narrow helpers into focused modules
-  - or formally constrain `SystemUtils` to a documented limited role
+  - merge `AnimationStateBridge` and `StateUtils` state-sync responsibilities
+  - or document one as compatibility-only and one as internal utility
 
-#### PR-034 — Move `ImageAssetCache` into asset/resource subsystem
+#### PR-039 — Move cleanup behavior out of `StateUtils`
 - Type: architecture/refactor
-- Risk: low
-- Goal: keep asset loading and caching close to other image/png resource concerns
+- Risk: medium
+- Goal: keep animation utilities focused on animation concerns only
+- Move owner cleanup/property destruction to object/runtime cleanup layers
 
-#### PR-035 — Create explicit debug/diagnostics boundary
-- Type: architecture/refactor/docs
+#### PR-040 — Document public/internal animation API boundaries
+- Type: architecture/docs
 - Risk: low
-- Goal: move:
-  - `debugFlag.js`
-  - `debugLog.js`
-  into a dedicated diagnostics area
+- Goal: clarify which modules are stable public APIs and which are internal bridging utilities
 
 ## PR Roadmap Additions
 
-### PR-030
-Title: Split engine/utils into focused subsystem boundaries
-Scope: engine/utils
+### PR-036
+Title: Normalize animation controller model
+Scope: engine/animation
+Risk: High
+Status: pending
+
+### PR-037
+Title: Define animation state ownership
+Scope: engine/animation, engine/lifecycle
+Risk: High
+Status: pending
+
+### PR-038
+Title: Clarify and reduce animation state sync helpers
+Scope: engine/animation
 Risk: Medium
 Status: pending
 
-### PR-031
-Title: Move CanExplode out of engine/utils
-Scope: engine/utils, engine/effects
+### PR-039
+Title: Move cleanup behavior out of StateUtils
+Scope: engine/animation, engine/utils
 Risk: Medium
 Status: pending
 
-### PR-032
-Title: Move Timer into runtime/core boundary
-Scope: engine/utils, engine/core
-Risk: Medium
-Status: pending
-
-### PR-033
-Title: Break up or constrain SystemUtils
-Scope: engine/utils
-Risk: Medium
-Status: pending
-
-### PR-034
-Title: Move ImageAssetCache into asset/resource subsystem
-Scope: engine/utils, engine/assets
-Risk: Low
-Status: pending
-
-### PR-035
-Title: Create explicit debug diagnostics boundary
-Scope: engine/utils
+### PR-040
+Title: Define public and internal animation API boundaries
+Scope: engine/animation, docs
 Risk: Low
 Status: pending

@@ -1,37 +1,31 @@
 # PR Roadmap
 
-## PR-030
-Title: Split engine/utils into focused subsystem boundaries
-Scope: engine/utils
+## PR-036
+Title: Normalize animation controller model
+Scope: engine/animation
+Risk: High
+Status: pending
+
+## PR-037
+Title: Define animation state ownership
+Scope: engine/animation, engine/lifecycle
+Risk: High
+Status: pending
+
+## PR-038
+Title: Clarify and reduce animation state sync helpers
+Scope: engine/animation
 Risk: Medium
 Status: pending
 
-## PR-031
-Title: Move CanExplode out of engine/utils
-Scope: engine/utils, engine/effects
+## PR-039
+Title: Move cleanup behavior out of StateUtils
+Scope: engine/animation, engine/utils
 Risk: Medium
 Status: pending
 
-## PR-032
-Title: Move Timer into runtime/core boundary
-Scope: engine/utils, engine/core
-Risk: Medium
-Status: pending
-
-## PR-033
-Title: Break up or constrain SystemUtils
-Scope: engine/utils
-Risk: Medium
-Status: pending
-
-## PR-034
-Title: Move ImageAssetCache into asset/resource subsystem
-Scope: engine/utils, engine/assets
-Risk: Low
-Status: pending
-
-## PR-035
-Title: Create explicit debug diagnostics boundary
-Scope: engine/utils
+## PR-040
+Title: Define public and internal animation API boundaries
+Scope: engine/animation, docs
 Risk: Low
 Status: pending
