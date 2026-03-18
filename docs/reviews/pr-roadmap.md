@@ -1,25 +1,25 @@
 # PR Roadmap
 
-## PR-007
-Title: Split engine/game infrastructure from gameplay helpers
-Scope: engine/game
+## PR-011
+Title: Split animation counters out of ObjectLifecycle
+Scope: engine/lifecycle, engine/animation
 Risk: Medium
 Status: pending
 
-## PR-008
-Title: Make GameObjectSystem a true façade
-Scope: engine/game
+## PR-012
+Title: Define engine-wide lifecycle ownership model
+Scope: engine/core, engine/game, engine/lifecycle
+Risk: High
+Status: pending
+
+## PR-013
+Title: Clarify engine/lifecycle boundary
+Scope: engine/lifecycle, docs
+Risk: Low
+Status: pending
+
+## PR-014
+Title: Add optional transition rules to ObjectLifecycle
+Scope: engine/lifecycle
 Risk: Medium
-Status: pending
-
-## PR-009
-Title: Decouple GameObject from ObjectPNG
-Scope: engine/game, engine/objects, engine/renderers
-Risk: High
-Status: pending
-
-## PR-010
-Title: Separate deregistration from destruction
-Scope: engine/game
-Risk: High
 Status: pending

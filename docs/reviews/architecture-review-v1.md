@@ -1,165 +1,134 @@
 # Architecture Review v1
 
-## engine/game findings
+## engine/lifecycle findings
 
 ### Findings
-1. `engine/game` currently mixes three architectural layers:
-   - reusable object-system infrastructure: `gameObjectSystem.js`, `gameObjectManager.js`, `gameObjectRegistry.js`, `gameCollision.js`
-   - entity model: `gameObject.js`, `gameObjectUtils.js`
-   - game-specific UX/helpers: `gamePlayerSelectUi.js`, `gameUtils.js`
+1. `engine/lifecycle` currently contains a single class, `ObjectLifecycle`, so the folder boundary is very narrow and clear. That is a strength.
 
-   This weakens the boundary of the folder. The object system looks engine-level and reusable, while the player-select UI and player-count helper logic look consumer/gameplay specific.
+2. `ObjectLifecycle` is a small state-holder for:
+   - valid status list
+   - current status
+   - frame index
+   - delay counter
+   - destroyed guard
 
-2. `GameObjectSystem` is a façade/composition root over:
-   - manager
-   - registry
-   - collision API
+   Architecturally, this is not a full lifecycle system. It is a lifecycle-state helper.
 
-   This is a good architectural center, but it exposes child components publicly as mutable properties:
-   - `this.manager`
-   - `this.registry`
-   - `this.collision`
+3. The class cleanly separates:
+   - status validation
+   - status transition
+   - counter reset
+   - destruction guard
 
-   That means consumers can bypass the intended façade and couple directly to internals.
+   That makes it predictable and testable.
 
-3. `GameObjectManager` and `GameObjectRegistry` separate responsibilities cleanly:
-   - manager owns active collection + lifetime removal
-   - registry owns id lookup
+4. The biggest architecture issue is that the class mixes two concepts:
+   - domain lifecycle state (`status`)
+   - animation progression state (`currentFrameIndex`, `delayCounter`)
 
-   That separation is good. The architecture issue is that destruction semantics are embedded in `GameObjectManager.removeGameObject()`, so “membership removal” and “object lifetime termination” are fused.
+   Those counters are not generic lifecycle concerns. They are animation/timing concerns.
 
-4. `GameObjectSystem` rollback behavior is thoughtful:
-   - add to manager
-   - register
-   - rollback manager add on duplicate-id failure
+5. The class is neutral about lifecycle semantics:
+   - no transition graph
+   - no allowed transition rules
+   - no callbacks/hooks
+   - no ownership contract with object managers or runtime
 
-   This is good transactional thinking. But it also shows the system is coordinating two stores that can drift. The need for rollback indicates the manager/registry model is not truly unified.
+   This keeps it simple, but it also means lifecycle policy is fragmented elsewhere in the engine.
 
-5. `GameObject` extends `ObjectPNG`, which means the default “game object” abstraction is tightly coupled to PNG-backed rendering. That is a significant architecture choice:
-   - all canonical game objects inherit rendering/image assumptions
-   - non-sprite domain objects become second-class
-   - object identity, motion, and rendering are not cleanly separated
+6. The destroy model is local and defensive:
+   - `destroy()` marks the lifecycle helper unusable
+   - subsequent operations throw
 
-6. `gameCollision.js` is a thin canonical wrapper around physics/boundary utilities. This is good for public API consistency, but it is effectively an alias layer, not a game-domain collision policy layer.
+   That is internally consistent, but it also means `ObjectLifecycle.destroy()` is destruction of the helper, not destruction of the owning object. The naming can blur ownership boundaries.
 
-7. `gamePlayerSelectUi.js` and `gameUtils.js` do not fit the same abstraction level as the object system.
-   - `gamePlayerSelectUi.js` depends on canvas/core rendering concerns
-   - `gameUtils.js` contains player-select defaults, controller button conventions, and life-swapping logic
+7. Since the folder only has this one helper, the repo currently does not have a centralized lifecycle architecture in `engine/lifecycle`; instead, lifecycle ownership appears to be distributed across:
+   - `engine/core/GameBase`
+   - `engine/game/GameObjectManager`
+   - object classes and utilities
+   - this helper
 
-   These look like gameplay/UI helpers, not engine-level object-system infrastructure.
-
-8. Public/internal/private boundaries are still implicit.
-   Likely public:
-   - `GameObject`
-   - `GameObjectSystem`
-   - `GameCollision`
-
-   Likely internal:
-   - `GameObjectManager`
-   - `GameObjectRegistry`
-   - `GameObjectUtils`
-
-   Likely misplaced or should move out of `engine/game`:
-   - `GamePlayerSelectUi`
-   - `GameUtils`
+   So the folder name suggests a subsystem, but the implementation is only a utility primitive.
 
 ### Risks
 #### High
-1. **Rendering-coupled base entity**
-   `GameObject` inheriting from `ObjectPNG` makes the engine’s base game-object abstraction image/rendering specific.
+1. **Lifecycle policy fragmentation**
+   The engine does not appear to have one authoritative lifecycle model. `ObjectLifecycle` is only a helper, while real lifecycle ownership is distributed across multiple folders.
 
-2. **Façade bypass risk**
-   `GameObjectSystem` publishes `manager`, `registry`, and `collision` directly, allowing consumer code to depend on internal composition.
-
-3. **Folder boundary ambiguity**
-   `engine/game` is serving both engine infrastructure and game-specific UI/gameplay helper roles.
+2. **Animation state mixed into lifecycle state**
+   `currentFrameIndex` and `delayCounter` tie lifecycle to animation sequencing, which makes the abstraction less reusable and muddies subsystem boundaries.
 
 #### Medium
-4. **Lifetime and membership are fused**
-   Removing an object from `GameObjectManager` destroys it. That may be correct for some games, but it limits reuse for pooling, temporary deregistration, scene migration, or ownership transfer.
+3. **Misleading subsystem boundary**
+   A folder named `engine/lifecycle` implies a full lifecycle subsystem, but currently it contains only one low-level helper.
 
-5. **Dual-store coordination complexity**
-   The manager and registry are separate stores that require coordinated rollback paths.
+4. **Ownership ambiguity around destroy**
+   `ObjectLifecycle.destroy()` destroys the helper object itself, not the engine/game object lifecycle in a broader sense.
 
-6. **Pseudo-domain collision layer**
-   `GameCollision` gives a stable API, but it does not yet encode game-domain policy; it mostly re-exports lower-level utilities.
+5. **No formal transition rules**
+   Statuses are validated against an allowed set, but transition legality is not modeled. Any valid status can move to any other valid status.
 
 #### Lower
-7. **Utility sprawl**
-   `gameObjectUtils.js` mixes constructor validation, metadata init, id validation, and destroy cleanup. It is manageable now but could grow into a grab-bag utility file.
+6. **Future god-helper drift**
+   Because this is the only lifecycle file, there is a risk more unrelated lifecycle-ish behavior gets piled into it over time.
 
 ### PR Candidates
-#### PR-001 — Split `engine/game` into infrastructure vs gameplay helpers
+#### PR-011 — Split animation counters out of `ObjectLifecycle`
+- Type: architecture/refactor
+- Risk: medium
+- Goal: keep `ObjectLifecycle` focused on lifecycle state only
+- Move:
+  - `currentFrameIndex`
+  - `delayCounter`
+  into an animation/state-tracking helper or into object-specific animation code
+
+#### PR-012 — Define engine-wide lifecycle ownership model
 - Type: architecture
-- Risk: medium
-- Keep in `engine/game`:
-  - `gameObjectSystem.js`
-  - `gameObjectManager.js`
-  - `gameObjectRegistry.js`
-  - `gameCollision.js`
-  - `gameObject.js`
-  - `gameObjectUtils.js`
-- Move out:
-  - `gamePlayerSelectUi.js`
-  - `gameUtils.js`
-- Suggested destinations:
-  - `engine/ui/` or `engine/renderers/ui/`
-  - or `games/shared/` if they are really gameplay helpers
-
-#### PR-002 — Hide `GameObjectSystem` internals behind a true façade
-- Type: architecture/refactor
-- Risk: medium
-- Replace public mutable properties with private fields or documented internal accessors.
-- Keep external API on:
-  - `addGameObject`
-  - `removeGameObject`
-  - `getGameObjectById`
-  - `hasGameObjectById`
-  - `getActiveGameObjects`
-  - collision delegates
-
-#### PR-003 — Decouple base object identity/lifecycle from PNG rendering
-- Type: architecture/refactor
 - Risk: high
-- Introduce a render-agnostic base game entity, then make PNG-backed objects a specialization.
+- Goal: document and normalize who owns:
+  - init
+  - active/inactive state
+  - destruction
+  - deregistration
+  - animation-state progression
 
-#### PR-004 — Separate membership removal from destruction
-- Type: architecture/refactor
-- Risk: high
-- Add explicit lifecycle methods such as:
-  - detach / unregister
-  - destroy / dispose
-- Keep destruction as a higher-level policy, not always a side effect of removal.
-
-#### PR-005 — Document public/internal/private boundaries for `engine/game`
-- Type: docs/architecture
+#### PR-013 — Rename or re-scope `engine/lifecycle`
+- Type: architecture/docs
 - Risk: low
-- Public: `GameObjectSystem`, `GameObject`, `GameCollision`
-- Internal: `GameObjectManager`, `GameObjectRegistry`, `GameObjectUtils`
-- Reclassify/move: `GamePlayerSelectUi`, `GameUtils`
+- Goal: either:
+  - keep the folder but document it as lifecycle primitives, or
+  - expand it into a true lifecycle subsystem
+
+#### PR-014 — Add optional transition rules to `ObjectLifecycle`
+- Type: enhancement/architecture
+- Risk: medium
+- Goal: support explicit allowed transitions such as:
+  - alive -> dying
+  - dying -> dead
+  - but not dead -> alive unless explicitly configured
 
 ## PR Roadmap Additions
 
-### PR-007
-Title: Split engine/game infrastructure from gameplay helpers
-Scope: engine/game
+### PR-011
+Title: Split animation counters out of ObjectLifecycle
+Scope: engine/lifecycle, engine/animation
 Risk: Medium
 Status: pending
 
-### PR-008
-Title: Make GameObjectSystem a true façade
-Scope: engine/game
+### PR-012
+Title: Define engine-wide lifecycle ownership model
+Scope: engine/core, engine/game, engine/lifecycle
+Risk: High
+Status: pending
+
+### PR-013
+Title: Clarify engine/lifecycle boundary
+Scope: engine/lifecycle, docs
+Risk: Low
+Status: pending
+
+### PR-014
+Title: Add optional transition rules to ObjectLifecycle
+Scope: engine/lifecycle
 Risk: Medium
-Status: pending
-
-### PR-009
-Title: Decouple GameObject from ObjectPNG
-Scope: engine/game, engine/objects, engine/renderers
-Risk: High
-Status: pending
-
-### PR-010
-Title: Separate deregistration from destruction
-Scope: engine/game
-Risk: High
 Status: pending
