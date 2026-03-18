@@ -1,173 +1,184 @@
 # Architecture Review v1
 
-## engine/physics findings
+## engine/utils findings
 
 ### Findings
-1. `engine/physics` is organized as a utility-first subsystem, not an object-oriented service layer. Every module in the folder is effectively a static helper:
-   - `PhysicsUtils`
-   - `BoundaryUtils`
-   - `CollisionUtils`
-   - `CollisionShapeUtils`
-   - `VectorShapeUtils`
-   - `PolygonCollision`
+1. `engine/utils` is not a single coherent subsystem. It is currently a catch-all folder containing:
+   - debug helpers (`debugFlag.js`, `debugLog.js`)
+   - validation helpers (`objectValidation.js`, `stringValidation.js`)
+   - cleanup/state helpers (`objectCleanup.js`, `pngAssetState.js`)
+   - runtime/shared utilities (`systemUtils.js`, `timer.js`)
+   - asset loading/cache support (`imageAssetCache.js`)
+   - gameplay/effects mixin-like behavior (`canExplode.js`)
 
-   That makes the boundary easy to understand, but it also means the subsystem has no central public façade.
+   This is the biggest architectural issue in the folder.
 
-2. The folder is really serving **three different concerns**:
-   - motion/velocity helpers (`physicsUtils.js`)
-   - collision and shape helpers (`collisionUtils.js`, `collisionShapeUtils.js`, `polygonCollision.js`, `vectorShapeUtils.js`)
-   - screen/bounds logic (`boundaryUtils.js`)
+2. Several files are strong narrow utilities:
+   - `DebugFlag` is a clean URL-query debug toggle helper.
+   - `StringValidation` and `ObjectValidation` are coherent validation primitives.
+   - `ObjectCleanup` is small and focused.
+   - `PngAssetState` is a focused state holder for image asset lifecycle.
 
-   These concerns are related, but the current folder shape treats them as one flat physics bucket.
+   These have good local boundaries, but they do not belong to the same architectural layer.
 
-3. `PhysicsUtils` is broader than “physics.” It combines:
-   - velocity abstraction
-   - movement updates
-   - directional helpers
-   - gravity/wind/drag/friction/bounce
-   - future-point prediction
-   - stop/set velocity helpers
+3. `Timer` is more than a utility. It is a stateful runtime service/object with:
+   - active timer instances
+   - global registry via `Timer.timers`
+   - visibility-wide pause/resume coordination
 
-   This makes it the canonical motion utility, but also creates scope-creep risk. It is as much a kinematics helper as a physics layer.
+   Architecturally, this fits better as a runtime/core service than a generic util.
 
-4. `CollisionUtils` is the architectural center of the collision side, but it is extremely broad. It includes:
-   - point transforms
-   - AABB-style box collision
-   - circle collision
-   - vector/polygon collision
-   - debug logging and flags
-   - rendering-adjacent debug drawing imports through canvas dependencies
+4. `SystemUtils` is a classic broad utility bucket. It includes:
+   - string/case helpers
+   - object-type helpers
+   - config validation
+   - general-purpose support methods
 
-   This is a classic “god utility” risk.
+   This creates “misc utility sink” risk. It is the least well-bounded file in the folder.
 
-5. `CollisionUtils` depends on:
-   - `CanvasUtils`
-   - `DebugFlag`
-   - `DebugLog`
-   - `SystemUtils`
-   - shape utilities
-   - polygon utilities
+5. `ImageAssetCache` is a well-defined service, but it is not generic utility code. It is specifically:
+   - browser image loading
+   - transparent sprite caching
+   - asset/resource management
 
-   That means collision logic is not purely geometric/physics-focused. It is coupled to rendering config and debug infrastructure.
+   That makes it closer to an asset/resource subsystem than a util.
 
-6. `BoundaryUtils` also depends directly on `CanvasUtils.getConfigWidth()` / `getConfigHeight()`. So boundary logic is not generic world-boundary logic; it is specifically **screen/canvas boundary logic**.
+6. `CanExplode` is clearly misplaced in `engine/utils`. It is not a utility:
+   - it owns explosion state
+   - creates `ParticleExplosion` instances
+   - updates and destroys them
+   - behaves like a mixin/behavior object
 
-7. `CollisionShapeUtils` is a good normalizing helper. It creates a stable way to extract:
-   - bounding boxes
-   - vector shape data
-   from varied object types. This is one of the cleaner abstractions in the folder.
+   This belongs closer to effects, behaviors, or gameplay object composition.
 
-8. `VectorShapeUtils` is also a clean utility layer. Its responsibilities are narrow:
-   - validate point arrays
-   - rotate points
-   - calculate bounds
-   - transform vector shapes
+7. `DebugLog` is useful, but it couples debug logging to:
+   - URL debug flags
+   - stack trace inspection
+   - console formatting
 
-   This file has one of the strongest boundaries in the subsystem.
+   It is a coherent debug helper, but it should likely live in a debug/diagnostics boundary rather than general utils.
 
-9. `PolygonCollision` is very focused and well-contained. It provides edge intersection and point-in-polygon utilities and does not try to own broader collision orchestration.
+8. Public/internal/private boundaries are very unclear because `engine/utils` mixes unrelated layers.
 
-10. Public/internal/private boundaries are not explicit, but a sensible classification would be:
-
-   **public**
-   - `PhysicsUtils`
-   - `CollisionUtils`
-   - `BoundaryUtils`
-
-   **internal**
-   - `CollisionShapeUtils`
-   - `VectorShapeUtils`
-   - `PolygonCollision`
-
-   The public issue is that `CollisionUtils` and `BoundaryUtils` expose engine behavior that is actually canvas/screen-dependent, not truly generic physics.
+   Best current classification:
+   - public:
+     - `Timer`
+     - maybe `DebugFlag`
+     - maybe `StringValidation` / `ObjectValidation`
+   - internal:
+     - `ObjectCleanup`
+     - `PngAssetState`
+     - `ImageAssetCache`
+     - `DebugLog`
+   - misplaced / should move:
+     - `CanExplode`
+     - `Timer` (to core/runtime)
+     - `ImageAssetCache` (to assets/resources)
+     - debug helpers (to diagnostics/debug)
 
 ### Risks
 #### High
-1. **`CollisionUtils` god-utility risk**
-   It combines collision math, object-shape interpretation, debug behavior, and canvas-aware assumptions in one large static utility.
+1. **Catch-all utility bucket**
+   `engine/utils` is absorbing multiple unrelated concerns, which makes boundaries weak and future growth messy.
 
-2. **Subsystem boundary blur between physics and rendering/runtime**
-   `CollisionUtils` and `BoundaryUtils` both depend on `CanvasUtils`, so this subsystem is partly geometry and partly screen/runtime behavior.
+2. **Misplaced behavior object**
+   `CanExplode` is not a utility at all; it is stateful behavior/effects orchestration living in the wrong layer.
 
-3. **No central physics façade**
-   Consumers likely import many utility modules directly, which makes future refactors harder and public/internal boundaries weaker.
+3. **Stateful runtime service hidden as a util**
+   `Timer` has global coordination and active-instance ownership, so treating it as a generic utility understates its architectural role.
 
 #### Medium
-4. **Flat folder with mixed concerns**
-   Motion, collision, shape extraction, and screen boundaries all live together without sub-boundaries.
+4. **`SystemUtils` sink risk**
+   It is broad enough to become the default dumping ground for unrelated helpers.
 
-5. **`PhysicsUtils` scope creep**
-   It contains both low-level velocity abstraction and higher-level motion helpers, which may grow into a catch-all movement utility.
+5. **Asset/resource logic mixed into utils**
+   `ImageAssetCache` is a specialized subsystem concern, not generic helper code.
 
-6. **Debug coupling inside collision layer**
-   Collision code directly owns debug flag/log behavior instead of routing that through a separate debug layer.
+6. **Debug/diagnostics mixed into utils**
+   `DebugFlag` and `DebugLog` are coherent together, but not as part of a generic utils boundary.
 
 #### Lower
-7. **Canvas-specific semantics hidden behind generic names**
-   `BoundaryUtils` sounds generic, but most of its behavior is specifically about game screen/canvas boundaries.
+7. **Public API ambiguity**
+   Because the folder mixes many concerns, consumers are likely to import internals directly.
 
 ### PR Candidates
-#### PR-025 — Split `engine/physics` into motion, collision, and boundaries sub-boundaries
+#### PR-030 — Split `engine/utils` into real subsystem boundaries
 - Type: architecture
 - Risk: medium
-- Goal: separate:
-  - motion/kinematics
-  - collision/shape math
-  - screen/world boundary policies
+- Goal: break the catch-all folder into:
+  - `engine/debug/` or `engine/diagnostics/`
+  - `engine/validation/`
+  - `engine/assets/` or `engine/resources/`
+  - `engine/runtime/` or move selected files into `engine/core`
+  - `engine/effects/` or `engine/behaviors/`
 
-#### PR-026 — Break `CollisionUtils` into smaller focused modules
-- Type: architecture/refactor
-- Risk: high
-- Goal: split:
-  - collision math
-  - collision shape normalization
-  - debug helpers
-  - screen-aware checks
-- Keep `CollisionUtils` only as a stable façade if needed
-
-#### PR-027 — Rename or document `BoundaryUtils` as screen-boundary logic
-- Type: architecture/docs/refactor
-- Risk: low
-- Goal: make it clear this is canvas/game-area boundary behavior, not generic world-boundary math
-
-#### PR-028 — Remove debug ownership from collision core
+#### PR-031 — Move `CanExplode` out of utils
 - Type: architecture/refactor
 - Risk: medium
-- Goal: move debug flag/logging concerns out of collision core and into optional debug wrappers
+- Goal: relocate to a behavior/effects layer such as:
+  - `engine/effects/`
+  - `engine/behaviors/`
+  - `engine/objects/behaviors/`
 
-#### PR-029 — Define a public physics API surface
-- Type: architecture/docs
+#### PR-032 — Move `Timer` into runtime/core boundary
+- Type: architecture/refactor
+- Risk: medium
+- Goal: reclassify `Timer` as a runtime service/object instead of generic utility
+
+#### PR-033 — Break up or constrain `SystemUtils`
+- Type: architecture/refactor
+- Risk: medium
+- Goal: either:
+  - split narrow helpers into focused modules
+  - or formally constrain `SystemUtils` to a documented limited role
+
+#### PR-034 — Move `ImageAssetCache` into asset/resource subsystem
+- Type: architecture/refactor
 - Risk: low
-- Goal: document which utilities are public engine APIs and which are internal geometry helpers
+- Goal: keep asset loading and caching close to other image/png resource concerns
+
+#### PR-035 — Create explicit debug/diagnostics boundary
+- Type: architecture/refactor/docs
+- Risk: low
+- Goal: move:
+  - `debugFlag.js`
+  - `debugLog.js`
+  into a dedicated diagnostics area
 
 ## PR Roadmap Additions
 
-### PR-025
-Title: Split physics subsystem into motion, collision, and boundary layers
-Scope: engine/physics
+### PR-030
+Title: Split engine/utils into focused subsystem boundaries
+Scope: engine/utils
 Risk: Medium
 Status: pending
 
-### PR-026
-Title: Break CollisionUtils into focused modules
-Scope: engine/physics
-Risk: High
+### PR-031
+Title: Move CanExplode out of engine/utils
+Scope: engine/utils, engine/effects
+Risk: Medium
 Status: pending
 
-### PR-027
-Title: Clarify BoundaryUtils as screen-boundary logic
-Scope: engine/physics
+### PR-032
+Title: Move Timer into runtime/core boundary
+Scope: engine/utils, engine/core
+Risk: Medium
+Status: pending
+
+### PR-033
+Title: Break up or constrain SystemUtils
+Scope: engine/utils
+Risk: Medium
+Status: pending
+
+### PR-034
+Title: Move ImageAssetCache into asset/resource subsystem
+Scope: engine/utils, engine/assets
 Risk: Low
 Status: pending
 
-### PR-028
-Title: Remove debug concerns from collision core
-Scope: engine/physics
-Risk: Medium
-Status: pending
-
-### PR-029
-Title: Define public and internal physics API boundaries
-Scope: engine/physics, docs
+### PR-035
+Title: Create explicit debug diagnostics boundary
+Scope: engine/utils
 Risk: Low
 Status: pending

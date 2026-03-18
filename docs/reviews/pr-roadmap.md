@@ -1,31 +1,37 @@
 # PR Roadmap
 
-## PR-025
-Title: Split physics subsystem into motion, collision, and boundary layers
-Scope: engine/physics
+## PR-030
+Title: Split engine/utils into focused subsystem boundaries
+Scope: engine/utils
 Risk: Medium
 Status: pending
 
-## PR-026
-Title: Break CollisionUtils into focused modules
-Scope: engine/physics
-Risk: High
+## PR-031
+Title: Move CanExplode out of engine/utils
+Scope: engine/utils, engine/effects
+Risk: Medium
 Status: pending
 
-## PR-027
-Title: Clarify BoundaryUtils as screen-boundary logic
-Scope: engine/physics
+## PR-032
+Title: Move Timer into runtime/core boundary
+Scope: engine/utils, engine/core
+Risk: Medium
+Status: pending
+
+## PR-033
+Title: Break up or constrain SystemUtils
+Scope: engine/utils
+Risk: Medium
+Status: pending
+
+## PR-034
+Title: Move ImageAssetCache into asset/resource subsystem
+Scope: engine/utils, engine/assets
 Risk: Low
 Status: pending
 
-## PR-028
-Title: Remove debug concerns from collision core
-Scope: engine/physics
-Risk: Medium
-Status: pending
-
-## PR-029
-Title: Define public and internal physics API boundaries
-Scope: engine/physics, docs
+## PR-035
+Title: Create explicit debug diagnostics boundary
+Scope: engine/utils
 Risk: Low
 Status: pending
