@@ -10,3 +10,4 @@
 # Ignore the docs directory
 /docs/assets/
 /docs/frogger/
+/*.zip

@@ -1,134 +1,187 @@
 # Architecture Review v1
 
-## engine/lifecycle findings
+## engine/render findings
 
 ### Findings
-1. `engine/lifecycle` currently contains a single class, `ObjectLifecycle`, so the folder boundary is very narrow and clear. That is a strength.
+1. The actual render folder in the repo is `engine/renderers/`, not `engine/render/`. Architecturally, this pass covers `engine/renderers`.
 
-2. `ObjectLifecycle` is a small state-holder for:
-   - valid status list
-   - current status
-   - frame index
-   - delay counter
-   - destroyed guard
+2. `engine/renderers/` has a mostly coherent top-level purpose: renderers and renderer support. The main reusable render modules are:
+   - `primitiveRenderer.js`
+   - `spriteRenderer.js`
+   - `pngRenderer.js`
+   - `vectorRenderer.js`
+   - `rendererGuards.js`
 
-   Architecturally, this is not a full lifecycle system. It is a lifecycle-state helper.
+   That center is solid.
 
-3. The class cleanly separates:
-   - status validation
-   - status transition
-   - counter reset
-   - destruction guard
+3. The folder boundary is weakened by mixed abstraction levels:
+   - renderer implementations live beside
+   - asset catalogs (`assets/colors.js`, `assets/font5x6.js`, `assets/palettes.js`, `assets/palettesList.js`)
+   - effect/entity-like behavior (`particleExplosion.js`)
+   - a planning note file (`pixelRenderer.js.txt`)
 
-   That makes it predictable and testable.
+   So `engine/renderers/` is partly a renderer subsystem, partly a render-assets bucket, and partly a staging area.
 
-4. The biggest architecture issue is that the class mixes two concepts:
-   - domain lifecycle state (`status`)
-   - animation progression state (`currentFrameIndex`, `delayCounter`)
+4. `PrimitiveRenderer` is the architectural center. It is a broad static drawing utility with many shape/debug helpers and private internals. This gives the repo one canonical low-level drawing API, which is good.
 
-   Those counters are not generic lifecycle concerns. They are animation/timing concerns.
+   The main architecture concern is scope: `PrimitiveRenderer` is both:
+   - foundational drawing backend
+   - high-level debug drawing helper
 
-5. The class is neutral about lifecycle semantics:
-   - no transition graph
-   - no allowed transition rules
-   - no callbacks/hooks
-   - no ownership contract with object managers or runtime
+   That makes it powerful, but also increases the chance it becomes the rendering “god utility.”
 
-   This keeps it simple, but it also means lifecycle policy is fragmented elsewhere in the engine.
+5. `RendererGuards` is a good boundary helper. It centralizes:
+   - renderability checks
+   - offset normalization
+   - line-width/number normalization
 
-6. The destroy model is local and defensive:
-   - `destroy()` marks the lifecycle helper unusable
-   - subsequent operations throw
+   This is a strong architectural move because it keeps renderer entry checks consistent.
 
-   That is internally consistent, but it also means `ObjectLifecycle.destroy()` is destruction of the helper, not destruction of the owning object. The naming can blur ownership boundaries.
+6. The renderers are tightly coupled to `engine/core` canvas helpers:
+   - `PrimitiveRenderer` depends on `CanvasUtils`
+   - `SpriteRenderer` depends on `CanvasSprite`
+   - `PngRenderer` depends on `CanvasUtils` and `CanvasText`
 
-7. Since the folder only has this one helper, the repo currently does not have a centralized lifecycle architecture in `engine/lifecycle`; instead, lifecycle ownership appears to be distributed across:
-   - `engine/core/GameBase`
-   - `engine/game/GameObjectManager`
-   - object classes and utilities
-   - this helper
+   This is workable, but it means the rendering subsystem is split across two folders:
+   - low-level canvas primitives in `engine/core`
+   - concrete renderers in `engine/renderers`
 
-   So the folder name suggests a subsystem, but the implementation is only a utility primitive.
+   The boundary is therefore not cleanly “all rendering lives here.”
+
+7. `PngRenderer`, `SpriteRenderer`, and `VectorRenderer` are thin specializations over shared low-level helpers. That is good. Their responsibility is clear:
+   - PNG image draw path
+   - sprite frame draw path
+   - vector/path draw path
+
+   The downside is that the real rendering dependency graph is centered on `engine/core` canvas classes and `PrimitiveRenderer`, not on a self-contained render subsystem.
+
+8. `particleExplosion.js` does not fit the same abstraction level as the renderer classes. It is not just a renderer; it is an effect object with:
+   - state
+   - particle generation
+   - update logic
+   - draw logic
+   - lifecycle (`isDone`, `destroy`)
+
+   This makes it feel closer to:
+   - an object/effects subsystem
+   - or a gameplay visual effect
+   than a pure renderer module.
+
+9. The assets subfolder is useful, but it mixes raw data and utility APIs:
+   - `palettesList.js` is a data catalog
+   - `colors.js` and `palettes.js` are static utility/service layers
+   - `font5x6.js` is a font data holder with utility-class shape
+
+   These likely deserve a clearer `render-assets` or `graphics-assets` boundary if the repo keeps growing.
+
+10. Public/internal/private boundaries are still implicit.
+
+   Best current classification:
+   - public:
+     - `PrimitiveRenderer`
+     - `SpriteRenderer`
+     - `PngRenderer`
+     - `VectorRenderer`
+   - internal:
+     - `RendererGuards`
+     - render asset helpers
+   - misplaced / should move:
+     - `ParticleExplosion`
+     - `pixelRenderer.js.txt` (planning note, not runtime module)
 
 ### Risks
 #### High
-1. **Lifecycle policy fragmentation**
-   The engine does not appear to have one authoritative lifecycle model. `ObjectLifecycle` is only a helper, while real lifecycle ownership is distributed across multiple folders.
+1. **Rendering split across `engine/core` and `engine/renderers`**
+   The subsystem boundary is blurred because core owns important canvas rendering primitives while renderers owns higher-level draw logic.
 
-2. **Animation state mixed into lifecycle state**
-   `currentFrameIndex` and `delayCounter` tie lifecycle to animation sequencing, which makes the abstraction less reusable and muddies subsystem boundaries.
+2. **`PrimitiveRenderer` scope creep**
+   It is already the canonical draw backend and also contains debug helpers. Without guardrails it can become an all-purpose graphics utility sink.
+
+3. **Effect-object mixed into renderer subsystem**
+   `ParticleExplosion` combines simulation state and rendering in the renderers folder, which muddies ownership boundaries.
 
 #### Medium
-3. **Misleading subsystem boundary**
-   A folder named `engine/lifecycle` implies a full lifecycle subsystem, but currently it contains only one low-level helper.
+4. **Asset/data/utilities mixed together**
+   The `assets/` area combines catalogs, palette services, fonts, and color utilities under one renderers path.
 
-4. **Ownership ambiguity around destroy**
-   `ObjectLifecycle.destroy()` destroys the helper object itself, not the engine/game object lifecycle in a broader sense.
+5. **Folder naming and staging drift**
+   `pixelRenderer.js.txt` is a planning artifact inside the live module tree, which weakens the production/runtime boundary.
 
-5. **No formal transition rules**
-   Statuses are validated against an allowed set, but transition legality is not modeled. Any valid status can move to any other valid status.
+6. **Static-global rendering assumptions**
+   Most rendering entry points depend on global/static canvas utilities, which reduces isolation and multi-surface flexibility.
 
 #### Lower
-6. **Future god-helper drift**
-   Because this is the only lifecycle file, there is a risk more unrelated lifecycle-ish behavior gets piled into it over time.
+7. **Public API ambiguity**
+   Consumers can likely import many helper modules directly because public vs internal render APIs are not explicitly documented.
 
 ### PR Candidates
-#### PR-011 — Split animation counters out of `ObjectLifecycle`
+#### PR-015 — Clarify render subsystem boundary
+- Type: architecture
+- Risk: medium
+- Goal: define where rendering truly lives
+- Suggested direction:
+  - keep high-level renderers in `engine/renderers`
+  - classify `CanvasUtils`, `CanvasSprite`, `CanvasText` as rendering internals or move them toward a dedicated render foundation area
+
+#### PR-016 — Split `ParticleExplosion` out of `engine/renderers`
 - Type: architecture/refactor
 - Risk: medium
-- Goal: keep `ObjectLifecycle` focused on lifecycle state only
-- Move:
-  - `currentFrameIndex`
-  - `delayCounter`
-  into an animation/state-tracking helper or into object-specific animation code
+- Goal: move stateful visual effects into a more appropriate home such as:
+  - `engine/effects/`
+  - `engine/objects/effects/`
+  - or `games/shared/effects/`
 
-#### PR-012 — Define engine-wide lifecycle ownership model
-- Type: architecture
-- Risk: high
-- Goal: document and normalize who owns:
-  - init
-  - active/inactive state
-  - destruction
-  - deregistration
-  - animation-state progression
-
-#### PR-013 — Rename or re-scope `engine/lifecycle`
-- Type: architecture/docs
+#### PR-017 — Split render assets from renderers
+- Type: architecture/refactor
 - Risk: low
-- Goal: either:
-  - keep the folder but document it as lifecycle primitives, or
-  - expand it into a true lifecycle subsystem
+- Goal: separate:
+  - renderer implementations
+  - asset catalogs
+  - palette/color utilities
+- Suggested destinations:
+  - `engine/render-assets/`
+  - `engine/graphics/assets/`
 
-#### PR-014 — Add optional transition rules to `ObjectLifecycle`
-- Type: enhancement/architecture
+#### PR-018 — Keep `PrimitiveRenderer` low-level and move debug helpers out
+- Type: architecture/refactor
 - Risk: medium
-- Goal: support explicit allowed transitions such as:
-  - alive -> dying
-  - dying -> dead
-  - but not dead -> alive unless explicitly configured
+- Goal: preserve `PrimitiveRenderer` as the core shape/path backend, while moving debug/bounds helpers into:
+  - `DebugRenderer`
+  - or `RenderDebugUtils`
+
+#### PR-019 — Remove planning artifacts from runtime tree
+- Type: cleanup/docs
+- Risk: low
+- Goal: move `pixelRenderer.js.txt` into docs, backlog, or ADR-style notes
 
 ## PR Roadmap Additions
 
-### PR-011
-Title: Split animation counters out of ObjectLifecycle
-Scope: engine/lifecycle, engine/animation
+### PR-015
+Title: Clarify engine render subsystem boundaries
+Scope: engine/renderers, engine/core
 Risk: Medium
 Status: pending
 
-### PR-012
-Title: Define engine-wide lifecycle ownership model
-Scope: engine/core, engine/game, engine/lifecycle
-Risk: High
+### PR-016
+Title: Move ParticleExplosion out of engine/renderers
+Scope: engine/renderers
+Risk: Medium
 Status: pending
 
-### PR-013
-Title: Clarify engine/lifecycle boundary
-Scope: engine/lifecycle, docs
+### PR-017
+Title: Split render assets from renderer implementations
+Scope: engine/renderers/assets
 Risk: Low
 Status: pending
 
-### PR-014
-Title: Add optional transition rules to ObjectLifecycle
-Scope: engine/lifecycle
+### PR-018
+Title: Separate PrimitiveRenderer debug helpers from draw backend
+Scope: engine/renderers
 Risk: Medium
+Status: pending
+
+### PR-019
+Title: Remove pixelRenderer planning artifact from runtime tree
+Scope: engine/renderers
+Risk: Low
 Status: pending
