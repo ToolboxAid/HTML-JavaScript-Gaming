@@ -1,31 +1,31 @@
 # PR Roadmap
 
-## PR-015
-Title: Clarify engine render subsystem boundaries
-Scope: engine/renderers, engine/core
+## PR-020
+Title: Make input adapters explicitly startable
+Scope: engine/input, engine/core
 Risk: Medium
 Status: pending
 
-## PR-016
-Title: Move ParticleExplosion out of engine/renderers
-Scope: engine/renderers
+## PR-021
+Title: Make GameControllers a true façade
+Scope: engine/input/controller
 Risk: Medium
 Status: pending
 
-## PR-017
-Title: Split render assets from renderer implementations
-Scope: engine/renderers/assets
+## PR-022
+Title: Define public and internal input API boundaries
+Scope: engine/input, docs
 Risk: Low
 Status: pending
 
-## PR-018
-Title: Separate PrimitiveRenderer debug helpers from draw backend
-Scope: engine/renderers
-Risk: Medium
+## PR-023
+Title: Move gamepadDebugger into debug/tooling layer
+Scope: engine/input/controller
+Risk: Low
 Status: pending
 
-## PR-019
-Title: Remove pixelRenderer planning artifact from runtime tree
-Scope: engine/renderers
-Risk: Low
+## PR-024
+Title: Separate canvas pointer normalization from MouseInput
+Scope: engine/input
+Risk: Medium
 Status: pending

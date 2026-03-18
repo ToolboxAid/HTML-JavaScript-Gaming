@@ -1,187 +1,180 @@
 # Architecture Review v1
 
-## engine/render findings
+## engine/input findings
 
 ### Findings
-1. The actual render folder in the repo is `engine/renderers/`, not `engine/render/`. Architecturally, this pass covers `engine/renderers`.
+1. `engine/input` has a stronger subsystem boundary than most of the repo. It is organized around:
+   - keyboard input
+   - mouse input
+   - controller/gamepad input
+   - shared input primitives (`InputFrameState`, `InputLifecycle`)
 
-2. `engine/renderers/` has a mostly coherent top-level purpose: renderers and renderer support. The main reusable render modules are:
-   - `primitiveRenderer.js`
-   - `spriteRenderer.js`
-   - `pngRenderer.js`
-   - `vectorRenderer.js`
-   - `rendererGuards.js`
+   That is a good top-level shape.
 
-   That center is solid.
+2. `InputFrameState` is a strong reusable primitive. It cleanly models frame-based input transitions:
+   - pressed
+   - down
+   - released
+   - pendingDown
+   - pendingUp
 
-3. The folder boundary is weakened by mixed abstraction levels:
-   - renderer implementations live beside
-   - asset catalogs (`assets/colors.js`, `assets/font5x6.js`, `assets/palettes.js`, `assets/palettesList.js`)
-   - effect/entity-like behavior (`particleExplosion.js`)
-   - a planning note file (`pixelRenderer.js.txt`)
+   This is one of the clearest engine abstractions reviewed so far.
 
-   So `engine/renderers/` is partly a renderer subsystem, partly a render-assets bucket, and partly a staging area.
+3. `InputLifecycle` is also a good primitive. It standardizes start/stop/destroy listener lifecycles and is already reused by:
+   - `KeyboardInput`
+   - `MouseInput`
+   - `GameControllers`
 
-4. `PrimitiveRenderer` is the architectural center. It is a broad static drawing utility with many shape/debug helpers and private internals. This gives the repo one canonical low-level drawing API, which is good.
+   That is good subsystem consistency.
 
-   The main architecture concern is scope: `PrimitiveRenderer` is both:
-   - foundational drawing backend
-   - high-level debug drawing helper
+4. The main architecture weakness is that input ownership is split across two styles:
+   - keyboard/mouse use the shared frame-state primitive directly
+   - controllers use a custom stack: `GameControllers` + `GamepadManager` + `GamepadState` + `GamepadMapper`
 
-   That makes it powerful, but also increases the chance it becomes the rendering “god utility.”
+   The controller stack is understandable, but it is not aligned with the simpler keyboard/mouse model.
 
-5. `RendererGuards` is a good boundary helper. It centralizes:
-   - renderability checks
-   - offset normalization
-   - line-width/number normalization
+5. `KeyboardInput` and `MouseInput` are clean public-facing adapters, but both auto-start in their constructors. This matches the earlier `GameBase` pattern and keeps lifecycle implicit rather than staged.
 
-   This is a strong architectural move because it keeps renderer entry checks consistent.
+6. `MouseInput` mixes:
+   - button-state input handling
+   - pointer position tracking
+   - wheel tracking
+   - canvas scaling normalization
 
-6. The renderers are tightly coupled to `engine/core` canvas helpers:
-   - `PrimitiveRenderer` depends on `CanvasUtils`
-   - `SpriteRenderer` depends on `CanvasSprite`
-   - `PngRenderer` depends on `CanvasUtils` and `CanvasText`
+   This is still acceptable, but it means `MouseInput` is both an input adapter and a canvas-coordinate translator.
 
-   This is workable, but it means the rendering subsystem is split across two folders:
-   - low-level canvas primitives in `engine/core`
-   - concrete renderers in `engine/renderers`
+7. The controller subsystem is the most architecturally complex part of input:
+   - `GamepadManager` owns browser polling and connection events
+   - `GameControllers` owns semantic API and mapping/state coordination
+   - `GamepadMapper` translates raw layout into semantic names
+   - `GamepadState` tracks per-frame buttons/axes
 
-   The boundary is therefore not cleanly “all rendering lives here.”
+   This layering is mostly sound, but boundaries are not fully sealed.
 
-7. `PngRenderer`, `SpriteRenderer`, and `VectorRenderer` are thin specializations over shared low-level helpers. That is good. Their responsibility is clear:
-   - PNG image draw path
-   - sprite frame draw path
-   - vector/path draw path
+8. `GameControllers` acts as a façade, but it publicly exposes internal structures such as:
+   - `gamepadManager`
+   - `gamepadStates`
+   - `gamepadMappers`
 
-   The downside is that the real rendering dependency graph is centered on `engine/core` canvas classes and `PrimitiveRenderer`, not on a self-contained render subsystem.
+   This repeats the same façade-bypass issue found in `engine/game`.
 
-8. `particleExplosion.js` does not fit the same abstraction level as the renderer classes. It is not just a renderer; it is an effect object with:
-   - state
-   - particle generation
-   - update logic
-   - draw logic
-   - lifecycle (`isDone`, `destroy`)
+9. The controller subsystem depends on a global/shared messaging layer:
+   - `EventBus.getInstance()`
+   - browser-global `window` gamepad events
+   - interval polling
 
-   This makes it feel closer to:
-   - an object/effects subsystem
-   - or a gameplay visual effect
-   than a pure renderer module.
+   That is reasonable for a browser engine, but it means controller input is not as self-contained as keyboard/mouse.
 
-9. The assets subfolder is useful, but it mixes raw data and utility APIs:
-   - `palettesList.js` is a data catalog
-   - `colors.js` and `palettes.js` are static utility/service layers
-   - `font5x6.js` is a font data holder with utility-class shape
+10. `gamepadDebugger.js` looks like tooling/debug support, not core input infrastructure. It may belong in a debug/tooling layer rather than inside the primary controller runtime tree.
 
-   These likely deserve a clearer `render-assets` or `graphics-assets` boundary if the repo keeps growing.
-
-10. Public/internal/private boundaries are still implicit.
+11. Public/internal/private boundaries are still implicit.
 
    Best current classification:
    - public:
-     - `PrimitiveRenderer`
-     - `SpriteRenderer`
-     - `PngRenderer`
-     - `VectorRenderer`
+     - `KeyboardInput`
+     - `MouseInput`
+     - `GameControllers`
    - internal:
-     - `RendererGuards`
-     - render asset helpers
+     - `InputFrameState`
+     - `InputLifecycle`
+     - `GamepadManager`
+     - `GamepadMapper`
+     - `GamepadState`
+     - `GameControllerMap`
+     - `gamepadEnums.js`
    - misplaced / should move:
-     - `ParticleExplosion`
-     - `pixelRenderer.js.txt` (planning note, not runtime module)
+     - `gamepadDebugger.js`
 
 ### Risks
 #### High
-1. **Rendering split across `engine/core` and `engine/renderers`**
-   The subsystem boundary is blurred because core owns important canvas rendering primitives while renderers owns higher-level draw logic.
+1. **Façade bypass in controller input**
+   `GameControllers` exposes internal manager/state/mapper structures directly, so games can couple to implementation details.
 
-2. **`PrimitiveRenderer` scope creep**
-   It is already the canonical draw backend and also contains debug helpers. Without guardrails it can become an all-purpose graphics utility sink.
+2. **Lifecycle auto-start in constructors**
+   Keyboard, mouse, and controller adapters become live immediately on construction, which makes setup/testing/composition harder.
 
-3. **Effect-object mixed into renderer subsystem**
-   `ParticleExplosion` combines simulation state and rendering in the renderers folder, which muddies ownership boundaries.
+3. **Input model inconsistency**
+   Keyboard/mouse use a small shared primitive model, while controllers use a more bespoke architecture. The subsystem feels unified at the folder level, but not yet at the API shape level.
 
 #### Medium
-4. **Asset/data/utilities mixed together**
-   The `assets/` area combines catalogs, palette services, fonts, and color utilities under one renderers path.
+4. **Canvas-specific pointer normalization inside `MouseInput`**
+   Mouse input is tied directly to canvas coordinate scaling, which makes it less reusable as a generic pointer adapter.
 
-5. **Folder naming and staging drift**
-   `pixelRenderer.js.txt` is a planning artifact inside the live module tree, which weakens the production/runtime boundary.
+5. **Controller runtime depends on global event bus + polling**
+   The controller stack depends on shared messaging and global browser facilities, increasing hidden coupling.
 
-6. **Static-global rendering assumptions**
-   Most rendering entry points depend on global/static canvas utilities, which reduces isolation and multi-surface flexibility.
+6. **Debug/runtime boundary blur**
+   `gamepadDebugger.js` lives inside the runtime controller folder rather than a debug or tooling area.
 
 #### Lower
 7. **Public API ambiguity**
-   Consumers can likely import many helper modules directly because public vs internal render APIs are not explicitly documented.
+   Consumers can likely import internal controller modules directly because the intended public API is not documented.
 
 ### PR Candidates
-#### PR-015 — Clarify render subsystem boundary
-- Type: architecture
-- Risk: medium
-- Goal: define where rendering truly lives
-- Suggested direction:
-  - keep high-level renderers in `engine/renderers`
-  - classify `CanvasUtils`, `CanvasSprite`, `CanvasText` as rendering internals or move them toward a dedicated render foundation area
-
-#### PR-016 — Split `ParticleExplosion` out of `engine/renderers`
+#### PR-020 — Make input adapters explicitly startable
 - Type: architecture/refactor
 - Risk: medium
-- Goal: move stateful visual effects into a more appropriate home such as:
-  - `engine/effects/`
-  - `engine/objects/effects/`
-  - or `games/shared/effects/`
+- Goal: stop auto-starting keyboard, mouse, and controller listeners in constructors
+- Add explicit `start()` ownership at runtime/bootstrap level
 
-#### PR-017 — Split render assets from renderers
+#### PR-021 — Make `GameControllers` a true façade
 - Type: architecture/refactor
+- Risk: medium
+- Goal: hide:
+  - `gamepadManager`
+  - `gamepadStates`
+  - `gamepadMappers`
+- Keep games on semantic methods only
+
+#### PR-022 — Define unified input API boundaries
+- Type: architecture/docs
 - Risk: low
-- Goal: separate:
-  - renderer implementations
-  - asset catalogs
-  - palette/color utilities
-- Suggested destinations:
-  - `engine/render-assets/`
-  - `engine/graphics/assets/`
+- Goal: formalize:
+  - public adapters (`KeyboardInput`, `MouseInput`, `GameControllers`)
+  - internal primitives/helpers
+  - controller support internals
 
-#### PR-018 — Keep `PrimitiveRenderer` low-level and move debug helpers out
+#### PR-023 — Split `gamepadDebugger` into debug/tooling layer
+- Type: architecture/cleanup
+- Risk: low
+- Goal: move gamepad-specific debugging support out of the runtime input tree
+
+#### PR-024 — Separate pointer normalization from `MouseInput`
 - Type: architecture/refactor
 - Risk: medium
-- Goal: preserve `PrimitiveRenderer` as the core shape/path backend, while moving debug/bounds helpers into:
-  - `DebugRenderer`
-  - or `RenderDebugUtils`
-
-#### PR-019 — Remove planning artifacts from runtime tree
-- Type: cleanup/docs
-- Risk: low
-- Goal: move `pixelRenderer.js.txt` into docs, backlog, or ADR-style notes
+- Goal: split generic mouse/button tracking from canvas-coordinate translation
+- Possible targets:
+  - `PointerInput`
+  - `CanvasPointerAdapter`
 
 ## PR Roadmap Additions
 
-### PR-015
-Title: Clarify engine render subsystem boundaries
-Scope: engine/renderers, engine/core
+### PR-020
+Title: Make input adapters explicitly startable
+Scope: engine/input, engine/core
 Risk: Medium
 Status: pending
 
-### PR-016
-Title: Move ParticleExplosion out of engine/renderers
-Scope: engine/renderers
+### PR-021
+Title: Make GameControllers a true façade
+Scope: engine/input/controller
 Risk: Medium
 Status: pending
 
-### PR-017
-Title: Split render assets from renderer implementations
-Scope: engine/renderers/assets
+### PR-022
+Title: Define public and internal input API boundaries
+Scope: engine/input, docs
 Risk: Low
 Status: pending
 
-### PR-018
-Title: Separate PrimitiveRenderer debug helpers from draw backend
-Scope: engine/renderers
-Risk: Medium
+### PR-023
+Title: Move gamepadDebugger into debug/tooling layer
+Scope: engine/input/controller
+Risk: Low
 Status: pending
 
-### PR-019
-Title: Remove pixelRenderer planning artifact from runtime tree
-Scope: engine/renderers
-Risk: Low
+### PR-024
+Title: Separate canvas pointer normalization from MouseInput
+Scope: engine/input
+Risk: Medium
 Status: pending
