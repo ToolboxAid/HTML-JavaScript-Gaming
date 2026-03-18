@@ -290,13 +290,3 @@ SCOPE: runtime
 * **SCOPE** = how much
 * **FOCUS** = why
 * **OUTPUT** = what you get
-
----
-
-If you want next step, I can convert this into:
-
-✅ `/docs/START_SESSION.md` (clean, versioned v1)
-✅ `/docs/PR_WORKFLOW.md`
-✅ GitHub PR template aligned with this system
-
-That’s how you turn this into a full dev system.
