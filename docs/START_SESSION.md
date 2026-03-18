@@ -1,184 +1,185 @@
 # ToolboxAid Dev Protocol v1
 
 ## Purpose
-Standardized command interface for interacting with ChatGPT for:
-- Code review
-- Architecture analysis
-- PR generation
-- Refactoring planning
 
----
+Standard command interface for working with ChatGPT on:
 
-## Session Start (Short Version)
+- architecture review
+- code review
+- PR planning
+- refactoring
+- performance analysis
+- API boundary review
 
-Use this at the start of every ChatGPT session:
+## Daily starter
 
-COMMAND: START_SESSION  
-REPO: ToolboxAid/HTML-JavaScript-Gaming  
-SCOPE: full  
-FOCUS: architecture  
-OUTPUT: review_state, plan, tasks  
+Use this short block at the start of a new chat session:
 
----
+```text
+COMMAND: START_SESSION
+REPO: ToolboxAid/HTML-JavaScript-Gaming
+SCOPE: full
+FOCUS: architecture
+OUTPUT: review_state, plan, tasks
+```
 
-## Command Structure
+## Command structure
 
-COMMAND: <action>  
-REPO: <owner/repo>  
-SCOPE: <area>  
-FOCUS: <analysis type>  
-OUTPUT: <response type>  
+```text
+COMMAND: <action>
+REPO: <owner/repo>
+SCOPE: <area>
+FOCUS: <analysis type>
+OUTPUT: <response type>
+```
 
----
+## Field reference
 
-## COMMAND Options
+### COMMAND
 
-### Core
-- START_SESSION
-- REVIEW_PASS
-- FIND_RISK
-- LIST_API
-- TRACE_FLOW
-- BUILD_PR
-- PLAN_PR
-- SUMMARIZE
-- COMPARE
-- REFACTOR
+Core commands:
 
-### Advanced
-- ENFORCE_RULES
-- CHECK_CONSISTENCY
-- MAP_DEPENDENCIES
-- VALIDATE_BOUNDARIES
+- `START_SESSION` — initialize workflow
+- `REVIEW_PASS` — analyze a specific scope
+- `FIND_RISK` — identify high-risk areas
+- `LIST_API` — list public, internal, and private APIs
+- `TRACE_FLOW` — follow execution paths such as update/render flow
+- `BUILD_PR` — generate PR title, description, and patch guidance
+- `PLAN_PR` — design a PR without code changes
+- `SUMMARIZE` — summarize findings
+- `COMPARE` — compare files, patterns, or approaches
+- `REFACTOR` — propose structure improvements
 
----
+Advanced commands:
 
-## SCOPE Options
+- `ENFORCE_RULES`
+- `CHECK_CONSISTENCY`
+- `MAP_DEPENDENCIES`
+- `VALIDATE_BOUNDARIES`
 
-### Broad
-- full
-- engine
-- games
-- samples
-- tests
-- docs
-- tools
+### REPO
 
-### Folder Examples
-- engine/core
-- engine/render
-- engine/physics
-- engine/lifecycle
+Format:
 
-### Logical
-- runtime
-- collision
-- render_loop
-- object_lifecycle
-- input_pipeline
+- `owner/repo`
 
----
+Examples:
 
-## FOCUS Options
+- `ToolboxAid/HTML-JavaScript-Gaming`
+- `myorg/my-engine`
+- `local-upload`
 
-### Architecture
-- architecture
-- design
-- coupling
+### SCOPE
 
-### Code Quality
-- bugs
-- edge_cases
-- consistency
-- cleanup
+Broad scopes:
 
-### Performance
-- performance
-- memory
-- rendering
-- physics
+- `full`
+- `engine`
+- `games`
+- `samples`
+- `tests`
+- `docs`
+- `tools`
 
-### Behavior
-- lifecycle
-- collision
-- input
-- timing
+Folder examples:
 
-### Refactor
-- refactor
-- modernize
-- simplify
+- `engine/core`
+- `engine/render`
+- `engine/physics`
+- `engine/lifecycle`
 
----
+File examples:
 
-## OUTPUT Options
+- `engine/core/gameBase.js`
+- `engine/game/objectRegistry.js`
 
-### Review
-- review_state
-- findings
-- risks
-- summary
+Logical scopes:
 
-### Planning
-- plan
-- tasks
-- roadmap
-- pr_candidates
+- `runtime`
+- `collision`
+- `render_loop`
+- `object_lifecycle`
+- `input_pipeline`
 
-### PR
-- pr_plan
-- diff
-- description
-- title
-- tests
+### FOCUS
 
-### Deep Analysis
-- dependency_map
-- call_flow
-- api_surface
-- boundary_map
+Architecture:
 
----
+- `architecture`
+- `design`
+- `coupling`
 
-## Review Rules
+Code quality:
 
-- One PR = one concern
-- Do not mix refactor + bug fixes + formatting
-- Identify public vs internal vs private
-- Prefer small, safe changes
-- Treat engine as a reusable library
-- Use games/samples as validation of architecture
+- `bugs`
+- `edge_cases`
+- `consistency`
+- `cleanup`
 
----
+Performance:
 
-## Workflow
+- `performance`
+- `memory`
+- `rendering`
+- `physics`
 
-1. Start session with short command
-2. Run REVIEW_PASS by scope
-3. Identify risks and PR candidates
-4. Build PRs in small, focused units
-5. Validate using tests/samples
+Behavior:
 
----
+- `lifecycle`
+- `collision`
+- `input`
+- `timing`
 
-## Example Commands
+Refactor:
 
-COMMAND: REVIEW_PASS  
-SCOPE: engine/core  
-FOCUS: architecture  
-OUTPUT: findings, risks, pr_candidates  
+- `refactor`
+- `modernize`
+- `simplify`
 
-COMMAND: BUILD_PR  
-SCOPE: engine/lifecycle  
-FOCUS: refactor  
-OUTPUT: title, description, diff  
+### OUTPUT
 
----
+Review outputs:
 
-## Mental Model
+- `review_state`
+- `findings`
+- `risks`
+- `summary`
 
-COMMAND = what to do  
-REPO = where  
-SCOPE = how much  
-FOCUS = why  
-OUTPUT = what you get  
+Planning outputs:
+
+- `plan`
+- `tasks`
+- `roadmap`
+- `pr_candidates`
+
+PR outputs:
+
+- `pr_plan`
+- `diff`
+- `description`
+- `title`
+- `tests`
+
+Deep analysis outputs:
+
+- `dependency_map`
+- `call_flow`
+- `api_surface`
+- `boundary_map`
+
+## Review rules
+
+- One PR = one concern.
+- Do not mix refactor, bug fixes, performance work, and formatting in the same PR.
+- Distinguish **public**, **internal**, and **private** code.
+- Treat `engine/` as a reusable framework first.
+- Use `games/` and `samples/` to validate whether the engine API is working.
+- Prefer small, low-risk, easily reviewable changes.
+
+## Standard workflow
+
+1. Start with `START_SESSION`.
+2. Run `REVIEW_PASS` by subsystem.
+3. Record findings in `reviews/architecture-review-v1.md`.
+4. Build PR candidates in `reviews/pr-roadmap.md`.
+5. Apply `PR_WORKFLOW.md`, `REVIEW_CHECKLIST.md`, `ENGINE_STANDARDS.md`, and `performance.md` as needed.

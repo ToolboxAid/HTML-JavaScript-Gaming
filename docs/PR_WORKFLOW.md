@@ -1,151 +1,143 @@
 # ToolboxAid PR Workflow v1
 
 ## Goal
-Create safe, reviewable, high-quality pull requests for the engine.
 
----
+Create safe, reviewable pull requests for the engine and supporting docs.
 
-## Core Rule
+## Core rule
 
 **One PR = one concern**
 
-Do NOT mix:
+Do not mix:
+
 - refactor
 - bug fixes
 - formatting
-- renaming
-- performance changes
+- broad renaming
+- architecture rewrites
+- performance tuning
 
----
+## PR types
 
-## PR Types
-
-### 1. Cleanup PR
-- remove dead code
-- extract constants
-- minor renames
-- no behavior changes
-
-Risk: LOW
-
----
-
-### 2. Bug Fix PR
-- fixes incorrect behavior
-- fixes edge cases
-- includes reproduction steps
-
-Risk: MEDIUM–HIGH
-
----
-
-### 3. Refactor PR
-- improves structure
-- reduces coupling
-- reorganizes code
-
-Risk: MEDIUM
-
----
-
-### 4. Performance PR
-- optimizes hot paths
-- reduces allocations
-- improves loops/math
-
-Risk: MEDIUM
-
----
-
-### 5. Architecture PR
-- changes system boundaries
-- changes ownership
-- introduces new patterns
-
-Risk: HIGH
-
----
-
-## PR Template
-
-### Title
-<type>: <short description>
+### Cleanup PR
 
 Examples:
-- refactor: normalize object lifecycle
-- fix: collision edge case at boundaries
-- perf: reduce allocations in update loop
 
----
+- remove dead code
+- extract constants
+- minor naming cleanup
+- comment or docs alignment
 
-### Description
+Risk: **Low**
 
-#### What
-What this PR changes
+### Bug Fix PR
 
-#### Why
-Why this change is needed
+Examples:
 
-#### Scope
-What files/systems are affected
+- fix incorrect behavior
+- fix boundary conditions
+- fix lifecycle or collision defects
 
-#### Risk
+Risk: **Medium to High**
+
+### Refactor PR
+
+Examples:
+
+- reduce coupling
+- split a large class
+- normalize subsystem ownership
+
+Risk: **Medium**
+
+### Performance PR
+
+Examples:
+
+- reduce allocations in hot loops
+- cache repeated calculations
+- lower render or collision overhead
+
+Risk: **Medium**
+
+### Architecture PR
+
+Examples:
+
+- change runtime ownership
+- change boundaries between subsystems
+- introduce or remove cross-system abstractions
+
+Risk: **High**
+
+## PR title style
+
+```text
+<type>: <short description>
+```
+
+Examples:
+
+- `refactor: normalize object lifecycle`
+- `fix: resolve collision boundary edge case`
+- `perf: reduce allocations in update loop`
+- `docs: consolidate review workflow`
+
+## PR description template
+
+### What
+
+What this PR changes.
+
+### Why
+
+Why the change is needed.
+
+### Scope
+
+Which files or systems are affected.
+
+### Risk
+
 Low / Medium / High
 
-#### Changes
-- bullet list of changes
+### Changes
 
-#### API Impact
-- none / minor / breaking
+- bullet list of intentional changes
 
-#### Testing
-- how to verify behavior
+### API impact
 
----
+- none
+- minor
+- breaking
 
-## Review Checklist
+### Testing
 
-- [ ] Single responsibility PR
-- [ ] No unrelated changes
-- [ ] Public API clearly identified
+How behavior was verified.
+
+## Review checklist
+
+- [ ] Single-responsibility PR
+- [ ] No unrelated edits
+- [ ] Public API impact is explicit
 - [ ] No hidden breaking changes
 - [ ] Logic is easy to follow
-- [ ] No unnecessary complexity
-- [ ] Performance impact considered
+- [ ] Risk level is stated
+- [ ] Validation steps are included
 
----
+## Recommended PR order
 
-## PR Order Strategy
+1. docs and boundary clarification
+2. cleanup
+3. consistency alignment
+4. bug fixes
+5. performance improvements
+6. refactors
+7. architecture changes
 
-1. Cleanup PRs (safe)
-2. Consistency PRs
-3. Bug fixes
-4. Performance improvements
-5. Refactors
-6. Architecture changes
+## Compatibility notes
 
----
-
-## Risk Guidelines
-
-### Low Risk
-- no behavior change
-- internal cleanup only
-
-### Medium Risk
-- logic touched
-- limited surface area
-
-### High Risk
-- lifecycle changes
-- runtime flow changes
-- cross-system changes
-
----
-
-## Notes
-
-- Prefer backward compatibility
-- Deprecate before removing
-- Keep PRs small and focused
-- Use samples/games to validate changes
+- Prefer backward compatibility for public APIs.
+- Deprecate before removing.
+- Keep PRs small enough for human review.
+- Validate changes against samples, games, and tests where applicable.

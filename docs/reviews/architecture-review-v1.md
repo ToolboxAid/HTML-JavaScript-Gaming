@@ -1,290 +1,113 @@
-**START_SESSION accepted**
+# Architecture Review v1
 
-**REPO:** `ToolboxAid/HTML-JavaScript-Gaming`
-**SCOPE:** `full`
-**FOCUS:** `architecture`
-**OUTPUT:** `review_state, plan, tasks`
+## Status
 
----
+Active.
 
-# 🔍 review_state
+## Scope
 
-**Session status:** active
-**Mode:** full-repo architecture review (engine-first)
+Repository-wide architecture review with an engine-first approach.
 
-## Current understanding
+## Goals
 
-The repo is structured as a **reusable browser-based 2D game engine + consumers**, with:
+- identify public, internal, and private boundaries
+- map subsystem ownership
+- detect coupling and duplication
+- generate small, safe PR candidates
 
-* `engine/` → core framework + subsystems (**primary focus**)
-* `games/` → full implementations (real-world usage)
-* `samples/` → isolated demos (API examples)
-* `tests/` → validation surface (stability indicator)
-* `docs/` → intended architecture (must align with reality)
-* `tools/` → support utilities
+## Initial review order
 
----
+1. `engine/core`
+2. `engine/game`
+3. lifecycle and object base classes
+4. `engine/animation`
+5. `engine/render`
+6. `engine/input`
+7. `engine/physics`
+8. `engine/math`
+9. `engine/messages`
+10. `engine/output`
+11. `engine/utils`
+12. `tests`
+13. `samples`
+14. `games`
+15. `tools`
+16. docs alignment
 
-## Architecture review goals
+## Boundary review standard
 
-We will evaluate the repo using your standards:
+For each reviewed area, answer:
 
-### Boundaries
+- What is public?
+- What is internal?
+- What is private?
+- Who owns state?
+- Who owns lifecycle?
+- Who depends on it?
+- What should it depend on?
+- Is it safe to change without breaking consumers?
 
-* What is **public**
-* What is **internal**
-* What is **private**
+## Current findings
 
-### Ownership
+### Repo-level review state
 
-* lifecycle (init/update/render/destroy)
-* runtime state
-* system coordination
+Pending direct code review.
 
-### Structure
+### Cross-cutting issues
 
-* subsystem separation
-* dependency direction
-* coupling and duplication
+Pending.
 
-### Consumer validation
+## Risk map
 
-* do `games/` and `samples/` follow intended usage?
-* are they forced to bypass the engine?
+### High risk
 
----
+- runtime orchestration
+- object lifecycle ownership
+- collision and registry coordination
 
-## Initial risk map (pre-review)
+### Medium risk
 
-### 🔴 High Risk (review first)
+- render subsystem
+- input subsystem
+- animation and physics sequencing
 
-* `engine/core/` → runtime orchestration
-* `engine/game/` → object + system coordination
-* lifecycle / shared base classes
+### Lower risk
 
-### 🟠 Medium Risk
+- isolated utilities
+- docs-only changes
+- self-contained tools
 
-* `engine/render/`
-* `engine/input/`
-* `engine/animation/`
-* `engine/physics/`
-* `engine/messages/`
+## Task lanes
 
-### 🟢 Lower Risk
+### A. Engine inventory
 
-* `engine/utils/`
-* `docs/`
-* `tools/`
-* isolated samples
+- list all engine folders
+- classify boundary level
+- identify likely public surface
 
----
+### B. Core runtime review
 
-## Key architecture questions for this repo
+- identify entry points
+- identify update and render owners
+- evaluate runtime context / state ownership
 
-1. Is `engine/` acting like a true framework or a loose collection?
-2. Is there a **single source of truth for lifecycle**?
-3. Is `runtimeContext` a clean container or a **god object**?
-4. Are subsystems:
+### C. Subsystem review
 
-   * independent?
-   * or tightly coupled?
-5. Do games rely on:
+- responsibility
+- dependencies
+- coupling
+- boundary classification
 
-   * public APIs
-   * or internal engine details?
-6. Are there multiple competing patterns for:
+### D. Consumer review
 
-   * object lifecycle
-   * rendering
-   * collision
-   * input
+- compare `samples/` and `games/`
+- detect engine API leakage or bypassing
 
----
+### E. Test alignment
 
-# 🧭 plan
+- map tests to public surfaces
+- identify hard-to-test architecture
 
-## Phase 1 — Engine architecture inventory (start here)
+## PR candidate log
 
-* map all `engine/` folders
-* identify subsystem responsibilities
-* classify: public / internal / private
-
-## Phase 2 — Core runtime deep review
-
-* analyze orchestration flow
-* identify lifecycle ownership
-* evaluate runtime context design
-* detect god-object patterns
-
-## Phase 3 — Subsystem boundary review
-
-For each engine subsystem:
-
-* responsibility
-* dependencies
-* coupling
-* API exposure
-* violations of standards
-
-## Phase 4 — Consumer validation
-
-* review `games/` and `samples/`
-* detect:
-
-  * API gaps
-  * boundary violations
-  * inconsistent usage patterns
-
-## Phase 5 — Cross-cutting issues
-
-* naming inconsistencies
-* duplicated utilities
-* mixed responsibilities
-* inconsistent lifecycle handling
-
-## Phase 6 — PR roadmap
-
-Generate small, ordered PRs:
-
-1. boundary clarification
-2. cleanup (low risk)
-3. consistency alignment
-4. bug fixes
-5. performance
-6. refactor
-7. architecture changes
-
----
-
-# 📋 tasks
-
-## Task Lane A — Engine inventory
-
-* list all folders under `engine/`
-* assign purpose to each
-* classify boundary level:
-
-  * PUBLIC
-  * INTERNAL
-  * PRIVATE
-
----
-
-## Task Lane B — Core runtime review (`engine/core`)
-
-* identify:
-
-  * entry point
-  * update loop owner
-  * render loop owner
-  * state owner
-* evaluate:
-
-  * lifecycle flow
-  * context usage
-* classify files:
-
-  * public / internal / private
-* detect:
-
-  * god objects
-  * hidden coupling
-
----
-
-## Task Lane C — Subsystem review (all engine folders)
-
-For each:
-
-* responsibility
-* inputs / outputs
-* dependencies
-* boundary classification
-* architecture concerns
-
-### Target order:
-
-1. core
-2. game
-3. lifecycle / object base
-4. animation
-5. render
-6. input
-7. physics
-8. math
-9. messages
-10. output
-11. utils
-
----
-
-## Task Lane D — Consumer analysis
-
-* review `games/` and `samples/`
-* identify:
-
-  * engine misuse
-  * API leaks
-  * duplication of logic
-* compare:
-
-  * sample patterns vs real game usage
-
----
-
-## Task Lane E — Test alignment
-
-* map tests to subsystems
-* identify:
-
-  * untestable areas
-  * tightly coupled code
-* validate public API stability
-
----
-
-## Task Lane F — Deliverables
-
-You will get:
-
-* architecture map
-* boundary map (public/internal/private)
-* risk heatmap
-* per-subsystem findings
-* cross-cutting issue list
-* PR candidates (small, safe, ordered)
-
----
-
-# 📊 session tracker
-
-## Open
-
-* engine inventory
-* boundary classification
-* core runtime analysis
-* subsystem reviews
-* consumer validation
-* PR roadmap generation
-
-## In progress
-
-* none yet
-
-## Done
-
-* session initialized
-* architecture review plan established
-
----
-
-# ▶️ next command
-
-```text
-COMMAND: REVIEW_PASS
-SCOPE: engine/core
-FOCUS: architecture
-OUTPUT: findings, risks, pr_candidates
-```
-
-This is the correct first move — it targets the **highest-risk area** and defines everything downstream.
+Pending.
