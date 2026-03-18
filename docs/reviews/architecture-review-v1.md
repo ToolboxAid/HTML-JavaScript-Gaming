@@ -1,180 +1,173 @@
 # Architecture Review v1
 
-## engine/input findings
+## engine/physics findings
 
 ### Findings
-1. `engine/input` has a stronger subsystem boundary than most of the repo. It is organized around:
-   - keyboard input
-   - mouse input
-   - controller/gamepad input
-   - shared input primitives (`InputFrameState`, `InputLifecycle`)
+1. `engine/physics` is organized as a utility-first subsystem, not an object-oriented service layer. Every module in the folder is effectively a static helper:
+   - `PhysicsUtils`
+   - `BoundaryUtils`
+   - `CollisionUtils`
+   - `CollisionShapeUtils`
+   - `VectorShapeUtils`
+   - `PolygonCollision`
 
-   That is a good top-level shape.
+   That makes the boundary easy to understand, but it also means the subsystem has no central public façade.
 
-2. `InputFrameState` is a strong reusable primitive. It cleanly models frame-based input transitions:
-   - pressed
-   - down
-   - released
-   - pendingDown
-   - pendingUp
+2. The folder is really serving **three different concerns**:
+   - motion/velocity helpers (`physicsUtils.js`)
+   - collision and shape helpers (`collisionUtils.js`, `collisionShapeUtils.js`, `polygonCollision.js`, `vectorShapeUtils.js`)
+   - screen/bounds logic (`boundaryUtils.js`)
 
-   This is one of the clearest engine abstractions reviewed so far.
+   These concerns are related, but the current folder shape treats them as one flat physics bucket.
 
-3. `InputLifecycle` is also a good primitive. It standardizes start/stop/destroy listener lifecycles and is already reused by:
-   - `KeyboardInput`
-   - `MouseInput`
-   - `GameControllers`
+3. `PhysicsUtils` is broader than “physics.” It combines:
+   - velocity abstraction
+   - movement updates
+   - directional helpers
+   - gravity/wind/drag/friction/bounce
+   - future-point prediction
+   - stop/set velocity helpers
 
-   That is good subsystem consistency.
+   This makes it the canonical motion utility, but also creates scope-creep risk. It is as much a kinematics helper as a physics layer.
 
-4. The main architecture weakness is that input ownership is split across two styles:
-   - keyboard/mouse use the shared frame-state primitive directly
-   - controllers use a custom stack: `GameControllers` + `GamepadManager` + `GamepadState` + `GamepadMapper`
+4. `CollisionUtils` is the architectural center of the collision side, but it is extremely broad. It includes:
+   - point transforms
+   - AABB-style box collision
+   - circle collision
+   - vector/polygon collision
+   - debug logging and flags
+   - rendering-adjacent debug drawing imports through canvas dependencies
 
-   The controller stack is understandable, but it is not aligned with the simpler keyboard/mouse model.
+   This is a classic “god utility” risk.
 
-5. `KeyboardInput` and `MouseInput` are clean public-facing adapters, but both auto-start in their constructors. This matches the earlier `GameBase` pattern and keeps lifecycle implicit rather than staged.
+5. `CollisionUtils` depends on:
+   - `CanvasUtils`
+   - `DebugFlag`
+   - `DebugLog`
+   - `SystemUtils`
+   - shape utilities
+   - polygon utilities
 
-6. `MouseInput` mixes:
-   - button-state input handling
-   - pointer position tracking
-   - wheel tracking
-   - canvas scaling normalization
+   That means collision logic is not purely geometric/physics-focused. It is coupled to rendering config and debug infrastructure.
 
-   This is still acceptable, but it means `MouseInput` is both an input adapter and a canvas-coordinate translator.
+6. `BoundaryUtils` also depends directly on `CanvasUtils.getConfigWidth()` / `getConfigHeight()`. So boundary logic is not generic world-boundary logic; it is specifically **screen/canvas boundary logic**.
 
-7. The controller subsystem is the most architecturally complex part of input:
-   - `GamepadManager` owns browser polling and connection events
-   - `GameControllers` owns semantic API and mapping/state coordination
-   - `GamepadMapper` translates raw layout into semantic names
-   - `GamepadState` tracks per-frame buttons/axes
+7. `CollisionShapeUtils` is a good normalizing helper. It creates a stable way to extract:
+   - bounding boxes
+   - vector shape data
+   from varied object types. This is one of the cleaner abstractions in the folder.
 
-   This layering is mostly sound, but boundaries are not fully sealed.
+8. `VectorShapeUtils` is also a clean utility layer. Its responsibilities are narrow:
+   - validate point arrays
+   - rotate points
+   - calculate bounds
+   - transform vector shapes
 
-8. `GameControllers` acts as a façade, but it publicly exposes internal structures such as:
-   - `gamepadManager`
-   - `gamepadStates`
-   - `gamepadMappers`
+   This file has one of the strongest boundaries in the subsystem.
 
-   This repeats the same façade-bypass issue found in `engine/game`.
+9. `PolygonCollision` is very focused and well-contained. It provides edge intersection and point-in-polygon utilities and does not try to own broader collision orchestration.
 
-9. The controller subsystem depends on a global/shared messaging layer:
-   - `EventBus.getInstance()`
-   - browser-global `window` gamepad events
-   - interval polling
+10. Public/internal/private boundaries are not explicit, but a sensible classification would be:
 
-   That is reasonable for a browser engine, but it means controller input is not as self-contained as keyboard/mouse.
+   **public**
+   - `PhysicsUtils`
+   - `CollisionUtils`
+   - `BoundaryUtils`
 
-10. `gamepadDebugger.js` looks like tooling/debug support, not core input infrastructure. It may belong in a debug/tooling layer rather than inside the primary controller runtime tree.
+   **internal**
+   - `CollisionShapeUtils`
+   - `VectorShapeUtils`
+   - `PolygonCollision`
 
-11. Public/internal/private boundaries are still implicit.
-
-   Best current classification:
-   - public:
-     - `KeyboardInput`
-     - `MouseInput`
-     - `GameControllers`
-   - internal:
-     - `InputFrameState`
-     - `InputLifecycle`
-     - `GamepadManager`
-     - `GamepadMapper`
-     - `GamepadState`
-     - `GameControllerMap`
-     - `gamepadEnums.js`
-   - misplaced / should move:
-     - `gamepadDebugger.js`
+   The public issue is that `CollisionUtils` and `BoundaryUtils` expose engine behavior that is actually canvas/screen-dependent, not truly generic physics.
 
 ### Risks
 #### High
-1. **Façade bypass in controller input**
-   `GameControllers` exposes internal manager/state/mapper structures directly, so games can couple to implementation details.
+1. **`CollisionUtils` god-utility risk**
+   It combines collision math, object-shape interpretation, debug behavior, and canvas-aware assumptions in one large static utility.
 
-2. **Lifecycle auto-start in constructors**
-   Keyboard, mouse, and controller adapters become live immediately on construction, which makes setup/testing/composition harder.
+2. **Subsystem boundary blur between physics and rendering/runtime**
+   `CollisionUtils` and `BoundaryUtils` both depend on `CanvasUtils`, so this subsystem is partly geometry and partly screen/runtime behavior.
 
-3. **Input model inconsistency**
-   Keyboard/mouse use a small shared primitive model, while controllers use a more bespoke architecture. The subsystem feels unified at the folder level, but not yet at the API shape level.
+3. **No central physics façade**
+   Consumers likely import many utility modules directly, which makes future refactors harder and public/internal boundaries weaker.
 
 #### Medium
-4. **Canvas-specific pointer normalization inside `MouseInput`**
-   Mouse input is tied directly to canvas coordinate scaling, which makes it less reusable as a generic pointer adapter.
+4. **Flat folder with mixed concerns**
+   Motion, collision, shape extraction, and screen boundaries all live together without sub-boundaries.
 
-5. **Controller runtime depends on global event bus + polling**
-   The controller stack depends on shared messaging and global browser facilities, increasing hidden coupling.
+5. **`PhysicsUtils` scope creep**
+   It contains both low-level velocity abstraction and higher-level motion helpers, which may grow into a catch-all movement utility.
 
-6. **Debug/runtime boundary blur**
-   `gamepadDebugger.js` lives inside the runtime controller folder rather than a debug or tooling area.
+6. **Debug coupling inside collision layer**
+   Collision code directly owns debug flag/log behavior instead of routing that through a separate debug layer.
 
 #### Lower
-7. **Public API ambiguity**
-   Consumers can likely import internal controller modules directly because the intended public API is not documented.
+7. **Canvas-specific semantics hidden behind generic names**
+   `BoundaryUtils` sounds generic, but most of its behavior is specifically about game screen/canvas boundaries.
 
 ### PR Candidates
-#### PR-020 — Make input adapters explicitly startable
+#### PR-025 — Split `engine/physics` into motion, collision, and boundaries sub-boundaries
+- Type: architecture
+- Risk: medium
+- Goal: separate:
+  - motion/kinematics
+  - collision/shape math
+  - screen/world boundary policies
+
+#### PR-026 — Break `CollisionUtils` into smaller focused modules
+- Type: architecture/refactor
+- Risk: high
+- Goal: split:
+  - collision math
+  - collision shape normalization
+  - debug helpers
+  - screen-aware checks
+- Keep `CollisionUtils` only as a stable façade if needed
+
+#### PR-027 — Rename or document `BoundaryUtils` as screen-boundary logic
+- Type: architecture/docs/refactor
+- Risk: low
+- Goal: make it clear this is canvas/game-area boundary behavior, not generic world-boundary math
+
+#### PR-028 — Remove debug ownership from collision core
 - Type: architecture/refactor
 - Risk: medium
-- Goal: stop auto-starting keyboard, mouse, and controller listeners in constructors
-- Add explicit `start()` ownership at runtime/bootstrap level
+- Goal: move debug flag/logging concerns out of collision core and into optional debug wrappers
 
-#### PR-021 — Make `GameControllers` a true façade
-- Type: architecture/refactor
-- Risk: medium
-- Goal: hide:
-  - `gamepadManager`
-  - `gamepadStates`
-  - `gamepadMappers`
-- Keep games on semantic methods only
-
-#### PR-022 — Define unified input API boundaries
+#### PR-029 — Define a public physics API surface
 - Type: architecture/docs
 - Risk: low
-- Goal: formalize:
-  - public adapters (`KeyboardInput`, `MouseInput`, `GameControllers`)
-  - internal primitives/helpers
-  - controller support internals
-
-#### PR-023 — Split `gamepadDebugger` into debug/tooling layer
-- Type: architecture/cleanup
-- Risk: low
-- Goal: move gamepad-specific debugging support out of the runtime input tree
-
-#### PR-024 — Separate pointer normalization from `MouseInput`
-- Type: architecture/refactor
-- Risk: medium
-- Goal: split generic mouse/button tracking from canvas-coordinate translation
-- Possible targets:
-  - `PointerInput`
-  - `CanvasPointerAdapter`
+- Goal: document which utilities are public engine APIs and which are internal geometry helpers
 
 ## PR Roadmap Additions
 
-### PR-020
-Title: Make input adapters explicitly startable
-Scope: engine/input, engine/core
+### PR-025
+Title: Split physics subsystem into motion, collision, and boundary layers
+Scope: engine/physics
 Risk: Medium
 Status: pending
 
-### PR-021
-Title: Make GameControllers a true façade
-Scope: engine/input/controller
-Risk: Medium
+### PR-026
+Title: Break CollisionUtils into focused modules
+Scope: engine/physics
+Risk: High
 Status: pending
 
-### PR-022
-Title: Define public and internal input API boundaries
-Scope: engine/input, docs
+### PR-027
+Title: Clarify BoundaryUtils as screen-boundary logic
+Scope: engine/physics
 Risk: Low
 Status: pending
 
-### PR-023
-Title: Move gamepadDebugger into debug/tooling layer
-Scope: engine/input/controller
-Risk: Low
+### PR-028
+Title: Remove debug concerns from collision core
+Scope: engine/physics
+Risk: Medium
 Status: pending
 
-### PR-024
-Title: Separate canvas pointer normalization from MouseInput
-Scope: engine/input
-Risk: Medium
+### PR-029
+Title: Define public and internal physics API boundaries
+Scope: engine/physics, docs
+Risk: Low
 Status: pending

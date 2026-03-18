@@ -1,31 +1,31 @@
 # PR Roadmap
 
-## PR-020
-Title: Make input adapters explicitly startable
-Scope: engine/input, engine/core
+## PR-025
+Title: Split physics subsystem into motion, collision, and boundary layers
+Scope: engine/physics
 Risk: Medium
 Status: pending
 
-## PR-021
-Title: Make GameControllers a true façade
-Scope: engine/input/controller
-Risk: Medium
+## PR-026
+Title: Break CollisionUtils into focused modules
+Scope: engine/physics
+Risk: High
 Status: pending
 
-## PR-022
-Title: Define public and internal input API boundaries
-Scope: engine/input, docs
+## PR-027
+Title: Clarify BoundaryUtils as screen-boundary logic
+Scope: engine/physics
 Risk: Low
 Status: pending
 
-## PR-023
-Title: Move gamepadDebugger into debug/tooling layer
-Scope: engine/input/controller
-Risk: Low
+## PR-028
+Title: Remove debug concerns from collision core
+Scope: engine/physics
+Risk: Medium
 Status: pending
 
-## PR-024
-Title: Separate canvas pointer normalization from MouseInput
-Scope: engine/input
-Risk: Medium
+## PR-029
+Title: Define public and internal physics API boundaries
+Scope: engine/physics, docs
+Risk: Low
 Status: pending
