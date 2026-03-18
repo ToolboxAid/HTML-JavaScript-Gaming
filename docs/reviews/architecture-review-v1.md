@@ -1,181 +1,174 @@
 # Architecture Review v1
 
-## samples findings
+## games findings
 
 ### Findings
-1. `samples/` is organized more clearly than many engine folders. It is grouped by domain:
-   - `samples/engine/`
-   - `samples/input/`
-   - `samples/output/`
-   - `samples/visual/`
+1. `games/` is not a single architecture pattern. It contains multiple full game implementations that span at least two major styles:
+   - newer engine-shell games centered on `GameBase` plus per-game runtime/state/ui folders
+   - older direct game classes that still import many engine internals directly from `engine/core`, `engine/game`, and `engine/renderers`
 
-   At the folder level, this is a strong documentation/discoverability structure.
+   This mirrors the earlier `samples/` finding that the repo currently teaches two major consumer patterns.
 
-2. The sample set serves **two different architectural purposes**:
-   - reference templates / recommended engine usage (`samples/engine/Game Engine`, refreshed visual samples)
-   - older or lower-level feature demos (`samples/input/Mouse`, `samples/input/GameControllers`, some output samples)
+2. The strongest architecture in `games/` is the newer **runtime/state/ui/world split** seen most clearly in `games/Asteroids/`:
+   - `runtime/`
+   - `state/`
+   - `systems/`
+   - `ui/`
+   - focused top-level entry (`game.js`)
+   - explicit app/session context
 
-   That dual purpose is useful, but it creates inconsistency in sample architecture style.
+   This is the clearest “modern game architecture” in the repo and looks like the intended direction.
 
-3. There are **two major sample patterns** in use:
-   - engine-driven samples built on `GameBase`
-   - direct DOM/canvas samples with manual init / requestAnimationFrame / cleanup
+3. `games/Asteroids/game.js` uses the engine shell cleanly:
+   - subclasses `GameBase`
+   - creates `KeyboardInput` in `onInitialize()`
+   - builds a game-specific app context
+   - delegates runtime/state work to focused modules
 
-   Examples:
-   - `samples/engine/Game Engine`, `samples/visual/Fullscreen Gaming`, `samples/visual/Solar System`, `samples/visual/Particle` use `GameBase`
-   - `samples/input/Mouse` and `samples/input/GameControllers` use direct bootstrap and manual loops
+   This is currently the best proof that the engine can support a stronger application architecture.
 
-   This is the biggest architecture finding in `samples/`.
+4. Older games such as `Space Invaders`, `Pong Game`, and several others are much flatter. Their `game.js` files often import many engine internals directly, including:
+   - `CanvasUtils`
+   - `CanvasSprite`
+   - `CanvasText`
+   - `Sprite`
+   - `GamePlayerSelectUi`
+   - `GameUtils`
+   - `PrimitiveRenderer`
+   - various math/misc helpers
 
-4. The engine-driven samples are increasingly consistent:
-   - subclass `GameBase`
-   - instantiate inputs in `onInitialize()`
-   - own state handlers in `game.js`
-   - keep config in `global.js`
-   - rely on runtime fullscreen/performance integration
+   These games still work, but architecturally they are closer to “engine-powered apps with direct internal access” than to consumers of a narrow public engine API.
 
-   This looks like the repo’s intended “modern” sample architecture.
+5. The `games/` folder therefore confirms the repo currently supports **two major game patterns**:
+   - **modern shell pattern**: `GameBase` + local runtime/state/ui/system folders
+   - **legacy direct-integration pattern**: `GameBase` or manual game loop + many direct engine module imports
 
-5. The direct/manual samples are still valuable, but they teach a different architectural story:
-   - manual canvas init
-   - manual RAF loop
-   - manual cleanup hooks
-   - direct engine utility imports rather than runtime-shell usage
+   This is the most important consumer-level finding.
 
-   That makes them better as low-level demos than as primary usage references.
+6. Several games depend on helpers previously flagged as misplaced in engine boundaries:
+   - `engine/game/gameUtils.js`
+   - `engine/game/gamePlayerSelectUi.js`
+   This confirms those files behave more like shared gameplay/game-shell helpers than pure engine infrastructure.
 
-6. The sample READMEs are generally strong. Many of them now explicitly say what they demonstrate and whether they are:
-   - engine-driven
-   - DOM/canvas-driven
-   - focused subsystem demos
+7. Boundary discipline is weak at the game-consumer level. Games often import engine modules that appear internal or subsystem-specific rather than importing from a clearly defined public surface.
 
-   This is a strong documentation pattern.
+8. `games/` is still valuable architecturally because it functions as a reality check:
+   - what games actually need
+   - what abstractions are missing
+   - which engine boundaries are too porous
 
-7. `samples/engine/Game Engine` is functioning as a de facto reference template. It includes:
-   - changelog
-   - checklist
-   - visual regression checklist
-   - cleaner state flow
-   - runtime shell structure
+   In practice, `games/` is revealing the gap between the engine’s intended architecture and its real consumption patterns.
 
-   Architecturally, that sample should probably be treated as the canonical template.
+9. The folder-level organization by game title is fine, but architectural maturity is uneven across games:
+   - some games have runtime/state/system layering
+   - others are mostly flat files
+   - some have clearer config/runtime separation than others
 
-8. `samples/engine/2D side scroll tile map` is a useful engine-driven sample, but it still depends on `engine/game/gameUtils.js` for player-select flow. That reinforces the earlier finding that some game-layer helpers in `engine/game` are really sample/gameplay concerns.
+10. Best current classification at the game-consumer level:
 
-9. The visual samples mostly reinforce the new engine-driven pattern well:
-   - `Draw Shapes`
-   - `Fullscreen Gaming`
-   - `Move Objects`
-   - `Particle`
-   - `Solar System`
+   **canonical / target pattern**
+   - `games/Asteroids/`
 
-   These are good consumer validation for `GameBase`, input ownership, and sample shell conventions.
+   **legacy / transitional consumers**
+   - `games/Space Invaders/`
+   - `games/Pong Game/`
+   - and several other flatter game folders
 
-10. The input samples are less consistent:
-   - `Keyboard` uses `GameBase`
-   - `Mouse` does not
-   - `GameControllers` does not
-
-   This means the input sample group itself teaches mixed architecture conventions.
-
-11. The output samples are also mixed:
-   - some are intentionally page/UI-driven (`Audio`, `MIDI Player`, `Synthesizer`)
-   - these are valid demos, but they are not really exercising the same game-runtime architecture as the engine and visual samples
-
-12. Public/internal/private boundary teaching is currently implicit. Samples often import internal-ish engine modules directly:
-   - `engine/core/canvasUtils.js`
-   - `engine/core/canvasText.js`
-   - `engine/renderers/primitiveRenderer.js`
-   - `engine/renderers/rendererGuards.js`
-   - debug helpers from `engine/utils`
-
-   That is fine for internal repo samples, but it means samples are not strongly enforcing the “public API only” story.
+   This is not a quality judgment about the games themselves; it is an architecture maturity judgment about how they consume the engine.
 
 ### Risks
 #### High
-1. **Mixed sample architecture patterns**
-   Some samples teach `GameBase` runtime ownership while others teach manual bootstrap/loop ownership. This weakens the repo’s architectural guidance.
+1. **Two major consumer patterns in active use**
+   The repo currently validates both a modern shell architecture and a legacy direct-integration architecture. That makes it harder to define the official engine usage model.
 
-2. **Canonical usage story is not explicit**
-   The repo appears to prefer the newer engine-driven shell pattern, but older/manual samples still sit beside it without a clear “reference vs low-level demo” distinction.
+2. **Games depend on engine internals freely**
+   Many games import deep engine modules directly, which weakens the public/internal boundary story and makes refactors riskier.
 
-3. **Samples import internals freely**
-   If samples are meant to be onboarding/reference material, they may normalize use of internal modules instead of stable public APIs.
+3. **Shared gameplay helpers live inside engine folders**
+   Helpers like `gameUtils.js` and `gamePlayerSelectUi.js` are being used by games as if they are part of the engine contract, even though they were previously identified as misplaced.
 
 #### Medium
-4. **Input samples are internally inconsistent**
-   Keyboard uses `GameBase`; Mouse and GameControllers do not.
+4. **Architectural maturity is uneven across games**
+   Some games model runtime/state/system boundaries; others remain flat and tightly coupled.
 
-5. **Output samples are architecture outliers**
-   They are valid demos, but they do not align with the engine-driven sample shell story.
+5. **Modern pattern is not formally promoted**
+   `Asteroids` looks like the strongest architecture example, but there is no explicit repo-level designation that it is the preferred game structure.
 
-6. **Engine/game helper leakage into samples**
-   Samples depend on helpers like `engine/game/gameUtils.js`, reinforcing weak boundaries found earlier in the engine.
+6. **Refactor pressure is asymmetric**
+   Future engine cleanup may be blocked by older games that consume internal modules directly.
 
 #### Lower
-7. **Template maturity unevenness**
-   Some samples have modern documentation/checklists/changelogs, while others are still lighter-weight feature demos.
+7. **Folder-by-title organization hides architecture status**
+   It is easy to treat all games as equivalent examples even though some are reference-quality patterns and others are legacy integrations.
 
 ### PR Candidates
-#### PR-041 — Classify samples as reference templates vs low-level demos
+#### PR-046 — Classify games by architecture maturity
 - Type: architecture/docs
 - Risk: low
-- Goal: explicitly label each sample as one of:
-  - canonical engine-driven template
-  - subsystem demo
-  - low-level/manual integration example
+- Goal: label each game as:
+  - canonical modern architecture
+  - maintained legacy integration
+  - experimental/prototype
+- Make it clear which game structure new work should follow
 
-#### PR-042 — Normalize input samples around a shared sample shell
-- Type: architecture/refactor
-- Risk: medium
-- Goal: align `Keyboard`, `Mouse`, and `GameControllers` samples under a clearer common pattern, while preserving low-level demos only where intentional
-
-#### PR-043 — Define sample import rules
-- Type: architecture/docs
-- Risk: low
-- Goal: document when samples may import:
-  - public APIs only
-  - internal modules for engine-internal demos
-- Make the distinction explicit in READMEs
-
-#### PR-044 — Promote `samples/engine/Game Engine` as canonical starter template
+#### PR-047 — Promote `games/Asteroids` as the canonical game architecture reference
 - Type: docs/architecture
 - Risk: low
-- Goal: formally designate this sample as the recommended starting point for new engine-based projects
+- Goal: formally designate Asteroids as the best current example of:
+  - runtime split
+  - state ownership
+  - UI separation
+  - system layering
 
-#### PR-045 — Remove gameplay helper leakage from engine-driven samples
+#### PR-048 — Define allowed engine imports for games
+- Type: architecture/docs
+- Risk: low
+- Goal: document which engine modules games should treat as stable/public versus internal/transitional
+
+#### PR-049 — Extract shared gameplay helpers out of engine folders
 - Type: architecture/refactor
 - Risk: medium
-- Goal: reduce dependencies on misplaced engine gameplay helpers such as `engine/game/gameUtils.js`
+- Goal: move:
+  - `engine/game/gameUtils.js`
+  - `engine/game/gamePlayerSelectUi.js`
+  into a shared gameplay or shell layer used by games and samples
+
+#### PR-050 — Create a migration plan from legacy direct-integration games to the modern shell pattern
+- Type: architecture/roadmap
+- Risk: medium
+- Goal: identify which older games should be:
+  - left as legacy references
+  - partially modernized
+  - fully migrated later
 
 ## PR Roadmap Additions
 
-### PR-041
-Title: Classify samples by architectural role
-Scope: samples, docs
+### PR-046
+Title: Classify games by architecture maturity
+Scope: games, docs
 Risk: Low
 Status: pending
 
-### PR-042
-Title: Normalize input samples around a shared shell pattern
-Scope: samples/input
+### PR-047
+Title: Promote Asteroids as canonical game architecture reference
+Scope: games/Asteroids, docs
+Risk: Low
+Status: pending
+
+### PR-048
+Title: Define allowed engine imports for games
+Scope: games, docs
+Risk: Low
+Status: pending
+
+### PR-049
+Title: Extract shared gameplay helpers out of engine folders
+Scope: engine/game, games/shared, samples
 Risk: Medium
 Status: pending
 
-### PR-043
-Title: Define sample import boundary rules
-Scope: samples, docs
-Risk: Low
-Status: pending
-
-### PR-044
-Title: Promote Game Engine sample as canonical starter template
-Scope: samples/engine/Game Engine, docs
-Risk: Low
-Status: pending
-
-### PR-045
-Title: Remove gameplay helper leakage from engine-driven samples
-Scope: samples/engine, engine/game
+### PR-050
+Title: Create migration plan for legacy games
+Scope: games, docs/reviews
 Risk: Medium
 Status: pending

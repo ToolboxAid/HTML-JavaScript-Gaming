@@ -1,31 +1,31 @@
 # PR Roadmap
 
-## PR-041
-Title: Classify samples by architectural role
-Scope: samples, docs
+## PR-046
+Title: Classify games by architecture maturity
+Scope: games, docs
 Risk: Low
 Status: pending
 
-## PR-042
-Title: Normalize input samples around a shared shell pattern
-Scope: samples/input
+## PR-047
+Title: Promote Asteroids as canonical game architecture reference
+Scope: games/Asteroids, docs
+Risk: Low
+Status: pending
+
+## PR-048
+Title: Define allowed engine imports for games
+Scope: games, docs
+Risk: Low
+Status: pending
+
+## PR-049
+Title: Extract shared gameplay helpers out of engine folders
+Scope: engine/game, games/shared, samples
 Risk: Medium
 Status: pending
 
-## PR-043
-Title: Define sample import boundary rules
-Scope: samples, docs
-Risk: Low
-Status: pending
-
-## PR-044
-Title: Promote Game Engine sample as canonical starter template
-Scope: samples/engine/Game Engine, docs
-Risk: Low
-Status: pending
-
-## PR-045
-Title: Remove gameplay helper leakage from engine-driven samples
-Scope: samples/engine, engine/game
+## PR-050
+Title: Create migration plan for legacy games
+Scope: games, docs/reviews
 Risk: Medium
 Status: pending
