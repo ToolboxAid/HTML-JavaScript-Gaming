@@ -103,7 +103,7 @@ Notes:
 Mark the reviewed item as one of:
 
 - **PUBLIC** — safe for games and external consumers
-- **INTERNAL** — engine-only or subsystem-only use
+- **INTERNAL** — tests-only
 - **PRIVATE** — file-local or module-local implementation detail
 
 ## Overall priority
