@@ -18,7 +18,7 @@ The engine must behave like a reusable framework, not a specific game.
 Every file should be understandable as:
 
 - **PUBLIC** — safe for games to use
-- **INTERNAL** — shared within the engine
+- **INTERNAL** — used only by tests (should not shared within the engine)
 - **PRIVATE** — implementation detail only
 
 ### 3. Single responsibility
