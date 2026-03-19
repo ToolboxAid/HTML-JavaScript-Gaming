@@ -1,14 +1,11 @@
 chatGPT executed:
-- Created the docs-only APPLY_PR package for PR-012
-- Wrote apply docs under /docs/prs/PR-012-engine-game-transition-planning-candidates/
-- Applied docs-only transition-planning labels for the compatibility-retained engine/game exports
-- Kept scope docs-only and preserved compatibility
-- Did not change runtime behavior, imports, file locations, or execution paths
+- Created the docs-first PLAN_PR package for PR-013
+- Wrote planning docs under /docs/prs/PR-013-engine-game-documentation-posture-split/
+- Kept scope planning-only with no runtime behavior changes
 
 User to execute:
-- Do not run Codex for APPLY_PR
-- Download the zip, extract it, drag/drop into the repo root, and commit
+- No Codex execution is required for this PLAN_PR package unless you want Codex to reproduce or extend the planning step
 
-model: GPT-5.3-codex
+model: GPT-5.4
 reasoning: high
-codex command: Apply the docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game transition-planning candidates. Ensure all PR docs live under /docs/prs/PR-012-engine-game-transition-planning-candidates, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Review the documented PR-012 split of compatibility-retained engine/game exports in ToolboxAid/HTML-JavaScript-Gaming and produce a docs-first documentation-posture plan. Label each compatibility-retained export as either a supported compatibility surface or a compatibility surface with transition-planning note, record concise rationale, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
