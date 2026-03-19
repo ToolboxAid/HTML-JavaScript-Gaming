@@ -1,14 +1,14 @@
 chatGPT executed:
-- Created the docs-only BUILD_PR package for PR-015
-- Wrote documentation template snippet docs under /docs/prs/PR-015-engine-game-documentation-template-snippets/
-- Defined reusable snippet templates, placeholder structure, and usage rules for compatibility-retained engine/game exports
+- Created the docs-only APPLY_PR package for PR-015
+- Wrote apply docs under /docs/prs/PR-015-engine-game-documentation-template-snippets/
+- Applied docs-only documentation template snippets for the compatibility-retained engine/game exports
 - Kept scope docs-only and preserved compatibility
 - Did not change runtime behavior, imports, file locations, or execution paths
 
 User to execute:
-- No Codex execution is required to use this BUILD_PR zip
-- Use the command below only if you want Codex to reproduce or extend this docs build step
+- Do not run Codex for APPLY_PR
+- Download the zip, extract it, drag/drop into the repo root, and commit
 
 model: GPT-5.3-codex
 reasoning: high
-codex command: Build a docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game documentation template snippets. Under /docs/prs/PR-015-engine-game-documentation-template-snippets, define reusable documentation snippet templates, placeholder structure, and usage rules for supported compatibility surfaces and compatibility surfaces with transition-planning notes, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Apply the docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game documentation template snippets. Ensure all PR docs live under /docs/prs/PR-015-engine-game-documentation-template-snippets, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
