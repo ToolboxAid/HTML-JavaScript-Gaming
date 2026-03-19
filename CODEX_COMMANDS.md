@@ -1,13 +1,11 @@
 chatGPT executed:
-- Created the docs-only APPLY_PR package for PR-006 verified results
-- Placed verified scan docs under /docs/prs/PR-006-engine-game-repo-export-scan-results/
-- Preserved compatibility and kept the patch docs-only
-- Did not change runtime behavior, imports, file locations, or execution paths
+- Created the docs-first PLAN_PR package for PR-007
+- Wrote planning docs under /docs/prs/PR-007-engine-game-export-classification-from-verified-results/
+- Kept scope planning-only with no runtime behavior changes
 
 User to execute:
-- Do not run Codex for APPLY_PR
-- Download the zip, extract it, drag/drop into the repo root, and commit
+- No Codex execution is required for this PLAN_PR package unless you want Codex to reproduce or extend the planning step
 
-model: GPT-5.3-codex
+model: GPT-5.4
 reasoning: high
-codex command: Apply the verified docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game repo export scan results. Ensure all PR docs live under /docs/prs/PR-006-engine-game-repo-export-scan-results, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Review the verified PR-006 engine/game export scan results in ToolboxAid/HTML-JavaScript-Gaming and produce a docs-first classification plan. Classify each verified engine/game export as public, internal, or transitional, record concise rationale for each, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
