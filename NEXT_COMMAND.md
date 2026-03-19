@@ -1,7 +1,7 @@
 COMMAND: APPLY_PR
 REPO: ToolboxAid/HTML-JavaScript-Gaming
 SCOPE: engine/game
-FOCUS: collision_facade_narrowing
+FOCUS: utility_split_gamebase_alignment_prep
 OUTPUT: apply_summary, changed_files, verification
 CONTEXT:
 - applied zip locally

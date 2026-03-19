@@ -1,7 +1,7 @@
-engine/game: narrow collision facade exposure from GameObjectSystem
+engine/game: prepare utility split and GameBase-aligned boundary cleanup
 
-- clarified GameCollision as the canonical collision boundary
-- clarified GameObjectSystem collision access as a transitional compatibility facade
-- documented collision passthrough ownership and retained compatibility wiring
+- clarified gameObjectUtils as a transitional mixed utility surface
+- clarified gameUtils as a gameplay-facing utility surface
+- documented likely extraction seams and GameBase-aligned boundary candidates
 - preserved compatibility and public API
 - no behavior changes

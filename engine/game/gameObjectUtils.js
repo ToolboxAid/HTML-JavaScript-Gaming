@@ -3,11 +3,12 @@
 // 03/12/2026
 // gameObjectUtils.js
 //
-// Runtime-neutral boundary note:
-// - Role: internal engine/game object helper and validation utility.
-// - Status: retained transitional boundary for compatibility.
-// - This first runtime-neutral patch is comment-only and preserves behavior.
-// - Mixed helper responsibilities are marked as extraction candidates for later cleanup.
+// PR-006 boundary note:
+// - transitional mixed utility surface for engine/game compatibility
+// - currently combines validation, metadata setup/cleanup, and object helper concerns
+// - retained as a compatibility surface for existing call paths during boundary cleanup
+// - validation/metadata sections below are likely future extraction candidates
+// - not yet aligned as a long-term public GameBase-facing boundary
 
 import ObjectCleanup from '../utils/objectCleanup.js';
 import NumberUtils from '../math/numberUtils.js';
@@ -19,9 +20,8 @@ class GameObjectUtils {
         throw new Error('GameObjectUtils is a utility class with only static methods. Do not instantiate.');
     }
 
-    // Transitional boundary:
-    // - Constructor validation remains centralized here for compatibility.
-    // - Candidate for later narrowing if object creation contracts move closer to public GameBase-facing APIs.
+    // PR-006 seam note:
+    // validation/constructor-argument support is a likely future extraction seam.
     static validateConstructorArgs({
         x,
         y,
@@ -40,8 +40,8 @@ class GameObjectUtils {
         ObjectValidation.boolean(debug, 'debug');
     }
 
-    // Transitional compatibility marker:
-    // - Metadata initialization remains here to preserve current helper ownership.
+    // PR-006 seam note:
+    // metadata initialization/cleanup is a separate concern from object ID validation.
     static initializeMetadata(target, { type, debug }) {
         if (!target || typeof target !== 'object') {
             throw new Error('target must be an object.');
@@ -51,8 +51,6 @@ class GameObjectUtils {
         target.debug = debug;
     }
 
-    // Transitional compatibility marker:
-    // - Metadata teardown remains here for legacy call-path stability.
     static destroyMetadata(target) {
         if (!target || typeof target !== 'object') {
             throw new Error('target must be an object.');
@@ -61,9 +59,8 @@ class GameObjectUtils {
         ObjectCleanup.nullifyProperties(target, ['type']);
     }
 
-    // Runtime-neutral compatibility marker:
-    // - Core object validation retained for manager, registry, and system coordination.
-    // - Extraction candidate if domain-specific validation boundaries narrow later.
+    // PR-006 seam note:
+    // object identity/validation helpers are retained here as a compatibility surface.
     static validateGameObject(gameObject, name = 'gameObject') {
         if (!gameObject || typeof gameObject !== 'object') {
             throw new Error(`${name} must be an object.`);
@@ -76,7 +73,6 @@ class GameObjectUtils {
         this.validateId(gameObject.ID, `${name}.ID`);
     }
 
-    // Internal compatibility surface retained for existing identity validation.
     static validateId(id, name = 'id') {
         const isValidString = typeof id === 'string' && id.trim() !== '';
         const isValidNumber = NumberUtils.isFiniteNumber(id);
@@ -86,7 +82,6 @@ class GameObjectUtils {
         }
     }
 
-    // Internal compatibility surface retained for existing identity lookup code.
     static getObjectId(gameObject) {
         this.validateGameObject(gameObject);
         return gameObject.ID;
