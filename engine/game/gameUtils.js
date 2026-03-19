@@ -7,18 +7,20 @@
 // - gameplay-facing utility surface retained for engine/game compatibility
 // - closer to a future GameBase-aligned public boundary than lower-level object helper utilities
 // - currently mixes gameplay convenience with assumptions about current engine/game wiring
-// - player-selection helpers below are likely future GameBase-aligned boundary candidates
 //
 // PR-011 boundary note:
 // - player-selection helpers are now extracted to GamePlayerSelectionUtils
 // - GameUtils retains delegation-based compatibility methods for existing callers
-// - player-state / turn-flow helpers remain here pending a later split
+//
+// PR-017 boundary note:
+// - turn-flow/state helpers are now extracted to GameTurnFlowUtils
+// - GameUtils retains delegation-based compatibility methods for existing callers
+// - GameUtils is now primarily a compatibility facade over split gameplay helpers
 
 import GamePlayerSelectionUtils from './gamePlayerSelectionUtils.js';
+import GameTurnFlowUtils from './gameTurnFlowUtils.js';
 
 class GameUtils {
-    // PR-011 compatibility note:
-    // delegated player-selection bridge retained for existing call paths.
     static getPlayerSelectConfig(canvasConfig, playerSelect = {}) {
         return GamePlayerSelectionUtils.getPlayerSelectConfig(canvasConfig, playerSelect);
     }
@@ -28,19 +30,11 @@ class GameUtils {
     }
 
     static areTrackedPlayersOut(playerLives, playerCount) {
-        return playerLives
-            .slice(0, playerCount)
-            .every(lives => lives <= 0);
+        return GameTurnFlowUtils.areTrackedPlayersOut(playerLives, playerCount);
     }
 
     static findNextActivePlayer(playerLives, currentPlayer, playerCount) {
-        let nextPlayer = currentPlayer;
-
-        do {
-            nextPlayer = (nextPlayer + 1) % playerCount;
-        } while (playerLives[nextPlayer] <= 0 && nextPlayer !== currentPlayer);
-
-        return nextPlayer;
+        return GameTurnFlowUtils.findNextActivePlayer(playerLives, currentPlayer, playerCount);
     }
 
     static getKeyboardPlayerSelection(keyboardInput, config) {
@@ -73,25 +67,7 @@ class GameUtils {
     }
 
     static swapPlayer(playerLives, currentPlayer, playerCount) {
-        const updatedLives = [...playerLives];
-
-        updatedLives[currentPlayer] -= 1;
-
-        if (updatedLives[currentPlayer] <= 0) {
-            if (this.areTrackedPlayersOut(updatedLives, playerCount)) {
-                return {
-                    updatedPlayer: 0,
-                    updatedLives,
-                    isGameOver: true
-                };
-            }
-        }
-
-        return {
-            updatedPlayer: this.findNextActivePlayer(updatedLives, currentPlayer, playerCount),
-            updatedLives,
-            isGameOver: false
-        };
+        return GameTurnFlowUtils.swapPlayer(playerLives, currentPlayer, playerCount);
     }
 
 }

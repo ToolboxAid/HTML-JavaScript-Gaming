@@ -1,13 +1,13 @@
 # Pre-Commit Test Checklist
 
-## Tests to run
-- tests/engine/game/gameUtilsTest.js
+## Games / samples to test
+- multi-player sample with player switching
+- any life-based game-over sample
+- tracked-player scenarios if available
 
-## Validation goals
-- drawPlayerSelection uses the corrected `(config, gameControllers)` signature
-- overlay/background assertion is meaningful again
-- test remains harness-compatible
-- production files remain untouched
-
-## Optional runtime sanity
-- quick player-selection UI smoke check
+## Targeted checks
+- same return shape from swapPlayer
+- no mutation of input lives array
+- correct next-player selection
+- correct tracked-player-only game-over behavior
+- player-selection behavior remains unchanged

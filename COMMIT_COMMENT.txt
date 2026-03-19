@@ -1,6 +1,7 @@
-tests/engine/game: restore drawPlayerSelection overlay assertion coverage
+engine/game: extract turn-flow helpers from GameUtils with compatibility bridge
 
-- kept the corrected GamePlayerSelectUi.drawPlayerSelection(config, gameControllers) call
-- restored a meaningful overlay/background assertion in gameUtilsTest
-- observed the real render collaborator path with test stubs
-- preserved production behavior
+- added GameTurnFlowUtils as the gameplay-facing turn-flow/state utility
+- kept extracted GameUtils methods as delegation-based compatibility bridges
+- left player-selection delegates in GameUtils unchanged
+- preserved compatibility and public API
+- no destructive changes
