@@ -1,39 +1,20 @@
 PR-003 — engine/game classification rules
 
-### Public
+### Public Rule
 
-An export is public when it is appropriate for direct use by game code and supports the stable direction of the architecture.
+Mark an export public when it supports game composition or orchestration, aligns with
+`GameBase`, and does not expose runtime-only plumbing.
 
-#### Public indicators
-- directly supports game composition
-- directly supports orchestration
-- reinforces `GameBase` as the preferred entry point
-- does not expose runtime-only plumbing
+### Internal Rule
 
-### Internal
+Mark an export internal when it coordinates runtime details, leaks implementation detail,
+or exists primarily for setup or hidden pass-through behavior.
 
-An export is internal when it exists to support implementation detail, runtime coordination, or hidden setup behavior.
+### Transitional Rule
 
-#### Internal indicators
-- setup-only behavior
-- runtime coordination
-- hidden helpers
-- implementation detail leakage
+Mark an export transitional when it exists mainly for compatibility and bridges older
+callers to the newer boundary model.
 
-### Transitional
+### Safety Rule
 
-An export is transitional when it exists mainly to preserve compatibility during the refactor.
-
-#### Transitional indicators
-- legacy re-export
-- compatibility wrapper
-- bridge between old and new import paths
-- not desired as permanent public API
-
-### Decision Rule Priority
-
-When classification is uncertain, use this order:
-1. preserve compatibility
-2. avoid public exposure of runtime internals
-3. prefer `GameBase`-aligned public surfaces
-4. freeze transitional scope rather than expand it
+This PR is docs-only. Classification here must not change runtime behavior.
