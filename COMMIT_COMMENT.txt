@@ -1,7 +1,6 @@
-engine/game: extract player-selection helpers from gameUtils with compatibility bridge
+engine/game: isolate drawPlayerSelection overlay test failure after player-selection split
 
-- added GamePlayerSelectionUtils as the gameplay-facing player-selection utility
-- kept extracted GameUtils methods as delegation-based compatibility bridges
-- left turn-flow helpers in GameUtils for a later split
-- preserved compatibility and public API
-- no destructive changes
+- documented the investigation path for the failing overlay-count assertion
+- defined baseline, dependency-trace, and static-state checks
+- kept scope surgical and evidence-driven
+- avoided speculative production changes

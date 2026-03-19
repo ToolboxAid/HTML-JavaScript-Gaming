@@ -1,15 +1,26 @@
-# Pre-Commit Test Checklist
+# Focused Investigation Checklist
 
-## Games / samples to test
-- any game/sample with player-count selection
-- any sample using keyboard start/select flow
-- any sample using controller-based player selection flow
-- attract/start menu flow if applicable
+## Baseline / comparison
+- run the exact failing test on pre-PR-011 baseline
+- run the exact failing test on PR-011 applied state
+- compare assertion output and call counts
 
-## Runtime paths to test
-- getPlayerSelectConfig
-- keyboard player selection
-- controller player selection
-- controller warning behavior
-- selection result shape
-- confirm turn-flow helpers still behave unchanged
+## Source / test tracing
+- inspect GamePlayerSelectUi.drawPlayerSelection call path
+- inspect gameUtilsTest setup and spies/mocks
+- inspect any UI render helper used by the failing assertion
+
+## Static/shared state checks
+- reset GameUtils.hasWarnedAboutControllerLimit if present
+- reset GamePlayerSelectionUtils.hasWarnedAboutControllerLimit if present
+- verify whether test order changes result
+
+## Runtime sanity
+- run attract/start menu flow
+- run player-count selection flow
+- verify overlay/background rendering visually if possible
+
+## Decision output
+- classify as pre-existing
+- or classify as test-only issue
+- or classify as production regression

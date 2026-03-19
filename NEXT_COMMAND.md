@@ -1,9 +1,9 @@
 COMMAND: APPLY_PR
 REPO: ToolboxAid/HTML-JavaScript-Gaming
 SCOPE: engine/game
-FOCUS: first_gameutils_player_selection_split
-OUTPUT: apply_summary, changed_files, verification
+FOCUS: isolate_gameutilstest_drawplayerselection_failure
+OUTPUT: apply_summary, findings, recommendation
 CONTEXT:
-- applied zip locally
-- verify only approved files changed
-- confirm compatibility preserved
+- investigation package reviewed and/or used locally
+- report whether the failure is pre-existing or exposed by PR-011
+- recommend the smallest justified next step
