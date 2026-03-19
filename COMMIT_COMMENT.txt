@@ -1,6 +1,6 @@
-engine/game: isolate drawPlayerSelection overlay test failure after player-selection split
+tests/engine/game: fix drawPlayerSelection signature mismatch in gameUtilsTest (harness-compatible)
 
-- documented the investigation path for the failing overlay-count assertion
-- defined baseline, dependency-trace, and static-state checks
-- kept scope surgical and evidence-driven
-- avoided speculative production changes
+- corrected import path to engine/game/gamePlayerSelectUi.js
+- preserved existing Node test harness (testGameUtils export)
+- fixed drawPlayerSelection call signature only
+- no production changes
