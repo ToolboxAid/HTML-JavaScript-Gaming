@@ -1,14 +1,14 @@
 chatGPT executed:
-- Created the docs-only BUILD_PR package for PR-014
-- Wrote wording-treatment rules docs under /docs/prs/PR-014-engine-game-wording-treatment-rules/
-- Defined preferred and avoided language for the compatibility-retained engine/game documentation postures
+- Created the docs-only APPLY_PR package for PR-014
+- Wrote apply docs under /docs/prs/PR-014-engine-game-wording-treatment-rules/
+- Applied docs-only wording treatment rules for the compatibility-retained engine/game exports
 - Kept scope docs-only and preserved compatibility
 - Did not change runtime behavior, imports, file locations, or execution paths
 
 User to execute:
-- No Codex execution is required to use this BUILD_PR zip
-- Use the command below only if you want Codex to reproduce or extend this docs build step
+- Do not run Codex for APPLY_PR
+- Download the zip, extract it, drag/drop into the repo root, and commit
 
 model: GPT-5.3-codex
 reasoning: high
-codex command: Build a docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game wording treatment rules. Under /docs/prs/PR-014-engine-game-wording-treatment-rules, define wording rules for supported compatibility surfaces and compatibility surfaces with transition-planning notes, record preferred and avoided language, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Apply the docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game wording treatment rules. Ensure all PR docs live under /docs/prs/PR-014-engine-game-wording-treatment-rules, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
