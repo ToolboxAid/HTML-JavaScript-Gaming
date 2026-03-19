@@ -1,7 +1,7 @@
 COMMAND: APPLY_PR
 REPO: ToolboxAid/HTML-JavaScript-Gaming
 SCOPE: engine/game
-FOCUS: utility_split_gamebase_alignment_prep
+FOCUS: first_real_utility_split_candidate
 OUTPUT: apply_summary, changed_files, verification
 CONTEXT:
 - applied zip locally

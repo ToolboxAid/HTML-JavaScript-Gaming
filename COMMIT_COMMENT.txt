@@ -1,7 +1,7 @@
-engine/game: prepare utility split and GameBase-aligned boundary cleanup
+engine/game: extract object identity helpers from gameObjectUtils with compatibility bridge
 
-- clarified gameObjectUtils as a transitional mixed utility surface
-- clarified gameUtils as a gameplay-facing utility surface
-- documented likely extraction seams and GameBase-aligned boundary candidates
+- added GameObjectIdentityUtils as the internal identity-focused utility
+- kept GameObjectUtils identity helpers as delegation-based compatibility methods
+- left constructor and metadata helpers in GameObjectUtils for now
 - preserved compatibility and public API
-- no behavior changes
+- no destructive changes

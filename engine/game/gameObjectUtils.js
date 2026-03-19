@@ -9,11 +9,17 @@
 // - retained as a compatibility surface for existing call paths during boundary cleanup
 // - validation/metadata sections below are likely future extraction candidates
 // - not yet aligned as a long-term public GameBase-facing boundary
+//
+// PR-007 boundary note:
+// - identity-focused helpers are now extracted to GameObjectIdentityUtils
+// - this file retains compatibility delegation for existing callers
+// - constructor/metadata helpers remain here pending later cleanup
 
 import ObjectCleanup from '../utils/objectCleanup.js';
 import NumberUtils from '../math/numberUtils.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import StringValidation from '../utils/stringValidation.js';
+import GameObjectIdentityUtils from './gameObjectIdentityUtils.js';
 
 class GameObjectUtils {
     constructor() {
@@ -59,32 +65,18 @@ class GameObjectUtils {
         ObjectCleanup.nullifyProperties(target, ['type']);
     }
 
-    // PR-006 seam note:
-    // object identity/validation helpers are retained here as a compatibility surface.
+    // PR-007 compatibility note:
+    // delegated identity validation bridge retained for existing call paths.
     static validateGameObject(gameObject, name = 'gameObject') {
-        if (!gameObject || typeof gameObject !== 'object') {
-            throw new Error(`${name} must be an object.`);
-        }
-
-        if (typeof gameObject.destroy !== 'function') {
-            throw new Error(`${name} must define a destroy() method.`);
-        }
-
-        this.validateId(gameObject.ID, `${name}.ID`);
+        return GameObjectIdentityUtils.validateGameObject(gameObject, name);
     }
 
     static validateId(id, name = 'id') {
-        const isValidString = typeof id === 'string' && id.trim() !== '';
-        const isValidNumber = NumberUtils.isFiniteNumber(id);
-
-        if (!isValidString && !isValidNumber) {
-            throw new Error(`${name} must be a non-empty string or finite number.`);
-        }
+        return GameObjectIdentityUtils.validateId(id, name);
     }
 
     static getObjectId(gameObject) {
-        this.validateGameObject(gameObject);
-        return gameObject.ID;
+        return GameObjectIdentityUtils.getObjectId(gameObject);
     }
 }
 
