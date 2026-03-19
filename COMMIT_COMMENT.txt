@@ -1,7 +1,1 @@
-engine/game: extract turn-flow helpers from GameUtils with compatibility bridge
-
-- added GameTurnFlowUtils as the gameplay-facing turn-flow/state utility
-- kept extracted GameUtils methods as delegation-based compatibility bridges
-- left player-selection delegates in GameUtils unchanged
-- preserved compatibility and public API
-- no destructive changes
+tests: add GameTurnFlowUtils equivalence probe
