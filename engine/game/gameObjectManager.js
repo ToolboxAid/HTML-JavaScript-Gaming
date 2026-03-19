@@ -3,11 +3,12 @@
 // Global Game Object Manager
 // 03/2026
 //
-// Runtime-neutral boundary note:
-// - Role: internal engine/game active-object manager.
-// - Status: retained transitional boundary for compatibility.
-// - This first runtime-neutral patch is comment-only and preserves behavior.
-// - Extraction candidates are marked where manager responsibilities overlap with system or utility concerns.
+// PR-004 boundary note:
+// - internal active-membership boundary
+// - manager owns the active game object collection
+// - manager supports add/remove operations for managed active objects
+// - manager is retained as a compatibility surface for existing engine/game call paths
+// - full-system sequencing, registry coordination, and top-level lifecycle authority remain outside this file
 
 import GameObjectUtils from './gameObjectUtils.js';
 import DebugLog from '../utils/debugLog.js';
@@ -28,9 +29,6 @@ class GameObjectManager {
         DebugLog.log(this.debug, null, 'GameObjectManager created');
     }
 
-    // Compatibility surface:
-    // - Internal read access retained for legacy call paths.
-    // - Snapshot behavior remains unchanged in this runtime-neutral patch.
     getActiveGameObjects(useSnapshot = true) {
         if (useSnapshot) {
             return [...this.#activeGameObjects];
@@ -38,19 +36,14 @@ class GameObjectManager {
         return this.#activeGameObjects;
     }
 
-    // Internal compatibility surface retained for existing orchestration code.
     getCount() {
         return this.#activeGameObjects.length;
     }
 
-    // Internal compatibility surface retained for existing orchestration code.
     hasGameObject(gameObject) {
         return this.#activeGameObjects.includes(gameObject);
     }
 
-    // Runtime-neutral compatibility marker:
-    // - Manager retains active-object orchestration at this boundary.
-    // - Validation remains delegated to gameObjectUtils for compatibility.
     addGameObject(gameObject) {
         GameObjectUtils.validateGameObject(gameObject);
 
@@ -71,9 +64,6 @@ class GameObjectManager {
         return true;
     }
 
-    // Transitional boundary:
-    // - Manager currently coordinates both containment and destruction.
-    // - Extraction candidate if lifecycle teardown moves to a narrower internal boundary later.
     removeGameObject(gameObject) {
         GameObjectUtils.validateGameObject(gameObject);
 
@@ -86,9 +76,9 @@ class GameObjectManager {
             return false;
         }
 
-        // Compatibility marker:
-        // - Destruction remains delegated through shared system utilities.
-        // - Retained for legacy call-path stability in this patch.
+        // PR-004 lifecycle note:
+        // manager removal handles active-membership teardown for a managed object.
+        // Full-system orchestration and registry sequencing remain system-owned.
         const destroyed = SystemUtils.destroy(gameObject);
 
         if (!destroyed) {
@@ -107,10 +97,10 @@ class GameObjectManager {
         return true;
     }
 
-    // Transitional boundary:
-    // - Bulk teardown is retained here for compatibility.
-    // - Candidate for later lifecycle narrowing once manager/system ownership is cleaner.
     destroy() {
+        // PR-004 lifecycle note:
+        // manager destroy is manager-scoped teardown of managed active membership.
+        // It is not the authoritative full object-system lifecycle entry point.
         for (let i = this.#activeGameObjects.length - 1; i >= 0; i -= 1) {
             this.removeGameObject(this.#activeGameObjects[i]);
         }
@@ -124,3 +114,4 @@ class GameObjectManager {
 }
 
 export default GameObjectManager;
+

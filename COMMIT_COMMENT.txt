@@ -1,7 +1,7 @@
-engine/game: narrow registry responsibility and clarify system orchestration boundary
+engine/game: tighten manager vs system lifecycle ownership
 
-- clarified GameObjectRegistry as identity/lookup only
-- clarified GameObjectSystem as orchestration layer
-- reduced responsibility overlap between registry and system
-- documented clear() ownership semantics
-- no behavior or API changes
+- clarified GameObjectManager as active-membership owner
+- clarified GameObjectSystem as authoritative lifecycle orchestrator
+- narrowed clear/destroy responsibility wording between manager and system
+- preserved compatibility and public API
+- no behavior changes

@@ -9,6 +9,12 @@
 // - registry remains identity/lookup focused
 // - manager remains active-object membership focused
 // - collision access is retained here as a compatibility surface
+//
+// PR-004 lifecycle note:
+// - system is the authoritative full-system lifecycle boundary
+// - system owns top-level add/remove sequencing across manager + registry
+// - system owns full clear/destroy entry points for the object system
+// - manager teardown remains subordinate to system-level orchestration
 
 import GameObjectUtils from './gameObjectUtils.js';
 import GameObjectManager from './gameObjectManager.js';
@@ -69,6 +75,10 @@ class GameObjectSystem {
         // PR-003 orchestration note:
         // system owns remove sequencing and compensating rollback between
         // registry state and manager-owned active membership.
+        //
+        // PR-004 lifecycle note:
+        // this is the authoritative full-system removal path because it coordinates
+        // manager-owned teardown with registry-owned identity state.
         const unregistered = this.registry.unregister(gameObject);
 
         if (!unregistered) {
@@ -138,6 +148,9 @@ class GameObjectSystem {
         // PR-003 boundary note:
         // full system clear is authoritative here because it coordinates
         // active-object removal through the manager-backed removal path.
+        //
+        // PR-004 lifecycle note:
+        // system clear remains the top-level full object-system lifecycle path.
         const activeGameObjects = this.manager.getActiveGameObjects(false);
         while (activeGameObjects.length > 0) {
             const gameObject = activeGameObjects[activeGameObjects.length - 1];
@@ -152,6 +165,8 @@ class GameObjectSystem {
     }
 
     destroy() {
+        // PR-004 lifecycle note:
+        // system destroy delegates to the authoritative full-system clear path.
         return this.clear();
     }
 }
