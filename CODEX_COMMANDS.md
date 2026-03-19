@@ -1,11 +1,14 @@
 chatGPT executed:
-- Created the docs-first PLAN_PR package for PR-009
-- Wrote planning docs under /docs/prs/PR-009-engine-game-compatibility-usage-evidence/
-- Kept scope planning-only with no runtime behavior changes
+- Created the docs-only BUILD_PR package for PR-009
+- Wrote compatibility usage-evidence docs under /docs/prs/PR-009-engine-game-compatibility-usage-evidence/
+- Prepared a docs-first matrix and caller-search rules for compatibility-retained exports
+- Kept scope docs-only and preserved compatibility
+- Did not change runtime behavior, imports, file locations, or execution paths
 
 User to execute:
-- No Codex execution is required for this PLAN_PR package unless you want Codex to reproduce or extend the planning step
+- No Codex execution is required to use this BUILD_PR zip
+- Use the command below only if you want Codex to reproduce or extend this docs build step
 
-model: GPT-5.4
+model: GPT-5.3-codex
 reasoning: high
-codex command: Review the verified PR-008 engine/game compatibility-retained exports in ToolboxAid/HTML-JavaScript-Gaming and produce a docs-first usage-evidence plan. Define how to gather verified caller evidence for samples, games, and other repo callers, record concise evidence rules, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Build a docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game compatibility usage evidence. Under /docs/prs/PR-009-engine-game-compatibility-usage-evidence, document the evidence matrix, caller search rules, and migration notes for the verified compatibility-retained engine/game exports, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
