@@ -1,22 +1,28 @@
-PR-006 - blocked status
+PR-006 — blocked status
 
-### Current Status
+### Blocking Reason
 
-Not blocked.
+The requested step was to execute the actual `engine/game` repo export scan and record results.
 
-### Resolution
-
-The previous blocker (missing repo access in prior execution context) is resolved in this
-workspace. The `engine/game` module entry files were scanned directly on 2026-03-19.
+That requires access to the repo files themselves. In this session, the repo contents were not
+available to inspect here, so a factual export scan could not be verified.
 
 ### What Was Verified
 
-- actual export names exposed by `engine/game` entry files
-- defining files for each export
-- direct export versus re-export status
-- re-export presence (none found in scanned surface)
+- workflow step is BUILD_PR then APPLY_PR
+- scope is `engine/game`
+- focus is `repo_export_scan_execution`
+- output remains docs-first
+- no runtime behavior changes are allowed
 
-### Source Of Truth
+### What Was Not Verified
 
-- local repo files under `engine/game`
-- factual scan output recorded in `EXPORT_SCAN_RESULTS.md`
+- actual export names
+- actual defining files
+- actual re-export files
+- actual direct export versus re-export results
+
+### Rule Preserved
+
+Because this workflow is docs-first and facts-only for export capture, no placeholder scan results
+were inserted as if they were verified.

@@ -1,12 +1,13 @@
 chatGPT executed:
-- Created the docs-only BUILD_PR package for PR-006
-- Recorded that the actual repo export scan could not be verified in this environment
-- Preserved compatibility and avoided unverified scan results
+- Created the docs-only APPLY_PR package for PR-006
+- Wrote apply docs under /docs/prs/PR-006-engine-game-repo-export-scan-execution/
+- Kept scope docs-only and preserved compatibility
 - Did not change runtime behavior, imports, file locations, or execution paths
 
 User to execute:
-- Run this in VS Code against the actual local repo to perform the factual export scan
-- Then use the resulting verified outputs for the next zip-based step
+- Do not run Codex for APPLY_PR
+- Download the zip, extract it, drag/drop into the repo root, and commit
+- Then run the Codex command below in VS Code against the local repo to perform the factual export scan
 
 model: GPT-5.3-codex
 reasoning: high

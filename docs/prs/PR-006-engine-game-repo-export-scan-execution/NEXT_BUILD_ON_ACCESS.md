@@ -1,18 +1,14 @@
-PR-006 - next build on access
+PR-006 — next build on access
 
-### Status
+### Next Build Goal
 
-Completed in this execution context.
+Once repo contents are available, rebuild this PR to replace the blocked status with actual scan results.
 
-### Result
+### Result Documents To Populate
 
-The factual repo export scan has been executed and recorded in:
-
-- `docs/prs/PR-006-engine-game-repo-export-scan-execution/EXPORT_SCAN_RESULTS.md`
-
-### If Re-run Is Needed
-
-Repeat the same scan rules and update only factual deltas.
+- factual export scan results
+- source attribution
+- direct export versus re-export map
 
 ### Constraints
 

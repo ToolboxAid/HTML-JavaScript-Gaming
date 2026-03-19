@@ -1,22 +1,22 @@
-PR-006 - access requirements
+PR-006 — access requirements
 
-### Access Used For This Execution
+### Required For Actual Scan
 
-The factual scan was executed from local repo files in this workspace on 2026-03-19.
+To complete the factual repo export scan, one of these must be available in the execution environment:
 
-### Required Inputs For Re-run
+- local repo files
+- connected GitHub access to the repo
+- uploaded repo snapshot or targeted files for `engine/game`
 
-- local checkout of `ToolboxAid/HTML-JavaScript-Gaming`
-- readable files under `engine/game`
-
-### Factual Outputs Produced
+### Expected Factual Outputs Once Access Exists
 
 - export name exactly as exposed
 - defining file
 - re-export file when applicable
 - surface type: direct export or re-export
+- factual compatibility note only when explicitly visible
 
-### Compatibility Constraint
+### Recommended Execution Path
 
-This execution remains docs-only and does not change runtime behavior, imports,
-file locations, or execution paths.
+Run the Codex command from VS Code against the actual local repo so the export scan is grounded in
+real repo contents.
