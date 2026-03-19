@@ -1,6 +1,6 @@
-tests/engine/game: fix drawPlayerSelection signature mismatch in gameUtilsTest (harness-compatible)
+tests/engine/game: restore drawPlayerSelection overlay assertion coverage
 
-- corrected import path to engine/game/gamePlayerSelectUi.js
-- preserved existing Node test harness (testGameUtils export)
-- fixed drawPlayerSelection call signature only
-- no production changes
+- kept the corrected GamePlayerSelectUi.drawPlayerSelection(config, gameControllers) call
+- restored a meaningful overlay/background assertion in gameUtilsTest
+- observed the real render collaborator path with test stubs
+- preserved production behavior
