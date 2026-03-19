@@ -23,7 +23,7 @@ Use one row per export with these fields:
 
 | Export Name | Source File | Surface Type | Notes |
 | --- | --- | --- | --- |
-| To be recorded in the next factual pass | To be recorded in the next factual pass | To be recorded in the next factual pass | Inventory follows actual repo exports only |
+| Inventory to be completed from actual repo exports in a later factual pass | Inventory to be completed from actual repo exports in a later factual pass | direct export / re-export / compatibility-oriented | Record facts only |
 
 ### Inventory Rules
 
