@@ -1,11 +1,13 @@
 chatGPT executed:
-- Created the docs-first PLAN_PR package for PR-010
-- Wrote planning docs under /docs/prs/PR-010-engine-game-verified-caller-scan-execution/
-- Kept scope planning-only with no runtime behavior changes
+- Created the docs-only BUILD_PR package for PR-010
+- Recorded that the actual caller scan could not be verified in this environment
+- Preserved compatibility and avoided unverified caller results
+- Did not change runtime behavior, imports, file locations, or execution paths
 
 User to execute:
-- No Codex execution is required for this PLAN_PR package unless you want Codex to reproduce or extend the planning step
+- Run this in VS Code against the actual local repo to perform the verified caller scan
+- Then use the resulting verified outputs for the next zip-based step
 
-model: GPT-5.4
+model: GPT-5.3-codex
 reasoning: high
-codex command: Review the verified PR-008 compatibility-retained engine/game exports in ToolboxAid/HTML-JavaScript-Gaming and produce a docs-first execution plan for scanning and recording verified caller references across games, samples, engine modules, and other repo callers. Record export name, caller file, caller category, and reference type, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Scan ToolboxAid/HTML-JavaScript-Gaming for verified callers of the compatibility-retained engine/game exports `GameCollision`, `GameObjectManager`, `GameObjectRegistry`, `GameObjectSystem`, `GameObjectUtils`, and `GameUtils`, and record results under /docs/prs/PR-010-engine-game-verified-caller-scan-execution. Capture export name, caller file, caller category, reference type, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
