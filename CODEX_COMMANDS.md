@@ -1,13 +1,11 @@
 chatGPT executed:
-- Created the docs-only APPLY_PR package for PR-010
-- Placed verified caller scan docs under /docs/prs/PR-010-engine-game-verified-caller-scan-execution/
-- Preserved compatibility and kept the patch docs-only
-- Did not change runtime behavior, imports, file locations, or execution paths
+- Created the docs-first PLAN_PR package for PR-011
+- Wrote planning docs under /docs/prs/PR-011-engine-game-usage-based-risk-tiering/
+- Kept scope planning-only with no runtime behavior changes
 
 User to execute:
-- Do not run Codex for APPLY_PR
-- Download the zip, extract it, drag/drop into the repo root, and commit
+- No Codex execution is required for this PLAN_PR package unless you want Codex to reproduce or extend the planning step
 
-model: GPT-5.3-codex
+model: GPT-5.4
 reasoning: high
-codex command: Apply the docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game verified caller scan execution. Ensure all PR docs live under /docs/prs/PR-010-engine-game-verified-caller-scan-execution, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Review the verified PR-010 caller results for the compatibility-retained engine/game exports in ToolboxAid/HTML-JavaScript-Gaming and produce a docs-first usage-based risk-tiering plan. Assign each compatibility-retained export a high, medium, or low risk tier based on verified caller evidence, record concise rationale, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
