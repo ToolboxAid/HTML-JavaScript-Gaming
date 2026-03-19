@@ -1,13 +1,13 @@
 chatGPT executed:
-- Created the docs-only BUILD_PR package for PR-006 results stage
-- Recorded that verified local scan results were not available in this session
-- Preserved compatibility and avoided unverified repo claims
+- Created the docs-only APPLY_PR package for PR-006 verified results
+- Placed verified scan docs under /docs/prs/PR-006-engine-game-repo-export-scan-results/
+- Preserved compatibility and kept the patch docs-only
 - Did not change runtime behavior, imports, file locations, or execution paths
 
 User to execute:
-- Run this in VS Code against the local repo
-- Then provide the verified results back for the next zip-based BUILD_PR with actual recorded outputs
+- Do not run Codex for APPLY_PR
+- Download the zip, extract it, drag/drop into the repo root, and commit
 
 model: GPT-5.3-codex
 reasoning: high
-codex command: Scan the actual engine/game module entry files in ToolboxAid/HTML-JavaScript-Gaming and record the verified export surface under /docs/prs/PR-006-engine-game-repo-export-scan-results. Capture export names exactly as exposed, defining files, re-export files where applicable, direct exports versus re-exports, factual compatibility notes only when explicitly visible, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Apply the verified docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game repo export scan results. Ensure all PR docs live under /docs/prs/PR-006-engine-game-repo-export-scan-results, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
