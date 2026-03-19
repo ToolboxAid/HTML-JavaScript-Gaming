@@ -1,7 +1,7 @@
 COMMAND: APPLY_PR
 REPO: ToolboxAid/HTML-JavaScript-Gaming
 SCOPE: engine/game
-FOCUS: manager_system_lifecycle_boundary
+FOCUS: collision_facade_narrowing
 OUTPUT: apply_summary, changed_files, verification
 CONTEXT:
 - applied zip locally

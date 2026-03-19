@@ -1,7 +1,7 @@
-engine/game: tighten manager vs system lifecycle ownership
+engine/game: narrow collision facade exposure from GameObjectSystem
 
-- clarified GameObjectManager as active-membership owner
-- clarified GameObjectSystem as authoritative lifecycle orchestrator
-- narrowed clear/destroy responsibility wording between manager and system
+- clarified GameCollision as the canonical collision boundary
+- clarified GameObjectSystem collision access as a transitional compatibility facade
+- documented collision passthrough ownership and retained compatibility wiring
 - preserved compatibility and public API
 - no behavior changes

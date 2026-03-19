@@ -8,13 +8,17 @@
 // - system coordinates manager + registry sequencing and rollback
 // - registry remains identity/lookup focused
 // - manager remains active-object membership focused
-// - collision access is retained here as a compatibility surface
 //
 // PR-004 lifecycle note:
 // - system is the authoritative full-system lifecycle boundary
 // - system owns top-level add/remove sequencing across manager + registry
 // - system owns full clear/destroy entry points for the object system
 // - manager teardown remains subordinate to system-level orchestration
+//
+// PR-005 collision note:
+// - collision access is retained here only as a transitional compatibility facade
+// - collision semantics live in GameCollision, not in system ownership
+// - system passthrough methods remain for compatibility with existing engine/game call paths
 
 import GameObjectUtils from './gameObjectUtils.js';
 import GameObjectManager from './gameObjectManager.js';
@@ -32,6 +36,9 @@ class GameObjectSystem {
         this.debug = debug;
         this.manager = new GameObjectManager(debug);
         this.registry = new GameObjectRegistry(debug);
+
+        // PR-005 collision note:
+        // retained compatibility wiring to the canonical collision utility boundary.
         this.collision = GameCollision;
 
         DebugLog.log(this.debug, null, 'GameObjectSystem created');
@@ -129,18 +136,26 @@ class GameObjectSystem {
     }
 
     intersects(objectA, objectB) {
+        // PR-005 collision note:
+        // transitional compatibility passthrough to GameCollision.
         return this.collision.intersects(objectA, objectB);
     }
 
     intersectsSides(objectA, objectB) {
+        // PR-005 collision note:
+        // transitional compatibility passthrough to GameCollision.
         return this.collision.intersectsSides(objectA, objectB);
     }
 
     isOutOfBounds(object, margin = 0) {
+        // PR-005 collision note:
+        // transitional compatibility passthrough to GameCollision.
         return this.collision.isOutOfBounds(object, margin);
     }
 
     getOutOfBoundsSides(object, margin = 0) {
+        // PR-005 collision note:
+        // transitional compatibility passthrough to GameCollision.
         return this.collision.getOutOfBoundsSides(object, margin);
     }
 
@@ -172,4 +187,3 @@ class GameObjectSystem {
 }
 
 export default GameObjectSystem;
-
