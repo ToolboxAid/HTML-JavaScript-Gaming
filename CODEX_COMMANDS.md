@@ -1,11 +1,3 @@
-model: GPT-5.4
-reasoning: high
-codex command: Review `engine/game` exports and produce a surgical docs-first boundary implementation plan aligned to GameBase-centered architecture. Classify each export as public, internal, or transitional. Do not change runtime behavior.
-
-model: GPT-5.4-mini
-reasoning: medium
-codex command: Inventory current `engine/game` files and imports. Suggest boundary labels and minimal docs changes only.
-
 model: GPT-5.3-codex
 reasoning: high
-codex command: Prepare BUILD_PR patch set for `engine/game` boundary docs and markers only. No behavior changes. Keep compatibility intact.
+codex command: Build a docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game architecture. Add or update PR-scoped boundary docs that classify engine/game surfaces as public, internal, or transitional, document dependency rules, and reinforce GameBase as the public entry point. Do not change runtime behavior, do not move files, do not rewrite imports, and preserve compatibility.
