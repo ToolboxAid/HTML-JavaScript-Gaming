@@ -3,11 +3,12 @@
 // Global Game Object System
 // 03/2026
 //
-// Runtime-neutral boundary note:
-// - Role: public engine/game orchestration surface for object management, lookup, and collision access.
-// - Status: retained transitional boundary for compatibility.
-// - This first runtime-neutral patch is comment-only and preserves behavior.
-// - Manager, registry, and collision overlap points are marked for later extraction or narrowing.
+// PR-003 boundary note:
+// - transitional orchestration boundary
+// - system coordinates manager + registry sequencing and rollback
+// - registry remains identity/lookup focused
+// - manager remains active-object membership focused
+// - collision access is retained here as a compatibility surface
 
 import GameObjectUtils from './gameObjectUtils.js';
 import GameObjectManager from './gameObjectManager.js';
@@ -23,10 +24,6 @@ class GameObjectSystem {
         ObjectValidation.boolean(debug, 'debug');
 
         this.debug = debug;
-
-        // Runtime-neutral compatibility marker:
-        // - System currently composes manager, registry, and collision at one public boundary.
-        // - Retained for legacy call-path stability while future narrowing is planned.
         this.manager = new GameObjectManager(debug);
         this.registry = new GameObjectRegistry(debug);
         this.collision = GameCollision;
@@ -34,12 +31,11 @@ class GameObjectSystem {
         DebugLog.log(this.debug, null, 'GameObjectSystem created');
     }
 
-    // Transitional boundary:
-    // - Public orchestration entry point retained for compatibility.
-    // - Coordinates validation, manager ownership, and registry identity in one place for now.
     addGameObject(gameObject) {
         GameObjectUtils.validateGameObject(gameObject);
 
+        // PR-003 orchestration note:
+        // system owns add sequencing across active membership and ID registration.
         if (!this.manager.addGameObject(gameObject)) {
             DebugLog.warn(this.debug, null, 'Failed to add GameObject to manager', {
                 id: gameObject.ID
@@ -55,8 +51,6 @@ class GameObjectSystem {
                 error: error.message
             });
 
-            // Runtime-neutral compatibility marker:
-            // - Rollback path is retained exactly to preserve current manager/registry coordination.
             this.manager.removeGameObject(gameObject);
             return false;
         }
@@ -69,12 +63,12 @@ class GameObjectSystem {
         return true;
     }
 
-    // Transitional boundary:
-    // - Public teardown entry point retained for compatibility.
-    // - Coordinates registry and manager responsibilities that may narrow in a later PR.
     removeGameObject(gameObject) {
         GameObjectUtils.validateGameObject(gameObject);
 
+        // PR-003 orchestration note:
+        // system owns remove sequencing and compensating rollback between
+        // registry state and manager-owned active membership.
         const unregistered = this.registry.unregister(gameObject);
 
         if (!unregistered) {
@@ -88,8 +82,6 @@ class GameObjectSystem {
                 id: gameObject.ID
             });
 
-            // Compatibility marker:
-            // - Registry rollback remains here for legacy call-path stability.
             if (unregistered) {
                 this.registry.register(gameObject);
             }
@@ -104,62 +96,48 @@ class GameObjectSystem {
         return true;
     }
 
-    // Public compatibility surface retained for identity lookup.
     getGameObjectById(id) {
         return this.registry.getById(id);
     }
 
-    // Public compatibility surface retained for identity lookup.
     hasGameObjectById(id) {
         return this.registry.hasId(id);
     }
 
-    // Public compatibility surface retained for manager-backed containment checks.
     hasGameObject(gameObject) {
         GameObjectUtils.validateGameObject(gameObject);
 
         return this.manager.hasGameObject(gameObject);
     }
 
-    // Public compatibility surface retained for manager-backed enumeration.
     getActiveGameObjects() {
         return this.manager.getActiveGameObjects();
     }
 
-    // Public compatibility surface retained for manager-backed counts.
     getCount() {
         return this.manager.getCount();
     }
 
-    // Runtime-neutral compatibility marker:
-    // - Collision passthrough retained at the public system boundary.
-    // - Extraction candidate if collision access separates from object orchestration later.
     intersects(objectA, objectB) {
         return this.collision.intersects(objectA, objectB);
     }
 
-    // Runtime-neutral compatibility marker:
-    // - Side-aware collision passthrough retained for compatibility.
     intersectsSides(objectA, objectB) {
         return this.collision.intersectsSides(objectA, objectB);
     }
 
-    // Runtime-neutral compatibility marker:
-    // - Bounds passthrough retained at the public system boundary.
     isOutOfBounds(object, margin = 0) {
         return this.collision.isOutOfBounds(object, margin);
     }
 
-    // Runtime-neutral compatibility marker:
-    // - Bounds-side passthrough retained at the public system boundary.
     getOutOfBoundsSides(object, margin = 0) {
         return this.collision.getOutOfBoundsSides(object, margin);
     }
 
-    // Transitional boundary:
-    // - Bulk clear currently coordinates public teardown through manager and registry.
-    // - Retained exactly for compatibility in this first runtime-neutral patch.
     clear() {
+        // PR-003 boundary note:
+        // full system clear is authoritative here because it coordinates
+        // active-object removal through the manager-backed removal path.
         const activeGameObjects = this.manager.getActiveGameObjects(false);
         while (activeGameObjects.length > 0) {
             const gameObject = activeGameObjects[activeGameObjects.length - 1];
@@ -173,10 +151,10 @@ class GameObjectSystem {
         return true;
     }
 
-    // Public compatibility surface retained for existing destroy call paths.
     destroy() {
         return this.clear();
     }
 }
 
 export default GameObjectSystem;
+

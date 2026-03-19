@@ -1,0 +1,7 @@
+engine/game: narrow registry responsibility and clarify system orchestration boundary
+
+- clarified GameObjectRegistry as identity/lookup only
+- clarified GameObjectSystem as orchestration layer
+- reduced responsibility overlap between registry and system
+- documented clear() ownership semantics
+- no behavior or API changes
