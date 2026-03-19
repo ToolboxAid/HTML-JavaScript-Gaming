@@ -8,8 +8,12 @@
 // - registry owns ID registration and ID lookup only
 // - retained as a compatibility surface for existing engine/game call paths
 // - lifecycle destruction and multi-part sequencing remain outside this file
+//
+// PR-008 migration note:
+// - internal identity-oriented callers now use GameObjectIdentityUtils directly
+// - this reduces reliance on the GameObjectUtils compatibility bridge in registry code
 
-import GameObjectUtils from './gameObjectUtils.js';
+import GameObjectIdentityUtils from './gameObjectIdentityUtils.js';
 import DebugLog from '../utils/debugLog.js';
 import ObjectValidation from '../utils/objectValidation.js';
 
@@ -28,7 +32,7 @@ class GameObjectRegistry {
     }
 
     register(gameObject) {
-        const id = GameObjectUtils.getObjectId(gameObject);
+        const id = GameObjectIdentityUtils.getObjectId(gameObject);
 
         if (this.#objectsById.has(id)) {
             throw new Error(`Duplicate GameObject ID detected: ${id}`);
@@ -45,7 +49,7 @@ class GameObjectRegistry {
     }
 
     unregister(gameObject) {
-        const id = GameObjectUtils.getObjectId(gameObject);
+        const id = GameObjectIdentityUtils.getObjectId(gameObject);
 
         if (!this.#objectsById.has(id)) {
             DebugLog.warn(this.debug, null, 'GameObject not found in registry', {
@@ -64,13 +68,13 @@ class GameObjectRegistry {
     }
 
     getById(id) {
-        GameObjectUtils.validateId(id);
+        GameObjectIdentityUtils.validateId(id);
 
         return this.#objectsById.get(id) || null;
     }
 
     hasId(id) {
-        GameObjectUtils.validateId(id);
+        GameObjectIdentityUtils.validateId(id);
 
         return this.#objectsById.has(id);
     }
@@ -91,4 +95,3 @@ class GameObjectRegistry {
 }
 
 export default GameObjectRegistry;
-

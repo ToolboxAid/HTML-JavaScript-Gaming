@@ -19,8 +19,12 @@
 // - collision access is retained here only as a transitional compatibility facade
 // - collision semantics live in GameCollision, not in system ownership
 // - system passthrough methods remain for compatibility with existing engine/game call paths
+//
+// PR-008 migration note:
+// - internal identity-oriented validation now uses GameObjectIdentityUtils directly
+// - GameObjectUtils remains available as a compatibility bridge for existing callers elsewhere
 
-import GameObjectUtils from './gameObjectUtils.js';
+import GameObjectIdentityUtils from './gameObjectIdentityUtils.js';
 import GameObjectManager from './gameObjectManager.js';
 import GameCollision from './gameCollision.js';
 import GameObjectRegistry from './gameObjectRegistry.js';
@@ -45,7 +49,7 @@ class GameObjectSystem {
     }
 
     addGameObject(gameObject) {
-        GameObjectUtils.validateGameObject(gameObject);
+        GameObjectIdentityUtils.validateGameObject(gameObject);
 
         // PR-003 orchestration note:
         // system owns add sequencing across active membership and ID registration.
@@ -77,7 +81,7 @@ class GameObjectSystem {
     }
 
     removeGameObject(gameObject) {
-        GameObjectUtils.validateGameObject(gameObject);
+        GameObjectIdentityUtils.validateGameObject(gameObject);
 
         // PR-003 orchestration note:
         // system owns remove sequencing and compensating rollback between
@@ -122,7 +126,7 @@ class GameObjectSystem {
     }
 
     hasGameObject(gameObject) {
-        GameObjectUtils.validateGameObject(gameObject);
+        GameObjectIdentityUtils.validateGameObject(gameObject);
 
         return this.manager.hasGameObject(gameObject);
     }

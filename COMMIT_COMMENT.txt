@@ -1,7 +1,7 @@
-engine/game: extract object identity helpers from gameObjectUtils with compatibility bridge
+engine/game: migrate internal identity callers to GameObjectIdentityUtils
 
-- added GameObjectIdentityUtils as the internal identity-focused utility
-- kept GameObjectUtils identity helpers as delegation-based compatibility methods
-- left constructor and metadata helpers in GameObjectUtils for now
+- updated gameObjectRegistry to use GameObjectIdentityUtils directly
+- updated gameObjectSystem to use GameObjectIdentityUtils directly
+- kept GameObjectUtils compatibility bridge intact
 - preserved compatibility and public API
 - no destructive changes

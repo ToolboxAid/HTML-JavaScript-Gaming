@@ -1,7 +1,7 @@
 COMMAND: APPLY_PR
 REPO: ToolboxAid/HTML-JavaScript-Gaming
 SCOPE: engine/game
-FOCUS: first_real_utility_split_candidate
+FOCUS: migrate_internal_identity_callers
 OUTPUT: apply_summary, changed_files, verification
 CONTEXT:
 - applied zip locally
