@@ -1,11 +1,13 @@
 chatGPT executed:
-- Created the docs-first PLAN_PR package for PR-004
-- Wrote planning docs under /docs/prs/PR-004-engine-game-concrete-export-inventory/
-- Kept scope planning-only with no runtime behavior changes
+- Created the docs-only BUILD_PR package for PR-004
+- Wrote inventory docs under /docs/prs/PR-004-engine-game-concrete-export-inventory/
+- Kept scope docs-first and compatibility-safe
+- Did not change runtime behavior, imports, file locations, or execution paths
 
 User to execute:
-- No Codex execution is required for this PLAN_PR package unless you want Codex to reproduce or extend the planning step
+- No Codex execution is required to use this BUILD_PR zip
+- Use the command below only if you want Codex to reproduce or extend this docs build step
 
-model: GPT-5.4
+model: GPT-5.3-codex
 reasoning: high
-codex command: Review the current engine/game module surface in ToolboxAid/HTML-JavaScript-Gaming and produce a docs-first plan to inventory every actual export. Record export names, source files, direct exports versus re-exports, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
+codex command: Build a docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game concrete export inventory. Under /docs/prs/PR-004-engine-game-concrete-export-inventory, document the actual export inventory format, source mapping rules, and migration notes, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
