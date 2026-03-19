@@ -23,7 +23,7 @@ Use one row per captured export with these fields:
 
 | Export Name | Defining File | Re-export File | Surface Type | Notes |
 | --- | --- | --- | --- | --- |
-| To be captured from the repo in the next factual pass | To be captured from the repo in the next factual pass | Leave blank if not re-exported | direct export / re-export | Facts only |
+| To be captured from the repo in a later factual pass | To be captured from the repo in a later factual pass | Leave blank if not re-exported | direct export / re-export | Facts only |
 
 ### Capture Rules
 

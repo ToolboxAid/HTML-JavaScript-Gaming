@@ -2,7 +2,7 @@ PR-005 — migration notes
 
 ### Current State
 
-This BUILD_PR is docs-only.
+This PR applies documentation only.
 
 ### Why This Matters
 
