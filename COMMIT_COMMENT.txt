@@ -1,7 +1,6 @@
-engine/game: migrate internal identity callers to GameObjectIdentityUtils
+engine/game: migrate GameObjectManager to GameObjectIdentityUtils
 
-- updated gameObjectRegistry to use GameObjectIdentityUtils directly
-- updated gameObjectSystem to use GameObjectIdentityUtils directly
+- updated gameObjectManager to use GameObjectIdentityUtils directly
 - kept GameObjectUtils compatibility bridge intact
 - preserved compatibility and public API
 - no destructive changes

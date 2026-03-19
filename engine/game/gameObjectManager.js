@@ -9,8 +9,12 @@
 // - manager supports add/remove operations for managed active objects
 // - manager is retained as a compatibility surface for existing engine/game call paths
 // - full-system sequencing, registry coordination, and top-level lifecycle authority remain outside this file
+//
+// PR-009 migration note:
+// - manager now uses GameObjectIdentityUtils directly for object validation
+// - this reduces reliance on the GameObjectUtils compatibility bridge in internal manager code
 
-import GameObjectUtils from './gameObjectUtils.js';
+import GameObjectIdentityUtils from './gameObjectIdentityUtils.js';
 import DebugLog from '../utils/debugLog.js';
 import ObjectValidation from '../utils/objectValidation.js';
 import SystemUtils from '../utils/systemUtils.js';
@@ -45,7 +49,7 @@ class GameObjectManager {
     }
 
     addGameObject(gameObject) {
-        GameObjectUtils.validateGameObject(gameObject);
+        GameObjectIdentityUtils.validateGameObject(gameObject);
 
         if (this.#activeGameObjects.includes(gameObject)) {
             DebugLog.warn(this.debug, null, 'GameObject already managed', {
@@ -65,7 +69,7 @@ class GameObjectManager {
     }
 
     removeGameObject(gameObject) {
-        GameObjectUtils.validateGameObject(gameObject);
+        GameObjectIdentityUtils.validateGameObject(gameObject);
 
         const index = this.#activeGameObjects.indexOf(gameObject);
 
@@ -114,4 +118,3 @@ class GameObjectManager {
 }
 
 export default GameObjectManager;
-
