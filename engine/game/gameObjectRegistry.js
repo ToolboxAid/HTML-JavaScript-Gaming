@@ -2,6 +2,12 @@
 // David Quesenberry
 // Global Game Object Registry
 // 03/2026
+//
+// Runtime-neutral boundary note:
+// - Role: internal engine/game identity and lookup registry.
+// - Status: retained transitional boundary for compatibility.
+// - This first runtime-neutral patch is comment-only and preserves behavior.
+// - Non-registry coordination seams are marked as extraction candidates for later cleanup.
 
 import GameObjectUtils from './gameObjectUtils.js';
 import DebugLog from '../utils/debugLog.js';
@@ -21,6 +27,9 @@ class GameObjectRegistry {
         DebugLog.log(this.debug, null, 'GameObjectRegistry created');
     }
 
+    // Runtime-neutral compatibility marker:
+    // - Primary internal registry entry point retained for legacy call-path stability.
+    // - Registry responsibility stays identity-oriented in this patch.
     register(gameObject) {
         const id = GameObjectUtils.getObjectId(gameObject);
 
@@ -38,6 +47,9 @@ class GameObjectRegistry {
         return true;
     }
 
+    // Runtime-neutral compatibility marker:
+    // - Registry removal remains identity-oriented.
+    // - Retained even where broader system coordination also participates in teardown.
     unregister(gameObject) {
         const id = GameObjectUtils.getObjectId(gameObject);
 
@@ -57,18 +69,23 @@ class GameObjectRegistry {
         return true;
     }
 
+    // Internal compatibility surface retained for existing lookup call paths.
     getById(id) {
         GameObjectUtils.validateId(id);
 
         return this.#objectsById.get(id) || null;
     }
 
+    // Internal compatibility surface retained for existing lookup call paths.
     hasId(id) {
         GameObjectUtils.validateId(id);
 
         return this.#objectsById.has(id);
     }
 
+    // Transitional boundary:
+    // - Bulk identity reset remains here for compatibility.
+    // - Retained without changing broader lifecycle ownership.
     clear() {
 
         this.#objectsById.clear();
@@ -76,10 +93,10 @@ class GameObjectRegistry {
         DebugLog.log(this.debug, null, 'GameObjectRegistry cleared');
     }
 
+    // Internal compatibility surface retained for existing orchestration code.
     getCount() {
         return this.#objectsById.size;
     }
 }
 
 export default GameObjectRegistry;
-

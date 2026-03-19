@@ -2,6 +2,12 @@
 // David Quesenberry
 // 02/12/2025
 // gameUtils.js
+//
+// Runtime-neutral boundary note:
+// - Role: transitional engine/game utility surface for shared gameplay helpers.
+// - Status: retained transitional boundary for compatibility.
+// - This first runtime-neutral patch is comment-only and preserves behavior.
+// - Broader helper scope and controller-specific assumptions are marked as extraction candidates.
 
 import DebugLog from '../utils/debugLog.js';
 
@@ -28,6 +34,9 @@ const DEFAULT_PLAYER_SELECT_CONFIG = Object.freeze({
 class GameUtils {
     static hasWarnedAboutControllerLimit = false;
 
+    // Transitional boundary:
+    // - Shared player-select configuration helper retained for compatibility.
+    // - Candidate for later narrowing if UI/runtime-specific config moves out of engine/game utilities.
     static getPlayerSelectConfig(canvasConfig, playerSelect = {}) {
         return {
             maxPlayers: playerSelect.maxPlayers ?? DEFAULT_PLAYER_SELECT_CONFIG.maxPlayers,
@@ -48,6 +57,7 @@ class GameUtils {
         };
     }
 
+    // Internal compatibility surface retained for current player-state helpers.
     static buildPlayerSelectionResult(playerCount, maxPlayers, lives) {
         return {
             playerCount,
@@ -55,12 +65,14 @@ class GameUtils {
         };
     }
 
+    // Internal compatibility surface retained for current player-state helpers.
     static areTrackedPlayersOut(playerLives, playerCount) {
         return playerLives
             .slice(0, playerCount)
             .every(lives => lives <= 0);
     }
 
+    // Internal compatibility surface retained for current player-state helpers.
     static findNextActivePlayer(playerLives, currentPlayer, playerCount) {
         let nextPlayer = currentPlayer;
 
@@ -71,6 +83,9 @@ class GameUtils {
         return nextPlayer;
     }
 
+    // Transitional boundary:
+    // - Keyboard-specific selection helper retained inside gameUtils for compatibility.
+    // - Extraction candidate if input/runtime boundaries narrow later.
     static getKeyboardPlayerSelection(keyboardInput, config) {
         if (!keyboardInput || typeof keyboardInput.getKeysPressed !== 'function') {
             return null;
@@ -87,6 +102,9 @@ class GameUtils {
         return null;
     }
 
+    // Transitional boundary:
+    // - Controller-specific selection helper retained inside gameUtils for compatibility.
+    // - Candidate for later extraction if runtime/input ownership narrows.
     static getControllerPlayerSelection(gameControllers, config) {
         if (!gameControllers) {
             return null;
@@ -105,6 +123,8 @@ class GameUtils {
         return null;
     }
 
+    // Transitional compatibility marker:
+    // - Logging of controller assumptions remains here for legacy call-path stability.
     static warnAboutControllerLimit() {
         if (this.hasWarnedAboutControllerLimit) {
             return;
@@ -114,6 +134,9 @@ class GameUtils {
         this.hasWarnedAboutControllerLimit = true;
     }
 
+    // Runtime-neutral compatibility marker:
+    // - Shared player-selection orchestration remains centralized here.
+    // - Extraction candidate if input handling separates from general gameplay utilities later.
     static resolvePlayerSelection(keyboardInput, gameControllers, config) {
         const keyboardSelection = this.getKeyboardPlayerSelection(keyboardInput, config);
         if (keyboardSelection) {
@@ -128,7 +151,7 @@ class GameUtils {
      * @example
      * ❌ Don't do this:
      * const gameUtils = new GameUtils(); // Throws Error
-     * 
+     *
      * ✅ Do this:
      * GameUtils.resolvePlayerSelection(...); // Use static methods directly
      */
@@ -136,6 +159,7 @@ class GameUtils {
         throw new Error('GameUtils is a utility class with only static methods. Do not instantiate.');
     }
 
+    // Internal compatibility surface retained for current multi-player life-cycle flow.
     static swapPlayer(playerLives, currentPlayer, playerCount) {
         const updatedLives = [...playerLives];
 
