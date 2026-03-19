@@ -1,3 +1,11 @@
-model: GPT-5.3-codex
+chatGPT executed:
+- Created the docs-first PLAN_PR package for PR-003
+- Wrote planning docs under /docs/prs/PR-003-engine-game-exports-plan/
+- Kept scope planning-only with no runtime behavior changes
+
+User to execute:
+- No Codex execution required for this PLAN_PR package unless you want Codex to reproduce or extend the planning step
+
+model: GPT-5.4
 reasoning: high
-codex command: Apply the docs-only PR for ToolboxAid/HTML-JavaScript-Gaming scoped to engine/game architecture. Ensure all PR docs live under /docs/prs/PR-002-engine-game-boundary, keep the patch docs-only, preserve compatibility, and do not change runtime behavior, imports, file locations, or existing execution paths.
+codex command: Review the current engine/game exports in ToolboxAid/HTML-JavaScript-Gaming and produce a docs-first concrete export classification plan. Classify each export as public, internal, or transitional, align public API direction to GameBase, preserve compatibility, and do not change runtime behavior, imports, file locations, or execution paths.
