@@ -6,10 +6,6 @@
 ├─ README.md
 ├─ LICENSE
 ├─ package.json
-├─ CODEX_COMMANDS.md
-├─ START_SESSION.md
-├─ PR_WORKFLOW.md
-├─ REVIEW_CHECKLIST.md
 ├─ CHANGELOG.md
 │
 ├─ engine/
