@@ -50,30 +50,18 @@ export default class InputMappingScene extends Scene {
         this.position.y = Math.max(minY, Math.min(maxY, this.position.y));
     }
 
-    render(ctx, engine, alpha) {
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
-        const drawX = this.previousPosition.x + (this.position.x - this.previousPosition.x) * alpha;
-        const drawY = this.previousPosition.y + (this.position.y - this.previousPosition.y) * alpha;
+    render(renderer, engine) {
+        const { width, height } = renderer.getCanvasSize();
+        const drawX = this.position.x;
+        const drawY = this.position.y;
         const half = this.size / 2;
 
-        ctx.fillStyle = theme.getColor('canvasBackground');
-        ctx.fillRect(0, 0, width, height);
+        renderer.clear(theme.getColor('canvasBackground'));
 
         const pad = 10;
-        ctx.strokeStyle = '#dddddd';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(pad, pad, width - pad * 2, height - pad * 2);
-
-        ctx.strokeStyle = '#d8d5ff';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
-
-        ctx.fillStyle = theme.getColor('actorFill');
-        ctx.fillRect(drawX - half, drawY - half, this.size, this.size);
-
-        ctx.fillStyle = '#dddddd';
-        ctx.font = '16px monospace';
+        renderer.strokeRect(pad, pad, width - pad * 2, height - pad * 2, '#dddddd', 2);
+        renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
+        renderer.drawRect(drawX - half, drawY - half, this.size, this.size, theme.getColor('actorFill'));
 
         const lines = [
             'Engine V2 Sample06',
@@ -84,7 +72,10 @@ export default class InputMappingScene extends Scene {
         ];
 
         lines.forEach((line, index) => {
-            ctx.fillText(line, this.textStartX, this.textStartY + this.textLineHeight * index);
+            renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * index, {
+                color: '#dddddd',
+                font: '16px monospace',
+            });
         });
 
         const actionSnapshot = engine.input.getActionSnapshot();
@@ -95,7 +86,10 @@ export default class InputMappingScene extends Scene {
         ];
 
         statusLines.forEach((line, index) => {
-            ctx.fillText(line, this.textStartX, height - 68 + index * 22);
+            renderer.drawText(line, this.textStartX, height - 68 + index * 22, {
+                color: '#dddddd',
+                font: '16px monospace',
+            });
         });
     }
 }

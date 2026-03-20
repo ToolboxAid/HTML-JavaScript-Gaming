@@ -22,7 +22,7 @@ export default class PlayScene extends Scene {
             direction: 1,
         };
         this.textStartX = 60;
-        this.textStartY = 90;
+        this.textStartY = 36;
         this.textLineHeight = 24;
     }
 
@@ -51,30 +51,20 @@ export default class PlayScene extends Scene {
         }
     }
 
-    render(ctx) {
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
+    render(renderer) {
+        const { width, height } = renderer.getCanvasSize();
 
-        ctx.fillStyle = '#2d1657';
-        ctx.fillRect(0, 0, width, height);
+        renderer.clear('#2d1657');
 
         const pad = 10;
-        ctx.strokeStyle = '#dddddd';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(pad, pad, width - pad * 2, height - pad * 2);
+        renderer.strokeRect(pad, pad, width - pad * 2, height - pad * 2, '#dddddd', 2);
+        renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#ffd8a8', 3);
+        renderer.drawCircle(this.actor.x, this.actor.y, this.actor.radius, theme.getColor('actorFill'));
 
-        ctx.strokeStyle = '#ffd8a8';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
-
-        ctx.beginPath();
-        ctx.fillStyle = theme.getColor('actorFill');
-        ctx.arc(this.actor.x, this.actor.y, this.actor.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = '#dddddd';
-        ctx.font = '16px monospace';
-        ctx.fillText('Engine V2 Sample05', this.textStartX, this.textStartY);
+        renderer.drawText('Engine V2 Sample05', this.textStartX, this.textStartY, {
+            color: '#dddddd',
+            font: '16px monospace',
+        });
 
         const lines = [
             'Demonstrates active scene behavior after a transition',
@@ -84,7 +74,10 @@ export default class PlayScene extends Scene {
         ];
 
         lines.forEach((line, index) => {
-            ctx.fillText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1));
+            renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1), {
+                color: '#dddddd',
+                font: '16px monospace',
+            });
         });
     }
 }

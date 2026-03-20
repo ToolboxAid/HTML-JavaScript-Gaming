@@ -21,21 +21,29 @@ export default class TransitionScene extends Scene {
         }
     }
 
-    render(context, engine, alpha) {
+    render(renderer, engine, alpha) {
         const progress = this.transition.getProgress();
+        const ctx = renderer?.ctx;
+
+        if (!ctx) {
+            if (this.fromScene) {
+                this.fromScene.render(renderer, engine, alpha);
+            }
+            return;
+        }
 
         if (this.fromScene) {
-            context.save();
-            context.globalAlpha = 1 - progress;
-            this.fromScene.render(context, engine, alpha);
-            context.restore();
+            ctx.save();
+            ctx.globalAlpha = 1 - progress;
+            this.fromScene.render(renderer, engine, alpha);
+            ctx.restore();
         }
 
         if (this.toScene) {
-            context.save();
-            context.globalAlpha = progress;
-            this.toScene.render(context, engine, alpha);
-            context.restore();
+            ctx.save();
+            ctx.globalAlpha = progress;
+            this.toScene.render(renderer, engine, alpha);
+            ctx.restore();
         }
     }
 }

@@ -11,11 +11,11 @@ export default class Engine {
     this.canvas.width = width;
     this.canvas.height = height;
 
+    this.renderer = new CanvasRenderer(this.ctx);
     this.input = input;
     this.fixedStepMs = fixedStepMs;
     this.fixedStepSeconds = fixedStepMs / 1000;
     this.scene = null;
-    this.renderer = new CanvasRenderer(this.ctx);
 
     this.lastTime = 0;
     this.accumulator = 0;
@@ -33,6 +33,10 @@ export default class Engine {
   }
 
   start() {
+    if (this.input && typeof this.input.attach === 'function') {
+      this.input.attach();
+    }
+
     this.lastTime = performance.now();
     this.rafId = requestAnimationFrame(this.tick);
   }
@@ -41,6 +45,10 @@ export default class Engine {
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
+    }
+
+    if (this.input && typeof this.input.detach === 'function') {
+      this.input.detach();
     }
   }
 
@@ -55,7 +63,7 @@ export default class Engine {
 
     while (this.accumulator >= this.fixedStepMs) {
       if (this.scene && typeof this.scene.update === 'function') {
-        this.scene.update(this.fixedStepSeconds, this.input, this);
+        this.scene.update(this.fixedStepSeconds, this);
       }
 
       this.accumulator -= this.fixedStepMs;

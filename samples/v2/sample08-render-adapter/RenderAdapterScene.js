@@ -9,9 +9,9 @@ export default class RenderAdapterScene extends Scene {
     super();
     this.playArea = { x: 40, y: 160, width: 880, height: 330 };
     this.entity = new Entity({
-      transform: new Transform(160, 260),
+      transform: new Transform({ x: 160, y: 260 }),
       velocity: new Velocity(160, 120),
-      bounds: new Bounds(48, 48),
+      bounds: new Bounds({ width: 48, height: 48 }),
     });
     this.textStartX = 40;
     this.textStartY = 48;
@@ -19,34 +19,36 @@ export default class RenderAdapterScene extends Scene {
   }
 
   update(dt) {
-    const nextX = this.entity.transform.x + this.entity.velocity.x * dt;
-    const nextY = this.entity.transform.y + this.entity.velocity.y * dt;
-    const maxX = this.playArea.x + this.playArea.width - this.entity.bounds.width;
-    const maxY = this.playArea.y + this.playArea.height - this.entity.bounds.height;
+    this.entity.integrate(dt);
+    const position = this.entity.transform.position;
+    const halfWidth = this.entity.bounds.width / 2;
+    const halfHeight = this.entity.bounds.height / 2;
+    const minX = this.playArea.x + halfWidth;
+    const maxX = this.playArea.x + this.playArea.width - halfWidth;
+    const minY = this.playArea.y + halfHeight;
+    const maxY = this.playArea.y + this.playArea.height - halfHeight;
 
-    this.entity.transform.x = nextX;
-    this.entity.transform.y = nextY;
-
-    if (this.entity.transform.x <= this.playArea.x || this.entity.transform.x >= maxX) {
-      this.entity.transform.x = Math.max(this.playArea.x, Math.min(maxX, this.entity.transform.x));
+    if (position.x <= minX || position.x >= maxX) {
+      position.x = Math.max(minX, Math.min(maxX, position.x));
       this.entity.velocity.x *= -1;
     }
 
-    if (this.entity.transform.y <= this.playArea.y || this.entity.transform.y >= maxY) {
-      this.entity.transform.y = Math.max(this.playArea.y, Math.min(maxY, this.entity.transform.y));
+    if (position.y <= minY || position.y >= maxY) {
+      position.y = Math.max(minY, Math.min(maxY, position.y));
       this.entity.velocity.y *= -1;
     }
   }
 
   render(renderer) {
     const { width, height } = renderer.getCanvasSize();
+    const position = this.entity.transform.position;
     renderer.clear(theme.getColor('canvasBackground'));
     renderer.strokeRect(10, 10, width - 20, height - 20, '#dddddd', 2);
     renderer.strokeRect(this.playArea.x, this.playArea.y, this.playArea.width, this.playArea.height, '#d8d5ff', 3);
 
     renderer.drawRect(
-      this.entity.transform.x,
-      this.entity.transform.y,
+      position.x - this.entity.bounds.width / 2,
+      position.y - this.entity.bounds.height / 2,
       this.entity.bounds.width,
       this.entity.bounds.height,
       theme.getColor('actorFill')

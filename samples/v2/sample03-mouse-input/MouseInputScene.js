@@ -34,39 +34,25 @@ export default class MouseInputScene extends Scene {
         this.marker.y = this.clamp(position.y, this.bounds.y, this.bounds.y + this.bounds.height);
     }
 
-    render(ctx, engine) {
+    render(renderer, engine) {
         const input = engine?.input;
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
+        const { width, height } = renderer.getCanvasSize();
         const isActive = input?.isMouseDown(0) ?? false;
         const radius = isActive ? this.marker.altRadius : this.marker.radius;
         const position = input?.getMousePosition?.() ?? { x: 0, y: 0 };
         const delta = input?.getMouseDelta?.() ?? { x: 0, y: 0 };
 
-        ctx.fillStyle = theme.getColor('canvasBackground');
-        ctx.fillRect(0, 0, width, height);
+        renderer.clear(theme.getColor('canvasBackground'));
 
-        // draw inner bounds (10px inset)
         const pad = 10;
-        const w = ctx.canvas.width;
-        const h = ctx.canvas.height;
+        renderer.strokeRect(pad, pad, width - pad * 2, height - pad * 2, '#dddddd', 2);
+        renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
+        renderer.drawCircle(this.marker.x, this.marker.y, radius, theme.getColor('actorFill'));
 
-        ctx.strokeStyle = "#dddddd";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
-
-        ctx.strokeStyle = '#d8d5ff';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
-
-        ctx.beginPath();
-        ctx.fillStyle = theme.getColor('actorFill');
-        ctx.arc(this.marker.x, this.marker.y, radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = theme.getColor('textCanvs');
-        ctx.font = '16px monospace';
-        ctx.fillText('Engine V2 Sample03', this.textStartX, this.textStartY);
+        renderer.drawText('Engine V2 Sample03', this.textStartX, this.textStartY, {
+            color: theme.getColor('textCanvs'),
+            font: '16px monospace',
+        });
 
         const lines = [
             'Demonstrates the mouse input boundary',
@@ -76,7 +62,10 @@ export default class MouseInputScene extends Scene {
         ];
 
         lines.forEach((line, index) => {
-            ctx.fillText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1));
+            renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1), {
+                color: theme.getColor('textCanvs'),
+                font: '16px monospace',
+            });
         });
     }
 

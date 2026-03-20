@@ -15,7 +15,7 @@ export default class IntroScene extends Scene {
             height: 230,
         };
         this.textStartX = 60;
-        this.textStartY = 90;
+        this.textStartY = 36;
         this.textLineHeight = 24;
         this.pulseSeconds = 0;
     }
@@ -31,37 +31,26 @@ export default class IntroScene extends Scene {
         }
     }
 
-    render(ctx, engine) {
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
+    render(renderer) {
+        const { width, height } = renderer.getCanvasSize();
         const pulse = 0.5 + 0.5 * Math.sin(this.pulseSeconds * 3.5);
         const panelWidth = 220 + pulse * 22;
         const panelHeight = 90 + pulse * 10;
         const panelX = this.bounds.x + (this.bounds.width - panelWidth) / 2;
         const panelY = this.bounds.y + (this.bounds.height - panelHeight) / 2;
 
-        ctx.fillStyle = theme.getColor('canvasBackground');
-        ctx.fillRect(0, 0, width, height);
+        renderer.clear(theme.getColor('canvasBackground'));
 
         const pad = 10;
-        ctx.strokeStyle = '#dddddd';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(pad, pad, width - pad * 2, height - pad * 2);
+        renderer.strokeRect(pad, pad, width - pad * 2, height - pad * 2, '#dddddd', 2);
+        renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
+        renderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgba(226, 224, 255, 0.18)');
+        renderer.strokeRect(panelX, panelY, panelWidth, panelHeight, '#ed9700', 2);
 
-        ctx.strokeStyle = '#d8d5ff';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
-
-        ctx.fillStyle = 'rgba(226, 224, 255, 0.18)';
-        ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-
-        ctx.strokeStyle = '#ed9700';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-
-        ctx.fillStyle = '#dddddd';
-        ctx.font = '16px monospace';
-        ctx.fillText('Engine V2 Sample05', this.textStartX, this.textStartY);
+        renderer.drawText('Engine V2 Sample05', this.textStartX, this.textStartY, {
+            color: '#dddddd',
+            font: '16px monospace',
+        });
 
         const lines = [
             'Demonstrates scene lifecycle and scene switching',
@@ -71,7 +60,10 @@ export default class IntroScene extends Scene {
         ];
 
         lines.forEach((line, index) => {
-            ctx.fillText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1));
+            renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1), {
+                color: '#dddddd',
+                font: '16px monospace',
+            });
         });
 
         const panelCenterX = panelX + panelWidth / 2;
@@ -84,16 +76,13 @@ export default class IntroScene extends Scene {
         const panelBlockHeight = panelLineHeight * panelLines.length;
         const panelTextStartY = panelCenterY - panelBlockHeight / 2 + panelLineHeight / 2;
 
-        ctx.fillStyle = '#dddddd';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
         panelLines.forEach((line, index) => {
-            ctx.font = line.font;
-            ctx.fillText(line.text, panelCenterX, panelTextStartY + panelLineHeight * index);
+            renderer.drawText(line.text, panelCenterX, panelTextStartY + panelLineHeight * index, {
+                color: '#dddddd',
+                font: line.font,
+                textAlign: 'center',
+                textBaseline: 'middle',
+            });
         });
-
-        ctx.textAlign = 'start';
-        ctx.textBaseline = 'alphabetic';
     }
 }

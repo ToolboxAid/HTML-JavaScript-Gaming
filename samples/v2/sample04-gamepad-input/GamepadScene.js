@@ -41,34 +41,24 @@ export default class GamepadScene extends Scene {
         this.box.y = this.clamp(this.box.y, this.bounds.y, this.bounds.y + this.bounds.height - this.box.size);
     }
 
-    render(ctx, engine) {
+    render(renderer, engine) {
         const gamepadZero = engine?.input?.getGamepad?.(0);
         const allGamepads = engine?.input?.getGamepads?.() ?? [];
         const isActive = gamepadZero?.isDown?.(0) ?? false;
         const actorFill = isActive ? '#ffd166' : theme.getColor('actorFill');
+        const { width, height } = renderer.getCanvasSize();
 
-        ctx.fillStyle = theme.getColor('canvasBackground');
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        renderer.clear(theme.getColor('canvasBackground'));
 
-        // draw inner bounds (10px inset)
         const pad = 10;
-        const w = ctx.canvas.width;
-        const h = ctx.canvas.height;
+        renderer.strokeRect(pad, pad, width - pad * 2, height - pad * 2, '#dddddd', 2);
+        renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
+        renderer.drawRect(this.box.x, this.box.y, this.box.size, this.box.size, actorFill);
 
-        ctx.strokeStyle = "#dddddd";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
-
-        ctx.strokeStyle = '#d8d5ff';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
-
-        ctx.fillStyle = actorFill;
-        ctx.fillRect(this.box.x, this.box.y, this.box.size, this.box.size);
-
-        ctx.fillStyle = '#dddddd';
-        ctx.font = '16px monospace';
-        ctx.fillText('Engine V2 Sample04', this.textStartX, this.textStartY);
+        renderer.drawText('Engine V2 Sample04', this.textStartX, this.textStartY, {
+            color: '#dddddd',
+            font: '16px monospace',
+        });
 
         const lines = [
             'Demonstrates the gamepad input boundary with concurrent controller snapshots',
@@ -78,7 +68,10 @@ export default class GamepadScene extends Scene {
         ];
 
         lines.forEach((line, index) => {
-            ctx.fillText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1));
+            renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1), {
+                color: '#dddddd',
+                font: '16px monospace',
+            });
         });
     }
 

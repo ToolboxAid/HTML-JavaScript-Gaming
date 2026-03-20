@@ -14,26 +14,29 @@ export default class BouncerScene {
     const width = engine.canvas.width;
     const height = engine.canvas.height;
 
-    if (this.x < 0) {
-      this.x = 0;
-      this.vx *= -1;
-    } else if (this.x + this.size > width) {
-      this.x = width - this.size;
+    if (this.x < 0 || this.x + this.size > width) {
       this.vx *= -1;
     }
 
-    if (this.y < 0) {
-      this.y = 0;
-      this.vy *= -1;
-    } else if (this.y + this.size > height) {
-      this.y = height - this.size;
+    if (this.y < 0 || this.y + this.size > height) {
       this.vy *= -1;
     }
   }
 
   render(renderer, engine) {
-    renderer.clear("#111111");
+    const width = engine.canvas.width;
+    const height = engine.canvas.height;
+
+    renderer.clear();
+
     renderer.drawRect(this.x, this.y, this.size, this.size, "#4CAF50");
-    renderer.drawText("Sample01: Bouncer", 20, 30, "#ffffff", "16px monospace");
+
+    renderer.drawText(
+      "Sample01: Bouncer (Fixed)",
+      20,
+      30,
+      "#ffffff",
+      "16px monospace"
+    );
   }
 }

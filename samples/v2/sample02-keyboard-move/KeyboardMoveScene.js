@@ -15,66 +15,63 @@ export default class KeyboardMoveScene {
       speed: 240,
     };
 
-    this.textColor = "#dddddd";
+    this.textColor = '#dddddd';
     this.textStartX = 40;
     this.textStartY = 50;
     this.textLineHeight = 24;
   }
 
-  update(deltaTime, services = {}) {
-    const input = services.input ?? services;
-    if (!input || typeof input.isDown !== "function") {
+  update(deltaTime, engine) {
+    const input = engine?.input;
+    if (!input || typeof input.isDown !== 'function') {
       return;
     }
 
     const distance = this.box.speed * deltaTime;
 
-    if (input.isDown("ArrowLeft")) {
+    if (input.isDown('ArrowLeft')) {
       this.box.x -= distance;
     }
 
-    if (input.isDown("ArrowRight")) {
+    if (input.isDown('ArrowRight')) {
       this.box.x += distance;
     }
 
-    if (input.isDown("ArrowUp")) {
+    if (input.isDown('ArrowUp')) {
       this.box.y -= distance;
     }
 
-    if (input.isDown("ArrowDown")) {
+    if (input.isDown('ArrowDown')) {
       this.box.y += distance;
     }
 
     this.clampBoxToBounds();
   }
 
-  render(ctx, surface = {}) {
-    const width = surface.width ?? ctx.canvas.width;
-    const height = surface.height ?? ctx.canvas.height;
+  render(renderer) {
+    const { width, height } = renderer.getCanvasSize();
 
-    ctx.clearRect(0, 0, width, height);
+    renderer.clear();
+    renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#dddddd', 2);
+    renderer.drawRect(this.box.x, this.box.y, this.box.width, this.box.height, '#ed9700');
 
-    ctx.strokeStyle = "#dddddd";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
+    renderer.drawText('Engine V2 Sample02', this.textStartX, this.textStartY, {
+      color: this.textColor,
+      font: '20px Arial',
+    });
 
-    ctx.fillStyle = "#ed9700";
-    ctx.fillRect(this.box.x, this.box.y, this.box.width, this.box.height);
-
-    ctx.fillStyle = this.textColor;
-    ctx.font = "20px Arial";
-    ctx.fillText("Engine V2 Sample02", this.textStartX, this.textStartY);
-
-    ctx.font = "16px Arial";
     const lines = [
-      "Demonstrates the keyboard input boundary",
-      "Use Arrow keys to move the box in four directions",
-      "Observe movement driven by input state, not DOM events in the scene",
-      "This sample reads InputService through a clean scene boundary",
+      'Demonstrates the keyboard input boundary',
+      'Use Arrow keys to move the box in four directions',
+      'Observe movement driven by input state, not DOM events in the scene',
+      'This sample reads InputService through a clean scene boundary',
     ];
 
     lines.forEach((line, index) => {
-      ctx.fillText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1));
+      renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1), {
+        color: this.textColor,
+        font: '16px Arial',
+      });
     });
   }
 
