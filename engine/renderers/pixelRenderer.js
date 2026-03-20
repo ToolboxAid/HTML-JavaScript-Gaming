@@ -2,8 +2,8 @@
 // David Quesenberry
 // 03/16/2026
 // pixelRenderer.js.txt
+/*
 
-[ ] Future build-out note:
 Create a dedicated PixelRenderer for 8-bit artwork and retro sprite workflows.
 
 Goals:
@@ -62,3 +62,4 @@ Current status:
             "000000000000",
         ],
     ];
+*/
