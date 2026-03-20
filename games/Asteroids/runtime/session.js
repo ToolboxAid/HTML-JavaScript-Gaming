@@ -3,7 +3,7 @@
 // 03/12/2026
 // session.js
 
-import GameUtils from '../../../engine/game/gameUtils.js';
+import GameTurnFlowUtils from '../../../engine/game/gameTurnFlowUtils.js';
 import Ship from '../ship.js';
 import AsteroidsWorld from '../world/world.js';
 
@@ -78,7 +78,7 @@ class AsteroidsSession {
 
         ship.setIsAlive();
 
-        const result = GameUtils.swapPlayer(
+        const result = GameTurnFlowUtils.swapPlayer(
             this.playerLives,
             this.currentPlayer,
             this.playerCount

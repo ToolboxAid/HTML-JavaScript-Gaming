@@ -4,6 +4,7 @@
 // gameStates.js
 
 import DebugLog from '../../../engine/utils/debugLog.js';
+import GameTurnFlowUtils from '../../../engine/game/gameTurnFlowUtils.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import { canvasConfig, gameUi } from './global.js';
 import { isPauseTogglePressed, isPlayerDeathPressed, isScorePressed, isStartPressed } from './gameInput.js';
@@ -104,7 +105,7 @@ export function playGame(game) {
         return;
     }
 
-    const result = GameUtils.swapPlayer(
+    const result = GameTurnFlowUtils.swapPlayer(
         game.playerLives,
         game.currentPlayer,
         game.playerCount

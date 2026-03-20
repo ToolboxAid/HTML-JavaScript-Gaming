@@ -12,13 +12,12 @@
 // - player-selection helpers are now extracted to GamePlayerSelectionUtils
 // - GameUtils retains delegation-based compatibility methods for existing callers
 //
-// PR-017 boundary note:
-// - turn-flow/state helpers are now extracted to GameTurnFlowUtils
-// - GameUtils retains delegation-based compatibility methods for existing callers
-// - GameUtils is now primarily a compatibility facade over split gameplay helpers
+// PR-021 cleanup note:
+// - turn-flow/state helpers are no longer exposed here
+// - GameTurnFlowUtils is now the sole owner of tracked-player turn-flow behavior
+// - GameUtils remains the compatibility facade for player-selection helpers only
 
 import GamePlayerSelectionUtils from './gamePlayerSelectionUtils.js';
-import GameTurnFlowUtils from './gameTurnFlowUtils.js';
 
 class GameUtils {
     static getPlayerSelectConfig(canvasConfig, playerSelect = {}) {
@@ -27,14 +26,6 @@ class GameUtils {
 
     static buildPlayerSelectionResult(playerCount, maxPlayers, lives) {
         return GamePlayerSelectionUtils.buildPlayerSelectionResult(playerCount, maxPlayers, lives);
-    }
-
-    static areTrackedPlayersOut(playerLives, playerCount) {
-        return GameTurnFlowUtils.areTrackedPlayersOut(playerLives, playerCount);
-    }
-
-    static findNextActivePlayer(playerLives, currentPlayer, playerCount) {
-        return GameTurnFlowUtils.findNextActivePlayer(playerLives, currentPlayer, playerCount);
     }
 
     static getKeyboardPlayerSelection(keyboardInput, config) {
@@ -65,11 +56,6 @@ class GameUtils {
     constructor() {
         throw new Error('GameUtils is a utility class with only static methods. Do not instantiate.');
     }
-
-    static swapPlayer(playerLives, currentPlayer, playerCount) {
-        return GameTurnFlowUtils.swapPlayer(playerLives, currentPlayer, playerCount);
-    }
-
 }
 
 export default GameUtils;

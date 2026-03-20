@@ -10,6 +10,7 @@ import CanvasUtils from '../../engine/core/canvasUtils.js';
 import CanvasText from '../../engine/core/canvasText.js';
 import CanvasSprite from '../../engine/core/canvasSprite.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
+import GameTurnFlowUtils from '../../engine/game/gameTurnFlowUtils.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 import PrimitiveRenderer from '../../engine/renderers/primitiveRenderer.js';
 
@@ -213,7 +214,7 @@ class Game extends GameBase {
     } else if (Game.enemyY + Game.enemySize > canvasConfig.height - 60 &&
       Game.enemyX + Game.enemySize > Game.playerX &&
       Game.enemyX < Game.playerX + this.playerWidth[this.currentPlayer]) {
-      const result = GameUtils.swapPlayer(
+      const result = GameTurnFlowUtils.swapPlayer(
         this.playerLives,
         this.currentPlayer,
         this.playerCount
@@ -250,5 +251,3 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
-
-

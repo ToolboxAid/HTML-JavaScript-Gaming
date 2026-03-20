@@ -10,6 +10,7 @@ import CanvasUtils from '../../engine/core/canvasUtils.js';
 import CanvasSprite from '../../engine/core/canvasSprite.js';
 import CanvasText from '../../engine/core/canvasText.js';
 import GamePlayerSelectUi from '../../engine/game/gamePlayerSelectUi.js';
+import GameTurnFlowUtils from '../../engine/game/gameTurnFlowUtils.js';
 import GameUtils from '../../engine/game/gameUtils.js';
 import KeyboardInput from '../../engine/input/keyboard.js';
 import GameControllers from '../../engine/input/controller/gameControllers.js';
@@ -219,7 +220,7 @@ class Game extends GameBase {
         if (this.keyboardInput.getKeysPressed().includes('KeyD') || controllerDeathPressed) {
             this.frog.loseLife();
             if (!this.frog.isAlive()) {
-                const result = GameUtils.swapPlayer(
+                const result = GameTurnFlowUtils.swapPlayer(
                     this.playerLives,
                     this.currentPlayer,
                     this.playerCount
@@ -251,5 +252,3 @@ class Game extends GameBase {
 export default Game;
 
 const game = new Game();
-
-

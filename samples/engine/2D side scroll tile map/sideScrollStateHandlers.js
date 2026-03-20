@@ -5,6 +5,7 @@
 
 import CanvasText from '../../../engine/core/canvasText.js';
 import GamePlayerSelectUi from '../../../engine/game/gamePlayerSelectUi.js';
+import GameTurnFlowUtils from '../../../engine/game/gameTurnFlowUtils.js';
 import GameUtils from '../../../engine/game/gameUtils.js';
 import { canvasConfig, playerSelect, sideScrollUi } from './global.js';
 
@@ -125,7 +126,7 @@ export function playGame(game) {
         return;
     }
 
-    const result = GameUtils.swapPlayer(
+    const result = GameTurnFlowUtils.swapPlayer(
         game.playerLives,
         game.currentPlayer,
         game.playerCount
@@ -144,4 +145,3 @@ export function resetGame(game) {
     game.enemyInitialized = false;
     game.backToAttractCounter = 0;
 }
-

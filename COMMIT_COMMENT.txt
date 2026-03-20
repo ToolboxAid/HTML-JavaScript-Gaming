@@ -1,1 +1,6 @@
-engine/game: re-audit turn-flow callers and keep delegation in place
+engine/game: finalize GameUtils turn-flow delegation removal from audited caller set
+
+- migrated audited production, sample, and test callers to GameTurnFlowUtils
+- removed turn-flow delegation methods from GameUtils
+- left player-selection delegation in GameUtils unchanged
+- preserved behavior through caller migration before removal

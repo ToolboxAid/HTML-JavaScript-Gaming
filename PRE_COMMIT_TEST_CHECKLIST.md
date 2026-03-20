@@ -1,6 +1,13 @@
 # Pre-Commit Test Checklist
 
-- confirm this package is docs-only
-- confirm no production files changed
-- confirm no test files changed
-- commit only the PR-019 docs/support files
+- verify no remaining meaningful references to:
+  - GameUtils.areTrackedPlayersOut
+  - GameUtils.findNextActivePlayer
+  - GameUtils.swapPlayer
+- run targeted tests for:
+  - tests/engine/game/gameUtilsTest.js
+- sanity-check:
+  - Asteroids player death flow
+  - Box Drop collision/life loss flow
+  - Frogger frog death / player swap flow
+  - sample game-over and player swap flow
