@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample26 - Camera Bounds</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      display: grid;
+      place-items: center;
+      font-family: Arial, sans-serif;
+      color: #333332;
+    }
+
+    main {
+      width: min(100%, 1000px);
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 960px;
+      height: auto;
+      border: 1px solid #334155;
+    }
+
+    p {
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+    <main>
+        <h1>Sample26 - Camera Bounds</h1>
+        <p>Demonstrates camera follow with camera clamping so the viewport never shows beyond the world edges.</p>
+        <canvas id="game" width="960" height="540"></canvas>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
