@@ -1,5 +1,12 @@
-export default class KeyboardMoveScene {
+import Scene from '../../../engine/v2/scenes/Scene.js';
+import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
+
+const theme = new Theme(ThemeTokens);
+
+export default class KeyboardMoveScene extends Scene {
   constructor() {
+    super();
+
     this.bounds = {
       x: 180,
       y: 160,
@@ -15,7 +22,6 @@ export default class KeyboardMoveScene {
       speed: 240,
     };
 
-    this.textColor = '#dddddd';
     this.textStartX = 40;
     this.textStartY = 50;
     this.textLineHeight = 24;
@@ -51,26 +57,23 @@ export default class KeyboardMoveScene {
   render(renderer) {
     const { width, height } = renderer.getCanvasSize();
 
-    renderer.clear();
-    renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#dddddd', 2);
-    renderer.drawRect(this.box.x, this.box.y, this.box.width, this.box.height, '#ed9700');
-
-    renderer.drawText('Engine V2 Sample02', this.textStartX, this.textStartY, {
-      color: this.textColor,
-      font: '20px Arial',
-    });
+    renderer.clear(theme.getColor('canvasBackground'));
+    renderer.strokeRect(10, 10, width - 20, height - 20, '#dddddd', 2);
+    renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
+    renderer.drawRect(this.box.x, this.box.y, this.box.width, this.box.height, theme.getColor('actorFill'));
 
     const lines = [
+      'Engine V2 Sample02',
       'Demonstrates the keyboard input boundary',
       'Use Arrow keys to move the box in four directions',
       'Observe movement driven by input state, not DOM events in the scene',
-      'This sample reads InputService through a clean scene boundary',
+      'This sample now matches the shared themed sample style',
     ];
 
     lines.forEach((line, index) => {
-      renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1), {
-        color: this.textColor,
-        font: '16px Arial',
+      renderer.drawText(line, this.textStartX, this.textStartY + this.textLineHeight * index, {
+        color: theme.getColor('textCanvs'),
+        font: '16px monospace',
       });
     });
   }
