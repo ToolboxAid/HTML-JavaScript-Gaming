@@ -1,64 +1,28 @@
 # Samples Guide
 
-This folder contains **focused, user-facing examples** that demonstrate specific engine capabilities.
+Samples are focused, user-facing demonstrations of one engine capability at a time.
 
----
+## Structure
+├─ samples/
+│  ├─ README.md
+│  ├─ input/
+│  │  ├─ sample01-basic-keyboard/
+│  │  ├─ sample02-mouse-input/
+│  │  └─ sample03-gamepad/
+│  ├─ rendering/
+│  │  ├─ sample01-sprite-draw/
+│  │  ├─ sample02-animation/
+│  │  └─ sample03-camera-follow/
+│  ├─ physics/
+│  ├─ tilemap/
+│  ├─ audio/
+│  ├─ ui/
+│  ├─ etc.../
 
-## 📁 Structure
+## Rules
+- One sample = one capability
+- Keep minimal and clear
+- No games, no tests
 
-samples/
-├─ README.md
-├─ input/
-├─ rendering/
-├─ physics/
-├─ tilemap/
-├─ audio/
-├─ ui/
-
----
-
-## 🎯 Purpose
-
-Samples exist to:
-- Demonstrate one engine capability at a time
-- Provide clear, minimal examples
-- Help users understand how to use the engine
-
----
-
-## 🧱 Naming
-
-Format:
+## Naming
 sampleNN-capability-name
-
-Example:
-sample01-basic-keyboard
-
----
-
-## 📄 Required Files per Sample
-
-sampleXX-name/
-├─ index.html
-├─ main.js
-├─ README.md
-└─ assets/ (optional)
-
----
-
-## 📝 Sample README Template
-
-# sampleXX-name
-
-## Purpose
-Explain what this sample demonstrates.
-
-## What it shows
-- Concept 1
-- Concept 2
-
-## How to run
-Open index.html
-
-## What to observe
-Describe expected behavior
