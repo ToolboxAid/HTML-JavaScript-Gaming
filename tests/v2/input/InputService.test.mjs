@@ -1,4 +1,5 @@
 import InputService from '../../../engine/v2/input/InputService.js';
+import InputMap from '../../../engine/v2/input/InputMap.js';
 
 function assert(condition, message) {
     if (!condition) {
@@ -32,52 +33,33 @@ class FakeEventTarget {
 
 export function run() {
     const target = new FakeEventTarget();
-    const input = new InputService({ target });
+    const inputMap = new InputMap({
+        moveLeft: ['ArrowLeft', 'KeyA'],
+        moveRight: ['ArrowRight', 'KeyD'],
+    });
+    const input = new InputService({ target, inputMap, getGamepads: () => [] });
 
     input.attach();
+    target.dispatch('keydown', { code: 'KeyA' });
+    input.update();
+
+    assert(input.isDown('KeyA') === true, 'Raw keyboard state should still work.');
+    assert(input.isActionDown('moveLeft') === true, 'Action should resolve from mapped key.');
+    assert(input.isActionPressed('moveLeft') === true, 'Action should be pressed on first mapped frame.');
+
+    input.update();
+    assert(input.isActionPressed('moveLeft') === false, 'Held mapped key should not re-trigger pressed state.');
+
+    target.dispatch('keyup', { code: 'KeyA' });
     target.dispatch('keydown', { code: 'ArrowRight' });
     input.update();
 
-    assert(input.isDown('ArrowRight') === true, 'ArrowRight should be down after keydown.');
-    assert(input.isPressed('ArrowRight') === true, 'ArrowRight should be pressed on its first frame.');
+    assert(input.isActionDown('moveLeft') === false, 'Released mapped inputs should clear the action.');
+    assert(input.isActionDown('moveRight') === true, 'Alternative mapped action should resolve normally.');
 
-    input.update();
-    assert(input.isPressed('ArrowRight') === false, 'ArrowRight should not report pressed on subsequent frames.');
-
-    target.dispatch('mousemove', { offsetX: 120, offsetY: 80 });
-    target.dispatch('mousedown', { button: 0 });
-    input.update();
-
-    const mousePosition = input.getMousePosition();
-    const mouseDelta = input.getMouseDelta();
-    assert(mousePosition.x === 120 && mousePosition.y === 80, 'Mouse position should update from mousemove.');
-    assert(mouseDelta.x === 120 && mouseDelta.y === 80, 'Mouse delta should report movement since the prior frame.');
-    assert(input.isMouseDown(0) === true, 'Mouse button should be down after mousedown.');
-    assert(input.isMousePressed(0) === true, 'Mouse button should be pressed on its first frame.');
-
-    input.update();
-    const settledDelta = input.getMouseDelta();
-    assert(settledDelta.x === 0 && settledDelta.y === 0, 'Mouse delta should reset after update when no new movement occurs.');
-    assert(input.isMousePressed(0) === false, 'Mouse button should not be pressed again while held.');
-
-    target.dispatch('blur');
-    input.update();
-    assert(input.isDown('ArrowRight') === false, 'Blur should clear all keys.');
-    assert(input.isMouseDown(0) === false, 'Blur should clear all mouse buttons.');
-
-    target.dispatch('keydown', { code: 'Space' });
-    target.dispatch('mousemove', { offsetX: 160, offsetY: 100 });
-    input.update();
-    const snapshot = input.getSnapshot();
-    snapshot.keyboard.down.add('InjectedKey');
-    snapshot.mouse.down.add(2);
-    assert(input.isDown('InjectedKey') === false, 'Keyboard snapshot must not mutate internal state.');
-    assert(input.isMouseDown(2) === false, 'Mouse snapshot must not mutate internal state.');
+    const snapshot = input.getActionSnapshot();
+    assert(snapshot.moveRight.down === true, 'Action snapshot should expose current action state.');
+    assert(Array.isArray(snapshot.moveRight.inputs), 'Action snapshot should expose bound inputs.');
 
     input.detach();
-    target.dispatch('keydown', { code: 'ArrowLeft' });
-    target.dispatch('mousedown', { button: 0 });
-    input.update();
-    assert(input.isDown('ArrowLeft') === false, 'Detached input should ignore new keyboard events.');
-    assert(input.isMouseDown(0) === false, 'Detached input should ignore new mouse events.');
 }

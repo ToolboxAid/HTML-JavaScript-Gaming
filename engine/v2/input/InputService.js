@@ -1,6 +1,7 @@
 import KeyboardState from './KeyboardState.js';
 import MouseState from './MouseState.js';
 import GamepadState from './GamepadState.js';
+import InputMap from './InputMap.js';
 
 export default class InputService {
     constructor({
@@ -8,12 +9,14 @@ export default class InputService {
         keyboard = null,
         mouse = null,
         gamepads = null,
+        inputMap = null,
         getGamepads = null,
     } = {}) {
         this.target = target;
         this.keyboard = keyboard ?? new KeyboardState();
         this.mouse = mouse ?? new MouseState();
         this.gamepads = gamepads ?? new GamepadState();
+        this.inputMap = inputMap ?? new InputMap();
         this.getGamepadsFromNavigator = getGamepads ?? (() => {
             if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') {
                 return [];
@@ -87,6 +90,10 @@ export default class InputService {
         this.gamepads.reset();
     }
 
+    setInputMap(inputMap) {
+        this.inputMap = inputMap ?? new InputMap();
+    }
+
     isDown(key) {
         return this.keyboard.isDown(key);
     }
@@ -95,11 +102,31 @@ export default class InputService {
         return this.keyboard.isPressed(key);
     }
 
+    isActionDown(action) {
+        return this.inputMap.isActionDown(action, (input) => this.isDown(input));
+    }
+
+    isActionPressed(action) {
+        return this.inputMap.isActionPressed(action, (input) => this.isPressed(input));
+    }
+
+    isAction(action) {
+        return this.isActionDown(action);
+    }
+
+    getActionSnapshot() {
+        return this.inputMap.getSnapshot(
+            (input) => this.isDown(input),
+            (input) => this.isPressed(input),
+        );
+    }
+
     getSnapshot() {
         return {
             keyboard: this.keyboard.getSnapshot(),
             mouse: this.mouse.getSnapshot(),
             gamepads: this.gamepads.getGamepads(),
+            actions: this.getActionSnapshot(),
         };
     }
 

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Engine V2 Sample06 - Input Mapping</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            width: min(100%, 1000px);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 960px;
+            height: auto;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Engine V2 Sample06</h1>
+        <p>
+            Demonstrates input mapping from physical keys to actions. Use Arrow keys or WASD
+            to move the box in four directions. Movement is driven by semantic actions, not
+            physical key checks directly inside the scene.
+        </p>
+        <canvas id="game"></canvas>
+    </main>
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
