@@ -1,6 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { Camera2D } from '../../../engine/v2/camera/index.js';
+import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { clamp, drawFrame, drawPanel } from './shared.js';
+import { clamp } from '../../../engine/v2/utils/math.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -11,7 +13,10 @@ export default class MinimapScene extends Scene {
     this.viewport = { width: 900, height: 300 };
     this.screen = { x: 30, y: 170 };
     this.world = { width: 2200, height: 1400 };
-    this.camera = { x: 0, y: 0 };
+    this.camera = new Camera2D({
+      viewportWidth: this.viewport.width,
+      viewportHeight: this.viewport.height,
+    });
     this.minimap = { x: 710, y: 28, width: 210, height: 134 };
 
     this.player = { x: 180, y: 180, width: 44, height: 44, speed: 260 };
@@ -37,16 +42,8 @@ export default class MinimapScene extends Scene {
     this.player.x = clamp(this.player.x, 0, this.world.width - this.player.width);
     this.player.y = clamp(this.player.y, 0, this.world.height - this.player.height);
 
-    this.camera.x = clamp(
-      this.player.x + this.player.width / 2 - this.viewport.width / 2,
-      0,
-      this.world.width - this.viewport.width
-    );
-    this.camera.y = clamp(
-      this.player.y + this.player.height / 2 - this.viewport.height / 2,
-      0,
-      this.world.height - this.viewport.height
-    );
+    this.camera.followRect(this.player);
+    this.camera.clampToWorld(this.world.width, this.world.height);
   }
 
   render(renderer) {
@@ -60,16 +57,15 @@ export default class MinimapScene extends Scene {
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
 
-    const offsetX = this.screen.x - this.camera.x;
-    const offsetY = this.screen.y - this.camera.y;
+    const offset = this.camera.getOffset(this.screen.x, this.screen.y);
 
     this.blocks.forEach((block) => {
-      renderer.drawRect(block.x + offsetX, block.y + offsetY, block.width, block.height, '#8888ff');
-      renderer.strokeRect(block.x + offsetX, block.y + offsetY, block.width, block.height, '#ffffff', 1);
+      renderer.drawRect(block.x + offset.x, block.y + offset.y, block.width, block.height, '#8888ff');
+      renderer.strokeRect(block.x + offset.x, block.y + offset.y, block.width, block.height, '#ffffff', 1);
     });
 
-    renderer.drawRect(this.player.x + offsetX, this.player.y + offsetY, this.player.width, this.player.height, theme.getColor('actorFill'));
-    renderer.strokeRect(this.player.x + offsetX, this.player.y + offsetY, this.player.width, this.player.height, '#ffffff', 1);
+    renderer.drawRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, theme.getColor('actorFill'));
+    renderer.strokeRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, '#ffffff', 1);
 
     drawPanel(renderer, this.minimap.x, this.minimap.y, this.minimap.width, this.minimap.height, 'Minimap', []);
 

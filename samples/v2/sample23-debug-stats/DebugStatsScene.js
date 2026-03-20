@@ -1,6 +1,7 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { drawPanel, drawSceneFrame, StatsTracker } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { World, drawSceneFrame, drawPanel } from './ecs.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -10,9 +11,7 @@ export default class DebugStatsScene extends Scene {
 
     this.world = new World();
     this.worldBounds = { x: 80, y: 170, width: 800, height: 280 };
-    this.frameCounter = 0;
-    this.frameAccumulator = 0;
-    this.displayFps = 0;
+    this.statsTracker = new StatsTracker({ sampleWindowSeconds: 0.5 });
     this.debugVisible = true;
     this.lastToggleState = false;
 
@@ -54,7 +53,7 @@ export default class DebugStatsScene extends Scene {
 
     if (this.debugVisible) {
       drawPanel(renderer, 640, 28, 280, 146, 'Stats Overlay', [
-        `FPS: ${this.displayFps.toFixed(1)}`,
+        `FPS: ${this.statsTracker.getFps().toFixed(1)}`,
         `Entities: ${this.world.countEntities()}`,
         `Movers: ${this.world.getEntitiesWith('velocity').length}`,
         `Debug visible: ${this.debugVisible ? 'yes' : 'no'}`,
@@ -64,14 +63,7 @@ export default class DebugStatsScene extends Scene {
   }
 
   updateStats(dt, engine) {
-    this.frameCounter += 1;
-    this.frameAccumulator += dt;
-
-    if (this.frameAccumulator >= 0.5) {
-      this.displayFps = this.frameCounter / this.frameAccumulator;
-      this.frameCounter = 0;
-      this.frameAccumulator = 0;
-    }
+    this.statsTracker.update(dt);
 
     const toggleDown = engine.input.isDown('KeyD');
     if (toggleDown && !this.lastToggleState) {

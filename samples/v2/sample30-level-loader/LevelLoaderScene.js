@@ -1,6 +1,9 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { isColliding } from '../../../engine/v2/collision/index.js';
+import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
+import { LevelLoader } from '../../../engine/v2/level/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { clamp, drawFrame, drawPanel, isColliding } from './shared.js';
+import { clamp } from '../../../engine/v2/utils/math.js';
 import { levelData } from './levelData.js';
 
 const theme = new Theme(ThemeTokens);
@@ -8,10 +11,11 @@ const theme = new Theme(ThemeTokens);
 export default class LevelLoaderScene extends Scene {
   constructor() {
     super();
-    this.worldBounds = levelData.worldBounds;
-    this.player = { ...levelData.player };
-    this.solids = levelData.solids.map((solid) => ({ ...solid }));
-    this.markers = levelData.markers.map((marker) => ({ ...marker }));
+    const clonedLevel = LevelLoader.cloneLevelData(levelData);
+    this.worldBounds = clonedLevel.worldBounds;
+    this.player = { ...clonedLevel.player };
+    this.solids = clonedLevel.solids;
+    this.markers = clonedLevel.markers;
     this.hitSolid = false;
   }
 

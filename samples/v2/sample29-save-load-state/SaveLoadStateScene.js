@@ -1,6 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
+import { StorageService } from '../../../engine/v2/persistence/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { clamp, drawFrame, drawPanel } from './shared.js';
+import { clamp } from '../../../engine/v2/utils/math.js';
 
 const theme = new Theme(ThemeTokens);
 const STORAGE_KEY = 'engine-v2-sample29-state';
@@ -49,18 +51,17 @@ export default class SaveLoadStateScene extends Scene {
       y: this.player.y,
     };
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    StorageService.setJSON(STORAGE_KEY, state);
     this.lastSaveState = `saved (${state.x.toFixed(0)}, ${state.y.toFixed(0)})`;
   }
 
   loadState() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
+    const state = StorageService.getJSON(STORAGE_KEY);
+    if (!state) {
       this.lastLoadState = 'no saved state';
       return;
     }
 
-    const state = JSON.parse(raw);
     this.player.x = state.x;
     this.player.y = state.y;
     this.lastLoadState = `loaded (${state.x.toFixed(0)}, ${state.y.toFixed(0)})`;

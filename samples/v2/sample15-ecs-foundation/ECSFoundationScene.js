@@ -1,6 +1,7 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { World, drawSceneFrame } from './ecs.js';
 
 const theme = new Theme(ThemeTokens);
 

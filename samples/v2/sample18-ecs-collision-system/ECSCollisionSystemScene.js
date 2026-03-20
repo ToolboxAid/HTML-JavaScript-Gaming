@@ -1,17 +1,11 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { isColliding } from '../../../engine/v2/collision/index.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { World, drawSceneFrame } from './ecs.js';
+import { clamp } from '../../../engine/v2/utils/math.js';
 
 const theme = new Theme(ThemeTokens);
-
-function isColliding(a, b) {
-  return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
-  );
-}
 
 export default class ECSCollisionSystemScene extends Scene {
   constructor() {
@@ -65,8 +59,8 @@ export default class ECSCollisionSystemScene extends Scene {
     const minY = this.worldBounds.y;
     const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
     const maxY = this.worldBounds.y + this.worldBounds.height - size.height;
-    transform.x = Math.max(minX, Math.min(transform.x, maxX));
-    transform.y = Math.max(minY, Math.min(transform.y, maxY));
+    transform.x = clamp(transform.x, minX, maxX);
+    transform.y = clamp(transform.y, minY, maxY);
 
     this.hitSolid = false;
 
@@ -104,7 +98,7 @@ export default class ECSCollisionSystemScene extends Scene {
       const transform = this.world.getComponent(entityId, 'transform');
       const size = this.world.getComponent(entityId, 'size');
       const renderable = this.world.getComponent(entityId, 'renderable');
-      const color = entityId === this.world.getEntitiesWith('inputControlled')[0] && false
+
       renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
       renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
     });

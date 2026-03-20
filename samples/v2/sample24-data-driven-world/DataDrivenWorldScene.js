@@ -1,18 +1,13 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { isColliding } from '../../../engine/v2/collision/index.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { drawPanel, drawSceneFrame } from '../../../engine/v2/debug/index.js';
+import { LevelLoader } from '../../../engine/v2/level/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { World, drawSceneFrame, drawPanel } from './ecs.js';
+import { clamp } from '../../../engine/v2/utils/math.js';
 import { worldData } from './worldData.js';
 
 const theme = new Theme(ThemeTokens);
-
-function isColliding(a, b) {
-  return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
-  );
-}
 
 export default class DataDrivenWorldScene extends Scene {
   constructor() {
@@ -25,25 +20,8 @@ export default class DataDrivenWorldScene extends Scene {
   }
 
   loadFromData() {
-    worldData.entities.forEach((definition) => {
-      const entityId = this.world.createEntity();
-
-      Object.entries(definition).forEach(([key, value]) => {
-        if (key === 'type') {
-          this.world.addComponent(entityId, 'tag', { value });
-          return;
-        }
-
-        if (key === 'renderable' && value.color === 'actorFill') {
-          this.world.addComponent(entityId, 'renderable', {
-            ...value,
-            color: theme.getColor('actorFill'),
-          });
-          return;
-        }
-
-        this.world.addComponent(entityId, key, { ...value });
-      });
+    LevelLoader.applyEntityDefinitions(this.world, worldData.entities, {
+      mapRenderableColor: (color) => (color === 'actorFill' ? theme.getColor('actorFill') : color),
     });
   }
 
@@ -66,8 +44,8 @@ export default class DataDrivenWorldScene extends Scene {
     const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
     const maxY = this.worldBounds.y + this.worldBounds.height - size.height;
 
-    transform.x = Math.max(minX, Math.min(transform.x, maxX));
-    transform.y = Math.max(minY, Math.min(transform.y, maxY));
+    transform.x = clamp(transform.x, minX, maxX);
+    transform.y = clamp(transform.y, minY, maxY);
 
     this.hitSolid = false;
 

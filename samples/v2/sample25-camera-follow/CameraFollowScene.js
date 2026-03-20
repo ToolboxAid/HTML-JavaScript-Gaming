@@ -1,6 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { Camera2D } from '../../../engine/v2/camera/index.js';
+import { drawFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { clamp, drawFrame } from './shared.js';
+import { clamp } from '../../../engine/v2/utils/math.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -10,7 +12,10 @@ export default class CameraFollowScene extends Scene {
 
     this.viewport = { width: 960, height: 540 };
     this.world = { width: 2200, height: 1400 };
-    this.camera = { x: 0, y: 0 };
+    this.camera = new Camera2D({
+      viewportWidth: this.viewport.width,
+      viewportHeight: this.viewport.height,
+    });
 
     this.player = {
       x: 180,
@@ -42,8 +47,7 @@ export default class CameraFollowScene extends Scene {
     this.player.x = clamp(this.player.x, 0, this.world.width - this.player.width);
     this.player.y = clamp(this.player.y, 0, this.world.height - this.player.height);
 
-    this.camera.x = this.player.x + this.player.width / 2 - this.viewport.width / 2;
-    this.camera.y = this.player.y + this.player.height / 2 - this.viewport.height / 2;
+    this.camera.followRect(this.player);
   }
 
   render(renderer) {
@@ -55,17 +59,16 @@ export default class CameraFollowScene extends Scene {
       'Camera bounds are intentionally not clamped yet so the next sample can focus on that',
     ]);
 
-    const offsetX = 30 - this.camera.x;
-    const offsetY = 170 - this.camera.y;
+    const offset = this.camera.getOffset(30, 170);
 
     renderer.strokeRect(30, 170, this.viewport.width - 60, this.viewport.height - 210, '#d8d5ff', 2);
 
     this.markers.forEach((marker) => {
-      renderer.drawRect(marker.x + offsetX, marker.y + offsetY, marker.width, marker.height, '#8888ff');
-      renderer.strokeRect(marker.x + offsetX, marker.y + offsetY, marker.width, marker.height, '#ffffff', 1);
+      renderer.drawRect(marker.x + offset.x, marker.y + offset.y, marker.width, marker.height, '#8888ff');
+      renderer.strokeRect(marker.x + offset.x, marker.y + offset.y, marker.width, marker.height, '#ffffff', 1);
     });
 
-    renderer.drawRect(this.player.x + offsetX, this.player.y + offsetY, this.player.width, this.player.height, theme.getColor('actorFill'));
-    renderer.strokeRect(this.player.x + offsetX, this.player.y + offsetY, this.player.width, this.player.height, '#ffffff', 1);
+    renderer.drawRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, theme.getColor('actorFill'));
+    renderer.strokeRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, '#ffffff', 1);
   }
 }

@@ -1,6 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { drawPanel, drawSceneFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { World, drawSceneFrame, drawPanel } from './ecs.js';
+import { clamp } from '../../../engine/v2/utils/math.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -46,8 +48,8 @@ export default class UIOverlayScene extends Scene {
     const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
     const maxY = this.worldBounds.y + this.worldBounds.height - size.height;
 
-    transform.x = Math.max(minX, Math.min(transform.x, maxX));
-    transform.y = Math.max(minY, Math.min(transform.y, maxY));
+    transform.x = clamp(transform.x, minX, maxX);
+    transform.y = clamp(transform.y, minY, maxY);
   }
 
   render(renderer) {
