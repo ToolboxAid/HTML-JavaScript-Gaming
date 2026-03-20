@@ -50,6 +50,15 @@ export default class GamepadScene extends Scene {
         ctx.fillStyle = theme.getColor('canvasBackground');
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+        // draw inner bounds (10px inset)
+        const pad = 10;
+        const w = ctx.canvas.width;
+        const h = ctx.canvas.height;
+
+        ctx.strokeStyle = "#dddddd";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
+
         ctx.strokeStyle = '#d8d5ff';
         ctx.lineWidth = 3;
         ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
