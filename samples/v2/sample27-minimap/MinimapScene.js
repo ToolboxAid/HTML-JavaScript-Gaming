@@ -1,8 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { Camera2D } from '../../../engine/v2/camera/index.js';
-import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { clamp } from '../../../engine/v2/utils/math.js';
+import { Camera2D } from '../../../engine/v2/camera/index.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -16,6 +16,8 @@ export default class MinimapScene extends Scene {
     this.camera = new Camera2D({
       viewportWidth: this.viewport.width,
       viewportHeight: this.viewport.height,
+      worldWidth: this.world.width,
+      worldHeight: this.world.height,
     });
     this.minimap = { x: 710, y: 28, width: 210, height: 134 };
 
@@ -43,11 +45,11 @@ export default class MinimapScene extends Scene {
     this.player.y = clamp(this.player.y, 0, this.world.height - this.player.height);
 
     this.camera.followRect(this.player);
-    this.camera.clampToWorld(this.world.width, this.world.height);
+    this.camera.clampToWorld();
   }
 
   render(renderer) {
-    drawFrame(renderer, theme, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample27',
       'Demonstrates a minimap overlay for a larger scrolling world',
       'Use Arrow keys to move and compare the viewport with the minimap panel',
@@ -67,7 +69,7 @@ export default class MinimapScene extends Scene {
     renderer.drawRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, theme.getColor('actorFill'));
     renderer.strokeRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, '#ffffff', 1);
 
-    drawPanel(renderer, this.minimap.x, this.minimap.y, this.minimap.width, this.minimap.height, 'Minimap', []);
+    DebugPanel.drawPanel(renderer, this.minimap.x, this.minimap.y, this.minimap.width, this.minimap.height, 'Minimap', []);
 
     const scaleX = (this.minimap.width - 24) / this.world.width;
     const scaleY = (this.minimap.height - 48) / this.world.height;

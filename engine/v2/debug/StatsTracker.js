@@ -6,9 +6,9 @@ export default class StatsTracker {
     this.displayFps = 0;
   }
 
-  update(dtSeconds) {
+  update(dt) {
     this.frameCounter += 1;
-    this.frameAccumulator += dtSeconds;
+    this.frameAccumulator += dt;
 
     if (this.frameAccumulator >= this.sampleWindowSeconds) {
       this.displayFps = this.frameCounter / this.frameAccumulator;

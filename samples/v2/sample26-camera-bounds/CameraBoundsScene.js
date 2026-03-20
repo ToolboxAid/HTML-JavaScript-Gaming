@@ -1,8 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { Camera2D } from '../../../engine/v2/camera/index.js';
-import { drawFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { clamp } from '../../../engine/v2/utils/math.js';
+import { Camera2D } from '../../../engine/v2/camera/index.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -16,6 +16,8 @@ export default class CameraBoundsScene extends Scene {
     this.camera = new Camera2D({
       viewportWidth: this.viewport.width,
       viewportHeight: this.viewport.height,
+      worldWidth: this.world.width,
+      worldHeight: this.world.height,
     });
 
     this.player = {
@@ -49,11 +51,11 @@ export default class CameraBoundsScene extends Scene {
     this.player.y = clamp(this.player.y, 0, this.world.height - this.player.height);
 
     this.camera.followRect(this.player);
-    this.camera.clampToWorld(this.world.width, this.world.height);
+    this.camera.clampToWorld();
   }
 
   render(renderer) {
-    drawFrame(renderer, theme, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample26',
       'Demonstrates camera follow with world-edge clamping',
       'Use Arrow keys to move the player near all edges of the world',

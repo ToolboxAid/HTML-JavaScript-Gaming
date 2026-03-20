@@ -1,9 +1,9 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { isColliding } from '../../../engine/v2/collision/index.js';
-import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
-import { LevelLoader } from '../../../engine/v2/level/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { clamp } from '../../../engine/v2/utils/math.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
+import { isColliding } from '../../../engine/v2/collision/aabb.js';
+import LevelLoader from '../../../engine/v2/level/LevelLoader.js';
 import { levelData } from './levelData.js';
 
 const theme = new Theme(ThemeTokens);
@@ -11,11 +11,12 @@ const theme = new Theme(ThemeTokens);
 export default class LevelLoaderScene extends Scene {
   constructor() {
     super();
-    const clonedLevel = LevelLoader.cloneLevelData(levelData);
-    this.worldBounds = clonedLevel.worldBounds;
-    this.player = { ...clonedLevel.player };
-    this.solids = clonedLevel.solids;
-    this.markers = clonedLevel.markers;
+
+    const loaded = LevelLoader.cloneLevel(levelData);
+    this.worldBounds = loaded.worldBounds;
+    this.player = loaded.player;
+    this.solids = loaded.solids;
+    this.markers = loaded.markers;
     this.hitSolid = false;
   }
 
@@ -44,7 +45,7 @@ export default class LevelLoaderScene extends Scene {
   }
 
   render(renderer) {
-    drawFrame(renderer, theme, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample30',
       'Demonstrates loading level content from structured level data',
       'Use Arrow keys to move through geometry defined outside the scene class',
@@ -71,7 +72,7 @@ export default class LevelLoaderScene extends Scene {
     renderer.drawRect(this.player.x, this.player.y, this.player.width, this.player.height, theme.getColor('actorFill'));
     renderer.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height, '#ffffff', 1);
 
-    drawPanel(renderer, 620, 180, 280, 132, 'Level Data', [
+    DebugPanel.drawPanel(renderer, 620, 180, 280, 132, 'Level Data', [
       `Solids: ${this.solids.length}`,
       `Markers: ${this.markers.length}`,
       'Source: levelData.js',

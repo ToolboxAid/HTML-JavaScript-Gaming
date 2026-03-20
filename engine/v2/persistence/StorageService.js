@@ -1,13 +1,16 @@
 export default class StorageService {
-  static setJSON(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+  constructor(storage = globalThis.localStorage) {
+    this.storage = storage;
   }
 
-  static getJSON(key, fallbackValue = null) {
-    const raw = localStorage.getItem(key);
+  saveJSON(key, value) {
+    this.storage.setItem(key, JSON.stringify(value));
+  }
 
+  loadJSON(key, fallback = null) {
+    const raw = this.storage.getItem(key);
     if (!raw) {
-      return fallbackValue;
+      return fallback;
     }
 
     return JSON.parse(raw);

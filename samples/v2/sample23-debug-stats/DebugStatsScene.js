@@ -1,7 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { World } from '../../../engine/v2/ecs/index.js';
-import { drawPanel, drawSceneFrame, StatsTracker } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { DebugPanel, StatsTracker } from '../../../engine/v2/debug/index.js';
+import { MovementSystem, RenderSystem } from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -11,7 +12,7 @@ export default class DebugStatsScene extends Scene {
 
     this.world = new World();
     this.worldBounds = { x: 80, y: 170, width: 800, height: 280 };
-    this.statsTracker = new StatsTracker({ sampleWindowSeconds: 0.5 });
+    this.stats = new StatsTracker();
     this.debugVisible = true;
     this.lastToggleState = false;
 
@@ -25,14 +26,24 @@ export default class DebugStatsScene extends Scene {
   }
 
   update(dt, engine) {
-    this.updateStats(dt, engine);
-    this.updateMovers(dt);
+    this.stats.update(dt);
+
+    const toggleDown = engine.input.isDown('KeyD');
+    if (toggleDown && !this.lastToggleState) {
+      this.debugVisible = !this.debugVisible;
+    }
+    this.lastToggleState = toggleDown;
+
+    MovementSystem.integrateVelocity({
+      world: this.world,
+      dt,
+      worldBounds: this.worldBounds,
+      reflectX: true,
+    });
   }
 
   render(renderer) {
-    const { width, height } = renderer.getCanvasSize();
-
-    drawSceneFrame(renderer, theme, width, height, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample23',
       'Demonstrates a live debug stats overlay for engine-style diagnostics',
       'Press KeyD to toggle the stats overlay on and off',
@@ -41,56 +52,16 @@ export default class DebugStatsScene extends Scene {
     ]);
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
-
-    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const renderable = this.world.getComponent(entityId, 'renderable');
-
-      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
-      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
-    });
+    RenderSystem.drawRenderableEntities(renderer, this.world);
 
     if (this.debugVisible) {
-      drawPanel(renderer, 640, 28, 280, 146, 'Stats Overlay', [
-        `FPS: ${this.statsTracker.getFps().toFixed(1)}`,
+      DebugPanel.drawPanel(renderer, 640, 28, 280, 146, 'Stats Overlay', [
+        `FPS: ${this.stats.getFps().toFixed(1)}`,
         `Entities: ${this.world.countEntities()}`,
         `Movers: ${this.world.getEntitiesWith('velocity').length}`,
         `Debug visible: ${this.debugVisible ? 'yes' : 'no'}`,
         'Toggle: KeyD',
       ]);
     }
-  }
-
-  updateStats(dt, engine) {
-    this.statsTracker.update(dt);
-
-    const toggleDown = engine.input.isDown('KeyD');
-    if (toggleDown && !this.lastToggleState) {
-      this.debugVisible = !this.debugVisible;
-    }
-    this.lastToggleState = toggleDown;
-  }
-
-  updateMovers(dt) {
-    this.world.getEntitiesWith('transform', 'size', 'velocity').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const velocity = this.world.getComponent(entityId, 'velocity');
-
-      transform.x += velocity.x * dt;
-
-      const minX = this.worldBounds.x;
-      const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
-
-      if (transform.x <= minX) {
-        transform.x = minX;
-        velocity.x *= -1;
-      }
-      if (transform.x >= maxX) {
-        transform.x = maxX;
-        velocity.x *= -1;
-      }
-    });
   }
 }

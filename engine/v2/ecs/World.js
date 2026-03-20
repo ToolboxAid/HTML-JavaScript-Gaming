@@ -13,7 +13,6 @@ export default class World {
 
   removeEntity(entityId) {
     this.entities.delete(entityId);
-
     for (const componentMap of this.components.values()) {
       componentMap.delete(entityId);
     }

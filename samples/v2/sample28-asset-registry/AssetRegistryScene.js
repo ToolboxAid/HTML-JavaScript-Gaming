@@ -1,7 +1,7 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { AssetRegistry } from '../../../engine/v2/assets/index.js';
-import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
+import { AssetRegistry } from '../../../engine/v2/assets/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -44,7 +44,7 @@ export default class AssetRegistryScene extends Scene {
   update() {}
 
   render(renderer) {
-    drawFrame(renderer, theme, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample28',
       'Demonstrates a centralized asset registry pattern before real loading is added',
       'The registry stores identifiers, asset types, paths, and status values',
@@ -53,7 +53,7 @@ export default class AssetRegistryScene extends Scene {
     ]);
 
     const entries = this.registry.entries();
-    drawPanel(renderer, 60, 176, 840, 290, 'Registered Assets', entries.map(([id, definition]) => {
+    DebugPanel.drawPanel(renderer, 60, 176, 840, 290, 'Registered Assets', entries.map(([id, definition]) => {
       return `${id} | ${definition.type} | ${definition.path} | ${definition.status}`;
     }).slice(0, 9));
 

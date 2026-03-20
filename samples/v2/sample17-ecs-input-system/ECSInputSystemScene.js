@@ -1,7 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { World } from '../../../engine/v2/ecs/index.js';
-import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
+import { InputControlSystem, RenderSystem } from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -26,32 +27,16 @@ export default class ECSInputSystemScene extends Scene {
   }
 
   update(dt, engine) {
-    const controlledEntities = this.world.getEntitiesWith('transform', 'size', 'speed', 'inputControlled');
-
-    controlledEntities.forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const speed = this.world.getComponent(entityId, 'speed').value;
-
-      if (engine.input.isDown('ArrowLeft')) transform.x -= speed * dt;
-      if (engine.input.isDown('ArrowRight')) transform.x += speed * dt;
-      if (engine.input.isDown('ArrowUp')) transform.y -= speed * dt;
-      if (engine.input.isDown('ArrowDown')) transform.y += speed * dt;
-
-      const minX = this.worldBounds.x;
-      const minY = this.worldBounds.y;
-      const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
-      const maxY = this.worldBounds.y + this.worldBounds.height - size.height;
-
-      transform.x = Math.max(minX, Math.min(transform.x, maxX));
-      transform.y = Math.max(minY, Math.min(transform.y, maxY));
+    InputControlSystem.applyDirectMovement({
+      world: this.world,
+      input: engine.input,
+      dt,
+      worldBounds: this.worldBounds,
     });
   }
 
   render(renderer) {
-    const { width, height } = renderer.getCanvasSize();
-
-    drawSceneFrame(renderer, theme, width, height, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample17',
       'Demonstrates an ECS input system with inputControlled and speed components',
       'Use Arrow keys to move the player entity through the play area',
@@ -60,14 +45,6 @@ export default class ECSInputSystemScene extends Scene {
     ]);
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
-
-    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const renderable = this.world.getComponent(entityId, 'renderable');
-
-      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
-      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
-    });
+    RenderSystem.drawRenderableEntities(renderer, this.world);
   }
 }

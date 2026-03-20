@@ -1,8 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
-import { StorageService } from '../../../engine/v2/persistence/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { clamp } from '../../../engine/v2/utils/math.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
+import { StorageService } from '../../../engine/v2/persistence/index.js';
 
 const theme = new Theme(ThemeTokens);
 const STORAGE_KEY = 'engine-v2-sample29-state';
@@ -11,6 +11,7 @@ export default class SaveLoadStateScene extends Scene {
   constructor() {
     super();
 
+    this.storage = new StorageService();
     this.worldBounds = { x: 60, y: 170, width: 840, height: 300 };
     this.player = { x: 180, y: 260, width: 46, height: 46, speed: 250 };
     this.lastSaveState = 'none';
@@ -51,12 +52,13 @@ export default class SaveLoadStateScene extends Scene {
       y: this.player.y,
     };
 
-    StorageService.setJSON(STORAGE_KEY, state);
+    this.storage.saveJSON(STORAGE_KEY, state);
     this.lastSaveState = `saved (${state.x.toFixed(0)}, ${state.y.toFixed(0)})`;
   }
 
   loadState() {
-    const state = StorageService.getJSON(STORAGE_KEY);
+    const state = this.storage.loadJSON(STORAGE_KEY);
+
     if (!state) {
       this.lastLoadState = 'no saved state';
       return;
@@ -68,7 +70,7 @@ export default class SaveLoadStateScene extends Scene {
   }
 
   render(renderer) {
-    drawFrame(renderer, theme, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample29',
       'Demonstrates basic save and load state using browser localStorage',
       'Use Arrow keys to move, KeyK to save, and KeyL to load',
@@ -80,7 +82,7 @@ export default class SaveLoadStateScene extends Scene {
     renderer.drawRect(this.player.x, this.player.y, this.player.width, this.player.height, theme.getColor('actorFill'));
     renderer.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height, '#ffffff', 1);
 
-    drawPanel(renderer, 610, 180, 290, 132, 'Persistence Status', [
+    DebugPanel.drawPanel(renderer, 610, 180, 290, 132, 'Persistence Status', [
       `Last save: ${this.lastSaveState}`,
       `Last load: ${this.lastLoadState}`,
       'Save key: KeyK',

@@ -1,7 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { World } from '../../../engine/v2/ecs/index.js';
-import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
+import { RenderSystem } from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -25,9 +26,7 @@ export default class ECSRenderSystemScene extends Scene {
   update() {}
 
   render(renderer) {
-    const { width, height } = renderer.getCanvasSize();
-
-    drawSceneFrame(renderer, theme, width, height, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample19',
       'Demonstrates an ECS render system driven by queried renderable entities',
       'Each entity is drawn through one shared render pass',
@@ -35,17 +34,6 @@ export default class ECSRenderSystemScene extends Scene {
       'This sample isolates rendering as its own engine-style system',
     ]);
 
-    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const renderable = this.world.getComponent(entityId, 'renderable');
-
-      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
-      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
-      renderer.drawText(renderable.label, transform.x + 6, transform.y + size.height + 18, {
-        color: '#ffffff',
-        font: '14px monospace',
-      });
-    });
+    RenderSystem.drawRenderableEntities(renderer, this.world, { labelMode: 'below' });
   }
 }

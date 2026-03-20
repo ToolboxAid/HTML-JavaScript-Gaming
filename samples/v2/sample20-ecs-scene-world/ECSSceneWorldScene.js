@@ -1,12 +1,10 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
-import { isColliding } from '../../../engine/v2/collision/index.js';
-import { World } from '../../../engine/v2/ecs/index.js';
-import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { clamp } from '../../../engine/v2/utils/math.js';
+import { World } from '../../../engine/v2/ecs/index.js';
+import { DebugPanel } from '../../../engine/v2/debug/index.js';
+import { InputControlSystem, MovementSystem, CollisionSystem, RenderSystem } from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
-
 
 export default class ECSSceneWorldScene extends Scene {
   constructor() {
@@ -39,15 +37,23 @@ export default class ECSSceneWorldScene extends Scene {
   }
 
   update(dt, engine) {
-    this.runInputSystem(engine);
-    this.runMovementSystem(dt);
-    this.runCollisionSystem();
+    InputControlSystem.applyVelocityFromInput({
+      world: this.world,
+      input: engine.input,
+    });
+
+    MovementSystem.integrateVelocity({
+      world: this.world,
+      dt,
+      worldBounds: this.worldBounds,
+      storePrevious: true,
+    });
+
+    this.hitSolid = CollisionSystem.revertControlledEntityAgainstSolids({ world: this.world });
   }
 
   render(renderer) {
-    const { width, height } = renderer.getCanvasSize();
-
-    drawSceneFrame(renderer, theme, width, height, [
+    DebugPanel.drawFrame(renderer, theme, [
       'Engine V2 Sample20',
       'Demonstrates a scene that delegates behavior to ECS-style systems',
       'Use Arrow keys to move the player entity through the world',
@@ -56,86 +62,6 @@ export default class ECSSceneWorldScene extends Scene {
     ]);
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
-
-    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const renderable = this.world.getComponent(entityId, 'renderable');
-
-      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
-      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
-      renderer.drawText(renderable.label, transform.x + 6, transform.y - 8, {
-        color: '#ffffff',
-        font: '14px monospace',
-      });
-    });
-  }
-
-  runInputSystem(engine) {
-    const controlled = this.world.getEntitiesWith('velocity', 'speed', 'inputControlled');
-
-    controlled.forEach((entityId) => {
-      const velocity = this.world.getComponent(entityId, 'velocity');
-      const speed = this.world.getComponent(entityId, 'speed').value;
-
-      velocity.x = 0;
-      velocity.y = 0;
-
-      if (engine.input.isDown('ArrowLeft')) velocity.x -= speed;
-      if (engine.input.isDown('ArrowRight')) velocity.x += speed;
-      if (engine.input.isDown('ArrowUp')) velocity.y -= speed;
-      if (engine.input.isDown('ArrowDown')) velocity.y += speed;
-    });
-  }
-
-  runMovementSystem(dt) {
-    const movers = this.world.getEntitiesWith('transform', 'size', 'velocity');
-
-    movers.forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const velocity = this.world.getComponent(entityId, 'velocity');
-
-      transform.previousX = transform.x;
-      transform.previousY = transform.y;
-
-      transform.x += velocity.x * dt;
-      transform.y += velocity.y * dt;
-
-      const minX = this.worldBounds.x;
-      const minY = this.worldBounds.y;
-      const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
-      const maxY = this.worldBounds.y + this.worldBounds.height - size.height;
-
-      transform.x = clamp(transform.x, minX, maxX);
-      transform.y = clamp(transform.y, minY, maxY);
-    });
-  }
-
-  runCollisionSystem() {
-    this.hitSolid = false;
-
-    const movers = this.world.getEntitiesWith('transform', 'size', 'collider');
-    const solids = this.world.getEntitiesWith('transform', 'size', 'solid');
-
-    movers.forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-
-      for (const solidId of solids) {
-        const solidTransform = this.world.getComponent(solidId, 'transform');
-        const solidSize = this.world.getComponent(solidId, 'size');
-
-        if (isColliding(
-          { x: transform.x, y: transform.y, width: size.width, height: size.height },
-          { x: solidTransform.x, y: solidTransform.y, width: solidSize.width, height: solidSize.height }
-        )) {
-          transform.x = transform.previousX;
-          transform.y = transform.previousY;
-          this.hitSolid = true;
-          break;
-        }
-      }
-    });
+    RenderSystem.drawRenderableEntities(renderer, this.world, { labelMode: 'above' });
   }
 }
