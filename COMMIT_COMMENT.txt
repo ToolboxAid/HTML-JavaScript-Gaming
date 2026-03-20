@@ -1,1 +1,1 @@
-tests: add GameTurnFlowUtils equivalence probe
+tests/engine/game: add direct GameTurnFlowUtils equivalence probe
