@@ -1,7 +1,8 @@
 export const ThemeTokens = {
   color: {
     canvasBackground: '#7a00df',
-    actorFill: '#ed9700'
+    actorFill: '#ed9700',
+    textPrimary: '#333332'
   },
 
   document: {

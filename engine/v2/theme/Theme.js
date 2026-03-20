@@ -9,16 +9,20 @@ export class Theme {
 
   applyDocumentTheme() {
     const doc = this.tokens.document;
+    const color = this.tokens.color;
+
     if (!doc) return;
 
-    // Ensure full height
     document.documentElement.style.height = doc.height;
     document.body.style.height = doc.height;
-
-    // Reset default margin
     document.body.style.margin = '0';
 
-    // Apply gradient
+    // background
     document.body.style.background = doc.background;
+
+    // text color
+    if (color?.textPrimary) {
+      document.body.style.color = color.textPrimary;
+    }
   }
 }
