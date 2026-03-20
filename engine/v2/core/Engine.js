@@ -3,6 +3,7 @@ import FrameClock from "./FrameClock.js";
 import FixedTicker from "./FixedTicker.js";
 import CanvasSurface from "./CanvasSurface.js";
 import SceneManager from "../scenes/SceneManager.js";
+import InputService from "../input/InputService.js";
 
 export default class Engine {
     constructor({
@@ -13,6 +14,7 @@ export default class Engine {
         frameClock = null,
         ticker = null,
         sceneManager = null,
+        input = null,
         requestFrame = (callback) => window.requestAnimationFrame(callback),
         cancelFrame = (id) => window.cancelAnimationFrame(id),
     } = {}) {
@@ -22,6 +24,7 @@ export default class Engine {
         this.frameClock = frameClock ?? new FrameClock();
         this.ticker = ticker ?? new FixedTicker({ stepMs: fixedStepMs });
         this.sceneManager = sceneManager ?? new SceneManager();
+        this.input = input ?? new InputService();
         this.requestFrame = requestFrame;
         this.cancelFrame = cancelFrame;
 
@@ -40,6 +43,8 @@ export default class Engine {
         }
 
         this.isRunning = true;
+        this.input.attach();
+        this.input.reset();
         this.frameClock.reset(startTimeMs);
         this.ticker.reset();
         this.frameRequestId = this.requestFrame(this.loop);
@@ -51,6 +56,7 @@ export default class Engine {
         }
 
         this.isRunning = false;
+        this.input.detach();
         if (this.frameRequestId !== null) {
             this.cancelFrame(this.frameRequestId);
             this.frameRequestId = null;
@@ -62,6 +68,7 @@ export default class Engine {
             return;
         }
 
+        this.input.update();
         const { deltaMs } = this.frameClock.tick(timeMs);
         const { alpha } = this.ticker.advance(deltaMs, (dtSeconds) => {
             this.sceneManager.update(dtSeconds, this);

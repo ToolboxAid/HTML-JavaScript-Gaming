@@ -2,6 +2,7 @@ export const ThemeTokens = {
   color: {
     canvasBackground: '#7a00df',
     actorFill: '#ed9700',
+    textCanvs: '#dddddd',
     textPrimary: '#333332'
   },
 
