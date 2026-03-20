@@ -1,4 +1,3 @@
-MODEL: GPT-5.3-codex
+MODEL: GPT-5.4
 REASONING: medium
-
-BUILD_PR: add engine/v2/theme with ThemeTokens and Theme classes, move brand colors into tokens, update sample to use theme, add minimal test
+COMMAND: BUILD_PR: add engine/v2/theme semantic color tokens and wire sample01-basic-loop to consume theme colors only; return changes-only zip

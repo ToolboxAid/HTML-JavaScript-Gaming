@@ -1,6 +1,11 @@
 export const ThemeTokens = {
   color: {
-    brandPrimary: '#7a00df',
-    brandAccent: '#ed9700'
+    canvasBackground: '#7a00df',
+    actorFill: '#ed9700'
+  },
+
+  document: {
+    background: 'linear-gradient(to bottom, #b8aeff, #e2e0ff)',
+    height: '100%'
   }
 };

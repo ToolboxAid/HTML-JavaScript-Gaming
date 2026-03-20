@@ -1,4 +1,7 @@
 import Scene from "../../../engine/v2/scenes/Scene.js";
+import { Theme, ThemeTokens } from "../../../engine/v2/theme/index.js";
+
+const theme = new Theme(ThemeTokens);
 
 export default class BouncerScene extends Scene {
     constructor() {
@@ -32,7 +35,7 @@ export default class BouncerScene extends Scene {
         const { width, height } = engine.surface.size;
         const drawX = this.previousX + (this.x - this.previousX) * alpha;
 
-        context.fillStyle = "#111827";
+        context.fillStyle = theme.getColor("canvasBackground");
         context.fillRect(0, 0, width, height);
 
         context.strokeStyle = "#334155";
@@ -40,7 +43,7 @@ export default class BouncerScene extends Scene {
         context.strokeRect(40, height / 2 - 30, width - 80, 60);
 
         context.beginPath();
-        context.fillStyle = "#22d3ee";
+        context.fillStyle = theme.getColor("actorFill");
         context.arc(drawX, height / 2, this.radius, 0, Math.PI * 2);
         context.fill();
 

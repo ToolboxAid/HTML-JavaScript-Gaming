@@ -8,12 +8,16 @@ canvas.height = 300;
 document.body.appendChild(canvas);
 
 const ctx = canvas.getContext('2d');
+theme.applyDocumentTheme();
 
 function draw() {
-  ctx.fillStyle = theme.getColor('brandPrimary');
-  ctx.fillRect(0, 0, 400, 300);
+  const background = theme.getColor('canvasBackground');
+  const actor = theme.getColor('actorFill');
 
-  ctx.fillStyle = theme.getColor('brandAccent');
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = actor;
   ctx.fillRect(150, 100, 100, 100);
 }
 
