@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engine V2 Sample07 - Entity Movement</title>
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: #333332;
+      font-family: Arial, sans-serif;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+
+    main {
+      width: min(100%, 1000px);
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+    }
+
+    p {
+      margin: 0 0 16px;
+      line-height: 1.5;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 960px;
+      height: auto;
+      border: 1px solid #334155;
+      background: #111827;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Engine V2 Sample07</h1>
+    <p>
+      Demonstrates entity-based movement using Transform, Velocity, and Bounds.
+      Use Arrow keys or WASD to move the entity inside the play area.
+      This sample introduces structured game state without coupling movement data directly to the scene.
+    </p>
+    <canvas id="game" width="960" height="540"></canvas>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
