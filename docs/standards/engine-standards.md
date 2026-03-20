@@ -1,4 +1,4 @@
-# ToolboxAid Engine Standards v1
+# Engine Standards
 
 ## Purpose
 
@@ -17,9 +17,9 @@ The engine must behave like a reusable framework, not a specific game.
 
 Every file should be understandable as:
 
-- **PUBLIC** — safe for games to use
-- **INTERNAL** — used only by tests (should not shared within the engine)
-- **PRIVATE** — implementation detail only
+- **PUBLIC** — safe for games to use <method>
+- **INTERNAL** — used only by tests (should not shared within the engine) <_method>
+- **PRIVATE** — implementation detail only <#method>
 
 ### 3. Single responsibility
 

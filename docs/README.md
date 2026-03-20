@@ -1,29 +1,34 @@
 # Docs Index
 
-This folder contains the project operating docs for reviewing, maintaining, and evolving `ToolboxAid/HTML-JavaScript-Gaming`.
+This folder contains the active project documentation for building, reviewing, and evolving the repo.
 
-## Core docs
+## Start here
 
-- [START_SESSION.md](./START_SESSION.md) — lightweight command protocol for ChatGPT review and PR sessions.
-- [PR_WORKFLOW.md](./PR_WORKFLOW.md) — pull request rules, risk levels, and templates.
-- [REVIEW_CHECKLIST.md](./REVIEW_CHECKLIST.md) — repeatable scoring rubric for file and subsystem reviews.
-- [ENGINE_STANDARDS.md](./ENGINE_STANDARDS.md) — architecture and boundary rules for the engine.
-- [ENGINE_API.md](./ENGINE_API.md) — intended public API boundary and stability guidance.
-- [performance.md](./performance.md) — performance review rules, hot-path heuristics, and optimization workflow.
+- [start-session.md](./start-session.md) — default session flow
+- [codex-commands.md](./codex-commands.md) — command reference
+- [pr-workflow.md](./pr-workflow.md) — required PR sequence and rules
+- [review-checklist.md](./review-checklist.md) — concise review checklist
 
-## Living review docs
+## Core references
 
-- [reviews/architecture-review-v1.md](./reviews/architecture-review-v1.md) — current architecture review state and findings.
-- [reviews/pr-roadmap.md](./reviews/pr-roadmap.md) — ordered PR execution list.
+- [getting-started.md](./getting-started.md) — how to run and navigate the repo
+- [performance.md](./performance.md) — performance review guidance
+- [sprite-system.md](./sprite-system.md) — sprite architecture overview
+- [CHANGELOG.md](./CHANGELOG.md) — notable repo and engine changes
+- [REPO_DIRECTORY_STRUCTURE.md](./REPO_DIRECTORY_STRUCTURE.md) — suggested repo layout
+
+## Architecture
+
+- [architecture/engine-api-boundary.md](./architecture/engine-api-boundary.md)
+
+## Standards
+
+- [standards/engine-standards.md](./standards/engine-standards.md)
 
 ## Decisions
 
-- [decisions/001-runtime-context-boundary.md](./decisions/001-runtime-context-boundary.md) — first ADR template/example for runtime ownership.
+- [decisions/001-runtime-context-boundary.md](./decisions/001-runtime-context-boundary.md)
 
-## Suggested workflow
+## Archive
 
-1. Start each review chat with the short command in `START_SESSION.md`.
-2. Review one scope at a time using `REVIEW_PASS`.
-3. Record findings in `reviews/architecture-review-v1.md`.
-4. Convert validated findings into small PRs in `reviews/pr-roadmap.md`.
-5. Use `PR_WORKFLOW.md`, `REVIEW_CHECKLIST.md`, and `ENGINE_STANDARDS.md` during implementation and review.
+- [archive/README.md](./archive/README.md)
