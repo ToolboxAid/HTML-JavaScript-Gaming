@@ -28,7 +28,7 @@ export default class CollisionDebugToolsScene extends Scene {
   constructor() {
     super();
 
-    this.worldBounds = { x: 60, y: 140, width: 840, height: 320 };
+    this.worldBounds = { x: 60, y: 160, width: 840, height: 320 };
     this.player = { x: 130, y: 190, width: 48, height: 48, speed: 240 };
     this.solids = [
       { x: 270, y: 170, width: 90, height: 100 },
