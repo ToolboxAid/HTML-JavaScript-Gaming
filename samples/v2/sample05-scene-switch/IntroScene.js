@@ -4,17 +4,18 @@ import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 const theme = new Theme(ThemeTokens);
 
 export default class IntroScene extends Scene {
-    constructor({ createPlayScene }) {
+    constructor({ createPlayScene, createTransitionScene }) {
         super();
         this.createPlayScene = createPlayScene;
+        this.createTransitionScene = createTransitionScene;
         this.bounds = {
             x: 180,
             y: 170,
             width: 600,
             height: 230,
         };
-        this.textStartX = 40;
-        this.textStartY = 40;
+        this.textStartX = 60;
+        this.textStartY = 90;
         this.textLineHeight = 24;
         this.pulseSeconds = 0;
     }
@@ -23,7 +24,10 @@ export default class IntroScene extends Scene {
         this.pulseSeconds += deltaTime;
 
         if (engine?.input?.isPressed?.('Enter')) {
-            engine.setScene(this.createPlayScene());
+            engine.setScene(this.createTransitionScene({
+                fromScene: this,
+                toScene: this.createPlayScene(),
+            }));
         }
     }
 
@@ -39,14 +43,10 @@ export default class IntroScene extends Scene {
         ctx.fillStyle = theme.getColor('canvasBackground');
         ctx.fillRect(0, 0, width, height);
 
-        // draw inner bounds (10px inset)
         const pad = 10;
-        const w = ctx.canvas.width;
-        const h = ctx.canvas.height;
-
-        ctx.strokeStyle = "#dddddd";
+        ctx.strokeStyle = '#dddddd';
         ctx.lineWidth = 2;
-        ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
+        ctx.strokeRect(pad, pad, width - pad * 2, height - pad * 2);
 
         ctx.strokeStyle = '#d8d5ff';
         ctx.lineWidth = 3;
@@ -66,7 +66,7 @@ export default class IntroScene extends Scene {
         const lines = [
             'Demonstrates scene lifecycle and scene switching',
             'Press Enter to move from IntroScene to PlayScene',
-            'Observe that each scene owns its own update and render behavior',
+            'Observe that transition effects bridge the active scene handoff',
             'SceneManager controls which scene is active',
         ];
 
@@ -74,15 +74,12 @@ export default class IntroScene extends Scene {
             ctx.fillText(line, this.textStartX, this.textStartY + this.textLineHeight * (index + 1));
         });
 
-        // Center panel text inside the breathing panel
         const panelCenterX = panelX + panelWidth / 2;
         const panelCenterY = panelY + panelHeight / 2;
-
         const panelLines = [
             { text: 'IntroScene', font: '20px monospace' },
             { text: 'Press Enter to continue', font: '16px monospace' },
         ];
-
         const panelLineHeight = 28;
         const panelBlockHeight = panelLineHeight * panelLines.length;
         const panelTextStartY = panelCenterY - panelBlockHeight / 2 + panelLineHeight / 2;
@@ -96,7 +93,6 @@ export default class IntroScene extends Scene {
             ctx.fillText(line.text, panelCenterX, panelTextStartY + panelLineHeight * index);
         });
 
-        // restore defaults
         ctx.textAlign = 'start';
         ctx.textBaseline = 'alphabetic';
     }

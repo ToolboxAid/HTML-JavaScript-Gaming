@@ -4,9 +4,10 @@ import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 const theme = new Theme(ThemeTokens);
 
 export default class PlayScene extends Scene {
-    constructor({ createIntroScene }) {
+    constructor({ createIntroScene, createTransitionScene }) {
         super();
         this.createIntroScene = createIntroScene;
+        this.createTransitionScene = createTransitionScene;
         this.bounds = {
             x: 180,
             y: 170,
@@ -20,14 +21,17 @@ export default class PlayScene extends Scene {
             speed: 230,
             direction: 1,
         };
-        this.textStartX = 40;
-        this.textStartY = 40;
+        this.textStartX = 60;
+        this.textStartY = 90;
         this.textLineHeight = 24;
     }
 
     update(deltaTime, engine) {
         if (engine?.input?.isPressed?.('Escape')) {
-            engine.setScene(this.createIntroScene());
+            engine.setScene(this.createTransitionScene({
+                fromScene: this,
+                toScene: this.createIntroScene(),
+            }));
             return;
         }
 
@@ -54,19 +58,14 @@ export default class PlayScene extends Scene {
         ctx.fillStyle = '#2d1657';
         ctx.fillRect(0, 0, width, height);
 
-        // draw inner bounds (10px inset)
         const pad = 10;
-        const w = ctx.canvas.width;
-        const h = ctx.canvas.height;
-
-        ctx.strokeStyle = "#dddddd";
+        ctx.strokeStyle = '#dddddd';
         ctx.lineWidth = 2;
-        ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
+        ctx.strokeRect(pad, pad, width - pad * 2, height - pad * 2);
 
         ctx.strokeStyle = '#ffd8a8';
         ctx.lineWidth = 3;
         ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
-
 
         ctx.beginPath();
         ctx.fillStyle = theme.getColor('actorFill');
