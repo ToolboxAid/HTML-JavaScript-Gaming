@@ -1,12 +1,5 @@
-
-import Scene from "../../../engine/v2/scenes/Scene.js";
-import { Theme, ThemeTokens } from "../../../engine/v2/theme/index.js";
-
-const theme = new Theme(ThemeTokens);
-
-export default class KeyboardMoveScene extends Scene {
+export default class KeyboardMoveScene {
   constructor() {
-    super();
     this.bounds = {
       x: 180,
       y: 160,
@@ -22,6 +15,7 @@ export default class KeyboardMoveScene extends Scene {
       speed: 240,
     };
 
+    this.textColor = "#dddddd";
     this.textStartX = 40;
     this.textStartY = 50;
     this.textLineHeight = 24;
@@ -58,30 +52,20 @@ export default class KeyboardMoveScene extends Scene {
     const width = surface.width ?? ctx.canvas.width;
     const height = surface.height ?? ctx.canvas.height;
 
-    ctx.fillStyle = theme.getColor("canvasBackground");
-    ctx.fillRect(0, 0, width, height);
-
-    // draw inner bounds (10px inset)
-    const pad = 10;
-    const w = ctx.canvas.width;
-    const h = ctx.canvas.height;
+    ctx.clearRect(0, 0, width, height);
 
     ctx.strokeStyle = "#dddddd";
     ctx.lineWidth = 2;
-    ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
-
-    ctx.strokeStyle = "#d8d5ff";
-    ctx.lineWidth = 3;
     ctx.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
 
-    ctx.fillStyle = theme.getColor("actorFill");
+    ctx.fillStyle = "#ed9700";
     ctx.fillRect(this.box.x, this.box.y, this.box.width, this.box.height);
 
-    ctx.fillStyle = theme.getColor("textCanvs");
-    ctx.font = "16px monospace";
+    ctx.fillStyle = this.textColor;
+    ctx.font = "20px Arial";
     ctx.fillText("Engine V2 Sample02", this.textStartX, this.textStartY);
 
-    ctx.font = "16px monospace";
+    ctx.font = "16px Arial";
     const lines = [
       "Demonstrates the keyboard input boundary",
       "Use Arrow keys to move the box in four directions",

@@ -1,81 +1,70 @@
-import { invariant } from "../utils/invariant.js";
-import FrameClock from "./FrameClock.js";
-import FixedTicker from "./FixedTicker.js";
-import CanvasSurface from "./CanvasSurface.js";
-import SceneManager from "../scenes/SceneManager.js";
-import InputService from "../input/InputService.js";
+import { CanvasRenderer } from '../render/index.js';
 
 export default class Engine {
-    constructor({
-        canvas,
-        width = 800,
-        height = 600,
-        fixedStepMs = 1000 / 60,
-        frameClock = null,
-        ticker = null,
-        sceneManager = null,
-        input = null,
-        requestFrame = (callback) => window.requestAnimationFrame(callback),
-        cancelFrame = (id) => window.cancelAnimationFrame(id),
-    } = {}) {
-        invariant(canvas, "Engine requires a canvas element.");
-
-        this.surface = new CanvasSurface({ canvas, width, height });
-        this.frameClock = frameClock ?? new FrameClock();
-        this.ticker = ticker ?? new FixedTicker({ stepMs: fixedStepMs });
-        this.sceneManager = sceneManager ?? new SceneManager();
-        this.input = input ?? new InputService();
-        this.requestFrame = requestFrame;
-        this.cancelFrame = cancelFrame;
-
-        this.isRunning = false;
-        this.frameRequestId = null;
-        this.loop = this.loop.bind(this);
+  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null } = {}) {
+    if (!canvas) {
+      throw new Error('Engine requires a canvas.');
     }
 
-    setScene(scene) {
-        this.sceneManager.setScene(scene, this);
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.canvas.width = width;
+    this.canvas.height = height;
+
+    this.input = input;
+    this.fixedStepMs = fixedStepMs;
+    this.fixedStepSeconds = fixedStepMs / 1000;
+    this.scene = null;
+    this.renderer = new CanvasRenderer(this.ctx);
+
+    this.lastTime = 0;
+    this.accumulator = 0;
+    this.rafId = null;
+
+    this.tick = this.tick.bind(this);
+  }
+
+  setScene(scene) {
+    this.scene = scene;
+
+    if (this.scene && typeof this.scene.enter === 'function') {
+      this.scene.enter(this);
+    }
+  }
+
+  start() {
+    this.lastTime = performance.now();
+    this.rafId = requestAnimationFrame(this.tick);
+  }
+
+  stop() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+  }
+
+  tick(now) {
+    const deltaMs = now - this.lastTime;
+    this.lastTime = now;
+    this.accumulator += deltaMs;
+
+    if (this.input && typeof this.input.update === 'function') {
+      this.input.update();
     }
 
-    start(startTimeMs) {
-        if (this.isRunning) {
-            return;
-        }
+    while (this.accumulator >= this.fixedStepMs) {
+      if (this.scene && typeof this.scene.update === 'function') {
+        this.scene.update(this.fixedStepSeconds, this.input, this);
+      }
 
-        this.isRunning = true;
-        this.input.attach();
-        this.input.reset();
-        this.frameClock.reset(startTimeMs);
-        this.ticker.reset();
-        this.frameRequestId = this.requestFrame(this.loop);
+      this.accumulator -= this.fixedStepMs;
     }
 
-    stop() {
-        if (!this.isRunning) {
-            return;
-        }
-
-        this.isRunning = false;
-        this.input.detach();
-        if (this.frameRequestId !== null) {
-            this.cancelFrame(this.frameRequestId);
-            this.frameRequestId = null;
-        }
+    if (this.scene && typeof this.scene.render === 'function') {
+      this.scene.render(this.renderer, this);
     }
 
-    loop(timeMs) {
-        if (!this.isRunning) {
-            return;
-        }
-
-        this.input.update();
-        const { deltaMs } = this.frameClock.tick(timeMs);
-        const { alpha } = this.ticker.advance(deltaMs, (dtSeconds) => {
-            this.sceneManager.update(dtSeconds, this);
-        });
-
-        this.surface.clear();
-        this.sceneManager.render(this.surface.context, this, alpha);
-        this.frameRequestId = this.requestFrame(this.loop);
-    }
+    this.rafId = requestAnimationFrame(this.tick);
+  }
 }
