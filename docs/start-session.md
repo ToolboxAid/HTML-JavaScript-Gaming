@@ -36,6 +36,10 @@ Include:
 - Never edit OLD folders (read-only reference)
 - Build in NEW structure only
 - Delete OLD only after full replacement
+- Always return zip with only changed files
+- Always provide codex command for me to exicute
+- When zip or codex command is provided, provide commit comment
+- Use website colors: #7a00df and #ed9700 (make the colors as part of a theme)
 
 ---
 
