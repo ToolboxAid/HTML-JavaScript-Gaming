@@ -1,10 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Engine V2 Sample 02 - Keyboard Move</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Engine V2 Sample 04 - Gamepad Input</title>
     <style>
         html,
         body {
@@ -13,7 +12,7 @@
 
         body {
             margin: 0;
-            color: #e2e8f0;
+            color: #333332;
             font-family: Arial, sans-serif;
             display: grid;
             place-items: center;
@@ -32,7 +31,6 @@
             max-width: 960px;
             height: auto;
             border: 1px solid #334155;
-            background: #111827;
         }
 
         p {
@@ -40,19 +38,16 @@
         }
     </style>
 </head>
-
 <body>
     <main>
-        <h1>Engine V2 Sample02</h1>
+        <h1>Engine V2 Sample04</h1>
         <p>
-            Demonstrates the keyboard input boundary using InputService and KeyboardState.
-            Use the Arrow keys to move the box in four directions.
-            Movement is driven by input state, not DOM event handling inside the scene.
+            Demonstrates the gamepad input boundary using GamepadState and InputService polling.
+            Connect one or more controllers, use the left stick on gamepad 0 to move the box, and press button 0 to change its state.
+            This sample proves the scene reads gamepad input through the input boundary instead of calling navigator.getGamepads() directly.
         </p>
         <canvas id="game" width="960" height="540"></canvas>
     </main>
-
     <script type="module" src="./main.js"></script>
 </body>
-
 </html>

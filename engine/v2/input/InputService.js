@@ -1,15 +1,26 @@
 import KeyboardState from './KeyboardState.js';
 import MouseState from './MouseState.js';
+import GamepadState from './GamepadState.js';
 
 export default class InputService {
     constructor({
         target = window,
         keyboard = null,
         mouse = null,
+        gamepads = null,
+        getGamepads = null,
     } = {}) {
         this.target = target;
         this.keyboard = keyboard ?? new KeyboardState();
         this.mouse = mouse ?? new MouseState();
+        this.gamepads = gamepads ?? new GamepadState();
+        this.getGamepadsFromNavigator = getGamepads ?? (() => {
+            if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') {
+                return [];
+            }
+            return navigator.getGamepads() ?? [];
+        });
+
         this.liveKeysDown = new Set();
         this.liveMouseButtonsDown = new Set();
         this.mousePosition = { x: 0, y: 0 };
@@ -62,6 +73,7 @@ export default class InputService {
             deltaY: this.mouseDelta.y,
             buttonsDown: this.liveMouseButtonsDown,
         });
+        this.gamepads.setSnapshot(this.readConnectedGamepads());
         this.mouseDelta = { x: 0, y: 0 };
     }
 
@@ -72,6 +84,7 @@ export default class InputService {
         this.mouseDelta = { x: 0, y: 0 };
         this.keyboard.reset();
         this.mouse.reset();
+        this.gamepads.reset();
     }
 
     isDown(key) {
@@ -86,6 +99,7 @@ export default class InputService {
         return {
             keyboard: this.keyboard.getSnapshot(),
             mouse: this.mouse.getSnapshot(),
+            gamepads: this.gamepads.getGamepads(),
         };
     }
 
@@ -103,6 +117,14 @@ export default class InputService {
 
     isMousePressed(button) {
         return this.mouse.isPressed(button);
+    }
+
+    getGamepad(index) {
+        return this.gamepads.getGamepad(index);
+    }
+
+    getGamepads() {
+        return this.gamepads.getGamepads();
     }
 
     onKeyDown(event) {
@@ -133,5 +155,22 @@ export default class InputService {
         this.liveKeysDown.clear();
         this.liveMouseButtonsDown.clear();
         this.mouseDelta = { x: 0, y: 0 };
+    }
+
+    readConnectedGamepads() {
+        const source = this.getGamepadsFromNavigator() ?? [];
+        return Array.from(source)
+            .filter((gamepad) => Boolean(gamepad && gamepad.connected !== false))
+            .map((gamepad) => ({
+                index: gamepad.index ?? 0,
+                id: gamepad.id ?? '',
+                connected: gamepad.connected !== false,
+                mapping: gamepad.mapping ?? '',
+                timestamp: gamepad.timestamp ?? 0,
+                axes: Array.isArray(gamepad.axes) ? [...gamepad.axes] : [],
+                buttons: Array.isArray(gamepad.buttons)
+                    ? gamepad.buttons.map((button) => ({ pressed: Boolean(button?.pressed) }))
+                    : [],
+            }));
     }
 }
