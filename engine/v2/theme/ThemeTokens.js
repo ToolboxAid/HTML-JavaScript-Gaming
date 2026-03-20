@@ -3,11 +3,11 @@ export const ThemeTokens = {
     canvasBackground: '#7a00df',
     actorFill: '#ed9700',
     textCanvs: '#dddddd',
-    textPrimary: '#333332'
+    textPrimary: '#333333'
   },
 
   document: {
-    background: 'linear-gradient(to bottom, #b8aeff, #e2e0ff)',
+    background: 'linear-gradient(to bottom, #e2e0ff, #6259ab)',
     height: '100%'
   }
 };

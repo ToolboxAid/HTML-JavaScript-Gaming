@@ -1,17 +1,26 @@
 import KeyboardState from './KeyboardState.js';
+import MouseState from './MouseState.js';
 
 export default class InputService {
     constructor({
         target = window,
         keyboard = null,
+        mouse = null,
     } = {}) {
         this.target = target;
         this.keyboard = keyboard ?? new KeyboardState();
+        this.mouse = mouse ?? new MouseState();
         this.liveKeysDown = new Set();
+        this.liveMouseButtonsDown = new Set();
+        this.mousePosition = { x: 0, y: 0 };
+        this.mouseDelta = { x: 0, y: 0 };
         this.isAttached = false;
 
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
         this.onBlur = this.onBlur.bind(this);
     }
 
@@ -22,6 +31,9 @@ export default class InputService {
 
         this.target.addEventListener('keydown', this.onKeyDown);
         this.target.addEventListener('keyup', this.onKeyUp);
+        this.target.addEventListener('mousemove', this.onMouseMove);
+        this.target.addEventListener('mousedown', this.onMouseDown);
+        this.target.addEventListener('mouseup', this.onMouseUp);
         this.target.addEventListener('blur', this.onBlur);
         this.isAttached = true;
     }
@@ -33,19 +45,33 @@ export default class InputService {
 
         this.target.removeEventListener('keydown', this.onKeyDown);
         this.target.removeEventListener('keyup', this.onKeyUp);
+        this.target.removeEventListener('mousemove', this.onMouseMove);
+        this.target.removeEventListener('mousedown', this.onMouseDown);
+        this.target.removeEventListener('mouseup', this.onMouseUp);
         this.target.removeEventListener('blur', this.onBlur);
         this.isAttached = false;
-        this.liveKeysDown.clear();
-        this.keyboard.reset();
+        this.reset();
     }
 
     update() {
         this.keyboard.setSnapshot(this.liveKeysDown);
+        this.mouse.setSnapshot({
+            x: this.mousePosition.x,
+            y: this.mousePosition.y,
+            deltaX: this.mouseDelta.x,
+            deltaY: this.mouseDelta.y,
+            buttonsDown: this.liveMouseButtonsDown,
+        });
+        this.mouseDelta = { x: 0, y: 0 };
     }
 
     reset() {
         this.liveKeysDown.clear();
+        this.liveMouseButtonsDown.clear();
+        this.mousePosition = { x: 0, y: 0 };
+        this.mouseDelta = { x: 0, y: 0 };
         this.keyboard.reset();
+        this.mouse.reset();
     }
 
     isDown(key) {
@@ -57,7 +83,26 @@ export default class InputService {
     }
 
     getSnapshot() {
-        return this.keyboard.getSnapshot();
+        return {
+            keyboard: this.keyboard.getSnapshot(),
+            mouse: this.mouse.getSnapshot(),
+        };
+    }
+
+    getMousePosition() {
+        return this.mouse.getPosition();
+    }
+
+    getMouseDelta() {
+        return this.mouse.getDelta();
+    }
+
+    isMouseDown(button) {
+        return this.mouse.isDown(button);
+    }
+
+    isMousePressed(button) {
+        return this.mouse.isPressed(button);
     }
 
     onKeyDown(event) {
@@ -68,7 +113,25 @@ export default class InputService {
         this.liveKeysDown.delete(event.code);
     }
 
+    onMouseMove(event) {
+        const nextX = event.offsetX ?? event.clientX ?? 0;
+        const nextY = event.offsetY ?? event.clientY ?? 0;
+        this.mouseDelta.x += nextX - this.mousePosition.x;
+        this.mouseDelta.y += nextY - this.mousePosition.y;
+        this.mousePosition = { x: nextX, y: nextY };
+    }
+
+    onMouseDown(event) {
+        this.liveMouseButtonsDown.add(event.button ?? 0);
+    }
+
+    onMouseUp(event) {
+        this.liveMouseButtonsDown.delete(event.button ?? 0);
+    }
+
     onBlur() {
         this.liveKeysDown.clear();
+        this.liveMouseButtonsDown.clear();
+        this.mouseDelta = { x: 0, y: 0 };
     }
 }

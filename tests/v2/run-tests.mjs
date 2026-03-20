@@ -1,15 +1,17 @@
-import { run as runFrameClock } from "./core/FrameClock.test.mjs";
-import { run as runFixedTicker } from "./core/FixedTicker.test.mjs";
-import { run as runSceneManager } from "./scenes/SceneManager.test.mjs";
-import { run as runKeyboardState } from "./input/KeyboardState.test.mjs";
-import { run as runInputService } from "./input/InputService.test.mjs";
+import { run as runFrameClock } from './core/FrameClock.test.mjs';
+import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
+import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
+import { run as runKeyboardState } from './input/KeyboardState.test.mjs';
+import { run as runMouseState } from './input/MouseState.test.mjs';
+import { run as runInputService } from './input/InputService.test.mjs';
 
 const tests = [
-    ["FrameClock", runFrameClock],
-    ["FixedTicker", runFixedTicker],
-    ["SceneManager", runSceneManager],
-    ["KeyboardState", runKeyboardState],
-    ["InputService", runInputService],
+    ['FrameClock', runFrameClock],
+    ['FixedTicker', runFixedTicker],
+    ['SceneManager', runSceneManager],
+    ['KeyboardState', runKeyboardState],
+    ['MouseState', runMouseState],
+    ['InputService', runInputService],
 ];
 
 let passed = 0;
