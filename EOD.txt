@@ -1,0 +1,254 @@
+Perfect — this is the right move. Let’s package a clean **End Of Day (EOD) snapshot** you can drop in and start fresh next session.
+
+I’ll give you **only the files that matter** for the current stable state.
+
+---
+
+# 📦 EOD SNAPSHOT (V2 – Stable State)
+
+## ✅ What this includes
+
+* fixed Engine (input lifecycle + renderer)
+* correct input wiring pattern
+* consistent scene contract
+* no ctx leakage
+* ready for next session
+
+---
+
+# 📁 1) engine/v2/core/Engine.js
+
+```js
+import { CanvasRenderer } from '../render/index.js';
+
+export default class Engine {
+  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null } = {}) {
+    if (!canvas) throw new Error('Engine requires a canvas.');
+
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.canvas.width = width;
+    this.canvas.height = height;
+
+    this.renderer = new CanvasRenderer(this.ctx);
+
+    this.input = input;
+
+    this.fixedStepMs = fixedStepMs;
+    this.fixedStepSeconds = fixedStepMs / 1000;
+
+    this.scene = null;
+
+    this.lastTime = 0;
+    this.accumulator = 0;
+    this.rafId = null;
+
+    this.tick = this.tick.bind(this);
+  }
+
+  setScene(scene) {
+    this.scene = scene;
+    if (this.scene?.enter) this.scene.enter(this);
+  }
+
+  start() {
+    if (this.input?.attach) this.input.attach();
+
+    this.lastTime = performance.now();
+    this.rafId = requestAnimationFrame(this.tick);
+  }
+
+  stop() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+
+    if (this.input?.detach) this.input.detach();
+  }
+
+  tick(now) {
+    const deltaMs = now - this.lastTime;
+    this.lastTime = now;
+    this.accumulator += deltaMs;
+
+    if (this.input?.update) this.input.update();
+
+    while (this.accumulator >= this.fixedStepMs) {
+      if (this.scene?.update) {
+        this.scene.update(this.fixedStepSeconds, this);
+      }
+      this.accumulator -= this.fixedStepMs;
+    }
+
+    if (this.scene?.render) {
+      this.scene.render(this.renderer, this);
+    }
+
+    this.rafId = requestAnimationFrame(this.tick);
+  }
+}
+```
+
+---
+
+# 📁 2) REQUIRED PATTERN (all input samples)
+
+## Standard `main.js` (keyboard/mouse/gamepad)
+
+```js
+import Engine from '../../../engine/v2/core/Engine.js';
+import { InputService } from '../../../engine/v2/input/index.js';
+import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
+
+const theme = new Theme(ThemeTokens);
+theme.applyDocumentTheme();
+
+const input = new InputService();
+const canvas = document.getElementById('game');
+
+const engine = new Engine({
+  canvas,
+  width: 960,
+  height: 540,
+  fixedStepMs: 1000 / 60,
+  input,
+});
+
+engine.start();
+```
+
+---
+
+## Mapping samples (06 & 07)
+
+```js
+import { InputMap, InputService } from '../../../engine/v2/input/index.js';
+
+const inputMap = new InputMap({
+  moveLeft: ['ArrowLeft', 'KeyA'],
+  moveRight: ['ArrowRight', 'KeyD'],
+  moveUp: ['ArrowUp', 'KeyW'],
+  moveDown: ['ArrowDown', 'KeyS'],
+});
+
+const input = new InputService({ inputMap });
+```
+
+---
+
+# 📁 3) SCENE CONTRACT (LOCK THIS IN)
+
+All scenes now follow:
+
+```js
+update(dt, engine)
+render(renderer, engine)
+```
+
+---
+
+## Input usage
+
+```js
+const input = engine.input;
+
+input.isDown(...)
+input.isActionDown(...)
+```
+
+---
+
+## Rendering usage
+
+```js
+renderer.drawRect(...)
+renderer.drawText(...)
+renderer.clear(...)
+```
+
+---
+
+# 📁 4) ARCHITECTURE (FINAL STATE TODAY)
+
+```text
+Engine
+ ├── Renderer (CanvasRenderer)
+ ├── InputService
+ │     ├── Keyboard
+ │     ├── Mouse
+ │     └── Gamepad
+ ├── InputMap
+ ├── SceneManager
+ └── Scene
+        ├── update(dt, engine)
+        └── render(renderer, engine)
+```
+
+---
+
+# 📁 5) WHAT IS NOW LOCKED
+
+## ✅ Rules
+
+* ❌ no `ctx` outside renderer
+* ❌ no DOM events in scenes
+* ❌ no direct input usage outside InputService
+* ✅ scenes use engine
+* ✅ rendering via renderer only
+* ✅ input via engine.input
+* ✅ actions via InputMap
+
+---
+
+# 📁 6) COMMIT COMMENT (EOD)
+
+```
+Stabilize V2 engine: finalize renderer abstraction, standardize scene update contract, and fix input lifecycle integration across all samples
+```
+
+---
+
+# 🚀 NEXT SESSION (READY)
+
+You said your order is:
+
+```
+3 → 5 → 1 → 2 → 4
+```
+
+We’ve now completed:
+
+* 3 (scene transitions) ✔
+* 5 (input mapping) ✔
+* 1 (entities) ✔
+* 2 (render adapter) ✔
+
+## 👉 Next:
+
+**Collision system (Option 4)**
+
+---
+
+# 💡 Recommendation for next session
+
+Start with:
+👉 **“plan collision system”**
+
+That will plug directly into:
+
+* entity bounds
+* movement
+* renderer (visual debug)
+
+---
+
+# 🔥 Final note
+
+You handled this exactly right:
+
+* didn’t roll back architecture
+* fixed forward
+* tightened contracts
+
+That’s how real engines get built 👍
