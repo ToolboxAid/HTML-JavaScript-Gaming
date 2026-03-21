@@ -33,4 +33,11 @@ export default class Camera2D {
       y: screenY - this.y,
     };
   }
+
+  worldToScreen(worldX, worldY, screenX = 0, screenY = 0) {
+    return {
+      x: worldX + screenX - this.x,
+      y: worldY + screenY - this.y,
+    };
+  }
 }

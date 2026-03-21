@@ -5,40 +5,18 @@ import { AssetRegistry } from '../../../engine/v2/assets/index.js';
 
 const theme = new Theme(ThemeTokens);
 
-function buildSampleAssetRegistry() {
-  const registry = new AssetRegistry();
-
-  registry.register('playerSprite', {
-    type: 'image',
-    path: '/assets/player.png',
-    status: 'registered',
-  });
-
-  registry.register('pickupSprite', {
-    type: 'image',
-    path: '/assets/pickup.png',
-    status: 'registered',
-  });
-
-  registry.register('menuMusic', {
-    type: 'audio',
-    path: '/assets/menu-theme.mp3',
-    status: 'registered',
-  });
-
-  registry.register('levelOneData', {
-    type: 'data',
-    path: '/assets/level-one.json',
-    status: 'registered',
-  });
-
-  return registry;
-}
+const sampleAssets = [
+  { id: 'playerSprite', type: 'image', path: '/assets/player.png', status: 'registered' },
+  { id: 'pickupSprite', type: 'image', path: '/assets/pickup.png', status: 'registered' },
+  { id: 'menuMusic', type: 'audio', path: '/assets/menu-theme.mp3', status: 'registered' },
+  { id: 'levelOneData', type: 'data', path: '/assets/level-one.json', status: 'registered' },
+];
 
 export default class AssetRegistryScene extends Scene {
   constructor() {
     super();
-    this.registry = buildSampleAssetRegistry();
+    this.registry = new AssetRegistry();
+    this.registry.registerMany(sampleAssets);
   }
 
   update() {}

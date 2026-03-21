@@ -1,7 +1,7 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { clamp } from '../../../engine/v2/utils/index.js';
-import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
+import { drawFrame, drawMinimap } from '../../../engine/v2/debug/index.js';
 import { Camera2D } from '../../../engine/v2/camera/index.js';
 
 const theme = new Theme(ThemeTokens);
@@ -10,12 +10,11 @@ export default class MinimapScene extends Scene {
   constructor() {
     super();
 
-    this.viewport = { width: 900, height: 300 };
     this.screen = { x: 30, y: 170 };
     this.world = { width: 2200, height: 1400 };
     this.camera = new Camera2D({
-      viewportWidth: this.viewport.width,
-      viewportHeight: this.viewport.height,
+      viewportWidth: 900,
+      viewportHeight: 300,
       worldWidth: this.world.width,
       worldHeight: this.world.height,
     });
@@ -57,54 +56,25 @@ export default class MinimapScene extends Scene {
       'This prepares the engine for larger navigable worlds and overview tools',
     ]);
 
-    renderer.strokeRect(this.screen.x, this.screen.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
-
-    const offset = this.camera.getOffset(this.screen.x, this.screen.y);
+    renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
 
     this.blocks.forEach((block) => {
-      renderer.drawRect(block.x + offset.x, block.y + offset.y, block.width, block.height, '#8888ff');
-      renderer.strokeRect(block.x + offset.x, block.y + offset.y, block.width, block.height, '#ffffff', 1);
+      const pos = this.camera.worldToScreen(block.x, block.y, this.screen.x, this.screen.y);
+      renderer.drawRect(pos.x, pos.y, block.width, block.height, '#8888ff');
+      renderer.strokeRect(pos.x, pos.y, block.width, block.height, '#ffffff', 1);
     });
 
-    renderer.drawRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, theme.getColor('actorFill'));
-    renderer.strokeRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, '#ffffff', 1);
+    const playerPos = this.camera.worldToScreen(this.player.x, this.player.y, this.screen.x, this.screen.y);
+    renderer.drawRect(playerPos.x, playerPos.y, this.player.width, this.player.height, theme.getColor('actorFill'));
+    renderer.strokeRect(playerPos.x, playerPos.y, this.player.width, this.player.height, '#ffffff', 1);
 
-    drawPanel(renderer, this.minimap.x, this.minimap.y, this.minimap.width, this.minimap.height, 'Minimap', []);
-
-    const scaleX = (this.minimap.width - 24) / this.world.width;
-    const scaleY = (this.minimap.height - 48) / this.world.height;
-    const mapX = this.minimap.x + 12;
-    const mapY = this.minimap.y + 34;
-    const mapWidth = this.minimap.width - 24;
-    const mapHeight = this.minimap.height - 46;
-
-    renderer.strokeRect(mapX, mapY, mapWidth, mapHeight, '#ffffff', 1);
-
-    this.blocks.forEach((block) => {
-      renderer.drawRect(
-        mapX + block.x * scaleX,
-        mapY + block.y * scaleY,
-        Math.max(2, block.width * scaleX),
-        Math.max(2, block.height * scaleY),
-        '#8888ff'
-      );
+    drawMinimap(renderer, {
+      panel: this.minimap,
+      world: this.world,
+      camera: this.camera,
+      player: this.player,
+      blocks: this.blocks,
+      title: 'Minimap',
     });
-
-    renderer.drawRect(
-      mapX + this.player.x * scaleX,
-      mapY + this.player.y * scaleY,
-      Math.max(3, this.player.width * scaleX),
-      Math.max(3, this.player.height * scaleY),
-      '#ffd166'
-    );
-
-    renderer.strokeRect(
-      mapX + this.camera.x * scaleX,
-      mapY + this.camera.y * scaleY,
-      this.viewport.width * scaleX,
-      this.viewport.height * scaleY,
-      '#ff6666',
-      1
-    );
   }
 }

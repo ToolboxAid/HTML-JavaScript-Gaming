@@ -13,7 +13,7 @@ export default class LevelLoaderScene extends Scene {
     super();
 
     const loader = new LevelLoader();
-    const loadedLevel = loader.load(levelData);
+    const loadedLevel = loader.loadSceneData(levelData);
 
     this.worldBounds = loadedLevel.worldBounds;
     this.player = { ...loadedLevel.player };

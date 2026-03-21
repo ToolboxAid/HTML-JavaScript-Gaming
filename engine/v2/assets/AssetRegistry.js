@@ -7,6 +7,12 @@ export default class AssetRegistry {
     this.assets.set(id, definition);
   }
 
+  registerMany(definitions = []) {
+    definitions.forEach((definition) => {
+      this.register(definition.id, { ...definition, id: undefined });
+    });
+  }
+
   get(id) {
     return this.assets.get(id);
   }

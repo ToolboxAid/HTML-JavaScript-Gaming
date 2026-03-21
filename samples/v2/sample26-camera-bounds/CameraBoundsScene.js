@@ -10,12 +10,11 @@ export default class CameraBoundsScene extends Scene {
   constructor() {
     super();
 
-    this.viewport = { width: 900, height: 300 };
     this.screen = { x: 30, y: 170 };
     this.world = { width: 2200, height: 1400 };
     this.camera = new Camera2D({
-      viewportWidth: this.viewport.width,
-      viewportHeight: this.viewport.height,
+      viewportWidth: 900,
+      viewportHeight: 300,
       worldWidth: this.world.width,
       worldHeight: this.world.height,
     });
@@ -63,16 +62,16 @@ export default class CameraBoundsScene extends Scene {
       'This is the stable camera behavior used by most scrolling games',
     ]);
 
-    renderer.strokeRect(this.screen.x, this.screen.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
-
-    const offset = this.camera.getOffset(this.screen.x, this.screen.y);
+    renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
 
     this.blocks.forEach((block) => {
-      renderer.drawRect(block.x + offset.x, block.y + offset.y, block.width, block.height, '#8888ff');
-      renderer.strokeRect(block.x + offset.x, block.y + offset.y, block.width, block.height, '#ffffff', 1);
+      const pos = this.camera.worldToScreen(block.x, block.y, this.screen.x, this.screen.y);
+      renderer.drawRect(pos.x, pos.y, block.width, block.height, '#8888ff');
+      renderer.strokeRect(pos.x, pos.y, block.width, block.height, '#ffffff', 1);
     });
 
-    renderer.drawRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, theme.getColor('actorFill'));
-    renderer.strokeRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, '#ffffff', 1);
+    const playerPos = this.camera.worldToScreen(this.player.x, this.player.y, this.screen.x, this.screen.y);
+    renderer.drawRect(playerPos.x, playerPos.y, this.player.width, this.player.height, theme.getColor('actorFill'));
+    renderer.strokeRect(playerPos.x, playerPos.y, this.player.width, this.player.height, '#ffffff', 1);
   }
 }

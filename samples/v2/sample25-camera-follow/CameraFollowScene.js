@@ -11,10 +11,11 @@ export default class CameraFollowScene extends Scene {
     super();
 
     this.viewport = { width: 960, height: 540 };
+    this.screen = { x: 30, y: 170 };
     this.world = { width: 2200, height: 1400 };
     this.camera = new Camera2D({
-      viewportWidth: this.viewport.width,
-      viewportHeight: this.viewport.height,
+      viewportWidth: this.viewport.width - 60,
+      viewportHeight: this.viewport.height - 210,
       worldWidth: this.world.width,
       worldHeight: this.world.height,
     });
@@ -61,16 +62,16 @@ export default class CameraFollowScene extends Scene {
       'Camera bounds are intentionally not clamped yet so the next sample can focus on that',
     ]);
 
-    const offset = this.camera.getOffset(30, 170);
-
-    renderer.strokeRect(30, 170, this.viewport.width - 60, this.viewport.height - 210, '#d8d5ff', 2);
+    renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
 
     this.markers.forEach((marker) => {
-      renderer.drawRect(marker.x + offset.x, marker.y + offset.y, marker.width, marker.height, '#8888ff');
-      renderer.strokeRect(marker.x + offset.x, marker.y + offset.y, marker.width, marker.height, '#ffffff', 1);
+      const pos = this.camera.worldToScreen(marker.x, marker.y, this.screen.x, this.screen.y);
+      renderer.drawRect(pos.x, pos.y, marker.width, marker.height, '#8888ff');
+      renderer.strokeRect(pos.x, pos.y, marker.width, marker.height, '#ffffff', 1);
     });
 
-    renderer.drawRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, theme.getColor('actorFill'));
-    renderer.strokeRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, '#ffffff', 1);
+    const playerPos = this.camera.worldToScreen(this.player.x, this.player.y, this.screen.x, this.screen.y);
+    renderer.drawRect(playerPos.x, playerPos.y, this.player.width, this.player.height, theme.getColor('actorFill'));
+    renderer.strokeRect(playerPos.x, playerPos.y, this.player.width, this.player.height, '#ffffff', 1);
   }
 }
