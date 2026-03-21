@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+CameraSystem.js
+*/
 export function followCameraTarget(camera, target, clampToWorld = true) {
   camera.followRect(target);
 

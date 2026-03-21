@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+DebugPanel.js
+*/
 export function drawSceneFrame(renderer, theme, width, height, lines) {
   renderer.clear(theme.getColor('canvasBackground'));
   renderer.strokeRect(10, 10, width - 20, height - 20, '#dddddd', 2);

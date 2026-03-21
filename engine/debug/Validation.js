@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Validation.js
+*/
 export function validateWorldEntities(world, rules = []) {
   const issues = [];
 

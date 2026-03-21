@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+StatsTracker.js
+*/
 export default class StatsTracker {
   constructor({ sampleWindowSeconds = 0.5 } = {}) {
     this.sampleWindowSeconds = sampleWindowSeconds;

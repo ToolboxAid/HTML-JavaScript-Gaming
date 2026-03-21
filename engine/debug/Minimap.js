@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Minimap.js
+*/
 export function drawMinimap(
   renderer,
   {

@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+PatrolSystem.js
+*/
 export function updatePatrolEntity(entity, dt) {
   if (!entity.patrol || !entity.transform || !entity.size) {
     return;

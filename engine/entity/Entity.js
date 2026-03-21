@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Entity.js
+*/
 import Transform from './Transform.js';
 import Velocity from './Velocity.js';
 import Bounds from './Bounds.js';

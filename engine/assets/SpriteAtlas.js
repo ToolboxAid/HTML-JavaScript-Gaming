@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+SpriteAtlas.js
+*/
 export default class SpriteAtlas {
   constructor({ imagePath = '', frames = {} } = {}) {
     this.imagePath = imagePath;

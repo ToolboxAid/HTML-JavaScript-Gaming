@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Camera2D.js
+*/
 import { clamp } from '../utils/math.js';
 
 export default class Camera2D {

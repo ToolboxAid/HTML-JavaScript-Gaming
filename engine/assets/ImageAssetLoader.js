@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+ImageAssetLoader.js
+*/
 export default class ImageAssetLoader {
   constructor() {
     this.loaded = new Map();

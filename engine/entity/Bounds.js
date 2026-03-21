@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Bounds.js
+*/
 export default class Bounds {
     constructor({ width = 0, height = 0 } = {}) {
         this.width = width;

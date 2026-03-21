@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+AnimationController.js
+*/
 export default class AnimationController {
   constructor({ animations = {}, initial = null } = {}) {
     this.animations = animations;

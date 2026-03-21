@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+CanvasSurface.js
+*/
 import { invariant } from "../utils/invariant.js";
 
 export default class CanvasSurface {

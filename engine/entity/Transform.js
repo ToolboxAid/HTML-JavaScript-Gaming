@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Transform.js
+*/
 export default class Transform {
     constructor({ x = 0, y = 0 } = {}) {
         this.position = { x, y };

@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+AssetRegistry.js
+*/
 export default class AssetRegistry {
   constructor() {
     this.assets = new Map();

@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+World.js
+*/
 import { COMPONENT_SCHEMAS } from '../components/index.js';
 
 export default class World {
