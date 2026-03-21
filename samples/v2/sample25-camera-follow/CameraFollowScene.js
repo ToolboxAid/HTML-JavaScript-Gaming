@@ -1,8 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { clamp } from '../../../engine/v2/utils/math.js';
+import { clamp } from '../../../engine/v2/utils/index.js';
+import { drawFrame } from '../../../engine/v2/debug/index.js';
 import { Camera2D } from '../../../engine/v2/camera/index.js';
-import { DebugPanel } from '../../../engine/v2/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -53,7 +53,7 @@ export default class CameraFollowScene extends Scene {
   }
 
   render(renderer) {
-    DebugPanel.drawFrame(renderer, theme, [
+    drawFrame(renderer, theme, [
       'Engine V2 Sample25',
       'Demonstrates camera follow over a world larger than the viewport',
       'Use Arrow keys to move the player and watch the camera track movement',

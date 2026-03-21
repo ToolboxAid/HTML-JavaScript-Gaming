@@ -1,8 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { World } from '../../../engine/v2/ecs/index.js';
-import { DebugPanel } from '../../../engine/v2/debug/index.js';
-import { RenderSystem } from '../../../engine/v2/systems/index.js';
+import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
+import { renderRectEntities } from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -26,7 +26,9 @@ export default class ECSRenderSystemScene extends Scene {
   update() {}
 
   render(renderer) {
-    DebugPanel.drawFrame(renderer, theme, [
+    const { width, height } = renderer.getCanvasSize();
+
+    drawSceneFrame(renderer, theme, width, height, [
       'Engine V2 Sample19',
       'Demonstrates an ECS render system driven by queried renderable entities',
       'Each entity is drawn through one shared render pass',
@@ -34,6 +36,6 @@ export default class ECSRenderSystemScene extends Scene {
       'This sample isolates rendering as its own engine-style system',
     ]);
 
-    RenderSystem.drawRenderableEntities(renderer, this.world, { labelMode: 'below' });
+    renderRectEntities(renderer, this.world, { label: true, labelOffsetY: 74 });
   }
 }

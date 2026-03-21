@@ -1,17 +1,15 @@
-export default class LifecycleSystem {
-  static expireTimedEntities({ world, componentName = 'lifetime', requiredTag = null, dt, onExpire = null }) {
-    const requiredComponents = requiredTag ? [requiredTag, componentName] : [componentName];
+export function tickLifetimes(world, dt) {
+  const expired = [];
 
-    for (const entityId of world.getEntitiesWith(...requiredComponents)) {
-      const lifetime = world.getComponent(entityId, componentName);
-      lifetime.remaining -= dt;
+  for (const entityId of world.getEntitiesWith('lifetime')) {
+    const lifetime = world.getComponent(entityId, 'lifetime');
+    lifetime.remaining -= dt;
 
-      if (lifetime.remaining <= 0) {
-        if (typeof onExpire === 'function') {
-          onExpire(entityId);
-        }
-        world.removeEntity(entityId);
-      }
+    if (lifetime.remaining <= 0) {
+      expired.push(entityId);
     }
   }
+
+  expired.forEach((entityId) => world.removeEntity(entityId));
+  return expired;
 }

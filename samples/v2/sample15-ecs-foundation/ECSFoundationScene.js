@@ -1,8 +1,7 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { World } from '../../../engine/v2/ecs/index.js';
-import { DebugPanel } from '../../../engine/v2/debug/index.js';
-import { RenderSystem } from '../../../engine/v2/systems/index.js';
+import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -26,7 +25,9 @@ export default class ECSFoundationScene extends Scene {
   update() {}
 
   render(renderer) {
-    DebugPanel.drawFrame(renderer, theme, [
+    const { width, height } = renderer.getCanvasSize();
+
+    drawSceneFrame(renderer, theme, width, height, [
       'Engine V2 Sample15',
       'Demonstrates ECS world creation with entity ids and component maps',
       'This sample renders entities by querying transform, size, and renderable components',
@@ -34,6 +35,17 @@ export default class ECSFoundationScene extends Scene {
       'This becomes the base for later movement, input, collision, and render systems',
     ]);
 
-    RenderSystem.drawRenderableEntities(renderer, this.world, { labelMode: 'inside', textOffsetY: 26 });
+    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
+      const transform = this.world.getComponent(entityId, 'transform');
+      const size = this.world.getComponent(entityId, 'size');
+      const renderable = this.world.getComponent(entityId, 'renderable');
+
+      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
+      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
+      renderer.drawText(renderable.label, transform.x + 8, transform.y + 26, {
+        color: '#ffffff',
+        font: '14px monospace',
+      });
+    });
   }
 }

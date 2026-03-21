@@ -1,8 +1,13 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { World } from '../../../engine/v2/ecs/index.js';
-import { DebugPanel } from '../../../engine/v2/debug/index.js';
-import { InputControlSystem, MovementSystem, CollisionSystem, RenderSystem } from '../../../engine/v2/systems/index.js';
+import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
+import {
+  applyInputControl,
+  moveEntities,
+  blockCollidingEntities,
+  renderRectEntities,
+} from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -37,23 +42,15 @@ export default class ECSSceneWorldScene extends Scene {
   }
 
   update(dt, engine) {
-    InputControlSystem.applyVelocityFromInput({
-      world: this.world,
-      input: engine.input,
-    });
-
-    MovementSystem.integrateVelocity({
-      world: this.world,
-      dt,
-      worldBounds: this.worldBounds,
-      storePrevious: true,
-    });
-
-    this.hitSolid = CollisionSystem.revertControlledEntityAgainstSolids({ world: this.world });
+    applyInputControl(this.world, engine.input);
+    moveEntities(this.world, dt, this.worldBounds);
+    this.hitSolid = blockCollidingEntities(this.world) > 0;
   }
 
   render(renderer) {
-    DebugPanel.drawFrame(renderer, theme, [
+    const { width, height } = renderer.getCanvasSize();
+
+    drawSceneFrame(renderer, theme, width, height, [
       'Engine V2 Sample20',
       'Demonstrates a scene that delegates behavior to ECS-style systems',
       'Use Arrow keys to move the player entity through the world',
@@ -62,6 +59,6 @@ export default class ECSSceneWorldScene extends Scene {
     ]);
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
-    RenderSystem.drawRenderableEntities(renderer, this.world, { labelMode: 'above' });
+    renderRectEntities(renderer, this.world, { label: true, labelOffsetY: -8 });
   }
 }

@@ -1,8 +1,8 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
-import { clamp } from '../../../engine/v2/utils/math.js';
+import { clamp } from '../../../engine/v2/utils/index.js';
+import { drawFrame, drawPanel } from '../../../engine/v2/debug/index.js';
 import { Camera2D } from '../../../engine/v2/camera/index.js';
-import { DebugPanel } from '../../../engine/v2/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -49,7 +49,7 @@ export default class MinimapScene extends Scene {
   }
 
   render(renderer) {
-    DebugPanel.drawFrame(renderer, theme, [
+    drawFrame(renderer, theme, [
       'Engine V2 Sample27',
       'Demonstrates a minimap overlay for a larger scrolling world',
       'Use Arrow keys to move and compare the viewport with the minimap panel',
@@ -69,7 +69,7 @@ export default class MinimapScene extends Scene {
     renderer.drawRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, theme.getColor('actorFill'));
     renderer.strokeRect(this.player.x + offset.x, this.player.y + offset.y, this.player.width, this.player.height, '#ffffff', 1);
 
-    DebugPanel.drawPanel(renderer, this.minimap.x, this.minimap.y, this.minimap.width, this.minimap.height, 'Minimap', []);
+    drawPanel(renderer, this.minimap.x, this.minimap.y, this.minimap.width, this.minimap.height, 'Minimap', []);
 
     const scaleX = (this.minimap.width - 24) / this.world.width;
     const scaleY = (this.minimap.height - 48) / this.world.height;

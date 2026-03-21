@@ -1,23 +1,25 @@
 import { clamp } from '../utils/math.js';
 
 export default class Camera2D {
-  constructor({ viewportWidth = 960, viewportHeight = 540, worldWidth = 960, worldHeight = 540 } = {}) {
+  constructor({
+    x = 0,
+    y = 0,
+    viewportWidth = 960,
+    viewportHeight = 540,
+    worldWidth = viewportWidth,
+    worldHeight = viewportHeight,
+  } = {}) {
+    this.x = x;
+    this.y = y;
     this.viewportWidth = viewportWidth;
     this.viewportHeight = viewportHeight;
     this.worldWidth = worldWidth;
     this.worldHeight = worldHeight;
-    this.x = 0;
-    this.y = 0;
   }
 
-  setWorldSize(width, height) {
-    this.worldWidth = width;
-    this.worldHeight = height;
-  }
-
-  followRect(rect) {
-    this.x = rect.x + rect.width / 2 - this.viewportWidth / 2;
-    this.y = rect.y + rect.height / 2 - this.viewportHeight / 2;
+  followRect(target) {
+    this.x = target.x + target.width / 2 - this.viewportWidth / 2;
+    this.y = target.y + target.height / 2 - this.viewportHeight / 2;
   }
 
   clampToWorld() {
@@ -29,13 +31,6 @@ export default class Camera2D {
     return {
       x: screenX - this.x,
       y: screenY - this.y,
-    };
-  }
-
-  worldToScreen(worldX, worldY, screenX = 0, screenY = 0) {
-    return {
-      x: worldX + screenX - this.x,
-      y: worldY + screenY - this.y,
     };
   }
 }

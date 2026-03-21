@@ -1,30 +1,32 @@
 import { isColliding } from '../collision/aabb.js';
 
-export default class CollisionSystem {
-  static revertControlledEntityAgainstSolids({ world }) {
-    const playerId = world.getEntitiesWith('transform', 'size', 'collider', 'inputControlled')[0];
-    if (!playerId) {
-      return false;
-    }
+export function blockCollidingEntities(world) {
+  let hitCount = 0;
 
-    const transform = world.getComponent(playerId, 'transform');
-    const size = world.getComponent(playerId, 'size');
-    const solids = world.getEntitiesWith('transform', 'size', 'solid');
+  const movers = world.getEntitiesWith('transform', 'size', 'collider');
+  const solids = world.getEntitiesWith('transform', 'size', 'solid');
+
+  movers.forEach((entityId) => {
+    const transform = world.getComponent(entityId, 'transform');
+    const size = world.getComponent(entityId, 'size');
 
     for (const solidId of solids) {
       const solidTransform = world.getComponent(solidId, 'transform');
       const solidSize = world.getComponent(solidId, 'size');
 
-      if (isColliding(
-        { x: transform.x, y: transform.y, width: size.width, height: size.height },
-        { x: solidTransform.x, y: solidTransform.y, width: solidSize.width, height: solidSize.height }
-      )) {
-        transform.x = transform.previousX;
-        transform.y = transform.previousY;
-        return true;
+      if (
+        isColliding(
+          { x: transform.x, y: transform.y, width: size.width, height: size.height },
+          { x: solidTransform.x, y: solidTransform.y, width: solidSize.width, height: solidSize.height }
+        )
+      ) {
+        transform.x = transform.previousX ?? transform.x;
+        transform.y = transform.previousY ?? transform.y;
+        hitCount += 1;
+        break;
       }
     }
+  });
 
-    return false;
-  }
+  return hitCount;
 }

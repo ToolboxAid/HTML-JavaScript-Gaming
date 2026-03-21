@@ -1,5 +1,5 @@
-export { default as InputControlSystem } from './InputControlSystem.js';
-export { default as MovementSystem } from './MovementSystem.js';
-export { default as CollisionSystem } from './CollisionSystem.js';
-export { default as RenderSystem } from './RenderSystem.js';
-export { default as LifecycleSystem } from './LifecycleSystem.js';
+export { applyInputControl } from './InputControlSystem.js';
+export { moveEntities } from './MovementSystem.js';
+export { blockCollidingEntities } from './CollisionSystem.js';
+export { renderRectEntities } from './RenderSystem.js';
+export { tickLifetimes } from './LifecycleSystem.js';

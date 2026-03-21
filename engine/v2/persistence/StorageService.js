@@ -3,16 +3,21 @@ export default class StorageService {
     this.storage = storage;
   }
 
-  saveJSON(key, value) {
+  saveJson(key, value) {
     this.storage.setItem(key, JSON.stringify(value));
   }
 
-  loadJSON(key, fallback = null) {
+  loadJson(key, fallback = null) {
     const raw = this.storage.getItem(key);
+
     if (!raw) {
       return fallback;
     }
 
-    return JSON.parse(raw);
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return fallback;
+    }
   }
 }
