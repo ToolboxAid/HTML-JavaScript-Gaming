@@ -7,3 +7,4 @@ export { clampEntitiesToBounds } from './BoundsSystem.js';
 export { bounceEntitiesHorizontallyInBounds } from './BounceSystem.js';
 export { collectOverlappingEntities } from './CollectSystem.js';
 export { requireSystemComponents, getSystemEntities } from './SystemUtils.js';
+export { spawnProjectile, updateProjectiles } from './ProjectileSystem.js';
