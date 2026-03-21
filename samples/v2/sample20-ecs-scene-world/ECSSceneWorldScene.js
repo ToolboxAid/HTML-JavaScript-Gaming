@@ -1,6 +1,16 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { World } from '../../../engine/v2/ecs/index.js';
+import {
+  createTransform,
+  createSize,
+  createVelocity,
+  createSpeed,
+  createInputControlled,
+  createCollider,
+  createSolid,
+  createRenderable,
+} from '../../../engine/v2/components/index.js';
 import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
 import {
   applyInputControl,
@@ -20,25 +30,25 @@ export default class ECSSceneWorldScene extends Scene {
     this.hitSolid = false;
 
     const player = this.world.createEntity();
-    this.world.addComponent(player, 'transform', { x: 150, y: 240 });
-    this.world.addComponent(player, 'size', { width: 48, height: 48 });
-    this.world.addComponent(player, 'velocity', { x: 0, y: 0 });
-    this.world.addComponent(player, 'speed', { value: 250 });
-    this.world.addComponent(player, 'inputControlled', { enabled: true });
-    this.world.addComponent(player, 'collider', { solid: false });
-    this.world.addComponent(player, 'renderable', { color: theme.getColor('actorFill'), label: 'player' });
+    this.world.addComponent(player, 'transform', createTransform(150, 240));
+    this.world.addComponent(player, 'size', createSize(48, 48));
+    this.world.addComponent(player, 'velocity', createVelocity(0, 0));
+    this.world.addComponent(player, 'speed', createSpeed(250));
+    this.world.addComponent(player, 'inputControlled', createInputControlled(true));
+    this.world.addComponent(player, 'collider', createCollider(false));
+    this.world.addComponent(player, 'renderable', createRenderable(theme.getColor('actorFill'), 'player'));
 
     const solidA = this.world.createEntity();
-    this.world.addComponent(solidA, 'transform', { x: 340, y: 170 });
-    this.world.addComponent(solidA, 'size', { width: 90, height: 170 });
-    this.world.addComponent(solidA, 'solid', { enabled: true });
-    this.world.addComponent(solidA, 'renderable', { color: '#8888ff', label: 'solidA' });
+    this.world.addComponent(solidA, 'transform', createTransform(340, 170));
+    this.world.addComponent(solidA, 'size', createSize(90, 170));
+    this.world.addComponent(solidA, 'solid', createSolid(true));
+    this.world.addComponent(solidA, 'renderable', createRenderable('#8888ff', 'solidA'));
 
     const solidB = this.world.createEntity();
-    this.world.addComponent(solidB, 'transform', { x: 540, y: 280 });
-    this.world.addComponent(solidB, 'size', { width: 160, height: 70 });
-    this.world.addComponent(solidB, 'solid', { enabled: true });
-    this.world.addComponent(solidB, 'renderable', { color: '#66cc99', label: 'solidB' });
+    this.world.addComponent(solidB, 'transform', createTransform(540, 280));
+    this.world.addComponent(solidB, 'size', createSize(160, 70));
+    this.world.addComponent(solidB, 'solid', createSolid(true));
+    this.world.addComponent(solidB, 'renderable', createRenderable('#66cc99', 'solidB'));
   }
 
   update(dt, engine) {

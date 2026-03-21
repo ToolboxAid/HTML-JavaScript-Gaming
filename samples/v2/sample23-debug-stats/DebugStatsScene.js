@@ -1,7 +1,18 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { World } from '../../../engine/v2/ecs/index.js';
+import {
+  createTransform,
+  createSize,
+  createVelocity,
+  createRenderable,
+} from '../../../engine/v2/components/index.js';
 import { drawSceneFrame, drawPanel, StatsTracker } from '../../../engine/v2/debug/index.js';
+import {
+  moveEntities,
+  bounceEntitiesHorizontallyInBounds,
+  renderRectEntities,
+} from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -17,17 +28,18 @@ export default class DebugStatsScene extends Scene {
 
     for (let i = 0; i < 12; i += 1) {
       const entity = this.world.createEntity();
-      this.world.addComponent(entity, 'transform', { x: 120 + i * 60, y: 210 + (i % 3) * 46 });
-      this.world.addComponent(entity, 'size', { width: 30, height: 30 });
-      this.world.addComponent(entity, 'velocity', { x: (i % 2 === 0 ? 1 : -1) * (80 + i * 4), y: 0 });
-      this.world.addComponent(entity, 'renderable', { color: i % 2 === 0 ? '#8888ff' : '#66cc99' });
+      this.world.addComponent(entity, 'transform', createTransform(120 + i * 60, 210 + (i % 3) * 46));
+      this.world.addComponent(entity, 'size', createSize(30, 30));
+      this.world.addComponent(entity, 'velocity', createVelocity((i % 2 === 0 ? 1 : -1) * (80 + i * 4), 0));
+      this.world.addComponent(entity, 'renderable', createRenderable(i % 2 === 0 ? '#8888ff' : '#66cc99'));
     }
   }
 
   update(dt, engine) {
     this.stats.update(dt);
     this.updateDebugToggle(engine);
-    this.updateMovers(dt);
+    moveEntities(this.world, dt);
+    bounceEntitiesHorizontallyInBounds(this.world, this.worldBounds);
   }
 
   render(renderer) {
@@ -42,15 +54,7 @@ export default class DebugStatsScene extends Scene {
     ]);
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
-
-    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const renderable = this.world.getComponent(entityId, 'renderable');
-
-      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
-      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
-    });
+    renderRectEntities(renderer, this.world);
 
     if (this.debugVisible) {
       drawPanel(renderer, 640, 28, 280, 146, 'Stats Overlay', [
@@ -69,27 +73,5 @@ export default class DebugStatsScene extends Scene {
       this.debugVisible = !this.debugVisible;
     }
     this.lastToggleState = toggleDown;
-  }
-
-  updateMovers(dt) {
-    this.world.getEntitiesWith('transform', 'size', 'velocity').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const velocity = this.world.getComponent(entityId, 'velocity');
-
-      transform.x += velocity.x * dt;
-
-      const minX = this.worldBounds.x;
-      const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
-
-      if (transform.x <= minX) {
-        transform.x = minX;
-        velocity.x *= -1;
-      }
-      if (transform.x >= maxX) {
-        transform.x = maxX;
-        velocity.x *= -1;
-      }
-    });
   }
 }

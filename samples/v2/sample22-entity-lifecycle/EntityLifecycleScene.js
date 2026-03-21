@@ -1,9 +1,24 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { World } from '../../../engine/v2/ecs/index.js';
+import {
+  createTransform,
+  createSize,
+  createVelocity,
+  createSpeed,
+  createInputControlled,
+  createLifetime,
+  createRenderable,
+  createTag,
+} from '../../../engine/v2/components/index.js';
 import { drawSceneFrame, drawPanel } from '../../../engine/v2/debug/index.js';
-import { isColliding } from '../../../engine/v2/collision/index.js';
-import { tickLifetimes } from '../../../engine/v2/systems/index.js';
+import {
+  applyInputControl,
+  moveEntities,
+  renderRectEntities,
+  tickLifetimes,
+  collectOverlappingEntities,
+} from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -20,18 +35,20 @@ export default class EntityLifecycleScene extends Scene {
     this.totalRemoved = 0;
 
     const player = this.world.createEntity();
-    this.world.addComponent(player, 'transform', { x: 180, y: 250 });
-    this.world.addComponent(player, 'size', { width: 48, height: 48 });
-    this.world.addComponent(player, 'speed', { value: 250 });
-    this.world.addComponent(player, 'inputControlled', { enabled: true });
-    this.world.addComponent(player, 'tag', { value: 'player' });
-    this.world.addComponent(player, 'renderable', { color: theme.getColor('actorFill') });
+    this.world.addComponent(player, 'transform', createTransform(180, 250));
+    this.world.addComponent(player, 'size', createSize(48, 48));
+    this.world.addComponent(player, 'velocity', createVelocity(0, 0));
+    this.world.addComponent(player, 'speed', createSpeed(250));
+    this.world.addComponent(player, 'inputControlled', createInputControlled(true));
+    this.world.addComponent(player, 'tag', createTag('player'));
+    this.world.addComponent(player, 'renderable', createRenderable(theme.getColor('actorFill')));
   }
 
   update(dt, engine) {
-    this.updatePlayer(dt, engine);
-    this.spawnTimer += dt;
+    applyInputControl(this.world, engine.input);
+    moveEntities(this.world, dt, this.worldBounds);
 
+    this.spawnTimer += dt;
     if (this.spawnTimer >= this.spawnInterval) {
       this.spawnTimer = 0;
       if (this.world.getEntitiesWith('pickup').length < this.maxPickups) {
@@ -39,7 +56,14 @@ export default class EntityLifecycleScene extends Scene {
       }
     }
 
-    this.collectPickups();
+    this.totalRemoved += collectOverlappingEntities(this.world, {
+      collectorQuery: ['inputControlled', 'transform', 'size'],
+      targetQuery: ['pickup', 'transform', 'size'],
+      onCollect: ({ world, targetId }) => {
+        world.removeEntity(targetId);
+      },
+    });
+
     this.totalRemoved += tickLifetimes(this.world, dt).length;
   }
 
@@ -55,15 +79,7 @@ export default class EntityLifecycleScene extends Scene {
     ]);
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
-
-    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const renderable = this.world.getComponent(entityId, 'renderable');
-
-      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
-      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
-    });
+    renderRectEntities(renderer, this.world);
 
     drawPanel(renderer, 640, 28, 280, 126, 'Lifecycle Status', [
       `Spawned: ${this.totalSpawned}`,
@@ -73,59 +89,19 @@ export default class EntityLifecycleScene extends Scene {
     ]);
   }
 
-  updatePlayer(dt, engine) {
-    const playerId = this.world.getEntitiesWith('inputControlled')[0];
-    const transform = this.world.getComponent(playerId, 'transform');
-    const size = this.world.getComponent(playerId, 'size');
-    const speed = this.world.getComponent(playerId, 'speed').value;
-
-    if (engine.input.isDown('ArrowLeft')) transform.x -= speed * dt;
-    if (engine.input.isDown('ArrowRight')) transform.x += speed * dt;
-    if (engine.input.isDown('ArrowUp')) transform.y -= speed * dt;
-    if (engine.input.isDown('ArrowDown')) transform.y += speed * dt;
-
-    const minX = this.worldBounds.x;
-    const minY = this.worldBounds.y;
-    const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
-    const maxY = this.worldBounds.y + this.worldBounds.height - size.height;
-
-    transform.x = Math.max(minX, Math.min(transform.x, maxX));
-    transform.y = Math.max(minY, Math.min(transform.y, maxY));
-  }
-
   spawnPickup() {
     const pickup = this.world.createEntity();
     const x = this.worldBounds.x + 30 + ((this.totalSpawned * 97) % (this.worldBounds.width - 60));
     const y = this.worldBounds.y + 30 + ((this.totalSpawned * 61) % (this.worldBounds.height - 60));
 
-    this.world.addComponent(pickup, 'transform', { x, y });
-    this.world.addComponent(pickup, 'size', { width: 24, height: 24 });
+    this.world.addComponent(pickup, 'transform', createTransform(x, y));
+    this.world.addComponent(pickup, 'size', createSize(24, 24));
+    this.world.addComponent(pickup, 'velocity', createVelocity(0, 0));
     this.world.addComponent(pickup, 'pickup', { value: true });
-    this.world.addComponent(pickup, 'tag', { value: 'pickup' });
-    this.world.addComponent(pickup, 'lifetime', { remaining: 5.0 });
-    this.world.addComponent(pickup, 'renderable', { color: '#ffd166' });
+    this.world.addComponent(pickup, 'tag', createTag('pickup'));
+    this.world.addComponent(pickup, 'lifetime', createLifetime(5.0));
+    this.world.addComponent(pickup, 'renderable', createRenderable('#ffd166'));
 
     this.totalSpawned += 1;
-  }
-
-  collectPickups() {
-    const playerId = this.world.getEntitiesWith('inputControlled')[0];
-    const playerTransform = this.world.getComponent(playerId, 'transform');
-    const playerSize = this.world.getComponent(playerId, 'size');
-
-    for (const pickupId of this.world.getEntitiesWith('pickup', 'transform', 'size')) {
-      const transform = this.world.getComponent(pickupId, 'transform');
-      const size = this.world.getComponent(pickupId, 'size');
-
-      if (
-        isColliding(
-          { x: playerTransform.x, y: playerTransform.y, width: playerSize.width, height: playerSize.height },
-          { x: transform.x, y: transform.y, width: size.width, height: size.height }
-        )
-      ) {
-        this.world.removeEntity(pickupId);
-        this.totalRemoved += 1;
-      }
-    }
   }
 }

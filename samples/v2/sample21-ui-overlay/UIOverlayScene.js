@@ -1,7 +1,20 @@
 import Scene from '../../../engine/v2/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
 import { World } from '../../../engine/v2/ecs/index.js';
+import {
+  createTransform,
+  createSize,
+  createVelocity,
+  createSpeed,
+  createInputControlled,
+  createRenderable,
+} from '../../../engine/v2/components/index.js';
 import { drawSceneFrame, drawPanel } from '../../../engine/v2/debug/index.js';
+import {
+  applyInputControl,
+  moveEntities,
+  renderRectEntities,
+} from '../../../engine/v2/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -17,38 +30,22 @@ export default class UIOverlayScene extends Scene {
     this.debugEnabled = true;
 
     const player = this.world.createEntity();
-    this.world.addComponent(player, 'transform', { x: 170, y: 250 });
-    this.world.addComponent(player, 'size', { width: 48, height: 48 });
-    this.world.addComponent(player, 'speed', { value: 240 });
-    this.world.addComponent(player, 'inputControlled', { enabled: true });
-    this.world.addComponent(player, 'renderable', { color: theme.getColor('actorFill'), label: 'player' });
+    this.world.addComponent(player, 'transform', createTransform(170, 250));
+    this.world.addComponent(player, 'size', createSize(48, 48));
+    this.world.addComponent(player, 'velocity', createVelocity(0, 0));
+    this.world.addComponent(player, 'speed', createSpeed(240));
+    this.world.addComponent(player, 'inputControlled', createInputControlled(true));
+    this.world.addComponent(player, 'renderable', createRenderable(theme.getColor('actorFill'), 'player'));
 
     const beacon = this.world.createEntity();
-    this.world.addComponent(beacon, 'transform', { x: 720, y: 260 });
-    this.world.addComponent(beacon, 'size', { width: 42, height: 42 });
-    this.world.addComponent(beacon, 'renderable', { color: '#ffd166', label: 'beacon' });
+    this.world.addComponent(beacon, 'transform', createTransform(720, 260));
+    this.world.addComponent(beacon, 'size', createSize(42, 42));
+    this.world.addComponent(beacon, 'renderable', createRenderable('#ffd166', 'beacon'));
   }
 
   update(dt, engine) {
-    const playerId = this.world.getEntitiesWith('transform', 'size', 'speed', 'inputControlled')[0];
-    if (!playerId) return;
-
-    const transform = this.world.getComponent(playerId, 'transform');
-    const size = this.world.getComponent(playerId, 'size');
-    const speed = this.world.getComponent(playerId, 'speed').value;
-
-    if (engine.input.isDown('ArrowLeft')) transform.x -= speed * dt;
-    if (engine.input.isDown('ArrowRight')) transform.x += speed * dt;
-    if (engine.input.isDown('ArrowUp')) transform.y -= speed * dt;
-    if (engine.input.isDown('ArrowDown')) transform.y += speed * dt;
-
-    const minX = this.worldBounds.x;
-    const minY = this.worldBounds.y;
-    const maxX = this.worldBounds.x + this.worldBounds.width - size.width;
-    const maxY = this.worldBounds.y + this.worldBounds.height - size.height;
-
-    transform.x = Math.max(minX, Math.min(transform.x, maxX));
-    transform.y = Math.max(minY, Math.min(transform.y, maxY));
+    applyInputControl(this.world, engine.input);
+    moveEntities(this.world, dt, this.worldBounds);
   }
 
   render(renderer) {
@@ -63,15 +60,7 @@ export default class UIOverlayScene extends Scene {
     ]);
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
-
-    this.world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-      const transform = this.world.getComponent(entityId, 'transform');
-      const size = this.world.getComponent(entityId, 'size');
-      const renderable = this.world.getComponent(entityId, 'renderable');
-
-      renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
-      renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
-    });
+    renderRectEntities(renderer, this.world);
 
     drawPanel(renderer, 650, 26, 270, 108, 'HUD', [
       `Score: ${this.score}`,
@@ -82,6 +71,7 @@ export default class UIOverlayScene extends Scene {
     if (this.debugEnabled) {
       const playerId = this.world.getEntitiesWith('inputControlled')[0];
       const transform = this.world.getComponent(playerId, 'transform');
+
       drawPanel(renderer, 650, 146, 270, 108, 'Debug Overlay', [
         `Player x: ${transform.x.toFixed(1)}`,
         `Player y: ${transform.y.toFixed(1)}`,
