@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+KeyboardState.js
+*/
 export default class KeyboardState {
     constructor() {
         this.currentDown = new Set();

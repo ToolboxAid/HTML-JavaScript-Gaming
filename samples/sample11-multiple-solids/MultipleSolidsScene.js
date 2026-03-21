@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+MultipleSolidsScene.js
+*/
 import Scene from '../../engine/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 

@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+FixedTicker.test.mjs
+*/
 import assert from "node:assert/strict";
 import FixedTicker from "../../engine/core/FixedTicker.js";
 

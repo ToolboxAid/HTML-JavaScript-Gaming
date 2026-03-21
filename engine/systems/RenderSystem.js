@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+RenderSystem.js
+*/
 import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function renderRectEntities(renderer, world, options = {}) {

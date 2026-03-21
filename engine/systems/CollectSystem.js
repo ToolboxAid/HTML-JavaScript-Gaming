@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+CollectSystem.js
+*/
 import { isColliding } from '../collision/aabb.js';
 import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 

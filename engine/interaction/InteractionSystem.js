@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+InteractionSystem.js
+*/
 import { isColliding } from '../collision/aabb.js';
 
 export function findNearestInteractable(subject, interactables, maxDistance = 80) {

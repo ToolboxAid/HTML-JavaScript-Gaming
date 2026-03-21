@@ -1,7 +1,9 @@
-// ToolboxAid.com
-// David Quesenberry
-// 01/20/2024
-// showHide.js
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+showHide.js
+*/
 
 class ShowHide {
     static click() {

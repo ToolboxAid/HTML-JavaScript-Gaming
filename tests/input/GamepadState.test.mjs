@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+GamepadState.test.mjs
+*/
 import assert from 'node:assert/strict';
 import GamepadState from '../../engine/input/GamepadState.js';
 

@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Theme.js
+*/
 export class Theme {
   constructor(tokens) {
     this.tokens = tokens;

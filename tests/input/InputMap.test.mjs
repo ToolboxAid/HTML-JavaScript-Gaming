@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+InputMap.test.mjs
+*/
 import InputMap from '../../engine/input/InputMap.js';
 
 function assert(condition, message) {

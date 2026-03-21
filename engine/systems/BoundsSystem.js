@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+BoundsSystem.js
+*/
 import { clamp } from '../utils/math.js';
 import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 

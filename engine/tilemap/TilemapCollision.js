@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+TilemapCollision.js
+*/
 import { isColliding } from '../collision/aabb.js';
 
 export function resolveRectVsTilemap(rect, tilemap, worldOffset = { x: 0, y: 0 }) {

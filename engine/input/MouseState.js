@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+MouseState.js
+*/
 export default class MouseState {
     constructor() {
         this.current = this.createState();

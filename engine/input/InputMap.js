@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+InputMap.js
+*/
 export default class InputMap {
     constructor(bindings = {}) {
         this.bindings = new Map();

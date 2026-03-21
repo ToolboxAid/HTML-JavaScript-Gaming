@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+PrefabFactory.js
+*/
 export function createPlayerPrefab({ x, y, color = '#34d399', label = 'player' } = {}) {
   return {
     x,

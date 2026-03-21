@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+GameModeState.js
+*/
 export default class GameModeState {
   constructor(initial = 'title') {
     this.mode = initial;

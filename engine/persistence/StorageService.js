@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+StorageService.js
+*/
 export default class StorageService {
   constructor(storage = globalThis.localStorage) {
     this.storage = storage;

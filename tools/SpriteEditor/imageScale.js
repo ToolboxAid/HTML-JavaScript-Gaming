@@ -1,7 +1,9 @@
-// ToolboxAid.com
-// David Quesenberry
-// 01/20/2024
-// imageScale.js
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+imageScale.js
+*/
 
 import { Message } from './message.js';
 

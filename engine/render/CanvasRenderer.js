@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+CanvasRenderer.js
+*/
 import Renderer from './Renderer.js';
 
 export default class CanvasRenderer extends Renderer {

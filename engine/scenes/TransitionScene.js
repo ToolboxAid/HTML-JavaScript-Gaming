@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+TransitionScene.js
+*/
 import Scene from './Scene.js';
 import SceneTransition from './SceneTransition.js';
 

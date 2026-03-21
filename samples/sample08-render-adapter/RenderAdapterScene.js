@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+RenderAdapterScene.js
+*/
 import Scene from '../../engine/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { Entity, Transform, Velocity, Bounds } from '../../engine/entity/index.js';

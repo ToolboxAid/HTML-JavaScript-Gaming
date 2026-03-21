@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+TilemapRenderSystem.js
+*/
 export function renderTilemap(renderer, tilemap, screen = { x: 0, y: 0 }) {
   for (let row = 0; row < tilemap.height; row += 1) {
     for (let col = 0; col < tilemap.width; col += 1) {

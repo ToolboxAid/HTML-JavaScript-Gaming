@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+FrameClock.test.mjs
+*/
 import assert from "node:assert/strict";
 import FrameClock from "../../engine/core/FrameClock.js";
 

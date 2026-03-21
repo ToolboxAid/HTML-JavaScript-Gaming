@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Tilemap.js
+*/
 export default class Tilemap {
   constructor({ tileSize = 32, tiles = [[]], palette = {} } = {}) {
     this.tileSize = tileSize;

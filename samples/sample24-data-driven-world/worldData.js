@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+worldData.js
+*/
 export const worldData = {
   worldBounds: { x: 80, y: 170, width: 800, height: 280 },
   entities: [

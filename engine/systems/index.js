@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+index.js
+*/
 export { applyInputControl } from './InputControlSystem.js';
 export { moveEntities } from './MovementSystem.js';
 export { blockCollidingEntities } from './CollisionSystem.js';

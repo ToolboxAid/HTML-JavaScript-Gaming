@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+main.js
+*/
 import Engine from '../../engine/core/Engine.js';
 import { InputService } from '../../engine/input/index.js';
 import UIOverlayScene from './UIOverlayScene.js';

@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Renderer.js
+*/
 export default class Renderer {
   clear(color) {
     throw new Error('Renderer.clear must be implemented by a concrete renderer.');

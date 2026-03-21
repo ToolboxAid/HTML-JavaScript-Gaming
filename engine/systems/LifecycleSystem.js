@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+LifecycleSystem.js
+*/
 import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function tickLifetimes(world, dt) {

@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+StateMachine.js
+*/
 export default class StateMachine {
   constructor({ initial = 'idle', states = {} } = {}) {
     this.states = states;

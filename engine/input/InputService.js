@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+InputService.js
+*/
 import KeyboardState from './KeyboardState.js';
 import MouseState from './MouseState.js';
 import GamepadState from './GamepadState.js';

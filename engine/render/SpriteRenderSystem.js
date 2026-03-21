@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+SpriteRenderSystem.js
+*/
 export function renderSpriteReadyEntities(renderer, entities, options = {}) {
   const {
     label = false,

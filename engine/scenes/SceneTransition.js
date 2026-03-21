@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+SceneTransition.js
+*/
 export default class SceneTransition {
     constructor({ durationSeconds = 0.35 } = {}) {
         this.durationSeconds = durationSeconds;

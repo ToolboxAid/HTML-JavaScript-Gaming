@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+ProjectileSystem.js
+*/
 export function spawnProjectile(projectiles, { x, y, width = 12, height = 12, velocityX = 0, velocityY = 0, life = 1.5, color = '#ffd166' }) {
   projectiles.push({
     x,

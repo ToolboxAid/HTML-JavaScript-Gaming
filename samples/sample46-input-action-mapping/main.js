@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+main.js
+*/
 import Engine from '../../engine/core/Engine.js';
 import { ActionInputMap, ActionInputService } from '../../engine/input/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';

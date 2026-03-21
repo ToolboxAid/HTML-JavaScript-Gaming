@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+Scene.js
+*/
 export default class Scene {
     enter(_engine) {}
 

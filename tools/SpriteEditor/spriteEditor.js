@@ -1,10 +1,11 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+spriteEditor.js
+*/
+
 import DebugFlag from '../../engine/utils/debugFlag.js';
-// ToolboxAid.com
-// David Quesenberry
-// 12/28/2024
-// spriteEditor.js
-
-
 import Colors from "../../engine/renderers/assets/colors.js";
 import Palettes from "../../engine/renderers/assets/palettes.js";
 import MouseInput from '../../engine/input/mouse.js';

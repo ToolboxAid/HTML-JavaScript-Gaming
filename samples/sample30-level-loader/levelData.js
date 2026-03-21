@@ -1,3 +1,9 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/21/2026
+levelData.js
+*/
 export const levelData = {
   worldBounds: { x: 60, y: 170, width: 840, height: 300 },
   player: { x: 120, y: 240, width: 46, height: 46, speed: 250 },
