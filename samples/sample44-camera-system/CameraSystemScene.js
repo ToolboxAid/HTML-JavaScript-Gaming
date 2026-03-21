@@ -17,7 +17,7 @@ export default class CameraSystemScene extends Scene {
       worldWidth: this.world.width,
       worldHeight: this.world.height,
     });
-    this.player = { x: 140, y: 220, width: 46, height: 46, speed: 260 };
+    this.player = { x: 80, y: 120, width: 46, height: 46, speed: 260 };
     this.objects = Array.from({ length: 14 }, (_, i) => ({
       x: 160 + i * 130,
       y: 200 + (i % 4) * 180,
