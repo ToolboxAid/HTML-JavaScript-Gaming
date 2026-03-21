@@ -16,7 +16,7 @@ export default class CollisionResponseScene extends Scene {
   constructor() {
     super();
 
-    this.worldBounds = { x: 60, y: 140, width: 840, height: 320 };
+    this.worldBounds = { x: 60, y: 180, width: 840, height: 320 };
     this.player = { x: 160, y: 230, width: 48, height: 48, speed: 260 };
     this.block = { x: 480, y: 220, width: 140, height: 140 };
     this.colliding = false;

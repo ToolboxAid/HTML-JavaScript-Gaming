@@ -16,7 +16,7 @@ export default class AxisSeparatedCollisionScene extends Scene {
   constructor() {
     super();
 
-    this.worldBounds = { x: 60, y: 140, width: 840, height: 320 };
+    this.worldBounds = { x: 60, y: 160, width: 840, height: 320 };
     this.player = { x: 120, y: 190, width: 48, height: 48, speed: 240 };
     this.solids = [
       { x: 300, y: 160, width: 70, height: 230 },

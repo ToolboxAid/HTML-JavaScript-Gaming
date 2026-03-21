@@ -9,7 +9,7 @@ export default class KeyboardMoveScene extends Scene {
 
     this.bounds = {
       x: 180,
-      y: 160,
+      y: 180,
       width: 600,
       height: 260,
     };

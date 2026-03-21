@@ -33,7 +33,7 @@ export default class CollisionScene extends Scene {
 
     this.worldBounds = {
       x: 60,
-      y: 150,
+      y: 170,
       width: 840,
       height: 320,
     };

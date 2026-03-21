@@ -8,7 +8,7 @@ export default class MouseInputScene extends Scene {
         super();
         this.bounds = {
             x: 180,
-            y: 160,
+            y: 180,
             width: 600,
             height: 260,
         };
