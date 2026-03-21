@@ -16,7 +16,7 @@ I’ll give you **only the files that matter** for the current stable state.
 
 ---
 
-# 📁 1) engine/v2/core/Engine.js
+# 📁 1) engine/core/Engine.js
 
 ```js
 import { CanvasRenderer } from '../render/index.js';
@@ -97,9 +97,9 @@ export default class Engine {
 ## Standard `main.js` (keyboard/mouse/gamepad)
 
 ```js
-import Engine from '../../../engine/v2/core/Engine.js';
-import { InputService } from '../../../engine/v2/input/index.js';
-import { Theme, ThemeTokens } from '../../../engine/v2/theme/index.js';
+import Engine from '../../../engine/core/Engine.js';
+import { InputService } from '../../../engine/input/index.js';
+import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
@@ -123,7 +123,7 @@ engine.start();
 ## Mapping samples (06 & 07)
 
 ```js
-import { InputMap, InputService } from '../../../engine/v2/input/index.js';
+import { InputMap, InputService } from '../../../engine/input/index.js';
 
 const inputMap = new InputMap({
   moveLeft: ['ArrowLeft', 'KeyA'],

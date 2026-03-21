@@ -4,8 +4,8 @@ This document defines the current source-of-truth template for V2 samples.
 
 The template is based on these approved working references:
 
-- `samples/v2/sample01-basic-loop/`
-- `samples/v2/sample02-keyboard-move/`
+- `samples/sample01-basic-loop/`
+- `samples/sample02-keyboard-move/`
 
 These samples establish the baseline for new V2 samples until a later approved template replaces them.
 
@@ -29,12 +29,12 @@ Samples are demonstrations, not mini-games.
 
 Use these as the current references:
 
-- `samples/v2/sample01-basic-loop/index.html`
-- `samples/v2/sample01-basic-loop/main.js`
-- `samples/v2/sample01-basic-loop/BouncerScene.js`
-- `samples/v2/sample02-keyboard-move/index.html`
-- `samples/v2/sample02-keyboard-move/main.js`
-- `samples/v2/sample02-keyboard-move/KeyboardMoveScene.js`
+- `samples/sample01-basic-loop/index.html`
+- `samples/sample01-basic-loop/main.js`
+- `samples/sample01-basic-loop/BouncerScene.js`
+- `samples/sample02-keyboard-move/index.html`
+- `samples/sample02-keyboard-move/main.js`
+- `samples/sample02-keyboard-move/KeyboardMoveScene.js`
 
 If a future sample conflicts with this document, the approved sample code in the repo is the source of truth until this document is updated.
 
@@ -45,7 +45,7 @@ If a future sample conflicts with this document, the approved sample code in the
 Each sample should follow this structure:
 
 ```text
-samples/v2/sampleXX-sample-name/
+samples/sampleXX-sample-name/
 ├─ index.html
 ├─ main.js
 └─ <SceneName>.js
@@ -54,7 +54,7 @@ samples/v2/sampleXX-sample-name/
 Example:
 
 ```text
-samples/v2/sample01-basic-loop/
+samples/sample01-basic-loop/
 ├─ index.html
 ├─ main.js
 └─ BouncerScene.js
@@ -217,9 +217,9 @@ Each sample bootstrap should stay minimal.
 ### Standard shape
 
 ```js
-import Engine from "../../../engine/v2/core/Engine.js";
+import Engine from "../../../engine/core/Engine.js";
 import SampleScene from "./SampleScene.js";
-import { Theme, ThemeTokens } from "../../../engine/v2/theme/index.js";
+import { Theme, ThemeTokens } from "../../../engine/theme/index.js";
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
@@ -270,7 +270,7 @@ Samples should import the same `Scene` base used by `SceneManager`.
 Example:
 
 ```js
-import Scene from "../../../engine/v2/scenes/Scene.js";
+import Scene from "../../../engine/scenes/Scene.js";
 ```
 
 Do not import a duplicate or alternate `Scene` class.

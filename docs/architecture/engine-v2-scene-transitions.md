@@ -8,9 +8,9 @@ The transition layer exists to own scene handoff effects so that individual scen
 
 ## Added files
 
-- `engine/v2/scenes/SceneTransition.js`
-- `engine/v2/scenes/TransitionScene.js`
-- `engine/v2/scenes/index.js`
+- `engine/scenes/SceneTransition.js`
+- `engine/scenes/TransitionScene.js`
+- `engine/scenes/index.js`
 
 ## Responsibilities
 

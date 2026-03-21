@@ -1,207 +1,46 @@
 # HTML-JavaScript-Gaming
 
-A browser-based 2D game development repository built with HTML5 Canvas, vanilla JavaScript, and reusable engine modules.
-
-This repo is organized around a shared `engine/` plus a set of playable `games/`, focused `samples/`, utility `tools/`, and supporting `docs/`.
-
-## What is in this repo
-
-### Shared engine
-
-The [`engine/`](./engine/) folder contains the reusable framework code used across the projects in this repository, including:
-
-- game bootstrapping and animation loop
-- shared runtime orchestration through `GameBase` and `RuntimeContext`
-- canvas helpers and rendering utilities
-- keyboard, mouse, and controller input
-- animation helpers for sprite and PNG workflows
-- game-facing object, registry, collision, and system APIs under `engine/game/`
-- shared object classes and lifecycle helpers
-- math and physics helpers
-- sprite, PNG sprite-sheet, and tile-map support
-- event messaging
-- audio, MIDI, and synthesizer output
-
-The main runtime entry point is [`engine/core/gameBase.js`](./engine/core/gameBase.js), working with [`engine/core/runtimeContext.js`](./engine/core/runtimeContext.js).
-
-### Playable games
-
-The [`games/`](./games/) folder contains complete browser games and gameplay prototypes, including:
-
-- Asteroids
-- Frogger
-- Snake
-- Space Invaders
-- Pong Game
-- Connect 4
-- Tic-Tac-Toe
-- Box Drop
-
-Each game usually includes its own `index.html`, `game.js`, `global.js`, styles, and game-specific classes/assets.
-
-### Samples
-
-The [`samples/`](./samples/) folder contains focused demos for individual engine features, such as:
-
-- [`samples/input/`](./samples/input/) for input-focused demos (`Keyboard`, `Mouse`, `GameControllers`)
-- [`samples/output/`](./samples/output/) for audio/output demos (`Audio`, `MIDI Player`, `Synthesizer`)
-- [`samples/visual/`](./samples/visual/) for rendering/visual demos (`Draw Shapes`, `Move Objects`, `Particle`, `Fullscreen Gaming`)
-- [`samples/engine/`](./samples/engine/) for engine-shell/system demos (`Game Engine`, `Solar System`, `2D side scroll tile map`)
-
-### Tools
-
-The [`tools/`](./tools/) folder contains utility projects. The main tool currently in the repo is:
-
-- [`tools/SpriteEditor/`](./tools/SpriteEditor/) for sprite editing and sprite workflow experiments
-
-### Documentation
-
-The [`docs/`](./docs/) folder contains project documentation, including:
-
-- [`docs/getting-started.md`](./docs/getting-started.md)
-- [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md)
-- [`docs/engine-api-conventions.md`](./docs/engine-api-conventions.md)
-- [`docs/sprite-system.md`](./docs/sprite-system.md)
+A browser-based 2D engine repository focused on the current engine architecture, reusable engine code, and progressive samples.
 
 ## Repository layout
 
 ```text
-index.html        Root launcher page
-engine/           Shared framework code
-games/            Full game implementations
-samples/          Focused demos for individual subsystems
-tools/            Utility applications
+engine/           Current reusable engine
+samples/          Progressive samples (Sample01+)
+tests/            Current engine test suite
 docs/             Documentation
+tools/            Utility applications
 scripts/          Repository automation scripts
-tests/            Engine test suite and manifest
 ```
 
-## Running the project
+## Current architecture
 
-Because the repo uses JavaScript modules, run it through a local web server instead of opening files directly with `file:///`.
+- renderer-only drawing
+- input only through InputService / ActionInputService
+- scene lifecycle owned by engine
+- progressive samples as the proof path
+- ECS-oriented systems operating on data
 
-### Option 1: VS Code Live Server
+## Running samples
 
-1. Open the repository in VS Code.
-2. Install the Live Server extension if needed.
-3. Open [`index.html`](./index.html) with Live Server.
-
-### Option 2: Python
-
-From the repository root:
+Use a local web server from the repository root:
 
 ```bash
 python -m http.server 8000
 ```
 
-Then open:
+Then open a sample directly, for example:
 
 ```text
-http://localhost:8000/
+http://localhost:8000/samples/sample01-basic-loop/index.html
 ```
 
 ## Running tests
-
-From the repository root:
 
 ```bash
 npm test
 ```
 
-`npm test` runs `scripts/run-node-tests.mjs`, which executes the shared test manifest at `tests/engine/testManifest.js`.
-The default suite is Node-safe and includes engine tests across animation, core, game, input, lifecycle, math, messages, misc, objects, output, physics, renderers, and utils.
+## Rules
 
-## Recommended first run
-
-Start with the root [`index.html`](./index.html) launcher page. It gives you one place to open games, samples, tools, and docs.
-
-Good first stops are:
-
-- [`games/Asteroids/`](./games/Asteroids/)
-- [`games/Frogger/`](./games/Frogger/)
-- [`samples/engine/Solar%20System/`](./samples/engine/Solar%20System/)
-- [`samples/engine/2D%20side%20scroll%20tile%20map/`](./samples/engine/2D%20side%20scroll%20tile%20map/)
-- [`samples/engine/Game%20Engine/`](./samples/engine/Game%20Engine/)
-- [`tools/SpriteEditor/`](./tools/SpriteEditor/)
-
-If you want a quick orientation path:
-
-1. Open the root launcher page.
-2. Run [`samples/engine/Game%20Engine/`](./samples/engine/Game%20Engine/).
-3. Open [`samples/engine/Solar%20System/`](./samples/engine/Solar%20System/) to compare a small engine-driven sample with a real project folder.
-4. Read [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md).
-5. Open [`games/Asteroids/`](./games/Asteroids/).
-
-## Sample Learning Order
-
-If you want to learn the engine from the bottom up, the samples make the most sense in an inheritance-first order:
-
-1. [`samples/visual/Draw%20Shapes/`](./samples/visual/Draw%20Shapes/)
-2. [`samples/visual/Move%20Objects/`](./samples/visual/Move%20Objects/)
-3. [`samples/input/Keyboard/`](./samples/input/Keyboard/)
-4. [`samples/input/Mouse/`](./samples/input/Mouse/)
-5. [`samples/input/GameControllers/`](./samples/input/GameControllers/)
-6. [`samples/engine/Game%20Engine/`](./samples/engine/Game%20Engine/)
-7. [`samples/engine/Solar%20System/`](./samples/engine/Solar%20System/)
-8. [`samples/engine/2D%20side%20scroll%20tile%20map/`](./samples/engine/2D%20side%20scroll%20tile%20map/)
-9. [`samples/visual/Particle/`](./samples/visual/Particle/)
-10. [`samples/output/Audio/`](./samples/output/Audio/)
-11. [`samples/output/MIDI%20Player/`](./samples/output/MIDI%20Player/)
-12. [`samples/output/Synthesizer/`](./samples/output/Synthesizer/)
-
-## Typical project flow
-
-Most game folders follow this pattern:
-
-1. `index.html` loads a game-specific `game.js` module.
-2. `game.js` imports shared code from `engine/` and usually extends `GameBase`.
-3. `GameBase` initializes shared services through `RuntimeContext`.
-4. `onInitialize(runtimeContext)` loads game-specific state, assets, and input.
-5. `gameLoop(deltaTime, runtimeContext)` updates and draws gameplay each animation frame.
-
-## Engine overview
-
-The engine is organized into a few clear layers:
-
-- `engine/core/` for the runtime shell, canvas helpers, and tile-map support
-- `engine/game/` for canonical game-facing object, registry, collision, and system APIs
-- `engine/animation/` for sprite and PNG animation controllers
-- `engine/input/` for keyboard, mouse, and controller input
-- `engine/objects/` for reusable object types like static, dynamic, killable, sprite, PNG, and vector objects
-- `engine/math/` and `engine/physics/` for low-level helpers
-- `engine/renderers/` for primitive, sprite, PNG, vector, and particle rendering
-- `engine/messages/` for event-style communication
-- `engine/output/` for audio, MIDI, and synthesizer support
-
-## Sprite workflows
-
-The repo currently supports two main sprite paths:
-
-- `ObjectSprite` for frame-array or JSON/palette sprites
-- `ObjectPNG` for PNG sprite-sheet rendering
-
-The current game-facing `GameObject` facade extends `ObjectPNG`, so PNG-backed sprite sheets are the default path in the newer `engine/game/` layer.
-
-For more detail, see [`docs/sprite-system.md`](./docs/sprite-system.md).
-
-## Documentation
-
-If you are exploring or contributing, these are the best docs to read first:
-
-- [`docs/getting-started.md`](./docs/getting-started.md)
-- [`docs/game-engine-architecture.md`](./docs/game-engine-architecture.md)
-- [`docs/engine-api-conventions.md`](./docs/engine-api-conventions.md)
-- [`docs/sprite-system.md`](./docs/sprite-system.md)
-
-## Built with
-
-- HTML5 Canvas
-- Vanilla JavaScript (ES modules)
-- CSS
-
-## License
-
-This repository is licensed under the terms of the [`LICENSE`](./LICENSE) file.
-
-
-
+See `RULES.txt` for the locked engine rules and scene contract.

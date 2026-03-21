@@ -1,0 +1,9 @@
+Repository rewrite applied:
+- Removed legacy V1 engine, game, sample, and test code
+- Promoted engine/v2 -> engine/
+- Promoted samples/v2 -> samples/
+- Promoted tests/v2 -> tests/
+- Added current RULES.txt at repo root
+
+Review notes:
+- Docs still include some historical V2 wording in narrative places, but code paths were updated to current root layout where applicable.

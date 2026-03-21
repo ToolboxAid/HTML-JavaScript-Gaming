@@ -10,4 +10,4 @@ Current strategy:
 
 Run from repo root:
 
-`node tests/v2/run-tests.mjs`
+`node tests/run-tests.mjs`

@@ -29,4 +29,4 @@ engine.input.getActionSnapshot();
 
 ## Sample
 
-`samples/v2/sample06-input-mapping/` proves the boundary by mapping Arrow keys and WASD to the same movement actions.
+`samples/sample06-input-mapping/` proves the boundary by mapping Arrow keys and WASD to the same movement actions.
