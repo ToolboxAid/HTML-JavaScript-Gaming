@@ -1,63 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engine V2 Sample05 - Scene Switch</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      margin: 0;
-      color: #333332;
-      font-family: Arial, sans-serif;
-      display: grid;
-      place-items: center;
-      min-height: 100vh;
-    }
-
-    main {
-      width: min(100%, 1000px);
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    h1 {
-      margin: 0 0 12px;
-    }
-
-    p {
-      margin: 0 0 16px;
-      line-height: 1.5;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      max-width: 960px;
-      height: auto;
-      border: 1px solid #334155;
-      background: #111827;
-    }
-  </style>
+  <title>Sample05 - Scene Switch</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
-  <main>
-    <h1>Engine V2 Sample05</h1>
-    <p>
-      Demonstrates scene lifecycle and scene switching using the V2 scene boundary.
-      Press Enter to move from the intro scene into the play scene, then press Escape to return.
-      This sample proves each scene owns its own update and render behavior while SceneManager controls which scene is
-      active.
-    </p>
-    <canvas id="game" width="960" height="540"></canvas>
-  </main>
-  <script type="module" src="./main.js"></script>
-</body>
+    <main>
+        <h1>Sample05 - Scene Switch</h1>
+        <p>Demonstrates scene transitions and shared engine scene flow.</p>
+        <canvas id="game" width="960" height="540"></canvas>
+    </main>
 
+    <script type="module" src="./main.js"></script>
+</body>
 </html>

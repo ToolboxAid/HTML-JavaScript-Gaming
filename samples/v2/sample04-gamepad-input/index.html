@@ -1,53 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Engine V2 Sample 04 - Gamepad Input</title>
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            color: #333332;
-            font-family: Arial, sans-serif;
-            display: grid;
-            place-items: center;
-            min-height: 100vh;
-        }
-
-        main {
-            width: min(100%, 1000px);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            max-width: 960px;
-            height: auto;
-            border: 1px solid #334155;
-        }
-
-        p {
-            line-height: 1.5;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Sample04 - Gamepad Input</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
 <body>
     <main>
-        <h1>Engine V2 Sample04</h1>
-        <p>
-            Demonstrates the gamepad input boundary using GamepadState and InputService polling.
-            Connect one or more controllers, use the left stick on gamepad 0 to move the box, and press button 0 to change its state.
-            This sample proves the scene reads gamepad input through the input boundary instead of calling navigator.getGamepads() directly.
-        </p>
+        <h1>Sample04 - Gamepad Input</h1>
+        <p>Demonstrates basic gamepad input and live control feedback.</p>
         <canvas id="game" width="960" height="540"></canvas>
     </main>
+
     <script type="module" src="./main.js"></script>
 </body>
 </html>

@@ -2,50 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engine V2 Sample 13 - Tile Collision</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      margin: 0;
-      display: grid;
-      place-items: center;
-      font-family: Arial, sans-serif;
-      color: #333332;
-    }
-
-    main {
-      width: min(100%, 1000px);
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      max-width: 960px;
-      height: auto;
-      border: 1px solid #334155;
-    }
-
-    p {
-      line-height: 1.5;
-    }
-  </style>
+  <title>Sample13 - Tile Collision</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
 <body>
-  <main>
-    <h1>Engine V2 Sample13</h1>
-    <p>
-      Demonstrates tile-based collision by treating selected grid cells as solid blockers with
-      axis-separated movement.
-    </p>
-    <canvas id="game" width="960" height="540"></canvas>
-  </main>
-  <script type="module" src="./main.js"></script>
+    <main>
+        <h1>Sample13 - Tile Collision</h1>
+        <p>Demonstrates tile-based collision by treating selected grid cells as solid blockers with axis-separated movement.</p>
+        <canvas id="game" width="960" height="540"></canvas>
+    </main>
+
+    <script type="module" src="./main.js"></script>
 </body>
 </html>

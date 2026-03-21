@@ -1,63 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engine V2 Sample03 - Mouse Input</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      margin: 0;
-      color: #333332;
-      font-family: Arial, sans-serif;
-      display: grid;
-      place-items: center;
-      min-height: 100vh;
-    }
-
-    main {
-      width: min(100%, 1000px);
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    h1 {
-      margin: 0 0 12px;
-    }
-
-    p {
-      margin: 0 0 16px;
-      line-height: 1.5;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      max-width: 960px;
-      height: auto;
-      border: 1px solid #334155;
-      background: #111827;
-    }
-  </style>
+  <title>Sample03 - Mouse Input</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
-  <main>
-    <h1>Engine V2 Sample03</h1>
-    <p>
-      Demonstrates the mouse input boundary using InputService and MouseState.
-      Move the mouse to reposition the marker and click to change its state.
-      Pointer state is read through the input service, not DOM events inside the scene.
-    </p>
-    <canvas id="game" width="960" height="540"></canvas>
-  </main>
-  
-  <script type="module" src="./main.js"></script>
-</body>
+    <main>
+        <h1>Sample03 - Mouse Input</h1>
+        <p>Demonstrates mouse input tracking and renderer-based feedback.</p>
+        <canvas id="game" width="960" height="540"></canvas>
+    </main>
 
+    <script type="module" src="./main.js"></script>
+</body>
 </html>

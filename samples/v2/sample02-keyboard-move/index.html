@@ -1,58 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Engine V2 Sample 02 - Keyboard Move</title>
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            color: #e2e8f0;
-            font-family: Arial, sans-serif;
-            display: grid;
-            place-items: center;
-            min-height: 100vh;
-        }
-
-        main {
-            width: min(100%, 1000px);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            max-width: 960px;
-            height: auto;
-            border: 1px solid #334155;
-            background: #111827;
-        }
-
-        p {
-            line-height: 1.5;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Sample02 - Keyboard Move</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
     <main>
-        <h1>Engine V2 Sample02</h1>
-        <p>
-            Demonstrates the keyboard input boundary using InputService and KeyboardState.
-            Use the Arrow keys to move the box in four directions.
-            Movement is driven by input state, not DOM event handling inside the scene.
-        </p>
+        <h1>Sample02 - Keyboard Move</h1>
+        <p>Demonstrates keyboard-driven movement inside a bounded play area.</p>
         <canvas id="game" width="960" height="540"></canvas>
     </main>
 
     <script type="module" src="./main.js"></script>
 </body>
-
 </html>

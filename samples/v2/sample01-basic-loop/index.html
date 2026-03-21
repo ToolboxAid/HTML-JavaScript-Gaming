@@ -1,54 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Engine V2 Sample 01 - Basic Loop</title>
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            color: #e2e8f0;
-            font-family: Arial, sans-serif;
-            display: grid;
-            place-items: center;
-        }
-
-        main {
-            width: min(100%, 1000px);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            max-width: 960px;
-            height: auto;
-            border: 1px solid #334155;
-            background: #111827;
-        }
-
-        p {
-            line-height: 1.5;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Sample01 - Basic Loop</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
     <main>
-        <h1>Engine V2 Sample 01</h1>
-        <p>This sample proves the new bootstrap boundary: Engine orchestrates, timing classes measure time, Scene owns
-            game behavior, and CanvasSurface owns drawing context setup.</p>
+        <h1>Sample01 - Basic Loop</h1>
+        <p>Demonstrates the core engine loop with simple bounded motion.</p>
         <canvas id="game" width="960" height="540"></canvas>
     </main>
 
     <script type="module" src="./main.js"></script>
 </body>
-
 </html>
