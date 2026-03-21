@@ -42,19 +42,12 @@
 │
 ├─ samples/
 │  ├─ README.md
-│  ├─ input/
-│  │  ├─ sample01-basic-keyboard/
-│  │  ├─ sample02-mouse-input/
-│  │  └─ sample03-gamepad/
-│  ├─ rendering/
-│  │  ├─ sample01-sprite-draw/
-│  │  ├─ sample02-animation/
-│  │  └─ sample03-camera-follow/
-│  ├─ physics/
-│  ├─ tilemap/
-│  ├─ audio/
-│  ├─ ui/
-│  ├─ etc.../
+│  ├─ sample01-basic-keyboard/
+│  ├─ sample02-mouse-input/
+│  ├─ sample03-gamepad/
+│  ├─ sample04-sprite-draw/
+│  ├─ sample05-animation/
+│  └─ sample06-camera-follow/
 │
 ├─ tests/
 │  ├─ unit/
