@@ -1,10 +1,14 @@
+import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
+
 export function bounceEntitiesHorizontallyInBounds(world, bounds, query = ['transform', 'size', 'velocity']) {
-  const entities = world.getEntitiesWith(...query);
+  const entities = getSystemEntities(world, query);
 
   entities.forEach((entityId) => {
-    const transform = world.getComponent(entityId, 'transform');
-    const size = world.getComponent(entityId, 'size');
-    const velocity = world.getComponent(entityId, 'velocity');
+    const [transform, size, velocity] = requireSystemComponents(world, entityId, [
+      'transform',
+      'size',
+      'velocity',
+    ]);
 
     const minX = bounds.x;
     const maxX = bounds.x + bounds.width - size.width;

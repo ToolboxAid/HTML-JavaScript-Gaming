@@ -1,11 +1,11 @@
 import { clamp } from '../utils/math.js';
+import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function clampEntitiesToBounds(world, bounds, query = ['transform', 'size']) {
-  const entities = world.getEntitiesWith(...query);
+  const entities = getSystemEntities(world, query);
 
   entities.forEach((entityId) => {
-    const transform = world.getComponent(entityId, 'transform');
-    const size = world.getComponent(entityId, 'size');
+    const [transform, size] = requireSystemComponents(world, entityId, ['transform', 'size']);
 
     const minX = bounds.x;
     const minY = bounds.y;

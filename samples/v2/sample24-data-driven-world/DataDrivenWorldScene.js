@@ -9,7 +9,7 @@ import {
   createInputControlled,
   createCollider,
 } from '../../../engine/v2/components/index.js';
-import { drawSceneFrame, drawPanel } from '../../../engine/v2/debug/index.js';
+import { drawSceneFrame, drawPanel, drawValidationPanel, validateWorldEntities } from '../../../engine/v2/debug/index.js';
 import {
   applyInputControl,
   moveEntities,
@@ -24,10 +24,17 @@ export default class DataDrivenWorldScene extends Scene {
   constructor() {
     super();
 
-    this.world = new World();
+    this.world = new World({ dev: true });
     this.worldBounds = worldData.worldBounds;
     this.hitSolid = false;
+    this.validationIssues = [];
     this.loadFromData();
+
+    this.validationIssues = validateWorldEntities(this.world, [
+      { require: ['inputControlled'], alsoRequire: ['transform', 'size', 'velocity', 'speed', 'collider'] },
+      { require: ['solid'], alsoRequire: ['transform', 'size'] },
+      { require: ['renderable'], alsoRequire: ['transform', 'size'] },
+    ]);
   }
 
   loadFromData() {
@@ -101,5 +108,9 @@ export default class DataDrivenWorldScene extends Scene {
       'Source: worldData.js',
       'Pattern: declarative setup',
     ]);
+
+    if (this.validationIssues.length > 0) {
+      drawValidationPanel(renderer, this.validationIssues, 620, 164, 300, 126);
+    }
   }
 }

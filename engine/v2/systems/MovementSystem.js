@@ -1,12 +1,15 @@
 import { clamp } from '../utils/math.js';
+import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function moveEntities(world, dt, worldBounds = null) {
-  const movers = world.getEntitiesWith('transform', 'size', 'velocity');
+  const movers = getSystemEntities(world, ['transform', 'size', 'velocity']);
 
   movers.forEach((entityId) => {
-    const transform = world.getComponent(entityId, 'transform');
-    const size = world.getComponent(entityId, 'size');
-    const velocity = world.getComponent(entityId, 'velocity');
+    const [transform, size, velocity] = requireSystemComponents(world, entityId, [
+      'transform',
+      'size',
+      'velocity',
+    ]);
 
     transform.previousX = transform.x;
     transform.previousY = transform.y;

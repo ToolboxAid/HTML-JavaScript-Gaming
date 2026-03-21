@@ -1,4 +1,5 @@
 import { isColliding } from '../collision/aabb.js';
+import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function collectOverlappingEntities(
   world,
@@ -8,22 +9,26 @@ export function collectOverlappingEntities(
     onCollect = null,
   } = {},
 ) {
-  const collectors = world.getEntitiesWith(...collectorQuery);
-  const targets = world.getEntitiesWith(...targetQuery);
+  const collectors = getSystemEntities(world, collectorQuery);
+  const targets = getSystemEntities(world, targetQuery);
 
   let collectedCount = 0;
 
   collectors.forEach((collectorId) => {
-    const collectorTransform = world.getComponent(collectorId, 'transform');
-    const collectorSize = world.getComponent(collectorId, 'size');
+    const [collectorTransform, collectorSize] = requireSystemComponents(world, collectorId, [
+      'transform',
+      'size',
+    ]);
 
     targets.slice().forEach((targetId) => {
       if (!world.entities.has(targetId)) {
         return;
       }
 
-      const targetTransform = world.getComponent(targetId, 'transform');
-      const targetSize = world.getComponent(targetId, 'size');
+      const [targetTransform, targetSize] = requireSystemComponents(world, targetId, [
+        'transform',
+        'size',
+      ]);
 
       if (
         isColliding(

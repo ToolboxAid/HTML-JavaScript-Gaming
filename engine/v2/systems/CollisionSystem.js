@@ -1,18 +1,33 @@
 import { isColliding } from '../collision/aabb.js';
+import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function blockCollidingEntities(world) {
   let hitCount = 0;
 
-  const movers = world.getEntitiesWith('transform', 'size', 'collider');
-  const solids = world.getEntitiesWith('transform', 'size', 'solid');
+  const movers = getSystemEntities(world, ['transform', 'size', 'collider']);
+  const solids = getSystemEntities(world, ['transform', 'size', 'solid']);
 
   movers.forEach((entityId) => {
-    const transform = world.getComponent(entityId, 'transform');
-    const size = world.getComponent(entityId, 'size');
+    const [transform, size, collider] = requireSystemComponents(world, entityId, [
+      'transform',
+      'size',
+      'collider',
+    ]);
+
+    if (collider.solid === true) {
+      return;
+    }
 
     for (const solidId of solids) {
-      const solidTransform = world.getComponent(solidId, 'transform');
-      const solidSize = world.getComponent(solidId, 'size');
+      const [solidTransform, solidSize, solid] = requireSystemComponents(world, solidId, [
+        'transform',
+        'size',
+        'solid',
+      ]);
+
+      if (!solid.enabled) {
+        continue;
+      }
 
       if (
         isColliding(

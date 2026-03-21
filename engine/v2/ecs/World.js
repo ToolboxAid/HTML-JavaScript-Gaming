@@ -1,8 +1,11 @@
+import { COMPONENT_SCHEMAS } from '../components/index.js';
+
 export default class World {
-  constructor() {
+  constructor({ dev = false } = {}) {
     this.nextEntityId = 1;
     this.entities = new Set();
     this.components = new Map();
+    this.dev = dev;
   }
 
   createEntity() {
@@ -20,6 +23,12 @@ export default class World {
   }
 
   addComponent(entityId, name, data) {
+    if (!this.entities.has(entityId)) {
+      throw new Error(`Cannot add component "${name}" to missing entity ${entityId}.`);
+    }
+
+    this.validateComponentShape(name, data);
+
     if (!this.components.has(name)) {
       this.components.set(name, new Map());
     }
@@ -29,6 +38,16 @@ export default class World {
 
   getComponent(entityId, name) {
     return this.components.get(name)?.get(entityId);
+  }
+
+  requireComponent(entityId, name) {
+    const component = this.getComponent(entityId, name);
+
+    if (!component) {
+      throw new Error(`Missing required component "${name}" on entity ${entityId}.`);
+    }
+
+    return component;
   }
 
   hasComponent(entityId, name) {
@@ -43,5 +62,26 @@ export default class World {
 
   countEntities() {
     return this.entities.size;
+  }
+
+  validateComponentShape(name, data) {
+    if (!this.dev) {
+      return;
+    }
+
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      throw new Error(`Component "${name}" must be an object.`);
+    }
+
+    const requiredKeys = COMPONENT_SCHEMAS[name];
+    if (!requiredKeys) {
+      return;
+    }
+
+    for (const key of requiredKeys) {
+      if (!(key in data)) {
+        throw new Error(`Component "${name}" is missing required key "${key}".`);
+      }
+    }
   }
 }

@@ -11,7 +11,7 @@ import {
   createSolid,
   createRenderable,
 } from '../../../engine/v2/components/index.js';
-import { drawSceneFrame } from '../../../engine/v2/debug/index.js';
+import { drawSceneFrame, drawValidationPanel, validateWorldEntities } from '../../../engine/v2/debug/index.js';
 import {
   applyInputControl,
   moveEntities,
@@ -25,9 +25,10 @@ export default class ECSSceneWorldScene extends Scene {
   constructor() {
     super();
 
-    this.world = new World();
+    this.world = new World({ dev: true });
     this.worldBounds = { x: 80, y: 170, width: 800, height: 280 };
     this.hitSolid = false;
+    this.validationIssues = [];
 
     const player = this.world.createEntity();
     this.world.addComponent(player, 'transform', createTransform(150, 240));
@@ -49,6 +50,12 @@ export default class ECSSceneWorldScene extends Scene {
     this.world.addComponent(solidB, 'size', createSize(160, 70));
     this.world.addComponent(solidB, 'solid', createSolid(true));
     this.world.addComponent(solidB, 'renderable', createRenderable('#66cc99', 'solidB'));
+
+    this.validationIssues = validateWorldEntities(this.world, [
+      { require: ['inputControlled'], alsoRequire: ['transform', 'size', 'velocity', 'speed'] },
+      { require: ['solid'], alsoRequire: ['transform', 'size'] },
+      { require: ['renderable'], alsoRequire: ['transform', 'size'] },
+    ]);
   }
 
   update(dt, engine) {
@@ -70,5 +77,9 @@ export default class ECSSceneWorldScene extends Scene {
 
     renderer.strokeRect(this.worldBounds.x, this.worldBounds.y, this.worldBounds.width, this.worldBounds.height, '#d8d5ff', 3);
     renderRectEntities(renderer, this.world, { label: true, labelOffsetY: -8 });
+
+    if (this.validationIssues.length > 0) {
+      drawValidationPanel(renderer, this.validationIssues);
+    }
   }
 }

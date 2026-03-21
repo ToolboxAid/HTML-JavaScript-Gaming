@@ -50,3 +50,16 @@ export function createLifetime(remaining = 0) {
 export function createTag(value = '') {
   return { value };
 }
+
+export const COMPONENT_SCHEMAS = {
+  transform: ['x', 'y', 'previousX', 'previousY'],
+  size: ['width', 'height'],
+  velocity: ['x', 'y'],
+  speed: ['value'],
+  renderable: ['color'],
+  inputControlled: ['enabled'],
+  collider: ['solid'],
+  solid: ['enabled'],
+  lifetime: ['remaining'],
+  tag: ['value'],
+};

@@ -1,13 +1,22 @@
+import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
+
 export function renderRectEntities(renderer, world, options = {}) {
   const {
     label = false,
     labelOffsetY = -8,
+    filter = null,
   } = options;
 
-  world.getEntitiesWith('transform', 'size', 'renderable').forEach((entityId) => {
-    const transform = world.getComponent(entityId, 'transform');
-    const size = world.getComponent(entityId, 'size');
-    const renderable = world.getComponent(entityId, 'renderable');
+  getSystemEntities(world, ['transform', 'size', 'renderable']).forEach((entityId) => {
+    const [transform, size, renderable] = requireSystemComponents(world, entityId, [
+      'transform',
+      'size',
+      'renderable',
+    ]);
+
+    if (typeof filter === 'function' && !filter({ entityId, transform, size, renderable })) {
+      return;
+    }
 
     renderer.drawRect(transform.x, transform.y, size.width, size.height, renderable.color);
     renderer.strokeRect(transform.x, transform.y, size.width, size.height, '#ffffff', 1);
