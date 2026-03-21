@@ -1,21 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Engine V2 Sample 18 - ECS Collision System</title>
-    <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+  <meta charset="UTF-8" />
+  <title>Sample18 - ECS Collision System</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
+<!--
+Sample: Sample18 - ECS Collision System
+Description: Demonstrates an ECS collision system that blocks a controlled entity against solids using collider and solid components.
+-->
     <main>
-        <h1>Engine V2 Sample 18 - ECS Collision System</h1>
-        <p>Demonstrates an ECS collision system that blocks a controlled entity against solids using collider and solid
-            components.</p>
+        <h1>Sample18 - ECS Collision System</h1>
+        <p>Demonstrates an ECS collision system that blocks a controlled entity against solids using collider and solid components.</p>
         <canvas id="game" width="960" height="540"></canvas>
+
+        <section>
+            <h3>Engine Classes Used</h3>
+            <ul>
+                <li>Engine</li>
+                <li>CanvasRenderer</li>
+                <li>Scene</li>
+                <li>World</li>
+                <li>InputControlSystem</li>
+                <li>MovementSystem</li>
+                <li>CollisionSystem</li>
+            </ul>
+        </section>
     </main>
 
     <script type="module" src="./main.js"></script>
 </body>
-
 </html>

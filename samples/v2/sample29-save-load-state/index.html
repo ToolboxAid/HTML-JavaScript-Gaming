@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Sample29 - Save Load State</title>
-    <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+  <meta charset="UTF-8" />
+  <title>Sample29 - Save Load State</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
+<!--
+Sample: Sample29 - Save Load State
+Description: Demonstrates saving and restoring player state with browser storage so a scene can persist position between actions.
+-->
     <main>
         <h1>Sample29 - Save Load State</h1>
-        <p>Demonstrates saving and restoring player state with browser storage so a scene can persist position between
-            actions.</p>
+        <p>Demonstrates saving and restoring player state with browser storage so a scene can persist position between actions.</p>
         <canvas id="game" width="960" height="540"></canvas>
+
+        <section>
+            <h3>Engine Classes Used</h3>
+            <ul>
+                <li>Engine</li>
+                <li>CanvasRenderer</li>
+                <li>Scene</li>
+                <li>StorageService</li>
+            </ul>
+        </section>
     </main>
 
     <script type="module" src="./main.js"></script>
 </body>
-
 </html>

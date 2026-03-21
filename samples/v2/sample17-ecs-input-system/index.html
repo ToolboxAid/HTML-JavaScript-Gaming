@@ -1,20 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Engine V2 Sample 17 - ECS Input System</title>
-    <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+  <meta charset="UTF-8" />
+  <title>Sample17 - ECS Input System</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
+<!--
+Sample: Sample17 - ECS Input System
+Description: Demonstrates an ECS input system that controls one entity through input and speed components.
+-->
     <main>
-        <h1>Engine V2 Sample 17 - ECS Input System</h1>
+        <h1>Sample17 - ECS Input System</h1>
         <p>Demonstrates an ECS input system that controls one entity through input and speed components.</p>
         <canvas id="game" width="960" height="540"></canvas>
+
+        <section>
+            <h3>Engine Classes Used</h3>
+            <ul>
+                <li>Engine</li>
+                <li>CanvasRenderer</li>
+                <li>Scene</li>
+                <li>World</li>
+                <li>InputControlSystem</li>
+                <li>MovementSystem</li>
+                <li>BoundsSystem</li>
+            </ul>
+        </section>
     </main>
 
     <script type="module" src="./main.js"></script>
 </body>
-
 </html>

@@ -1,21 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Engine V2 Sample 20 - ECS Scene World</title>
-    <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+  <meta charset="UTF-8" />
+  <title>Sample20 - ECS Scene World</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
 </head>
-
 <body>
+<!--
+Sample: Sample20 - ECS Scene World
+Description: Demonstrates a scene that delegates interaction to ECS-style systems for input, movement, collision, and rendering.
+-->
     <main>
-        <h1>Engine V2 Sample 20 - ECS Scene World</h1>
-        <p>Demonstrates a scene that delegates interaction to ECS-style systems for input, movement, collision, and
-            rendering.</p>
+        <h1>Sample20 - ECS Scene World</h1>
+        <p>Demonstrates a scene that delegates interaction to ECS-style systems for input, movement, collision, and rendering.</p>
         <canvas id="game" width="960" height="540"></canvas>
+
+        <section>
+            <h3>Engine Classes Used</h3>
+            <ul>
+                <li>Engine</li>
+                <li>CanvasRenderer</li>
+                <li>Scene</li>
+                <li>World</li>
+                <li>InputControlSystem</li>
+                <li>MovementSystem</li>
+                <li>CollisionSystem</li>
+                <li>RenderSystem</li>
+            </ul>
+        </section>
     </main>
 
     <script type="module" src="./main.js"></script>
 </body>
-
 </html>
