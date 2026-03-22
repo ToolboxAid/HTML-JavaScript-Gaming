@@ -19,6 +19,7 @@ import { run as runKeyboardState } from './input/KeyboardState.test.mjs';
 import { run as runMouseState } from './input/MouseState.test.mjs';
 import './input/GamepadState.test.mjs';
 import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
+import { run as runWorldSystems } from './world/WorldSystems.test.mjs';
 import './render/Renderer.test.mjs';
 import './theme.test.js';
 
@@ -37,6 +38,7 @@ const tests = [
     ['KeyboardState', runKeyboardState],
     ['MouseState', runMouseState],
     ['SceneManager', runSceneManager],
+    ['WorldSystems', runWorldSystems],
 ];
 
 let passed = 0;
