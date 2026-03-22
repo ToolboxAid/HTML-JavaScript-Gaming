@@ -138,6 +138,10 @@
       "indexHtml": "samples/sample120-packaging-build-system/index.html"
     },
     {
+      "id": "sample121-fullscreen-ability",
+      "indexHtml": "samples/sample121-fullscreen-ability/index.html"
+    },
+    {
       "id": "sample13-tile-collision",
       "indexHtml": "samples/sample13-tile-collision/index.html"
     },

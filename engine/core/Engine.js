@@ -7,9 +7,10 @@ Engine.js
 import { CanvasRenderer } from '../render/index.js';
 import RuntimeMetrics from './RuntimeMetrics.js';
 import EventBus from '../events/EventBus.js';
+import { FullscreenService } from '../runtime/index.js';
 
 export default class Engine {
-  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null, events = null, metrics = null } = {}) {
+  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null, events = null, metrics = null, fullscreen = null } = {}) {
     if (!canvas) {
       throw new Error('Engine requires a canvas.');
     }
@@ -23,6 +24,7 @@ export default class Engine {
     this.input = input;
     this.events = events || new EventBus();
     this.metrics = metrics || new RuntimeMetrics();
+    this.fullscreen = fullscreen || new FullscreenService({ target: canvas });
     this.fixedStepMs = fixedStepMs;
     this.fixedStepSeconds = fixedStepMs / 1000;
     this.scene = null;
@@ -46,6 +48,9 @@ export default class Engine {
     if (this.input && typeof this.input.attach === 'function') {
       this.input.attach();
     }
+    if (this.fullscreen && typeof this.fullscreen.attach === 'function') {
+      this.fullscreen.attach(this.canvas);
+    }
 
     this.lastTime = performance.now();
     this.rafId = requestAnimationFrame(this.tick);
@@ -59,6 +64,9 @@ export default class Engine {
 
     if (this.input && typeof this.input.detach === 'function') {
       this.input.detach();
+    }
+    if (this.fullscreen && typeof this.fullscreen.detach === 'function') {
+      this.fullscreen.detach();
     }
   }
 
