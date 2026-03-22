@@ -5,6 +5,4 @@ CODEX_COMMANDS.md
 
 MODEL: GPT-5.4
 REASONING: medium
-
-COMMANDS:
-build 80 - 84
+COMMAND: build 85 - 90

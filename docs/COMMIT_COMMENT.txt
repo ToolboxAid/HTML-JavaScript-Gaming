@@ -4,10 +4,10 @@ David Quesenberry
 COMMIT_COMMENT.txt
 
 Title:
-Build Samples 80–84 input system expansion
+Build Samples 85–90 combat foundation capabilities
 
 Body:
-- Add input queue, timing windows, cooldowns, chaining, and debug overlay
-- Keep logic in engine/input
-- Keep samples proof-only
-- Update samples/index.html
+- Add hitbox/hurtbox, attack timing, damage, knockback, health, and combat debug capabilities
+- Keep reusable combat logic in engine-owned paths
+- Keep samples 85–90 as proof-only and aligned to Sample01 structure
+- Update samples/index.html through Sample90

@@ -5,6 +5,7 @@ David Quesenberry
 index.js
 */
 export { drawSceneFrame, drawFrame, drawPanel } from './DebugPanel.js';
+export { drawCombatDebugOverlay } from './CombatDebugOverlay.js';
 export { default as StatsTracker } from './StatsTracker.js';
 export { drawMinimap } from './Minimap.js';
 export { validateWorldEntities, drawValidationPanel } from './Validation.js';

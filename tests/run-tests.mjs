@@ -6,6 +6,7 @@ run-tests.mjs
 */
 import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
+import { run as runCombat } from './combat/Combat.test.mjs';
 import { run as runEntity } from './entity/Entity.test.mjs';
 import { run as runInputMap } from './input/InputMap.test.mjs';
 import { run as runInputService } from './input/InputService.test.mjs';
@@ -19,6 +20,7 @@ import './theme.test.js';
 const tests = [
     ['FixedTicker', runFixedTicker],
     ['FrameClock', runFrameClock],
+    ['Combat', runCombat],
     ['Entity', runEntity],
     ['InputMap', runInputMap],
     ['InputService', runInputService],
