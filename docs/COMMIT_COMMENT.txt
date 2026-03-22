@@ -1,0 +1,13 @@
+Toolbox Aid
+David Quesenberry
+03/22/2026
+COMMIT_COMMENT.txt
+
+Title:
+Build Samples 80–84 input system expansion
+
+Body:
+- Add input queue, timing windows, cooldowns, chaining, and debug overlay
+- Keep logic in engine/input
+- Keep samples proof-only
+- Update samples/index.html
