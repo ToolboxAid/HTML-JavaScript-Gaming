@@ -5,4 +5,5 @@ David Quesenberry
 index.js
 */
 export { default as StorageService } from './StorageService.js';
+export { compressText, decompressText, compressJson, decompressJson } from './CompressionService.js';
 export { serializeWorldState, deserializeWorldState } from './WorldSerializer.js';

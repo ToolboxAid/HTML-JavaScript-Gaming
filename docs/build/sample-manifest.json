@@ -1,0 +1,485 @@
+{
+  "generatedAt": "repo-time",
+  "samples": [
+    {
+      "id": "sample01-basic-loop",
+      "indexHtml": "samples/sample01-basic-loop/index.html"
+    },
+    {
+      "id": "sample02-keyboard-move",
+      "indexHtml": "samples/sample02-keyboard-move/index.html"
+    },
+    {
+      "id": "sample03-mouse-input",
+      "indexHtml": "samples/sample03-mouse-input/index.html"
+    },
+    {
+      "id": "sample04-gamepad-input",
+      "indexHtml": "samples/sample04-gamepad-input/index.html"
+    },
+    {
+      "id": "sample05-scene-switch",
+      "indexHtml": "samples/sample05-scene-switch/index.html"
+    },
+    {
+      "id": "sample06-input-mapping",
+      "indexHtml": "samples/sample06-input-mapping/index.html"
+    },
+    {
+      "id": "sample07-entity-movement",
+      "indexHtml": "samples/sample07-entity-movement/index.html"
+    },
+    {
+      "id": "sample08-render-adapter",
+      "indexHtml": "samples/sample08-render-adapter/index.html"
+    },
+    {
+      "id": "sample09-collision",
+      "indexHtml": "samples/sample09-collision/index.html"
+    },
+    {
+      "id": "sample10-collision-response",
+      "indexHtml": "samples/sample10-collision-response/index.html"
+    },
+    {
+      "id": "sample100-state-driven-ai",
+      "indexHtml": "samples/sample100-state-driven-ai/index.html"
+    },
+    {
+      "id": "sample101-group-behaviors",
+      "indexHtml": "samples/sample101-group-behaviors/index.html"
+    },
+    {
+      "id": "sample102-quest-system",
+      "indexHtml": "samples/sample102-quest-system/index.html"
+    },
+    {
+      "id": "sample103-scripting-system",
+      "indexHtml": "samples/sample103-scripting-system/index.html"
+    },
+    {
+      "id": "sample104-cutscene-system",
+      "indexHtml": "samples/sample104-cutscene-system/index.html"
+    },
+    {
+      "id": "sample105-spawn-system",
+      "indexHtml": "samples/sample105-spawn-system/index.html"
+    },
+    {
+      "id": "sample106-day-night-cycle",
+      "indexHtml": "samples/sample106-day-night-cycle/index.html"
+    },
+    {
+      "id": "sample107-weather-system",
+      "indexHtml": "samples/sample107-weather-system/index.html"
+    },
+    {
+      "id": "sample108-world-streaming",
+      "indexHtml": "samples/sample108-world-streaming/index.html"
+    },
+    {
+      "id": "sample109-input-remapping",
+      "indexHtml": "samples/sample109-input-remapping/index.html"
+    },
+    {
+      "id": "sample11-multiple-solids",
+      "indexHtml": "samples/sample11-multiple-solids/index.html"
+    },
+    {
+      "id": "sample110-controller-support",
+      "indexHtml": "samples/sample110-controller-support/index.html"
+    },
+    {
+      "id": "sample111-resolution-scaling",
+      "indexHtml": "samples/sample111-resolution-scaling/index.html"
+    },
+    {
+      "id": "sample112-mobile-support",
+      "indexHtml": "samples/sample112-mobile-support/index.html"
+    },
+    {
+      "id": "sample113-asset-optimization",
+      "indexHtml": "samples/sample113-asset-optimization/index.html"
+    },
+    {
+      "id": "sample114-memory-management",
+      "indexHtml": "samples/sample114-memory-management/index.html"
+    },
+    {
+      "id": "sample115-save-compression",
+      "indexHtml": "samples/sample115-save-compression/index.html"
+    },
+    {
+      "id": "sample116-replay-system",
+      "indexHtml": "samples/sample116-replay-system/index.html"
+    },
+    {
+      "id": "sample117-mini-map-system",
+      "indexHtml": "samples/sample117-mini-map-system/index.html"
+    },
+    {
+      "id": "sample118-achievements-system",
+      "indexHtml": "samples/sample118-achievements-system/index.html"
+    },
+    {
+      "id": "sample119-localization-system",
+      "indexHtml": "samples/sample119-localization-system/index.html"
+    },
+    {
+      "id": "sample12-axis-separated-collision",
+      "indexHtml": "samples/sample12-axis-separated-collision/index.html"
+    },
+    {
+      "id": "sample120-packaging-build-system",
+      "indexHtml": "samples/sample120-packaging-build-system/index.html"
+    },
+    {
+      "id": "sample13-tile-collision",
+      "indexHtml": "samples/sample13-tile-collision/index.html"
+    },
+    {
+      "id": "sample14-collision-debug-tools",
+      "indexHtml": "samples/sample14-collision-debug-tools/index.html"
+    },
+    {
+      "id": "sample15-ecs-foundation",
+      "indexHtml": "samples/sample15-ecs-foundation/index.html"
+    },
+    {
+      "id": "sample16-ecs-movement-system",
+      "indexHtml": "samples/sample16-ecs-movement-system/index.html"
+    },
+    {
+      "id": "sample17-ecs-input-system",
+      "indexHtml": "samples/sample17-ecs-input-system/index.html"
+    },
+    {
+      "id": "sample18-ecs-collision-system",
+      "indexHtml": "samples/sample18-ecs-collision-system/index.html"
+    },
+    {
+      "id": "sample19-ecs-render-system",
+      "indexHtml": "samples/sample19-ecs-render-system/index.html"
+    },
+    {
+      "id": "sample20-ecs-scene-world",
+      "indexHtml": "samples/sample20-ecs-scene-world/index.html"
+    },
+    {
+      "id": "sample21-ui-overlay",
+      "indexHtml": "samples/sample21-ui-overlay/index.html"
+    },
+    {
+      "id": "sample22-entity-lifecycle",
+      "indexHtml": "samples/sample22-entity-lifecycle/index.html"
+    },
+    {
+      "id": "sample23-debug-stats",
+      "indexHtml": "samples/sample23-debug-stats/index.html"
+    },
+    {
+      "id": "sample24-data-driven-world",
+      "indexHtml": "samples/sample24-data-driven-world/index.html"
+    },
+    {
+      "id": "sample25-camera-follow",
+      "indexHtml": "samples/sample25-camera-follow/index.html"
+    },
+    {
+      "id": "sample26-camera-bounds",
+      "indexHtml": "samples/sample26-camera-bounds/index.html"
+    },
+    {
+      "id": "sample27-minimap",
+      "indexHtml": "samples/sample27-minimap/index.html"
+    },
+    {
+      "id": "sample28-asset-registry",
+      "indexHtml": "samples/sample28-asset-registry/index.html"
+    },
+    {
+      "id": "sample29-save-load-state",
+      "indexHtml": "samples/sample29-save-load-state/index.html"
+    },
+    {
+      "id": "sample30-level-loader",
+      "indexHtml": "samples/sample30-level-loader/index.html"
+    },
+    {
+      "id": "sample31-animation-system",
+      "indexHtml": "samples/sample31-animation-system/index.html"
+    },
+    {
+      "id": "sample32-state-machine",
+      "indexHtml": "samples/sample32-state-machine/index.html"
+    },
+    {
+      "id": "sample33-interaction-system",
+      "indexHtml": "samples/sample33-interaction-system/index.html"
+    },
+    {
+      "id": "sample34-projectile-system",
+      "indexHtml": "samples/sample34-projectile-system/index.html"
+    },
+    {
+      "id": "sample35-enemy-patrol-ai",
+      "indexHtml": "samples/sample35-enemy-patrol-ai/index.html"
+    },
+    {
+      "id": "sample36-playable-micro-level",
+      "indexHtml": "samples/sample36-playable-micro-level/index.html"
+    },
+    {
+      "id": "sample37-sprite-render-layer",
+      "indexHtml": "samples/sample37-sprite-render-layer/index.html"
+    },
+    {
+      "id": "sample38-animation-sprite-binding",
+      "indexHtml": "samples/sample38-animation-sprite-binding/index.html"
+    },
+    {
+      "id": "sample39-z-layer-ordering",
+      "indexHtml": "samples/sample39-z-layer-ordering/index.html"
+    },
+    {
+      "id": "sample40-prefab-system",
+      "indexHtml": "samples/sample40-prefab-system/index.html"
+    },
+    {
+      "id": "sample41-game-mode-state",
+      "indexHtml": "samples/sample41-game-mode-state/index.html"
+    },
+    {
+      "id": "sample42-polished-playable-slice",
+      "indexHtml": "samples/sample42-polished-playable-slice/index.html"
+    },
+    {
+      "id": "sample43-sprite-atlas-image-rendering",
+      "indexHtml": "samples/sample43-sprite-atlas-image-rendering/index.html"
+    },
+    {
+      "id": "sample44-camera-system",
+      "indexHtml": "samples/sample44-camera-system/index.html"
+    },
+    {
+      "id": "sample45-tilemap-system",
+      "indexHtml": "samples/sample45-tilemap-system/index.html"
+    },
+    {
+      "id": "sample46-input-action-mapping",
+      "indexHtml": "samples/sample46-input-action-mapping/index.html"
+    },
+    {
+      "id": "sample47-world-serialization",
+      "indexHtml": "samples/sample47-world-serialization/index.html"
+    },
+    {
+      "id": "sample48-tile-camera-sprite-slice",
+      "indexHtml": "samples/sample48-tile-camera-sprite-slice/index.html"
+    },
+    {
+      "id": "sample49-real-sprite-rendering",
+      "indexHtml": "samples/sample49-real-sprite-rendering/index.html"
+    },
+    {
+      "id": "sample50-animation-system",
+      "indexHtml": "samples/sample50-animation-system/index.html"
+    },
+    {
+      "id": "sample51-physics-system",
+      "indexHtml": "samples/sample51-physics-system/index.html"
+    },
+    {
+      "id": "sample52-collision-resolution",
+      "indexHtml": "samples/sample52-collision-resolution/index.html"
+    },
+    {
+      "id": "sample53-tile-metadata",
+      "indexHtml": "samples/sample53-tile-metadata/index.html"
+    },
+    {
+      "id": "sample54-nes-style-zones-parallax",
+      "indexHtml": "samples/sample54-nes-style-zones-parallax/index.html"
+    },
+    {
+      "id": "sample55-slopes-ramps",
+      "indexHtml": "samples/sample55-slopes-ramps/index.html"
+    },
+    {
+      "id": "sample56-gravity-zones",
+      "indexHtml": "samples/sample56-gravity-zones/index.html"
+    },
+    {
+      "id": "sample57-ladders-climb-zones",
+      "indexHtml": "samples/sample57-ladders-climb-zones/index.html"
+    },
+    {
+      "id": "sample58-moving-platforms",
+      "indexHtml": "samples/sample58-moving-platforms/index.html"
+    },
+    {
+      "id": "sample59-one-way-platforms",
+      "indexHtml": "samples/sample59-one-way-platforms/index.html"
+    },
+    {
+      "id": "sample60-friction-surfaces",
+      "indexHtml": "samples/sample60-friction-surfaces/index.html"
+    },
+    {
+      "id": "sample61-trigger-zones",
+      "indexHtml": "samples/sample61-trigger-zones/index.html"
+    },
+    {
+      "id": "sample62-pickups-collectibles",
+      "indexHtml": "samples/sample62-pickups-collectibles/index.html"
+    },
+    {
+      "id": "sample63-switches-buttons",
+      "indexHtml": "samples/sample63-switches-buttons/index.html"
+    },
+    {
+      "id": "sample64-doors-gates",
+      "indexHtml": "samples/sample64-doors-gates/index.html"
+    },
+    {
+      "id": "sample65-basic-npc-entity",
+      "indexHtml": "samples/sample65-basic-npc-entity/index.html"
+    },
+    {
+      "id": "sample66-interaction-press-key",
+      "indexHtml": "samples/sample66-interaction-press-key/index.html"
+    },
+    {
+      "id": "sample67-hitboxes-hurtboxes",
+      "indexHtml": "samples/sample67-hitboxes-hurtboxes/index.html"
+    },
+    {
+      "id": "sample68-projectile-system",
+      "indexHtml": "samples/sample68-projectile-system/index.html"
+    },
+    {
+      "id": "sample69-health-system",
+      "indexHtml": "samples/sample69-health-system/index.html"
+    },
+    {
+      "id": "sample70-damage-knockback",
+      "indexHtml": "samples/sample70-damage-knockback/index.html"
+    },
+    {
+      "id": "sample71-invulnerability-frames",
+      "indexHtml": "samples/sample71-invulnerability-frames/index.html"
+    },
+    {
+      "id": "sample72-simple-enemy-ai",
+      "indexHtml": "samples/sample72-simple-enemy-ai/index.html"
+    },
+    {
+      "id": "sample73-camera-dead-zone",
+      "indexHtml": "samples/sample73-camera-dead-zone/index.html"
+    },
+    {
+      "id": "sample74-camera-look-ahead",
+      "indexHtml": "samples/sample74-camera-look-ahead/index.html"
+    },
+    {
+      "id": "sample75-camera-smoothing",
+      "indexHtml": "samples/sample75-camera-smoothing/index.html"
+    },
+    {
+      "id": "sample76-camera-bounds",
+      "indexHtml": "samples/sample76-camera-bounds/index.html"
+    },
+    {
+      "id": "sample77-camera-shake",
+      "indexHtml": "samples/sample77-camera-shake/index.html"
+    },
+    {
+      "id": "sample78-camera-zoom",
+      "indexHtml": "samples/sample78-camera-zoom/index.html"
+    },
+    {
+      "id": "sample79-input-buffering",
+      "indexHtml": "samples/sample79-input-buffering/index.html"
+    },
+    {
+      "id": "sample80-input-queue-priority",
+      "indexHtml": "samples/sample80-input-queue-priority/index.html"
+    },
+    {
+      "id": "sample81-input-timing-windows",
+      "indexHtml": "samples/sample81-input-timing-windows/index.html"
+    },
+    {
+      "id": "sample82-action-cooldowns",
+      "indexHtml": "samples/sample82-action-cooldowns/index.html"
+    },
+    {
+      "id": "sample83-input-chaining",
+      "indexHtml": "samples/sample83-input-chaining/index.html"
+    },
+    {
+      "id": "sample84-input-state-debug-overlay",
+      "indexHtml": "samples/sample84-input-state-debug-overlay/index.html"
+    },
+    {
+      "id": "sample85-hitboxes-hurtboxes",
+      "indexHtml": "samples/sample85-hitboxes-hurtboxes/index.html"
+    },
+    {
+      "id": "sample86-attack-timing-windows",
+      "indexHtml": "samples/sample86-attack-timing-windows/index.html"
+    },
+    {
+      "id": "sample87-damage-invulnerability",
+      "indexHtml": "samples/sample87-damage-invulnerability/index.html"
+    },
+    {
+      "id": "sample88-knockback-response",
+      "indexHtml": "samples/sample88-knockback-response/index.html"
+    },
+    {
+      "id": "sample89-health-death-state",
+      "indexHtml": "samples/sample89-health-death-state/index.html"
+    },
+    {
+      "id": "sample90-combat-debug-overlay",
+      "indexHtml": "samples/sample90-combat-debug-overlay/index.html"
+    },
+    {
+      "id": "sample91-event-bus",
+      "indexHtml": "samples/sample91-event-bus/index.html"
+    },
+    {
+      "id": "sample92-state-machine-framework",
+      "indexHtml": "samples/sample92-state-machine-framework/index.html"
+    },
+    {
+      "id": "sample93-config-system",
+      "indexHtml": "samples/sample93-config-system/index.html"
+    },
+    {
+      "id": "sample94-asset-loader-system",
+      "indexHtml": "samples/sample94-asset-loader-system/index.html"
+    },
+    {
+      "id": "sample95-debug-tools",
+      "indexHtml": "samples/sample95-debug-tools/index.html"
+    },
+    {
+      "id": "sample96-performance-metrics",
+      "indexHtml": "samples/sample96-performance-metrics/index.html"
+    },
+    {
+      "id": "sample97-grid-pathfinding",
+      "indexHtml": "samples/sample97-grid-pathfinding/index.html"
+    },
+    {
+      "id": "sample98-patrol-ai",
+      "indexHtml": "samples/sample98-patrol-ai/index.html"
+    },
+    {
+      "id": "sample99-chase-evade-ai",
+      "indexHtml": "samples/sample99-chase-evade-ai/index.html"
+    }
+  ]
+}

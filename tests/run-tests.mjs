@@ -10,6 +10,7 @@ import { run as runConfigStore } from './config/ConfigStore.test.mjs';
 import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
 import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
+import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runCombat } from './combat/Combat.test.mjs';
 import { run as runEntity } from './entity/Entity.test.mjs';
 import { run as runEventBus } from './events/EventBus.test.mjs';
@@ -29,6 +30,7 @@ const tests = [
     ['AssetLoaderSystem', runAssetLoaderSystem],
     ['ConfigStore', runConfigStore],
     ['FixedTicker', runFixedTicker],
+    ['FinalSystems', runFinalSystems],
     ['FrameClock', runFrameClock],
     ['RuntimeMetrics', runRuntimeMetrics],
     ['Combat', runCombat],
