@@ -1,0 +1,28 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/22/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample156 - Lag / Packet Loss Simulation</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Sample156 - Lag / Packet Loss Simulation</h1>
+    <p>Tests network behavior under reusable lag, jitter, and packet-loss conditions.</p>
+    <canvas id="game" width="960" height="540"></canvas>
+    <section>
+      <button id="lag-clean" type="button">Clean Link</button>
+      <button id="lag-medium" type="button">Medium Lag</button>
+      <button id="lag-lossy" type="button">Lossy Link</button>
+      <button id="lag-send" type="button">Send Burst</button>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

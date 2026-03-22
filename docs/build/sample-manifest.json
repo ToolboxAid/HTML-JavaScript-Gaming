@@ -250,8 +250,56 @@
       "indexHtml": "samples/sample146-release-validation-checklist-flow/index.html"
     },
     {
+      "id": "sample147-networking-layer",
+      "indexHtml": "samples/sample147-networking-layer/index.html"
+    },
+    {
+      "id": "sample148-state-sync-replication",
+      "indexHtml": "samples/sample148-state-sync-replication/index.html"
+    },
+    {
+      "id": "sample149-client-prediction-reconciliation",
+      "indexHtml": "samples/sample149-client-prediction-reconciliation/index.html"
+    },
+    {
       "id": "sample15-ecs-foundation",
       "indexHtml": "samples/sample15-ecs-foundation/index.html"
+    },
+    {
+      "id": "sample150-serialization-system",
+      "indexHtml": "samples/sample150-serialization-system/index.html"
+    },
+    {
+      "id": "sample151-network-debug-overlay",
+      "indexHtml": "samples/sample151-network-debug-overlay/index.html"
+    },
+    {
+      "id": "sample152-remote-entity-interpolation",
+      "indexHtml": "samples/sample152-remote-entity-interpolation/index.html"
+    },
+    {
+      "id": "sample153-lobby-session-system",
+      "indexHtml": "samples/sample153-lobby-session-system/index.html"
+    },
+    {
+      "id": "sample154-host-server-bootstrap",
+      "indexHtml": "samples/sample154-host-server-bootstrap/index.html"
+    },
+    {
+      "id": "sample155-interest-management",
+      "indexHtml": "samples/sample155-interest-management/index.html"
+    },
+    {
+      "id": "sample156-lag-packet-loss-simulation",
+      "indexHtml": "samples/sample156-lag-packet-loss-simulation/index.html"
+    },
+    {
+      "id": "sample157-chat-presence-layer",
+      "indexHtml": "samples/sample157-chat-presence-layer/index.html"
+    },
+    {
+      "id": "sample158-rollback-replay-diagnostics",
+      "indexHtml": "samples/sample158-rollback-replay-diagnostics/index.html"
     },
     {
       "id": "sample16-ecs-movement-system",

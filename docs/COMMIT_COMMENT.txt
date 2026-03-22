@@ -4,10 +4,10 @@ David Quesenberry
 COMMIT_COMMENT.txt
 
 Title:
-Build Samples 141–146 final polish and deployment capabilities
+Build Samples 147–158 multiplayer networking stack capabilities
 
 Body:
-- Add settings, accessibility, deployment profiles, distribution packaging, crash recovery, and release validation capabilities
-- Keep reusable logic in engine-owned or repo-owned paths
-- Keep samples 141–146 as proof-only and aligned to Sample01 structure
-- Update samples/index.html through Sample146
+- Add networking, sync, prediction, serialization, diagnostics, lobby/session, host bootstrap, interest management, lag simulation, chat/presence, and rollback/replay diagnostic capabilities
+- Keep reusable multiplayer logic in engine-owned or repo-approved paths
+- Keep samples 147–158 as proof-only and aligned to Sample01 structure
+- Update samples/index.html through Sample158

@@ -3,15 +3,15 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample141–146 Planning Pack
+# Sample147–158 Planning Pack
 
 This ZIP contains planning documents only.
 
 Phase:
-9 - Final Polish + Deployment
+10 - Multiplayer Networking Stack
 
 Structure:
-- /docs/plans/PLAN_PR_141.md through PLAN_PR_146.md
+- /docs/plans/PLAN_PR_147.md through PLAN_PR_158.md
 - /docs/CODEX_COMMANDS.md
 - /docs/COMMIT_COMMENT.txt
 - /docs/NEXT_COMMAND.txt

@@ -14,6 +14,7 @@ import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runFullscreenService } from './final/FullscreenService.test.mjs';
 import { run as runPlatformUxSystems } from './final/PlatformUxSystems.test.mjs';
 import { run as runPrecisionCollisionSystems } from './final/PrecisionCollisionSystems.test.mjs';
+import { run as runMultiplayerNetworkingStack } from './final/MultiplayerNetworkingStack.test.mjs';
 import { run as runReleaseReadinessSystems } from './final/ReleaseReadinessSystems.test.mjs';
 import { run as runCombat } from './combat/Combat.test.mjs';
 import { run as runEntity } from './entity/Entity.test.mjs';
@@ -38,6 +39,7 @@ const tests = [
     ['FullscreenService', runFullscreenService],
     ['PlatformUxSystems', runPlatformUxSystems],
     ['PrecisionCollisionSystems', runPrecisionCollisionSystems],
+    ['MultiplayerNetworkingStack', runMultiplayerNetworkingStack],
     ['ReleaseReadinessSystems', runReleaseReadinessSystems],
     ['FrameClock', runFrameClock],
     ['RuntimeMetrics', runRuntimeMetrics],
