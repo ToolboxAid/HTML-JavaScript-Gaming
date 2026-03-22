@@ -4,10 +4,10 @@ David Quesenberry
 COMMIT_COMMENT.txt
 
 Title:
-Build Samples 85–90 combat foundation capabilities
+Build Samples 91–96 systems foundation capabilities
 
 Body:
-- Add hitbox/hurtbox, attack timing, damage, knockback, health, and combat debug capabilities
-- Keep reusable combat logic in engine-owned paths
-- Keep samples 85–90 as proof-only and aligned to Sample01 structure
-- Update samples/index.html through Sample90
+- Add event bus, state machine, config, asset loader, debug tools, and performance metrics capabilities
+- Keep reusable systems logic in engine-owned paths
+- Keep samples 91–96 as proof-only and aligned to Sample01 structure
+- Update samples/index.html through Sample96

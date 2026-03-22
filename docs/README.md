@@ -3,17 +3,17 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample85–90 Planning Pack
+# Sample91–96 Planning Pack
 
 This ZIP contains planning documents only.
 
 Structure:
-- /docs/plans/PLAN_PR_85.md
-- /docs/plans/PLAN_PR_86.md
-- /docs/plans/PLAN_PR_87.md
-- /docs/plans/PLAN_PR_88.md
-- /docs/plans/PLAN_PR_89.md
-- /docs/plans/PLAN_PR_90.md
+- /docs/plans/PLAN_PR_91.md
+- /docs/plans/PLAN_PR_92.md
+- /docs/plans/PLAN_PR_93.md
+- /docs/plans/PLAN_PR_94.md
+- /docs/plans/PLAN_PR_95.md
+- /docs/plans/PLAN_PR_96.md
 - /docs/CODEX_COMMANDS.md
 - /docs/COMMIT_COMMENT.txt
 - /docs/NEXT_COMMAND.txt

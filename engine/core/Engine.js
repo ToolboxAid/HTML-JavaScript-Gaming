@@ -5,9 +5,11 @@ David Quesenberry
 Engine.js
 */
 import { CanvasRenderer } from '../render/index.js';
+import RuntimeMetrics from './RuntimeMetrics.js';
+import EventBus from '../events/EventBus.js';
 
 export default class Engine {
-  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null } = {}) {
+  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null, events = null, metrics = null } = {}) {
     if (!canvas) {
       throw new Error('Engine requires a canvas.');
     }
@@ -19,6 +21,8 @@ export default class Engine {
 
     this.renderer = new CanvasRenderer(this.ctx);
     this.input = input;
+    this.events = events || new EventBus();
+    this.metrics = metrics || new RuntimeMetrics();
     this.fixedStepMs = fixedStepMs;
     this.fixedStepSeconds = fixedStepMs / 1000;
     this.scene = null;
@@ -60,24 +64,41 @@ export default class Engine {
 
   tick(now) {
     const deltaMs = now - this.lastTime;
+    const frameStart = performance.now();
     this.lastTime = now;
     this.accumulator += deltaMs;
+    let updateDurationMs = 0;
+    let renderDurationMs = 0;
+    let fixedUpdates = 0;
 
     if (this.input && typeof this.input.update === 'function') {
       this.input.update(deltaMs / 1000);
     }
 
+    const updateStart = performance.now();
     while (this.accumulator >= this.fixedStepMs) {
       if (this.scene && typeof this.scene.update === 'function') {
         this.scene.update(this.fixedStepSeconds, this);
       }
 
       this.accumulator -= this.fixedStepMs;
+      fixedUpdates += 1;
     }
+    updateDurationMs = performance.now() - updateStart;
 
+    const renderStart = performance.now();
     if (this.scene && typeof this.scene.render === 'function') {
       this.scene.render(this.renderer, this);
     }
+    renderDurationMs = performance.now() - renderStart;
+
+    this.metrics.recordFrame({
+      dtSeconds: deltaMs / 1000,
+      frameMs: performance.now() - frameStart,
+      updateMs: updateDurationMs,
+      renderMs: renderDurationMs,
+      fixedUpdates,
+    });
 
     this.rafId = requestAnimationFrame(this.tick);
   }
