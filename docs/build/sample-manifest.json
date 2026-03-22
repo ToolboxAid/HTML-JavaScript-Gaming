@@ -142,8 +142,48 @@
       "indexHtml": "samples/sample121-fullscreen-ability/index.html"
     },
     {
+      "id": "sample122-audio-system",
+      "indexHtml": "samples/sample122-audio-system/index.html"
+    },
+    {
+      "id": "sample123-midi-player",
+      "indexHtml": "samples/sample123-midi-player/index.html"
+    },
+    {
+      "id": "sample124-synthesizer",
+      "indexHtml": "samples/sample124-synthesizer/index.html"
+    },
+    {
+      "id": "sample125-frequency-player",
+      "indexHtml": "samples/sample125-frequency-player/index.html"
+    },
+    {
+      "id": "sample126-particle-fx",
+      "indexHtml": "samples/sample126-particle-fx/index.html"
+    },
+    {
+      "id": "sample127-ui-framework",
+      "indexHtml": "samples/sample127-ui-framework/index.html"
+    },
+    {
+      "id": "sample128-input-context-system",
+      "indexHtml": "samples/sample128-input-context-system/index.html"
+    },
+    {
+      "id": "sample129-scene-transitions",
+      "indexHtml": "samples/sample129-scene-transitions/index.html"
+    },
+    {
       "id": "sample13-tile-collision",
       "indexHtml": "samples/sample13-tile-collision/index.html"
+    },
+    {
+      "id": "sample130-save-slots-profiles",
+      "indexHtml": "samples/sample130-save-slots-profiles/index.html"
+    },
+    {
+      "id": "sample131-logging-error-system",
+      "indexHtml": "samples/sample131-logging-error-system/index.html"
     },
     {
       "id": "sample14-collision-debug-tools",

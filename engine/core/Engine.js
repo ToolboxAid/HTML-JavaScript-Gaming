@@ -8,9 +8,11 @@ import { CanvasRenderer } from '../render/index.js';
 import RuntimeMetrics from './RuntimeMetrics.js';
 import EventBus from '../events/EventBus.js';
 import { FullscreenService } from '../runtime/index.js';
+import { AudioService } from '../audio/index.js';
+import { Logger } from '../logging/index.js';
 
 export default class Engine {
-  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null, events = null, metrics = null, fullscreen = null } = {}) {
+  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null, events = null, metrics = null, fullscreen = null, audio = null, logger = null } = {}) {
     if (!canvas) {
       throw new Error('Engine requires a canvas.');
     }
@@ -25,6 +27,8 @@ export default class Engine {
     this.events = events || new EventBus();
     this.metrics = metrics || new RuntimeMetrics();
     this.fullscreen = fullscreen || new FullscreenService({ target: canvas });
+    this.audio = audio || new AudioService();
+    this.logger = logger || new Logger({ channel: 'engine' });
     this.fixedStepMs = fixedStepMs;
     this.fixedStepSeconds = fixedStepMs / 1000;
     this.scene = null;
@@ -81,6 +85,9 @@ export default class Engine {
 
     if (this.input && typeof this.input.update === 'function') {
       this.input.update(deltaMs / 1000);
+    }
+    if (this.audio && typeof this.audio.update === 'function') {
+      this.audio.update(deltaMs / 1000);
     }
 
     const updateStart = performance.now();
