@@ -8,6 +8,8 @@ export const ThemeTokens = {
   color: {
     canvasBackground: '#7a00df',
     actorFill: '#ed9700',
+    panelFill: '#2c1c66',
+    panelBorder: '#d8d5ff',
     textCanvs: '#dddddd',
     textPrimary: '#333333'
   },
