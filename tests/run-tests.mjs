@@ -20,6 +20,7 @@ import { run as runMouseState } from './input/MouseState.test.mjs';
 import './input/GamepadState.test.mjs';
 import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
 import { run as runWorldSystems } from './world/WorldSystems.test.mjs';
+import { run as runProductionReadiness } from './production/ProductionReadiness.test.mjs';
 import './render/Renderer.test.mjs';
 import './theme.test.js';
 
@@ -37,6 +38,7 @@ const tests = [
     ['InputService', runInputService],
     ['KeyboardState', runKeyboardState],
     ['MouseState', runMouseState],
+    ['ProductionReadiness', runProductionReadiness],
     ['SceneManager', runSceneManager],
     ['WorldSystems', runWorldSystems],
 ];

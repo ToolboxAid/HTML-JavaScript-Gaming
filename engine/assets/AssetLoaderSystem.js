@@ -5,10 +5,11 @@ David Quesenberry
 AssetLoaderSystem.js
 */
 export default class AssetLoaderSystem {
-  constructor({ registry, imageLoader, loaders = {} } = {}) {
+  constructor({ registry, imageLoader, loaders = {}, optimizer = null } = {}) {
     this.registry = registry;
     this.imageLoader = imageLoader;
     this.loaders = new Map(Object.entries(loaders));
+    this.optimizer = optimizer;
     this.results = new Map();
     this.status = 'idle';
     this.lastError = null;
@@ -56,21 +57,28 @@ export default class AssetLoaderSystem {
 
   async resolveAsset(id, definition) {
     const type = definition.type ?? 'unknown';
+    const load = async () => {
+      if (type === 'image' && this.imageLoader) {
+        return this.imageLoader.load(id, definition.source ?? definition.path ?? definition);
+      }
 
-    if (type === 'image' && this.imageLoader) {
-      return this.imageLoader.load(id, definition.source ?? definition.path ?? definition);
+      const loader = this.loaders.get(type);
+      if (loader) {
+        return loader(id, definition);
+      }
+
+      if (definition.source !== undefined) {
+        return definition.source;
+      }
+
+      return definition;
+    };
+
+    if (this.optimizer) {
+      return this.optimizer.getOrCreate(id, definition, load);
     }
 
-    const loader = this.loaders.get(type);
-    if (loader) {
-      return loader(id, definition);
-    }
-
-    if (definition.source !== undefined) {
-      return definition.source;
-    }
-
-    return definition;
+    return load();
   }
 
   getSnapshot() {

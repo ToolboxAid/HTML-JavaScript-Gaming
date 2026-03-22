@@ -6,7 +6,7 @@ ActionInputMap.js
 */
 export default class ActionInputMap {
   constructor(bindings = {}) {
-    this.bindings = bindings;
+    this.bindings = { ...bindings };
   }
 
   getKeys(action) {
@@ -15,5 +15,14 @@ export default class ActionInputMap {
 
   getActions() {
     return Object.keys(this.bindings);
+  }
+
+  setKeys(action, keys = []) {
+    this.bindings[action] = [...keys];
+  }
+
+  remapAction(action, keys = []) {
+    this.setKeys(action, keys);
+    return this.getKeys(action);
   }
 }

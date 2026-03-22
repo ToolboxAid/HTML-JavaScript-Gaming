@@ -4,10 +4,10 @@ David Quesenberry
 COMMIT_COMMENT.txt
 
 Title:
-Build Samples 102–108 world systems
+Build Samples 109–114 production-readiness capabilities
 
 Body:
-- Add quest, scripting, cutscene, spawn, day/night, weather, and streaming systems
-- Keep all logic engine-owned
-- Keep samples proof-only
-- Update samples/index.html
+- Add input remapping, controller support, resolution scaling, mobile tweaks, asset optimization, and memory management capabilities
+- Keep reusable production-readiness logic in engine-owned paths
+- Keep samples 109–114 as proof-only and aligned to Sample01 structure
+- Update samples/index.html through Sample114

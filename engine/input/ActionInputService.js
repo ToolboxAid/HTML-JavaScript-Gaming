@@ -5,6 +5,7 @@ David Quesenberry
 ActionInputService.js
 */
 import ActionInputMap from './ActionInputMap.js';
+import GamepadState from './GamepadState.js';
 
 export default class ActionInputService {
   constructor({
@@ -16,6 +17,7 @@ export default class ActionInputService {
     actionChains = [],
   } = {}) {
     this.actionMap = actionMap;
+    this.gamepads = new GamepadState();
     this.down = new Set();
     this.pressedCodes = new Set();
     this.framePressedCodes = new Set();
@@ -73,6 +75,7 @@ export default class ActionInputService {
   }
 
   update(dtSeconds = 0) {
+    this.updateGamepads();
     this.framePressedCodes = new Set(this.pressedCodes);
     this.pressedActions.clear();
     this.actionWindowHits.clear();
@@ -84,7 +87,7 @@ export default class ActionInputService {
 
     for (const action of this.actionMap.getActions()) {
       const keys = this.actionMap.getKeys(action);
-      const wasPressed = keys.some((code) => this.framePressedCodes.has(code));
+      const wasPressed = keys.some((code) => this.isBindingPressed(code));
 
       if (!wasPressed) {
         continue;
@@ -221,7 +224,7 @@ export default class ActionInputService {
   }
 
   isActionDown(action) {
-    return this.actionMap.getKeys(action).some((code) => this.down.has(code));
+    return this.actionMap.getKeys(action).some((code) => this.isBindingDown(code));
   }
 
   isActionPressed(action) {
@@ -426,5 +429,57 @@ export default class ActionInputService {
     }
 
     map.delete(action);
+  }
+
+  remapAction(action, bindings = []) {
+    this.actionMap.remapAction(action, bindings);
+    return this.actionMap.getKeys(action);
+  }
+
+  updateGamepads() {
+    if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') {
+      return;
+    }
+
+    const pads = Array.from(navigator.getGamepads()).filter(Boolean);
+    this.gamepads.setSnapshot(pads);
+  }
+
+  isBindingDown(binding) {
+    if (binding.startsWith('Pad')) {
+      return this.isGamepadBindingDown(binding);
+    }
+
+    return this.down.has(binding);
+  }
+
+  isBindingPressed(binding) {
+    if (binding.startsWith('Pad')) {
+      return this.isGamepadBindingPressed(binding);
+    }
+
+    return this.framePressedCodes.has(binding);
+  }
+
+  isGamepadBindingDown(binding) {
+    const match = /^Pad(\d+):Button(\d+)$/.exec(binding);
+    if (!match) {
+      return false;
+    }
+
+    const [, padIndex, buttonIndex] = match;
+    const pad = this.gamepads.getGamepad(Number(padIndex));
+    return Boolean(pad?.isDown(Number(buttonIndex)));
+  }
+
+  isGamepadBindingPressed(binding) {
+    const match = /^Pad(\d+):Button(\d+)$/.exec(binding);
+    if (!match) {
+      return false;
+    }
+
+    const [, padIndex, buttonIndex] = match;
+    const pad = this.gamepads.getGamepad(Number(padIndex));
+    return Boolean(pad?.isPressed(Number(buttonIndex)));
   }
 }
