@@ -42,7 +42,7 @@ export default class ECSMovementSystemScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine V2 Sample16',
+      'Engine Sample16',
       'Demonstrates an ECS movement system using transform and velocity components',
       'Each moving entity is updated through the same shared system logic',
       'Horizontal bounds reflection keeps the sample visually predictable',

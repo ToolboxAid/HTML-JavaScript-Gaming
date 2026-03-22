@@ -1,6 +1,6 @@
-# Engine V2 Gamepad Input Boundary
+# Engine Gamepad Input Boundary
 
-This slice adds gamepad support to the V2 input boundary without leaking navigator polling into scenes.
+This slice adds gamepad support to the input boundary without leaking navigator polling into scenes.
 
 ## Responsibilities
 

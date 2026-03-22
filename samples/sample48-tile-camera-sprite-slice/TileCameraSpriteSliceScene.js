@@ -136,7 +136,7 @@ export default class TileCameraSpriteSliceScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample48',
+      'Engine Sample48',
       'Combines tilemap, camera, action input, sprite-style frames, and snapshots',
       'Use Arrow keys or WASD to move, KeyK to save, KeyL to load',
       this.message,

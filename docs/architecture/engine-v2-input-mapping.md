@@ -1,4 +1,4 @@
-# Engine V2 Input Mapping
+# Engine Input Mapping
 
 This slice adds an action-based input layer on top of the existing raw keyboard boundary.
 

@@ -61,7 +61,7 @@ export default class GamepadScene extends Scene {
         renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
         renderer.drawRect(this.box.x, this.box.y, this.box.size, this.box.size, actorFill);
 
-        renderer.drawText('Engine V2 Sample04', this.textStartX, this.textStartY, {
+        renderer.drawText('Engine Sample04', this.textStartX, this.textStartY, {
             color: '#dddddd',
             font: '16px monospace',
         });

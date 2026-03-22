@@ -35,7 +35,7 @@ export default class ECSRenderSystemScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine V2 Sample19',
+      'Engine Sample19',
       'Demonstrates an ECS render system driven by queried renderable entities',
       'Each entity is drawn through one shared render pass',
       'Labels help show how rendering data can stay independent from scene wiring',

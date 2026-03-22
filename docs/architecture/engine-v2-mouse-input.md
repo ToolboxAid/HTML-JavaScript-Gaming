@@ -1,6 +1,6 @@
-# Engine V2 Mouse Input Boundary
+# Engine Mouse Input Boundary
 
-Engine V2 mouse handling is owned by the input layer.
+Engine mouse handling is owned by the input layer.
 
 ## Responsibilities
 

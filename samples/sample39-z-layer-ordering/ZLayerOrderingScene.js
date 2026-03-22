@@ -16,7 +16,7 @@ export default class ZLayerOrderingScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample39',
+      'Engine Sample39',
       'Demonstrates explicit layered draw ordering for runtime rendering',
       'The scene renders background, world, actors, projectiles, UI, and debug in order',
       'This sample defines the engine draw-order boundary for future games',

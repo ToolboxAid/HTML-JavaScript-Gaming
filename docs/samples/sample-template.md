@@ -1,19 +1,19 @@
-# V2 Sample Template Standard
+# Sample Template Standard
 
-This document defines the current source-of-truth template for V2 samples.
+This document defines the current source-of-truth template for samples.
 
 The template is based on these approved working references:
 
 - `samples/sample01-basic-loop/`
 - `samples/sample02-keyboard-move/`
 
-These samples establish the baseline for new V2 samples until a later approved template replaces them.
+These samples establish the baseline for new samples until a later approved template replaces them.
 
 ---
 
 ## Purpose
 
-Every V2 sample should:
+Every sample should:
 
 - prove one main concept clearly
 - stay small and focused
@@ -80,25 +80,25 @@ Examples:
 Use this pattern:
 
 ```text
-Engine V2 Sample XX - Short Description
+Engine Sample XX - Short Description
 ```
 
 Examples:
 
-- `Engine V2 Sample 01 - Basic Loop`
-- `Engine V2 Sample 02 - Keyboard Move`
+- `Engine Sample 01 - Basic Loop`
+- `Engine Sample 02 - Keyboard Move`
 
 ### H1
 Use:
 
 ```text
-Engine V2 SampleXX
+Engine SampleXX
 ```
 
 Examples from the current approved samples:
 
-- `Engine V2 Sample 01`
-- `Engine V2 Sample02`
+- `Engine Sample 01`
+- `Engine Sample02`
 
 Note: the current approved code is not perfectly normalized between spacing styles. New samples should stay visually consistent with the approved sample code in the repo. If naming normalization is desired, do that in a separate PR.
 
@@ -120,7 +120,7 @@ Each sample HTML page should include:
 
 ```html
 <main>
-  <h1>Engine V2 SampleXX</h1>
+  <h1>Engine SampleXX</h1>
   <p>Sample description...</p>
   <canvas id="game" width="960" height="540"></canvas>
 </main>
@@ -314,7 +314,7 @@ All samples should draw descriptive text inside the canvas.
 Use a 4–5 line format:
 
 ```text
-Engine V2 SampleXX
+Engine SampleXX
 Demonstrates <main concept>
 Use <interaction> or explain passive behavior
 Observe <expected result>
@@ -324,7 +324,7 @@ This sample <architecture boundary note>
 ### Example: sample01
 
 ```text
-Engine V2 Sample01
+Engine Sample01
 Demonstrates the core engine loop and bounded motion
 The ball updates every frame and bounces inside the rectangle
 Observe edge response and interpolated motion inside the play area
@@ -334,7 +334,7 @@ This sample keeps motion logic inside the scene
 ### Example: sample02
 
 ```text
-Engine V2 Sample02
+Engine Sample02
 Demonstrates the keyboard input boundary
 Use Arrow keys to move the box in four directions
 Observe movement driven by input state, not DOM events in the scene
@@ -416,7 +416,7 @@ Keyboard movement must be read through the input boundary, not by DOM event hand
 
 ## Concern Separation Rules
 
-All new samples must respect the V2 boundaries.
+All new samples must respect the boundaries.
 
 ### Allowed in sample HTML
 

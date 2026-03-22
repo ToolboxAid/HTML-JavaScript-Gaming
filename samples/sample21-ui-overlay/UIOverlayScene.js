@@ -58,7 +58,7 @@ export default class UIOverlayScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine V2 Sample21',
+      'Engine Sample21',
       'Demonstrates a world layer plus a separate UI overlay layer',
       'Use Arrow keys to move the player entity across the world space',
       'The HUD and debug panel stay screen-fixed instead of world-positioned',

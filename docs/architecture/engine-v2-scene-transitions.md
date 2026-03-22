@@ -1,6 +1,6 @@
-# Engine V2 Scene Transitions
+# Engine Scene Transitions
 
-This PR adds a small scene transition layer for V2 without changing the engine loop or the input boundary.
+This PR adds a small scene transition layer for without changing the engine loop or the input boundary.
 
 ## Purpose
 

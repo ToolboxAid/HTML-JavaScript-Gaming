@@ -7,7 +7,7 @@ main.js
 import Engine from '../../engine/core/Engine.js';
 import { ActionInputMap, ActionInputService } from '../../engine/input/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
-import CollisionResolutionV2Scene from './CollisionResolutionV2Scene.js';
+import CollisionResolutionScene from './CollisionResolutionScene.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
@@ -29,5 +29,5 @@ const engine = new Engine({
   input,
 });
 
-engine.setScene(new CollisionResolutionV2Scene());
+engine.setScene(new CollisionResolutionScene());
 engine.start();

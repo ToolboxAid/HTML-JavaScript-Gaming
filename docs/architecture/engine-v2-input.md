@@ -1,4 +1,4 @@
-# Engine V2 Input Boundary
+# Engine Input Boundary
 
 This slice adds keyboard input as an isolated service boundary.
 

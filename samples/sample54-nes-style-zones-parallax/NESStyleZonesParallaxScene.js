@@ -10,7 +10,7 @@ import { drawFrame, drawPanel } from '../../engine/debug/index.js';
 import { Camera2D, followCameraTarget, worldRectToScreen } from '../../engine/camera/index.js';
 import { Tilemap, renderTilemap } from '../../engine/tilemap/index.js';
 import { SpriteAtlas, ImageAssetLoader } from '../../engine/assets/index.js';
-import { AnimationControllerV2 } from '../../engine/animation/index.js';
+import { AnimationController } from '../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../engine/render/index.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '../../engine/systems/index.js';
 import { createDemoSpriteSheet } from '../sample49-real-sprite-rendering/demoSpriteFactory.js';
@@ -78,7 +78,7 @@ export default class NESStyleZonesParallaxScene extends Scene {
       maxSpeedY: 260,
       moveAcceleration: 980,
     };
-    this.animation = new AnimationControllerV2({
+    this.animation = new AnimationController({
       initial: 'idle',
       animations: {
         idle: { frames: ['idle_0'], frameDuration: 0.25, loop: true },
@@ -125,7 +125,7 @@ export default class NESStyleZonesParallaxScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample54',
+      'Engine Sample54',
       'Shows NES-style scrolling zones with simple parallax layers',
       'Move left and right to cross deliberate camera zones instead of pure free-follow',
       'Foreground tilemap stays sharp while distant layers move at slower rates',

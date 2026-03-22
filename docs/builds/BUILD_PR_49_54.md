@@ -16,7 +16,7 @@ BUILD_PR_49_54.md
 ## Engine additions
 - image-frame rendering path in renderer
 - generated image asset support in image loader
-- AnimationControllerV2
+- AnimationController
 - PhysicsSystem helpers
 - CollisionResolutionSystem helpers
 - Tile metadata lookup support

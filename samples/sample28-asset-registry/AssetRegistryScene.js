@@ -29,7 +29,7 @@ export default class AssetRegistryScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample28',
+      'Engine Sample28',
       'Demonstrates a centralized asset registry pattern before real loading is added',
       'The registry stores identifiers, asset types, paths, and status values',
       'This helps separate content references from scene logic and engine flow',

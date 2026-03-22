@@ -1,8 +1,8 @@
-# Engine V2 Entity Layer
+# Engine Entity Layer
 
 ## Purpose
 
-The V2 entity layer introduces structured game state without jumping to a full ECS design.
+The entity layer introduces structured game state without jumping to a full ECS design.
 
 This slice keeps responsibilities narrow:
 
@@ -15,7 +15,7 @@ This slice keeps responsibilities narrow:
 
 Earlier samples kept movement data directly on the scene. That worked for proving the loop, input, and mapping layers, but it does not scale well as more actors are introduced.
 
-The entity layer provides a consistent shape for game state while preserving the existing V2 boundaries:
+The entity layer provides a consistent shape for game state while preserving the existing boundaries:
 
 - scenes still orchestrate sample behavior
 - input still stays inside `InputService`

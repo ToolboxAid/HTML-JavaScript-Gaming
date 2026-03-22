@@ -73,7 +73,7 @@ export default class BouncerScene extends Scene {
     renderer.drawCircle(this.x, this.y, this.radius, theme.getColor("actorFill"));
 
     const lines = [
-      "Engine V2 Sample01",
+      "Engine Sample01",
       "Demonstrates the core engine loop and bounded motion",
       "The ball updates every frame and bounces inside the rectangle",
       "Observe edge response inside the play area",

@@ -10,7 +10,6 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 ### 1. Confirm scope
 - What feature/system are we working on?
-- Is this V2 work? (do not modify old folders)
 
 ### 2. Create PLAN_PR
 Include:
@@ -43,9 +42,9 @@ Include:
 
 ---
 
-## Typical first PR (V2)
+## Typical first PR
 
-**Title:** Bootstrap v2 structure and engine core boundaries
+**Title:** Bootstrap structure and engine core boundaries
 
 **Goal:**
 Establish clean folder structure and minimal engine foundation.

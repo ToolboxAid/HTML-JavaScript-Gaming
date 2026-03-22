@@ -10,7 +10,7 @@ import { drawFrame, drawPanel } from '../../engine/debug/index.js';
 import { Camera2D, followCameraTarget, worldRectToScreen } from '../../engine/camera/index.js';
 import { Tilemap, renderTilemap } from '../../engine/tilemap/index.js';
 import { SpriteAtlas, ImageAssetLoader } from '../../engine/assets/index.js';
-import { AnimationControllerV2 } from '../../engine/animation/index.js';
+import { AnimationController } from '../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../engine/render/index.js';
 import { stepArcadeBody } from '../../engine/systems/index.js';
 import { createDemoSpriteSheet } from '../sample49-real-sprite-rendering/demoSpriteFactory.js';
@@ -69,7 +69,7 @@ export default class PhysicsSystemScene extends Scene {
       maxSpeedY: 240,
       moveAcceleration: 920,
     };
-    this.animation = new AnimationControllerV2({
+    this.animation = new AnimationController({
       initial: 'idle',
       animations: {
         idle: { frames: ['idle_0'], frameDuration: 0.25, loop: true },
@@ -102,7 +102,7 @@ export default class PhysicsSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample51',
+      'Engine Sample51',
       'Shifts movement to velocity, acceleration, and drag instead of raw position nudging',
       'Move with Arrow keys or WASD and release to watch drag settle the actor',
       'This is the motion base for better collision response in Sample52',

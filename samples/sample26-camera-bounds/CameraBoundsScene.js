@@ -61,7 +61,7 @@ export default class CameraBoundsScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample26',
+      'Engine Sample26',
       'Demonstrates camera follow with world-edge clamping',
       'Use Arrow keys to move the player near all edges of the world',
       'The camera stops at the valid world bounds instead of drifting into empty space',

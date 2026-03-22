@@ -1,4 +1,4 @@
-# Engine V2 Render Adapter
+# Engine Render Adapter
 
 ## Purpose
 

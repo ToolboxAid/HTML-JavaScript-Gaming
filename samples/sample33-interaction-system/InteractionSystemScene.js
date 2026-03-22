@@ -52,7 +52,7 @@ export default class InteractionSystemScene extends Scene {
     const nearest = findNearestInteractable(this.player, this.interactables, 90);
 
     drawFrame(renderer, theme, [
-      'Engine V2 Sample33',
+      'Engine Sample33',
       'Demonstrates prompt-based interactions using engine interaction helpers',
       'Use Arrow keys to move near an object, then press KeyE',
       `Nearest interactable: ${nearest ? nearest.label : 'none'}`,

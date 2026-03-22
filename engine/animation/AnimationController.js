@@ -10,23 +10,29 @@ export default class AnimationController {
     this.current = initial || Object.keys(animations)[0] || null;
     this.time = 0;
     this.frameIndex = 0;
+    this.finished = false;
   }
 
-  play(name) {
+  play(name, { restart = false } = {}) {
     if (!this.animations[name]) {
       return;
     }
 
-    if (this.current !== name) {
+    if (this.current !== name || restart) {
       this.current = name;
       this.time = 0;
       this.frameIndex = 0;
+      this.finished = false;
     }
   }
 
   update(dt) {
     const animation = this.animations[this.current];
-    if (!animation || !animation.frames || animation.frames.length === 0) {
+    if (!animation || !Array.isArray(animation.frames) || animation.frames.length === 0) {
+      return;
+    }
+
+    if (this.finished && animation.loop === false) {
       return;
     }
 
@@ -35,13 +41,29 @@ export default class AnimationController {
 
     while (this.time >= frameDuration) {
       this.time -= frameDuration;
-      this.frameIndex = (this.frameIndex + 1) % animation.frames.length;
+
+      if (this.frameIndex < animation.frames.length - 1) {
+        this.frameIndex += 1;
+        continue;
+      }
+
+      if (animation.loop === false) {
+        this.finished = true;
+        this.frameIndex = animation.frames.length - 1;
+        break;
+      }
+
+      this.frameIndex = 0;
     }
+  }
+
+  isFinished() {
+    return this.finished;
   }
 
   getFrame() {
     const animation = this.animations[this.current];
-    if (!animation || !animation.frames || animation.frames.length === 0) {
+    if (!animation || !Array.isArray(animation.frames) || animation.frames.length === 0) {
       return null;
     }
 

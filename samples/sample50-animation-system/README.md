@@ -1,4 +1,4 @@
-# Sample50 - Animation System V2
+# Sample50 - Animation System
 
 ## Purpose
 Adds timing, loop control, and transition behavior on top of Sample49.

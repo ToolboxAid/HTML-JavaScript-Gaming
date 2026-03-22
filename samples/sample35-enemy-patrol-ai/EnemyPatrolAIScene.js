@@ -48,7 +48,7 @@ export default class EnemyPatrolAIScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample35',
+      'Engine Sample35',
       'Demonstrates patrol behavior and player detection using engine AI helpers',
       'Use Arrow keys to move near the patrolling enemy',
       `Detection state: ${this.detected ? 'player detected' : 'patrolling'}`,

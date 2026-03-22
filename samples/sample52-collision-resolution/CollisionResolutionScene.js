@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 03/21/2026
-CollisionResolutionV2Scene.js
+CollisionResolutionScene.js
 */
 import Scene from '../../engine/scenes/Scene.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
@@ -10,14 +10,14 @@ import { drawFrame, drawPanel } from '../../engine/debug/index.js';
 import { Camera2D, followCameraTarget, worldRectToScreen } from '../../engine/camera/index.js';
 import { Tilemap, renderTilemap } from '../../engine/tilemap/index.js';
 import { SpriteAtlas, ImageAssetLoader } from '../../engine/assets/index.js';
-import { AnimationControllerV2 } from '../../engine/animation/index.js';
+import { AnimationController } from '../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../engine/render/index.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '../../engine/systems/index.js';
 import { createDemoSpriteSheet } from '../sample49-real-sprite-rendering/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
 
-export default class CollisionResolutionV2Scene extends Scene {
+export default class CollisionResolutionScene extends Scene {
   constructor() {
     super();
     this.screen = { x: 60, y: 180 };
@@ -69,7 +69,7 @@ export default class CollisionResolutionV2Scene extends Scene {
       maxSpeedY: 250,
       moveAcceleration: 980,
     };
-    this.animation = new AnimationControllerV2({
+    this.animation = new AnimationController({
       initial: 'idle',
       animations: {
         idle: { frames: ['idle_0'], frameDuration: 0.25, loop: true },
@@ -113,7 +113,7 @@ export default class CollisionResolutionV2Scene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample52',
+      'Engine Sample52',
       'Refines collision response with axis-separated resolution and clean wall sliding',
       'Drive diagonally into corners to see reduced snagging compared with rollback collision',
       'Physics remains the motion source, while collision now resolves axis by axis',
@@ -138,7 +138,7 @@ export default class CollisionResolutionV2Scene extends Scene {
       getImage: () => this.asset?.image || null,
     });
 
-    drawPanel(renderer, 620, 34, 300, 126, 'Collision V2', [
+    drawPanel(renderer, 620, 34, 300, 126, 'Collision', [
       `vx: ${this.player.velocityX.toFixed(1)}`,
       `vy: ${this.player.velocityY.toFixed(1)}`,
       `Collision: ${this.collisionNote}`,

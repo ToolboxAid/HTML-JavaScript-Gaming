@@ -54,7 +54,7 @@ export default class LevelLoaderScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample30',
+      'Engine Sample30',
       'Demonstrates loading level content from structured level data',
       'Use Arrow keys to move through geometry defined outside the scene class',
       `Collision state: ${this.hitSolid ? 'blocked' : 'clear'}`,

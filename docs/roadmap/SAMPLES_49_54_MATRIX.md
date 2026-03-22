@@ -8,9 +8,9 @@ SAMPLES_49_54_MATRIX.md
 | Sample | Theme | Depends On | Engine Areas | Main Proof | Must Not Become |
 |---|---|---|---|---|---|
 | 49 | Real Sprite Rendering | 43, 48 | assets, render | image-backed actor path | animation rewrite |
-| 50 | Animation System V2 | 49 | animation, render, state | timing + looping + transitions | physics rewrite |
+| 50 | Animation System | 49 | animation, render, state | timing + looping + transitions | physics rewrite |
 | 51 | Physics System | 50 (light), 48 | ecs, systems, movement/physics | velocity + acceleration + friction | collision overhaul |
-| 52 | Collision Resolution V2 | 51 | collision, tilemap, systems | slide + corner handling | tile metadata pass |
+| 52 | Collision Resolution | 51 | collision, tilemap, systems | slide + corner handling | tile metadata pass |
 | 53 | Tile Metadata | 45, 52 | tilemap, persistence | hazards + triggers + metadata schema | event engine rewrite |
 | 54 | NES-style Zones + Parallax | 49-53 | camera, render, tilemap | zone camera + layered depth | full game level |
 

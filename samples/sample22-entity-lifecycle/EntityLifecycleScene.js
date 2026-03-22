@@ -77,7 +77,7 @@ export default class EntityLifecycleScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine V2 Sample22',
+      'Engine Sample22',
       'Demonstrates spawning, tagging, collecting, expiring, and removing entities',
       'Use Arrow keys to move the player and collect yellow pickups',
       'Pickups also expire on a timer if you do not collect them',

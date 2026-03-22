@@ -32,7 +32,7 @@ export default class PrefabSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample40',
+      'Engine Sample40',
       'Demonstrates prefab-based creation for repeated gameplay objects',
       'Players, enemies, pickups, and projectiles come from shared factory functions',
       'This reduces scene duplication and prepares the engine for content scaling',

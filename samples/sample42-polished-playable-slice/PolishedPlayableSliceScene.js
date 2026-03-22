@@ -148,7 +148,7 @@ export default class PolishedPlayableSliceScene extends Scene {
     const mode = this.mode.getMode();
 
     drawFrame(renderer, theme, [
-      'Engine V2 Sample42',
+      'Engine Sample42',
       'Combines prefabs, layered rendering, projectiles, interaction, and game modes',
       'Enter starts, Arrow keys move, KeyE interacts, Space fires',
       `Mode: ${mode}`,

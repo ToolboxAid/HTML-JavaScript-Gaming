@@ -1,6 +1,6 @@
 # Tests
 
-Tests validate Engine V2 boundaries before games are migrated.
+Tests validate Engine boundaries before games are migrated.
 
 Current strategy:
 

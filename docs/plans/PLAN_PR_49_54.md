@@ -42,9 +42,9 @@ These samples are treated as the proof base for 49-54.
 
 ## Planned order
 1. **49 - Real Sprite Rendering**
-2. **50 - Animation System V2**
+2. **50 - Animation System**
 3. **51 - Physics System**
-4. **52 - Collision Resolution V2**
+4. **52 - Collision Resolution**
 5. **53 - Tile Metadata**
 6. **54 - NES-style scrolling zones + parallax**
 
@@ -89,7 +89,7 @@ Sample43 proves atlas/image rendering, but later playable samples still need a s
 
 ---
 
-# Sample 50 - Animation System V2
+# Sample 50 - Animation System
 
 ## Purpose
 Add predictable frame timing, loop control, and transition behavior on top of Sample49’s real sprite path.
@@ -170,7 +170,7 @@ Movement can be functional without being mature. This sample makes actor motion 
 
 ---
 
-# Sample 52 - Collision Resolution V2
+# Sample 52 - Collision Resolution
 
 ## Purpose
 Improve collision response so movement feels cleaner at walls, corners, and slide cases.

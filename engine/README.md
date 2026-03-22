@@ -1,6 +1,6 @@
-# Engine V2 Bootstrap
+# Engine Bootstrap
 
-Engine V2 is a parallel rewrite track.
+Engine is a parallel rewrite track.
 
 The current engine stays locked. New work goes into `engine/` until the boundaries are proven with samples and tests.
 

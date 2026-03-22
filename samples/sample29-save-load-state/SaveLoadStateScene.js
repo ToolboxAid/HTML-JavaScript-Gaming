@@ -77,7 +77,7 @@ export default class SaveLoadStateScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample29',
+      'Engine Sample29',
       'Demonstrates basic save and load state using browser localStorage',
       'Use Arrow keys to move, KeyK to save, and KeyL to load',
       'The scene persists player position so state can survive scene resets or refreshes',

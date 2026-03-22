@@ -1,4 +1,4 @@
-# Sample52 - Collision Resolution V2
+# Sample52 - Collision Resolution
 
 ## Purpose
 Makes collision response cleaner at walls and corners.

@@ -34,7 +34,7 @@ export default class ECSFoundationScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine V2 Sample15',
+      'Engine Sample15',
       'Demonstrates ECS world creation with entity ids and component maps',
       'This sample renders entities by querying transform, size, and renderable components',
       'The scene is static on purpose so the ECS structure stays easy to inspect',
