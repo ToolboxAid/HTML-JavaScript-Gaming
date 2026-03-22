@@ -1,0 +1,35 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/22/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample180 - Live Tuning / Hot Reload</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Sample180 - Live Tuning / Hot Reload</h1>
+    <p>Adjusts live data without restarting the runtime.</p>
+    <canvas id="game" width="960" height="540"></canvas>
+    <section>
+      <button id="tune-speed" type="button">Tune Speed 4</button>
+      <button id="tune-speed-fast" type="button">Tune Speed 8</button>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>Engine</li>
+        <li>Theme</li>
+        <li>LiveTuningService</li>
+        <li>Scene</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

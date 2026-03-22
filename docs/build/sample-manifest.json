@@ -382,8 +382,32 @@
       "indexHtml": "samples/sample176-content-validation-pipeline/index.html"
     },
     {
+      "id": "sample177-developer-console",
+      "indexHtml": "samples/sample177-developer-console/index.html"
+    },
+    {
+      "id": "sample178-in-engine-inspector",
+      "indexHtml": "samples/sample178-in-engine-inspector/index.html"
+    },
+    {
+      "id": "sample179-property-editor",
+      "indexHtml": "samples/sample179-property-editor/index.html"
+    },
+    {
       "id": "sample18-ecs-collision-system",
       "indexHtml": "samples/sample18-ecs-collision-system/index.html"
+    },
+    {
+      "id": "sample180-live-tuning-hot-reload",
+      "indexHtml": "samples/sample180-live-tuning-hot-reload/index.html"
+    },
+    {
+      "id": "sample181-asset-browser",
+      "indexHtml": "samples/sample181-asset-browser/index.html"
+    },
+    {
+      "id": "sample182-scene-graph-entity-hierarchy-viewer",
+      "indexHtml": "samples/sample182-scene-graph-entity-hierarchy-viewer/index.html"
     },
     {
       "id": "sample19-ecs-render-system",
