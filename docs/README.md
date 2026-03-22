@@ -3,12 +3,15 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample121 Planning Pack
+# Sample132–137 Planning Pack
 
 This ZIP contains planning documents only.
 
+Phase:
+8 - Graphics + Precision Collision
+
 Structure:
-- /docs/plans/PLAN_PR_121.md
+- /docs/plans/PLAN_PR_132.md through PLAN_PR_137.md
 - /docs/CODEX_COMMANDS.md
 - /docs/COMMIT_COMMENT.txt
 - /docs/NEXT_COMMAND.txt

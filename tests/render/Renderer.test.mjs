@@ -23,6 +23,10 @@ function createFakeContext() {
     clearRect(...args) { calls.push(['clearRect', ...args]); },
     strokeRect(...args) { calls.push(['strokeRect', ...args]); },
     beginPath() { calls.push(['beginPath']); },
+    moveTo(...args) { calls.push(['moveTo', ...args]); },
+    lineTo(...args) { calls.push(['lineTo', ...args]); },
+    closePath() { calls.push(['closePath']); },
+    stroke() { calls.push(['stroke']); },
     arc(...args) { calls.push(['arc', ...args]); },
     fill() { calls.push(['fill']); },
     fillText(...args) { calls.push(['fillText', ...args]); },
@@ -54,6 +58,27 @@ function createFakeContext() {
   assert.deepEqual(ctx.calls[0], ['fillText', 'hello', 10, 20]);
   assert.equal(ctx.textAlign, 'start');
   assert.equal(ctx.textBaseline, 'alphabetic');
+}
+
+{
+  const ctx = createFakeContext();
+  const renderer = new CanvasRenderer(ctx);
+  renderer.drawLine(1, 2, 3, 4, '#ffffff', 2);
+  assert.deepEqual(ctx.calls.slice(0, 4), [
+    ['beginPath'],
+    ['moveTo', 1, 2],
+    ['lineTo', 3, 4],
+    ['stroke'],
+  ]);
+}
+
+{
+  const ctx = createFakeContext();
+  const renderer = new CanvasRenderer(ctx);
+  renderer.drawPolygon([{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 5, y: 10 }], { fillColor: '#333333', strokeColor: '#ffffff' });
+  assert.equal(ctx.calls.some((entry) => entry[0] === 'closePath'), true);
+  assert.equal(ctx.calls.some((entry) => entry[0] === 'fill'), true);
+  assert.equal(ctx.calls.some((entry) => entry[0] === 'stroke'), true);
 }
 
 console.log('Renderer.test.mjs passed');

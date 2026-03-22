@@ -5,3 +5,6 @@ David Quesenberry
 index.js
 */
 export { isColliding } from './aabb.js';
+export { arePolygonsColliding, isPointInPolygon, getPolygonBounds } from './polygon.js';
+export { createRasterMask, areMasksColliding, isPointInMask, getMaskBounds } from './raster.js';
+export { runHybridCollision, getCollisionBoundsFromPolygon } from './hybrid.js';

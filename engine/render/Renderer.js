@@ -21,6 +21,14 @@ export default class Renderer {
     throw new Error('Renderer.drawCircle must be implemented by a concrete renderer.');
   }
 
+  drawLine(x1, y1, x2, y2, color = '#000000', lineWidth = 1) {
+    throw new Error('Renderer.drawLine must be implemented by a concrete renderer.');
+  }
+
+  drawPolygon(points, options = {}) {
+    throw new Error('Renderer.drawPolygon must be implemented by a concrete renderer.');
+  }
+
   drawText(text, x, y, options = {}) {
     throw new Error('Renderer.drawText must be implemented by a concrete renderer.');
   }

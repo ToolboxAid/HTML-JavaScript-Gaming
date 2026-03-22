@@ -4,10 +4,10 @@ David Quesenberry
 COMMIT_COMMENT.txt
 
 Title:
-Build Sample121 fullscreen ability capability
+Build Samples 132–137 graphics and precision collision capabilities
 
 Body:
-- Add reusable fullscreen request, exit, and state support for Sample121
-- Keep fullscreen/platform logic in approved engine-owned presentation paths
-- Keep Sample121 as proof-only and aligned to Sample01 structure
-- Update samples/index.html through Sample121
+- Add vector rendering, polygon collision, inside-shape collision, raster mask collision, pixel-perfect collision, and hybrid collision capabilities
+- Keep reusable rendering and collision logic in engine-owned paths
+- Keep samples 132–137 as proof-only and aligned to Sample01 structure
+- Update samples/index.html through Sample137

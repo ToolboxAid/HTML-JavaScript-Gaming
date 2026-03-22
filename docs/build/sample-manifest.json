@@ -186,6 +186,30 @@
       "indexHtml": "samples/sample131-logging-error-system/index.html"
     },
     {
+      "id": "sample132-vector-rendering-system",
+      "indexHtml": "samples/sample132-vector-rendering-system/index.html"
+    },
+    {
+      "id": "sample133-polygon-collision",
+      "indexHtml": "samples/sample133-polygon-collision/index.html"
+    },
+    {
+      "id": "sample134-point-in-polygon",
+      "indexHtml": "samples/sample134-point-in-polygon/index.html"
+    },
+    {
+      "id": "sample135-raster-mask-collision",
+      "indexHtml": "samples/sample135-raster-mask-collision/index.html"
+    },
+    {
+      "id": "sample136-pixel-perfect-collision",
+      "indexHtml": "samples/sample136-pixel-perfect-collision/index.html"
+    },
+    {
+      "id": "sample137-hybrid-collision",
+      "indexHtml": "samples/sample137-hybrid-collision/index.html"
+    },
+    {
       "id": "sample14-collision-debug-tools",
       "indexHtml": "samples/sample14-collision-debug-tools/index.html"
     },
