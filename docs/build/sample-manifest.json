@@ -74,6 +74,10 @@
       "indexHtml": "samples/sample107-weather-system/index.html"
     },
     {
+      "id": "sample107a-weather-animation",
+      "indexHtml": "samples/sample107a-weather-animation/index.html"
+    },
+    {
       "id": "sample108-world-streaming",
       "indexHtml": "samples/sample108-world-streaming/index.html"
     },

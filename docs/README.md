@@ -3,17 +3,12 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample115–120 Planning Pack
+# Sample121 Planning Pack
 
 This ZIP contains planning documents only.
 
 Structure:
-- /docs/plans/PLAN_PR_115.md
-- /docs/plans/PLAN_PR_116.md
-- /docs/plans/PLAN_PR_117.md
-- /docs/plans/PLAN_PR_118.md
-- /docs/plans/PLAN_PR_119.md
-- /docs/plans/PLAN_PR_120.md
+- /docs/plans/PLAN_PR_121.md
 - /docs/CODEX_COMMANDS.md
 - /docs/COMMIT_COMMENT.txt
 - /docs/NEXT_COMMAND.txt
