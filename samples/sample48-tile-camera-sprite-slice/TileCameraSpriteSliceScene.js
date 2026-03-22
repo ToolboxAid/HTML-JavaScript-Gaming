@@ -51,7 +51,6 @@ export default class TileCameraSpriteSliceScene extends Scene {
       },
     });
 
-    // Spawn fully inside an open tile so movement is not immediately blocked.
     this.player = { x: 56, y: 56, width: 34, height: 34, speed: 220, frame: 'idle_0' };
     this.goal = { x: 630, y: 195, width: 36, height: 36 };
     this.message = 'Reach the goal.';
@@ -61,21 +60,48 @@ export default class TileCameraSpriteSliceScene extends Scene {
   }
 
   update(dt, engine) {
-    const prev = { x: this.player.x, y: this.player.y };
     const move = this.player.speed * dt;
-    let moving = false;
+    let dx = 0;
+    let dy = 0;
 
-    if (engine.input.isActionDown('move_left')) { this.player.x -= move; moving = true; }
-    if (engine.input.isActionDown('move_right')) { this.player.x += move; moving = true; }
-    if (engine.input.isActionDown('move_up')) { this.player.y -= move; moving = true; }
-    if (engine.input.isActionDown('move_down')) { this.player.y += move; moving = true; }
+    if (engine.input.isActionDown('move_left')) {
+      dx -= move;
+    }
+    if (engine.input.isActionDown('move_right')) {
+      dx += move;
+    }
+    if (engine.input.isActionDown('move_up')) {
+      dy -= move;
+    }
+    if (engine.input.isActionDown('move_down')) {
+      dy += move;
+    }
 
+    const moving = dx !== 0 || dy !== 0;
     this.player.frame = moving ? 'move_0' : 'idle_0';
 
-    const hit = resolveRectVsTilemap(this.player, this.tilemap, this.worldOffset);
-    if (hit) {
-      this.player.x = prev.x;
-      this.player.y = prev.y;
+    if (dx !== 0) {
+      this.player.x += dx;
+      const hitX = resolveRectVsTilemap(this.player, this.tilemap, this.worldOffset);
+      if (hitX) {
+        if (dx > 0) {
+          this.player.x = hitX.x - this.player.width;
+        } else {
+          this.player.x = hitX.x + hitX.width;
+        }
+      }
+    }
+
+    if (dy !== 0) {
+      this.player.y += dy;
+      const hitY = resolveRectVsTilemap(this.player, this.tilemap, this.worldOffset);
+      if (hitY) {
+        if (dy > 0) {
+          this.player.y = hitY.y - this.player.height;
+        } else {
+          this.player.y = hitY.y + hitY.height;
+        }
+      }
     }
 
     followCameraTarget(this.camera, this.player, true);
@@ -90,7 +116,7 @@ export default class TileCameraSpriteSliceScene extends Scene {
 
     if (loadPressed && !this.lastL && this.saved) {
       const state = deserializeWorldState(this.saved);
-      this.player = state.player;
+      this.player = { ...this.player, ...state.player };
       this.message = 'Loaded snapshot.';
     }
 

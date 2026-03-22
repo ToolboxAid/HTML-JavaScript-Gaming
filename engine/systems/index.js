@@ -14,3 +14,5 @@ export { bounceEntitiesHorizontallyInBounds } from './BounceSystem.js';
 export { collectOverlappingEntities } from './CollectSystem.js';
 export { requireSystemComponents, getSystemEntities } from './SystemUtils.js';
 export { spawnProjectile, updateProjectiles } from './ProjectileSystem.js';
+export { stepArcadeBody, applyDrag } from './PhysicsSystem.js';
+export { moveRectWithTilemapCollision, getTileCollision } from './CollisionResolutionSystem.js';

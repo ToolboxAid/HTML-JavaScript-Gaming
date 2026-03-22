@@ -59,6 +59,14 @@ export default class CanvasRenderer extends Renderer {
     this.ctx.textBaseline = 'alphabetic';
   }
 
+  drawImageFrame(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+    if (!image) {
+      return;
+    }
+
+    this.ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+  }
+
   getCanvasSize() {
     return {
       width: this.ctx.canvas.width,

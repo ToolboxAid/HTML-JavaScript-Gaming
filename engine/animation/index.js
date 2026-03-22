@@ -5,3 +5,4 @@ David Quesenberry
 index.js
 */
 export { default as AnimationController } from './AnimationController.js';
+export { default as AnimationControllerV2 } from './AnimationControllerV2.js';

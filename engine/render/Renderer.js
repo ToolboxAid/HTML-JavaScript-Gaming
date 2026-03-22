@@ -25,6 +25,10 @@ export default class Renderer {
     throw new Error('Renderer.drawText must be implemented by a concrete renderer.');
   }
 
+  drawImageFrame(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+    throw new Error('Renderer.drawImageFrame must be implemented by a concrete renderer.');
+  }
+
   getCanvasSize() {
     throw new Error('Renderer.getCanvasSize must be implemented by a concrete renderer.');
   }
