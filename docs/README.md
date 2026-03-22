@@ -3,15 +3,18 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample147–158 Planning Pack
+# Sample159–176 Planning Pack
 
 This ZIP contains planning documents only.
 
-Phase:
-10 - Multiplayer Networking Stack
+Phases:
+11 - Editor Layer
+12 - Automation / Testing Layer
+13 - Security / Trust Layer
+14 - Content Pipeline Layer
 
 Structure:
-- /docs/plans/PLAN_PR_147.md through PLAN_PR_158.md
+- /docs/plans/PLAN_PR_159.md through PLAN_PR_176.md
 - /docs/CODEX_COMMANDS.md
 - /docs/COMMIT_COMMENT.txt
 - /docs/NEXT_COMMAND.txt

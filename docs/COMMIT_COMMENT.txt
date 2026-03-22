@@ -4,10 +4,10 @@ David Quesenberry
 COMMIT_COMMENT.txt
 
 Title:
-Build Samples 147–158 multiplayer networking stack capabilities
+Build Samples 159–176 editor, automation, security, and content pipeline capabilities
 
 Body:
-- Add networking, sync, prediction, serialization, diagnostics, lobby/session, host bootstrap, interest management, lag simulation, chat/presence, and rollback/replay diagnostic capabilities
-- Keep reusable multiplayer logic in engine-owned or repo-approved paths
-- Keep samples 147–158 as proof-only and aligned to Sample01 structure
-- Update samples/index.html through Sample158
+- Add editor, automation/testing, security/trust, and content pipeline capabilities
+- Keep reusable logic in engine-owned, tooling-owned, or repo-approved paths
+- Keep samples 159–176 as proof-only and aligned to Sample01 structure where applicable
+- Update samples/index.html through Sample176

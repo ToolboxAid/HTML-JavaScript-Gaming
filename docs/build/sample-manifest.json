@@ -302,12 +302,84 @@
       "indexHtml": "samples/sample158-rollback-replay-diagnostics/index.html"
     },
     {
+      "id": "sample159-level-editor",
+      "indexHtml": "samples/sample159-level-editor/index.html"
+    },
+    {
       "id": "sample16-ecs-movement-system",
       "indexHtml": "samples/sample16-ecs-movement-system/index.html"
     },
     {
+      "id": "sample160-tile-map-editor",
+      "indexHtml": "samples/sample160-tile-map-editor/index.html"
+    },
+    {
+      "id": "sample161-entity-placement-editor",
+      "indexHtml": "samples/sample161-entity-placement-editor/index.html"
+    },
+    {
+      "id": "sample162-timeline-cutscene-editor",
+      "indexHtml": "samples/sample162-timeline-cutscene-editor/index.html"
+    },
+    {
+      "id": "sample163-automated-test-runner",
+      "indexHtml": "samples/sample163-automated-test-runner/index.html"
+    },
+    {
+      "id": "sample164-regression-playback-harness",
+      "indexHtml": "samples/sample164-regression-playback-harness/index.html"
+    },
+    {
+      "id": "sample165-performance-benchmark-runner",
+      "indexHtml": "samples/sample165-performance-benchmark-runner/index.html"
+    },
+    {
+      "id": "sample166-ci-validation-flow",
+      "indexHtml": "samples/sample166-ci-validation-flow/index.html"
+    },
+    {
+      "id": "sample167-packet-validation-anti-cheat",
+      "indexHtml": "samples/sample167-packet-validation-anti-cheat/index.html"
+    },
+    {
+      "id": "sample168-save-data-integrity-checks",
+      "indexHtml": "samples/sample168-save-data-integrity-checks/index.html"
+    },
+    {
+      "id": "sample169-permissions-capability-gating",
+      "indexHtml": "samples/sample169-permissions-capability-gating/index.html"
+    },
+    {
       "id": "sample17-ecs-input-system",
       "indexHtml": "samples/sample17-ecs-input-system/index.html"
+    },
+    {
+      "id": "sample170-trust-session-validation",
+      "indexHtml": "samples/sample170-trust-session-validation/index.html"
+    },
+    {
+      "id": "sample171-asset-import-pipeline",
+      "indexHtml": "samples/sample171-asset-import-pipeline/index.html"
+    },
+    {
+      "id": "sample172-texture-sprite-preprocess-pipeline",
+      "indexHtml": "samples/sample172-texture-sprite-preprocess-pipeline/index.html"
+    },
+    {
+      "id": "sample173-audio-preprocess-pipeline",
+      "indexHtml": "samples/sample173-audio-preprocess-pipeline/index.html"
+    },
+    {
+      "id": "sample174-content-versioning-migration",
+      "indexHtml": "samples/sample174-content-versioning-migration/index.html"
+    },
+    {
+      "id": "sample175-build-asset-manifest-system",
+      "indexHtml": "samples/sample175-build-asset-manifest-system/index.html"
+    },
+    {
+      "id": "sample176-content-validation-pipeline",
+      "indexHtml": "samples/sample176-content-validation-pipeline/index.html"
     },
     {
       "id": "sample18-ecs-collision-system",
