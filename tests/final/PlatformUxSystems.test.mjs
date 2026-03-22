@@ -5,12 +5,12 @@ David Quesenberry
 PlatformUxSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { AudioService, MidiPlayer, FrequencyPlayer, Synthesizer } from '../../engine/audio/index.js';
+import { AudioService, MidiPlayer, FrequencyPlayer, Synthesizer, MediaTrackService, PlaylistManager } from '../../engine/audio/index.js';
 import { ParticleSystem } from '../../engine/fx/index.js';
 import { UIFramework } from '../../engine/ui/index.js';
 import { InputContextService } from '../../engine/input/index.js';
 import { SceneTransitionController } from '../../engine/scenes/index.js';
-import { SaveSlotManager, StorageService } from '../../engine/persistence/index.js';
+import { SaveSlotManager, StorageService, CookieStorageService } from '../../engine/persistence/index.js';
 import { Logger, ErrorBoundary } from '../../engine/logging/index.js';
 
 class MemoryStorage {
@@ -71,6 +71,39 @@ export async function run() {
   particles.update(0.2);
   assert.equal(particles.getSnapshot().length > 0, true);
 
+  const fakeAudioFactory = (src) => ({
+    src,
+    currentTime: 0,
+    duration: 12,
+    loop: false,
+    volume: 1,
+    paused: true,
+    async play() {
+      this.paused = false;
+    },
+    pause() {
+      this.paused = true;
+    },
+  });
+  const mediaTracks = new MediaTrackService({
+    backend: {
+      isSupported: () => true,
+      createTrack: fakeAudioFactory,
+    },
+  });
+  mediaTracks.register('track-a', { src: '/audio/a.mp3', loop: true, volume: 0.4 });
+  await mediaTracks.play('track-a');
+  mediaTracks.seek('track-a', 3);
+  assert.equal(mediaTracks.getState('track-a').paused, false);
+  assert.equal(mediaTracks.getState('track-a').currentTime, 3);
+
+  mediaTracks.register('track-b', { src: '/audio/b.mp3' });
+  const playlist = new PlaylistManager(mediaTracks);
+  playlist.registerPlaylist('mix', ['track-a', 'track-b']);
+  assert.equal(playlist.getState('mix').currentTrackId, 'track-a');
+  playlist.next('mix');
+  assert.equal(playlist.getState('mix').currentTrackId, 'track-b');
+
   const ui = new UIFramework();
   let clicked = null;
   ui.addButton({
@@ -108,6 +141,13 @@ export async function run() {
   slots.saveSlot('slot-2', { label: 'Slot 2', hp: 5 });
   assert.equal(slots.listSlots().length, 2);
   assert.equal(slots.loadSlot('slot-2').hp, 5);
+
+  const cookieDocument = { cookie: '' };
+  const cookies = new CookieStorageService({ documentRef: cookieDocument });
+  cookies.set('theme', 'mint');
+  assert.equal(cookies.get('theme'), 'mint');
+  cookies.remove('theme');
+  assert.equal(cookies.get('theme'), null);
 
   const logger = new Logger({ channel: 'test', level: 'debug' });
   logger.info('hello', { ok: true });

@@ -210,8 +210,20 @@
       "indexHtml": "samples/sample137-hybrid-collision/index.html"
     },
     {
+      "id": "sample138-mp3-player",
+      "indexHtml": "samples/sample138-mp3-player/index.html"
+    },
+    {
+      "id": "sample139-cookie-write-read-system",
+      "indexHtml": "samples/sample139-cookie-write-read-system/index.html"
+    },
+    {
       "id": "sample14-collision-debug-tools",
       "indexHtml": "samples/sample14-collision-debug-tools/index.html"
+    },
+    {
+      "id": "sample140-audio-playlist-track-management",
+      "indexHtml": "samples/sample140-audio-playlist-track-management/index.html"
     },
     {
       "id": "sample15-ecs-foundation",
