@@ -4,10 +4,10 @@ David Quesenberry
 COMMIT_COMMENT.txt
 
 Title:
-Build Samples 91–96 systems foundation capabilities
+Build Samples 97–101 AI foundation capabilities
 
 Body:
-- Add event bus, state machine, config, asset loader, debug tools, and performance metrics capabilities
-- Keep reusable systems logic in engine-owned paths
-- Keep samples 91–96 as proof-only and aligned to Sample01 structure
-- Update samples/index.html through Sample96
+- Add pathfinding, patrol, chase/evade, state-driven AI, and group behavior capabilities
+- Keep reusable AI and navigation logic in engine-owned paths
+- Keep samples 97–101 as proof-only and aligned to Sample01 structure
+- Update samples/index.html through Sample101

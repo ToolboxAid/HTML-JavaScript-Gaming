@@ -4,6 +4,7 @@ David Quesenberry
 03/21/2026
 run-tests.mjs
 */
+import { run as runAIBehaviors } from './ai/AIBehaviors.test.mjs';
 import { run as runAssetLoaderSystem } from './assets/AssetLoaderSystem.test.mjs';
 import { run as runConfigStore } from './config/ConfigStore.test.mjs';
 import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
@@ -22,6 +23,7 @@ import './render/Renderer.test.mjs';
 import './theme.test.js';
 
 const tests = [
+    ['AIBehaviors', runAIBehaviors],
     ['AssetLoaderSystem', runAssetLoaderSystem],
     ['ConfigStore', runConfigStore],
     ['FixedTicker', runFixedTicker],
