@@ -10,6 +10,7 @@ import EventBus from '../events/EventBus.js';
 import { FullscreenService } from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
 import { Logger } from '../logging/index.js';
+import { SettingsSystem } from '../release/index.js';
 
 export default class Engine {
   constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null, events = null, metrics = null, fullscreen = null, audio = null, logger = null } = {}) {
@@ -29,6 +30,14 @@ export default class Engine {
     this.fullscreen = fullscreen || new FullscreenService({ target: canvas });
     this.audio = audio || new AudioService();
     this.logger = logger || new Logger({ channel: 'engine' });
+    this.settings = new SettingsSystem({
+      namespace: 'toolboxaid:engine-settings',
+      defaults: {
+        audio: { musicVolume: 0.8, sfxVolume: 0.8 },
+        video: { fullscreenPreferred: false },
+        gameplay: { difficulty: 'normal' },
+      },
+    });
     this.fixedStepMs = fixedStepMs;
     this.fixedStepSeconds = fixedStepMs / 1000;
     this.scene = null;

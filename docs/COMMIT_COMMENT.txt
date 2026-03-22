@@ -1,1 +1,13 @@
-Build Samples 138–140 MP3, cookies, and playlist systems
+Toolbox Aid
+David Quesenberry
+03/22/2026
+COMMIT_COMMENT.txt
+
+Title:
+Build Samples 141–146 final polish and deployment capabilities
+
+Body:
+- Add settings, accessibility, deployment profiles, distribution packaging, crash recovery, and release validation capabilities
+- Keep reusable logic in engine-owned or repo-owned paths
+- Keep samples 141–146 as proof-only and aligned to Sample01 structure
+- Update samples/index.html through Sample146

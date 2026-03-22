@@ -226,6 +226,30 @@
       "indexHtml": "samples/sample140-audio-playlist-track-management/index.html"
     },
     {
+      "id": "sample141-settings-system",
+      "indexHtml": "samples/sample141-settings-system/index.html"
+    },
+    {
+      "id": "sample142-accessibility-options",
+      "indexHtml": "samples/sample142-accessibility-options/index.html"
+    },
+    {
+      "id": "sample143-deployment-profiles",
+      "indexHtml": "samples/sample143-deployment-profiles/index.html"
+    },
+    {
+      "id": "sample144-distribution-packaging",
+      "indexHtml": "samples/sample144-distribution-packaging/index.html"
+    },
+    {
+      "id": "sample145-crash-recovery-fallback-flow",
+      "indexHtml": "samples/sample145-crash-recovery-fallback-flow/index.html"
+    },
+    {
+      "id": "sample146-release-validation-checklist-flow",
+      "indexHtml": "samples/sample146-release-validation-checklist-flow/index.html"
+    },
+    {
       "id": "sample15-ecs-foundation",
       "indexHtml": "samples/sample15-ecs-foundation/index.html"
     },

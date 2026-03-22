@@ -1,0 +1,28 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/22/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample145 - Crash Recovery / Fallback Flow</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Sample145 - Crash Recovery / Fallback Flow</h1>
+    <p>Handles runtime failures gracefully and restores a usable fallback state.</p>
+    <canvas id="game" width="960" height="540"></canvas>
+    <section>
+      <button id="recovery-safe" type="button">Run Safe Step</button>
+      <button id="recovery-crash" type="button">Trigger Crash</button>
+      <button id="recovery-restore" type="button">Restore Last Crash</button>
+      <button id="recovery-clear" type="button">Clear Crash State</button>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
