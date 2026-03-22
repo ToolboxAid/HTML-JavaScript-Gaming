@@ -27,9 +27,9 @@ export default class SwitchesButtonsScene extends Scene {
     this.camera = new Camera2D({ viewportWidth: 860, viewportHeight: 300, worldWidth: this.world.width, worldHeight: this.world.height });
     this.player = { x: 120, y: 320, width: 28, height: 40, vx: 0, vy: 0, gravity: 1100, moveSpeed: 2100, jumpSpeed: 430, maxVx: 320, maxVy: 760, onGround: false };
     this.floor = { x: 0, y: 380, width: 1280, height: 48, label: 'floor' };
-    this.column = { x: 660, y: 260, width: 24, height: 120, label: 'column' };
+    this.column = { x: 660, y: 308, width: 24, height: 72, label: 'column' };
     this.floorButton = { x: 300, y: 360, width: 60, height: 20, color: '#ef4444', label: 'button', pressed: false };
-    this.wallSwitch = { x: 612, y: 300, width: 24, height: 60, color: '#fbbf24', label: 'switch', on: false };
+    this.wallSwitch = { x: 720, y: 300, width: 24, height: 60, color: '#fbbf24', label: 'switch', on: false };
     this.message = 'Step on the button or press E at the switch.';
     this.lastJump = false;
     this.lastInteract = false;
