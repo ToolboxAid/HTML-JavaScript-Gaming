@@ -64,7 +64,7 @@ export default class Engine {
     this.accumulator += deltaMs;
 
     if (this.input && typeof this.input.update === 'function') {
-      this.input.update();
+      this.input.update(deltaMs / 1000);
     }
 
     while (this.accumulator >= this.fixedStepMs) {
