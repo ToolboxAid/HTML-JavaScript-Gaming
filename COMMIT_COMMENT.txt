@@ -1,0 +1,6 @@
+Toolbox Aid
+David Quesenberry
+03/23/2026
+COMMIT_COMMENT.txt
+
+game: add Gravity Well (vector-based physics validation)

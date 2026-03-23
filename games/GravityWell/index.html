@@ -1,0 +1,47 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/23/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gravity Well</title>
+  <link rel="stylesheet" href="/samples/_shared/sampleLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Gravity Well</h1>
+    <p>Vector-space flight game built around orbital pull. Rotate, thrust, and slingshot through gravity wells to collect all beacons without crashing into a planet or drifting out of bounds.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <p><code>Enter</code> starts or restarts. <code>Left</code>/<code>Right</code> rotate, <code>Up</code> thrusts, and <code>Space</code> applies a braking burn.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <ul>
+        <li>Read the gravity field and build orbital speed with thrust.</li>
+        <li>Collect every beacon in one run.</li>
+        <li>Avoid planetary collision and hard drift beyond the play area.</li>
+      </ul>
+    </section>    
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>core / Engine</li>
+        <li>debug / drawPanel</li>
+        <li>input / InputService</li>
+        <li>runtime / FullscreenService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+        <li>vector / drawVectorShape</li>
+        <li>vector / transformPoints</li>
+      </ul>
+    </section>
+
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

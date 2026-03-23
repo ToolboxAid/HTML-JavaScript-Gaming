@@ -24,7 +24,16 @@ index.html
     <p>Playable Asteroids-style arcade game with player-select flow, high score, player scores, and ship-icon lives.</p>
     <canvas id="game" width="960" height="720"></canvas>
     <section>
-      <p>`1` or `2` starts one-player or two-player. `Left/Right` rotate, `Up` thrust, `Space` fire, `Enter` returns to menu after game over.</p>
+      <h3>Keys</h3>
+      <p><code>1</code> or <code>2</code> starts one-player or two-player. <code>Left</code>/<code>Right</code> rotate, <code>Up</code> thrusts, <code>Space</code> fires, and <code>Enter</code> returns to the menu after game over.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <ul>
+        <li>Clear each asteroid wave while surviving collisions and incoming fire.</li>
+        <li>Use thrust and rotation to line up shots, then split large rocks into smaller threats.</li>
+        <li>Manage UFO pressure, preserve lives, and push for the high score across one-player or alternating two-player runs.</li>
+      </ul>
     </section>
     <section>
       <h3>Engine Classes Used</h3>
