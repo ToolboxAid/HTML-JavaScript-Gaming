@@ -5,8 +5,9 @@ David Quesenberry
 ParticleSystem.js
 */
 export default class ParticleSystem {
-  constructor() {
+  constructor({ random = Math.random } = {}) {
     this.particles = [];
+    this.random = typeof random === 'function' ? random : Math.random;
   }
 
   static colorWithAlpha(color, alpha) {
@@ -42,13 +43,13 @@ export default class ParticleSystem {
     for (let index = 0; index < count; index += 1) {
       const baseAngle = (Math.PI * 2 * index) / count;
       const angle = randomize
-        ? baseAngle + ((Math.random() * 2) - 1) * (Math.PI / 5)
+        ? baseAngle + ((this.random() * 2) - 1) * (Math.PI / 5)
         : baseAngle;
       const velocity = randomize
-        ? speed * (0.35 + Math.random() * 1.05)
+        ? speed * (0.35 + this.random() * 1.05)
         : speed * (0.6 + (index % 4) * 0.15);
       const generatedSize = randomize
-        ? 2 + Math.random() * 7
+        ? 2 + this.random() * 7
         : 4 + (index % 3) * 2;
       const size = minSize !== null || maxSize !== null
         ? Math.max(

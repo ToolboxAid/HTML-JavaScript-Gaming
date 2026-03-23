@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-engine: stabilize scene lifecycle and transition renderer seam
+engine: harden persistence defaults and add FX determinism seam

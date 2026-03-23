@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-ENGINE-STABILIZATION-PHASE1-SCENE-LIFECYCLE-AND-TRANSITION-SEAMS. Fix engine scene replacement so outgoing scenes receive exit() and incoming scenes receive enter() exactly once, aligned with the intended scene lifecycle contract. Remove raw renderer.ctx dependence from engine/scenes/TransitionScene.js without broadening renderer responsibilities. Add focused engine/scene tests for lifecycle correctness and transition seam behavior. Do not change persistence, ParticleSystem, Asteroids extraction, gameplay, or unrelated files.
+COMMAND: Implement PR-ENGINE-STABILIZATION-PHASE2-PERSISTENCE-DEFAULTS-AND-FX-DETERMINISM. Harden engine/persistence/StorageService.js so engine-level persistence behavior is safe when browser storage is unavailable, adjusting engine/release/SettingsSystem.js only if required for safe composition and unchanged behavior. Add a deterministic RNG seam to engine/fx/ParticleSystem.js without redesigning the FX system, preserving default runtime behavior. Add focused tests for storage absence safety and FX determinism. Do not change scene lifecycle, Asteroids extraction, gameplay tuning, or unrelated files.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that scene replacement is lifecycle-correct, TransitionScene no longer depends on raw renderer.ctx, focused engine/scene tests were added, and no unrelated subsystems changed.
+COMMAND: Verify that persistence is safe without browser storage globals, ParticleSystem supports deterministic control, focused tests were added, and no unrelated subsystems changed.

@@ -13,6 +13,7 @@ import { run as runEngineSceneLifecycle } from './core/EngineSceneLifecycle.test
 import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
 import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
+import { run as runParticleSystem } from './fx/ParticleSystem.test.mjs';
 import { run as runAsteroidsHardening } from './games/AsteroidsHardening.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runFullscreenService } from './final/FullscreenService.test.mjs';
@@ -35,6 +36,7 @@ import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
 import { run as runTransitionScene } from './scenes/TransitionScene.test.mjs';
 import { run as runWorldSystems } from './world/WorldSystems.test.mjs';
 import { run as runProductionReadiness } from './production/ProductionReadiness.test.mjs';
+import { run as runStorageService } from './persistence/StorageService.test.mjs';
 import './render/Renderer.test.mjs';
 import './theme.test.js';
 
@@ -55,6 +57,7 @@ const tests = [
     ['DeveloperToolingSystems', runDeveloperToolingSystems],
     ['ReleaseReadinessSystems', runReleaseReadinessSystems],
     ['FrameClock', runFrameClock],
+    ['ParticleSystem', runParticleSystem],
     ['RuntimeMetrics', runRuntimeMetrics],
     ['AsteroidsHardening', runAsteroidsHardening],
     ['Combat', runCombat],
@@ -65,6 +68,7 @@ const tests = [
     ['InputService', runInputService],
     ['KeyboardState', runKeyboardState],
     ['MouseState', runMouseState],
+    ['StorageService', runStorageService],
     ['ProductionReadiness', runProductionReadiness],
     ['SceneManager', runSceneManager],
     ['TransitionScene', runTransitionScene],

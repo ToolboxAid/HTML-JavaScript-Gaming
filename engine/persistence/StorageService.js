@@ -5,16 +5,45 @@ David Quesenberry
 StorageService.js
 */
 export default class StorageService {
-  constructor(storage = globalThis.localStorage) {
-    this.storage = storage;
+  constructor(storage = undefined) {
+    this.storage = storage === undefined ? StorageService.resolveDefaultStorage() : storage;
+  }
+
+  static resolveDefaultStorage() {
+    try {
+      return globalThis.localStorage ?? null;
+    } catch {
+      return null;
+    }
   }
 
   saveJson(key, value) {
-    this.storage.setItem(key, JSON.stringify(value));
+    if (!this.storage || typeof this.storage.setItem !== 'function') {
+      return false;
+    }
+
+    const serialized = JSON.stringify(value);
+
+    try {
+      this.storage.setItem(key, serialized);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   loadJson(key, fallback = null) {
-    const raw = this.storage.getItem(key);
+    if (!this.storage || typeof this.storage.getItem !== 'function') {
+      return fallback;
+    }
+
+    let raw;
+
+    try {
+      raw = this.storage.getItem(key);
+    } catch {
+      return fallback;
+    }
 
     if (!raw) {
       return fallback;
