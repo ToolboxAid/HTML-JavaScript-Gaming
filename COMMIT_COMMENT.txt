@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-engine: boundary cleanup step 1 (adapter seams, renderer enforcement, test scaffolding)
+docs: plan engine boundary cleanup step 2 static global reduction

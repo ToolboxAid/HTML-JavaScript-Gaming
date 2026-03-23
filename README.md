@@ -3,24 +3,27 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Engine Boundary Cleanup Step 1 (Adapter Seams)
+# PLAN_PR — Engine Boundary Cleanup Step 2 (Static Global Reduction)
 
 ## Purpose
-Implement the first safe boundary cleanup based on audit results.
+Define the next surgical PR after Step 1 adapter seams.
 
-## Scope
-- Remove renderer ctx leakage
-- Add scheduler/time injection seams
-- Guard browser globals
-- Introduce tests/engine structure
+## Goal
+Reduce the remaining architecture risk caused by shared static/global engine state.
+
+## Primary Targets
+- `engine/core/canvasUtils.js`
+- `engine/core/fullscreen.js`
+- `engine/core/performanceMonitor.js`
+- `engine/core/timer.js`
+- `engine/events/eventBus.js`
 
 ## Constraints
 - No gameplay changes
-- No refactor beyond defined scope
-- No prefab/release redesign
-- Surgical changes only
+- No broad rewrite
+- No scene/system redesign in this step
+- No engine API churn beyond justified seams
+- Planning/audit only in this PR
 
 ## Expected Outcome
-- Renderer boundary enforced
-- Engine testable without browser
-- tests/engine present and wired
+Codex classifies global/static ownership debt, identifies which pieces should become injected services vs remain utilities, and proposes the smallest safe BUILD_PR order.
