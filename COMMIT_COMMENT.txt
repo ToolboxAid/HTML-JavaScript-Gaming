@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-ui: relocate shared layout css to engine/ui and align references
+docs: correct shared-folder notes after sampleLayout.css move

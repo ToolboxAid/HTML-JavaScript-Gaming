@@ -7,11 +7,10 @@ CODEX_COMMANDS.md
 
 ## Primary execution
 MODEL: GPT-5.4
-REASONING: medium
-COMMAND: Implement PR-ENGINE-UI-LAYOUT-AND-SHARED-UI-ALIGNMENT. Move /engine/ui/sampleLayout.css to /engine/ui/sampleLayout.css, update all sample and game HTML references to the new path, update any directly related references that still mention the old path, remove the old file, and verify no broken stylesheet links or layout regressions remain. Keep the stylesheet behavior unchanged. Do not change gameplay or engine runtime logic.
+REASONING: low
+COMMAND: Implement PR-DOCS-CORRECT-SHARED-FOLDER-NOTES. Update the relevant documentation so it correctly states that sampleLayout.css moved from /samples/_shared/ to /engine/ui/, while samples/_shared/ still remains intentionally because it contains sample-owned helper files such as lateSampleBootstrap.js and platformerHelpers.js. Do not change runtime or gameplay code.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that engine/ui/sampleLayout.css exists, all sample/game references were updated, the old engine/ui/sampleLayout.css file was removed, and no gameplay/runtime logic changed.
-
+COMMAND: Verify the docs no longer imply samples/_shared/ is empty or removable and that no code files changed.
