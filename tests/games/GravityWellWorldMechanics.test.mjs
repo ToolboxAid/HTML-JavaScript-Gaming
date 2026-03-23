@@ -47,7 +47,7 @@ export function run() {
   thrustOnlyWorld.ship.vy = 0;
   thrustOnlyWorld.ship.angle = 0;
   thrustOnlyWorld.update(0.25, createInput(['ArrowUp']));
-  assert.equal(thrustOnlyWorld.ship.vx, 0);
+  assertClose(thrustOnlyWorld.ship.vx, 0);
   assert.equal(thrustOnlyWorld.ship.vy < 0, true);
   assert.equal(thrustOnlyWorld.ship.thrusting, true);
   assertClose(thrustOnlyWorld.lastGravity.x, 0);

@@ -5,3 +5,4 @@ David Quesenberry
 index.js
 */
 export { transformPoints, drawVectorShape } from './VectorDrawing.js';
+export { vectorFromAngle } from './VectorMath.js';

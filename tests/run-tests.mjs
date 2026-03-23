@@ -41,6 +41,7 @@ import { run as runMouseState } from './input/MouseState.test.mjs';
 import './input/GamepadState.test.mjs';
 import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
 import { run as runTransitionScene } from './scenes/TransitionScene.test.mjs';
+import { run as runVectorMath } from './vector/VectorMath.test.mjs';
 import { run as runWorldSystems } from './world/WorldSystems.test.mjs';
 import { run as runProductionReadiness } from './production/ProductionReadiness.test.mjs';
 import { run as runEnginePublicBarrelImports } from './production/EnginePublicBarrelImports.test.mjs';
@@ -88,6 +89,7 @@ const tests = [
     ['ProductionReadiness', runProductionReadiness],
     ['SceneManager', runSceneManager],
     ['TransitionScene', runTransitionScene],
+    ['VectorMath', runVectorMath],
     ['WorldSystems', runWorldSystems],
 ];
 

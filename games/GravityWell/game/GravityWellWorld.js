@@ -5,7 +5,7 @@ David Quesenberry
 GravityWellWorld.js
 */
 import { clamp, distance } from '../../../engine/utils/index.js';
-import { transformPoints } from '../../../engine/vector/index.js';
+import { transformPoints, vectorFromAngle } from '../../../engine/vector/index.js';
 
 const SHIP_SHAPE = [
   { x: 0, y: -16 },
@@ -66,13 +66,6 @@ function createInputSnapshot(input = null) {
     right: Boolean(input?.isDown?.('ArrowRight')),
     thrust: Boolean(input?.isDown?.('ArrowUp')),
     brake: Boolean(input?.isDown?.('Space')),
-  };
-}
-
-function getForwardVector(angle) {
-  return {
-    x: Math.sin(angle),
-    y: -Math.cos(angle),
   };
 }
 
@@ -147,7 +140,7 @@ export default class GravityWellWorld {
     });
 
     if (controls.thrust) {
-      const forward = getForwardVector(ship.angle);
+      const forward = vectorFromAngle(ship.angle - (Math.PI / 2));
       ax += forward.x * THRUST_ACCELERATION;
       ay += forward.y * THRUST_ACCELERATION;
     }
