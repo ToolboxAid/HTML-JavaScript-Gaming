@@ -19,6 +19,7 @@ export default class AsteroidsSession {
     this.turnIntroFlashesRemaining = 0;
     this.turnIntroTimer = 0;
     this.turnIntroVisible = false;
+    this.extraLifeInterval = 10000;
     this.status = 'Press 1 for one player or 2 for two players.';
   }
 
@@ -27,7 +28,7 @@ export default class AsteroidsSession {
       id: index + 1,
       score: 0,
       lives: 3,
-      nextExtraLifeScore: 10000,
+      nextExtraLifeScore: this.extraLifeInterval,
       worldState: null,
     }));
     this.activePlayerIndex = 0;
@@ -95,7 +96,7 @@ export default class AsteroidsSession {
     let awardedExtraLife = false;
     while (this.activePlayer.score >= this.activePlayer.nextExtraLifeScore) {
       this.activePlayer.lives += 1;
-      this.activePlayer.nextExtraLifeScore += 1000;
+      this.activePlayer.nextExtraLifeScore += this.extraLifeInterval;
       awardedExtraLife = true;
     }
     if (this.activePlayer.score > this.highScore) {

@@ -37,6 +37,7 @@ export default class AsteroidsWorld {
     this.shipActive = true;
     this.respawnDelay = 0;
     this.respawnLocked = false;
+    this.fireHeld = false;
     this.ufo = null;
     this.ufoBullets = [];
     this.ufoSpawnTimer = this.getUfoSpawnDelay();
@@ -85,6 +86,7 @@ export default class AsteroidsWorld {
       shipActive: this.shipActive,
       respawnDelay: this.respawnDelay,
       respawnLocked: this.respawnLocked,
+      fireHeld: this.fireHeld,
       fireCooldown: this.fireCooldown,
       status: this.status,
       ufoSpawnTimer: this.ufoSpawnTimer,
@@ -150,6 +152,7 @@ export default class AsteroidsWorld {
     this.shipActive = state.shipActive ?? true;
     this.respawnDelay = state.respawnDelay ?? 0;
     this.respawnLocked = state.respawnLocked ?? false;
+    this.fireHeld = state.fireHeld ?? false;
     this.fireCooldown = state.fireCooldown ?? 0;
     this.status = state.status ?? '';
     this.ufoSpawnTimer = state.ufoSpawnTimer ?? this.getUfoSpawnDelay();
@@ -168,7 +171,7 @@ export default class AsteroidsWorld {
   }
 
   getWaveSpeedMultiplier() {
-    return 1 + (this.wave - 1) * 0.12;
+    return 1 + (this.wave - 1) * 0.16;
   }
 
   getUfoSpawnDelay() {
@@ -216,6 +219,7 @@ export default class AsteroidsWorld {
     this.shipActive = true;
     this.respawnDelay = 0;
     this.respawnLocked = false;
+    this.fireHeld = false;
     this.bullets = [];
     this.ufoBullets = [];
     this.ufo = null;
@@ -230,6 +234,7 @@ export default class AsteroidsWorld {
     this.shipActive = true;
     this.respawnDelay = 0;
     this.respawnLocked = false;
+    this.fireHeld = false;
     this.bullets = [];
   }
 
@@ -237,6 +242,7 @@ export default class AsteroidsWorld {
     this.shipActive = false;
     this.respawnDelay = 5;
     this.respawnLocked = false;
+    this.fireHeld = false;
     this.bullets = [];
     this.ship.thrusting = false;
     this.status = 'Stand by for safe respawn.';
@@ -349,8 +355,6 @@ export default class AsteroidsWorld {
       this.ufoBullets = [];
       this.ufoSpawnTimer = this.getUfoSpawnDelay();
       waveCleared = true;
-    } else if (this.asteroids.length === 0 && this.ufo) {
-      this.status = 'Field clear. Waiting for saucer to finish its pass.';
     }
     return {
       points,
@@ -387,12 +391,14 @@ export default class AsteroidsWorld {
       events.shipRespawned = this.tryRespawn();
     }
 
+    const firePressed = !!input?.isDown('Space');
     this.fireCooldown = Math.max(0, this.fireCooldown - dtSeconds);
-    if (this.shipActive && input?.isDown('Space') && this.fireCooldown === 0) {
+    if (this.shipActive && firePressed && !this.fireHeld && this.fireCooldown === 0) {
       if (this.fire()) {
         events.sfx.push('fire');
       }
     }
+    this.fireHeld = firePressed;
 
     this.bullets.forEach((bullet) => bullet.update(dtSeconds, this.bounds));
     this.bullets = this.bullets.filter((bullet) => bullet.isAlive());
@@ -541,6 +547,7 @@ export default class AsteroidsWorld {
         if (arePolygonsColliding(shipPolygon, asteroid.getPoints())) {
           const result = this.splitAsteroid(asteroidIndex);
           this.destroyShip();
+          events.scoreEvents.push(result.points);
           events.explosions.push(result.explosion);
           events.waveCleared = events.waveCleared || result.waveCleared;
           events.shipDestroyed = true;
@@ -551,6 +558,7 @@ export default class AsteroidsWorld {
     }
 
     if (this.shipActive && !events.shipDestroyed && this.ufo && this.ship.invulnerable === 0 && arePolygonsColliding(this.ship.getPoints(), this.ufo.getCollisionPolygon())) {
+      events.scoreEvents.push(this.ufo.points);
       events.explosions.push({
         x: this.ufo.x,
         y: this.ufo.y,
