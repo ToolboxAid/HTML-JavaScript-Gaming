@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-engine: harden persistence defaults and add FX determinism seam
+games: validate asteroids boot, lifecycle, fullscreen, and persistence flows

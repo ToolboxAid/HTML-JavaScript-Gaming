@@ -4,26 +4,42 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '/engine/core/Engine.js';
-import { InputService } from '/engine/input/index.js';
-import { Theme, ThemeTokens } from '/engine/theme/index.js';
-import AsteroidsGameScene from '/games/Asteroids/game/AsteroidsGameScene.js';
+import Engine from '../../engine/core/Engine.js';
+import { InputService } from '../../engine/input/index.js';
+import { Theme, ThemeTokens } from '../../engine/theme/index.js';
+import AsteroidsGameScene from './game/AsteroidsGameScene.js';
 
 const theme = new Theme(ThemeTokens);
-theme.applyDocumentTheme();
 
-const input = new InputService();
-const canvas = document.getElementById('game');
-async function boot() {
-  if (document.fonts?.load) {
+export async function bootAsteroids({
+  documentRef = globalThis.document ?? null,
+  EngineClass = Engine,
+  InputServiceClass = InputService,
+  SceneClass = AsteroidsGameScene,
+} = {}) {
+  if (!documentRef) {
+    return null;
+  }
+
+  if (documentRef === globalThis.document && documentRef.documentElement && documentRef.body) {
+    theme.applyDocumentTheme();
+  }
+
+  const canvas = documentRef.getElementById?.('game') ?? null;
+  if (!canvas) {
+    return null;
+  }
+
+  if (documentRef.fonts?.load) {
     try {
-      await document.fonts.load('24px "Vector Battle"');
+      await documentRef.fonts.load('24px "Vector Battle"');
     } catch {
       // Keep booting if the custom font fails to load.
     }
   }
 
-  const engine = new Engine({
+  const input = new InputServiceClass();
+  const engine = new EngineClass({
     canvas,
     width: 960,
     height: 720,
@@ -31,10 +47,10 @@ async function boot() {
     input,
   });
 
-  engine.setScene(new AsteroidsGameScene());
+  engine.setScene(new SceneClass());
   engine.start();
 
-  canvas?.addEventListener('click', async () => {
+  canvas.addEventListener?.('click', async () => {
     const fullscreenState = engine.fullscreen?.getState?.();
     if (!fullscreenState?.available || fullscreenState.active) {
       return;
@@ -42,6 +58,10 @@ async function boot() {
 
     await engine.fullscreen.request();
   });
+
+  return engine;
 }
 
-boot();
+if (typeof document !== 'undefined') {
+  void bootAsteroids();
+}

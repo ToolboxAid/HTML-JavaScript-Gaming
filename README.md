@@ -3,31 +3,35 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Engine Stabilization Phase 2 (Persistence Defaults + FX Determinism)
+# BUILD_PR — Asteroids Validation Phase 1 (Boot + Lifecycle + Persistence)
 
 ## Purpose
-Implement the second stabilization pass after scene lifecycle and transition seam cleanup.
+Validate the stabilized engine under real Asteroids gameplay without doing promotion/extraction yet.
 
 ## Goal
-Reduce browser-default persistence risk and make engine FX behavior more deterministic and testable.
+Prove engine behavior under real game flow for:
+- browser boot readiness
+- scene lifecycle transitions
+- fullscreen affordance/use
+- persistence and snapshot/player-swap safety
 
 ## Scope
-- `engine/persistence/StorageService.js`
-- related persistence/default call sites only if required
-- `engine/release/SettingsSystem.js` only if required for safe default handling
-- `engine/fx/ParticleSystem.js`
-- focused persistence and FX determinism tests
+- `games/Asteroids/`
+- focused engine/game validation tests
+- minimal supporting engine test adjustments only if required for validation
 - `tests/run-tests.mjs` only if required
 
 ## Constraints
-- No gameplay tuning changes
-- No scene lifecycle work in this PR
-- No Asteroids extraction work in this PR
-- No broad persistence redesign
-- No broad FX system redesign
-- Preserve current browser behavior for normal usage
+- No promotion/extraction work in this PR
+- No broad engine redesign
+- No gameplay feature expansion
+- No sample consolidation in this PR
+- Prefer validation/tests over code churn
+- Any runtime fixes must be minimal and directly required by the validation target
 
 ## Expected Outcome
-- persistence defaults no longer rely on unsafe implicit browser assumptions in engine-level behavior
-- particle/effect randomness can be controlled for deterministic tests where appropriate
-- focused tests prove storage-absence safety and FX determinism seams
+- Asteroids boot path is validated
+- lifecycle transitions are validated through real game flow
+- persistence-related flows are validated
+- fullscreen/browser-entry behavior is validated
+- proof is gathered before any promotion phase begins

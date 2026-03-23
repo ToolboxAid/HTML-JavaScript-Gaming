@@ -89,6 +89,21 @@ export default class AsteroidsGameScene extends Scene {
     this.scoreFlashTime = 0;
   }
 
+  enter(engine) {
+    if (engine?.canvas) {
+      engine.canvas.style.cursor = this.session.mode === 'playing' && !this.isPaused
+        ? 'none'
+        : 'default';
+    }
+  }
+
+  exit(engine) {
+    this.audio.stopAll();
+    if (engine?.canvas) {
+      engine.canvas.style.cursor = 'default';
+    }
+  }
+
   update(dtSeconds, engine) {
     const enterPressed = engine.input?.isDown('Enter');
     const onePressed = engine.input?.isDown('Digit1');

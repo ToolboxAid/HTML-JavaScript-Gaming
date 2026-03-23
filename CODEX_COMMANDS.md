@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-ENGINE-STABILIZATION-PHASE2-PERSISTENCE-DEFAULTS-AND-FX-DETERMINISM. Harden engine/persistence/StorageService.js so engine-level persistence behavior is safe when browser storage is unavailable, adjusting engine/release/SettingsSystem.js only if required for safe composition and unchanged behavior. Add a deterministic RNG seam to engine/fx/ParticleSystem.js without redesigning the FX system, preserving default runtime behavior. Add focused tests for storage absence safety and FX determinism. Do not change scene lifecycle, Asteroids extraction, gameplay tuning, or unrelated files.
+COMMAND: Implement PR-ASTEROIDS-VALIDATION-PHASE1-BOOT-LIFECYCLE-PERSISTENCE. Validate games/Asteroids/ for browser boot readiness, scene lifecycle through real game flow, fullscreen/browser-entry behavior, and persistence/snapshot/player-swap safety. Add focused validation tests under tests/games/ and/or tests/engine/ where practical. Make only minimal runtime fixes directly required by validation findings. Do not do promotion/extraction, broad refactors, sample consolidation, or unrelated gameplay expansion.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that persistence is safe without browser storage globals, ParticleSystem supports deterministic control, focused tests were added, and no unrelated subsystems changed.
+COMMAND: Verify that Asteroids boot/lifecycle/persistence/fullscreen validation was added, any runtime fixes are minimal and directly tied to validation findings, and no promotion/extraction work was included.

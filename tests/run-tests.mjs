@@ -15,6 +15,7 @@ import { run as runFrameClock } from './core/FrameClock.test.mjs';
 import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
 import { run as runParticleSystem } from './fx/ParticleSystem.test.mjs';
 import { run as runAsteroidsHardening } from './games/AsteroidsHardening.test.mjs';
+import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runFullscreenService } from './final/FullscreenService.test.mjs';
 import { run as runPlatformUxSystems } from './final/PlatformUxSystems.test.mjs';
@@ -60,6 +61,7 @@ const tests = [
     ['ParticleSystem', runParticleSystem],
     ['RuntimeMetrics', runRuntimeMetrics],
     ['AsteroidsHardening', runAsteroidsHardening],
+    ['AsteroidsValidation', runAsteroidsValidation],
     ['Combat', runCombat],
     ['Entity', runEntity],
     ['EventBus', runEventBus],
