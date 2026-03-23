@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 Ship.js
 */
-import { wrap } from './math.js';
+import { wrap } from '../utils/math.js';
 
 const SMALL_VECTOR_MAP = [
   [14, 0],
@@ -70,12 +70,14 @@ export default class Ship {
     });
   }
 
-  getFlamePoints() {
+  getFlamePoints(pulse = 1) {
     const rear = this.angle + Math.PI;
+    const flameReach = (18 + pulse * 9) * 0.5;
+    const wingSpread = (8 + pulse * 2) * 0.5;
     return [
-      { x: this.x + Math.cos(rear) * 18, y: this.y + Math.sin(rear) * 18 },
-      { x: this.x + Math.cos(this.angle + 2.7) * 8, y: this.y + Math.sin(this.angle + 2.7) * 8 },
-      { x: this.x + Math.cos(this.angle - 2.7) * 8, y: this.y + Math.sin(this.angle - 2.7) * 8 },
+      { x: this.x + Math.cos(rear) * flameReach, y: this.y + Math.sin(rear) * flameReach },
+      { x: this.x + Math.cos(this.angle + 2.7) * wingSpread, y: this.y + Math.sin(this.angle + 2.7) * wingSpread },
+      { x: this.x + Math.cos(this.angle - 2.7) * wingSpread, y: this.y + Math.sin(this.angle - 2.7) * wingSpread },
     ];
   }
 }

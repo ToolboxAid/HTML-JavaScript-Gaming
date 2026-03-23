@@ -3,7 +3,7 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Asteroids Planning Pack
+# Asteroids Planning Pack V2
 
 This ZIP contains planning documents only.
 

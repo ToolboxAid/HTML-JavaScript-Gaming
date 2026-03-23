@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Asteroids Preview Capture</title>
+  <style>
+    @font-face {
+      font-family: "Vector Battle";
+      src: url("./assets/vector_battle.ttf") format("truetype");
+      font-display: block;
+    }
+
+    html,
+    body {
+      margin: 0;
+      background: #020617;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="960" height="720"></canvas>
+  <script type="module">
+    import { bootCapturePreview } from '../../engine/tooling/CapturePreviewRuntime.js';
+    import AsteroidsGameScene from './game/AsteroidsGameScene.js';
+
+    const canvas = document.getElementById('game');
+
+    await bootCapturePreview({
+      canvas,
+      width: 960,
+      height: 720,
+      fontSpec: '24px "Vector Battle"',
+      createScene: () => new AsteroidsGameScene(),
+      configureScene: (scene) => {
+        scene.session.start(1);
+        scene.world.ship.x = 470;
+        scene.world.ship.y = 350;
+        scene.world.ship.angle = -0.45;
+        scene.world.ship.invulnerable = 0;
+        scene.world.asteroids = [
+          scene.world.asteroids[0],
+          scene.world.asteroids[1],
+          scene.world.asteroids[2],
+        ];
+        scene.world.asteroids[0].x = 180;
+        scene.world.asteroids[0].y = 180;
+        scene.world.asteroids[1].x = 780;
+        scene.world.asteroids[1].y = 210;
+        scene.world.asteroids[2].x = 700;
+        scene.world.asteroids[2].y = 520;
+        scene.world.fire();
+        scene.world.bullets[0].x = 560;
+        scene.world.bullets[0].y = 300;
+        scene.world.bullets[0].vx = 0;
+        scene.world.bullets[0].vy = 0;
+        scene.session.players[0].score = 240;
+        scene.session.highScore = 1280;
+        scene.session.status = 'Player 1 ready.';
+      },
+    });
+  </script>
+</body>
+</html>

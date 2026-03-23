@@ -4,15 +4,15 @@ David Quesenberry
 03/22/2026
 Bullet.js
 */
-import { wrap } from './math.js';
+import { wrap } from '../utils/math.js';
 
 export default class Bullet {
-  constructor(x, y, vx, vy) {
+  constructor(x, y, vx, vy, life = 1.1) {
     this.x = x;
     this.y = y;
     this.vx = vx;
     this.vy = vy;
-    this.life = 1.1;
+    this.life = life;
   }
 
   update(dtSeconds, bounds) {

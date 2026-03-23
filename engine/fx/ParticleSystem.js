@@ -9,6 +9,24 @@ export default class ParticleSystem {
     this.particles = [];
   }
 
+  static colorWithAlpha(color, alpha) {
+    if (typeof color !== 'string') {
+      return color;
+    }
+
+    if (color.startsWith('#')) {
+      const normalized = color.length === 4
+        ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
+        : color;
+      const red = Number.parseInt(normalized.slice(1, 3), 16);
+      const green = Number.parseInt(normalized.slice(3, 5), 16);
+      const blue = Number.parseInt(normalized.slice(5, 7), 16);
+      return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+    }
+
+    return color;
+  }
+
   spawnExplosion({
     x,
     y,
@@ -18,6 +36,8 @@ export default class ParticleSystem {
     lifeSeconds = 0.8,
     randomize = false,
     shape = 'square',
+    minSize = null,
+    maxSize = null,
   } = {}) {
     for (let index = 0; index < count; index += 1) {
       const baseAngle = (Math.PI * 2 * index) / count;
@@ -27,9 +47,15 @@ export default class ParticleSystem {
       const velocity = randomize
         ? speed * (0.35 + Math.random() * 1.05)
         : speed * (0.6 + (index % 4) * 0.15);
-      const size = randomize
+      const generatedSize = randomize
         ? 2 + Math.random() * 7
         : 4 + (index % 3) * 2;
+      const size = minSize !== null || maxSize !== null
+        ? Math.max(
+          minSize ?? generatedSize,
+          Math.min(maxSize ?? generatedSize, generatedSize),
+        )
+        : generatedSize;
       this.particles.push({
         x,
         y,
@@ -60,11 +86,15 @@ export default class ParticleSystem {
   render(renderer) {
     for (const particle of this.particles) {
       if (particle.shape === 'circle') {
+        const lifeRatio = particle.maxLifeSeconds > 0
+          ? Math.max(0, particle.lifeSeconds / particle.maxLifeSeconds)
+          : 0;
+        const currentSize = Math.max(0.5, particle.size * lifeRatio);
         renderer.drawCircle(
-          particle.x + particle.size * 0.5,
-          particle.y + particle.size * 0.5,
-          particle.size * 0.5,
-          particle.color,
+          particle.x + currentSize * 0.5,
+          particle.y + currentSize * 0.5,
+          currentSize * 0.5,
+          ParticleSystem.colorWithAlpha(particle.color, Math.max(0.08, lifeRatio)),
         );
         continue;
       }

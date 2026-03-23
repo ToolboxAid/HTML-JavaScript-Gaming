@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 Asteroid.js
 */
-import { TAU, randomRange, wrap } from './math.js';
+import { TAU, randomRange, wrap } from '../utils/math.js';
 
 const BASE_VECTOR_MAP = [
   [10, 40],

@@ -10,3 +10,4 @@ export { default as PropertyEditor } from './PropertyEditor.js';
 export { default as LiveTuningService } from './LiveTuningService.js';
 export { default as AssetBrowser } from './AssetBrowser.js';
 export { default as SceneGraphViewer } from './SceneGraphViewer.js';
+export { bootCapturePreview } from './CapturePreviewRuntime.js';

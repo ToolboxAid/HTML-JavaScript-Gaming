@@ -9,23 +9,37 @@ index.html
 <head>
   <meta charset="UTF-8" />
   <title>Asteroids</title>
-  <link rel="stylesheet" href="../../samples/_shared/sampleLayout.css" />
+  <link rel="stylesheet" href="/samples/_shared/sampleLayout.css" />
+  <style>
+    @font-face {
+      font-family: "Vector Battle";
+      src: url("./assets/vector_battle.ttf") format("truetype");
+      font-display: swap;
+    }
+  </style>
 </head>
 <body>
   <main>
     <h1>Asteroids</h1>
-    <p>Playable Asteroids-style arcade game with ship thrust, wraparound movement, asteroid splitting, and scoring.</p>
-    <canvas id="game" width="960" height="540"></canvas>
+    <p>Playable Asteroids-style arcade game with player-select flow, high score, player scores, and ship-icon lives.</p>
+    <canvas id="game" width="960" height="720"></canvas>
     <section>
-      <p>`Left/Right` rotate, `Up` thrust, `Space` fire, `Enter` restart after game over.</p>
+      <p>`1` or `2` starts one-player or two-player. `Left/Right` rotate, `Up` thrust, `Space` fire, `Enter` returns to menu after game over.</p>
     </section>
     <section>
       <h3>Engine Classes Used</h3>
       <ul>
         <li>Engine</li>
+        <li>CanvasRenderer</li>
+        <li>FullscreenService</li>
         <li>InputService</li>
-        <li>Theme</li>
+        <li>ParticleSystem</li>
         <li>Scene</li>
+        <li>Theme</li>
+        <li>MediaTrackService</li>
+        <li>HtmlAudioMediaBackend</li>
+        <li>StorageService</li>
+        <li>Renderer</li>
       </ul>
     </section>
   </main>

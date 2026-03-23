@@ -22,40 +22,80 @@ index.html
       margin-bottom: 10px;
     }
 
+    h2 {
+      margin-top: 30px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+
     p {
       color: #ccc;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
       margin-top: 20px;
     }
 
     a.live {
       display: block;
-      padding: 12px;
+      overflow: hidden;
       background: #1e1e1e;
       border: 1px solid #333;
-      text-align: left;
       text-decoration: none;
-      border-radius: 6px;
-      color: #0af;
+      border-radius: 10px;
+      color: #e2e8f0;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
     }
 
     a.live:hover {
-      background: #333;
+      background: #262626;
+      border-color: #4f8cff;
+      transform: translateY(-2px);
+    }
+
+    .thumb {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: #020617;
+      border-bottom: 1px solid #333;
+    }
+
+    .cardBody {
+      padding: 14px;
+    }
+
+    .cardTitle {
+      font-size: 1.1rem;
+      color: #7dd3fc;
+      margin-bottom: 6px;
+    }
+
+    .cardDesc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.4;
     }
   </style>
 </head>
 <body>
   <h1>ToolboxAid - Game Launcher</h1>
-  <p>Playable games built in this repo live here separately from the engine samples.</p>
+  <p>Playable games live here.</p>
 
   <section>
+    <h2>Arcade Games</h2>
     <div class="grid">
-      <a class="live" href="../games/Asteroids/index.html">Asteroids</a>
+      <a class="live" href="/games/Asteroids/index.html">
+        <img class="thumb" src="/games/Asteroids/assets/preview.png" alt="Asteroids gameplay screenshot" />
+        <div class="cardBody">
+          <div class="cardTitle">Asteroids</div>
+          <div class="cardDesc">Classic-style space shooter with one/two-player start, high score tracking, vector HUD, and ship-icon lives.</div>
+        </div>
+      </a>
     </div>
   </section>
 </body>
