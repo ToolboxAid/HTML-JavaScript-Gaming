@@ -29,6 +29,7 @@ const WAVE_SPAWN_MARGIN_X = 80;
 const WAVE_SPAWN_MARGIN_Y = 120;
 const WAVE_SPAWN_ATTEMPTS = 60;
 const ASTEROID_SPAWN_SAFE_PADDING = 24;
+const MAX_UPDATE_STEP_SECONDS = 1 / 60;
 
 function sanitizeFiniteNumber(value, fallback) {
   return Number.isFinite(value) ? value : fallback;
@@ -81,6 +82,35 @@ function sanitizeBounds(bounds) {
   const height = Math.max(1, sanitizeFiniteNumber(source.height, DEFAULT_WORLD_HEIGHT));
 
   return { width, height };
+}
+
+function createWorldEvents() {
+  return {
+    explosions: [],
+    scoreEvents: [],
+    shipDestroyed: false,
+    shipDestroyedState: null,
+    shipRespawned: false,
+    waveCleared: false,
+    sfx: [],
+  };
+}
+
+function mergeWorldEvents(target, stepEvents) {
+  if (!stepEvents) {
+    return target;
+  }
+
+  target.explosions.push(...(stepEvents.explosions || []));
+  target.scoreEvents.push(...(stepEvents.scoreEvents || []));
+  target.shipDestroyed = target.shipDestroyed || !!stepEvents.shipDestroyed;
+  if (!target.shipDestroyedState && stepEvents.shipDestroyedState) {
+    target.shipDestroyedState = stepEvents.shipDestroyedState;
+  }
+  target.shipRespawned = target.shipRespawned || !!stepEvents.shipRespawned;
+  target.waveCleared = target.waveCleared || !!stepEvents.waveCleared;
+  target.sfx.push(...(stepEvents.sfx || []));
+  return target;
 }
 
 function getRectOverlapDepth(x, y, radius, rect) {
@@ -562,16 +592,8 @@ export default class AsteroidsWorld {
     this.status = 'Ship destroyed.';
   }
 
-  update(dtSeconds, input) {
-    const events = {
-      explosions: [],
-      scoreEvents: [],
-      shipDestroyed: false,
-      shipDestroyedState: null,
-      shipRespawned: false,
-      waveCleared: false,
-      sfx: [],
-    };
+  updateStep(dtSeconds, input) {
+    const events = createWorldEvents();
 
     const safeDtSeconds = Number.isFinite(dtSeconds)
       ? Math.max(0, dtSeconds)
@@ -800,6 +822,26 @@ export default class AsteroidsWorld {
         vy: this.ship.vy,
       };
       this.queueRespawn();
+    }
+
+    return events;
+  }
+
+  update(dtSeconds, input) {
+    const safeDtSeconds = Number.isFinite(dtSeconds)
+      ? Math.max(0, dtSeconds)
+      : 0;
+
+    if (safeDtSeconds <= MAX_UPDATE_STEP_SECONDS) {
+      return this.updateStep(safeDtSeconds, input);
+    }
+
+    const stepCount = Math.max(1, Math.ceil(safeDtSeconds / MAX_UPDATE_STEP_SECONDS));
+    const stepSeconds = safeDtSeconds / stepCount;
+    const events = createWorldEvents();
+
+    for (let stepIndex = 0; stepIndex < stepCount; stepIndex += 1) {
+      mergeWorldEvents(events, this.updateStep(stepSeconds, input));
     }
 
     return events;

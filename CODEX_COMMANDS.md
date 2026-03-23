@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-ASTEROIDS-VALIDATION-PHASE1-BOOT-LIFECYCLE-PERSISTENCE. Validate games/Asteroids/ for browser boot readiness, scene lifecycle through real game flow, fullscreen/browser-entry behavior, and persistence/snapshot/player-swap safety. Add focused validation tests under tests/games/ and/or tests/engine/ where practical. Make only minimal runtime fixes directly required by validation findings. Do not do promotion/extraction, broad refactors, sample consolidation, or unrelated gameplay expansion.
+COMMAND: Implement PR-ASTEROIDS-VALIDATION-PHASE2-COLLISION-TIMING-STRESS. Stress-test games/Asteroids/ for collision correctness, wave progression stability, respawn safety, and timing consistency under load. Add focused stress and validation tests. Apply only minimal runtime fixes directly tied to failures. Do not perform promotion/extraction or broad refactors.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that Asteroids boot/lifecycle/persistence/fullscreen validation was added, any runtime fixes are minimal and directly tied to validation findings, and no promotion/extraction work was included.
+COMMAND: Verify that collision, timing, and stress validation is present, fixes are minimal, and no unrelated changes were introduced.

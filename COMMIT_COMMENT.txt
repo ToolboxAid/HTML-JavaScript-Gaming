@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-games: validate asteroids boot, lifecycle, fullscreen, and persistence flows
+games: validate asteroids collision, timing, and stress behavior
