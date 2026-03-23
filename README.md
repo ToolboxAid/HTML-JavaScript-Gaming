@@ -3,30 +3,33 @@ David Quesenberry
 03/23/2026
 README.md
 
-# PLAN_PR — Gravity Well Validation Phase 1
+# BUILD_PR — Gravity Well Validation Phase 1 (Boot + Scene)
 
 ## Purpose
-Validate Game #2 (Gravity Well) as a real engine consumer before adding polish or promoting any game-side helpers.
+Implement the first Gravity Well validation pass with focused proof around boot composition and scene flow.
 
 ## Goal
-Prove Gravity Well correctness for:
-- boot and initial state
-- thrust + gravity interaction
-- win-zone detection
-- deterministic repeatability
-- stable motion across timing conditions
+Validate:
+- browser/test boot composition
+- safe null-return paths
+- scene installation/start behavior
+- fullscreen click gating composition
+- scene phase transitions at the top level
 
 ## Scope
-- `games/GravityWell/`
-- focused validation tests
-- docs-only planning output in this PR
+- `games/GravityWell/main.js`
+- `games/GravityWell/game/GravityWellScene.js`
+- focused tests under `tests/games/` and/or `tests/engine/`
+- `tests/run-tests.mjs` only if required
 
 ## Constraints
-- No runtime code changes in this PR
-- No engine redesign
+- Prefer tests over runtime changes
 - No gameplay expansion
+- No engine changes
 - No promotion/extraction work
-- Prefer validation planning over speculative cleanup
+- Any runtime fixes must be minimal and directly required by failing validation
 
 ## Expected Outcome
-A validation plan and next BUILD_PR ladder for hardening Gravity Well before any promotion or polish.
+- Gravity Well boot behavior is proven in browser-like and test-safe paths
+- scene installation/start behavior is covered
+- top-level scene flow is validated without broad runtime changes

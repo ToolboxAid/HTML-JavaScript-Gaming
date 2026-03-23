@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-GRAVITY-WELL-VALIDATION-PHASE1 as a docs-only planning pass. Audit games/GravityWell/ for boot correctness, thrust+gravity interaction, win-zone detection, deterministic repeatability, and timing-condition stability. Write docs/prs/PR-GRAVITY-WELL-VALIDATION-PHASE1/PLAN.md and TASKS.md with a small BUILD_PR ladder for hardening and validation. Do not modify runtime source files.
+COMMAND: Implement PR-GRAVITY-WELL-VALIDATION-PHASE1-BOOT-SCENE. Add focused validation tests for games/GravityWell/main.js and games/GravityWell/game/GravityWellScene.js covering safe no-document/no-canvas boot paths, successful engine creation/install/start, safe fullscreen click composition, and top-level scene transitions such as menu->playing and restart after won/lost. Prefer tests over runtime changes. Apply only minimal fixes directly required by failing validation and keep them within games/GravityWell/. Do not change engine code or expand gameplay.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that only docs/prs/PR-GRAVITY-WELL-VALIDATION-PHASE1/PLAN.md and TASKS.md were edited and that no runtime source files changed.
+COMMAND: Verify that Gravity Well boot and scene validation was added, any runtime fixes are minimal and local to games/GravityWell/, and no engine or gameplay-expansion changes were introduced.

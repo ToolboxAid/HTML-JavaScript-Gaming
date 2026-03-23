@@ -19,6 +19,7 @@ import { run as runAsteroidsCollisionTimingStress } from './games/AsteroidsColli
 import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
 import { run as runGravityWell } from './games/GravityWell.test.mjs';
+import { run as runGravityWellValidation } from './games/GravityWellValidation.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runFullscreenService } from './final/FullscreenService.test.mjs';
 import { run as runPlatformUxSystems } from './final/PlatformUxSystems.test.mjs';
@@ -69,6 +70,7 @@ const tests = [
     ['AsteroidsValidation', runAsteroidsValidation],
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
     ['GravityWell', runGravityWell],
+    ['GravityWellValidation', runGravityWellValidation],
     ['Combat', runCombat],
     ['Entity', runEntity],
     ['EventBus', runEventBus],

@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-docs: plan gravity well validation phase 1
+games: validate gravity well boot composition and scene flow
