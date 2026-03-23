@@ -3,24 +3,34 @@ David Quesenberry
 03/23/2026
 README.md
 
-# PLAN_PR — Relocate Shared Layout CSS to engine/ui
+# BUILD_PR — Engine UI Layout + Shared UI Alignment
 
 ## Purpose
-Create a small, low-risk plan to move the shared sample/game page layout CSS into a clearer engine-owned location.
+Execute the shared layout CSS move and bundle nearby low-risk UI-alignment work in one larger mechanical pass.
 
 ## Goal
-- relocate `/samples/_shared/sampleLayout.css`
-- update all references from samples and games
-- keep layout ownership clear and enforceable
-- avoid mixing runtime engine code with sample/game duplication
+- move `/engine/ui/sampleLayout.css` to `/engine/ui/sampleLayout.css`
+- update all sample and game HTML references
+- remove the old duplicate path
+- align any direct references/documentation that still mention the old path
+- keep behavior unchanged
 
-## Naming Recommendation
-Preferred file name: `sampleLayout.css`
+## Scope
+- `samples/`
+- `games/`
+- `engine/ui/`
+- minimal docs/reference updates only if directly tied to the move
 
-Reason:
-- it describes exactly what the file is used for today
-- it avoids over-generalizing a dev/demo page scaffold into a universal “base” layout
-- `baseLayout.css` sounds broader and more foundational than the current use justifies
+## Constraints
+- No gameplay changes
+- No engine runtime logic changes
+- No CSS redesign
+- No new UI framework
+- Keep this mechanical and behavior-preserving
 
 ## Expected Outcome
-A small BUILD_PR that moves the CSS to `engine/ui/sampleLayout.css`, updates references, and preserves behavior.
+- one shared layout stylesheet lives in `engine/ui/`
+- all consumers point to the new path
+- no legacy copy remains
+- no broken links or layout regressions
+

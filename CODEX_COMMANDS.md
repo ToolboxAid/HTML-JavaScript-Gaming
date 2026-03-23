@@ -8,9 +8,10 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: medium
-COMMAND: Implement PR-ENGINE-UI-SAMPLE-LAYOUT-CSS. Move /samples/_shared/sampleLayout.css to /engine/ui/sampleLayout.css, keep the file name as sampleLayout.css, update all sample and game HTML references to the new path, remove the old file, and verify no layout regressions or broken links remain. Do not redesign the stylesheet or change engine/game runtime behavior.
+COMMAND: Implement PR-ENGINE-UI-LAYOUT-AND-SHARED-UI-ALIGNMENT. Move /engine/ui/sampleLayout.css to /engine/ui/sampleLayout.css, update all sample and game HTML references to the new path, update any directly related references that still mention the old path, remove the old file, and verify no broken stylesheet links or layout regressions remain. Keep the stylesheet behavior unchanged. Do not change gameplay or engine runtime logic.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that engine/ui/sampleLayout.css exists, all references were updated, the old samples/_shared/sampleLayout.css file was removed, and no runtime/gameplay files changed.
+COMMAND: Verify that engine/ui/sampleLayout.css exists, all sample/game references were updated, the old engine/ui/sampleLayout.css file was removed, and no gameplay/runtime logic changed.
+

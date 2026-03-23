@@ -38,7 +38,7 @@ The clean ownership rule is:
 This is UI scaffolding, not gameplay logic and not sample-only infrastructure.
 
 ## In Scope
-- move `/samples/_shared/sampleLayout.css` to `/engine/ui/sampleLayout.css`
+- move `/engine/ui/sampleLayout.css` to `/engine/ui/sampleLayout.css`
 - update all HTML references in `/samples` and `/games`
 - keep behavior unchanged
 - optionally leave no duplicate copy behind
@@ -54,7 +54,7 @@ This is UI scaffolding, not gameplay logic and not sample-only infrastructure.
 
 ### 1. Inventory usage
 Find every reference to:
-- `/samples/_shared/sampleLayout.css`
+- `/engine/ui/sampleLayout.css`
 
 Classify usage by:
 - sample HTML pages
@@ -70,7 +70,7 @@ This is a relocation, not a redesign.
 
 ### 3. Update references
 Change all sample/game HTML references to the new path:
-- from `/samples/_shared/sampleLayout.css`
+- from `/engine/ui/sampleLayout.css`
 - to `/engine/ui/sampleLayout.css`
 
 Preserve relative paths correctly for:
@@ -79,7 +79,7 @@ Preserve relative paths correctly for:
 
 ### 4. Remove old file
 After references are updated and verified, remove:
-- `/samples/_shared/sampleLayout.css`
+- `/engine/ui/sampleLayout.css`
 
 Do not leave duplicate copies unless a verification blocker requires a temporary transition step.
 
@@ -96,3 +96,4 @@ Confirm:
 - no duplicate legacy copy remains
 - behavior is unchanged
 - naming remains `sampleLayout.css`
+
