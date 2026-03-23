@@ -1,1 +1,11 @@
-/* Toolbox Aid David Quesenberry 03/22/2026 main.js */ import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import TimelineCutsceneEditorScene from './TimelineCutsceneEditorScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new TimelineCutsceneEditorScene(); engine.setScene(scene); engine.start(); document.getElementById('timeline-add')?.addEventListener('click', () => scene.add()); document.getElementById('timeline-move')?.addEventListener('click', () => scene.move());
+/* Toolbox Aid David Quesenberry 03/22/2026 main.js */
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import TimelineCutsceneEditorScene from './TimelineCutsceneEditorScene.js';
+
+bootLateSample({
+  SceneClass: TimelineCutsceneEditorScene,
+  controls: [
+    { id: 'timeline-add', action: ({ scene }) => scene.add() },
+    { id: 'timeline-move', action: ({ scene }) => scene.move() },
+  ],
+});

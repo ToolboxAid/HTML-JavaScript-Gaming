@@ -4,19 +4,14 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../engine/theme/index.js';
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
 import DeveloperConsoleScene from './DeveloperConsoleScene.js';
 
-const theme = new Theme(ThemeTokens);
-theme.applyDocumentTheme();
-
-const canvas = document.getElementById('game');
-const engine = new Engine({ canvas, width: 960, height: 540 });
-const scene = new DeveloperConsoleScene();
-engine.setScene(scene);
-engine.start();
-
-document.getElementById('console-help')?.addEventListener('click', () => scene.run('help'));
-document.getElementById('console-heal')?.addEventListener('click', () => scene.run('heal 3'));
-document.getElementById('console-unknown')?.addEventListener('click', () => scene.run('teleport'));
+bootLateSample({
+  SceneClass: DeveloperConsoleScene,
+  controls: [
+    { id: 'console-help', action: ({ scene }) => scene.run('help') },
+    { id: 'console-heal', action: ({ scene }) => scene.run('heal 3') },
+    { id: 'console-unknown', action: ({ scene }) => scene.run('teleport') },
+  ],
+});

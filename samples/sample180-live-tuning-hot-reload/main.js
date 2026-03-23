@@ -4,18 +4,13 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../engine/theme/index.js';
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
 import LiveTuningHotReloadScene from './LiveTuningHotReloadScene.js';
 
-const theme = new Theme(ThemeTokens);
-theme.applyDocumentTheme();
-
-const canvas = document.getElementById('game');
-const engine = new Engine({ canvas, width: 960, height: 540 });
-const scene = new LiveTuningHotReloadScene();
-engine.setScene(scene);
-engine.start();
-
-document.getElementById('tune-speed')?.addEventListener('click', () => scene.tune(4));
-document.getElementById('tune-speed-fast')?.addEventListener('click', () => scene.tune(8));
+bootLateSample({
+  SceneClass: LiveTuningHotReloadScene,
+  controls: [
+    { id: 'tune-speed', action: ({ scene }) => scene.tune(4) },
+    { id: 'tune-speed-fast', action: ({ scene }) => scene.tune(8) },
+  ],
+});

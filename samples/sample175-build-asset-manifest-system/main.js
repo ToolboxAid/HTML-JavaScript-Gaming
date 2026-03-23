@@ -1,1 +1,9 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import BuildAssetManifestSystemScene from './BuildAssetManifestSystemScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new BuildAssetManifestSystemScene(); engine.setScene(scene); engine.start(); document.getElementById('manifest-run')?.addEventListener('click', () => scene.run());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import BuildAssetManifestSystemScene from './BuildAssetManifestSystemScene.js';
+
+bootLateSample({
+  SceneClass: BuildAssetManifestSystemScene,
+  controls: [
+    { id: 'manifest-run', action: ({ scene }) => scene.run() },
+  ],
+});

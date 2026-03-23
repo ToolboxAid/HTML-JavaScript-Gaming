@@ -1,1 +1,10 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import TrustSessionValidationScene from './TrustSessionValidationScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new TrustSessionValidationScene(); engine.setScene(scene); engine.start(); document.getElementById('session-fresh')?.addEventListener('click', () => scene.validateFresh()); document.getElementById('session-stale')?.addEventListener('click', () => scene.validateStale());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import TrustSessionValidationScene from './TrustSessionValidationScene.js';
+
+bootLateSample({
+  SceneClass: TrustSessionValidationScene,
+  controls: [
+    { id: 'session-fresh', action: ({ scene }) => scene.validateFresh() },
+    { id: 'session-stale', action: ({ scene }) => scene.validateStale() },
+  ],
+});

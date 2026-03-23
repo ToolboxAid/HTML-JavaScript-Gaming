@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-ASTEROIDS-PROMOTION-PHASE1-VECTOR-TRANSFORMS. Replace Asteroids-local vector/point transform helpers with existing engine/vector support where already proven reusable. Keep the promotion narrow: do not promote HUD, session, persistence, menu, score, or one-off gameplay geometry policy. Add only minimal compatibility glue if strictly required and preserve runtime behavior.
+COMMAND: Implement PR-SAMPLE-CONSOLIDATION-PHASE1-LATE-BOOTSTRAP-AND-SAMPLE183. Consolidate only the clearly duplicated late-sample bootstrap code into sample-owned infrastructure under samples/_shared/ where justified, keep all consolidation out of engine/, and resolve samples/sample183-asteroids-game/ truthfully with a real bridge or accurate update. Update samples/index.html only if required for accuracy. Do not change engine/runtime behavior, gameplay, or perform broad sample rewrites.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that Asteroids now uses engine/vector for the promoted transform behavior, that gameplay behavior is unchanged, and that no unrelated logic was promoted.
+COMMAND: Verify that bootstrap consolidation stays sample-owned, affected samples still boot, Sample183 is truthfully resolved, and no engine/runtime files were changed.

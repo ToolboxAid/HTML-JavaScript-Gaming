@@ -1,1 +1,12 @@
-/* Toolbox Aid David Quesenberry 03/22/2026 main.js */ import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import TileMapEditorScene from './TileMapEditorScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new TileMapEditorScene(); engine.setScene(scene); engine.start(); document.getElementById('tile-grass')?.addEventListener('click', () => scene.setTile(1)); document.getElementById('tile-water')?.addEventListener('click', () => scene.setTile(2)); document.getElementById('tile-paint')?.addEventListener('click', () => scene.paint());
+/* Toolbox Aid David Quesenberry 03/22/2026 main.js */
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import TileMapEditorScene from './TileMapEditorScene.js';
+
+bootLateSample({
+  SceneClass: TileMapEditorScene,
+  controls: [
+    { id: 'tile-grass', action: ({ scene }) => scene.setTile(1) },
+    { id: 'tile-water', action: ({ scene }) => scene.setTile(2) },
+    { id: 'tile-paint', action: ({ scene }) => scene.paint() },
+  ],
+});

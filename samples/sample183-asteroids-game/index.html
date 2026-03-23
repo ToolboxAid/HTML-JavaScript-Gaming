@@ -1,0 +1,60 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/23/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample183 - Asteroids Game Bridge</title>
+  <link rel="stylesheet" href="../_shared/sampleLayout.css" />
+  <style>
+    .bridge-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bridge-launch {
+      display: inline-block;
+      width: fit-content;
+      padding: 10px 14px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      background: #0f172a;
+      color: #e2e8f0;
+      text-decoration: none;
+    }
+
+    .bridge-frame {
+      width: 100%;
+      height: 760px;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      background: #020617;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Sample183 - Asteroids Game Bridge</h1>
+    <p>This sample is a bridge to the real playable Asteroids game in <code>/games/Asteroids/</code>. It does not duplicate the game runtime inside <code>samples/</code>.</p>
+    <section class="bridge-card">
+      <a class="bridge-launch" href="../../games/Asteroids/index.html">Open Asteroids Directly</a>
+      <iframe
+        class="bridge-frame"
+        src="../../games/Asteroids/index.html"
+        title="Asteroids Game"
+      ></iframe>
+    </section>
+    <section>
+      <h3>Bridge Notes</h3>
+      <ul>
+        <li>Uses the real game entrypoint under <code>games/Asteroids/</code>.</li>
+        <li>Keeps sample numbering accurate without forking gameplay code into <code>samples/</code>.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

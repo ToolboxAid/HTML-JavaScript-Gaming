@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-games: promote asteroids vector transforms onto engine/vector
+samples: consolidate late bootstrap flow and resolve sample183 truthfully

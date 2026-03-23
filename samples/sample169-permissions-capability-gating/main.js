@@ -1,1 +1,10 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import PermissionsCapabilityGatingScene from './PermissionsCapabilityGatingScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new PermissionsCapabilityGatingScene(); engine.setScene(scene); engine.start(); document.getElementById('perm-admin')?.addEventListener('click', () => scene.setRole('admin')); document.getElementById('perm-guest')?.addEventListener('click', () => scene.setRole('guest'));
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import PermissionsCapabilityGatingScene from './PermissionsCapabilityGatingScene.js';
+
+bootLateSample({
+  SceneClass: PermissionsCapabilityGatingScene,
+  controls: [
+    { id: 'perm-admin', action: ({ scene }) => scene.setRole('admin') },
+    { id: 'perm-guest', action: ({ scene }) => scene.setRole('guest') },
+  ],
+});

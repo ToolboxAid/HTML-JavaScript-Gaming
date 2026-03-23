@@ -1,1 +1,10 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import SaveDataIntegrityChecksScene from './SaveDataIntegrityChecksScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new SaveDataIntegrityChecksScene(); engine.setScene(scene); engine.start(); document.getElementById('integrity-seal')?.addEventListener('click', () => scene.seal()); document.getElementById('integrity-tamper')?.addEventListener('click', () => scene.tamper());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import SaveDataIntegrityChecksScene from './SaveDataIntegrityChecksScene.js';
+
+bootLateSample({
+  SceneClass: SaveDataIntegrityChecksScene,
+  controls: [
+    { id: 'integrity-seal', action: ({ scene }) => scene.seal() },
+    { id: 'integrity-tamper', action: ({ scene }) => scene.tamper() },
+  ],
+});

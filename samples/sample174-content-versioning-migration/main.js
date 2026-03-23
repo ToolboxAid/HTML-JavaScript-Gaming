@@ -1,1 +1,9 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import ContentVersioningMigrationScene from './ContentVersioningMigrationScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new ContentVersioningMigrationScene(); engine.setScene(scene); engine.start(); document.getElementById('migration-run')?.addEventListener('click', () => scene.run());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import ContentVersioningMigrationScene from './ContentVersioningMigrationScene.js';
+
+bootLateSample({
+  SceneClass: ContentVersioningMigrationScene,
+  controls: [
+    { id: 'migration-run', action: ({ scene }) => scene.run() },
+  ],
+});

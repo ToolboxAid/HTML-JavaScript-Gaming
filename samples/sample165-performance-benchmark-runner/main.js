@@ -1,1 +1,9 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import PerformanceBenchmarkRunnerScene from './PerformanceBenchmarkRunnerScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new PerformanceBenchmarkRunnerScene(); engine.setScene(scene); engine.start(); document.getElementById('bench-run')?.addEventListener('click', () => scene.runBenches());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import PerformanceBenchmarkRunnerScene from './PerformanceBenchmarkRunnerScene.js';
+
+bootLateSample({
+  SceneClass: PerformanceBenchmarkRunnerScene,
+  controls: [
+    { id: 'bench-run', action: ({ scene }) => scene.runBenches() },
+  ],
+});

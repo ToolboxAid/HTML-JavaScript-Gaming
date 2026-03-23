@@ -1,1 +1,9 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import AssetImportPipelineScene from './AssetImportPipelineScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new AssetImportPipelineScene(); engine.setScene(scene); engine.start(); document.getElementById('import-run')?.addEventListener('click', () => scene.runImport());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import AssetImportPipelineScene from './AssetImportPipelineScene.js';
+
+bootLateSample({
+  SceneClass: AssetImportPipelineScene,
+  controls: [
+    { id: 'import-run', action: ({ scene }) => scene.runImport() },
+  ],
+});

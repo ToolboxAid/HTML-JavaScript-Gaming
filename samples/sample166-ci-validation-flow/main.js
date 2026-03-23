@@ -1,1 +1,10 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import CIValidationFlowScene from './CIValidationFlowScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new CIValidationFlowScene(); engine.setScene(scene); engine.start(); document.getElementById('ci-green')?.addEventListener('click', () => scene.run(true)); document.getElementById('ci-red')?.addEventListener('click', () => scene.run(false));
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import CIValidationFlowScene from './CIValidationFlowScene.js';
+
+bootLateSample({
+  SceneClass: CIValidationFlowScene,
+  controls: [
+    { id: 'ci-green', action: ({ scene }) => scene.run(true) },
+    { id: 'ci-red', action: ({ scene }) => scene.run(false) },
+  ],
+});

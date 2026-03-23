@@ -1,1 +1,10 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import ContentValidationPipelineScene from './ContentValidationPipelineScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new ContentValidationPipelineScene(); engine.setScene(scene); engine.start(); document.getElementById('content-good')?.addEventListener('click', () => scene.good()); document.getElementById('content-bad')?.addEventListener('click', () => scene.bad());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import ContentValidationPipelineScene from './ContentValidationPipelineScene.js';
+
+bootLateSample({
+  SceneClass: ContentValidationPipelineScene,
+  controls: [
+    { id: 'content-good', action: ({ scene }) => scene.good() },
+    { id: 'content-bad', action: ({ scene }) => scene.bad() },
+  ],
+});

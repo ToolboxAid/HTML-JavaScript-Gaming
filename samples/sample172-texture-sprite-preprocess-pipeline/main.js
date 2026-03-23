@@ -1,1 +1,9 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import TextureSpritePreprocessPipelineScene from './TextureSpritePreprocessPipelineScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new TextureSpritePreprocessPipelineScene(); engine.setScene(scene); engine.start(); document.getElementById('texture-run')?.addEventListener('click', () => scene.run());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import TextureSpritePreprocessPipelineScene from './TextureSpritePreprocessPipelineScene.js';
+
+bootLateSample({
+  SceneClass: TextureSpritePreprocessPipelineScene,
+  controls: [
+    { id: 'texture-run', action: ({ scene }) => scene.run() },
+  ],
+});

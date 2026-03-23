@@ -4,18 +4,13 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../engine/theme/index.js';
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
 import AssetBrowserScene from './AssetBrowserScene.js';
 
-const theme = new Theme(ThemeTokens);
-theme.applyDocumentTheme();
-
-const canvas = document.getElementById('game');
-const engine = new Engine({ canvas, width: 960, height: 540 });
-const scene = new AssetBrowserScene();
-engine.setScene(scene);
-engine.start();
-
-document.getElementById('asset-texture')?.addEventListener('click', () => scene.select('hero-texture'));
-document.getElementById('asset-audio')?.addEventListener('click', () => scene.select('menu-theme'));
+bootLateSample({
+  SceneClass: AssetBrowserScene,
+  controls: [
+    { id: 'asset-texture', action: ({ scene }) => scene.select('hero-texture') },
+    { id: 'asset-audio', action: ({ scene }) => scene.select('menu-theme') },
+  ],
+});

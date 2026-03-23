@@ -1,1 +1,10 @@
-/* Toolbox Aid David Quesenberry 03/22/2026 main.js */ import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import AutomatedTestRunnerScene from './AutomatedTestRunnerScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new AutomatedTestRunnerScene(); engine.setScene(scene); engine.start(); document.getElementById('tests-run')?.addEventListener('click', () => { scene.runTests(); });
+/* Toolbox Aid David Quesenberry 03/22/2026 main.js */
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import AutomatedTestRunnerScene from './AutomatedTestRunnerScene.js';
+
+bootLateSample({
+  SceneClass: AutomatedTestRunnerScene,
+  controls: [
+    { id: 'tests-run', action: ({ scene }) => scene.runTests() },
+  ],
+});

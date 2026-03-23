@@ -1,1 +1,9 @@
-import Engine from '../../engine/core/Engine.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import AudioPreprocessPipelineScene from './AudioPreprocessPipelineScene.js'; const theme = new Theme(ThemeTokens); theme.applyDocumentTheme(); const canvas = document.getElementById('game'); const engine = new Engine({ canvas, width: 960, height: 540 }); const scene = new AudioPreprocessPipelineScene(); engine.setScene(scene); engine.start(); document.getElementById('audio-run')?.addEventListener('click', () => scene.run());
+import { bootLateSample } from '../_shared/lateSampleBootstrap.js';
+import AudioPreprocessPipelineScene from './AudioPreprocessPipelineScene.js';
+
+bootLateSample({
+  SceneClass: AudioPreprocessPipelineScene,
+  controls: [
+    { id: 'audio-run', action: ({ scene }) => scene.run() },
+  ],
+});
