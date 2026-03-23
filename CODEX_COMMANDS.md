@@ -7,10 +7,10 @@ CODEX_COMMANDS.md
 
 ## Primary execution
 MODEL: GPT-5.4
-REASONING: medium
-COMMAND: Implement PR-FINAL-POLISH-AND-REMOVE-SAMPLE183. Delete samples/sample183-asteroids-game/ if it is unnecessary or misleading, remove or update direct references, and keep samples/index.html truthful. Apply only small, justified final polish related to sample accuracy and repo truthfulness. Do not change engine/runtime/gameplay files and do not introduce a fake Sample183 replacement.
+REASONING: high
+COMMAND: Implement PR-ENGINE-CLASS-USAGE-ALIGNMENT-AND-GUARDRAIL. Mechanically align shipped samples and games to canonical public engine barrels where the audit already proved replacements exist: normalize scene imports to engine/scenes/index.js across samples and Asteroids, normalize Asteroids deep imports for fx/collision/utils/tooling to their public barrels, and add a focused validation guardrail that catches new deep imports into engine subsystems that already expose index.js. Keep engine/core/Engine.js as the approved direct-import exception. Do not change runtime behavior, gameplay, or engine APIs.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that sample183 was removed if unnecessary, samples/index.html and references are accurate, no dead links remain, and no engine/runtime/gameplay files were changed.
+COMMAND: Verify that public barrel alignment is complete for the audited drift, the import guardrail exists and allows engine/core/Engine.js, and no runtime/gameplay behavior changed.

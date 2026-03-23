@@ -4,14 +4,14 @@ David Quesenberry
 03/22/2026
 AsteroidsGameScene.js
 */
-import Scene from '../../../engine/scenes/Scene.js';
+import { Scene } from '../../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
+import { ParticleSystem } from '../../../engine/fx/index.js';
 import AsteroidsSession from './AsteroidsSession.js';
 import AsteroidsWorld from './AsteroidsWorld.js';
 import HighScoreStore from '../systems/HighScoreStore.js';
 import AsteroidsAudio from '../systems/AsteroidsAudio.js';
 import ShipDebrisSystem from '../systems/ShipDebrisSystem.js';
-import ParticleSystem from '../../../engine/fx/ParticleSystem.js';
 
 const theme = new Theme(ThemeTokens);
 const HUD_FONT = '"Vector Battle", monospace';

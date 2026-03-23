@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 TilemapSystemScene.js
 */
-import Scene from '../../engine/scenes/Scene.js';
+import { Scene } from '../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { clamp } from '../../engine/utils/index.js';
 import { drawFrame, drawPanel } from '../../engine/debug/index.js';

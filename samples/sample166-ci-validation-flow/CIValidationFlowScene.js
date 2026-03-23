@@ -1,4 +1,4 @@
-import Scene from '../../engine/scenes/Scene.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { CIValidationFlow } from '../../engine/automation/index.js';
+import { Scene } from '../../engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { CIValidationFlow } from '../../engine/automation/index.js';
 const theme = new Theme(ThemeTokens);
 export default class CIValidationFlowScene extends Scene {
   constructor() { super(); this.results = null; this.status = 'Run green or red CI validation.'; }

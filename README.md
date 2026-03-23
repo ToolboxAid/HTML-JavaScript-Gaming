@@ -3,31 +3,31 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Final Polish + Remove Unnecessary Sample183
+# BUILD_PR — Engine Class Usage Alignment + Guardrail
 
 ## Purpose
-Complete the final low-risk polish pass and remove the unnecessary `samples/sample183-asteroids-game/` endpoint if it is no longer needed.
+Complete engine class usage alignment across shipped samples and games in one mechanical, low-risk pass, then add a guardrail to keep the repo aligned.
 
 ## Goal
-- tighten repo polish without introducing engine/runtime drift
-- remove `sample183-asteroids-game` if it is unnecessary or misleading
-- keep `samples/index.html` truthful
-- leave the repo cleaner and more release-ready
+- normalize samples and games onto canonical public engine barrels
+- eliminate known deep-import drift where public barrels already exist
+- add a focused guardrail so future deep-import regressions are caught early
 
 ## Scope
-- `samples/sample183-asteroids-game/`
-- `samples/index.html`
-- docs/readme/meta polish only where clearly justified
-- no engine/runtime/gameplay changes
+- `samples/`
+- `games/Asteroids/`
+- test/validation files needed for the guardrail
+- `tests/run-tests.mjs` only if required
 
 ## Constraints
-- No engine changes
+- No runtime behavior changes
+- No engine API redesign
 - No gameplay changes
-- No promotion/extraction work
-- No broad docs rewrite
-- Prefer deletion over placeholder if Sample183 adds no real value
+- No new engine barrels in this PR
+- Treat `engine/core/Engine.js` as the approved direct import exception
+- Keep this mechanical and evidence-based
 
 ## Expected Outcome
-- Sample183 is removed if unnecessary
-- sample index and repo references stay accurate
-- final polish remains small, truthful, and low risk
+- scene imports use `engine/scenes/index.js`
+- Asteroids deep imports align to public barrels for scenes/fx/collision/utils/tooling
+- a focused validation check prevents reintroducing deep imports where a public barrel already exists

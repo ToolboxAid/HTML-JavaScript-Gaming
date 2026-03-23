@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 UIFrameworkScene.js
 */
-import Scene from '../../engine/scenes/Scene.js';
+import { Scene } from '../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { drawFrame } from '../../engine/debug/index.js';
 import { UIFramework } from '../../engine/ui/index.js';

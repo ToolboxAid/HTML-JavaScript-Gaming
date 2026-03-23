@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 RegressionPlaybackHarnessScene.js
 */
-import Scene from '../../engine/scenes/Scene.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { RegressionPlaybackHarness } from '../../engine/automation/index.js';
+import { Scene } from '../../engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { RegressionPlaybackHarness } from '../../engine/automation/index.js';
 const theme = new Theme(ThemeTokens);
 export default class RegressionPlaybackHarnessScene extends Scene {
   constructor() { super(); this.harness = new RegressionPlaybackHarness(); this.harness.register('run-right', [{ x: 140 }, { x: 180 }, { x: 220 }, { x: 260 }]); this.frames = []; this.index = 0; this.actorX = 140; this.status = 'Play a stored regression path.'; }

@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 math.js
 */
-import { randomRange as sharedRandomRange, wrap as sharedWrap } from '../../../engine/utils/math.js';
+import { randomRange as sharedRandomRange, wrap as sharedWrap } from '../../../engine/utils/index.js';
 
 export const TAU = Math.PI * 2;
 

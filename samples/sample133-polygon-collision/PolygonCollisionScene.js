@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 PolygonCollisionScene.js
 */
-import Scene from '../../engine/scenes/Scene.js';
+import { Scene } from '../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { drawFrame, drawPanel } from '../../engine/debug/index.js';
 import { transformPoints, drawVectorShape } from '../../engine/vector/index.js';

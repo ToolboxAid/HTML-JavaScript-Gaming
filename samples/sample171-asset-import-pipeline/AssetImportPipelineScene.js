@@ -1,4 +1,4 @@
-import Scene from '../../engine/scenes/Scene.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { AssetImportPipeline } from '../../engine/pipeline/index.js';
+import { Scene } from '../../engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { AssetImportPipeline } from '../../engine/pipeline/index.js';
 const theme = new Theme(ThemeTokens);
 export default class AssetImportPipelineScene extends Scene {
   constructor() { super(); this.pipeline = new AssetImportPipeline([(asset) => ({ ...asset, imported: true }), (asset) => ({ ...asset, cataloged: true })]); this.asset = null; this.status = 'Import a raw asset through structured steps.'; }

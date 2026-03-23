@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 DeveloperConsoleScene.js
 */
-import Scene from '../../engine/scenes/Scene.js';
+import { Scene } from '../../engine/scenes/index.js';
 import { drawFrame, drawPanel } from '../../engine/debug/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { DeveloperConsole } from '../../engine/tooling/index.js';

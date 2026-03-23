@@ -8,8 +8,8 @@ import Asteroid from '../entities/Asteroid.js';
 import Bullet from '../entities/Bullet.js';
 import Ship from '../entities/Ship.js';
 import Ufo from '../entities/Ufo.js';
-import { arePolygonsColliding } from '../../../engine/collision/polygon.js';
-import { distance } from '../../../engine/utils/math.js';
+import { arePolygonsColliding } from '../../../engine/collision/index.js';
+import { distance } from '../../../engine/utils/index.js';
 import { randomRange } from '../utils/math.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];

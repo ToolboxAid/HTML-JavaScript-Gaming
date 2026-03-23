@@ -39,6 +39,7 @@ import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
 import { run as runTransitionScene } from './scenes/TransitionScene.test.mjs';
 import { run as runWorldSystems } from './world/WorldSystems.test.mjs';
 import { run as runProductionReadiness } from './production/ProductionReadiness.test.mjs';
+import { run as runEnginePublicBarrelImports } from './production/EnginePublicBarrelImports.test.mjs';
 import { run as runStorageService } from './persistence/StorageService.test.mjs';
 import './render/Renderer.test.mjs';
 import './theme.test.js';
@@ -75,6 +76,7 @@ const tests = [
     ['KeyboardState', runKeyboardState],
     ['MouseState', runMouseState],
     ['StorageService', runStorageService],
+    ['EnginePublicBarrelImports', runEnginePublicBarrelImports],
     ['ProductionReadiness', runProductionReadiness],
     ['SceneManager', runSceneManager],
     ['TransitionScene', runTransitionScene],

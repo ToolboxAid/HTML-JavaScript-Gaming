@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 PickupsCollectiblesScene.js
 */
-import Scene from '../../engine/scenes/Scene.js';
+import { Scene } from '../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { drawFrame, drawPanel } from '../../engine/debug/index.js';
 import { Camera2D, followCameraTarget } from '../../engine/camera/index.js';

@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 PerformanceMetricsScene.js
 */
-import Scene from '../../engine/scenes/Scene.js';
+import { Scene } from '../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { drawFrame, drawPerformanceMetricsPanel } from '../../engine/debug/index.js';
 

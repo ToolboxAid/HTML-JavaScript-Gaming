@@ -1,4 +1,4 @@
-import Scene from '../../engine/scenes/Scene.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { SessionTrustValidator } from '../../engine/security/index.js';
+import { Scene } from '../../engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../engine/theme/index.js'; import { SessionTrustValidator } from '../../engine/security/index.js';
 const theme = new Theme(ThemeTokens);
 export default class TrustSessionValidationScene extends Scene {
   constructor() { super(); this.validator = new SessionTrustValidator(); this.result = null; this.status = 'Validate fresh or stale session trust.'; }
