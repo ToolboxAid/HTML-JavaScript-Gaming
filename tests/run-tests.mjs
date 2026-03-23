@@ -8,6 +8,7 @@ import { run as runAIBehaviors } from './ai/AIBehaviors.test.mjs';
 import { run as runAssetLoaderSystem } from './assets/AssetLoaderSystem.test.mjs';
 import { run as runConfigStore } from './config/ConfigStore.test.mjs';
 import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
+import { run as runEngineFullscreen } from './core/EngineFullscreen.test.mjs';
 import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
 import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
@@ -38,6 +39,7 @@ const tests = [
     ['AIBehaviors', runAIBehaviors],
     ['AssetLoaderSystem', runAssetLoaderSystem],
     ['ConfigStore', runConfigStore],
+    ['EngineFullscreen', runEngineFullscreen],
     ['EngineTiming', runEngineTiming],
     ['FixedTicker', runFixedTicker],
     ['FinalSystems', runFinalSystems],

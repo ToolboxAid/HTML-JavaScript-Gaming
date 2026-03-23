@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-ENGINE-BOUNDARY-CLEANUP-STEP2A-ENGINE-TIME-COMPOSITION. Refactor engine/core/Engine.js to compose with engine/core/FrameClock.js and engine/core/FixedTicker.js instead of owning raw timing bookkeeping directly. Add focused engine timing tests for delta clamping and fixed-step catch-up. Do not merge FrameClock and FixedTicker. Do not change gameplay, rendering, fullscreen, canvas ownership, or unrelated files.
+COMMAND: Implement PR-ENGINE-BOUNDARY-CLEANUP-STEP2B-FULLSCREEN-INJECTION. Refactor engine/core/Engine.js and engine/runtime/FullscreenService.js so Engine fullscreen composition is explicit and production paths do not rely on implicit globalThis.document defaults. Add focused engine-level fullscreen composition tests covering attach/detach with injected fullscreen doubles or service instances. Preserve browser fullscreen behavior. Do not change timing, canvas ownership, event bus, metrics, gameplay, or unrelated files.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that Engine now composes with FrameClock and FixedTicker, that focused engine timing tests were added, and that no unrelated engine subsystems were changed.
+COMMAND: Verify that fullscreen composition is explicit at the engine boundary, engine-level fullscreen tests were added, and no unrelated subsystems were changed.

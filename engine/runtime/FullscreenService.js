@@ -5,7 +5,11 @@ David Quesenberry
 FullscreenService.js
 */
 export default class FullscreenService {
-  constructor({ documentRef = globalThis.document ?? null, target = null } = {}) {
+  static fromBrowser({ documentRef = globalThis.document ?? null, target = null } = {}) {
+    return new FullscreenService({ documentRef, target });
+  }
+
+  constructor({ documentRef = null, target = null } = {}) {
     this.documentRef = documentRef;
     this.target = target;
     this.isActive = false;

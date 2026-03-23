@@ -47,7 +47,10 @@ export default class Engine {
       stepMs: fixedStepMs,
       maxCatchUpSteps: Number.POSITIVE_INFINITY,
     });
-    this.fullscreen = fullscreen || new FullscreenService({ target: canvas });
+    this.fullscreen = fullscreen || FullscreenService.fromBrowser({
+      documentRef: globalThis.document ?? null,
+      target: canvas,
+    });
     this.audio = audio || new AudioService();
     this.logger = logger || new Logger({ channel: 'engine' });
     this.settings = new SettingsSystem({

@@ -3,32 +3,29 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Engine Boundary Cleanup Step 2A (Engine Time Composition)
+# BUILD_PR — Engine Boundary Cleanup Step 2B (Fullscreen Injection)
 
 ## Purpose
-Implement the first Step 2 follow-up from the approved static-global audit.
+Implement the second Step 2 follow-up from the approved static-global audit.
 
 ## Goal
-Replace raw loop timing state inside `Engine` with composition over:
-- `engine/core/FrameClock.js`
-- `engine/core/FixedTicker.js`
+Remove reliance on implicit browser globals in fullscreen composition and make fullscreen ownership explicit at the engine boundary.
 
 ## Scope
 - `engine/core/Engine.js`
-- `engine/core/FrameClock.js` (only if needed for safe Engine composition)
-- `engine/core/FixedTicker.js` (only if needed for safe Engine composition)
-- focused engine timing tests
-- test runner updates only if required
+- `engine/runtime/FullscreenService.js`
+- focused engine-level fullscreen composition tests
+- `tests/run-tests.mjs` only if required
 
 ## Constraints
 - No gameplay changes
-- No rendering changes
-- No fullscreen work in this PR
+- No timing changes
 - No CanvasSurface work in this PR
-- Do not merge `FrameClock` and `FixedTicker`
-- Preserve current update loop semantics
+- No EventBus casing work in this PR
+- No metrics composition work in this PR
+- Preserve current fullscreen behavior in browser
 
 ## Expected Outcome
-- `Engine` stops owning raw loop timing bookkeeping directly
-- `Engine` delegates timing to `FrameClock` and `FixedTicker`
-- focused tests prove no behavior change in delta clamping and fixed-step catch-up
+- Engine no longer relies on `FullscreenService` implicit `globalThis.document` behavior from production construction paths
+- fullscreen composition is explicit and testable
+- focused tests prove attach/detach behavior with injected fullscreen doubles

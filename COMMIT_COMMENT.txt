@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-engine: compose Engine timing with FrameClock and FixedTicker
+engine: make fullscreen composition explicit at engine boundary
