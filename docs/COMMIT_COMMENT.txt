@@ -1,1 +1,13 @@
-Build Samples 177–182 developer tooling systems
+Toolbox Aid
+David Quesenberry
+03/22/2026
+COMMIT_COMMENT.txt
+
+Title:
+Build game Asteroids under /games/ with games index and original-faithful presentation
+
+Body:
+- Create /games/Asteroids/ as the first named real game built on the engine
+- Create /games/index.html similar to /samples/index.html
+- Use canvas theme for the game page and include Header plus Classes Used section
+- Keep the game as close to original Asteroids as practical while using engine public contracts

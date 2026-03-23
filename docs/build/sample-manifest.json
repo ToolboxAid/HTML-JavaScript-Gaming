@@ -410,6 +410,10 @@
       "indexHtml": "samples/sample182-scene-graph-entity-hierarchy-viewer/index.html"
     },
     {
+      "id": "sample183-asteroids-game",
+      "indexHtml": "samples/sample183-asteroids-game/index.html"
+    },
+    {
       "id": "sample19-ecs-render-system",
       "indexHtml": "samples/sample19-ecs-render-system/index.html"
     },

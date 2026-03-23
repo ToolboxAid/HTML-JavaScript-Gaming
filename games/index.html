@@ -1,0 +1,62 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/22/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ToolboxAid - Game Launcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #ccc;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    a.live {
+      display: block;
+      padding: 12px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      text-align: left;
+      text-decoration: none;
+      border-radius: 6px;
+      color: #0af;
+    }
+
+    a.live:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>ToolboxAid - Game Launcher</h1>
+  <p>Playable games built in this repo live here separately from the engine samples.</p>
+
+  <section>
+    <div class="grid">
+      <a class="live" href="../games/Asteroids/index.html">Asteroids</a>
+    </div>
+  </section>
+</body>
+</html>
