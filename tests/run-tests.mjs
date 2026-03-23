@@ -20,6 +20,7 @@ import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
 import { run as runGravityWell } from './games/GravityWell.test.mjs';
 import { run as runGravityWellValidation } from './games/GravityWellValidation.test.mjs';
+import { run as runGravityWellWorldMechanics } from './games/GravityWellWorldMechanics.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runFullscreenService } from './final/FullscreenService.test.mjs';
 import { run as runPlatformUxSystems } from './final/PlatformUxSystems.test.mjs';
@@ -71,6 +72,7 @@ const tests = [
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
     ['GravityWell', runGravityWell],
     ['GravityWellValidation', runGravityWellValidation],
+    ['GravityWellWorldMechanics', runGravityWellWorldMechanics],
     ['Combat', runCombat],
     ['Entity', runEntity],
     ['EventBus', runEventBus],

@@ -3,33 +3,35 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Gravity Well Validation Phase 1 (Boot + Scene)
+# BUILD_PR — Gravity Well Validation Phase 2 (World Mechanics)
 
 ## Purpose
-Implement the first Gravity Well validation pass with focused proof around boot composition and scene flow.
+Implement the second Gravity Well validation pass focused on world simulation correctness.
 
 ## Goal
 Validate:
-- browser/test boot composition
-- safe null-return paths
-- scene installation/start behavior
-- fullscreen click gating composition
-- scene phase transitions at the top level
+- thrust-only directionality
+- thrust + gravity interaction
+- brake damping behavior
+- max-speed clamp behavior
+- pickup boundary correctness
+- collection/no-double-count behavior
+- loss ordering where edge cases overlap
 
 ## Scope
-- `games/GravityWell/main.js`
-- `games/GravityWell/game/GravityWellScene.js`
-- focused tests under `tests/games/` and/or `tests/engine/`
+- `games/GravityWell/game/GravityWellWorld.js`
+- focused tests under `tests/games/`
 - `tests/run-tests.mjs` only if required
 
 ## Constraints
 - Prefer tests over runtime changes
-- No gameplay expansion
 - No engine changes
+- No gameplay expansion
 - No promotion/extraction work
+- No timing stress work in this PR
 - Any runtime fixes must be minimal and directly required by failing validation
 
 ## Expected Outcome
-- Gravity Well boot behavior is proven in browser-like and test-safe paths
-- scene installation/start behavior is covered
-- top-level scene flow is validated without broad runtime changes
+- Gravity Well world mechanics are proven in focused tests
+- interaction ordering is explicit
+- only minimal local fixes are allowed if validation exposes real issues
