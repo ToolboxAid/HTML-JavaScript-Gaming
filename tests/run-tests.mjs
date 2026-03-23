@@ -9,6 +9,7 @@ import { run as runAssetLoaderSystem } from './assets/AssetLoaderSystem.test.mjs
 import { run as runConfigStore } from './config/ConfigStore.test.mjs';
 import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
 import { run as runEngineFullscreen } from './core/EngineFullscreen.test.mjs';
+import { run as runEngineSceneLifecycle } from './core/EngineSceneLifecycle.test.mjs';
 import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
 import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
@@ -31,6 +32,7 @@ import { run as runKeyboardState } from './input/KeyboardState.test.mjs';
 import { run as runMouseState } from './input/MouseState.test.mjs';
 import './input/GamepadState.test.mjs';
 import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
+import { run as runTransitionScene } from './scenes/TransitionScene.test.mjs';
 import { run as runWorldSystems } from './world/WorldSystems.test.mjs';
 import { run as runProductionReadiness } from './production/ProductionReadiness.test.mjs';
 import './render/Renderer.test.mjs';
@@ -41,6 +43,7 @@ const tests = [
     ['AssetLoaderSystem', runAssetLoaderSystem],
     ['ConfigStore', runConfigStore],
     ['EngineFullscreen', runEngineFullscreen],
+    ['EngineSceneLifecycle', runEngineSceneLifecycle],
     ['EngineTiming', runEngineTiming],
     ['FixedTicker', runFixedTicker],
     ['FinalSystems', runFinalSystems],
@@ -64,6 +67,7 @@ const tests = [
     ['MouseState', runMouseState],
     ['ProductionReadiness', runProductionReadiness],
     ['SceneManager', runSceneManager],
+    ['TransitionScene', runTransitionScene],
     ['WorldSystems', runWorldSystems],
 ];
 

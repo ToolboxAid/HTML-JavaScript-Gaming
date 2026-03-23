@@ -71,6 +71,16 @@ export default class Engine {
   }
 
   setScene(scene) {
+    if (scene === this.scene) {
+      return;
+    }
+
+    const previousScene = this.scene;
+
+    if (previousScene && typeof previousScene.exit === 'function') {
+      previousScene.exit(this);
+    }
+
     this.scene = scene;
 
     if (this.scene && typeof this.scene.enter === 'function') {

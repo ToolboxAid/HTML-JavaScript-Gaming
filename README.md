@@ -3,25 +3,32 @@ David Quesenberry
 03/23/2026
 README.md
 
-# PLAN_PR — Engine Stabilization and Promotion Phase
+# BUILD_PR — Engine Stabilization Phase 1 (Scene Lifecycle + Transition Seams)
 
 ## Purpose
-Start the next phase after boundary cleanup.
+Implement the first post-cleanup stabilization pass.
 
 ## Goal
-Use the cleaned engine as a stable base to:
-- harden runtime behavior
-- reduce duplication across samples
-- promote only proven reusable patterns into engine
-- use Asteroids as the first real validation target
+Fix scene lifecycle correctness and remove the remaining transition renderer boundary leak.
 
-## Guiding Principles
-- Docs-first
-- Small surgical PRs
-- No broad rewrite
-- Samples validate engine behavior
-- Games prove engine maturity
-- Promote patterns only after proof, not speculation
+## Scope
+- `engine/core/Engine.js`
+- `engine/scenes/Scene.js`
+- `engine/scenes/SceneManager.js` only if needed for parity/alignment
+- `engine/scenes/TransitionScene.js`
+- focused engine/scene tests
+- `tests/run-tests.mjs` only if required
+
+## Constraints
+- No gameplay changes
+- No persistence work in this PR
+- No ParticleSystem work in this PR
+- No Asteroids extraction work in this PR
+- Preserve current scene flow semantics except for lifecycle correctness
+- Do not broaden transition responsibilities beyond fixing the seam
 
 ## Expected Outcome
-Codex produces a phased plan for stabilization, promotion, validation, and low-risk consolidation.
+- scene transitions consistently call `exit()` on the outgoing scene and `enter()` on the incoming scene
+- no double-enter / skipped-exit behavior
+- `TransitionScene` no longer depends on raw `renderer.ctx`
+- focused tests prove lifecycle and transition behavior
