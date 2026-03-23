@@ -341,7 +341,7 @@ export default class AsteroidsWorld {
     }
 
     let waveCleared = false;
-    if (this.asteroids.length === 0) {
+    if (this.asteroids.length === 0 && !this.ufo) {
       this.wave += 1;
       this.status = `Wave ${this.wave - 1} cleared. Wave ${this.wave} inbound.`;
       this.asteroids = this.createWave();
@@ -349,6 +349,8 @@ export default class AsteroidsWorld {
       this.ufoBullets = [];
       this.ufoSpawnTimer = this.getUfoSpawnDelay();
       waveCleared = true;
+    } else if (this.asteroids.length === 0 && this.ufo) {
+      this.status = 'Field clear. Waiting for saucer to finish its pass.';
     }
     return {
       points,
@@ -397,8 +399,10 @@ export default class AsteroidsWorld {
 
     this.asteroids.forEach((asteroid) => asteroid.update(dtSeconds, this.bounds));
 
-    this.ufoSpawnTimer -= dtSeconds;
-    if (!this.ufo && this.ufoSpawnTimer <= 0) {
+    if (this.shipActive) {
+      this.ufoSpawnTimer -= dtSeconds;
+    }
+    if (this.shipActive && !this.ufo && this.ufoSpawnTimer <= 0) {
       const type = this.wave >= 3 ? 'small' : 'large';
       this.ufo = new Ufo(this.bounds, type, this.wave);
       this.status = type === 'small' ? 'Small saucer inbound.' : 'Large saucer inbound.';
@@ -430,8 +434,12 @@ export default class AsteroidsWorld {
 
     if (this.ufo) {
       const ufoPolygon = this.ufo.getCollisionPolygon();
-      for (const asteroid of this.asteroids) {
+      for (let asteroidIndex = this.asteroids.length - 1; asteroidIndex >= 0; asteroidIndex -= 1) {
+        const asteroid = this.asteroids[asteroidIndex];
         if (arePolygonsColliding(ufoPolygon, asteroid.getPoints())) {
+          const result = this.splitAsteroid(asteroidIndex);
+          events.explosions.push(result.explosion);
+          events.waveCleared = events.waveCleared || result.waveCleared;
           events.explosions.push({
             x: this.ufo.x,
             y: this.ufo.y,
@@ -440,8 +448,9 @@ export default class AsteroidsWorld {
           });
           this.ufo = null;
           this.ufoSpawnTimer = this.getUfoSpawnDelay();
+          events.sfx.push(result.points === 20 ? 'bangLarge' : result.points === 50 ? 'bangMedium' : 'bangSmall');
           events.sfx.push('bangMedium');
-          this.status = 'Saucer collided with an asteroid.';
+          this.status = 'Saucer and asteroid destroyed on impact.';
           break;
         }
       }

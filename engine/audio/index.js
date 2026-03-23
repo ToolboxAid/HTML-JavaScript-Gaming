@@ -5,6 +5,7 @@ David Quesenberry
 index.js
 */
 export { default as WebAudioToneBackend } from './WebAudioToneBackend.js';
+export { default as GaplessLoopPlayer } from './GaplessLoopPlayer.js';
 export { default as HtmlAudioMediaBackend } from './HtmlAudioMediaBackend.js';
 export { default as AudioService } from './AudioService.js';
 export { default as MediaTrackService } from './MediaTrackService.js';

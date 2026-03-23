@@ -4,19 +4,17 @@ David Quesenberry
 03/22/2026
 AsteroidsAudio.js
 */
-import { HtmlAudioMediaBackend, MediaTrackService } from '../../../engine/audio/index.js';
+import { GaplessLoopPlayer, HtmlAudioMediaBackend, MediaTrackService } from '../../../engine/audio/index.js';
 
 export default class AsteroidsAudio {
   constructor() {
     this.media = new MediaTrackService({
       backend: new HtmlAudioMediaBackend(),
     });
+    this.loopPlayer = new GaplessLoopPlayer();
     this.initialized = false;
     this.thrustActive = false;
     this.activeUfoTrack = null;
-    this.extraShipPlaybackToken = 0;
-    this.extraShipStopTimer = null;
-    this.extraShipMetadataHandler = null;
   }
 
   ensureInitialized() {
@@ -30,10 +28,10 @@ export default class AsteroidsAudio {
     this.media.register('bangSmall', { src: '/games/Asteroids/assets/bangSmall.wav', volume: 0.55 });
     this.media.register('beat1', { src: '/games/Asteroids/assets/beat1.wav', volume: 0.45 });
     this.media.register('beat2', { src: '/games/Asteroids/assets/beat2.wav', volume: 0.45 });
-    this.media.register('extraShip', { src: '/games/Asteroids/assets/extraShip.wav', loop: true, volume: 0.6 });
-    this.media.register('thrust', { src: '/games/Asteroids/assets/thrust.wav', loop: true, volume: 0.35 });
-    this.media.register('saucerLarge', { src: '/games/Asteroids/assets/saucerBig.wav', loop: true, volume: 0.35 });
-    this.media.register('saucerSmall', { src: '/games/Asteroids/assets/saucerSmall.wav', loop: true, volume: 0.4 });
+    this.loopPlayer.register('extraShip', { src: '/games/Asteroids/assets/extraShip.wav', volume: 0.6, overlapSeconds: 0.035, fadeSeconds: 0.012 });
+    this.loopPlayer.register('thrust', { src: '/games/Asteroids/assets/thrust.wav', volume: 0.35, overlapSeconds: 0.03, fadeSeconds: 0.01 });
+    this.loopPlayer.register('saucerLarge', { src: '/games/Asteroids/assets/saucerBig.wav', volume: 0.35, overlapSeconds: 0.03, fadeSeconds: 0.01 });
+    this.loopPlayer.register('saucerSmall', { src: '/games/Asteroids/assets/saucerSmall.wav', volume: 0.4, overlapSeconds: 0.03, fadeSeconds: 0.01 });
     this.initialized = true;
   }
 
@@ -49,66 +47,15 @@ export default class AsteroidsAudio {
 
   playExtraShipLoops(loopCount = 1) {
     this.ensureInitialized();
-    const track = this.media.tracks.get('extraShip');
-    if (!track) {
-      return;
-    }
-
-    this.extraShipPlaybackToken += 1;
-    const token = this.extraShipPlaybackToken;
-    track.pause?.();
-    track.currentTime = 0;
-    track.loop = true;
-    this.clearExtraShipStopTimer();
-    track.play?.();
-
-    const scheduleStop = () => {
-      if (token !== this.extraShipPlaybackToken) {
-        return;
-      }
-
-      const duration = Number.isFinite(track.duration) ? track.duration : 0;
-      if (duration <= 0) {
-        return;
-      }
-
-      this.clearExtraShipStopTimer();
-      this.extraShipStopTimer = globalThis.setTimeout?.(() => {
-        if (token !== this.extraShipPlaybackToken) {
-          return;
-        }
-
-        track.pause?.();
-        track.currentTime = 0;
-        track.loop = true;
-        this.extraShipStopTimer = null;
-      }, duration * Math.max(1, loopCount) * 1000);
-    };
-
-    if (Number.isFinite(track.duration) && track.duration > 0) {
-      scheduleStop();
-      return;
-    }
-
-    if (this.extraShipMetadataHandler) {
-      track.removeEventListener?.('loadedmetadata', this.extraShipMetadataHandler);
-    }
-
-    this.extraShipMetadataHandler = () => {
-      track.removeEventListener?.('loadedmetadata', this.extraShipMetadataHandler);
-      this.extraShipMetadataHandler = null;
-      scheduleStop();
-    };
-    track.addEventListener?.('loadedmetadata', this.extraShipMetadataHandler);
+    this.loopPlayer.play('extraShip', { loopCount: Math.max(1, loopCount) });
   }
 
   updateThrust(active) {
     this.ensureInitialized();
     if (active && !this.thrustActive) {
-      this.media.play('thrust');
+      this.loopPlayer.play('thrust');
     } else if (!active && this.thrustActive) {
-      this.media.pause('thrust');
-      this.media.seek('thrust', 0);
+      this.loopPlayer.stop('thrust');
     }
     this.thrustActive = active;
   }
@@ -126,37 +73,18 @@ export default class AsteroidsAudio {
     }
 
     if (this.activeUfoTrack) {
-      this.media.pause(this.activeUfoTrack);
-      this.media.seek(this.activeUfoTrack, 0);
+      this.loopPlayer.stop(this.activeUfoTrack);
     }
 
     this.activeUfoTrack = nextTrack;
     if (this.activeUfoTrack) {
-      this.media.play(this.activeUfoTrack);
+      this.loopPlayer.play(this.activeUfoTrack);
     }
   }
 
   stopAll() {
-    this.extraShipPlaybackToken += 1;
-    this.clearExtraShipStopTimer();
-    this.media.stop('thrust');
-    this.media.stop('extraShip');
-    this.media.stop('saucerLarge');
-    this.media.stop('saucerSmall');
+    this.loopPlayer.stopAll();
     this.thrustActive = false;
     this.activeUfoTrack = null;
-  }
-
-  clearExtraShipStopTimer() {
-    if (this.extraShipStopTimer !== null) {
-      globalThis.clearTimeout?.(this.extraShipStopTimer);
-      this.extraShipStopTimer = null;
-    }
-
-    const track = this.media.tracks.get('extraShip');
-    if (track && this.extraShipMetadataHandler) {
-      track.removeEventListener?.('loadedmetadata', this.extraShipMetadataHandler);
-      this.extraShipMetadataHandler = null;
-    }
   }
 }

@@ -27,7 +27,7 @@ export default class AsteroidsSession {
       id: index + 1,
       score: 0,
       lives: 3,
-      nextExtraLifeScore: 1000,
+      nextExtraLifeScore: 10000,
       worldState: null,
     }));
     this.activePlayerIndex = 0;
