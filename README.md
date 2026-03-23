@@ -3,29 +3,29 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Engine Boundary Cleanup Step 2B (Fullscreen Injection)
+# BUILD_PR — Engine Boundary Cleanup Step 2C (CanvasSurface Ownership)
 
 ## Purpose
-Implement the second Step 2 follow-up from the approved static-global audit.
+Resolve ownership and placement of CanvasSurface identified in Step 2 audit.
 
 ## Goal
-Remove reliance on implicit browser globals in fullscreen composition and make fullscreen ownership explicit at the engine boundary.
+Determine whether CanvasSurface is:
+- dead code (remove), OR
+- a browser adapter (relocate/split)
 
 ## Scope
-- `engine/core/Engine.js`
-- `engine/runtime/FullscreenService.js`
-- focused engine-level fullscreen composition tests
-- `tests/run-tests.mjs` only if required
+- engine/core/CanvasSurface.js
+- potential callers (engine/, samples/, games/)
+- minimal adapter extraction if required
+- tests/engine for verification
 
 ## Constraints
 - No gameplay changes
-- No timing changes
-- No CanvasSurface work in this PR
-- No EventBus casing work in this PR
-- No metrics composition work in this PR
-- Preserve current fullscreen behavior in browser
+- No rendering behavior changes
+- No refactor beyond CanvasSurface scope
+- Do NOT introduce new rendering abstractions
 
 ## Expected Outcome
-- Engine no longer relies on `FullscreenService` implicit `globalThis.document` behavior from production construction paths
-- fullscreen composition is explicit and testable
-- focused tests prove attach/detach behavior with injected fullscreen doubles
+- CanvasSurface is either:
+  - safely removed, OR
+  - relocated/split into proper adapter layer

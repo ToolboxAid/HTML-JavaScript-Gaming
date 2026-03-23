@@ -3,14 +3,11 @@ David Quesenberry
 03/23/2026
 CODEX_COMMANDS.md
 
-# CODEX COMMANDS
-
-## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-ENGINE-BOUNDARY-CLEANUP-STEP2B-FULLSCREEN-INJECTION. Refactor engine/core/Engine.js and engine/runtime/FullscreenService.js so Engine fullscreen composition is explicit and production paths do not rely on implicit globalThis.document defaults. Add focused engine-level fullscreen composition tests covering attach/detach with injected fullscreen doubles or service instances. Preserve browser fullscreen behavior. Do not change timing, canvas ownership, event bus, metrics, gameplay, or unrelated files.
+COMMAND: Implement Step 2C CanvasSurface ownership resolution. Determine if engine/core/CanvasSurface.js is unused. If unused, remove it. If used, relocate or split it so DOM canvas ownership is not in engine/core. Do not change rendering behavior or unrelated files.
 
-## Optional verification
+# Verify
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that fullscreen composition is explicit at the engine boundary, engine-level fullscreen tests were added, and no unrelated subsystems were changed.
+COMMAND: Confirm CanvasSurface is either removed or relocated correctly and no rendering regressions exist.
