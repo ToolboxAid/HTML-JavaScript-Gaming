@@ -13,6 +13,7 @@ export default class Bullet {
     this.vx = vx;
     this.vy = vy;
     this.life = life;
+    this.radius = 2;
   }
 
   update(dtSeconds, bounds) {
@@ -23,5 +24,14 @@ export default class Bullet {
 
   isAlive() {
     return this.life > 0;
+  }
+
+  getCollisionPolygon() {
+    return [
+      { x: this.x - this.radius, y: this.y - this.radius },
+      { x: this.x + this.radius, y: this.y - this.radius },
+      { x: this.x + this.radius, y: this.y + this.radius },
+      { x: this.x - this.radius, y: this.y + this.radius },
+    ];
   }
 }

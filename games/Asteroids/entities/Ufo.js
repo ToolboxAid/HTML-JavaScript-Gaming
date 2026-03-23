@@ -104,12 +104,16 @@ export default class Ufo {
     return distance(this, point) <= this.radius + padding;
   }
 
+  getCollisionPolygon() {
+    return VECTOR_MAPS[this.type].map(([x, y]) => ({
+      x: this.x + x,
+      y: this.y + y,
+    }));
+  }
+
   getBodyLines() {
     return [
-      VECTOR_MAPS[this.type].map(([x, y]) => ({
-        x: this.x + x,
-        y: this.y + y,
-      })),
+      this.getCollisionPolygon(),
     ];
   }
 }

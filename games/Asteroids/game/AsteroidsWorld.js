@@ -8,6 +8,7 @@ import Asteroid from '../entities/Asteroid.js';
 import Bullet from '../entities/Bullet.js';
 import Ship from '../entities/Ship.js';
 import Ufo from '../entities/Ufo.js';
+import { arePolygonsColliding } from '../../../engine/collision/polygon.js';
 import { distance, randomRange } from '../utils/math.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];
@@ -428,8 +429,9 @@ export default class AsteroidsWorld {
     this.ufoBullets = this.ufoBullets.filter((bullet) => bullet.isAlive());
 
     if (this.ufo) {
+      const ufoPolygon = this.ufo.getCollisionPolygon();
       for (const asteroid of this.asteroids) {
-        if (distance(this.ufo, asteroid) < this.ufo.radius + asteroid.radius) {
+        if (arePolygonsColliding(ufoPolygon, asteroid.getPoints())) {
           events.explosions.push({
             x: this.ufo.x,
             y: this.ufo.y,
@@ -447,9 +449,10 @@ export default class AsteroidsWorld {
 
     for (let bulletIndex = this.bullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
       const bullet = this.bullets[bulletIndex];
+      const bulletPolygon = bullet.getCollisionPolygon();
       let hit = false;
 
-      if (this.ufo && this.ufo.collidesWithPoint(bullet, 2)) {
+      if (this.ufo && arePolygonsColliding(bulletPolygon, this.ufo.getCollisionPolygon())) {
         this.bullets.splice(bulletIndex, 1);
         events.scoreEvents.push(this.ufo.points);
         events.explosions.push({
@@ -466,7 +469,7 @@ export default class AsteroidsWorld {
       }
 
       for (let asteroidIndex = this.asteroids.length - 1; asteroidIndex >= 0; asteroidIndex -= 1) {
-        if (distance(bullet, this.asteroids[asteroidIndex]) < this.asteroids[asteroidIndex].radius + 2) {
+        if (arePolygonsColliding(bulletPolygon, this.asteroids[asteroidIndex].getPoints())) {
           this.bullets.splice(bulletIndex, 1);
           const result = this.splitAsteroid(asteroidIndex);
           events.scoreEvents.push(result.points);
@@ -485,10 +488,11 @@ export default class AsteroidsWorld {
 
     if (this.ufo) {
       for (let bulletIndex = this.ufoBullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
+        const bulletPolygon = this.ufoBullets[bulletIndex].getCollisionPolygon();
         let hit = false;
 
         for (let asteroidIndex = this.asteroids.length - 1; asteroidIndex >= 0; asteroidIndex -= 1) {
-          if (distance(this.ufoBullets[bulletIndex], this.asteroids[asteroidIndex]) < this.asteroids[asteroidIndex].radius + 2) {
+          if (arePolygonsColliding(bulletPolygon, this.asteroids[asteroidIndex].getPoints())) {
             this.ufoBullets.splice(bulletIndex, 1);
             const result = this.splitAsteroid(asteroidIndex);
             events.explosions.push(result.explosion);
@@ -504,7 +508,7 @@ export default class AsteroidsWorld {
           continue;
         }
 
-        if (this.ufo.collidesWithPoint(this.ufoBullets[bulletIndex], 2)) {
+        if (arePolygonsColliding(bulletPolygon, this.ufo.getCollisionPolygon())) {
           this.ufoBullets.splice(bulletIndex, 1);
           events.explosions.push({
             x: this.ufo.x,
@@ -522,9 +526,10 @@ export default class AsteroidsWorld {
     }
 
     if (this.shipActive && this.ship.invulnerable === 0) {
+      const shipPolygon = this.ship.getPoints();
       for (let asteroidIndex = this.asteroids.length - 1; asteroidIndex >= 0; asteroidIndex -= 1) {
         const asteroid = this.asteroids[asteroidIndex];
-        if (distance(this.ship, asteroid) < asteroid.radius + 10) {
+        if (arePolygonsColliding(shipPolygon, asteroid.getPoints())) {
           const result = this.splitAsteroid(asteroidIndex);
           this.destroyShip();
           events.explosions.push(result.explosion);
@@ -536,15 +541,24 @@ export default class AsteroidsWorld {
       }
     }
 
-    if (this.shipActive && !events.shipDestroyed && this.ufo && this.ship.invulnerable === 0 && this.ufo.collidesWithPoint(this.ship, 10)) {
+    if (this.shipActive && !events.shipDestroyed && this.ufo && this.ship.invulnerable === 0 && arePolygonsColliding(this.ship.getPoints(), this.ufo.getCollisionPolygon())) {
+      events.explosions.push({
+        x: this.ufo.x,
+        y: this.ufo.y,
+        size: this.ufo.type === 'small' ? 1 : 2,
+        source: 'ufo',
+      });
+      this.ufo = null;
+      this.ufoSpawnTimer = this.getUfoSpawnDelay();
       this.destroyShip();
       events.shipDestroyed = true;
       events.sfx.push('bangLarge');
     }
 
     if (this.shipActive && !events.shipDestroyed && this.ship.invulnerable === 0) {
+      const shipPolygon = this.ship.getPoints();
       for (const bullet of this.ufoBullets) {
-        if (distance(this.ship, bullet) < 12) {
+        if (arePolygonsColliding(bullet.getCollisionPolygon(), shipPolygon)) {
           this.destroyShip();
           events.shipDestroyed = true;
           events.sfx.push('bangLarge');
