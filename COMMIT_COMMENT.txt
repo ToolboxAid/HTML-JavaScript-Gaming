@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-games: validate gravity well determinism and timing stress
+games: finalize gravity well validation and apply minimal hardening if needed
