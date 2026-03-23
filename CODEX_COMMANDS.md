@@ -3,11 +3,14 @@ David Quesenberry
 03/23/2026
 CODEX_COMMANDS.md
 
+# CODEX COMMANDS
+
+## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement Step 2C CanvasSurface ownership resolution. Determine if engine/core/CanvasSurface.js is unused. If unused, remove it. If used, relocate or split it so DOM canvas ownership is not in engine/core. Do not change rendering behavior or unrelated files.
+COMMAND: Implement PR-ENGINE-BOUNDARY-CLEANUP-STEP2D-EVENTBUS-NAMING. Normalize EventBus import/file casing to engine/events/EventBus.js across direct usages, preserve EventBus as an engine-owned injected instance service, and add focused portability/casing validation where practical. Do not change timing, fullscreen, canvas, metrics, gameplay, or unrelated files.
 
-# Verify
+## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Confirm CanvasSurface is either removed or relocated correctly and no rendering regressions exist.
+COMMAND: Verify that EventBus casing is normalized, ownership remains instance-based and engine-owned, and no unrelated subsystems were changed.

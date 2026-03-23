@@ -3,29 +3,27 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Engine Boundary Cleanup Step 2C (CanvasSurface Ownership)
+# BUILD_PR — Engine Boundary Cleanup Step 2D (EventBus Naming + Ownership)
 
 ## Purpose
-Resolve ownership and placement of CanvasSurface identified in Step 2 audit.
+Implement the next surgical Step 2 follow-up by normalizing EventBus casing and protecting cross-platform portability.
 
 ## Goal
-Determine whether CanvasSurface is:
-- dead code (remove), OR
-- a browser adapter (relocate/split)
+Resolve `eventBus.js` vs `EventBus.js` casing drift so imports are portable across case-sensitive filesystems, while preserving EventBus as an engine-owned injected service.
 
 ## Scope
-- engine/core/CanvasSurface.js
-- potential callers (engine/, samples/, games/)
-- minimal adapter extraction if required
-- tests/engine for verification
+- `engine/events/EventBus.js`
+- direct imports/usages of EventBus
+- focused tests or validation for portability/ownership
+- `tests/run-tests.mjs` only if required
 
 ## Constraints
 - No gameplay changes
-- No rendering behavior changes
-- No refactor beyond CanvasSurface scope
-- Do NOT introduce new rendering abstractions
+- No timing/fullscreen/canvas work in this PR
+- Do not convert EventBus into a process-global singleton
+- Preserve current EventBus behavior and ownership model
 
 ## Expected Outcome
-- CanvasSurface is either:
-  - safely removed, OR
-  - relocated/split into proper adapter layer
+- Import casing is normalized to `EventBus.js`
+- cross-platform case drift risk is removed
+- EventBus remains injectable and engine-owned

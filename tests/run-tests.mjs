@@ -24,6 +24,7 @@ import { run as runReleaseReadinessSystems } from './final/ReleaseReadinessSyste
 import { run as runCombat } from './combat/Combat.test.mjs';
 import { run as runEntity } from './entity/Entity.test.mjs';
 import { run as runEventBus } from './events/EventBus.test.mjs';
+import { run as runEventBusNaming } from './events/EventBusNaming.test.mjs';
 import { run as runInputMap } from './input/InputMap.test.mjs';
 import { run as runInputService } from './input/InputService.test.mjs';
 import { run as runKeyboardState } from './input/KeyboardState.test.mjs';
@@ -56,6 +57,7 @@ const tests = [
     ['Combat', runCombat],
     ['Entity', runEntity],
     ['EventBus', runEventBus],
+    ['EventBusNaming', runEventBusNaming],
     ['InputMap', runInputMap],
     ['InputService', runInputService],
     ['KeyboardState', runKeyboardState],
