@@ -1,34 +1,31 @@
-# Engine Bootstrap
+# Engine
 
-Engine is a parallel rewrite track.
+The `engine/` folder is the shared framework layer used by `samples/` and `games/`.
 
-The current engine stays locked. New work goes into `engine/` until the boundaries are proven with samples and tests.
+## Import Policy
+- `engine/core/Engine.js` is the approved direct import for bootstrapping
+- for other engine subsystems, prefer the public barrel at `engine/<subsystem>/index.js` when it exists
 
-## Rules
+## Key Areas
+- `core/` engine orchestration, timing composition, metrics
+- `scenes/` scene lifecycle and transition helpers
+- `render/` renderer implementations and render helpers
+- `input/` keyboard, mouse, gamepad, and action mapping
+- `audio/` audio services and backends
+- `persistence/` storage and serialization helpers
+- `fx/` effect helpers such as `ParticleSystem`
+- `runtime/` runtime/platform adapters such as fullscreen/mobile helpers
+- `vector/`, `collision/`, `utils/` shared math and geometry helpers
+- feature barrels such as `world/`, `automation/`, `editor/`, `release/`, `security/`, `pipeline/`, and others used by later samples
 
-- one class = one concern
-- no game-specific behavior in engine classes
-- no rendering logic inside timing classes
-- no timing logic inside scene classes
-- no hidden globals
-- samples prove usage
-- tests prove behavior
+## Validation
+Engine behavior is primarily validated through:
+- `tests/`
+- sample usage under `samples/`
+- Asteroids under `games/Asteroids/`
 
-## Initial layout
+Run the suite from repo root:
 
-- `core/` = loop, surface, timing
-- `scenes/` = scene contract and scene switching
-- `utils/` = tiny shared helpers only
-
-## Current bootstrap slice
-
-This first pass only establishes:
-
-- deterministic fixed-step updates
-- render interpolation support
-- scene lifecycle boundaries
-- canvas ownership boundary
-- sample wiring
-- test harness
-
-Games will be rebuilt after the engine boundary is stable.
+```bash
+npm test
+```

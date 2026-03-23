@@ -1,4 +1,0 @@
-Repository rewrite applied:
-- Added current RULES.txt at repo root
-
-Review notes:

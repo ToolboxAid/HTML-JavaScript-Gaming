@@ -1,13 +1,16 @@
 # Tests
 
-Tests validate Engine boundaries before games are migrated.
+The test suite is Node-safe and focuses on engine behavior, import guardrails, and Asteroids validation.
 
-Current strategy:
+## Run
 
-- small Node-based ES module tests for pure logic
-- scene lifecycle tests without browser dependency
-- samples remain the browser-facing proof
+```bash
+npm test
+```
 
-Run from repo root:
-
-`node tests/run-tests.mjs`
+## Current Coverage Themes
+- core timing, scene lifecycle, fullscreen composition, and metrics
+- input, events, entity/world behavior
+- persistence and FX determinism
+- production-readiness/import guardrail checks
+- Asteroids boot, hardening, timing stress, and promotion validation
