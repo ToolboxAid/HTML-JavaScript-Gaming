@@ -1,46 +1,28 @@
-# HTML-JavaScript-Gaming
+Toolbox Aid
+David Quesenberry
+03/23/2026
+README.md
 
-A browser-based 2D engine repository focused on the current engine architecture, reusable engine code, and progressive samples.
+# BUILD_PR Delta Pack — Engine Boundary Cleanup Audit
 
-## Repository layout
+This pack is the next repo-aligned handoff after the approved PLAN_PR.
 
-```text
-engine/           Current reusable engine
-samples/          Progressive samples (Sample01+)
-tests/            Current engine test suite
-docs/             Documentation
-tools/            Utility applications
-scripts/          Repository automation scripts
-```
+## Purpose
+Create a docs-first audit scaffold for the engine boundary cleanup review.
 
-## Current architecture
-
-- renderer-only drawing
-- input only through InputService / ActionInputService
-- scene lifecycle owned by engine
-- progressive samples as the proof path
-- ECS-oriented systems operating on data
-
-## Running samples
-
-Use a local web server from the repository root:
-
-```bash
-python -m http.server 8000
-```
-
-Then open a sample directly, for example:
-
-```text
-http://localhost:8000/samples/sample01-basic-loop/index.html
-```
-
-## Running tests
-
-```bash
-npm test
-```
+## Scope
+- Add the PR folder under `docs/prs/PR-ENGINE-BOUNDARY-CLEANUP-AUDIT/`
+- Add `PLAN.md`
+- Add `TASKS.md`
+- Add `CODEX_COMMANDS.md`
+- Add `COMMIT_COMMENT.txt`
 
 ## Rules
+- No runtime source changes
+- No gameplay changes
+- No sample changes
+- No engine refactor in this step
+- Codex should inspect and write findings only
 
-See `RULES.txt` for the locked engine rules and scene contract.
+## Expected Outcome
+Codex audits `engine/` and `tests/engine/`, then fills in the plan/task docs with exact findings and recommended next surgical build.
