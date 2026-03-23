@@ -12,6 +12,6 @@ export function wrap(value, max) {
   return sharedWrap(value, 0, max);
 }
 
-export function randomRange(min, max) {
-  return sharedRandomRange(min, max);
+export function randomRange(min, max, rng = Math.random) {
+  return sharedRandomRange(min, max, rng);
 }

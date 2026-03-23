@@ -76,7 +76,7 @@ export default class AsteroidsGameScene extends Scene {
     this.world = new AsteroidsWorld({ width: 960, height: 720 });
     this.session = new AsteroidsSession(this.world, new HighScoreStore());
     this.audio = new AsteroidsAudio();
-    this.shipDebris = new ShipDebrisSystem();
+    this.shipDebris = new ShipDebrisSystem({ rng: this.world.rng });
     this.particles = new ParticleSystem();
     this.lastEnterPressed = false;
     this.lastOnePressed = false;

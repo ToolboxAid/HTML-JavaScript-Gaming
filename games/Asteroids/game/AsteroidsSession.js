@@ -4,18 +4,57 @@ David Quesenberry
 03/22/2026
 AsteroidsSession.js
 */
+function sanitizeNonNegativeInteger(value, fallback = 0) {
+  if (!Number.isFinite(value)) {
+    return fallback;
+  }
+
+  return Math.max(0, Math.trunc(value));
+}
+
+function sanitizePlayerCount(value) {
+  const count = sanitizeNonNegativeInteger(Number(value), 1);
+  return Math.max(1, Math.min(2, count || 1));
+}
+
+function createFallbackHighScoreStore() {
+  return {
+    load: () => 0,
+    save: (score) => sanitizeNonNegativeInteger(Number(score), 0),
+  };
+}
+
+function createSilentEvents() {
+  return {
+    explosions: [],
+    scoreEvents: [],
+    shipDestroyed: false,
+    shipDestroyedState: null,
+    shipRespawned: false,
+    waveCleared: false,
+    sfx: [],
+  };
+}
+
 export default class AsteroidsSession {
   constructor(world, highScoreStore) {
     this.turnIntroTotalFlashes = 10;
     this.turnIntroInterval = 0.2;
     this.world = world;
-    this.highScoreStore = highScoreStore;
-    this.highScore = this.highScoreStore.load();
+    this.highScoreStore = highScoreStore
+      && typeof highScoreStore.load === 'function'
+      && typeof highScoreStore.save === 'function'
+      ? highScoreStore
+      : createFallbackHighScoreStore();
+    this.highScore = sanitizeNonNegativeInteger(Number(this.highScoreStore.load()), 0);
     this.mode = 'menu';
     this.players = [];
     this.activePlayerIndex = 0;
     this.pendingSwapIndex = null;
     this.pendingSwapTimer = 0;
+    this.pendingSwapElapsed = 0;
+    this.pendingSwapDurationSeconds = 10;
+    this.pendingSwapMaxWaitSeconds = 12;
     this.turnIntroFlashesRemaining = 0;
     this.turnIntroTimer = 0;
     this.turnIntroVisible = false;
@@ -24,7 +63,8 @@ export default class AsteroidsSession {
   }
 
   start(playerCount) {
-    this.players = Array.from({ length: playerCount }, (_, index) => ({
+    const safePlayerCount = sanitizePlayerCount(Number(playerCount));
+    this.players = Array.from({ length: safePlayerCount }, (_, index) => ({
       id: index + 1,
       score: 0,
       lives: 3,
@@ -34,17 +74,19 @@ export default class AsteroidsSession {
     this.activePlayerIndex = 0;
     this.pendingSwapIndex = null;
     this.pendingSwapTimer = 0;
+    this.pendingSwapElapsed = 0;
     this.turnIntroFlashesRemaining = 0;
     this.turnIntroTimer = 0;
     this.turnIntroVisible = false;
     this.mode = 'playing';
     this.world.startGame();
-    this.players[0].worldState = this.world.getState();
+    const initialState = this.world.getState();
+    this.players[0].worldState = initialState;
     for (let index = 1; index < this.players.length; index += 1) {
-      this.players[index].worldState = this.world.getState();
+      this.players[index].worldState = initialState;
     }
-    this.world.loadState(this.players[0].worldState);
-    this.status = playerCount === 1
+    this.world.loadState(initialState);
+    this.status = safePlayerCount === 1
       ? 'Player 1 ready.'
       : '2-player game started. Player 1 up.';
   }
@@ -92,7 +134,9 @@ export default class AsteroidsSession {
     if (!this.activePlayer) {
       return false;
     }
-    this.activePlayer.score += points;
+
+    const safePoints = sanitizeNonNegativeInteger(Number(points), 0);
+    this.activePlayer.score += safePoints;
     let awardedExtraLife = false;
     while (this.activePlayer.score >= this.activePlayer.nextExtraLifeScore) {
       this.activePlayer.lives += 1;
@@ -100,7 +144,11 @@ export default class AsteroidsSession {
       awardedExtraLife = true;
     }
     if (this.activePlayer.score > this.highScore) {
-      this.highScore = this.highScoreStore.save(this.activePlayer.score);
+      const savedScore = sanitizeNonNegativeInteger(
+        Number(this.highScoreStore.save(this.activePlayer.score)),
+        this.activePlayer.score,
+      );
+      this.highScore = Math.max(this.highScore, savedScore);
     }
     return awardedExtraLife;
   }
@@ -110,14 +158,15 @@ export default class AsteroidsSession {
       return;
     }
 
-    this.activePlayer.lives -= 1;
+    this.activePlayer.lives = Math.max(0, this.activePlayer.lives - 1);
     this.activePlayer.worldState = this.world.getState();
     const nextIndex = this.players.findIndex((player, index) => index !== this.activePlayerIndex && player.lives > 0);
     if (nextIndex >= 0) {
       this.world.setRespawnLocked(true);
       this.activePlayer.worldState = this.world.getState();
       this.pendingSwapIndex = nextIndex;
-      this.pendingSwapTimer = 10;
+      this.pendingSwapTimer = this.pendingSwapDurationSeconds;
+      this.pendingSwapElapsed = 0;
       this.status = `Player ${this.activePlayer.id} destroyed.`;
       return;
     }
@@ -137,20 +186,24 @@ export default class AsteroidsSession {
       return;
     }
 
+    const safeDtSeconds = Number.isFinite(dtSeconds)
+      ? Math.max(0, dtSeconds)
+      : 0;
+
     if (this.isTurnIntroActive()) {
-      this.updateTurnIntro(dtSeconds);
-      return {
-        explosions: [],
-        scoreEvents: [],
-        shipDestroyed: false,
-        shipDestroyedState: null,
-        shipRespawned: false,
-        waveCleared: false,
-        sfx: [],
-      };
+      this.updateTurnIntro(safeDtSeconds);
+      return createSilentEvents();
     }
 
-    const events = this.world.update(dtSeconds, input);
+    const worldEvents = this.world.update(safeDtSeconds, input);
+    const events = {
+      ...createSilentEvents(),
+      ...(worldEvents || {}),
+      explosions: Array.isArray(worldEvents?.explosions) ? worldEvents.explosions : [],
+      scoreEvents: Array.isArray(worldEvents?.scoreEvents) ? worldEvents.scoreEvents : [],
+      sfx: Array.isArray(worldEvents?.sfx) ? worldEvents.sfx : [],
+    };
+
     if (this.activePlayer) {
       this.activePlayer.worldState = this.world.getState();
     }
@@ -170,18 +223,24 @@ export default class AsteroidsSession {
     }
 
     if (this.pendingSwapIndex !== null) {
-      this.pendingSwapTimer = Math.max(0, this.pendingSwapTimer - dtSeconds);
+      this.pendingSwapTimer = Math.max(0, this.pendingSwapTimer - safeDtSeconds);
+      this.pendingSwapElapsed += safeDtSeconds;
       const ufoCleared = !this.world.ufo;
-      if (this.pendingSwapTimer === 0 && ufoCleared) {
+      const swapReady = this.pendingSwapTimer === 0 && ufoCleared;
+      const swapForced = this.pendingSwapElapsed >= this.pendingSwapMaxWaitSeconds;
+      if (swapReady || swapForced) {
         this.activePlayerIndex = this.pendingSwapIndex;
         this.pendingSwapIndex = null;
+        this.pendingSwapElapsed = 0;
         if (!this.players[this.activePlayerIndex].worldState) {
           this.players[this.activePlayerIndex].worldState = this.world.getState();
         }
         this.world.loadState(this.players[this.activePlayerIndex].worldState);
         this.world.setRespawnLocked(true);
         this.startTurnIntro();
-        this.status = `Player ${this.activePlayer?.id || 1} up.`;
+        this.status = swapForced && !ufoCleared
+          ? `Player ${this.activePlayer?.id || 1} up. Forced swap safety timeout reached.`
+          : `Player ${this.activePlayer?.id || 1} up.`;
       } else if (!ufoCleared) {
         this.status = 'Waiting for saucer to clear before player swap.';
       }

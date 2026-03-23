@@ -39,19 +39,20 @@ const VECTOR_MAPS = {
 };
 
 export default class Ufo {
-  constructor(bounds, type = 'large', level = 1) {
+  constructor(bounds, type = 'large', level = 1, rng = Math.random) {
     this.bounds = bounds;
+    this.rng = typeof rng === 'function' ? rng : Math.random;
     this.type = UFO_PROFILES[type] ? type : 'large';
     this.profile = UFO_PROFILES[this.type];
-    this.direction = Math.random() > 0.5 ? 1 : -1;
+    this.direction = this.rng() > 0.5 ? 1 : -1;
     this.x = this.direction > 0 ? -48 : bounds.width + 48;
-    this.y = randomRange(120, bounds.height - 140);
+    this.y = randomRange(120, bounds.height - 140, this.rng);
     this.vx = this.profile.speed * (1 + (level - 1) * 0.05) * this.direction;
-    this.vy = randomRange(-26, 26);
+    this.vy = randomRange(-26, 26, this.rng);
     this.radius = this.profile.radius;
     this.points = this.profile.points;
-    this.turnTimer = randomRange(1.2, 2.4);
-    this.fireTimer = randomRange(...this.profile.fireInterval);
+    this.turnTimer = randomRange(1.2, 2.4, this.rng);
+    this.fireTimer = randomRange(...this.profile.fireInterval, this.rng);
     this.alive = true;
   }
 
@@ -61,8 +62,8 @@ export default class Ufo {
 
     this.turnTimer -= dtSeconds;
     if (this.turnTimer <= 0) {
-      this.turnTimer = randomRange(1.1, 2.2);
-      this.vy = randomRange(-52, 52);
+      this.turnTimer = randomRange(1.1, 2.2, this.rng);
+      this.vy = randomRange(-52, 52, this.rng);
     }
 
     if (this.y < 88) {
@@ -86,8 +87,8 @@ export default class Ufo {
   }
 
   fireAt(target) {
-    this.fireTimer = randomRange(...this.profile.fireInterval);
-    const aimAngle = Math.atan2(target.y - this.y, target.x - this.x) + randomRange(-this.profile.aimJitter, this.profile.aimJitter);
+    this.fireTimer = randomRange(...this.profile.fireInterval, this.rng);
+    const aimAngle = Math.atan2(target.y - this.y, target.x - this.x) + randomRange(-this.profile.aimJitter, this.profile.aimJitter, this.rng);
     const muzzleX = this.x + Math.cos(aimAngle) * (this.radius - 2);
     const muzzleY = this.y + Math.sin(aimAngle) * (this.radius - 2);
     const shotSpeed = 250;

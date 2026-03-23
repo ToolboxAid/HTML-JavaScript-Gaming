@@ -49,14 +49,14 @@ const SIZE_BY_ID = {
 };
 
 export default class Asteroid {
-  constructor(x, y, size = 3) {
+  constructor(x, y, size = 3, rng = Math.random) {
     const profile = SIZE_BY_ID[size] || SIZE_PROFILES.LRG;
     this.x = x;
     this.y = y;
-    this.vx = randomRange(-70, 70);
-    this.vy = randomRange(-70, 70);
-    this.angle = randomRange(0, TAU);
-    this.spin = randomRange(-1.4, 1.4);
+    this.vx = randomRange(-70, 70, rng);
+    this.vy = randomRange(-70, 70, rng);
+    this.angle = randomRange(0, TAU, rng);
+    this.spin = randomRange(-1.4, 1.4, rng);
     this.size = profile.id;
     this.sizeLabel = Object.entries(SIZE_PROFILES).find(([, value]) => value.id === profile.id)?.[0] || 'LRG';
     this.scale = profile.targetRadius / BASE_RADIUS;

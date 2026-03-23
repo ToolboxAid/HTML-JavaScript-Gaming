@@ -22,13 +22,11 @@ export function wrap(value, min, max) {
     return low;
   }
 
-  if (value < low) {
-    return value + span;
+  if (value >= low && value <= high) {
+    return value;
   }
-  if (value > high) {
-    return value - span;
-  }
-  return value;
+
+  return ((((value - low) % span) + span) % span) + low;
 }
 
 export function randomRange(min, max, rng = Math.random) {

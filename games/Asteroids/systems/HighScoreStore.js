@@ -6,6 +6,14 @@ HighScoreStore.js
 */
 import { StorageService } from '../../../engine/persistence/index.js';
 
+function toSafeScore(value) {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.trunc(value));
+}
+
 export default class HighScoreStore {
   constructor({
     key = 'toolboxaid:games:asteroids:high-score',
@@ -16,11 +24,12 @@ export default class HighScoreStore {
   }
 
   load() {
-    return Number(this.storage.loadJson(this.key, 0)) || 0;
+    return toSafeScore(Number(this.storage.loadJson(this.key, 0)));
   }
 
   save(score) {
-    this.storage.saveJson(this.key, score);
-    return score;
+    const safeScore = toSafeScore(Number(score));
+    this.storage.saveJson(this.key, safeScore);
+    return safeScore;
   }
 }

@@ -21,16 +21,192 @@ const ASTEROID_SAFE_RECTS = [
   { x: 260, y: 180, width: 440, height: 240 },
 ];
 
+const DEFAULT_WORLD_WIDTH = 960;
+const DEFAULT_WORLD_HEIGHT = 720;
+const ASTEROID_SIZE_MIN = 1;
+const ASTEROID_SIZE_MAX = 3;
+const WAVE_SPAWN_MARGIN_X = 80;
+const WAVE_SPAWN_MARGIN_Y = 120;
+const WAVE_SPAWN_ATTEMPTS = 60;
+const ASTEROID_SPAWN_SAFE_PADDING = 24;
+
+function sanitizeFiniteNumber(value, fallback) {
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function sanitizeBoolean(value, fallback = false) {
+  return typeof value === 'boolean' ? value : fallback;
+}
+
+function sanitizeInteger(value, fallback, { min = -Infinity, max = Infinity } = {}) {
+  if (!Number.isFinite(value)) {
+    return fallback;
+  }
+  return Math.max(min, Math.min(max, Math.trunc(value)));
+}
+
+function sanitizePositiveNumber(value, fallback) {
+  const number = sanitizeFiniteNumber(value, fallback);
+  return number > 0 ? number : fallback;
+}
+
+function sanitizeArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function sanitizeStatus(value, fallback = '') {
+  return typeof value === 'string' ? value : fallback;
+}
+
+function sanitizeUfoType(type) {
+  return type === 'small' || type === 'large'
+    ? type
+    : 'large';
+}
+
+function sanitizeDirection(value, fallback = 1) {
+  if (!Number.isFinite(value) || value === 0) {
+    return fallback < 0 ? -1 : 1;
+  }
+
+  return value < 0 ? -1 : 1;
+}
+
+function sanitizeBounds(bounds) {
+  const source = bounds && typeof bounds === 'object'
+    ? bounds
+    : {};
+
+  const width = Math.max(1, sanitizeFiniteNumber(source.width, DEFAULT_WORLD_WIDTH));
+  const height = Math.max(1, sanitizeFiniteNumber(source.height, DEFAULT_WORLD_HEIGHT));
+
+  return { width, height };
+}
+
+function getRectOverlapDepth(x, y, radius, rect) {
+  const overlaps = (
+    x + radius > rect.x
+    && x - radius < rect.x + rect.width
+    && y + radius > rect.y
+    && y - radius < rect.y + rect.height
+  );
+
+  if (!overlaps) {
+    return 0;
+  }
+
+  const overlapLeft = (x + radius) - rect.x;
+  const overlapRight = (rect.x + rect.width) - (x - radius);
+  const overlapTop = (y + radius) - rect.y;
+  const overlapBottom = (rect.y + rect.height) - (y - radius);
+
+  return Math.max(0, Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom));
+}
+
 export default class AsteroidsWorld {
-  constructor(bounds) {
-    this.bounds = bounds;
+  constructor(bounds, { rng = Math.random } = {}) {
+    this.rng = typeof rng === 'function' ? rng : Math.random;
+    this.bounds = sanitizeBounds(bounds);
     this.starfield = Array.from({ length: 70 }, () => ({
-      x: randomRange(0, bounds.width),
-      y: randomRange(0, bounds.height),
-      size: Math.random() > 0.7 ? 2 : 1,
+      x: randomRange(0, this.bounds.width, this.rng),
+      y: randomRange(0, this.bounds.height, this.rng),
+      size: this.rng() > 0.7 ? 2 : 1,
     }));
-    this.ship = new Ship(bounds.width / 2, bounds.height / 2);
+    this.ship = new Ship(this.bounds.width / 2, this.bounds.height / 2);
     this.startGame();
+  }
+
+  createAsteroidEntity(x, y, size = 3) {
+    return new Asteroid(x, y, size, this.rng);
+  }
+
+  createUfoEntity(type = 'large', level = 1) {
+    return new Ufo(this.bounds, type, level, this.rng);
+  }
+
+  createRandomAsteroid(size = 3, minX = WAVE_SPAWN_MARGIN_X, maxX = this.bounds.width - WAVE_SPAWN_MARGIN_X, minY = WAVE_SPAWN_MARGIN_Y, maxY = this.bounds.height - WAVE_SPAWN_MARGIN_X) {
+    return this.createAsteroidEntity(
+      randomRange(minX, maxX, this.rng),
+      randomRange(minY, maxY, this.rng),
+      size,
+    );
+  }
+
+  getSpawnAnchors() {
+    return [
+      { x: WAVE_SPAWN_MARGIN_X, y: this.bounds.height - WAVE_SPAWN_MARGIN_X },
+      { x: this.bounds.width - WAVE_SPAWN_MARGIN_X, y: this.bounds.height - WAVE_SPAWN_MARGIN_X },
+      { x: this.bounds.width * 0.5, y: this.bounds.height - WAVE_SPAWN_MARGIN_X },
+      { x: WAVE_SPAWN_MARGIN_X, y: this.bounds.height * 0.5 },
+      { x: this.bounds.width - WAVE_SPAWN_MARGIN_X, y: this.bounds.height * 0.5 },
+    ];
+  }
+
+  getSafeRectPenalty(x, y, radius = 0) {
+    return ASTEROID_SAFE_RECTS.reduce((total, rect) => (
+      total + getRectOverlapDepth(x, y, radius, rect)
+    ), 0);
+  }
+
+  pickWaveAsteroid(size = 3) {
+    let bestCandidate = null;
+    let bestPenalty = Number.POSITIVE_INFINITY;
+
+    for (let attempt = 0; attempt < WAVE_SPAWN_ATTEMPTS; attempt += 1) {
+      const candidate = this.createRandomAsteroid(size);
+      const penalty = this.getSafeRectPenalty(
+        candidate.x,
+        candidate.y,
+        candidate.radius + ASTEROID_SPAWN_SAFE_PADDING,
+      );
+
+      if (penalty === 0) {
+        return candidate;
+      }
+
+      if (penalty < bestPenalty) {
+        bestCandidate = candidate;
+        bestPenalty = penalty;
+      }
+    }
+
+    for (const anchor of this.getSpawnAnchors()) {
+      const candidate = this.createAsteroidEntity(anchor.x, anchor.y, size);
+      const penalty = this.getSafeRectPenalty(
+        candidate.x,
+        candidate.y,
+        candidate.radius + ASTEROID_SPAWN_SAFE_PADDING,
+      );
+
+      if (penalty === 0) {
+        return candidate;
+      }
+
+      if (penalty < bestPenalty) {
+        bestCandidate = candidate;
+        bestPenalty = penalty;
+      }
+    }
+
+    return bestCandidate || this.createAsteroidEntity(
+      this.bounds.width * 0.5,
+      this.bounds.height - WAVE_SPAWN_MARGIN_X,
+      size,
+    );
+  }
+
+  applyShipState(shipState) {
+    if (!shipState || typeof shipState !== 'object') {
+      return;
+    }
+
+    this.ship.x = sanitizeFiniteNumber(shipState.x, this.ship.x);
+    this.ship.y = sanitizeFiniteNumber(shipState.y, this.ship.y);
+    this.ship.vx = sanitizeFiniteNumber(shipState.vx, this.ship.vx);
+    this.ship.vy = sanitizeFiniteNumber(shipState.vy, this.ship.vy);
+    this.ship.angle = sanitizeFiniteNumber(shipState.angle, this.ship.angle);
+    this.ship.invulnerable = Math.max(0, sanitizeFiniteNumber(shipState.invulnerable, this.ship.invulnerable));
+    this.ship.thrusting = sanitizeBoolean(shipState.thrusting, this.ship.thrusting);
   }
 
   startGame() {
@@ -39,6 +215,7 @@ export default class AsteroidsWorld {
     this.respawnDelay = 0;
     this.respawnLocked = false;
     this.fireHeld = false;
+    this.waveClearPending = false;
     this.ufo = null;
     this.ufoBullets = [];
     this.ufoSpawnTimer = this.getUfoSpawnDelay();
@@ -46,38 +223,54 @@ export default class AsteroidsWorld {
   }
 
   createAsteroidFromState(state) {
-    const asteroid = new Asteroid(state.x, state.y, state.size);
-    asteroid.vx = state.vx;
-    asteroid.vy = state.vy;
-    asteroid.angle = state.angle;
-    asteroid.spin = state.spin;
-    asteroid.size = state.size;
-    asteroid.sizeLabel = state.sizeLabel;
-    asteroid.scale = state.scale;
-    asteroid.radius = state.radius;
+    const source = state && typeof state === 'object' ? state : {};
+    const size = sanitizeInteger(source.size, 3, { min: ASTEROID_SIZE_MIN, max: ASTEROID_SIZE_MAX });
+    const asteroid = this.createAsteroidEntity(
+      sanitizeFiniteNumber(source.x, this.bounds.width * 0.5),
+      sanitizeFiniteNumber(source.y, this.bounds.height * 0.5),
+      size,
+    );
+
+    asteroid.vx = sanitizeFiniteNumber(source.vx, asteroid.vx);
+    asteroid.vy = sanitizeFiniteNumber(source.vy, asteroid.vy);
+    asteroid.angle = sanitizeFiniteNumber(source.angle, asteroid.angle);
+    asteroid.spin = sanitizeFiniteNumber(source.spin, asteroid.spin);
+    asteroid.size = size;
+    asteroid.sizeLabel = typeof source.sizeLabel === 'string' ? source.sizeLabel : asteroid.sizeLabel;
+    asteroid.scale = sanitizePositiveNumber(source.scale, asteroid.scale);
+    asteroid.radius = sanitizePositiveNumber(source.radius, asteroid.radius);
     return asteroid;
   }
 
   createBulletFromState(state) {
-    return new Bullet(state.x, state.y, state.vx, state.vy, state.life);
+    const source = state && typeof state === 'object' ? state : {};
+    return new Bullet(
+      sanitizeFiniteNumber(source.x, this.bounds.width * 0.5),
+      sanitizeFiniteNumber(source.y, this.bounds.height * 0.5),
+      sanitizeFiniteNumber(source.vx, 0),
+      sanitizeFiniteNumber(source.vy, 0),
+      Math.max(0, sanitizeFiniteNumber(source.life, 1.1)),
+    );
   }
 
   createUfoFromState(state) {
-    if (!state) {
+    if (!state || typeof state !== 'object') {
       return null;
     }
 
-    const ufo = new Ufo(this.bounds, state.type, state.level ?? this.wave);
-    ufo.direction = state.direction;
-    ufo.x = state.x;
-    ufo.y = state.y;
-    ufo.vx = state.vx;
-    ufo.vy = state.vy;
-    ufo.radius = state.radius;
-    ufo.points = state.points;
-    ufo.turnTimer = state.turnTimer;
-    ufo.fireTimer = state.fireTimer;
-    ufo.alive = state.alive;
+    const type = sanitizeUfoType(state.type);
+    const level = sanitizeInteger(state.level ?? this.wave, this.wave, { min: 1, max: 9999 });
+    const ufo = this.createUfoEntity(type, level);
+    ufo.direction = sanitizeDirection(state.direction, ufo.direction);
+    ufo.x = sanitizeFiniteNumber(state.x, ufo.x);
+    ufo.y = sanitizeFiniteNumber(state.y, ufo.y);
+    ufo.vx = sanitizeFiniteNumber(state.vx, ufo.vx);
+    ufo.vy = sanitizeFiniteNumber(state.vy, ufo.vy);
+    ufo.radius = sanitizePositiveNumber(state.radius, ufo.radius);
+    ufo.points = sanitizeInteger(state.points, ufo.points, { min: 0, max: Number.MAX_SAFE_INTEGER });
+    ufo.turnTimer = Math.max(0, sanitizeFiniteNumber(state.turnTimer, ufo.turnTimer));
+    ufo.fireTimer = Math.max(0, sanitizeFiniteNumber(state.fireTimer, ufo.fireTimer));
+    ufo.alive = sanitizeBoolean(state.alive, ufo.alive);
     return ufo;
   }
 
@@ -88,6 +281,7 @@ export default class AsteroidsWorld {
       respawnDelay: this.respawnDelay,
       respawnLocked: this.respawnLocked,
       fireHeld: this.fireHeld,
+      waveClearPending: this.waveClearPending,
       fireCooldown: this.fireCooldown,
       status: this.status,
       ufoSpawnTimer: this.ufoSpawnTimer,
@@ -144,27 +338,31 @@ export default class AsteroidsWorld {
   }
 
   loadState(state) {
-    if (!state) {
+    if (!state || typeof state !== 'object') {
       this.startGame();
       return;
     }
 
-    this.wave = state.wave ?? 1;
-    this.shipActive = state.shipActive ?? true;
-    this.respawnDelay = state.respawnDelay ?? 0;
-    this.respawnLocked = state.respawnLocked ?? false;
-    this.fireHeld = state.fireHeld ?? false;
-    this.fireCooldown = state.fireCooldown ?? 0;
-    this.status = state.status ?? '';
-    this.ufoSpawnTimer = state.ufoSpawnTimer ?? this.getUfoSpawnDelay();
+    this.wave = sanitizeInteger(state.wave, 1, { min: 1, max: 9999 });
+    this.shipActive = sanitizeBoolean(state.shipActive, true);
+    this.respawnDelay = Math.max(0, sanitizeFiniteNumber(state.respawnDelay, 0));
+    this.respawnLocked = sanitizeBoolean(state.respawnLocked, false);
+    this.fireHeld = sanitizeBoolean(state.fireHeld, false);
+    this.waveClearPending = sanitizeBoolean(state.waveClearPending, false);
+    this.fireCooldown = Math.max(0, sanitizeFiniteNumber(state.fireCooldown, 0));
+    this.status = sanitizeStatus(state.status, '');
+    this.ufoSpawnTimer = Math.max(0, sanitizeFiniteNumber(state.ufoSpawnTimer, this.getUfoSpawnDelay()));
 
     this.ship.reset();
-    Object.assign(this.ship, state.ship ?? {});
+    this.applyShipState(state.ship);
 
-    this.asteroids = (state.asteroids ?? []).map((asteroid) => this.createAsteroidFromState(asteroid));
-    this.bullets = (state.bullets ?? []).map((bullet) => this.createBulletFromState(bullet));
-    this.ufoBullets = (state.ufoBullets ?? []).map((bullet) => this.createBulletFromState(bullet));
+    this.asteroids = sanitizeArray(state.asteroids).map((asteroid) => this.createAsteroidFromState(asteroid));
+    this.bullets = sanitizeArray(state.bullets).map((bullet) => this.createBulletFromState(bullet));
+    this.ufoBullets = sanitizeArray(state.ufoBullets).map((bullet) => this.createBulletFromState(bullet));
     this.ufo = this.createUfoFromState(state.ufo);
+    if (!this.ufo || this.asteroids.length > 0) {
+      this.waveClearPending = false;
+    }
   }
 
   getWaveAsteroidCount() {
@@ -176,7 +374,7 @@ export default class AsteroidsWorld {
   }
 
   getUfoSpawnDelay() {
-    return randomRange(7, 12);
+    return randomRange(7, 12, this.rng);
   }
 
   isInsideSafeRect(x, y, radius = 0) {
@@ -189,25 +387,10 @@ export default class AsteroidsWorld {
   }
 
   createWave(count = this.getWaveAsteroidCount()) {
-    return Array.from({ length: count }, () => {
-      let asteroid = null;
-      for (let attempt = 0; attempt < 40; attempt += 1) {
-        const candidate = new Asteroid(
-          randomRange(80, this.bounds.width - 80),
-          randomRange(120, this.bounds.height - 80),
-          3,
-        );
-        if (!this.isInsideSafeRect(candidate.x, candidate.y, candidate.radius + 24)) {
-          asteroid = candidate;
-          break;
-        }
-      }
+    const safeCount = sanitizeInteger(count, this.getWaveAsteroidCount(), { min: 1, max: 50 });
 
-      asteroid ||= new Asteroid(
-        randomRange(80, this.bounds.width - 80),
-        randomRange(160, this.bounds.height - 80),
-        3,
-      );
+    return Array.from({ length: safeCount }, () => {
+      const asteroid = this.pickWaveAsteroid(3);
       asteroid.vx *= this.getWaveSpeedMultiplier();
       asteroid.vy *= this.getWaveSpeedMultiplier();
       asteroid.spin *= 1 + (this.wave - 1) * 0.08;
@@ -221,6 +404,7 @@ export default class AsteroidsWorld {
     this.respawnDelay = 0;
     this.respawnLocked = false;
     this.fireHeld = false;
+    this.waveClearPending = false;
     this.bullets = [];
     this.ufoBullets = [];
     this.ufo = null;
@@ -282,17 +466,6 @@ export default class AsteroidsWorld {
     return true;
   }
 
-  maybeSpawnUfo() {
-    if (this.ufo || this.asteroids.length === 0) {
-      return;
-    }
-
-    this.ufoSpawnTimer -= 0;
-    const type = this.wave >= 3 ? 'small' : 'large';
-    this.ufo = new Ufo(this.bounds, type, this.wave);
-    this.status = type === 'small' ? 'Small saucer inbound.' : 'Large saucer inbound.';
-  }
-
   getUfoTarget() {
     if (!this.ufo) {
       return null;
@@ -337,26 +510,43 @@ export default class AsteroidsWorld {
     return true;
   }
 
+  advanceWave() {
+    this.wave += 1;
+    this.status = `Wave ${this.wave - 1} cleared. Wave ${this.wave} inbound.`;
+    this.asteroids = this.createWave();
+    this.ufo = null;
+    this.ufoBullets = [];
+    this.ufoSpawnTimer = this.getUfoSpawnDelay();
+    this.waveClearPending = false;
+    return true;
+  }
+
+  handleAsteroidFieldCleared() {
+    if (this.asteroids.length > 0) {
+      return false;
+    }
+
+    if (this.ufo && this.ufo.alive) {
+      this.waveClearPending = true;
+      this.ufoBullets = [];
+      this.status = 'Asteroids cleared. Waiting for saucer to clear.';
+      return false;
+    }
+
+    return this.advanceWave();
+  }
+
   splitAsteroid(index) {
     const asteroid = this.asteroids[index];
     this.asteroids.splice(index, 1);
     const points = asteroid.size === 3 ? 20 : asteroid.size === 2 ? 50 : 100;
 
     if (asteroid.size > 1) {
-      this.asteroids.push(new Asteroid(asteroid.x, asteroid.y, asteroid.size - 1));
-      this.asteroids.push(new Asteroid(asteroid.x, asteroid.y, asteroid.size - 1));
+      this.asteroids.push(this.createAsteroidEntity(asteroid.x, asteroid.y, asteroid.size - 1));
+      this.asteroids.push(this.createAsteroidEntity(asteroid.x, asteroid.y, asteroid.size - 1));
     }
 
-    let waveCleared = false;
-    if (this.asteroids.length === 0 && !this.ufo) {
-      this.wave += 1;
-      this.status = `Wave ${this.wave - 1} cleared. Wave ${this.wave} inbound.`;
-      this.asteroids = this.createWave();
-      this.ufo = null;
-      this.ufoBullets = [];
-      this.ufoSpawnTimer = this.getUfoSpawnDelay();
-      waveCleared = true;
-    }
+    const waveCleared = this.handleAsteroidFieldCleared();
     return {
       points,
       waveCleared,
@@ -383,41 +573,49 @@ export default class AsteroidsWorld {
       sfx: [],
     };
 
+    const safeDtSeconds = Number.isFinite(dtSeconds)
+      ? Math.max(0, dtSeconds)
+      : 0;
+
     if (this.shipActive) {
-      this.ship.update(dtSeconds, this.bounds, input);
+      this.ship.update(safeDtSeconds, this.bounds, input);
     } else {
       if (!this.respawnLocked) {
-        this.respawnDelay = Math.max(0, this.respawnDelay - dtSeconds);
+        this.respawnDelay = Math.max(0, this.respawnDelay - safeDtSeconds);
       }
       events.shipRespawned = this.tryRespawn();
     }
 
     const firePressed = !!input?.isDown('Space');
-    this.fireCooldown = Math.max(0, this.fireCooldown - dtSeconds);
-    if (this.shipActive && firePressed && !this.fireHeld && this.fireCooldown === 0) {
+    this.fireCooldown = Math.max(0, this.fireCooldown - safeDtSeconds);
+    if (this.shipActive && firePressed && !this.fireHeld && this.fireCooldown <= 0) {
       if (this.fire()) {
         events.sfx.push('fire');
       }
     }
     this.fireHeld = firePressed;
 
-    this.bullets.forEach((bullet) => bullet.update(dtSeconds, this.bounds));
+    this.bullets.forEach((bullet) => bullet.update(safeDtSeconds, this.bounds));
     this.bullets = this.bullets.filter((bullet) => bullet.isAlive());
 
-    this.asteroids.forEach((asteroid) => asteroid.update(dtSeconds, this.bounds));
+    this.asteroids.forEach((asteroid) => asteroid.update(safeDtSeconds, this.bounds));
 
     if (this.shipActive) {
-      this.ufoSpawnTimer -= dtSeconds;
+      this.ufoSpawnTimer -= safeDtSeconds;
     }
-    if (this.shipActive && !this.ufo && this.ufoSpawnTimer <= 0) {
+    if (this.shipActive && this.asteroids.length > 0 && !this.waveClearPending && !this.ufo && this.ufoSpawnTimer <= 0) {
       const type = this.wave >= 3 ? 'small' : 'large';
-      this.ufo = new Ufo(this.bounds, type, this.wave);
+      this.ufo = this.createUfoEntity(type, this.wave);
       this.status = type === 'small' ? 'Small saucer inbound.' : 'Large saucer inbound.';
     }
 
     if (this.ufo) {
-      this.ufo.update(dtSeconds);
-      if (this.ufo.alive && this.shipActive && this.ufo.canFire()) {
+      if (this.waveClearPending) {
+        this.ufo.vy = 0;
+        this.ufo.turnTimer = Number.POSITIVE_INFINITY;
+      }
+      this.ufo.update(safeDtSeconds);
+      if (this.ufo.alive && this.shipActive && !this.waveClearPending && this.ufo.canFire()) {
         const target = this.getUfoTarget();
         if (target) {
           this.ufoBullets.push(this.ufo.fireAt(target));
@@ -426,17 +624,11 @@ export default class AsteroidsWorld {
       if (!this.ufo.alive) {
         this.ufo = null;
         this.ufoSpawnTimer = this.getUfoSpawnDelay();
-        if (this.asteroids.length === 0) {
-          this.wave += 1;
-          this.status = `Wave ${this.wave - 1} cleared. Wave ${this.wave} inbound.`;
-          this.asteroids = this.createWave();
-          this.ufoBullets = [];
-          events.waveCleared = true;
-        }
+        events.waveCleared = events.waveCleared || this.handleAsteroidFieldCleared();
       }
     }
 
-    this.ufoBullets.forEach((bullet) => bullet.update(dtSeconds, this.bounds));
+    this.ufoBullets.forEach((bullet) => bullet.update(safeDtSeconds, this.bounds));
     this.ufoBullets = this.ufoBullets.filter((bullet) => bullet.isAlive());
 
     if (this.ufo) {
@@ -455,9 +647,13 @@ export default class AsteroidsWorld {
           });
           this.ufo = null;
           this.ufoSpawnTimer = this.getUfoSpawnDelay();
+          const waveClearedNow = this.handleAsteroidFieldCleared();
+          events.waveCleared = events.waveCleared || waveClearedNow;
           events.sfx.push(result.points === 20 ? 'bangLarge' : result.points === 50 ? 'bangMedium' : 'bangSmall');
           events.sfx.push('bangMedium');
-          this.status = 'Saucer and asteroid destroyed on impact.';
+          if (!waveClearedNow) {
+            this.status = 'Saucer and asteroid destroyed on impact.';
+          }
           break;
         }
       }
@@ -480,7 +676,11 @@ export default class AsteroidsWorld {
         events.sfx.push(this.ufo.type === 'small' ? 'bangSmall' : 'bangMedium');
         this.ufo = null;
         this.ufoSpawnTimer = this.getUfoSpawnDelay();
-        this.status = 'Saucer destroyed.';
+        const waveClearedNow = this.handleAsteroidFieldCleared();
+        events.waveCleared = events.waveCleared || waveClearedNow;
+        if (!waveClearedNow) {
+          this.status = 'Saucer destroyed.';
+        }
         continue;
       }
 
@@ -534,8 +734,12 @@ export default class AsteroidsWorld {
           });
           this.ufo = null;
           this.ufoSpawnTimer = this.getUfoSpawnDelay();
+          const waveClearedNow = this.handleAsteroidFieldCleared();
+          events.waveCleared = events.waveCleared || waveClearedNow;
           events.sfx.push('bangMedium');
-          this.status = 'Saucer destroyed by crossfire.';
+          if (!waveClearedNow) {
+            this.status = 'Saucer destroyed by crossfire.';
+          }
           break;
         }
       }
@@ -568,6 +772,8 @@ export default class AsteroidsWorld {
       });
       this.ufo = null;
       this.ufoSpawnTimer = this.getUfoSpawnDelay();
+      const waveClearedNow = this.handleAsteroidFieldCleared();
+      events.waveCleared = events.waveCleared || waveClearedNow;
       this.destroyShip();
       events.shipDestroyed = true;
       events.sfx.push('bangLarge');

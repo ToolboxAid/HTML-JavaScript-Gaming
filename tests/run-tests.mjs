@@ -10,6 +10,7 @@ import { run as runConfigStore } from './config/ConfigStore.test.mjs';
 import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
 import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
+import { run as runAsteroidsHardening } from './games/AsteroidsHardening.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runFullscreenService } from './final/FullscreenService.test.mjs';
 import { run as runPlatformUxSystems } from './final/PlatformUxSystems.test.mjs';
@@ -47,6 +48,7 @@ const tests = [
     ['ReleaseReadinessSystems', runReleaseReadinessSystems],
     ['FrameClock', runFrameClock],
     ['RuntimeMetrics', runRuntimeMetrics],
+    ['AsteroidsHardening', runAsteroidsHardening],
     ['Combat', runCombat],
     ['Entity', runEntity],
     ['EventBus', runEventBus],

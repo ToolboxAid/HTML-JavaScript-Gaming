@@ -27,8 +27,9 @@ function whiteWithAlpha(alpha) {
 }
 
 export default class ShipDebrisSystem {
-  constructor() {
+  constructor({ rng = Math.random } = {}) {
     this.fragments = [];
+    this.rng = typeof rng === 'function' ? rng : Math.random;
   }
 
   spawn({ x, y, angle = -Math.PI / 2, vx = 0, vy = 0, lifeSeconds = 3 }) {
@@ -40,9 +41,9 @@ export default class ShipDebrisSystem {
       this.fragments.push({
         x,
         y,
-        vx: vx + Math.cos(burstAngle) * speed + randomRange(-18, 18),
-        vy: vy + Math.sin(burstAngle) * speed + randomRange(-18, 18),
-        spin: randomRange(-4.4, 4.4),
+        vx: vx + Math.cos(burstAngle) * speed + randomRange(-18, 18, this.rng),
+        vy: vy + Math.sin(burstAngle) * speed + randomRange(-18, 18, this.rng),
+        spin: randomRange(-4.4, 4.4, this.rng),
         angle: 0,
         lifeSeconds,
         maxLifeSeconds: lifeSeconds,
