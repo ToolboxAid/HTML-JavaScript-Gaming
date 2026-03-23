@@ -3,27 +3,32 @@ David Quesenberry
 03/23/2026
 README.md
 
-# PLAN_PR — Engine Boundary Cleanup Step 2 (Static Global Reduction)
+# BUILD_PR — Engine Boundary Cleanup Step 2A (Engine Time Composition)
 
 ## Purpose
-Define the next surgical PR after Step 1 adapter seams.
+Implement the first Step 2 follow-up from the approved static-global audit.
 
 ## Goal
-Reduce the remaining architecture risk caused by shared static/global engine state.
+Replace raw loop timing state inside `Engine` with composition over:
+- `engine/core/FrameClock.js`
+- `engine/core/FixedTicker.js`
 
-## Primary Targets
-- `engine/core/canvasUtils.js`
-- `engine/core/fullscreen.js`
-- `engine/core/performanceMonitor.js`
-- `engine/core/timer.js`
-- `engine/events/eventBus.js`
+## Scope
+- `engine/core/Engine.js`
+- `engine/core/FrameClock.js` (only if needed for safe Engine composition)
+- `engine/core/FixedTicker.js` (only if needed for safe Engine composition)
+- focused engine timing tests
+- test runner updates only if required
 
 ## Constraints
 - No gameplay changes
-- No broad rewrite
-- No scene/system redesign in this step
-- No engine API churn beyond justified seams
-- Planning/audit only in this PR
+- No rendering changes
+- No fullscreen work in this PR
+- No CanvasSurface work in this PR
+- Do not merge `FrameClock` and `FixedTicker`
+- Preserve current update loop semantics
 
 ## Expected Outcome
-Codex classifies global/static ownership debt, identifies which pieces should become injected services vs remain utilities, and proposes the smallest safe BUILD_PR order.
+- `Engine` stops owning raw loop timing bookkeeping directly
+- `Engine` delegates timing to `FrameClock` and `FixedTicker`
+- focused tests prove no behavior change in delta clamping and fixed-step catch-up

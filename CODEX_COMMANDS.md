@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Audit engine/core/canvasUtils.js, engine/core/fullscreen.js, engine/core/performanceMonitor.js, engine/core/timer.js, and engine/events/eventBus.js plus their direct callers. Classify each target as KEEP_STATIC_UTILITY, INJECTABLE_SERVICE_CANDIDATE, MIXED_SPLIT_REQUIRED, or LEGACY_GLOBAL_DEBT. Write findings and the smallest safe implementation order into docs/prs/PR-ENGINE-BOUNDARY-CLEANUP-STEP2-STATIC-GLOBALS/PLAN.md and TASKS.md. Do not modify runtime source files.
+COMMAND: Implement PR-ENGINE-BOUNDARY-CLEANUP-STEP2A-ENGINE-TIME-COMPOSITION. Refactor engine/core/Engine.js to compose with engine/core/FrameClock.js and engine/core/FixedTicker.js instead of owning raw timing bookkeeping directly. Add focused engine timing tests for delta clamping and fixed-step catch-up. Do not merge FrameClock and FixedTicker. Do not change gameplay, rendering, fullscreen, canvas ownership, or unrelated files.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that only docs/prs/PR-ENGINE-BOUNDARY-CLEANUP-STEP2-STATIC-GLOBALS/PLAN.md and TASKS.md were edited and that no runtime source files changed.
+COMMAND: Verify that Engine now composes with FrameClock and FixedTicker, that focused engine timing tests were added, and that no unrelated engine subsystems were changed.

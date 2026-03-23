@@ -6,6 +6,8 @@ Engine.js
 */
 import { CanvasRenderer } from '../render/index.js';
 import RuntimeMetrics from './RuntimeMetrics.js';
+import FrameClock from './FrameClock.js';
+import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
 import { FullscreenService } from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
@@ -13,7 +15,20 @@ import { Logger } from '../logging/index.js';
 import { SettingsSystem } from '../release/index.js';
 
 export default class Engine {
-  constructor({ canvas, width = 960, height = 540, fixedStepMs = 1000 / 60, input = null, events = null, metrics = null, fullscreen = null, audio = null, logger = null } = {}) {
+  constructor({
+    canvas,
+    width = 960,
+    height = 540,
+    fixedStepMs = 1000 / 60,
+    input = null,
+    events = null,
+    metrics = null,
+    frameClock = null,
+    fixedTicker = null,
+    fullscreen = null,
+    audio = null,
+    logger = null,
+  } = {}) {
     if (!canvas) {
       throw new Error('Engine requires a canvas.');
     }
@@ -27,6 +42,11 @@ export default class Engine {
     this.input = input;
     this.events = events || new EventBus();
     this.metrics = metrics || new RuntimeMetrics();
+    this.frameClock = frameClock || new FrameClock({ maxDeltaMs: Number.POSITIVE_INFINITY });
+    this.fixedTicker = fixedTicker || new FixedTicker({
+      stepMs: fixedStepMs,
+      maxCatchUpSteps: Number.POSITIVE_INFINITY,
+    });
     this.fullscreen = fullscreen || new FullscreenService({ target: canvas });
     this.audio = audio || new AudioService();
     this.logger = logger || new Logger({ channel: 'engine' });
@@ -42,8 +62,6 @@ export default class Engine {
     this.fixedStepSeconds = fixedStepMs / 1000;
     this.scene = null;
 
-    this.lastTime = 0;
-    this.accumulator = 0;
     this.rafId = null;
 
     this.tick = this.tick.bind(this);
@@ -65,7 +83,8 @@ export default class Engine {
       this.fullscreen.attach(this.canvas);
     }
 
-    this.lastTime = performance.now();
+    this.frameClock.reset();
+    this.fixedTicker.reset();
     this.rafId = requestAnimationFrame(this.tick);
   }
 
@@ -84,30 +103,26 @@ export default class Engine {
   }
 
   tick(now) {
-    const deltaMs = now - this.lastTime;
+    const { deltaMs, deltaSeconds } = this.frameClock.tick(now);
     const frameStart = performance.now();
-    this.lastTime = now;
-    this.accumulator += deltaMs;
     let updateDurationMs = 0;
     let renderDurationMs = 0;
     let fixedUpdates = 0;
 
     if (this.input && typeof this.input.update === 'function') {
-      this.input.update(deltaMs / 1000);
+      this.input.update(deltaSeconds);
     }
     if (this.audio && typeof this.audio.update === 'function') {
-      this.audio.update(deltaMs / 1000);
+      this.audio.update(deltaSeconds);
     }
 
     const updateStart = performance.now();
-    while (this.accumulator >= this.fixedStepMs) {
+    const tickerResult = this.fixedTicker.advance(deltaMs, (stepSeconds) => {
       if (this.scene && typeof this.scene.update === 'function') {
-        this.scene.update(this.fixedStepSeconds, this);
+        this.scene.update(stepSeconds, this);
       }
-
-      this.accumulator -= this.fixedStepMs;
-      fixedUpdates += 1;
-    }
+    });
+    fixedUpdates = tickerResult.steps;
     updateDurationMs = performance.now() - updateStart;
 
     const renderStart = performance.now();
@@ -117,7 +132,7 @@ export default class Engine {
     renderDurationMs = performance.now() - renderStart;
 
     this.metrics.recordFrame({
-      dtSeconds: deltaMs / 1000,
+      dtSeconds: deltaSeconds,
       frameMs: performance.now() - frameStart,
       updateMs: updateDurationMs,
       renderMs: renderDurationMs,

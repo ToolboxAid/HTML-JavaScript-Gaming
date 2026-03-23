@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-docs: plan engine boundary cleanup step 2 static global reduction
+engine: compose Engine timing with FrameClock and FixedTicker
