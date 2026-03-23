@@ -5,3 +5,4 @@ David Quesenberry
 index.js
 */
 export { clamp } from './math.js';
+export { distance, wrap, randomRange } from './math.js';

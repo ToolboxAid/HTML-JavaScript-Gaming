@@ -4,24 +4,14 @@ David Quesenberry
 03/22/2026
 math.js
 */
+import { randomRange as sharedRandomRange, wrap as sharedWrap } from '../../../engine/utils/math.js';
+
 export const TAU = Math.PI * 2;
 
 export function wrap(value, max) {
-  if (value < 0) {
-    return value + max;
-  }
-  if (value > max) {
-    return value - max;
-  }
-  return value;
-}
-
-export function distance(a, b) {
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  return Math.sqrt(dx * dx + dy * dy);
+  return sharedWrap(value, 0, max);
 }
 
 export function randomRange(min, max) {
-  return min + Math.random() * (max - min);
+  return sharedRandomRange(min, max);
 }

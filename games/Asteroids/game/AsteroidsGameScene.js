@@ -19,6 +19,7 @@ const SCORE_ONE_X = 136;
 const HIGH_SCORE_X = 480;
 const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
+const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const LIFE_ICON_POINTS = [
   [14, 0],
   [-10, -8],
@@ -317,6 +318,7 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     if (this.isPaused && this.session.mode === 'playing') {
+      renderer.drawRect(0, 0, this.world.bounds.width, this.world.bounds.height, PAUSE_OVERLAY_COLOR);
       renderer.drawText('PAUSED', 480, 360, {
         color: '#ffffff',
         font: `36px ${HUD_FONT}`,

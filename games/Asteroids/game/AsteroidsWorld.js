@@ -9,7 +9,8 @@ import Bullet from '../entities/Bullet.js';
 import Ship from '../entities/Ship.js';
 import Ufo from '../entities/Ufo.js';
 import { arePolygonsColliding } from '../../../engine/collision/polygon.js';
-import { distance, randomRange } from '../utils/math.js';
+import { distance } from '../../../engine/utils/math.js';
+import { randomRange } from '../utils/math.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];
 const RESPAWN_SAFE_DISTANCE = 100;
