@@ -6,6 +6,7 @@ Ufo.js
 */
 import Bullet from './Bullet.js';
 import { distance } from '../../../engine/utils/math.js';
+import { transformPoints } from '../../../engine/vector/index.js';
 import { randomRange } from '../utils/math.js';
 
 const UFO_PROFILES = {
@@ -27,14 +28,14 @@ const UFO_PROFILES = {
 
 const VECTOR_MAPS = {
   small: [
-    [-14, 3], [14, 3], [9, 9], [-9, 9], [-14, 3], [-9, -3],
-    [-5, -3], [-5, -6], [-2, -9], [2, -9], [5, -6], [5, -3], [-5, -3],
-    [9, -3], [14, 3],
+    { x: -14, y: 3 }, { x: 14, y: 3 }, { x: 9, y: 9 }, { x: -9, y: 9 }, { x: -14, y: 3 }, { x: -9, y: -3 },
+    { x: -5, y: -3 }, { x: -5, y: -6 }, { x: -2, y: -9 }, { x: 2, y: -9 }, { x: 5, y: -6 }, { x: 5, y: -3 }, { x: -5, y: -3 },
+    { x: 9, y: -3 }, { x: 14, y: 3 },
   ],
   large: [
-    [-21, 4.5], [21, 4.5], [13.5, 13.5], [-13.5, 13.5], [-21, 4.5], [-13.5, -4.5],
-    [-7.5, -4.5], [-7.5, -9], [-3, -13.5], [3, -13.5], [7.5, -9], [7.5, -4.5], [-7.5, -4.5],
-    [13.5, -4.5], [21, 4.5],
+    { x: -21, y: 4.5 }, { x: 21, y: 4.5 }, { x: 13.5, y: 13.5 }, { x: -13.5, y: 13.5 }, { x: -21, y: 4.5 }, { x: -13.5, y: -4.5 },
+    { x: -7.5, y: -4.5 }, { x: -7.5, y: -9 }, { x: -3, y: -13.5 }, { x: 3, y: -13.5 }, { x: 7.5, y: -9 }, { x: 7.5, y: -4.5 }, { x: -7.5, y: -4.5 },
+    { x: 13.5, y: -4.5 }, { x: 21, y: 4.5 },
   ],
 };
 
@@ -107,10 +108,10 @@ export default class Ufo {
   }
 
   getCollisionPolygon() {
-    return VECTOR_MAPS[this.type].map(([x, y]) => ({
-      x: this.x + x,
-      y: this.y + y,
-    }));
+    return transformPoints(VECTOR_MAPS[this.type], {
+      x: this.x,
+      y: this.y,
+    });
   }
 
   getBodyLines() {

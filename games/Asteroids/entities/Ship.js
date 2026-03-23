@@ -5,22 +5,16 @@ David Quesenberry
 Ship.js
 */
 import { wrap } from '../utils/math.js';
+import { transformPoints } from '../../../engine/vector/index.js';
 
 const SMALL_VECTOR_MAP = [
-  [14, 0],
-  [-10, -8],
-  [-6, -3],
-  [-6, 3],
-  [-10, 8],
-  [14, 0],
+  { x: 14, y: 0 },
+  { x: -10, y: -8 },
+  { x: -6, y: -3 },
+  { x: -6, y: 3 },
+  { x: -10, y: 8 },
+  { x: 14, y: 0 },
 ];
-
-function rotatePoint(x, y, angle) {
-  return {
-    x: x * Math.cos(angle) - y * Math.sin(angle),
-    y: x * Math.sin(angle) + y * Math.cos(angle),
-  };
-}
 
 export default class Ship {
   constructor(x, y) {
@@ -61,12 +55,10 @@ export default class Ship {
   }
 
   getPoints() {
-    return SMALL_VECTOR_MAP.map(([x, y]) => {
-      const rotated = rotatePoint(x, y, this.angle);
-      return {
-        x: this.x + rotated.x,
-        y: this.y + rotated.y,
-      };
+    return transformPoints(SMALL_VECTOR_MAP, {
+      x: this.x,
+      y: this.y,
+      rotation: this.angle,
     });
   }
 

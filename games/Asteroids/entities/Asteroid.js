@@ -5,32 +5,33 @@ David Quesenberry
 Asteroid.js
 */
 import { TAU, randomRange, wrap } from '../utils/math.js';
+import { transformPoints } from '../../../engine/vector/index.js';
 
 const BASE_VECTOR_MAP = [
-  [10, 40],
-  [50, 20],
-  [45, 5],
-  [25, -10],
-  [50, -35],
-  [30, -45],
-  [10, -38],
-  [-20, -45],
-  [-43, -18],
-  [-43, 20],
-  [-25, 20],
-  [-25, 40],
+  { x: 10, y: 40 },
+  { x: 50, y: 20 },
+  { x: 45, y: 5 },
+  { x: 25, y: -10 },
+  { x: 50, y: -35 },
+  { x: 30, y: -45 },
+  { x: 10, y: -38 },
+  { x: -20, y: -45 },
+  { x: -43, y: -18 },
+  { x: -43, y: 20 },
+  { x: -25, y: 20 },
+  { x: -25, y: 40 },
 ];
 
 function centerVectorMap(points) {
-  const xs = points.map(([x]) => x);
-  const ys = points.map(([, y]) => y);
+  const xs = points.map(({ x }) => x);
+  const ys = points.map(({ y }) => y);
   const centerX = (Math.min(...xs) + Math.max(...xs)) / 2;
   const centerY = (Math.min(...ys) + Math.max(...ys)) / 2;
-  return points.map(([x, y]) => [x - centerX, y - centerY]);
+  return points.map(({ x, y }) => ({ x: x - centerX, y: y - centerY }));
 }
 
 function maxRadius(points) {
-  return Math.max(...points.map(([x, y]) => Math.sqrt(x * x + y * y)));
+  return Math.max(...points.map(({ x, y }) => Math.sqrt(x * x + y * y)));
 }
 
 const CENTERED_VECTOR_MAP = centerVectorMap(BASE_VECTOR_MAP);
@@ -70,13 +71,11 @@ export default class Asteroid {
   }
 
   getPoints() {
-    return CENTERED_VECTOR_MAP.map(([x, y]) => {
-      const scaledX = x * this.scale;
-      const scaledY = y * this.scale;
-      return {
-        x: this.x + scaledX * Math.cos(this.angle) - scaledY * Math.sin(this.angle),
-        y: this.y + scaledX * Math.sin(this.angle) + scaledY * Math.cos(this.angle),
-      };
+    return transformPoints(CENTERED_VECTOR_MAP, {
+      x: this.x,
+      y: this.y,
+      rotation: this.angle,
+      scale: this.scale,
     });
   }
 }

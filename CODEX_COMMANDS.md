@@ -8,9 +8,9 @@ CODEX_COMMANDS.md
 ## Primary execution
 MODEL: GPT-5.4
 REASONING: high
-COMMAND: Implement PR-ASTEROIDS-VALIDATION-PHASE2-COLLISION-TIMING-STRESS. Stress-test games/Asteroids/ for collision correctness, wave progression stability, respawn safety, and timing consistency under load. Add focused stress and validation tests. Apply only minimal runtime fixes directly tied to failures. Do not perform promotion/extraction or broad refactors.
+COMMAND: Implement PR-ASTEROIDS-PROMOTION-PHASE1-VECTOR-TRANSFORMS. Replace Asteroids-local vector/point transform helpers with existing engine/vector support where already proven reusable. Keep the promotion narrow: do not promote HUD, session, persistence, menu, score, or one-off gameplay geometry policy. Add only minimal compatibility glue if strictly required and preserve runtime behavior.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify that collision, timing, and stress validation is present, fixes are minimal, and no unrelated changes were introduced.
+COMMAND: Verify that Asteroids now uses engine/vector for the promoted transform behavior, that gameplay behavior is unchanged, and that no unrelated logic was promoted.

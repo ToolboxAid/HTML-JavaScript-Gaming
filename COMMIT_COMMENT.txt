@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-games: validate asteroids collision, timing, and stress behavior
+games: promote asteroids vector transforms onto engine/vector

@@ -3,33 +3,30 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Asteroids Validation Phase 2 (Collision + Timing Stress)
+# BUILD_PR — Asteroids Promotion Phase 1 (Vector Transforms)
 
 ## Purpose
-Validate engine stability under gameplay stress using Asteroids.
+Execute the first controlled promotion pass now that engine cleanup, stabilization, and validation are complete.
 
 ## Goal
-Prove engine correctness under pressure for:
-- collision handling
-- wave progression
-- respawn safety
-- timing consistency under load
+Replace Asteroids-local vector/point transform helpers with existing `engine/vector` capabilities where already proven reusable.
 
 ## Scope
 - `games/Asteroids/`
-- focused stress and validation tests
-- minimal engine/runtime fixes only if required
+- `engine/vector/`
+- direct tests affected by the promotion
 - `tests/run-tests.mjs` only if required
 
 ## Constraints
-- No promotion/extraction
-- No broad refactors
-- No gameplay feature expansion
-- Prefer tests and validation over code changes
-- Runtime fixes must be minimal and directly tied to failures
+- No broad math refactor
+- No gameplay changes
+- No UI/HUD/session extraction
+- No promotion of one-off game-feel logic
+- Prefer adoption of existing engine utilities over creating new abstractions
+- Keep schema/session/HUD rules local to Asteroids
 
 ## Expected Outcome
-- collision system is stable under load
-- wave progression does not break under stress
-- respawn logic is safe under rapid transitions
-- timing remains consistent under heavy update loops
+- Asteroids uses engine-owned vector transform helpers where appropriate
+- duplicate local transform logic is reduced
+- behavior remains unchanged
+- promotion stays narrow and proven
