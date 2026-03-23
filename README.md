@@ -3,33 +3,24 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Gravity Well Promotion (Reusable Vector/Force Helpers, Single Step)
+# PLAN_PR — Relocate Shared Layout CSS to engine/ui
 
 ## Purpose
-Perform one tightly scoped promotion pass to extract only the Gravity Well vector/force helpers that are clearly reusable.
+Create a small, low-risk plan to move the shared sample/game page layout CSS into a clearer engine-owned location.
 
 ## Goal
-- identify already-proven generic vector/force helpers inside `games/GravityWell/`
-- move only the clearly reusable portion into `engine/`
-- keep gameplay policy, tuning, and game-specific rules local
-- complete the promotion in one safe step
+- relocate `/samples/_shared/sampleLayout.css`
+- update all references from samples and games
+- keep layout ownership clear and enforceable
+- avoid mixing runtime engine code with sample/game duplication
 
-## Scope
-- `games/GravityWell/`
-- `engine/vector/` and/or another already-relevant engine utility area only if strictly justified
-- focused tests affected by the promotion
-- `tests/run-tests.mjs` only if required
+## Naming Recommendation
+Preferred file name: `sampleLayout.css`
 
-## Constraints
-- Single-step promotion only
-- No engine redesign
-- No gameplay changes
-- No speculative abstraction
-- No promotion of win/loss rules, level logic, UI, or game tuning
-- Prefer adoption of existing engine/vector patterns over new subsystem creation
+Reason:
+- it describes exactly what the file is used for today
+- it avoids over-generalizing a dev/demo page scaffold into a universal “base” layout
+- `baseLayout.css` sounds broader and more foundational than the current use justifies
 
 ## Expected Outcome
-- only clearly reusable vector/force helpers are promoted
-- Gravity Well adopts the promoted engine helper(s)
-- behavior remains unchanged
-- promotion stays narrow, proven, and mechanical
+A small BUILD_PR that moves the CSS to `engine/ui/sampleLayout.css`, updates references, and preserves behavior.

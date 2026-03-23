@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-games: promote only clearly reusable gravity well vector/force helpers
+ui: relocate shared sample layout css to engine/ui
