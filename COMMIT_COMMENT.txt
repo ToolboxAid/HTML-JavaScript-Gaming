@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-samples: consolidate late bootstrap flow and resolve sample183 truthfully
+samples: remove unnecessary sample183 and apply final polish

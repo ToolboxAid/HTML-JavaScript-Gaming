@@ -3,31 +3,31 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Sample Consolidation Phase 1 (Late Bootstrap + Sample183)
+# BUILD_PR — Final Polish + Remove Unnecessary Sample183
 
 ## Purpose
-Clean up late-sample duplication and resolve the empty Sample183 endpoint without pushing sample infrastructure into engine.
+Complete the final low-risk polish pass and remove the unnecessary `samples/sample183-asteroids-game/` endpoint if it is no longer needed.
 
 ## Goal
-Consolidate repeated late-sample bootstrap patterns into sample-owned shared infrastructure and either wire or resolve `sample183-asteroids-game` in a truthful, low-risk way.
+- tighten repo polish without introducing engine/runtime drift
+- remove `sample183-asteroids-game` if it is unnecessary or misleading
+- keep `samples/index.html` truthful
+- leave the repo cleaner and more release-ready
 
 ## Scope
-- `samples/sample90+` bootstrap entry files where repetition is real
-- `samples/_shared/` sample-owned helpers if needed
 - `samples/sample183-asteroids-game/`
-- direct sample tests or validation only if needed
-- `samples/index.html` if required to keep the ladder truthful
+- `samples/index.html`
+- docs/readme/meta polish only where clearly justified
+- no engine/runtime/gameplay changes
 
 ## Constraints
-- No engine promotion in this PR
+- No engine changes
 - No gameplay changes
-- No broad historical sample rewrite
-- Keep consolidation in sample infrastructure, not engine
-- Prefer small shared helper adoption over new framework layers
-- Sample183 must become truthful: real bridge or removal/redirect, not a fake placeholder
+- No promotion/extraction work
+- No broad docs rewrite
+- Prefer deletion over placeholder if Sample183 adds no real value
 
 ## Expected Outcome
-- repeated late-sample bootstrap code is reduced
-- sample infrastructure stays outside engine
-- Sample183 is no longer an empty misleading endpoint
-- sample ladder remains truthful and maintainable
+- Sample183 is removed if unnecessary
+- sample index and repo references stay accurate
+- final polish remains small, truthful, and low risk
