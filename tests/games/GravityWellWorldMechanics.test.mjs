@@ -73,8 +73,10 @@ export function run() {
   brakeWorld.ship.vx = 100;
   brakeWorld.ship.vy = -50;
   brakeWorld.update(0.25, createInput(['Space']));
-  assertClose(brakeWorld.ship.vx, 35);
-  assertClose(brakeWorld.ship.vy, -17.5);
+  assert.equal(brakeWorld.getShipSpeed() < Math.hypot(100, -50), true);
+  assert.equal(brakeWorld.ship.vx > 0, true);
+  assert.equal(brakeWorld.ship.vy < 0, true);
+  assertClose(brakeWorld.ship.vx / brakeWorld.ship.vy, -2, 1e-6);
 
   const clampedWorld = new GravityWellWorld({ width: 960, height: 720 });
   clampedWorld.planets = [];

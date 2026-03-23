@@ -19,6 +19,7 @@ import { run as runAsteroidsCollisionTimingStress } from './games/AsteroidsColli
 import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
 import { run as runGravityWell } from './games/GravityWell.test.mjs';
+import { run as runGravityWellDeterminismTimingStress } from './games/GravityWellDeterminismTimingStress.test.mjs';
 import { run as runGravityWellValidation } from './games/GravityWellValidation.test.mjs';
 import { run as runGravityWellWorldMechanics } from './games/GravityWellWorldMechanics.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
@@ -71,6 +72,7 @@ const tests = [
     ['AsteroidsValidation', runAsteroidsValidation],
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
     ['GravityWell', runGravityWell],
+    ['GravityWellDeterminismTimingStress', runGravityWellDeterminismTimingStress],
     ['GravityWellValidation', runGravityWellValidation],
     ['GravityWellWorldMechanics', runGravityWellWorldMechanics],
     ['Combat', runCombat],

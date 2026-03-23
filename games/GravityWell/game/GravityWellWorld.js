@@ -39,6 +39,7 @@ const ROTATION_SPEED = 2.9;
 const THRUST_ACCELERATION = 210;
 const BRAKE_FACTOR = 2.6;
 const MAX_SPEED = 450;
+const MAX_UPDATE_STEP_SECONDS = 1 / 60;
 
 function createShip() {
   return {
@@ -108,11 +109,29 @@ export default class GravityWellWorld {
       return { status: this.status, collectedBeacon: false };
     }
 
-    this.elapsedSeconds += dtSeconds;
+    const safeDtSeconds = Number.isFinite(dtSeconds)
+      ? Math.max(0, dtSeconds)
+      : 0;
+
+    if (safeDtSeconds > MAX_UPDATE_STEP_SECONDS) {
+      let remainingSeconds = safeDtSeconds;
+      let collectedBeacon = false;
+
+      while (remainingSeconds > 1e-9 && this.status === 'running') {
+        const stepSeconds = Math.min(MAX_UPDATE_STEP_SECONDS, remainingSeconds);
+        const stepResult = this.update(stepSeconds, input);
+        collectedBeacon = collectedBeacon || stepResult.collectedBeacon;
+        remainingSeconds -= stepSeconds;
+      }
+
+      return { status: this.status, collectedBeacon };
+    }
+
+    this.elapsedSeconds += safeDtSeconds;
     const controls = createInputSnapshot(input);
     const ship = this.ship;
 
-    ship.angle += ((controls.right ? 1 : 0) - (controls.left ? 1 : 0)) * ROTATION_SPEED * dtSeconds;
+    ship.angle += ((controls.right ? 1 : 0) - (controls.left ? 1 : 0)) * ROTATION_SPEED * safeDtSeconds;
 
     let ax = 0;
     let ay = 0;
@@ -134,11 +153,11 @@ export default class GravityWellWorld {
     }
 
     ship.thrusting = controls.thrust;
-    ship.vx += ax * dtSeconds;
-    ship.vy += ay * dtSeconds;
+    ship.vx += ax * safeDtSeconds;
+    ship.vy += ay * safeDtSeconds;
 
     if (controls.brake) {
-      const damp = Math.max(0, 1 - (BRAKE_FACTOR * dtSeconds));
+      const damp = Math.max(0, 1 - (BRAKE_FACTOR * safeDtSeconds));
       ship.vx *= damp;
       ship.vy *= damp;
     }
@@ -150,8 +169,8 @@ export default class GravityWellWorld {
       ship.vy *= speedScale;
     }
 
-    ship.x += ship.vx * dtSeconds;
-    ship.y += ship.vy * dtSeconds;
+    ship.x += ship.vx * safeDtSeconds;
+    ship.y += ship.vy * safeDtSeconds;
     this.lastGravity = { x: ax, y: ay };
     this.updateTrail();
 
