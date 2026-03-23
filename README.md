@@ -3,27 +3,25 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR — Engine Boundary Cleanup Step 2D (EventBus Naming + Ownership)
+# PLAN_PR — Engine Stabilization and Promotion Phase
 
 ## Purpose
-Implement the next surgical Step 2 follow-up by normalizing EventBus casing and protecting cross-platform portability.
+Start the next phase after boundary cleanup.
 
 ## Goal
-Resolve `eventBus.js` vs `EventBus.js` casing drift so imports are portable across case-sensitive filesystems, while preserving EventBus as an engine-owned injected service.
+Use the cleaned engine as a stable base to:
+- harden runtime behavior
+- reduce duplication across samples
+- promote only proven reusable patterns into engine
+- use Asteroids as the first real validation target
 
-## Scope
-- `engine/events/EventBus.js`
-- direct imports/usages of EventBus
-- focused tests or validation for portability/ownership
-- `tests/run-tests.mjs` only if required
-
-## Constraints
-- No gameplay changes
-- No timing/fullscreen/canvas work in this PR
-- Do not convert EventBus into a process-global singleton
-- Preserve current EventBus behavior and ownership model
+## Guiding Principles
+- Docs-first
+- Small surgical PRs
+- No broad rewrite
+- Samples validate engine behavior
+- Games prove engine maturity
+- Promote patterns only after proof, not speculation
 
 ## Expected Outcome
-- Import casing is normalized to `EventBus.js`
-- cross-platform case drift risk is removed
-- EventBus remains injectable and engine-owned
+Codex produces a phased plan for stabilization, promotion, validation, and low-risk consolidation.

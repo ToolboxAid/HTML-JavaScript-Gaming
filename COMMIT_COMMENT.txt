@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-engine: normalize EventBus casing and preserve injected ownership
+docs: plan engine stabilization and promotion phase
