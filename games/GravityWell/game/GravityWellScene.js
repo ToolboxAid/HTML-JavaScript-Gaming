@@ -8,6 +8,7 @@ import { Scene } from '../../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
 import { drawPanel } from '../../../engine/debug/index.js';
 import { drawVectorShape } from '../../../engine/vector/index.js';
+import { ReplaySystem } from '../../../engine/replay/index.js';
 import GravityWellWorld from './GravityWellWorld.js';
 
 const theme = new Theme(ThemeTokens);
@@ -22,13 +23,45 @@ function createStars(width, height) {
   }));
 }
 
+function createReplayInputSnapshot(input = null) {
+  return {
+    left: Boolean(input?.isDown?.('ArrowLeft')),
+    right: Boolean(input?.isDown?.('ArrowRight')),
+    thrust: Boolean(input?.isDown?.('ArrowUp')),
+    brake: Boolean(input?.isDown?.('Space')),
+  };
+}
+
+function createReplayInput(inputSnapshot = {}) {
+  return {
+    isDown(code) {
+      if (code === 'ArrowLeft') {
+        return Boolean(inputSnapshot.left);
+      }
+      if (code === 'ArrowRight') {
+        return Boolean(inputSnapshot.right);
+      }
+      if (code === 'ArrowUp') {
+        return Boolean(inputSnapshot.thrust);
+      }
+      if (code === 'Space') {
+        return Boolean(inputSnapshot.brake);
+      }
+      return false;
+    },
+  };
+}
+
 export default class GravityWellScene extends Scene {
   constructor() {
     super();
     this.world = new GravityWellWorld({ width: 960, height: 720 });
     this.stars = createStars(this.world.width, this.world.height);
+    this.replay = new ReplaySystem();
     this.phase = 'menu';
     this.lastEnterPressed = false;
+    this.lastRecordPressed = false;
+    this.lastPlaybackPressed = false;
   }
 
   enter(engine) {
@@ -43,38 +76,98 @@ export default class GravityWellScene extends Scene {
     }
   }
 
-  startRun() {
+  startRun({ record = false } = {}) {
     this.world.reset();
     this.phase = 'playing';
+    if (record) {
+      this.replay.startRecording({
+        metadata: { game: 'GravityWell' },
+        initialState: this.world.getState(),
+      });
+    } else {
+      this.replay.recording = false;
+    }
+  }
+
+  startReplay() {
+    const replay = this.replay.getReplay();
+    if (!replay?.frames?.length || !replay.initialState) {
+      return false;
+    }
+
+    this.world.reset();
+    this.world.loadState(replay.initialState);
+    this.phase = 'playing';
+    return this.replay.startPlayback(replay);
   }
 
   update(dtSeconds, engine) {
     const enterPressed = Boolean(engine.input?.isDown('Enter'));
+    const recordPressed = Boolean(engine.input?.isDown('KeyR'));
+    const playbackPressed = Boolean(engine.input?.isDown('KeyP'));
 
     if (this.phase === 'menu') {
-      if (enterPressed && !this.lastEnterPressed) {
+      if (recordPressed && !this.lastRecordPressed) {
+        this.startRun({ record: true });
+      } else if (playbackPressed && !this.lastPlaybackPressed) {
+        this.startReplay();
+      } else if (enterPressed && !this.lastEnterPressed) {
         this.startRun();
       }
       this.lastEnterPressed = enterPressed;
+      this.lastRecordPressed = recordPressed;
+      this.lastPlaybackPressed = playbackPressed;
       return;
     }
 
     if (this.phase === 'won' || this.phase === 'lost') {
-      if (enterPressed && !this.lastEnterPressed) {
+      if (recordPressed && !this.lastRecordPressed) {
+        this.startRun({ record: true });
+      } else if (playbackPressed && !this.lastPlaybackPressed) {
+        this.startReplay();
+      } else if (enterPressed && !this.lastEnterPressed) {
         this.startRun();
       }
       this.lastEnterPressed = enterPressed;
+      this.lastRecordPressed = recordPressed;
+      this.lastPlaybackPressed = playbackPressed;
       return;
     }
 
-    const result = this.world.update(dtSeconds, engine.input);
+    let result = null;
+
+    if (this.replay.playing) {
+      const frame = this.replay.nextFrame();
+      if (!frame) {
+        result = { status: this.world.status, collectedBeacon: false };
+      } else {
+        result = this.world.update(frame.dtSeconds, createReplayInput(frame.input));
+      }
+    } else {
+      const replayInput = createReplayInputSnapshot(engine.input);
+      result = this.world.update(dtSeconds, engine.input);
+      if (this.replay.recording) {
+        this.replay.recordFrame({
+          dtSeconds,
+          input: replayInput,
+          events: result,
+        });
+      }
+    }
+
     if (result.status === 'won') {
       this.phase = 'won';
     } else if (result.status === 'lost') {
       this.phase = 'lost';
     }
 
+    if (this.replay.recording && (this.phase === 'won' || this.phase === 'lost')) {
+      this.replay.stopRecording({ finalState: this.world.getState() });
+    }
+
     this.lastEnterPressed = enterPressed;
+    this.lastRecordPressed = recordPressed;
+    this.lastPlaybackPressed = playbackPressed;
   }
 
   render(renderer) {
@@ -163,8 +256,10 @@ export default class GravityWellScene extends Scene {
       `Speed: ${this.world.getShipSpeed().toFixed(1)}`,
       `Field: ${(this.world.getGravityPercent() * 100).toFixed(0)}%`,
       `Time: ${this.world.elapsedSeconds.toFixed(1)}s`,
+      `Replay: ${this.replay.playing ? 'PLAYBACK' : this.replay.recording ? 'RECORDING' : this.replay.frames.length ? 'READY' : 'NONE'}`,
       'Left/Right rotate',
       'Up thrusts, Space brakes',
+      'R records, P replays',
     ]);
 
     renderer.drawText('Slingshot around the wells and collect every beacon.', 42, 48, {
@@ -191,7 +286,7 @@ export default class GravityWellScene extends Scene {
       ? [
           'Collect every beacon while surviving the gravity wells.',
           'Use orbital pull and short thrust burns to build speed.',
-          'Press Enter to launch.',
+          'Press Enter to launch. R records. P replays.',
         ]
       : [
           this.world.statusMessage,

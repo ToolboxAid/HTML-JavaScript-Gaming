@@ -20,6 +20,7 @@ import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
 import { run as runGravityWell } from './games/GravityWell.test.mjs';
 import { run as runGravityWellDeterminismTimingStress } from './games/GravityWellDeterminismTimingStress.test.mjs';
+import { run as runGravityWellReplay } from './games/GravityWellReplay.test.mjs';
 import { run as runGravityWellValidation } from './games/GravityWellValidation.test.mjs';
 import { run as runGravityWellWorldMechanics } from './games/GravityWellWorldMechanics.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
@@ -47,6 +48,7 @@ import { run as runProductionReadiness } from './production/ProductionReadiness.
 import { run as runEnginePublicBarrelImports } from './production/EnginePublicBarrelImports.test.mjs';
 import { run as runStorageService } from './persistence/StorageService.test.mjs';
 import './render/Renderer.test.mjs';
+import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import './theme.test.js';
 
 const tests = [
@@ -74,6 +76,7 @@ const tests = [
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
     ['GravityWell', runGravityWell],
     ['GravityWellDeterminismTimingStress', runGravityWellDeterminismTimingStress],
+    ['GravityWellReplay', runGravityWellReplay],
     ['GravityWellValidation', runGravityWellValidation],
     ['GravityWellWorldMechanics', runGravityWellWorldMechanics],
     ['Combat', runCombat],
@@ -85,6 +88,7 @@ const tests = [
     ['KeyboardState', runKeyboardState],
     ['MouseState', runMouseState],
     ['StorageService', runStorageService],
+    ['ReplaySystem', runReplaySystem],
     ['EnginePublicBarrelImports', runEnginePublicBarrelImports],
     ['ProductionReadiness', runProductionReadiness],
     ['SceneManager', runSceneManager],

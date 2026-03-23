@@ -7,10 +7,10 @@ CODEX_COMMANDS.md
 
 ## Primary execution
 MODEL: GPT-5.4
-REASONING: low
-COMMAND: Implement PR-DOCS-CORRECT-SHARED-FOLDER-NOTES. Update the relevant documentation so it correctly states that sampleLayout.css moved from /samples/_shared/ to /engine/ui/, while samples/_shared/ still remains intentionally because it contains sample-owned helper files such as lateSampleBootstrap.js and platformerHelpers.js. Do not change runtime or gameplay code.
+REASONING: high
+COMMAND: Implement PR-REPLAY-SYSTEM-BIG-PACKAGE-ONE-PASS. Build a minimal replay MVP that records deterministic input/event data and replays it to reproduce the same outcome. Keep the generic replay core narrow and reusable, and integrate it into games/GravityWell/ first as the proof target. Add focused tests for recording integrity, playback correctness, and same-input same-outcome behavior, using explicit tolerance only where necessary. Do not perform a broad engine redesign, expand gameplay, or build a full editor/tool suite.
 
 ## Optional verification
 MODEL: GPT-5.4-mini
 REASONING: low
-COMMAND: Verify the docs no longer imply samples/_shared/ is empty or removable and that no code files changed.
+COMMAND: Verify that a narrow replay MVP exists, Gravity Well can record and replay deterministically, tests cover replay correctness, and no broad engine redesign or gameplay expansion was introduced.

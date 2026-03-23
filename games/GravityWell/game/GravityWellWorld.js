@@ -60,6 +60,13 @@ function createBeacon(beacon) {
   };
 }
 
+function createTrailPoint(point) {
+  return {
+    x: point?.x ?? 0,
+    y: point?.y ?? 0,
+  };
+}
+
 function createInputSnapshot(input = null) {
   return {
     left: Boolean(input?.isDown?.('ArrowLeft')),
@@ -95,6 +102,64 @@ export default class GravityWellWorld {
 
   getShipSpeed() {
     return Math.hypot(this.ship.vx, this.ship.vy);
+  }
+
+  getState() {
+    return {
+      ship: {
+        x: this.ship.x,
+        y: this.ship.y,
+        vx: this.ship.vx,
+        vy: this.ship.vy,
+        angle: this.ship.angle,
+        radius: this.ship.radius,
+        thrusting: this.ship.thrusting,
+      },
+      beacons: this.beacons.map((beacon) => ({
+        x: beacon.x,
+        y: beacon.y,
+        radius: beacon.radius,
+        color: beacon.color,
+        collected: beacon.collected,
+      })),
+      status: this.status,
+      statusMessage: this.statusMessage,
+      elapsedSeconds: this.elapsedSeconds,
+      collectedCount: this.collectedCount,
+      lastGravity: {
+        x: this.lastGravity.x,
+        y: this.lastGravity.y,
+      },
+      trail: this.trail.map(createTrailPoint),
+    };
+  }
+
+  loadState(state) {
+    if (!state || typeof state !== 'object') {
+      this.reset();
+      return;
+    }
+
+    this.ship = {
+      ...this.ship,
+      ...state.ship,
+    };
+    this.beacons = Array.isArray(state.beacons)
+      ? state.beacons.map((beacon) => ({
+          ...beacon,
+        }))
+      : this.beaconSeed.map(createBeacon);
+    this.status = typeof state.status === 'string' ? state.status : 'running';
+    this.statusMessage = typeof state.statusMessage === 'string'
+      ? state.statusMessage
+      : 'Collect every beacon.';
+    this.elapsedSeconds = Number.isFinite(state.elapsedSeconds) ? state.elapsedSeconds : 0;
+    this.collectedCount = Number.isFinite(state.collectedCount) ? state.collectedCount : 0;
+    this.lastGravity = {
+      x: Number.isFinite(state?.lastGravity?.x) ? state.lastGravity.x : 0,
+      y: Number.isFinite(state?.lastGravity?.y) ? state.lastGravity.y : 0,
+    };
+    this.trail = Array.isArray(state.trail) ? state.trail.map(createTrailPoint) : [];
   }
 
   update(dtSeconds, input = null) {

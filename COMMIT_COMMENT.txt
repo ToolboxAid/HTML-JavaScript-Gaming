@@ -3,4 +3,4 @@ David Quesenberry
 03/23/2026
 COMMIT_COMMENT.txt
 
-docs: correct shared-folder notes after sampleLayout.css move
+tooling: add minimal deterministic replay system and gravity well proof integration
