@@ -3,17 +3,30 @@ David Quesenberry
 03/23/2026
 README.md
 
-# GAME #2 — GRAVITY WELL
+# PLAN_PR — Gravity Well Validation Phase 1
 
-## Game Name
-Gravity Well
+## Purpose
+Validate Game #2 (Gravity Well) as a real engine consumer before adding polish or promoting any game-side helpers.
 
-## Concept
-A vector-based space navigation game where the player uses thrust and gravity fields to navigate between planets and reach objectives without crashing.
+## Goal
+Prove Gravity Well correctness for:
+- boot and initial state
+- thrust + gravity interaction
+- win-zone detection
+- deterministic repeatability
+- stable motion across timing conditions
 
-## Why This Game
-- Validates vector math
-- Validates deterministic timing
-- Introduces continuous forces
-- Complements Asteroids (discrete → continuous)
+## Scope
+- `games/GravityWell/`
+- focused validation tests
+- docs-only planning output in this PR
 
+## Constraints
+- No runtime code changes in this PR
+- No engine redesign
+- No gameplay expansion
+- No promotion/extraction work
+- Prefer validation planning over speculative cleanup
+
+## Expected Outcome
+A validation plan and next BUILD_PR ladder for hardening Gravity Well before any promotion or polish.
