@@ -1,0 +1,6 @@
+Toolbox Aid
+David Quesenberry
+03/23/2026
+COMMIT_COMMENT.txt
+
+engine: boundary cleanup step 1 (adapter seams, renderer enforcement, test scaffolding)

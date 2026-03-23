@@ -3,26 +3,24 @@ David Quesenberry
 03/23/2026
 README.md
 
-# BUILD_PR Delta Pack — Engine Boundary Cleanup Audit
-
-This pack is the next repo-aligned handoff after the approved PLAN_PR.
+# BUILD_PR — Engine Boundary Cleanup Step 1 (Adapter Seams)
 
 ## Purpose
-Create a docs-first audit scaffold for the engine boundary cleanup review.
+Implement the first safe boundary cleanup based on audit results.
 
 ## Scope
-- Add the PR folder under `docs/prs/PR-ENGINE-BOUNDARY-CLEANUP-AUDIT/`
-- Add `PLAN.md`
-- Add `TASKS.md`
-- Add `CODEX_COMMANDS.md`
-- Add `COMMIT_COMMENT.txt`
+- Remove renderer ctx leakage
+- Add scheduler/time injection seams
+- Guard browser globals
+- Introduce tests/engine structure
 
-## Rules
-- No runtime source changes
+## Constraints
 - No gameplay changes
-- No sample changes
-- No engine refactor in this step
-- Codex should inspect and write findings only
+- No refactor beyond defined scope
+- No prefab/release redesign
+- Surgical changes only
 
 ## Expected Outcome
-Codex audits `engine/` and `tests/engine/`, then fills in the plan/task docs with exact findings and recommended next surgical build.
+- Renderer boundary enforced
+- Engine testable without browser
+- tests/engine present and wired
