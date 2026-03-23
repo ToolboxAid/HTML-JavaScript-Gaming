@@ -1,6 +1,1 @@
-Toolbox Aid
-David Quesenberry
-03/23/2026
-COMMIT_COMMENT.txt
-
-tooling: add minimal deterministic replay system and gravity well proof integration
+Document game roadmap, add tools hub, and expose hubs from the root index before starting Pong.

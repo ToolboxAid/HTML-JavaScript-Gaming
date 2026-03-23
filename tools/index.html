@@ -1,0 +1,236 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/23/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ToolboxAid - Tools</title>
+  <style>
+    :root {
+      --bg: #101114;
+      --panel: #1b1d24;
+      --panel2: #232733;
+      --line: #343949;
+      --text: #eef2f7;
+      --muted: #b9c2d0;
+      --accent: #7dd3fc;
+      --live: #2f9e44;
+      --planned: #f59f00;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0f1116 0%, #151927 100%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topnav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .topnav a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 { margin: 0 0 10px; }
+    p { color: var(--muted); line-height: 1.55; }
+
+    h2 {
+      margin-top: 32px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+    }
+
+    .card a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    .card p {
+      margin: 0 0 10px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .live { background: var(--live); }
+    .planned { background: var(--planned); color: #111; }
+
+    .callout {
+      margin-top: 18px;
+      background: #141925;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    code {
+      background: #0d1320;
+      border: 1px solid #27334a;
+      border-radius: 6px;
+      padding: 1px 5px;
+      color: #d9ecff;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="../index.html">Home</a>
+      <a href="../games/index.html">Games Hub</a>
+    </div>
+
+    <h1>ToolboxAid - Tools</h1>
+    <p>Tools for building sprites, maps, palettes, animations, collision data, and other reusable game assets. This hub keeps the toolchain visible before we expand the build pipeline.</p>
+
+    <section>
+      <h2>Available Now</h2>
+      <div class="grid">
+        <div class="card">
+          <h3><a href="SpriteEditor/index.html">Sprite Editor</a></h3>
+          <p>The current working editor for sprite creation and frame workflow. It is the live center of the asset pipeline today.</p>
+          <div class="meta">
+            <span class="pill live">Live</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Planned Next</h2>
+      <p>Tilemaps and palette management are the next priorities, followed by supporting tools that round out the asset workflow.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Tilemap Editor</h3>
+          <p>Create, paint, save, and load tile-based levels with layer editing and collision flags.</p>
+          <div class="meta">
+            <span class="pill planned">Next Tool</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Palette Browser / Manager</h3>
+          <p>Load named palettes, preview symbols, copy palette data, and keep art tools aligned with shared color definitions.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Animation / Flipbook Editor</h3>
+          <p>Preview timing, duplicate frames, reorder frames, and export animation data cleanly.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Collision / Hitbox Editor</h3>
+          <p>Define rectangular or point-based collision regions without hardcoding them into game code.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Level / Entity Placement Editor</h3>
+          <p>Place enemies, spawns, pickups, triggers, and named points on top of map data.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Input Mapper / Controller Tester</h3>
+          <p>Verify keyboard and gamepad bindings, dead zones, button maps, and player assignments.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Replay Inspector</h3>
+          <p>Open recorded sessions, step frame by frame, and debug input-driven playback behavior.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Audio / SFX Playground</h3>
+          <p>Test timing, simple generated effects, and event-to-sound mapping while building arcade feedback.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Asset Browser / Import Helper</h3>
+          <p>Review sprites, maps, and animation data in one place and move assets into the expected repo structure.</p>
+          <div class="meta">
+            <span class="pill planned">Planned</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="callout">
+      <strong>Palette workflow:</strong> art tooling should move toward the shared <code>palettesList</code> data so editors and runtime assets use the same named colors and transparent entries.
+    </div>
+  </div>
+</body>
+</html>
