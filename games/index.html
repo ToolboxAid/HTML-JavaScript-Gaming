@@ -12,78 +12,98 @@ index.html
   <title>ToolboxAid - Games</title>
   <style>
     :root {
-      --bg: #111;
-      --panel: #1b1b1b;
-      --panel2: #222;
-      --line: #333;
-      --text: #eee;
-      --muted: #c8c8c8;
-      --accent: #7dd3fc;
-      --playable: #2f9e44;
-      --next: #c084fc;
-      --roadmap: #f59f00;
+      --bg: #0f1115;
+      --panel: #171a21;
+      --panel2: #1d2230;
+      --text: #eef2f7;
+      --muted: #a9b3c3;
+      --line: #2b3242;
+      --accent: #6cb8ff;
+      --accent2: #8df0c8;
+      --playable: #2b8a3e;
+      --planned: #1971c2;
+      --sample: #9c36b5;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
       margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #0d1015 0%, #131722 100%);
+      color: var(--text);
     }
 
     .wrap {
-      max-width: 1280px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 32px 24px 64px;
     }
 
-    .topnav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
+    header {
+      margin-bottom: 28px;
     }
 
-    .topnav a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: bold;
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2.2rem;
+      line-height: 1.1;
     }
 
-    h1 { margin: 0 0 10px; }
+    .subtitle {
+      color: var(--muted);
+      max-width: 980px;
+      line-height: 1.6;
+      margin: 0;
+    }
 
-    h2 {
+    .note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .section {
       margin-top: 34px;
-      border-bottom: 1px solid #444;
-      padding-bottom: 6px;
     }
 
-    p, li { color: var(--muted); line-height: 1.55; }
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 1.4rem;
+    }
+
+    .section p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 20px;
+      gap: 18px;
     }
 
-    .card, .live-link {
+    .card {
       display: block;
       overflow: hidden;
       background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
       border: 1px solid var(--line);
-      border-radius: 12px;
-      color: var(--text);
+      border-radius: 16px;
       text-decoration: none;
-      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      color: var(--text);
+      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
     }
 
-    .live-link:hover {
-      background: #262626;
-      border-color: #4f8cff;
+    .card:hover {
       transform: translateY(-2px);
+      border-color: #4d638c;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
     }
 
     .thumb {
@@ -95,174 +115,231 @@ index.html
       border-bottom: 1px solid var(--line);
     }
 
-    .card-body {
-      padding: 14px;
+    .cardBody {
+      padding: 14px 16px 16px;
     }
 
-    .card-title {
-      margin: 0 0 6px;
-      color: var(--accent);
-      font-size: 1.1rem;
+    .cardTitle {
+      font-size: 1.08rem;
+      color: #7dd3fc;
+      margin-bottom: 6px;
+      font-weight: bold;
     }
 
-    .card-desc {
-      margin: 0 0 10px;
-      color: #d8dee9;
+    .cardDesc {
+      color: #cbd5e1;
       font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .levels {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .levelCard {
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .levelCard h3 {
+      margin: 0 0 10px;
+      font-size: 1.02rem;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .levelCard ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .levelCard li {
+      margin: 0 0 10px;
+      color: #dbe5f1;
       line-height: 1.45;
     }
 
-    .meta {
+    .tagRow {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      margin-bottom: 12px;
     }
 
-    .pill {
+    .badge {
       display: inline-block;
-      padding: 4px 8px;
+      font-size: 11px;
+      line-height: 1;
+      padding: 6px 8px;
       border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: bold;
-      letter-spacing: 0.02em;
       color: #fff;
+      font-weight: bold;
+      letter-spacing: 0.2px;
     }
 
     .playable { background: var(--playable); }
-    .next { background: var(--next); }
-    .roadmap { background: var(--roadmap); color: #111; }
+    .planned { background: var(--planned); }
+    .sample { background: var(--sample); }
 
-    .plan {
-      background: #171717;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 16px 18px;
-      margin-top: 16px;
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
     }
 
-    .plan h3 {
-      margin: 0 0 10px;
-      color: var(--accent);
-    }
-
-    .plan ol {
-      margin: 0 0 0 22px;
-      padding: 0;
-    }
-
-    .footer-note {
-      margin-top: 26px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
-      color: #9fb0c3;
-      font-size: 0.95rem;
+    @media (max-width: 700px) {
+      .wrap {
+        padding: 24px 16px 48px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topnav">
-      <a href="../index.html">Home</a>
-      <a href="../tools/index.html">Tools Hub</a>
-    </div>
+  <main class="wrap">
+    <header>
+      <h1>ToolboxAid - Games</h1>
+      <p class="subtitle">Playable games live here. This page also tracks the current planned build order from easier projects to harder projects so the engine grows in a controlled way.</p>
+      <div class="legend">
+        <span class="badge playable">Playable Now</span>
+        <span class="badge planned">Planned Game</span>
+        <span class="badge sample">Better in /samples</span>
+      </div>
+      <div class="note">Recommendation: keep fully playable, user-facing projects in <strong>/games</strong>. Move engine probes, mechanic sandboxes, and system validation pieces into <strong>/samples</strong>. On the roadmap below, items marked <strong>(sample track)</strong> are better fits for samples than games.</div>
+    </header>
 
-    <h1>ToolboxAid - Games</h1>
-    <p>Playable games live here. This hub also captures the next build queue so we can document the arcade roadmap before starting Pong.</p>
-
-    <section>
+    <section class="section">
       <h2>Playable Now</h2>
-      <p>These are the current game builds linked from this repo today.</p>
+      <p>Current integrated game builds available in the repo.</p>
       <div class="grid">
-        <a class="live-link" href="GravityWell/index.html">
-          <img class="thumb" src="GravityWell/assets/preview.svg" alt="Gravity Well gameplay preview" />
-          <div class="card-body">
-            <div class="card-title">Gravity Well</div>
-            <div class="card-desc">Vector-based orbital flight game about slingshotting through planetary gravity fields to collect every beacon in one run.</div>
-            <div class="meta">
-              <span class="pill playable">Playable</span>
-            </div>
+        <a class="card" href="/games/GravityWell/index.html">
+          <img class="thumb" src="/games/GravityWell/assets/preview.svg" alt="Gravity Well gameplay preview" />
+          <div class="cardBody">
+            <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+            <div class="cardTitle">Gravity Well</div>
+            <div class="cardDesc">Vector-based orbital flight game focused on slingshotting through planetary gravity fields to collect every beacon in one run.</div>
           </div>
         </a>
 
-        <a class="live-link" href="Asteroids/index.html">
-          <img class="thumb" src="Asteroids/assets/preview.png" alt="Asteroids gameplay screenshot" />
-          <div class="card-body">
-            <div class="card-title">Asteroids</div>
-            <div class="card-desc">Classic-style space shooter with one or two player start, high score tracking, vector HUD, and ship-icon lives.</div>
-            <div class="meta">
-              <span class="pill playable">Playable</span>
-            </div>
+        <a class="card" href="/games/Asteroids/index.html">
+          <img class="thumb" src="/games/Asteroids/assets/preview.png" alt="Asteroids gameplay screenshot" />
+          <div class="cardBody">
+            <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+            <div class="cardTitle">Asteroids</div>
+            <div class="cardDesc">Classic-style space shooter with one/two-player start, high score tracking, vector HUD, and ship-icon lives.</div>
           </div>
         </a>
       </div>
     </section>
 
-    <section>
-      <h2>Next Build Queue</h2>
-      <p>Pong is the next planned build, followed by a broader set of classic arcade milestones.</p>
-      <div class="grid">
-        <div class="card">
-          <div class="card-body">
-            <div class="card-title">Pong</div>
-            <div class="card-desc">Next planned game. Goal: arcade-authentic paddle and ball play, gamepad support, paddle-hit english, and original-style variants like Tennis, Hockey, Handball, and Jai Alai.</div>
-            <div class="meta">
-              <span class="pill next">Next Build</span>
-            </div>
-          </div>
-        </div>
+    <section class="section">
+      <h2>Planned Game Difficulty Progression</h2>
+      <p>Ordered from easier to harder. This preserves the exact roadmap structure while also flagging which entries should probably graduate to <strong>/samples</strong> instead of staying in <strong>/games</strong>.</p>
 
-        <div class="card">
-          <div class="card-body">
-            <div class="card-title">Breakout</div>
-            <div class="card-desc">A strong follow-up for paddle control, collision angles, speed curves, and brick-field design once Pong is stable.</div>
-            <div class="meta">
-              <span class="pill roadmap">Roadmap</span>
-            </div>
-          </div>
-        </div>
+      <div class="levels">
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span></div>
+          <h3>Level 1 — Basic Motion</h3>
+          <ul>
+            <li>Bouncing Ball</li>
+            <li>Breakout</li>
+            <li>Gravity</li>
+          </ul>
+        </article>
 
-        <div class="card">
-          <div class="card-body">
-            <div class="card-title">Space Invaders</div>
-            <div class="card-desc">Enemy wave timing, shields, formation stepping, and the arcade pacing that builds on shared shooter patterns.</div>
-            <div class="meta">
-              <span class="pill roadmap">Roadmap</span>
-            </div>
-          </div>
-        </div>
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
+          <h3>Level 2 — Physics Systems</h3>
+          <ul>
+            <li>Thruster</li>
+            <li>Orbit <strong>(sample track)</strong></li>
+            <li>Projectile Lab <strong>(sample track)</strong></li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
+          <h3>Level 3 — Collision Mastery</h3>
+          <ul>
+            <li>Paddle Intercept <strong>(sample track)</strong></li>
+            <li>Multi-Ball Chaos <strong>(sample track)</strong></li>
+            <li>Pong</li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span></div>
+          <h3>Level 4 — Classic Arcade</h3>
+          <ul>
+            <li>Space Invaders</li>
+            <li>Asteroids</li>
+            <li>Frogger</li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span></div>
+          <h3>Level 5 — Skill + Input</h3>
+          <ul>
+            <li>Dual Stick Arena</li>
+            <li>Arena Shooter</li>
+            <li>Robotron 2084</li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
+          <h3>Level 6 — AI Systems</h3>
+          <ul>
+            <li>AI Target Dummy <strong>(sample track)</strong></li>
+            <li>Pac-Man (Lite)</li>
+            <li>Pac-Man (Full AI)</li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
+          <h3>Level 7 — World Systems</h3>
+          <ul>
+            <li>Scrolling World Test <strong>(sample track)</strong></li>
+            <li>Tile Collision Demo <strong>(sample track)</strong></li>
+            <li>Defender (Lite)</li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
+          <h3>Level 8 — Platforming</h3>
+          <ul>
+            <li>Donkey Kong</li>
+            <li>Platformer Demo <strong>(sample track)</strong></li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span></div>
+          <h3>Level 9 — Advanced Arcade</h3>
+          <ul>
+            <li>Galaga</li>
+            <li>Rally-X</li>
+          </ul>
+        </article>
+
+        <article class="levelCard">
+          <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
+          <h3>Level 10 — Full Systems</h3>
+          <ul>
+            <li>Full Arena Shooter</li>
+            <li>Replay System <strong>(sample track)</strong></li>
+            <li>Multiplayer (Optional) <strong>(sample track)</strong></li>
+          </ul>
+        </article>
       </div>
     </section>
-
-    <section>
-      <h2>Classic Arcade Roadmap</h2>
-      <p>The launcher now separates live games from future targets so the roadmap is visible without implying unfinished games are playable.</p>
-      <div class="grid">
-        <div class="card"><div class="card-body"><div class="card-title">Pong</div><div class="card-desc">Foundational paddle, serve, score, and rally systems.</div><div class="meta"><span class="pill next">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Breakout</div><div class="card-desc">Brick destruction, rebound tuning, and level layouts.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Space Invaders</div><div class="card-desc">Wave motion, shields, and tension scaling.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Pac-Man</div><div class="card-desc">Grid movement, maze rules, pellets, ghosts, and pathing behavior.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Donkey Kong</div><div class="card-desc">Platform timing, ladders, hazards, and stage scripting.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Galaga</div><div class="card-desc">Formation attacks, capture flow, and precise enemy motion.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Defender</div><div class="card-desc">Fast scrolling, radar awareness, civilians, and pressure-heavy action.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Robotron: 2084</div><div class="card-desc">Twin-stick control, crowd logic, and survival pacing.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-        <div class="card"><div class="card-body"><div class="card-title">Q*bert</div><div class="card-desc">Isometric movement, tile-state scoring, and enemy timing.</div><div class="meta"><span class="pill roadmap">Planned</span></div></div></div>
-      </div>
-    </section>
-
-    <section class="plan">
-      <h3>Plan Notes Before Pong</h3>
-      <ol>
-        <li>Keep Pong as a focused PR with one implementation pass.</li>
-        <li>Build arcade-faithful core play first: serve, rally, score, and win/reset loop.</li>
-        <li>Add paddle-hit english and gamepad support in the first delivery, not as later cleanup.</li>
-        <li>Structure rules so Tennis, Hockey, Handball, and Jai Alai can slot in as variants instead of separate games.</li>
-        <li>Use the tools hub to guide asset creation, palette workflow, and future editing tools.</li>
-      </ol>
-    </section>
-
-    <div class="footer-note">
-      Roadmap entries are planning targets only; they are intentionally shown without live links in this PR.
-    </div>
-  </div>
+  </main>
 </body>
 </html>
