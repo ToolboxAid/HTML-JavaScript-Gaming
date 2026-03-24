@@ -28,7 +28,7 @@ export default class DistributionPackagingScene extends Scene {
       profile,
       samples: ['sample141-settings-system', 'sample142-accessibility-options', 'sample144-distribution-packaging'],
       assets: [
-        'samples/_shared/baseLayout.css',
+        'engine/ui/baseLayout.css',
         `profiles/${profile.id}.json`,
         'docs/build/sample-manifest.json',
       ],
