@@ -155,7 +155,7 @@ Only touch engine if a truly tiny reusable helper is clearly justified.
 Suggested structure:
 
 games/
-  bouncing-ball/
+  Bouncing-ball/
     index.html
     main.js
     assets/
@@ -240,7 +240,7 @@ Not in this PR:
 Keep it intentionally small.
 
 ## Recommended Execution Order
-1. scaffold games/bouncing-ball
+1. scaffold games/Bouncing-ball
 2. implement world state and bounce logic
 3. add start/pause/reset flow
 4. wire keyboard and optional gamepad controls

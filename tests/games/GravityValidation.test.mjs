@@ -2,11 +2,11 @@
 Toolbox Aid
 David Quesenberry
 03/24/2026
-BouncingBallValidation.test.mjs
+GravityValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import BouncingBallScene from '../../games/Bouncing-ball/game/BouncingBallScene.js';
-import { bootBouncingBall } from '../../games/Bouncing-ball/main.js';
+import GravityScene from '../../games/Gravity/game/GravityScene.js';
+import { bootGravity } from '../../games/Gravity/main.js';
 
 function createCanvas() {
   const listeners = new Map();
@@ -22,17 +22,19 @@ function createCanvas() {
 }
 
 function createMutableInput() {
+  let down = new Set();
   let pressed = new Set();
   let gamepads = [];
   return {
-    setState(codesPressed = [], nextGamepads = null) {
+    setState(codesDown = [], codesPressed = [], nextGamepads = null) {
+      down = new Set(codesDown);
       pressed = new Set(codesPressed);
       if (nextGamepads) {
         gamepads = nextGamepads;
       }
     },
-    isDown() {
-      return false;
+    isDown(code) {
+      return down.has(code);
     },
     isPressed(code) {
       return pressed.has(code);
@@ -47,6 +49,7 @@ function createMutableInput() {
 }
 
 function createPad(index, {
+  axes = [0, 0, 0, 0],
   pressed = {},
   connected = true,
 } = {}) {
@@ -55,9 +58,9 @@ function createPad(index, {
     connected,
     id: `Pad-${index}`,
     mapping: 'standard',
-    axes: [0, 0, 0, 0],
-    isDown() {
-      return false;
+    axes,
+    isDown(buttonIndex) {
+      return Boolean(pressed[buttonIndex]);
     },
     isPressed(buttonIndex) {
       return Boolean(pressed[buttonIndex]);
@@ -67,7 +70,7 @@ function createPad(index, {
 
 export async function run() {
   let constructed = false;
-  const noDocument = bootBouncingBall({
+  const noDocument = bootGravity({
     documentRef: null,
     EngineClass: class {
       constructor() {
@@ -78,7 +81,7 @@ export async function run() {
   assert.equal(noDocument, null);
   assert.equal(constructed, false);
 
-  const noCanvas = bootBouncingBall({
+  const noCanvas = bootGravity({
     documentRef: {
       getElementById() {
         return null;
@@ -115,7 +118,7 @@ export async function run() {
     }
   }
 
-  const booted = bootBouncingBall({
+  const booted = bootGravity({
     documentRef: {
       getElementById(id) {
         return id === 'game' ? canvas : null;
@@ -126,9 +129,11 @@ export async function run() {
       isDown() {
         return false;
       }
+
       isPressed() {
         return false;
       }
+
       getGamepad() {
         return null;
       }
@@ -137,7 +142,7 @@ export async function run() {
 
   assert.equal(Boolean(booted), true);
   assert.equal(started, 1);
-  assert.equal(installedScene instanceof BouncingBallScene, true);
+  assert.equal(installedScene instanceof GravityScene, true);
   await canvas.trigger('click');
   assert.equal(fullscreenRequests, 1);
   fullscreenState = { available: false, active: false };
@@ -145,30 +150,38 @@ export async function run() {
   assert.equal(fullscreenRequests, 1);
 
   const input = createMutableInput();
-  const scene = new BouncingBallScene();
+  const scene = new GravityScene();
   scene.enter({ input, canvas: { style: {} } });
 
-  input.setState(['Enter']);
+  input.setState([], ['Enter']);
   scene.update(0.016);
   assert.equal(scene.world.status, 'playing');
 
-  input.setState(['KeyP']);
+  input.setState(['ArrowRight'], []);
+  const beforeVx = scene.world.ball.vx;
+  scene.update(0.1);
+  assert.equal(scene.world.ball.vx > beforeVx, true);
+
+  input.setState([], ['KeyP']);
   scene.update(0.016);
   assert.equal(scene.isPaused, true);
-  const pausedX = scene.world.ball.x;
-  input.setState([]);
+  const pausedY = scene.world.ball.y;
+  input.setState(['ArrowRight'], []);
   scene.update(0.2);
-  assert.equal(scene.world.ball.x, pausedX);
+  assert.equal(scene.world.ball.y, pausedY);
 
-  input.setState(['KeyP']);
+  input.setState([], ['KeyP']);
   scene.update(0.016);
   assert.equal(scene.isPaused, false);
 
-  input.setState(['KeyR']);
+  input.setState([], ['KeyR']);
   scene.update(0.016);
   assert.equal(scene.world.status, 'menu');
 
-  input.setState([], [createPad(2, { pressed: { 0: true } })]);
+  input.setState([], [], [createPad(2, { axes: [0.75, 0], pressed: { 0: true } })]);
   scene.update(0.016);
   assert.equal(scene.world.status, 'playing');
+  const padStartX = scene.world.ball.x;
+  scene.update(0.2);
+  assert.equal(scene.world.ball.x > padStartX, true);
 }

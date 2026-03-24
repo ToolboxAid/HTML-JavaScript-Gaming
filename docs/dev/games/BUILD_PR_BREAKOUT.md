@@ -251,7 +251,7 @@ Acceptable small engine changes only if Breakout exposes a genuinely reusable is
 Suggested structure:
 
 games/
-  breakout/
+  Breakout/
     index.html
     main.js
     assets/
@@ -320,7 +320,7 @@ Not in this PR:
 Keep it surgical.
 
 ## Recommended Execution Order
-1. scaffold games/breakout
+1. scaffold games/Breakout
 2. implement world state + paddle + ball
 3. add brick grid and collision
 4. add score/lives/win/lose flow

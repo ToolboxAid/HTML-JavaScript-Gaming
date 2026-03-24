@@ -23,6 +23,8 @@ import { run as runBouncingBallValidation } from './games/BouncingBallValidation
 import { run as runBouncingBallWorld } from './games/BouncingBallWorld.test.mjs';
 import { run as runBreakoutValidation } from './games/BreakoutValidation.test.mjs';
 import { run as runBreakoutWorld } from './games/BreakoutWorld.test.mjs';
+import { run as runGravityValidation } from './games/GravityValidation.test.mjs';
+import { run as runGravityWorld } from './games/GravityWorld.test.mjs';
 import { run as runGravityWell } from './games/GravityWell.test.mjs';
 import { run as runGravityWellDeterminismTimingStress } from './games/GravityWellDeterminismTimingStress.test.mjs';
 import { run as runGravityWellReplay } from './games/GravityWellReplay.test.mjs';
@@ -88,6 +90,8 @@ const tests = [
     ['BouncingBallWorld', runBouncingBallWorld],
     ['BreakoutValidation', runBreakoutValidation],
     ['BreakoutWorld', runBreakoutWorld],
+    ['GravityValidation', runGravityValidation],
+    ['GravityWorld', runGravityWorld],
     ['GravityWell', runGravityWell],
     ['GravityWellDeterminismTimingStress', runGravityWellDeterminismTimingStress],
     ['GravityWellReplay', runGravityWellReplay],

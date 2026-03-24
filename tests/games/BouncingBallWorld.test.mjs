@@ -5,7 +5,7 @@ David Quesenberry
 BouncingBallWorld.test.mjs
 */
 import assert from 'node:assert/strict';
-import BouncingBallWorld from '../../games/bouncing-ball/game/BouncingBallWorld.js';
+import BouncingBallWorld from '../../games/Bouncing-ball/game/BouncingBallWorld.js';
 
 function createControls(overrides = {}) {
   return {
