@@ -19,6 +19,8 @@ import { run as runAsteroidsHardening } from './games/AsteroidsHardening.test.mj
 import { run as runAsteroidsCollisionTimingStress } from './games/AsteroidsCollisionTimingStress.test.mjs';
 import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
+import { run as runBouncingBallValidation } from './games/BouncingBallValidation.test.mjs';
+import { run as runBouncingBallWorld } from './games/BouncingBallWorld.test.mjs';
 import { run as runBreakoutValidation } from './games/BreakoutValidation.test.mjs';
 import { run as runBreakoutWorld } from './games/BreakoutWorld.test.mjs';
 import { run as runGravityWell } from './games/GravityWell.test.mjs';
@@ -82,6 +84,8 @@ const tests = [
     ['AsteroidsCollisionTimingStress', runAsteroidsCollisionTimingStress],
     ['AsteroidsValidation', runAsteroidsValidation],
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
+    ['BouncingBallValidation', runBouncingBallValidation],
+    ['BouncingBallWorld', runBouncingBallWorld],
     ['BreakoutValidation', runBreakoutValidation],
     ['BreakoutWorld', runBreakoutWorld],
     ['GravityWell', runGravityWell],

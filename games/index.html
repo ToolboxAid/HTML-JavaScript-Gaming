@@ -254,10 +254,18 @@ index.html
       <p>Current integrated game builds grouped under the roadmap level they belong to.</p>
 
       <section class="playableLevel">
-        
         <h3>Level 1 - Basic Motion</h3>
         <p>This level matters because it proves the fundamentals first: immediate movement, readable collisions, and a simple arcade loop that feels good before bigger systems are layered on top.</p>
         <div class="grid">
+          <a class="card" href="/games/bouncing-ball/index.html">
+            <img class="thumb" src="/games/bouncing-ball/assets/preview.svg" alt="Bouncing Ball gameplay preview" />
+            <div class="cardBody">
+              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+              <div class="cardTitle">Bouncing Ball</div>
+              <div class="cardDesc">A minimal bounded-arena ball motion game focused on clean wall rebounds, stable motion, and no-gravity arcade feel.</div>
+            </div>
+          </a>
+
           <a class="card" href="/games/Breakout/index.html">
             <img class="thumb" src="/games/Breakout/assets/preview.svg" alt="Breakout gameplay preview" />
             <div class="cardBody">
@@ -266,7 +274,13 @@ index.html
               <div class="cardDesc">Classic brick breaker with immediate paddle response, score-and-lives pressure, and keyboard plus gamepad play.</div>
             </div>
           </a>
+        </div>
+      </section>
 
+      <section class="playableLevel">
+        <h3>Level 2 - Physics Systems</h3>
+        <p>This level is where motion starts to become more expressive: forces, orbital pull, and field interaction matter more than simple straight-line arcade response.</p>
+        <div class="grid">
           <a class="card" href="/games/GravityWell/index.html">
             <img class="thumb" src="/games/GravityWell/assets/preview.svg" alt="Gravity Well gameplay preview" />
             <div class="cardBody">
@@ -275,9 +289,6 @@ index.html
               <div class="cardDesc">Vector-based orbital flight game focused on slingshotting through planetary gravity fields to collect every beacon in one run.</div>
             </div>
           </a>
-
-
-
         </div>
       </section>
 
@@ -324,7 +335,6 @@ index.html
           <ul>
             <li>Bouncing Ball</li>
             <li>Breakout</li>
-            <li>Gravity</li>
           </ul>
         </article>
 
@@ -333,6 +343,7 @@ index.html
           <h3>Level 2 - Physics Systems</h3>
           <p>Motion and force experiments that deepen acceleration, orbital behavior, and projectile tuning without requiring full game structure yet.</p>
           <ul>
+            <li>Gravity / Gravity Well</li>
             <li>Thruster</li>
             <li>Orbit <strong>(sample track)</strong></li>
             <li>Projectile Lab <strong>(sample track)</strong></li>

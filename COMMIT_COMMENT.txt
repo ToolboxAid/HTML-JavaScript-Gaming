@@ -3,4 +3,4 @@ David Quesenberry
 03/24/2026
 COMMIT_COMMENT.txt
 
-Build Breakout as Game #4 with reusable engine input/audio integration
+Build Bouncing Ball as a minimal arcade-style motion and bounce game
