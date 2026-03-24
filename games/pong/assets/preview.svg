@@ -39,6 +39,4 @@ preview.svg
   <text x="480" y="98" fill="#7de2ff" font-family="monospace" font-size="22" text-anchor="middle">TENNIS  HOCKEY  HANDBALL  JAI-ALAI</text>
   <text x="410" y="182" fill="#f5f8ff" font-family="monospace" font-size="68" font-weight="700" text-anchor="end">7</text>
   <text x="550" y="182" fill="#f5f8ff" font-family="monospace" font-size="68" font-weight="700">5</text>
-  <rect x="252" y="618" width="456" height="56" rx="14" fill="#0a1017" stroke="#7de2ff" stroke-width="2" />
-  <text x="480" y="652" fill="#ffd37d" font-family="monospace" font-size="20" text-anchor="middle">SPIN SERVES  GOAL MOUTHS  WALL RETURNS</text>
 </svg>

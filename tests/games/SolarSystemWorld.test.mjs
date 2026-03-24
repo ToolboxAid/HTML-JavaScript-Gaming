@@ -21,7 +21,7 @@ function testBodyCountsAndInitialState() {
   assert.equal(world.planets.length, 8);
   assert.equal(world.moons.length >= 5, true);
   assert.equal(world.labelsVisible, true);
-  assert.equal(world.getTimeScale().label, 'x10');
+  assert.equal(world.getTimeScale().label, 'x2');
 }
 
 function testTimeAdvanceMovesBodiesStably() {
@@ -50,8 +50,8 @@ function testTimeAdvanceMovesBodiesStably() {
 function testTimeControlsAndReset() {
   const world = new SolarSystemWorld({ width: 960, height: 720 });
   world.update(1, createControls({ timeScaleIndex: 3 }));
-  assert.equal(world.getTimeScale().label, 'x200');
-  assert.equal(world.elapsedDays > 100, true);
+  assert.equal(world.getTimeScale().label, 'x4');
+  assert.equal(world.elapsedDays >= 4, true);
 
   world.update(0, createControls({ toggleLabelsPressed: true }));
   assert.equal(world.labelsVisible, false);

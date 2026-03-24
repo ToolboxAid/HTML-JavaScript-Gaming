@@ -30,6 +30,8 @@ import { run as runGravityWellDeterminismTimingStress } from './games/GravityWel
 import { run as runGravityWellReplay } from './games/GravityWellReplay.test.mjs';
 import { run as runGravityWellValidation } from './games/GravityWellValidation.test.mjs';
 import { run as runGravityWellWorldMechanics } from './games/GravityWellWorldMechanics.test.mjs';
+import { run as runMultiBallChaosValidation } from './games/MultiBallChaosValidation.test.mjs';
+import { run as runMultiBallChaosWorld } from './games/MultiBallChaosWorld.test.mjs';
 import { run as runPongValidation } from './games/PongValidation.test.mjs';
 import { run as runPongAudio } from './games/PongAudio.test.mjs';
 import { run as runPongWorld } from './games/PongWorld.test.mjs';
@@ -105,6 +107,8 @@ const tests = [
     ['GravityWellReplay', runGravityWellReplay],
     ['GravityWellValidation', runGravityWellValidation],
     ['GravityWellWorldMechanics', runGravityWellWorldMechanics],
+    ['MultiBallChaosValidation', runMultiBallChaosValidation],
+    ['MultiBallChaosWorld', runMultiBallChaosWorld],
     ['PongValidation', runPongValidation],
     ['PongAudio', runPongAudio],
     ['PongWorld', runPongWorld],

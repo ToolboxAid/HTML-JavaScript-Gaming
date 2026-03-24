@@ -2,11 +2,11 @@
 Toolbox Aid
 David Quesenberry
 03/24/2026
-SolarSystemValidation.test.mjs
+MultiBallChaosValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import SolarSystemScene from '../../games/SolarSystem/game/SolarSystemScene.js';
-import { bootSolarSystem } from '../../games/SolarSystem/main.js';
+import MultiBallChaosScene from '../../games/MultiBallChaos/game/MultiBallChaosScene.js';
+import { bootMultiBallChaos } from '../../games/MultiBallChaos/main.js';
 
 function createCanvas() {
   const listeners = new Map();
@@ -23,25 +23,54 @@ function createCanvas() {
 
 function createMutableInput() {
   let down = new Set();
+  let pressed = new Set();
+  let gamepads = [];
   return {
-    setState(codesDown = []) {
+    setState(codesDown = [], codesPressed = [], nextGamepads = null) {
       down = new Set(codesDown);
+      pressed = new Set(codesPressed);
+      if (nextGamepads) {
+        gamepads = nextGamepads;
+      }
     },
     isDown(code) {
       return down.has(code);
     },
-    isPressed() {
-      return false;
+    isPressed(code) {
+      return pressed.has(code);
     },
-    getGamepad() {
-      return null;
+    getGamepad(index = 0) {
+      return gamepads.find((pad) => pad.index === index) ?? null;
+    },
+    getGamepads() {
+      return gamepads;
+    },
+  };
+}
+
+function createPad(index, {
+  axes = [0, 0, 0, 0],
+  pressed = {},
+  connected = true,
+} = {}) {
+  return {
+    index,
+    connected,
+    id: `Pad-${index}`,
+    mapping: 'standard',
+    axes,
+    isDown(buttonIndex) {
+      return Boolean(pressed[buttonIndex]);
+    },
+    isPressed(buttonIndex) {
+      return Boolean(pressed[buttonIndex]);
     },
   };
 }
 
 export async function run() {
   let constructed = false;
-  const noDocument = bootSolarSystem({
+  const noDocument = bootMultiBallChaos({
     documentRef: null,
     EngineClass: class {
       constructor() {
@@ -52,7 +81,7 @@ export async function run() {
   assert.equal(noDocument, null);
   assert.equal(constructed, false);
 
-  const noCanvas = bootSolarSystem({
+  const noCanvas = bootMultiBallChaos({
     documentRef: {
       getElementById() {
         return null;
@@ -89,7 +118,7 @@ export async function run() {
     }
   }
 
-  const booted = bootSolarSystem({
+  const booted = bootMultiBallChaos({
     documentRef: {
       getElementById(id) {
         return id === 'game' ? canvas : null;
@@ -100,9 +129,11 @@ export async function run() {
       isDown() {
         return false;
       }
+
       isPressed() {
         return false;
       }
+
       getGamepad() {
         return null;
       }
@@ -111,7 +142,7 @@ export async function run() {
 
   assert.equal(Boolean(booted), true);
   assert.equal(started, 1);
-  assert.equal(installedScene instanceof SolarSystemScene, true);
+  assert.equal(installedScene instanceof MultiBallChaosScene, true);
   await canvas.trigger('click');
   assert.equal(fullscreenRequests, 1);
   fullscreenState = { available: false, active: false };
@@ -119,31 +150,36 @@ export async function run() {
   assert.equal(fullscreenRequests, 1);
 
   const input = createMutableInput();
-  const scene = new SolarSystemScene();
-  const elapsedBefore = scene.world.elapsedDays;
+  const scene = new MultiBallChaosScene();
+  scene.enter({ input, audio: null, canvas: { style: {} } });
 
-  input.setState(['Digit4']);
-  scene.update(1, { input });
-  assert.equal(scene.world.getTimeScale().label, 'x4');
-  assert.equal(scene.world.elapsedDays > elapsedBefore, true);
+  input.setState([], ['Digit3']);
+  scene.update(0.016);
+  assert.equal(scene.world.selectedPresetId, 'ten');
+  assert.equal(scene.world.balls.length, 10);
 
-  input.setState(['KeyL']);
-  scene.update(0, { input });
-  assert.equal(scene.world.labelsVisible, false);
+  input.setState([], ['Enter']);
+  scene.update(0.016);
+  assert.equal(scene.world.status, 'playing');
 
-  input.setState(['KeyP']);
-  scene.update(0.016, { input });
+  input.setState([], ['KeyP']);
+  scene.update(0.016);
   assert.equal(scene.isPaused, true);
-  const pausedDays = scene.world.elapsedDays;
-  input.setState([]);
-  scene.update(1, { input });
-  assert.equal(scene.world.elapsedDays, pausedDays);
+  const pausedTime = scene.world.elapsedSeconds;
+  input.setState([], []);
+  scene.update(0.3);
+  assert.equal(scene.world.elapsedSeconds, pausedTime);
 
-  input.setState(['KeyP']);
-  scene.update(0.016, { input });
+  input.setState([], ['KeyP']);
+  scene.update(0.016);
   assert.equal(scene.isPaused, false);
 
-  input.setState(['KeyR']);
-  scene.update(0, { input });
-  assert.equal(scene.world.elapsedDays, 0);
+  input.setState([], ['KeyR']);
+  scene.update(0.016);
+  assert.equal(scene.world.status, 'menu');
+  assert.equal(scene.world.selectedPresetId, 'ten');
+
+  input.setState([], [], [createPad(1, { pressed: { 4: true } })]);
+  scene.update(0.016);
+  assert.equal(scene.world.selectedPresetId, 'six');
 }

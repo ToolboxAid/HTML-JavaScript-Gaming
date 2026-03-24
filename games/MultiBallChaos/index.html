@@ -1,0 +1,43 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Multi-Ball Chaos</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Multi-Ball Chaos</h1>
+    <p>A beginner-friendly multi-ball motion game: pick a preset, start the chamber, and watch a clean bounded playfield stay stable under increasing ball counts.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>1</code>-<code>4</code> switch presets. <code>Space</code> or <code>Enter</code> starts. <code>P</code> pauses. <code>R</code> resets. Gamepads use the south button to start, Start to pause, B/East to reset, and shoulder buttons to cycle presets.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <p>Use the 3 Balls, 6 Balls, 10 Balls, and Fast Chaos presets to compare how multiple balls behave in the same bounded arena. This build intentionally omits ball-ball collision, paddles, and gravity so the setup stays readable.</p>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>audio / AudioService</li>
+        <li>core / Engine</li>
+        <li>input / InputService</li>
+        <li>input / GamepadInputAdapter</li>
+        <li>render / CanvasRenderer</li>
+        <li>runtime / FullscreenService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

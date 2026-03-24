@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Multi-Ball Chaos preview</title>
+  <desc id="desc">Arcade-style preview showing multiple colored balls bouncing in a bounded chamber beside a preset sidebar.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#020617" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)" />
+  <rect x="34" y="34" width="732" height="532" rx="18" fill="#081121" stroke="#e2e8f0" stroke-width="4" />
+  <rect x="74" y="98" width="492" height="404" fill="#142033" stroke="#e2e8f0" stroke-width="3" />
+  <rect x="602" y="98" width="128" height="186" rx="14" fill="#0f172a" stroke="#334155" stroke-width="3" />
+  <rect x="602" y="306" width="128" height="158" rx="14" fill="#0f172a" stroke="#334155" stroke-width="3" />
+  <text x="74" y="70" fill="#f8fafc" font-family="monospace" font-size="28" font-weight="bold">MULTI-BALL CHAOS</text>
+  <text x="620" y="128" fill="#f59e0b" font-family="monospace" font-size="18" font-weight="bold">Preset</text>
+  <text x="620" y="162" fill="#f8fafc" font-family="monospace" font-size="18">10 Balls</text>
+  <text x="620" y="196" fill="#94a3b8" font-family="monospace" font-size="14">Balls 10</text>
+  <text x="620" y="220" fill="#94a3b8" font-family="monospace" font-size="14">Avg 285</text>
+  <text x="620" y="336" fill="#f59e0b" font-family="monospace" font-size="18" font-weight="bold">Keys</text>
+  <text x="620" y="370" fill="#f8fafc" font-family="monospace" font-size="14">1  3 Balls</text>
+  <text x="620" y="394" fill="#f8fafc" font-family="monospace" font-size="14">2  6 Balls</text>
+  <text x="620" y="418" fill="#f8fafc" font-family="monospace" font-size="14">3  10 Balls</text>
+  <text x="620" y="442" fill="#f8fafc" font-family="monospace" font-size="14">4  Fast</text>
+  <g stroke="#ffffff" stroke-width="2">
+    <rect x="150" y="170" width="22" height="22" fill="#f59e0b" />
+    <rect x="240" y="124" width="22" height="22" fill="#38bdf8" />
+    <rect x="328" y="212" width="22" height="22" fill="#f472b6" />
+    <rect x="418" y="158" width="22" height="22" fill="#34d399" />
+    <rect x="208" y="276" width="22" height="22" fill="#fde047" />
+    <rect x="304" y="338" width="22" height="22" fill="#c084fc" />
+    <rect x="424" y="286" width="22" height="22" fill="#fb7185" />
+    <rect x="132" y="390" width="22" height="22" fill="#60a5fa" />
+    <rect x="496" y="360" width="22" height="22" fill="#f97316" />
+    <rect x="500" y="214" width="22" height="22" fill="#2dd4bf" />
+  </g>
+</svg>
