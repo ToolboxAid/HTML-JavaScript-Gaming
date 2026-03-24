@@ -1,0 +1,30 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Solar System</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Solar System</h1>
+    <p>A readable stylized solar-system simulation with the Sun, all eight planets, selected moons, scaled orbital motion, and simple time controls.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>P</code> pauses or resumes, <code>R</code> resets the simulation clock, <code>L</code> toggles labels, and <code>1</code>-<code>4</code> switch between four time speeds.</p>
+    </section>
+    <section>
+      <h3>Simulation Scope</h3>
+      <p>This first pass focuses on readable stable orbital motion, not exact scientific distances. The Sun, all eight planets, and selected moons are included with clean deterministic motion and no audio layer yet.</p>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

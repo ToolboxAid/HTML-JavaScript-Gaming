@@ -3,4 +3,4 @@ David Quesenberry
 03/24/2026
 COMMIT_COMMENT.txt
 
-Build Bouncing Ball as a minimal arcade-style motion and bounce game
+Build Solar System under games as a physics-systems simulation

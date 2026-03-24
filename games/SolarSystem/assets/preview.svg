@@ -1,0 +1,26 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+preview.svg
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-label="Solar System preview">
+  <rect width="960" height="720" fill="#030712" />
+  <rect x="0" y="0" width="960" height="18" fill="#dbeafe" />
+  <rect x="0" y="702" width="960" height="18" fill="#dbeafe" />
+  <rect x="0" y="0" width="18" height="720" fill="#dbeafe" />
+  <rect x="942" y="0" width="18" height="720" fill="#dbeafe" />
+  <rect x="38" y="108" width="884" height="566" fill="none" stroke="#dbeafe" stroke-width="2" />
+  <circle cx="352" cy="390" r="34" fill="#fbbf24" />
+  <ellipse cx="352" cy="390" rx="82" ry="58" fill="none" stroke="#334155" stroke-width="1.5" />
+  <ellipse cx="352" cy="390" rx="120" ry="90" fill="none" stroke="#334155" stroke-width="1.5" />
+  <ellipse cx="352" cy="390" rx="168" ry="126" fill="none" stroke="#334155" stroke-width="1.5" />
+  <ellipse cx="352" cy="390" rx="228" ry="172" fill="none" stroke="#334155" stroke-width="1.5" />
+  <circle cx="434" cy="390" r="5" fill="#a3e635" />
+  <circle cx="472" cy="458" r="7" fill="#38bdf8" />
+  <circle cx="520" cy="390" r="6" fill="#f97316" />
+  <circle cx="583" cy="332" r="13" fill="#f59e0b" />
+  <circle cx="665" cy="472" r="11" fill="#eab308" />
+  <text x="30" y="48" fill="#dbeafe" font-family="monospace" font-size="24" font-weight="700">SOLAR SYSTEM</text>
+  <text x="742" y="48" fill="#dbeafe" font-family="monospace" font-size="18" font-weight="700">TIME x4</text>
+</svg>

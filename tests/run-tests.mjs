@@ -33,6 +33,8 @@ import { run as runGravityWellWorldMechanics } from './games/GravityWellWorldMec
 import { run as runPongValidation } from './games/PongValidation.test.mjs';
 import { run as runPongAudio } from './games/PongAudio.test.mjs';
 import { run as runPongWorld } from './games/PongWorld.test.mjs';
+import { run as runSolarSystemValidation } from './games/SolarSystemValidation.test.mjs';
+import { run as runSolarSystemWorld } from './games/SolarSystemWorld.test.mjs';
 import { run as runThrusterValidation } from './games/ThrusterValidation.test.mjs';
 import { run as runThrusterWorld } from './games/ThrusterWorld.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
@@ -106,6 +108,8 @@ const tests = [
     ['PongValidation', runPongValidation],
     ['PongAudio', runPongAudio],
     ['PongWorld', runPongWorld],
+    ['SolarSystemValidation', runSolarSystemValidation],
+    ['SolarSystemWorld', runSolarSystemWorld],
     ['ThrusterValidation', runThrusterValidation],
     ['ThrusterWorld', runThrusterWorld],
     ['Combat', runCombat],

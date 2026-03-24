@@ -3,12 +3,12 @@ David Quesenberry
 03/24/2026
 README.md
 
-# Bouncing Ball BUILD_PR Deliverable
+# Solar System BUILD_PR Deliverable
 
-This ZIP contains the BUILD_PR planning package for Bouncing Ball.
+This ZIP contains the BUILD_PR planning package for Solar System.
 
 ## Included
-- docs/dev/games/BUILD_PR_BOUNCING_BALL.md
+- docs/dev/games/BUILD_PR_SOLAR_SYSTEM.md
 - CODEX_COMMANDS.md
 - COMMIT_COMMENT.txt
 - NEXT_COMMAND.txt
@@ -18,5 +18,5 @@ This ZIP contains the BUILD_PR planning package for Bouncing Ball.
 This package is for the BUILD_PR step only.
 It defines the approved implementation scope for Codex.
 
-## Special Note
-This BUILD_PR also requires updating games/index.html so the grouped playable section includes the missing level groupings in order.
+## Critical Note
+Solar System belongs under games/SolarSystem, not under samples.

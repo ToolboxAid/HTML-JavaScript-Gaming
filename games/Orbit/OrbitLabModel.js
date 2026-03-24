@@ -11,12 +11,12 @@ const PRESETS = {
   stable: {
     label: 'Stable Orbit',
     description: 'Tangential velocity is tuned for a near-circular path.',
-    body: { x: 320, y: 212, vx: 51, vy: 0 },
+    body: { x: 320, y: 212, vx: 45, vy: 0 },
   },
   elliptical: {
     label: 'Elliptical Orbit',
     description: 'Reduced tangential speed creates a longer, oval trajectory.',
-    body: { x: 320, y: 204, vx: 43, vy: 0 },
+    body: { x: 320, y: 204, vx: 36, vy: 0 },
   },
   fall: {
     label: 'Fall Inward',
