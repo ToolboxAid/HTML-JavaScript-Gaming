@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-label="Pong preview">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#07121c"/>
+      <stop offset="100%" stop-color="#102336"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="720" fill="url(#bg)"/>
+  <rect x="20" y="20" width="920" height="680" fill="none" stroke="#7dd3fc" stroke-width="4"/>
+  <rect x="474" y="48" width="12" height="624" fill="#dbeafe" opacity="0.25"/>
+  <rect x="72" y="264" width="18" height="156" rx="6" fill="#f8fafc"/>
+  <rect x="870" y="228" width="18" height="156" rx="6" fill="#cbd5e1"/>
+  <circle cx="482" cy="322" r="14" fill="#7dd3fc"/>
+  <path d="M110 122h236" stroke="#7dd3fc" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+  <path d="M110 154h148" stroke="#f8fafc" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+  <path d="M110 192h298" stroke="#cbd5e1" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+  <text x="110" y="548" fill="#f8fafc" font-family="monospace" font-size="44">PONG</text>
+  <text x="110" y="594" fill="#cbd5e1" font-family="monospace" font-size="24">Tennis / Hockey / Handball / Jai-Alai</text>
+</svg>

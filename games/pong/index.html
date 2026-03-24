@@ -1,0 +1,46 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pong</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Pong</h1>
+    <p>Standalone paddle-and-ball arcade set with four rule variants: Tennis, Hockey, Handball, and Jai-Alai. Keyboard and gamepad both drive the same player controls, and paddle motion adds english to every return.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Keys</h3>
+      <p><code>Arrow Keys</code> or <code>WASD</code> move the paddle. <code>Enter</code> or <code>Space</code> starts, serves, and restarts. <code>Esc</code> returns to the mode menu. A standard gamepad uses the left stick or D-pad plus <code>A</code> to confirm and <code>B</code> to go back.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <ul>
+        <li><strong>Tennis</strong>: classic player-vs-opponent Pong race to seven.</li>
+        <li><strong>Hockey</strong>: free-move paddles, open goal mouths, and puck-style rebounds.</li>
+        <li><strong>Handball</strong>: attack the front wall, score on clean strikes, survive three misses.</li>
+        <li><strong>Jai-Alai</strong>: faster handball with stronger english and tighter control windows.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>core / Engine</li>
+        <li>input / InputService</li>
+        <li>input / GamepadInputAdapter</li>
+        <li>runtime / FullscreenService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
