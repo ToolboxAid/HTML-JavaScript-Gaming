@@ -1,1 +1,0 @@
-Document game roadmap, add tools hub, and expose hubs from the root index before starting Pong.
