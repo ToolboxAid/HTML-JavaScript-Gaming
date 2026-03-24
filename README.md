@@ -3,14 +3,20 @@ David Quesenberry
 03/24/2026
 README.md
 
-# Pong APPLY_PR Delta
+# Sound System BUILD_PR Deliverable
 
-This ZIP contains the repo-structured delta for adding standalone Pong.
+This ZIP contains the BUILD_PR planning package for the engine sound system and Pong sound integration.
 
 ## Included
-- `games/Pong/*`
-- `engine/input/GamepadInputAdapter.js`
-- `engine/input/index.js`
-- `games/index.html`
-- `docs/dev/games/PONG.md`
-- command / commit helper files
+- docs/dev/engine/BUILD_PR_SOUND_SYSTEM.md
+- CODEX_COMMANDS.md
+- COMMIT_COMMENT.txt
+- NEXT_COMMAND.txt
+- README.md
+
+## Purpose
+This is a BUILD_PR package only.
+It defines the approved scope for Codex to implement.
+
+## Special Note
+The implementation should keep a comment block with the Recommended Defaults sound values for Pong.

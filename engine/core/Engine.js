@@ -92,6 +92,9 @@ export default class Engine {
     if (this.input && typeof this.input.attach === 'function') {
       this.input.attach();
     }
+    if (this.audio && typeof this.audio.attach === 'function') {
+      this.audio.attach(this.canvas);
+    }
     if (this.fullscreen && typeof this.fullscreen.attach === 'function') {
       this.fullscreen.attach(this.canvas);
     }
@@ -109,6 +112,9 @@ export default class Engine {
 
     if (this.input && typeof this.input.detach === 'function') {
       this.input.detach();
+    }
+    if (this.audio && typeof this.audio.detach === 'function') {
+      this.audio.detach();
     }
     if (this.fullscreen && typeof this.fullscreen.detach === 'function') {
       this.fullscreen.detach();

@@ -3,4 +3,4 @@ David Quesenberry
 03/24/2026
 COMMIT_COMMENT.txt
 
-Add standalone Pong with multi-mode play and reusable gamepad adapter
+Add engine audio service and integrate Pong sound effects

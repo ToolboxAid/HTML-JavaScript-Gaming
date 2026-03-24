@@ -6,6 +6,7 @@ PongScene.js
 */
 import { Scene } from '../../../engine/scenes/index.js';
 import PongInputController from './PongInputController.js';
+import PongAudio from './PongAudio.js';
 import { getPongModes } from './PongModeConfig.js';
 
 const COURT = {
@@ -66,6 +67,7 @@ export default class PongScene extends Scene {
     this.modeIndex = 0;
     this.mode = this.modes[this.modeIndex];
     this.inputController = null;
+    this.audio = new PongAudio();
     this.isPaused = false;
     this.roundOver = true;
     this.winnerText = '';
@@ -79,6 +81,7 @@ export default class PongScene extends Scene {
 
   enter(engine) {
     this.inputController = new PongInputController(engine.input);
+    this.audio.setAudioService(engine.audio ?? null);
     this.applyMode();
   }
 
@@ -86,11 +89,12 @@ export default class PongScene extends Scene {
     const frame = this.inputController.getFrameState({ soloMode: !this.mode.twoPaddles });
 
     if (frame.exitPressed) {
+      this.isPaused = false;
       this.applyMode();
       return;
     }
 
-    if (frame.pausePressed) {
+    if (!this.roundOver && frame.pausePressed) {
       this.isPaused = !this.isPaused;
     }
 
@@ -113,21 +117,39 @@ export default class PongScene extends Scene {
     if (this.roundOver) {
       if (frame.servePressed) {
         this.startRound();
+        this.audio.playServe();
       }
       return;
     }
 
     this.updateBall(dt);
-    this.handleTopBottomWalls();
-    this.handlePaddleCollision(this.leftPaddle, 1);
-
-    if (this.mode.twoPaddles) {
-      this.handlePaddleCollision(this.rightPaddle, -1);
-    } else {
-      this.handleSoloWall();
+    const bouncedOnWall = this.handleTopBottomWalls();
+    const leftPaddleHit = this.handlePaddleCollision(this.leftPaddle, 1);
+    if (bouncedOnWall) {
+      this.audio.playWallHit();
+    }
+    if (leftPaddleHit) {
+      this.audio.playPaddleHit();
     }
 
-    this.handleEndZones();
+    if (this.mode.twoPaddles) {
+      const rightPaddleHit = this.handlePaddleCollision(this.rightPaddle, -1);
+      if (rightPaddleHit) {
+        this.audio.playPaddleHit();
+      }
+    } else {
+      const soloWallHit = this.handleSoloWall();
+      if (soloWallHit) {
+        this.audio.playWallHit();
+      }
+    }
+
+    const endZoneEvent = this.handleEndZones();
+    if (endZoneEvent === 'score') {
+      this.audio.playScore();
+    } else if (endZoneEvent === 'wall') {
+      this.audio.playWallHit();
+    }
   }
 
   render(renderer) {
@@ -141,6 +163,7 @@ export default class PongScene extends Scene {
     renderer.drawCircle(this.ball.x, this.ball.y, this.ball.radius, COLORS.ink);
 
     if (this.isPaused) {
+      renderer.drawRect(0, 0, COURT.width, COURT.height, 'rgba(0, 0, 0, 0.5)');
       this.drawOverlay(renderer, 'Paused', 'Press P or Start to resume.');
     } else if (this.roundOver) {
       this.drawOverlay(renderer, this.winnerText || this.mode.name, this.messageText);
@@ -242,15 +265,20 @@ export default class PongScene extends Scene {
   }
 
   handleTopBottomWalls() {
+    let collided = false;
     if (this.ball.y - this.ball.radius <= COURT.top) {
       this.ball.y = COURT.top + this.ball.radius;
       this.ball.vy = Math.abs(this.ball.vy);
+      collided = true;
     }
 
     if (this.ball.y + this.ball.radius >= COURT.bottom) {
       this.ball.y = COURT.bottom - this.ball.radius;
       this.ball.vy = -Math.abs(this.ball.vy);
+      collided = true;
     }
+
+    return collided;
   }
 
   handlePaddleCollision(paddle, direction) {
@@ -275,7 +303,7 @@ export default class PongScene extends Scene {
 
     const approaching = direction > 0 ? this.ball.vx < 0 : this.ball.vx > 0;
     if (!overlaps || !approaching) {
-      return;
+      return false;
     }
 
     const hitOffset = (this.ball.y - (paddle.y + paddle.height / 2)) / (paddle.height / 2);
@@ -294,15 +322,17 @@ export default class PongScene extends Scene {
       this.score.rally += 1;
       this.score.bestRally = Math.max(this.score.bestRally, this.score.rally);
     }
+
+    return true;
   }
 
   handleSoloWall() {
     if (!this.mode.rightWallClosed) {
-      return;
+      return false;
     }
 
     if (this.ball.x + this.ball.radius < COURT.right) {
-      return;
+      return false;
     }
 
     const speed = Math.min(this.mode.maxSpeed, this.getBallSpeed() + this.mode.speedStep * 0.5);
@@ -313,21 +343,23 @@ export default class PongScene extends Scene {
     const relativeY = (this.ball.y - COURT.centerY) / ((COURT.bottom - COURT.top) / 2);
     this.ball.vy += speed * relativeY * wallInfluence;
     this.ball.vy = Math.max(-this.mode.maxSpeed * 0.9, Math.min(this.mode.maxSpeed * 0.9, this.ball.vy));
+    return true;
   }
 
   handleEndZones() {
     if (this.mode.key === 'hockey') {
-      this.handleHockeyGoals();
-      return;
+      return this.handleHockeyGoals();
     }
 
     if (this.mode.twoPaddles) {
       if (this.ball.x + this.ball.radius < COURT.left) {
         this.onPointScored('right');
+        return 'score';
       } else if (this.ball.x - this.ball.radius > COURT.right) {
         this.onPointScored('left');
+        return 'score';
       }
-      return;
+      return null;
     }
 
     if (this.ball.x + this.ball.radius < COURT.left) {
@@ -336,7 +368,10 @@ export default class PongScene extends Scene {
       this.messageText = `Missed return. Best rally: ${this.score.bestRally}. Press serve to try again.`;
       this.score.rally = 0;
       this.resetBall();
+      return 'score';
     }
+
+    return null;
   }
 
   handleHockeyGoals() {
@@ -347,20 +382,26 @@ export default class PongScene extends Scene {
     if (this.ball.x - this.ball.radius <= COURT.left + this.mode.wallInset) {
       if (inGoalLane) {
         this.onPointScored('right');
+        return 'score';
       } else {
         this.ball.x = COURT.left + this.mode.wallInset + this.ball.radius;
         this.ball.vx = Math.abs(this.ball.vx);
+        return 'wall';
       }
     }
 
     if (this.ball.x + this.ball.radius >= COURT.right - this.mode.wallInset) {
       if (inGoalLane) {
         this.onPointScored('left');
+        return 'score';
       } else {
         this.ball.x = COURT.right - this.mode.wallInset - this.ball.radius;
         this.ball.vx = -Math.abs(this.ball.vx);
+        return 'wall';
       }
     }
+
+    return null;
   }
 
   onPointScored(side) {
@@ -454,24 +495,20 @@ export default class PongScene extends Scene {
       });
     }
 
-    renderer.drawText('M/N change mode', 926, 24, {
-      color: COLORS.muted,
-      font: '16px monospace',
-      textAlign: 'right',
-      textBaseline: 'top',
-    });
-    renderer.drawText('P pause', 926, 48, {
-      color: COLORS.muted,
-      font: '16px monospace',
-      textAlign: 'right',
-      textBaseline: 'top',
-    });
-    renderer.drawText('X menu', 926, 72, {
-      color: COLORS.muted,
-      font: '16px monospace',
-      textAlign: 'right',
-      textBaseline: 'top',
-    });
+    if (!this.roundOver || this.winnerText) {
+      renderer.drawText('P pause', 926, 24, {
+        color: COLORS.muted,
+        font: '16px monospace',
+        textAlign: 'right',
+        textBaseline: 'top',
+      });
+      renderer.drawText('X menu', 926, 48, {
+        color: COLORS.muted,
+        font: '16px monospace',
+        textAlign: 'right',
+        textBaseline: 'top',
+      });
+    }
   }
 
   drawPaddle(renderer, paddle) {

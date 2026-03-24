@@ -14,6 +14,7 @@ import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
 import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
 import { run as runParticleSystem } from './fx/ParticleSystem.test.mjs';
+import { run as runAudioService } from './audio/AudioService.test.mjs';
 import { run as runAsteroidsHardening } from './games/AsteroidsHardening.test.mjs';
 import { run as runAsteroidsCollisionTimingStress } from './games/AsteroidsCollisionTimingStress.test.mjs';
 import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
@@ -24,6 +25,7 @@ import { run as runGravityWellReplay } from './games/GravityWellReplay.test.mjs'
 import { run as runGravityWellValidation } from './games/GravityWellValidation.test.mjs';
 import { run as runGravityWellWorldMechanics } from './games/GravityWellWorldMechanics.test.mjs';
 import { run as runPongValidation } from './games/PongValidation.test.mjs';
+import { run as runPongAudio } from './games/PongAudio.test.mjs';
 import { run as runPongWorld } from './games/PongWorld.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
 import { run as runFullscreenService } from './final/FullscreenService.test.mjs';
@@ -72,6 +74,7 @@ const tests = [
     ['ReleaseReadinessSystems', runReleaseReadinessSystems],
     ['FrameClock', runFrameClock],
     ['ParticleSystem', runParticleSystem],
+    ['AudioService', runAudioService],
     ['RuntimeMetrics', runRuntimeMetrics],
     ['AsteroidsHardening', runAsteroidsHardening],
     ['AsteroidsCollisionTimingStress', runAsteroidsCollisionTimingStress],
@@ -83,6 +86,7 @@ const tests = [
     ['GravityWellValidation', runGravityWellValidation],
     ['GravityWellWorldMechanics', runGravityWellWorldMechanics],
     ['PongValidation', runPongValidation],
+    ['PongAudio', runPongAudio],
     ['PongWorld', runPongWorld],
     ['Combat', runCombat],
     ['Entity', runEntity],

@@ -5,4 +5,4 @@ CODEX_COMMANDS.md
 
 MODEL: GPT-5.4
 REASONING: medium
-COMMAND: Apply the Pong delta exactly as provided; add games/Pong as a standalone playable game, add engine/input/GamepadInputAdapter.js and export it from engine/input/index.js, update games/index.html to include Pong in Playable Now, and keep the change surgical with no unrelated refactors.
+COMMAND: Add a minimal reusable engine-owned audio service with safe browser unlock handling, one-shot playback, mute support, and generated Pong sound effects; integrate Pong serve, paddle hit, wall hit, and score events through the engine audio contract only; keep the change surgical, include tests or mock-based validation where practical, and keep a comment block in the implementation with the Recommended Defaults frequencies, durations, wave type, and volume values.

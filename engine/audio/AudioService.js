@@ -11,15 +11,54 @@ function cloneNotes(notes = []) {
 }
 
 export default class AudioService {
-  constructor({ backend = new WebAudioToneBackend() } = {}) {
+  constructor({
+    backend = new WebAudioToneBackend(),
+    unlockTarget = globalThis.document ?? globalThis.window ?? null,
+  } = {}) {
     this.backend = backend;
+    this.unlockTarget = unlockTarget;
     this.tracks = new Map();
     this.ready = false;
+    this.muted = false;
     this.lastError = '';
+    this.isAttached = false;
+    this.unlockHandler = this.unlockHandler.bind(this);
   }
 
   isSupported() {
     return typeof this.backend?.isSupported === 'function' ? this.backend.isSupported() : true;
+  }
+
+  attach(target = this.unlockTarget) {
+    if (this.isAttached || !target?.addEventListener) {
+      return;
+    }
+
+    this.unlockTarget = target;
+    target.addEventListener('pointerdown', this.unlockHandler);
+    target.addEventListener('keydown', this.unlockHandler);
+    target.addEventListener('touchstart', this.unlockHandler);
+    this.isAttached = true;
+  }
+
+  detach() {
+    if (!this.isAttached || !this.unlockTarget?.removeEventListener) {
+      this.isAttached = false;
+      return;
+    }
+
+    this.unlockTarget.removeEventListener('pointerdown', this.unlockHandler);
+    this.unlockTarget.removeEventListener('keydown', this.unlockHandler);
+    this.unlockTarget.removeEventListener('touchstart', this.unlockHandler);
+    this.isAttached = false;
+  }
+
+  async unlock() {
+    return this.resume();
+  }
+
+  async unlockHandler() {
+    await this.unlock();
   }
 
   async resume() {
@@ -37,6 +76,28 @@ export default class AudioService {
       this.lastError = error?.message || 'Audio resume failed.';
       return false;
     }
+  }
+
+  setMuted(muted = true) {
+    this.muted = Boolean(muted);
+    return this.muted;
+  }
+
+  isMuted() {
+    return this.muted;
+  }
+
+  async playOneShot(id, note = {}, options = {}) {
+    if (Array.isArray(note)) {
+      return this.playSequence(id, {
+        notes: note,
+        loop: false,
+        category: options.category ?? 'sfx',
+        volume: options.volume ?? 0.2,
+      });
+    }
+
+    return this.triggerSfx(id, note, options);
   }
 
   async triggerSfx(id, note = {}) {
@@ -192,6 +253,10 @@ export default class AudioService {
     track.lastNote = { ...payload };
 
     try {
+      if (this.muted) {
+        this.lastError = '';
+        return false;
+      }
       if (typeof this.backend?.playTone === 'function') {
         await this.backend.playTone(payload);
       }
@@ -225,6 +290,7 @@ export default class AudioService {
     return {
       supported: this.isSupported(),
       ready: this.ready,
+      muted: this.muted,
       lastError: this.lastError,
       tracks: Array.from(this.tracks.keys()).map((id) => this.getTrackState(id)),
     };
