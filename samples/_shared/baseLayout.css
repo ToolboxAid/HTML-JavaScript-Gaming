@@ -1,0 +1,29 @@
+/* Toolbox Aid
+David Quesenberry
+03/24/2026
+baseLayout.css */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #eee;
+}
+
+main {
+  padding: 16px;
+}
+
+canvas {
+  display: block;
+  margin: 16px 0;
+  border: 1px solid #444;
+}
+
+h1, h3 {
+  margin: 8px 0;
+}
+
+section {
+  margin-top: 16px;
+}

@@ -12,10 +12,21 @@ Root
 │   ├── persistence/
 │   ├── debug/
 │   └── validation/
+├── games/
+│   ├── <name>/
+│   ├── <name>/
+│   ├── ... <name>/
+│   └── index.html
 ├── samples/
 │   ├── Sample001-<name>/
 │   ├── Sample002/<name>
-│   └── ... Sample078/<name>
+│   ├── ... Sample182/<name>
+│   └── index.html
+├── toolss/
+│   ├── <name>/
+│   ├── <name>/
+│   ├── ... <name>/
+│   └── index.html
 ├── tests/
 ├── RULES.txt
 ├── README.md

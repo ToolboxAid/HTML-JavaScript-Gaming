@@ -3,21 +3,21 @@ David Quesenberry
 03/23/2026
 PLAN.md
 
-# PLAN_PR — Create `/engine/ui/sampleLayout.css`
+# PLAN_PR — Create `/samples/_shared/baseLayout.css`
 
 ## Recommendation
 
 ### Path
 Use:
-- `engine/ui/sampleLayout.css`
+- `samples/_shared/baseLayout.css`
 
 ### File name
 Keep:
-- `sampleLayout.css`
+- `baseLayout.css`
 
-## Why `sampleLayout.css` makes more sense than `baseLayout.css`
+## Why `baseLayout.css` makes more sense than `baseLayout.css`
 
-### `sampleLayout.css` is better because:
+### `baseLayout.css` is better because:
 - it matches the current, proven use: sample pages and game demo pages
 - it is specific without being misleading
 - it reduces the chance that future contributors treat it like a global foundation stylesheet for unrelated app surfaces
@@ -38,7 +38,7 @@ The clean ownership rule is:
 This is UI scaffolding, not gameplay logic and not sample-only infrastructure.
 
 ## In Scope
-- move `/engine/ui/sampleLayout.css` to `/engine/ui/sampleLayout.css`
+- move `/samples/_shared/baseLayout.css` to `/samples/_shared/baseLayout.css`
 - update all HTML references in `/samples` and `/games`
 - keep behavior unchanged
 - optionally leave no duplicate copy behind
@@ -54,7 +54,7 @@ This is UI scaffolding, not gameplay logic and not sample-only infrastructure.
 
 ### 1. Inventory usage
 Find every reference to:
-- `/engine/ui/sampleLayout.css`
+- `/samples/_shared/baseLayout.css`
 
 Classify usage by:
 - sample HTML pages
@@ -63,15 +63,15 @@ Classify usage by:
 
 ### 2. Create target file
 Create:
-- `engine/ui/sampleLayout.css`
+- `samples/_shared/baseLayout.css`
 
 Initial content should be identical to the existing stylesheet.
 This is a relocation, not a redesign.
 
 ### 3. Update references
 Change all sample/game HTML references to the new path:
-- from `/engine/ui/sampleLayout.css`
-- to `/engine/ui/sampleLayout.css`
+- from `/samples/_shared/baseLayout.css`
+- to `/samples/_shared/baseLayout.css`
 
 Preserve relative paths correctly for:
 - sample pages
@@ -79,7 +79,7 @@ Preserve relative paths correctly for:
 
 ### 4. Remove old file
 After references are updated and verified, remove:
-- `/engine/ui/sampleLayout.css`
+- `/samples/_shared/baseLayout.css`
 
 Do not leave duplicate copies unless a verification blocker requires a temporary transition step.
 
@@ -91,9 +91,9 @@ Confirm:
 - no layout regressions are introduced
 
 ## Acceptance Criteria
-- stylesheet lives at `engine/ui/sampleLayout.css`
+- stylesheet lives at `samples/_shared/baseLayout.css`
 - all sample/game references point to the new location
 - no duplicate legacy copy remains
 - behavior is unchanged
-- naming remains `sampleLayout.css`
+- naming remains `baseLayout.css`
 

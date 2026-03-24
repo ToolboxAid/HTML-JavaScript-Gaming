@@ -19,7 +19,7 @@ This work is:
 The stylesheet content should remain the same. Only ownership and references change.
 
 ## In Scope
-- move `/engine/ui/sampleLayout.css` -> `/engine/ui/sampleLayout.css`
+- move `/samples/_shared/baseLayout.css` -> `/samples/_shared/baseLayout.css`
 - update all sample HTML references
 - update all game HTML references
 - update any direct docs or reference files that still mention the old path
@@ -37,17 +37,17 @@ The stylesheet content should remain the same. Only ownership and references cha
 
 ### 1. Create canonical shared layout path
 Create:
-- `engine/ui/sampleLayout.css`
+- `samples/_shared/baseLayout.css`
 
 Initial content must match the current shared stylesheet exactly.
 This is a relocation, not a redesign.
 
 ### 2. Update all consumers
 Replace references to:
-- `/engine/ui/sampleLayout.css`
+- `/samples/_shared/baseLayout.css`
 
 with:
-- `/engine/ui/sampleLayout.css`
+- `/samples/_shared/baseLayout.css`
 
 Update:
 - sample HTML pages
@@ -56,7 +56,7 @@ Update:
 
 ### 3. Remove legacy copy
 Remove:
-- `/engine/ui/sampleLayout.css`
+- `/samples/_shared/baseLayout.css`
 
 Do not keep duplicate copies after verification.
 
@@ -68,9 +68,9 @@ Confirm:
 - no behavior or visual regressions are introduced
 
 ## Acceptance Criteria
-- `engine/ui/sampleLayout.css` exists
+- `samples/_shared/baseLayout.css` exists
 - all sample/game references point to the new path
-- old `/engine/ui/sampleLayout.css` is removed
+- old `/samples/_shared/baseLayout.css` is removed
 - any directly related stale references are updated
 - no gameplay/runtime files change
 - visual behavior remains unchanged

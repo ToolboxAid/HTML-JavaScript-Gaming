@@ -8,7 +8,7 @@ PLAN.md
 ## Goal
 Correct docs to reflect the real state of the repo:
 
-- `sampleLayout.css` was relocated to `engine/ui/sampleLayout.css`
+- `baseLayout.css` was relocated to `samples/_shared/baseLayout.css`
 - `samples/_shared/` still exists intentionally
 - `_shared` is still used for sample-owned JavaScript helpers and bootstrap support
 
@@ -16,8 +16,8 @@ Correct docs to reflect the real state of the repo:
 
 ### 1. Correct the CSS relocation wording
 Ensure docs say the move was:
-- `/samples/_shared/sampleLayout.css`
-- to `/engine/ui/sampleLayout.css`
+- `/samples/_shared/baseLayout.css`
+- to `/samples/_shared/baseLayout.css`
 
 ### 2. Clarify `_shared` is still valid
 Docs must not imply `_shared` was removed or is now unnecessary.
