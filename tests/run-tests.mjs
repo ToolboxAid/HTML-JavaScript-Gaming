@@ -32,6 +32,8 @@ import { run as runGravityWellValidation } from './games/GravityWellValidation.t
 import { run as runGravityWellWorldMechanics } from './games/GravityWellWorldMechanics.test.mjs';
 import { run as runMultiBallChaosValidation } from './games/MultiBallChaosValidation.test.mjs';
 import { run as runMultiBallChaosWorld } from './games/MultiBallChaosWorld.test.mjs';
+import { run as runPaddleInterceptValidation } from './games/PaddleInterceptValidation.test.mjs';
+import { run as runPaddleInterceptWorld } from './games/PaddleInterceptWorld.test.mjs';
 import { run as runPongValidation } from './games/PongValidation.test.mjs';
 import { run as runPongAudio } from './games/PongAudio.test.mjs';
 import { run as runPongWorld } from './games/PongWorld.test.mjs';
@@ -109,6 +111,8 @@ const tests = [
     ['GravityWellWorldMechanics', runGravityWellWorldMechanics],
     ['MultiBallChaosValidation', runMultiBallChaosValidation],
     ['MultiBallChaosWorld', runMultiBallChaosWorld],
+    ['PaddleInterceptValidation', runPaddleInterceptValidation],
+    ['PaddleInterceptWorld', runPaddleInterceptWorld],
     ['PongValidation', runPongValidation],
     ['PongAudio', runPongAudio],
     ['PongWorld', runPongWorld],

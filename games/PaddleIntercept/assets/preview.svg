@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Paddle Intercept preview</title>
+  <desc id="desc">Minimal arcade preview showing a bouncing ball, an intercept marker, and a tracking paddle.</desc>
+  <rect width="800" height="600" fill="#030712" />
+  <rect x="28" y="28" width="744" height="544" rx="18" fill="#0f172a" stroke="#e2e8f0" stroke-width="4" />
+  <rect x="70" y="94" width="502" height="390" fill="#111c30" stroke="#e2e8f0" stroke-width="3" />
+  <rect x="612" y="112" width="126" height="132" rx="12" fill="#111827" stroke="#334155" stroke-width="3" />
+  <text x="70" y="70" fill="#f8fafc" font-family="monospace" font-size="28" font-weight="bold">PADDLE INTERCEPT</text>
+  <text x="632" y="146" fill="#f8fafc" font-family="monospace" font-size="14">P Pause</text>
+  <text x="632" y="172" fill="#f8fafc" font-family="monospace" font-size="14">R Reset</text>
+  <text x="632" y="198" fill="#94a3b8" font-family="monospace" font-size="13">Green = target</text>
+  <line x1="170" y1="208" x2="476" y2="338" stroke="rgba(52,211,153,0.35)" stroke-width="2" />
+  <line x1="458" y1="338" x2="510" y2="338" stroke="#34d399" stroke-width="4" />
+  <line x1="484" y1="318" x2="484" y2="358" stroke="#34d399" stroke-width="3" />
+  <rect x="220" y="190" width="18" height="18" fill="#f59e0b" />
+  <rect x="520" y="278" width="14" height="104" fill="#f8fafc" />
+</svg>
