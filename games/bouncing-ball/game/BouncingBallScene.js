@@ -145,13 +145,13 @@ export default class BouncingBallScene extends Scene {
     });
 
     if (this.world.status === 'playing') {
-      renderer.drawText('P pause', 930, 48, {
+      renderer.drawText('P pause', 930, 38, {
         color: COLORS.muted,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
       });
-      renderer.drawText('R reset', 930, 72, {
+      renderer.drawText('R reset', 930, 58, {
         color: COLORS.muted,
         font: '16px monospace',
         textAlign: 'right',
