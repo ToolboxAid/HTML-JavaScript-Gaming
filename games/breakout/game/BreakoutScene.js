@@ -19,7 +19,7 @@ const COLORS = {
   wall: '#f8f8f2',
   paddle: '#f8f8f2',
   ball: '#f8f8f2',
-  text: '#f8f8f2',
+  text: '#04040A', //f8f8f2
   muted: '#a0a0a0',
   panel: '#000000',
 };
@@ -157,13 +157,13 @@ export default class BreakoutScene extends Scene {
 
     if (this.world.status === 'playing' || this.world.status === 'serve') {
       renderer.drawText('P pause', 928, 10, {
-        color: '#ff0000',
+        color: COLORS.text,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
       });
       renderer.drawText('X menu', 928, 30, {
-        color: '#ff0000',
+        color: COLORS.text,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
