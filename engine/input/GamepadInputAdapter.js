@@ -4,69 +4,116 @@ David Quesenberry
 03/24/2026
 GamepadInputAdapter.js
 */
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
 export default class GamepadInputAdapter {
-  constructor({
-    gamepadIndex = 0,
-    deadzone = 0.18,
-    axes = {},
-    buttons = {},
-  } = {}) {
-    this.gamepadIndex = gamepadIndex;
-    this.deadzone = deadzone;
-    this.axes = { ...axes };
-    this.buttons = { ...buttons };
+  constructor({ input = null, deadzone = 0.2 } = {}) {
+    this.input = input;
+    this.deadzone = Math.max(0, Number(deadzone) || 0.2);
   }
 
-  read(inputService = null) {
-    const gamepad = inputService?.getGamepad?.(this.gamepadIndex) ?? null;
-    const axisSnapshot = {};
-    const buttonSnapshot = {};
-    const pressedSnapshot = {};
+  setInput(input) {
+    this.input = input;
+    return this;
+  }
 
-    Object.entries(this.axes).forEach(([name, axisIndex]) => {
-      axisSnapshot[name] = this.getAxisValue(gamepad, axisIndex);
-    });
+  getPad(index = 0) {
+    if (!this.input || typeof this.input.getGamepad !== 'function') {
+      return this.createEmptyPad(index);
+    }
 
-    Object.entries(this.buttons).forEach(([name, buttonIndex]) => {
-      buttonSnapshot[name] = Boolean(gamepad?.isDown?.(buttonIndex));
-      pressedSnapshot[name] = Boolean(gamepad?.isPressed?.(buttonIndex));
-    });
+    const pad = this.input.getGamepad(index);
+    if (!pad) {
+      return this.createEmptyPad(index);
+    }
+
+    const leftX = this.readAxis(pad.axes?.[0] ?? 0);
+    const leftY = this.readAxis(pad.axes?.[1] ?? 0);
+    const rightX = this.readAxis(pad.axes?.[2] ?? 0);
+    const rightY = this.readAxis(pad.axes?.[3] ?? 0);
+
+    const dpadUp = this.isDown(pad, 12);
+    const dpadDown = this.isDown(pad, 13);
+    const dpadLeft = this.isDown(pad, 14);
+    const dpadRight = this.isDown(pad, 15);
+
+    const vertical = this.combineDigitalAxis(leftY, dpadUp, dpadDown);
+    const horizontal = this.combineDigitalAxis(leftX, dpadLeft, dpadRight);
 
     return {
-      connected: Boolean(gamepad?.connected),
-      id: gamepad?.id ?? '',
-      index: gamepad?.index ?? this.gamepadIndex,
-      axes: axisSnapshot,
-      buttons: buttonSnapshot,
-      pressed: pressedSnapshot,
-      getAxis(name) {
-        return axisSnapshot[name] ?? 0;
+      index,
+      connected: Boolean(pad.connected),
+      id: pad.id ?? '',
+      mapping: pad.mapping ?? '',
+      axes: [...(pad.axes ?? [])],
+      buttonsDown: [...(pad.buttonsDown ?? [])],
+      buttonsPressed: [...(pad.buttonsPressed ?? [])],
+      leftStick: { x: leftX, y: leftY },
+      rightStick: { x: rightX, y: rightY },
+      dpad: {
+        up: dpadUp,
+        down: dpadDown,
+        left: dpadLeft,
+        right: dpadRight,
       },
-      isDown(name) {
-        return Boolean(buttonSnapshot[name]);
-      },
-      isPressed(name) {
-        return Boolean(pressedSnapshot[name]);
-      },
+      horizontal,
+      vertical,
+      confirmDown: this.isDown(pad, 0),
+      confirmPressed: this.isPressed(pad, 0),
+      cancelPressed: this.isPressed(pad, 1),
+      startPressed: this.isPressed(pad, 9),
+      leftShoulderDown: this.isDown(pad, 4),
+      rightShoulderDown: this.isDown(pad, 5),
+      isDown: (buttonIndex) => this.isDown(pad, buttonIndex),
+      isPressed: (buttonIndex) => this.isPressed(pad, buttonIndex),
     };
   }
 
-  getAxisValue(gamepad, axisIndex) {
-    if (!gamepad || typeof axisIndex !== 'number') {
-      return 0;
+  createEmptyPad(index = 0) {
+    return {
+      index,
+      connected: false,
+      id: '',
+      mapping: '',
+      axes: [],
+      buttonsDown: [],
+      buttonsPressed: [],
+      leftStick: { x: 0, y: 0 },
+      rightStick: { x: 0, y: 0 },
+      dpad: { up: false, down: false, left: false, right: false },
+      horizontal: 0,
+      vertical: 0,
+      confirmDown: false,
+      confirmPressed: false,
+      cancelPressed: false,
+      startPressed: false,
+      leftShoulderDown: false,
+      rightShoulderDown: false,
+      isDown: () => false,
+      isPressed: () => false,
+    };
+  }
+
+  readAxis(value) {
+    const axis = Number(value) || 0;
+    return Math.abs(axis) < this.deadzone ? 0 : Math.max(-1, Math.min(1, axis));
+  }
+
+  combineDigitalAxis(analogValue, negativePressed, positivePressed) {
+    if (negativePressed && !positivePressed) {
+      return -1;
     }
 
-    const rawValue = Number(gamepad.axes?.[axisIndex] ?? 0);
-    const magnitude = Math.abs(rawValue);
-    if (magnitude <= this.deadzone) {
-      return 0;
+    if (positivePressed && !negativePressed) {
+      return 1;
     }
 
-    const normalizedMagnitude = (magnitude - this.deadzone) / (1 - this.deadzone);
-    return clamp(Math.sign(rawValue) * normalizedMagnitude, -1, 1);
+    return analogValue;
+  }
+
+  isDown(pad, buttonIndex) {
+    return Boolean(pad?.isDown?.(buttonIndex));
+  }
+
+  isPressed(pad, buttonIndex) {
+    return Boolean(pad?.isPressed?.(buttonIndex));
   }
 }

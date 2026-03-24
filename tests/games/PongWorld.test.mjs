@@ -5,7 +5,7 @@ David Quesenberry
 PongWorld.test.mjs
 */
 import assert from 'node:assert/strict';
-import PongWorld from '../../games/pong/game/PongWorld.js';
+import PongWorld from '../../games/Pong/game/PongWorld.js';
 
 function createControls(overrides = {}) {
   return {

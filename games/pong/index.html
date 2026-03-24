@@ -14,19 +14,19 @@ index.html
 <body>
   <main>
     <h1>Pong</h1>
-    <p>Standalone paddle-and-ball arcade set with four rule variants: Tennis, Hockey, Handball, and Jai-Alai. Keyboard and gamepad both drive the same player controls, and paddle motion adds english to every return.</p>
+    <p>Arcade-style Pong build with Tennis, Hockey, Handball, and Jai-Alai modes, paddle english, and keyboard/gamepad support.</p>
     <canvas id="game" width="960" height="720"></canvas>
     <section>
-      <h3>Keys</h3>
-      <p><code>Arrow Keys</code> or <code>WASD</code> move the paddle. <code>Enter</code> or <code>Space</code> starts, serves, and restarts. <code>Esc</code> returns to the mode menu. A standard gamepad uses the left stick or D-pad plus <code>A</code> to confirm and <code>B</code> to go back.</p>
+      <h3>Controls</h3>
+      <p><code>W</code>/<code>S</code> move the left paddle, and Hockey also uses <code>A</code>/<code>D</code> for left/right drift away from goal. <code>Up</code>/<code>Down</code> move the right paddle. <code>Space</code> or <code>Enter</code> serves and restarts. <code>M</code> changes mode. <code>P</code> pauses. <code>X</code> exits the current run back to the menu. Gamepads use the left stick or D-pad; south button serves, start pauses, and east/cancel returns to menu.</p>
     </section>
     <section>
-      <h3>Gameplay Loop</h3>
+      <h3>Modes</h3>
       <ul>
-        <li><strong>Tennis</strong>: classic player-vs-opponent Pong race to seven.</li>
-        <li><strong>Hockey</strong>: free-move paddles, open goal mouths, and puck-style rebounds.</li>
-        <li><strong>Handball</strong>: attack the front wall, score on clean strikes, survive three misses.</li>
-        <li><strong>Jai-Alai</strong>: faster handball with stronger english and tighter control windows.</li>
+        <li><strong>Tennis:</strong> classic head-to-head Pong.</li>
+        <li><strong>Hockey:</strong> enclosed rink with goal slots at each end.</li>
+        <li><strong>Handball:</strong> solo return practice against the far wall.</li>
+        <li><strong>Jai-Alai:</strong> high-speed solo wall game with faster rebounds.</li>
       </ul>
     </section>
     <section>
@@ -35,6 +35,7 @@ index.html
         <li>core / Engine</li>
         <li>input / InputService</li>
         <li>input / GamepadInputAdapter</li>
+        <li>render / CanvasRenderer</li>
         <li>runtime / FullscreenService</li>
         <li>scenes / Scene</li>
         <li>theme / Theme</li>

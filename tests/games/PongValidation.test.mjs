@@ -5,8 +5,8 @@ David Quesenberry
 PongValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import PongScene from '../../games/pong/game/PongScene.js';
-import { bootPong } from '../../games/pong/main.js';
+import PongScene from '../../games/Pong/game/PongScene.js';
+import { bootPong } from '../../games/Pong/main.js';
 
 function createCanvas() {
   const listeners = new Map();
@@ -25,6 +25,26 @@ function createInput(codesDown = [], codesPressed = []) {
   const down = new Set(codesDown);
   const pressed = new Set(codesPressed);
   return {
+    isDown(code) {
+      return down.has(code);
+    },
+    isPressed(code) {
+      return pressed.has(code);
+    },
+    getGamepad() {
+      return null;
+    },
+  };
+}
+
+function createMutableInput() {
+  let down = new Set();
+  let pressed = new Set();
+  return {
+    setState(codesDown = [], codesPressed = []) {
+      down = new Set(codesDown);
+      pressed = new Set(codesPressed);
+    },
     isDown(code) {
       return down.has(code);
     },
@@ -125,19 +145,55 @@ export async function run() {
   assert.equal(fullscreenRequests, 1);
 
   const scene = new PongScene();
-  const engine = { input: createInput(['ArrowDown'], []), canvas: { style: {} } };
+  const input = createMutableInput();
+  const engine = { input, canvas: { style: {} } };
+  scene.enter(engine);
+  input.setState([], ['KeyM']);
   scene.update(0.016, engine);
-  scene.update(0.016, { input: createInput([], []), canvas: { style: {} } });
-  assert.equal(scene.selectedModeIndex, 1);
+  assert.equal(scene.mode.key, 'hockey');
+  assert.equal(scene.roundOver, true);
+  input.setState(['KeyD'], []);
+  scene.update(0.25, engine);
+  assert.equal(scene.leftPaddle.x > 54, true);
+  assert.equal(scene.leftPaddle.x <= (480 - 44), true);
 
-  scene.update(0.016, { input: createInput([], ['Enter']), canvas: { style: {} } });
-  assert.equal(scene.phase, 'playing');
-  assert.equal(scene.world.modeKey, 'hockey');
+  input.setState([], ['Enter']);
+  scene.update(0.016, engine);
+  assert.equal(scene.roundOver, false);
+  assert.equal(scene.getBallSpeed() > 0, true);
+  assert.equal(Math.abs(scene.ball.x - 480) < 10, true);
+  assert.equal(scene.leftPaddle.x > 54, true);
+  assert.equal(scene.rightPaddle.x, 892);
 
-  scene.world.status = 'won';
-  scene.update(0.016, { input: createInput([], ['Enter']), canvas: { style: {} } });
-  assert.equal(scene.world.status, 'serve');
+  input.setState([], ['KeyP']);
+  scene.update(0.016, engine);
+  assert.equal(scene.isPaused, true);
+  input.setState([], ['KeyP']);
+  scene.update(0.016, engine);
+  assert.equal(scene.isPaused, false);
 
-  scene.update(0.016, { input: createInput([], ['Escape']), canvas: { style: {} } });
-  assert.equal(scene.phase, 'menu');
+  input.setState([], ['KeyX']);
+  scene.update(0.016, engine);
+  assert.equal(scene.roundOver, true);
+  assert.equal(scene.isPaused, false);
+  assert.equal(scene.ball.vx, 0);
+  assert.equal(scene.ball.vy, 0);
+
+  scene.roundOver = true;
+  scene.messageText = 'ready';
+  input.setState([], ['KeyN']);
+  scene.update(0.016, engine);
+  assert.equal(scene.mode.key, 'tennis');
+
+  input.setState([], ['KeyM']);
+  scene.update(0.016, engine);
+  assert.equal(scene.mode.key, 'hockey');
+  input.setState([], ['KeyM']);
+  scene.update(0.016, engine);
+  assert.equal(scene.mode.key, 'handball');
+  assert.equal(scene.leftPaddle.x, 54);
+  input.setState([], ['KeyM']);
+  scene.update(0.016, engine);
+  assert.equal(scene.mode.key, 'jai-alai');
+  assert.equal(scene.leftPaddle.x, 54);
 }

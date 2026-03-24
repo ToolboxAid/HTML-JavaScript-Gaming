@@ -3,4 +3,4 @@ David Quesenberry
 03/24/2026
 NEXT_COMMAND.txt
 
-Use CODEX_COMMANDS.md in VS Code to generate the Pong implementation delta ZIP.
+Validate games/Pong in browser, confirm all four modes work, then package the next cleanup or polish PR.

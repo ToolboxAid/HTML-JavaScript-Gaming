@@ -8,13 +8,16 @@ import assert from 'node:assert/strict';
 import GamepadInputAdapter from '../../engine/input/GamepadInputAdapter.js';
 
 function createInputService({
-  axes = [0, 0],
+  axes = [0, 0, 0, 0],
   down = {},
   pressed = {},
   connected = true,
 } = {}) {
   return {
-    getGamepad() {
+    getGamepad(index = 0) {
+      if (index !== 0) {
+        return null;
+      }
       return {
         connected,
         id: 'Pad',
@@ -31,39 +34,48 @@ function createInputService({
   };
 }
 
-function testAppliesDeadzoneAndNormalization() {
+function testAppliesDeadzoneAndDigitalOverrides() {
   const adapter = new GamepadInputAdapter({
+    input: createInputService({ axes: [0.1, -0.19] }),
     deadzone: 0.2,
-    axes: { moveX: 0, moveY: 1 },
   });
 
-  const insideDeadzone = adapter.read(createInputService({ axes: [0.1, -0.19] }));
-  assert.equal(insideDeadzone.getAxis('moveX'), 0);
-  assert.equal(insideDeadzone.getAxis('moveY'), 0);
+  const insideDeadzone = adapter.getPad(0);
+  assert.equal(insideDeadzone.leftStick.x, 0);
+  assert.equal(insideDeadzone.leftStick.y, 0);
+  assert.equal(insideDeadzone.horizontal, 0);
+  assert.equal(insideDeadzone.vertical, 0);
 
-  const outsideDeadzone = adapter.read(createInputService({ axes: [0.6, -1] }));
-  assert.equal(outsideDeadzone.getAxis('moveX') > 0.49, true);
-  assert.equal(outsideDeadzone.getAxis('moveX') < 0.51, true);
-  assert.equal(outsideDeadzone.getAxis('moveY'), -1);
+  adapter.setInput(createInputService({
+    axes: [0.6, -1],
+    down: { 12: true },
+  }));
+  const outsideDeadzone = adapter.getPad(0);
+  assert.equal(outsideDeadzone.leftStick.x, 0.6);
+  assert.equal(outsideDeadzone.leftStick.y, -1);
+  assert.equal(outsideDeadzone.horizontal, 0.6);
+  assert.equal(outsideDeadzone.vertical, -1);
 }
 
-function testMapsNamedButtons() {
+function testMapsSemanticButtons() {
   const adapter = new GamepadInputAdapter({
-    buttons: { confirm: 0, cancel: 1, start: 9 },
+    input: createInputService({
+      axes: [0, 0, 0.3, -0.4],
+    down: { 0: true, 9: true },
+      pressed: { 1: true, 9: true },
+    }),
   });
 
-  const snapshot = adapter.read(createInputService({
-    down: { 0: true, 9: true },
-    pressed: { 1: true },
-  }));
-
-  assert.equal(snapshot.isDown('confirm'), true);
-  assert.equal(snapshot.isDown('start'), true);
-  assert.equal(snapshot.isPressed('cancel'), true);
-  assert.equal(snapshot.isPressed('confirm'), false);
+  const snapshot = adapter.getPad(0);
+  assert.equal(snapshot.confirmDown, true);
+  assert.equal(snapshot.confirmPressed, false);
+  assert.equal(snapshot.cancelPressed, true);
+  assert.equal(snapshot.startPressed, true);
+  assert.equal(snapshot.rightStick.x, 0.3);
+  assert.equal(snapshot.rightStick.y, -0.4);
 }
 
 export function run() {
-  testAppliesDeadzoneAndNormalization();
-  testMapsNamedButtons();
+  testAppliesDeadzoneAndDigitalOverrides();
+  testMapsSemanticButtons();
 }

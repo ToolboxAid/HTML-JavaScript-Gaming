@@ -3,19 +3,14 @@ David Quesenberry
 03/24/2026
 README.md
 
-# Pong BUILD_PR Deliverable
+# Pong APPLY_PR Delta
 
-This ZIP contains the BUILD_PR planning package for Game #3: Pong.
+This ZIP contains the repo-structured delta for adding standalone Pong.
 
 ## Included
-- docs/dev/games/BUILD_PR_PONG.md
-- CODEX_COMMANDS.md
-- COMMIT_COMMENT.txt
-- NEXT_COMMAND.txt
-
-## Purpose
-This package is for the BUILD_PR step only.
-It defines the approved scope Codex should execute.
-
-## Expected Codex Output
-A separate delta ZIP matching repo structure exactly, containing the actual implementation files.
+- `games/Pong/*`
+- `engine/input/GamepadInputAdapter.js`
+- `engine/input/index.js`
+- `games/index.html`
+- `docs/dev/games/PONG.md`
+- command / commit helper files

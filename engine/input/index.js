@@ -9,5 +9,5 @@ export { default as InputMap } from './InputMap.js';
 export { default as ActionInputMap } from './ActionInputMap.js';
 export { default as ActionInputService } from './ActionInputService.js';
 export { default as InputContextService } from './InputContextService.js';
-export { default as GamepadInputAdapter } from './GamepadInputAdapter.js';
 export { drawActionInputDebugOverlay } from './ActionInputDebugOverlay.js';
+export { default as GamepadInputAdapter } from './GamepadInputAdapter.js';

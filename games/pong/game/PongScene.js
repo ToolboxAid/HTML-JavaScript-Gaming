@@ -5,252 +5,537 @@ David Quesenberry
 PongScene.js
 */
 import { Scene } from '../../../engine/scenes/index.js';
-import PongControls from './PongControls.js';
-import PongWorld, { PONG_MODE_LIST } from './PongWorld.js';
+import PongInputController from './PongInputController.js';
+import { getPongModes } from './PongModeConfig.js';
 
-function wrapIndex(index, length) {
-  if (length <= 0) {
-    return 0;
-  }
-  return ((index % length) + length) % length;
+const COURT = {
+  width: 960,
+  height: 720,
+  top: 68,
+  bottom: 692,
+  left: 28,
+  right: 932,
+  centerX: 480,
+  centerY: 380,
+};
+
+const COLORS = {
+  background: '#05070a',
+  ink: '#f4f7fb',
+  muted: '#a6b0bf',
+  accent: '#7de2ff',
+  good: '#8bf0c8',
+  warn: '#ffd37d',
+  danger: '#ff9a9a',
+};
+
+function wrapOverlayText(text, maxCharacters = 44) {
+  const paragraphs = String(text ?? '').split('\n');
+  const lines = [];
+
+  paragraphs.forEach((paragraph) => {
+    const words = paragraph.split(/\s+/).filter(Boolean);
+    let currentLine = '';
+
+    words.forEach((word) => {
+      const nextLine = currentLine ? `${currentLine} ${word}` : word;
+      if (nextLine.length > maxCharacters && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+        return;
+      }
+      currentLine = nextLine;
+    });
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    if (!words.length) {
+      lines.push('');
+    }
+  });
+
+  return lines;
 }
 
 export default class PongScene extends Scene {
   constructor() {
     super();
-    this.world = new PongWorld({ width: 960, height: 720 });
-    this.controls = new PongControls();
-    this.phase = 'menu';
-    this.selectedModeIndex = 0;
-    this.lastMenuUp = false;
-    this.lastMenuDown = false;
+    this.modes = getPongModes();
+    this.modeIndex = 0;
+    this.mode = this.modes[this.modeIndex];
+    this.inputController = null;
+    this.isPaused = false;
+    this.roundOver = true;
+    this.winnerText = '';
+    this.messageText = 'Press Space, Enter, or gamepad south button to serve.';
+    this.score = { left: 0, right: 0, rally: 0, bestRally: 0 };
+    this.serveDirection = 1;
+    this.leftPaddle = this.createPaddle('left');
+    this.rightPaddle = this.createPaddle('right');
+    this.ball = this.createBall();
   }
 
-  startSelectedMode() {
-    const mode = PONG_MODE_LIST[this.selectedModeIndex] ?? PONG_MODE_LIST[0];
-    this.world.setMode(mode.key);
-    this.phase = 'playing';
+  enter(engine) {
+    this.inputController = new PongInputController(engine.input);
+    this.applyMode();
   }
 
-  update(dtSeconds, engine) {
-    const menuInput = this.controls.readMenu(engine.input);
+  update(dt, engine) {
+    const frame = this.inputController.getFrameState({ soloMode: !this.mode.twoPaddles });
 
-    if (this.phase === 'menu') {
-      const menuUp = menuInput.moveY < -0.6;
-      const menuDown = menuInput.moveY > 0.6;
+    if (frame.exitPressed) {
+      this.applyMode();
+      return;
+    }
 
-      if (menuUp && !this.lastMenuUp) {
-        this.selectedModeIndex = wrapIndex(this.selectedModeIndex - 1, PONG_MODE_LIST.length);
-      }
+    if (frame.pausePressed) {
+      this.isPaused = !this.isPaused;
+    }
 
-      if (menuDown && !this.lastMenuDown) {
-        this.selectedModeIndex = wrapIndex(this.selectedModeIndex + 1, PONG_MODE_LIST.length);
-      }
+    if (frame.nextModePressed) {
+      this.setMode(this.modeIndex + 1);
+      return;
+    }
 
-      this.lastMenuUp = menuUp;
-      this.lastMenuDown = menuDown;
+    if (frame.previousModePressed) {
+      this.setMode(this.modeIndex - 1);
+      return;
+    }
 
-      if (menuInput.confirmPressed) {
-        this.startSelectedMode();
+    if (this.isPaused) {
+      return;
+    }
+
+    this.updatePaddles(dt, frame);
+
+    if (this.roundOver) {
+      if (frame.servePressed) {
+        this.startRound();
       }
       return;
     }
 
-    const gameplayInput = this.controls.readGameplay(engine.input, {
-      allowHorizontal: this.world.mode.allowHorizontal,
-    });
+    this.updateBall(dt);
+    this.handleTopBottomWalls();
+    this.handlePaddleCollision(this.leftPaddle, 1);
 
-    if (gameplayInput.backPressed) {
-      this.phase = 'menu';
-      return;
+    if (this.mode.twoPaddles) {
+      this.handlePaddleCollision(this.rightPaddle, -1);
+    } else {
+      this.handleSoloWall();
     }
 
-    this.world.update(dtSeconds, gameplayInput);
-
-    if ((this.world.status === 'won' || this.world.status === 'lost') && gameplayInput.confirmPressed) {
-      this.world.resetMatch();
-    }
+    this.handleEndZones();
   }
 
   render(renderer) {
-    renderer.clear('#06111b');
-    renderer.drawRect(20, 20, this.world.width - 40, this.world.height - 40, this.world.mode.arenaColor);
-    renderer.strokeRect(20, 20, this.world.width - 40, this.world.height - 40, this.world.mode.accent, 2);
+    renderer.clear(COLORS.background);
+    this.drawCourt(renderer);
+    this.drawHud(renderer);
+    this.drawPaddle(renderer, this.leftPaddle);
+    if (this.mode.twoPaddles) {
+      this.drawPaddle(renderer, this.rightPaddle);
+    }
+    renderer.drawCircle(this.ball.x, this.ball.y, this.ball.radius, COLORS.ink);
 
-    this.renderArenaLines(renderer);
-    this.renderTrail(renderer);
-    this.renderPaddles(renderer);
-    this.renderBall(renderer);
-    this.renderHud(renderer);
+    if (this.isPaused) {
+      this.drawOverlay(renderer, 'Paused', 'Press P or Start to resume.');
+    } else if (this.roundOver) {
+      this.drawOverlay(renderer, this.winnerText || this.mode.name, this.messageText);
+    }
+  }
 
-    if (this.phase === 'menu') {
-      this.renderMenu(renderer);
+  createPaddle(side) {
+    return {
+      side,
+      x: side === 'left' ? 54 : 892,
+      y: COURT.centerY - 56,
+      width: 14,
+      height: 112,
+      speed: 540,
+      velocityY: 0,
+      color: COLORS.ink,
+    };
+  }
+
+  createBall() {
+    return {
+      x: COURT.centerX,
+      y: COURT.centerY,
+      radius: 8,
+      vx: 0,
+      vy: 0,
+      color: COLORS.ink,
+    };
+  }
+
+  applyMode() {
+    this.mode = this.modes[this.modeIndex];
+    this.score = { left: 0, right: 0, rally: 0, bestRally: 0 };
+    this.leftPaddle.height = this.mode.leftPaddleHeight;
+    this.rightPaddle.height = this.mode.rightPaddleHeight;
+    this.leftPaddle.x = 54;
+    this.rightPaddle.x = 892;
+    this.leftPaddle.y = COURT.centerY - this.leftPaddle.height / 2;
+    this.rightPaddle.y = COURT.centerY - Math.max(1, this.rightPaddle.height) / 2;
+    this.roundOver = true;
+    this.winnerText = '';
+    this.messageText = `${this.mode.description}\nPress Space, Enter, or south button to serve.`;
+    this.isPaused = false;
+    this.resetBall();
+  }
+
+  setMode(index) {
+    this.modeIndex = ((index % this.modes.length) + this.modes.length) % this.modes.length;
+    this.applyMode();
+  }
+
+  resetBall() {
+    this.ball.x = COURT.centerX;
+    this.ball.y = COURT.centerY;
+    this.ball.vx = 0;
+    this.ball.vy = 0;
+  }
+
+  startRound() {
+    const angleSpread = this.mode.twoPaddles ? 0.6 : 0.75;
+    const direction = this.mode.twoPaddles ? this.serveDirection : 1;
+    const random = (Math.random() * 2 - 1) * angleSpread;
+    this.ball.x = COURT.centerX;
+    this.ball.y = COURT.centerY + (Math.random() * 80 - 40);
+    this.ball.vx = this.mode.startSpeed * direction;
+    this.ball.vy = this.mode.startSpeed * 0.55 * random;
+    this.roundOver = false;
+    this.winnerText = '';
+    this.messageText = 'Active rally';
+    this.score.rally = 0;
+  }
+
+  updatePaddles(dt, frame) {
+    this.movePaddle(this.leftPaddle, frame.leftAxis, dt, frame.leftHorizontal ?? 0);
+    if (this.mode.twoPaddles) {
+      this.movePaddle(this.rightPaddle, frame.rightAxis, dt);
+    }
+  }
+
+  movePaddle(paddle, axis, dt, horizontalAxis = 0) {
+    const amount = (Number(axis) || 0) * paddle.speed;
+    paddle.velocityY = amount;
+    paddle.y += amount * dt;
+    paddle.y = Math.max(COURT.top, Math.min(COURT.bottom - paddle.height, paddle.y));
+
+    if (this.mode.key === 'hockey' && paddle.side === 'left') {
+      const horizontalAmount = (Number(horizontalAxis) || 0) * paddle.speed;
+      paddle.x += horizontalAmount * dt;
+      paddle.x = Math.max(54, Math.min(COURT.centerX - 44, paddle.x));
       return;
     }
 
-    if (this.world.status !== 'playing') {
-      this.renderOverlay(renderer);
+    paddle.x = paddle.side === 'left' ? 54 : 892;
+  }
+
+  updateBall(dt) {
+    this.ball.x += this.ball.vx * dt;
+    this.ball.y += this.ball.vy * dt;
+  }
+
+  handleTopBottomWalls() {
+    if (this.ball.y - this.ball.radius <= COURT.top) {
+      this.ball.y = COURT.top + this.ball.radius;
+      this.ball.vy = Math.abs(this.ball.vy);
+    }
+
+    if (this.ball.y + this.ball.radius >= COURT.bottom) {
+      this.ball.y = COURT.bottom - this.ball.radius;
+      this.ball.vy = -Math.abs(this.ball.vy);
     }
   }
 
-  renderArenaLines(renderer) {
-    if (this.world.mode.goalType === 'goal-mouth') {
-      const goals = this.world.getGoalBounds();
-      renderer.drawRect(goals.left.x + 20, goals.left.y + 20, 12, goals.left.height, 'rgba(147, 197, 253, 0.3)');
-      renderer.drawRect(goals.right.x + 18, goals.right.y + 20, 12, goals.right.height, 'rgba(147, 197, 253, 0.3)');
-      renderer.strokeRect((this.world.width * 0.5) - 1, 24, 2, this.world.height - 48, 'rgba(255,255,255,0.18)', 1);
+  handlePaddleCollision(paddle, direction) {
+    if (!paddle || paddle.height <= 0) {
       return;
     }
 
-    if (this.world.mode.goalType === 'front-wall') {
-      renderer.drawRect(this.world.width - 38, 22, 16, this.world.height - 44, 'rgba(251, 191, 36, 0.15)');
-      renderer.strokeRect(this.world.width - 38, 22, 16, this.world.height - 44, this.world.mode.accent, 1);
+    const ballLeft = this.ball.x - this.ball.radius;
+    const ballRight = this.ball.x + this.ball.radius;
+    const ballTop = this.ball.y - this.ball.radius;
+    const ballBottom = this.ball.y + this.ball.radius;
+    const paddleLeft = paddle.x;
+    const paddleRight = paddle.x + paddle.width;
+    const paddleTop = paddle.y;
+    const paddleBottom = paddle.y + paddle.height;
+
+    const overlaps =
+      ballRight >= paddleLeft &&
+      ballLeft <= paddleRight &&
+      ballBottom >= paddleTop &&
+      ballTop <= paddleBottom;
+
+    const approaching = direction > 0 ? this.ball.vx < 0 : this.ball.vx > 0;
+    if (!overlaps || !approaching) {
       return;
     }
 
-    for (let y = 34; y < this.world.height - 34; y += 28) {
-      renderer.drawRect((this.world.width * 0.5) - 2, y, 4, 16, 'rgba(255,255,255,0.18)');
+    const hitOffset = (this.ball.y - (paddle.y + paddle.height / 2)) / (paddle.height / 2);
+    const clampedOffset = Math.max(-1, Math.min(1, hitOffset));
+    const english = (paddle.velocityY / paddle.speed) * 0.6;
+    const speed = Math.min(this.mode.maxSpeed, this.getBallSpeed() + this.mode.speedStep);
+    const horizontal = Math.max(speed * 0.72, Math.abs(this.ball.vx));
+    const vertical = speed * Math.max(-0.92, Math.min(0.92, clampedOffset * 0.82 + english * 0.55));
+
+    this.ball.vx = horizontal * direction;
+    this.ball.vy = vertical;
+    this.ball.x = direction > 0 ? paddleRight + this.ball.radius : paddleLeft - this.ball.radius;
+
+    if (this.mode.soloScoring) {
+      this.score.left += 1;
+      this.score.rally += 1;
+      this.score.bestRally = Math.max(this.score.bestRally, this.score.rally);
     }
   }
 
-  renderTrail(renderer) {
-    for (let index = 1; index < this.world.trail.length; index += 1) {
-      const previous = this.world.trail[index - 1];
-      const current = this.world.trail[index];
-      renderer.drawLine(
-        previous.x,
-        previous.y,
-        current.x,
-        current.y,
-        `rgba(255, 255, 255, ${index / (this.world.trail.length * 2.6)})`,
-        2,
-      );
-    }
-  }
-
-  renderPaddles(renderer) {
-    renderer.drawRect(
-      this.world.player.x - (this.world.player.width * 0.5),
-      this.world.player.y - (this.world.player.height * 0.5),
-      this.world.player.width,
-      this.world.player.height,
-      '#f8fafc',
-    );
-
-    if (!this.world.opponent) {
+  handleSoloWall() {
+    if (!this.mode.rightWallClosed) {
       return;
     }
 
-    renderer.drawRect(
-      this.world.opponent.x - (this.world.opponent.width * 0.5),
-      this.world.opponent.y - (this.world.opponent.height * 0.5),
-      this.world.opponent.width,
-      this.world.opponent.height,
-      '#cbd5e1',
-    );
+    if (this.ball.x + this.ball.radius < COURT.right) {
+      return;
+    }
+
+    const speed = Math.min(this.mode.maxSpeed, this.getBallSpeed() + this.mode.speedStep * 0.5);
+    this.ball.x = COURT.right - this.ball.radius;
+    this.ball.vx = -Math.max(speed * 0.76, Math.abs(this.ball.vx));
+
+    const wallInfluence = this.mode.key === 'jai-alai' ? 0.22 : 0.12;
+    const relativeY = (this.ball.y - COURT.centerY) / ((COURT.bottom - COURT.top) / 2);
+    this.ball.vy += speed * relativeY * wallInfluence;
+    this.ball.vy = Math.max(-this.mode.maxSpeed * 0.9, Math.min(this.mode.maxSpeed * 0.9, this.ball.vy));
   }
 
-  renderBall(renderer) {
-    renderer.drawCircle(this.world.ball.x, this.world.ball.y, this.world.ball.radius + 2, 'rgba(255,255,255,0.15)');
-    renderer.drawCircle(this.world.ball.x, this.world.ball.y, this.world.ball.radius, this.world.mode.accent);
+  handleEndZones() {
+    if (this.mode.key === 'hockey') {
+      this.handleHockeyGoals();
+      return;
+    }
+
+    if (this.mode.twoPaddles) {
+      if (this.ball.x + this.ball.radius < COURT.left) {
+        this.onPointScored('right');
+      } else if (this.ball.x - this.ball.radius > COURT.right) {
+        this.onPointScored('left');
+      }
+      return;
+    }
+
+    if (this.ball.x + this.ball.radius < COURT.left) {
+      this.roundOver = true;
+      this.winnerText = this.mode.name;
+      this.messageText = `Missed return. Best rally: ${this.score.bestRally}. Press serve to try again.`;
+      this.score.rally = 0;
+      this.resetBall();
+    }
   }
 
-  renderHud(renderer) {
-    renderer.drawText(`MODE ${this.world.mode.title.toUpperCase()}`, 36, 44, {
-      color: '#f8fafc',
-      font: '24px monospace',
+  handleHockeyGoals() {
+    const goalTop = COURT.centerY - this.mode.goalHeight / 2;
+    const goalBottom = COURT.centerY + this.mode.goalHeight / 2;
+    const inGoalLane = this.ball.y >= goalTop && this.ball.y <= goalBottom;
+
+    if (this.ball.x - this.ball.radius <= COURT.left + this.mode.wallInset) {
+      if (inGoalLane) {
+        this.onPointScored('right');
+      } else {
+        this.ball.x = COURT.left + this.mode.wallInset + this.ball.radius;
+        this.ball.vx = Math.abs(this.ball.vx);
+      }
+    }
+
+    if (this.ball.x + this.ball.radius >= COURT.right - this.mode.wallInset) {
+      if (inGoalLane) {
+        this.onPointScored('left');
+      } else {
+        this.ball.x = COURT.right - this.mode.wallInset - this.ball.radius;
+        this.ball.vx = -Math.abs(this.ball.vx);
+      }
+    }
+  }
+
+  onPointScored(side) {
+    if (side === 'left') {
+      this.score.left += 1;
+      this.serveDirection = -1;
+    } else {
+      this.score.right += 1;
+      this.serveDirection = 1;
+    }
+
+    if (this.isMatchWon(side)) {
+      this.roundOver = true;
+      this.winnerText = `${side === 'left' ? 'Left' : 'Right'} player wins`;
+      this.messageText = `Final score ${this.score.left} - ${this.score.right}. Press serve to restart or M for next mode.`;
+      this.score.left = 0;
+      this.score.right = 0;
+    } else {
+      this.roundOver = true;
+      this.winnerText = `${side === 'left' ? 'Left' : 'Right'} player scores`;
+      this.messageText = `Score ${this.score.left} - ${this.score.right}. Press serve for the next rally.`;
+    }
+
+    this.resetBall();
+  }
+
+  isMatchWon(side) {
+    if (this.mode.soloScoring) {
+      return false;
+    }
+
+    const value = side === 'left' ? this.score.left : this.score.right;
+    const other = side === 'left' ? this.score.right : this.score.left;
+    if (value < this.mode.targetScore) {
+      return false;
+    }
+
+    if (!this.mode.winByTwo) {
+      return true;
+    }
+
+    return value - other >= 2;
+  }
+
+  getBallSpeed() {
+    return Math.hypot(this.ball.vx, this.ball.vy);
+  }
+
+  drawCourt(renderer) {
+    renderer.strokeRect(COURT.left, COURT.top, COURT.right - COURT.left, COURT.bottom - COURT.top, COLORS.ink, 2);
+    for (let y = COURT.top + 16; y < COURT.bottom; y += 28) {
+      renderer.drawRect(COURT.centerX - 2, y, 4, 14, '#6a7482');
+    }
+
+    if (this.mode.key === 'hockey') {
+      const goalTop = COURT.centerY - this.mode.goalHeight / 2;
+      renderer.drawRect(COURT.left - 2, goalTop, 4, this.mode.goalHeight, COLORS.accent);
+      renderer.drawRect(COURT.right - 2, goalTop, 4, this.mode.goalHeight, COLORS.accent);
+    }
+  }
+
+  drawHud(renderer) {
+    renderer.drawText('PONG', 34, 24, { color: COLORS.ink, font: 'bold 26px monospace', textBaseline: 'top' });
+    renderer.drawText(this.mode.name.toUpperCase(), COURT.centerX, 24, {
+      color: COLORS.accent,
+      font: 'bold 22px monospace',
+      textAlign: 'center',
+      textBaseline: 'top',
     });
 
-    if (this.world.mode.hasOpponent) {
-      renderer.drawText(`${this.world.scores[0]}`, 416, 44, {
-        color: '#f8fafc',
-        font: '34px monospace',
-        textAlign: 'center',
+    if (this.mode.twoPaddles) {
+      renderer.drawText(String(this.score.left), 426, 118, {
+        color: COLORS.ink,
+        font: 'bold 44px monospace',
+        textAlign: 'right',
       });
-      renderer.drawText(`${this.world.scores[1]}`, 544, 44, {
-        color: '#cbd5e1',
-        font: '34px monospace',
-        textAlign: 'center',
+      renderer.drawText(String(this.score.right), 534, 118, {
+        color: COLORS.ink,
+        font: 'bold 44px monospace',
       });
     } else {
-      renderer.drawText(`SCORE ${this.world.scores[0]}`, 700, 44, {
-        color: '#f8fafc',
-        font: '24px monospace',
+      renderer.drawText(`Score ${this.score.left}`, 34, 88, {
+        color: COLORS.good,
+        font: 'bold 20px monospace',
+        textBaseline: 'top',
       });
-      renderer.drawText(`LIVES ${this.world.playerLives}`, 700, 74, {
-        color: '#f8fafc',
-        font: '24px monospace',
+      renderer.drawText(`Best ${this.score.bestRally}`, 34, 114, {
+        color: COLORS.warn,
+        font: '18px monospace',
+        textBaseline: 'top',
       });
     }
 
-    renderer.drawText(this.world.statusMessage, 36, 692, {
-      color: '#cbd5e1',
-      font: '18px monospace',
+    renderer.drawText('M/N change mode', 926, 24, {
+      color: COLORS.muted,
+      font: '16px monospace',
+      textAlign: 'right',
+      textBaseline: 'top',
+    });
+    renderer.drawText('P pause', 926, 48, {
+      color: COLORS.muted,
+      font: '16px monospace',
+      textAlign: 'right',
+      textBaseline: 'top',
+    });
+    renderer.drawText('X menu', 926, 72, {
+      color: COLORS.muted,
+      font: '16px monospace',
+      textAlign: 'right',
+      textBaseline: 'top',
     });
   }
 
-  renderMenu(renderer) {
-    renderer.drawRect(160, 88, 640, 544, 'rgba(3, 10, 18, 0.9)');
-    renderer.strokeRect(160, 88, 640, 544, '#7dd3fc', 2);
-    renderer.drawText('PONG', 480, 138, {
-      color: '#f8fafc',
-      font: '40px monospace',
-      textAlign: 'center',
-    });
-    renderer.drawText('Choose a ruleset and launch.', 480, 172, {
-      color: '#cbd5e1',
-      font: '18px monospace',
-      textAlign: 'center',
-    });
-
-    PONG_MODE_LIST.forEach((mode, index) => {
-      const isSelected = index === this.selectedModeIndex;
-      const y = 228 + (index * 82);
-      renderer.drawRect(210, y, 540, 62, isSelected ? 'rgba(125, 211, 252, 0.16)' : 'rgba(255,255,255,0.03)');
-      renderer.strokeRect(210, y, 540, 62, isSelected ? mode.accent : 'rgba(255,255,255,0.14)', isSelected ? 2 : 1);
-      renderer.drawText(mode.title, 236, y + 24, {
-        color: '#f8fafc',
-        font: '22px monospace',
-      });
-      renderer.drawText(mode.description, 236, y + 48, {
-        color: '#cbd5e1',
-        font: '14px monospace',
-      });
-    });
-
-    renderer.drawText('Arrow keys / stick to choose. Enter / A to play.', 480, 590, {
-      color: '#cbd5e1',
-      font: '16px monospace',
-      textAlign: 'center',
-    });
+  drawPaddle(renderer, paddle) {
+    renderer.drawRect(paddle.x, paddle.y, paddle.width, paddle.height, paddle.color);
   }
 
-  renderOverlay(renderer) {
-    renderer.drawRect(232, 272, 496, 156, 'rgba(4, 10, 18, 0.88)');
-    renderer.strokeRect(232, 272, 496, 156, this.world.mode.accent, 2);
-    const title = this.world.status === 'serve'
-      ? 'READY'
-      : this.world.status === 'won'
-        ? 'MATCH WON'
-        : 'MATCH LOST';
-    const hint = this.world.status === 'serve'
-      ? 'Press Enter, Space, or A to serve.'
-      : 'Press Enter or A to restart. Esc or B returns to menu.';
+  drawOverlay(renderer, title, body) {
+    const showModeList = this.roundOver && !this.winnerText;
+    const bodySections = String(body ?? '').split('\n');
+    const descriptionLines = wrapOverlayText(bodySections[0] ?? '', showModeList ? 46 : 50);
+    const promptLines = wrapOverlayText(bodySections.slice(1).join(' ').trim(), 46);
+    const bodyLines = showModeList ? descriptionLines : wrapOverlayText(body, 50);
+    const panelHeight = showModeList ? 346 : Math.max(150, 112 + (bodyLines.length * 26));
+    renderer.drawRect(160, 250, 640, panelHeight, 'rgba(8, 12, 18, 0.86)');
+    renderer.strokeRect(160, 250, 640, panelHeight, COLORS.ink, 2);
+    renderer.drawText(title, COURT.centerX, 288, {
+      color: COLORS.ink,
+      font: 'bold 28px monospace',
+      textAlign: 'center',
+      textBaseline: 'top',
+    });
 
-    renderer.drawText(title, 480, 324, {
-      color: '#f8fafc',
-      font: '32px monospace',
-      textAlign: 'center',
+    bodyLines.forEach((line, index) => {
+      renderer.drawText(line, COURT.centerX, 330 + (index * 24), {
+        color: COLORS.muted,
+        font: '18px monospace',
+        textAlign: 'center',
+        textBaseline: 'top',
+      });
     });
-    renderer.drawText(this.world.statusMessage, 480, 360, {
-      color: '#cbd5e1',
-      font: '18px monospace',
-      textAlign: 'center',
-    });
-    renderer.drawText(hint, 480, 394, {
-      color: '#cbd5e1',
+
+    if (!showModeList) {
+      return;
+    }
+
+    const modeHeaderY = 364 + ((descriptionLines.length - 1) * 24);
+    renderer.drawText('Modes: M next, N previous', COURT.centerX, modeHeaderY, {
+      color: COLORS.accent,
       font: '16px monospace',
       textAlign: 'center',
+      textBaseline: 'top',
+    });
+
+    this.modes.forEach((mode, index) => {
+      renderer.drawText(
+        `${index === this.modeIndex ? '>' : ' '} ${mode.name}`,
+        COURT.centerX,
+        modeHeaderY + 28 + (index * 26),
+        {
+          color: index === this.modeIndex ? COLORS.good : COLORS.muted,
+          font: '18px monospace',
+          textAlign: 'center',
+          textBaseline: 'top',
+        },
+      );
+    });
+
+    promptLines.forEach((line, index) => {
+      renderer.drawText(line, COURT.centerX, modeHeaderY + 146 + (index * 22), {
+        color: COLORS.warn,
+        font: '16px monospace',
+        textAlign: 'center',
+        textBaseline: 'top',
+      });
     });
   }
 }
