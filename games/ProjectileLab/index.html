@@ -1,0 +1,30 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Projectile Lab</title>
+  <link rel="stylesheet" href="../../engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Projectile Lab</h1>
+    <p>Arcade-clean projectile sandbox for spawning, travel, lifetime cleanup, repeated firing stability, and preset comparison.</p>
+    <canvas id="game" width="960" height="540"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>1</code>-<code>5</code> select presets, <code>Space</code> or <code>F</code> fires, <code>P</code> pauses or resumes, and <code>R</code> resets the lab.</p>
+    </section>
+    <section>
+      <h3>Preset Set</h3>
+      <p>Single Shot, Fast Short-Life, Slow Long-Life, Burst, and Angled Shot are provided so projectile behavior can be compared under stable repeated update conditions.</p>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

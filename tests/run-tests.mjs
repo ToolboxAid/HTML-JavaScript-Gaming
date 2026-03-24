@@ -62,6 +62,8 @@ import { run as runEnginePublicBarrelImports } from './production/EnginePublicBa
 import { run as runStorageService } from './persistence/StorageService.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
+import { run as runProjectileLabModel } from './samples/ProjectileLabModel.test.mjs';
+import { run as runProjectileLabScene } from './samples/ProjectileLabScene.test.mjs';
 import './theme.test.js';
 
 const tests = [
@@ -115,6 +117,8 @@ const tests = [
     ['MouseState', runMouseState],
     ['StorageService', runStorageService],
     ['ReplaySystem', runReplaySystem],
+    ['ProjectileLabModel', runProjectileLabModel],
+    ['ProjectileLabScene', runProjectileLabScene],
     ['EnginePublicBarrelImports', runEnginePublicBarrelImports],
     ['ProductionReadiness', runProductionReadiness],
     ['SceneManager', runSceneManager],
