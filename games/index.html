@@ -1,7 +1,7 @@
 <!--
 Toolbox Aid
 David Quesenberry
-03/23/2026
+03/24/2026
 index.html
 -->
 <!DOCTYPE html>
@@ -18,14 +18,14 @@ index.html
       --text: #eef2f7;
       --muted: #a9b3c3;
       --line: #2b3242;
-      --accent: #6cb8ff;
-      --accent2: #8df0c8;
       --playable: #2b8a3e;
       --planned: #1971c2;
       --sample: #9c36b5;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -65,7 +65,7 @@ index.html
       padding: 14px 16px;
       border: 1px solid var(--line);
       border-radius: 14px;
-      background: rgba(255,255,255,0.02);
+      background: rgba(255, 255, 255, 0.02);
     }
 
     .section {
@@ -77,7 +77,7 @@ index.html
       font-size: 1.4rem;
     }
 
-    .section p {
+    .section > p {
       margin: 0 0 18px;
       color: var(--muted);
       line-height: 1.5;
@@ -87,6 +87,28 @@ index.html
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 18px;
+    }
+
+    .playableLevel {
+      margin-top: 24px;
+    }
+
+    .playableLevel:first-of-type {
+      margin-top: 0;
+    }
+
+    .playableLevel h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    .playableLevel p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 980px;
     }
 
     .card {
@@ -152,6 +174,13 @@ index.html
       color: var(--text);
     }
 
+    .levelCard p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
     .levelCard ul {
       margin: 0;
       padding-left: 20px;
@@ -181,9 +210,17 @@ index.html
       letter-spacing: 0.2px;
     }
 
-    .playable { background: var(--playable); }
-    .planned { background: var(--planned); }
-    .sample { background: var(--sample); }
+    .playable {
+      background: var(--playable);
+    }
+
+    .planned {
+      background: var(--planned);
+    }
+
+    .sample {
+      background: var(--sample);
+    }
 
     .legend {
       display: flex;
@@ -214,54 +251,76 @@ index.html
 
     <section class="section">
       <h2>Playable Now</h2>
-      <p>Current integrated game builds available in the repo.</p>
-      <div class="grid">
-        <a class="card" href="/games/Breakout/index.html">
-          <img class="thumb" src="/games/Breakout/assets/preview.svg" alt="Breakout gameplay preview" />
-          <div class="cardBody">
-            <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-            <div class="cardTitle">Breakout</div>
-            <div class="cardDesc">Classic brick breaker with immediate paddle response, score-and-lives pressure, and keyboard plus gamepad play.</div>
-          </div>
-        </a>
+      <p>Current integrated game builds grouped under the roadmap level they belong to.</p>
 
-        <a class="card" href="/games/GravityWell/index.html">
-          <img class="thumb" src="/games/GravityWell/assets/preview.svg" alt="Gravity Well gameplay preview" />
-          <div class="cardBody">
-            <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-            <div class="cardTitle">Gravity Well</div>
-            <div class="cardDesc">Vector-based orbital flight game focused on slingshotting through planetary gravity fields to collect every beacon in one run.</div>
-          </div>
-        </a>
-
+      <section class="playableLevel">
         
-<a class="card" href="/games/Pong/index.html">
-  <img class="thumb" src="/games/Pong/assets/preview.svg" alt="Pong gameplay preview" />
-  <div class="cardBody">
-    <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-    <div class="cardTitle">Pong</div>
-    <div class="cardDesc">Arcade-style Pong with Tennis, Hockey, Handball, and Jai-Alai modes, paddle english, and keyboard plus gamepad play.</div>
-  </div>
-</a>
-<a class="card" href="/games/Asteroids/index.html">
-          <img class="thumb" src="/games/Asteroids/assets/preview.png" alt="Asteroids gameplay screenshot" />
-          <div class="cardBody">
-            <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-            <div class="cardTitle">Asteroids</div>
-            <div class="cardDesc">Classic-style space shooter with one/two-player start, high score tracking, vector HUD, and ship-icon lives.</div>
-          </div>
-        </a>
-      </div>
+        <h3>Level 1 - Basic Motion</h3>
+        <p>This level matters because it proves the fundamentals first: immediate movement, readable collisions, and a simple arcade loop that feels good before bigger systems are layered on top.</p>
+        <div class="grid">
+          <a class="card" href="/games/Breakout/index.html">
+            <img class="thumb" src="/games/Breakout/assets/preview.svg" alt="Breakout gameplay preview" />
+            <div class="cardBody">
+              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+              <div class="cardTitle">Breakout</div>
+              <div class="cardDesc">Classic brick breaker with immediate paddle response, score-and-lives pressure, and keyboard plus gamepad play.</div>
+            </div>
+          </a>
+
+          <a class="card" href="/games/GravityWell/index.html">
+            <img class="thumb" src="/games/GravityWell/assets/preview.svg" alt="Gravity Well gameplay preview" />
+            <div class="cardBody">
+              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+              <div class="cardTitle">Gravity Well</div>
+              <div class="cardDesc">Vector-based orbital flight game focused on slingshotting through planetary gravity fields to collect every beacon in one run.</div>
+            </div>
+          </a>
+
+
+
+        </div>
+      </section>
+
+      <section class="playableLevel">
+        <h3>Level 3 - Collision Mastery</h3>
+        <p>This level is important because arcade feel starts depending on contact quality, rebound angles, pacing under pressure, and controls that stay predictable at speed.</p>
+        <div class="grid">
+          <a class="card" href="/games/Pong/index.html">
+            <img class="thumb" src="/games/Pong/assets/preview.svg" alt="Pong gameplay preview" />
+            <div class="cardBody">
+              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+              <div class="cardTitle">Pong</div>
+              <div class="cardDesc">Arcade-style Pong with Tennis, Hockey, Handball, and Jai-Alai modes, paddle english, and keyboard plus gamepad play.</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="playableLevel">
+        <h3>Level 4 - Classic Arcade</h3>
+        <p>This level matters because it combines the earlier mechanics into fuller arcade games with hazards, scoring pressure, enemy pacing, and recognizable long-run play loops.</p>
+        <div class="grid">
+          <a class="card" href="/games/Asteroids/index.html">
+            <img class="thumb" src="/games/Asteroids/assets/preview.png" alt="Asteroids gameplay screenshot" />
+            <div class="cardBody">
+              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+              <div class="cardTitle">Asteroids</div>
+              <div class="cardDesc">Classic-style space shooter with one/two-player start, high score tracking, vector HUD, and ship-icon lives.</div>
+            </div>
+          </a>
+        </div>
+      </section>
     </section>
 
     <section class="section">
       <h2>Planned Game Difficulty Progression</h2>
-      <p>Ordered from easier to harder. This preserves the exact roadmap structure while also flagging which entries should probably graduate to <strong>/samples</strong> instead of staying in <strong>/games</strong>.</p>
+      <p>Ordered from easier to harder. This preserves the roadmap while also flagging which entries are better fits for <strong>/samples</strong> instead of staying in <strong>/games</strong>.</p>
 
       <div class="levels">
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-          <h3>Level 1 — Basic Motion</h3>
+          <h3>Level 1 - Basic Motion</h3>
+          <p>Foundational arcade builds that prove immediate movement, simple collision, and the basic feel of direct player control before larger systems pile on.</p>
           <ul>
             <li>Bouncing Ball</li>
             <li>Breakout</li>
@@ -271,7 +330,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
-          <h3>Level 2 — Physics Systems</h3>
+          <h3>Level 2 - Physics Systems</h3>
+          <p>Motion and force experiments that deepen acceleration, orbital behavior, and projectile tuning without requiring full game structure yet.</p>
           <ul>
             <li>Thruster</li>
             <li>Orbit <strong>(sample track)</strong></li>
@@ -281,7 +341,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
-          <h3>Level 3 — Collision Mastery</h3>
+          <h3>Level 3 - Collision Mastery</h3>
+          <p>Projects centered on collision quality: reading contact points, handling rebounds cleanly, and building confidence in fast-moving arcade response.</p>
           <ul>
             <li>Paddle Intercept <strong>(sample track)</strong></li>
             <li>Multi-Ball Chaos <strong>(sample track)</strong></li>
@@ -291,7 +352,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-          <h3>Level 4 — Classic Arcade</h3>
+          <h3>Level 4 - Classic Arcade</h3>
+          <p>Recognizable arcade conversions that start combining combat, hazards, enemy pacing, and progression into broader playable loops.</p>
           <ul>
             <li>Space Invaders</li>
             <li>Asteroids</li>
@@ -301,7 +363,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-          <h3>Level 5 — Skill + Input</h3>
+          <h3>Level 5 - Skill + Input</h3>
+          <p>Games that push responsiveness, multi-axis control, and higher player dexterity, especially where aiming and movement must stay readable together.</p>
           <ul>
             <li>Dual Stick Arena</li>
             <li>Arena Shooter</li>
@@ -311,7 +374,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
-          <h3>Level 6 — AI Systems</h3>
+          <h3>Level 6 - AI Systems</h3>
+          <p>Builds where enemy behavior and navigation become central, requiring believable pursuit, evasion, routing, and pressure over time.</p>
           <ul>
             <li>AI Target Dummy <strong>(sample track)</strong></li>
             <li>Pac-Man (Lite)</li>
@@ -321,7 +385,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
-          <h3>Level 7 — World Systems</h3>
+          <h3>Level 7 - World Systems</h3>
+          <p>Larger spaces and scrolling maps become the focus here, with more emphasis on traversal, streaming, and keeping simulation stable across a broader playfield.</p>
           <ul>
             <li>Scrolling World Test <strong>(sample track)</strong></li>
             <li>Tile Collision Demo <strong>(sample track)</strong></li>
@@ -331,7 +396,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
-          <h3>Level 8 — Platforming</h3>
+          <h3>Level 8 - Platforming</h3>
+          <p>Precision jump timing, grounded motion, and collision edge cases dominate this level, making feel and consistency more important than raw feature count.</p>
           <ul>
             <li>Donkey Kong</li>
             <li>Platformer Demo <strong>(sample track)</strong></li>
@@ -340,7 +406,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-          <h3>Level 9 — Advanced Arcade</h3>
+          <h3>Level 9 - Advanced Arcade</h3>
+          <p>These titles demand denser enemy patterns, layered scoring pressure, and more simultaneous systems while still feeling like tight classic arcade games.</p>
           <ul>
             <li>Galaga</li>
             <li>Rally-X</li>
@@ -349,7 +416,8 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample Track</span></div>
-          <h3>Level 10 — Full Systems</h3>
+          <h3>Level 10 - Full Systems</h3>
+          <p>The final tier is where replay, multiplayer, tooling, and richer production constraints become worth validating after the core arcade foundation is proven.</p>
           <ul>
             <li>Full Arena Shooter</li>
             <li>Replay System <strong>(sample track)</strong></li>
