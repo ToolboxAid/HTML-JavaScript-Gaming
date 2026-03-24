@@ -237,9 +237,9 @@ export default class PongScene extends Scene {
   }
 
   updatePaddles(dt, frame) {
-    this.movePaddle(this.leftPaddle, frame.leftAxis, dt, frame.leftHorizontal ?? 0);
+    this.movePaddle(this.leftPaddle, frame.playerMoveY, dt, frame.playerMoveX ?? 0);
     if (this.mode.twoPaddles) {
-      this.movePaddle(this.rightPaddle, frame.rightAxis, dt);
+      this.movePaddle(this.rightPaddle, frame.opponentMoveY, dt);
     }
   }
 

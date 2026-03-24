@@ -14,43 +14,47 @@ export default class PongInputController {
 
   getFrameState({ soloMode = false } = {}) {
     this.gamepads.setInput(this.input);
-    const pad0 = this.gamepads.getPad(0);
-    const pad1 = this.gamepads.getPad(1);
+    const connectedIndices = this.gamepads.listConnectedIndices();
+    const playerPadIndex = connectedIndices[0] ?? 0;
+    const opponentPadIndex = soloMode ? null : (connectedIndices.find((index) => index !== playerPadIndex) ?? 1);
+    const playerPad = this.gamepads.getPad(playerPadIndex);
+    const opponentPad = opponentPadIndex == null
+      ? this.gamepads.createEmptyPad(1)
+      : this.gamepads.getPad(opponentPadIndex);
 
-    const leftHorizontalKeyboard = this.readDigitalAxis('KeyA', 'KeyD');
-    const leftKeyboard = this.readDigitalAxis('KeyW', 'KeyS');
-    const rightKeyboard = this.readDigitalAxis('ArrowUp', 'ArrowDown');
-    const leftHorizontal = this.pickAxis(leftHorizontalKeyboard, pad0.horizontal);
-    const leftAxis = this.pickAxis(leftKeyboard, pad0.vertical, soloMode ? pad1.vertical : 0);
-    const rightAxis = soloMode ? 0 : this.pickAxis(rightKeyboard, pad1.vertical, 0);
+    const playerHorizontalKeyboard = this.readDigitalAxis('KeyA', 'KeyD');
+    const playerVerticalKeyboard = this.readDigitalAxis('KeyW', 'KeyS');
+    const opponentVerticalKeyboard = this.readDigitalAxis('ArrowUp', 'ArrowDown');
+    const playerMoveX = this.pickAxis(playerHorizontalKeyboard, playerPad.horizontal);
+    const playerMoveY = this.pickAxis(playerVerticalKeyboard, playerPad.vertical, soloMode ? opponentPad.vertical : 0);
+    const opponentMoveY = soloMode ? 0 : this.pickAxis(opponentVerticalKeyboard, opponentPad.vertical, 0);
 
     return {
-      leftHorizontal,
-      leftAxis,
-      rightAxis,
+      playerMoveX,
+      playerMoveY,
+      opponentMoveY,
       exitPressed:
         this.wasPressed('KeyX') ||
-        pad0.cancelPressed ||
-        pad1.cancelPressed,
+        playerPad.cancelPressed ||
+        opponentPad.cancelPressed,
       servePressed:
         this.wasPressed('Space') ||
         this.wasPressed('Enter') ||
-        pad0.confirmPressed ||
-        pad1.confirmPressed,
+        playerPad.confirmPressed ||
+        opponentPad.confirmPressed,
       pausePressed:
         this.wasPressed('KeyP') ||
-        pad0.startPressed ||
-        pad1.startPressed,
+        playerPad.startPressed ||
+        opponentPad.startPressed,
       nextModePressed:
         this.wasPressed('KeyM') ||
         this.wasPressed('Tab') ||
-        pad0.rightShoulderDown ||
-        pad1.rightShoulderDown,
+        playerPad.rightShoulderPressed ||
+        opponentPad.rightShoulderPressed,
       previousModePressed:
         this.wasPressed('KeyN') ||
-        pad0.leftShoulderDown ||
-        pad1.leftShoulderDown,
-      connectedGamepads: [pad0, pad1].filter((pad) => pad.connected).length,
+        playerPad.leftShoulderPressed ||
+        opponentPad.leftShoulderPressed,
     };
   }
 

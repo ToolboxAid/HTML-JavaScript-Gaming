@@ -40,10 +40,14 @@ function createInput(codesDown = [], codesPressed = []) {
 function createMutableInput() {
   let down = new Set();
   let pressed = new Set();
+  let gamepads = [];
   return {
-    setState(codesDown = [], codesPressed = []) {
+    setState(codesDown = [], codesPressed = [], nextGamepads = null) {
       down = new Set(codesDown);
       pressed = new Set(codesPressed);
+      if (nextGamepads) {
+        gamepads = nextGamepads;
+      }
     },
     isDown(code) {
       return down.has(code);
@@ -51,8 +55,32 @@ function createMutableInput() {
     isPressed(code) {
       return pressed.has(code);
     },
-    getGamepad() {
-      return null;
+    getGamepad(index = 0) {
+      return gamepads.find((pad) => pad.index === index) ?? null;
+    },
+    getGamepads() {
+      return gamepads;
+    },
+  };
+}
+
+function createPad(index, {
+  axes = [0, 0, 0, 0],
+  down = {},
+  pressed = {},
+  connected = true,
+} = {}) {
+  return {
+    index,
+    connected,
+    id: `Pad-${index}`,
+    mapping: 'standard',
+    axes,
+    isDown(buttonIndex) {
+      return Boolean(down[buttonIndex]);
+    },
+    isPressed(buttonIndex) {
+      return Boolean(pressed[buttonIndex]);
     },
   };
 }
@@ -196,4 +224,33 @@ export async function run() {
   scene.update(0.016, engine);
   assert.equal(scene.mode.key, 'jai-alai');
   assert.equal(scene.leftPaddle.x, 54);
+
+  scene.applyMode();
+  input.setState([], [], [createPad(0, { axes: [0, 0.75] })]);
+  scene.update(0.2, engine);
+  assert.equal(scene.leftPaddle.y > (380 - scene.leftPaddle.height / 2), true);
+
+  scene.setMode(1);
+  scene.applyMode();
+  input.setState([], [], [createPad(2, { axes: [0.65, 0] })]);
+  scene.update(0.2, engine);
+  assert.equal(scene.leftPaddle.x > 54, true);
+
+  scene.setMode(0);
+  scene.applyMode();
+  input.setState([], [], [createPad(0, { down: { 5: true } })]);
+  scene.update(0.016, engine);
+  assert.equal(scene.mode.key, 'tennis');
+  input.setState([], [], [createPad(0, { pressed: { 5: true } })]);
+  scene.update(0.016, engine);
+  assert.equal(scene.mode.key, 'hockey');
+
+  const serveScene = new PongScene();
+  const serveInput = createMutableInput();
+  const serveEngine = { input: serveInput, canvas: { style: {} } };
+  serveScene.enter(serveEngine);
+  serveScene.setMode(0);
+  serveInput.setState([], [], [createPad(3, { pressed: { 0: true } })]);
+  serveScene.update(0.016, serveEngine);
+  assert.equal(serveScene.roundOver, false);
 }

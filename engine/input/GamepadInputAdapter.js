@@ -62,9 +62,40 @@ export default class GamepadInputAdapter {
       startPressed: this.isPressed(pad, 9),
       leftShoulderDown: this.isDown(pad, 4),
       rightShoulderDown: this.isDown(pad, 5),
+      leftShoulderPressed: this.isPressed(pad, 4),
+      rightShoulderPressed: this.isPressed(pad, 5),
       isDown: (buttonIndex) => this.isDown(pad, buttonIndex),
       isPressed: (buttonIndex) => this.isPressed(pad, buttonIndex),
     };
+  }
+
+  listConnectedIndices() {
+    if (!this.input) {
+      return [];
+    }
+
+    if (typeof this.input.getGamepads === 'function') {
+      return this.input
+        .getGamepads()
+        .filter((pad) => Boolean(pad && pad.connected !== false))
+        .map((pad) => Number(pad.index))
+        .filter((index) => Number.isInteger(index) && index >= 0)
+        .sort((a, b) => a - b);
+    }
+
+    if (typeof this.input.getGamepad !== 'function') {
+      return [];
+    }
+
+    const connected = [];
+    for (let index = 0; index < 4; index += 1) {
+      const pad = this.input.getGamepad(index);
+      if (pad && pad.connected !== false) {
+        connected.push(index);
+      }
+    }
+
+    return connected;
   }
 
   createEmptyPad(index = 0) {
@@ -87,6 +118,8 @@ export default class GamepadInputAdapter {
       startPressed: false,
       leftShoulderDown: false,
       rightShoulderDown: false,
+      leftShoulderPressed: false,
+      rightShoulderPressed: false,
       isDown: () => false,
       isPressed: () => false,
     };
@@ -94,7 +127,14 @@ export default class GamepadInputAdapter {
 
   readAxis(value) {
     const axis = Number(value) || 0;
-    return Math.abs(axis) < this.deadzone ? 0 : Math.max(-1, Math.min(1, axis));
+    const magnitude = Math.abs(axis);
+    if (magnitude <= this.deadzone) {
+      return 0;
+    }
+
+    const remaining = Math.max(0.000001, 1 - this.deadzone);
+    const normalized = (magnitude - this.deadzone) / remaining;
+    return Math.sign(axis) * Math.max(0, Math.min(1, normalized));
   }
 
   combineDigitalAxis(analogValue, negativePressed, positivePressed) {

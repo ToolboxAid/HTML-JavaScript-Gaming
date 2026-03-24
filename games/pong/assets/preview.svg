@@ -4,34 +4,41 @@ David Quesenberry
 03/24/2026
 preview.svg
 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-label="Pong preview">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#06080d" />
-      <stop offset="100%" stop-color="#111826" />
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#04070d" />
+      <stop offset="55%" stop-color="#0e1626" />
+      <stop offset="100%" stop-color="#101f24" />
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#111a27" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#0b111a" stop-opacity="0.95" />
     </linearGradient>
   </defs>
   <rect width="960" height="720" fill="url(#bg)" />
-  <rect x="70" y="70" width="820" height="580" fill="none" stroke="#f5f7fb" stroke-width="6" />
-  <rect x="136" y="270" width="16" height="144" fill="#f5f7fb" />
-  <rect x="808" y="220" width="16" height="144" fill="#f5f7fb" />
-  <circle cx="500" cy="356" r="14" fill="#f5f7fb" />
+  <rect x="64" y="62" width="832" height="596" rx="24" fill="url(#panel)" stroke="#eaf2ff" stroke-width="4" />
+  <rect x="92" y="118" width="776" height="470" rx="18" fill="none" stroke="#eaf2ff" stroke-width="4" />
   <g fill="#6a7482">
-    <rect x="476" y="92" width="8" height="24" />
-    <rect x="476" y="136" width="8" height="24" />
-    <rect x="476" y="180" width="8" height="24" />
-    <rect x="476" y="224" width="8" height="24" />
-    <rect x="476" y="268" width="8" height="24" />
-    <rect x="476" y="312" width="8" height="24" />
-    <rect x="476" y="356" width="8" height="24" />
-    <rect x="476" y="400" width="8" height="24" />
-    <rect x="476" y="444" width="8" height="24" />
-    <rect x="476" y="488" width="8" height="24" />
-    <rect x="476" y="532" width="8" height="24" />
-    <rect x="476" y="576" width="8" height="24" />
+    <rect x="476" y="140" width="8" height="24" />
+    <rect x="476" y="184" width="8" height="24" />
+    <rect x="476" y="228" width="8" height="24" />
+    <rect x="476" y="272" width="8" height="24" />
+    <rect x="476" y="316" width="8" height="24" />
+    <rect x="476" y="360" width="8" height="24" />
+    <rect x="476" y="404" width="8" height="24" />
+    <rect x="476" y="448" width="8" height="24" />
+    <rect x="476" y="492" width="8" height="24" />
+    <rect x="476" y="536" width="8" height="24" />
   </g>
-  <text x="70" y="44" fill="#f5f7fb" font-family="monospace" font-size="34" font-weight="700">PONG</text>
-  <text x="480" y="46" fill="#7de2ff" font-family="monospace" font-size="28" text-anchor="middle">TENNIS · HOCKEY · HANDBALL · JAI-ALAI</text>
-  <text x="400" y="120" fill="#f5f7fb" font-family="monospace" font-size="70" text-anchor="end">7</text>
-  <text x="560" y="120" fill="#f5f7fb" font-family="monospace" font-size="70">5</text>
+  <rect x="148" y="278" width="18" height="134" rx="6" fill="#f5f8ff" />
+  <rect x="792" y="238" width="18" height="134" rx="6" fill="#f5f8ff" />
+  <circle cx="538" cy="340" r="13" fill="#f5f8ff" />
+  <path d="M538 340 L626 302" stroke="#7de2ff" stroke-width="6" stroke-linecap="round" opacity="0.75" />
+  <text x="94" y="98" fill="#f5f8ff" font-family="monospace" font-size="34" font-weight="700">PONG</text>
+  <text x="480" y="98" fill="#7de2ff" font-family="monospace" font-size="22" text-anchor="middle">TENNIS  HOCKEY  HANDBALL  JAI-ALAI</text>
+  <text x="410" y="182" fill="#f5f8ff" font-family="monospace" font-size="68" font-weight="700" text-anchor="end">7</text>
+  <text x="550" y="182" fill="#f5f8ff" font-family="monospace" font-size="68" font-weight="700">5</text>
+  <rect x="252" y="618" width="456" height="56" rx="14" fill="#0a1017" stroke="#7de2ff" stroke-width="2" />
+  <text x="480" y="652" fill="#ffd37d" font-family="monospace" font-size="20" text-anchor="middle">SPIN SERVES  GOAL MOUTHS  WALL RETURNS</text>
 </svg>
