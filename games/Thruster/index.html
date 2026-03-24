@@ -1,0 +1,43 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thruster</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Thruster</h1>
+    <p>A compact inertial ship-control game: rotate, burn thrust, drift through a bounded chamber, and manage momentum without shooting or gravity fields.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>Left</code>/<code>Right</code> or <code>A</code>/<code>D</code> rotate. <code>Up</code> or <code>W</code> applies thrust. <code>Space</code> or <code>Enter</code> starts. <code>P</code> pauses. <code>R</code> resets. Gamepads use the left stick or D-pad to rotate and the south button to thrust/start.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <p>Start a run, build velocity with short burns, and keep the ship under control inside the arena. This build is intentionally small and does not include shooting, orbit mechanics, or gravity wells.</p>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>audio / AudioService</li>
+        <li>core / Engine</li>
+        <li>input / InputService</li>
+        <li>input / GamepadInputAdapter</li>
+        <li>render / CanvasRenderer</li>
+        <li>runtime / FullscreenService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
