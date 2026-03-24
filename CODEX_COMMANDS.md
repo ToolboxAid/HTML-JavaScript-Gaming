@@ -5,4 +5,4 @@ CODEX_COMMANDS.md
 
 MODEL: GPT-5.4
 REASONING: medium
-COMMAND: Add a minimal reusable engine-owned audio service with safe browser unlock handling, one-shot playback, mute support, and generated Pong sound effects; integrate Pong serve, paddle hit, wall hit, and score events through the engine audio contract only; keep the change surgical, include tests or mock-based validation where practical, and keep a comment block in the implementation with the Recommended Defaults frequencies, durations, wave type, and volume values.
+COMMAND: Build Game #4 Breakout as a standalone game under games/breakout using the existing engine input, audio, renderer, and scene contracts; implement paddle, ball, brick grid, score, lives, win/lose flow, keyboard/gamepad support, and minimal HUD; reuse Pong-era patterns where cleanly appropriate without forcing abstractions; maintain classic arcade visual and motion style with solid colors, no gradients or effects, rectangular geometry only, minimal HUD, and immediate input/physics response consistent with original Breakout; keep the PR surgical and include tests for core gameplay and control parity.

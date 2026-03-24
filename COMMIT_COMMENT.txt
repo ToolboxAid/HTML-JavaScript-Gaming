@@ -3,4 +3,4 @@ David Quesenberry
 03/24/2026
 COMMIT_COMMENT.txt
 
-Add engine audio service and integrate Pong sound effects
+Build Breakout as Game #4 with reusable engine input/audio integration

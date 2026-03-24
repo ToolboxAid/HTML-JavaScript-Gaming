@@ -3,20 +3,25 @@ David Quesenberry
 03/24/2026
 README.md
 
-# Sound System BUILD_PR Deliverable
+# Breakout BUILD_PR Deliverable
 
-This ZIP contains the BUILD_PR planning package for the engine sound system and Pong sound integration.
+This ZIP contains the BUILD_PR planning package for Game #4: Breakout.
 
 ## Included
-- docs/dev/engine/BUILD_PR_SOUND_SYSTEM.md
+- docs/dev/games/BUILD_PR_BREAKOUT.md
 - CODEX_COMMANDS.md
 - COMMIT_COMMENT.txt
 - NEXT_COMMAND.txt
 - README.md
 
 ## Purpose
-This is a BUILD_PR package only.
-It defines the approved scope for Codex to implement.
+This package is for the BUILD_PR step only.
+It defines the approved implementation scope for Codex.
 
 ## Special Note
-The implementation should keep a comment block with the Recommended Defaults sound values for Pong.
+Breakout should look and feel like the original arcade game:
+- solid colors
+- simple geometry
+- minimal HUD
+- immediate controls
+- no modern effects

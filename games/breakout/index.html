@@ -1,0 +1,43 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/24/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Breakout</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Breakout</h1>
+    <p>Classic single-screen brick breaker with crisp paddle control, rectangular arcade visuals, keyboard and gamepad support, and a minimal score-and-lives HUD.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>Left</code>/<code>Right</code> or <code>A</code>/<code>D</code> move the paddle. <code>Space</code> or <code>Enter</code> starts and launches. <code>X</code> returns to the menu. Gamepads use the left stick or D-pad to move, south button or start to launch, and east/cancel to return to menu.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <p>Break every brick to win the board. Each dropped ball costs one life, and three misses ends the run. Paddle motion adds english to the ball, so moving into the contact point can reshape the rebound angle.</p>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>audio / AudioService</li>
+        <li>core / Engine</li>
+        <li>input / InputService</li>
+        <li>input / GamepadInputAdapter</li>
+        <li>render / CanvasRenderer</li>
+        <li>runtime / FullscreenService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
