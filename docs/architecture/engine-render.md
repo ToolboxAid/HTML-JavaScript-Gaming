@@ -54,4 +54,4 @@ Scene -> Renderer -> CanvasRenderer -> CanvasRenderingContext2D
 
 ## Sample
 
-`sample08-render-adapter` proves that scene behavior can remain unchanged while drawing flows through a renderer instead of directly using `ctx`.
+`sample008-render-adapter` proves that scene behavior can remain unchanged while drawing flows through a renderer instead of directly using `ctx`.

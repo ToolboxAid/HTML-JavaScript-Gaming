@@ -44,9 +44,9 @@ Current Scene -> TransitionScene -> Next Scene
 - transition timing does not live in `Engine`
 - input handling does not move into the transition layer
 
-## Sample05 usage
+## Sample005 usage
 
-`sample05-scene-switch` now uses fade transitions for:
+`sample005-scene-switch` now uses fade transitions for:
 
 - `Enter`: IntroScene -> PlayScene
 - `Escape`: PlayScene -> IntroScene

@@ -30,4 +30,4 @@ engine.input.getSnapshot();
 
 ## Sample
 
-`samples/sample02-keyboard-move/` proves the boundary with keyboard movement and no direct DOM event handling inside the scene.
+`samples/sample002-keyboard-move/` proves the boundary with keyboard movement and no direct DOM event handling inside the scene.

@@ -1,0 +1,39 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/21/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample056 - Gravity Zones</title>
+  <link rel="stylesheet" href="../../engine/ui/sampleLayout.css" />
+</head>
+<body>
+<!--
+Sample: Sample056 - Gravity Zones
+Description: Colored zones change the direction of gravity. Move through the blue, orange, and green fields to verify that gravity can be authored per-zone instead of globally. Space adds a simple jump impulse opposite the current gravity direction.
+-->
+    <main>
+        <h1>Sample056 - Gravity Zones</h1>
+        <p>Colored zones change the direction of gravity. Move through the blue, orange, and green fields to verify that gravity can be authored per-zone instead of globally. Press Space to jump opposite the current gravity direction.</p>
+        <canvas id="game" width="960" height="540"></canvas>
+
+        <section>
+            <h3>Engine Classes Used</h3>
+            <ul>
+                <li>Engine</li>
+                <li>Scene</li>
+                <li>Camera2D</li>
+                <li>ActionInputMap</li>
+                <li>ActionInputService</li>
+            </ul>
+        </section>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
+

@@ -51,7 +51,7 @@ Those can be layered on later once the basic state shape is proven.
 
 ## Sample
 
-`sample07-entity-movement` demonstrates:
+`sample007-entity-movement` demonstrates:
 
 - action-based movement through the input mapping layer
 - a scene owning a single entity instance
