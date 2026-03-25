@@ -276,6 +276,22 @@ export default class SpaceInvadersScene extends Scene {
 
     if (this.world.ufo) {
       drawUfo(renderer, this.world.ufo);
+      if (this.world.debugBoxes) {
+        const loop = this.audio?.ufoLoop;
+        const loopState = !loop
+          ? 'none'
+          : loop.paused
+            ? 'paused'
+            : loop.ended
+              ? 'ended'
+              : 'playing';
+        const label = `UFO AUDIO: ${loopState}${this.audio?.muted ? ' (muted)' : ''}`;
+        drawPixelText(renderer, label, this.world.ufo.x + (this.world.ufo.width / 2), this.world.ufo.y + this.world.ufo.height + 6, {
+          color: '#ffffff',
+          scale: FONT_SCALE_SMALL,
+          align: 'center',
+        });
+      }
     }
     if (this.world.ufoDeath) {
       drawUfoDeath(renderer, this.world.ufoDeath);
