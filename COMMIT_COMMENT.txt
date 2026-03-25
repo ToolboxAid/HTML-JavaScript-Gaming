@@ -1,1 +1,1 @@
-Plan Asteroids with arcade-accurate scope and reuse of attract/high-score patterns
+Add Asteroids vector rendering, attract mode, and high score presentation

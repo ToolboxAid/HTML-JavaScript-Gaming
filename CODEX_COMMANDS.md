@@ -5,7 +5,7 @@ CODEX_COMMANDS.md
 
 # Codex Commands
 
-## Asteroids Plan PR
+## Asteroids Vector & Arcade Presentation
 MODEL: GPT-5.4-codex
 REASONING: medium
-COMMAND: PLAN_PR_ASTEROIDS
+COMMAND: BUILD_PR_ASTEROIDS_PRESENTATION
