@@ -39,6 +39,8 @@ import { run as runPaddleInterceptValidation } from './games/PaddleInterceptVali
 import { run as runPaddleInterceptWorld } from './games/PaddleInterceptWorld.test.mjs';
 import { run as runPacmanLiteValidation } from './games/PacmanLiteValidation.test.mjs';
 import { run as runPacmanLiteWorld } from './games/PacmanLiteWorld.test.mjs';
+import { run as runPacmanFullAIValidation } from './games/PacmanFullAIValidation.test.mjs';
+import { run as runPacmanFullAIWorld } from './games/PacmanFullAIWorld.test.mjs';
 import { run as runPongValidation } from './games/PongValidation.test.mjs';
 import { run as runPongAudio } from './games/PongAudio.test.mjs';
 import { run as runPongWorld } from './games/PongWorld.test.mjs';
@@ -131,6 +133,8 @@ const tests = [
     ['PaddleInterceptWorld', runPaddleInterceptWorld],
     ['PacmanLiteValidation', runPacmanLiteValidation],
     ['PacmanLiteWorld', runPacmanLiteWorld],
+    ['PacmanFullAIValidation', runPacmanFullAIValidation],
+    ['PacmanFullAIWorld', runPacmanFullAIWorld],
     ['PongValidation', runPongValidation],
     ['PongAudio', runPongAudio],
     ['PongWorld', runPongWorld],
