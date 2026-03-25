@@ -20,10 +20,13 @@ const MIN_MARCH_INTERVAL = 0.09;
 const WAVE_ENTRY_DELAY = 1.2;
 const LIFE_RESPAWN_DELAY = 1.1;
 const PLAYER_RESPAWN_INVULNERABILITY = 1.25;
+const SPAWN_INTERVAL = 0.016;
 const ALIEN_DEATH_DURATION = 0.28;
 const BOMB_DEATH_DURATION = 0.28;
 const PLAYER_DEATH_DURATION = 0.5;
 const UFO_DEATH_DURATION = 0.36;
+const UFO_SCORE_POPUP_DURATION = 1.1;
+const UFO_SCORE_CYCLE = [100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100];
 const BOMB_TYPES = ['bomb1', 'bomb2', 'bomb3'];
 
 const ROW_TYPES = [
@@ -93,6 +96,11 @@ export default class SpaceInvadersWorld {
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.player = this.createPlayer();
     this.debugBoxes = false;
+    this.spawnQueue = [];
+    this.spawnTimer = 0;
+    this.formationReady = false;
+    this.playerShotsFired = 0;
+    this.ufoScorePopups = [];
     this.resetGame();
   }
 
@@ -151,6 +159,12 @@ export default class SpaceInvadersWorld {
     this.transitionTimer = 0;
     this.gameOver = false;
     this.debugBoxes = this.debugBoxes || false;
+    this.spawnQueue = [];
+    this.spawnTimer = 0;
+    this.formationReady = false;
+    this.ufoScoreCycleIndex = 0;
+    this.playerShotsFired = 0;
+    this.ufoScorePopups = [];
     this.playerShot = null;
     this.alienShots = [];
     this.alienDeaths = [];
@@ -174,16 +188,17 @@ export default class SpaceInvadersWorld {
     const horizontalSpacing = 56;
     const verticalSpacing = 44;
     this.aliens = [];
-    for (let row = 0; row < ALIEN_ROWS; row += 1) {
+    this.spawnQueue = [];
+    this.spawnTimer = 0;
+    this.formationReady = false;
+    for (let row = ALIEN_ROWS - 1; row >= 0; row -= 1) {
       for (let column = 0; column < ALIEN_COLUMNS; column += 1) {
-        this.aliens.push(
-          this.createAlien(
-            row,
-            column,
-            left + (column * horizontalSpacing),
-            top + (row * verticalSpacing),
-          ),
-        );
+        this.spawnQueue.push({
+          row,
+          column,
+          x: left + (column * horizontalSpacing),
+          y: top + (row * verticalSpacing),
+        });
       }
     }
     this.formationDirection = 1;
@@ -247,6 +262,40 @@ export default class SpaceInvadersWorld {
     return type;
   }
 
+  processSpawns(dtSeconds) {
+    if (!this.spawnQueue.length) {
+      return;
+    }
+
+    this.spawnTimer += dtSeconds;
+    while (this.spawnTimer >= SPAWN_INTERVAL && this.spawnQueue.length) {
+      const next = this.spawnQueue.shift();
+      this.aliens.push(this.createAlien(next.row, next.column, next.x, next.y));
+      this.spawnTimer -= SPAWN_INTERVAL;
+    }
+
+    if (!this.spawnQueue.length) {
+      this.formationReady = true;
+      this.marchTimer = this.marchInterval;
+    }
+  }
+
+  getNextUfoScore() {
+    const shots = Math.max(1, this.playerShotsFired);
+    const score = UFO_SCORE_CYCLE[(shots - 1) % UFO_SCORE_CYCLE.length];
+    return score;
+  }
+
+  tickScorePopups(dtSeconds) {
+    if (dtSeconds <= 0 || !this.ufoScorePopups.length) {
+      return;
+    }
+    this.ufoScorePopups.forEach((popup) => {
+      popup.visibleDelay = Math.max(0, popup.visibleDelay - dtSeconds);
+      popup.lifeRemaining = Math.max(0, popup.lifeRemaining - dtSeconds);
+    });
+    this.ufoScorePopups = this.ufoScorePopups.filter((popup) => popup.lifeRemaining > 0);
+  }
   firePlayerShot() {
     if (!this.player.alive || this.playerShot) {
       return false;
@@ -260,11 +309,12 @@ export default class SpaceInvadersWorld {
       vy: -PLAYER_SHOT_SPEED,
       owner: 'player',
     });
+    this.playerShotsFired += 1;
     return true;
   }
 
   fireAlienShot() {
-    if (this.alienShots.length >= 3) {
+    if (!this.formationReady || this.alienShots.length >= 3) {
       return false;
     }
     const liveColumns = Array.from({ length: ALIEN_COLUMNS }, (_, column) => column)
@@ -442,8 +492,9 @@ export default class SpaceInvadersWorld {
     }
 
     if (this.playerShot && this.ufo && overlapsRect(this.playerShot, this.ufo)) {
-      this.score += this.ufo.points;
-      event.scoreDelta += this.ufo.points;
+      const awarded = this.getNextUfoScore();
+      this.score += awarded;
+      event.scoreDelta += awarded;
       event.ufoHit = true;
       event.sfx.push('explosion');
       this.ufoDeath = {
@@ -451,6 +502,13 @@ export default class SpaceInvadersWorld {
         y: this.ufo.y,
         elapsed: 0,
       };
+      this.ufoScorePopups.push({
+        x: this.ufo.x,
+        y: this.ufo.y,
+        value: awarded,
+        visibleDelay: UFO_DEATH_DURATION,
+        lifeRemaining: UFO_DEATH_DURATION + UFO_SCORE_POPUP_DURATION,
+      });
       this.playerShot = null;
       this.ufo = null;
       this.ufoTimer = clamp(11 - (this.wave * 0.35), 5.5, 12);
@@ -460,12 +518,14 @@ export default class SpaceInvadersWorld {
       const shotIndex = this.alienShots.findIndex((shot) => overlapsRect(this.playerShot, shot));
       if (shotIndex >= 0) {
         const bomb = this.alienShots[shotIndex];
-        this.bombDeaths.push({
-          x: bomb.x - 12,
-          y: bomb.y,
-          elapsed: 0,
-        });
-        this.alienShots.splice(shotIndex, 1);
+        if (bomb.type !== 'bomb3') {
+          this.bombDeaths.push({
+            x: bomb.x - 12,
+            y: bomb.y,
+            elapsed: 0,
+          });
+          this.alienShots.splice(shotIndex, 1);
+        }
         this.playerShot = null;
       }
     }
@@ -544,6 +604,8 @@ export default class SpaceInvadersWorld {
       this.debugBoxes = !this.debugBoxes;
     }
 
+    this.processSpawns(dtSeconds);
+
     if (this.status === 'menu') {
       if (controls.startPressed) {
         this.startGame();
@@ -580,22 +642,27 @@ export default class SpaceInvadersWorld {
     this.updatePlayer(dtSeconds, controls, event);
     this.updateUfo(dtSeconds, event);
 
-    this.marchTimer -= dtSeconds;
-    if (this.marchTimer <= 0) {
-      const descended = this.marchFormation();
-      this.marchTimer += this.marchInterval;
-      event.sfx.push(`fastinvader${(this.wave + this.getAliveAliens().length) % 4 + 1}`);
-      if (descended) {
-        event.alienFired = this.fireAlienShot();
-      } else if (this.rng() < clamp(0.12 + ((this.wave - 1) * 0.03), 0.12, 0.34) * dtSeconds * 60) {
-        if (this.fireAlienShot()) {
-          event.alienFired = true;
+    if (this.formationReady) {
+      this.marchTimer -= dtSeconds;
+      if (this.marchTimer <= 0) {
+        const descended = this.marchFormation();
+        this.marchTimer += this.marchInterval;
+        event.sfx.push(`fastinvader${(this.wave + this.getAliveAliens().length) % 4 + 1}`);
+        if (descended) {
+          event.alienFired = this.fireAlienShot();
+        } else if (this.rng() < clamp(0.12 + ((this.wave - 1) * 0.03), 0.12, 0.34) * dtSeconds * 60) {
+          if (this.fireAlienShot()) {
+            event.alienFired = true;
+          }
         }
       }
     }
 
     this.updateShots(dtSeconds, event);
     this.updateAnimations(dtSeconds);
+    if (!this.formationReady) {
+      return event;
+    }
     this.checkWaveState(event);
     if (this.gameOver) {
       event.gameOver = true;
@@ -605,6 +672,7 @@ export default class SpaceInvadersWorld {
 
   update(dtSeconds, controls = {}) {
     let remaining = Math.max(0, Number(dtSeconds) || 0);
+    this.tickScorePopups(remaining);
     let event = makeEvent();
     let frameControls = {
       moveAxis: controls.moveAxis ?? 0,

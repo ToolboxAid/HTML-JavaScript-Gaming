@@ -274,6 +274,15 @@ export default class SpaceInvadersScene extends Scene {
     if (this.world.ufoDeath) {
       drawUfoDeath(renderer, this.world.ufoDeath);
     }
+    this.world.ufoScorePopups.forEach((popup) => {
+      if (popup.visibleDelay <= 0) {
+        drawPixelText(renderer, String(popup.value), popup.x + 8, popup.y - 12, {
+          color: '#ffffff',
+          scale: FONT_SCALE_SMALL,
+          align: 'center',
+        });
+      }
+    });
 
     if (this.world.player.alive) {
       drawPlayer(renderer, this.world.player);
