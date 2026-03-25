@@ -343,6 +343,57 @@ function testGroundDestructsOnBombHit() {
   assert.equal(afterPixels < beforePixels, true);
 }
 
+function testBombCadenceIncreased() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+  spawnAll(world);
+  world.marchTimer = 0;
+  const before = world.alienShots.length;
+  world.update(0.01, createControls());
+  assert.equal(world.formationReady, true);
+  assert.equal(world.alienShots.length > before, true);
+}
+
+function testBombStrongerShieldDamage() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+  const shield = world.shields[0];
+  const beforePixels = countPixels(shield.frame);
+  world.alienShots = [{
+    x: shield.x + (shield.width / 2),
+    y: shield.y + 2,
+    width: 9,
+    height: 24,
+    vy: 0,
+    owner: 'alien',
+    type: 'bomb1',
+    animationFrame: 0,
+    animationElapsed: 0,
+    active: true,
+  }];
+  world.update(0, createControls());
+  const afterPixels = countPixels(shield.frame);
+  assert.equal(world.alienShots.length, 0);
+  assert.equal(afterPixels <= beforePixels - 20, true);
+}
+
+function testAlienErodesShieldOnOverlap() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+  spawnAll(world);
+  const shield = world.shields[0];
+  const alien = world.getAliveAliens()[0];
+  alien.x = shield.x;
+  alien.y = shield.y;
+  const beforePixels = countPixels(shield.frame);
+  world.erodeShieldsUnderAliens();
+  const afterPixels = countPixels(shield.frame);
+  assert.equal(afterPixels < beforePixels, true);
+}
+
 export function run() {
   testFormationReversesAndDescendsAtEdge();
   testPlayerShootingDisciplineLimitsShots();
@@ -357,4 +408,7 @@ export function run() {
   testShieldsSpawnAndSitAbovePlayer();
   testShieldTakesBombDamageAndRemovesShot();
   testGroundDestructsOnBombHit();
+  testBombCadenceIncreased();
+  testBombStrongerShieldDamage();
+  testAlienErodesShieldOnOverlap();
 }

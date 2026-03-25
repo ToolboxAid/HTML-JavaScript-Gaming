@@ -33,6 +33,7 @@ const SHIELD_PIXEL_SIZE = 3;
 const SHIELD_COUNT = 4;
 const GROUND_PIXEL_SIZE = 3;
 const GROUND_ROWS = 2;
+const BOMB_FIRE_MULTIPLIER = 10;
 
 const ROW_TYPES = [
   { type: 'octopus', points: 30, width: 24, height: 24 },
@@ -377,9 +378,12 @@ export default class SpaceInvadersWorld {
     const hitY = (shot.y + shot.height) - shield.y;
     const impactColumn = Math.floor(hitX / shield.pixelSize);
     const impactRow = Math.floor(hitY / shield.pixelSize);
-    const { frame, changed } = this.applyOverlay(shield.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
+    const first = this.applyOverlay(shield.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
+    // second pass widen crater for stronger damage
+    const second = this.applyOverlay(first.frame, SHIELD_BOMB_OVERLAY, impactColumn + 1, impactRow);
+    const changed = first.changed || second.changed;
     if (changed) {
-      shield.frame = frame;
+      shield.frame = second.frame;
       this.bombDeaths.push({
         x: shot.x - 12,
         y: shot.y,
@@ -409,6 +413,43 @@ export default class SpaceInvadersWorld {
       event.sfx.push('explosion');
     }
     return changed;
+  }
+
+  erodeShieldsUnderAliens() {
+    if (!this.shields.length) {
+      return;
+    }
+    const aliveAliens = this.getAliveAliens();
+    this.shields.forEach((shield) => {
+      let changed = false;
+      const rows = shield.frame.map((row) => row.split(''));
+      aliveAliens.forEach((alien) => {
+        if (!overlapsRect(alien, shield)) {
+          return;
+        }
+        const overlapX1 = Math.max(alien.x, shield.x);
+        const overlapY1 = Math.max(alien.y, shield.y);
+        const overlapX2 = Math.min(alien.x + alien.width, shield.x + shield.width);
+        const overlapY2 = Math.min(alien.y + alien.height, shield.y + shield.height);
+        const startCol = Math.floor((overlapX1 - shield.x) / shield.pixelSize);
+        const endCol = Math.ceil((overlapX2 - shield.x) / shield.pixelSize);
+        const startRow = Math.floor((overlapY1 - shield.y) / shield.pixelSize);
+        const endRow = Math.ceil((overlapY2 - shield.y) / shield.pixelSize);
+        for (let r = startRow; r < endRow; r += 1) {
+          if (r < 0 || r >= rows.length) continue;
+          for (let c = startCol; c < endCol; c += 1) {
+            if (c < 0 || c >= rows[r].length) continue;
+            if (rows[r][c] === '1') {
+              rows[r][c] = '0';
+              changed = true;
+            }
+          }
+        }
+      });
+      if (changed) {
+        shield.frame = rows.map((row) => row.join(''));
+      }
+    });
   }
   firePlayerShot() {
     if (!this.player.alive || this.playerShot) {
@@ -800,7 +841,7 @@ export default class SpaceInvadersWorld {
         event.sfx.push(`fastinvader${(this.wave + this.getAliveAliens().length) % 4 + 1}`);
         if (descended) {
           event.alienFired = this.fireAlienShot();
-        } else if (this.rng() < clamp(0.12 + ((this.wave - 1) * 0.03), 0.12, 0.34) * dtSeconds * 60) {
+        } else if (this.rng() < clamp(0.12 + ((this.wave - 1) * 0.03), 0.12, 0.34) * dtSeconds * 60 * BOMB_FIRE_MULTIPLIER) {
           if (this.fireAlienShot()) {
             event.alienFired = true;
           }
@@ -810,6 +851,7 @@ export default class SpaceInvadersWorld {
 
     this.updateShots(dtSeconds, event);
     this.updateAnimations(dtSeconds);
+    this.erodeShieldsUnderAliens();
     if (!this.formationReady) {
       return event;
     }
