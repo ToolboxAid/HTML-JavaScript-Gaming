@@ -1,1 +1,1 @@
-Update start-of-day: Level 6 AI Systems complete
+Fix index and roadmap references for Pacman Full AI
