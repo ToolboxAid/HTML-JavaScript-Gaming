@@ -27,11 +27,9 @@ const UFO_DEATH_DURATION = 0.36;
 const BOMB_TYPES = ['bomb1', 'bomb2', 'bomb3'];
 
 const ROW_TYPES = [
-  // Top row uses the former bottom sprite (octopus), but keeps top-row scoring.
   { type: 'octopus', points: 30, width: 24, height: 24 },
   { type: 'crab', points: 20, width: 36, height: 24 },
   { type: 'crab', points: 20, width: 36, height: 24 },
-  // Bottom two rows use the former top sprite (squid), but keep bottom-row scoring.
   { type: 'squid', points: 10, width: 33, height: 24 },
   { type: 'squid', points: 10, width: 33, height: 24 },
 ];

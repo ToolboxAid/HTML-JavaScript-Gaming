@@ -236,7 +236,6 @@ export default class SpaceInvadersScene extends Scene {
     }
 
     if (this.isPaused) {
-      this.audio.stopUfoLoop();
       return;
     }
 
@@ -323,11 +322,7 @@ export default class SpaceInvadersScene extends Scene {
       scale: FONT_SCALE_SMALL,
       align: 'right',
     });
-    drawPixelText(renderer, 'LEFT/RIGHT MOVE SPACE FIRE P PAUSE', VIEW.width / 2, boundaryY + 28, {
-      color: '#8df58d',
-      scale: FONT_SCALE_SMALL,
-      align: 'center',
-    });
+    // control hint now shown only in overlays
 
     const showOverlay = this.isPaused || this.world.status === 'menu' || this.world.status === 'game-over' || this.world.isWaveTransition;
 
@@ -348,19 +343,38 @@ export default class SpaceInvadersScene extends Scene {
   }
 
   drawOverlay(renderer, title, prompt) {
-    renderer.drawRect(210, 268, 540, 150, 'rgba(0, 0, 0, 0.84)');
-    renderer.strokeRect(210, 268, 540, 150, '#66ff66', 2);
-    drawPixelText(renderer, title, VIEW.width / 2, 304, {
+    const boxX = 210;
+    const boxY = 268; // move up 20px
+    const boxW = 540;
+    const boxH = 180; // increase height by 30px
+    renderer.drawRect(boxX, boxY, boxW, boxH, 'rgba(0, 0, 0, 0.84)');
+    renderer.strokeRect(boxX, boxY, boxW, boxH, '#66ff66', 2);
+    drawPixelText(renderer, title, VIEW.width / 2, 284, {
       color: '#ffffff',
       scale: FONT_SCALE_OVERLAY,
       align: 'center',
     });
     wrapPixelText(prompt, 480, FONT_SCALE_SMALL).forEach((line, index) => {
-      drawPixelText(renderer, line, VIEW.width / 2, 360 + (index * 20), {
+      drawPixelText(renderer, line, VIEW.width / 2, 332 + (index * 18), {
         color: '#8df58d',
         scale: FONT_SCALE_SMALL,
         align: 'center',
       });
+    });
+    drawPixelText(renderer, 'LEFT/RIGHT MOVE', VIEW.width / 2, 376, {
+      color: '#8df58d',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
+    });
+    drawPixelText(renderer, 'SPACE FIRE  P PAUSE', VIEW.width / 2, 394, {
+      color: '#8df58d',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
+    });
+    drawPixelText(renderer, 'PRESS START', VIEW.width / 2, 418, {
+      color: '#ffffff',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
     });
   }
 }
