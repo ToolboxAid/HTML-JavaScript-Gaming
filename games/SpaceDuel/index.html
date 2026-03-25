@@ -1,0 +1,49 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/25/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Space Duel</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>Space Duel</h1>
+    <p>Arcade-style vector combat with inertial thrust movement, rotating ships, enemy splits, and same-screen one or two player play.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Keys</h3>
+      <p><code>1</code> starts one-player, <code>2</code> starts two-player, <code>P</code> pauses, and <code>X</code> returns to menu while paused.</p>
+      <p>Player 1: <code>Left</code>/<code>Right</code> rotate, <code>Up</code> thrust, <code>Space</code> fire.</p>
+      <p>Player 2: <code>A</code>/<code>D</code> rotate, <code>W</code> thrust, <code>Left Shift</code> fire.</p>
+    </section>
+    <section>
+      <h3>Gameplay Loop</h3>
+      <ul>
+        <li>Clear geometric enemy waves while managing inertia and wrap-around movement.</li>
+        <li>Large enemies split into smaller, faster threats when destroyed.</li>
+        <li>Survive hazards, build score, and push into harder waves.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Audio</h3>
+      <p>This build uses generated placeholder WAV files under <code>/games/SpaceDuel/assets/effects</code> for easy asset replacement later.</p>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>render / CanvasRenderer</li>
+        <li>input / ActionInputService</li>
+        <li>input / ActionInputMap</li>
+        <li>scenes / Scene</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
