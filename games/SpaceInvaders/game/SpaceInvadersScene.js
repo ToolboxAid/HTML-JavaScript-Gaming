@@ -20,6 +20,9 @@ import {
   UFO_LIVING_FRAMES,
 } from './SpaceInvadersSpriteData.js';
 import SpaceInvadersWorld from './SpaceInvadersWorld.js';
+import PlayerManager from './PlayerManager.js';
+import UfoController from './UfoController.js';
+import WaveController from './WaveController.js';
 
 const VIEW = { width: 960, height: 720 };
 const ALIEN_PIXEL_SIZE = 3;
@@ -216,6 +219,9 @@ export default class SpaceInvadersScene extends Scene {
     this.world = new SpaceInvadersWorld(VIEW);
     this.inputController = null;
     this.audio = new SpaceInvadersAudio();
+    this.playerManager = new PlayerManager({ world: this.world });
+    this.ufoController = new UfoController({ world: this.world, audio: this.audio });
+    this.waveController = new WaveController({ world: this.world });
     this.isPaused = false;
   }
 
@@ -229,19 +235,24 @@ export default class SpaceInvadersScene extends Scene {
   }
 
   exit(engine) {
-    this.audio.stopUfoLoop();
+    this.ufoController.stopLoop();
     if (engine?.canvas) {
       engine.canvas.style.cursor = 'default';
     }
   }
 
   update(dtSeconds) {
+    this.playerManager.world = this.world;
+    this.waveController.world = this.world;
+    this.ufoController.world = this.world;
+    this.ufoController.audio = this.audio;
+
     const frame = this.inputController.getFrameState();
 
     if (frame.menuPressed && this.isPaused) {
       this.world.resetGame();
       this.isPaused = false;
-      this.audio.stopUfoLoop();
+      this.ufoController.stopLoop();
       return;
     }
 
@@ -249,7 +260,7 @@ export default class SpaceInvadersScene extends Scene {
     if (pauseable && frame.pausePressed) {
       this.isPaused = !this.isPaused;
       if (this.isPaused) {
-        this.audio.stopUfoLoop();
+        this.ufoController.stopLoop();
       }
       return;
     }
@@ -259,31 +270,17 @@ export default class SpaceInvadersScene extends Scene {
     }
 
     const event = this.world.update(dtSeconds, frame);
-    event.sfx.forEach((effectId) => this.audio.play(effectId));
-    const allowUfoLoop = !this.isPaused
-      && this.world.status === 'playing'
-      && !this.world.isWaveTransition
-      && !this.world.gameOver
-      && Boolean(this.world.ufo);
-    if (allowUfoLoop) {
-      this.audio.startUfoLoop(this.world.ufoDirection);
-    } else {
-      this.audio.stopUfoLoop();
-    }
+    this.ufoController.playSfx(event);
+    this.ufoController.syncLoop({ isPaused: this.isPaused });
   }
 
   render(renderer) {
-    const boundaryY = this.world.playerBaseY + 21;
-    const player1Score = String(this.world.getPlayerScore(0)).padStart(4, '0');
-    const player2Score = String(this.world.getPlayerScore(1)).padStart(4, '0');
-    const hiScore = String(this.world.hiScore).padStart(4, '0');
+    const boundaryY = this.waveController.getBoundaryY();
+    const hud = this.playerManager.getHudSnapshot();
     const scoreColorText = '#d0d0d0';
     const scoreColor = '#fbbf24';
-    const blinkActive = Boolean(this.world.pendingTurnSwitch) || this.world.introBlinkTimer > 0;
-    const blinkOff = blinkActive && !this.world.getPlayerSwapBlinkVisible();
-    const blinkTargetIndex = this.world.getBlinkTargetIndex();
-    const player1ScoreColor = blinkOff && blinkTargetIndex === 0 ? '#000000' : scoreColor;
-    const player2ScoreColor = blinkOff && blinkTargetIndex === 1 ? '#000000' : scoreColor;
+    const player1ScoreColor = hud.player1ScoreVisible ? scoreColor : '#000000';
+    const player2ScoreColor = hud.player2ScoreVisible ? scoreColor : '#000000';
     renderer.clear('#000000');
     renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#020702');
     renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#66ff66', 2);
@@ -296,20 +293,20 @@ export default class SpaceInvadersScene extends Scene {
       ctx.clip();
     }
 
-    drawPixelText(renderer, 'PLAYER 1', 84, 34, {
-      color: this.world.currentPlayerIndex === 0 ? '#ffffff' : scoreColorText,
+    drawPixelText(renderer, 'PLAYER<1>', 84, 34, {
+      color: hud.currentPlayerIndex === 0 ? '#ffffff' : scoreColorText,
       scale: FONT_SCALE_HUD,
     });
     drawPixelText(renderer, 'HI-SCORE', VIEW.width / 2, 34, { color: scoreColorText, scale: FONT_SCALE_HUD, align: 'center' });
-    drawPixelText(renderer, 'PLAYER 2', VIEW.width - 84, 34, {
-      color: this.world.currentPlayerIndex === 1 ? '#ffffff' : scoreColorText,
+    drawPixelText(renderer, 'PLAYER<2>', VIEW.width - 84, 34, {
+      color: hud.currentPlayerIndex === 1 ? '#ffffff' : scoreColorText,
       scale: FONT_SCALE_HUD,
       align: 'right',
     });
 
-    drawPixelText(renderer, player1Score, 112, 56, { color: player1ScoreColor, scale: FONT_SCALE_HUD });
-    drawPixelText(renderer, hiScore, VIEW.width / 2, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'center' });
-    drawPixelText(renderer, player2Score, VIEW.width - 112, 56, { color: player2ScoreColor, scale: FONT_SCALE_HUD, align: 'right' });
+    drawPixelText(renderer, hud.player1Score, 112, 56, { color: player1ScoreColor, scale: FONT_SCALE_HUD });
+    drawPixelText(renderer, hud.hiScore, VIEW.width / 2, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'center' });
+    drawPixelText(renderer, hud.player2Score, VIEW.width - 112, 56, { color: player2ScoreColor, scale: FONT_SCALE_HUD, align: 'right' });
 
     if (this.world.ground) {
       drawBitmap(renderer, this.world.ground.frame, this.world.ground.x, this.world.ground.y, this.world.ground.pixelSize, '#66ff66');
@@ -319,10 +316,6 @@ export default class SpaceInvadersScene extends Scene {
     });
 
     const aliveAliens = this.world.getAliveAliens();
-    // if (aliveAliens.length) {
-    //   const dangerLineY = Math.max(...aliveAliens.map((alien) => alien.y + (alien.height * 2)));
-    //   renderer.drawLine(24, dangerLineY, VIEW.width - 24, dangerLineY, '#ff0000', 2);
-    // }
     aliveAliens.forEach((alien) => drawAlien(renderer, alien));
     this.world.alienDeaths.forEach((death) => drawAlienDeath(renderer, death));
 
@@ -398,44 +391,43 @@ export default class SpaceInvadersScene extends Scene {
       }
     }
 
-    drawLives(renderer, this.world.lives, boundaryY + 12);
+    drawLives(renderer, hud.lives, boundaryY + 12);
 
-    drawPixelText(renderer, `${Math.max(0, this.world.lives)}`, 32, boundaryY + 17, {
+    drawPixelText(renderer, `${hud.lives}`, 32, boundaryY + 17, {
       color: '#66ff66',
       scale: FONT_SCALE_HUD,
     });
-    drawPixelText(renderer, `WAVE ${this.world.wave}`, VIEW.width - 44, boundaryY + 10, {
+    drawPixelText(renderer, this.waveController.getBottomHudWaveText(), VIEW.width - 44, boundaryY + 10, {
       color: '#8df58d',
       scale: FONT_SCALE_SMALL,
       align: 'right',
     });
-    const showOverlay = this.isPaused || this.world.status === 'menu' || this.world.status === 'game-over';
+    const overlay = this.playerManager.getOverlayState({ isPaused: this.isPaused });
+    const showOverlay = Boolean(overlay);
 
     if (showOverlay) {
       renderer.drawRect(0, 0, VIEW.width, VIEW.height, 'rgba(0, 0, 0, 0.5)');
     }
 
-    if (this.world.status === 'menu') {
+    if (overlay) {
       this.drawOverlay(
         renderer,
-        'SPACE INVADERS',
-        `${this.world.selectedPlayerCount} PLAYER${this.world.selectedPlayerCount > 1 ? 'S' : ''} SELECTED`,
-        ['PRESS 1 OR 2 TO CHOOSE', 'PRESS SPACE OR ENTER TO START'],
-        -20,
-        10,
+        overlay.title,
+        overlay.prompt,
+        overlay.lines,
+        overlay.textOffsetY,
+        overlay.startOffsetY,
+        overlay.controlsOffsetY,
       );
-    } else if (this.world.status === 'game-over') {
-      this.drawOverlay(renderer, 'GAME OVER', 'PRESS SPACE OR ENTER FOR PLAYER SELECT', [], -20, 0, -20);
-    } else if (this.isPaused) {
-      this.drawOverlay(renderer, 'PAUSED', 'PRESS P TO RESUME', ['PRESS X FOR MENU']);
-    } else if (this.world.pendingTurnSwitch) {
-      drawCenterBanner(renderer, `PLAYER ${this.world.pendingTurnSwitch.targetIndex + 1}`);
-    } else if (this.world.entryDelay > 0 || this.world.turnAnnouncementTimer > 0) {
+    } else {
+      const banner = this.waveController.getCenterBanner();
+      if (banner) {
       drawCenterBanner(
         renderer,
-        this.world.statusMessage,
-        this.world.statusMessage === 'EXTRA LIFE' ? 'BONUS SHIP AWARDED' : '',
+        banner.title,
+        banner.subtitle,
       );
+      }
     }
 
     if (ctx) {

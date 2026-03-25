@@ -17,7 +17,32 @@ BUILD_PR_SPACE_INVADERS_FINAL_POLISH_AND_BUGFIX_PASS.md
 - sprite alignment / HUD polish
 - fix UFO loop sound not ending on game over
 - player score blinking transition before player swap (10 blinks over 5 seconds)
+- reduce main scene size by extracting Space Invaders game-local controllers
 - bug fixes only, no new major systems
+
+## Refactor Target
+Keep `SpaceInvadersScene` as coordinator only.
+
+### Extract first
+- PlayerManager
+  - 1P / 2P selection
+  - current player
+  - lives
+  - death / respawn
+  - player swap blink timing
+
+- UfoController
+  - spawn / despawn
+  - movement
+  - loop sound start / stop
+  - game-over cleanup
+  - score display timing
+
+- WaveController
+  - wave start / reset
+  - alien-count speed scaling
+  - wave-clear timing
+  - no between-level popup behavior
 
 ## Engine Classes Used
 - CanvasRenderer — rendering entry point only
@@ -38,7 +63,7 @@ BUILD_PR_SPACE_INVADERS_FINAL_POLISH_AND_BUGFIX_PASS.md
 - Keep Space Invaders-specific rules in the game layer
 
 ## Intent
-Stabilize and polish the current Space Invaders implementation without expanding feature scope, while making engine usage explicit like the other samples and games.
+Stabilize and polish the current Space Invaders implementation without expanding feature scope, while making engine usage explicit like the other samples and games and reducing main scene size.
 
 ## Acceptance Criteria
 - No console errors
@@ -49,11 +74,12 @@ Stabilize and polish the current Space Invaders implementation without expanding
 - Timing and collisions feel consistent
 - UFO sound stops immediately on game over
 - Player swap includes 10 blinks over ~5 seconds before switching
+- Main scene is reduced by extracting game-local controllers
 - Engine classes used are documented clearly
 - No new architecture violations
 
 ## Commit Comment
-Polish Space Invaders gameplay flow, timing, scoring, player swap transition, and UFO game over sound cleanup
+Polish Space Invaders gameplay flow, timing, scoring, player swap transition, scene refactor, and UFO game over sound cleanup
 
 ## Codex Command
 MODEL: GPT-5.4-codex
