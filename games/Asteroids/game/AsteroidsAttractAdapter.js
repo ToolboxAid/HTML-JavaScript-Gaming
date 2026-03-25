@@ -24,6 +24,40 @@ function drawTextPanel(renderer, {
   renderer.drawRect(x, top, width, height, `rgba(2, 6, 23, ${safeAlpha.toFixed(3)})`);
 }
 
+function drawShipSilhouette(renderer, x, y, angle = 0, color = '#ffffff') {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const toWorld = (lx, ly) => ({
+    x: x + (lx * cos) - (ly * sin),
+    y: y + (lx * sin) + (ly * cos),
+  });
+  const a = toWorld(16, 0);
+  const b = toWorld(-10, 9);
+  const c = toWorld(-5, 0);
+  const d = toWorld(-10, -9);
+  renderer.drawLine(a.x, a.y, b.x, b.y, color, 2);
+  renderer.drawLine(b.x, b.y, c.x, c.y, color, 2);
+  renderer.drawLine(c.x, c.y, d.x, d.y, color, 2);
+  renderer.drawLine(d.x, d.y, a.x, a.y, color, 2);
+}
+
+function drawSaucerSilhouette(renderer, x, y, color = '#dbeafe') {
+  renderer.drawLine(x - 20, y + 5, x + 20, y + 5, color, 2);
+  renderer.drawLine(x - 14, y - 4, x + 14, y - 4, color, 2);
+  renderer.drawLine(x - 20, y + 5, x - 14, y - 4, color, 2);
+  renderer.drawLine(x + 20, y + 5, x + 14, y - 4, color, 2);
+}
+
+function drawAsteroidSilhouette(renderer, x, y, color = '#cbd5e1') {
+  const pts = [
+    [x - 16, y - 5], [x - 7, y + 14], [x + 11, y + 12],
+    [x + 15, y - 6], [x + 2, y - 16], [x - 16, y - 5],
+  ];
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    renderer.drawLine(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], color, 2);
+  }
+}
+
 export default class AsteroidsAttractAdapter {
   constructor({ scene }) {
     this.scene = scene;
@@ -86,8 +120,9 @@ export default class AsteroidsAttractAdapter {
     const phaseMs = this.scene?.attractController?.getSnapshot?.().phaseMs ?? 0;
     const duration = this.scene?.attractController?.phaseDurationMs ?? 1;
     const normalized = clamp(phaseMs / duration, 0, 1);
-    const edge = Math.min(normalized, 1 - normalized);
-    return clamp(edge * 2.2, 0.2, 1);
+    const fadeIn = clamp(normalized / 0.18, 0, 1);
+    const fadeOut = clamp((1 - normalized) / 0.14, 0, 1);
+    return clamp(Math.min(fadeIn, fadeOut), 0, 1);
   }
 
   renderTitle(renderer, alpha) {
@@ -106,7 +141,7 @@ export default class AsteroidsAttractAdapter {
       textBaseline: 'top',
     });
     renderer.drawText('ARCADE ATTRACT MODE', 480, 258, {
-      color: `rgba(203,213,225,${alpha})`,
+      color: `rgba(226,232,240,${alpha})`,
       font: '18px "Vector Battle", monospace',
       textAlign: 'center',
       textBaseline: 'top',
@@ -120,6 +155,9 @@ export default class AsteroidsAttractAdapter {
         textBaseline: 'top',
       });
     }
+
+    drawShipSilhouette(renderer, 328, 348, -0.28, `rgba(248,250,252,${alpha})`);
+    drawAsteroidSilhouette(renderer, 632, 352, `rgba(203,213,225,${alpha})`);
   }
 
   renderHighScores(renderer, alpha) {
@@ -148,7 +186,7 @@ export default class AsteroidsAttractAdapter {
         textBaseline: 'top',
       });
       renderer.drawText(String(row.score).padStart(5, '0'), 662, y, {
-        color: `rgba(251,191,36,${alpha})`,
+        color: `rgba(252,211,77,${alpha})`,
         font: '20px "Vector Battle", monospace',
         textAlign: 'right',
         textBaseline: 'top',
@@ -188,18 +226,12 @@ export default class AsteroidsAttractAdapter {
 
     const x = 480 + Math.cos(this.demoTime * 0.7) * 220;
     const y = 340 + Math.sin(this.demoTime * 1.1) * 130;
-    renderer.drawLine(x + 15, y, x - 11, y + 10, '#ffffff', 2);
-    renderer.drawLine(x - 11, y + 10, x - 6, y, '#ffffff', 2);
-    renderer.drawLine(x - 6, y, x - 11, y - 10, '#ffffff', 2);
-    renderer.drawLine(x - 11, y - 10, x + 15, y, '#ffffff', 2);
+    drawShipSilhouette(renderer, x, y, Math.sin(this.demoTime * 0.9) * 1.2, '#ffffff');
 
     const rockX = 480 + Math.sin(this.demoTime * 0.5) * 250;
     const rockY = 330 + Math.cos(this.demoTime * 0.9) * 120;
-    renderer.drawLine(rockX - 16, rockY - 5, rockX - 7, rockY + 14, '#cbd5e1', 2);
-    renderer.drawLine(rockX - 7, rockY + 14, rockX + 11, rockY + 12, '#cbd5e1', 2);
-    renderer.drawLine(rockX + 11, rockY + 12, rockX + 15, rockY - 6, '#cbd5e1', 2);
-    renderer.drawLine(rockX + 15, rockY - 6, rockX + 2, rockY - 16, '#cbd5e1', 2);
-    renderer.drawLine(rockX + 2, rockY - 16, rockX - 16, rockY - 5, '#cbd5e1', 2);
+    drawAsteroidSilhouette(renderer, rockX, rockY, '#cbd5e1');
+    drawSaucerSilhouette(renderer, 480 + Math.cos(this.demoTime * 0.43) * 280, 284, '#dbeafe');
 
     renderer.drawText('PRESS ANY GAME INPUT TO EXIT ATTRACT', 480, 520, {
       color: `rgba(148,163,184,${alpha})`,
