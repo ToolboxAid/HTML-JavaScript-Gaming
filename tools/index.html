@@ -10,32 +10,12 @@ index.html
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolboxAid - Tools</title>
+  <link rel="stylesheet" href="../engine/ui/hubCommon.css" />
   <style>
     :root {
-      --bg: #101114;
-      --panel: #1b1d24;
-      --panel2: #232733;
-      --line: #343949;
-      --text: #eef2f7;
-      --muted: #b9c2d0;
-      --accent: #7dd3fc;
-      --live: #2f9e44;
-      --planned: #f59f00;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #0f1116 0%, #151927 100%);
-      color: var(--text);
-    }
-
-    .wrap {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 24px;
+      --wrap-max: 1280px;
+      --wrap-padding: 24px;
+      --grid-min: 260px;
     }
 
     .topnav {
@@ -51,9 +31,6 @@ index.html
       font-weight: bold;
     }
 
-    h1 { margin: 0 0 10px; }
-    p { color: var(--muted); line-height: 1.55; }
-
     h2 {
       margin-top: 32px;
       padding-bottom: 6px;
@@ -61,8 +38,6 @@ index.html
     }
 
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 16px;
       margin-top: 18px;
     }
@@ -74,10 +49,6 @@ index.html
       padding: 16px;
     }
 
-    .card h3 {
-      margin: 0 0 8px;
-    }
-
     .card a {
       color: var(--accent);
       text-decoration: none;
@@ -87,27 +58,7 @@ index.html
       text-decoration: underline;
     }
 
-    .card p {
-      margin: 0 0 10px;
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pill {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: bold;
-      color: #fff;
-    }
-
-    .live { background: var(--live); }
-    .planned { background: var(--planned); color: #111; }
+    .card p { margin-bottom: 10px; }
 
     .callout {
       margin-top: 18px;
@@ -155,13 +106,24 @@ index.html
       <h2>Planned Next</h2>
       <p>Tilemaps and palette management are the next priorities, followed by supporting tools that round out the asset workflow.</p>
       <div class="grid">
+
+        <div class="card">
+          <h3>Vector Map Editor</h3>
+          <p>Create, paint, save, and load vector graphics for editing and collision flags.</p>
+          <div class="meta">
+            <span class="pill planned">Next Tool</span><span> (required to finish Space Duel)</span>
+          </div>
+        </div>
+
         <div class="card">
           <h3>Tilemap Editor</h3>
           <p>Create, paint, save, and load tile-based levels with layer editing and collision flags.</p>
           <div class="meta">
-            <span class="pill planned">Next Tool</span>
+            <span class="pill planned">Planned</span>
           </div>
         </div>
+
+
 
         <div class="card">
           <h3>Palette Browser / Manager</h3>

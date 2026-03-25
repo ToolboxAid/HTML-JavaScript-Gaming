@@ -10,53 +10,19 @@ index.html
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolboxAid - Games</title>
+  <link rel="stylesheet" href="../engine/ui/hubCommon.css" />
   <style>
     :root {
-      --bg: #0f1115;
-      --panel: #171a21;
-      --panel2: #1d2230;
-      --text: #eef2f7;
-      --muted: #a9b3c3;
-      --line: #2b3242;
-      --playable: #2b8a3e;
-      --planned: #1971c2;
-      --inprogress: #f08c00;
-      --sample: #9c36b5;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #0d1015 0%, #131722 100%);
-      color: var(--text);
-    }
-
-    .wrap {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 32px 24px 64px;
+      --wrap-max: 1300px;
+      --wrap-padding: 32px 24px 64px;
+      --grid-min: 280px;
     }
 
     header {
       margin-bottom: 28px;
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: 2.2rem;
-      line-height: 1.1;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      max-width: 980px;
-      line-height: 1.6;
-      margin: 0;
-    }
+    h1 { margin-bottom: 8px; }
 
     .note {
       margin-top: 14px;
@@ -69,10 +35,6 @@ index.html
       background: rgba(255, 255, 255, 0.02);
     }
 
-    .section {
-      margin-top: 34px;
-    }
-
     .section h2 {
       margin: 0 0 10px;
       font-size: 1.4rem;
@@ -82,12 +44,6 @@ index.html
       margin: 0 0 18px;
       color: var(--muted);
       line-height: 1.5;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
     }
 
     .playableLevel {
@@ -113,13 +69,8 @@ index.html
     }
 
     .card {
-      display: block;
       overflow: hidden;
-      background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      text-decoration: none;
-      color: var(--text);
+      border-color: var(--line);
       transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
     }
 
@@ -194,51 +145,11 @@ index.html
     }
 
     .tagRow {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
       margin-bottom: 12px;
     }
 
-    .badge {
-      display: inline-block;
-      font-size: 11px;
-      line-height: 1;
-      padding: 6px 8px;
-      border-radius: 999px;
-      color: #fff;
-      font-weight: bold;
-      letter-spacing: 0.2px;
-    }
-
-    .playable {
-      background: var(--playable);
-    }
-
-    .planned {
-      background: var(--planned);
-    }
-
-    .inprogress {
-      background: var(--inprogress);
-      color: #111;
-    }
-
-    .sample {
-      background: var(--sample);
-    }
-
     .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
       margin-top: 10px;
-    }
-
-    @media (max-width: 700px) {
-      .wrap {
-        padding: 24px 16px 48px;
-      }
     }
   </style>
 </head>
@@ -454,7 +365,7 @@ index.html
         </article>
 
         <article class="levelCard">
-          <div class="tagRow"><span class="badge planned">Planned Game</span></div>
+          <div class="tagRow"><span class="badge inprogress">In Progress</Progress></span></div>
           <h3>Level 4 - Classic Arcade</h3>
           <p>Recognizable arcade conversions that start combining combat, hazards, enemy pacing, and progression into broader playable loops.</p>
           <ul>

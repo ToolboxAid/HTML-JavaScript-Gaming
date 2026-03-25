@@ -1,0 +1,175 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/25/2026
+hubCommon.css
+*/
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel2: #1d2230;
+  --text: #eef2f7;
+  --muted: #a9b3c3;
+  --line: #2b3242;
+  --accent: #7dd3fc;
+  --card-hover-border: #4d638c;
+  --bg-gradient: linear-gradient(180deg, #0d1015 0%, #131722 100%);
+  --wrap-max: 1180px;
+  --wrap-padding: 32px 24px 64px;
+  --grid-min: 260px;
+  --grid-gap: 18px;
+  --section-gap: 34px;
+  --status-playable: #2b8a3e;
+  --status-planned: #1971c2;
+  --status-sample: #9c36b5;
+  --status-inprogress: #f08c00;
+  --status-live: #2f9e44;
+  --status-tool: #9c36b5;
+  --status-roadmap: #f59f00;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text, #eef2f7);
+  background: var(--bg-gradient, linear-gradient(180deg, #0d1015 0%, #131722 100%));
+}
+
+.wrap {
+  max-width: var(--wrap-max, 1180px);
+  margin: 0 auto;
+  padding: var(--wrap-padding, 32px 24px 64px);
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 980px;
+  color: var(--muted, #a9b3c3);
+  line-height: 1.6;
+}
+
+p {
+  color: var(--muted, #a9b3c3);
+  line-height: 1.55;
+}
+
+.section {
+  margin-top: var(--section-gap, 34px);
+}
+
+.section h2 {
+  margin: 0 0 10px;
+  font-size: 1.35rem;
+}
+
+.section p,
+.section > p {
+  margin: 0 0 18px;
+  color: var(--muted, #a9b3c3);
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 260px), 1fr));
+  gap: var(--grid-gap, 18px);
+}
+
+.card {
+  display: block;
+  color: var(--text, #eef2f7);
+  text-decoration: none;
+  border: 1px solid var(--line, #2b3242);
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--panel, #171a21) 0%, var(--panel2, #1d2230) 100%);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--card-hover-border, #4d638c);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.card h3 {
+  margin: 0 0 8px;
+}
+
+.card p {
+  margin: 0 0 12px;
+  color: var(--muted, #a9b3c3);
+  line-height: 1.55;
+}
+
+.badges,
+.tagRow,
+.legend,
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge,
+.pill {
+  display: inline-block;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 6px 8px;
+}
+
+.pill {
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 4px 8px;
+}
+
+.playable,
+.game {
+  background: var(--status-playable);
+}
+
+.planned {
+  background: var(--status-planned);
+}
+
+.sample,
+.tool {
+  background: var(--status-sample);
+}
+
+.inprogress {
+  background: var(--status-inprogress);
+  color: #111;
+}
+
+.live {
+  background: var(--status-live);
+}
+
+.roadmap {
+  background: var(--status-roadmap);
+  color: #111;
+}
+
+@media (max-width: 700px) {
+  .wrap {
+    padding: 24px 16px 48px;
+  }
+}
