@@ -1,1 +1,1 @@
-Add Space Invaders attract mode and 8x8 font UI presentation
+Add Space Invaders high score persistence, initials entry, and attract high score display

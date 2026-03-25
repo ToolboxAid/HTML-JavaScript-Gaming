@@ -38,6 +38,15 @@ function createAudioSpy() {
   };
 }
 
+function createPressedInput(codes = []) {
+  const set = new Set(codes);
+  return {
+    isPressed(code) {
+      return set.has(code);
+    },
+  };
+}
+
 function testUfoLoopStopsOnGameOverEvenIfUfoSpriteRemains() {
   const scene = new SpaceInvadersScene();
   scene.audio = createAudioSpy();
@@ -92,8 +101,48 @@ function testAttractModeIdleEnterAndInputExit() {
   assert.equal(scene.attractController.active, false);
 }
 
+function testQualifyingGameOverStartsInitialsEntry() {
+  const scene = new SpaceInvadersScene();
+  scene.audio = createAudioSpy();
+  scene.world.status = 'game-over';
+  scene.world.players = [{ score: 2100, lives: 0 }, { score: 0, lives: 0 }];
+  scene.inputController = {
+    input: createPressedInput([]),
+    getFrameState: () => createFrame(),
+  };
+
+  scene.update(1 / 60);
+  assert.equal(scene.initialsEntry.active, true);
+
+  scene.inputController = {
+    input: createPressedInput(['KeyD']),
+    getFrameState: () => createFrame(),
+  };
+  scene.update(1 / 60);
+  scene.inputController = {
+    input: createPressedInput(['KeyQ']),
+    getFrameState: () => createFrame(),
+  };
+  scene.update(1 / 60);
+  scene.inputController = {
+    input: createPressedInput(['KeyZ']),
+    getFrameState: () => createFrame(),
+  };
+  scene.update(1 / 60);
+  scene.inputController = {
+    input: createPressedInput(['Enter']),
+    getFrameState: () => createFrame(),
+  };
+  scene.update(1 / 60);
+
+  assert.equal(scene.initialsEntry.active, false);
+  assert.equal(scene.world.status, 'menu');
+  assert.equal(scene.highScoreRows[0].initials, 'DQZ');
+}
+
 export function run() {
   testUfoLoopStopsOnGameOverEvenIfUfoSpriteRemains();
   testPauseStopsUfoLoopImmediately();
   testAttractModeIdleEnterAndInputExit();
+  testQualifyingGameOverStartsInitialsEntry();
 }

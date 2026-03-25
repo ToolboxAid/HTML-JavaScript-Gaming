@@ -42,6 +42,7 @@ import { run as runSolarSystemValidation } from './games/SolarSystemValidation.t
 import { run as runSolarSystemWorld } from './games/SolarSystemWorld.test.mjs';
 import { run as runSpaceInvadersFont } from './games/SpaceInvadersFont.test.mjs';
 import { run as runSpaceInvadersAudio } from './games/SpaceInvadersAudio.test.mjs';
+import { run as runSpaceInvadersHighScorePersistence } from './games/SpaceInvadersHighScorePersistence.test.mjs';
 import { run as runSpaceInvadersScene } from './games/SpaceInvadersScene.test.mjs';
 import { run as runSpaceInvadersWorld } from './games/SpaceInvadersWorld.test.mjs';
 import { run as runSpaceDuelCore } from './games/SpaceDuelCore.test.mjs';
@@ -129,6 +130,7 @@ const tests = [
     ['SolarSystemWorld', runSolarSystemWorld],
     ['SpaceInvadersFont', runSpaceInvadersFont],
     ['SpaceInvadersAudio', runSpaceInvadersAudio],
+    ['SpaceInvadersHighScorePersistence', runSpaceInvadersHighScorePersistence],
     ['SpaceInvadersScene', runSpaceInvadersScene],
     ['SpaceInvadersWorld', runSpaceInvadersWorld],
     ['SpaceDuelCore', runSpaceDuelCore],

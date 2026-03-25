@@ -5,7 +5,7 @@ CODEX_COMMANDS.md
 
 # Codex Commands
 
-## Space Invaders Attract Mode and 8x8 Font Pass
+## Space Invaders High Score Persistence, Initials Entry, and Attract High Scores
 MODEL: GPT-5.4-codex
 REASONING: medium
-COMMAND: BUILD_PR_SPACE_INVADERS_ATTRACT_8X8_FONT
+COMMAND: BUILD_PR_SPACE_INVADERS_HIGH_SCORE_ATTRACT

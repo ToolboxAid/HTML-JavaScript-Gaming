@@ -7,7 +7,9 @@ SpaceInvadersScene.js
 import { AttractModeController, Scene } from '../../../engine/scenes/index.js';
 import SpaceInvadersAudio from './SpaceInvadersAudio.js';
 import { getFontGlyph } from './font8x8.js';
+import SpaceInvadersHighScoreService from './SpaceInvadersHighScoreService.js';
 import SpaceInvadersInputController from './SpaceInvadersInputController.js';
+import SpaceInvadersInitialsEntry from './SpaceInvadersInitialsEntry.js';
 import {
   ALIEN_DYING_FRAMES,
   BOMB_DYING_FRAMES,
@@ -218,6 +220,11 @@ export default class SpaceInvadersScene extends Scene {
   constructor() {
     super();
     this.world = new SpaceInvadersWorld(VIEW);
+    this.highScoreService = new SpaceInvadersHighScoreService();
+    this.highScoreRows = this.highScoreService.loadTable();
+    this.world.hiScore = this.highScoreService.getTopScore(this.highScoreRows);
+    this.initialsEntry = new SpaceInvadersInitialsEntry();
+    this.didCheckGameOverQualifying = false;
     this.inputController = null;
     this.audio = new SpaceInvadersAudio();
     this.playerManager = new PlayerManager({ world: this.world });
@@ -235,6 +242,9 @@ export default class SpaceInvadersScene extends Scene {
   enter(engine) {
     this.inputController = new SpaceInvadersInputController(engine.input);
     this.world.resetGame();
+    this.world.hiScore = this.highScoreService.getTopScore(this.highScoreRows);
+    this.initialsEntry.cancel();
+    this.didCheckGameOverQualifying = false;
     this.isPaused = false;
     this.currentFrame = null;
     this.attractDemoTime = 0;
@@ -259,6 +269,15 @@ export default class SpaceInvadersScene extends Scene {
 
     const frame = this.inputController.getFrameState();
     this.currentFrame = frame;
+
+    if (this.initialsEntry.active) {
+      const result = this.initialsEntry.update(this.inputController?.input);
+      if (result.confirmed) {
+        this.finishInitialsEntry(result);
+      }
+      this.ufoController.stopLoop();
+      return;
+    }
 
     const attractEligible = this.world.status === 'menu' || this.world.status === 'game-over';
     if (attractEligible) {
@@ -293,8 +312,61 @@ export default class SpaceInvadersScene extends Scene {
     }
 
     const event = this.world.update(dtSeconds, frame);
+
+    if (this.world.status === 'playing') {
+      this.didCheckGameOverQualifying = false;
+    }
+    if (this.world.status === 'game-over' && !this.didCheckGameOverQualifying) {
+      this.didCheckGameOverQualifying = true;
+      this.tryBeginInitialsEntry();
+      if (this.initialsEntry.active) {
+        this.ufoController.stopLoop();
+        return;
+      }
+    }
+
     this.ufoController.playSfx(event);
     this.ufoController.syncLoop({ isPaused: this.isPaused });
+  }
+
+  getQualifyingPlayerScore() {
+    if (!Array.isArray(this.world.players) || !this.world.players.length) {
+      return null;
+    }
+
+    return this.world.players.reduce((best, player, index) => (
+      !best || player.score > best.score
+        ? { playerId: index + 1, score: player.score }
+        : best
+    ), null);
+  }
+
+  tryBeginInitialsEntry() {
+    const candidate = this.getQualifyingPlayerScore();
+    if (!candidate || candidate.score <= 0) {
+      return false;
+    }
+
+    const qualifyingIndex = this.highScoreService.getQualifyingIndex(candidate.score, this.highScoreRows);
+    if (qualifyingIndex < 0) {
+      return false;
+    }
+
+    this.initialsEntry.begin(candidate);
+    return true;
+  }
+
+  finishInitialsEntry(result) {
+    this.highScoreRows = this.highScoreService.insertScore({
+      initials: result.initials,
+      score: result.score,
+    }, this.highScoreRows);
+    this.world.hiScore = this.highScoreService.getTopScore(this.highScoreRows);
+    this.initialsEntry.cancel();
+    this.world.resetGame();
+    this.world.hiScore = this.highScoreService.getTopScore(this.highScoreRows);
+    this.attractController.resetIdle();
+    this.didCheckGameOverQualifying = false;
   }
 
   isAttractExitInputActive() {
@@ -446,7 +518,7 @@ export default class SpaceInvadersScene extends Scene {
       scale: FONT_SCALE_SMALL,
       align: 'right',
     });
-    const overlay = this.playerManager.getOverlayState({ isPaused: this.isPaused });
+    const overlay = this.initialsEntry.active ? null : this.playerManager.getOverlayState({ isPaused: this.isPaused });
     const showOverlay = Boolean(overlay);
 
     if (showOverlay) {
@@ -472,6 +544,10 @@ export default class SpaceInvadersScene extends Scene {
         banner.subtitle,
       );
       }
+    }
+
+    if (this.initialsEntry.active) {
+      this.drawInitialsEntry(renderer);
     }
 
     if (ctx) {
@@ -511,37 +587,39 @@ export default class SpaceInvadersScene extends Scene {
     }
 
     if (phase === 'highScores') {
-      drawPixelText(renderer, 'SCORE ADVANCE TABLE', VIEW.width / 2, 144, {
+      drawPixelText(renderer, 'HIGH SCORES', VIEW.width / 2, 130, {
         color: '#ffffff',
         scale: FONT_SCALE_SMALL,
         align: 'center',
       });
-      drawPixelText(renderer, 'UFO = 50 100 150 300', VIEW.width / 2, 196, {
+      this.highScoreRows.forEach((row, index) => {
+        const y = 182 + (index * 40);
+        drawPixelText(renderer, `${index + 1}. ${row.initials}`, 302, y, {
+          color: '#8df58d',
+          scale: FONT_SCALE_SMALL,
+        });
+        drawPixelText(renderer, String(row.score).padStart(4, '0'), 658, y, {
+          color: '#fbbf24',
+          scale: FONT_SCALE_SMALL,
+          align: 'right',
+        });
+      });
+      drawPixelText(renderer, 'SCORE ADVANCE TABLE', VIEW.width / 2, 414, {
+        color: '#ffffff',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'SQUID 10  CRAB 20  OCTOPUS 30', VIEW.width / 2, 448, {
+        color: '#66ff66',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'UFO 50 100 150 300', VIEW.width / 2, 480, {
         color: '#ff8b8b',
         scale: FONT_SCALE_SMALL,
         align: 'center',
       });
-      drawPixelText(renderer, 'SQUID ROW = 10', VIEW.width / 2, 234, {
-        color: '#66ff66',
-        scale: FONT_SCALE_SMALL,
-        align: 'center',
-      });
-      drawPixelText(renderer, 'CRAB ROW = 20', VIEW.width / 2, 272, {
-        color: '#66ff66',
-        scale: FONT_SCALE_SMALL,
-        align: 'center',
-      });
-      drawPixelText(renderer, 'OCTOPUS ROW = 30', VIEW.width / 2, 310, {
-        color: '#66ff66',
-        scale: FONT_SCALE_SMALL,
-        align: 'center',
-      });
-      drawPixelText(renderer, `HI SCORE ${String(this.world.hiScore).padStart(4, '0')}`, VIEW.width / 2, 372, {
-        color: '#fbbf24',
-        scale: FONT_SCALE_SMALL,
-        align: 'center',
-      });
-      drawPixelText(renderer, 'PRESS 1 OR 2 TO START', VIEW.width / 2, 430, {
+      drawPixelText(renderer, 'PRESS 1 OR 2 TO START', VIEW.width / 2, 524, {
         color: '#ffffff',
         scale: FONT_SCALE_SMALL,
         align: 'center',
@@ -557,7 +635,7 @@ export default class SpaceInvadersScene extends Scene {
       });
 
       const shipX = 480 + Math.cos(this.attractDemoTime * 0.8) * 190;
-      const shipY = 420 + Math.sin(this.attractDemoTime * 1.2) * 52;
+      const shipY = 420;// + Math.sin(this.attractDemoTime * 1.2) * 52;
       const ufoX = 480 + Math.sin(this.attractDemoTime * 0.45) * 280;
       drawBitmap(renderer, PLAYER_LIVING_FRAMES[0], shipX, shipY, PLAYER_PIXEL_SIZE, '#66ff66');
       drawBitmap(renderer, UFO_LIVING_FRAMES[0], ufoX, 214, ALIEN_PIXEL_SIZE, '#ff4d4d');
@@ -613,6 +691,49 @@ export default class SpaceInvadersScene extends Scene {
     });
     drawPixelText(renderer, 'PRESS START', VIEW.width / 2, 450 + textOffsetY + startOffsetY, {
       color: '#ffffff',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
+    });
+  }
+
+  drawInitialsEntry(renderer) {
+    renderer.drawRect(0, 0, VIEW.width, VIEW.height, 'rgba(0, 0, 0, 0.64)');
+    renderer.drawRect(188, 224, 584, 260, 'rgba(0, 0, 0, 0.9)');
+    renderer.strokeRect(188, 224, 584, 260, '#66ff66', 2);
+    drawPixelText(renderer, 'NEW HIGH SCORE', VIEW.width / 2, 256, {
+      color: '#ffffff',
+      scale: FONT_SCALE_OVERLAY,
+      align: 'center',
+    });
+    drawPixelText(renderer, `SCORE ${String(this.initialsEntry.score).padStart(4, '0')}`, VIEW.width / 2, 308, {
+      color: '#fbbf24',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
+    });
+    drawPixelText(renderer, 'ENTER INITIALS', VIEW.width / 2, 344, {
+      color: '#8df58d',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
+    });
+
+    const initials = this.initialsEntry.getInitials().split('');
+    initials.forEach((letter, index) => {
+      const x = 430 + (index * 56);
+      const selected = this.initialsEntry.cursor === index;
+      drawPixelText(renderer, letter, x, 390, {
+        color: selected ? '#ffffff' : '#8df58d',
+        scale: FONT_SCALE_OVERLAY,
+      });
+      if (selected) {
+        drawPixelText(renderer, '^', x + 12, 372, {
+          color: '#ffffff',
+          scale: FONT_SCALE_SMALL,
+        });
+      }
+    });
+
+    drawPixelText(renderer, 'A-Z TYPE  ENTER CONFIRM', VIEW.width / 2, 450, {
+      color: '#8df58d',
       scale: FONT_SCALE_SMALL,
       align: 'center',
     });
