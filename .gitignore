@@ -9,3 +9,4 @@
 
 # Ignore the docs directory
 /*.zip
+/tmp/*
