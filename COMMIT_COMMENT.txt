@@ -1,1 +1,1 @@
-Build Pac-Man Lite with grid movement, buffered turns, and simplified ghost routing
+Plan Pac-Man Full AI with arcade-accurate ghost behavior, mode timing, and presentation goals
