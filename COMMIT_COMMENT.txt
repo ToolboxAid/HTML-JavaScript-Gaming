@@ -1,1 +1,1 @@
-Build reusable AttractModeController with engine state machine and adapter pattern
+Build Space Duel attract content, demo flow, and title screen polish

@@ -169,6 +169,12 @@ function testAttractControllerMenuFlow() {
   assert.equal(scene.attractController.active, true);
   assert.equal(scene.attractAdapter.active, true);
 
+  scene.attractController.setPhaseIndex?.(2);
+  scene.attractAdapter.setPhase('demo');
+  scene.attractAdapter.startDemo();
+  scene.attractAdapter.update(0.1);
+  assert.equal(scene.attractAdapter.demoTrail.length > 0, true);
+
   scene.update(0.016, { input: makeInput(['p1Left']) });
   assert.equal(scene.attractController.active, false);
 }
