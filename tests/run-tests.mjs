@@ -43,6 +43,7 @@ import { run as runSpaceInvadersFont } from './games/SpaceInvadersFont.test.mjs'
 import { run as runSpaceInvadersAudio } from './games/SpaceInvadersAudio.test.mjs';
 import { run as runSpaceInvadersScene } from './games/SpaceInvadersScene.test.mjs';
 import { run as runSpaceInvadersWorld } from './games/SpaceInvadersWorld.test.mjs';
+import { run as runSpaceDuelCore } from './games/SpaceDuelCore.test.mjs';
 import { run as runThrusterValidation } from './games/ThrusterValidation.test.mjs';
 import { run as runThrusterWorld } from './games/ThrusterWorld.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
@@ -126,6 +127,7 @@ const tests = [
     ['SpaceInvadersAudio', runSpaceInvadersAudio],
     ['SpaceInvadersScene', runSpaceInvadersScene],
     ['SpaceInvadersWorld', runSpaceInvadersWorld],
+    ['SpaceDuelCore', runSpaceDuelCore],
     ['ThrusterValidation', runThrusterValidation],
     ['ThrusterWorld', runThrusterWorld],
     ['Combat', runCombat],

@@ -184,6 +184,42 @@ export default class SpaceDuelScene extends Scene {
   }
 
   resolveShipCollisions() {
+    for (let bulletIndex = this.playerBullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
+      const bullet = this.playerBullets[bulletIndex];
+      let hitPlayer = null;
+      for (let playerIndex = 0; playerIndex < this.players.length; playerIndex += 1) {
+        const player = this.players[playerIndex];
+        if (!player.alive || player.invulnerableTimer > 0 || player.id === bullet.ownerId) {
+          continue;
+        }
+        if (this.physics.collidesCircle(player, bullet)) {
+          hitPlayer = player;
+          break;
+        }
+      }
+
+      if (hitPlayer) {
+        this.playerBullets.splice(bulletIndex, 1);
+        this.applyPlayerHit(hitPlayer);
+      }
+    }
+
+    if (this.players.length > 1) {
+      for (let left = 0; left < this.players.length; left += 1) {
+        for (let right = left + 1; right < this.players.length; right += 1) {
+          const a = this.players[left];
+          const b = this.players[right];
+          if (!a.alive || !b.alive || a.invulnerableTimer > 0 || b.invulnerableTimer > 0) {
+            continue;
+          }
+          if (this.physics.collidesCircle(a, b)) {
+            this.applyPlayerHit(a);
+            this.applyPlayerHit(b);
+          }
+        }
+      }
+    }
+
     this.players.forEach((player) => {
       if (!player.alive || player.invulnerableTimer > 0) {
         if (!player.alive && player.respawnTimer <= 0 && this.scoreManager.hasLives(player.id)) {
@@ -210,16 +246,24 @@ export default class SpaceDuelScene extends Scene {
         this.waveController.enemyShots.splice(hitShotIndex, 1);
       }
 
-      this.playerController.destroy(player);
-      this.scoreManager.loseLife(player.id);
-      this.soundController.play('playerDeath', { volume: 0.46 });
-
-      const anyShipAlive = this.players.some((entry) => entry.alive);
-      if (!anyShipAlive && !this.scoreManager.hasAnyLifeRemaining()) {
-        this.mode = 'game-over';
-        this.soundController.play('gameOver', { volume: 0.5 });
-      }
+      this.applyPlayerHit(player);
     });
+  }
+
+  applyPlayerHit(player) {
+    if (!player.alive || player.invulnerableTimer > 0) {
+      return;
+    }
+
+    this.playerController.destroy(player);
+    this.scoreManager.loseLife(player.id);
+    this.soundController.play('playerDeath', { volume: 0.46 });
+
+    const anyShipAlive = this.players.some((entry) => entry.alive);
+    if (!anyShipAlive && !this.scoreManager.hasAnyLifeRemaining()) {
+      this.mode = 'game-over';
+      this.soundController.play('gameOver', { volume: 0.5 });
+    }
   }
 
   render(renderer) {
