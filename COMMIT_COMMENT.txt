@@ -3,4 +3,4 @@ David Quesenberry
 03/24/2026
 COMMIT_COMMENT.txt
 
-Build Paddle Intercept under games as a predictive interception sandbox
+Build Space Invaders as a classic-faithful game using existing fx assets
