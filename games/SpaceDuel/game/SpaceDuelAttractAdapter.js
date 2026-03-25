@@ -77,11 +77,11 @@ export default class SpaceDuelAttractAdapter {
   }
 
   getPhaseFadeAlpha() {
-    const phaseMs = this.scene?.attractController?.getSnapshot?.().phaseMs ?? 0;
-    const duration = this.scene?.attractController?.phaseDurationMs ?? 1;
-    const normalized = clamp(phaseMs / duration, 0, 1);
-    const edge = Math.min(normalized, 1 - normalized);
-    return clamp(edge * 2.2, 0.18, 1);
+    const timing = this.scene?.attractController?.getPhaseTimingState?.();
+    if (!timing) {
+      return 1;
+    }
+    return clamp(timing.alpha, 0, 1);
   }
 
   getDemoShipState() {
@@ -205,6 +205,7 @@ export default class SpaceDuelAttractAdapter {
     }
 
     const fade = this.getPhaseFadeAlpha();
+    renderer.drawRect(0, 0, 960, 720, 'rgba(2, 6, 23, 0.86)');
 
     if (this.phase === 'title') {
       this.renderTitle(renderer, fade);

@@ -117,12 +117,11 @@ export default class AsteroidsAttractAdapter {
   }
 
   getPhaseAlpha() {
-    const phaseMs = this.scene?.attractController?.getSnapshot?.().phaseMs ?? 0;
-    const duration = this.scene?.attractController?.phaseDurationMs ?? 1;
-    const normalized = clamp(phaseMs / duration, 0, 1);
-    const fadeIn = clamp(normalized / 0.18, 0, 1);
-    const fadeOut = clamp((1 - normalized) / 0.14, 0, 1);
-    return clamp(Math.min(fadeIn, fadeOut), 0, 1);
+    const timing = this.scene?.attractController?.getPhaseTimingState?.();
+    if (!timing) {
+      return 1;
+    }
+    return clamp(timing.alpha, 0, 1);
   }
 
   renderTitle(renderer, alpha) {
@@ -247,6 +246,7 @@ export default class AsteroidsAttractAdapter {
     }
 
     const alpha = this.getPhaseAlpha();
+    renderer.drawRect(0, 0, 960, 720, 'rgba(2, 6, 23, 0.86)');
 
     if (this.phase === 'title') {
       this.renderTitle(renderer, alpha);

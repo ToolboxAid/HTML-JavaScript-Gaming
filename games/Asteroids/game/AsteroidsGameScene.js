@@ -110,8 +110,6 @@ export default class AsteroidsGameScene extends Scene {
     this.attractAdapter = new AsteroidsAttractAdapter({ scene: this });
     this.currentInput = null;
     this.attractController = new AttractModeController({
-      idleTimeoutMs: 12000,
-      phaseDurationMs: 4600,
       phases: ['title', 'highScores', 'demo'],
       isInputActive: () => this.isAttractExitInputActive(),
       onEnterAttract: () => this.attractAdapter.enter(),

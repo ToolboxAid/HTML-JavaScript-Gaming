@@ -73,10 +73,11 @@ function testAsteroidsAttractMenuFlow() {
     input: createInput(),
     canvas: { style: {} },
   };
+  const idleTimeoutSeconds = scene.attractController.idleTimeoutMs / 1000;
 
-  scene.update(6.1, engine);
+  scene.update(Math.max(0, idleTimeoutSeconds - 0.001), engine);
   assert.equal(scene.attractController.active, false);
-  scene.update(6.1, engine);
+  scene.update(0.001, engine);
   assert.equal(scene.attractController.active, true);
 
   engine.input = createInput({ down: ['ArrowLeft'] });

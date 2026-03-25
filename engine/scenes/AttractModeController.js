@@ -5,11 +5,19 @@ David Quesenberry
 AttractModeController.js
 */
 const DEFAULT_PHASES = ['title', 'highScores', 'demo'];
+const DEFAULT_ATTRACT_CONFIG = Object.freeze({
+  idleTimeoutMs: 15000,
+  phaseDurationMs: 4600,
+  fadeInMs: 500,
+  fadeOutMs: 500,
+});
 
 export default class AttractModeController {
   constructor({
-    idleTimeoutMs = 15000,
-    phaseDurationMs = 8000,
+    idleTimeoutMs = DEFAULT_ATTRACT_CONFIG.idleTimeoutMs,
+    phaseDurationMs = DEFAULT_ATTRACT_CONFIG.phaseDurationMs,
+    fadeInMs = DEFAULT_ATTRACT_CONFIG.fadeInMs,
+    fadeOutMs = DEFAULT_ATTRACT_CONFIG.fadeOutMs,
     phases = DEFAULT_PHASES,
     isInputActive = () => false,
     onEnterAttract = null,
@@ -20,6 +28,8 @@ export default class AttractModeController {
   } = {}) {
     this.idleTimeoutMs = Math.max(0, idleTimeoutMs);
     this.phaseDurationMs = Math.max(1, phaseDurationMs);
+    this.fadeInMs = Math.max(0, fadeInMs);
+    this.fadeOutMs = Math.max(0, fadeOutMs);
     this.phases = Array.isArray(phases) && phases.length ? [...phases] : [...DEFAULT_PHASES];
     this.isInputActive = isInputActive;
 
@@ -45,6 +55,26 @@ export default class AttractModeController {
       phase: this.phase,
       idleMs: this.idleMs,
       phaseMs: this.phaseMs,
+    };
+  }
+
+  getPhaseTimingState() {
+    const inFadeIn = this.active && this.phaseMs < this.fadeInMs;
+    const fadeOutStartMs = Math.max(0, this.phaseDurationMs - this.fadeOutMs);
+    const inFadeOut = this.active && this.phaseMs >= fadeOutStartMs;
+
+    return {
+      phaseDurationMs: this.phaseDurationMs,
+      fadeInMs: this.fadeInMs,
+      fadeOutMs: this.fadeOutMs,
+      phaseMs: this.phaseMs,
+      inFadeIn,
+      inFadeOut,
+      alpha: inFadeIn
+        ? (this.fadeInMs > 0 ? this.phaseMs / this.fadeInMs : 1)
+        : inFadeOut
+          ? (this.fadeOutMs > 0 ? (this.phaseDurationMs - this.phaseMs) / this.fadeOutMs : 0)
+          : 1,
     };
   }
 
@@ -134,3 +164,4 @@ export default class AttractModeController {
 }
 
 export { AttractModeController as LegacyAttractModeController };
+export { DEFAULT_ATTRACT_CONFIG };

@@ -168,8 +168,6 @@ export default class SpaceDuelScene extends Scene {
     this.currentInput = null;
     this.attractAdapter = new SpaceDuelAttractAdapter({ scene: this });
     this.attractController = new AttractModeController({
-      idleTimeoutMs: 12000,
-      phaseDurationMs: 7000,
       phases: ['title', 'highScores', 'demo'],
       isInputActive: () => this.isAttractExitInputActive(),
       onEnterAttract: () => this.attractAdapter.enter(),

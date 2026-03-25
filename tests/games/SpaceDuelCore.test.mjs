@@ -161,11 +161,12 @@ function testTwoPlayerSharedSpaceCollision() {
 function testAttractControllerMenuFlow() {
   const scene = new SpaceDuelScene();
   const makeInput = (down = [], pressed = []) => createInputState({ down, pressed });
+  const idleTimeoutSeconds = scene.attractController.idleTimeoutMs / 1000;
 
-  scene.update(6.1, { input: makeInput() });
+  scene.update(Math.max(0, idleTimeoutSeconds - 0.001), { input: makeInput() });
   assert.equal(scene.attractController.active, false);
 
-  scene.update(6.1, { input: makeInput() });
+  scene.update(0.001, { input: makeInput() });
   assert.equal(scene.attractController.active, true);
   assert.equal(scene.attractAdapter.active, true);
 

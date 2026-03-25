@@ -5,7 +5,7 @@ David Quesenberry
 AttractModeController.test.mjs
 */
 import assert from 'node:assert/strict';
-import { AttractModeController } from '../../engine/scenes/index.js';
+import { AttractModeController, DEFAULT_ATTRACT_CONFIG } from '../../engine/scenes/index.js';
 
 function testIdleEnterAndPhaseCycle() {
   const phases = [];
@@ -75,8 +75,45 @@ function testSnapshotContract() {
   assert.equal(after.phase, 'title');
 }
 
+function testDefaultTimingConfig() {
+  const controller = new AttractModeController();
+  assert.equal(controller.idleTimeoutMs, DEFAULT_ATTRACT_CONFIG.idleTimeoutMs);
+  assert.equal(controller.phaseDurationMs, DEFAULT_ATTRACT_CONFIG.phaseDurationMs);
+  assert.equal(controller.fadeInMs, DEFAULT_ATTRACT_CONFIG.fadeInMs);
+  assert.equal(controller.fadeOutMs, DEFAULT_ATTRACT_CONFIG.fadeOutMs);
+}
+
+function testPhaseTimingState() {
+  const controller = new AttractModeController({
+    idleTimeoutMs: 1,
+    phaseDurationMs: 1000,
+    fadeInMs: 200,
+    fadeOutMs: 300,
+    isInputActive: () => false,
+  });
+
+  controller.update(0.001);
+  let timing = controller.getPhaseTimingState();
+  assert.equal(timing.inFadeIn, true);
+  assert.equal(timing.inFadeOut, false);
+  assert.equal(timing.alpha > 0 && timing.alpha < 1, true);
+
+  controller.update(0.399);
+  timing = controller.getPhaseTimingState();
+  assert.equal(timing.inFadeIn, false);
+  assert.equal(timing.inFadeOut, false);
+  assert.equal(timing.alpha, 1);
+
+  controller.update(0.4);
+  timing = controller.getPhaseTimingState();
+  assert.equal(timing.inFadeOut, true);
+  assert.equal(timing.alpha > 0 && timing.alpha < 1, true);
+}
+
 export function run() {
   testIdleEnterAndPhaseCycle();
   testDemoHooksAndInputExit();
   testSnapshotContract();
+  testDefaultTimingConfig();
+  testPhaseTimingState();
 }
