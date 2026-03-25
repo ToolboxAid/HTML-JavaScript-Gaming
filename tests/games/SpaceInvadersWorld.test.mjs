@@ -61,6 +61,7 @@ function testFormationReversesAndDescendsAtEdge() {
   });
   const beforeY = alive[0].y;
   world.marchFormation();
+  world.update(1, createControls());
   assert.equal(world.formationDirection, -1);
   assert.equal(alive[0].y, beforeY + 22);
 }
