@@ -9,7 +9,8 @@ CURRENT STATE:
 - Samples 001–182 complete and working
 - samples/index.html is up to date
 - Level 4: Classic Arcade Space Invaders complete
-- Space Invaders final polish pass complete
+- Space Duel arcade loop complete
+- Reusable AttractModeController complete
 - Engine usage normalization complete for game pages
 
 ARCHITECTURE RULES:
@@ -19,22 +20,24 @@ ARCHITECTURE RULES:
 - Follow ENGINE RULES (LOCKED)
 
 CURRENT TASK:
-- Build Space Duel Core
+- Plan next arcade title
 
 REQUIREMENTS:
 - As close to original arcade as possible
 - Use engine-facing patterns consistent with other games
-- Generate placeholder WAV files for sounds during build
-- Keep reusable logic in engine only if reused beyond this game
-- Keep main scene lean through game-local controllers
+- Reuse AttractModeController where appropriate
+- Reuse score persistence/high-score patterns where appropriate
+- Keep reusable logic in engine only if reused beyond a single game
+- Keep main scenes lean through game-local controllers
 
 OUTPUT:
 - Delta ZIP
 - Match repo structure exactly
 - Include /docs/dev updates if changed
+- Include commit and codex files
 
 DEFINITION OF DONE:
-- Core movement and shooting working
-- Core enemy/hazard loop working
-- Placeholder WAV files generated and loadable
-- Engine classes used remain aligned to actual usage
+- Next PLAN_PR approved
+- Clear game scope defined
+- Engine classes used documented
+- Reuse opportunities identified from Space Duel and Space Invaders

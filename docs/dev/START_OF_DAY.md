@@ -11,25 +11,33 @@ START_OF_DAY.md
 - Level 4 — Classic Arcade Space Invaders complete
 - Space Invaders final polish pass complete
 - Engine usage normalization complete for game pages
+- Space Duel core complete
+- Space Duel vector shapes complete
+- Space Duel vector polish complete
+- Space Duel gameplay accuracy complete
+- Reusable AttractModeController complete
+- Space Duel attract content complete
+- Space Duel persistent high scores complete
+- Space Duel arcade loop complete
 
 ## Current Focus
-- Next game: Space Duel
-- Goal: as close to original arcade as possible
+- Next game planning
 
 ## Active Work
-- BUILD_PR — Space Duel Core
+- PLAN_PR — Next arcade title
 
 ## Requirements
-- Arcade-accurate gameplay emphasis
-- Generate placeholder WAV files for sound effects during build
-- Keep engine boundaries clean
-- Keep scene size under control through game-local controllers where needed
+- As close to original arcade as possible
+- Reuse engine-facing patterns already proven in Space Duel and Space Invaders
+- Keep scene size controlled through game-local controllers
+- Reuse attract mode and score persistence patterns where appropriate
 
 ## Known Notes
-- Replace generated placeholder WAV files later with final assets
-- Reuse engine contracts, avoid game-specific engine pollution
+- AttractModeController is now available for reuse
+- Space Duel high-score persistence is complete and validated
+- Future games should consume engine through actual imported classes only
 
 ## Next Actions
-- Execute BUILD_PR_SPACE_DUEL_CORE
-- Build movement, shooting, and enemy/hazard core loop
-- Keep main scene lean and modular
+- Approve next arcade title
+- Build PLAN_PR for the next game
+- Keep repo-structured deltas fullpath-relative with commit and codex files
