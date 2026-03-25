@@ -5,7 +5,7 @@ CODEX_COMMANDS.md
 
 # Codex Commands
 
-## Pac-Man Lite Plan PR
+## Pac-Man Lite Build PR
 MODEL: GPT-5.4-codex
 REASONING: medium
-COMMAND: PLAN_PR_PACMAN_LITE
+COMMAND: BUILD_PR_PACMAN_LITE

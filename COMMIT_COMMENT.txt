@@ -1,1 +1,1 @@
-Plan Pac-Man Lite for grid movement, maze routing, and simplified ghost pressure
+Build Pac-Man Lite with grid movement, buffered turns, and simplified ghost routing
