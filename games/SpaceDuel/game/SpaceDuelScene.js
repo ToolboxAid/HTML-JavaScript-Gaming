@@ -4,12 +4,13 @@ David Quesenberry
 03/25/2026
 SpaceDuelScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { AttractModeController, Scene } from '../../../engine/scenes/index.js';
 import PhysicsController from './PhysicsController.js';
 import PlayerController from './PlayerController.js';
 import WaveController from './WaveController.js';
 import ScoreManager from './ScoreManager.js';
 import SoundController from './SoundController.js';
+import SpaceDuelAttractAdapter from './SpaceDuelAttractAdapter.js';
 
 const VIEW = {
   width: 960,
@@ -79,6 +80,21 @@ const SHOT_SEGMENTS = [
   [[0, -3], [0, 3]],
 ];
 
+const ATTRACT_INPUT_ACTIONS = [
+  'startOnePlayer',
+  'startTwoPlayer',
+  'pause',
+  'menuBack',
+  'p1Left',
+  'p1Right',
+  'p1Thrust',
+  'p1Fire',
+  'p2Left',
+  'p2Right',
+  'p2Thrust',
+  'p2Fire',
+];
+
 function rotateTranslatePoint(point, angle, tx, ty, scale = 1) {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
@@ -143,6 +159,19 @@ export default class SpaceDuelScene extends Scene {
     this.elapsedSeconds = 0;
     this.lastPausePressed = false;
     this.starfield = this.buildStarfield();
+    this.currentInput = null;
+    this.attractAdapter = new SpaceDuelAttractAdapter({ scene: this });
+    this.attractController = new AttractModeController({
+      idleTimeoutMs: 12000,
+      phaseDurationMs: 7000,
+      phases: ['title', 'highScores', 'demo'],
+      isInputActive: () => this.isAttractExitInputActive(),
+      onEnterAttract: () => this.attractAdapter.enter(),
+      onExitAttract: () => this.attractAdapter.exit(),
+      onEnterDemo: () => this.attractAdapter.startDemo(),
+      onExitDemo: () => this.attractAdapter.stopDemo(),
+      onPhaseChange: (phase) => this.attractAdapter.setPhase(phase),
+    });
   }
 
   buildStarfield() {
@@ -163,6 +192,7 @@ export default class SpaceDuelScene extends Scene {
   }
 
   startGame(playerCount) {
+    this.attractController.exitAttract();
     this.playerCount = playerCount;
     this.scoreManager.start(playerCount);
     this.players = this.playerController.createPlayers(playerCount);
@@ -181,11 +211,29 @@ export default class SpaceDuelScene extends Scene {
     this.waveController.hazards = [];
     this.waveController.enemyShots = [];
     this.isPaused = false;
+    this.attractController.resetIdle();
+  }
+
+  isAttractExitInputActive() {
+    if (!this.currentInput) {
+      return false;
+    }
+
+    return ATTRACT_INPUT_ACTIONS.some((action) =>
+      this.currentInput.isActionDown?.(action) || this.currentInput.isActionPressed?.(action));
   }
 
   update(dtSeconds, engine) {
     this.elapsedSeconds += dtSeconds;
     const input = engine.input;
+    this.currentInput = input;
+
+    if (this.mode === 'menu') {
+      this.attractController.update(dtSeconds);
+      this.attractAdapter.update(dtSeconds);
+    } else if (this.attractController.active) {
+      this.attractController.exitAttract();
+    }
 
     const pausePressed = Boolean(input?.isActionPressed?.('pause'));
     const backPressed = Boolean(input?.isActionPressed?.('menuBack'));
@@ -352,6 +400,7 @@ export default class SpaceDuelScene extends Scene {
 
     if (this.mode === 'menu') {
       this.drawMenu(renderer);
+      this.attractAdapter.render(renderer);
       return;
     }
 

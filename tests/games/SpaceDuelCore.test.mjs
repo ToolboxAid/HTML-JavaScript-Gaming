@@ -158,6 +158,21 @@ function testTwoPlayerSharedSpaceCollision() {
   assert.equal(scene.scoreManager.getPlayerState(2).lives, 2);
 }
 
+function testAttractControllerMenuFlow() {
+  const scene = new SpaceDuelScene();
+  const makeInput = (down = [], pressed = []) => createInputState({ down, pressed });
+
+  scene.update(6.1, { input: makeInput() });
+  assert.equal(scene.attractController.active, false);
+
+  scene.update(6.1, { input: makeInput() });
+  assert.equal(scene.attractController.active, true);
+  assert.equal(scene.attractAdapter.active, true);
+
+  scene.update(0.016, { input: makeInput(['p1Left']) });
+  assert.equal(scene.attractController.active, false);
+}
+
 export function run() {
   testPhysicsWrap();
   testWrapAwareNearestTargeting();
@@ -165,4 +180,5 @@ export function run() {
   testWaveSplitAndProgression();
   testScoreExtraLife();
   testTwoPlayerSharedSpaceCollision();
+  testAttractControllerMenuFlow();
 }

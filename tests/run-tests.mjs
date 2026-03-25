@@ -64,6 +64,7 @@ import { run as runInputService } from './input/InputService.test.mjs';
 import { run as runKeyboardState } from './input/KeyboardState.test.mjs';
 import { run as runMouseState } from './input/MouseState.test.mjs';
 import './input/GamepadState.test.mjs';
+import { run as runAttractModeController } from './scenes/AttractModeController.test.mjs';
 import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
 import { run as runTransitionScene } from './scenes/TransitionScene.test.mjs';
 import { run as runVectorMath } from './vector/VectorMath.test.mjs';
@@ -147,6 +148,7 @@ const tests = [
     ['ProjectileLabScene', runProjectileLabScene],
     ['EnginePublicBarrelImports', runEnginePublicBarrelImports],
     ['ProductionReadiness', runProductionReadiness],
+    ['AttractModeController', runAttractModeController],
     ['SceneManager', runSceneManager],
     ['TransitionScene', runTransitionScene],
     ['VectorMath', runVectorMath],

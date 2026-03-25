@@ -1,1 +1,1 @@
-Plan reusable AttractModeController with engine state machine and game-local adapters
+Build reusable AttractModeController with engine state machine and adapter pattern

@@ -9,3 +9,4 @@ export { default as SceneManager } from './SceneManager.js';
 export { default as SceneTransition } from './SceneTransition.js';
 export { default as TransitionScene } from './TransitionScene.js';
 export { default as SceneTransitionController } from './SceneTransitionController.js';
+export { default as AttractModeController } from './AttractModeController.js';
