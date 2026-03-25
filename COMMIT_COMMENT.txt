@@ -1,1 +1,1 @@
-Tune Space Duel gameplay for arcade-accurate physics, collisions, and behavior
+Plan reusable AttractModeController with engine state machine and game-local adapters
