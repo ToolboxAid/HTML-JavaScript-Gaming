@@ -27,15 +27,15 @@ const PLAYER_DEFS = {
   },
 };
 
-const ROTATION_SPEED = 3.9;
-const THRUST_ACCELERATION = 300;
-const MAX_SPEED = 280;
+const ROTATION_SPEED = 4.45;
+const THRUST_ACCELERATION = 328;
+const MAX_SPEED = 300;
 const SHIP_RADIUS = 12;
-const FIRE_COOLDOWN_SECONDS = 0.18;
+const FIRE_COOLDOWN_SECONDS = 0.2;
 const RESPAWN_DELAY_SECONDS = 1.2;
 const INVULNERABLE_SECONDS = 1.7;
-const BULLET_SPEED = 520;
-const BULLET_TTL = 1.35;
+const BULLET_SPEED = 560;
+const BULLET_TTL = 1.1;
 
 function createShipForPlayer(playerId) {
   const definition = PLAYER_DEFS[playerId];

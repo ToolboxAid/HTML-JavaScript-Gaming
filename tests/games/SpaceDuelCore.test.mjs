@@ -30,6 +30,19 @@ function testPhysicsWrap() {
   physics.wrap(body, body.radius);
   assert.equal(body.x, 970);
   assert.equal(body.y, -10);
+
+  const left = { x: 2, y: 350, radius: 6 };
+  const right = { x: 957, y: 350, radius: 6 };
+  assert.equal(physics.collidesCircle(left, right), true);
+}
+
+function testWrapAwareNearestTargeting() {
+  const physics = new PhysicsController({ width: 960, height: 720 });
+  const origin = { x: 954, y: 320 };
+  const nearWrap = { x: 8, y: 320, alive: true };
+  const farDirect = { x: 870, y: 320, alive: true };
+  const nearest = physics.findNearestTarget(origin, [farDirect, nearWrap]);
+  assert.equal(nearest, nearWrap);
 }
 
 function testPlayerInertiaAndFireCooldown() {
@@ -147,6 +160,7 @@ function testTwoPlayerSharedSpaceCollision() {
 
 export function run() {
   testPhysicsWrap();
+  testWrapAwareNearestTargeting();
   testPlayerInertiaAndFireCooldown();
   testWaveSplitAndProgression();
   testScoreExtraLife();

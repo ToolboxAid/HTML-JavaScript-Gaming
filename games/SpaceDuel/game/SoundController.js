@@ -20,6 +20,7 @@ export default class SoundController {
     this.baseUrl = baseUrl;
     this.enabled = typeof Audio !== 'undefined';
     this.lastThrustAt = 0;
+    this.lastPlayedAt = new Map();
   }
 
   play(effectId, { volume = 0.42 } = {}) {
@@ -27,6 +28,18 @@ export default class SoundController {
     if (!this.enabled || !path) {
       return null;
     }
+
+    const now = (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
+    const minInterval = effectId === 'fire'
+      ? 0.045
+      : effectId === 'enemySplit'
+        ? 0.06
+        : 0;
+    const since = now - (this.lastPlayedAt.get(effectId) ?? -999);
+    if (since < minInterval) {
+      return null;
+    }
+    this.lastPlayedAt.set(effectId, now);
 
     try {
       const audio = new Audio(new URL(path, this.baseUrl).href);

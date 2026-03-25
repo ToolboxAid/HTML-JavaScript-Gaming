@@ -26,6 +26,22 @@ export default class PhysicsController {
     return wrapped;
   }
 
+  getWrappedDelta(a, b) {
+    const width = this.bounds.width;
+    const height = this.bounds.height;
+    let dx = a.x - b.x;
+    let dy = a.y - b.y;
+
+    if (Math.abs(dx) > width * 0.5) {
+      dx -= Math.sign(dx) * width;
+    }
+    if (Math.abs(dy) > height * 0.5) {
+      dy -= Math.sign(dy) * height;
+    }
+
+    return { dx, dy };
+  }
+
   advanceBody(body, dtSeconds) {
     body.x += body.vx * dtSeconds;
     body.y += body.vy * dtSeconds;
@@ -59,8 +75,7 @@ export default class PhysicsController {
   }
 
   collidesCircle(a, b) {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
+    const { dx, dy } = this.getWrappedDelta(a, b);
     const radius = (a.radius ?? 0) + (b.radius ?? 0);
     return (dx * dx) + (dy * dy) <= radius * radius;
   }
@@ -74,8 +89,9 @@ export default class PhysicsController {
         return;
       }
 
-      const dx = target.x - origin.x;
-      const dy = target.y - origin.y;
+      const delta = this.getWrappedDelta(target, origin);
+      const dx = delta.dx;
+      const dy = delta.dy;
       const distanceSq = (dx * dx) + (dy * dy);
       if (distanceSq < nearestDistanceSq) {
         nearestDistanceSq = distanceSq;

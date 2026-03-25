@@ -19,12 +19,15 @@ const VIEW = {
 const COLORS = {
   background: '#020617',
   border: '#8aa0bb',
+  borderInner: '#334155',
   text: '#e2e8f0',
   muted: '#93a5bc',
   player1: '#ffffff',
   player2: '#9ae6b4',
   enemy: '#e2e8f0',
+  enemyInner: '#94a3b8',
   hazard: '#fca5a5',
+  hazardInner: '#fecaca',
   bullet: '#f8fafc',
   enemyShot: '#f87171',
 };
@@ -102,6 +105,27 @@ function drawVectorSegments(renderer, segments, {
   });
 }
 
+function drawDualStrokeSegments(renderer, segments, options) {
+  const {
+    outerColor,
+    innerColor,
+    outerWidth = 3,
+    innerWidth = 1.5,
+    ...transform
+  } = options;
+
+  drawVectorSegments(renderer, segments, {
+    ...transform,
+    color: outerColor,
+    lineWidth: outerWidth,
+  });
+  drawVectorSegments(renderer, segments, {
+    ...transform,
+    color: innerColor,
+    lineWidth: innerWidth,
+  });
+}
+
 export default class SpaceDuelScene extends Scene {
   constructor() {
     super();
@@ -118,6 +142,24 @@ export default class SpaceDuelScene extends Scene {
     this.isPaused = false;
     this.elapsedSeconds = 0;
     this.lastPausePressed = false;
+    this.starfield = this.buildStarfield();
+  }
+
+  buildStarfield() {
+    const stars = [];
+    for (let index = 0; index < 68; index += 1) {
+      const seed = index + 1;
+      const x = ((seed * 137) % 900) + 30;
+      const y = ((seed * 211) % 610) + 64;
+      stars.push({
+        x,
+        y,
+        drift: ((seed % 7) + 1) * 0.03,
+        phase: (seed * 0.8) % (Math.PI * 2),
+        intensity: seed % 3 === 0 ? 0.9 : 0.55,
+      });
+    }
+    return stars;
   }
 
   startGame(playerCount) {
@@ -301,7 +343,9 @@ export default class SpaceDuelScene extends Scene {
 
   render(renderer) {
     renderer.clear(COLORS.background);
+    this.drawBackdrop(renderer);
     renderer.strokeRect(40, 56, VIEW.width - 80, VIEW.height - 110, COLORS.border, 2);
+    renderer.strokeRect(44, 60, VIEW.width - 88, VIEW.height - 118, COLORS.borderInner, 1);
 
     this.drawHud(renderer);
     this.drawObjects(renderer);
@@ -319,6 +363,14 @@ export default class SpaceDuelScene extends Scene {
     if (this.isPaused) {
       this.drawPauseOverlay(renderer);
     }
+  }
+
+  drawBackdrop(renderer) {
+    this.starfield.forEach((star) => {
+      const pulse = 0.45 + ((Math.sin(this.elapsedSeconds * star.drift * 12 + star.phase) + 1) * 0.28);
+      const alpha = Math.min(1, star.intensity * pulse);
+      renderer.drawRect(star.x, star.y, 1.6, 1.6, `rgba(203, 213, 225, ${alpha.toFixed(3)})`);
+    });
   }
 
   drawHud(renderer) {
@@ -359,25 +411,29 @@ export default class SpaceDuelScene extends Scene {
     this.waveController.enemies.forEach((enemy) => {
       const segments = enemy.tier > 1 ? ENEMY_HEAVY_SEGMENTS : ENEMY_LIGHT_SEGMENTS;
       const scale = enemy.radius / (enemy.tier > 1 ? 16 : 12);
-      drawVectorSegments(renderer, segments, {
+      drawDualStrokeSegments(renderer, segments, {
         x: enemy.x,
         y: enemy.y,
         angle: enemy.angle,
         scale,
-        color: COLORS.enemy,
-        lineWidth: 2,
+        outerColor: COLORS.enemy,
+        innerColor: COLORS.enemyInner,
+        outerWidth: 2.2,
+        innerWidth: 1.1,
       });
     });
 
     this.waveController.hazards.forEach((hazard) => {
       const pulseScale = (hazard.radius / 10) + (Math.sin(hazard.pulse) * 0.1);
-      drawVectorSegments(renderer, HAZARD_SEGMENTS, {
+      drawDualStrokeSegments(renderer, HAZARD_SEGMENTS, {
         x: hazard.x,
         y: hazard.y,
         angle: hazard.pulse * 0.35,
         scale: pulseScale,
-        color: COLORS.hazard,
-        lineWidth: 2,
+        outerColor: COLORS.hazard,
+        innerColor: COLORS.hazardInner,
+        outerWidth: 2.2,
+        innerWidth: 1.1,
       });
     });
 
@@ -388,7 +444,7 @@ export default class SpaceDuelScene extends Scene {
         angle: this.elapsedSeconds * 18,
         scale: 0.7,
         color: COLORS.enemyShot,
-        lineWidth: 1.5,
+        lineWidth: 1.35,
       });
     });
 
@@ -399,7 +455,7 @@ export default class SpaceDuelScene extends Scene {
         angle: 0,
         scale: 0.6,
         color: COLORS.bullet,
-        lineWidth: 1.5,
+        lineWidth: 1.35,
       });
     });
 
@@ -413,21 +469,27 @@ export default class SpaceDuelScene extends Scene {
         return;
       }
 
-      drawVectorSegments(renderer, SHIP_SEGMENTS, {
+      const shipOuter = player.id === 1 ? COLORS.player1 : COLORS.player2;
+      const shipInner = player.id === 1 ? '#cbd5e1' : '#86efac';
+      drawDualStrokeSegments(renderer, SHIP_SEGMENTS, {
         x: player.x,
         y: player.y,
         angle: player.angle,
-        color: player.id === 1 ? COLORS.player1 : COLORS.player2,
-        lineWidth: 2,
+        outerColor: shipOuter,
+        innerColor: shipInner,
+        outerWidth: 2.5,
+        innerWidth: 1.2,
       });
 
       if (player.thrusting) {
-        drawVectorSegments(renderer, FLAME_SEGMENTS, {
+        drawDualStrokeSegments(renderer, FLAME_SEGMENTS, {
           x: player.x,
           y: player.y,
           angle: player.angle,
-          color: '#f59e0b',
-          lineWidth: 2,
+          outerColor: '#f59e0b',
+          innerColor: '#fde68a',
+          outerWidth: 2.1,
+          innerWidth: 1,
         });
       }
     });

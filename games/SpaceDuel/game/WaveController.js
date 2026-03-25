@@ -16,6 +16,7 @@ const ENEMY_SCORE = {
 
 const HAZARD_SCORE = 180;
 const SHOT_SCORE = 30;
+const MAX_ENEMY_SHOTS_BASE = 6;
 
 function randomBetween(min, max) {
   return min + (Math.random() * (max - min));
@@ -116,13 +117,19 @@ export default class WaveController {
 
       if (enemy.fireCooldown <= 0) {
         enemy.fireCooldown = randomBetween(1.2, 2.6) / Math.max(1, this.wave * 0.18 + 0.82);
+        const maxEnemyShots = MAX_ENEMY_SHOTS_BASE + Math.min(8, Math.floor(this.wave * 0.75));
+        if (this.enemyShots.length >= maxEnemyShots) {
+          return;
+        }
+
         const nearest = this.physics.findNearestTarget(enemy, players);
         if (!nearest) {
           return;
         }
 
-        const dx = nearest.x - enemy.x;
-        const dy = nearest.y - enemy.y;
+        const delta = this.physics.getWrappedDelta(nearest, enemy);
+        const dx = delta.dx;
+        const dy = delta.dy;
         const norm = Math.max(1, Math.hypot(dx, dy));
         const speed = 205 + (this.wave * 10);
         this.enemyShots.push({
