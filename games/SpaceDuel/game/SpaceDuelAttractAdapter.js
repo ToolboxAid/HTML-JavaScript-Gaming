@@ -26,16 +26,12 @@ export default class SpaceDuelAttractAdapter {
     this.demoTime = 0;
     this.demoTrail = [];
 
-    const high = this.scene?.scoreManager?.highScore ?? 0;
-    const p1 = this.scene?.scoreManager?.getPlayerState?.(1)?.score ?? 0;
-    const p2 = this.scene?.scoreManager?.getPlayerState?.(2)?.score ?? 0;
-    this.highScoreRows = [
-      { rank: 1, label: 'ACE', score: Math.max(high, 1800) },
-      { rank: 2, label: 'VTR', score: Math.max(p1, 1200) },
-      { rank: 3, label: 'ION', score: Math.max(p2, 900) },
-      { rank: 4, label: 'CPU', score: 700 },
-      { rank: 5, label: 'BOT', score: 500 },
-    ];
+    const loadedRows = this.scene?.highScoreRows || this.scene?.highScoreService?.loadTable?.() || [];
+    this.highScoreRows = loadedRows.map((row, index) => ({
+      rank: index + 1,
+      label: row.initials,
+      score: row.score,
+    }));
   }
 
   exit() {

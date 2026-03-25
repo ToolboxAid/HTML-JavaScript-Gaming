@@ -5,7 +5,7 @@ CODEX_COMMANDS.md
 
 # Codex Commands
 
-## Space Duel Attract Content Pass
+## Space Duel High Score Persistence Micro-PR
 MODEL: GPT-5.4-codex
 REASONING: medium
-COMMAND: BUILD_PR_SPACE_DUEL_ATTRACT_CONTENT
+COMMAND: BUILD_PR_SPACE_DUEL_HIGH_SCORE_PERSISTENCE

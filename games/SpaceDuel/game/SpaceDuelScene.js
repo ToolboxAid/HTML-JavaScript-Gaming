@@ -11,6 +11,8 @@ import WaveController from './WaveController.js';
 import ScoreManager from './ScoreManager.js';
 import SoundController from './SoundController.js';
 import SpaceDuelAttractAdapter from './SpaceDuelAttractAdapter.js';
+import SpaceDuelHighScoreService from './SpaceDuelHighScoreService.js';
+import SpaceDuelInitialsEntry from './SpaceDuelInitialsEntry.js';
 
 const VIEW = {
   width: 960,
@@ -150,6 +152,10 @@ export default class SpaceDuelScene extends Scene {
     this.waveController = new WaveController({ physics: this.physics });
     this.scoreManager = new ScoreManager();
     this.soundController = new SoundController();
+    this.highScoreService = new SpaceDuelHighScoreService();
+    this.highScoreRows = this.highScoreService.loadTable();
+    this.initialsEntry = new SpaceDuelInitialsEntry();
+    this.qualifyingPending = false;
 
     this.mode = 'menu';
     this.playerCount = 1;
@@ -172,6 +178,7 @@ export default class SpaceDuelScene extends Scene {
       onExitDemo: () => this.attractAdapter.stopDemo(),
       onPhaseChange: (phase) => this.attractAdapter.setPhase(phase),
     });
+    this.scoreManager.highScore = this.highScoreService.getTopScore(this.highScoreRows);
   }
 
   buildStarfield() {
@@ -201,6 +208,8 @@ export default class SpaceDuelScene extends Scene {
     this.scoreManager.setWave(this.waveController.wave);
     this.mode = 'playing';
     this.isPaused = false;
+    this.qualifyingPending = false;
+    this.initialsEntry.cancel();
     this.soundController.play('start', { volume: 0.44 });
   }
 
@@ -211,7 +220,31 @@ export default class SpaceDuelScene extends Scene {
     this.waveController.hazards = [];
     this.waveController.enemyShots = [];
     this.isPaused = false;
+    this.qualifyingPending = false;
+    this.initialsEntry.cancel();
     this.attractController.resetIdle();
+  }
+
+  enterInitialsEntryIfQualified() {
+    if (this.qualifyingPending || this.initialsEntry.active) {
+      return;
+    }
+
+    const candidate = this.scoreManager.players.reduce((best, player) =>
+      (!best || player.score > best.score ? { playerId: player.id, score: player.score } : best), null);
+
+    if (!candidate || candidate.score <= 0) {
+      return;
+    }
+
+    const index = this.highScoreService.getQualifyingIndex(candidate.score, this.highScoreRows);
+    if (index < 0) {
+      return;
+    }
+
+    this.qualifyingPending = true;
+    this.mode = 'initials-entry';
+    this.initialsEntry.begin(candidate);
   }
 
   isAttractExitInputActive() {
@@ -249,7 +282,26 @@ export default class SpaceDuelScene extends Scene {
     }
 
     if (this.mode === 'game-over') {
+      if (this.qualifyingPending || this.initialsEntry.active) {
+        this.mode = 'initials-entry';
+      }
       if (input?.isActionPressed?.('startOnePlayer') || input?.isActionPressed?.('startTwoPlayer')) {
+        this.returnToMenu();
+      }
+      this.lastPausePressed = pausePressed;
+      return;
+    }
+
+    if (this.mode === 'initials-entry') {
+      const result = this.initialsEntry.update(input);
+      if (result.confirmed) {
+        this.highScoreRows = this.highScoreService.insertScore({
+          initials: result.initials,
+          score: result.score,
+        }, this.highScoreRows);
+        this.scoreManager.highScore = this.highScoreService.getTopScore(this.highScoreRows);
+        this.qualifyingPending = false;
+        this.initialsEntry.cancel();
         this.returnToMenu();
       }
       this.lastPausePressed = pausePressed;
@@ -386,6 +438,7 @@ export default class SpaceDuelScene extends Scene {
     if (!anyShipAlive && !this.scoreManager.hasAnyLifeRemaining()) {
       this.mode = 'game-over';
       this.soundController.play('gameOver', { volume: 0.5 });
+      this.enterInitialsEntryIfQualified();
     }
   }
 
@@ -406,6 +459,11 @@ export default class SpaceDuelScene extends Scene {
 
     if (this.mode === 'game-over') {
       this.drawGameOver(renderer);
+      return;
+    }
+
+    if (this.mode === 'initials-entry') {
+      this.drawInitialsEntry(renderer);
       return;
     }
 
@@ -603,6 +661,43 @@ export default class SpaceDuelScene extends Scene {
     renderer.drawText('Press 1 or 2 to return to menu', VIEW.width * 0.5, 380, {
       color: COLORS.text,
       font: '20px monospace',
+      textAlign: 'center',
+      textBaseline: 'top',
+    });
+  }
+
+  drawInitialsEntry(renderer) {
+    renderer.drawRect(0, 0, VIEW.width, VIEW.height, 'rgba(1, 6, 19, 0.62)');
+    renderer.drawRect(220, 250, 520, 220, '#020b1e');
+    renderer.strokeRect(220, 250, 520, 220, '#94a3b8', 2);
+
+    renderer.drawText('NEW HIGH SCORE', 480, 284, {
+      color: '#fbbf24',
+      font: '36px monospace',
+      textAlign: 'center',
+      textBaseline: 'top',
+    });
+    renderer.drawText(`SCORE ${String(this.initialsEntry.score).padStart(5, '0')}`, 480, 332, {
+      color: '#e2e8f0',
+      font: '22px monospace',
+      textAlign: 'center',
+      textBaseline: 'top',
+    });
+
+    const initials = this.initialsEntry.getInitials().split('');
+    initials.forEach((letter, index) => {
+      const x = 430 + (index * 50);
+      const selected = this.initialsEntry.cursor === index;
+      renderer.drawText(letter, x, 378, {
+        color: selected ? '#fbbf24' : '#e2e8f0',
+        font: selected ? '44px monospace' : '36px monospace',
+        textBaseline: 'top',
+      });
+    });
+
+    renderer.drawText('TYPE A-Z, ARROWS ADJUST, ENTER SAVES', 480, 434, {
+      color: '#93a5bc',
+      font: '14px monospace',
       textAlign: 'center',
       textBaseline: 'top',
     });
