@@ -53,6 +53,8 @@ export default class SpaceInvadersInputController {
       pausePressed: this.wasPressed('KeyP'),
       menuPressed: this.wasPressed('KeyX') || pad.cancelPressed,
       debugPressed: this.wasPressed('KeyB'),
+      select1Pressed: this.wasPressed('Digit1') || this.wasPressed('Numpad1'),
+      select2Pressed: this.wasPressed('Digit2') || this.wasPressed('Numpad2'),
     };
   }
 }

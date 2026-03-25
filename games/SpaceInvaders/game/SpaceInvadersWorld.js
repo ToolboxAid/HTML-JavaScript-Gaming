@@ -34,6 +34,10 @@ const SHIELD_COUNT = 4;
 const GROUND_PIXEL_SIZE = 3;
 const GROUND_ROWS = 2;
 const BOMB_FIRE_MULTIPLIER = 10;
+const EXTRA_LIFE_SCORE = 1500;
+const TURN_SWITCH_DELAY = 0.9;
+const WAVE_CLEAR_DELAY = 0.45;
+const READY_BANNER_DURATION = 0.8;
 
 const ROW_TYPES = [
   { type: 'octopus', points: 30, width: 24, height: 24 },
@@ -54,6 +58,13 @@ function randomChoice(list, rng) {
   return list[Math.floor(rng() * list.length)];
 }
 
+function deepClone(value) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value));
+}
+
 function makeEvent() {
   return {
     sfx: [],
@@ -67,6 +78,8 @@ function makeEvent() {
     scoreDelta: 0,
     ufoSpawned: false,
     ufoHit: false,
+    extraLifeAwarded: false,
+    playerSwitched: false,
   };
 }
 
@@ -83,6 +96,8 @@ function mergeEvents(base, next) {
     scoreDelta: base.scoreDelta + (next.scoreDelta || 0),
     ufoSpawned: base.ufoSpawned || next.ufoSpawned,
     ufoHit: base.ufoHit || next.ufoHit,
+    extraLifeAwarded: base.extraLifeAwarded || next.extraLifeAwarded,
+    playerSwitched: base.playerSwitched || next.playerSwitched,
   };
 }
 
@@ -106,11 +121,19 @@ export default class SpaceInvadersWorld {
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.player = this.createPlayer();
     this.debugBoxes = false;
+    this.hiScore = 0;
+    this.selectedPlayerCount = 1;
+    this.playerCount = 1;
+    this.currentPlayerIndex = 0;
+    this.players = [];
+    this.pendingTurnSwitch = null;
+    this.turnAnnouncementTimer = 0;
     this.spawnQueue = [];
     this.spawnTimer = 0;
     this.formationReady = false;
     this.playerShotsFired = 0;
     this.ufoScorePopups = [];
+    this.extraLifeAwarded = false;
     this.resetGame();
   }
 
@@ -199,11 +222,17 @@ export default class SpaceInvadersWorld {
     this.score = 0;
     this.lives = 3;
     this.wave = 1;
+    this.extraLifeAwarded = false;
+    this.playerCount = this.selectedPlayerCount;
+    this.currentPlayerIndex = 0;
+    this.players = [];
     this.status = 'menu';
-    this.statusMessage = 'Press Space or Enter to start.';
+    this.statusMessage = '1 OR 2 PLAYERS';
     this.isWaveTransition = false;
     this.transitionTimer = 0;
     this.gameOver = false;
+    this.pendingTurnSwitch = null;
+    this.turnAnnouncementTimer = 0;
     this.debugBoxes = this.debugBoxes || false;
     this.spawnQueue = [];
     this.spawnTimer = 0;
@@ -228,6 +257,11 @@ export default class SpaceInvadersWorld {
     this.player.respawnTimer = 0;
     this.player.invulnerabilityTimer = 0;
     this.setupWave(this.wave);
+    this.status = 'menu';
+    this.statusMessage = '1 OR 2 PLAYERS';
+    this.gameOver = false;
+    this.entryDelay = 0;
+    this.turnAnnouncementTimer = 0;
   }
 
   setupWave(waveNumber) {
@@ -235,6 +269,7 @@ export default class SpaceInvadersWorld {
     const top = 148;
     const horizontalSpacing = 56;
     const verticalSpacing = 44;
+    this.wave = waveNumber;
     this.aliens = [];
     this.spawnQueue = [];
     this.spawnTimer = 0;
@@ -261,7 +296,7 @@ export default class SpaceInvadersWorld {
     this.alienDeaths = [];
     this.bombDeaths = [];
     this.playerDeath = null;
-    this.entryDelay = waveNumber === 1 && this.status === 'menu' ? 0 : WAVE_ENTRY_DELAY;
+    this.entryDelay = waveNumber === 1 ? READY_BANNER_DURATION : WAVE_ENTRY_DELAY * 0.5;
     this.ufo = null;
     this.ufoDeath = null;
     this.bombTypeIndex = 0;
@@ -272,16 +307,218 @@ export default class SpaceInvadersWorld {
     this.player.invulnerabilityTimer = PLAYER_RESPAWN_INVULNERABILITY;
     this.shields = this.createShields();
     this.ground = this.createGround();
+    this.status = 'playing';
+    this.statusMessage = `PLAYER ${this.currentPlayerIndex + 1}`;
+    this.gameOver = false;
+    this.isWaveTransition = false;
   }
 
-  startGame() {
+  startGame(playerCount = this.selectedPlayerCount) {
+    this.selectedPlayerCount = clamp(Number(playerCount) || 1, 1, 2);
+    this.playerCount = this.selectedPlayerCount;
+    this.currentPlayerIndex = 0;
+    this.pendingTurnSwitch = null;
+    this.turnAnnouncementTimer = READY_BANNER_DURATION;
     this.score = 0;
     this.lives = 3;
-    this.wave = 1;
+    this.extraLifeAwarded = false;
     this.gameOver = false;
     this.status = 'playing';
-    this.statusMessage = 'Wave 1';
+    this.statusMessage = 'PLAYER 1';
     this.setupWave(1);
+    const initialBoardState = this.captureBoardState();
+    this.players = Array.from({ length: this.playerCount }, () => ({
+      score: 0,
+      lives: 3,
+      extraLifeAwarded: false,
+      boardState: deepClone(initialBoardState),
+    }));
+    this.loadPlayerSlot(0, { announce: true });
+  }
+
+  getActivePlayerSlot() {
+    return this.players[this.currentPlayerIndex] ?? null;
+  }
+
+  getPlayerScore(index) {
+    return this.players[index]?.score ?? (index === this.currentPlayerIndex ? this.score : 0);
+  }
+
+  setSelectedPlayerCount(count) {
+    this.selectedPlayerCount = clamp(Number(count) || 1, 1, 2);
+    this.playerCount = this.selectedPlayerCount;
+    this.statusMessage = `${this.selectedPlayerCount} PLAYER${this.selectedPlayerCount > 1 ? 'S' : ''}`;
+  }
+
+  syncActivePlayerMeta() {
+    const slot = this.getActivePlayerSlot();
+    if (!slot) {
+      return;
+    }
+    slot.score = this.score;
+    slot.lives = this.lives;
+    slot.extraLifeAwarded = this.extraLifeAwarded;
+  }
+
+  captureBoardState() {
+    return deepClone({
+      wave: this.wave,
+      statusMessage: this.statusMessage,
+      isWaveTransition: this.isWaveTransition,
+      transitionTimer: this.transitionTimer,
+      spawnQueue: this.spawnQueue,
+      spawnTimer: this.spawnTimer,
+      formationReady: this.formationReady,
+      ufoScoreCycleIndex: this.ufoScoreCycleIndex,
+      playerShotsFired: this.playerShotsFired,
+      ufoScorePopups: this.ufoScorePopups,
+      shields: this.shields,
+      ground: this.ground,
+      playerShot: this.playerShot,
+      alienShots: this.alienShots,
+      alienDeaths: this.alienDeaths,
+      bombDeaths: this.bombDeaths,
+      playerDeath: this.playerDeath,
+      ufo: this.ufo,
+      ufoDeath: this.ufoDeath,
+      bombTypeIndex: this.bombTypeIndex,
+      ufoDirection: this.ufoDirection,
+      ufoTimer: this.ufoTimer,
+      aliens: this.aliens,
+      formationDirection: this.formationDirection,
+      marchInterval: this.marchInterval,
+      marchTimer: this.marchTimer,
+      formationStepX: this.formationStepX,
+      entryDelay: this.entryDelay,
+      player: this.player,
+    });
+  }
+
+  loadBoardState(boardState) {
+    const state = deepClone(boardState);
+    this.wave = state.wave;
+    this.status = 'playing';
+    this.statusMessage = state.statusMessage ?? `PLAYER ${this.currentPlayerIndex + 1}`;
+    this.isWaveTransition = Boolean(state.isWaveTransition);
+    this.transitionTimer = state.transitionTimer ?? 0;
+    this.gameOver = false;
+    this.spawnQueue = state.spawnQueue ?? [];
+    this.spawnTimer = state.spawnTimer ?? 0;
+    this.formationReady = Boolean(state.formationReady);
+    this.ufoScoreCycleIndex = state.ufoScoreCycleIndex ?? 0;
+    this.playerShotsFired = state.playerShotsFired ?? 0;
+    this.ufoScorePopups = state.ufoScorePopups ?? [];
+    this.shields = state.shields ?? [];
+    this.ground = state.ground ?? null;
+    this.playerShot = state.playerShot ?? null;
+    this.alienShots = state.alienShots ?? [];
+    this.alienDeaths = state.alienDeaths ?? [];
+    this.bombDeaths = state.bombDeaths ?? [];
+    this.playerDeath = state.playerDeath ?? null;
+    this.ufo = state.ufo ?? null;
+    this.ufoDeath = state.ufoDeath ?? null;
+    this.bombTypeIndex = state.bombTypeIndex ?? 0;
+    this.ufoDirection = state.ufoDirection ?? 1;
+    this.ufoTimer = state.ufoTimer ?? 12;
+    this.aliens = state.aliens ?? [];
+    this.formationDirection = state.formationDirection ?? 1;
+    this.marchInterval = state.marchInterval ?? INITIAL_MARCH_INTERVAL;
+    this.marchTimer = state.marchTimer ?? this.marchInterval;
+    this.formationStepX = state.formationStepX ?? 14;
+    this.entryDelay = state.entryDelay ?? 0;
+    this.player = {
+      ...this.createPlayer(),
+      ...(state.player ?? {}),
+    };
+  }
+
+  buildRespawnBoardState() {
+    const boardState = this.captureBoardState();
+    boardState.player.x = (this.width - this.player.width) / 2;
+    boardState.player.alive = true;
+    boardState.player.respawnTimer = 0;
+    boardState.player.invulnerabilityTimer = PLAYER_RESPAWN_INVULNERABILITY;
+    boardState.playerShot = null;
+    boardState.alienShots = [];
+    boardState.alienDeaths = [];
+    boardState.bombDeaths = [];
+    boardState.playerDeath = null;
+    boardState.ufo = null;
+    boardState.ufoDeath = null;
+    boardState.ufoScorePopups = [];
+    boardState.entryDelay = READY_BANNER_DURATION * 0.75;
+    boardState.statusMessage = `PLAYER ${this.currentPlayerIndex + 1}`;
+    boardState.isWaveTransition = false;
+    boardState.transitionTimer = 0;
+    return boardState;
+  }
+
+  saveActivePlayerBoardState({ respawnReady = false } = {}) {
+    const slot = this.getActivePlayerSlot();
+    if (!slot) {
+      return;
+    }
+    this.syncActivePlayerMeta();
+    slot.boardState = respawnReady ? this.buildRespawnBoardState() : this.captureBoardState();
+  }
+
+  loadPlayerSlot(index, { announce = false } = {}) {
+    const slot = this.players[index];
+    if (!slot) {
+      return false;
+    }
+    this.currentPlayerIndex = index;
+    this.score = slot.score;
+    this.lives = slot.lives;
+    this.extraLifeAwarded = Boolean(slot.extraLifeAwarded);
+    this.loadBoardState(slot.boardState);
+    this.statusMessage = `PLAYER ${index + 1}`;
+    if (announce) {
+      this.turnAnnouncementTimer = Math.max(this.turnAnnouncementTimer, READY_BANNER_DURATION);
+      this.entryDelay = Math.max(this.entryDelay, READY_BANNER_DURATION * 0.75);
+    }
+    return true;
+  }
+
+  getOtherLivingPlayerIndex() {
+    if (this.playerCount < 2) {
+      return -1;
+    }
+    for (let index = 0; index < this.players.length; index += 1) {
+      if (index === this.currentPlayerIndex) {
+        continue;
+      }
+      if ((this.players[index]?.lives ?? 0) > 0) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  queuePlayerSwitch(targetIndex) {
+    this.pendingTurnSwitch = {
+      targetIndex,
+      timer: TURN_SWITCH_DELAY,
+    };
+    this.turnAnnouncementTimer = TURN_SWITCH_DELAY;
+    this.statusMessage = `PLAYER ${targetIndex + 1}`;
+  }
+
+  awardScore(points, event) {
+    if (!points) {
+      return;
+    }
+    this.score += points;
+    this.hiScore = Math.max(this.hiScore, this.score);
+    event.scoreDelta += points;
+    if (!this.extraLifeAwarded && this.score >= EXTRA_LIFE_SCORE) {
+      this.lives += 1;
+      this.extraLifeAwarded = true;
+      event.extraLifeAwarded = true;
+      this.statusMessage = 'EXTRA LIFE';
+      this.turnAnnouncementTimer = Math.max(this.turnAnnouncementTimer, 1);
+    }
+    this.syncActivePlayerMeta();
   }
 
   getAliveAliens() {
@@ -524,31 +761,45 @@ export default class SpaceInvadersWorld {
     );
   }
 
-  hitPlayer() {
+  hitPlayer(event) {
     if (!this.player.alive || this.player.invulnerabilityTimer > 0) {
       return false;
     }
+
     this.lives -= 1;
-    if (this.lives <= 0) {
-      this.player.alive = false;
-      this.gameOver = true;
-      this.status = 'game-over';
-      this.statusMessage = 'Game Over';
-      this.playerDeath = {
-        x: this.player.x,
-        y: this.player.y - 20,
-        elapsed: 0,
-      };
-      return true;
-    }
+    this.syncActivePlayerMeta();
     this.player.alive = false;
-    this.player.respawnTimer = LIFE_RESPAWN_DELAY;
-    this.statusMessage = `${this.lives} lives remaining`;
     this.playerDeath = {
       x: this.player.x,
       y: this.player.y - 20,
       elapsed: 0,
     };
+
+    if (this.lives <= 0) {
+      const otherLivingPlayer = this.getOtherLivingPlayerIndex();
+      if (otherLivingPlayer >= 0) {
+        this.saveActivePlayerBoardState({ respawnReady: false });
+        this.queuePlayerSwitch(otherLivingPlayer);
+        event.playerSwitched = true;
+        return true;
+      }
+      this.gameOver = true;
+      this.status = 'game-over';
+      this.statusMessage = 'Game Over';
+      event.gameOver = true;
+      return true;
+    }
+
+    const otherLivingPlayer = this.getOtherLivingPlayerIndex();
+    if (otherLivingPlayer >= 0) {
+      this.saveActivePlayerBoardState({ respawnReady: true });
+      this.queuePlayerSwitch(otherLivingPlayer);
+      event.playerSwitched = true;
+      return true;
+    }
+
+    this.player.respawnTimer = LIFE_RESPAWN_DELAY;
+    this.statusMessage = `${this.lives} lives remaining`;
     return true;
   }
 
@@ -665,8 +916,7 @@ export default class SpaceInvadersWorld {
         }
         if (overlapsRect(this.playerShot, alien)) {
           alien.alive = false;
-          this.score += alien.points;
-          event.scoreDelta += alien.points;
+          this.awardScore(alien.points, event);
           event.alienHit = true;
           event.sfx.push('invaderkilled');
           this.alienDeaths.push({
@@ -684,8 +934,7 @@ export default class SpaceInvadersWorld {
 
     if (this.playerShot && this.ufo && overlapsRect(this.playerShot, this.ufo)) {
       const awarded = this.getNextUfoScore();
-      this.score += awarded;
-      event.scoreDelta += awarded;
+      this.awardScore(awarded, event);
       event.ufoHit = true;
       event.sfx.push('explosion');
       this.ufoDeath = {
@@ -723,7 +972,7 @@ export default class SpaceInvadersWorld {
 
     this.alienShots = this.alienShots.filter((shot) => {
       if (this.player.alive && overlapsRect(shot, this.player)) {
-        if (this.hitPlayer()) {
+        if (this.hitPlayer(event)) {
           event.playerHit = true;
           event.sfx.push('explosion');
         }
@@ -772,19 +1021,28 @@ export default class SpaceInvadersWorld {
     if (bounds && bounds.bottom >= this.player.y + 6) {
       this.lives = 0;
       this.player.alive = false;
-      this.gameOver = true;
-      this.status = 'game-over';
-      this.statusMessage = 'Game Over';
-      event.gameOver = true;
+      this.syncActivePlayerMeta();
+      const otherLivingPlayer = this.getOtherLivingPlayerIndex();
+      if (otherLivingPlayer >= 0) {
+        this.saveActivePlayerBoardState({ respawnReady: false });
+        this.queuePlayerSwitch(otherLivingPlayer);
+        event.playerSwitched = true;
+      } else {
+        this.gameOver = true;
+        this.status = 'game-over';
+        this.statusMessage = 'Game Over';
+        event.gameOver = true;
+      }
       return;
     }
 
     if (!this.getAliveAliens().length) {
       this.wave += 1;
       this.isWaveTransition = true;
-      this.transitionTimer = 1.1;
-      this.statusMessage = `Wave ${this.wave - 1} cleared`;
+      this.transitionTimer = WAVE_CLEAR_DELAY;
+      this.statusMessage = `WAVE ${this.wave}`;
       event.waveCleared = true;
+      this.saveActivePlayerBoardState();
     }
   }
 
@@ -794,12 +1052,16 @@ export default class SpaceInvadersWorld {
     if (controls.debugPressed) {
       this.debugBoxes = !this.debugBoxes;
     }
-
-    this.processSpawns(dtSeconds);
+    this.turnAnnouncementTimer = Math.max(0, this.turnAnnouncementTimer - dtSeconds);
 
     if (this.status === 'menu') {
+      if (controls.select1Pressed) {
+        this.setSelectedPlayerCount(1);
+      } else if (controls.select2Pressed) {
+        this.setSelectedPlayerCount(2);
+      }
       if (controls.startPressed) {
-        this.startGame();
+        this.startGame(this.selectedPlayerCount);
         event.waveStarted = true;
       }
       return event;
@@ -807,22 +1069,39 @@ export default class SpaceInvadersWorld {
 
     if (this.status === 'game-over') {
       if (controls.startPressed) {
-        this.startGame();
+        this.resetGame();
         event.waveStarted = true;
+      }
+      return event;
+    }
+
+    if (this.pendingTurnSwitch) {
+      this.updateAnimations(dtSeconds);
+      this.pendingTurnSwitch.timer = Math.max(0, this.pendingTurnSwitch.timer - dtSeconds);
+      if (this.pendingTurnSwitch.timer === 0) {
+        const { targetIndex } = this.pendingTurnSwitch;
+        this.pendingTurnSwitch = null;
+        this.loadPlayerSlot(targetIndex, { announce: true });
+        event.playerSwitched = true;
       }
       return event;
     }
 
     if (this.isWaveTransition) {
       this.transitionTimer = Math.max(0, this.transitionTimer - dtSeconds);
+      this.updateAnimations(dtSeconds);
       if (this.transitionTimer === 0) {
         this.isWaveTransition = false;
         this.setupWave(this.wave);
-        this.statusMessage = `Wave ${this.wave}`;
+        this.turnAnnouncementTimer = Math.max(this.turnAnnouncementTimer, READY_BANNER_DURATION * 0.75);
+        this.syncActivePlayerMeta();
+        this.saveActivePlayerBoardState();
         event.waveStarted = true;
       }
       return event;
     }
+
+    this.processSpawns(dtSeconds);
 
     if (this.entryDelay > 0) {
       this.entryDelay = Math.max(0, this.entryDelay - dtSeconds);
@@ -852,13 +1131,15 @@ export default class SpaceInvadersWorld {
     this.updateShots(dtSeconds, event);
     this.updateAnimations(dtSeconds);
     this.erodeShieldsUnderAliens();
-    if (!this.formationReady) {
+    if (!this.formationReady || this.pendingTurnSwitch) {
+      this.syncActivePlayerMeta();
       return event;
     }
     this.checkWaveState(event);
     if (this.gameOver) {
       event.gameOver = true;
     }
+    this.syncActivePlayerMeta();
     return event;
   }
 
@@ -871,6 +1152,8 @@ export default class SpaceInvadersWorld {
       firePressed: Boolean(controls.firePressed),
       startPressed: Boolean(controls.startPressed),
       debugPressed: Boolean(controls.debugPressed),
+      select1Pressed: Boolean(controls.select1Pressed),
+      select2Pressed: Boolean(controls.select2Pressed),
     };
 
     if (remaining === 0) {
@@ -885,6 +1168,8 @@ export default class SpaceInvadersWorld {
         ...frameControls,
         firePressed: false,
         startPressed: false,
+        select1Pressed: false,
+        select2Pressed: false,
       };
     }
 

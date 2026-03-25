@@ -13,6 +13,8 @@ function createControls(overrides = {}) {
     firePressed: false,
     startPressed: false,
     debugPressed: false,
+    select1Pressed: false,
+    select2Pressed: false,
     ...overrides,
   };
 }
@@ -160,7 +162,7 @@ function testWaveAndGameOverStability() {
   gameOverWorld.player.invulnerabilityTimer = 0;
   gameOverWorld.alienShots = [{
     x: gameOverWorld.player.x,
-    y: gameOverWorld.player.y,
+    y: gameOverWorld.player.y - 12,
     width: 6,
     height: 18,
     vy: 0,
@@ -218,7 +220,7 @@ function testSpawnSequencingAndFormationDelay() {
   world.startGame();
   world.entryDelay = 0;
 
-  const spawnDelay = 0.016*10;
+  const spawnDelay = 0.016;
 
   // Before spawning completes, formation should not be ready and march timer should not tick.
   const initialMarchTimer = world.marchTimer;
@@ -326,8 +328,8 @@ function testGroundDestructsOnBombHit() {
   const ground = world.ground;
   const beforePixels = countPixels(ground.frame);
   world.alienShots = [{
-    x: ground.x + (ground.width / 2),
-    y: ground.y + 1,
+    x: ground.x + 3,
+    y: ground.y - 23,
     width: 9,
     height: 24,
     vy: 0,
@@ -394,6 +396,93 @@ function testAlienErodesShieldOnOverlap() {
   assert.equal(afterPixels < beforePixels, true);
 }
 
+function testMenuSelectionStartsTwoPlayerGame() {
+  const world = createWorld();
+  assert.equal(world.status, 'menu');
+  world.update(0, createControls({ select2Pressed: true }));
+  assert.equal(world.selectedPlayerCount, 2);
+  world.update(0, createControls({ startPressed: true }));
+  assert.equal(world.playerCount, 2);
+  assert.equal(world.players.length, 2);
+  assert.equal(world.currentPlayerIndex, 0);
+  assert.equal(world.status, 'playing');
+}
+
+function testExtraLifeAwardedAt1500() {
+  const world = createWorld();
+  world.startGame();
+  world.score = 1490;
+  world.lives = 2;
+  world.extraLifeAwarded = false;
+  world.syncActivePlayerMeta();
+  const event = {
+    sfx: [],
+    playerFired: false,
+    alienFired: false,
+    alienHit: false,
+    playerHit: false,
+    waveStarted: false,
+    waveCleared: false,
+    gameOver: false,
+    scoreDelta: 0,
+    ufoSpawned: false,
+    ufoHit: false,
+    extraLifeAwarded: false,
+    playerSwitched: false,
+  };
+  world.awardScore(20, event);
+  assert.equal(world.score, 1510);
+  assert.equal(world.lives, 3);
+  assert.equal(world.extraLifeAwarded, true);
+  assert.equal(event.extraLifeAwarded, true);
+}
+
+function testTwoPlayerDeathSwitchesTurnAndPreservesScore() {
+  const world = createWorld();
+  world.startGame(2);
+  world.entryDelay = 0;
+  spawnAll(world);
+  world.score = 120;
+  world.players[0].score = 120;
+  world.players[1].score = 40;
+  world.lives = 2;
+  world.players[0].lives = 2;
+  world.players[1].lives = 3;
+  world.player.invulnerabilityTimer = 0;
+  world.alienShots = [{
+    x: world.player.x,
+    y: world.player.y - 12,
+    width: 6,
+    height: 18,
+    vy: 0,
+    owner: 'alien',
+    type: 'bomb1',
+    animationFrame: 0,
+    animationElapsed: 0,
+    active: true,
+  }];
+  const lossEvent = world.update(0, createControls());
+  assert.equal(lossEvent.playerHit, true);
+  assert.equal(world.pendingTurnSwitch?.targetIndex, 1);
+  world.update(1, createControls());
+  assert.equal(world.currentPlayerIndex, 1);
+  assert.equal(world.score, 40);
+  assert.equal(world.players[0].score, 120);
+  assert.equal(world.players[0].lives, 1);
+}
+
+function testGameOverStartReturnsToPlayerSelect() {
+  const world = createWorld();
+  world.setSelectedPlayerCount(2);
+  world.startGame(2);
+  world.status = 'game-over';
+  world.gameOver = true;
+  const event = world.update(0, createControls({ startPressed: true }));
+  assert.equal(event.waveStarted, true);
+  assert.equal(world.status, 'menu');
+  assert.equal(world.selectedPlayerCount, 2);
+}
+
 export function run() {
   testFormationReversesAndDescendsAtEdge();
   testPlayerShootingDisciplineLimitsShots();
@@ -411,4 +500,8 @@ export function run() {
   testBombCadenceIncreased();
   testBombStrongerShieldDamage();
   testAlienErodesShieldOnOverlap();
+  testMenuSelectionStartsTwoPlayerGame();
+  testExtraLifeAwardedAt1500();
+  testTwoPlayerDeathSwitchesTurnAndPreservesScore();
+  testGameOverStartReturnsToPlayerSelect();
 }

@@ -195,6 +195,21 @@ function drawLives(renderer, lives, y) {
   }
 }
 
+function drawCenterBanner(renderer, title, subtitle = '') {
+  drawPixelText(renderer, title, VIEW.width / 2, 116, {
+    color: '#ffffff',
+    scale: FONT_SCALE_OVERLAY,
+    align: 'center',
+  });
+  if (subtitle) {
+    drawPixelText(renderer, subtitle, VIEW.width / 2, 148, {
+      color: '#8df58d',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
+    });
+  }
+}
+
 export default class SpaceInvadersScene extends Scene {
   constructor() {
     super();
@@ -250,19 +265,29 @@ export default class SpaceInvadersScene extends Scene {
 
   render(renderer) {
     const boundaryY = this.world.player.y + 21;
+    const player1Score = String(this.world.getPlayerScore(0)).padStart(4, '0');
+    const player2Score = String(this.world.getPlayerScore(1)).padStart(4, '0');
+    const hiScore = String(this.world.hiScore).padStart(4, '0');
+    const scoreColorText = '#d0d0d0';
+    const scoreColor = '#fbbf24';
     renderer.clear('#000000');
     renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#020702');
     renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#66ff66', 2);
 
-    const scoreColorText = '#d0d0d0';
-    drawPixelText(renderer, 'PLAYER 1', 84, 34, { color: scoreColorText, scale: FONT_SCALE_HUD });
+    drawPixelText(renderer, 'PLAYER 1', 84, 34, {
+      color: this.world.currentPlayerIndex === 0 ? '#ffffff' : scoreColorText,
+      scale: FONT_SCALE_HUD,
+    });
     drawPixelText(renderer, 'HI-SCORE', VIEW.width / 2, 34, { color: scoreColorText, scale: FONT_SCALE_HUD, align: 'center' });
-    drawPixelText(renderer, 'PLAYER 2', VIEW.width - 84, 34, { color: scoreColorText, scale: FONT_SCALE_HUD, align: 'right' });
+    drawPixelText(renderer, 'PLAYER 2', VIEW.width - 84, 34, {
+      color: this.world.currentPlayerIndex === 1 ? '#ffffff' : scoreColorText,
+      scale: FONT_SCALE_HUD,
+      align: 'right',
+    });
 
-    const scoreColor = '#fbbf24';
-    drawPixelText(renderer, String(this.world.score).padStart(4, '0'), 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD });
-    drawPixelText(renderer, String(this.world.score).padStart(4, '0'), VIEW.width / 2, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'center' });
-    drawPixelText(renderer, '0000', VIEW.width - 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'right' });
+    drawPixelText(renderer, player1Score, 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD });
+    drawPixelText(renderer, hiScore, VIEW.width / 2, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'center' });
+    drawPixelText(renderer, player2Score, VIEW.width - 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'right' });
 
     if (this.world.ground) {
       drawBitmap(renderer, this.world.ground.frame, this.world.ground.x, this.world.ground.y, this.world.ground.pixelSize, '#66ff66');
@@ -357,56 +382,73 @@ export default class SpaceInvadersScene extends Scene {
       scale: FONT_SCALE_SMALL,
       align: 'right',
     });
-    // control hint now shown only in overlays
+    const showOverlay = this.isPaused || this.world.status === 'menu' || this.world.status === 'game-over';
 
-    const showOverlay = this.isPaused || this.world.status === 'menu' || this.world.status === 'game-over' || this.world.isWaveTransition;
-
-    // Dim first so overlays render above the darkness.
     if (showOverlay) {
       renderer.drawRect(0, 0, VIEW.width, VIEW.height, 'rgba(0, 0, 0, 0.5)');
     }
 
     if (this.world.status === 'menu') {
-      this.drawOverlay(renderer, 'SPACE INVADERS', 'Press Space or Enter to start.');
+      this.drawOverlay(
+        renderer,
+        'SPACE INVADERS',
+        `${this.world.selectedPlayerCount} PLAYER${this.world.selectedPlayerCount > 1 ? 'S' : ''} SELECTED`,
+        ['PRESS 1 OR 2 TO CHOOSE', 'PRESS SPACE OR ENTER TO START'],
+        -20,
+        10,
+      );
     } else if (this.world.status === 'game-over') {
-      this.drawOverlay(renderer, 'GAME OVER', 'Press Space or Enter to restart.');
-    } else if (this.world.isWaveTransition) {
-      this.drawOverlay(renderer, `WAVE ${this.world.wave}`, 'Next formation incoming.');
+      this.drawOverlay(renderer, 'GAME OVER', 'PRESS SPACE OR ENTER FOR PLAYER SELECT', [], -20, 0, -20);
     } else if (this.isPaused) {
-      this.drawOverlay(renderer, 'PAUSED', 'Press P to resume or X for menu.');
+      this.drawOverlay(renderer, 'PAUSED', 'PRESS P TO RESUME', ['PRESS X FOR MENU']);
+    } else if (this.world.pendingTurnSwitch) {
+      drawCenterBanner(renderer, `PLAYER ${this.world.pendingTurnSwitch.targetIndex + 1}`);
+    } else if (this.world.entryDelay > 0 || this.world.turnAnnouncementTimer > 0) {
+      drawCenterBanner(
+        renderer,
+        this.world.statusMessage,
+        this.world.statusMessage === 'EXTRA LIFE' ? 'BONUS SHIP AWARDED' : '',
+      );
     }
   }
 
-  drawOverlay(renderer, title, prompt) {
+  drawOverlay(renderer, title, prompt, extraLines = [], textOffsetY = 0, startOffsetY = 0, controlsOffsetY = 0) {
     const boxX = 210;
-    const boxY = 268; // move up 20px
+    const boxY = 252;
     const boxW = 540;
-    const boxH = 180; // increase height by 30px
+    const boxH = 212;
     renderer.drawRect(boxX, boxY, boxW, boxH, 'rgba(0, 0, 0, 0.84)');
     renderer.strokeRect(boxX, boxY, boxW, boxH, '#66ff66', 2);
-    drawPixelText(renderer, title, VIEW.width / 2, 284, {
+    drawPixelText(renderer, title, VIEW.width / 2, 284 + textOffsetY, {
       color: '#ffffff',
       scale: FONT_SCALE_OVERLAY,
       align: 'center',
     });
     wrapPixelText(prompt, 480, FONT_SCALE_SMALL).forEach((line, index) => {
-      drawPixelText(renderer, line, VIEW.width / 2, 332 + (index * 18), {
+      drawPixelText(renderer, line, VIEW.width / 2, 328 + textOffsetY + (index * 18), {
         color: '#8df58d',
         scale: FONT_SCALE_SMALL,
         align: 'center',
       });
     });
-    drawPixelText(renderer, 'LEFT/RIGHT MOVE', VIEW.width / 2, 376, {
+    extraLines.forEach((line, index) => {
+      drawPixelText(renderer, line, VIEW.width / 2, 364 + textOffsetY + (index * 20), {
+        color: '#8df58d',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+    });
+    drawPixelText(renderer, 'LEFT/RIGHT MOVE', VIEW.width / 2, 414 + textOffsetY + controlsOffsetY, {
       color: '#8df58d',
       scale: FONT_SCALE_SMALL,
       align: 'center',
     });
-    drawPixelText(renderer, 'SPACE FIRE  P PAUSE', VIEW.width / 2, 394, {
+    drawPixelText(renderer, 'SPACE FIRE  P PAUSE', VIEW.width / 2, 432 + textOffsetY + controlsOffsetY, {
       color: '#8df58d',
       scale: FONT_SCALE_SMALL,
       align: 'center',
     });
-    drawPixelText(renderer, 'PRESS START', VIEW.width / 2, 418, {
+    drawPixelText(renderer, 'PRESS START', VIEW.width / 2, 450 + textOffsetY + startOffsetY, {
       color: '#ffffff',
       scale: FONT_SCALE_SMALL,
       align: 'center',
