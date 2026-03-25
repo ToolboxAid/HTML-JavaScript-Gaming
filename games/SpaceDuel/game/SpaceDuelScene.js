@@ -29,44 +29,77 @@ const COLORS = {
   enemyShot: '#f87171',
 };
 
-function shipPoints(ship) {
-  const cos = Math.cos(ship.angle);
-  const sin = Math.sin(ship.angle);
-  const lateralCos = Math.cos(ship.angle + (Math.PI / 2));
-  const lateralSin = Math.sin(ship.angle + (Math.PI / 2));
+const SHIP_SEGMENTS = [
+  [[16, 0], [-11, 9]],
+  [[-11, 9], [-4, 0]],
+  [[-4, 0], [-11, -9]],
+  [[-11, -9], [16, 0]],
+  [[-4, 0], [-8, 0]],
+];
 
-  return [
-    { x: ship.x + (cos * 16), y: ship.y + (sin * 16) },
-    { x: ship.x - (cos * 11) + (lateralCos * 9), y: ship.y - (sin * 11) + (lateralSin * 9) },
-    { x: ship.x - (cos * 4), y: ship.y - (sin * 4) },
-    { x: ship.x - (cos * 11) - (lateralCos * 9), y: ship.y - (sin * 11) - (lateralSin * 9) },
-  ];
+const FLAME_SEGMENTS = [
+  [[-8, 4], [-20, 0]],
+  [[-20, 0], [-8, -4]],
+];
+
+const ENEMY_HEAVY_SEGMENTS = [
+  [[16, 0], [9, 12]],
+  [[9, 12], [-6, 15]],
+  [[-6, 15], [-16, 6]],
+  [[-16, 6], [-14, -8]],
+  [[-14, -8], [-2, -16]],
+  [[-2, -16], [12, -12]],
+  [[12, -12], [16, 0]],
+  [[-9, 4], [9, 4]],
+  [[-6, -5], [7, -5]],
+];
+
+const ENEMY_LIGHT_SEGMENTS = [
+  [[12, 0], [4, 11]],
+  [[4, 11], [-8, 8]],
+  [[-8, 8], [-12, -2]],
+  [[-12, -2], [-3, -11]],
+  [[-3, -11], [9, -8]],
+  [[9, -8], [12, 0]],
+  [[-5, 1], [6, 1]],
+];
+
+const HAZARD_SEGMENTS = [
+  [[-9, 0], [9, 0]],
+  [[0, -9], [0, 9]],
+  [[-7, -7], [7, 7]],
+  [[7, -7], [-7, 7]],
+];
+
+const SHOT_SEGMENTS = [
+  [[-3, 0], [3, 0]],
+  [[0, -3], [0, 3]],
+];
+
+function rotateTranslatePoint(point, angle, tx, ty, scale = 1) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const x = point[0] * scale;
+  const y = point[1] * scale;
+  return {
+    x: tx + (x * cos) - (y * sin),
+    y: ty + (x * sin) + (y * cos),
+  };
 }
 
-function flamePoints(ship) {
-  const cos = Math.cos(ship.angle);
-  const sin = Math.sin(ship.angle);
-  const lateralCos = Math.cos(ship.angle + (Math.PI / 2));
-  const lateralSin = Math.sin(ship.angle + (Math.PI / 2));
-
-  return [
-    { x: ship.x - (cos * 8) + (lateralCos * 4), y: ship.y - (sin * 8) + (lateralSin * 4) },
-    { x: ship.x - (cos * 20), y: ship.y - (sin * 20) },
-    { x: ship.x - (cos * 8) - (lateralCos * 4), y: ship.y - (sin * 8) - (lateralSin * 4) },
-  ];
-}
-
-function enemyPolygon(enemy) {
-  const points = [];
-  for (let i = 0; i < enemy.sides; i += 1) {
-    const t = enemy.angle + ((Math.PI * 2 * i) / enemy.sides);
-    const jitter = i % 2 === 0 ? 1 : 0.82;
-    points.push({
-      x: enemy.x + Math.cos(t) * enemy.radius * jitter,
-      y: enemy.y + Math.sin(t) * enemy.radius * jitter,
-    });
-  }
-  return points;
+function drawVectorSegments(renderer, segments, {
+  x = 0,
+  y = 0,
+  angle = 0,
+  scale = 1,
+  color = '#ffffff',
+  lineWidth = 2,
+} = {}) {
+  segments.forEach((segment) => {
+    const start = rotateTranslatePoint(segment[0], angle, x, y, scale);
+    const end = rotateTranslatePoint(segment[1], angle, x, y, scale);
+    renderer.drawLine(start.x, start.y, end.x, end.y, color, lineWidth);
+  });
 }
 
 export default class SpaceDuelScene extends Scene {
@@ -324,34 +357,50 @@ export default class SpaceDuelScene extends Scene {
 
   drawObjects(renderer) {
     this.waveController.enemies.forEach((enemy) => {
-      renderer.drawPolygon(enemyPolygon(enemy), {
-        fillColor: null,
-        strokeColor: COLORS.enemy,
+      const segments = enemy.tier > 1 ? ENEMY_HEAVY_SEGMENTS : ENEMY_LIGHT_SEGMENTS;
+      const scale = enemy.radius / (enemy.tier > 1 ? 16 : 12);
+      drawVectorSegments(renderer, segments, {
+        x: enemy.x,
+        y: enemy.y,
+        angle: enemy.angle,
+        scale,
+        color: COLORS.enemy,
         lineWidth: 2,
       });
     });
 
     this.waveController.hazards.forEach((hazard) => {
-      const pulseRadius = hazard.radius + (Math.sin(hazard.pulse) * 2.4);
-      renderer.drawCircle(hazard.x, hazard.y, pulseRadius, {
-        fillColor: null,
-        strokeColor: COLORS.hazard,
+      const pulseScale = (hazard.radius / 10) + (Math.sin(hazard.pulse) * 0.1);
+      drawVectorSegments(renderer, HAZARD_SEGMENTS, {
+        x: hazard.x,
+        y: hazard.y,
+        angle: hazard.pulse * 0.35,
+        scale: pulseScale,
+        color: COLORS.hazard,
         lineWidth: 2,
       });
-      renderer.drawLine(hazard.x - 10, hazard.y - 10, hazard.x + 10, hazard.y + 10, COLORS.hazard, 2);
-      renderer.drawLine(hazard.x + 10, hazard.y - 10, hazard.x - 10, hazard.y + 10, COLORS.hazard, 2);
     });
 
     this.waveController.enemyShots.forEach((shot) => {
-      renderer.drawCircle(shot.x, shot.y, shot.radius, {
-        fillColor: COLORS.enemyShot,
-        strokeColor: COLORS.enemyShot,
-        lineWidth: 1,
+      drawVectorSegments(renderer, SHOT_SEGMENTS, {
+        x: shot.x,
+        y: shot.y,
+        angle: this.elapsedSeconds * 18,
+        scale: 0.7,
+        color: COLORS.enemyShot,
+        lineWidth: 1.5,
       });
     });
 
     this.playerBullets.forEach((bullet) => {
-      renderer.drawRect(bullet.x - 2, bullet.y - 2, 4, 4, COLORS.bullet);
+      drawVectorSegments(renderer, SHOT_SEGMENTS, {
+        x: bullet.x,
+        y: bullet.y,
+        angle: 0,
+        scale: 0.6,
+        color: COLORS.bullet,
+        lineWidth: 1.5,
+      });
     });
 
     this.players.forEach((player) => {
@@ -364,16 +413,20 @@ export default class SpaceDuelScene extends Scene {
         return;
       }
 
-      renderer.drawPolygon(shipPoints(player), {
-        fillColor: null,
-        strokeColor: player.id === 1 ? COLORS.player1 : COLORS.player2,
+      drawVectorSegments(renderer, SHIP_SEGMENTS, {
+        x: player.x,
+        y: player.y,
+        angle: player.angle,
+        color: player.id === 1 ? COLORS.player1 : COLORS.player2,
         lineWidth: 2,
       });
 
       if (player.thrusting) {
-        renderer.drawPolygon(flamePoints(player), {
-          fillColor: null,
-          strokeColor: '#f59e0b',
+        drawVectorSegments(renderer, FLAME_SEGMENTS, {
+          x: player.x,
+          y: player.y,
+          angle: player.angle,
+          color: '#f59e0b',
           lineWidth: 2,
         });
       }
