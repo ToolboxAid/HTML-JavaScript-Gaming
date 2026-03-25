@@ -4,6 +4,9 @@ David Quesenberry
 03/25/2026
 AITargetDummyWorld.js
 */
+import AITargetDummyConfig from './AITargetDummyConfig.js';
+import AITargetDummyController from './AITargetDummyController.js';
+
 const MAX_STEP_SECONDS = 1 / 120;
 
 function clamp(value, min, max) {
@@ -19,9 +22,10 @@ function safeNormalize(x, y) {
 }
 
 export default class AITargetDummyWorld {
-  constructor({ width = 960, height = 720 } = {}) {
+  constructor({ width = 960, height = 720, config = AITargetDummyConfig } = {}) {
     this.width = width;
     this.height = height;
+    this.config = config;
     this.playfield = {
       left: 56,
       right: width - 56,
@@ -29,7 +33,6 @@ export default class AITargetDummyWorld {
       bottom: height - 56,
     };
     this.status = 'menu';
-    this.stateTimer = 0;
     this.player = {
       x: width * 0.36,
       y: height * 0.56,
@@ -40,15 +43,20 @@ export default class AITargetDummyWorld {
       x: width * 0.68,
       y: height * 0.42,
       radius: 16,
-      speed: 170,
+      vx: 0,
+      vy: 0,
+      headingRad: 0,
       state: 'idle',
-      senseRadius: 280,
-      attackRadius: 62,
-      attackWindupSeconds: 0.22,
-      cooldownSeconds: 0.65,
-      recoverSeconds: 0.2,
-      attacksLanded: 0,
       lastDistance: 0,
+    };
+    this.controller = new AITargetDummyController({ config: this.config });
+    this.telemetry = {
+      stateChanged: false,
+      dummyState: 'idle',
+      playerDistance: 0,
+      decisionTimeMs: 0,
+      velocity: 0,
+      lastKnownTarget: null,
     };
     this.resetGame();
   }
@@ -58,14 +66,13 @@ export default class AITargetDummyWorld {
     this.player.y = this.height * 0.56;
     this.dummy.x = this.width * 0.68;
     this.dummy.y = this.height * 0.42;
-    this.dummy.state = 'idle';
-    this.dummy.attacksLanded = 0;
-    this.stateTimer = 0;
+    this.controller.reset(this.dummy);
   }
 
   resetGame() {
     this.status = 'menu';
     this.resetActorPositions();
+    this.telemetry = this.createEvent();
   }
 
   startGame() {
@@ -81,10 +88,12 @@ export default class AITargetDummyWorld {
       status: this.status,
       started: false,
       reset: false,
-      attackTriggered: false,
       stateChanged: false,
       dummyState: this.dummy.state,
       playerDistance: this.dummy.lastDistance || 0,
+      decisionTimeMs: this.telemetry?.decisionTimeMs || 0,
+      velocity: this.telemetry?.velocity || 0,
+      lastKnownTarget: this.telemetry?.lastKnownTarget || null,
     };
   }
 
@@ -93,19 +102,13 @@ export default class AITargetDummyWorld {
       status: next.status,
       started: base.started || next.started,
       reset: base.reset || next.reset,
-      attackTriggered: base.attackTriggered || next.attackTriggered,
       stateChanged: base.stateChanged || next.stateChanged,
       dummyState: next.dummyState,
       playerDistance: next.playerDistance,
+      decisionTimeMs: next.decisionTimeMs,
+      velocity: next.velocity,
+      lastKnownTarget: next.lastKnownTarget,
     };
-  }
-
-  setDummyState(nextState, event) {
-    if (this.dummy.state === nextState) {
-      return;
-    }
-    this.dummy.state = nextState;
-    event.stateChanged = true;
   }
 
   movePlayer(stepSeconds, controls) {
@@ -116,75 +119,21 @@ export default class AITargetDummyWorld {
     this.player.y = clamp(this.player.y, this.playfield.top + this.player.radius, this.playfield.bottom - this.player.radius);
   }
 
-  updateDummy(stepSeconds, event) {
-    const toPlayerX = this.player.x - this.dummy.x;
-    const toPlayerY = this.player.y - this.dummy.y;
-    const toPlayer = safeNormalize(toPlayerX, toPlayerY);
-    this.dummy.lastDistance = toPlayer.length;
-    event.playerDistance = toPlayer.length;
-
-    const disengageDistance = this.dummy.senseRadius * 1.12;
-    if (toPlayer.length > disengageDistance && this.dummy.state !== 'attack') {
-      this.setDummyState('idle', event);
-    }
-
-    if (this.dummy.state === 'idle') {
-      if (toPlayer.length <= this.dummy.senseRadius) {
-        this.setDummyState('chase', event);
-      }
-      event.dummyState = this.dummy.state;
-      return;
-    }
-
-    if (this.dummy.state === 'chase') {
-      this.dummy.x += toPlayer.x * this.dummy.speed * stepSeconds;
-      this.dummy.y += toPlayer.y * this.dummy.speed * stepSeconds;
-      this.dummy.x = clamp(this.dummy.x, this.playfield.left + this.dummy.radius, this.playfield.right - this.dummy.radius);
-      this.dummy.y = clamp(this.dummy.y, this.playfield.top + this.dummy.radius, this.playfield.bottom - this.dummy.radius);
-      if (toPlayer.length <= this.dummy.attackRadius) {
-        this.setDummyState('attack', event);
-        this.stateTimer = this.dummy.attackWindupSeconds;
-      }
-      event.dummyState = this.dummy.state;
-      return;
-    }
-
-    if (this.dummy.state === 'attack') {
-      this.stateTimer = Math.max(0, this.stateTimer - stepSeconds);
-      if (this.stateTimer === 0) {
-        this.dummy.attacksLanded += 1;
-        event.attackTriggered = true;
-        this.setDummyState('cooldown', event);
-        this.stateTimer = this.dummy.cooldownSeconds;
-      }
-      event.dummyState = this.dummy.state;
-      return;
-    }
-
-    if (this.dummy.state === 'cooldown') {
-      this.stateTimer = Math.max(0, this.stateTimer - stepSeconds);
-      if (this.stateTimer === 0) {
-        this.setDummyState('recover', event);
-        this.stateTimer = this.dummy.recoverSeconds;
-      }
-      event.dummyState = this.dummy.state;
-      return;
-    }
-
-    if (this.dummy.state === 'recover') {
-      this.stateTimer = Math.max(0, this.stateTimer - stepSeconds);
-      if (this.stateTimer === 0) {
-        this.setDummyState(toPlayer.length <= this.dummy.attackRadius ? 'attack' : 'chase', event);
-        this.stateTimer = this.dummy.state === 'attack' ? this.dummy.attackWindupSeconds : 0;
-      }
-      event.dummyState = this.dummy.state;
-    }
-  }
-
   updateStep(stepSeconds, controls) {
     const event = this.createEvent();
     this.movePlayer(stepSeconds, controls);
-    this.updateDummy(stepSeconds, event);
+    const telemetry = this.controller.update(stepSeconds, {
+      dummy: this.dummy,
+      player: this.player,
+      playfield: this.playfield,
+    });
+    this.telemetry = telemetry;
+    event.stateChanged = telemetry.stateChanged;
+    event.dummyState = telemetry.dummyState;
+    event.playerDistance = telemetry.playerDistance;
+    event.decisionTimeMs = telemetry.decisionTimeMs;
+    event.velocity = telemetry.velocity;
+    event.lastKnownTarget = telemetry.lastKnownTarget;
     event.status = this.status;
     return event;
   }
@@ -206,9 +155,6 @@ export default class AITargetDummyWorld {
     }
 
     if (this.status !== 'playing') {
-      event.status = this.status;
-      event.dummyState = this.dummy.state;
-      event.playerDistance = this.dummy.lastDistance;
       return event;
     }
 

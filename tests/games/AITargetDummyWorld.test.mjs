@@ -31,27 +31,44 @@ function testDummyChasesWhenPlayerInSenseRadius() {
   world.startGame();
   world.player.x = world.dummy.x - 140;
   world.player.y = world.dummy.y;
-  world.update(1 / 60, createControls());
-  assert.equal(world.dummy.state === 'chase' || world.dummy.state === 'attack', true);
+  for (let i = 0; i < 90; i += 1) {
+    world.update(1 / 60, createControls());
+  }
+  assert.equal(world.dummy.state, 'pursue');
 }
 
-function testDummyAttackCycle() {
+function testDummyEvadesAtCloseRange() {
   const world = new AITargetDummyWorld({ width: 960, height: 720 });
   world.startGame();
-  world.player.x = world.dummy.x - 10;
-  world.player.y = world.dummy.y;
+  world.player.x = world.dummy.x - 8;
+  world.player.y = world.dummy.y - 8;
 
-  let attackTriggered = false;
-  for (let i = 0; i < 120; i += 1) {
+  let sawEvade = false;
+  for (let i = 0; i < 90; i += 1) {
     const event = world.update(1 / 60, createControls());
-    if (event.attackTriggered) {
-      attackTriggered = true;
+    if (event.dummyState === 'evade') {
+      sawEvade = true;
       break;
     }
   }
+  assert.equal(sawEvade, true);
+}
 
-  assert.equal(attackTriggered, true);
-  assert.equal(world.dummy.attacksLanded > 0, true);
+function testHysteresisPreventsRapidFlipping() {
+  const world = new AITargetDummyWorld({ width: 960, height: 720 });
+  world.startGame();
+  world.player.x = world.dummy.x - 220;
+  world.player.y = world.dummy.y;
+  for (let i = 0; i < 80; i += 1) {
+    world.update(1 / 60, createControls());
+  }
+  const before = world.dummy.state;
+  world.player.x = world.dummy.x - 258;
+  for (let i = 0; i < 5; i += 1) {
+    world.update(1 / 60, createControls());
+  }
+  assert.equal(before, 'pursue');
+  assert.equal(world.dummy.state, 'pursue');
 }
 
 function testResetReturnsToMenu() {
@@ -66,6 +83,7 @@ function testResetReturnsToMenu() {
 export function run() {
   testStartAndPlayerMovement();
   testDummyChasesWhenPlayerInSenseRadius();
-  testDummyAttackCycle();
+  testDummyEvadesAtCloseRange();
+  testHysteresisPreventsRapidFlipping();
   testResetReturnsToMenu();
 }

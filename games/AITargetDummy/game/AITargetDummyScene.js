@@ -5,6 +5,7 @@ David Quesenberry
 AITargetDummyScene.js
 */
 import { Scene } from '../../../engine/scenes/index.js';
+import AITargetDummyDebugOverlay from './AITargetDummyDebugOverlay.js';
 import AITargetDummyInputController from './AITargetDummyInputController.js';
 import AITargetDummyWorld from './AITargetDummyWorld.js';
 
@@ -26,6 +27,7 @@ export default class AITargetDummyScene extends Scene {
     super();
     this.world = new AITargetDummyWorld(VIEW);
     this.inputController = null;
+    this.debugOverlay = new AITargetDummyDebugOverlay();
     this.isPaused = false;
     this.lastEvent = this.world.createEvent();
   }
@@ -67,10 +69,8 @@ export default class AITargetDummyScene extends Scene {
   }
 
   drawArena(renderer) {
-    const { left, top, right, bottom } = this.world.playfield;
     renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, COLORS.panel);
     renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, COLORS.line, 2);
-    renderer.strokeRect(left, top, right - left, bottom - top, COLORS.line, 1.5);
   }
 
   drawAgent(renderer, actor, color) {
@@ -83,48 +83,30 @@ export default class AITargetDummyScene extends Scene {
 
     const dummy = this.world.dummy;
     const player = this.world.player;
-    renderer.drawCircle(dummy.x, dummy.y, dummy.senseRadius, COLORS.sense);
-    renderer.drawCircle(dummy.x, dummy.y, dummy.attackRadius, COLORS.attack);
     this.drawAgent(renderer, player, COLORS.player);
     this.drawAgent(renderer, dummy, COLORS.dummy);
     renderer.drawLine(dummy.x, dummy.y, player.x, player.y, '#64748b', 1);
 
-    renderer.drawText('AI TARGET DUMMY', 28, 20, {
+    renderer.drawText('AI TARGET DUMMY', 38, 40, {
       color: COLORS.text,
       font: 'bold 22px monospace',
       textBaseline: 'top',
     });
-    renderer.drawText(`STATUS ${this.world.status.toUpperCase()}`, 932, 20, {
+    renderer.drawText(`STATUS ${this.world.status.toUpperCase()}`, 922, 40, {
       color: COLORS.text,
       font: '16px monospace',
       textAlign: 'right',
       textBaseline: 'top',
     });
 
-    renderer.drawRect(660, 88, 272, 192, 'rgba(2, 6, 23, 0.82)');
-    renderer.strokeRect(660, 88, 272, 192, '#334155', 1);
-    const lines = [
-      `STATE: ${dummy.state.toUpperCase()}`,
-      `DIST: ${dummy.lastDistance.toFixed(1)}`,
-      `ATTACKS: ${dummy.attacksLanded}`,
-      `EVENT ATTACK: ${this.lastEvent.attackTriggered}`,
-      `STATE CHANGED: ${this.lastEvent.stateChanged}`,
-      `TIMER: ${this.world.stateTimer.toFixed(2)}`,
-    ];
-    lines.forEach((line, index) => {
-      renderer.drawText(line, 676, 106 + (index * 26), {
-        color: index === 0 ? COLORS.text : COLORS.muted,
-        font: '15px monospace',
-        textBaseline: 'top',
-      });
-    });
+    this.debugOverlay.render(renderer, { world: this.world, telemetry: this.lastEvent });
 
-    renderer.drawText('MOVE: WASD/ARROWS OR LEFT STICK', 28, 662, {
+    renderer.drawText('MOVE: WASD/ARROWS OR LEFT STICK', 38, 647, {
       color: COLORS.muted,
       font: '15px monospace',
       textBaseline: 'top',
     });
-    renderer.drawText('ENTER/SPACE START  P PAUSE  R RESET', 28, 686, {
+    renderer.drawText('ENTER/SPACE START  P PAUSE  R RESET', 38, 671, {
       color: COLORS.muted,
       font: '15px monospace',
       textBaseline: 'top',

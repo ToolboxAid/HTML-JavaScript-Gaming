@@ -1,1 +1,1 @@
-Correct AI Target Dummy classification from sample to game path
+Tune AI Target Dummy behavior, state transitions, and debug visibility
