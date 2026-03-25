@@ -273,7 +273,7 @@ export default class SpaceInvadersScene extends Scene {
   }
 
   render(renderer) {
-    const boundaryY = this.world.player.y + 21;
+    const boundaryY = this.world.playerBaseY + 21;
     const player1Score = String(this.world.getPlayerScore(0)).padStart(4, '0');
     const player2Score = String(this.world.getPlayerScore(1)).padStart(4, '0');
     const hiScore = String(this.world.hiScore).padStart(4, '0');
@@ -287,6 +287,14 @@ export default class SpaceInvadersScene extends Scene {
     renderer.clear('#000000');
     renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#020702');
     renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#66ff66', 2);
+
+    const ctx = renderer?.ctx;
+    if (ctx) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(24, 24, VIEW.width - 48, VIEW.height - 48);
+      ctx.clip();
+    }
 
     drawPixelText(renderer, 'PLAYER 1', 84, 34, {
       color: this.world.currentPlayerIndex === 0 ? '#ffffff' : scoreColorText,
@@ -310,7 +318,12 @@ export default class SpaceInvadersScene extends Scene {
       drawBitmap(renderer, shield.frame, shield.x, shield.y, shield.pixelSize, '#66ff66');
     });
 
-    this.world.getAliveAliens().forEach((alien) => drawAlien(renderer, alien));
+    const aliveAliens = this.world.getAliveAliens();
+    // if (aliveAliens.length) {
+    //   const dangerLineY = Math.max(...aliveAliens.map((alien) => alien.y + (alien.height * 2)));
+    //   renderer.drawLine(24, dangerLineY, VIEW.width - 24, dangerLineY, '#ff0000', 2);
+    // }
+    aliveAliens.forEach((alien) => drawAlien(renderer, alien));
     this.world.alienDeaths.forEach((death) => drawAlienDeath(renderer, death));
 
     if (this.world.ufo) {
@@ -423,6 +436,10 @@ export default class SpaceInvadersScene extends Scene {
         this.world.statusMessage,
         this.world.statusMessage === 'EXTRA LIFE' ? 'BONUS SHIP AWARDED' : '',
       );
+    }
+
+    if (ctx) {
+      ctx.restore();
     }
   }
 

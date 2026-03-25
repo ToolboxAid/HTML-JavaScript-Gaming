@@ -11,6 +11,7 @@ function createControls(overrides = {}) {
   return {
     moveAxis: 0,
     firePressed: false,
+    fireHeld: false,
     startPressed: false,
     debugPressed: false,
     select1Pressed: false,

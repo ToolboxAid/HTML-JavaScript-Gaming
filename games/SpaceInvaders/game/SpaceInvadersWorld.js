@@ -39,6 +39,7 @@ const PLAYER_SWAP_DURATION = 5;
 const PLAYER_SWAP_BLINK_INTERVAL = 0.5;
 const WAVE_CLEAR_DELAY = 0.45;
 const READY_BANNER_DURATION = 0.8;
+const PLAYER_Y_OFFSET = 26;
 
 const ROW_TYPES = [
   { type: 'octopus', points: 30, width: 24, height: 24 },
@@ -139,6 +140,7 @@ export default class SpaceInvadersWorld {
     this.width = width;
     this.height = height;
     this.rng = typeof rng === 'function' ? rng : Math.random;
+    this.playerBaseY = this.height - 94;
     this.player = this.createPlayer();
     this.debugBoxes = false;
     this.hiScore = 0;
@@ -164,12 +166,17 @@ export default class SpaceInvadersWorld {
       width: PLAYER_WIDTH,
       height: PLAYER_HEIGHT,
       x: 0,
-      y: this.height - 94,
+      y: this.playerBaseY - PLAYER_Y_OFFSET,
       speed: PLAYER_SPEED,
       alive: true,
       respawnTimer: 0,
       invulnerabilityTimer: 0,
     };
+  }
+
+  setPlayerHomePosition() {
+    this.player.x = (this.width - this.player.width) / 2;
+    this.player.y = this.playerBaseY - PLAYER_Y_OFFSET;
   }
 
   createShot({ x, y, vy, owner }) {
@@ -208,7 +215,7 @@ export default class SpaceInvadersWorld {
     const shieldWidth = 25 * SHIELD_PIXEL_SIZE;
     const margin = 140;
     const spacing = (this.width - (margin * 2)) / (SHIELD_COUNT - 1);
-    const y = this.player.y - 140;
+    const y = this.playerBaseY - 140;
     const shields = [];
     for (let index = 0; index < SHIELD_COUNT; index += 1) {
       const centerX = margin + (spacing * index);
@@ -229,7 +236,7 @@ export default class SpaceInvadersWorld {
     const frameRow = '1'.repeat(columns);
     const frame = Array.from({ length: GROUND_ROWS }, () => frameRow);
     const height = GROUND_ROWS * GROUND_PIXEL_SIZE;
-    const y = (this.player.y + 21) - height;
+    const y = (this.playerBaseY + 21) - height;
     return {
       x: 52,
       y,
@@ -264,7 +271,7 @@ export default class SpaceInvadersWorld {
     this.bombTypeIndex = 0;
     this.ufoDirection = 1;
     this.ufoTimer = 12;
-    this.player.x = (this.width - this.player.width) / 2;
+    this.setPlayerHomePosition();
     this.player.alive = true;
     this.player.respawnTimer = 0;
     this.player.invulnerabilityTimer = 0;
@@ -309,7 +316,7 @@ export default class SpaceInvadersWorld {
     this.ufoDeath = null;
     this.bombTypeIndex = 0;
     this.ufoTimer = clamp(11 - (waveNumber * 0.35), 5.5, 12);
-    this.player.x = (this.width - this.player.width) / 2;
+    this.setPlayerHomePosition();
     this.player.alive = true;
     this.player.respawnTimer = 0;
     this.player.invulnerabilityTimer = PLAYER_RESPAWN_INVULNERABILITY;
@@ -651,11 +658,14 @@ export default class SpaceInvadersWorld {
     const impactColumn = Math.floor(hitX / shield.pixelSize);
     const impactRow = Math.floor(hitY / shield.pixelSize);
     const first = this.applyOverlay(shield.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
-    // second pass widen crater for stronger damage
     const second = this.applyOverlay(first.frame, SHIELD_BOMB_OVERLAY, impactColumn + 1, impactRow);
-    const changed = first.changed || second.changed;
+    const third = this.applyOverlay(second.frame, SHIELD_BOMB_OVERLAY, impactColumn - 1, impactRow);
+    const fourth = this.applyOverlay(third.frame, SHIELD_BOMB_OVERLAY, impactColumn + 2, impactRow);
+    const fifth = this.applyOverlay(fourth.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow - 1);
+    const sixth = this.applyOverlay(fifth.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow + 1);
+    const changed = first.changed || second.changed || third.changed || fourth.changed || fifth.changed || sixth.changed;
     if (changed) {
-      shield.frame = second.frame;
+      shield.frame = sixth.frame;
       this.bombDeaths.push({
         x: shot.x - 12,
         y: shot.y,
@@ -878,14 +888,14 @@ export default class SpaceInvadersWorld {
       this.player.respawnTimer = Math.max(0, this.player.respawnTimer - dtSeconds);
       if (this.player.respawnTimer === 0) {
         this.player.alive = true;
-        this.player.x = (this.width - this.player.width) / 2;
+    this.setPlayerHomePosition();
         this.player.invulnerabilityTimer = PLAYER_RESPAWN_INVULNERABILITY;
       }
     }
 
     this.player.invulnerabilityTimer = Math.max(0, this.player.invulnerabilityTimer - dtSeconds);
 
-    if (controls.firePressed && this.firePlayerShot()) {
+    if ((controls.firePressed || controls.fireHeld) && this.firePlayerShot()) {
       event.playerFired = true;
       event.sfx.push('shoot');
     }
@@ -915,9 +925,12 @@ export default class SpaceInvadersWorld {
           const hitY = this.playerShot.y - shield.y;
           const impactColumn = Math.floor(hitX / shield.pixelSize);
           const impactRow = Math.floor(hitY / shield.pixelSize);
-          const { frame, changed } = this.applyOverlay(shield.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
+          const first = this.applyOverlay(shield.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
+          const second = this.applyOverlay(first.frame, SHIELD_BOMB_OVERLAY, impactColumn + 1, impactRow);
+          const third = this.applyOverlay(second.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow - 1);
+          const changed = first.changed || second.changed || third.changed;
           if (changed) {
-            shield.frame = frame;
+            shield.frame = third.frame;
             this.playerShot = null;
             break;
           }
@@ -1052,23 +1065,26 @@ export default class SpaceInvadersWorld {
   }
 
   checkWaveState(event) {
-    const bounds = this.getFormationBounds();
-    if (bounds && bounds.bottom >= this.player.y + 6) {
-      this.lives = 0;
-      this.player.alive = false;
-      this.syncActivePlayerMeta();
-      const otherLivingPlayer = this.getOtherLivingPlayerIndex();
-      if (otherLivingPlayer >= 0) {
-        this.saveActivePlayerBoardState({ respawnReady: false });
-        this.queuePlayerSwitch(otherLivingPlayer);
-        event.playerSwitched = true;
-      } else {
-        this.gameOver = true;
-        this.status = 'game-over';
-        this.statusMessage = 'Game Over';
-        event.gameOver = true;
+    const alive = this.getAliveAliens();
+    if (alive.length) {
+      const dangerLineY = Math.max(...alive.map((alien) => alien.y + (alien.height * 2)));
+      if (dangerLineY >= this.player.y) {
+        this.lives = 0;
+        this.player.alive = false;
+        this.syncActivePlayerMeta();
+        const otherLivingPlayer = this.getOtherLivingPlayerIndex();
+        if (otherLivingPlayer >= 0) {
+          this.saveActivePlayerBoardState({ respawnReady: false });
+          this.queuePlayerSwitch(otherLivingPlayer);
+          event.playerSwitched = true;
+        } else {
+          this.gameOver = true;
+          this.status = 'game-over';
+          this.statusMessage = 'Game Over';
+          event.gameOver = true;
+        }
+        return;
       }
-      return;
     }
 
     if (!this.getAliveAliens().length) {
@@ -1194,6 +1210,7 @@ export default class SpaceInvadersWorld {
     let frameControls = {
       moveAxis: controls.moveAxis ?? 0,
       firePressed: Boolean(controls.firePressed),
+      fireHeld: Boolean(controls.fireHeld),
       startPressed: Boolean(controls.startPressed),
       debugPressed: Boolean(controls.debugPressed),
       select1Pressed: Boolean(controls.select1Pressed),
@@ -1211,6 +1228,7 @@ export default class SpaceInvadersWorld {
       frameControls = {
         ...frameControls,
         firePressed: false,
+        fireHeld: frameControls.fireHeld,
         startPressed: false,
         select1Pressed: false,
         select2Pressed: false,

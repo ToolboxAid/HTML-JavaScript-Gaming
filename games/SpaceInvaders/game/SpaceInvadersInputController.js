@@ -49,6 +49,7 @@ export default class SpaceInvadersInputController {
     return {
       moveAxis: this.pickAxis(keyboardAxis, pad.horizontal),
       firePressed: this.wasPressed('Space') || pad.confirmPressed,
+      fireHeld: this.isDown('Space') || pad.confirmDown,
       startPressed: this.wasPressed('Enter') || this.wasPressed('Space') || pad.startPressed,
       pausePressed: this.wasPressed('KeyP'),
       menuPressed: this.wasPressed('KeyX') || pad.cancelPressed,
