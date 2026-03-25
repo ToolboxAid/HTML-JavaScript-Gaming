@@ -253,7 +253,6 @@ export default class SpaceInvadersScene extends Scene {
     renderer.clear('#000000');
     renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#020702');
     renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#66ff66', 2);
-    renderer.drawLine(44, boundaryY, VIEW.width - 44, boundaryY, '#66ff66', 2);
 
     const scoreColorText = '#d0d0d0';
     drawPixelText(renderer, 'PLAYER 1', 84, 34, { color: scoreColorText, scale: FONT_SCALE_HUD });
@@ -264,6 +263,13 @@ export default class SpaceInvadersScene extends Scene {
     drawPixelText(renderer, String(this.world.score).padStart(4, '0'), 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD });
     drawPixelText(renderer, String(this.world.score).padStart(4, '0'), VIEW.width / 2, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'center' });
     drawPixelText(renderer, '0000', VIEW.width - 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'right' });
+
+    if (this.world.ground) {
+      drawBitmap(renderer, this.world.ground.frame, this.world.ground.x, this.world.ground.y, this.world.ground.pixelSize, '#66ff66');
+    }
+    this.world.shields.forEach((shield) => {
+      drawBitmap(renderer, shield.frame, shield.x, shield.y, shield.pixelSize, '#66ff66');
+    });
 
     this.world.getAliveAliens().forEach((alien) => drawAlien(renderer, alien));
     this.world.alienDeaths.forEach((death) => drawAlienDeath(renderer, death));
@@ -317,6 +323,10 @@ export default class SpaceInvadersScene extends Scene {
       });
       if (this.world.ufo) {
         stroke(this.world.ufo.x, this.world.ufo.y, this.world.ufo.width, this.world.ufo.height);
+      }
+      this.world.shields.forEach((shield) => stroke(shield.x, shield.y, shield.width, shield.height));
+      if (this.world.ground) {
+        stroke(this.world.ground.x, this.world.ground.y, this.world.ground.width, this.world.ground.height);
       }
     }
 

@@ -4,6 +4,7 @@ David Quesenberry
 03/24/2026
 SpaceInvadersWorld.js
 */
+import { SHIELD_BOMB_OVERLAY, SHIELD_FRAME } from './SpaceInvadersSpriteData.js';
 const MAX_STEP_SECONDS = 1 / 120;
 const PLAYER_WIDTH = 51;
 const PLAYER_HEIGHT = 33;
@@ -28,6 +29,10 @@ const UFO_DEATH_DURATION = 0.36;
 const UFO_SCORE_POPUP_DURATION = 1.1;
 const UFO_SCORE_CYCLE = [100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100];
 const BOMB_TYPES = ['bomb1', 'bomb2', 'bomb3'];
+const SHIELD_PIXEL_SIZE = 3;
+const SHIELD_COUNT = 4;
+const GROUND_PIXEL_SIZE = 3;
+const GROUND_ROWS = 2;
 
 const ROW_TYPES = [
   { type: 'octopus', points: 30, width: 24, height: 24 },
@@ -87,6 +92,10 @@ function overlapsRect(a, b) {
     a.y < b.y + b.height &&
     a.y + a.height > b.y
   );
+}
+
+function cloneFrame(frame) {
+  return frame.map((row) => row.split('').join(''));
 }
 
 export default class SpaceInvadersWorld {
@@ -149,6 +158,42 @@ export default class SpaceInvadersWorld {
     };
   }
 
+  createShields() {
+    const shieldWidth = 25 * SHIELD_PIXEL_SIZE;
+    const margin = 140;
+    const spacing = (this.width - (margin * 2)) / (SHIELD_COUNT - 1);
+    const y = this.player.y - 140;
+    const shields = [];
+    for (let index = 0; index < SHIELD_COUNT; index += 1) {
+      const centerX = margin + (spacing * index);
+      shields.push({
+        x: Math.round(centerX - (shieldWidth / 2)),
+        y,
+        width: shieldWidth,
+        height: 19 * SHIELD_PIXEL_SIZE,
+        pixelSize: SHIELD_PIXEL_SIZE,
+        frame: cloneFrame(SHIELD_FRAME),
+      });
+    }
+    return shields;
+  }
+
+  createGround() {
+    const columns = Math.floor((this.width - 104) / GROUND_PIXEL_SIZE);
+    const frameRow = '1'.repeat(columns);
+    const frame = Array.from({ length: GROUND_ROWS }, () => frameRow);
+    const height = GROUND_ROWS * GROUND_PIXEL_SIZE;
+    const y = (this.player.y + 21) - height;
+    return {
+      x: 52,
+      y,
+      width: columns * GROUND_PIXEL_SIZE,
+      height,
+      pixelSize: GROUND_PIXEL_SIZE,
+      frame,
+    };
+  }
+
   resetGame() {
     this.score = 0;
     this.lives = 3;
@@ -165,6 +210,8 @@ export default class SpaceInvadersWorld {
     this.ufoScoreCycleIndex = 0;
     this.playerShotsFired = 0;
     this.ufoScorePopups = [];
+    this.shields = [];
+    this.ground = null;
     this.playerShot = null;
     this.alienShots = [];
     this.alienDeaths = [];
@@ -222,6 +269,8 @@ export default class SpaceInvadersWorld {
     this.player.alive = true;
     this.player.respawnTimer = 0;
     this.player.invulnerabilityTimer = PLAYER_RESPAWN_INVULNERABILITY;
+    this.shields = this.createShields();
+    this.ground = this.createGround();
   }
 
   startGame() {
@@ -295,6 +344,71 @@ export default class SpaceInvadersWorld {
       popup.lifeRemaining = Math.max(0, popup.lifeRemaining - dtSeconds);
     });
     this.ufoScorePopups = this.ufoScorePopups.filter((popup) => popup.lifeRemaining > 0);
+  }
+
+  applyOverlay(frame, overlay, impactColumn, impactRow) {
+    const rows = frame.map((row) => row.split(''));
+    const halfH = Math.floor(overlay.length / 2);
+    const halfW = Math.floor((overlay[0] ?? '').length / 2);
+    let changed = false;
+
+    for (let overlayRow = 0; overlayRow < overlay.length; overlayRow += 1) {
+      const targetRow = impactRow + overlayRow - halfH;
+      if (targetRow < 0 || targetRow >= rows.length) {
+        continue;
+      }
+      for (let overlayCol = 0; overlayCol < overlay[overlayRow].length; overlayCol += 1) {
+        const targetCol = impactColumn + overlayCol - halfW;
+        if (targetCol < 0 || targetCol >= rows[targetRow].length) {
+          continue;
+        }
+        if (overlay[overlayRow][overlayCol] === '1' && rows[targetRow][targetCol] === '1') {
+          rows[targetRow][targetCol] = '0';
+          changed = true;
+        }
+      }
+    }
+
+    return { frame: rows.map((row) => row.join('')), changed };
+  }
+
+  handleBombAgainstShield(shot, shield, event) {
+    const hitX = (shot.x + (shot.width / 2)) - shield.x;
+    const hitY = (shot.y + shot.height) - shield.y;
+    const impactColumn = Math.floor(hitX / shield.pixelSize);
+    const impactRow = Math.floor(hitY / shield.pixelSize);
+    const { frame, changed } = this.applyOverlay(shield.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
+    if (changed) {
+      shield.frame = frame;
+      this.bombDeaths.push({
+        x: shot.x - 12,
+        y: shot.y,
+        elapsed: 0,
+      });
+      event.sfx.push('explosion');
+    }
+    return changed;
+  }
+
+  handleBombAgainstGround(shot, event) {
+    if (!this.ground) {
+      return false;
+    }
+    const hitX = (shot.x + (shot.width / 2)) - this.ground.x;
+    const hitY = (shot.y + shot.height) - this.ground.y;
+    const impactColumn = Math.floor(hitX / this.ground.pixelSize);
+    const impactRow = Math.floor(hitY / this.ground.pixelSize);
+    const { frame, changed } = this.applyOverlay(this.ground.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
+    if (changed) {
+      this.ground.frame = frame;
+      this.bombDeaths.push({
+        x: shot.x - 12,
+        y: shot.y,
+        elapsed: 0,
+      });
+      event.sfx.push('explosion');
+    }
+    return changed;
   }
   firePlayerShot() {
     if (!this.player.alive || this.playerShot) {
@@ -466,6 +580,42 @@ export default class SpaceInvadersWorld {
       shot.y += shot.vy * dtSeconds;
     });
     this.alienShots = this.alienShots.filter((shot) => shot.y <= this.height + 24);
+
+    if (this.playerShot) {
+      for (const shield of this.shields) {
+        if (overlapsRect(this.playerShot, shield)) {
+          const hitX = (this.playerShot.x + (this.playerShot.width / 2)) - shield.x;
+          const hitY = this.playerShot.y - shield.y;
+          const impactColumn = Math.floor(hitX / shield.pixelSize);
+          const impactRow = Math.floor(hitY / shield.pixelSize);
+          const { frame, changed } = this.applyOverlay(shield.frame, SHIELD_BOMB_OVERLAY, impactColumn, impactRow);
+          if (changed) {
+            shield.frame = frame;
+            this.playerShot = null;
+            break;
+          }
+        }
+      }
+    }
+
+    // Bombs vs shields and ground
+    for (let index = this.alienShots.length - 1; index >= 0; index -= 1) {
+      const shot = this.alienShots[index];
+      let consumed = false;
+      for (const shield of this.shields) {
+        if (overlapsRect(shot, shield) && this.handleBombAgainstShield(shot, shield, event)) {
+          this.alienShots.splice(index, 1);
+          consumed = true;
+          break;
+        }
+      }
+      if (consumed) {
+        continue;
+      }
+      if (this.ground && overlapsRect(shot, this.ground) && this.handleBombAgainstGround(shot, event)) {
+        this.alienShots.splice(index, 1);
+      }
+    }
 
     if (this.playerShot) {
       for (const alien of this.aliens) {

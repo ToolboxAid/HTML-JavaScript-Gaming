@@ -31,6 +31,13 @@ function createWorld() {
   });
 }
 
+function countPixels(frame) {
+  return frame.reduce(
+    (sum, row) => sum + Array.from(row).filter((cell) => cell === '1').length,
+    0,
+  );
+}
+
 function spawnAll(world) {
   while (!world.formationReady && world.spawnQueue.length > 0) {
     world.update(0.01, createControls());
@@ -274,6 +281,68 @@ function testUfoScorePopupVisibleThenRemoved() {
   assert.equal(world.ufoScorePopups.length, 0);
 }
 
+function testShieldsSpawnAndSitAbovePlayer() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+  assert.equal(world.shields.length, 4);
+  world.shields.forEach((shield, index) => {
+    assert.equal(shield.frame.length > 0, true);
+    assert.equal(shield.y < world.player.y, true);
+    if (index > 0) {
+      assert.equal(shield.x > world.shields[index - 1].x, true);
+    }
+  });
+}
+
+function testShieldTakesBombDamageAndRemovesShot() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+  const shield = world.shields[0];
+  const beforePixels = countPixels(shield.frame);
+  world.alienShots = [{
+    x: shield.x + (shield.width / 2),
+    y: shield.y + 1,
+    width: 9,
+    height: 24,
+    vy: 0,
+    owner: 'alien',
+    type: 'bomb1',
+    animationFrame: 0,
+    animationElapsed: 0,
+    active: true,
+  }];
+  world.update(0, createControls());
+  const afterPixels = countPixels(shield.frame);
+  assert.equal(world.alienShots.length, 0);
+  assert.equal(afterPixels < beforePixels, true);
+}
+
+function testGroundDestructsOnBombHit() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+  const ground = world.ground;
+  const beforePixels = countPixels(ground.frame);
+  world.alienShots = [{
+    x: ground.x + (ground.width / 2),
+    y: ground.y + 1,
+    width: 9,
+    height: 24,
+    vy: 0,
+    owner: 'alien',
+    type: 'bomb2',
+    animationFrame: 0,
+    animationElapsed: 0,
+    active: true,
+  }];
+  world.update(0, createControls());
+  const afterPixels = countPixels(ground.frame);
+  assert.equal(world.alienShots.length, 0);
+  assert.equal(afterPixels < beforePixels, true);
+}
+
 export function run() {
   testFormationReversesAndDescendsAtEdge();
   testPlayerShootingDisciplineLimitsShots();
@@ -285,4 +354,7 @@ export function run() {
   testSpawnSequencingAndFormationDelay();
   testUfoScoreCycle();
   testUfoScorePopupVisibleThenRemoved();
+  testShieldsSpawnAndSitAbovePlayer();
+  testShieldTakesBombDamageAndRemovesShot();
+  testGroundDestructsOnBombHit();
 }
