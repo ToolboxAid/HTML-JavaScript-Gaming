@@ -96,13 +96,13 @@ export default class PacmanFullAIScene extends Scene {
   }
 
   renderStatus(renderer) {
-    renderer.drawText('PAC-MAN FULL AI', 30, 18, { color: '#f8fafc', font: 'bold 24px monospace', textBaseline: 'top' });
-    renderer.drawText(`SCORE ${this.world.score}`, 30, 52, { color: '#e2e8f0', font: '16px monospace', textBaseline: 'top' });
-    renderer.drawText(`LIVES ${this.world.lives}`, 30, 76, { color: '#e2e8f0', font: '16px monospace', textBaseline: 'top' });
-    renderer.drawText(`MODE ${this.world.modeState.mode.toUpperCase()}`, 930, 18, {
-      color: '#f8fafc', font: '16px monospace', textAlign: 'right', textBaseline: 'top',
-    });
-    renderer.drawText('ARROWS/WASD MOVE  ENTER/SPACE START  P PAUSE  R RESET', 480, 690, {
+    renderer.drawText('PAC-MAN FULL AI', 45, 35, { color: '#f8fafc', font: 'bold 24px monospace', textBaseline: 'top' });
+    renderer.drawText(`SCORE ${this.world.score}`, 45, 72, { color: '#e2e8f0', font: '16px monospace', textBaseline: 'top' });
+    renderer.drawText(`LIVES ${this.world.lives}`, 45, 96, { color: '#e2e8f0', font: '16px monospace', textBaseline: 'top' });
+    // renderer.drawText(`MODE ${this.world.modeState.mode.toUpperCase()}`, 930, 18, {
+    //   color: '#f8fafc', font: '16px monospace', textAlign: 'right', textBaseline: 'top',
+    // });
+    renderer.drawText('ARROWS/WASD MOVE  ENTER/SPACE START  P PAUSE  R RESET', 480, 678, {
       color: '#cbd5e1', font: '15px monospace', textAlign: 'center', textBaseline: 'top',
     });
   }
