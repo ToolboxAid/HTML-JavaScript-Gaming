@@ -10,13 +10,14 @@ START_OF_DAY.md
 - samples/index.html up to date
 - Level 4 — Classic Arcade Space Invaders complete
 - Space Invaders final polish pass complete
+- Engine usage normalization complete for game pages
 
 ## Current Focus
 - Next game: Space Duel
 - Goal: as close to original arcade as possible
 
 ## Active Work
-- PLAN_PR — Space Duel
+- BUILD_PR — Space Duel Core
 
 ## Requirements
 - Arcade-accurate gameplay emphasis
@@ -29,6 +30,6 @@ START_OF_DAY.md
 - Reuse engine contracts, avoid game-specific engine pollution
 
 ## Next Actions
-- Create PLAN_PR for Space Duel
-- Define engine classes used
-- Define sound placeholder generation scope
+- Execute BUILD_PR_SPACE_DUEL_CORE
+- Build movement, shooting, and enemy/hazard core loop
+- Keep main scene lean and modular

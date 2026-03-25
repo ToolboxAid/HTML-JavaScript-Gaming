@@ -10,6 +10,7 @@ CURRENT STATE:
 - samples/index.html is up to date
 - Level 4: Classic Arcade Space Invaders complete
 - Space Invaders final polish pass complete
+- Engine usage normalization complete for game pages
 
 ARCHITECTURE RULES:
 - PLAN_PR → BUILD_PR → APPLY_PR
@@ -18,13 +19,14 @@ ARCHITECTURE RULES:
 - Follow ENGINE RULES (LOCKED)
 
 CURRENT TASK:
-- Plan Space Duel (arcade-accurate target)
+- Build Space Duel Core
 
 REQUIREMENTS:
 - As close to original arcade as possible
 - Use engine-facing patterns consistent with other games
 - Generate placeholder WAV files for sounds during build
 - Keep reusable logic in engine only if reused beyond this game
+- Keep main scene lean through game-local controllers
 
 OUTPUT:
 - Delta ZIP
@@ -32,7 +34,7 @@ OUTPUT:
 - Include /docs/dev updates if changed
 
 DEFINITION OF DONE:
-- PLAN_PR approved
-- Clear game scope defined
-- Engine classes used documented
-- Sound placeholder strategy documented
+- Core movement and shooting working
+- Core enemy/hazard loop working
+- Placeholder WAV files generated and loadable
+- Engine classes used remain aligned to actual usage
