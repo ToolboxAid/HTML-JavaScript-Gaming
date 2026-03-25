@@ -35,7 +35,8 @@ const GROUND_PIXEL_SIZE = 3;
 const GROUND_ROWS = 2;
 const BOMB_FIRE_MULTIPLIER = 10;
 const EXTRA_LIFE_SCORE = 1500;
-const TURN_SWITCH_DELAY = 0.9;
+const PLAYER_SWAP_DURATION = 5;
+const PLAYER_SWAP_BLINK_INTERVAL = 0.5;
 const WAVE_CLEAR_DELAY = 0.45;
 const READY_BANNER_DURATION = 0.8;
 
@@ -147,6 +148,8 @@ export default class SpaceInvadersWorld {
     this.players = [];
     this.pendingTurnSwitch = null;
     this.turnAnnouncementTimer = 0;
+    this.introBlinkTimer = 0;
+    this.introBlinkDuration = PLAYER_SWAP_DURATION;
     this.spawnQueue = [];
     this.spawnTimer = 0;
     this.formationReady = false;
@@ -252,6 +255,8 @@ export default class SpaceInvadersWorld {
     this.gameOver = false;
     this.pendingTurnSwitch = null;
     this.turnAnnouncementTimer = 0;
+    this.introBlinkTimer = 0;
+    this.introBlinkDuration = PLAYER_SWAP_DURATION;
     this.debugBoxes = this.debugBoxes || false;
     Object.assign(this, makeEmptyBoardState());
     this.ufoScoreCycleIndex = 0;
@@ -321,7 +326,9 @@ export default class SpaceInvadersWorld {
     this.playerCount = this.selectedPlayerCount;
     this.currentPlayerIndex = 0;
     this.pendingTurnSwitch = null;
-    this.turnAnnouncementTimer = READY_BANNER_DURATION;
+    this.turnAnnouncementTimer = PLAYER_SWAP_DURATION;
+    this.introBlinkTimer = PLAYER_SWAP_DURATION;
+    this.introBlinkDuration = PLAYER_SWAP_DURATION;
     this.score = 0;
     this.lives = 3;
     this.extraLifeAwarded = false;
@@ -501,10 +508,35 @@ export default class SpaceInvadersWorld {
   queuePlayerSwitch(targetIndex) {
     this.pendingTurnSwitch = {
       targetIndex,
-      timer: TURN_SWITCH_DELAY,
+      timer: PLAYER_SWAP_DURATION,
+      duration: PLAYER_SWAP_DURATION,
     };
-    this.turnAnnouncementTimer = TURN_SWITCH_DELAY;
+    this.turnAnnouncementTimer = PLAYER_SWAP_DURATION;
     this.statusMessage = `PLAYER ${targetIndex + 1}`;
+  }
+
+  getPlayerSwapBlinkVisible() {
+    if (!this.pendingTurnSwitch) {
+      if (this.introBlinkTimer <= 0) {
+        return true;
+      }
+      const elapsed = this.introBlinkDuration - this.introBlinkTimer;
+      const blinkIndex = Math.floor(elapsed / PLAYER_SWAP_BLINK_INTERVAL);
+      return blinkIndex % 2 === 0;
+    }
+    const elapsed = this.pendingTurnSwitch.duration - this.pendingTurnSwitch.timer;
+    const blinkIndex = Math.floor(elapsed / PLAYER_SWAP_BLINK_INTERVAL);
+    return blinkIndex % 2 === 0;
+  }
+
+  getBlinkTargetIndex() {
+    if (this.pendingTurnSwitch) {
+      return this.pendingTurnSwitch.targetIndex;
+    }
+    if (this.introBlinkTimer > 0) {
+      return this.currentPlayerIndex;
+    }
+    return this.currentPlayerIndex;
   }
 
   awardScore(points, event) {
@@ -1074,6 +1106,15 @@ export default class SpaceInvadersWorld {
       if (controls.startPressed) {
         this.resetGame();
         event.waveStarted = true;
+      }
+      return event;
+    }
+
+    if (this.introBlinkTimer > 0) {
+      this.updateAnimations(dtSeconds);
+      this.introBlinkTimer = Math.max(0, this.introBlinkTimer - dtSeconds);
+      if (this.introBlinkTimer === 0) {
+        this.entryDelay = Math.max(this.entryDelay, READY_BANNER_DURATION * 0.75);
       }
       return event;
     }

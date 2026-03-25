@@ -191,7 +191,7 @@ function drawBombDeath(renderer, death) {
 function drawLives(renderer, lives, y) {
   const frame = PLAYER_LIVING_FRAMES[0];
   for (let index = 0; index < Math.max(0, lives - 1); index += 1) {
-    drawBitmap(renderer, frame, 44 + (index * 58), y, 2, '#66ff66');
+    drawBitmap(renderer, frame, 60 + (index * 52), y, 2, '#66ff66');
   }
 }
 
@@ -279,6 +279,11 @@ export default class SpaceInvadersScene extends Scene {
     const hiScore = String(this.world.hiScore).padStart(4, '0');
     const scoreColorText = '#d0d0d0';
     const scoreColor = '#fbbf24';
+    const blinkActive = Boolean(this.world.pendingTurnSwitch) || this.world.introBlinkTimer > 0;
+    const blinkOff = blinkActive && !this.world.getPlayerSwapBlinkVisible();
+    const blinkTargetIndex = this.world.getBlinkTargetIndex();
+    const player1ScoreColor = blinkOff && blinkTargetIndex === 0 ? '#000000' : scoreColor;
+    const player2ScoreColor = blinkOff && blinkTargetIndex === 1 ? '#000000' : scoreColor;
     renderer.clear('#000000');
     renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#020702');
     renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#66ff66', 2);
@@ -294,9 +299,9 @@ export default class SpaceInvadersScene extends Scene {
       align: 'right',
     });
 
-    drawPixelText(renderer, player1Score, 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD });
+    drawPixelText(renderer, player1Score, 112, 56, { color: player1ScoreColor, scale: FONT_SCALE_HUD });
     drawPixelText(renderer, hiScore, VIEW.width / 2, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'center' });
-    drawPixelText(renderer, player2Score, VIEW.width - 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'right' });
+    drawPixelText(renderer, player2Score, VIEW.width - 112, 56, { color: player2ScoreColor, scale: FONT_SCALE_HUD, align: 'right' });
 
     if (this.world.ground) {
       drawBitmap(renderer, this.world.ground.frame, this.world.ground.x, this.world.ground.y, this.world.ground.pixelSize, '#66ff66');
@@ -382,7 +387,7 @@ export default class SpaceInvadersScene extends Scene {
 
     drawLives(renderer, this.world.lives, boundaryY + 12);
 
-    drawPixelText(renderer, `${Math.max(0, this.world.lives)}`, 180, boundaryY + 10, {
+    drawPixelText(renderer, `${Math.max(0, this.world.lives)}`, 32, boundaryY + 17, {
       color: '#66ff66',
       scale: FONT_SCALE_HUD,
     });

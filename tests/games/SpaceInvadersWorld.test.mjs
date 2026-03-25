@@ -41,6 +41,7 @@ function countPixels(frame) {
 }
 
 function spawnAll(world) {
+  world.introBlinkTimer = 0;
   while (!world.formationReady && world.spawnQueue.length > 0) {
     world.update(0.01, createControls());
   }
@@ -49,6 +50,7 @@ function spawnAll(world) {
 function testFormationReversesAndDescendsAtEdge() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   const alive = world.getAliveAliens();
@@ -65,6 +67,7 @@ function testFormationReversesAndDescendsAtEdge() {
 function testPlayerShootingDisciplineLimitsShots() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   const firstShotEvent = world.update(0, createControls({ firePressed: true }));
@@ -80,6 +83,7 @@ function testPlayerShootingDisciplineLimitsShots() {
 function testAlienShootingLimitAndHitRemoval() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   assert.equal(world.fireAlienShot(), true);
@@ -108,6 +112,7 @@ function testAlienShootingLimitAndHitRemoval() {
 function testBombBehaviorUsesOriginalThreeTypesAndBombDeaths() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
 
@@ -141,6 +146,7 @@ function testBombBehaviorUsesOriginalThreeTypesAndBombDeaths() {
 function testWaveAndGameOverStability() {
   const waveWorld = createWorld();
   waveWorld.startGame();
+  waveWorld.introBlinkTimer = 0;
   waveWorld.entryDelay = 0;
   spawnAll(waveWorld);
   waveWorld.aliens.forEach((alien) => {
@@ -156,6 +162,7 @@ function testWaveAndGameOverStability() {
 
   const gameOverWorld = createWorld();
   gameOverWorld.startGame();
+  gameOverWorld.introBlinkTimer = 0;
   gameOverWorld.entryDelay = 0;
   spawnAll(gameOverWorld);
   gameOverWorld.lives = 1;
@@ -181,6 +188,7 @@ function testWaveAndGameOverStability() {
 function testBoundingBoxToggle() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   assert.equal(world.debugBoxes, false);
@@ -193,6 +201,7 @@ function testBoundingBoxToggle() {
 function testBomb3SurvivesLaser() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   world.fireAlienShot();
@@ -218,6 +227,7 @@ function testBomb3SurvivesLaser() {
 function testSpawnSequencingAndFormationDelay() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
 
   const spawnDelay = 0.016;
@@ -251,6 +261,7 @@ function testUfoScoreCycle() {
   expected.forEach((value, index) => {
     const world = createWorld();
     world.startGame();
+    world.introBlinkTimer = 0;
     world.entryDelay = 0;
     world.spawnQueue = [];
     world.formationReady = true;
@@ -266,6 +277,7 @@ function testUfoScoreCycle() {
 function testUfoScorePopupVisibleThenRemoved() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   world.spawnQueue = [];
   world.formationReady = true;
@@ -286,6 +298,7 @@ function testUfoScorePopupVisibleThenRemoved() {
 function testShieldsSpawnAndSitAbovePlayer() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   assert.equal(world.shields.length, 4);
   world.shields.forEach((shield, index) => {
@@ -300,6 +313,7 @@ function testShieldsSpawnAndSitAbovePlayer() {
 function testShieldTakesBombDamageAndRemovesShot() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   const shield = world.shields[0];
   const beforePixels = countPixels(shield.frame);
@@ -324,6 +338,7 @@ function testShieldTakesBombDamageAndRemovesShot() {
 function testGroundDestructsOnBombHit() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   const ground = world.ground;
   const beforePixels = countPixels(ground.frame);
@@ -348,6 +363,7 @@ function testGroundDestructsOnBombHit() {
 function testBombCadenceIncreased() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   world.marchTimer = 0;
@@ -360,6 +376,7 @@ function testBombCadenceIncreased() {
 function testBombStrongerShieldDamage() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   const shield = world.shields[0];
   const beforePixels = countPixels(shield.frame);
@@ -384,6 +401,7 @@ function testBombStrongerShieldDamage() {
 function testAlienErodesShieldOnOverlap() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   const shield = world.shields[0];
@@ -411,6 +429,7 @@ function testMenuSelectionStartsTwoPlayerGame() {
 function testExtraLifeAwardedAt1500() {
   const world = createWorld();
   world.startGame();
+  world.introBlinkTimer = 0;
   world.score = 1490;
   world.lives = 2;
   world.extraLifeAwarded = false;
@@ -440,6 +459,7 @@ function testExtraLifeAwardedAt1500() {
 function testTwoPlayerDeathSwitchesTurnAndPreservesScore() {
   const world = createWorld();
   world.startGame(2);
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   world.score = 120;
@@ -464,7 +484,7 @@ function testTwoPlayerDeathSwitchesTurnAndPreservesScore() {
   const lossEvent = world.update(0, createControls());
   assert.equal(lossEvent.playerHit, true);
   assert.equal(world.pendingTurnSwitch?.targetIndex, 1);
-  world.update(1, createControls());
+  world.update(5.1, createControls());
   assert.equal(world.currentPlayerIndex, 1);
   assert.equal(world.score, 40);
   assert.equal(world.players[0].score, 120);
@@ -475,6 +495,7 @@ function testGameOverStartReturnsToPlayerSelect() {
   const world = createWorld();
   world.setSelectedPlayerCount(2);
   world.startGame(2);
+  world.introBlinkTimer = 0;
   world.status = 'game-over';
   world.gameOver = true;
   const event = world.update(0, createControls({ startPressed: true }));
@@ -487,6 +508,7 @@ function testResetGameClearsActiveBoardButKeepsMenuSelection() {
   const world = createWorld();
   world.setSelectedPlayerCount(2);
   world.startGame(2);
+  world.introBlinkTimer = 0;
   world.entryDelay = 0;
   spawnAll(world);
   assert.equal(world.getAliveAliens().length > 0, true);
@@ -496,6 +518,22 @@ function testResetGameClearsActiveBoardButKeepsMenuSelection() {
   assert.equal(world.getAliveAliens().length, 0);
   assert.equal(world.shields.length, 0);
   assert.equal(world.ground, null);
+}
+
+function testPlayerSwapBlinksTenTimesOverFiveSeconds() {
+  const world = createWorld();
+  world.startGame(2);
+  world.introBlinkTimer = 0;
+  world.queuePlayerSwitch(1);
+  const visibilities = [];
+  for (let index = 0; index < 10; index += 1) {
+    visibilities.push(world.getPlayerSwapBlinkVisible());
+    world.update(0.5, createControls());
+  }
+  visibilities.forEach((visible, index) => {
+    assert.equal(visible, index % 2 === 0);
+  });
+  assert.equal(world.currentPlayerIndex, 1);
 }
 
 export function run() {
@@ -520,4 +558,5 @@ export function run() {
   testTwoPlayerDeathSwitchesTurnAndPreservesScore();
   testGameOverStartReturnsToPlayerSelect();
   testResetGameClearsActiveBoardButKeepsMenuSelection();
+  testPlayerSwapBlinksTenTimesOverFiveSeconds();
 }
