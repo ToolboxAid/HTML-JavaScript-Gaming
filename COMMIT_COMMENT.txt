@@ -1,1 +1,1 @@
-Tune AI Target Dummy behavior, state transitions, and debug visibility
+Plan Pac-Man Lite for grid movement, maze routing, and simplified ghost pressure
