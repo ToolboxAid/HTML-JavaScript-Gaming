@@ -7,35 +7,101 @@ SpaceInvadersScene.js
 import { Scene } from '../../../engine/scenes/index.js';
 import SpaceInvadersAudio from './SpaceInvadersAudio.js';
 import SpaceInvadersInputController from './SpaceInvadersInputController.js';
+import {
+  ALIEN_DYING_FRAMES,
+  PLAYER_DYING_FRAMES,
+  PLAYER_LIVING_FRAMES,
+  SPRITES_BY_TYPE,
+} from './SpaceInvadersSpriteData.js';
 import SpaceInvadersWorld from './SpaceInvadersWorld.js';
 
 const VIEW = { width: 960, height: 720 };
 const HUD_FONT = 'bold 24px monospace';
 const TEXT_FONT = '18px monospace';
+const ALIEN_PIXEL_SIZE = 3;
+const PLAYER_PIXEL_SIZE = 3;
+const ALIEN_DEATH_DURATION = 0.28;
+const PLAYER_DEATH_DURATION = 0.5;
+
+function getBitmapWidth(frame) {
+  return frame?.[0]?.length ?? 0;
+}
+
+function drawBitmap(renderer, frame, x, y, pixelSize, color) {
+  if (!frame) {
+    return;
+  }
+
+  frame.forEach((row, rowIndex) => {
+    for (let columnIndex = 0; columnIndex < row.length; columnIndex += 1) {
+      if (row[columnIndex] !== '1') {
+        continue;
+      }
+      renderer.drawRect(
+        x + (columnIndex * pixelSize),
+        y + (rowIndex * pixelSize),
+        pixelSize,
+        pixelSize,
+        color,
+      );
+    }
+  });
+}
+
+function getAlienFrame(alien) {
+  const frames = SPRITES_BY_TYPE[alien.type] ?? SPRITES_BY_TYPE.octopus;
+  return frames[alien.animationFrame % frames.length];
+}
+
+function getAlienDeathFrame(elapsed) {
+  const index = Math.min(
+    ALIEN_DYING_FRAMES.length - 1,
+    Math.floor((elapsed / ALIEN_DEATH_DURATION) * ALIEN_DYING_FRAMES.length),
+  );
+  return ALIEN_DYING_FRAMES[index];
+}
+
+function getPlayerDeathFrame(elapsed) {
+  const index = Math.min(
+    PLAYER_DYING_FRAMES.length - 1,
+    Math.floor((elapsed / PLAYER_DEATH_DURATION) * PLAYER_DYING_FRAMES.length),
+  );
+  return PLAYER_DYING_FRAMES[index];
+}
 
 function drawAlien(renderer, alien) {
-  const color = '#66ff66';
-  if (alien.type === 'squid') {
-    renderer.drawRect(alien.x + 8, alien.y, 8, 4, color);
-    renderer.drawRect(alien.x + 4, alien.y + 4, 16, 6, color);
-    renderer.drawRect(alien.x, alien.y + 10, 24, 4, color);
-    renderer.drawRect(alien.x + (alien.animationFrame ? 2 : 0), alien.y + 14, 4, 4, color);
-    renderer.drawRect(alien.x + 18 - (alien.animationFrame ? 2 : 0), alien.y + 14, 4, 4, color);
-    return;
+  const frame = getAlienFrame(alien);
+  drawBitmap(renderer, frame, alien.x, alien.y, ALIEN_PIXEL_SIZE, '#66ff66');
+}
+
+function drawAlienDeath(renderer, death) {
+  const frame = getAlienDeathFrame(death.elapsed);
+  drawBitmap(renderer, frame, death.x, death.y + 2, ALIEN_PIXEL_SIZE, '#d7ffd7');
+}
+
+function drawPlayer(renderer, player) {
+  const frame = PLAYER_LIVING_FRAMES[0];
+  drawBitmap(renderer, frame, player.x - 4, player.y - 20, PLAYER_PIXEL_SIZE, player.invulnerabilityTimer > 0 ? '#b6ffb6' : '#66ff66');
+}
+
+function drawPlayerDeath(renderer, death) {
+  const frame = getPlayerDeathFrame(death.elapsed);
+  drawBitmap(renderer, frame, death.x - 4, death.y, PLAYER_PIXEL_SIZE, '#d7ffd7');
+}
+
+function drawUfo(renderer, ufo) {
+  renderer.drawRect(ufo.x + 10, ufo.y, 32, 4, '#ff4d4d');
+  renderer.drawRect(ufo.x + 4, ufo.y + 4, 44, 8, '#ff4d4d');
+  renderer.drawRect(ufo.x, ufo.y + 12, 52, 6, '#ff4d4d');
+  renderer.drawRect(ufo.x + 18, ufo.y + 18, 6, 4, '#ff4d4d');
+  renderer.drawRect(ufo.x + 28, ufo.y + 18, 6, 4, '#ff4d4d');
+}
+
+function drawLives(renderer, lives) {
+  const frame = PLAYER_LIVING_FRAMES[0];
+  for (let index = 0; index < Math.max(0, lives - 1); index += 1) {
+    drawBitmap(renderer, frame, 44 + (index * 58), VIEW.height - 76, 2, '#66ff66');
   }
-  if (alien.type === 'crab') {
-    renderer.drawRect(alien.x + 4, alien.y, 18, 4, color);
-    renderer.drawRect(alien.x, alien.y + 4, 26, 6, color);
-    renderer.drawRect(alien.x + 4, alien.y + 10, 18, 4, color);
-    renderer.drawRect(alien.x + (alien.animationFrame ? 0 : 4), alien.y + 14, 4, 4, color);
-    renderer.drawRect(alien.x + (alien.animationFrame ? 22 : 18), alien.y + 14, 4, 4, color);
-    return;
-  }
-  renderer.drawRect(alien.x + 6, alien.y, 12, 4, color);
-  renderer.drawRect(alien.x + 2, alien.y + 4, 20, 6, color);
-  renderer.drawRect(alien.x, alien.y + 10, 24, 4, color);
-  renderer.drawRect(alien.x + (alien.animationFrame ? 2 : 6), alien.y + 14, 4, 4, color);
-  renderer.drawRect(alien.x + (alien.animationFrame ? 18 : 14), alien.y + 14, 4, 4, color);
 }
 
 export default class SpaceInvadersScene extends Scene {
@@ -110,17 +176,18 @@ export default class SpaceInvadersScene extends Scene {
     });
 
     this.world.getAliveAliens().forEach((alien) => drawAlien(renderer, alien));
+    this.world.alienDeaths.forEach((death) => drawAlienDeath(renderer, death));
 
     if (this.world.ufo) {
-      renderer.drawRect(this.world.ufo.x + 10, this.world.ufo.y, 32, 4, '#ff4d4d');
-      renderer.drawRect(this.world.ufo.x + 4, this.world.ufo.y + 4, 44, 8, '#ff4d4d');
-      renderer.drawRect(this.world.ufo.x, this.world.ufo.y + 12, 52, 6, '#ff4d4d');
+      drawUfo(renderer, this.world.ufo);
     }
 
     if (this.world.player.alive) {
-      const playerColor = this.world.player.invulnerabilityTimer > 0 ? '#b6ffb6' : '#66ff66';
-      renderer.drawRect(this.world.player.x, this.world.player.y, this.world.player.width, 8, playerColor);
-      renderer.drawRect(this.world.player.x + 12, this.world.player.y - 10, 20, 10, playerColor);
+      drawPlayer(renderer, this.world.player);
+    }
+
+    if (this.world.playerDeath) {
+      drawPlayerDeath(renderer, this.world.playerDeath);
     }
 
     if (this.world.playerShot) {
@@ -131,12 +198,7 @@ export default class SpaceInvadersScene extends Scene {
       renderer.drawRect(shot.x, shot.y, shot.width, shot.height, '#ff6666');
     });
 
-    for (let index = 0; index < Math.max(0, this.world.lives - 1); index += 1) {
-      const x = 44 + (index * 40);
-      const y = VIEW.height - 42;
-      renderer.drawRect(x, y, 28, 6, '#66ff66');
-      renderer.drawRect(x + 8, y - 8, 12, 8, '#66ff66');
-    }
+    drawLives(renderer, this.world.lives);
 
     renderer.drawText(`${Math.max(0, this.world.lives)}`, 180, VIEW.height - 56, {
       color: '#66ff66',

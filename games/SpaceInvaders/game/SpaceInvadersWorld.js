@@ -20,6 +20,8 @@ const MIN_MARCH_INTERVAL = 0.09;
 const WAVE_ENTRY_DELAY = 1.2;
 const LIFE_RESPAWN_DELAY = 1.1;
 const PLAYER_RESPAWN_INVULNERABILITY = 1.25;
+const ALIEN_DEATH_DURATION = 0.28;
+const PLAYER_DEATH_DURATION = 0.5;
 
 const ROW_TYPES = [
   { type: 'squid', points: 30, width: 24, height: 18 },
@@ -142,6 +144,8 @@ export default class SpaceInvadersWorld {
     this.gameOver = false;
     this.playerShot = null;
     this.alienShots = [];
+    this.alienDeaths = [];
+    this.playerDeath = null;
     this.ufo = null;
     this.ufoDirection = 1;
     this.ufoTimer = 12;
@@ -179,6 +183,8 @@ export default class SpaceInvadersWorld {
     this.formationStepX = 14;
     this.playerShot = null;
     this.alienShots = [];
+    this.alienDeaths = [];
+    this.playerDeath = null;
     this.entryDelay = waveNumber === 1 && this.status === 'menu' ? 0 : WAVE_ENTRY_DELAY;
     this.ufo = null;
     this.ufoTimer = clamp(11 - (waveNumber * 0.35), 5.5, 12);
@@ -299,12 +305,38 @@ export default class SpaceInvadersWorld {
       this.gameOver = true;
       this.status = 'game-over';
       this.statusMessage = 'Game Over';
+      this.playerDeath = {
+        x: this.player.x,
+        y: this.player.y - 20,
+        elapsed: 0,
+      };
       return true;
     }
     this.player.alive = false;
     this.player.respawnTimer = LIFE_RESPAWN_DELAY;
     this.statusMessage = `${this.lives} lives remaining`;
+    this.playerDeath = {
+      x: this.player.x,
+      y: this.player.y - 20,
+      elapsed: 0,
+    };
     return true;
+  }
+
+  updateAnimations(dtSeconds) {
+    this.alienDeaths.forEach((death) => {
+      death.elapsed += dtSeconds;
+    });
+    this.alienDeaths = this.alienDeaths.filter((death) => death.elapsed < ALIEN_DEATH_DURATION);
+
+    if (!this.playerDeath) {
+      return;
+    }
+
+    this.playerDeath.elapsed += dtSeconds;
+    if (this.playerDeath.elapsed >= PLAYER_DEATH_DURATION) {
+      this.playerDeath = null;
+    }
   }
 
   updatePlayer(dtSeconds, controls, event) {
@@ -356,6 +388,12 @@ export default class SpaceInvadersWorld {
           event.scoreDelta += alien.points;
           event.alienHit = true;
           event.sfx.push('invaderkilled');
+          this.alienDeaths.push({
+            x: alien.x,
+            y: alien.y,
+            type: alien.type,
+            elapsed: 0,
+          });
           this.playerShot = null;
           this.updateMarchSpeed();
           break;
@@ -475,6 +513,7 @@ export default class SpaceInvadersWorld {
 
     if (this.entryDelay > 0) {
       this.entryDelay = Math.max(0, this.entryDelay - dtSeconds);
+      this.updateAnimations(dtSeconds);
       return event;
     }
 
@@ -496,6 +535,7 @@ export default class SpaceInvadersWorld {
     }
 
     this.updateShots(dtSeconds, event);
+    this.updateAnimations(dtSeconds);
     this.checkWaveState(event);
     if (this.gameOver) {
       event.gameOver = true;
