@@ -1,1 +1,1 @@
-Add Asteroids vector rendering, attract mode, and high score presentation
+Improve Asteroids attract text readability with subtle dim panel

@@ -8,6 +8,22 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+function estimateTextWidth(text, fontPx) {
+  return String(text ?? '').length * (fontPx * 0.62);
+}
+
+function drawTextPanel(renderer, {
+  cx,
+  top,
+  width,
+  height,
+  alpha,
+} = {}) {
+  const safeAlpha = clamp(alpha ?? 0.28, 0, 1);
+  const x = cx - (width / 2);
+  renderer.drawRect(x, top, width, height, `rgba(2, 6, 23, ${safeAlpha.toFixed(3)})`);
+}
+
 export default class AsteroidsAttractAdapter {
   constructor({ scene }) {
     this.scene = scene;
@@ -75,6 +91,14 @@ export default class AsteroidsAttractAdapter {
   }
 
   renderTitle(renderer, alpha) {
+    drawTextPanel(renderer, {
+      cx: 480,
+      top: 176,
+      width: 620,
+      height: 196,
+      alpha: 0.27 * alpha,
+    });
+
     renderer.drawText('ASTEROIDS', 480, 196, {
       color: `rgba(255,255,255,${alpha})`,
       font: '56px "Vector Battle", monospace',
@@ -100,6 +124,14 @@ export default class AsteroidsAttractAdapter {
 
   renderHighScores(renderer, alpha) {
     const rows = this.scene?.highScoreRows || [];
+    const rowCount = Math.max(rows.length, 1);
+    drawTextPanel(renderer, {
+      cx: 480,
+      top: 176,
+      width: 460,
+      height: 104 + (rowCount * 42),
+      alpha: 0.29 * alpha,
+    });
 
     renderer.drawText('HIGH SCORES', 480, 196, {
       color: `rgba(255,255,255,${alpha})`,
@@ -125,6 +157,23 @@ export default class AsteroidsAttractAdapter {
   }
 
   renderDemo(renderer, alpha) {
+    const instructions = 'PRESS ANY GAME INPUT TO EXIT ATTRACT';
+    const instructionsWidth = estimateTextWidth(instructions, 14) + 28;
+    drawTextPanel(renderer, {
+      cx: 480,
+      top: 184,
+      width: 230,
+      height: 54,
+      alpha: 0.24 * alpha,
+    });
+    drawTextPanel(renderer, {
+      cx: 480,
+      top: 510,
+      width: instructionsWidth,
+      height: 30,
+      alpha: 0.3 * alpha,
+    });
+
     renderer.drawText('DEMO', 480, 196, {
       color: `rgba(251,191,36,${alpha})`,
       font: '34px "Vector Battle", monospace',
