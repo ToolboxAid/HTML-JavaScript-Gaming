@@ -5,7 +5,7 @@ CODEX_COMMANDS.md
 
 # Codex Commands
 
-## Space Duel Core Build PR
+## Engine Usage Normalization
 MODEL: GPT-5.4-codex
-REASONING: medium
-COMMAND: BUILD_PR_SPACE_DUEL_CORE
+REASONING: low
+COMMAND: BUILD_PR_ENGINE_USAGE_NORMALIZATION

@@ -1,25 +1,34 @@
 Toolbox Aid
 David Quesenberry
-03/24/2026
+03/25/2026
 README.md
 
-# Space Invaders BUILD_PR Deliverable
+# Engine Usage Normalization — Delta
 
-This ZIP contains the BUILD_PR planning package for Space Invaders.
+This delta provides:
+- A BUILD_PR document to normalize engine usage listings across samples and games
+- A CODEX_COMMANDS.md to execute the PR
+- A helper script to audit actual engine usage from source imports
 
-## Included
-- docs/dev/games/BUILD_PR_SPACE_INVADERS.md
-- CODEX_COMMANDS.md
-- COMMIT_COMMENT.txt
-- NEXT_COMMAND.txt
-- README.md
+## Goal
+Ensure all index.html entries list ONLY the engine classes actually used by each sample/game.
 
-## Purpose
-This package is for the BUILD_PR step only.
-It defines the approved implementation scope for Codex.
+## Canonical Order
+- core / Engine
+- render / CanvasRenderer
+- input / InputService
+- scenes / Scene
+- theme / Theme (if used)
+- add others ONLY if used (e.g., ActionInputService, Camera2D)
 
-## Critical Notes
-- Space Invaders belongs under games/SpaceInvaders, not samples
-- Use existing fx from /SpaceInvaders/assets/fx
-- Do not delete the old classes folder
-- Keep the game as close to the original arcade version as possible
+## How to Use
+1) Run the Codex command from CODEX_COMMANDS.md
+2) Optionally run the audit script locally:
+   python scripts/engine_usage_audit.py <repo_root>
+
+3) Update index.html entries to match actual imports (no speculative entries)
+
+## Notes
+- Do NOT include unused engine modules
+- Keep entries minimal and accurate
+- No engine code changes in this PR (docs + normalization only)
