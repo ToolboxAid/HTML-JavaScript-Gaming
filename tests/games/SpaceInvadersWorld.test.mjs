@@ -483,6 +483,21 @@ function testGameOverStartReturnsToPlayerSelect() {
   assert.equal(world.selectedPlayerCount, 2);
 }
 
+function testResetGameClearsActiveBoardButKeepsMenuSelection() {
+  const world = createWorld();
+  world.setSelectedPlayerCount(2);
+  world.startGame(2);
+  world.entryDelay = 0;
+  spawnAll(world);
+  assert.equal(world.getAliveAliens().length > 0, true);
+  world.resetGame();
+  assert.equal(world.status, 'menu');
+  assert.equal(world.selectedPlayerCount, 2);
+  assert.equal(world.getAliveAliens().length, 0);
+  assert.equal(world.shields.length, 0);
+  assert.equal(world.ground, null);
+}
+
 export function run() {
   testFormationReversesAndDescendsAtEdge();
   testPlayerShootingDisciplineLimitsShots();
@@ -504,4 +519,5 @@ export function run() {
   testExtraLifeAwardedAt1500();
   testTwoPlayerDeathSwitchesTurnAndPreservesScore();
   testGameOverStartReturnsToPlayerSelect();
+  testResetGameClearsActiveBoardButKeepsMenuSelection();
 }

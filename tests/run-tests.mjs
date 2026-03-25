@@ -40,6 +40,8 @@ import { run as runPongWorld } from './games/PongWorld.test.mjs';
 import { run as runSolarSystemValidation } from './games/SolarSystemValidation.test.mjs';
 import { run as runSolarSystemWorld } from './games/SolarSystemWorld.test.mjs';
 import { run as runSpaceInvadersFont } from './games/SpaceInvadersFont.test.mjs';
+import { run as runSpaceInvadersAudio } from './games/SpaceInvadersAudio.test.mjs';
+import { run as runSpaceInvadersScene } from './games/SpaceInvadersScene.test.mjs';
 import { run as runSpaceInvadersWorld } from './games/SpaceInvadersWorld.test.mjs';
 import { run as runThrusterValidation } from './games/ThrusterValidation.test.mjs';
 import { run as runThrusterWorld } from './games/ThrusterWorld.test.mjs';
@@ -121,6 +123,8 @@ const tests = [
     ['SolarSystemValidation', runSolarSystemValidation],
     ['SolarSystemWorld', runSolarSystemWorld],
     ['SpaceInvadersFont', runSpaceInvadersFont],
+    ['SpaceInvadersAudio', runSpaceInvadersAudio],
+    ['SpaceInvadersScene', runSpaceInvadersScene],
     ['SpaceInvadersWorld', runSpaceInvadersWorld],
     ['ThrusterValidation', runThrusterValidation],
     ['ThrusterWorld', runThrusterWorld],

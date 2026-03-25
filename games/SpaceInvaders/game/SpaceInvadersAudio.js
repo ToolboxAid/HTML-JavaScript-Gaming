@@ -43,7 +43,7 @@ export default class SpaceInvadersAudio {
       const [firstCandidate, ...fallbackCandidates] = candidates;
       const audio = new Audio(new URL(firstCandidate, this.baseUrl).href);
       audio.volume = effectId.startsWith('ufo_') ? 0.32 : 0.42;
-      if (fallbackCandidates.length) {
+      if (fallbackCandidates.length && typeof audio.addEventListener === 'function') {
         audio.addEventListener('error', () => {
           const fallback = fallbackCandidates.shift();
           if (fallback) {
@@ -83,21 +83,23 @@ export default class SpaceInvadersAudio {
     const audio = new Audio(new URL(candidates[0], this.baseUrl).href);
     audio.loop = true;
     audio.volume = 0.35;
-    audio.addEventListener('timeupdate', () => {
-      // Manually tighten the loop to avoid gaps; rewind slightly before file end.
-      if (audio.duration && audio.currentTime > audio.duration - 0.018) {
-        audio.currentTime = 0.01;
-        if (audio.paused) {
+    if (typeof audio.addEventListener === 'function') {
+      audio.addEventListener('timeupdate', () => {
+        // Manually tighten the loop to avoid gaps; rewind slightly before file end.
+        if (audio.duration && audio.currentTime > audio.duration - 0.018) {
+          audio.currentTime = 0.01;
+          if (audio.paused) {
+            audio.play().catch(() => {});
+          }
+        }
+      });
+      audio.addEventListener('ended', () => {
+        if (this.ufoLoop === audio && !this.muted) {
+          audio.currentTime = 0;
           audio.play().catch(() => {});
         }
-      }
-    });
-    audio.addEventListener('ended', () => {
-      if (this.ufoLoop === audio && !this.muted) {
-        audio.currentTime = 0;
-        audio.play().catch(() => {});
-      }
-    });
+      });
+    }
     audio.play().catch(() => {});
     this.ufoLoop = audio;
     this.ufoLoopId = desiredId;

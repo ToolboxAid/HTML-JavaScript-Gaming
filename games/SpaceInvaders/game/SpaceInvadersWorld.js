@@ -114,6 +114,25 @@ function cloneFrame(frame) {
   return frame.map((row) => row.split('').join(''));
 }
 
+function makeEmptyBoardState() {
+  return {
+    spawnQueue: [],
+    spawnTimer: 0,
+    formationReady: false,
+    shields: [],
+    ground: null,
+    playerShot: null,
+    alienShots: [],
+    alienDeaths: [],
+    bombDeaths: [],
+    playerDeath: null,
+    ufo: null,
+    ufoDeath: null,
+    ufoScorePopups: [],
+    aliens: [],
+  };
+}
+
 export default class SpaceInvadersWorld {
   constructor({ width = 960, height = 720, rng = Math.random } = {}) {
     this.width = width;
@@ -234,21 +253,9 @@ export default class SpaceInvadersWorld {
     this.pendingTurnSwitch = null;
     this.turnAnnouncementTimer = 0;
     this.debugBoxes = this.debugBoxes || false;
-    this.spawnQueue = [];
-    this.spawnTimer = 0;
-    this.formationReady = false;
+    Object.assign(this, makeEmptyBoardState());
     this.ufoScoreCycleIndex = 0;
     this.playerShotsFired = 0;
-    this.ufoScorePopups = [];
-    this.shields = [];
-    this.ground = null;
-    this.playerShot = null;
-    this.alienShots = [];
-    this.alienDeaths = [];
-    this.bombDeaths = [];
-    this.playerDeath = null;
-    this.ufo = null;
-    this.ufoDeath = null;
     this.bombTypeIndex = 0;
     this.ufoDirection = 1;
     this.ufoTimer = 12;
@@ -256,10 +263,6 @@ export default class SpaceInvadersWorld {
     this.player.alive = true;
     this.player.respawnTimer = 0;
     this.player.invulnerabilityTimer = 0;
-    this.setupWave(this.wave);
-    this.status = 'menu';
-    this.statusMessage = '1 OR 2 PLAYERS';
-    this.gameOver = false;
     this.entryDelay = 0;
     this.turnAnnouncementTimer = 0;
   }

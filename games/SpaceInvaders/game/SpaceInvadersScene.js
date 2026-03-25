@@ -241,12 +241,16 @@ export default class SpaceInvadersScene extends Scene {
     if (frame.menuPressed && this.isPaused) {
       this.world.resetGame();
       this.isPaused = false;
+      this.audio.stopUfoLoop();
       return;
     }
 
     const pauseable = this.world.status === 'playing' || this.world.isWaveTransition;
     if (pauseable && frame.pausePressed) {
       this.isPaused = !this.isPaused;
+      if (this.isPaused) {
+        this.audio.stopUfoLoop();
+      }
       return;
     }
 
@@ -256,7 +260,12 @@ export default class SpaceInvadersScene extends Scene {
 
     const event = this.world.update(dtSeconds, frame);
     event.sfx.forEach((effectId) => this.audio.play(effectId));
-    if (this.world.ufo) {
+    const allowUfoLoop = !this.isPaused
+      && this.world.status === 'playing'
+      && !this.world.isWaveTransition
+      && !this.world.gameOver
+      && Boolean(this.world.ufo);
+    if (allowUfoLoop) {
       this.audio.startUfoLoop(this.world.ufoDirection);
     } else {
       this.audio.stopUfoLoop();
