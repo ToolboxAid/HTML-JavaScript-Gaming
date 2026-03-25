@@ -3,17 +3,20 @@
 ## Repo Status
 - Samples 001–182 complete, tested, committed
 - samples/index.html up to date
+- Levels 1, 2, and 3 complete
+- Pong complete
 
 ## Current Focus
-- Game #3: Pong
+- Level 4: Classic Arcade Space Invaders
 
 ## Active Work
-- BUILD_PR — Pong
+- BUILD_PR — Classic Arcade Space Invaders
 
 ## Known Gaps
 - Docs mismatch (_shared vs engine/ui)
-- Gamepad abstraction needed
+- Space Invaders arcade-accuracy behaviors still in active implementation/tuning
 
 ## Next Actions
-- Build Pong core loop
-- Add input + physics
+- Build Space Invaders core loop
+- Implement formation movement + descent
+- Add player shot, alien shots, shields, score, lives, and wave progression

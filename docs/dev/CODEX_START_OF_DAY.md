@@ -3,6 +3,8 @@ PROJECT: HTML-JavaScript-Gaming Repo
 CURRENT STATE:
 - Samples 001–182 complete and working
 - samples/index.html is up to date
+- Levels 1, 2, and 3 complete
+- Pong complete
 
 ARCHITECTURE RULES:
 - PLAN_PR → BUILD_PR → APPLY_PR
@@ -11,12 +13,15 @@ ARCHITECTURE RULES:
 - Follow ENGINE RULES (LOCKED)
 
 CURRENT TASK:
-- Build Pong (multi-mode, arcade accurate)
+- Build Level 4: Classic Arcade Space Invaders
 
 REQUIREMENTS:
-- Modes: Tennis, Hockey, Handball, Jai-Alai
-- Paddle English
-- Gamepad support
+- Classic arcade player movement and shot cadence
+- Alien formation movement and descent
+- Shields / bunker damage
+- Alien projectiles
+- Score, lives, wave progression
+- Arcade-feel tuning without breaking engine rules
 
 OUTPUT:
 - Delta ZIP
@@ -26,5 +31,6 @@ OUTPUT:
 DEFINITION OF DONE:
 - Game runs standalone
 - No console errors
-- Input works (keyboard + gamepad)
-- All modes functional
+- Input works
+- Core Space Invaders loop is functional
+- Level 4 state is reflected in start-of-day files

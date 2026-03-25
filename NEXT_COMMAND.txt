@@ -1,6 +1,0 @@
-Toolbox Aid
-David Quesenberry
-03/24/2026
-NEXT_COMMAND.txt
-
-Use CODEX_COMMANDS.md in VS Code to generate the Space Invaders implementation delta ZIP.
