@@ -1,1 +1,1 @@
-Add Space Invaders high score persistence, initials entry, and attract high score display
+Plan Level 6 AI Target Dummy sample for pursuit, evasion, routing, and state transitions
