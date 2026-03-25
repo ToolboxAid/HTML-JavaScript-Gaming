@@ -1,34 +1,41 @@
-Toolbox Aid
-David Quesenberry
-03/25/2026
-README.md
+HTML JavaScript Gaming
+======================
 
-# Engine Usage Normalization — Delta
+Vanilla JS/HTML game collection built on a lightweight custom engine. The repo ships browser-launchable samples, reusable controllers, and full arcade-style games - no build step required to play.
 
-This delta provides:
-- A BUILD_PR document to normalize engine usage listings across samples and games
-- A CODEX_COMMANDS.md to execute the PR
-- A helper script to audit actual engine usage from source imports
+What's Included
+---------------
+- `engine/` - shared engine modules (rendering, input, scenes, AI, UI, etc.).
+- `games/` - playable games such as Asteroids, Space Duel, Space Invaders, Pacman Lite, Pacman Full AI, and AI Target Dummy (launch via `games/index.html`).
+- `samples/` - numbered micro-demos (001-182) covering mechanics and patterns (launch via `samples/index.html`).
+- `docs/` - architecture, standards, and getting-started guides.
+- `tests/` - 81 node-run tests covering engine and sample surfaces.
+- `scripts/` & `tools/` - automation for manifests, audits, and repo utilities.
 
-## Goal
-Ensure all index.html entries list ONLY the engine classes actually used by each sample/game.
+Current Status (03/25/2026)
+---------------------------
+- Samples 001-182 complete and published in the sample launcher.
+- Level 4 "Classic Arcade" set shipped: Asteroids, Space Duel, Space Invaders.
+- Level 6 "AI Systems" set shipped: AI Target Dummy, Pacman Lite, Pacman Full AI.
+- AttractModeController unified across games; engine-usage listings normalized to actual imports.
+- Full automated suite passing (81/81).
 
-## Canonical Order
-- core / Engine
-- render / CanvasRenderer
-- input / InputService
-- scenes / Scene
-- theme / Theme (if used)
-- add others ONLY if used (e.g., ActionInputService, Camera2D)
+Run Locally
+-----------
+1) From repo root start a simple server: `python -m http.server 8000`
+2) Open `http://localhost:8000/`
+3) Launchers: root hub (`index.html`), samples (`samples/index.html`), games (`games/index.html`).
 
-## How to Use
-1) Run the Codex command from CODEX_COMMANDS.md
-2) Optionally run the audit script locally:
-   python scripts/engine_usage_audit.py <repo_root>
+Useful Commands
+---------------
+- `npm test` - run node-safe automated tests.
+- `npm run build:manifest` - regenerate `docs/build/sample-manifest.json` for sample listings.
 
-3) Update index.html entries to match actual imports (no speculative entries)
+Conventions
+-----------
+- Import `Engine` from `engine/core/Engine.js`; prefer subsystem barrels such as `engine/scenes/index.js` and `engine/input/index.js`.
+- Keep each page's engine usage list limited to the classes it actually imports.
 
-## Notes
-- Do NOT include unused engine modules
-- Keep entries minimal and accurate
-- No engine code changes in this PR (docs + normalization only)
+More Info
+---------
+Start with `docs/getting-started.md`, `docs/repo-directory-structure.md`, and `engine/README.md` for deeper architecture and standards.

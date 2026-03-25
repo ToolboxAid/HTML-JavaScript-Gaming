@@ -1,31 +1,23 @@
 # Engine
 
-The `engine/` folder is the shared framework layer used by `samples/` and `games/`.
+Shared framework used by `samples/` and `games/`. All modules are ES modules and browser-ready; no build step is required.
 
 ## Import Policy
-- `engine/core/Engine.js` is the approved direct import for bootstrapping
-- for other engine subsystems, prefer the public barrel at `engine/<subsystem>/index.js` when it exists
+- Bootstrap via `engine/core/Engine.js`.
+- For subsystems, prefer the public barrel `engine/<subsystem>/index.js` when it exists.
 
 ## Key Areas
-- `core/` engine orchestration, timing composition, metrics
-- `scenes/` scene lifecycle and transition helpers
-- `render/` renderer implementations and render helpers
-- `input/` keyboard, mouse, gamepad, action mapping, and reusable gamepad adapters
+- `core/` timing, orchestration, metrics
+- `scenes/` scene lifecycle and transitions
+- `render/` canvas renderers and helpers
+- `input/` keyboard, mouse, gamepad, action mapping
 - `audio/` audio services and backends
-- `persistence/` storage and serialization helpers
-- `fx/` effect helpers such as `ParticleSystem`
-- `runtime/` runtime/platform adapters such as fullscreen/mobile helpers
-- `vector/`, `collision/`, `utils/` shared math and geometry helpers
-- feature barrels such as `world/`, `automation/`, `editor/`, `release/`, `security/`, `pipeline/`, and others used by later samples
+- `ui/` shared hub and overlay components
+- `world/`, `ecs/`, `collision/`, `vector/`, `utils/` shared math and world helpers
+- `persistence/` serialization and storage
+- `fx/` effects such as `ParticleSystem`
+- platform and pipelines: `runtime/`, `automation/`, `release/`, `security/`, `pipeline/`, `editor/`
 
 ## Validation
-Engine behavior is primarily validated through:
-- `tests/`
-- sample usage under `samples/`
-- Asteroids under `games/Asteroids/`
-
-Run the suite from repo root:
-
-```bash
-npm test
-```
+- Automated: `npm test` (81/81 passing as of 03/25/2026)
+- In-repo usage: numbered samples and shipped games (Asteroids, Space Duel, Space Invaders, Pacman Lite/Full AI, AI Target Dummy)

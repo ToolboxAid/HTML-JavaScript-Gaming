@@ -1,7 +1,7 @@
 # Standards
 
-Standards documents define the repo rules for naming, boundaries, ownership, and change quality.
+Rules for naming, boundaries, ownership, and change quality across the repo.
 
 ## Files
-
-- `engine-standards.md` — core engine architecture and design rules
+- `engine-standards.md` - core engine architecture and design rules
+- `review-checklist.md` - checklist for PR quality
