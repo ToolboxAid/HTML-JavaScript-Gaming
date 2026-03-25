@@ -70,7 +70,30 @@ function testPauseStopsUfoLoopImmediately() {
   assert.equal(scene.audio.stopCalls, 1);
 }
 
+function testAttractModeIdleEnterAndInputExit() {
+  const scene = new SpaceInvadersScene();
+  scene.audio = createAudioSpy();
+  scene.world.status = 'menu';
+  scene.inputController = {
+    getFrameState: () => createFrame(),
+  };
+
+  const idleSeconds = scene.attractController.idleTimeoutMs / 1000;
+  scene.update(Math.max(0, idleSeconds - 0.001));
+  assert.equal(scene.attractController.active, false);
+
+  scene.update(0.001);
+  assert.equal(scene.attractController.active, true);
+
+  scene.inputController = {
+    getFrameState: () => createFrame({ startPressed: true }),
+  };
+  scene.update(0.016);
+  assert.equal(scene.attractController.active, false);
+}
+
 export function run() {
   testUfoLoopStopsOnGameOverEvenIfUfoSpriteRemains();
   testPauseStopsUfoLoopImmediately();
+  testAttractModeIdleEnterAndInputExit();
 }

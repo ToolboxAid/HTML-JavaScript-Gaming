@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 SpaceInvadersScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { AttractModeController, Scene } from '../../../engine/scenes/index.js';
 import SpaceInvadersAudio from './SpaceInvadersAudio.js';
 import { getFontGlyph } from './font8x8.js';
 import SpaceInvadersInputController from './SpaceInvadersInputController.js';
@@ -36,6 +36,7 @@ const FONT_SCALE_HUD = 2;
 const FONT_SCALE_OVERLAY = 3;
 const FONT_SCALE_SMALL = 2;
 const DEBUG_BOX_COLOR = '#39ff14';
+const ATTRACT_PHASES = ['title', 'highScores', 'demo'];
 
 function getBitmapWidth(frame) {
   return frame?.[0]?.length ?? 0;
@@ -223,12 +224,21 @@ export default class SpaceInvadersScene extends Scene {
     this.ufoController = new UfoController({ world: this.world, audio: this.audio });
     this.waveController = new WaveController({ world: this.world });
     this.isPaused = false;
+    this.currentFrame = null;
+    this.attractDemoTime = 0;
+    this.attractController = new AttractModeController({
+      phases: ATTRACT_PHASES,
+      isInputActive: () => this.isAttractExitInputActive(),
+    });
   }
 
   enter(engine) {
     this.inputController = new SpaceInvadersInputController(engine.input);
     this.world.resetGame();
     this.isPaused = false;
+    this.currentFrame = null;
+    this.attractDemoTime = 0;
+    this.attractController.exitAttract();
     if (engine?.canvas) {
       engine.canvas.style.cursor = 'none';
     }
@@ -248,6 +258,19 @@ export default class SpaceInvadersScene extends Scene {
     this.ufoController.audio = this.audio;
 
     const frame = this.inputController.getFrameState();
+    this.currentFrame = frame;
+
+    const attractEligible = this.world.status === 'menu' || this.world.status === 'game-over';
+    if (attractEligible) {
+      this.attractController.update(dtSeconds);
+      if (this.attractController.active) {
+        this.attractDemoTime += dtSeconds;
+        this.ufoController.stopLoop();
+        return;
+      }
+    } else if (this.attractController.active) {
+      this.attractController.exitAttract();
+    }
 
     if (frame.menuPressed && this.isPaused) {
       this.world.resetGame();
@@ -274,7 +297,28 @@ export default class SpaceInvadersScene extends Scene {
     this.ufoController.syncLoop({ isPaused: this.isPaused });
   }
 
+  isAttractExitInputActive() {
+    if (!this.currentFrame) {
+      return false;
+    }
+
+    return Boolean(
+      this.currentFrame.startPressed
+      || this.currentFrame.firePressed
+      || this.currentFrame.menuPressed
+      || this.currentFrame.pausePressed
+      || this.currentFrame.select1Pressed
+      || this.currentFrame.select2Pressed
+      || Math.abs(Number(this.currentFrame.moveAxis) || 0) > 0.01,
+    );
+  }
+
   render(renderer) {
+    if (this.attractController.active) {
+      this.renderAttract(renderer);
+      return;
+    }
+
     const boundaryY = this.waveController.getBoundaryY();
     const hud = this.playerManager.getHudSnapshot();
     const scoreColorText = '#d0d0d0';
@@ -432,6 +476,102 @@ export default class SpaceInvadersScene extends Scene {
 
     if (ctx) {
       ctx.restore();
+    }
+  }
+
+  renderAttract(renderer) {
+    const phase = this.attractController.phase;
+    renderer.clear('#000000');
+    renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#020702');
+    renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#66ff66', 2);
+    renderer.drawRect(0, 0, VIEW.width, VIEW.height, 'rgba(0, 0, 0, 0.74)');
+
+    if (phase === 'title') {
+      drawPixelText(renderer, 'SPACE INVADERS', VIEW.width / 2, 164, {
+        color: '#ffffff',
+        scale: FONT_SCALE_OVERLAY,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'PRESS 1 OR 2 TO START', VIEW.width / 2, 244, {
+        color: '#8df58d',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'IDLE ATTRACT MODE', VIEW.width / 2, 282, {
+        color: '#8df58d',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'ANY GAME INPUT EXITS ATTRACT', VIEW.width / 2, 320, {
+        color: '#8df58d',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      return;
+    }
+
+    if (phase === 'highScores') {
+      drawPixelText(renderer, 'SCORE ADVANCE TABLE', VIEW.width / 2, 144, {
+        color: '#ffffff',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'UFO = 50 100 150 300', VIEW.width / 2, 196, {
+        color: '#ff8b8b',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'SQUID ROW = 10', VIEW.width / 2, 234, {
+        color: '#66ff66',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'CRAB ROW = 20', VIEW.width / 2, 272, {
+        color: '#66ff66',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'OCTOPUS ROW = 30', VIEW.width / 2, 310, {
+        color: '#66ff66',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, `HI SCORE ${String(this.world.hiScore).padStart(4, '0')}`, VIEW.width / 2, 372, {
+        color: '#fbbf24',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'PRESS 1 OR 2 TO START', VIEW.width / 2, 430, {
+        color: '#ffffff',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      return;
+    }
+
+    if (phase === 'demo') {
+      drawPixelText(renderer, 'DEMO LOOP', VIEW.width / 2, 144, {
+        color: '#ffffff',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+
+      const shipX = 480 + Math.cos(this.attractDemoTime * 0.8) * 190;
+      const shipY = 420 + Math.sin(this.attractDemoTime * 1.2) * 52;
+      const ufoX = 480 + Math.sin(this.attractDemoTime * 0.45) * 280;
+      drawBitmap(renderer, PLAYER_LIVING_FRAMES[0], shipX, shipY, PLAYER_PIXEL_SIZE, '#66ff66');
+      drawBitmap(renderer, UFO_LIVING_FRAMES[0], ufoX, 214, ALIEN_PIXEL_SIZE, '#ff4d4d');
+
+      drawPixelText(renderer, 'PRESS 1 OR 2 TO START', VIEW.width / 2, 510, {
+        color: '#ffffff',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
+      drawPixelText(renderer, 'ANY GAME INPUT EXITS ATTRACT', VIEW.width / 2, 548, {
+        color: '#8df58d',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
     }
   }
 

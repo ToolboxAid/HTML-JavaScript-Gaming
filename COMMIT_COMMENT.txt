@@ -1,1 +1,1 @@
-Improve AttractModeController defaults for faster transitions and better readability
+Add Space Invaders attract mode and 8x8 font UI presentation

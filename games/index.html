@@ -20,6 +20,7 @@ index.html
       --line: #2b3242;
       --playable: #2b8a3e;
       --planned: #1971c2;
+      --inprogress: #f08c00;
       --sample: #9c36b5;
     }
 
@@ -218,6 +219,11 @@ index.html
       background: var(--planned);
     }
 
+    .inprogress {
+      background: var(--inprogress);
+      color: #111;
+    }
+
     .sample {
       background: var(--sample);
     }
@@ -243,6 +249,7 @@ index.html
       <p class="subtitle">Playable games live here. This page also tracks the current planned build order from easier projects to harder projects so the engine grows in a controlled way.</p>
       <div class="legend">
         <span class="badge playable">Playable Now</span>
+        <span class="badge inprogress">In Progress</span>
         <span class="badge planned">Planned Game</span>
         <span class="badge sample">Better in /samples</span>
       </div>
@@ -387,7 +394,7 @@ index.html
           <a class="card" href="/games/SpaceDuel/index.html">
             <img class="thumb" src="/games/SpaceDuel/assets/preview.svg" alt="Space Duel gameplay preview" />
             <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
+              <div class="tagRow"><span class="badge inprogress">In Progress</span></div>
               <div class="cardTitle">Space Duel</div>
               <div class="cardDesc">Vector-style inertial ship combat with one or two players, enemy split behavior, hazards, and wave escalation.</div>
             </div>
