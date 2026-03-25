@@ -20,6 +20,8 @@ import { run as runAsteroidsCollisionTimingStress } from './games/AsteroidsColli
 import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
 import { run as runAsteroidsPresentation } from './games/AsteroidsPresentation.test.mjs';
+import { run as runAITargetDummyWorld } from './games/AITargetDummyWorld.test.mjs';
+import { run as runAITargetDummyValidation } from './games/AITargetDummyValidation.test.mjs';
 import { run as runBouncingBallValidation } from './games/BouncingBallValidation.test.mjs';
 import { run as runBouncingBallWorld } from './games/BouncingBallWorld.test.mjs';
 import { run as runBreakoutValidation } from './games/BreakoutValidation.test.mjs';
@@ -108,6 +110,8 @@ const tests = [
     ['AsteroidsValidation', runAsteroidsValidation],
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
     ['AsteroidsPresentation', runAsteroidsPresentation],
+    ['AITargetDummyWorld', runAITargetDummyWorld],
+    ['AITargetDummyValidation', runAITargetDummyValidation],
     ['BouncingBallValidation', runBouncingBallValidation],
     ['BouncingBallWorld', runBouncingBallWorld],
     ['BreakoutValidation', runBreakoutValidation],

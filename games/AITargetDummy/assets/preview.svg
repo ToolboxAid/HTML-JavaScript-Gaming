@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#070b14"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="720" fill="url(#bg)"/>
+  <rect x="24" y="24" width="912" height="672" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+  <rect x="56" y="96" width="848" height="568" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+  <circle cx="650" cy="320" r="280" fill="rgba(14,165,233,0.14)"/>
+  <circle cx="650" cy="320" r="62" fill="rgba(239,68,68,0.2)"/>
+  <circle cx="346" cy="404" r="14" fill="#22c55e"/>
+  <circle cx="650" cy="320" r="16" fill="#ef4444"/>
+  <line x1="650" y1="320" x2="346" y2="404" stroke="#64748b" stroke-width="1"/>
+  <text x="28" y="48" fill="#e2e8f0" font-family="monospace" font-size="28" font-weight="bold">AI TARGET DUMMY</text>
+  <rect x="658" y="88" width="274" height="194" fill="rgba(2,6,23,0.82)" stroke="#334155"/>
+  <text x="676" y="118" fill="#e2e8f0" font-family="monospace" font-size="18">STATE: CHASE</text>
+  <text x="676" y="148" fill="#94a3b8" font-family="monospace" font-size="16">DIST: 315.4</text>
+  <text x="676" y="176" fill="#94a3b8" font-family="monospace" font-size="16">ATTACKS: 7</text>
+  <text x="676" y="204" fill="#94a3b8" font-family="monospace" font-size="16">EVENT ATTACK: false</text>
+</svg>

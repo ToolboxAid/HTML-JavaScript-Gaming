@@ -1,0 +1,41 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/25/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Target Dummy</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+</head>
+<body>
+  <main>
+    <h1>AI Target Dummy</h1>
+    <p>AI behavior lab focused on deterministic state transitions: idle, chase, attack, cooldown, and recover.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>WASD</code>/<code>Arrows</code> move target. <code>Enter</code>/<code>Space</code> start. <code>P</code> pause. <code>R</code> reset.</p>
+    </section>
+    <section>
+      <h3>Focus</h3>
+      <p>This build validates AI sensing radius, pursuit behavior, attack timing, and disengage logic with readable debug output.</p>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>core / Engine</li>
+        <li>render / CanvasRenderer</li>
+        <li>input / InputService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+        <li>input / GamepadInputAdapter</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
