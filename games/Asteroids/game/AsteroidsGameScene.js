@@ -4,14 +4,16 @@ David Quesenberry
 03/22/2026
 AsteroidsGameScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { AttractModeController, Scene } from '../../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
 import { ParticleSystem } from '../../../engine/fx/index.js';
 import AsteroidsSession from './AsteroidsSession.js';
 import AsteroidsWorld from './AsteroidsWorld.js';
-import HighScoreStore from '../systems/HighScoreStore.js';
 import AsteroidsAudio from '../systems/AsteroidsAudio.js';
 import ShipDebrisSystem from '../systems/ShipDebrisSystem.js';
+import AsteroidsAttractAdapter from './AsteroidsAttractAdapter.js';
+import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
+import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 
 const theme = new Theme(ThemeTokens);
 const HUD_FONT = '"Vector Battle", monospace';
@@ -20,12 +22,23 @@ const HIGH_SCORE_X = 480;
 const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
+const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
 const LIFE_ICON_POINTS = [
   [14, 0],
   [-10, -8],
   [-6, -3],
   [-6, 3],
   [-10, 8],
+];
+const ATTRACT_INPUT_CODES = [
+  'Digit1',
+  'Digit2',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowUp',
+  'Space',
+  'Enter',
+  'KeyP',
 ];
 
 function getBeatInterval(asteroidCount) {
@@ -74,7 +87,13 @@ export default class AsteroidsGameScene extends Scene {
   constructor() {
     super();
     this.world = new AsteroidsWorld({ width: 960, height: 720 });
-    this.session = new AsteroidsSession(this.world, new HighScoreStore());
+    this.highScoreService = new AsteroidsHighScoreService();
+    this.highScoreRows = this.highScoreService.loadTable();
+    const initialTopScore = this.highScoreService.getTopScore(this.highScoreRows);
+    this.session = new AsteroidsSession(this.world, {
+      load: () => initialTopScore,
+      save: (score) => Math.max(0, Math.trunc(Number(score) || 0)),
+    });
     this.audio = new AsteroidsAudio();
     this.shipDebris = new ShipDebrisSystem({ rng: this.world.rng });
     this.particles = new ParticleSystem();
@@ -87,6 +106,68 @@ export default class AsteroidsGameScene extends Scene {
     this.beatTimer = 0;
     this.nextBeatId = 'beat1';
     this.scoreFlashTime = 0;
+    this.initialsEntry = new AsteroidsInitialsEntry();
+    this.attractAdapter = new AsteroidsAttractAdapter({ scene: this });
+    this.currentInput = null;
+    this.attractController = new AttractModeController({
+      idleTimeoutMs: 12000,
+      phaseDurationMs: 7000,
+      phases: ['title', 'highScores', 'demo'],
+      isInputActive: () => this.isAttractExitInputActive(),
+      onEnterAttract: () => this.attractAdapter.enter(),
+      onExitAttract: () => this.attractAdapter.exit(),
+      onEnterDemo: () => this.attractAdapter.startDemo(),
+      onExitDemo: () => this.attractAdapter.stopDemo(),
+      onPhaseChange: (phase) => this.attractAdapter.setPhase(phase),
+    });
+    this.session.highScore = initialTopScore;
+  }
+
+  isAttractExitInputActive() {
+    if (!this.currentInput) {
+      return false;
+    }
+
+    return ATTRACT_INPUT_CODES.some((code) => this.currentInput.isDown?.(code));
+  }
+
+  getQualifyingPlayerScore() {
+    if (!Array.isArray(this.session.players) || !this.session.players.length) {
+      return null;
+    }
+
+    return this.session.players.reduce((best, player) => (
+      !best || player.score > best.score
+        ? { playerId: player.id, score: player.score }
+        : best
+    ), null);
+  }
+
+  tryBeginInitialsEntry() {
+    const candidate = this.getQualifyingPlayerScore();
+    if (!candidate || candidate.score <= 0) {
+      return false;
+    }
+
+    const qualifyingIndex = this.highScoreService.getQualifyingIndex(candidate.score, this.highScoreRows);
+    if (qualifyingIndex < 0) {
+      return false;
+    }
+
+    this.initialsEntry.begin(candidate);
+    return true;
+  }
+
+  finishInitialsEntry(result) {
+    this.highScoreRows = this.highScoreService.insertScore({
+      initials: result.initials,
+      score: result.score,
+    }, this.highScoreRows);
+    this.session.highScore = Math.max(this.session.highScore, this.highScoreService.getTopScore(this.highScoreRows));
+    this.initialsEntry.cancel();
+    this.session.mode = 'menu';
+    this.session.status = 'Press 1 for one player or 2 for two players.';
+    this.attractController.resetIdle();
   }
 
   enter(engine) {
@@ -105,12 +186,15 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   update(dtSeconds, engine) {
+    this.currentInput = engine.input ?? null;
     const enterPressed = engine.input?.isDown('Enter');
     const onePressed = engine.input?.isDown('Digit1');
     const twoPressed = engine.input?.isDown('Digit2');
     const pPressed = engine.input?.isDown('KeyP');
 
     if (this.session.mode === 'menu') {
+      this.attractController.update(dtSeconds);
+      this.attractAdapter.update(dtSeconds);
       this.isPaused = false;
       this.audio.stopAll();
       this.beatTimer = 0;
@@ -121,9 +205,11 @@ export default class AsteroidsGameScene extends Scene {
         engine.canvas.style.cursor = 'default';
       }
       if (onePressed && !this.lastOnePressed) {
+        this.attractController.exitAttract();
         this.session.start(1);
       }
       if (twoPressed && !this.lastTwoPressed) {
+        this.attractController.exitAttract();
         this.session.start(2);
       }
       this.lastEnterPressed = enterPressed;
@@ -143,9 +229,23 @@ export default class AsteroidsGameScene extends Scene {
       if (engine.canvas) {
         engine.canvas.style.cursor = 'default';
       }
+      if (this.initialsEntry.active) {
+        const entryResult = this.initialsEntry.update(engine.input);
+        if (entryResult.confirmed) {
+          this.finishInitialsEntry(entryResult);
+        }
+        this.lastEnterPressed = enterPressed;
+        this.lastOnePressed = onePressed;
+        this.lastTwoPressed = twoPressed;
+        this.lastPPressed = pPressed;
+        return;
+      }
       if (enterPressed && !this.lastEnterPressed) {
-        this.session.mode = 'menu';
-        this.session.status = 'Press 1 for one player or 2 for two players.';
+        if (!this.tryBeginInitialsEntry()) {
+          this.session.mode = 'menu';
+          this.session.status = 'Press 1 for one player or 2 for two players.';
+          this.attractController.resetIdle();
+        }
       }
       this.lastEnterPressed = enterPressed;
       this.lastOnePressed = onePressed;
@@ -293,37 +393,45 @@ export default class AsteroidsGameScene extends Scene {
     this.shipDebris.render(renderer);
 
     if (this.session.mode === 'menu') {
-      renderer.drawText('ASTEROIDS', 480, 220, {
-        color: '#ffffff',
-        font: `56px ${HUD_FONT}`,
-        textAlign: 'center',
-      });
-      renderer.drawText(`HIGH SCORE ${String(this.session.highScore).padStart(4, '0')}`, 480, 286, {
-        color: '#ffffff',
-        font: `20px ${HUD_FONT}`,
-        textAlign: 'center',
-      });
-      renderer.drawText('PRESS 1 FOR ONE PLAYER', 480, 332, {
-        color: '#f8fafc',
-        font: `24px ${HUD_FONT}`,
-        textAlign: 'center',
-      });
-      renderer.drawText('PRESS 2 FOR TWO PLAYERS', 480, 376, {
-        color: '#f8fafc',
-        font: `24px ${HUD_FONT}`,
-        textAlign: 'center',
-      });
+      if (this.attractController.active) {
+        this.attractAdapter.render(renderer);
+      } else {
+        renderer.drawText('ASTEROIDS', 480, 220, {
+          color: '#ffffff',
+          font: `56px ${HUD_FONT}`,
+          textAlign: 'center',
+        });
+        renderer.drawText(`HIGH SCORE ${String(this.session.highScore).padStart(4, '0')}`, 480, 286, {
+          color: '#ffffff',
+          font: `20px ${HUD_FONT}`,
+          textAlign: 'center',
+        });
+        renderer.drawText('PRESS 1 FOR ONE PLAYER', 480, 332, {
+          color: '#f8fafc',
+          font: `24px ${HUD_FONT}`,
+          textAlign: 'center',
+        });
+        renderer.drawText('PRESS 2 FOR TWO PLAYERS', 480, 376, {
+          color: '#f8fafc',
+          font: `24px ${HUD_FONT}`,
+          textAlign: 'center',
+        });
+      }
     } else if (this.session.mode === 'game-over') {
       renderer.drawText('GAME OVER', 480, 352, {
         color: '#f87171',
         font: `40px ${HUD_FONT}`,
         textAlign: 'center',
       });
-      renderer.drawText('PRESS ENTER FOR MENU', 480, 398, {
-        color: '#ffffff',
-        font: `20px ${HUD_FONT}`,
-        textAlign: 'center',
-      });
+      if (this.initialsEntry.active) {
+        this.drawInitialsEntry(renderer);
+      } else {
+        renderer.drawText('PRESS ENTER TO CONTINUE', 480, 398, {
+          color: '#ffffff',
+          font: `20px ${HUD_FONT}`,
+          textAlign: 'center',
+        });
+      }
     } else if (!this.isPaused) {
       renderer.drawText(`PLAYER ${this.session.activePlayer?.id || 1}`, 480, 690, {
         color: '#fbbf24',
@@ -340,5 +448,42 @@ export default class AsteroidsGameScene extends Scene {
         textAlign: 'center',
       });
     }
+  }
+
+  drawInitialsEntry(renderer) {
+    renderer.drawRect(0, 0, this.world.bounds.width, this.world.bounds.height, INITIALS_OVERLAY_COLOR);
+    renderer.drawRect(220, 250, 520, 220, '#020b1e');
+    renderer.strokeRect(220, 250, 520, 220, '#94a3b8', 2);
+
+    renderer.drawText('NEW HIGH SCORE', 480, 284, {
+      color: '#fbbf24',
+      font: `36px ${HUD_FONT}`,
+      textAlign: 'center',
+      textBaseline: 'top',
+    });
+    renderer.drawText(`SCORE ${String(this.initialsEntry.score).padStart(5, '0')}`, 480, 332, {
+      color: '#e2e8f0',
+      font: `22px ${HUD_FONT}`,
+      textAlign: 'center',
+      textBaseline: 'top',
+    });
+
+    const initials = this.initialsEntry.getInitials().split('');
+    initials.forEach((letter, index) => {
+      const x = 430 + (index * 50);
+      const selected = this.initialsEntry.cursor === index;
+      renderer.drawText(letter, x, 378, {
+        color: selected ? '#fbbf24' : '#e2e8f0',
+        font: selected ? `44px ${HUD_FONT}` : `36px ${HUD_FONT}`,
+        textBaseline: 'top',
+      });
+    });
+
+    renderer.drawText('TYPE A-Z, ARROWS ADJUST, ENTER SAVES', 480, 434, {
+      color: '#93a5bc',
+      font: `14px ${HUD_FONT}`,
+      textAlign: 'center',
+      textBaseline: 'top',
+    });
   }
 }
