@@ -52,6 +52,7 @@ export default class SpaceInvadersInputController {
       startPressed: this.wasPressed('Enter') || this.wasPressed('Space') || pad.startPressed,
       pausePressed: this.wasPressed('KeyP'),
       menuPressed: this.wasPressed('KeyX') || pad.cancelPressed,
+      debugPressed: this.wasPressed('KeyB'),
     };
   }
 }

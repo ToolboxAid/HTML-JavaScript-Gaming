@@ -20,6 +20,8 @@ export default class SpaceInvadersAudio {
   constructor({ baseUrl = import.meta.url } = {}) {
     this.baseUrl = baseUrl;
     this.enabled = typeof Audio !== 'undefined';
+    this.ufoLoop = null;
+    this.ufoLoopId = null;
   }
 
   play(effectId) {
@@ -45,6 +47,35 @@ export default class SpaceInvadersAudio {
       return audio;
     } catch {
       return null;
+    }
+  }
+
+  startUfoLoop(direction = 1) {
+    if (!this.enabled) {
+      return;
+    }
+    const desiredId = direction > 0 ? 'ufo_lowpitch' : 'ufo_highpitch';
+    if (this.ufoLoop && this.ufoLoopId === desiredId) {
+      return;
+    }
+    this.stopUfoLoop();
+    const candidates = EFFECTS[desiredId] ?? [];
+    if (!candidates.length) {
+      return;
+    }
+    const audio = new Audio(new URL(candidates[0], this.baseUrl).href);
+    audio.loop = true;
+    audio.volume = 0.35;
+    audio.play().catch(() => {});
+    this.ufoLoop = audio;
+    this.ufoLoopId = desiredId;
+  }
+
+  stopUfoLoop() {
+    if (this.ufoLoop) {
+      this.ufoLoop.pause();
+      this.ufoLoop = null;
+      this.ufoLoopId = null;
     }
   }
 }

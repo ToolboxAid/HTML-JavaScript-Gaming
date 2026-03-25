@@ -12,6 +12,7 @@ function createControls(overrides = {}) {
     moveAxis: 0,
     firePressed: false,
     startPressed: false,
+    debugPressed: false,
     ...overrides,
   };
 }
@@ -85,6 +86,38 @@ function testAlienShootingLimitAndHitRemoval() {
   assert.equal(world.playerShot, null);
 }
 
+function testBombBehaviorUsesOriginalThreeTypesAndBombDeaths() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+
+  world.fireAlienShot();
+  world.fireAlienShot();
+  world.fireAlienShot();
+
+  assert.deepEqual(
+    world.alienShots.map((shot) => shot.type),
+    ['bomb1', 'bomb2', 'bomb3'],
+  );
+
+  const bomb = world.alienShots[0];
+  world.playerShot = {
+    x: bomb.x,
+    y: bomb.y,
+    width: 3,
+    height: 30,
+    vy: -520,
+    owner: 'player',
+    type: 'laser',
+    animationFrame: 0,
+    animationElapsed: 0,
+  };
+
+  world.update(0, createControls());
+  assert.equal(world.alienShots.length, 2);
+  assert.equal(world.bombDeaths.length, 1);
+}
+
 function testWaveAndGameOverStability() {
   const waveWorld = createWorld();
   waveWorld.startGame();
@@ -122,9 +155,22 @@ function testWaveAndGameOverStability() {
   assert.equal(gameOverWorld.status, 'game-over');
 }
 
+function testBoundingBoxToggle() {
+  const world = createWorld();
+  world.startGame();
+  world.entryDelay = 0;
+  assert.equal(world.debugBoxes, false);
+  world.update(0, createControls({ debugPressed: true }));
+  assert.equal(world.debugBoxes, true);
+  world.update(0, createControls({ debugPressed: true }));
+  assert.equal(world.debugBoxes, false);
+}
+
 export function run() {
   testFormationReversesAndDescendsAtEdge();
   testPlayerShootingDisciplineLimitsShots();
   testAlienShootingLimitAndHitRemoval();
+  testBombBehaviorUsesOriginalThreeTypesAndBombDeaths();
   testWaveAndGameOverStability();
+  testBoundingBoxToggle();
 }

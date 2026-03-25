@@ -6,22 +6,33 @@ SpaceInvadersScene.js
 */
 import { Scene } from '../../../engine/scenes/index.js';
 import SpaceInvadersAudio from './SpaceInvadersAudio.js';
+import { getFontGlyph } from './font8x8.js';
 import SpaceInvadersInputController from './SpaceInvadersInputController.js';
 import {
   ALIEN_DYING_FRAMES,
+  BOMB_DYING_FRAMES,
+  BOMB_SPRITES_BY_TYPE,
   PLAYER_DYING_FRAMES,
+  PLAYER_LASER_LIVING_FRAMES,
   PLAYER_LIVING_FRAMES,
   SPRITES_BY_TYPE,
+  UFO_DYING_FRAMES,
+  UFO_LIVING_FRAMES,
 } from './SpaceInvadersSpriteData.js';
 import SpaceInvadersWorld from './SpaceInvadersWorld.js';
 
 const VIEW = { width: 960, height: 720 };
-const HUD_FONT = 'bold 24px monospace';
-const TEXT_FONT = '18px monospace';
 const ALIEN_PIXEL_SIZE = 3;
+const BOMB_PIXEL_SIZE = 3;
 const PLAYER_PIXEL_SIZE = 3;
 const ALIEN_DEATH_DURATION = 0.28;
+const BOMB_DEATH_DURATION = 0.28;
 const PLAYER_DEATH_DURATION = 0.5;
+const UFO_DEATH_DURATION = 0.36;
+const FONT_SCALE_HUD = 2;
+const FONT_SCALE_OVERLAY = 3;
+const FONT_SCALE_SMALL = 2;
+const DEBUG_BOX_COLOR = '#39ff14';
 
 function getBitmapWidth(frame) {
   return frame?.[0]?.length ?? 0;
@@ -48,6 +59,57 @@ function drawBitmap(renderer, frame, x, y, pixelSize, color) {
   });
 }
 
+function measurePixelText(text, scale = FONT_SCALE_HUD) {
+  const characters = Array.from(String(text ?? ''));
+  const glyphWidth = 8 * scale;
+  const gap = scale;
+  return Math.max(0, (characters.length * glyphWidth) + (Math.max(0, characters.length - 1) * gap));
+}
+
+function drawPixelText(renderer, text, x, y, {
+  color = '#ffffff',
+  scale = FONT_SCALE_HUD,
+  align = 'left',
+} = {}) {
+  const content = String(text ?? '').toUpperCase();
+  const textWidth = measurePixelText(content, scale);
+  const glyphWidth = 8 * scale;
+  const gap = scale;
+  let drawX = x;
+
+  if (align === 'center') {
+    drawX -= textWidth / 2;
+  } else if (align === 'right') {
+    drawX -= textWidth;
+  }
+
+  Array.from(content).forEach((character, index) => {
+    drawBitmap(renderer, getFontGlyph(character), drawX + (index * (glyphWidth + gap)), y, scale, color);
+  });
+}
+
+function wrapPixelText(text, maxWidth, scale = FONT_SCALE_SMALL) {
+  const words = String(text ?? '').toUpperCase().split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = '';
+
+  words.forEach((word) => {
+    const next = current ? `${current} ${word}` : word;
+    if (measurePixelText(next, scale) > maxWidth && current) {
+      lines.push(current);
+      current = word;
+      return;
+    }
+    current = next;
+  });
+
+  if (current) {
+    lines.push(current);
+  }
+
+  return lines;
+}
+
 function getAlienFrame(alien) {
   const frames = SPRITES_BY_TYPE[alien.type] ?? SPRITES_BY_TYPE.octopus;
   return frames[alien.animationFrame % frames.length];
@@ -67,6 +129,27 @@ function getPlayerDeathFrame(elapsed) {
     Math.floor((elapsed / PLAYER_DEATH_DURATION) * PLAYER_DYING_FRAMES.length),
   );
   return PLAYER_DYING_FRAMES[index];
+}
+
+function getBombFrame(bomb) {
+  const frames = BOMB_SPRITES_BY_TYPE[bomb.type] ?? BOMB_SPRITES_BY_TYPE.bomb1;
+  return frames[bomb.animationFrame % frames.length];
+}
+
+function getBombDeathFrame(elapsed) {
+  const index = Math.min(
+    BOMB_DYING_FRAMES.length - 1,
+    Math.floor((elapsed / BOMB_DEATH_DURATION) * BOMB_DYING_FRAMES.length),
+  );
+  return BOMB_DYING_FRAMES[index];
+}
+
+function getUfoDeathFrame(elapsed) {
+  const index = Math.min(
+    UFO_DYING_FRAMES.length - 1,
+    Math.floor((elapsed / UFO_DEATH_DURATION) * UFO_DYING_FRAMES.length),
+  );
+  return UFO_DYING_FRAMES[index];
 }
 
 function drawAlien(renderer, alien) {
@@ -90,17 +173,25 @@ function drawPlayerDeath(renderer, death) {
 }
 
 function drawUfo(renderer, ufo) {
-  renderer.drawRect(ufo.x + 10, ufo.y, 32, 4, '#ff4d4d');
-  renderer.drawRect(ufo.x + 4, ufo.y + 4, 44, 8, '#ff4d4d');
-  renderer.drawRect(ufo.x, ufo.y + 12, 52, 6, '#ff4d4d');
-  renderer.drawRect(ufo.x + 18, ufo.y + 18, 6, 4, '#ff4d4d');
-  renderer.drawRect(ufo.x + 28, ufo.y + 18, 6, 4, '#ff4d4d');
+  drawBitmap(renderer, UFO_LIVING_FRAMES[0], ufo.x, ufo.y, ALIEN_PIXEL_SIZE, '#ff4d4d');
 }
 
-function drawLives(renderer, lives) {
+function drawUfoDeath(renderer, death) {
+  drawBitmap(renderer, getUfoDeathFrame(death.elapsed), death.x, death.y, ALIEN_PIXEL_SIZE, '#ffd1d1');
+}
+
+function drawBomb(renderer, bomb) {
+  drawBitmap(renderer, getBombFrame(bomb), bomb.x, bomb.y, BOMB_PIXEL_SIZE, '#ff6666');
+}
+
+function drawBombDeath(renderer, death) {
+  drawBitmap(renderer, getBombDeathFrame(death.elapsed), death.x, death.y, BOMB_PIXEL_SIZE, '#ffd1d1');
+}
+
+function drawLives(renderer, lives, y) {
   const frame = PLAYER_LIVING_FRAMES[0];
   for (let index = 0; index < Math.max(0, lives - 1); index += 1) {
-    drawBitmap(renderer, frame, 44 + (index * 58), VIEW.height - 76, 2, '#66ff66');
+    drawBitmap(renderer, frame, 44 + (index * 58), y, 2, '#66ff66');
   }
 }
 
@@ -123,6 +214,7 @@ export default class SpaceInvadersScene extends Scene {
   }
 
   exit(engine) {
+    this.audio.stopUfoLoop();
     if (engine?.canvas) {
       engine.canvas.style.cursor = 'default';
     }
@@ -144,42 +236,44 @@ export default class SpaceInvadersScene extends Scene {
     }
 
     if (this.isPaused) {
+      this.audio.stopUfoLoop();
       return;
     }
 
     const event = this.world.update(dtSeconds, frame);
     event.sfx.forEach((effectId) => this.audio.play(effectId));
+    if (this.world.ufo) {
+      this.audio.startUfoLoop(this.world.ufoDirection);
+    } else {
+      this.audio.stopUfoLoop();
+    }
   }
 
   render(renderer) {
+    const boundaryY = this.world.player.y + 21;
     renderer.clear('#000000');
     renderer.drawRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#020702');
     renderer.strokeRect(24, 24, VIEW.width - 48, VIEW.height - 48, '#66ff66', 2);
-    renderer.drawLine(44, this.world.player.y + 36, VIEW.width - 44, this.world.player.y + 36, '#66ff66', 2);
+    renderer.drawLine(44, boundaryY, VIEW.width - 44, boundaryY, '#66ff66', 2);
 
-    renderer.drawText(`SCORE<1> ${String(this.world.score).padStart(4, '0')}`, 44, 30, {
-      color: '#ffffff',
-      font: HUD_FONT,
-      textBaseline: 'top',
-    });
-    renderer.drawText(`HI-SCORE ${String(this.world.score).padStart(4, '0')}`, VIEW.width / 2, 30, {
-      color: '#ffffff',
-      font: HUD_FONT,
-      textAlign: 'center',
-      textBaseline: 'top',
-    });
-    renderer.drawText(`WAVE ${this.world.wave}`, VIEW.width - 44, 30, {
-      color: '#ffffff',
-      font: HUD_FONT,
-      textAlign: 'right',
-      textBaseline: 'top',
-    });
+    const scoreColorText = '#d0d0d0';
+    drawPixelText(renderer, 'PLAYER 1', 84, 34, { color: scoreColorText, scale: FONT_SCALE_HUD });
+    drawPixelText(renderer, 'HI-SCORE', VIEW.width / 2, 34, { color: scoreColorText, scale: FONT_SCALE_HUD, align: 'center' });
+    drawPixelText(renderer, 'PLAYER 2', VIEW.width - 84, 34, { color: scoreColorText, scale: FONT_SCALE_HUD, align: 'right' });
+
+    const scoreColor = '#fbbf24';
+    drawPixelText(renderer, String(this.world.score).padStart(4, '0'), 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD });
+    drawPixelText(renderer, String(this.world.score).padStart(4, '0'), VIEW.width / 2, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'center' });
+    drawPixelText(renderer, '0000', VIEW.width - 112, 56, { color: scoreColor, scale: FONT_SCALE_HUD, align: 'right' });
 
     this.world.getAliveAliens().forEach((alien) => drawAlien(renderer, alien));
     this.world.alienDeaths.forEach((death) => drawAlienDeath(renderer, death));
 
     if (this.world.ufo) {
       drawUfo(renderer, this.world.ufo);
+    }
+    if (this.world.ufoDeath) {
+      drawUfoDeath(renderer, this.world.ufoDeath);
     }
 
     if (this.world.player.alive) {
@@ -191,27 +285,56 @@ export default class SpaceInvadersScene extends Scene {
     }
 
     if (this.world.playerShot) {
-      renderer.drawRect(this.world.playerShot.x, this.world.playerShot.y, this.world.playerShot.width, this.world.playerShot.height, '#ffffff');
+      drawBitmap(renderer, PLAYER_LASER_LIVING_FRAMES, this.world.playerShot.x, this.world.playerShot.y, PLAYER_PIXEL_SIZE, '#ffffff');
     }
 
     this.world.alienShots.forEach((shot) => {
-      renderer.drawRect(shot.x, shot.y, shot.width, shot.height, '#ff6666');
+      drawBomb(renderer, shot);
     });
+    this.world.bombDeaths.forEach((death) => drawBombDeath(renderer, death));
 
-    drawLives(renderer, this.world.lives);
+    if (this.world.debugBoxes) {
+      const stroke = (x, y, w, h) => renderer.strokeRect(x, y, w, h, DEBUG_BOX_COLOR, 1);
+      if (this.world.player.alive) {
+        stroke(this.world.player.x, this.world.player.y - 20, this.world.player.width, this.world.player.height);
+      }
+      if (this.world.playerShot) {
+        stroke(this.world.playerShot.x, this.world.playerShot.y, this.world.playerShot.width, this.world.playerShot.height);
+      }
+      this.world.getAliveAliens().forEach((alien) => {
+        stroke(alien.x, alien.y, alien.width, alien.height);
+      });
+      this.world.alienShots.forEach((shot) => {
+        stroke(shot.x, shot.y, shot.width, shot.height);
+      });
+      if (this.world.ufo) {
+        stroke(this.world.ufo.x, this.world.ufo.y, this.world.ufo.width, this.world.ufo.height);
+      }
+    }
 
-    renderer.drawText(`${Math.max(0, this.world.lives)}`, 180, VIEW.height - 56, {
+    drawLives(renderer, this.world.lives, boundaryY + 12);
+
+    drawPixelText(renderer, `${Math.max(0, this.world.lives)}`, 180, boundaryY + 10, {
       color: '#66ff66',
-      font: HUD_FONT,
-      textBaseline: 'top',
+      scale: FONT_SCALE_HUD,
+    });
+    drawPixelText(renderer, `WAVE ${this.world.wave}`, VIEW.width - 44, boundaryY + 10, {
+      color: '#8df58d',
+      scale: FONT_SCALE_SMALL,
+      align: 'right',
+    });
+    drawPixelText(renderer, 'LEFT/RIGHT MOVE SPACE FIRE P PAUSE', VIEW.width / 2, boundaryY + 28, {
+      color: '#8df58d',
+      scale: FONT_SCALE_SMALL,
+      align: 'center',
     });
 
-    renderer.drawText('LEFT/RIGHT MOVE  SPACE FIRE  P PAUSE', VIEW.width / 2, VIEW.height - 44, {
-      color: '#8df58d',
-      font: TEXT_FONT,
-      textAlign: 'center',
-      textBaseline: 'top',
-    });
+    const showOverlay = this.isPaused || this.world.status === 'menu' || this.world.status === 'game-over' || this.world.isWaveTransition;
+
+    // Dim first so overlays render above the darkness.
+    if (showOverlay) {
+      renderer.drawRect(0, 0, VIEW.width, VIEW.height, 'rgba(0, 0, 0, 0.5)');
+    }
 
     if (this.world.status === 'menu') {
       this.drawOverlay(renderer, 'SPACE INVADERS', 'Press Space or Enter to start.');
@@ -227,17 +350,17 @@ export default class SpaceInvadersScene extends Scene {
   drawOverlay(renderer, title, prompt) {
     renderer.drawRect(210, 268, 540, 150, 'rgba(0, 0, 0, 0.84)');
     renderer.strokeRect(210, 268, 540, 150, '#66ff66', 2);
-    renderer.drawText(title, VIEW.width / 2, 308, {
+    drawPixelText(renderer, title, VIEW.width / 2, 304, {
       color: '#ffffff',
-      font: 'bold 34px monospace',
-      textAlign: 'center',
-      textBaseline: 'top',
+      scale: FONT_SCALE_OVERLAY,
+      align: 'center',
     });
-    renderer.drawText(prompt, VIEW.width / 2, 360, {
-      color: '#8df58d',
-      font: TEXT_FONT,
-      textAlign: 'center',
-      textBaseline: 'top',
+    wrapPixelText(prompt, 480, FONT_SCALE_SMALL).forEach((line, index) => {
+      drawPixelText(renderer, line, VIEW.width / 2, 360 + (index * 20), {
+        color: '#8df58d',
+        scale: FONT_SCALE_SMALL,
+        align: 'center',
+      });
     });
   }
 }
