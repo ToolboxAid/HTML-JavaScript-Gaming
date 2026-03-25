@@ -1,1 +1,1 @@
-Add Space Duel persistent high scores and initials entry micro-PR
+Plan Asteroids with arcade-accurate scope and reuse of attract/high-score patterns
