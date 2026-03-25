@@ -14,6 +14,7 @@ What's Included
 
 Current Status (03/25/2026)
 ---------------------------
+- Levels 1-3 foundational tracks complete (core engine, collision/camera/input fundamentals).
 - Samples 001-182 complete and published in the sample launcher.
 - Level 4 "Classic Arcade" set shipped: Asteroids, Space Duel, Space Invaders.
 - Level 6 "AI Systems" set shipped: AI Target Dummy, Pacman Lite, Pacman Full AI.

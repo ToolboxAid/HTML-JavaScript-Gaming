@@ -13,10 +13,10 @@ tools/    Repo utilities
 ```
 
 ## Current Launchers
-- Root launcher: `index.html`
-- Sample launcher: `samples/index.html`
-- Game launcher: `games/index.html`
-- Current shipped game: `games/Asteroids/index.html`
+- Root hub: `index.html`
+- Samples: `samples/index.html` (covers 001-182)
+- Games: `games/index.html` (Arcade + AI tracks)
+- Direct game entries: Asteroids, Space Duel, Space Invaders, Pacman Lite, Pacman Full AI, AI Target Dummy
 
 ## Running Locally
 Serve the repo from a local web server:
@@ -25,11 +25,7 @@ Serve the repo from a local web server:
 python -m http.server 8000
 ```
 
-Open:
-
-```text
-http://localhost:8000/
-```
+Open `http://localhost:8000/`
 
 ## Running Tests
 
@@ -43,7 +39,7 @@ Useful extra command:
 npm run build:manifest
 ```
 
-That regenerates `docs/build/sample-manifest.json`.
+Regenerates `docs/build/sample-manifest.json`.
 
 ## Current Engine Usage Rule
 - Import `Engine` from `engine/core/Engine.js`
@@ -59,6 +55,7 @@ Examples:
 ## Suggested First Pass
 1. Open the root launcher.
 2. Open the sample launcher and browse a few numbered samples.
-3. Run Asteroids from `games/Asteroids/`.
-4. Read `engine/README.md`.
-5. Read `docs/architecture/README.md` and `docs/standards/engine-standards.md`.
+3. Launch games from `games/index.html` (start with Asteroids, Space Duel, then Space Invaders).
+4. Try the AI track: Pacman Lite, Pacman Full AI, AI Target Dummy.
+5. Read `engine/README.md`.
+6. Read `docs/architecture/README.md` and `docs/standards/engine-standards.md`.
