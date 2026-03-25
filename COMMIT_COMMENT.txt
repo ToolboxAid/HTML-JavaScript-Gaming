@@ -1,1 +1,1 @@
-Plan Level 6 AI Target Dummy sample for pursuit, evasion, routing, and state transitions
+Correct AI Target Dummy classification from sample to game path
