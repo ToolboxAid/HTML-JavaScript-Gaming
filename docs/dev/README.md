@@ -1,5 +1,5 @@
-# Engine Rules (Clean Version v4)
+SpriteEditor BUILD_PR
 
-This version enforces:
-- Full repo directory structure in all ZIPs
-- ALL control + documentation files must live under /docs/dev/
+- Legacy editor renamed to spriteEditorOld
+- New SpriteEditor uses theme files
+- spriteEditor.css is structure only

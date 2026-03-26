@@ -1,1 +1,1 @@
-Update ENGINE RULES: enforce docs/dev structure and fullpath ZIP requirements
+Create new SpriteEditor shell and preserve legacy sprite editor
