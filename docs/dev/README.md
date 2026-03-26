@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v3.3 Docs-Only BUILD_PR
+# Sprite Editor v3.5 Docs-Only BUILD_PR
 
 Includes:
-- first-class macro commands
-- multi-step action sequencing
-- macro integration with command palette
+- dirty-state tracking guidance
+- history-aware UX improvements
+- canvas-native save/load safety prompts
 
 No code included. Codex implements.

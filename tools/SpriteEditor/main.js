@@ -862,9 +862,17 @@ main.js
       this.recentActions = this.loadRecentActions();
       this.favoriteActions = this.loadFavoriteActions();
       this.commandPaletteCommands = this.createCommandPaletteCommands();
+      this.history = { undo: [], redo: [], maxEntries: 120 };
+      this.activeStrokeHistory = null;
+      this.historySuppressedDepth = 0;
+      this.dirtyBaselineSignature = "";
+      this.isDirty = false;
+      this.replaceGuard = { open: false, title: "", message: "", onConfirm: null, confirmRect: null, cancelRect: null };
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
+      this.dirtyBaselineSignature = this.historySignature(this.captureHistoryState());
+      this.updateDirtyState();
       this.bindEvents();
       this.renderAll();
       requestAnimationFrame((ts) => this.tick(ts));
@@ -893,6 +901,180 @@ main.js
       const next = [actionId].concat(this.recentActions.filter((x) => x !== actionId));
       this.recentActions = next.slice(0, 40);
       this.saveRecentActions();
+    }
+
+    cloneGridData(grid) {
+      if (!Array.isArray(grid)) return null;
+      return grid.map((row) => Array.isArray(row) ? row.slice() : row);
+    }
+
+    captureHistoryState() {
+      const sel = this.document.selection ? { ...this.document.selection } : null;
+      const selClip = this.document.selectionClipboard ? {
+        width: this.document.selectionClipboard.width,
+        height: this.document.selectionClipboard.height,
+        pixels: this.cloneGridData(this.document.selectionClipboard.pixels)
+      } : null;
+      return {
+        doc: this.document.buildExportPayload(),
+        activeFrameIndex: this.document.activeFrameIndex,
+        selection: sel,
+        selectionClipboard: selClip,
+        frameClipboard: this.document.frameClipboard ? this.cloneGridData(this.document.frameClipboard) : null
+      };
+    }
+
+    restoreHistoryState(state) {
+      if (!state || !state.doc) return false;
+      try {
+        this.document.importPayload(state.doc);
+        this.document.activeFrameIndex = Math.max(0, Math.min(state.activeFrameIndex || 0, this.document.frames.length - 1));
+        this.document.selection = state.selection ? { ...state.selection } : null;
+        this.document.selectionClipboard = state.selectionClipboard ? {
+          width: state.selectionClipboard.width,
+          height: state.selectionClipboard.height,
+          pixels: this.cloneGridData(state.selectionClipboard.pixels)
+        } : null;
+        this.document.frameClipboard = state.frameClipboard ? this.cloneGridData(state.frameClipboard) : null;
+        this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        this.gridRect = this.computeGridRect();
+        return true;
+      } catch (_e) {
+        return false;
+      }
+    }
+
+    historySignature(state) {
+      if (!state) return "";
+      return JSON.stringify({
+        doc: state.doc,
+        activeFrameIndex: state.activeFrameIndex,
+        selection: state.selection,
+        selectionClipboard: state.selectionClipboard,
+        frameClipboard: state.frameClipboard
+      });
+    }
+
+    pushHistoryEntry(entry) {
+      if (!entry || !entry.before || !entry.after) return;
+      this.history.undo.push(entry);
+      if (this.history.undo.length > this.history.maxEntries) this.history.undo.shift();
+      this.history.redo = [];
+      this.updateDirtyState();
+    }
+
+    executeWithHistory(label, mutator, options = {}) {
+      const before = this.captureHistoryState();
+      const result = mutator();
+      if (!result) return result;
+      if (options.suppressHistory || this.historySuppressedDepth > 0) return result;
+      const after = this.captureHistoryState();
+      if (this.historySignature(before) !== this.historySignature(after)) {
+        this.pushHistoryEntry({ label, before, after });
+      }
+      return result;
+    }
+
+    beginStrokeHistory(label) {
+      if (this.activeStrokeHistory) return;
+      this.activeStrokeHistory = { label, before: this.captureHistoryState() };
+    }
+
+    commitStrokeHistory() {
+      if (!this.activeStrokeHistory) return;
+      const after = this.captureHistoryState();
+      if (this.historySignature(this.activeStrokeHistory.before) !== this.historySignature(after)) {
+        this.pushHistoryEntry({ label: this.activeStrokeHistory.label, before: this.activeStrokeHistory.before, after });
+      }
+      this.activeStrokeHistory = null;
+    }
+
+    undoHistory() {
+      const entry = this.history.undo.pop();
+      if (!entry) {
+        this.showMessage("Nothing to undo.");
+        return false;
+      }
+      if (!this.restoreHistoryState(entry.before)) {
+        this.showMessage("Undo failed.");
+        return false;
+      }
+      this.history.redo.push(entry);
+      this.updateDirtyState();
+      this.showMessage(`Undo: ${entry.label}`);
+      return true;
+    }
+
+    redoHistory() {
+      const entry = this.history.redo.pop();
+      if (!entry) {
+        this.showMessage("Nothing to redo.");
+        return false;
+      }
+      if (!this.restoreHistoryState(entry.after)) {
+        this.showMessage("Redo failed.");
+        return false;
+      }
+      this.history.undo.push(entry);
+      this.updateDirtyState();
+      this.showMessage(`Redo: ${entry.label}`);
+      return true;
+    }
+
+    updateDirtyState() {
+      this.isDirty = this.historySignature(this.captureHistoryState()) !== this.dirtyBaselineSignature;
+    }
+
+    markCleanBaseline() {
+      this.dirtyBaselineSignature = this.historySignature(this.captureHistoryState());
+      this.updateDirtyState();
+    }
+
+    clearHistoryStacks() {
+      this.history.undo = [];
+      this.history.redo = [];
+    }
+
+    requestReplaceGuard(title, message, onConfirm) {
+      if (!this.isDirty) {
+        if (typeof onConfirm === "function") onConfirm();
+        return;
+      }
+      this.replaceGuard = {
+        open: true,
+        title,
+        message,
+        onConfirm,
+        confirmRect: null,
+        cancelRect: null
+      };
+      this.showMessage("Unsaved changes. Confirm or cancel.");
+    }
+
+    closeReplaceGuard() {
+      this.replaceGuard.open = false;
+      this.replaceGuard.onConfirm = null;
+      this.replaceGuard.confirmRect = null;
+      this.replaceGuard.cancelRect = null;
+    }
+
+    handleReplaceGuardPointer(p) {
+      if (!this.replaceGuard.open || !p) return false;
+      const inRect = (r) => r && p.x >= r.x && p.y >= r.y && p.x <= r.x + r.w && p.y <= r.y + r.h;
+      if (inRect(this.replaceGuard.confirmRect)) {
+        const fn = this.replaceGuard.onConfirm;
+        this.closeReplaceGuard();
+        if (typeof fn === "function") fn();
+        this.renderAll();
+        return true;
+      }
+      if (inRect(this.replaceGuard.cancelRect)) {
+        this.closeReplaceGuard();
+        this.showMessage("Replace canceled.");
+        this.renderAll();
+        return true;
+      }
+      return true;
     }
 
     loadFavoriteActions() {
@@ -1002,8 +1184,13 @@ main.js
         const file = event.target.files && event.target.files[0];
         if (!file) return;
         try {
-          this.document.importPayload(JSON.parse(await file.text()));
-          this.showMessage("Imported sprite JSON.");
+          const payload = JSON.parse(await file.text());
+          this.requestReplaceGuard("Import JSON", "Replace current document with imported JSON?", () => {
+            this.document.importPayload(payload);
+            this.clearHistoryStacks();
+            this.markCleanBaseline();
+            this.showMessage("Imported sprite JSON.");
+          });
         } catch (_error) {
           this.showMessage("Import failed.");
         }
@@ -1096,6 +1283,10 @@ main.js
     onPointerDown(e) {
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
+      if (this.replaceGuard.open) {
+        this.handleReplaceGuardPointer(p);
+        return;
+      }
 
       if (e.button === 1 || e.shiftKey) {
         this.isPanning = true;
@@ -1118,6 +1309,7 @@ main.js
         return;
       }
 
+      this.beginStrokeHistory(this.activeTool === "erase" || e.button === 2 ? "Erase Stroke" : "Draw Stroke");
       this.applyGridTool(cell.x, cell.y, e.button === 2);
       this.renderAll();
     }
@@ -1125,6 +1317,7 @@ main.js
     onPointerUp(e) {
       const p = this.logicalPointFromEvent(e);
       if (p && this.controlSurface.pointerUp(p.x, p.y)) this.renderAll();
+      this.commitStrokeHistory();
       this.isPointerDown = false;
       this.selectionStart = null;
       this.isPanning = false;
@@ -1138,6 +1331,16 @@ main.js
     }
 
     onKeyDown(e) {
+      if (this.replaceGuard.open) {
+        const k = (e.key || "").toLowerCase();
+        if (k === "escape") {
+          this.closeReplaceGuard();
+          this.showMessage("Replace canceled.");
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+      }
       if (this.isTypingTarget(e.target)) return;
       if (this.controlSurface.commandPaletteOpen) {
         const k = (e.key || "").toLowerCase();
@@ -1209,6 +1412,9 @@ main.js
         "ctrl+c": "selection.copy",
         "ctrl+x": "selection.cut",
         "ctrl+v": "selection.paste",
+        "ctrl+z": "system.undo",
+        "ctrl+y": "system.redo",
+        "ctrl+shift+z": "system.redo",
         "ctrl+k": "system.commandPalette",
         "shift+f": "system.fullscreen",
         "escape": "system.escape",
@@ -1244,6 +1450,11 @@ main.js
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
         { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"], aliases: ["clear", "delete"] },
+        { id: "system.saveLocal", label: "System: Save Local", category: "System", keywords: ["save", "local"], aliases: ["save"] },
+        { id: "system.loadLocal", label: "System: Load Local", category: "System", keywords: ["load", "local"], aliases: ["load"] },
+        { id: "system.importJson", label: "System: Import JSON", category: "System", keywords: ["import", "json"], aliases: ["import json", "import"] },
+        { id: "system.undo", label: "System: Undo", category: "System", keywords: ["undo", "history"], aliases: ["undo action", "revert"] },
+        { id: "system.redo", label: "System: Redo", category: "System", keywords: ["redo", "history"], aliases: ["redo action", "reapply"] },
         { id: "system.commandPalette", label: "System: Open Command Palette", category: "System", keywords: ["command", "search"], aliases: ["command palette", "open command search"] }
       ];
       const list = (typeof palettesList === "object" && palettesList) ? palettesList : null;
@@ -1355,18 +1566,20 @@ main.js
     }
 
     applyNamedPalette(paletteName) {
-      if (typeof palettesList !== "object" || !palettesList || !Array.isArray(palettesList[paletteName])) return false;
-      const next = palettesList[paletteName]
-        .map((entry) => entry && entry.hex)
-        .filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex))
-        .slice(0, 32);
-      if (!next.length) return false;
-      this.document.palette = next;
-      if (this.document.palette.indexOf(this.document.currentColor) < 0) {
-        this.document.currentColor = this.document.palette[0];
-      }
-      this.showMessage(`Palette applied: ${paletteName}`);
-      return true;
+      return this.executeWithHistory(`Apply Palette: ${paletteName}`, () => {
+        if (typeof palettesList !== "object" || !palettesList || !Array.isArray(palettesList[paletteName])) return false;
+        const next = palettesList[paletteName]
+          .map((entry) => entry && entry.hex)
+          .filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex))
+          .slice(0, 32);
+        if (!next.length) return false;
+        this.document.palette = next;
+        if (this.document.palette.indexOf(this.document.currentColor) < 0) {
+          this.document.currentColor = this.document.palette[0];
+        }
+        this.showMessage(`Palette applied: ${paletteName}`);
+        return true;
+      });
     }
 
     dispatchCommandAction(actionId) {
@@ -1395,7 +1608,9 @@ main.js
         this.showMessage("Macro loop blocked.");
         return false;
       }
+      const macroBefore = this.captureHistoryState();
       activeSet.add(macroId);
+      this.historySuppressedDepth += 1;
       let successCount = 0;
       for (let i = 0; i < macro.actions.length; i += 1) {
         const actionId = macro.actions[i];
@@ -1417,7 +1632,12 @@ main.js
         }
         successCount += 1;
       }
+      this.historySuppressedDepth = Math.max(0, this.historySuppressedDepth - 1);
       activeSet.delete(macroId);
+      const macroAfter = this.captureHistoryState();
+      if (this.historySignature(macroBefore) !== this.historySignature(macroAfter)) {
+        this.pushHistoryEntry({ label: `Macro: ${macro.label}`, before: macroBefore, after: macroAfter });
+      }
       if (successCount === macro.actions.length) {
         this.showMessage(`Macro ran: ${macro.label}`);
         return true;
@@ -1446,6 +1666,11 @@ main.js
         this.openCommandPalette();
         return true;
       }
+      if (action === "system.saveLocal") { this.saveLocal(); return true; }
+      if (action === "system.loadLocal") { this.loadLocal(); return true; }
+      if (action === "system.importJson") { this.openImport(); return true; }
+      if (action === "system.undo") return this.undoHistory();
+      if (action === "system.redo") return this.redoHistory();
       if (action === "system.escape") {
         if (this.controlSurface.commandPaletteOpen) {
           this.controlSurface.closeCommandPalette();
@@ -1492,9 +1717,11 @@ main.js
       if (action === "system.playback") { this.togglePlayback(); return true; }
       if (action === "system.delete") {
         if (this.document.selection) { this.handleSelectionAction("sel-cut"); return true; }
-        this.document.clearFrame();
-        this.showMessage("Frame cleared.");
-        return true;
+        return this.executeWithHistory("Clear Frame", () => {
+          this.document.clearFrame();
+          this.showMessage("Frame cleared.");
+          return true;
+        });
       }
       return false;
     }
@@ -1564,21 +1791,27 @@ main.js
     toggleMirror() { this.mirror = !this.mirror; this.showMessage(this.mirror ? "Mirror on." : "Mirror off."); this.renderAll(); }
 
     handleSelectionAction(id) {
+      const isMutating = id === "sel-cut" || id === "sel-paste" || id === "sel-fliph" || id === "sel-flipv";
       let ok = false;
-      if (id === "sel-copy") ok = this.document.copySelection();
-      else if (id === "sel-cut") ok = this.document.cutSelection();
-      else if (id === "sel-paste") ok = this.document.pasteSelection(this.selectionPasteOrigin.x,this.selectionPasteOrigin.y);
-      else if (id === "sel-fliph") ok = this.document.flipSelection(true);
-      else if (id === "sel-flipv") ok = this.document.flipSelection(false);
-      else if (id === "sel-clear") { this.document.clearSelection(); ok = true; }
+      const run = () => {
+        if (id === "sel-copy") ok = this.document.copySelection();
+        else if (id === "sel-cut") ok = this.document.cutSelection();
+        else if (id === "sel-paste") ok = this.document.pasteSelection(this.selectionPasteOrigin.x,this.selectionPasteOrigin.y);
+        else if (id === "sel-fliph") ok = this.document.flipSelection(true);
+        else if (id === "sel-flipv") ok = this.document.flipSelection(false);
+        else if (id === "sel-clear") { this.document.clearSelection(); ok = true; }
+        return ok;
+      };
+      if (isMutating) this.executeWithHistory("Selection Edit", run);
+      else run();
       this.showMessage(ok ? "Selection updated." : "No active selection.");
       this.renderAll();
     }
 
-    addFrame() { this.document.addFrame(); this.showMessage("Frame added."); this.renderAll(); }
-    duplicateFrame() { this.document.duplicateFrame(); this.showMessage("Frame duplicated."); this.renderAll(); }
-    deleteFrame() { this.showMessage(this.document.deleteFrame() ? "Frame deleted." : "Cannot delete last frame."); this.renderAll(); }
-    reorderFrame(from,to) { this.showMessage(this.document.moveFrame(from,to) ? "Frame reordered." : "Frame reorder failed."); this.renderAll(); }
+    addFrame() { this.executeWithHistory("Frame Add", () => { this.document.addFrame(); this.showMessage("Frame added."); return true; }); this.renderAll(); }
+    duplicateFrame() { this.executeWithHistory("Frame Duplicate", () => { this.document.duplicateFrame(); this.showMessage("Frame duplicated."); return true; }); this.renderAll(); }
+    deleteFrame() { this.executeWithHistory("Frame Delete", () => { const ok = this.document.deleteFrame(); this.showMessage(ok ? "Frame deleted." : "Cannot delete last frame."); return ok; }); this.renderAll(); }
+    reorderFrame(from,to) { this.executeWithHistory("Frame Reorder", () => { const ok = this.document.moveFrame(from,to); this.showMessage(ok ? "Frame reordered." : "Frame reorder failed."); return ok; }); this.renderAll(); }
     selectFrame(i) {
       this.document.activeFrameIndex = Math.max(0, Math.min(i, this.document.frames.length - 1));
       this.playback.previewFrameIndex = this.document.activeFrameIndex;
@@ -1586,7 +1819,7 @@ main.js
       this.renderAll();
     }
     copyFrame() { this.document.copyFrame(); this.showMessage("Frame copied."); this.renderAll(); }
-    pasteFrame() { this.showMessage(this.document.pasteFrame() ? "Frame pasted." : "No copied frame."); this.renderAll(); }
+    pasteFrame() { this.executeWithHistory("Frame Paste", () => { const ok = this.document.pasteFrame(); this.showMessage(ok ? "Frame pasted." : "No copied frame."); return ok; }); this.renderAll(); }
 
     cycleSheetLayout() {
       const order = ["horizontal","vertical","grid"];
@@ -1612,27 +1845,36 @@ main.js
         doc: this.document.buildExportPayload(),
         uiDensityMode: this.uiDensityMode
       }));
+      this.markCleanBaseline();
       this.showMessage("Saved locally.");
     }
     loadLocal() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) { this.showMessage("No local save."); return; }
-      try {
-        const parsed = JSON.parse(raw);
-        if (parsed && parsed.doc) {
-          this.document.importPayload(parsed.doc);
-          this.uiDensityMode = ["auto", "standard", "pro"].includes(parsed.uiDensityMode) ? parsed.uiDensityMode : "standard";
-        } else {
-          this.document.importPayload(parsed);
-          this.uiDensityMode = "auto";
+      this.requestReplaceGuard("Load Local", "Replace current document with local save?", () => {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) { this.showMessage("No local save."); return; }
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.doc) {
+            this.document.importPayload(parsed.doc);
+            this.uiDensityMode = ["auto", "standard", "pro"].includes(parsed.uiDensityMode) ? parsed.uiDensityMode : "standard";
+          } else {
+            this.document.importPayload(parsed);
+            this.uiDensityMode = "auto";
+          }
+          this.clearHistoryStacks();
+          this.markCleanBaseline();
+          this.showMessage("Loaded local save.");
         }
-        this.showMessage("Loaded local save.");
-      }
-      catch (_e) { this.showMessage("Load failed."); }
+        catch (_e) { this.showMessage("Load failed."); }
+      });
       this.renderAll();
     }
     openImport() { this.fileInput.click(); }
-    exportJson(pretty) { this.downloadBlob("sprite-editor.json", JSON.stringify(this.document.buildExportPayload(), null, pretty ? 2 : 0), "application/json"); this.showMessage("JSON exported."); }
+    exportJson(pretty) {
+      this.downloadBlob("sprite-editor.json", JSON.stringify(this.document.buildExportPayload(), null, pretty ? 2 : 0), "application/json");
+      this.markCleanBaseline();
+      this.showMessage("JSON exported.");
+    }
     exportSheetMetadata() { this.downloadBlob("sprite-sheet-meta.json", JSON.stringify(this.document.buildSheetMetadata(), null, 2), "application/json"); this.showMessage("Sheet metadata exported."); }
     downloadSheetPng() {
       const plc = this.document.computeSheetPlacement();
@@ -1670,6 +1912,7 @@ main.js
     }
 
     renderAll() {
+      this.updateDirtyState();
       this.controlSurface.rebuildLayout();
       this.gridRect = this.computeGridRect();
       this.controlSurface.draw(this.ctx);
@@ -1677,6 +1920,44 @@ main.js
       this.drawPreviewPanel();
       this.drawSheetPanel();
       this.drawBottomStatus();
+      this.drawReplaceGuard();
+    }
+
+    drawReplaceGuard() {
+      if (!this.replaceGuard.open) return;
+      const ctx = this.ctx;
+      const w = 560, h = 190;
+      const x = Math.floor((LOGICAL_W - w) * 0.5);
+      const y = Math.floor((LOGICAL_H - h) * 0.28);
+      ctx.fillStyle = "rgba(2, 6, 12, 0.62)";
+      ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+      ctx.fillStyle = "#162435";
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = "#4cc9f0";
+      ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+      ctx.fillStyle = "#dbe7f3";
+      ctx.font = "bold 18px Arial";
+      ctx.fillText(this.replaceGuard.title || "Confirm Replace", x + 18, y + 28);
+      ctx.font = "13px Arial";
+      ctx.fillStyle = "#b9c8d8";
+      ctx.fillText(this.replaceGuard.message || "Unsaved changes will be lost.", x + 18, y + 64);
+      ctx.fillText("This action replaces the current editor state.", x + 18, y + 86);
+      const cancelRect = { x: x + w - 230, y: y + h - 56, w: 96, h: 34 };
+      const confirmRect = { x: x + w - 122, y: y + h - 56, w: 104, h: 34 };
+      this.replaceGuard.cancelRect = cancelRect;
+      this.replaceGuard.confirmRect = confirmRect;
+      ctx.fillStyle = "#1a2733";
+      ctx.fillRect(cancelRect.x, cancelRect.y, cancelRect.w, cancelRect.h);
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.strokeRect(cancelRect.x + 0.5, cancelRect.y + 0.5, cancelRect.w - 1, cancelRect.h - 1);
+      ctx.fillStyle = "#edf2f7";
+      ctx.fillText("Cancel", cancelRect.x + 22, cancelRect.y + 22);
+      ctx.fillStyle = "#27435a";
+      ctx.fillRect(confirmRect.x, confirmRect.y, confirmRect.w, confirmRect.h);
+      ctx.strokeStyle = "#4cc9f0";
+      ctx.strokeRect(confirmRect.x + 0.5, confirmRect.y + 0.5, confirmRect.w - 1, confirmRect.h - 1);
+      ctx.fillStyle = "#e6f2ff";
+      ctx.fillText("Replace", confirmRect.x + 24, confirmRect.y + 22);
     }
 
     drawMainGrid() {
@@ -1800,7 +2081,10 @@ main.js
       this.ctx.fillText(toolText, Math.max(b.x + 18, toolX), y);
       this.ctx.fillText(shortcutsText, Math.max(b.x + 18, shortcutsX), y+22);
       this.ctx.fillStyle = "#91a3b6";
-      this.ctx.fillText(`Color selected: ${this.document.currentColor}`, b.x + 18, y + 44);
+      const dirtyText = this.isDirty ? "Modified" : "Saved";
+      const nextUndo = this.history.undo.length ? this.history.undo[this.history.undo.length - 1].label : "-";
+      const nextRedo = this.history.redo.length ? this.history.redo[this.history.redo.length - 1].label : "-";
+      this.ctx.fillText(`State: ${dirtyText}  |  Undo: ${nextUndo}  |  Redo: ${nextRedo}`, b.x + 18, y + 44);
       this.ctx.fillStyle = performance.now() < this.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
       this.ctx.fillText(this.statusMessage, b.x+b.width-360, y + 44);
     }
