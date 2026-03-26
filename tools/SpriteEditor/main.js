@@ -219,9 +219,9 @@ main.js
       this.dragFeedbackText = "";
     }
 
-    getDensityConfig() {
-      if (this.app.uiDensityMode === "pro") {
-        return {
+    getDensityPresets() {
+      return {
+        pro: {
           topButtonHeight: 36,
           sideButtonHeight: 32,
           spacing: 6,
@@ -232,24 +232,38 @@ main.js
           bottomPanelHeight: 122,
           leftPanelWidth: 214,
           rightPanelWidth: 292
-        };
-      }
-      return {
-        topButtonHeight: 42,
-        sideButtonHeight: 38,
-        spacing: 8,
-        padding: 18,
-        frameThumbHeight: 58,
-        labelHeight: 24,
-        topPanelHeight: 82,
-        bottomPanelHeight: 138,
-        leftPanelWidth: 230,
-        rightPanelWidth: 310
+        },
+        standard: {
+          topButtonHeight: 42,
+          sideButtonHeight: 38,
+          spacing: 8,
+          padding: 18,
+          frameThumbHeight: 58,
+          labelHeight: 24,
+          topPanelHeight: 82,
+          bottomPanelHeight: 138,
+          leftPanelWidth: 230,
+          rightPanelWidth: 310
+        }
       };
     }
 
+    resolveDensity() {
+      const selectedMode = this.app.uiDensityMode;
+      const presets = this.getDensityPresets();
+      const display = this.app.viewport.displayRect || { width: LOGICAL_W, height: LOGICAL_H };
+      const scaleW = display.width / LOGICAL_W;
+      const scaleH = display.height / LOGICAL_H;
+      const fitScale = Math.min(scaleW, scaleH);
+      const effectiveMode = selectedMode === "auto"
+        ? (fitScale < 0.86 ? "pro" : "standard")
+        : selectedMode;
+      return { selectedMode, effectiveMode, config: presets[effectiveMode] };
+    }
+
     rebuildLayout() {
-      const d = this.getDensityConfig();
+      const density = this.resolveDensity();
+      const d = density.config;
       const frame = { x: 18, y: 18, width: LOGICAL_W - 36, height: LOGICAL_H - 36 };
       const top = d.topPanelHeight;
       const bottom = d.bottomPanelHeight;
@@ -264,6 +278,7 @@ main.js
         bottomPanel: { x: frame.x, y: frame.y + frame.height - bottom, width: frame.width, height: bottom },
         gridArea: { x: frame.x + left + pad, y: frame.y + top + pad, width: frame.width - left - right - pad * 2, height: frame.height - top - bottom - pad * 2 }
       };
+      this.app.uiDensityEffectiveMode = density.effectiveMode;
       this.controls = [];
       this.build();
     }
@@ -271,14 +286,19 @@ main.js
     add(kind, id, x, y, w, h, text, action, extra = {}) { this.controls.push({ kind, id, x, y, w, h, text, action, ...extra }); }
 
     build() {
-      const d = this.getDensityConfig();
+      const density = this.resolveDensity();
+      const d = density.config;
+      const selectedMode = density.selectedMode;
+      const effectiveMode = density.effectiveMode;
       const top = this.layout.topPanel, left = this.layout.leftPanel, right = this.layout.rightPanel, bottom = this.layout.bottomPanel;
       let x = top.x + d.padding;
       let y = top.y + Math.floor((top.height - d.topButtonHeight) / 2);
       const h = d.topButtonHeight;
-      const fullscreenW = this.app.uiDensityMode === "pro" ? 96 : 106;
+      const fullscreenW = effectiveMode === "pro" ? 96 : 106;
       const fullscreenX = top.x + top.width - (d.padding + fullscreenW);
-      const modeLabel = this.app.uiDensityMode === "pro" ? "Mode: Pro" : "Mode: Standard";
+      const modeLabel = selectedMode === "auto"
+        ? `Mode: Auto (${effectiveMode === "pro" ? "Pro" : "Std"})`
+        : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard");
 
       const addTop = (id, width, text, action) => {
         if ((x + width) > (fullscreenX - d.spacing)) return;
@@ -286,27 +306,27 @@ main.js
         x += width + d.spacing;
       };
 
-      const labels = this.app.uiDensityMode === "pro"
+      const labels = effectiveMode === "pro"
         ? { save: "Save", load: "Load", import: "Import", json: "Export", png: "PNG", meta: "Meta" }
         : { save: "Save", load: "Load", import: "Import", json: "Export JSON", png: "PNG Sheet", meta: "Sheet Meta" };
 
-      addTop("top-save", this.app.uiDensityMode === "pro" ? 76 : 88, labels.save, () => this.app.saveLocal());
-      addTop("top-load", this.app.uiDensityMode === "pro" ? 76 : 88, labels.load, () => this.app.loadLocal());
-      addTop("top-import", this.app.uiDensityMode === "pro" ? 84 : 88, labels.import, () => this.app.openImport());
-      addTop("top-json", this.app.uiDensityMode === "pro" ? 88 : 116, labels.json, () => this.app.exportJson(true));
-      addTop("top-png", this.app.uiDensityMode === "pro" ? 72 : 102, labels.png, () => this.app.downloadSheetPng());
-      addTop("top-meta", this.app.uiDensityMode === "pro" ? 74 : 118, labels.meta, () => this.app.exportSheetMetadata());
-      addTop("top-pixel", this.app.uiDensityMode === "pro" ? 94 : 112, this.app.viewport.pixelPerfect ? "Pixel: On" : "Pixel: Off", () => this.app.togglePixelPerfect());
-      addTop("top-mode", this.app.uiDensityMode === "pro" ? 90 : 126, modeLabel, () => this.app.toggleDensityMode());
+      addTop("top-save", effectiveMode === "pro" ? 76 : 88, labels.save, () => this.app.saveLocal());
+      addTop("top-load", effectiveMode === "pro" ? 76 : 88, labels.load, () => this.app.loadLocal());
+      addTop("top-import", effectiveMode === "pro" ? 84 : 88, labels.import, () => this.app.openImport());
+      addTop("top-json", effectiveMode === "pro" ? 88 : 116, labels.json, () => this.app.exportJson(true));
+      addTop("top-png", effectiveMode === "pro" ? 72 : 102, labels.png, () => this.app.downloadSheetPng());
+      addTop("top-meta", effectiveMode === "pro" ? 74 : 118, labels.meta, () => this.app.exportSheetMetadata());
+      addTop("top-pixel", effectiveMode === "pro" ? 94 : 112, this.app.viewport.pixelPerfect ? "Pixel: On" : "Pixel: Off", () => this.app.togglePixelPerfect());
+      addTop("top-mode", effectiveMode === "pro" ? 150 : 186, modeLabel, () => this.app.toggleDensityMode());
 
-      const zoomResetW = this.app.uiDensityMode === "pro" ? 74 : 92;
+      const zoomResetW = effectiveMode === "pro" ? 74 : 92;
       const zoomBtnW = 56;
       const zoomClusterW = zoomResetW + zoomBtnW * 2 + d.spacing * 2;
       const zoomX = fullscreenX - d.spacing - zoomClusterW;
       if (zoomX > x) {
         this.add("button", "top-zoom-out", zoomX, y, zoomBtnW, h, "Zoom -", () => this.app.adjustZoom(-0.25));
         this.add("button", "top-zoom-in", zoomX + zoomBtnW + d.spacing, y, zoomBtnW, h, "Zoom +", () => this.app.adjustZoom(0.25));
-        this.add("button", "top-zoom-reset", zoomX + zoomBtnW * 2 + d.spacing * 2, y, zoomResetW, h, this.app.uiDensityMode === "pro" ? "Reset" : "Reset", () => this.app.resetZoom());
+        this.add("button", "top-zoom-reset", zoomX + zoomBtnW * 2 + d.spacing * 2, y, zoomResetW, h, "Reset", () => this.app.resetZoom());
       }
       this.add("button", "fullscreen", fullscreenX, y, fullscreenW, h, this.app.isFullscreen() ? "Exit Full" : "Full Screen", () => this.app.toggleFullscreen());
 
@@ -461,7 +481,8 @@ main.js
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
       this.gridRect = null;
-      this.uiDensityMode = "standard";
+      this.uiDensityMode = "auto";
+      this.uiDensityEffectiveMode = "standard";
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
       this.isPanning = false;
@@ -669,8 +690,14 @@ main.js
     }
 
     toggleDensityMode() {
-      this.uiDensityMode = this.uiDensityMode === "standard" ? "pro" : "standard";
-      this.showMessage(this.uiDensityMode === "pro" ? "Mode: Pro" : "Mode: Standard");
+      const order = ["auto", "standard", "pro"];
+      const i = order.indexOf(this.uiDensityMode);
+      this.uiDensityMode = order[(i + 1) % order.length];
+      if (this.uiDensityMode === "auto") {
+        this.showMessage("Mode: Auto.");
+      } else {
+        this.showMessage(this.uiDensityMode === "pro" ? "Mode: Pro." : "Mode: Standard.");
+      }
       this.renderAll();
     }
 
@@ -762,10 +789,10 @@ main.js
         const parsed = JSON.parse(raw);
         if (parsed && parsed.doc) {
           this.document.importPayload(parsed.doc);
-          this.uiDensityMode = parsed.uiDensityMode === "pro" ? "pro" : "standard";
+          this.uiDensityMode = ["auto", "standard", "pro"].includes(parsed.uiDensityMode) ? parsed.uiDensityMode : "standard";
         } else {
           this.document.importPayload(parsed);
-          this.uiDensityMode = "standard";
+          this.uiDensityMode = "auto";
         }
         this.showMessage("Loaded local save.");
       }
