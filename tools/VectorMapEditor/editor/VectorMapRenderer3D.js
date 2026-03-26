@@ -17,7 +17,7 @@ export class VectorMapRenderer3D {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = documentData.background || "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    this.drawGrid(ctx, canvas);
+    this.drawGrid(ctx, canvas, view);
     this.drawAxes(ctx, view);
 
     for (const object of documentData.objects) {
@@ -42,14 +42,17 @@ export class VectorMapRenderer3D {
     }
   }
 
-  drawGrid(ctx, canvas) {
+  drawGrid(ctx, canvas, view) {
+    const step = Math.max(20, 40 * view.zoom);
+    const offsetX = ((view.offsetX % step) + step) % step;
+    const offsetY = ((view.offsetY % step) + step) % step;
     ctx.save();
     ctx.strokeStyle = "#162038";
     ctx.lineWidth = 1;
-    for (let x = 0; x < canvas.width; x += 40) {
+    for (let x = offsetX; x < canvas.width; x += step) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
     }
-    for (let y = 0; y < canvas.height; y += 40) {
+    for (let y = offsetY; y < canvas.height; y += step) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
     }
     ctx.restore();
@@ -134,12 +137,13 @@ export class VectorMapRenderer3D {
 
   drawCenter(ctx, center, view) {
     const point = this.project(center, view);
+    const size = Math.max(8, Math.min(14, 10 * Math.sqrt(view.zoom)));
     ctx.save();
     ctx.strokeStyle = "#ff7ef4";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(point.x - 10, point.y); ctx.lineTo(point.x + 10, point.y);
-    ctx.moveTo(point.x, point.y - 10); ctx.lineTo(point.x, point.y + 10);
+    ctx.moveTo(point.x - size, point.y); ctx.lineTo(point.x + size, point.y);
+    ctx.moveTo(point.x, point.y - size); ctx.lineTo(point.x, point.y + size);
     ctx.stroke();
     ctx.restore();
   }

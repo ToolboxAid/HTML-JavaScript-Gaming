@@ -258,6 +258,28 @@ body.vector-editor-page {
   align-items: center;
 }
 
+.vector-editor-page .zoom-controls {
+  gap: 6px;
+}
+
+.vector-editor-page .toolbar-readout,
+.vector-editor-page .rotation-readout {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #10192f;
+  color: var(--text);
+}
+
+.vector-editor-page .toolbar-readout {
+  min-width: 72px;
+  text-align: center;
+}
+
+.vector-editor-page .rotation-readout {
+  margin-bottom: 10px;
+}
+
 .vector-editor-page .field-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

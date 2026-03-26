@@ -16,6 +16,27 @@ import { VectorMapFullscreenController } from "./VectorMapFullscreenController.j
 import { VectorMapCollisionTester } from "./VectorMapCollisionTester.js";
 import { VectorMapRuntimeExporter } from "./VectorMapRuntimeExporter.js";
 
+function normalizeDegrees(value) {
+  const numeric = Number(value || 0);
+  if (!Number.isFinite(numeric)) {
+    return 0;
+  }
+  const wrapped = ((numeric + 180) % 360 + 360) % 360 - 180;
+  return wrapped === -180 ? 180 : wrapped;
+}
+
+function parseNumericInput(value) {
+  if (typeof value !== "string") {
+    return Number.isFinite(Number(value)) ? Number(value) : null;
+  }
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "-" || trimmed === "+" || trimmed === "." || trimmed === "-." || trimmed === "+.") {
+    return null;
+  }
+  const numeric = Number(trimmed);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
 export class VectorMapEditorApp {
   constructor(rootDocument) {
     this.rootDocument = rootDocument;
@@ -70,6 +91,10 @@ export class VectorMapEditorApp {
       workspaceModeSelect: doc.getElementById("workspaceModeSelect"),
       toolModeSelect: doc.getElementById("toolModeSelect"),
       snapSizeInput: doc.getElementById("snapSizeInput"),
+      zoomOutButton: doc.getElementById("zoomOutButton"),
+      zoomResetButton: doc.getElementById("zoomResetButton"),
+      zoomInButton: doc.getElementById("zoomInButton"),
+      zoomDisplay: doc.getElementById("zoomDisplay"),
       newDocumentButton: doc.getElementById("newDocumentButton"),
       saveDocumentButton: doc.getElementById("saveDocumentButton"),
       exportRuntimeButton: doc.getElementById("exportRuntimeButton"),
@@ -99,6 +124,7 @@ export class VectorMapEditorApp {
       rotationYUpButton: doc.getElementById("rotationYUpButton"),
       rotationZDownButton: doc.getElementById("rotationZDownButton"),
       rotationZUpButton: doc.getElementById("rotationZUpButton"),
+      rotationDegreesDisplay: doc.getElementById("rotationDegreesDisplay"),
       applyRotationButton: doc.getElementById("applyRotationButton"),
       resetRotationButton: doc.getElementById("resetRotationButton"),
       objectStrokeInput: doc.getElementById("objectStrokeInput"),
@@ -168,6 +194,17 @@ export class VectorMapEditorApp {
       this.syncUIFromDocument();
       this.render();
     });
+
+    canvas.addEventListener("wheel", (event) => {
+      if (this.workspaceViewMode === "json") {
+        return;
+      }
+      event.preventDefault();
+      const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
+      this.interactionController.zoomAtPosition(this.getCanvasPosition(event), factor);
+      this.syncStatus();
+      this.render();
+    }, { passive: false });
 
     canvas.addEventListener("dblclick", (event) => {
       if (this.workspaceViewMode === "json") {
@@ -286,6 +323,24 @@ export class VectorMapEditorApp {
       this.render();
     });
 
+    this.elements.zoomOutButton.addEventListener("click", () => {
+      this.interactionController.stepZoom(-1, this.getCanvasCenter());
+      this.syncStatus();
+      this.render();
+    });
+
+    this.elements.zoomResetButton.addEventListener("click", () => {
+      this.interactionController.resetView();
+      this.syncStatus();
+      this.render();
+    });
+
+    this.elements.zoomInButton.addEventListener("click", () => {
+      this.interactionController.stepZoom(1, this.getCanvasCenter());
+      this.syncStatus();
+      this.render();
+    });
+
     this.elements.duplicateObjectButton.addEventListener("click", () => {
       if (!this.selectionModel.objectId) {
         return;
@@ -338,6 +393,27 @@ export class VectorMapEditorApp {
 
     this.elements.applyRotationButton.addEventListener("click", () => {
       this.applyAbsoluteRotationFromInputs();
+    });
+
+    [this.elements.rotationXInput, this.elements.rotationYInput, this.elements.rotationZInput].forEach((element) => {
+      element.addEventListener("input", () => {
+        if (!this.selectionModel.hasObject()) {
+          return;
+        }
+        this.updateRotationDisplayFromInputs();
+      });
+      element.addEventListener("change", () => {
+        if (!this.selectionModel.hasObject()) {
+          return;
+        }
+        this.applyAbsoluteRotationFromInputs();
+      });
+      element.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" || !this.selectionModel.hasObject()) {
+          return;
+        }
+        this.applyAbsoluteRotationFromInputs();
+      });
     });
 
     this.elements.resetRotationButton.addEventListener("click", () => {
@@ -498,12 +574,19 @@ export class VectorMapEditorApp {
       return;
     }
     const current = selection.object.rotation;
+    const nextX = parseNumericInput(this.elements.rotationXInput.value);
+    const nextY = parseNumericInput(this.elements.rotationYInput.value);
+    const nextZ = parseNumericInput(this.elements.rotationZInput.value);
     const next = {
-      x: Number(this.elements.rotationXInput.value || 0),
-      y: Number(this.elements.rotationYInput.value || 0),
-      z: Number(this.elements.rotationZInput.value || 0)
+      x: nextX === null ? current.x : normalizeDegrees(nextX),
+      y: nextY === null ? current.y : normalizeDegrees(nextY),
+      z: nextZ === null ? current.z : normalizeDegrees(nextZ)
     };
-    this.transformController.applyRotation({ x: next.x - current.x, y: next.y - current.y, z: next.z - current.z });
+    this.transformController.applyRotation({
+      x: normalizeDegrees(next.x - current.x),
+      y: normalizeDegrees(next.y - current.y),
+      z: normalizeDegrees(next.z - current.z)
+    });
     this.syncUIFromDocument();
     this.render();
   }
@@ -545,9 +628,16 @@ export class VectorMapEditorApp {
     this.elements.centerXInput.value = object ? String(object.center.x) : "";
     this.elements.centerYInput.value = object ? String(object.center.y) : "";
     this.elements.centerZInput.value = object ? String(object.center.z) : "";
-    this.elements.rotationXInput.value = object ? String(object.rotation.x) : "";
-    this.elements.rotationYInput.value = object ? String(object.rotation.y) : "";
-    this.elements.rotationZInput.value = object ? String(object.rotation.z) : "";
+    this.elements.rotationXInput.value = object ? String(normalizeDegrees(object.rotation.x)) : "";
+    this.elements.rotationYInput.value = object ? String(normalizeDegrees(object.rotation.y)) : "";
+    this.elements.rotationZInput.value = object ? String(normalizeDegrees(object.rotation.z)) : "";
+    this.elements.rotationDegreesDisplay.textContent = object
+      ? this.formatRotationReadout({
+        x: normalizeDegrees(object.rotation.x),
+        y: normalizeDegrees(object.rotation.y),
+        z: normalizeDegrees(object.rotation.z)
+      })
+      : this.formatRotationReadout({ x: 0, y: 0, z: 0 });
     this.elements.objectStrokeInput.value = object?.style?.stroke || "#ffffff";
     this.elements.objectFillInput.value = object?.style?.fill || "";
     this.elements.objectLineWidthInput.value = String(object?.style?.lineWidth || 2);
@@ -626,7 +716,8 @@ export class VectorMapEditorApp {
 
   syncStatus() {
     this.elements.statusLeft.textContent = this.statusMessage;
-    this.elements.statusCenter.textContent = `Mode: ${this.workspaceViewMode.toUpperCase()} | Tool: ${this.elements.toolModeSelect.value}`;
+    this.elements.statusCenter.textContent = `Mode: ${this.workspaceViewMode.toUpperCase()} | Tool: ${this.elements.toolModeSelect.value} | Zoom: ${Math.round(this.interactionController.getView().zoom * 100)}%`;
+    this.elements.zoomDisplay.textContent = `${Math.round(this.interactionController.getView().zoom * 100)}%`;
   }
 
   setStatus(message) {
@@ -644,6 +735,37 @@ export class VectorMapEditorApp {
     this.elements.canvas.style.width = `${width}px`;
     this.elements.canvas.style.height = `${height}px`;
     this.ctx?.setTransform(ratio, 0, 0, ratio, 0, 0);
+  }
+
+  getCanvasCenter() {
+    const rect = this.elements.canvas.getBoundingClientRect();
+    return {
+      x: rect.width * 0.5,
+      y: rect.height * 0.5
+    };
+  }
+
+  updateRotationDisplayFromInputs() {
+    const selection = this.selectionModel.getSelection(this.documentModel);
+    const object = selection.object;
+    if (!object) {
+      this.elements.rotationDegreesDisplay.textContent = this.formatRotationReadout({ x: 0, y: 0, z: 0 });
+      return;
+    }
+    const next = {
+      x: parseNumericInput(this.elements.rotationXInput.value),
+      y: parseNumericInput(this.elements.rotationYInput.value),
+      z: parseNumericInput(this.elements.rotationZInput.value)
+    };
+    this.elements.rotationDegreesDisplay.textContent = this.formatRotationReadout({
+      x: next.x === null ? normalizeDegrees(object.rotation.x) : normalizeDegrees(next.x),
+      y: next.y === null ? normalizeDegrees(object.rotation.y) : normalizeDegrees(next.y),
+      z: next.z === null ? normalizeDegrees(object.rotation.z) : normalizeDegrees(next.z)
+    });
+  }
+
+  formatRotationReadout(rotation) {
+    return `X: ${rotation.x.toFixed(1)}deg | Y: ${rotation.y.toFixed(1)}deg | Z: ${rotation.z.toFixed(1)}deg`;
   }
 
   render() {

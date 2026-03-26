@@ -8,6 +8,15 @@ function toRadians(degrees) {
   return (degrees * Math.PI) / 180;
 }
 
+function normalizeDegrees(value) {
+  const numeric = Number(value || 0);
+  if (!Number.isFinite(numeric)) {
+    return 0;
+  }
+  const wrapped = ((numeric + 180) % 360 + 360) % 360 - 180;
+  return wrapped === -180 ? 180 : wrapped;
+}
+
 function rotateAroundCenter(point, center, rotation) {
   let x = point.x - center.x;
   let y = point.y - center.y;
@@ -94,9 +103,9 @@ export class VectorMapTransformController {
     };
 
     object.points = object.points.map((point) => rotateAroundCenter(point, object.center, deltaRotation));
-    object.rotation.x += deltaRotation.x;
-    object.rotation.y += deltaRotation.y;
-    object.rotation.z += deltaRotation.z;
+    object.rotation.x = normalizeDegrees(object.rotation.x + deltaRotation.x);
+    object.rotation.y = normalizeDegrees(object.rotation.y + deltaRotation.y);
+    object.rotation.z = normalizeDegrees(object.rotation.z + deltaRotation.z);
   }
 
   resetRotation() {
@@ -104,6 +113,11 @@ export class VectorMapTransformController {
     if (!object) {
       return;
     }
+    object.points = object.points.map((point) => rotateAroundCenter(point, object.center, {
+      x: -object.rotation.x,
+      y: -object.rotation.y,
+      z: -object.rotation.z
+    }));
     object.rotation = { x: 0, y: 0, z: 0 };
   }
 

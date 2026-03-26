@@ -33,6 +33,15 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function normalizeDegrees(value) {
+  const numeric = Number(value || 0);
+  if (!Number.isFinite(numeric)) {
+    return 0;
+  }
+  const wrapped = ((numeric + 180) % 360 + 360) % 360 - 180;
+  return wrapped === -180 ? 180 : wrapped;
+}
+
 export class VectorMapDocument {
   constructor(data = null) {
     this.data = data ? this.normalizeDocument(data) : this.createDefault();
@@ -67,9 +76,9 @@ export class VectorMapDocument {
       closed,
       center: this.normalizePoint(object?.center || { x: 0, y: 0, z: 0 }, "#ff7ef4"),
       rotation: {
-        x: Number(object?.rotation?.x || 0),
-        y: Number(object?.rotation?.y || 0),
-        z: Number(object?.rotation?.z || 0)
+        x: normalizeDegrees(object?.rotation?.x),
+        y: normalizeDegrees(object?.rotation?.y),
+        z: normalizeDegrees(object?.rotation?.z)
       },
       style: {
         stroke,
@@ -191,9 +200,9 @@ export class VectorMapDocument {
     if (!object) {
       return;
     }
-    object.rotation.x = Number(rotation?.x || 0);
-    object.rotation.y = Number(rotation?.y || 0);
-    object.rotation.z = Number(rotation?.z || 0);
+    object.rotation.x = normalizeDegrees(rotation?.x);
+    object.rotation.y = normalizeDegrees(rotation?.y);
+    object.rotation.z = normalizeDegrees(rotation?.z);
   }
 
   setObjectCenter(objectId, center) {

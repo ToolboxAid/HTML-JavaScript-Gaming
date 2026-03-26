@@ -23,7 +23,8 @@ export class VectorMapInteractionController {
     this.onStatus = onStatus;
     this.onCollisionResult = onCollisionResult;
     this.toolMode = "select";
-    this.view = { zoom: 1, offsetX: 240, offsetY: 160 };
+    this.defaultView = { zoom: 1, offsetX: 240, offsetY: 160 };
+    this.view = { ...this.defaultView };
     this.drag = null;
     this.hoverPoint = null;
     this.pendingObjectId = null;
@@ -41,6 +42,30 @@ export class VectorMapInteractionController {
 
   setView(nextView) {
     this.view = { ...this.view, ...nextView };
+  }
+
+  zoomAtPosition(position, factor) {
+    const nextZoom = Math.min(8, Math.max(0.2, this.view.zoom * factor));
+    if (Math.abs(nextZoom - this.view.zoom) < 0.0001) {
+      return this.view.zoom;
+    }
+    const projectedX = (position.x - this.view.offsetX) / this.view.zoom;
+    const projectedY = (position.y - this.view.offsetY) / this.view.zoom;
+    this.view.zoom = nextZoom;
+    this.view.offsetX = position.x - projectedX * nextZoom;
+    this.view.offsetY = position.y - projectedY * nextZoom;
+    return this.view.zoom;
+  }
+
+  stepZoom(direction, anchor = null) {
+    const referencePoint = anchor || { x: this.view.offsetX, y: this.view.offsetY };
+    const factor = direction > 0 ? 1.2 : 1 / 1.2;
+    return this.zoomAtPosition(referencePoint, factor);
+  }
+
+  resetView() {
+    this.view = { ...this.defaultView };
+    return this.view.zoom;
   }
 
   getCollisionVector() {

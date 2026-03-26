@@ -34,7 +34,7 @@ export class VectorMapRenderer2D {
   }
 
   drawGrid(ctx, canvas, view) {
-    const step = 50 * view.zoom;
+    const step = Math.max(20, 50 * view.zoom);
     ctx.save();
     ctx.strokeStyle = "#162038";
     ctx.lineWidth = 1;
@@ -139,12 +139,13 @@ export class VectorMapRenderer2D {
 
   drawCenter(ctx, center, view) {
     const point = this.toScreen(center, view);
+    const size = Math.max(8, Math.min(14, 10 * Math.sqrt(view.zoom)));
     ctx.save();
     ctx.strokeStyle = "#ff7ef4";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(point.x - 10, point.y); ctx.lineTo(point.x + 10, point.y);
-    ctx.moveTo(point.x, point.y - 10); ctx.lineTo(point.x, point.y + 10);
+    ctx.moveTo(point.x - size, point.y); ctx.lineTo(point.x + size, point.y);
+    ctx.moveTo(point.x, point.y - size); ctx.lineTo(point.x, point.y + size);
     ctx.stroke();
     ctx.restore();
   }

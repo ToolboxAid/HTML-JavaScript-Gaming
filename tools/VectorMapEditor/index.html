@@ -56,6 +56,12 @@ index.html
           Snap
           <input id="snapSizeInput" type="number" min="1" step="1" value="10" />
         </label>
+        <div class="toolbar-group zoom-controls">
+          <button id="zoomOutButton" type="button">Zoom Out</button>
+          <button id="zoomResetButton" type="button">Reset Zoom</button>
+          <button id="zoomInButton" type="button">Zoom In</button>
+          <div id="zoomDisplay" class="toolbar-readout">100%</div>
+        </div>
         <a class="toolbar-link" href="./how_to_use.html">How to Use</a>
       </div>
     </div>
@@ -158,6 +164,7 @@ index.html
 
       <div class="panel">
         <h3>Rotation</h3>
+        <div id="rotationDegreesDisplay" class="help rotation-readout">X: 0deg | Y: 0deg | Z: 0deg</div>
         <div class="single-field-grid">
           <label>X
             <div class="spin-row">
