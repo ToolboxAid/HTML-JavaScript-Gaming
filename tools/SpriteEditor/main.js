@@ -278,6 +278,21 @@ main.js
     }
     selectNextLayer() { return this.selectLayer(this.activeFrame.activeLayerIndex + 1); }
     selectPrevLayer() { return this.selectLayer(this.activeFrame.activeLayerIndex - 1); }
+    moveLayer(from, to) {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      if (from === to || from < 0 || to < 0 || from >= f.layers.length || to >= f.layers.length) return false;
+      const [moved] = f.layers.splice(from, 1);
+      f.layers.splice(to, 0, moved);
+      f.activeLayerIndex = to;
+      return true;
+    }
+    renameActiveLayer(name) {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      const n = String(name || "").trim();
+      if (!n) return false;
+      f.layers[f.activeLayerIndex].name = n;
+      return true;
+    }
     computeSheetPlacement() {
       const count = this.frames.length, p = this.sheet.padding, s = this.sheet.spacing;
       let cols = 1, rows = 1;
@@ -746,6 +761,9 @@ main.js
       [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()]].forEach(([id,t,a]) => {
         this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
+      [["up","Layer Up",()=>this.app.moveLayerUp()],["down","Layer Down",()=>this.app.moveLayerDown()],["rename","Rename Layer",()=>this.app.openLayerRenamePrompt()]].forEach(([id,t,a]) => {
+        this.add("button","layer-edit-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
+      });
       [["prev","Layer Prev",()=>this.app.selectPrevLayer()],["next","Layer Next",()=>this.app.selectNextLayer()]].forEach(([id,t,a]) => {
         this.add("button","layer-nav-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
@@ -897,6 +915,14 @@ main.js
       if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
       ctx.fillStyle = "#edf2f7"; ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial"; ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+      if (activeLayerItem) {
+        ctx.fillStyle = "#4cc9f0";
+        ctx.fillRect(c.x + 2, c.y + 2, 4, c.h - 4);
+        ctx.font = "bold 11px Arial";
+        const badge = "ACTIVE";
+        const bw = ctx.measureText(badge).width;
+        ctx.fillText(badge, c.x + c.w - bw - 10, c.y + c.h / 2);
+      }
       if (c.isCommandRow && c.category) {
         ctx.fillStyle = "#4cc9f0";
         ctx.font = "11px Arial";
@@ -1013,6 +1039,7 @@ main.js
       this.dirtyBaselineSignature = "";
       this.isDirty = false;
       this.replaceGuard = { open: false, title: "", message: "", onConfirm: null, confirmRect: null, cancelRect: null };
+      this.layerRenamePrompt = { open: false, text: "", title: "Rename Layer", panelRect: null, confirmRect: null, cancelRect: null };
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -1227,6 +1254,62 @@ main.js
       if (inRect(this.replaceGuard.cancelRect)) {
         this.closeReplaceGuard();
         this.showMessage("Replace canceled.");
+        this.renderAll();
+        return true;
+      }
+      return true;
+    }
+
+    isLayerRenameOpen() {
+      return !!(this.layerRenamePrompt && this.layerRenamePrompt.open);
+    }
+
+    openLayerRenamePrompt() {
+      const af = this.document.ensureFrameLayers(this.document.activeFrame);
+      const active = af.layers[af.activeLayerIndex];
+      this.layerRenamePrompt.open = true;
+      this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
+      this.showMessage("Rename layer: type, Enter apply, Esc cancel.");
+      this.renderAll();
+    }
+
+    closeLayerRenamePrompt() {
+      this.layerRenamePrompt.open = false;
+      this.layerRenamePrompt.panelRect = null;
+      this.layerRenamePrompt.confirmRect = null;
+      this.layerRenamePrompt.cancelRect = null;
+    }
+
+    confirmLayerRename() {
+      if (!this.isLayerRenameOpen()) return false;
+      const nextName = String(this.layerRenamePrompt.text || "").trim();
+      const ok = this.executeWithHistory("Layer Rename", () => {
+        const done = this.document.renameActiveLayer(nextName);
+        if (done) this.showMessage(`Layer renamed: ${this.document.activeLayer.name}`);
+        return done;
+      });
+      if (!ok) this.showMessage("Layer rename canceled.");
+      this.closeLayerRenamePrompt();
+      this.renderAll();
+      return !!ok;
+    }
+
+    handleLayerRenamePointer(p) {
+      if (!this.isLayerRenameOpen() || !p) return false;
+      const inRect = (r) => r && p.x >= r.x && p.y >= r.y && p.x <= r.x + r.w && p.y <= r.y + r.h;
+      if (inRect(this.layerRenamePrompt.confirmRect)) {
+        this.confirmLayerRename();
+        return true;
+      }
+      if (inRect(this.layerRenamePrompt.cancelRect)) {
+        this.closeLayerRenamePrompt();
+        this.showMessage("Layer rename canceled.");
+        this.renderAll();
+        return true;
+      }
+      if (this.layerRenamePrompt.panelRect && !inRect(this.layerRenamePrompt.panelRect)) {
+        this.closeLayerRenamePrompt();
+        this.showMessage("Layer rename canceled.");
         this.renderAll();
         return true;
       }
@@ -1572,6 +1655,10 @@ main.js
     onPointerDown(e) {
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
+      if (this.isLayerRenameOpen()) {
+        this.handleLayerRenamePointer(p);
+        return;
+      }
       if (this.replaceGuard.open) {
         this.handleReplaceGuardPointer(p);
         return;
@@ -1663,6 +1750,33 @@ main.js
     }
 
     onKeyDown(e) {
+      if (this.isLayerRenameOpen()) {
+        const k = (e.key || "").toLowerCase();
+        if (k === "escape") {
+          this.closeLayerRenamePrompt();
+          this.showMessage("Layer rename canceled.");
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+        if (k === "enter") {
+          this.confirmLayerRename();
+          e.preventDefault();
+          return;
+        }
+        if (k === "backspace") {
+          this.layerRenamePrompt.text = this.layerRenamePrompt.text.slice(0, -1);
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+        if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          if (this.layerRenamePrompt.text.length < 40) this.layerRenamePrompt.text += e.key;
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+      }
       if (this.replaceGuard.open) {
         const k = (e.key || "").toLowerCase();
         if (k === "escape") {
@@ -1751,6 +1865,9 @@ main.js
         "ctrl+y": "system.redo",
         "ctrl+shift+z": "system.redo",
         "ctrl+k": "system.commandPalette",
+        "ctrl+shift+r": "layer.rename",
+        "alt+arrowup": "layer.moveUp",
+        "alt+arrowdown": "layer.moveDown",
         "arrowup": "selection.nudge_up",
         "arrowdown": "selection.nudge_down",
         "arrowleft": "selection.nudge_left",
@@ -1802,6 +1919,9 @@ main.js
         { id: "layer.toggleVisibility", label: "Layer: Toggle Visibility", category: "Layer", keywords: ["layer", "visibility", "hide", "show"], aliases: ["toggle layer visibility", "hide layer", "show layer"] },
         { id: "layer.next", label: "Layer: Select Next", category: "Layer", keywords: ["layer", "next"], aliases: ["next layer"] },
         { id: "layer.prev", label: "Layer: Select Previous", category: "Layer", keywords: ["layer", "previous"], aliases: ["prev layer", "previous layer"] },
+        { id: "layer.moveUp", label: "Layer: Move Up", category: "Layer", keywords: ["layer", "move", "up", "reorder"], aliases: ["move layer up", "layer up", "reorder layer up"] },
+        { id: "layer.moveDown", label: "Layer: Move Down", category: "Layer", keywords: ["layer", "move", "down", "reorder"], aliases: ["move layer down", "layer down", "reorder layer down"] },
+        { id: "layer.rename", label: "Layer: Rename", category: "Layer", keywords: ["layer", "rename", "name"], aliases: ["rename layer", "layer name"] },
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
         { id: "system.playbackPlay", label: "System: Playback Play", category: "System", keywords: ["play", "transport"], aliases: ["play"] },
@@ -2096,6 +2216,9 @@ main.js
       if (action === "layer.toggleVisibility") { this.toggleLayerVisibility(); return true; }
       if (action === "layer.next") { this.selectNextLayer(); return true; }
       if (action === "layer.prev") { this.selectPrevLayer(); return true; }
+      if (action === "layer.moveUp") { this.moveLayerUp(); return true; }
+      if (action === "layer.moveDown") { this.moveLayerDown(); return true; }
+      if (action === "layer.rename") { this.openLayerRenamePrompt(); return true; }
       if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
       if (action === "system.playback") { this.togglePlayback(); return true; }
       if (action === "system.playbackPlay") { this.togglePlayback(true); return true; }
@@ -2217,6 +2340,26 @@ main.js
     duplicateLayer() { this.executeWithHistory("Layer Duplicate", () => { const ok = this.document.duplicateLayer(); this.showMessage(ok ? "Layer duplicated." : "Layer duplicate failed."); return ok; }); this.renderAll(); }
     deleteLayer() { this.executeWithHistory("Layer Delete", () => { const ok = this.document.deleteLayer(); this.showMessage(ok ? "Layer deleted." : "Cannot delete last layer."); return ok; }); this.renderAll(); }
     toggleLayerVisibility() { this.executeWithHistory("Layer Visibility", () => { const ok = this.document.toggleLayerVisibility(); this.showMessage(ok ? "Layer visibility toggled." : "Layer visibility failed."); return ok; }); this.renderAll(); }
+    moveLayerUp() {
+      this.executeWithHistory("Layer Reorder Up", () => {
+        const af = this.document.ensureFrameLayers(this.document.activeFrame);
+        const from = af.activeLayerIndex;
+        const ok = this.document.moveLayer(from, from - 1);
+        this.showMessage(ok ? "Layer moved up." : "Layer already at top.");
+        return ok;
+      });
+      this.renderAll();
+    }
+    moveLayerDown() {
+      this.executeWithHistory("Layer Reorder Down", () => {
+        const af = this.document.ensureFrameLayers(this.document.activeFrame);
+        const from = af.activeLayerIndex;
+        const ok = this.document.moveLayer(from, from + 1);
+        this.showMessage(ok ? "Layer moved down." : "Layer already at bottom.");
+        return ok;
+      });
+      this.renderAll();
+    }
     selectLayer(i) { this.document.selectLayer(i); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
     selectNextLayer() { this.document.selectNextLayer(); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
     selectPrevLayer() { this.document.selectPrevLayer(); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
@@ -2352,6 +2495,7 @@ main.js
       this.drawSheetPanel();
       this.drawBottomStatus();
       this.drawReplaceGuard();
+      this.drawLayerRenamePrompt();
     }
 
     drawTimelinePanel() {
@@ -2436,6 +2580,54 @@ main.js
       ctx.strokeRect(confirmRect.x + 0.5, confirmRect.y + 0.5, confirmRect.w - 1, confirmRect.h - 1);
       ctx.fillStyle = "#e6f2ff";
       ctx.fillText("Replace", confirmRect.x + 24, confirmRect.y + 22);
+    }
+
+    drawLayerRenamePrompt() {
+      if (!this.isLayerRenameOpen()) return;
+      const frame = this.controlSurface.layout.appFrame;
+      const panelW = 480;
+      const panelH = 154;
+      const x = frame.x + Math.floor((frame.width - panelW) * 0.5);
+      const y = frame.y + Math.floor((frame.height - panelH) * 0.24);
+      this.layerRenamePrompt.panelRect = { x, y, w: panelW, h: panelH };
+      this.ctx.fillStyle = "rgba(2, 6, 12, 0.58)";
+      this.ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+      this.ctx.fillStyle = "#162435";
+      this.ctx.fillRect(x, y, panelW, panelH);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "bold 16px Arial";
+      this.ctx.fillText("Rename Layer", x + 16, y + 24);
+      this.ctx.font = "12px Arial";
+      this.ctx.fillStyle = "#91a3b6";
+      this.ctx.fillText("Enter apply  Esc cancel", x + 16, y + 44);
+      this.ctx.fillStyle = "#101a24";
+      this.ctx.fillRect(x + 16, y + 56, panelW - 32, 36);
+      this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      this.ctx.strokeRect(x + 16.5, y + 56.5, panelW - 33, 35);
+      this.ctx.fillStyle = "#e6f2ff";
+      this.ctx.font = "13px Arial";
+      const renameText = (this.layerRenamePrompt.text || "").slice(0, 40) || "Layer";
+      this.ctx.fillText(renameText, x + 24, y + 74);
+      const btnW = 120;
+      const btnH = 30;
+      const gap = 10;
+      const by = y + panelH - btnH - 14;
+      this.layerRenamePrompt.confirmRect = { x: x + panelW - btnW * 2 - gap - 16, y: by, w: btnW, h: btnH };
+      this.layerRenamePrompt.cancelRect = { x: x + panelW - btnW - 16, y: by, w: btnW, h: btnH };
+      this.ctx.fillStyle = "#244d67";
+      this.ctx.fillRect(this.layerRenamePrompt.confirmRect.x, by, btnW, btnH);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(this.layerRenamePrompt.confirmRect.x + 0.5, by + 0.5, btnW - 1, btnH - 1);
+      this.ctx.fillStyle = "#edf2f7";
+      this.ctx.fillText("Apply", this.layerRenamePrompt.confirmRect.x + 43, by + 19);
+      this.ctx.fillStyle = "#1a2733";
+      this.ctx.fillRect(this.layerRenamePrompt.cancelRect.x, by, btnW, btnH);
+      this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      this.ctx.strokeRect(this.layerRenamePrompt.cancelRect.x + 0.5, by + 0.5, btnW - 1, btnH - 1);
+      this.ctx.fillStyle = "#edf2f7";
+      this.ctx.fillText("Cancel", this.layerRenamePrompt.cancelRect.x + 38, by + 19);
     }
 
     drawMainGrid() {
