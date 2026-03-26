@@ -76,6 +76,25 @@ main.js
     }
     makeGrid(fill = null) { return Array.from({ length: this.rows }, () => Array.from({ length: this.cols }, () => fill)); }
     cloneGrid(grid) { return grid.map((r) => r.slice()); }
+    cloneLayer(layer, fallbackIndex = 0) {
+      return {
+        id: "l_" + Math.random().toString(36).slice(2, 10),
+        name: layer.name || `Layer ${fallbackIndex + 1}`,
+        visible: layer.visible !== false,
+        locked: layer.locked === true,
+        opacity: typeof layer.opacity === "number" ? Math.max(0, Math.min(1, layer.opacity)) : 1,
+        pixels: this.cloneGrid(layer.pixels || this.makeGrid())
+      };
+    }
+    cloneFrame(frame, fallbackIndex = 0) {
+      const f = this.ensureFrameLayers(frame);
+      return {
+        id: "f_" + Math.random().toString(36).slice(2, 10),
+        name: f.name || `Frame ${fallbackIndex + 1}`,
+        activeLayerIndex: Math.max(0, Math.min(f.activeLayerIndex || 0, f.layers.length - 1)),
+        layers: f.layers.map((layer, i) => this.cloneLayer(layer, i))
+      };
+    }
     makeLayer(name = "Layer 1", pixels = null) {
       return {
         id: "l_" + Math.random().toString(36).slice(2, 10),
@@ -211,9 +230,9 @@ main.js
     addFrame() { this.frames.push(this.makeFrame("Frame " + (this.frames.length + 1))); this.activeFrameIndex = this.frames.length - 1; }
     duplicateFrame() {
       const f = this.activeFrame;
-      const copyLayers = this.ensureFrameLayers(f).layers.map((l) => this.makeLayer(l.name, l.pixels));
-      copyLayers.forEach((l, i) => { l.visible = f.layers[i].visible !== false; l.locked = f.layers[i].locked === true; l.opacity = typeof f.layers[i].opacity === "number" ? f.layers[i].opacity : 1; });
-      this.frames.splice(this.activeFrameIndex + 1, 0, { id: "f_" + Math.random().toString(36).slice(2, 10), name: f.name + " Copy", layers: copyLayers, activeLayerIndex: f.activeLayerIndex || 0 });
+      const copyFrame = this.cloneFrame(f, this.activeFrameIndex);
+      copyFrame.name = f.name + " Copy";
+      this.frames.splice(this.activeFrameIndex + 1, 0, copyFrame);
       this.activeFrameIndex += 1;
     }
     deleteFrame() {
@@ -399,6 +418,53 @@ main.js
         activeLayerIndex: f.activeLayerIndex
       });
       return before !== after;
+    }
+    duplicateFrameRange(start, end) {
+      const s = Math.max(0, Math.min(start, end));
+      const e = Math.min(this.frames.length - 1, Math.max(start, end));
+      if (s < 0 || e < s) return null;
+      const clones = [];
+      for (let i = s; i <= e; i += 1) {
+        const cloned = this.cloneFrame(this.frames[i], i);
+        cloned.name = `${this.frames[i].name} Copy`;
+        clones.push(cloned);
+      }
+      if (!clones.length) return null;
+      this.frames.splice(e + 1, 0, ...clones);
+      this.activeFrameIndex = e + 1;
+      return { start: e + 1, end: e + clones.length };
+    }
+    deleteFrameRange(start, end) {
+      const s = Math.max(0, Math.min(start, end));
+      const e = Math.min(this.frames.length - 1, Math.max(start, end));
+      const count = e - s + 1;
+      if (count <= 0 || count >= this.frames.length) return false;
+      this.frames.splice(s, count);
+      this.activeFrameIndex = Math.max(0, Math.min(s, this.frames.length - 1));
+      return true;
+    }
+    shiftFrameRange(start, end, direction) {
+      const s = Math.max(0, Math.min(start, end));
+      const e = Math.min(this.frames.length - 1, Math.max(start, end));
+      if (e <= s && direction !== 0) {
+        if (direction < 0 && s <= 0) return null;
+        if (direction > 0 && e >= this.frames.length - 1) return null;
+      }
+      if (direction < 0) {
+        if (s <= 0) return null;
+        const block = this.frames.splice(s, e - s + 1);
+        this.frames.splice(s - 1, 0, ...block);
+        this.activeFrameIndex = Math.max(0, this.activeFrameIndex - 1);
+        return { start: s - 1, end: e - 1 };
+      }
+      if (direction > 0) {
+        if (e >= this.frames.length - 1) return null;
+        const block = this.frames.splice(s, e - s + 1);
+        this.frames.splice(s + 1, 0, ...block);
+        this.activeFrameIndex = Math.min(this.frames.length - 1, this.activeFrameIndex + 1);
+        return { start: s + 1, end: e + 1 };
+      }
+      return null;
     }
     selectLayer(index) {
       const f = this.ensureFrameLayers(this.activeFrame);
@@ -1169,6 +1235,7 @@ main.js
       this.selectionMoveSession = null;
       this.timelineInteraction = null;
       this.timelineStripRect = null;
+      this.frameRangeSelection = null;
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
@@ -1259,7 +1326,8 @@ main.js
         selection: sel,
         selectionClipboard: selClip,
         frameClipboard: this.cloneFrameClipboardData(this.document.frameClipboard),
-        soloState: this.document.soloState ? { ...this.document.soloState } : null
+        soloState: this.document.soloState ? { ...this.document.soloState } : null,
+        frameRangeSelection: this.frameRangeSelection ? { ...this.frameRangeSelection } : null
       };
     }
 
@@ -1276,6 +1344,7 @@ main.js
         } : null;
         this.document.frameClipboard = this.cloneFrameClipboardData(state.frameClipboard);
         this.document.soloState = state.soloState ? { ...state.soloState } : null;
+        this.frameRangeSelection = state.frameRangeSelection ? { ...state.frameRangeSelection } : null;
         this.playback.previewFrameIndex = this.document.activeFrameIndex;
         this.gridRect = this.computeGridRect();
         return true;
@@ -1292,7 +1361,8 @@ main.js
         selection: state.selection,
         selectionClipboard: state.selectionClipboard,
         frameClipboard: state.frameClipboard,
-        soloState: state.soloState
+        soloState: state.soloState,
+        frameRangeSelection: state.frameRangeSelection
       });
     }
 
@@ -1698,6 +1768,25 @@ main.js
       }
       return null;
     }
+    getFrameRangeSelection() {
+      if (!this.frameRangeSelection) return { start: this.document.activeFrameIndex, end: this.document.activeFrameIndex, explicit: false };
+      const start = Math.max(0, Math.min(this.frameRangeSelection.start, this.frameRangeSelection.end, this.document.frames.length - 1));
+      const end = Math.max(0, Math.min(Math.max(this.frameRangeSelection.start, this.frameRangeSelection.end), this.document.frames.length - 1));
+      return { start, end, explicit: true };
+    }
+    isFrameInSelectedRange(index) {
+      const range = this.getFrameRangeSelection();
+      return index >= range.start && index <= range.end;
+    }
+    setFrameRangeSelection(start, end, anchor = start) {
+      const s = Math.max(0, Math.min(start, end, this.document.frames.length - 1));
+      const e = Math.max(0, Math.min(Math.max(start, end), this.document.frames.length - 1));
+      this.frameRangeSelection = { start: s, end: e, anchor };
+    }
+    clearFrameRangeSelection(showMessage = false) {
+      this.frameRangeSelection = null;
+      if (showMessage) this.showMessage("Frame range cleared.");
+    }
 
     isCellInsideSelection(cell) {
       const s = this.document.selection;
@@ -1835,10 +1924,16 @@ main.js
       }
       const timelineIndex = this.getTimelineIndexAt(p);
       if (timelineIndex !== null) {
-        if (e.shiftKey) {
+        if (e.shiftKey && e.altKey) {
           this.timelineInteraction = { mode: "reorder", startIndex: timelineIndex, targetIndex: timelineIndex };
           this.controlSurface.dragFeedbackText = `Timeline reorder ${timelineIndex + 1}`;
+        } else if (e.shiftKey) {
+          const anchor = this.frameRangeSelection ? this.frameRangeSelection.anchor : this.document.activeFrameIndex;
+          this.setFrameRangeSelection(anchor, timelineIndex, anchor);
+          this.selectFrame(timelineIndex);
+          this.showMessage(`Frame range: ${Math.min(anchor, timelineIndex) + 1}-${Math.max(anchor, timelineIndex) + 1}`);
         } else {
+          this.setFrameRangeSelection(timelineIndex, timelineIndex, timelineIndex);
           this.timelineInteraction = { mode: "scrub", startIndex: timelineIndex, targetIndex: timelineIndex };
           this.selectFrame(timelineIndex);
         }
@@ -2066,6 +2161,11 @@ main.js
         { id: "frame.prev", label: "Frame: Previous", category: "Frame", keywords: ["animation", "back"], aliases: ["prev frame", "previous frame"] },
         { id: "frame.next", label: "Frame: Next", category: "Frame", keywords: ["animation", "forward"], aliases: ["next frame"] },
         { id: "frame.duplicate", label: "Frame: Duplicate", category: "Frame", keywords: ["copy frame"], aliases: ["dup frame", "duplicate frame"] },
+        { id: "frame.duplicateRange", label: "Frame: Duplicate Range", category: "Frame", keywords: ["frame", "range", "duplicate", "batch"], aliases: ["duplicate range", "duplicate selected frames"] },
+        { id: "frame.deleteRange", label: "Frame: Delete Range", category: "Frame", keywords: ["frame", "range", "delete", "batch"], aliases: ["delete range", "delete selected frames"] },
+        { id: "frame.shiftRangeLeft", label: "Frame: Shift Range Left", category: "Frame", keywords: ["frame", "range", "shift", "left"], aliases: ["shift range left", "move range left"] },
+        { id: "frame.shiftRangeRight", label: "Frame: Shift Range Right", category: "Frame", keywords: ["frame", "range", "shift", "right"], aliases: ["shift range right", "move range right"] },
+        { id: "frame.clearRangeSelection", label: "Frame: Clear Range Selection", category: "Frame", keywords: ["frame", "range", "clear", "selection"], aliases: ["clear frame range", "clear range selection"] },
         { id: "selection.copy", label: "Selection: Copy", category: "Selection", keywords: ["copy"], aliases: ["copy selection"] },
         { id: "selection.cut", label: "Selection: Cut", category: "Selection", keywords: ["cut"], aliases: ["cut selection"] },
         { id: "selection.paste", label: "Selection: Paste", category: "Selection", keywords: ["paste"], aliases: ["paste selection"] },
@@ -2358,6 +2458,11 @@ main.js
       if (action === "frame.prev") { this.selectFrame(this.document.activeFrameIndex - 1); return true; }
       if (action === "frame.next") { this.selectFrame(this.document.activeFrameIndex + 1); return true; }
       if (action === "frame.duplicate") { this.duplicateFrame(); return true; }
+      if (action === "frame.duplicateRange") { this.duplicateSelectedFrameRange(); return true; }
+      if (action === "frame.deleteRange") { this.deleteSelectedFrameRange(); return true; }
+      if (action === "frame.shiftRangeLeft") { this.shiftSelectedFrameRange(-1); return true; }
+      if (action === "frame.shiftRangeRight") { this.shiftSelectedFrameRange(1); return true; }
+      if (action === "frame.clearRangeSelection") { this.clearFrameRangeSelection(true); return true; }
       if (action === "selection.copy") {
         if (this.document.selection) { this.handleSelectionAction("sel-copy"); return true; }
         return false;
@@ -2515,6 +2620,52 @@ main.js
     duplicateFrame() { this.executeWithHistory("Frame Duplicate", () => { this.document.duplicateFrame(); this.showMessage("Frame duplicated."); return true; }); this.renderAll(); }
     deleteFrame() { this.executeWithHistory("Frame Delete", () => { const ok = this.document.deleteFrame(); this.showMessage(ok ? "Frame deleted." : "Cannot delete last frame."); return ok; }); this.renderAll(); }
     reorderFrame(from,to) { this.executeWithHistory("Frame Reorder", () => { const ok = this.document.moveFrame(from,to); this.showMessage(ok ? "Frame reordered." : "Frame reorder failed."); return ok; }); this.renderAll(); }
+    duplicateSelectedFrameRange() {
+      this.executeWithHistory("Frame Range Duplicate", () => {
+        const range = this.getFrameRangeSelection();
+        const result = this.document.duplicateFrameRange(range.start, range.end);
+        if (!result) {
+          this.showMessage("Duplicate range unavailable.");
+          return false;
+        }
+        this.setFrameRangeSelection(result.start, result.end, result.start);
+        this.document.activeFrameIndex = result.start;
+        this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        this.showMessage(`Duplicated frames ${result.start + 1}-${result.end + 1}.`);
+        return true;
+      });
+      this.renderAll();
+    }
+    deleteSelectedFrameRange() {
+      this.executeWithHistory("Frame Range Delete", () => {
+        const range = this.getFrameRangeSelection();
+        const ok = this.document.deleteFrameRange(range.start, range.end);
+        if (!ok) {
+          this.showMessage("Cannot delete selected frame range.");
+          return false;
+        }
+        this.setFrameRangeSelection(this.document.activeFrameIndex, this.document.activeFrameIndex, this.document.activeFrameIndex);
+        this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        this.showMessage(`Deleted frames ${range.start + 1}-${range.end + 1}.`);
+        return true;
+      });
+      this.renderAll();
+    }
+    shiftSelectedFrameRange(direction) {
+      this.executeWithHistory(direction < 0 ? "Frame Range Shift Left" : "Frame Range Shift Right", () => {
+        const range = this.getFrameRangeSelection();
+        const result = this.document.shiftFrameRange(range.start, range.end, direction);
+        if (!result) {
+          this.showMessage(direction < 0 ? "Range already at start." : "Range already at end.");
+          return false;
+        }
+        this.setFrameRangeSelection(result.start, result.end, result.start);
+        this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        this.showMessage(`Shifted frames ${result.start + 1}-${result.end + 1}.`);
+        return true;
+      });
+      this.renderAll();
+    }
     addLayer() { this.executeWithHistory("Layer Add", () => { const ok = this.document.addLayer(); this.showMessage(ok ? "Layer added." : "Layer add failed."); return ok; }); this.renderAll(); }
     duplicateLayer() { this.executeWithHistory("Layer Duplicate", () => { const ok = this.document.duplicateLayer(); this.showMessage(ok ? "Layer duplicated." : "Layer duplicate failed."); return ok; }); this.renderAll(); }
     deleteLayer() { this.executeWithHistory("Layer Delete", () => { const ok = this.document.deleteLayer(); this.showMessage(ok ? "Layer deleted." : "Cannot delete last layer."); return ok; }); this.renderAll(); }
@@ -2612,6 +2763,21 @@ main.js
       if (solo.layerIndex < 0 || solo.layerIndex >= fr.layers.length) {
         this.document.soloState = null;
       }
+    }
+    sanitizeFrameRangeSelection() {
+      if (!this.frameRangeSelection) return;
+      const max = this.document.frames.length - 1;
+      if (max < 0) {
+        this.frameRangeSelection = null;
+        return;
+      }
+      const start = Math.max(0, Math.min(this.frameRangeSelection.start, max));
+      const end = Math.max(0, Math.min(this.frameRangeSelection.end, max));
+      this.frameRangeSelection = {
+        start: Math.min(start, end),
+        end: Math.max(start, end),
+        anchor: Math.max(0, Math.min(this.frameRangeSelection.anchor, max))
+      };
     }
     moveLayerUp() {
       this.executeWithHistory("Layer Reorder Up", () => {
@@ -2758,6 +2924,7 @@ main.js
 
     renderAll() {
       this.sanitizeSoloState();
+      this.sanitizeFrameRangeSelection();
       this.updateDirtyState();
       this.controlSurface.rebuildLayout();
       this.gridRect = this.computeGridRect();
@@ -2804,11 +2971,13 @@ main.js
       t.slots.forEach((slot) => {
         const f = this.document.frames[slot.index];
         const active = slot.index === this.document.activeFrameIndex;
+        const inRange = this.isFrameInSelectedRange(slot.index);
         const reorderTarget = this.timelineInteraction && this.timelineInteraction.mode === "reorder" && slot.index === this.timelineInteraction.targetIndex;
-        ctx.fillStyle = active ? "#244d67" : "#101a24";
+        ctx.fillStyle = inRange ? "#1d3950" : "#101a24";
+        if (active) ctx.fillStyle = "#244d67";
         if (reorderTarget) ctx.fillStyle = "#305c4a";
         ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
-        ctx.strokeStyle = active ? "#4cc9f0" : "rgba(255,255,255,0.22)";
+        ctx.strokeStyle = active ? "#4cc9f0" : (inRange ? "#7dd3fc" : "rgba(255,255,255,0.22)");
         ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
         const thumbH = slot.h - 18;
         const thumbW = slot.w - 8;
@@ -3066,6 +3235,10 @@ main.js
       const b = this.controlSurface.layout.bottomPanel, y = b.y + 78;
       const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
+      const frameRange = this.getFrameRangeSelection();
+      const frameRangeText = frameRange.explicit
+        ? `Frames ${frameRange.start + 1}-${frameRange.end + 1}`
+        : `Frame ${this.document.activeFrameIndex + 1}`;
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const activeLayer = af.layers[af.activeLayerIndex];
       const soloTag = this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? " Solo" : "";
@@ -3074,7 +3247,7 @@ main.js
       const blendTag = this.document.blendPreviewMode === "boost" ? "Blend:Boost" : "Blend:Normal";
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
       const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"}`;
-      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const toolText = `Tool: ${this.activeTool}   |   ${frameRangeText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;

@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v4.4 Docs-Only BUILD_PR
+# Sprite Editor v4.5 Docs-Only BUILD_PR
 
 Includes:
-- Merge Down requirements
-- Flatten Frame safety guidance
-- history-safe destructive action expectations
+- frame-range selection guidance
+- undo-safe batch frame operation requirements
+- layered-frame preservation expectations
 
 No code included. Codex implements.

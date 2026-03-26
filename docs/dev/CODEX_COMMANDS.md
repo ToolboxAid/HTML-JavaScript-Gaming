@@ -7,13 +7,13 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_4_LAYER_MERGE_FLATTEN_EXPORT_SAFETY.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_5_MULTI_FRAME_EDITING_BATCH_OPERATIONS.md
 
 Constraints:
 - Keep architecture intact
-- Reuse existing layer/history/dirty-state/save-load/render/command systems
-- Add Merge Down and Flatten Frame safely
-- Guard flatten with canvas-native confirm/cancel
-- Keep destructive actions undoable
-- Avoid no-op history pollution
+- Reuse existing frame/layer/history/timeline/command systems
+- Add lightweight contiguous frame-range selection
+- Add atomic undo-safe batch operations
+- Preserve layered frame data
+- Keep playback/timeline state coherent
 - Do not rewrite architecture
