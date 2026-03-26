@@ -243,6 +243,10 @@ main.js
         const w = id === "json" ? 116 : id === "meta" ? 118 : id === "png" ? 102 : 88;
         this.add("button","top-"+id,x,y,w,h,t,a); x += w + 8;
       });
+      this.add("button","top-zoom-in",x,y,84,h,"Zoom +",()=>this.app.adjustZoom(0.25)); x += 92;
+      this.add("button","top-zoom-out",x,y,84,h,"Zoom -",()=>this.app.adjustZoom(-0.25)); x += 92;
+      this.add("button","top-zoom-reset",x,y,108,h,"Reset Zoom",()=>this.app.resetZoom()); x += 116;
+      this.add("button","top-pixel",x,y,112,h,this.app.viewport.pixelPerfect ? "Pixel: On" : "Pixel: Off",()=>this.app.togglePixelPerfect());
       this.add("button","fullscreen",top.x + top.width - 122,y,106,h,this.app.isFullscreen() ? "Exit Full" : "Full Screen",()=>this.app.toggleFullscreen());
 
       x = left.x + 18; y = left.y + 18; const bw = left.width - 36, bh = 38;
@@ -254,12 +258,6 @@ main.js
       [["copy","Copy"],["cut","Cut"],["paste","Paste"],["fliph","Flip H"],["flipv","Flip V"],["clear","Clear"]].forEach(([id,t]) => {
         this.add("button","sel-"+id,x,y,bw,bh,t,()=>this.app.handleSelectionAction("sel-"+id)); y += 46;
       });
-      y += 8; this.add("label","lbl-view",x,y,bw,24,"VIEW",null); y += 28;
-      this.add("button","zoom-in",x,y,bw,bh,"Zoom +",()=>this.app.adjustZoom(0.25)); y += 46;
-      this.add("button","zoom-out",x,y,bw,bh,"Zoom -",()=>this.app.adjustZoom(-0.25)); y += 46;
-      this.add("button","zoom-reset",x,y,bw,bh,"Reset Zoom",()=>this.app.resetZoom()); y += 46;
-      this.add("button","pixel-perfect",x,y,bw,bh,this.app.viewport.pixelPerfect ? "Pixel Perfect: On" : "Pixel Perfect: Off",()=>this.app.togglePixelPerfect());
-
       x = right.x + 18; y = right.y + 18; const rw = right.width - 36;
       this.add("label","lbl-frames",x,y,rw,24,"FRAMES",null); y += 28;
       [["add","Add Frame",()=>this.app.addFrame()],["dup","Duplicate",()=>this.app.duplicateFrame()],["del","Delete",()=>this.app.deleteFrame()],["copy","Copy Frame",()=>this.app.copyFrame()],["paste","Paste Frame",()=>this.app.pasteFrame()]].forEach(([id,t,a]) => {
