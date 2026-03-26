@@ -9,7 +9,7 @@ index.html
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sprite Editor v1.2</title>
+  <title>Sprite Editor v1.3</title>
   <link rel="stylesheet" href="../../engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="./spriteEditor.css" />
 </head>
@@ -17,8 +17,8 @@ index.html
   <div class="app-shell">
     <header class="app-header">
       <div>
-        <h1>Sprite Editor v1.2</h1>
-        <p class="subtitle">Multi-frame sprite editing, animation preview, and sprite sheet export.</p>
+        <h1>Sprite Editor v1.3</h1>
+        <p class="subtitle">Multi-frame sprite editing with animation preview, sprite sheet export, frame reordering, and selection tools.</p>
       </div>
       <div class="header-actions">
         <button id="saveLocalBtn">Save Local</button>
@@ -50,6 +50,7 @@ index.html
             <button id="eraseToolBtn" class="tool">Erase</button>
             <button id="fillToolBtn" class="tool">Fill</button>
             <button id="eyedropperToolBtn" class="tool">Eyedropper</button>
+            <button id="selectToolBtn" class="tool">Select</button>
           </div>
           <label class="checkbox-row"><input id="dragDrawInput" type="checkbox" checked /> Drag draw enabled</label>
           <label class="checkbox-row"><input id="mirrorInput" type="checkbox" /> Mirror horizontally</label>
@@ -66,6 +67,18 @@ index.html
           <div class="button-row">
             <button id="addPaletteColorBtn">Add Color</button>
             <button id="removePaletteColorBtn">Remove Last</button>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Selection</h2>
+          <div class="button-row stacked">
+            <button id="copySelectionBtn">Copy Selection</button>
+            <button id="cutSelectionBtn">Cut Selection</button>
+            <button id="pasteSelectionBtn">Paste Selection</button>
+            <button id="flipHBtn">Flip Horizontal</button>
+            <button id="flipVBtn">Flip Vertical</button>
+            <button id="clearSelectionBtn">Clear Selection</button>
           </div>
         </section>
 
@@ -102,7 +115,7 @@ index.html
             <p id="statusText" class="status-text">Ready.</p>
           </div>
           <div class="legend">
-            <span><strong>LMB</strong> draw</span>
+            <span><strong>LMB</strong> draw/select</span>
             <span><strong>RMB</strong> erase</span>
           </div>
         </div>
@@ -120,6 +133,10 @@ index.html
             <button id="deleteFrameBtn">Delete</button>
             <button id="prevFrameBtn">Previous</button>
             <button id="nextFrameBtn">Next</button>
+            <button id="moveFrameLeftBtn">Move Left</button>
+            <button id="moveFrameRightBtn">Move Right</button>
+            <button id="copyFrameBtn">Copy Frame</button>
+            <button id="pasteFrameBtn">Paste Frame</button>
           </div>
           <div id="frameStrip" class="frame-strip"></div>
         </section>
@@ -154,6 +171,7 @@ index.html
             <div><strong>Filled Cells:</strong> <span id="filledCountText">0</span></div>
             <div><strong>Frame:</strong> <span id="activeFrameText">1 / 1</span></div>
             <div><strong>Preview:</strong> <span id="previewStateText">Paused</span></div>
+            <div><strong>Selection:</strong> <span id="selectionText">None</span></div>
           </div>
         </section>
 
