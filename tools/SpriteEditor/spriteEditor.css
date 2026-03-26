@@ -4,27 +4,84 @@ David Quesenberry
 03/26/2026
 spriteEditor.css
 */
-/* Tool-specific styles only */
+.editor-shell {
+  width: min(100%, 1100px);
+}
+
+.subtitle {
+  color: #93c5fd;
+}
+
 .panel {
-  border: 1px solid #2b3a53;
+  background: #111827;
+  border: 1px solid #334155;
   border-radius: 10px;
   padding: 12px;
-  margin-bottom: 14px;
-  background: #0f172a;
+  margin-bottom: 12px;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.column h2,
+.panel h2 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+canvas {
+  image-rendering: pixelated;
+  border: 1px solid #475569;
+  background: #020617;
+  width: 100%;
+  max-width: 256px;
+  height: auto;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+input[type="number"] {
+  width: 70px;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.status {
+  color: #fcd34d;
+  min-height: 1.2em;
 }
 
 .frame-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
   gap: 8px;
 }
 
 .frame-thumb {
-  border: 1px solid #3f4f6b;
+  border: 1px solid #334155;
   border-radius: 8px;
   padding: 6px;
-  background: #111827;
   text-align: center;
+  background: #0f172a;
 }
 
 .frame-thumb.active {
@@ -32,7 +89,7 @@ spriteEditor.css
   box-shadow: 0 0 0 1px #f59e0b inset;
 }
 
-.frame-thumb button {
-  width: 100%;
-  margin-top: 6px;
+.frame-thumb canvas {
+  width: 64px;
+  height: 64px;
 }

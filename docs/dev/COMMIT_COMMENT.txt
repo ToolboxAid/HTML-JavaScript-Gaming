@@ -1,1 +1,6 @@
-Align Sprite Editor v1.1 to engine UI styling (remove duplicate CSS)
+Toolbox Aid
+David Quesenberry
+03/26/2026
+COMMIT_COMMENT.txt
+
+Apply rebuilt Sprite Editor v1.1 validation and finalize tools-only scope

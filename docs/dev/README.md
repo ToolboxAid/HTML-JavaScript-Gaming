@@ -3,10 +3,19 @@ David Quesenberry
 03/26/2026
 README.md
 
-This ZIP finalizes APPLY_PR for Sprite Editor replacement.
+# APPLY_PR ZIP — Sprite Editor v1.1 Rebuild Only
 
-Includes:
-- APPLY_PR checklist in docs/pr
-- Minimal tool placeholders (already applied in repo)
+This ZIP is the clean APPLY_PR package for the rebuilt Sprite Editor v1.1.
 
-Use APPLY_PR doc as validation reference.
+## Included
+- docs/pr/APPLY_PR_TOOLS_SPRITE_EDITOR_V1_1_MULTI_FRAME_ANIMATION_PREVIEW.md
+- docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V1_1_MULTI_FRAME_ANIMATION_PREVIEW.md
+- docs/dev/README.md
+- docs/dev/CODEX_COMMANDS.md
+- docs/dev/COMMIT_COMMENT.txt
+
+## Clarification
+This applies to the rebuilt Sprite Editor only.
+No engine/ui alignment.
+No architecture rewrite.
+No old implementation carried forward into the rebuilt tool.
