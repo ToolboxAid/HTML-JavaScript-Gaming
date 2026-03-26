@@ -7,13 +7,12 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_1_LAYER_UX_REORDERING_NAMING.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_2_LAYER_VISIBILITY_SOLO_LOCK_MVP.md
 
 Constraints:
 - Keep architecture intact
-- Reuse existing layer/history/dirty-state/command systems
-- Add lightweight layer reorder support
-- Add lightweight layer rename support
-- Improve active layer clarity
-- Keep UI canvas-native and disciplined
+- Reuse existing layer/history/dirty-state/save-load/command systems
+- Add visibility UX polish, solo, and lock behavior
+- Keep solo model simple and explicit
+- Prevent locked-layer edits safely
 - Do not rewrite architecture

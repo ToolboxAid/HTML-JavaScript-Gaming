@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v4.1 Docs-Only BUILD_PR
+# Sprite Editor v4.2 Docs-Only BUILD_PR
 
 Includes:
-- layer reorder guidance
-- lightweight rename requirements
-- active-layer clarity improvements
+- layer visibility UX refinement
+- solo-layer behavior guidance
+- locked-layer editing safety requirements
 
 No code included. Codex implements.

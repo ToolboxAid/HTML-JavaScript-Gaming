@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v4.1 refining layer UX with reordering, naming, and stronger active layer clarity
+Build Sprite Editor v4.2 refining layer visibility UX and adding solo/lock MVP behavior
