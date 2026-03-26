@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v3.8 adding frame timeline strip and scrubbing interaction
+Build Sprite Editor v3.9 adding playback timeline controls and FPS adjustment
