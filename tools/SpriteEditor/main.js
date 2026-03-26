@@ -70,6 +70,7 @@ main.js
       this.selection = null;
       this.selectionClipboard = null;
       this.frameClipboard = null;
+      this.soloState = null;
       this.sheet = { layout: "horizontal", padding: 4, spacing: 2, transparent: true, backgroundColor: "#ffffff" };
     }
     makeGrid(fill = null) { return Array.from({ length: this.rows }, () => Array.from({ length: this.cols }, () => fill)); }
@@ -79,6 +80,7 @@ main.js
         id: "l_" + Math.random().toString(36).slice(2, 10),
         name,
         visible: true,
+        locked: false,
         pixels: pixels ? this.cloneGrid(pixels) : this.makeGrid()
       };
     }
@@ -100,6 +102,7 @@ main.js
           id: l.id || "l_" + i,
           name: l.name || `Layer ${i + 1}`,
           visible: l.visible !== false,
+          locked: l.locked === true,
           pixels: l.pixels ? this.cloneGrid(l.pixels) : this.makeGrid()
         }));
       }
@@ -115,8 +118,10 @@ main.js
     getCompositedPixels(frame = this.activeFrame) {
       const f = this.ensureFrameLayers(frame);
       const out = this.makeGrid();
+      const solo = this.soloState;
       for (let li = 0; li < f.layers.length; li += 1) {
         const layer = f.layers[li];
+        if (solo && solo.frameId === f.id && solo.layerIndex !== li) continue;
         if (layer.visible === false) continue;
         for (let y = 0; y < this.rows; y += 1) {
           for (let x = 0; x < this.cols; x += 1) {
@@ -159,7 +164,7 @@ main.js
     duplicateFrame() {
       const f = this.activeFrame;
       const copyLayers = this.ensureFrameLayers(f).layers.map((l) => this.makeLayer(l.name, l.pixels));
-      copyLayers.forEach((l, i) => { l.visible = f.layers[i].visible !== false; });
+      copyLayers.forEach((l, i) => { l.visible = f.layers[i].visible !== false; l.locked = f.layers[i].locked === true; });
       this.frames.splice(this.activeFrameIndex + 1, 0, { id: "f_" + Math.random().toString(36).slice(2, 10), name: f.name + " Copy", layers: copyLayers, activeLayerIndex: f.activeLayerIndex || 0 });
       this.activeFrameIndex += 1;
     }
@@ -179,7 +184,7 @@ main.js
     copyFrame() {
       const f = this.ensureFrameLayers(this.activeFrame);
       this.frameClipboard = {
-        layers: f.layers.map((l) => ({ name: l.name, visible: l.visible !== false, pixels: this.cloneGrid(l.pixels) })),
+        layers: f.layers.map((l) => ({ name: l.name, visible: l.visible !== false, locked: l.locked === true, pixels: this.cloneGrid(l.pixels) })),
         activeLayerIndex: f.activeLayerIndex || 0
       };
     }
@@ -189,6 +194,7 @@ main.js
         id: "l_" + Math.random().toString(36).slice(2, 10),
         name: l.name || `Layer ${i + 1}`,
         visible: l.visible !== false,
+        locked: l.locked === true,
         pixels: this.cloneGrid(l.pixels || this.makeGrid())
       }));
       this.activeFrame.layers = layers;
@@ -255,6 +261,7 @@ main.js
       const src = f.layers[f.activeLayerIndex];
       const dup = this.makeLayer(src.name + " Copy", src.pixels);
       dup.visible = src.visible !== false;
+      dup.locked = src.locked === true;
       f.layers.splice(f.activeLayerIndex + 1, 0, dup);
       f.activeLayerIndex += 1;
       return true;
@@ -269,6 +276,11 @@ main.js
     toggleLayerVisibility() {
       const l = this.activeLayer;
       l.visible = l.visible === false ? true : false;
+      return true;
+    }
+    toggleLayerLock() {
+      const l = this.activeLayer;
+      l.locked = l.locked === true ? false : true;
       return true;
     }
     selectLayer(index) {
@@ -325,6 +337,7 @@ main.js
               id: l.id,
               name: l.name,
               visible: l.visible !== false,
+              locked: l.locked === true,
               pixels: this.cloneGrid(l.pixels)
             }))
           };
@@ -348,6 +361,7 @@ main.js
       }
       this.activeFrameIndex = 0;
       this.selection = null;
+      this.soloState = null;
     }
   }
 
@@ -758,7 +772,7 @@ main.js
       });
       y += d.spacing;
       this.add("label","lbl-layers",x,y,rw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
-      [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()]].forEach(([id,t,a]) => {
+      [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()],["solo","Solo",()=>this.app.toggleLayerSolo()],["lock","Toggle Lock",()=>this.app.toggleLayerLock()]].forEach(([id,t,a]) => {
         this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
       [["up","Layer Up",()=>this.app.moveLayerUp()],["down","Layer Down",()=>this.app.moveLayerDown()],["rename","Rename Layer",()=>this.app.openLayerRenamePrompt()]].forEach(([id,t,a]) => {
@@ -770,8 +784,15 @@ main.js
       const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
       const layers = af.layers || [];
       layers.forEach((l, i) => {
-        const label = `${i === af.activeLayerIndex ? ">" : " "} ${l.visible === false ? "[H]" : "[V]"} ${l.name}`;
-        this.add("button", "layer-item-" + i, x, y, rw, Math.max(24, bh - 8), label, () => this.app.selectLayer(i), { layerIndex: i });
+        const hidden = !this.app.isLayerVisibleEffective(af, i);
+        const solo = this.app.isLayerSoloActiveFor(af, i);
+        const label = `${i === af.activeLayerIndex ? ">" : " "} ${hidden ? "[H]" : "[V]"} ${l.locked ? "[L]" : "[ ]"} ${solo ? "[S]" : "[ ]"} ${l.name}`;
+        this.add("button", "layer-item-" + i, x, y, rw, Math.max(24, bh - 8), label, () => this.app.selectLayer(i), {
+          layerIndex: i,
+          layerHidden: hidden,
+          layerLocked: l.locked === true,
+          layerSolo: solo
+        });
         y += Math.max(24, bh - 8) + d.spacing;
       });
       this.app.document.frames.forEach((f,i) => {
@@ -914,7 +935,9 @@ main.js
       ctx.strokeStyle = (toolActive || activeFrame || activeLayerItem || dragTarget) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
       if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
-      ctx.fillStyle = "#edf2f7"; ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial"; ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+      ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
+      ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial";
+      ctx.fillText(c.text,c.x+10,c.y+c.h/2);
       if (activeLayerItem) {
         ctx.fillStyle = "#4cc9f0";
         ctx.fillRect(c.x + 2, c.y + 2, 4, c.h - 4);
@@ -922,6 +945,14 @@ main.js
         const badge = "ACTIVE";
         const bw = ctx.measureText(badge).width;
         ctx.fillText(badge, c.x + c.w - bw - 10, c.y + c.h / 2);
+      }
+      if (c.layerLocked) {
+        ctx.strokeStyle = "#f59e0b";
+        ctx.strokeRect(c.x + c.w - 22.5, c.y + 6.5, 14, 14);
+      }
+      if (c.layerSolo) {
+        ctx.fillStyle = "#22c55e";
+        ctx.fillRect(c.x + c.w - 8, c.y + 6, 4, c.h - 12);
       }
       if (c.isCommandRow && c.category) {
         ctx.fillStyle = "#4cc9f0";
@@ -1086,6 +1117,7 @@ main.js
         layers: clip.layers.map((l, i) => ({
           name: l.name || `Layer ${i + 1}`,
           visible: l.visible !== false,
+          locked: l.locked === true,
           pixels: this.cloneGridData(l.pixels || this.document.makeGrid())
         }))
       };
@@ -1103,7 +1135,8 @@ main.js
         activeFrameIndex: this.document.activeFrameIndex,
         selection: sel,
         selectionClipboard: selClip,
-        frameClipboard: this.cloneFrameClipboardData(this.document.frameClipboard)
+        frameClipboard: this.cloneFrameClipboardData(this.document.frameClipboard),
+        soloState: this.document.soloState ? { ...this.document.soloState } : null
       };
     }
 
@@ -1119,6 +1152,7 @@ main.js
           pixels: this.cloneGridData(state.selectionClipboard.pixels)
         } : null;
         this.document.frameClipboard = this.cloneFrameClipboardData(state.frameClipboard);
+        this.document.soloState = state.soloState ? { ...state.soloState } : null;
         this.playback.previewFrameIndex = this.document.activeFrameIndex;
         this.gridRect = this.computeGridRect();
         return true;
@@ -1134,7 +1168,8 @@ main.js
         activeFrameIndex: state.activeFrameIndex,
         selection: state.selection,
         selectionClipboard: state.selectionClipboard,
-        frameClipboard: state.frameClipboard
+        frameClipboard: state.frameClipboard,
+        soloState: state.soloState
       });
     }
 
@@ -1579,6 +1614,7 @@ main.js
 
     beginSelectionMove(cell) {
       if (!this.isCellInsideSelection(cell)) return false;
+      if (!this.canEditActiveLayer(true)) return false;
       this.selectionMoveSession = {
         before: this.captureHistoryState(),
         lastCell: { x: cell.x, y: cell.y }
@@ -1596,6 +1632,7 @@ main.js
     }
 
     nudgeSelection(dx, dy, step) {
+      if (!this.canEditActiveLayer(true)) return false;
       return this.executeWithHistory(`Selection Nudge ${step}`, () => this.moveSelectionBy(dx, dy));
     }
 
@@ -1922,6 +1959,8 @@ main.js
         { id: "layer.moveUp", label: "Layer: Move Up", category: "Layer", keywords: ["layer", "move", "up", "reorder"], aliases: ["move layer up", "layer up", "reorder layer up"] },
         { id: "layer.moveDown", label: "Layer: Move Down", category: "Layer", keywords: ["layer", "move", "down", "reorder"], aliases: ["move layer down", "layer down", "reorder layer down"] },
         { id: "layer.rename", label: "Layer: Rename", category: "Layer", keywords: ["layer", "rename", "name"], aliases: ["rename layer", "layer name"] },
+        { id: "layer.solo", label: "Layer: Toggle Solo", category: "Layer", keywords: ["layer", "solo", "isolate"], aliases: ["solo layer", "isolate layer", "toggle solo"] },
+        { id: "layer.toggleLock", label: "Layer: Toggle Lock", category: "Layer", keywords: ["layer", "lock", "unlock"], aliases: ["lock layer", "unlock layer", "toggle lock"] },
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
         { id: "system.playbackPlay", label: "System: Playback Play", category: "System", keywords: ["play", "transport"], aliases: ["play"] },
@@ -2219,6 +2258,8 @@ main.js
       if (action === "layer.moveUp") { this.moveLayerUp(); return true; }
       if (action === "layer.moveDown") { this.moveLayerDown(); return true; }
       if (action === "layer.rename") { this.openLayerRenamePrompt(); return true; }
+      if (action === "layer.solo") { this.toggleLayerSolo(); return true; }
+      if (action === "layer.toggleLock") { this.toggleLayerLock(); return true; }
       if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
       if (action === "system.playback") { this.togglePlayback(); return true; }
       if (action === "system.playbackPlay") { this.togglePlayback(true); return true; }
@@ -2229,6 +2270,7 @@ main.js
       if (action === "system.playbackFpsDown") { this.adjustPlaybackFps(-1); return true; }
       if (action === "system.delete") {
         if (this.document.selection) { this.handleSelectionAction("sel-cut"); return true; }
+        if (!this.canEditActiveLayer(true)) return false;
         return this.executeWithHistory("Clear Frame", () => {
           this.document.clearFrame();
           this.showMessage("Frame cleared.");
@@ -2297,6 +2339,7 @@ main.js
         this.showMessage("Picked color.");
         return;
       }
+      if (!this.canEditActiveLayer(true)) return;
       if (this.activeTool === "fill") {
         this.document.floodFill(x,y,erase ? null : this.document.currentColor,this.mirror);
         return;
@@ -2316,6 +2359,7 @@ main.js
 
     handleSelectionAction(id) {
       const isMutating = id === "sel-cut" || id === "sel-paste" || id === "sel-fliph" || id === "sel-flipv";
+      if (isMutating && !this.canEditActiveLayer(true)) { this.renderAll(); return; }
       let ok = false;
       const run = () => {
         if (id === "sel-copy") ok = this.document.copySelection();
@@ -2339,7 +2383,59 @@ main.js
     addLayer() { this.executeWithHistory("Layer Add", () => { const ok = this.document.addLayer(); this.showMessage(ok ? "Layer added." : "Layer add failed."); return ok; }); this.renderAll(); }
     duplicateLayer() { this.executeWithHistory("Layer Duplicate", () => { const ok = this.document.duplicateLayer(); this.showMessage(ok ? "Layer duplicated." : "Layer duplicate failed."); return ok; }); this.renderAll(); }
     deleteLayer() { this.executeWithHistory("Layer Delete", () => { const ok = this.document.deleteLayer(); this.showMessage(ok ? "Layer deleted." : "Cannot delete last layer."); return ok; }); this.renderAll(); }
-    toggleLayerVisibility() { this.executeWithHistory("Layer Visibility", () => { const ok = this.document.toggleLayerVisibility(); this.showMessage(ok ? "Layer visibility toggled." : "Layer visibility failed."); return ok; }); this.renderAll(); }
+    toggleLayerVisibility() {
+      this.executeWithHistory("Layer Visibility", () => {
+        const ok = this.document.toggleLayerVisibility();
+        this.showMessage(ok ? (this.document.activeLayer.visible === false ? "Layer hidden." : "Layer visible.") : "Layer visibility failed.");
+        return ok;
+      });
+      this.renderAll();
+    }
+    toggleLayerLock() { this.executeWithHistory("Layer Lock", () => { const ok = this.document.toggleLayerLock(); this.showMessage(ok ? (this.document.activeLayer.locked ? "Layer locked." : "Layer unlocked.") : "Layer lock failed."); return ok; }); this.renderAll(); }
+    toggleLayerSolo() {
+      this.executeWithHistory("Layer Solo", () => {
+        const af = this.document.ensureFrameLayers(this.document.activeFrame);
+        const index = af.activeLayerIndex;
+        const activeSolo = this.document.soloState && this.document.soloState.frameId === af.id && this.document.soloState.layerIndex === index;
+        this.document.soloState = activeSolo ? null : { frameId: af.id, layerIndex: index };
+        this.showMessage(activeSolo ? "Layer solo cleared." : `Layer solo: ${af.layers[index].name}`);
+        return true;
+      });
+      this.renderAll();
+    }
+    isLayerSoloActiveFor(frame, layerIndex) {
+      const solo = this.document.soloState;
+      return !!(solo && frame && solo.frameId === frame.id && solo.layerIndex === layerIndex);
+    }
+    isLayerVisibleEffective(frame, layerIndex) {
+      const f = this.document.ensureFrameLayers(frame || this.document.activeFrame);
+      const layer = f.layers[layerIndex];
+      if (!layer) return false;
+      const solo = this.document.soloState;
+      if (solo && solo.frameId === f.id) return solo.layerIndex === layerIndex;
+      return layer.visible !== false;
+    }
+    canEditActiveLayer(showFeedback = true) {
+      const l = this.document.activeLayer;
+      if (l && l.locked) {
+        if (showFeedback) this.showMessage(`Layer locked: ${l.name}`);
+        return false;
+      }
+      return true;
+    }
+    sanitizeSoloState() {
+      const solo = this.document.soloState;
+      if (!solo) return;
+      const frame = this.document.frames.find((f) => f.id === solo.frameId);
+      if (!frame) {
+        this.document.soloState = null;
+        return;
+      }
+      const fr = this.document.ensureFrameLayers(frame);
+      if (solo.layerIndex < 0 || solo.layerIndex >= fr.layers.length) {
+        this.document.soloState = null;
+      }
+    }
     moveLayerUp() {
       this.executeWithHistory("Layer Reorder Up", () => {
         const af = this.document.ensureFrameLayers(this.document.activeFrame);
@@ -2484,6 +2580,7 @@ main.js
     }
 
     renderAll() {
+      this.sanitizeSoloState();
       this.updateDirtyState();
       this.controlSurface.rebuildLayout();
       this.gridRect = this.computeGridRect();
@@ -2794,9 +2891,11 @@ main.js
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const activeLayer = af.layers[af.activeLayerIndex];
+      const soloTag = this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? " Solo" : "";
+      const lockTag = activeLayer && activeLayer.locked ? " Locked" : "";
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
       const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"}`;
-      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;
