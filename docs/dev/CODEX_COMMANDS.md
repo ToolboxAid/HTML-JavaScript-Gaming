@@ -1,3 +1,10 @@
-MODEL: GPT-5.3-codex
+Toolbox Aid
+David Quesenberry
+03/26/2026
+CODEX_COMMANDS.md
+
+MODEL: GPT-5.4
 REASONING: low
-COMMAND: apply this build pr
+
+COMMAND:
+Validate APPLY_PR_TOOLS_SPRITE_EDITOR_REPLACEMENT.md checklist

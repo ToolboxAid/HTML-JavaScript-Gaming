@@ -1,5 +1,12 @@
-SpriteEditor BUILD_PR
+Toolbox Aid
+David Quesenberry
+03/26/2026
+README.md
 
-- Legacy editor renamed to spriteEditorOld
-- New SpriteEditor uses theme files
-- spriteEditor.css is structure only
+This ZIP finalizes APPLY_PR for Sprite Editor replacement.
+
+Includes:
+- APPLY_PR checklist in docs/pr
+- Minimal tool placeholders (already applied in repo)
+
+Use APPLY_PR doc as validation reference.
