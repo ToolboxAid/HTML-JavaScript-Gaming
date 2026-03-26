@@ -846,6 +846,7 @@ main.js
       this.mirror = false;
       this.selectionStart = null;
       this.selectionPasteOrigin = { x: 0, y: 0 };
+      this.selectionMoveSession = null;
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
@@ -1250,6 +1251,64 @@ main.js
       return { x: Math.floor((x - r.x) / r.pixelSize), y: Math.floor((y - r.y) / r.pixelSize) };
     }
 
+    isCellInsideSelection(cell) {
+      const s = this.document.selection;
+      if (!s || !cell) return false;
+      return cell.x >= s.x && cell.y >= s.y && cell.x < s.x + s.width && cell.y < s.y + s.height;
+    }
+
+    moveSelectionBy(dx, dy) {
+      const s = this.document.selection;
+      if (!s || (!dx && !dy)) return false;
+      const maxLeft = -s.x;
+      const maxRight = this.document.cols - (s.x + s.width);
+      const maxUp = -s.y;
+      const maxDown = this.document.rows - (s.y + s.height);
+      const cdx = Math.max(maxLeft, Math.min(maxRight, dx));
+      const cdy = Math.max(maxUp, Math.min(maxDown, dy));
+      if (!cdx && !cdy) return false;
+      const block = this.document.readSelection();
+      if (!block) return false;
+      const frame = this.document.activeFrame.pixels;
+      for (let y = 0; y < s.height; y += 1) {
+        for (let x = 0; x < s.width; x += 1) {
+          frame[s.y + y][s.x + x] = null;
+        }
+      }
+      const nx = s.x + cdx;
+      const ny = s.y + cdy;
+      for (let y = 0; y < block.height; y += 1) {
+        for (let x = 0; x < block.width; x += 1) {
+          frame[ny + y][nx + x] = block.pixels[y][x];
+        }
+      }
+      this.document.setSelection({ x: nx, y: ny, width: s.width, height: s.height });
+      this.selectionPasteOrigin = { x: nx, y: ny };
+      return true;
+    }
+
+    beginSelectionMove(cell) {
+      if (!this.isCellInsideSelection(cell)) return false;
+      this.selectionMoveSession = {
+        before: this.captureHistoryState(),
+        lastCell: { x: cell.x, y: cell.y }
+      };
+      return true;
+    }
+
+    commitSelectionMove() {
+      if (!this.selectionMoveSession) return;
+      const after = this.captureHistoryState();
+      if (this.historySignature(this.selectionMoveSession.before) !== this.historySignature(after)) {
+        this.pushHistoryEntry({ label: "Selection Move", before: this.selectionMoveSession.before, after });
+      }
+      this.selectionMoveSession = null;
+    }
+
+    nudgeSelection(dx, dy, step) {
+      return this.executeWithHistory(`Selection Nudge ${step}`, () => this.moveSelectionBy(dx, dy));
+    }
+
     onPointerMove(e) {
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
@@ -1266,6 +1325,16 @@ main.js
       }
 
       if (this.isPointerDown) {
+        if (this.selectionMoveSession && cell) {
+          const dx = cell.x - this.selectionMoveSession.lastCell.x;
+          const dy = cell.y - this.selectionMoveSession.lastCell.y;
+          if (dx || dy) {
+            this.moveSelectionBy(dx, dy);
+            this.selectionMoveSession.lastCell = { x: cell.x, y: cell.y };
+          }
+          this.renderAll();
+          return;
+        }
         if (this.activeTool === "select" && this.selectionStart && cell) {
           this.setSelectionFromTwoCells(this.selectionStart, cell);
           this.renderAll();
@@ -1303,6 +1372,11 @@ main.js
       this.hoveredGridCell = cell;
 
       if (this.activeTool === "select") {
+        if (this.beginSelectionMove(cell)) {
+          this.isPointerDown = true;
+          this.renderAll();
+          return;
+        }
         this.selectionStart = cell;
         this.setSelectionFromTwoCells(cell, cell);
         this.renderAll();
@@ -1318,10 +1392,12 @@ main.js
       const p = this.logicalPointFromEvent(e);
       if (p && this.controlSurface.pointerUp(p.x, p.y)) this.renderAll();
       this.commitStrokeHistory();
+      this.commitSelectionMove();
       this.isPointerDown = false;
       this.selectionStart = null;
       this.isPanning = false;
       this.panStart = null;
+      this.renderAll();
     }
 
     onWheel(e) {
@@ -1416,6 +1492,14 @@ main.js
         "ctrl+y": "system.redo",
         "ctrl+shift+z": "system.redo",
         "ctrl+k": "system.commandPalette",
+        "arrowup": "selection.nudge_up",
+        "arrowdown": "selection.nudge_down",
+        "arrowleft": "selection.nudge_left",
+        "arrowright": "selection.nudge_right",
+        "shift+arrowup": "selection.nudge_up_big",
+        "shift+arrowdown": "selection.nudge_down_big",
+        "shift+arrowleft": "selection.nudge_left_big",
+        "shift+arrowright": "selection.nudge_right_big",
         "shift+f": "system.fullscreen",
         "escape": "system.escape",
         "delete": "system.delete"
@@ -1447,6 +1531,10 @@ main.js
         { id: "selection.copy", label: "Selection: Copy", category: "Selection", keywords: ["copy"], aliases: ["copy selection"] },
         { id: "selection.cut", label: "Selection: Cut", category: "Selection", keywords: ["cut"], aliases: ["cut selection"] },
         { id: "selection.paste", label: "Selection: Paste", category: "Selection", keywords: ["paste"], aliases: ["paste selection"] },
+        { id: "selection.nudge_up", label: "Selection: Nudge Up", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection up"] },
+        { id: "selection.nudge_down", label: "Selection: Nudge Down", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection down"] },
+        { id: "selection.nudge_left", label: "Selection: Nudge Left", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection left"] },
+        { id: "selection.nudge_right", label: "Selection: Nudge Right", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection right"] },
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
         { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"], aliases: ["clear", "delete"] },
@@ -1677,6 +1765,12 @@ main.js
           this.showMessage("Command palette closed.");
           return true;
         }
+        if (this.selectionMoveSession) {
+          this.restoreHistoryState(this.selectionMoveSession.before);
+          this.selectionMoveSession = null;
+          this.showMessage("Selection move canceled.");
+          return true;
+        }
         if (this.controlSurface.overflowPanelOpen) {
           this.controlSurface.closeOverflowPanel();
           this.showMessage("Overflow closed.");
@@ -1713,6 +1807,14 @@ main.js
         if (this.document.selectionClipboard) { this.handleSelectionAction("sel-paste"); return true; }
         return false;
       }
+      if (action === "selection.nudge_up") return this.nudgeSelection(0, -1, "Up");
+      if (action === "selection.nudge_down") return this.nudgeSelection(0, 1, "Down");
+      if (action === "selection.nudge_left") return this.nudgeSelection(-1, 0, "Left");
+      if (action === "selection.nudge_right") return this.nudgeSelection(1, 0, "Right");
+      if (action === "selection.nudge_up_big") return this.nudgeSelection(0, -8, "Up x8");
+      if (action === "selection.nudge_down_big") return this.nudgeSelection(0, 8, "Down x8");
+      if (action === "selection.nudge_left_big") return this.nudgeSelection(-8, 0, "Left x8");
+      if (action === "selection.nudge_right_big") return this.nudgeSelection(8, 0, "Right x8");
       if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
       if (action === "system.playback") { this.togglePlayback(); return true; }
       if (action === "system.delete") {
@@ -1980,6 +2082,27 @@ main.js
       if (this.document.selection) {
         ctx.strokeStyle = "#ff9800"; ctx.lineWidth = 3;
         ctx.strokeRect(r.x+this.document.selection.x*r.pixelSize+1, r.y+this.document.selection.y*r.pixelSize+1, this.document.selection.width*r.pixelSize-2, this.document.selection.height*r.pixelSize-2);
+        const sx = r.x + this.document.selection.x * r.pixelSize;
+        const sy = r.y + this.document.selection.y * r.pixelSize;
+        const sw = this.document.selection.width * r.pixelSize;
+        const sh = this.document.selection.height * r.pixelSize;
+        const hs = Math.max(6, Math.min(12, Math.floor(r.pixelSize * 0.6)));
+        const handles = [
+          { x: sx - hs / 2, y: sy - hs / 2 },
+          { x: sx + sw - hs / 2, y: sy - hs / 2 },
+          { x: sx - hs / 2, y: sy + sh - hs / 2 },
+          { x: sx + sw - hs / 2, y: sy + sh - hs / 2 }
+        ];
+        ctx.fillStyle = "#ff9800";
+        handles.forEach((h) => {
+          ctx.fillRect(Math.floor(h.x), Math.floor(h.y), hs, hs);
+        });
+        const cx = Math.floor(sx + sw * 0.5);
+        const cy = Math.floor(sy + sh * 0.5);
+        ctx.strokeStyle = "#4cc9f0";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx - 8, cy); ctx.lineTo(cx + 8, cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, cy - 8); ctx.lineTo(cx, cy + 8); ctx.stroke();
       }
     }
 
