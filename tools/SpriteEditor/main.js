@@ -680,6 +680,7 @@ main.js
       this.pan = { x: 0, y: 0 };
       this.isPanning = false;
       this.panStart = null;
+      this.keybindings = this.createKeybindingMap();
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -837,33 +838,104 @@ main.js
     }
 
     onKeyDown(e) {
-      const k = e.key.toLowerCase();
-      if (k === "escape" && this.controlSurface.overflowPanelOpen) {
-        this.controlSurface.closeOverflowPanel();
-        this.renderAll();
-        e.preventDefault();
-        return;
-      }
-      if (k === "b") this.setTool("brush");
-      else if (k === "e") this.setTool("erase");
-      else if (k === "f") this.setTool("fill");
-      else if (k === "i") this.setTool("eyedropper");
-      else if (k === "s") this.setTool("select");
-      else if (k === "p") this.togglePlayback();
-      else if (k === "[") this.selectFrame(this.document.activeFrameIndex - 1);
-      else if (k === "]") this.selectFrame(this.document.activeFrameIndex + 1);
-      else if (e.shiftKey && k === "f") this.toggleFullscreen();
-      else if (k === "=" || k === "+") this.adjustZoom(0.25);
-      else if (k === "-") this.adjustZoom(-0.25);
-      else if (k === "0") this.resetZoom();
-      else if (k === "x") this.togglePixelPerfect();
-      else if (e.ctrlKey && k === "c") { if (this.document.selection) this.handleSelectionAction("sel-copy"); }
-      else if (e.ctrlKey && k === "x") { if (this.document.selection) this.handleSelectionAction("sel-cut"); }
-      else if (e.ctrlKey && k === "v") { if (this.document.selectionClipboard) this.handleSelectionAction("sel-paste"); }
-      else if (k === "delete") { if (this.document.selection) this.handleSelectionAction("sel-cut"); else this.document.clearFrame(); }
-      else return;
+      if (this.isTypingTarget(e.target)) return;
+      const gesture = this.getKeyGesture(e);
+      const action = this.keybindings[gesture];
+      if (!action) return;
+      const handled = this.dispatchKeybinding(action);
+      if (!handled) return;
       e.preventDefault();
       this.renderAll();
+    }
+
+    createKeybindingMap() {
+      return {
+        "b": "tool.brush",
+        "e": "tool.erase",
+        "f": "tool.fill",
+        "i": "tool.eyedropper",
+        "s": "tool.select",
+        "p": "system.playback",
+        "=": "view.zoomIn",
+        "+": "view.zoomIn",
+        "-": "view.zoomOut",
+        "0": "view.zoomReset",
+        "x": "view.pixelToggle",
+        "[": "frame.prev",
+        "]": "frame.next",
+        "ctrl+d": "frame.duplicate",
+        "ctrl+c": "selection.copy",
+        "ctrl+x": "selection.cut",
+        "ctrl+v": "selection.paste",
+        "shift+f": "system.fullscreen",
+        "escape": "system.escape",
+        "delete": "system.delete"
+      };
+    }
+
+    isTypingTarget(target) {
+      if (!target) return false;
+      const tag = (target.tagName || "").toLowerCase();
+      if (target.isContentEditable) return true;
+      return tag === "input" || tag === "textarea" || tag === "select";
+    }
+
+    getKeyGesture(e) {
+      const parts = [];
+      if (e.ctrlKey || e.metaKey) parts.push("ctrl");
+      if (e.shiftKey) parts.push("shift");
+      if (e.altKey) parts.push("alt");
+      parts.push((e.key || "").toLowerCase());
+      return parts.join("+");
+    }
+
+    dispatchKeybinding(action) {
+      if (action === "system.escape") {
+        if (this.controlSurface.overflowPanelOpen) {
+          this.controlSurface.closeOverflowPanel();
+          this.showMessage("Overflow closed.");
+          return true;
+        }
+        if (this.selectionStart) {
+          this.selectionStart = null;
+          this.showMessage("Transient selection canceled.");
+          return true;
+        }
+        return false;
+      }
+      if (action === "tool.brush") { this.setTool("brush"); return true; }
+      if (action === "tool.erase") { this.setTool("erase"); return true; }
+      if (action === "tool.fill") { this.setTool("fill"); return true; }
+      if (action === "tool.eyedropper") { this.setTool("eyedropper"); return true; }
+      if (action === "tool.select") { this.setTool("select"); return true; }
+      if (action === "view.zoomIn") { this.adjustZoom(0.25); return true; }
+      if (action === "view.zoomOut") { this.adjustZoom(-0.25); return true; }
+      if (action === "view.zoomReset") { this.resetZoom(); return true; }
+      if (action === "view.pixelToggle") { this.togglePixelPerfect(); return true; }
+      if (action === "frame.prev") { this.selectFrame(this.document.activeFrameIndex - 1); return true; }
+      if (action === "frame.next") { this.selectFrame(this.document.activeFrameIndex + 1); return true; }
+      if (action === "frame.duplicate") { this.duplicateFrame(); return true; }
+      if (action === "selection.copy") {
+        if (this.document.selection) { this.handleSelectionAction("sel-copy"); return true; }
+        return false;
+      }
+      if (action === "selection.cut") {
+        if (this.document.selection) { this.handleSelectionAction("sel-cut"); return true; }
+        return false;
+      }
+      if (action === "selection.paste") {
+        if (this.document.selectionClipboard) { this.handleSelectionAction("sel-paste"); return true; }
+        return false;
+      }
+      if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
+      if (action === "system.playback") { this.togglePlayback(); return true; }
+      if (action === "system.delete") {
+        if (this.document.selection) { this.handleSelectionAction("sel-cut"); return true; }
+        this.document.clearFrame();
+        this.showMessage("Frame cleared.");
+        return true;
+      }
+      return false;
     }
 
     adjustZoom(delta) {
@@ -1158,7 +1230,7 @@ main.js
       const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
       const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
-      const shortcutsText = "B/E/F/I/S tools  P play  [ ] frame  +/- zoom  0 reset  Shift+F full  X pixel-perfect  Shift+Drag pan";
+      const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  +/- zoom  0 reset  Shift+F full  X pixel-perfect";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "12px Arial";

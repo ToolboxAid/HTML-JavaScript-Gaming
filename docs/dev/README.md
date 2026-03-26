@@ -3,7 +3,7 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v2.7 Docs-Only BUILD_PR
+# Sprite Editor v2.8 Docs-Only BUILD_PR
 
 This ZIP contains:
 - BUILD_PR
