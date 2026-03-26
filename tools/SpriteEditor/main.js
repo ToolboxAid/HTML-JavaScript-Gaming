@@ -848,6 +848,7 @@ main.js
       this.selectionPasteOrigin = { x: 0, y: 0 };
       this.selectionMoveSession = null;
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
+      this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
       this.gridRect = null;
@@ -1482,6 +1483,8 @@ main.js
         "-": "view.zoomOut",
         "0": "view.zoomReset",
         "x": "view.pixelToggle",
+        "o": "view.onionPrevToggle",
+        "shift+o": "view.onionNextToggle",
         "[": "frame.prev",
         "]": "frame.next",
         "ctrl+d": "frame.duplicate",
@@ -1525,6 +1528,8 @@ main.js
         { id: "view.zoomOut", label: "View: Zoom Out", category: "View", keywords: ["farther", "shrink"], aliases: ["zoom out", "decrease zoom"] },
         { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "View", keywords: ["reset", "center"], aliases: ["reset zoom", "zoom reset", "center view"] },
         { id: "view.pixelToggle", label: "View: Toggle Pixel Perfect", category: "View", keywords: ["pixel", "filter"], aliases: ["pixel perfect", "toggle pixel", "pixel"] },
+        { id: "view.onionPrevToggle", label: "View: Toggle Onion Previous", category: "View", keywords: ["onion", "previous", "frame"], aliases: ["onion prev", "toggle onion previous"] },
+        { id: "view.onionNextToggle", label: "View: Toggle Onion Next", category: "View", keywords: ["onion", "next", "frame"], aliases: ["onion next", "toggle onion next"] },
         { id: "frame.prev", label: "Frame: Previous", category: "Frame", keywords: ["animation", "back"], aliases: ["prev frame", "previous frame"] },
         { id: "frame.next", label: "Frame: Next", category: "Frame", keywords: ["animation", "forward"], aliases: ["next frame"] },
         { id: "frame.duplicate", label: "Frame: Duplicate", category: "Frame", keywords: ["copy frame"], aliases: ["dup frame", "duplicate frame"] },
@@ -1792,6 +1797,8 @@ main.js
       if (action === "view.zoomOut") { this.adjustZoom(-0.25); return true; }
       if (action === "view.zoomReset") { this.resetZoom(); return true; }
       if (action === "view.pixelToggle") { this.togglePixelPerfect(); return true; }
+      if (action === "view.onionPrevToggle") { this.toggleOnionPrevious(); return true; }
+      if (action === "view.onionNextToggle") { this.toggleOnionNext(); return true; }
       if (action === "frame.prev") { this.selectFrame(this.document.activeFrameIndex - 1); return true; }
       if (action === "frame.next") { this.selectFrame(this.document.activeFrameIndex + 1); return true; }
       if (action === "frame.duplicate") { this.duplicateFrame(); return true; }
@@ -1847,6 +1854,18 @@ main.js
       this.viewport.togglePixelPerfect();
       this.resize();
       this.showMessage(this.viewport.pixelPerfect ? "Pixel perfect on." : "Pixel perfect off.");
+      this.renderAll();
+    }
+
+    toggleOnionPrevious() {
+      this.onionSkin.prev = !this.onionSkin.prev;
+      this.showMessage(this.onionSkin.prev ? "Onion previous on." : "Onion previous off.");
+      this.renderAll();
+    }
+
+    toggleOnionNext() {
+      this.onionSkin.next = !this.onionSkin.next;
+      this.showMessage(this.onionSkin.next ? "Onion next on." : "Onion next off.");
       this.renderAll();
     }
 
@@ -2064,11 +2083,38 @@ main.js
 
     drawMainGrid() {
       const r = this.gridRect, ctx = this.ctx, pixels = this.document.activeFrame.pixels;
+      const prevFrame = this.document.frames[this.document.activeFrameIndex - 1];
+      const nextFrame = this.document.frames[this.document.activeFrameIndex + 1];
       ctx.fillStyle = "#fff"; ctx.fillRect(r.x, r.y, r.width, r.height);
       for (let y=0; y<this.document.rows; y+=1) {
         for (let x=0; x<this.document.cols; x+=1) {
+          ctx.fillStyle = ((x+y)%2===0) ? "#f8fafc" : "#e2e8f0";
+          ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
+        }
+      }
+      if (this.onionSkin.prev && prevFrame) {
+        ctx.fillStyle = "rgba(80, 180, 255, 0.20)";
+        for (let y=0; y<this.document.rows; y+=1) {
+          for (let x=0; x<this.document.cols; x+=1) {
+            if (!prevFrame.pixels[y][x]) continue;
+            ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
+          }
+        }
+      }
+      if (this.onionSkin.next && nextFrame) {
+        ctx.fillStyle = "rgba(255, 170, 80, 0.18)";
+        for (let y=0; y<this.document.rows; y+=1) {
+          for (let x=0; x<this.document.cols; x+=1) {
+            if (!nextFrame.pixels[y][x]) continue;
+            ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
+          }
+        }
+      }
+      for (let y=0; y<this.document.rows; y+=1) {
+        for (let x=0; x<this.document.cols; x+=1) {
           const v = pixels[y][x];
-          ctx.fillStyle = v || (((x+y)%2===0) ? "#f8fafc" : "#e2e8f0");
+          if (!v) continue;
+          ctx.fillStyle = v;
           ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
         }
       }
@@ -2194,8 +2240,9 @@ main.js
       const b = this.controlSurface.layout.bottomPanel, y = b.y + 78;
       const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
-      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
-      const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  +/- zoom  0 reset  Shift+F full  X pixel-perfect";
+      const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
+      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "12px Arial";

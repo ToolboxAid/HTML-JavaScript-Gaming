@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v3.6 adding selection transform gizmo and precise nudge controls
+Build Sprite Editor v3.7 adding onion skin rendering for animation workflows
