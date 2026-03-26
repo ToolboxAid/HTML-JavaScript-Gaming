@@ -4,33 +4,27 @@ David Quesenberry
 03/26/2026
 spriteEditor.css
 */
-.app-shell { padding: 16px; }
-.layout { display: grid; grid-template-columns: 360px minmax(420px, 1fr) 440px; gap: 16px; align-items: start; }
-.panel { border-radius: 16px; }
-.panel-section { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.panel-section:last-child { border-bottom: none; }
-.app-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
-.subtitle, .status-text, .legend, .meta-list, .checkbox-row, .frame-thumb .label { opacity: 0.8; }
-.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field-grid label, .palette-controls label { display: grid; gap: 6px; font-size: 0.95rem; }
-.palette-controls { display: grid; gap: 10px; margin-bottom: 12px; }
-.button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-.button-row.stacked { display: grid; gap: 10px; }
-.button-row.stacked-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.checkbox-row { display: flex !important; align-items: center; gap: 8px; }
-.canvas-wrap { padding: 16px; display: flex; justify-content: center; overflow: auto; }
-#editorCanvas, #previewCanvas, #sheetCanvas { background: #fff; border: 1px solid rgba(255,255,255,0.15); image-rendering: pixelated; image-rendering: crisp-edges; }
-#sheetCanvas, #previewCanvas { width: 100%; max-width: 256px; height: auto; display: block; margin: 0 auto; }
-.swatch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.swatch { height: 36px; border-radius: 8px; border: 2px solid transparent; }
-.swatch.selected { border-color: #4cc9f0; }
-.frame-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 12px; }
-.frame-thumb { border: 1px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 10px; display: grid; gap: 6px; }
-.frame-thumb.active { outline: 2px solid #4cc9f0; }
-.frame-thumb canvas { width: 100%; aspect-ratio: 1 / 1; border: 1px solid rgba(255,255,255,0.15); background: #fff; image-rendering: pixelated; }
-.meta-list { display: grid; gap: 8px; }
-textarea { width: 100%; min-height: 220px; resize: vertical; }
-select, input, button, textarea { font: inherit; }
-.tool.active { outline: 2px solid #4cc9f0; }
-@media (max-width: 1280px) { .layout { grid-template-columns: 1fr; } }
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.sprite-editor-shell {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: stretch;
+}
+
+#spriteEditorCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: crosshair;
+}
