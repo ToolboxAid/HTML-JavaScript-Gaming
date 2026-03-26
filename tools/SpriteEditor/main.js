@@ -10,6 +10,7 @@ main.js
   const LOGICAL_W = 1600;
   const LOGICAL_H = 900;
   const STORAGE_KEY = "sprite-editor-v22";
+  const RECENT_ACTIONS_KEY = "sprite-editor-command-recent-v30";
 
   class SpriteEditorViewport {
     constructor(canvas) {
@@ -390,12 +391,7 @@ main.js
       const headerH = 64;
       const footerH = 20;
       const maxRows = 10;
-      const q = this.commandPaletteQuery.trim().toLowerCase();
-      this.commandPaletteFiltered = this.commandPaletteItems.filter((item) => {
-        if (!q) return true;
-        const hay = `${item.label} ${item.category || ""} ${item.shortcut || ""}`.toLowerCase();
-        return hay.indexOf(q) >= 0;
-      });
+      this.commandPaletteFiltered = this.app.getRankedCommandPaletteItems(this.commandPaletteItems, this.commandPaletteQuery);
       const rowCount = Math.min(maxRows, Math.max(1, this.commandPaletteFiltered.length));
       const panelH = headerH + footerH + rowCount * rowH + 16;
       const panelY = Math.max(frame.y + 12, Math.min(topBiasY, frame.y + frame.height - panelH - 12));
@@ -416,7 +412,8 @@ main.js
           isCommandRow: true,
           selected: idx === this.commandPaletteSelectedIndex,
           shortcut: item.shortcut || "",
-          category: item.category || ""
+          category: item.category || "",
+          score: item.score || 0
         });
       });
     }
@@ -585,6 +582,7 @@ main.js
       [["brush","Brush"],["erase","Erase"],["fill","Fill"],["eyedropper","Eye"],["select","Select"]].forEach(([tool,t]) => {
         this.add("button","tool-"+tool,x,y,bw,bh,t,()=>this.app.setTool(tool),{tool}); y += bh + d.spacing;
       });
+      this.add("button","mirror-toggle",x,y,bw,bh,this.app.mirror ? "Mirror: On" : "Mirror: Off",()=>this.app.toggleMirror()); y += bh + d.spacing;
       y += d.spacing;
       this.add("label","lbl-sel",x,y,bw,d.labelHeight,"SELECTION",null); y += d.labelHeight + d.spacing;
       [["copy","Copy"],["cut","Cut"],["paste","Paste"],["fliph","Flip H"],["flipv","Flip V"],["clear","Clear"]].forEach(([id,t]) => {
@@ -609,7 +607,6 @@ main.js
       this.app.document.palette.forEach((c,i) => { this.add("palette","palette-"+i,x,y,34,34,"",()=>this.app.setCurrentColor(c),{color:c}); x += 42; });
       x += d.padding;
       this.add("button","color-next",x,y,84,34,"Next",()=>this.app.nextColor()); x += 92;
-      this.add("button","mirror-toggle",x,y,108,34,this.app.mirror ? "Mirror: On" : "Mirror: Off",()=>this.app.toggleMirror());
     }
 
     getControlAt(x,y) {
@@ -734,6 +731,13 @@ main.js
       if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
       ctx.fillStyle = "#edf2f7"; ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial"; ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+      if (c.isCommandRow && c.category) {
+        ctx.fillStyle = "#4cc9f0";
+        ctx.font = "11px Arial";
+        ctx.fillText(`[${String(c.category).slice(0, 10)}]`, c.x + 10, c.y + 11);
+        ctx.fillStyle = "#edf2f7";
+        ctx.font = "13px Arial";
+      }
       if (c.isCommandRow && c.shortcut) {
         ctx.fillStyle = "#91a3b6";
         const t = `[${c.shortcut}]`;
@@ -823,13 +827,40 @@ main.js
       this.isPanning = false;
       this.panStart = null;
       this.keybindings = this.createKeybindingMap();
+      this.commandDefinitions = this.getCommandDefinitions();
       this.commandPaletteCommands = this.createCommandPaletteCommands();
+      this.recentActions = this.loadRecentActions();
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
       this.bindEvents();
       this.renderAll();
       requestAnimationFrame((ts) => this.tick(ts));
+    }
+
+    loadRecentActions() {
+      try {
+        const raw = localStorage.getItem(RECENT_ACTIONS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 40) : [];
+      } catch (_e) {
+        return [];
+      }
+    }
+
+    saveRecentActions() {
+      try {
+        localStorage.setItem(RECENT_ACTIONS_KEY, JSON.stringify(this.recentActions.slice(0, 40)));
+      } catch (_e) {
+        // Ignore localStorage failures.
+      }
+    }
+
+    trackRecentAction(actionId) {
+      if (!actionId || actionId === "system.commandPalette") return;
+      const next = [actionId].concat(this.recentActions.filter((x) => x !== actionId));
+      this.recentActions = next.slice(0, 40);
+      this.saveRecentActions();
     }
 
     bindEvents() {
@@ -1028,6 +1059,7 @@ main.js
       if (!action) return;
       const handled = this.dispatchKeybinding(action);
       if (!handled) return;
+      this.trackRecentAction(action);
       e.preventDefault();
       this.renderAll();
     }
@@ -1066,39 +1098,85 @@ main.js
       return "";
     }
 
-    createCommandPaletteCommands() {
+    getCommandDefinitions() {
       const commands = [
-        { id: "tool.brush", label: "Tool: Brush", category: "tool" },
-        { id: "tool.erase", label: "Tool: Erase", category: "tool" },
-        { id: "tool.fill", label: "Tool: Fill", category: "tool" },
-        { id: "tool.eyedropper", label: "Tool: Eyedropper", category: "tool" },
-        { id: "tool.select", label: "Tool: Select", category: "tool" },
-        { id: "view.zoomIn", label: "View: Zoom In", category: "view" },
-        { id: "view.zoomOut", label: "View: Zoom Out", category: "view" },
-        { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "view" },
-        { id: "view.pixelToggle", label: "View: Toggle Pixel Perfect", category: "view" },
-        { id: "frame.prev", label: "Frame: Previous", category: "frame" },
-        { id: "frame.next", label: "Frame: Next", category: "frame" },
-        { id: "frame.duplicate", label: "Frame: Duplicate", category: "frame" },
-        { id: "selection.copy", label: "Selection: Copy", category: "selection" },
-        { id: "selection.cut", label: "Selection: Cut", category: "selection" },
-        { id: "selection.paste", label: "Selection: Paste", category: "selection" },
-        { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "system" },
-        { id: "system.playback", label: "System: Toggle Playback", category: "system" },
-        { id: "system.delete", label: "System: Delete/Clear", category: "system" },
-        { id: "system.commandPalette", label: "System: Open Command Palette", category: "system" }
+        { id: "tool.brush", label: "Tool: Brush", category: "Tool", keywords: ["draw", "paint", "pen"] },
+        { id: "tool.erase", label: "Tool: Erase", category: "Tool", keywords: ["eraser", "remove"] },
+        { id: "tool.fill", label: "Tool: Fill", category: "Tool", keywords: ["bucket", "flood"] },
+        { id: "tool.eyedropper", label: "Tool: Eyedropper", category: "Tool", keywords: ["picker", "sample"] },
+        { id: "tool.select", label: "Tool: Select", category: "Tool", keywords: ["marquee", "selection"] },
+        { id: "view.zoomIn", label: "View: Zoom In", category: "View", keywords: ["magnify", "closer"] },
+        { id: "view.zoomOut", label: "View: Zoom Out", category: "View", keywords: ["farther", "shrink"] },
+        { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "View", keywords: ["reset", "center"] },
+        { id: "view.pixelToggle", label: "View: Toggle Pixel Perfect", category: "View", keywords: ["pixel", "filter"] },
+        { id: "frame.prev", label: "Frame: Previous", category: "Frame", keywords: ["animation", "back"] },
+        { id: "frame.next", label: "Frame: Next", category: "Frame", keywords: ["animation", "forward"] },
+        { id: "frame.duplicate", label: "Frame: Duplicate", category: "Frame", keywords: ["copy frame"] },
+        { id: "selection.copy", label: "Selection: Copy", category: "Selection", keywords: ["copy"] },
+        { id: "selection.cut", label: "Selection: Cut", category: "Selection", keywords: ["cut"] },
+        { id: "selection.paste", label: "Selection: Paste", category: "Selection", keywords: ["paste"] },
+        { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"] },
+        { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"] },
+        { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"] },
+        { id: "system.commandPalette", label: "System: Open Command Palette", category: "System", keywords: ["command", "search"] }
       ];
       const list = (typeof palettesList === "object" && palettesList) ? palettesList : null;
       if (list) {
         Object.keys(list).forEach((name) => {
-          commands.push({ id: `palette.apply:${name}`, label: `Palette: Apply ${name}`, category: "palette" });
+          commands.push({ id: `palette.apply:${name}`, label: `Palette: Apply ${name}`, category: "Palette", keywords: ["palette", "color", name] });
         });
       }
+      return commands;
+    }
+
+    createCommandPaletteCommands() {
+      const commands = this.commandDefinitions;
       return commands.map((cmd) => ({
         ...cmd,
         shortcut: this.getShortcutHintForAction(cmd.id),
         action: () => this.dispatchCommandAction(cmd.id)
       }));
+    }
+
+    fuzzyMatchScore(text, query) {
+      const t = text.toLowerCase();
+      const q = query.toLowerCase();
+      if (!q) return 0;
+      const prefix = t.indexOf(q) === 0;
+      const substringIndex = t.indexOf(q);
+      let qi = 0;
+      let lastMatch = -1;
+      let gaps = 0;
+      for (let i = 0; i < t.length && qi < q.length; i += 1) {
+        if (t[i] === q[qi]) {
+          if (lastMatch >= 0 && i !== lastMatch + 1) gaps += (i - lastMatch - 1);
+          lastMatch = i;
+          qi += 1;
+        }
+      }
+      const fuzzyMatched = qi === q.length;
+      if (!fuzzyMatched && substringIndex < 0) return -1;
+      let score = 0;
+      if (prefix) score += 1200;
+      if (substringIndex >= 0) score += Math.max(0, 600 - substringIndex * 8);
+      if (fuzzyMatched) score += Math.max(0, 420 - gaps * 7);
+      score += Math.max(0, 120 - (t.length - q.length));
+      return score;
+    }
+
+    getRankedCommandPaletteItems(items, query) {
+      const q = String(query || "").trim().toLowerCase();
+      const recentIndex = new Map();
+      this.recentActions.forEach((id, i) => recentIndex.set(id, i));
+      const ranked = items.map((item) => {
+        const hay = `${item.label} ${item.category || ""} ${item.shortcut || ""} ${(item.keywords || []).join(" ")}`;
+        const score = q ? this.fuzzyMatchScore(hay, q) : 0;
+        const recency = recentIndex.has(item.id) ? Math.max(0, 500 - recentIndex.get(item.id) * 20) : 0;
+        const total = (q ? score : 200) + recency;
+        return { ...item, score: total, _match: q ? score >= 0 : true, _recent: recency };
+      }).filter((item) => item._match);
+      ranked.sort((a, b) => (b.score - a.score) || String(a.label).localeCompare(String(b.label)));
+      return ranked;
     }
 
     openCommandPalette() {
@@ -1124,9 +1202,13 @@ main.js
 
     dispatchCommandAction(actionId) {
       if (actionId.indexOf("palette.apply:") === 0) {
-        return this.applyNamedPalette(actionId.slice("palette.apply:".length));
+        const ok = this.applyNamedPalette(actionId.slice("palette.apply:".length));
+        if (ok) this.trackRecentAction(actionId);
+        return ok;
       }
-      return this.dispatchKeybinding(actionId);
+      const ok = this.dispatchKeybinding(actionId);
+      if (ok) this.trackRecentAction(actionId);
+      return ok;
     }
 
     isTypingTarget(target) {

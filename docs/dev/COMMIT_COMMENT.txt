@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v2.9 adding command palette and action search with palette integration
+Build Sprite Editor v3.0 adding fuzzy command ranking and recent actions to command palette

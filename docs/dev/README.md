@@ -3,8 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v2.9 Docs-Only BUILD_PR
+# Sprite Editor v3.0 Docs-Only BUILD_PR
 
-Includes command palette instructions and paletteList.js integration guidance.
+Includes:
+- Fuzzy search
+- Ranked command results
+- Recent actions
 
 No code included. Codex implements.

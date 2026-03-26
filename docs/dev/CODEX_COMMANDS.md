@@ -7,11 +7,11 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V2_9_COMMAND_PALETTE_ACTION_SEARCH.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V3_0_FUZZY_COMMAND_RANKING_RECENT_ACTIONS.md
 
 Constraints:
-- Keep 1600x900 logical space fixed
-- Keep control surface central
-- Implement command palette using existing action system
-- Integrate paletteList.js appropriately (prefer editor-local copy if needed)
-- No architecture rewrite
+- Keep architecture intact
+- Add fuzzy matching + ranking
+- Add recent action tracking
+- Centralize command metadata
+- Reuse dispatch system
