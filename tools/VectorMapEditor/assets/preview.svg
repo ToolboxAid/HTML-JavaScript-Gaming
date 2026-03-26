@@ -1,0 +1,32 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/25/2026
+preview.svg
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Vector Map Editor preview">
+  <rect width="640" height="360" fill="#0b1020"/>
+  <rect x="30" y="30" width="580" height="300" rx="18" fill="#121a2f" stroke="#2a395f"/>
+  <rect x="50" y="60" width="150" height="240" rx="12" fill="#17223e" stroke="#2a395f"/>
+  <rect x="220" y="60" width="220" height="240" rx="12" fill="#080b14" stroke="#2a395f"/>
+  <rect x="460" y="60" width="130" height="240" rx="12" fill="#17223e" stroke="#2a395f"/>
+  <g stroke="#6bb8ff" stroke-width="3" fill="none">
+    <path d="M250 210 L305 120 L360 155 L395 105" />
+    <path d="M275 245 L335 190 L395 220 L370 270 Z" stroke="#ffffff" />
+  </g>
+  <g fill="#ffd86b">
+    <circle cx="250" cy="210" r="5"/>
+    <circle cx="305" cy="120" r="5"/>
+    <circle cx="360" cy="155" r="5"/>
+    <circle cx="395" cy="105" r="5"/>
+    <circle cx="275" cy="245" r="5"/>
+    <circle cx="335" cy="190" r="5"/>
+    <circle cx="395" cy="220" r="5"/>
+    <circle cx="370" cy="270" r="5"/>
+  </g>
+  <g stroke="#ff7ef4" stroke-width="2">
+    <line x1="335" y1="190" x2="355" y2="190"/>
+    <line x1="345" y1="180" x2="345" y2="200"/>
+  </g>
+  <text x="320" y="34" text-anchor="middle" fill="#ecf2ff" font-family="Arial, Helvetica, sans-serif" font-size="18">Vector Map Editor</text>
+</svg>

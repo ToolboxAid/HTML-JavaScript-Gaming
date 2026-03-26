@@ -1,0 +1,419 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/25/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vector Map Editor</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a2f;
+      --panel-2: #17223e;
+      --line: #2a395f;
+      --text: #ecf2ff;
+      --muted: #9eb0d8;
+      --accent: #6bb8ff;
+      --danger: #ff7878;
+      --success: #80e4a3;
+      --canvas-bg: #080b14;
+      --grid: #162038;
+      --handle: #ffd86b;
+      --center: #ff7ef4;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: Arial, Helvetica, sans-serif; }
+    body { display: flex; flex-direction: column; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr 360px;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        "toolbar toolbar toolbar"
+        "left center right"
+        "status status status";
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      grid-area: toolbar;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+    }
+
+    .sidebar, .rightbar {
+      padding: 12px;
+      overflow: auto;
+      background: var(--panel);
+    }
+    .sidebar { grid-area: left; border-right: 1px solid var(--line); }
+    .rightbar { grid-area: right; border-left: 1px solid var(--line); }
+
+    .canvas-shell {
+      grid-area: center;
+      position: relative;
+      background: var(--canvas-bg);
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    .statusbar {
+      grid-area: status;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .panel {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .panel h3, .panel h4 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+    }
+
+    .toolbar button, .toolbar select, .toolbar input[type="number"], .toolbar input[type="text"],
+    .sidebar button, .rightbar button, .rightbar select, .rightbar input, .rightbar textarea {
+      background: #1b2948;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font: inherit;
+    }
+
+    .toolbar button, .sidebar button, .rightbar button { cursor: pointer; }
+    .toolbar button.active, .tool-button.active { outline: 2px solid var(--accent); }
+
+    .button-row, .field-row, .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .object-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 6px;
+    }
+
+    .object-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #182441;
+      cursor: pointer;
+    }
+
+    .object-item.active {
+      outline: 2px solid var(--accent);
+    }
+
+    .canvas-layer {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .dock {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      max-height: 38%;
+      background: rgba(9, 14, 29, 0.95);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .dock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(18, 26, 47, 0.96);
+    }
+
+    .json-editor {
+      width: 100%;
+      min-height: 220px;
+      max-height: 320px;
+      resize: vertical;
+      padding: 10px;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-family: Consolas, Monaco, monospace;
+      line-height: 1.5;
+    }
+
+    .help {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .muted { color: var(--muted); }
+    .success { color: var(--success); }
+    .danger { color: var(--danger); }
+
+    .hidden { display: none !important; }
+
+    body.fullscreen-mode .app {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        "toolbar"
+        "center"
+        "status";
+    }
+
+    body.fullscreen-mode .sidebar,
+    body.fullscreen-mode .rightbar {
+      display: none;
+    }
+
+    @media (max-width: 1280px) {
+      .app {
+        grid-template-columns: 220px 1fr 320px;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr auto auto;
+        grid-template-areas:
+          "toolbar"
+          "left"
+          "center"
+          "right"
+          "status";
+      }
+      .sidebar, .rightbar {
+        border: 0;
+        border-top: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <button id="newDocumentButton">New</button>
+        <button id="saveDocumentButton">Save JSON</button>
+        <label>
+          <span class="hidden">Load JSON</span>
+          <input id="loadDocumentInput" type="file" accept=".json,application/json" />
+        </label>
+      </div>
+
+      <div class="toolbar-group">
+        <select id="workspaceModeSelect" title="Workspace mode">
+          <option value="2d">2D Edit</option>
+          <option value="3d">3D Wireframe</option>
+          <option value="json">JSON Edit</option>
+        </select>
+
+        <select id="toolModeSelect" title="Tool mode">
+          <option value="select">Select</option>
+          <option value="point">Point</option>
+          <option value="line">Line</option>
+          <option value="polyline">Polyline</option>
+          <option value="polygon">Polygon</option>
+          <option value="move">Move</option>
+          <option value="rotate">Rotate</option>
+          <option value="setCenter">Set Center</option>
+          <option value="pan">Pan</option>
+          <option value="delete">Delete</option>
+        </select>
+
+        <button id="toggleFullscreenButton">Fullscreen</button>
+        <button id="toggleJsonDockButton">JSON Dock</button>
+      </div>
+
+      <div class="toolbar-group">
+        <label>
+          Snap
+          <input id="snapSizeInput" type="number" min="1" step="1" value="10" />
+        </label>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="panel">
+        <h3>Objects</h3>
+        <div class="button-row">
+          <button id="duplicateObjectButton">Duplicate</button>
+          <button id="deleteObjectButton">Delete</button>
+        </div>
+        <ul id="objectList" class="object-list"></ul>
+      </div>
+
+      <div class="panel">
+        <h3>Document</h3>
+        <label>
+          Name
+          <input id="documentNameInput" type="text" value="untitled" />
+        </label>
+        <div class="field-grid">
+          <label>
+            Width
+            <input id="documentWidthInput" type="number" min="64" step="1" value="1280" />
+          </label>
+          <label>
+            Height
+            <input id="documentHeightInput" type="number" min="64" step="1" value="720" />
+          </label>
+          <label>
+            Background
+            <input id="documentBackgroundInput" type="text" value="#000000" />
+          </label>
+        </div>
+        <p class="help">Tip: Point, line, polyline, and polygon tools create objects in the current workspace. In polygon/polyline mode, double-click to finish.</p>
+      </div>
+    </aside>
+
+    <main class="canvas-shell" id="canvasShell">
+      <canvas id="editorCanvas" class="canvas-layer"></canvas>
+
+      <div id="jsonDock" class="dock hidden">
+        <div class="dock-header">
+          <strong>Manual JSON Editor</strong>
+          <div class="button-row">
+            <button id="jsonValidateButton">Validate</button>
+            <button id="jsonApplyButton">Apply</button>
+            <button id="jsonPrettyPrintButton">Pretty Print</button>
+            <button id="jsonRevertButton">Revert</button>
+          </div>
+        </div>
+        <textarea id="jsonEditor" class="json-editor" spellcheck="false"></textarea>
+      </div>
+    </main>
+
+    <aside class="rightbar">
+      <div class="panel">
+        <h3>Selected Object</h3>
+        <label>
+          Name
+          <input id="selectedObjectNameInput" type="text" />
+        </label>
+        <div class="field-row">
+          <label>
+            Kind
+            <input id="selectedObjectKindInput" type="text" readonly />
+          </label>
+          <label>
+            Space
+            <input id="selectedObjectSpaceInput" type="text" readonly />
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Center Point</h3>
+        <div class="button-row">
+          <button id="autoCenterBoundsButton">Bounds</button>
+          <button id="autoCenterCentroidButton">Centroid</button>
+          <button id="autoCenterOriginButton">Origin</button>
+          <button id="autoCenterSelectionButton">Selection</button>
+        </div>
+        <div class="field-grid">
+          <label>X <input id="centerXInput" type="number" step="0.1" /></label>
+          <label>Y <input id="centerYInput" type="number" step="0.1" /></label>
+          <label>Z <input id="centerZInput" type="number" step="0.1" /></label>
+        </div>
+        <div class="button-row">
+          <button id="applyCenterButton">Apply XYZ</button>
+          <button id="setCenterFromSelectionButton">Use Selected Point</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Rotation</h3>
+        <div class="field-grid">
+          <label>X <input id="rotationXInput" type="number" step="1" /></label>
+          <label>Y <input id="rotationYInput" type="number" step="1" /></label>
+          <label>Z <input id="rotationZInput" type="number" step="1" /></label>
+        </div>
+        <div class="button-row">
+          <button id="applyRotationButton">Apply Rotation</button>
+          <button id="resetRotationButton">Reset Rotation</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Points</h3>
+        <div id="pointsSummary" class="help">No selection.</div>
+      </div>
+
+      <div class="panel">
+        <h3>Keyboard & Mouse</h3>
+        <div class="help">
+          <div><strong>Pan:</strong> Space + drag or Pan tool</div>
+          <div><strong>Select:</strong> Click object/point</div>
+          <div><strong>Move:</strong> Drag selected point/object</div>
+          <div><strong>Rotate:</strong> Rotate tool + drag left/right</div>
+          <div><strong>Set Center:</strong> Click to place center</div>
+          <div><strong>Delete:</strong> Delete tool or Delete key</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="statusbar">
+      <div id="statusLeft">Ready.</div>
+      <div id="statusCenter">Mode: 2D | Tool: Select</div>
+      <div id="statusRight">Cursor: 0, 0, 0</div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
