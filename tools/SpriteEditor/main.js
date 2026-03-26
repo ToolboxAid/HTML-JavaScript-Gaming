@@ -414,11 +414,11 @@ main.js
     }
 
     isFullscreen() {
-      return document.fullscreenElement === this.canvas.closest(".sprite-editor-stage");
+      return document.fullscreenElement === this.canvas.closest(".sprite-editor-shell");
     }
 
     async toggleFullscreen() {
-      const stage = this.canvas.closest(".sprite-editor-stage");
+      const stage = this.canvas.closest(".sprite-editor-shell");
       try {
         if (this.isFullscreen()) await document.exitFullscreen();
         else await stage.requestFullscreen();

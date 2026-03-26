@@ -17,13 +17,17 @@ body { overflow: hidden; }
   place-items: center;
 }
 .sprite-editor-stage {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+#spriteEditorCanvas {
   width: min(100vw, calc(100vh * 16 / 9));
   height: min(100vh, calc(100vw * 9 / 16));
   aspect-ratio: 16 / 9;
-}
-#spriteEditorCanvas {
-  width: 100%;
-  height: 100%;
+  max-width: none;
+  max-height: none;
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
