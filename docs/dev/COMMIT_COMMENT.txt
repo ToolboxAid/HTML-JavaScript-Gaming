@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v2.4 adding toolbar density scaling with Pro mode while preserving canvas-native architecture
+Build Sprite Editor v2.6 adding control priority and overflow strategy while preserving canvas-native architecture

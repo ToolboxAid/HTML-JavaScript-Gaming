@@ -285,6 +285,34 @@ main.js
 
     add(kind, id, x, y, w, h, text, action, extra = {}) { this.controls.push({ kind, id, x, y, w, h, text, action, ...extra }); }
 
+    getTopControlPolicy(effectiveMode, selectedMode) {
+      const modeLabel = selectedMode === "auto"
+        ? `Mode: Auto (${effectiveMode === "pro" ? "Pro" : "Std"})`
+        : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard");
+      const defs = [
+        { id: "top-save", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Save", "Save", "S"] : ["Save", "Save", "S"], action: () => this.app.saveLocal() },
+        { id: "top-load", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Load", "Load", "L"] : ["Load", "Load", "L"], action: () => this.app.loadLocal() },
+        { id: "top-import", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Import", "Imp", "I"] : ["Import", "Imp", "I"], action: () => this.app.openImport() },
+        { id: "top-json", tier: 3, overflowEligible: true, labels: effectiveMode === "pro" ? ["Export", "JSON", "J"] : ["Export JSON", "JSON", "J"], action: () => this.app.exportJson(true) },
+        { id: "top-png", tier: 3, overflowEligible: true, labels: effectiveMode === "pro" ? ["PNG", "PNG", "P"] : ["PNG Sheet", "PNG", "P"], action: () => this.app.downloadSheetPng() },
+        { id: "top-meta", tier: 3, overflowEligible: true, labels: effectiveMode === "pro" ? ["Meta", "Meta", "M"] : ["Sheet Meta", "Meta", "M"], action: () => this.app.exportSheetMetadata() },
+        { id: "top-pixel", tier: 2, overflowEligible: true, labels: this.app.viewport.pixelPerfect ? ["Pixel: On", "Pixel", "Px"] : ["Pixel: Off", "Pixel", "Px"], action: () => this.app.togglePixelPerfect() }
+      ];
+      return {
+        mode: { id: "top-mode", tier: 1, labels: [modeLabel, selectedMode === "auto" ? "Mode: Auto" : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Std"), "Mode"], action: () => this.app.toggleDensityMode() },
+        zoom: {
+          out: { id: "top-zoom-out", label: "Zoom -" },
+          in: { id: "top-zoom-in", label: "Zoom +" },
+          reset: { id: "top-zoom-reset", labels: ["Reset", "Reset", "R"] }
+        },
+        controls: defs
+      };
+    }
+
+    measureButtonWidth(ctx, text, minWidth, padX) {
+      return Math.max(minWidth, Math.ceil(ctx.measureText(text).width + padX * 2));
+    }
+
     build() {
       const density = this.resolveDensity();
       const d = density.config;
@@ -294,41 +322,86 @@ main.js
       let x = top.x + d.padding;
       let y = top.y + Math.floor((top.height - d.topButtonHeight) / 2);
       const h = d.topButtonHeight;
-      const fullscreenW = effectiveMode === "pro" ? 96 : 106;
-      const fullscreenX = top.x + top.width - (d.padding + fullscreenW);
-      const modeLabel = selectedMode === "auto"
-        ? `Mode: Auto (${effectiveMode === "pro" ? "Pro" : "Std"})`
-        : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard");
+      const policy = this.getTopControlPolicy(effectiveMode, selectedMode);
+      const prevFont = this.app.ctx.font;
+      this.app.ctx.font = "13px Arial";
+      const minBtn = effectiveMode === "pro" ? 52 : 58;
+      const padX = effectiveMode === "pro" ? 10 : 12;
+      const spacingBase = d.spacing;
+      const spacing = Math.max(4, spacingBase - (effectiveMode === "pro" ? 1 : 0));
 
-      const addTop = (id, width, text, action) => {
-        if ((x + width) > (fullscreenX - d.spacing)) return;
-        this.add("button", id, x, y, width, h, text, action);
-        x += width + d.spacing;
+      const fullscreenLabel = this.app.isFullscreen() ? "Exit Full" : "Full Screen";
+      const fullscreenShort = this.app.isFullscreen() ? "Exit" : "Full";
+      const fullscreenWLong = this.measureButtonWidth(this.app.ctx, fullscreenLabel, minBtn, padX);
+      const fullscreenWShort = this.measureButtonWidth(this.app.ctx, fullscreenShort, minBtn, padX);
+      const zoomBtnW = this.measureButtonWidth(this.app.ctx, "Zoom +", minBtn, padX - 2);
+      const zoomResetW = this.measureButtonWidth(this.app.ctx, policy.zoom.reset.labels[0], minBtn, padX - 2);
+
+      let level = 0;
+      let hidden = [];
+      const computeLayout = (fitLevel) => {
+        const tryShortFullscreen = fitLevel >= 1;
+        const fsLabel = tryShortFullscreen ? fullscreenShort : fullscreenLabel;
+        const fsW = tryShortFullscreen ? fullscreenWShort : fullscreenWLong;
+        const modeText = policy.mode.labels[Math.min(fitLevel, 2)];
+        const modeW = this.measureButtonWidth(this.app.ctx, modeText, minBtn + 10, padX);
+        const showZoom = fitLevel <= 2;
+        const zoomW = showZoom ? (zoomBtnW * 2 + zoomResetW + spacing * 2 + spacing) : 0;
+        const overflowSlots = fitLevel >= 2 ? 1 : 0;
+        const overflowW = overflowSlots ? this.measureButtonWidth(this.app.ctx, "More", minBtn, padX) : 0;
+        const rightReserve = fsW + spacing + modeW + (showZoom ? (spacing + zoomW) : 0) + (overflowSlots ? (spacing + overflowW) : 0);
+        const rightStart = top.x + top.width - d.padding - rightReserve;
+        const availableRight = rightStart - spacing;
+        const leftControls = [];
+        hidden = [];
+        let leftX = x;
+        const visibleMaxTier = fitLevel >= 3 ? 1 : (fitLevel >= 2 ? 2 : 3);
+        for (const c of policy.controls) {
+          if (c.tier > visibleMaxTier && c.overflowEligible) {
+            hidden.push(c);
+            continue;
+          }
+          const label = c.labels[Math.min(fitLevel, 2)];
+          const w = this.measureButtonWidth(this.app.ctx, label, minBtn, padX);
+          if ((leftX + w) > availableRight) {
+            if (c.overflowEligible) hidden.push(c);
+            continue;
+          }
+          leftControls.push({ ...c, text: label, w, x: leftX });
+          leftX += w + spacing;
+        }
+        return {
+          fsLabel, fsW, modeText, modeW, showZoom, overflowSlots, overflowW, rightStart, leftControls
+        };
       };
 
-      const labels = effectiveMode === "pro"
-        ? { save: "Save", load: "Load", import: "Import", json: "Export", png: "PNG", meta: "Meta" }
-        : { save: "Save", load: "Load", import: "Import", json: "Export JSON", png: "PNG Sheet", meta: "Sheet Meta" };
-
-      addTop("top-save", effectiveMode === "pro" ? 76 : 88, labels.save, () => this.app.saveLocal());
-      addTop("top-load", effectiveMode === "pro" ? 76 : 88, labels.load, () => this.app.loadLocal());
-      addTop("top-import", effectiveMode === "pro" ? 84 : 88, labels.import, () => this.app.openImport());
-      addTop("top-json", effectiveMode === "pro" ? 88 : 116, labels.json, () => this.app.exportJson(true));
-      addTop("top-png", effectiveMode === "pro" ? 72 : 102, labels.png, () => this.app.downloadSheetPng());
-      addTop("top-meta", effectiveMode === "pro" ? 74 : 118, labels.meta, () => this.app.exportSheetMetadata());
-      addTop("top-pixel", effectiveMode === "pro" ? 94 : 112, this.app.viewport.pixelPerfect ? "Pixel: On" : "Pixel: Off", () => this.app.togglePixelPerfect());
-      addTop("top-mode", effectiveMode === "pro" ? 150 : 186, modeLabel, () => this.app.toggleDensityMode());
-
-      const zoomResetW = effectiveMode === "pro" ? 74 : 92;
-      const zoomBtnW = 56;
-      const zoomClusterW = zoomResetW + zoomBtnW * 2 + d.spacing * 2;
-      const zoomX = fullscreenX - d.spacing - zoomClusterW;
-      if (zoomX > x) {
-        this.add("button", "top-zoom-out", zoomX, y, zoomBtnW, h, "Zoom -", () => this.app.adjustZoom(-0.25));
-        this.add("button", "top-zoom-in", zoomX + zoomBtnW + d.spacing, y, zoomBtnW, h, "Zoom +", () => this.app.adjustZoom(0.25));
-        this.add("button", "top-zoom-reset", zoomX + zoomBtnW * 2 + d.spacing * 2, y, zoomResetW, h, "Reset", () => this.app.resetZoom());
+      let topLayout = computeLayout(level);
+      while (level < 3 && topLayout.rightStart <= x) {
+        level += 1;
+        topLayout = computeLayout(level);
       }
-      this.add("button", "fullscreen", fullscreenX, y, fullscreenW, h, this.app.isFullscreen() ? "Exit Full" : "Full Screen", () => this.app.toggleFullscreen());
+
+      topLayout.leftControls.forEach((c) => this.add("button", c.id, c.x, y, c.w, h, c.text, c.action));
+
+      let rightX = topLayout.rightStart;
+      const addRight = (id, w, text, action, extra = {}) => {
+        this.add("button", id, rightX, y, w, h, text, action, extra);
+        rightX += w + spacing;
+      };
+
+      if (topLayout.showZoom) {
+        addRight(policy.zoom.out.id, zoomBtnW, policy.zoom.out.label, () => this.app.adjustZoom(-0.25));
+        addRight(policy.zoom.in.id, zoomBtnW, policy.zoom.in.label, () => this.app.adjustZoom(0.25));
+        addRight(policy.zoom.reset.id, zoomResetW, policy.zoom.reset.labels[Math.min(level, 2)], () => this.app.resetZoom());
+      }
+      addRight(policy.mode.id, topLayout.modeW, topLayout.modeText, policy.mode.action);
+      if (topLayout.overflowSlots && hidden.length) {
+        const overflowText = `More (${hidden.length})`;
+        const overflowW = this.measureButtonWidth(this.app.ctx, overflowText, minBtn, padX);
+        addRight("top-overflow", overflowW, overflowText, () => this.app.showMessage("Hidden: " + hidden.map((c) => c.labels[0]).join(", ")), { overflowItems: hidden.map((c) => c.id) });
+      }
+      addRight("fullscreen", topLayout.fsW, topLayout.fsLabel, () => this.app.toggleFullscreen());
+      this.app.ctx.font = prevFont;
 
       x = left.x + d.padding;
       y = left.y + d.padding;
