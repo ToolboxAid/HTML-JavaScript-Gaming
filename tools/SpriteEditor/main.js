@@ -52,6 +52,7 @@ main.js
 
     togglePixelPerfect() {
       this.pixelPerfect = !this.pixelPerfect;
+      this.canvas.style.imageRendering = this.pixelPerfect ? "pixelated" : "auto";
     }
   }
 
@@ -215,6 +216,7 @@ main.js
       this.dragFrameIndex = null;
       this.dragOverFrameIndex = null;
       this.layout = null;
+      this.dragFeedbackText = "";
     }
 
     rebuildLayout() {
@@ -289,13 +291,18 @@ main.js
     pointerDown(x,y) {
       const c = this.getControlAt(x,y);
       this.pressed = c ? c.id : null;
-      if (c && c.kind === "frame") { this.dragFrameIndex = c.frameIndex; this.dragOverFrameIndex = c.frameIndex; }
+      if (c && c.kind === "frame") {
+        this.dragFrameIndex = c.frameIndex;
+        this.dragOverFrameIndex = c.frameIndex;
+        this.dragFeedbackText = "Dragging frame " + (c.frameIndex + 1);
+      }
       return c;
     }
     pointerUp(x,y) {
       const c = this.getControlAt(x,y);
       const from = this.dragFrameIndex, to = this.dragOverFrameIndex;
       this.dragFrameIndex = null; this.dragOverFrameIndex = null;
+      this.dragFeedbackText = "";
       if (from !== null && to !== null && from !== to) { this.pressed = null; this.app.reorderFrame(from,to); return true; }
       const ok = c && c.id === this.pressed;
       this.pressed = null;
@@ -316,6 +323,13 @@ main.js
       ctx.font = "13px Arial"; ctx.textBaseline = "middle";
       this.controls.forEach((c) => this.drawControl(ctx,c));
       ctx.fillStyle = "#dbe7f3"; ctx.font = "bold 18px Arial"; ctx.fillText("Sprite Editor v2.2", L.topPanel.x + L.topPanel.width/2 - 90, L.topPanel.y + 40);
+      if (this.dragFrameIndex !== null && this.dragOverFrameIndex !== null) {
+        const from = this.dragFrameIndex + 1;
+        const to = this.dragOverFrameIndex + 1;
+        ctx.fillStyle = "#4cc9f0";
+        ctx.font = "12px Arial";
+        ctx.fillText(`Reorder: ${from} -> ${to}`, L.rightPanel.x + 18, L.rightPanel.y + L.rightPanel.height - 14);
+      }
     }
 
     drawControl(ctx,c) {
@@ -377,6 +391,7 @@ main.js
       this.pan = { x: 0, y: 0 };
       this.isPanning = false;
       this.panStart = null;
+      this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
       this.bindEvents();
@@ -435,6 +450,10 @@ main.js
       const pixelSize = Math.max(4, Math.floor(basePixelSize * this.zoom));
       const width = this.document.cols * pixelSize;
       const height = this.document.rows * pixelSize;
+      const maxPanX = Math.max(0, Math.floor((width - a.width) / 2) + 40);
+      const maxPanY = Math.max(0, Math.floor((height - a.height) / 2) + 40);
+      this.pan.x = Math.max(-maxPanX, Math.min(maxPanX, this.pan.x));
+      this.pan.y = Math.max(-maxPanY, Math.min(maxPanY, this.pan.y));
       return {
         x: a.x + Math.floor((a.width - width) / 2) + this.pan.x,
         y: a.y + Math.floor((a.height - height) / 2) + this.pan.y,
@@ -563,7 +582,7 @@ main.js
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
       this.gridRect = this.computeGridRect();
-      this.showMessage("Zoom reset.");
+      this.showMessage("Zoom/pan reset.");
       this.renderAll();
     }
 
@@ -796,7 +815,7 @@ main.js
       const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "12px Arial";
-      this.ctx.fillText(`Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}`, b.x+18, y);
+      this.ctx.fillText(`Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`, b.x+18, y);
       this.ctx.fillText("B/E/F/I/S tools  P play  [ ] frame  +/- zoom  0 reset  Shift+F full  X pixel-perfect  Shift+Drag pan", b.x+18, y+22);
       this.ctx.fillStyle = performance.now() < this.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
       this.ctx.fillText(this.statusMessage, b.x+b.width-360, y);
