@@ -1,1 +1,0 @@
-Fix index and roadmap references for Pacman Full AI
