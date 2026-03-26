@@ -74,19 +74,70 @@ main.js
     }
     makeGrid(fill = null) { return Array.from({ length: this.rows }, () => Array.from({ length: this.cols }, () => fill)); }
     cloneGrid(grid) { return grid.map((r) => r.slice()); }
-    makeFrame(name) { return { id: "f_" + Math.random().toString(36).slice(2, 10), name, pixels: this.makeGrid() }; }
+    makeLayer(name = "Layer 1", pixels = null) {
+      return {
+        id: "l_" + Math.random().toString(36).slice(2, 10),
+        name,
+        visible: true,
+        pixels: pixels ? this.cloneGrid(pixels) : this.makeGrid()
+      };
+    }
+    makeFrame(name) {
+      return {
+        id: "f_" + Math.random().toString(36).slice(2, 10),
+        name,
+        layers: [this.makeLayer("Layer 1")],
+        activeLayerIndex: 0
+      };
+    }
     get activeFrame() { return this.frames[this.activeFrameIndex]; }
+    ensureFrameLayers(frame) {
+      if (!frame.layers || !Array.isArray(frame.layers) || !frame.layers.length) {
+        const basePixels = frame.pixels ? this.cloneGrid(frame.pixels) : this.makeGrid();
+        frame.layers = [this.makeLayer("Layer 1", basePixels)];
+      } else {
+        frame.layers = frame.layers.map((l, i) => ({
+          id: l.id || "l_" + i,
+          name: l.name || `Layer ${i + 1}`,
+          visible: l.visible !== false,
+          pixels: l.pixels ? this.cloneGrid(l.pixels) : this.makeGrid()
+        }));
+      }
+      if (typeof frame.activeLayerIndex !== "number") frame.activeLayerIndex = 0;
+      frame.activeLayerIndex = Math.max(0, Math.min(frame.activeLayerIndex, frame.layers.length - 1));
+      delete frame.pixels;
+      return frame;
+    }
+    get activeLayer() {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      return f.layers[f.activeLayerIndex];
+    }
+    getCompositedPixels(frame = this.activeFrame) {
+      const f = this.ensureFrameLayers(frame);
+      const out = this.makeGrid();
+      for (let li = 0; li < f.layers.length; li += 1) {
+        const layer = f.layers[li];
+        if (layer.visible === false) continue;
+        for (let y = 0; y < this.rows; y += 1) {
+          for (let x = 0; x < this.cols; x += 1) {
+            const v = layer.pixels[y][x];
+            if (v) out[y][x] = v;
+          }
+        }
+      }
+      return out;
+    }
     setPixel(x, y, value, mirror = false) {
       if (x < 0 || y < 0 || x >= this.cols || y >= this.rows) return;
-      this.activeFrame.pixels[y][x] = value;
+      this.activeLayer.pixels[y][x] = value;
       if (mirror) {
         const mx = this.cols - 1 - x;
-        if (mx >= 0 && mx < this.cols) this.activeFrame.pixels[y][mx] = value;
+        if (mx >= 0 && mx < this.cols) this.activeLayer.pixels[y][mx] = value;
       }
     }
     getPixel(x, y) {
       if (x < 0 || y < 0 || x >= this.cols || y >= this.rows) return null;
-      return this.activeFrame.pixels[y][x];
+      return this.activeLayer.pixels[y][x];
     }
     floodFill(startX, startY, nextValue, mirror = false) {
       const targetValue = this.getPixel(startX, startY);
@@ -99,7 +150,7 @@ main.js
         if (seen.has(key)) continue;
         seen.add(key);
         if (c.x < 0 || c.y < 0 || c.x >= this.cols || c.y >= this.rows) continue;
-        if (this.activeFrame.pixels[c.y][c.x] !== targetValue) continue;
+        if (this.activeLayer.pixels[c.y][c.x] !== targetValue) continue;
         this.setPixel(c.x, c.y, nextValue, mirror);
         queue.push({ x: c.x + 1, y: c.y }, { x: c.x - 1, y: c.y }, { x: c.x, y: c.y + 1 }, { x: c.x, y: c.y - 1 });
       }
@@ -107,7 +158,9 @@ main.js
     addFrame() { this.frames.push(this.makeFrame("Frame " + (this.frames.length + 1))); this.activeFrameIndex = this.frames.length - 1; }
     duplicateFrame() {
       const f = this.activeFrame;
-      this.frames.splice(this.activeFrameIndex + 1, 0, { id: "f_" + Math.random().toString(36).slice(2, 10), name: f.name + " Copy", pixels: this.cloneGrid(f.pixels) });
+      const copyLayers = this.ensureFrameLayers(f).layers.map((l) => this.makeLayer(l.name, l.pixels));
+      copyLayers.forEach((l, i) => { l.visible = f.layers[i].visible !== false; });
+      this.frames.splice(this.activeFrameIndex + 1, 0, { id: "f_" + Math.random().toString(36).slice(2, 10), name: f.name + " Copy", layers: copyLayers, activeLayerIndex: f.activeLayerIndex || 0 });
       this.activeFrameIndex += 1;
     }
     deleteFrame() {
@@ -123,9 +176,26 @@ main.js
       this.activeFrameIndex = to;
       return true;
     }
-    copyFrame() { this.frameClipboard = this.cloneGrid(this.activeFrame.pixels); }
-    pasteFrame() { if (!this.frameClipboard) return false; this.activeFrame.pixels = this.cloneGrid(this.frameClipboard); return true; }
-    clearFrame() { this.activeFrame.pixels = this.makeGrid(); }
+    copyFrame() {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      this.frameClipboard = {
+        layers: f.layers.map((l) => ({ name: l.name, visible: l.visible !== false, pixels: this.cloneGrid(l.pixels) })),
+        activeLayerIndex: f.activeLayerIndex || 0
+      };
+    }
+    pasteFrame() {
+      if (!this.frameClipboard || !Array.isArray(this.frameClipboard.layers) || !this.frameClipboard.layers.length) return false;
+      const layers = this.frameClipboard.layers.map((l, i) => ({
+        id: "l_" + Math.random().toString(36).slice(2, 10),
+        name: l.name || `Layer ${i + 1}`,
+        visible: l.visible !== false,
+        pixels: this.cloneGrid(l.pixels || this.makeGrid())
+      }));
+      this.activeFrame.layers = layers;
+      this.activeFrame.activeLayerIndex = Math.max(0, Math.min(this.frameClipboard.activeLayerIndex || 0, layers.length - 1));
+      return true;
+    }
+    clearFrame() { this.activeLayer.pixels = this.makeGrid(); }
     setSelection(rect) { this.selection = rect; }
     clearSelection() { this.selection = null; }
     readSelection() {
@@ -156,7 +226,7 @@ main.js
         for (let px = 0; px < this.selectionClipboard.width; px += 1) {
           const tx = x + px, ty = y + py;
           if (tx < 0 || ty < 0 || tx >= this.cols || ty >= this.rows) continue;
-          this.activeFrame.pixels[ty][tx] = this.selectionClipboard.pixels[py][px];
+          this.activeLayer.pixels[ty][tx] = this.selectionClipboard.pixels[py][px];
         }
       }
       return true;
@@ -169,11 +239,45 @@ main.js
       else next.reverse();
       for (let y = 0; y < block.height; y += 1) {
         for (let x = 0; x < block.width; x += 1) {
-          this.activeFrame.pixels[this.selection.y + y][this.selection.x + x] = next[y][x];
+          this.activeLayer.pixels[this.selection.y + y][this.selection.x + x] = next[y][x];
         }
       }
       return true;
     }
+    addLayer() {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      f.layers.push(this.makeLayer("Layer " + (f.layers.length + 1)));
+      f.activeLayerIndex = f.layers.length - 1;
+      return true;
+    }
+    duplicateLayer() {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      const src = f.layers[f.activeLayerIndex];
+      const dup = this.makeLayer(src.name + " Copy", src.pixels);
+      dup.visible = src.visible !== false;
+      f.layers.splice(f.activeLayerIndex + 1, 0, dup);
+      f.activeLayerIndex += 1;
+      return true;
+    }
+    deleteLayer() {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      if (f.layers.length === 1) return false;
+      f.layers.splice(f.activeLayerIndex, 1);
+      f.activeLayerIndex = Math.max(0, Math.min(f.activeLayerIndex, f.layers.length - 1));
+      return true;
+    }
+    toggleLayerVisibility() {
+      const l = this.activeLayer;
+      l.visible = l.visible === false ? true : false;
+      return true;
+    }
+    selectLayer(index) {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      f.activeLayerIndex = Math.max(0, Math.min(index, f.layers.length - 1));
+      return true;
+    }
+    selectNextLayer() { return this.selectLayer(this.activeFrame.activeLayerIndex + 1); }
+    selectPrevLayer() { return this.selectLayer(this.activeFrame.activeLayerIndex - 1); }
     computeSheetPlacement() {
       const count = this.frames.length, p = this.sheet.padding, s = this.sheet.spacing;
       let cols = 1, rows = 1;
@@ -188,7 +292,29 @@ main.js
       return { width: p * 2 + cols * this.cols + Math.max(0, cols - 1) * s, height: p * 2 + rows * this.rows + Math.max(0, rows - 1) * s, entries };
     }
     buildExportPayload() {
-      return { version: 22, kind: "sprite-editor-v2.2", cols: this.cols, rows: this.rows, palette: this.palette, currentColor: this.currentColor, sheet: this.sheet, frames: this.frames.map((f) => ({ id: f.id, name: f.name, pixels: this.cloneGrid(f.pixels) })) };
+      return {
+        version: 40,
+        kind: "sprite-editor-v4.0",
+        cols: this.cols,
+        rows: this.rows,
+        palette: this.palette,
+        currentColor: this.currentColor,
+        sheet: this.sheet,
+        frames: this.frames.map((f) => {
+          const fr = this.ensureFrameLayers(f);
+          return {
+            id: fr.id,
+            name: fr.name,
+            activeLayerIndex: fr.activeLayerIndex || 0,
+            layers: fr.layers.map((l) => ({
+              id: l.id,
+              name: l.name,
+              visible: l.visible !== false,
+              pixels: this.cloneGrid(l.pixels)
+            }))
+          };
+        })
+      };
     }
     buildSheetMetadata() {
       const plc = this.computeSheetPlacement();
@@ -201,9 +327,9 @@ main.js
       this.currentColor = payload.currentColor || this.palette[0];
       this.sheet = { ...this.sheet, ...(payload.sheet || {}) };
       if (Array.isArray(payload.frames) && payload.frames.length) {
-        this.frames = payload.frames.map((f, i) => ({ id: f.id || "f_" + i, name: f.name || "Frame " + (i + 1), pixels: f.pixels || this.makeGrid() }));
+        this.frames = payload.frames.map((f, i) => this.ensureFrameLayers({ id: f.id || "f_" + i, name: f.name || "Frame " + (i + 1), activeLayerIndex: f.activeLayerIndex || 0, layers: f.layers, pixels: f.pixels }));
       } else if (Array.isArray(payload.pixels)) {
-        this.frames = [{ id: "f_1", name: "Frame 1", pixels: payload.pixels }];
+        this.frames = [this.ensureFrameLayers({ id: "f_1", name: "Frame 1", pixels: payload.pixels })];
       }
       this.activeFrameIndex = 0;
       this.selection = null;
@@ -776,7 +902,7 @@ main.js
       }
       if (c.kind === "frame") {
         const f = this.app.document.frames[c.frameIndex];
-        this.drawMiniFrame(ctx, f.pixels, c.x+c.w-54, c.y+8, 46, c.h-16);
+        this.drawMiniFrame(ctx, this.app.document.getCompositedPixels(f), c.x+c.w-54, c.y+8, 46, c.h-16);
       }
     }
 
@@ -911,6 +1037,17 @@ main.js
       if (!Array.isArray(grid)) return null;
       return grid.map((row) => Array.isArray(row) ? row.slice() : row);
     }
+    cloneFrameClipboardData(clip) {
+      if (!clip || !Array.isArray(clip.layers)) return null;
+      return {
+        activeLayerIndex: clip.activeLayerIndex || 0,
+        layers: clip.layers.map((l, i) => ({
+          name: l.name || `Layer ${i + 1}`,
+          visible: l.visible !== false,
+          pixels: this.cloneGridData(l.pixels || this.document.makeGrid())
+        }))
+      };
+    }
 
     captureHistoryState() {
       const sel = this.document.selection ? { ...this.document.selection } : null;
@@ -924,7 +1061,7 @@ main.js
         activeFrameIndex: this.document.activeFrameIndex,
         selection: sel,
         selectionClipboard: selClip,
-        frameClipboard: this.document.frameClipboard ? this.cloneGridData(this.document.frameClipboard) : null
+        frameClipboard: this.cloneFrameClipboardData(this.document.frameClipboard)
       };
     }
 
@@ -939,7 +1076,7 @@ main.js
           height: state.selectionClipboard.height,
           pixels: this.cloneGridData(state.selectionClipboard.pixels)
         } : null;
-        this.document.frameClipboard = state.frameClipboard ? this.cloneGridData(state.frameClipboard) : null;
+        this.document.frameClipboard = this.cloneFrameClipboardData(state.frameClipboard);
         this.playback.previewFrameIndex = this.document.activeFrameIndex;
         this.gridRect = this.computeGridRect();
         return true;
@@ -1324,7 +1461,7 @@ main.js
       if (!cdx && !cdy) return false;
       const block = this.document.readSelection();
       if (!block) return false;
-      const frame = this.document.activeFrame.pixels;
+      const frame = this.document.activeLayer.pixels;
       for (let y = 0; y < s.height; y += 1) {
         for (let x = 0; x < s.width; x += 1) {
           frame[s.y + y][s.x + x] = null;
@@ -2222,7 +2359,7 @@ main.js
         ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
         const thumbH = slot.h - 18;
         const thumbW = slot.w - 8;
-        this.drawMiniPixels(f.pixels, slot.x + 4, slot.y + 2, thumbW, thumbH);
+        this.drawMiniPixels(this.document.getCompositedPixels(f), slot.x + 4, slot.y + 2, thumbW, thumbH);
         ctx.fillStyle = "#dbe7f3";
         ctx.font = "11px Arial";
         ctx.fillText(String(slot.index + 1), slot.x + 4, slot.y + slot.h - 6);
@@ -2267,9 +2404,11 @@ main.js
     }
 
     drawMainGrid() {
-      const r = this.gridRect, ctx = this.ctx, pixels = this.document.activeFrame.pixels;
+      const r = this.gridRect, ctx = this.ctx, pixels = this.document.getCompositedPixels(this.document.activeFrame);
       const prevFrame = this.document.frames[this.document.activeFrameIndex - 1];
       const nextFrame = this.document.frames[this.document.activeFrameIndex + 1];
+      const prevPixels = prevFrame ? this.document.getCompositedPixels(prevFrame) : null;
+      const nextPixels = nextFrame ? this.document.getCompositedPixels(nextFrame) : null;
       ctx.fillStyle = "#fff"; ctx.fillRect(r.x, r.y, r.width, r.height);
       for (let y=0; y<this.document.rows; y+=1) {
         for (let x=0; x<this.document.cols; x+=1) {
@@ -2277,20 +2416,20 @@ main.js
           ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
         }
       }
-      if (this.onionSkin.prev && prevFrame) {
+      if (this.onionSkin.prev && prevPixels) {
         ctx.fillStyle = "rgba(80, 180, 255, 0.20)";
         for (let y=0; y<this.document.rows; y+=1) {
           for (let x=0; x<this.document.cols; x+=1) {
-            if (!prevFrame.pixels[y][x]) continue;
+            if (!prevPixels[y][x]) continue;
             ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
           }
         }
       }
-      if (this.onionSkin.next && nextFrame) {
+      if (this.onionSkin.next && nextPixels) {
         ctx.fillStyle = "rgba(255, 170, 80, 0.18)";
         for (let y=0; y<this.document.rows; y+=1) {
           for (let x=0; x<this.document.cols; x+=1) {
-            if (!nextFrame.pixels[y][x]) continue;
+            if (!nextPixels[y][x]) continue;
             ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
           }
         }
@@ -2342,7 +2481,7 @@ main.js
       this.ctx.fillStyle = "#1a2733"; this.ctx.fillRect(x,y,w,h); this.ctx.strokeStyle = "rgba(255,255,255,0.15)"; this.ctx.strokeRect(x+0.5,y+0.5,w-1,h-1);
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "bold 12px Arial"; this.ctx.fillText("ANIMATION PREVIEW",x+12,y+16);
       const f = this.playback.isPlaying ? this.document.frames[this.playback.previewFrameIndex] : this.document.activeFrame;
-      this.drawMiniPixels(f.pixels,x+12,y+24,72,72);
+      this.drawMiniPixels(this.document.getCompositedPixels(f),x+12,y+24,72,72);
       this.ctx.font = "12px Arial";
       this.ctx.fillText("Frame "+(this.document.activeFrameIndex+1)+" / "+this.document.frames.length,x+96,y+36);
       this.ctx.fillText(this.playback.isPlaying ? "Playing" : "Paused",x+96,y+58);
@@ -2377,9 +2516,10 @@ main.js
       else { ctx.fillStyle = this.document.sheet.backgroundColor; ctx.fillRect(drawX,drawY,drawW,drawH); }
       this.document.frames.forEach((f,i) => {
         const e = plc.entries[i];
+        const cpx = this.document.getCompositedPixels(f);
         for (let y=0; y<this.document.rows; y+=1) {
           for (let x=0; x<this.document.cols; x+=1) {
-            const v = f.pixels[y][x];
+            const v = cpx[y][x];
             if (!v) continue;
             ctx.fillStyle = v;
             ctx.fillRect(drawX+(e.x+x)*scale, drawY+(e.y+y)*scale, scale, scale);

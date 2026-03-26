@@ -3,11 +3,12 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v3.9 Docs-Only BUILD_PR
+# Sprite Editor v4.0 Docs-Only BUILD_PR
 
 Includes:
-- timeline-aware playback transport guidance
-- FPS control requirements
-- command-palette integration for playback actions
+- per-frame layered structure guidance
+- active-layer editing rules
+- composited rendering requirements
+- backward-compatible migration expectations
 
 No code included. Codex implements.

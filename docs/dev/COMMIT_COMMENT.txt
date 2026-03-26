@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v3.9 adding playback timeline controls and FPS adjustment
+Build Sprite Editor v4.0 adding a minimal layered frame system with active layer editing and composited rendering
