@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v4.5 adding multi-frame range selection and undo-safe batch frame operations
+Build Sprite Editor v4.6 adding playback range, loop segment control, and timeline preview scrub

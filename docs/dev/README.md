@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v4.5 Docs-Only BUILD_PR
+# Sprite Editor v4.6 Docs-Only BUILD_PR
 
 Includes:
-- frame-range selection guidance
-- undo-safe batch frame operation requirements
-- layered-frame preservation expectations
+- playback range guidance
+- loop-segment behavior
+- timeline hover/preview scrub requirements
 
 No code included. Codex implements.

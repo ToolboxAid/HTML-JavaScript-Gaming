@@ -1236,6 +1236,8 @@ main.js
       this.timelineInteraction = null;
       this.timelineStripRect = null;
       this.frameRangeSelection = null;
+      this.playbackRange = { enabled: false, startFrame: 0, endFrame: 0 };
+      this.timelineHoverIndex = null;
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
@@ -1787,6 +1789,50 @@ main.js
       this.frameRangeSelection = null;
       if (showMessage) this.showMessage("Frame range cleared.");
     }
+    getPlaybackRange() {
+      const max = Math.max(0, this.document.frames.length - 1);
+      const start = Math.max(0, Math.min(this.playbackRange.startFrame, this.playbackRange.endFrame, max));
+      const end = Math.max(0, Math.min(Math.max(this.playbackRange.startFrame, this.playbackRange.endFrame), max));
+      return { enabled: !!this.playbackRange.enabled, startFrame: start, endFrame: end };
+    }
+    setPlaybackRange(startFrame, endFrame, enabled = true) {
+      const max = Math.max(0, this.document.frames.length - 1);
+      const start = Math.max(0, Math.min(startFrame, endFrame, max));
+      const end = Math.max(0, Math.min(Math.max(startFrame, endFrame), max));
+      this.playbackRange = { enabled: !!enabled, startFrame: start, endFrame: end };
+    }
+    clearPlaybackRange(showMessage = false) {
+      this.playbackRange.enabled = false;
+      this.playbackRange.startFrame = 0;
+      this.playbackRange.endFrame = Math.max(0, this.document.frames.length - 1);
+      if (showMessage) this.showMessage("Playback range cleared.");
+    }
+    isFrameInPlaybackRange(index) {
+      const range = this.getPlaybackRange();
+      if (!range.enabled) return false;
+      return index >= range.startFrame && index <= range.endFrame;
+    }
+    setPlaybackRangeFromSelection() {
+      const range = this.getFrameRangeSelection();
+      if (!range.explicit || range.start === range.end) {
+        this.showMessage("Select at least two frames first.");
+        return false;
+      }
+      this.setPlaybackRange(range.start, range.end, true);
+      this.showMessage(`Playback range: ${range.start + 1}-${range.end + 1}`);
+      this.renderAll();
+      return true;
+    }
+    jumpToPlaybackRangeEdge(toEnd) {
+      const range = this.getPlaybackRange();
+      if (!range.enabled) {
+        this.showMessage("Playback range not set.");
+        return false;
+      }
+      this.selectFrame(toEnd ? range.endFrame : range.startFrame);
+      this.showMessage(toEnd ? "Jumped to range end." : "Jumped to range start.");
+      return true;
+    }
 
     isCellInsideSelection(cell) {
       const s = this.document.selection;
@@ -1864,6 +1910,8 @@ main.js
         this.renderAll();
         return;
       }
+      const hoverTimelineIndex = this.getTimelineIndexAt(p);
+      this.timelineHoverIndex = hoverTimelineIndex;
       this.controlSurface.updateHover(p.x, p.y);
       const cell = this.getGridCellAtLogical(p.x, p.y);
       this.hoveredGridCell = cell;
@@ -1995,6 +2043,7 @@ main.js
       this.selectionStart = null;
       this.isPanning = false;
       this.panStart = null;
+      if (!p || this.getTimelineIndexAt(p) === null) this.timelineHoverIndex = null;
       this.renderAll();
     }
 
@@ -2198,6 +2247,11 @@ main.js
         { id: "system.playbackLoopToggle", label: "System: Toggle Playback Loop", category: "System", keywords: ["loop", "playback"], aliases: ["toggle loop", "loop"] },
         { id: "system.playbackFpsUp", label: "System: Increase Playback FPS", category: "System", keywords: ["fps", "speed", "increase"], aliases: ["fps up", "increase fps"] },
         { id: "system.playbackFpsDown", label: "System: Decrease Playback FPS", category: "System", keywords: ["fps", "speed", "decrease"], aliases: ["fps down", "decrease fps"] },
+        { id: "playback.setRangeFromSelection", label: "Playback: Set Range From Selection", category: "Playback", keywords: ["playback", "range", "selection", "loop"], aliases: ["set playback range", "range from selection", "set range from selection"] },
+        { id: "playback.clearRange", label: "Playback: Clear Range", category: "Playback", keywords: ["playback", "range", "clear"], aliases: ["clear playback range", "clear range"] },
+        { id: "playback.toggleRangeLoop", label: "Playback: Toggle Range Loop", category: "Playback", keywords: ["playback", "range", "loop"], aliases: ["toggle range loop", "range loop"] },
+        { id: "playback.jumpRangeStart", label: "Playback: Jump To Range Start", category: "Playback", keywords: ["playback", "range", "start", "jump"], aliases: ["jump to range start", "range start"] },
+        { id: "playback.jumpRangeEnd", label: "Playback: Jump To Range End", category: "Playback", keywords: ["playback", "range", "end", "jump"], aliases: ["jump to range end", "range end"] },
         { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"], aliases: ["clear", "delete"] },
         { id: "system.saveLocal", label: "System: Save Local", category: "System", keywords: ["save", "local"], aliases: ["save"] },
         { id: "system.loadLocal", label: "System: Load Local", category: "System", keywords: ["load", "local"], aliases: ["load"] },
@@ -2508,6 +2562,29 @@ main.js
       if (action === "system.playbackLoopToggle") { this.togglePlaybackLoop(); return true; }
       if (action === "system.playbackFpsUp") { this.adjustPlaybackFps(1); return true; }
       if (action === "system.playbackFpsDown") { this.adjustPlaybackFps(-1); return true; }
+      if (action === "playback.setRangeFromSelection") return this.setPlaybackRangeFromSelection();
+      if (action === "playback.clearRange") {
+        const hadRange = this.getPlaybackRange().enabled;
+        if (!hadRange) {
+          this.showMessage("Playback range already clear.");
+          return false;
+        }
+        this.clearPlaybackRange(true);
+        this.renderAll();
+        return true;
+      }
+      if (action === "playback.toggleRangeLoop") {
+        const range = this.getPlaybackRange();
+        if (range.enabled) {
+          this.clearPlaybackRange(true);
+        } else {
+          if (!this.setPlaybackRangeFromSelection()) return false;
+        }
+        this.renderAll();
+        return true;
+      }
+      if (action === "playback.jumpRangeStart") return this.jumpToPlaybackRangeEdge(false);
+      if (action === "playback.jumpRangeEnd") return this.jumpToPlaybackRangeEdge(true);
       if (action === "system.delete") {
         if (this.document.selection) { this.handleSelectionAction("sel-cut"); return true; }
         if (!this.canEditActiveLayer(true)) return false;
@@ -2631,6 +2708,7 @@ main.js
         this.setFrameRangeSelection(result.start, result.end, result.start);
         this.document.activeFrameIndex = result.start;
         this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        this.sanitizePlaybackRange();
         this.showMessage(`Duplicated frames ${result.start + 1}-${result.end + 1}.`);
         return true;
       });
@@ -2646,6 +2724,7 @@ main.js
         }
         this.setFrameRangeSelection(this.document.activeFrameIndex, this.document.activeFrameIndex, this.document.activeFrameIndex);
         this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        this.sanitizePlaybackRange();
         this.showMessage(`Deleted frames ${range.start + 1}-${range.end + 1}.`);
         return true;
       });
@@ -2661,6 +2740,7 @@ main.js
         }
         this.setFrameRangeSelection(result.start, result.end, result.start);
         this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        this.sanitizePlaybackRange();
         this.showMessage(`Shifted frames ${result.start + 1}-${result.end + 1}.`);
         return true;
       });
@@ -2779,6 +2859,20 @@ main.js
         anchor: Math.max(0, Math.min(this.frameRangeSelection.anchor, max))
       };
     }
+    sanitizePlaybackRange() {
+      const max = Math.max(0, this.document.frames.length - 1);
+      this.playbackRange.startFrame = Math.max(0, Math.min(this.playbackRange.startFrame, max));
+      this.playbackRange.endFrame = Math.max(0, Math.min(this.playbackRange.endFrame, max));
+      if (this.playbackRange.endFrame < this.playbackRange.startFrame) {
+        const next = this.playbackRange.startFrame;
+        this.playbackRange.startFrame = this.playbackRange.endFrame;
+        this.playbackRange.endFrame = next;
+      }
+      if (this.document.frames.length <= 1) this.playbackRange.enabled = false;
+      if (this.timelineHoverIndex !== null && (this.timelineHoverIndex < 0 || this.timelineHoverIndex > max)) {
+        this.timelineHoverIndex = null;
+      }
+    }
     moveLayerUp() {
       this.executeWithHistory("Layer Reorder Up", () => {
         const af = this.document.ensureFrameLayers(this.document.activeFrame);
@@ -2826,15 +2920,26 @@ main.js
     togglePlayback(force) {
       if (typeof force === "boolean") this.playback.isPlaying = force;
       else this.playback.isPlaying = !this.playback.isPlaying;
-      if (this.playback.isPlaying) { this.playback.previewFrameIndex = this.document.activeFrameIndex; this.playback.lastTick = performance.now(); }
+      if (this.playback.isPlaying) {
+        const range = this.getPlaybackRange();
+        if (range.enabled) {
+          this.playback.previewFrameIndex = Math.max(range.startFrame, Math.min(range.endFrame, this.document.activeFrameIndex));
+          this.document.activeFrameIndex = this.playback.previewFrameIndex;
+        } else {
+          this.playback.previewFrameIndex = this.document.activeFrameIndex;
+        }
+        this.playback.lastTick = performance.now();
+      }
       this.showMessage(this.playback.isPlaying ? "Playback started." : "Playback paused.");
       this.renderAll();
     }
 
     stopPlayback() {
       this.playback.isPlaying = false;
-      this.playback.previewFrameIndex = 0;
-      this.selectFrame(0);
+      const range = this.getPlaybackRange();
+      const nextIndex = range.enabled ? range.startFrame : 0;
+      this.playback.previewFrameIndex = nextIndex;
+      this.selectFrame(nextIndex);
       this.showMessage("Playback stopped.");
     }
 
@@ -2912,9 +3017,18 @@ main.js
         const fd = 1000 / this.playback.fps;
         if (ts - this.playback.lastTick >= fd) {
           this.playback.lastTick = ts;
-          if (this.playback.previewFrameIndex < this.document.frames.length - 1) this.playback.previewFrameIndex += 1;
-          else if (this.playback.loop) this.playback.previewFrameIndex = 0;
-          else this.playback.isPlaying = false;
+          const range = this.getPlaybackRange();
+          const start = range.enabled ? range.startFrame : 0;
+          const end = range.enabled ? range.endFrame : Math.max(0, this.document.frames.length - 1);
+          if (this.playback.previewFrameIndex < start || this.playback.previewFrameIndex > end) {
+            this.playback.previewFrameIndex = start;
+          } else if (this.playback.previewFrameIndex < end) {
+            this.playback.previewFrameIndex += 1;
+          } else if (this.playback.loop) {
+            this.playback.previewFrameIndex = start;
+          } else {
+            this.playback.isPlaying = false;
+          }
           this.document.activeFrameIndex = this.playback.previewFrameIndex;
           this.renderAll();
         }
@@ -2925,6 +3039,7 @@ main.js
     renderAll() {
       this.sanitizeSoloState();
       this.sanitizeFrameRangeSelection();
+      this.sanitizePlaybackRange();
       this.updateDirtyState();
       this.controlSurface.rebuildLayout();
       this.gridRect = this.computeGridRect();
@@ -2972,12 +3087,17 @@ main.js
         const f = this.document.frames[slot.index];
         const active = slot.index === this.document.activeFrameIndex;
         const inRange = this.isFrameInSelectedRange(slot.index);
+        const inPlaybackRange = this.isFrameInPlaybackRange(slot.index);
+        const hoverPreview = this.timelineHoverIndex === slot.index;
         const reorderTarget = this.timelineInteraction && this.timelineInteraction.mode === "reorder" && slot.index === this.timelineInteraction.targetIndex;
         ctx.fillStyle = inRange ? "#1d3950" : "#101a24";
+        if (inPlaybackRange) ctx.fillStyle = "#28344f";
         if (active) ctx.fillStyle = "#244d67";
+        if (hoverPreview && !active) ctx.fillStyle = "#2f4858";
         if (reorderTarget) ctx.fillStyle = "#305c4a";
         ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
         ctx.strokeStyle = active ? "#4cc9f0" : (inRange ? "#7dd3fc" : "rgba(255,255,255,0.22)");
+        if (inPlaybackRange && !active) ctx.strokeStyle = "#fbbf24";
         ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
         const thumbH = slot.h - 18;
         const thumbW = slot.w - 8;
@@ -2985,6 +3105,10 @@ main.js
         ctx.fillStyle = "#dbe7f3";
         ctx.font = "11px Arial";
         ctx.fillText(String(slot.index + 1), slot.x + 4, slot.y + slot.h - 6);
+        if (inPlaybackRange) {
+          ctx.fillStyle = "#fbbf24";
+          ctx.fillRect(slot.x + 2, slot.y + slot.h - 4, slot.w - 4, 2);
+        }
       });
     }
 
@@ -3150,11 +3274,14 @@ main.js
       const p = this.controlSurface.layout.rightPanel, x = p.x + 18, y = p.y + p.height - 248, w = p.width - 36, h = 98;
       this.ctx.fillStyle = "#1a2733"; this.ctx.fillRect(x,y,w,h); this.ctx.strokeStyle = "rgba(255,255,255,0.15)"; this.ctx.strokeRect(x+0.5,y+0.5,w-1,h-1);
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "bold 12px Arial"; this.ctx.fillText("ANIMATION PREVIEW",x+12,y+16);
-      const f = this.playback.isPlaying ? this.document.frames[this.playback.previewFrameIndex] : this.document.activeFrame;
+      const previewIndex = this.playback.isPlaying
+        ? this.playback.previewFrameIndex
+        : (this.timelineHoverIndex !== null ? this.timelineHoverIndex : this.document.activeFrameIndex);
+      const f = this.document.frames[Math.max(0, Math.min(previewIndex, this.document.frames.length - 1))];
       this.drawMiniPixels(this.document.getCompositedPixels(f),x+12,y+24,72,72);
       this.ctx.font = "12px Arial";
-      this.ctx.fillText("Frame "+(this.document.activeFrameIndex+1)+" / "+this.document.frames.length,x+96,y+36);
-      this.ctx.fillText(this.playback.isPlaying ? "Playing" : "Paused",x+96,y+58);
+      this.ctx.fillText("Frame "+(previewIndex+1)+" / "+this.document.frames.length,x+96,y+36);
+      this.ctx.fillText(this.playback.isPlaying ? "Playing" : (this.timelineHoverIndex !== null ? "Hover Preview" : "Paused"),x+96,y+58);
       this.ctx.fillText("P play/pause  [ ] frame",x+96,y+80);
     }
 
@@ -3239,6 +3366,11 @@ main.js
       const frameRangeText = frameRange.explicit
         ? `Frames ${frameRange.start + 1}-${frameRange.end + 1}`
         : `Frame ${this.document.activeFrameIndex + 1}`;
+      const playbackRange = this.getPlaybackRange();
+      const playbackRangeText = playbackRange.enabled
+        ? `Range ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}`
+        : "Range Off";
+      const hoverPreviewText = this.timelineHoverIndex !== null ? `Hover ${this.timelineHoverIndex + 1}` : "Hover -";
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const activeLayer = af.layers[af.activeLayerIndex];
       const soloTag = this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? " Solo" : "";
@@ -3246,8 +3378,8 @@ main.js
       const opacityTag = activeLayer ? ` ${Math.round(((typeof activeLayer.opacity === "number" ? activeLayer.opacity : 1) * 100))}%` : "";
       const blendTag = this.document.blendPreviewMode === "boost" ? "Blend:Boost" : "Blend:Normal";
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
-      const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"}`;
-      const toolText = `Tool: ${this.activeTool}   |   ${frameRangeText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"} ${playbackRangeText}`;
+      const toolText = `Tool: ${this.activeTool}   |   ${frameRangeText}   |   ${hoverPreviewText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;
