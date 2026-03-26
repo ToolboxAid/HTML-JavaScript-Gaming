@@ -4,8 +4,19 @@ David Quesenberry
 03/25/2026
 VectorMapDocument.js
 */
+const DEFAULT_FLAGS = {
+  collidable: false,
+  deadly: false,
+  trigger: false,
+  spawnBlocker: false,
+  projectileBlocker: false,
+  playerOnly: false,
+  enemyOnly: false,
+  tag: ""
+};
+
 const DEFAULT_DOCUMENT = {
-  version: 2,
+  version: 3,
   name: "untitled",
   mode: "2d",
   width: 1280,
@@ -33,7 +44,7 @@ export class VectorMapDocument {
 
   normalizeDocument(input) {
     const data = clone({ ...DEFAULT_DOCUMENT, ...(input || {}) });
-    data.version = Number.isFinite(data.version) ? data.version : 2;
+    data.version = Number.isFinite(data.version) ? Number(data.version) : DEFAULT_DOCUMENT.version;
     data.name = String(data.name || "untitled");
     data.mode = data.mode === "3d" ? "3d" : "2d";
     data.width = Number.isFinite(Number(data.width)) ? Number(data.width) : DEFAULT_DOCUMENT.width;
@@ -47,6 +58,7 @@ export class VectorMapDocument {
     const kind = object?.kind || "polyline";
     const space = object?.space === "3d" ? "3d" : "2d";
     const closed = Boolean(object?.closed);
+    const stroke = object?.style?.stroke || "#ffffff";
     return {
       id: object?.id || nextId("obj"),
       name: object?.name || kind,
@@ -60,11 +72,26 @@ export class VectorMapDocument {
         z: Number(object?.rotation?.z || 0)
       },
       style: {
-        stroke: object?.style?.stroke || "#ffffff",
+        stroke,
         fill: object?.style?.fill ?? null,
-        lineWidth: Number(object?.style?.lineWidth || 2)
+        lineWidth: Number(object?.style?.lineWidth || 2),
+        colorMode: object?.style?.colorMode === "point" ? "point" : "object"
       },
-      points: Array.isArray(object?.points) ? object.points.map((point) => this.normalizePoint(point)) : []
+      flags: this.normalizeFlags(object?.flags),
+      points: Array.isArray(object?.points) ? object.points.map((point) => this.normalizePoint(point, stroke)) : []
+    };
+  }
+
+  normalizeFlags(flags) {
+    return {
+      collidable: Boolean(flags?.collidable),
+      deadly: Boolean(flags?.deadly),
+      trigger: Boolean(flags?.trigger),
+      spawnBlocker: Boolean(flags?.spawnBlocker),
+      projectileBlocker: Boolean(flags?.projectileBlocker),
+      playerOnly: Boolean(flags?.playerOnly),
+      enemyOnly: Boolean(flags?.enemyOnly),
+      tag: typeof flags?.tag === "string" ? flags.tag : ""
     };
   }
 
@@ -121,7 +148,8 @@ export class VectorMapDocument {
       closed: partialObject.closed ?? false,
       center: partialObject.center || { x: 0, y: 0, z: 0 },
       rotation: partialObject.rotation || { x: 0, y: 0, z: 0 },
-      style: partialObject.style || { stroke: "#ffffff", fill: null, lineWidth: 2 },
+      style: partialObject.style || { stroke: "#ffffff", fill: null, lineWidth: 2, colorMode: "object" },
+      flags: partialObject.flags || clone(DEFAULT_FLAGS),
       points: partialObject.points || []
     });
     this.data.objects.push(object);
@@ -138,7 +166,7 @@ export class VectorMapDocument {
     copy.name = `${object.name || object.kind} Copy`;
     copy.points = copy.points.map((point) => ({ ...point, x: point.x + 16, y: point.y + 16 }));
     copy.center = { ...copy.center, x: copy.center.x + 16, y: copy.center.y + 16 };
-    this.data.objects.push(copy);
+    this.data.objects.push(this.normalizeObject(copy));
     return copy;
   }
 
@@ -153,10 +181,9 @@ export class VectorMapDocument {
 
   renameObject(objectId, name) {
     const object = this.getObjectById(objectId);
-    if (!object) {
-      return;
+    if (object) {
+      object.name = String(name || object.name);
     }
-    object.name = String(name || object.name);
   }
 
   setObjectRotation(objectId, rotation) {
@@ -171,10 +198,41 @@ export class VectorMapDocument {
 
   setObjectCenter(objectId, center) {
     const object = this.getObjectById(objectId);
+    if (object) {
+      object.center = this.normalizePoint(center, "#ff7ef4");
+    }
+  }
+
+  setObjectStyle(objectId, style) {
+    const object = this.getObjectById(objectId);
     if (!object) {
       return;
     }
-    object.center = this.normalizePoint(center, "#ff7ef4");
+    object.style = {
+      ...object.style,
+      stroke: typeof style?.stroke === "string" && style.stroke ? style.stroke : object.style.stroke,
+      fill: Object.prototype.hasOwnProperty.call(style || {}, "fill") ? (style.fill || null) : object.style.fill,
+      lineWidth: Number.isFinite(Number(style?.lineWidth)) ? Number(style.lineWidth) : object.style.lineWidth,
+      colorMode: style?.colorMode === "point" ? "point" : (style?.colorMode === "object" ? "object" : object.style.colorMode)
+    };
+    if (object.style.colorMode === "object") {
+      object.points = object.points.map((point) => ({ ...point, color: point.color || object.style.stroke }));
+    }
+  }
+
+  setObjectFlags(objectId, flags) {
+    const object = this.getObjectById(objectId);
+    if (object) {
+      object.flags = { ...object.flags, ...this.normalizeFlags(flags) };
+    }
+  }
+
+  setPointColor(objectId, pointIndex, color) {
+    const object = this.getObjectById(objectId);
+    if (!object || !object.points[pointIndex] || typeof color !== "string") {
+      return;
+    }
+    object.points[pointIndex].color = color;
   }
 
   addPointToObject(objectId, point) {
@@ -182,7 +240,7 @@ export class VectorMapDocument {
     if (!object) {
       return null;
     }
-    const normalizedPoint = this.normalizePoint(point);
+    const normalizedPoint = this.normalizePoint(point, object.style.stroke || "#ffffff");
     object.points.push(normalizedPoint);
     return normalizedPoint;
   }
@@ -192,10 +250,7 @@ export class VectorMapDocument {
     if (!object || !object.points[pointIndex]) {
       return;
     }
-    object.points[pointIndex] = this.normalizePoint({
-      ...object.points[pointIndex],
-      ...partialPoint
-    }, object.points[pointIndex].color);
+    object.points[pointIndex] = this.normalizePoint({ ...object.points[pointIndex], ...partialPoint }, object.points[pointIndex].color || object.style.stroke);
   }
 
   removePoint(objectId, pointIndex) {
@@ -209,10 +264,9 @@ export class VectorMapDocument {
 
   replacePoints(objectId, points) {
     const object = this.getObjectById(objectId);
-    if (!object) {
-      return;
+    if (object) {
+      object.points = points.map((point) => this.normalizePoint(point, object.style.stroke));
     }
-    object.points = points.map((point) => this.normalizePoint(point));
   }
 
   toJSON() {

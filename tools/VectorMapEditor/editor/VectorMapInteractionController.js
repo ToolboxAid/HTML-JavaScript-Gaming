@@ -15,16 +15,20 @@ function pointInBounds(point, bounds) {
 }
 
 export class VectorMapInteractionController {
-  constructor({ documentModel, selectionModel, transformController, onStatus }) {
+  constructor({ documentModel, selectionModel, transformController, collisionTester = null, onStatus, onCollisionResult }) {
     this.documentModel = documentModel;
     this.selectionModel = selectionModel;
     this.transformController = transformController;
+    this.collisionTester = collisionTester;
     this.onStatus = onStatus;
+    this.onCollisionResult = onCollisionResult;
     this.toolMode = "select";
     this.view = { zoom: 1, offsetX: 240, offsetY: 160 };
     this.drag = null;
     this.hoverPoint = null;
     this.pendingObjectId = null;
+    this.collisionVector = { start: null, end: null };
+    this.collisionHit = null;
   }
 
   setToolMode(toolMode) {
@@ -39,17 +43,24 @@ export class VectorMapInteractionController {
     this.view = { ...this.view, ...nextView };
   }
 
+  getCollisionVector() {
+    return this.collisionVector;
+  }
+
+  getCollisionHit() {
+    return this.collisionHit;
+  }
+
+  clearCollisionResult() {
+    this.collisionVector = { start: null, end: null };
+    this.collisionHit = null;
+    this.onCollisionResult?.(null, this.collisionVector);
+  }
+
   screenToWorld(position, mode = "2d") {
-    if (mode === "3d") {
-      const x = (position.x - this.view.offsetX) / this.view.zoom;
-      const y = (position.y - this.view.offsetY) / this.view.zoom;
-      return { x, y, z: 0 };
-    }
-    return {
-      x: (position.x - this.view.offsetX) / this.view.zoom,
-      y: (position.y - this.view.offsetY) / this.view.zoom,
-      z: 0
-    };
+    const x = (position.x - this.view.offsetX) / this.view.zoom;
+    const y = (position.y - this.view.offsetY) / this.view.zoom;
+    return { x, y, z: mode === "3d" ? 0 : 0 };
   }
 
   snap(worldPoint, snapSize) {
@@ -66,40 +77,26 @@ export class VectorMapInteractionController {
 
   getHitTarget(worldPoint, documentMode) {
     const objects = this.documentModel.getObjects();
-    let pointHit = null;
     const threshold = 10 / this.view.zoom;
 
     for (const object of [...objects].reverse()) {
       if (object.space !== documentMode) {
         continue;
       }
-
       for (let index = 0; index < object.points.length; index += 1) {
         if (distanceSquared(object.points[index], worldPoint) <= threshold * threshold) {
-          pointHit = { type: "point", objectId: object.id, pointIndex: index };
-          break;
+          return { type: "point", objectId: object.id, pointIndex: index };
         }
       }
-
-      if (pointHit) {
-        return pointHit;
-      }
-
       if (object.points.length) {
         const xs = object.points.map((point) => point.x);
         const ys = object.points.map((point) => point.y);
-        const bounds = {
-          minX: Math.min(...xs) - threshold,
-          maxX: Math.max(...xs) + threshold,
-          minY: Math.min(...ys) - threshold,
-          maxY: Math.max(...ys) + threshold
-        };
+        const bounds = { minX: Math.min(...xs) - threshold, maxX: Math.max(...xs) + threshold, minY: Math.min(...ys) - threshold, maxY: Math.max(...ys) + threshold };
         if (pointInBounds(worldPoint, bounds)) {
           return { type: "object", objectId: object.id };
         }
       }
     }
-
     return null;
   }
 
@@ -108,13 +105,16 @@ export class VectorMapInteractionController {
     const hit = this.getHitTarget(worldPoint, documentMode);
 
     if (spaceKey || this.toolMode === "pan") {
-      this.drag = {
-        type: "pan",
-        startX: position.x,
-        startY: position.y,
-        offsetX: this.view.offsetX,
-        offsetY: this.view.offsetY
-      };
+      this.drag = { type: "pan", startX: position.x, startY: position.y, offsetX: this.view.offsetX, offsetY: this.view.offsetY };
+      return;
+    }
+
+    if (this.toolMode === "collisionVector") {
+      this.collisionVector = { start: worldPoint, end: worldPoint };
+      this.collisionHit = null;
+      this.drag = { type: "collision-vector", documentMode, snapSize };
+      this.onCollisionResult?.(null, this.collisionVector);
+      this.onStatus?.("Collision vector started.");
       return;
     }
 
@@ -133,14 +133,9 @@ export class VectorMapInteractionController {
       if (hit?.type === "point") {
         this.selectionModel.selectPoint(hit.objectId, hit.pointIndex);
         const selection = this.selectionModel.getSelection(this.documentModel);
-        this.drag = {
-          type: "move-point",
-          startWorld: worldPoint,
-          originalPoint: { ...selection.point }
-        };
+        this.drag = { type: "move-point", startWorld: worldPoint, originalPoint: { ...selection.point } };
         return;
       }
-
       if (hit?.type === "object") {
         this.selectionModel.selectObject(hit.objectId);
         const selection = this.selectionModel.getSelection(this.documentModel);
@@ -152,7 +147,6 @@ export class VectorMapInteractionController {
         };
         return;
       }
-
       if (!shiftKey) {
         this.selectionModel.clear();
       }
@@ -160,10 +154,7 @@ export class VectorMapInteractionController {
     }
 
     if (this.toolMode === "rotate" && this.selectionModel.hasObject()) {
-      this.drag = {
-        type: "rotate",
-        startX: position.x
-      };
+      this.drag = { type: "rotate", startX: position.x };
       return;
     }
 
@@ -174,28 +165,14 @@ export class VectorMapInteractionController {
     }
 
     if (this.toolMode === "point") {
-      const object = this.documentModel.addObject({
-        name: "Point",
-        kind: "point",
-        space: documentMode,
-        closed: false,
-        center: worldPoint,
-        points: [worldPoint]
-      });
+      const object = this.documentModel.addObject({ name: "Point", kind: "point", space: documentMode, closed: false, center: worldPoint, points: [worldPoint] });
       this.selectionModel.selectPoint(object.id, 0);
       return;
     }
 
     if (this.toolMode === "line") {
       if (!this.pendingObjectId) {
-        const object = this.documentModel.addObject({
-          name: "Line",
-          kind: "line",
-          space: documentMode,
-          closed: false,
-          center: worldPoint,
-          points: [worldPoint]
-        });
+        const object = this.documentModel.addObject({ name: "Line", kind: "line", space: documentMode, closed: false, center: worldPoint, points: [worldPoint] });
         this.pendingObjectId = object.id;
         this.selectionModel.selectObject(object.id);
         this.onStatus?.("Line started. Click again to finish.");
@@ -225,10 +202,9 @@ export class VectorMapInteractionController {
     }
   }
 
-  pointerMove(position, { documentMode, snapSize, spaceKey = false }) {
+  pointerMove(position, { documentMode, snapSize }) {
     const worldPoint = this.snap(this.screenToWorld(position, documentMode), snapSize);
     this.hoverPoint = worldPoint;
-
     if (!this.drag) {
       return;
     }
@@ -241,10 +217,9 @@ export class VectorMapInteractionController {
 
     if (this.drag.type === "move-point") {
       const selection = this.selectionModel.getSelection(this.documentModel);
-      if (!selection.object || !selection.point) {
-        return;
+      if (selection.object && selection.point) {
+        this.documentModel.updatePoint(selection.object.id, selection.pointIndex, worldPoint);
       }
-      this.documentModel.updatePoint(selection.object.id, selection.pointIndex, worldPoint);
       return;
     }
 
@@ -253,26 +228,9 @@ export class VectorMapInteractionController {
       if (!selection.object) {
         return;
       }
-
-      const delta = {
-        x: worldPoint.x - this.drag.startWorld.x,
-        y: worldPoint.y - this.drag.startWorld.y,
-        z: worldPoint.z - this.drag.startWorld.z
-      };
-
-      selection.object.points = this.drag.originalPoints.map((point) => ({
-        ...point,
-        x: point.x + delta.x,
-        y: point.y + delta.y,
-        z: point.z + delta.z
-      }));
-
-      selection.object.center = {
-        ...this.drag.originalCenter,
-        x: this.drag.originalCenter.x + delta.x,
-        y: this.drag.originalCenter.y + delta.y,
-        z: this.drag.originalCenter.z + delta.z
-      };
+      const delta = { x: worldPoint.x - this.drag.startWorld.x, y: worldPoint.y - this.drag.startWorld.y, z: worldPoint.z - this.drag.startWorld.z };
+      selection.object.points = this.drag.originalPoints.map((point) => ({ ...point, x: point.x + delta.x, y: point.y + delta.y, z: point.z + delta.z }));
+      selection.object.center = { ...this.drag.originalCenter, x: this.drag.originalCenter.x + delta.x, y: this.drag.originalCenter.y + delta.y, z: this.drag.originalCenter.z + delta.z };
       return;
     }
 
@@ -280,10 +238,24 @@ export class VectorMapInteractionController {
       const deltaX = position.x - this.drag.startX;
       this.transformController.applyRotation({ z: deltaX * 0.25 });
       this.drag.startX = position.x;
+      return;
+    }
+
+    if (this.drag.type === "collision-vector") {
+      this.collisionVector = { ...this.collisionVector, end: worldPoint };
+      this.collisionHit = this.collisionTester?.test(this.documentModel, this.collisionVector, documentMode) || null;
+      this.onCollisionResult?.(this.collisionHit, this.collisionVector);
     }
   }
 
-  pointerUp() {
+  pointerUp(position, meta) {
+    if (this.drag?.type === "collision-vector") {
+      const worldPoint = this.snap(this.screenToWorld(position, meta.documentMode), meta.snapSize);
+      this.collisionVector = { ...this.collisionVector, end: worldPoint };
+      this.collisionHit = this.collisionTester?.test(this.documentModel, this.collisionVector, meta.documentMode) || null;
+      this.onCollisionResult?.(this.collisionHit, this.collisionVector);
+      this.onStatus?.(this.collisionHit ? `Hit ${this.collisionHit.objectName}.` : "No collision hit.");
+    }
     this.drag = null;
   }
 
@@ -291,14 +263,12 @@ export class VectorMapInteractionController {
     if (!this.pendingObjectId) {
       return;
     }
-
     const worldPoint = this.snap(this.screenToWorld(position, documentMode), snapSize);
     const object = this.documentModel.getObjectById(this.pendingObjectId);
     if (!object) {
       this.pendingObjectId = null;
       return;
     }
-
     const lastPoint = object.points[object.points.length - 1];
     if (!lastPoint || distanceSquared(lastPoint, worldPoint) > 0.5) {
       this.documentModel.addPointToObject(this.pendingObjectId, worldPoint);

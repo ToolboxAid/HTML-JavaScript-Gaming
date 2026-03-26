@@ -1,0 +1,202 @@
+{
+  "version": 3,
+  "name": "untitled",
+  "mode": "2d",
+  "width": 1280,
+  "height": 720,
+  "background": "#000000",
+  "objects": [
+    {
+      "id": "obj-j8plu3f3",
+      "name": "Line",
+      "kind": "line",
+      "space": "2d",
+      "closed": false,
+      "center": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "color": "#ff7ef4"
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "style": {
+        "stroke": "#ffffff",
+        "fill": null,
+        "lineWidth": 2,
+        "colorMode": "object"
+      },
+      "flags": {
+        "collidable": false,
+        "deadly": false,
+        "trigger": false,
+        "spawnBlocker": false,
+        "projectileBlocker": false,
+        "playerOnly": false,
+        "enemyOnly": false,
+        "tag": ""
+      },
+      "points": [
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 0,
+          "y": -60,
+          "z": 0,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "obj-dd1acfvk",
+      "name": "Line",
+      "kind": "line",
+      "space": "2d",
+      "closed": false,
+      "center": {
+        "x": 80,
+        "y": -60,
+        "z": 0,
+        "color": "#ff7ef4"
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "style": {
+        "stroke": "#ffffff",
+        "fill": null,
+        "lineWidth": 2,
+        "colorMode": "object"
+      },
+      "flags": {
+        "collidable": false,
+        "deadly": false,
+        "trigger": false,
+        "spawnBlocker": false,
+        "projectileBlocker": false,
+        "playerOnly": false,
+        "enemyOnly": false,
+        "tag": ""
+      },
+      "points": [
+        {
+          "x": 80,
+          "y": -60,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 0,
+          "y": -60,
+          "z": 0,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "obj-iir29rd1",
+      "name": "Line",
+      "kind": "line",
+      "space": "2d",
+      "closed": false,
+      "center": {
+        "x": 80,
+        "y": -60,
+        "z": 0,
+        "color": "#ff7ef4"
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "style": {
+        "stroke": "#ffffff",
+        "fill": null,
+        "lineWidth": 2,
+        "colorMode": "object"
+      },
+      "flags": {
+        "collidable": false,
+        "deadly": false,
+        "trigger": false,
+        "spawnBlocker": false,
+        "projectileBlocker": false,
+        "playerOnly": false,
+        "enemyOnly": false,
+        "tag": ""
+      },
+      "points": [
+        {
+          "x": 80,
+          "y": -60,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 80,
+          "y": 0,
+          "z": 0,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "obj-0o0gq3yg",
+      "name": "Line",
+      "kind": "line",
+      "space": "2d",
+      "closed": false,
+      "center": {
+        "x": 80,
+        "y": 0,
+        "z": 0,
+        "color": "#ff7ef4"
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "style": {
+        "stroke": "#ffffff",
+        "fill": null,
+        "lineWidth": 2,
+        "colorMode": "object"
+      },
+      "flags": {
+        "collidable": false,
+        "deadly": false,
+        "trigger": false,
+        "spawnBlocker": false,
+        "projectileBlocker": false,
+        "playerOnly": false,
+        "enemyOnly": false,
+        "tag": ""
+      },
+      "points": [
+        {
+          "x": 80,
+          "y": 0,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "color": "#ffffff"
+        }
+      ]
+    }
+  ]
+}

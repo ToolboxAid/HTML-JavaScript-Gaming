@@ -15,7 +15,7 @@ export class VectorMapSerializer {
 
   download(documentModel) {
     const data = this.toPrettyJSON(documentModel);
-    const fileName = `${documentModel.getData().name || "untitled"}.json`;
+    const fileName = `${documentModel.getData().name || "untitled"}.editor.json`;
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");

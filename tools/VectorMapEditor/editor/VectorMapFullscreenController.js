@@ -15,17 +15,12 @@ export class VectorMapFullscreenController {
       document.body.classList.add("fullscreen-mode");
       return true;
     }
-
     await document.exitFullscreen();
     document.body.classList.remove("fullscreen-mode");
     return false;
   }
 
   syncBodyClass() {
-    if (!document.fullscreenElement) {
-      document.body.classList.remove("fullscreen-mode");
-      return;
-    }
-    document.body.classList.add("fullscreen-mode");
+    document.body.classList.toggle("fullscreen-mode", Boolean(document.fullscreenElement));
   }
 }

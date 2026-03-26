@@ -13,6 +13,8 @@ import { VectorMapTransformController } from "./VectorMapTransformController.js"
 import { VectorMapSelectionModel } from "./VectorMapSelectionModel.js";
 import { VectorMapJsonEditor } from "./VectorMapJsonEditor.js";
 import { VectorMapFullscreenController } from "./VectorMapFullscreenController.js";
+import { VectorMapCollisionTester } from "./VectorMapCollisionTester.js";
+import { VectorMapRuntimeExporter } from "./VectorMapRuntimeExporter.js";
 
 export class VectorMapEditorApp {
   constructor(rootDocument) {
@@ -20,28 +22,47 @@ export class VectorMapEditorApp {
     this.documentModel = new VectorMapDocument();
     this.selectionModel = new VectorMapSelectionModel();
     this.serializer = new VectorMapSerializer();
+    this.runtimeExporter = new VectorMapRuntimeExporter();
     this.renderer2D = new VectorMapRenderer2D();
     this.renderer3D = new VectorMapRenderer3D();
+    this.collisionTester = new VectorMapCollisionTester();
     this.transformController = new VectorMapTransformController(this.documentModel, this.selectionModel);
+    this.workspaceViewMode = "2d";
     this.spaceKeyDown = false;
     this.statusMessage = "Ready.";
+    this.lastCollisionResult = null;
 
     this.elements = this.cacheElements(rootDocument);
     this.jsonEditor = new VectorMapJsonEditor(this.elements.jsonEditor);
-    this.fullscreenController = new VectorMapFullscreenController(this.elements.canvasShell);
+    this.fullscreenController = new VectorMapFullscreenController(this.elements.appRoot);
+    this.createInteractionController();
+  }
+
+  createInteractionController() {
     this.interactionController = new VectorMapInteractionController({
       documentModel: this.documentModel,
       selectionModel: this.selectionModel,
       transformController: this.transformController,
-      onStatus: (message) => this.setStatus(message)
+      collisionTester: this.collisionTester,
+      onStatus: (message) => this.setStatus(message),
+      onCollisionResult: (hit) => {
+        this.lastCollisionResult = hit;
+        this.syncCollisionSummary();
+      }
     });
   }
 
   cacheElements(doc) {
     return {
+      appRoot: doc.getElementById("appRoot"),
+      leftSidebar: doc.getElementById("leftSidebar"),
+      rightSidebar: doc.getElementById("rightSidebar"),
+      showLeftPanelButton: doc.getElementById("showLeftPanelButton"),
+      showRightPanelButton: doc.getElementById("showRightPanelButton"),
       canvasShell: doc.getElementById("canvasShell"),
       canvas: doc.getElementById("editorCanvas"),
       objectList: doc.getElementById("objectList"),
+      collisionSummary: doc.getElementById("collisionSummary"),
       documentNameInput: doc.getElementById("documentNameInput"),
       documentWidthInput: doc.getElementById("documentWidthInput"),
       documentHeightInput: doc.getElementById("documentHeightInput"),
@@ -51,6 +72,7 @@ export class VectorMapEditorApp {
       snapSizeInput: doc.getElementById("snapSizeInput"),
       newDocumentButton: doc.getElementById("newDocumentButton"),
       saveDocumentButton: doc.getElementById("saveDocumentButton"),
+      exportRuntimeButton: doc.getElementById("exportRuntimeButton"),
       loadDocumentInput: doc.getElementById("loadDocumentInput"),
       toggleFullscreenButton: doc.getElementById("toggleFullscreenButton"),
       toggleJsonDockButton: doc.getElementById("toggleJsonDockButton"),
@@ -71,8 +93,28 @@ export class VectorMapEditorApp {
       rotationXInput: doc.getElementById("rotationXInput"),
       rotationYInput: doc.getElementById("rotationYInput"),
       rotationZInput: doc.getElementById("rotationZInput"),
+      rotationXDownButton: doc.getElementById("rotationXDownButton"),
+      rotationXUpButton: doc.getElementById("rotationXUpButton"),
+      rotationYDownButton: doc.getElementById("rotationYDownButton"),
+      rotationYUpButton: doc.getElementById("rotationYUpButton"),
+      rotationZDownButton: doc.getElementById("rotationZDownButton"),
+      rotationZUpButton: doc.getElementById("rotationZUpButton"),
       applyRotationButton: doc.getElementById("applyRotationButton"),
       resetRotationButton: doc.getElementById("resetRotationButton"),
+      objectStrokeInput: doc.getElementById("objectStrokeInput"),
+      objectFillInput: doc.getElementById("objectFillInput"),
+      objectLineWidthInput: doc.getElementById("objectLineWidthInput"),
+      objectColorModeSelect: doc.getElementById("objectColorModeSelect"),
+      selectedPointColorInput: doc.getElementById("selectedPointColorInput"),
+      applyPointColorButton: doc.getElementById("applyPointColorButton"),
+      flagCollidableInput: doc.getElementById("flagCollidableInput"),
+      flagDeadlyInput: doc.getElementById("flagDeadlyInput"),
+      flagTriggerInput: doc.getElementById("flagTriggerInput"),
+      flagSpawnBlockerInput: doc.getElementById("flagSpawnBlockerInput"),
+      flagProjectileBlockerInput: doc.getElementById("flagProjectileBlockerInput"),
+      flagPlayerOnlyInput: doc.getElementById("flagPlayerOnlyInput"),
+      flagEnemyOnlyInput: doc.getElementById("flagEnemyOnlyInput"),
+      flagTagInput: doc.getElementById("flagTagInput"),
       pointsSummary: doc.getElementById("pointsSummary"),
       statusLeft: doc.getElementById("statusLeft"),
       statusCenter: doc.getElementById("statusCenter"),
@@ -100,6 +142,9 @@ export class VectorMapEditorApp {
     const canvas = this.elements.canvas;
 
     canvas.addEventListener("pointerdown", (event) => {
+      if (this.workspaceViewMode === "json") {
+        return;
+      }
       canvas.setPointerCapture(event.pointerId);
       this.interactionController.pointerDown(this.getCanvasPosition(event), this.getInteractionMeta(event));
       this.syncUIFromDocument();
@@ -107,19 +152,27 @@ export class VectorMapEditorApp {
     });
 
     canvas.addEventListener("pointermove", (event) => {
-      this.interactionController.pointerMove(this.getCanvasPosition(event), this.getInteractionMeta(event));
+      if (this.workspaceViewMode !== "json") {
+        this.interactionController.pointerMove(this.getCanvasPosition(event), this.getInteractionMeta(event));
+      }
       this.updateCursorStatus(event);
       this.syncSelectionFields();
+      this.syncCollisionSummary();
       this.render();
     });
 
-    canvas.addEventListener("pointerup", () => {
-      this.interactionController.pointerUp();
+    canvas.addEventListener("pointerup", (event) => {
+      if (this.workspaceViewMode !== "json") {
+        this.interactionController.pointerUp(this.getCanvasPosition(event), this.getInteractionMeta(event));
+      }
       this.syncUIFromDocument();
       this.render();
     });
 
     canvas.addEventListener("dblclick", (event) => {
+      if (this.workspaceViewMode === "json") {
+        return;
+      }
       this.interactionController.doubleClick(this.getCanvasPosition(event), this.getInteractionMeta(event));
       this.syncUIFromDocument();
       this.render();
@@ -136,7 +189,9 @@ export class VectorMapEditorApp {
       }
       if (event.key === "Escape") {
         this.interactionController.cancelPendingShape();
-        this.setStatus("Pending shape canceled.");
+        this.interactionController.clearCollisionResult();
+        this.setStatus("Pending interaction canceled.");
+        this.render();
       }
     });
 
@@ -148,13 +203,19 @@ export class VectorMapEditorApp {
 
     document.addEventListener("fullscreenchange", () => {
       this.fullscreenController.syncBodyClass();
+      this.elements.leftSidebar.classList.remove("visible-overlay");
+      this.elements.rightSidebar.classList.remove("visible-overlay");
       this.resizeCanvas();
       this.render();
     });
 
     this.elements.workspaceModeSelect.addEventListener("change", () => {
-      this.documentModel.setMode(this.elements.workspaceModeSelect.value);
-      this.syncUIFromDocument();
+      this.workspaceViewMode = this.elements.workspaceModeSelect.value;
+      if (this.workspaceViewMode === "2d" || this.workspaceViewMode === "3d") {
+        this.documentModel.setMode(this.workspaceViewMode);
+      }
+      this.syncStatus();
+      this.resizeCanvas();
       this.render();
     });
 
@@ -167,13 +228,9 @@ export class VectorMapEditorApp {
       this.documentModel = new VectorMapDocument();
       this.selectionModel = new VectorMapSelectionModel();
       this.transformController = new VectorMapTransformController(this.documentModel, this.selectionModel);
-      this.interactionController = new VectorMapInteractionController({
-        documentModel: this.documentModel,
-        selectionModel: this.selectionModel,
-        transformController: this.transformController,
-        onStatus: (message) => this.setStatus(message)
-      });
+      this.createInteractionController();
       this.interactionController.setToolMode(this.elements.toolModeSelect.value);
+      this.lastCollisionResult = null;
       this.syncUIFromDocument();
       this.render();
       this.setStatus("New document created.");
@@ -182,7 +239,13 @@ export class VectorMapEditorApp {
     this.elements.saveDocumentButton.addEventListener("click", () => {
       this.syncDocumentFromInputs();
       this.serializer.download(this.documentModel);
-      this.setStatus("Document saved.");
+      this.setStatus("Editor document saved.");
+    });
+
+    this.elements.exportRuntimeButton.addEventListener("click", () => {
+      this.syncDocumentFromInputs();
+      this.runtimeExporter.download(this.documentModel);
+      this.setStatus("Runtime document exported.");
     });
 
     this.elements.loadDocumentInput.addEventListener("change", async (event) => {
@@ -193,6 +256,11 @@ export class VectorMapEditorApp {
       const data = await this.serializer.readFile(file);
       this.documentModel.setData(data);
       this.selectionModel.clear();
+      this.lastCollisionResult = null;
+      this.workspaceViewMode = this.documentModel.getData().mode;
+      this.elements.workspaceModeSelect.value = this.workspaceViewMode;
+      this.createInteractionController();
+      this.interactionController.setToolMode(this.elements.toolModeSelect.value);
       this.syncUIFromDocument();
       this.render();
       this.setStatus(`Loaded ${file.name}.`);
@@ -202,6 +270,14 @@ export class VectorMapEditorApp {
       await this.fullscreenController.toggle();
       this.resizeCanvas();
       this.render();
+    });
+
+    this.elements.showLeftPanelButton.addEventListener("click", () => {
+      this.elements.leftSidebar.classList.toggle("visible-overlay");
+    });
+
+    this.elements.showRightPanelButton.addEventListener("click", () => {
+      this.elements.rightSidebar.classList.toggle("visible-overlay");
     });
 
     this.elements.toggleJsonDockButton.addEventListener("click", () => {
@@ -239,62 +315,99 @@ export class VectorMapEditorApp {
       }
       this.documentModel.renameObject(this.selectionModel.objectId, this.elements.selectedObjectNameInput.value);
       this.syncObjectList();
+      this.syncJsonEditor();
       this.render();
     });
 
     this.elements.applyCenterButton.addEventListener("click", () => {
-      this.transformController.setCenter(this.getCenterInputs());
-      this.syncSelectionFields();
+      this.transformController.setCenter(this.readCenterInputs());
+      this.syncUIFromDocument();
       this.render();
     });
 
     this.elements.setCenterFromSelectionButton.addEventListener("click", () => {
       this.transformController.autoCenterBySelection();
-      this.syncSelectionFields();
+      this.syncUIFromDocument();
       this.render();
     });
 
-    this.elements.autoCenterBoundsButton.addEventListener("click", () => {
-      this.transformController.autoCenterByBounds();
-      this.syncSelectionFields();
-      this.render();
-    });
-
-    this.elements.autoCenterCentroidButton.addEventListener("click", () => {
-      this.transformController.autoCenterByCentroid();
-      this.syncSelectionFields();
-      this.render();
-    });
-
-    this.elements.autoCenterOriginButton.addEventListener("click", () => {
-      this.transformController.autoCenterByOrigin();
-      this.syncSelectionFields();
-      this.render();
-    });
-
-    this.elements.autoCenterSelectionButton.addEventListener("click", () => {
-      this.transformController.autoCenterBySelection();
-      this.syncSelectionFields();
-      this.render();
-    });
+    this.elements.autoCenterBoundsButton.addEventListener("click", () => { this.transformController.autoCenterByBounds(); this.syncUIFromDocument(); this.render(); });
+    this.elements.autoCenterCentroidButton.addEventListener("click", () => { this.transformController.autoCenterByCentroid(); this.syncUIFromDocument(); this.render(); });
+    this.elements.autoCenterOriginButton.addEventListener("click", () => { this.transformController.autoCenterByOrigin(); this.syncUIFromDocument(); this.render(); });
+    this.elements.autoCenterSelectionButton.addEventListener("click", () => { this.transformController.autoCenterBySelection(); this.syncUIFromDocument(); this.render(); });
 
     this.elements.applyRotationButton.addEventListener("click", () => {
-      this.transformController.applyRotation({
-        x: Number(this.elements.rotationXInput.value || 0),
-        y: Number(this.elements.rotationYInput.value || 0),
-        z: Number(this.elements.rotationZInput.value || 0)
-      });
-      this.syncSelectionFields();
-      this.render();
+      this.applyAbsoluteRotationFromInputs();
     });
 
     this.elements.resetRotationButton.addEventListener("click", () => {
+      this.transformController.resetRotation();
       const selection = this.selectionModel.getSelection(this.documentModel);
       if (selection.object) {
-        selection.object.rotation = { x: 0, y: 0, z: 0 };
+        this.documentModel.setObjectRotation(selection.object.id, { x: 0, y: 0, z: 0 });
       }
-      this.syncSelectionFields();
+      this.syncUIFromDocument();
       this.render();
+    });
+
+    this.wireSpinButton(this.elements.rotationXDownButton, "x", -1);
+    this.wireSpinButton(this.elements.rotationXUpButton, "x", 1);
+    this.wireSpinButton(this.elements.rotationYDownButton, "y", -1);
+    this.wireSpinButton(this.elements.rotationYUpButton, "y", 1);
+    this.wireSpinButton(this.elements.rotationZDownButton, "z", -1);
+    this.wireSpinButton(this.elements.rotationZUpButton, "z", 1);
+
+    [this.elements.objectStrokeInput, this.elements.objectFillInput, this.elements.objectLineWidthInput, this.elements.objectColorModeSelect].forEach((element) => {
+      element.addEventListener("input", () => {
+        const selection = this.selectionModel.getSelection(this.documentModel);
+        if (!selection.object) {
+          return;
+        }
+        this.documentModel.setObjectStyle(selection.object.id, this.readStyleInputs());
+        this.syncUIFromDocument();
+        this.render();
+      });
+    });
+
+    this.elements.applyPointColorButton.addEventListener("click", () => {
+      const selection = this.selectionModel.getSelection(this.documentModel);
+      if (!selection.object || !Number.isInteger(selection.pointIndex)) {
+        this.setStatus("Select a point to apply point color.");
+        return;
+      }
+      this.documentModel.setPointColor(selection.object.id, selection.pointIndex, this.elements.selectedPointColorInput.value);
+      this.syncUIFromDocument();
+      this.render();
+    });
+
+    [
+      this.elements.flagCollidableInput,
+      this.elements.flagDeadlyInput,
+      this.elements.flagTriggerInput,
+      this.elements.flagSpawnBlockerInput,
+      this.elements.flagProjectileBlockerInput,
+      this.elements.flagPlayerOnlyInput,
+      this.elements.flagEnemyOnlyInput,
+      this.elements.flagTagInput
+    ].forEach((element) => {
+      element.addEventListener("input", () => {
+        const selection = this.selectionModel.getSelection(this.documentModel);
+        if (!selection.object) {
+          return;
+        }
+        this.documentModel.setObjectFlags(selection.object.id, this.readFlagsInputs());
+        this.syncJsonEditor();
+        this.render();
+      });
+      element.addEventListener("change", () => {
+        const selection = this.selectionModel.getSelection(this.documentModel);
+        if (!selection.object) {
+          return;
+        }
+        this.documentModel.setObjectFlags(selection.object.id, this.readFlagsInputs());
+        this.syncJsonEditor();
+        this.render();
+      });
     });
 
     this.elements.jsonValidateButton.addEventListener("click", () => {
@@ -306,146 +419,49 @@ export class VectorMapEditorApp {
       }
     });
 
+    this.elements.jsonApplyButton.addEventListener("click", () => {
+      try {
+        const nextData = this.jsonEditor.validate();
+        this.documentModel.setData(nextData);
+        this.selectionModel.clear();
+        this.lastCollisionResult = null;
+        this.workspaceViewMode = this.documentModel.getData().mode;
+        if (this.workspaceViewMode !== "2d" && this.workspaceViewMode !== "3d") {
+          this.workspaceViewMode = "json";
+        }
+        this.syncUIFromDocument();
+        this.render();
+        this.setStatus("JSON applied.");
+      } catch (error) {
+        this.setStatus(`JSON invalid: ${error.message}`);
+      }
+    });
+
     this.elements.jsonPrettyPrintButton.addEventListener("click", () => {
       try {
         this.jsonEditor.prettyPrint();
         this.setStatus("JSON pretty printed.");
       } catch (error) {
-        this.setStatus(`Pretty print failed: ${error.message}`);
-      }
-    });
-
-    this.elements.jsonApplyButton.addEventListener("click", () => {
-      try {
-        const parsed = this.jsonEditor.validate();
-        this.documentModel.setData(parsed);
-        this.selectionModel.clear();
-        this.syncUIFromDocument();
-        this.render();
-        this.setStatus("JSON applied.");
-      } catch (error) {
-        this.setStatus(`Apply failed: ${error.message}`);
+        this.setStatus(`JSON invalid: ${error.message}`);
       }
     });
 
     this.elements.jsonRevertButton.addEventListener("click", () => {
-      this.jsonEditor.revert();
+      this.syncJsonEditor();
       this.setStatus("JSON reverted.");
     });
   }
 
-  resizeCanvas() {
-    const shellRect = this.elements.canvasShell.getBoundingClientRect();
-    this.elements.canvas.width = Math.max(320, Math.floor(shellRect.width));
-    this.elements.canvas.height = Math.max(320, Math.floor(shellRect.height));
-    this.render();
-  }
-
-  getCanvasPosition(event) {
-    const rect = this.elements.canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
-  }
-
-  getInteractionMeta(event) {
-    return {
-      documentMode: this.documentModel.getData().mode,
-      snapSize: Number(this.elements.snapSizeInput.value || 10),
-      shiftKey: event?.shiftKey ?? false,
-      spaceKey: this.spaceKeyDown
-    };
-  }
-
-  syncDocumentFromInputs(shouldResize = false) {
-    this.documentModel.setDocumentProperties({
-      name: this.elements.documentNameInput.value,
-      width: Number(this.elements.documentWidthInput.value || 1280),
-      height: Number(this.elements.documentHeightInput.value || 720),
-      background: this.elements.documentBackgroundInput.value
-    });
-    this.syncJsonEditor();
-    if (shouldResize) {
+  wireSpinButton(button, axis, direction) {
+    button.addEventListener("click", (event) => {
+      const step = event.shiftKey ? 15 : 1;
+      this.transformController.applyRotation({ [axis]: direction * step });
+      this.syncUIFromDocument();
       this.render();
-    }
+    });
   }
 
-  syncUIFromDocument() {
-    const data = this.documentModel.getData();
-    this.elements.documentNameInput.value = data.name;
-    this.elements.documentWidthInput.value = data.width;
-    this.elements.documentHeightInput.value = data.height;
-    this.elements.documentBackgroundInput.value = data.background;
-    this.elements.workspaceModeSelect.value = data.mode;
-    this.interactionController.setToolMode(this.elements.toolModeSelect.value);
-    this.syncObjectList();
-    this.syncSelectionFields();
-    this.syncJsonEditor();
-    this.syncStatus();
-  }
-
-  syncObjectList() {
-    const data = this.documentModel.getData();
-    this.elements.objectList.innerHTML = "";
-    for (const object of data.objects) {
-      const item = document.createElement("li");
-      item.className = `object-item ${this.selectionModel.isSelectedObject(object.id) ? "active" : ""}`;
-      item.innerHTML = `<span>${object.name}</span><span class="muted">${object.kind} · ${object.space}</span>`;
-      item.addEventListener("click", () => {
-        this.selectionModel.selectObject(object.id);
-        this.syncSelectionFields();
-        this.syncObjectList();
-        this.render();
-      });
-      this.elements.objectList.appendChild(item);
-    }
-  }
-
-  syncSelectionFields() {
-    const selection = this.selectionModel.getSelection(this.documentModel);
-    if (!selection.object) {
-      this.elements.selectedObjectNameInput.value = "";
-      this.elements.selectedObjectKindInput.value = "";
-      this.elements.selectedObjectSpaceInput.value = "";
-      this.elements.centerXInput.value = "";
-      this.elements.centerYInput.value = "";
-      this.elements.centerZInput.value = "";
-      this.elements.rotationXInput.value = "";
-      this.elements.rotationYInput.value = "";
-      this.elements.rotationZInput.value = "";
-      this.elements.pointsSummary.textContent = "No selection.";
-      this.syncObjectList();
-      this.syncJsonEditor();
-      return;
-    }
-
-    this.elements.selectedObjectNameInput.value = selection.object.name;
-    this.elements.selectedObjectKindInput.value = selection.object.kind;
-    this.elements.selectedObjectSpaceInput.value = selection.object.space;
-    this.elements.centerXInput.value = selection.object.center.x;
-    this.elements.centerYInput.value = selection.object.center.y;
-    this.elements.centerZInput.value = selection.object.center.z;
-    this.elements.rotationXInput.value = selection.object.rotation.x;
-    this.elements.rotationYInput.value = selection.object.rotation.y;
-    this.elements.rotationZInput.value = selection.object.rotation.z;
-    this.elements.pointsSummary.textContent = `${selection.object.points.length} point(s).${selection.point ? ` Selected point #${selection.pointIndex + 1}` : ""}`;
-    this.syncObjectList();
-    this.syncJsonEditor();
-  }
-
-  syncJsonEditor() {
-    this.jsonEditor.setValue(this.serializer.toPrettyJSON(this.documentModel));
-  }
-
-  syncStatus() {
-    const modeLabel = this.documentModel.getData().mode === "3d" ? "3D" : "2D";
-    const toolLabel = this.elements.toolModeSelect.options[this.elements.toolModeSelect.selectedIndex]?.text || "Select";
-    this.elements.statusCenter.textContent = `Mode: ${modeLabel} | Tool: ${toolLabel}`;
-    this.elements.statusLeft.textContent = this.statusMessage;
-  }
-
-  getCenterInputs() {
+  readCenterInputs() {
     return {
       x: Number(this.elements.centerXInput.value || 0),
       y: Number(this.elements.centerYInput.value || 0),
@@ -453,36 +469,197 @@ export class VectorMapEditorApp {
     };
   }
 
+  readStyleInputs() {
+    const fillText = this.elements.objectFillInput.value.trim();
+    return {
+      stroke: this.elements.objectStrokeInput.value,
+      fill: fillText && fillText.toLowerCase() !== "null" ? fillText : null,
+      lineWidth: Number(this.elements.objectLineWidthInput.value || 2),
+      colorMode: this.elements.objectColorModeSelect.value
+    };
+  }
+
+  readFlagsInputs() {
+    return {
+      collidable: this.elements.flagCollidableInput.checked,
+      deadly: this.elements.flagDeadlyInput.checked,
+      trigger: this.elements.flagTriggerInput.checked,
+      spawnBlocker: this.elements.flagSpawnBlockerInput.checked,
+      projectileBlocker: this.elements.flagProjectileBlockerInput.checked,
+      playerOnly: this.elements.flagPlayerOnlyInput.checked,
+      enemyOnly: this.elements.flagEnemyOnlyInput.checked,
+      tag: this.elements.flagTagInput.value
+    };
+  }
+
+  applyAbsoluteRotationFromInputs() {
+    const selection = this.selectionModel.getSelection(this.documentModel);
+    if (!selection.object) {
+      return;
+    }
+    const current = selection.object.rotation;
+    const next = {
+      x: Number(this.elements.rotationXInput.value || 0),
+      y: Number(this.elements.rotationYInput.value || 0),
+      z: Number(this.elements.rotationZInput.value || 0)
+    };
+    this.transformController.applyRotation({ x: next.x - current.x, y: next.y - current.y, z: next.z - current.z });
+    this.syncUIFromDocument();
+    this.render();
+  }
+
+  syncDocumentFromInputs(shouldResize = false) {
+    this.documentModel.setDocumentProperties({
+      name: this.elements.documentNameInput.value,
+      width: Number(this.elements.documentWidthInput.value || 0),
+      height: Number(this.elements.documentHeightInput.value || 0),
+      background: this.elements.documentBackgroundInput.value
+    });
+    this.syncJsonEditor();
+    if (shouldResize) {
+      this.resizeCanvas();
+      this.render();
+    }
+  }
+
+  syncUIFromDocument() {
+    const data = this.documentModel.getData();
+    this.elements.documentNameInput.value = data.name;
+    this.elements.documentWidthInput.value = String(data.width);
+    this.elements.documentHeightInput.value = String(data.height);
+    this.elements.documentBackgroundInput.value = data.background;
+    this.elements.workspaceModeSelect.value = this.workspaceViewMode;
+    this.syncSelectionFields();
+    this.syncObjectList();
+    this.syncCollisionSummary();
+    this.syncJsonEditor();
+    this.syncStatus();
+  }
+
+  syncSelectionFields() {
+    const selection = this.selectionModel.getSelection(this.documentModel);
+    const object = selection.object;
+    this.elements.selectedObjectNameInput.value = object?.name || "";
+    this.elements.selectedObjectKindInput.value = object?.kind || "";
+    this.elements.selectedObjectSpaceInput.value = object?.space || "";
+    this.elements.centerXInput.value = object ? String(object.center.x) : "";
+    this.elements.centerYInput.value = object ? String(object.center.y) : "";
+    this.elements.centerZInput.value = object ? String(object.center.z) : "";
+    this.elements.rotationXInput.value = object ? String(object.rotation.x) : "";
+    this.elements.rotationYInput.value = object ? String(object.rotation.y) : "";
+    this.elements.rotationZInput.value = object ? String(object.rotation.z) : "";
+    this.elements.objectStrokeInput.value = object?.style?.stroke || "#ffffff";
+    this.elements.objectFillInput.value = object?.style?.fill || "";
+    this.elements.objectLineWidthInput.value = String(object?.style?.lineWidth || 2);
+    this.elements.objectColorModeSelect.value = object?.style?.colorMode || "object";
+    this.elements.selectedPointColorInput.value = selection.point?.color || object?.style?.stroke || "#ffffff";
+
+    const flags = object?.flags || {};
+    this.elements.flagCollidableInput.checked = Boolean(flags.collidable);
+    this.elements.flagDeadlyInput.checked = Boolean(flags.deadly);
+    this.elements.flagTriggerInput.checked = Boolean(flags.trigger);
+    this.elements.flagSpawnBlockerInput.checked = Boolean(flags.spawnBlocker);
+    this.elements.flagProjectileBlockerInput.checked = Boolean(flags.projectileBlocker);
+    this.elements.flagPlayerOnlyInput.checked = Boolean(flags.playerOnly);
+    this.elements.flagEnemyOnlyInput.checked = Boolean(flags.enemyOnly);
+    this.elements.flagTagInput.value = flags.tag || "";
+
+    if (!object) {
+      this.elements.pointsSummary.textContent = "No selection.";
+      return;
+    }
+    const pointRows = object.points.map((point, index) => `#${index + 1}: (${point.x}, ${point.y}, ${point.z}) ${point.color || ""}`);
+    this.elements.pointsSummary.innerHTML = `${object.points.length} point(s).${selection.point ? ` Selected point #${selection.pointIndex + 1}.` : ""}<br />${pointRows.join("<br />")}`;
+  }
+
+  syncObjectList() {
+    const objects = this.documentModel.getObjects();
+    this.elements.objectList.innerHTML = "";
+    for (const object of objects) {
+      const item = document.createElement("li");
+      item.className = `object-item${this.selectionModel.isSelectedObject(object.id) ? " active" : ""}`;
+      item.innerHTML = `<span>${object.name}</span><span class="muted">${object.space.toUpperCase()} | ${object.points.length}</span>`;
+      item.addEventListener("click", () => {
+        this.selectionModel.selectObject(object.id);
+        this.syncUIFromDocument();
+        this.render();
+      });
+      this.elements.objectList.appendChild(item);
+    }
+  }
+
+  syncCollisionSummary() {
+    const hit = this.interactionController?.getCollisionHit?.() || this.lastCollisionResult;
+    if (!hit) {
+      this.elements.collisionSummary.textContent = "No collision test yet.";
+      return;
+    }
+    const flags = Object.entries(hit.flags || {}).filter(([key, value]) => key === "tag" ? Boolean(value) : Boolean(value)).map(([key, value]) => key === "tag" ? `tag=${value}` : key);
+    this.elements.collisionSummary.innerHTML = `<strong>${hit.objectName}</strong><br />Distance: ${hit.distance.toFixed(2)}<br />Hit: (${hit.point.x.toFixed(1)}, ${hit.point.y.toFixed(1)}, ${hit.point.z.toFixed(1)})<br />Flags: ${flags.join(", ") || "none"}`;
+  }
+
+  syncJsonEditor() {
+    if (this.rootDocument.activeElement === this.elements.jsonEditor) {
+      return;
+    }
+    this.jsonEditor.setValue(this.serializer.toPrettyJSON(this.documentModel));
+  }
+
+  getCanvasPosition(event) {
+    const rect = this.elements.canvas.getBoundingClientRect();
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+  }
+
+  getInteractionMeta(event) {
+    return {
+      documentMode: this.documentModel.getData().mode,
+      snapSize: Number(this.elements.snapSizeInput.value || 1),
+      shiftKey: event.shiftKey,
+      spaceKey: this.spaceKeyDown
+    };
+  }
+
+  updateCursorStatus(event) {
+    const point = this.interactionController.screenToWorld(this.getCanvasPosition(event), this.documentModel.getData().mode);
+    this.elements.statusRight.textContent = `Cursor: ${point.x.toFixed(1)}, ${point.y.toFixed(1)}, ${point.z.toFixed(1)}`;
+  }
+
+  syncStatus() {
+    this.elements.statusLeft.textContent = this.statusMessage;
+    this.elements.statusCenter.textContent = `Mode: ${this.workspaceViewMode.toUpperCase()} | Tool: ${this.elements.toolModeSelect.value}`;
+  }
+
   setStatus(message) {
     this.statusMessage = message;
     this.syncStatus();
   }
 
-  updateCursorStatus(event) {
-    const position = this.getCanvasPosition(event);
-    const worldPoint = this.interactionController.screenToWorld(position, this.documentModel.getData().mode);
-    this.elements.statusRight.textContent = `Cursor: ${worldPoint.x.toFixed(1)}, ${worldPoint.y.toFixed(1)}, ${worldPoint.z.toFixed(1)}`;
+  resizeCanvas() {
+    const rect = this.elements.canvasShell.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const width = Math.max(320, Math.floor(rect.width || this.documentModel.getData().width));
+    const height = Math.max(240, Math.floor(rect.height || this.documentModel.getData().height));
+    this.elements.canvas.width = Math.floor(width * ratio);
+    this.elements.canvas.height = Math.floor(height * ratio);
+    this.elements.canvas.style.width = `${width}px`;
+    this.elements.canvas.style.height = `${height}px`;
+    this.ctx?.setTransform(ratio, 0, 0, ratio, 0, 0);
   }
 
   render() {
     if (!this.ctx) {
       return;
     }
-
-    const data = this.documentModel.getData();
     const state = {
       canvas: this.elements.canvas,
-      ctx: this.ctx,
-      documentData: data,
+      documentData: this.documentModel.getData(),
       selectionModel: this.selectionModel,
       view: this.interactionController.getView(),
-      hover: this.interactionController.getHoverPoint()
+      hover: this.interactionController.getHoverPoint(),
+      collisionVector: this.interactionController.getCollisionVector(),
+      collisionHit: this.interactionController.getCollisionHit()
     };
-
-    if (data.mode === "3d") {
-      this.renderer3D.render(this.ctx, state);
-    } else {
-      this.renderer2D.render(this.ctx, state);
-    }
+    const renderer = this.documentModel.getData().mode === "3d" ? this.renderer3D : this.renderer2D;
+    renderer.render(this.ctx, state);
   }
 }

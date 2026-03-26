@@ -5,61 +5,33 @@ README.md
 
 # Vector Map Editor
 
-## Purpose
-Vector Map Editor is a new tools/ utility for authoring 2D and 3D vector geometry that can later support gameplay assets, editing workflows, and collision-ready content.
+Vector Map Editor is a repo-local tool for authoring 2D and 3D vector geometry.
 
-This CORE build includes:
+## Current Core + Collision/Color Features
 - 2D edit mode
 - 3D wireframe mode
 - point / line / polyline / polygon creation
-- select / move / delete
-- automatic and manual center point control
-- X / Y / Z rotation
-- save / load JSON
-- manual JSON editing in the tool
-- fullscreen editing
+- object selection and movement
+- automatic and manual center point controls
+- X / Y / Z rotation with spin buttons
+- fullscreen workspace editing with full canvas priority
+- manual JSON editing dock
+- save/load editor JSON documents
+- runtime JSON export
+- per-object collision flags
+- point-to-point colors
+- mouse collision vector testing with first-hit reporting
 
-## Controls
+## Save Outputs
+- **Editor JSON**: full restore format for continued editing
+- **Runtime JSON**: stripped geometry/flags export for downstream game use
 
-### Mouse
-- Select tool: click object or point
-- Move tool: drag selected object or point
-- Rotate tool: drag left/right to rotate around Z
-- Set Center tool: click to place center
-- Point / Line / Polyline / Polygon: click to place points
-- Double-click while drawing polyline/polygon to finish
+## Fullscreen Behavior
+Fullscreen targets the entire editor workspace so the active canvas gets the full viewport. Left and right panels are hidden by default in fullscreen and can be reopened as overlays.
 
-### Keyboard
-- Space + drag: pan viewport
-- Delete: delete selected point/object
-- Escape: cancel active line/polyline/polygon
+## Collision Testing
+Use the **Collision Vector** tool, click-drag on the canvas, and inspect the collision summary for the closest hit against flagged geometry.
 
-## Center Point
-Automatic center options:
-- Bounds
-- Centroid
-- Origin
-- Selection
-
-Manual center options:
-- Apply typed X/Y/Z
-- Click in viewport with Set Center tool
-- Use Selected Point
-
-## JSON
-The docked JSON editor supports:
-- Validate
-- Apply
-- Pretty Print
-- Revert
-
-## Current limits
-This CORE build does not yet include:
-- collision flags
-- collision test vectors
-- runtime export split
-- point-to-point color gradients
-- Space Duel runtime integration
-
-## Next planned PR
-PLAN_PR_VECTOR_MAP_EDITOR_COLLISION_COLOR
+## Notes
+- Runtime export is intentionally game-agnostic.
+- Space Duel-specific consumption should remain in a later game-facing PR.

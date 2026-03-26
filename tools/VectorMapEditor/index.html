@@ -40,6 +40,7 @@ index.html
         "left center right"
         "status status status";
       min-height: 100vh;
+      min-width: 0;
     }
 
     .toolbar {
@@ -57,6 +58,7 @@ index.html
       padding: 12px;
       overflow: auto;
       background: var(--panel);
+      min-width: 0;
     }
     .sidebar { grid-area: left; border-right: 1px solid var(--line); }
     .rightbar { grid-area: right; border-left: 1px solid var(--line); }
@@ -67,6 +69,7 @@ index.html
       background: var(--canvas-bg);
       overflow: hidden;
       min-height: 520px;
+      min-width: 0;
     }
 
     .statusbar {
@@ -89,13 +92,10 @@ index.html
       margin-bottom: 12px;
     }
 
-    .panel h3, .panel h4 {
-      margin: 0 0 8px 0;
-      font-size: 14px;
-    }
+    .panel h3, .panel h4 { margin: 0 0 8px 0; font-size: 14px; }
 
     .toolbar button, .toolbar select, .toolbar input[type="number"], .toolbar input[type="text"],
-    .sidebar button, .rightbar button, .rightbar select, .rightbar input, .rightbar textarea {
+    .sidebar button, .rightbar button, .rightbar select, .rightbar input, .rightbar textarea, .sidebar input, .sidebar select {
       background: #1b2948;
       color: var(--text);
       border: 1px solid var(--line);
@@ -105,37 +105,15 @@ index.html
     }
 
     .toolbar button, .sidebar button, .rightbar button { cursor: pointer; }
-    .toolbar button.active, .tool-button.active { outline: 2px solid var(--accent); }
+    .button-row, .field-row, .toolbar-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .field-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .single-field-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 
-    .button-row, .field-row, .toolbar-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
+    label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+    .flag-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .flag-grid label { flex-direction: row; align-items: center; gap: 8px; }
 
-    .field-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .object-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 6px;
-    }
-
+    .object-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
     .object-item {
       display: flex;
       justify-content: space-between;
@@ -146,16 +124,9 @@ index.html
       background: #182441;
       cursor: pointer;
     }
+    .object-item.active { outline: 2px solid var(--accent); }
 
-    .object-item.active {
-      outline: 2px solid var(--accent);
-    }
-
-    .canvas-layer {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+    .canvas-layer { display: block; width: 100%; height: 100%; }
 
     .dock {
       position: absolute;
@@ -167,6 +138,7 @@ index.html
       border: 1px solid var(--line);
       border-radius: 12px;
       overflow: hidden;
+      z-index: 20;
     }
 
     .dock-header {
@@ -193,19 +165,35 @@ index.html
       line-height: 1.5;
     }
 
-    .help {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
+    .help { font-size: 12px; color: var(--muted); line-height: 1.45; }
     .muted { color: var(--muted); }
     .success { color: var(--success); }
     .danger { color: var(--danger); }
-
     .hidden { display: none !important; }
 
+    .spin-row {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) 28px;
+      gap: 6px;
+      align-items: center;
+    }
+    .spin-row input { text-align: center; }
+    .spin-button { padding: 6px 0; }
+
+    .fullscreen-overlay-button {
+      display: none;
+      position: absolute;
+      top: 12px;
+      z-index: 15;
+      padding: 8px 10px;
+      background: rgba(18, 26, 47, 0.95);
+    }
+    #showLeftPanelButton { left: 12px; }
+    #showRightPanelButton { right: 12px; }
+
     body.fullscreen-mode .app {
+      width: 100vw;
+      height: 100vh;
       grid-template-columns: 1fr;
       grid-template-rows: auto 1fr auto;
       grid-template-areas:
@@ -217,12 +205,26 @@ index.html
     body.fullscreen-mode .sidebar,
     body.fullscreen-mode .rightbar {
       display: none;
+      position: absolute;
+      top: 56px;
+      bottom: 40px;
+      width: min(360px, 38vw);
+      z-index: 30;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
     }
 
+    body.fullscreen-mode .sidebar.visible-overlay,
+    body.fullscreen-mode .rightbar.visible-overlay {
+      display: block;
+    }
+
+    body.fullscreen-mode .sidebar { left: 0; }
+    body.fullscreen-mode .rightbar { right: 0; }
+    body.fullscreen-mode .canvas-shell { min-height: 0; height: 100%; }
+    body.fullscreen-mode .fullscreen-overlay-button { display: inline-flex; align-items: center; }
+
     @media (max-width: 1280px) {
-      .app {
-        grid-template-columns: 220px 1fr 320px;
-      }
+      .app { grid-template-columns: 220px 1fr 320px; }
     }
 
     @media (max-width: 1080px) {
@@ -244,11 +246,12 @@ index.html
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="app" id="appRoot">
     <div class="toolbar">
       <div class="toolbar-group">
         <button id="newDocumentButton">New</button>
         <button id="saveDocumentButton">Save JSON</button>
+        <button id="exportRuntimeButton">Export Runtime</button>
         <label>
           <span class="hidden">Load JSON</span>
           <input id="loadDocumentInput" type="file" accept=".json,application/json" />
@@ -271,6 +274,7 @@ index.html
           <option value="move">Move</option>
           <option value="rotate">Rotate</option>
           <option value="setCenter">Set Center</option>
+          <option value="collisionVector">Collision Vector</option>
           <option value="pan">Pan</option>
           <option value="delete">Delete</option>
         </select>
@@ -287,7 +291,7 @@ index.html
       </div>
     </div>
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="leftSidebar">
       <div class="panel">
         <h3>Objects</h3>
         <div class="button-row">
@@ -317,11 +321,18 @@ index.html
             <input id="documentBackgroundInput" type="text" value="#000000" />
           </label>
         </div>
-        <p class="help">Tip: Point, line, polyline, and polygon tools create objects in the current workspace. In polygon/polyline mode, double-click to finish.</p>
+        <p class="help">Point, line, polyline, and polygon tools create objects in the current workspace. Double-click to finish polyline/polygon. Collision Vector drags a test ray across flagged geometry.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Collision Result</h3>
+        <div id="collisionSummary" class="help">No collision test yet.</div>
       </div>
     </aside>
 
     <main class="canvas-shell" id="canvasShell">
+      <button id="showLeftPanelButton" class="fullscreen-overlay-button">Objects</button>
+      <button id="showRightPanelButton" class="fullscreen-overlay-button">Properties</button>
       <canvas id="editorCanvas" class="canvas-layer"></canvas>
 
       <div id="jsonDock" class="dock hidden">
@@ -338,7 +349,7 @@ index.html
       </div>
     </main>
 
-    <aside class="rightbar">
+    <aside class="rightbar" id="rightSidebar">
       <div class="panel">
         <h3>Selected Object</h3>
         <label>
@@ -378,15 +389,73 @@ index.html
 
       <div class="panel">
         <h3>Rotation</h3>
-        <div class="field-grid">
-          <label>X <input id="rotationXInput" type="number" step="1" /></label>
-          <label>Y <input id="rotationYInput" type="number" step="1" /></label>
-          <label>Z <input id="rotationZInput" type="number" step="1" /></label>
+        <div class="single-field-grid">
+          <label>X
+            <div class="spin-row">
+              <button id="rotationXDownButton" class="spin-button">-</button>
+              <input id="rotationXInput" type="number" step="1" />
+              <button id="rotationXUpButton" class="spin-button">+</button>
+            </div>
+          </label>
+          <label>Y
+            <div class="spin-row">
+              <button id="rotationYDownButton" class="spin-button">-</button>
+              <input id="rotationYInput" type="number" step="1" />
+              <button id="rotationYUpButton" class="spin-button">+</button>
+            </div>
+          </label>
+          <label>Z
+            <div class="spin-row">
+              <button id="rotationZDownButton" class="spin-button">-</button>
+              <input id="rotationZInput" type="number" step="1" />
+              <button id="rotationZUpButton" class="spin-button">+</button>
+            </div>
+          </label>
         </div>
         <div class="button-row">
           <button id="applyRotationButton">Apply Rotation</button>
           <button id="resetRotationButton">Reset Rotation</button>
         </div>
+      </div>
+
+      <div class="panel">
+        <h3>Appearance</h3>
+        <div class="field-grid">
+          <label>Stroke <input id="objectStrokeInput" type="color" value="#ffffff" /></label>
+          <label>Fill <input id="objectFillInput" type="text" value="" placeholder="null or #rrggbb" /></label>
+          <label>Line Width <input id="objectLineWidthInput" type="number" min="1" step="1" value="2" /></label>
+        </div>
+        <div class="field-grid">
+          <label>Color Mode
+            <select id="objectColorModeSelect">
+              <option value="object">Object</option>
+              <option value="point">Point-to-point</option>
+            </select>
+          </label>
+          <label>Selected Point Color
+            <input id="selectedPointColorInput" type="color" value="#ffffff" />
+          </label>
+          <label>&nbsp;
+            <button id="applyPointColorButton">Apply Point Color</button>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Collision Flags</h3>
+        <div class="flag-grid">
+          <label><input id="flagCollidableInput" type="checkbox" /> Collidable</label>
+          <label><input id="flagDeadlyInput" type="checkbox" /> Deadly</label>
+          <label><input id="flagTriggerInput" type="checkbox" /> Trigger</label>
+          <label><input id="flagSpawnBlockerInput" type="checkbox" /> Spawn Blocker</label>
+          <label><input id="flagProjectileBlockerInput" type="checkbox" /> Projectile Blocker</label>
+          <label><input id="flagPlayerOnlyInput" type="checkbox" /> Player Only</label>
+          <label><input id="flagEnemyOnlyInput" type="checkbox" /> Enemy Only</label>
+        </div>
+        <label>
+          Tag
+          <input id="flagTagInput" type="text" placeholder="wall / trigger / zone" />
+        </label>
       </div>
 
       <div class="panel">
@@ -402,6 +471,7 @@ index.html
           <div><strong>Move:</strong> Drag selected point/object</div>
           <div><strong>Rotate:</strong> Rotate tool + drag left/right</div>
           <div><strong>Set Center:</strong> Click to place center</div>
+          <div><strong>Collision Vector:</strong> Drag a ray to inspect first hit</div>
           <div><strong>Delete:</strong> Delete tool or Delete key</div>
         </div>
       </div>

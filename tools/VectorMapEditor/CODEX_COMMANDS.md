@@ -1,12 +1,12 @@
 Toolbox Aid
 David Quesenberry
-03/25/2026
+03/26/2026
 CODEX_COMMANDS.md
 
 Commit Comment:
-Add Vector Map Editor core shell with 2D/3D editing, center controls, rotation, save/load, fullscreen, and JSON editor
+Add Vector Map Editor collision flags, point colors, runtime export, full-canvas fullscreen, and XYZ spin controls
 
 MODEL: GPT-5.4
 REASONING: medium
 COMMAND:
-Review the provided VectorMapEditor core delta, merge it into the repo under tools/VectorMapEditor/, wire the new tool into tools/index.html using the repo's existing style, preserve required file headers, and keep scope limited to the approved core features only. Do not add collision flags, mouse collision vectors, runtime export, or Space Duel-specific logic in this PR.
+Implement BUILD_PR_VECTOR_MAP_EDITOR_COLLISION_COLOR exactly as approved. Update tools/VectorMapEditor/ to add object collision flags, point-to-point colors, mouse collision vector testing, runtime export, fullscreen behavior so the full editing workspace enters fullscreen and prioritizes the canvas, and numeric spin controls for X/Y/Z rotation. Keep scope surgical. Do not add Space Duel runtime/game integration in this PR.

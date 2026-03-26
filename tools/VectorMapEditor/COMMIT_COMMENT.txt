@@ -1,0 +1,6 @@
+Toolbox Aid
+David Quesenberry
+03/26/2026
+COMMIT_COMMENT.txt
+
+Add Vector Map Editor collision flags, point colors, runtime export, full-canvas fullscreen, and XYZ spin controls
