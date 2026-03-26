@@ -1218,7 +1218,6 @@ main.js
       try {
         if (this.isFullscreen()) await document.exitFullscreen();
         else await stage.requestFullscreen();
-        this.showMessage(this.isFullscreen() ? "Exited full screen." : "Entered full screen.");
       } catch (_error) {
         this.showMessage("Full screen unavailable.");
       }
