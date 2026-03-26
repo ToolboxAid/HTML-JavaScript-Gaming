@@ -118,10 +118,12 @@ main.js
       const f = this.ensureFrameLayers(this.activeFrame);
       return f.layers[f.activeLayerIndex];
     }
-    getCompositedPixels(frame = this.activeFrame) {
+    getCompositedPixels(frame = this.activeFrame, options = {}) {
       const f = this.ensureFrameLayers(frame);
       const out = this.makeGrid();
-      const solo = this.soloState;
+      const respectSolo = options.respectSolo !== false;
+      const blendMode = options.blendMode || this.blendPreviewMode;
+      const solo = respectSolo ? this.soloState : null;
       for (let li = 0; li < f.layers.length; li += 1) {
         const layer = f.layers[li];
         if (solo && solo.frameId === f.id && solo.layerIndex !== li) continue;
@@ -132,7 +134,7 @@ main.js
           for (let x = 0; x < this.cols; x += 1) {
             const v = layer.pixels[y][x];
             if (!v) continue;
-            out[y][x] = this.compositeColor(out[y][x], v, layerOpacity, this.blendPreviewMode);
+            out[y][x] = this.compositeColor(out[y][x], v, layerOpacity, blendMode);
           }
         }
       }
@@ -347,6 +349,56 @@ main.js
     toggleBlendPreviewMode() {
       this.blendPreviewMode = this.blendPreviewMode === "normal" ? "boost" : "normal";
       return this.blendPreviewMode;
+    }
+    mergeLayerDown() {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      const from = f.activeLayerIndex;
+      if (from <= 0) return false;
+      const top = f.layers[from];
+      const bottom = f.layers[from - 1];
+      const merged = this.makeGrid();
+      for (let y = 0; y < this.rows; y += 1) {
+        for (let x = 0; x < this.cols; x += 1) {
+          let out = null;
+          if (bottom.visible !== false && (typeof bottom.opacity === "number" ? bottom.opacity : 1) > 0 && bottom.pixels[y][x]) {
+            out = this.compositeColor(null, bottom.pixels[y][x], typeof bottom.opacity === "number" ? bottom.opacity : 1, "normal");
+          }
+          if (top.visible !== false && (typeof top.opacity === "number" ? top.opacity : 1) > 0 && top.pixels[y][x]) {
+            out = this.compositeColor(out, top.pixels[y][x], typeof top.opacity === "number" ? top.opacity : 1, "normal");
+          }
+          merged[y][x] = out;
+        }
+      }
+      bottom.pixels = merged;
+      bottom.visible = true;
+      bottom.opacity = 1;
+      f.layers.splice(from, 1);
+      f.activeLayerIndex = from - 1;
+      if (this.soloState && this.soloState.frameId === f.id) {
+        if (this.soloState.layerIndex === from) this.soloState.layerIndex = from - 1;
+        else if (this.soloState.layerIndex > from) this.soloState.layerIndex -= 1;
+      }
+      return true;
+    }
+    flattenActiveFrame() {
+      const f = this.ensureFrameLayers(this.activeFrame);
+      const before = JSON.stringify({
+        layers: f.layers.map((l) => ({ name: l.name, visible: l.visible !== false, locked: l.locked === true, opacity: typeof l.opacity === "number" ? l.opacity : 1, pixels: l.pixels })),
+        activeLayerIndex: f.activeLayerIndex
+      });
+      const flat = this.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" });
+      const layerName = f.layers.length === 1 ? (f.layers[0].name || "Layer 1") : "Flattened";
+      f.layers = [this.makeLayer(layerName, flat)];
+      f.layers[0].visible = true;
+      f.layers[0].locked = false;
+      f.layers[0].opacity = 1;
+      f.activeLayerIndex = 0;
+      if (this.soloState && this.soloState.frameId === f.id) this.soloState = null;
+      const after = JSON.stringify({
+        layers: f.layers.map((l) => ({ name: l.name, visible: l.visible !== false, locked: l.locked === true, opacity: typeof l.opacity === "number" ? l.opacity : 1, pixels: l.pixels })),
+        activeLayerIndex: f.activeLayerIndex
+      });
+      return before !== after;
     }
     selectLayer(index) {
       const f = this.ensureFrameLayers(this.activeFrame);
@@ -841,7 +893,7 @@ main.js
       [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()],["solo","Solo",()=>this.app.toggleLayerSolo()],["lock","Toggle Lock",()=>this.app.toggleLayerLock()]].forEach(([id,t,a]) => {
         this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
-      [["op-down","Opacity -",()=>this.app.adjustLayerOpacity(-0.1)],["op-up","Opacity +",()=>this.app.adjustLayerOpacity(0.1)],["op-reset","Opacity 100%",()=>this.app.resetLayerOpacity()],["blend","Blend Preview",()=>this.app.toggleBlendPreview()]].forEach(([id,t,a]) => {
+      [["op-down","Opacity -",()=>this.app.adjustLayerOpacity(-0.1)],["op-up","Opacity +",()=>this.app.adjustLayerOpacity(0.1)],["op-reset","Opacity 100%",()=>this.app.resetLayerOpacity()],["blend","Blend Preview",()=>this.app.toggleBlendPreview()],["merge-down","Merge Down",()=>this.app.mergeLayerDown()],["flatten","Flatten Frame",()=>this.app.requestFlattenFrame()]].forEach(([id,t,a]) => {
         this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
       [["up","Layer Up",()=>this.app.moveLayerUp()],["down","Layer Down",()=>this.app.moveLayerDown()],["rename","Rename Layer",()=>this.app.openLayerRenamePrompt()]].forEach(([id,t,a]) => {
@@ -1324,8 +1376,8 @@ main.js
       this.history.redo = [];
     }
 
-    requestReplaceGuard(title, message, onConfirm) {
-      if (!this.isDirty) {
+    requestReplaceGuard(title, message, onConfirm, forcePrompt = false) {
+      if (!forcePrompt && !this.isDirty) {
         if (typeof onConfirm === "function") onConfirm();
         return;
       }
@@ -2035,6 +2087,8 @@ main.js
         { id: "layer.opacityUp", label: "Layer: Opacity Up", category: "Layer", keywords: ["layer", "opacity", "alpha", "up"], aliases: ["opacity up", "increase opacity", "alpha up"] },
         { id: "layer.opacityDown", label: "Layer: Opacity Down", category: "Layer", keywords: ["layer", "opacity", "alpha", "down"], aliases: ["opacity down", "decrease opacity", "alpha down"] },
         { id: "layer.opacityReset", label: "Layer: Opacity Reset", category: "Layer", keywords: ["layer", "opacity", "reset"], aliases: ["opacity 100", "reset opacity", "alpha reset"] },
+        { id: "layer.mergeDown", label: "Layer: Merge Down", category: "Layer", keywords: ["layer", "merge", "down"], aliases: ["merge down", "merge layer down"] },
+        { id: "layer.flattenFrame", label: "Layer: Flatten Frame", category: "Layer", keywords: ["layer", "flatten", "frame"], aliases: ["flatten", "flatten frame", "flatten layers"] },
         { id: "view.blendPreviewToggle", label: "View: Toggle Blend Preview", category: "View", keywords: ["blend", "preview", "opacity"], aliases: ["blend preview", "toggle blend preview"] },
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
@@ -2338,6 +2392,8 @@ main.js
       if (action === "layer.opacityUp") { this.adjustLayerOpacity(0.1); return true; }
       if (action === "layer.opacityDown") { this.adjustLayerOpacity(-0.1); return true; }
       if (action === "layer.opacityReset") { this.resetLayerOpacity(); return true; }
+      if (action === "layer.mergeDown") { this.mergeLayerDown(); return true; }
+      if (action === "layer.flattenFrame") { this.requestFlattenFrame(); return true; }
       if (action === "view.blendPreviewToggle") { this.toggleBlendPreview(); return true; }
       if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
       if (action === "system.playback") { this.togglePlayback(); return true; }
@@ -2503,6 +2559,25 @@ main.js
     toggleBlendPreview() {
       const mode = this.document.toggleBlendPreviewMode();
       this.showMessage(mode === "boost" ? "Blend preview: Boost" : "Blend preview: Normal");
+      this.renderAll();
+    }
+    mergeLayerDown() {
+      this.executeWithHistory("Layer Merge Down", () => {
+        const ok = this.document.mergeLayerDown();
+        this.showMessage(ok ? "Merged layer down." : "Merge down unavailable.");
+        return ok;
+      });
+      this.renderAll();
+    }
+    requestFlattenFrame() {
+      this.requestReplaceGuard("Flatten Frame", "Flatten all layers in current frame into one layer?", () => {
+        this.executeWithHistory("Layer Flatten Frame", () => {
+          const ok = this.document.flattenActiveFrame();
+          this.showMessage(ok ? "Frame flattened." : "Flatten produced no changes.");
+          return ok;
+        });
+        this.renderAll();
+      }, true);
       this.renderAll();
     }
     isLayerSoloActiveFor(frame, layerIndex) {
