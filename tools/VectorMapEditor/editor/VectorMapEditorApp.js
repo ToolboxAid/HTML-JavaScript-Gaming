@@ -55,6 +55,7 @@ export class VectorMapEditorApp {
     this.statusMessage = "Ready.";
     this.lastCollisionResult = null;
     this.pendingHistoryEntry = null;
+    this.spinAnimationFrame = null;
 
     this.elements = this.cacheElements(rootDocument);
     this.jsonEditor = new VectorMapJsonEditor(this.elements.jsonEditor);
@@ -132,6 +133,9 @@ export class VectorMapEditorApp {
       rotationDegreesDisplay: doc.getElementById("rotationDegreesDisplay"),
       applyRotationButton: doc.getElementById("applyRotationButton"),
       resetRotationButton: doc.getElementById("resetRotationButton"),
+      rotatePointsDegreesInput: doc.getElementById("rotatePointsDegreesInput"),
+      rotatePointsDegreesButton: doc.getElementById("rotatePointsDegreesButton"),
+      spinAllPointsButton: doc.getElementById("spinAllPointsButton"),
       objectStrokeInput: doc.getElementById("objectStrokeInput"),
       objectFillInput: doc.getElementById("objectFillInput"),
       objectLineWidthInput: doc.getElementById("objectLineWidthInput"),
@@ -249,6 +253,7 @@ export class VectorMapEditorApp {
         });
       }
       if (event.key === "Escape") {
+        this.cancelSpinAnimation();
         this.pendingHistoryEntry = null;
         this.interactionController.cancelPendingShape();
         this.interactionController.clearCollisionResult();
@@ -287,6 +292,7 @@ export class VectorMapEditorApp {
     });
 
     this.elements.newDocumentButton.addEventListener("click", () => {
+      this.cancelSpinAnimation();
       this.documentModel = new VectorMapDocument();
       this.selectionModel = new VectorMapSelectionModel();
       this.transformController = new VectorMapTransformController(this.documentModel, this.selectionModel);
@@ -321,6 +327,7 @@ export class VectorMapEditorApp {
         return;
       }
       const data = await this.serializer.readFile(file);
+      this.cancelSpinAnimation();
       this.documentModel.setData(data);
       this.selectionModel.clear();
       this.lastCollisionResult = null;
@@ -461,6 +468,21 @@ export class VectorMapEditorApp {
           this.documentModel.setObjectRotation(selection.object.id, { x: 0, y: 0, z: 0 });
         }
       });
+    });
+
+    this.elements.rotatePointsDegreesButton.addEventListener("click", () => {
+      const degrees = parseNumericInput(this.elements.rotatePointsDegreesInput.value);
+      if (degrees === null) {
+        this.setStatus("Enter degrees to rotate points.");
+        return;
+      }
+      this.performHistoryAction("Rotate", () => {
+        this.transformController.applyRotation({ z: degrees });
+      });
+    });
+
+    this.elements.spinAllPointsButton.addEventListener("click", () => {
+      this.spinSelectedObject360();
     });
 
     this.wireSpinButton(this.elements.rotationXDownButton, "x", -1);
@@ -804,6 +826,56 @@ export class VectorMapEditorApp {
     return `X: ${rotation.x.toFixed(1)}deg | Y: ${rotation.y.toFixed(1)}deg | Z: ${rotation.z.toFixed(1)}deg`;
   }
 
+  cancelSpinAnimation() {
+    if (this.spinAnimationFrame !== null) {
+      cancelAnimationFrame(this.spinAnimationFrame);
+      this.spinAnimationFrame = null;
+    }
+  }
+
+  spinSelectedObject360() {
+    const selection = this.selectionModel.getSelection(this.documentModel);
+    if (!selection.object) {
+      this.setStatus("Select an object to spin all points.");
+      return;
+    }
+
+    this.cancelSpinAnimation();
+    const beforeSnapshot = this.createHistorySnapshot();
+    const durationMs = 2400;
+    const totalDegrees = 360;
+    let rotatedDegrees = 0;
+    let lastTimestamp = null;
+
+    const step = (timestamp) => {
+      if (lastTimestamp === null) {
+        lastTimestamp = timestamp;
+      }
+      const deltaMs = timestamp - lastTimestamp;
+      lastTimestamp = timestamp;
+      const remaining = totalDegrees - rotatedDegrees;
+      const nextDegrees = Math.min(remaining, (deltaMs / durationMs) * totalDegrees);
+      if (nextDegrees > 0) {
+        this.transformController.applyRotation({ z: nextDegrees });
+        rotatedDegrees += nextDegrees;
+        this.syncUIFromDocument();
+        this.render();
+      }
+      if (rotatedDegrees < totalDegrees) {
+        this.spinAnimationFrame = requestAnimationFrame(step);
+        return;
+      }
+      this.spinAnimationFrame = null;
+      this.commitHistorySnapshot("Rotate", beforeSnapshot);
+      this.syncUIFromDocument();
+      this.render();
+      this.setStatus("Spin 360 complete.");
+    };
+
+    this.setStatus("Spinning selected object 360deg.");
+    this.spinAnimationFrame = requestAnimationFrame(step);
+  }
+
   syncHistoryControls() {
     this.elements.undoButton.disabled = !this.historyManager.canUndo();
     this.elements.redoButton.disabled = !this.historyManager.canRedo();
@@ -857,6 +929,7 @@ export class VectorMapEditorApp {
   }
 
   undo() {
+    this.cancelSpinAnimation();
     const label = this.historyManager.undo((snapshot) => this.applyHistorySnapshot(snapshot));
     if (!label) {
       return;
@@ -865,6 +938,7 @@ export class VectorMapEditorApp {
   }
 
   redo() {
+    this.cancelSpinAnimation();
     const label = this.historyManager.redo((snapshot) => this.applyHistorySnapshot(snapshot));
     if (!label) {
       return;
