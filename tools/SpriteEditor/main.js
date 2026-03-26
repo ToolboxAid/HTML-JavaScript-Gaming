@@ -1259,10 +1259,19 @@ main.js
       const y = p.y + p.height - 356;
       const w = p.width - 36;
       const h = 96;
+      const transportY = y + 16;
+      const transportH = 18;
+      const transport = [
+        { id: "play_pause", x: x + 8, y: transportY, w: 54, h: transportH },
+        { id: "stop", x: x + 66, y: transportY, w: 42, h: transportH },
+        { id: "loop", x: x + 112, y: transportY, w: 50, h: transportH },
+        { id: "fps_down", x: x + w - 92, y: transportY, w: 20, h: transportH },
+        { id: "fps_up", x: x + w - 24, y: transportY, w: 20, h: transportH }
+      ];
       const innerX = x + 8;
-      const innerY = y + 24;
+      const innerY = y + 40;
       const innerW = w - 16;
-      const innerH = h - 32;
+      const innerH = h - 48;
       const count = Math.max(1, this.document.frames.length);
       const slotGap = 6;
       const maxSlotW = 52;
@@ -1274,7 +1283,7 @@ main.js
       for (let i = 0; i < count; i += 1) {
         slots.push({ index: i, x: startX + i * (slotW + slotGap), y: innerY, w: slotW, h: slotH });
       }
-      return { x, y, w, h, slots };
+      return { x, y, w, h, slots, transport };
     }
 
     getTimelineIndexAt(p) {
@@ -1283,6 +1292,16 @@ main.js
       for (let i = 0; i < slots.length; i += 1) {
         const s = slots[i];
         if (p.x >= s.x && p.y >= s.y && p.x <= s.x + s.w && p.y <= s.y + s.h) return s.index;
+      }
+      return null;
+    }
+
+    getTimelineControlAt(p) {
+      if (!this.timelineStripRect || !p) return null;
+      const controls = this.timelineStripRect.transport || [];
+      for (let i = 0; i < controls.length; i += 1) {
+        const c = controls[i];
+        if (p.x >= c.x && p.y >= c.y && p.x <= c.x + c.w && p.y <= c.y + c.h) return c.id;
       }
       return null;
     }
@@ -1403,6 +1422,16 @@ main.js
       if (!p) return;
       if (this.replaceGuard.open) {
         this.handleReplaceGuardPointer(p);
+        return;
+      }
+      const timelineControl = this.getTimelineControlAt(p);
+      if (timelineControl) {
+        if (timelineControl === "play_pause") this.togglePlayback();
+        else if (timelineControl === "stop") this.stopPlayback();
+        else if (timelineControl === "loop") this.togglePlaybackLoop();
+        else if (timelineControl === "fps_down") this.adjustPlaybackFps(-1);
+        else if (timelineControl === "fps_up") this.adjustPlaybackFps(1);
+        this.renderAll();
         return;
       }
       const timelineIndex = this.getTimelineIndexAt(p);
@@ -1552,6 +1581,7 @@ main.js
         "i": "tool.eyedropper",
         "s": "tool.select",
         "p": "system.playback",
+        " ": "system.playback",
         "=": "view.zoomIn",
         "+": "view.zoomIn",
         "-": "view.zoomOut",
@@ -1616,6 +1646,12 @@ main.js
         { id: "selection.nudge_right", label: "Selection: Nudge Right", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection right"] },
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
+        { id: "system.playbackPlay", label: "System: Playback Play", category: "System", keywords: ["play", "transport"], aliases: ["play"] },
+        { id: "system.playbackPause", label: "System: Playback Pause", category: "System", keywords: ["pause", "transport"], aliases: ["pause"] },
+        { id: "system.playbackStop", label: "System: Playback Stop/Reset", category: "System", keywords: ["stop", "reset", "transport"], aliases: ["stop playback", "reset playback"] },
+        { id: "system.playbackLoopToggle", label: "System: Toggle Playback Loop", category: "System", keywords: ["loop", "playback"], aliases: ["toggle loop", "loop"] },
+        { id: "system.playbackFpsUp", label: "System: Increase Playback FPS", category: "System", keywords: ["fps", "speed", "increase"], aliases: ["fps up", "increase fps"] },
+        { id: "system.playbackFpsDown", label: "System: Decrease Playback FPS", category: "System", keywords: ["fps", "speed", "decrease"], aliases: ["fps down", "decrease fps"] },
         { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"], aliases: ["clear", "delete"] },
         { id: "system.saveLocal", label: "System: Save Local", category: "System", keywords: ["save", "local"], aliases: ["save"] },
         { id: "system.loadLocal", label: "System: Load Local", category: "System", keywords: ["load", "local"], aliases: ["load"] },
@@ -1898,6 +1934,12 @@ main.js
       if (action === "selection.nudge_right_big") return this.nudgeSelection(8, 0, "Right x8");
       if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
       if (action === "system.playback") { this.togglePlayback(); return true; }
+      if (action === "system.playbackPlay") { this.togglePlayback(true); return true; }
+      if (action === "system.playbackPause") { this.togglePlayback(false); return true; }
+      if (action === "system.playbackStop") { this.stopPlayback(); return true; }
+      if (action === "system.playbackLoopToggle") { this.togglePlaybackLoop(); return true; }
+      if (action === "system.playbackFpsUp") { this.adjustPlaybackFps(1); return true; }
+      if (action === "system.playbackFpsDown") { this.adjustPlaybackFps(-1); return true; }
       if (action === "system.delete") {
         if (this.document.selection) { this.handleSelectionAction("sel-cut"); return true; }
         return this.executeWithHistory("Clear Frame", () => {
@@ -2030,8 +2072,27 @@ main.js
     togglePlayback(force) {
       if (typeof force === "boolean") this.playback.isPlaying = force;
       else this.playback.isPlaying = !this.playback.isPlaying;
-      if (this.playback.isPlaying) { this.playback.previewFrameIndex = 0; this.playback.lastTick = performance.now(); }
+      if (this.playback.isPlaying) { this.playback.previewFrameIndex = this.document.activeFrameIndex; this.playback.lastTick = performance.now(); }
       this.showMessage(this.playback.isPlaying ? "Playback started." : "Playback paused.");
+      this.renderAll();
+    }
+
+    stopPlayback() {
+      this.playback.isPlaying = false;
+      this.playback.previewFrameIndex = 0;
+      this.selectFrame(0);
+      this.showMessage("Playback stopped.");
+    }
+
+    togglePlaybackLoop() {
+      this.playback.loop = !this.playback.loop;
+      this.showMessage(this.playback.loop ? "Loop on." : "Loop off.");
+      this.renderAll();
+    }
+
+    adjustPlaybackFps(delta) {
+      this.playback.fps = Math.max(1, Math.min(30, this.playback.fps + delta));
+      this.showMessage(`FPS: ${this.playback.fps}`);
       this.renderAll();
     }
 
@@ -2100,6 +2161,7 @@ main.js
           if (this.playback.previewFrameIndex < this.document.frames.length - 1) this.playback.previewFrameIndex += 1;
           else if (this.playback.loop) this.playback.previewFrameIndex = 0;
           else this.playback.isPlaying = false;
+          this.document.activeFrameIndex = this.playback.previewFrameIndex;
           this.renderAll();
         }
       }
@@ -2131,6 +2193,24 @@ main.js
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 12px Arial";
       ctx.fillText("TIMELINE", t.x + 10, t.y + 14);
+      (t.transport || []).forEach((c) => {
+        ctx.fillStyle = "#1a2733";
+        if (c.id === "play_pause" && this.playback.isPlaying) ctx.fillStyle = "#244d67";
+        if (c.id === "loop" && this.playback.loop) ctx.fillStyle = "#244d67";
+        ctx.fillRect(c.x, c.y, c.w, c.h);
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
+        ctx.fillStyle = "#dbe7f3";
+        ctx.font = "11px Arial";
+        if (c.id === "play_pause") ctx.fillText(this.playback.isPlaying ? "Pause" : "Play", c.x + 8, c.y + 12);
+        else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + 12);
+        else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + 12);
+        else if (c.id === "fps_down") ctx.fillText("-", c.x + 7, c.y + 12);
+        else if (c.id === "fps_up") ctx.fillText("+", c.x + 6, c.y + 12);
+      });
+      ctx.fillStyle = "#91a3b6";
+      ctx.font = "11px Arial";
+      ctx.fillText(`FPS ${this.playback.fps}`, t.x + t.w - 62, t.y + 14);
       t.slots.forEach((slot) => {
         const f = this.document.frames[slot.index];
         const active = slot.index === this.document.activeFrameIndex;
@@ -2346,7 +2426,8 @@ main.js
       const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
-      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"}`;
+      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;
