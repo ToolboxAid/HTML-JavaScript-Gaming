@@ -741,6 +741,21 @@ main.js
       [["add","Add Frame",()=>this.app.addFrame()],["dup","Duplicate",()=>this.app.duplicateFrame()],["del","Delete",()=>this.app.deleteFrame()],["copy","Copy Frame",()=>this.app.copyFrame()],["paste","Paste Frame",()=>this.app.pasteFrame()]].forEach(([id,t,a]) => {
         this.add("button","frame-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
+      y += d.spacing;
+      this.add("label","lbl-layers",x,y,rw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
+      [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()]].forEach(([id,t,a]) => {
+        this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
+      });
+      [["prev","Layer Prev",()=>this.app.selectPrevLayer()],["next","Layer Next",()=>this.app.selectNextLayer()]].forEach(([id,t,a]) => {
+        this.add("button","layer-nav-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
+      });
+      const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
+      const layers = af.layers || [];
+      layers.forEach((l, i) => {
+        const label = `${i === af.activeLayerIndex ? ">" : " "} ${l.visible === false ? "[H]" : "[V]"} ${l.name}`;
+        this.add("button", "layer-item-" + i, x, y, rw, Math.max(24, bh - 8), label, () => this.app.selectLayer(i), { layerIndex: i });
+        y += Math.max(24, bh - 8) + d.spacing;
+      });
       this.app.document.frames.forEach((f,i) => {
         this.add("frame","frame-thumb-"+i,x,y,rw,d.frameThumbHeight,f.name,()=>this.app.selectFrame(i),{frameIndex:i});
         y += d.frameThumbHeight + d.spacing;
@@ -871,14 +886,14 @@ main.js
         ctx.lineWidth = 1;
         return;
       }
-      const hovered = this.hovered === c.id, pressed = this.pressed === c.id, activeFrame = c.kind === "frame" && this.app.document.activeFrameIndex === c.frameIndex, dragTarget = c.kind === "frame" && this.dragOverFrameIndex === c.frameIndex && this.dragFrameIndex !== null, toolActive = c.tool && this.app.activeTool === c.tool;
+      const hovered = this.hovered === c.id, pressed = this.pressed === c.id, activeFrame = c.kind === "frame" && this.app.document.activeFrameIndex === c.frameIndex, activeLayerItem = typeof c.layerIndex === "number" && this.app.document.activeFrame.activeLayerIndex === c.layerIndex, dragTarget = c.kind === "frame" && this.dragOverFrameIndex === c.frameIndex && this.dragFrameIndex !== null, toolActive = c.tool && this.app.activeTool === c.tool;
       ctx.fillStyle = pressed ? "#27435a" : (hovered ? "#223444" : "#1a2733");
       if (c.isCommandRow && c.selected) ctx.fillStyle = "#2d5169";
-      if (toolActive || activeFrame) ctx.fillStyle = "#244d67";
+      if (toolActive || activeFrame || activeLayerItem) ctx.fillStyle = "#244d67";
       if (dragTarget) ctx.fillStyle = "#305c4a";
       ctx.fillRect(c.x,c.y,c.w,c.h);
       ctx.lineWidth = 1;
-      ctx.strokeStyle = (toolActive || activeFrame || dragTarget) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
+      ctx.strokeStyle = (toolActive || activeFrame || activeLayerItem || dragTarget) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
       if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
       ctx.fillStyle = "#edf2f7"; ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial"; ctx.fillText(c.text,c.x+10,c.y+c.h/2);
@@ -1781,6 +1796,12 @@ main.js
         { id: "selection.nudge_down", label: "Selection: Nudge Down", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection down"] },
         { id: "selection.nudge_left", label: "Selection: Nudge Left", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection left"] },
         { id: "selection.nudge_right", label: "Selection: Nudge Right", category: "Selection", keywords: ["nudge", "move"], aliases: ["move selection right"] },
+        { id: "layer.add", label: "Layer: Add", category: "Layer", keywords: ["layer", "add"], aliases: ["add layer"] },
+        { id: "layer.duplicate", label: "Layer: Duplicate", category: "Layer", keywords: ["layer", "duplicate"], aliases: ["dup layer", "duplicate layer"] },
+        { id: "layer.delete", label: "Layer: Delete", category: "Layer", keywords: ["layer", "delete"], aliases: ["delete layer"] },
+        { id: "layer.toggleVisibility", label: "Layer: Toggle Visibility", category: "Layer", keywords: ["layer", "visibility", "hide", "show"], aliases: ["toggle layer visibility", "hide layer", "show layer"] },
+        { id: "layer.next", label: "Layer: Select Next", category: "Layer", keywords: ["layer", "next"], aliases: ["next layer"] },
+        { id: "layer.prev", label: "Layer: Select Previous", category: "Layer", keywords: ["layer", "previous"], aliases: ["prev layer", "previous layer"] },
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
         { id: "system.playbackPlay", label: "System: Playback Play", category: "System", keywords: ["play", "transport"], aliases: ["play"] },
@@ -2069,6 +2090,12 @@ main.js
       if (action === "selection.nudge_down_big") return this.nudgeSelection(0, 8, "Down x8");
       if (action === "selection.nudge_left_big") return this.nudgeSelection(-8, 0, "Left x8");
       if (action === "selection.nudge_right_big") return this.nudgeSelection(8, 0, "Right x8");
+      if (action === "layer.add") { this.addLayer(); return true; }
+      if (action === "layer.duplicate") { this.duplicateLayer(); return true; }
+      if (action === "layer.delete") { this.deleteLayer(); return true; }
+      if (action === "layer.toggleVisibility") { this.toggleLayerVisibility(); return true; }
+      if (action === "layer.next") { this.selectNextLayer(); return true; }
+      if (action === "layer.prev") { this.selectPrevLayer(); return true; }
       if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
       if (action === "system.playback") { this.togglePlayback(); return true; }
       if (action === "system.playbackPlay") { this.togglePlayback(true); return true; }
@@ -2186,8 +2213,16 @@ main.js
     duplicateFrame() { this.executeWithHistory("Frame Duplicate", () => { this.document.duplicateFrame(); this.showMessage("Frame duplicated."); return true; }); this.renderAll(); }
     deleteFrame() { this.executeWithHistory("Frame Delete", () => { const ok = this.document.deleteFrame(); this.showMessage(ok ? "Frame deleted." : "Cannot delete last frame."); return ok; }); this.renderAll(); }
     reorderFrame(from,to) { this.executeWithHistory("Frame Reorder", () => { const ok = this.document.moveFrame(from,to); this.showMessage(ok ? "Frame reordered." : "Frame reorder failed."); return ok; }); this.renderAll(); }
+    addLayer() { this.executeWithHistory("Layer Add", () => { const ok = this.document.addLayer(); this.showMessage(ok ? "Layer added." : "Layer add failed."); return ok; }); this.renderAll(); }
+    duplicateLayer() { this.executeWithHistory("Layer Duplicate", () => { const ok = this.document.duplicateLayer(); this.showMessage(ok ? "Layer duplicated." : "Layer duplicate failed."); return ok; }); this.renderAll(); }
+    deleteLayer() { this.executeWithHistory("Layer Delete", () => { const ok = this.document.deleteLayer(); this.showMessage(ok ? "Layer deleted." : "Cannot delete last layer."); return ok; }); this.renderAll(); }
+    toggleLayerVisibility() { this.executeWithHistory("Layer Visibility", () => { const ok = this.document.toggleLayerVisibility(); this.showMessage(ok ? "Layer visibility toggled." : "Layer visibility failed."); return ok; }); this.renderAll(); }
+    selectLayer(i) { this.document.selectLayer(i); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
+    selectNextLayer() { this.document.selectNextLayer(); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
+    selectPrevLayer() { this.document.selectPrevLayer(); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
     selectFrame(i) {
       this.document.activeFrameIndex = Math.max(0, Math.min(i, this.document.frames.length - 1));
+      this.document.ensureFrameLayers(this.document.activeFrame);
       this.playback.previewFrameIndex = this.document.activeFrameIndex;
       this.document.clearSelection();
       this.renderAll();
@@ -2565,9 +2600,11 @@ main.js
       const b = this.controlSurface.layout.bottomPanel, y = b.y + 78;
       const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
+      const af = this.document.ensureFrameLayers(this.document.activeFrame);
+      const activeLayer = af.layers[af.activeLayerIndex];
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
       const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"}`;
-      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;
