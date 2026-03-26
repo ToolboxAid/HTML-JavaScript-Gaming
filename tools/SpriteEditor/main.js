@@ -219,9 +219,43 @@ main.js
       this.dragFeedbackText = "";
     }
 
+    getDensityConfig() {
+      if (this.app.uiDensityMode === "pro") {
+        return {
+          topButtonHeight: 36,
+          sideButtonHeight: 32,
+          spacing: 6,
+          padding: 14,
+          frameThumbHeight: 50,
+          labelHeight: 20,
+          topPanelHeight: 74,
+          bottomPanelHeight: 122,
+          leftPanelWidth: 214,
+          rightPanelWidth: 292
+        };
+      }
+      return {
+        topButtonHeight: 42,
+        sideButtonHeight: 38,
+        spacing: 8,
+        padding: 18,
+        frameThumbHeight: 58,
+        labelHeight: 24,
+        topPanelHeight: 82,
+        bottomPanelHeight: 138,
+        leftPanelWidth: 230,
+        rightPanelWidth: 310
+      };
+    }
+
     rebuildLayout() {
+      const d = this.getDensityConfig();
       const frame = { x: 18, y: 18, width: LOGICAL_W - 36, height: LOGICAL_H - 36 };
-      const top = 82, bottom = 138, left = 230, right = 310, pad = 18;
+      const top = d.topPanelHeight;
+      const bottom = d.bottomPanelHeight;
+      const left = d.leftPanelWidth;
+      const right = d.rightPanelWidth;
+      const pad = d.padding;
       this.layout = {
         appFrame: frame,
         topPanel: { x: frame.x, y: frame.y, width: frame.width, height: top },
@@ -237,38 +271,76 @@ main.js
     add(kind, id, x, y, w, h, text, action, extra = {}) { this.controls.push({ kind, id, x, y, w, h, text, action, ...extra }); }
 
     build() {
+      const d = this.getDensityConfig();
       const top = this.layout.topPanel, left = this.layout.leftPanel, right = this.layout.rightPanel, bottom = this.layout.bottomPanel;
-      let x = top.x + 16, y = top.y + 20, h = 42;
-      [["save","Save",()=>this.app.saveLocal()],["load","Load",()=>this.app.loadLocal()],["import","Import",()=>this.app.openImport()],["json","Export JSON",()=>this.app.exportJson(true)],["png","PNG Sheet",()=>this.app.downloadSheetPng()],["meta","Sheet Meta",()=>this.app.exportSheetMetadata()]].forEach(([id,t,a]) => {
-        const w = id === "json" ? 116 : id === "meta" ? 118 : id === "png" ? 102 : 88;
-        this.add("button","top-"+id,x,y,w,h,t,a); x += w + 8;
-      });
-      this.add("button","top-zoom-in",x,y,84,h,"Zoom +",()=>this.app.adjustZoom(0.25)); x += 92;
-      this.add("button","top-zoom-out",x,y,84,h,"Zoom -",()=>this.app.adjustZoom(-0.25)); x += 92;
-      this.add("button","top-zoom-reset",x,y,108,h,"Reset Zoom",()=>this.app.resetZoom()); x += 116;
-      this.add("button","top-pixel",x,y,112,h,this.app.viewport.pixelPerfect ? "Pixel: On" : "Pixel: Off",()=>this.app.togglePixelPerfect());
-      this.add("button","fullscreen",top.x + top.width - 122,y,106,h,this.app.isFullscreen() ? "Exit Full" : "Full Screen",()=>this.app.toggleFullscreen());
+      let x = top.x + d.padding;
+      let y = top.y + Math.floor((top.height - d.topButtonHeight) / 2);
+      const h = d.topButtonHeight;
+      const fullscreenW = this.app.uiDensityMode === "pro" ? 96 : 106;
+      const fullscreenX = top.x + top.width - (d.padding + fullscreenW);
+      const modeLabel = this.app.uiDensityMode === "pro" ? "Mode: Pro" : "Mode: Standard";
 
-      x = left.x + 18; y = left.y + 18; const bw = left.width - 36, bh = 38;
-      this.add("label","lbl-tools",x,y,bw,24,"TOOLS",null); y += 28;
+      const addTop = (id, width, text, action) => {
+        if ((x + width) > (fullscreenX - d.spacing)) return;
+        this.add("button", id, x, y, width, h, text, action);
+        x += width + d.spacing;
+      };
+
+      const labels = this.app.uiDensityMode === "pro"
+        ? { save: "Save", load: "Load", import: "Import", json: "Export", png: "PNG", meta: "Meta" }
+        : { save: "Save", load: "Load", import: "Import", json: "Export JSON", png: "PNG Sheet", meta: "Sheet Meta" };
+
+      addTop("top-save", this.app.uiDensityMode === "pro" ? 76 : 88, labels.save, () => this.app.saveLocal());
+      addTop("top-load", this.app.uiDensityMode === "pro" ? 76 : 88, labels.load, () => this.app.loadLocal());
+      addTop("top-import", this.app.uiDensityMode === "pro" ? 84 : 88, labels.import, () => this.app.openImport());
+      addTop("top-json", this.app.uiDensityMode === "pro" ? 88 : 116, labels.json, () => this.app.exportJson(true));
+      addTop("top-png", this.app.uiDensityMode === "pro" ? 72 : 102, labels.png, () => this.app.downloadSheetPng());
+      addTop("top-meta", this.app.uiDensityMode === "pro" ? 74 : 118, labels.meta, () => this.app.exportSheetMetadata());
+      addTop("top-pixel", this.app.uiDensityMode === "pro" ? 94 : 112, this.app.viewport.pixelPerfect ? "Pixel: On" : "Pixel: Off", () => this.app.togglePixelPerfect());
+      addTop("top-mode", this.app.uiDensityMode === "pro" ? 90 : 126, modeLabel, () => this.app.toggleDensityMode());
+
+      const zoomResetW = this.app.uiDensityMode === "pro" ? 74 : 92;
+      const zoomBtnW = 56;
+      const zoomClusterW = zoomResetW + zoomBtnW * 2 + d.spacing * 2;
+      const zoomX = fullscreenX - d.spacing - zoomClusterW;
+      if (zoomX > x) {
+        this.add("button", "top-zoom-out", zoomX, y, zoomBtnW, h, "Zoom -", () => this.app.adjustZoom(-0.25));
+        this.add("button", "top-zoom-in", zoomX + zoomBtnW + d.spacing, y, zoomBtnW, h, "Zoom +", () => this.app.adjustZoom(0.25));
+        this.add("button", "top-zoom-reset", zoomX + zoomBtnW * 2 + d.spacing * 2, y, zoomResetW, h, this.app.uiDensityMode === "pro" ? "Reset" : "Reset", () => this.app.resetZoom());
+      }
+      this.add("button", "fullscreen", fullscreenX, y, fullscreenW, h, this.app.isFullscreen() ? "Exit Full" : "Full Screen", () => this.app.toggleFullscreen());
+
+      x = left.x + d.padding;
+      y = left.y + d.padding;
+      const bw = left.width - (d.padding * 2);
+      const bh = d.sideButtonHeight;
+      this.add("label","lbl-tools",x,y,bw,d.labelHeight,"TOOLS",null); y += d.labelHeight + d.spacing;
       [["brush","Brush"],["erase","Erase"],["fill","Fill"],["eyedropper","Eye"],["select","Select"]].forEach(([tool,t]) => {
-        this.add("button","tool-"+tool,x,y,bw,bh,t,()=>this.app.setTool(tool),{tool}); y += 46;
+        this.add("button","tool-"+tool,x,y,bw,bh,t,()=>this.app.setTool(tool),{tool}); y += bh + d.spacing;
       });
-      y += 8; this.add("label","lbl-sel",x,y,bw,24,"SELECTION",null); y += 28;
+      y += d.spacing;
+      this.add("label","lbl-sel",x,y,bw,d.labelHeight,"SELECTION",null); y += d.labelHeight + d.spacing;
       [["copy","Copy"],["cut","Cut"],["paste","Paste"],["fliph","Flip H"],["flipv","Flip V"],["clear","Clear"]].forEach(([id,t]) => {
-        this.add("button","sel-"+id,x,y,bw,bh,t,()=>this.app.handleSelectionAction("sel-"+id)); y += 46;
+        this.add("button","sel-"+id,x,y,bw,bh,t,()=>this.app.handleSelectionAction("sel-"+id)); y += bh + d.spacing;
       });
-      x = right.x + 18; y = right.y + 18; const rw = right.width - 36;
-      this.add("label","lbl-frames",x,y,rw,24,"FRAMES",null); y += 28;
-      [["add","Add Frame",()=>this.app.addFrame()],["dup","Duplicate",()=>this.app.duplicateFrame()],["del","Delete",()=>this.app.deleteFrame()],["copy","Copy Frame",()=>this.app.copyFrame()],["paste","Paste Frame",()=>this.app.pasteFrame()]].forEach(([id,t,a]) => {
-        this.add("button","frame-"+id,x,y,rw,bh,t,a); y += 46;
-      });
-      this.app.document.frames.forEach((f,i) => { this.add("frame","frame-thumb-"+i,x,y,rw,58,f.name,()=>this.app.selectFrame(i),{frameIndex:i}); y += 66; });
 
-      x = bottom.x + 18; y = bottom.y + 22;
-      this.add("label","lbl-palette",x,y-16,180,16,"PALETTE",null);
+      x = right.x + d.padding;
+      y = right.y + d.padding;
+      const rw = right.width - (d.padding * 2);
+      this.add("label","lbl-frames",x,y,rw,d.labelHeight,"FRAMES",null); y += d.labelHeight + d.spacing;
+      [["add","Add Frame",()=>this.app.addFrame()],["dup","Duplicate",()=>this.app.duplicateFrame()],["del","Delete",()=>this.app.deleteFrame()],["copy","Copy Frame",()=>this.app.copyFrame()],["paste","Paste Frame",()=>this.app.pasteFrame()]].forEach(([id,t,a]) => {
+        this.add("button","frame-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
+      });
+      this.app.document.frames.forEach((f,i) => {
+        this.add("frame","frame-thumb-"+i,x,y,rw,d.frameThumbHeight,f.name,()=>this.app.selectFrame(i),{frameIndex:i});
+        y += d.frameThumbHeight + d.spacing;
+      });
+
+      x = bottom.x + d.padding;
+      y = bottom.y + d.padding + 4;
+      this.add("label","lbl-palette",x,y-(d.labelHeight - 4),180,d.labelHeight - 4,"PALETTE",null);
       this.app.document.palette.forEach((c,i) => { this.add("palette","palette-"+i,x,y,34,34,"",()=>this.app.setCurrentColor(c),{color:c}); x += 42; });
-      x += 18;
+      x += d.padding;
       this.add("button","color-next",x,y,84,34,"Next",()=>this.app.nextColor()); x += 92;
       this.add("button","mirror-toggle",x,y,108,34,this.app.mirror ? "Mirror: On" : "Mirror: Off",()=>this.app.toggleMirror());
     }
@@ -320,7 +392,11 @@ main.js
       });
       ctx.font = "13px Arial"; ctx.textBaseline = "middle";
       this.controls.forEach((c) => this.drawControl(ctx,c));
-      ctx.fillStyle = "#dbe7f3"; ctx.font = "bold 18px Arial"; ctx.fillText("Sprite Editor v2.2", L.topPanel.x + L.topPanel.width/2 - 90, L.topPanel.y + 40);
+      ctx.fillStyle = "#dbe7f3";
+      ctx.font = "bold 18px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Sprite Editor v2.2", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 10);
+      ctx.textAlign = "left";
       if (this.dragFrameIndex !== null && this.dragOverFrameIndex !== null) {
         const from = this.dragFrameIndex + 1;
         const to = this.dragOverFrameIndex + 1;
@@ -385,6 +461,7 @@ main.js
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
       this.gridRect = null;
+      this.uiDensityMode = "standard";
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
       this.isPanning = false;
@@ -591,6 +668,12 @@ main.js
       this.renderAll();
     }
 
+    toggleDensityMode() {
+      this.uiDensityMode = this.uiDensityMode === "standard" ? "pro" : "standard";
+      this.showMessage(this.uiDensityMode === "pro" ? "Mode: Pro" : "Mode: Standard");
+      this.renderAll();
+    }
+
     setSelectionFromTwoCells(a,b) {
       const l = Math.min(a.x,b.x), t = Math.min(a.y,b.y), r = Math.max(a.x,b.x), bt = Math.max(a.y,b.y);
       this.document.setSelection({ x: l, y: t, width: r-l+1, height: bt-t+1 });
@@ -665,11 +748,27 @@ main.js
       this.renderAll();
     }
 
-    saveLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.document.buildExportPayload())); this.showMessage("Saved locally."); }
+    saveLocal() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        doc: this.document.buildExportPayload(),
+        uiDensityMode: this.uiDensityMode
+      }));
+      this.showMessage("Saved locally.");
+    }
     loadLocal() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) { this.showMessage("No local save."); return; }
-      try { this.document.importPayload(JSON.parse(raw)); this.showMessage("Loaded local save."); }
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.doc) {
+          this.document.importPayload(parsed.doc);
+          this.uiDensityMode = parsed.uiDensityMode === "pro" ? "pro" : "standard";
+        } else {
+          this.document.importPayload(parsed);
+          this.uiDensityMode = "standard";
+        }
+        this.showMessage("Loaded local save.");
+      }
       catch (_e) { this.showMessage("Load failed."); }
       this.renderAll();
     }
@@ -763,15 +862,25 @@ main.js
 
     drawSheetPreview(ctx, rect, withChrome) {
       const plc = this.document.computeSheetPlacement();
+      const titleH = withChrome ? 18 : 0;
+      const footerH = withChrome ? 20 : 0;
+      const innerPad = withChrome ? 12 : 0;
       if (withChrome) {
         ctx.fillStyle = "#1a2733"; ctx.fillRect(rect.x,rect.y,rect.width,rect.height);
         ctx.strokeStyle = "rgba(255,255,255,0.15)"; ctx.strokeRect(rect.x+0.5,rect.y+0.5,rect.width-1,rect.height-1);
         ctx.fillStyle = "#dbe7f3"; ctx.font = "bold 12px Arial"; ctx.fillText("SHEET PREVIEW",rect.x+12,rect.y+16);
       }
-      const cx = rect.x + (withChrome ? 12 : 0), cy = rect.y + (withChrome ? 24 : 0), cw = rect.width - (withChrome ? 24 : 0), ch = rect.height - (withChrome ? 32 : 0);
+      const cx = rect.x + innerPad;
+      const cy = rect.y + innerPad + titleH;
+      const cw = rect.width - innerPad * 2;
+      const ch = rect.height - innerPad * 2 - titleH - footerH;
       const scale = Math.max(1, Math.floor(Math.min(cw/plc.width, ch/plc.height)));
-      if (this.document.sheet.transparent) this.drawCheckerboard(ctx,cx,cy,plc.width*scale,plc.height*scale,Math.max(4,scale));
-      else { ctx.fillStyle = this.document.sheet.backgroundColor; ctx.fillRect(cx,cy,plc.width*scale,plc.height*scale); }
+      const drawW = plc.width * scale;
+      const drawH = plc.height * scale;
+      const drawX = cx + Math.floor((cw - drawW) * 0.5);
+      const drawY = cy + Math.floor((ch - drawH) * 0.5);
+      if (this.document.sheet.transparent) this.drawCheckerboard(ctx,drawX,drawY,drawW,drawH,Math.max(4,scale));
+      else { ctx.fillStyle = this.document.sheet.backgroundColor; ctx.fillRect(drawX,drawY,drawW,drawH); }
       this.document.frames.forEach((f,i) => {
         const e = plc.entries[i];
         for (let y=0; y<this.document.rows; y+=1) {
@@ -779,11 +888,21 @@ main.js
             const v = f.pixels[y][x];
             if (!v) continue;
             ctx.fillStyle = v;
-            ctx.fillRect(cx+(e.x+x)*scale, cy+(e.y+y)*scale, scale, scale);
+            ctx.fillRect(drawX+(e.x+x)*scale, drawY+(e.y+y)*scale, scale, scale);
           }
         }
       });
-      if (withChrome) { ctx.fillStyle = "#dbe7f3"; ctx.font = "11px Arial"; ctx.fillText("Order: " + this.document.frames.map((_,i)=>i+1).join(", "), rect.x+12, rect.y+rect.height-10); }
+      if (withChrome) {
+        const footerY = rect.y + rect.height - 8;
+        ctx.fillStyle = "rgba(10, 15, 24, 0.9)";
+        ctx.fillRect(rect.x + 8, rect.y + rect.height - footerH - 8, rect.width - 16, footerH);
+        ctx.fillStyle = "#e6f2ff";
+        ctx.font = "11px Arial";
+        const order = this.document.frames.length <= 8
+          ? this.document.frames.map((_,i)=>i+1).join(", ")
+          : `1..${this.document.frames.length}`;
+        ctx.fillText(`Frames: ${this.document.frames.length}  Order: ${order}`, rect.x+12, footerY);
+      }
     }
 
     drawMiniPixels(pixels,x,y,w,h) {
@@ -812,11 +931,19 @@ main.js
       const b = this.controlSurface.layout.bottomPanel, y = b.y + 78;
       const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
+      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const shortcutsText = "B/E/F/I/S tools  P play  [ ] frame  +/- zoom  0 reset  Shift+F full  X pixel-perfect  Shift+Drag pan";
+      const rightMargin = 18;
+      const maxRight = b.x + b.width - rightMargin;
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "12px Arial";
-      this.ctx.fillText(`Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`, b.x+18, y);
-      this.ctx.fillText("B/E/F/I/S tools  P play  [ ] frame  +/- zoom  0 reset  Shift+F full  X pixel-perfect  Shift+Drag pan", b.x+18, y+22);
+      const toolX = maxRight - this.ctx.measureText(toolText).width;
+      const shortcutsX = maxRight - this.ctx.measureText(shortcutsText).width;
+      this.ctx.fillText(toolText, Math.max(b.x + 18, toolX), y);
+      this.ctx.fillText(shortcutsText, Math.max(b.x + 18, shortcutsX), y+22);
+      this.ctx.fillStyle = "#91a3b6";
+      this.ctx.fillText(`Color selected: ${this.document.currentColor}`, b.x + 18, y + 44);
       this.ctx.fillStyle = performance.now() < this.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
-      this.ctx.fillText(this.statusMessage, b.x+b.width-360, y);
+      this.ctx.fillText(this.statusMessage, b.x+b.width-360, y + 44);
     }
   }
 

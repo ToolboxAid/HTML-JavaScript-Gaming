@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v2.1 with centered 16:9 canvas, full-screen support, and drag frame strip
+Build Sprite Editor v2.4 adding toolbar density scaling with Pro mode while preserving canvas-native architecture
