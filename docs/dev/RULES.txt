@@ -1,105 +1,95 @@
 // Toolbox Aid
 // David Quesenberry
-// 2026-03-21
+// 2026-03-26
 
-ENGINE RULES (LOCKED)
+ENGINE RULES (LOCKED — CLEAN VERSION v4)
 
-OPERATING WORKFLOW
-- ChatGPT owns planning, architecture, sequencing, and scope definition
-- Codex owns build execution, file creation, and repo deltas
-- Do not let Codex redefine the approved architecture during a build
-- User approval gates: PLAN_PR -> BUILD_PR -> APPLY_PR
+WORKFLOW (NON-NEGOTIABLE)
+- ChatGPT defines: architecture, PLAN_PR, BUILD_PR
+- Codex executes: file creation, repo changes, deltas only
+- Required flow: PLAN_PR -> BUILD_PR -> APPLY_PR
+- Codex must NOT change architecture or expand scope
 
 CORE ARCHITECTURE
-- Engine owns lifecycle (init → update → render → dispose)
+- Engine owns lifecycle: init → update → render → dispose
 - Engine owns all reusable logic
-- Systems operate on data only (no direct rendering)
+- Systems operate on data only (no rendering)
 
-RENDERING
-- No rendering outside renderer
+RENDERING (STRICT)
+- ONLY renderer can draw
 - No ctx usage outside renderer
-- Renderer is the only drawing entry point
+- No rendering in scenes/systems/entities
 
-INPUT
-- No DOM events in scenes or systems
-- Input only through:
-    - InputService
-    - ActionInputService
-- Input must be abstracted (no raw keycodes in game logic)
+INPUT (STRICT)
+- No DOM events in scenes/systems
+- Use only InputService / ActionInputService
+- No raw keycodes in game logic
 
-SCENE CONTRACT (STRICT)
-Every scene MUST implement:
-    constructor (static classes should provide an error)
-    init(engine)
-    update(dt, engine)
-    render(renderer, engine)
-    dispose(engine)
+SCENE CONTRACT (MANDATORY)
+constructor()
+init(engine)
+update(dt, engine)
+render(renderer, engine)
+dispose(engine)
 
 SEPARATION OF CONCERNS
-- Scenes orchestrate, DO NOT implement systems
-- Systems contain logic, DO NOT know about scenes
-- Engine wires everything together
+- Scenes orchestrate only
+- Systems contain logic only
+- Engine wires everything
 
-CODE OWNERSHIP RULES
-- Reusable code → engine
-- Sample-only code → samples
-- NEVER duplicate logic between samples
-- If logic is reused twice → move to engine
+CODE OWNERSHIP
+- Reusable → engine/
+- Game-specific → games/
+- Sample-only → samples/
+- If reused twice → move to engine
 
 ECS DIRECTION
-- Entities = pure data containers
-- Components = data only (no logic)
-- Systems = logic operating on components
+- Entities = data only
+- Components = data only
+- Systems = logic only
 - No cross-system coupling
 
 SAMPLE RULES
-
-PURPOSE
-- Samples demonstrate ONE concept clearly
-- Each sample builds on previous
-
-STRUCTURE
-- Sample01 = canonical template (REQUIRED)
-- All samples must follow same structure
-- samples/index.html must stay synchronized with all working samples
-
-RULES
-- No engine logic inside samples
-- No hacks that bypass engine rules
-- Samples must be removable without breaking engine
-- Build new samples from the approved ChatGPT plan
-- Codex executes the approved sample scope only
-- A CODEX_COMMANDS.md if you need me to run something in Visual Studio Code
+- One concept per sample
+- Sample01 is canonical template
+- All samples must match exactly
+- samples/index.html must stay synced
+- No engine logic in samples
+- No hacks
+- Removable without breaking engine
+- Only build from approved PLAN_PR
 
 NAMING
 - Sample01, Sample02, ...
 
-DOWNLOAD ZIP RULES
-- Complete set of delta
-- Matching repo structure exactly
+ZIP / DELIVERY RULES (CRITICAL)
+- ZIP MUST match repo directory structure EXACTLY
+- ALL documentation + control files MUST be under:
+    /docs/dev/
+        - RULES.txt
+        - README.md
+        - CODEX_COMMANDS.md
+        - COMMIT_COMMENT.txt
+- Paths must be full repo paths (/games/, /engine/, /docs/)
+- No flattened files at root
+- Delta only (no unrelated files)
 - Ready-to-run (no setup guessing)
-- Commit Comment
-- A CODEX_COMMANDS.md if you need me to run something
 
 REQUIRED FILES
-- README.md
-- CODEX_COMMANDS.md
-- All source files
+- README.md (under /docs/dev/)
+- CODEX_COMMANDS.md (under /docs/dev/)
+- COMMIT_COMMENT.txt (under /docs/dev/)
+- All source files in correct repo paths
 
 REQUIRED CONTENT
-
-Commit Comment
+Commit Comment:
 - Short, clear, scoped
 
-Codex Execution Block
-- MODEL: GPT-5.4 / GPT-5.4-mini / GPT-5.3-codex (as specified)
-- REASONING: low / medium / high
-- COMMAND: <command>
+Codex Execution Block:
+MODEL: GPT-5.4 / GPT-5.4-mini / GPT-5.3-codex
+REASONING: low / medium / high
+COMMAND: <command>
 
-- Only include commands user runs in VS Code
-- DO NOT include anything ChatGPT executed
-- Codex executes builds; ChatGPT does not stand in for Codex in final repo output
-
-FORMAT RULES
-- Sample01 is the template for ALL samples
-- All samples must match its structure exactly
+FORMAT RULE
+- Sample01 defines structure
+- All samples must match exactly

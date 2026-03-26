@@ -34,7 +34,18 @@ OUTPUT:
 - Delta ZIP
 - Match repo structure exactly
 - Include /docs/dev updates if changed
+- - Commit comment
+- - CODEX
+- - ARCHITECTURE.txt
+- - CODEX_START_OF_DAY.md
+- - RULES.txt
+- - SAMPLE_CSS_CLEANUP.md
+- - START_OF_DAY.md
+- - WORKFLOW.md
 - Include commit and codex files
+- All *PR* belong in /docs/pr/<game/engine/tools/build/etc...)
+
+
 
 DEFINITION OF DONE:
 - Next PLAN_PR approved
