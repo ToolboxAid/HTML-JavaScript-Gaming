@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v2.8 adding keyboard shortcuts and power user workflow improvements while preserving canvas-native architecture
+Build Sprite Editor v2.9 adding command palette and action search with palette integration

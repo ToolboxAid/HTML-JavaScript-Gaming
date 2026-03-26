@@ -7,12 +7,11 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V2_8_KEYBOARD_POWER_USER_WORKFLOW.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V2_9_COMMAND_PALETTE_ACTION_SEARCH.md
 
 Constraints:
 - Keep 1600x900 logical space fixed
-- Keep SpriteEditorCanvasControlSurface as layout/control authority
-- Add centralized keybinding system
-- Reuse existing action paths
-- Keep overflow and pointer workflows intact
-- Do not rewrite architecture
+- Keep control surface central
+- Implement command palette using existing action system
+- Integrate paletteList.js appropriately (prefer editor-local copy if needed)
+- No architecture rewrite

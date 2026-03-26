@@ -216,6 +216,13 @@ main.js
       this.overflowPanelControls = [];
       this.overflowAnchorControl = null;
       this.hiddenTopControls = [];
+      this.commandPaletteOpen = false;
+      this.commandPaletteQuery = "";
+      this.commandPaletteItems = [];
+      this.commandPaletteFiltered = [];
+      this.commandPaletteSelectedIndex = 0;
+      this.commandPaletteBounds = null;
+      this.commandPaletteRowControls = [];
       this.hovered = null;
       this.pressed = null;
       this.dragFrameIndex = null;
@@ -327,6 +334,91 @@ main.js
       this.overflowPanelBounds = null;
       this.overflowPanelControls = [];
       this.overflowAnchorControl = null;
+    }
+
+    pointInRect(x, y, r) {
+      return !!r && x >= r.x && y >= r.y && x <= r.x + r.w && y <= r.y + r.h;
+    }
+
+    openCommandPalette(items) {
+      this.commandPaletteItems = Array.isArray(items) ? items.slice() : [];
+      this.commandPaletteQuery = "";
+      this.commandPaletteOpen = true;
+      this.commandPaletteSelectedIndex = 0;
+      this.rebuildCommandPaletteRows();
+    }
+
+    closeCommandPalette() {
+      this.commandPaletteOpen = false;
+      this.commandPaletteBounds = null;
+      this.commandPaletteRowControls = [];
+      this.commandPaletteFiltered = [];
+      this.commandPaletteQuery = "";
+      this.commandPaletteSelectedIndex = 0;
+    }
+
+    setCommandPaletteQuery(query) {
+      this.commandPaletteQuery = query;
+      this.commandPaletteSelectedIndex = 0;
+      this.rebuildCommandPaletteRows();
+    }
+
+    moveCommandPaletteSelection(delta) {
+      if (!this.commandPaletteOpen || !this.commandPaletteFiltered.length) return;
+      const next = this.commandPaletteSelectedIndex + delta;
+      const max = this.commandPaletteFiltered.length - 1;
+      this.commandPaletteSelectedIndex = Math.max(0, Math.min(max, next));
+      this.rebuildCommandPaletteRows();
+    }
+
+    activateCommandPaletteSelection() {
+      if (!this.commandPaletteOpen || !this.commandPaletteFiltered.length) return false;
+      const selected = this.commandPaletteFiltered[this.commandPaletteSelectedIndex];
+      if (!selected || typeof selected.action !== "function") return false;
+      selected.action();
+      this.closeCommandPalette();
+      return true;
+    }
+
+    rebuildCommandPaletteRows() {
+      if (!this.commandPaletteOpen) return;
+      const frame = this.layout.appFrame;
+      const panelW = Math.min(760, frame.width - 160);
+      const topBiasY = frame.y + Math.floor(frame.height * 0.16);
+      const panelX = frame.x + Math.floor((frame.width - panelW) * 0.5);
+      const rowH = 36;
+      const headerH = 64;
+      const footerH = 20;
+      const maxRows = 10;
+      const q = this.commandPaletteQuery.trim().toLowerCase();
+      this.commandPaletteFiltered = this.commandPaletteItems.filter((item) => {
+        if (!q) return true;
+        const hay = `${item.label} ${item.category || ""} ${item.shortcut || ""}`.toLowerCase();
+        return hay.indexOf(q) >= 0;
+      });
+      const rowCount = Math.min(maxRows, Math.max(1, this.commandPaletteFiltered.length));
+      const panelH = headerH + footerH + rowCount * rowH + 16;
+      const panelY = Math.max(frame.y + 12, Math.min(topBiasY, frame.y + frame.height - panelH - 12));
+      this.commandPaletteBounds = { x: panelX, y: panelY, w: panelW, h: panelH, rowH, headerH, footerH, rowCount };
+      this.commandPaletteSelectedIndex = Math.max(0, Math.min(this.commandPaletteSelectedIndex, Math.max(0, this.commandPaletteFiltered.length - 1)));
+      this.commandPaletteRowControls = [];
+      const visible = this.commandPaletteFiltered.slice(0, maxRows);
+      visible.forEach((item, idx) => {
+        this.commandPaletteRowControls.push({
+          kind: "button",
+          id: `cmd-row-${idx}`,
+          x: panelX + 12,
+          y: panelY + headerH + (idx * rowH),
+          w: panelW - 24,
+          h: rowH - 4,
+          text: item.label,
+          action: item.action,
+          isCommandRow: true,
+          selected: idx === this.commandPaletteSelectedIndex,
+          shortcut: item.shortcut || "",
+          category: item.category || ""
+        });
+      });
     }
 
     rebuildOverflowPanel() {
@@ -521,6 +613,12 @@ main.js
     }
 
     getControlAt(x,y) {
+      if (this.commandPaletteOpen) {
+        for (let i = this.commandPaletteRowControls.length - 1; i >= 0; i -= 1) {
+          const c = this.commandPaletteRowControls[i];
+          if (x >= c.x && y >= c.y && x <= c.x + c.w && y <= c.y + c.h) return c;
+        }
+      }
       if (this.overflowPanelOpen) {
         for (let i = this.overflowPanelControls.length - 1; i >= 0; i -= 1) {
           const c = this.overflowPanelControls[i];
@@ -540,6 +638,13 @@ main.js
       if (this.dragFrameIndex !== null) this.dragOverFrameIndex = c && c.kind === "frame" ? c.frameIndex : null;
     }
     pointerDown(x,y) {
+      if (this.commandPaletteOpen) {
+        if (!this.pointInRect(x, y, this.commandPaletteBounds)) {
+          this.closeCommandPalette();
+          this.pressed = null;
+          return { id: "command-palette-dismiss", kind: "button" };
+        }
+      }
       if (this.overflowPanelOpen) {
         const inPanel = this.overflowPanelBounds &&
           x >= this.overflowPanelBounds.x && y >= this.overflowPanelBounds.y &&
@@ -575,6 +680,7 @@ main.js
       if (!ok) return false;
       if (typeof c.action === "function") {
         c.action();
+        if (c.isCommandRow) this.closeCommandPalette();
         if (c.id.indexOf("overflow-item-") === 0) this.closeOverflowPanel();
         return true;
       }
@@ -593,6 +699,7 @@ main.js
       ctx.font = "13px Arial"; ctx.textBaseline = "middle";
       this.controls.forEach((c) => this.drawControl(ctx,c));
       this.drawOverflowPanel(ctx);
+      this.drawCommandPalette(ctx);
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 18px Arial";
       ctx.textAlign = "center";
@@ -619,12 +726,20 @@ main.js
       }
       const hovered = this.hovered === c.id, pressed = this.pressed === c.id, activeFrame = c.kind === "frame" && this.app.document.activeFrameIndex === c.frameIndex, dragTarget = c.kind === "frame" && this.dragOverFrameIndex === c.frameIndex && this.dragFrameIndex !== null, toolActive = c.tool && this.app.activeTool === c.tool;
       ctx.fillStyle = pressed ? "#27435a" : (hovered ? "#223444" : "#1a2733");
+      if (c.isCommandRow && c.selected) ctx.fillStyle = "#2d5169";
       if (toolActive || activeFrame) ctx.fillStyle = "#244d67";
       if (dragTarget) ctx.fillStyle = "#305c4a";
       ctx.fillRect(c.x,c.y,c.w,c.h);
       ctx.strokeStyle = (toolActive || activeFrame || dragTarget) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
+      if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
       ctx.fillStyle = "#edf2f7"; ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial"; ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+      if (c.isCommandRow && c.shortcut) {
+        ctx.fillStyle = "#91a3b6";
+        const t = `[${c.shortcut}]`;
+        const w = ctx.measureText(t).width;
+        ctx.fillText(t, c.x + c.w - w - 10, c.y + c.h / 2);
+      }
       if (c.kind === "frame") {
         const f = this.app.document.frames[c.frameIndex];
         this.drawMiniFrame(ctx, f.pixels, c.x+c.w-54, c.y+8, 46, c.h-16);
@@ -652,6 +767,33 @@ main.js
       ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(p.x + 0.5, p.y + 0.5, p.w - 1, p.h - 1);
       this.overflowPanelControls.forEach((c) => this.drawControl(ctx, c));
+    }
+
+    drawCommandPalette(ctx) {
+      if (!this.commandPaletteOpen || !this.commandPaletteBounds) return;
+      const p = this.commandPaletteBounds;
+      ctx.fillStyle = "rgba(2, 6, 12, 0.58)";
+      ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+      ctx.fillStyle = "#162435";
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.strokeStyle = "#4cc9f0";
+      ctx.strokeRect(p.x + 0.5, p.y + 0.5, p.w - 1, p.h - 1);
+      ctx.fillStyle = "#dbe7f3";
+      ctx.font = "bold 15px Arial";
+      ctx.fillText("Command Palette", p.x + 14, p.y + 20);
+      ctx.font = "13px Arial";
+      const q = this.commandPaletteQuery ? this.commandPaletteQuery : "(type to search)";
+      ctx.fillStyle = this.commandPaletteQuery ? "#e6f2ff" : "#91a3b6";
+      ctx.fillText(`> ${q}`, p.x + 14, p.y + 44);
+      if (!this.commandPaletteFiltered.length) {
+        ctx.fillStyle = "#91a3b6";
+        ctx.fillText("No matching commands.", p.x + 14, p.y + p.headerH + 20);
+      } else {
+        this.commandPaletteRowControls.forEach((c) => this.drawControl(ctx, c));
+      }
+      ctx.fillStyle = "#91a3b6";
+      ctx.font = "12px Arial";
+      ctx.fillText("Up/Down navigate  Enter execute  Esc close", p.x + 14, p.y + p.h - 10);
     }
   }
 
@@ -681,6 +823,7 @@ main.js
       this.isPanning = false;
       this.panStart = null;
       this.keybindings = this.createKeybindingMap();
+      this.commandPaletteCommands = this.createCommandPaletteCommands();
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -839,6 +982,47 @@ main.js
 
     onKeyDown(e) {
       if (this.isTypingTarget(e.target)) return;
+      if (this.controlSurface.commandPaletteOpen) {
+        const k = (e.key || "").toLowerCase();
+        if (k === "escape") {
+          this.controlSurface.closeCommandPalette();
+          this.showMessage("Command palette closed.");
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+        if (k === "arrowdown") {
+          this.controlSurface.moveCommandPaletteSelection(1);
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+        if (k === "arrowup") {
+          this.controlSurface.moveCommandPaletteSelection(-1);
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+        if (k === "enter") {
+          if (this.controlSurface.activateCommandPaletteSelection()) {
+            e.preventDefault();
+            this.renderAll();
+            return;
+          }
+        }
+        if (k === "backspace") {
+          this.controlSurface.setCommandPaletteQuery(this.controlSurface.commandPaletteQuery.slice(0, -1));
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+        if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          this.controlSurface.setCommandPaletteQuery(this.controlSurface.commandPaletteQuery + e.key);
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+      }
       const gesture = this.getKeyGesture(e);
       const action = this.keybindings[gesture];
       if (!action) return;
@@ -867,10 +1051,82 @@ main.js
         "ctrl+c": "selection.copy",
         "ctrl+x": "selection.cut",
         "ctrl+v": "selection.paste",
+        "ctrl+k": "system.commandPalette",
         "shift+f": "system.fullscreen",
         "escape": "system.escape",
         "delete": "system.delete"
       };
+    }
+
+    getShortcutHintForAction(action) {
+      const pairs = Object.entries(this.keybindings);
+      for (let i = 0; i < pairs.length; i += 1) {
+        if (pairs[i][1] === action) return pairs[i][0];
+      }
+      return "";
+    }
+
+    createCommandPaletteCommands() {
+      const commands = [
+        { id: "tool.brush", label: "Tool: Brush", category: "tool" },
+        { id: "tool.erase", label: "Tool: Erase", category: "tool" },
+        { id: "tool.fill", label: "Tool: Fill", category: "tool" },
+        { id: "tool.eyedropper", label: "Tool: Eyedropper", category: "tool" },
+        { id: "tool.select", label: "Tool: Select", category: "tool" },
+        { id: "view.zoomIn", label: "View: Zoom In", category: "view" },
+        { id: "view.zoomOut", label: "View: Zoom Out", category: "view" },
+        { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "view" },
+        { id: "view.pixelToggle", label: "View: Toggle Pixel Perfect", category: "view" },
+        { id: "frame.prev", label: "Frame: Previous", category: "frame" },
+        { id: "frame.next", label: "Frame: Next", category: "frame" },
+        { id: "frame.duplicate", label: "Frame: Duplicate", category: "frame" },
+        { id: "selection.copy", label: "Selection: Copy", category: "selection" },
+        { id: "selection.cut", label: "Selection: Cut", category: "selection" },
+        { id: "selection.paste", label: "Selection: Paste", category: "selection" },
+        { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "system" },
+        { id: "system.playback", label: "System: Toggle Playback", category: "system" },
+        { id: "system.delete", label: "System: Delete/Clear", category: "system" },
+        { id: "system.commandPalette", label: "System: Open Command Palette", category: "system" }
+      ];
+      const list = (typeof palettesList === "object" && palettesList) ? palettesList : null;
+      if (list) {
+        Object.keys(list).forEach((name) => {
+          commands.push({ id: `palette.apply:${name}`, label: `Palette: Apply ${name}`, category: "palette" });
+        });
+      }
+      return commands.map((cmd) => ({
+        ...cmd,
+        shortcut: this.getShortcutHintForAction(cmd.id),
+        action: () => this.dispatchCommandAction(cmd.id)
+      }));
+    }
+
+    openCommandPalette() {
+      this.commandPaletteCommands = this.createCommandPaletteCommands();
+      this.controlSurface.openCommandPalette(this.commandPaletteCommands);
+      this.showMessage("Command palette opened.");
+    }
+
+    applyNamedPalette(paletteName) {
+      if (typeof palettesList !== "object" || !palettesList || !Array.isArray(palettesList[paletteName])) return false;
+      const next = palettesList[paletteName]
+        .map((entry) => entry && entry.hex)
+        .filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex))
+        .slice(0, 32);
+      if (!next.length) return false;
+      this.document.palette = next;
+      if (this.document.palette.indexOf(this.document.currentColor) < 0) {
+        this.document.currentColor = this.document.palette[0];
+      }
+      this.showMessage(`Palette applied: ${paletteName}`);
+      return true;
+    }
+
+    dispatchCommandAction(actionId) {
+      if (actionId.indexOf("palette.apply:") === 0) {
+        return this.applyNamedPalette(actionId.slice("palette.apply:".length));
+      }
+      return this.dispatchKeybinding(actionId);
     }
 
     isTypingTarget(target) {
@@ -890,7 +1146,16 @@ main.js
     }
 
     dispatchKeybinding(action) {
+      if (action === "system.commandPalette") {
+        this.openCommandPalette();
+        return true;
+      }
       if (action === "system.escape") {
+        if (this.controlSurface.commandPaletteOpen) {
+          this.controlSurface.closeCommandPalette();
+          this.showMessage("Command palette closed.");
+          return true;
+        }
         if (this.controlSurface.overflowPanelOpen) {
           this.controlSurface.closeOverflowPanel();
           this.showMessage("Overflow closed.");
