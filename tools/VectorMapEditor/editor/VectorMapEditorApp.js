@@ -15,6 +15,7 @@ import { VectorMapJsonEditor } from "./VectorMapJsonEditor.js";
 import { VectorMapFullscreenController } from "./VectorMapFullscreenController.js";
 import { VectorMapCollisionTester } from "./VectorMapCollisionTester.js";
 import { VectorMapRuntimeExporter } from "./VectorMapRuntimeExporter.js";
+import { VectorMapHistoryManager } from "./VectorMapHistoryManager.js";
 
 function normalizeDegrees(value) {
   const numeric = Number(value || 0);
@@ -44,6 +45,7 @@ export class VectorMapEditorApp {
     this.selectionModel = new VectorMapSelectionModel();
     this.serializer = new VectorMapSerializer();
     this.runtimeExporter = new VectorMapRuntimeExporter();
+    this.historyManager = new VectorMapHistoryManager(80);
     this.renderer2D = new VectorMapRenderer2D();
     this.renderer3D = new VectorMapRenderer3D();
     this.collisionTester = new VectorMapCollisionTester();
@@ -52,6 +54,7 @@ export class VectorMapEditorApp {
     this.spaceKeyDown = false;
     this.statusMessage = "Ready.";
     this.lastCollisionResult = null;
+    this.pendingHistoryEntry = null;
 
     this.elements = this.cacheElements(rootDocument);
     this.jsonEditor = new VectorMapJsonEditor(this.elements.jsonEditor);
@@ -96,6 +99,8 @@ export class VectorMapEditorApp {
       zoomInButton: doc.getElementById("zoomInButton"),
       zoomDisplay: doc.getElementById("zoomDisplay"),
       newDocumentButton: doc.getElementById("newDocumentButton"),
+      undoButton: doc.getElementById("undoButton"),
+      redoButton: doc.getElementById("redoButton"),
       saveDocumentButton: doc.getElementById("saveDocumentButton"),
       exportRuntimeButton: doc.getElementById("exportRuntimeButton"),
       loadDocumentInput: doc.getElementById("loadDocumentInput"),
@@ -156,6 +161,7 @@ export class VectorMapEditorApp {
 
   start() {
     this.ctx = this.elements.canvas.getContext("2d");
+    this.historyManager.reset();
     this.resizeCanvas();
     this.wireEvents();
     this.syncUIFromDocument();
@@ -171,6 +177,7 @@ export class VectorMapEditorApp {
       if (this.workspaceViewMode === "json") {
         return;
       }
+      this.beginPointerHistoryEntry(event);
       canvas.setPointerCapture(event.pointerId);
       this.interactionController.pointerDown(this.getCanvasPosition(event), this.getInteractionMeta(event));
       this.syncUIFromDocument();
@@ -191,6 +198,7 @@ export class VectorMapEditorApp {
       if (this.workspaceViewMode !== "json") {
         this.interactionController.pointerUp(this.getCanvasPosition(event), this.getInteractionMeta(event));
       }
+      this.completePendingHistoryEntry();
       this.syncUIFromDocument();
       this.render();
     });
@@ -210,21 +218,38 @@ export class VectorMapEditorApp {
       if (this.workspaceViewMode === "json") {
         return;
       }
+      const beforeSnapshot = this.createHistorySnapshot();
       this.interactionController.doubleClick(this.getCanvasPosition(event), this.getInteractionMeta(event));
+      this.commitHistorySnapshot("Add Point", beforeSnapshot);
       this.syncUIFromDocument();
       this.render();
     });
 
     this.rootDocument.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        if (event.shiftKey) {
+          this.redo();
+        } else {
+          this.undo();
+        }
+        return;
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        this.redo();
+        return;
+      }
       if (event.code === "Space") {
         this.spaceKeyDown = true;
       }
       if (event.key === "Delete") {
-        this.interactionController.deleteSelection();
-        this.syncUIFromDocument();
-        this.render();
+        this.performHistoryAction(this.getDeleteHistoryLabel(), () => {
+          this.interactionController.deleteSelection();
+        });
       }
       if (event.key === "Escape") {
+        this.pendingHistoryEntry = null;
         this.interactionController.cancelPendingShape();
         this.interactionController.clearCollisionResult();
         this.setStatus("Pending interaction canceled.");
@@ -266,12 +291,17 @@ export class VectorMapEditorApp {
       this.selectionModel = new VectorMapSelectionModel();
       this.transformController = new VectorMapTransformController(this.documentModel, this.selectionModel);
       this.createInteractionController();
+      this.historyManager.reset();
+      this.pendingHistoryEntry = null;
       this.interactionController.setToolMode(this.elements.toolModeSelect.value);
       this.lastCollisionResult = null;
       this.syncUIFromDocument();
       this.render();
       this.setStatus("New document created.");
     });
+
+    this.elements.undoButton.addEventListener("click", () => this.undo());
+    this.elements.redoButton.addEventListener("click", () => this.redo());
 
     this.elements.saveDocumentButton.addEventListener("click", () => {
       this.syncDocumentFromInputs();
@@ -294,6 +324,8 @@ export class VectorMapEditorApp {
       this.documentModel.setData(data);
       this.selectionModel.clear();
       this.lastCollisionResult = null;
+      this.historyManager.reset();
+      this.pendingHistoryEntry = null;
       this.workspaceViewMode = this.documentModel.getData().mode;
       this.elements.workspaceModeSelect.value = this.workspaceViewMode;
       this.createInteractionController();
@@ -345,18 +377,18 @@ export class VectorMapEditorApp {
       if (!this.selectionModel.objectId) {
         return;
       }
-      const nextObject = this.documentModel.duplicateObject(this.selectionModel.objectId);
-      if (nextObject) {
-        this.selectionModel.selectObject(nextObject.id);
-        this.syncUIFromDocument();
-        this.render();
-      }
+      this.performHistoryAction("Duplicate Object", () => {
+        const nextObject = this.documentModel.duplicateObject(this.selectionModel.objectId);
+        if (nextObject) {
+          this.selectionModel.selectObject(nextObject.id);
+        }
+      });
     });
 
     this.elements.deleteObjectButton.addEventListener("click", () => {
-      this.interactionController.deleteSelection();
-      this.syncUIFromDocument();
-      this.render();
+      this.performHistoryAction(this.getDeleteHistoryLabel(), () => {
+        this.interactionController.deleteSelection();
+      });
     });
 
     this.elements.documentNameInput.addEventListener("input", () => this.syncDocumentFromInputs());
@@ -368,31 +400,32 @@ export class VectorMapEditorApp {
       if (!this.selectionModel.objectId) {
         return;
       }
-      this.documentModel.renameObject(this.selectionModel.objectId, this.elements.selectedObjectNameInput.value);
-      this.syncObjectList();
-      this.syncJsonEditor();
-      this.render();
+      this.performHistoryAction("Rename Object", () => {
+        this.documentModel.renameObject(this.selectionModel.objectId, this.elements.selectedObjectNameInput.value);
+      });
     });
 
     this.elements.applyCenterButton.addEventListener("click", () => {
-      this.transformController.setCenter(this.readCenterInputs());
-      this.syncUIFromDocument();
-      this.render();
+      this.performHistoryAction("Set Center", () => {
+        this.transformController.setCenter(this.readCenterInputs());
+      });
     });
 
     this.elements.setCenterFromSelectionButton.addEventListener("click", () => {
-      this.transformController.autoCenterBySelection();
-      this.syncUIFromDocument();
-      this.render();
+      this.performHistoryAction("Set Center", () => {
+        this.transformController.autoCenterBySelection();
+      });
     });
 
-    this.elements.autoCenterBoundsButton.addEventListener("click", () => { this.transformController.autoCenterByBounds(); this.syncUIFromDocument(); this.render(); });
-    this.elements.autoCenterCentroidButton.addEventListener("click", () => { this.transformController.autoCenterByCentroid(); this.syncUIFromDocument(); this.render(); });
-    this.elements.autoCenterOriginButton.addEventListener("click", () => { this.transformController.autoCenterByOrigin(); this.syncUIFromDocument(); this.render(); });
-    this.elements.autoCenterSelectionButton.addEventListener("click", () => { this.transformController.autoCenterBySelection(); this.syncUIFromDocument(); this.render(); });
+    this.elements.autoCenterBoundsButton.addEventListener("click", () => this.performHistoryAction("Set Center", () => this.transformController.autoCenterByBounds()));
+    this.elements.autoCenterCentroidButton.addEventListener("click", () => this.performHistoryAction("Set Center", () => this.transformController.autoCenterByCentroid()));
+    this.elements.autoCenterOriginButton.addEventListener("click", () => this.performHistoryAction("Set Center", () => this.transformController.autoCenterByOrigin()));
+    this.elements.autoCenterSelectionButton.addEventListener("click", () => this.performHistoryAction("Set Center", () => this.transformController.autoCenterBySelection()));
 
     this.elements.applyRotationButton.addEventListener("click", () => {
-      this.applyAbsoluteRotationFromInputs();
+      this.performHistoryAction("Rotate", () => {
+        this.applyAbsoluteRotationFromInputs();
+      });
     });
 
     [this.elements.rotationXInput, this.elements.rotationYInput, this.elements.rotationZInput].forEach((element) => {
@@ -406,24 +439,28 @@ export class VectorMapEditorApp {
         if (!this.selectionModel.hasObject()) {
           return;
         }
-        this.applyAbsoluteRotationFromInputs();
+        this.performHistoryAction("Rotate", () => {
+          this.applyAbsoluteRotationFromInputs();
+        });
       });
       element.addEventListener("keydown", (event) => {
         if (event.key !== "Enter" || !this.selectionModel.hasObject()) {
           return;
         }
-        this.applyAbsoluteRotationFromInputs();
+        this.performHistoryAction("Rotate", () => {
+          this.applyAbsoluteRotationFromInputs();
+        });
       });
     });
 
     this.elements.resetRotationButton.addEventListener("click", () => {
-      this.transformController.resetRotation();
-      const selection = this.selectionModel.getSelection(this.documentModel);
-      if (selection.object) {
-        this.documentModel.setObjectRotation(selection.object.id, { x: 0, y: 0, z: 0 });
-      }
-      this.syncUIFromDocument();
-      this.render();
+      this.performHistoryAction("Rotate", () => {
+        this.transformController.resetRotation();
+        const selection = this.selectionModel.getSelection(this.documentModel);
+        if (selection.object) {
+          this.documentModel.setObjectRotation(selection.object.id, { x: 0, y: 0, z: 0 });
+        }
+      });
     });
 
     this.wireSpinButton(this.elements.rotationXDownButton, "x", -1);
@@ -439,9 +476,9 @@ export class VectorMapEditorApp {
         if (!selection.object) {
           return;
         }
-        this.documentModel.setObjectStyle(selection.object.id, this.readStyleInputs());
-        this.syncUIFromDocument();
-        this.render();
+        this.performHistoryAction("Update Appearance", () => {
+          this.documentModel.setObjectStyle(selection.object.id, this.readStyleInputs());
+        });
       });
     });
 
@@ -451,9 +488,9 @@ export class VectorMapEditorApp {
         this.setStatus("Select a point to apply point color.");
         return;
       }
-      this.documentModel.setPointColor(selection.object.id, selection.pointIndex, this.elements.selectedPointColorInput.value);
-      this.syncUIFromDocument();
-      this.render();
+      this.performHistoryAction("Update Appearance", () => {
+        this.documentModel.setPointColor(selection.object.id, selection.pointIndex, this.elements.selectedPointColorInput.value);
+      });
     });
 
     [
@@ -471,18 +508,18 @@ export class VectorMapEditorApp {
         if (!selection.object) {
           return;
         }
-        this.documentModel.setObjectFlags(selection.object.id, this.readFlagsInputs());
-        this.syncJsonEditor();
-        this.render();
+        this.performHistoryAction("Update Collision Flags", () => {
+          this.documentModel.setObjectFlags(selection.object.id, this.readFlagsInputs());
+        });
       });
       element.addEventListener("change", () => {
         const selection = this.selectionModel.getSelection(this.documentModel);
         if (!selection.object) {
           return;
         }
-        this.documentModel.setObjectFlags(selection.object.id, this.readFlagsInputs());
-        this.syncJsonEditor();
-        this.render();
+        this.performHistoryAction("Update Collision Flags", () => {
+          this.documentModel.setObjectFlags(selection.object.id, this.readFlagsInputs());
+        });
       });
     });
 
@@ -497,16 +534,16 @@ export class VectorMapEditorApp {
 
     this.elements.jsonApplyButton.addEventListener("click", () => {
       try {
-        const nextData = this.jsonEditor.validate();
-        this.documentModel.setData(nextData);
-        this.selectionModel.clear();
-        this.lastCollisionResult = null;
-        this.workspaceViewMode = this.documentModel.getData().mode;
-        if (this.workspaceViewMode !== "2d" && this.workspaceViewMode !== "3d") {
-          this.workspaceViewMode = "json";
-        }
-        this.syncUIFromDocument();
-        this.render();
+        this.performHistoryAction("JSON Apply", () => {
+          const nextData = this.jsonEditor.validate();
+          this.documentModel.setData(nextData);
+          this.selectionModel.clear();
+          this.lastCollisionResult = null;
+          this.workspaceViewMode = this.documentModel.getData().mode;
+          if (this.workspaceViewMode !== "2d" && this.workspaceViewMode !== "3d") {
+            this.workspaceViewMode = "json";
+          }
+        });
         this.setStatus("JSON applied.");
       } catch (error) {
         this.setStatus(`JSON invalid: ${error.message}`);
@@ -531,9 +568,9 @@ export class VectorMapEditorApp {
   wireSpinButton(button, axis, direction) {
     button.addEventListener("click", (event) => {
       const step = event.shiftKey ? 15 : 1;
-      this.transformController.applyRotation({ [axis]: direction * step });
-      this.syncUIFromDocument();
-      this.render();
+      this.performHistoryAction("Rotate", () => {
+        this.transformController.applyRotation({ [axis]: direction * step });
+      });
     });
   }
 
@@ -587,8 +624,6 @@ export class VectorMapEditorApp {
       y: normalizeDegrees(next.y - current.y),
       z: normalizeDegrees(next.z - current.z)
     });
-    this.syncUIFromDocument();
-    this.render();
   }
 
   syncDocumentFromInputs(shouldResize = false) {
@@ -718,6 +753,7 @@ export class VectorMapEditorApp {
     this.elements.statusLeft.textContent = this.statusMessage;
     this.elements.statusCenter.textContent = `Mode: ${this.workspaceViewMode.toUpperCase()} | Tool: ${this.elements.toolModeSelect.value} | Zoom: ${Math.round(this.interactionController.getView().zoom * 100)}%`;
     this.elements.zoomDisplay.textContent = `${Math.round(this.interactionController.getView().zoom * 100)}%`;
+    this.syncHistoryControls();
   }
 
   setStatus(message) {
@@ -766,6 +802,128 @@ export class VectorMapEditorApp {
 
   formatRotationReadout(rotation) {
     return `X: ${rotation.x.toFixed(1)}deg | Y: ${rotation.y.toFixed(1)}deg | Z: ${rotation.z.toFixed(1)}deg`;
+  }
+
+  syncHistoryControls() {
+    this.elements.undoButton.disabled = !this.historyManager.canUndo();
+    this.elements.redoButton.disabled = !this.historyManager.canRedo();
+  }
+
+  createHistorySnapshot() {
+    return {
+      documentData: this.documentModel.toJSON(),
+      selection: {
+        objectId: this.selectionModel.objectId,
+        pointIndex: this.selectionModel.pointIndex
+      },
+      workspaceViewMode: this.workspaceViewMode
+    };
+  }
+
+  applyHistorySnapshot(snapshot) {
+    this.documentModel.setData(snapshot.documentData);
+    const objectId = snapshot.selection?.objectId;
+    const pointIndex = snapshot.selection?.pointIndex;
+    if (objectId && this.documentModel.getObjectById(objectId)) {
+      if (Number.isInteger(pointIndex)) {
+        this.selectionModel.selectPoint(objectId, pointIndex);
+      } else {
+        this.selectionModel.selectObject(objectId);
+      }
+    } else {
+      this.selectionModel.clear();
+    }
+    this.workspaceViewMode = snapshot.workspaceViewMode || this.documentModel.getData().mode;
+    this.lastCollisionResult = null;
+    this.interactionController.clearCollisionResult();
+    this.syncUIFromDocument();
+    this.render();
+  }
+
+  commitHistorySnapshot(label, beforeSnapshot) {
+    const committed = this.historyManager.push(label, beforeSnapshot, this.createHistorySnapshot());
+    this.syncHistoryControls();
+    return committed;
+  }
+
+  performHistoryAction(label, action, shouldRefresh = true) {
+    const beforeSnapshot = this.createHistorySnapshot();
+    action?.();
+    this.commitHistorySnapshot(label, beforeSnapshot);
+    if (shouldRefresh) {
+      this.syncUIFromDocument();
+      this.render();
+    }
+  }
+
+  undo() {
+    const label = this.historyManager.undo((snapshot) => this.applyHistorySnapshot(snapshot));
+    if (!label) {
+      return;
+    }
+    this.setStatus(`Undo: ${label}.`);
+  }
+
+  redo() {
+    const label = this.historyManager.redo((snapshot) => this.applyHistorySnapshot(snapshot));
+    if (!label) {
+      return;
+    }
+    this.setStatus(`Redo: ${label}.`);
+  }
+
+  getDeleteHistoryLabel() {
+    const selection = this.selectionModel.getSelection(this.documentModel);
+    if (selection.point && Number.isInteger(selection.pointIndex)) {
+      return "Delete Point";
+    }
+    return selection.object ? "Delete Object" : "Delete";
+  }
+
+  beginPointerHistoryEntry(event) {
+    const label = this.getPointerHistoryLabel(event);
+    this.pendingHistoryEntry = label ? { label, before: this.createHistorySnapshot() } : null;
+  }
+
+  completePendingHistoryEntry() {
+    if (!this.pendingHistoryEntry) {
+      return;
+    }
+    this.commitHistorySnapshot(this.pendingHistoryEntry.label, this.pendingHistoryEntry.before);
+    this.pendingHistoryEntry = null;
+  }
+
+  getPointerHistoryLabel(event) {
+    const mode = this.elements.toolModeSelect.value;
+    const worldPoint = this.interactionController.screenToWorld(this.getCanvasPosition(event), this.documentModel.getData().mode);
+    const hit = this.interactionController.getHitTarget(worldPoint, this.documentModel.getData().mode);
+    if (mode === "pan" || mode === "collisionVector") {
+      return null;
+    }
+    if (mode === "delete") {
+      return hit?.type === "point" ? "Delete Point" : "Delete Object";
+    }
+    if (mode === "rotate") {
+      return this.selectionModel.hasObject() ? "Rotate" : null;
+    }
+    if (mode === "setCenter") {
+      return this.selectionModel.hasObject() ? "Set Center" : null;
+    }
+    if (mode === "point") {
+      return "Create Object";
+    }
+    if (mode === "line" || mode === "polyline" || mode === "polygon") {
+      return this.interactionController.pendingObjectId ? "Add Point" : "Create Object";
+    }
+    if (mode === "move" || mode === "select") {
+      if (hit?.type === "point") {
+        return "Move Point";
+      }
+      if (hit?.type === "object") {
+        return "Move Object";
+      }
+    }
+    return null;
   }
 
   render() {

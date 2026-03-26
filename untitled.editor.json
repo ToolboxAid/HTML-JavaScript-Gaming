@@ -1,0 +1,94 @@
+{
+  "version": 3,
+  "name": "untitled",
+  "mode": "2d",
+  "width": 128,
+  "height": 72,
+  "background": "#000000",
+  "objects": [
+    {
+      "id": "obj-5qstwjid",
+      "name": "Polyline",
+      "kind": "polyline",
+      "space": "2d",
+      "closed": false,
+      "center": {
+        "x": 80,
+        "y": 50,
+        "z": 0,
+        "color": "#ff7ef4"
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "style": {
+        "stroke": "#ffffff",
+        "fill": null,
+        "lineWidth": 2,
+        "colorMode": "object"
+      },
+      "flags": {
+        "collidable": false,
+        "deadly": false,
+        "trigger": false,
+        "spawnBlocker": false,
+        "projectileBlocker": false,
+        "playerOnly": false,
+        "enemyOnly": false,
+        "tag": ""
+      },
+      "points": [
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 160,
+          "y": 50,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 0,
+          "y": 100,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 20,
+          "y": 80,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 20,
+          "y": 20,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 50,
+          "y": 50,
+          "z": 0,
+          "color": "#ffffff"
+        },
+        {
+          "x": 20,
+          "y": 80,
+          "z": 0,
+          "color": "#ffffff"
+        }
+      ]
+    }
+  ]
+}
