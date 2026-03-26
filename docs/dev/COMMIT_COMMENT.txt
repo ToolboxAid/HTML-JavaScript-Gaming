@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v3.2 adding command favorites and pinning for faster personalized workflows
+Build Sprite Editor v3.3 adding command macros and multi-step action support

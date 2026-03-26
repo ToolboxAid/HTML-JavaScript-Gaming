@@ -12,6 +12,7 @@ main.js
   const STORAGE_KEY = "sprite-editor-v22";
   const RECENT_ACTIONS_KEY = "sprite-editor-command-recent-v30";
   const FAVORITE_ACTIONS_KEY = "sprite-editor-command-favorites-v32";
+  const MACRO_DEFINITIONS_KEY = "sprite-editor-command-macros-v33";
 
   class SpriteEditorViewport {
     constructor(canvas) {
@@ -856,6 +857,7 @@ main.js
       this.isPanning = false;
       this.panStart = null;
       this.keybindings = this.createKeybindingMap();
+      this.macroDefinitions = this.loadMacroDefinitions();
       this.commandDefinitions = this.getCommandDefinitions();
       this.recentActions = this.loadRecentActions();
       this.favoriteActions = this.loadFavoriteActions();
@@ -900,6 +902,70 @@ main.js
         return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 80) : [];
       } catch (_e) {
         return [];
+      }
+    }
+
+    getBuiltInMacros() {
+      return [
+        {
+          id: "macro:prep_brush_center",
+          label: "Macro: Prep Brush Center",
+          category: "Macro",
+          aliases: ["prep brush", "reset and brush"],
+          keywords: ["macro", "reset", "brush"],
+          actions: ["view.zoomReset", "tool.brush"]
+        },
+        {
+          id: "macro:animate_preview_cycle",
+          label: "Macro: Animate Preview Cycle",
+          category: "Macro",
+          aliases: ["preview cycle", "animation preview"],
+          keywords: ["macro", "playback", "preview"],
+          actions: ["frame.next", "frame.next", "system.playback"]
+        }
+      ];
+    }
+
+    normalizeMacroDefinition(input) {
+      if (!input || typeof input !== "object") return null;
+      const id = String(input.id || "").trim();
+      const label = String(input.label || "").trim();
+      if (!id || !label || id.indexOf("macro:") !== 0) return null;
+      const actions = Array.isArray(input.actions) ? input.actions.filter((a) => typeof a === "string" && a.trim()).map((a) => a.trim()) : [];
+      if (!actions.length) return null;
+      const aliases = Array.isArray(input.aliases) ? input.aliases.filter((a) => typeof a === "string") : [];
+      const keywords = Array.isArray(input.keywords) ? input.keywords.filter((k) => typeof k === "string") : [];
+      return {
+        id,
+        label,
+        category: "Macro",
+        aliases,
+        keywords,
+        actions
+      };
+    }
+
+    loadMacroDefinitions() {
+      const builtIns = this.getBuiltInMacros().map((m) => this.normalizeMacroDefinition(m)).filter(Boolean);
+      try {
+        const raw = localStorage.getItem(MACRO_DEFINITIONS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(parsed)) return builtIns;
+        const custom = parsed.map((m) => this.normalizeMacroDefinition(m)).filter(Boolean);
+        const byId = new Map();
+        builtIns.forEach((m) => byId.set(m.id, m));
+        custom.forEach((m) => byId.set(m.id, m));
+        return Array.from(byId.values());
+      } catch (_e) {
+        return builtIns;
+      }
+    }
+
+    saveMacroDefinitions() {
+      try {
+        localStorage.setItem(MACRO_DEFINITIONS_KEY, JSON.stringify(this.macroDefinitions));
+      } catch (_e) {
+        // Ignore localStorage failures.
       }
     }
 
@@ -1186,6 +1252,16 @@ main.js
           commands.push({ id: `palette.apply:${name}`, label: `Palette: Apply ${name}`, category: "Palette", keywords: ["palette", "color", name], aliases: [`use ${name}`, `set palette ${name}`] });
         });
       }
+      this.macroDefinitions.forEach((macro) => {
+        commands.push({
+          id: macro.id,
+          label: macro.label,
+          category: "Macro",
+          keywords: (macro.keywords || []).concat(["macro"]),
+          aliases: macro.aliases || [],
+          actions: macro.actions || []
+        });
+      });
       return commands;
     }
 
@@ -1294,6 +1370,11 @@ main.js
     }
 
     dispatchCommandAction(actionId) {
+      if (actionId.indexOf("macro:") === 0) {
+        const ok = this.executeMacroCommand(actionId, new Set());
+        if (ok) this.trackRecentAction(actionId);
+        return ok;
+      }
       if (actionId.indexOf("palette.apply:") === 0) {
         const ok = this.applyNamedPalette(actionId.slice("palette.apply:".length));
         if (ok) this.trackRecentAction(actionId);
@@ -1302,6 +1383,46 @@ main.js
       const ok = this.dispatchKeybinding(actionId);
       if (ok) this.trackRecentAction(actionId);
       return ok;
+    }
+
+    executeMacroCommand(macroId, activeSet) {
+      const macro = this.macroDefinitions.find((m) => m.id === macroId);
+      if (!macro) {
+        this.showMessage("Macro missing.");
+        return false;
+      }
+      if (activeSet.has(macroId)) {
+        this.showMessage("Macro loop blocked.");
+        return false;
+      }
+      activeSet.add(macroId);
+      let successCount = 0;
+      for (let i = 0; i < macro.actions.length; i += 1) {
+        const actionId = macro.actions[i];
+        let ok = false;
+        if (typeof actionId !== "string" || !actionId) {
+          this.showMessage(`Macro step invalid (${i + 1}).`);
+          break;
+        }
+        if (actionId.indexOf("macro:") === 0) {
+          ok = this.executeMacroCommand(actionId, activeSet);
+        } else if (actionId.indexOf("palette.apply:") === 0) {
+          ok = this.applyNamedPalette(actionId.slice("palette.apply:".length));
+        } else {
+          ok = this.dispatchKeybinding(actionId);
+        }
+        if (!ok) {
+          this.showMessage(`Macro stopped at step ${i + 1}.`);
+          break;
+        }
+        successCount += 1;
+      }
+      activeSet.delete(macroId);
+      if (successCount === macro.actions.length) {
+        this.showMessage(`Macro ran: ${macro.label}`);
+        return true;
+      }
+      return false;
     }
 
     isTypingTarget(target) {

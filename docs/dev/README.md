@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v3.2 Docs-Only BUILD_PR
+# Sprite Editor v3.3 Docs-Only BUILD_PR
 
 Includes:
-- command favorites/pinning
-- persisted favorite state
-- favorite-aware ranking guidance
+- first-class macro commands
+- multi-step action sequencing
+- macro integration with command palette
 
 No code included. Codex implements.
