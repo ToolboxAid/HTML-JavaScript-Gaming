@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v3.0 adding fuzzy command ranking and recent actions to command palette
+Build Sprite Editor v3.1 adding command aliases and natural language trigger support to the command palette

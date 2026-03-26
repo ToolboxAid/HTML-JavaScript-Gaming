@@ -1100,30 +1100,30 @@ main.js
 
     getCommandDefinitions() {
       const commands = [
-        { id: "tool.brush", label: "Tool: Brush", category: "Tool", keywords: ["draw", "paint", "pen"] },
-        { id: "tool.erase", label: "Tool: Erase", category: "Tool", keywords: ["eraser", "remove"] },
-        { id: "tool.fill", label: "Tool: Fill", category: "Tool", keywords: ["bucket", "flood"] },
-        { id: "tool.eyedropper", label: "Tool: Eyedropper", category: "Tool", keywords: ["picker", "sample"] },
-        { id: "tool.select", label: "Tool: Select", category: "Tool", keywords: ["marquee", "selection"] },
-        { id: "view.zoomIn", label: "View: Zoom In", category: "View", keywords: ["magnify", "closer"] },
-        { id: "view.zoomOut", label: "View: Zoom Out", category: "View", keywords: ["farther", "shrink"] },
-        { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "View", keywords: ["reset", "center"] },
-        { id: "view.pixelToggle", label: "View: Toggle Pixel Perfect", category: "View", keywords: ["pixel", "filter"] },
-        { id: "frame.prev", label: "Frame: Previous", category: "Frame", keywords: ["animation", "back"] },
-        { id: "frame.next", label: "Frame: Next", category: "Frame", keywords: ["animation", "forward"] },
-        { id: "frame.duplicate", label: "Frame: Duplicate", category: "Frame", keywords: ["copy frame"] },
-        { id: "selection.copy", label: "Selection: Copy", category: "Selection", keywords: ["copy"] },
-        { id: "selection.cut", label: "Selection: Cut", category: "Selection", keywords: ["cut"] },
-        { id: "selection.paste", label: "Selection: Paste", category: "Selection", keywords: ["paste"] },
-        { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"] },
-        { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"] },
-        { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"] },
-        { id: "system.commandPalette", label: "System: Open Command Palette", category: "System", keywords: ["command", "search"] }
+        { id: "tool.brush", label: "Tool: Brush", category: "Tool", keywords: ["draw", "paint", "pen"], aliases: ["brush", "brush tool", "switch brush"] },
+        { id: "tool.erase", label: "Tool: Erase", category: "Tool", keywords: ["eraser", "remove"], aliases: ["erase", "eraser", "switch erase"] },
+        { id: "tool.fill", label: "Tool: Fill", category: "Tool", keywords: ["bucket", "flood"], aliases: ["fill", "bucket fill"] },
+        { id: "tool.eyedropper", label: "Tool: Eyedropper", category: "Tool", keywords: ["picker", "sample"], aliases: ["eyedropper", "color picker", "picker"] },
+        { id: "tool.select", label: "Tool: Select", category: "Tool", keywords: ["marquee", "selection"], aliases: ["select", "selection tool"] },
+        { id: "view.zoomIn", label: "View: Zoom In", category: "View", keywords: ["magnify", "closer"], aliases: ["zoom in", "increase zoom"] },
+        { id: "view.zoomOut", label: "View: Zoom Out", category: "View", keywords: ["farther", "shrink"], aliases: ["zoom out", "decrease zoom"] },
+        { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "View", keywords: ["reset", "center"], aliases: ["reset zoom", "zoom reset", "center view"] },
+        { id: "view.pixelToggle", label: "View: Toggle Pixel Perfect", category: "View", keywords: ["pixel", "filter"], aliases: ["pixel perfect", "toggle pixel", "pixel"] },
+        { id: "frame.prev", label: "Frame: Previous", category: "Frame", keywords: ["animation", "back"], aliases: ["prev frame", "previous frame"] },
+        { id: "frame.next", label: "Frame: Next", category: "Frame", keywords: ["animation", "forward"], aliases: ["next frame"] },
+        { id: "frame.duplicate", label: "Frame: Duplicate", category: "Frame", keywords: ["copy frame"], aliases: ["dup frame", "duplicate frame"] },
+        { id: "selection.copy", label: "Selection: Copy", category: "Selection", keywords: ["copy"], aliases: ["copy selection"] },
+        { id: "selection.cut", label: "Selection: Cut", category: "Selection", keywords: ["cut"], aliases: ["cut selection"] },
+        { id: "selection.paste", label: "Selection: Paste", category: "Selection", keywords: ["paste"], aliases: ["paste selection"] },
+        { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
+        { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
+        { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"], aliases: ["clear", "delete"] },
+        { id: "system.commandPalette", label: "System: Open Command Palette", category: "System", keywords: ["command", "search"], aliases: ["command palette", "open command search"] }
       ];
       const list = (typeof palettesList === "object" && palettesList) ? palettesList : null;
       if (list) {
         Object.keys(list).forEach((name) => {
-          commands.push({ id: `palette.apply:${name}`, label: `Palette: Apply ${name}`, category: "Palette", keywords: ["palette", "color", name] });
+          commands.push({ id: `palette.apply:${name}`, label: `Palette: Apply ${name}`, category: "Palette", keywords: ["palette", "color", name], aliases: [`use ${name}`, `set palette ${name}`] });
         });
       }
       return commands;
@@ -1136,6 +1136,15 @@ main.js
         shortcut: this.getShortcutHintForAction(cmd.id),
         action: () => this.dispatchCommandAction(cmd.id)
       }));
+    }
+
+    normalizeCommandText(input) {
+      const raw = String(input || "").toLowerCase().trim();
+      const noPunct = raw.replace(/[^\w\s]/g, " ");
+      const collapsed = noPunct.replace(/\s+/g, " ").trim();
+      const filler = new Set(["to", "the", "tool"]);
+      const tokens = collapsed.split(" ").filter((t) => t && !filler.has(t));
+      return tokens.join(" ");
     }
 
     fuzzyMatchScore(text, query) {
@@ -1164,13 +1173,35 @@ main.js
       return score;
     }
 
+    scoreCommandItem(item, normalizedQuery) {
+      if (!normalizedQuery) return 0;
+      const label = this.normalizeCommandText(item.label || "");
+      const aliases = Array.isArray(item.aliases) ? item.aliases.map((a) => this.normalizeCommandText(a)) : [];
+      const keywords = Array.isArray(item.keywords) ? item.keywords.map((k) => this.normalizeCommandText(k)) : [];
+      const shortcut = this.normalizeCommandText(item.shortcut || "");
+      if (label.indexOf(normalizedQuery) === 0) return 2400;
+      for (let i = 0; i < aliases.length; i += 1) {
+        if (aliases[i] === normalizedQuery) return 2200;
+        if (aliases[i].indexOf(normalizedQuery) === 0) return 2000;
+      }
+      if (label.indexOf(normalizedQuery) >= 0) return 1600 - label.indexOf(normalizedQuery) * 5;
+      for (let i = 0; i < aliases.length; i += 1) {
+        const pos = aliases[i].indexOf(normalizedQuery);
+        if (pos >= 0) return 1450 - pos * 4;
+      }
+      for (let i = 0; i < keywords.length; i += 1) {
+        if (keywords[i].indexOf(normalizedQuery) >= 0) return 1200;
+      }
+      const hay = `${label} ${aliases.join(" ")} ${keywords.join(" ")} ${shortcut}`;
+      return this.fuzzyMatchScore(hay, normalizedQuery);
+    }
+
     getRankedCommandPaletteItems(items, query) {
-      const q = String(query || "").trim().toLowerCase();
+      const q = this.normalizeCommandText(query);
       const recentIndex = new Map();
       this.recentActions.forEach((id, i) => recentIndex.set(id, i));
       const ranked = items.map((item) => {
-        const hay = `${item.label} ${item.category || ""} ${item.shortcut || ""} ${(item.keywords || []).join(" ")}`;
-        const score = q ? this.fuzzyMatchScore(hay, q) : 0;
+        const score = q ? this.scoreCommandItem(item, q) : 0;
         const recency = recentIndex.has(item.id) ? Math.max(0, 500 - recentIndex.get(item.id) * 20) : 0;
         const total = (q ? score : 200) + recency;
         return { ...item, score: total, _match: q ? score >= 0 : true, _recent: recency };
