@@ -99,7 +99,7 @@ main.js
       ctx.font="13px Arial"; ctx.textBaseline="middle";
       this.controls.forEach(c=>this.drawControl(ctx,c));
       ctx.fillStyle="#dbe7f3"; ctx.font="bold 18px Arial"; ctx.fillText("Sprite Editor v2.1", L.topPanel.x + L.topPanel.width/2 - 90, L.topPanel.y + 40);
-      if(this.dragFrameIndex!==null&&this.dragOverFrameIndex!==null){ ctx.fillStyle="#4cc9f0"; ctx.font="12px Arial"; ctx.fillText("Drag reorder: "+(this.dragFrameIndex+1)+" → "+(this.dragOverFrameIndex+1), L.rightPanel.x+18, L.rightPanel.y+L.rightPanel.height-14); }
+      if(this.dragFrameIndex!==null&&this.dragOverFrameIndex!==null){ ctx.fillStyle="#4cc9f0"; ctx.font="12px Arial"; ctx.fillText("Drag reorder: "+(this.dragFrameIndex+1)+" ? "+(this.dragOverFrameIndex+1), L.rightPanel.x+18, L.rightPanel.y+L.rightPanel.height-14); }
     }
     drawControl(ctx,c){
       if(c.kind==="label"){ ctx.fillStyle="#91a3b6"; ctx.font="bold 12px Arial"; ctx.fillText(c.text,c.x,c.y+c.h/2); return; }
@@ -141,8 +141,8 @@ main.js
       });
     }
     resizeCanvas(){ this.canvas.width=CANVAS_W; this.canvas.height=CANVAS_H; this.controlSurface.rebuildLayout(CANVAS_W,CANVAS_H); this.gridRect=this.computeGridRect(); }
-    isFullscreen(){ return document.fullscreenElement===this.canvas.parentElement; }
-    async toggleFullscreen(){ try{ if(this.isFullscreen()) await document.exitFullscreen(); else await this.canvas.parentElement.requestFullscreen(); this.showMessage(this.isFullscreen()?"Exited full screen.":"Entered full screen."); } catch(_e){ this.showMessage("Full screen unavailable."); } this.renderAll(); }
+    isFullscreen(){ return document.fullscreenElement===this.canvas.closest(".sprite-editor-stage"); }
+    async toggleFullscreen(){ try{ const stage=this.canvas.closest(".sprite-editor-stage"); if(!stage){ this.showMessage("Full screen unavailable."); return; } if(this.isFullscreen()) await document.exitFullscreen(); else await stage.requestFullscreen(); this.showMessage(this.isFullscreen()?"Exited full screen.":"Entered full screen."); } catch(_e){ this.showMessage("Full screen unavailable."); } this.renderAll(); }
     computeGridRect(){ const a=this.controlSurface.layout.gridArea, ps=Math.max(12,Math.floor(Math.min(a.width/this.document.cols,a.height/this.document.rows))); const w=this.document.cols*ps,h=this.document.rows*ps; return {x:a.x+Math.floor((a.width-w)/2),y:a.y+Math.floor((a.height-h)/2),width:w,height:h,pixelSize:ps}; }
     getCanvasPoint(e){ const r=this.canvas.getBoundingClientRect(); return {x:(e.clientX-r.left)*(this.canvas.width/r.width),y:(e.clientY-r.top)*(this.canvas.height/r.height)}; }
     getGridCellAt(x,y){ const r=this.gridRect; if(!r||x<r.x||y<r.y||x>r.x+r.width||y>r.y+r.height) return null; return {x:Math.floor((x-r.x)/r.pixelSize),y:Math.floor((y-r.y)/r.pixelSize)}; }
