@@ -1,1 +1,38 @@
-/* placeholder */
+/*
+Toolbox Aid
+David Quesenberry
+03/26/2026
+spriteEditor.css
+*/
+/* Tool-specific styles only */
+.panel {
+  border: 1px solid #2b3a53;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+  background: #0f172a;
+}
+
+.frame-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 8px;
+}
+
+.frame-thumb {
+  border: 1px solid #3f4f6b;
+  border-radius: 8px;
+  padding: 6px;
+  background: #111827;
+  text-align: center;
+}
+
+.frame-thumb.active {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 1px #f59e0b inset;
+}
+
+.frame-thumb button {
+  width: 100%;
+  margin-top: 6px;
+}

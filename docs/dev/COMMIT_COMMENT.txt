@@ -1,6 +1,1 @@
-Toolbox Aid
-David Quesenberry
-03/26/2026
-COMMIT_COMMENT.txt
-
-Finalize APPLY_PR validation for Sprite Editor replacement
+Align Sprite Editor v1.1 to engine UI styling (remove duplicate CSS)

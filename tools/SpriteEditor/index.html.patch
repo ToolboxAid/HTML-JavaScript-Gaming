@@ -1,0 +1,4 @@
+<!-- PATCH: Engine UI integration -->
+<link rel="stylesheet" href="../../engine/ui/base.css" />
+<link rel="stylesheet" href="../../engine/ui/layout.css" />
+<!-- Removed local spriteEditor.css dependency -->
