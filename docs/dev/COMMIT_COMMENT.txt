@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v2.6 adding control priority and overflow strategy while preserving canvas-native architecture
+Build Sprite Editor v2.7 adding interactive canvas-native overflow panel while preserving layout and control architecture

@@ -211,6 +211,11 @@ main.js
     constructor(app) {
       this.app = app;
       this.controls = [];
+      this.overflowPanelOpen = false;
+      this.overflowPanelBounds = null;
+      this.overflowPanelControls = [];
+      this.overflowAnchorControl = null;
+      this.hiddenTopControls = [];
       this.hovered = null;
       this.pressed = null;
       this.dragFrameIndex = null;
@@ -280,6 +285,10 @@ main.js
       };
       this.app.uiDensityEffectiveMode = density.effectiveMode;
       this.controls = [];
+      this.hiddenTopControls = [];
+      if (this.overflowPanelOpen) {
+        this.rebuildOverflowPanel();
+      }
       this.build();
     }
 
@@ -311,6 +320,75 @@ main.js
 
     measureButtonWidth(ctx, text, minWidth, padX) {
       return Math.max(minWidth, Math.ceil(ctx.measureText(text).width + padX * 2));
+    }
+
+    closeOverflowPanel() {
+      this.overflowPanelOpen = false;
+      this.overflowPanelBounds = null;
+      this.overflowPanelControls = [];
+      this.overflowAnchorControl = null;
+    }
+
+    rebuildOverflowPanel() {
+      if (!this.overflowPanelOpen || !this.hiddenTopControls.length) {
+        this.closeOverflowPanel();
+        return;
+      }
+      const anchor = this.controls.find((c) => c.id === "top-overflow") || this.overflowAnchorControl;
+      if (!anchor) {
+        this.closeOverflowPanel();
+        return;
+      }
+      this.overflowAnchorControl = anchor;
+      const d = this.resolveDensity().config;
+      const panelPad = 8;
+      const rowH = d.topButtonHeight;
+      const gap = Math.max(4, d.spacing - 2);
+      const minBtn = this.app.uiDensityEffectiveMode === "pro" ? 52 : 58;
+      const padX = this.app.uiDensityEffectiveMode === "pro" ? 10 : 12;
+      const prevFont = this.app.ctx.font;
+      this.app.ctx.font = "13px Arial";
+      let maxW = 0;
+      this.hiddenTopControls.forEach((item) => {
+        maxW = Math.max(maxW, this.measureButtonWidth(this.app.ctx, item.text, minBtn, padX));
+      });
+      const panelW = Math.max(140, maxW + panelPad * 2);
+      const panelH = panelPad * 2 + (this.hiddenTopControls.length * rowH) + (Math.max(0, this.hiddenTopControls.length - 1) * gap);
+      const frame = this.layout.appFrame;
+      let panelX = anchor.x + anchor.w - panelW;
+      panelX = Math.max(frame.x + 8, Math.min(panelX, frame.x + frame.width - panelW - 8));
+      let panelY = anchor.y + anchor.h + 8;
+      if (panelY + panelH > frame.y + frame.height - 8) {
+        panelY = anchor.y - panelH - 8;
+      }
+      panelY = Math.max(frame.y + 8, Math.min(panelY, frame.y + frame.height - panelH - 8));
+      this.overflowPanelBounds = { x: panelX, y: panelY, w: panelW, h: panelH };
+      this.overflowPanelControls = [];
+      let y = panelY + panelPad;
+      this.hiddenTopControls.forEach((item, index) => {
+        this.overflowPanelControls.push({
+          kind: "button",
+          id: `overflow-item-${index}`,
+          x: panelX + panelPad,
+          y,
+          w: panelW - panelPad * 2,
+          h: rowH,
+          text: item.text,
+          action: item.action
+        });
+        y += rowH + gap;
+      });
+      this.app.ctx.font = prevFont;
+    }
+
+    toggleOverflowPanel() {
+      if (this.overflowPanelOpen) {
+        this.closeOverflowPanel();
+        return;
+      }
+      if (!this.hiddenTopControls.length) return;
+      this.overflowPanelOpen = true;
+      this.rebuildOverflowPanel();
     }
 
     build() {
@@ -398,7 +476,11 @@ main.js
       if (topLayout.overflowSlots && hidden.length) {
         const overflowText = `More (${hidden.length})`;
         const overflowW = this.measureButtonWidth(this.app.ctx, overflowText, minBtn, padX);
-        addRight("top-overflow", overflowW, overflowText, () => this.app.showMessage("Hidden: " + hidden.map((c) => c.labels[0]).join(", ")), { overflowItems: hidden.map((c) => c.id) });
+        this.hiddenTopControls = hidden.map((c) => ({ id: c.id, text: c.labels[0], action: c.action }));
+        addRight("top-overflow", overflowW, overflowText, () => this.toggleOverflowPanel(), { overflowItems: hidden.map((c) => c.id) });
+      } else {
+        this.hiddenTopControls = [];
+        this.closeOverflowPanel();
       }
       addRight("fullscreen", topLayout.fsW, topLayout.fsLabel, () => this.app.toggleFullscreen());
       this.app.ctx.font = prevFont;
@@ -439,6 +521,12 @@ main.js
     }
 
     getControlAt(x,y) {
+      if (this.overflowPanelOpen) {
+        for (let i = this.overflowPanelControls.length - 1; i >= 0; i -= 1) {
+          const c = this.overflowPanelControls[i];
+          if (x >= c.x && y >= c.y && x <= c.x + c.w && y <= c.y + c.h) return c;
+        }
+      }
       for (let i = this.controls.length - 1; i >= 0; i -= 1) {
         const c = this.controls[i];
         if (c.kind === "label") continue;
@@ -452,6 +540,21 @@ main.js
       if (this.dragFrameIndex !== null) this.dragOverFrameIndex = c && c.kind === "frame" ? c.frameIndex : null;
     }
     pointerDown(x,y) {
+      if (this.overflowPanelOpen) {
+        const inPanel = this.overflowPanelBounds &&
+          x >= this.overflowPanelBounds.x && y >= this.overflowPanelBounds.y &&
+          x <= this.overflowPanelBounds.x + this.overflowPanelBounds.w &&
+          y <= this.overflowPanelBounds.y + this.overflowPanelBounds.h;
+        const overflowButton = this.controls.find((c) => c.id === "top-overflow");
+        const inOverflowButton = overflowButton &&
+          x >= overflowButton.x && y >= overflowButton.y &&
+          x <= overflowButton.x + overflowButton.w && y <= overflowButton.y + overflowButton.h;
+        if (!inPanel && !inOverflowButton) {
+          this.closeOverflowPanel();
+          this.pressed = null;
+          return { id: "overflow-dismiss", kind: "button" };
+        }
+      }
       const c = this.getControlAt(x,y);
       this.pressed = c ? c.id : null;
       if (c && c.kind === "frame") {
@@ -470,7 +573,11 @@ main.js
       const ok = c && c.id === this.pressed;
       this.pressed = null;
       if (!ok) return false;
-      if (typeof c.action === "function") { c.action(); return true; }
+      if (typeof c.action === "function") {
+        c.action();
+        if (c.id.indexOf("overflow-item-") === 0) this.closeOverflowPanel();
+        return true;
+      }
       return false;
     }
 
@@ -485,6 +592,7 @@ main.js
       });
       ctx.font = "13px Arial"; ctx.textBaseline = "middle";
       this.controls.forEach((c) => this.drawControl(ctx,c));
+      this.drawOverflowPanel(ctx);
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 18px Arial";
       ctx.textAlign = "center";
@@ -532,6 +640,18 @@ main.js
         ctx.fillStyle = v; ctx.fillRect(x+px*pw, y+py*ph, pw, ph);
       }
       ctx.strokeStyle = "rgba(0,0,0,0.2)"; ctx.strokeRect(x+0.5,y+0.5,w-1,h-1);
+    }
+
+    drawOverflowPanel(ctx) {
+      if (!this.overflowPanelOpen || !this.overflowPanelBounds) return;
+      const p = this.overflowPanelBounds;
+      ctx.fillStyle = "rgba(7, 12, 18, 0.86)";
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.fillStyle = "#182432";
+      ctx.fillRect(p.x + 1, p.y + 1, p.w - 2, p.h - 2);
+      ctx.strokeStyle = "#4cc9f0";
+      ctx.strokeRect(p.x + 0.5, p.y + 0.5, p.w - 1, p.h - 1);
+      this.overflowPanelControls.forEach((c) => this.drawControl(ctx, c));
     }
   }
 
@@ -718,6 +838,12 @@ main.js
 
     onKeyDown(e) {
       const k = e.key.toLowerCase();
+      if (k === "escape" && this.controlSurface.overflowPanelOpen) {
+        this.controlSurface.closeOverflowPanel();
+        this.renderAll();
+        e.preventDefault();
+        return;
+      }
       if (k === "b") this.setTool("brush");
       else if (k === "e") this.setTool("erase");
       else if (k === "f") this.setTool("fill");
