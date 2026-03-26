@@ -11,67 +11,20 @@ index.html
   <meta charset="UTF-8" />
   <title>ToolboxAid - Sample Launcher</title>
   <link rel="stylesheet" href="../engine/ui/hubCommon.css" />
-  <style>
-    :root {
-      --text: #eee;
-      --muted: #ccc;
-      --line: #444;
-      --panel: #1e1e1e;
-      --panel2: #1e1e1e;
-      --bg-gradient: #111;
-      --wrap-max: 100%;
-      --wrap-padding: 20px;
-      --grid-min: 240px;
-      --grid-gap: 10px;
-      --section-gap: 30px;
-      --status-live: #0a84ff;
-      --status-planned: #161616;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      margin-top: 30px;
-      border-bottom: 1px solid #444;
-      padding-bottom: 5px;
-    }
-
-    .grid {
-      margin-top: 10px;
-    }
-
-    a.live,
-    .planned {
-      display: block;
-      padding: 10px;
-      border: 1px solid #333;
-      text-align: left;
-      text-decoration: none;
-      border-radius: 6px;
-    }
-
-    a.live { color: #fff; }
-
-    a.live:hover {
-      background: #333;
-    }
-
-    .planned {
-      color: #777;
-      border-style: dashed;
-      cursor: not-allowed;
-    }
-
-  </style>
 </head>
 
-<body>
+<body class="hub-page-samples">
+  <div class="wrap">
+  <div class="topnav">
+    <a href="../index.html">Home</a>
+    <a href="../games/index.html">Games Hub</a>
+    <a href="../tools/index.html">Tools Hub</a>
+  </div>
 
-  <h1>ToolboxAid - Sample Launcher</h1>
-  <p>Built from the current GitHub repo layout. Live links are enabled for existing samples. Planned samples are shown
-    but disabled to avoid 404s.</p>
+  <section class="hero">
+    <h1>ToolboxAid - Sample Launcher</h1>
+    <p class="subtitle">Built from the current repo layout. Live links are enabled for existing samples, and planned samples stay visible but disabled so the roadmap remains readable without opening dead links.</p>
+  </section>
 
   <section>
     <h2>Phase 1 - Core Engine (001-024)</h2>
@@ -415,6 +368,7 @@ index.html
       <div class="planned">Sample 225 - Lobby Full Match Flow</div>
     </div>
   </section>
+</div>
 </body>
 
 </html>

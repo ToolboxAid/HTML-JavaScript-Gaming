@@ -11,151 +11,10 @@ index.html
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolboxAid - Games</title>
   <link rel="stylesheet" href="../engine/ui/hubCommon.css" />
-  <style>
-    :root {
-      --wrap-max: 1300px;
-      --wrap-padding: 32px 24px 64px;
-      --grid-min: 280px;
-    }
-
-    header {
-      margin-bottom: 28px;
-    }
-
-    h1 { margin-bottom: 8px; }
-
-    .note {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .section h2 {
-      margin: 0 0 10px;
-      font-size: 1.4rem;
-    }
-
-    .section > p {
-      margin: 0 0 18px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .playableLevel {
-      margin-top: 24px;
-    }
-
-    .playableLevel:first-of-type {
-      margin-top: 0;
-    }
-
-    .playableLevel h3 {
-      margin: 0 0 8px;
-      font-size: 1.12rem;
-      line-height: 1.35;
-      color: var(--text);
-    }
-
-    .playableLevel p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      line-height: 1.55;
-      max-width: 980px;
-    }
-
-    .card {
-      overflow: hidden;
-      border-color: var(--line);
-      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: #4d638c;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
-    }
-
-    .thumb {
-      display: block;
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      object-fit: cover;
-      background: #020617;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .cardBody {
-      padding: 14px 16px 16px;
-    }
-
-    .cardTitle {
-      font-size: 1.08rem;
-      color: #7dd3fc;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-
-    .cardDesc {
-      color: #cbd5e1;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    .levels {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 18px;
-    }
-
-    .levelCard {
-      background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 18px;
-    }
-
-    .levelCard h3 {
-      margin: 0 0 10px;
-      font-size: 1.02rem;
-      line-height: 1.4;
-      color: var(--text);
-    }
-
-    .levelCard p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 0.95rem;
-    }
-
-    .levelCard ul {
-      margin: 0;
-      padding-left: 20px;
-    }
-
-    .levelCard li {
-      margin: 0 0 10px;
-      color: #dbe5f1;
-      line-height: 1.45;
-    }
-
-    .tagRow {
-      margin-bottom: 12px;
-    }
-
-    .legend {
-      margin-top: 10px;
-    }
-  </style>
 </head>
-<body>
+<body class="hub-page-games">
   <main class="wrap">
-    <header>
+    <header class="hero">
       <h1>ToolboxAid - Games</h1>
       <p class="subtitle">Playable games live here. This page also tracks the current planned build order from easier projects to harder projects so the engine grows in a controlled way.</p>
       <div class="legend">
@@ -401,7 +260,7 @@ index.html
           <p>Recognizable arcade conversions that start combining combat, hazards, enemy pacing, and progression into broader playable loops.</p>
           <ul>
             <li>Asteroids</li>
-            <li>Space Duel <span style="color: #f08c00;">(Parshall Playable)</span></li>
+            <li>Space Duel <span class="inline-status">(Parshall Playable)</span></li>
             <li>Space Invaders</li>
             <li>Frogger</li>
           </ul>

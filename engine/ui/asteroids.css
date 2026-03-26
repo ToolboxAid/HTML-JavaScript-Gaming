@@ -1,0 +1,11 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/26/2026
+asteroids.css
+*/
+@font-face {
+  font-family: "Vector Battle";
+  src: url("/games/Asteroids/assets/vector_battle.ttf") format("truetype");
+  font-display: swap;
+}
