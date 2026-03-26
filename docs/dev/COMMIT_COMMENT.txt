@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v4.9 refining usability with context-aware panels and progressive disclosure
+Build Sprite Editor v5.0 adding palette editor and color replace workflow

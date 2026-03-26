@@ -1047,10 +1047,16 @@ main.js
 
       x = bottom.x + d.padding;
       y = bottom.y + d.padding + 4;
-      this.add("label","lbl-palette",x,y-(d.labelHeight - 4),180,d.labelHeight - 4,"PALETTE",null);
+      this.add("label","lbl-palette",x,y-(d.labelHeight - 4),220,d.labelHeight - 4,`PALETTE ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null);
       this.app.document.palette.forEach((c,i) => { this.add("palette","palette-"+i,x,y,34,34,"",()=>this.app.setCurrentColor(c),{color:c}); x += 42; });
       x += d.padding;
+      this.add("button","color-prev",x,y,84,34,"Prev",()=>this.app.prevColor()); x += 92;
       this.add("button","color-next",x,y,84,34,"Next",()=>this.app.nextColor()); x += 92;
+      this.add("button","palette-src",x,y,96,34,"Set Src",()=>this.app.setPaletteReplaceSource()); x += 104;
+      this.add("button","palette-dst",x,y,96,34,"Set Dst",()=>this.app.setPaletteReplaceTarget()); x += 104;
+      this.add("button","palette-scope",x,y,150,34,this.app.getPaletteScopeLabel(),()=>this.app.cyclePaletteReplaceScope()); x += 158;
+      this.add("button","palette-replace",x,y,96,34,"Replace",()=>this.app.replacePaletteColor()); x += 104;
+      this.add("button","palette-menu",x,y,96,34,"Palette",()=>this.app.openPaletteWorkflowMenu());
     }
 
     getControlAt(x,y) {
@@ -1168,6 +1174,14 @@ main.js
         ctx.strokeStyle = current ? "#4cc9f0" : "rgba(255,255,255,0.2)";
         ctx.lineWidth = current ? 3 : 1;
         ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
+        if (this.app.paletteWorkflow.source === c.color) {
+          ctx.fillStyle = "#fbbf24";
+          ctx.fillRect(c.x + 2, c.y + 2, 8, 8);
+        }
+        if (this.app.paletteWorkflow.target === c.color) {
+          ctx.fillStyle = "#22c55e";
+          ctx.fillRect(c.x + c.w - 10, c.y + 2, 8, 8);
+        }
         ctx.lineWidth = 1;
         return;
       }
@@ -1300,6 +1314,8 @@ main.js
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.strokeLastCell = null;
       this.shapePreview = null;
+      this.currentPalettePreset = "Custom";
+      this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
       this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
@@ -2335,6 +2351,12 @@ main.js
         { id: "brush.sizeUp", label: "Brush: Size Up", category: "Brush", keywords: ["brush", "size", "up"], aliases: ["increase brush size", "brush bigger"] },
         { id: "brush.sizeDown", label: "Brush: Size Down", category: "Brush", keywords: ["brush", "size", "down"], aliases: ["decrease brush size", "brush smaller"] },
         { id: "brush.toggleShape", label: "Brush: Toggle Shape", category: "Brush", keywords: ["brush", "shape", "square", "circle"], aliases: ["toggle brush shape", "brush shape"] },
+        { id: "palette.prevColor", label: "Palette: Previous Color", category: "Palette", keywords: ["palette", "previous", "color"], aliases: ["previous color", "prev color"] },
+        { id: "palette.nextColor", label: "Palette: Next Color", category: "Palette", keywords: ["palette", "next", "color"], aliases: ["next color"] },
+        { id: "palette.replaceColor", label: "Palette: Replace Color", category: "Palette", keywords: ["palette", "replace", "color"], aliases: ["replace color", "palette replace"] },
+        { id: "palette.scopeActiveLayer", label: "Palette: Set Scope Active Layer", category: "Palette", keywords: ["palette", "scope", "layer"], aliases: ["scope active layer", "palette scope layer"] },
+        { id: "palette.scopeCurrentFrame", label: "Palette: Set Scope Current Frame", category: "Palette", keywords: ["palette", "scope", "frame"], aliases: ["scope current frame", "palette scope frame"] },
+        { id: "palette.scopeSelectedRange", label: "Palette: Set Scope Selected Range", category: "Palette", keywords: ["palette", "scope", "range"], aliases: ["scope selected range", "palette scope range"] },
         { id: "view.zoomIn", label: "View: Zoom In", category: "View", keywords: ["magnify", "closer"], aliases: ["zoom in", "increase zoom"] },
         { id: "view.zoomOut", label: "View: Zoom Out", category: "View", keywords: ["farther", "shrink"], aliases: ["zoom out", "decrease zoom"] },
         { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "View", keywords: ["reset", "center"], aliases: ["reset zoom", "zoom reset", "center view"] },
@@ -2514,6 +2536,7 @@ main.js
         if (this.document.palette.indexOf(this.document.currentColor) < 0) {
           this.document.currentColor = this.document.palette[0];
         }
+        this.currentPalettePreset = paletteName;
         this.showMessage(`Palette applied: ${paletteName}`);
         return true;
       });
@@ -2643,6 +2666,12 @@ main.js
       if (action === "brush.sizeUp") { this.adjustBrushSize(1); return true; }
       if (action === "brush.sizeDown") { this.adjustBrushSize(-1); return true; }
       if (action === "brush.toggleShape") { this.toggleBrushShape(); return true; }
+      if (action === "palette.prevColor") { this.prevColor(); return true; }
+      if (action === "palette.nextColor") { this.nextColor(); return true; }
+      if (action === "palette.replaceColor") return this.replacePaletteColor();
+      if (action === "palette.scopeActiveLayer") return this.setPaletteReplaceScope("active_layer");
+      if (action === "palette.scopeCurrentFrame") return this.setPaletteReplaceScope("current_frame");
+      if (action === "palette.scopeSelectedRange") return this.setPaletteReplaceScope("selected_range");
       if (action.indexOf("brush.size_") === 0) {
         const next = Number(action.slice("brush.size_".length));
         if (!Number.isFinite(next)) return false;
@@ -2904,11 +2933,113 @@ main.js
       this.renderAll();
     }
     setCurrentColor(c) { this.document.currentColor = c; this.showMessage("Color selected."); }
+    prevColor() {
+      const p = this.document.palette, i = p.indexOf(this.document.currentColor), n = i >= 0 ? (i - 1 + p.length) % p.length : 0;
+      this.document.currentColor = p[n];
+      this.showMessage("Color cycled.");
+      this.renderAll();
+    }
     nextColor() {
       const p = this.document.palette, i = p.indexOf(this.document.currentColor), n = i >= 0 ? (i+1) % p.length : 0;
       this.document.currentColor = p[n];
       this.showMessage("Color cycled.");
       this.renderAll();
+    }
+    getPaletteScopeLabel() {
+      if (this.paletteWorkflow.scope === "active_layer") return "Scope: Layer";
+      if (this.paletteWorkflow.scope === "current_frame") return "Scope: Frame";
+      return "Scope: Range";
+    }
+    cyclePaletteReplaceScope() {
+      const order = ["active_layer", "current_frame", "selected_range"];
+      const current = order.indexOf(this.paletteWorkflow.scope);
+      this.paletteWorkflow.scope = order[(current + 1) % order.length];
+      this.showMessage(this.getPaletteScopeLabel());
+      this.renderAll();
+    }
+    setPaletteReplaceScope(scope) {
+      this.paletteWorkflow.scope = scope;
+      this.showMessage(this.getPaletteScopeLabel());
+      this.renderAll();
+      return true;
+    }
+    setPaletteReplaceSource() {
+      this.paletteWorkflow.source = this.document.currentColor;
+      this.showMessage("Replace source set.");
+      this.renderAll();
+    }
+    setPaletteReplaceTarget() {
+      this.paletteWorkflow.target = this.document.currentColor;
+      this.showMessage("Replace target set.");
+      this.renderAll();
+    }
+    openPaletteWorkflowMenu() {
+      const items = [
+        { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
+        { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget() },
+        { id: "palette-menu-scope-layer", text: "Scope Active Layer", action: () => this.setPaletteReplaceScope("active_layer") },
+        { id: "palette-menu-scope-frame", text: "Scope Current Frame", action: () => this.setPaletteReplaceScope("current_frame") },
+        { id: "palette-menu-scope-range", text: "Scope Selected Range", action: () => this.setPaletteReplaceScope("selected_range") },
+        { id: "palette-menu-replace", text: "Replace Color", action: () => this.replacePaletteColor() }
+      ];
+      if (typeof palettesList === "object" && palettesList) {
+        Object.keys(palettesList).slice(0, 12).forEach((name) => {
+          items.push({ id: `palette-menu-preset-${name}`, text: `Preset: ${name}`, action: () => this.applyNamedPalette(name) });
+        });
+      }
+      this.controlSurface.toggleTopMenu("palette-menu", items);
+      this.renderAll();
+    }
+    replacePaletteColor() {
+      const source = this.paletteWorkflow.source;
+      const target = this.paletteWorkflow.target;
+      if (!source || !target) {
+        this.showMessage("Set source and target first.");
+        return false;
+      }
+      if (source === target) {
+        this.showMessage("Source and target are the same.");
+        return false;
+      }
+      let replacementCount = 0;
+      const applyLayer = (layer) => {
+        if (!layer || layer.locked === true) return;
+        for (let y = 0; y < this.document.rows; y += 1) {
+          for (let x = 0; x < this.document.cols; x += 1) {
+            if (layer.pixels[y][x] === source) {
+              layer.pixels[y][x] = target;
+              replacementCount += 1;
+            }
+          }
+        }
+      };
+      const scope = this.paletteWorkflow.scope;
+      const run = () => {
+        if (scope === "active_layer") {
+          if (this.document.activeLayer.locked === true) return false;
+          applyLayer(this.document.activeLayer);
+        } else if (scope === "current_frame") {
+          const frame = this.document.ensureFrameLayers(this.document.activeFrame);
+          frame.layers.forEach((layer) => applyLayer(layer));
+        } else if (scope === "selected_range") {
+          const range = this.getFrameRangeSelection();
+          if (!range.explicit) return false;
+          for (let i = range.start; i <= range.end; i += 1) {
+            const frame = this.document.ensureFrameLayers(this.document.frames[i]);
+            frame.layers.forEach((layer) => applyLayer(layer));
+          }
+        }
+        return replacementCount > 0;
+      };
+      const ok = this.executeWithHistory("Palette Replace Color", run);
+      if (!ok) {
+        this.showMessage(scope === "selected_range" && !this.getFrameRangeSelection().explicit ? "Select a frame range first." : "No matching pixels to replace.");
+        this.renderAll();
+        return false;
+      }
+      this.showMessage(`Replaced ${replacementCount} pixels.`);
+      this.renderAll();
+      return true;
     }
     toggleMirror() { this.mirror = !this.mirror; this.showMessage(this.mirror ? "Mirror on." : "Mirror off."); this.renderAll(); }
 
@@ -3111,6 +3242,24 @@ main.js
         this.timelineHoverIndex = null;
       }
     }
+    syncCurrentPalettePreset() {
+      if (typeof palettesList !== "object" || !palettesList) {
+        this.currentPalettePreset = "Custom";
+        return;
+      }
+      const paletteSig = JSON.stringify(this.document.palette || []);
+      const names = Object.keys(palettesList);
+      for (let i = 0; i < names.length; i += 1) {
+        const entries = palettesList[names[i]];
+        if (!Array.isArray(entries)) continue;
+        const hexes = entries.map((entry) => entry && entry.hex).filter((hex) => typeof hex === "string").slice(0, 32);
+        if (JSON.stringify(hexes) === paletteSig) {
+          this.currentPalettePreset = names[i];
+          return;
+        }
+      }
+      this.currentPalettePreset = "Custom";
+    }
     moveLayerUp() {
       this.executeWithHistory("Layer Reorder Up", () => {
         const af = this.document.ensureFrameLayers(this.document.activeFrame);
@@ -3278,6 +3427,7 @@ main.js
       this.sanitizeSoloState();
       this.sanitizeFrameRangeSelection();
       this.sanitizePlaybackRange();
+      this.syncCurrentPalettePreset();
       this.updateDirtyState();
       this.controlSurface.rebuildLayout();
       this.gridRect = this.computeGridRect();
@@ -3625,6 +3775,7 @@ main.js
         ? `Range ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}`
         : "Range Off";
       const hoverPreviewText = this.timelineHoverIndex !== null ? `Hover ${this.timelineHoverIndex + 1}` : "Hover -";
+      const paletteReplaceText = `Replace ${this.paletteWorkflow.source ? "S" : "-"}>${this.paletteWorkflow.target ? "T" : "-"} ${this.getPaletteScopeLabel().replace("Scope: ", "")}`;
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const activeLayer = af.layers[af.activeLayerIndex];
       const soloTag = this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? " Solo" : "";
@@ -3633,7 +3784,7 @@ main.js
       const blendTag = this.document.blendPreviewMode === "boost" ? "Blend:Boost" : "Blend:Normal";
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
       const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"} ${playbackRangeText}`;
-      const toolText = `Tool: ${this.activeTool}   |   Brush ${this.brush.size}/${this.brush.shape}   |   ${frameRangeText}   |   ${hoverPreviewText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const toolText = `Tool: ${this.activeTool}   |   Brush ${this.brush.size}/${this.brush.shape}   |   ${paletteReplaceText}   |   ${frameRangeText}   |   ${hoverPreviewText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;

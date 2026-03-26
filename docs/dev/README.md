@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v4.9 Docs-Only BUILD_PR
+# Sprite Editor v5.0 Docs-Only BUILD_PR
 
 Includes:
-- context-aware panel guidance
-- progressive disclosure requirements
-- decluttering constraints without capability loss
+- palette editor/viewer guidance
+- exact color replace workflow requirements
+- undo-safe scoped replacement expectations
 
 No code included. Codex implements.
