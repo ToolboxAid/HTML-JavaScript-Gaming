@@ -11,6 +11,7 @@ main.js
   const LOGICAL_H = 900;
   const STORAGE_KEY = "sprite-editor-v22";
   const RECENT_ACTIONS_KEY = "sprite-editor-command-recent-v30";
+  const FAVORITE_ACTIONS_KEY = "sprite-editor-command-favorites-v32";
 
   class SpriteEditorViewport {
     constructor(canvas) {
@@ -341,6 +342,20 @@ main.js
       return !!r && x >= r.x && y >= r.y && x <= r.x + r.w && y <= r.y + r.h;
     }
 
+    toggleFavoriteAt(x, y) {
+      if (!this.commandPaletteOpen) return false;
+      for (let i = 0; i < this.commandPaletteRowControls.length; i += 1) {
+        const c = this.commandPaletteRowControls[i];
+        if (!c.isCommandRow || !c.favoriteToggleRect) continue;
+        if (this.pointInRect(x, y, c.favoriteToggleRect)) {
+          this.app.toggleFavoriteAction(c.commandId);
+          this.rebuildCommandPaletteRows();
+          return true;
+        }
+      }
+      return false;
+    }
+
     openCommandPalette(items) {
       this.commandPaletteItems = Array.isArray(items) ? items.slice() : [];
       this.commandPaletteQuery = "";
@@ -413,7 +428,10 @@ main.js
           selected: idx === this.commandPaletteSelectedIndex,
           shortcut: item.shortcut || "",
           category: item.category || "",
-          score: item.score || 0
+          score: item.score || 0,
+          commandId: item.id,
+          favorite: !!item.favorite,
+          favoriteToggleRect: { x: panelX + panelW - 30, y: panelY + headerH + (idx * rowH) + 6, w: 18, h: 18 }
         });
       });
     }
@@ -641,6 +659,10 @@ main.js
           this.pressed = null;
           return { id: "command-palette-dismiss", kind: "button" };
         }
+        if (this.toggleFavoriteAt(x, y)) {
+          this.pressed = null;
+          return { id: "command-palette-favorite", kind: "button" };
+        }
       }
       if (this.overflowPanelOpen) {
         const inPanel = this.overflowPanelBounds &&
@@ -719,6 +741,7 @@ main.js
         ctx.strokeStyle = current ? "#4cc9f0" : "rgba(255,255,255,0.2)";
         ctx.lineWidth = current ? 3 : 1;
         ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
+        ctx.lineWidth = 1;
         return;
       }
       const hovered = this.hovered === c.id, pressed = this.pressed === c.id, activeFrame = c.kind === "frame" && this.app.document.activeFrameIndex === c.frameIndex, dragTarget = c.kind === "frame" && this.dragOverFrameIndex === c.frameIndex && this.dragFrameIndex !== null, toolActive = c.tool && this.app.activeTool === c.tool;
@@ -727,6 +750,7 @@ main.js
       if (toolActive || activeFrame) ctx.fillStyle = "#244d67";
       if (dragTarget) ctx.fillStyle = "#305c4a";
       ctx.fillRect(c.x,c.y,c.w,c.h);
+      ctx.lineWidth = 1;
       ctx.strokeStyle = (toolActive || activeFrame || dragTarget) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
       if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
@@ -743,6 +767,11 @@ main.js
         const t = `[${c.shortcut}]`;
         const w = ctx.measureText(t).width;
         ctx.fillText(t, c.x + c.w - w - 10, c.y + c.h / 2);
+      }
+      if (c.isCommandRow && c.favoriteToggleRect) {
+        ctx.fillStyle = c.favorite ? "#fbbf24" : "#6b7b8e";
+        ctx.font = "15px Arial";
+        ctx.fillText(c.favorite ? "★" : "☆", c.favoriteToggleRect.x + 1, c.favoriteToggleRect.y + 9);
       }
       if (c.kind === "frame") {
         const f = this.app.document.frames[c.frameIndex];
@@ -828,8 +857,9 @@ main.js
       this.panStart = null;
       this.keybindings = this.createKeybindingMap();
       this.commandDefinitions = this.getCommandDefinitions();
-      this.commandPaletteCommands = this.createCommandPaletteCommands();
       this.recentActions = this.loadRecentActions();
+      this.favoriteActions = this.loadFavoriteActions();
+      this.commandPaletteCommands = this.createCommandPaletteCommands();
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -861,6 +891,36 @@ main.js
       const next = [actionId].concat(this.recentActions.filter((x) => x !== actionId));
       this.recentActions = next.slice(0, 40);
       this.saveRecentActions();
+    }
+
+    loadFavoriteActions() {
+      try {
+        const raw = localStorage.getItem(FAVORITE_ACTIONS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 80) : [];
+      } catch (_e) {
+        return [];
+      }
+    }
+
+    saveFavoriteActions() {
+      try {
+        localStorage.setItem(FAVORITE_ACTIONS_KEY, JSON.stringify(this.favoriteActions.slice(0, 80)));
+      } catch (_e) {
+        // Ignore localStorage failures.
+      }
+    }
+
+    toggleFavoriteAction(actionId) {
+      if (!actionId) return;
+      if (this.favoriteActions.indexOf(actionId) >= 0) {
+        this.favoriteActions = this.favoriteActions.filter((id) => id !== actionId);
+        this.showMessage("Favorite removed.");
+      } else {
+        this.favoriteActions = [actionId].concat(this.favoriteActions.filter((id) => id !== actionId)).slice(0, 80);
+        this.showMessage("Favorite pinned.");
+      }
+      this.saveFavoriteActions();
     }
 
     bindEvents() {
@@ -1134,6 +1194,7 @@ main.js
       return commands.map((cmd) => ({
         ...cmd,
         shortcut: this.getShortcutHintForAction(cmd.id),
+        favorite: this.favoriteActions.indexOf(cmd.id) >= 0,
         action: () => this.dispatchCommandAction(cmd.id)
       }));
     }
@@ -1203,8 +1264,9 @@ main.js
       const ranked = items.map((item) => {
         const score = q ? this.scoreCommandItem(item, q) : 0;
         const recency = recentIndex.has(item.id) ? Math.max(0, 500 - recentIndex.get(item.id) * 20) : 0;
-        const total = (q ? score : 200) + recency;
-        return { ...item, score: total, _match: q ? score >= 0 : true, _recent: recency };
+        const favoriteBias = this.favoriteActions.indexOf(item.id) >= 0 ? (q ? 280 : 600) : 0;
+        const total = (q ? score : 200) + recency + favoriteBias;
+        return { ...item, favorite: this.favoriteActions.indexOf(item.id) >= 0, score: total, _match: q ? score >= 0 : true, _recent: recency };
       }).filter((item) => item._match);
       ranked.sort((a, b) => (b.score - a.score) || String(a.label).localeCompare(String(b.label)));
       return ranked;

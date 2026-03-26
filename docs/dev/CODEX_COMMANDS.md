@@ -7,12 +7,12 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V3_1_COMMAND_ALIASES_NATURAL_LANGUAGE_TRIGGERS.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V3_2_COMMAND_FAVORITES_PINNING.md
 
 Constraints:
 - Keep architecture intact
-- Extend centralized command metadata with aliases
-- Add lightweight natural-language normalization
-- Feed aliases/normalized input into existing ranking path
-- Reuse dispatch system
+- Reuse centralized command metadata/ranking/dispatch
+- Add persisted favorite command state
+- Add lightweight canvas-native favorite indicator
+- Integrate favorite bias into existing ranking flow
 - Do not rewrite architecture
