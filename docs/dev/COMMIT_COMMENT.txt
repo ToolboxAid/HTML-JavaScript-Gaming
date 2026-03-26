@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Apply rebuilt Sprite Editor v1.1 validation and finalize tools-only scope
+Build Sprite Editor v2.1 with centered 16:9 canvas, full-screen support, and drag frame strip
