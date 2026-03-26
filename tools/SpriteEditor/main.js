@@ -71,6 +71,7 @@ main.js
       this.selectionClipboard = null;
       this.frameClipboard = null;
       this.soloState = null;
+      this.blendPreviewMode = "normal";
       this.sheet = { layout: "horizontal", padding: 4, spacing: 2, transparent: true, backgroundColor: "#ffffff" };
     }
     makeGrid(fill = null) { return Array.from({ length: this.rows }, () => Array.from({ length: this.cols }, () => fill)); }
@@ -81,6 +82,7 @@ main.js
         name,
         visible: true,
         locked: false,
+        opacity: 1,
         pixels: pixels ? this.cloneGrid(pixels) : this.makeGrid()
       };
     }
@@ -103,6 +105,7 @@ main.js
           name: l.name || `Layer ${i + 1}`,
           visible: l.visible !== false,
           locked: l.locked === true,
+          opacity: typeof l.opacity === "number" ? Math.max(0, Math.min(1, l.opacity)) : 1,
           pixels: l.pixels ? this.cloneGrid(l.pixels) : this.makeGrid()
         }));
       }
@@ -123,14 +126,57 @@ main.js
         const layer = f.layers[li];
         if (solo && solo.frameId === f.id && solo.layerIndex !== li) continue;
         if (layer.visible === false) continue;
+        const layerOpacity = typeof layer.opacity === "number" ? Math.max(0, Math.min(1, layer.opacity)) : 1;
+        if (layerOpacity <= 0) continue;
         for (let y = 0; y < this.rows; y += 1) {
           for (let x = 0; x < this.cols; x += 1) {
             const v = layer.pixels[y][x];
-            if (v) out[y][x] = v;
+            if (!v) continue;
+            out[y][x] = this.compositeColor(out[y][x], v, layerOpacity, this.blendPreviewMode);
           }
         }
       }
       return out;
+    }
+    colorToRgba(color, opacity = 1) {
+      if (!color || typeof color !== "string") return null;
+      const c = color.trim();
+      if (c[0] === "#") {
+        if (c.length === 7 || c.length === 9) {
+          const r = parseInt(c.slice(1, 3), 16);
+          const g = parseInt(c.slice(3, 5), 16);
+          const b = parseInt(c.slice(5, 7), 16);
+          const a = c.length === 9 ? (parseInt(c.slice(7, 9), 16) / 255) : 1;
+          return { r, g, b, a: Math.max(0, Math.min(1, a * opacity)) };
+        }
+        return null;
+      }
+      const m = c.match(/^rgba?\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})(?:\s*,\s*([0-9]*\.?[0-9]+))?\s*\)$/i);
+      if (m) {
+        const r = Math.max(0, Math.min(255, Number(m[1])));
+        const g = Math.max(0, Math.min(255, Number(m[2])));
+        const b = Math.max(0, Math.min(255, Number(m[3])));
+        const aSrc = typeof m[4] === "string" ? Number(m[4]) : 1;
+        return { r, g, b, a: Math.max(0, Math.min(1, aSrc * opacity)) };
+      }
+      return null;
+    }
+    rgbaToCss(rgba) {
+      const a = Math.max(0, Math.min(1, rgba.a));
+      return `rgba(${rgba.r},${rgba.g},${rgba.b},${Number(a.toFixed(3))})`;
+    }
+    compositeColor(baseColor, overColor, overOpacity, blendPreviewMode = "normal") {
+      const over = this.colorToRgba(overColor, overOpacity);
+      if (!over || over.a <= 0) return baseColor || null;
+      const base = this.colorToRgba(baseColor || "rgba(0,0,0,0)", 1) || { r: 0, g: 0, b: 0, a: 0 };
+      let oa = over.a;
+      if (blendPreviewMode === "boost") oa = Math.min(1, oa * 1.35);
+      const outA = oa + base.a * (1 - oa);
+      if (outA <= 0) return null;
+      const outR = Math.round(((over.r * oa) + (base.r * base.a * (1 - oa))) / outA);
+      const outG = Math.round(((over.g * oa) + (base.g * base.a * (1 - oa))) / outA);
+      const outB = Math.round(((over.b * oa) + (base.b * base.a * (1 - oa))) / outA);
+      return this.rgbaToCss({ r: outR, g: outG, b: outB, a: outA });
     }
     setPixel(x, y, value, mirror = false) {
       if (x < 0 || y < 0 || x >= this.cols || y >= this.rows) return;
@@ -164,7 +210,7 @@ main.js
     duplicateFrame() {
       const f = this.activeFrame;
       const copyLayers = this.ensureFrameLayers(f).layers.map((l) => this.makeLayer(l.name, l.pixels));
-      copyLayers.forEach((l, i) => { l.visible = f.layers[i].visible !== false; l.locked = f.layers[i].locked === true; });
+      copyLayers.forEach((l, i) => { l.visible = f.layers[i].visible !== false; l.locked = f.layers[i].locked === true; l.opacity = typeof f.layers[i].opacity === "number" ? f.layers[i].opacity : 1; });
       this.frames.splice(this.activeFrameIndex + 1, 0, { id: "f_" + Math.random().toString(36).slice(2, 10), name: f.name + " Copy", layers: copyLayers, activeLayerIndex: f.activeLayerIndex || 0 });
       this.activeFrameIndex += 1;
     }
@@ -184,7 +230,7 @@ main.js
     copyFrame() {
       const f = this.ensureFrameLayers(this.activeFrame);
       this.frameClipboard = {
-        layers: f.layers.map((l) => ({ name: l.name, visible: l.visible !== false, locked: l.locked === true, pixels: this.cloneGrid(l.pixels) })),
+        layers: f.layers.map((l) => ({ name: l.name, visible: l.visible !== false, locked: l.locked === true, opacity: typeof l.opacity === "number" ? l.opacity : 1, pixels: this.cloneGrid(l.pixels) })),
         activeLayerIndex: f.activeLayerIndex || 0
       };
     }
@@ -195,6 +241,7 @@ main.js
         name: l.name || `Layer ${i + 1}`,
         visible: l.visible !== false,
         locked: l.locked === true,
+        opacity: typeof l.opacity === "number" ? l.opacity : 1,
         pixels: this.cloneGrid(l.pixels || this.makeGrid())
       }));
       this.activeFrame.layers = layers;
@@ -262,6 +309,7 @@ main.js
       const dup = this.makeLayer(src.name + " Copy", src.pixels);
       dup.visible = src.visible !== false;
       dup.locked = src.locked === true;
+      dup.opacity = typeof src.opacity === "number" ? src.opacity : 1;
       f.layers.splice(f.activeLayerIndex + 1, 0, dup);
       f.activeLayerIndex += 1;
       return true;
@@ -282,6 +330,23 @@ main.js
       const l = this.activeLayer;
       l.locked = l.locked === true ? false : true;
       return true;
+    }
+    adjustActiveLayerOpacity(delta) {
+      const l = this.activeLayer;
+      const next = Math.max(0, Math.min(1, Number((((typeof l.opacity === "number" ? l.opacity : 1) + delta)).toFixed(2))));
+      if (next === (typeof l.opacity === "number" ? l.opacity : 1)) return false;
+      l.opacity = next;
+      return true;
+    }
+    resetActiveLayerOpacity() {
+      const l = this.activeLayer;
+      if ((typeof l.opacity === "number" ? l.opacity : 1) === 1) return false;
+      l.opacity = 1;
+      return true;
+    }
+    toggleBlendPreviewMode() {
+      this.blendPreviewMode = this.blendPreviewMode === "normal" ? "boost" : "normal";
+      return this.blendPreviewMode;
     }
     selectLayer(index) {
       const f = this.ensureFrameLayers(this.activeFrame);
@@ -338,6 +403,7 @@ main.js
               name: l.name,
               visible: l.visible !== false,
               locked: l.locked === true,
+              opacity: typeof l.opacity === "number" ? l.opacity : 1,
               pixels: this.cloneGrid(l.pixels)
             }))
           };
@@ -775,6 +841,9 @@ main.js
       [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()],["solo","Solo",()=>this.app.toggleLayerSolo()],["lock","Toggle Lock",()=>this.app.toggleLayerLock()]].forEach(([id,t,a]) => {
         this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
+      [["op-down","Opacity -",()=>this.app.adjustLayerOpacity(-0.1)],["op-up","Opacity +",()=>this.app.adjustLayerOpacity(0.1)],["op-reset","Opacity 100%",()=>this.app.resetLayerOpacity()],["blend","Blend Preview",()=>this.app.toggleBlendPreview()]].forEach(([id,t,a]) => {
+        this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
+      });
       [["up","Layer Up",()=>this.app.moveLayerUp()],["down","Layer Down",()=>this.app.moveLayerDown()],["rename","Rename Layer",()=>this.app.openLayerRenamePrompt()]].forEach(([id,t,a]) => {
         this.add("button","layer-edit-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
@@ -786,7 +855,8 @@ main.js
       layers.forEach((l, i) => {
         const hidden = !this.app.isLayerVisibleEffective(af, i);
         const solo = this.app.isLayerSoloActiveFor(af, i);
-        const label = `${i === af.activeLayerIndex ? ">" : " "} ${hidden ? "[H]" : "[V]"} ${l.locked ? "[L]" : "[ ]"} ${solo ? "[S]" : "[ ]"} ${l.name}`;
+        const opacityPct = `${Math.round(((typeof l.opacity === "number" ? l.opacity : 1) * 100))}%`;
+        const label = `${i === af.activeLayerIndex ? ">" : " "} ${hidden ? "[H]" : "[V]"} ${l.locked ? "[L]" : "[ ]"} ${solo ? "[S]" : "[ ]"} ${l.name} ${opacityPct}`;
         this.add("button", "layer-item-" + i, x, y, rw, Math.max(24, bh - 8), label, () => this.app.selectLayer(i), {
           layerIndex: i,
           layerHidden: hidden,
@@ -1118,6 +1188,7 @@ main.js
           name: l.name || `Layer ${i + 1}`,
           visible: l.visible !== false,
           locked: l.locked === true,
+          opacity: typeof l.opacity === "number" ? l.opacity : 1,
           pixels: this.cloneGridData(l.pixels || this.document.makeGrid())
         }))
       };
@@ -1961,6 +2032,10 @@ main.js
         { id: "layer.rename", label: "Layer: Rename", category: "Layer", keywords: ["layer", "rename", "name"], aliases: ["rename layer", "layer name"] },
         { id: "layer.solo", label: "Layer: Toggle Solo", category: "Layer", keywords: ["layer", "solo", "isolate"], aliases: ["solo layer", "isolate layer", "toggle solo"] },
         { id: "layer.toggleLock", label: "Layer: Toggle Lock", category: "Layer", keywords: ["layer", "lock", "unlock"], aliases: ["lock layer", "unlock layer", "toggle lock"] },
+        { id: "layer.opacityUp", label: "Layer: Opacity Up", category: "Layer", keywords: ["layer", "opacity", "alpha", "up"], aliases: ["opacity up", "increase opacity", "alpha up"] },
+        { id: "layer.opacityDown", label: "Layer: Opacity Down", category: "Layer", keywords: ["layer", "opacity", "alpha", "down"], aliases: ["opacity down", "decrease opacity", "alpha down"] },
+        { id: "layer.opacityReset", label: "Layer: Opacity Reset", category: "Layer", keywords: ["layer", "opacity", "reset"], aliases: ["opacity 100", "reset opacity", "alpha reset"] },
+        { id: "view.blendPreviewToggle", label: "View: Toggle Blend Preview", category: "View", keywords: ["blend", "preview", "opacity"], aliases: ["blend preview", "toggle blend preview"] },
         { id: "system.fullscreen", label: "System: Toggle Full Screen", category: "System", keywords: ["fullscreen", "window"], aliases: ["full screen", "fullscreen", "toggle full"] },
         { id: "system.playback", label: "System: Toggle Playback", category: "System", keywords: ["play", "pause", "preview"], aliases: ["playback", "play pause", "preview animation"] },
         { id: "system.playbackPlay", label: "System: Playback Play", category: "System", keywords: ["play", "transport"], aliases: ["play"] },
@@ -2260,6 +2335,10 @@ main.js
       if (action === "layer.rename") { this.openLayerRenamePrompt(); return true; }
       if (action === "layer.solo") { this.toggleLayerSolo(); return true; }
       if (action === "layer.toggleLock") { this.toggleLayerLock(); return true; }
+      if (action === "layer.opacityUp") { this.adjustLayerOpacity(0.1); return true; }
+      if (action === "layer.opacityDown") { this.adjustLayerOpacity(-0.1); return true; }
+      if (action === "layer.opacityReset") { this.resetLayerOpacity(); return true; }
+      if (action === "view.blendPreviewToggle") { this.toggleBlendPreview(); return true; }
       if (action === "system.fullscreen") { this.toggleFullscreen(); return true; }
       if (action === "system.playback") { this.togglePlayback(); return true; }
       if (action === "system.playbackPlay") { this.togglePlayback(true); return true; }
@@ -2401,6 +2480,29 @@ main.js
         this.showMessage(activeSolo ? "Layer solo cleared." : `Layer solo: ${af.layers[index].name}`);
         return true;
       });
+      this.renderAll();
+    }
+    adjustLayerOpacity(delta) {
+      this.executeWithHistory("Layer Opacity", () => {
+        const ok = this.document.adjustActiveLayerOpacity(delta);
+        if (ok) this.showMessage(`Layer opacity: ${Math.round(this.document.activeLayer.opacity * 100)}%`);
+        else this.showMessage("Layer opacity unchanged.");
+        return ok;
+      });
+      this.renderAll();
+    }
+    resetLayerOpacity() {
+      this.executeWithHistory("Layer Opacity Reset", () => {
+        const ok = this.document.resetActiveLayerOpacity();
+        if (ok) this.showMessage("Layer opacity: 100%");
+        else this.showMessage("Layer opacity already 100%.");
+        return ok;
+      });
+      this.renderAll();
+    }
+    toggleBlendPreview() {
+      const mode = this.document.toggleBlendPreviewMode();
+      this.showMessage(mode === "boost" ? "Blend preview: Boost" : "Blend preview: Normal");
       this.renderAll();
     }
     isLayerSoloActiveFor(frame, layerIndex) {
@@ -2893,9 +2995,11 @@ main.js
       const activeLayer = af.layers[af.activeLayerIndex];
       const soloTag = this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? " Solo" : "";
       const lockTag = activeLayer && activeLayer.locked ? " Locked" : "";
+      const opacityTag = activeLayer ? ` ${Math.round(((typeof activeLayer.opacity === "number" ? activeLayer.opacity : 1) * 100))}%` : "";
+      const blendTag = this.document.blendPreviewMode === "boost" ? "Blend:Boost" : "Blend:Normal";
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
       const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"}`;
-      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const toolText = `Tool: ${this.activeTool}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;

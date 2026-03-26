@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v4.2 refining layer visibility UX and adding solo/lock MVP behavior
+Build Sprite Editor v4.3 adding lightweight layer opacity and blend preview MVP support

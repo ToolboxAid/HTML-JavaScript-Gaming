@@ -7,12 +7,12 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_2_LAYER_VISIBILITY_SOLO_LOCK_MVP.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_3_LAYER_OPACITY_BLEND_PREVIEW_MVP.md
 
 Constraints:
 - Keep architecture intact
-- Reuse existing layer/history/dirty-state/save-load/command systems
-- Add visibility UX polish, solo, and lock behavior
-- Keep solo model simple and explicit
-- Prevent locked-layer edits safely
+- Reuse existing layer/history/dirty-state/save-load/render/command systems
+- Add lightweight per-layer opacity support
+- Keep blend preview MVP intentionally small
+- Maintain backward compatibility
 - Do not rewrite architecture

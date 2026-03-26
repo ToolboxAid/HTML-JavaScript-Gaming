@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v4.2 Docs-Only BUILD_PR
+# Sprite Editor v4.3 Docs-Only BUILD_PR
 
 Includes:
-- layer visibility UX refinement
-- solo-layer behavior guidance
-- locked-layer editing safety requirements
+- per-layer opacity guidance
+- minimal blend preview MVP scope
+- compositing/save-load/history expectations
 
 No code included. Codex implements.
