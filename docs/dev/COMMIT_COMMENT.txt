@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v3.7 adding onion skin rendering for animation workflows
+Build Sprite Editor v3.8 adding frame timeline strip and scrubbing interaction

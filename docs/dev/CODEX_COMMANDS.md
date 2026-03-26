@@ -7,12 +7,12 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V3_7_ONION_SKIN_MULTI_FRAME.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V3_8_FRAME_TIMELINE_SCRUBBING.md
 
 Constraints:
 - Keep architecture intact
-- Reuse existing multi-frame/rendering/command systems
-- Add onion skin as a visual overlay only
-- Keep editing scoped to current frame
-- Integrate toggle into keyboard + command palette
+- Reuse existing frame selection/reorder/history/rendering systems
+- Add canvas-native timeline strip with scrubbing
+- Make reorder undoable
+- Keep selection/scrubbing out of history
 - Do not rewrite architecture

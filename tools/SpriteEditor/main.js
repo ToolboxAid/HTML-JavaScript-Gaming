@@ -847,6 +847,8 @@ main.js
       this.selectionStart = null;
       this.selectionPasteOrigin = { x: 0, y: 0 };
       this.selectionMoveSession = null;
+      this.timelineInteraction = null;
+      this.timelineStripRect = null;
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
@@ -1252,6 +1254,40 @@ main.js
       return { x: Math.floor((x - r.x) / r.pixelSize), y: Math.floor((y - r.y) / r.pixelSize) };
     }
 
+    computeTimelineLayout() {
+      const p = this.controlSurface.layout.rightPanel;
+      const x = p.x + 18;
+      const y = p.y + p.height - 356;
+      const w = p.width - 36;
+      const h = 96;
+      const innerX = x + 8;
+      const innerY = y + 24;
+      const innerW = w - 16;
+      const innerH = h - 32;
+      const count = Math.max(1, this.document.frames.length);
+      const slotGap = 6;
+      const maxSlotW = 52;
+      const slotW = Math.max(24, Math.min(maxSlotW, Math.floor((innerW - (count - 1) * slotGap) / count)));
+      const slotH = innerH;
+      const totalW = count * slotW + (count - 1) * slotGap;
+      const startX = innerX + Math.max(0, Math.floor((innerW - totalW) * 0.5));
+      const slots = [];
+      for (let i = 0; i < count; i += 1) {
+        slots.push({ index: i, x: startX + i * (slotW + slotGap), y: innerY, w: slotW, h: slotH });
+      }
+      return { x, y, w, h, slots };
+    }
+
+    getTimelineIndexAt(p) {
+      if (!this.timelineStripRect || !p) return null;
+      const slots = this.timelineStripRect.slots;
+      for (let i = 0; i < slots.length; i += 1) {
+        const s = slots[i];
+        if (p.x >= s.x && p.y >= s.y && p.x <= s.x + s.w && p.y <= s.y + s.h) return s.index;
+      }
+      return null;
+    }
+
     isCellInsideSelection(cell) {
       const s = this.document.selection;
       if (!s || !cell) return false;
@@ -1313,6 +1349,19 @@ main.js
     onPointerMove(e) {
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
+      if (this.timelineInteraction) {
+        const idx = this.getTimelineIndexAt(p);
+        if (idx !== null) {
+          if (this.timelineInteraction.mode === "scrub") {
+            this.selectFrame(idx);
+          } else if (this.timelineInteraction.mode === "reorder") {
+            this.timelineInteraction.targetIndex = idx;
+            this.controlSurface.dragFeedbackText = `Timeline reorder ${this.timelineInteraction.startIndex + 1} -> ${idx + 1}`;
+          }
+        }
+        this.renderAll();
+        return;
+      }
       this.controlSurface.updateHover(p.x, p.y);
       const cell = this.getGridCellAtLogical(p.x, p.y);
       this.hoveredGridCell = cell;
@@ -1357,6 +1406,19 @@ main.js
         this.handleReplaceGuardPointer(p);
         return;
       }
+      const timelineIndex = this.getTimelineIndexAt(p);
+      if (timelineIndex !== null) {
+        if (e.shiftKey) {
+          this.timelineInteraction = { mode: "reorder", startIndex: timelineIndex, targetIndex: timelineIndex };
+          this.controlSurface.dragFeedbackText = `Timeline reorder ${timelineIndex + 1}`;
+        } else {
+          this.timelineInteraction = { mode: "scrub", startIndex: timelineIndex, targetIndex: timelineIndex };
+          this.selectFrame(timelineIndex);
+        }
+        this.isPointerDown = true;
+        this.renderAll();
+        return;
+      }
 
       if (e.button === 1 || e.shiftKey) {
         this.isPanning = true;
@@ -1391,6 +1453,19 @@ main.js
 
     onPointerUp(e) {
       const p = this.logicalPointFromEvent(e);
+      if (this.timelineInteraction) {
+        if (this.timelineInteraction.mode === "reorder") {
+          const from = this.timelineInteraction.startIndex;
+          const to = this.timelineInteraction.targetIndex;
+          if (typeof to === "number" && from !== to) this.reorderFrame(from, to);
+          else this.showMessage("Timeline reorder canceled.");
+        }
+        this.timelineInteraction = null;
+        this.controlSurface.dragFeedbackText = "";
+        this.isPointerDown = false;
+        this.renderAll();
+        return;
+      }
       if (p && this.controlSurface.pointerUp(p.x, p.y)) this.renderAll();
       this.commitStrokeHistory();
       this.commitSelectionMove();
@@ -2036,12 +2111,43 @@ main.js
       this.updateDirtyState();
       this.controlSurface.rebuildLayout();
       this.gridRect = this.computeGridRect();
+      this.timelineStripRect = this.computeTimelineLayout();
       this.controlSurface.draw(this.ctx);
       this.drawMainGrid();
+      this.drawTimelinePanel();
       this.drawPreviewPanel();
       this.drawSheetPanel();
       this.drawBottomStatus();
       this.drawReplaceGuard();
+    }
+
+    drawTimelinePanel() {
+      const t = this.timelineStripRect;
+      if (!t) return;
+      const ctx = this.ctx;
+      ctx.fillStyle = "#1a2733";
+      ctx.fillRect(t.x, t.y, t.w, t.h);
+      ctx.strokeStyle = "rgba(255,255,255,0.15)";
+      ctx.strokeRect(t.x + 0.5, t.y + 0.5, t.w - 1, t.h - 1);
+      ctx.fillStyle = "#dbe7f3";
+      ctx.font = "bold 12px Arial";
+      ctx.fillText("TIMELINE", t.x + 10, t.y + 14);
+      t.slots.forEach((slot) => {
+        const f = this.document.frames[slot.index];
+        const active = slot.index === this.document.activeFrameIndex;
+        const reorderTarget = this.timelineInteraction && this.timelineInteraction.mode === "reorder" && slot.index === this.timelineInteraction.targetIndex;
+        ctx.fillStyle = active ? "#244d67" : "#101a24";
+        if (reorderTarget) ctx.fillStyle = "#305c4a";
+        ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
+        ctx.strokeStyle = active ? "#4cc9f0" : "rgba(255,255,255,0.22)";
+        ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
+        const thumbH = slot.h - 18;
+        const thumbW = slot.w - 8;
+        this.drawMiniPixels(f.pixels, slot.x + 4, slot.y + 2, thumbW, thumbH);
+        ctx.fillStyle = "#dbe7f3";
+        ctx.font = "11px Arial";
+        ctx.fillText(String(slot.index + 1), slot.x + 4, slot.y + slot.h - 6);
+      });
     }
 
     drawReplaceGuard() {
