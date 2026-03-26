@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v4.8 Docs-Only BUILD_PR
+# Sprite Editor v4.9 Docs-Only BUILD_PR
 
 Includes:
-- top bar decluttering guidance
-- File menu consolidation requirements
-- canvas-native menu behavior expectations
+- context-aware panel guidance
+- progressive disclosure requirements
+- decluttering constraints without capability loss
 
 No code included. Codex implements.

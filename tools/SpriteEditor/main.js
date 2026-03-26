@@ -688,6 +688,11 @@ main.js
       this.overflowAnchorControl = null;
       this.topMenuSource = null;
     }
+    getMenuAnchorId() {
+      if (this.topMenuSource === "file") return "top-file";
+      if (this.topMenuSource === "overflow") return "top-overflow";
+      return this.topMenuSource;
+    }
 
     pointInRect(x, y, r) {
       return !!r && x >= r.x && y >= r.y && x <= r.x + r.w && y <= r.y + r.h;
@@ -792,7 +797,7 @@ main.js
         this.closeOverflowPanel();
         return;
       }
-      const anchorId = this.topMenuSource === "file" ? "top-file" : "top-overflow";
+      const anchorId = this.getMenuAnchorId();
       const anchor = this.controls.find((c) => c.id === anchorId) || this.overflowAnchorControl;
       if (!anchor) {
         this.closeOverflowPanel();
@@ -968,12 +973,38 @@ main.js
       [["brush","Brush"],["erase","Erase"],["fill","Fill"],["line","Line"],["rect","Rect"],["fillrect","Fill Rect"],["eyedropper","Eye"],["select","Select"]].forEach(([tool,t]) => {
         this.add("button","tool-"+tool,x,y,bw,bh,t,()=>this.app.setTool(tool),{tool}); y += bh + d.spacing;
       });
+      const brushToolActive = this.app.activeTool === "brush" || this.app.activeTool === "erase";
+      const shapeToolActive = this.app.activeTool === "line" || this.app.activeTool === "rect" || this.app.activeTool === "fillrect";
+      if (brushToolActive) {
+        y += d.spacing;
+        this.add("label","lbl-brush",x,y,bw,d.labelHeight,"BRUSH",null); y += d.labelHeight + d.spacing;
+        this.add("button","brush-size-down",x,y,Math.floor((bw - d.spacing) / 2),bh,`Size - (${this.app.brush.size})`,()=>this.app.adjustBrushSize(-1)); 
+        this.add("button","brush-size-up",x + Math.floor((bw - d.spacing) / 2) + d.spacing,y,Math.ceil((bw - d.spacing) / 2),bh,"Size +",()=>this.app.adjustBrushSize(1));
+        y += bh + d.spacing;
+        this.add("button","brush-shape-toggle",x,y,bw,bh,`Shape: ${this.app.brush.shape}`,()=>this.app.toggleBrushShape());
+        y += bh + d.spacing;
+      } else if (shapeToolActive) {
+        y += d.spacing;
+        this.add("label","lbl-shape",x,y,bw,d.labelHeight,"SHAPE",null); y += d.labelHeight + d.spacing;
+        this.add("label","shape-help",x,y,bw,bh,"Drag on canvas to preview",null);
+        y += bh + d.spacing;
+      }
       this.add("button","mirror-toggle",x,y,bw,bh,this.app.mirror ? "Mirror: On" : "Mirror: Off",()=>this.app.toggleMirror()); y += bh + d.spacing;
       y += d.spacing;
       this.add("label","lbl-sel",x,y,bw,d.labelHeight,"SELECTION",null); y += d.labelHeight + d.spacing;
-      [["copy","Copy"],["cut","Cut"],["paste","Paste"],["fliph","Flip H"],["flipv","Flip V"],["clear","Clear"]].forEach(([id,t]) => {
-        this.add("button","sel-"+id,x,y,bw,bh,t,()=>this.app.handleSelectionAction("sel-"+id)); y += bh + d.spacing;
-      });
+      const hasSelection = !!this.app.document.selection;
+      const hasClipboard = !!this.app.document.selectionClipboard;
+      if (hasSelection) {
+        [["copy","Copy"],["cut","Cut"],["paste","Paste"],["fliph","Flip H"],["flipv","Flip V"],["clear","Clear"]].forEach(([id,t]) => {
+          this.add("button","sel-"+id,x,y,bw,bh,t,()=>this.app.handleSelectionAction("sel-"+id)); y += bh + d.spacing;
+        });
+      } else if (hasClipboard) {
+        this.add("button","sel-paste",x,y,bw,bh,"Paste",()=>this.app.handleSelectionAction("sel-paste")); y += bh + d.spacing;
+        this.add("label","sel-hint-paste",x,y,bw,bh,"Clipboard ready",null); y += bh + d.spacing;
+      } else {
+        this.add("label","sel-hint",x,y,bw,bh,"No selection",null); y += bh + d.spacing;
+        this.add("label","sel-hint-2",x,y,bw,bh,"Use Select tool to create one",null); y += bh + d.spacing;
+      }
 
       x = right.x + d.padding;
       y = right.y + d.padding;
@@ -982,20 +1013,18 @@ main.js
       [["add","Add Frame",()=>this.app.addFrame()],["dup","Duplicate",()=>this.app.duplicateFrame()],["del","Delete",()=>this.app.deleteFrame()],["copy","Copy Frame",()=>this.app.copyFrame()],["paste","Paste Frame",()=>this.app.pasteFrame()]].forEach(([id,t,a]) => {
         this.add("button","frame-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
+      const playbackRange = this.app.getPlaybackRange();
+      if (playbackRange.enabled || this.app.getFrameRangeSelection().explicit) {
+        y += d.spacing;
+        this.add("label","lbl-playback-range",x,y,rw,d.labelHeight,"PLAYBACK RANGE",null); y += d.labelHeight + d.spacing;
+        this.add("button","playback-range-menu",x,y,rw,bh,playbackRange.enabled ? `Range: ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}` : "Range Actions",()=>this.app.openPlaybackRangeMenu()); y += bh + d.spacing;
+      }
       y += d.spacing;
       this.add("label","lbl-layers",x,y,rw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
       [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()],["solo","Solo",()=>this.app.toggleLayerSolo()],["lock","Toggle Lock",()=>this.app.toggleLayerLock()]].forEach(([id,t,a]) => {
         this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
       });
-      [["op-down","Opacity -",()=>this.app.adjustLayerOpacity(-0.1)],["op-up","Opacity +",()=>this.app.adjustLayerOpacity(0.1)],["op-reset","Opacity 100%",()=>this.app.resetLayerOpacity()],["blend","Blend Preview",()=>this.app.toggleBlendPreview()],["merge-down","Merge Down",()=>this.app.mergeLayerDown()],["flatten","Flatten Frame",()=>this.app.requestFlattenFrame()]].forEach(([id,t,a]) => {
-        this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
-      });
-      [["up","Layer Up",()=>this.app.moveLayerUp()],["down","Layer Down",()=>this.app.moveLayerDown()],["rename","Rename Layer",()=>this.app.openLayerRenamePrompt()]].forEach(([id,t,a]) => {
-        this.add("button","layer-edit-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
-      });
-      [["prev","Layer Prev",()=>this.app.selectPrevLayer()],["next","Layer Next",()=>this.app.selectNextLayer()]].forEach(([id,t,a]) => {
-        this.add("button","layer-nav-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
-      });
+      this.add("button","layer-actions-menu",x,y,rw,bh,"Layer More",()=>this.app.openLayerActionsMenu()); y += bh + d.spacing;
       const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
       const layers = af.layers || [];
       layers.forEach((l, i) => {
@@ -1066,7 +1095,7 @@ main.js
           x >= this.overflowPanelBounds.x && y >= this.overflowPanelBounds.y &&
           x <= this.overflowPanelBounds.x + this.overflowPanelBounds.w &&
           y <= this.overflowPanelBounds.y + this.overflowPanelBounds.h;
-        const anchorId = this.topMenuSource === "file" ? "top-file" : "top-overflow";
+        const anchorId = this.getMenuAnchorId();
         const anchorButton = this.controls.find((c) => c.id === anchorId);
         const inAnchorButton = anchorButton &&
           x >= anchorButton.x && y >= anchorButton.y &&
@@ -1762,6 +1791,7 @@ main.js
         { id: "play_pause", x: x + 8, y: transportY, w: 54, h: transportH },
         { id: "stop", x: x + 66, y: transportY, w: 42, h: transportH },
         { id: "loop", x: x + 112, y: transportY, w: 50, h: transportH },
+        { id: "range", x: x + 166, y: transportY, w: 56, h: transportH },
         { id: "fps_down", x: x + w - 92, y: transportY, w: 20, h: transportH },
         { id: "fps_up", x: x + w - 24, y: transportY, w: 20, h: transportH }
       ];
@@ -1864,6 +1894,34 @@ main.js
       this.selectFrame(toEnd ? range.endFrame : range.startFrame);
       this.showMessage(toEnd ? "Jumped to range end." : "Jumped to range start.");
       return true;
+    }
+    openPlaybackRangeMenu() {
+      const items = [
+        { id: "playback-menu-set", text: "Set Range From Selection", action: () => this.setPlaybackRangeFromSelection() },
+        { id: "playback-menu-clear", text: "Clear Range", action: () => this.dispatchKeybinding("playback.clearRange") },
+        { id: "playback-menu-toggle", text: "Toggle Range Loop", action: () => this.dispatchKeybinding("playback.toggleRangeLoop") },
+        { id: "playback-menu-start", text: "Jump To Range Start", action: () => this.jumpToPlaybackRangeEdge(false) },
+        { id: "playback-menu-end", text: "Jump To Range End", action: () => this.jumpToPlaybackRangeEdge(true) }
+      ];
+      this.controlSurface.toggleTopMenu("playback-range-menu", items);
+      this.renderAll();
+    }
+    openLayerActionsMenu() {
+      const items = [
+        { id: "layer-menu-rename", text: "Rename Layer", action: () => this.openLayerRenamePrompt() },
+        { id: "layer-menu-up", text: "Layer Up", action: () => this.moveLayerUp() },
+        { id: "layer-menu-down", text: "Layer Down", action: () => this.moveLayerDown() },
+        { id: "layer-menu-merge", text: "Merge Down", action: () => this.mergeLayerDown() },
+        { id: "layer-menu-flatten", text: "Flatten Frame", action: () => this.requestFlattenFrame() },
+        { id: "layer-menu-opacity-down", text: "Opacity -", action: () => this.adjustLayerOpacity(-0.1) },
+        { id: "layer-menu-opacity-up", text: "Opacity +", action: () => this.adjustLayerOpacity(0.1) },
+        { id: "layer-menu-opacity-reset", text: "Opacity 100%", action: () => this.resetLayerOpacity() },
+        { id: "layer-menu-blend", text: "Blend Preview", action: () => this.toggleBlendPreview() },
+        { id: "layer-menu-prev", text: "Layer Prev", action: () => this.selectPrevLayer() },
+        { id: "layer-menu-next", text: "Layer Next", action: () => this.selectNextLayer() }
+      ];
+      this.controlSurface.toggleTopMenu("layer-actions-menu", items);
+      this.renderAll();
     }
 
     isCellInsideSelection(cell) {
@@ -2008,6 +2066,7 @@ main.js
         if (timelineControl === "play_pause") this.togglePlayback();
         else if (timelineControl === "stop") this.stopPlayback();
         else if (timelineControl === "loop") this.togglePlaybackLoop();
+        else if (timelineControl === "range") this.openPlaybackRangeMenu();
         else if (timelineControl === "fps_down") this.adjustPlaybackFps(-1);
         else if (timelineControl === "fps_up") this.adjustPlaybackFps(1);
         this.renderAll();
@@ -3248,6 +3307,7 @@ main.js
         ctx.fillStyle = "#1a2733";
         if (c.id === "play_pause" && this.playback.isPlaying) ctx.fillStyle = "#244d67";
         if (c.id === "loop" && this.playback.loop) ctx.fillStyle = "#244d67";
+        if (c.id === "range" && this.getPlaybackRange().enabled) ctx.fillStyle = "#6b4f1d";
         ctx.fillRect(c.x, c.y, c.w, c.h);
         ctx.strokeStyle = "rgba(255,255,255,0.2)";
         ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
@@ -3256,6 +3316,7 @@ main.js
         if (c.id === "play_pause") ctx.fillText(this.playback.isPlaying ? "Pause" : "Play", c.x + 8, c.y + 12);
         else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + 12);
         else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + 12);
+        else if (c.id === "range") ctx.fillText("Range", c.x + 8, c.y + 12);
         else if (c.id === "fps_down") ctx.fillText("-", c.x + 7, c.y + 12);
         else if (c.id === "fps_up") ctx.fillText("+", c.x + 6, c.y + 12);
       });

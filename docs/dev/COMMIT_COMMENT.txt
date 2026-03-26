@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v4.8 consolidating top bar actions into canvas-native menus for cleaner workflow
+Build Sprite Editor v4.9 refining usability with context-aware panels and progressive disclosure
