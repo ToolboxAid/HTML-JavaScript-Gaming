@@ -9,61 +9,168 @@ index.html
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sprite Editor v1.1</title>
+  <title>Sprite Editor v1.2</title>
   <link rel="stylesheet" href="../../engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="./spriteEditor.css" />
 </head>
 <body>
-  <main class="editor-shell">
-    <h1>Sprite Editor v1.1</h1>
-    <p class="subtitle">Rebuilt multi-frame editor with animation preview.</p>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <h1>Sprite Editor v1.2</h1>
+        <p class="subtitle">Multi-frame sprite editing, animation preview, and sprite sheet export.</p>
+      </div>
+      <div class="header-actions">
+        <button id="saveLocalBtn">Save Local</button>
+        <button id="loadLocalBtn">Load Local</button>
+        <button id="clearBtn">Clear Frame</button>
+      </div>
+    </header>
 
-    <section class="panel controls">
-      <h2>Frame Controls</h2>
-      <div class="row">
-        <button id="prevFrame" type="button">Prev</button>
-        <button id="nextFrame" type="button">Next</button>
-        <button id="addFrame" type="button">Add</button>
-        <button id="dupFrame" type="button">Duplicate</button>
-        <button id="delFrame" type="button">Delete</button>
-      </div>
-      <div class="row">
-        <label for="fpsInput">FPS</label>
-        <input id="fpsInput" type="number" min="1" max="60" value="8" />
-        <label><input id="loopToggle" type="checkbox" checked /> Loop</label>
-        <button id="playPreview" type="button">Play</button>
-        <button id="pausePreview" type="button">Pause</button>
-      </div>
-      <div id="statusLine" class="status">Ready.</div>
-    </section>
+    <main class="layout">
+      <aside class="panel left-panel">
+        <section class="panel-section">
+          <h2>Canvas</h2>
+          <div class="field-grid">
+            <label>Columns<input id="colsInput" type="number" min="4" max="64" value="16" /></label>
+            <label>Rows<input id="rowsInput" type="number" min="4" max="64" value="16" /></label>
+            <label>Pixel Size<input id="pixelSizeInput" type="number" min="8" max="40" value="20" /></label>
+            <label>Preview Scale<input id="previewScaleInput" type="number" min="4" max="32" value="8" /></label>
+          </div>
+          <div class="button-row">
+            <button id="resizeBtn">Apply Size</button>
+            <button id="toggleGridBtn">Toggle Grid</button>
+          </div>
+        </section>
 
-    <section class="panel workspace">
-      <div class="column">
-        <h2>Editor Grid</h2>
-        <canvas id="editorCanvas" width="256" height="256"></canvas>
-      </div>
-      <div class="column">
-        <h2>Preview</h2>
-        <canvas id="previewCanvas" width="256" height="256"></canvas>
-      </div>
-    </section>
+        <section class="panel-section">
+          <h2>Tools</h2>
+          <div class="tool-grid">
+            <button id="brushToolBtn" class="tool active">Brush</button>
+            <button id="eraseToolBtn" class="tool">Erase</button>
+            <button id="fillToolBtn" class="tool">Fill</button>
+            <button id="eyedropperToolBtn" class="tool">Eyedropper</button>
+          </div>
+          <label class="checkbox-row"><input id="dragDrawInput" type="checkbox" checked /> Drag draw enabled</label>
+          <label class="checkbox-row"><input id="mirrorInput" type="checkbox" /> Mirror horizontally</label>
+        </section>
 
-    <section class="panel">
-      <h2>Frames</h2>
-      <div id="frameStrip" class="frame-strip"></div>
-    </section>
+        <section class="panel-section">
+          <h2>Palette</h2>
+          <div class="palette-controls">
+            <label>Current Color<input id="currentColorInput" type="color" value="#00ccff" /></label>
+            <label>Transparent Key<input id="transparentColorInput" type="color" value="#ff00ff" /></label>
+            <label>Sheet Background<input id="sheetBackgroundInput" type="color" value="#ffffff" /></label>
+          </div>
+          <div id="paletteSwatches" class="swatch-grid"></div>
+          <div class="button-row">
+            <button id="addPaletteColorBtn">Add Color</button>
+            <button id="removePaletteColorBtn">Remove Last</button>
+          </div>
+        </section>
 
-    <section class="panel io">
-      <h2>Import / Export</h2>
-      <div class="row">
-        <button id="exportJson" type="button">Export JSON</button>
-        <button id="importJson" type="button">Import JSON</button>
-        <button id="saveLocal" type="button">Save Local</button>
-        <button id="loadLocal" type="button">Load Local</button>
-      </div>
-      <textarea id="jsonArea" rows="10" spellcheck="false"></textarea>
-    </section>
-  </main>
-  <script type="module" src="./main.js"></script>
+        <section class="panel-section">
+          <h2>Sprite Sheet Export</h2>
+          <div class="field-grid">
+            <label>Layout
+              <select id="sheetLayoutSelect">
+                <option value="horizontal">Horizontal</option>
+                <option value="vertical">Vertical</option>
+                <option value="grid">Grid</option>
+              </select>
+            </label>
+            <label>Grid Columns<input id="sheetColumnsInput" type="number" min="1" max="32" value="4" /></label>
+            <label>Padding<input id="sheetPaddingInput" type="number" min="0" max="64" value="4" /></label>
+            <label>Spacing<input id="sheetSpacingInput" type="number" min="0" max="32" value="2" /></label>
+          </div>
+          <div class="field-grid">
+            <label class="checkbox-row"><input id="sheetTransparentInput" type="checkbox" checked /> Transparent Background</label>
+            <label class="checkbox-row"><input id="sheetLabelsInput" type="checkbox" /> Labels</label>
+          </div>
+          <div class="button-row stacked">
+            <button id="renderSheetBtn">Render Sheet Preview</button>
+            <button id="downloadSheetBtn">Download PNG</button>
+            <button id="exportSheetMetaBtn">Export Sheet Metadata</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="panel canvas-panel">
+        <div class="panel-section canvas-header">
+          <div>
+            <h2>Editor Grid</h2>
+            <p id="statusText" class="status-text">Ready.</p>
+          </div>
+          <div class="legend">
+            <span><strong>LMB</strong> draw</span>
+            <span><strong>RMB</strong> erase</span>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="editorCanvas" width="320" height="320"></canvas>
+        </div>
+      </section>
+
+      <aside class="panel right-panel">
+        <section class="panel-section">
+          <h2>Frames</h2>
+          <div class="button-row stacked-two">
+            <button id="addFrameBtn">Add Frame</button>
+            <button id="duplicateFrameBtn">Duplicate</button>
+            <button id="deleteFrameBtn">Delete</button>
+            <button id="prevFrameBtn">Previous</button>
+            <button id="nextFrameBtn">Next</button>
+          </div>
+          <div id="frameStrip" class="frame-strip"></div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Animation Preview</h2>
+          <canvas id="previewCanvas" width="128" height="128"></canvas>
+          <div class="field-grid preview-grid">
+            <label>FPS<input id="fpsInput" type="number" min="1" max="24" value="6" /></label>
+            <label class="checkbox-row"><input id="loopInput" type="checkbox" checked /> Loop</label>
+          </div>
+          <div class="button-row">
+            <button id="playBtn">Play</button>
+            <button id="pauseBtn">Pause</button>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Sheet Preview</h2>
+          <canvas id="sheetCanvas" width="256" height="256"></canvas>
+          <div class="meta-list">
+            <div><strong>Sheet Size:</strong> <span id="sheetSizeText">-</span></div>
+            <div><strong>Frame Order:</strong> <span id="sheetOrderText">-</span></div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Metadata</h2>
+          <div class="meta-list">
+            <div><strong>Hovered:</strong> <span id="hoveredCellText">-</span></div>
+            <div><strong>Active Tool:</strong> <span id="activeToolText">Brush</span></div>
+            <div><strong>Filled Cells:</strong> <span id="filledCountText">0</span></div>
+            <div><strong>Frame:</strong> <span id="activeFrameText">1 / 1</span></div>
+            <div><strong>Preview:</strong> <span id="previewStateText">Paused</span></div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Import / Export</h2>
+          <div class="button-row stacked">
+            <button id="exportJsonBtn">Export JSON</button>
+            <button id="exportCompactBtn">Export Compact</button>
+            <button id="copyDataBtn">Copy Output</button>
+            <button id="importJsonBtn">Import JSON</button>
+          </div>
+          <textarea id="dataOutput" spellcheck="false"></textarea>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script src="./main.js"></script>
 </body>
 </html>

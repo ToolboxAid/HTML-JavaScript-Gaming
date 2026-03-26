@@ -3,19 +3,20 @@ David Quesenberry
 03/26/2026
 README.md
 
-# APPLY_PR ZIP — Sprite Editor v1.1 Rebuild Only
+# Sprite Editor v1.2 BUILD_PR
 
-This ZIP is the clean APPLY_PR package for the rebuilt Sprite Editor v1.1.
+This ZIP contains the repo-structured delta for Sprite Editor v1.2 sprite sheet export.
 
 ## Included
-- docs/pr/APPLY_PR_TOOLS_SPRITE_EDITOR_V1_1_MULTI_FRAME_ANIMATION_PREVIEW.md
-- docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V1_1_MULTI_FRAME_ANIMATION_PREVIEW.md
+- tools/SpriteEditor/index.html
+- tools/SpriteEditor/main.js
+- tools/SpriteEditor/spriteEditor.css
+- docs/pr/PLAN_PR_TOOLS_SPRITE_EDITOR_V1_2_SPRITE_SHEET_EXPORT.md
+- docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V1_2_SPRITE_SHEET_EXPORT.md
+- docs/pr/APPLY_PR_TOOLS_SPRITE_EDITOR_V1_2_SPRITE_SHEET_EXPORT.md
 - docs/dev/README.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 
-## Clarification
-This applies to the rebuilt Sprite Editor only.
-No engine/ui alignment.
-No architecture rewrite.
-No old implementation carried forward into the rebuilt tool.
+## Scope
+Tools and docs only.

@@ -4,92 +4,89 @@ David Quesenberry
 03/26/2026
 spriteEditor.css
 */
-.editor-shell {
-  width: min(100%, 1100px);
+.app-shell { padding: 16px; }
+.layout {
+  display: grid;
+  grid-template-columns: 360px minmax(420px, 1fr) 420px;
+  gap: 16px;
+  align-items: start;
 }
-
-.subtitle {
-  color: #93c5fd;
+.panel { border-radius: 16px; }
+.panel-section { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.panel-section:last-child { border-bottom: none; }
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
 }
-
-.panel {
-  background: #111827;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 12px;
-}
-
-.workspace {
+.subtitle, .status-text, .legend, .meta-list, .checkbox-row, .frame-thumb .label { opacity: 0.8; }
+.field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
-
-.column h2,
-.panel h2 {
-  margin: 0 0 10px;
-  font-size: 1rem;
+.field-grid label, .palette-controls label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.95rem;
 }
-
-canvas {
+.palette-controls { display: grid; gap: 10px; margin-bottom: 12px; }
+.button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.button-row.stacked { display: grid; gap: 10px; }
+.button-row.stacked-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.checkbox-row { display: flex !important; align-items: center; gap: 8px; }
+.canvas-wrap { padding: 16px; display: flex; justify-content: center; overflow: auto; }
+#editorCanvas, #previewCanvas, #sheetCanvas {
+  background: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
   image-rendering: pixelated;
-  border: 1px solid #475569;
-  background: #020617;
-  width: 100%;
-  max-width: 256px;
-  height: auto;
+  image-rendering: crisp-edges;
 }
-
-.row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
+#sheetCanvas, #previewCanvas { width: 100%; max-width: 256px; height: auto; display: block; margin: 0 auto; }
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
-
-button,
-input,
-textarea {
-  font: inherit;
+.swatch {
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid transparent;
 }
-
-input[type="number"] {
-  width: 70px;
-}
-
-textarea {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.status {
-  color: #fcd34d;
-  min-height: 1.2em;
-}
-
+.swatch.selected { border-color: #4cc9f0; }
 .frame-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
 }
-
 .frame-thumb {
-  border: 1px solid #334155;
-  border-radius: 8px;
-  padding: 6px;
-  text-align: center;
-  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px;
+  border-radius: 10px;
+  display: grid;
+  gap: 6px;
 }
-
-.frame-thumb.active {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 1px #f59e0b inset;
-}
-
+.frame-thumb.active { outline: 2px solid #4cc9f0; }
 .frame-thumb canvas {
-  width: 64px;
-  height: 64px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: #fff;
+  image-rendering: pixelated;
+}
+.meta-list { display: grid; gap: 8px; }
+textarea {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+}
+select, input, button, textarea {
+  font: inherit;
+}
+@media (max-width: 1280px) {
+  .layout { grid-template-columns: 1fr; }
 }
