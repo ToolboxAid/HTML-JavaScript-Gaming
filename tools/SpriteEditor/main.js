@@ -937,7 +937,7 @@ main.js
       const bw = left.width - (d.padding * 2);
       const bh = d.sideButtonHeight;
       this.add("label","lbl-tools",x,y,bw,d.labelHeight,"TOOLS",null); y += d.labelHeight + d.spacing;
-      [["brush","Brush"],["erase","Erase"],["fill","Fill"],["eyedropper","Eye"],["select","Select"]].forEach(([tool,t]) => {
+      [["brush","Brush"],["erase","Erase"],["fill","Fill"],["line","Line"],["rect","Rect"],["fillrect","Fill Rect"],["eyedropper","Eye"],["select","Select"]].forEach(([tool,t]) => {
         this.add("button","tool-"+tool,x,y,bw,bh,t,()=>this.app.setTool(tool),{tool}); y += bh + d.spacing;
       });
       this.add("button","mirror-toggle",x,y,bw,bh,this.app.mirror ? "Mirror: On" : "Mirror: Off",()=>this.app.toggleMirror()); y += bh + d.spacing;
@@ -1227,6 +1227,7 @@ main.js
       this.document = new SpriteEditorDocument();
       this.controlSurface = new SpriteEditorCanvasControlSurface(this);
       this.activeTool = "brush";
+      this.brush = { size: 1, shape: "square" };
       this.hoveredGridCell = null;
       this.isPointerDown = false;
       this.mirror = false;
@@ -1239,6 +1240,8 @@ main.js
       this.playbackRange = { enabled: false, startFrame: 0, endFrame: 0 };
       this.timelineHoverIndex = null;
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
+      this.strokeLastCell = null;
+      this.shapePreview = null;
       this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
@@ -1925,6 +1928,11 @@ main.js
       }
 
       if (this.isPointerDown) {
+        if (this.shapePreview && cell) {
+          this.shapePreview.current = { x: cell.x, y: cell.y };
+          this.renderAll();
+          return;
+        }
         if (this.selectionMoveSession && cell) {
           const dx = cell.x - this.selectionMoveSession.lastCell.x;
           const dy = cell.y - this.selectionMoveSession.lastCell.y;
@@ -1941,7 +1949,13 @@ main.js
           return;
         }
         if (cell && this.activeTool !== "select") {
-          this.applyGridTool(cell.x, cell.y, e.buttons === 2);
+          if (this.activeTool === "brush" || this.activeTool === "erase") {
+            const erase = e.buttons === 2 || this.activeTool === "erase";
+            this.applyStrokeSegment(this.strokeLastCell || cell, cell, erase);
+            this.strokeLastCell = { x: cell.x, y: cell.y };
+          } else {
+            this.applyGridTool(cell.x, cell.y, e.buttons === 2);
+          }
           this.renderAll();
         }
       } else {
@@ -2016,7 +2030,20 @@ main.js
         return;
       }
 
+      if (this.activeTool === "line" || this.activeTool === "rect" || this.activeTool === "fillrect") {
+        if (!this.canEditActiveLayer(true)) return;
+        this.shapePreview = {
+          tool: this.activeTool,
+          start: { x: cell.x, y: cell.y },
+          current: { x: cell.x, y: cell.y },
+          erase: e.button === 2
+        };
+        this.renderAll();
+        return;
+      }
+
       this.beginStrokeHistory(this.activeTool === "erase" || e.button === 2 ? "Erase Stroke" : "Draw Stroke");
+      this.strokeLastCell = { x: cell.x, y: cell.y };
       this.applyGridTool(cell.x, cell.y, e.button === 2);
       this.renderAll();
     }
@@ -2037,10 +2064,15 @@ main.js
         return;
       }
       if (p && this.controlSurface.pointerUp(p.x, p.y)) this.renderAll();
+      if (this.shapePreview) {
+        this.commitShapePreview();
+        this.shapePreview = null;
+      }
       this.commitStrokeHistory();
       this.commitSelectionMove();
       this.isPointerDown = false;
       this.selectionStart = null;
+      this.strokeLastCell = null;
       this.isPanning = false;
       this.panStart = null;
       if (!p || this.getTimelineIndexAt(p) === null) this.timelineHoverIndex = null;
@@ -2148,8 +2180,16 @@ main.js
         "b": "tool.brush",
         "e": "tool.erase",
         "f": "tool.fill",
+        "l": "tool.line",
+        "r": "tool.rect",
+        "g": "tool.fillrect",
         "i": "tool.eyedropper",
         "s": "tool.select",
+        "1": "brush.size_1",
+        "2": "brush.size_2",
+        "3": "brush.size_3",
+        "4": "brush.size_4",
+        "5": "brush.size_5",
         "p": "system.playback",
         " ": "system.playback",
         "=": "view.zoomIn",
@@ -2199,8 +2239,14 @@ main.js
         { id: "tool.brush", label: "Tool: Brush", category: "Tool", keywords: ["draw", "paint", "pen"], aliases: ["brush", "brush tool", "switch brush"] },
         { id: "tool.erase", label: "Tool: Erase", category: "Tool", keywords: ["eraser", "remove"], aliases: ["erase", "eraser", "switch erase"] },
         { id: "tool.fill", label: "Tool: Fill", category: "Tool", keywords: ["bucket", "flood"], aliases: ["fill", "bucket fill"] },
+        { id: "tool.line", label: "Tool: Line", category: "Tool", keywords: ["line", "shape"], aliases: ["line tool", "draw line"] },
+        { id: "tool.rect", label: "Tool: Rectangle", category: "Tool", keywords: ["rectangle", "rect", "shape"], aliases: ["rectangle tool", "rect tool"] },
+        { id: "tool.fillrect", label: "Tool: Fill Rectangle", category: "Tool", keywords: ["filled", "rectangle", "rect", "shape"], aliases: ["fill rectangle", "filled rect", "fill rect"] },
         { id: "tool.eyedropper", label: "Tool: Eyedropper", category: "Tool", keywords: ["picker", "sample"], aliases: ["eyedropper", "color picker", "picker"] },
         { id: "tool.select", label: "Tool: Select", category: "Tool", keywords: ["marquee", "selection"], aliases: ["select", "selection tool"] },
+        { id: "brush.sizeUp", label: "Brush: Size Up", category: "Brush", keywords: ["brush", "size", "up"], aliases: ["increase brush size", "brush bigger"] },
+        { id: "brush.sizeDown", label: "Brush: Size Down", category: "Brush", keywords: ["brush", "size", "down"], aliases: ["decrease brush size", "brush smaller"] },
+        { id: "brush.toggleShape", label: "Brush: Toggle Shape", category: "Brush", keywords: ["brush", "shape", "square", "circle"], aliases: ["toggle brush shape", "brush shape"] },
         { id: "view.zoomIn", label: "View: Zoom In", category: "View", keywords: ["magnify", "closer"], aliases: ["zoom in", "increase zoom"] },
         { id: "view.zoomOut", label: "View: Zoom Out", category: "View", keywords: ["farther", "shrink"], aliases: ["zoom out", "decrease zoom"] },
         { id: "view.zoomReset", label: "View: Reset Zoom/Pan", category: "View", keywords: ["reset", "center"], aliases: ["reset zoom", "zoom reset", "center view"] },
@@ -2501,8 +2547,20 @@ main.js
       if (action === "tool.brush") { this.setTool("brush"); return true; }
       if (action === "tool.erase") { this.setTool("erase"); return true; }
       if (action === "tool.fill") { this.setTool("fill"); return true; }
+      if (action === "tool.line") { this.setTool("line"); return true; }
+      if (action === "tool.rect") { this.setTool("rect"); return true; }
+      if (action === "tool.fillrect") { this.setTool("fillrect"); return true; }
       if (action === "tool.eyedropper") { this.setTool("eyedropper"); return true; }
       if (action === "tool.select") { this.setTool("select"); return true; }
+      if (action === "brush.sizeUp") { this.adjustBrushSize(1); return true; }
+      if (action === "brush.sizeDown") { this.adjustBrushSize(-1); return true; }
+      if (action === "brush.toggleShape") { this.toggleBrushShape(); return true; }
+      if (action.indexOf("brush.size_") === 0) {
+        const next = Number(action.slice("brush.size_".length));
+        if (!Number.isFinite(next)) return false;
+        this.setBrushSize(next);
+        return true;
+      }
       if (action === "view.zoomIn") { this.adjustZoom(0.25); return true; }
       if (action === "view.zoomOut") { this.adjustZoom(-0.25); return true; }
       if (action === "view.zoomReset") { this.resetZoom(); return true; }
@@ -2649,6 +2707,83 @@ main.js
       this.selectionPasteOrigin = { x: l, y: t };
     }
 
+    getBrushCellsAt(x, y, size = this.brush.size, shape = this.brush.shape) {
+      const cells = [];
+      const radius = Math.floor(Math.max(1, size) / 2);
+      for (let oy = -radius; oy <= radius; oy += 1) {
+        for (let ox = -radius; ox <= radius; ox += 1) {
+          if (shape === "circle") {
+            const limit = radius + 0.25;
+            if (Math.sqrt((ox * ox) + (oy * oy)) > limit) continue;
+          }
+          cells.push({ x: x + ox, y: y + oy });
+        }
+      }
+      return cells;
+    }
+    getLineCells(a, b) {
+      const cells = [];
+      let x0 = a.x;
+      let y0 = a.y;
+      const x1 = b.x;
+      const y1 = b.y;
+      const dx = Math.abs(x1 - x0);
+      const dy = Math.abs(y1 - y0);
+      const sx = x0 < x1 ? 1 : -1;
+      const sy = y0 < y1 ? 1 : -1;
+      let err = dx - dy;
+      while (true) {
+        cells.push({ x: x0, y: y0 });
+        if (x0 === x1 && y0 === y1) break;
+        const e2 = err * 2;
+        if (e2 > -dy) { err -= dy; x0 += sx; }
+        if (e2 < dx) { err += dx; y0 += sy; }
+      }
+      return cells;
+    }
+    getRectCells(a, b, filled) {
+      const left = Math.min(a.x, b.x);
+      const right = Math.max(a.x, b.x);
+      const top = Math.min(a.y, b.y);
+      const bottom = Math.max(a.y, b.y);
+      const cells = [];
+      for (let y = top; y <= bottom; y += 1) {
+        for (let x = left; x <= right; x += 1) {
+          if (filled || x === left || x === right || y === top || y === bottom) {
+            cells.push({ x, y });
+          }
+        }
+      }
+      return cells;
+    }
+    getShapeCells(start, end, tool) {
+      if (!start || !end) return [];
+      if (tool === "line") return this.getLineCells(start, end);
+      if (tool === "rect") return this.getRectCells(start, end, false);
+      if (tool === "fillrect") return this.getRectCells(start, end, true);
+      return [];
+    }
+    applyBrushStamp(x, y, erase) {
+      const value = erase ? null : this.document.currentColor;
+      const cells = this.getBrushCellsAt(x, y);
+      cells.forEach((cell) => this.document.setPixel(cell.x, cell.y, value, this.mirror));
+    }
+    applyStrokeSegment(from, to, erase) {
+      const path = this.getLineCells(from, to);
+      path.forEach((cell) => this.applyBrushStamp(cell.x, cell.y, erase));
+    }
+    commitShapePreview() {
+      if (!this.shapePreview || !this.shapePreview.start || !this.shapePreview.current) return false;
+      return this.executeWithHistory("Shape Draw", () => {
+        const cells = this.getShapeCells(this.shapePreview.start, this.shapePreview.current, this.shapePreview.tool);
+        if (!cells.length) return false;
+        const erase = !!this.shapePreview.erase;
+        const value = erase ? null : this.document.currentColor;
+        cells.forEach((cell) => this.document.setPixel(cell.x, cell.y, value, this.mirror));
+        this.showMessage(`Shape: ${this.shapePreview.tool}`);
+        return true;
+      });
+    }
     applyGridTool(x,y,erase) {
       if (this.activeTool === "eyedropper") {
         const v = this.document.getPixel(x,y);
@@ -2661,10 +2796,25 @@ main.js
         this.document.floodFill(x,y,erase ? null : this.document.currentColor,this.mirror);
         return;
       }
-      this.document.setPixel(x,y,(erase || this.activeTool === "erase") ? null : this.document.currentColor,this.mirror);
+      this.applyBrushStamp(x,y,erase || this.activeTool === "erase");
     }
 
-    setTool(t) { this.activeTool = t; this.showMessage("Tool: " + t); }
+    setTool(t) {
+      this.activeTool = t;
+      this.shapePreview = null;
+      this.showMessage("Tool: " + t);
+    }
+    setBrushSize(size) {
+      this.brush.size = Math.max(1, Math.min(5, Math.floor(size || 1)));
+      this.showMessage(`Brush size: ${this.brush.size}`);
+      this.renderAll();
+    }
+    adjustBrushSize(delta) { this.setBrushSize(this.brush.size + delta); }
+    toggleBrushShape() {
+      this.brush.shape = this.brush.shape === "square" ? "circle" : "square";
+      this.showMessage(`Brush shape: ${this.brush.shape}`);
+      this.renderAll();
+    }
     setCurrentColor(c) { this.document.currentColor = c; this.showMessage("Color selected."); }
     nextColor() {
       const p = this.document.palette, i = p.indexOf(this.document.currentColor), n = i >= 0 ? (i+1) % p.length : 0;
@@ -3268,6 +3418,20 @@ main.js
         ctx.beginPath(); ctx.moveTo(cx - 8, cy); ctx.lineTo(cx + 8, cy); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(cx, cy - 8); ctx.lineTo(cx, cy + 8); ctx.stroke();
       }
+      if (this.shapePreview && this.shapePreview.start && this.shapePreview.current) {
+        const previewCells = this.getShapeCells(this.shapePreview.start, this.shapePreview.current, this.shapePreview.tool);
+        ctx.fillStyle = this.shapePreview.erase ? "rgba(239,68,68,0.35)" : "rgba(76,201,240,0.35)";
+        previewCells.forEach((cell) => {
+          if (cell.x < 0 || cell.y < 0 || cell.x >= this.document.cols || cell.y >= this.document.rows) return;
+          ctx.fillRect(r.x + cell.x * r.pixelSize, r.y + cell.y * r.pixelSize, r.pixelSize, r.pixelSize);
+        });
+        ctx.strokeStyle = this.shapePreview.erase ? "#ef4444" : "#4cc9f0";
+        ctx.lineWidth = 2;
+        previewCells.forEach((cell) => {
+          if (cell.x < 0 || cell.y < 0 || cell.x >= this.document.cols || cell.y >= this.document.rows) return;
+          ctx.strokeRect(r.x + cell.x * r.pixelSize + 1, r.y + cell.y * r.pixelSize + 1, r.pixelSize - 2, r.pixelSize - 2);
+        });
+      }
     }
 
     drawPreviewPanel() {
@@ -3379,7 +3543,7 @@ main.js
       const blendTag = this.document.blendPreviewMode === "boost" ? "Blend:Boost" : "Blend:Normal";
       const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
       const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"} ${playbackRangeText}`;
-      const toolText = `Tool: ${this.activeTool}   |   ${frameRangeText}   |   ${hoverPreviewText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
+      const toolText = `Tool: ${this.activeTool}   |   Brush ${this.brush.size}/${this.brush.shape}   |   ${frameRangeText}   |   ${hoverPreviewText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
       const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;

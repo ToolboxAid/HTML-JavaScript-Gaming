@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v4.6 adding playback range, loop segment control, and timeline preview scrub
+Build Sprite Editor v4.7 adding brush engine and shape tools MVP

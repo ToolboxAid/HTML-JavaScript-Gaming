@@ -7,12 +7,10 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_6_PLAYBACK_RANGE_LOOP_SEGMENT_PREVIEW_SCRUB.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V4_7_BRUSH_ENGINE_SHAPE_TOOLS_MVP.md
 
 Constraints:
 - Keep architecture intact
-- Reuse existing timeline/playback/range selection/command systems
-- Add lightweight playback range and loop-segment behavior
-- Keep hover preview non-destructive
-- Keep transport state out of undo/redo history
-- Do not rewrite architecture
+- Add brush engine and shape tools without rewriting systems
+- Reuse existing pointer/history/command systems
+- Keep rendering pixel-perfect and deterministic
