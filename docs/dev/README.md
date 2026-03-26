@@ -3,11 +3,11 @@ David Quesenberry
 03/26/2026
 README.md
 
-# Sprite Editor v4.7 Docs-Only BUILD_PR
+# Sprite Editor v4.8 Docs-Only BUILD_PR
 
 Includes:
-- brush engine MVP
-- shape tools MVP
-- integration with existing systems
+- top bar decluttering guidance
+- File menu consolidation requirements
+- canvas-native menu behavior expectations
 
 No code included. Codex implements.

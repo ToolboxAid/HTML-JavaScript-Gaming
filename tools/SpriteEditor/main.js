@@ -558,6 +558,7 @@ main.js
       this.overflowPanelControls = [];
       this.overflowAnchorControl = null;
       this.hiddenTopControls = [];
+      this.topMenuSource = null;
       this.commandPaletteOpen = false;
       this.commandPaletteQuery = "";
       this.commandPaletteItems = [];
@@ -647,13 +648,22 @@ main.js
       const modeLabel = selectedMode === "auto"
         ? `Mode: Auto (${effectiveMode === "pro" ? "Pro" : "Std"})`
         : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard");
+      const fileMenuItems = [
+        { id: "file-save", text: "Save Local", action: () => this.app.saveLocal() },
+        { id: "file-load", text: "Load Local", action: () => this.app.loadLocal() },
+        { id: "file-import", text: "Import JSON", action: () => this.app.openImport() },
+        { id: "file-export", text: "Export JSON", action: () => this.app.exportJson(true) },
+        { id: "file-png", text: "PNG Sheet", action: () => this.app.downloadSheetPng() },
+        { id: "file-meta", text: "Sheet Meta", action: () => this.app.exportSheetMetadata() }
+      ];
       const defs = [
-        { id: "top-save", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Save", "Save", "S"] : ["Save", "Save", "S"], action: () => this.app.saveLocal() },
-        { id: "top-load", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Load", "Load", "L"] : ["Load", "Load", "L"], action: () => this.app.loadLocal() },
-        { id: "top-import", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Import", "Imp", "I"] : ["Import", "Imp", "I"], action: () => this.app.openImport() },
-        { id: "top-json", tier: 3, overflowEligible: true, labels: effectiveMode === "pro" ? ["Export", "JSON", "J"] : ["Export JSON", "JSON", "J"], action: () => this.app.exportJson(true) },
-        { id: "top-png", tier: 3, overflowEligible: true, labels: effectiveMode === "pro" ? ["PNG", "PNG", "P"] : ["PNG Sheet", "PNG", "P"], action: () => this.app.downloadSheetPng() },
-        { id: "top-meta", tier: 3, overflowEligible: true, labels: effectiveMode === "pro" ? ["Meta", "Meta", "M"] : ["Sheet Meta", "Meta", "M"], action: () => this.app.exportSheetMetadata() },
+        {
+          id: "top-file",
+          tier: 1,
+          overflowEligible: false,
+          labels: effectiveMode === "pro" ? ["File", "File", "F"] : ["File", "File", "F"],
+          action: () => this.toggleTopMenu("file", fileMenuItems)
+        },
         { id: "top-pixel", tier: 2, overflowEligible: true, labels: this.app.viewport.pixelPerfect ? ["Pixel: On", "Pixel", "Px"] : ["Pixel: Off", "Pixel", "Px"], action: () => this.app.togglePixelPerfect() }
       ];
       return {
@@ -676,6 +686,7 @@ main.js
       this.overflowPanelBounds = null;
       this.overflowPanelControls = [];
       this.overflowAnchorControl = null;
+      this.topMenuSource = null;
     }
 
     pointInRect(x, y, r) {
@@ -781,7 +792,8 @@ main.js
         this.closeOverflowPanel();
         return;
       }
-      const anchor = this.controls.find((c) => c.id === "top-overflow") || this.overflowAnchorControl;
+      const anchorId = this.topMenuSource === "file" ? "top-file" : "top-overflow";
+      const anchor = this.controls.find((c) => c.id === anchorId) || this.overflowAnchorControl;
       if (!anchor) {
         this.closeOverflowPanel();
         return;
@@ -834,6 +846,18 @@ main.js
         return;
       }
       if (!this.hiddenTopControls.length) return;
+      this.topMenuSource = "overflow";
+      this.overflowPanelOpen = true;
+      this.rebuildOverflowPanel();
+    }
+
+    toggleTopMenu(source, items) {
+      if (this.overflowPanelOpen && this.topMenuSource === source) {
+        this.closeOverflowPanel();
+        return;
+      }
+      this.hiddenTopControls = Array.isArray(items) ? items.slice() : [];
+      this.topMenuSource = source || "menu";
       this.overflowPanelOpen = true;
       this.rebuildOverflowPanel();
     }
@@ -923,11 +947,15 @@ main.js
       if (topLayout.overflowSlots && hidden.length) {
         const overflowText = `More (${hidden.length})`;
         const overflowW = this.measureButtonWidth(this.app.ctx, overflowText, minBtn, padX);
-        this.hiddenTopControls = hidden.map((c) => ({ id: c.id, text: c.labels[0], action: c.action }));
+        if (this.topMenuSource !== "file") {
+          this.hiddenTopControls = hidden.map((c) => ({ id: c.id, text: c.labels[0], action: c.action }));
+        }
         addRight("top-overflow", overflowW, overflowText, () => this.toggleOverflowPanel(), { overflowItems: hidden.map((c) => c.id) });
       } else {
-        this.hiddenTopControls = [];
-        this.closeOverflowPanel();
+        if (this.topMenuSource !== "file") {
+          this.hiddenTopControls = [];
+          this.closeOverflowPanel();
+        }
       }
       addRight("fullscreen", topLayout.fsW, topLayout.fsLabel, () => this.app.toggleFullscreen());
       this.app.ctx.font = prevFont;
@@ -1038,11 +1066,12 @@ main.js
           x >= this.overflowPanelBounds.x && y >= this.overflowPanelBounds.y &&
           x <= this.overflowPanelBounds.x + this.overflowPanelBounds.w &&
           y <= this.overflowPanelBounds.y + this.overflowPanelBounds.h;
-        const overflowButton = this.controls.find((c) => c.id === "top-overflow");
-        const inOverflowButton = overflowButton &&
-          x >= overflowButton.x && y >= overflowButton.y &&
-          x <= overflowButton.x + overflowButton.w && y <= overflowButton.y + overflowButton.h;
-        if (!inPanel && !inOverflowButton) {
+        const anchorId = this.topMenuSource === "file" ? "top-file" : "top-overflow";
+        const anchorButton = this.controls.find((c) => c.id === anchorId);
+        const inAnchorButton = anchorButton &&
+          x >= anchorButton.x && y >= anchorButton.y &&
+          x <= anchorButton.x + anchorButton.w && y <= anchorButton.y + anchorButton.h;
+        if (!inPanel && !inAnchorButton) {
           this.closeOverflowPanel();
           this.pressed = null;
           return { id: "overflow-dismiss", kind: "button" };
