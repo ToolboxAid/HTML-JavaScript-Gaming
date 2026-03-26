@@ -1,0 +1,485 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/26/2026
+how_to_use.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vector Map Editor - How to Use</title>
+  <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <style>
+    :root {
+      --wrap-max: 1120px;
+      --wrap-padding: 28px 24px 56px;
+      --grid-min: 250px;
+    }
+
+    .topnav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .topnav a,
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--text);
+      text-decoration: none;
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+      font-weight: bold;
+    }
+
+    .hero {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(23, 26, 33, 0.98) 0%, rgba(29, 34, 48, 0.98) 100%);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .hero .cta.primary {
+      border-color: #3c6b95;
+      background: linear-gradient(180deg, #17324d 0%, #12304a 100%);
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .guide {
+      display: grid;
+      gap: 16px;
+    }
+
+    .guide p {
+      margin: 0 0 10px;
+    }
+
+    .steps {
+      margin: 0;
+      padding-left: 22px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .steps li + li {
+      margin-top: 8px;
+    }
+
+    .label {
+      margin: 0 0 6px;
+      color: var(--text);
+      font-weight: bold;
+    }
+
+    .section-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .section-list li + li {
+      margin-top: 6px;
+    }
+
+    .callout {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 14px;
+      background: rgba(23, 26, 33, 0.94);
+      color: var(--muted);
+    }
+
+    .path {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 9px;
+      border: 1px solid #253047;
+      border-radius: 8px;
+      background: #101521;
+      color: #8f9bb0;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .footer-note {
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="../index.html">Tools Hub</a>
+      <a href="./index.html">Vector Map Editor</a>
+    </div>
+
+    <section class="hero">
+      <h1>Vector Map Editor Help</h1>
+      <p class="subtitle">
+        Use this page as the quick operator guide for building vector geometry, editing object metadata, testing collision rays, and exporting clean runtime JSON without leaving the tool workflow.
+      </p>
+      <div class="hero-actions">
+        <a class="cta primary" href="./index.html">Open Editor</a>
+        <a class="cta" href="./README.md">Read Feature Summary</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <div class="card guide">
+        <p class="label">Purpose</p>
+        <p>The editor supports 2D editing, 3D wireframe viewing, shape creation, object transforms, collision metadata, point colors, JSON editing, fullscreen work, and runtime export.</p>
+        <p class="label">Steps</p>
+        <ol class="steps">
+          <li>Open the editor from <span class="path">tools/VectorMapEditor/index.html</span>.</li>
+          <li>Choose a workspace mode and tool from the top toolbar.</li>
+          <li>Build or edit geometry in the canvas, then refine metadata in the side panels.</li>
+          <li>Save the editor document and export runtime JSON when the shape is ready.</li>
+        </ol>
+        <p class="label">Expected Result</p>
+        <p>You end up with a reusable vector document that stays game-agnostic until a later runtime integration pass.</p>
+        <p class="label">Notes</p>
+        <p>The page is intended as the operator guide while <a href="./README.md">README.md</a> stays focused on feature summary.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Editor Layout</h2>
+      <div class="card guide">
+        <p class="label">Purpose</p>
+        <p>Learn where each part of the editor lives before you start creating or inspecting shapes.</p>
+        <p class="label">Steps</p>
+        <ol class="steps">
+          <li>Use the top toolbar for document actions, workspace mode, tool mode, fullscreen, JSON dock, and snap size.</li>
+          <li>Use the left panel for the object list, document properties, and collision result summary.</li>
+          <li>Use the center canvas as the main drawing and interaction space.</li>
+          <li>Use the right panel for selected object details, center controls, rotation, appearance, collision flags, and point summaries.</li>
+        </ol>
+        <p class="label">Expected Result</p>
+        <p>You know where to go for document management, shape editing, metadata changes, and collision inspection.</p>
+        <p class="label">Notes</p>
+        <p>`Workspace mode` switches between `2D Edit`, `3D Wireframe`, and `JSON Edit`. `Tool mode` controls selection, creation, transforms, panning, collision-vector testing, and delete behavior.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Shape Creation</h2>
+      <div class="card guide">
+        <p class="label">Purpose</p>
+        <p>Create point-based geometry in either 2D or 3D space.</p>
+        <p class="label">Steps</p>
+        <ol class="steps">
+          <li>Choose `Point`, `Line`, `Polyline`, or `Polygon` from the tool dropdown.</li>
+          <li>Set a `Snap` value if you want the new geometry to align to a consistent grid.</li>
+          <li>Click in the canvas to place points. `Line` completes on the second click.</li>
+          <li>For `Polyline` and `Polygon`, keep clicking to add points and double-click to finish the shape.</li>
+          <li>Check the object list to confirm the new object was created in the current workspace mode.</li>
+        </ol>
+        <p class="label">Expected Result</p>
+        <p>A new object appears in the document with the chosen shape type and point set.</p>
+        <p class="label">Notes</p>
+        <p>The active workspace mode determines whether the object is created in 2D or 3D space.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Select, Move, Delete</h2>
+      <div class="grid">
+        <div class="card guide">
+          <h3>Select and Move</h3>
+          <p class="label">Purpose</p>
+          <p>Reposition points or whole objects without rebuilding geometry.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Choose `Select` or `Move` from the tool dropdown.</li>
+            <li>Click an object or point in the canvas to select it.</li>
+            <li>Drag a selected point to move only that point.</li>
+            <li>Drag a selected object to move the full shape and its center together.</li>
+            <li>Use `Duplicate` in the left panel if you want an offset copy before editing further.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>The selection moves in the canvas and the object remains active for further edits.</p>
+        </div>
+        <div class="card guide">
+          <h3>Delete</h3>
+          <p class="label">Purpose</p>
+          <p>Remove unwanted points or whole objects from the document.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Choose the `Delete` tool and click the point or object you want to remove.</li>
+            <li>Or select the target first, then press the `Delete` key.</li>
+            <li>Press `Escape` to cancel an in-progress shape or clear an active collision-vector test instead of deleting.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>The selected point or object is removed from the canvas and object list.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Center Point</h2>
+      <div class="grid">
+        <div class="card guide">
+          <h3>Automatic Centering</h3>
+          <p class="label">Purpose</p>
+          <p>Recalculate the object center from geometry or selection state.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Select an object.</li>
+            <li>Use `Bounds` to center on the object bounds.</li>
+            <li>Use `Centroid` to average all points.</li>
+            <li>Use `Origin` to reset the center to `0, 0, 0`.</li>
+            <li>Use `Selection` to center on the selected point or selection bounds.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>The center marker moves immediately and future rotations pivot around the new center.</p>
+        </div>
+        <div class="card guide">
+          <h3>Manual Centering</h3>
+          <p class="label">Purpose</p>
+          <p>Place the center exactly where you want it.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Select an object.</li>
+            <li>Type `X`, `Y`, and `Z` values in the center fields, then press `Apply XYZ`.</li>
+            <li>Or choose `Set Center` in the tool dropdown and click directly in the canvas.</li>
+            <li>Use `Use Selected Point` if you want the center to match a currently selected point.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>The object center updates to the exact coordinates you entered or clicked.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Rotation</h2>
+      <div class="card guide">
+        <p class="label">Purpose</p>
+        <p>Rotate a selected object around its center using exact axis values or quick adjustments.</p>
+        <p class="label">Steps</p>
+        <ol class="steps">
+          <li>Select an object.</li>
+          <li>Use the numeric spin controls for `X`, `Y`, and `Z` to nudge values with `-` and `+`.</li>
+          <li>Hold `Shift` while clicking a spin button for larger steps.</li>
+          <li>Or type exact axis values directly and press `Apply Rotation`.</li>
+          <li>Use the `Rotate` tool in the canvas if you want drag-based Z rotation.</li>
+          <li>Press `Reset Rotation` to clear the stored axis values.</li>
+        </ol>
+        <p class="label">Expected Result</p>
+        <p>The selected object rotates around its current center, and the rotation fields reflect the active values.</p>
+        <p class="label">Notes</p>
+        <p>Set the center before major rotations if you need clean, predictable pivots.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Fullscreen Editing</h2>
+      <div class="card guide">
+        <p class="label">Purpose</p>
+        <p>Prioritize the canvas when you need more room for editing, cleanup, or inspection.</p>
+        <p class="label">Steps</p>
+        <ol class="steps">
+          <li>Press `Fullscreen` in the toolbar.</li>
+          <li>Work directly in the enlarged canvas area.</li>
+          <li>Use the `Objects` or `Properties` overlay buttons if you need either side panel while staying fullscreen.</li>
+          <li>Exit fullscreen when you want the full three-column workspace back.</li>
+        </ol>
+        <p class="label">Expected Result</p>
+        <p>The entire editor workspace expands, the canvas gets priority, and the side panels stay available as overlays.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Colors and Flags</h2>
+      <div class="grid">
+        <div class="card guide">
+          <h3>Point-to-Point Colors</h3>
+          <p class="label">Purpose</p>
+          <p>Blend colors across segments instead of using one object-wide stroke.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Select an object.</li>
+            <li>Use the `Appearance` panel to set `Stroke`, optional `Fill`, and `Line Width`.</li>
+            <li>Switch `Color Mode` to `Point-to-point`.</li>
+            <li>Select an individual point, choose a color, and press `Apply Point Color`.</li>
+            <li>Repeat for other points until the segment transitions look right.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>The selected object renders with blended point-to-point segment colors in the canvas.</p>
+        </div>
+        <div class="card guide">
+          <h3>Collision Flags</h3>
+          <p class="label">Purpose</p>
+          <p>Mark geometry with exported collision metadata for downstream runtime use.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Select an object.</li>
+            <li>Open the `Collision Flags` panel on the right.</li>
+            <li>Enable the flags that match the object's intended behavior, such as `Collidable`, `Deadly`, or `Trigger`.</li>
+            <li>Optionally enter a `Tag` like `wall`, `zone`, or `gate`.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>The object carries collision metadata in the document and exported runtime JSON.</p>
+          <p class="label">Notes</p>
+          <p>Only flagged geometry participates in collision-vector hit testing.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Collision Vector Testing</h2>
+      <div class="card guide">
+        <p class="label">Purpose</p>
+        <p>Test a ray against flagged geometry and inspect the nearest hit.</p>
+        <p class="label">Steps</p>
+        <ol class="steps">
+          <li>Choose `Collision Vector` from the tool dropdown.</li>
+          <li>Click and drag on the canvas to define the test ray.</li>
+          <li>Release the pointer to complete the test.</li>
+          <li>Inspect the left-panel `Collision Result` block for the nearest hit, distance, coordinates, and flags.</li>
+        </ol>
+        <p class="label">Expected Result</p>
+        <p>The canvas shows the vector and first-hit marker, and the collision summary reports the closest flagged object hit.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Save, Load, and Export</h2>
+      <div class="grid">
+        <div class="card guide">
+          <h3>Editor JSON</h3>
+          <p class="label">Purpose</p>
+          <p>Save and restore the full editable document state.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Press `Save JSON` to write the current document as `name.editor.json`.</li>
+            <li>Use the file load input in the toolbar to reopen an existing editor document.</li>
+            <li>Open `JSON Dock` if you want to inspect or edit the document text directly.</li>
+            <li>Use `Validate`, `Apply`, `Pretty Print`, or `Revert` inside the dock as needed.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>You can round-trip the full editor state for continued editing later.</p>
+        </div>
+        <div class="card guide">
+          <h3>Runtime JSON</h3>
+          <p class="label">Purpose</p>
+          <p>Produce a cleaner export for downstream runtime consumption.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Finish geometry, appearance, center, rotation, and collision metadata.</li>
+            <li>Press `Export Runtime`.</li>
+            <li>Use the generated `name.runtime.json` in later downstream work.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>You get a runtime-focused JSON export that stays game-agnostic.</p>
+          <p class="label">Notes</p>
+          <p>No game-specific runtime hookup is implied by this export alone.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Workflow</h2>
+      <div class="card guide">
+        <p class="label">Purpose</p>
+        <p>Follow a repeatable order of operations that keeps the document stable as it grows.</p>
+        <p class="label">Steps</p>
+        <ol class="steps">
+          <li>Block the shape in 2D first.</li>
+          <li>Set or refine the center before major rotations.</li>
+          <li>Adjust rotation and object placement.</li>
+          <li>Apply appearance and switch to point-to-point colors after geometry is stable.</li>
+          <li>Set collision flags and tags when the object purpose is clear.</li>
+          <li>Run collision-vector tests to verify the flagged geometry behaves as expected.</li>
+          <li>Save the editor JSON, then export runtime JSON.</li>
+        </ol>
+        <p class="label">Expected Result</p>
+        <p>You avoid unnecessary rework and finish with both an editable source document and a clean runtime export.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Tips</h2>
+      <div class="grid">
+        <div class="card guide">
+          <h3>Practical Tips</h3>
+          <p class="label">Purpose</p>
+          <p>Keep the editing flow clean and predictable.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Use snap while blocking shapes so later center and rotation work stays cleaner.</li>
+            <li>Save an editor JSON checkpoint before large transform or color passes.</li>
+            <li>Use fullscreen when cleaning dense point layouts or checking collision rays.</li>
+            <li>Keep tags short and consistent if the export will be grouped later.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>You spend less time correcting drift, mislabeled geometry, or missed collision setup.</p>
+        </div>
+        <div class="card guide">
+          <h3>Notes</h3>
+          <p class="label">Purpose</p>
+          <p>Call out the practical limits and quick references for the tool.</p>
+          <p class="label">Steps</p>
+          <ol class="steps">
+            <li>Use the editor for geometry authoring and inspection, not game-specific runtime behavior.</li>
+            <li>Treat 3D mode as a wireframe workspace view for layout and transforms.</li>
+            <li>Use the quick paths below when you need the tool or feature summary fast.</li>
+          </ol>
+          <p class="label">Expected Result</p>
+          <p>You stay inside the intended scope of the editor and can jump back to the right files quickly.</p>
+        </div>
+      </div>
+      <div class="callout" style="margin-top: 16px;">
+        <div class="path">tools/VectorMapEditor/index.html</div>
+        <div class="path">tools/VectorMapEditor/README.md</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Quick Notes</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Scope Reminder</h3>
+          <ul class="section-list">
+            <li>The editor is optimized for geometry authoring and inspection, not game-specific runtime behavior.</li>
+            <li>3D mode is a wireframe workspace view, useful for layout and transforms rather than final presentation.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Best Reminder</h3>
+          <p>Save the editable document first, then export runtime JSON once the geometry, colors, and flags are stable.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Open the editor from a local web server when possible so module loading, fullscreen behavior, and file interactions stay consistent with the rest of the repo tooling.
+    </div>
+  </div>
+</body>
+</html>
