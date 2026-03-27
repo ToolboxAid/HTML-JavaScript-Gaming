@@ -1,1 +1,1 @@
-Sprite Editor v6.9.3 clean up palette label, remove animation preview text chrome, and reorder timeline controls
+Sprite Editor v6.9.4 make grid controls visible, enlarge Sheet Preview, and move Frames/Order text beside preview

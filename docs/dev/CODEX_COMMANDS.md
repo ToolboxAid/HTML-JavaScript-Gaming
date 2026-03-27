@@ -2,12 +2,12 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply TOOLS_SPRITE_EDITOR_V6_9_3_PREVIEW_AND_TIMELINE_LABEL_CLEANUP in tools/SpriteEditor/main.js
+Apply TOOLS_SPRITE_EDITOR_V6_9_4_GRID_CONTROLS_AND_SHEET_PREVIEW_LAYOUT in tools/SpriteEditor/main.js
 
 VALIDATIONS:
-- Palette label displays as `Palette: <name>`
-- Animation preview no longer shows state text
-- Animation preview no longer shows the bottom helper/control line
-- Timeline controls appear in order: Play, Stop, Loop, Range
-- Existing timeline and preview controls still work
+- Add/remove rows controls are visible
+- Add/remove columns controls are visible
+- Sheet Preview image is larger and fills the preview height better
+- Frames and Order text appear to the right of Sheet Preview
+- No overlap with timeline controls
 - No console errors

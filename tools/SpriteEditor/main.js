@@ -1095,6 +1095,14 @@ main.js
       }
       this.add("button","mirror-toggle",x,y,bw,bh,this.app.mirror ? "Mirror: On" : "Mirror: Off",()=>this.app.toggleMirror()); y += bh + d.spacing;
       y += d.spacing;
+      this.add("label","lbl-grid",x,y,bw,d.labelHeight,"GRID SIZE",null); y += d.labelHeight + d.spacing;
+      this.add("label","grid-size-readout",x,y,bw,bh,`${this.app.document.cols} cols x ${this.app.document.rows} rows`,null); y += bh + d.spacing;
+      this.add("button","grid-cols-down",x,y,Math.floor((bw - d.spacing) / 2),bh,"Cols -",()=>this.app.adjustGridCols(-1));
+      this.add("button","grid-cols-up",x + Math.floor((bw - d.spacing) / 2) + d.spacing,y,Math.ceil((bw - d.spacing) / 2),bh,"Cols +",()=>this.app.adjustGridCols(1));
+      y += bh + d.spacing;
+      this.add("button","grid-rows-down",x,y,Math.floor((bw - d.spacing) / 2),bh,"Rows -",()=>this.app.adjustGridRows(-1));
+      this.add("button","grid-rows-up",x + Math.floor((bw - d.spacing) / 2) + d.spacing,y,Math.ceil((bw - d.spacing) / 2),bh,"Rows +",()=>this.app.adjustGridRows(1));
+      y += d.spacing;
       this.add("label","lbl-sel",x,y,bw,d.labelHeight,"SELECTION",null); y += d.labelHeight + d.spacing;
       const hasSelection = !!this.app.document.selection;
       const hasClipboard = !!this.app.document.selectionClipboard;
@@ -3497,6 +3505,48 @@ main.js
       this.renderAll();
     }
 
+    resizeDocumentGrid(nextCols, nextRows) {
+      return this.executeWithHistory(`Grid Resize ${nextCols}x${nextRows}`, () => {
+        const cols = Math.max(1, Math.min(256, Math.floor(Number(nextCols) || this.document.cols)));
+        const rows = Math.max(1, Math.min(256, Math.floor(Number(nextRows) || this.document.rows)));
+        if (cols === this.document.cols && rows === this.document.rows) return false;
+        const resizeGrid = (source) => {
+          const out = Array.from({ length: rows }, (_row, y) =>
+            Array.from({ length: cols }, (_col, x) => (source && source[y] && typeof source[y][x] !== "undefined") ? source[y][x] : null)
+          );
+          return out;
+        };
+        this.document.frames.forEach((frame) => {
+          const normalized = this.document.ensureFrameLayers(frame);
+          normalized.layers.forEach((layer) => {
+            layer.pixels = resizeGrid(layer.pixels);
+          });
+        });
+        this.document.cols = cols;
+        this.document.rows = rows;
+        this.document.clearSelection();
+        this.gridRect = this.computeGridRect();
+        this.showMessage(`Grid size: ${cols} x ${rows}`);
+        return true;
+      });
+    }
+
+    adjustGridCols(delta) {
+      const next = this.document.cols + delta;
+      const ok = this.resizeDocumentGrid(next, this.document.rows);
+      if (!ok) this.showMessage("Grid columns unchanged.");
+      this.renderAll();
+      return ok;
+    }
+
+    adjustGridRows(delta) {
+      const next = this.document.rows + delta;
+      const ok = this.resizeDocumentGrid(this.document.cols, next);
+      if (!ok) this.showMessage("Grid rows unchanged.");
+      this.renderAll();
+      return ok;
+    }
+
     resetZoom() {
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
@@ -4834,28 +4884,39 @@ main.js
     }
 
     drawSheetPanel() {
-      const p = this.controlSurface.layout.bottomPanel, x = p.x + 242, y = p.y + 12, w = Math.max(220, (this.timelineStripRect ? this.timelineStripRect.x : (p.x + p.width - 18)) - (p.x + 242) - 18), h = 100;
+      const p = this.controlSurface.layout.bottomPanel, x = p.x + 242, y = p.y + 12, w = Math.max(240, (this.timelineStripRect ? this.timelineStripRect.x : (p.x + p.width - 18)) - (p.x + 242) - 18), h = 100;
       this.drawSheetPreview(this.ctx, { x, y, width: w, height: h }, true);
     }
 
     drawSheetPreview(ctx, rect, withChrome) {
       const plc = this.document.computeSheetPlacement();
-      const titleH = withChrome ? 18 : 0;
-      const footerH = withChrome ? 20 : 0;
-      const innerPad = withChrome ? 12 : 0;
+      const titleH = withChrome ? 20 : 0;
+      const footerH = 0;
+      const innerPad = withChrome ? 8 : 0;
+      const order = this.document.frames.length <= 8
+        ? this.document.frames.map((_,i)=>i+1).join(", ")
+        : `1..${this.document.frames.length}`;
       if (withChrome) {
         ctx.fillStyle = "#1a2733"; ctx.fillRect(rect.x,rect.y,rect.width,rect.height);
         ctx.strokeStyle = "rgba(255,255,255,0.15)"; ctx.strokeRect(rect.x+0.5,rect.y+0.5,rect.width-1,rect.height-1);
-        ctx.fillStyle = "#dbe7f3"; ctx.font = "bold 12px Arial"; ctx.fillText("SHEET PREVIEW",rect.x+12,rect.y+16);
+        ctx.fillStyle = "#dbe7f3";
+        ctx.font = "bold 12px Arial";
+        ctx.fillText("SHEET PREVIEW", rect.x + 12, rect.y + 16);
+        ctx.font = "11px Arial";
+        ctx.fillStyle = "#e6f2ff";
+        ctx.fillText(`Frames: ${this.document.frames.length}`, rect.x + 118, rect.y + 16);
+        ctx.fillStyle = "#b9c8d8";
+        ctx.fillText(`Order: ${order}`, rect.x + 192, rect.y + 16);
       }
       const cx = rect.x + innerPad;
       const cy = rect.y + innerPad + titleH;
       const cw = rect.width - innerPad * 2;
       const ch = rect.height - innerPad * 2 - titleH - footerH;
-      const scale = Math.max(1, Math.floor(Math.min(cw/plc.width, ch/plc.height)));
+      const previewW = cw;
+      const scale = Math.max(1, Math.floor(Math.min(previewW/plc.width, ch/plc.height)));
       const drawW = plc.width * scale;
       const drawH = plc.height * scale;
-      const drawX = cx + Math.floor((cw - drawW) * 0.5);
+      const drawX = cx + Math.floor((previewW - drawW) * 0.5);
       const drawY = cy + Math.floor((ch - drawH) * 0.5);
       if (this.document.sheet.transparent) this.drawCheckerboard(ctx,drawX,drawY,drawW,drawH,Math.max(4,scale));
       else { ctx.fillStyle = this.document.sheet.backgroundColor; ctx.fillRect(drawX,drawY,drawW,drawH); }
@@ -4871,17 +4932,6 @@ main.js
           }
         }
       });
-      if (withChrome) {
-        const footerY = rect.y + rect.height - 8;
-        ctx.fillStyle = "rgba(10, 15, 24, 0.9)";
-        ctx.fillRect(rect.x + 8, rect.y + rect.height - footerH - 8, rect.width - 16, footerH);
-        ctx.fillStyle = "#e6f2ff";
-        ctx.font = "11px Arial";
-        const order = this.document.frames.length <= 8
-          ? this.document.frames.map((_,i)=>i+1).join(", ")
-          : `1..${this.document.frames.length}`;
-        ctx.fillText(`Frames: ${this.document.frames.length}  Order: ${order}`, rect.x+12, footerY);
-      }
     }
 
     drawMiniPixels(pixels,x,y,w,h) {
