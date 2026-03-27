@@ -1491,6 +1491,7 @@ main.js
       this.layerRenamePrompt = { open: false, text: "", title: "Rename Layer", panelRect: null, confirmRect: null, cancelRect: null };
       this.helpDetailPopup = { open: false, section: "", panelRect: null, closeRect: null };
       this.aboutPopup = { open: false, panelRect: null, closeRect: null };
+      this.palettePresetPopup = { open: false, panelRect: null, closeRect: null, backRect: null, rowRects: [] };
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -1742,6 +1743,7 @@ main.js
     closeMenuLikeSurfaces() {
       this.closeHelpDetailPopup();
       this.closeAboutPopup();
+      this.closePalettePresetPopup();
       this.controlSurface.closeOverflowPanel();
       this.controlSurface.closeCommandPalette();
     }
@@ -1805,6 +1807,11 @@ main.js
         this.showMessage("About closed.");
         return true;
       }
+      if (this.palettePresetPopup.open) {
+        this.closePalettePresetPopup();
+        this.showMessage("Palette presets closed.");
+        return true;
+      }
       if (this.replaceGuard.open) {
         this.closeReplaceGuard();
         this.showMessage("Replace canceled.");
@@ -1860,6 +1867,13 @@ main.js
       this.aboutPopup.open = false;
       this.aboutPopup.panelRect = null;
       this.aboutPopup.closeRect = null;
+    }
+    closePalettePresetPopup() {
+      this.palettePresetPopup.open = false;
+      this.palettePresetPopup.panelRect = null;
+      this.palettePresetPopup.closeRect = null;
+      this.palettePresetPopup.backRect = null;
+      this.palettePresetPopup.rowRects = [];
     }
     closeHelpDetailPopup() {
       this.helpDetailPopup.open = false;
@@ -2007,6 +2021,37 @@ main.js
       }
       if (this.aboutPopup.panelRect && !inRect(this.aboutPopup.panelRect)) {
         this.closeAboutPopup();
+        this.renderAll();
+        return false;
+      }
+      return true;
+    }
+    handlePalettePresetPopupPointer(p) {
+      if (!this.palettePresetPopup.open || !p) return false;
+      const inRect = (r) => r && p.x >= r.x && p.y >= r.y && p.x <= r.x + r.w && p.y <= r.y + r.h;
+      if (inRect(this.palettePresetPopup.closeRect)) {
+        this.closePalettePresetPopup();
+        this.showMessage("Palette presets closed.");
+        this.renderAll();
+        return true;
+      }
+      if (inRect(this.palettePresetPopup.backRect)) {
+        this.closePalettePresetPopup();
+        this.openPaletteWorkflowMenu();
+        return true;
+      }
+      for (let i = 0; i < this.palettePresetPopup.rowRects.length; i += 1) {
+        const row = this.palettePresetPopup.rowRects[i];
+        if (!inRect(row.rect)) continue;
+        const ok = this.applyNamedPalette(row.name);
+        if (ok) {
+          this.closePalettePresetPopup();
+          this.renderAll();
+        }
+        return true;
+      }
+      if (this.palettePresetPopup.panelRect && !inRect(this.palettePresetPopup.panelRect)) {
+        this.closePalettePresetPopup();
         this.renderAll();
         return false;
       }
@@ -2650,6 +2695,10 @@ main.js
       }
       if (this.aboutPopup.open) {
         const consumed = this.handleAboutPopupPointer(p);
+        if (consumed) return;
+      }
+      if (this.palettePresetPopup.open) {
+        const consumed = this.handlePalettePresetPopupPointer(p);
         if (consumed) return;
       }
       if (e.button === 2) {
@@ -3585,18 +3634,10 @@ main.js
     }
     openPalettePresetsMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
-      const items = [
-        { id: "palette-presets-back", text: "Back To Palette", action: () => this.openPaletteWorkflowMenu() }
-      ];
-      if (typeof palettesList === "object" && palettesList) {
-        Object.keys(palettesList).forEach((name) => {
-          items.push({ id: `palette-menu-preset-${name}`, text: `Preset: ${name}`, action: () => this.applyNamedPalette(name) });
-        });
-      }
-      this.controlSurface.toggleTopMenu("palette-presets", items);
+      this.closeMenuLikeSurfaces();
+      this.palettePresetPopup.open = true;
+      this.palettePresetPopup.rowRects = [];
+      this.showMessage("Palette presets: choose a preset to apply.");
       this.renderAll();
       return true;
     }
@@ -4252,6 +4293,7 @@ main.js
       this.drawSheetPanel();
       this.drawHelpDetailPopup();
       this.drawAboutPopup();
+      this.drawPalettePresetPopup();
       this.drawReplaceGuard();
       this.drawLayerRenamePrompt();
     }
@@ -4336,6 +4378,87 @@ main.js
       this.ctx.strokeRect(closeRect.x + 0.5, closeRect.y + 0.5, closeRect.w - 1, closeRect.h - 1);
       this.ctx.fillStyle = "#e6f2ff";
       this.ctx.fillText("Close", closeRect.x + 29, closeRect.y + 20);
+    }
+
+    drawPalettePresetPopup() {
+      if (!this.palettePresetPopup.open) return;
+      const list = (typeof palettesList === "object" && palettesList) ? Object.keys(palettesList) : [];
+      const frame = this.controlSurface.layout.appFrame;
+      const panelW = Math.min(560, frame.width - 64);
+      const rowH = 36;
+      const headerH = 92;
+      const footerH = 56;
+      const panelH = Math.min(frame.height - 32, headerH + footerH + Math.max(1, list.length) * rowH + 16);
+      const x = Math.max(frame.x + 12, Math.floor(frame.x + (frame.width - panelW) * 0.5));
+      const y = Math.max(frame.y + 12, Math.floor(frame.y + (frame.height - panelH) * 0.5));
+      const innerX = x + 18;
+      const innerW = panelW - 36;
+      this.palettePresetPopup.panelRect = { x, y, w: panelW, h: panelH };
+      this.palettePresetPopup.rowRects = [];
+
+      this.ctx.fillStyle = "rgba(2, 6, 12, 0.72)";
+      this.ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+      this.ctx.fillStyle = "#162435";
+      this.ctx.fillRect(x, y, panelW, panelH);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "bold 18px Arial";
+      this.ctx.fillText("Palette Presets", x + 18, y + 28);
+      this.ctx.font = "13px Arial";
+      this.ctx.fillStyle = "#9fb8cf";
+      this.ctx.fillText("Palette -> Palettes now opens a dedicated preset chooser.", x + 18, y + 52);
+      this.ctx.fillText(`Current preset: ${this.currentPalettePreset || "Custom"}`, x + 18, y + 74);
+
+      if (!list.length) {
+        this.ctx.fillStyle = "#b9c8d8";
+        this.ctx.font = "13px Arial";
+        this.ctx.fillText("No palette presets available.", innerX, y + headerH + 18);
+      } else {
+        list.forEach((name, index) => {
+          const isCurrent = String(this.currentPalettePreset || "").toLowerCase() === String(name).toLowerCase();
+          const rowRect = { x: innerX, y: y + headerH + (index * rowH), w: innerW, h: rowH - 4 };
+          this.palettePresetPopup.rowRects.push({ name, rect: rowRect });
+          this.ctx.fillStyle = isCurrent ? "#244d67" : "#1a2733";
+          this.ctx.fillRect(rowRect.x, rowRect.y, rowRect.w, rowRect.h);
+          this.ctx.strokeStyle = isCurrent ? "#4cc9f0" : "rgba(255,255,255,0.22)";
+          this.ctx.strokeRect(rowRect.x + 0.5, rowRect.y + 0.5, rowRect.w - 1, rowRect.h - 1);
+          this.ctx.fillStyle = isCurrent ? "#fbbf24" : "#e6f2ff";
+          this.ctx.font = "bold 13px Arial";
+          this.ctx.fillText(name, rowRect.x + 14, rowRect.y + 13);
+          this.ctx.font = "11px Arial";
+          this.ctx.fillStyle = "#9fb8cf";
+          this.ctx.fillText(isCurrent ? "Current preset" : "Click to apply preset", rowRect.x + 14, rowRect.y + 27);
+          if (isCurrent) {
+            const badge = "ACTIVE";
+            this.ctx.fillStyle = "#4cc9f0";
+            this.ctx.font = "bold 11px Arial";
+            const badgeW = this.ctx.measureText(badge).width;
+            this.ctx.fillText(badge, rowRect.x + rowRect.w - badgeW - 14, rowRect.y + 13);
+          }
+        });
+      }
+
+      const backRect = { x: x + 18, y: y + panelH - 38, w: 132, h: 24 };
+      const closeRect = { x: x + panelW - 110, y: y + panelH - 38, w: 92, h: 24 };
+      this.palettePresetPopup.backRect = backRect;
+      this.palettePresetPopup.closeRect = closeRect;
+
+      this.ctx.fillStyle = "#1a2733";
+      this.ctx.fillRect(backRect.x, backRect.y, backRect.w, backRect.h);
+      this.ctx.strokeStyle = "rgba(255,255,255,0.22)";
+      this.ctx.strokeRect(backRect.x + 0.5, backRect.y + 0.5, backRect.w - 1, backRect.h - 1);
+      this.ctx.fillStyle = "#edf2f7";
+      this.ctx.font = "12px Arial";
+      this.ctx.fillText("Back To Palette", backRect.x + 15, backRect.y + 14);
+
+      this.ctx.fillStyle = "#27435a";
+      this.ctx.fillRect(closeRect.x, closeRect.y, closeRect.w, closeRect.h);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(closeRect.x + 0.5, closeRect.y + 0.5, closeRect.w - 1, closeRect.h - 1);
+      this.ctx.fillStyle = "#e6f2ff";
+      this.ctx.fillText("Close", closeRect.x + 27, closeRect.y + 14);
     }
 
     drawTimelinePanel() {

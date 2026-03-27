@@ -1,1 +1,1 @@
-Sprite Editor v6.8.5 fix Palette->Palettes submenu visibility and remove duplicate sidebar Palette button
+Sprite Editor v6.8.6 make Palette->Palettes visibly render on-screen and easy to select
