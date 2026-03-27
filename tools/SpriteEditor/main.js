@@ -701,7 +701,7 @@ main.js
           tier: 1,
           overflowEligible: false,
           labels: effectiveMode === "pro" ? ["Files", "Files", "F"] : ["Files", "Files", "F"],
-          action: () => this.toggleTopMenu("file", fileMenuItems)
+          action: () => this.app.openFileMenu(fileMenuItems)
         },
         {
           id: "top-tools",
@@ -1658,6 +1658,7 @@ main.js
     }
 
     closeMenuLikeSurfaces() {
+      this.closeAboutPopup();
       this.controlSurface.closeOverflowPanel();
       this.controlSurface.closeCommandPalette();
     }
@@ -1709,34 +1710,6 @@ main.js
         return "Pan canceled.";
       }
       return "";
-    }
-    handleEscapeAction() {
-      if (this.replaceGuard.open) {
-        this.closeReplaceGuard();
-        this.showMessage("Replace canceled.");
-        return true;
-      }
-      if (this.isLayerRenameOpen()) {
-        this.closeLayerRenamePrompt();
-        this.showMessage("Layer rename canceled.");
-        return true;
-      }
-      if (this.controlSurface.overflowPanelOpen) {
-        this.controlSurface.closeOverflowPanel();
-        this.showMessage("Menu closed.");
-        return true;
-      }
-      if (this.controlSurface.commandPaletteOpen) {
-        this.controlSurface.closeCommandPalette();
-        this.showMessage("Command palette closed.");
-        return true;
-      }
-      const canceled = this.cancelActiveInteraction();
-      if (canceled) {
-        this.showMessage(canceled);
-        return true;
-      }
-      return false;
     }
     handleCloseSurfaceAction() {
       if (this.aboutPopup.open) {
@@ -1819,8 +1792,24 @@ main.js
       if (this.aboutPopup.panelRect && !inRect(this.aboutPopup.panelRect)) {
         this.closeAboutPopup();
         this.renderAll();
-        return true;
+        return false;
       }
+      return true;
+    }
+
+    openFileMenu(itemsOverride = null) {
+      if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
+      this.controlSurface.closeCommandPalette();
+      const items = Array.isArray(itemsOverride) ? itemsOverride : [
+        { id: "file-save", text: "Save Local", action: () => this.saveLocal() },
+        { id: "file-load", text: "Load Local", action: () => this.loadLocal() },
+        { id: "file-import", text: "Import JSON", action: () => this.openImport() },
+        { id: "file-export-menu", text: "Export...", action: () => this.openExportMenu() },
+        { id: "file-export-editor", text: "Export Editor JSON", action: () => this.exportJson(true) }
+      ];
+      this.controlSurface.toggleTopMenu("file", items);
+      this.renderAll();
       return true;
     }
 
@@ -2162,6 +2151,7 @@ main.js
     }
     openPlaybackRangeMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
         { id: "playback-menu-set", text: "Set Range From Selection", action: () => this.setPlaybackRangeFromSelection() },
@@ -2189,6 +2179,7 @@ main.js
     }
     openToolsMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const tools = [
         ["brush", "Brush"],
@@ -2211,6 +2202,7 @@ main.js
     }
     openEditMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const hasSelection = !!this.document.selection;
       const hasClipboard = !!this.document.selectionClipboard;
@@ -2233,6 +2225,7 @@ main.js
     }
     openFrameMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const range = this.getFrameRangeSelection();
       const playbackRange = this.getPlaybackRange();
@@ -2256,6 +2249,7 @@ main.js
     }
     openLayerMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const activeLayer = af.layers[af.activeLayerIndex];
@@ -2415,8 +2409,8 @@ main.js
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
       if (this.aboutPopup.open) {
-        this.handleAboutPopupPointer(p);
-        return;
+        const consumed = this.handleAboutPopupPointer(p);
+        if (consumed) return;
       }
       if (e.button === 2) {
         const canceled = this.cancelActiveInteraction();
@@ -2893,6 +2887,7 @@ main.js
 
     openCommandPalette() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeOverflowPanel();
       this.commandPaletteCommands = this.createCommandPaletteCommands();
       this.controlSurface.openCommandPalette(this.commandPaletteCommands);
@@ -3349,6 +3344,7 @@ main.js
     }
     openPaletteWorkflowMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
         { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
@@ -3533,6 +3529,7 @@ main.js
     }
     openExportMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
         { id: "export-menu-mode-current", text: `Mode: Current Frame${this.exportMode === "current_frame" ? " *" : ""}`, action: () => this.setExportMode("current_frame") },
@@ -3544,9 +3541,7 @@ main.js
         { id: "export-menu-animation", text: "Animation JSON", action: () => this.exportAnimationJson() },
         { id: "export-menu-package", text: "Export Package", action: () => this.exportPackageJson() }
       ];
-      this.controlSurface.toggleTopMenu("file", items);
-      this.renderAll();
-      return true;
+      return this.openFileMenu(items);
     }
     replacePaletteColor() {
       const source = this.paletteWorkflow.source;
@@ -4009,7 +4004,7 @@ main.js
       const panelW = 520;
       const panelH = 228;
       const x = frame.x + Math.floor((frame.width - panelW) * 0.5);
-      const y = frame.y + Math.floor((frame.height - panelH) * 0.22);
+      const y = frame.y + Math.floor((frame.height - panelH) * 0.5);
       this.aboutPopup.panelRect = { x, y, w: panelW, h: panelH };
       this.ctx.fillStyle = "rgba(2, 6, 12, 0.62)";
       this.ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);

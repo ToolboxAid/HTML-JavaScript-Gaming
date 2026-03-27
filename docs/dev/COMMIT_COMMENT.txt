@@ -1,1 +1,1 @@
-Sprite Editor v6.5 reorder top menus and add About popup with close button
+Sprite Editor v6.5.1 fix About popup rendering, close behavior, and shared menu handling
