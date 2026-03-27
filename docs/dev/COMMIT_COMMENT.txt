@@ -1,1 +1,1 @@
-Sprite Editor v6.8.9 remove Mode UI and default to Pro behavior
+Sprite Editor v6.9 remove palette display cap and show all colors in selected palette

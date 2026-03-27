@@ -1150,25 +1150,35 @@ main.js
       const rw = right.width - (d.padding * 2);
       this.add("label","lbl-palette",x,y,rw,d.labelHeight,`PALETTE ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null); y += d.labelHeight + d.spacing;
       this.add("label","palette-current",x,y,rw,18,`Current ${String(this.app.document.currentColor || "").toUpperCase()}`,null); y += 20;
-      let paletteX = x;
-      let paletteY = y;
       const gap = 4;
       const targetSwatch = this.app.uiDensityEffectiveMode === "pro" ? 20 : 22;
       const cols = Math.max(1, Math.floor((rw + gap) / (targetSwatch + gap)));
       const sw = Math.max(18, Math.min(24, Math.floor((rw - gap * (cols - 1)) / cols)));
       const sh = sw;
-      const availableHeight = Math.max(sh, (right.y + right.height) - y - d.padding);
-      const maxRows = Math.max(1, Math.floor((availableHeight + gap) / (sh + gap)));
-      const maxVisibleSwatches = Math.max(cols, cols * maxRows);
-      const swatchCount = Math.min(this.app.document.palette.length, maxVisibleSwatches);
-      this.app.document.palette.slice(0, swatchCount).forEach((c, i) => {
-        this.add("palette","palette-"+i,paletteX,paletteY,sw,sh,"",()=>this.app.setCurrentColor(c),{color:c});
-        if (((i + 1) % cols) === 0) {
-          paletteX = x;
-          paletteY += sh + gap;
-        } else {
-          paletteX += sw + gap;
-        }
+      const viewportHeight = Math.max(sh, (right.y + right.height) - y - d.padding);
+      const totalRows = Math.max(1, Math.ceil(this.app.document.palette.length / cols));
+      const contentHeight = totalRows * sh + Math.max(0, totalRows - 1) * gap;
+      const maxScroll = Math.max(0, contentHeight - viewportHeight);
+      this.app.paletteSidebarScroll = Math.max(0, Math.min(maxScroll, this.app.paletteSidebarScroll || 0));
+      this.app.paletteSidebarMetrics = {
+        x,
+        y,
+        w: rw,
+        h: viewportHeight,
+        sw,
+        sh,
+        gap,
+        cols,
+        contentHeight,
+        maxScroll
+      };
+      this.app.document.palette.forEach((c, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const drawX = x + col * (sw + gap);
+        const drawY = y + row * (sh + gap) - this.app.paletteSidebarScroll;
+        if (drawY + sh < y || drawY > y + viewportHeight) return;
+        this.add("palette","palette-"+i,drawX,drawY,sw,sh,"",()=>this.app.setCurrentColor(c),{color:c});
       });
     }
 
@@ -1475,6 +1485,8 @@ main.js
       this.helpDetailPopup = { open: false, section: "", panelRect: null, closeRect: null };
       this.aboutPopup = { open: false, panelRect: null, closeRect: null };
       this.palettePresetPopup = { open: false, panelRect: null, closeRect: null, backRect: null, rowRects: [] };
+      this.paletteSidebarScroll = 0;
+      this.paletteSidebarMetrics = null;
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -2808,6 +2820,24 @@ main.js
 
     onWheel(e) {
       e.preventDefault();
+      const p = this.logicalPointFromEvent(e);
+      const paletteRect = this.paletteSidebarMetrics;
+      if (
+        p &&
+        paletteRect &&
+        p.x >= paletteRect.x &&
+        p.y >= paletteRect.y &&
+        p.x <= paletteRect.x + paletteRect.w &&
+        p.y <= paletteRect.y + paletteRect.h &&
+        paletteRect.maxScroll > 0
+      ) {
+        const next = Math.max(0, Math.min(paletteRect.maxScroll, this.paletteSidebarScroll + Math.sign(e.deltaY) * Math.max(18, paletteRect.sh + paletteRect.gap)));
+        if (next !== this.paletteSidebarScroll) {
+          this.paletteSidebarScroll = next;
+          this.renderAll();
+        }
+        return;
+      }
       if (e.deltaY < 0) this.adjustZoom(0.25);
       else this.adjustZoom(-0.25);
     }
@@ -3173,10 +3203,10 @@ main.js
         if (typeof palettesList !== "object" || !palettesList || !Array.isArray(palettesList[paletteName])) return false;
         const next = palettesList[paletteName]
           .map((entry) => entry && entry.hex)
-          .filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex))
-          .slice(0, 32);
+          .filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex));
         if (!next.length) return false;
         this.document.palette = next;
+        this.paletteSidebarScroll = 0;
         if (this.document.palette.indexOf(this.document.currentColor) < 0) {
           this.document.currentColor = this.document.palette[0];
         }
@@ -4081,7 +4111,7 @@ main.js
       for (let i = 0; i < names.length; i += 1) {
         const entries = palettesList[names[i]];
         if (!Array.isArray(entries)) continue;
-        const hexes = entries.map((entry) => entry && entry.hex).filter((hex) => typeof hex === "string").slice(0, 32);
+        const hexes = entries.map((entry) => entry && entry.hex).filter((hex) => typeof hex === "string");
         if (JSON.stringify(hexes) === paletteSig) {
           this.currentPalettePreset = names[i];
           return;
