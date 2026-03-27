@@ -1165,13 +1165,15 @@ main.js
       this.add("label","palette-current",x,y,rw,18,`Current ${String(this.app.document.currentColor || "").toUpperCase()}`,null); y += 20;
       let paletteX = x;
       let paletteY = y;
-      const gap = 6;
-      const maxRows = 3;
-      const cols = Math.max(1, Math.floor((rw + gap) / (32 + gap)));
+      const gap = 4;
+      const targetSwatch = this.app.uiDensityEffectiveMode === "pro" ? 20 : 22;
+      const cols = Math.max(1, Math.floor((rw + gap) / (targetSwatch + gap)));
+      const sw = Math.max(18, Math.min(24, Math.floor((rw - gap * (cols - 1)) / cols)));
+      const sh = sw;
+      const availableHeight = Math.max(sh, (right.y + right.height) - y - d.padding);
+      const maxRows = Math.max(1, Math.floor((availableHeight + gap) / (sh + gap)));
       const maxVisibleSwatches = Math.max(cols, cols * maxRows);
       const swatchCount = Math.min(this.app.document.palette.length, maxVisibleSwatches);
-      const sw = Math.max(24, Math.min(34, Math.floor((rw - gap * (cols - 1)) / cols)));
-      const sh = sw;
       this.app.document.palette.slice(0, swatchCount).forEach((c, i) => {
         this.add("palette","palette-"+i,paletteX,paletteY,sw,sh,"",()=>this.app.setCurrentColor(c),{color:c});
         if (((i + 1) % cols) === 0) {
@@ -1181,10 +1183,6 @@ main.js
           paletteX += sw + gap;
         }
       });
-      y = paletteY + sh + d.spacing + 4;
-      if (this.app.document.palette.length > swatchCount) {
-        this.add("label","palette-more",x,y,rw,18,`+${this.app.document.palette.length - swatchCount} more colors in top Palette menu`,null);
-      }
     }
 
     getControlAt(x,y) {
@@ -1278,8 +1276,6 @@ main.js
       });
       ctx.font = "13px Arial"; ctx.textBaseline = "middle";
       this.controls.forEach((c) => this.drawControl(ctx,c));
-      this.drawOverflowPanel(ctx);
-      this.drawCommandPalette(ctx);
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 18px Arial";
       ctx.textAlign = "center";
@@ -4291,6 +4287,8 @@ main.js
       this.drawTimelinePanel();
       this.drawPreviewPanel();
       this.drawSheetPanel();
+      this.controlSurface.drawOverflowPanel(this.ctx);
+      this.controlSurface.drawCommandPalette(this.ctx);
       this.drawHelpDetailPopup();
       this.drawAboutPopup();
       this.drawPalettePresetPopup();
@@ -4608,10 +4606,15 @@ main.js
 
     drawMainGrid() {
       const r = this.gridRect, ctx = this.ctx, pixels = this.document.getCompositedPixels(this.document.activeFrame);
+      const viewport = this.controlSurface.layout.gridArea;
       const prevFrame = this.document.frames[this.document.activeFrameIndex - 1];
       const nextFrame = this.document.frames[this.document.activeFrameIndex + 1];
       const prevPixels = prevFrame ? this.document.getCompositedPixels(prevFrame) : null;
       const nextPixels = nextFrame ? this.document.getCompositedPixels(nextFrame) : null;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(viewport.x, viewport.y, viewport.width, viewport.height);
+      ctx.clip();
       ctx.fillStyle = "#fff"; ctx.fillRect(r.x, r.y, r.width, r.height);
       for (let y=0; y<this.document.rows; y+=1) {
         for (let x=0; x<this.document.cols; x+=1) {
@@ -4691,6 +4694,7 @@ main.js
           ctx.strokeRect(r.x + cell.x * r.pixelSize + 1, r.y + cell.y * r.pixelSize + 1, r.pixelSize - 2, r.pixelSize - 2);
         });
       }
+      ctx.restore();
     }
 
     drawPreviewPanel() {
