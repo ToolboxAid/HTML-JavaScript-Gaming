@@ -1,1 +1,1 @@
-Sprite Editor v6.8.2 clean up palette panel, move utility actions to Palette menu, and stop bottom overflow
+Sprite Editor v6.8.3 add top-level Palette menu and remove sidebar palette duplication

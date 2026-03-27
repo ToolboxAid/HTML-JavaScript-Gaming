@@ -732,6 +732,13 @@ main.js
           action: () => this.app.openLayerMenu()
         },
         {
+          id: "top-palette",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["Palette", "Palette", "P"],
+          action: () => this.app.openPaletteWorkflowMenu()
+        },
+        {
           id: "top-help",
           tier: 1,
           overflowEligible: false,
@@ -776,6 +783,7 @@ main.js
       if (this.topMenuSource === "edit") return "top-edit";
       if (this.topMenuSource === "frame") return "top-frame";
       if (this.topMenuSource === "layer") return "top-layer";
+      if (this.topMenuSource === "palette") return "top-palette";
       if (this.topMenuSource === "help") return "top-help";
       if (this.topMenuSource === "overflow") return "top-overflow";
       return this.topMenuSource;
@@ -1177,7 +1185,7 @@ main.js
         this.add("label","palette-more",x,y,rw,18,`+${this.app.document.palette.length - swatchCount} more colors in Palette Menu`,null);
         y += 22;
       }
-      this.add("button","palette-menu",x,y,rw,34,"Palette Menu",()=>this.app.openPaletteWorkflowMenu());
+      this.add("button","palette-menu",x,y,rw,34,"Palette",()=>this.app.openPaletteWorkflowMenu());
     }
 
     getControlAt(x,y) {
@@ -3596,7 +3604,7 @@ main.js
           items.push({ id: `palette-menu-preset-${name}`, text: `Preset: ${name}`, action: () => this.applyNamedPalette(name) });
         });
       }
-      this.controlSurface.toggleTopMenu("palette-menu", items);
+      this.controlSurface.toggleTopMenu("palette", items);
       this.renderAll();
       return true;
     }
