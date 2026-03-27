@@ -1,1 +1,1 @@
-Sprite Editor v7.0 fix interaction model, selection data loss, palette scroll, and timeline stability
+Sprite Editor v7.0 apply real interaction and core behavior fixes before regression

@@ -1350,6 +1350,33 @@ main.js
     drawControl(ctx,c) {
       const inLeftSidebar = this.layout && this.layout.leftPanel && c.x >= this.layout.leftPanel.x && c.x < (this.layout.leftPanel.x + this.layout.leftPanel.width);
       if (c.kind === "label") {
+        if (c.id === "palette-current") {
+          const currentHex = String(this.app.document.currentColor || "").toUpperCase();
+          let name = "Unnamed";
+          if (typeof palettesList === "object" && palettesList && this.app.currentPalettePreset && Array.isArray(palettesList[this.app.currentPalettePreset])) {
+            const presetEntries = palettesList[this.app.currentPalettePreset];
+            const match = presetEntries.find((entry) => entry && String(entry.hex || "").toUpperCase() === currentHex && typeof entry.name === "string" && entry.name.trim());
+            if (match) name = match.name.trim();
+          }
+          const baseY = c.y + c.h / 2;
+          ctx.fillStyle = "#91a3b6";
+          ctx.font = "bold 12px Arial";
+          const leftText = `Current: ${currentHex}`;
+          ctx.fillText(leftText, c.x, baseY);
+          const leftWidth = ctx.measureText(leftText).width;
+          const sw = 12;
+          const sh = 12;
+          const swatchX = c.x + leftWidth + 8;
+          const swatchY = Math.floor(baseY - sh * 0.75);
+          ctx.fillStyle = currentHex;
+          ctx.fillRect(swatchX, swatchY, sw, sh);
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(swatchX + 0.5, swatchY + 0.5, sw - 1, sh - 1);
+          ctx.fillStyle = "#91a3b6";
+          ctx.fillText(`Named: ${name}`, swatchX + sw + 10, baseY);
+          return;
+        }
         ctx.fillStyle = "#91a3b6";
         ctx.font = "bold 12px Arial";
         if (inLeftSidebar && c.text && c.text.length > 16) {
@@ -1865,7 +1892,6 @@ main.js
         return "Timeline interaction canceled.";
       }
       if (this.selectionMoveSession) {
-        this.restoreHistoryState(this.selectionMoveSession.before);
         this.selectionMoveSession = null;
         this.isPointerDown = false;
         return "Selection move canceled.";
@@ -2670,35 +2696,24 @@ main.js
     }
 
     moveSelectionBy(dx, dy) {
-      const s = this.document.selection;
+      const session = this.selectionMoveSession;
+      const s = session && session.sourceRect ? session.sourceRect : this.document.selection;
       if (!s || (!dx && !dy)) return false;
+      const nextOffsetX = (session ? session.offsetX : 0) + dx;
+      const nextOffsetY = (session ? session.offsetY : 0) + dy;
       const maxLeft = -s.x;
       const maxRight = this.document.cols - (s.x + s.width);
       const maxUp = -s.y;
       const maxDown = this.document.rows - (s.y + s.height);
-      const cdx = Math.max(maxLeft, Math.min(maxRight, dx));
-      const cdy = Math.max(maxUp, Math.min(maxDown, dy));
-      if (!cdx && !cdy) return false;
-      const block = this.selectionMoveSession && this.selectionMoveSession.block
-        ? this.selectionMoveSession.block
-        : this.document.readSelection();
-      if (!block) return false;
-      const frame = this.document.activeLayer.pixels;
-      for (let y = 0; y < s.height; y += 1) {
-        for (let x = 0; x < s.width; x += 1) {
-          frame[s.y + y][s.x + x] = null;
-        }
+      const clampedOffsetX = Math.max(maxLeft, Math.min(maxRight, nextOffsetX));
+      const clampedOffsetY = Math.max(maxUp, Math.min(maxDown, nextOffsetY));
+      if (session) {
+        if (clampedOffsetX === session.offsetX && clampedOffsetY === session.offsetY) return false;
+        session.offsetX = clampedOffsetX;
+        session.offsetY = clampedOffsetY;
+        return true;
       }
-      const nx = s.x + cdx;
-      const ny = s.y + cdy;
-      for (let y = 0; y < block.height; y += 1) {
-        for (let x = 0; x < block.width; x += 1) {
-          frame[ny + y][nx + x] = block.pixels[y][x];
-        }
-      }
-      this.document.setSelection({ x: nx, y: ny, width: s.width, height: s.height });
-      this.selectionPasteOrigin = { x: nx, y: ny };
-      return true;
+      return false;
     }
 
     beginSelectionMove(cell) {
@@ -2706,13 +2721,18 @@ main.js
       if (!this.canEditActiveLayer(true)) return false;
       const block = this.document.readSelection();
       if (!block) return false;
+      const sourceRect = { ...this.document.selection };
       this.selectionMoveSession = {
         before: this.captureHistoryState(),
+        sourceRect,
         block: {
           width: block.width,
           height: block.height,
           pixels: this.cloneGridData(block.pixels)
         },
+        offsetX: 0,
+        offsetY: 0,
+        startCell: { x: cell.x, y: cell.y },
         lastCell: { x: cell.x, y: cell.y }
       };
       return true;
@@ -2720,9 +2740,34 @@ main.js
 
     commitSelectionMove() {
       if (!this.selectionMoveSession) return;
+      const session = this.selectionMoveSession;
+      const sourceRect = session.sourceRect;
+      const offsetX = session.offsetX || 0;
+      const offsetY = session.offsetY || 0;
+      if (!sourceRect) {
+        this.selectionMoveSession = null;
+        return;
+      }
+      if (offsetX || offsetY) {
+        const frame = this.document.activeLayer.pixels;
+        for (let y = 0; y < sourceRect.height; y += 1) {
+          for (let x = 0; x < sourceRect.width; x += 1) {
+            frame[sourceRect.y + y][sourceRect.x + x] = null;
+          }
+        }
+        const nx = sourceRect.x + offsetX;
+        const ny = sourceRect.y + offsetY;
+        for (let y = 0; y < session.block.height; y += 1) {
+          for (let x = 0; x < session.block.width; x += 1) {
+            frame[ny + y][nx + x] = session.block.pixels[y][x];
+          }
+        }
+        this.document.setSelection({ x: nx, y: ny, width: sourceRect.width, height: sourceRect.height });
+        this.selectionPasteOrigin = { x: nx, y: ny };
+      }
       const after = this.captureHistoryState();
-      if (this.historySignature(this.selectionMoveSession.before) !== this.historySignature(after)) {
-        this.pushHistoryEntry({ label: "Selection Move", before: this.selectionMoveSession.before, after });
+      if (this.historySignature(session.before) !== this.historySignature(after)) {
+        this.pushHistoryEntry({ label: "Selection Move", before: session.before, after });
       }
       this.selectionMoveSession = null;
     }
@@ -3797,7 +3842,7 @@ main.js
         const match = presetEntries.find((entry) => entry && String(entry.hex || "").toUpperCase() === currentHex && typeof entry.name === "string" && entry.name.trim());
         if (match) name = match.name.trim();
       }
-      return name ? `Current: ${currentHex}  Named: ${name}` : `Current: ${currentHex}`;
+      return `Current: ${currentHex} Named: ${name || "Unnamed"}`;
     }
     setCurrentColor(c) { this.document.currentColor = c; this.showMessage("Color selected."); }
     setPaletteSortMode(mode) {
@@ -4875,6 +4920,18 @@ main.js
           ctx.fillRect(r.x+x*r.pixelSize, r.y+y*r.pixelSize, r.pixelSize, r.pixelSize);
         }
       }
+      if (this.selectionMoveSession && this.selectionMoveSession.block && this.selectionMoveSession.sourceRect) {
+        const previewX = this.selectionMoveSession.sourceRect.x + (this.selectionMoveSession.offsetX || 0);
+        const previewY = this.selectionMoveSession.sourceRect.y + (this.selectionMoveSession.offsetY || 0);
+        for (let y = 0; y < this.selectionMoveSession.block.height; y += 1) {
+          for (let x = 0; x < this.selectionMoveSession.block.width; x += 1) {
+            const v = this.selectionMoveSession.block.pixels[y][x];
+            if (!v) continue;
+            ctx.fillStyle = v;
+            ctx.fillRect(r.x + (previewX + x) * r.pixelSize, r.y + (previewY + y) * r.pixelSize, r.pixelSize, r.pixelSize);
+          }
+        }
+      }
       ctx.strokeStyle = "rgba(0,0,0,0.18)";
       for (let x=0; x<=this.document.cols; x+=1) { ctx.beginPath(); ctx.moveTo(r.x+x*r.pixelSize+0.5,r.y); ctx.lineTo(r.x+x*r.pixelSize+0.5,r.y+r.height); ctx.stroke(); }
       for (let y=0; y<=this.document.rows; y+=1) { ctx.beginPath(); ctx.moveTo(r.x,r.y+y*r.pixelSize+0.5); ctx.lineTo(r.x+r.width,r.y+y*r.pixelSize+0.5); ctx.stroke(); }
@@ -4883,12 +4940,20 @@ main.js
         ctx.strokeRect(r.x+this.hoveredGridCell.x*r.pixelSize+1, r.y+this.hoveredGridCell.y*r.pixelSize+1, r.pixelSize-2, r.pixelSize-2);
       }
       if (this.document.selection) {
+        const selectionRect = this.selectionMoveSession && this.selectionMoveSession.sourceRect
+          ? {
+              x: this.selectionMoveSession.sourceRect.x + (this.selectionMoveSession.offsetX || 0),
+              y: this.selectionMoveSession.sourceRect.y + (this.selectionMoveSession.offsetY || 0),
+              width: this.selectionMoveSession.sourceRect.width,
+              height: this.selectionMoveSession.sourceRect.height
+            }
+          : this.document.selection;
         ctx.strokeStyle = "#ff9800"; ctx.lineWidth = 3;
-        ctx.strokeRect(r.x+this.document.selection.x*r.pixelSize+1, r.y+this.document.selection.y*r.pixelSize+1, this.document.selection.width*r.pixelSize-2, this.document.selection.height*r.pixelSize-2);
-        const sx = r.x + this.document.selection.x * r.pixelSize;
-        const sy = r.y + this.document.selection.y * r.pixelSize;
-        const sw = this.document.selection.width * r.pixelSize;
-        const sh = this.document.selection.height * r.pixelSize;
+        ctx.strokeRect(r.x+selectionRect.x*r.pixelSize+1, r.y+selectionRect.y*r.pixelSize+1, selectionRect.width*r.pixelSize-2, selectionRect.height*r.pixelSize-2);
+        const sx = r.x + selectionRect.x * r.pixelSize;
+        const sy = r.y + selectionRect.y * r.pixelSize;
+        const sw = selectionRect.width * r.pixelSize;
+        const sh = selectionRect.height * r.pixelSize;
         const hs = Math.max(6, Math.min(12, Math.floor(r.pixelSize * 0.6)));
         const handles = [
           { x: sx - hs / 2, y: sy - hs / 2 },
