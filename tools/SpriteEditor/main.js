@@ -784,6 +784,7 @@ main.js
       if (this.topMenuSource === "frame") return "top-frame";
       if (this.topMenuSource === "layer") return "top-layer";
       if (this.topMenuSource === "palette") return "top-palette";
+      if (this.topMenuSource === "palette-presets") return "top-palette";
       if (this.topMenuSource === "help") return "top-help";
       if (this.topMenuSource === "overflow") return "top-overflow";
       return this.topMenuSource;
@@ -3584,12 +3585,30 @@ main.js
       this.showMessage("Replace target set.");
       this.renderAll();
     }
+    openPalettePresetsMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
+      this.closeAboutPopup();
+      this.controlSurface.closeCommandPalette();
+      const items = [
+        { id: "palette-presets-back", text: "Back To Palette", action: () => this.openPaletteWorkflowMenu() }
+      ];
+      if (typeof palettesList === "object" && palettesList) {
+        Object.keys(palettesList).forEach((name) => {
+          items.push({ id: `palette-menu-preset-${name}`, text: `Preset: ${name}`, action: () => this.applyNamedPalette(name) });
+        });
+      }
+      this.controlSurface.toggleTopMenu("palette-presets", items);
+      this.renderAll();
+      return true;
+    }
     openPaletteWorkflowMenu() {
       if (!this.canOpenTransientSurface()) return false;
       this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
+        { id: "palette-menu-presets", text: "Palettes...", action: () => this.openPalettePresetsMenu() },
         { id: "palette-menu-prev", text: "Previous Color", action: () => this.prevColor(), shortcut: "[" },
         { id: "palette-menu-next", text: "Next Color", action: () => this.nextColor(), shortcut: "]" },
         { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
@@ -3599,11 +3618,6 @@ main.js
         { id: "palette-menu-scope-range", text: "Scope Selected Range", action: () => this.setPaletteReplaceScope("selected_range") },
         { id: "palette-menu-replace", text: "Replace Color", action: () => this.replacePaletteColor() }
       ];
-      if (typeof palettesList === "object" && palettesList) {
-        Object.keys(palettesList).slice(0, 12).forEach((name) => {
-          items.push({ id: `palette-menu-preset-${name}`, text: `Preset: ${name}`, action: () => this.applyNamedPalette(name) });
-        });
-      }
       this.controlSurface.toggleTopMenu("palette", items);
       this.renderAll();
       return true;
