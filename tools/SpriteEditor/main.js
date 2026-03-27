@@ -571,6 +571,7 @@ main.js
       this.overflowPanelControls = [];
       this.overflowAnchorControl = null;
       this.hiddenTopControls = [];
+      this.menuItems = [];
       this.topMenuSource = null;
       this.commandPaletteOpen = false;
       this.commandPaletteQuery = "";
@@ -647,9 +648,11 @@ main.js
         gridArea: { x: frame.x + left + pad, y: frame.y + top + pad, width: frame.width - left - right - pad * 2, height: frame.height - top - bottom - pad * 2 }
       };
       this.app.uiDensityEffectiveMode = density.effectiveMode;
+      const openMenuItems = this.menuItems.slice();
       this.controls = [];
       this.hiddenTopControls = [];
       if (this.overflowPanelOpen) {
+        this.menuItems = openMenuItems;
         this.rebuildOverflowPanel();
       }
       this.build();
@@ -719,6 +722,7 @@ main.js
       this.overflowPanelBounds = null;
       this.overflowPanelControls = [];
       this.overflowAnchorControl = null;
+      this.menuItems = [];
       this.topMenuSource = null;
     }
     getMenuAnchorId() {
@@ -732,6 +736,13 @@ main.js
 
     pointInRect(x, y, r) {
       return !!r && x >= r.x && y >= r.y && x <= r.x + r.w && y <= r.y + r.h;
+    }
+
+    getOpenPanelItems() {
+      if (this.topMenuSource === "overflow") {
+        return Array.isArray(this.hiddenTopControls) ? this.hiddenTopControls : [];
+      }
+      return Array.isArray(this.menuItems) ? this.menuItems : [];
     }
 
     toggleFavoriteAt(x, y) {
@@ -829,7 +840,9 @@ main.js
     }
 
     rebuildOverflowPanel() {
-      if (!this.overflowPanelOpen || !this.hiddenTopControls.length) {
+      const panelItems = this.getOpenPanelItems();
+      const hasItems = panelItems.length > 0;
+      if (!this.overflowPanelOpen) {
         this.closeOverflowPanel();
         return;
       }
@@ -849,11 +862,13 @@ main.js
       const prevFont = this.app.ctx.font;
       this.app.ctx.font = "13px Arial";
       let maxW = 0;
-      this.hiddenTopControls.forEach((item) => {
+      const itemsForMeasure = hasItems ? panelItems : [{ text: "No menu items (ERROR)" }];
+      itemsForMeasure.forEach((item) => {
         maxW = Math.max(maxW, this.measureButtonWidth(this.app.ctx, item.text, minBtn, padX));
       });
-      const panelW = Math.max(140, maxW + panelPad * 2);
-      const panelH = panelPad * 2 + (this.hiddenTopControls.length * rowH) + (Math.max(0, this.hiddenTopControls.length - 1) * gap);
+      const visibleItems = hasItems ? panelItems : [{ id: "menu-error-empty", text: "No menu items (ERROR)", action: null }];
+      const panelW = Math.max(160, maxW + panelPad * 2);
+      const panelH = Math.max(rowH + panelPad * 2, panelPad * 2 + (visibleItems.length * rowH) + (Math.max(0, visibleItems.length - 1) * gap));
       const frame = this.layout.appFrame;
       let panelX = anchor.x + anchor.w - panelW;
       panelX = Math.max(frame.x + 8, Math.min(panelX, frame.x + frame.width - panelW - 8));
@@ -865,7 +880,7 @@ main.js
       this.overflowPanelBounds = { x: panelX, y: panelY, w: panelW, h: panelH };
       this.overflowPanelControls = [];
       let y = panelY + panelPad;
-      this.hiddenTopControls.forEach((item, index) => {
+      visibleItems.forEach((item, index) => {
         this.overflowPanelControls.push({
           kind: "button",
           id: `overflow-item-${index}`,
@@ -887,6 +902,7 @@ main.js
         return;
       }
       if (!this.hiddenTopControls.length) return;
+      this.menuItems = [];
       this.topMenuSource = "overflow";
       this.overflowPanelOpen = true;
       this.rebuildOverflowPanel();
@@ -897,7 +913,7 @@ main.js
         this.closeOverflowPanel();
         return;
       }
-      this.hiddenTopControls = Array.isArray(items) ? items.slice() : [];
+      this.menuItems = Array.isArray(items) ? items.slice() : [];
       this.topMenuSource = source || "menu";
       this.overflowPanelOpen = true;
       this.rebuildOverflowPanel();
@@ -988,14 +1004,14 @@ main.js
       if (topLayout.overflowSlots && hidden.length) {
         const overflowText = `More (${hidden.length})`;
         const overflowW = this.measureButtonWidth(this.app.ctx, overflowText, minBtn, padX);
-        if (this.topMenuSource !== "file") {
+        if (this.topMenuSource === "overflow") {
           this.hiddenTopControls = hidden.map((c) => ({ id: c.id, text: c.labels[0], action: c.action }));
         }
         addRight("top-overflow", overflowW, overflowText, () => this.toggleOverflowPanel(), { overflowItems: hidden.map((c) => c.id) });
       } else {
-        if (this.topMenuSource !== "file") {
+        if (this.topMenuSource === "overflow") {
           this.hiddenTopControls = [];
-          this.closeOverflowPanel();
+          if (this.overflowPanelOpen) this.closeOverflowPanel();
         }
       }
       addRight("fullscreen", topLayout.fsW, topLayout.fsLabel, () => this.app.toggleFullscreen());
