@@ -1,1 +1,1 @@
-Run browser validation for Sprite Editor v6.2 input remap and transient surface controls
+Sprite Editor v6.3 remove duplicate Frames UI and finish no-ESC input remap behavior

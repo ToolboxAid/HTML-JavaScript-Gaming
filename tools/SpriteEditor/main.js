@@ -1085,15 +1085,6 @@ main.js
       x = right.x + d.padding;
       y = right.y + d.padding;
       const rw = right.width - (d.padding * 2);
-      this.add("label","lbl-frames",x,y,rw,d.labelHeight,"FRAMES",null); y += d.labelHeight + d.spacing;
-      this.add("button","frame-add",x,y,rw,bh,"Add Frame",()=>this.app.addFrame()); y += bh + d.spacing;
-      const playbackRange = this.app.getPlaybackRange();
-      if (playbackRange.enabled || this.app.getFrameRangeSelection().explicit) {
-        y += d.spacing;
-        this.add("label","lbl-playback-range",x,y,rw,d.labelHeight,"PLAYBACK RANGE",null); y += d.labelHeight + d.spacing;
-        this.add("label","playback-range-state",x,y,rw,bh,playbackRange.enabled ? `Loop ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}` : "Use Frame menu for range actions",null); y += bh + d.spacing;
-      }
-      y += d.spacing;
       this.add("label","lbl-layers",x,y,rw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
       this.add("button","layer-add",x,y,rw,bh,"Add Layer",()=>this.app.addLayer()); y += bh + d.spacing;
       const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
@@ -1110,10 +1101,6 @@ main.js
           layerSolo: solo
         });
         y += Math.max(24, bh - 8) + d.spacing;
-      });
-      this.app.document.frames.forEach((f,i) => {
-        this.add("frame","frame-thumb-"+i,x,y,rw,d.frameThumbHeight,f.name,()=>this.app.selectFrame(i),{frameIndex:i});
-        y += d.frameThumbHeight + d.spacing;
       });
 
       x = bottom.x + d.padding;
@@ -2509,15 +2496,24 @@ main.js
           return;
         }
       }
-      if (this.isTypingTarget(e.target)) return;
-      if (this.controlSurface.commandPaletteOpen) {
-        if ((e.ctrlKey || e.metaKey) && k === "w") {
-          this.controlSurface.closeCommandPalette();
-          this.showMessage("Command palette closed.");
+      if (!this.isTypingTarget(e.target) && (e.ctrlKey || e.metaKey) && k === "w") {
+        if (this.handleCloseSurfaceAction()) {
           e.preventDefault();
           this.renderAll();
           return;
         }
+      }
+      if (!this.isTypingTarget(e.target) && k === "backspace") {
+        const canceled = this.cancelActiveInteraction();
+        if (canceled) {
+          this.showMessage(canceled);
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+      }
+      if (this.isTypingTarget(e.target)) return;
+      if (this.controlSurface.commandPaletteOpen) {
         if (k === "arrowdown") {
           this.controlSurface.moveCommandPaletteSelection(1);
           e.preventDefault();

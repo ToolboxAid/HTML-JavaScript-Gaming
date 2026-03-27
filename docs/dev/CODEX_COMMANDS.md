@@ -2,24 +2,18 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Run browser validation for the v6.2 Sprite Editor input remap in tools/SpriteEditor/main.js.
+Apply TOOLS_SPRITE_EDITOR_V6_3_REMOVE_DUPLICATE_FRAMES_UI_AND_FINISH_INPUT_REMAP in tools/SpriteEditor/main.js
 
 VALIDATIONS:
-- ESC exits fullscreen and is not consumed by the editor
-- ESC does not close menus, overlays, command palette, or active interactions
-- Command palette toggles with Ctrl+P
-- Ctrl+W closes the active transient surface:
-  - menus
-  - rename overlay
-  - replace/confirm overlay
-  - command palette
-- Right-click cancels active interactions
+- Only one frame UI remains, and it is the timeline
+- Legacy duplicate Frames surface is removed
+- ESC exits fullscreen only and does not close/cancel editor UI or interactions
+- Ctrl+W closes menus
+- Ctrl+W closes rename overlay
+- Ctrl+W closes replace/confirm overlay
+- Ctrl+W closes command palette
 - Backspace cancels active interactions when not typing
-- Click-outside still closes menus
-- No console errors during the validation pass
-
-OUTPUT:
-- Report each validation as PASS / FAIL / BLOCKED
-- Include exact repro steps for any FAIL
-- Include exact blocker reason for any BLOCKED
-- Do not leave temporary validation files in the repo
+- Backspace cancel shows visible cancel feedback
+- Right-click still cancels active interactions
+- No cancel-only history entry is created
+- No console errors
