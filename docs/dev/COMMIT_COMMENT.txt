@@ -1,1 +1,1 @@
-Sprite Editor v6.2 remove ESC handling from editor and remap interaction controls
+Run browser validation for Sprite Editor v6.2 input remap and transient surface controls
