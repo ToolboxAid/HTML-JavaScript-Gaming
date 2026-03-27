@@ -1093,8 +1093,12 @@ main.js
       if (brushToolActive) {
         y += d.spacing;
         this.add("label","lbl-brush",x,y,bw,d.labelHeight,"BRUSH",null); y += d.labelHeight + d.spacing;
-        this.add("button","brush-size-down",x,y,Math.floor((bw - d.spacing) / 2),bh,`Size - (${this.app.brush.size})`,()=>this.app.adjustBrushSize(-1)); 
-        this.add("button","brush-size-up",x + Math.floor((bw - d.spacing) / 2) + d.spacing,y,Math.ceil((bw - d.spacing) / 2),bh,"Size +",()=>this.app.adjustBrushSize(1));
+        const brushGap = d.spacing;
+        const brushBtnW = Math.floor((bw - brushGap * 2) / 3);
+        const brushReadoutW = bw - brushBtnW * 2 - brushGap * 2;
+        this.add("button","brush-size-down",x,y,brushBtnW,bh,"Size -",()=>this.app.adjustBrushSize(-1));
+        this.add("button","brush-size-readout",x + brushBtnW + brushGap,y,brushReadoutW,bh,String(this.app.brush.size),null,{ centerText: true });
+        this.add("button","brush-size-up",x + brushBtnW + brushGap + brushReadoutW + brushGap,y,brushBtnW,bh,"Size +",()=>this.app.adjustBrushSize(1));
         y += bh + d.spacing;
         this.add("button","brush-shape-toggle",x,y,bw,bh,`Shape: ${this.app.brush.shape}`,()=>this.app.toggleBrushShape());
         y += bh + d.spacing;
@@ -1311,10 +1315,10 @@ main.js
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 18px Arial";
       ctx.textAlign = "center";
-      ctx.fillText("Sprite Editor v2.2", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 10);
+      ctx.fillText("Sprite Editor v2.2", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 35);
       ctx.font = "12px Arial";
       ctx.fillStyle = performance.now() < this.app.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
-      ctx.fillText(this.app.statusMessage || "Ready.", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 28);
+      ctx.fillText(this.app.statusMessage || "Ready.", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 53);
       ctx.textAlign = "left";
       if (this.dragFrameIndex !== null && this.dragOverFrameIndex !== null) {
         const from = this.dragFrameIndex + 1;
@@ -1325,8 +1329,41 @@ main.js
       }
     }
 
+    wrapSidebarText(ctx, text, maxWidth) {
+      const words = String(text || "").split(/\s+/).filter(Boolean);
+      if (!words.length) return [""];
+      const lines = [];
+      let current = "";
+      words.forEach((word) => {
+        const candidate = current ? `${current} ${word}` : word;
+        if (current && ctx.measureText(candidate).width > maxWidth) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = candidate;
+        }
+      });
+      if (current) lines.push(current);
+      return lines;
+    }
+
     drawControl(ctx,c) {
-      if (c.kind === "label") { ctx.fillStyle = "#91a3b6"; ctx.font = "bold 12px Arial"; ctx.fillText(c.text,c.x,c.y+c.h/2); return; }
+      const inLeftSidebar = this.layout && this.layout.leftPanel && c.x >= this.layout.leftPanel.x && c.x < (this.layout.leftPanel.x + this.layout.leftPanel.width);
+      if (c.kind === "label") {
+        ctx.fillStyle = "#91a3b6";
+        ctx.font = "bold 12px Arial";
+        if (inLeftSidebar && c.text && c.text.length > 16) {
+          const lines = this.wrapSidebarText(ctx, c.text, Math.max(24, c.w - 16));
+          const lineH = 12;
+          const baseY = c.y + Math.max(10, Math.floor((c.h - Math.min(lines.length, 3) * lineH) * 0.5)) + 2;
+          lines.slice(0, 3).forEach((line, index) => {
+            ctx.fillText(line, c.x + (index === 0 ? 0 : 12), baseY + index * lineH);
+          });
+        } else {
+          ctx.fillText(c.text,c.x,c.y+c.h/2);
+        }
+        return;
+      }
       if (c.kind === "palette") {
         ctx.fillStyle = c.color; ctx.fillRect(c.x,c.y,c.w,c.h);
         const current = this.app.document.currentColor === c.color;
@@ -1374,7 +1411,19 @@ main.js
       } else {
         ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
         ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial";
-        ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+        if (c.centerText) {
+          const textW = ctx.measureText(c.text).width;
+          ctx.fillText(c.text, c.x + Math.max(8, Math.floor((c.w - textW) * 0.5)), c.y + c.h / 2);
+        } else if (inLeftSidebar && c.text && c.text.length > 12 && !c.shortcut) {
+          const lines = this.wrapSidebarText(ctx, c.text, Math.max(24, c.w - 20));
+          const lineH = 12;
+          const baseY = c.y + Math.max(10, Math.floor((c.h - Math.min(lines.length, 3) * lineH) * 0.5)) + 2;
+          lines.slice(0, 3).forEach((line, index) => {
+            ctx.fillText(line, c.x + 10 + (index === 0 ? 0 : 12), baseY + index * lineH);
+          });
+        } else {
+          ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+        }
       }
       if (activeLayerItem) {
         ctx.fillStyle = "#4cc9f0";
@@ -2354,7 +2403,7 @@ main.js
       const w = Math.min(402, b.width - 36);
       const h = 100;
       const transportX = x + 8;
-      const transportY = y + 18;
+      const transportY = y + 6;
       const transportW = 58;
       const transportH = 16;
       const transportGap = 4;
@@ -4663,12 +4712,20 @@ main.js
         else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + 12);
         else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + 12);
         else if (c.id === "range") ctx.fillText("Range", c.x + 8, c.y + 12);
-        else if (c.id === "fps_down") ctx.fillText("-", c.x + 7, c.y + 12);
-        else if (c.id === "fps_up") ctx.fillText("+", c.x + 6, c.y + 12);
+        else if (c.id === "fps_down") {
+          const textW = ctx.measureText("-").width;
+          ctx.fillText("-", c.x + Math.floor((c.w - textW) * 0.5), c.y + c.h / 2);
+        }
+        else if (c.id === "fps_up") {
+          const textW = ctx.measureText("+").width;
+          ctx.fillText("+", c.x + Math.floor((c.w - textW) * 0.5), c.y + c.h / 2);
+        }
       });
       ctx.fillStyle = "#91a3b6";
       ctx.font = "11px Arial";
-      ctx.fillText(`FPS ${this.playback.fps}`, t.x + t.w - 62, t.y + 14);
+      const fpsControl = (t.transport || []).find((c) => c.id === "fps_down");
+      const fpsY = fpsControl ? (fpsControl.y + fpsControl.h / 2) : (t.y + 14);
+      ctx.fillText(`FPS ${this.playback.fps}`, t.x + t.w - 62, fpsY);
       t.slots.forEach((slot) => {
         const f = this.document.frames[slot.index];
         const active = slot.index === this.document.activeFrameIndex;
