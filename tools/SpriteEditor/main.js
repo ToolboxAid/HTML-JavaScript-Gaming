@@ -704,18 +704,18 @@ main.js
           action: () => this.app.openFileMenu(fileMenuItems)
         },
         {
-          id: "top-tools",
-          tier: 1,
-          overflowEligible: false,
-          labels: ["Tools", "Tools", "T"],
-          action: () => this.app.openToolsMenu()
-        },
-        {
           id: "top-edit",
           tier: 1,
           overflowEligible: false,
           labels: ["Edit", "Edit", "E"],
           action: () => this.app.openEditMenu()
+        },
+        {
+          id: "top-tools",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["Tools", "Tools", "T"],
+          action: () => this.app.openToolsMenu()
         },
         {
           id: "top-frame",
@@ -730,6 +730,13 @@ main.js
           overflowEligible: false,
           labels: ["Layer", "Layer", "L"],
           action: () => this.app.openLayerMenu()
+        },
+        {
+          id: "top-help",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["Help", "Help", "H"],
+          action: () => this.app.openHelpMenu()
         },
         {
           id: "top-about",
@@ -769,6 +776,7 @@ main.js
       if (this.topMenuSource === "edit") return "top-edit";
       if (this.topMenuSource === "frame") return "top-frame";
       if (this.topMenuSource === "layer") return "top-layer";
+      if (this.topMenuSource === "help") return "top-help";
       if (this.topMenuSource === "overflow") return "top-overflow";
       return this.topMenuSource;
     }
@@ -1408,6 +1416,7 @@ main.js
       this.isDirty = false;
       this.replaceGuard = { open: false, title: "", message: "", onConfirm: null, confirmRect: null, cancelRect: null };
       this.layerRenamePrompt = { open: false, text: "", title: "Rename Layer", panelRect: null, confirmRect: null, cancelRect: null };
+      this.helpDetailPopup = { open: false, section: "", panelRect: null, closeRect: null };
       this.aboutPopup = { open: false, panelRect: null, closeRect: null };
       this.canvas.style.imageRendering = "pixelated";
 
@@ -1658,6 +1667,7 @@ main.js
     }
 
     closeMenuLikeSurfaces() {
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeOverflowPanel();
       this.controlSurface.closeCommandPalette();
@@ -1712,6 +1722,11 @@ main.js
       return "";
     }
     handleCloseSurfaceAction() {
+      if (this.helpDetailPopup.open) {
+        this.closeHelpDetailPopup();
+        this.showMessage("Help closed.");
+        return true;
+      }
       if (this.aboutPopup.open) {
         this.closeAboutPopup();
         this.showMessage("About closed.");
@@ -1773,6 +1788,136 @@ main.js
       this.aboutPopup.panelRect = null;
       this.aboutPopup.closeRect = null;
     }
+    closeHelpDetailPopup() {
+      this.helpDetailPopup.open = false;
+      this.helpDetailPopup.section = "";
+      this.helpDetailPopup.panelRect = null;
+      this.helpDetailPopup.closeRect = null;
+    }
+    getHelpSections() {
+      return {
+        file: {
+          title: "Files",
+          description: "Save, load, import, and export sprite work without leaving the canvas-first workflow.",
+          howToUse: "Open Files from the top bar, then choose the storage or export action you want.",
+          options: [
+            "Save Local: writes the current editor document to local browser storage.",
+            "Load Local: restores the most recently saved local document.",
+            "Import JSON / Export Editor JSON: move full editor documents in and out.",
+            "Export: opens game-friendly export choices such as sprite sheet and metadata."
+          ]
+        },
+        edit: {
+          title: "Edit",
+          description: "Quick access to undo/redo and selection-driven edit actions.",
+          howToUse: "Open Edit when you want command-style editing instead of direct canvas gestures.",
+          options: [
+            "Undo / Redo: step backward or forward through history.",
+            "Copy / Cut / Paste: act on the current selection or stored clipboard data.",
+            "Clear Selection: removes the current selection box.",
+            "Duplicate Frame / Delete Frame: manage the active frame from one place."
+          ]
+        },
+        tools: {
+          title: "Tools",
+          description: "Choose the active drawing or selection tool used on the main canvas.",
+          howToUse: "Open Tools, select the tool you want, then draw or manipulate pixels in the grid.",
+          options: [
+            "Brush / Erase / Fill: core paint operations.",
+            "Line / Rectangle / Fill Rectangle: pixel-perfect shape tools.",
+            "Eyedropper: sample the active color from artwork.",
+            "Select: create and move rectangular selections."
+          ]
+        },
+        frame: {
+          title: "Frame",
+          description: "Manage animation frames, ranges, and playback-ready frame ordering.",
+          howToUse: "Open Frame for single-frame actions or range actions tied to the timeline selection.",
+          options: [
+            "Add / Duplicate / Delete / Copy / Paste Frame: standard frame operations.",
+            "Duplicate Range / Delete Range / Shift Range: batch operations on contiguous selections.",
+            "Clear Range Selection: return to a single-frame focus.",
+            "Playback Range actions: set or clear the active preview/export segment."
+          ]
+        },
+        layer: {
+          title: "Layer",
+          description: "Control layer structure, ordering, visibility, lock state, and compositing behavior.",
+          howToUse: "Open Layer when you need to organize artwork beyond the active layer row controls.",
+          options: [
+            "Add / Duplicate / Delete / Rename: maintain the layer stack.",
+            "Move Up / Move Down: reorder the active layer.",
+            "Visibility / Solo / Lock: control what is seen and what is editable.",
+            "Merge Down / Flatten / Opacity / Blend Preview: compositing tools for finishing work."
+          ]
+        },
+        help: {
+          title: "Help",
+          description: "A quick reference menu for understanding each major top-level area of the editor.",
+          howToUse: "Open Help, choose the section you want, and read the focused detail popup.",
+          options: [
+            "Files / Edit / Tools / Frame / Layer: each entry explains its area and main actions.",
+            "Help: describes how the reference system works.",
+            "About: points to editor identity and quick orientation details."
+          ]
+        },
+        about: {
+          title: "About",
+          description: "Overview of the Sprite Editor, its workflow intent, and where it fits in the toolset.",
+          howToUse: "Use About for high-level orientation, then return to Help or the working menus for specifics.",
+          options: [
+            "Version and identity: confirms which editor surface you are using.",
+            "Workflow summary: reinforces the canvas-native, game-ready editing approach.",
+            "Shortcut reminders: points you to command palette and close-surface controls."
+          ]
+        }
+      };
+    }
+    openHelpMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.closeAboutPopup();
+      this.closeHelpDetailPopup();
+      this.controlSurface.closeCommandPalette();
+      const sections = this.getHelpSections();
+      const items = [
+        { id: "help-menu-files", text: "Files", action: () => this.openHelpDetailPopup("file") },
+        { id: "help-menu-edit", text: "Edit", action: () => this.openHelpDetailPopup("edit") },
+        { id: "help-menu-tools", text: "Tools", action: () => this.openHelpDetailPopup("tools") },
+        { id: "help-menu-frame", text: "Frame", action: () => this.openHelpDetailPopup("frame") },
+        { id: "help-menu-layer", text: "Layer", action: () => this.openHelpDetailPopup("layer") },
+        { id: "help-menu-help", text: "Help", action: () => this.openHelpDetailPopup("help") },
+        { id: "help-menu-about", text: "About", action: () => this.openHelpDetailPopup("about") }
+      ];
+      this.controlSurface.toggleTopMenu("help", items);
+      this.renderAll();
+      return true;
+    }
+    openHelpDetailPopup(section) {
+      const sections = this.getHelpSections();
+      if (!sections[section]) return false;
+      if (!this.canOpenTransientSurface()) return false;
+      this.closeMenuLikeSurfaces();
+      this.helpDetailPopup.open = true;
+      this.helpDetailPopup.section = section;
+      this.renderAll();
+      return true;
+    }
+    handleHelpDetailPointer(p) {
+      if (!this.helpDetailPopup.open || !p) return false;
+      const inRect = (r) => r && p.x >= r.x && p.y >= r.y && p.x <= r.x + r.w && p.y <= r.y + r.h;
+      if (inRect(this.helpDetailPopup.closeRect)) {
+        this.closeHelpDetailPopup();
+        this.showMessage("Help closed.");
+        this.renderAll();
+        return true;
+      }
+      if (this.helpDetailPopup.panelRect && !inRect(this.helpDetailPopup.panelRect)) {
+        this.closeHelpDetailPopup();
+        this.renderAll();
+        return false;
+      }
+      return true;
+    }
     openAboutPopup() {
       if (!this.canOpenTransientSurface()) return false;
       this.closeMenuLikeSurfaces();
@@ -1799,6 +1944,7 @@ main.js
 
     openFileMenu(itemsOverride = null) {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = Array.isArray(itemsOverride) ? itemsOverride : [
@@ -2151,6 +2297,7 @@ main.js
     }
     openPlaybackRangeMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
@@ -2179,6 +2326,7 @@ main.js
     }
     openToolsMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const tools = [
@@ -2202,6 +2350,7 @@ main.js
     }
     openEditMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const hasSelection = !!this.document.selection;
@@ -2225,6 +2374,7 @@ main.js
     }
     openFrameMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const range = this.getFrameRangeSelection();
@@ -2249,6 +2399,7 @@ main.js
     }
     openLayerMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
@@ -2408,6 +2559,10 @@ main.js
     onPointerDown(e) {
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
+      if (this.helpDetailPopup.open) {
+        const consumed = this.handleHelpDetailPointer(p);
+        if (consumed) return;
+      }
       if (this.aboutPopup.open) {
         const consumed = this.handleAboutPopupPointer(p);
         if (consumed) return;
@@ -2887,6 +3042,7 @@ main.js
 
     openCommandPalette() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeOverflowPanel();
       this.commandPaletteCommands = this.createCommandPaletteCommands();
@@ -3344,6 +3500,7 @@ main.js
     }
     openPaletteWorkflowMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
@@ -3529,6 +3686,7 @@ main.js
     }
     openExportMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      this.closeHelpDetailPopup();
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
@@ -3993,9 +4151,58 @@ main.js
       this.drawPreviewPanel();
       this.drawSheetPanel();
       this.drawBottomStatus();
+      this.drawHelpDetailPopup();
       this.drawAboutPopup();
       this.drawReplaceGuard();
       this.drawLayerRenamePrompt();
+    }
+
+    drawHelpDetailPopup() {
+      if (!this.helpDetailPopup.open) return;
+      const section = this.getHelpSections()[this.helpDetailPopup.section];
+      if (!section) {
+        this.closeHelpDetailPopup();
+        return;
+      }
+      const frame = this.controlSurface.layout.appFrame;
+      const panelW = 620;
+      const panelH = 330;
+      const x = frame.x + Math.floor((frame.width - panelW) * 0.5);
+      const y = frame.y + Math.floor((frame.height - panelH) * 0.5);
+      this.helpDetailPopup.panelRect = { x, y, w: panelW, h: panelH };
+      this.ctx.fillStyle = "rgba(2, 6, 12, 0.7)";
+      this.ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+      this.ctx.fillStyle = "#162435";
+      this.ctx.fillRect(x, y, panelW, panelH);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "bold 20px Arial";
+      this.ctx.fillText(section.title, x + 20, y + 30);
+      this.ctx.font = "13px Arial";
+      this.ctx.fillStyle = "#9fb8cf";
+      this.ctx.fillText("Short description", x + 20, y + 58);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.fillText(section.description, x + 20, y + 78);
+      this.ctx.fillStyle = "#9fb8cf";
+      this.ctx.fillText("How to use", x + 20, y + 108);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.fillText(section.howToUse, x + 20, y + 128);
+      this.ctx.fillStyle = "#9fb8cf";
+      this.ctx.fillText("Options", x + 20, y + 158);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "12px Arial";
+      section.options.forEach((line, index) => {
+        this.ctx.fillText(`- ${line}`, x + 20, y + 182 + index * 24);
+      });
+      const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
+      this.helpDetailPopup.closeRect = closeRect;
+      this.ctx.fillStyle = "#27435a";
+      this.ctx.fillRect(closeRect.x, closeRect.y, closeRect.w, closeRect.h);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(closeRect.x + 0.5, closeRect.y + 0.5, closeRect.w - 1, closeRect.h - 1);
+      this.ctx.fillStyle = "#e6f2ff";
+      this.ctx.fillText("Close", closeRect.x + 28, closeRect.y + 20);
     }
 
     drawAboutPopup() {
@@ -4019,7 +4226,7 @@ main.js
       this.ctx.fillStyle = "#b9c8d8";
       this.ctx.fillText("Sprite Editor v2.2", x + 18, y + 64);
       this.ctx.fillText("Canvas-native pixel editor for game-ready sprite workflows.", x + 18, y + 88);
-      this.ctx.fillText("Menus: Files, Tools, Edit, Frame, Layer, About", x + 18, y + 112);
+      this.ctx.fillText("Menus: Files, Edit, Tools, Frame, Layer, Help, About", x + 18, y + 112);
       this.ctx.fillText("Shortcuts: Ctrl+P command palette, Ctrl+W close surface", x + 18, y + 136);
       this.ctx.fillText("Cancel interaction: right-click or Backspace", x + 18, y + 160);
       const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };

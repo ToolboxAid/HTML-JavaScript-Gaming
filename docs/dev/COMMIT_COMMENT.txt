@@ -1,1 +1,1 @@
-Sprite Editor v6.5.1 fix About popup rendering, close behavior, and shared menu handling
+Sprite Editor v6.6 add Help menu with topic details, swap Edit/Tools order, and keep About popup intact
