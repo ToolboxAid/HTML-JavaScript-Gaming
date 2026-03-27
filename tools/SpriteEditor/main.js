@@ -642,15 +642,9 @@ main.js
     }
 
     resolveDensity() {
-      const selectedMode = this.app.uiDensityMode;
       const presets = this.getDensityPresets();
-      const display = this.app.viewport.displayRect || { width: LOGICAL_W, height: LOGICAL_H };
-      const scaleW = display.width / LOGICAL_W;
-      const scaleH = display.height / LOGICAL_H;
-      const fitScale = Math.min(scaleW, scaleH);
-      const effectiveMode = selectedMode === "auto"
-        ? (fitScale < 0.86 ? "pro" : "standard")
-        : selectedMode;
+      const selectedMode = "pro";
+      const effectiveMode = "pro";
       return { selectedMode, effectiveMode, config: presets[effectiveMode] };
     }
 
@@ -685,9 +679,6 @@ main.js
     add(kind, id, x, y, w, h, text, action, extra = {}) { this.controls.push({ kind, id, x, y, w, h, text, action, ...extra }); }
 
     getTopControlPolicy(effectiveMode, selectedMode) {
-      const modeLabel = selectedMode === "auto"
-        ? `Mode: Auto (${effectiveMode === "pro" ? "Pro" : "Standard"})`
-        : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard");
       const fileMenuItems = [
         { id: "file-save", text: "Save Local", action: () => this.app.saveLocal() },
         { id: "file-load", text: "Load Local", action: () => this.app.loadLocal() },
@@ -754,7 +745,6 @@ main.js
         }
       ];
       return {
-        mode: { id: "top-mode", tier: 1, labels: [modeLabel, selectedMode === "auto" ? "Mode: Auto" : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard"), "Mode"], action: () => this.app.toggleDensityMode() },
         pixel: { id: "top-pixel", labels: this.app.viewport.pixelPerfect ? ["Pixel: On", "Pixel", "Px"] : ["Pixel: Off", "Pixel", "Px"], action: () => this.app.togglePixelPerfect() },
         zoom: {
           out: { id: "top-zoom-out", label: "Zoom -" },
@@ -1008,15 +998,13 @@ main.js
         const tryShortFullscreen = fitLevel >= 1;
         const fsLabel = tryShortFullscreen ? fullscreenShort : fullscreenLabel;
         const fsW = tryShortFullscreen ? fullscreenWShort : fullscreenWLong;
-        const modeText = policy.mode.labels[Math.min(fitLevel, 2)];
-        const modeW = this.measureButtonWidth(this.app.ctx, modeText, minBtn + 10, padX);
         const pixelText = policy.pixel.labels[Math.min(fitLevel, 2)];
         const pixelWidth = this.measureButtonWidth(this.app.ctx, pixelText, minBtn, padX);
         const showZoom = fitLevel <= 2;
         const zoomW = showZoom ? (zoomBtnW * 2 + zoomResetW + pixelWidth + spacing * 3) : 0;
         const overflowSlots = fitLevel >= 2 ? 1 : 0;
         const overflowW = overflowSlots ? this.measureButtonWidth(this.app.ctx, "More", minBtn, padX) : 0;
-        const rightReserve = fsW + spacing + modeW + (showZoom ? (spacing + zoomW) : 0) + (overflowSlots ? (spacing + overflowW) : 0);
+        const rightReserve = fsW + (showZoom ? (spacing + zoomW) : 0) + (overflowSlots ? (spacing + overflowW) : 0);
         const rightStart = top.x + top.width - d.padding - rightReserve;
         const availableRight = rightStart - spacing;
         const leftControls = [];
@@ -1038,7 +1026,7 @@ main.js
           leftX += w + spacing;
         }
         return {
-          fsLabel, fsW, modeText, modeW, pixelText, pixelWidth, showZoom, overflowSlots, overflowW, rightStart, leftControls
+          fsLabel, fsW, pixelText, pixelWidth, showZoom, overflowSlots, overflowW, rightStart, leftControls
         };
       };
 
@@ -1062,7 +1050,6 @@ main.js
         addRight(policy.zoom.reset.id, zoomResetW, policy.zoom.reset.labels[Math.min(level, 2)], () => this.app.resetZoom());
         addRight(policy.pixel.id, topLayout.pixelWidth || pixelW, topLayout.pixelText || policy.pixel.labels[Math.min(level, 2)], policy.pixel.action);
       }
-      addRight(policy.mode.id, topLayout.modeW, topLayout.modeText, policy.mode.action);
       if (topLayout.overflowSlots && hidden.length) {
         const overflowText = `More (${hidden.length})`;
         const overflowW = this.measureButtonWidth(this.app.ctx, overflowText, minBtn, padX);
@@ -1466,8 +1453,8 @@ main.js
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
       this.gridRect = null;
-      this.uiDensityMode = "auto";
-      this.uiDensityEffectiveMode = "standard";
+      this.uiDensityMode = "pro";
+      this.uiDensityEffectiveMode = "pro";
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
       this.isPanning = false;
@@ -3462,14 +3449,9 @@ main.js
     }
 
     toggleDensityMode() {
-      const order = ["auto", "standard", "pro"];
-      const i = order.indexOf(this.uiDensityMode);
-      this.uiDensityMode = order[(i + 1) % order.length];
-      if (this.uiDensityMode === "auto") {
-        this.showMessage("Mode: Auto.");
-      } else {
-        this.showMessage(this.uiDensityMode === "pro" ? "Mode: Pro." : "Mode: Standard.");
-      }
+      this.uiDensityMode = "pro";
+      this.uiDensityEffectiveMode = "pro";
+      this.showMessage("Mode locked to Pro.");
       this.renderAll();
     }
 
@@ -3650,8 +3632,7 @@ main.js
         { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget() },
         { id: "palette-menu-scope-layer", text: "Scope Active Layer", action: () => this.setPaletteReplaceScope("active_layer") },
         { id: "palette-menu-scope-frame", text: "Scope Current Frame", action: () => this.setPaletteReplaceScope("current_frame") },
-        { id: "palette-menu-scope-range", text: "Scope Selected Range", action: () => this.setPaletteReplaceScope("selected_range") },
-        { id: "palette-menu-replace", text: "Replace Color", action: () => this.replacePaletteColor() }
+        { id: "palette-menu-scope-range", text: "Scope Selected Range", action: () => this.setPaletteReplaceScope("selected_range") }
       ];
       this.controlSurface.toggleTopMenu("palette", items);
       this.renderAll();
@@ -4197,7 +4178,7 @@ main.js
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         doc: this.document.buildExportPayload(),
-        uiDensityMode: this.uiDensityMode
+        uiDensityMode: "pro"
       }));
       this.markCleanBaseline();
       this.showMessage("Saved locally.");
@@ -4210,11 +4191,12 @@ main.js
           const parsed = JSON.parse(raw);
           if (parsed && parsed.doc) {
             this.document.importPayload(parsed.doc);
-            this.uiDensityMode = ["auto", "standard", "pro"].includes(parsed.uiDensityMode) ? parsed.uiDensityMode : "standard";
+            this.uiDensityMode = "pro";
           } else {
             this.document.importPayload(parsed);
-            this.uiDensityMode = "auto";
+            this.uiDensityMode = "pro";
           }
+          this.uiDensityEffectiveMode = "pro";
           this.clearHistoryStacks();
           this.markCleanBaseline();
           this.showMessage("Loaded local save.");
