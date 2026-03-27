@@ -1183,10 +1183,8 @@ main.js
       });
       y = paletteY + sh + d.spacing + 4;
       if (this.app.document.palette.length > swatchCount) {
-        this.add("label","palette-more",x,y,rw,18,`+${this.app.document.palette.length - swatchCount} more colors in Palette Menu`,null);
-        y += 22;
+        this.add("label","palette-more",x,y,rw,18,`+${this.app.document.palette.length - swatchCount} more colors in top Palette menu`,null);
       }
-      this.add("button","palette-menu",x,y,rw,34,"Palette",()=>this.app.openPaletteWorkflowMenu());
     }
 
     getControlAt(x,y) {

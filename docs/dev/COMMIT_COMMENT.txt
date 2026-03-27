@@ -1,1 +1,1 @@
-Sprite Editor v6.8.4 split true palette presets into Palettes submenu and keep utility actions in main Palette menu
+Sprite Editor v6.8.5 fix Palette->Palettes submenu visibility and remove duplicate sidebar Palette button
