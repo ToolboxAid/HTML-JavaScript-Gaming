@@ -1,1 +1,1 @@
-Sprite Editor v6.9.5 move grid row and column controls into a guaranteed-visible Grid section
+Sprite Editor v7.0 fix interaction model, selection data loss, palette scroll, and timeline stability

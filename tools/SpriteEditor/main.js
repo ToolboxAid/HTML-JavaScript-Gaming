@@ -1164,7 +1164,7 @@ main.js
       y = right.y + d.padding;
       const rw = right.width - (d.padding * 2);
       this.add("label","lbl-palette",x,y,rw,d.labelHeight,`PALETTE: ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null); y += d.labelHeight + d.spacing;
-      this.add("label","palette-current",x,y,rw,18,`Current ${String(this.app.document.currentColor || "").toUpperCase()}`,null); y += 20;
+      this.add("label","palette-current",x,y,rw,18,this.app.getCurrentColorDisplayText(),null); y += 20;
       const sortTop = right.y + right.height - d.padding - 64;
       const sortButtonGap = 6;
       const sortButtonH = 24;
@@ -1185,7 +1185,7 @@ main.js
       const maxScroll = Math.max(0, contentHeight - viewportHeight);
       this.app.paletteSidebarScroll = Math.max(0, Math.min(maxScroll, this.app.paletteSidebarScroll || 0));
       const startRow = Math.max(0, Math.floor(this.app.paletteSidebarScroll / rowStride));
-      const endRow = Math.min(totalRows - 1, Math.ceil((this.app.paletteSidebarScroll + viewportHeight) / rowStride));
+      const endRow = Math.min(totalRows - 1, Math.floor((this.app.paletteSidebarScroll + viewportHeight - 1) / rowStride));
       const visibleStart = startRow * cols;
       const visibleEnd = Math.min(paletteEntries.length, ((endRow + 1) * cols));
       this.app.paletteSidebarMetrics = {
@@ -2411,7 +2411,6 @@ main.js
         { id: "play_pause", x: transportX, y: transportY, w: transportW, h: transportH },
         { id: "stop", x: transportX, y: transportY + (transportH + transportGap), w: transportW, h: transportH },
         { id: "loop", x: transportX, y: transportY + (transportH + transportGap) * 2, w: transportW, h: transportH },
-        { id: "range", x: transportX, y: transportY + (transportH + transportGap) * 3, w: transportW, h: transportH },
         { id: "fps_down", x: x + w - 92, y: transportY, w: 20, h: transportH },
         { id: "fps_up", x: x + w - 24, y: transportY, w: 20, h: transportH }
       ];
@@ -2680,7 +2679,9 @@ main.js
       const cdx = Math.max(maxLeft, Math.min(maxRight, dx));
       const cdy = Math.max(maxUp, Math.min(maxDown, dy));
       if (!cdx && !cdy) return false;
-      const block = this.document.readSelection();
+      const block = this.selectionMoveSession && this.selectionMoveSession.block
+        ? this.selectionMoveSession.block
+        : this.document.readSelection();
       if (!block) return false;
       const frame = this.document.activeLayer.pixels;
       for (let y = 0; y < s.height; y += 1) {
@@ -2703,8 +2704,15 @@ main.js
     beginSelectionMove(cell) {
       if (!this.isCellInsideSelection(cell)) return false;
       if (!this.canEditActiveLayer(true)) return false;
+      const block = this.document.readSelection();
+      if (!block) return false;
       this.selectionMoveSession = {
         before: this.captureHistoryState(),
+        block: {
+          width: block.width,
+          height: block.height,
+          pixels: this.cloneGridData(block.pixels)
+        },
         lastCell: { x: cell.x, y: cell.y }
       };
       return true;
@@ -2826,7 +2834,6 @@ main.js
         if (timelineControl === "play_pause") this.togglePlayback();
         else if (timelineControl === "stop") this.stopPlayback();
         else if (timelineControl === "loop") this.togglePlaybackLoop();
-        else if (timelineControl === "range") this.openPlaybackRangeMenu();
         else if (timelineControl === "fps_down") this.adjustPlaybackFps(-1);
         else if (timelineControl === "fps_up") this.adjustPlaybackFps(1);
         this.renderAll();
@@ -2954,13 +2961,6 @@ main.js
     onKeyDown(e) {
       const k = (e.key || "").toLowerCase();
       if (this.isLayerRenameOpen()) {
-        if ((e.ctrlKey || e.metaKey) && k === "w") {
-          this.closeLayerRenamePrompt();
-          this.showMessage("Layer rename canceled.");
-          e.preventDefault();
-          this.renderAll();
-          return;
-        }
         if (k === "enter") {
           this.confirmLayerRename();
           e.preventDefault();
@@ -2974,22 +2974,6 @@ main.js
         }
         if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
           if (this.layerRenamePrompt.text.length < 40) this.layerRenamePrompt.text += e.key;
-          e.preventDefault();
-          this.renderAll();
-          return;
-        }
-      }
-      if (this.replaceGuard.open) {
-        if ((e.ctrlKey || e.metaKey) && k === "w") {
-          this.closeReplaceGuard();
-          this.showMessage("Replace canceled.");
-          e.preventDefault();
-          this.renderAll();
-          return;
-        }
-      }
-      if (!this.isTypingTarget(e.target) && (e.ctrlKey || e.metaKey) && k === "w") {
-        if (this.handleCloseSurfaceAction()) {
           e.preventDefault();
           this.renderAll();
           return;
@@ -3082,7 +3066,6 @@ main.js
         "ctrl+y": "system.redo",
         "ctrl+shift+z": "system.redo",
         "ctrl+p": "system.commandPalette",
-        "ctrl+w": "system.closeSurface",
         "ctrl+shift+r": "layer.rename",
         "alt+arrowup": "layer.moveUp",
         "alt+arrowdown": "layer.moveDown",
@@ -3805,6 +3788,16 @@ main.js
         return a.index - b.index;
       });
       return entries;
+    }
+    getCurrentColorDisplayText() {
+      const currentHex = String(this.document.currentColor || "").toUpperCase();
+      let name = "";
+      if (typeof palettesList === "object" && palettesList && this.currentPalettePreset && Array.isArray(palettesList[this.currentPalettePreset])) {
+        const presetEntries = palettesList[this.currentPalettePreset];
+        const match = presetEntries.find((entry) => entry && String(entry.hex || "").toUpperCase() === currentHex && typeof entry.name === "string" && entry.name.trim());
+        if (match) name = match.name.trim();
+      }
+      return name ? `Current: ${currentHex}  Named: ${name}` : `Current: ${currentHex}`;
     }
     setCurrentColor(c) { this.document.currentColor = c; this.showMessage("Color selected."); }
     setPaletteSortMode(mode) {
@@ -4594,7 +4587,7 @@ main.js
       this.ctx.fillText("Sprite Editor v2.2", x + 18, y + 64);
       this.ctx.fillText("Canvas-native pixel editor for game-ready sprite workflows.", x + 18, y + 88);
       this.ctx.fillText("Menus: Files, Edit, Tools, Frame, Layer, Help, About", x + 18, y + 112);
-      this.ctx.fillText("Shortcuts: Ctrl+P command palette, Ctrl+W close surface", x + 18, y + 136);
+      this.ctx.fillText("Shortcuts: Ctrl+P command palette", x + 18, y + 136);
       this.ctx.fillText("Cancel interaction: right-click or Backspace", x + 18, y + 160);
       const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
       this.aboutPopup.closeRect = closeRect;
@@ -4697,12 +4690,11 @@ main.js
       ctx.strokeRect(t.x + 0.5, t.y + 0.5, t.w - 1, t.h - 1);
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 12px Arial";
-      ctx.fillText("TIMELINE", t.x + 10, t.y + 14);
+      ctx.fillText("TIMELINE", t.x + 78, t.y + 14);
       (t.transport || []).forEach((c) => {
         ctx.fillStyle = "#1a2733";
         if (c.id === "play_pause" && this.playback.isPlaying) ctx.fillStyle = "#244d67";
         if (c.id === "loop" && this.playback.loop) ctx.fillStyle = "#244d67";
-        if (c.id === "range" && this.getPlaybackRange().enabled) ctx.fillStyle = "#6b4f1d";
         ctx.fillRect(c.x, c.y, c.w, c.h);
         ctx.strokeStyle = "rgba(255,255,255,0.2)";
         ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
@@ -4711,7 +4703,6 @@ main.js
         if (c.id === "play_pause") ctx.fillText(this.playback.isPlaying ? "Pause" : "Play", c.x + 8, c.y + 12);
         else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + 12);
         else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + 12);
-        else if (c.id === "range") ctx.fillText("Range", c.x + 8, c.y + 12);
         else if (c.id === "fps_down") {
           const textW = ctx.measureText("-").width;
           ctx.fillText("-", c.x + Math.floor((c.w - textW) * 0.5), c.y + c.h / 2);

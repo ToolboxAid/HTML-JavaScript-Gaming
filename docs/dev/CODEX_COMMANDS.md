@@ -2,13 +2,14 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply TOOLS_SPRITE_EDITOR_V6_9_5_GRID_CONTROLS_VISIBLE in tools/SpriteEditor/main.js
+Apply TOOLS_SPRITE_EDITOR_V7_0_INTERACTION_AND_CORE_FIXES in tools/SpriteEditor/main.js
 
 VALIDATIONS:
-- Grid section is visibly present
-- Add Row is visible and clickable
-- Remove Row is visible and clickable
-- Add Column is visible and clickable
-- Remove Column is visible and clickable
-- Controls do not overlap adjacent UI
+- Ctrl+W not used
+- Backspace cancel works
+- Selection tool preserves data
+- Palette scroll reaches end
+- Timeline range works or is removed
+- Timeline header visible
+- Current color line correct
 - No console errors
