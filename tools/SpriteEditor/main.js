@@ -1108,7 +1108,6 @@ main.js
       y = right.y + d.padding;
       const rw = right.width - (d.padding * 2);
       this.add("label","lbl-layers",x,y,rw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
-      this.add("button","layer-add",x,y,rw,bh,"Add Layer",()=>this.app.addLayer()); y += bh + d.spacing;
       const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
       const layers = af.layers || [];
       layers.forEach((l, i) => {
