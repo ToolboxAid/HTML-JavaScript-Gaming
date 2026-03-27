@@ -683,9 +683,9 @@ main.js
         { id: "file-new", text: "New", action: () => this.app.newDocument() },
         { id: "file-open", text: "Open", action: () => this.app.loadLocal() },
         { id: "file-save", text: "Save", action: () => this.app.saveLocal() },
-        { id: "file-import", text: "Import JSON", action: () => this.app.openImport() },
-        { id: "file-export-menu", text: "Export", action: () => this.app.openExportMenu() },
-        { id: "file-export-editor", text: "Export Editor JSON", action: () => this.app.exportJson(true) }
+        { id: "file-import-editor", text: "Import Editor JSON", action: () => this.app.openImport() },
+        { id: "file-export-editor", text: "Export Editor JSON", action: () => this.app.exportJson(true) },
+        { id: "file-export-menu", text: "Export", action: () => this.app.openExportMenu() }
       ];
       const defs = [
         {
@@ -771,6 +771,7 @@ main.js
     getMenuAnchorId() {
       if (this.topMenuSource === "tools") return "top-tools";
       if (this.topMenuSource === "file") return "top-file";
+      if (this.topMenuSource === "file-export") return "top-file";
       if (this.topMenuSource === "edit") return "top-edit";
       if (this.topMenuSource === "frame") return "top-frame";
       if (this.topMenuSource === "layer") return "top-layer";
@@ -1292,9 +1293,12 @@ main.js
       this.pressed = null;
       if (!ok) return false;
       if (typeof c.action === "function") {
+        const previousMenuSource = this.topMenuSource;
         c.action();
         if (c.isCommandRow) this.closeCommandPalette();
-        if (c.id.indexOf("overflow-item-") === 0) this.closeOverflowPanel();
+        if (c.id.indexOf("overflow-item-") === 0 && this.topMenuSource === previousMenuSource) {
+          this.closeOverflowPanel();
+        }
         return true;
       }
       return false;
@@ -1361,7 +1365,7 @@ main.js
           const baseY = c.y + c.h / 2;
           ctx.fillStyle = "#91a3b6";
           ctx.font = "bold 12px Arial";
-          const leftText = `Current: ${currentHex} [■] Named: ${name}`;
+          const leftText = `Current: ${currentHex}  ■   Named: ${name}`;
           ctx.fillText(leftText, c.x, baseY);
           const leftWidth = ctx.measureText(`Current: ${currentHex} `).width;
           const sw = 12;
@@ -2019,7 +2023,7 @@ main.js
           options: [
             "New / Open / Save / Export: the main document flow for starting, restoring, saving, and shipping work.",
             "Open uses the existing local browser save for fast restore.",
-            "Import JSON / Export Editor JSON: move full editor documents in and out.",
+            "Import Editor JSON / Export Editor JSON: move full editor documents in and out.",
             "Export: opens game-friendly export choices such as sprite sheet and metadata."
           ]
         },
@@ -2210,9 +2214,9 @@ main.js
         { id: "file-new", text: "New", action: () => this.newDocument() },
         { id: "file-open", text: "Open", action: () => this.loadLocal() },
         { id: "file-save", text: "Save", action: () => this.saveLocal() },
-        { id: "file-import", text: "Import JSON", action: () => this.openImport() },
-        { id: "file-export-menu", text: "Export", action: () => this.openExportMenu() },
-        { id: "file-export-editor", text: "Export Editor JSON", action: () => this.exportJson(true) }
+        { id: "file-import-editor", text: "Import Editor JSON", action: () => this.openImport() },
+        { id: "file-export-editor", text: "Export Editor JSON", action: () => this.exportJson(true) },
+        { id: "file-export-menu", text: "Export", action: () => this.openExportMenu() }
       ];
       this.controlSurface.toggleTopMenu("file", items);
       this.renderAll();
@@ -3859,7 +3863,7 @@ main.js
         const match = presetEntries.find((entry) => entry && String(entry.hex || "").toUpperCase() === currentHex && typeof entry.name === "string" && entry.name.trim());
         if (match) name = match.name.trim();
       }
-      return `Current: ${currentHex} [■] Named: ${name || "Unnamed"}`;
+      return `Current: ${currentHex}  ■   Named: ${name || "Unnamed"}`;
     }
     setCurrentColor(c) { this.document.currentColor = c; this.showMessage("Color selected."); }
     setPaletteSortMode(mode) {
@@ -4118,7 +4122,9 @@ main.js
         { id: "export-menu-animation", text: "Animation JSON", action: () => this.exportAnimationJson() },
         { id: "export-menu-package", text: "Export Package", action: () => this.exportPackageJson() }
       ];
-      return this.openFileMenu(items);
+      this.controlSurface.toggleTopMenu("file-export", items);
+      this.renderAll();
+      return true;
     }
     replacePaletteColor() {
       const source = this.paletteWorkflow.source;
