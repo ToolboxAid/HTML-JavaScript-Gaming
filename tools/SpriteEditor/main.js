@@ -697,6 +697,13 @@ main.js
       ];
       const defs = [
         {
+          id: "top-tools",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["Tools", "Tools", "T"],
+          action: () => this.app.openToolsMenu()
+        },
+        {
           id: "top-file",
           tier: 1,
           overflowEligible: false,
@@ -750,6 +757,7 @@ main.js
       this.topMenuSource = null;
     }
     getMenuAnchorId() {
+      if (this.topMenuSource === "tools") return "top-tools";
       if (this.topMenuSource === "file") return "top-file";
       if (this.topMenuSource === "edit") return "top-edit";
       if (this.topMenuSource === "frame") return "top-frame";
@@ -1045,10 +1053,9 @@ main.js
       y = left.y + d.padding;
       const bw = left.width - (d.padding * 2);
       const bh = d.sideButtonHeight;
-      this.add("label","lbl-tools",x,y,bw,d.labelHeight,"TOOLS",null); y += d.labelHeight + d.spacing;
-      [["brush","Brush"],["erase","Erase"],["fill","Fill"],["line","Line"],["rect","Rect"],["fillrect","Fill Rect"],["eyedropper","Eye"],["select","Select"]].forEach(([tool,t]) => {
-        this.add("button","tool-"+tool,x,y,bw,bh,t,()=>this.app.setTool(tool),{tool}); y += bh + d.spacing;
-      });
+      const activeToolLabel = this.app.getToolLabel(this.app.activeTool);
+      this.add("label","lbl-tools",x,y,bw,d.labelHeight,"ACTIVE TOOL",null); y += d.labelHeight + d.spacing;
+      this.add("button","tool-active-readout",x,y,bw,bh,activeToolLabel,null,{tool:this.app.activeTool}); y += bh + d.spacing;
       const brushToolActive = this.app.activeTool === "brush" || this.app.activeTool === "erase";
       const shapeToolActive = this.app.activeTool === "line" || this.app.activeTool === "rect" || this.app.activeTool === "fillrect";
       if (brushToolActive) {
@@ -2123,6 +2130,41 @@ main.js
         { id: "playback-menu-end", text: "Jump To Range End", action: () => this.jumpToPlaybackRangeEdge(true) }
       ];
       this.controlSurface.toggleTopMenu("playback-range-menu", items);
+      this.renderAll();
+      return true;
+    }
+    getToolLabel(tool) {
+      const labels = {
+        brush: "Brush",
+        erase: "Erase",
+        fill: "Fill",
+        line: "Line",
+        rect: "Rectangle",
+        fillrect: "Fill Rectangle",
+        eyedropper: "Eyedropper",
+        select: "Select"
+      };
+      return labels[tool] || String(tool || "Tool");
+    }
+    openToolsMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeCommandPalette();
+      const tools = [
+        ["brush", "Brush"],
+        ["erase", "Erase"],
+        ["fill", "Fill"],
+        ["line", "Line"],
+        ["rect", "Rectangle"],
+        ["fillrect", "Fill Rectangle"],
+        ["eyedropper", "Eyedropper"],
+        ["select", "Select"]
+      ];
+      const items = tools.map(([tool, label]) => ({
+        id: `tools-menu-${tool}`,
+        text: `${this.activeTool === tool ? "* " : ""}${label}`,
+        action: () => this.setTool(tool)
+      }));
+      this.controlSurface.toggleTopMenu("tools", items);
       this.renderAll();
       return true;
     }

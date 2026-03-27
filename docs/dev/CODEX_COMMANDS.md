@@ -2,18 +2,16 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply TOOLS_SPRITE_EDITOR_V6_3_REMOVE_DUPLICATE_FRAMES_UI_AND_FINISH_INPUT_REMAP in tools/SpriteEditor/main.js
+Apply TOOLS_SPRITE_EDITOR_V6_4_MOVE_ALL_TOOLS_TO_TOP_MENU in tools/SpriteEditor/main.js
 
 VALIDATIONS:
-- Only one frame UI remains, and it is the timeline
-- Legacy duplicate Frames surface is removed
-- ESC exits fullscreen only and does not close/cancel editor UI or interactions
-- Ctrl+W closes menus
-- Ctrl+W closes rename overlay
-- Ctrl+W closes replace/confirm overlay
-- Ctrl+W closes command palette
-- Backspace cancels active interactions when not typing
-- Backspace cancel shows visible cancel feedback
-- Right-click still cancels active interactions
-- No cancel-only history entry is created
+- A top-level Tools menu exists
+- All tool entries are available from the Tools menu
+- Any old duplicated tool-selection surface is removed
+- Active tool is visibly indicated
+- Selecting each tool from the Tools menu activates it correctly
+- Existing non-conflicting tool shortcuts still work
+- Tools menu closes on click-outside
+- Tools menu closes with Ctrl+W
+- Only one top menu is open at a time
 - No console errors
