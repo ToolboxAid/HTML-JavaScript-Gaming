@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v5.4 polishing UX and interaction consistency across menus, panels, and editor states
+Build Sprite Editor v6.0 hardening release-candidate reliability, normalization, and edge-case safety

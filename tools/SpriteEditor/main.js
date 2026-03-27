@@ -63,7 +63,7 @@ main.js
     constructor() {
       this.cols = 16;
       this.rows = 16;
-      this.palette = ["#000000", "#ffffff", "#00ccff", "#f59e0b", "#22c55e", "#ef4444", "#8b5cf6"];
+      this.palette = this.getDefaultPalette();
       this.currentColor = "#00ccff";
       this.frames = [this.makeFrame("Frame 1"), this.makeFrame("Frame 2"), this.makeFrame("Frame 3")];
       this.activeFrameIndex = 0;
@@ -74,6 +74,7 @@ main.js
       this.blendPreviewMode = "normal";
       this.sheet = { layout: "horizontal", padding: 4, spacing: 2, transparent: true, backgroundColor: "#ffffff" };
     }
+    getDefaultPalette() { return ["#000000", "#ffffff", "#00ccff", "#f59e0b", "#22c55e", "#ef4444", "#8b5cf6"]; }
     makeGrid(fill = null) { return Array.from({ length: this.rows }, () => Array.from({ length: this.cols }, () => fill)); }
     cloneGrid(grid) { return grid.map((r) => r.slice()); }
     cloneLayer(layer, fallbackIndex = 0) {
@@ -113,7 +114,28 @@ main.js
         activeLayerIndex: 0
       };
     }
-    get activeFrame() { return this.frames[this.activeFrameIndex]; }
+    ensureDocumentState() {
+      const nextCols = Math.max(1, Math.min(256, Math.floor(Number(this.cols) || 16)));
+      const nextRows = Math.max(1, Math.min(256, Math.floor(Number(this.rows) || 16)));
+      this.cols = nextCols;
+      this.rows = nextRows;
+      const palette = Array.isArray(this.palette)
+        ? this.palette.filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex)).slice(0, 64)
+        : [];
+      this.palette = palette.length ? palette : this.getDefaultPalette();
+      if (this.palette.indexOf(this.currentColor) < 0) this.currentColor = this.palette[0];
+      if (!Array.isArray(this.frames) || !this.frames.length) this.frames = [this.makeFrame("Frame 1")];
+      this.frames = this.frames.map((frame, index) => {
+        const next = frame && typeof frame === "object" ? frame : this.makeFrame(`Frame ${index + 1}`);
+        if (!next.id) next.id = "f_" + Math.random().toString(36).slice(2, 10);
+        if (!next.name) next.name = `Frame ${index + 1}`;
+        return this.ensureFrameLayers(next);
+      });
+      this.activeFrameIndex = Math.max(0, Math.min(Math.floor(Number(this.activeFrameIndex) || 0), this.frames.length - 1));
+      this.ensureFrameLayers(this.frames[this.activeFrameIndex]);
+      return true;
+    }
+    get activeFrame() { this.ensureDocumentState(); return this.frames[this.activeFrameIndex]; }
     ensureFrameLayers(frame) {
       if (!frame.layers || !Array.isArray(frame.layers) || !frame.layers.length) {
         const basePixels = frame.pixels ? this.cloneGrid(frame.pixels) : this.makeGrid();
@@ -546,19 +568,21 @@ main.js
       return { version: 1, kind: "sprite-sheet", frames: this.frames.map((f, i) => ({ index: i, id: f.id, name: f.name, x: plc.entries[i].x, y: plc.entries[i].y, width: this.cols, height: this.rows })) };
     }
     importPayload(payload) {
-      this.cols = payload.cols || 16;
-      this.rows = payload.rows || 16;
-      this.palette = Array.isArray(payload.palette) && payload.palette.length ? payload.palette : this.palette;
-      this.currentColor = payload.currentColor || this.palette[0];
-      this.sheet = { ...this.sheet, ...(payload.sheet || {}) };
-      if (Array.isArray(payload.frames) && payload.frames.length) {
-        this.frames = payload.frames.map((f, i) => this.ensureFrameLayers({ id: f.id || "f_" + i, name: f.name || "Frame " + (i + 1), activeLayerIndex: f.activeLayerIndex || 0, layers: f.layers, pixels: f.pixels }));
-      } else if (Array.isArray(payload.pixels)) {
-        this.frames = [this.ensureFrameLayers({ id: "f_1", name: "Frame 1", pixels: payload.pixels })];
+      const data = payload && typeof payload === "object" ? payload : {};
+      this.cols = data.cols || 16;
+      this.rows = data.rows || 16;
+      this.palette = Array.isArray(data.palette) && data.palette.length ? data.palette : this.palette;
+      this.currentColor = data.currentColor || this.palette[0];
+      this.sheet = { ...this.sheet, ...(data.sheet || {}) };
+      if (Array.isArray(data.frames) && data.frames.length) {
+        this.frames = data.frames.map((f, i) => this.ensureFrameLayers({ id: f.id || "f_" + i, name: f.name || "Frame " + (i + 1), activeLayerIndex: f.activeLayerIndex || 0, layers: f.layers, pixels: f.pixels }));
+      } else if (Array.isArray(data.pixels)) {
+        this.frames = [this.ensureFrameLayers({ id: "f_1", name: "Frame 1", pixels: data.pixels })];
       }
       this.activeFrameIndex = 0;
       this.selection = null;
       this.soloState = null;
+      this.ensureDocumentState();
     }
   }
 
@@ -1468,6 +1492,7 @@ main.js
         this.document.frameClipboard = this.cloneFrameClipboardData(state.frameClipboard);
         this.document.soloState = state.soloState ? { ...state.soloState } : null;
         this.frameRangeSelection = state.frameRangeSelection ? { ...state.frameRangeSelection } : null;
+        this.normalizeEditorState();
         this.playback.previewFrameIndex = this.document.activeFrameIndex;
         this.gridRect = this.computeGridRect();
         return true;
@@ -1639,6 +1664,23 @@ main.js
       this.timelineHoverIndex = null;
       this.hoveredGridCell = null;
       this.controlSurface.hovered = null;
+    }
+    normalizeExportMode() {
+      if (!["all_frames", "current_frame", "selected_range"].includes(this.exportMode)) {
+        this.exportMode = "all_frames";
+      }
+    }
+    normalizeEditorState() {
+      this.document.ensureDocumentState();
+      this.normalizeExportMode();
+      this.sanitizeSoloState();
+      this.sanitizeFrameRangeSelection();
+      this.sanitizePlaybackRange();
+      this.playback.previewFrameIndex = Math.max(0, Math.min(this.playback.previewFrameIndex || 0, this.document.frames.length - 1));
+      if (this.selectionMoveSession && !this.document.selection) this.selectionMoveSession = null;
+      if (this.hoveredGridCell && (this.hoveredGridCell.x < 0 || this.hoveredGridCell.y < 0 || this.hoveredGridCell.x >= this.document.cols || this.hoveredGridCell.y >= this.document.rows)) {
+        this.hoveredGridCell = null;
+      }
     }
 
     openLayerRenamePrompt() {
@@ -3153,12 +3195,17 @@ main.js
       return "All Frames";
     }
     setExportMode(mode) {
+      if (!["all_frames", "current_frame", "selected_range"].includes(mode)) {
+        this.showMessage("Export mode unavailable.");
+        return false;
+      }
       this.exportMode = mode;
       this.showMessage(`Export mode: ${this.getExportModeLabel()}`);
       this.renderAll();
       return true;
     }
     getExportFrameIndices(mode = this.exportMode) {
+      this.normalizeEditorState();
       if (mode === "current_frame") return [this.document.activeFrameIndex];
       if (mode === "selected_range") {
         const range = this.getFrameRangeSelection();
@@ -3173,7 +3220,9 @@ main.js
       const indices = this.getExportFrameIndices(mode);
       if (!indices || !indices.length) return null;
       const range = this.getPlaybackRange();
-      const frames = indices.map((index, order) => {
+      const validIndices = indices.filter((index) => Number.isInteger(index) && index >= 0 && index < this.document.frames.length);
+      if (!validIndices.length) return null;
+      const frames = validIndices.map((index, order) => {
         const frame = this.document.ensureFrameLayers(this.document.frames[index]);
         return {
           exportIndex: order,
@@ -3186,7 +3235,7 @@ main.js
       return {
         mode,
         modeLabel: this.getExportModeLabel(),
-        indices,
+        indices: validIndices,
         frames,
         frameWidth: this.document.cols,
         frameHeight: this.document.rows,
@@ -3755,9 +3804,7 @@ main.js
     }
 
     renderAll() {
-      this.sanitizeSoloState();
-      this.sanitizeFrameRangeSelection();
-      this.sanitizePlaybackRange();
+      this.normalizeEditorState();
       this.syncCurrentPalettePreset();
       this.updateDirtyState();
       this.controlSurface.rebuildLayout();

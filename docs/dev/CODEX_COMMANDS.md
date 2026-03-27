@@ -4,14 +4,14 @@ David Quesenberry
 CODEX_COMMANDS.md
 
 MODEL: GPT-5.4
-REASONING: medium
+REASONING: high
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V5_4_FINAL_UX_POLISH_INTERACTION_CONSISTENCY.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V6_0_RELEASE_CANDIDATE_HARDENING.md
 
 Constraints:
 - Keep architecture intact
-- Reuse existing menu/popover/timeline/layer/command systems
-- Focus on consistency, state cleanup, and validation friendliness
-- Do not add major new features
+- Focus on edge-case hardening, normalization helpers, and workflow resilience
+- Add no new major features
+- Prefer centralized small fixes over scattered one-offs
 - Do not rewrite architecture
