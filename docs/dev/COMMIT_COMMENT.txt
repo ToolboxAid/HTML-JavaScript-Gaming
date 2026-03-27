@@ -1,1 +1,1 @@
-Update RULES.txt to require NEXT COMMAND in copyable control and ZIP alignment
+Sprite Editor v6.2 remove ESC handling from editor and remap interaction controls

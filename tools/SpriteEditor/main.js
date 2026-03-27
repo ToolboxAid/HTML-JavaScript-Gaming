@@ -1736,6 +1736,29 @@ main.js
       }
       return false;
     }
+    handleCloseSurfaceAction() {
+      if (this.replaceGuard.open) {
+        this.closeReplaceGuard();
+        this.showMessage("Replace canceled.");
+        return true;
+      }
+      if (this.isLayerRenameOpen()) {
+        this.closeLayerRenamePrompt();
+        this.showMessage("Layer rename canceled.");
+        return true;
+      }
+      if (this.controlSurface.overflowPanelOpen) {
+        this.controlSurface.closeOverflowPanel();
+        this.showMessage("Menu closed.");
+        return true;
+      }
+      if (this.controlSurface.commandPaletteOpen) {
+        this.controlSurface.closeCommandPalette();
+        this.showMessage("Command palette closed.");
+        return true;
+      }
+      return false;
+    }
     normalizeExportMode() {
       if (!["all_frames", "current_frame", "selected_range"].includes(this.exportMode)) {
         this.exportMode = "all_frames";
@@ -2321,6 +2344,14 @@ main.js
     onPointerDown(e) {
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
+      if (e.button === 2) {
+        const canceled = this.cancelActiveInteraction();
+        if (canceled) {
+          this.showMessage(canceled);
+          this.renderAll();
+          return;
+        }
+      }
       if (this.isLayerRenameOpen()) {
         this.handleLayerRenamePointer(p);
         return;
@@ -2443,15 +2474,8 @@ main.js
 
     onKeyDown(e) {
       const k = (e.key || "").toLowerCase();
-      if (k === "escape") {
-        if (this.handleEscapeAction()) {
-          e.preventDefault();
-          this.renderAll();
-          return;
-        }
-      }
       if (this.isLayerRenameOpen()) {
-        if (k === "escape") {
+        if ((e.ctrlKey || e.metaKey) && k === "w") {
           this.closeLayerRenamePrompt();
           this.showMessage("Layer rename canceled.");
           e.preventDefault();
@@ -2477,7 +2501,7 @@ main.js
         }
       }
       if (this.replaceGuard.open) {
-        if (k === "escape") {
+        if ((e.ctrlKey || e.metaKey) && k === "w") {
           this.closeReplaceGuard();
           this.showMessage("Replace canceled.");
           e.preventDefault();
@@ -2487,7 +2511,7 @@ main.js
       }
       if (this.isTypingTarget(e.target)) return;
       if (this.controlSurface.commandPaletteOpen) {
-        if (k === "escape") {
+        if ((e.ctrlKey || e.metaKey) && k === "w") {
           this.controlSurface.closeCommandPalette();
           this.showMessage("Command palette closed.");
           e.preventDefault();
@@ -2569,7 +2593,8 @@ main.js
         "ctrl+z": "system.undo",
         "ctrl+y": "system.redo",
         "ctrl+shift+z": "system.redo",
-        "ctrl+k": "system.commandPalette",
+        "ctrl+p": "system.commandPalette",
+        "ctrl+w": "system.closeSurface",
         "ctrl+shift+r": "layer.rename",
         "alt+arrowup": "layer.moveUp",
         "alt+arrowdown": "layer.moveDown",
@@ -2582,7 +2607,7 @@ main.js
         "shift+arrowleft": "selection.nudge_left_big",
         "shift+arrowright": "selection.nudge_right_big",
         "shift+f": "system.fullscreen",
-        "escape": "system.escape",
+        "backspace": "system.cancelInteraction",
         "delete": "system.delete"
       };
     }
@@ -2677,7 +2702,9 @@ main.js
         { id: "system.importJson", label: "System: Import JSON", category: "System", keywords: ["import", "json"], aliases: ["import json", "import"] },
         { id: "system.undo", label: "System: Undo", category: "System", keywords: ["undo", "history"], aliases: ["undo action", "revert"] },
         { id: "system.redo", label: "System: Redo", category: "System", keywords: ["redo", "history"], aliases: ["redo action", "reapply"] },
-        { id: "system.commandPalette", label: "System: Open Command Palette", category: "System", keywords: ["command", "search"], aliases: ["command palette", "open command search"] }
+        { id: "system.commandPalette", label: "System: Toggle Command Palette", category: "System", keywords: ["command", "search"], aliases: ["command palette", "open command search", "toggle command palette"] },
+        { id: "system.closeSurface", label: "System: Close Surface", category: "System", keywords: ["close", "menu", "palette", "overlay"], aliases: ["close menu", "close palette", "close overlay"] },
+        { id: "system.cancelInteraction", label: "System: Cancel Interaction", category: "System", keywords: ["cancel", "interaction", "brush", "drag", "pan"], aliases: ["cancel interaction", "cancel drag", "cancel drawing"] }
       ];
       const list = (typeof palettesList === "object" && palettesList) ? palettesList : null;
       if (list) {
@@ -2889,16 +2916,29 @@ main.js
 
     dispatchKeybinding(action) {
       if (action === "system.commandPalette") {
-        this.openCommandPalette();
+        if (this.controlSurface.commandPaletteOpen) {
+          this.controlSurface.closeCommandPalette();
+          this.showMessage("Command palette closed.");
+        } else {
+          this.openCommandPalette();
+        }
         return true;
+      }
+      if (action === "system.closeSurface") {
+        return this.handleCloseSurfaceAction();
       }
       if (action === "system.saveLocal") { this.saveLocal(); return true; }
       if (action === "system.loadLocal") { this.loadLocal(); return true; }
       if (action === "system.importJson") { this.openImport(); return true; }
       if (action === "system.undo") return this.undoHistory();
       if (action === "system.redo") return this.redoHistory();
-      if (action === "system.escape") {
-        return this.handleEscapeAction();
+      if (action === "system.cancelInteraction") {
+        const canceled = this.cancelActiveInteraction();
+        if (canceled) {
+          this.showMessage(canceled);
+          return true;
+        }
+        return false;
       }
       if (action === "tool.brush") { this.setTool("brush"); return true; }
       if (action === "tool.erase") { this.setTool("erase"); return true; }
