@@ -1,1 +1,1 @@
-Sprite Editor v6.7 remove duplicate sidebar Add Layer control and keep Layer menu action
+Sprite Editor v6.8 clean up layout, shortcuts, palette/layer placement, mode label, and Help submenu contents

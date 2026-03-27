@@ -686,7 +686,7 @@ main.js
 
     getTopControlPolicy(effectiveMode, selectedMode) {
       const modeLabel = selectedMode === "auto"
-        ? `Mode: Auto (${effectiveMode === "pro" ? "Pro" : "Std"})`
+        ? `Mode: Auto (${effectiveMode === "pro" ? "Pro" : "Standard"})`
         : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard");
       const fileMenuItems = [
         { id: "file-save", text: "Save Local", action: () => this.app.saveLocal() },
@@ -744,11 +744,11 @@ main.js
           overflowEligible: false,
           labels: ["About", "About", "A"],
           action: () => this.app.openAboutPopup()
-        },
-        { id: "top-pixel", tier: 2, overflowEligible: true, labels: this.app.viewport.pixelPerfect ? ["Pixel: On", "Pixel", "Px"] : ["Pixel: Off", "Pixel", "Px"], action: () => this.app.togglePixelPerfect() }
+        }
       ];
       return {
-        mode: { id: "top-mode", tier: 1, labels: [modeLabel, selectedMode === "auto" ? "Mode: Auto" : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Std"), "Mode"], action: () => this.app.toggleDensityMode() },
+        mode: { id: "top-mode", tier: 1, labels: [modeLabel, selectedMode === "auto" ? "Mode: Auto" : (selectedMode === "pro" ? "Mode: Pro" : "Mode: Standard"), "Mode"], action: () => this.app.toggleDensityMode() },
+        pixel: { id: "top-pixel", labels: this.app.viewport.pixelPerfect ? ["Pixel: On", "Pixel", "Px"] : ["Pixel: Off", "Pixel", "Px"], action: () => this.app.togglePixelPerfect() },
         zoom: {
           out: { id: "top-zoom-out", label: "Zoom -" },
           in: { id: "top-zoom-in", label: "Zoom +" },
@@ -911,7 +911,8 @@ main.js
       let maxW = 0;
       const itemsForMeasure = hasItems ? panelItems : [{ text: "No menu items (ERROR)" }];
       itemsForMeasure.forEach((item) => {
-        maxW = Math.max(maxW, this.measureButtonWidth(this.app.ctx, item.text, minBtn, padX));
+        const measureText = item.shortcut ? `${item.text}   [${item.shortcut}]` : item.text;
+        maxW = Math.max(maxW, this.measureButtonWidth(this.app.ctx, measureText, minBtn, padX));
       });
       const visibleItems = hasItems ? panelItems : [{ id: "menu-error-empty", text: "No menu items (ERROR)", action: null }];
       const panelW = Math.max(160, maxW + panelPad * 2);
@@ -936,7 +937,8 @@ main.js
           w: panelW - panelPad * 2,
           h: rowH,
           text: item.text,
-          action: item.action
+          action: item.action,
+          shortcut: item.shortcut || ""
         });
         y += rowH + gap;
       });
@@ -989,6 +991,7 @@ main.js
       const fullscreenWShort = this.measureButtonWidth(this.app.ctx, fullscreenShort, minBtn, padX);
       const zoomBtnW = this.measureButtonWidth(this.app.ctx, "Zoom +", minBtn, padX - 2);
       const zoomResetW = this.measureButtonWidth(this.app.ctx, policy.zoom.reset.labels[0], minBtn, padX - 2);
+      const pixelW = this.measureButtonWidth(this.app.ctx, policy.pixel.labels[0], minBtn, padX);
 
       let level = 0;
       let hidden = [];
@@ -998,8 +1001,10 @@ main.js
         const fsW = tryShortFullscreen ? fullscreenWShort : fullscreenWLong;
         const modeText = policy.mode.labels[Math.min(fitLevel, 2)];
         const modeW = this.measureButtonWidth(this.app.ctx, modeText, minBtn + 10, padX);
+        const pixelText = policy.pixel.labels[Math.min(fitLevel, 2)];
+        const pixelWidth = this.measureButtonWidth(this.app.ctx, pixelText, minBtn, padX);
         const showZoom = fitLevel <= 2;
-        const zoomW = showZoom ? (zoomBtnW * 2 + zoomResetW + spacing * 2 + spacing) : 0;
+        const zoomW = showZoom ? (zoomBtnW * 2 + zoomResetW + pixelWidth + spacing * 3) : 0;
         const overflowSlots = fitLevel >= 2 ? 1 : 0;
         const overflowW = overflowSlots ? this.measureButtonWidth(this.app.ctx, "More", minBtn, padX) : 0;
         const rightReserve = fsW + spacing + modeW + (showZoom ? (spacing + zoomW) : 0) + (overflowSlots ? (spacing + overflowW) : 0);
@@ -1024,7 +1029,7 @@ main.js
           leftX += w + spacing;
         }
         return {
-          fsLabel, fsW, modeText, modeW, showZoom, overflowSlots, overflowW, rightStart, leftControls
+          fsLabel, fsW, modeText, modeW, pixelText, pixelWidth, showZoom, overflowSlots, overflowW, rightStart, leftControls
         };
       };
 
@@ -1046,6 +1051,7 @@ main.js
         addRight(policy.zoom.out.id, zoomBtnW, policy.zoom.out.label, () => this.app.adjustZoom(-0.25));
         addRight(policy.zoom.in.id, zoomBtnW, policy.zoom.in.label, () => this.app.adjustZoom(0.25));
         addRight(policy.zoom.reset.id, zoomResetW, policy.zoom.reset.labels[Math.min(level, 2)], () => this.app.resetZoom());
+        addRight(policy.pixel.id, topLayout.pixelWidth || pixelW, topLayout.pixelText || policy.pixel.labels[Math.min(level, 2)], policy.pixel.action);
       }
       addRight(policy.mode.id, topLayout.modeW, topLayout.modeText, policy.mode.action);
       if (topLayout.overflowSlots && hidden.length) {
@@ -1069,8 +1075,12 @@ main.js
       const bw = left.width - (d.padding * 2);
       const bh = d.sideButtonHeight;
       const activeToolLabel = this.app.getToolLabel(this.app.activeTool);
+      const toolDescription = this.app.getActiveToolDescription();
       this.add("label","lbl-tools",x,y,bw,d.labelHeight,"ACTIVE TOOL",null); y += d.labelHeight + d.spacing;
       this.add("button","tool-active-readout",x,y,bw,bh,activeToolLabel,null,{tool:this.app.activeTool}); y += bh + d.spacing;
+      this.add("label","tool-desc-1",x,y,bw,bh,toolDescription.primary,null); y += bh + d.spacing;
+      this.add("label","tool-desc-2",x,y,bw,bh,toolDescription.secondary,null); y += bh + d.spacing;
+      this.add("label","tool-status",x,y,bw,bh,this.app.statusMessage || "Ready.",null); y += bh + d.spacing;
       const brushToolActive = this.app.activeTool === "brush" || this.app.activeTool === "erase";
       const shapeToolActive = this.app.activeTool === "line" || this.app.activeTool === "rect" || this.app.activeTool === "fillrect";
       if (brushToolActive) {
@@ -1103,35 +1113,50 @@ main.js
         this.add("label","sel-hint",x,y,bw,bh,"No selection",null); y += bh + d.spacing;
         this.add("label","sel-hint-2",x,y,bw,bh,"Use Select tool to create one",null); y += bh + d.spacing;
       }
-
-      x = right.x + d.padding;
-      y = right.y + d.padding;
-      const rw = right.width - (d.padding * 2);
-      this.add("label","lbl-layers",x,y,rw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
+      y += d.spacing;
+      this.add("label","lbl-layers",x,y,bw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
       const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
       const layers = af.layers || [];
       layers.forEach((l, i) => {
         const hidden = !this.app.isLayerVisibleEffective(af, i);
         const solo = this.app.isLayerSoloActiveFor(af, i);
         const opacityPct = `${Math.round(((typeof l.opacity === "number" ? l.opacity : 1) * 100))}%`;
-        const label = `${i === af.activeLayerIndex ? ">" : " "} ${hidden ? "[H]" : "[V]"} ${l.locked ? "[L]" : "[ ]"} ${solo ? "[S]" : "[ ]"} ${l.name} ${opacityPct}`;
-        this.add("button", "layer-item-" + i, x, y, rw, Math.max(24, bh - 8), label, () => this.app.selectLayer(i), {
+        const rowHeight = Math.max(28, bh - 6);
+        const stateText = `${hidden ? "Hidden" : "Visible"}${l.locked ? " | Locked" : ""}${solo ? " | Solo" : ""}`;
+        const label = `${i === af.activeLayerIndex ? "Active | " : ""}${l.name} | ${stateText} | ${opacityPct}`;
+        this.add("button", "layer-item-" + i, x, y, bw, rowHeight, label, () => this.app.selectLayer(i), {
           layerIndex: i,
           layerHidden: hidden,
           layerLocked: l.locked === true,
           layerSolo: solo
         });
-        y += Math.max(24, bh - 8) + d.spacing;
+        y += rowHeight + d.spacing;
       });
 
-      x = bottom.x + d.padding;
-      y = bottom.y + d.padding + 4;
-      this.add("label","lbl-palette",x,y-(d.labelHeight - 4),220,d.labelHeight - 4,`PALETTE ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null);
-      this.app.document.palette.forEach((c,i) => { this.add("palette","palette-"+i,x,y,34,34,"",()=>this.app.setCurrentColor(c),{color:c}); x += 42; });
-      x += d.padding;
-      this.add("button","color-prev",x,y,84,34,"Prev",()=>this.app.prevColor()); x += 92;
-      this.add("button","color-next",x,y,84,34,"Next",()=>this.app.nextColor()); x += 92;
-      this.add("button","palette-menu",x,y,96,34,"Palette",()=>this.app.openPaletteWorkflowMenu());
+      x = right.x + d.padding;
+      y = right.y + d.padding;
+      const rw = right.width - (d.padding * 2);
+      this.add("label","lbl-palette",x,y,rw,d.labelHeight,`PALETTE ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null); y += d.labelHeight + d.spacing;
+      let paletteX = x;
+      let paletteY = y;
+      const sw = 34;
+      const sh = 34;
+      const gap = 8;
+      const cols = Math.max(1, Math.floor((rw + gap) / (sw + gap)));
+      this.app.document.palette.forEach((c, i) => {
+        this.add("palette","palette-"+i,paletteX,paletteY,sw,sh,"",()=>this.app.setCurrentColor(c),{color:c});
+        if (((i + 1) % cols) === 0) {
+          paletteX = x;
+          paletteY += sh + gap;
+        } else {
+          paletteX += sw + gap;
+        }
+      });
+      y = paletteY + sh + d.spacing + 4;
+      this.add("button","color-prev",x,y,Math.floor((rw - d.spacing) / 2),34,"Prev",()=>this.app.prevColor());
+      this.add("button","color-next",x + Math.floor((rw - d.spacing) / 2) + d.spacing,y,Math.ceil((rw - d.spacing) / 2),34,"Next",()=>this.app.nextColor());
+      y += 34 + d.spacing;
+      this.add("button","palette-menu",x,y,rw,34,"Palette Menu",()=>this.app.openPaletteWorkflowMenu());
     }
 
     getControlAt(x,y) {
@@ -1276,10 +1301,6 @@ main.js
       if (activeLayerItem) {
         ctx.fillStyle = "#4cc9f0";
         ctx.fillRect(c.x + 2, c.y + 2, 4, c.h - 4);
-        ctx.font = "bold 11px Arial";
-        const badge = "ACTIVE";
-        const bw = ctx.measureText(badge).width;
-        ctx.fillText(badge, c.x + c.w - bw - 10, c.y + c.h / 2);
       }
       if (c.layerLocked) {
         ctx.strokeStyle = "#f59e0b";
@@ -1296,7 +1317,7 @@ main.js
         ctx.fillStyle = "#edf2f7";
         ctx.font = "13px Arial";
       }
-      if (c.isCommandRow && c.shortcut) {
+      if (c.shortcut) {
         ctx.fillStyle = "#91a3b6";
         const t = `[${c.shortcut}]`;
         const w = ctx.measureText(t).width;
@@ -1883,9 +1904,7 @@ main.js
         { id: "help-menu-edit", text: "Edit", action: () => this.openHelpDetailPopup("edit") },
         { id: "help-menu-tools", text: "Tools", action: () => this.openHelpDetailPopup("tools") },
         { id: "help-menu-frame", text: "Frame", action: () => this.openHelpDetailPopup("frame") },
-        { id: "help-menu-layer", text: "Layer", action: () => this.openHelpDetailPopup("layer") },
-        { id: "help-menu-help", text: "Help", action: () => this.openHelpDetailPopup("help") },
-        { id: "help-menu-about", text: "About", action: () => this.openHelpDetailPopup("about") }
+        { id: "help-menu-layer", text: "Layer", action: () => this.openHelpDetailPopup("layer") }
       ];
       this.controlSurface.toggleTopMenu("help", items);
       this.renderAll();
@@ -2323,6 +2342,19 @@ main.js
       };
       return labels[tool] || String(tool || "Tool");
     }
+    getActiveToolDescription() {
+      const map = {
+        brush: { primary: "Paint pixels with the active color.", secondary: "Drag for continuous strokes. 1-5 changes size." },
+        erase: { primary: "Remove pixels from the active layer.", secondary: "Right-click also erases while drawing." },
+        fill: { primary: "Flood fill connected pixels.", secondary: "Use when you want solid retro regions fast." },
+        line: { primary: "Draw a straight pixel-perfect line.", secondary: "Click and drag to preview before committing." },
+        rect: { primary: "Draw a rectangle outline.", secondary: "Drag to size the shape before release." },
+        fillrect: { primary: "Draw a filled rectangle.", secondary: "Good for blocks, panels, and tile silhouettes." },
+        eyedropper: { primary: "Sample a color from artwork.", secondary: "Click any painted cell to set the active color." },
+        select: { primary: "Create or move a rectangular selection.", secondary: "Use arrows to nudge after selecting." }
+      };
+      return map[this.activeTool] || { primary: "Choose a tool from the top Tools menu.", secondary: "Tool details appear here while you work." };
+    }
     openToolsMenu() {
       if (!this.canOpenTransientSurface()) return false;
       this.closeHelpDetailPopup();
@@ -2341,7 +2373,8 @@ main.js
       const items = tools.map(([tool, label]) => ({
         id: `tools-menu-${tool}`,
         text: `${this.activeTool === tool ? "* " : ""}${label}`,
-        action: () => this.setTool(tool)
+        action: () => this.setTool(tool),
+        shortcut: { brush: "B", erase: "E", fill: "F", line: "L", rect: "R", fillrect: "G", eyedropper: "I", select: "S" }[tool] || ""
       }));
       this.controlSurface.toggleTopMenu("tools", items);
       this.renderAll();
@@ -2355,13 +2388,13 @@ main.js
       const hasSelection = !!this.document.selection;
       const hasClipboard = !!this.document.selectionClipboard;
       const items = [
-        { id: "edit-menu-undo", text: "Undo", action: () => this.undoHistory() },
-        { id: "edit-menu-redo", text: "Redo", action: () => this.redoHistory() },
-        { id: "edit-menu-copy", text: "Copy", action: () => this.handleSelectionAction("sel-copy") },
-        { id: "edit-menu-cut", text: "Cut", action: () => this.handleSelectionAction("sel-cut") },
-        { id: "edit-menu-paste", text: "Paste", action: () => this.handleSelectionAction("sel-paste") },
+        { id: "edit-menu-undo", text: "Undo", action: () => this.undoHistory(), shortcut: "Ctrl+Z" },
+        { id: "edit-menu-redo", text: "Redo", action: () => this.redoHistory(), shortcut: "Ctrl+Y" },
+        { id: "edit-menu-copy", text: "Copy", action: () => this.handleSelectionAction("sel-copy"), shortcut: "Ctrl+C" },
+        { id: "edit-menu-cut", text: "Cut", action: () => this.handleSelectionAction("sel-cut"), shortcut: "Ctrl+X" },
+        { id: "edit-menu-paste", text: "Paste", action: () => this.handleSelectionAction("sel-paste"), shortcut: "Ctrl+V" },
         { id: "edit-menu-clear", text: hasSelection ? "Clear Selection" : "Clear Selection (none)", action: () => this.handleSelectionAction("sel-clear") },
-        { id: "edit-menu-dup-frame", text: "Duplicate Frame", action: () => this.duplicateFrame() },
+        { id: "edit-menu-dup-frame", text: "Duplicate Frame", action: () => this.duplicateFrame(), shortcut: "Ctrl+D" },
         { id: "edit-menu-del-frame", text: "Delete Frame", action: () => this.deleteFrame() }
       ];
       if (!hasSelection && !hasClipboard) {
@@ -2380,11 +2413,11 @@ main.js
       const playbackRange = this.getPlaybackRange();
       const items = [
         { id: "frame-menu-add", text: "Add Frame", action: () => this.addFrame() },
-        { id: "frame-menu-dup", text: "Duplicate Frame", action: () => this.duplicateFrame() },
+        { id: "frame-menu-dup", text: "Duplicate Frame", action: () => this.duplicateFrame(), shortcut: "Ctrl+D" },
         { id: "frame-menu-del", text: "Delete Frame", action: () => this.deleteFrame() },
         { id: "frame-menu-copy", text: "Copy Frame", action: () => this.copyFrame() },
         { id: "frame-menu-paste", text: "Paste Frame", action: () => this.pasteFrame() },
-        { id: "frame-menu-range-dup", text: `Duplicate Range${range.explicit ? ` (${range.start + 1}-${range.end + 1})` : ""}`, action: () => this.duplicateSelectedFrameRange() },
+        { id: "frame-menu-range-dup", text: `Duplicate Range${range.explicit ? ` (${range.start + 1}-${range.end + 1})` : ""}`, action: () => this.duplicateSelectedFrameRange(), shortcut: "Ctrl+D" },
         { id: "frame-menu-range-del", text: `Delete Range${range.explicit ? ` (${range.start + 1}-${range.end + 1})` : ""}`, action: () => this.deleteSelectedFrameRange() },
         { id: "frame-menu-range-left", text: "Shift Range Left", action: () => this.shiftSelectedFrameRange(-1) },
         { id: "frame-menu-range-right", text: "Shift Range Right", action: () => this.shiftSelectedFrameRange(1) },
@@ -2408,9 +2441,9 @@ main.js
         { id: "layer-menu-add", text: "Add Layer", action: () => this.addLayer() },
         { id: "layer-menu-dup", text: "Duplicate Layer", action: () => this.duplicateLayer() },
         { id: "layer-menu-del", text: "Delete Layer", action: () => this.deleteLayer() },
-        { id: "layer-menu-rename", text: `Rename ${layerName}`, action: () => this.openLayerRenamePrompt() },
-        { id: "layer-menu-up", text: "Move Up", action: () => this.moveLayerUp() },
-        { id: "layer-menu-down", text: "Move Down", action: () => this.moveLayerDown() },
+        { id: "layer-menu-rename", text: `Rename ${layerName}`, action: () => this.openLayerRenamePrompt(), shortcut: "Ctrl+Shift+R" },
+        { id: "layer-menu-up", text: "Move Up", action: () => this.moveLayerUp(), shortcut: "Alt+Up" },
+        { id: "layer-menu-down", text: "Move Down", action: () => this.moveLayerDown(), shortcut: "Alt+Down" },
         { id: "layer-menu-vis", text: "Toggle Visibility", action: () => this.toggleLayerVisibility() },
         { id: "layer-menu-solo", text: "Solo", action: () => this.toggleLayerSolo() },
         { id: "layer-menu-lock", text: "Lock", action: () => this.toggleLayerLock() },
@@ -4149,7 +4182,6 @@ main.js
       this.drawTimelinePanel();
       this.drawPreviewPanel();
       this.drawSheetPanel();
-      this.drawBottomStatus();
       this.drawHelpDetailPopup();
       this.drawAboutPopup();
       this.drawReplaceGuard();
@@ -4471,7 +4503,7 @@ main.js
     }
 
     drawPreviewPanel() {
-      const p = this.controlSurface.layout.rightPanel, x = p.x + 18, y = p.y + p.height - 248, w = p.width - 36, h = 98;
+      const p = this.controlSurface.layout.bottomPanel, x = p.x + 18, y = p.y + 12, w = 210, h = 100;
       this.ctx.fillStyle = "#1a2733"; this.ctx.fillRect(x,y,w,h); this.ctx.strokeStyle = "rgba(255,255,255,0.15)"; this.ctx.strokeRect(x+0.5,y+0.5,w-1,h-1);
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "bold 12px Arial"; this.ctx.fillText("ANIMATION PREVIEW",x+12,y+16);
       const previewIndex = this.playback.isPlaying
@@ -4486,7 +4518,7 @@ main.js
     }
 
     drawSheetPanel() {
-      const p = this.controlSurface.layout.rightPanel, x = p.x + 18, y = p.y + p.height - 140, w = p.width - 36, h = 104;
+      const p = this.controlSurface.layout.bottomPanel, x = p.x + 242, y = p.y + 12, w = Math.max(220, (this.timelineStripRect ? this.timelineStripRect.x : (p.x + p.width - 18)) - (p.x + 242) - 18), h = 100;
       this.drawSheetPreview(this.ctx, { x, y, width: w, height: h }, true);
     }
 

@@ -2,12 +2,17 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply TOOLS_SPRITE_EDITOR_V6_7_REMOVE_SIDEBAR_ADD_LAYER_DUPLICATE in tools/SpriteEditor/main.js
+Apply TOOLS_SPRITE_EDITOR_V6_8_LAYOUT_AND_MENU_CLEANUP in tools/SpriteEditor/main.js
 
 VALIDATIONS:
-- Sidebar Add Layer control is removed
-- Layer menu still contains Add Layer
-- Layer menu Add Layer still creates a layer correctly
-- No duplicate visible Add Layer entry point remains
-- Sidebar layout remains clean after removal
+- Submenu items show shortcut hints consistently
+- Pixel appears on the right between Reset and Mode
+- Palette occupies the former Layers sidebar area
+- Layers occupy the former Palette area
+- Bottom area is previews only
+- Descriptive text is under Active Tool or in a dedicated section below it
+- Std is removed and Pro is used instead
+- Help menu no longer contains Help or About submenu entries
+- About top-level popup still works
+- Layer row presentation is clearer than the prior compressed bracket form
 - No console errors
