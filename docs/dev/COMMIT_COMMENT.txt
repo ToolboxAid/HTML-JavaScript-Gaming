@@ -1,1 +1,1 @@
-Sprite Editor v7.0 apply real interaction and core behavior fixes before regression
+Sprite Editor v7.1 redo plan only: pre-regression consolidation constrained to Sprite Editor with no engine changes

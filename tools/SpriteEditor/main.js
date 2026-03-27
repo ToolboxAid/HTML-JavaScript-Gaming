@@ -680,10 +680,11 @@ main.js
 
     getTopControlPolicy(effectiveMode, selectedMode) {
       const fileMenuItems = [
-        { id: "file-save", text: "Save Local", action: () => this.app.saveLocal() },
-        { id: "file-load", text: "Load Local", action: () => this.app.loadLocal() },
+        { id: "file-new", text: "New", action: () => this.app.newDocument() },
+        { id: "file-open", text: "Open", action: () => this.app.loadLocal() },
+        { id: "file-save", text: "Save", action: () => this.app.saveLocal() },
         { id: "file-import", text: "Import JSON", action: () => this.app.openImport() },
-        { id: "file-export-menu", text: "Export...", action: () => this.app.openExportMenu() },
+        { id: "file-export-menu", text: "Export", action: () => this.app.openExportMenu() },
         { id: "file-export-editor", text: "Export Editor JSON", action: () => this.app.exportJson(true) }
       ];
       const defs = [
@@ -880,7 +881,7 @@ main.js
           score: item.score || 0,
           commandId: item.id,
           favorite: !!item.favorite,
-          favoriteToggleRect: { x: panelX + panelW - 30, y: panelY + headerH + (idx * rowH) + 6, w: 18, h: 18 }
+          favoriteToggleRect: null
         });
       });
     }
@@ -1128,9 +1129,10 @@ main.js
       this.add("label","lbl-layers",x,y,bw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
       const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
       const layers = af.layers || [];
-      layers.forEach((l, i) => {
+      for (let visualIndex = layers.length - 1; visualIndex >= 0; visualIndex -= 1) {
+        const l = layers[visualIndex];
+        const i = visualIndex;
         const hidden = !this.app.isLayerVisibleEffective(af, i);
-        const solo = this.app.isLayerSoloActiveFor(af, i);
         const opacityPct = `${Math.round(((typeof l.opacity === "number" ? l.opacity : 1) * 100))}%`;
         const rowHeight = 40;
         const visWidth = 56;
@@ -1138,7 +1140,6 @@ main.js
         const rowWidth = bw - visWidth - rowGap;
         const stateParts = [hidden ? "Hidden" : "Visible"];
         if (l.locked) stateParts.push("Locked");
-        if (solo) stateParts.push("Solo");
         const stateText = stateParts.join(" | ");
         this.add("button", "layer-vis-" + i, x, y, visWidth, rowHeight, hidden ? "Show" : "Hide", () => {
           this.app.selectLayer(i);
@@ -1154,11 +1155,10 @@ main.js
           layerStateText: stateText,
           layerOpacityText: opacityPct,
           layerHidden: hidden,
-          layerLocked: l.locked === true,
-          layerSolo: solo
+          layerLocked: l.locked === true
         });
         y += rowHeight + d.spacing;
-      });
+      }
 
       x = right.x + d.padding;
       y = right.y + d.padding;
@@ -1361,20 +1361,18 @@ main.js
           const baseY = c.y + c.h / 2;
           ctx.fillStyle = "#91a3b6";
           ctx.font = "bold 12px Arial";
-          const leftText = `Current: ${currentHex}`;
+          const leftText = `Current: ${currentHex} [■] Named: ${name}`;
           ctx.fillText(leftText, c.x, baseY);
-          const leftWidth = ctx.measureText(leftText).width;
+          const leftWidth = ctx.measureText(`Current: ${currentHex} `).width;
           const sw = 12;
           const sh = 12;
-          const swatchX = c.x + leftWidth + 8;
+          const swatchX = c.x + leftWidth + 4;
           const swatchY = Math.floor(baseY - sh * 0.75);
           ctx.fillStyle = currentHex;
           ctx.fillRect(swatchX, swatchY, sw, sh);
           ctx.strokeStyle = "#ffffff";
           ctx.lineWidth = 1;
           ctx.strokeRect(swatchX + 0.5, swatchY + 0.5, sw - 1, sh - 1);
-          ctx.fillStyle = "#91a3b6";
-          ctx.fillText(`Named: ${name}`, swatchX + sw + 10, baseY);
           return;
         }
         ctx.fillStyle = "#91a3b6";
@@ -1425,15 +1423,28 @@ main.js
       } else if (typeof c.layerIndex === "number") {
         ctx.fillStyle = "#edf2f7";
         ctx.font = "bold 13px Arial";
-        ctx.fillText(c.layerName || c.text, c.x + 10, c.y + 13);
+        const opacityText = c.layerOpacityText || "";
+        const activeBadgeText = activeLayerItem ? "ACTIVE" : "";
+        const activeBadgeWidth = activeBadgeText ? ctx.measureText(activeBadgeText).width : 0;
+        const opacityWidth = opacityText ? ctx.measureText(opacityText).width : 0;
+        const maxNameWidth = Math.max(32, c.w - opacityWidth - activeBadgeWidth - 38);
+        const fullName = c.layerName || c.text;
+        let displayName = fullName;
+        if (ctx.measureText(displayName).width > maxNameWidth) {
+          displayName = fullName;
+          while (displayName.length > 1 && ctx.measureText(`${displayName}...`).width > maxNameWidth) {
+            displayName = displayName.slice(0, -1);
+          }
+          displayName = `${displayName}...`;
+        }
+        ctx.fillText(displayName, c.x + 10, c.y + 13);
         ctx.fillStyle = "#9fb8cf";
         ctx.font = "11px Arial";
         ctx.fillText(c.layerStateText || "", c.x + 10, c.y + c.h - 11);
-        if (c.layerOpacityText) {
+        if (opacityText) {
           ctx.fillStyle = "#dbe7f3";
           ctx.font = "bold 11px Arial";
-          const opacityWidth = ctx.measureText(c.layerOpacityText).width;
-          ctx.fillText(c.layerOpacityText, c.x + c.w - opacityWidth - 12, c.y + 13);
+          ctx.fillText(opacityText, c.x + c.w - opacityWidth - activeBadgeWidth - 18, c.y + 13);
         }
       } else {
         ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
@@ -1459,21 +1470,17 @@ main.js
           ctx.font = "bold 10px Arial";
           const badge = "ACTIVE";
           const badgeWidth = ctx.measureText(badge).width;
-          ctx.fillText(badge, c.x + c.w - badgeWidth - 12, c.y + c.h - 11);
+          ctx.fillText(badge, c.x + c.w - badgeWidth - 12, c.y + 13);
         }
       }
       if (c.layerLocked) {
         ctx.strokeStyle = "#f59e0b";
         ctx.strokeRect(c.x + c.w - 24.5, c.y + c.h - 19.5, 14, 14);
       }
-      if (c.layerSolo) {
-        ctx.fillStyle = "#22c55e";
-        ctx.fillRect(c.x + c.w - 6, c.y + c.h - 20, 3, 14);
-      }
       if (c.isCommandRow && c.category) {
-        ctx.fillStyle = "#4cc9f0";
+        ctx.fillStyle = "#91a3b6";
         ctx.font = "11px Arial";
-        ctx.fillText(`[${String(c.category).slice(0, 10)}]`, c.x + 10, c.y + 11);
+        ctx.fillText(String(c.category).slice(0, 12), c.x + 10, c.y + 11);
         ctx.fillStyle = "#edf2f7";
         ctx.font = "13px Arial";
       }
@@ -1483,14 +1490,9 @@ main.js
         const w = ctx.measureText(t).width;
         ctx.fillText(t, c.x + c.w - w - 10, c.y + c.h / 2);
       }
-      if (c.isCommandRow && c.favoriteToggleRect) {
-        ctx.fillStyle = c.favorite ? "#fbbf24" : "#6b7b8e";
-        ctx.font = "15px Arial";
-        ctx.fillText(c.favorite ? "★" : "☆", c.favoriteToggleRect.x + 1, c.favoriteToggleRect.y + 9);
-      }
       if (c.kind === "frame") {
         const f = this.app.document.frames[c.frameIndex];
-        this.drawMiniFrame(ctx, this.app.document.getCompositedPixels(f), c.x+c.w-54, c.y+8, 46, c.h-16);
+        this.drawMiniFrame(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), c.x+c.w-54, c.y+8, 46, c.h-16);
       }
     }
 
@@ -1541,7 +1543,7 @@ main.js
       }
       ctx.fillStyle = "#91a3b6";
       ctx.font = "12px Arial";
-      ctx.fillText("Up/Down navigate  Enter execute  Esc close", p.x + 14, p.y + p.h - 10);
+      ctx.fillText("Up/Down navigate  Enter execute", p.x + 14, p.y + p.h - 10);
     }
 
     drawPaletteSidebarScrollbar(ctx) {
@@ -2015,8 +2017,8 @@ main.js
           description: "Save, load, import, and export sprite work without leaving the canvas-first workflow.",
           howToUse: "Open Files from the top bar, then choose the storage or export action you want.",
           options: [
-            "Save Local: writes the current editor document to local browser storage.",
-            "Load Local: restores the most recently saved local document.",
+            "New / Open / Save / Export: the main document flow for starting, restoring, saving, and shipping work.",
+            "Open uses the existing local browser save for fast restore.",
             "Import JSON / Export Editor JSON: move full editor documents in and out.",
             "Export: opens game-friendly export choices such as sprite sheet and metadata."
           ]
@@ -2061,8 +2063,21 @@ main.js
           options: [
             "Add / Duplicate / Delete / Rename: maintain the layer stack.",
             "Move Up / Move Down: reorder the active layer.",
-            "Visibility / Solo / Lock: control what is seen and what is editable.",
+            "Visibility / Lock: control what is seen and what is editable.",
             "Merge Down / Flatten / Opacity / Blend Preview: compositing tools for finishing work."
+          ]
+        },
+        palette: {
+          title: "Palette",
+          description: "Choose colors, presets, sorting, and replace-color scope from the sidebar and top Palette menu.",
+          howToUse: "Use Palette -> Palettes for preset lists, click sidebar swatches to choose colors, and use the sort buttons to reorganize the sidebar.",
+          options: [
+            "Palette -> Palettes: open the preset chooser.",
+            "Sidebar swatches: select the current color, including large palettes with scrolling.",
+            "Sort controls: reorder by Name, Hue, Saturation, or Lightness.",
+            "Set Src From Current / Set Dst From Current: prepare palette replace source and target colors.",
+            "Scope Active Layer / Current Frame / Selected Range: choose where replace-color actions apply.",
+            "Middle mouse or Shift-drag pan: move the zoomed canvas viewport."
           ]
         },
         help: {
@@ -2098,7 +2113,8 @@ main.js
         { id: "help-menu-edit", text: "Edit", action: () => this.openHelpDetailPopup("edit") },
         { id: "help-menu-tools", text: "Tools", action: () => this.openHelpDetailPopup("tools") },
         { id: "help-menu-frame", text: "Frame", action: () => this.openHelpDetailPopup("frame") },
-        { id: "help-menu-layer", text: "Layer", action: () => this.openHelpDetailPopup("layer") }
+        { id: "help-menu-layer", text: "Layer", action: () => this.openHelpDetailPopup("layer") },
+        { id: "help-menu-palette", text: "Palette", action: () => this.openHelpDetailPopup("palette") }
       ];
       this.controlSurface.toggleTopMenu("help", items);
       this.renderAll();
@@ -2191,10 +2207,11 @@ main.js
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = Array.isArray(itemsOverride) ? itemsOverride : [
-        { id: "file-save", text: "Save Local", action: () => this.saveLocal() },
-        { id: "file-load", text: "Load Local", action: () => this.loadLocal() },
+        { id: "file-new", text: "New", action: () => this.newDocument() },
+        { id: "file-open", text: "Open", action: () => this.loadLocal() },
+        { id: "file-save", text: "Save", action: () => this.saveLocal() },
         { id: "file-import", text: "Import JSON", action: () => this.openImport() },
-        { id: "file-export-menu", text: "Export...", action: () => this.openExportMenu() },
+        { id: "file-export-menu", text: "Export", action: () => this.openExportMenu() },
         { id: "file-export-editor", text: "Export Editor JSON", action: () => this.exportJson(true) }
       ];
       this.controlSurface.toggleTopMenu("file", items);
@@ -2571,7 +2588,7 @@ main.js
     }
     getActiveToolDescription() {
       const map = {
-        brush: { primary: "Paint pixels with the active color.", secondary: "Drag for continuous strokes. 1-5 changes size." },
+        brush: { primary: "Paint pixels with the active color.", secondary: "Drag for continuous strokes. 1-9 changes size." },
         erase: { primary: "Remove pixels from the active layer.", secondary: "Right-click also erases while drawing." },
         fill: { primary: "Flood fill connected pixels.", secondary: "Use when you want solid retro regions fast." },
         line: { primary: "Draw a straight pixel-perfect line.", secondary: "Click and drag to preview before committing." },
@@ -2671,8 +2688,6 @@ main.js
         { id: "layer-menu-rename", text: `Rename ${layerName}`, action: () => this.openLayerRenamePrompt(), shortcut: "Ctrl+Shift+R" },
         { id: "layer-menu-up", text: "Move Up", action: () => this.moveLayerUp(), shortcut: "Alt+Up" },
         { id: "layer-menu-down", text: "Move Down", action: () => this.moveLayerDown(), shortcut: "Alt+Down" },
-        { id: "layer-menu-vis", text: "Toggle Visibility", action: () => this.toggleLayerVisibility() },
-        { id: "layer-menu-solo", text: "Solo", action: () => this.toggleLayerSolo() },
         { id: "layer-menu-lock", text: "Lock", action: () => this.toggleLayerLock() },
         { id: "layer-menu-merge", text: "Merge Down", action: () => this.mergeLayerDown() },
         { id: "layer-menu-flatten", text: "Flatten Frame", action: () => this.requestFlattenFrame() },
@@ -3092,6 +3107,10 @@ main.js
         "3": "brush.size_3",
         "4": "brush.size_4",
         "5": "brush.size_5",
+        "6": "brush.size_6",
+        "7": "brush.size_7",
+        "8": "brush.size_8",
+        "9": "brush.size_9",
         "p": "system.playback",
         " ": "system.playback",
         "=": "view.zoomIn",
@@ -3185,7 +3204,6 @@ main.js
         { id: "layer.moveUp", label: "Layer: Move Up", category: "Layer", keywords: ["layer", "move", "up", "reorder"], aliases: ["move layer up", "layer up", "reorder layer up"] },
         { id: "layer.moveDown", label: "Layer: Move Down", category: "Layer", keywords: ["layer", "move", "down", "reorder"], aliases: ["move layer down", "layer down", "reorder layer down"] },
         { id: "layer.rename", label: "Layer: Rename", category: "Layer", keywords: ["layer", "rename", "name"], aliases: ["rename layer", "layer name"] },
-        { id: "layer.solo", label: "Layer: Toggle Solo", category: "Layer", keywords: ["layer", "solo", "isolate"], aliases: ["solo layer", "isolate layer", "toggle solo"] },
         { id: "layer.toggleLock", label: "Layer: Toggle Lock", category: "Layer", keywords: ["layer", "lock", "unlock"], aliases: ["lock layer", "unlock layer", "toggle lock"] },
         { id: "layer.opacityUp", label: "Layer: Opacity Up", category: "Layer", keywords: ["layer", "opacity", "alpha", "up"], aliases: ["opacity up", "increase opacity", "alpha up"] },
         { id: "layer.opacityDown", label: "Layer: Opacity Down", category: "Layer", keywords: ["layer", "opacity", "alpha", "down"], aliases: ["opacity down", "decrease opacity", "alpha down"] },
@@ -3524,7 +3542,6 @@ main.js
       if (action === "layer.moveUp") { this.moveLayerUp(); return true; }
       if (action === "layer.moveDown") { this.moveLayerDown(); return true; }
       if (action === "layer.rename") { this.openLayerRenamePrompt(); return true; }
-      if (action === "layer.solo") { this.toggleLayerSolo(); return true; }
       if (action === "layer.toggleLock") { this.toggleLayerLock(); return true; }
       if (action === "layer.opacityUp") { this.adjustLayerOpacity(0.1); return true; }
       if (action === "layer.opacityDown") { this.adjustLayerOpacity(-0.1); return true; }
@@ -3768,7 +3785,7 @@ main.js
       this.showMessage("Tool: " + t);
     }
     setBrushSize(size) {
-      this.brush.size = Math.max(1, Math.min(5, Math.floor(size || 1)));
+      this.brush.size = Math.max(1, Math.min(9, Math.floor(size || 1)));
       this.showMessage(`Brush size: ${this.brush.size}`);
       this.renderAll();
     }
@@ -3842,7 +3859,7 @@ main.js
         const match = presetEntries.find((entry) => entry && String(entry.hex || "").toUpperCase() === currentHex && typeof entry.name === "string" && entry.name.trim());
         if (match) name = match.name.trim();
       }
-      return `Current: ${currentHex} Named: ${name || "Unnamed"}`;
+      return `Current: ${currentHex} [■] Named: ${name || "Unnamed"}`;
     }
     setCurrentColor(c) { this.document.currentColor = c; this.showMessage("Color selected."); }
     setPaletteSortMode(mode) {
@@ -4166,13 +4183,24 @@ main.js
         else if (id === "sel-paste") ok = this.document.pasteSelection(this.selectionPasteOrigin.x,this.selectionPasteOrigin.y);
         else if (id === "sel-fliph") ok = this.document.flipSelection(true);
         else if (id === "sel-flipv") ok = this.document.flipSelection(false);
-        else if (id === "sel-clear") { this.document.clearSelection(); ok = true; }
+        else if (id === "sel-clear") ok = this.clearSelection(false);
         return ok;
       };
       if (isMutating) this.executeWithHistory("Selection Edit", run);
       else run();
       this.showMessage(ok ? "Selection updated." : "No active selection.");
       this.renderAll();
+    }
+
+    clearSelection(showMessage = true) {
+      if (!this.document.selection && !this.selectionMoveSession) {
+        if (showMessage) this.showMessage("No active selection.");
+        return false;
+      }
+      this.document.clearSelection();
+      this.selectionMoveSession = null;
+      if (showMessage) this.showMessage("Selection cleared.");
+      return true;
     }
 
     addFrame() { this.executeWithHistory("Frame Add", () => { this.document.addFrame(); this.showMessage("Frame added."); return true; }); this.renderAll(); }
@@ -4240,17 +4268,6 @@ main.js
       this.renderAll();
     }
     toggleLayerLock() { this.executeWithHistory("Layer Lock", () => { const ok = this.document.toggleLayerLock(); this.showMessage(ok ? (this.document.activeLayer.locked ? "Layer locked." : "Layer unlocked.") : "Layer lock failed."); return ok; }); this.renderAll(); }
-    toggleLayerSolo() {
-      this.executeWithHistory("Layer Solo", () => {
-        const af = this.document.ensureFrameLayers(this.document.activeFrame);
-        const index = af.activeLayerIndex;
-        const activeSolo = this.document.soloState && this.document.soloState.frameId === af.id && this.document.soloState.layerIndex === index;
-        this.document.soloState = activeSolo ? null : { frameId: af.id, layerIndex: index };
-        this.showMessage(activeSolo ? "Layer solo cleared." : `Layer solo: ${af.layers[index].name}`);
-        return true;
-      });
-      this.renderAll();
-    }
     adjustLayerOpacity(delta) {
       this.executeWithHistory("Layer Opacity", () => {
         const ok = this.document.adjustActiveLayerOpacity(delta);
@@ -4377,7 +4394,7 @@ main.js
       this.executeWithHistory("Layer Reorder Up", () => {
         const af = this.document.ensureFrameLayers(this.document.activeFrame);
         const from = af.activeLayerIndex;
-        const ok = this.document.moveLayer(from, from - 1);
+        const ok = this.document.moveLayer(from, from + 1);
         this.showMessage(ok ? "Layer moved up." : "Layer already at top.");
         return ok;
       });
@@ -4387,7 +4404,7 @@ main.js
       this.executeWithHistory("Layer Reorder Down", () => {
         const af = this.document.ensureFrameLayers(this.document.activeFrame);
         const from = af.activeLayerIndex;
-        const ok = this.document.moveLayer(from, from + 1);
+        const ok = this.document.moveLayer(from, from - 1);
         this.showMessage(ok ? "Layer moved down." : "Layer already at bottom.");
         return ok;
       });
@@ -4453,6 +4470,35 @@ main.js
       this.playback.fps = Math.max(1, Math.min(30, this.playback.fps + delta));
       this.showMessage(`FPS: ${this.playback.fps}`);
       this.renderAll();
+    }
+
+    newDocument() {
+      this.requestReplaceGuard("New Document", "Replace current document with a new blank sprite?", () => {
+        this.document = new SpriteEditorDocument();
+        this.activeTool = "brush";
+        this.hoveredGridCell = null;
+        this.selectionStart = null;
+        this.selectionPasteOrigin = { x: 0, y: 0 };
+        this.selectionMoveSession = null;
+        this.timelineInteraction = null;
+        this.timelineHoverIndex = null;
+        this.frameRangeSelection = null;
+        this.playbackRange = { enabled: false, startFrame: 0, endFrame: 0 };
+        this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
+        this.strokeLastCell = null;
+        this.shapePreview = null;
+        this.currentPalettePreset = "Custom";
+        this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
+        this.paletteSidebarScroll = 0;
+        this.pan = { x: 0, y: 0 };
+        this.zoom = 1;
+        this.clearHistoryStacks();
+        this.normalizeEditorState();
+        this.markCleanBaseline();
+        this.showMessage("New document.");
+        this.renderAll();
+      });
+      return true;
     }
 
     saveLocal() {
@@ -4614,7 +4660,7 @@ main.js
       if (!this.aboutPopup.open) return;
       const frame = this.controlSurface.layout.appFrame;
       const panelW = 520;
-      const panelH = 228;
+      const panelH = 216;
       const x = frame.x + Math.floor((frame.width - panelW) * 0.5);
       const y = frame.y + Math.floor((frame.height - panelH) * 0.5);
       this.aboutPopup.panelRect = { x, y, w: panelW, h: panelH };
@@ -4631,9 +4677,9 @@ main.js
       this.ctx.fillStyle = "#b9c8d8";
       this.ctx.fillText("Sprite Editor v2.2", x + 18, y + 64);
       this.ctx.fillText("Canvas-native pixel editor for game-ready sprite workflows.", x + 18, y + 88);
-      this.ctx.fillText("Menus: Files, Edit, Tools, Frame, Layer, Help, About", x + 18, y + 112);
-      this.ctx.fillText("Shortcuts: Ctrl+P command palette", x + 18, y + 136);
-      this.ctx.fillText("Cancel interaction: right-click or Backspace", x + 18, y + 160);
+      this.ctx.fillText("Top bar: Files, Edit, Tools, Frame, Layer, Help, About", x + 18, y + 112);
+      this.ctx.fillText("toolboxaid.com", x + 18, y + 142);
+      this.ctx.fillText("github.com/ToolboxAid/HTML-JavaScript-Gaming", x + 18, y + 166);
       const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
       this.aboutPopup.closeRect = closeRect;
       this.ctx.fillStyle = "#27435a";
@@ -4780,7 +4826,7 @@ main.js
         ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
         const thumbH = slot.h - 18;
         const thumbW = slot.w - 8;
-        this.drawMiniPixels(this.document.getCompositedPixels(f), slot.x + 4, slot.y + 2, thumbW, thumbH);
+        this.drawMiniPixels(this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), slot.x + 4, slot.y + 2, thumbW, thumbH);
         ctx.fillStyle = "#dbe7f3";
         ctx.font = "11px Arial";
         ctx.fillText(String(slot.index + 1), slot.x + 4, slot.y + slot.h - 6);
@@ -4990,28 +5036,28 @@ main.js
     }
 
     drawPreviewPanel() {
-      const p = this.controlSurface.layout.bottomPanel, x = p.x + 18, y = p.y + 12, w = 210, h = 100;
+      const p = this.controlSurface.layout.bottomPanel, x = p.x + 18, y = p.y + 8, w = 210, h = 108;
       this.ctx.fillStyle = "#1a2733"; this.ctx.fillRect(x,y,w,h); this.ctx.strokeStyle = "rgba(255,255,255,0.15)"; this.ctx.strokeRect(x+0.5,y+0.5,w-1,h-1);
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "bold 12px Arial"; this.ctx.fillText("ANIMATION PREVIEW",x+12,y+16);
       const previewIndex = this.playback.isPlaying
         ? this.playback.previewFrameIndex
         : (this.timelineHoverIndex !== null ? this.timelineHoverIndex : this.document.activeFrameIndex);
       const f = this.document.frames[Math.max(0, Math.min(previewIndex, this.document.frames.length - 1))];
-      this.drawMiniPixels(this.document.getCompositedPixels(f),x+12,y+24,72,72);
+      this.drawMiniPixels(this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }),x+12,y+24,72,72);
       this.ctx.font = "12px Arial";
       this.ctx.fillText("Frame "+(previewIndex+1)+" / "+this.document.frames.length,x+96,y+36);
     }
 
     drawSheetPanel() {
-      const p = this.controlSurface.layout.bottomPanel, x = p.x + 242, y = p.y + 12, w = Math.max(240, (this.timelineStripRect ? this.timelineStripRect.x : (p.x + p.width - 18)) - (p.x + 242) - 18), h = 100;
+      const p = this.controlSurface.layout.bottomPanel, x = p.x + 242, y = p.y + 6, w = Math.max(240, (this.timelineStripRect ? this.timelineStripRect.x : (p.x + p.width - 18)) - (p.x + 242) - 18), h = 112;
       this.drawSheetPreview(this.ctx, { x, y, width: w, height: h }, true);
     }
 
     drawSheetPreview(ctx, rect, withChrome) {
       const plc = this.document.computeSheetPlacement();
-      const titleH = withChrome ? 20 : 0;
+      const titleH = withChrome ? 18 : 0;
       const footerH = 0;
-      const innerPad = withChrome ? 8 : 0;
+      const innerPad = withChrome ? 5 : 0;
       const order = this.document.frames.length <= 8
         ? this.document.frames.map((_,i)=>i+1).join(", ")
         : `1..${this.document.frames.length}`;
@@ -5021,27 +5067,25 @@ main.js
         ctx.fillStyle = "#dbe7f3";
         ctx.font = "bold 12px Arial";
         ctx.fillText("SHEET PREVIEW", rect.x + 12, rect.y + 16);
-        ctx.font = "11px Arial";
-        ctx.fillStyle = "#e6f2ff";
-        ctx.fillText(`Frames: ${this.document.frames.length}`, rect.x + 118, rect.y + 16);
-        ctx.fillStyle = "#b9c8d8";
-        ctx.fillText(`Order: ${order}`, rect.x + 192, rect.y + 16);
       }
       const cx = rect.x + innerPad;
       const cy = rect.y + innerPad + titleH;
       const cw = rect.width - innerPad * 2;
       const ch = rect.height - innerPad * 2 - titleH - footerH;
-      const previewW = cw;
+      const infoW = withChrome ? Math.min(132, Math.max(110, Math.floor(cw * 0.26))) : 0;
+      const previewW = Math.max(24, cw - infoW - (withChrome ? 8 : 0));
+      const previewX = cx;
+      const infoX = previewX + previewW + 8;
       const scale = Math.max(1, Math.floor(Math.min(previewW/plc.width, ch/plc.height)));
       const drawW = plc.width * scale;
       const drawH = plc.height * scale;
-      const drawX = cx + Math.floor((previewW - drawW) * 0.5);
+      const drawX = previewX + Math.floor((previewW - drawW) * 0.5);
       const drawY = cy + Math.floor((ch - drawH) * 0.5);
       if (this.document.sheet.transparent) this.drawCheckerboard(ctx,drawX,drawY,drawW,drawH,Math.max(4,scale));
       else { ctx.fillStyle = this.document.sheet.backgroundColor; ctx.fillRect(drawX,drawY,drawW,drawH); }
       this.document.frames.forEach((f,i) => {
         const e = plc.entries[i];
-        const cpx = this.document.getCompositedPixels(f);
+        const cpx = this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" });
         for (let y=0; y<this.document.rows; y+=1) {
           for (let x=0; x<this.document.cols; x+=1) {
             const v = cpx[y][x];
@@ -5051,6 +5095,14 @@ main.js
           }
         }
       });
+      if (withChrome) {
+        ctx.font = "11px Arial";
+        ctx.fillStyle = "#e6f2ff";
+        ctx.fillText(`Frames: ${this.document.frames.length}`, infoX, cy + 18);
+        ctx.fillStyle = "#b9c8d8";
+        ctx.fillText("Order:", infoX, cy + 38);
+        ctx.fillText(order.length > 18 ? `${order.slice(0, 18)}...` : order, infoX, cy + 54);
+      }
     }
 
     drawMiniPixels(pixels,x,y,w,h) {
@@ -5089,7 +5141,6 @@ main.js
       const activeLayer = af.layers[af.activeLayerIndex];
       const layerFlags = [
         activeLayer && activeLayer.locked ? "Locked" : null,
-        this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? "Solo" : null,
         activeLayer ? `${Math.round(((typeof activeLayer.opacity === "number" ? activeLayer.opacity : 1) * 100))}%` : null
       ].filter(Boolean).join(" ");
       const brushText = (this.activeTool === "brush" || this.activeTool === "erase")
