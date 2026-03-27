@@ -1,1 +1,1 @@
-Sprite Editor v6.9.4 make grid controls visible, enlarge Sheet Preview, and move Frames/Order text beside preview
+Sprite Editor v6.9.5 move grid row and column controls into a guaranteed-visible Grid section

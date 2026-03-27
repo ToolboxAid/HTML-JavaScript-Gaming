@@ -1070,13 +1070,24 @@ main.js
       y = left.y + d.padding;
       const bw = left.width - (d.padding * 2);
       const bh = d.sideButtonHeight;
+      const halfW = Math.floor((bw - d.spacing) / 2);
+      this.add("label","lbl-grid",x,y,bw,d.labelHeight,"GRID",null); y += d.labelHeight + d.spacing;
+      y += 5;
+      this.add("button","grid-add-row",x,y,halfW,bh,"Add Row",()=>this.app.adjustGridRows(1));
+      this.add("button","grid-remove-row",x + halfW + d.spacing,y,bw - halfW - d.spacing,bh,"Sub Row",()=>this.app.adjustGridRows(-1));
+      y += bh + d.spacing;
+      this.add("button","grid-add-column",x,y,halfW,bh,"Add Col",()=>this.app.adjustGridCols(1));
+      this.add("button","grid-remove-column",x + halfW + d.spacing,y,bw - halfW - d.spacing,bh,"Sub Col",()=>this.app.adjustGridCols(-1));
+      y += bh + d.spacing;
+      y += 5;
+      this.add("label","grid-size-readout",x,y,bw,bh,`${this.app.document.cols} cols x ${this.app.document.rows} rows`,null); y += bh + d.spacing;
+      y += d.spacing;
       const activeToolLabel = this.app.getToolLabel(this.app.activeTool);
       const toolDescription = this.app.getActiveToolDescription();
       this.add("label","lbl-tools",x,y,bw,d.labelHeight,"ACTIVE TOOL",null); y += d.labelHeight + d.spacing;
       this.add("button","tool-active-readout",x,y,bw,bh,activeToolLabel,null,{tool:this.app.activeTool}); y += bh + d.spacing;
       this.add("label","tool-desc-1",x,y,bw,bh,toolDescription.primary,null); y += bh + d.spacing;
       this.add("label","tool-desc-2",x,y,bw,bh,toolDescription.secondary,null); y += bh + d.spacing;
-      this.add("label","tool-status",x,y,bw,bh,this.app.statusMessage || "Ready.",null); y += bh + d.spacing;
       const brushToolActive = this.app.activeTool === "brush" || this.app.activeTool === "erase";
       const shapeToolActive = this.app.activeTool === "line" || this.app.activeTool === "rect" || this.app.activeTool === "fillrect";
       if (brushToolActive) {
@@ -1094,14 +1105,6 @@ main.js
         y += bh + d.spacing;
       }
       this.add("button","mirror-toggle",x,y,bw,bh,this.app.mirror ? "Mirror: On" : "Mirror: Off",()=>this.app.toggleMirror()); y += bh + d.spacing;
-      y += d.spacing;
-      this.add("label","lbl-grid",x,y,bw,d.labelHeight,"GRID SIZE",null); y += d.labelHeight + d.spacing;
-      this.add("label","grid-size-readout",x,y,bw,bh,`${this.app.document.cols} cols x ${this.app.document.rows} rows`,null); y += bh + d.spacing;
-      this.add("button","grid-cols-down",x,y,Math.floor((bw - d.spacing) / 2),bh,"Cols -",()=>this.app.adjustGridCols(-1));
-      this.add("button","grid-cols-up",x + Math.floor((bw - d.spacing) / 2) + d.spacing,y,Math.ceil((bw - d.spacing) / 2),bh,"Cols +",()=>this.app.adjustGridCols(1));
-      y += bh + d.spacing;
-      this.add("button","grid-rows-down",x,y,Math.floor((bw - d.spacing) / 2),bh,"Rows -",()=>this.app.adjustGridRows(-1));
-      this.add("button","grid-rows-up",x + Math.floor((bw - d.spacing) / 2) + d.spacing,y,Math.ceil((bw - d.spacing) / 2),bh,"Rows +",()=>this.app.adjustGridRows(1));
       y += d.spacing;
       this.add("label","lbl-sel",x,y,bw,d.labelHeight,"SELECTION",null); y += d.labelHeight + d.spacing;
       const hasSelection = !!this.app.document.selection;
@@ -1309,6 +1312,9 @@ main.js
       ctx.font = "bold 18px Arial";
       ctx.textAlign = "center";
       ctx.fillText("Sprite Editor v2.2", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 10);
+      ctx.font = "12px Arial";
+      ctx.fillStyle = performance.now() < this.app.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
+      ctx.fillText(this.app.statusMessage || "Ready.", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 28);
       ctx.textAlign = "left";
       if (this.dragFrameIndex !== null && this.dragOverFrameIndex !== null) {
         const from = this.dragFrameIndex + 1;
