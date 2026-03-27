@@ -1574,6 +1574,9 @@ main.js
         if (typeof onConfirm === "function") onConfirm();
         return;
       }
+      this.controlSurface.closeOverflowPanel();
+      this.controlSurface.closeCommandPalette();
+      this.closeLayerRenamePrompt();
       this.replaceGuard = {
         open: true,
         title,
@@ -1615,13 +1618,39 @@ main.js
       return !!(this.layerRenamePrompt && this.layerRenamePrompt.open);
     }
 
+    canOpenTransientSurface() {
+      if (this.replaceGuard.open) {
+        this.showMessage("Finish current confirm/cancel first.");
+        return false;
+      }
+      if (this.isLayerRenameOpen()) {
+        this.showMessage("Finish layer rename first.");
+        return false;
+      }
+      return true;
+    }
+
+    closeMenuLikeSurfaces() {
+      this.controlSurface.closeOverflowPanel();
+      this.controlSurface.closeCommandPalette();
+    }
+
+    clearHoverPreviewState() {
+      this.timelineHoverIndex = null;
+      this.hoveredGridCell = null;
+      this.controlSurface.hovered = null;
+    }
+
     openLayerRenamePrompt() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.closeMenuLikeSurfaces();
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const active = af.layers[af.activeLayerIndex];
       this.layerRenamePrompt.open = true;
       this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
       this.showMessage("Rename layer: type, Enter apply, Esc cancel.");
       this.renderAll();
+      return true;
     }
 
     closeLayerRenamePrompt() {
@@ -1766,6 +1795,11 @@ main.js
       document.addEventListener("fullscreenchange", () => { this.resize(); this.renderAll(); });
       this.canvas.addEventListener("pointermove", (e) => this.onPointerMove(e));
       this.canvas.addEventListener("pointerdown", (e) => this.onPointerDown(e));
+      this.canvas.addEventListener("pointerleave", () => {
+        if (this.isPointerDown || this.timelineInteraction) return;
+        this.clearHoverPreviewState();
+        this.renderAll();
+      });
       window.addEventListener("pointerup", (e) => this.onPointerUp(e));
       this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
       this.canvas.addEventListener("wheel", (e) => this.onWheel(e), { passive: false });
@@ -1956,6 +1990,8 @@ main.js
       return true;
     }
     openPlaybackRangeMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeCommandPalette();
       const items = [
         { id: "playback-menu-set", text: "Set Range From Selection", action: () => this.setPlaybackRangeFromSelection() },
         { id: "playback-menu-clear", text: "Clear Range", action: () => this.dispatchKeybinding("playback.clearRange") },
@@ -1965,8 +2001,11 @@ main.js
       ];
       this.controlSurface.toggleTopMenu("playback-range-menu", items);
       this.renderAll();
+      return true;
     }
     openEditMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeCommandPalette();
       const hasSelection = !!this.document.selection;
       const hasClipboard = !!this.document.selectionClipboard;
       const items = [
@@ -1984,8 +2023,11 @@ main.js
       }
       this.controlSurface.toggleTopMenu("edit", items);
       this.renderAll();
+      return true;
     }
     openFrameMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeCommandPalette();
       const range = this.getFrameRangeSelection();
       const playbackRange = this.getPlaybackRange();
       const items = [
@@ -2004,8 +2046,11 @@ main.js
       ];
       this.controlSurface.toggleTopMenu("frame", items);
       this.renderAll();
+      return true;
     }
     openLayerMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeCommandPalette();
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const activeLayer = af.layers[af.activeLayerIndex];
       const layerName = activeLayer ? activeLayer.name : "Layer";
@@ -2028,6 +2073,7 @@ main.js
       ];
       this.controlSurface.toggleTopMenu("layer", items);
       this.renderAll();
+      return true;
     }
     openLayerActionsMenu() {
       this.openLayerMenu();
@@ -2618,9 +2664,12 @@ main.js
     }
 
     openCommandPalette() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeOverflowPanel();
       this.commandPaletteCommands = this.createCommandPaletteCommands();
       this.controlSurface.openCommandPalette(this.commandPaletteCommands);
       this.showMessage("Command palette opened.");
+      return true;
     }
 
     applyNamedPalette(paletteName) {
@@ -2744,7 +2793,7 @@ main.js
         }
         if (this.controlSurface.overflowPanelOpen) {
           this.controlSurface.closeOverflowPanel();
-          this.showMessage("Overflow closed.");
+          this.showMessage("Menu closed.");
           return true;
         }
         if (this.selectionStart) {
@@ -3079,6 +3128,8 @@ main.js
       this.renderAll();
     }
     openPaletteWorkflowMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeCommandPalette();
       const items = [
         { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
         { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget() },
@@ -3094,6 +3145,7 @@ main.js
       }
       this.controlSurface.toggleTopMenu("palette-menu", items);
       this.renderAll();
+      return true;
     }
     getExportModeLabel() {
       if (this.exportMode === "current_frame") return "Current Frame";
@@ -3253,6 +3305,8 @@ main.js
       return true;
     }
     openExportMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.controlSurface.closeCommandPalette();
       const items = [
         { id: "export-menu-mode-current", text: `Mode: Current Frame${this.exportMode === "current_frame" ? " *" : ""}`, action: () => this.setExportMode("current_frame") },
         { id: "export-menu-mode-all", text: `Mode: All Frames${this.exportMode === "all_frames" ? " *" : ""}`, action: () => this.setExportMode("all_frames") },
@@ -3265,6 +3319,7 @@ main.js
       ];
       this.controlSurface.toggleTopMenu("file", items);
       this.renderAll();
+      return true;
     }
     replacePaletteColor() {
       const source = this.paletteWorkflow.source;
@@ -4039,43 +4094,49 @@ main.js
     }
 
     drawBottomStatus() {
-      const b = this.controlSurface.layout.bottomPanel, y = b.y + 78;
-      const sel = this.document.selection ? `Selection ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "No selection";
+      const b = this.controlSurface.layout.bottomPanel, y = b.y + 40;
+      const sel = this.document.selection ? `Sel ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "Sel -";
       const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
       const frameRange = this.getFrameRangeSelection();
-      const frameRangeText = frameRange.explicit
-        ? `Frames ${frameRange.start + 1}-${frameRange.end + 1}`
-        : `Frame ${this.document.activeFrameIndex + 1}`;
+      const frameRangeText = frameRange.explicit ? `Frames ${frameRange.start + 1}-${frameRange.end + 1}` : `Frame ${this.document.activeFrameIndex + 1}`;
       const playbackRange = this.getPlaybackRange();
-      const playbackRangeText = playbackRange.enabled
-        ? `Range ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}`
-        : "Range Off";
+      const playbackRangeText = playbackRange.enabled ? `Range ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}` : "Range Off";
       const hoverPreviewText = this.timelineHoverIndex !== null ? `Hover ${this.timelineHoverIndex + 1}` : "Hover -";
       const paletteReplaceText = `Replace ${this.paletteWorkflow.source ? "S" : "-"}>${this.paletteWorkflow.target ? "T" : "-"} ${this.getPaletteScopeLabel().replace("Scope: ", "")}`;
       const af = this.document.ensureFrameLayers(this.document.activeFrame);
       const activeLayer = af.layers[af.activeLayerIndex];
-      const soloTag = this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? " Solo" : "";
-      const lockTag = activeLayer && activeLayer.locked ? " Locked" : "";
-      const opacityTag = activeLayer ? ` ${Math.round(((typeof activeLayer.opacity === "number" ? activeLayer.opacity : 1) * 100))}%` : "";
-      const blendTag = this.document.blendPreviewMode === "boost" ? "Blend:Boost" : "Blend:Normal";
-      const onionStatus = `Onion P:${this.onionSkin.prev ? "On" : "Off"} N:${this.onionSkin.next ? "On" : "Off"}`;
-      const playStatus = `Playback:${this.playback.isPlaying ? "Play" : "Pause"} FPS:${this.playback.fps} Loop:${this.playback.loop ? "On" : "Off"} ${playbackRangeText}`;
-      const toolText = `Tool: ${this.activeTool}   |   Brush ${this.brush.size}/${this.brush.shape}   |   ${paletteReplaceText}   |   ${frameRangeText}   |   ${hoverPreviewText}   |   ${hover}   |   ${sel}   |   Layer: ${activeLayer ? activeLayer.name : "-"}${lockTag}${soloTag}${opacityTag}   |   ${blendTag}   |   Zoom ${this.zoom.toFixed(2)}x   |   PixelPerfect ${this.viewport.pixelPerfect ? "On" : "Off"}   |   ${onionStatus}   |   ${playStatus}${this.controlSurface.dragFeedbackText ? "   |   " + this.controlSurface.dragFeedbackText : ""}`;
-      const shortcutsText = "B/E/F/I/S tools  [ ] frame  Ctrl+D dup  Ctrl+C/X/V select  O onion prev  Shift+O onion next";
+      const layerFlags = [
+        activeLayer && activeLayer.locked ? "Locked" : null,
+        this.isLayerSoloActiveFor(af, af.activeLayerIndex) ? "Solo" : null,
+        activeLayer ? `${Math.round(((typeof activeLayer.opacity === "number" ? activeLayer.opacity : 1) * 100))}%` : null
+      ].filter(Boolean).join(" ");
+      const brushText = (this.activeTool === "brush" || this.activeTool === "erase")
+        ? `Brush ${this.brush.size}/${this.brush.shape}`
+        : (this.activeTool === "line" || this.activeTool === "rect" || this.activeTool === "fillrect" ? "Shape drag preview" : "Brush -");
+      const topLine = `Tool ${this.activeTool} | ${brushText} | ${frameRangeText} | ${hoverPreviewText} | ${hover}`;
+      const middleLine = `Layer ${activeLayer ? activeLayer.name : "-"}${layerFlags ? ` (${layerFlags})` : ""} | ${paletteReplaceText} | Zoom ${this.zoom.toFixed(2)}x | Pixel ${this.viewport.pixelPerfect ? "On" : "Off"}`;
+      const playbackText = `Playback ${this.playback.isPlaying ? "Play" : "Pause"} ${this.playback.fps}fps ${this.playback.loop ? "Loop" : "Once"} | ${playbackRangeText} | Onion ${this.onionSkin.prev ? "P" : "-"}${this.onionSkin.next ? "N" : "-"}`;
+      const shortcutsText = this.controlSurface.dragFeedbackText
+        ? this.controlSurface.dragFeedbackText
+        : `${sel} | ${playbackText}`;
       const rightMargin = 18;
       const maxRight = b.x + b.width - rightMargin;
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "12px Arial";
-      const toolX = maxRight - this.ctx.measureText(toolText).width;
+      const toolX = maxRight - this.ctx.measureText(topLine).width;
+      const middleX = maxRight - this.ctx.measureText(middleLine).width;
       const shortcutsX = maxRight - this.ctx.measureText(shortcutsText).width;
-      this.ctx.fillText(toolText, Math.max(b.x + 18, toolX), y);
-      this.ctx.fillText(shortcutsText, Math.max(b.x + 18, shortcutsX), y+22);
+      this.ctx.fillText(topLine, Math.max(b.x + 18, toolX), y);
+      this.ctx.fillText(middleLine, Math.max(b.x + 18, middleX), y + 22);
+      this.ctx.fillText(shortcutsText, Math.max(b.x + 18, shortcutsX), y + 44);
       this.ctx.fillStyle = "#91a3b6";
       const dirtyText = this.isDirty ? "Modified" : "Saved";
       const nextUndo = this.history.undo.length ? this.history.undo[this.history.undo.length - 1].label : "-";
       const nextRedo = this.history.redo.length ? this.history.redo[this.history.redo.length - 1].label : "-";
-      this.ctx.fillText(`State: ${dirtyText}  |  Undo: ${nextUndo}  |  Redo: ${nextRedo}`, b.x + 18, y + 44);
+      this.ctx.fillText(`State: ${dirtyText} | Undo: ${nextUndo} | Redo: ${nextRedo}`, b.x + 18, y + 66);
       this.ctx.fillStyle = performance.now() < this.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
-      this.ctx.fillText(this.statusMessage, b.x+b.width-360, y + 44);
+      const message = this.statusMessage || "Ready.";
+      const messageX = Math.max(b.x + 18, maxRight - this.ctx.measureText(message).width);
+      this.ctx.fillText(message, messageX, y + 66);
     }
   }
 

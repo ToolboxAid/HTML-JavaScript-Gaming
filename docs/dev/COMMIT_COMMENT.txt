@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v5.2 consolidating menus and reducing screen clutter while preserving direct workflow controls
+Build Sprite Editor v5.4 polishing UX and interaction consistency across menus, panels, and editor states
