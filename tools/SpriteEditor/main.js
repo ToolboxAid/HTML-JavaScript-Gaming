@@ -1121,11 +1121,27 @@ main.js
         const hidden = !this.app.isLayerVisibleEffective(af, i);
         const solo = this.app.isLayerSoloActiveFor(af, i);
         const opacityPct = `${Math.round(((typeof l.opacity === "number" ? l.opacity : 1) * 100))}%`;
-        const rowHeight = Math.max(28, bh - 6);
-        const stateText = `${hidden ? "Hidden" : "Visible"}${l.locked ? " | Locked" : ""}${solo ? " | Solo" : ""}`;
-        const label = `${i === af.activeLayerIndex ? "Active | " : ""}${l.name} | ${stateText} | ${opacityPct}`;
-        this.add("button", "layer-item-" + i, x, y, bw, rowHeight, label, () => this.app.selectLayer(i), {
+        const rowHeight = 40;
+        const visWidth = 56;
+        const rowGap = 8;
+        const rowWidth = bw - visWidth - rowGap;
+        const stateParts = [hidden ? "Hidden" : "Visible"];
+        if (l.locked) stateParts.push("Locked");
+        if (solo) stateParts.push("Solo");
+        const stateText = stateParts.join(" | ");
+        this.add("button", "layer-vis-" + i, x, y, visWidth, rowHeight, hidden ? "Show" : "Hide", () => {
+          this.app.selectLayer(i);
+          this.app.toggleLayerVisibility();
+        }, {
           layerIndex: i,
+          layerVisibilityToggle: true,
+          layerHidden: hidden
+        });
+        this.add("button", "layer-item-" + i, x + visWidth + rowGap, y, rowWidth, rowHeight, l.name, () => this.app.selectLayer(i), {
+          layerIndex: i,
+          layerName: l.name,
+          layerStateText: stateText,
+          layerOpacityText: opacityPct,
           layerHidden: hidden,
           layerLocked: l.locked === true,
           layerSolo: solo
@@ -1137,13 +1153,17 @@ main.js
       y = right.y + d.padding;
       const rw = right.width - (d.padding * 2);
       this.add("label","lbl-palette",x,y,rw,d.labelHeight,`PALETTE ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null); y += d.labelHeight + d.spacing;
+      this.add("label","palette-current",x,y,rw,18,`Current ${String(this.app.document.currentColor || "").toUpperCase()}`,null); y += 20;
       let paletteX = x;
       let paletteY = y;
-      const sw = 34;
-      const sh = 34;
-      const gap = 8;
-      const cols = Math.max(1, Math.floor((rw + gap) / (sw + gap)));
-      this.app.document.palette.forEach((c, i) => {
+      const gap = 6;
+      const maxRows = 3;
+      const cols = Math.max(1, Math.floor((rw + gap) / (32 + gap)));
+      const maxVisibleSwatches = Math.max(cols, cols * maxRows);
+      const swatchCount = Math.min(this.app.document.palette.length, maxVisibleSwatches);
+      const sw = Math.max(24, Math.min(34, Math.floor((rw - gap * (cols - 1)) / cols)));
+      const sh = sw;
+      this.app.document.palette.slice(0, swatchCount).forEach((c, i) => {
         this.add("palette","palette-"+i,paletteX,paletteY,sw,sh,"",()=>this.app.setCurrentColor(c),{color:c});
         if (((i + 1) % cols) === 0) {
           paletteX = x;
@@ -1153,9 +1173,10 @@ main.js
         }
       });
       y = paletteY + sh + d.spacing + 4;
-      this.add("button","color-prev",x,y,Math.floor((rw - d.spacing) / 2),34,"Prev",()=>this.app.prevColor());
-      this.add("button","color-next",x + Math.floor((rw - d.spacing) / 2) + d.spacing,y,Math.ceil((rw - d.spacing) / 2),34,"Next",()=>this.app.nextColor());
-      y += 34 + d.spacing;
+      if (this.app.document.palette.length > swatchCount) {
+        this.add("label","palette-more",x,y,rw,18,`+${this.app.document.palette.length - swatchCount} more colors in Palette Menu`,null);
+        y += 22;
+      }
       this.add("button","palette-menu",x,y,rw,34,"Palette Menu",()=>this.app.openPaletteWorkflowMenu());
     }
 
@@ -1295,20 +1316,45 @@ main.js
       ctx.strokeStyle = (toolActive || activeFrame || activeLayerItem || dragTarget) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
       if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
-      ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
-      ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial";
-      ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+      if (c.layerVisibilityToggle) {
+        ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
+        ctx.font = "bold 12px Arial";
+        ctx.fillText(c.layerHidden ? "Show" : "Hide", c.x + 9, c.y + c.h / 2);
+      } else if (typeof c.layerIndex === "number") {
+        ctx.fillStyle = "#edf2f7";
+        ctx.font = "bold 13px Arial";
+        ctx.fillText(c.layerName || c.text, c.x + 10, c.y + 13);
+        ctx.fillStyle = "#9fb8cf";
+        ctx.font = "11px Arial";
+        ctx.fillText(c.layerStateText || "", c.x + 10, c.y + c.h - 11);
+        if (c.layerOpacityText) {
+          ctx.fillStyle = "#dbe7f3";
+          ctx.font = "bold 11px Arial";
+          const opacityWidth = ctx.measureText(c.layerOpacityText).width;
+          ctx.fillText(c.layerOpacityText, c.x + c.w - opacityWidth - 12, c.y + 13);
+        }
+      } else {
+        ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
+        ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial";
+        ctx.fillText(c.text,c.x+10,c.y+c.h/2);
+      }
       if (activeLayerItem) {
         ctx.fillStyle = "#4cc9f0";
         ctx.fillRect(c.x + 2, c.y + 2, 4, c.h - 4);
+        if (!c.layerVisibilityToggle) {
+          ctx.font = "bold 10px Arial";
+          const badge = "ACTIVE";
+          const badgeWidth = ctx.measureText(badge).width;
+          ctx.fillText(badge, c.x + c.w - badgeWidth - 12, c.y + c.h - 11);
+        }
       }
       if (c.layerLocked) {
         ctx.strokeStyle = "#f59e0b";
-        ctx.strokeRect(c.x + c.w - 22.5, c.y + 6.5, 14, 14);
+        ctx.strokeRect(c.x + c.w - 24.5, c.y + c.h - 19.5, 14, 14);
       }
       if (c.layerSolo) {
         ctx.fillStyle = "#22c55e";
-        ctx.fillRect(c.x + c.w - 8, c.y + 6, 4, c.h - 12);
+        ctx.fillRect(c.x + c.w - 6, c.y + c.h - 20, 3, 14);
       }
       if (c.isCommandRow && c.category) {
         ctx.fillStyle = "#4cc9f0";
@@ -3536,6 +3582,8 @@ main.js
       this.closeAboutPopup();
       this.controlSurface.closeCommandPalette();
       const items = [
+        { id: "palette-menu-prev", text: "Previous Color", action: () => this.prevColor(), shortcut: "[" },
+        { id: "palette-menu-next", text: "Next Color", action: () => this.nextColor(), shortcut: "]" },
         { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
         { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget() },
         { id: "palette-menu-scope-layer", text: "Scope Active Layer", action: () => this.setPaletteReplaceScope("active_layer") },

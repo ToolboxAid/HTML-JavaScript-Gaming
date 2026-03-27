@@ -1,1 +1,1 @@
-Sprite Editor v6.8 clean up layout, shortcuts, palette/layer placement, mode label, and Help submenu contents
+Sprite Editor v6.8.2 clean up palette panel, move utility actions to Palette menu, and stop bottom overflow
