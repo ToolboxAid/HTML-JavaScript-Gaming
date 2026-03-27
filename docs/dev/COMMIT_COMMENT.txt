@@ -1,1 +1,1 @@
-Sprite Editor v6.9 remove palette display cap and show all colors in selected palette
+Sprite Editor v6.9.1 fix palette viewport and scroll math so all palette colors are shown and reachable

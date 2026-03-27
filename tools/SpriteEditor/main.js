@@ -120,7 +120,7 @@ main.js
       this.cols = nextCols;
       this.rows = nextRows;
       const palette = Array.isArray(this.palette)
-        ? this.palette.filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex)).slice(0, 64)
+        ? this.palette.filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex))
         : [];
       this.palette = palette.length ? palette : this.getDefaultPalette();
       if (this.palette.indexOf(this.currentColor) < 0) this.currentColor = this.palette[0];
@@ -1152,32 +1152,44 @@ main.js
       this.add("label","palette-current",x,y,rw,18,`Current ${String(this.app.document.currentColor || "").toUpperCase()}`,null); y += 20;
       const gap = 4;
       const targetSwatch = this.app.uiDensityEffectiveMode === "pro" ? 20 : 22;
-      const cols = Math.max(1, Math.floor((rw + gap) / (targetSwatch + gap)));
-      const sw = Math.max(18, Math.min(24, Math.floor((rw - gap * (cols - 1)) / cols)));
+      const scrollbarW = 10;
+      const paletteGridW = Math.max(24, rw - scrollbarW - gap);
+      const cols = Math.max(1, Math.floor((paletteGridW + gap) / (targetSwatch + gap)));
+      const sw = Math.max(18, Math.min(24, Math.floor((paletteGridW - gap * (cols - 1)) / cols)));
       const sh = sw;
       const viewportHeight = Math.max(sh, (right.y + right.height) - y - d.padding);
+      const rowStride = sh + gap;
       const totalRows = Math.max(1, Math.ceil(this.app.document.palette.length / cols));
-      const contentHeight = totalRows * sh + Math.max(0, totalRows - 1) * gap;
+      const contentHeight = totalRows * rowStride - gap;
       const maxScroll = Math.max(0, contentHeight - viewportHeight);
       this.app.paletteSidebarScroll = Math.max(0, Math.min(maxScroll, this.app.paletteSidebarScroll || 0));
+      const startRow = Math.max(0, Math.floor(this.app.paletteSidebarScroll / rowStride));
+      const endRow = Math.min(totalRows - 1, Math.ceil((this.app.paletteSidebarScroll + viewportHeight) / rowStride));
+      const visibleStart = startRow * cols;
+      const visibleEnd = Math.min(this.app.document.palette.length, ((endRow + 1) * cols));
       this.app.paletteSidebarMetrics = {
         x,
         y,
-        w: rw,
+        w: paletteGridW,
         h: viewportHeight,
         sw,
         sh,
         gap,
         cols,
+        rowStride,
+        totalRows,
         contentHeight,
-        maxScroll
+        maxScroll,
+        scrollbarX: x + paletteGridW + gap,
+        scrollbarW
       };
-      this.app.document.palette.forEach((c, i) => {
+      this.app.document.palette.slice(visibleStart, visibleEnd).forEach((c, offset) => {
+        const i = visibleStart + offset;
         const col = i % cols;
         const row = Math.floor(i / cols);
         const drawX = x + col * (sw + gap);
-        const drawY = y + row * (sh + gap) - this.app.paletteSidebarScroll;
-        if (drawY + sh < y || drawY > y + viewportHeight) return;
+        const drawY = y + row * rowStride - this.app.paletteSidebarScroll;
+        if (drawY + sh <= y || drawY >= y + viewportHeight) return;
         this.add("palette","palette-"+i,drawX,drawY,sw,sh,"",()=>this.app.setCurrentColor(c),{color:c});
       });
     }
@@ -1273,6 +1285,7 @@ main.js
       });
       ctx.font = "13px Arial"; ctx.textBaseline = "middle";
       this.controls.forEach((c) => this.drawControl(ctx,c));
+      this.drawPaletteSidebarScrollbar(ctx);
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 18px Arial";
       ctx.textAlign = "center";
@@ -1428,6 +1441,24 @@ main.js
       ctx.fillStyle = "#91a3b6";
       ctx.font = "12px Arial";
       ctx.fillText("Up/Down navigate  Enter execute  Esc close", p.x + 14, p.y + p.h - 10);
+    }
+
+    drawPaletteSidebarScrollbar(ctx) {
+      const metrics = this.app.paletteSidebarMetrics;
+      if (!metrics || metrics.maxScroll <= 0) return;
+      const trackX = metrics.scrollbarX;
+      const trackY = metrics.y;
+      const trackH = metrics.h;
+      const trackW = metrics.scrollbarW;
+      const thumbH = Math.max(28, Math.floor((trackH / metrics.contentHeight) * trackH));
+      const thumbTravel = Math.max(0, trackH - thumbH);
+      const thumbY = trackY + Math.floor((this.app.paletteSidebarScroll / metrics.maxScroll) * thumbTravel);
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      ctx.fillRect(trackX, trackY, trackW, trackH);
+      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.strokeRect(trackX + 0.5, trackY + 0.5, trackW - 1, trackH - 1);
+      ctx.fillStyle = "#4cc9f0";
+      ctx.fillRect(trackX + 1, thumbY + 1, trackW - 2, Math.max(12, thumbH - 2));
     }
   }
 
