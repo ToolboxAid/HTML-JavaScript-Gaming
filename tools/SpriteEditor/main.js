@@ -1150,6 +1150,11 @@ main.js
       const rw = right.width - (d.padding * 2);
       this.add("label","lbl-palette",x,y,rw,d.labelHeight,`PALETTE ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null); y += d.labelHeight + d.spacing;
       this.add("label","palette-current",x,y,rw,18,`Current ${String(this.app.document.currentColor || "").toUpperCase()}`,null); y += 20;
+      const sortTop = right.y + right.height - d.padding - 64;
+      const sortButtonGap = 6;
+      const sortButtonH = 24;
+      const sortButtonW = Math.floor((rw - sortButtonGap) / 2);
+      const paletteViewportBottom = Math.max(y + 24, sortTop - 10);
       const gap = 4;
       const targetSwatch = this.app.uiDensityEffectiveMode === "pro" ? 20 : 22;
       const scrollbarW = 10;
@@ -1157,16 +1162,17 @@ main.js
       const cols = Math.max(1, Math.floor((paletteGridW + gap) / (targetSwatch + gap)));
       const sw = Math.max(18, Math.min(24, Math.floor((paletteGridW - gap * (cols - 1)) / cols)));
       const sh = sw;
-      const viewportHeight = Math.max(sh, (right.y + right.height) - y - d.padding);
+      const viewportHeight = Math.max(sh, paletteViewportBottom - y);
       const rowStride = sh + gap;
-      const totalRows = Math.max(1, Math.ceil(this.app.document.palette.length / cols));
+      const paletteEntries = this.app.getPaletteDisplayEntries();
+      const totalRows = Math.max(1, Math.ceil(paletteEntries.length / cols));
       const contentHeight = totalRows * rowStride - gap;
       const maxScroll = Math.max(0, contentHeight - viewportHeight);
       this.app.paletteSidebarScroll = Math.max(0, Math.min(maxScroll, this.app.paletteSidebarScroll || 0));
       const startRow = Math.max(0, Math.floor(this.app.paletteSidebarScroll / rowStride));
       const endRow = Math.min(totalRows - 1, Math.ceil((this.app.paletteSidebarScroll + viewportHeight) / rowStride));
       const visibleStart = startRow * cols;
-      const visibleEnd = Math.min(this.app.document.palette.length, ((endRow + 1) * cols));
+      const visibleEnd = Math.min(paletteEntries.length, ((endRow + 1) * cols));
       this.app.paletteSidebarMetrics = {
         x,
         y,
@@ -1183,15 +1189,20 @@ main.js
         scrollbarX: x + paletteGridW + gap,
         scrollbarW
       };
-      this.app.document.palette.slice(visibleStart, visibleEnd).forEach((c, offset) => {
+      paletteEntries.slice(visibleStart, visibleEnd).forEach((entry, offset) => {
         const i = visibleStart + offset;
         const col = i % cols;
         const row = Math.floor(i / cols);
         const drawX = x + col * (sw + gap);
         const drawY = y + row * rowStride - this.app.paletteSidebarScroll;
         if (drawY + sh <= y || drawY >= y + viewportHeight) return;
-        this.add("palette","palette-"+i,drawX,drawY,sw,sh,"",()=>this.app.setCurrentColor(c),{color:c});
+        this.add("palette","palette-"+entry.index,drawX,drawY,sw,sh,"",()=>this.app.setCurrentColor(entry.hex),{color:entry.hex});
       });
+      this.add("label","palette-sort-label",x,sortTop,rw,18,"SORT",null);
+      this.add("button","palette-sort-name",x,sortTop + 20,sortButtonW,sortButtonH,"Name",()=>this.app.setPaletteSortMode("name"),{ paletteSortMode: "name" });
+      this.add("button","palette-sort-hue",x + sortButtonW + sortButtonGap,sortTop + 20,sortButtonW,sortButtonH,"Hue",()=>this.app.setPaletteSortMode("hue"),{ paletteSortMode: "hue" });
+      this.add("button","palette-sort-saturation",x,sortTop + 20 + sortButtonH + sortButtonGap,sortButtonW,sortButtonH,"Saturation",()=>this.app.setPaletteSortMode("saturation"),{ paletteSortMode: "saturation" });
+      this.add("button","palette-sort-lightness",x + sortButtonW + sortButtonGap,sortTop + 20 + sortButtonH + sortButtonGap,sortButtonW,sortButtonH,"Lightness",()=>this.app.setPaletteSortMode("lightness"),{ paletteSortMode: "lightness" });
     }
 
     getControlAt(x,y) {
@@ -1319,14 +1330,14 @@ main.js
         ctx.lineWidth = 1;
         return;
       }
-      const hovered = this.hovered === c.id, pressed = this.pressed === c.id, activeFrame = c.kind === "frame" && this.app.document.activeFrameIndex === c.frameIndex, activeLayerItem = typeof c.layerIndex === "number" && this.app.document.activeFrame.activeLayerIndex === c.layerIndex, dragTarget = c.kind === "frame" && this.dragOverFrameIndex === c.frameIndex && this.dragFrameIndex !== null, toolActive = c.tool && this.app.activeTool === c.tool;
+      const hovered = this.hovered === c.id, pressed = this.pressed === c.id, activeFrame = c.kind === "frame" && this.app.document.activeFrameIndex === c.frameIndex, activeLayerItem = typeof c.layerIndex === "number" && this.app.document.activeFrame.activeLayerIndex === c.layerIndex, dragTarget = c.kind === "frame" && this.dragOverFrameIndex === c.frameIndex && this.dragFrameIndex !== null, toolActive = c.tool && this.app.activeTool === c.tool, sortModeActive = c.paletteSortMode && this.app.paletteSortMode === c.paletteSortMode;
       ctx.fillStyle = pressed ? "#27435a" : (hovered ? "#223444" : "#1a2733");
       if (c.isCommandRow && c.selected) ctx.fillStyle = "#2d5169";
-      if (toolActive || activeFrame || activeLayerItem) ctx.fillStyle = "#244d67";
+      if (toolActive || activeFrame || activeLayerItem || sortModeActive) ctx.fillStyle = "#244d67";
       if (dragTarget) ctx.fillStyle = "#305c4a";
       ctx.fillRect(c.x,c.y,c.w,c.h);
       ctx.lineWidth = 1;
-      ctx.strokeStyle = (toolActive || activeFrame || activeLayerItem || dragTarget) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
+      ctx.strokeStyle = (toolActive || activeFrame || activeLayerItem || dragTarget || sortModeActive) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
       if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
       ctx.strokeRect(c.x+0.5,c.y+0.5,c.w-1,c.h-1);
       if (c.layerVisibilityToggle) {
@@ -1518,6 +1529,7 @@ main.js
       this.palettePresetPopup = { open: false, panelRect: null, closeRect: null, backRect: null, rowRects: [] };
       this.paletteSidebarScroll = 0;
       this.paletteSidebarMetrics = null;
+      this.paletteSortMode = "name";
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -3630,7 +3642,72 @@ main.js
       this.showMessage(`Brush shape: ${this.brush.shape}`);
       this.renderAll();
     }
+    colorHexToHsl(hex) {
+      if (typeof hex !== "string" || !/^#[0-9a-fA-F]{6,8}$/.test(hex)) return { h: 0, s: 0, l: 0 };
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h = 0;
+      let s = 0;
+      const l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d) + (g < b ? 6 : 0); break;
+          case g: h = ((b - r) / d) + 2; break;
+          default: h = ((r - g) / d) + 4; break;
+        }
+        h /= 6;
+      }
+      return { h, s, l };
+    }
+    getPaletteDisplayEntries() {
+      const palette = Array.isArray(this.document.palette) ? this.document.palette : [];
+      const presetEntries = (typeof palettesList === "object" && palettesList && this.currentPalettePreset && Array.isArray(palettesList[this.currentPalettePreset]))
+        ? palettesList[this.currentPalettePreset]
+        : null;
+      const entries = palette.map((hex, index) => {
+        const presetEntry = presetEntries && presetEntries[index] ? presetEntries[index] : null;
+        const name = presetEntry && typeof presetEntry.name === "string" && presetEntry.name.trim() ? presetEntry.name.trim() : hex;
+        const hsl = this.colorHexToHsl(hex);
+        return { hex, index, name, h: hsl.h, s: hsl.s, l: hsl.l };
+      });
+      const mode = this.paletteSortMode || "name";
+      const collator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
+      entries.sort((a, b) => {
+        if (mode === "name") {
+          const cmp = collator.compare(a.name, b.name);
+          if (cmp !== 0) return cmp;
+        } else if (mode === "hue") {
+          if (a.h !== b.h) return a.h - b.h;
+          if (a.s !== b.s) return a.s - b.s;
+          if (a.l !== b.l) return a.l - b.l;
+        } else if (mode === "saturation") {
+          if (a.s !== b.s) return a.s - b.s;
+          if (a.h !== b.h) return a.h - b.h;
+          if (a.l !== b.l) return a.l - b.l;
+        } else if (mode === "lightness") {
+          if (a.l !== b.l) return a.l - b.l;
+          if (a.h !== b.h) return a.h - b.h;
+          if (a.s !== b.s) return a.s - b.s;
+        }
+        return a.index - b.index;
+      });
+      return entries;
+    }
     setCurrentColor(c) { this.document.currentColor = c; this.showMessage("Color selected."); }
+    setPaletteSortMode(mode) {
+      if (!["name", "hue", "saturation", "lightness"].includes(mode)) return false;
+      if (this.paletteSortMode === mode) return false;
+      this.paletteSortMode = mode;
+      this.paletteSidebarScroll = 0;
+      this.showMessage(`Palette sort: ${mode[0].toUpperCase()}${mode.slice(1)}.`);
+      this.renderAll();
+      return true;
+    }
     prevColor() {
       const p = this.document.palette, i = p.indexOf(this.document.currentColor), n = i >= 0 ? (i - 1 + p.length) % p.length : 0;
       this.document.currentColor = p[n];

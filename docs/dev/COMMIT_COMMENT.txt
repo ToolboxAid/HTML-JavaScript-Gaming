@@ -1,1 +1,1 @@
-Sprite Editor v6.9.1 fix palette viewport and scroll math so all palette colors are shown and reachable
+Sprite Editor v6.9.2b add palette sidebar sort controls for Name, Hue, Saturation, and Lightness
