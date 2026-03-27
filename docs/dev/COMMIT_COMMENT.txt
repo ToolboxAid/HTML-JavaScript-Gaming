@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v5.1 adding export pipeline and game integration metadata without increasing UI clutter
+Build Sprite Editor v5.2 consolidating menus and reducing screen clutter while preserving direct workflow controls

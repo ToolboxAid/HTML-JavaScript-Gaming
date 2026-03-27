@@ -676,6 +676,27 @@ main.js
           labels: effectiveMode === "pro" ? ["File", "File", "F"] : ["File", "File", "F"],
           action: () => this.toggleTopMenu("file", fileMenuItems)
         },
+        {
+          id: "top-edit",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["Edit", "Edit", "E"],
+          action: () => this.app.openEditMenu()
+        },
+        {
+          id: "top-frame",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["Frame", "Frame", "Fr"],
+          action: () => this.app.openFrameMenu()
+        },
+        {
+          id: "top-layer",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["Layer", "Layer", "L"],
+          action: () => this.app.openLayerMenu()
+        },
         { id: "top-pixel", tier: 2, overflowEligible: true, labels: this.app.viewport.pixelPerfect ? ["Pixel: On", "Pixel", "Px"] : ["Pixel: Off", "Pixel", "Px"], action: () => this.app.togglePixelPerfect() }
       ];
       return {
@@ -702,6 +723,9 @@ main.js
     }
     getMenuAnchorId() {
       if (this.topMenuSource === "file") return "top-file";
+      if (this.topMenuSource === "edit") return "top-edit";
+      if (this.topMenuSource === "frame") return "top-frame";
+      if (this.topMenuSource === "layer") return "top-layer";
       if (this.topMenuSource === "overflow") return "top-overflow";
       return this.topMenuSource;
     }
@@ -1007,12 +1031,12 @@ main.js
       const hasSelection = !!this.app.document.selection;
       const hasClipboard = !!this.app.document.selectionClipboard;
       if (hasSelection) {
-        [["copy","Copy"],["cut","Cut"],["paste","Paste"],["fliph","Flip H"],["flipv","Flip V"],["clear","Clear"]].forEach(([id,t]) => {
-          this.add("button","sel-"+id,x,y,bw,bh,t,()=>this.app.handleSelectionAction("sel-"+id)); y += bh + d.spacing;
-        });
+        const selectionText = `${this.app.document.selection.width}x${this.app.document.selection.height} ready`;
+        this.add("label","sel-state",x,y,bw,bh,selectionText,null); y += bh + d.spacing;
+        this.add("label","sel-hint-actions",x,y,bw,bh,"Edit menu for copy/cut/paste",null); y += bh + d.spacing;
       } else if (hasClipboard) {
-        this.add("button","sel-paste",x,y,bw,bh,"Paste",()=>this.app.handleSelectionAction("sel-paste")); y += bh + d.spacing;
         this.add("label","sel-hint-paste",x,y,bw,bh,"Clipboard ready",null); y += bh + d.spacing;
+        this.add("label","sel-hint-actions",x,y,bw,bh,"Edit menu to paste",null); y += bh + d.spacing;
       } else {
         this.add("label","sel-hint",x,y,bw,bh,"No selection",null); y += bh + d.spacing;
         this.add("label","sel-hint-2",x,y,bw,bh,"Use Select tool to create one",null); y += bh + d.spacing;
@@ -1022,21 +1046,16 @@ main.js
       y = right.y + d.padding;
       const rw = right.width - (d.padding * 2);
       this.add("label","lbl-frames",x,y,rw,d.labelHeight,"FRAMES",null); y += d.labelHeight + d.spacing;
-      [["add","Add Frame",()=>this.app.addFrame()],["dup","Duplicate",()=>this.app.duplicateFrame()],["del","Delete",()=>this.app.deleteFrame()],["copy","Copy Frame",()=>this.app.copyFrame()],["paste","Paste Frame",()=>this.app.pasteFrame()]].forEach(([id,t,a]) => {
-        this.add("button","frame-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
-      });
+      this.add("button","frame-add",x,y,rw,bh,"Add Frame",()=>this.app.addFrame()); y += bh + d.spacing;
       const playbackRange = this.app.getPlaybackRange();
       if (playbackRange.enabled || this.app.getFrameRangeSelection().explicit) {
         y += d.spacing;
         this.add("label","lbl-playback-range",x,y,rw,d.labelHeight,"PLAYBACK RANGE",null); y += d.labelHeight + d.spacing;
-        this.add("button","playback-range-menu",x,y,rw,bh,playbackRange.enabled ? `Range: ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}` : "Range Actions",()=>this.app.openPlaybackRangeMenu()); y += bh + d.spacing;
+        this.add("label","playback-range-state",x,y,rw,bh,playbackRange.enabled ? `Loop ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}` : "Use Frame menu for range actions",null); y += bh + d.spacing;
       }
       y += d.spacing;
       this.add("label","lbl-layers",x,y,rw,d.labelHeight,"LAYERS",null); y += d.labelHeight + d.spacing;
-      [["add","Add Layer",()=>this.app.addLayer()],["dup","Dup Layer",()=>this.app.duplicateLayer()],["del","Del Layer",()=>this.app.deleteLayer()],["vis","Toggle Vis",()=>this.app.toggleLayerVisibility()],["solo","Solo",()=>this.app.toggleLayerSolo()],["lock","Toggle Lock",()=>this.app.toggleLayerLock()]].forEach(([id,t,a]) => {
-        this.add("button","layer-"+id,x,y,rw,bh,t,a); y += bh + d.spacing;
-      });
-      this.add("button","layer-actions-menu",x,y,rw,bh,"Layer More",()=>this.app.openLayerActionsMenu()); y += bh + d.spacing;
+      this.add("button","layer-add",x,y,rw,bh,"Add Layer",()=>this.app.addLayer()); y += bh + d.spacing;
       const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
       const layers = af.layers || [];
       layers.forEach((l, i) => {
@@ -1064,10 +1083,6 @@ main.js
       x += d.padding;
       this.add("button","color-prev",x,y,84,34,"Prev",()=>this.app.prevColor()); x += 92;
       this.add("button","color-next",x,y,84,34,"Next",()=>this.app.nextColor()); x += 92;
-      this.add("button","palette-src",x,y,96,34,"Set Src",()=>this.app.setPaletteReplaceSource()); x += 104;
-      this.add("button","palette-dst",x,y,96,34,"Set Dst",()=>this.app.setPaletteReplaceTarget()); x += 104;
-      this.add("button","palette-scope",x,y,150,34,this.app.getPaletteScopeLabel(),()=>this.app.cyclePaletteReplaceScope()); x += 158;
-      this.add("button","palette-replace",x,y,96,34,"Replace",()=>this.app.replacePaletteColor()); x += 104;
       this.add("button","palette-menu",x,y,96,34,"Palette",()=>this.app.openPaletteWorkflowMenu());
     }
 
@@ -1935,22 +1950,71 @@ main.js
       this.controlSurface.toggleTopMenu("playback-range-menu", items);
       this.renderAll();
     }
-    openLayerActionsMenu() {
+    openEditMenu() {
+      const hasSelection = !!this.document.selection;
+      const hasClipboard = !!this.document.selectionClipboard;
       const items = [
-        { id: "layer-menu-rename", text: "Rename Layer", action: () => this.openLayerRenamePrompt() },
-        { id: "layer-menu-up", text: "Layer Up", action: () => this.moveLayerUp() },
-        { id: "layer-menu-down", text: "Layer Down", action: () => this.moveLayerDown() },
+        { id: "edit-menu-undo", text: "Undo", action: () => this.undoHistory() },
+        { id: "edit-menu-redo", text: "Redo", action: () => this.redoHistory() },
+        { id: "edit-menu-copy", text: "Copy", action: () => this.handleSelectionAction("sel-copy") },
+        { id: "edit-menu-cut", text: "Cut", action: () => this.handleSelectionAction("sel-cut") },
+        { id: "edit-menu-paste", text: "Paste", action: () => this.handleSelectionAction("sel-paste") },
+        { id: "edit-menu-clear", text: hasSelection ? "Clear Selection" : "Clear Selection (none)", action: () => this.handleSelectionAction("sel-clear") },
+        { id: "edit-menu-dup-frame", text: "Duplicate Frame", action: () => this.duplicateFrame() },
+        { id: "edit-menu-del-frame", text: "Delete Frame", action: () => this.deleteFrame() }
+      ];
+      if (!hasSelection && !hasClipboard) {
+        items.splice(2, 0, { id: "edit-menu-hint", text: "Selection tools via Select tool", action: null });
+      }
+      this.controlSurface.toggleTopMenu("edit", items);
+      this.renderAll();
+    }
+    openFrameMenu() {
+      const range = this.getFrameRangeSelection();
+      const playbackRange = this.getPlaybackRange();
+      const items = [
+        { id: "frame-menu-add", text: "Add Frame", action: () => this.addFrame() },
+        { id: "frame-menu-dup", text: "Duplicate Frame", action: () => this.duplicateFrame() },
+        { id: "frame-menu-del", text: "Delete Frame", action: () => this.deleteFrame() },
+        { id: "frame-menu-copy", text: "Copy Frame", action: () => this.copyFrame() },
+        { id: "frame-menu-paste", text: "Paste Frame", action: () => this.pasteFrame() },
+        { id: "frame-menu-range-dup", text: `Duplicate Range${range.explicit ? ` (${range.start + 1}-${range.end + 1})` : ""}`, action: () => this.duplicateSelectedFrameRange() },
+        { id: "frame-menu-range-del", text: `Delete Range${range.explicit ? ` (${range.start + 1}-${range.end + 1})` : ""}`, action: () => this.deleteSelectedFrameRange() },
+        { id: "frame-menu-range-left", text: "Shift Range Left", action: () => this.shiftSelectedFrameRange(-1) },
+        { id: "frame-menu-range-right", text: "Shift Range Right", action: () => this.shiftSelectedFrameRange(1) },
+        { id: "frame-menu-range-clear", text: "Clear Range Selection", action: () => this.clearFrameRangeSelection(true) },
+        { id: "frame-menu-playback-set", text: "Set Playback Range From Selection", action: () => this.setPlaybackRangeFromSelection() },
+        { id: "frame-menu-playback-clear", text: playbackRange.enabled ? "Clear Playback Range" : "Clear Playback Range (none)", action: () => this.dispatchKeybinding("playback.clearRange") }
+      ];
+      this.controlSurface.toggleTopMenu("frame", items);
+      this.renderAll();
+    }
+    openLayerMenu() {
+      const af = this.document.ensureFrameLayers(this.document.activeFrame);
+      const activeLayer = af.layers[af.activeLayerIndex];
+      const layerName = activeLayer ? activeLayer.name : "Layer";
+      const items = [
+        { id: "layer-menu-add", text: "Add Layer", action: () => this.addLayer() },
+        { id: "layer-menu-dup", text: "Duplicate Layer", action: () => this.duplicateLayer() },
+        { id: "layer-menu-del", text: "Delete Layer", action: () => this.deleteLayer() },
+        { id: "layer-menu-rename", text: `Rename ${layerName}`, action: () => this.openLayerRenamePrompt() },
+        { id: "layer-menu-up", text: "Move Up", action: () => this.moveLayerUp() },
+        { id: "layer-menu-down", text: "Move Down", action: () => this.moveLayerDown() },
+        { id: "layer-menu-vis", text: "Toggle Visibility", action: () => this.toggleLayerVisibility() },
+        { id: "layer-menu-solo", text: "Solo", action: () => this.toggleLayerSolo() },
+        { id: "layer-menu-lock", text: "Lock", action: () => this.toggleLayerLock() },
         { id: "layer-menu-merge", text: "Merge Down", action: () => this.mergeLayerDown() },
         { id: "layer-menu-flatten", text: "Flatten Frame", action: () => this.requestFlattenFrame() },
         { id: "layer-menu-opacity-down", text: "Opacity -", action: () => this.adjustLayerOpacity(-0.1) },
         { id: "layer-menu-opacity-up", text: "Opacity +", action: () => this.adjustLayerOpacity(0.1) },
         { id: "layer-menu-opacity-reset", text: "Opacity 100%", action: () => this.resetLayerOpacity() },
-        { id: "layer-menu-blend", text: "Blend Preview", action: () => this.toggleBlendPreview() },
-        { id: "layer-menu-prev", text: "Layer Prev", action: () => this.selectPrevLayer() },
-        { id: "layer-menu-next", text: "Layer Next", action: () => this.selectNextLayer() }
+        { id: "layer-menu-blend", text: "Blend Preview", action: () => this.toggleBlendPreview() }
       ];
-      this.controlSurface.toggleTopMenu("layer-actions-menu", items);
+      this.controlSurface.toggleTopMenu("layer", items);
       this.renderAll();
+    }
+    openLayerActionsMenu() {
+      this.openLayerMenu();
     }
 
     isCellInsideSelection(cell) {
@@ -3177,7 +3241,9 @@ main.js
         { id: "export-menu-mode-current", text: `Mode: Current Frame${this.exportMode === "current_frame" ? " *" : ""}`, action: () => this.setExportMode("current_frame") },
         { id: "export-menu-mode-all", text: `Mode: All Frames${this.exportMode === "all_frames" ? " *" : ""}`, action: () => this.setExportMode("all_frames") },
         { id: "export-menu-mode-range", text: `Mode: Selected Range${this.exportMode === "selected_range" ? " *" : ""}`, action: () => this.setExportMode("selected_range") },
+        { id: "export-menu-editor-json", text: "Editor JSON", action: () => this.exportJson(true) },
         { id: "export-menu-sheet", text: "Sprite Sheet PNG", action: () => this.downloadSpriteSheetPng() },
+        { id: "export-menu-meta", text: "Sheet Meta", action: () => this.exportSheetMetadata() },
         { id: "export-menu-animation", text: "Animation JSON", action: () => this.exportAnimationJson() },
         { id: "export-menu-package", text: "Export Package", action: () => this.exportPackageJson() }
       ];

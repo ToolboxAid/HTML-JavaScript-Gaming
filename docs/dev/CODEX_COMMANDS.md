@@ -7,12 +7,12 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V5_1_EXPORT_PIPELINE_GAME_INTEGRATION.md
+Apply docs/pr/BUILD_PR_TOOLS_SPRITE_EDITOR_V5_2_COMPLETE_MENU_CONSOLIDATION_SCREEN_CLEANUP.md
 
 Constraints:
 - Keep architecture intact
-- Reuse existing export/save/timeline/layer/command systems
-- Add game-friendly export pipeline without adding permanent top-bar clutter
-- Prefer File menu / command palette / compact popovers
-- Export composited visible frame results
+- Reuse existing canvas-native popover/menu systems
+- Perform actual decluttering by moving lower-frequency controls into File/Edit/Layer/Frame menus
+- Keep high-frequency workflow controls visible
+- Preserve command palette and keyboard access
 - Do not rewrite architecture
