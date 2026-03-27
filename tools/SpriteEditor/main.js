@@ -1148,7 +1148,7 @@ main.js
       x = right.x + d.padding;
       y = right.y + d.padding;
       const rw = right.width - (d.padding * 2);
-      this.add("label","lbl-palette",x,y,rw,d.labelHeight,`PALETTE ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null); y += d.labelHeight + d.spacing;
+      this.add("label","lbl-palette",x,y,rw,d.labelHeight,`PALETTE: ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`,null); y += d.labelHeight + d.spacing;
       this.add("label","palette-current",x,y,rw,18,`Current ${String(this.app.document.currentColor || "").toUpperCase()}`,null); y += 20;
       const sortTop = right.y + right.height - d.padding - 64;
       const sortButtonGap = 6;
@@ -2338,20 +2338,23 @@ main.js
       const x = Math.max(b.x + 18, b.x + b.width - 420);
       const y = b.y + 14;
       const w = Math.min(402, b.width - 36);
-      const h = 96;
-      const transportY = y + 16;
-      const transportH = 18;
+      const h = 100;
+      const transportX = x + 8;
+      const transportY = y + 18;
+      const transportW = 58;
+      const transportH = 16;
+      const transportGap = 4;
       const transport = [
-        { id: "play_pause", x: x + 8, y: transportY, w: 54, h: transportH },
-        { id: "stop", x: x + 66, y: transportY, w: 42, h: transportH },
-        { id: "loop", x: x + 112, y: transportY, w: 50, h: transportH },
-        { id: "range", x: x + 166, y: transportY, w: 56, h: transportH },
+        { id: "play_pause", x: transportX, y: transportY, w: transportW, h: transportH },
+        { id: "stop", x: transportX, y: transportY + (transportH + transportGap), w: transportW, h: transportH },
+        { id: "loop", x: transportX, y: transportY + (transportH + transportGap) * 2, w: transportW, h: transportH },
+        { id: "range", x: transportX, y: transportY + (transportH + transportGap) * 3, w: transportW, h: transportH },
         { id: "fps_down", x: x + w - 92, y: transportY, w: 20, h: transportH },
         { id: "fps_up", x: x + w - 24, y: transportY, w: 20, h: transportH }
       ];
-      const innerX = x + 8;
+      const innerX = x + 76;
       const innerY = y + 40;
-      const innerW = w - 16;
+      const innerW = w - 84;
       const innerH = h - 48;
       const count = Math.max(1, this.document.frames.length);
       const slotGap = 6;
@@ -4828,8 +4831,6 @@ main.js
       this.drawMiniPixels(this.document.getCompositedPixels(f),x+12,y+24,72,72);
       this.ctx.font = "12px Arial";
       this.ctx.fillText("Frame "+(previewIndex+1)+" / "+this.document.frames.length,x+96,y+36);
-      this.ctx.fillText(this.playback.isPlaying ? "Playing" : (this.timelineHoverIndex !== null ? "Hover Preview" : "Paused"),x+96,y+58);
-      this.ctx.fillText("P play/pause  [ ] frame",x+96,y+80);
     }
 
     drawSheetPanel() {

@@ -1,1 +1,1 @@
-Sprite Editor v6.9.2b add palette sidebar sort controls for Name, Hue, Saturation, and Lightness
+Sprite Editor v6.9.3 clean up palette label, remove animation preview text chrome, and reorder timeline controls
