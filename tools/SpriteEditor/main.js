@@ -1665,6 +1665,77 @@ main.js
       this.hoveredGridCell = null;
       this.controlSurface.hovered = null;
     }
+    cancelActiveInteraction() {
+      if (this.timelineInteraction) {
+        this.timelineInteraction = null;
+        this.controlSurface.dragFrameIndex = null;
+        this.controlSurface.dragOverFrameIndex = null;
+        this.controlSurface.dragFeedbackText = "";
+        this.clearHoverPreviewState();
+        this.isPointerDown = false;
+        return "Timeline interaction canceled.";
+      }
+      if (this.selectionMoveSession) {
+        this.restoreHistoryState(this.selectionMoveSession.before);
+        this.selectionMoveSession = null;
+        this.isPointerDown = false;
+        return "Selection move canceled.";
+      }
+      if (this.activeStrokeHistory) {
+        this.restoreHistoryState(this.activeStrokeHistory.before);
+        this.activeStrokeHistory = null;
+        this.shapePreview = null;
+        this.strokeLastCell = null;
+        this.selectionStart = null;
+        this.isPointerDown = false;
+        return "Drawing canceled.";
+      }
+      if (this.shapePreview) {
+        this.shapePreview = null;
+        this.selectionStart = null;
+        this.isPointerDown = false;
+        return "Shape preview canceled.";
+      }
+      if (this.selectionStart) {
+        this.selectionStart = null;
+        this.isPointerDown = false;
+        return "Transient selection canceled.";
+      }
+      if (this.isPanning) {
+        this.isPanning = false;
+        this.panStart = null;
+        return "Pan canceled.";
+      }
+      return "";
+    }
+    handleEscapeAction() {
+      if (this.replaceGuard.open) {
+        this.closeReplaceGuard();
+        this.showMessage("Replace canceled.");
+        return true;
+      }
+      if (this.isLayerRenameOpen()) {
+        this.closeLayerRenamePrompt();
+        this.showMessage("Layer rename canceled.");
+        return true;
+      }
+      if (this.controlSurface.overflowPanelOpen) {
+        this.controlSurface.closeOverflowPanel();
+        this.showMessage("Menu closed.");
+        return true;
+      }
+      if (this.controlSurface.commandPaletteOpen) {
+        this.controlSurface.closeCommandPalette();
+        this.showMessage("Command palette closed.");
+        return true;
+      }
+      const canceled = this.cancelActiveInteraction();
+      if (canceled) {
+        this.showMessage(canceled);
+        return true;
+      }
+      return false;
+    }
     normalizeExportMode() {
       if (!["all_frames", "current_frame", "selected_range"].includes(this.exportMode)) {
         this.exportMode = "all_frames";
@@ -1916,10 +1987,10 @@ main.js
     }
 
     computeTimelineLayout() {
-      const p = this.controlSurface.layout.rightPanel;
-      const x = p.x + 18;
-      const y = p.y + p.height - 356;
-      const w = p.width - 36;
+      const b = this.controlSurface.layout.bottomPanel;
+      const x = Math.max(b.x + 18, b.x + b.width - 420);
+      const y = b.y + 14;
+      const w = Math.min(402, b.width - 36);
       const h = 96;
       const transportY = y + 16;
       const transportH = 18;
@@ -2371,8 +2442,15 @@ main.js
     }
 
     onKeyDown(e) {
+      const k = (e.key || "").toLowerCase();
+      if (k === "escape") {
+        if (this.handleEscapeAction()) {
+          e.preventDefault();
+          this.renderAll();
+          return;
+        }
+      }
       if (this.isLayerRenameOpen()) {
-        const k = (e.key || "").toLowerCase();
         if (k === "escape") {
           this.closeLayerRenamePrompt();
           this.showMessage("Layer rename canceled.");
@@ -2399,7 +2477,6 @@ main.js
         }
       }
       if (this.replaceGuard.open) {
-        const k = (e.key || "").toLowerCase();
         if (k === "escape") {
           this.closeReplaceGuard();
           this.showMessage("Replace canceled.");
@@ -2410,7 +2487,6 @@ main.js
       }
       if (this.isTypingTarget(e.target)) return;
       if (this.controlSurface.commandPaletteOpen) {
-        const k = (e.key || "").toLowerCase();
         if (k === "escape") {
           this.controlSurface.closeCommandPalette();
           this.showMessage("Command palette closed.");
@@ -2822,28 +2898,7 @@ main.js
       if (action === "system.undo") return this.undoHistory();
       if (action === "system.redo") return this.redoHistory();
       if (action === "system.escape") {
-        if (this.controlSurface.commandPaletteOpen) {
-          this.controlSurface.closeCommandPalette();
-          this.showMessage("Command palette closed.");
-          return true;
-        }
-        if (this.selectionMoveSession) {
-          this.restoreHistoryState(this.selectionMoveSession.before);
-          this.selectionMoveSession = null;
-          this.showMessage("Selection move canceled.");
-          return true;
-        }
-        if (this.controlSurface.overflowPanelOpen) {
-          this.controlSurface.closeOverflowPanel();
-          this.showMessage("Menu closed.");
-          return true;
-        }
-        if (this.selectionStart) {
-          this.selectionStart = null;
-          this.showMessage("Transient selection canceled.");
-          return true;
-        }
-        return false;
+        return this.handleEscapeAction();
       }
       if (action === "tool.brush") { this.setTool("brush"); return true; }
       if (action === "tool.erase") { this.setTool("erase"); return true; }
@@ -3723,6 +3778,10 @@ main.js
     }
 
     saveLocal() {
+      if (!this.isDirty) {
+        this.showMessage("Nothing to save.");
+        return;
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         doc: this.document.buildExportPayload(),
         uiDensityMode: this.uiDensityMode
@@ -4167,7 +4226,8 @@ main.js
         ? this.controlSurface.dragFeedbackText
         : `${sel} | ${playbackText}`;
       const rightMargin = 18;
-      const maxRight = b.x + b.width - rightMargin;
+      const timelineLeft = this.timelineStripRect ? this.timelineStripRect.x - 18 : (b.x + b.width - rightMargin);
+      const maxRight = Math.max(b.x + 320, Math.min(b.x + b.width - rightMargin, timelineLeft));
       this.ctx.fillStyle = "#dbe7f3"; this.ctx.font = "12px Arial";
       const toolX = maxRight - this.ctx.measureText(topLine).width;
       const middleX = maxRight - this.ctx.measureText(middleLine).width;

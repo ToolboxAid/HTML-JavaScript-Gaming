@@ -51,7 +51,7 @@ ECS DIRECTION
 
 SAMPLE RULES
 - One concept per sample
-- Sample01 is canonical template
+- Sample001 is canonical template
 - All samples must match exactly
 - samples/index.html must stay synced
 - No engine logic in samples
@@ -60,7 +60,7 @@ SAMPLE RULES
 - Only build from approved PLAN_PR
 
 NAMING
-- Sample01, Sample02, ...
+- Sample001, Sample002, ...
 
 ZIP / DELIVERY RULES (CRITICAL)
 - ZIP MUST match repo directory structure EXACTLY
@@ -74,6 +74,20 @@ ZIP / DELIVERY RULES (CRITICAL)
 - No flattened files at root
 - Delta only (no unrelated files)
 - Ready-to-run (no setup guessing)
+
+EXECUTION PACKAGING (MANDATORY)
+- ANY step requiring execution MUST include a ZIP
+- ZIP MUST include:
+    /docs/dev/CODEX_COMMANDS.md
+    /docs/dev/COMMIT_COMMENT.txt
+- NEVER provide execution-only instructions in chat
+- NEVER require manual reconstruction
+
+NEXT COMMAND DELIVERY (MANDATORY)
+- The NEXT COMMAND must ALWAYS be presented in a control with a copy button
+- The control must contain ONLY the executable command content
+- The same command MUST also exist in /docs/dev/CODEX_COMMANDS.md
+- Chat display is for visibility; ZIP is the source of truth
 
 REQUIRED FILES
 - README.md (under /docs/dev/)
@@ -91,5 +105,5 @@ REASONING: low / medium / high
 COMMAND: <command>
 
 FORMAT RULE
-- Sample01 defines structure
+- Sample001 defines structure
 - All samples must match exactly

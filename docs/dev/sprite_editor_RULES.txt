@@ -1,0 +1,132 @@
+SPRITE EDITOR RULES (UPDATED)
+Date: 2026-03-26
+
+CORE PRINCIPLES
+- Do NOT rewrite architecture
+- Canvas-native UI only (no DOM UI additions)
+- SpriteEditorCanvasControlSurface remains authority
+- Fixed 1600x900 logical space
+- Reuse systems (menu, command, history, timeline, layers)
+- Prefer surgical fixes over new systems
+
+--------------------------------------------------
+
+CRITICAL UX RULES (NEW)
+
+1. ESC PRIORITY (MANDATORY)
+ESC must resolve in this order:
+1) Close confirm / rename overlays
+2) Close menus / popovers
+3) Close command palette
+4) Cancel active interaction (drag, selection, etc.)
+5) Only then allow fullscreen exit
+
+ESC must NEVER prematurely exit fullscreen during active UI interaction.
+
+--------------------------------------------------
+
+2. NO INVISIBLE UI (BLOCKER RULE)
+- Timeline MUST always be visible
+- Playback controls MUST always be visible
+- Layer panel MUST NOT overlap timeline
+- No UI may render off-screen or under another panel
+- If something is hidden → it is considered broken
+
+--------------------------------------------------
+
+3. MENU BEHAVIOR CONSISTENCY
+- Only ONE menu open at a time
+- Opening a menu closes others
+- Opening command palette closes menus
+- Opening overlays closes menus
+- Outside click closes menus
+- ESC closes menus (see priority)
+
+--------------------------------------------------
+
+4. NO SILENT ACTIONS
+EVERY action must:
+- Perform visible change OR
+- Emit status message
+
+Examples:
+- Save → "Saved locally"
+- Load → "Loaded project"
+- Export → "Export complete"
+- No-op → "Nothing to change"
+
+--------------------------------------------------
+
+5. STATUS SYSTEM (REQUIRED)
+Bottom status must:
+- Be stable (not jumping)
+- Show key state only:
+  - tool
+  - frame / range
+  - layer
+  - playback
+  - dirty state
+- Show action feedback messages
+
+--------------------------------------------------
+
+6. VALIDATION-FIRST DESIGN
+If user cannot SEE or UNDERSTAND a feature:
+→ it is considered broken
+
+--------------------------------------------------
+
+7. SAFE FAILURE RULE
+When something cannot execute:
+- DO NOT crash
+- DO NOT silently fail
+- DO show status message
+- DO NOT add history entry
+
+--------------------------------------------------
+
+8. LAYER / FRAME SAFETY
+- Must always have at least 1 frame
+- Must always have at least 1 layer
+- Active indices must always be valid
+- Normalize after deletes/reorders
+
+--------------------------------------------------
+
+9. TIMELINE IS CORE
+Timeline is NOT optional UI:
+- Must be visible
+- Must not be covered
+
+--------------------------------------------------
+
+10. NO FEATURE EXPANSION (CURRENT PHASE)
+Only:
+- fix visibility
+- fix interaction
+- fix consistency
+- fix feedback
+
+--------------------------------------------------
+
+START OF DAY CHECKLIST
+
+1. Open editor
+2. Confirm no console errors
+3. Confirm timeline is visible
+4. Confirm menus open with items
+5. Confirm ESC behavior works correctly
+6. Draw, undo, redo
+7. Open File menu → verify feedback works
+8. Select frames → confirm range visible
+9. Play animation → confirm visible + working
+10. Toggle layer visibility → confirm visible change
+
+If any fail → STOP and fix first
+
+--------------------------------------------------
+
+END OF DAY RULE
+
+If you cannot clearly validate a feature:
+→ the problem is UX/visibility, NOT logic

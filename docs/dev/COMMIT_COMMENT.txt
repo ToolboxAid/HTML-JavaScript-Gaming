@@ -1,6 +1,1 @@
-Toolbox Aid
-David Quesenberry
-03/26/2026
-COMMIT_COMMENT.txt
-
-Build Sprite Editor v6.0 hardening release-candidate reliability, normalization, and edge-case safety
+Update RULES.txt to require NEXT COMMAND in copyable control and ZIP alignment

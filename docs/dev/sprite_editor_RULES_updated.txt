@@ -1,0 +1,44 @@
+SPRITE EDITOR RULES xxxx
+Updated: 2026-03-26
+
+CHATGPT CREATES PLAN
+CODEX DOES CODE
+
+CORE RULES
+- Do NOT rewrite architecture
+- Canvas-native UI only
+- SpriteEditorCanvasControlSurface remains authority
+- Keep 1600x900 logical space
+- Reuse existing systems
+- Prefer surgical fixes
+
+CURRENT PHASE
+- fix visibility
+- fix interaction
+- fix consistency
+- fix feedback
+- harden edge cases
+
+ESC PRIORITY
+1. Close confirm / rename overlays
+2. Close menus / popovers
+3. Close command palette
+4. Cancel active interaction
+5. Only then allow fullscreen exit
+
+NO INVISIBLE UI
+- Timeline must always be visible
+- Playback controls must always be visible
+- Layer panel must not overlap timeline
+- Menus/popovers must stay on-screen
+
+NO SILENT ACTIONS
+Every action must either visibly change state or emit status feedback.
+
+SAFE FAILURE
+- no crash
+- no silent fail
+- no no-op history entry
+
+VALIDATION RULE
+If a feature cannot be clearly validated, the problem is UX/visibility first.
