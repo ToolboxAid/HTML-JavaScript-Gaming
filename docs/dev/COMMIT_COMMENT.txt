@@ -3,4 +3,4 @@ David Quesenberry
 03/26/2026
 COMMIT_COMMENT.txt
 
-Build Sprite Editor v5.0 adding palette editor and color replace workflow
+Build Sprite Editor v5.1 adding export pipeline and game integration metadata without increasing UI clutter

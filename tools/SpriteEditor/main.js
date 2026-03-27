@@ -501,6 +501,19 @@ main.js
       }
       return { width: p * 2 + cols * this.cols + Math.max(0, cols - 1) * s, height: p * 2 + rows * this.rows + Math.max(0, rows - 1) * s, entries };
     }
+    computeSheetPlacementForCount(count) {
+      const p = this.sheet.padding, s = this.sheet.spacing;
+      let cols = 1, rows = 1;
+      if (this.sheet.layout === "horizontal") { cols = count; rows = 1; }
+      else if (this.sheet.layout === "vertical") { cols = 1; rows = count; }
+      else { cols = Math.min(4, Math.max(1, count)); rows = Math.ceil(Math.max(1, count) / cols); }
+      const entries = [];
+      for (let i = 0; i < count; i += 1) {
+        const col = i % cols, row = Math.floor(i / cols);
+        entries.push({ x: p + col * (this.cols + s), y: p + row * (this.rows + s) });
+      }
+      return { width: p * 2 + cols * this.cols + Math.max(0, cols - 1) * s, height: p * 2 + rows * this.rows + Math.max(0, rows - 1) * s, entries };
+    }
     buildExportPayload() {
       return {
         version: 40,
@@ -652,9 +665,8 @@ main.js
         { id: "file-save", text: "Save Local", action: () => this.app.saveLocal() },
         { id: "file-load", text: "Load Local", action: () => this.app.loadLocal() },
         { id: "file-import", text: "Import JSON", action: () => this.app.openImport() },
-        { id: "file-export", text: "Export JSON", action: () => this.app.exportJson(true) },
-        { id: "file-png", text: "PNG Sheet", action: () => this.app.downloadSheetPng() },
-        { id: "file-meta", text: "Sheet Meta", action: () => this.app.exportSheetMetadata() }
+        { id: "file-export-menu", text: "Export...", action: () => this.app.openExportMenu() },
+        { id: "file-export-editor", text: "Export Editor JSON", action: () => this.app.exportJson(true) }
       ];
       const defs = [
         {
@@ -1316,6 +1328,7 @@ main.js
       this.shapePreview = null;
       this.currentPalettePreset = "Custom";
       this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
+      this.exportMode = "all_frames";
       this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
@@ -2408,6 +2421,12 @@ main.js
         { id: "playback.toggleRangeLoop", label: "Playback: Toggle Range Loop", category: "Playback", keywords: ["playback", "range", "loop"], aliases: ["toggle range loop", "range loop"] },
         { id: "playback.jumpRangeStart", label: "Playback: Jump To Range Start", category: "Playback", keywords: ["playback", "range", "start", "jump"], aliases: ["jump to range start", "range start"] },
         { id: "playback.jumpRangeEnd", label: "Playback: Jump To Range End", category: "Playback", keywords: ["playback", "range", "end", "jump"], aliases: ["jump to range end", "range end"] },
+        { id: "export.spriteSheetPng", label: "Export: Sprite Sheet PNG", category: "Export", keywords: ["export", "sprite", "sheet", "png"], aliases: ["export sprite sheet", "sheet png"] },
+        { id: "export.animationJson", label: "Export: Animation JSON", category: "Export", keywords: ["export", "animation", "json"], aliases: ["export animation json", "animation json"] },
+        { id: "export.package", label: "Export: Export Package", category: "Export", keywords: ["export", "package", "metadata"], aliases: ["export package", "package json"] },
+        { id: "export.modeCurrentFrame", label: "Export: Current Frame", category: "Export", keywords: ["export", "current", "frame"], aliases: ["export current frame", "current frame export"] },
+        { id: "export.modeAllFrames", label: "Export: All Frames", category: "Export", keywords: ["export", "all", "frames"], aliases: ["export all frames", "all frames export"] },
+        { id: "export.modeSelectedRange", label: "Export: Selected Range", category: "Export", keywords: ["export", "selected", "range"], aliases: ["export selected range", "selected range export"] },
         { id: "system.delete", label: "System: Delete/Clear", category: "System", keywords: ["delete", "clear"], aliases: ["clear", "delete"] },
         { id: "system.saveLocal", label: "System: Save Local", category: "System", keywords: ["save", "local"], aliases: ["save"] },
         { id: "system.loadLocal", label: "System: Load Local", category: "System", keywords: ["load", "local"], aliases: ["load"] },
@@ -2760,6 +2779,12 @@ main.js
       }
       if (action === "playback.jumpRangeStart") return this.jumpToPlaybackRangeEdge(false);
       if (action === "playback.jumpRangeEnd") return this.jumpToPlaybackRangeEdge(true);
+      if (action === "export.spriteSheetPng") return this.downloadSpriteSheetPng();
+      if (action === "export.animationJson") return this.exportAnimationJson();
+      if (action === "export.package") return this.exportPackageJson();
+      if (action === "export.modeCurrentFrame") return this.setExportMode("current_frame");
+      if (action === "export.modeAllFrames") return this.setExportMode("all_frames");
+      if (action === "export.modeSelectedRange") return this.setExportMode("selected_range");
       if (action === "system.delete") {
         if (this.document.selection) { this.handleSelectionAction("sel-cut"); return true; }
         if (!this.canEditActiveLayer(true)) return false;
@@ -2988,6 +3013,175 @@ main.js
         });
       }
       this.controlSurface.toggleTopMenu("palette-menu", items);
+      this.renderAll();
+    }
+    getExportModeLabel() {
+      if (this.exportMode === "current_frame") return "Current Frame";
+      if (this.exportMode === "selected_range") return "Selected Range";
+      return "All Frames";
+    }
+    setExportMode(mode) {
+      this.exportMode = mode;
+      this.showMessage(`Export mode: ${this.getExportModeLabel()}`);
+      this.renderAll();
+      return true;
+    }
+    getExportFrameIndices(mode = this.exportMode) {
+      if (mode === "current_frame") return [this.document.activeFrameIndex];
+      if (mode === "selected_range") {
+        const range = this.getFrameRangeSelection();
+        if (!range.explicit) return null;
+        const indices = [];
+        for (let i = range.start; i <= range.end; i += 1) indices.push(i);
+        return indices;
+      }
+      return this.document.frames.map((_f, i) => i);
+    }
+    buildExportContext(mode = this.exportMode) {
+      const indices = this.getExportFrameIndices(mode);
+      if (!indices || !indices.length) return null;
+      const range = this.getPlaybackRange();
+      const frames = indices.map((index, order) => {
+        const frame = this.document.ensureFrameLayers(this.document.frames[index]);
+        return {
+          exportIndex: order,
+          frameIndex: index,
+          id: frame.id,
+          name: frame.name || `Frame ${index + 1}`,
+          pixels: this.document.getCompositedPixels(frame, { respectSolo: false, blendMode: "normal" })
+        };
+      });
+      return {
+        mode,
+        modeLabel: this.getExportModeLabel(),
+        indices,
+        frames,
+        frameWidth: this.document.cols,
+        frameHeight: this.document.rows,
+        frameCount: frames.length,
+        fps: this.playback.fps,
+        loop: this.playback.loop,
+        playbackRange: range.enabled ? { startFrame: range.startFrame, endFrame: range.endFrame } : null,
+        palettePreset: this.currentPalettePreset || "Custom",
+        palette: (this.document.palette || []).slice(),
+        layerExport: "composited_visible_only",
+        soloIgnored: true
+      };
+    }
+    buildAnimationExportData(mode = this.exportMode) {
+      const context = this.buildExportContext(mode);
+      if (!context) return null;
+      return {
+        version: 1,
+        kind: "sprite-animation-export",
+        exportMode: context.mode,
+        frameWidth: context.frameWidth,
+        frameHeight: context.frameHeight,
+        frameCount: context.frameCount,
+        fps: context.fps,
+        loop: context.loop,
+        playbackRange: context.playbackRange,
+        palettePreset: context.palettePreset,
+        palette: context.palette,
+        layerExport: context.layerExport,
+        soloIgnored: context.soloIgnored,
+        frames: context.frames.map((frame) => ({
+          exportIndex: frame.exportIndex,
+          frameIndex: frame.frameIndex,
+          id: frame.id,
+          name: frame.name
+        }))
+      };
+    }
+    buildExportPackageData(mode = this.exportMode) {
+      const context = this.buildExportContext(mode);
+      if (!context) return null;
+      return {
+        version: 1,
+        kind: "sprite-export-package",
+        exportMode: context.mode,
+        frameWidth: context.frameWidth,
+        frameHeight: context.frameHeight,
+        frameCount: context.frameCount,
+        frameOrder: context.frames.map((frame) => frame.frameIndex),
+        frameNames: context.frames.map((frame) => frame.name),
+        fps: context.fps,
+        loop: context.loop,
+        playbackRange: context.playbackRange,
+        palettePreset: context.palettePreset,
+        palette: context.palette,
+        layerExport: context.layerExport,
+        soloIgnored: context.soloIgnored,
+        outputs: {
+          spriteSheetPng: `sprite-sheet-${context.mode}.png`,
+          animationJson: `animation-${context.mode}.json`,
+          packageJson: `export-package-${context.mode}.json`
+        }
+      };
+    }
+    downloadSpriteSheetPng(mode = this.exportMode) {
+      const context = this.buildExportContext(mode);
+      if (!context) {
+        this.showMessage(mode === "selected_range" ? "Select a frame range first." : "Export unavailable.");
+        return false;
+      }
+      const plc = this.document.computeSheetPlacementForCount(context.frameCount);
+      const temp = document.createElement("canvas");
+      temp.width = plc.width;
+      temp.height = plc.height;
+      const ctx = temp.getContext("2d");
+      if (this.document.sheet.transparent) this.drawCheckerboard(ctx, 0, 0, plc.width, plc.height, 4);
+      else {
+        ctx.fillStyle = this.document.sheet.backgroundColor;
+        ctx.fillRect(0, 0, plc.width, plc.height);
+      }
+      context.frames.forEach((frame, i) => {
+        const entry = plc.entries[i];
+        for (let y = 0; y < this.document.rows; y += 1) {
+          for (let x = 0; x < this.document.cols; x += 1) {
+            const v = frame.pixels[y][x];
+            if (!v) continue;
+            ctx.fillStyle = v;
+            ctx.fillRect(entry.x + x, entry.y + y, 1, 1);
+          }
+        }
+      });
+      this.downloadLink.download = `sprite-sheet-${mode}.png`;
+      this.downloadLink.href = temp.toDataURL("image/png");
+      this.downloadLink.click();
+      this.showMessage(`Sprite sheet exported (${context.modeLabel}).`);
+      return true;
+    }
+    exportAnimationJson(mode = this.exportMode) {
+      const data = this.buildAnimationExportData(mode);
+      if (!data) {
+        this.showMessage(mode === "selected_range" ? "Select a frame range first." : "Animation export unavailable.");
+        return false;
+      }
+      this.downloadBlob(`animation-${mode}.json`, JSON.stringify(data, null, 2), "application/json");
+      this.showMessage(`Animation JSON exported (${data.frameCount} frames).`);
+      return true;
+    }
+    exportPackageJson(mode = this.exportMode) {
+      const data = this.buildExportPackageData(mode);
+      if (!data) {
+        this.showMessage(mode === "selected_range" ? "Select a frame range first." : "Export package unavailable.");
+        return false;
+      }
+      this.downloadBlob(`export-package-${mode}.json`, JSON.stringify(data, null, 2), "application/json");
+      this.showMessage(`Export package saved (${data.exportMode}).`);
+      return true;
+    }
+    openExportMenu() {
+      const items = [
+        { id: "export-menu-mode-current", text: `Mode: Current Frame${this.exportMode === "current_frame" ? " *" : ""}`, action: () => this.setExportMode("current_frame") },
+        { id: "export-menu-mode-all", text: `Mode: All Frames${this.exportMode === "all_frames" ? " *" : ""}`, action: () => this.setExportMode("all_frames") },
+        { id: "export-menu-mode-range", text: `Mode: Selected Range${this.exportMode === "selected_range" ? " *" : ""}`, action: () => this.setExportMode("selected_range") },
+        { id: "export-menu-sheet", text: "Sprite Sheet PNG", action: () => this.downloadSpriteSheetPng() },
+        { id: "export-menu-animation", text: "Animation JSON", action: () => this.exportAnimationJson() },
+        { id: "export-menu-package", text: "Export Package", action: () => this.exportPackageJson() }
+      ];
+      this.controlSurface.toggleTopMenu("file", items);
       this.renderAll();
     }
     replacePaletteColor() {
