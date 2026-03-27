@@ -697,18 +697,18 @@ main.js
       ];
       const defs = [
         {
+          id: "top-file",
+          tier: 1,
+          overflowEligible: false,
+          labels: effectiveMode === "pro" ? ["Files", "Files", "F"] : ["Files", "Files", "F"],
+          action: () => this.toggleTopMenu("file", fileMenuItems)
+        },
+        {
           id: "top-tools",
           tier: 1,
           overflowEligible: false,
           labels: ["Tools", "Tools", "T"],
           action: () => this.app.openToolsMenu()
-        },
-        {
-          id: "top-file",
-          tier: 1,
-          overflowEligible: false,
-          labels: effectiveMode === "pro" ? ["File", "File", "F"] : ["File", "File", "F"],
-          action: () => this.toggleTopMenu("file", fileMenuItems)
         },
         {
           id: "top-edit",
@@ -730,6 +730,13 @@ main.js
           overflowEligible: false,
           labels: ["Layer", "Layer", "L"],
           action: () => this.app.openLayerMenu()
+        },
+        {
+          id: "top-about",
+          tier: 1,
+          overflowEligible: false,
+          labels: ["About", "About", "A"],
+          action: () => this.app.openAboutPopup()
         },
         { id: "top-pixel", tier: 2, overflowEligible: true, labels: this.app.viewport.pixelPerfect ? ["Pixel: On", "Pixel", "Px"] : ["Pixel: Off", "Pixel", "Px"], action: () => this.app.togglePixelPerfect() }
       ];
@@ -1401,6 +1408,7 @@ main.js
       this.isDirty = false;
       this.replaceGuard = { open: false, title: "", message: "", onConfirm: null, confirmRect: null, cancelRect: null };
       this.layerRenamePrompt = { open: false, text: "", title: "Rename Layer", panelRect: null, confirmRect: null, cancelRect: null };
+      this.aboutPopup = { open: false, panelRect: null, closeRect: null };
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();
@@ -1731,6 +1739,11 @@ main.js
       return false;
     }
     handleCloseSurfaceAction() {
+      if (this.aboutPopup.open) {
+        this.closeAboutPopup();
+        this.showMessage("About closed.");
+        return true;
+      }
       if (this.replaceGuard.open) {
         this.closeReplaceGuard();
         this.showMessage("Replace canceled.");
@@ -1780,6 +1793,34 @@ main.js
       this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
       this.showMessage("Rename layer: type, Enter apply, Esc cancel.");
       this.renderAll();
+      return true;
+    }
+    closeAboutPopup() {
+      this.aboutPopup.open = false;
+      this.aboutPopup.panelRect = null;
+      this.aboutPopup.closeRect = null;
+    }
+    openAboutPopup() {
+      if (!this.canOpenTransientSurface()) return false;
+      this.closeMenuLikeSurfaces();
+      this.aboutPopup.open = true;
+      this.renderAll();
+      return true;
+    }
+    handleAboutPopupPointer(p) {
+      if (!this.aboutPopup.open || !p) return false;
+      const inRect = (r) => r && p.x >= r.x && p.y >= r.y && p.x <= r.x + r.w && p.y <= r.y + r.h;
+      if (inRect(this.aboutPopup.closeRect)) {
+        this.closeAboutPopup();
+        this.showMessage("About closed.");
+        this.renderAll();
+        return true;
+      }
+      if (this.aboutPopup.panelRect && !inRect(this.aboutPopup.panelRect)) {
+        this.closeAboutPopup();
+        this.renderAll();
+        return true;
+      }
       return true;
     }
 
@@ -2373,6 +2414,10 @@ main.js
     onPointerDown(e) {
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
+      if (this.aboutPopup.open) {
+        this.handleAboutPopupPointer(p);
+        return;
+      }
       if (e.button === 2) {
         const canceled = this.cancelActiveInteraction();
         if (canceled) {
@@ -3953,8 +3998,43 @@ main.js
       this.drawPreviewPanel();
       this.drawSheetPanel();
       this.drawBottomStatus();
+      this.drawAboutPopup();
       this.drawReplaceGuard();
       this.drawLayerRenamePrompt();
+    }
+
+    drawAboutPopup() {
+      if (!this.aboutPopup.open) return;
+      const frame = this.controlSurface.layout.appFrame;
+      const panelW = 520;
+      const panelH = 228;
+      const x = frame.x + Math.floor((frame.width - panelW) * 0.5);
+      const y = frame.y + Math.floor((frame.height - panelH) * 0.22);
+      this.aboutPopup.panelRect = { x, y, w: panelW, h: panelH };
+      this.ctx.fillStyle = "rgba(2, 6, 12, 0.62)";
+      this.ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+      this.ctx.fillStyle = "#162435";
+      this.ctx.fillRect(x, y, panelW, panelH);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "bold 18px Arial";
+      this.ctx.fillText("About Sprite Editor", x + 18, y + 28);
+      this.ctx.font = "13px Arial";
+      this.ctx.fillStyle = "#b9c8d8";
+      this.ctx.fillText("Sprite Editor v2.2", x + 18, y + 64);
+      this.ctx.fillText("Canvas-native pixel editor for game-ready sprite workflows.", x + 18, y + 88);
+      this.ctx.fillText("Menus: Files, Tools, Edit, Frame, Layer, About", x + 18, y + 112);
+      this.ctx.fillText("Shortcuts: Ctrl+P command palette, Ctrl+W close surface", x + 18, y + 136);
+      this.ctx.fillText("Cancel interaction: right-click or Backspace", x + 18, y + 160);
+      const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
+      this.aboutPopup.closeRect = closeRect;
+      this.ctx.fillStyle = "#27435a";
+      this.ctx.fillRect(closeRect.x, closeRect.y, closeRect.w, closeRect.h);
+      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeRect(closeRect.x + 0.5, closeRect.y + 0.5, closeRect.w - 1, closeRect.h - 1);
+      this.ctx.fillStyle = "#e6f2ff";
+      this.ctx.fillText("Close", closeRect.x + 29, closeRect.y + 20);
     }
 
     drawTimelinePanel() {

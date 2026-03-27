@@ -2,16 +2,15 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply TOOLS_SPRITE_EDITOR_V6_4_MOVE_ALL_TOOLS_TO_TOP_MENU in tools/SpriteEditor/main.js
+Apply TOOLS_SPRITE_EDITOR_V6_5_MENU_ORDER_AND_ABOUT_POPUP in tools/SpriteEditor/main.js
 
 VALIDATIONS:
-- A top-level Tools menu exists
-- All tool entries are available from the Tools menu
-- Any old duplicated tool-selection surface is removed
-- Active tool is visibly indicated
-- Selecting each tool from the Tools menu activates it correctly
-- Existing non-conflicting tool shortcuts still work
-- Tools menu closes on click-outside
-- Tools menu closes with Ctrl+W
-- Only one top menu is open at a time
+- Top menu order is Files, Tools, Edit, ..., About
+- About is the last top-level item
+- About opens a popup surface, not a dropdown list
+- About popup includes a visible close button
+- Clicking the close button closes the About popup
+- Ctrl+W closes the About popup
+- ESC is not consumed by editor UI
+- Other menus still open/close normally
 - No console errors
