@@ -10,7 +10,9 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     ctx.strokeRect(t.x + 0.5, t.y + 0.5, t.w - 1, t.h - 1);
     ctx.fillStyle = "#dbe7f3";
     ctx.font = "bold 12px Arial";
-    ctx.fillText("TIMELINE", t.x + 78, t.y + 14);
+    const timelineTitleX = t.x + 78;
+    const timelineTitleY = t.y + 14;
+    ctx.fillText("TIMELINE", timelineTitleX, timelineTitleY);
     (t.transport || []).forEach((c) => {
       if (c.id === "fps_down" || c.id === "fps_up") return;
       ctx.fillStyle = "#1a2733";
@@ -21,19 +23,28 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "11px Arial";
-      if (c.id === "play_pause") ctx.fillText(this.app.playback.isPlaying ? "Pause" : "Play", c.x + 8, c.y + 12);
-      else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + 12);
-      else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + 12);
-      else if (c.id === "fps_down" || c.id === "fps_up") return;
+      ctx.textBaseline = "middle";
+      if (c.id === "play_pause") ctx.fillText(this.app.playback.isPlaying ? "Pause" : "Play", c.x + 8, c.y + c.h * 0.5);
+      else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + c.h * 0.5);
+      else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + c.h * 0.5);
+      ctx.textBaseline = "alphabetic";
     });
     ctx.fillStyle = "#91a3b6";
     ctx.font = "11px Arial";
     const playbackOrder = this.app.getPlaybackOrderOverride ? this.app.getPlaybackOrderOverride() : { enabled: false };
     const baseOrder = this.app.document.frames.map((_f, i) => i);
     const effectiveOrder = this.app.getEffectivePlaybackSequence ? this.app.getEffectivePlaybackSequence(baseOrder) : baseOrder;
+    const fitText = (text, maxWidth) => {
+      let next = String(text || "");
+      if (ctx.measureText(next).width <= maxWidth) return next;
+      while (next.length > 1 && ctx.measureText(`${next}...`).width > maxWidth) next = next.slice(0, -1);
+      return `${next}...`;
+    };
     const orderText = effectiveOrder.map((i) => i + 1).join(", ");
-    const orderLabel = playbackOrder.enabled ? `Playback Order: ${orderText}` : "Playback Order: Linear";
-    ctx.fillText(orderLabel.length > 42 ? `${orderLabel.slice(0, 42)}...` : orderLabel, t.x + 78, t.y + 28);
+    const orderLabel = playbackOrder.enabled ? `Playback: ${orderText}` : "Playback: Linear";
+    const orderX = timelineTitleX + 80;
+    const orderMaxWidth = Math.max(48, t.x + t.w - orderX - 10);
+    ctx.fillText(fitText(orderLabel, orderMaxWidth), orderX, timelineTitleY);
     t.slots.forEach((slot) => {
       const f = this.app.document.frames[slot.index];
       const active = slot.index === this.app.document.activeFrameIndex;

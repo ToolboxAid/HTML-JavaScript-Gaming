@@ -5,7 +5,7 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
       const x = Math.max(panel.x + 18, panel.x + panel.width - 420);
       const y = panel.y + 14;
       const w = Math.min(402, panel.width - 36);
-      const h = 100;
+      const h = 108;
       const previewX = panel.x + 18;
       const previewY = panel.y + 8;
       const transportX = x + 8;
@@ -21,13 +21,13 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
         { id: "fps_up", x: previewX + 174, y: previewY + 60, w: 20, h: transportH }
       ];
       const innerX = x + 76;
-      const innerY = y + 40;
+      const innerY = y + 34;
       const innerW = w - 84;
-      const innerH = h - 48;
+      const innerH = h - 40;
       const count = Math.max(1, this.document.frames.length);
       const slotGap = 6;
-      const maxSlotW = 52;
-      const slotW = Math.max(24, Math.min(maxSlotW, Math.floor((innerW - (count - 1) * slotGap) / count)));
+      const maxSlotW = 60;
+      const slotW = Math.max(28, Math.min(maxSlotW, Math.floor((innerW - (count - 1) * slotGap) / count)));
       const slotH = innerH;
       const totalW = count * slotW + (count - 1) * slotGap;
       const startX = innerX + Math.max(0, Math.floor((innerW - totalW) * 0.5));

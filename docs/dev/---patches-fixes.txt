@@ -32,6 +32,8 @@ scop selecte rand
 - move FPT under Frame x/y in Animation preview
 
 ============================================================================
-next 
 
-- 
+- in timeline, center text top/bottom for Play, Stop, Loop
+
+============================================================================
+next 
