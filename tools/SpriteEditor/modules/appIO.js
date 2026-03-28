@@ -2,30 +2,45 @@ import { STORAGE_KEY } from "./constants.js";
 
 function installSpriteEditorIOMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
+    resetEditorSessionState() {
+      this.activeTool = "brush";
+      this.hoveredGridCell = null;
+      this.selectionStart = null;
+      this.selectionPasteOrigin = { x: 0, y: 0 };
+      this.selectionMoveSession = null;
+      this.timelineInteraction = null;
+      this.timelineHoverIndex = null;
+      this.frameRangeSelection = null;
+      this.playbackRange = { enabled: false, startFrame: 0, endFrame: 0 };
+      this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
+      this.strokeLastCell = null;
+      this.shapePreview = null;
+      this.currentPalettePreset = "Custom";
+      this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
+      this.paletteSidebarScroll = 0;
+      this.pan = { x: 0, y: 0 };
+      this.zoom = 1;
+    },
+
+    finalizeDocumentReplacement(message) {
+      this.uiDensityMode = "pro";
+      this.uiDensityEffectiveMode = "pro";
+      this.clearHistoryStacks();
+      this.normalizeEditorState();
+      this.markCleanBaseline();
+      this.showMessage(message);
+    },
+
+    importDocumentPayload(payload, successMessage) {
+      this.document.importPayload(payload);
+      this.finalizeDocumentReplacement(successMessage);
+    },
+
     newDocument() {
       this.requestReplaceGuard("New Document", "Replace current document with a new blank sprite?", () => {
         this.document = new this.document.constructor();
-        this.activeTool = "brush";
-        this.hoveredGridCell = null;
-        this.selectionStart = null;
-        this.selectionPasteOrigin = { x: 0, y: 0 };
-        this.selectionMoveSession = null;
-        this.timelineInteraction = null;
-        this.timelineHoverIndex = null;
-        this.frameRangeSelection = null;
-        this.playbackRange = { enabled: false, startFrame: 0, endFrame: 0 };
-        this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
-        this.strokeLastCell = null;
-        this.shapePreview = null;
-        this.currentPalettePreset = "Custom";
-        this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
-        this.paletteSidebarScroll = 0;
-        this.pan = { x: 0, y: 0 };
-        this.zoom = 1;
-        this.clearHistoryStacks();
-        this.normalizeEditorState();
-        this.markCleanBaseline();
-        this.showMessage("New document.");
+        this.resetEditorSessionState();
+        this.finalizeDocumentReplacement("New document.");
         this.renderAll();
       });
       return true;
@@ -54,16 +69,10 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
         try {
           const parsed = JSON.parse(raw);
           if (parsed && parsed.doc) {
-            this.document.importPayload(parsed.doc);
-            this.uiDensityMode = "pro";
+            this.importDocumentPayload(parsed.doc, "Loaded local save.");
           } else {
-            this.document.importPayload(parsed);
-            this.uiDensityMode = "pro";
+            this.importDocumentPayload(parsed, "Loaded local save.");
           }
-          this.uiDensityEffectiveMode = "pro";
-          this.clearHistoryStacks();
-          this.markCleanBaseline();
-          this.showMessage("Loaded local save.");
         } catch (_e) {
           this.showMessage("Load failed.");
         }

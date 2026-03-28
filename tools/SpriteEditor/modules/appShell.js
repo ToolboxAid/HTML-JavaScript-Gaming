@@ -209,10 +209,7 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
         try {
           const payload = JSON.parse(await file.text());
           this.requestReplaceGuard("Import JSON", "Replace current document with imported JSON?", () => {
-            this.document.importPayload(payload);
-            this.clearHistoryStacks();
-            this.markCleanBaseline();
-            this.showMessage("Imported sprite JSON.");
+            this.importDocumentPayload(payload, "Imported sprite JSON.");
           });
         } catch (_error) {
           this.showMessage("Import failed.");
