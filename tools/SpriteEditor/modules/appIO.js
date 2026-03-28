@@ -2,6 +2,17 @@ import { STORAGE_KEY } from "./constants.js";
 
 function installSpriteEditorIOMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
+    requestDocumentReplacement(title, message, onReplace) {
+      this.requestReplaceGuard(title, message, onReplace);
+      this.renderAll();
+      return true;
+    },
+
+    getStoredDocumentPayload(parsed) {
+      if (parsed && parsed.doc) return parsed.doc;
+      return parsed;
+    },
+
     resetEditorSessionState() {
       this.activeTool = "brush";
       this.hoveredGridCell = null;
@@ -37,13 +48,11 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
     },
 
     newDocument() {
-      this.requestReplaceGuard("New Document", "Replace current document with a new blank sprite?", () => {
+      return this.requestDocumentReplacement("New Document", "Replace current document with a new blank sprite?", () => {
         this.document = new this.document.constructor();
         this.resetEditorSessionState();
         this.finalizeDocumentReplacement("New document.");
-        this.renderAll();
       });
-      return true;
     },
 
     saveLocal() {
@@ -60,7 +69,7 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
     },
 
     loadLocal() {
-      this.requestReplaceGuard("Load Local", "Replace current document with local save?", () => {
+      return this.requestDocumentReplacement("Load Local", "Replace current document with local save?", () => {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) {
           this.showMessage("No local save.");
@@ -68,16 +77,11 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
         }
         try {
           const parsed = JSON.parse(raw);
-          if (parsed && parsed.doc) {
-            this.importDocumentPayload(parsed.doc, "Loaded local save.");
-          } else {
-            this.importDocumentPayload(parsed, "Loaded local save.");
-          }
+          this.importDocumentPayload(this.getStoredDocumentPayload(parsed), "Loaded local save.");
         } catch (_e) {
           this.showMessage("Load failed.");
         }
       });
-      this.renderAll();
     },
 
     openImport() {
