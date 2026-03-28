@@ -1,9 +1,9 @@
-Sprite Editor V7.4 PLAN_PR
+Sprite Editor V7.5 BUILD_PR
 
 Purpose:
-Define the next Sprite Editor-only pass for strict palette lock, reference image support behind the grid, alignment/auto-align, GIF timing from FPS, and FPS placement cleanup.
+Execute the approved V7.5 Sprite Editor-only stabilization pass.
 
 Notes:
-- Plan only
-- No code in this package
+- BUILD_PR only
 - No engine changes
+- Preserve load/open behavior

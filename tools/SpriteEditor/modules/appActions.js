@@ -70,11 +70,25 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
         this.renderAll();
         return;
       }
+      const previousTool = this.activeTool;
+      const restoreTool = () => {
+        if (this.activeTool !== previousTool) this.activeTool = previousTool;
+      };
+      const ensureSelectionFlow = () => {
+        if (this.activeTool !== "select") this.activeTool = "select";
+      };
       let ok = false;
       const run = () => {
-        if (id === "sel-copy") ok = this.document.copySelection();
-        else if (id === "sel-cut") ok = this.document.cutSelection();
-        else if (id === "sel-paste") ok = this.document.pasteSelection(this.selectionPasteOrigin.x, this.selectionPasteOrigin.y);
+        if (id === "sel-copy") {
+          ensureSelectionFlow();
+          ok = this.document.copySelection();
+        } else if (id === "sel-cut") {
+          ensureSelectionFlow();
+          ok = this.document.cutSelection();
+        } else if (id === "sel-paste") {
+          ensureSelectionFlow();
+          ok = this.document.pasteSelection(this.selectionPasteOrigin.x, this.selectionPasteOrigin.y);
+        }
         else if (id === "sel-fliph") ok = this.document.flipSelection(true);
         else if (id === "sel-flipv") ok = this.document.flipSelection(false);
         else if (id === "sel-clear") ok = this.clearSelection(false);
@@ -82,6 +96,7 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
       };
       if (isMutating) this.executeWithHistory("Selection Edit", run);
       else run();
+      restoreTool();
       this.showMessageAndRender(ok ? "Selection updated." : "No active selection.");
     },
 

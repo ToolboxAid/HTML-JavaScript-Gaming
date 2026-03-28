@@ -6,9 +6,18 @@ function installControlSurfaceRightPanel(SpriteEditorCanvasControlSurface) {
     const rw = right.width - (d.padding * 2);
     const actionRequired = this.app.isPaletteSelectionRequired && this.app.isPaletteSelectionRequired();
     const titleH = 23;
+    const cloneH = 22;
     const messageH = 22;
     this.add("label", "lbl-palette", x, y, rw, titleH, `PALETTE: ${this.app.getPaletteStatusLabel()}`, null, { paletteHeaderBox: true, paletteActionRequired: actionRequired });
     y += titleH + d.spacing;
+    const customClones = this.app.getCustomPaletteNames ? this.app.getCustomPaletteNames() : [];
+    const cloneName = customClones.length
+      ? (customClones.indexOf(this.app.currentPalettePreset) >= 0 ? this.app.currentPalettePreset : customClones[0])
+      : "None";
+    const cloneLabel = actionRequired ? "Clone: Select preset first" : `Clone: ${cloneName}`;
+    const cloneAction = actionRequired ? () => this.app.showMessage("Select a palette preset first.") : () => this.app.openPaletteCloneMenu();
+    this.add("button", "palette-clone-picker", x, y, rw, cloneH, cloneLabel, cloneAction);
+    y += cloneH + d.spacing;
     this.add("label", "palette-current", x, y, rw, messageH, this.app.getCurrentColorDisplayText(), null, { paletteHeaderBox: true, paletteActionRequired: actionRequired });
     y += messageH + d.spacing;
 
@@ -18,7 +27,7 @@ function installControlSurfaceRightPanel(SpriteEditorCanvasControlSurface) {
     const sortButtonW = Math.floor((rw - sortButtonGap) / 2);
     const paletteViewportBottom = Math.max(y + 24, sortTop - 10);
     const gap = 4;
-    const targetSwatch = this.app.uiDensityEffectiveMode === "pro" ? 20 : 22;
+    const targetSwatch = this.app.uiDensityEffectiveMode === "pro" ? 28 : 30;
     const scrollbarW = 10;
     const paletteGridW = Math.max(24, rw - scrollbarW - gap);
     const cols = Math.max(1, Math.floor((paletteGridW + gap) / (targetSwatch + gap)));

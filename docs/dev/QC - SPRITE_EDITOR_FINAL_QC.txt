@@ -234,6 +234,14 @@ sub-submenu ( I see no value in these, move Export GIF to Files menu and delete 
 ==============================
 FINAL SUMMARY
 ==============================
+
+
+==============================
+New
+==============================
+[-] palette lock should not occure until the grid has its first update
+[-] Help/palette text extends below message box
+
 Must Fix:
 - 
 

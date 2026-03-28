@@ -66,10 +66,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "file-save", text: "Save Project (Local)", action: () => this.saveLocal() },
         { id: "file-import-editor", text: "Import Project JSON", action: () => this.openImport() },
         { id: "file-export-editor", text: "Export Project JSON", action: () => this.exportJson(true) },
+        { id: "file-export-sprite", text: "Export Sprite", action: () => this.downloadSpriteSheetPng("all_frames") },
+        { id: "file-export-gif", text: "Export GIF", action: () => this.exportGif("all_frames") },
         { id: "file-load-reference", text: "Load Reference Image", action: () => this.loadReferenceImage() },
         { id: "file-fit-reference", text: "Fit Reference To Grid", action: () => this.fitReferenceImageToGrid() },
-        { id: "file-reset-reference", text: "Reset Reference Alignment", action: () => this.resetReferenceAlignment() },
-        { id: "file-export-menu", text: "Export Assets...", action: () => this.openExportMenu() }
+        { id: "file-reset-reference", text: "Reset Reference Alignment", action: () => this.resetReferenceAlignment() }
       ];
       return this.prepareTopMenu("file", items);
     },
@@ -111,7 +112,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "edit-menu-copy", text: "Copy", action: () => this.handleSelectionAction("sel-copy"), shortcut: "Ctrl+C" },
         { id: "edit-menu-cut", text: "Cut", action: () => this.handleSelectionAction("sel-cut"), shortcut: "Ctrl+X" },
         { id: "edit-menu-paste", text: "Paste", action: () => this.handleSelectionAction("sel-paste"), shortcut: "Ctrl+V" },
-        { id: "edit-menu-clear-selection", text: "Clear Selection", action: () => this.clearSelection(), shortcut: "Esc" },
+        { id: "edit-menu-clear-selection", text: "Clear Selection", action: () => this.clearSelection(), shortcut: "Backspace" },
         { id: "edit-menu-dup-frame", text: "Duplicate Frame", action: () => this.duplicateFrame(), shortcut: "Ctrl+D" },
         { id: "edit-menu-delete-frame", text: "Delete Frame", action: () => this.deleteFrame(), shortcut: "Delete" }
       ];
@@ -171,7 +172,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
     openPalettePresetsMenu() {
       if (typeof this.isPalettePresetLocked === "function" && this.isPalettePresetLocked()) {
         if (typeof this.openPaletteLockPopup === "function") this.openPaletteLockPopup("Palette is locked for this sprite/project");
-        if (typeof this.showAlertMessage === "function") this.showAlertMessage("Palette cannot be changed after grid edits made been made.");
+        if (typeof this.showAlertMessage === "function") this.showAlertMessage("Palette cannot be changed after grid edits start.");
         else this.showMessage("Palette cannot be changed after  edits start.");
         return true;
       }
@@ -190,15 +191,32 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
 
     openPaletteWorkflowMenu() {
       if (!this.canOpenTransientSurface()) return false;
+      const canClone = !!(this.currentPalettePreset || this.document.palettePresetName);
       const items = [
         { id: "palette-menu-presets", text: "Palettes...", action: () => this.openPalettePresetsMenu() },
-        { id: "palette-menu-clone", text: "Create Custom Palette Clone", action: () => this.createCustomPaletteClone() },
+        { id: "palette-menu-clone", text: canClone ? "Clone" : "Clone (select preset first)", action: () => this.createCustomPaletteClone() },
+        { id: "palette-menu-clones", text: "Choose Clone...", action: () => this.openPaletteCloneMenu() },
         { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
         { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget() },
         { id: "palette-menu-scope-layer", text: "Scope Active Layer", action: () => this.setPaletteReplaceScope("active_layer") },
         { id: "palette-menu-scope-frame", text: "Scope Current Frame", action: () => this.setPaletteReplaceScope("current_frame") },
         { id: "palette-menu-scope-range", text: "Scope Selected Range", action: () => this.setPaletteReplaceScope("selected_range") }
       ];
+      return this.prepareTopMenu("palette", items);
+    },
+
+    openPaletteCloneMenu() {
+      if (!this.canOpenTransientSurface()) return false;
+      const clones = this.getCustomPaletteNames();
+      if (!clones.length) {
+        this.showMessageAndRender("No custom palette clones yet.");
+        return false;
+      }
+      const items = clones.map((name) => ({
+        id: `palette-clone-${name}`,
+        text: `${this.currentPalettePreset === name ? "• " : ""}${name}`,
+        action: () => this.selectCustomPaletteClone(name)
+      }));
       return this.prepareTopMenu("palette", items);
     },
 

@@ -90,7 +90,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         },
         showMessage: (message) => this.showMessage(message),
         render: () => this.renderAll(),
-        message: "Rename layer: type, Enter apply, Esc cancel."
+        message: "Rename layer: type, Enter apply, Backspace edits."
       });
     },
 
@@ -126,10 +126,11 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
           description: "Save, load, import, and export sprite work without leaving the canvas-first workflow.",
           howToUse: "Open Files from the top bar, then choose the storage or export action you want.",
           options: [
-            "New / Open / Save / Export: the main document flow for starting, restoring, saving, and shipping work.",
+            "New / Open / Save: main document flow for starting, restoring, and saving work.",
             "Open uses the existing local browser save for fast restore.",
             "Import Editor JSON / Export Editor JSON: move full editor documents in and out.",
-            "Export: opens game-friendly export choices such as sprite sheet and metadata."
+            "Export Sprite / Export GIF: direct asset exports without extra submenus.",
+            "Load Reference / Fit To Grid / Reset Alignment: reference-image workflow controls."
           ]
         },
         edit: {
@@ -184,11 +185,11 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
             "Palette -> Palettes: open the preset chooser.",
             "Sidebar swatches: select the current color, including large palettes with scrolling.",
             "Sort controls: reorder by Name, Hue, Saturation, or Lightness.",
-            "Set Src From Current: marks the currently selected color as the replace source color.",
-            "Set Dst From Current: marks the currently selected color as the replace destination color.",
-            "Scope Active Layer: apply replace only to the active layer.",
-            "Scope Current Frame: apply replace to all layers in the active frame.",
-            "Scope Selected Range: apply replace across the selected frame range.",
+            "Set Src From Current: marks source color, then status confirms source was set.",
+            "Set Dst From Current: marks destination color, then status confirms destination was set.",
+            "Scope Active Layer: replace affects active layer only, status shows Scope: Layer.",
+            "Scope Current Frame: replace affects all layers in current frame, status shows Scope: Frame.",
+            "Scope Selected Range: replace affects selected timeline range, status shows Scope: Range.",
             "Middle mouse or Shift-drag pan: move the zoomed canvas viewport."
           ]
         },
@@ -408,7 +409,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.fillStyle = "#b9c8d8";
       this.ctx.fillText("Sprite Editor v2.2", x + 18, y + 64);
       this.ctx.fillText("Canvas-native pixel editor for game-ready sprite workflows.", x + 18, y + 88);
-      this.ctx.fillText("Top bar: Files, Edit, Tools, Frame, Layer, Help, About", x + 18, y + 112);
+      this.ctx.fillText("Top bar: Files, Edit, Tools, Frame, Layer, Palette, Help, About", x + 18, y + 112);
       this.ctx.fillText("toolboxaid.com", x + 18, y + 142);
       this.ctx.fillText("github.com/ToolboxAid/HTML-JavaScript-Gaming", x + 18, y + 166);
       const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
@@ -419,7 +420,8 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     drawPalettePresetPopup() {
       if (!this.palettePresetPopup.open) return;
       const paletteLibrary = this.getProjectPaletteLibrary ? this.getProjectPaletteLibrary() : this.getPaletteLibrary();
-      const list = paletteLibrary ? Object.keys(paletteLibrary) : [];
+      const rawList = paletteLibrary ? Object.keys(paletteLibrary) : [];
+      const list = rawList.indexOf("default") >= 0 ? rawList.slice() : ["default"].concat(rawList);
       const frame = this.controlSurface.layout.appFrame;
       const panelW = Math.min(560, frame.width - 64);
       const rowH = 36;
@@ -544,7 +546,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.fillText("Rename Layer", x + 16, y + 24);
       this.ctx.font = "12px Arial";
       this.ctx.fillStyle = "#91a3b6";
-      this.ctx.fillText("Enter apply  Esc cancel", x + 16, y + 44);
+      this.ctx.fillText("Enter apply  Backspace edits", x + 16, y + 44);
       this.ctx.fillStyle = "#101a24";
       this.ctx.fillRect(x + 16, y + 56, panelW - 32, 36);
       this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
@@ -586,7 +588,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.fillStyle = "#dbe7f3";
       this.ctx.font = "13px Arial";
       this.ctx.fillText(this.paletteLockPopup.message || "Palette is locked for this sprite/project.", x + 18, y + 62);
-      this.ctx.fillText("Palette cannot be changed after grid edits made been made.", x + 18, y + 86);
+      this.ctx.fillText("Palette cannot be changed after grid edits start.", x + 18, y + 86);
       const closeRect = { x: x + w - 112, y: y + h - 42, w: 92, h: 24 };
       this.paletteLockPopup.closeRect = closeRect;
       drawCanvasDialogButton(this.ctx, closeRect, "Close", { textOffsetX: 27, textOffsetY: 14, font: "12px Arial" });
@@ -619,7 +621,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.fillText("myPreset: [{ hex: '#000000', name: 'Black' }, ...]", x + 30, y + 184);
       this.ctx.font = "13px Arial";
       this.ctx.fillStyle = "#b9c8d8";
-      this.ctx.fillText("4. For non-default palettes, add a matching preset then reload the page.", x + 20, y + 210);
+      this.ctx.fillText("4. For non-default palettes, add a matching preset, then reload.", x + 20, y + 210);
       this.ctx.fillStyle = "#fbbf24";
       this.ctx.fillText("This popup is blocking by design until fixed.", x + 20, y + h - 18);
     }

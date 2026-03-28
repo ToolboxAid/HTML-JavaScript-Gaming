@@ -256,7 +256,12 @@ class SpriteEditorDocument {
         queue.push({ x: c.x + 1, y: c.y }, { x: c.x - 1, y: c.y }, { x: c.x, y: c.y + 1 }, { x: c.x, y: c.y - 1 });
       }
     }
-    addFrame() { this.frames.push(this.makeFrame("Frame " + (this.frames.length + 1))); this.activeFrameIndex = this.frames.length - 1; }
+    addFrame() {
+      const insertAt = Math.max(0, Math.min(this.activeFrameIndex + 1, this.frames.length));
+      const nextFrame = this.makeFrame("Frame " + (this.frames.length + 1));
+      this.frames.splice(insertAt, 0, nextFrame);
+      this.activeFrameIndex = insertAt;
+    }
     duplicateFrame() {
       const f = this.activeFrame;
       const copyFrame = this.cloneFrame(f, this.activeFrameIndex);

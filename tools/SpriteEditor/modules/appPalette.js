@@ -12,6 +12,13 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       return { ...globalPalettes, ...customPalettes };
     },
 
+    getCustomPaletteNames() {
+      const customPalettes = this.document && this.document.customPalettes && typeof this.document.customPalettes === "object"
+        ? this.document.customPalettes
+        : {};
+      return Object.keys(customPalettes).sort((a, b) => a.localeCompare(b));
+    },
+
     isPaletteSelectionRequired() {
       return !!(this.document && this.document.paletteSelectionRequired === true);
     },
@@ -23,7 +30,12 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
 
     ensurePaletteSelectedForEdit(showFeedback = true) {
       if (!this.isPaletteSelectionRequired()) return true;
-      if (showFeedback) this.showMessage("Palette must be selected first.");
+      if (showFeedback) {
+        if (typeof this.openPaletteLockPopup === "function") {
+          this.openPaletteLockPopup("Select a palette preset before editing pixels.");
+        }
+        this.showMessage("Palette must be selected first.");
+      }
       return false;
     },
 
@@ -224,6 +236,20 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       this.showMessageAndRender("Replace target set.");
     },
 
+    selectCustomPaletteClone(name) {
+      if (!name) return false;
+      const customPalettes = this.document && this.document.customPalettes && typeof this.document.customPalettes === "object"
+        ? this.document.customPalettes
+        : {};
+      if (!Array.isArray(customPalettes[name])) {
+        this.showMessageAndRender("Clone not found.");
+        return false;
+      }
+      const ok = this.applyNamedPalette(name);
+      if (ok) this.showMessageAndRender(`Clone selected: ${name}`);
+      return ok;
+    },
+
     applyNamedPalette(paletteName) {
       if (this.isPalettePresetLocked()) {
         if (typeof this.closePalettePresetPopup === "function") this.closePalettePresetPopup();
@@ -235,10 +261,12 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       }
       return this.executeWithHistory(`Apply Palette: ${paletteName}`, () => {
         const paletteLibrary = this.getProjectPaletteLibrary();
-        if (!paletteLibrary || !Array.isArray(paletteLibrary[paletteName])) return false;
-        const next = paletteLibrary[paletteName]
-          .map((entry) => entry && entry.hex)
-          .filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex));
+        let paletteEntries = paletteLibrary && Array.isArray(paletteLibrary[paletteName]) ? paletteLibrary[paletteName] : null;
+        if (!paletteEntries && paletteName === "default" && typeof this.document.getDefaultPaletteNamedEntries === "function") {
+          paletteEntries = this.document.getDefaultPaletteNamedEntries();
+        }
+        if (!Array.isArray(paletteEntries)) return false;
+        const next = paletteEntries.map((entry) => entry && entry.hex).filter((hex) => typeof hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(hex));
         if (!next.length) return false;
         this.document.palette = next;
         this.paletteSidebarScroll = 0;
@@ -254,6 +282,10 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     createCustomPaletteClone() {
+      if (!this.currentPalettePreset && !this.document.palettePresetName) {
+        this.showMessageAndRender("Select a palette before cloning.");
+        return false;
+      }
       const baseName = this.currentPalettePreset || this.document.palettePresetName || "Palette";
       const suggested = `Custom ${baseName}`.slice(0, 40);
       const raw = globalThis.prompt ? globalThis.prompt("Custom palette name:", suggested) : suggested;
@@ -277,7 +309,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       this.document.palettePresetName = cloneName;
       this.document.paletteSelectionRequired = false;
       this.currentPalettePreset = cloneName;
-      this.showMessage(`Custom palette clone created: ${cloneName}`);
+      this.showMessage(`Palette clone created: ${cloneName}`);
       this.renderAll();
       return true;
     },

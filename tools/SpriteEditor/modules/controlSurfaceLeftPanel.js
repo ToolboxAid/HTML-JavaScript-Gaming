@@ -85,7 +85,7 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
       const i = visualIndex;
       const hidden = !this.app.isLayerVisibleEffective(af, i);
       const opacityPct = `${Math.round(((typeof l.opacity === "number" ? l.opacity : 1) * 100))}%`;
-      const rowHeight = 40;
+      const rowHeight = 64;
       const visWidth = 56;
       const rowGap = 8;
       const rowWidth = bw - visWidth - rowGap;
@@ -104,10 +104,25 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
         layerIndex: i,
         layerName: l.name,
         layerStateText: stateText,
-        layerOpacityText: opacityPct,
+        layerOpacityText: "",
         layerHidden: hidden,
         layerLocked: l.locked === true
       });
+      const opacityY = y + rowHeight - 23;
+      const minusW = 26;
+      const plusW = 26;
+      const opacityReadoutW = 64;
+      const opacityGap = 6;
+      const opacityX = x + visWidth + rowGap + 10;
+      this.add("button", `layer-opacity-down-${i}`, opacityX, opacityY, minusW, 18, "-", () => {
+        this.app.selectLayer(i);
+        this.app.adjustLayerOpacity(-0.1);
+      }, { centerText: true });
+      this.add("button", `layer-opacity-value-${i}`, opacityX + minusW + opacityGap, opacityY, opacityReadoutW, 18, opacityPct, () => this.app.selectLayer(i), { centerText: true });
+      this.add("button", `layer-opacity-up-${i}`, opacityX + minusW + opacityGap + opacityReadoutW + opacityGap, opacityY, plusW, 18, "+", () => {
+        this.app.selectLayer(i);
+        this.app.adjustLayerOpacity(0.1);
+      }, { centerText: true });
       y += rowHeight + d.spacing;
     }
   };

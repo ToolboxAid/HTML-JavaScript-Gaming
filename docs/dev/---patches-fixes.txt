@@ -37,3 +37,8 @@ scop selecte rand
 
 ============================================================================
 next 
+
+[ ] sprite-editor.jsaon says: sprite-editor-v4.0 but Sprite Editor says: v2.2
+[ ] pixels should be transparent if not present "pixels": [ [ "#1CAC78",
+[ ] cloned palettes should be editable, only palette that come from paletteList should be locked
+[ ] when clone palette is selected offer edit.

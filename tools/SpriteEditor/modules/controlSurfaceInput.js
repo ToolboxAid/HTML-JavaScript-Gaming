@@ -70,6 +70,7 @@ function installControlSurfaceInput(SpriteEditorCanvasControlSurface) {
 
   SpriteEditorCanvasControlSurface.prototype.pointerUp = function pointerUp(x, y) {
     const c = this.getControlAt(x, y);
+    const wasMenuRow = !!(c && typeof c.id === "string" && c.id.indexOf("overflow-item-") === 0);
     const from = this.dragFrameIndex;
     const to = this.dragOverFrameIndex;
     this.dragFrameIndex = null;
@@ -87,7 +88,7 @@ function installControlSurfaceInput(SpriteEditorCanvasControlSurface) {
       const previousMenuSource = this.topMenuSource;
       c.action();
       if (c.isCommandRow) this.closeCommandPalette();
-      if (c.id.indexOf("overflow-item-") === 0 && this.topMenuSource === previousMenuSource) {
+      if (wasMenuRow && this.overflowPanelOpen && this.topMenuSource === previousMenuSource) {
         this.closeOverflowPanel();
       }
       return true;
