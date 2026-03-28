@@ -1,4 +1,5 @@
 import { installControlSurfaceBuild } from "./controlSurfaceBuild.js";
+import { installControlSurfaceBottomPanel } from "./controlSurfaceBottomPanel.js";
 import { installControlSurfaceCommandPalette } from "./controlSurfaceCommandPalette.js";
 import { installControlSurfaceDraw } from "./controlSurfaceDraw.js";
 import { installControlSurfaceInput } from "./controlSurfaceInput.js";
@@ -33,6 +34,7 @@ class SpriteEditorCanvasControlSurface {
 }
 
 installControlSurfaceBuild(SpriteEditorCanvasControlSurface);
+installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface);
 installControlSurfaceCommandPalette(SpriteEditorCanvasControlSurface);
 installControlSurfaceDraw(SpriteEditorCanvasControlSurface);
 installControlSurfaceInput(SpriteEditorCanvasControlSurface);
