@@ -1,1 +1,11 @@
-Sprite Editor v7.1 redo plan only: pre-regression consolidation constrained to Sprite Editor with no engine changes
+Sprite Editor V7.2 - Interaction stabilization
+
+Fixes:
+- Selection move preview/commit
+- Backspace cancel behavior
+- Palette scroll boundary
+- Layer ordering and UI cleanup
+- Timeline range correctness
+- Input cleanup (remove Ctrl+W)
+- Command palette visual fixes
+- Help/About cleanup
