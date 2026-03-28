@@ -83,6 +83,11 @@ class SpriteEditorApp {
       requestAnimationFrame((ts) => this.tick(ts));
     }
 
+    showMessageAndRender(message) {
+      this.showMessage(message);
+      this.renderAll();
+    }
+
     showMessage(m) { this.statusMessage = m; this.flashMessageUntil = performance.now() + 1800; }
 }
 

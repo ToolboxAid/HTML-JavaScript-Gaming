@@ -12,8 +12,7 @@ function installSpriteEditorLayerMethods(SpriteEditorApp) {
     },
 
     announceActiveLayerSelection() {
-      this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`);
-      this.renderAll();
+      this.showMessageAndRender(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`);
     },
 
     isLayerVisibleEffective(frame, layerIndex) {
@@ -81,8 +80,7 @@ function installSpriteEditorLayerMethods(SpriteEditorApp) {
 
     copyFrame() {
       this.document.copyFrame();
-      this.showMessage("Frame copied.");
-      this.renderAll();
+      this.showMessageAndRender("Frame copied.");
     },
 
     pasteFrame() {

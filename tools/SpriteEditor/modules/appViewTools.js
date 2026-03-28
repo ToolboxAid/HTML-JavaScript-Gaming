@@ -60,8 +60,7 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
     adjustZoom(delta) {
       this.zoom = Math.max(0.5, Math.min(8, Number((this.zoom + delta).toFixed(2))));
       this.gridRect = this.computeGridRect();
-      this.showMessage("Zoom: " + this.zoom.toFixed(2) + "x");
-      this.renderAll();
+      this.showMessageAndRender("Zoom: " + this.zoom.toFixed(2) + "x");
     },
 
     resizeDocumentGrid(nextCols, nextRows) {
@@ -105,27 +104,23 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
       this.gridRect = this.computeGridRect();
-      this.showMessage("Zoom/pan reset.");
-      this.renderAll();
+      this.showMessageAndRender("Zoom/pan reset.");
     },
 
     togglePixelPerfect() {
       this.viewport.togglePixelPerfect();
       this.resize();
-      this.showMessage(this.viewport.pixelPerfect ? "Pixel perfect on." : "Pixel perfect off.");
-      this.renderAll();
+      this.showMessageAndRender(this.viewport.pixelPerfect ? "Pixel perfect on." : "Pixel perfect off.");
     },
 
     toggleOnionPrevious() {
       this.onionSkin.prev = !this.onionSkin.prev;
-      this.showMessage(this.onionSkin.prev ? "Onion previous on." : "Onion previous off.");
-      this.renderAll();
+      this.showMessageAndRender(this.onionSkin.prev ? "Onion previous on." : "Onion previous off.");
     },
 
     toggleOnionNext() {
       this.onionSkin.next = !this.onionSkin.next;
-      this.showMessage(this.onionSkin.next ? "Onion next on." : "Onion next off.");
-      this.renderAll();
+      this.showMessageAndRender(this.onionSkin.next ? "Onion next on." : "Onion next off.");
     },
 
     setSelectionFromTwoCells(a, b) {
@@ -244,8 +239,7 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
 
     setBrushSize(size) {
       this.brush.size = Math.max(1, Math.min(9, Math.floor(size || 1)));
-      this.showMessage(`Brush size: ${this.brush.size}`);
-      this.renderAll();
+      this.showMessageAndRender(`Brush size: ${this.brush.size}`);
     },
 
     adjustBrushSize(delta) {
@@ -254,14 +248,12 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
 
     toggleBrushShape() {
       this.brush.shape = this.brush.shape === "square" ? "circle" : "square";
-      this.showMessage(`Brush shape: ${this.brush.shape}`);
-      this.renderAll();
+      this.showMessageAndRender(`Brush shape: ${this.brush.shape}`);
     },
 
     toggleMirror() {
       this.mirror = !this.mirror;
-      this.showMessage(this.mirror ? "Mirror on." : "Mirror off.");
-      this.renderAll();
+      this.showMessageAndRender(this.mirror ? "Mirror on." : "Mirror off.");
     }
   });
 }

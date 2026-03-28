@@ -86,8 +86,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       if (this.paletteSortMode === mode) return false;
       this.paletteSortMode = mode;
       this.paletteSidebarScroll = 0;
-      this.showMessage(`Palette sort: ${mode[0].toUpperCase()}${mode.slice(1)}.`);
-      this.renderAll();
+      this.showMessageAndRender(`Palette sort: ${mode[0].toUpperCase()}${mode.slice(1)}.`);
       return true;
     },
 
@@ -99,8 +98,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         ? (index + step + palette.length) % palette.length
         : 0;
       this.document.currentColor = palette[nextIndex];
-      this.showMessage("Color cycled.");
-      this.renderAll();
+      this.showMessageAndRender("Color cycled.");
       return true;
     },
 
@@ -122,27 +120,23 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       const order = ["active_layer", "current_frame", "selected_range"];
       const current = order.indexOf(this.paletteWorkflow.scope);
       this.paletteWorkflow.scope = order[(current + 1) % order.length];
-      this.showMessage(this.getPaletteScopeLabel());
-      this.renderAll();
+      this.showMessageAndRender(this.getPaletteScopeLabel());
     },
 
     setPaletteReplaceScope(scope) {
       this.paletteWorkflow.scope = scope;
-      this.showMessage(this.getPaletteScopeLabel());
-      this.renderAll();
+      this.showMessageAndRender(this.getPaletteScopeLabel());
       return true;
     },
 
     setPaletteReplaceSource() {
       this.paletteWorkflow.source = this.document.currentColor;
-      this.showMessage("Replace source set.");
-      this.renderAll();
+      this.showMessageAndRender("Replace source set.");
     },
 
     setPaletteReplaceTarget() {
       this.paletteWorkflow.target = this.document.currentColor;
-      this.showMessage("Replace target set.");
-      this.renderAll();
+      this.showMessageAndRender("Replace target set.");
     },
 
     applyNamedPalette(paletteName) {

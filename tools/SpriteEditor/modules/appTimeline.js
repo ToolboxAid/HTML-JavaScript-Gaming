@@ -117,8 +117,7 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
         return false;
       }
       this.setPlaybackRange(range.start, range.end, true);
-      this.showMessage(`Playback range: ${range.start + 1}-${range.end + 1}`);
-      this.renderAll();
+      this.showMessageAndRender(`Playback range: ${range.start + 1}-${range.end + 1}`);
       return true;
     },
 
@@ -177,8 +176,7 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
         }
         this.playback.lastTick = performance.now();
       }
-      this.showMessage(this.playback.isPlaying ? "Playback started." : "Playback paused.");
-      this.renderAll();
+      this.showMessageAndRender(this.playback.isPlaying ? "Playback started." : "Playback paused.");
     },
 
     stopPlayback() {
@@ -192,14 +190,12 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
 
     togglePlaybackLoop() {
       this.playback.loop = !this.playback.loop;
-      this.showMessage(this.playback.loop ? "Loop on." : "Loop off.");
-      this.renderAll();
+      this.showMessageAndRender(this.playback.loop ? "Loop on." : "Loop off.");
     },
 
     adjustPlaybackFps(delta) {
       this.playback.fps = Math.max(1, Math.min(30, this.playback.fps + delta));
-      this.showMessage(`FPS: ${this.playback.fps}`);
-      this.renderAll();
+      this.showMessageAndRender(`FPS: ${this.playback.fps}`);
     }
   });
 }
