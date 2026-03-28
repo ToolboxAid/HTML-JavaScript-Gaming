@@ -1,3 +1,5 @@
+import { drawCanvasDialogButton, drawCanvasModalFrame } from "../../../engine/ui/index.js";
+
 function installSpriteEditorPopupMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     getCenteredPanelRect(frame, width, height, verticalBias = 0.5) {
@@ -7,33 +9,6 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         w: width,
         h: height
       };
-    },
-
-    drawModalFrame(rect, overlayFill = "rgba(2, 6, 12, 0.7)") {
-      this.ctx.fillStyle = overlayFill;
-      this.ctx.fillRect(0, 0, this.viewport.logicalWidth, this.viewport.logicalHeight);
-      this.ctx.fillStyle = "#162435";
-      this.ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-      this.ctx.strokeStyle = "#4cc9f0";
-      this.ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
-    },
-
-    drawDialogButton(rect, text, options = {}) {
-      const {
-        fillStyle = "#27435a",
-        strokeStyle = "#4cc9f0",
-        textStyle = "#e6f2ff",
-        textOffsetX = 28,
-        textOffsetY = 20,
-        font = null
-      } = options;
-      if (font) this.ctx.font = font;
-      this.ctx.fillStyle = fillStyle;
-      this.ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-      this.ctx.strokeStyle = strokeStyle;
-      this.ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
-      this.ctx.fillStyle = textStyle;
-      this.ctx.fillText(text, rect.x + textOffsetX, rect.y + textOffsetY);
     },
 
     dismissPopup(closeFn, message = "", consumed = true) {
@@ -346,7 +321,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const frame = this.controlSurface.layout.appFrame;
       this.helpDetailPopup.panelRect = this.getCenteredPanelRect(frame, 620, 330);
       const { x, y, w: panelW, h: panelH } = this.helpDetailPopup.panelRect;
-      this.drawModalFrame(this.helpDetailPopup.panelRect);
+      drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, this.helpDetailPopup.panelRect);
       this.ctx.fillStyle = "#dbe7f3";
       this.ctx.font = "bold 20px Arial";
       this.ctx.fillText(section.title, x + 20, y + 30);
@@ -368,7 +343,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       });
       const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
       this.helpDetailPopup.closeRect = closeRect;
-      this.drawDialogButton(closeRect, "Close");
+      drawCanvasDialogButton(this.ctx, closeRect, "Close");
     },
 
     drawAboutPopup() {
@@ -376,7 +351,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const frame = this.controlSurface.layout.appFrame;
       this.aboutPopup.panelRect = this.getCenteredPanelRect(frame, 520, 216);
       const { x, y, w: panelW, h: panelH } = this.aboutPopup.panelRect;
-      this.drawModalFrame(this.aboutPopup.panelRect, "rgba(2, 6, 12, 0.62)");
+      drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, this.aboutPopup.panelRect, "rgba(2, 6, 12, 0.62)");
       this.ctx.fillStyle = "#dbe7f3";
       this.ctx.font = "bold 18px Arial";
       this.ctx.fillText("About Sprite Editor", x + 18, y + 28);
@@ -389,7 +364,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.fillText("github.com/ToolboxAid/HTML-JavaScript-Gaming", x + 18, y + 166);
       const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
       this.aboutPopup.closeRect = closeRect;
-      this.drawDialogButton(closeRect, "Close", { textOffsetX: 29 });
+      drawCanvasDialogButton(this.ctx, closeRect, "Close", { textOffsetX: 29 });
     },
 
     drawPalettePresetPopup() {
@@ -409,12 +384,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.palettePresetPopup.panelRect = { x, y, w: panelW, h: panelH };
       this.palettePresetPopup.rowRects = [];
 
-      this.ctx.fillStyle = "rgba(2, 6, 12, 0.72)";
-      this.ctx.fillRect(0, 0, this.viewport.logicalWidth, this.viewport.logicalHeight);
-      this.ctx.fillStyle = "#162435";
-      this.ctx.fillRect(x, y, panelW, panelH);
-      this.ctx.strokeStyle = "#4cc9f0";
-      this.ctx.strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+      drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, this.palettePresetPopup.panelRect, "rgba(2, 6, 12, 0.72)");
 
       this.ctx.fillStyle = "#dbe7f3";
       this.ctx.font = "bold 18px Arial";
@@ -458,7 +428,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.palettePresetPopup.backRect = backRect;
       this.palettePresetPopup.closeRect = closeRect;
 
-      this.drawDialogButton(backRect, "Back To Palette", {
+      drawCanvasDialogButton(this.ctx, backRect, "Back To Palette", {
         fillStyle: "#1a2733",
         strokeStyle: "rgba(255,255,255,0.22)",
         textStyle: "#edf2f7",
@@ -466,7 +436,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         textOffsetY: 14,
         font: "12px Arial"
       });
-      this.drawDialogButton(closeRect, "Close", {
+      drawCanvasDialogButton(this.ctx, closeRect, "Close", {
         textOffsetX: 27,
         textOffsetY: 14,
         font: "12px Arial"
@@ -483,7 +453,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         h: 190
       };
       const { x, y, w, h } = panelRect;
-      this.drawModalFrame(panelRect, "rgba(2, 6, 12, 0.62)");
+      drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, panelRect, "rgba(2, 6, 12, 0.62)");
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 18px Arial";
       ctx.fillText(this.replaceGuard.title || "Confirm Replace", x + 18, y + 28);
@@ -495,14 +465,14 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const confirmRect = { x: x + w - 122, y: y + h - 56, w: 104, h: 34 };
       this.replaceGuard.cancelRect = cancelRect;
       this.replaceGuard.confirmRect = confirmRect;
-      this.drawDialogButton(cancelRect, "Cancel", {
+      drawCanvasDialogButton(this.ctx, cancelRect, "Cancel", {
         fillStyle: "#1a2733",
         strokeStyle: "rgba(255,255,255,0.2)",
         textStyle: "#edf2f7",
         textOffsetX: 22,
         textOffsetY: 22
       });
-      this.drawDialogButton(confirmRect, "Replace", {
+      drawCanvasDialogButton(this.ctx, confirmRect, "Replace", {
         textOffsetX: 24,
         textOffsetY: 22
       });
@@ -513,7 +483,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const frame = this.controlSurface.layout.appFrame;
       this.layerRenamePrompt.panelRect = this.getCenteredPanelRect(frame, 480, 154, 0.24);
       const { x, y, w: panelW, h: panelH } = this.layerRenamePrompt.panelRect;
-      this.drawModalFrame(this.layerRenamePrompt.panelRect, "rgba(2, 6, 12, 0.58)");
+      drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, this.layerRenamePrompt.panelRect, "rgba(2, 6, 12, 0.58)");
       this.ctx.fillStyle = "#dbe7f3";
       this.ctx.font = "bold 16px Arial";
       this.ctx.fillText("Rename Layer", x + 16, y + 24);
@@ -534,13 +504,13 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const by = y + panelH - btnH - 14;
       this.layerRenamePrompt.confirmRect = { x: x + panelW - btnW * 2 - gap - 16, y: by, w: btnW, h: btnH };
       this.layerRenamePrompt.cancelRect = { x: x + panelW - btnW - 16, y: by, w: btnW, h: btnH };
-      this.drawDialogButton(this.layerRenamePrompt.confirmRect, "Apply", {
+      drawCanvasDialogButton(this.ctx, this.layerRenamePrompt.confirmRect, "Apply", {
         fillStyle: "#244d67",
         textStyle: "#edf2f7",
         textOffsetX: 43,
         textOffsetY: 19
       });
-      this.drawDialogButton(this.layerRenamePrompt.cancelRect, "Cancel", {
+      drawCanvasDialogButton(this.ctx, this.layerRenamePrompt.cancelRect, "Cancel", {
         fillStyle: "#1a2733",
         strokeStyle: "rgba(255,255,255,0.2)",
         textStyle: "#edf2f7",
