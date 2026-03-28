@@ -1,0 +1,265 @@
+import {
+  FAVORITE_ACTIONS_KEY,
+  MACRO_DEFINITIONS_KEY,
+  RECENT_ACTIONS_KEY,
+} from "./constants.js";
+
+function installSpriteEditorShellMethods(SpriteEditorApp) {
+  Object.assign(SpriteEditorApp.prototype, {
+    loadRecentActions() {
+      try {
+        const raw = localStorage.getItem(RECENT_ACTIONS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 40) : [];
+      } catch (_e) {
+        return [];
+      }
+    },
+
+    saveRecentActions() {
+      try {
+        localStorage.setItem(RECENT_ACTIONS_KEY, JSON.stringify(this.recentActions.slice(0, 40)));
+      } catch (_e) {
+        // Ignore localStorage failures.
+      }
+    },
+
+    trackRecentAction(actionId) {
+      if (!actionId || actionId === "system.commandPalette") return;
+      const next = [actionId].concat(this.recentActions.filter((x) => x !== actionId));
+      this.recentActions = next.slice(0, 40);
+      this.saveRecentActions();
+    },
+
+    isPointInRect(point, rect) {
+      return !!(point && rect && point.x >= rect.x && point.y >= rect.y && point.x <= rect.x + rect.w && point.y <= rect.y + rect.h);
+    },
+
+    clearHoverPreviewState() {
+      this.timelineHoverIndex = null;
+      this.hoveredGridCell = null;
+      this.controlSurface.hovered = null;
+    },
+
+    cancelActiveInteraction() {
+      if (this.timelineInteraction) {
+        this.timelineInteraction = null;
+        this.controlSurface.dragFrameIndex = null;
+        this.controlSurface.dragOverFrameIndex = null;
+        this.controlSurface.dragFeedbackText = "";
+        this.clearHoverPreviewState();
+        this.isPointerDown = false;
+        return "Timeline interaction canceled.";
+      }
+      if (this.selectionMoveSession) {
+        this.selectionMoveSession = null;
+        this.isPointerDown = false;
+        return "Selection move canceled.";
+      }
+      if (this.activeStrokeHistory) {
+        this.restoreHistoryState(this.activeStrokeHistory.before);
+        this.activeStrokeHistory = null;
+        this.shapePreview = null;
+        this.strokeLastCell = null;
+        this.selectionStart = null;
+        this.isPointerDown = false;
+        return "Drawing canceled.";
+      }
+      if (this.shapePreview) {
+        this.shapePreview = null;
+        this.selectionStart = null;
+        this.isPointerDown = false;
+        return "Shape preview canceled.";
+      }
+      if (this.selectionStart) {
+        this.selectionStart = null;
+        this.isPointerDown = false;
+        return "Transient selection canceled.";
+      }
+      if (this.isPanning) {
+        this.isPanning = false;
+        this.panStart = null;
+        return "Pan canceled.";
+      }
+      return "";
+    },
+
+    normalizeExportMode() {
+      if (!["all_frames", "current_frame", "selected_range"].includes(this.exportMode)) {
+        this.exportMode = "all_frames";
+      }
+    },
+
+    normalizeEditorState() {
+      this.document.ensureDocumentState();
+      this.normalizeExportMode();
+      this.sanitizeSoloState();
+      this.sanitizeFrameRangeSelection();
+      this.sanitizePlaybackRange();
+      this.playback.previewFrameIndex = Math.max(0, Math.min(this.playback.previewFrameIndex || 0, this.document.frames.length - 1));
+      if (this.selectionMoveSession && !this.document.selection) this.selectionMoveSession = null;
+      if (this.hoveredGridCell && (this.hoveredGridCell.x < 0 || this.hoveredGridCell.y < 0 || this.hoveredGridCell.x >= this.document.cols || this.hoveredGridCell.y >= this.document.rows)) {
+        this.hoveredGridCell = null;
+      }
+    },
+
+    loadFavoriteActions() {
+      try {
+        const raw = localStorage.getItem(FAVORITE_ACTIONS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 80) : [];
+      } catch (_e) {
+        return [];
+      }
+    },
+
+    getBuiltInMacros() {
+      return [
+        {
+          id: "macro:prep_brush_center",
+          label: "Macro: Prep Brush Center",
+          category: "Macro",
+          aliases: ["prep brush", "reset and brush"],
+          keywords: ["macro", "reset", "brush"],
+          actions: ["view.zoomReset", "tool.brush"]
+        },
+        {
+          id: "macro:animate_preview_cycle",
+          label: "Macro: Animate Preview Cycle",
+          category: "Macro",
+          aliases: ["preview cycle", "animation preview"],
+          keywords: ["macro", "playback", "preview"],
+          actions: ["frame.next", "frame.next", "system.playback"]
+        }
+      ];
+    },
+
+    normalizeMacroDefinition(input) {
+      if (!input || typeof input !== "object") return null;
+      const id = String(input.id || "").trim();
+      const label = String(input.label || "").trim();
+      if (!id || !label || id.indexOf("macro:") !== 0) return null;
+      const actions = Array.isArray(input.actions) ? input.actions.filter((a) => typeof a === "string" && a.trim()).map((a) => a.trim()) : [];
+      if (!actions.length) return null;
+      const aliases = Array.isArray(input.aliases) ? input.aliases.filter((a) => typeof a === "string") : [];
+      const keywords = Array.isArray(input.keywords) ? input.keywords.filter((k) => typeof k === "string") : [];
+      return {
+        id,
+        label,
+        category: "Macro",
+        aliases,
+        keywords,
+        actions
+      };
+    },
+
+    loadMacroDefinitions() {
+      const builtIns = this.getBuiltInMacros().map((m) => this.normalizeMacroDefinition(m)).filter(Boolean);
+      try {
+        const raw = localStorage.getItem(MACRO_DEFINITIONS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(parsed)) return builtIns;
+        const custom = parsed.map((m) => this.normalizeMacroDefinition(m)).filter(Boolean);
+        const byId = new Map();
+        builtIns.forEach((m) => byId.set(m.id, m));
+        custom.forEach((m) => byId.set(m.id, m));
+        return Array.from(byId.values());
+      } catch (_e) {
+        return builtIns;
+      }
+    },
+
+    saveFavoriteActions() {
+      try {
+        localStorage.setItem(FAVORITE_ACTIONS_KEY, JSON.stringify(this.favoriteActions.slice(0, 80)));
+      } catch (_e) {
+        // Ignore localStorage failures.
+      }
+    },
+
+    toggleFavoriteAction(actionId) {
+      if (!actionId) return;
+      if (this.favoriteActions.indexOf(actionId) >= 0) {
+        this.favoriteActions = this.favoriteActions.filter((id) => id !== actionId);
+        this.showMessage("Favorite removed.");
+      } else {
+        this.favoriteActions = [actionId].concat(this.favoriteActions.filter((id) => id !== actionId)).slice(0, 80);
+        this.showMessage("Favorite pinned.");
+      }
+      this.saveFavoriteActions();
+    },
+
+    bindEvents() {
+      window.addEventListener("resize", () => { this.resize(); this.renderAll(); });
+      document.addEventListener("fullscreenchange", () => { this.resize(); this.renderAll(); });
+      this.canvas.addEventListener("pointermove", (e) => this.onPointerMove(e));
+      this.canvas.addEventListener("pointerdown", (e) => this.onPointerDown(e));
+      this.canvas.addEventListener("pointerleave", () => {
+        if (this.isPointerDown || this.timelineInteraction) return;
+        this.clearHoverPreviewState();
+        this.renderAll();
+      });
+      window.addEventListener("pointerup", (e) => this.onPointerUp(e));
+      this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+      this.canvas.addEventListener("wheel", (e) => this.onWheel(e), { passive: false });
+      window.addEventListener("keydown", (e) => this.onKeyDown(e));
+      this.fileInput.addEventListener("change", async (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        try {
+          const payload = JSON.parse(await file.text());
+          this.requestReplaceGuard("Import JSON", "Replace current document with imported JSON?", () => {
+            this.document.importPayload(payload);
+            this.clearHistoryStacks();
+            this.markCleanBaseline();
+            this.showMessage("Imported sprite JSON.");
+          });
+        } catch (_error) {
+          this.showMessage("Import failed.");
+        }
+        this.fileInput.value = "";
+        this.renderAll();
+      });
+    },
+
+    resize() {
+      this.viewport.updateFromCanvasElement();
+      this.controlSurface.rebuildLayout();
+      this.gridRect = this.computeGridRect();
+    },
+
+    // { } thouse should come out of engine.
+    isFullscreen() {
+      return document.fullscreenElement === this.canvas.closest(".sprite-editor-shell");
+    },
+
+    async toggleFullscreen() {
+      const stage = this.canvas.closest(".sprite-editor-shell");
+      try {
+        if (this.isFullscreen()) await document.exitFullscreen();
+        else await stage.requestFullscreen();
+      } catch (_error) {
+        this.showMessage("Full screen unavailable.");
+      }
+      this.renderAll();
+    },
+
+    isTypingTarget(target) {
+      if (!target) return false;
+      const tag = (target.tagName || "").toLowerCase();
+      if (target.isContentEditable) return true;
+      return tag === "input" || tag === "textarea" || tag === "select";
+    },
+
+    getKeyGesture(event) {
+      const parts = [];
+      if (event.ctrlKey || event.metaKey) parts.push("ctrl");
+      if (event.shiftKey) parts.push("shift");
+      if (event.altKey) parts.push("alt");
+      parts.push((event.key || "").toLowerCase());
+      return parts.join("+");
+    },
+  });
+}
+
+export { installSpriteEditorShellMethods };
