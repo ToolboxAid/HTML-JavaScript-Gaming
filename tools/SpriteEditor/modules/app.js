@@ -15,6 +15,7 @@ import { installSpriteEditorInputMethods } from "./appInput.js";
 import { installSpriteEditorCommandMethods } from "./appCommands.js";
 import { installSpriteEditorPaletteMethods } from "./appPalette.js";
 import { installSpriteEditorExportMethods } from "./appExport.js";
+import { installSpriteEditorTimelineMethods } from "./appTimeline.js";
 
 class SpriteEditorApp {
     constructor(canvas,fileInput,downloadLink) {
@@ -502,124 +503,6 @@ class SpriteEditorApp {
       return { x: Math.floor((x - r.x) / r.pixelSize), y: Math.floor((y - r.y) / r.pixelSize) };
     }
 
-    computeTimelineLayout() {
-      const b = this.controlSurface.layout.bottomPanel;
-      const x = Math.max(b.x + 18, b.x + b.width - 420);
-      const y = b.y + 14;
-      const w = Math.min(402, b.width - 36);
-      const h = 100;
-      const transportX = x + 8;
-      const transportY = y + 6;
-      const transportW = 58;
-      const transportH = 16;
-      const transportGap = 4;
-      const transport = [
-        { id: "play_pause", x: transportX, y: transportY, w: transportW, h: transportH },
-        { id: "stop", x: transportX, y: transportY + (transportH + transportGap), w: transportW, h: transportH },
-        { id: "loop", x: transportX, y: transportY + (transportH + transportGap) * 2, w: transportW, h: transportH },
-        { id: "fps_down", x: x + w - 92, y: transportY, w: 20, h: transportH },
-        { id: "fps_up", x: x + w - 24, y: transportY, w: 20, h: transportH }
-      ];
-      const innerX = x + 76;
-      const innerY = y + 40;
-      const innerW = w - 84;
-      const innerH = h - 48;
-      const count = Math.max(1, this.document.frames.length);
-      const slotGap = 6;
-      const maxSlotW = 52;
-      const slotW = Math.max(24, Math.min(maxSlotW, Math.floor((innerW - (count - 1) * slotGap) / count)));
-      const slotH = innerH;
-      const totalW = count * slotW + (count - 1) * slotGap;
-      const startX = innerX + Math.max(0, Math.floor((innerW - totalW) * 0.5));
-      const slots = [];
-      for (let i = 0; i < count; i += 1) {
-        slots.push({ index: i, x: startX + i * (slotW + slotGap), y: innerY, w: slotW, h: slotH });
-      }
-      return { x, y, w, h, slots, transport };
-    }
-
-    getTimelineIndexAt(p) {
-      if (!this.timelineStripRect || !p) return null;
-      const slots = this.timelineStripRect.slots;
-      for (let i = 0; i < slots.length; i += 1) {
-        const s = slots[i];
-        if (p.x >= s.x && p.y >= s.y && p.x <= s.x + s.w && p.y <= s.y + s.h) return s.index;
-      }
-      return null;
-    }
-
-    getTimelineControlAt(p) {
-      if (!this.timelineStripRect || !p) return null;
-      const controls = this.timelineStripRect.transport || [];
-      for (let i = 0; i < controls.length; i += 1) {
-        const c = controls[i];
-        if (p.x >= c.x && p.y >= c.y && p.x <= c.x + c.w && p.y <= c.y + c.h) return c.id;
-      }
-      return null;
-    }
-    getFrameRangeSelection() {
-      if (!this.frameRangeSelection) return { start: this.document.activeFrameIndex, end: this.document.activeFrameIndex, explicit: false };
-      const start = Math.max(0, Math.min(this.frameRangeSelection.start, this.frameRangeSelection.end, this.document.frames.length - 1));
-      const end = Math.max(0, Math.min(Math.max(this.frameRangeSelection.start, this.frameRangeSelection.end), this.document.frames.length - 1));
-      return { start, end, explicit: true };
-    }
-    isFrameInSelectedRange(index) {
-      const range = this.getFrameRangeSelection();
-      return index >= range.start && index <= range.end;
-    }
-    setFrameRangeSelection(start, end, anchor = start) {
-      const s = Math.max(0, Math.min(start, end, this.document.frames.length - 1));
-      const e = Math.max(0, Math.min(Math.max(start, end), this.document.frames.length - 1));
-      this.frameRangeSelection = { start: s, end: e, anchor };
-    }
-    clearFrameRangeSelection(showMessage = false) {
-      this.frameRangeSelection = null;
-      if (showMessage) this.showMessage("Frame range cleared.");
-    }
-    getPlaybackRange() {
-      const max = Math.max(0, this.document.frames.length - 1);
-      const start = Math.max(0, Math.min(this.playbackRange.startFrame, this.playbackRange.endFrame, max));
-      const end = Math.max(0, Math.min(Math.max(this.playbackRange.startFrame, this.playbackRange.endFrame), max));
-      return { enabled: !!this.playbackRange.enabled, startFrame: start, endFrame: end };
-    }
-    setPlaybackRange(startFrame, endFrame, enabled = true) {
-      const max = Math.max(0, this.document.frames.length - 1);
-      const start = Math.max(0, Math.min(startFrame, endFrame, max));
-      const end = Math.max(0, Math.min(Math.max(startFrame, endFrame), max));
-      this.playbackRange = { enabled: !!enabled, startFrame: start, endFrame: end };
-    }
-    clearPlaybackRange(showMessage = false) {
-      this.playbackRange.enabled = false;
-      this.playbackRange.startFrame = 0;
-      this.playbackRange.endFrame = Math.max(0, this.document.frames.length - 1);
-      if (showMessage) this.showMessage("Playback range cleared.");
-    }
-    isFrameInPlaybackRange(index) {
-      const range = this.getPlaybackRange();
-      if (!range.enabled) return false;
-      return index >= range.startFrame && index <= range.endFrame;
-    }
-    setPlaybackRangeFromSelection() {
-      const range = this.getFrameRangeSelection();
-      if (!range.explicit || range.start === range.end) {
-        this.showMessage("Select at least two frames first.");
-        return false;
-      }
-      this.setPlaybackRange(range.start, range.end, true);
-      this.showMessage(`Playback range: ${range.start + 1}-${range.end + 1}`);
-      this.renderAll();
-      return true;
-    }
-    jumpToPlaybackRangeEdge(toEnd) {
-      const range = this.getPlaybackRange();
-      if (!range.enabled) {
-        this.showMessage("Playback range not set.");
-        return false;
-      }
-      this.selectFrame(toEnd ? range.endFrame : range.startFrame);
-      this.showMessage(toEnd ? "Jumped to range end." : "Jumped to range start.");
-      return true;
-    }
     getToolLabel(tool) {
       const labels = {
         brush: "Brush",
@@ -970,35 +853,6 @@ class SpriteEditorApp {
         this.document.soloState = null;
       }
     }
-    sanitizeFrameRangeSelection() {
-      if (!this.frameRangeSelection) return;
-      const max = this.document.frames.length - 1;
-      if (max < 0) {
-        this.frameRangeSelection = null;
-        return;
-      }
-      const start = Math.max(0, Math.min(this.frameRangeSelection.start, max));
-      const end = Math.max(0, Math.min(this.frameRangeSelection.end, max));
-      this.frameRangeSelection = {
-        start: Math.min(start, end),
-        end: Math.max(start, end),
-        anchor: Math.max(0, Math.min(this.frameRangeSelection.anchor, max))
-      };
-    }
-    sanitizePlaybackRange() {
-      const max = Math.max(0, this.document.frames.length - 1);
-      this.playbackRange.startFrame = Math.max(0, Math.min(this.playbackRange.startFrame, max));
-      this.playbackRange.endFrame = Math.max(0, Math.min(this.playbackRange.endFrame, max));
-      if (this.playbackRange.endFrame < this.playbackRange.startFrame) {
-        const next = this.playbackRange.startFrame;
-        this.playbackRange.startFrame = this.playbackRange.endFrame;
-        this.playbackRange.endFrame = next;
-      }
-      if (this.document.frames.length <= 1) this.playbackRange.enabled = false;
-      if (this.timelineHoverIndex !== null && (this.timelineHoverIndex < 0 || this.timelineHoverIndex > max)) {
-        this.timelineHoverIndex = null;
-      }
-    }
     syncCurrentPalettePreset() {
       const paletteLibrary = this.getPaletteLibrary();
       if (!paletteLibrary) {
@@ -1051,55 +905,6 @@ class SpriteEditorApp {
     copyFrame() { this.document.copyFrame(); this.showMessage("Frame copied."); this.renderAll(); }
     pasteFrame() { this.executeWithHistory("Frame Paste", () => { const ok = this.document.pasteFrame(); this.showMessage(ok ? "Frame pasted." : "No copied frame."); return ok; }); this.renderAll(); }
 
-    cycleSheetLayout() {
-      const order = ["horizontal","vertical","grid"];
-      const i = order.indexOf(this.document.sheet.layout);
-      this.document.sheet.layout = order[(i+1) % order.length];
-      this.showMessage("Sheet layout: " + this.document.sheet.layout);
-      this.renderAll();
-    }
-    adjustSheetPadding(d) { this.document.sheet.padding = Math.max(0, Math.min(64, this.document.sheet.padding + d)); this.showMessage("Sheet padding: " + this.document.sheet.padding); this.renderAll(); }
-    adjustSheetSpacing(d) { this.document.sheet.spacing = Math.max(0, Math.min(32, this.document.sheet.spacing + d)); this.showMessage("Sheet spacing: " + this.document.sheet.spacing); this.renderAll(); }
-    toggleSheetBackgroundMode() { this.document.sheet.transparent = !this.document.sheet.transparent; this.showMessage(this.document.sheet.transparent ? "Sheet background transparent." : "Sheet background solid."); this.renderAll(); }
-
-    togglePlayback(force) {
-      if (typeof force === "boolean") this.playback.isPlaying = force;
-      else this.playback.isPlaying = !this.playback.isPlaying;
-      if (this.playback.isPlaying) {
-        const range = this.getPlaybackRange();
-        if (range.enabled) {
-          this.playback.previewFrameIndex = Math.max(range.startFrame, Math.min(range.endFrame, this.document.activeFrameIndex));
-          this.document.activeFrameIndex = this.playback.previewFrameIndex;
-        } else {
-          this.playback.previewFrameIndex = this.document.activeFrameIndex;
-        }
-        this.playback.lastTick = performance.now();
-      }
-      this.showMessage(this.playback.isPlaying ? "Playback started." : "Playback paused.");
-      this.renderAll();
-    }
-
-    stopPlayback() {
-      this.playback.isPlaying = false;
-      const range = this.getPlaybackRange();
-      const nextIndex = range.enabled ? range.startFrame : 0;
-      this.playback.previewFrameIndex = nextIndex;
-      this.selectFrame(nextIndex);
-      this.showMessage("Playback stopped.");
-    }
-
-    togglePlaybackLoop() {
-      this.playback.loop = !this.playback.loop;
-      this.showMessage(this.playback.loop ? "Loop on." : "Loop off.");
-      this.renderAll();
-    }
-
-    adjustPlaybackFps(delta) {
-      this.playback.fps = Math.max(1, Math.min(30, this.playback.fps + delta));
-      this.showMessage(`FPS: ${this.playback.fps}`);
-      this.renderAll();
-    }
-
     showMessage(m) { this.statusMessage = m; this.flashMessageUntil = performance.now() + 1800; }
 }
 
@@ -1112,5 +917,6 @@ installSpriteEditorInputMethods(SpriteEditorApp);
 installSpriteEditorCommandMethods(SpriteEditorApp);
 installSpriteEditorPaletteMethods(SpriteEditorApp);
 installSpriteEditorExportMethods(SpriteEditorApp);
+installSpriteEditorTimelineMethods(SpriteEditorApp);
 
 export { SpriteEditorApp };
