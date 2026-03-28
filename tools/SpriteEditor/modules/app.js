@@ -43,7 +43,7 @@ class SpriteEditorApp {
       this.frameRangeSelection = null;
       this.playbackRange = { enabled: false, startFrame: 0, endFrame: 0 };
       this.timelineHoverIndex = null;
-      this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
+      this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, sequenceCursor: 0, lastTick: 0 };
       this.strokeLastCell = null;
       this.shapePreview = null;
       this.currentPalettePreset = "";
@@ -52,6 +52,7 @@ class SpriteEditorApp {
       this.onionSkin = { prev: false, next: false };
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
+      this.errorMessageUntil = 0;
       this.gridRect = null;
       this.uiDensityEffectiveMode = "pro";
       this.zoom = 1;
@@ -98,6 +99,11 @@ class SpriteEditorApp {
     }
 
     showMessage(m) { this.statusMessage = m; this.flashMessageUntil = performance.now() + 1800; }
+    showAlertMessage(m) {
+      this.statusMessage = m;
+      this.flashMessageUntil = performance.now() + 2200;
+      this.errorMessageUntil = this.flashMessageUntil;
+    }
 }
 
 installSpriteEditorPopupMethods(SpriteEditorApp);

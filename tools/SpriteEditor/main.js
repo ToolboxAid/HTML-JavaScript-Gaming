@@ -135,23 +135,24 @@ function installV72InteractionStabilization(targetApp) {
       const frameDuration = 1000 / this.playback.fps;
       if (ts - this.playback.lastTick >= frameDuration) {
         this.playback.lastTick = ts;
-        const range = this.getPlaybackRange();
-        const start = range.enabled ? range.startFrame : 0;
-        const end = range.enabled ? range.endFrame : Math.max(0, this.document.frames.length - 1);
-        let next = this.playback.previewFrameIndex;
-        if (next < start || next > end) {
-          next = start;
-        } else if (next < end) {
-          next += 1;
-        } else if (this.playback.loop) {
-          next = start;
-        } else {
-          this.playback.isPlaying = false;
-          next = end;
+        const baseOrder = this.document.frames.map((_f, i) => i);
+        const sequence = this.getEffectivePlaybackSequence
+          ? this.getEffectivePlaybackSequence(baseOrder)
+          : baseOrder;
+        if (sequence.length) {
+          let cursor = Number.isInteger(this.playback.sequenceCursor) ? this.playback.sequenceCursor : -1;
+          if (cursor < 0 || cursor >= sequence.length || sequence[cursor] !== this.playback.previewFrameIndex) {
+            cursor = sequence.indexOf(this.playback.previewFrameIndex);
+            if (cursor < 0) cursor = 0;
+          }
+          if (cursor < sequence.length - 1) cursor += 1;
+          else if (this.playback.loop) cursor = 0;
+          else this.playback.isPlaying = false;
+          this.playback.sequenceCursor = cursor;
+          this.playback.previewFrameIndex = sequence[cursor] ?? sequence[0];
+          this.document.activeFrameIndex = this.playback.previewFrameIndex;
+          this.renderAll();
         }
-        this.playback.previewFrameIndex = next;
-        this.document.activeFrameIndex = next;
-        this.renderAll();
       }
     }
     requestAnimationFrame((t) => this.tick(t));

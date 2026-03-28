@@ -26,7 +26,8 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
     ctx.textAlign = "center";
     ctx.fillText("Sprite Editor v2.2", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 35);
     ctx.font = "12px Arial";
-    ctx.fillStyle = performance.now() < this.app.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
+    if (performance.now() < (this.app.errorMessageUntil || 0)) ctx.fillStyle = "#ef4444";
+    else ctx.fillStyle = performance.now() < this.app.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
     ctx.fillText(this.app.statusMessage || "Ready.", L.topPanel.x + (L.topPanel.width * 0.5), L.topPanel.y + 53);
     ctx.textAlign = "left";
     if (this.dragFrameIndex !== null && this.dragOverFrameIndex !== null) {

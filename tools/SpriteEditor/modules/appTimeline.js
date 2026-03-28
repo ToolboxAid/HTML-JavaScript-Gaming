@@ -244,6 +244,7 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
         if (sequence.length) {
           const activePos = sequence.indexOf(this.document.activeFrameIndex);
           const startIndex = activePos >= 0 ? activePos : 0;
+          this.playback.sequenceCursor = startIndex;
           this.playback.previewFrameIndex = sequence[startIndex];
           this.document.activeFrameIndex = this.playback.previewFrameIndex;
         }
@@ -256,6 +257,7 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
       this.playback.isPlaying = false;
       const sequence = this.getEffectivePlaybackSequence();
       const nextIndex = sequence.length ? sequence[0] : 0;
+      this.playback.sequenceCursor = 0;
       this.playback.previewFrameIndex = nextIndex;
       this.selectFrame(nextIndex);
       this.showMessage("Playback stopped.");

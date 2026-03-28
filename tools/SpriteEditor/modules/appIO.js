@@ -23,7 +23,7 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.timelineHoverIndex = null;
       this.frameRangeSelection = null;
       this.playbackRange = { enabled: false, startFrame: 0, endFrame: 0 };
-      this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
+      this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, sequenceCursor: 0, lastTick: 0 };
       this.strokeLastCell = null;
       this.shapePreview = null;
       this.currentPalettePreset = "";
@@ -116,12 +116,16 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
           this.playback.lastTick = ts;
           const sequence = this.getEffectivePlaybackSequence();
           if (sequence.length) {
-            let position = sequence.indexOf(this.playback.previewFrameIndex);
-            if (position < 0) position = 0;
-            else if (position < sequence.length - 1) position += 1;
-            else if (this.playback.loop) position = 0;
+            let cursor = Number.isInteger(this.playback.sequenceCursor) ? this.playback.sequenceCursor : -1;
+            if (cursor < 0 || cursor >= sequence.length || sequence[cursor] !== this.playback.previewFrameIndex) {
+              cursor = sequence.indexOf(this.playback.previewFrameIndex);
+              if (cursor < 0) cursor = 0;
+            }
+            if (cursor < sequence.length - 1) cursor += 1;
+            else if (this.playback.loop) cursor = 0;
             else this.playback.isPlaying = false;
-            this.playback.previewFrameIndex = sequence[position] ?? sequence[0];
+            this.playback.sequenceCursor = cursor;
+            this.playback.previewFrameIndex = sequence[cursor] ?? sequence[0];
           }
           this.document.activeFrameIndex = this.playback.previewFrameIndex;
           this.renderAll();

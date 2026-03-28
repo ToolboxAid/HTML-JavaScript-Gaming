@@ -18,7 +18,12 @@ scop selecte rand
 
 ============================================================================
 next 
+- order still not working, do not extend the sprite sheet, instead when custom is set, draw use the frameIndex to display frame[frameIndex] until end of override (i used frameIndex, not sure what code uses)
+- once a palette is selected, it cannot be changed, display red message if someone clicks it
 
+
+
+============================================================================
 - ability to load an image behind grid, with alignment as scale option to fit grid
 - once image is loaded, js to attempt to auto align to grid
 - lock once complete so the zoom keep grid and image aligned

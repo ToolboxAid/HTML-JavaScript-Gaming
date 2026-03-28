@@ -37,7 +37,11 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     const fpsY = fpsControl ? (fpsControl.y + fpsControl.h / 2) : (t.y + 14);
     ctx.fillText(`FPS ${this.app.playback.fps}`, t.x + t.w - 62, fpsY);
     const playbackOrder = this.app.getPlaybackOrderOverride ? this.app.getPlaybackOrderOverride() : { enabled: false };
-    ctx.fillText(playbackOrder.enabled ? "Playback Order: Custom" : "Playback Order: Linear", t.x + 78, t.y + 28);
+    const baseOrder = this.app.document.frames.map((_f, i) => i);
+    const effectiveOrder = this.app.getEffectivePlaybackSequence ? this.app.getEffectivePlaybackSequence(baseOrder) : baseOrder;
+    const orderText = effectiveOrder.map((i) => i + 1).join(", ");
+    const orderLabel = playbackOrder.enabled ? `Playback Order: ${orderText}` : "Playback Order: Linear";
+    ctx.fillText(orderLabel.length > 42 ? `${orderLabel.slice(0, 42)}...` : orderLabel, t.x + 78, t.y + 28);
     t.slots.forEach((slot) => {
       const f = this.app.document.frames[slot.index];
       const active = slot.index === this.app.document.activeFrameIndex;
@@ -110,7 +114,7 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     const footerH = 0;
     const innerPad = withChrome ? 5 : 0;
     const order = this.app.document.frames.length <= 8
-      ? this.app.document.frames.map((_, i) => i + 1).join(", ")
+      ? this.app.document.frames.map((_f, i) => i + 1).join(", ")
       : `1..${this.app.document.frames.length}`;
     if (withChrome) {
       ctx.fillStyle = "#1a2733";
