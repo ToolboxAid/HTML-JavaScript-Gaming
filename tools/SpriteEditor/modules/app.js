@@ -1,6 +1,7 @@
 import { SpriteEditorViewport } from "./viewport.js";
 import { SpriteEditorDocument } from "./document.js";
 import { SpriteEditorCanvasControlSurface } from "./controlSurface.js";
+import { FullscreenService } from "../../../engine/runtime/index.js";
 import { installSpriteEditorPopupMethods } from "./appPopups.js";
 import { installSpriteEditorMenuMethods } from "./appMenus.js";
 import { installSpriteEditorRenderMethods } from "./appRender.js";
@@ -48,10 +49,13 @@ class SpriteEditorApp {
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
       this.gridRect = null;
-      this.uiDensityMode = "pro";
       this.uiDensityEffectiveMode = "pro";
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
+      this.fullscreen = FullscreenService.fromBrowser({
+        documentRef: globalThis.document ?? null,
+        target: canvas.closest(".sprite-editor-shell")
+      });
       this.isPanning = false;
       this.panStart = null;
       this.keybindings = this.createKeybindingMap();

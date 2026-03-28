@@ -190,6 +190,9 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
     },
 
     bindEvents() {
+      if (this.fullscreen && typeof this.fullscreen.attach === "function") {
+        this.fullscreen.attach(this.getFullscreenStage());
+      }
       window.addEventListener("resize", () => { this.resize(); this.renderAll(); });
       document.addEventListener("fullscreenchange", () => { this.resize(); this.renderAll(); });
       this.canvas.addEventListener("pointermove", (e) => this.onPointerMove(e));
@@ -224,19 +227,26 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
       this.gridRect = this.computeGridRect();
     },
 
-    // { } thouse should come out of engine.
+    getFullscreenStage() {
+      return this.canvas.closest(".sprite-editor-shell");
+    },
+
     isFullscreen() {
-      return document.fullscreenElement === this.canvas.closest(".sprite-editor-shell");
+      if (!this.fullscreen) return false;
+      return !!this.fullscreen.getState().active;
     },
 
     async toggleFullscreen() {
-      const stage = this.canvas.closest(".sprite-editor-shell");
-      try {
-        if (this.isFullscreen()) await document.exitFullscreen();
-        else await stage.requestFullscreen();
-      } catch (_error) {
+      if (!this.fullscreen) {
         this.showMessage("Full screen unavailable.");
+        this.renderAll();
+        return;
       }
+      this.fullscreen.setTarget(this.getFullscreenStage());
+      const ok = this.isFullscreen()
+        ? await this.fullscreen.exit()
+        : await this.fullscreen.request();
+      if (!ok) this.showMessage(this.fullscreen.getState().lastError || "Full screen unavailable.");
       this.renderAll();
     },
 

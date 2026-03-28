@@ -57,9 +57,8 @@ class SpriteEditorCanvasControlSurface {
 
     resolveDensity() {
       const presets = this.getDensityPresets();
-      const selectedMode = "pro";
       const effectiveMode = "pro";
-      return { selectedMode, effectiveMode, config: presets[effectiveMode] };
+      return { effectiveMode, config: presets[effectiveMode] };
     }
 
     rebuildLayout() {
@@ -92,7 +91,7 @@ class SpriteEditorCanvasControlSurface {
 
     add(kind, id, x, y, w, h, text, action, extra = {}) { this.controls.push({ kind, id, x, y, w, h, text, action, ...extra }); }
 
-    getTopControlPolicy(effectiveMode, selectedMode) {
+    getTopControlPolicy(effectiveMode) {
       const fileMenuItems = [
         { id: "file-new", text: "New", action: () => this.app.newDocument() },
         { id: "file-open", text: "Open", action: () => this.app.loadLocal() },
@@ -386,13 +385,12 @@ class SpriteEditorCanvasControlSurface {
     build() {
       const density = this.resolveDensity();
       const d = density.config;
-      const selectedMode = density.selectedMode;
       const effectiveMode = density.effectiveMode;
       const top = this.layout.topPanel, left = this.layout.leftPanel, right = this.layout.rightPanel, bottom = this.layout.bottomPanel;
       let x = top.x + d.padding;
       let y = top.y + Math.floor((top.height - d.topButtonHeight) / 2);
       const h = d.topButtonHeight;
-      const policy = this.getTopControlPolicy(effectiveMode, selectedMode);
+      const policy = this.getTopControlPolicy(effectiveMode);
       const prevFont = this.app.ctx.font;
       this.app.ctx.font = "13px Arial";
       const minBtn = effectiveMode === "pro" ? 52 : 58;

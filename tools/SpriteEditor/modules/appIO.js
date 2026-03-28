@@ -34,7 +34,6 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
     },
 
     finalizeDocumentReplacement(message) {
-      this.uiDensityMode = "pro";
       this.uiDensityEffectiveMode = "pro";
       this.clearHistoryStacks();
       this.normalizeEditorState();
@@ -61,8 +60,7 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
         return;
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        doc: this.document.buildExportPayload(),
-        uiDensityMode: "pro"
+        doc: this.document.buildExportPayload()
       }));
       this.markCleanBaseline();
       this.showMessage("Saved locally.");
