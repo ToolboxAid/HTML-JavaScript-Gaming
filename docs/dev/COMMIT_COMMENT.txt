@@ -1,11 +1,1 @@
-Sprite Editor V7.2 BUILD
-
-Implements interaction stabilization:
-- selection preview/commit
-- cancel behavior
-- palette scroll fix
-- layer ordering + UI cleanup
-- timeline range fix
-- input cleanup
-- command palette cleanup
-- help/about completion
+Sprite Editor v7.3 plan only: palette lock, project palette persistence, custom clones, GIF export, and playback order override

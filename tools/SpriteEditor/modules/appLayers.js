@@ -25,6 +25,7 @@ function installSpriteEditorLayerMethods(SpriteEditorApp) {
     },
 
     canEditActiveLayer(showFeedback = true) {
+      if (!this.ensurePaletteSelectedForEdit(showFeedback)) return false;
       const layer = this.document.activeLayer;
       if (layer && layer.locked) {
         if (showFeedback) this.showMessage(`Layer locked: ${layer.name}`);

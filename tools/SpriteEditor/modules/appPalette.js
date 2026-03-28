@@ -4,11 +4,34 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       return (typeof globalThis.palettesList === "object" && globalThis.palettesList) ? globalThis.palettesList : null;
     },
 
+    getProjectPaletteLibrary() {
+      const globalPalettes = this.getPaletteLibrary() || {};
+      const customPalettes = this.document && this.document.customPalettes && typeof this.document.customPalettes === "object"
+        ? this.document.customPalettes
+        : {};
+      return { ...globalPalettes, ...customPalettes };
+    },
+
+    isPaletteSelectionRequired() {
+      return !!(this.document && this.document.paletteSelectionRequired === true);
+    },
+
+    getPaletteStatusLabel() {
+      if (this.isPaletteSelectionRequired()) return "MUST BE SELECTED FIRST";
+      return String(this.currentPalettePreset || this.document.palettePresetName || "CUSTOM").toUpperCase();
+    },
+
+    ensurePaletteSelectedForEdit(showFeedback = true) {
+      if (!this.isPaletteSelectionRequired()) return true;
+      if (showFeedback) this.showMessage("Palette must be selected first.");
+      return false;
+    },
+
     getPaletteSignature(palette) {
       return JSON.stringify(Array.isArray(palette) ? palette : []);
     },
 
-    findMatchingPalettePresetName(paletteLibrary = this.getPaletteLibrary()) {
+    findMatchingPalettePresetName(paletteLibrary = this.getProjectPaletteLibrary()) {
       if (!paletteLibrary) return "";
       const paletteSig = this.getPaletteSignature(this.document.palette || []);
       const names = Object.keys(paletteLibrary);
@@ -22,13 +45,13 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     validatePaletteConfiguration() {
-      const paletteLibrary = this.getPaletteLibrary();
+      const paletteLibrary = this.getProjectPaletteLibrary();
       const currentPaletteSig = this.getPaletteSignature(this.document.palette || []);
       const defaultPaletteSig = this.getPaletteSignature(
         typeof this.document.getDefaultPalette === "function" ? this.document.getDefaultPalette() : []
       );
       if (currentPaletteSig === defaultPaletteSig) {
-        this.currentPalettePreset = "default";
+        this.currentPalettePreset = this.document && this.document.palettePresetName ? this.document.palettePresetName : "default";
         this.paletteConfigBlockMessage = "";
         return true;
       }
@@ -38,10 +61,11 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       }
       const matchedPreset = this.findMatchingPalettePresetName(paletteLibrary);
       if (!matchedPreset) {
-        this.paletteConfigBlockMessage = "Current non-default document palette was not found in engine/paletteList.js.";
+        this.paletteConfigBlockMessage = "Current non-default document palette was not found in palette library.";
         return false;
       }
       this.currentPalettePreset = matchedPreset;
+      this.document.palettePresetName = matchedPreset;
       this.paletteConfigBlockMessage = "";
       return true;
     },
@@ -51,7 +75,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     getActivePresetEntries() {
-      const paletteLibrary = this.getPaletteLibrary();
+      const paletteLibrary = this.getProjectPaletteLibrary();
       if (paletteLibrary && this.currentPalettePreset && Array.isArray(paletteLibrary[this.currentPalettePreset])) {
         return paletteLibrary[this.currentPalettePreset];
       }
@@ -86,6 +110,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     getPaletteDisplayEntries() {
+      if (this.isPaletteSelectionRequired()) return [];
       const palette = Array.isArray(this.document.palette) ? this.document.palette : [];
       const presetEntries = this.getActivePresetEntries();
       const entries = palette.map((hex, index) => {
@@ -119,6 +144,9 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     getCurrentColorDisplayText() {
+      if (this.isPaletteSelectionRequired()) {
+        return "Current: NONE   Named: Select palette first";
+      }
       const currentHex = String(this.document.currentColor || "").toUpperCase();
       let name = "";
       const presetEntries = this.getActivePresetEntries();
@@ -194,7 +222,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
 
     applyNamedPalette(paletteName) {
       return this.executeWithHistory(`Apply Palette: ${paletteName}`, () => {
-        const paletteLibrary = this.getPaletteLibrary();
+        const paletteLibrary = this.getProjectPaletteLibrary();
         if (!paletteLibrary || !Array.isArray(paletteLibrary[paletteName])) return false;
         const next = paletteLibrary[paletteName]
           .map((entry) => entry && entry.hex)
@@ -205,10 +233,41 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         if (this.document.palette.indexOf(this.document.currentColor) < 0) {
           this.document.currentColor = this.document.palette[0];
         }
+        this.document.paletteSelectionRequired = false;
+        this.document.palettePresetName = paletteName;
         this.currentPalettePreset = paletteName;
         this.showMessage(`Palette applied: ${paletteName}`);
         return true;
       });
+    },
+
+    createCustomPaletteClone() {
+      const baseName = this.currentPalettePreset || this.document.palettePresetName || "Palette";
+      const suggested = `Custom ${baseName}`.slice(0, 40);
+      const raw = globalThis.prompt ? globalThis.prompt("Custom palette name:", suggested) : suggested;
+      const cloneName = String(raw || "").trim();
+      if (!cloneName) {
+        this.showMessage("Clone canceled.");
+        return false;
+      }
+      const entries = this.getPaletteDisplayEntries().map((entry, index) => ({
+        hex: entry.hex,
+        name: entry.name && entry.name !== entry.hex ? entry.name : `Color ${index + 1}`
+      }));
+      if (!entries.length) {
+        this.showMessage("Clone unavailable.");
+        return false;
+      }
+      if (!this.document.customPalettes || typeof this.document.customPalettes !== "object") {
+        this.document.customPalettes = {};
+      }
+      this.document.customPalettes[cloneName] = entries;
+      this.document.palettePresetName = cloneName;
+      this.document.paletteSelectionRequired = false;
+      this.currentPalettePreset = cloneName;
+      this.showMessage(`Custom palette clone created: ${cloneName}`);
+      this.renderAll();
+      return true;
     },
 
     syncCurrentPalettePreset() {
@@ -217,11 +276,13 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         typeof this.document.getDefaultPalette === "function" ? this.document.getDefaultPalette() : []
       );
       if (currentPaletteSig === defaultPaletteSig) {
-        this.currentPalettePreset = "default";
+        this.currentPalettePreset = this.document && this.document.palettePresetName ? this.document.palettePresetName : "default";
+        this.document.palettePresetName = this.currentPalettePreset;
         return;
       }
       const matchedPreset = this.findMatchingPalettePresetName();
       this.currentPalettePreset = matchedPreset || "";
+      if (matchedPreset) this.document.palettePresetName = matchedPreset;
     },
   });
 }

@@ -171,8 +171,11 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
             "Palette -> Palettes: open the preset chooser.",
             "Sidebar swatches: select the current color, including large palettes with scrolling.",
             "Sort controls: reorder by Name, Hue, Saturation, or Lightness.",
-            "Set Src From Current / Set Dst From Current: prepare palette replace source and target colors.",
-            "Scope Active Layer / Current Frame / Selected Range: choose where replace-color actions apply.",
+            "Set Src From Current: marks the currently selected color as the replace source color.",
+            "Set Dst From Current: marks the currently selected color as the replace destination color.",
+            "Scope Active Layer: apply replace only to the active layer.",
+            "Scope Current Frame: apply replace to all layers in the active frame.",
+            "Scope Selected Range: apply replace across the selected frame range.",
             "Middle mouse or Shift-drag pan: move the zoomed canvas viewport."
           ]
         },
@@ -387,7 +390,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
 
     drawPalettePresetPopup() {
       if (!this.palettePresetPopup.open) return;
-      const paletteLibrary = this.getPaletteLibrary();
+      const paletteLibrary = this.getProjectPaletteLibrary ? this.getProjectPaletteLibrary() : this.getPaletteLibrary();
       const list = paletteLibrary ? Object.keys(paletteLibrary) : [];
       const frame = this.controlSurface.layout.appFrame;
       const panelW = Math.min(560, frame.width - 64);

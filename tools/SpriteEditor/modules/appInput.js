@@ -144,6 +144,11 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
 
       const cell = this.getGridCellAtLogical(p.x, p.y);
       if (!cell) return;
+      if (!this.ensurePaletteSelectedForEdit(false)) {
+        this.showMessage("Select palette first.");
+        this.renderAll();
+        return;
+      }
       this.isPointerDown = true;
       this.hoveredGridCell = cell;
 

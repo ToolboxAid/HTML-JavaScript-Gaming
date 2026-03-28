@@ -1,4 +1,9 @@
-Sprite Editor V7.2 BUILD_PR
+Sprite Editor V7.3 PLAN_PR
 
-Implements interaction fixes only.
-No architecture or engine changes.
+Purpose:
+Define the next Sprite Editor-only pass for palette locking, palette persistence, custom clones, clearer file/export labeling, GIF export, and optional playback order override.
+
+Notes:
+- Plan only
+- No code in this package
+- No engine changes

@@ -26,7 +26,11 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.strokeLastCell = null;
       this.shapePreview = null;
-      this.currentPalettePreset = "default";
+      this.currentPalettePreset = "";
+      this.document.palettePresetName = "";
+      this.document.paletteSelectionRequired = true;
+      this.document.customPalettes = {};
+      this.document.playbackOrderOverride = { enabled: false, order: [] };
       this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
       this.paletteSidebarScroll = 0;
       this.pan = { x: 0, y: 0 };
@@ -110,17 +114,14 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
         const fd = 1000 / this.playback.fps;
         if (ts - this.playback.lastTick >= fd) {
           this.playback.lastTick = ts;
-          const range = this.getPlaybackRange();
-          const start = range.enabled ? range.startFrame : 0;
-          const end = range.enabled ? range.endFrame : Math.max(0, this.document.frames.length - 1);
-          if (this.playback.previewFrameIndex < start || this.playback.previewFrameIndex > end) {
-            this.playback.previewFrameIndex = start;
-          } else if (this.playback.previewFrameIndex < end) {
-            this.playback.previewFrameIndex += 1;
-          } else if (this.playback.loop) {
-            this.playback.previewFrameIndex = start;
-          } else {
-            this.playback.isPlaying = false;
+          const sequence = this.getEffectivePlaybackSequence();
+          if (sequence.length) {
+            let position = sequence.indexOf(this.playback.previewFrameIndex);
+            if (position < 0) position = 0;
+            else if (position < sequence.length - 1) position += 1;
+            else if (this.playback.loop) position = 0;
+            else this.playback.isPlaying = false;
+            this.playback.previewFrameIndex = sequence[position] ?? sequence[0];
           }
           this.document.activeFrameIndex = this.playback.previewFrameIndex;
           this.renderAll();

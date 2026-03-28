@@ -58,12 +58,12 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
     openFileMenu(itemsOverride = null) {
       if (!this.canOpenTransientSurface()) return false;
       const items = Array.isArray(itemsOverride) ? itemsOverride : [
-        { id: "file-new", text: "New", action: () => this.newDocument() },
-        { id: "file-open", text: "Open", action: () => this.loadLocal() },
-        { id: "file-save", text: "Save", action: () => this.saveLocal() },
-        { id: "file-import-editor", text: "Import Editor JSON", action: () => this.openImport() },
-        { id: "file-export-editor", text: "Export Editor JSON", action: () => this.exportJson(true) },
-        { id: "file-export-menu", text: "Export", action: () => this.openExportMenu() }
+        { id: "file-new", text: "New Project", action: () => this.newDocument() },
+        { id: "file-open", text: "Open Project (Local)", action: () => this.loadLocal() },
+        { id: "file-save", text: "Save Project (Local)", action: () => this.saveLocal() },
+        { id: "file-import-editor", text: "Import Project JSON", action: () => this.openImport() },
+        { id: "file-export-editor", text: "Export Project JSON", action: () => this.exportJson(true) },
+        { id: "file-export-menu", text: "Export Assets...", action: () => this.openExportMenu() }
       ];
       return this.prepareTopMenu("file", items);
     },
@@ -126,6 +126,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "frame-menu-range-shift-left", text: "Shift Range Left", action: () => this.shiftSelectedFrameRange(-1) },
         { id: "frame-menu-range-shift-right", text: "Shift Range Right", action: () => this.shiftSelectedFrameRange(1) },
         { id: "frame-menu-range-clear", text: "Clear Range Selection", action: () => this.clearFrameRangeSelection(true) },
+        { id: "frame-menu-playback-order", text: "Edit Playback Order", action: () => this.openPlaybackOrderEditor() },
         { id: "frame-menu-playback", text: "Playback Range...", action: () => this.openPlaybackRangeMenu() }
       ];
       return this.prepareTopMenu("frame", items);
@@ -179,10 +180,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
       if (!this.canOpenTransientSurface()) return false;
       const items = [
         { id: "palette-menu-presets", text: "Palettes...", action: () => this.openPalettePresetsMenu() },
-        { id: "palette-menu-sort-name", text: "Sort By Name", action: () => this.setPaletteSortMode("name") },
-        { id: "palette-menu-sort-hue", text: "Sort By Hue", action: () => this.setPaletteSortMode("hue") },
-        { id: "palette-menu-sort-saturation", text: "Sort By Saturation", action: () => this.setPaletteSortMode("saturation") },
-        { id: "palette-menu-sort-lightness", text: "Sort By Lightness", action: () => this.setPaletteSortMode("lightness") },
+        { id: "palette-menu-clone", text: "Create Custom Palette Clone", action: () => this.createCustomPaletteClone() },
         { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
         { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget() },
         { id: "palette-menu-scope-layer", text: "Scope Active Layer", action: () => this.setPaletteReplaceScope("active_layer") },
@@ -195,8 +193,9 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
     openExportMenu() {
       if (!this.canOpenTransientSurface()) return false;
       const items = [
-        { id: "export-menu-sheet-png", text: "Sprite Sheet PNG", action: () => this.downloadSpriteSheetPng(this.exportMode) },
-        { id: "export-menu-animation-json", text: "Animation JSON", action: () => this.exportAnimationJson(this.exportMode) },
+        { id: "export-menu-sheet-png", text: "Export Sprite Sheet", action: () => this.downloadSpriteSheetPng(this.exportMode) },
+        { id: "export-menu-animation-json", text: "Export Animation JSON", action: () => this.exportAnimationJson(this.exportMode) },
+        { id: "export-menu-gif", text: "Export GIF", action: () => this.exportGif(this.exportMode) },
         { id: "export-menu-package-json", text: "Export Package", action: () => this.exportPackageJson(this.exportMode) },
         { id: "export-menu-current", text: `Mode: ${this.exportMode === "current_frame" ? "• " : ""}Current Frame`, action: () => this.setExportMode("current_frame") },
         { id: "export-menu-all", text: `Mode: ${this.exportMode === "all_frames" ? "• " : ""}All Frames`, action: () => this.setExportMode("all_frames") },

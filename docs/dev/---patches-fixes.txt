@@ -2,15 +2,27 @@
 - add a gif generator export/save
 - open/save is very generic, add something to indicate mem, cooke, whatever
 - put a moving dash/dot around the selected palette color
-- palette must be selected prior to first command being exicuted.  Once selected, it cannot change for the sprite,  we need the ability to create a custom from selected font and name it. this is for games that have a common theme, like block in the sun they are red, in the basement they are gray, under water they are blue.  so multiple custom clones can exist. the colors of the clone can be modified. prevent first grid click until set.  on new/start set palette to NONE-Must be selected first and a popup if grid is clicked
-
+- should paletette be stored in json and loaded as part of import as the original may paletteList may have changed, or am I overreaching
 - review how palette(s) should be used.
 
-- Palette menu does not need to duplicat Sort By: Name, Hue, Sat, Lightness
+- Palette menu does not need to duplicat Sort By: Name, Hue, Sat, Lightness as it is on the palette sidebar
 
-- what do these do:
+- what do these do (how do I test and action to look for):
 Set src from currently
 set dst from currently
 scope active lay
 scope current frame
 scop selecte rand 
+
+- palette must be selected prior to first command being exicuted.  Once selected, it cannot change for the sprite,  we need the ability to create a custom from selected font and name it. this is for games that have a common theme, like block in the sun they are red, in the basement they are gray, under water they are blue.  so multiple custom clones can exist. the colors of the clone can be modified. prevent first grid click until set.  on new/start set palette to NONE-Must be selected first and a popup if grid is clicked
+
+============================================================================
+next 
+
+- ability to load an image behind grid, with alignment as scale option to fit grid
+- once image is loaded, js to attempt to auto align to grid
+- lock once complete so the zoom keep grid and image aligned
+
+- gif should use FPT for animation.
+
+- move FPT under Frame x/y in Animation preview

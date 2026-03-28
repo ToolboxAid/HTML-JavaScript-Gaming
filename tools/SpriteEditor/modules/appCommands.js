@@ -444,7 +444,7 @@ function installSpriteEditorCommandMethods(SpriteEditorApp) {
         { id: "system.closeSurface", label: "System: Close Surface", category: "System", keywords: ["close", "menu", "palette", "overlay"], aliases: ["close menu", "close overlay"] },
         { id: "system.cancelInteraction", label: "System: Cancel Interaction", category: "System", keywords: ["cancel", "interaction"], aliases: ["cancel interaction"] }
       ];
-      const list = this.getPaletteLibrary();
+      const list = this.getProjectPaletteLibrary ? this.getProjectPaletteLibrary() : this.getPaletteLibrary();
       if (list) {
         Object.keys(list).forEach((name) => {
           commands.push({ id: `palette.apply:${name}`, label: `Palette: Apply ${name}`, category: "Palette", keywords: ["palette", "color", name], aliases: [`use ${name}`, `set palette ${name}`] });

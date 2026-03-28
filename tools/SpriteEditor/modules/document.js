@@ -14,10 +14,39 @@ class SpriteEditorDocument {
       this.soloState = null;
       this.blendPreviewMode = "normal";
       this.sheet = { layout: "horizontal", padding: 4, spacing: 2, transparent: true, backgroundColor: "#ffffff" };
+      this.palettePresetName = "";
+      this.paletteSelectionRequired = true;
+      this.customPalettes = {};
+      this.playbackOrderOverride = { enabled: false, order: [] };
     }
     getDefaultPalette() { return DEFAULT_PALETTE.slice(); }
     getDefaultPaletteNamedEntries() {
       return DEFAULT_PALETTE_NAMED_ENTRIES.map((entry) => ({ ...entry }));
+    }
+    sanitizeCustomPalettes(input) {
+      const output = {};
+      const source = input && typeof input === "object" ? input : {};
+      Object.keys(source).forEach((name) => {
+        const key = String(name || "").trim();
+        if (!key) return;
+        const entries = Array.isArray(source[name]) ? source[name] : [];
+        const normalized = entries
+          .map((entry, i) => ({
+            hex: entry && typeof entry.hex === "string" && /^#[0-9a-fA-F]{6,8}$/.test(entry.hex) ? entry.hex : null,
+            name: entry && typeof entry.name === "string" && entry.name.trim() ? entry.name.trim() : `Color ${i + 1}`
+          }))
+          .filter((entry) => !!entry.hex);
+        if (normalized.length) output[key] = normalized;
+      });
+      return output;
+    }
+    sanitizePlaybackOrderOverride(input) {
+      const source = input && typeof input === "object" ? input : {};
+      const raw = Array.isArray(source.order) ? source.order : [];
+      const order = raw
+        .map((idx) => Number(idx))
+        .filter((idx) => Number.isInteger(idx) && idx >= 0 && idx < this.frames.length);
+      return { enabled: !!source.enabled && order.length > 0, order };
     }
     makeGrid(fill = null) { return Array.from({ length: this.rows }, () => Array.from({ length: this.cols }, () => fill)); }
     cloneGrid(grid) { return grid.map((r) => r.slice()); }
@@ -68,6 +97,9 @@ class SpriteEditorDocument {
         : [];
       this.palette = palette.length ? palette : this.getDefaultPalette();
       if (this.palette.indexOf(this.currentColor) < 0) this.currentColor = this.palette[0];
+      this.palettePresetName = typeof this.palettePresetName === "string" ? this.palettePresetName : "";
+      this.paletteSelectionRequired = this.paletteSelectionRequired === true;
+      this.customPalettes = this.sanitizeCustomPalettes(this.customPalettes);
       if (!Array.isArray(this.frames) || !this.frames.length) this.frames = [this.makeFrame("Frame 1")];
       this.frames = this.frames.map((frame, index) => {
         const next = frame && typeof frame === "object" ? frame : this.makeFrame(`Frame ${index + 1}`);
@@ -77,6 +109,7 @@ class SpriteEditorDocument {
       });
       this.activeFrameIndex = Math.max(0, Math.min(Math.floor(Number(this.activeFrameIndex) || 0), this.frames.length - 1));
       this.ensureFrameLayers(this.frames[this.activeFrameIndex]);
+      this.playbackOrderOverride = this.sanitizePlaybackOrderOverride(this.playbackOrderOverride);
       return true;
     }
     get activeFrame() { this.ensureDocumentState(); return this.frames[this.activeFrameIndex]; }
@@ -488,6 +521,10 @@ class SpriteEditorDocument {
         rows: this.rows,
         palette: this.palette,
         currentColor: this.currentColor,
+        palettePresetName: this.palettePresetName || "",
+        paletteSelectionRequired: this.paletteSelectionRequired === true,
+        customPalettes: this.sanitizeCustomPalettes(this.customPalettes),
+        playbackOrderOverride: this.sanitizePlaybackOrderOverride(this.playbackOrderOverride),
         sheet: this.sheet,
         frames: this.frames.map((f) => {
           const fr = this.ensureFrameLayers(f);
@@ -517,6 +554,9 @@ class SpriteEditorDocument {
       this.rows = data.rows || 16;
       this.palette = Array.isArray(data.palette) && data.palette.length ? data.palette : this.palette;
       this.currentColor = data.currentColor || this.palette[0];
+      this.palettePresetName = typeof data.palettePresetName === "string" ? data.palettePresetName : "";
+      this.paletteSelectionRequired = data.paletteSelectionRequired === true;
+      this.customPalettes = this.sanitizeCustomPalettes(data.customPalettes);
       this.sheet = { ...this.sheet, ...(data.sheet || {}) };
       if (Array.isArray(data.frames) && data.frames.length) {
         this.frames = data.frames.map((f, i) => this.ensureFrameLayers({ id: f.id || "f_" + i, name: f.name || "Frame " + (i + 1), activeLayerIndex: f.activeLayerIndex || 0, layers: f.layers, pixels: f.pixels }));
@@ -527,6 +567,7 @@ class SpriteEditorDocument {
       this.selection = null;
       this.soloState = null;
       this.ensureDocumentState();
+      this.playbackOrderOverride = this.sanitizePlaybackOrderOverride(data.playbackOrderOverride);
     }
 }
 

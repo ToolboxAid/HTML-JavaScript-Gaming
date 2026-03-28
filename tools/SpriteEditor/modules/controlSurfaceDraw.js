@@ -67,25 +67,50 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
           const match = presetEntries.find((entry) => entry && String(entry.hex || "").toUpperCase() === currentHex && typeof entry.name === "string" && entry.name.trim());
           if (match) name = match.name.trim();
         }
-        const baseY = c.y + c.h / 2;
-        ctx.fillStyle = "#91a3b6";
+        const textY = c.y + 5;
+        if (c.paletteHeaderBox) {
+          ctx.fillStyle = "rgba(255,255,255,0.06)";
+          ctx.fillRect(c.x, c.y, c.w, c.h);
+          ctx.strokeStyle = "rgba(255,255,255,0.16)";
+          ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
+        }
+        ctx.fillStyle = c.paletteActionRequired ? "#ef4444" : "#91a3b6";
         ctx.font = "bold 12px Arial";
-        const leftText = `Current: ${currentHex}  ■   Named: ${name}`;
-        ctx.fillText(leftText, c.x, baseY);
+        const leftText = `Current: ${currentHex}   Named: ${name}`;
+        ctx.textBaseline = "top";
+        if (this.app.isPaletteSelectionRequired && this.app.isPaletteSelectionRequired()) {
+          ctx.fillText(this.app.getCurrentColorDisplayText(), c.x, textY);
+          ctx.textBaseline = "middle";
+          return;
+        }
+        ctx.fillText(leftText, c.x, textY);
         const leftWidth = ctx.measureText(`Current: ${currentHex} `).width;
         const sw = 12;
         const sh = 12;
         const swatchX = c.x + leftWidth + 4;
-        const swatchY = Math.floor(baseY - sh * 0.75);
+        const swatchY = c.y + 5;
         ctx.fillStyle = currentHex;
         ctx.fillRect(swatchX, swatchY, sw, sh);
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 1;
         ctx.strokeRect(swatchX + 0.5, swatchY + 0.5, sw - 1, sh - 1);
+        ctx.textBaseline = "middle";
         return;
       }
-      ctx.fillStyle = "#91a3b6";
-      ctx.font = "bold 12px Arial";
+      if (c.paletteHeaderBox) {
+        ctx.fillStyle = "rgba(255,255,255,0.06)";
+        ctx.fillRect(c.x, c.y, c.w, c.h);
+        ctx.strokeStyle = "rgba(255,255,255,0.16)";
+        ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
+      }
+      ctx.fillStyle = c.paletteActionRequired ? "#ef4444" : "#91a3b6";
+      ctx.font = c.id === "lbl-palette" ? "bold 13px Arial" : "bold 12px Arial";
+      if (c.paletteHeaderBox) {
+        ctx.textBaseline = "top";
+        ctx.fillText(c.text, c.x, c.y + 5);
+        ctx.textBaseline = "middle";
+        return;
+      }
       if (inLeftSidebar && c.text && c.text.length > 16) {
         const lines = this.wrapSidebarText(ctx, c.text, Math.max(24, c.w - 16));
         const lineH = 12;
@@ -105,6 +130,16 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       ctx.strokeStyle = current ? "#4cc9f0" : "rgba(255,255,255,0.2)";
       ctx.lineWidth = current ? 3 : 1;
       ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
+      if (current) {
+        const dash = Math.max(2, Math.floor(c.w / 5));
+        ctx.save();
+        ctx.setLineDash([dash, 2]);
+        ctx.lineDashOffset = -Math.floor(performance.now() / 80);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(c.x + 1.5, c.y + 1.5, c.w - 3, c.h - 3);
+        ctx.restore();
+      }
       if (this.app.paletteWorkflow.source === c.color) {
         ctx.fillStyle = "#fbbf24";
         ctx.fillRect(c.x + 2, c.y + 2, 8, 8);

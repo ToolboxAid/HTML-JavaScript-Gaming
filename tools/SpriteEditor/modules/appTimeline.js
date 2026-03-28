@@ -104,6 +104,79 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
       if (showMessage) this.showMessage("Playback range cleared.");
     },
 
+    getPlaybackOrderOverride() {
+      const source = this.document.playbackOrderOverride && typeof this.document.playbackOrderOverride === "object"
+        ? this.document.playbackOrderOverride
+        : { enabled: false, order: [] };
+      const order = Array.isArray(source.order)
+        ? source.order
+          .map((idx) => Number(idx))
+          .filter((idx) => Number.isInteger(idx) && idx >= 0 && idx < this.document.frames.length)
+        : [];
+      return { enabled: !!source.enabled && order.length > 0, order };
+    },
+
+    setPlaybackOrderOverride(order, enabled = true) {
+      const next = Array.isArray(order)
+        ? order.map((idx) => Number(idx)).filter((idx) => Number.isInteger(idx) && idx >= 0 && idx < this.document.frames.length)
+        : [];
+      this.document.playbackOrderOverride = { enabled: !!enabled && next.length > 0, order: next };
+      return this.document.playbackOrderOverride.enabled;
+    },
+
+    clearPlaybackOrderOverride(showMessage = false) {
+      this.document.playbackOrderOverride = { enabled: false, order: [] };
+      if (showMessage) this.showMessage("Playback order: Linear.");
+      return true;
+    },
+
+    getEffectivePlaybackSequence(baseIndices = null) {
+      const indices = Array.isArray(baseIndices) && baseIndices.length
+        ? baseIndices.slice()
+        : (this.getPlaybackRange().enabled
+          ? Array.from({ length: this.getPlaybackRange().endFrame - this.getPlaybackRange().startFrame + 1 }, (_v, i) => this.getPlaybackRange().startFrame + i)
+          : this.document.frames.map((_f, i) => i));
+      const override = this.getPlaybackOrderOverride();
+      if (!override.enabled) return indices;
+      const allow = new Set(indices);
+      const sequence = override.order.filter((idx) => allow.has(idx));
+      return sequence.length ? sequence : indices;
+    },
+
+    openPlaybackOrderEditor() {
+      const current = this.getPlaybackOrderOverride();
+      const hint = current.enabled && current.order.length
+        ? current.order.map((idx) => idx + 1).join(",")
+        : "";
+      const raw = globalThis.prompt
+        ? globalThis.prompt("Playback order (1-based). Comma list or [array]. Leave blank for linear.", hint)
+        : hint;
+      if (raw === null) return false;
+      const text = String(raw || "").trim();
+      if (!text) {
+        this.clearPlaybackOrderOverride(true);
+        this.renderAll();
+        return true;
+      }
+      let values = null;
+      if (text.startsWith("[")) {
+        try {
+          const parsedJson = JSON.parse(text);
+          if (Array.isArray(parsedJson)) values = parsedJson;
+        } catch (_err) {
+          values = null;
+        }
+      }
+      if (!Array.isArray(values)) {
+        values = text.replace(/[\[\]]/g, "").split(/[\s,]+/).filter(Boolean);
+      }
+      const parsed = values.map((part) => Number(part) - 1);
+      const ok = this.setPlaybackOrderOverride(parsed, true);
+      this.showMessage(ok ? "Playback order: Custom." : "Playback order invalid.");
+      this.renderAll();
+      return ok;
+    },
+
     isFrameInPlaybackRange(index) {
       const range = this.getPlaybackRange();
       if (!range.enabled) return false;
@@ -167,12 +240,12 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
       if (typeof force === "boolean") this.playback.isPlaying = force;
       else this.playback.isPlaying = !this.playback.isPlaying;
       if (this.playback.isPlaying) {
-        const range = this.getPlaybackRange();
-        if (range.enabled) {
-          this.playback.previewFrameIndex = Math.max(range.startFrame, Math.min(range.endFrame, this.document.activeFrameIndex));
+        const sequence = this.getEffectivePlaybackSequence();
+        if (sequence.length) {
+          const activePos = sequence.indexOf(this.document.activeFrameIndex);
+          const startIndex = activePos >= 0 ? activePos : 0;
+          this.playback.previewFrameIndex = sequence[startIndex];
           this.document.activeFrameIndex = this.playback.previewFrameIndex;
-        } else {
-          this.playback.previewFrameIndex = this.document.activeFrameIndex;
         }
         this.playback.lastTick = performance.now();
       }
@@ -181,8 +254,8 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
 
     stopPlayback() {
       this.playback.isPlaying = false;
-      const range = this.getPlaybackRange();
-      const nextIndex = range.enabled ? range.startFrame : 0;
+      const sequence = this.getEffectivePlaybackSequence();
+      const nextIndex = sequence.length ? sequence[0] : 0;
       this.playback.previewFrameIndex = nextIndex;
       this.selectFrame(nextIndex);
       this.showMessage("Playback stopped.");

@@ -1,12 +1,12 @@
 function installControlSurfaceTopBar(SpriteEditorCanvasControlSurface) {
   SpriteEditorCanvasControlSurface.prototype.getTopControlPolicy = function getTopControlPolicy(effectiveMode) {
     const fileMenuItems = [
-      { id: "file-new", text: "New", action: () => this.app.newDocument() },
-      { id: "file-open", text: "Open", action: () => this.app.loadLocal() },
-      { id: "file-save", text: "Save", action: () => this.app.saveLocal() },
-      { id: "file-import-editor", text: "Import Editor JSON", action: () => this.app.openImport() },
-      { id: "file-export-editor", text: "Export Editor JSON", action: () => this.app.exportJson(true) },
-      { id: "file-export-menu", text: "Export", action: () => this.app.openExportMenu() }
+      { id: "file-new", text: "New Project", action: () => this.app.newDocument() },
+      { id: "file-open", text: "Open Project (Local)", action: () => this.app.loadLocal() },
+      { id: "file-save", text: "Save Project (Local)", action: () => this.app.saveLocal() },
+      { id: "file-import-editor", text: "Import Project JSON", action: () => this.app.openImport() },
+      { id: "file-export-editor", text: "Export Project JSON", action: () => this.app.exportJson(true) },
+      { id: "file-export-menu", text: "Export Assets...", action: () => this.app.openExportMenu() }
     ];
     const defs = [
       { id: "top-file", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Files", "Files", "F"] : ["Files", "Files", "F"], action: () => this.app.openFileMenu(fileMenuItems) },

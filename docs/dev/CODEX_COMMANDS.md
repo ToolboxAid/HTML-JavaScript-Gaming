@@ -1,21 +1,19 @@
-MODEL: GPT-5.3-codex
+MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Apply interaction fixes from V7.2 plan.
+Use docs/pr/TOOLS_SPRITE_EDITOR_V7_3_PALETTE_LOCK_ANIMATION_ORDER_AND_EXPORTS_PLAN_ONLY.md as the sole implementation plan for the next Sprite Editor-only pass. Do not modify engine code. Preserve load/open behavior.
 
-Scope:
-- ONLY tools/SpriteEditor/main.js
-- NO engine changes
-
-Tasks:
-1. Fix selection move (preview/commit)
-2. Fix Backspace cancel (non-typing only)
-3. Fix palette scroll to true last row
-4. Fix layer render order = visual order
-5. Fix layer UI overlap
-6. Fix timeline range playback
-7. Remove ALL Ctrl+W handling
-8. Fix command palette overlap
-9. Add Help -> Palette section
-10. Clean About panel
+VALIDATIONS:
+- No files under /engine/ changed
+- Palette starts as NONE and blocks first edit until selected
+- Palette is stored in project JSON and restored on load
+- Custom palette clones can be created/named and persist in project JSON
+- Selected palette swatch shows an animated marquee/highlight
+- Palette menu no longer duplicates sidebar sort items
+- Files menu labels clearly indicate local/project behavior
+- GIF export exists
+- Playback order override exists and is optional
+- Help explains Set Src, Set Dst, and Scope actions
+- No load/open regression
+- No console errors

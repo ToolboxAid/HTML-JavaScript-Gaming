@@ -36,6 +36,8 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     const fpsControl = (t.transport || []).find((c) => c.id === "fps_down");
     const fpsY = fpsControl ? (fpsControl.y + fpsControl.h / 2) : (t.y + 14);
     ctx.fillText(`FPS ${this.app.playback.fps}`, t.x + t.w - 62, fpsY);
+    const playbackOrder = this.app.getPlaybackOrderOverride ? this.app.getPlaybackOrderOverride() : { enabled: false };
+    ctx.fillText(playbackOrder.enabled ? "Playback Order: Custom" : "Playback Order: Linear", t.x + 78, t.y + 28);
     t.slots.forEach((slot) => {
       const f = this.app.document.frames[slot.index];
       const active = slot.index === this.app.document.activeFrameIndex;
