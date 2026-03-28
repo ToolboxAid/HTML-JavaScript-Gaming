@@ -1,6 +1,8 @@
 import { LOGICAL_H, LOGICAL_W } from "./constants.js";
 import { xyInRect } from "../../../engine/utils/index.js";
 import { drawCanvasPixelPreview } from "../../../engine/ui/index.js";
+import { installControlSurfaceCommandPalette } from "./controlSurfaceCommandPalette.js";
+import { installControlSurfaceMenus } from "./controlSurfaceMenus.js";
 
 class SpriteEditorCanvasControlSurface {
     constructor(app) {
@@ -173,211 +175,6 @@ class SpriteEditorCanvasControlSurface {
 
     measureButtonWidth(ctx, text, minWidth, padX) {
       return Math.max(minWidth, Math.ceil(ctx.measureText(text).width + padX * 2));
-    }
-
-    closeOverflowPanel() {
-      this.overflowPanelOpen = false;
-      this.overflowPanelBounds = null;
-      this.overflowPanelControls = [];
-      this.overflowAnchorControl = null;
-      this.menuItems = [];
-      this.topMenuSource = null;
-    }
-    getMenuAnchorId() {
-      if (this.topMenuSource === "tools") return "top-tools";
-      if (this.topMenuSource === "file") return "top-file";
-      if (this.topMenuSource === "file-export") return "top-file";
-      if (this.topMenuSource === "edit") return "top-edit";
-      if (this.topMenuSource === "frame") return "top-frame";
-      if (this.topMenuSource === "layer") return "top-layer";
-      if (this.topMenuSource === "palette") return "top-palette";
-      if (this.topMenuSource === "palette-presets") return "top-palette";
-      if (this.topMenuSource === "help") return "top-help";
-      if (this.topMenuSource === "overflow") return "top-overflow";
-      return this.topMenuSource;
-    }
-
-    getOpenPanelItems() {
-      if (this.topMenuSource === "overflow") {
-        return Array.isArray(this.hiddenTopControls) ? this.hiddenTopControls : [];
-      }
-      return Array.isArray(this.menuItems) ? this.menuItems : [];
-    }
-
-    toggleFavoriteAt(x, y) {
-      if (!this.commandPaletteOpen) return false;
-      for (let i = 0; i < this.commandPaletteRowControls.length; i += 1) {
-        const c = this.commandPaletteRowControls[i];
-        if (!c.isCommandRow || !c.favoriteToggleRect) continue;
-        if (xyInRect(x, y, c.favoriteToggleRect)) {
-          this.app.toggleFavoriteAction(c.commandId);
-          this.rebuildCommandPaletteRows();
-          return true;
-        }
-      }
-      return false;
-    }
-
-    openCommandPalette(items) {
-      this.commandPaletteItems = Array.isArray(items) ? items.slice() : [];
-      this.commandPaletteQuery = "";
-      this.commandPaletteOpen = true;
-      this.commandPaletteSelectedIndex = 0;
-      this.rebuildCommandPaletteRows();
-    }
-
-    closeCommandPalette() {
-      this.commandPaletteOpen = false;
-      this.commandPaletteBounds = null;
-      this.commandPaletteRowControls = [];
-      this.commandPaletteFiltered = [];
-      this.commandPaletteQuery = "";
-      this.commandPaletteSelectedIndex = 0;
-    }
-
-    setCommandPaletteQuery(query) {
-      this.commandPaletteQuery = query;
-      this.commandPaletteSelectedIndex = 0;
-      this.rebuildCommandPaletteRows();
-    }
-
-    moveCommandPaletteSelection(delta) {
-      if (!this.commandPaletteOpen || !this.commandPaletteFiltered.length) return;
-      const next = this.commandPaletteSelectedIndex + delta;
-      const max = this.commandPaletteFiltered.length - 1;
-      this.commandPaletteSelectedIndex = Math.max(0, Math.min(max, next));
-      this.rebuildCommandPaletteRows();
-    }
-
-    activateCommandPaletteSelection() {
-      if (!this.commandPaletteOpen || !this.commandPaletteFiltered.length) return false;
-      const selected = this.commandPaletteFiltered[this.commandPaletteSelectedIndex];
-      if (!selected || typeof selected.action !== "function") return false;
-      selected.action();
-      this.closeCommandPalette();
-      return true;
-    }
-
-    rebuildCommandPaletteRows() {
-      if (!this.commandPaletteOpen) return;
-      const frame = this.layout.appFrame;
-      const panelW = Math.min(760, frame.width - 160);
-      const topBiasY = frame.y + Math.floor(frame.height * 0.16);
-      const panelX = frame.x + Math.floor((frame.width - panelW) * 0.5);
-      const rowH = 36;
-      const headerH = 64;
-      const footerH = 20;
-      const maxRows = 10;
-      this.commandPaletteFiltered = this.app.getRankedCommandPaletteItems(this.commandPaletteItems, this.commandPaletteQuery);
-      const rowCount = Math.min(maxRows, Math.max(1, this.commandPaletteFiltered.length));
-      const panelH = headerH + footerH + rowCount * rowH + 16;
-      const panelY = Math.max(frame.y + 12, Math.min(topBiasY, frame.y + frame.height - panelH - 12));
-      this.commandPaletteBounds = { x: panelX, y: panelY, w: panelW, h: panelH, rowH, headerH, footerH, rowCount };
-      this.commandPaletteSelectedIndex = Math.max(0, Math.min(this.commandPaletteSelectedIndex, Math.max(0, this.commandPaletteFiltered.length - 1)));
-      this.commandPaletteRowControls = [];
-      const visible = this.commandPaletteFiltered.slice(0, maxRows);
-      visible.forEach((item, idx) => {
-        this.commandPaletteRowControls.push({
-          kind: "button",
-          id: `cmd-row-${idx}`,
-          x: panelX + 12,
-          y: panelY + headerH + (idx * rowH),
-          w: panelW - 24,
-          h: rowH - 4,
-          text: item.label,
-          action: item.action,
-          isCommandRow: true,
-          selected: idx === this.commandPaletteSelectedIndex,
-          shortcut: item.shortcut || "",
-          category: item.category || "",
-          score: item.score || 0,
-          commandId: item.id,
-          favorite: !!item.favorite,
-          favoriteToggleRect: null
-        });
-      });
-    }
-
-    rebuildOverflowPanel() {
-      const panelItems = this.getOpenPanelItems();
-      const hasItems = panelItems.length > 0;
-      if (!this.overflowPanelOpen) {
-        this.closeOverflowPanel();
-        return;
-      }
-      const anchorId = this.getMenuAnchorId();
-      const anchor = this.controls.find((c) => c.id === anchorId) || this.overflowAnchorControl;
-      if (!anchor) {
-        this.closeOverflowPanel();
-        return;
-      }
-      this.overflowAnchorControl = anchor;
-      const d = this.resolveDensity().config;
-      const panelPad = 8;
-      const rowH = d.topButtonHeight;
-      const gap = Math.max(4, d.spacing - 2);
-      const minBtn = this.app.uiDensityEffectiveMode === "pro" ? 52 : 58;
-      const padX = this.app.uiDensityEffectiveMode === "pro" ? 10 : 12;
-      const prevFont = this.app.ctx.font;
-      this.app.ctx.font = "13px Arial";
-      let maxW = 0;
-      const itemsForMeasure = hasItems ? panelItems : [{ text: "No menu items (ERROR)" }];
-      itemsForMeasure.forEach((item) => {
-        const measureText = item.shortcut ? `${item.text}   [${item.shortcut}]` : item.text;
-        maxW = Math.max(maxW, this.measureButtonWidth(this.app.ctx, measureText, minBtn, padX));
-      });
-      const visibleItems = hasItems ? panelItems : [{ id: "menu-error-empty", text: "No menu items (ERROR)", action: null }];
-      const panelW = Math.max(160, maxW + panelPad * 2);
-      const panelH = Math.max(rowH + panelPad * 2, panelPad * 2 + (visibleItems.length * rowH) + (Math.max(0, visibleItems.length - 1) * gap));
-      const frame = this.layout.appFrame;
-      let panelX = anchor.x + anchor.w - panelW;
-      panelX = Math.max(frame.x + 8, Math.min(panelX, frame.x + frame.width - panelW - 8));
-      let panelY = anchor.y + anchor.h + 8;
-      if (panelY + panelH > frame.y + frame.height - 8) {
-        panelY = anchor.y - panelH - 8;
-      }
-      panelY = Math.max(frame.y + 8, Math.min(panelY, frame.y + frame.height - panelH - 8));
-      this.overflowPanelBounds = { x: panelX, y: panelY, w: panelW, h: panelH };
-      this.overflowPanelControls = [];
-      let y = panelY + panelPad;
-      visibleItems.forEach((item, index) => {
-        this.overflowPanelControls.push({
-          kind: "button",
-          id: `overflow-item-${index}`,
-          x: panelX + panelPad,
-          y,
-          w: panelW - panelPad * 2,
-          h: rowH,
-          text: item.text,
-          action: item.action,
-          shortcut: item.shortcut || ""
-        });
-        y += rowH + gap;
-      });
-      this.app.ctx.font = prevFont;
-    }
-
-    toggleOverflowPanel() {
-      if (this.overflowPanelOpen) {
-        this.closeOverflowPanel();
-        return;
-      }
-      if (!this.hiddenTopControls.length) return;
-      this.menuItems = [];
-      this.topMenuSource = "overflow";
-      this.overflowPanelOpen = true;
-      this.rebuildOverflowPanel();
-    }
-
-    toggleTopMenu(source, items) {
-      if (this.overflowPanelOpen && this.topMenuSource === source) {
-        this.closeOverflowPanel();
-        return;
-      }
-      this.menuItems = Array.isArray(items) ? items.slice() : [];
-      this.topMenuSource = source || "menu";
-      this.overflowPanelOpen = true;
-      this.rebuildOverflowPanel();
     }
 
     build() {
@@ -913,45 +710,6 @@ class SpriteEditorCanvasControlSurface {
       }
     }
 
-    drawOverflowPanel(ctx) {
-      if (!this.overflowPanelOpen || !this.overflowPanelBounds) return;
-      const p = this.overflowPanelBounds;
-      ctx.fillStyle = "rgba(7, 12, 18, 0.86)";
-      ctx.fillRect(p.x, p.y, p.w, p.h);
-      ctx.fillStyle = "#182432";
-      ctx.fillRect(p.x + 1, p.y + 1, p.w - 2, p.h - 2);
-      ctx.strokeStyle = "#4cc9f0";
-      ctx.strokeRect(p.x + 0.5, p.y + 0.5, p.w - 1, p.h - 1);
-      this.overflowPanelControls.forEach((c) => this.drawControl(ctx, c));
-    }
-
-    drawCommandPalette(ctx) {
-      if (!this.commandPaletteOpen || !this.commandPaletteBounds) return;
-      const p = this.commandPaletteBounds;
-      ctx.fillStyle = "rgba(2, 6, 12, 0.58)";
-      ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
-      ctx.fillStyle = "#162435";
-      ctx.fillRect(p.x, p.y, p.w, p.h);
-      ctx.strokeStyle = "#4cc9f0";
-      ctx.strokeRect(p.x + 0.5, p.y + 0.5, p.w - 1, p.h - 1);
-      ctx.fillStyle = "#dbe7f3";
-      ctx.font = "bold 15px Arial";
-      ctx.fillText("Command Palette", p.x + 14, p.y + 20);
-      ctx.font = "13px Arial";
-      const q = this.commandPaletteQuery ? this.commandPaletteQuery : "(type to search)";
-      ctx.fillStyle = this.commandPaletteQuery ? "#e6f2ff" : "#91a3b6";
-      ctx.fillText(`> ${q}`, p.x + 14, p.y + 44);
-      if (!this.commandPaletteFiltered.length) {
-        ctx.fillStyle = "#91a3b6";
-        ctx.fillText("No matching commands.", p.x + 14, p.y + p.headerH + 20);
-      } else {
-        this.commandPaletteRowControls.forEach((c) => this.drawControl(ctx, c));
-      }
-      ctx.fillStyle = "#91a3b6";
-      ctx.font = "12px Arial";
-      ctx.fillText("Up/Down navigate  Enter execute", p.x + 14, p.y + p.h - 10);
-    }
-
     drawPaletteSidebarScrollbar(ctx) {
       const metrics = this.app.paletteSidebarMetrics;
       if (!metrics || metrics.maxScroll <= 0) return;
@@ -970,5 +728,8 @@ class SpriteEditorCanvasControlSurface {
       ctx.fillRect(trackX + 1, thumbY + 1, trackW - 2, Math.max(12, thumbH - 2));
     }
 }
+
+installControlSurfaceCommandPalette(SpriteEditorCanvasControlSurface);
+installControlSurfaceMenus(SpriteEditorCanvasControlSurface);
 
 export { SpriteEditorCanvasControlSurface };
