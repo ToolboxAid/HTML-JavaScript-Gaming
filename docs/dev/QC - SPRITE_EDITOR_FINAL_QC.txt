@@ -1,0 +1,244 @@
+SPRITE EDITOR FINAL QC (DEFECT TRACKING VERSION)
+
+INSTRUCTIONS
+- Use this file during manual testing
+- Mark issues inline using:
+  [x] success
+  [-] = defect (include short description)
+  [?] = unclear / needs validation
+  [D] = Delete and remove code that is not needed
+- Add notes directly under each item if needed
+
+
+==============================
+1. LAUNCH / SMOKE
+==============================
+[x] Editor loads without errors
+[x] No console errors on load
+
+[-] when clicking buttons, menu drop items do not close
+==============================
+2. TOP MENU
+==============================
+[x] Files menu opens/closes correctly
+[x] Edit menu opens/closes correctly
+[x] Tools menu opens/closes correctly
+[x] Frame menu opens/closes correctly
+[x] Layer menu opens/closes correctly
+[x] Palette menu opens/closes correctly
+[x] Help menu opens/closes correctly
+[x] About popup opens/closes correctly
+[x] Any menu layering issues (should always be top layer)
+
+
+==============================
+3. FILES MENU
+==============================
+[x] New resets editor state
+[x] Open loads project correctly
+[x] Save persists project correctly
+[x] Import Project json
+[x] Export Project json
+[D] Export assets opens sub-submenu
+
+sub-submenu ( I see no value in these, move Export GIF to Files menu and delete sub-submenu and related code that is not needed)
+[X] Export Sprite (move up one menu level)
+[D] Export animation json
+[X] Export GIF works (move up one menu level)
+[D] Export package
+[D] Mode current frame
+[D] mode all frames
+[D] mode select range
+
+==============================
+4. EDIT MENU
+==============================
+[x] Undo works
+[x] Redo works
+[X] Copy
+[X] Paste
+[-] Selection clear works (esc should never be used in a browser app, pick a different letter)
+[-] copy paste and select work, but I should not be required to click tools select first, for copy, is should auto enable select, and after selected, go back to prior tool
+[R] Duplicate Frame (works under frame menu)
+[R] Delete Frame (works under frame menu)
+
+==============================
+5. TOOLS
+==============================
+[x] Brush works (sizes up to 9)
+[X] Erase works
+[X] Fill works
+[X] Line works
+[x] Rectangle works
+[x] Fill Rectangle works
+[x] Eyedropper works
+[x] Select works
+[-] Selection move clears pixels (should not clear pixels behind it until is is unselected) (how to unselect?)
+
+
+==============================
+6. FRAME
+==============================
+[-] Add Frame works (should add frame after currently selected frame)
+[x] Duplicate Frame works
+[x] Delete Frame works
+[x] copy frame
+[x] paste frame
+[x] Duplicate Range delete range
+[x] delete range
+[x] shitch range left
+[x] shitch range right
+[x] clear range select
+[x] edit playback order
+[-] playback range (does nothing)
+[-] when clicking timeline frame, does not alway show under animation preview
+
+
+==============================
+7. LAYERS
+==============================
+[x] Add Layer works
+[x] Duplicate layer
+[x] Delete Layer
+[-] Rename layer (work but backspace does not, make this a popup like clone)
+[x] move up
+[x] move down
+[x] lock layer
+[x] merge down
+[x] flatten layer
+[x] Layer selection works
+[x] Visibility works
+[-] spaw locations for Layers name/Visibility
+[-] Not able to change opacity, add "[-] xxx% [+]"
+[-] Layers leaking into preview areas ( change spacing in leftsidebar titles margin 10 above, text above 5, ), 
+
+
+==============================
+8. PALETTE MENU
+==============================
+[x] Palette menu opens correctly
+[x] Palettes submenu shows presets
+[-] create custom palette clone should be renamed remove the Create (it should not be selectable until after palette is selected)
+[?] Set Src From Current behavior understood (explain what this does and the value it gives me)
+[?] Set Dst From Current behavior understood (explain what this does and the value it gives me)
+[?] Scope Active Layer works (explain what this does and the value it gives me)
+[?] Scope Current Frame works (explain what this does and the value it gives me)
+[?] Scope Selected Range works (explain what this does and the value it gives me)
+
+
+==============================
+9. PALETTE SIDEBAR
+==============================
+[x] Label shows: Palette: <name>
+[x] All colors visible (no cap)
+[-] Cannot scroll to bottom (if present) (double the size of the palette colors so we can see if it scrolls)
+[x] Sorting Name/Hue/Saturation/Lightness works
+[-] Selected color has animated highlight (yes, should move always, not just when the mouse moves)
+[-] default should be in the list of palettes
+
+==============================
+10. PALETTE LOCK (V7.3)
+==============================
+[x] Starts as NONE - MUST BE SELECTED FIRST
+[x] First grid click blocked
+[-] Popup appears
+[-] Red message appears
+[?x] Selecting palette unlocks editing
+[x] Re-selecting palette is blocked
+[x] Popup + red message shown again
+
+
+==============================
+11. CUSTOM PALETTES
+==============================
+[x] Create Custom Palette Clone works (should not be available until a palette is selected message and popup)
+[-] create a dropdown box in right side bar for the clones between Pallette: and current: can have multiple editable clones
+[-] Naming prompt works  (backspace does not work)
+[-] Clone selectable (not visible to select)
+[?] Clone persists after save/open
+[?] Clone editable independently
+
+
+==============================
+12. REFERENCE IMAGE (V7.4)
+==============================
+[-] Load Reference Image works
+[-] Image appears behind grid
+[-] Fit to Grid works
+[-] Reset Alignment works
+[-] Auto-align runs on load
+[-] Zoom keeps alignment
+[-] Pan keeps alignment
+[-] Persists after save/open
+[-] need ability to load image 
+
+
+==============================
+13. GRID CONTROLS
+==============================
+[x] Add Row works
+[x] Remove Row works
+[x] Add Column works
+[x] Remove Column works
+
+
+==============================
+14. TIMELINE
+==============================
+[x] Play works
+[x] Stop works
+[x] Loop works
+[r] Range not working correctly
+
+
+==============================
+15. ANIMATION PREVIEW
+==============================
+[?] Preview updates correctly
+[?] No extra state text shown
+[?] FPS shown under Frame X/Y
+
+
+==============================
+16. SHEET PREVIEW
+==============================
+[?] Uses full vertical space
+[?] Frames/order text aligned right
+[-] Layout spacing issues
+
+
+==============================
+17. ZOOM / CLIPPING
+==============================
+[x] Grid stays within bounds
+[x] Pixels stay within bounds
+[x] Overlays clipped correctly
+
+
+==============================
+18. INPUT / INTERACTION
+==============================
+[-] Backspace cancel not working
+[-] Command palette visual issues (underlays Animation Preview)
+
+
+==============================
+19. STABILITY
+==============================
+[x] No console errors during usage
+[x] Rapid tool switching stable
+[x] Large palette stable
+
+
+[-] need nudge tool left,right, up, down (all grid pixels)
+==============================
+FINAL SUMMARY
+==============================
+Must Fix:
+- 
+
+Can Defer:
+- 
+
+Ready for Signoff:
+[-]
