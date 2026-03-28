@@ -1,5 +1,14 @@
 function installSpriteEditorMenuMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
+    prepareTopMenu(menuId, items) {
+      this.closeHelpDetailPopup();
+      this.closeAboutPopup();
+      this.controlSurface.closeCommandPalette();
+      this.controlSurface.toggleTopMenu(menuId, items);
+      this.renderAll();
+      return true;
+    },
+
     handleCloseSurfaceAction() {
       if (this.helpDetailPopup.open) {
         this.closeHelpDetailPopup();
@@ -41,9 +50,8 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
 
     openHelpMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeAboutPopup();
       this.closeHelpDetailPopup();
-      this.controlSurface.closeCommandPalette();
+      this.closeAboutPopup();
       const items = [
         { id: "help-menu-files", text: "Files", action: () => this.openHelpDetailPopup("file") },
         { id: "help-menu-edit", text: "Edit", action: () => this.openHelpDetailPopup("edit") },
@@ -52,16 +60,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "help-menu-layer", text: "Layer", action: () => this.openHelpDetailPopup("layer") },
         { id: "help-menu-palette", text: "Palette", action: () => this.openHelpDetailPopup("palette") }
       ];
-      this.controlSurface.toggleTopMenu("help", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("help", items);
     },
 
     openFileMenu(itemsOverride = null) {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const items = Array.isArray(itemsOverride) ? itemsOverride : [
         { id: "file-new", text: "New", action: () => this.newDocument() },
         { id: "file-open", text: "Open", action: () => this.loadLocal() },
@@ -70,16 +73,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "file-export-editor", text: "Export Editor JSON", action: () => this.exportJson(true) },
         { id: "file-export-menu", text: "Export", action: () => this.openExportMenu() }
       ];
-      this.controlSurface.toggleTopMenu("file", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("file", items);
     },
 
     openPlaybackRangeMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const range = this.getPlaybackRange();
       const items = [
         { id: "playback-range-set", text: "Set From Selection", action: () => this.setPlaybackRangeFromSelection(), shortcut: "Ctrl+Shift+P" },
@@ -88,16 +86,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "playback-range-jump-start", text: "Jump To Range Start", action: () => this.jumpToPlaybackRangeEdge(false) },
         { id: "playback-range-jump-end", text: "Jump To Range End", action: () => this.jumpToPlaybackRangeEdge(true) }
       ];
-      this.controlSurface.toggleTopMenu("playback-range-menu", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("playback-range-menu", items);
     },
 
     openToolsMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const active = this.activeTool;
       const items = [
         { id: "tools-brush", text: `${active === "brush" ? "• " : ""}Brush`, action: () => this.setTool("brush"), shortcut: "B" },
@@ -109,16 +102,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "tools-eyedropper", text: `${active === "eyedropper" ? "• " : ""}Eyedropper`, action: () => this.setTool("eyedropper"), shortcut: "I" },
         { id: "tools-select", text: `${active === "select" ? "• " : ""}Select`, action: () => this.setTool("select"), shortcut: "S" }
       ];
-      this.controlSurface.toggleTopMenu("tools", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("tools", items);
     },
 
     openEditMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const items = [
         { id: "edit-menu-undo", text: "Undo", action: () => this.undoHistory(), shortcut: "Ctrl+Z" },
         { id: "edit-menu-redo", text: "Redo", action: () => this.redoHistory(), shortcut: "Ctrl+Y" },
@@ -129,16 +117,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "edit-menu-dup-frame", text: "Duplicate Frame", action: () => this.duplicateFrame(), shortcut: "Ctrl+D" },
         { id: "edit-menu-delete-frame", text: "Delete Frame", action: () => this.deleteFrame(), shortcut: "Delete" }
       ];
-      this.controlSurface.toggleTopMenu("edit", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("edit", items);
     },
 
     openFrameMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const range = this.getFrameRangeSelection();
       const items = [
         { id: "frame-menu-add", text: "Add Frame", action: () => this.addFrame(), shortcut: "N" },
@@ -153,16 +136,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "frame-menu-range-clear", text: "Clear Range Selection", action: () => this.clearFrameRangeSelection(true) },
         { id: "frame-menu-playback", text: "Playback Range...", action: () => this.openPlaybackRangeMenu() }
       ];
-      this.controlSurface.toggleTopMenu("frame", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("frame", items);
     },
 
     openLayerMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const layer = this.document.activeLayer;
       const layerName = layer && layer.name ? layer.name : `Layer ${this.document.activeFrame.activeLayerIndex + 1}`;
       const items = [
@@ -177,13 +155,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "layer-menu-merge", text: "Merge Down", action: () => this.mergeLayerDown() },
         { id: "layer-menu-flatten", text: "Flatten Frame", action: () => this.requestFlattenFrame() }
       ];
-      this.controlSurface.toggleTopMenu("layer", items);
-      this.renderAll();
-      return true;
-    },
-
-    openLayerActionsMenu() {
-      this.openLayerMenu();
+      return this.prepareTopMenu("layer", items);
     },
 
     openCommandPalette() {
@@ -209,9 +181,6 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
 
     openPaletteWorkflowMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const items = [
         { id: "palette-menu-presets", text: "Palettes...", action: () => this.openPalettePresetsMenu() },
         { id: "palette-menu-sort-name", text: "Sort By Name", action: () => this.setPaletteSortMode("name") },
@@ -224,16 +193,11 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "palette-menu-scope-frame", text: "Scope Current Frame", action: () => this.setPaletteReplaceScope("current_frame") },
         { id: "palette-menu-scope-range", text: "Scope Selected Range", action: () => this.setPaletteReplaceScope("selected_range") }
       ];
-      this.controlSurface.toggleTopMenu("palette", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("palette", items);
     },
 
     openExportMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
-      this.controlSurface.closeCommandPalette();
       const items = [
         { id: "export-menu-sheet-png", text: "Sprite Sheet PNG", action: () => this.downloadSpriteSheetPng(this.exportMode) },
         { id: "export-menu-animation-json", text: "Animation JSON", action: () => this.exportAnimationJson(this.exportMode) },
@@ -242,9 +206,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "export-menu-all", text: `Mode: ${this.exportMode === "all_frames" ? "• " : ""}All Frames`, action: () => this.setExportMode("all_frames") },
         { id: "export-menu-range", text: `Mode: ${this.exportMode === "selected_range" ? "• " : ""}Selected Range`, action: () => this.setExportMode("selected_range") }
       ];
-      this.controlSurface.toggleTopMenu("file-export", items);
-      this.renderAll();
-      return true;
+      return this.prepareTopMenu("file-export", items);
     }
   });
 }
