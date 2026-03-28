@@ -7,10 +7,7 @@ function installControlSurfaceTopBar(SpriteEditorCanvasControlSurface) {
       { id: "file-import-editor", text: "Import Project JSON", action: () => this.app.openImport() },
       { id: "file-export-editor", text: "Export Project JSON", action: () => this.app.exportJson(true) },
       { id: "file-export-sprite", text: "Export Sprite", action: () => this.app.downloadSpriteSheetPng("all_frames") },
-      { id: "file-export-gif", text: "Export GIF", action: () => this.app.exportGif("all_frames") },
-      { id: "file-load-reference", text: "Load Reference Image", action: () => this.app.loadReferenceImage() },
-      { id: "file-fit-reference", text: "Fit Reference To Grid", action: () => this.app.fitReferenceImageToGrid() },
-      { id: "file-reset-reference", text: "Reset Reference Alignment", action: () => this.app.resetReferenceAlignment() }
+      { id: "file-export-gif", text: "Export GIF", action: () => this.app.exportGif("all_frames") }
     ];
     const defs = [
       { id: "top-file", tier: 1, overflowEligible: false, labels: effectiveMode === "pro" ? ["Files", "Files", "F"] : ["Files", "Files", "F"], action: () => this.app.openFileMenu(fileMenuItems) },

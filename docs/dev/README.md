@@ -1,9 +1,5 @@
-Sprite Editor V7.5 BUILD_PR
+Sprite Editor V7.5 QC execution pack
 
 Purpose:
-Execute the approved V7.5 Sprite Editor-only stabilization pass.
-
-Notes:
-- BUILD_PR only
-- No engine changes
-- Preserve load/open behavior
+Run one manual QC pass after the V7.5 Sprite Editor-only stabilization build.
+No code changes in this step.

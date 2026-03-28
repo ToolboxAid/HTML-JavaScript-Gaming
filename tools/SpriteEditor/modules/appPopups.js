@@ -129,8 +129,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
             "New / Open / Save: main document flow for starting, restoring, and saving work.",
             "Open uses the existing local browser save for fast restore.",
             "Import Editor JSON / Export Editor JSON: move full editor documents in and out.",
-            "Export Sprite / Export GIF: direct asset exports without extra submenus.",
-            "Load Reference / Fit To Grid / Reset Alignment: reference-image workflow controls."
+            "Export Sprite / Export GIF: direct asset exports without extra submenus."
           ]
         },
         edit: {
@@ -152,7 +151,8 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
             "Brush / Erase / Fill: core paint operations.",
             "Line / Rectangle / Fill Rectangle: pixel-perfect shape tools.",
             "Eyedropper: sample the active color from artwork.",
-            "Select: create and move rectangular selections."
+            "Select: create and move rectangular selections.",
+            "Reference Image: open left-panel controls for Load, Fit Ref To Grid, and Reset Alignment."
           ]
         },
         frame: {

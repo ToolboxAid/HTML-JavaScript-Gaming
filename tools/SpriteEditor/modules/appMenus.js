@@ -67,10 +67,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "file-import-editor", text: "Import Project JSON", action: () => this.openImport() },
         { id: "file-export-editor", text: "Export Project JSON", action: () => this.exportJson(true) },
         { id: "file-export-sprite", text: "Export Sprite", action: () => this.downloadSpriteSheetPng("all_frames") },
-        { id: "file-export-gif", text: "Export GIF", action: () => this.exportGif("all_frames") },
-        { id: "file-load-reference", text: "Load Reference Image", action: () => this.loadReferenceImage() },
-        { id: "file-fit-reference", text: "Fit Reference To Grid", action: () => this.fitReferenceImageToGrid() },
-        { id: "file-reset-reference", text: "Reset Reference Alignment", action: () => this.resetReferenceAlignment() }
+        { id: "file-export-gif", text: "Export GIF", action: () => this.exportGif("all_frames") }
       ];
       return this.prepareTopMenu("file", items);
     },
@@ -99,7 +96,8 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "tools-rect", text: `${active === "rect" ? "• " : ""}Rectangle`, action: () => this.setTool("rect"), shortcut: "R" },
         { id: "tools-fillrect", text: `${active === "fillrect" ? "• " : ""}Filled Rectangle`, action: () => this.setTool("fillrect"), shortcut: "Shift+R" },
         { id: "tools-eyedropper", text: `${active === "eyedropper" ? "• " : ""}Eyedropper`, action: () => this.setTool("eyedropper"), shortcut: "I" },
-        { id: "tools-select", text: `${active === "select" ? "• " : ""}Select`, action: () => this.setTool("select"), shortcut: "S" }
+        { id: "tools-select", text: `${active === "select" ? "• " : ""}Select`, action: () => this.setTool("select"), shortcut: "S" },
+        { id: "tools-reference", text: `${active === "reference" ? "• " : ""}Reference Image`, action: () => this.setTool("reference") }
       ];
       return this.prepareTopMenu("tools", items);
     },
@@ -112,9 +110,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "edit-menu-copy", text: "Copy", action: () => this.handleSelectionAction("sel-copy"), shortcut: "Ctrl+C" },
         { id: "edit-menu-cut", text: "Cut", action: () => this.handleSelectionAction("sel-cut"), shortcut: "Ctrl+X" },
         { id: "edit-menu-paste", text: "Paste", action: () => this.handleSelectionAction("sel-paste"), shortcut: "Ctrl+V" },
-        { id: "edit-menu-clear-selection", text: "Clear Selection", action: () => this.clearSelection(), shortcut: "Backspace" },
-        { id: "edit-menu-dup-frame", text: "Duplicate Frame", action: () => this.duplicateFrame(), shortcut: "Ctrl+D" },
-        { id: "edit-menu-delete-frame", text: "Delete Frame", action: () => this.deleteFrame(), shortcut: "Delete" }
+        { id: "edit-menu-clear-selection", text: "Clear Selection", action: () => this.clearSelection(), shortcut: "Backspace" }
       ];
       return this.prepareTopMenu("edit", items);
     },

@@ -51,6 +51,10 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
           return;
         }
         if (cell && this.activeTool !== "select") {
+          if (this.activeTool === "reference") {
+            this.renderAll();
+            return;
+          }
           if (this.activeTool === "brush" || this.activeTool === "erase") {
             const erase = e.buttons === 2 || this.activeTool === "erase";
             this.applyStrokeSegment(this.strokeLastCell || cell, cell, erase);
@@ -176,6 +180,12 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
           current: { x: cell.x, y: cell.y },
           erase: e.button === 2
         };
+        this.renderAll();
+        return;
+      }
+
+      if (this.activeTool === "reference") {
+        this.showMessage("Reference tool: use left panel controls.");
         this.renderAll();
         return;
       }

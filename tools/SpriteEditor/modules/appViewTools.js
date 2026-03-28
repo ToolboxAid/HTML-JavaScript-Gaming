@@ -38,7 +38,8 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
         rect: "Rectangle",
         fillrect: "Fill Rectangle",
         eyedropper: "Eyedropper",
-        select: "Select"
+        select: "Select",
+        reference: "Reference Image"
       };
       return labels[tool] || String(tool || "Tool");
     },
@@ -52,7 +53,8 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
         rect: { primary: "Draw a rectangle outline.", secondary: "Drag to size the shape before release." },
         fillrect: { primary: "Draw a filled rectangle.", secondary: "Good for blocks, panels, and tile silhouettes." },
         eyedropper: { primary: "Sample a color from artwork.", secondary: "Click any painted cell to set the active color." },
-        select: { primary: "Create or move a rectangular selection.", secondary: "Use arrows to nudge after selecting." }
+        select: { primary: "Create or move a rectangular selection.", secondary: "Use arrows to nudge after selecting." },
+        reference: { primary: "Adjust reference image workflow controls.", secondary: "Use left panel to load, fit, or reset alignment." }
       };
       return descriptions[this.activeTool] || { primary: "Choose a tool from the top Tools menu.", secondary: "Tool details appear here while you work." };
     },
@@ -217,6 +219,10 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
     },
 
     applyGridTool(x, y, erase) {
+      if (this.activeTool === "reference") {
+        this.showMessage("Reference tool: use left panel controls.");
+        return;
+      }
       if (this.activeTool === "eyedropper") {
         const value = this.document.getPixel(x, y);
         if (value) this.setCurrentColor(value);

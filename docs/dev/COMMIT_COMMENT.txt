@@ -1,1 +1,1 @@
-Sprite Editor v7.5 build: interaction, palette, files, layer, and reference-image stabilization
+Run V7.5 manual QC pass for menu close behavior, files flattening, palette lock, clone workflow, and remaining blockers

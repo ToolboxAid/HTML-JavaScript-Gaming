@@ -16,7 +16,7 @@ INSTRUCTIONS
 [x] Editor loads without errors
 [x] No console errors on load
 
-[-] when clicking buttons, menu drop items do not close
+[x] when clicking buttons, menu drop items do not close
 ==============================
 2. TOP MENU
 ==============================
@@ -57,10 +57,10 @@ sub-submenu ( I see no value in these, move Export GIF to Files menu and delete 
 [x] Redo works
 [X] Copy
 [X] Paste
-[-] Selection clear works (esc should never be used in a browser app, pick a different letter)
-[-] copy paste and select work, but I should not be required to click tools select first, for copy, is should auto enable select, and after selected, go back to prior tool
-[R] Duplicate Frame (works under frame menu)
-[R] Delete Frame (works under frame menu)
+[x] Selection clear works (backspace not working)
+[X] copy paste and select work, but I should not be required to click tools select first, for copy, is should auto enable select, and after selected, go back to prior tool
+[R] Duplicate Frame - move to Frame Tab
+[R] Delete Frame  - move to Frame Tab
 
 ==============================
 5. TOOLS
@@ -241,6 +241,9 @@ New
 ==============================
 [-] palette lock should not occure until the grid has its first update
 [-] Help/palette text extends below message box
+[-] don't force Reference image into existing grid size, figure it out and set grip appropirately
+[-] reference image should be on top of layers and under menu/submenu
+
 
 Must Fix:
 - 
