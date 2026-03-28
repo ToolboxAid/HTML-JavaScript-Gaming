@@ -17,6 +17,7 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
       this.drawHelpDetailPopup();
       this.drawAboutPopup();
       this.drawPalettePresetPopup();
+      this.drawPaletteLockPopup();
       this.drawReplaceGuard();
       this.drawLayerRenamePrompt();
       this.drawPaletteConfigurationBlocker();
@@ -42,6 +43,17 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
           ctx.fillStyle = ((x + y) % 2 === 0) ? "#f8fafc" : "#e2e8f0";
           ctx.fillRect(r.x + x * r.pixelSize, r.y + y * r.pixelSize, r.pixelSize, r.pixelSize);
         }
+      }
+      if (this.document.referenceImage && this.document.referenceImage.visible && this.referenceImageRuntime && this.referenceImageRuntime.loaded && this.referenceImageRuntime.image) {
+        const ref = this.document.referenceImage;
+        const drawX = r.x + ref.xCells * r.pixelSize;
+        const drawY = r.y + ref.yCells * r.pixelSize;
+        const drawW = ref.widthCells * r.pixelSize;
+        const drawH = ref.heightCells * r.pixelSize;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, Number(ref.opacity) || 0.45));
+        ctx.drawImage(this.referenceImageRuntime.image, drawX, drawY, drawW, drawH);
+        ctx.restore();
       }
       if (this.onionSkin.prev && prevPixels) {
         ctx.fillStyle = "rgba(80, 180, 255, 0.20)";

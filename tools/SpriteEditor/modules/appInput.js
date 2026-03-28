@@ -84,6 +84,10 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
         const consumed = this.handlePalettePresetPopupPointer(p);
         if (consumed) return;
       }
+      if (this.paletteLockPopup && this.paletteLockPopup.open) {
+        const consumed = this.handlePaletteLockPopupPointer(p);
+        if (consumed) return;
+      }
       if (e.button === 2) {
         const canceled = this.cancelActiveInteraction();
         if (canceled) {

@@ -12,6 +12,7 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     ctx.font = "bold 12px Arial";
     ctx.fillText("TIMELINE", t.x + 78, t.y + 14);
     (t.transport || []).forEach((c) => {
+      if (c.id === "fps_down" || c.id === "fps_up") return;
       ctx.fillStyle = "#1a2733";
       if (c.id === "play_pause" && this.app.playback.isPlaying) ctx.fillStyle = "#244d67";
       if (c.id === "loop" && this.app.playback.loop) ctx.fillStyle = "#244d67";
@@ -23,19 +24,10 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       if (c.id === "play_pause") ctx.fillText(this.app.playback.isPlaying ? "Pause" : "Play", c.x + 8, c.y + 12);
       else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + 12);
       else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + 12);
-      else if (c.id === "fps_down") {
-        const textW = ctx.measureText("-").width;
-        ctx.fillText("-", c.x + Math.floor((c.w - textW) * 0.5), c.y + c.h / 2);
-      } else if (c.id === "fps_up") {
-        const textW = ctx.measureText("+").width;
-        ctx.fillText("+", c.x + Math.floor((c.w - textW) * 0.5), c.y + c.h / 2);
-      }
+      else if (c.id === "fps_down" || c.id === "fps_up") return;
     });
     ctx.fillStyle = "#91a3b6";
     ctx.font = "11px Arial";
-    const fpsControl = (t.transport || []).find((c) => c.id === "fps_down");
-    const fpsY = fpsControl ? (fpsControl.y + fpsControl.h / 2) : (t.y + 14);
-    ctx.fillText(`FPS ${this.app.playback.fps}`, t.x + t.w - 62, fpsY);
     const playbackOrder = this.app.getPlaybackOrderOverride ? this.app.getPlaybackOrderOverride() : { enabled: false };
     const baseOrder = this.app.document.frames.map((_f, i) => i);
     const effectiveOrder = this.app.getEffectivePlaybackSequence ? this.app.getEffectivePlaybackSequence(baseOrder) : baseOrder;
@@ -97,6 +89,28 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     });
     ctx.font = "12px Arial";
     ctx.fillText(`Frame ${previewIndex + 1} / ${this.app.document.frames.length}`, x + 96, y + 36);
+    const fpsDown = (this.app.timelineStripRect && this.app.timelineStripRect.transport || []).find((c) => c.id === "fps_down");
+    const fpsUp = (this.app.timelineStripRect && this.app.timelineStripRect.transport || []).find((c) => c.id === "fps_up");
+    if (fpsDown && fpsUp) {
+      [fpsDown, fpsUp].forEach((c) => {
+        ctx.fillStyle = "#1a2733";
+        ctx.fillRect(c.x, c.y, c.w, c.h);
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
+        ctx.fillStyle = "#dbe7f3";
+        ctx.font = "11px Arial";
+        const symbol = c.id === "fps_down" ? "-" : "+";
+        const textW = ctx.measureText(symbol).width;
+        ctx.fillText(symbol, c.x + Math.floor((c.w - textW) * 0.5), c.y + c.h / 2);
+      });
+      ctx.fillStyle = "#91a3b6";
+      ctx.font = "11px Arial";
+      ctx.fillText(`FPS ${this.app.playback.fps}`, fpsDown.x + fpsDown.w + 8, fpsDown.y + fpsDown.h / 2);
+    } else {
+      ctx.fillStyle = "#91a3b6";
+      ctx.font = "11px Arial";
+      ctx.fillText(`FPS ${this.app.playback.fps}`, x + 96, y + 52);
+    }
   };
 
   SpriteEditorCanvasControlSurface.prototype.drawSheetPanel = function drawSheetPanel(ctx) {
@@ -113,9 +127,6 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     const titleH = withChrome ? 18 : 0;
     const footerH = 0;
     const innerPad = withChrome ? 5 : 0;
-    const order = this.app.document.frames.length <= 8
-      ? this.app.document.frames.map((_f, i) => i + 1).join(", ")
-      : `1..${this.app.document.frames.length}`;
     if (withChrome) {
       ctx.fillStyle = "#1a2733";
       ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
@@ -124,6 +135,9 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 12px Arial";
       ctx.fillText("SHEET PREVIEW", rect.x + 12, rect.y + 16);
+      ctx.font = "11px Arial";
+      ctx.fillStyle = "#e6f2ff";
+      ctx.fillText(`Frames: ${this.app.document.frames.length}`, rect.x + 12, rect.y + 30);
     }
     const cx = rect.x + innerPad;
     const cy = rect.y + innerPad + titleH;
@@ -132,7 +146,6 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     const infoW = withChrome ? Math.min(132, Math.max(110, Math.floor(cw * 0.26))) : 0;
     const previewW = Math.max(24, cw - infoW - (withChrome ? 8 : 0));
     const previewX = cx;
-    const infoX = previewX + previewW + 8;
     const scale = Math.max(1, Math.floor(Math.min(previewW / plc.width, ch / plc.height)));
     const drawW = plc.width * scale;
     const drawH = plc.height * scale;
@@ -155,14 +168,6 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
         }
       }
     });
-    if (withChrome) {
-      ctx.font = "11px Arial";
-      ctx.fillStyle = "#e6f2ff";
-      ctx.fillText(`Frames: ${this.app.document.frames.length}`, infoX, cy + 18);
-      ctx.fillStyle = "#b9c8d8";
-      ctx.fillText("Order:", infoX, cy + 38);
-      ctx.fillText(order.length > 18 ? `${order.slice(0, 18)}...` : order, infoX, cy + 54);
-    }
   };
 }
 

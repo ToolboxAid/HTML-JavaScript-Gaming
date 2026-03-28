@@ -1,1 +1,1 @@
-Sprite Editor v7.3 plan only: palette lock, project palette persistence, custom clones, GIF export, and playback order override
+Sprite Editor v7.4 plan only: strict palette lock, reference image alignment, GIF FPT timing, and FPT preview placement

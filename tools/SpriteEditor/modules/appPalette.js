@@ -226,8 +226,11 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
 
     applyNamedPalette(paletteName) {
       if (this.isPalettePresetLocked()) {
-        if (typeof this.showAlertMessage === "function") this.showAlertMessage("Palette is locked after first selection.");
-        else this.showMessage("Palette is locked after first selection.");
+        if (typeof this.closePalettePresetPopup === "function") this.closePalettePresetPopup();
+        if (typeof this.openPaletteLockPopup === "function") this.openPaletteLockPopup("Palette is locked for this sprite/project");
+        if (typeof this.showAlertMessage === "function") this.showAlertMessage("Palette cannot be changed after grid edits start.");
+        else this.showMessage("Palette cannot be changed after grid edits start.");
+        this.renderAll();
         return false;
       }
       return this.executeWithHistory(`Apply Palette: ${paletteName}`, () => {
@@ -251,11 +254,6 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     createCustomPaletteClone() {
-      if (this.isPalettePresetLocked()) {
-        if (typeof this.showAlertMessage === "function") this.showAlertMessage("Palette is locked after first selection.");
-        else this.showMessage("Palette is locked after first selection.");
-        return false;
-      }
       const baseName = this.currentPalettePreset || this.document.palettePresetName || "Palette";
       const suggested = `Custom ${baseName}`.slice(0, 40);
       const raw = globalThis.prompt ? globalThis.prompt("Custom palette name:", suggested) : suggested;

@@ -6,6 +6,8 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
       const y = panel.y + 14;
       const w = Math.min(402, panel.width - 36);
       const h = 100;
+      const previewX = panel.x + 18;
+      const previewY = panel.y + 8;
       const transportX = x + 8;
       const transportY = y + 6;
       const transportW = 58;
@@ -15,8 +17,8 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
         { id: "play_pause", x: transportX, y: transportY, w: transportW, h: transportH },
         { id: "stop", x: transportX, y: transportY + (transportH + transportGap), w: transportW, h: transportH },
         { id: "loop", x: transportX, y: transportY + (transportH + transportGap) * 2, w: transportW, h: transportH },
-        { id: "fps_down", x: x + w - 92, y: transportY, w: 20, h: transportH },
-        { id: "fps_up", x: x + w - 24, y: transportY, w: 20, h: transportH }
+        { id: "fps_down", x: previewX + 96, y: previewY + 60, w: 20, h: transportH },
+        { id: "fps_up", x: previewX + 174, y: previewY + 60, w: 20, h: transportH }
       ];
       const innerX = x + 76;
       const innerY = y + 40;

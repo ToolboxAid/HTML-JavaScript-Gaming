@@ -27,6 +27,9 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
       if (this.palettePresetPopup.open) {
         return this.closeSurfaceWithMessage(this.closePalettePresetPopup, "Palette presets closed.");
       }
+      if (this.paletteLockPopup && this.paletteLockPopup.open) {
+        return this.closeSurfaceWithMessage(this.closePaletteLockPopup, "Palette lock message closed.");
+      }
       if (this.replaceGuard.open) {
         return this.closeSurfaceWithMessage(this.closeReplaceGuard, "Replace canceled.");
       }
@@ -63,6 +66,9 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "file-save", text: "Save Project (Local)", action: () => this.saveLocal() },
         { id: "file-import-editor", text: "Import Project JSON", action: () => this.openImport() },
         { id: "file-export-editor", text: "Export Project JSON", action: () => this.exportJson(true) },
+        { id: "file-load-reference", text: "Load Reference Image", action: () => this.loadReferenceImage() },
+        { id: "file-fit-reference", text: "Fit Reference To Grid", action: () => this.fitReferenceImageToGrid() },
+        { id: "file-reset-reference", text: "Reset Reference Alignment", action: () => this.resetReferenceAlignment() },
         { id: "file-export-menu", text: "Export Assets...", action: () => this.openExportMenu() }
       ];
       return this.prepareTopMenu("file", items);
@@ -163,6 +169,12 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
     },
 
     openPalettePresetsMenu() {
+      if (typeof this.isPalettePresetLocked === "function" && this.isPalettePresetLocked()) {
+        if (typeof this.openPaletteLockPopup === "function") this.openPaletteLockPopup("Palette is locked for this sprite/project");
+        if (typeof this.showAlertMessage === "function") this.showAlertMessage("Palette cannot be changed after grid edits made been made.");
+        else this.showMessage("Palette cannot be changed after  edits start.");
+        return true;
+      }
       return openCanvasTransientSurface({
         canOpen: () => this.canOpenTransientSurface(),
         closeOthers: () => this.closeMenuLikeSurfaces(),

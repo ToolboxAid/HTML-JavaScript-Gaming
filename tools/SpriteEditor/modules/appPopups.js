@@ -102,6 +102,18 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       resetCanvasPopupState(this.palettePresetPopup, { backRect: null, rowRects: [] });
     },
 
+    openPaletteLockPopup(message = "Palette is locked for this sprite/project.") {
+      this.paletteLockPopup.open = true;
+      this.paletteLockPopup.message = message;
+      this.paletteLockPopup.closeRect = null;
+      this.renderAll();
+      return true;
+    },
+
+    closePaletteLockPopup() {
+      resetCanvasPopupState(this.paletteLockPopup, { message: "", closeRect: null });
+    },
+
     closeHelpDetailPopup() {
       resetCanvasPopupState(this.helpDetailPopup, { section: "" });
     },
@@ -284,6 +296,26 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
             render: () => this.renderAll()
           });
         }
+        return true;
+      }
+      return true;
+    },
+
+    handlePaletteLockPopupPointer(p) {
+      if (!this.paletteLockPopup.open || !p) return false;
+      const dismissResult = handleCanvasPopupDismissPointer({
+        point: p,
+        popup: this.paletteLockPopup,
+        containsPoint: (point, rect) => this.isPointInRect(point, rect),
+        close: () => this.closePaletteLockPopup(),
+        showMessage: () => {},
+        render: () => this.renderAll(),
+        closeMessage: ""
+      });
+      if (dismissResult !== null) return dismissResult;
+      if (this.isPointInRect(p, this.paletteLockPopup.closeRect)) {
+        this.closePaletteLockPopup();
+        this.renderAll();
         return true;
       }
       return true;
@@ -544,6 +576,24 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         textOffsetX: 38,
         textOffsetY: 19
       });
+    },
+
+    drawPaletteLockPopup() {
+      if (!this.paletteLockPopup.open) return;
+      const frame = this.controlSurface.layout.appFrame;
+      const panelRect = getCenteredRect(frame, 520, 168, 0.24);
+      const { x, y, w, h } = panelRect;
+      drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, panelRect, "rgba(2, 6, 12, 0.70)");
+      this.ctx.fillStyle = "#ef4444";
+      this.ctx.font = "bold 18px Arial";
+      this.ctx.fillText("Palette Locked", x + 18, y + 30);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "13px Arial";
+      this.ctx.fillText(this.paletteLockPopup.message || "Palette is locked for this sprite/project.", x + 18, y + 62);
+      this.ctx.fillText("Palette cannot be changed after grid edits made been made.", x + 18, y + 86);
+      const closeRect = { x: x + w - 112, y: y + h - 42, w: 92, h: 24 };
+      this.paletteLockPopup.closeRect = closeRect;
+      drawCanvasDialogButton(this.ctx, closeRect, "Close", { textOffsetX: 27, textOffsetY: 14, font: "12px Arial" });
     },
 
     drawPaletteConfigurationBlocker() {

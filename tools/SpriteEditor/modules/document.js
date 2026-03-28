@@ -18,6 +18,16 @@ class SpriteEditorDocument {
       this.paletteSelectionRequired = true;
       this.customPalettes = {};
       this.playbackOrderOverride = { enabled: false, order: [] };
+      this.referenceImage = {
+        src: "",
+        visible: false,
+        opacity: 0.45,
+        xCells: 0,
+        yCells: 0,
+        widthCells: this.cols,
+        heightCells: this.rows,
+        alignmentLocked: false
+      };
     }
     getDefaultPalette() { return DEFAULT_PALETTE.slice(); }
     getDefaultPaletteNamedEntries() {
@@ -100,6 +110,26 @@ class SpriteEditorDocument {
       this.palettePresetName = typeof this.palettePresetName === "string" ? this.palettePresetName : "";
       this.paletteSelectionRequired = this.paletteSelectionRequired === true;
       this.customPalettes = this.sanitizeCustomPalettes(this.customPalettes);
+      if (!this.referenceImage || typeof this.referenceImage !== "object") {
+        this.referenceImage = {
+          src: "",
+          visible: false,
+          opacity: 0.45,
+          xCells: 0,
+          yCells: 0,
+          widthCells: this.cols,
+          heightCells: this.rows,
+          alignmentLocked: false
+        };
+      }
+      this.referenceImage.src = typeof this.referenceImage.src === "string" ? this.referenceImage.src : "";
+      this.referenceImage.visible = this.referenceImage.visible === true;
+      this.referenceImage.opacity = Math.max(0, Math.min(1, Number(this.referenceImage.opacity) || 0.45));
+      this.referenceImage.xCells = Number(this.referenceImage.xCells) || 0;
+      this.referenceImage.yCells = Number(this.referenceImage.yCells) || 0;
+      this.referenceImage.widthCells = Math.max(1, Number(this.referenceImage.widthCells) || this.cols);
+      this.referenceImage.heightCells = Math.max(1, Number(this.referenceImage.heightCells) || this.rows);
+      this.referenceImage.alignmentLocked = this.referenceImage.alignmentLocked === true;
       if (!Array.isArray(this.frames) || !this.frames.length) this.frames = [this.makeFrame("Frame 1")];
       this.frames = this.frames.map((frame, index) => {
         const next = frame && typeof frame === "object" ? frame : this.makeFrame(`Frame ${index + 1}`);
@@ -525,6 +555,16 @@ class SpriteEditorDocument {
         paletteSelectionRequired: this.paletteSelectionRequired === true,
         customPalettes: this.sanitizeCustomPalettes(this.customPalettes),
         playbackOrderOverride: this.sanitizePlaybackOrderOverride(this.playbackOrderOverride),
+        referenceImage: {
+          src: this.referenceImage.src || "",
+          visible: this.referenceImage.visible === true,
+          opacity: this.referenceImage.opacity,
+          xCells: this.referenceImage.xCells,
+          yCells: this.referenceImage.yCells,
+          widthCells: this.referenceImage.widthCells,
+          heightCells: this.referenceImage.heightCells,
+          alignmentLocked: this.referenceImage.alignmentLocked === true
+        },
         sheet: this.sheet,
         frames: this.frames.map((f) => {
           const fr = this.ensureFrameLayers(f);
@@ -557,6 +597,16 @@ class SpriteEditorDocument {
       this.palettePresetName = typeof data.palettePresetName === "string" ? data.palettePresetName : "";
       this.paletteSelectionRequired = data.paletteSelectionRequired === true;
       this.customPalettes = this.sanitizeCustomPalettes(data.customPalettes);
+      this.referenceImage = {
+        src: data.referenceImage && typeof data.referenceImage.src === "string" ? data.referenceImage.src : "",
+        visible: !!(data.referenceImage && data.referenceImage.visible),
+        opacity: data.referenceImage && typeof data.referenceImage.opacity === "number" ? data.referenceImage.opacity : 0.45,
+        xCells: data.referenceImage && typeof data.referenceImage.xCells === "number" ? data.referenceImage.xCells : 0,
+        yCells: data.referenceImage && typeof data.referenceImage.yCells === "number" ? data.referenceImage.yCells : 0,
+        widthCells: data.referenceImage && typeof data.referenceImage.widthCells === "number" ? data.referenceImage.widthCells : this.cols,
+        heightCells: data.referenceImage && typeof data.referenceImage.heightCells === "number" ? data.referenceImage.heightCells : this.rows,
+        alignmentLocked: !!(data.referenceImage && data.referenceImage.alignmentLocked)
+      };
       this.sheet = { ...this.sheet, ...(data.sheet || {}) };
       if (Array.isArray(data.frames) && data.frames.length) {
         this.frames = data.frames.map((f, i) => this.ensureFrameLayers({ id: f.id || "f_" + i, name: f.name || "Frame " + (i + 1), activeLayerIndex: f.activeLayerIndex || 0, layers: f.layers, pixels: f.pixels }));

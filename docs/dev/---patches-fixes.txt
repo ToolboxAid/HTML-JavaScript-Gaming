@@ -17,9 +17,8 @@ scop selecte rand
 - palette must be selected prior to first command being exicuted.  Once selected, it cannot change for the sprite,  we need the ability to create a custom from selected font and name it. this is for games that have a common theme, like block in the sun they are red, in the basement they are gray, under water they are blue.  so multiple custom clones can exist. the colors of the clone can be modified. prevent first grid click until set.  on new/start set palette to NONE-Must be selected first and a popup if grid is clicked
 
 ============================================================================
-next 
-- order still not working, do not extend the sprite sheet, instead when custom is set, draw use the frameIndex to display frame[frameIndex] until end of override (i used frameIndex, not sure what code uses)
-- once a palette is selected, it cannot be changed, display red message if someone clicks it
+ 
+- once a palette is selected, it cannot be changed, do not show paletteList, display popup message and red message if someone clicks it
 
 
 
@@ -31,3 +30,8 @@ next
 - gif should use FPT for animation.
 
 - move FPT under Frame x/y in Animation preview
+
+============================================================================
+next 
+
+- 

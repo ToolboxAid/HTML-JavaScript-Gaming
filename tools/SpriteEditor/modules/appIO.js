@@ -35,12 +35,15 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.paletteSidebarScroll = 0;
       this.pan = { x: 0, y: 0 };
       this.zoom = 1;
+      this.referenceImageRuntime = { image: null, loaded: false };
+      this.uiAnimationLastTick = 0;
     },
 
     finalizeDocumentReplacement(message) {
       this.uiDensityEffectiveMode = "pro";
       this.clearHistoryStacks();
       this.normalizeEditorState();
+      this.syncReferenceImageFromDocument();
       this.markCleanBaseline();
       this.showMessage(message);
     },
@@ -94,6 +97,103 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.fileInput.click();
     },
 
+    syncReferenceImageFromDocument() {
+      const src = this.document && this.document.referenceImage ? this.document.referenceImage.src : "";
+      if (!src) {
+        this.referenceImageRuntime = { image: null, loaded: false };
+        return;
+      }
+      const image = new Image();
+      image.onload = () => {
+        this.referenceImageRuntime = { image, loaded: true };
+        this.renderAll();
+      };
+      image.onerror = () => {
+        this.referenceImageRuntime = { image: null, loaded: false };
+        this.showAlertMessage("Reference image failed to load.");
+        this.renderAll();
+      };
+      image.src = src;
+    },
+
+    autoAlignReferenceImage(showMessage = true) {
+      if (!this.document || !this.document.referenceImage || !this.document.referenceImage.src) return false;
+      this.document.referenceImage.xCells = 0;
+      this.document.referenceImage.yCells = 0;
+      this.document.referenceImage.widthCells = this.document.cols;
+      this.document.referenceImage.heightCells = this.document.rows;
+      this.document.referenceImage.alignmentLocked = true;
+      if (showMessage) this.showMessage("Reference auto-align attempted.");
+      this.renderAll();
+      return true;
+    },
+
+    fitReferenceImageToGrid() {
+      if (!this.document || !this.document.referenceImage || !this.document.referenceImage.src) {
+        this.showMessage("Load reference image first.");
+        return false;
+      }
+      this.document.referenceImage.xCells = 0;
+      this.document.referenceImage.yCells = 0;
+      this.document.referenceImage.widthCells = this.document.cols;
+      this.document.referenceImage.heightCells = this.document.rows;
+      this.document.referenceImage.alignmentLocked = true;
+      this.showMessageAndRender("Reference fit to grid.");
+      return true;
+    },
+
+    resetReferenceAlignment() {
+      if (!this.document || !this.document.referenceImage || !this.document.referenceImage.src) {
+        this.showMessage("No reference image.");
+        return false;
+      }
+      this.document.referenceImage.xCells = 0;
+      this.document.referenceImage.yCells = 0;
+      this.document.referenceImage.widthCells = this.document.cols;
+      this.document.referenceImage.heightCells = this.document.rows;
+      this.document.referenceImage.alignmentLocked = false;
+      this.showMessageAndRender("Reference alignment reset.");
+      return true;
+    },
+
+    loadReferenceImage() {
+      const picker = document.createElement("input");
+      picker.type = "file";
+      picker.accept = "image/*";
+      picker.onchange = async (event) => {
+        const file = event.target && event.target.files ? event.target.files[0] : null;
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          const src = typeof reader.result === "string" ? reader.result : "";
+          if (!src) {
+            this.showAlertMessage("Reference image load failed.");
+            this.renderAll();
+            return;
+          }
+          const image = new Image();
+          image.onload = () => {
+            this.referenceImageRuntime = { image, loaded: true };
+            this.document.referenceImage.src = src;
+            this.document.referenceImage.visible = true;
+            this.document.referenceImage.opacity = Math.max(0.15, Math.min(0.85, this.document.referenceImage.opacity || 0.45));
+            this.autoAlignReferenceImage(false);
+            this.showMessage("Reference image loaded. Auto-align attempted.");
+            this.renderAll();
+          };
+          image.onerror = () => {
+            this.referenceImageRuntime = { image: null, loaded: false };
+            this.showAlertMessage("Reference image decode failed.");
+            this.renderAll();
+          };
+          image.src = src;
+        };
+        reader.readAsDataURL(file);
+      };
+      picker.click();
+      return true;
+    },
+
     exportJson(pretty) {
       const ok = this.downloads.downloadText(
         "sprite-editor.json",
@@ -110,6 +210,7 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
     },
 
     tick(ts) {
+      let didRender = false;
       if (this.playback.isPlaying) {
         const fd = 1000 / this.playback.fps;
         if (ts - this.playback.lastTick >= fd) {
@@ -128,6 +229,14 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
             this.playback.previewFrameIndex = sequence[cursor] ?? sequence[0];
           }
           this.document.activeFrameIndex = this.playback.previewFrameIndex;
+          this.renderAll();
+          didRender = true;
+        }
+      }
+      if (!didRender) {
+        const marqueeStepMs = 66;
+        if (ts - (this.uiAnimationLastTick || 0) >= marqueeStepMs) {
+          this.uiAnimationLastTick = ts;
           this.renderAll();
         }
       }

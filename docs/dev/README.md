@@ -1,7 +1,7 @@
-Sprite Editor V7.3 PLAN_PR
+Sprite Editor V7.4 PLAN_PR
 
 Purpose:
-Define the next Sprite Editor-only pass for palette locking, palette persistence, custom clones, clearer file/export labeling, GIF export, and optional playback order override.
+Define the next Sprite Editor-only pass for strict palette lock, reference image support behind the grid, alignment/auto-align, GIF timing from FPS, and FPS placement cleanup.
 
 Notes:
 - Plan only

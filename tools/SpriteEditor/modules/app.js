@@ -53,6 +53,7 @@ class SpriteEditorApp {
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
       this.errorMessageUntil = 0;
+      this.uiAnimationLastTick = 0;
       this.gridRect = null;
       this.uiDensityEffectiveMode = "pro";
       this.zoom = 1;
@@ -79,7 +80,12 @@ class SpriteEditorApp {
       this.helpDetailPopup = createCanvasPopupState({ section: "" });
       this.aboutPopup = createCanvasPopupState();
       this.palettePresetPopup = createCanvasPopupState({ backRect: null, rowRects: [] });
+      this.paletteLockPopup = createCanvasPopupState({ message: "", closeRect: null });
       this.paletteConfigBlockMessage = "";
+      this.referenceImageRuntime = {
+        image: null,
+        loaded: false
+      };
       this.paletteSidebarScroll = 0;
       this.paletteSidebarMetrics = null;
       this.paletteSortMode = "name";

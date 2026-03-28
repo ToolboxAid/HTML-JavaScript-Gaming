@@ -59,6 +59,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
 
   SpriteEditorCanvasControlSurface.prototype.drawControl = function drawControl(ctx, c) {
     const inLeftSidebar = this.layout && this.layout.leftPanel && c.x >= this.layout.leftPanel.x && c.x < (this.layout.leftPanel.x + this.layout.leftPanel.width);
+    const paletteTextOffsetX = 8;
     if (c.kind === "label") {
       if (c.id === "palette-current") {
         const currentHex = String(this.app.document.currentColor || "").toUpperCase();
@@ -75,26 +76,36 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
           ctx.strokeStyle = "rgba(255,255,255,0.16)";
           ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
         }
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(c.x + 2, c.y + 2, Math.max(0, c.w - 4), Math.max(0, c.h - 4));
+        ctx.clip();
         ctx.fillStyle = c.paletteActionRequired ? "#ef4444" : "#91a3b6";
         ctx.font = "bold 12px Arial";
         const leftText = `Current: ${currentHex}   Named: ${name}`;
         ctx.textBaseline = "top";
         if (this.app.isPaletteSelectionRequired && this.app.isPaletteSelectionRequired()) {
-          ctx.fillText(this.app.getCurrentColorDisplayText(), c.x, textY);
+          ctx.fillText(this.app.getCurrentColorDisplayText(), c.x + paletteTextOffsetX, textY);
           ctx.textBaseline = "middle";
+          ctx.restore();
           return;
         }
-        ctx.fillText(leftText, c.x, textY);
-        const leftWidth = ctx.measureText(`Current: ${currentHex} `).width;
+        const prefix = `Current: ${currentHex}`;
+        ctx.fillText(prefix, c.x + paletteTextOffsetX, textY);
+        const prefixWidth = ctx.measureText(prefix).width;
         const sw = 12;
         const sh = 12;
-        const swatchX = c.x + leftWidth + 4;
+        const swatchX = c.x + paletteTextOffsetX + prefixWidth + 8;
         const swatchY = c.y + 5;
         ctx.fillStyle = currentHex;
         ctx.fillRect(swatchX, swatchY, sw, sh);
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 1;
         ctx.strokeRect(swatchX + 0.5, swatchY + 0.5, sw - 1, sh - 1);
+        const namedX = swatchX + sw + 12;
+        ctx.fillStyle = c.paletteActionRequired ? "#ef4444" : "#91a3b6";
+        ctx.fillText(`Named: ${name}`, namedX, textY);
+        ctx.restore();
         ctx.textBaseline = "middle";
         return;
       }
@@ -107,9 +118,14 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       ctx.fillStyle = c.paletteActionRequired ? "#ef4444" : "#91a3b6";
       ctx.font = c.id === "lbl-palette" ? "bold 13px Arial" : "bold 12px Arial";
       if (c.paletteHeaderBox) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(c.x + 2, c.y + 2, Math.max(0, c.w - 4), Math.max(0, c.h - 4));
+        ctx.clip();
         ctx.textBaseline = "top";
-        ctx.fillText(c.text, c.x, c.y + 5);
+        ctx.fillText(c.text, c.x + paletteTextOffsetX, c.y + 5);
         ctx.textBaseline = "middle";
+        ctx.restore();
         return;
       }
       if (inLeftSidebar && c.text && c.text.length > 16) {
@@ -128,16 +144,21 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       ctx.fillStyle = c.color;
       ctx.fillRect(c.x, c.y, c.w, c.h);
       const current = this.app.document.currentColor === c.color;
-      ctx.strokeStyle = current ? "#4cc9f0" : "rgba(255,255,255,0.2)";
+      ctx.strokeStyle = current ? "#ffffff" : "rgba(255,255,255,0.2)";
       ctx.lineWidth = current ? 3 : 1;
       ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
       if (current) {
         const dash = Math.max(2, Math.floor(c.w / 5));
+        const offset = -Math.floor(performance.now() / 80);
         ctx.save();
         ctx.setLineDash([dash, 2]);
-        ctx.lineDashOffset = -Math.floor(performance.now() / 80);
+        ctx.lineDashOffset = offset;
         ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 3.25;
+        ctx.strokeRect(c.x + 1.5, c.y + 1.5, c.w - 3, c.h - 3);
+        ctx.lineDashOffset = offset + dash;
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 3.25;
         ctx.strokeRect(c.x + 1.5, c.y + 1.5, c.w - 3, c.h - 3);
         ctx.restore();
       }
