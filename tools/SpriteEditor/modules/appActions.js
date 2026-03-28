@@ -52,12 +52,10 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
       };
       const ok = this.executeWithHistory("Palette Replace Color", run);
       if (!ok) {
-        this.showMessage(scope === "selected_range" && !this.getFrameRangeSelection().explicit ? "Select a frame range first." : "No matching pixels to replace.");
-        this.renderAll();
+        this.showMessageAndRender(scope === "selected_range" && !this.getFrameRangeSelection().explicit ? "Select a frame range first." : "No matching pixels to replace.");
         return false;
       }
-      this.showMessage(`Replaced ${replacementCount} pixels.`);
-      this.renderAll();
+      this.showMessageAndRender(`Replaced ${replacementCount} pixels.`);
       return true;
     },
 
@@ -79,8 +77,7 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
       };
       if (isMutating) this.executeWithHistory("Selection Edit", run);
       else run();
-      this.showMessage(ok ? "Selection updated." : "No active selection.");
-      this.renderAll();
+      this.showMessageAndRender(ok ? "Selection updated." : "No active selection.");
     },
 
     clearSelection(showMessage = true) {
@@ -95,21 +92,17 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
     },
 
     addFrame() {
-      this.executeWithHistory("Frame Add", () => {
+      this.runHistoryResultAction("Frame Add", () => {
         this.document.addFrame();
-        this.showMessage("Frame added.");
         return true;
-      });
-      this.renderAll();
+      }, "Frame added.", "Frame add failed.");
     },
 
     duplicateFrame() {
-      this.executeWithHistory("Frame Duplicate", () => {
+      this.runHistoryResultAction("Frame Duplicate", () => {
         this.document.duplicateFrame();
-        this.showMessage("Frame duplicated.");
         return true;
-      });
-      this.renderAll();
+      }, "Frame duplicated.", "Frame duplicate failed.");
     },
 
     deleteFrame() {
@@ -224,8 +217,7 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
 
     toggleBlendPreview() {
       const mode = this.document.toggleBlendPreviewMode();
-      this.showMessage(mode === "boost" ? "Blend preview: Boost" : "Blend preview: Normal");
-      this.renderAll();
+      this.showMessageAndRender(mode === "boost" ? "Blend preview: Boost" : "Blend preview: Normal");
     },
 
     mergeLayerDown() {
