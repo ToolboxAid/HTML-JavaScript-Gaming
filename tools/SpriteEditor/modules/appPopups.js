@@ -18,13 +18,22 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
     },
 
-    drawDialogButton(rect, text, textOffsetX = 28) {
-      this.ctx.fillStyle = "#27435a";
+    drawDialogButton(rect, text, options = {}) {
+      const {
+        fillStyle = "#27435a",
+        strokeStyle = "#4cc9f0",
+        textStyle = "#e6f2ff",
+        textOffsetX = 28,
+        textOffsetY = 20,
+        font = null
+      } = options;
+      if (font) this.ctx.font = font;
+      this.ctx.fillStyle = fillStyle;
       this.ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-      this.ctx.strokeStyle = "#4cc9f0";
+      this.ctx.strokeStyle = strokeStyle;
       this.ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
-      this.ctx.fillStyle = "#e6f2ff";
-      this.ctx.fillText(text, rect.x + textOffsetX, rect.y + 20);
+      this.ctx.fillStyle = textStyle;
+      this.ctx.fillText(text, rect.x + textOffsetX, rect.y + textOffsetY);
     },
 
     dismissPopup(closeFn, message = "", consumed = true) {
@@ -380,7 +389,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.fillText("github.com/ToolboxAid/HTML-JavaScript-Gaming", x + 18, y + 166);
       const closeRect = { x: x + panelW - 116, y: y + panelH - 50, w: 96, h: 32 };
       this.aboutPopup.closeRect = closeRect;
-      this.drawDialogButton(closeRect, "Close", 29);
+      this.drawDialogButton(closeRect, "Close", { textOffsetX: 29 });
     },
 
     drawPalettePresetPopup() {
@@ -449,20 +458,19 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.palettePresetPopup.backRect = backRect;
       this.palettePresetPopup.closeRect = closeRect;
 
-      this.ctx.fillStyle = "#1a2733";
-      this.ctx.fillRect(backRect.x, backRect.y, backRect.w, backRect.h);
-      this.ctx.strokeStyle = "rgba(255,255,255,0.22)";
-      this.ctx.strokeRect(backRect.x + 0.5, backRect.y + 0.5, backRect.w - 1, backRect.h - 1);
-      this.ctx.fillStyle = "#edf2f7";
-      this.ctx.font = "12px Arial";
-      this.ctx.fillText("Back To Palette", backRect.x + 15, backRect.y + 14);
-
-      this.ctx.fillStyle = "#27435a";
-      this.ctx.fillRect(closeRect.x, closeRect.y, closeRect.w, closeRect.h);
-      this.ctx.strokeStyle = "#4cc9f0";
-      this.ctx.strokeRect(closeRect.x + 0.5, closeRect.y + 0.5, closeRect.w - 1, closeRect.h - 1);
-      this.ctx.fillStyle = "#e6f2ff";
-      this.ctx.fillText("Close", closeRect.x + 27, closeRect.y + 14);
+      this.drawDialogButton(backRect, "Back To Palette", {
+        fillStyle: "#1a2733",
+        strokeStyle: "rgba(255,255,255,0.22)",
+        textStyle: "#edf2f7",
+        textOffsetX: 15,
+        textOffsetY: 14,
+        font: "12px Arial"
+      });
+      this.drawDialogButton(closeRect, "Close", {
+        textOffsetX: 27,
+        textOffsetY: 14,
+        font: "12px Arial"
+      });
     },
 
     drawReplaceGuard() {
@@ -487,18 +495,17 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const confirmRect = { x: x + w - 122, y: y + h - 56, w: 104, h: 34 };
       this.replaceGuard.cancelRect = cancelRect;
       this.replaceGuard.confirmRect = confirmRect;
-      ctx.fillStyle = "#1a2733";
-      ctx.fillRect(cancelRect.x, cancelRect.y, cancelRect.w, cancelRect.h);
-      ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      ctx.strokeRect(cancelRect.x + 0.5, cancelRect.y + 0.5, cancelRect.w - 1, cancelRect.h - 1);
-      ctx.fillStyle = "#edf2f7";
-      ctx.fillText("Cancel", cancelRect.x + 22, cancelRect.y + 22);
-      ctx.fillStyle = "#27435a";
-      ctx.fillRect(confirmRect.x, confirmRect.y, confirmRect.w, confirmRect.h);
-      ctx.strokeStyle = "#4cc9f0";
-      ctx.strokeRect(confirmRect.x + 0.5, confirmRect.y + 0.5, confirmRect.w - 1, confirmRect.h - 1);
-      ctx.fillStyle = "#e6f2ff";
-      ctx.fillText("Replace", confirmRect.x + 24, confirmRect.y + 22);
+      this.drawDialogButton(cancelRect, "Cancel", {
+        fillStyle: "#1a2733",
+        strokeStyle: "rgba(255,255,255,0.2)",
+        textStyle: "#edf2f7",
+        textOffsetX: 22,
+        textOffsetY: 22
+      });
+      this.drawDialogButton(confirmRect, "Replace", {
+        textOffsetX: 24,
+        textOffsetY: 22
+      });
     },
 
     drawLayerRenamePrompt() {
@@ -527,18 +534,19 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const by = y + panelH - btnH - 14;
       this.layerRenamePrompt.confirmRect = { x: x + panelW - btnW * 2 - gap - 16, y: by, w: btnW, h: btnH };
       this.layerRenamePrompt.cancelRect = { x: x + panelW - btnW - 16, y: by, w: btnW, h: btnH };
-      this.ctx.fillStyle = "#244d67";
-      this.ctx.fillRect(this.layerRenamePrompt.confirmRect.x, by, btnW, btnH);
-      this.ctx.strokeStyle = "#4cc9f0";
-      this.ctx.strokeRect(this.layerRenamePrompt.confirmRect.x + 0.5, by + 0.5, btnW - 1, btnH - 1);
-      this.ctx.fillStyle = "#edf2f7";
-      this.ctx.fillText("Apply", this.layerRenamePrompt.confirmRect.x + 43, by + 19);
-      this.ctx.fillStyle = "#1a2733";
-      this.ctx.fillRect(this.layerRenamePrompt.cancelRect.x, by, btnW, btnH);
-      this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      this.ctx.strokeRect(this.layerRenamePrompt.cancelRect.x + 0.5, by + 0.5, btnW - 1, btnH - 1);
-      this.ctx.fillStyle = "#edf2f7";
-      this.ctx.fillText("Cancel", this.layerRenamePrompt.cancelRect.x + 38, by + 19);
+      this.drawDialogButton(this.layerRenamePrompt.confirmRect, "Apply", {
+        fillStyle: "#244d67",
+        textStyle: "#edf2f7",
+        textOffsetX: 43,
+        textOffsetY: 19
+      });
+      this.drawDialogButton(this.layerRenamePrompt.cancelRect, "Cancel", {
+        fillStyle: "#1a2733",
+        strokeStyle: "rgba(255,255,255,0.2)",
+        textStyle: "#edf2f7",
+        textOffsetX: 38,
+        textOffsetY: 19
+      });
     }
   });
 }
