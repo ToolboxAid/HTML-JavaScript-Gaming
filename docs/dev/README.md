@@ -1,4 +1,4 @@
-Sprite Editor V7.2 Interaction Stabilization
+Sprite Editor V7.2 BUILD_PR
 
-This PR fixes interaction correctness issues discovered during QC validation.
-No engine changes.
+Implements interaction fixes only.
+No architecture or engine changes.

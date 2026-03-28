@@ -1,11 +1,11 @@
-Sprite Editor V7.2 - Interaction stabilization
+Sprite Editor V7.2 BUILD
 
-Fixes:
-- Selection move preview/commit
-- Backspace cancel behavior
-- Palette scroll boundary
-- Layer ordering and UI cleanup
-- Timeline range correctness
-- Input cleanup (remove Ctrl+W)
-- Command palette visual fixes
-- Help/About cleanup
+Implements interaction stabilization:
+- selection preview/commit
+- cancel behavior
+- palette scroll fix
+- layer ordering + UI cleanup
+- timeline range fix
+- input cleanup
+- command palette cleanup
+- help/about completion

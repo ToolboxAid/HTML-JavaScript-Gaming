@@ -1,0 +1,6 @@
+- currently the animation is [1...n] add an optional fields to pass in override order [1,2,3,2,3,2]
+- add a gif generator export/save
+- open/save is very generic, add something to indicate mem, cooke, whatever
+- put a moving dash/dot around the selected palette color
+- palette must be selected prior to first command being exicuted.  Once selected, it cannot change for the sprite,  we need the ability to create a custom from selected font and name it. this is for games that have a common theme, like block in the sun they are red, in the basement they are gray, under water they are blue.  so multiple custom clones can exist. the colors of the clone can be modified. prevent first grid click until set.  on new/start set palette to NONE-Must be selected first and a popup if grid is clicked
+

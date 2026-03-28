@@ -4,19 +4,19 @@
 // paletteList.js
 
 /** Reference colors
- * Crayola Colors
  * https://www.crayola.com/explore-colors/
  * https://toolboxaid.com/programming/html/crayola-colors/
  * https://www.w3schools.com/colors/colors_crayola.asp
  * https://www.jennyscrayoncollection.com/2017/10/complete-list-of-current-crayola-crayon.html
- * 
  */
 
 const palettesList = {
+    /*
     custom: [
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
     ],
+    */
 
     default: [
         { symbol: '!', hex: '#F08080', name: 'LightCoral' }, 		// color #'0' ascii'33'
@@ -161,7 +161,7 @@ const palettesList = {
         { symbol: 'Ï', hex: '#FFC0CB', name: 'Pink' }, 		    // color #'139' ascii'207'
         { symbol: 'Ð', hex: '#FFB6C1', name: 'LightPink' }, 		// color #'140' ascii'208'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+       // { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
     ],
 
     // Crayola Crayon colors by package
@@ -175,7 +175,7 @@ const palettesList = {
         { symbol: ')', hex: '#926EAE', name: 'Violet' }, 		 // color #'7' ascii'41'
         { symbol: '*', hex: '#EE204D', name: 'Red' }, 		 // color #'8' ascii'42'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST -->            
     ],
     crayola016: [
         { symbol: '!', hex: '#232323', name: 'Black' }, 		    // color #'0' ascii'33'
@@ -195,7 +195,7 @@ const palettesList = {
         { symbol: '1', hex: '#FFAACC', name: 'Carnation Pink' }, 	// color #'15' ascii'49'
         { symbol: '2', hex: '#EE204D', name: 'Red' }, 		    // color #'16' ascii'50'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
 
     ],
     crayola024: [
@@ -224,7 +224,7 @@ const palettesList = {
         { symbol: '9', hex: '#EE204D', name: 'Red' }, 		    // color #'23' ascii'57'
         { symbol: ':', hex: '#FC2847', name: 'Scarlet' }, 		// color #'24' ascii'58'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
     ],
     crayola032: [
         { symbol: '!', hex: '#232323', name: 'Black' }, 		    // color #'0' ascii'33'
@@ -260,7 +260,7 @@ const palettesList = {
         { symbol: 'A', hex: '#EE204D', name: 'Red' }, 		        // color #'31' ascii'65'
         { symbol: 'B', hex: '#FC2847', name: 'Scarlet' }, 		    // color #'32' ascii'66'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
 
     ],
     crayola048: [
@@ -313,7 +313,7 @@ const palettesList = {
         { symbol: 'Q', hex: '#FF9BAA', name: 'Salmon' }, 		    // color #'47' ascii'81'
         { symbol: 'R', hex: '#FC2847', name: 'Scarlet' }, 		    // color #'48' ascii'82'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
 
     ],
     crayola064: [
@@ -382,7 +382,7 @@ const palettesList = {
         { symbol: 'b', hex: '#FC2847', name: 'Scarlet' }, 		// color #'63' ascii'98'
         { symbol: 'c', hex: '#CB4154', name: 'Brick Red' }, 	// color #'64' ascii'99'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
 
     ],
     crayola096: [
@@ -483,7 +483,7 @@ const palettesList = {
         { symbol: '¤', hex: '#FC2847', name: 'Scarlet' }, 		// color #'95' ascii'164'
         { symbol: '¥', hex: '#CB4154', name: 'Brick Red' }, 		// color #'96' ascii'165'
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
 
     ],
     crayola120: [
@@ -909,7 +909,7 @@ const palettesList = {
         { symbol: 'è', hex: '#FFFFFF', name: 'White' },
 
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
     ],
 
     // JavaScript named colors
@@ -1056,10 +1056,11 @@ const palettesList = {
         { symbol: 'Ð', hex: '#ffb6c1', name: 'LightPink' }, 		 // color #'139' ascii'208'
 
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
     ],
 
     // 
+    /*
     test: [
         { symbol: '!', hex: '#843530', name: 'Color-132-53-48' }, 		 // color #'0' ascii'33'
         { symbol: 'ÿ', hex: '#8b3d32', name: 'Color-139-61-50' }, 		 // color #'1' ascii'34'
@@ -1163,8 +1164,10 @@ const palettesList = {
         { symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
 
     ],
+    */
 
     //
+    /*
     spaceInvaders: [
         { symbol: 'R', hex: '#FF0000', name: 'Red' },
         { symbol: 'O', hex: '#FFA500', name: 'Orange' },
@@ -1187,12 +1190,13 @@ const palettesList = {
         { symbol: 'N', hex: '#000080', name: 'navy' },
         { symbol: 'K', hex: '#F0E68C', name: 'khaki' },
         // Transparent
-        { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
+        //{ symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
     ],
+    */
 
 };
 
-export default palettesList;
+window.palettesList = palettesList;
 
 
 
