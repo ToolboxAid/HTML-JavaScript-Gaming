@@ -1,10 +1,12 @@
 import { getCenteredRect } from "../../../engine/utils/index.js";
 import {
+  createCanvasPopupState,
   dismissCanvasPopup,
   drawCanvasDialogButton,
   drawCanvasModalFrame,
   handleCanvasPopupDismissPointer,
-  openCanvasTransientSurface
+  openCanvasTransientSurface,
+  resetCanvasPopupState
 } from "../../../engine/ui/index.js";
 
 function installSpriteEditorPopupMethods(SpriteEditorApp) {
@@ -17,22 +19,19 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.controlSurface.closeOverflowPanel();
       this.controlSurface.closeCommandPalette();
       this.closeLayerRenamePrompt();
-      this.replaceGuard = {
+      this.replaceGuard = createCanvasPopupState({
         open: true,
         title,
         message,
         onConfirm,
         confirmRect: null,
         cancelRect: null
-      };
+      });
       this.showMessage("Unsaved changes. Confirm or cancel.");
     },
 
     closeReplaceGuard() {
-      this.replaceGuard.open = false;
-      this.replaceGuard.onConfirm = null;
-      this.replaceGuard.confirmRect = null;
-      this.replaceGuard.cancelRect = null;
+      resetCanvasPopupState(this.replaceGuard, { title: "", message: "", onConfirm: null, confirmRect: null, cancelRect: null });
     },
 
     handleReplaceGuardPointer(p) {
@@ -96,24 +95,15 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     },
 
     closeAboutPopup() {
-      this.aboutPopup.open = false;
-      this.aboutPopup.panelRect = null;
-      this.aboutPopup.closeRect = null;
+      resetCanvasPopupState(this.aboutPopup);
     },
 
     closePalettePresetPopup() {
-      this.palettePresetPopup.open = false;
-      this.palettePresetPopup.panelRect = null;
-      this.palettePresetPopup.closeRect = null;
-      this.palettePresetPopup.backRect = null;
-      this.palettePresetPopup.rowRects = [];
+      resetCanvasPopupState(this.palettePresetPopup, { backRect: null, rowRects: [] });
     },
 
     closeHelpDetailPopup() {
-      this.helpDetailPopup.open = false;
-      this.helpDetailPopup.section = "";
-      this.helpDetailPopup.panelRect = null;
-      this.helpDetailPopup.closeRect = null;
+      resetCanvasPopupState(this.helpDetailPopup, { section: "" });
     },
 
     getHelpSections() {
@@ -297,10 +287,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     },
 
     closeLayerRenamePrompt() {
-      this.layerRenamePrompt.open = false;
-      this.layerRenamePrompt.panelRect = null;
-      this.layerRenamePrompt.confirmRect = null;
-      this.layerRenamePrompt.cancelRect = null;
+      resetCanvasPopupState(this.layerRenamePrompt, { text: "", title: "Rename Layer", confirmRect: null, cancelRect: null });
     },
 
     confirmLayerRename() {
