@@ -143,9 +143,52 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       return true;
     },
 
+    getReferenceImageCellSize() {
+      const image = this.referenceImageRuntime && this.referenceImageRuntime.image ? this.referenceImageRuntime.image : null;
+      if (!image) return null;
+      const rawCols = Math.max(1, Number(image.naturalWidth || image.width) || 1);
+      const rawRows = Math.max(1, Number(image.naturalHeight || image.height) || 1);
+      const cols = Math.max(1, Math.min(256, Math.round(rawCols)));
+      const rows = Math.max(1, Math.min(256, Math.round(rawRows)));
+      return {
+        cols,
+        rows,
+        clamped: cols !== Math.round(rawCols) || rows !== Math.round(rawRows),
+        rawCols: Math.round(rawCols),
+        rawRows: Math.round(rawRows)
+      };
+    },
+
+    applyReferenceImageCellGrid(showMessage = true) {
+      const inferred = this.getReferenceImageCellSize();
+      if (!inferred) return false;
+      const resized = this.resizeDocumentGrid(inferred.cols, inferred.rows);
+      if (!resized && this.document.cols === inferred.cols && this.document.rows === inferred.rows) {
+        if (showMessage) {
+          this.showMessage(inferred.clamped
+            ? `Reference cells inferred: ${inferred.rawCols}x${inferred.rawRows} (clamped to ${inferred.cols}x${inferred.rows}).`
+            : `Reference cells inferred: ${inferred.cols}x${inferred.rows}.`);
+        }
+        this.renderAll();
+        return true;
+      }
+      if (showMessage) {
+        this.showMessage(inferred.clamped
+          ? `Grid matched reference cells: ${inferred.rawCols}x${inferred.rawRows} (clamped to ${inferred.cols}x${inferred.rows}).`
+          : `Grid matched reference cells: ${inferred.cols}x${inferred.rows}.`);
+      }
+      this.renderAll();
+      return resized;
+    },
+
     autoFitReferenceImage() {
+      if (!this.document || !this.document.referenceImage || !this.document.referenceImage.src) {
+        this.showMessage("Load reference image first.");
+        return false;
+      }
+      this.applyReferenceImageCellGrid(false);
       const ok = this.fitReferenceImageToGrid();
-      if (ok) this.showMessageAndRender("Reference auto-fit complete.");
+      if (ok) this.showMessageAndRender("Reference auto-fit complete (grid matched to image cells).");
       return ok;
     },
 
@@ -203,7 +246,8 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
             this.document.referenceImage.visible = true;
             this.document.referenceImage.opacity = Math.max(0.15, Math.min(0.85, this.document.referenceImage.opacity || 0.45));
             this.autoAlignReferenceImage(false);
-            this.showMessage("Reference image loaded. Auto-align attempted.");
+            this.applyReferenceImageCellGrid(false);
+            this.showMessage("Reference image loaded. Grid matched to image cells.");
             this.renderAll();
           };
           image.onerror = () => {
