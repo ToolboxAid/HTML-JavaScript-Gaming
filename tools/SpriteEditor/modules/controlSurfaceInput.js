@@ -5,18 +5,21 @@ function installControlSurfaceInput(SpriteEditorCanvasControlSurface) {
     if (this.commandPaletteOpen) {
       for (let i = this.commandPaletteRowControls.length - 1; i >= 0; i -= 1) {
         const c = this.commandPaletteRowControls[i];
+        if (c.clipRect && (x < c.clipRect.x || y < c.clipRect.y || x > c.clipRect.x + c.clipRect.width || y > c.clipRect.y + c.clipRect.height)) continue;
         if (x >= c.x && y >= c.y && x <= c.x + c.w && y <= c.y + c.h) return c;
       }
     }
     if (this.overflowPanelOpen) {
       for (let i = this.overflowPanelControls.length - 1; i >= 0; i -= 1) {
         const c = this.overflowPanelControls[i];
+        if (c.clipRect && (x < c.clipRect.x || y < c.clipRect.y || x > c.clipRect.x + c.clipRect.width || y > c.clipRect.y + c.clipRect.height)) continue;
         if (x >= c.x && y >= c.y && x <= c.x + c.w && y <= c.y + c.h) return c;
       }
     }
     for (let i = this.controls.length - 1; i >= 0; i -= 1) {
       const c = this.controls[i];
       if (c.kind === "label") continue;
+      if (c.clipRect && (x < c.clipRect.x || y < c.clipRect.y || x > c.clipRect.x + c.clipRect.width || y > c.clipRect.y + c.clipRect.height)) continue;
       if (x >= c.x && y >= c.y && x <= c.x + c.w && y <= c.y + c.h) return c;
     }
     return null;

@@ -1,5 +1,9 @@
-Sprite Editor V7.5 QC execution pack
+Sprite Editor V7.6 PLAN_PR
 
 Purpose:
-Run one manual QC pass after the V7.5 Sprite Editor-only stabilization build.
-No code changes in this step.
+Define the next Sprite Editor-only pass to separate left-panel action ownership from right-panel palette/state ownership using a single-open accordion on the left.
+
+Notes:
+- Plan only
+- No code in this package
+- No engine changes

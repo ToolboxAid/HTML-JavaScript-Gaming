@@ -89,6 +89,7 @@ class SpriteEditorApp {
       this.paletteSidebarScroll = 0;
       this.paletteSidebarMetrics = null;
       this.paletteSortMode = "name";
+      this.leftPanelOpenSection = "brush";
       this.canvas.style.imageRendering = "pixelated";
 
       this.resize();

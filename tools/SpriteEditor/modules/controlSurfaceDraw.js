@@ -58,6 +58,14 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
   };
 
   SpriteEditorCanvasControlSurface.prototype.drawControl = function drawControl(ctx, c) {
+    let clipped = false;
+    if (c && c.clipRect) {
+      clipped = true;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(c.clipRect.x, c.clipRect.y, c.clipRect.width, c.clipRect.height);
+      ctx.clip();
+    }
     const inLeftSidebar = this.layout && this.layout.leftPanel && c.x >= this.layout.leftPanel.x && c.x < (this.layout.leftPanel.x + this.layout.leftPanel.width);
     const paletteTextOffsetX = 8;
     if (c.kind === "label") {
@@ -88,6 +96,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
           ctx.fillText(this.app.getCurrentColorDisplayText(), c.x + paletteTextOffsetX, textY);
           ctx.textBaseline = "middle";
           ctx.restore();
+          if (clipped) ctx.restore();
           return;
         }
         const prefix = `Current: ${currentHex}`;
@@ -107,6 +116,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         ctx.fillText(`Named: ${name}`, namedX, textY);
         ctx.restore();
         ctx.textBaseline = "middle";
+        if (clipped) ctx.restore();
         return;
       }
       if (c.paletteHeaderBox) {
@@ -126,6 +136,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         ctx.fillText(c.text, c.x + paletteTextOffsetX, c.y + 5);
         ctx.textBaseline = "middle";
         ctx.restore();
+        if (clipped) ctx.restore();
         return;
       }
       if (inLeftSidebar && c.text && c.text.length > 16) {
@@ -138,6 +149,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       } else {
         ctx.fillText(c.text, c.x, c.y + c.h / 2);
       }
+      if (clipped) ctx.restore();
       return;
     }
     if (c.kind === "palette") {
@@ -171,6 +183,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         ctx.fillRect(c.x + c.w - 10, c.y + 2, 8, 8);
       }
       ctx.lineWidth = 1;
+      if (clipped) ctx.restore();
       return;
     }
     const hovered = this.hovered === c.id;
@@ -183,11 +196,13 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
     ctx.fillStyle = pressed ? "#27435a" : (hovered ? "#223444" : "#1a2733");
     if (c.isCommandRow && c.selected) ctx.fillStyle = "#2d5169";
     if (toolActive || activeFrame || activeLayerItem || sortModeActive) ctx.fillStyle = "#244d67";
+    if (c.accordionHeader) ctx.fillStyle = c.accordionOpen ? "#244d67" : (hovered ? "#223444" : "#1a2733");
     if (dragTarget) ctx.fillStyle = "#305c4a";
     ctx.fillRect(c.x, c.y, c.w, c.h);
     ctx.lineWidth = 1;
     ctx.strokeStyle = (toolActive || activeFrame || activeLayerItem || dragTarget || sortModeActive) ? "#4cc9f0" : "rgba(255,255,255,0.15)";
     if (c.isCommandRow && c.selected) ctx.strokeStyle = "#4cc9f0";
+    if (c.accordionHeader) ctx.strokeStyle = c.accordionOpen ? "#4cc9f0" : "rgba(255,255,255,0.18)";
     ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
     if (c.layerVisibilityToggle) {
       ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
@@ -235,6 +250,11 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       } else {
         ctx.fillText(c.text, c.x + 10, c.y + c.h / 2);
       }
+      if (c.accordionHeader) {
+        const arrow = c.accordionOpen ? "-" : "+";
+        const arrowW = ctx.measureText(arrow).width;
+        ctx.fillText(arrow, c.x + c.w - arrowW - 10, c.y + c.h / 2);
+      }
     }
     if (activeLayerItem) {
       ctx.fillStyle = "#4cc9f0";
@@ -270,6 +290,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         rows: this.app.document.rows
       });
     }
+    if (clipped) ctx.restore();
   };
 
   SpriteEditorCanvasControlSurface.prototype.drawPaletteSidebarScrollbar = function drawPaletteSidebarScrollbar(ctx) {

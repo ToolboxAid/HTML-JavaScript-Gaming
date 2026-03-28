@@ -1,146 +1,137 @@
 function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
   SpriteEditorCanvasControlSurface.prototype.buildLeftPanel = function buildLeftPanel(d) {
     const left = this.layout.leftPanel;
-    let x = left.x + d.padding;
-    let y = left.y + d.padding + 10;
+    const x = left.x + d.padding;
+    let y = left.y + d.padding;
     const bw = left.width - (d.padding * 2);
     const bh = d.sideButtonHeight;
-    const halfW = Math.floor((bw - d.spacing) / 2);
-    const headerTop = 10;
-    const textTop = 5;
-    const drawingToolActive = ["brush", "erase", "fill", "line", "rect", "fillrect"].indexOf(this.app.activeTool) >= 0;
-
-    this.add("label", "lbl-grid", x, y, bw, d.labelHeight, "GRID", null);
-    y += d.labelHeight;
-    this.add("button", "grid-add-row", x, y, halfW, bh, "Add Row", () => this.app.adjustGridRows(1));
-    this.add("button", "grid-remove-row", x + halfW + d.spacing, y, bw - halfW - d.spacing, bh, "Sub Row", () => this.app.adjustGridRows(-1));
-    y += bh;
-    this.add("button", "grid-add-column", x, y, halfW, bh, "Add Col", () => this.app.adjustGridCols(1));
-    this.add("button", "grid-remove-column", x + halfW + d.spacing, y, bw - halfW - d.spacing, bh, "Sub Col", () => this.app.adjustGridCols(-1));
-    y += bh + textTop;
-    this.add("label", "grid-size-readout", x, y, bw, bh, `${this.app.document.cols} cols x ${this.app.document.rows} rows`, null);
-    y += bh + headerTop;
+    const sectionHeaderH = 24;
+    const gap = 4;
+    const maxY = left.y + left.height - d.padding;
+    const openSection = ["brush", "select", "grid", "layer"].indexOf(this.app.leftPanelOpenSection) >= 0
+      ? this.app.leftPanelOpenSection
+      : "brush";
 
     const activeToolLabel = this.app.getToolLabel(this.app.activeTool);
     const toolDescription = this.app.getActiveToolDescription();
-    this.add("label", "lbl-tools", x, y, bw, d.labelHeight, "ACTIVE TOOL", null);
-    y += d.labelHeight;
-    this.add("button", "tool-active-readout", x, y, bw, bh, activeToolLabel, null, { tool: this.app.activeTool });
-    y += bh + textTop;
-    this.add("label", "tool-desc-1", x, y, bw, bh, toolDescription.primary, null);
-    y += bh + textTop;
-    this.add("label", "tool-desc-2", x, y, bw, bh, toolDescription.secondary, null);
-    y += bh;
+    this.add("label", "lbl-tools", x, y, bw, d.labelHeight, "ACTIVE TOOL", null, { clipRect: left });
+    y += d.labelHeight + 5;
+    if (y + bh > maxY) return;
+    this.add("button", "tool-active-readout", x, y, bw, bh, activeToolLabel, null, { tool: this.app.activeTool, clipRect: left });
+    y += bh + 5;
+    if (y + bh > maxY) return;
+    this.add("label", "tool-summary", x, y, bw, bh, toolDescription.primary, null, { clipRect: left });
+    y += bh + 10;
 
-    const brushToolActive = this.app.activeTool === "brush" || this.app.activeTool === "erase";
-    const shapeToolActive = this.app.activeTool === "line" || this.app.activeTool === "rect" || this.app.activeTool === "fillrect";
-    if (brushToolActive) {
-      y += headerTop;
-      this.add("label", "lbl-brush", x, y, bw, d.labelHeight, "BRUSH", null);
-      y += d.labelHeight;
-      const brushGap = d.spacing;
-      const brushBtnW = Math.floor((bw - brushGap * 2) / 3);
-      const brushReadoutW = bw - brushBtnW * 2 - brushGap * 2;
-      this.add("button", "brush-size-down", x, y, brushBtnW, bh, "Size -", () => this.app.adjustBrushSize(-1));
-      this.add("button", "brush-size-readout", x + brushBtnW + brushGap, y, brushReadoutW, bh, String(this.app.brush.size), null, { centerText: true });
-      this.add("button", "brush-size-up", x + brushBtnW + brushGap + brushReadoutW + brushGap, y, brushBtnW, bh, "Size +", () => this.app.adjustBrushSize(1));
-      y += bh;
-      this.add("button", "brush-shape-toggle", x, y, bw, bh, `Shape: ${this.app.brush.shape}`, () => this.app.toggleBrushShape());
-      y += bh;
-    } else if (shapeToolActive) {
-      y += headerTop;
-      this.add("label", "lbl-shape", x, y, bw, d.labelHeight, "SHAPE", null);
-      y += d.labelHeight + textTop;
-      this.add("label", "shape-help", x, y, bw, bh, "Drag on canvas to preview", null);
-      y += bh;
-    } else if (this.app.activeTool === "reference") {
-      y += headerTop;
-      this.add("label", "lbl-reference", x, y, bw, d.labelHeight, "REFERENCE IMAGE", null);
-      y += d.labelHeight;
-      this.add("button", "reference-load", x, y, bw, bh, "Load Reference", () => this.app.loadReferenceImage());
-      y += bh;
-      this.add("button", "reference-fit", x, y, bw, bh, "Fit Ref To Grid", () => this.app.fitReferenceImageToGrid());
-      y += bh;
-      this.add("button", "reference-reset", x, y, bw, bh, "Reset Alignment", () => this.app.resetReferenceAlignment());
-      y += bh;
-    }
-
-    if (drawingToolActive) {
-      this.add("button", "mirror-toggle", x, y, bw, bh, this.app.mirror ? "Mirror: On" : "Mirror: Off", () => this.app.toggleMirror());
-      y += bh;
-    }
-    y += headerTop;
-    this.add("label", "lbl-sel", x, y, bw, d.labelHeight, "SELECTION", null);
-    y += d.labelHeight + textTop;
-    const hasSelection = !!this.app.document.selection;
-    const hasClipboard = !!this.app.document.selectionClipboard;
-    if (hasSelection) {
-      const selectionText = `${this.app.document.selection.width}x${this.app.document.selection.height} ready`;
-      this.add("label", "sel-state", x, y, bw, bh, selectionText, null);
-      y += bh + textTop;
-      this.add("label", "sel-hint-actions", x, y, bw, bh, "Edit menu for copy/cut/paste", null);
-      y += bh;
-    } else if (hasClipboard) {
-      this.add("label", "sel-hint-paste", x, y, bw, bh, "Clipboard ready", null);
-      y += bh + textTop;
-      this.add("label", "sel-hint-actions", x, y, bw, bh, "Edit menu to paste", null);
-      y += bh;
-    } else {
-      this.add("label", "sel-hint", x, y, bw, bh, "No selection", null);
-      y += bh + textTop;
-      this.add("label", "sel-hint-2", x, y, bw, bh, "Use Select tool to create one", null);
-      y += bh;
-    }
-
-    y += headerTop;
-    this.add("label", "lbl-layers", x, y, bw, d.labelHeight, "LAYERS", null);
-    y += d.labelHeight;
-    const af = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
-    const layers = af.layers || [];
-    for (let visualIndex = layers.length - 1; visualIndex >= 0; visualIndex -= 1) {
-      const l = layers[visualIndex];
-      const i = visualIndex;
-      const hidden = !this.app.isLayerVisibleEffective(af, i);
-      const opacityPct = `${Math.round(((typeof l.opacity === "number" ? l.opacity : 1) * 100))}%`;
-      const rowHeight = 64;
-      const visWidth = 56;
-      const rowGap = 8;
-      const rowWidth = bw - visWidth - rowGap;
-      const stateParts = [hidden ? "Hidden" : "Visible"];
-      if (l.locked) stateParts.push("Locked");
-      const stateText = stateParts.join(" | ");
-      this.add("button", `layer-vis-${i}`, x, y, visWidth, rowHeight, hidden ? "Show" : "Hide", () => {
-        this.app.selectLayer(i);
-        this.app.toggleLayerVisibility();
-      }, {
-        layerIndex: i,
-        layerVisibilityToggle: true,
-        layerHidden: hidden
+    const addSectionHeader = (id, title) => {
+      if (y + sectionHeaderH > maxY) return false;
+      this.add("button", `accordion-${id}-header`, x, y, bw, sectionHeaderH, title, () => this.app.setLeftPanelSection(id), {
+        accordionHeader: true,
+        accordionOpen: openSection === id,
+        clipRect: left
       });
-      this.add("button", `layer-item-${i}`, x + visWidth + rowGap, y, rowWidth, rowHeight, l.name, () => this.app.selectLayer(i), {
-        layerIndex: i,
-        layerName: l.name,
-        layerStateText: stateText,
-        layerOpacityText: "",
-        layerHidden: hidden,
-        layerLocked: l.locked === true
-      });
-      const opacityY = y + rowHeight - 23;
-      const minusW = 26;
-      const plusW = 26;
-      const opacityReadoutW = 64;
-      const opacityGap = 6;
-      const opacityX = x + visWidth + rowGap + 10;
-      this.add("button", `layer-opacity-down-${i}`, opacityX, opacityY, minusW, 18, "-", () => {
-        this.app.selectLayer(i);
-        this.app.adjustLayerOpacity(-0.1);
-      }, { centerText: true });
-      this.add("button", `layer-opacity-value-${i}`, opacityX + minusW + opacityGap, opacityY, opacityReadoutW, 18, opacityPct, () => this.app.selectLayer(i), { centerText: true });
-      this.add("button", `layer-opacity-up-${i}`, opacityX + minusW + opacityGap + opacityReadoutW + opacityGap, opacityY, plusW, 18, "+", () => {
-        this.app.selectLayer(i);
-        this.app.adjustLayerOpacity(0.1);
-      }, { centerText: true });
-      y += rowHeight;
+      y += sectionHeaderH;
+      return true;
+    };
+
+    const addButtonRow = (id, rowY, leftLabel, leftAction, rightLabel, rightAction) => {
+      const halfW = Math.floor((bw - gap) / 2);
+      this.add("button", `${id}-left`, x, rowY, halfW, bh, leftLabel, leftAction, { clipRect: left });
+      this.add("button", `${id}-right`, x + halfW + gap, rowY, bw - halfW - gap, bh, rightLabel, rightAction, { clipRect: left });
+    };
+
+    const addSectionTopGap = () => { y += 5; };
+    const addSectionBottomGap = () => { y += 10; };
+
+    if (!addSectionHeader("brush", "Brush")) return;
+    if (openSection === "brush") {
+      addSectionTopGap();
+      if (y + bh > maxY) return;
+      const minusW = 36;
+      const plusW = 36;
+      const readoutW = bw - minusW - plusW - gap * 2;
+      this.add("button", "brush-size-down", x, y, minusW, bh, "-", () => this.app.adjustBrushSize(-1), { centerText: true, clipRect: left });
+      this.add("button", "brush-size-readout", x + minusW + gap, y, readoutW, bh, String(this.app.brush.size), null, { centerText: true, clipRect: left });
+      this.add("button", "brush-size-up", x + minusW + gap + readoutW + gap, y, plusW, bh, "+", () => this.app.adjustBrushSize(1), { centerText: true, clipRect: left });
+      y += bh + gap;
+      if (y + bh <= maxY) {
+        this.add("button", "brush-shape-toggle", x, y, bw, bh, `Shape: ${this.app.brush.shape}`, () => this.app.toggleBrushShape(), { clipRect: left });
+        y += bh;
+      }
+      addSectionBottomGap();
+    }
+
+    if (!addSectionHeader("select", "Select")) return;
+    if (openSection === "select") {
+      addSectionTopGap();
+      if (y + bh > maxY) return;
+      const hasSelection = !!this.app.document.selection;
+      const hasClipboard = !!this.app.document.selectionClipboard;
+      const selectionText = hasSelection
+        ? `${this.app.document.selection.width}x${this.app.document.selection.height} selected`
+        : (hasClipboard ? "Clipboard ready" : "No active selection");
+      this.add("label", "select-status", x, y, bw, bh, selectionText, null, { clipRect: left });
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      addButtonRow("select-row1", y, "Copy", () => this.app.handleSelectionAction("sel-copy"), "Paste", () => this.app.handleSelectionAction("sel-paste"));
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      addButtonRow("select-row2", y, "Clear", () => this.app.clearSelection(), "Cut", () => this.app.handleSelectionAction("sel-cut"));
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      addButtonRow("select-move1", y, "Move Left", () => this.app.nudgeSelection(-1, 0, "Left"), "Move Right", () => this.app.nudgeSelection(1, 0, "Right"));
+      y += bh + gap;
+      if (y + bh <= maxY) {
+        addButtonRow("select-move2", y, "Move Up", () => this.app.nudgeSelection(0, -1, "Up"), "Move Down", () => this.app.nudgeSelection(0, 1, "Down"));
+        y += bh;
+      }
+      addSectionBottomGap();
+    }
+
+    if (!addSectionHeader("grid", "Grid")) return;
+    if (openSection === "grid") {
+      addSectionTopGap();
+      if (y + bh > maxY) return;
+      addButtonRow("grid-row", y, "Add Row", () => this.app.adjustGridRows(1), "Sub Row", () => this.app.adjustGridRows(-1));
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      addButtonRow("grid-col", y, "Add Col", () => this.app.adjustGridCols(1), "Sub Col", () => this.app.adjustGridCols(-1));
+      y += bh + gap;
+      if (y + bh <= maxY) {
+        this.add("label", "grid-size-readout", x, y, bw, bh, `${this.app.document.cols} cols x ${this.app.document.rows} rows`, null, { clipRect: left });
+        y += bh;
+      }
+      addSectionBottomGap();
+    }
+
+    if (!addSectionHeader("layer", "Layer")) return;
+    if (openSection === "layer") {
+      addSectionTopGap();
+      const frame = this.app.document.ensureFrameLayers(this.app.document.activeFrame);
+      const layer = frame.layers[frame.activeLayerIndex];
+      const visibleText = layer && layer.visible !== false ? "Visible" : "Hidden";
+      const opacityPct = `${Math.round(((layer && typeof layer.opacity === "number" ? layer.opacity : 1) * 100))}%`;
+      if (y + bh > maxY) return;
+      this.add("label", "layer-active-status", x, y, bw, bh, `Active: ${layer ? layer.name : "Layer"} | ${visibleText}`, null, { clipRect: left });
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      addButtonRow(
+        "layer-actions",
+        y,
+        "Rename",
+        () => this.app.openLayerRenamePrompt(),
+        layer && layer.visible !== false ? "Hide" : "Show",
+        () => this.app.toggleLayerVisibility()
+      );
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      const minusW = 36;
+      const plusW = 36;
+      const readoutW = bw - minusW - plusW - gap * 2;
+      this.add("button", "layer-opacity-down-active", x, y, minusW, bh, "-", () => this.app.adjustLayerOpacity(-0.1), { centerText: true, clipRect: left });
+      this.add("button", "layer-opacity-readout-active", x + minusW + gap, y, readoutW, bh, opacityPct, null, { centerText: true, clipRect: left });
+      this.add("button", "layer-opacity-up-active", x + minusW + gap + readoutW + gap, y, plusW, bh, "+", () => this.app.adjustLayerOpacity(0.1), { centerText: true, clipRect: left });
+      y += bh;
     }
   };
 }

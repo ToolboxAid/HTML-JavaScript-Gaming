@@ -33,6 +33,27 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
       this.controlSurface.hovered = null;
     },
 
+    getLeftPanelSectionForTool(tool = this.activeTool) {
+      if (tool === "select") return "select";
+      if (["brush", "erase", "fill", "line", "rect", "fillrect", "eyedropper"].indexOf(tool) >= 0) return "brush";
+      return null;
+    },
+
+    setLeftPanelSection(section, render = true) {
+      const allowed = ["brush", "select", "grid", "layer"];
+      if (allowed.indexOf(section) < 0) return false;
+      if (this.leftPanelOpenSection === section) return false;
+      this.leftPanelOpenSection = section;
+      if (render) this.renderAll();
+      return true;
+    },
+
+    syncLeftPanelSectionForTool(tool = this.activeTool, render = false) {
+      const target = this.getLeftPanelSectionForTool(tool);
+      if (!target) return false;
+      return this.setLeftPanelSection(target, render);
+    },
+
     cancelActiveInteraction() {
       if (this.timelineInteraction) {
         this.timelineInteraction = null;

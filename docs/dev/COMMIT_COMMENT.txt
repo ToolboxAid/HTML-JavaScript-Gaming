@@ -1,1 +1,1 @@
-Run V7.5 manual QC pass for menu close behavior, files flattening, palette lock, clone workflow, and remaining blockers
+Sprite Editor v7.6 plan only: left accordion action panel and right palette/state panel refactor

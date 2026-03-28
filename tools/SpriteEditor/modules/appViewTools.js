@@ -240,6 +240,11 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
     setTool(tool) {
       this.activeTool = tool;
       this.shapePreview = null;
+      if (tool !== "select") {
+        this.clearSelection(false);
+        this.selectionStart = null;
+      }
+      this.syncLeftPanelSectionForTool(tool);
       this.showMessage("Tool: " + tool);
     },
 

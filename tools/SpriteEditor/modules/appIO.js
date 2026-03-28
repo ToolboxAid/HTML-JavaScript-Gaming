@@ -33,6 +33,7 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.document.playbackOrderOverride = { enabled: false, order: [] };
       this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
       this.paletteSidebarScroll = 0;
+      this.leftPanelOpenSection = "brush";
       this.pan = { x: 0, y: 0 };
       this.zoom = 1;
       this.referenceImageRuntime = { image: null, loaded: false };

@@ -6,10 +6,14 @@ function installControlSurfaceRightPanel(SpriteEditorCanvasControlSurface) {
     const rw = right.width - (d.padding * 2);
     const actionRequired = this.app.isPaletteSelectionRequired && this.app.isPaletteSelectionRequired();
     const titleH = 23;
+    const presetH = 22;
     const cloneH = 22;
     const messageH = 22;
     this.add("label", "lbl-palette", x, y, rw, titleH, `PALETTE: ${this.app.getPaletteStatusLabel()}`, null, { paletteHeaderBox: true, paletteActionRequired: actionRequired });
     y += titleH + d.spacing;
+    const presetLabel = `Preset: ${this.app.currentPalettePreset || this.app.document.palettePresetName || "default"}`;
+    this.add("button", "palette-preset-picker", x, y, rw, presetH, presetLabel, () => this.app.openPalettePresetsMenu());
+    y += presetH + d.spacing;
     const customClones = this.app.getCustomPaletteNames ? this.app.getCustomPaletteNames() : [];
     const cloneName = customClones.length
       ? (customClones.indexOf(this.app.currentPalettePreset) >= 0 ? this.app.currentPalettePreset : customClones[0])
