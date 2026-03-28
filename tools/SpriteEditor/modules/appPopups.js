@@ -428,6 +428,9 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.palettePresetPopup.backRect = backRect;
       this.palettePresetPopup.closeRect = closeRect;
 
+      /* Only the fields passed here override the engine defaults for
+       canvas dialog buttons.
+       */
       drawCanvasDialogButton(this.ctx, backRect, "Back To Palette", {
         fillStyle: "#1a2733",
         strokeStyle: "rgba(255,255,255,0.22)",
@@ -436,6 +439,9 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         textOffsetY: 14,
         font: "12px Arial"
       });
+      /* Unspecified button fields still come from the engine
+       default button style.
+       */
       drawCanvasDialogButton(this.ctx, closeRect, "Close", {
         textOffsetX: 27,
         textOffsetY: 14,
