@@ -1,5 +1,21 @@
 function installSpriteEditorLayerMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
+    reorderActiveLayer(delta, actionLabel, successMessage, failureMessage) {
+      this.executeWithHistory(actionLabel, () => {
+        const activeFrame = this.document.ensureFrameLayers(this.document.activeFrame);
+        const from = activeFrame.activeLayerIndex;
+        const ok = this.document.moveLayer(from, from + delta);
+        this.showMessage(ok ? successMessage : failureMessage);
+        return ok;
+      });
+      this.renderAll();
+    },
+
+    announceActiveLayerSelection() {
+      this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`);
+      this.renderAll();
+    },
+
     isLayerVisibleEffective(frame, layerIndex) {
       const resolvedFrame = this.document.ensureFrameLayers(frame || this.document.activeFrame);
       const layer = resolvedFrame.layers[layerIndex];
@@ -33,43 +49,26 @@ function installSpriteEditorLayerMethods(SpriteEditorApp) {
     },
 
     moveLayerUp() {
-      this.executeWithHistory("Layer Reorder Up", () => {
-        const activeFrame = this.document.ensureFrameLayers(this.document.activeFrame);
-        const from = activeFrame.activeLayerIndex;
-        const ok = this.document.moveLayer(from, from + 1);
-        this.showMessage(ok ? "Layer moved up." : "Layer already at top.");
-        return ok;
-      });
-      this.renderAll();
+      this.reorderActiveLayer(1, "Layer Reorder Up", "Layer moved up.", "Layer already at top.");
     },
 
     moveLayerDown() {
-      this.executeWithHistory("Layer Reorder Down", () => {
-        const activeFrame = this.document.ensureFrameLayers(this.document.activeFrame);
-        const from = activeFrame.activeLayerIndex;
-        const ok = this.document.moveLayer(from, from - 1);
-        this.showMessage(ok ? "Layer moved down." : "Layer already at bottom.");
-        return ok;
-      });
-      this.renderAll();
+      this.reorderActiveLayer(-1, "Layer Reorder Down", "Layer moved down.", "Layer already at bottom.");
     },
 
     selectLayer(index) {
       this.document.selectLayer(index);
-      this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`);
-      this.renderAll();
+      this.announceActiveLayerSelection();
     },
 
     selectNextLayer() {
       this.document.selectNextLayer();
-      this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`);
-      this.renderAll();
+      this.announceActiveLayerSelection();
     },
 
     selectPrevLayer() {
       this.document.selectPrevLayer();
-      this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`);
-      this.renderAll();
+      this.announceActiveLayerSelection();
     },
 
     selectFrame(index) {
