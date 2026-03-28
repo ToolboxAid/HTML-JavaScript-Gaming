@@ -8,21 +8,12 @@ import { pointInRect } from "../../../engine/utils/index.js";
 function installSpriteEditorShellMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     loadRecentActions() {
-      try {
-        const raw = localStorage.getItem(RECENT_ACTIONS_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 40) : [];
-      } catch (_e) {
-        return [];
-      }
+      const parsed = this.storage.loadJson(RECENT_ACTIONS_KEY, []);
+      return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 40) : [];
     },
 
     saveRecentActions() {
-      try {
-        localStorage.setItem(RECENT_ACTIONS_KEY, JSON.stringify(this.recentActions.slice(0, 40)));
-      } catch (_e) {
-        // Ignore localStorage failures.
-      }
+      this.storage.saveJson(RECENT_ACTIONS_KEY, this.recentActions.slice(0, 40));
     },
 
     trackRecentAction(actionId) {
@@ -105,13 +96,8 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
     },
 
     loadFavoriteActions() {
-      try {
-        const raw = localStorage.getItem(FAVORITE_ACTIONS_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 80) : [];
-      } catch (_e) {
-        return [];
-      }
+      const parsed = this.storage.loadJson(FAVORITE_ACTIONS_KEY, []);
+      return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string").slice(0, 80) : [];
     },
 
     getBuiltInMacros() {
@@ -156,26 +142,17 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
 
     loadMacroDefinitions() {
       const builtIns = this.getBuiltInMacros().map((m) => this.normalizeMacroDefinition(m)).filter(Boolean);
-      try {
-        const raw = localStorage.getItem(MACRO_DEFINITIONS_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        if (!Array.isArray(parsed)) return builtIns;
-        const custom = parsed.map((m) => this.normalizeMacroDefinition(m)).filter(Boolean);
-        const byId = new Map();
-        builtIns.forEach((m) => byId.set(m.id, m));
-        custom.forEach((m) => byId.set(m.id, m));
-        return Array.from(byId.values());
-      } catch (_e) {
-        return builtIns;
-      }
+      const parsed = this.storage.loadJson(MACRO_DEFINITIONS_KEY, []);
+      if (!Array.isArray(parsed)) return builtIns;
+      const custom = parsed.map((m) => this.normalizeMacroDefinition(m)).filter(Boolean);
+      const byId = new Map();
+      builtIns.forEach((m) => byId.set(m.id, m));
+      custom.forEach((m) => byId.set(m.id, m));
+      return Array.from(byId.values());
     },
 
     saveFavoriteActions() {
-      try {
-        localStorage.setItem(FAVORITE_ACTIONS_KEY, JSON.stringify(this.favoriteActions.slice(0, 80)));
-      } catch (_e) {
-        // Ignore localStorage failures.
-      }
+      this.storage.saveJson(FAVORITE_ACTIONS_KEY, this.favoriteActions.slice(0, 80));
     },
 
     toggleFavoriteAction(actionId) {

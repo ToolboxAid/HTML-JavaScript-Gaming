@@ -59,23 +59,27 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
         this.showMessage("Nothing to save.");
         return;
       }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      const ok = this.storage.saveJson(STORAGE_KEY, {
         doc: this.document.buildExportPayload()
-      }));
+      });
+      if (!ok) {
+        this.showMessage("Save unavailable.");
+        return false;
+      }
       this.markCleanBaseline();
       this.showMessage("Saved locally.");
+      return true;
     },
 
     loadLocal() {
       return this.requestDocumentReplacement("Load Local", "Replace current document with local save?", () => {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
+        const stored = this.storage.loadJson(STORAGE_KEY, null);
+        if (!stored) {
           this.showMessage("No local save.");
           return;
         }
         try {
-          const parsed = JSON.parse(raw);
-          this.importDocumentPayload(this.getStoredDocumentPayload(parsed), "Loaded local save.");
+          this.importDocumentPayload(this.getStoredDocumentPayload(stored), "Loaded local save.");
         } catch (_e) {
           this.showMessage("Load failed.");
         }

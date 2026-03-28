@@ -1,6 +1,7 @@
 import { SpriteEditorViewport } from "./viewport.js";
 import { SpriteEditorDocument } from "./document.js";
 import { SpriteEditorCanvasControlSurface } from "./controlSurface.js";
+import { StorageService } from "../../../engine/persistence/index.js";
 import { BrowserDownloadService, FullscreenService } from "../../../engine/runtime/index.js";
 import { createCanvasPopupState } from "../../../engine/ui/index.js";
 import { installSpriteEditorPopupMethods } from "./appPopups.js";
@@ -25,6 +26,7 @@ class SpriteEditorApp {
       this.fileInput = fileInput;
       this.downloadLink = downloadLink;
       this.downloads = BrowserDownloadService.fromBrowser({ linkElement: downloadLink });
+      this.storage = new StorageService();
       this.viewport = new SpriteEditorViewport(canvas);
       this.document = new SpriteEditorDocument();
       this.controlSurface = new SpriteEditorCanvasControlSurface(this);
