@@ -4,3 +4,13 @@
 - put a moving dash/dot around the selected palette color
 - palette must be selected prior to first command being exicuted.  Once selected, it cannot change for the sprite,  we need the ability to create a custom from selected font and name it. this is for games that have a common theme, like block in the sun they are red, in the basement they are gray, under water they are blue.  so multiple custom clones can exist. the colors of the clone can be modified. prevent first grid click until set.  on new/start set palette to NONE-Must be selected first and a popup if grid is clicked
 
+- review how palette(s) should be used.
+
+- Palette menu does not need to duplicat Sort By: Name, Hue, Sat, Lightness
+
+- what do these do:
+Set src from currently
+set dst from currently
+scope active lay
+scope current frame
+scop selecte rand 
