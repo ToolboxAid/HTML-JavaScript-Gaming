@@ -4,12 +4,10 @@
 // paletteList.js
 
 /** Reference colors
- * Crayola Colors
  * https://www.crayola.com/explore-colors/
  * https://toolboxaid.com/programming/html/crayola-colors/
  * https://www.w3schools.com/colors/colors_crayola.asp
  * https://www.jennyscrayoncollection.com/2017/10/complete-list-of-current-crayola-crayon.html
- * 
  */
 
 const palettesList = {
@@ -1060,6 +1058,7 @@ const palettesList = {
     ],
 
     // 
+    /*
     test: [
         { symbol: '!', hex: '#843530', name: 'Color-132-53-48' }, 		 // color #'0' ascii'33'
         { symbol: 'ÿ', hex: '#8b3d32', name: 'Color-139-61-50' }, 		 // color #'1' ascii'34'
@@ -1163,8 +1162,10 @@ const palettesList = {
         { symbol: 'Ø', hex: '#00000000', name: 'Transparent' },
 
     ],
+    */
 
     //
+    /*
     spaceInvaders: [
         { symbol: 'R', hex: '#FF0000', name: 'Red' },
         { symbol: 'O', hex: '#FFA500', name: 'Orange' },
@@ -1189,6 +1190,7 @@ const palettesList = {
         // Transparent
         { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
     ],
+    */
 
 };
 
