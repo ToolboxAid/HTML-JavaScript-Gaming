@@ -185,6 +185,168 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
         });
       }
       ctx.restore();
+    },
+
+    drawPreviewPanel() {
+      const p = this.controlSurface.layout.bottomPanel;
+      const x = p.x + 18;
+      const y = p.y + 8;
+      const w = 210;
+      const h = 108;
+      this.ctx.fillStyle = "#1a2733";
+      this.ctx.fillRect(x, y, w, h);
+      this.ctx.strokeStyle = "rgba(255,255,255,0.15)";
+      this.ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "bold 12px Arial";
+      this.ctx.fillText("ANIMATION PREVIEW", x + 12, y + 16);
+      const previewIndex = this.playback.isPlaying
+        ? this.playback.previewFrameIndex
+        : (this.timelineHoverIndex !== null ? this.timelineHoverIndex : this.document.activeFrameIndex);
+      const f = this.document.frames[Math.max(0, Math.min(previewIndex, this.document.frames.length - 1))];
+      this.drawMiniPixels(this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), x + 12, y + 24, 72, 72);
+      this.ctx.font = "12px Arial";
+      this.ctx.fillText(`Frame ${previewIndex + 1} / ${this.document.frames.length}`, x + 96, y + 36);
+    },
+
+    drawSheetPanel() {
+      const p = this.controlSurface.layout.bottomPanel;
+      const x = p.x + 242;
+      const y = p.y + 6;
+      const w = Math.max(240, (this.timelineStripRect ? this.timelineStripRect.x : (p.x + p.width - 18)) - (p.x + 242) - 18);
+      const h = 112;
+      this.drawSheetPreview(this.ctx, { x, y, width: w, height: h }, true);
+    },
+
+    drawSheetPreview(ctx, rect, withChrome) {
+      const plc = this.document.computeSheetPlacement();
+      const titleH = withChrome ? 18 : 0;
+      const footerH = 0;
+      const innerPad = withChrome ? 5 : 0;
+      const order = this.document.frames.length <= 8
+        ? this.document.frames.map((_, i) => i + 1).join(", ")
+        : `1..${this.document.frames.length}`;
+      if (withChrome) {
+        ctx.fillStyle = "#1a2733";
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        ctx.strokeStyle = "rgba(255,255,255,0.15)";
+        ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
+        ctx.fillStyle = "#dbe7f3";
+        ctx.font = "bold 12px Arial";
+        ctx.fillText("SHEET PREVIEW", rect.x + 12, rect.y + 16);
+      }
+      const cx = rect.x + innerPad;
+      const cy = rect.y + innerPad + titleH;
+      const cw = rect.width - innerPad * 2;
+      const ch = rect.height - innerPad * 2 - titleH - footerH;
+      const infoW = withChrome ? Math.min(132, Math.max(110, Math.floor(cw * 0.26))) : 0;
+      const previewW = Math.max(24, cw - infoW - (withChrome ? 8 : 0));
+      const previewX = cx;
+      const infoX = previewX + previewW + 8;
+      const scale = Math.max(1, Math.floor(Math.min(previewW / plc.width, ch / plc.height)));
+      const drawW = plc.width * scale;
+      const drawH = plc.height * scale;
+      const drawX = previewX + Math.floor((previewW - drawW) * 0.5);
+      const drawY = cy + Math.floor((ch - drawH) * 0.5);
+      if (this.document.sheet.transparent) this.drawCheckerboard(ctx, drawX, drawY, drawW, drawH, Math.max(4, scale));
+      else {
+        ctx.fillStyle = this.document.sheet.backgroundColor;
+        ctx.fillRect(drawX, drawY, drawW, drawH);
+      }
+      this.document.frames.forEach((f, i) => {
+        const e = plc.entries[i];
+        const cpx = this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" });
+        for (let y = 0; y < this.document.rows; y += 1) {
+          for (let x = 0; x < this.document.cols; x += 1) {
+            const v = cpx[y][x];
+            if (!v) continue;
+            ctx.fillStyle = v;
+            ctx.fillRect(drawX + (e.x + x) * scale, drawY + (e.y + y) * scale, scale, scale);
+          }
+        }
+      });
+      if (withChrome) {
+        ctx.font = "11px Arial";
+        ctx.fillStyle = "#e6f2ff";
+        ctx.fillText(`Frames: ${this.document.frames.length}`, infoX, cy + 18);
+        ctx.fillStyle = "#b9c8d8";
+        ctx.fillText("Order:", infoX, cy + 38);
+        ctx.fillText(order.length > 18 ? `${order.slice(0, 18)}...` : order, infoX, cy + 54);
+      }
+    },
+
+    drawMiniPixels(pixels, x, y, w, h) {
+      const cols = this.document.cols;
+      const rows = this.document.rows;
+      const pw = Math.max(1, Math.floor(w / cols));
+      const ph = Math.max(1, Math.floor(h / rows));
+      this.ctx.fillStyle = "#fff";
+      this.ctx.fillRect(x, y, w, h);
+      for (let py = 0; py < rows; py += 1) {
+        for (let px = 0; px < cols; px += 1) {
+          const v = pixels[py][px];
+          if (!v) continue;
+          this.ctx.fillStyle = v;
+          this.ctx.fillRect(x + px * pw, y + py * ph, pw, ph);
+        }
+      }
+      this.ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      this.ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+    },
+
+    drawCheckerboard(ctx, x, y, w, h, b) {
+      for (let py = 0; py < h; py += b) {
+        for (let px = 0; px < w; px += b) {
+          ctx.fillStyle = ((Math.floor(px / b) + Math.floor(py / b)) % 2 === 0) ? "#f8fafc" : "#e2e8f0";
+          ctx.fillRect(x + px, y + py, b, b);
+        }
+      }
+    },
+
+    drawBottomStatus() {
+      const b = this.controlSurface.layout.bottomPanel;
+      const y = b.y + 40;
+      const sel = this.document.selection ? `Sel ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "Sel -";
+      const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
+      const frameRange = this.getFrameRangeSelection();
+      const frameRangeText = frameRange.explicit ? `Frames ${frameRange.start + 1}-${frameRange.end + 1}` : `Frame ${this.document.activeFrameIndex + 1}`;
+      const playbackRange = this.getPlaybackRange();
+      const playbackRangeText = playbackRange.enabled ? `Range ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}` : "Range Off";
+      const hoverPreviewText = this.timelineHoverIndex !== null ? `Hover ${this.timelineHoverIndex + 1}` : "Hover -";
+      const paletteReplaceText = `Replace ${this.paletteWorkflow.source ? "S" : "-"}>${this.paletteWorkflow.target ? "T" : "-"} ${this.getPaletteScopeLabel().replace("Scope: ", "")}`;
+      const af = this.document.ensureFrameLayers(this.document.activeFrame);
+      const activeLayer = af.layers[af.activeLayerIndex];
+      const layerFlags = [
+        activeLayer && activeLayer.locked ? "Locked" : null,
+        activeLayer ? `${Math.round(((typeof activeLayer.opacity === "number" ? activeLayer.opacity : 1) * 100))}%` : null
+      ].filter(Boolean).join(" ");
+      const brushText = (this.activeTool === "brush" || this.activeTool === "erase")
+        ? `Brush ${this.brush.size}/${this.brush.shape}`
+        : (this.activeTool === "line" || this.activeTool === "rect" || this.activeTool === "fillrect" ? "Shape drag preview" : "Brush -");
+      const topLine = `Tool ${this.activeTool} | ${brushText} | ${frameRangeText} | ${hoverPreviewText} | ${hover}`;
+      const middleLine = `Layer ${activeLayer ? activeLayer.name : "-"}${layerFlags ? ` (${layerFlags})` : ""} | ${paletteReplaceText} | Zoom ${this.zoom.toFixed(2)}x | Pixel ${this.viewport.pixelPerfect ? "On" : "Off"}`;
+      const playbackText = `Playback ${this.playback.isPlaying ? "Play" : "Pause"} ${this.playback.fps}fps ${this.playback.loop ? "Loop" : "Once"} | ${playbackRangeText} | Onion ${this.onionSkin.prev ? "P" : "-"}${this.onionSkin.next ? "N" : "-"}`;
+      const shortcutsText = this.controlSurface.dragFeedbackText ? this.controlSurface.dragFeedbackText : `${sel} | ${playbackText}`;
+      const rightMargin = 18;
+      const timelineLeft = this.timelineStripRect ? this.timelineStripRect.x - 18 : (b.x + b.width - rightMargin);
+      const maxRight = Math.max(b.x + 320, Math.min(b.x + b.width - rightMargin, timelineLeft));
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "12px Arial";
+      const toolX = maxRight - this.ctx.measureText(topLine).width;
+      const middleX = maxRight - this.ctx.measureText(middleLine).width;
+      const shortcutsX = maxRight - this.ctx.measureText(shortcutsText).width;
+      this.ctx.fillText(topLine, Math.max(b.x + 18, toolX), y);
+      this.ctx.fillText(middleLine, Math.max(b.x + 18, middleX), y + 22);
+      this.ctx.fillText(shortcutsText, Math.max(b.x + 18, shortcutsX), y + 44);
+      this.ctx.fillStyle = "#91a3b6";
+      const dirtyText = this.isDirty ? "Modified" : "Saved";
+      const nextUndo = this.history.undo.length ? this.history.undo[this.history.undo.length - 1].label : "-";
+      const nextRedo = this.history.redo.length ? this.history.redo[this.history.redo.length - 1].label : "-";
+      this.ctx.fillText(`State: ${dirtyText} | Undo: ${nextUndo} | Redo: ${nextRedo}`, b.x + 18, y + 66);
+      this.ctx.fillStyle = performance.now() < this.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
+      const message = this.statusMessage || "Ready.";
+      const messageX = Math.max(b.x + 18, maxRight - this.ctx.measureText(message).width);
+      this.ctx.fillText(message, messageX, y + 66);
     }
   });
 }

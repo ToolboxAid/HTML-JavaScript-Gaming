@@ -1,5 +1,14 @@
 function installSpriteEditorActionMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
+    runHistoryResultAction(label, mutator, successMessage, failureMessage) {
+      this.executeWithHistory(label, () => {
+        const ok = mutator();
+        this.showMessage(ok ? successMessage : failureMessage);
+        return ok;
+      });
+      this.renderAll();
+    },
+
     replacePaletteColor() {
       const source = this.paletteWorkflow.source;
       const target = this.paletteWorkflow.target;
@@ -85,10 +94,31 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
       return true;
     },
 
-    addFrame() { this.executeWithHistory("Frame Add", () => { this.document.addFrame(); this.showMessage("Frame added."); return true; }); this.renderAll(); },
-    duplicateFrame() { this.executeWithHistory("Frame Duplicate", () => { this.document.duplicateFrame(); this.showMessage("Frame duplicated."); return true; }); this.renderAll(); },
-    deleteFrame() { this.executeWithHistory("Frame Delete", () => { const ok = this.document.deleteFrame(); this.showMessage(ok ? "Frame deleted." : "Cannot delete last frame."); return ok; }); this.renderAll(); },
-    reorderFrame(from, to) { this.executeWithHistory("Frame Reorder", () => { const ok = this.document.moveFrame(from, to); this.showMessage(ok ? "Frame reordered." : "Frame reorder failed."); return ok; }); this.renderAll(); },
+    addFrame() {
+      this.executeWithHistory("Frame Add", () => {
+        this.document.addFrame();
+        this.showMessage("Frame added.");
+        return true;
+      });
+      this.renderAll();
+    },
+
+    duplicateFrame() {
+      this.executeWithHistory("Frame Duplicate", () => {
+        this.document.duplicateFrame();
+        this.showMessage("Frame duplicated.");
+        return true;
+      });
+      this.renderAll();
+    },
+
+    deleteFrame() {
+      this.runHistoryResultAction("Frame Delete", () => this.document.deleteFrame(), "Frame deleted.", "Cannot delete last frame.");
+    },
+
+    reorderFrame(from, to) {
+      this.runHistoryResultAction("Frame Reorder", () => this.document.moveFrame(from, to), "Frame reordered.", "Frame reorder failed.");
+    },
 
     duplicateSelectedFrameRange() {
       this.executeWithHistory("Frame Range Duplicate", () => {
@@ -142,9 +172,17 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
       this.renderAll();
     },
 
-    addLayer() { this.executeWithHistory("Layer Add", () => { const ok = this.document.addLayer(); this.showMessage(ok ? "Layer added." : "Layer add failed."); return ok; }); this.renderAll(); },
-    duplicateLayer() { this.executeWithHistory("Layer Duplicate", () => { const ok = this.document.duplicateLayer(); this.showMessage(ok ? "Layer duplicated." : "Layer duplicate failed."); return ok; }); this.renderAll(); },
-    deleteLayer() { this.executeWithHistory("Layer Delete", () => { const ok = this.document.deleteLayer(); this.showMessage(ok ? "Layer deleted." : "Cannot delete last layer."); return ok; }); this.renderAll(); },
+    addLayer() {
+      this.runHistoryResultAction("Layer Add", () => this.document.addLayer(), "Layer added.", "Layer add failed.");
+    },
+
+    duplicateLayer() {
+      this.runHistoryResultAction("Layer Duplicate", () => this.document.duplicateLayer(), "Layer duplicated.", "Layer duplicate failed.");
+    },
+
+    deleteLayer() {
+      this.runHistoryResultAction("Layer Delete", () => this.document.deleteLayer(), "Layer deleted.", "Cannot delete last layer.");
+    },
 
     toggleLayerVisibility() {
       this.executeWithHistory("Layer Visibility", () => {
@@ -155,7 +193,14 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
       this.renderAll();
     },
 
-    toggleLayerLock() { this.executeWithHistory("Layer Lock", () => { const ok = this.document.toggleLayerLock(); this.showMessage(ok ? (this.document.activeLayer.locked ? "Layer locked." : "Layer unlocked.") : "Layer lock failed."); return ok; }); this.renderAll(); },
+    toggleLayerLock() {
+      this.executeWithHistory("Layer Lock", () => {
+        const ok = this.document.toggleLayerLock();
+        this.showMessage(ok ? (this.document.activeLayer.locked ? "Layer locked." : "Layer unlocked.") : "Layer lock failed.");
+        return ok;
+      });
+      this.renderAll();
+    },
 
     adjustLayerOpacity(delta) {
       this.executeWithHistory("Layer Opacity", () => {
