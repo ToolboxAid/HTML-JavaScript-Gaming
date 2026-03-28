@@ -17,6 +17,8 @@ import { installSpriteEditorPaletteMethods } from "./appPalette.js";
 import { installSpriteEditorExportMethods } from "./appExport.js";
 import { installSpriteEditorTimelineMethods } from "./appTimeline.js";
 import { installSpriteEditorHistoryMethods } from "./appHistory.js";
+import { installSpriteEditorViewToolMethods } from "./appViewTools.js";
+import { installSpriteEditorLayerMethods } from "./appLayers.js";
 
 class SpriteEditorApp {
     constructor(canvas,fileInput,downloadLink) {
@@ -112,10 +114,6 @@ class SpriteEditorApp {
 
     isPointInRect(point, rect) {
       return !!(point && rect && point.x >= rect.x && point.y >= rect.y && point.x <= rect.x + rect.w && point.y <= rect.y + rect.h);
-    }
-
-    getPaletteLibrary() {
-      return (typeof globalThis.palettesList === "object" && globalThis.palettesList) ? globalThis.palettesList : null;
     }
 
     clearHoverPreviewState() {
@@ -323,61 +321,6 @@ class SpriteEditorApp {
       this.renderAll();
     }
 
-    computeGridRect() {
-      const a = this.controlSurface.layout.gridArea;
-      const basePixelSize = Math.max(12, Math.floor(Math.min(a.width / this.document.cols, a.height / this.document.rows)));
-      const pixelSize = Math.max(4, Math.floor(basePixelSize * this.zoom));
-      const width = this.document.cols * pixelSize;
-      const height = this.document.rows * pixelSize;
-      const maxPanX = Math.max(0, Math.floor((width - a.width) / 2) + 40);
-      const maxPanY = Math.max(0, Math.floor((height - a.height) / 2) + 40);
-      this.pan.x = Math.max(-maxPanX, Math.min(maxPanX, this.pan.x));
-      this.pan.y = Math.max(-maxPanY, Math.min(maxPanY, this.pan.y));
-      return {
-        x: a.x + Math.floor((a.width - width) / 2) + this.pan.x,
-        y: a.y + Math.floor((a.height - height) / 2) + this.pan.y,
-        width,
-        height,
-        pixelSize
-      };
-    }
-
-    logicalPointFromEvent(e) {
-      return this.viewport.screenToLogical(e.clientX, e.clientY);
-    }
-
-    getGridCellAtLogical(x, y) {
-      const r = this.gridRect;
-      if (!r || x < r.x || y < r.y || x > r.x + r.width || y > r.y + r.height) return null;
-      return { x: Math.floor((x - r.x) / r.pixelSize), y: Math.floor((y - r.y) / r.pixelSize) };
-    }
-
-    getToolLabel(tool) {
-      const labels = {
-        brush: "Brush",
-        erase: "Erase",
-        fill: "Fill",
-        line: "Line",
-        rect: "Rectangle",
-        fillrect: "Fill Rectangle",
-        eyedropper: "Eyedropper",
-        select: "Select"
-      };
-      return labels[tool] || String(tool || "Tool");
-    }
-    getActiveToolDescription() {
-      const map = {
-        brush: { primary: "Paint pixels with the active color.", secondary: "Drag for continuous strokes. 1-9 changes size." },
-        erase: { primary: "Remove pixels from the active layer.", secondary: "Right-click also erases while drawing." },
-        fill: { primary: "Flood fill connected pixels.", secondary: "Use when you want solid retro regions fast." },
-        line: { primary: "Draw a straight pixel-perfect line.", secondary: "Click and drag to preview before committing." },
-        rect: { primary: "Draw a rectangle outline.", secondary: "Drag to size the shape before release." },
-        fillrect: { primary: "Draw a filled rectangle.", secondary: "Good for blocks, panels, and tile silhouettes." },
-        eyedropper: { primary: "Sample a color from artwork.", secondary: "Click any painted cell to set the active color." },
-        select: { primary: "Create or move a rectangular selection.", secondary: "Use arrows to nudge after selecting." }
-      };
-      return map[this.activeTool] || { primary: "Choose a tool from the top Tools menu.", secondary: "Tool details appear here while you work." };
-    }
     isTypingTarget(target) {
       if (!target) return false;
       const tag = (target.tagName || "").toLowerCase();
@@ -394,278 +337,6 @@ class SpriteEditorApp {
       return parts.join("+");
     }
 
-    adjustZoom(delta) {
-      this.zoom = Math.max(0.5, Math.min(8, Number((this.zoom + delta).toFixed(2))));
-      this.gridRect = this.computeGridRect();
-      this.showMessage("Zoom: " + this.zoom.toFixed(2) + "x");
-      this.renderAll();
-    }
-
-    resizeDocumentGrid(nextCols, nextRows) {
-      return this.executeWithHistory(`Grid Resize ${nextCols}x${nextRows}`, () => {
-        const cols = Math.max(1, Math.min(256, Math.floor(Number(nextCols) || this.document.cols)));
-        const rows = Math.max(1, Math.min(256, Math.floor(Number(nextRows) || this.document.rows)));
-        if (cols === this.document.cols && rows === this.document.rows) return false;
-        const resizeGrid = (source) => {
-          const out = Array.from({ length: rows }, (_row, y) =>
-            Array.from({ length: cols }, (_col, x) => (source && source[y] && typeof source[y][x] !== "undefined") ? source[y][x] : null)
-          );
-          return out;
-        };
-        this.document.frames.forEach((frame) => {
-          const normalized = this.document.ensureFrameLayers(frame);
-          normalized.layers.forEach((layer) => {
-            layer.pixels = resizeGrid(layer.pixels);
-          });
-        });
-        this.document.cols = cols;
-        this.document.rows = rows;
-        this.document.clearSelection();
-        this.gridRect = this.computeGridRect();
-        this.showMessage(`Grid size: ${cols} x ${rows}`);
-        return true;
-      });
-    }
-
-    adjustGridCols(delta) {
-      const next = this.document.cols + delta;
-      const ok = this.resizeDocumentGrid(next, this.document.rows);
-      if (!ok) this.showMessage("Grid columns unchanged.");
-      this.renderAll();
-      return ok;
-    }
-
-    adjustGridRows(delta) {
-      const next = this.document.rows + delta;
-      const ok = this.resizeDocumentGrid(this.document.cols, next);
-      if (!ok) this.showMessage("Grid rows unchanged.");
-      this.renderAll();
-      return ok;
-    }
-
-    resetZoom() {
-      this.zoom = 1;
-      this.pan = { x: 0, y: 0 };
-      this.gridRect = this.computeGridRect();
-      this.showMessage("Zoom/pan reset.");
-      this.renderAll();
-    }
-
-    togglePixelPerfect() {
-      this.viewport.togglePixelPerfect();
-      this.resize();
-      this.showMessage(this.viewport.pixelPerfect ? "Pixel perfect on." : "Pixel perfect off.");
-      this.renderAll();
-    }
-
-    toggleOnionPrevious() {
-      this.onionSkin.prev = !this.onionSkin.prev;
-      this.showMessage(this.onionSkin.prev ? "Onion previous on." : "Onion previous off.");
-      this.renderAll();
-    }
-
-    toggleOnionNext() {
-      this.onionSkin.next = !this.onionSkin.next;
-      this.showMessage(this.onionSkin.next ? "Onion next on." : "Onion next off.");
-      this.renderAll();
-    }
-
-    setSelectionFromTwoCells(a,b) {
-      const l = Math.min(a.x,b.x), t = Math.min(a.y,b.y), r = Math.max(a.x,b.x), bt = Math.max(a.y,b.y);
-      this.document.setSelection({ x: l, y: t, width: r-l+1, height: bt-t+1 });
-      this.selectionPasteOrigin = { x: l, y: t };
-    }
-
-    getBrushCellsAt(x, y, size = this.brush.size, shape = this.brush.shape) {
-      const cells = [];
-      const radius = Math.floor(Math.max(1, size) / 2);
-      for (let oy = -radius; oy <= radius; oy += 1) {
-        for (let ox = -radius; ox <= radius; ox += 1) {
-          if (shape === "circle") {
-            const limit = radius + 0.25;
-            if (Math.sqrt((ox * ox) + (oy * oy)) > limit) continue;
-          }
-          cells.push({ x: x + ox, y: y + oy });
-        }
-      }
-      return cells;
-    }
-    getLineCells(a, b) {
-      const cells = [];
-      let x0 = a.x;
-      let y0 = a.y;
-      const x1 = b.x;
-      const y1 = b.y;
-      const dx = Math.abs(x1 - x0);
-      const dy = Math.abs(y1 - y0);
-      const sx = x0 < x1 ? 1 : -1;
-      const sy = y0 < y1 ? 1 : -1;
-      let err = dx - dy;
-      while (true) {
-        cells.push({ x: x0, y: y0 });
-        if (x0 === x1 && y0 === y1) break;
-        const e2 = err * 2;
-        if (e2 > -dy) { err -= dy; x0 += sx; }
-        if (e2 < dx) { err += dx; y0 += sy; }
-      }
-      return cells;
-    }
-    getRectCells(a, b, filled) {
-      const left = Math.min(a.x, b.x);
-      const right = Math.max(a.x, b.x);
-      const top = Math.min(a.y, b.y);
-      const bottom = Math.max(a.y, b.y);
-      const cells = [];
-      for (let y = top; y <= bottom; y += 1) {
-        for (let x = left; x <= right; x += 1) {
-          if (filled || x === left || x === right || y === top || y === bottom) {
-            cells.push({ x, y });
-          }
-        }
-      }
-      return cells;
-    }
-    getShapeCells(start, end, tool) {
-      if (!start || !end) return [];
-      if (tool === "line") return this.getLineCells(start, end);
-      if (tool === "rect") return this.getRectCells(start, end, false);
-      if (tool === "fillrect") return this.getRectCells(start, end, true);
-      return [];
-    }
-    applyBrushStamp(x, y, erase) {
-      const value = erase ? null : this.document.currentColor;
-      const cells = this.getBrushCellsAt(x, y);
-      cells.forEach((cell) => this.document.setPixel(cell.x, cell.y, value, this.mirror));
-    }
-    applyStrokeSegment(from, to, erase) {
-      const path = this.getLineCells(from, to);
-      path.forEach((cell) => this.applyBrushStamp(cell.x, cell.y, erase));
-    }
-    commitShapePreview() {
-      if (!this.shapePreview || !this.shapePreview.start || !this.shapePreview.current) return false;
-      return this.executeWithHistory("Shape Draw", () => {
-        const cells = this.getShapeCells(this.shapePreview.start, this.shapePreview.current, this.shapePreview.tool);
-        if (!cells.length) return false;
-        const erase = !!this.shapePreview.erase;
-        const value = erase ? null : this.document.currentColor;
-        cells.forEach((cell) => this.document.setPixel(cell.x, cell.y, value, this.mirror));
-        this.showMessage(`Shape: ${this.shapePreview.tool}`);
-        return true;
-      });
-    }
-    applyGridTool(x,y,erase) {
-      if (this.activeTool === "eyedropper") {
-        const v = this.document.getPixel(x,y);
-        if (v) this.setCurrentColor(v);
-        this.showMessage("Picked color.");
-        return;
-      }
-      if (!this.canEditActiveLayer(true)) return;
-      if (this.activeTool === "fill") {
-        this.document.floodFill(x,y,erase ? null : this.document.currentColor,this.mirror);
-        return;
-      }
-      this.applyBrushStamp(x,y,erase || this.activeTool === "erase");
-    }
-
-    setTool(t) {
-      this.activeTool = t;
-      this.shapePreview = null;
-      this.showMessage("Tool: " + t);
-    }
-    setBrushSize(size) {
-      this.brush.size = Math.max(1, Math.min(9, Math.floor(size || 1)));
-      this.showMessage(`Brush size: ${this.brush.size}`);
-      this.renderAll();
-    }
-    adjustBrushSize(delta) { this.setBrushSize(this.brush.size + delta); }
-    toggleBrushShape() {
-      this.brush.shape = this.brush.shape === "square" ? "circle" : "square";
-      this.showMessage(`Brush shape: ${this.brush.shape}`);
-      this.renderAll();
-    }
-    toggleMirror() { this.mirror = !this.mirror; this.showMessage(this.mirror ? "Mirror on." : "Mirror off."); this.renderAll(); }
-    isLayerVisibleEffective(frame, layerIndex) {
-      const f = this.document.ensureFrameLayers(frame || this.document.activeFrame);
-      const layer = f.layers[layerIndex];
-      if (!layer) return false;
-      const solo = this.document.soloState;
-      if (solo && solo.frameId === f.id) return solo.layerIndex === layerIndex;
-      return layer.visible !== false;
-    }
-    canEditActiveLayer(showFeedback = true) {
-      const l = this.document.activeLayer;
-      if (l && l.locked) {
-        if (showFeedback) this.showMessage(`Layer locked: ${l.name}`);
-        return false;
-      }
-      return true;
-    }
-    sanitizeSoloState() {
-      const solo = this.document.soloState;
-      if (!solo) return;
-      const frame = this.document.frames.find((f) => f.id === solo.frameId);
-      if (!frame) {
-        this.document.soloState = null;
-        return;
-      }
-      const fr = this.document.ensureFrameLayers(frame);
-      if (solo.layerIndex < 0 || solo.layerIndex >= fr.layers.length) {
-        this.document.soloState = null;
-      }
-    }
-    syncCurrentPalettePreset() {
-      const paletteLibrary = this.getPaletteLibrary();
-      if (!paletteLibrary) {
-        this.currentPalettePreset = "Custom";
-        return;
-      }
-      const paletteSig = JSON.stringify(this.document.palette || []);
-      const names = Object.keys(paletteLibrary);
-      for (let i = 0; i < names.length; i += 1) {
-        const entries = paletteLibrary[names[i]];
-        if (!Array.isArray(entries)) continue;
-        const hexes = entries.map((entry) => entry && entry.hex).filter((hex) => typeof hex === "string");
-        if (JSON.stringify(hexes) === paletteSig) {
-          this.currentPalettePreset = names[i];
-          return;
-        }
-      }
-      this.currentPalettePreset = "Custom";
-    }
-    moveLayerUp() {
-      this.executeWithHistory("Layer Reorder Up", () => {
-        const af = this.document.ensureFrameLayers(this.document.activeFrame);
-        const from = af.activeLayerIndex;
-        const ok = this.document.moveLayer(from, from + 1);
-        this.showMessage(ok ? "Layer moved up." : "Layer already at top.");
-        return ok;
-      });
-      this.renderAll();
-    }
-    moveLayerDown() {
-      this.executeWithHistory("Layer Reorder Down", () => {
-        const af = this.document.ensureFrameLayers(this.document.activeFrame);
-        const from = af.activeLayerIndex;
-        const ok = this.document.moveLayer(from, from - 1);
-        this.showMessage(ok ? "Layer moved down." : "Layer already at bottom.");
-        return ok;
-      });
-      this.renderAll();
-    }
-    selectLayer(i) { this.document.selectLayer(i); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
-    selectNextLayer() { this.document.selectNextLayer(); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
-    selectPrevLayer() { this.document.selectPrevLayer(); this.showMessage(`Layer ${this.document.activeFrame.activeLayerIndex + 1} selected.`); this.renderAll(); }
-    selectFrame(i) {
-      this.document.activeFrameIndex = Math.max(0, Math.min(i, this.document.frames.length - 1));
-      this.document.ensureFrameLayers(this.document.activeFrame);
-      this.playback.previewFrameIndex = this.document.activeFrameIndex;
-      this.document.clearSelection();
-      this.renderAll();
-    }
-    copyFrame() { this.document.copyFrame(); this.showMessage("Frame copied."); this.renderAll(); }
-    pasteFrame() { this.executeWithHistory("Frame Paste", () => { const ok = this.document.pasteFrame(); this.showMessage(ok ? "Frame pasted." : "No copied frame."); return ok; }); this.renderAll(); }
-
     showMessage(m) { this.statusMessage = m; this.flashMessageUntil = performance.now() + 1800; }
 }
 
@@ -680,5 +351,7 @@ installSpriteEditorPaletteMethods(SpriteEditorApp);
 installSpriteEditorExportMethods(SpriteEditorApp);
 installSpriteEditorTimelineMethods(SpriteEditorApp);
 installSpriteEditorHistoryMethods(SpriteEditorApp);
+installSpriteEditorViewToolMethods(SpriteEditorApp);
+installSpriteEditorLayerMethods(SpriteEditorApp);
 
 export { SpriteEditorApp };

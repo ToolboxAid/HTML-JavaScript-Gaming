@@ -1,5 +1,9 @@
 function installSpriteEditorPaletteMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
+    getPaletteLibrary() {
+      return (typeof globalThis.palettesList === "object" && globalThis.palettesList) ? globalThis.palettesList : null;
+    },
+
     colorHexToHsl(hex) {
       const value = String(hex || "").replace("#", "");
       if (value.length < 6) return { h: 0, s: 0, l: 0 };
@@ -158,6 +162,26 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         this.showMessage(`Palette applied: ${paletteName}`);
         return true;
       });
+    },
+
+    syncCurrentPalettePreset() {
+      const paletteLibrary = this.getPaletteLibrary();
+      if (!paletteLibrary) {
+        this.currentPalettePreset = "Custom";
+        return;
+      }
+      const paletteSig = JSON.stringify(this.document.palette || []);
+      const names = Object.keys(paletteLibrary);
+      for (let i = 0; i < names.length; i += 1) {
+        const entries = paletteLibrary[names[i]];
+        if (!Array.isArray(entries)) continue;
+        const hexes = entries.map((entry) => entry && entry.hex).filter((hex) => typeof hex === "string");
+        if (JSON.stringify(hexes) === paletteSig) {
+          this.currentPalettePreset = names[i];
+          return;
+        }
+      }
+      this.currentPalettePreset = "Custom";
     },
   });
 }
