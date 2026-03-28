@@ -223,6 +223,28 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       ];
     },
 
+    parseCssColorToRgbInt(value) {
+      const text = String(value || "").trim();
+      if (!text) return null;
+      const hex = this.normalizeHexColor(text);
+      if (hex) {
+        const [r, g, b] = this.parseHexColorToRgb(hex);
+        return (r << 16) | (g << 8) | b;
+      }
+      const rgba = text.match(/^rgba?\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})(?:\s*,\s*([0-9]*\.?[0-9]+))?\s*\)$/i);
+      if (!rgba) return null;
+      const r = Math.max(0, Math.min(255, Number(rgba[1])));
+      const g = Math.max(0, Math.min(255, Number(rgba[2])));
+      const b = Math.max(0, Math.min(255, Number(rgba[3])));
+      const a = rgba[4] !== undefined ? Math.max(0, Math.min(1, Number(rgba[4]))) : 1;
+      if (a <= 0.001) return null;
+      if (a >= 0.999) return (r << 16) | (g << 8) | b;
+      const br = Math.round(r * a + 255 * (1 - a));
+      const bg = Math.round(g * a + 255 * (1 - a));
+      const bb = Math.round(b * a + 255 * (1 - a));
+      return (br << 16) | (bg << 8) | bb;
+    },
+
     gifPackSubBlocks(bytes) {
       const out = [];
       let offset = 0;
@@ -237,68 +259,60 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
     },
 
     gifLzwEncode(indices, minCodeSize) {
-      if (!indices.length) return new Uint8Array([]);
       const clearCode = 1 << minCodeSize;
       const endCode = clearCode + 1;
-      const maxCode = 4095;
-      let dict = new Map();
-      let nextCode = endCode + 1;
       let codeSize = minCodeSize + 1;
-      const codes = [];
-
-      const resetDictionary = () => {
-        dict = new Map();
-        nextCode = endCode + 1;
-        codeSize = minCodeSize + 1;
-      };
-      const keyOf = (arr) => arr.join(",");
-      const codeOf = (arr) => (arr.length === 1 ? arr[0] : dict.get(keyOf(arr)));
-      const pushCode = (code) => {
-        codes.push({ code, size: codeSize });
-      };
-
-      resetDictionary();
-      pushCode(clearCode);
-      let w = [indices[0]];
-      for (let i = 1; i < indices.length; i += 1) {
-        const k = indices[i];
-        const wk = w.concat(k);
-        const wkKey = keyOf(wk);
-        if (dict.has(wkKey)) {
-          w = wk;
-          continue;
-        }
-        pushCode(codeOf(w));
-        if (nextCode <= maxCode) {
-          dict.set(wkKey, nextCode);
-          nextCode += 1;
-          if (nextCode === (1 << codeSize) && codeSize < 12) codeSize += 1;
-        } else {
-          pushCode(clearCode);
-          resetDictionary();
-        }
-        w = [k];
-      }
-      pushCode(codeOf(w));
-      pushCode(endCode);
-
+      let nextCode = endCode + 1;
+      const maxCode = 4095;
       const bytes = [];
       let bitBuffer = 0;
       let bitCount = 0;
-      codes.forEach((entry) => {
-        bitBuffer |= entry.code << bitCount;
-        bitCount += entry.size;
+
+      const writeCode = (code) => {
+        bitBuffer |= (code & ((1 << codeSize) - 1)) << bitCount;
+        bitCount += codeSize;
         while (bitCount >= 8) {
           bytes.push(bitBuffer & 0xFF);
           bitBuffer >>= 8;
           bitCount -= 8;
         }
-      });
+      };
+
+      const resetDictionary = () => {
+        codeSize = minCodeSize + 1;
+        nextCode = endCode + 1;
+      };
+
+      resetDictionary();
+      writeCode(clearCode);
+      if (!indices.length) {
+        writeCode(endCode);
+        if (bitCount > 0) bytes.push(bitBuffer & 0xFF);
+        return new Uint8Array(bytes);
+      }
+
+      let hasPrevious = false;
+      for (let i = 0; i < indices.length; i += 1) {
+        writeCode(indices[i]);
+        if (!hasPrevious) {
+          hasPrevious = true;
+          continue;
+        }
+        if (nextCode < maxCode) {
+          nextCode += 1;
+          if (nextCode === (1 << codeSize) && codeSize < 12) codeSize += 1;
+          continue;
+        }
+        writeCode(clearCode);
+        resetDictionary();
+        hasPrevious = false;
+      }
+      writeCode(endCode);
       if (bitCount > 0) bytes.push(bitBuffer & 0xFF);
       return new Uint8Array(bytes);
     },
 
-    buildAnimatedGifBlob({ width, height, frameIndices, delayCs, loop, paletteRgb }) {
+    buildAnimatedGifBlob({ width, height, frameIndices, delayCs, loop, paletteRgb, backgroundRgbInt }) {
       const colors = Array.isArray(paletteRgb) ? paletteRgb.slice(0, 255) : [];
       const colorCount = colors.length + 1;
       let tableSize = 2;
@@ -306,7 +320,8 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       const tableSizeBits = Math.max(0, Math.log2(tableSize) - 1);
       const packedLsd = 0x80 | (7 << 4) | tableSizeBits;
       const tableBytes = [];
-      tableBytes.push(0, 0, 0);
+      const bg = Number.isInteger(backgroundRgbInt) ? backgroundRgbInt : 0xFFFFFF;
+      tableBytes.push((bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
       colors.forEach((rgbInt) => {
         tableBytes.push((rgbInt >> 16) & 0xFF, (rgbInt >> 8) & 0xFF, rgbInt & 0xFF);
       });
@@ -331,12 +346,11 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
         );
       }
 
-      const transparentIndex = 0;
       const minCodeSize = Math.max(2, Math.ceil(Math.log2(tableSize)));
       frameIndices.forEach((indices) => {
-        out.push(0x21, 0xF9, 0x04, 0x09);
+        out.push(0x21, 0xF9, 0x04, 0x04);
         pushWord(delayCs);
-        out.push(transparentIndex, 0x00);
+        out.push(0x00, 0x00);
 
         out.push(0x2C);
         pushWord(0);
@@ -369,38 +383,55 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       }
       const colorToIndex = new Map();
       const palette = [];
+      const backgroundRgbInt = this.parseCssColorToRgbInt(this.document.sheet && this.document.sheet.backgroundColor) ?? 0xFFFFFF;
+      colorToIndex.set(backgroundRgbInt, 0);
+      const frameCanvas = document.createElement("canvas");
+      frameCanvas.width = this.document.cols;
+      frameCanvas.height = this.document.rows;
+      const frameCtx = frameCanvas.getContext("2d", { willReadFrequently: true });
+      if (!frameCtx) {
+        this.showMessage("GIF export unavailable.");
+        return false;
+      }
       const frameIndices = [];
       orderedIndices.forEach((frameIndex) => {
         const frame = this.document.frames[frameIndex];
         const pixels = this.document.getCompositedPixels(frame, { respectSolo: false, blendMode: "normal" });
-        const indices = new Uint8Array(this.document.cols * this.document.rows);
+        if (this.document.sheet && this.document.sheet.transparent) {
+          drawCanvasCheckerboard(frameCtx, { x: 0, y: 0, w: this.document.cols, h: this.document.rows }, 2);
+        } else {
+          frameCtx.fillStyle = this.document.sheet && this.document.sheet.backgroundColor ? this.document.sheet.backgroundColor : "#ffffff";
+          frameCtx.fillRect(0, 0, this.document.cols, this.document.rows);
+        }
         for (let y = 0; y < this.document.rows; y += 1) {
           for (let x = 0; x < this.document.cols; x += 1) {
             const value = pixels[y][x];
-            const i = y * this.document.cols + x;
-            if (!value) {
-              indices[i] = 0;
-              continue;
-            }
-            const normalized = this.normalizeHexColor(value);
-            if (!normalized) {
-              indices[i] = 0;
-              continue;
-            }
-            let entry = colorToIndex.get(normalized);
-            if (!entry) {
-              if (palette.length >= 255) {
-                this.showMessage("GIF export unavailable (too many colors).");
-                return false;
-              }
-              const [r, g, b] = this.parseHexColorToRgb(normalized);
-              const rgbInt = (r << 16) | (g << 8) | b;
-              entry = palette.length + 1;
-              palette.push(rgbInt);
-              colorToIndex.set(normalized, entry);
-            }
-            indices[i] = entry;
+            if (!value) continue;
+            frameCtx.fillStyle = value;
+            frameCtx.fillRect(x, y, 1, 1);
           }
+        }
+        const data = frameCtx.getImageData(0, 0, this.document.cols, this.document.rows).data;
+        const indices = new Uint8Array(this.document.cols * this.document.rows);
+        for (let i = 0; i < indices.length; i += 1) {
+          const di = i * 4;
+          const a = data[di + 3];
+          if (a <= 0) {
+            indices[i] = 0;
+            continue;
+          }
+          const rgbInt = (data[di] << 16) | (data[di + 1] << 8) | data[di + 2];
+          let entry = colorToIndex.get(rgbInt);
+          if (entry === undefined) {
+            if (palette.length >= 255) {
+              this.showMessage("GIF export unavailable (too many colors).");
+              return false;
+            }
+            entry = palette.length + 1;
+            palette.push(rgbInt);
+            colorToIndex.set(rgbInt, entry);
+          }
+          indices[i] = entry;
         }
         frameIndices.push(indices);
       });
@@ -416,7 +447,8 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
         frameIndices,
         delayCs,
         loop: this.playback.loop,
-        paletteRgb: palette
+        paletteRgb: palette,
+        backgroundRgbInt
       });
       if (!blob) {
         this.showMessage("GIF export unavailable.");
