@@ -18,6 +18,7 @@ const palettesList = {
     ],
     */
 
+    /*
     default: [
         { symbol: '!', hex: '#F08080', name: 'LightCoral' }, 		// color #'0' ascii'33'
         { symbol: 'Ñ', hex: '#CD5C5C', name: 'IndianRed' }, 		// color #'1' ascii'34'
@@ -163,7 +164,8 @@ const palettesList = {
         // Transparent
        // { symbol: 'Ø', hex: '#00000000', name: 'Transparent' }, 	//<!--  LAST --> 
     ],
-
+    */
+   
     // Crayola Crayon colors by package
     crayola008: [
         { symbol: '!', hex: '#232323', name: 'Black' }, 		 // color #'0' ascii'33'

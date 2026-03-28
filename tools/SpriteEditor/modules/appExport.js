@@ -59,7 +59,7 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
         fps: this.playback.fps,
         loop: this.playback.loop,
         playbackRange: range.enabled ? { startFrame: range.startFrame, endFrame: range.endFrame } : null,
-        palettePreset: this.currentPalettePreset || "Custom",
+        palettePreset: this.currentPalettePreset || "default",
         palette: (this.document.palette || []).slice(),
         layerExport: "composited_visible_only",
         soloIgnored: true

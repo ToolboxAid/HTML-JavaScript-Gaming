@@ -2,7 +2,7 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     renderAll() {
       this.normalizeEditorState();
-      this.syncCurrentPalettePreset();
+      if (!this.validatePaletteConfiguration()) this.syncCurrentPalettePreset();
       this.updateDirtyState();
       this.controlSurface.rebuildLayout();
       this.gridRect = this.computeGridRect();
@@ -19,6 +19,7 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
       this.drawPalettePresetPopup();
       this.drawReplaceGuard();
       this.drawLayerRenamePrompt();
+      this.drawPaletteConfigurationBlocker();
     },
 
     drawMainGrid() {

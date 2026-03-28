@@ -410,7 +410,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.font = "13px Arial";
       this.ctx.fillStyle = "#9fb8cf";
       this.ctx.fillText("Palette -> Palettes now opens a dedicated preset chooser.", x + 18, y + 52);
-      this.ctx.fillText(`Current preset: ${this.currentPalettePreset || "Custom"}`, x + 18, y + 74);
+      this.ctx.fillText(`Current preset: ${this.currentPalettePreset || "default"}`, x + 18, y + 74);
 
       if (!list.length) {
         this.ctx.fillStyle = "#b9c8d8";
@@ -541,6 +541,38 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         textOffsetX: 38,
         textOffsetY: 19
       });
+    },
+
+    drawPaletteConfigurationBlocker() {
+      if (!this.isPaletteConfigurationBlocked()) return;
+      const frame = this.controlSurface.layout.appFrame;
+      const panelRect = getCenteredRect(frame, 680, 300, 0.24);
+      const { x, y, w, h } = panelRect;
+      drawCanvasModalFrame(
+        this.ctx,
+        { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight },
+        panelRect,
+        "rgba(2, 6, 12, 0.78)"
+      );
+      this.ctx.fillStyle = "#dbe7f3";
+      this.ctx.font = "bold 18px Arial";
+      this.ctx.fillText("Palette Configuration Required", x + 20, y + 30);
+      this.ctx.font = "13px Arial";
+      this.ctx.fillStyle = "#fca5a5";
+      this.ctx.fillText(this.paletteConfigBlockMessage || "Invalid palette configuration.", x + 20, y + 58);
+      this.ctx.fillStyle = "#b9c8d8";
+      this.ctx.fillText("How to fix:", x + 20, y + 88);
+      this.ctx.fillText("1. Open engine/paletteList.js", x + 20, y + 112);
+      this.ctx.fillText("2. Note: built-in default palette is allowed from document.getDefaultPalette().", x + 20, y + 136);
+      this.ctx.fillText("3. Example preset format:", x + 20, y + 160);
+      this.ctx.fillStyle = "#e2e8f0";
+      this.ctx.font = "12px Consolas";
+      this.ctx.fillText("myPreset: [{ hex: '#000000', name: 'Black' }, ...]", x + 30, y + 184);
+      this.ctx.font = "13px Arial";
+      this.ctx.fillStyle = "#b9c8d8";
+      this.ctx.fillText("4. For non-default palettes, add a matching preset then reload the page.", x + 20, y + 210);
+      this.ctx.fillStyle = "#fbbf24";
+      this.ctx.fillText("This popup is blocking by design until fixed.", x + 20, y + h - 18);
     }
   });
 }

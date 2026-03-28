@@ -14,6 +14,17 @@ class SpriteEditorDocument {
       this.sheet = { layout: "horizontal", padding: 4, spacing: 2, transparent: true, backgroundColor: "#ffffff" };
     }
     getDefaultPalette() { return ["#000000", "#ffffff", "#00ccff", "#f59e0b", "#22c55e", "#ef4444", "#8b5cf6"]; }
+    getDefaultPaletteNamedEntries() {
+      return [
+        { hex: "#000000", name: "Black" },
+        { hex: "#ffffff", name: "White" },
+        { hex: "#00ccff", name: "Sky Blue" },
+        { hex: "#f59e0b", name: "Amber" },
+        { hex: "#22c55e", name: "Green" },
+        { hex: "#ef4444", name: "Red" },
+        { hex: "#8b5cf6", name: "Violet" }
+      ];
+    }
     makeGrid(fill = null) { return Array.from({ length: this.rows }, () => Array.from({ length: this.cols }, () => fill)); }
     cloneGrid(grid) { return grid.map((r) => r.slice()); }
     cloneLayer(layer, fallbackIndex = 0) {

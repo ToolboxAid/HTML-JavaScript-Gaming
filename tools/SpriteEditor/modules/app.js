@@ -46,7 +46,7 @@ class SpriteEditorApp {
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.strokeLastCell = null;
       this.shapePreview = null;
-      this.currentPalettePreset = "Custom";
+      this.currentPalettePreset = "default";
       this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
       this.exportMode = "all_frames";
       this.onionSkin = { prev: false, next: false };
@@ -78,6 +78,7 @@ class SpriteEditorApp {
       this.helpDetailPopup = createCanvasPopupState({ section: "" });
       this.aboutPopup = createCanvasPopupState();
       this.palettePresetPopup = createCanvasPopupState({ backRect: null, rowRects: [] });
+      this.paletteConfigBlockMessage = "";
       this.paletteSidebarScroll = 0;
       this.paletteSidebarMetrics = null;
       this.paletteSortMode = "name";

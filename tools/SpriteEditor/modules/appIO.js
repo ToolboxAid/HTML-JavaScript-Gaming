@@ -26,7 +26,7 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.playback = { isPlaying: false, fps: 6, loop: true, previewFrameIndex: 0, lastTick: 0 };
       this.strokeLastCell = null;
       this.shapePreview = null;
-      this.currentPalettePreset = "Custom";
+      this.currentPalettePreset = "default";
       this.paletteWorkflow = { source: null, target: null, scope: "active_layer" };
       this.paletteSidebarScroll = 0;
       this.pan = { x: 0, y: 0 };

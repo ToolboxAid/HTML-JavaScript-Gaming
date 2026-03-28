@@ -66,6 +66,10 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
     },
 
     onPointerDown(e) {
+      if (this.isPaletteConfigurationBlocked()) {
+        this.renderAll();
+        return;
+      }
       const p = this.logicalPointFromEvent(e);
       if (!p) return;
       if (this.helpDetailPopup.open) {
@@ -205,6 +209,11 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
     },
 
     onWheel(e) {
+      if (this.isPaletteConfigurationBlocked()) {
+        e.preventDefault();
+        this.renderAll();
+        return;
+      }
       e.preventDefault();
       const p = this.logicalPointFromEvent(e);
       const paletteRect = this.paletteSidebarMetrics;
@@ -229,6 +238,11 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
     },
 
     onKeyDown(e) {
+      if (this.isPaletteConfigurationBlocked()) {
+        e.preventDefault();
+        this.renderAll();
+        return;
+      }
       const k = (e.key || "").toLowerCase();
       if (this.isLayerRenameOpen()) {
         if (k === "enter") {

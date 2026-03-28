@@ -62,8 +62,8 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       if (c.id === "palette-current") {
         const currentHex = String(this.app.document.currentColor || "").toUpperCase();
         let name = "Unnamed";
-        if (typeof palettesList === "object" && palettesList && this.app.currentPalettePreset && Array.isArray(palettesList[this.app.currentPalettePreset])) {
-          const presetEntries = palettesList[this.app.currentPalettePreset];
+        const presetEntries = typeof this.app.getActivePresetEntries === "function" ? this.app.getActivePresetEntries() : null;
+        if (Array.isArray(presetEntries)) {
           const match = presetEntries.find((entry) => entry && String(entry.hex || "").toUpperCase() === currentHex && typeof entry.name === "string" && entry.name.trim());
           if (match) name = match.name.trim();
         }

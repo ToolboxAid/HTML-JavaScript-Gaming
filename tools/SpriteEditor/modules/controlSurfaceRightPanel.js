@@ -4,7 +4,7 @@ function installControlSurfaceRightPanel(SpriteEditorCanvasControlSurface) {
     let x = right.x + d.padding;
     let y = right.y + d.padding;
     const rw = right.width - (d.padding * 2);
-    this.add("label", "lbl-palette", x, y, rw, d.labelHeight, `PALETTE: ${String(this.app.currentPalettePreset || "Custom").toUpperCase()}`, null);
+    this.add("label", "lbl-palette", x, y, rw, d.labelHeight, `PALETTE: ${String(this.app.currentPalettePreset || "default").toUpperCase()}`, null);
     y += d.labelHeight + d.spacing;
     this.add("label", "palette-current", x, y, rw, 18, this.app.getCurrentColorDisplayText(), null);
     y += 20;
