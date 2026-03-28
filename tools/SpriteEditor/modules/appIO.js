@@ -87,18 +87,18 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
     },
 
     exportJson(pretty) {
-      this.downloadBlob("sprite-editor.json", JSON.stringify(this.document.buildExportPayload(), null, pretty ? 2 : 0), "application/json");
+      const ok = this.downloads.downloadText(
+        "sprite-editor.json",
+        JSON.stringify(this.document.buildExportPayload(), null, pretty ? 2 : 0),
+        "application/json"
+      );
+      if (!ok) {
+        this.showMessage("JSON export unavailable.");
+        return false;
+      }
       this.markCleanBaseline();
       this.showMessage("JSON exported.");
-    },
-
-    downloadBlob(name, text, mime) {
-      const blob = new Blob([text], { type: mime });
-      const url = URL.createObjectURL(blob);
-      this.downloadLink.download = name;
-      this.downloadLink.href = url;
-      this.downloadLink.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      return true;
     },
 
     tick(ts) {

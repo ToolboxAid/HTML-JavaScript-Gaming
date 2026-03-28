@@ -1,7 +1,7 @@
 import { SpriteEditorViewport } from "./viewport.js";
 import { SpriteEditorDocument } from "./document.js";
 import { SpriteEditorCanvasControlSurface } from "./controlSurface.js";
-import { FullscreenService } from "../../../engine/runtime/index.js";
+import { BrowserDownloadService, FullscreenService } from "../../../engine/runtime/index.js";
 import { installSpriteEditorPopupMethods } from "./appPopups.js";
 import { installSpriteEditorMenuMethods } from "./appMenus.js";
 import { installSpriteEditorRenderMethods } from "./appRender.js";
@@ -23,6 +23,7 @@ class SpriteEditorApp {
       this.ctx = canvas.getContext("2d");
       this.fileInput = fileInput;
       this.downloadLink = downloadLink;
+      this.downloads = BrowserDownloadService.fromBrowser({ linkElement: downloadLink });
       this.viewport = new SpriteEditorViewport(canvas);
       this.document = new SpriteEditorDocument();
       this.controlSurface = new SpriteEditorCanvasControlSurface(this);

@@ -157,7 +157,11 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
         this.showMessage(mode === "selected_range" ? "Select a frame range first." : "Animation export unavailable.");
         return false;
       }
-      this.downloadBlob(`animation-${mode}.json`, JSON.stringify(data, null, 2), "application/json");
+      const ok = this.downloads.downloadText(`animation-${mode}.json`, JSON.stringify(data, null, 2), "application/json");
+      if (!ok) {
+        this.showMessage("Animation export unavailable.");
+        return false;
+      }
       this.showMessage(`Animation JSON exported (${data.frameCount} frames).`);
       return true;
     },
@@ -168,7 +172,11 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
         this.showMessage(mode === "selected_range" ? "Select a frame range first." : "Export package unavailable.");
         return false;
       }
-      this.downloadBlob(`export-package-${mode}.json`, JSON.stringify(data, null, 2), "application/json");
+      const ok = this.downloads.downloadText(`export-package-${mode}.json`, JSON.stringify(data, null, 2), "application/json");
+      if (!ok) {
+        this.showMessage("Export package unavailable.");
+        return false;
+      }
       this.showMessage(`Export package saved (${data.exportMode}).`);
       return true;
     }
