@@ -103,6 +103,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     },
 
     openPaletteLockPopup(message = "Palette is locked for this sprite/project.") {
+      if (this.palettePresetPopup && this.palettePresetPopup.open) this.closePalettePresetPopup();
       this.paletteLockPopup.open = true;
       this.paletteLockPopup.message = message;
       this.paletteLockPopup.closeRect = null;
@@ -303,17 +304,12 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
 
     handlePaletteLockPopupPointer(p) {
       if (!this.paletteLockPopup.open || !p) return false;
-      const dismissResult = handleCanvasPopupDismissPointer({
-        point: p,
-        popup: this.paletteLockPopup,
-        containsPoint: (point, rect) => this.isPointInRect(point, rect),
-        close: () => this.closePaletteLockPopup(),
-        showMessage: () => {},
-        render: () => this.renderAll(),
-        closeMessage: ""
-      });
-      if (dismissResult !== null) return dismissResult;
       if (this.isPointInRect(p, this.paletteLockPopup.closeRect)) {
+        this.closePaletteLockPopup();
+        this.renderAll();
+        return true;
+      }
+      if (this.paletteLockPopup.panelRect && !this.isPointInRect(p, this.paletteLockPopup.panelRect)) {
         this.closePaletteLockPopup();
         this.renderAll();
         return true;
