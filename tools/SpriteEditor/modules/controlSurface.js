@@ -1,4 +1,5 @@
 import { LOGICAL_H, LOGICAL_W } from "./constants.js";
+import { xyInRect } from "../../../engine/utils/index.js";
 
 class SpriteEditorCanvasControlSurface {
     constructor(app) {
@@ -195,10 +196,6 @@ class SpriteEditorCanvasControlSurface {
       return this.topMenuSource;
     }
 
-    pointInRect(x, y, r) {
-      return !!r && x >= r.x && y >= r.y && x <= r.x + r.w && y <= r.y + r.h;
-    }
-
     getOpenPanelItems() {
       if (this.topMenuSource === "overflow") {
         return Array.isArray(this.hiddenTopControls) ? this.hiddenTopControls : [];
@@ -211,7 +208,7 @@ class SpriteEditorCanvasControlSurface {
       for (let i = 0; i < this.commandPaletteRowControls.length; i += 1) {
         const c = this.commandPaletteRowControls[i];
         if (!c.isCommandRow || !c.favoriteToggleRect) continue;
-        if (this.pointInRect(x, y, c.favoriteToggleRect)) {
+        if (xyInRect(x, y, c.favoriteToggleRect)) {
           this.app.toggleFavoriteAction(c.commandId);
           this.rebuildCommandPaletteRows();
           return true;
@@ -660,7 +657,7 @@ class SpriteEditorCanvasControlSurface {
     }
     pointerDown(x,y) {
       if (this.commandPaletteOpen) {
-        if (!this.pointInRect(x, y, this.commandPaletteBounds)) {
+        if (!xyInRect(x, y, this.commandPaletteBounds)) {
           this.closeCommandPalette();
           this.pressed = null;
           return { id: "command-palette-dismiss", kind: "button" };

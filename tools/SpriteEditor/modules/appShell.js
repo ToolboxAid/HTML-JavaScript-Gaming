@@ -3,6 +3,7 @@ import {
   MACRO_DEFINITIONS_KEY,
   RECENT_ACTIONS_KEY,
 } from "./constants.js";
+import { pointInRect } from "../../../engine/utils/index.js";
 
 function installSpriteEditorShellMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
@@ -32,7 +33,7 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
     },
 
     isPointInRect(point, rect) {
-      return !!(point && rect && point.x >= rect.x && point.y >= rect.y && point.x <= rect.x + rect.w && point.y <= rect.y + rect.h);
+      return pointInRect(point, rect);
     },
 
     clearHoverPreviewState() {
