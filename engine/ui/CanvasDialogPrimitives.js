@@ -54,3 +54,12 @@ export function drawCanvasDialogButton(ctx, rect, text, options = {}) {
   ctx.fillStyle = textStyle;
   ctx.fillText(text, rect.x + textOffsetX, rect.y + textOffsetY);
 }
+
+export function drawCanvasCheckerboard(ctx, rect, blockSize) {
+  for (let py = 0; py < rect.h; py += blockSize) {
+    for (let px = 0; px < rect.w; px += blockSize) {
+      ctx.fillStyle = ((Math.floor(px / blockSize) + Math.floor(py / blockSize)) % 2 === 0) ? "#f8fafc" : "#e2e8f0";
+      ctx.fillRect(rect.x + px, rect.y + py, blockSize, blockSize);
+    }
+  }
+}

@@ -1,42 +1,14 @@
-import { drawCanvasDialogButton, drawCanvasModalFrame } from "../../../engine/ui/index.js";
+import { getCenteredRect } from "../../../engine/utils/index.js";
+import {
+  dismissCanvasPopup,
+  drawCanvasDialogButton,
+  drawCanvasModalFrame,
+  handleCanvasPopupDismissPointer,
+  openCanvasTransientSurface
+} from "../../../engine/ui/index.js";
 
 function installSpriteEditorPopupMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
-    getCenteredPanelRect(frame, width, height, verticalBias = 0.5) {
-      return {
-        x: frame.x + Math.floor((frame.width - width) * 0.5),
-        y: frame.y + Math.floor((frame.height - height) * verticalBias),
-        w: width,
-        h: height
-      };
-    },
-
-    dismissPopup(closeFn, message = "", consumed = true) {
-      closeFn.call(this);
-      if (message) this.showMessage(message);
-      this.renderAll();
-      return consumed;
-    },
-
-    handlePopupDismissPointer(p, popup, closeFn, closeMessage = "", outsideMessage = "", outsideConsumed = false) {
-      if (this.isPointInRect(p, popup.closeRect)) {
-        return this.dismissPopup(closeFn, closeMessage, true);
-      }
-      if (popup.panelRect && !this.isPointInRect(p, popup.panelRect)) {
-        return this.dismissPopup(closeFn, outsideMessage, outsideConsumed);
-      }
-      return null;
-    },
-
-    openTransientSurface(opener, message = "") {
-      if (!this.canOpenTransientSurface()) return false;
-      this.closeMenuLikeSurfaces();
-      opener.call(this);
-      if (message) this.showMessage(message);
-      this.renderAll();
-      return true;
-    },
-
     requestReplaceGuard(title, message, onConfirm, forcePrompt = false) {
       if (!forcePrompt && !this.isDirty) {
         if (typeof onConfirm === "function") onConfirm();
@@ -73,7 +45,12 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         return true;
       }
       if (this.isPointInRect(p, this.replaceGuard.cancelRect)) {
-        return this.dismissPopup(this.closeReplaceGuard, "Replace canceled.");
+        return dismissCanvasPopup({
+          close: () => this.closeReplaceGuard(),
+          showMessage: (message) => this.showMessage(message),
+          render: () => this.renderAll(),
+          message: "Replace canceled."
+        });
       }
       return true;
     },
@@ -103,12 +80,19 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     },
 
     openLayerRenamePrompt() {
-      return this.openTransientSurface(() => {
-        const af = this.document.ensureFrameLayers(this.document.activeFrame);
-        const active = af.layers[af.activeLayerIndex];
-        this.layerRenamePrompt.open = true;
-        this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
-      }, "Rename layer: type, Enter apply, Esc cancel.");
+      return openCanvasTransientSurface({
+        canOpen: () => this.canOpenTransientSurface(),
+        closeOthers: () => this.closeMenuLikeSurfaces(),
+        open: () => {
+          const af = this.document.ensureFrameLayers(this.document.activeFrame);
+          const active = af.layers[af.activeLayerIndex];
+          this.layerRenamePrompt.open = true;
+          this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
+        },
+        showMessage: (message) => this.showMessage(message),
+        render: () => this.renderAll(),
+        message: "Rename layer: type, Enter apply, Esc cancel."
+      });
     },
 
     closeAboutPopup() {
@@ -228,35 +212,69 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     openHelpDetailPopup(section) {
       const sections = this.getHelpSections();
       if (!sections[section]) return false;
-      return this.openTransientSurface(() => {
-        this.helpDetailPopup.open = true;
-        this.helpDetailPopup.section = section;
+      return openCanvasTransientSurface({
+        canOpen: () => this.canOpenTransientSurface(),
+        closeOthers: () => this.closeMenuLikeSurfaces(),
+        open: () => {
+          this.helpDetailPopup.open = true;
+          this.helpDetailPopup.section = section;
+        },
+        render: () => this.renderAll()
       });
     },
 
     handleHelpDetailPointer(p) {
       if (!this.helpDetailPopup.open || !p) return false;
-      const dismissResult = this.handlePopupDismissPointer(p, this.helpDetailPopup, this.closeHelpDetailPopup, "Help closed.");
+      const dismissResult = handleCanvasPopupDismissPointer({
+        point: p,
+        popup: this.helpDetailPopup,
+        containsPoint: (point, rect) => this.isPointInRect(point, rect),
+        close: () => this.closeHelpDetailPopup(),
+        showMessage: (message) => this.showMessage(message),
+        render: () => this.renderAll(),
+        closeMessage: "Help closed."
+      });
       if (dismissResult !== null) return dismissResult;
       return true;
     },
 
     openAboutPopup() {
-      return this.openTransientSurface(() => {
-        this.aboutPopup.open = true;
+      return openCanvasTransientSurface({
+        canOpen: () => this.canOpenTransientSurface(),
+        closeOthers: () => this.closeMenuLikeSurfaces(),
+        open: () => {
+          this.aboutPopup.open = true;
+        },
+        render: () => this.renderAll()
       });
     },
 
     handleAboutPopupPointer(p) {
       if (!this.aboutPopup.open || !p) return false;
-      const dismissResult = this.handlePopupDismissPointer(p, this.aboutPopup, this.closeAboutPopup, "About closed.");
+      const dismissResult = handleCanvasPopupDismissPointer({
+        point: p,
+        popup: this.aboutPopup,
+        containsPoint: (point, rect) => this.isPointInRect(point, rect),
+        close: () => this.closeAboutPopup(),
+        showMessage: (message) => this.showMessage(message),
+        render: () => this.renderAll(),
+        closeMessage: "About closed."
+      });
       if (dismissResult !== null) return dismissResult;
       return true;
     },
 
     handlePalettePresetPopupPointer(p) {
       if (!this.palettePresetPopup.open || !p) return false;
-      const dismissResult = this.handlePopupDismissPointer(p, this.palettePresetPopup, this.closePalettePresetPopup, "Palette presets closed.");
+      const dismissResult = handleCanvasPopupDismissPointer({
+        point: p,
+        popup: this.palettePresetPopup,
+        containsPoint: (point, rect) => this.isPointInRect(point, rect),
+        close: () => this.closePalettePresetPopup(),
+        showMessage: (message) => this.showMessage(message),
+        render: () => this.renderAll(),
+        closeMessage: "Palette presets closed."
+      });
       if (dismissResult !== null) return dismissResult;
       if (this.isPointInRect(p, this.palettePresetPopup.backRect)) {
         this.closePalettePresetPopup();
@@ -268,7 +286,10 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         if (!this.isPointInRect(p, row.rect)) continue;
         const ok = this.applyNamedPalette(row.name);
         if (ok) {
-          this.dismissPopup(this.closePalettePresetPopup);
+          dismissCanvasPopup({
+            close: () => this.closePalettePresetPopup(),
+            render: () => this.renderAll()
+          });
         }
         return true;
       }
@@ -303,10 +324,20 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         return true;
       }
       if (this.isPointInRect(p, this.layerRenamePrompt.cancelRect)) {
-        return this.dismissPopup(this.closeLayerRenamePrompt, "Layer rename canceled.");
+        return dismissCanvasPopup({
+          close: () => this.closeLayerRenamePrompt(),
+          showMessage: (message) => this.showMessage(message),
+          render: () => this.renderAll(),
+          message: "Layer rename canceled."
+        });
       }
       if (this.layerRenamePrompt.panelRect && !this.isPointInRect(p, this.layerRenamePrompt.panelRect)) {
-        return this.dismissPopup(this.closeLayerRenamePrompt, "Layer rename canceled.");
+        return dismissCanvasPopup({
+          close: () => this.closeLayerRenamePrompt(),
+          showMessage: (message) => this.showMessage(message),
+          render: () => this.renderAll(),
+          message: "Layer rename canceled."
+        });
       }
       return true;
     },
@@ -319,7 +350,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         return;
       }
       const frame = this.controlSurface.layout.appFrame;
-      this.helpDetailPopup.panelRect = this.getCenteredPanelRect(frame, 620, 330);
+      this.helpDetailPopup.panelRect = getCenteredRect(frame, 620, 330);
       const { x, y, w: panelW, h: panelH } = this.helpDetailPopup.panelRect;
       drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, this.helpDetailPopup.panelRect);
       this.ctx.fillStyle = "#dbe7f3";
@@ -349,7 +380,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     drawAboutPopup() {
       if (!this.aboutPopup.open) return;
       const frame = this.controlSurface.layout.appFrame;
-      this.aboutPopup.panelRect = this.getCenteredPanelRect(frame, 520, 216);
+      this.aboutPopup.panelRect = getCenteredRect(frame, 520, 216);
       const { x, y, w: panelW, h: panelH } = this.aboutPopup.panelRect;
       drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, this.aboutPopup.panelRect, "rgba(2, 6, 12, 0.62)");
       this.ctx.fillStyle = "#dbe7f3";
@@ -487,7 +518,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     drawLayerRenamePrompt() {
       if (!this.isLayerRenameOpen()) return;
       const frame = this.controlSurface.layout.appFrame;
-      this.layerRenamePrompt.panelRect = this.getCenteredPanelRect(frame, 480, 154, 0.24);
+      this.layerRenamePrompt.panelRect = getCenteredRect(frame, 480, 154, 0.24);
       const { x, y, w: panelW, h: panelH } = this.layerRenamePrompt.panelRect;
       drawCanvasModalFrame(this.ctx, { width: this.viewport.logicalWidth, height: this.viewport.logicalHeight }, this.layerRenamePrompt.panelRect, "rgba(2, 6, 12, 0.58)");
       this.ctx.fillStyle = "#dbe7f3";

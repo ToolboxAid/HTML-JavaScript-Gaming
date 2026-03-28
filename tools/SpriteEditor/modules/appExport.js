@@ -1,3 +1,5 @@
+import { drawCanvasCheckerboard } from "../../../engine/ui/index.js";
+
 function installSpriteEditorExportMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     getExportModeLabel() {
@@ -128,7 +130,7 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       temp.width = plc.width;
       temp.height = plc.height;
       const ctx = temp.getContext("2d");
-      if (this.document.sheet.transparent) this.drawCheckerboard(ctx, 0, 0, plc.width, plc.height, 4);
+      if (this.document.sheet.transparent) drawCanvasCheckerboard(ctx, { x: 0, y: 0, w: plc.width, h: plc.height }, 4);
       else {
         ctx.fillStyle = this.document.sheet.backgroundColor;
         ctx.fillRect(0, 0, plc.width, plc.height);

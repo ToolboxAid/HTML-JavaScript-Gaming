@@ -1,3 +1,5 @@
+import { openCanvasTransientSurface } from "../../../engine/ui/index.js";
+
 function installSpriteEditorMenuMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     prepareTopMenu(menuId, items) {
@@ -160,10 +162,17 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
     },
 
     openPalettePresetsMenu() {
-      return this.openTransientSurface(() => {
-        this.palettePresetPopup.open = true;
-        this.palettePresetPopup.rowRects = [];
-      }, "Palette presets: choose a preset to apply.");
+      return openCanvasTransientSurface({
+        canOpen: () => this.canOpenTransientSurface(),
+        closeOthers: () => this.closeMenuLikeSurfaces(),
+        open: () => {
+          this.palettePresetPopup.open = true;
+          this.palettePresetPopup.rowRects = [];
+        },
+        showMessage: (message) => this.showMessage(message),
+        render: () => this.renderAll(),
+        message: "Palette presets: choose a preset to apply."
+      });
     },
 
     openPaletteWorkflowMenu() {

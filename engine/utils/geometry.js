@@ -18,3 +18,12 @@ export function pointInRect(point, rect) {
 export function xyInRect(x, y, rect) {
   return pointInRect({ x, y }, rect);
 }
+
+export function getCenteredRect(containerRect, width, height, verticalBias = 0.5) {
+  return {
+    x: containerRect.x + Math.floor((containerRect.width - width) * 0.5),
+    y: containerRect.y + Math.floor((containerRect.height - height) * verticalBias),
+    w: width,
+    h: height
+  };
+}

@@ -6,4 +6,4 @@ index.js
 */
 export { clamp } from './math.js';
 export { distance, wrap, randomRange } from './math.js';
-export { pointInRect, xyInRect } from './geometry.js';
+export { pointInRect, xyInRect, getCenteredRect } from './geometry.js';

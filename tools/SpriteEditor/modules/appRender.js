@@ -1,3 +1,5 @@
+import { drawCanvasCheckerboard } from "../../../engine/ui/index.js";
+
 function installSpriteEditorRenderMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     renderAll() {
@@ -248,7 +250,7 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
       const drawH = plc.height * scale;
       const drawX = previewX + Math.floor((previewW - drawW) * 0.5);
       const drawY = cy + Math.floor((ch - drawH) * 0.5);
-      if (this.document.sheet.transparent) this.drawCheckerboard(ctx, drawX, drawY, drawW, drawH, Math.max(4, scale));
+      if (this.document.sheet.transparent) drawCanvasCheckerboard(ctx, { x: drawX, y: drawY, w: drawW, h: drawH }, Math.max(4, scale));
       else {
         ctx.fillStyle = this.document.sheet.backgroundColor;
         ctx.fillRect(drawX, drawY, drawW, drawH);
@@ -294,60 +296,6 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
       this.ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
     },
 
-    drawCheckerboard(ctx, x, y, w, h, b) {
-      for (let py = 0; py < h; py += b) {
-        for (let px = 0; px < w; px += b) {
-          ctx.fillStyle = ((Math.floor(px / b) + Math.floor(py / b)) % 2 === 0) ? "#f8fafc" : "#e2e8f0";
-          ctx.fillRect(x + px, y + py, b, b);
-        }
-      }
-    },
-
-    drawBottomStatus() {
-      const b = this.controlSurface.layout.bottomPanel;
-      const y = b.y + 40;
-      const sel = this.document.selection ? `Sel ${this.document.selection.width}x${this.document.selection.height} @ ${this.document.selection.x},${this.document.selection.y}` : "Sel -";
-      const hover = this.hoveredGridCell ? `Cell ${this.hoveredGridCell.x},${this.hoveredGridCell.y}` : "Cell -";
-      const frameRange = this.getFrameRangeSelection();
-      const frameRangeText = frameRange.explicit ? `Frames ${frameRange.start + 1}-${frameRange.end + 1}` : `Frame ${this.document.activeFrameIndex + 1}`;
-      const playbackRange = this.getPlaybackRange();
-      const playbackRangeText = playbackRange.enabled ? `Range ${playbackRange.startFrame + 1}-${playbackRange.endFrame + 1}` : "Range Off";
-      const hoverPreviewText = this.timelineHoverIndex !== null ? `Hover ${this.timelineHoverIndex + 1}` : "Hover -";
-      const paletteReplaceText = `Replace ${this.paletteWorkflow.source ? "S" : "-"}>${this.paletteWorkflow.target ? "T" : "-"} ${this.getPaletteScopeLabel().replace("Scope: ", "")}`;
-      const af = this.document.ensureFrameLayers(this.document.activeFrame);
-      const activeLayer = af.layers[af.activeLayerIndex];
-      const layerFlags = [
-        activeLayer && activeLayer.locked ? "Locked" : null,
-        activeLayer ? `${Math.round(((typeof activeLayer.opacity === "number" ? activeLayer.opacity : 1) * 100))}%` : null
-      ].filter(Boolean).join(" ");
-      const brushText = (this.activeTool === "brush" || this.activeTool === "erase")
-        ? `Brush ${this.brush.size}/${this.brush.shape}`
-        : (this.activeTool === "line" || this.activeTool === "rect" || this.activeTool === "fillrect" ? "Shape drag preview" : "Brush -");
-      const topLine = `Tool ${this.activeTool} | ${brushText} | ${frameRangeText} | ${hoverPreviewText} | ${hover}`;
-      const middleLine = `Layer ${activeLayer ? activeLayer.name : "-"}${layerFlags ? ` (${layerFlags})` : ""} | ${paletteReplaceText} | Zoom ${this.zoom.toFixed(2)}x | Pixel ${this.viewport.pixelPerfect ? "On" : "Off"}`;
-      const playbackText = `Playback ${this.playback.isPlaying ? "Play" : "Pause"} ${this.playback.fps}fps ${this.playback.loop ? "Loop" : "Once"} | ${playbackRangeText} | Onion ${this.onionSkin.prev ? "P" : "-"}${this.onionSkin.next ? "N" : "-"}`;
-      const shortcutsText = this.controlSurface.dragFeedbackText ? this.controlSurface.dragFeedbackText : `${sel} | ${playbackText}`;
-      const rightMargin = 18;
-      const timelineLeft = this.timelineStripRect ? this.timelineStripRect.x - 18 : (b.x + b.width - rightMargin);
-      const maxRight = Math.max(b.x + 320, Math.min(b.x + b.width - rightMargin, timelineLeft));
-      this.ctx.fillStyle = "#dbe7f3";
-      this.ctx.font = "12px Arial";
-      const toolX = maxRight - this.ctx.measureText(topLine).width;
-      const middleX = maxRight - this.ctx.measureText(middleLine).width;
-      const shortcutsX = maxRight - this.ctx.measureText(shortcutsText).width;
-      this.ctx.fillText(topLine, Math.max(b.x + 18, toolX), y);
-      this.ctx.fillText(middleLine, Math.max(b.x + 18, middleX), y + 22);
-      this.ctx.fillText(shortcutsText, Math.max(b.x + 18, shortcutsX), y + 44);
-      this.ctx.fillStyle = "#91a3b6";
-      const dirtyText = this.isDirty ? "Modified" : "Saved";
-      const nextUndo = this.history.undo.length ? this.history.undo[this.history.undo.length - 1].label : "-";
-      const nextRedo = this.history.redo.length ? this.history.redo[this.history.redo.length - 1].label : "-";
-      this.ctx.fillText(`State: ${dirtyText} | Undo: ${nextUndo} | Redo: ${nextRedo}`, b.x + 18, y + 66);
-      this.ctx.fillStyle = performance.now() < this.flashMessageUntil ? "#4cc9f0" : "#91a3b6";
-      const message = this.statusMessage || "Ready.";
-      const messageX = Math.max(b.x + 18, maxRight - this.ctx.measureText(message).width);
-      this.ctx.fillText(message, messageX, y + 66);
-    }
   });
 }
 

@@ -5,4 +5,5 @@ David Quesenberry
 index.js
 */
 export { default as UIFramework } from './UIFramework.js';
-export { drawCanvasModalFrame, drawCanvasDialogButton } from './CanvasDialogPrimitives.js';
+export { drawCanvasModalFrame, drawCanvasDialogButton, drawCanvasCheckerboard } from './CanvasDialogPrimitives.js';
+export { dismissCanvasPopup, handleCanvasPopupDismissPointer, openCanvasTransientSurface } from './CanvasPopupInteractions.js';
