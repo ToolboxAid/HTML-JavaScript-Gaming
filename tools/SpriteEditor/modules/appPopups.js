@@ -27,6 +27,23 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.fillText(text, rect.x + textOffsetX, rect.y + 20);
     },
 
+    dismissPopup(closeFn, message = "", consumed = true) {
+      closeFn.call(this);
+      if (message) this.showMessage(message);
+      this.renderAll();
+      return consumed;
+    },
+
+    handlePopupDismissPointer(p, popup, closeFn, closeMessage = "", outsideMessage = "", outsideConsumed = false) {
+      if (this.isPointInRect(p, popup.closeRect)) {
+        return this.dismissPopup(closeFn, closeMessage, true);
+      }
+      if (popup.panelRect && !this.isPointInRect(p, popup.panelRect)) {
+        return this.dismissPopup(closeFn, outsideMessage, outsideConsumed);
+      }
+      return null;
+    },
+
     requestReplaceGuard(title, message, onConfirm, forcePrompt = false) {
       if (!forcePrompt && !this.isDirty) {
         if (typeof onConfirm === "function") onConfirm();
@@ -102,8 +119,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       const active = af.layers[af.activeLayerIndex];
       this.layerRenamePrompt.open = true;
       this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
-      this.showMessage("Rename layer: type, Enter apply, Esc cancel.");
-      this.renderAll();
+      this.showMessageAndRender("Rename layer: type, Enter apply, Esc cancel.");
       return true;
     },
 
@@ -234,17 +250,8 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
 
     handleHelpDetailPointer(p) {
       if (!this.helpDetailPopup.open || !p) return false;
-      if (this.isPointInRect(p, this.helpDetailPopup.closeRect)) {
-        this.closeHelpDetailPopup();
-        this.showMessage("Help closed.");
-        this.renderAll();
-        return true;
-      }
-      if (this.helpDetailPopup.panelRect && !this.isPointInRect(p, this.helpDetailPopup.panelRect)) {
-        this.closeHelpDetailPopup();
-        this.renderAll();
-        return false;
-      }
+      const dismissResult = this.handlePopupDismissPointer(p, this.helpDetailPopup, this.closeHelpDetailPopup, "Help closed.");
+      if (dismissResult !== null) return dismissResult;
       return true;
     },
 
@@ -258,28 +265,15 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
 
     handleAboutPopupPointer(p) {
       if (!this.aboutPopup.open || !p) return false;
-      if (this.isPointInRect(p, this.aboutPopup.closeRect)) {
-        this.closeAboutPopup();
-        this.showMessage("About closed.");
-        this.renderAll();
-        return true;
-      }
-      if (this.aboutPopup.panelRect && !this.isPointInRect(p, this.aboutPopup.panelRect)) {
-        this.closeAboutPopup();
-        this.renderAll();
-        return false;
-      }
+      const dismissResult = this.handlePopupDismissPointer(p, this.aboutPopup, this.closeAboutPopup, "About closed.");
+      if (dismissResult !== null) return dismissResult;
       return true;
     },
 
     handlePalettePresetPopupPointer(p) {
       if (!this.palettePresetPopup.open || !p) return false;
-      if (this.isPointInRect(p, this.palettePresetPopup.closeRect)) {
-        this.closePalettePresetPopup();
-        this.showMessage("Palette presets closed.");
-        this.renderAll();
-        return true;
-      }
+      const dismissResult = this.handlePopupDismissPointer(p, this.palettePresetPopup, this.closePalettePresetPopup, "Palette presets closed.");
+      if (dismissResult !== null) return dismissResult;
       if (this.isPointInRect(p, this.palettePresetPopup.backRect)) {
         this.closePalettePresetPopup();
         this.openPaletteWorkflowMenu();
@@ -290,15 +284,9 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         if (!this.isPointInRect(p, row.rect)) continue;
         const ok = this.applyNamedPalette(row.name);
         if (ok) {
-          this.closePalettePresetPopup();
-          this.renderAll();
+          this.dismissPopup(this.closePalettePresetPopup);
         }
         return true;
-      }
-      if (this.palettePresetPopup.panelRect && !this.isPointInRect(p, this.palettePresetPopup.panelRect)) {
-        this.closePalettePresetPopup();
-        this.renderAll();
-        return false;
       }
       return true;
     },
@@ -318,9 +306,9 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         if (done) this.showMessage(`Layer renamed: ${this.document.activeLayer.name}`);
         return done;
       });
-      if (!ok) this.showMessage("Layer rename canceled.");
       this.closeLayerRenamePrompt();
-      this.renderAll();
+      if (ok) this.renderAll();
+      else this.showMessageAndRender("Layer rename canceled.");
       return !!ok;
     },
 
@@ -331,16 +319,10 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         return true;
       }
       if (this.isPointInRect(p, this.layerRenamePrompt.cancelRect)) {
-        this.closeLayerRenamePrompt();
-        this.showMessage("Layer rename canceled.");
-        this.renderAll();
-        return true;
+        return this.dismissPopup(this.closeLayerRenamePrompt, "Layer rename canceled.");
       }
       if (this.layerRenamePrompt.panelRect && !this.isPointInRect(p, this.layerRenamePrompt.panelRect)) {
-        this.closeLayerRenamePrompt();
-        this.showMessage("Layer rename canceled.");
-        this.renderAll();
-        return true;
+        return this.dismissPopup(this.closeLayerRenamePrompt, "Layer rename canceled.");
       }
       return true;
     },
