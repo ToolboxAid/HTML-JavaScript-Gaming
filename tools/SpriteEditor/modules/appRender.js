@@ -1,4 +1,4 @@
-import { drawCanvasCheckerboard } from "../../../engine/ui/index.js";
+import { drawCanvasCheckerboard, drawCanvasPixelPreview } from "../../../engine/ui/index.js";
 
 function installSpriteEditorRenderMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
@@ -77,7 +77,10 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
         ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
         const thumbH = slot.h - 18;
         const thumbW = slot.w - 8;
-        this.drawMiniPixels(this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), slot.x + 4, slot.y + 2, thumbW, thumbH);
+        drawCanvasPixelPreview(ctx, this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), { x: slot.x + 4, y: slot.y + 2, w: thumbW, h: thumbH }, {
+          cols: this.document.cols,
+          rows: this.document.rows
+        });
         ctx.fillStyle = "#dbe7f3";
         ctx.font = "11px Arial";
         ctx.fillText(String(slot.index + 1), slot.x + 4, slot.y + slot.h - 6);
@@ -206,7 +209,10 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
         ? this.playback.previewFrameIndex
         : (this.timelineHoverIndex !== null ? this.timelineHoverIndex : this.document.activeFrameIndex);
       const f = this.document.frames[Math.max(0, Math.min(previewIndex, this.document.frames.length - 1))];
-      this.drawMiniPixels(this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), x + 12, y + 24, 72, 72);
+      drawCanvasPixelPreview(this.ctx, this.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), { x: x + 12, y: y + 24, w: 72, h: 72 }, {
+        cols: this.document.cols,
+        rows: this.document.rows
+      });
       this.ctx.font = "12px Arial";
       this.ctx.fillText(`Frame ${previewIndex + 1} / ${this.document.frames.length}`, x + 96, y + 36);
     },
@@ -275,25 +281,6 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
         ctx.fillText("Order:", infoX, cy + 38);
         ctx.fillText(order.length > 18 ? `${order.slice(0, 18)}...` : order, infoX, cy + 54);
       }
-    },
-
-    drawMiniPixels(pixels, x, y, w, h) {
-      const cols = this.document.cols;
-      const rows = this.document.rows;
-      const pw = Math.max(1, Math.floor(w / cols));
-      const ph = Math.max(1, Math.floor(h / rows));
-      this.ctx.fillStyle = "#fff";
-      this.ctx.fillRect(x, y, w, h);
-      for (let py = 0; py < rows; py += 1) {
-        for (let px = 0; px < cols; px += 1) {
-          const v = pixels[py][px];
-          if (!v) continue;
-          this.ctx.fillStyle = v;
-          this.ctx.fillRect(x + px * pw, y + py * ph, pw, ph);
-        }
-      }
-      this.ctx.strokeStyle = "rgba(0,0,0,0.2)";
-      this.ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
     },
 
   });

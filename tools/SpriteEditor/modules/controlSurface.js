@@ -1,5 +1,6 @@
 import { LOGICAL_H, LOGICAL_W } from "./constants.js";
 import { xyInRect } from "../../../engine/utils/index.js";
+import { drawCanvasPixelPreview } from "../../../engine/ui/index.js";
 
 class SpriteEditorCanvasControlSurface {
     constructor(app) {
@@ -905,19 +906,11 @@ class SpriteEditorCanvasControlSurface {
       }
       if (c.kind === "frame") {
         const f = this.app.document.frames[c.frameIndex];
-        this.drawMiniFrame(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), c.x+c.w-54, c.y+8, 46, c.h-16);
+        drawCanvasPixelPreview(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), { x: c.x + c.w - 54, y: c.y + 8, w: 46, h: c.h - 16 }, {
+          cols: this.app.document.cols,
+          rows: this.app.document.rows
+        });
       }
-    }
-
-    drawMiniFrame(ctx,pixels,x,y,w,h) {
-      const cols = this.app.document.cols, rows = this.app.document.rows, pw = Math.max(1, Math.floor(w/cols)), ph = Math.max(1, Math.floor(h/rows));
-      ctx.fillStyle = "#fff"; ctx.fillRect(x,y,w,h);
-      for (let py=0; py<rows; py+=1) for (let px=0; px<cols; px+=1) {
-        const v = pixels[py][px];
-        if (!v) continue;
-        ctx.fillStyle = v; ctx.fillRect(x+px*pw, y+py*ph, pw, ph);
-      }
-      ctx.strokeStyle = "rgba(0,0,0,0.2)"; ctx.strokeRect(x+0.5,y+0.5,w-1,h-1);
     }
 
     drawOverflowPanel(ctx) {

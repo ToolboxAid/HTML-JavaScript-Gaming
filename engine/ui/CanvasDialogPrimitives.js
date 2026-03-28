@@ -63,3 +63,27 @@ export function drawCanvasCheckerboard(ctx, rect, blockSize) {
     }
   }
 }
+
+export function drawCanvasPixelPreview(ctx, pixels, rect, options = {}) {
+  const {
+    cols = Array.isArray(pixels) && pixels[0] ? pixels[0].length : 0,
+    rows = Array.isArray(pixels) ? pixels.length : 0,
+    backgroundFill = "#fff",
+    borderStroke = "rgba(0,0,0,0.2)"
+  } = options;
+  if (!pixels || !cols || !rows) return;
+  const pw = Math.max(1, Math.floor(rect.w / cols));
+  const ph = Math.max(1, Math.floor(rect.h / rows));
+  ctx.fillStyle = backgroundFill;
+  ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+  for (let py = 0; py < rows; py += 1) {
+    for (let px = 0; px < cols; px += 1) {
+      const value = pixels[py][px];
+      if (!value) continue;
+      ctx.fillStyle = value;
+      ctx.fillRect(rect.x + px * pw, rect.y + py * ph, pw, ph);
+    }
+  }
+  ctx.strokeStyle = borderStroke;
+  ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+}
