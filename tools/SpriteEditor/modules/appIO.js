@@ -81,24 +81,6 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.showMessage("JSON exported.");
     },
 
-    exportSheetMetadata() {
-      this.downloadBlob("sprite-sheet-meta.json", JSON.stringify(this.document.buildSheetMetadata(), null, 2), "application/json");
-      this.showMessage("Sheet metadata exported.");
-    },
-
-    downloadSheetPng() {
-      const plc = this.document.computeSheetPlacement();
-      const temp = document.createElement("canvas");
-      temp.width = plc.width;
-      temp.height = plc.height;
-      const ctx = temp.getContext("2d");
-      this.drawSheetPreview(ctx, { x: 0, y: 0, width: plc.width, height: plc.height }, false);
-      this.downloadLink.download = "sprite-sheet.png";
-      this.downloadLink.href = temp.toDataURL("image/png");
-      this.downloadLink.click();
-      this.showMessage("PNG sheet exported.");
-    },
-
     downloadBlob(name, text, mime) {
       const blob = new Blob([text], { type: mime });
       const url = URL.createObjectURL(blob);
