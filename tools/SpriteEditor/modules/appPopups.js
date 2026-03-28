@@ -53,6 +53,15 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       return null;
     },
 
+    openTransientSurface(opener, message = "") {
+      if (!this.canOpenTransientSurface()) return false;
+      this.closeMenuLikeSurfaces();
+      opener.call(this);
+      if (message) this.showMessage(message);
+      this.renderAll();
+      return true;
+    },
+
     requestReplaceGuard(title, message, onConfirm, forcePrompt = false) {
       if (!forcePrompt && !this.isDirty) {
         if (typeof onConfirm === "function") onConfirm();
@@ -89,10 +98,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
         return true;
       }
       if (this.isPointInRect(p, this.replaceGuard.cancelRect)) {
-        this.closeReplaceGuard();
-        this.showMessage("Replace canceled.");
-        this.renderAll();
-        return true;
+        return this.dismissPopup(this.closeReplaceGuard, "Replace canceled.");
       }
       return true;
     },
@@ -122,14 +128,12 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     },
 
     openLayerRenamePrompt() {
-      if (!this.canOpenTransientSurface()) return false;
-      this.closeMenuLikeSurfaces();
-      const af = this.document.ensureFrameLayers(this.document.activeFrame);
-      const active = af.layers[af.activeLayerIndex];
-      this.layerRenamePrompt.open = true;
-      this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
-      this.showMessageAndRender("Rename layer: type, Enter apply, Esc cancel.");
-      return true;
+      return this.openTransientSurface(() => {
+        const af = this.document.ensureFrameLayers(this.document.activeFrame);
+        const active = af.layers[af.activeLayerIndex];
+        this.layerRenamePrompt.open = true;
+        this.layerRenamePrompt.text = active && active.name ? active.name : `Layer ${af.activeLayerIndex + 1}`;
+      }, "Rename layer: type, Enter apply, Esc cancel.");
     },
 
     closeAboutPopup() {
@@ -249,12 +253,10 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     openHelpDetailPopup(section) {
       const sections = this.getHelpSections();
       if (!sections[section]) return false;
-      if (!this.canOpenTransientSurface()) return false;
-      this.closeMenuLikeSurfaces();
-      this.helpDetailPopup.open = true;
-      this.helpDetailPopup.section = section;
-      this.renderAll();
-      return true;
+      return this.openTransientSurface(() => {
+        this.helpDetailPopup.open = true;
+        this.helpDetailPopup.section = section;
+      });
     },
 
     handleHelpDetailPointer(p) {
@@ -265,11 +267,9 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
     },
 
     openAboutPopup() {
-      if (!this.canOpenTransientSurface()) return false;
-      this.closeMenuLikeSurfaces();
-      this.aboutPopup.open = true;
-      this.renderAll();
-      return true;
+      return this.openTransientSurface(() => {
+        this.aboutPopup.open = true;
+      });
     },
 
     handleAboutPopupPointer(p) {

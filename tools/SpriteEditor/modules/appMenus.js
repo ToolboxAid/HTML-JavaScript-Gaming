@@ -160,13 +160,10 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
     },
 
     openPalettePresetsMenu() {
-      if (!this.canOpenTransientSurface()) return false;
-      this.closeMenuLikeSurfaces();
-      this.palettePresetPopup.open = true;
-      this.palettePresetPopup.rowRects = [];
-      this.showMessage("Palette presets: choose a preset to apply.");
-      this.renderAll();
-      return true;
+      return this.openTransientSurface(() => {
+        this.palettePresetPopup.open = true;
+        this.palettePresetPopup.rowRects = [];
+      }, "Palette presets: choose a preset to apply.");
     },
 
     openPaletteWorkflowMenu() {
