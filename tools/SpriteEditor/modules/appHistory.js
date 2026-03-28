@@ -154,7 +154,16 @@ function installSpriteEditorHistoryMethods(SpriteEditorApp) {
     },
 
     isCellInsideSelection(cell) {
-      const selection = this.document.selection;
+      const base = this.document.selection;
+      const session = this.selectionMoveSession;
+      const selection = session && session.sourceRect
+        ? {
+            x: session.sourceRect.x + (session.offsetX || 0),
+            y: session.sourceRect.y + (session.offsetY || 0),
+            width: session.sourceRect.width,
+            height: session.sourceRect.height
+          }
+        : base;
       if (!selection || !cell) return false;
       return cell.x >= selection.x && cell.y >= selection.y && cell.x < selection.x + selection.width && cell.y < selection.y + selection.height;
     },
@@ -183,6 +192,10 @@ function installSpriteEditorHistoryMethods(SpriteEditorApp) {
     beginSelectionMove(cell) {
       if (!this.isCellInsideSelection(cell)) return false;
       if (!this.canEditActiveLayer(true)) return false;
+      if (this.selectionMoveSession && this.selectionMoveSession.sourceRect) {
+        this.selectionMoveSession.lastCell = { x: cell.x, y: cell.y };
+        return true;
+      }
       const block = this.document.readSelection();
       if (!block) return false;
       const sourceRect = { ...this.document.selection };
@@ -238,7 +251,26 @@ function installSpriteEditorHistoryMethods(SpriteEditorApp) {
 
     nudgeSelection(dx, dy, step) {
       if (!this.canEditActiveLayer(true)) return false;
-      return this.executeWithHistory(`Selection Nudge ${step}`, () => this.moveSelectionBy(dx, dy));
+      if (!this.selectionMoveSession) {
+        if (!this.document.selection) return false;
+        const block = this.document.readSelection();
+        if (!block) return false;
+        const sourceRect = { ...this.document.selection };
+        this.selectionMoveSession = {
+          before: this.captureHistoryState(),
+          sourceRect,
+          block: {
+            width: block.width,
+            height: block.height,
+            pixels: this.cloneGridData(block.pixels)
+          },
+          offsetX: 0,
+          offsetY: 0,
+          startCell: { x: sourceRect.x, y: sourceRect.y },
+          lastCell: { x: sourceRect.x, y: sourceRect.y }
+        };
+      }
+      return this.moveSelectionBy(dx, dy);
     }
   });
 }

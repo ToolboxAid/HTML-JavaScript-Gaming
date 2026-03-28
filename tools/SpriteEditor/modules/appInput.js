@@ -217,7 +217,6 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
         this.shapePreview = null;
       }
       this.commitStrokeHistory();
-      this.commitSelectionMove();
       this.isPointerDown = false;
       this.selectionStart = null;
       this.strokeLastCell = null;

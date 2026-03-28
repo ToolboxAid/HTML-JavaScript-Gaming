@@ -143,6 +143,30 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       return true;
     },
 
+    autoFitReferenceImage() {
+      const ok = this.fitReferenceImageToGrid();
+      if (ok) this.showMessageAndRender("Reference auto-fit complete.");
+      return ok;
+    },
+
+    scaleReferenceImage(deltaCells) {
+      if (!this.document || !this.document.referenceImage || !this.document.referenceImage.src) {
+        this.showMessage("Load reference image first.");
+        return false;
+      }
+      const ref = this.document.referenceImage;
+      const delta = Number(deltaCells) || 0;
+      if (!delta) return false;
+      const nextW = Math.max(1, Math.min(512, Math.round((Number(ref.widthCells) || this.document.cols) + delta)));
+      const nextH = Math.max(1, Math.min(512, Math.round((Number(ref.heightCells) || this.document.rows) + delta)));
+      if (nextW === ref.widthCells && nextH === ref.heightCells) return false;
+      ref.widthCells = nextW;
+      ref.heightCells = nextH;
+      ref.alignmentLocked = false;
+      this.showMessageAndRender(`Reference scale: ${nextW} x ${nextH}`);
+      return true;
+    },
+
     resetReferenceAlignment() {
       if (!this.document || !this.document.referenceImage || !this.document.referenceImage.src) {
         this.showMessage("No reference image.");

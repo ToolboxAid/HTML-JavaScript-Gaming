@@ -8,7 +8,7 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
     const sectionHeaderH = 24;
     const gap = 4;
     const maxY = left.y + left.height - d.padding;
-    const openSection = ["brush", "select", "grid", "layer"].indexOf(this.app.leftPanelOpenSection) >= 0
+    const openSection = ["brush", "reference", "select", "grid", "layer"].indexOf(this.app.leftPanelOpenSection) >= 0
       ? this.app.leftPanelOpenSection
       : "brush";
 
@@ -46,46 +46,82 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
     if (!addSectionHeader("brush", "Brush")) return;
     if (openSection === "brush") {
       addSectionTopGap();
-      if (y + bh > maxY) return;
-      const minusW = 36;
-      const plusW = 36;
-      const readoutW = bw - minusW - plusW - gap * 2;
-      this.add("button", "brush-size-down", x, y, minusW, bh, "-", () => this.app.adjustBrushSize(-1), { centerText: true, clipRect: left });
-      this.add("button", "brush-size-readout", x + minusW + gap, y, readoutW, bh, String(this.app.brush.size), null, { centerText: true, clipRect: left });
-      this.add("button", "brush-size-up", x + minusW + gap + readoutW + gap, y, plusW, bh, "+", () => this.app.adjustBrushSize(1), { centerText: true, clipRect: left });
-      y += bh + gap;
-      if (y + bh <= maxY) {
-        this.add("button", "brush-shape-toggle", x, y, bw, bh, `Shape: ${this.app.brush.shape}`, () => this.app.toggleBrushShape(), { clipRect: left });
+      const usesBrushSize = this.app.activeTool === "brush" || this.app.activeTool === "erase";
+      if (usesBrushSize) {
+        if (y + bh > maxY) return;
+        const minusW = 36;
+        const plusW = 36;
+        const readoutW = bw - minusW - plusW - gap * 2;
+        this.add("button", "brush-size-down", x, y, minusW, bh, "-", () => this.app.adjustBrushSize(-1), { centerText: true, clipRect: left });
+        this.add("button", "brush-size-readout", x + minusW + gap, y, readoutW, bh, String(this.app.brush.size), null, { centerText: true, clipRect: left });
+        this.add("button", "brush-size-up", x + minusW + gap + readoutW + gap, y, plusW, bh, "+", () => this.app.adjustBrushSize(1), { centerText: true, clipRect: left });
+        y += bh + gap;
+        if (y + bh <= maxY) {
+          this.add("button", "brush-shape-toggle", x, y, bw, bh, `Shape: ${this.app.brush.shape}`, () => this.app.toggleBrushShape(), { clipRect: left });
+          y += bh;
+        }
+      } else if (y + bh <= maxY) {
+        this.add("label", "brush-no-options", x, y, bw, bh, "No brush options for this tool.", null, { clipRect: left });
         y += bh;
       }
       addSectionBottomGap();
     }
 
-    if (!addSectionHeader("select", "Select")) return;
-    if (openSection === "select") {
+    if (!addSectionHeader("reference", "Reference")) return;
+    if (openSection === "reference") {
       addSectionTopGap();
       if (y + bh > maxY) return;
-      const hasSelection = !!this.app.document.selection;
-      const hasClipboard = !!this.app.document.selectionClipboard;
-      const selectionText = hasSelection
-        ? `${this.app.document.selection.width}x${this.app.document.selection.height} selected`
-        : (hasClipboard ? "Clipboard ready" : "No active selection");
-      this.add("label", "select-status", x, y, bw, bh, selectionText, null, { clipRect: left });
+      this.add("button", "reference-import", x, y, bw, bh, "Import Image", () => this.app.loadReferenceImage(), { clipRect: left });
       y += bh + gap;
       if (y + bh > maxY) return;
-      addButtonRow("select-row1", y, "Copy", () => this.app.handleSelectionAction("sel-copy"), "Paste", () => this.app.handleSelectionAction("sel-paste"));
-      y += bh + gap;
-      if (y + bh > maxY) return;
-      addButtonRow("select-row2", y, "Clear", () => this.app.clearSelection(), "Cut", () => this.app.handleSelectionAction("sel-cut"));
-      y += bh + gap;
-      if (y + bh > maxY) return;
-      addButtonRow("select-move1", y, "Move Left", () => this.app.nudgeSelection(-1, 0, "Left"), "Move Right", () => this.app.nudgeSelection(1, 0, "Right"));
+      addButtonRow("reference-scale", y, "Scale -", () => this.app.scaleReferenceImage(-1), "Scale +", () => this.app.scaleReferenceImage(1));
       y += bh + gap;
       if (y + bh <= maxY) {
-        addButtonRow("select-move2", y, "Move Up", () => this.app.nudgeSelection(0, -1, "Up"), "Move Down", () => this.app.nudgeSelection(0, 1, "Down"));
+        this.add("button", "reference-autofit", x, y, bw, bh, "Auto Fit", () => this.app.autoFitReferenceImage(), { clipRect: left });
         y += bh;
       }
       addSectionBottomGap();
+    }
+
+    if (this.app.activeTool !== "reference") {
+      if (!addSectionHeader("select", "Select")) return;
+      if (openSection === "select") {
+        addSectionTopGap();
+        if (y + bh > maxY) return;
+        const hasSelection = !!this.app.document.selection;
+        const hasClipboard = !!this.app.document.selectionClipboard;
+        const selectionText = hasSelection
+          ? `${this.app.document.selection.width}x${this.app.document.selection.height} selected`
+          : (hasClipboard ? "Clipboard ready" : "No active selection");
+        this.add("label", "select-status", x, y, bw, bh, selectionText, null, { clipRect: left });
+        y += bh + gap;
+        if (y + bh > maxY) return;
+        addButtonRow("select-row1", y, "Copy", () => this.app.handleSelectionAction("sel-copy"), "Paste", () => this.app.handleSelectionAction("sel-paste"));
+        y += bh + gap;
+        if (y + bh > maxY) return;
+        addButtonRow("select-row2", y, "Clear", () => this.app.clearSelection(), "Cut", () => this.app.handleSelectionAction("sel-cut"));
+        y += bh + gap;
+        if (y + bh > maxY) return;
+        addButtonRow("select-move1", y, "Move Left", () => this.app.nudgeSelection(-1, 0, "Left"), "Move Right", () => this.app.nudgeSelection(1, 0, "Right"));
+        y += bh + gap;
+        if (y + bh <= maxY) {
+          addButtonRow("select-move2", y, "Move Up", () => this.app.nudgeSelection(0, -1, "Up"), "Move Down", () => this.app.nudgeSelection(0, 1, "Down"));
+          y += bh;
+        }
+        y += gap;
+        if (y + bh <= maxY) {
+          this.add("button", "select-move-complete", x, y, bw, bh, "Move Complete", () => {
+            if (this.app.selectionMoveSession) {
+              this.app.commitSelectionMove();
+              this.app.showMessageAndRender("Selection move committed.");
+              return;
+            }
+            this.app.showMessageAndRender("No move to commit.");
+          }, { clipRect: left });
+          y += bh;
+        }
+        addSectionBottomGap();
+      }
     }
 
     if (!addSectionHeader("grid", "Grid")) return;

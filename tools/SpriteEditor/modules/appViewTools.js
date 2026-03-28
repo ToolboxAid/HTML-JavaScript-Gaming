@@ -54,7 +54,7 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
         fillrect: { primary: "Draw a filled rectangle.", secondary: "Good for blocks, panels, and tile silhouettes." },
         eyedropper: { primary: "Sample a color from artwork.", secondary: "Click any painted cell to set the active color." },
         select: { primary: "Create or move a rectangular selection.", secondary: "Use arrows to nudge after selecting." },
-        reference: { primary: "Adjust reference image workflow controls.", secondary: "Use left panel to load, fit, or reset alignment." }
+        reference: { primary: "Adjust reference image workflow controls.", secondary: "Use left panel to import, scale, and auto-fit." }
       };
       return descriptions[this.activeTool] || { primary: "Choose a tool from the top Tools menu.", secondary: "Tool details appear here while you work." };
     },
@@ -67,6 +67,8 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
 
     resizeDocumentGrid(nextCols, nextRows) {
       return this.executeWithHistory(`Grid Resize ${nextCols}x${nextRows}`, () => {
+        const prevCols = this.document.cols;
+        const prevRows = this.document.rows;
         const cols = Math.max(1, Math.min(256, Math.floor(Number(nextCols) || this.document.cols)));
         const rows = Math.max(1, Math.min(256, Math.floor(Number(nextRows) || this.document.rows)));
         if (cols === this.document.cols && rows === this.document.rows) return false;
@@ -81,6 +83,15 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
         });
         this.document.cols = cols;
         this.document.rows = rows;
+        if (this.document.referenceImage && this.document.referenceImage.src) {
+          const ref = this.document.referenceImage;
+          const scaleX = cols / Math.max(1, prevCols);
+          const scaleY = rows / Math.max(1, prevRows);
+          ref.xCells = Math.round((Number(ref.xCells) || 0) * scaleX);
+          ref.yCells = Math.round((Number(ref.yCells) || 0) * scaleY);
+          ref.widthCells = Math.max(1, Math.round((Number(ref.widthCells) || prevCols) * scaleX));
+          ref.heightCells = Math.max(1, Math.round((Number(ref.heightCells) || prevRows) * scaleY));
+        }
         this.document.clearSelection();
         this.gridRect = this.computeGridRect();
         this.showMessage(`Grid size: ${cols} x ${rows}`);
@@ -241,6 +252,7 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
       this.activeTool = tool;
       this.shapePreview = null;
       if (tool !== "select") {
+        if (this.selectionMoveSession) this.commitSelectionMove();
         this.clearSelection(false);
         this.selectionStart = null;
       }

@@ -35,12 +35,13 @@ function installSpriteEditorShellMethods(SpriteEditorApp) {
 
     getLeftPanelSectionForTool(tool = this.activeTool) {
       if (tool === "select") return "select";
-      if (["brush", "erase", "fill", "line", "rect", "fillrect", "eyedropper"].indexOf(tool) >= 0) return "brush";
+      if (tool === "reference") return "reference";
+      if (["brush", "erase"].indexOf(tool) >= 0) return "brush";
       return null;
     },
 
     setLeftPanelSection(section, render = true) {
-      const allowed = ["brush", "select", "grid", "layer"];
+      const allowed = ["brush", "reference", "select", "grid", "layer"];
       if (allowed.indexOf(section) < 0) return false;
       if (this.leftPanelOpenSection === section) return false;
       this.leftPanelOpenSection = section;

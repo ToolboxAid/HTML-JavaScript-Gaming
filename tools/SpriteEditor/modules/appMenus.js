@@ -109,8 +109,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "edit-menu-redo", text: "Redo", action: () => this.redoHistory(), shortcut: "Ctrl+Y" },
         { id: "edit-menu-copy", text: "Copy", action: () => this.handleSelectionAction("sel-copy"), shortcut: "Ctrl+C" },
         { id: "edit-menu-cut", text: "Cut", action: () => this.handleSelectionAction("sel-cut"), shortcut: "Ctrl+X" },
-        { id: "edit-menu-paste", text: "Paste", action: () => this.handleSelectionAction("sel-paste"), shortcut: "Ctrl+V" },
-        { id: "edit-menu-clear-selection", text: "Clear Selection", action: () => this.clearSelection(), shortcut: "Backspace" }
+        { id: "edit-menu-paste", text: "Paste", action: () => this.handleSelectionAction("sel-paste"), shortcut: "Ctrl+V" }
       ];
       return this.prepareTopMenu("edit", items);
     },

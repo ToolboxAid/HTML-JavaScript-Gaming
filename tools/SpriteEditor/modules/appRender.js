@@ -44,17 +44,6 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
           ctx.fillRect(r.x + x * r.pixelSize, r.y + y * r.pixelSize, r.pixelSize, r.pixelSize);
         }
       }
-      if (this.document.referenceImage && this.document.referenceImage.visible && this.referenceImageRuntime && this.referenceImageRuntime.loaded && this.referenceImageRuntime.image) {
-        const ref = this.document.referenceImage;
-        const drawX = r.x + ref.xCells * r.pixelSize;
-        const drawY = r.y + ref.yCells * r.pixelSize;
-        const drawW = ref.widthCells * r.pixelSize;
-        const drawH = ref.heightCells * r.pixelSize;
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, Math.min(1, Number(ref.opacity) || 0.45));
-        ctx.drawImage(this.referenceImageRuntime.image, drawX, drawY, drawW, drawH);
-        ctx.restore();
-      }
       if (this.onionSkin.prev && prevPixels) {
         ctx.fillStyle = "rgba(80, 180, 255, 0.20)";
         for (let y = 0; y < this.document.rows; y += 1) {
@@ -105,6 +94,17 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
         ctx.moveTo(r.x, r.y + y * r.pixelSize + 0.5);
         ctx.lineTo(r.x + r.width, r.y + y * r.pixelSize + 0.5);
         ctx.stroke();
+      }
+      if (this.document.referenceImage && this.document.referenceImage.visible && this.referenceImageRuntime && this.referenceImageRuntime.loaded && this.referenceImageRuntime.image) {
+        const ref = this.document.referenceImage;
+        const drawX = r.x + ref.xCells * r.pixelSize;
+        const drawY = r.y + ref.yCells * r.pixelSize;
+        const drawW = ref.widthCells * r.pixelSize;
+        const drawH = ref.heightCells * r.pixelSize;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, Number(ref.opacity) || 0.45));
+        ctx.drawImage(this.referenceImageRuntime.image, drawX, drawY, drawW, drawH);
+        ctx.restore();
       }
       if (this.hoveredGridCell) {
         ctx.strokeStyle = "#4cc9f0";
