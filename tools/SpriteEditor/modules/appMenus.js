@@ -9,49 +9,39 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
       return true;
     },
 
+    closeSurfaceWithMessage(closeFn, message) {
+      closeFn.call(this);
+      this.showMessage(message);
+      return true;
+    },
+
     handleCloseSurfaceAction() {
       if (this.helpDetailPopup.open) {
-        this.closeHelpDetailPopup();
-        this.showMessage("Help closed.");
-        return true;
+        return this.closeSurfaceWithMessage(this.closeHelpDetailPopup, "Help closed.");
       }
       if (this.aboutPopup.open) {
-        this.closeAboutPopup();
-        this.showMessage("About closed.");
-        return true;
+        return this.closeSurfaceWithMessage(this.closeAboutPopup, "About closed.");
       }
       if (this.palettePresetPopup.open) {
-        this.closePalettePresetPopup();
-        this.showMessage("Palette presets closed.");
-        return true;
+        return this.closeSurfaceWithMessage(this.closePalettePresetPopup, "Palette presets closed.");
       }
       if (this.replaceGuard.open) {
-        this.closeReplaceGuard();
-        this.showMessage("Replace canceled.");
-        return true;
+        return this.closeSurfaceWithMessage(this.closeReplaceGuard, "Replace canceled.");
       }
       if (this.isLayerRenameOpen()) {
-        this.closeLayerRenamePrompt();
-        this.showMessage("Layer rename canceled.");
-        return true;
+        return this.closeSurfaceWithMessage(this.closeLayerRenamePrompt, "Layer rename canceled.");
       }
       if (this.controlSurface.overflowPanelOpen) {
-        this.controlSurface.closeOverflowPanel();
-        this.showMessage("Menu closed.");
-        return true;
+        return this.closeSurfaceWithMessage(this.controlSurface.closeOverflowPanel, "Menu closed.");
       }
       if (this.controlSurface.commandPaletteOpen) {
-        this.controlSurface.closeCommandPalette();
-        this.showMessage("Command palette closed.");
-        return true;
+        return this.closeSurfaceWithMessage(this.controlSurface.closeCommandPalette, "Command palette closed.");
       }
       return false;
     },
 
     openHelpMenu() {
       if (!this.canOpenTransientSurface()) return false;
-      this.closeHelpDetailPopup();
-      this.closeAboutPopup();
       const items = [
         { id: "help-menu-files", text: "Files", action: () => this.openHelpDetailPopup("file") },
         { id: "help-menu-edit", text: "Edit", action: () => this.openHelpDetailPopup("edit") },

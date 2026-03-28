@@ -9,6 +9,11 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
       this.renderAll();
     },
 
+    runHistoryMessageAction(label, mutator) {
+      this.executeWithHistory(label, mutator);
+      this.renderAll();
+    },
+
     replacePaletteColor() {
       const source = this.paletteWorkflow.source;
       const target = this.paletteWorkflow.target;
@@ -114,7 +119,7 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
     },
 
     duplicateSelectedFrameRange() {
-      this.executeWithHistory("Frame Range Duplicate", () => {
+      this.runHistoryMessageAction("Frame Range Duplicate", () => {
         const range = this.getFrameRangeSelection();
         const result = this.document.duplicateFrameRange(range.start, range.end);
         if (!result) {
@@ -128,11 +133,10 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
         this.showMessage(`Duplicated frames ${result.start + 1}-${result.end + 1}.`);
         return true;
       });
-      this.renderAll();
     },
 
     deleteSelectedFrameRange() {
-      this.executeWithHistory("Frame Range Delete", () => {
+      this.runHistoryMessageAction("Frame Range Delete", () => {
         const range = this.getFrameRangeSelection();
         const ok = this.document.deleteFrameRange(range.start, range.end);
         if (!ok) {
@@ -145,11 +149,10 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
         this.showMessage(`Deleted frames ${range.start + 1}-${range.end + 1}.`);
         return true;
       });
-      this.renderAll();
     },
 
     shiftSelectedFrameRange(direction) {
-      this.executeWithHistory(direction < 0 ? "Frame Range Shift Left" : "Frame Range Shift Right", () => {
+      this.runHistoryMessageAction(direction < 0 ? "Frame Range Shift Left" : "Frame Range Shift Right", () => {
         const range = this.getFrameRangeSelection();
         const result = this.document.shiftFrameRange(range.start, range.end, direction);
         if (!result) {
@@ -162,7 +165,6 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
         this.showMessage(`Shifted frames ${result.start + 1}-${result.end + 1}.`);
         return true;
       });
-      this.renderAll();
     },
 
     addLayer() {
@@ -178,41 +180,37 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
     },
 
     toggleLayerVisibility() {
-      this.executeWithHistory("Layer Visibility", () => {
+      this.runHistoryMessageAction("Layer Visibility", () => {
         const ok = this.document.toggleLayerVisibility();
         this.showMessage(ok ? (this.document.activeLayer.visible === false ? "Layer hidden." : "Layer visible.") : "Layer visibility failed.");
         return ok;
       });
-      this.renderAll();
     },
 
     toggleLayerLock() {
-      this.executeWithHistory("Layer Lock", () => {
+      this.runHistoryMessageAction("Layer Lock", () => {
         const ok = this.document.toggleLayerLock();
         this.showMessage(ok ? (this.document.activeLayer.locked ? "Layer locked." : "Layer unlocked.") : "Layer lock failed.");
         return ok;
       });
-      this.renderAll();
     },
 
     adjustLayerOpacity(delta) {
-      this.executeWithHistory("Layer Opacity", () => {
+      this.runHistoryMessageAction("Layer Opacity", () => {
         const ok = this.document.adjustActiveLayerOpacity(delta);
         if (ok) this.showMessage(`Layer opacity: ${Math.round(this.document.activeLayer.opacity * 100)}%`);
         else this.showMessage("Layer opacity unchanged.");
         return ok;
       });
-      this.renderAll();
     },
 
     resetLayerOpacity() {
-      this.executeWithHistory("Layer Opacity Reset", () => {
+      this.runHistoryMessageAction("Layer Opacity Reset", () => {
         const ok = this.document.resetActiveLayerOpacity();
         if (ok) this.showMessage("Layer opacity: 100%");
         else this.showMessage("Layer opacity already 100%.");
         return ok;
       });
-      this.renderAll();
     },
 
     toggleBlendPreview() {
@@ -221,22 +219,20 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
     },
 
     mergeLayerDown() {
-      this.executeWithHistory("Layer Merge Down", () => {
+      this.runHistoryMessageAction("Layer Merge Down", () => {
         const ok = this.document.mergeLayerDown();
         this.showMessage(ok ? "Merged layer down." : "Merge down unavailable.");
         return ok;
       });
-      this.renderAll();
     },
 
     requestFlattenFrame() {
       this.requestReplaceGuard("Flatten Frame", "Flatten all layers in current frame into one layer?", () => {
-        this.executeWithHistory("Layer Flatten Frame", () => {
+        this.runHistoryMessageAction("Layer Flatten Frame", () => {
           const ok = this.document.flattenActiveFrame();
           this.showMessage(ok ? "Frame flattened." : "Flatten produced no changes.");
           return ok;
         });
-        this.renderAll();
       }, true);
       this.renderAll();
     }
