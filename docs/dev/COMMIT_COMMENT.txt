@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-samples(level8.1): validate second-game reuse via shared world systems and Space Invaders sample
+samples(level8.2): add Pacman Lite sample using shared world systems without engine changes

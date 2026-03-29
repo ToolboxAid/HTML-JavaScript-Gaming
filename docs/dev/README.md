@@ -3,19 +3,17 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Level 8.1 Space Invaders Reuse Validation BUILD_PR
+# Level 8.2 Pacman Lite Pattern Expansion BUILD_PR
 
-This package contains a sample-based Space Invaders implementation validating reuse of the shared world-systems stack.
+This package contains a sample-based Pacman Lite implementation using the existing shared world-systems stack.
 
 ## Included
-- samples/shared/worldSystems.js
-- samples/sample149-asteroids-world-systems/AsteroidsWorldSystemsScene.js
-- samples/sample153-space-invaders-world-systems/SpaceInvadersWorldSystemsScene.js
-- samples/sample153-space-invaders-world-systems/main.js
-- samples/sample153-space-invaders-world-systems/index.js
-- samples/sample153-space-invaders-world-systems/index.html
-- docs/pr/PLAN_PR_LEVEL_8_1_SECOND_GAME_REUSE_VALIDATION.md
-- docs/pr/BUILD_PR_LEVEL_8_1_SPACE_INVADERS_REUSE_VALIDATION.md
+- samples/sample156-pacman-lite-world-systems/PacmanLiteWorldSystemsScene.js
+- samples/sample156-pacman-lite-world-systems/main.js
+- samples/sample156-pacman-lite-world-systems/index.js
+- samples/sample156-pacman-lite-world-systems/index.html
+- docs/pr/PLAN_PR_LEVEL_8_2_THIRD_GAME_PATTERN_EXPANSION.md
+- docs/pr/BUILD_PR_LEVEL_8_2_PACMAN_LITE_PATTERN_EXPANSION.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -24,4 +22,4 @@ This package contains a sample-based Space Invaders implementation validating re
 
 ## Scope Notes
 - No engine changes.
-- Shared systems reused by composition across two games.
+- Pacman-specific mechanics remain local to sample scene layer.
