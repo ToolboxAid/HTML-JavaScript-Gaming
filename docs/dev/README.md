@@ -3,17 +3,15 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Repo Cleanup Phase 1F BUILD_PR
+# Repo Cleanup Phase 1G BUILD_PR
 
-This package contains a controlled multi-helper extraction delta for Sprite Editor plus engine-candidate evaluation documentation.
+This package contains a minimal engine-promotion delta from Phase 1F strong candidates.
 
 ## Included
-- tools/SpriteEditor/modules/appCommands.js
-- tools/SpriteEditor/shared/normalizeCommandText.js
-- tools/SpriteEditor/shared/fuzzyMatchScore.js
+- engine/utils/fuzzyMatchScore.js
 - tools/SpriteEditor/shared/scoreCommandItem.js
-- docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
-- docs/pr/BUILD_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
+- docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md
+- docs/pr/BUILD_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -21,6 +19,6 @@ This package contains a controlled multi-helper extraction delta for Sprite Edit
 - docs/dev/RULES.txt
 
 ## Scope Notes
-- Extracted exactly 3 helpers from modules to shared.
+- Exactly one helper promoted into engine.
 - Behavior preserved.
-- No changes to engine, games, or samples.
+- No games or samples changes.

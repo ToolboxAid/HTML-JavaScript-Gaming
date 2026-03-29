@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-cleanup(sprite-editor): Phase 1F extract command search helpers and add engine candidate evaluation
+cleanup(engine): Phase 1G promote fuzzyMatchScore from SpriteEditor shared to engine utils
