@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-build(sprite-editor): normalize helper ownership for panel boundaries in Phase 1C
+docs(cleanup): add Phase 1D post-normalization extraction-gate plan for Sprite Editor

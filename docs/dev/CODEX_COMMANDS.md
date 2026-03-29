@@ -5,12 +5,9 @@ CODEX_COMMANDS.md
 
 MODEL: GPT-5.4
 REASONING: medium
-COMMAND: APPLY_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION
+COMMAND: Create BUILD_PR_REPO_CLEANUP_PHASE_1D_SPRITE_EDITOR_EXTRACTION_GATE_CLASSIFICATION_AND_PILOT as a docs-first, Sprite Editor-only delta. Use docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1D_SPRITE_EDITOR_POST_NORMALIZATION_EXTRACTION_GATE.md as source of truth. Keep scope to tools/SpriteEditor/modules analysis plus docs/pr and docs/dev artifacts. Do not modify engine/, games/, or samples/. Include helper inventory, bucket classification (keep-local/monitor/future-candidate), extraction gate pass/fail checklist, repo-relative paths, COMMIT_COMMENT.txt, and NEXT_COMMAND.txt.
 
 VALIDATIONS:
-- node -c tools/SpriteEditor/modules/appPalette.js
-- node -c tools/SpriteEditor/modules/appInput.js
-- node -c tools/SpriteEditor/modules/appViewTools.js
-- verify palette sidebar wheel behavior is unchanged
-- verify reference tool guidance still routes to left panel controls
 - verify no files changed under engine/, games/, samples/
+- verify classification includes keep-local/monitor/future-candidate buckets
+- verify extraction gate criteria are explicitly evaluated per touched helper family
