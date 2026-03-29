@@ -1,1 +1,1 @@
-Create BUILD_PR_LEVEL_10_5_EVENT_PIPELINE_PILOT_CONSUMER as a minimal, controlled implementation delta. Use Level 10.4 BUILD docs as the source of truth. Add exactly one optional advanced consumer that subscribes to public events through the defined pipeline contracts. Preserve existing behavior when the advanced consumer is disabled. Do not modify engine core APIs beyond the approved event boundary implementation.
+BUILD_PR_LEVEL_10_5_SYSTEM_INTEGRATION_LAYER
