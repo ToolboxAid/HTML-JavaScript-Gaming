@@ -3,14 +3,14 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Level 9 Engine Promotion of Proven Systems BUILD_PR
+# Level 9.1 Engine API Stabilization BUILD_PR
 
-This package contains a docs-first promotion-preparation delta for moving proven world systems into engine ownership.
+This package contains a docs-first API-boundary stabilization delta for promoted world systems.
 
 ## Included
-- docs/pr/PLAN_PR_LEVEL_9_ENGINE_PROMOTION_OF_PROVEN_SYSTEMS.md
-- docs/pr/LEVEL_9_ENGINE_PROMOTION_MAPPING.md
-- docs/pr/BUILD_PR_LEVEL_9_ENGINE_PROMOTION_OF_PROVEN_SYSTEMS.md
+- docs/pr/PLAN_PR_LEVEL_9_1_ENGINE_API_STABILIZATION.md
+- docs/pr/LEVEL_9_1_ENGINE_API_STABILIZATION_CONTRACTS.md
+- docs/pr/BUILD_PR_LEVEL_9_1_ENGINE_API_STABILIZATION.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -19,5 +19,5 @@ This package contains a docs-first promotion-preparation delta for moving proven
 
 ## Scope Notes
 - No runtime code changes.
-- No engine modifications in this docs-first preparation step.
-- Game-specific configuration/rules remain in sample/game layer.
+- No engine architecture redesign.
+- API boundaries and ownership rules documented for safe migration.
