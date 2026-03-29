@@ -1,8 +1,8 @@
 // Toolbox Aid
 // David Quesenberry
-// 2026-03-26
+// 2026-03-29
 
-ENGINE RULES (LOCKED — CLEAN VERSION v4)
+ENGINE RULES (LOCKED — CLEAN VERSION v5)
 
 WORKFLOW (NON-NEGOTIABLE)
 - ChatGPT defines: architecture, PLAN_PR, BUILD_PR
@@ -74,36 +74,29 @@ ZIP / DELIVERY RULES (CRITICAL)
 - No flattened files at root
 - Delta only (no unrelated files)
 - Ready-to-run (no setup guessing)
+- Delta only (no unrelated files)
+
+CODEX RESULT ZIP RULE (MANDATORY)
+- All BUILD_PR executions MUST produce a result ZIP
+- Codex MUST write the result ZIP to:
+
+    tmp/BUILD_PR_<NAME>_delta.zip
+
+- The ZIP MUST:
+    - Contain ONLY changed/added files (delta only)
+    - Preserve exact repo-relative structure
+    - NOT include full repo copies
+    - NOT include dependencies or unrelated files
+
+- This ZIP is the ONLY accepted output from Codex for BUILD_PR
+- Chat summaries are NOT sufficient
 
 EXECUTION PACKAGING (MANDATORY)
 - ANY step requiring execution MUST include a ZIP
-- ZIP MUST include:
-    /docs/dev/CODEX_COMMANDS.md
-    /docs/dev/COMMIT_COMMENT.txt
-- NEVER provide execution-only instructions in chat
-- NEVER require manual reconstruction
+- CODEX_COMMANDS.md MUST include:
 
-NEXT COMMAND DELIVERY (MANDATORY)
-- The NEXT COMMAND must ALWAYS be presented in a control with a copy button
-- The control must contain ONLY the executable command content
-- The same command MUST also exist in /docs/dev/CODEX_COMMANDS.md
-- Chat display is for visibility; ZIP is the source of truth
-
-REQUIRED FILES
-- README.md (under /docs/dev/)
-- CODEX_COMMANDS.md (under /docs/dev/)
-- COMMIT_COMMENT.txt (under /docs/dev/)
-- All source files in correct repo paths
-
-REQUIRED CONTENT
-Commit Comment:
-- Short, clear, scoped
-
-Codex Execution Block:
-MODEL: GPT-5.4 / GPT-5.4-mini / GPT-5.3-codex
-REASONING: low / medium / high
-COMMAND: <command>
-
-FORMAT RULE
-- Sample001 defines structure
-- All samples must match exactly
+CODEX OUTPUT CONTRACT (MANDATORY)
+- CODEX_COMMANDS.md MUST include a FINAL STEP requiring:
+    - Creation of a repo-structured delta ZIP
+    - Output path: /tmp/BUILD_PR_<NAME>_delta.zip
+- Missing this step = invalid package
