@@ -3,15 +3,16 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Level 10.1 Adaptive Spawn Director BUILD_PR
+# Level 10.2 Advanced AI Behavior System BUILD_PR
 
-This package contains docs-first preparation for the first advanced optional system, Adaptive Spawn Director.
+This package contains docs-first preparation for an optional advanced AI behavior layer that composes with the stabilized world systems.
 
 ## Included
-- docs/pr/PLAN_PR_LEVEL_10_1_FIRST_ADVANCED_SYSTEM_IMPLEMENTATION.md
-- docs/pr/LEVEL_10_1_ADAPTIVE_SPAWN_DIRECTOR_SPEC.md
-- docs/pr/LEVEL_10_1_ADAPTIVE_SPAWN_DIRECTOR_USAGE.md
-- docs/pr/BUILD_PR_LEVEL_10_1_ADAPTIVE_SPAWN_DIRECTOR.md
+- docs/pr/PLAN_PR_LEVEL_10_2_ADVANCED_AI_BEHAVIOR_SYSTEM.md
+- docs/pr/LEVEL_10_2_ADVANCED_AI_BEHAVIOR_SPEC.md
+- docs/pr/LEVEL_10_2_AI_BEHAVIOR_PATTERNS.md
+- docs/pr/LEVEL_10_2_ADVANCED_AI_USAGE.md
+- docs/pr/BUILD_PR_LEVEL_10_2_ADVANCED_AI_BEHAVIOR_SYSTEM.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -20,4 +21,4 @@ This package contains docs-first preparation for the first advanced optional sys
 
 ## Scope Notes
 - Documentation only.
-- No engine or runtime changes.
+- No engine core API or runtime changes.
