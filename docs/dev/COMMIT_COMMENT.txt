@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-samples(level8.2): add Pacman Lite sample using shared world systems without engine changes
+samples(level8.3): add stress/edge validation scenarios for Asteroids, Invaders, and Pacman Lite

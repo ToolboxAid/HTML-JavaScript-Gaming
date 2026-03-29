@@ -10,6 +10,50 @@ import { drawFrame, drawPanel } from '../../engine/debug/index.js';
 import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '../shared/worldSystems.js';
 
 const theme = new Theme(ThemeTokens);
+const INVADERS_VALIDATION_PRESETS = {
+  baseline: {
+    waves: [
+      { spawn: { id: 'invader', interval: 0.06, limit: 18 }, config: { invaderSpeed: 28, playerCooldown: 0.28 } },
+      { spawn: { id: 'invader', interval: 0.05, limit: 24 }, config: { invaderSpeed: 36, playerCooldown: 0.24 } },
+      { spawn: { id: 'invader', interval: 0.04, limit: 30 }, config: { invaderSpeed: 44, playerCooldown: 0.2 } }
+    ],
+    events: [
+      { id: 'ufo-pass', phase: 'active', time: 5.5, repeat: false, action: { type: 'spawnUfo' } },
+      { id: 'tempo-spike', waveIndex: 1, time: 8.0, repeat: false, action: { type: 'invaderSpeedMult', value: 1.18 } },
+      { id: 'late-wave-pressure', waveIndex: 2, phase: 'active', time: 11.0, repeat: true, action: { type: 'invaderSpeedMult', value: 1.02 } }
+    ],
+    lifecycle: { maxEntities: 110, maxLifetime: 2.2 }
+  },
+  stress: {
+    waves: [
+      { spawn: { id: 'invader', interval: 0.03, limit: 36 }, config: { invaderSpeed: 44, playerCooldown: 0.22 } },
+      { spawn: { id: 'invader', interval: 0.025, limit: 42 }, config: { invaderSpeed: 56, playerCooldown: 0.18 } }
+    ],
+    events: [
+      { id: 'stress-ufo', phase: 'active', time: 2.5, repeat: true, action: { type: 'spawnUfo' } },
+      { id: 'stress-tempo', phase: 'active', time: 3.0, repeat: true, action: { type: 'invaderSpeedMult', value: 1.01 } }
+    ],
+    lifecycle: { maxEntities: 220, maxLifetime: 1.4 }
+  },
+  edge: {
+    waves: [
+      { spawn: { id: 'invader', interval: 0.1, limit: 0 }, config: { invaderSpeed: 20, playerCooldown: 0.3 } },
+      { spawn: { id: 'invader', interval: 0.1, limit: 1 }, config: { invaderSpeed: 120, playerCooldown: 0.3 } }
+    ],
+    events: [
+      { id: 'edge-overlap-1', phase: 'spawning', time: 0.1, repeat: false, action: { type: 'spawnUfo' } },
+      { id: 'edge-overlap-2', phase: 'spawning', time: 0.1, repeat: false, action: { type: 'spawnUfo' } }
+    ],
+    lifecycle: { maxEntities: 20, maxLifetime: 0.7 }
+  }
+};
+
+function getValidationMode() {
+  const query = (globalThis.location && globalThis.location.search) ? String(globalThis.location.search) : '';
+  if (query.indexOf('validation=stress') >= 0) return 'stress';
+  if (query.indexOf('validation=edge') >= 0) return 'edge';
+  return 'baseline';
+}
 
 export default class SpaceInvadersWorldSystemsScene extends Scene {
   constructor() {
@@ -19,6 +63,8 @@ export default class SpaceInvadersWorldSystemsScene extends Scene {
     this.elapsed = 0;
     this.score = 0;
     this.lastEvent = '';
+    this.validationMode = getValidationMode();
+    this.validationConfig = INVADERS_VALIDATION_PRESETS[this.validationMode] || INVADERS_VALIDATION_PRESETS.baseline;
     this.player = { x: this.width * 0.5, y: this.height - 48, cooldown: 0.28 };
     this.playerFireCooldown = 0.28;
     this.formationStep = 24;
@@ -28,22 +74,14 @@ export default class SpaceInvadersWorldSystemsScene extends Scene {
     this.spawnDone = false;
     this.entities = [];
 
-    this.stateSystem = new WorldStateSystem([
-      { spawn: { id: 'invader', interval: 0.06, limit: 18 }, config: { invaderSpeed: 28, playerCooldown: 0.28 } },
-      { spawn: { id: 'invader', interval: 0.05, limit: 24 }, config: { invaderSpeed: 36, playerCooldown: 0.24 } },
-      { spawn: { id: 'invader', interval: 0.04, limit: 30 }, config: { invaderSpeed: 44, playerCooldown: 0.2 } }
-    ]);
+    this.stateSystem = new WorldStateSystem(this.validationConfig.waves);
 
-    this.eventsSystem = new EventsSystem([
-      { id: 'ufo-pass', phase: 'active', time: 5.5, repeat: false, action: { type: 'spawnUfo' } },
-      { id: 'tempo-spike', waveIndex: 1, time: 8.0, repeat: false, action: { type: 'invaderSpeedMult', value: 1.18 } },
-      { id: 'late-wave-pressure', waveIndex: 2, phase: 'active', time: 11.0, repeat: true, action: { type: 'invaderSpeedMult', value: 1.02 } }
-    ]);
+    this.eventsSystem = new EventsSystem(this.validationConfig.events);
 
     this.spawnSystem = null;
     this.lifecycleSystem = new LifecycleSystem({
-      maxEntities: 110,
-      maxLifetime: 2.2,
+      maxEntities: this.validationConfig.lifecycle.maxEntities,
+      maxLifetime: this.validationConfig.lifecycle.maxLifetime,
       bounds: { minX: 0, maxX: this.width, minY: 0, maxY: this.height }
     });
     this.configureWave();
@@ -220,6 +258,7 @@ export default class SpaceInvadersWorldSystemsScene extends Scene {
     drawPanel(renderer, 610, 28, 330, 216, 'Space Invaders Systems', [
       `Phase: ${this.stateSystem.phase}`,
       `Wave: ${Math.min(this.stateSystem.waveIndex + 1, this.stateSystem.waves.length)}/${this.stateSystem.waves.length}`,
+      `Validation: ${this.validationMode}`,
       `Invaders: ${invaders}`,
       `UFOs: ${ufos}`,
       `Shots: ${shots}`,

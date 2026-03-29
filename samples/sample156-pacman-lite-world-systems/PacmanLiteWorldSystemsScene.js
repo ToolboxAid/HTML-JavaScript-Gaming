@@ -15,6 +15,49 @@ const MAZE_MIN_X = 120;
 const MAZE_MAX_X = 840;
 const MAZE_MIN_Y = 90;
 const MAZE_MAX_Y = 450;
+const PACMAN_VALIDATION_PRESETS = {
+  baseline: {
+    waves: [
+      { spawn: { id: 'round0', interval: 0.05, limit: 25 }, config: { ghostCount: 2, pelletStepX: 120, pelletStepY: 90 } },
+      { spawn: { id: 'round1', interval: 0.045, limit: 31 }, config: { ghostCount: 3, pelletStepX: 100, pelletStepY: 80 } }
+    ],
+    events: [
+      { id: 'frightened-window', phase: 'active', time: 5.0, repeat: false, action: { type: 'frightened', duration: 4.5 } },
+      { id: 'bonus-fruit', phase: 'active', time: 8.0, repeat: false, action: { type: 'spawnBonus' } },
+      { id: 'tempo-rise', waveIndex: 1, phase: 'active', time: 12.0, repeat: true, action: { type: 'ghostSpeedMult', value: 1.015 } }
+    ],
+    lifecycle: { maxEntities: 80, maxLifetime: 16 }
+  },
+  stress: {
+    waves: [
+      { spawn: { id: 'round0', interval: 0.02, limit: 48 }, config: { ghostCount: 4, pelletStepX: 80, pelletStepY: 70 } },
+      { spawn: { id: 'round1', interval: 0.018, limit: 56 }, config: { ghostCount: 5, pelletStepX: 72, pelletStepY: 64 } }
+    ],
+    events: [
+      { id: 'stress-fright', phase: 'active', time: 3.0, repeat: true, action: { type: 'frightened', duration: 2.0 } },
+      { id: 'stress-bonus', phase: 'active', time: 4.0, repeat: true, action: { type: 'spawnBonus' } }
+    ],
+    lifecycle: { maxEntities: 160, maxLifetime: 10 }
+  },
+  edge: {
+    waves: [
+      { spawn: { id: 'round0', interval: 0.1, limit: 0 }, config: { ghostCount: 0, pelletStepX: 120, pelletStepY: 90 } },
+      { spawn: { id: 'round1', interval: 0.1, limit: 1 }, config: { ghostCount: 1, pelletStepX: 120, pelletStepY: 90 } }
+    ],
+    events: [
+      { id: 'edge-overlap-a', phase: 'spawning', time: 0.1, repeat: false, action: { type: 'spawnBonus' } },
+      { id: 'edge-overlap-b', phase: 'spawning', time: 0.1, repeat: false, action: { type: 'spawnBonus' } }
+    ],
+    lifecycle: { maxEntities: 20, maxLifetime: 4 }
+  }
+};
+
+function getValidationMode() {
+  const query = (globalThis.location && globalThis.location.search) ? String(globalThis.location.search) : '';
+  if (query.indexOf('validation=stress') >= 0) return 'stress';
+  if (query.indexOf('validation=edge') >= 0) return 'edge';
+  return 'baseline';
+}
 
 export default class PacmanLiteWorldSystemsScene extends Scene {
   constructor() {
@@ -25,6 +68,8 @@ export default class PacmanLiteWorldSystemsScene extends Scene {
     this.score = 0;
     this.lives = 3;
     this.lastEvent = '';
+    this.validationMode = getValidationMode();
+    this.validationConfig = PACMAN_VALIDATION_PRESETS[this.validationMode] || PACMAN_VALIDATION_PRESETS.baseline;
 
     this.player = { x: 480, y: 270, vx: 88, vy: 0, radius: 9 };
     this.ghostSpeed = 48;
@@ -33,45 +78,14 @@ export default class PacmanLiteWorldSystemsScene extends Scene {
     this.entities = [];
     this.spawnDone = false;
 
-    this.stateSystem = new WorldStateSystem([
-      {
-        spawn: {
-          id: 'round0',
-          interval: 0.05,
-          limit: 25
-        },
-        config: {
-          ghostCount: 2,
-          pelletStepX: 120,
-          pelletStepY: 90,
-          bonusDelay: 8.0
-        }
-      },
-      {
-        spawn: {
-          id: 'round1',
-          interval: 0.045,
-          limit: 31
-        },
-        config: {
-          ghostCount: 3,
-          pelletStepX: 100,
-          pelletStepY: 80,
-          bonusDelay: 6.0
-        }
-      }
-    ]);
+    this.stateSystem = new WorldStateSystem(this.validationConfig.waves);
 
-    this.eventsSystem = new EventsSystem([
-      { id: 'frightened-window', phase: 'active', time: 5.0, repeat: false, action: { type: 'frightened', duration: 4.5 } },
-      { id: 'bonus-fruit', phase: 'active', time: 8.0, repeat: false, action: { type: 'spawnBonus' } },
-      { id: 'tempo-rise', waveIndex: 1, phase: 'active', time: 12.0, repeat: true, action: { type: 'ghostSpeedMult', value: 1.015 } }
-    ]);
+    this.eventsSystem = new EventsSystem(this.validationConfig.events);
 
     this.spawnSystem = null;
     this.lifecycleSystem = new LifecycleSystem({
-      maxEntities: 80,
-      maxLifetime: 16,
+      maxEntities: this.validationConfig.lifecycle.maxEntities,
+      maxLifetime: this.validationConfig.lifecycle.maxLifetime,
       bounds: { minX: MAZE_MIN_X, maxX: MAZE_MAX_X, minY: MAZE_MIN_Y, maxY: MAZE_MAX_Y }
     });
 
@@ -249,6 +263,7 @@ export default class PacmanLiteWorldSystemsScene extends Scene {
     drawPanel(renderer, 612, 24, 328, 220, 'Pacman Lite Systems', [
       `Phase: ${this.stateSystem.phase}`,
       `Round: ${Math.min(this.stateSystem.waveIndex + 1, this.stateSystem.waves.length)}/${this.stateSystem.waves.length}`,
+      `Validation: ${this.validationMode}`,
       `Pellets: ${pellets}`,
       `Ghosts: ${ghosts}`,
       `Lives: ${this.lives}`,
