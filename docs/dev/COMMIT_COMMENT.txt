@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-samples(level8): add asteroids-style sample using spawn/lifecycle/state/events world systems
+samples(level8.1): validate second-game reuse via shared world systems and Space Invaders sample
