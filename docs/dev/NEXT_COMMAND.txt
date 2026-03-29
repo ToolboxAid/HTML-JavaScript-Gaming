@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 NEXT_COMMAND.txt
 
-Create APPLY_PR_LEVEL_7_1_SAMPLE_LIFECYCLE_SYSTEM as a commit-ready apply step from docs/pr/BUILD_PR_LEVEL_7_1_SAMPLE_LIFECYCLE_SYSTEM.md.
+Create APPLY_PR_LEVEL_7_2_SAMPLE_WORLD_STATE_SYSTEM as a commit-ready apply step from docs/pr/BUILD_PR_LEVEL_7_2_SAMPLE_WORLD_STATE_SYSTEM.md.

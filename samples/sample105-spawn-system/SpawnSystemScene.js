@@ -66,54 +66,118 @@ class SampleLifecycleSystem {
   }
 }
 
+class SampleWorldStateSystem {
+  constructor(waves = []) {
+    this.waves = Array.isArray(waves) ? waves : [];
+    this.phase = this.waves.length ? 'idle' : 'complete';
+    this.waveIndex = 0;
+  }
+
+  getCurrentWave() {
+    return this.waves[this.waveIndex] || null;
+  }
+
+  update(entities, spawnDone) {
+    const transitions = [];
+    if (this.phase === 'complete') return transitions;
+    if (this.phase === 'idle') {
+      this.phase = 'spawning';
+      transitions.push('spawning');
+      return transitions;
+    }
+    if (this.phase === 'spawning' && spawnDone) {
+      this.phase = 'active';
+      transitions.push('active');
+      return transitions;
+    }
+    if (this.phase === 'active' && entities.length === 0) {
+      this.waveIndex += 1;
+      if (this.waveIndex >= this.waves.length) {
+        this.phase = 'complete';
+        transitions.push('complete');
+      } else {
+        this.phase = 'spawning';
+        transitions.push('spawning');
+      }
+    }
+    return transitions;
+  }
+}
+
 export default class SpawnSystemScene extends Scene {
   constructor() {
     super();
     this.spawned = [];
     this.elapsed = 0;
-    this.spawnSystem = new SampleSpawnSystem([
-      { id: 'orb', interval: 0.5, limit: 6 },
+    this.worldStateSystem = new SampleWorldStateSystem([
+      { spawn: { id: 'orb', interval: 0.5, limit: 6 }, lifecycle: { maxEntities: 6, maxLifetime: 3.5 } },
+      { spawn: { id: 'orb', interval: 0.35, limit: 8 }, lifecycle: { maxEntities: 8, maxLifetime: 3.2 } }
     ]);
+    this.spawnSystem = null;
+    this.lifecycleSystem = null;
+    this.spawnDone = false;
+    this.configureForWave();
+  }
+
+  configureForWave() {
+    const wave = this.worldStateSystem.getCurrentWave();
+    if (!wave) {
+      this.spawnSystem = new SampleSpawnSystem([]);
+      this.lifecycleSystem = new SampleLifecycleSystem({ maxEntities: 1, maxLifetime: 0.1 });
+      this.spawnDone = true;
+      return;
+    }
+    this.spawnSystem = new SampleSpawnSystem([wave.spawn]);
     this.lifecycleSystem = new SampleLifecycleSystem({
-      maxEntities: 6,
-      maxLifetime: 3.5,
+      maxEntities: wave.lifecycle.maxEntities,
+      maxLifetime: wave.lifecycle.maxLifetime,
       bounds: { minX: -40, maxX: 1000, minY: -40, maxY: 580 }
     });
+    this.spawnDone = false;
   }
 
   update(dt) {
     this.elapsed += Math.max(0, Number(dt) || 0);
-    const created = this.spawnSystem.update(dt, (rule, count) => ({
-      id: `${rule.id}-${count}`,
-      x: 140 + count * 90,
-      y: 290,
-      age: 0
-    }));
-    this.spawned.push(...created);
+    if (this.worldStateSystem.phase === 'spawning') {
+      const created = this.spawnSystem.update(dt, (rule, count) => ({
+        id: `${rule.id}-${this.worldStateSystem.waveIndex}-${count}`,
+        x: 140 + count * 90,
+        y: 290,
+        age: 0
+      }));
+      this.spawned.push(...created);
+      const doneRule = this.spawnSystem.rules[0];
+      this.spawnDone = !!doneRule && doneRule.count >= doneRule.limit;
+    }
     for (let i = 0; i < this.spawned.length; i += 1) {
       this.spawned[i].x += 28 * Math.max(0, Number(dt) || 0);
     }
     this.spawned = this.lifecycleSystem.update(this.spawned, dt);
+    const transitions = this.worldStateSystem.update(this.spawned, this.spawnDone);
+    if (transitions.indexOf('spawning') >= 0) {
+      this.configureForWave();
+    }
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
       'Engine Sample105',
-      'Spawn + lifecycle systems run deterministically at scene level.',
-      'Entities expire by lifetime, bounds, and max active limits.',
+      'Spawn + lifecycle + world phase systems run deterministically.',
+      'World phase transitions: idle -> spawning -> active -> complete.',
     ]);
 
     this.spawned.forEach((entity) => {
       renderer.drawCircle(entity.x, entity.y, 14, '#fbbf24');
     });
 
-    drawPanel(renderer, 620, 34, 300, 152, 'World Lifecycle System', [
+    drawPanel(renderer, 620, 34, 300, 178, 'World State / Phase System', [
       `Spawned: ${this.spawned.length}`,
-      `Rules: ${this.spawnSystem.rules.length}`,
-      `First interval: ${this.spawnSystem.rules[0].interval}s`,
+      `Phase: ${this.worldStateSystem.phase}`,
+      `Wave: ${Math.min(this.worldStateSystem.waveIndex + 1, this.worldStateSystem.waves.length)}/${this.worldStateSystem.waves.length}`,
+      `Spawn interval: ${this.spawnSystem.rules[0] ? this.spawnSystem.rules[0].interval : 0}s`,
       `Max lifetime: ${this.lifecycleSystem.maxLifetime}s`,
       `Max active: ${this.lifecycleSystem.maxEntities}`,
-      'Cleanup removes expired/out-of-bounds entities.',
+      'Wave advances after spawn complete and entity cleanup.',
     ]);
   }
 }

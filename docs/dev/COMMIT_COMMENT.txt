@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-samples(level7.1): add local deterministic lifecycle cleanup system for sample105
+samples(level7.2): add local deterministic world state/phase system with wave progression
