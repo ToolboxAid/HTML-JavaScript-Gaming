@@ -104,6 +104,30 @@ class SampleWorldStateSystem {
   }
 }
 
+class SampleWorldEventsSystem {
+  constructor(events = []) {
+    this.events = Array.isArray(events)
+      ? events.map((event) => ({ ...event, fired: false }))
+      : [];
+  }
+
+  update(context, applyAction) {
+    const triggered = [];
+    for (let i = 0; i < this.events.length; i += 1) {
+      const event = this.events[i];
+      const matchesTime = typeof event.time === 'number' ? context.elapsed >= event.time : true;
+      const matchesPhase = event.phase ? context.phase === event.phase : true;
+      const matchesWave = typeof event.waveIndex === 'number' ? context.waveIndex === event.waveIndex : true;
+      if (!(matchesTime && matchesPhase && matchesWave)) continue;
+      if (!event.repeat && event.fired) continue;
+      applyAction(event.action, context);
+      event.fired = true;
+      triggered.push(event.id || `event-${i}`);
+    }
+    return triggered;
+  }
+}
+
 export default class SpawnSystemScene extends Scene {
   constructor() {
     super();
@@ -115,7 +139,13 @@ export default class SpawnSystemScene extends Scene {
     ]);
     this.spawnSystem = null;
     this.lifecycleSystem = null;
+    this.worldEventsSystem = new SampleWorldEventsSystem([
+      { id: 'warmup-rate-boost', time: 1.5, waveIndex: 0, repeat: false, action: { type: 'setSpawnInterval', value: 0.4 } },
+      { id: 'active-lifetime-shorten', phase: 'active', repeat: false, action: { type: 'setMaxLifetime', value: 2.8 } },
+      { id: 'wave2-rate-ramp', waveIndex: 1, time: 4.5, repeat: true, action: { type: 'multiplySpawnInterval', value: 0.96 } }
+    ]);
     this.spawnDone = false;
+    this.lastEvent = '';
     this.configureForWave();
   }
 
@@ -138,6 +168,24 @@ export default class SpawnSystemScene extends Scene {
 
   update(dt) {
     this.elapsed += Math.max(0, Number(dt) || 0);
+    const fired = this.worldEventsSystem.update({
+      elapsed: this.elapsed,
+      phase: this.worldStateSystem.phase,
+      waveIndex: this.worldStateSystem.waveIndex
+    }, (action) => {
+      if (!action || !this.spawnSystem || !this.lifecycleSystem) return;
+      if (action.type === 'setSpawnInterval' && this.spawnSystem.rules[0]) {
+        this.spawnSystem.rules[0].interval = Math.max(0.08, Number(action.value) || this.spawnSystem.rules[0].interval);
+      }
+      if (action.type === 'multiplySpawnInterval' && this.spawnSystem.rules[0]) {
+        const next = this.spawnSystem.rules[0].interval * (Number(action.value) || 1);
+        this.spawnSystem.rules[0].interval = Math.max(0.08, next);
+      }
+      if (action.type === 'setMaxLifetime') {
+        this.lifecycleSystem.maxLifetime = Math.max(0.25, Number(action.value) || this.lifecycleSystem.maxLifetime);
+      }
+    });
+    if (fired.length) this.lastEvent = fired[fired.length - 1];
     if (this.worldStateSystem.phase === 'spawning') {
       const created = this.spawnSystem.update(dt, (rule, count) => ({
         id: `${rule.id}-${this.worldStateSystem.waveIndex}-${count}`,
@@ -170,13 +218,15 @@ export default class SpawnSystemScene extends Scene {
       renderer.drawCircle(entity.x, entity.y, 14, '#fbbf24');
     });
 
-    drawPanel(renderer, 620, 34, 300, 178, 'World State / Phase System', [
+    drawPanel(renderer, 620, 34, 300, 204, 'World Events / Phase System', [
       `Spawned: ${this.spawned.length}`,
       `Phase: ${this.worldStateSystem.phase}`,
       `Wave: ${Math.min(this.worldStateSystem.waveIndex + 1, this.worldStateSystem.waves.length)}/${this.worldStateSystem.waves.length}`,
       `Spawn interval: ${this.spawnSystem.rules[0] ? this.spawnSystem.rules[0].interval : 0}s`,
       `Max lifetime: ${this.lifecycleSystem.maxLifetime}s`,
       `Max active: ${this.lifecycleSystem.maxEntities}`,
+      `Events: ${this.worldEventsSystem.events.length}`,
+      `Last event: ${this.lastEvent || 'none'}`,
       'Wave advances after spawn complete and entity cleanup.',
     ]);
   }
