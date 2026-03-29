@@ -7,23 +7,53 @@ SpawnSystemScene.js
 import { Scene } from '../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../engine/theme/index.js';
 import { drawFrame, drawPanel } from '../../engine/debug/index.js';
-import { SpawnSystem } from '../../engine/world/index.js';
 
 const theme = new Theme(ThemeTokens);
+
+class SampleSpawnSystem {
+  constructor(rules = []) {
+    this.rules = Array.isArray(rules)
+      ? rules.map((rule) => ({
+          id: rule.id,
+          interval: Math.max(0.001, Number(rule.interval) || 1),
+          limit: Math.max(0, Number(rule.limit) || 0),
+          elapsed: 0,
+          count: 0
+        }))
+      : [];
+  }
+
+  update(dt, spawnFactory) {
+    const created = [];
+    const delta = Math.max(0, Number(dt) || 0);
+    for (let i = 0; i < this.rules.length; i += 1) {
+      const rule = this.rules[i];
+      if (rule.count >= rule.limit) continue;
+      rule.elapsed += delta;
+      while (rule.elapsed >= rule.interval && rule.count < rule.limit) {
+        rule.elapsed -= rule.interval;
+        const entity = spawnFactory(rule, rule.count);
+        if (entity) created.push(entity);
+        rule.count += 1;
+      }
+    }
+    return created;
+  }
+}
 
 export default class SpawnSystemScene extends Scene {
   constructor() {
     super();
     this.spawned = [];
-    this.spawnSystem = new SpawnSystem([
+    this.spawnSystem = new SampleSpawnSystem([
       { id: 'orb', interval: 0.5, limit: 6 },
     ]);
   }
 
   update(dt) {
-    this.spawned.push(...this.spawnSystem.update(dt, (rule) => ({
-      id: `${rule.id}-${this.spawned.length}`,
-      x: 140 + this.spawned.length * 90,
+    this.spawned.push(...this.spawnSystem.update(dt, (rule, count) => ({
+      id: `${rule.id}-${count}`,
+      x: 140 + count * 90,
       y: 290,
     })));
   }
