@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-docs(level9.2): add engine world-system usage patterns, examples, and quick start
+docs(level9.3): add engine sample templates, wiring examples, and config patterns

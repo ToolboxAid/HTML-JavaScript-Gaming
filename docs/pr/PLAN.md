@@ -1,21 +1,19 @@
-PLAN_PR_LEVEL_9_2_ENGINE_DOCUMENTATION_AND_USAGE_PATTERNS
+PLAN_PR_LEVEL_9_3_ENGINE_SAMPLE_TEMPLATES
 
-# Level 9.2 — Engine Documentation & Usage Patterns
+# Level 9.3 — Engine Sample Templates
 
 ## Purpose
-Define how to USE the engine systems:
-- patterns
-- examples
-- do/don't rules
-
-## Scope
-docs only
+Provide ready-to-use templates for building new games using:
+- Spawn
+- Lifecycle
+- World State
+- Events systems
 
 ## Deliverables
-- usage patterns for Spawn, Lifecycle, State, Events
-- sample wiring patterns
-- anti-patterns
-- quick start guide
+- minimal game template
+- system wiring example
+- config templates
+- folder structure guidance
 
 ## Next
-BUILD_PR_LEVEL_9_2_ENGINE_DOCUMENTATION_AND_USAGE_PATTERNS
+BUILD_PR_LEVEL_9_3_ENGINE_SAMPLE_TEMPLATES
