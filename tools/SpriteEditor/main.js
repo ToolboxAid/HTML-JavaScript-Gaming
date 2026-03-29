@@ -225,40 +225,6 @@ function installV72InteractionStabilization(targetApp) {
       }
       return;
     }
-    if (control && typeof control.layerIndex === "number" && !control.layerVisibilityToggle) {
-      const hovered = this.hovered === control.id;
-      const pressed = this.pressed === control.id;
-      const activeLayer = this.app.document.activeFrame.activeLayerIndex === control.layerIndex;
-      ctx.fillStyle = pressed ? "#27435a" : (hovered ? "#223444" : "#1a2733");
-      if (activeLayer) ctx.fillStyle = "#244d67";
-      ctx.fillRect(control.x, control.y, control.w, control.h);
-      ctx.strokeStyle = activeLayer ? "#4cc9f0" : "rgba(255,255,255,0.15)";
-      ctx.strokeRect(control.x + 0.5, control.y + 0.5, control.w - 1, control.h - 1);
-      const opacityText = String(control.layerOpacityText || "");
-      ctx.font = "bold 11px Arial";
-      const opacityW = opacityText ? ctx.measureText(opacityText).width : 0;
-      const nameMaxW = Math.max(38, control.w - opacityW - 24);
-      ctx.fillStyle = "#edf2f7";
-      ctx.font = "bold 13px Arial";
-      ctx.fillText(truncateText(ctx, control.layerName || control.text, nameMaxW), control.x + 10, control.y + 13);
-      if (opacityText) {
-        ctx.fillStyle = "#dbe7f3";
-        ctx.font = "bold 11px Arial";
-        ctx.fillText(opacityText, control.x + control.w - opacityW - 10, control.y + 13);
-      }
-      ctx.fillStyle = "#9fb8cf";
-      ctx.font = "11px Arial";
-      ctx.fillText(truncateText(ctx, control.layerStateText || "", control.w - 20), control.x + 10, control.y + control.h - 11);
-      if (activeLayer) {
-        ctx.fillStyle = "#4cc9f0";
-        ctx.fillRect(control.x + 2, control.y + 2, 4, control.h - 4);
-      }
-      if (control.layerLocked) {
-        ctx.strokeStyle = "#f59e0b";
-        ctx.strokeRect(control.x + control.w - 24.5, control.y + control.h - 19.5, 14, 14);
-      }
-      return;
-    }
     baseDrawControl(ctx, control);
   };
 

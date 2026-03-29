@@ -197,13 +197,31 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
       this.add("label", "layer-active-status", x, y, bw, bh, `Active: ${layer ? layer.name : "Layer"} | ${visibleText}`, null, { clipRect: left });
       y += bh + gap;
       if (y + bh > maxY) return;
-      addButtonRow(
-        "layer-actions",
+      const colW = Math.floor((bw - gap * 2) / 3);
+      const colW2 = Math.floor((bw - gap * 2) / 3);
+      const colW3 = bw - colW - colW2 - gap * 2;
+      this.add("button", "layer-action-rename", x, y, colW, bh, "Rename", () => this.app.openLayerRenamePrompt(), { clipRect: left, centerText: true });
+      this.add(
+        "button",
+        "layer-action-visibility",
+        x + colW + gap,
         y,
-        "Rename",
-        () => this.app.openLayerRenamePrompt(),
+        colW2,
+        bh,
         layer && layer.visible !== false ? "Hide" : "Show",
-        () => this.app.toggleLayerVisibility()
+        () => this.app.toggleLayerVisibility(),
+        { clipRect: left, centerText: true }
+      );
+      this.add(
+        "button",
+        "layer-action-lock",
+        x + colW + gap + colW2 + gap,
+        y,
+        colW3,
+        bh,
+        layer && layer.locked === true ? "Unlock" : "Lock",
+        () => this.app.toggleLayerLock(),
+        { clipRect: left, centerText: true }
       );
       y += bh + gap;
       if (y + bh > maxY) return;
@@ -237,6 +255,9 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
             layerIndex: li,
             layerName: entry && entry.name ? entry.name : `Layer ${li + 1}`,
             layerHidden: entry && entry.visible === false,
+            layerLocked: entry && entry.locked === true,
+            layerInlineState: true,
+            layerPixels: entry && Array.isArray(entry.pixels) ? entry.pixels : null,
             layerOpacityText: `${Math.round(Math.max(0, Math.min(1, opacityValue)) * 100)}%`,
             layerStateText: entry && entry.locked === true ? "Locked" : "Unlocked"
           }

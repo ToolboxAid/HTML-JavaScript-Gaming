@@ -209,15 +209,89 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       ctx.font = "bold 12px Arial";
       ctx.fillText(c.layerHidden ? "Show" : "Hide", c.x + 9, c.y + c.h / 2);
     } else if (typeof c.layerIndex === "number") {
-      ctx.fillStyle = "#edf2f7";
-      ctx.font = "bold 13px Arial";
+      const iconSize = 12;
+      const iconGap = 6;
+      const previewSize = Math.max(18, Math.min(28, c.h - 10));
+      const previewX = c.x + c.w - previewSize - 6;
+      const previewY = c.y + Math.floor((c.h - previewSize) * 0.5);
+      drawCanvasPixelPreview(
+        ctx,
+        c.layerPixels,
+        { x: previewX, y: previewY, w: previewSize, h: previewSize },
+        {
+          cols: this.app.document.cols,
+          rows: this.app.document.rows,
+          backgroundFill: this.app.document.sheet && this.app.document.sheet.transparent ? "rgba(0,0,0,0)" : "#ffffff",
+          borderStroke: "rgba(255,255,255,0.25)"
+        }
+      );
+      const drawVisibilityIcon = (ix, iy, size, visible) => {
+        ctx.save();
+        ctx.strokeStyle = visible ? "#dbe7f3" : "#8fa0b2";
+        ctx.lineWidth = 1.25;
+        ctx.beginPath();
+        ctx.moveTo(ix, iy + size * 0.5);
+        ctx.quadraticCurveTo(ix + size * 0.5, iy - 1, ix + size, iy + size * 0.5);
+        ctx.quadraticCurveTo(ix + size * 0.5, iy + size + 1, ix, iy + size * 0.5);
+        ctx.stroke();
+        if (visible) {
+          ctx.fillStyle = "#dbe7f3";
+          ctx.beginPath();
+          ctx.arc(ix + size * 0.5, iy + size * 0.5, Math.max(1.6, size * 0.18), 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(ix + 1, iy + size - 1);
+          ctx.lineTo(ix + size - 1, iy + 1);
+          ctx.stroke();
+        }
+        ctx.restore();
+      };
+      const drawLockIcon = (ix, iy, size, locked) => {
+        ctx.save();
+        ctx.strokeStyle = locked ? "#f59e0b" : "#8fa0b2";
+        ctx.fillStyle = locked ? "rgba(245,158,11,0.12)" : "rgba(143,160,178,0.10)";
+        ctx.lineWidth = 1.25;
+        const bodyY = iy + size * 0.45;
+        const bodyH = size * 0.5;
+        ctx.fillRect(ix + 1, bodyY, size - 2, bodyH);
+        ctx.strokeRect(ix + 1.5, bodyY + 0.5, size - 3, bodyH - 1);
+        ctx.beginPath();
+        if (locked) {
+          ctx.arc(ix + size * 0.5, iy + size * 0.42, size * 0.22, Math.PI, 0, false);
+        } else {
+          ctx.arc(ix + size * 0.42, iy + size * 0.42, size * 0.22, Math.PI * 0.9, Math.PI * 1.95, false);
+        }
+        ctx.stroke();
+        ctx.restore();
+      };
+      const drawActiveStateIcon = (ix, iy, size, active) => {
+        ctx.save();
+        ctx.strokeStyle = active ? "#4cc9f0" : "#8fa0b2";
+        ctx.lineWidth = 1.25;
+        ctx.beginPath();
+        ctx.arc(ix + size * 0.5, iy + size * 0.5, Math.max(2, size * 0.32), 0, Math.PI * 2);
+        ctx.stroke();
+        if (active) {
+          ctx.fillStyle = "#4cc9f0";
+          ctx.beginPath();
+          ctx.arc(ix + size * 0.5, iy + size * 0.5, Math.max(1.6, size * 0.18), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      };
+      const rightPad = 10;
+      const nameX = c.x + 5;
+      const nameTopY = c.y + 5;
+      const bottomY = c.y + c.h - 8;
+      const iconY = bottomY - Math.floor(iconSize * 0.5);
       const opacityText = c.layerOpacityText || "";
-      const activeBadgeText = activeLayerItem ? "ACTIVE" : "";
-      const activeBadgeWidth = activeBadgeText ? ctx.measureText(activeBadgeText).width : 0;
-      const opacityWidth = opacityText ? ctx.measureText(opacityText).width : 0;
-      const maxNameWidth = Math.max(32, c.w - opacityWidth - activeBadgeWidth - 38);
       const fullName = c.layerName || c.text;
       let displayName = fullName;
+      ctx.fillStyle = "#edf2f7";
+      ctx.font = "bold 13px Arial";
+      ctx.textBaseline = "top";
+      const maxNameWidth = Math.max(32, previewX - nameX - 8);
       if (ctx.measureText(displayName).width > maxNameWidth) {
         displayName = fullName;
         while (displayName.length > 1 && ctx.measureText(`${displayName}...`).width > maxNameWidth) {
@@ -225,15 +299,20 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         }
         displayName = `${displayName}...`;
       }
-      ctx.fillText(displayName, c.x + 10, c.y + 13);
-      ctx.fillStyle = "#9fb8cf";
-      ctx.font = "11px Arial";
-      ctx.fillText(c.layerStateText || "", c.x + 10, c.y + c.h - 11);
+      ctx.fillText(displayName, nameX, nameTopY);
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#dbe7f3";
+      ctx.font = "bold 11px Arial";
+      let statusX = c.x + 5;
       if (opacityText) {
-        ctx.fillStyle = "#dbe7f3";
-        ctx.font = "bold 11px Arial";
-        ctx.fillText(opacityText, c.x + c.w - opacityWidth - activeBadgeWidth - 18, c.y + 13);
+        ctx.fillText(opacityText, statusX, bottomY);
+        statusX += Math.ceil(ctx.measureText(opacityText).width) + iconGap;
       }
+      drawVisibilityIcon(statusX, iconY, iconSize, c.layerHidden !== true);
+      statusX += iconSize + iconGap;
+      drawLockIcon(statusX, iconY, iconSize, c.layerLocked === true);
+      statusX += iconSize + iconGap;
+      drawActiveStateIcon(statusX, iconY, iconSize, activeLayerItem);
     } else {
       ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
       ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial";
@@ -259,11 +338,11 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
     if (activeLayerItem) {
       ctx.fillStyle = "#4cc9f0";
       ctx.fillRect(c.x + 2, c.y + 2, 4, c.h - 4);
-      if (!c.layerVisibilityToggle) {
+      if (!c.layerVisibilityToggle && !c.layerInlineState) {
         ctx.font = "bold 10px Arial";
         const badge = "ACTIVE";
         const badgeWidth = ctx.measureText(badge).width;
-        ctx.fillText(badge, c.x + c.w - badgeWidth - 12, c.y + 13);
+        ctx.fillText(badge, c.x + c.w - badgeWidth - 12, c.y + 8);
       }
     }
     if (c.layerLocked) {
