@@ -1,1 +1,1 @@
-BUILD_PR_LEVEL_10_5_SYSTEM_INTEGRATION_LAYER
+Create BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT as a minimal implementation delta. Use Level 10.6 BUILD docs as source of truth. Implement a contract-only world/game state module with named transition stubs and read-only selectors. Integrate one optional consumer through approved Level 10.4 events and Level 10.5 integration APIs. Preserve behavior with feature-gated passive mode.

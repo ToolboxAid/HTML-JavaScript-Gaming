@@ -1,1 +1,1 @@
-Level 10.5 PLAN_PR: System Integration Layer
+Level 10.6 BUILD_PR: world state/game state contracts, selectors, transitions, and boundaries

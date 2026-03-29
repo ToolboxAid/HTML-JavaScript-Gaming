@@ -1,4 +1,17 @@
-Level 10.5 PLAN_PR package
+Level 10.6 BUILD_PR package.
 
-Codex must return:
- /tmp/BUILD_PR_LEVEL_10_5_SYSTEM_INTEGRATION_LAYER_delta.zip
+Contents:
+- docs/pr/PLAN_PR_LEVEL_10_6_WORLD_STATE_GAME_STATE_SYSTEM.md
+- docs/pr/BUILD_PR_LEVEL_10_6_WORLD_STATE_GAME_STATE_SYSTEM.md
+- docs/pr/LEVEL_10_6_WORLD_STATE_GAME_STATE_SPEC.md
+- docs/pr/LEVEL_10_6_STATE_SELECTORS_AND_TRANSITIONS.md
+- docs/pr/LEVEL_10_6_STATE_OWNERSHIP_BOUNDARIES.md
+- docs/pr/LEVEL_10_6_COMPOSITION_WITH_EVENT_PIPELINE_AND_INTEGRATION_LAYER.md
+- docs/dev/CODEX_COMMANDS.md
+- docs/dev/COMMIT_COMMENT.txt
+- docs/dev/NEXT_COMMAND.txt
+- docs/dev/README.md
+
+Codex output requirement:
+- Return a repo-structured delta ZIP at:
+  /tmp/BUILD_PR_LEVEL_10_6_WORLD_STATE_GAME_STATE_SYSTEM_delta.zip
