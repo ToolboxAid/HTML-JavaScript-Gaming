@@ -3,14 +3,15 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Level 9.1 Engine API Stabilization BUILD_PR
+# Level 9.2 Engine Documentation and Usage Patterns BUILD_PR
 
-This package contains a docs-first API-boundary stabilization delta for promoted world systems.
+This package contains docs-first usage guidance for promoted world systems.
 
 ## Included
-- docs/pr/PLAN_PR_LEVEL_9_1_ENGINE_API_STABILIZATION.md
-- docs/pr/LEVEL_9_1_ENGINE_API_STABILIZATION_CONTRACTS.md
-- docs/pr/BUILD_PR_LEVEL_9_1_ENGINE_API_STABILIZATION.md
+- docs/pr/PLAN.md
+- docs/pr/LEVEL_9_2_ENGINE_USAGE_PATTERNS.md
+- docs/pr/LEVEL_9_2_ENGINE_QUICK_START.md
+- docs/pr/BUILD_PR_LEVEL_9_2_ENGINE_DOCUMENTATION_AND_USAGE_PATTERNS.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -18,6 +19,5 @@ This package contains a docs-first API-boundary stabilization delta for promoted
 - docs/dev/RULES.txt
 
 ## Scope Notes
-- No runtime code changes.
-- No engine architecture redesign.
-- API boundaries and ownership rules documented for safe migration.
+- Documentation only.
+- No engine/runtime changes.
