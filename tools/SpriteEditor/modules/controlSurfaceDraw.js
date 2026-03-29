@@ -186,6 +186,17 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       if (clipped) ctx.restore();
       return;
     }
+    if (c.kind === "divider") {
+      const lineY = c.y + Math.floor(c.h * 0.5) + 0.5;
+      ctx.strokeStyle = "rgba(255,255,255,0.24)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(c.x + 2, lineY);
+      ctx.lineTo(c.x + c.w - 2, lineY);
+      ctx.stroke();
+      if (clipped) ctx.restore();
+      return;
+    }
     const hovered = this.hovered === c.id;
     const pressed = this.pressed === c.id;
     const activeFrame = c.kind === "frame" && this.app.document.activeFrameIndex === c.frameIndex;
@@ -333,6 +344,31 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         const arrow = c.accordionOpen ? "-" : "+";
         const arrowW = ctx.measureText(arrow).width;
         ctx.fillText(arrow, c.x + c.w - arrowW - 10, c.y + c.h / 2);
+      }
+      if (Object.prototype.hasOwnProperty.call(c, "menuSwatchColor")) {
+        const swatchW = 14;
+        const swatchH = 12;
+        const shortcutW = c.shortcut ? ctx.measureText(`[${c.shortcut}]`).width + 14 : 0;
+        const swatchX = c.x + c.w - swatchW - 10 - shortcutW;
+        const swatchY = c.y + Math.floor((c.h - swatchH) * 0.5);
+        const colorToken = String(c.menuSwatchColor || "").trim();
+        const hasColor = colorToken.length > 0;
+        if (hasColor) {
+          ctx.fillStyle = colorToken;
+          ctx.fillRect(swatchX + 1, swatchY + 1, swatchW - 2, swatchH - 2);
+        } else {
+          ctx.fillStyle = "#2a3948";
+          ctx.fillRect(swatchX + 1, swatchY + 1, swatchW - 2, swatchH - 2);
+          ctx.strokeStyle = "#8fa0b2";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(swatchX + 2, swatchY + swatchH - 2);
+          ctx.lineTo(swatchX + swatchW - 2, swatchY + 2);
+          ctx.stroke();
+        }
+        ctx.strokeStyle = "rgba(255,255,255,0.7)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(swatchX + 0.5, swatchY + 0.5, swatchW - 1, swatchH - 1);
       }
     }
     if (activeLayerItem) {

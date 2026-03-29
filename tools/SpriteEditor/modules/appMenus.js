@@ -187,18 +187,23 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
     openPaletteWorkflowMenu() {
       if (!this.canOpenTransientSurface()) return false;
       const canClone = !!(this.currentPalettePreset || this.document.palettePresetName);
-      const currentScope = String(this.paletteWorkflow && this.paletteWorkflow.scope ? this.paletteWorkflow.scope : "active_layer")
+      const rawScope = String(this.paletteWorkflow && this.paletteWorkflow.scope ? this.paletteWorkflow.scope : "active_layer")
         .toLowerCase()
         .replace(/\s+/g, "_");
+      const currentScope = ["active_layer", "current_frame", "selected_range"].includes(rawScope) ? rawScope : "active_layer";
+      const sourceColor = this.paletteWorkflow && this.paletteWorkflow.source ? String(this.paletteWorkflow.source) : "";
+      const targetColor = this.paletteWorkflow && this.paletteWorkflow.target ? String(this.paletteWorkflow.target) : "";
+      const scopeLabel = (scopeId, label) => `Set Scope ${label}${currentScope === scopeId ? " ✓" : ""}`;
       const items = [
         { id: "palette-menu-presets", text: "Palettes...", action: () => this.openPalettePresetsMenu() },
         { id: "palette-menu-clone", text: canClone ? "Clone" : "Clone (select preset first)", action: () => this.createCustomPaletteClone() },
         { id: "palette-menu-clones", text: "Choose Clone...", action: () => this.openPaletteCloneMenu() },
-        { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource() },
-        { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget() },
-        { id: "palette-menu-scope-layer", text: `${currentScope === "active_layer" ? "[Selected] " : ""}Scope Active Layer`, action: () => this.setPaletteReplaceScope("active_layer") },
-        { id: "palette-menu-scope-frame", text: `${currentScope === "current_frame" ? "[Selected] " : ""}Scope Current Frame`, action: () => this.setPaletteReplaceScope("current_frame") },
-        { id: "palette-menu-scope-range", text: `${currentScope === "selected_range" ? "[Selected] " : ""}Scope Selected Range`, action: () => this.setPaletteReplaceScope("selected_range") },
+        { id: "palette-menu-divider-workflow", divider: true },
+        { id: "palette-menu-src", text: "Set Src From Current", action: () => this.setPaletteReplaceSource(), menuSwatchColor: sourceColor },
+        { id: "palette-menu-dst", text: "Set Dst From Current", action: () => this.setPaletteReplaceTarget(), menuSwatchColor: targetColor },
+        { id: "palette-menu-scope-layer", text: scopeLabel("active_layer", "Active Layer"), action: () => this.setPaletteReplaceScope("active_layer") },
+        { id: "palette-menu-scope-frame", text: scopeLabel("current_frame", "Current Frame"), action: () => this.setPaletteReplaceScope("current_frame") },
+        { id: "palette-menu-scope-range", text: scopeLabel("selected_range", "Selected Range"), action: () => this.setPaletteReplaceScope("selected_range") },
         { id: "palette-menu-replace", text: "Replace Colors", action: () => this.replacePaletteColor() }
       ];
       return this.prepareTopMenu("palette", items);

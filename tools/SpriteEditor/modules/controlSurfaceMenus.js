@@ -53,13 +53,32 @@ function installControlSurfaceMenus(SpriteEditorCanvasControlSurface) {
     this.app.ctx.font = "13px Arial";
     let maxW = 0;
     const itemsForMeasure = hasItems ? panelItems : [{ text: "No menu items (ERROR)" }];
-    itemsForMeasure.forEach((item) => {
+    const rowDefs = itemsForMeasure.map((item, index) => {
+      if (item && item.divider) {
+        return {
+          kind: "divider",
+          id: item.id || `overflow-divider-${index}`,
+          h: 8
+        };
+      }
       const measureText = item.shortcut ? `${item.text}   [${item.shortcut}]` : item.text;
       maxW = Math.max(maxW, this.measureButtonWidth(this.app.ctx, measureText, minBtn, padX));
+      const row = {
+        kind: "button",
+        id: item.id || `overflow-item-${index}`,
+        text: item.text,
+        action: item.action,
+        shortcut: item.shortcut || "",
+        h: rowH
+      };
+      if (Object.prototype.hasOwnProperty.call(item, "menuSwatchColor")) {
+        row.menuSwatchColor = String(item.menuSwatchColor || "");
+      }
+      return row;
     });
-    const visibleItems = hasItems ? panelItems : [{ id: "menu-error-empty", text: "No menu items (ERROR)", action: null }];
     const panelW = Math.max(160, maxW + panelPad * 2);
-    const panelH = Math.max(rowH + panelPad * 2, panelPad * 2 + (visibleItems.length * rowH) + (Math.max(0, visibleItems.length - 1) * gap));
+    const contentH = rowDefs.reduce((sum, row) => sum + (row.h || rowH), 0) + (Math.max(0, rowDefs.length - 1) * gap);
+    const panelH = Math.max(rowH + panelPad * 2, panelPad * 2 + contentH);
     const frame = this.layout.appFrame;
     let panelX = anchor.x + anchor.w - panelW;
     panelX = Math.max(frame.x + 8, Math.min(panelX, frame.x + frame.width - panelW - 8));
@@ -71,19 +90,35 @@ function installControlSurfaceMenus(SpriteEditorCanvasControlSurface) {
     this.overflowPanelBounds = { x: panelX, y: panelY, w: panelW, h: panelH };
     this.overflowPanelControls = [];
     let y = panelY + panelPad;
-    visibleItems.forEach((item, index) => {
-      this.overflowPanelControls.push({
+    rowDefs.forEach((row, index) => {
+      if (row.kind === "divider") {
+        this.overflowPanelControls.push({
+          kind: "divider",
+          id: row.id || `overflow-divider-${index}`,
+          x: panelX + panelPad,
+          y,
+          w: panelW - panelPad * 2,
+          h: row.h || 8
+        });
+        y += (row.h || 8) + gap;
+        return;
+      }
+      const control = {
         kind: "button",
         id: `overflow-item-${index}`,
         x: panelX + panelPad,
         y,
         w: panelW - panelPad * 2,
-        h: rowH,
-        text: item.text,
-        action: item.action,
-        shortcut: item.shortcut || ""
-      });
-      y += rowH + gap;
+        h: row.h || rowH,
+        text: row.text,
+        action: row.action,
+        shortcut: row.shortcut || ""
+      };
+      if (Object.prototype.hasOwnProperty.call(row, "menuSwatchColor")) {
+        control.menuSwatchColor = String(row.menuSwatchColor || "");
+      }
+      this.overflowPanelControls.push(control);
+      y += (row.h || rowH) + gap;
     });
     this.app.ctx.font = prevFont;
   };
