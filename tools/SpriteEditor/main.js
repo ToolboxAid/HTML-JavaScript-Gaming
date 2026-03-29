@@ -26,14 +26,6 @@ function installV72InteractionStabilization(targetApp) {
   delete targetApp.keybindings["ctrl+shift+w"];
   delete targetApp.keybindings["backspace"];
 
-  targetApp.moveLayerUp = function moveLayerUpPatched() {
-    this.reorderActiveLayer(1, "Layer Reorder Up", "Layer moved up.", "Layer already at top.");
-  };
-
-  targetApp.moveLayerDown = function moveLayerDownPatched() {
-    this.reorderActiveLayer(-1, "Layer Reorder Down", "Layer moved down.", "Layer already at bottom.");
-  };
-
   targetApp.commitSelectionMove = function commitSelectionMovePatched() {
     if (!this.selectionMoveSession) return;
     const session = this.selectionMoveSession;

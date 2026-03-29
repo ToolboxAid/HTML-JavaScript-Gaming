@@ -213,7 +213,36 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
       this.add("button", "layer-opacity-down-active", x, y, minusW, bh, "-", () => this.app.adjustLayerOpacity(-0.1), { centerText: true, clipRect: left });
       this.add("button", "layer-opacity-readout-active", x + minusW + gap, y, readoutW, bh, opacityPct, null, { centerText: true, clipRect: left });
       this.add("button", "layer-opacity-up-active", x + minusW + gap + readoutW + gap, y, plusW, bh, "+", () => this.app.adjustLayerOpacity(0.1), { centerText: true, clipRect: left });
-      y += bh;
+      y += bh + gap;
+      if (y + d.labelHeight <= maxY) {
+        this.add("label", "layer-list-label", x, y, bw, d.labelHeight, "Layers", null, { clipRect: left });
+        y += d.labelHeight;
+      }
+      const rowH = Math.max(36, bh + 6);
+      for (let li = 0; li < frame.layers.length; li += 1) {
+        if (y + rowH > maxY) break;
+        const entry = frame.layers[li];
+        const opacityValue = typeof entry.opacity === "number" ? entry.opacity : 1;
+        this.add(
+          "button",
+          `layer-item-${li}`,
+          x,
+          y,
+          bw,
+          rowH,
+          entry && entry.name ? entry.name : `Layer ${li + 1}`,
+          () => this.app.selectLayer(li),
+          {
+            clipRect: left,
+            layerIndex: li,
+            layerName: entry && entry.name ? entry.name : `Layer ${li + 1}`,
+            layerHidden: entry && entry.visible === false,
+            layerOpacityText: `${Math.round(Math.max(0, Math.min(1, opacityValue)) * 100)}%`,
+            layerStateText: entry && entry.locked === true ? "Locked" : "Unlocked"
+          }
+        );
+        y += rowH + gap;
+      }
     }
   };
 }

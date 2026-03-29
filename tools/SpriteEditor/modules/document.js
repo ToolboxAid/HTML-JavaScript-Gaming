@@ -172,7 +172,7 @@ class SpriteEditorDocument {
       const respectSolo = options.respectSolo !== false;
       const blendMode = options.blendMode || this.blendPreviewMode;
       const solo = respectSolo ? this.soloState : null;
-      for (let li = 0; li < f.layers.length; li += 1) {
+      for (let li = f.layers.length - 1; li >= 0; li -= 1) {
         const layer = f.layers[li];
         if (solo && solo.frameId === f.id && solo.layerIndex !== li) continue;
         if (layer.visible === false) continue;

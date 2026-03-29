@@ -49,11 +49,11 @@ function installSpriteEditorLayerMethods(SpriteEditorApp) {
     },
 
     moveLayerUp() {
-      this.reorderActiveLayer(1, "Layer Reorder Up", "Layer moved up.", "Layer already at top.");
+      this.reorderActiveLayer(-1, "Layer Reorder Up", "Layer moved up.", "Layer already at top.");
     },
 
     moveLayerDown() {
-      this.reorderActiveLayer(-1, "Layer Reorder Down", "Layer moved down.", "Layer already at bottom.");
+      this.reorderActiveLayer(1, "Layer Reorder Down", "Layer moved down.", "Layer already at bottom.");
     },
 
     selectLayer(index) {
