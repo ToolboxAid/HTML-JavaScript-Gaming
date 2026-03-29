@@ -101,9 +101,17 @@ function installSpriteEditorRenderMethods(SpriteEditorApp) {
         const drawY = r.y + ref.yCells * r.pixelSize;
         const drawW = ref.widthCells * r.pixelSize;
         const drawH = ref.heightCells * r.pixelSize;
+        const layout = (this.referenceImageRuntime && this.referenceImageRuntime.layout) || (this.inferReferenceSheetLayout ? this.inferReferenceSheetLayout(this.referenceImageRuntime.image) : null);
+        const sourceW = layout && layout.framePixelWidth ? layout.framePixelWidth : this.referenceImageRuntime.image.width;
+        const sourceH = layout && layout.framePixelHeight ? layout.framePixelHeight : this.referenceImageRuntime.image.height;
+        const frameCount = layout && layout.frameCount ? layout.frameCount : 1;
+        const sheetColumns = layout && layout.sheetColumns ? layout.sheetColumns : 1;
+        const cappedFrameIndex = Math.max(0, Math.min(this.document.activeFrameIndex, frameCount - 1));
+        const sourceX = (cappedFrameIndex % sheetColumns) * sourceW;
+        const sourceY = Math.floor(cappedFrameIndex / sheetColumns) * sourceH;
         ctx.save();
         ctx.globalAlpha = Math.max(0, Math.min(1, Number(ref.opacity) || 0.45));
-        ctx.drawImage(this.referenceImageRuntime.image, drawX, drawY, drawW, drawH);
+        ctx.drawImage(this.referenceImageRuntime.image, sourceX, sourceY, sourceW, sourceH, drawX, drawY, drawW, drawH);
         ctx.restore();
       }
       if (this.hoveredGridCell) {

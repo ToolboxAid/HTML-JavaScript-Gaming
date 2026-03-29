@@ -1,5 +1,3 @@
-import { drawCanvasCheckerboard } from "../../../engine/ui/index.js";
-
 function installSpriteEditorExportMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     getExportModeLabel() {
@@ -150,10 +148,11 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       temp.width = plc.width;
       temp.height = plc.height;
       const ctx = temp.getContext("2d");
-      if (this.document.sheet.transparent) drawCanvasCheckerboard(ctx, { x: 0, y: 0, w: plc.width, h: plc.height }, 4);
-      else {
+      if (!this.document.sheet.transparent) {
         ctx.fillStyle = this.document.sheet.backgroundColor;
         ctx.fillRect(0, 0, plc.width, plc.height);
+      } else {
+        ctx.clearRect(0, 0, plc.width, plc.height);
       }
       context.frames.forEach((frame, i) => {
         const entry = plc.entries[i];
@@ -312,7 +311,7 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       return new Uint8Array(bytes);
     },
 
-    buildAnimatedGifBlob({ width, height, frameIndices, delayCs, loop, paletteRgb, backgroundRgbInt }) {
+    buildAnimatedGifBlob({ width, height, frameIndices, delayCs, loop, paletteRgb, backgroundRgbInt, transparentIndex = null }) {
       const colors = Array.isArray(paletteRgb) ? paletteRgb.slice(0, 255) : [];
       const colorCount = colors.length + 1;
       let tableSize = 2;
@@ -321,7 +320,8 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       const packedLsd = 0x80 | (7 << 4) | tableSizeBits;
       const tableBytes = [];
       const bg = Number.isInteger(backgroundRgbInt) ? backgroundRgbInt : 0xFFFFFF;
-      tableBytes.push((bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
+      if (transparentIndex === 0) tableBytes.push(0x00, 0x00, 0x00);
+      else tableBytes.push((bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
       colors.forEach((rgbInt) => {
         tableBytes.push((rgbInt >> 16) & 0xFF, (rgbInt >> 8) & 0xFF, rgbInt & 0xFF);
       });
@@ -348,9 +348,12 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
 
       const minCodeSize = Math.max(2, Math.ceil(Math.log2(tableSize)));
       frameIndices.forEach((indices) => {
-        out.push(0x21, 0xF9, 0x04, 0x04);
+        const hasTransparency = transparentIndex === 0;
+        const gcePacked = hasTransparency ? 0x05 : 0x04;
+        const transparentColorIndex = hasTransparency ? 0x00 : 0x00;
+        out.push(0x21, 0xF9, 0x04, gcePacked);
         pushWord(delayCs);
-        out.push(0x00, 0x00);
+        out.push(transparentColorIndex, 0x00);
 
         out.push(0x2C);
         pushWord(0);
@@ -383,8 +386,9 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       }
       const colorToIndex = new Map();
       const palette = [];
+      const transparentSheet = !!(this.document.sheet && this.document.sheet.transparent);
       const backgroundRgbInt = this.parseCssColorToRgbInt(this.document.sheet && this.document.sheet.backgroundColor) ?? 0xFFFFFF;
-      colorToIndex.set(backgroundRgbInt, 0);
+      if (!transparentSheet) colorToIndex.set(backgroundRgbInt, 0);
       const frameCanvas = document.createElement("canvas");
       frameCanvas.width = this.document.cols;
       frameCanvas.height = this.document.rows;
@@ -397,11 +401,11 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
       orderedIndices.forEach((frameIndex) => {
         const frame = this.document.frames[frameIndex];
         const pixels = this.document.getCompositedPixels(frame, { respectSolo: false, blendMode: "normal" });
-        if (this.document.sheet && this.document.sheet.transparent) {
-          drawCanvasCheckerboard(frameCtx, { x: 0, y: 0, w: this.document.cols, h: this.document.rows }, 2);
-        } else {
+        if (!transparentSheet) {
           frameCtx.fillStyle = this.document.sheet && this.document.sheet.backgroundColor ? this.document.sheet.backgroundColor : "#ffffff";
           frameCtx.fillRect(0, 0, this.document.cols, this.document.rows);
+        } else {
+          frameCtx.clearRect(0, 0, this.document.cols, this.document.rows);
         }
         for (let y = 0; y < this.document.rows; y += 1) {
           for (let x = 0; x < this.document.cols; x += 1) {
@@ -448,7 +452,8 @@ function installSpriteEditorExportMethods(SpriteEditorApp) {
         delayCs,
         loop: this.playback.loop,
         paletteRgb: palette,
-        backgroundRgbInt
+        backgroundRgbInt,
+        transparentIndex: transparentSheet ? 0 : null
       });
       if (!blob) {
         this.showMessage("GIF export unavailable.");

@@ -84,8 +84,11 @@ class SpriteEditorApp {
       this.paletteConfigBlockMessage = "";
       this.referenceImageRuntime = {
         image: null,
-        loaded: false
+        loaded: false,
+        layout: null,
+        sourceName: ""
       };
+      this.referenceManualSplit = { width: "", height: "", frames: "" };
       this.paletteSidebarScroll = 0;
       this.paletteSidebarMetrics = null;
       this.paletteSortMode = "name";

@@ -63,9 +63,15 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
       const thumbH = slot.h - 18;
       const thumbW = slot.w - 8;
-      drawCanvasPixelPreview(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), { x: slot.x + 4, y: slot.y + 2, w: thumbW, h: thumbH }, {
+      const thumbRect = { x: slot.x + 4, y: slot.y + 2, w: thumbW, h: thumbH };
+      const thumbScale = Math.max(1, Math.floor(Math.min(thumbRect.w / Math.max(1, this.app.document.cols), thumbRect.h / Math.max(1, this.app.document.rows))));
+      if (this.app.document.sheet.transparent) {
+        drawCanvasCheckerboard(ctx, thumbRect, Math.max(2, thumbScale));
+      }
+      drawCanvasPixelPreview(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), thumbRect, {
         cols: this.app.document.cols,
-        rows: this.app.document.rows
+        rows: this.app.document.rows,
+        backgroundFill: this.app.document.sheet.transparent ? "rgba(0,0,0,0)" : "#fff"
       });
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "11px Arial";
@@ -94,9 +100,13 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       ? this.app.playback.previewFrameIndex
       : (this.app.timelineHoverIndex !== null ? this.app.timelineHoverIndex : this.app.document.activeFrameIndex);
     const f = this.app.document.frames[Math.max(0, Math.min(previewIndex, this.app.document.frames.length - 1))];
-    drawCanvasPixelPreview(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), { x: x + 12, y: y + 24, w: 72, h: 72 }, {
+    const previewRect = { x: x + 12, y: y + 24, w: 72, h: 72 };
+    const previewPixels = this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" });
+    const previewBackgroundFill = this.app.document.sheet.transparent ? "rgba(0,0,0,0)" : "#fff";
+    drawCanvasPixelPreview(ctx, previewPixels, previewRect, {
       cols: this.app.document.cols,
-      rows: this.app.document.rows
+      rows: this.app.document.rows,
+      backgroundFill: previewBackgroundFill
     });
     ctx.font = "12px Arial";
     ctx.fillText(`Frame ${previewIndex + 1} / ${this.app.document.frames.length}`, x + 96, y + 36);

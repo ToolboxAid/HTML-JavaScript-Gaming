@@ -70,14 +70,47 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
     if (!addSectionHeader("reference", "Reference")) return;
     if (openSection === "reference") {
       addSectionTopGap();
+      const manual = this.app.ensureReferenceManualSplitState ? this.app.ensureReferenceManualSplitState() : { width: "", height: "", frames: "" };
       if (y + bh > maxY) return;
       this.add("button", "reference-import", x, y, bw, bh, "Import Image", () => this.app.loadReferenceImage(), { clipRect: left });
       y += bh + gap;
       if (y + bh > maxY) return;
+      const refVisible = this.app.document && this.app.document.referenceImage && this.app.document.referenceImage.visible === true;
+      this.add("button", "reference-overlay-toggle", x, y, bw, bh, refVisible ? "Hide Overlay" : "Show Overlay", () => this.app.toggleReferenceOverlayVisibility(), { clipRect: left });
+      y += bh + gap;
+      if (y + bh > maxY) return;
       addButtonRow("reference-scale", y, "Scale -", () => this.app.scaleReferenceImage(-1), "Scale +", () => this.app.scaleReferenceImage(1));
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      addButtonRow("reference-move-h", y, "Left", () => this.app.nudgeReferenceImage(-1, 0), "Right", () => this.app.nudgeReferenceImage(1, 0));
+      y += bh + gap;
+      if (y + bh > maxY) return;
+      addButtonRow("reference-move-v", y, "Up", () => this.app.nudgeReferenceImage(0, -1), "Down", () => this.app.nudgeReferenceImage(0, 1));
       y += bh + gap;
       if (y + bh <= maxY) {
         this.add("button", "reference-autofit", x, y, bw, bh, "Auto Fit", () => this.app.autoFitReferenceImage(), { clipRect: left });
+        y += bh;
+      }
+      y += gap;
+      const halfW = Math.floor((bw - gap) / 2);
+      if (y + d.labelHeight <= maxY) {
+        this.add("label", "reference-manual-width-label", x, y, halfW, d.labelHeight, "Width", null, { clipRect: left });
+        this.add("label", "reference-manual-height-label", x + halfW + gap, y, bw - halfW - gap, d.labelHeight, "Height", null, { clipRect: left });
+        y += d.labelHeight;
+      }
+      if (y + bh <= maxY) {
+        this.add("button", "reference-manual-width", x, y, halfW, bh, manual.width || String(this.app.document.cols), () => this.app.promptReferenceManualSplitField("width", "Width", 1, 256), { centerText: true, clipRect: left });
+        this.add("button", "reference-manual-height", x + halfW + gap, y, bw - halfW - gap, bh, manual.height || String(this.app.document.rows), () => this.app.promptReferenceManualSplitField("height", "Height", 1, 256), { centerText: true, clipRect: left });
+        y += bh + gap;
+      }
+      if (y + d.labelHeight <= maxY) {
+        this.add("label", "reference-manual-frames-label", x, y, halfW, d.labelHeight, "Frames", null, { clipRect: left });
+        this.add("label", "reference-manual-apply-label", x + halfW + gap, y, bw - halfW - gap, d.labelHeight, "Apply", null, { clipRect: left });
+        y += d.labelHeight;
+      }
+      if (y + bh <= maxY) {
+        this.add("button", "reference-manual-frames", x, y, halfW, bh, manual.frames || String(this.app.document.frames.length), () => this.app.promptReferenceManualSplitField("frames", "Frames", 1, 512), { centerText: true, clipRect: left });
+        this.add("button", "reference-manual-apply", x + halfW + gap, y, bw - halfW - gap, bh, "Apply Manual", () => this.app.applyManualReferenceSplit(), { clipRect: left });
         y += bh;
       }
       addSectionBottomGap();
