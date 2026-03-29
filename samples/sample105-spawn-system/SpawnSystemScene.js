@@ -41,39 +41,79 @@ class SampleSpawnSystem {
   }
 }
 
+class SampleLifecycleSystem {
+  constructor(config = {}) {
+    this.maxEntities = Math.max(1, Number(config.maxEntities) || 6);
+    this.maxLifetime = Math.max(0.1, Number(config.maxLifetime) || 4);
+    this.bounds = config.bounds || { minX: -40, maxX: 1000, minY: -40, maxY: 580 };
+  }
+
+  update(entities, dt) {
+    const delta = Math.max(0, Number(dt) || 0);
+    const next = [];
+    for (let i = 0; i < entities.length; i += 1) {
+      const entity = entities[i];
+      const age = (entity.age || 0) + delta;
+      const x = Number(entity.x) || 0;
+      const y = Number(entity.y) || 0;
+      const inBounds = x >= this.bounds.minX && x <= this.bounds.maxX && y >= this.bounds.minY && y <= this.bounds.maxY;
+      if (age <= this.maxLifetime && inBounds) {
+        next.push({ ...entity, age });
+      }
+    }
+    if (next.length <= this.maxEntities) return next;
+    return next.slice(next.length - this.maxEntities);
+  }
+}
+
 export default class SpawnSystemScene extends Scene {
   constructor() {
     super();
     this.spawned = [];
+    this.elapsed = 0;
     this.spawnSystem = new SampleSpawnSystem([
       { id: 'orb', interval: 0.5, limit: 6 },
     ]);
+    this.lifecycleSystem = new SampleLifecycleSystem({
+      maxEntities: 6,
+      maxLifetime: 3.5,
+      bounds: { minX: -40, maxX: 1000, minY: -40, maxY: 580 }
+    });
   }
 
   update(dt) {
-    this.spawned.push(...this.spawnSystem.update(dt, (rule, count) => ({
+    this.elapsed += Math.max(0, Number(dt) || 0);
+    const created = this.spawnSystem.update(dt, (rule, count) => ({
       id: `${rule.id}-${count}`,
       x: 140 + count * 90,
       y: 290,
-    })));
+      age: 0
+    }));
+    this.spawned.push(...created);
+    for (let i = 0; i < this.spawned.length; i += 1) {
+      this.spawned[i].x += 28 * Math.max(0, Number(dt) || 0);
+    }
+    this.spawned = this.lifecycleSystem.update(this.spawned, dt);
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
       'Engine Sample105',
-      'Entity spawning is controlled by a reusable engine system with timing rules.',
-      'New orbs appear on a schedule until the configured limit is reached.',
+      'Spawn + lifecycle systems run deterministically at scene level.',
+      'Entities expire by lifetime, bounds, and max active limits.',
     ]);
 
     this.spawned.forEach((entity) => {
       renderer.drawCircle(entity.x, entity.y, 14, '#fbbf24');
     });
 
-    drawPanel(renderer, 620, 34, 300, 126, 'Spawn System', [
+    drawPanel(renderer, 620, 34, 300, 152, 'World Lifecycle System', [
       `Spawned: ${this.spawned.length}`,
       `Rules: ${this.spawnSystem.rules.length}`,
       `First interval: ${this.spawnSystem.rules[0].interval}s`,
-      'Spawns stop at the rule limit.',
+      `Max lifetime: ${this.lifecycleSystem.maxLifetime}s`,
+      `Max active: ${this.lifecycleSystem.maxEntities}`,
+      'Cleanup removes expired/out-of-bounds entities.',
     ]);
   }
 }

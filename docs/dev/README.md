@@ -3,14 +3,14 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Level 7 Sample Spawn System BUILD_PR
+# Level 7.1 Sample Lifecycle System BUILD_PR
 
-This package contains a sample-only spawn/world system implementation for Level 7 track.
+This package contains a sample-only world lifecycle system implementation for Level 7.1 track.
 
 ## Included
 - samples/sample105-spawn-system/SpawnSystemScene.js
-- docs/pr/PLAN_PR_LEVEL_7_WORLD_SYSTEMS_TRACK.md
-- docs/pr/BUILD_PR_LEVEL_7_SAMPLE_SPAWN_SYSTEM.md
+- docs/pr/PLAN_PR_LEVEL_7_1_WORLD_LIFECYCLE_SYSTEM.md
+- docs/pr/BUILD_PR_LEVEL_7_1_SAMPLE_LIFECYCLE_SYSTEM.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -19,4 +19,4 @@ This package contains a sample-only spawn/world system implementation for Level 
 
 ## Scope Notes
 - No engine changes.
-- Deterministic spawn system implemented in sample scene scope.
+- Deterministic lifecycle cleanup in sample scene scope.

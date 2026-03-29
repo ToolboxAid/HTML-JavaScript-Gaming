@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-samples(level7): add local deterministic spawn system implementation for sample105
+samples(level7.1): add local deterministic lifecycle cleanup system for sample105
