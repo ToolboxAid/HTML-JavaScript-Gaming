@@ -1,57 +1,58 @@
 Toolbox Aid
 David Quesenberry
-03/25/2026
+03/29/2026
 CODEX_START_OF_DAY.md
 
-PROJECT: HTML-JavaScript-Gaming Repo
+# CODEX START OF DAY
 
-CURRENT STATE:
-- Samples 001–182 complete and working
-- samples/index.html is up to date
-- Level 4: Classic Arcade Space Invaders complete
-- Space Duel arcade loop complete
-- Reusable AttractModeController complete
-- Engine usage normalization complete for game pages
+## Execution Mode
+BUILD_PR execution only
 
-ARCHITECTURE RULES:
-- PLAN_PR → BUILD_PR → APPLY_PR
-- No breaking changes
-- Reuse engine systems
-- Follow ENGINE RULES (LOCKED)
+## Active Phase
+Repo Cleanup Phase 1C - Sprite Editor Helper Ownership and Panel Boundary Normalization
 
-CURRENT TASK:
-- Plan next arcade title
+## Active Objective
+Execute the approved BUILD_PR for Phase 1C as a docs-first, behavior-preserving, Sprite Editor-only cleanup pass.
 
-REQUIREMENTS:
-- As close to original arcade as possible
-- Use engine-facing patterns consistent with other games
-- Reuse AttractModeController where appropriate
-- Reuse score persistence/high-score patterns where appropriate
-- Keep reusable logic in engine only if reused beyond a single game
-- Keep main scenes lean through game-local controllers
+This is not a feature pass.
+This is not an architecture pass.
+This is not an engine extraction pass.
 
-OUTPUT:
-- Delta ZIP
-- Match repo structure exactly
-- Include /docs/dev updates if changed
-- - Commit comment
-- - CODEX
-- - ARCHITECTURE.txt
-- - CODEX_START_OF_DAY.md
-- - RULES.txt
-- - SAMPLE_CSS_CLEANUP.md
-- - START_OF_DAY.md
-- - WORKFLOW.md
-- Include commit and codex files
-- All *PR* belong in /docs/pr/<game/engine/tools/build/etc...)
+## Workflow Lock
+PLAN_PR -> BUILD_PR -> APPLY_PR
 
+Do not skip steps.
+Do not expand scope.
+Do not rewrite architecture.
 
+## Scope Lock
+Allowed area:
+- tools/SpriteEditor/modules/
+- docs/dev/
 
-DEFINITION OF DONE:
-- Next PLAN_PR approved
-- Clear game scope defined
-- Engine classes used documented
-- Reuse opportunities identified from Space Duel and Space Invaders
+Do not touch:
+- engine/
+- games/
+- samples/
+- tests/
+- tools outside SpriteEditor/
+
+## Source of Truth
+- docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION.md
+- docs/pr/BUILD_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION.md
+
+If anything conflicts, stop and follow the BUILD_PR scope only.
+
+## Files Targeted for This Pass
+- tools/SpriteEditor/modules/appPalette.js
+- tools/SpriteEditor/modules/appInput.js
+- tools/SpriteEditor/modules/appViewTools.js
+
+## Required Outcome
+Normalize helper ownership and panel responsibility boundaries without changing behavior.
+
+## Behavior Lock
+Preserve current behavior exactly.
 
 Never prompt:
 "Do you want to run this command?"
@@ -64,3 +65,6 @@ Always:
 All PowerShell commands must:
 - include $ConfirmPreference = 'None'
 - include -Confirm:$false where applicable
+
+## Codex Command
+Create BUILD_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION as a docs-first, Sprite Editor-only delta. Use PLAN_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION.md as the source of truth. Produce only docs/dev files plus the minimal Sprite Editor module delta required by the approved BUILD scope. Do not modify engine/, games/, or samples/. Include full repo-relative paths, helper ownership before/after table, COMMIT_COMMENT.txt, and NEXT_COMMAND.txt.
