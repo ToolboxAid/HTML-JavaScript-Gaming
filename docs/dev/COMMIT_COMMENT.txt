@@ -1,1 +1,6 @@
-Sprite Editor v7.6 plan only: left accordion action panel and right palette/state panel refactor
+Toolbox Aid
+David Quesenberry
+03/29/2026
+COMMIT_COMMENT.txt
+
+build(sprite-editor): normalize helper ownership for panel boundaries in Phase 1C

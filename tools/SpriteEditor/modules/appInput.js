@@ -185,8 +185,7 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       }
 
       if (this.activeTool === "reference") {
-        this.showMessage("Reference tool: use left panel controls.");
-        this.renderAll();
+        this.showReferenceToolPanelGuidance(true);
         return;
       }
 
@@ -234,21 +233,9 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       }
       e.preventDefault();
       const p = this.logicalPointFromEvent(e);
-      const paletteRect = this.paletteSidebarMetrics;
-      if (
-        p &&
-        paletteRect &&
-        p.x >= paletteRect.x &&
-        p.y >= paletteRect.y &&
-        p.x <= paletteRect.x + paletteRect.w &&
-        p.y <= paletteRect.y + paletteRect.h &&
-        paletteRect.maxScroll > 0
-      ) {
-        const next = Math.max(0, Math.min(paletteRect.maxScroll, this.paletteSidebarScroll + Math.sign(e.deltaY) * Math.max(18, paletteRect.sh + paletteRect.gap)));
-        if (next !== this.paletteSidebarScroll) {
-          this.paletteSidebarScroll = next;
-          this.renderAll();
-        }
+      const paletteWheelResult = this.handlePaletteSidebarWheel(p, e.deltaY);
+      if (paletteWheelResult !== null) {
+        if (paletteWheelResult) this.renderAll();
         return;
       }
       if (e.deltaY < 0) this.adjustZoom(0.25);

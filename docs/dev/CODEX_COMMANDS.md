@@ -1,23 +1,16 @@
+Toolbox Aid
+David Quesenberry
+03/29/2026
+CODEX_COMMANDS.md
+
 MODEL: GPT-5.4
 REASONING: medium
-
-COMMAND:
-Use docs/pr/TOOLS_SPRITE_EDITOR_V7_6_LEFT_RIGHT_PANEL_REFACTOR_PLAN_ONLY.md as the sole implementation plan for the next Sprite Editor-only pass. Do not modify engine code. Preserve load/open behavior.
+COMMAND: APPLY_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION
 
 VALIDATIONS:
-- No files under /engine/ changed
-- Left panel is accordion-based
-- Only one accordion section is open at a time
-- Brush section owns brush size/options
-- Select section owns clear/copy/paste/move actions
-- Grid section owns add/remove row/column
-- Layer section owns opacity/rename/visibility quick actions
-- Right panel owns palette label
-- Right panel owns clone/palette dropdown
-- Right panel owns current color readout
-- Right panel owns swatches
-- Right panel owns sort controls
-- No overlapping panel concerns remain
-- No panel content bleeds into previews or adjacent regions
-- No load/open regression
-- No console errors
+- node -c tools/SpriteEditor/modules/appPalette.js
+- node -c tools/SpriteEditor/modules/appInput.js
+- node -c tools/SpriteEditor/modules/appViewTools.js
+- verify palette sidebar wheel behavior is unchanged
+- verify reference tool guidance still routes to left panel controls
+- verify no files changed under engine/, games/, samples/

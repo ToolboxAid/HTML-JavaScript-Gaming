@@ -52,3 +52,15 @@ DEFINITION OF DONE:
 - Clear game scope defined
 - Engine classes used documented
 - Reuse opportunities identified from Space Duel and Space Invaders
+
+Never prompt:
+"Do you want to run this command?"
+
+Always:
+- Assume YES
+- Execute immediately
+- Return result only
+
+All PowerShell commands must:
+- include $ConfirmPreference = 'None'
+- include -Confirm:$false where applicable

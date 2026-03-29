@@ -59,6 +59,11 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
       return descriptions[this.activeTool] || { primary: "Choose a tool from the top Tools menu.", secondary: "Tool details appear here while you work." };
     },
 
+    showReferenceToolPanelGuidance(render = false) {
+      this.showMessage("Reference tool: use left panel controls.");
+      if (render) this.renderAll();
+    },
+
     adjustZoom(delta) {
       this.zoom = Math.max(0.5, Math.min(8, Number((this.zoom + delta).toFixed(2))));
       this.gridRect = this.computeGridRect();
@@ -238,7 +243,7 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
 
     applyGridTool(x, y, erase) {
       if (this.activeTool === "reference") {
-        this.showMessage("Reference tool: use left panel controls.");
+        this.showReferenceToolPanelGuidance(false);
         return;
       }
       if (this.activeTool === "eyedropper") {

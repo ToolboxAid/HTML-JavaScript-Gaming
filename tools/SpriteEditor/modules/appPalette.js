@@ -173,6 +173,35 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       return `Current: ${currentHex}  ■   Named: ${name || "Unnamed"}`;
     },
 
+    isPointInPaletteSidebar(point) {
+      const metrics = this.paletteSidebarMetrics;
+      if (!point || !metrics) return false;
+      return (
+        point.x >= metrics.x &&
+        point.y >= metrics.y &&
+        point.x <= metrics.x + metrics.w &&
+        point.y <= metrics.y + metrics.h
+      );
+    },
+
+    scrollPaletteSidebarByWheel(deltaY) {
+      const metrics = this.paletteSidebarMetrics;
+      if (!metrics || metrics.maxScroll <= 0) return false;
+      const stride = Math.max(18, (metrics.sh || 18) + (metrics.gap || 0));
+      const next = Math.max(
+        0,
+        Math.min(metrics.maxScroll, this.paletteSidebarScroll + Math.sign(deltaY) * stride)
+      );
+      if (next === this.paletteSidebarScroll) return false;
+      this.paletteSidebarScroll = next;
+      return true;
+    },
+
+    handlePaletteSidebarWheel(point, deltaY) {
+      if (!this.isPointInPaletteSidebar(point)) return null;
+      return this.scrollPaletteSidebarByWheel(deltaY);
+    },
+
     setCurrentColor(color) {
       this.document.currentColor = color;
       this.showMessage("Color selected.");
