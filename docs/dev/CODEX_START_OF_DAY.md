@@ -1,7 +1,7 @@
-Toolbox Aid
-David Quesenberry
-03/29/2026
-CODEX_START_OF_DAY.md
+# Toolbox Aid
+# David Quesenberry
+# 03/29/2026
+# CODEX_START_OF_DAY.md
 
 # CODEX START OF DAY
 
@@ -67,4 +67,4 @@ All PowerShell commands must:
 - include -Confirm:$false where applicable
 
 ## Codex Command
-Create BUILD_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION as a docs-first, Sprite Editor-only delta. Use PLAN_PR_REPO_CLEANUP_PHASE_1C_SPRITE_EDITOR_HELPER_OWNERSHIP_AND_PANEL_BOUNDARY_NORMALIZATION.md as the source of truth. Produce only docs/dev files plus the minimal Sprite Editor module delta required by the approved BUILD scope. Do not modify engine/, games/, or samples/. Include full repo-relative paths, helper ownership before/after table, COMMIT_COMMENT.txt, and NEXT_COMMAND.txt.
+
