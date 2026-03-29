@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-cleanup(sprite-editor): Phase 1E extract getPaletteSignature helper into shared
+cleanup(sprite-editor): Phase 1F extract command search helpers and add engine candidate evaluation

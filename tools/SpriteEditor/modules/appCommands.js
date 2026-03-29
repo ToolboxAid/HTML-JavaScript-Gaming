@@ -1,3 +1,6 @@
+import { normalizeCommandText } from "../shared/normalizeCommandText.js";
+import { scoreCommandItem } from "../shared/scoreCommandItem.js";
+
 function installSpriteEditorCommandMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     createKeybindingMap() {
@@ -75,70 +78,12 @@ function installSpriteEditorCommandMethods(SpriteEditorApp) {
       return "";
     },
 
-    normalizeCommandText(input) {
-      const raw = String(input || "").toLowerCase().trim();
-      const noPunct = raw.replace(/[^\w\s]/g, " ");
-      const collapsed = noPunct.replace(/\s+/g, " ").trim();
-      const filler = new Set(["to", "the", "tool"]);
-      const tokens = collapsed.split(" ").filter((t) => t && !filler.has(t));
-      return tokens.join(" ");
-    },
-
-    fuzzyMatchScore(text, query) {
-      const t = text.toLowerCase();
-      const q = query.toLowerCase();
-      if (!q) return 0;
-      const prefix = t.indexOf(q) === 0;
-      const substringIndex = t.indexOf(q);
-      let qi = 0;
-      let lastMatch = -1;
-      let gaps = 0;
-      for (let i = 0; i < t.length && qi < q.length; i += 1) {
-        if (t[i] === q[qi]) {
-          if (lastMatch >= 0 && i !== lastMatch + 1) gaps += (i - lastMatch - 1);
-          lastMatch = i;
-          qi += 1;
-        }
-      }
-      const fuzzyMatched = qi === q.length;
-      if (!fuzzyMatched && substringIndex < 0) return -1;
-      let score = 0;
-      if (prefix) score += 1200;
-      if (substringIndex >= 0) score += Math.max(0, 600 - substringIndex * 8);
-      if (fuzzyMatched) score += Math.max(0, 420 - gaps * 7);
-      score += Math.max(0, 120 - (t.length - q.length));
-      return score;
-    },
-
-    scoreCommandItem(item, normalizedQuery) {
-      if (!normalizedQuery) return 0;
-      const label = this.normalizeCommandText(item.label || "");
-      const aliases = Array.isArray(item.aliases) ? item.aliases.map((a) => this.normalizeCommandText(a)) : [];
-      const keywords = Array.isArray(item.keywords) ? item.keywords.map((k) => this.normalizeCommandText(k)) : [];
-      const shortcut = this.normalizeCommandText(item.shortcut || "");
-      if (label.indexOf(normalizedQuery) === 0) return 2400;
-      for (let i = 0; i < aliases.length; i += 1) {
-        if (aliases[i] === normalizedQuery) return 2200;
-        if (aliases[i].indexOf(normalizedQuery) === 0) return 2000;
-      }
-      if (label.indexOf(normalizedQuery) >= 0) return 1600 - label.indexOf(normalizedQuery) * 5;
-      for (let i = 0; i < aliases.length; i += 1) {
-        const pos = aliases[i].indexOf(normalizedQuery);
-        if (pos >= 0) return 1450 - pos * 4;
-      }
-      for (let i = 0; i < keywords.length; i += 1) {
-        if (keywords[i].indexOf(normalizedQuery) >= 0) return 1200;
-      }
-      const hay = `${label} ${aliases.join(" ")} ${keywords.join(" ")} ${shortcut}`;
-      return this.fuzzyMatchScore(hay, normalizedQuery);
-    },
-
     getRankedCommandPaletteItems(items, query) {
-      const q = this.normalizeCommandText(query);
+      const q = normalizeCommandText(query);
       const recentIndex = new Map();
       this.recentActions.forEach((id, i) => recentIndex.set(id, i));
       const ranked = items.map((item) => {
-        const score = q ? this.scoreCommandItem(item, q) : 0;
+        const score = q ? scoreCommandItem(item, q) : 0;
         const recency = recentIndex.has(item.id) ? Math.max(0, 500 - recentIndex.get(item.id) * 20) : 0;
         const favoriteBias = this.favoriteActions.indexOf(item.id) >= 0 ? (q ? 280 : 600) : 0;
         const total = (q ? score : 200) + recency + favoriteBias;

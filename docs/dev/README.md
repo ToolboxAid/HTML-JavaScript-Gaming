@@ -3,15 +3,17 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Repo Cleanup Phase 1E BUILD_PR
+# Repo Cleanup Phase 1F BUILD_PR
 
-This package contains the Phase 1E minimal extraction build for Sprite Editor.
+This package contains a controlled multi-helper extraction delta for Sprite Editor plus engine-candidate evaluation documentation.
 
 ## Included
-- tools/SpriteEditor/modules/appPalette.js
-- tools/SpriteEditor/shared/getPaletteSignature.js
-- docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md
-- docs/pr/BUILD_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md
+- tools/SpriteEditor/modules/appCommands.js
+- tools/SpriteEditor/shared/normalizeCommandText.js
+- tools/SpriteEditor/shared/fuzzyMatchScore.js
+- tools/SpriteEditor/shared/scoreCommandItem.js
+- docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
+- docs/pr/BUILD_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -19,6 +21,6 @@ This package contains the Phase 1E minimal extraction build for Sprite Editor.
 - docs/dev/RULES.txt
 
 ## Scope Notes
-- Exactly one helper extracted from modules to shared.
-- No engine/games/samples changes.
+- Extracted exactly 3 helpers from modules to shared.
 - Behavior preserved.
+- No changes to engine, games, or samples.
