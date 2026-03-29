@@ -89,6 +89,7 @@ class SpriteEditorApp {
         sourceName: ""
       };
       this.referenceManualSplit = { width: "", height: "", frames: "" };
+      this.referenceTransformStep = 1;
       this.paletteSidebarScroll = 0;
       this.paletteSidebarMetrics = null;
       this.paletteSortMode = "name";

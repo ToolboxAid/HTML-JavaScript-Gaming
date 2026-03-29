@@ -270,6 +270,22 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       ctx.strokeStyle = "#f59e0b";
       ctx.strokeRect(c.x + c.w - 24.5, c.y + c.h - 19.5, 14, 14);
     }
+    if (c.marqueeSelected) {
+      const dash = Math.max(2, Math.floor(Math.min(c.w, c.h) / 5));
+      const offset = -Math.floor(performance.now() / 80);
+      ctx.save();
+      ctx.setLineDash([dash, 2]);
+      ctx.lineDashOffset = offset;
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3.25;
+      ctx.strokeRect(c.x + 1.5, c.y + 1.5, c.w - 3, c.h - 3);
+      ctx.lineDashOffset = offset + dash;
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 3.25;
+      ctx.strokeRect(c.x + 1.5, c.y + 1.5, c.w - 3, c.h - 3);
+      ctx.restore();
+      ctx.lineWidth = 1;
+    }
     if (c.isCommandRow && c.category) {
       ctx.fillStyle = "#91a3b6";
       ctx.font = "11px Arial";

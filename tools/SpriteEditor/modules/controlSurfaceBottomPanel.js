@@ -1,4 +1,38 @@
-import { drawCanvasCheckerboard, drawCanvasPixelPreview } from "../../../engine/ui/index.js";
+import { drawCanvasCheckerboard } from "../../../engine/ui/index.js";
+
+function drawPixelPreviewExact(ctx, pixels, rect, options = {}) {
+  const cols = Math.max(1, Number(options.cols) || 1);
+  const rows = Math.max(1, Number(options.rows) || 1);
+  const backgroundFill = Object.prototype.hasOwnProperty.call(options, "backgroundFill") ? options.backgroundFill : "#fff";
+  const borderStroke = options.borderStroke || "rgba(0,0,0,0.2)";
+  if (backgroundFill) {
+    ctx.fillStyle = backgroundFill;
+    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+  }
+  if (!pixels || !Array.isArray(pixels)) {
+    ctx.strokeStyle = borderStroke;
+    ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+    return;
+  }
+  for (let py = 0; py < rows; py += 1) {
+    const row = pixels[py];
+    if (!Array.isArray(row)) continue;
+    const y0 = rect.y + Math.floor((py * rect.h) / rows);
+    const y1 = rect.y + Math.floor(((py + 1) * rect.h) / rows);
+    const h = Math.max(1, y1 - y0);
+    for (let px = 0; px < cols; px += 1) {
+      const value = row[px];
+      if (!value) continue;
+      const x0 = rect.x + Math.floor((px * rect.w) / cols);
+      const x1 = rect.x + Math.floor(((px + 1) * rect.w) / cols);
+      const w = Math.max(1, x1 - x0);
+      ctx.fillStyle = value;
+      ctx.fillRect(x0, y0, w, h);
+    }
+  }
+  ctx.strokeStyle = borderStroke;
+  ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+}
 
 function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
   SpriteEditorCanvasControlSurface.prototype.drawTimelinePanel = function drawTimelinePanel(ctx) {
@@ -68,7 +102,7 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       if (this.app.document.sheet.transparent) {
         drawCanvasCheckerboard(ctx, thumbRect, Math.max(2, thumbScale));
       }
-      drawCanvasPixelPreview(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), thumbRect, {
+      drawPixelPreviewExact(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), thumbRect, {
         cols: this.app.document.cols,
         rows: this.app.document.rows,
         backgroundFill: this.app.document.sheet.transparent ? "rgba(0,0,0,0)" : "#fff"
@@ -100,12 +134,27 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       ? this.app.playback.previewFrameIndex
       : (this.app.timelineHoverIndex !== null ? this.app.timelineHoverIndex : this.app.document.activeFrameIndex);
     const f = this.app.document.frames[Math.max(0, Math.min(previewIndex, this.app.document.frames.length - 1))];
-    const previewRect = { x: x + 12, y: y + 24, w: 72, h: 72 };
+    const previewSlot = { x: x + 12, y: y + 24, w: 72, h: 72 };
+    const cols = Math.max(1, Number(this.app.document.cols) || 1);
+    const rows = Math.max(1, Number(this.app.document.rows) || 1);
+    const aspect = cols / rows;
+    let boxW = previewSlot.w;
+    let boxH = previewSlot.h;
+    if (aspect > 1) boxH = Math.max(1, Math.floor(previewSlot.w / aspect));
+    else if (aspect < 1) boxW = Math.max(1, Math.floor(previewSlot.h * aspect));
+    const previewRect = {
+      x: previewSlot.x + Math.floor((previewSlot.w - boxW) * 0.5),
+      y: previewSlot.y + Math.floor((previewSlot.h - boxH) * 0.5),
+      w: boxW,
+      h: boxH
+    };
     const previewPixels = this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" });
-    const previewBackgroundFill = this.app.document.sheet.transparent ? "rgba(0,0,0,0)" : "#fff";
-    drawCanvasPixelPreview(ctx, previewPixels, previewRect, {
-      cols: this.app.document.cols,
-      rows: this.app.document.rows,
+    const previewBackgroundFill = this.app.document.sheet.transparent
+      ? "rgba(0,0,0,0)"
+      : (this.app.document.sheet && this.app.document.sheet.backgroundColor ? this.app.document.sheet.backgroundColor : "#ffffff");
+    drawPixelPreviewExact(ctx, previewPixels, previewRect, {
+      cols,
+      rows,
       backgroundFill: previewBackgroundFill
     });
     ctx.font = "12px Arial";

@@ -38,6 +38,7 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       this.zoom = 1;
       this.referenceImageRuntime = { image: null, loaded: false, layout: null, sourceName: "" };
       this.referenceManualSplit = { width: "", height: "", frames: "" };
+      this.referenceTransformStep = 1;
       this.uiAnimationLastTick = 0;
     },
 
@@ -417,14 +418,28 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
       const ref = this.document.referenceImage;
       const delta = Number(deltaCells) || 0;
       if (!delta) return false;
-      const nextW = Math.max(1, Math.min(512, Math.round((Number(ref.widthCells) || this.document.cols) + delta)));
-      const nextH = Math.max(1, Math.min(512, Math.round((Number(ref.heightCells) || this.document.rows) + delta)));
+      const nextW = Math.max(0.01, Math.min(512, Number(((Number(ref.widthCells) || this.document.cols) + delta).toFixed(3))));
+      const nextH = Math.max(0.01, Math.min(512, Number(((Number(ref.heightCells) || this.document.rows) + delta).toFixed(3))));
       if (nextW === ref.widthCells && nextH === ref.heightCells) return false;
       ref.widthCells = nextW;
       ref.heightCells = nextH;
       ref.alignmentLocked = false;
       this.showMessageAndRender(`Reference scale: ${nextW} x ${nextH}`);
       return true;
+    },
+
+    setReferenceTransformStep(stepValue) {
+      const allowed = [1, 0.1, 0.01, 0.0001];
+      const parsed = Number(stepValue);
+      if (!allowed.includes(parsed)) return false;
+      this.referenceTransformStep = parsed;
+      this.showMessageAndRender(`Reference step size: ${parsed}`);
+      return true;
+    },
+
+    // Backward-compatible alias for prior callers.
+    setReferenceScaleStep(stepValue) {
+      return this.setReferenceTransformStep(stepValue);
     },
 
     toggleReferenceOverlayVisibility() {
@@ -443,11 +458,11 @@ function installSpriteEditorIOMethods(SpriteEditorApp) {
         return false;
       }
       const ref = this.document.referenceImage;
-      const stepX = Math.trunc(Number(dx) || 0);
-      const stepY = Math.trunc(Number(dy) || 0);
+      const stepX = Number(dx) || 0;
+      const stepY = Number(dy) || 0;
       if (!stepX && !stepY) return false;
-      ref.xCells = Math.round((Number(ref.xCells) || 0) + stepX);
-      ref.yCells = Math.round((Number(ref.yCells) || 0) + stepY);
+      ref.xCells = Number(((Number(ref.xCells) || 0) + stepX).toFixed(4));
+      ref.yCells = Number(((Number(ref.yCells) || 0) + stepY).toFixed(4));
       ref.alignmentLocked = false;
       this.showMessageAndRender(`Reference moved to ${ref.xCells}, ${ref.yCells}.`);
       return true;

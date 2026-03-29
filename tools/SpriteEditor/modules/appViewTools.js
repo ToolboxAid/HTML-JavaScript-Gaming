@@ -81,6 +81,12 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
             layer.pixels = resizeGrid(layer.pixels);
           });
         });
+        if (this.document.frameClipboard && Array.isArray(this.document.frameClipboard.layers)) {
+          this.document.frameClipboard.layers = this.document.frameClipboard.layers.map((layer) => ({
+            ...layer,
+            pixels: resizeGrid(layer && layer.pixels ? layer.pixels : null)
+          }));
+        }
         this.document.cols = cols;
         this.document.rows = rows;
         if (this.document.referenceImage && this.document.referenceImage.src) {
@@ -93,8 +99,9 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
           ref.heightCells = Math.max(1, Math.round((Number(ref.heightCells) || prevRows) * scaleY));
         }
         this.document.clearSelection();
+        this.selectionMoveSession = null;
         this.gridRect = this.computeGridRect();
-        this.showMessage(`Grid size: ${cols} x ${rows}`);
+        this.showMessage(`Grid size: ${cols} x ${rows} (display rebuilt).`);
         return true;
       });
     },
