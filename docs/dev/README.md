@@ -3,15 +3,15 @@ David Quesenberry
 03/29/2026
 README.md
 
-# Level 9.3 Engine Sample Templates BUILD_PR
+# Level 10 Advanced Systems and Differentiation Layer BUILD_PR
 
-This package contains docs-first templates and wiring examples for building new games with the promoted world systems.
+This package contains docs-first guidance for advanced optional systems and differentiation patterns on top of the stabilized engine platform.
 
 ## Included
-- docs/pr/PLAN.md
-- docs/pr/LEVEL_9_3_ENGINE_SAMPLE_TEMPLATES.md
-- docs/pr/LEVEL_9_3_SYSTEM_WIRING_EXAMPLE.md
-- docs/pr/BUILD_PR_LEVEL_9_3_ENGINE_SAMPLE_TEMPLATES.md
+- docs/pr/PLAN_PR_LEVEL_10_ADVANCED_SYSTEMS_AND_DIFFERENTIATION_LAYER.md
+- docs/pr/LEVEL_10_ADVANCED_SYSTEM_CANDIDATES.md
+- docs/pr/LEVEL_10_DIFFERENTIATION_PATTERNS.md
+- docs/pr/BUILD_PR_LEVEL_10_ADVANCED_SYSTEMS_AND_DIFFERENTIATION_LAYER.md
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
@@ -20,4 +20,4 @@ This package contains docs-first templates and wiring examples for building new 
 
 ## Scope Notes
 - Documentation only.
-- No engine/runtime changes.
+- No engine or runtime changes.

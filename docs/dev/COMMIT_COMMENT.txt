@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-docs(level9.3): add engine sample templates, wiring examples, and config patterns
+docs(level10): define advanced optional systems and differentiation-layer patterns

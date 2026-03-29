@@ -4,5 +4,5 @@ David Quesenberry
 CODEX_COMMANDS.md
 
 MODEL: GPT-5.4
-REASONING: low
-COMMAND: Create APPLY_PR_LEVEL_9_3_ENGINE_SAMPLE_TEMPLATES as a commit-ready apply step. Use docs/pr/BUILD_PR_LEVEL_9_3_ENGINE_SAMPLE_TEMPLATES.md as source of truth, include only listed files, and emit repo-structured ZIP.
+REASONING: medium
+COMMAND: Create APPLY_PR_LEVEL_10_ADVANCED_SYSTEMS_AND_DIFFERENTIATION_LAYER as a commit-ready application step. Use docs/pr/BUILD_PR_LEVEL_10_ADVANCED_SYSTEMS_AND_DIFFERENTIATION_LAYER.md as source of truth, include only listed files, and emit repo-structured ZIP.
