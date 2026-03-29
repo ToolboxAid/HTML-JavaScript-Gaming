@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-cleanup(engine): Phase 1G promote fuzzyMatchScore from SpriteEditor shared to engine utils
+cleanup(engine): Phase 1H promote normalizeCommandText and consolidate shared imports

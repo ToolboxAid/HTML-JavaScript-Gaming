@@ -1,4 +1,4 @@
-import { normalizeCommandText } from "../shared/normalizeCommandText.js";
+import { normalizeCommandText } from "../../../engine/utils/normalizeCommandText.js";
 import { scoreCommandItem } from "../shared/scoreCommandItem.js";
 
 function installSpriteEditorCommandMethods(SpriteEditorApp) {

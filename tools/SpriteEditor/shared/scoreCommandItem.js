@@ -1,5 +1,5 @@
 import { fuzzyMatchScore } from "../../../engine/utils/fuzzyMatchScore.js";
-import { normalizeCommandText } from "./normalizeCommandText.js";
+import { normalizeCommandText } from "../../../engine/utils/normalizeCommandText.js";
 
 function scoreCommandItem(item, normalizedQuery) {
   if (!normalizedQuery) return 0;
