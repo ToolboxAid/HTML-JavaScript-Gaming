@@ -1,3 +1,5 @@
+import { dispatchRender, dispatchStatusMessage, dispatchStatusMessageAndRender } from "./events/eventDispatch.js";
+
 function installSpriteEditorViewToolMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     computeGridRect() {
@@ -60,14 +62,14 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
     },
 
     showReferenceToolPanelGuidance(render = false) {
-      this.showMessage("Reference tool: use left panel controls.");
-      if (render) this.renderAll();
+      dispatchStatusMessage(this, "Reference tool: use left panel controls.");
+      if (render) dispatchRender(this);
     },
 
     adjustZoom(delta) {
       this.zoom = Math.max(0.5, Math.min(8, Number((this.zoom + delta).toFixed(2))));
       this.gridRect = this.computeGridRect();
-      this.showMessageAndRender("Zoom: " + this.zoom.toFixed(2) + "x");
+      dispatchStatusMessageAndRender(this, "Zoom: " + this.zoom.toFixed(2) + "x");
     },
 
     resizeDocumentGrid(nextCols, nextRows) {
@@ -106,22 +108,22 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
         this.document.clearSelection();
         this.selectionMoveSession = null;
         this.gridRect = this.computeGridRect();
-        this.showMessage(`Grid size: ${cols} x ${rows} (display rebuilt).`);
+        dispatchStatusMessage(this, `Grid size: ${cols} x ${rows} (display rebuilt).`);
         return true;
       });
     },
 
     adjustGridCols(delta) {
       const ok = this.resizeDocumentGrid(this.document.cols + delta, this.document.rows);
-      if (!ok) this.showMessage("Grid columns unchanged.");
-      this.renderAll();
+      if (!ok) dispatchStatusMessage(this, "Grid columns unchanged.");
+      dispatchRender(this);
       return ok;
     },
 
     adjustGridRows(delta) {
       const ok = this.resizeDocumentGrid(this.document.cols, this.document.rows + delta);
-      if (!ok) this.showMessage("Grid rows unchanged.");
-      this.renderAll();
+      if (!ok) dispatchStatusMessage(this, "Grid rows unchanged.");
+      dispatchRender(this);
       return ok;
     },
 
@@ -129,23 +131,23 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
       this.zoom = 1;
       this.pan = { x: 0, y: 0 };
       this.gridRect = this.computeGridRect();
-      this.showMessageAndRender("Zoom/pan reset.");
+      dispatchStatusMessageAndRender(this, "Zoom/pan reset.");
     },
 
     togglePixelPerfect() {
       this.viewport.togglePixelPerfect();
       this.resize();
-      this.showMessageAndRender(this.viewport.pixelPerfect ? "Pixel perfect on." : "Pixel perfect off.");
+      dispatchStatusMessageAndRender(this, this.viewport.pixelPerfect ? "Pixel perfect on." : "Pixel perfect off.");
     },
 
     toggleOnionPrevious() {
       this.onionSkin.prev = !this.onionSkin.prev;
-      this.showMessageAndRender(this.onionSkin.prev ? "Onion previous on." : "Onion previous off.");
+      dispatchStatusMessageAndRender(this, this.onionSkin.prev ? "Onion previous on." : "Onion previous off.");
     },
 
     toggleOnionNext() {
       this.onionSkin.next = !this.onionSkin.next;
-      this.showMessageAndRender(this.onionSkin.next ? "Onion next on." : "Onion next off.");
+      dispatchStatusMessageAndRender(this, this.onionSkin.next ? "Onion next on." : "Onion next off.");
     },
 
     setSelectionFromTwoCells(a, b) {
@@ -236,7 +238,7 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
         const erase = !!this.shapePreview.erase;
         const value = erase ? null : this.document.currentColor;
         cells.forEach((cell) => this.document.setPixel(cell.x, cell.y, value, this.mirror));
-        this.showMessage(`Shape: ${this.shapePreview.tool}`);
+        dispatchStatusMessage(this, `Shape: ${this.shapePreview.tool}`);
         return true;
       });
     },
@@ -249,7 +251,7 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
       if (this.activeTool === "eyedropper") {
         const value = this.document.getPixel(x, y);
         if (value) this.setCurrentColor(value);
-        this.showMessage("Picked color.");
+        dispatchStatusMessage(this, "Picked color.");
         return;
       }
       if (!this.canEditActiveLayer(true)) return;
@@ -269,12 +271,12 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
         this.selectionStart = null;
       }
       this.syncLeftPanelSectionForTool(tool);
-      this.showMessage("Tool: " + tool);
+      dispatchStatusMessage(this, "Tool: " + tool);
     },
 
     setBrushSize(size) {
       this.brush.size = Math.max(1, Math.min(9, Math.floor(size || 1)));
-      this.showMessageAndRender(`Brush size: ${this.brush.size}`);
+      dispatchStatusMessageAndRender(this, `Brush size: ${this.brush.size}`);
     },
 
     adjustBrushSize(delta) {
@@ -283,14 +285,15 @@ function installSpriteEditorViewToolMethods(SpriteEditorApp) {
 
     toggleBrushShape() {
       this.brush.shape = this.brush.shape === "square" ? "circle" : "square";
-      this.showMessageAndRender(`Brush shape: ${this.brush.shape}`);
+      dispatchStatusMessageAndRender(this, `Brush shape: ${this.brush.shape}`);
     },
 
     toggleMirror() {
       this.mirror = !this.mirror;
-      this.showMessageAndRender(this.mirror ? "Mirror on." : "Mirror off.");
+      dispatchStatusMessageAndRender(this, this.mirror ? "Mirror on." : "Mirror off.");
     }
   });
 }
 
 export { installSpriteEditorViewToolMethods };
+

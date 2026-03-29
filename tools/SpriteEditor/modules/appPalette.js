@@ -1,4 +1,5 @@
 import { getPaletteSignature } from "../shared/getPaletteSignature.js";
+import { dispatchRender, dispatchStatusMessage, dispatchStatusMessageAndRender } from "./events/eventDispatch.js";
 
 function installSpriteEditorPaletteMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
@@ -36,7 +37,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         if (typeof this.openPaletteLockPopup === "function") {
           this.openPaletteLockPopup("Select a palette preset before editing pixels.");
         }
-        this.showMessage("Palette must be selected first.");
+        dispatchStatusMessage(this, "Palette must be selected first.");
       }
       return false;
     },
@@ -202,7 +203,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
 
     setCurrentColor(color) {
       this.document.currentColor = color;
-      this.showMessage("Color selected.");
+      dispatchStatusMessage(this, "Color selected.");
     },
 
     setPaletteSortMode(mode) {
@@ -210,7 +211,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       if (this.paletteSortMode === mode) return false;
       this.paletteSortMode = mode;
       this.paletteSidebarScroll = 0;
-      this.showMessageAndRender(`Palette sort: ${mode[0].toUpperCase()}${mode.slice(1)}.`);
+      dispatchStatusMessageAndRender(this, `Palette sort: ${mode[0].toUpperCase()}${mode.slice(1)}.`);
       return true;
     },
 
@@ -222,7 +223,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         ? (index + step + palette.length) % palette.length
         : 0;
       this.document.currentColor = palette[nextIndex];
-      this.showMessageAndRender("Color cycled.");
+      dispatchStatusMessageAndRender(this, "Color cycled.");
       return true;
     },
 
@@ -254,18 +255,18 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       const suffix = this.paletteWorkflow.scope === "selected_range"
         ? " Requires an active frame-range selection. Use Replace Colors to apply."
         : " Use Replace Colors to apply.";
-      this.showMessageAndRender(`${scopeLabel}.${suffix}`);
+      dispatchStatusMessageAndRender(this, `${scopeLabel}.${suffix}`);
       return true;
     },
 
     setPaletteReplaceSource() {
       this.paletteWorkflow.source = this.document.currentColor;
-      this.showMessageAndRender("Replace source set.");
+      dispatchStatusMessageAndRender(this, "Replace source set.");
     },
 
     setPaletteReplaceTarget() {
       this.paletteWorkflow.target = this.document.currentColor;
-      this.showMessageAndRender("Replace target set.");
+      dispatchStatusMessageAndRender(this, "Replace target set.");
     },
 
     selectCustomPaletteClone(name) {
@@ -274,11 +275,11 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         ? this.document.customPalettes
         : {};
       if (!Array.isArray(customPalettes[name])) {
-        this.showMessageAndRender("Clone not found.");
+        dispatchStatusMessageAndRender(this, "Clone not found.");
         return false;
       }
       const ok = this.applyNamedPalette(name);
-      if (ok) this.showMessageAndRender(`Clone selected: ${name}`);
+      if (ok) dispatchStatusMessageAndRender(this, `Clone selected: ${name}`);
       return ok;
     },
 
@@ -287,8 +288,8 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         if (typeof this.closePalettePresetPopup === "function") this.closePalettePresetPopup();
         if (typeof this.openPaletteLockPopup === "function") this.openPaletteLockPopup("Palette is locked for this sprite/project");
         if (typeof this.showAlertMessage === "function") this.showAlertMessage("Palette cannot be changed after grid edits start.");
-        else this.showMessage("Palette cannot be changed after grid edits start.");
-        this.renderAll();
+        else dispatchStatusMessage(this, "Palette cannot be changed after grid edits start.");
+        dispatchRender(this);
         return false;
       }
       return this.executeWithHistory(`Apply Palette: ${paletteName}`, () => {
@@ -308,14 +309,14 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         this.document.paletteSelectionRequired = false;
         this.document.palettePresetName = paletteName;
         this.currentPalettePreset = paletteName;
-        this.showMessage(`Palette applied: ${paletteName}`);
+        dispatchStatusMessage(this, `Palette applied: ${paletteName}`);
         return true;
       });
     },
 
     createCustomPaletteClone() {
       if (!this.currentPalettePreset && !this.document.palettePresetName) {
-        this.showMessageAndRender("Select a palette before cloning.");
+        dispatchStatusMessageAndRender(this, "Select a palette before cloning.");
         return false;
       }
       const baseName = this.currentPalettePreset || this.document.palettePresetName || "Palette";
@@ -323,7 +324,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       const raw = globalThis.prompt ? globalThis.prompt("Custom palette name:", suggested) : suggested;
       const cloneName = String(raw || "").trim();
       if (!cloneName) {
-        this.showMessage("Clone canceled.");
+        dispatchStatusMessage(this, "Clone canceled.");
         return false;
       }
       const entries = this.getPaletteDisplayEntries().map((entry, index) => ({
@@ -331,7 +332,7 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         name: entry.name && entry.name !== entry.hex ? entry.name : `Color ${index + 1}`
       }));
       if (!entries.length) {
-        this.showMessage("Clone unavailable.");
+        dispatchStatusMessage(this, "Clone unavailable.");
         return false;
       }
       if (!this.document.customPalettes || typeof this.document.customPalettes !== "object") {
@@ -341,8 +342,8 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       this.document.palettePresetName = cloneName;
       this.document.paletteSelectionRequired = false;
       this.currentPalettePreset = cloneName;
-      this.showMessage(`Palette clone created: ${cloneName}`);
-      this.renderAll();
+      dispatchStatusMessage(this, `Palette clone created: ${cloneName}`);
+      dispatchRender(this);
       return true;
     },
 
@@ -364,3 +365,4 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
 }
 
 export { installSpriteEditorPaletteMethods };
+

@@ -1,8 +1,9 @@
-Toolbox Aid
-David Quesenberry
-03/29/2026
-CODEX_COMMANDS.md
+MODEL: GPT-5.3-codex
+REASONING: high
 
-MODEL: GPT-5.4
-REASONING: medium
-COMMAND: Create APPLY_PR_LEVEL_10_3_ADVANCED_OBJECTIVE_MISSION_SYSTEM as a commit-ready application step. Use docs/pr/BUILD_PR_LEVEL_10_3_ADVANCED_OBJECTIVE_MISSION_SYSTEM.md as source of truth, include only listed files, and emit repo-structured ZIP.
+codex.run:
+- Create modules/events/eventBus.js
+- Create modules/events/eventTypes.js
+- Create modules/events/eventDispatch.js
+- Refactor direct calls to use events
+- Ensure no behavior change

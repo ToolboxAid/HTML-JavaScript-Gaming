@@ -1,3 +1,5 @@
+import { dispatchRender, dispatchStatusMessage } from "./events/eventDispatch.js";
+
 function installSpriteEditorInputMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     onPointerMove(e) {
@@ -13,7 +15,7 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
             this.controlSurface.dragFeedbackText = `Timeline reorder ${this.timelineInteraction.startIndex + 1} -> ${idx + 1}`;
           }
         }
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
       this.timelineHoverIndex = this.getTimelineIndexAt(p);
@@ -25,14 +27,14 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
         this.pan.x = this.panStart.baseX + (p.x - this.panStart.x);
         this.pan.y = this.panStart.baseY + (p.y - this.panStart.y);
         this.gridRect = this.computeGridRect();
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
 
       if (this.isPointerDown) {
         if (this.shapePreview && cell) {
           this.shapePreview.current = { x: cell.x, y: cell.y };
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         if (this.selectionMoveSession && cell) {
@@ -42,17 +44,17 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
             this.moveSelectionBy(dx, dy);
             this.selectionMoveSession.lastCell = { x: cell.x, y: cell.y };
           }
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         if (this.activeTool === "select" && this.selectionStart && cell) {
           this.setSelectionFromTwoCells(this.selectionStart, cell);
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         if (cell && this.activeTool !== "select") {
           if (this.activeTool === "reference") {
-            this.renderAll();
+            dispatchRender(this);
             return;
           }
           if (this.activeTool === "brush" || this.activeTool === "erase") {
@@ -62,16 +64,16 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
           } else {
             this.applyGridTool(cell.x, cell.y, e.buttons === 2);
           }
-          this.renderAll();
+          dispatchRender(this);
         }
       } else {
-        this.renderAll();
+        dispatchRender(this);
       }
     },
 
     onPointerDown(e) {
       if (this.isPaletteConfigurationBlocked()) {
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
       const p = this.logicalPointFromEvent(e);
@@ -95,8 +97,8 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       if (e.button === 2) {
         const canceled = this.cancelActiveInteraction();
         if (canceled) {
-          this.showMessage(canceled);
-          this.renderAll();
+          dispatchStatusMessage(this, canceled);
+          dispatchRender(this);
           return;
         }
       }
@@ -115,7 +117,7 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
         else if (timelineControl === "loop") this.togglePlaybackLoop();
         else if (timelineControl === "fps_down") this.adjustPlaybackFps(-1);
         else if (timelineControl === "fps_up") this.adjustPlaybackFps(1);
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
       const timelineIndex = this.getTimelineIndexAt(p);
@@ -127,14 +129,14 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
           const anchor = this.frameRangeSelection ? this.frameRangeSelection.anchor : this.document.activeFrameIndex;
           this.setFrameRangeSelection(anchor, timelineIndex, anchor);
           this.selectFrame(timelineIndex);
-          this.showMessage(`Frame range: ${Math.min(anchor, timelineIndex) + 1}-${Math.max(anchor, timelineIndex) + 1}`);
+          dispatchStatusMessage(this, `Frame range: ${Math.min(anchor, timelineIndex) + 1}-${Math.max(anchor, timelineIndex) + 1}`);
         } else {
           this.setFrameRangeSelection(timelineIndex, timelineIndex, timelineIndex);
           this.timelineInteraction = { mode: "scrub", startIndex: timelineIndex, targetIndex: timelineIndex };
           this.selectFrame(timelineIndex);
         }
         this.isPointerDown = true;
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
 
@@ -146,15 +148,15 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
 
       const control = this.controlSurface.pointerDown(p.x, p.y);
       if (control) {
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
 
       const cell = this.getGridCellAtLogical(p.x, p.y);
       if (!cell) return;
       if (!this.ensurePaletteSelectedForEdit(false)) {
-        this.showMessage("Select palette first.");
-        this.renderAll();
+        dispatchStatusMessage(this, "Select palette first.");
+        dispatchRender(this);
         return;
       }
       this.isPointerDown = true;
@@ -163,12 +165,12 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       if (this.activeTool === "select") {
         if (this.beginSelectionMove(cell)) {
           this.isPointerDown = true;
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         this.selectionStart = cell;
         this.setSelectionFromTwoCells(cell, cell);
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
 
@@ -180,7 +182,7 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
           current: { x: cell.x, y: cell.y },
           erase: e.button === 2
         };
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
 
@@ -192,7 +194,7 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       this.beginStrokeHistory(this.activeTool === "erase" || e.button === 2 ? "Erase Stroke" : "Draw Stroke");
       this.strokeLastCell = { x: cell.x, y: cell.y };
       this.applyGridTool(cell.x, cell.y, e.button === 2);
-      this.renderAll();
+      dispatchRender(this);
     },
 
     onPointerUp(e) {
@@ -202,15 +204,15 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
           const from = this.timelineInteraction.startIndex;
           const to = this.timelineInteraction.targetIndex;
           if (typeof to === "number" && from !== to) this.reorderFrame(from, to);
-          else this.showMessage("Timeline reorder canceled.");
+          else dispatchStatusMessage(this, "Timeline reorder canceled.");
         }
         this.timelineInteraction = null;
         this.controlSurface.dragFeedbackText = "";
         this.isPointerDown = false;
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
-      if (p && this.controlSurface.pointerUp(p.x, p.y)) this.renderAll();
+      if (p && this.controlSurface.pointerUp(p.x, p.y)) dispatchRender(this);
       if (this.shapePreview) {
         this.commitShapePreview();
         this.shapePreview = null;
@@ -222,20 +224,20 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       this.isPanning = false;
       this.panStart = null;
       if (!p || this.getTimelineIndexAt(p) === null) this.timelineHoverIndex = null;
-      this.renderAll();
+      dispatchRender(this);
     },
 
     onWheel(e) {
       if (this.isPaletteConfigurationBlocked()) {
         e.preventDefault();
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
       e.preventDefault();
       const p = this.logicalPointFromEvent(e);
       const paletteWheelResult = this.handlePaletteSidebarWheel(p, e.deltaY);
       if (paletteWheelResult !== null) {
-        if (paletteWheelResult) this.renderAll();
+        if (paletteWheelResult) dispatchRender(this);
         return;
       }
       if (e.deltaY < 0) this.adjustZoom(0.25);
@@ -245,7 +247,7 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
     onKeyDown(e) {
       if (this.isPaletteConfigurationBlocked()) {
         e.preventDefault();
-        this.renderAll();
+        dispatchRender(this);
         return;
       }
       const k = (e.key || "").toLowerCase();
@@ -262,14 +264,14 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
           this.layerRenamePrompt.text = renameText.slice(0, -1);
           e.preventDefault();
           e.stopPropagation();
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
           if (renameText.length < 40) this.layerRenamePrompt.text = `${renameText}${e.key}`;
           e.preventDefault();
           e.stopPropagation();
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         e.preventDefault();
@@ -278,9 +280,9 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       if (!this.isTypingTarget(e.target) && k === "backspace") {
         const canceled = this.cancelActiveInteraction();
         if (canceled) {
-          this.showMessage(canceled);
+          dispatchStatusMessage(this, canceled);
           e.preventDefault();
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
       }
@@ -289,32 +291,32 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
         if (k === "arrowdown") {
           this.controlSurface.moveCommandPaletteSelection(1);
           e.preventDefault();
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         if (k === "arrowup") {
           this.controlSurface.moveCommandPaletteSelection(-1);
           e.preventDefault();
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         if (k === "enter") {
           if (this.controlSurface.activateCommandPaletteSelection()) {
             e.preventDefault();
-            this.renderAll();
+            dispatchRender(this);
             return;
           }
         }
         if (k === "backspace") {
           this.controlSurface.setCommandPaletteQuery(this.controlSurface.commandPaletteQuery.slice(0, -1));
           e.preventDefault();
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
         if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
           this.controlSurface.setCommandPaletteQuery(this.controlSurface.commandPaletteQuery + e.key);
           e.preventDefault();
-          this.renderAll();
+          dispatchRender(this);
           return;
         }
       }
@@ -325,9 +327,10 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       if (!handled) return;
       this.trackRecentAction(action);
       e.preventDefault();
-      this.renderAll();
+      dispatchRender(this);
     }
   });
 }
 
 export { installSpriteEditorInputMethods };
+

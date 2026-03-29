@@ -18,6 +18,13 @@ import { installSpriteEditorHistoryMethods } from "./appHistory.js";
 import { installSpriteEditorViewToolMethods } from "./appViewTools.js";
 import { installSpriteEditorLayerMethods } from "./appLayers.js";
 import { installSpriteEditorShellMethods } from "./appShell.js";
+import { createEventBus } from "./events/eventBus.js";
+import {
+  dispatchAlertMessage,
+  dispatchStatusMessage,
+  dispatchStatusMessageAndRender,
+  installSpriteEditorEventDispatch
+} from "./events/eventDispatch.js";
 
 class SpriteEditorApp {
     constructor(canvas,fileInput,downloadLink) {
@@ -53,6 +60,8 @@ class SpriteEditorApp {
       this.statusMessage = "Locked 16:9 viewport ready.";
       this.flashMessageUntil = 0;
       this.errorMessageUntil = 0;
+      this.eventBus = createEventBus();
+      installSpriteEditorEventDispatch(this);
       this.uiAnimationLastTick = 0;
       this.gridRect = null;
       this.uiDensityEffectiveMode = "pro";
@@ -105,15 +114,12 @@ class SpriteEditorApp {
     }
 
     showMessageAndRender(message) {
-      this.showMessage(message);
-      this.renderAll();
+      dispatchStatusMessageAndRender(this, message);
     }
 
-    showMessage(m) { this.statusMessage = m; this.flashMessageUntil = performance.now() + 1800; }
+    showMessage(m) { dispatchStatusMessage(this, m); }
     showAlertMessage(m) {
-      this.statusMessage = m;
-      this.flashMessageUntil = performance.now() + 2200;
-      this.errorMessageUntil = this.flashMessageUntil;
+      dispatchAlertMessage(this, m);
     }
 }
 
