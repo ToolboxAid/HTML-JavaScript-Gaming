@@ -225,12 +225,18 @@ function installControlSurfaceLeftPanel(SpriteEditorCanvasControlSurface) {
       );
       y += bh + gap;
       if (y + bh > maxY) return;
-      const minusW = 36;
-      const plusW = 36;
-      const readoutW = bw - minusW - plusW - gap * 2;
-      this.add("button", "layer-opacity-down-active", x, y, minusW, bh, "-", () => this.app.adjustLayerOpacity(-0.1), { centerText: true, clipRect: left });
-      this.add("button", "layer-opacity-readout-active", x + minusW + gap, y, readoutW, bh, opacityPct, null, { centerText: true, clipRect: left });
-      this.add("button", "layer-opacity-up-active", x + minusW + gap + readoutW + gap, y, plusW, bh, "+", () => this.app.adjustLayerOpacity(0.1), { centerText: true, clipRect: left });
+      const buttonW = 30;
+      const readoutW = bw - (buttonW * 4) - (gap * 4);
+      const x1 = x;
+      const x2 = x1 + buttonW + gap;
+      const x3 = x2 + buttonW + gap;
+      const x4 = x3 + readoutW + gap;
+      const x5 = x4 + buttonW + gap;
+      this.add("button", "layer-opacity-down-10-active", x1, y, buttonW, bh, "<<", () => this.app.adjustLayerOpacity(-0.1), { centerText: true, clipRect: left });
+      this.add("button", "layer-opacity-down-1-active", x2, y, buttonW, bh, "<", () => this.app.adjustLayerOpacity(-0.01), { centerText: true, clipRect: left });
+      this.add("button", "layer-opacity-readout-active", x3, y, readoutW, bh, opacityPct, null, { centerText: true, clipRect: left });
+      this.add("button", "layer-opacity-up-1-active", x4, y, buttonW, bh, ">", () => this.app.adjustLayerOpacity(0.01), { centerText: true, clipRect: left });
+      this.add("button", "layer-opacity-up-10-active", x5, y, buttonW, bh, ">>", () => this.app.adjustLayerOpacity(0.1), { centerText: true, clipRect: left });
       y += bh + gap;
       if (y + d.labelHeight <= maxY) {
         this.add("label", "layer-list-label", x, y, bw, d.labelHeight, "Layers", null, { clipRect: left });
