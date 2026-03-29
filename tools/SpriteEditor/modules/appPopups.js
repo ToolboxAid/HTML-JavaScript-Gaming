@@ -553,7 +553,7 @@ function installSpriteEditorPopupMethods(SpriteEditorApp) {
       this.ctx.strokeRect(x + 16.5, y + 56.5, panelW - 33, 35);
       this.ctx.fillStyle = "#e6f2ff";
       this.ctx.font = "13px Arial";
-      const renameText = (this.layerRenamePrompt.text || "").slice(0, 40) || "Layer";
+      const renameText = (this.layerRenamePrompt.text || "").slice(0, 40);
       this.ctx.fillText(renameText, x + 24, y + 74);
       const btnW = 120;
       const btnH = 30;

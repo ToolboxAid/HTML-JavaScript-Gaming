@@ -292,7 +292,7 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         ctx.restore();
       };
       const rightPad = 10;
-      const nameX = c.x + 5;
+      const nameX = c.x + 10;
       const nameTopY = c.y + 5;
       const bottomY = c.y + c.h - 8;
       const iconY = bottomY - Math.floor(iconSize * 0.5);
@@ -314,7 +314,9 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "bold 11px Arial";
-      let statusX = c.x + 5;
+      let statusX = c.x + 10;
+      drawActiveStateIcon(statusX, iconY, iconSize, activeLayerItem);
+      statusX += iconSize + iconGap;
       if (opacityText) {
         ctx.fillText(opacityText, statusX, bottomY);
         statusX += Math.ceil(ctx.measureText(opacityText).width) + iconGap;
@@ -322,8 +324,6 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       drawVisibilityIcon(statusX, iconY, iconSize, c.layerHidden !== true);
       statusX += iconSize + iconGap;
       drawLockIcon(statusX, iconY, iconSize, c.layerLocked === true);
-      statusX += iconSize + iconGap;
-      drawActiveStateIcon(statusX, iconY, iconSize, activeLayerItem);
     } else {
       ctx.fillStyle = c.layerHidden ? "#8fa0b2" : "#edf2f7";
       ctx.font = c.kind === "frame" ? "12px Arial" : "13px Arial";
@@ -380,10 +380,6 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
         const badgeWidth = ctx.measureText(badge).width;
         ctx.fillText(badge, c.x + c.w - badgeWidth - 12, c.y + 8);
       }
-    }
-    if (c.layerLocked) {
-      ctx.strokeStyle = "#f59e0b";
-      ctx.strokeRect(c.x + c.w - 24.5, c.y + c.h - 19.5, 14, 14);
     }
     if (c.marqueeSelected) {
       const dash = Math.max(2, Math.floor(Math.min(c.w, c.h) / 5));

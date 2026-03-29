@@ -44,41 +44,11 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     ctx.strokeRect(t.x + 0.5, t.y + 0.5, t.w - 1, t.h - 1);
     ctx.fillStyle = "#dbe7f3";
     ctx.font = "bold 12px Arial";
-    const timelineTitleX = t.x + 78;
+    const timelineTitleX = t.x + 15;
     const timelineTitleY = t.y + 14;
     ctx.fillText("TIMELINE", timelineTitleX, timelineTitleY);
-    (t.transport || []).forEach((c) => {
-      if (c.id === "fps_down" || c.id === "fps_up") return;
-      ctx.fillStyle = "#1a2733";
-      if (c.id === "play_pause" && this.app.playback.isPlaying) ctx.fillStyle = "#244d67";
-      if (c.id === "loop" && this.app.playback.loop) ctx.fillStyle = "#244d67";
-      ctx.fillRect(c.x, c.y, c.w, c.h);
-      ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
-      ctx.fillStyle = "#dbe7f3";
-      ctx.font = "11px Arial";
-      ctx.textBaseline = "middle";
-      if (c.id === "play_pause") ctx.fillText(this.app.playback.isPlaying ? "Pause" : "Play", c.x + 8, c.y + c.h * 0.5);
-      else if (c.id === "stop") ctx.fillText("Stop", c.x + 8, c.y + c.h * 0.5);
-      else if (c.id === "loop") ctx.fillText("Loop", c.x + 9, c.y + c.h * 0.5);
-      ctx.textBaseline = "alphabetic";
-    });
     ctx.fillStyle = "#91a3b6";
     ctx.font = "11px Arial";
-    const playbackOrder = this.app.getPlaybackOrderOverride ? this.app.getPlaybackOrderOverride() : { enabled: false };
-    const baseOrder = this.app.document.frames.map((_f, i) => i);
-    const effectiveOrder = this.app.getEffectivePlaybackSequence ? this.app.getEffectivePlaybackSequence(baseOrder) : baseOrder;
-    const fitText = (text, maxWidth) => {
-      let next = String(text || "");
-      if (ctx.measureText(next).width <= maxWidth) return next;
-      while (next.length > 1 && ctx.measureText(`${next}...`).width > maxWidth) next = next.slice(0, -1);
-      return `${next}...`;
-    };
-    const orderText = effectiveOrder.map((i) => i + 1).join(", ");
-    const orderLabel = playbackOrder.enabled ? `Playback: ${orderText}` : "Playback: Linear";
-    const orderX = timelineTitleX + 80;
-    const orderMaxWidth = Math.max(48, t.x + t.w - orderX - 10);
-    ctx.fillText(fitText(orderLabel, orderMaxWidth), orderX, timelineTitleY);
     t.slots.forEach((slot) => {
       const f = this.app.document.frames[slot.index];
       const active = slot.index === this.app.document.activeFrameIndex;
@@ -121,7 +91,7 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     const p = this.layout.bottomPanel;
     const x = p.x + 18;
     const y = p.y + 8;
-    const w = 210;
+    const w = 236;
     const h = 108;
     ctx.fillStyle = "#1a2733";
     ctx.fillRect(x, y, w, h);
@@ -134,7 +104,7 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       ? this.app.playback.previewFrameIndex
       : (this.app.timelineHoverIndex !== null ? this.app.timelineHoverIndex : this.app.document.activeFrameIndex);
     const f = this.app.document.frames[Math.max(0, Math.min(previewIndex, this.app.document.frames.length - 1))];
-    const previewSlot = { x: x + 12, y: y + 24, w: 72, h: 72 };
+    const previewSlot = { x: x + 10, y: y + 24, w: 82, h: 82 };
     const cols = Math.max(1, Number(this.app.document.cols) || 1);
     const rows = Math.max(1, Number(this.app.document.rows) || 1);
     const aspect = cols / rows;
@@ -157,37 +127,86 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       rows,
       backgroundFill: previewBackgroundFill
     });
+    const fitText = (text, maxWidth) => {
+      let next = String(text || "");
+      if (ctx.measureText(next).width <= maxWidth) return next;
+      while (next.length > 1 && ctx.measureText(`${next}...`).width > maxWidth) next = next.slice(0, -1);
+      return `${next}...`;
+    };
+    const transportControls = this.app.timelineStripRect && Array.isArray(this.app.timelineStripRect.transport)
+      ? this.app.timelineStripRect.transport
+      : [];
+    const controlsById = new Map();
+    transportControls.forEach((control) => {
+      if (!control || !control.id) return;
+      controlsById.set(control.id, control);
+    });
+    const drawTransportControl = (control) => {
+      if (!control) return;
+      const active = (control.id === "play_pause" && this.app.playback.isPlaying)
+        || (control.id === "loop" && this.app.playback.loop);
+      ctx.fillStyle = active ? "#244d67" : "#1a2733";
+      ctx.fillRect(control.x, control.y, control.w, control.h);
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.strokeRect(control.x + 0.5, control.y + 0.5, control.w - 1, control.h - 1);
+      let label = "";
+      if (control.id === "play_pause") label = this.app.playback.isPlaying ? "Pause" : "Play";
+      else if (control.id === "stop") label = "Stop";
+      else if (control.id === "loop") label = "Loop";
+      else if (control.id === "fps_down") label = "-";
+      else if (control.id === "fps_up") label = "+";
+      if (!label) return;
+      ctx.fillStyle = "#dbe7f3";
+      ctx.font = "11px Arial";
+      ctx.textBaseline = "middle";
+      const textW = ctx.measureText(label).width;
+      ctx.fillText(label, control.x + Math.floor((control.w - textW) * 0.5), control.y + Math.floor(control.h * 0.5));
+      ctx.textBaseline = "alphabetic";
+    };
+    ["play_pause", "stop", "loop", "fps_down", "fps_up"].forEach((id) => drawTransportControl(controlsById.get(id)));
+
     ctx.font = "12px Arial";
-    ctx.fillText(`Frame ${previewIndex + 1} / ${this.app.document.frames.length}`, x + 96, y + 36);
-    const fpsDown = (this.app.timelineStripRect && this.app.timelineStripRect.transport || []).find((c) => c.id === "fps_down");
-    const fpsUp = (this.app.timelineStripRect && this.app.timelineStripRect.transport || []).find((c) => c.id === "fps_up");
+    ctx.fillStyle = "#dbe7f3";
+    ctx.fillText(`Frame ${previewIndex + 1} / ${this.app.document.frames.length}`, x + 98, y + 34);
+    const fpsDown = controlsById.get("fps_down");
+    const fpsUp = controlsById.get("fps_up");
+    const playbackOrder = this.app.getPlaybackOrderOverride ? this.app.getPlaybackOrderOverride() : { enabled: false };
+    const baseOrder = this.app.document.frames.map((_frame, i) => i);
+    const effectiveOrder = this.app.getEffectivePlaybackSequence ? this.app.getEffectivePlaybackSequence(baseOrder) : baseOrder;
+    const orderText = effectiveOrder.map((i) => i + 1).join(", ");
+    const orderLabel = playbackOrder.enabled ? `Playback: ${orderText}` : "Playback: Linear";
     if (fpsDown && fpsUp) {
-      [fpsDown, fpsUp].forEach((c) => {
-        ctx.fillStyle = "#1a2733";
-        ctx.fillRect(c.x, c.y, c.w, c.h);
-        ctx.strokeStyle = "rgba(255,255,255,0.2)";
-        ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
-        ctx.fillStyle = "#dbe7f3";
-        ctx.font = "11px Arial";
-        const symbol = c.id === "fps_down" ? "-" : "+";
-        const textW = ctx.measureText(symbol).width;
-        ctx.fillText(symbol, c.x + Math.floor((c.w - textW) * 0.5), c.y + c.h / 2);
-      });
       ctx.fillStyle = "#91a3b6";
       ctx.font = "11px Arial";
-      ctx.fillText(`FPS ${this.app.playback.fps}`, fpsDown.x + fpsDown.w + 8, fpsDown.y + fpsDown.h / 2);
+      ctx.textBaseline = "middle";
+      const fpsLabelX = fpsUp.x + fpsUp.w + 8;
+      const fpsLabelY = fpsDown.y + Math.floor(fpsDown.h * 0.5);
+      ctx.fillText(`FPS ${this.app.playback.fps}`, fpsLabelX, fpsLabelY);
+      const orderLabelX = Math.max(x + 90, fpsDown.x - 6) + 5;
+      const orderLabelY = fpsDown.y + fpsDown.h + 10;
+      const orderMaxWidth = Math.max(56, x + w - orderLabelX - 10);
+      ctx.fillText(fitText(orderLabel, orderMaxWidth), orderLabelX, orderLabelY);
+      ctx.textBaseline = "alphabetic";
     } else {
       ctx.fillStyle = "#91a3b6";
       ctx.font = "11px Arial";
-      ctx.fillText(`FPS ${this.app.playback.fps}`, x + 96, y + 52);
+      ctx.textBaseline = "middle";
+      const fpsLabelX = x + 98;
+      const fpsLabelY = y + 78;
+      ctx.fillText(`FPS ${this.app.playback.fps}`, fpsLabelX, fpsLabelY);
+      const orderLabelX = x + 95;
+      const orderLabelY = fpsLabelY + 16;
+      const orderMaxWidth = Math.max(56, x + w - orderLabelX - 12);
+      ctx.fillText(fitText(orderLabel, orderMaxWidth), orderLabelX, orderLabelY);
+      ctx.textBaseline = "alphabetic";
     }
   };
 
   SpriteEditorCanvasControlSurface.prototype.drawSheetPanel = function drawSheetPanel(ctx) {
     const p = this.layout.bottomPanel;
-    const x = p.x + 242;
+    const x = p.x + 266;
     const y = p.y + 6;
-    const w = Math.max(240, (this.app.timelineStripRect ? this.app.timelineStripRect.x : (p.x + p.width - 18)) - (p.x + 242) - 18);
+    const w = Math.max(216, (this.app.timelineStripRect ? this.app.timelineStripRect.x : (p.x + p.width - 18)) - x - 18);
     const h = 112;
     this.drawSheetPreview(ctx, { x, y, width: w, height: h }, true);
   };

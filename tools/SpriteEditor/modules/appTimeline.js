@@ -2,28 +2,29 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     computeTimelineLayout() {
       const panel = this.controlSurface.layout.bottomPanel;
+      const previewX = panel.x + 18;
+      const previewY = panel.y + 8;
       const x = Math.max(panel.x + 18, panel.x + panel.width - 420);
       const y = panel.y + 14;
       const w = Math.min(402, panel.width - 36);
       const h = 108;
-      const previewX = panel.x + 18;
-      const previewY = panel.y + 8;
-      const transportX = x + 8;
-      const transportY = y + 6;
-      const transportW = 58;
-      const transportH = 16;
+      const transportX = previewX + 96;
+      const transportY = previewY + 48;
+      const transportW = 40;
+      const transportH = 18;
       const transportGap = 4;
+      const fpsY = transportY + transportH + 6;
       const transport = [
         { id: "play_pause", x: transportX, y: transportY, w: transportW, h: transportH },
-        { id: "stop", x: transportX, y: transportY + (transportH + transportGap), w: transportW, h: transportH },
-        { id: "loop", x: transportX, y: transportY + (transportH + transportGap) * 2, w: transportW, h: transportH },
-        { id: "fps_down", x: previewX + 96, y: previewY + 60, w: 20, h: transportH },
-        { id: "fps_up", x: previewX + 174, y: previewY + 60, w: 20, h: transportH }
+        { id: "stop", x: transportX + transportW + transportGap, y: transportY, w: transportW, h: transportH },
+        { id: "loop", x: transportX + (transportW + transportGap) * 2, y: transportY, w: transportW, h: transportH },
+        { id: "fps_down", x: transportX, y: fpsY, w: 20, h: transportH },
+        { id: "fps_up", x: transportX + 24, y: fpsY, w: 20, h: transportH }
       ];
-      const innerX = x + 76;
-      const innerY = y + 34;
-      const innerW = w - 84;
-      const innerH = h - 40;
+      const innerX = x + 10;
+      const innerY = y + 30;
+      const innerW = Math.max(80, w - 20);
+      const innerH = h - 36;
       const count = Math.max(1, this.document.frames.length);
       const slotGap = 6;
       const maxSlotW = 60;

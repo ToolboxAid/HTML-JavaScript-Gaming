@@ -263,23 +263,30 @@ function installSpriteEditorInputMethods(SpriteEditorApp) {
       }
       const k = (e.key || "").toLowerCase();
       if (this.isLayerRenameOpen()) {
+        const renameText = String(this.layerRenamePrompt.text || "");
+        const isBackspace = k === "backspace" || e.code === "Backspace" || e.keyCode === 8;
+        const isDelete = k === "delete" || e.code === "Delete" || e.keyCode === 46;
         if (k === "enter") {
           this.confirmLayerRename();
           e.preventDefault();
           return;
         }
-        if (k === "backspace") {
-          this.layerRenamePrompt.text = this.layerRenamePrompt.text.slice(0, -1);
+        if (isBackspace || isDelete) {
+          this.layerRenamePrompt.text = renameText.slice(0, -1);
           e.preventDefault();
+          e.stopPropagation();
           this.renderAll();
           return;
         }
         if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-          if (this.layerRenamePrompt.text.length < 40) this.layerRenamePrompt.text += e.key;
+          if (renameText.length < 40) this.layerRenamePrompt.text = `${renameText}${e.key}`;
           e.preventDefault();
+          e.stopPropagation();
           this.renderAll();
           return;
         }
+        e.preventDefault();
+        return;
       }
       if (!this.isTypingTarget(e.target) && k === "backspace") {
         const canceled = this.cancelActiveInteraction();
