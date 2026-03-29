@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 NEXT_COMMAND.txt
 
-Create APPLY_PR_LEVEL_7_3_SAMPLE_WORLD_EVENTS_SYSTEM as a commit-ready apply step from docs/pr/BUILD_PR_LEVEL_7_3_SAMPLE_WORLD_EVENTS_SYSTEM.md.
+Create APPLY_PR_LEVEL_8_ASTEROIDS_GAME as a commit-ready apply step from docs/pr/BUILD_PR_LEVEL_8_ASTEROIDS_GAME.md.
