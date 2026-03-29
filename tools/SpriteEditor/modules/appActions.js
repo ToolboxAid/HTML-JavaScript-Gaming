@@ -15,6 +15,7 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
     },
 
     replacePaletteColor() {
+      console.log(`[PaletteReplace]`);
       const source = this.paletteWorkflow.source;
       const target = this.paletteWorkflow.target;
       if (!source || !target) {
@@ -25,25 +26,52 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
         this.showMessage("Source and target are the same.");
         return false;
       }
+      const normalizeColorToken = (value) => {
+        const text = String(value || "").trim();
+        if (!text) return "";
+        const shortHex = text.match(/^#([0-9a-f]{3})$/i);
+        if (shortHex) {
+          const h = shortHex[1].toLowerCase();
+          return `#${h[0]}${h[0]}${h[1]}${h[1]}${h[2]}${h[2]}`;
+        }
+        const hex = text.match(/^#([0-9a-f]{6}|[0-9a-f]{8})$/i);
+        if (hex) return `#${hex[1].toLowerCase()}`;
+        const rgba = text.match(/^rgba?\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})(?:\s*,\s*([0-9]*\.?[0-9]+))?\s*\)$/i);
+        if (rgba) {
+          const r = Math.max(0, Math.min(255, Number(rgba[1])));
+          const g = Math.max(0, Math.min(255, Number(rgba[2])));
+          const b = Math.max(0, Math.min(255, Number(rgba[3])));
+          const a = rgba[4] !== undefined ? Math.max(0, Math.min(1, Number(rgba[4]))) : 1;
+          return `rgba(${r},${g},${b},${Number(a.toFixed(3))})`;
+        }
+        return text.toLowerCase();
+      };
+
+
+      const sourceToken = normalizeColorToken(source);
       let replacementCount = 0;
       const applyLayer = (layer) => {
-        if (!layer || layer.locked === true) return;
+        if (!layer || layer.locked === true || !Array.isArray(layer.pixels)) return;
         for (let y = 0; y < this.document.rows; y += 1) {
           for (let x = 0; x < this.document.cols; x += 1) {
-            if (layer.pixels[y][x] === source) {
+            const row = layer.pixels[y];
+            if (!Array.isArray(row)) continue;
+            if (normalizeColorToken(row[x]) === sourceToken) {
               layer.pixels[y][x] = target;
               replacementCount += 1;
             }
           }
         }
       };
-      const scope = this.paletteWorkflow.scope;
+      const rawScope = String(this.paletteWorkflow.scope || "active_layer").toLowerCase().replace(/\s+/g, "_");
+      const scope = ["active_layer", "current_frame", "selected_range"].includes(rawScope) ? rawScope : "active_layer";
+      console.log(`[PaletteReplace] src=${source} dst=${target} scope=${scope}`);
       const run = () => {
         if (scope === "active_layer") {
           if (this.document.activeLayer.locked === true) return false;
           applyLayer(this.document.activeLayer);
         } else if (scope === "current_frame") {
-          const frame = this.document.ensureFrameLayers(this.document.activeFrame);
+          const frame = this.document.ensureFrameLayers(this.document.frames[this.document.activeFrameIndex]);
           frame.layers.forEach((layer) => applyLayer(layer));
         } else if (scope === "selected_range") {
           const range = this.getFrameRangeSelection();
@@ -56,6 +84,7 @@ function installSpriteEditorActionMethods(SpriteEditorApp) {
         return replacementCount > 0;
       };
       const ok = this.executeWithHistory("Palette Replace Color", run);
+      console.log(`[PaletteReplace] replaced=${replacementCount}`);
       if (!ok) {
         this.showMessageAndRender(scope === "selected_range" && !this.getFrameRangeSelection().explicit ? "Select a frame range first." : "No matching pixels to replace.");
         return false;

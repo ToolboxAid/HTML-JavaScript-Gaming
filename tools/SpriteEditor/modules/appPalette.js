@@ -208,21 +208,26 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     getPaletteScopeLabel() {
-      if (this.paletteWorkflow.scope === "active_layer") return "Scope: Layer";
-      if (this.paletteWorkflow.scope === "current_frame") return "Scope: Frame";
-      return "Scope: Range";
+      if (this.paletteWorkflow.scope === "active_layer") return "Scope: Active Layer";
+      if (this.paletteWorkflow.scope === "current_frame") return "Scope: Current Frame";
+      return "Scope: Selected Range";
     },
 
     cyclePaletteReplaceScope() {
       const order = ["active_layer", "current_frame", "selected_range"];
       const current = order.indexOf(this.paletteWorkflow.scope);
-      this.paletteWorkflow.scope = order[(current + 1) % order.length];
-      this.showMessageAndRender(this.getPaletteScopeLabel());
+      return this.setPaletteReplaceScope(order[(current + 1) % order.length]);
     },
 
     setPaletteReplaceScope(scope) {
-      this.paletteWorkflow.scope = scope;
-      this.showMessageAndRender(this.getPaletteScopeLabel());
+      const normalized = String(scope || "active_layer").toLowerCase().replace(/\s+/g, "_");
+      const allowed = ["active_layer", "current_frame", "selected_range"];
+      this.paletteWorkflow.scope = allowed.includes(normalized) ? normalized : "active_layer";
+      const scopeLabel = this.getPaletteScopeLabel();
+      const suffix = this.paletteWorkflow.scope === "selected_range"
+        ? " Requires an active frame-range selection. Use Replace Colors to apply."
+        : " Use Replace Colors to apply.";
+      this.showMessageAndRender(`${scopeLabel}.${suffix}`);
       return true;
     },
 
