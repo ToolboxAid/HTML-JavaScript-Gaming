@@ -1,1 +1,0 @@
-PATCH_PR — Sprite Editor v2.1 16:9 fullscreen fix

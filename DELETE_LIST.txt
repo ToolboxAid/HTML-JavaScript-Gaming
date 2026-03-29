@@ -1,1 +1,0 @@
-samples/sample028-asset-registry/assetRegistry.js
