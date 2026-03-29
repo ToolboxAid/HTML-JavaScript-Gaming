@@ -1,3 +1,5 @@
+import { getPaletteSignature } from "../shared/getPaletteSignature.js";
+
 function installSpriteEditorPaletteMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
     getPaletteLibrary() {
@@ -43,27 +45,23 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       return !this.isPaletteSelectionRequired();
     },
 
-    getPaletteSignature(palette) {
-      return JSON.stringify(Array.isArray(palette) ? palette : []);
-    },
-
     findMatchingPalettePresetName(paletteLibrary = this.getProjectPaletteLibrary()) {
       if (!paletteLibrary) return "";
-      const paletteSig = this.getPaletteSignature(this.document.palette || []);
+      const paletteSig = getPaletteSignature(this.document.palette || []);
       const names = Object.keys(paletteLibrary);
       for (let i = 0; i < names.length; i += 1) {
         const entries = paletteLibrary[names[i]];
         if (!Array.isArray(entries)) continue;
         const hexes = entries.map((entry) => entry && entry.hex).filter((hex) => typeof hex === "string");
-        if (this.getPaletteSignature(hexes) === paletteSig) return names[i];
+        if (getPaletteSignature(hexes) === paletteSig) return names[i];
       }
       return "";
     },
 
     validatePaletteConfiguration() {
       const paletteLibrary = this.getProjectPaletteLibrary();
-      const currentPaletteSig = this.getPaletteSignature(this.document.palette || []);
-      const defaultPaletteSig = this.getPaletteSignature(
+      const currentPaletteSig = getPaletteSignature(this.document.palette || []);
+      const defaultPaletteSig = getPaletteSignature(
         typeof this.document.getDefaultPalette === "function" ? this.document.getDefaultPalette() : []
       );
       if (currentPaletteSig === defaultPaletteSig) {
@@ -349,8 +347,8 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     syncCurrentPalettePreset() {
-      const currentPaletteSig = this.getPaletteSignature(this.document.palette || []);
-      const defaultPaletteSig = this.getPaletteSignature(
+      const currentPaletteSig = getPaletteSignature(this.document.palette || []);
+      const defaultPaletteSig = getPaletteSignature(
         typeof this.document.getDefaultPalette === "function" ? this.document.getDefaultPalette() : []
       );
       if (currentPaletteSig === defaultPaletteSig) {

@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-docs(cleanup): add Phase 1D post-normalization extraction-gate plan for Sprite Editor
+cleanup(sprite-editor): Phase 1E extract getPaletteSignature helper into shared
