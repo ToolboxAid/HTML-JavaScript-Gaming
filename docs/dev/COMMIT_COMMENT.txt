@@ -3,4 +3,4 @@ David Quesenberry
 03/29/2026
 COMMIT_COMMENT.txt
 
-docs(level10): define advanced optional systems and differentiation-layer patterns
+docs(level10.1): define Adaptive Spawn Director boundaries and usage through public APIs
