@@ -24,6 +24,32 @@ function installControlSurfaceRightPanel(SpriteEditorCanvasControlSurface) {
     y += cloneH + d.spacing;
     this.add("label", "palette-current", x, y, rw, messageH, this.app.getCurrentColorDisplayText(), null, { paletteHeaderBox: true, paletteActionRequired: actionRequired });
     y += messageH + d.spacing;
+    const usedColors = this.app.getUsedColorEntries ? this.app.getUsedColorEntries() : [];
+    const usedHeaderH = 16;
+    const usedGap = 4;
+    const usedSwatchSize = this.app.uiDensityEffectiveMode === "pro" ? 16 : 18;
+    const usedCols = Math.max(1, Math.floor((rw + usedGap) / (usedSwatchSize + usedGap)));
+    const visibleUsedCount = Math.min(usedColors.length, usedCols);
+    this.add("label", "palette-used-label", x, y, rw, usedHeaderH, `USED COLORS (${usedColors.length})`, null);
+    y += usedHeaderH + 2;
+    for (let index = 0; index < visibleUsedCount; index += 1) {
+      const drawX = x + index * (usedSwatchSize + usedGap);
+      this.add(
+        "palette",
+        `palette-used-${index}`,
+        drawX,
+        y,
+        usedSwatchSize,
+        usedSwatchSize,
+        "",
+        () => this.app.setCurrentColor(usedColors[index], "used colors"),
+        { color: usedColors[index], paletteUsed: true }
+      );
+    }
+    if (usedColors.length > visibleUsedCount) {
+      this.add("label", "palette-used-overflow", x + (visibleUsedCount * (usedSwatchSize + usedGap)), y, rw, usedSwatchSize, `+${usedColors.length - visibleUsedCount}`, null);
+    }
+    y += usedSwatchSize + d.spacing;
 
     const sortTop = right.y + right.height - d.padding - 64;
     const sortButtonGap = 6;
@@ -71,7 +97,7 @@ function installControlSurfaceRightPanel(SpriteEditorCanvasControlSurface) {
       const drawX = x + col * (sw + gap);
       const drawY = y + row * rowStride - this.app.paletteSidebarScroll;
       if (drawY + sh <= y || drawY >= y + viewportHeight) return;
-      this.add("palette", `palette-${entry.index}`, drawX, drawY, sw, sh, "", () => this.app.setCurrentColor(entry.hex), { color: entry.hex });
+      this.add("palette", `palette-${entry.index}`, drawX, drawY, sw, sh, "", () => this.app.setCurrentColor(entry.hex, "palette"), { color: entry.hex });
     });
 
     this.add("label", "palette-sort-label", x, sortTop, rw, 18, "SORT", null);

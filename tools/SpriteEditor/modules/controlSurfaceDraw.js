@@ -159,6 +159,11 @@ function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
       ctx.strokeStyle = current ? "#ffffff" : "rgba(255,255,255,0.2)";
       ctx.lineWidth = current ? 3 : 1;
       ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1);
+      if (c.paletteUsed === true && !current) {
+        ctx.strokeStyle = "rgba(148,163,184,0.85)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(c.x + 1.5, c.y + 1.5, c.w - 3, c.h - 3);
+      }
       if (current) {
         const dash = Math.max(2, Math.floor(c.w / 5));
         const offset = -Math.floor(performance.now() / 80);

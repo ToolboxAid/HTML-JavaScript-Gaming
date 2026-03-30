@@ -1,29 +1,32 @@
-Build: BUILD_PR_SVG_PAN_BUTTON_REMOVAL_AND_TILESET_PNG_ASSIGNMENT
+Build: BUILD_PR_TOOL_THEME_AND_SHARED_SWATCH_WORKFLOW
 Date: 2026-03-30
 
-Summary of implementation delta
-1) SVG Background Editor pan behavior update
-- Removed the explicit Pan tool button from tools/SVG Background Editor/index.html.
-- Updated tool help text to document middle-mouse drag panning.
-- Updated tools/SVG Background Editor/main.js so panning starts only on middle mouse button drag.
+Implementation Summary
+1) Shared theme adoption across tools
+- Added shared theme include to Sprite Editor entry page:
+  - tools/SpriteEditor/index.html now includes ../../engine/ui/hubCommon.css
+- Verified all tool index pages now include the shared theme stylesheet:
+  - tools/SpriteEditor/index.html
+  - tools/SVG Background Editor/index.html
+  - tools/Tile Map Editor/index.html
+  - tools/Parallax Editor/index.html
+  - tools/VectorMapEditor/index.html
 
-2) Tile Map Editor PNG tileset assignment workflow
-- Added Tileset UI controls in tools/Tile Map Editor/index.html:
-  - Load Tileset PNG
-  - Tile W / Tile H
-  - Spacing / Margin
-  - Generate Tile Grid
-  - Tileset metadata readout
-- Added corresponding styles in tools/Tile Map Editor/tileMapEditor.css.
-- Implemented runtime/model support in tools/Tile Map Editor/main.js:
-  - tilesetAtlas state block on document model with sanitize + defaults
-  - PNG loading via file input (data URL + image dimension capture)
-  - configurable slice settings (tile width/height, spacing, margin)
-  - tileset generation from atlas slices into palette entries with source rect metadata
-  - palette swatches render atlas tile previews when available
-  - tile layer painting/rendering draws atlas sub-rects via drawImage; color fallback remains supported
-  - tilesetAtlas included in runtime export payload
+2) SVG Background Editor explicit palette target workflow
+- Updated palette target button labels to explicit workflow language:
+  - Active Paint
+  - Active Stroke
+- Updated palette state/readout messaging to make behavior explicit:
+  - User selects active target first, then selects palette/used swatch color.
+  - Paint/Stroke values remain stored until intentionally changed.
 
-Constraints and boundaries respected
-- No modifications were made under engine/.
-- Changes are contained to the two editor tools plus required docs/dev/reports outputs.
+3) Sprite Editor used-color swatch strip above palette
+- Added used-color strip section above the main palette grid in the right panel.
+- Added used-color discovery from active frame layer pixel data.
+- Added swatch normalization for stable dedupe and matching.
+- Used-color swatches are clickable and set current color directly.
+- Main palette and used-color swatches now report source in status messaging.
+
+Boundaries respected
+- No files under engine/ were modified.
+- Changes are scoped to tools and required docs/dev/reports outputs.

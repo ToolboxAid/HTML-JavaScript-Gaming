@@ -320,7 +320,7 @@ function updatePaletteReadout() {
 
   refs.activePaintLabel.textContent = paintHex ? `Paint: ${paintHex}` : "Paint: not selected";
   refs.activeStrokeLabel.textContent = strokeHex ? `Stroke: ${strokeHex}` : "Stroke: not selected";
-  refs.paletteStateReadout.textContent = `${getEditingGateMessage()} Target: ${target}.`;
+  refs.paletteStateReadout.textContent = `${getEditingGateMessage()} Active target: ${target}. Paint/Stroke values stay stored until you change them.`;
 }
 
 function applyEnablementState() {
@@ -354,7 +354,7 @@ function setPaletteTarget(target, options = {}) {
   renderUsedColorStrip();
   renderMainPaletteGrid();
   if (!options.silent) {
-    setStatus(`Palette target set to ${state.activePaletteTarget}.`);
+    setStatus(`Active ${state.activePaletteTarget} target selected. Palette choices remain until changed.`);
   }
 }
 

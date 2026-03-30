@@ -124,6 +124,73 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       return { h, s, l };
     },
 
+    normalizeSwatchColor(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      const hexMatch = raw.match(/^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/);
+      if (hexMatch) {
+        const digits = hexMatch[1];
+        if (digits.length === 3 || digits.length === 4) {
+          const expanded = digits.split("").map((ch) => ch + ch).join("");
+          return `#${expanded.toUpperCase()}`;
+        }
+        return `#${digits.toUpperCase()}`;
+      }
+      const rgbMatch = raw.match(/^rgba?\(([^)]+)\)$/i);
+      if (!rgbMatch) return "";
+      const parts = rgbMatch[1].split(",").map((part) => Number(part.trim()));
+      if (parts.length < 3 || parts.slice(0, 3).some((part) => !Number.isFinite(part))) return "";
+      const r = Math.max(0, Math.min(255, Math.round(parts[0])));
+      const g = Math.max(0, Math.min(255, Math.round(parts[1])));
+      const b = Math.max(0, Math.min(255, Math.round(parts[2])));
+      if (parts.length < 4 || !Number.isFinite(parts[3])) {
+        return `rgb(${r},${g},${b})`;
+      }
+      const alpha = Math.max(0, Math.min(1, Number(parts[3])));
+      return `rgba(${r},${g},${b},${Number(alpha.toFixed(3))})`;
+    },
+
+    getUsedColorEntries() {
+      const frame = this.document && this.document.activeFrame ? this.document.activeFrame : null;
+      if (!frame || !Array.isArray(frame.layers)) return [];
+      const colors = [];
+      const seen = new Set();
+      const addColor = (value) => {
+        const normalized = this.normalizeSwatchColor(value);
+        if (!normalized || seen.has(normalized)) return;
+        seen.add(normalized);
+        colors.push(normalized);
+      };
+
+      frame.layers.forEach((layer) => {
+        if (!layer || !Array.isArray(layer.pixels)) return;
+        for (let row = 0; row < layer.pixels.length; row += 1) {
+          const rowValues = Array.isArray(layer.pixels[row]) ? layer.pixels[row] : [];
+          for (let col = 0; col < rowValues.length; col += 1) {
+            addColor(rowValues[col]);
+          }
+        }
+      });
+
+      if (colors.length <= 1) return colors;
+      const palette = Array.isArray(this.document && this.document.palette) ? this.document.palette : [];
+      const paletteOrder = new Map();
+      const paletteCanonical = new Map();
+      palette.forEach((value, index) => {
+        const normalized = this.normalizeSwatchColor(value);
+        if (!normalized || paletteOrder.has(normalized)) return;
+        paletteOrder.set(normalized, index);
+        paletteCanonical.set(normalized, value);
+      });
+      colors.sort((left, right) => {
+        const leftIndex = paletteOrder.has(left) ? paletteOrder.get(left) : Number.MAX_SAFE_INTEGER;
+        const rightIndex = paletteOrder.has(right) ? paletteOrder.get(right) : Number.MAX_SAFE_INTEGER;
+        if (leftIndex !== rightIndex) return leftIndex - rightIndex;
+        return left.localeCompare(right);
+      });
+      return colors.map((color) => (paletteCanonical.has(color) ? paletteCanonical.get(color) : color));
+    },
+
     getPaletteDisplayEntries() {
       if (this.isPaletteSelectionRequired()) return [];
       const palette = Array.isArray(this.document.palette) ? this.document.palette : [];
@@ -201,9 +268,9 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
       return this.scrollPaletteSidebarByWheel(deltaY);
     },
 
-    setCurrentColor(color) {
+    setCurrentColor(color, sourceLabel = "palette") {
       this.document.currentColor = color;
-      dispatchStatusMessage(this, "Color selected.");
+      dispatchStatusMessage(this, `Color selected from ${sourceLabel}.`);
     },
 
     setPaletteSortMode(mode) {

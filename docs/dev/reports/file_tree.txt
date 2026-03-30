@@ -1,4 +1,4 @@
-BUILD_PR_SVG_PAN_BUTTON_REMOVAL_AND_TILESET_PNG_ASSIGNMENT
+BUILD_PR_TOOL_THEME_AND_SHARED_SWATCH_WORKFLOW
 
 repo/
   docs/
@@ -11,7 +11,9 @@ repo/
     SVG Background Editor/
       index.html
       main.js
-    Tile Map Editor/
+    SpriteEditor/
       index.html
-      main.js
-      tileMapEditor.css
+      modules/
+        appPalette.js
+        controlSurfaceDraw.js
+        controlSurfaceRightPanel.js
