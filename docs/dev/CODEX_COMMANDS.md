@@ -4,7 +4,7 @@ COMMAND: Create BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT as an im
 
 FINAL STEP:
 - Package all created and modified files into a repo-structured delta ZIP
-- Write the result ZIP to: /tmp/BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT_delta.zip
+- Write the result ZIP to: <project>/tmp/BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT_delta.zip
 - Preserve exact repo-relative structure inside the ZIP
 - Include only files relevant to this PR
 - Do not include unrelated files, full-repo copies, dependencies, or build artifacts
