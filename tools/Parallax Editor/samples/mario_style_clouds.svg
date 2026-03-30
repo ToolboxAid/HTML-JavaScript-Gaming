@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 256">
+  <rect width="1024" height="256" fill="none"/>
+  <g fill="#ffffff" stroke="#cdefff" stroke-width="4" opacity="0.98">
+    <g transform="translate(40 34)">
+      <ellipse cx="46" cy="32" rx="30" ry="20"/>
+      <ellipse cx="76" cy="22" rx="36" ry="24"/>
+      <ellipse cx="112" cy="34" rx="30" ry="20"/>
+      <rect x="46" y="28" width="66" height="24"/>
+    </g>
+    <g transform="translate(320 68)">
+      <ellipse cx="46" cy="32" rx="30" ry="20"/>
+      <ellipse cx="76" cy="22" rx="36" ry="24"/>
+      <ellipse cx="112" cy="34" rx="30" ry="20"/>
+      <rect x="46" y="28" width="66" height="24"/>
+    </g>
+    <g transform="translate(620 24)">
+      <ellipse cx="46" cy="32" rx="30" ry="20"/>
+      <ellipse cx="76" cy="22" rx="36" ry="24"/>
+      <ellipse cx="112" cy="34" rx="30" ry="20"/>
+      <rect x="46" y="28" width="66" height="24"/>
+    </g>
+    <g transform="translate(840 82)">
+      <ellipse cx="46" cy="32" rx="30" ry="20"/>
+      <ellipse cx="76" cy="22" rx="36" ry="24"/>
+      <ellipse cx="112" cy="34" rx="30" ry="20"/>
+      <rect x="46" y="28" width="66" height="24"/>
+    </g>
+  </g>
+</svg>

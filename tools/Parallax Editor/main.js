@@ -291,6 +291,7 @@ class ParallaxEditorApp {
     this.cameraY = 0;
     this.refs = {};
     this.imageCache = new Map();
+    this.imageCacheVersion = 0;
     this.sampleEntries = [];
     this.isSimulationMode = false;
     this.simulation = {
@@ -308,6 +309,11 @@ class ParallaxEditorApp {
       traversalDistance: 0,
       traversalDurationMs: 14000
     };
+  }
+
+  invalidateImageCache() {
+    this.imageCache.clear();
+    this.imageCacheVersion += 1;
   }
 
   init(rootDocument) {
@@ -817,7 +823,7 @@ class ParallaxEditorApp {
       this.documentModel = extractParallaxDocument(raw);
       normalizeDrawOrderSequence(this.documentModel.layers);
       this.selectedLayerId = this.documentModel.layers[0]?.id || "";
-      this.imageCache.clear();
+      this.invalidateImageCache();
       this.cameraX = 0;
       this.cameraY = 0;
       this.syncInputsFromDocument();
@@ -832,7 +838,7 @@ class ParallaxEditorApp {
     this.exitSimulationMode();
     this.documentModel = createInitialParallaxDocument({ map: this.documentModel.map });
     this.selectedLayerId = this.documentModel.layers[0]?.id || "";
-    this.imageCache.clear();
+    this.invalidateImageCache();
     this.cameraX = 0;
     this.cameraY = 0;
     this.syncInputsFromDocument();
@@ -870,7 +876,7 @@ class ParallaxEditorApp {
         this.documentModel = extractParallaxDocument(raw);
         normalizeDrawOrderSequence(this.documentModel.layers);
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
-        this.imageCache.clear();
+        this.invalidateImageCache();
         this.cameraX = 0;
         this.cameraY = 0;
         this.syncInputsFromDocument();
@@ -1021,6 +1027,7 @@ class ParallaxEditorApp {
       layer.imageDataUrl = "";
     }
 
+    this.invalidateImageCache();
     this.touchDocument();
     this.renderAll();
     this.updateStatus(source ? `Assigned image source to ${layer.name}.` : `Cleared image source for ${layer.name}.`);
@@ -1041,6 +1048,7 @@ class ParallaxEditorApp {
     reader.onload = () => {
       layer.imageDataUrl = String(reader.result || "");
       layer.imageSource = file.name;
+      this.invalidateImageCache();
       this.touchDocument();
       this.renderAll();
       this.updateStatus(`Assigned local image file ${file.name} to ${layer.name}.`);
@@ -1129,14 +1137,30 @@ class ParallaxEditorApp {
     this.refs.wrapModeSelect.value = layer.wrapMode;
   }
 
+  resolveLayerImageUrl(source) {
+    if (!source || source.startsWith("data:")) {
+      return source;
+    }
+
+    try {
+      const url = new URL(source, window.location.href);
+      url.searchParams.set("_cb", String(this.imageCacheVersion));
+      return url.toString();
+    } catch (error) {
+      const separator = source.includes("?") ? "&" : "?";
+      return `${source}${separator}_cb=${this.imageCacheVersion}`;
+    }
+  }
+
   getLayerImageRecord(layer) {
     const source = layer.imageDataUrl || layer.imageSource;
     if (!source) {
       return null;
     }
 
-    if (this.imageCache.has(source)) {
-      return this.imageCache.get(source);
+    const cacheKey = `${source}::v${this.imageCacheVersion}`;
+    if (this.imageCache.has(cacheKey)) {
+      return this.imageCache.get(cacheKey);
     }
 
     const record = {
@@ -1158,9 +1182,9 @@ class ParallaxEditorApp {
     if (!source.startsWith("data:")) {
       record.image.crossOrigin = "anonymous";
     }
-    record.image.src = source;
+    record.image.src = this.resolveLayerImageUrl(source);
 
-    this.imageCache.set(source, record);
+    this.imageCache.set(cacheKey, record);
     return record;
   }
 
