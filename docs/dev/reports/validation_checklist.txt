@@ -1,15 +1,18 @@
-﻿BUILD_PR_EDITOR_LOAD_UX_AND_SIMULATION_POLISH validation checklist
+BUILD_PR_EDITOR_ADVANCED_SIMULATION_FULL_MAPS Validation Checklist
 
-[PASS] Both editors expose standardized top-level actions (New Project, Load Project, Load Sample, Save Project, Simulate, Exit Simulation).
-[PASS] Tile Map Editor supports local sample loading from tools/Tile Map Editor/samples/.
-[PASS] Parallax Editor retains local sample loading from tools/Parallax Editor/samples/.
-[PASS] Tile Map Editor simulation mode previews tile/data/object authored state.
-[PASS] Parallax Editor simulation mode previews depth + camera-relative parallax motion.
-[PASS] Tile and Parallax editors remain separate tools.
-[PASS] No engine/ files modified.
-[PASS] Required report files generated under docs/dev/reports/.
+[PASS] Both editors include simulation controls: Simulate, Play, Pause, Restart Position, Exit Simulation.
+[PASS] Tile Map Editor simulation upgraded to full-map traversal mode with scroll-follow context.
+[PASS] Tile simulation visibly covers layout/collision/data/marker validation via overlay + counters + probe path.
+[PASS] Parallax Editor simulation upgraded to full-map traversal with progress-based camera motion.
+[PASS] Parallax simulation visibly exposes depth/foreground/background and repeat/wrap behavior over traverse.
+[PASS] Both editors preserve local sample loading (`./samples/sample-manifest.json`).
+[PASS] Editors remain separate tools (`tools/Tile Map Editor/` and `tools/Parallax Editor/`).
+[PASS] No engine core API changes (`git diff --name-only -- engine` returned no files).
+[PASS] JavaScript syntax validation passed for updated runtime files.
 
-Validation commands
-- node -e "new Function(require('fs').readFileSync('tools/Tile Map Editor/main.js','utf8')); new Function(require('fs').readFileSync('tools/Parallax Editor/main.js','utf8')); console.log('syntax-ok')"
-- rg checks for standardized action labels in both index.html files.
-- sample directory scans for both tools.
+Validation Commands Run
+- node -e "const fs=require('fs'); new Function(fs.readFileSync(process.argv[1],'utf8'));" "tools/Tile Map Editor/main.js"
+- node -e "const fs=require('fs'); new Function(fs.readFileSync(process.argv[1],'utf8'));" "tools/Parallax Editor/main.js"
+- rg -n "playSimulationButton|pauseSimulationButton|restartSimulationButton|simulationContext" tools/Tile Map Editor/index.html tools/Parallax Editor/index.html
+- rg -n "SAMPLE_MANIFEST_PATH|./samples/sample-manifest.json|normalizeSamplePath" tools/Tile Map Editor/main.js tools/Parallax Editor/main.js
+- git diff --name-only -- engine

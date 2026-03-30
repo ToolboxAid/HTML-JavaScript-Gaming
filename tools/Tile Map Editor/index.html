@@ -29,6 +29,9 @@ index.html
         <button id="loadSampleButton" type="button" disabled>Load Sample</button>
         <button id="saveProjectButton" type="button">Save Project</button>
         <button id="simulateButton" type="button">Simulate</button>
+        <button id="playSimulationButton" type="button" disabled>Play</button>
+        <button id="pauseSimulationButton" type="button" disabled>Pause</button>
+        <button id="restartSimulationButton" type="button" disabled>Restart Position</button>
         <button id="exitSimulationButton" type="button" disabled>Exit Simulation</button>
         <button id="exportRuntimeButton" type="button">Export Runtime</button>
       </div>
@@ -99,6 +102,7 @@ index.html
         <div class="canvas-toolbar">
           <strong>Map Canvas</strong>
           <span id="canvasMeta" class="muted"></span>
+          <span id="simulationContext" class="muted"></span>
         </div>
         <div class="canvas-wrap">
           <canvas id="mapCanvas" width="768" height="432"></canvas>

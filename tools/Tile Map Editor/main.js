@@ -328,11 +328,18 @@ class TileMapEditorApp {
       rafId: 0,
       lastTimestamp: 0,
       accumulatorMs: 0,
+      playing: false,
       probeCol: 0,
       probeRow: 0,
-      directionCol: 1,
-      directionRow: 1,
-      currentCellSummary: ""
+      routeIndex: 0,
+      routeDirection: 1,
+      totalCells: 0,
+      visitedCells: new Set(),
+      collisionHits: 0,
+      dataHits: 0,
+      markerHits: 0,
+      currentCellSummary: "",
+      currentTraversalSummary: ""
     };
   }
 
@@ -352,6 +359,9 @@ class TileMapEditorApp {
     this.refs.loadSampleButton = rootDocument.getElementById("loadSampleButton");
     this.refs.saveProjectButton = rootDocument.getElementById("saveProjectButton");
     this.refs.simulateButton = rootDocument.getElementById("simulateButton");
+    this.refs.playSimulationButton = rootDocument.getElementById("playSimulationButton");
+    this.refs.pauseSimulationButton = rootDocument.getElementById("pauseSimulationButton");
+    this.refs.restartSimulationButton = rootDocument.getElementById("restartSimulationButton");
     this.refs.exitSimulationButton = rootDocument.getElementById("exitSimulationButton");
     this.refs.exportRuntimeButton = rootDocument.getElementById("exportRuntimeButton");
 
@@ -365,6 +375,7 @@ class TileMapEditorApp {
     this.refs.selectedLayerKindBadge = rootDocument.getElementById("selectedLayerKindBadge");
     this.refs.activeLayerName = rootDocument.getElementById("activeLayerName");
     this.refs.canvasMeta = rootDocument.getElementById("canvasMeta");
+    this.refs.simulationContext = rootDocument.getElementById("simulationContext");
 
     this.refs.tilePalette = rootDocument.getElementById("tilePalette");
 
@@ -381,6 +392,7 @@ class TileMapEditorApp {
     this.refs.markerList = rootDocument.getElementById("markerList");
 
     this.refs.statusText = rootDocument.getElementById("statusText");
+    this.refs.canvasWrap = rootDocument.querySelector(".canvas-wrap");
     this.refs.mapCanvas = rootDocument.getElementById("mapCanvas");
     this.refs.canvasContext = this.refs.mapCanvas.getContext("2d", { alpha: false });
   }
@@ -393,6 +405,9 @@ class TileMapEditorApp {
     this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
     this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
     this.refs.simulateButton.addEventListener("click", () => this.enterSimulationMode());
+    this.refs.playSimulationButton.addEventListener("click", () => this.resumeSimulation());
+    this.refs.pauseSimulationButton.addEventListener("click", () => this.pauseSimulation());
+    this.refs.restartSimulationButton.addEventListener("click", () => this.restartSimulationPosition());
     this.refs.exitSimulationButton.addEventListener("click", () => this.exitSimulationMode());
     this.refs.exportRuntimeButton.addEventListener("click", () => this.handleExportRuntime());
 
@@ -432,6 +447,13 @@ class TileMapEditorApp {
     this.refs.mapCanvas.addEventListener("mousemove", (event) => this.handleCanvasPointerMove(event));
     this.refs.mapCanvas.addEventListener("mouseleave", () => this.handleCanvasPointerLeave());
     this.refs.mapCanvas.addEventListener("contextmenu", (event) => event.preventDefault());
+    if (this.refs.canvasWrap) {
+      this.refs.canvasWrap.addEventListener("scroll", () => {
+        if (this.isSimulationMode) {
+          this.updateSimulationContext();
+        }
+      });
+    }
 
     window.addEventListener("mouseup", () => {
       this.isPointerPainting = false;
@@ -765,8 +787,12 @@ class TileMapEditorApp {
   }
 
   refreshSimulationActionState() {
-    this.refs.simulateButton.disabled = this.isSimulationMode;
-    this.refs.exitSimulationButton.disabled = !this.isSimulationMode;
+    const inSimulation = this.isSimulationMode;
+    this.refs.simulateButton.disabled = inSimulation;
+    this.refs.playSimulationButton.disabled = !inSimulation || this.simulation.playing;
+    this.refs.pauseSimulationButton.disabled = !inSimulation || !this.simulation.playing;
+    this.refs.restartSimulationButton.disabled = !inSimulation;
+    this.refs.exitSimulationButton.disabled = !inSimulation;
   }
 
   async loadSampleManifest() {
@@ -873,23 +899,196 @@ class TileMapEditorApp {
     }
   }
 
+  getSimulationStartCell() {
+    const spawnMarker = this.documentModel.markers.find((marker) => marker.type === "spawn");
+    const fallbackMarker = spawnMarker || this.documentModel.markers[0] || null;
+    if (fallbackMarker) {
+      return {
+        col: clampInteger(fallbackMarker.col, 0, this.documentModel.map.width - 1, 0),
+        row: clampInteger(fallbackMarker.row, 0, this.documentModel.map.height - 1, 0)
+      };
+    }
+    return { col: 0, row: 0 };
+  }
+
+  getSimulationRouteIndexFromCell(col, row) {
+    const mapWidth = this.documentModel.map.width;
+    const safeRow = clampInteger(row, 0, this.documentModel.map.height - 1, 0);
+    const safeCol = clampInteger(col, 0, mapWidth - 1, 0);
+    const offset = safeRow % 2 === 0 ? safeCol : (mapWidth - 1 - safeCol);
+    return (safeRow * mapWidth) + offset;
+  }
+
+  setSimulationProbeFromRouteIndex() {
+    const mapWidth = this.documentModel.map.width;
+    const row = Math.floor(this.simulation.routeIndex / mapWidth);
+    const offset = this.simulation.routeIndex % mapWidth;
+    const col = row % 2 === 0 ? offset : (mapWidth - 1 - offset);
+    this.simulation.probeCol = col;
+    this.simulation.probeRow = row;
+  }
+
+  inspectSimulationCell(col, row) {
+    const tileLayers = this.documentModel.layers.filter((layer) => layer.kind === "tile" && layer.visible);
+    const collisionLayers = this.documentModel.layers.filter((layer) => layer.kind === "collision" && layer.visible);
+    const dataLayers = this.documentModel.layers.filter((layer) => layer.kind === "data" && layer.visible);
+
+    const tileValues = tileLayers.map((layer) => normalizeCellValue(layer.data[row][col])).filter((value) => value > 0);
+    const collisionHit = collisionLayers.some((layer) => normalizeCellValue(layer.data[row][col]) > 0);
+    const dataValues = dataLayers.map((layer) => normalizeCellValue(layer.data[row][col])).filter((value) => value > 0);
+    const markers = this.documentModel.markers.filter((marker) => marker.col === col && marker.row === row);
+
+    return { tileValues, collisionHit, dataValues, markers };
+  }
+
+  buildSimulationCellSummaryFromDetails(details) {
+    const markerText = details.markers.length > 0
+      ? details.markers.map((marker) => `${marker.type}:${marker.name}`).join(", ")
+      : "none";
+    return `tile=${details.tileValues.length > 0 ? details.tileValues.join("|") : 0} collision=${details.collisionHit ? "hit" : "none"} data=${details.dataValues.length > 0 ? details.dataValues.join("|") : 0} objects=${markerText}`;
+  }
+
+  resetSimulationTraversalState(playing) {
+    const mapWidth = this.documentModel.map.width;
+    const mapHeight = this.documentModel.map.height;
+    this.simulation.totalCells = mapWidth * mapHeight;
+    this.simulation.routeDirection = 1;
+    const startCell = this.getSimulationStartCell();
+    this.simulation.routeIndex = this.getSimulationRouteIndexFromCell(startCell.col, startCell.row);
+    this.simulation.playing = playing;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
+    this.simulation.visitedCells = new Set();
+    this.simulation.collisionHits = 0;
+    this.simulation.dataHits = 0;
+    this.simulation.markerHits = 0;
+    this.setSimulationProbeFromRouteIndex();
+
+    const details = this.inspectSimulationCell(this.simulation.probeCol, this.simulation.probeRow);
+    this.simulation.currentCellSummary = this.buildSimulationCellSummaryFromDetails(details);
+    this.simulation.visitedCells.add(`${this.simulation.probeCol},${this.simulation.probeRow}`);
+    if (details.collisionHit) {
+      this.simulation.collisionHits += 1;
+    }
+    if (details.dataValues.length > 0) {
+      this.simulation.dataHits += 1;
+    }
+    if (details.markers.length > 0) {
+      this.simulation.markerHits += details.markers.length;
+    }
+    this.updateSimulationContext();
+  }
+
+  ensureSimulationProbeVisible(forceCenter = false) {
+    if (!this.refs.canvasWrap) {
+      return;
+    }
+    const wrap = this.refs.canvasWrap;
+    const tileSize = this.documentModel.map.tileSize;
+    const targetX = (this.simulation.probeCol * tileSize) + Math.floor(tileSize / 2);
+    const targetY = (this.simulation.probeRow * tileSize) + Math.floor(tileSize / 2);
+    const maxScrollX = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
+    const maxScrollY = Math.max(0, wrap.scrollHeight - wrap.clientHeight);
+
+    if (forceCenter) {
+      wrap.scrollLeft = Math.max(0, Math.min(maxScrollX, Math.round(targetX - (wrap.clientWidth / 2))));
+      wrap.scrollTop = Math.max(0, Math.min(maxScrollY, Math.round(targetY - (wrap.clientHeight / 2))));
+      return;
+    }
+
+    const marginX = Math.max(48, Math.floor(wrap.clientWidth * 0.2));
+    const marginY = Math.max(48, Math.floor(wrap.clientHeight * 0.2));
+    let nextScrollLeft = wrap.scrollLeft;
+    let nextScrollTop = wrap.scrollTop;
+
+    if (targetX < wrap.scrollLeft + marginX) {
+      nextScrollLeft = Math.max(0, Math.round(targetX - marginX));
+    } else if (targetX > wrap.scrollLeft + wrap.clientWidth - marginX) {
+      nextScrollLeft = Math.min(maxScrollX, Math.round(targetX - wrap.clientWidth + marginX));
+    }
+
+    if (targetY < wrap.scrollTop + marginY) {
+      nextScrollTop = Math.max(0, Math.round(targetY - marginY));
+    } else if (targetY > wrap.scrollTop + wrap.clientHeight - marginY) {
+      nextScrollTop = Math.min(maxScrollY, Math.round(targetY - wrap.clientHeight + marginY));
+    }
+
+    if (nextScrollLeft !== wrap.scrollLeft) {
+      wrap.scrollLeft = nextScrollLeft;
+    }
+    if (nextScrollTop !== wrap.scrollTop) {
+      wrap.scrollTop = nextScrollTop;
+    }
+  }
+
+  updateSimulationContext() {
+    if (!this.isSimulationMode) {
+      this.refs.simulationContext.textContent = "";
+      return;
+    }
+    const visitedCount = this.simulation.visitedCells.size;
+    const totalCells = Math.max(1, this.simulation.totalCells);
+    const progressPercent = Math.round((visitedCount / totalCells) * 100);
+    const tileSize = this.documentModel.map.tileSize;
+    const wrap = this.refs.canvasWrap;
+    const viewportSummary = wrap
+      ? `view c${Math.floor(wrap.scrollLeft / tileSize)}-${Math.ceil((wrap.scrollLeft + wrap.clientWidth) / tileSize)}, r${Math.floor(wrap.scrollTop / tileSize)}-${Math.ceil((wrap.scrollTop + wrap.clientHeight) / tileSize)}`
+      : "view n/a";
+
+    const playback = this.simulation.playing ? "PLAY" : "PAUSE";
+    this.simulation.currentTraversalSummary = `${playback} ${progressPercent}% (${visitedCount}/${totalCells}) collisions:${this.simulation.collisionHits} data:${this.simulation.dataHits} markers:${this.simulation.markerHits} ${viewportSummary}`;
+    this.refs.simulationContext.textContent = this.simulation.currentTraversalSummary;
+  }
+
   enterSimulationMode() {
     if (this.isSimulationMode) {
       return;
     }
     this.isSimulationMode = true;
-    this.simulation.probeCol = 0;
-    this.simulation.probeRow = 0;
-    this.simulation.directionCol = 1;
-    this.simulation.directionRow = 1;
+    this.isPointerPainting = false;
+    this.resetSimulationTraversalState(true);
+    this.refreshSimulationActionState();
+    this.updateStatus("Simulation mode active. Full-map traversal preview is now running.");
+    this.startSimulationLoop();
+    this.ensureSimulationProbeVisible(true);
+    this.renderCanvas();
+  }
+
+  pauseSimulation() {
+    if (!this.isSimulationMode || !this.simulation.playing) {
+      return;
+    }
+    this.simulation.playing = false;
     this.simulation.lastTimestamp = 0;
     this.simulation.accumulatorMs = 0;
-    this.isPointerPainting = false;
-    this.refs.simulateButton.disabled = true;
-    this.refs.exitSimulationButton.disabled = false;
-    this.updateStatus("Simulation mode active. Tile/data/object state is now preview-only.");
-    this.startSimulationLoop();
+    this.refreshSimulationActionState();
+    this.updateSimulationContext();
     this.renderCanvas();
+    this.updateStatus("Simulation paused.");
+  }
+
+  resumeSimulation() {
+    if (!this.isSimulationMode || this.simulation.playing) {
+      return;
+    }
+    this.simulation.playing = true;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
+    this.refreshSimulationActionState();
+    this.updateSimulationContext();
+    this.renderCanvas();
+    this.updateStatus("Simulation resumed.");
+  }
+
+  restartSimulationPosition() {
+    if (!this.isSimulationMode) {
+      return;
+    }
+    this.resetSimulationTraversalState(this.simulation.playing);
+    this.ensureSimulationProbeVisible(true);
+    this.refreshSimulationActionState();
+    this.renderCanvas();
+    this.updateStatus("Simulation restarted from the initial traversal position.");
   }
 
   exitSimulationMode() {
@@ -902,10 +1101,15 @@ class TileMapEditorApp {
       cancelAnimationFrame(this.simulation.rafId);
       this.simulation.rafId = 0;
     }
-    this.refs.simulateButton.disabled = false;
-    this.refs.exitSimulationButton.disabled = true;
+    this.simulation.playing = false;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
     this.simulation.currentCellSummary = "";
+    this.simulation.currentTraversalSummary = "";
+    this.simulation.visitedCells = new Set();
+    this.refs.simulationContext.textContent = "";
     this.isPointerPainting = false;
+    this.refreshSimulationActionState();
     this.renderCanvas();
     if (wasSimulationMode) {
       this.updateStatus("Exited simulation mode.");
@@ -918,18 +1122,20 @@ class TileMapEditorApp {
         return;
       }
 
-      if (this.simulation.lastTimestamp === 0) {
+      if (this.simulation.playing) {
+        if (this.simulation.lastTimestamp === 0) {
+          this.simulation.lastTimestamp = timestamp;
+        }
+
+        const delta = timestamp - this.simulation.lastTimestamp;
         this.simulation.lastTimestamp = timestamp;
-      }
+        this.simulation.accumulatorMs += delta;
 
-      const delta = timestamp - this.simulation.lastTimestamp;
-      this.simulation.lastTimestamp = timestamp;
-      this.simulation.accumulatorMs += delta;
-
-      const stepMs = 180;
-      while (this.simulation.accumulatorMs >= stepMs) {
-        this.advanceSimulationProbe();
-        this.simulation.accumulatorMs -= stepMs;
+        const stepMs = Math.max(100, Math.min(220, Math.round(120 + (24000 / Math.max(1200, this.simulation.totalCells)))));
+        while (this.simulation.accumulatorMs >= stepMs) {
+          this.advanceSimulationProbe();
+          this.simulation.accumulatorMs -= stepMs;
+        }
       }
 
       this.renderCanvas();
@@ -940,41 +1146,39 @@ class TileMapEditorApp {
   }
 
   advanceSimulationProbe() {
-    const mapWidth = this.documentModel.map.width;
-    const mapHeight = this.documentModel.map.height;
-    let nextCol = this.simulation.probeCol + this.simulation.directionCol;
-    let nextRow = this.simulation.probeRow + this.simulation.directionRow;
-
-    if (nextCol < 0 || nextCol >= mapWidth) {
-      this.simulation.directionCol *= -1;
-      nextCol = this.simulation.probeCol + this.simulation.directionCol;
+    if (this.simulation.totalCells <= 1) {
+      this.updateSimulationContext();
+      return;
     }
 
-    if (nextRow < 0 || nextRow >= mapHeight) {
-      this.simulation.directionRow *= -1;
-      nextRow = this.simulation.probeRow + this.simulation.directionRow;
+    let nextIndex = this.simulation.routeIndex + this.simulation.routeDirection;
+    if (nextIndex < 0 || nextIndex >= this.simulation.totalCells) {
+      this.simulation.routeDirection *= -1;
+      nextIndex = this.simulation.routeIndex + this.simulation.routeDirection;
     }
 
-    this.simulation.probeCol = Math.max(0, Math.min(mapWidth - 1, nextCol));
-    this.simulation.probeRow = Math.max(0, Math.min(mapHeight - 1, nextRow));
-    this.simulation.currentCellSummary = this.buildSimulationCellSummary(this.simulation.probeCol, this.simulation.probeRow);
+    this.simulation.routeIndex = Math.max(0, Math.min(this.simulation.totalCells - 1, nextIndex));
+    this.setSimulationProbeFromRouteIndex();
+
+    const details = this.inspectSimulationCell(this.simulation.probeCol, this.simulation.probeRow);
+    this.simulation.currentCellSummary = this.buildSimulationCellSummaryFromDetails(details);
+    this.simulation.visitedCells.add(`${this.simulation.probeCol},${this.simulation.probeRow}`);
+    if (details.collisionHit) {
+      this.simulation.collisionHits += 1;
+    }
+    if (details.dataValues.length > 0) {
+      this.simulation.dataHits += 1;
+    }
+    if (details.markers.length > 0) {
+      this.simulation.markerHits += details.markers.length;
+    }
+    this.ensureSimulationProbeVisible();
+    this.updateSimulationContext();
   }
 
   buildSimulationCellSummary(col, row) {
-    const tileLayers = this.documentModel.layers.filter((layer) => layer.kind === "tile" && layer.visible);
-    const collisionLayers = this.documentModel.layers.filter((layer) => layer.kind === "collision" && layer.visible);
-    const dataLayers = this.documentModel.layers.filter((layer) => layer.kind === "data" && layer.visible);
-
-    const tileValues = tileLayers.map((layer) => normalizeCellValue(layer.data[row][col])).filter((value) => value > 0);
-    const collisionHits = collisionLayers.some((layer) => normalizeCellValue(layer.data[row][col]) > 0);
-    const dataValues = dataLayers.map((layer) => normalizeCellValue(layer.data[row][col])).filter((value) => value > 0);
-    const markers = this.documentModel.markers.filter((marker) => marker.col === col && marker.row === row);
-
-    const markerText = markers.length > 0
-      ? markers.map((marker) => `${marker.type}:${marker.name}`).join(", ")
-      : "none";
-
-    return `tile=${tileValues.length > 0 ? tileValues.join("|") : 0} collision=${collisionHits ? "hit" : "none"} data=${dataValues.length > 0 ? dataValues.join("|") : 0} objects=${markerText}`;
+    const details = this.inspectSimulationCell(col, row);
+    return this.buildSimulationCellSummaryFromDetails(details);
   }
 
   renderAll() {
@@ -985,6 +1189,7 @@ class TileMapEditorApp {
     this.renderLayerMeta();
     this.refs.canvasMeta.textContent = `${this.documentModel.map.width}x${this.documentModel.map.height}`;
     this.refreshSimulationActionState();
+    this.updateSimulationContext();
   }
 
   renderLayerMeta() {
@@ -1183,6 +1388,7 @@ class TileMapEditorApp {
       if (!this.simulation.currentCellSummary) {
         this.simulation.currentCellSummary = this.buildSimulationCellSummary(this.simulation.probeCol, this.simulation.probeRow);
       }
+      this.updateSimulationContext();
       this.drawSimulationOverlay(context, tileSize);
     }
 
@@ -1199,27 +1405,29 @@ class TileMapEditorApp {
   }
 
   drawSimulationOverlay(context, tileSize) {
+    const details = this.inspectSimulationCell(this.simulation.probeCol, this.simulation.probeRow);
     const probeX = this.simulation.probeCol * tileSize + (tileSize / 2);
     const probeY = this.simulation.probeRow * tileSize + (tileSize / 2);
     const probeRadius = Math.max(4, Math.floor(tileSize * 0.25));
 
     context.save();
-    context.fillStyle = "#f8fafc";
+    context.fillStyle = details.collisionHit ? "#f87171" : "#f8fafc";
     context.beginPath();
     context.arc(probeX, probeY, probeRadius, 0, Math.PI * 2);
     context.fill();
-    context.strokeStyle = "#0f172a";
+    context.strokeStyle = details.collisionHit ? "#7f1d1d" : "#0f172a";
     context.lineWidth = 2;
     context.stroke();
 
     context.fillStyle = "rgba(15, 23, 42, 0.82)";
-    context.fillRect(8, 8, Math.min(context.canvas.width - 16, 520), 56);
+    context.fillRect(8, 8, Math.min(context.canvas.width - 16, 980), 74);
     context.fillStyle = "#e2e8f0";
     context.font = "12px monospace";
     context.textBaseline = "top";
-    context.fillText("SIMULATION MODE", 14, 14);
+    context.fillText(`SIMULATION MODE (${this.simulation.playing ? "PLAY" : "PAUSE"})`, 14, 14);
     const summary = `cell ${this.simulation.probeCol},${this.simulation.probeRow} -> ${this.simulation.currentCellSummary}`;
     context.fillText(summary, 14, 32);
+    context.fillText(this.simulation.currentTraversalSummary, 14, 50);
     context.restore();
   }
 

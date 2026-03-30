@@ -1,14 +1,21 @@
-﻿BUILD_PR_EDITOR_LOAD_UX_AND_SIMULATION_POLISH delta file tree
+BUILD_PR_EDITOR_ADVANCED_SIMULATION_FULL_MAPS
 
-./docs/dev/reports/file_tree.txt
-./docs/dev/reports/change_summary.txt
-./docs/dev/reports/validation_checklist.txt
-./tools/Tile Map Editor/index.html
-./tools/Tile Map Editor/main.js
-./tools/Tile Map Editor/README.md
-./tools/Tile Map Editor/samples/sample-manifest.json
-./tools/Tile Map Editor/samples/tile_editor_sample_basic.json
-./tools/Tile Map Editor/samples/tile_editor_sample_objective.json
-./tools/Parallax Editor/index.html
-./tools/Parallax Editor/main.js
-./tools/Parallax Editor/README.md
+Modified
+- tools/Tile Map Editor/index.html
+- tools/Tile Map Editor/main.js
+- tools/Tile Map Editor/tileMapEditor.css
+- tools/Parallax Editor/index.html
+- tools/Parallax Editor/main.js
+- tools/Parallax Editor/parallaxEditor.css
+
+Included source-of-truth docs
+- docs/pr/BUILD_PR_EDITOR_ADVANCED_SIMULATION_FULL_MAPS.md
+- docs/pr/LEVEL_EDITOR_ADVANCED_SIMULATION_REQUIREMENTS.md
+- docs/pr/LEVEL_EDITOR_ADVANCED_SIMULATION_ACCEPTANCE.md
+- docs/pr/LEVEL_EDITOR_ADVANCED_SIMULATION_SAMPLES.md
+- docs/pr/LEVEL_EDITOR_FULL_MAP_SIMULATION_BOUNDARIES.md
+
+Report outputs
+- docs/dev/reports/file_tree.txt
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/validation_checklist.txt

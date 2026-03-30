@@ -1,6 +1,3 @@
 Docs-only bundle.
 
-Final polish includes:
-- shared load UX across both editors
-- Simulate / Exit Simulation in both editors
-- no engine core API changes
+This polish pass upgrades both editors from simple preview to full-map simulation.

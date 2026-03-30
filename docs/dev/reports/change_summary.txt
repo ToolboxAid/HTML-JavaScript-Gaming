@@ -1,21 +1,32 @@
-﻿BUILD_PR_EDITOR_LOAD_UX_AND_SIMULATION_POLISH change summary
+Summary
+- Upgraded both editors from basic preview simulation to full-map traversal simulation modes with explicit Play, Pause, Restart Position, and Exit controls.
+- Preserved local sample loading per tool and kept Tile Map Editor and Parallax Editor as separate tools.
+- No engine core APIs were modified.
 
-Scope delivered
-- Applied a final UX polish pass to both editors while keeping them separate tools.
-- Standardized top-level action labels in both UIs: New Project, Load Project, Load Sample, Save Project, Simulate, Exit Simulation.
-- Tile Map Editor:
-  - Added local sample manifest + sample files under tools/Tile Map Editor/samples/.
-  - Added in-editor sample loading from local manifest paths.
-  - Added simulation mode and exit flow.
-  - Simulation previews authored tile/data/object state with a moving probe + per-cell summary overlay.
-- Parallax Editor:
-  - Remapped top-level actions to the standardized labels.
-  - Preserved local sample loading and integrated with standardized top actions.
-  - Added explicit simulation mode and exit flow.
-  - Simulation animates camera-relative motion to preview depth ordering, scroll factors, repeat/wrap behavior.
-- Updated both README files to document standardized actions and simulation mode.
+Tile Map Editor updates
+- Added top-level simulation controls wiring for play/pause/restart.
+- Added simulation traversal context readout (`simulationContext`) and viewport-aware context reporting.
+- Reworked simulation runtime to serpentine full-map traversal with:
+  - start position derived from spawn marker (fallback to 0,0)
+  - progress/visited tracking across full map cells
+  - collision/data/marker hit counters
+  - play/pause/restart state transitions
+  - auto-scroll follow in `.canvas-wrap` for wide-map traversal context
+- Updated simulation overlay to show playback mode, cell summary, traversal summary, and collision-aware probe styling.
 
-Boundary compliance
-- No engine core API changes.
-- Tile and Parallax editors remain separate tools.
-- Sample loading remains local per tool.
+Parallax Editor updates
+- Added top-level simulation controls wiring for play/pause/restart.
+- Added simulation traversal context readout (`simulationContext`).
+- Reworked simulation runtime from oscillation to full-map traverse with:
+  - explicit start/end camera positions across map span
+  - progress tracking by traversed distance
+  - play/pause/restart state transitions
+  - auto-stop at end-of-traverse
+- Expanded preview rendering to full-map scrollable canvas dimensions and map-space framing.
+- Added traversal proxy marker and viewport follow during simulation to validate depth/foreground/background behavior over distance.
+- Preserved repeat/wrap and scroll-factor visibility in runtime overlay/context summaries.
+
+Scope and boundaries
+- No modifications under `engine/`.
+- No coupling of Tile and Parallax UIs into a single tool.
+- No changes to sample-loading model outside each tool's local `./samples/` paths.

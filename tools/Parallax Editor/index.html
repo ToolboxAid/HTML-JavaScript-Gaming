@@ -22,6 +22,9 @@ index.html
         <input id="loadProjectInput" class="hidden-file-input" type="file" accept=".json,application/json" />
         <button id="saveProjectButton" type="button">Save Project</button>
         <button id="simulateButton" type="button">Simulate</button>
+        <button id="playSimulationButton" type="button" disabled>Play</button>
+        <button id="pauseSimulationButton" type="button" disabled>Pause</button>
+        <button id="restartSimulationButton" type="button" disabled>Restart Position</button>
         <button id="exitSimulationButton" type="button" disabled>Exit Simulation</button>
         <button id="exportParallaxPatchButton" type="button">Export Tilemap Patch</button>
       </div>
@@ -97,6 +100,7 @@ index.html
         <div class="preview-toolbar">
           <strong>Parallax Preview</strong>
           <span id="previewMeta" class="muted"></span>
+          <span id="simulationContext" class="muted"></span>
         </div>
         <div class="preview-wrap">
           <canvas id="previewCanvas" width="960" height="540"></canvas>

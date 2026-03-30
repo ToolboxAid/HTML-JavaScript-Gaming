@@ -284,9 +284,18 @@ class ParallaxEditorApp {
     this.isSimulationMode = false;
     this.simulation = {
       rafId: 0,
-      startTimestamp: 0,
+      lastTimestamp: 0,
+      accumulatorMs: 0,
+      playing: false,
       baseCameraX: 0,
-      baseCameraY: 0
+      baseCameraY: 0,
+      startCameraX: 0,
+      startCameraY: 0,
+      endCameraX: 0,
+      endCameraY: 0,
+      traversedDistance: 0,
+      traversalDistance: 0,
+      traversalDurationMs: 14000
     };
   }
 
@@ -304,6 +313,9 @@ class ParallaxEditorApp {
     this.refs.loadProjectInput = rootDocument.getElementById("loadProjectInput");
     this.refs.saveProjectButton = rootDocument.getElementById("saveProjectButton");
     this.refs.simulateButton = rootDocument.getElementById("simulateButton");
+    this.refs.playSimulationButton = rootDocument.getElementById("playSimulationButton");
+    this.refs.pauseSimulationButton = rootDocument.getElementById("pauseSimulationButton");
+    this.refs.restartSimulationButton = rootDocument.getElementById("restartSimulationButton");
     this.refs.exitSimulationButton = rootDocument.getElementById("exitSimulationButton");
     this.refs.exportParallaxPatchButton = rootDocument.getElementById("exportParallaxPatchButton");
 
@@ -346,7 +358,9 @@ class ParallaxEditorApp {
     this.refs.applyLayerSettingsButton = rootDocument.getElementById("applyLayerSettingsButton");
 
     this.refs.previewMeta = rootDocument.getElementById("previewMeta");
+    this.refs.simulationContext = rootDocument.getElementById("simulationContext");
     this.refs.statusText = rootDocument.getElementById("statusText");
+    this.refs.previewWrap = rootDocument.querySelector(".preview-wrap");
     this.refs.previewCanvas = rootDocument.getElementById("previewCanvas");
     this.refs.previewContext = this.refs.previewCanvas.getContext("2d", { alpha: false });
   }
@@ -357,6 +371,9 @@ class ParallaxEditorApp {
     this.refs.loadProjectInput.addEventListener("change", (event) => this.handleLoadProject(event));
     this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
     this.refs.simulateButton.addEventListener("click", () => this.enterSimulationMode());
+    this.refs.playSimulationButton.addEventListener("click", () => this.resumeSimulation());
+    this.refs.pauseSimulationButton.addEventListener("click", () => this.pauseSimulation());
+    this.refs.restartSimulationButton.addEventListener("click", () => this.restartSimulationPosition());
     this.refs.exitSimulationButton.addEventListener("click", () => this.exitSimulationMode());
     this.refs.exportParallaxPatchButton.addEventListener("click", () => this.handleExportTilemapPatch());
 
@@ -383,6 +400,13 @@ class ParallaxEditorApp {
 
     this.refs.cameraXInput.addEventListener("input", () => this.handleCameraChange());
     this.refs.cameraYInput.addEventListener("input", () => this.handleCameraChange());
+    if (this.refs.previewWrap) {
+      this.refs.previewWrap.addEventListener("scroll", () => {
+        if (this.isSimulationMode) {
+          this.updateSimulationContextReadout();
+        }
+      });
+    }
   }
 
   getSelectedLayer() {
@@ -402,15 +426,94 @@ class ParallaxEditorApp {
     this.refs.mapWidthInput.value = String(this.documentModel.map.width);
     this.refs.mapHeightInput.value = String(this.documentModel.map.height);
     this.refs.tileSizeInput.value = String(this.documentModel.map.tileSize);
+    this.updateCameraInputBounds();
     this.refs.cameraXInput.value = String(this.cameraX);
     this.refs.cameraYInput.value = String(this.cameraY);
   }
 
+  updateCameraInputBounds() {
+    const maxHorizontal = Math.max(1024, this.documentModel.map.pixelWidth);
+    const maxVertical = Math.max(1024, this.documentModel.map.pixelHeight);
+    this.refs.cameraXInput.min = String(-maxHorizontal);
+    this.refs.cameraXInput.max = String(maxHorizontal);
+    this.refs.cameraYInput.min = String(-maxVertical);
+    this.refs.cameraYInput.max = String(maxVertical);
+  }
+
   refreshSimulationActionState() {
-    this.refs.simulateButton.disabled = this.isSimulationMode;
-    this.refs.exitSimulationButton.disabled = !this.isSimulationMode;
-    this.refs.cameraXInput.disabled = this.isSimulationMode;
-    this.refs.cameraYInput.disabled = this.isSimulationMode;
+    const inSimulation = this.isSimulationMode;
+    this.refs.simulateButton.disabled = inSimulation;
+    this.refs.playSimulationButton.disabled = !inSimulation || this.simulation.playing;
+    this.refs.pauseSimulationButton.disabled = !inSimulation || !this.simulation.playing;
+    this.refs.restartSimulationButton.disabled = !inSimulation;
+    this.refs.exitSimulationButton.disabled = !inSimulation;
+    this.refs.cameraXInput.disabled = inSimulation;
+    this.refs.cameraYInput.disabled = inSimulation;
+  }
+
+  configureSimulationTraverse(playing) {
+    const viewportWidth = this.refs.previewCanvas.width;
+    const worldWidth = Math.max(1, this.documentModel.map.pixelWidth);
+    const startCameraX = -Math.floor(viewportWidth * 0.2);
+    const endCameraX = Math.max(startCameraX + 1, worldWidth - Math.floor(viewportWidth * 0.8));
+
+    this.simulation.startCameraX = startCameraX;
+    this.simulation.endCameraX = endCameraX;
+    this.simulation.startCameraY = 0;
+    this.simulation.endCameraY = 0;
+    this.simulation.traversalDistance = Math.max(1, Math.abs(endCameraX - startCameraX));
+    this.simulation.traversalDurationMs = Math.max(9000, Math.min(24000, 9000 + (this.simulation.traversalDistance * 9)));
+    this.simulation.traversedDistance = 0;
+    this.simulation.playing = playing;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
+
+    this.cameraX = startCameraX;
+    this.cameraY = 0;
+    if (this.refs.previewWrap) {
+      this.refs.previewWrap.scrollTop = 0;
+    }
+    this.refs.cameraXInput.value = String(this.cameraX);
+    this.refs.cameraYInput.value = String(this.cameraY);
+    this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
+    this.updateSimulationContextReadout();
+  }
+
+  getSimulationProgress() {
+    if (!this.isSimulationMode || this.simulation.traversalDistance <= 0) {
+      return 0;
+    }
+    return Math.max(0, Math.min(1, this.simulation.traversedDistance / this.simulation.traversalDistance));
+  }
+
+  updateSimulationContextReadout() {
+    if (!this.isSimulationMode) {
+      this.refs.simulationContext.textContent = "";
+      return;
+    }
+
+    const sortedLayers = cloneDeep(this.documentModel.layers);
+    sortLayersByOrder(sortedLayers);
+    const progress = this.getSimulationProgress();
+    const progressPercent = Math.round(progress * 100);
+    const repeatCount = sortedLayers.filter((layer) => layer.repeatX || layer.repeatY).length;
+    const wrapCount = sortedLayers.filter((layer) => layer.wrapMode === "wrap").length;
+    const backLayer = sortedLayers[0]?.name || "none";
+    const frontLayer = sortedLayers[sortedLayers.length - 1]?.name || "none";
+    const mode = this.simulation.playing ? "PLAY" : "PAUSE";
+    this.refs.simulationContext.textContent = `${mode} ${progressPercent}% cam:${this.cameraX},${this.cameraY} depth:${backLayer}->${frontLayer} repeat:${repeatCount}/${sortedLayers.length} wrap:${wrapCount}`;
+  }
+
+  applySimulationCameraAtProgress(progress) {
+    const clampedProgress = Math.max(0, Math.min(1, progress));
+    const nextX = this.simulation.startCameraX
+      + ((this.simulation.endCameraX - this.simulation.startCameraX) * clampedProgress);
+
+    this.cameraX = Math.round(nextX);
+    this.cameraY = 0;
+    this.refs.cameraXInput.value = String(this.cameraX);
+    this.refs.cameraYInput.value = String(this.cameraY);
+    this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
   }
 
   enterSimulationMode() {
@@ -419,12 +522,49 @@ class ParallaxEditorApp {
     }
 
     this.isSimulationMode = true;
-    this.simulation.startTimestamp = 0;
     this.simulation.baseCameraX = this.cameraX;
     this.simulation.baseCameraY = this.cameraY;
+    this.configureSimulationTraverse(true);
     this.refreshSimulationActionState();
-    this.updateStatus("Simulation mode active. Preview now animates camera-relative parallax motion.");
+    this.updateStatus("Simulation mode active. Running full-map parallax traversal.");
     this.startSimulationLoop();
+    this.renderPreview();
+  }
+
+  pauseSimulation() {
+    if (!this.isSimulationMode || !this.simulation.playing) {
+      return;
+    }
+    this.simulation.playing = false;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
+    this.refreshSimulationActionState();
+    this.updateSimulationContextReadout();
+    this.renderPreview();
+    this.updateStatus("Simulation paused.");
+  }
+
+  resumeSimulation() {
+    if (!this.isSimulationMode || this.simulation.playing) {
+      return;
+    }
+    this.simulation.playing = true;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
+    this.refreshSimulationActionState();
+    this.updateSimulationContextReadout();
+    this.renderPreview();
+    this.updateStatus("Simulation resumed.");
+  }
+
+  restartSimulationPosition() {
+    if (!this.isSimulationMode) {
+      return;
+    }
+    this.configureSimulationTraverse(this.simulation.playing);
+    this.refreshSimulationActionState();
+    this.renderPreview();
+    this.updateStatus("Simulation restarted from the initial traversal position.");
   }
 
   exitSimulationMode() {
@@ -439,10 +579,16 @@ class ParallaxEditorApp {
       this.simulation.rafId = 0;
     }
 
+    this.simulation.playing = false;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
+    this.simulation.traversedDistance = 0;
+    this.simulation.traversalDistance = 0;
     this.cameraX = this.simulation.baseCameraX;
     this.cameraY = this.simulation.baseCameraY;
     this.refs.cameraXInput.value = String(this.cameraX);
     this.refs.cameraYInput.value = String(this.cameraY);
+    this.refs.simulationContext.textContent = "";
     this.refreshSimulationActionState();
     this.renderPreview();
     if (wasSimulationMode) {
@@ -456,12 +602,15 @@ class ParallaxEditorApp {
         return;
       }
 
-      if (this.simulation.startTimestamp === 0) {
-        this.simulation.startTimestamp = timestamp;
+      if (this.simulation.playing) {
+        if (this.simulation.lastTimestamp === 0) {
+          this.simulation.lastTimestamp = timestamp;
+        }
+        const deltaMs = timestamp - this.simulation.lastTimestamp;
+        this.simulation.lastTimestamp = timestamp;
+        this.advanceSimulationCamera(deltaMs);
       }
 
-      const elapsed = timestamp - this.simulation.startTimestamp;
-      this.updateSimulationCamera(elapsed);
       this.renderPreview();
       this.simulation.rafId = requestAnimationFrame(tick);
     };
@@ -469,14 +618,22 @@ class ParallaxEditorApp {
     this.simulation.rafId = requestAnimationFrame(tick);
   }
 
-  updateSimulationCamera(elapsedMs) {
-    const widthAmplitude = Math.max(60, Math.min(560, Math.floor(this.documentModel.map.pixelWidth * 0.28)));
-    const heightAmplitude = Math.max(24, Math.min(220, Math.floor(this.documentModel.map.pixelHeight * 0.2)));
-    this.cameraX = Math.round(Math.sin(elapsedMs * 0.0011) * widthAmplitude);
-    this.cameraY = Math.round(Math.cos(elapsedMs * 0.00085) * heightAmplitude);
-    this.refs.cameraXInput.value = String(this.cameraX);
-    this.refs.cameraYInput.value = String(this.cameraY);
-    this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
+  advanceSimulationCamera(deltaMs) {
+    const durationMs = Math.max(1, this.simulation.traversalDurationMs);
+    const advanceBy = Math.max(0, deltaMs) * (this.simulation.traversalDistance / durationMs);
+    this.simulation.traversedDistance = Math.min(
+      this.simulation.traversalDistance,
+      this.simulation.traversedDistance + advanceBy
+    );
+    const progress = this.getSimulationProgress();
+    this.applySimulationCameraAtProgress(progress);
+    this.updateSimulationContextReadout();
+
+    if (progress >= 1) {
+      this.simulation.playing = false;
+      this.refreshSimulationActionState();
+      this.updateStatus("Simulation reached the end of the full-map traverse.");
+    }
   }
 
   async loadSampleManifest() {
@@ -652,6 +809,7 @@ class ParallaxEditorApp {
     });
 
     this.documentModel.map = map;
+    this.updateCameraInputBounds();
     this.touchDocument();
     this.renderPreview();
     this.refs.previewMeta.textContent = `${map.width}x${map.height} @ ${map.tileSize}px (${map.pixelWidth}x${map.pixelHeight})`;
@@ -811,8 +969,10 @@ class ParallaxEditorApp {
     if (this.isSimulationMode) {
       return;
     }
-    this.cameraX = Math.trunc(clamp(this.refs.cameraXInput.value, -1024, 1024, 0));
-    this.cameraY = Math.trunc(clamp(this.refs.cameraYInput.value, -1024, 1024, 0));
+    const maxHorizontal = Math.max(1024, this.documentModel.map.pixelWidth);
+    const maxVertical = Math.max(1024, this.documentModel.map.pixelHeight);
+    this.cameraX = Math.trunc(clamp(this.refs.cameraXInput.value, -maxHorizontal, maxHorizontal, 0));
+    this.cameraY = Math.trunc(clamp(this.refs.cameraYInput.value, -maxVertical, maxVertical, 0));
     this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
     this.renderPreview();
   }
@@ -825,6 +985,7 @@ class ParallaxEditorApp {
     this.refs.previewMeta.textContent = `${this.documentModel.map.width}x${this.documentModel.map.height} @ ${this.documentModel.map.tileSize}px (${this.documentModel.map.pixelWidth}x${this.documentModel.map.pixelHeight})`;
     this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
     this.refreshSimulationActionState();
+    this.updateSimulationContextReadout();
   }
 
   renderLayerList() {
@@ -939,13 +1100,13 @@ class ParallaxEditorApp {
     context.fillRect(screenX, screenY, width, height);
   }
 
-  drawSingleLayer(context, layer, viewportWidth, viewportHeight) {
+  drawSingleLayer(context, layer, viewportWidth, viewportHeight, mapOriginX, mapOriginY) {
     if (!layer.visible || layer.opacity <= 0) {
       return;
     }
 
-    const screenX = Math.round((-this.cameraX * layer.scrollFactorX) + layer.offsetX);
-    const screenY = Math.round((-this.cameraY * layer.scrollFactorY) + layer.offsetY);
+    const screenX = Math.round(mapOriginX + (-this.cameraX * layer.scrollFactorX) + layer.offsetX);
+    const screenY = Math.round(mapOriginY + (-this.cameraY * layer.scrollFactorY) + layer.offsetY);
 
     context.save();
     context.globalAlpha = layer.opacity;
@@ -966,7 +1127,7 @@ class ParallaxEditorApp {
 
     if (layer.repeatX) {
       if (layer.wrapMode === "wrap") {
-        let startX = screenX - mod(screenX, tileWidth) - tileWidth;
+        let startX = mod(screenX, tileWidth) - tileWidth;
         for (let x = startX; x <= viewportWidth + tileWidth; x += tileWidth) {
           xPositions.push(x);
         }
@@ -984,7 +1145,7 @@ class ParallaxEditorApp {
 
     if (layer.repeatY) {
       if (layer.wrapMode === "wrap") {
-        let startY = screenY - mod(screenY, tileHeight) - tileHeight;
+        let startY = mod(screenY, tileHeight) - tileHeight;
         for (let y = startY; y <= viewportHeight + tileHeight; y += tileHeight) {
           yPositions.push(y);
         }
@@ -1009,11 +1170,38 @@ class ParallaxEditorApp {
     context.restore();
   }
 
+  ensureSimulationViewportFocus(focusX) {
+    if (!this.isSimulationMode || !this.refs.previewWrap) {
+      return;
+    }
+    const wrap = this.refs.previewWrap;
+    const maxScrollX = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
+    const targetLeft = Math.max(0, Math.min(maxScrollX, Math.round(focusX - (wrap.clientWidth * 0.45))));
+    if (wrap.scrollLeft !== targetLeft) {
+      wrap.scrollLeft = targetLeft;
+    }
+    if (wrap.scrollTop !== 0) {
+      wrap.scrollTop = 0;
+    }
+  }
+
   renderPreview() {
     const context = this.refs.previewContext;
     const canvas = this.refs.previewCanvas;
+    const desiredWidth = Math.max(960, Math.min(4096, this.documentModel.map.pixelWidth + 360));
+    const desiredHeight = Math.max(540, Math.min(2160, this.documentModel.map.pixelHeight + 260));
+    if (canvas.width !== desiredWidth) {
+      canvas.width = desiredWidth;
+    }
+    if (canvas.height !== desiredHeight) {
+      canvas.height = desiredHeight;
+    }
     const viewportWidth = canvas.width;
     const viewportHeight = canvas.height;
+    const worldWidth = this.documentModel.map.pixelWidth;
+    const worldHeight = this.documentModel.map.pixelHeight;
+    const mapOriginX = Math.max(20, Math.round((viewportWidth - worldWidth) / 2));
+    const mapOriginY = Math.max(20, Math.round((viewportHeight - worldHeight) / 2));
 
     context.fillStyle = "#0b1830";
     context.fillRect(0, 0, viewportWidth, viewportHeight);
@@ -1026,35 +1214,72 @@ class ParallaxEditorApp {
     const sortedLayers = cloneDeep(this.documentModel.layers);
     sortLayersByOrder(sortedLayers);
 
-    sortedLayers.forEach((layer) => {
-      this.drawSingleLayer(context, layer, viewportWidth, viewportHeight);
+    const progress = this.getSimulationProgress();
+    const proxyX = mapOriginX + Math.round(progress * Math.max(1, worldWidth - 1));
+    const proxyY = mapOriginY + Math.round(worldHeight * 0.62);
+    const visibleHeroLayer = sortedLayers.find((layer) => {
+      if (!layer.visible) {
+        return false;
+      }
+      const id = typeof layer.id === "string" ? layer.id.toLowerCase() : "";
+      const name = typeof layer.name === "string" ? layer.name.toLowerCase() : "";
+      return id.includes("hero") || name.includes("hero");
     });
+    const heroDrawOrder = visibleHeroLayer ? visibleHeroLayer.drawOrder : null;
+    let markerDrawn = false;
+    const drawTraversalMarker = (includeTrackLine) => {
+      if (includeTrackLine) {
+        context.strokeStyle = "rgba(244, 244, 245, 0.35)";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(proxyX, mapOriginY);
+        context.lineTo(proxyX, mapOriginY + worldHeight);
+        context.stroke();
+      }
+      context.fillStyle = this.isSimulationMode ? "#f59e0b" : "#e2e8f0";
+      context.beginPath();
+      context.arc(proxyX, proxyY, 8, 0, Math.PI * 2);
+      context.fill();
+    };
 
-    const worldWidth = this.documentModel.map.pixelWidth;
-    const worldHeight = this.documentModel.map.pixelHeight;
-    const borderX = Math.round((viewportWidth - Math.min(worldWidth, viewportWidth - 20)) / 2);
-    const borderY = Math.round((viewportHeight - Math.min(worldHeight, viewportHeight - 20)) / 2);
-    const borderW = Math.min(worldWidth, viewportWidth - 20);
-    const borderH = Math.min(worldHeight, viewportHeight - 20);
+    sortedLayers.forEach((layer) => {
+      this.drawSingleLayer(context, layer, viewportWidth, viewportHeight, mapOriginX, mapOriginY);
+      if (!markerDrawn && heroDrawOrder !== null && layer.drawOrder >= heroDrawOrder) {
+        drawTraversalMarker(false);
+        markerDrawn = true;
+      }
+    });
+    if (!markerDrawn) {
+      drawTraversalMarker(true);
+    }
 
     context.strokeStyle = "rgba(255, 255, 255, 0.45)";
     context.lineWidth = 2;
-    context.strokeRect(borderX, borderY, borderW, borderH);
+    context.strokeRect(mapOriginX, mapOriginY, worldWidth, worldHeight);
+    this.ensureSimulationViewportFocus(proxyX);
 
     context.fillStyle = "rgba(15, 23, 42, 0.72)";
-    context.fillRect(10, 10, 560, 132);
+    context.fillRect(10, 10, Math.min(860, viewportWidth - 20), 148);
     context.fillStyle = "#dbeafe";
     context.font = "12px monospace";
     context.textBaseline = "top";
-    context.fillText(`Mode: ${this.isSimulationMode ? "SIMULATION" : "EDIT"}`, 18, 18);
+    const modeText = this.isSimulationMode
+      ? `SIMULATION ${this.simulation.playing ? "PLAY" : "PAUSE"}`
+      : "EDIT";
+    const repeatCount = sortedLayers.filter((layer) => layer.repeatX || layer.repeatY).length;
+    const wrapCount = sortedLayers.filter((layer) => layer.wrapMode === "wrap").length;
+
+    context.fillText(`Mode: ${modeText}`, 18, 18);
     context.fillText(`Map: ${this.documentModel.map.name}`, 18, 34);
     context.fillText(`Camera: ${this.cameraX}, ${this.cameraY}`, 18, 50);
-    context.fillText(`Layers: ${sortedLayers.length} (order/scroll/repeat-wrap)`, 18, 66);
+    context.fillText(`Traverse: ${Math.round(progress * 100)}% (${Math.round(this.simulation.traversedDistance)}/${Math.round(this.simulation.traversalDistance || 0)} px)`, 18, 66);
+    context.fillText(`Layers: ${sortedLayers.length} repeat=${repeatCount} wrap=${wrapCount}`, 18, 82);
     sortedLayers.slice(0, 3).forEach((layer, index) => {
-      const y = 84 + (index * 16);
+      const y = 100 + (index * 16);
       const row = `${layer.drawOrder}:${layer.name} sf(${layer.scrollFactorX.toFixed(2)},${layer.scrollFactorY.toFixed(2)}) ${layer.repeatX ? "RX" : "--"}/${layer.repeatY ? "RY" : "--"} ${layer.wrapMode}`;
       context.fillText(row, 18, y);
     });
+    this.updateSimulationContextReadout();
   }
 }
 
