@@ -1,0 +1,21 @@
+﻿BUILD_PR_TILEMAP_EDITOR_FOUNDATION change summary
+
+Scope delivered
+- Added a new standalone Tile Map Editor foundation under tools/Tile Map Editor.
+- Implemented tile painting/erase/picker workflows on selected layers.
+- Implemented layer controls (select, add, remove, visibility) with tile/collision/data layer kinds.
+- Implemented tileset selection palette with editor-defined tile IDs/colors.
+- Implemented map document load/save JSON and runtime export JSON.
+- Implemented object/spawn marker placement and removal on map cells.
+- Reserved parallax compatibility via a required top-level parallax block in saved documents, without parallax UI.
+- Updated tools hub to surface Tile Map Editor as live foundation and keep parallax as a planned companion.
+- Expanded docs/pr/BUILD_PR_TILEMAP_EDITOR_FOUNDATION.md with scope, data contract, and boundaries.
+
+Out-of-scope preserved
+- No Parallax Editor implementation.
+- No engine/ changes.
+- No sample/ changes.
+
+Notes
+- Syntax validation was performed with Node by parsing tools/Tile Map Editor/main.js via Function constructor.
+- Direct node -c path checking in this sandbox produced an EPERM path-resolution failure unrelated to app logic.

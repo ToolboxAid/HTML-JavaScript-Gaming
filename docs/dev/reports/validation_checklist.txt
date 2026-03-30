@@ -1,0 +1,18 @@
+﻿BUILD_PR_TILEMAP_EDITOR_FOUNDATION validation checklist
+
+[PASS] Tile Map Editor foundation created under tools/Tile Map Editor.
+[PASS] Tile painting implemented.
+[PASS] Layer support implemented (tile, collision, data).
+[PASS] Tileset selection implemented.
+[PASS] Map load/save implemented.
+[PASS] Runtime export path implemented.
+[PASS] Object/spawn marker support implemented.
+[PASS] Parallax editor excluded from this PR.
+[PASS] Saved data includes reserved parallax block for future companion editor compatibility.
+[PASS] tools/index.html updated to expose Tile Map Editor foundation.
+[PASS] engine/ was not modified.
+[PASS] Required reports produced in docs/dev/reports/.
+
+Validation commands
+- node -e "new Function(require('fs').readFileSync('tools/Tile Map Editor/main.js','utf8')); console.log('syntax-ok')"
+- rg checks across docs and tool files for required scope and parallax boundaries.

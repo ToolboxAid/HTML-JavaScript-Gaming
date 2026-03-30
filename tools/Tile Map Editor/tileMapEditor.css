@@ -1,0 +1,291 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/30/2026
+tileMapEditor.css
+*/
+:root {
+  --editor-bg: #0f172a;
+  --editor-panel: #162338;
+  --editor-panel-2: #1d2f4a;
+  --editor-border: #2e4668;
+  --editor-text: #e2e8f0;
+  --editor-muted: #9db0cc;
+  --editor-accent: #22c55e;
+  --editor-warning: #ef4444;
+}
+
+.tile-map-editor-page {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 20%, #1e293b 0%, transparent 55%),
+    radial-gradient(circle at 80% 0%, #16233a 0%, transparent 45%),
+    linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+  color: var(--editor-text);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--editor-border);
+  background: rgba(11, 18, 32, 0.9);
+  border-radius: 10px;
+}
+
+.toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.toolbar label,
+.inline-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--editor-muted);
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+button,
+.file-input-label {
+  border: 1px solid var(--editor-border);
+  background: #1a2b44;
+  color: var(--editor-text);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover,
+.file-input-label:hover {
+  border-color: #4f7099;
+  background: #223555;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+input,
+select {
+  background: #0f1b2f;
+  border: 1px solid #2d4669;
+  color: var(--editor-text);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+.badge-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.badge {
+  font-size: 11px;
+  line-height: 1;
+  padding: 4px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--editor-border);
+  background: #1b2a43;
+}
+
+.workspace {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 280px) minmax(420px, 1fr) minmax(240px, 320px);
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar,
+.canvas-panel {
+  border: 1px solid var(--editor-border);
+  border-radius: 10px;
+  background: rgba(12, 20, 34, 0.92);
+  min-height: 0;
+}
+
+.sidebar {
+  padding: 10px;
+  overflow: auto;
+}
+
+.panel {
+  border: 1px solid #304a6e;
+  border-radius: 8px;
+  background: rgba(22, 35, 56, 0.9);
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.panel h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.canvas-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.canvas-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.muted {
+  color: var(--editor-muted);
+  font-size: 12px;
+}
+
+.canvas-wrap {
+  flex: 1;
+  min-height: 260px;
+  overflow: auto;
+  border: 1px solid var(--editor-border);
+  border-radius: 8px;
+  background: #111c2f;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+#mapCanvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+}
+
+.status-text {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--editor-muted);
+}
+
+.tile-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 6px;
+}
+
+.tile-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  min-height: 58px;
+}
+
+.tile-color-preview {
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  background: transparent;
+}
+
+.tile-swatch.active {
+  border-color: var(--editor-accent);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35) inset;
+}
+
+.layer-list,
+.marker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layer-item,
+.marker-item {
+  border: 1px solid #2f486c;
+  border-radius: 6px;
+  padding: 6px;
+  background: #162842;
+}
+
+.layer-item.selected,
+.marker-item.selected {
+  border-color: #8ab4ff;
+}
+
+.layer-row,
+.marker-row,
+.button-row,
+.inline-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.layer-name,
+.marker-name {
+  flex: 1;
+  font-size: 12px;
+}
+
+.layer-kind {
+  font-size: 10px;
+  color: var(--editor-muted);
+  text-transform: uppercase;
+}
+
+.help-text,
+.usage-list {
+  margin: 0;
+  font-size: 12px;
+  color: var(--editor-muted);
+}
+
+.usage-list {
+  padding-left: 18px;
+}
+
+.hidden-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 1200px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    max-height: none;
+  }
+}

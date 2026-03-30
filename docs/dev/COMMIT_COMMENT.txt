@@ -1,1 +1,1 @@
-Initial project template snapshot
+Build plan: Tile Map Editor foundation first; parallax editor remains a separate companion tool

@@ -1,0 +1,144 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/30/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en" class="tile-map-editor-page-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tile Map Editor</title>
+  <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="./tileMapEditor.css" />
+</head>
+<body class="tile-map-editor-page">
+  <div class="app-shell" id="appShell">
+    <header class="toolbar">
+      <div class="toolbar-group">
+        <button id="newMapButton" type="button">New Map</button>
+        <button id="saveMapButton" type="button">Save JSON</button>
+        <button id="exportRuntimeButton" type="button">Export Runtime</button>
+        <label class="file-input-label" for="loadMapInput">Load JSON</label>
+        <input id="loadMapInput" class="hidden-file-input" type="file" accept=".json,application/json" />
+      </div>
+
+      <div class="toolbar-group">
+        <label>
+          Map Name
+          <input id="mapNameInput" type="text" value="untitled-map" />
+        </label>
+        <label>
+          Width
+          <input id="mapWidthInput" type="number" min="4" max="256" step="1" value="32" />
+        </label>
+        <label>
+          Height
+          <input id="mapHeightInput" type="number" min="4" max="256" step="1" value="18" />
+        </label>
+        <label>
+          Tile Size
+          <input id="tileSizeInput" type="number" min="8" max="64" step="1" value="24" />
+        </label>
+        <button id="applyMapSizeButton" type="button">Apply Size</button>
+      </div>
+
+      <div class="toolbar-group">
+        <label>
+          Tool
+          <select id="activeToolSelect">
+            <option value="paint">Paint</option>
+            <option value="erase">Erase</option>
+            <option value="picker">Picker</option>
+            <option value="marker">Marker</option>
+          </select>
+        </label>
+        <div class="badge-row">
+          <span id="selectedLayerKindBadge" class="badge">Layer: tile</span>
+          <span id="activeLayerName" class="badge">Ground</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar left-sidebar">
+        <section class="panel">
+          <h3>Tileset</h3>
+          <div id="tilePalette" class="tile-palette"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Markers</h3>
+          <label>
+            Marker Type
+            <select id="markerTypeSelect">
+              <option value="spawn">Spawn</option>
+              <option value="object">Object</option>
+            </select>
+          </label>
+          <label>
+            Marker Name
+            <input id="markerNameInput" type="text" value="spawn-point" />
+          </label>
+          <button id="clearMarkersButton" type="button">Clear Markers</button>
+          <ul id="markerList" class="marker-list"></ul>
+        </section>
+      </aside>
+
+      <main class="canvas-panel">
+        <div class="canvas-toolbar">
+          <strong>Map Canvas</strong>
+          <span id="canvasMeta" class="muted"></span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="mapCanvas" width="768" height="432"></canvas>
+        </div>
+        <div id="statusText" class="status-text">Ready.</div>
+      </main>
+
+      <aside class="sidebar right-sidebar">
+        <section class="panel">
+          <h3>Layers</h3>
+          <ul id="layerList" class="layer-list"></ul>
+          <div class="inline-row">
+            <label>
+              Name
+              <input id="newLayerNameInput" type="text" value="Layer" />
+            </label>
+          </div>
+          <div class="inline-row">
+            <label>
+              Kind
+              <select id="newLayerKindSelect">
+                <option value="tile">Tile</option>
+                <option value="collision">Collision</option>
+                <option value="data">Data</option>
+              </select>
+            </label>
+          </div>
+          <div class="button-row">
+            <button id="addLayerButton" type="button">Add Layer</button>
+            <button id="removeLayerButton" type="button">Remove Layer</button>
+            <button id="layerVisibilityToggle" type="button">Toggle Visibility</button>
+          </div>
+          <p class="help-text">Collision and Data layers are first-class map layers in this foundation. Parallax remains reserved for a separate companion editor.</p>
+        </section>
+
+        <section class="panel">
+          <h3>Usage</h3>
+          <ul class="usage-list">
+            <li>Paint and Erase write to the selected layer.</li>
+            <li>Picker reads current cell value into active tile.</li>
+            <li>Marker tool places object or spawn markers per cell.</li>
+            <li>Right click on the canvas erases or removes a marker.</li>
+            <li>Saved JSON keeps a reserved parallax block for future companion tooling.</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
