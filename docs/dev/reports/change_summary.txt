@@ -1,0 +1,23 @@
+Change Summary
+
+1) Authoritative transition handoff
+- Promoted exactly one transition (`updateObjectiveProgress`) to conditional authoritative behavior.
+- Kept all other transitions in stub/non-authoritative behavior.
+
+2) Feature gate
+- Added/used gate: `authoritativeObjectiveProgress`.
+- Default remains OFF (`false`) unless explicitly enabled in options.featureGates.
+
+3) Write-path enforcement
+- When authoritative objective mode is active (`passiveMode=false` + gate ON), external snapshot patch writes to objective slice are rejected.
+- Objective authoritative writes are routed through `requestTransition('updateObjectiveProgress', ...)`.
+
+4) Passive mode preservation
+- Passive mode remains default and non-authoritative.
+- `updateObjectiveProgress` produces comparison output in passive/gated-comparison paths without mutating canonical objective state.
+
+5) Consumer boundary
+- Single read-only consumer path retained and validated through approved events and selectors only.
+
+6) Engine boundary
+- No files under `engine/` were modified.

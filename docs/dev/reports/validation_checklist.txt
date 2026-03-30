@@ -1,0 +1,26 @@
+Validation Checklist
+
+[PASS] Feature gate exists and defaults OFF
+- Verified in `src/advanced/state/createWorldGameStateSystem.js`.
+
+[PASS] Exactly one authoritative transition
+- `updateObjectiveProgress` is the only transition with `authoritativeApply` path.
+
+[PASS] Writes via transition-only path for authoritative objective slice
+- External objective patch attempts are rejected when authoritative objective mode is active.
+
+[PASS] Passive mode preserved
+- Passive mode remains default; comparison mode returns without authoritative mutation.
+
+[PASS] Selectors remain read-only
+- Selector outputs are returned as readonly clones.
+
+[PASS] One consumer path only
+- Objective progress mirror consumer remains read-only and selector-driven.
+
+[PASS] No engine changes
+- `git status --short` shows no modified paths under `engine/`.
+
+[PASS] Contract tests
+- Added/updated: `tests/world/WorldGameStateAuthoritativeHandoff.test.mjs`.
+- Validation run: `npm test` -> 83/83 explicit tests passed.

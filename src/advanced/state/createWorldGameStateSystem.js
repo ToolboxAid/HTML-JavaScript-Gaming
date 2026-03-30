@@ -25,6 +25,13 @@ import {
   mergeDeep
 } from './utils.js';
 
+function patchTouchesObjectiveSlice(patch) {
+  if (!isPlainObject(patch)) return false;
+  const worldStatePatch = patch.worldState;
+  if (!isPlainObject(worldStatePatch)) return false;
+  return worldStatePatch.objectives !== undefined;
+}
+
 function createWorldGameStateSystem(options = {}) {
   const now = typeof options.now === 'function' ? options.now : () => Date.now();
   const passiveMode = options.passiveMode !== undefined ? Boolean(options.passiveMode) : true;
@@ -203,6 +210,31 @@ function createWorldGameStateSystem(options = {}) {
         ok: false,
         reason: 'External snapshot patch must be an object.',
         changes: []
+      };
+    }
+
+    const objectiveAuthoritativeActive = Boolean(
+      !passiveMode &&
+      featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS]
+    );
+    if (objectiveAuthoritativeActive && patchTouchesObjectiveSlice(patch)) {
+      const correlationId = `externalPatchRejected:${Number(now())}`;
+      const rejectionEvent = createTransitionRejectedEvent({
+        transitionName: 'applyExternalSnapshotPatch',
+        correlationId,
+        code: 'OBJECTIVE_AUTHORITATIVE_SLICE_REQUIRES_TRANSITION',
+        reason: 'Objective progress authoritative slice must be written through updateObjectiveProgress transition.',
+        payload: {
+          rejectedRoots: Object.keys(patch)
+        },
+        now
+      });
+      return {
+        ok: false,
+        reason: 'OBJECTIVE_AUTHORITATIVE_SLICE_REQUIRES_TRANSITION',
+        changes: [],
+        correlationId,
+        eventPublished: publishEnvelope(rejectionEvent.eventType, rejectionEvent)
       };
     }
 

@@ -1,0 +1,21 @@
+BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE
+
+.
+|-- docs/
+|   |-- dev/
+|   |   |-- CODEX_COMMANDS.md
+|   |   |-- COMMIT_COMMENT.txt
+|   |   |-- NEXT_COMMAND.txt
+|   |   |-- README.md
+|   |   '-- reports/
+|   |       |-- file_tree.txt
+|   |       |-- change_summary.txt
+|   |       '-- validation_checklist.txt
+|   '-- pr/
+|       |-- BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md
+|       |-- LEVEL_11_1_HANDOFF_RULES.md
+|       '-- LEVEL_11_1_TEST_AND_ROLLBACK.md
+|-- src/
+|   '-- advanced/
+|       '-- state/
+|           '-- createWorldGameStateSystem.js

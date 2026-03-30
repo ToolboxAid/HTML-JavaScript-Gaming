@@ -1,1 +1,1 @@
-Level 11.1 BUILD_PR implementation: feature-gated authoritative updateObjectiveProgress handoff with passive comparison preservation, contract tests, and one approved real consumer validation path
+Level 11.1 implementation: feature-gated authoritative objectiveProgress handoff with passive-mode preservation, transition-only writes for the authoritative slice, and contract coverage

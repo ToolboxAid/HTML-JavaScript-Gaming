@@ -1,6 +1,4 @@
-# Level 11.1 Bundle
-
-Implementation delta for one authoritative handoff candidate.
+Implementation delta bundle for Level 11.1.
 
 Contents:
 - docs/pr/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md
@@ -8,6 +6,8 @@ Contents:
 - docs/pr/LEVEL_11_1_CONTRACT_TESTS_AND_ROLLBACK_GATES.md
 - docs/pr/LEVEL_11_1_REAL_CONSUMER_VALIDATION_PATH.md
 - docs/pr/LEVEL_11_1_IMPLEMENTATION_NOTES_FOR_CODEX.md
+- docs/pr/LEVEL_11_1_HANDOFF_RULES.md
+- docs/pr/LEVEL_11_1_TEST_AND_ROLLBACK.md
 - src/advanced/state/constants.js
 - src/advanced/state/transitions.js
 - src/advanced/state/createWorldGameStateSystem.js
@@ -21,8 +21,9 @@ Contents:
 - docs/dev/README.md
 
 Rules:
-- Promote exactly one authoritative transition (`updateObjectiveProgress`)
-- Preserve passive-mode comparison behavior
-- Validate one real consumer path only
+- Exactly one authoritative transition (`updateObjectiveProgress`)
+- Feature gate default OFF
+- Passive mode preserved for comparison behavior
+- Selectors for reads only, transitions for authoritative writes
+- One consumer path only
 - No engine core API changes
-- Repo ZIP output path must use <project folder>/tmp/<ZIP_NAME>.zip

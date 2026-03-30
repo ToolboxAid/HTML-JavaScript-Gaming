@@ -72,6 +72,12 @@ function createIntegrationApi(pipeline) {
 }
 
 export function run() {
+  const defaultGateSystem = createWorldGameStateSystem();
+  assert.equal(
+    defaultGateSystem.getFeatureGates()[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS],
+    false
+  );
+
   const passiveComparisonSystem = createWorldGameStateSystem({
     passiveMode: true,
     featureGates: {
@@ -116,6 +122,10 @@ export function run() {
       [WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS]: true
     }
   });
+  assert.equal(
+    authoritativeSystem.getFeatureGates()[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS],
+    true
+  );
   const authoritativeResult = authoritativeSystem.requestTransition('updateObjectiveProgress', {
     objectiveId: 'obj-auth',
     currentValue: 3,
@@ -133,6 +143,23 @@ export function run() {
   assert.throws(() => {
     objectiveSnapshot.byId['obj-auth'].currentValue = 999;
   }, /TypeError/);
+
+  const rejectedPatchResult = authoritativeSystem.applyExternalSnapshotPatch({
+    worldState: {
+      objectives: {
+        byId: {
+          'obj-auth': {
+            objectiveId: 'obj-auth',
+            currentValue: 999
+          }
+        }
+      }
+    }
+  });
+  assert.equal(rejectedPatchResult.ok, false);
+  assert.equal(rejectedPatchResult.reason, 'OBJECTIVE_AUTHORITATIVE_SLICE_REQUIRES_TRANSITION');
+  const objectiveSnapshotAfterRejectedPatch = authoritativeSystem.select('selectObjectiveSnapshot');
+  assert.equal(objectiveSnapshotAfterRejectedPatch.byId['obj-auth'].currentValue, 3);
 
   const pipeline = createEventPipeline();
   const integrationApi = createIntegrationApi(pipeline);
