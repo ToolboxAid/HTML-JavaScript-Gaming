@@ -1,43 +1,14 @@
-# Repository Directory Structure
 
-## High-Level Layout
+# Repo Structure
 
-```text
-/
-├─ README.md
-├─ package.json
-├─ index.html
-├─ docs/
-├─ engine/
-├─ games/
-├─ samples/
-├─ scripts/
-├─ tests/
-├─ tools/
-└─ tmp/
-```
+engine/ → core stable systems  
+src/advanced/state/ → authoritative state system  
+src/advanced/events/ → event system  
+src/advanced/integration/ → integration layer  
 
-## Folder Notes
-- `docs/`
-  Durable repo-facing docs only. Architecture, standards, decisions, getting-started, and the generated sample manifest live here.
+docs/pr/ → PR documentation  
+docs/dev/reports/ → generated reports  
 
-- `engine/`
-  Shared engine source. `engine/core/Engine.js` is the canonical direct boot import. Public subsystem APIs should generally be consumed through `engine/*/index.js`.
-
-- `games/`
-  Shipped games. The current game catalog contains `Asteroids/` plus the launcher page.
-
-- `samples/`
-  Large numbered sample catalog and `_shared/` sample-owned infrastructure.
-
-- `scripts/`
-  Test and manifest generation automation.
-
-- `tests/`
-  Node-safe tests for engine behavior, guardrails, and Asteroids validation.
-
-- `tools/`
-  Utility projects and repo support tools.
-
-- `tmp/`
-  Temporary local workspace artifacts.
+games/ → game implementations  
+tools/ → dev tools  
+samples/ → examples  

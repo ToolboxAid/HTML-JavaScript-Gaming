@@ -1,12 +1,23 @@
-# PROJECT TEMPLATE
 
-This is a clean starting point.
+# Project Overview
 
-Includes:
-- Engine (stable)
-- Advanced systems (state, events, integration)
-- Docs + workflow
-- Empty game space
+This repository provides a reusable game architecture framework.
 
-Start building in:
-games/<your-game-name>/
+## Current State
+
+- Advanced state system located in `src/advanced/state/`
+- Authoritative slices implemented:
+  - objectiveProgress
+  - score
+- Reports generated in `docs/dev/reports/`
+- Docs-first workflow enforced
+- Codex performs all implementation
+
+## Workflow
+
+PLAN_PR → BUILD_PR → APPLY_PR
+
+## Output Rules
+
+All ZIP outputs must go to:
+<project folder>/tmp/

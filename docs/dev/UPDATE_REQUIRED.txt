@@ -1,0 +1,19 @@
+UPDATE TO CURRENT STATE
+
+- README.md
+- docs/README.md
+- docs/repo-directory-structure.md
+- docs/getting-started.md
+- docs/review-checklist.md
+- docs/architecture/README.md
+- docs/architecture/engine-api-boundary.md
+- docs/dev/README.md
+
+CURRENT-STATE ITEMS TO REFLECT
+- src/advanced/state/ exists
+- authoritative objectiveProgress slice exists
+- authoritative score slice exists
+- docs/dev/reports/ is the report location
+- docs-only planning bundles; Codex writes implementation
+- PR docs belong in docs/pr/
+- ZIP outputs belong in <project folder>/tmp/
