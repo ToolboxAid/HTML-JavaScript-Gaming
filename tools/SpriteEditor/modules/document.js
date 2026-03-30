@@ -13,7 +13,7 @@ class SpriteEditorDocument {
       this.frameClipboard = null;
       this.soloState = null;
       this.blendPreviewMode = "normal";
-      this.sheet = { layout: "horizontal", padding: 4, spacing: 2, transparent: true, backgroundColor: "#ffffff" };
+      this.sheet = { layout: "horizontal", padding: 0, spacing: 0, transparent: true, backgroundColor: "#ffffff" };
       this.palettePresetName = "";
       this.paletteSelectionRequired = true;
       this.customPalettes = {};
@@ -523,7 +523,7 @@ class SpriteEditorDocument {
       return true;
     }
     computeSheetPlacement() {
-      const count = this.frames.length, p = this.sheet.padding, s = this.sheet.spacing;
+      const count = this.frames.length, p = 0, s = this.sheet.spacing;
       let cols = 1, rows = 1;
       if (this.sheet.layout === "horizontal") { cols = count; rows = 1; }
       else if (this.sheet.layout === "vertical") { cols = 1; rows = count; }
@@ -536,7 +536,7 @@ class SpriteEditorDocument {
       return { width: p * 2 + cols * this.cols + Math.max(0, cols - 1) * s, height: p * 2 + rows * this.rows + Math.max(0, rows - 1) * s, entries };
     }
     computeSheetPlacementForCount(count) {
-      const p = this.sheet.padding, s = this.sheet.spacing;
+      const p = 0, s = this.sheet.spacing;
       let cols = 1, rows = 1;
       if (this.sheet.layout === "horizontal") { cols = count; rows = 1; }
       else if (this.sheet.layout === "vertical") { cols = 1; rows = count; }

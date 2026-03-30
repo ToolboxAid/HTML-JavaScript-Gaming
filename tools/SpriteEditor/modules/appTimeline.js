@@ -26,9 +26,19 @@ function installSpriteEditorTimelineMethods(SpriteEditorApp) {
       const innerW = Math.max(80, w - 20);
       const innerH = h - 36;
       const count = Math.max(1, this.document.frames.length);
-      const slotGap = 6;
+      let slotGap = 6;
       const maxSlotW = 60;
-      const slotW = Math.max(28, Math.min(maxSlotW, Math.floor((innerW - (count - 1) * slotGap) / count)));
+      let slotW = Math.floor((innerW - (count - 1) * slotGap) / count);
+      if (slotW > maxSlotW) {
+        slotW = maxSlotW;
+      }
+      // Keep timeline slots inside bounds for large frame counts.
+      if (slotW < 10) {
+        slotGap = 0;
+        slotW = Math.max(1, Math.floor(innerW / count));
+      } else {
+        slotW = Math.max(1, slotW);
+      }
       const slotH = innerH;
       const totalW = count * slotW + (count - 1) * slotGap;
       const startX = innerX + Math.max(0, Math.floor((innerW - totalW) * 0.5));

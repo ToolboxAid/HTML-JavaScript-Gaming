@@ -772,7 +772,11 @@ class TileMapEditorApp {
       this.syncInputsFromDocument();
       this.renderTileset();
       this.renderCanvas();
-      this.updateStatus(`Loaded tileset PNG ${atlas.imageName}. Set tile size/spacing/margin and click Generate Tile Grid.`);
+      const successMessage = `Loaded tileset PNG ${atlas.imageName}. Set tile size/spacing/margin and click Generate Tile Grid.`;
+      this.updateStatus(successMessage);
+      if (typeof globalThis.alert === "function") {
+        globalThis.alert(successMessage);
+      }
     } catch (error) {
       this.updateStatus(`Tileset PNG load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     } finally {

@@ -4,14 +4,18 @@ function drawPixelPreviewExact(ctx, pixels, rect, options = {}) {
   const cols = Math.max(1, Number(options.cols) || 1);
   const rows = Math.max(1, Number(options.rows) || 1);
   const backgroundFill = Object.prototype.hasOwnProperty.call(options, "backgroundFill") ? options.backgroundFill : "#fff";
-  const borderStroke = options.borderStroke || "rgba(0,0,0,0.2)";
+  const borderStroke = Object.prototype.hasOwnProperty.call(options, "borderStroke")
+    ? options.borderStroke
+    : "rgba(0,0,0,0.2)";
   if (backgroundFill) {
     ctx.fillStyle = backgroundFill;
     ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
   }
   if (!pixels || !Array.isArray(pixels)) {
-    ctx.strokeStyle = borderStroke;
-    ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+    if (borderStroke) {
+      ctx.strokeStyle = borderStroke;
+      ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+    }
     return;
   }
   for (let py = 0; py < rows; py += 1) {
@@ -30,18 +34,34 @@ function drawPixelPreviewExact(ctx, pixels, rect, options = {}) {
       ctx.fillRect(x0, y0, w, h);
     }
   }
-  ctx.strokeStyle = borderStroke;
-  ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+  if (borderStroke) {
+    ctx.strokeStyle = borderStroke;
+    ctx.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.w - 1, rect.h - 1);
+  }
 }
 
 function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
+  const drawSolidBorder = (ctx, x, y, w, h, color) => {
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const iw = Math.max(0, Math.floor(w));
+    const ih = Math.max(0, Math.floor(h));
+    if (iw <= 1 || ih <= 1) return;
+    ctx.fillStyle = color;
+    ctx.fillRect(ix, iy, iw, 1);
+    ctx.fillRect(ix, iy + ih - 1, iw, 1);
+    ctx.fillRect(ix, iy, 1, ih);
+    ctx.fillRect(ix + iw - 1, iy, 1, ih);
+  };
+
   SpriteEditorCanvasControlSurface.prototype.drawTimelinePanel = function drawTimelinePanel(ctx) {
     const t = this.app.timelineStripRect;
     if (!t) return;
+    ctx.save();
+    ctx.lineWidth = 1;
     ctx.fillStyle = "#1a2733";
     ctx.fillRect(t.x, t.y, t.w, t.h);
-    ctx.strokeStyle = "rgba(255,255,255,0.15)";
-    ctx.strokeRect(t.x + 0.5, t.y + 0.5, t.w - 1, t.h - 1);
+    drawSolidBorder(ctx, t.x, t.y, t.w, t.h, "rgba(255,255,255,0.15)");
     ctx.fillStyle = "#dbe7f3";
     ctx.font = "bold 12px Arial";
     const timelineTitleX = t.x + 15;
@@ -49,6 +69,10 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
     ctx.fillText("TIMELINE", timelineTitleX, timelineTitleY);
     ctx.fillStyle = "#91a3b6";
     ctx.font = "11px Arial";
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(t.x + 1, t.y + 1, Math.max(0, t.w - 2), Math.max(0, t.h - 2));
+    ctx.clip();
     t.slots.forEach((slot) => {
       const f = this.app.document.frames[slot.index];
       const active = slot.index === this.app.document.activeFrameIndex;
@@ -62,20 +86,26 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
       if (hoverPreview && !active) ctx.fillStyle = "#2f4858";
       if (reorderTarget) ctx.fillStyle = "#305c4a";
       ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
-      ctx.strokeStyle = active ? "#4cc9f0" : (inRange ? "#7dd3fc" : "rgba(255,255,255,0.22)");
-      if (inPlaybackRange && !active) ctx.strokeStyle = "#fbbf24";
-      ctx.strokeRect(slot.x + 0.5, slot.y + 0.5, slot.w - 1, slot.h - 1);
+      let slotBorderColor = active ? "#4cc9f0" : (inRange ? "#7dd3fc" : "rgba(255,255,255,0.22)");
+      if (inPlaybackRange && !active) slotBorderColor = "#fbbf24";
+      drawSolidBorder(ctx, slot.x, slot.y, slot.w, slot.h, slotBorderColor);
       const thumbH = slot.h - 18;
       const thumbW = slot.w - 8;
       const thumbRect = { x: slot.x + 4, y: slot.y + 2, w: thumbW, h: thumbH };
       const thumbScale = Math.max(1, Math.floor(Math.min(thumbRect.w / Math.max(1, this.app.document.cols), thumbRect.h / Math.max(1, this.app.document.rows))));
       if (this.app.document.sheet.transparent) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(thumbRect.x, thumbRect.y, thumbRect.w, thumbRect.h);
+        ctx.clip();
         drawCanvasCheckerboard(ctx, thumbRect, Math.max(2, thumbScale));
+        ctx.restore();
       }
       drawPixelPreviewExact(ctx, this.app.document.getCompositedPixels(f, { respectSolo: false, blendMode: "normal" }), thumbRect, {
         cols: this.app.document.cols,
         rows: this.app.document.rows,
-        backgroundFill: this.app.document.sheet.transparent ? "rgba(0,0,0,0)" : "#fff"
+        backgroundFill: this.app.document.sheet.transparent ? "rgba(0,0,0,0)" : "#fff",
+        borderStroke: null
       });
       ctx.fillStyle = "#dbe7f3";
       ctx.font = "11px Arial";
@@ -85,6 +115,18 @@ function installControlSurfaceBottomPanel(SpriteEditorCanvasControlSurface) {
         ctx.fillRect(slot.x + 2, slot.y + slot.h - 4, slot.w - 4, 2);
       }
     });
+    const panelInnerRight = Math.floor(t.x + t.w - 1);
+    const rightMostSlotEdge = t.slots.reduce(
+      (maxX, slot) => Math.max(maxX, Math.floor(slot.x + slot.w)),
+      Math.floor(t.x + 1)
+    );
+    if (rightMostSlotEdge < panelInnerRight) {
+      ctx.fillStyle = "#1a2733";
+      ctx.fillRect(rightMostSlotEdge, Math.floor(t.y + 1), panelInnerRight - rightMostSlotEdge, Math.max(0, Math.floor(t.h - 2)));
+    }
+    ctx.restore();
+    drawSolidBorder(ctx, t.x, t.y, t.w, t.h, "rgba(255,255,255,0.15)");
+    ctx.restore();
   };
 
   SpriteEditorCanvasControlSurface.prototype.drawPreviewPanel = function drawPreviewPanel(ctx) {
