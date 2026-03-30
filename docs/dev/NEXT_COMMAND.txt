@@ -1,1 +1,1 @@
-Create BUILD_PR_SVG_BACKGROUND_EDITOR_PARALLAX_HANDOFF_POLISH as a docs-only, repo-structured delta
+Create BUILD_PR_SVG_BACKGROUND_EDITOR_SHAPE_WORKFLOW_POLISH as a docs-only, repo-structured delta

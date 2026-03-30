@@ -12,6 +12,7 @@ index.html
   <title>SVG Background Editor</title>
   <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="./svgBackgroundEditor.css" />
+  <script src="../../engine/paletteList.js"></script>
 </head>
 <body class="svg-background-editor-page">
   <div class="app-shell">
@@ -75,14 +76,29 @@ index.html
 
         <section class="panel">
           <h3>Paint + Stroke</h3>
-          <label>
-            Fill
-            <input id="fillColorInput" type="color" value="#7ec9ff" />
-          </label>
-          <label>
-            Stroke
-            <input id="strokeColorInput" type="color" value="#154f7c" />
-          </label>
+          <div class="row buttons">
+            <button id="setPaletteTargetPaintButton" type="button" class="palette-target-button">Set Paint</button>
+            <button id="setPaletteTargetStrokeButton" type="button" class="palette-target-button">Set Stroke</button>
+          </div>
+          <div id="paletteStateReadout" class="muted">Select Paint and Stroke from the palette to enable editing.</div>
+          <div class="active-color-row">
+            <div class="active-color-chip">
+              <span id="activePaintSwatch" class="color-dot"></span>
+              <span id="activePaintLabel">Paint: not selected</span>
+            </div>
+            <div class="active-color-chip">
+              <span id="activeStrokeSwatch" class="color-dot"></span>
+              <span id="activeStrokeLabel">Stroke: not selected</span>
+            </div>
+          </div>
+          <div class="swatch-strip-group">
+            <div class="swatch-strip-header">Used Colors</div>
+            <div id="usedColorStrip" class="swatch-grid used-color-grid"></div>
+          </div>
+          <div class="swatch-strip-group">
+            <div class="swatch-strip-header">Palette</div>
+            <div id="mainPaletteGrid" class="swatch-grid palette-grid"></div>
+          </div>
           <label>
             Stroke Width
             <input id="strokeWidthInput" type="number" min="0" max="128" step="0.5" value="2" />
@@ -91,6 +107,7 @@ index.html
             <button id="applyStyleButton" type="button">Apply Style to Selected</button>
             <button id="deleteSelectedButton" type="button">Delete Selected</button>
           </div>
+          <p class="help-text">Active Paint/Stroke stay locked until you intentionally change them from the palette.</p>
         </section>
 
         <section class="panel">

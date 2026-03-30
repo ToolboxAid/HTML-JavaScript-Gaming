@@ -1,20 +1,19 @@
 Summary
-- Added a new standalone SVG Background Editor at `tools/SVG Background Editor/` for background art authoring.
-- Implemented SVG authoring foundation with:
-  - New/Load/Save SVG workflow
-  - local sample loading from `tools/SVG Background Editor/samples/`
-  - shape tools: rectangle, ellipse/circle, line, polyline, and path
-  - fill/stroke/stroke-width controls
-  - element selection, move, resize, delete
-  - element list with order controls (send backward / bring forward)
-  - canvas zoom and pan controls
-- Added local SVG learning samples and a sample manifest:
-  - sky gradient scene
-  - mountain range scene
-  - Mario-style learning backdrop
-- Added a Tools hub card entry so the editor is discoverable from `tools/index.html`.
+- Updated `tools/SVG Background Editor/` to use palette-based select-and-draw for Paint and Stroke instead of direct color pickers.
+- Added explicit palette target flow (`Set Paint` / `Set Stroke`) and stored active Paint/Stroke values in editor state.
+- Enforced stable Paint/Stroke behavior:
+  - active values persist after selection
+  - selecting SVG elements no longer overwrites active Paint/Stroke
+  - active values change only when user intentionally selects a new palette swatch
+- Added used-color swatch strip above the main palette:
+  - derived from colors actually used in the current document
+  - duplicate colors collapsed
+  - swatch click reuses the same palette selection flow
+- Added enablement gating rules:
+  - startup/file actions remain available (`New`, `Load`, `Load Sample`)
+  - most edit actions are disabled until both Paint and Stroke selections exist
+  - object-dependent actions stay disabled unless an element is selected and style state is valid
+- Kept zoom/pan and view-only selection flow available before style selection.
 
-Boundary and compatibility notes
-- Tool remains focused on background art authoring only.
-- Saved output is plain SVG for use as Parallax Editor image sources.
+Boundary notes
 - No files under `engine/` were modified.

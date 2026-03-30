@@ -1,19 +1,9 @@
-BUILD_PR_SVG_BACKGROUND_EDITOR_FOUNDATION
+BUILD_PR_SVG_BACKGROUND_EDITOR_PALETTE_AND_ENABLEMENT_RULES
 
-Tool
+SVG Background Editor
 - tools/SVG Background Editor/index.html
 - tools/SVG Background Editor/main.js
 - tools/SVG Background Editor/svgBackgroundEditor.css
-- tools/SVG Background Editor/README.md
-
-Samples
-- tools/SVG Background Editor/samples/sample-manifest.json
-- tools/SVG Background Editor/samples/sky_gradient_scene.svg
-- tools/SVG Background Editor/samples/mountain_range_scene.svg
-- tools/SVG Background Editor/samples/mario_style_learning_backdrop.svg
-
-Tool Hub Integration
-- tools/index.html
 
 Reports
 - docs/dev/reports/file_tree.txt

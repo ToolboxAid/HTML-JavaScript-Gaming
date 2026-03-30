@@ -33,9 +33,12 @@ const state = {
   panX: 0,
   panY: 0,
   activeTool: "select",
-  fill: "#7ec9ff",
-  stroke: "#154f7c",
+  fill: null,
+  stroke: null,
+  activePaletteTarget: "paint",
   strokeWidth: 2,
+  usedColors: [],
+  paletteEntries: [],
   selectedId: null,
   drag: null,
   pendingPolyline: null,
@@ -60,8 +63,15 @@ const refs = {
   zoomInButton: document.getElementById("zoomInButton"),
   resetViewButton: document.getElementById("resetViewButton"),
   toolGrid: document.getElementById("toolGrid"),
-  fillColorInput: document.getElementById("fillColorInput"),
-  strokeColorInput: document.getElementById("strokeColorInput"),
+  setPaletteTargetPaintButton: document.getElementById("setPaletteTargetPaintButton"),
+  setPaletteTargetStrokeButton: document.getElementById("setPaletteTargetStrokeButton"),
+  paletteStateReadout: document.getElementById("paletteStateReadout"),
+  activePaintSwatch: document.getElementById("activePaintSwatch"),
+  activePaintLabel: document.getElementById("activePaintLabel"),
+  activeStrokeSwatch: document.getElementById("activeStrokeSwatch"),
+  activeStrokeLabel: document.getElementById("activeStrokeLabel"),
+  usedColorStrip: document.getElementById("usedColorStrip"),
+  mainPaletteGrid: document.getElementById("mainPaletteGrid"),
   strokeWidthInput: document.getElementById("strokeWidthInput"),
   applyStyleButton: document.getElementById("applyStyleButton"),
   deleteSelectedButton: document.getElementById("deleteSelectedButton"),
@@ -94,6 +104,274 @@ function round2(value) {
 
 function setStatus(text) {
   refs.statusText.textContent = text;
+}
+
+const DRAW_TOOL_SET = new Set(["rect", "ellipse", "line", "polyline", "path"]);
+const FALLBACK_PALETTE = [
+  { hex: "#232323", name: "Black" },
+  { hex: "#EDEDED", name: "White" },
+  { hex: "#FF5349", name: "Red Orange" },
+  { hex: "#FF7538", name: "Orange" },
+  { hex: "#FCE883", name: "Yellow" },
+  { hex: "#1CAC78", name: "Green" },
+  { hex: "#1F75FE", name: "Blue" },
+  { hex: "#926EAE", name: "Violet" }
+];
+
+function normalizeHexColor(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const hex = trimmed.startsWith("#") ? trimmed.slice(1) : trimmed;
+  if (!/^[0-9a-fA-F]{3,8}$/.test(hex)) {
+    return null;
+  }
+  if (hex.length === 3 || hex.length === 4) {
+    return `#${hex.slice(0, 3).split("").map((ch) => ch + ch).join("").toUpperCase()}`;
+  }
+  if (hex.length === 6 || hex.length === 8) {
+    return `#${hex.slice(0, 6).toUpperCase()}`;
+  }
+  return null;
+}
+
+function normalizeColorValue(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim().toLowerCase();
+  if (!trimmed || trimmed === "none" || trimmed === "transparent" || trimmed.startsWith("url(")) {
+    return null;
+  }
+  const hex = normalizeHexColor(trimmed);
+  if (hex) {
+    return hex;
+  }
+  const rgbMatch = trimmed.match(/^rgba?\(([^)]+)\)$/i);
+  if (!rgbMatch) {
+    return null;
+  }
+  const parts = rgbMatch[1].split(",").map((part) => Number(part.trim()));
+  if (parts.length < 3 || parts.slice(0, 3).some((part) => !Number.isFinite(part))) {
+    return null;
+  }
+  const [r, g, b] = parts;
+  const toHex = (channel) => Math.max(0, Math.min(255, Math.round(channel))).toString(16).padStart(2, "0").toUpperCase();
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function hasRequiredStyleSelection() {
+  return Boolean(normalizeColorValue(state.fill) && normalizeColorValue(state.stroke));
+}
+
+function getEditingGateMessage() {
+  const missing = [];
+  if (!normalizeColorValue(state.fill)) {
+    missing.push("Paint");
+  }
+  if (!normalizeColorValue(state.stroke)) {
+    missing.push("Stroke");
+  }
+  if (missing.length === 0) {
+    return "Editing enabled.";
+  }
+  return `Select ${missing.join(" and ")} from the palette to enable editing.`;
+}
+
+function getPaletteLibrary() {
+  if (typeof globalThis.palettesList === "object" && globalThis.palettesList) {
+    return globalThis.palettesList;
+  }
+  return null;
+}
+
+function loadPaletteEntriesFromExistingWorkflow() {
+  const library = getPaletteLibrary();
+  const seen = new Set();
+  const entries = [];
+
+  const consumePalette = (paletteName, paletteEntries) => {
+    if (!Array.isArray(paletteEntries)) {
+      return;
+    }
+    paletteEntries.forEach((entry, index) => {
+      const normalizedHex = normalizeColorValue(entry?.hex);
+      if (!normalizedHex || seen.has(normalizedHex)) {
+        return;
+      }
+      seen.add(normalizedHex);
+      entries.push({
+        hex: normalizedHex,
+        name: typeof entry?.name === "string" && entry.name.trim() ? entry.name.trim() : `${paletteName} ${index + 1}`
+      });
+    });
+  };
+
+  if (library) {
+    const preferred = ["default", "crayola024", "crayola016", "crayola008"];
+    preferred.forEach((name) => {
+      if (Object.prototype.hasOwnProperty.call(library, name)) {
+        consumePalette(name, library[name]);
+      }
+    });
+    Object.keys(library).forEach((name) => consumePalette(name, library[name]));
+  }
+
+  if (entries.length === 0) {
+    FALLBACK_PALETTE.forEach((entry) => entries.push(entry));
+  }
+
+  return entries;
+}
+
+function createSwatchButton(colorHex, options = {}) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `palette-swatch${options.used ? " used" : ""}`;
+  button.title = options.name ? `${options.name} (${colorHex})` : colorHex;
+  button.dataset.color = colorHex;
+  button.style.backgroundColor = colorHex;
+  button.addEventListener("click", () => {
+    applyPaletteColorSelection(colorHex, options.used ? "used-colors" : "palette");
+  });
+  return button;
+}
+
+function renderMainPaletteGrid() {
+  refs.mainPaletteGrid.innerHTML = "";
+  state.paletteEntries.forEach((entry) => {
+    const swatch = createSwatchButton(entry.hex, { name: entry.name, used: false });
+    const isActiveColor = state.activePaletteTarget === "paint"
+      ? normalizeColorValue(state.fill) === entry.hex
+      : normalizeColorValue(state.stroke) === entry.hex;
+    if (isActiveColor) {
+      swatch.classList.add("active-target-color");
+    }
+    refs.mainPaletteGrid.appendChild(swatch);
+  });
+}
+
+function renderUsedColorStrip() {
+  refs.usedColorStrip.innerHTML = "";
+  if (state.usedColors.length === 0) {
+    const empty = document.createElement("span");
+    empty.className = "muted";
+    empty.textContent = "No used colors in this document yet.";
+    refs.usedColorStrip.appendChild(empty);
+    return;
+  }
+
+  state.usedColors.forEach((colorHex) => {
+    const swatch = createSwatchButton(colorHex, { used: true });
+    const isActiveColor = state.activePaletteTarget === "paint"
+      ? normalizeColorValue(state.fill) === colorHex
+      : normalizeColorValue(state.stroke) === colorHex;
+    if (isActiveColor) {
+      swatch.classList.add("active-target-color");
+    }
+    refs.usedColorStrip.appendChild(swatch);
+  });
+}
+
+function refreshUsedColors() {
+  const discovered = [];
+  const discoveredSet = new Set();
+
+  getDrawableElements().forEach((element) => {
+    const fill = normalizeColorValue(element.getAttribute("fill") || element.style.fill || "");
+    const stroke = normalizeColorValue(element.getAttribute("stroke") || element.style.stroke || "");
+    if (fill && !discoveredSet.has(fill)) {
+      discoveredSet.add(fill);
+      discovered.push(fill);
+    }
+    if (stroke && !discoveredSet.has(stroke)) {
+      discoveredSet.add(stroke);
+      discovered.push(stroke);
+    }
+  });
+
+  const retained = state.usedColors.filter((colorHex) => discoveredSet.has(colorHex));
+  discovered.forEach((colorHex) => {
+    if (!retained.includes(colorHex)) {
+      retained.push(colorHex);
+    }
+  });
+  state.usedColors = retained;
+  renderUsedColorStrip();
+  renderMainPaletteGrid();
+}
+
+function updatePaletteReadout() {
+  const target = state.activePaletteTarget === "paint" ? "Paint" : "Stroke";
+  const paintHex = normalizeColorValue(state.fill);
+  const strokeHex = normalizeColorValue(state.stroke);
+
+  refs.setPaletteTargetPaintButton.classList.toggle("active", state.activePaletteTarget === "paint");
+  refs.setPaletteTargetStrokeButton.classList.toggle("active", state.activePaletteTarget === "stroke");
+
+  refs.activePaintSwatch.style.backgroundColor = paintHex || "transparent";
+  refs.activeStrokeSwatch.style.backgroundColor = strokeHex || "transparent";
+  refs.activePaintSwatch.classList.toggle("empty", !paintHex);
+  refs.activeStrokeSwatch.classList.toggle("empty", !strokeHex);
+
+  refs.activePaintLabel.textContent = paintHex ? `Paint: ${paintHex}` : "Paint: not selected";
+  refs.activeStrokeLabel.textContent = strokeHex ? `Stroke: ${strokeHex}` : "Stroke: not selected";
+  refs.paletteStateReadout.textContent = `${getEditingGateMessage()} Target: ${target}.`;
+}
+
+function applyEnablementState() {
+  const hasStyleSelection = hasRequiredStyleSelection();
+  const hasObjectSelection = Boolean(getSelectedElement());
+
+  refs.applyCanvasSizeButton.disabled = !hasStyleSelection;
+  refs.strokeWidthInput.disabled = !hasStyleSelection;
+  refs.applyStyleButton.disabled = !(hasStyleSelection && hasObjectSelection);
+  refs.deleteSelectedButton.disabled = !(hasStyleSelection && hasObjectSelection);
+  refs.sendBackwardButton.disabled = !(hasStyleSelection && hasObjectSelection);
+  refs.bringForwardButton.disabled = !(hasStyleSelection && hasObjectSelection);
+
+  refs.toolGrid.querySelectorAll("[data-tool]").forEach((button) => {
+    const isDrawTool = DRAW_TOOL_SET.has(button.dataset.tool || "");
+    const isDisabled = isDrawTool && !hasStyleSelection;
+    button.disabled = isDisabled;
+    button.classList.toggle("locked", isDisabled);
+  });
+
+  if (!hasStyleSelection && DRAW_TOOL_SET.has(state.activeTool)) {
+    setActiveTool("select", { silent: true });
+  }
+
+  updatePaletteReadout();
+}
+
+function setPaletteTarget(target, options = {}) {
+  state.activePaletteTarget = target === "stroke" ? "stroke" : "paint";
+  updatePaletteReadout();
+  renderUsedColorStrip();
+  renderMainPaletteGrid();
+  if (!options.silent) {
+    setStatus(`Palette target set to ${state.activePaletteTarget}.`);
+  }
+}
+
+function applyPaletteColorSelection(colorHex, sourceLabel = "palette") {
+  const normalized = normalizeColorValue(colorHex);
+  if (!normalized) {
+    return;
+  }
+
+  if (state.activePaletteTarget === "paint") {
+    state.fill = normalized;
+  } else {
+    state.stroke = normalized;
+  }
+
+  applyEnablementState();
+  setStatus(`Selected ${normalized} from ${sourceLabel} for ${state.activePaletteTarget}.`);
 }
 
 function createSvgElement(tagName) {
@@ -129,12 +407,18 @@ function getSelectedElement() {
   return refs.sceneRoot.querySelector(`[data-editor-id="${state.selectedId}"]`);
 }
 
-function setActiveTool(toolName) {
+function setActiveTool(toolName, options = {}) {
+  const targetButton = refs.toolGrid.querySelector(`[data-tool="${toolName}"]`);
+  if (targetButton && targetButton.disabled) {
+    return;
+  }
   state.activeTool = toolName;
   refs.toolGrid.querySelectorAll("[data-tool]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tool === toolName);
   });
-  setStatus(`Active tool: ${toolName}.`);
+  if (!options.silent) {
+    setStatus(`Active tool: ${toolName}.`);
+  }
 }
 
 function updateCanvasMeta() {
@@ -173,26 +457,7 @@ function clearSelection() {
   refs.selectionReadout.textContent = "No element selected.";
   refs.selectionOverlay.classList.add("hidden");
   renderElementList();
-}
-
-function syncStyleControlsFromSelection(element) {
-  const fill = element.getAttribute("fill");
-  const stroke = element.getAttribute("stroke");
-  const strokeWidth = element.getAttribute("stroke-width");
-
-  if (typeof fill === "string" && fill.startsWith("#") && fill.length === 7) {
-    state.fill = fill;
-    refs.fillColorInput.value = fill;
-  }
-  if (typeof stroke === "string" && stroke.startsWith("#") && stroke.length === 7) {
-    state.stroke = stroke;
-    refs.strokeColorInput.value = stroke;
-  }
-  if (strokeWidth !== null) {
-    const nextStrokeWidth = clamp(strokeWidth, 0, 128, state.strokeWidth);
-    state.strokeWidth = nextStrokeWidth;
-    refs.strokeWidthInput.value = String(nextStrokeWidth);
-  }
+  applyEnablementState();
 }
 
 function selectElement(element) {
@@ -206,9 +471,9 @@ function selectElement(element) {
   const bbox = safeGetBBox(element);
   const bboxText = bbox ? `bounds: ${Math.round(bbox.x)}, ${Math.round(bbox.y)}, ${Math.round(bbox.width)} x ${Math.round(bbox.height)}` : "bounds: unavailable";
   refs.selectionReadout.textContent = `${tagName} | id: ${element.getAttribute("id")} | ${bboxText}`;
-  syncStyleControlsFromSelection(element);
   renderElementList();
   updateSelectionOverlay();
+  applyEnablementState();
 }
 
 function updateSelectionOverlay() {
@@ -230,6 +495,7 @@ function updateSelectionOverlay() {
   const height = Math.max(1, bbox.height * state.zoom);
 
   refs.selectionOverlay.classList.remove("hidden");
+  refs.selectionOverlay.classList.toggle("gated", !hasRequiredStyleSelection());
   refs.selectionBounds.style.left = `${left}px`;
   refs.selectionBounds.style.top = `${top}px`;
   refs.selectionBounds.style.width = `${width}px`;
@@ -264,6 +530,7 @@ function renderElementList() {
     item.textContent = "No drawable elements.";
     refs.elementList.appendChild(item);
     updateCanvasMeta();
+    applyEnablementState();
     return;
   }
 
@@ -293,6 +560,7 @@ function renderElementList() {
   });
 
   updateCanvasMeta();
+  applyEnablementState();
 }
 
 function setCanvasSize(width, height) {
@@ -309,10 +577,13 @@ function createNewDocument() {
   refs.sceneRoot.replaceChildren();
   state.documentName = "untitled-background";
   state.elementIdCounter = 1;
+  state.usedColors = [];
   state.pendingPolyline = null;
   state.pendingFreehand = null;
   clearSelection();
   setCanvasSize(refs.canvasWidthInput.value, refs.canvasHeightInput.value);
+  refreshUsedColors();
+  applyEnablementState();
   setStatus("Created new SVG background document.");
 }
 
@@ -340,8 +611,13 @@ function resetView() {
 }
 
 function applyCurrentStyle(element) {
-  element.setAttribute("fill", state.fill);
-  element.setAttribute("stroke", state.stroke);
+  const fillColor = normalizeColorValue(state.fill);
+  const strokeColor = normalizeColorValue(state.stroke);
+  if (!fillColor || !strokeColor) {
+    return;
+  }
+  element.setAttribute("fill", fillColor);
+  element.setAttribute("stroke", strokeColor);
   element.setAttribute("stroke-width", String(state.strokeWidth));
   element.setAttribute("stroke-linecap", "round");
   element.setAttribute("stroke-linejoin", "round");
@@ -378,6 +654,7 @@ function createShapeForTool(toolName, point) {
   applyCurrentStyle(element);
   ensureEditorIdentity(element);
   refs.sceneRoot.appendChild(element);
+  refreshUsedColors();
   return element;
 }
 
@@ -763,12 +1040,14 @@ function finalizePendingPolyline(commit = true) {
 
   if (!commit || points.length < 2) {
     element.remove();
+    refreshUsedColors();
     setStatus("Polyline canceled.");
     renderElementList();
     return;
   }
 
   element.setAttribute("points", pointsToAttribute(points));
+  refreshUsedColors();
   selectElement(element);
   setStatus("Polyline committed.");
 }
@@ -783,6 +1062,7 @@ function handlePolylineClick(point) {
     ensureEditorIdentity(element);
     refs.sceneRoot.appendChild(element);
     state.pendingPolyline = { element, points };
+    refreshUsedColors();
     selectElement(element);
     renderElementList();
     setStatus("Polyline started. Click to add points, double click or Enter to finish.");
@@ -812,6 +1092,7 @@ function startFreehandPath(point) {
   element.setAttribute("d", pointsToPath(points, false));
   ensureEditorIdentity(element);
   refs.sceneRoot.appendChild(element);
+  refreshUsedColors();
   state.pendingFreehand = {
     element,
     points
@@ -845,12 +1126,14 @@ function finalizeFreehandPath(commit = true) {
   state.pendingFreehand = null;
   if (!commit || points.length < 2) {
     element.remove();
+    refreshUsedColors();
     setStatus("Path canceled.");
     renderElementList();
     return;
   }
 
   element.setAttribute("d", pointsToPath(points, false));
+  refreshUsedColors();
   selectElement(element);
   setStatus("Path committed.");
 }
@@ -882,6 +1165,10 @@ function onSvgPointerDown(event) {
   }
 
   if (state.activeTool === "polyline") {
+    if (!hasRequiredStyleSelection()) {
+      setStatus("Select Paint and Stroke from the palette before drawing.");
+      return;
+    }
     handlePolylineClick(scenePoint);
     renderElementList();
     event.preventDefault();
@@ -889,6 +1176,10 @@ function onSvgPointerDown(event) {
   }
 
   if (state.activeTool === "path") {
+    if (!hasRequiredStyleSelection()) {
+      setStatus("Select Paint and Stroke from the palette before drawing.");
+      return;
+    }
     finalizePendingPolyline(false);
     startFreehandPath(scenePoint);
     state.drag = {
@@ -908,7 +1199,7 @@ function onSvgPointerDown(event) {
     if (hitShape) {
       selectElement(hitShape);
       const snapshot = captureGeometry(hitShape);
-      if (snapshot) {
+      if (snapshot && hasRequiredStyleSelection()) {
         state.drag = {
           kind: "move",
           pointerId: event.pointerId,
@@ -926,6 +1217,10 @@ function onSvgPointerDown(event) {
   }
 
   if (state.activeTool === "rect" || state.activeTool === "ellipse" || state.activeTool === "line") {
+    if (!hasRequiredStyleSelection()) {
+      setStatus("Select Paint and Stroke from the palette before drawing.");
+      return;
+    }
     finalizePendingPolyline(true);
     const shape = createShapeForTool(state.activeTool, scenePoint);
     if (!shape) {
@@ -1026,17 +1321,26 @@ function onCanvasWheel(event) {
 }
 
 function deleteSelectedElement() {
+  if (!hasRequiredStyleSelection()) {
+    setStatus("Select Paint and Stroke from the palette first.");
+    return;
+  }
   const selected = getSelectedElement();
   if (!selected) {
     return;
   }
   selected.remove();
+  refreshUsedColors();
   clearSelection();
   renderElementList();
   setStatus("Deleted selected element.");
 }
 
 function moveSelectedForward() {
+  if (!hasRequiredStyleSelection()) {
+    setStatus("Select Paint and Stroke from the palette first.");
+    return;
+  }
   const selected = getSelectedElement();
   if (!selected || !selected.parentNode) {
     return;
@@ -1051,6 +1355,10 @@ function moveSelectedForward() {
 }
 
 function moveSelectedBackward() {
+  if (!hasRequiredStyleSelection()) {
+    setStatus("Select Paint and Stroke from the palette first.");
+    return;
+  }
   const selected = getSelectedElement();
   if (!selected || !selected.parentNode) {
     return;
@@ -1065,12 +1373,18 @@ function moveSelectedBackward() {
 }
 
 function applyStyleToSelection() {
+  if (!hasRequiredStyleSelection()) {
+    setStatus("Select Paint and Stroke from the palette first.");
+    return;
+  }
   const selected = getSelectedElement();
   if (!selected) {
     setStatus("No selected element to style.");
     return;
   }
   applyCurrentStyle(selected);
+  refreshUsedColors();
+  applyEnablementState();
   setStatus("Applied style to selected element.");
 }
 
@@ -1214,6 +1528,8 @@ function loadSvgFromText(svgText, sourceName = "loaded-svg") {
   state.documentName = sourceName.replace(/\.svg$/i, "") || "loaded-background";
   clearSelection();
   renderElementList();
+  refreshUsedColors();
+  applyEnablementState();
   setStatus(`Loaded SVG: ${sourceName}`);
 }
 
@@ -1351,6 +1667,10 @@ function bindEvents() {
   });
 
   refs.applyCanvasSizeButton.addEventListener("click", () => {
+    if (!hasRequiredStyleSelection()) {
+      setStatus("Select Paint and Stroke from the palette before editing.");
+      return;
+    }
     setCanvasSize(refs.canvasWidthInput.value, refs.canvasHeightInput.value);
     setStatus("Updated canvas size.");
   });
@@ -1381,16 +1701,17 @@ function bindEvents() {
     });
   });
 
-  refs.fillColorInput.addEventListener("input", () => {
-    state.fill = refs.fillColorInput.value;
+  refs.setPaletteTargetPaintButton.addEventListener("click", () => {
+    setPaletteTarget("paint");
   });
 
-  refs.strokeColorInput.addEventListener("input", () => {
-    state.stroke = refs.strokeColorInput.value;
+  refs.setPaletteTargetStrokeButton.addEventListener("click", () => {
+    setPaletteTarget("stroke");
   });
 
   refs.strokeWidthInput.addEventListener("input", () => {
     state.strokeWidth = clamp(refs.strokeWidthInput.value, 0, 128, state.strokeWidth);
+    applyEnablementState();
   });
 
   refs.applyStyleButton.addEventListener("click", applyStyleToSelection);
@@ -1414,6 +1735,10 @@ function bindEvents() {
     handleButton.addEventListener("pointerdown", (event) => {
       event.preventDefault();
       event.stopPropagation();
+      if (!hasRequiredStyleSelection()) {
+        setStatus("Select Paint and Stroke from the palette before editing.");
+        return;
+      }
       const selected = getSelectedElement();
       if (!selected) {
         return;
@@ -1506,9 +1831,14 @@ function bindEvents() {
 }
 
 async function initialize() {
+  state.paletteEntries = loadPaletteEntriesFromExistingWorkflow();
   bindEvents();
   setCanvasSize(state.canvasWidth, state.canvasHeight);
   resetView();
+  renderMainPaletteGrid();
+  renderUsedColorStrip();
+  setPaletteTarget("paint", { silent: true });
+  applyEnablementState();
   renderElementList();
   await refreshSampleOptions(false);
   setStatus("SVG Background Editor ready.");

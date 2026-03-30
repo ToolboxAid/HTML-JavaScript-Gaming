@@ -1,1 +1,1 @@
-Build plan: add SVG Background Editor foundation for creating parallax-ready background art
+Build plan: SVG Background Editor palette-driven paint/stroke persistence, enablement gating, and used-color swatches

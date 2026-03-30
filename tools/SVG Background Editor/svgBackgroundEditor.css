@@ -148,6 +148,98 @@ button:disabled {
   background: #1f4d76;
 }
 
+.tool-button.locked {
+  opacity: 0.45;
+}
+
+.palette-target-button.active {
+  border-color: #8be0ff;
+  box-shadow: 0 0 0 1px rgba(139, 224, 255, 0.35) inset;
+  background: #20567e;
+}
+
+.active-color-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.active-color-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #c8d9ef;
+  background: transparent;
+}
+
+.color-dot.empty {
+  background:
+    repeating-linear-gradient(45deg, #30445e 0, #30445e 4px, #1c2d44 4px, #1c2d44 8px);
+}
+
+.swatch-strip-group {
+  margin-top: 10px;
+}
+
+.swatch-strip-header {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.swatch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.palette-grid {
+  max-height: 180px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.used-color-grid {
+  max-height: 70px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.palette-swatch {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #d2deef;
+  border-radius: 4px;
+  padding: 0;
+  min-width: 22px;
+  min-height: 22px;
+  box-sizing: border-box;
+}
+
+.palette-swatch:hover {
+  border-color: #ffffff;
+}
+
+.palette-swatch.used {
+  border-style: dashed;
+}
+
+.palette-swatch.active-target-color {
+  box-shadow: 0 0 0 2px #8be0ff;
+}
+
 .canvas-panel {
   display: flex;
   flex-direction: column;
@@ -265,6 +357,10 @@ button:disabled {
 }
 
 .selection-overlay.hidden {
+  display: none;
+}
+
+.selection-overlay.gated .resize-handle {
   display: none;
 }
 

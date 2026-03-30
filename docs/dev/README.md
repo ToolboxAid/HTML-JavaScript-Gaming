@@ -1,8 +1,7 @@
 Docs-only bundle.
 
-Next tool:
-- SVG Background Editor
-
-Purpose:
-- draw background art inside the project
-- hand off SVG assets to the Parallax Editor
+Key rules:
+- Paint + Stroke use the existing palette workflow
+- selected colors persist until changed
+- most controls stay disabled until valid selection
+- used colors appear as swatches above the palette

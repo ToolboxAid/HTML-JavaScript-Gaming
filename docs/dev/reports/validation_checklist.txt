@@ -1,18 +1,16 @@
-BUILD_PR_SVG_BACKGROUND_EDITOR_FOUNDATION Validation Checklist
+BUILD_PR_SVG_BACKGROUND_EDITOR_PALETTE_AND_ENABLEMENT_RULES Validation Checklist
 
-[PASS] New tool directory exists at `tools/SVG Background Editor/`.
-[PASS] Tool entrypoint files exist: `index.html`, `main.js`, `svgBackgroundEditor.css`.
-[PASS] Local sample manifest exists and parses as JSON.
-[PASS] Local sample SVG files exist and parse as XML.
-[PASS] UI includes required authoring actions and shape tools.
+[PASS] SVG editor UI now exposes palette target workflow (`Set Paint` / `Set Stroke`).
+[PASS] Direct color picker controls were replaced by palette-driven swatch selection.
+[PASS] Active Paint/Stroke values are stored in editor state and not overwritten by object selection.
+[PASS] Used-color swatch strip exists above main palette and is wired to selection flow.
+[PASS] Enablement gating exists for most editing controls until required Paint+Stroke selection is valid.
+[PASS] Startup/file actions (`New`, `Load`, `Load Sample`) remain available before style selection.
 [PASS] Runtime script parses successfully (`new Function(...)` syntax check).
-[PASS] Tools hub includes SVG Background Editor card entry.
 [PASS] No engine core API files were modified.
 
 Validation Commands Run
-- node -e "const fs=require('fs'); const src=fs.readFileSync('tools/SVG Background Editor/main.js','utf8'); new Function(src); console.log('main.js syntax ok');"
-- node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('tools/SVG Background Editor/samples/sample-manifest.json','utf8')); console.log('sample manifest json ok');"
-- powershell: `[xml](Get-Content -LiteralPath 'tools/SVG Background Editor/samples/sky_gradient_scene.svg' -Raw)`, `[xml](Get-Content -LiteralPath 'tools/SVG Background Editor/samples/mountain_range_scene.svg' -Raw)`, `[xml](Get-Content -LiteralPath 'tools/SVG Background Editor/samples/mario_style_learning_backdrop.svg' -Raw)`
-- rg -n "New SVG|Load SVG|Save SVG|Rectangle|Ellipse/Circle|Line|Polyline|Path|Apply Style to Selected|Delete Selected" "tools/SVG Background Editor/index.html"
-- rg -n "SVG Background Editor" "tools/index.html"
+- node -e "const fs=require('fs'); const src=fs.readFileSync('tools/SVG Background Editor/main.js','utf8'); new Function(src); console.log('svg editor main.js syntax ok');"
+- rg -n "setPaletteTarget(Paint|Stroke)Button|paletteStateReadout|usedColorStrip|mainPaletteGrid|paletteList\\.js" "tools/SVG Background Editor/index.html"
+- rg -n "hasRequiredStyleSelection|applyEnablementState|loadPaletteEntriesFromExistingWorkflow|renderUsedColorStrip|renderMainPaletteGrid|applyPaletteColorSelection|setPaletteTarget\\(" "tools/SVG Background Editor/main.js"
 - git diff --name-only -- engine
