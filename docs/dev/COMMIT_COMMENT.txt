@@ -1,1 +1,1 @@
-Build plan: remove SVG pan button, use middle mouse pan, and clarify Tile Map Editor PNG tileset assignment flow
+Build plan: shared theme across tools, explicit SVG palette selection, and used-color swatches in Sprite Editor

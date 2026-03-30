@@ -1,6 +1,6 @@
 Docs-only bundle.
 
-Included:
-- SVG pan button removal rule
-- middle mouse pan rule
-- Tile Map Editor PNG tileset assignment workflow
+Includes:
+- all-tools shared theme rule
+- explicit SVG palette selection flow
+- used-color swatch strip for Sprite Editor
