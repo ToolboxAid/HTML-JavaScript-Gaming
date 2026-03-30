@@ -1,18 +1,18 @@
-BUILD_PR_EDITOR_ADVANCED_SIMULATION_FULL_MAPS Validation Checklist
+BUILD_PR_SVG_BACKGROUND_EDITOR_FOUNDATION Validation Checklist
 
-[PASS] Both editors include simulation controls: Simulate, Play, Pause, Restart Position, Exit Simulation.
-[PASS] Tile Map Editor simulation upgraded to full-map traversal mode with scroll-follow context.
-[PASS] Tile simulation visibly covers layout/collision/data/marker validation via overlay + counters + probe path.
-[PASS] Parallax Editor simulation upgraded to full-map traversal with progress-based camera motion.
-[PASS] Parallax simulation visibly exposes depth/foreground/background and repeat/wrap behavior over traverse.
-[PASS] Both editors preserve local sample loading (`./samples/sample-manifest.json`).
-[PASS] Editors remain separate tools (`tools/Tile Map Editor/` and `tools/Parallax Editor/`).
-[PASS] No engine core API changes (`git diff --name-only -- engine` returned no files).
-[PASS] JavaScript syntax validation passed for updated runtime files.
+[PASS] New tool directory exists at `tools/SVG Background Editor/`.
+[PASS] Tool entrypoint files exist: `index.html`, `main.js`, `svgBackgroundEditor.css`.
+[PASS] Local sample manifest exists and parses as JSON.
+[PASS] Local sample SVG files exist and parse as XML.
+[PASS] UI includes required authoring actions and shape tools.
+[PASS] Runtime script parses successfully (`new Function(...)` syntax check).
+[PASS] Tools hub includes SVG Background Editor card entry.
+[PASS] No engine core API files were modified.
 
 Validation Commands Run
-- node -e "const fs=require('fs'); new Function(fs.readFileSync(process.argv[1],'utf8'));" "tools/Tile Map Editor/main.js"
-- node -e "const fs=require('fs'); new Function(fs.readFileSync(process.argv[1],'utf8'));" "tools/Parallax Editor/main.js"
-- rg -n "playSimulationButton|pauseSimulationButton|restartSimulationButton|simulationContext" tools/Tile Map Editor/index.html tools/Parallax Editor/index.html
-- rg -n "SAMPLE_MANIFEST_PATH|./samples/sample-manifest.json|normalizeSamplePath" tools/Tile Map Editor/main.js tools/Parallax Editor/main.js
+- node -e "const fs=require('fs'); const src=fs.readFileSync('tools/SVG Background Editor/main.js','utf8'); new Function(src); console.log('main.js syntax ok');"
+- node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('tools/SVG Background Editor/samples/sample-manifest.json','utf8')); console.log('sample manifest json ok');"
+- powershell: `[xml](Get-Content -LiteralPath 'tools/SVG Background Editor/samples/sky_gradient_scene.svg' -Raw)`, `[xml](Get-Content -LiteralPath 'tools/SVG Background Editor/samples/mountain_range_scene.svg' -Raw)`, `[xml](Get-Content -LiteralPath 'tools/SVG Background Editor/samples/mario_style_learning_backdrop.svg' -Raw)`
+- rg -n "New SVG|Load SVG|Save SVG|Rectangle|Ellipse/Circle|Line|Polyline|Path|Apply Style to Selected|Delete Selected" "tools/SVG Background Editor/index.html"
+- rg -n "SVG Background Editor" "tools/index.html"
 - git diff --name-only -- engine

@@ -1,0 +1,149 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/30/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en" class="svg-background-editor-page-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG Background Editor</title>
+  <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="./svgBackgroundEditor.css" />
+</head>
+<body class="svg-background-editor-page">
+  <div class="app-shell">
+    <header class="toolbar">
+      <div class="toolbar-group">
+        <button id="newSvgButton" type="button">New SVG</button>
+        <button id="loadSvgButton" type="button">Load SVG</button>
+        <input id="loadSvgInput" class="hidden-file-input" type="file" accept=".svg,image/svg+xml" />
+        <button id="saveSvgButton" type="button">Save SVG</button>
+      </div>
+
+      <div class="toolbar-group">
+        <label>
+          Samples
+          <select id="sampleSelect">
+            <option value="">No samples loaded</option>
+          </select>
+        </label>
+        <button id="refreshSamplesButton" type="button">Refresh Samples</button>
+        <button id="loadSampleButton" type="button" disabled>Load Sample</button>
+      </div>
+
+      <div class="toolbar-group">
+        <label>
+          Width
+          <input id="canvasWidthInput" type="number" min="256" max="8192" step="1" value="1600" />
+        </label>
+        <label>
+          Height
+          <input id="canvasHeightInput" type="number" min="256" max="8192" step="1" value="900" />
+        </label>
+        <button id="applyCanvasSizeButton" type="button">Apply Canvas Size</button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="zoomOutButton" type="button">Zoom -</button>
+        <label>
+          Zoom %
+          <input id="zoomPercentInput" type="number" min="25" max="800" step="5" value="100" />
+        </label>
+        <button id="zoomInButton" type="button">Zoom +</button>
+        <button id="resetViewButton" type="button">Reset View</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar left-sidebar">
+        <section class="panel">
+          <h3>Shape Tools</h3>
+          <div class="tool-grid" id="toolGrid">
+            <button class="tool-button active" data-tool="select" type="button">Select</button>
+            <button class="tool-button" data-tool="pan" type="button">Pan</button>
+            <button class="tool-button" data-tool="rect" type="button">Rectangle</button>
+            <button class="tool-button" data-tool="ellipse" type="button">Ellipse/Circle</button>
+            <button class="tool-button" data-tool="line" type="button">Line</button>
+            <button class="tool-button" data-tool="polyline" type="button">Polyline</button>
+            <button class="tool-button" data-tool="path" type="button">Path</button>
+          </div>
+          <p class="help-text">Shift while drawing ellipse to force a circle. Polyline finishes on double click or Enter.</p>
+        </section>
+
+        <section class="panel">
+          <h3>Paint + Stroke</h3>
+          <label>
+            Fill
+            <input id="fillColorInput" type="color" value="#7ec9ff" />
+          </label>
+          <label>
+            Stroke
+            <input id="strokeColorInput" type="color" value="#154f7c" />
+          </label>
+          <label>
+            Stroke Width
+            <input id="strokeWidthInput" type="number" min="0" max="128" step="0.5" value="2" />
+          </label>
+          <div class="row buttons">
+            <button id="applyStyleButton" type="button">Apply Style to Selected</button>
+            <button id="deleteSelectedButton" type="button">Delete Selected</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3>Selection</h3>
+          <div id="selectionReadout" class="muted">No element selected.</div>
+          <div id="pointerReadout" class="muted">pointer: -, -</div>
+          <div id="viewReadout" class="muted">view: zoom 100%, pan 0, 0</div>
+        </section>
+      </aside>
+
+      <main class="canvas-panel">
+        <div class="canvas-toolbar">
+          <strong>SVG Background Canvas</strong>
+          <span id="canvasMeta" class="muted"></span>
+        </div>
+        <div id="canvasViewport" class="canvas-viewport">
+          <svg id="editorSvg" width="100%" height="100%" viewBox="0 0 1600 900">
+            <g id="sceneRoot"></g>
+          </svg>
+          <div id="selectionOverlay" class="selection-overlay hidden" aria-hidden="true">
+            <div id="selectionBounds" class="selection-bounds"></div>
+            <button class="resize-handle handle-nw" data-handle="nw" type="button" tabindex="-1" aria-label="Resize north-west"></button>
+            <button class="resize-handle handle-ne" data-handle="ne" type="button" tabindex="-1" aria-label="Resize north-east"></button>
+            <button class="resize-handle handle-sw" data-handle="sw" type="button" tabindex="-1" aria-label="Resize south-west"></button>
+            <button class="resize-handle handle-se" data-handle="se" type="button" tabindex="-1" aria-label="Resize south-east"></button>
+          </div>
+        </div>
+        <div id="statusText" class="status-text">Ready.</div>
+      </main>
+
+      <aside class="sidebar right-sidebar">
+        <section class="panel">
+          <h3>Element List</h3>
+          <ul id="elementList" class="element-list"></ul>
+          <div class="row buttons">
+            <button id="sendBackwardButton" type="button">Send Backward</button>
+            <button id="bringForwardButton" type="button">Bring Forward</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3>Boundaries</h3>
+          <ul class="usage-list">
+            <li>Background art authoring only.</li>
+            <li>Save SVG files and use them as Parallax Editor layer images.</li>
+            <li>No tile map gameplay editing in this tool.</li>
+            <li>No engine core API changes.</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

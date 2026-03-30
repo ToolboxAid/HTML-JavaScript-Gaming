@@ -5,6 +5,7 @@ David Quesenberry
 main.js
 */
 
+const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 
 function clamp(value, min, max, fallback) {
@@ -254,6 +255,16 @@ function normalizeSamplePath(pathValue) {
   return `./samples/${trimmed}`;
 }
 
+function toSampleLabel(pathValue) {
+  const fileName = String(pathValue).split("/").pop() || String(pathValue);
+  const base = fileName.replace(/\.json$/i, "");
+  const words = base.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!words) {
+    return "Sample";
+  }
+  return words.replace(/\b\w/g, (value) => value.toUpperCase());
+}
+
 function mod(value, range) {
   if (range === 0) {
     return 0;
@@ -381,6 +392,9 @@ class ParallaxEditorApp {
     this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
     this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
     this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
+    this.refs.sampleSelect.addEventListener("focus", () => {
+      void this.loadSampleManifest({ quiet: true });
+    });
 
     this.refs.addLayerButton.addEventListener("click", () => this.addLayer());
     this.refs.removeLayerButton.addEventListener("click", () => this.removeSelectedLayer());
@@ -636,48 +650,116 @@ class ParallaxEditorApp {
     }
   }
 
-  async loadSampleManifest() {
-    this.refs.sampleSelect.innerHTML = "<option value=\"\">Loading samples...</option>";
-    this.refs.loadSampleButton.disabled = true;
+  createSampleEntry(pathValue, labelHint = "", idHint = "") {
+    const path = normalizeSamplePath(pathValue);
+    if (!path) {
+      return null;
+    }
+    const normalizedLabel = typeof labelHint === "string" ? labelHint.trim() : "";
+    const fallbackLabel = toSampleLabel(path);
+    return {
+      id: typeof idHint === "string" && idHint.trim() ? idHint.trim() : path,
+      label: normalizedLabel && !/[\\/]/.test(normalizedLabel) ? normalizedLabel : fallbackLabel,
+      path
+    };
+  }
+
+  async discoverSampleEntriesFromDirectory() {
+    const directoryUrl = new URL(SAMPLE_DIRECTORY_PATH, window.location.href);
+    const response = await fetch(directoryUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Directory request failed (${response.status}).`);
+    }
+
+    const html = await response.text();
+    const parser = new DOMParser();
+    const documentModel = parser.parseFromString(html, "text/html");
+    const anchors = Array.from(documentModel.querySelectorAll("a[href]"));
+    const discovered = [];
+    const seenPaths = new Set();
+
+    anchors.forEach((anchor) => {
+      const href = anchor.getAttribute("href");
+      if (!href) {
+        return;
+      }
+      const resolved = new URL(href, directoryUrl);
+      const fileName = decodeURIComponent((resolved.pathname.split("/").pop() || "").trim());
+      if (!fileName || !fileName.toLowerCase().endsWith(".json")) {
+        return;
+      }
+      if (fileName.toLowerCase() === "sample-manifest.json") {
+        return;
+      }
+
+      const entry = this.createSampleEntry(fileName, anchor.textContent || "", fileName);
+      if (!entry || seenPaths.has(entry.path)) {
+        return;
+      }
+      seenPaths.add(entry.path);
+      discovered.push(entry);
+    });
+
+    discovered.sort((left, right) => left.label.localeCompare(right.label));
+    return discovered;
+  }
+
+  collectSampleEntriesFromManifest(manifest) {
+    const rawSamples = Array.isArray(manifest?.samples) ? manifest.samples : [];
+    return rawSamples
+      .map((entry) => this.createSampleEntry(entry?.path, entry?.label, entry?.id))
+      .filter((entry) => entry !== null);
+  }
+
+  async loadSampleManifest(options = {}) {
+    const quiet = options.quiet === true;
+    const previousSelection = normalizeSamplePath(this.refs.sampleSelect.value);
+    if (!quiet) {
+      this.refs.sampleSelect.innerHTML = "<option value=\"\">Loading samples...</option>";
+      this.refs.loadSampleButton.disabled = true;
+    }
 
     try {
-      const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
-      const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`Manifest request failed (${response.status}).`);
-      }
-
-      const manifest = await response.json();
-      const rawSamples = Array.isArray(manifest?.samples) ? manifest.samples : [];
-      const sampleEntries = rawSamples
-        .map((entry) => {
-          const path = normalizeSamplePath(entry?.path);
-          if (!path) {
-            return null;
-          }
-          return {
-            id: typeof entry?.id === "string" && entry.id.trim() ? entry.id.trim() : path,
-            label: typeof entry?.label === "string" && entry.label.trim() ? entry.label.trim() : path,
-            path
-          };
-        })
-        .filter((entry) => entry !== null);
-
+      const sampleEntries = await this.discoverSampleEntriesFromDirectory();
       if (sampleEntries.length === 0) {
-        throw new Error("Sample manifest had no valid entries.");
+        throw new Error("No sample JSON files were discovered in ./samples/.");
       }
-
       this.sampleEntries = sampleEntries;
-      this.renderSampleOptions();
-      this.updateStatus(`Loaded ${sampleEntries.length} samples from ${SAMPLE_MANIFEST_PATH}.`);
-    } catch (error) {
-      this.sampleEntries = [];
-      this.renderSampleOptions();
-      this.updateStatus(`Sample manifest unavailable: ${error instanceof Error ? error.message : "unknown error"}`);
+      this.renderSampleOptions(previousSelection);
+      if (!quiet) {
+        this.updateStatus(`Loaded ${sampleEntries.length} samples from ${SAMPLE_DIRECTORY_PATH}.`);
+      }
+      return;
+    } catch (directoryError) {
+      try {
+        const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
+        const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Manifest request failed (${response.status}).`);
+        }
+
+        const manifest = await response.json();
+        const sampleEntries = this.collectSampleEntriesFromManifest(manifest);
+        if (sampleEntries.length === 0) {
+          throw new Error("Sample manifest had no valid entries.");
+        }
+
+        this.sampleEntries = sampleEntries;
+        this.renderSampleOptions(previousSelection);
+        if (!quiet) {
+          this.updateStatus(`Loaded ${sampleEntries.length} samples from ${SAMPLE_MANIFEST_PATH}.`);
+        }
+      } catch (error) {
+        this.sampleEntries = [];
+        this.renderSampleOptions(previousSelection);
+        if (!quiet) {
+          this.updateStatus(`Sample discovery unavailable: ${error instanceof Error ? error.message : "unknown error"}`);
+        }
+      }
     }
   }
 
-  renderSampleOptions() {
+  renderSampleOptions(preferredPath = "") {
     const select = this.refs.sampleSelect;
     select.innerHTML = "";
 
@@ -702,6 +784,9 @@ class ParallaxEditorApp {
       select.appendChild(option);
     });
 
+    if (preferredPath && this.sampleEntries.some((entry) => entry.path === preferredPath)) {
+      select.value = preferredPath;
+    }
     this.refs.loadSampleButton.disabled = false;
   }
 

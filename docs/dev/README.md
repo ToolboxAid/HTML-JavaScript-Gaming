@@ -1,3 +1,8 @@
 Docs-only bundle.
 
-This polish pass upgrades both editors from simple preview to full-map simulation.
+Next tool:
+- SVG Background Editor
+
+Purpose:
+- draw background art inside the project
+- hand off SVG assets to the Parallax Editor

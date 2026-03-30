@@ -11,6 +11,11 @@
       "id": "tile-objective",
       "label": "Tile Sample - Data + Objects",
       "path": "./samples/tile_editor_sample_objective.json"
+    },
+    {
+      "id": "tile-mario-learning",
+      "label": "Tile Sample - Mario Style Learning Level",
+      "path": "./samples/mario_style_learning_level_tilemap.json"
     }
   ]
 }

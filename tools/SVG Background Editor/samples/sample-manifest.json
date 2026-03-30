@@ -1,0 +1,21 @@
+{
+  "schema": "toolbox.svg-background-sample-manifest/1",
+  "version": 1,
+  "samples": [
+    {
+      "id": "svg-sky-gradient",
+      "label": "Sky Gradient Scene",
+      "path": "./samples/sky_gradient_scene.svg"
+    },
+    {
+      "id": "svg-mountain-range",
+      "label": "Mountain Range Scene",
+      "path": "./samples/mountain_range_scene.svg"
+    },
+    {
+      "id": "svg-mario-learning-backdrop",
+      "label": "Mario Style Learning Backdrop",
+      "path": "./samples/mario_style_learning_backdrop.svg"
+    }
+  ]
+}

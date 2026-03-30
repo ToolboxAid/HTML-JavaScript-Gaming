@@ -1,21 +1,21 @@
-BUILD_PR_EDITOR_ADVANCED_SIMULATION_FULL_MAPS
+BUILD_PR_SVG_BACKGROUND_EDITOR_FOUNDATION
 
-Modified
-- tools/Tile Map Editor/index.html
-- tools/Tile Map Editor/main.js
-- tools/Tile Map Editor/tileMapEditor.css
-- tools/Parallax Editor/index.html
-- tools/Parallax Editor/main.js
-- tools/Parallax Editor/parallaxEditor.css
+Tool
+- tools/SVG Background Editor/index.html
+- tools/SVG Background Editor/main.js
+- tools/SVG Background Editor/svgBackgroundEditor.css
+- tools/SVG Background Editor/README.md
 
-Included source-of-truth docs
-- docs/pr/BUILD_PR_EDITOR_ADVANCED_SIMULATION_FULL_MAPS.md
-- docs/pr/LEVEL_EDITOR_ADVANCED_SIMULATION_REQUIREMENTS.md
-- docs/pr/LEVEL_EDITOR_ADVANCED_SIMULATION_ACCEPTANCE.md
-- docs/pr/LEVEL_EDITOR_ADVANCED_SIMULATION_SAMPLES.md
-- docs/pr/LEVEL_EDITOR_FULL_MAP_SIMULATION_BOUNDARIES.md
+Samples
+- tools/SVG Background Editor/samples/sample-manifest.json
+- tools/SVG Background Editor/samples/sky_gradient_scene.svg
+- tools/SVG Background Editor/samples/mountain_range_scene.svg
+- tools/SVG Background Editor/samples/mario_style_learning_backdrop.svg
 
-Report outputs
+Tool Hub Integration
+- tools/index.html
+
+Reports
 - docs/dev/reports/file_tree.txt
 - docs/dev/reports/change_summary.txt
 - docs/dev/reports/validation_checklist.txt

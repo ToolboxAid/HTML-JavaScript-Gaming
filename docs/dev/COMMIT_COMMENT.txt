@@ -1,1 +1,1 @@
-Build plan: advanced full-map simulation for Tile Map Editor and Parallax Editor
+Build plan: add SVG Background Editor foundation for creating parallax-ready background art

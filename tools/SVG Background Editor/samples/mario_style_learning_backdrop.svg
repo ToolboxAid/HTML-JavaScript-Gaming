@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="marioSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#88cfff" />
+      <stop offset="70%" stop-color="#b7e8ff" />
+      <stop offset="100%" stop-color="#e6f8ff" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#marioSky)" />
+  <ellipse cx="240" cy="180" rx="118" ry="34" fill="#ffffff" opacity="0.88" />
+  <ellipse cx="335" cy="165" rx="90" ry="28" fill="#ffffff" opacity="0.88" />
+  <ellipse cx="1020" cy="220" rx="150" ry="44" fill="#ffffff" opacity="0.8" />
+  <ellipse cx="1145" cy="202" rx="108" ry="30" fill="#ffffff" opacity="0.8" />
+  <path d="M0 625 L120 510 L260 625 L410 470 L570 625 L740 430 L930 625 L1120 470 L1300 625 L1480 520 L1600 580 L1600 900 L0 900 Z" fill="#82a2cb" />
+  <path d="M0 700 L120 640 L260 700 L420 620 L580 700 L760 620 L960 700 L1140 630 L1320 700 L1480 645 L1600 680 L1600 900 L0 900 Z" fill="#4f7f5d" />
+  <g fill="#2c5b2f">
+    <path d="M120 900 L156 740 L192 900 Z" />
+    <path d="M210 900 L244 748 L278 900 Z" />
+    <path d="M1230 900 L1268 730 L1306 900 Z" />
+    <path d="M1320 900 L1352 756 L1384 900 Z" />
+  </g>
+</svg>

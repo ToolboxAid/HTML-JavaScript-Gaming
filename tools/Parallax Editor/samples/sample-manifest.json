@@ -11,6 +11,11 @@
       "id": "tilemap-embedded",
       "label": "Tilemap + Parallax Sample (toolbox.tilemap/1)",
       "path": "./samples/tilemap_parallax_sample.json"
+    },
+    {
+      "id": "mario-style-learning",
+      "label": "Mario Style Learning Level (toolbox.parallax/1)",
+      "path": "./samples/mario_style_learning_level_parallax.json"
     }
   ]
 }
