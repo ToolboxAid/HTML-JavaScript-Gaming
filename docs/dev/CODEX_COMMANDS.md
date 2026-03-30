@@ -2,23 +2,22 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE as an implementation delta.
+Create BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW as a docs + validation delta.
 
-ENFORCED REQUIREMENTS:
-- Add feature gate (authoritativeObjectiveProgress = false by default)
-- Modify ONE transition to become authoritative
-- Ensure all writes go through that transition only
-- Keep selectors read-only
-- Keep ONE consumer only (read-only)
-- Add contract tests
+REQUIREMENTS:
+- Analyze Level 11.1 results
+- Validate against expansion criteria
+- Produce EXPAND or HOLD decision
+- DO NOT add new implementation
 - DO NOT modify engine/
 
-REQUIRED REPORT OUTPUT:
+REQUIRED OUTPUT:
 docs/dev/reports/file_tree.txt
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
+docs/dev/reports/expansion_decision.txt
 
 FINAL STEP:
 - Output ZIP to:
-  <project folder>/tmp/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE_delta.zip
-- Include docs/dev/reports/ in ZIP
+  <project folder>/tmp/BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW_delta.zip
+- Include docs/dev/reports/

@@ -1,1 +1,1 @@
-Create BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW as a docs-first, repo-structured delta. Use Level 11.1 implementation output as source of truth and define expansion criteria for the next authoritative candidate without engine core API changes.
+Create BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE as a docs-first, repo-structured delta. Use Level 11.2 EXPAND decision as source of truth and define score-slice handoff boundaries, tests, gates, and rollback criteria without engine core API changes.

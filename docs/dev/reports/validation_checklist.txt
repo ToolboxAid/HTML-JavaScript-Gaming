@@ -1,26 +1,19 @@
 Validation Checklist
 
-[PASS] Feature gate exists and defaults OFF
-- Verified in `src/advanced/state/createWorldGameStateSystem.js`.
+[PASS] Analyze Level 11.1 results
+- Inputs reviewed: Level 11.1 build/review docs and prior report artifacts.
 
-[PASS] Exactly one authoritative transition
-- `updateObjectiveProgress` is the only transition with `authoritativeApply` path.
+[PASS] Validate expansion criteria
+- Criteria checked from LEVEL_11_2_EXPANSION_CRITERIA.md and LEVEL_11_2_NON_EXPANSION_CRITERIA.md.
 
-[PASS] Writes via transition-only path for authoritative objective slice
-- External objective patch attempts are rejected when authoritative objective mode is active.
+[PASS] Decision produced
+- Decision output provided in docs/dev/reports/expansion_decision.txt.
 
-[PASS] Passive mode preserved
-- Passive mode remains default; comparison mode returns without authoritative mutation.
+[PASS] No new implementation
+- No new src/ files created for this PR.
 
-[PASS] Selectors remain read-only
-- Selector outputs are returned as readonly clones.
+[PASS] No engine modification
+- No modified paths under engine/.
 
-[PASS] One consumer path only
-- Objective progress mirror consumer remains read-only and selector-driven.
-
-[PASS] No engine changes
-- `git status --short` shows no modified paths under `engine/`.
-
-[PASS] Contract tests
-- Added/updated: `tests/world/WorldGameStateAuthoritativeHandoff.test.mjs`.
-- Validation run: `npm test` -> 83/83 explicit tests passed.
+[PASS] Validation evidence current
+- npm test executed: 83/83 explicit tests passed.

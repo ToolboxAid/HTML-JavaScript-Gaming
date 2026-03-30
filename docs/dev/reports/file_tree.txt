@@ -1,4 +1,4 @@
-BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE
+BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW
 
 .
 |-- docs/
@@ -10,12 +10,11 @@ BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE
 |   |   '-- reports/
 |   |       |-- file_tree.txt
 |   |       |-- change_summary.txt
-|   |       '-- validation_checklist.txt
+|   |       |-- validation_checklist.txt
+|   |       '-- expansion_decision.txt
 |   '-- pr/
-|       |-- BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md
-|       |-- LEVEL_11_1_HANDOFF_RULES.md
-|       '-- LEVEL_11_1_TEST_AND_ROLLBACK.md
-|-- src/
-|   '-- advanced/
-|       '-- state/
-|           '-- createWorldGameStateSystem.js
+|       |-- BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW.md
+|       |-- LEVEL_11_2_EXPANSION_CRITERIA.md
+|       |-- LEVEL_11_2_NON_EXPANSION_CRITERIA.md
+|       |-- LEVEL_11_2_NEXT_CANDIDATE_SELECTION.md
+|       '-- LEVEL_11_2_REPORTS_REQUIREMENT.md

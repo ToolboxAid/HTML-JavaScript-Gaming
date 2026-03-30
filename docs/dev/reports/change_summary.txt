@@ -1,23 +1,18 @@
 Change Summary
 
-1) Authoritative transition handoff
-- Promoted exactly one transition (`updateObjectiveProgress`) to conditional authoritative behavior.
-- Kept all other transitions in stub/non-authoritative behavior.
+1) Level 11.1 review execution
+- Reviewed authoritative objectiveProgress handoff results from Level 11.1 docs and reports.
+- Re-validated test evidence via current npm test run.
 
-2) Feature gate
-- Added/used gate: `authoritativeObjectiveProgress`.
-- Default remains OFF (`false`) unless explicitly enabled in options.featureGates.
+2) Expansion criteria validation
+- Evaluated Level 11.2 expansion and non-expansion criteria against current evidence.
+- Confirmed criteria files are aligned and readable (ASCII-safe formatting updates).
 
-3) Write-path enforcement
-- When authoritative objective mode is active (`passiveMode=false` + gate ON), external snapshot patch writes to objective slice are rejected.
-- Objective authoritative writes are routed through `requestTransition('updateObjectiveProgress', ...)`.
+3) Decision output
+- Added explicit expansion decision as required in docs/dev/reports/expansion_decision.txt.
+- Decision includes rationale, scope guardrails, and next candidate guidance.
 
-4) Passive mode preservation
-- Passive mode remains default and non-authoritative.
-- `updateObjectiveProgress` produces comparison output in passive/gated-comparison paths without mutating canonical objective state.
-
-5) Consumer boundary
-- Single read-only consumer path retained and validated through approved events and selectors only.
-
-6) Engine boundary
-- No files under `engine/` were modified.
+4) Scope enforcement
+- This delta is docs + validation only.
+- No new implementation added.
+- No changes under engine/.
