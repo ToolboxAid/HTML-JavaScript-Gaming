@@ -281,6 +281,13 @@ class ParallaxEditorApp {
     this.refs = {};
     this.imageCache = new Map();
     this.sampleEntries = [];
+    this.isSimulationMode = false;
+    this.simulation = {
+      rafId: 0,
+      startTimestamp: 0,
+      baseCameraX: 0,
+      baseCameraY: 0
+    };
   }
 
   init(rootDocument) {
@@ -292,10 +299,13 @@ class ParallaxEditorApp {
   }
 
   captureRefs(rootDocument) {
-    this.refs.newParallaxButton = rootDocument.getElementById("newParallaxButton");
-    this.refs.saveParallaxButton = rootDocument.getElementById("saveParallaxButton");
+    this.refs.newProjectButton = rootDocument.getElementById("newProjectButton");
+    this.refs.loadProjectButton = rootDocument.getElementById("loadProjectButton");
+    this.refs.loadProjectInput = rootDocument.getElementById("loadProjectInput");
+    this.refs.saveProjectButton = rootDocument.getElementById("saveProjectButton");
+    this.refs.simulateButton = rootDocument.getElementById("simulateButton");
+    this.refs.exitSimulationButton = rootDocument.getElementById("exitSimulationButton");
     this.refs.exportParallaxPatchButton = rootDocument.getElementById("exportParallaxPatchButton");
-    this.refs.loadAnyInput = rootDocument.getElementById("loadAnyInput");
 
     this.refs.projectNameInput = rootDocument.getElementById("projectNameInput");
     this.refs.mapWidthInput = rootDocument.getElementById("mapWidthInput");
@@ -342,10 +352,13 @@ class ParallaxEditorApp {
   }
 
   attachEvents() {
-    this.refs.newParallaxButton.addEventListener("click", () => this.handleNewDocument());
-    this.refs.saveParallaxButton.addEventListener("click", () => this.handleSaveParallax());
+    this.refs.newProjectButton.addEventListener("click", () => this.handleNewProject());
+    this.refs.loadProjectButton.addEventListener("click", () => this.refs.loadProjectInput.click());
+    this.refs.loadProjectInput.addEventListener("change", (event) => this.handleLoadProject(event));
+    this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
+    this.refs.simulateButton.addEventListener("click", () => this.enterSimulationMode());
+    this.refs.exitSimulationButton.addEventListener("click", () => this.exitSimulationMode());
     this.refs.exportParallaxPatchButton.addEventListener("click", () => this.handleExportTilemapPatch());
-    this.refs.loadAnyInput.addEventListener("change", (event) => this.handleLoadAnyJson(event));
 
     this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
     this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
@@ -391,6 +404,79 @@ class ParallaxEditorApp {
     this.refs.tileSizeInput.value = String(this.documentModel.map.tileSize);
     this.refs.cameraXInput.value = String(this.cameraX);
     this.refs.cameraYInput.value = String(this.cameraY);
+  }
+
+  refreshSimulationActionState() {
+    this.refs.simulateButton.disabled = this.isSimulationMode;
+    this.refs.exitSimulationButton.disabled = !this.isSimulationMode;
+    this.refs.cameraXInput.disabled = this.isSimulationMode;
+    this.refs.cameraYInput.disabled = this.isSimulationMode;
+  }
+
+  enterSimulationMode() {
+    if (this.isSimulationMode) {
+      return;
+    }
+
+    this.isSimulationMode = true;
+    this.simulation.startTimestamp = 0;
+    this.simulation.baseCameraX = this.cameraX;
+    this.simulation.baseCameraY = this.cameraY;
+    this.refreshSimulationActionState();
+    this.updateStatus("Simulation mode active. Preview now animates camera-relative parallax motion.");
+    this.startSimulationLoop();
+  }
+
+  exitSimulationMode() {
+    const wasSimulationMode = this.isSimulationMode;
+    if (!wasSimulationMode && !this.simulation.rafId) {
+      return;
+    }
+
+    this.isSimulationMode = false;
+    if (this.simulation.rafId) {
+      cancelAnimationFrame(this.simulation.rafId);
+      this.simulation.rafId = 0;
+    }
+
+    this.cameraX = this.simulation.baseCameraX;
+    this.cameraY = this.simulation.baseCameraY;
+    this.refs.cameraXInput.value = String(this.cameraX);
+    this.refs.cameraYInput.value = String(this.cameraY);
+    this.refreshSimulationActionState();
+    this.renderPreview();
+    if (wasSimulationMode) {
+      this.updateStatus("Exited simulation mode.");
+    }
+  }
+
+  startSimulationLoop() {
+    const tick = (timestamp) => {
+      if (!this.isSimulationMode) {
+        return;
+      }
+
+      if (this.simulation.startTimestamp === 0) {
+        this.simulation.startTimestamp = timestamp;
+      }
+
+      const elapsed = timestamp - this.simulation.startTimestamp;
+      this.updateSimulationCamera(elapsed);
+      this.renderPreview();
+      this.simulation.rafId = requestAnimationFrame(tick);
+    };
+
+    this.simulation.rafId = requestAnimationFrame(tick);
+  }
+
+  updateSimulationCamera(elapsedMs) {
+    const widthAmplitude = Math.max(60, Math.min(560, Math.floor(this.documentModel.map.pixelWidth * 0.28)));
+    const heightAmplitude = Math.max(24, Math.min(220, Math.floor(this.documentModel.map.pixelHeight * 0.2)));
+    this.cameraX = Math.round(Math.sin(elapsedMs * 0.0011) * widthAmplitude);
+    this.cameraY = Math.round(Math.cos(elapsedMs * 0.00085) * heightAmplitude);
+    this.refs.cameraXInput.value = String(this.cameraX);
+    this.refs.cameraYInput.value = String(this.cameraY);
+    this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
   }
 
   async loadSampleManifest() {
@@ -477,6 +563,7 @@ class ParallaxEditorApp {
       return;
     }
 
+    this.exitSimulationMode();
     try {
       const sampleUrl = new URL(selectedPath, window.location.href);
       const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
@@ -499,7 +586,8 @@ class ParallaxEditorApp {
     }
   }
 
-  handleNewDocument() {
+  handleNewProject() {
+    this.exitSimulationMode();
     this.documentModel = createInitialParallaxDocument({ map: this.documentModel.map });
     this.selectedLayerId = this.documentModel.layers[0]?.id || "";
     this.imageCache.clear();
@@ -510,7 +598,7 @@ class ParallaxEditorApp {
     this.updateStatus("Created new parallax document.");
   }
 
-  handleSaveParallax() {
+  handleSaveProject() {
     this.touchDocument();
     const payload = JSON.stringify(this.documentModel, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.parallax.json`;
@@ -526,7 +614,8 @@ class ParallaxEditorApp {
     this.updateStatus(`Exported ${fileName}.`);
   }
 
-  handleLoadAnyJson(event) {
+  handleLoadProject(event) {
+    this.exitSimulationMode();
     const file = event.target.files?.[0];
     if (!file) {
       return;
@@ -548,7 +637,7 @@ class ParallaxEditorApp {
       } catch (error) {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
       }
-      this.refs.loadAnyInput.value = "";
+      this.refs.loadProjectInput.value = "";
     };
 
     reader.readAsText(file);
@@ -719,6 +808,9 @@ class ParallaxEditorApp {
   }
 
   handleCameraChange() {
+    if (this.isSimulationMode) {
+      return;
+    }
     this.cameraX = Math.trunc(clamp(this.refs.cameraXInput.value, -1024, 1024, 0));
     this.cameraY = Math.trunc(clamp(this.refs.cameraYInput.value, -1024, 1024, 0));
     this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
@@ -732,6 +824,7 @@ class ParallaxEditorApp {
     this.renderPreview();
     this.refs.previewMeta.textContent = `${this.documentModel.map.width}x${this.documentModel.map.height} @ ${this.documentModel.map.tileSize}px (${this.documentModel.map.pixelWidth}x${this.documentModel.map.pixelHeight})`;
     this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
+    this.refreshSimulationActionState();
   }
 
   renderLayerList() {
@@ -948,14 +1041,20 @@ class ParallaxEditorApp {
     context.lineWidth = 2;
     context.strokeRect(borderX, borderY, borderW, borderH);
 
-    context.fillStyle = "rgba(15, 23, 42, 0.66)";
-    context.fillRect(10, 10, 330, 64);
+    context.fillStyle = "rgba(15, 23, 42, 0.72)";
+    context.fillRect(10, 10, 560, 132);
     context.fillStyle = "#dbeafe";
     context.font = "12px monospace";
     context.textBaseline = "top";
-    context.fillText(`Map: ${this.documentModel.map.name}`, 18, 18);
-    context.fillText(`Camera: ${this.cameraX}, ${this.cameraY}`, 18, 34);
-    context.fillText(`Layers: ${sortedLayers.length} (parallax-only view)`, 18, 50);
+    context.fillText(`Mode: ${this.isSimulationMode ? "SIMULATION" : "EDIT"}`, 18, 18);
+    context.fillText(`Map: ${this.documentModel.map.name}`, 18, 34);
+    context.fillText(`Camera: ${this.cameraX}, ${this.cameraY}`, 18, 50);
+    context.fillText(`Layers: ${sortedLayers.length} (order/scroll/repeat-wrap)`, 18, 66);
+    sortedLayers.slice(0, 3).forEach((layer, index) => {
+      const y = 84 + (index * 16);
+      const row = `${layer.drawOrder}:${layer.name} sf(${layer.scrollFactorX.toFixed(2)},${layer.scrollFactorY.toFixed(2)}) ${layer.repeatX ? "RX" : "--"}/${layer.repeatY ? "RY" : "--"} ${layer.wrapMode}`;
+      context.fillText(row, 18, y);
+    });
   }
 }
 

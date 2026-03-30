@@ -22,6 +22,8 @@ const RESERVED_PARALLAX_BLOCK = Object.freeze({
   layers: []
 });
 
+const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
+
 function clampInteger(value, min, max, fallback) {
   const numeric = Number.parseInt(value, 10);
   if (!Number.isFinite(numeric)) {
@@ -291,6 +293,25 @@ function downloadTextFile(fileName, content) {
   URL.revokeObjectURL(blobUrl);
 }
 
+function normalizeSamplePath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return null;
+  }
+
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return null;
+  }
+
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return `./samples/${trimmed}`;
+}
+
 class TileMapEditorApp {
   constructor(documentModel) {
     this.documentModel = documentModel;
@@ -301,6 +322,18 @@ class TileMapEditorApp {
     this.isPointerPainting = false;
     this.selectedMarkerId = "";
     this.refs = {};
+    this.sampleEntries = [];
+    this.isSimulationMode = false;
+    this.simulation = {
+      rafId: 0,
+      lastTimestamp: 0,
+      accumulatorMs: 0,
+      probeCol: 0,
+      probeRow: 0,
+      directionCol: 1,
+      directionRow: 1,
+      currentCellSummary: ""
+    };
   }
 
   init(rootDocument) {
@@ -308,13 +341,19 @@ class TileMapEditorApp {
     this.attachEvents();
     this.syncInputsFromDocument();
     this.renderAll();
+    this.loadSampleManifest();
   }
 
   captureRefs(rootDocument) {
-    this.refs.newMapButton = rootDocument.getElementById("newMapButton");
-    this.refs.saveMapButton = rootDocument.getElementById("saveMapButton");
+    this.refs.newProjectButton = rootDocument.getElementById("newProjectButton");
+    this.refs.loadProjectButton = rootDocument.getElementById("loadProjectButton");
+    this.refs.loadProjectInput = rootDocument.getElementById("loadProjectInput");
+    this.refs.sampleSelect = rootDocument.getElementById("sampleSelect");
+    this.refs.loadSampleButton = rootDocument.getElementById("loadSampleButton");
+    this.refs.saveProjectButton = rootDocument.getElementById("saveProjectButton");
+    this.refs.simulateButton = rootDocument.getElementById("simulateButton");
+    this.refs.exitSimulationButton = rootDocument.getElementById("exitSimulationButton");
     this.refs.exportRuntimeButton = rootDocument.getElementById("exportRuntimeButton");
-    this.refs.loadMapInput = rootDocument.getElementById("loadMapInput");
 
     this.refs.mapNameInput = rootDocument.getElementById("mapNameInput");
     this.refs.mapWidthInput = rootDocument.getElementById("mapWidthInput");
@@ -347,12 +386,21 @@ class TileMapEditorApp {
   }
 
   attachEvents() {
-    this.refs.newMapButton.addEventListener("click", () => this.handleNewMap());
-    this.refs.saveMapButton.addEventListener("click", () => this.handleSaveDocument());
+    this.refs.newProjectButton.addEventListener("click", () => this.handleNewProject());
+    this.refs.loadProjectButton.addEventListener("click", () => this.refs.loadProjectInput.click());
+    this.refs.loadProjectInput.addEventListener("change", (event) => this.handleLoadProject(event));
+    this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
+    this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
+    this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
+    this.refs.simulateButton.addEventListener("click", () => this.enterSimulationMode());
+    this.refs.exitSimulationButton.addEventListener("click", () => this.exitSimulationMode());
     this.refs.exportRuntimeButton.addEventListener("click", () => this.handleExportRuntime());
-    this.refs.loadMapInput.addEventListener("change", (event) => this.handleLoadDocument(event));
 
     this.refs.mapNameInput.addEventListener("change", () => {
+      if (!this.ensureEditable()) {
+        this.refs.mapNameInput.value = this.documentModel.map.name;
+        return;
+      }
       this.documentModel.map.name = this.refs.mapNameInput.value.trim() || "untitled-map";
       this.touchDocument();
       this.updateStatus(`Map renamed to ${this.documentModel.map.name}.`);
@@ -370,6 +418,9 @@ class TileMapEditorApp {
     this.refs.layerVisibilityToggle.addEventListener("click", () => this.toggleSelectedLayerVisibility());
 
     this.refs.clearMarkersButton.addEventListener("click", () => {
+      if (!this.ensureEditable()) {
+        return;
+      }
       this.documentModel.markers = [];
       this.selectedMarkerId = "";
       this.touchDocument();
@@ -387,7 +438,8 @@ class TileMapEditorApp {
     });
   }
 
-  handleNewMap() {
+  handleNewProject() {
+    this.exitSimulationMode();
     const width = clampInteger(this.refs.mapWidthInput.value, 4, 256, 32);
     const height = clampInteger(this.refs.mapHeightInput.value, 4, 256, 18);
     const tileSize = clampInteger(this.refs.tileSizeInput.value, 8, 64, 24);
@@ -402,7 +454,7 @@ class TileMapEditorApp {
     this.updateStatus("Created a new map document.");
   }
 
-  handleSaveDocument() {
+  handleSaveProject() {
     this.touchDocument();
     const serialized = JSON.stringify(this.documentModel, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.tilemap.json`;
@@ -418,7 +470,8 @@ class TileMapEditorApp {
     this.updateStatus(`Exported ${fileName}.`);
   }
 
-  handleLoadDocument(event) {
+  handleLoadProject(event) {
+    this.exitSimulationMode();
     const file = event.target.files?.[0];
     if (!file) {
       return;
@@ -439,7 +492,7 @@ class TileMapEditorApp {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
       }
 
-      this.refs.loadMapInput.value = "";
+      this.refs.loadProjectInput.value = "";
     };
 
     reader.readAsText(file);
@@ -456,6 +509,9 @@ class TileMapEditorApp {
   }
 
   applyMapSizing() {
+    if (!this.ensureEditable()) {
+      return;
+    }
     const nextWidth = clampInteger(this.refs.mapWidthInput.value, 4, 256, this.documentModel.map.width);
     const nextHeight = clampInteger(this.refs.mapHeightInput.value, 4, 256, this.documentModel.map.height);
     const nextTileSize = clampInteger(this.refs.tileSizeInput.value, 8, 64, this.documentModel.map.tileSize);
@@ -476,7 +532,18 @@ class TileMapEditorApp {
     return this.documentModel.layers.find((layer) => layer.id === this.selectedLayerId) || this.documentModel.layers[0] || null;
   }
 
+  ensureEditable() {
+    if (this.isSimulationMode) {
+      this.updateStatus("Exit Simulation to edit the project.");
+      return false;
+    }
+    return true;
+  }
+
   addLayer() {
+    if (!this.ensureEditable()) {
+      return;
+    }
     const name = this.refs.newLayerNameInput.value.trim() || "Layer";
     const kind = ["tile", "collision", "data"].includes(this.refs.newLayerKindSelect.value)
       ? this.refs.newLayerKindSelect.value
@@ -493,6 +560,9 @@ class TileMapEditorApp {
   }
 
   removeSelectedLayer() {
+    if (!this.ensureEditable()) {
+      return;
+    }
     if (this.documentModel.layers.length <= 1) {
       this.updateStatus("Cannot remove the last layer.");
       return;
@@ -512,6 +582,9 @@ class TileMapEditorApp {
   }
 
   toggleSelectedLayerVisibility() {
+    if (!this.ensureEditable()) {
+      return;
+    }
     const layer = this.getSelectedLayer();
     if (!layer) {
       return;
@@ -524,6 +597,9 @@ class TileMapEditorApp {
   }
 
   handleCanvasPointerDown(event) {
+    if (!this.ensureEditable()) {
+      return;
+    }
     const cell = this.getCellFromMouseEvent(event);
     if (!cell) {
       return;
@@ -590,6 +666,9 @@ class TileMapEditorApp {
   }
 
   applyCellEdit(col, row, mode) {
+    if (!this.ensureEditable()) {
+      return;
+    }
     const layer = this.getSelectedLayer();
     if (!layer || layer.locked || !layer.visible) {
       return;
@@ -622,6 +701,9 @@ class TileMapEditorApp {
   }
 
   placeMarkerAtCell(col, row) {
+    if (!this.ensureEditable()) {
+      return;
+    }
     const markerType = this.refs.markerTypeSelect.value === "object" ? "object" : "spawn";
     const markerName = this.refs.markerNameInput.value.trim() || (markerType === "spawn" ? "spawn-point" : "map-object");
 
@@ -652,6 +734,9 @@ class TileMapEditorApp {
   }
 
   removeMarkerAtCell(col, row) {
+    if (!this.ensureEditable()) {
+      return;
+    }
     const index = this.documentModel.markers.findIndex((marker) => marker.col === col && marker.row === row);
     if (index < 0) {
       return;
@@ -679,6 +764,219 @@ class TileMapEditorApp {
     this.refs.activeToolSelect.value = this.activeTool;
   }
 
+  refreshSimulationActionState() {
+    this.refs.simulateButton.disabled = this.isSimulationMode;
+    this.refs.exitSimulationButton.disabled = !this.isSimulationMode;
+  }
+
+  async loadSampleManifest() {
+    this.refs.sampleSelect.innerHTML = "<option value=\"\">Loading samples...</option>";
+    this.refs.loadSampleButton.disabled = true;
+
+    try {
+      const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
+      const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Manifest request failed (${response.status}).`);
+      }
+
+      const manifest = await response.json();
+      const rawSamples = Array.isArray(manifest?.samples) ? manifest.samples : [];
+      const sampleEntries = rawSamples
+        .map((entry) => {
+          const path = normalizeSamplePath(entry?.path);
+          if (!path) {
+            return null;
+          }
+          return {
+            id: typeof entry?.id === "string" && entry.id.trim() ? entry.id.trim() : path,
+            label: typeof entry?.label === "string" && entry.label.trim() ? entry.label.trim() : path,
+            path
+          };
+        })
+        .filter((entry) => entry !== null);
+
+      if (sampleEntries.length === 0) {
+        throw new Error("Sample manifest had no valid entries.");
+      }
+
+      this.sampleEntries = sampleEntries;
+      this.renderSampleOptions();
+      this.updateStatus(`Loaded ${sampleEntries.length} local tile-map samples.`);
+    } catch (error) {
+      this.sampleEntries = [];
+      this.renderSampleOptions();
+      this.updateStatus(`Sample manifest unavailable: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+
+  renderSampleOptions() {
+    const select = this.refs.sampleSelect;
+    select.innerHTML = "";
+
+    if (this.sampleEntries.length === 0) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No samples available";
+      select.appendChild(option);
+      this.refs.loadSampleButton.disabled = true;
+      return;
+    }
+
+    const promptOption = document.createElement("option");
+    promptOption.value = "";
+    promptOption.textContent = "Select a sample...";
+    select.appendChild(promptOption);
+
+    this.sampleEntries.forEach((entry) => {
+      const option = document.createElement("option");
+      option.value = entry.path;
+      option.textContent = entry.label;
+      select.appendChild(option);
+    });
+
+    this.refs.loadSampleButton.disabled = false;
+  }
+
+  handleSampleSelectionChanged() {
+    const selectedPath = normalizeSamplePath(this.refs.sampleSelect.value);
+    if (selectedPath) {
+      this.updateStatus(`Sample selected: ${selectedPath}`);
+    }
+  }
+
+  async handleLoadSelectedSample() {
+    const selectedPath = normalizeSamplePath(this.refs.sampleSelect.value);
+    if (!selectedPath) {
+      this.updateStatus("Select a sample before loading.");
+      return;
+    }
+
+    this.exitSimulationMode();
+    try {
+      const sampleUrl = new URL(selectedPath, window.location.href);
+      const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Sample request failed (${response.status}).`);
+      }
+
+      const raw = await response.json();
+      this.documentModel = sanitizeDocument(raw);
+      this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+      this.selectedMarkerId = "";
+      this.activeTileId = this.findFirstNonEmptyTileId();
+      this.syncInputsFromDocument();
+      this.renderAll();
+      this.updateStatus(`Loaded sample ${selectedPath}.`);
+    } catch (error) {
+      this.updateStatus(`Sample load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+
+  enterSimulationMode() {
+    if (this.isSimulationMode) {
+      return;
+    }
+    this.isSimulationMode = true;
+    this.simulation.probeCol = 0;
+    this.simulation.probeRow = 0;
+    this.simulation.directionCol = 1;
+    this.simulation.directionRow = 1;
+    this.simulation.lastTimestamp = 0;
+    this.simulation.accumulatorMs = 0;
+    this.isPointerPainting = false;
+    this.refs.simulateButton.disabled = true;
+    this.refs.exitSimulationButton.disabled = false;
+    this.updateStatus("Simulation mode active. Tile/data/object state is now preview-only.");
+    this.startSimulationLoop();
+    this.renderCanvas();
+  }
+
+  exitSimulationMode() {
+    const wasSimulationMode = this.isSimulationMode;
+    if (!wasSimulationMode && !this.simulation.rafId) {
+      return;
+    }
+    this.isSimulationMode = false;
+    if (this.simulation.rafId) {
+      cancelAnimationFrame(this.simulation.rafId);
+      this.simulation.rafId = 0;
+    }
+    this.refs.simulateButton.disabled = false;
+    this.refs.exitSimulationButton.disabled = true;
+    this.simulation.currentCellSummary = "";
+    this.isPointerPainting = false;
+    this.renderCanvas();
+    if (wasSimulationMode) {
+      this.updateStatus("Exited simulation mode.");
+    }
+  }
+
+  startSimulationLoop() {
+    const tick = (timestamp) => {
+      if (!this.isSimulationMode) {
+        return;
+      }
+
+      if (this.simulation.lastTimestamp === 0) {
+        this.simulation.lastTimestamp = timestamp;
+      }
+
+      const delta = timestamp - this.simulation.lastTimestamp;
+      this.simulation.lastTimestamp = timestamp;
+      this.simulation.accumulatorMs += delta;
+
+      const stepMs = 180;
+      while (this.simulation.accumulatorMs >= stepMs) {
+        this.advanceSimulationProbe();
+        this.simulation.accumulatorMs -= stepMs;
+      }
+
+      this.renderCanvas();
+      this.simulation.rafId = requestAnimationFrame(tick);
+    };
+
+    this.simulation.rafId = requestAnimationFrame(tick);
+  }
+
+  advanceSimulationProbe() {
+    const mapWidth = this.documentModel.map.width;
+    const mapHeight = this.documentModel.map.height;
+    let nextCol = this.simulation.probeCol + this.simulation.directionCol;
+    let nextRow = this.simulation.probeRow + this.simulation.directionRow;
+
+    if (nextCol < 0 || nextCol >= mapWidth) {
+      this.simulation.directionCol *= -1;
+      nextCol = this.simulation.probeCol + this.simulation.directionCol;
+    }
+
+    if (nextRow < 0 || nextRow >= mapHeight) {
+      this.simulation.directionRow *= -1;
+      nextRow = this.simulation.probeRow + this.simulation.directionRow;
+    }
+
+    this.simulation.probeCol = Math.max(0, Math.min(mapWidth - 1, nextCol));
+    this.simulation.probeRow = Math.max(0, Math.min(mapHeight - 1, nextRow));
+    this.simulation.currentCellSummary = this.buildSimulationCellSummary(this.simulation.probeCol, this.simulation.probeRow);
+  }
+
+  buildSimulationCellSummary(col, row) {
+    const tileLayers = this.documentModel.layers.filter((layer) => layer.kind === "tile" && layer.visible);
+    const collisionLayers = this.documentModel.layers.filter((layer) => layer.kind === "collision" && layer.visible);
+    const dataLayers = this.documentModel.layers.filter((layer) => layer.kind === "data" && layer.visible);
+
+    const tileValues = tileLayers.map((layer) => normalizeCellValue(layer.data[row][col])).filter((value) => value > 0);
+    const collisionHits = collisionLayers.some((layer) => normalizeCellValue(layer.data[row][col]) > 0);
+    const dataValues = dataLayers.map((layer) => normalizeCellValue(layer.data[row][col])).filter((value) => value > 0);
+    const markers = this.documentModel.markers.filter((marker) => marker.col === col && marker.row === row);
+
+    const markerText = markers.length > 0
+      ? markers.map((marker) => `${marker.type}:${marker.name}`).join(", ")
+      : "none";
+
+    return `tile=${tileValues.length > 0 ? tileValues.join("|") : 0} collision=${collisionHits ? "hit" : "none"} data=${dataValues.length > 0 ? dataValues.join("|") : 0} objects=${markerText}`;
+  }
+
   renderAll() {
     this.renderLayerList();
     this.renderTileset();
@@ -686,6 +984,7 @@ class TileMapEditorApp {
     this.renderCanvas();
     this.renderLayerMeta();
     this.refs.canvasMeta.textContent = `${this.documentModel.map.width}x${this.documentModel.map.height}`;
+    this.refreshSimulationActionState();
   }
 
   renderLayerMeta() {
@@ -767,6 +1066,9 @@ class TileMapEditorApp {
       visibilityButton.type = "button";
       visibilityButton.textContent = layer.visible ? "Hide" : "Show";
       visibilityButton.addEventListener("click", () => {
+        if (!this.ensureEditable()) {
+          return;
+        }
         layer.visible = !layer.visible;
         this.touchDocument();
         this.renderAll();
@@ -818,6 +1120,9 @@ class TileMapEditorApp {
       removeButton.type = "button";
       removeButton.textContent = "Remove";
       removeButton.addEventListener("click", () => {
+        if (!this.ensureEditable()) {
+          return;
+        }
         const index = this.documentModel.markers.findIndex((entry) => entry.id === marker.id);
         if (index >= 0) {
           this.documentModel.markers.splice(index, 1);
@@ -874,6 +1179,12 @@ class TileMapEditorApp {
 
     this.drawGrid(context, width, height, tileSize);
     this.drawMarkers(context, tileSize);
+    if (this.isSimulationMode) {
+      if (!this.simulation.currentCellSummary) {
+        this.simulation.currentCellSummary = this.buildSimulationCellSummary(this.simulation.probeCol, this.simulation.probeRow);
+      }
+      this.drawSimulationOverlay(context, tileSize);
+    }
 
     if (this.hoverCell) {
       context.strokeStyle = "#f59e0b";
@@ -885,6 +1196,31 @@ class TileMapEditorApp {
         tileSize - 2
       );
     }
+  }
+
+  drawSimulationOverlay(context, tileSize) {
+    const probeX = this.simulation.probeCol * tileSize + (tileSize / 2);
+    const probeY = this.simulation.probeRow * tileSize + (tileSize / 2);
+    const probeRadius = Math.max(4, Math.floor(tileSize * 0.25));
+
+    context.save();
+    context.fillStyle = "#f8fafc";
+    context.beginPath();
+    context.arc(probeX, probeY, probeRadius, 0, Math.PI * 2);
+    context.fill();
+    context.strokeStyle = "#0f172a";
+    context.lineWidth = 2;
+    context.stroke();
+
+    context.fillStyle = "rgba(15, 23, 42, 0.82)";
+    context.fillRect(8, 8, Math.min(context.canvas.width - 16, 520), 56);
+    context.fillStyle = "#e2e8f0";
+    context.font = "12px monospace";
+    context.textBaseline = "top";
+    context.fillText("SIMULATION MODE", 14, 14);
+    const summary = `cell ${this.simulation.probeCol},${this.simulation.probeRow} -> ${this.simulation.currentCellSummary}`;
+    context.fillText(summary, 14, 32);
+    context.restore();
   }
 
   drawCheckerboard(context, width, height, tileSize) {

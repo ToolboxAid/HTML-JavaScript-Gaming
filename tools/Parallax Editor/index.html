@@ -17,11 +17,13 @@ index.html
   <div class="app-shell">
     <header class="toolbar">
       <div class="toolbar-group">
-        <button id="newParallaxButton" type="button">New Parallax</button>
-        <button id="saveParallaxButton" type="button">Save Parallax JSON</button>
+        <button id="newProjectButton" type="button">New Project</button>
+        <button id="loadProjectButton" type="button">Load Project</button>
+        <input id="loadProjectInput" class="hidden-file-input" type="file" accept=".json,application/json" />
+        <button id="saveProjectButton" type="button">Save Project</button>
+        <button id="simulateButton" type="button">Simulate</button>
+        <button id="exitSimulationButton" type="button" disabled>Exit Simulation</button>
         <button id="exportParallaxPatchButton" type="button">Export Tilemap Patch</button>
-        <label class="file-input-label" for="loadAnyInput">Load JSON</label>
-        <input id="loadAnyInput" class="hidden-file-input" type="file" accept=".json,application/json" />
       </div>
 
       <div class="toolbar-group">
@@ -186,6 +188,7 @@ index.html
           <ul class="usage-list">
             <li>Parallax-only authoring tool.</li>
             <li>Compatible with Tile Map Editor `toolbox.tilemap/1` files.</li>
+            <li>Use Simulate to preview depth and camera-relative motion.</li>
             <li>No map tile/collision/data editing in this UI.</li>
             <li>No engine core API modifications.</li>
           </ul>

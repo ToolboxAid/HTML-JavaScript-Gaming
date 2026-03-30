@@ -17,6 +17,8 @@ Standalone companion tool for parallax depth/background authoring.
 - Load from `toolbox.tilemap/1` or `toolbox.parallax/1`
 - Save parallax-only JSON
 - Export tilemap parallax patch JSON
+- Top-level project actions: New Project, Load Project, Load Sample, Save Project, Simulate, Exit Simulation
+- Simulation mode with camera-relative parallax motion preview
 - Direct sample loading from `tools/Parallax Editor/samples/` via in-editor sample selector
 
 ## Boundaries

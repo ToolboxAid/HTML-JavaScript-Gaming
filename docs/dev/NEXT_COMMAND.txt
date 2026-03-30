@@ -1,1 +1,1 @@
-Create BUILD_PR_TILEMAP_PARALLAX_SHARED_PROJECT_MODEL_REVIEW as a docs-only, repo-structured delta
+Create BUILD_PR_FIRST_GAME_PROJECT_BOOTSTRAP as a docs-only, repo-structured delta

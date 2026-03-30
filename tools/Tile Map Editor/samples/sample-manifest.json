@@ -1,0 +1,16 @@
+{
+  "schema": "toolbox.tilemap-sample-manifest/1",
+  "version": 1,
+  "samples": [
+    {
+      "id": "tile-basic",
+      "label": "Tile Sample - Basic Layout",
+      "path": "./samples/tile_editor_sample_basic.json"
+    },
+    {
+      "id": "tile-objective",
+      "label": "Tile Sample - Data + Objects",
+      "path": "./samples/tile_editor_sample_objective.json"
+    }
+  ]
+}

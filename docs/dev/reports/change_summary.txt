@@ -1,19 +1,21 @@
-﻿BUILD_PR_PARALLAX_EDITOR_COMPANION change summary
+﻿BUILD_PR_EDITOR_LOAD_UX_AND_SIMULATION_POLISH change summary
 
 Scope delivered
-- Added a new standalone companion tool at tools/Parallax Editor.
-- Implemented parallax layer management (add/remove/duplicate/select and move up/down).
-- Implemented image assignment per layer via source path/URL and local image file import.
-- Implemented draw order controls and ordered rendering.
-- Implemented per-layer scroll factors, offsets, repeat controls, wrap mode, visibility, and opacity.
-- Implemented parallax preview canvas with camera offset sliders to validate depth motion.
-- Implemented schema-compatible loading from toolbox.tilemap/1 and toolbox.parallax/1 JSON.
-- Implemented parallax-only save output (toolbox.parallax/1).
-- Implemented tilemap parallax patch export for merge into shared project format.
-- Updated tools/index.html to expose Parallax Editor as a separate live companion tool.
-- Updated docs/pr/BUILD_PR_PARALLAX_EDITOR_COMPANION.md to reflect implemented contracts and boundaries.
+- Applied a final UX polish pass to both editors while keeping them separate tools.
+- Standardized top-level action labels in both UIs: New Project, Load Project, Load Sample, Save Project, Simulate, Exit Simulation.
+- Tile Map Editor:
+  - Added local sample manifest + sample files under tools/Tile Map Editor/samples/.
+  - Added in-editor sample loading from local manifest paths.
+  - Added simulation mode and exit flow.
+  - Simulation previews authored tile/data/object state with a moving probe + per-cell summary overlay.
+- Parallax Editor:
+  - Remapped top-level actions to the standardized labels.
+  - Preserved local sample loading and integrated with standardized top actions.
+  - Added explicit simulation mode and exit flow.
+  - Simulation animates camera-relative motion to preview depth ordering, scroll factors, repeat/wrap behavior.
+- Updated both README files to document standardized actions and simulation mode.
 
-Boundary guarantees
-- Parallax editor is separate from Tile Map Editor UI.
-- No tile/collision/data editing added here.
-- No engine core APIs were modified.
+Boundary compliance
+- No engine core API changes.
+- Tile and Parallax editors remain separate tools.
+- Sample loading remains local per tool.

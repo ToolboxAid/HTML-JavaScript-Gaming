@@ -1,19 +1,15 @@
-﻿BUILD_PR_PARALLAX_EDITOR_COMPANION validation checklist
+﻿BUILD_PR_EDITOR_LOAD_UX_AND_SIMULATION_POLISH validation checklist
 
-[PASS] Standalone Parallax Editor created under tools/Parallax Editor.
-[PASS] Parallax layer management implemented.
-[PASS] Image assignment per layer implemented.
-[PASS] Draw order controls implemented.
-[PASS] Scroll factor controls implemented.
-[PASS] Repeat and wrap controls implemented.
-[PASS] Preview against shared project/level format implemented.
-[PASS] JSON load from toolbox.tilemap/1 and toolbox.parallax/1 implemented.
-[PASS] Parallax-only save implemented.
-[PASS] Separate tilemap parallax patch export implemented.
-[PASS] Tool remains separate from Tile Map Editor UI.
-[PASS] No engine/ modifications.
-[PASS] Required reports generated in docs/dev/reports/.
+[PASS] Both editors expose standardized top-level actions (New Project, Load Project, Load Sample, Save Project, Simulate, Exit Simulation).
+[PASS] Tile Map Editor supports local sample loading from tools/Tile Map Editor/samples/.
+[PASS] Parallax Editor retains local sample loading from tools/Parallax Editor/samples/.
+[PASS] Tile Map Editor simulation mode previews tile/data/object authored state.
+[PASS] Parallax Editor simulation mode previews depth + camera-relative parallax motion.
+[PASS] Tile and Parallax editors remain separate tools.
+[PASS] No engine/ files modified.
+[PASS] Required report files generated under docs/dev/reports/.
 
 Validation commands
-- node -e "new Function(require('fs').readFileSync('tools/Parallax Editor/main.js','utf8')); console.log('syntax-ok')"
-- rg checks for required feature keywords and schema contracts across companion files.
+- node -e "new Function(require('fs').readFileSync('tools/Tile Map Editor/main.js','utf8')); new Function(require('fs').readFileSync('tools/Parallax Editor/main.js','utf8')); console.log('syntax-ok')"
+- rg checks for standardized action labels in both index.html files.
+- sample directory scans for both tools.

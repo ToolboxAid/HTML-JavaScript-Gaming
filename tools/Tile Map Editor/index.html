@@ -17,11 +17,20 @@ index.html
   <div class="app-shell" id="appShell">
     <header class="toolbar">
       <div class="toolbar-group">
-        <button id="newMapButton" type="button">New Map</button>
-        <button id="saveMapButton" type="button">Save JSON</button>
+        <button id="newProjectButton" type="button">New Project</button>
+        <button id="loadProjectButton" type="button">Load Project</button>
+        <input id="loadProjectInput" class="hidden-file-input" type="file" accept=".json,application/json" />
+        <label>
+          Samples
+          <select id="sampleSelect">
+            <option value="">No samples loaded</option>
+          </select>
+        </label>
+        <button id="loadSampleButton" type="button" disabled>Load Sample</button>
+        <button id="saveProjectButton" type="button">Save Project</button>
+        <button id="simulateButton" type="button">Simulate</button>
+        <button id="exitSimulationButton" type="button" disabled>Exit Simulation</button>
         <button id="exportRuntimeButton" type="button">Export Runtime</button>
-        <label class="file-input-label" for="loadMapInput">Load JSON</label>
-        <input id="loadMapInput" class="hidden-file-input" type="file" accept=".json,application/json" />
       </div>
 
       <div class="toolbar-group">
@@ -132,6 +141,7 @@ index.html
             <li>Picker reads current cell value into active tile.</li>
             <li>Marker tool places object or spawn markers per cell.</li>
             <li>Right click on the canvas erases or removes a marker.</li>
+            <li>Use Simulate to preview tile/data/object state in motion.</li>
             <li>Saved JSON keeps a reserved parallax block for future companion tooling.</li>
           </ul>
         </section>

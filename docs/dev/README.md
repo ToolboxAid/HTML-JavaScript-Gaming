@@ -1,6 +1,6 @@
 Docs-only bundle.
 
-Decision:
-- Parallax Editor is a separate companion tool
-- Shared project format is allowed
-- Tile Map Editor UI remains focused on map authoring
+Final polish includes:
+- shared load UX across both editors
+- Simulate / Exit Simulation in both editors
+- no engine core API changes
