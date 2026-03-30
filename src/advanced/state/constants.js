@@ -26,7 +26,8 @@ const WORLD_GAME_STATE_TRANSITION_NAMES = Object.freeze([
 ]);
 
 const WORLD_GAME_STATE_FEATURE_GATES = Object.freeze({
-  AUTHORITATIVE_OBJECTIVE_PROGRESS: 'authoritativeObjectiveProgress'
+  AUTHORITATIVE_OBJECTIVE_PROGRESS: 'authoritativeObjectiveProgress',
+  AUTHORITATIVE_SCORE: 'authoritativeScore'
 });
 
 export {

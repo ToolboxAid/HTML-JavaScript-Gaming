@@ -1,18 +1,24 @@
 Change Summary
 
-1) Level 11.1 review execution
-- Reviewed authoritative objectiveProgress handoff results from Level 11.1 docs and reports.
-- Re-validated test evidence via current npm test run.
+1) Feature gate
+- Added score gate constant: `authoritativeScore`.
+- Gate defaults OFF unless explicitly enabled through options.featureGates.
 
-2) Expansion criteria validation
-- Evaluated Level 11.2 expansion and non-expansion criteria against current evidence.
-- Confirmed criteria files are aligned and readable (ASCII-safe formatting updates).
+2) Authoritative score transition
+- Promoted exactly one transition to authoritative behavior: `applyScoreDelta`.
+- Implemented score authoritative apply function behind gate and passive-mode checks.
 
-3) Decision output
-- Added explicit expansion decision as required in docs/dev/reports/expansion_decision.txt.
-- Decision includes rationale, scope guardrails, and next candidate guidance.
+3) Transition-only write enforcement
+- When score authoritative mode is active (`passiveMode=false` + gate ON), external snapshot patch writes to `worldState.scores` are rejected.
+- Score writes in authoritative mode are routed through `requestTransition('applyScoreDelta', ...)`.
 
-4) Scope enforcement
-- This delta is docs + validation only.
-- No new implementation added.
-- No changes under engine/.
+4) Read + consumer boundaries
+- Selectors remain read-only (readonly clone behavior unchanged).
+- Existing single consumer path is retained; no additional consumer introduced.
+
+5) Contract tests
+- Added score-specific contract test file and test runner registration.
+- Full test suite passes.
+
+6) Engine boundary
+- No files under `engine/` were modified.

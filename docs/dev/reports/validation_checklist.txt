@@ -1,20 +1,25 @@
 Validation Checklist
 
-[PASS] Readiness criteria validated
-- Source reviewed: LEVEL_11_3_READINESS_CRITERIA.md
-- Supporting evidence: 11.2 EXPAND decision and latest full test run (83/83 passing).
+[PASS] Feature gate added and default OFF
+- `authoritativeScore` added in `src/advanced/state/constants.js` and defaulted to false in `createWorldGameStateSystem`.
 
-[PASS] Non-implementation rule enforced
-- Source reviewed: LEVEL_11_3_NON_IMPLEMENTATION_RULE.md
-- No new implementation files were added or modified for this 11.3 delta.
+[PASS] Exactly one authoritative score transition
+- `applyScoreDelta` is the score transition with authoritative apply logic.
 
-[PASS] No engine modifications
-- Verified no modified paths under engine/ for this review delta.
+[PASS] All score writes via transition in authoritative mode
+- External score patch writes are rejected when authoritative score mode is active.
 
-[PASS] Candidate slice documented
-- Source reviewed: LEVEL_11_3_SLICE_DEFINITION.md (slice: score).
+[PASS] Selectors remain read-only
+- Read-only selector contract preserved and validated by tests.
 
-[PASS] Report outputs generated
-- file_tree.txt
-- validation_checklist.txt
-- readiness_decision.txt
+[PASS] One consumer only
+- No additional consumers introduced; existing read-only consumer path retained.
+
+[PASS] Contract tests added
+- Added `tests/world/WorldGameStateAuthoritativeScore.test.mjs` and wired into `tests/run-tests.mjs`.
+
+[PASS] No engine changes
+- No modified `engine/` paths in working tree.
+
+[PASS] Validation run
+- `npm test` passed: 84/84 explicit tests.

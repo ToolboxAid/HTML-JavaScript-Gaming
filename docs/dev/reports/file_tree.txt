@@ -1,14 +1,20 @@
-BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE
+BUILD_PR_LEVEL_11_4_AUTHORITATIVE_STATE_SCORE_IMPLEMENTATION
 
 .
 |-- docs/
 |   |-- pr/
-|   |   |-- BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE.md
-|   |   |-- LEVEL_11_3_READINESS_CRITERIA.md
-|   |   |-- LEVEL_11_3_NON_IMPLEMENTATION_RULE.md
-|   |   '-- LEVEL_11_3_SLICE_DEFINITION.md
+|   |   |-- BUILD_PR_LEVEL_11_4_AUTHORITATIVE_STATE_SCORE_IMPLEMENTATION.md
+|   |   |-- LEVEL_11_4_RULES.md
+|   |   |-- LEVEL_11_4_TESTS.md
+|   |   '-- LEVEL_11_4_REPORTS.md
 |   '-- dev/
 |       '-- reports/
 |           |-- file_tree.txt
-|           |-- validation_checklist.txt
-|           '-- readiness_decision.txt
+|           |-- change_summary.txt
+|           '-- validation_checklist.txt
+|-- src/
+|   '-- advanced/
+|       '-- state/
+|           |-- constants.js
+|           |-- transitions.js
+|           '-- createWorldGameStateSystem.js

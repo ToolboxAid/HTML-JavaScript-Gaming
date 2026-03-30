@@ -1,1 +1,1 @@
-Level 11.3 docs: next authoritative slice (score) definition and readiness criteria
+Level 11.4 implementation: authoritative score slice via feature-gated applyScoreDelta transition with transition-only writes, read-only selectors, single consumer path, and contract tests

@@ -63,6 +63,35 @@ function validateApplyScoreDelta(payload) {
   return { ok: true };
 }
 
+function applyAuthoritativeScoreDelta(snapshot, payload) {
+  if (!snapshot.worldState || !isPlainObject(snapshot.worldState)) {
+    snapshot.worldState = {};
+  }
+  if (!isPlainObject(snapshot.worldState.scores)) {
+    snapshot.worldState.scores = {
+      total: 0,
+      rewardPoints: 0,
+      rank: null
+    };
+  }
+
+  const scores = snapshot.worldState.scores;
+  const currentTotal = toFiniteNumber(scores.total, 0);
+  const currentRewardPoints = toFiniteNumber(scores.rewardPoints, 0);
+  const delta = toFiniteNumber(payload.delta, 0);
+  const rewardDelta = payload.rewardDelta !== undefined ? toFiniteNumber(payload.rewardDelta, 0) : 0;
+
+  scores.total = currentTotal + delta;
+  scores.rewardPoints = currentRewardPoints + rewardDelta;
+  if (payload.rank !== undefined) {
+    scores.rank = payload.rank;
+  }
+
+  const changes = ['worldState.scores.total', 'worldState.scores.rewardPoints'];
+  if (payload.rank !== undefined) changes.push('worldState.scores.rank');
+  return { changes };
+}
+
 function validateUpdateObjectiveProgress(payload) {
   if (!isPlainObject(payload)) {
     return { ok: false, reason: 'updateObjectiveProgress requires an object payload.' };
@@ -155,7 +184,8 @@ function createTransitionRegistry() {
     },
     applyScoreDelta: {
       validate: validateApplyScoreDelta,
-      eventType: WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_APPLIED
+      eventType: WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_APPLIED,
+      authoritativeApply: applyAuthoritativeScoreDelta
     },
     updateObjectiveProgress: {
       validate: validateUpdateObjectiveProgress,

@@ -32,6 +32,13 @@ function patchTouchesObjectiveSlice(patch) {
   return worldStatePatch.objectives !== undefined;
 }
 
+function patchTouchesScoreSlice(patch) {
+  if (!isPlainObject(patch)) return false;
+  const worldStatePatch = patch.worldState;
+  if (!isPlainObject(worldStatePatch)) return false;
+  return worldStatePatch.scores !== undefined;
+}
+
 function createWorldGameStateSystem(options = {}) {
   const now = typeof options.now === 'function' ? options.now : () => Date.now();
   const passiveMode = options.passiveMode !== undefined ? Boolean(options.passiveMode) : true;
@@ -42,6 +49,11 @@ function createWorldGameStateSystem(options = {}) {
       options &&
       options.featureGates &&
       options.featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS]
+    ),
+    [WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_SCORE]: Boolean(
+      options &&
+      options.featureGates &&
+      options.featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_SCORE]
     )
   });
   const correlationIdFactory = typeof options.correlationIdFactory === 'function'
@@ -144,35 +156,51 @@ function createWorldGameStateSystem(options = {}) {
       featureGates
     };
 
-    const canUseAuthoritativeObjectiveProgress = Boolean(
-      normalizedTransitionName === 'updateObjectiveProgress' &&
+    const authoritativeGateByTransition = {
+      updateObjectiveProgress: WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS,
+      applyScoreDelta: WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_SCORE
+    };
+    const authoritativeGateKey = authoritativeGateByTransition[normalizedTransitionName];
+    const canUseAuthoritativeTransition = Boolean(
+      authoritativeGateKey &&
       typeof transition.authoritativeApply === 'function'
     );
 
-    if (canUseAuthoritativeObjectiveProgress) {
+    if (canUseAuthoritativeTransition) {
       const previewSnapshot = cloneDeep(snapshot);
       const previewResult = transition.authoritativeApply(previewSnapshot, payload, { now });
+      const beforeSlice = normalizedTransitionName === 'updateObjectiveProgress'
+        ? snapshot.worldState.objectives
+        : snapshot.worldState.scores;
+      const candidateSlice = normalizedTransitionName === 'updateObjectiveProgress'
+        ? previewSnapshot.worldState.objectives
+        : previewSnapshot.worldState.scores;
       comparison = {
         mode: passiveMode ? 'passive-comparison' : 'gated-comparison',
-        before: createReadonlyClone(snapshot.worldState.objectives),
-        candidate: createReadonlyClone(previewSnapshot.worldState.objectives),
+        before: createReadonlyClone(beforeSlice),
+        candidate: createReadonlyClone(candidateSlice),
         changes: Array.isArray(previewResult && previewResult.changes) ? previewResult.changes.slice() : []
       };
 
-      const authoritativeEnabled = featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS];
+      const authoritativeEnabled = featureGates[authoritativeGateKey];
       if (!passiveMode && authoritativeEnabled) {
         snapshot = previewSnapshot;
         changes = comparison.changes.slice();
         applied = true;
-        result.reason = 'APPLIED_AUTHORITATIVE_OBJECTIVE_PROGRESS';
-        result.code = 'APPLIED_AUTHORITATIVE_OBJECTIVE_PROGRESS';
+        if (normalizedTransitionName === 'applyScoreDelta') {
+          result.reason = 'APPLIED_AUTHORITATIVE_SCORE';
+          result.code = 'APPLIED_AUTHORITATIVE_SCORE';
+        } else {
+          result.reason = 'APPLIED_AUTHORITATIVE_OBJECTIVE_PROGRESS';
+          result.code = 'APPLIED_AUTHORITATIVE_OBJECTIVE_PROGRESS';
+        }
       } else {
         result.reason = 'PASSIVE_COMPARISON_ONLY';
         result.code = 'PASSIVE_COMPARISON_ONLY';
       }
     }
 
-    if (!canUseAuthoritativeObjectiveProgress) {
+    if (!canUseAuthoritativeTransition) {
       result.reason = 'STUB_NOOP';
       result.code = 'STUB_NOOP';
     }
@@ -232,6 +260,31 @@ function createWorldGameStateSystem(options = {}) {
       return {
         ok: false,
         reason: 'OBJECTIVE_AUTHORITATIVE_SLICE_REQUIRES_TRANSITION',
+        changes: [],
+        correlationId,
+        eventPublished: publishEnvelope(rejectionEvent.eventType, rejectionEvent)
+      };
+    }
+
+    const scoreAuthoritativeActive = Boolean(
+      !passiveMode &&
+      featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_SCORE]
+    );
+    if (scoreAuthoritativeActive && patchTouchesScoreSlice(patch)) {
+      const correlationId = `externalPatchRejected:${Number(now())}`;
+      const rejectionEvent = createTransitionRejectedEvent({
+        transitionName: 'applyExternalSnapshotPatch',
+        correlationId,
+        code: 'SCORE_AUTHORITATIVE_SLICE_REQUIRES_TRANSITION',
+        reason: 'Score authoritative slice must be written through applyScoreDelta transition.',
+        payload: {
+          rejectedRoots: Object.keys(patch)
+        },
+        now
+      });
+      return {
+        ok: false,
+        reason: 'SCORE_AUTHORITATIVE_SLICE_REQUIRES_TRANSITION',
         changes: [],
         correlationId,
         eventPublished: publishEnvelope(rejectionEvent.eventType, rejectionEvent)

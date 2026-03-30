@@ -1,1 +1,1 @@
-Create BUILD_PR_LEVEL_11_4_AUTHORITATIVE_STATE_SCORE_IMPLEMENTATION as docs-only
+Create BUILD_PR_LEVEL_11_5_AUTHORITATIVE_STATE_SCORE_EXPANSION_REVIEW as a docs + validation delta. Validate score-slice stability gates and produce EXPAND/HOLD decision without engine core API changes.
