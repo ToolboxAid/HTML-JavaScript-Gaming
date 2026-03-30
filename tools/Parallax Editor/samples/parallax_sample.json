@@ -1,0 +1,66 @@
+{
+  "schema": "toolbox.parallax/1",
+  "version": 1,
+  "companionEditor": "ParallaxEditor",
+  "map": {
+    "name": "sample-parallax-only",
+    "width": 64,
+    "height": 24,
+    "tileSize": 24
+  },
+  "layers": [
+    {
+      "id": "sample-sky",
+      "name": "Sample Sky",
+      "drawOrder": 0,
+      "imageSource": "./samples/images/sky-gradient.svg",
+      "imageDataUrl": "",
+      "scrollFactorX": 0.08,
+      "scrollFactorY": 0.03,
+      "offsetX": 0,
+      "offsetY": 0,
+      "repeatX": true,
+      "repeatY": false,
+      "wrapMode": "wrap",
+      "opacity": 1,
+      "visible": true
+    },
+    {
+      "id": "sample-clouds",
+      "name": "Sample Clouds",
+      "drawOrder": 1,
+      "imageSource": "./samples/images/cloud-bands.svg",
+      "imageDataUrl": "",
+      "scrollFactorX": 0.32,
+      "scrollFactorY": 0.08,
+      "offsetX": 0,
+      "offsetY": 48,
+      "repeatX": true,
+      "repeatY": false,
+      "wrapMode": "wrap",
+      "opacity": 0.92,
+      "visible": true
+    },
+    {
+      "id": "sample-mountains",
+      "name": "Sample Mountains",
+      "drawOrder": 2,
+      "imageSource": "./samples/images/mountain-ridge.svg",
+      "imageDataUrl": "",
+      "scrollFactorX": 0.58,
+      "scrollFactorY": 0.2,
+      "offsetX": 0,
+      "offsetY": 210,
+      "repeatX": true,
+      "repeatY": false,
+      "wrapMode": "wrap",
+      "opacity": 0.95,
+      "visible": true
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+    "source": "parallax-editor-samples"
+  }
+}

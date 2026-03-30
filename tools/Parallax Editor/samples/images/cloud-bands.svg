@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="240" viewBox="0 0 960 240">
+  <rect x="0" y="0" width="960" height="240" fill="transparent"/>
+  <g fill="#ffffff" fill-opacity="0.65">
+    <ellipse cx="90" cy="70" rx="70" ry="28"/>
+    <ellipse cx="160" cy="76" rx="80" ry="26"/>
+    <ellipse cx="250" cy="68" rx="74" ry="24"/>
+    <ellipse cx="390" cy="86" rx="92" ry="28"/>
+    <ellipse cx="520" cy="64" rx="74" ry="24"/>
+    <ellipse cx="650" cy="82" rx="88" ry="30"/>
+    <ellipse cx="790" cy="70" rx="78" ry="26"/>
+    <ellipse cx="910" cy="84" rx="62" ry="22"/>
+  </g>
+  <g fill="#e2e8f0" fill-opacity="0.4">
+    <ellipse cx="40" cy="160" rx="62" ry="20"/>
+    <ellipse cx="140" cy="172" rx="74" ry="22"/>
+    <ellipse cx="270" cy="158" rx="66" ry="20"/>
+    <ellipse cx="400" cy="166" rx="70" ry="22"/>
+    <ellipse cx="540" cy="174" rx="82" ry="24"/>
+    <ellipse cx="690" cy="160" rx="78" ry="22"/>
+    <ellipse cx="830" cy="170" rx="72" ry="22"/>
+    <ellipse cx="930" cy="162" rx="58" ry="20"/>
+  </g>
+</svg>

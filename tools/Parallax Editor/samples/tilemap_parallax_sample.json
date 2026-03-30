@@ -1,0 +1,62 @@
+{
+  "schema": "toolbox.tilemap/1",
+  "version": 1,
+  "map": {
+    "name": "sample-tilemap-with-parallax",
+    "width": 80,
+    "height": 30,
+    "tileSize": 24
+  },
+  "tileset": [
+    {
+      "id": 0,
+      "name": "Empty",
+      "color": "transparent"
+    }
+  ],
+  "layers": [],
+  "markers": [],
+  "parallax": {
+    "schema": "toolbox.parallax/1",
+    "companionEditor": "ParallaxEditor",
+    "layers": [
+      {
+        "id": "tm-sky",
+        "name": "Tilemap Sky",
+        "drawOrder": 0,
+        "imageSource": "./samples/images/sky-gradient.svg",
+        "imageDataUrl": "",
+        "scrollFactorX": 0.1,
+        "scrollFactorY": 0.05,
+        "offsetX": 0,
+        "offsetY": 0,
+        "repeatX": true,
+        "repeatY": false,
+        "wrapMode": "wrap",
+        "opacity": 1,
+        "visible": true
+      },
+      {
+        "id": "tm-ridge",
+        "name": "Tilemap Ridge",
+        "drawOrder": 1,
+        "imageSource": "./samples/images/mountain-ridge.svg",
+        "imageDataUrl": "",
+        "scrollFactorX": 0.52,
+        "scrollFactorY": 0.18,
+        "offsetX": 0,
+        "offsetY": 250,
+        "repeatX": true,
+        "repeatY": false,
+        "wrapMode": "wrap",
+        "opacity": 0.96,
+        "visible": true
+      }
+    ]
+  },
+  "metadata": {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+    "notes": "Sample for Parallax Editor companion direct loading."
+  }
+}

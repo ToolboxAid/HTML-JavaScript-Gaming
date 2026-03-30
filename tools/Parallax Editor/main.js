@@ -5,6 +5,8 @@ David Quesenberry
 main.js
 */
 
+const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
+
 function clamp(value, min, max, fallback) {
   const number = Number(value);
   if (!Number.isFinite(number)) {
@@ -233,6 +235,25 @@ function createDownload(fileName, content) {
   URL.revokeObjectURL(href);
 }
 
+function normalizeSamplePath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return null;
+  }
+
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return null;
+  }
+
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return `./samples/${trimmed}`;
+}
+
 function mod(value, range) {
   if (range === 0) {
     return 0;
@@ -259,6 +280,7 @@ class ParallaxEditorApp {
     this.cameraY = 0;
     this.refs = {};
     this.imageCache = new Map();
+    this.sampleEntries = [];
   }
 
   init(rootDocument) {
@@ -266,6 +288,7 @@ class ParallaxEditorApp {
     this.attachEvents();
     this.syncInputsFromDocument();
     this.renderAll();
+    this.loadSampleManifest();
   }
 
   captureRefs(rootDocument) {
@@ -279,6 +302,8 @@ class ParallaxEditorApp {
     this.refs.mapHeightInput = rootDocument.getElementById("mapHeightInput");
     this.refs.tileSizeInput = rootDocument.getElementById("tileSizeInput");
     this.refs.applyMapMetaButton = rootDocument.getElementById("applyMapMetaButton");
+    this.refs.sampleSelect = rootDocument.getElementById("sampleSelect");
+    this.refs.loadSampleButton = rootDocument.getElementById("loadSampleButton");
 
     this.refs.layerList = rootDocument.getElementById("layerList");
     this.refs.newLayerNameInput = rootDocument.getElementById("newLayerNameInput");
@@ -324,6 +349,8 @@ class ParallaxEditorApp {
 
     this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
     this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
+    this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
+    this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
 
     this.refs.addLayerButton.addEventListener("click", () => this.addLayer());
     this.refs.removeLayerButton.addEventListener("click", () => this.removeSelectedLayer());
@@ -364,6 +391,112 @@ class ParallaxEditorApp {
     this.refs.tileSizeInput.value = String(this.documentModel.map.tileSize);
     this.refs.cameraXInput.value = String(this.cameraX);
     this.refs.cameraYInput.value = String(this.cameraY);
+  }
+
+  async loadSampleManifest() {
+    this.refs.sampleSelect.innerHTML = "<option value=\"\">Loading samples...</option>";
+    this.refs.loadSampleButton.disabled = true;
+
+    try {
+      const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
+      const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Manifest request failed (${response.status}).`);
+      }
+
+      const manifest = await response.json();
+      const rawSamples = Array.isArray(manifest?.samples) ? manifest.samples : [];
+      const sampleEntries = rawSamples
+        .map((entry) => {
+          const path = normalizeSamplePath(entry?.path);
+          if (!path) {
+            return null;
+          }
+          return {
+            id: typeof entry?.id === "string" && entry.id.trim() ? entry.id.trim() : path,
+            label: typeof entry?.label === "string" && entry.label.trim() ? entry.label.trim() : path,
+            path
+          };
+        })
+        .filter((entry) => entry !== null);
+
+      if (sampleEntries.length === 0) {
+        throw new Error("Sample manifest had no valid entries.");
+      }
+
+      this.sampleEntries = sampleEntries;
+      this.renderSampleOptions();
+      this.updateStatus(`Loaded ${sampleEntries.length} samples from ${SAMPLE_MANIFEST_PATH}.`);
+    } catch (error) {
+      this.sampleEntries = [];
+      this.renderSampleOptions();
+      this.updateStatus(`Sample manifest unavailable: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+
+  renderSampleOptions() {
+    const select = this.refs.sampleSelect;
+    select.innerHTML = "";
+
+    if (this.sampleEntries.length === 0) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No samples available";
+      select.appendChild(option);
+      this.refs.loadSampleButton.disabled = true;
+      return;
+    }
+
+    const promptOption = document.createElement("option");
+    promptOption.value = "";
+    promptOption.textContent = "Select a sample...";
+    select.appendChild(promptOption);
+
+    this.sampleEntries.forEach((entry) => {
+      const option = document.createElement("option");
+      option.value = entry.path;
+      option.textContent = entry.label;
+      select.appendChild(option);
+    });
+
+    this.refs.loadSampleButton.disabled = false;
+  }
+
+  handleSampleSelectionChanged() {
+    const selectedPath = normalizeSamplePath(this.refs.sampleSelect.value);
+    if (!selectedPath) {
+      return;
+    }
+    this.updateStatus(`Sample selected: ${selectedPath}`);
+  }
+
+  async handleLoadSelectedSample() {
+    const selectedPath = normalizeSamplePath(this.refs.sampleSelect.value);
+    if (!selectedPath) {
+      this.updateStatus("Select a sample before loading.");
+      return;
+    }
+
+    try {
+      const sampleUrl = new URL(selectedPath, window.location.href);
+      const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Sample request failed (${response.status}).`);
+      }
+
+      const raw = await response.json();
+      this.documentModel = extractParallaxDocument(raw);
+      normalizeDrawOrderSequence(this.documentModel.layers);
+      this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+      this.imageCache.clear();
+      this.cameraX = 0;
+      this.cameraY = 0;
+      this.syncInputsFromDocument();
+      this.renderAll();
+      this.updateStatus(`Loaded sample ${selectedPath}.`);
+    } catch (error) {
+      this.updateStatus(`Sample load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
   }
 
   handleNewDocument() {

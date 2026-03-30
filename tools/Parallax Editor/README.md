@@ -17,6 +17,7 @@ Standalone companion tool for parallax depth/background authoring.
 - Load from `toolbox.tilemap/1` or `toolbox.parallax/1`
 - Save parallax-only JSON
 - Export tilemap parallax patch JSON
+- Direct sample loading from `tools/Parallax Editor/samples/` via in-editor sample selector
 
 ## Boundaries
 - This tool edits only parallax data.
@@ -25,3 +26,7 @@ Standalone companion tool for parallax depth/background authoring.
 
 ## Entry
 - `tools/Parallax Editor/index.html`
+
+## Samples
+- Manifest: `tools/Parallax Editor/samples/sample-manifest.json`
+- Samples and images use paths relative to `tools/Parallax Editor/`

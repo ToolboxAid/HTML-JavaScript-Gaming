@@ -1,0 +1,16 @@
+{
+  "schema": "toolbox.parallax-sample-manifest/1",
+  "version": 1,
+  "samples": [
+    {
+      "id": "parallax-basic",
+      "label": "Parallax Sample (toolbox.parallax/1)",
+      "path": "./samples/parallax_sample.json"
+    },
+    {
+      "id": "tilemap-embedded",
+      "label": "Tilemap + Parallax Sample (toolbox.tilemap/1)",
+      "path": "./samples/tilemap_parallax_sample.json"
+    }
+  ]
+}
