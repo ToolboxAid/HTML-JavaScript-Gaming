@@ -1,0 +1,831 @@
+﻿/*
+Toolbox Aid
+David Quesenberry
+03/30/2026
+main.js
+*/
+
+function clamp(value, min, max, fallback) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    return fallback;
+  }
+  return Math.max(min, Math.min(max, number));
+}
+
+function cloneDeep(value) {
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value));
+}
+
+function normalizeMapMeta(rawMap) {
+  const width = clamp(rawMap?.width, 4, 1024, 32);
+  const height = clamp(rawMap?.height, 4, 1024, 18);
+  const tileSize = clamp(rawMap?.tileSize, 8, 128, 24);
+  const name = typeof rawMap?.name === "string" && rawMap.name.trim() ? rawMap.name.trim() : "untitled-map";
+
+  return {
+    name,
+    width,
+    height,
+    tileSize,
+    pixelWidth: width * tileSize,
+    pixelHeight: height * tileSize
+  };
+}
+
+function createDefaultLayer(index = 0, name = "Parallax Layer") {
+  return {
+    id: `parallax-layer-${Date.now()}-${index}`,
+    name,
+    drawOrder: index,
+    imageSource: "",
+    imageDataUrl: "",
+    scrollFactorX: 0.4,
+    scrollFactorY: 0.3,
+    offsetX: 0,
+    offsetY: 0,
+    repeatX: true,
+    repeatY: false,
+    wrapMode: "wrap",
+    opacity: 1,
+    visible: true
+  };
+}
+
+function normalizeLayer(rawLayer, index = 0) {
+  const fallback = createDefaultLayer(index, `Parallax Layer ${index + 1}`);
+  const repeatX = rawLayer?.repeatX !== false;
+  const repeatY = rawLayer?.repeatY === true;
+  const wrapMode = rawLayer?.wrapMode === "clamp" ? "clamp" : "wrap";
+
+  return {
+    id: typeof rawLayer?.id === "string" && rawLayer.id.trim() ? rawLayer.id.trim() : fallback.id,
+    name: typeof rawLayer?.name === "string" && rawLayer.name.trim() ? rawLayer.name.trim() : fallback.name,
+    drawOrder: Math.trunc(clamp(rawLayer?.drawOrder, -999, 999, index)),
+    imageSource: typeof rawLayer?.imageSource === "string" ? rawLayer.imageSource : "",
+    imageDataUrl: typeof rawLayer?.imageDataUrl === "string" ? rawLayer.imageDataUrl : "",
+    scrollFactorX: clamp(rawLayer?.scrollFactorX, -4, 4, fallback.scrollFactorX),
+    scrollFactorY: clamp(rawLayer?.scrollFactorY, -4, 4, fallback.scrollFactorY),
+    offsetX: Math.trunc(clamp(rawLayer?.offsetX, -4096, 4096, 0)),
+    offsetY: Math.trunc(clamp(rawLayer?.offsetY, -4096, 4096, 0)),
+    repeatX,
+    repeatY,
+    wrapMode,
+    opacity: clamp(rawLayer?.opacity, 0, 1, 1),
+    visible: rawLayer?.visible !== false
+  };
+}
+
+function sortLayersByOrder(layers) {
+  layers.sort((a, b) => {
+    if (a.drawOrder !== b.drawOrder) {
+      return a.drawOrder - b.drawOrder;
+    }
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function normalizeDrawOrderSequence(layers) {
+  sortLayersByOrder(layers);
+  layers.forEach((layer, index) => {
+    layer.drawOrder = index;
+  });
+}
+
+function createInitialParallaxDocument(options = {}) {
+  const map = normalizeMapMeta(options.map || {});
+  const createdAt = new Date().toISOString();
+  const layers = [
+    {
+      ...createDefaultLayer(0, "Sky"),
+      scrollFactorX: 0.2,
+      scrollFactorY: 0.05,
+      opacity: 1,
+      repeatY: false
+    },
+    {
+      ...createDefaultLayer(1, "Far Mountains"),
+      scrollFactorX: 0.4,
+      scrollFactorY: 0.15,
+      opacity: 0.95
+    },
+    {
+      ...createDefaultLayer(2, "Near Trees"),
+      scrollFactorX: 0.75,
+      scrollFactorY: 0.35,
+      opacity: 0.9
+    }
+  ];
+
+  normalizeDrawOrderSequence(layers);
+
+  return {
+    schema: "toolbox.parallax/1",
+    version: 1,
+    companionEditor: "ParallaxEditor",
+    map,
+    layers,
+    metadata: {
+      createdAt,
+      updatedAt: createdAt,
+      source: "parallax-editor-companion"
+    }
+  };
+}
+
+function sanitizeParallaxDocument(rawDocument, fallbackMap = null) {
+  const fallback = createInitialParallaxDocument({ map: fallbackMap || undefined });
+  if (!rawDocument || typeof rawDocument !== "object") {
+    return fallback;
+  }
+
+  const map = normalizeMapMeta(rawDocument.map || fallback.map);
+  const rawLayers = Array.isArray(rawDocument.layers) ? rawDocument.layers : [];
+  const layers = rawLayers.length > 0
+    ? rawLayers.map((layer, index) => normalizeLayer(layer, index))
+    : cloneDeep(fallback.layers);
+  normalizeDrawOrderSequence(layers);
+
+  return {
+    schema: "toolbox.parallax/1",
+    version: Number.isFinite(rawDocument.version) ? rawDocument.version : 1,
+    companionEditor: "ParallaxEditor",
+    map,
+    layers,
+    metadata: {
+      createdAt: typeof rawDocument?.metadata?.createdAt === "string" ? rawDocument.metadata.createdAt : fallback.metadata.createdAt,
+      updatedAt: new Date().toISOString(),
+      source: "parallax-editor-companion"
+    }
+  };
+}
+
+function extractParallaxDocument(rawAnyDocument) {
+  if (!rawAnyDocument || typeof rawAnyDocument !== "object") {
+    throw new Error("Expected a JSON object.");
+  }
+
+  if (rawAnyDocument.schema === "toolbox.parallax/1") {
+    return sanitizeParallaxDocument(rawAnyDocument);
+  }
+
+  if (rawAnyDocument.schema === "toolbox.tilemap/1") {
+    const map = normalizeMapMeta(rawAnyDocument.map || {});
+    const rawParallax = rawAnyDocument.parallax && typeof rawAnyDocument.parallax === "object"
+      ? rawAnyDocument.parallax
+      : { schema: "toolbox.parallax/1", layers: [] };
+
+    const merged = {
+      schema: "toolbox.parallax/1",
+      version: 1,
+      companionEditor: "ParallaxEditor",
+      map,
+      layers: Array.isArray(rawParallax.layers) ? rawParallax.layers : []
+    };
+
+    return sanitizeParallaxDocument(merged, map);
+  }
+
+  if (rawAnyDocument.parallax && rawAnyDocument.map) {
+    const map = normalizeMapMeta(rawAnyDocument.map);
+    const merged = {
+      schema: "toolbox.parallax/1",
+      version: 1,
+      companionEditor: "ParallaxEditor",
+      map,
+      layers: Array.isArray(rawAnyDocument.parallax.layers) ? rawAnyDocument.parallax.layers : []
+    };
+    return sanitizeParallaxDocument(merged, map);
+  }
+
+  throw new Error("Unsupported schema. Expected toolbox.tilemap/1 or toolbox.parallax/1.");
+}
+
+function createTilemapParallaxPatch(parallaxDocument) {
+  return {
+    schema: "toolbox.tilemap-parallax-patch/1",
+    map: cloneDeep(parallaxDocument.map),
+    parallax: {
+      schema: "toolbox.parallax/1",
+      companionEditor: "ParallaxEditor",
+      layers: cloneDeep(parallaxDocument.layers)
+    },
+    metadata: {
+      generatedAt: new Date().toISOString(),
+      generatedBy: "tools/Parallax Editor"
+    }
+  };
+}
+
+function createDownload(fileName, content) {
+  const blob = new Blob([content], { type: "application/json" });
+  const href = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = href;
+  anchor.download = fileName;
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(href);
+}
+
+function mod(value, range) {
+  if (range === 0) {
+    return 0;
+  }
+  return ((value % range) + range) % range;
+}
+
+function getLayerVisualColor(layer) {
+  const hashSource = `${layer.id}|${layer.name}`;
+  let hash = 0;
+  for (let i = 0; i < hashSource.length; i += 1) {
+    hash = ((hash << 5) - hash) + hashSource.charCodeAt(i);
+    hash |= 0;
+  }
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue} 56% 42%)`;
+}
+
+class ParallaxEditorApp {
+  constructor(documentModel) {
+    this.documentModel = documentModel;
+    this.selectedLayerId = documentModel.layers[0]?.id || "";
+    this.cameraX = 0;
+    this.cameraY = 0;
+    this.refs = {};
+    this.imageCache = new Map();
+  }
+
+  init(rootDocument) {
+    this.captureRefs(rootDocument);
+    this.attachEvents();
+    this.syncInputsFromDocument();
+    this.renderAll();
+  }
+
+  captureRefs(rootDocument) {
+    this.refs.newParallaxButton = rootDocument.getElementById("newParallaxButton");
+    this.refs.saveParallaxButton = rootDocument.getElementById("saveParallaxButton");
+    this.refs.exportParallaxPatchButton = rootDocument.getElementById("exportParallaxPatchButton");
+    this.refs.loadAnyInput = rootDocument.getElementById("loadAnyInput");
+
+    this.refs.projectNameInput = rootDocument.getElementById("projectNameInput");
+    this.refs.mapWidthInput = rootDocument.getElementById("mapWidthInput");
+    this.refs.mapHeightInput = rootDocument.getElementById("mapHeightInput");
+    this.refs.tileSizeInput = rootDocument.getElementById("tileSizeInput");
+    this.refs.applyMapMetaButton = rootDocument.getElementById("applyMapMetaButton");
+
+    this.refs.layerList = rootDocument.getElementById("layerList");
+    this.refs.newLayerNameInput = rootDocument.getElementById("newLayerNameInput");
+    this.refs.addLayerButton = rootDocument.getElementById("addLayerButton");
+    this.refs.removeLayerButton = rootDocument.getElementById("removeLayerButton");
+    this.refs.duplicateLayerButton = rootDocument.getElementById("duplicateLayerButton");
+    this.refs.moveLayerUpButton = rootDocument.getElementById("moveLayerUpButton");
+    this.refs.moveLayerDownButton = rootDocument.getElementById("moveLayerDownButton");
+
+    this.refs.cameraXInput = rootDocument.getElementById("cameraXInput");
+    this.refs.cameraYInput = rootDocument.getElementById("cameraYInput");
+    this.refs.cameraReadout = rootDocument.getElementById("cameraReadout");
+
+    this.refs.layerNameInput = rootDocument.getElementById("layerNameInput");
+    this.refs.layerDrawOrderInput = rootDocument.getElementById("layerDrawOrderInput");
+    this.refs.layerOpacityInput = rootDocument.getElementById("layerOpacityInput");
+    this.refs.layerVisibleSelect = rootDocument.getElementById("layerVisibleSelect");
+
+    this.refs.layerImageSourceInput = rootDocument.getElementById("layerImageSourceInput");
+    this.refs.applyImageSourceButton = rootDocument.getElementById("applyImageSourceButton");
+    this.refs.layerImageFileInput = rootDocument.getElementById("layerImageFileInput");
+
+    this.refs.scrollFactorXInput = rootDocument.getElementById("scrollFactorXInput");
+    this.refs.scrollFactorYInput = rootDocument.getElementById("scrollFactorYInput");
+    this.refs.offsetXInput = rootDocument.getElementById("offsetXInput");
+    this.refs.offsetYInput = rootDocument.getElementById("offsetYInput");
+    this.refs.repeatXSelect = rootDocument.getElementById("repeatXSelect");
+    this.refs.repeatYSelect = rootDocument.getElementById("repeatYSelect");
+    this.refs.wrapModeSelect = rootDocument.getElementById("wrapModeSelect");
+    this.refs.applyLayerSettingsButton = rootDocument.getElementById("applyLayerSettingsButton");
+
+    this.refs.previewMeta = rootDocument.getElementById("previewMeta");
+    this.refs.statusText = rootDocument.getElementById("statusText");
+    this.refs.previewCanvas = rootDocument.getElementById("previewCanvas");
+    this.refs.previewContext = this.refs.previewCanvas.getContext("2d", { alpha: false });
+  }
+
+  attachEvents() {
+    this.refs.newParallaxButton.addEventListener("click", () => this.handleNewDocument());
+    this.refs.saveParallaxButton.addEventListener("click", () => this.handleSaveParallax());
+    this.refs.exportParallaxPatchButton.addEventListener("click", () => this.handleExportTilemapPatch());
+    this.refs.loadAnyInput.addEventListener("change", (event) => this.handleLoadAnyJson(event));
+
+    this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
+    this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
+
+    this.refs.addLayerButton.addEventListener("click", () => this.addLayer());
+    this.refs.removeLayerButton.addEventListener("click", () => this.removeSelectedLayer());
+    this.refs.duplicateLayerButton.addEventListener("click", () => this.duplicateSelectedLayer());
+    this.refs.moveLayerUpButton.addEventListener("click", () => this.moveSelectedLayer(-1));
+    this.refs.moveLayerDownButton.addEventListener("click", () => this.moveSelectedLayer(1));
+
+    this.refs.layerNameInput.addEventListener("change", () => this.applyBasicLayerFields());
+    this.refs.layerDrawOrderInput.addEventListener("change", () => this.applyBasicLayerFields());
+    this.refs.layerOpacityInput.addEventListener("change", () => this.applyBasicLayerFields());
+    this.refs.layerVisibleSelect.addEventListener("change", () => this.applyBasicLayerFields());
+
+    this.refs.applyImageSourceButton.addEventListener("click", () => this.applyImageSourceFromInput());
+    this.refs.layerImageFileInput.addEventListener("change", (event) => this.assignLocalImageFile(event));
+
+    this.refs.applyLayerSettingsButton.addEventListener("click", () => this.applyExtendedLayerSettings());
+
+    this.refs.cameraXInput.addEventListener("input", () => this.handleCameraChange());
+    this.refs.cameraYInput.addEventListener("input", () => this.handleCameraChange());
+  }
+
+  getSelectedLayer() {
+    return this.documentModel.layers.find((layer) => layer.id === this.selectedLayerId) || this.documentModel.layers[0] || null;
+  }
+
+  touchDocument() {
+    this.documentModel.metadata.updatedAt = new Date().toISOString();
+  }
+
+  updateStatus(message) {
+    this.refs.statusText.textContent = message;
+  }
+
+  syncInputsFromDocument() {
+    this.refs.projectNameInput.value = this.documentModel.map.name;
+    this.refs.mapWidthInput.value = String(this.documentModel.map.width);
+    this.refs.mapHeightInput.value = String(this.documentModel.map.height);
+    this.refs.tileSizeInput.value = String(this.documentModel.map.tileSize);
+    this.refs.cameraXInput.value = String(this.cameraX);
+    this.refs.cameraYInput.value = String(this.cameraY);
+  }
+
+  handleNewDocument() {
+    this.documentModel = createInitialParallaxDocument({ map: this.documentModel.map });
+    this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+    this.imageCache.clear();
+    this.cameraX = 0;
+    this.cameraY = 0;
+    this.syncInputsFromDocument();
+    this.renderAll();
+    this.updateStatus("Created new parallax document.");
+  }
+
+  handleSaveParallax() {
+    this.touchDocument();
+    const payload = JSON.stringify(this.documentModel, null, 2);
+    const fileName = `${this.documentModel.map.name || "map"}.parallax.json`;
+    createDownload(fileName, payload);
+    this.updateStatus(`Saved ${fileName}.`);
+  }
+
+  handleExportTilemapPatch() {
+    const patch = createTilemapParallaxPatch(this.documentModel);
+    const payload = JSON.stringify(patch, null, 2);
+    const fileName = `${this.documentModel.map.name || "map"}.tilemap-parallax.patch.json`;
+    createDownload(fileName, payload);
+    this.updateStatus(`Exported ${fileName}.`);
+  }
+
+  handleLoadAnyJson(event) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const raw = JSON.parse(String(reader.result));
+        this.documentModel = extractParallaxDocument(raw);
+        normalizeDrawOrderSequence(this.documentModel.layers);
+        this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+        this.imageCache.clear();
+        this.cameraX = 0;
+        this.cameraY = 0;
+        this.syncInputsFromDocument();
+        this.renderAll();
+        this.updateStatus(`Loaded ${file.name}.`);
+      } catch (error) {
+        this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
+      }
+      this.refs.loadAnyInput.value = "";
+    };
+
+    reader.readAsText(file);
+  }
+
+  applyMapMetaFromInputs() {
+    const map = normalizeMapMeta({
+      name: this.refs.projectNameInput.value,
+      width: this.refs.mapWidthInput.value,
+      height: this.refs.mapHeightInput.value,
+      tileSize: this.refs.tileSizeInput.value
+    });
+
+    this.documentModel.map = map;
+    this.touchDocument();
+    this.renderPreview();
+    this.refs.previewMeta.textContent = `${map.width}x${map.height} @ ${map.tileSize}px (${map.pixelWidth}x${map.pixelHeight})`;
+    this.updateStatus("Updated map metadata for parallax preview.");
+  }
+
+  addLayer() {
+    const name = this.refs.newLayerNameInput.value.trim() || `Parallax Layer ${this.documentModel.layers.length + 1}`;
+    const newLayer = createDefaultLayer(this.documentModel.layers.length, name);
+    newLayer.drawOrder = this.documentModel.layers.length;
+
+    this.documentModel.layers.push(newLayer);
+    normalizeDrawOrderSequence(this.documentModel.layers);
+    this.selectedLayerId = newLayer.id;
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(`Added layer ${name}.`);
+  }
+
+  removeSelectedLayer() {
+    if (this.documentModel.layers.length <= 1) {
+      this.updateStatus("Cannot remove the last parallax layer.");
+      return;
+    }
+
+    const index = this.documentModel.layers.findIndex((layer) => layer.id === this.selectedLayerId);
+    if (index < 0) {
+      return;
+    }
+
+    const removed = this.documentModel.layers[index];
+    this.documentModel.layers.splice(index, 1);
+    normalizeDrawOrderSequence(this.documentModel.layers);
+    this.selectedLayerId = this.documentModel.layers[Math.max(0, index - 1)]?.id || this.documentModel.layers[0].id;
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(`Removed layer ${removed.name}.`);
+  }
+
+  duplicateSelectedLayer() {
+    const selected = this.getSelectedLayer();
+    if (!selected) {
+      return;
+    }
+
+    const duplicate = normalizeLayer(cloneDeep(selected), this.documentModel.layers.length);
+    duplicate.id = `parallax-layer-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    duplicate.name = `${selected.name} Copy`;
+    duplicate.drawOrder = this.documentModel.layers.length;
+
+    this.documentModel.layers.push(duplicate);
+    normalizeDrawOrderSequence(this.documentModel.layers);
+    this.selectedLayerId = duplicate.id;
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(`Duplicated layer ${selected.name}.`);
+  }
+
+  moveSelectedLayer(direction) {
+    const currentIndex = this.documentModel.layers.findIndex((layer) => layer.id === this.selectedLayerId);
+    if (currentIndex < 0) {
+      return;
+    }
+
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= this.documentModel.layers.length) {
+      return;
+    }
+
+    const [layer] = this.documentModel.layers.splice(currentIndex, 1);
+    this.documentModel.layers.splice(nextIndex, 0, layer);
+    normalizeDrawOrderSequence(this.documentModel.layers);
+    this.selectedLayerId = layer.id;
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(`Moved layer ${layer.name} ${direction < 0 ? "up" : "down"}.`);
+  }
+
+  applyBasicLayerFields() {
+    const layer = this.getSelectedLayer();
+    if (!layer) {
+      return;
+    }
+
+    layer.name = this.refs.layerNameInput.value.trim() || layer.name;
+    layer.drawOrder = Math.trunc(clamp(this.refs.layerDrawOrderInput.value, -999, 999, layer.drawOrder));
+    layer.opacity = clamp(this.refs.layerOpacityInput.value, 0, 1, layer.opacity);
+    layer.visible = this.refs.layerVisibleSelect.value === "true";
+
+    normalizeDrawOrderSequence(this.documentModel.layers);
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(`Updated basic layer settings for ${layer.name}.`);
+  }
+
+  applyExtendedLayerSettings() {
+    const layer = this.getSelectedLayer();
+    if (!layer) {
+      return;
+    }
+
+    layer.scrollFactorX = clamp(this.refs.scrollFactorXInput.value, -4, 4, layer.scrollFactorX);
+    layer.scrollFactorY = clamp(this.refs.scrollFactorYInput.value, -4, 4, layer.scrollFactorY);
+    layer.offsetX = Math.trunc(clamp(this.refs.offsetXInput.value, -4096, 4096, layer.offsetX));
+    layer.offsetY = Math.trunc(clamp(this.refs.offsetYInput.value, -4096, 4096, layer.offsetY));
+    layer.repeatX = this.refs.repeatXSelect.value === "true";
+    layer.repeatY = this.refs.repeatYSelect.value === "true";
+    layer.wrapMode = this.refs.wrapModeSelect.value === "clamp" ? "clamp" : "wrap";
+
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(`Applied scroll/repeat settings for ${layer.name}.`);
+  }
+
+  applyImageSourceFromInput() {
+    const layer = this.getSelectedLayer();
+    if (!layer) {
+      return;
+    }
+
+    const source = this.refs.layerImageSourceInput.value.trim();
+    layer.imageSource = source;
+    if (source) {
+      layer.imageDataUrl = "";
+    }
+
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(source ? `Assigned image source to ${layer.name}.` : `Cleared image source for ${layer.name}.`);
+  }
+
+  assignLocalImageFile(event) {
+    const layer = this.getSelectedLayer();
+    if (!layer) {
+      return;
+    }
+
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      layer.imageDataUrl = String(reader.result || "");
+      layer.imageSource = file.name;
+      this.touchDocument();
+      this.renderAll();
+      this.updateStatus(`Assigned local image file ${file.name} to ${layer.name}.`);
+      this.refs.layerImageFileInput.value = "";
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  handleCameraChange() {
+    this.cameraX = Math.trunc(clamp(this.refs.cameraXInput.value, -1024, 1024, 0));
+    this.cameraY = Math.trunc(clamp(this.refs.cameraYInput.value, -1024, 1024, 0));
+    this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
+    this.renderPreview();
+  }
+
+  renderAll() {
+    normalizeDrawOrderSequence(this.documentModel.layers);
+    this.renderLayerList();
+    this.renderSelectedLayerFields();
+    this.renderPreview();
+    this.refs.previewMeta.textContent = `${this.documentModel.map.width}x${this.documentModel.map.height} @ ${this.documentModel.map.tileSize}px (${this.documentModel.map.pixelWidth}x${this.documentModel.map.pixelHeight})`;
+    this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
+  }
+
+  renderLayerList() {
+    const list = this.refs.layerList;
+    list.innerHTML = "";
+
+    const fragment = document.createDocumentFragment();
+    this.documentModel.layers.forEach((layer) => {
+      const item = document.createElement("li");
+      item.className = `layer-item${layer.id === this.selectedLayerId ? " selected" : ""}`;
+
+      const row = document.createElement("div");
+      row.className = "layer-row";
+
+      const selectButton = document.createElement("button");
+      selectButton.type = "button";
+      selectButton.className = "layer-select-btn";
+      selectButton.textContent = layer.name;
+      selectButton.addEventListener("click", () => {
+        this.selectedLayerId = layer.id;
+        this.renderAll();
+        this.updateStatus(`Selected layer ${layer.name}.`);
+      });
+
+      const orderChip = document.createElement("span");
+      orderChip.className = "layer-order-chip";
+      orderChip.textContent = `order ${layer.drawOrder}`;
+
+      row.appendChild(selectButton);
+      row.appendChild(orderChip);
+      item.appendChild(row);
+      fragment.appendChild(item);
+    });
+
+    list.appendChild(fragment);
+  }
+
+  renderSelectedLayerFields() {
+    const layer = this.getSelectedLayer();
+    if (!layer) {
+      return;
+    }
+
+    this.refs.layerNameInput.value = layer.name;
+    this.refs.layerDrawOrderInput.value = String(layer.drawOrder);
+    this.refs.layerOpacityInput.value = String(layer.opacity);
+    this.refs.layerVisibleSelect.value = layer.visible ? "true" : "false";
+
+    this.refs.layerImageSourceInput.value = layer.imageSource || "";
+    this.refs.scrollFactorXInput.value = String(layer.scrollFactorX);
+    this.refs.scrollFactorYInput.value = String(layer.scrollFactorY);
+    this.refs.offsetXInput.value = String(layer.offsetX);
+    this.refs.offsetYInput.value = String(layer.offsetY);
+    this.refs.repeatXSelect.value = layer.repeatX ? "true" : "false";
+    this.refs.repeatYSelect.value = layer.repeatY ? "true" : "false";
+    this.refs.wrapModeSelect.value = layer.wrapMode;
+  }
+
+  getLayerImageRecord(layer) {
+    const source = layer.imageDataUrl || layer.imageSource;
+    if (!source) {
+      return null;
+    }
+
+    if (this.imageCache.has(source)) {
+      return this.imageCache.get(source);
+    }
+
+    const record = {
+      status: "loading",
+      image: new Image(),
+      error: null
+    };
+
+    record.image.onload = () => {
+      record.status = "ready";
+      this.renderPreview();
+    };
+    record.image.onerror = () => {
+      record.status = "error";
+      record.error = "Image failed to load.";
+      this.renderPreview();
+    };
+
+    if (!source.startsWith("data:")) {
+      record.image.crossOrigin = "anonymous";
+    }
+    record.image.src = source;
+
+    this.imageCache.set(source, record);
+    return record;
+  }
+
+  drawFallbackLayer(context, layer, viewportWidth, viewportHeight, screenX, screenY) {
+    const color = getLayerVisualColor(layer);
+    context.fillStyle = color;
+
+    if (layer.repeatX || layer.repeatY) {
+      context.globalAlpha = layer.opacity * 0.25;
+      context.fillRect(0, 0, viewportWidth, viewportHeight);
+      context.globalAlpha = layer.opacity * 0.6;
+      const stripeHeight = Math.max(24, Math.floor(viewportHeight / 10));
+      for (let y = 0; y < viewportHeight; y += stripeHeight * 2) {
+        context.fillRect(0, y, viewportWidth, stripeHeight);
+      }
+      return;
+    }
+
+    const width = Math.max(240, Math.floor(viewportWidth * 0.4));
+    const height = Math.max(140, Math.floor(viewportHeight * 0.25));
+    context.globalAlpha = layer.opacity * 0.65;
+    context.fillRect(screenX, screenY, width, height);
+  }
+
+  drawSingleLayer(context, layer, viewportWidth, viewportHeight) {
+    if (!layer.visible || layer.opacity <= 0) {
+      return;
+    }
+
+    const screenX = Math.round((-this.cameraX * layer.scrollFactorX) + layer.offsetX);
+    const screenY = Math.round((-this.cameraY * layer.scrollFactorY) + layer.offsetY);
+
+    context.save();
+    context.globalAlpha = layer.opacity;
+
+    const imageRecord = this.getLayerImageRecord(layer);
+    if (!imageRecord || imageRecord.status === "error" || imageRecord.status === "loading") {
+      this.drawFallbackLayer(context, layer, viewportWidth, viewportHeight, screenX, screenY);
+      context.restore();
+      return;
+    }
+
+    const image = imageRecord.image;
+    const tileWidth = Math.max(1, image.naturalWidth || image.width || viewportWidth);
+    const tileHeight = Math.max(1, image.naturalHeight || image.height || viewportHeight);
+
+    const xPositions = [];
+    const yPositions = [];
+
+    if (layer.repeatX) {
+      if (layer.wrapMode === "wrap") {
+        let startX = screenX - mod(screenX, tileWidth) - tileWidth;
+        for (let x = startX; x <= viewportWidth + tileWidth; x += tileWidth) {
+          xPositions.push(x);
+        }
+      } else {
+        for (let x = screenX; x <= viewportWidth + tileWidth; x += tileWidth) {
+          xPositions.push(x);
+        }
+        for (let x = screenX - tileWidth; x >= -tileWidth; x -= tileWidth) {
+          xPositions.push(x);
+        }
+      }
+    } else {
+      xPositions.push(screenX);
+    }
+
+    if (layer.repeatY) {
+      if (layer.wrapMode === "wrap") {
+        let startY = screenY - mod(screenY, tileHeight) - tileHeight;
+        for (let y = startY; y <= viewportHeight + tileHeight; y += tileHeight) {
+          yPositions.push(y);
+        }
+      } else {
+        for (let y = screenY; y <= viewportHeight + tileHeight; y += tileHeight) {
+          yPositions.push(y);
+        }
+        for (let y = screenY - tileHeight; y >= -tileHeight; y -= tileHeight) {
+          yPositions.push(y);
+        }
+      }
+    } else {
+      yPositions.push(screenY);
+    }
+
+    for (let yi = 0; yi < yPositions.length; yi += 1) {
+      for (let xi = 0; xi < xPositions.length; xi += 1) {
+        context.drawImage(image, Math.round(xPositions[xi]), Math.round(yPositions[yi]));
+      }
+    }
+
+    context.restore();
+  }
+
+  renderPreview() {
+    const context = this.refs.previewContext;
+    const canvas = this.refs.previewCanvas;
+    const viewportWidth = canvas.width;
+    const viewportHeight = canvas.height;
+
+    context.fillStyle = "#0b1830";
+    context.fillRect(0, 0, viewportWidth, viewportHeight);
+
+    context.fillStyle = "#0f2340";
+    for (let y = 0; y < viewportHeight; y += 48) {
+      context.fillRect(0, y, viewportWidth, 24);
+    }
+
+    const sortedLayers = cloneDeep(this.documentModel.layers);
+    sortLayersByOrder(sortedLayers);
+
+    sortedLayers.forEach((layer) => {
+      this.drawSingleLayer(context, layer, viewportWidth, viewportHeight);
+    });
+
+    const worldWidth = this.documentModel.map.pixelWidth;
+    const worldHeight = this.documentModel.map.pixelHeight;
+    const borderX = Math.round((viewportWidth - Math.min(worldWidth, viewportWidth - 20)) / 2);
+    const borderY = Math.round((viewportHeight - Math.min(worldHeight, viewportHeight - 20)) / 2);
+    const borderW = Math.min(worldWidth, viewportWidth - 20);
+    const borderH = Math.min(worldHeight, viewportHeight - 20);
+
+    context.strokeStyle = "rgba(255, 255, 255, 0.45)";
+    context.lineWidth = 2;
+    context.strokeRect(borderX, borderY, borderW, borderH);
+
+    context.fillStyle = "rgba(15, 23, 42, 0.66)";
+    context.fillRect(10, 10, 330, 64);
+    context.fillStyle = "#dbeafe";
+    context.font = "12px monospace";
+    context.textBaseline = "top";
+    context.fillText(`Map: ${this.documentModel.map.name}`, 18, 18);
+    context.fillText(`Camera: ${this.cameraX}, ${this.cameraY}`, 18, 34);
+    context.fillText(`Layers: ${sortedLayers.length} (parallax-only view)`, 18, 50);
+  }
+}
+
+const initialDocument = createInitialParallaxDocument();
+const app = new ParallaxEditorApp(initialDocument);
+app.init(document);

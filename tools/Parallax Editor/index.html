@@ -1,0 +1,189 @@
+<!--
+Toolbox Aid
+David Quesenberry
+03/30/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en" class="parallax-editor-page-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parallax Editor</title>
+  <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="./parallaxEditor.css" />
+</head>
+<body class="parallax-editor-page">
+  <div class="app-shell">
+    <header class="toolbar">
+      <div class="toolbar-group">
+        <button id="newParallaxButton" type="button">New Parallax</button>
+        <button id="saveParallaxButton" type="button">Save Parallax JSON</button>
+        <button id="exportParallaxPatchButton" type="button">Export Tilemap Patch</button>
+        <label class="file-input-label" for="loadAnyInput">Load JSON</label>
+        <input id="loadAnyInput" class="hidden-file-input" type="file" accept=".json,application/json" />
+      </div>
+
+      <div class="toolbar-group">
+        <label>
+          Project Name
+          <input id="projectNameInput" type="text" value="untitled-map" />
+        </label>
+        <label>
+          Map Width
+          <input id="mapWidthInput" type="number" min="4" max="1024" step="1" value="32" />
+        </label>
+        <label>
+          Map Height
+          <input id="mapHeightInput" type="number" min="4" max="1024" step="1" value="18" />
+        </label>
+        <label>
+          Tile Size
+          <input id="tileSizeInput" type="number" min="8" max="128" step="1" value="24" />
+        </label>
+        <button id="applyMapMetaButton" type="button">Apply Map Meta</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar left-sidebar">
+        <section class="panel">
+          <h3>Parallax Layers</h3>
+          <ul id="layerList" class="layer-list"></ul>
+          <div class="row">
+            <label>
+              New Layer Name
+              <input id="newLayerNameInput" type="text" value="Parallax Layer" />
+            </label>
+          </div>
+          <div class="row buttons">
+            <button id="addLayerButton" type="button">Add Layer</button>
+            <button id="removeLayerButton" type="button">Remove Layer</button>
+            <button id="duplicateLayerButton" type="button">Duplicate</button>
+          </div>
+          <div class="row buttons">
+            <button id="moveLayerUpButton" type="button">Move Up</button>
+            <button id="moveLayerDownButton" type="button">Move Down</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3>Preview Camera</h3>
+          <label>
+            Camera X
+            <input id="cameraXInput" type="range" min="-1024" max="1024" step="1" value="0" />
+          </label>
+          <label>
+            Camera Y
+            <input id="cameraYInput" type="range" min="-1024" max="1024" step="1" value="0" />
+          </label>
+          <div id="cameraReadout" class="muted">camera: 0, 0</div>
+        </section>
+      </aside>
+
+      <main class="preview-panel">
+        <div class="preview-toolbar">
+          <strong>Parallax Preview</strong>
+          <span id="previewMeta" class="muted"></span>
+        </div>
+        <div class="preview-wrap">
+          <canvas id="previewCanvas" width="960" height="540"></canvas>
+        </div>
+        <div id="statusText" class="status-text">Ready.</div>
+      </main>
+
+      <aside class="sidebar right-sidebar">
+        <section class="panel">
+          <h3>Selected Layer</h3>
+          <label>
+            Name
+            <input id="layerNameInput" type="text" />
+          </label>
+          <label>
+            Draw Order
+            <input id="layerDrawOrderInput" type="number" min="-999" max="999" step="1" value="0" />
+          </label>
+          <label>
+            Opacity
+            <input id="layerOpacityInput" type="number" min="0" max="1" step="0.05" value="1" />
+          </label>
+          <label>
+            Visible
+            <select id="layerVisibleSelect">
+              <option value="true">Visible</option>
+              <option value="false">Hidden</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="panel">
+          <h3>Image Assignment</h3>
+          <label>
+            Image Source (URL or repo-relative path)
+            <input id="layerImageSourceInput" type="text" placeholder="assets/backgrounds/clouds.png" />
+          </label>
+          <div class="row buttons">
+            <button id="applyImageSourceButton" type="button">Apply Source</button>
+            <label class="file-input-label inline-label" for="layerImageFileInput">Use Local File</label>
+            <input id="layerImageFileInput" class="hidden-file-input" type="file" accept="image/*" />
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3>Scroll + Repeat</h3>
+          <label>
+            Scroll Factor X
+            <input id="scrollFactorXInput" type="number" min="-4" max="4" step="0.05" value="0.5" />
+          </label>
+          <label>
+            Scroll Factor Y
+            <input id="scrollFactorYInput" type="number" min="-4" max="4" step="0.05" value="0.5" />
+          </label>
+          <label>
+            Offset X
+            <input id="offsetXInput" type="number" min="-4096" max="4096" step="1" value="0" />
+          </label>
+          <label>
+            Offset Y
+            <input id="offsetYInput" type="number" min="-4096" max="4096" step="1" value="0" />
+          </label>
+          <label>
+            Repeat X
+            <select id="repeatXSelect">
+              <option value="true">Repeat</option>
+              <option value="false">No Repeat</option>
+            </select>
+          </label>
+          <label>
+            Repeat Y
+            <select id="repeatYSelect">
+              <option value="true">Repeat</option>
+              <option value="false">No Repeat</option>
+            </select>
+          </label>
+          <label>
+            Wrap Mode
+            <select id="wrapModeSelect">
+              <option value="wrap">Wrap</option>
+              <option value="clamp">Clamp</option>
+            </select>
+          </label>
+          <button id="applyLayerSettingsButton" type="button">Apply Layer Settings</button>
+        </section>
+
+        <section class="panel">
+          <h3>Boundaries</h3>
+          <ul class="usage-list">
+            <li>Parallax-only authoring tool.</li>
+            <li>Compatible with Tile Map Editor `toolbox.tilemap/1` files.</li>
+            <li>No map tile/collision/data editing in this UI.</li>
+            <li>No engine core API modifications.</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

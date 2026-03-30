@@ -1,11 +1,11 @@
-﻿BUILD_PR_TILEMAP_EDITOR_FOUNDATION delta file tree
+﻿BUILD_PR_PARALLAX_EDITOR_COMPANION delta file tree
 
-./docs/pr/BUILD_PR_TILEMAP_EDITOR_FOUNDATION.md
+./docs/pr/BUILD_PR_PARALLAX_EDITOR_COMPANION.md
 ./docs/dev/reports/file_tree.txt
 ./docs/dev/reports/change_summary.txt
 ./docs/dev/reports/validation_checklist.txt
 ./tools/index.html
-./tools/Tile Map Editor/index.html
-./tools/Tile Map Editor/main.js
-./tools/Tile Map Editor/tileMapEditor.css
-./tools/Tile Map Editor/README.md
+./tools/Parallax Editor/index.html
+./tools/Parallax Editor/main.js
+./tools/Parallax Editor/parallaxEditor.css
+./tools/Parallax Editor/README.md

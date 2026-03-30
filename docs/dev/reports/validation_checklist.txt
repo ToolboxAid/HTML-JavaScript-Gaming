@@ -1,18 +1,19 @@
-﻿BUILD_PR_TILEMAP_EDITOR_FOUNDATION validation checklist
+﻿BUILD_PR_PARALLAX_EDITOR_COMPANION validation checklist
 
-[PASS] Tile Map Editor foundation created under tools/Tile Map Editor.
-[PASS] Tile painting implemented.
-[PASS] Layer support implemented (tile, collision, data).
-[PASS] Tileset selection implemented.
-[PASS] Map load/save implemented.
-[PASS] Runtime export path implemented.
-[PASS] Object/spawn marker support implemented.
-[PASS] Parallax editor excluded from this PR.
-[PASS] Saved data includes reserved parallax block for future companion editor compatibility.
-[PASS] tools/index.html updated to expose Tile Map Editor foundation.
-[PASS] engine/ was not modified.
-[PASS] Required reports produced in docs/dev/reports/.
+[PASS] Standalone Parallax Editor created under tools/Parallax Editor.
+[PASS] Parallax layer management implemented.
+[PASS] Image assignment per layer implemented.
+[PASS] Draw order controls implemented.
+[PASS] Scroll factor controls implemented.
+[PASS] Repeat and wrap controls implemented.
+[PASS] Preview against shared project/level format implemented.
+[PASS] JSON load from toolbox.tilemap/1 and toolbox.parallax/1 implemented.
+[PASS] Parallax-only save implemented.
+[PASS] Separate tilemap parallax patch export implemented.
+[PASS] Tool remains separate from Tile Map Editor UI.
+[PASS] No engine/ modifications.
+[PASS] Required reports generated in docs/dev/reports/.
 
 Validation commands
-- node -e "new Function(require('fs').readFileSync('tools/Tile Map Editor/main.js','utf8')); console.log('syntax-ok')"
-- rg checks across docs and tool files for required scope and parallax boundaries.
+- node -e "new Function(require('fs').readFileSync('tools/Parallax Editor/main.js','utf8')); console.log('syntax-ok')"
+- rg checks for required feature keywords and schema contracts across companion files.

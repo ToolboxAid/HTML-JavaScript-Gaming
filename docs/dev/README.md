@@ -1,5 +1,6 @@
 Docs-only bundle.
 
 Decision:
-- Build Tile Map Editor first
-- Build Parallax Editor separately afterward
+- Parallax Editor is a separate companion tool
+- Shared project format is allowed
+- Tile Map Editor UI remains focused on map authoring

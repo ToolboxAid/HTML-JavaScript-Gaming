@@ -1,1 +1,1 @@
-Build plan: Tile Map Editor foundation first; parallax editor remains a separate companion tool
+Build plan: Parallax Editor companion tool separated from Tile Map Editor

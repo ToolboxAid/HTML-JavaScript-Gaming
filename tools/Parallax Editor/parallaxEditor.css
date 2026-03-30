@@ -1,0 +1,241 @@
+/*
+Toolbox Aid
+David Quesenberry
+03/30/2026
+parallaxEditor.css
+*/
+:root {
+  --bg-a: #0d1b2d;
+  --bg-b: #10253b;
+  --panel: #162b43;
+  --panel-2: #1b3552;
+  --border: #2f4f73;
+  --text: #e2e8f0;
+  --muted: #9ab3d3;
+  --accent: #38bdf8;
+}
+
+.parallax-editor-page {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, #1d3555 0%, transparent 40%),
+    radial-gradient(circle at 100% 10%, #162d47 0%, transparent 35%),
+    linear-gradient(180deg, #0a1424 0%, #0f1c31 100%);
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(9, 20, 34, 0.93);
+  padding: 10px;
+}
+
+.toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  color: var(--text);
+  background: #0f2136;
+  border: 1px solid #365476;
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+button,
+.file-input-label {
+  color: var(--text);
+  background: #1c3350;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+button:hover,
+.file-input-label:hover {
+  border-color: #5d84b2;
+  background: #224166;
+}
+
+.inline-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hidden-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(250px, 320px) minmax(420px, 1fr) minmax(260px, 360px);
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar,
+.preview-panel {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(10, 20, 35, 0.9);
+  min-height: 0;
+}
+
+.sidebar {
+  padding: 10px;
+  overflow: auto;
+}
+
+.panel {
+  border: 1px solid #345375;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  background: rgba(20, 39, 61, 0.9);
+}
+
+.panel h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.preview-wrap {
+  flex: 1;
+  min-height: 260px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: auto;
+  background: #0a1728;
+}
+
+#previewCanvas {
+  image-rendering: auto;
+  display: block;
+}
+
+.status-text,
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status-text {
+  margin-top: 8px;
+}
+
+.layer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layer-item {
+  border: 1px solid #355476;
+  border-radius: 6px;
+  background: #19324f;
+  padding: 6px;
+}
+
+.layer-item.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3) inset;
+}
+
+.layer-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.layer-select-btn {
+  flex: 1;
+}
+
+.layer-order-chip {
+  font-size: 10px;
+  color: var(--muted);
+  border: 1px solid #426487;
+  border-radius: 999px;
+  padding: 2px 6px;
+  line-height: 1.2;
+}
+
+.row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.row.buttons {
+  flex-wrap: wrap;
+}
+
+.usage-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 1260px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}

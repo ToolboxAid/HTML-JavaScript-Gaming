@@ -1,21 +1,19 @@
-﻿BUILD_PR_TILEMAP_EDITOR_FOUNDATION change summary
+﻿BUILD_PR_PARALLAX_EDITOR_COMPANION change summary
 
 Scope delivered
-- Added a new standalone Tile Map Editor foundation under tools/Tile Map Editor.
-- Implemented tile painting/erase/picker workflows on selected layers.
-- Implemented layer controls (select, add, remove, visibility) with tile/collision/data layer kinds.
-- Implemented tileset selection palette with editor-defined tile IDs/colors.
-- Implemented map document load/save JSON and runtime export JSON.
-- Implemented object/spawn marker placement and removal on map cells.
-- Reserved parallax compatibility via a required top-level parallax block in saved documents, without parallax UI.
-- Updated tools hub to surface Tile Map Editor as live foundation and keep parallax as a planned companion.
-- Expanded docs/pr/BUILD_PR_TILEMAP_EDITOR_FOUNDATION.md with scope, data contract, and boundaries.
+- Added a new standalone companion tool at tools/Parallax Editor.
+- Implemented parallax layer management (add/remove/duplicate/select and move up/down).
+- Implemented image assignment per layer via source path/URL and local image file import.
+- Implemented draw order controls and ordered rendering.
+- Implemented per-layer scroll factors, offsets, repeat controls, wrap mode, visibility, and opacity.
+- Implemented parallax preview canvas with camera offset sliders to validate depth motion.
+- Implemented schema-compatible loading from toolbox.tilemap/1 and toolbox.parallax/1 JSON.
+- Implemented parallax-only save output (toolbox.parallax/1).
+- Implemented tilemap parallax patch export for merge into shared project format.
+- Updated tools/index.html to expose Parallax Editor as a separate live companion tool.
+- Updated docs/pr/BUILD_PR_PARALLAX_EDITOR_COMPANION.md to reflect implemented contracts and boundaries.
 
-Out-of-scope preserved
-- No Parallax Editor implementation.
-- No engine/ changes.
-- No sample/ changes.
-
-Notes
-- Syntax validation was performed with Node by parsing tools/Tile Map Editor/main.js via Function constructor.
-- Direct node -c path checking in this sandbox produced an EPERM path-resolution failure unrelated to app logic.
+Boundary guarantees
+- Parallax editor is separate from Tile Map Editor UI.
+- No tile/collision/data editing added here.
+- No engine core APIs were modified.
