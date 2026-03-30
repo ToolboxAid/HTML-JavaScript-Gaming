@@ -193,6 +193,7 @@ select {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
   gap: 6px;
+  margin-top: 8px;
 }
 
 .tile-swatch {
@@ -214,9 +215,24 @@ select {
   background: transparent;
 }
 
+.tile-image-preview {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  background: #0f172a;
+}
+
 .tile-swatch.active {
   border-color: var(--editor-accent);
   box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35) inset;
+}
+
+.tileset-config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(92px, 1fr));
+  gap: 6px;
+  margin-top: 8px;
 }
 
 .layer-list,

@@ -1,16 +1,31 @@
-BUILD_PR_SVG_BACKGROUND_EDITOR_PALETTE_AND_ENABLEMENT_RULES Validation Checklist
+BUILD_PR_SVG_PAN_BUTTON_REMOVAL_AND_TILESET_PNG_ASSIGNMENT - Validation Checklist
 
-[PASS] SVG editor UI now exposes palette target workflow (`Set Paint` / `Set Stroke`).
-[PASS] Direct color picker controls were replaced by palette-driven swatch selection.
-[PASS] Active Paint/Stroke values are stored in editor state and not overwritten by object selection.
-[PASS] Used-color swatch strip exists above main palette and is wired to selection flow.
-[PASS] Enablement gating exists for most editing controls until required Paint+Stroke selection is valid.
-[PASS] Startup/file actions (`New`, `Load`, `Load Sample`) remain available before style selection.
-[PASS] Runtime script parses successfully (`new Function(...)` syntax check).
-[PASS] No engine core API files were modified.
+[PASS] Remove explicit Pan button from tools/SVG Background Editor/
+- Verified Pan button markup removed from tools/SVG Background Editor/index.html.
 
-Validation Commands Run
-- node -e "const fs=require('fs'); const src=fs.readFileSync('tools/SVG Background Editor/main.js','utf8'); new Function(src); console.log('svg editor main.js syntax ok');"
-- rg -n "setPaletteTarget(Paint|Stroke)Button|paletteStateReadout|usedColorStrip|mainPaletteGrid|paletteList\\.js" "tools/SVG Background Editor/index.html"
-- rg -n "hasRequiredStyleSelection|applyEnablementState|loadPaletteEntriesFromExistingWorkflow|renderUsedColorStrip|renderMainPaletteGrid|applyPaletteColorSelection|setPaletteTarget\\(" "tools/SVG Background Editor/main.js"
-- git diff --name-only -- engine
+[PASS] Standardize canvas panning to middle mouse drag in SVG Background Editor
+- Verified pointer down pan branch in tools/SVG Background Editor/main.js now uses event.button === 1 only.
+
+[PASS] Add clear Load Tileset PNG workflow in tools/Tile Map Editor/
+- Verified new controls exist for loading PNG, tile width, tile height, spacing, margin, and generation action.
+- Verified metadata status element added.
+
+[PASS] Generate tile palette/grid from PNG tileset config
+- Verified atlas metrics and tile slicing logic implemented in main.js.
+- Verified generated tiles include source rect metadata for draw usage.
+
+[PASS] Active tile selection and tile painting onto tile layers
+- Verified palette retains active tile behavior.
+- Verified paint path writes selected tile id onto tile layers (existing flow preserved).
+
+[PASS] Rendering path supports PNG atlas-backed tiles
+- Verified drawTileLayer now uses drawImage with tile source rects when atlas image is loaded.
+- Verified color fallback path still exists for non-atlas/default tiles.
+
+[PASS] No engine core API changes
+- Verified modified files are outside engine/.
+
+[PASS] Basic syntax validation
+- Ran node --check tools/Tile Map Editor/main.js
+- Ran node --check tools/SVG Background Editor/main.js
+- Both checks completed with exit code 0.

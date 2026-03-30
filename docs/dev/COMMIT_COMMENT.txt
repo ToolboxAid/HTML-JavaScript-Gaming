@@ -1,1 +1,1 @@
-Build plan: SVG Background Editor palette-driven paint/stroke persistence, enablement gating, and used-color swatches
+Build plan: remove SVG pan button, use middle mouse pan, and clarify Tile Map Editor PNG tileset assignment flow

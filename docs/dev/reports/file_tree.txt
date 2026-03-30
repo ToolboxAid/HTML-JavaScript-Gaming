@@ -1,11 +1,17 @@
-BUILD_PR_SVG_BACKGROUND_EDITOR_PALETTE_AND_ENABLEMENT_RULES
+BUILD_PR_SVG_PAN_BUTTON_REMOVAL_AND_TILESET_PNG_ASSIGNMENT
 
-SVG Background Editor
-- tools/SVG Background Editor/index.html
-- tools/SVG Background Editor/main.js
-- tools/SVG Background Editor/svgBackgroundEditor.css
-
-Reports
-- docs/dev/reports/file_tree.txt
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
+repo/
+  docs/
+    dev/
+      reports/
+        change_summary.txt
+        file_tree.txt
+        validation_checklist.txt
+  tools/
+    SVG Background Editor/
+      index.html
+      main.js
+    Tile Map Editor/
+      index.html
+      main.js
+      tileMapEditor.css

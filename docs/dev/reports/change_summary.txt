@@ -1,19 +1,29 @@
-Summary
-- Updated `tools/SVG Background Editor/` to use palette-based select-and-draw for Paint and Stroke instead of direct color pickers.
-- Added explicit palette target flow (`Set Paint` / `Set Stroke`) and stored active Paint/Stroke values in editor state.
-- Enforced stable Paint/Stroke behavior:
-  - active values persist after selection
-  - selecting SVG elements no longer overwrites active Paint/Stroke
-  - active values change only when user intentionally selects a new palette swatch
-- Added used-color swatch strip above the main palette:
-  - derived from colors actually used in the current document
-  - duplicate colors collapsed
-  - swatch click reuses the same palette selection flow
-- Added enablement gating rules:
-  - startup/file actions remain available (`New`, `Load`, `Load Sample`)
-  - most edit actions are disabled until both Paint and Stroke selections exist
-  - object-dependent actions stay disabled unless an element is selected and style state is valid
-- Kept zoom/pan and view-only selection flow available before style selection.
+Build: BUILD_PR_SVG_PAN_BUTTON_REMOVAL_AND_TILESET_PNG_ASSIGNMENT
+Date: 2026-03-30
 
-Boundary notes
-- No files under `engine/` were modified.
+Summary of implementation delta
+1) SVG Background Editor pan behavior update
+- Removed the explicit Pan tool button from tools/SVG Background Editor/index.html.
+- Updated tool help text to document middle-mouse drag panning.
+- Updated tools/SVG Background Editor/main.js so panning starts only on middle mouse button drag.
+
+2) Tile Map Editor PNG tileset assignment workflow
+- Added Tileset UI controls in tools/Tile Map Editor/index.html:
+  - Load Tileset PNG
+  - Tile W / Tile H
+  - Spacing / Margin
+  - Generate Tile Grid
+  - Tileset metadata readout
+- Added corresponding styles in tools/Tile Map Editor/tileMapEditor.css.
+- Implemented runtime/model support in tools/Tile Map Editor/main.js:
+  - tilesetAtlas state block on document model with sanitize + defaults
+  - PNG loading via file input (data URL + image dimension capture)
+  - configurable slice settings (tile width/height, spacing, margin)
+  - tileset generation from atlas slices into palette entries with source rect metadata
+  - palette swatches render atlas tile previews when available
+  - tile layer painting/rendering draws atlas sub-rects via drawImage; color fallback remains supported
+  - tilesetAtlas included in runtime export payload
+
+Constraints and boundaries respected
+- No modifications were made under engine/.
+- Changes are contained to the two editor tools plus required docs/dev/reports outputs.

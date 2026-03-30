@@ -1146,7 +1146,7 @@ function onSvgPointerDown(event) {
   const scenePoint = getScenePoint(event);
   refs.pointerReadout.textContent = `pointer: ${Math.round(scenePoint.x)}, ${Math.round(scenePoint.y)}`;
 
-  if (event.button === 1 || state.activeTool === "pan") {
+  if (event.button === 1) {
     state.drag = {
       kind: "pan",
       pointerId: event.pointerId,

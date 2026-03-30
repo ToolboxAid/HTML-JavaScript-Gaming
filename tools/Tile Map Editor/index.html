@@ -77,6 +77,30 @@ index.html
       <aside class="sidebar left-sidebar">
         <section class="panel">
           <h3>Tileset</h3>
+          <div class="button-row">
+            <button id="loadTilesetPngButton" type="button">Load Tileset PNG</button>
+            <input id="loadTilesetPngInput" class="hidden-file-input" type="file" accept=".png,image/png" />
+            <button id="generateTilesetButton" type="button">Generate Tile Grid</button>
+          </div>
+          <div class="tileset-config-grid">
+            <label>
+              Tile W
+              <input id="tilesetTileWidthInput" type="number" min="1" max="512" step="1" value="24" />
+            </label>
+            <label>
+              Tile H
+              <input id="tilesetTileHeightInput" type="number" min="1" max="512" step="1" value="24" />
+            </label>
+            <label>
+              Spacing
+              <input id="tilesetSpacingInput" type="number" min="0" max="256" step="1" value="0" />
+            </label>
+            <label>
+              Margin
+              <input id="tilesetMarginInput" type="number" min="0" max="256" step="1" value="0" />
+            </label>
+          </div>
+          <p id="tilesetMeta" class="help-text">No tileset PNG loaded. Load a PNG and generate a tile grid.</p>
           <div id="tilePalette" class="tile-palette"></div>
         </section>
 
