@@ -78,6 +78,7 @@ import { run as runSceneManager } from './scenes/SceneManager.test.mjs';
 import { run as runTransitionScene } from './scenes/TransitionScene.test.mjs';
 import { run as runVectorMath } from './vector/VectorMath.test.mjs';
 import { run as runWorldSystems } from './world/WorldSystems.test.mjs';
+import { run as runWorldGameStateSystem } from './world/WorldGameStateSystem.test.mjs';
 import { run as runProductionReadiness } from './production/ProductionReadiness.test.mjs';
 import { run as runEnginePublicBarrelImports } from './production/EnginePublicBarrelImports.test.mjs';
 import { run as runStorageService } from './persistence/StorageService.test.mjs';
@@ -171,6 +172,7 @@ const tests = [
     ['TransitionScene', runTransitionScene],
     ['VectorMath', runVectorMath],
     ['WorldSystems', runWorldSystems],
+    ['WorldGameStateSystem', runWorldGameStateSystem],
 ];
 
 let passed = 0;
