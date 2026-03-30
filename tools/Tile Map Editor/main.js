@@ -587,7 +587,9 @@ class TileMapEditorApp {
     this.refs.loadTilesetPngInput.addEventListener("change", (event) => {
       void this.handleLoadTilesetPng(event);
     });
-    this.refs.generateTilesetButton.addEventListener("click", () => this.generateTilesetFromLoadedPng());
+    this.refs.generateTilesetButton.addEventListener("click", () => {
+      void this.generateTilesetFromLoadedPng();
+    });
 
     this.refs.clearMarkersButton.addEventListener("click", () => {
       if (!this.ensureEditable()) {
@@ -774,17 +776,18 @@ class TileMapEditorApp {
       this.renderCanvas();
       const successMessage = `Loaded tileset PNG ${atlas.imageName}. Set tile size/spacing/margin and click Generate Tile Grid.`;
       this.updateStatus(successMessage);
-      if (typeof globalThis.alert === "function") {
-        globalThis.alert(successMessage);
-      }
     } catch (error) {
-      this.updateStatus(`Tileset PNG load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+      const failureMessage = `Tileset PNG load failed: ${error instanceof Error ? error.message : "unknown error"}`;
+      this.updateStatus(failureMessage);
+      if (typeof globalThis.alert === "function") {
+        globalThis.alert(failureMessage);
+      }
     } finally {
       this.refs.loadTilesetPngInput.value = "";
     }
   }
 
-  generateTilesetFromLoadedPng() {
+  async generateTilesetFromLoadedPng() {
     if (!this.ensureEditable()) {
       return;
     }
@@ -794,16 +797,37 @@ class TileMapEditorApp {
       this.updateStatus("Load a tileset PNG before generating tiles.");
       return;
     }
-    if (!this.tilesetImage) {
-      void this.reloadTilesetImageFromDocument({ quiet: true });
-      this.updateStatus("Tileset image is reloading. Try Generate Tile Grid again.");
-      return;
+
+    let image = this.tilesetImage;
+    if (!image) {
+      try {
+        image = await loadImageElement(atlas.imageDataUrl);
+        this.tilesetImage = image;
+      } catch (error) {
+        const failureMessage = `Tileset image decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
+        this.updateStatus(failureMessage);
+        if (typeof globalThis.alert === "function") {
+          globalThis.alert(failureMessage);
+        }
+        return;
+      }
+    }
+
+    if (image && image.naturalWidth > 0 && image.naturalHeight > 0) {
+      atlas.imageWidth = image.naturalWidth;
+      atlas.imageHeight = image.naturalHeight;
+      this.documentModel.tilesetAtlas = atlas;
+      this.renderTilesetMeta();
     }
 
     const result = buildTilesetFromAtlas(atlas);
     if (result.metrics.total <= 0) {
       this.renderTilesetMeta();
-      this.updateStatus("No tiles fit current tile width/height, spacing, and margin settings.");
+      const failureMessage = `No tiles fit: image ${result.metrics.imageWidth}x${result.metrics.imageHeight}, tile ${result.metrics.tileWidth}x${result.metrics.tileHeight}, spacing ${result.metrics.spacing}, margin ${result.metrics.margin}.`;
+      this.updateStatus(failureMessage);
+      if (typeof globalThis.alert === "function") {
+        globalThis.alert(failureMessage);
+      }
       return;
     }
 
