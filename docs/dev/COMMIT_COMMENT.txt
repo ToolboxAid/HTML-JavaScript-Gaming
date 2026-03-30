@@ -1,1 +1,1 @@
-Level 11.2 BUILD_PR review: expansion criteria validation completed with EXPAND decision and reports package
+Level 11.3 docs: next authoritative slice (score) definition and readiness criteria

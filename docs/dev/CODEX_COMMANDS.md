@@ -2,22 +2,19 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW as a docs + validation delta.
+Create BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE as a docs-only validation delta.
 
 REQUIREMENTS:
-- Analyze Level 11.1 results
-- Validate against expansion criteria
-- Produce EXPAND or HOLD decision
-- DO NOT add new implementation
-- DO NOT modify engine/
+- Validate readiness criteria
+- Confirm NO implementation changes
+- Produce report
 
 REQUIRED OUTPUT:
 docs/dev/reports/file_tree.txt
-docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
-docs/dev/reports/expansion_decision.txt
+docs/dev/reports/readiness_decision.txt
 
 FINAL STEP:
 - Output ZIP to:
-  <project folder>/tmp/BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW_delta.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE_delta.zip
 - Include docs/dev/reports/

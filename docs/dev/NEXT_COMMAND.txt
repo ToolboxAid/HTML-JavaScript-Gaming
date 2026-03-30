@@ -1,1 +1,1 @@
-Create BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE as a docs-first, repo-structured delta. Use Level 11.2 EXPAND decision as source of truth and define score-slice handoff boundaries, tests, gates, and rollback criteria without engine core API changes.
+Create BUILD_PR_LEVEL_11_4_AUTHORITATIVE_STATE_SCORE_IMPLEMENTATION as docs-only

@@ -1,20 +1,14 @@
-BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW
+BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE
 
 .
 |-- docs/
-|   |-- dev/
-|   |   |-- CODEX_COMMANDS.md
-|   |   |-- COMMIT_COMMENT.txt
-|   |   |-- NEXT_COMMAND.txt
-|   |   |-- README.md
-|   |   '-- reports/
-|   |       |-- file_tree.txt
-|   |       |-- change_summary.txt
-|   |       |-- validation_checklist.txt
-|   |       '-- expansion_decision.txt
-|   '-- pr/
-|       |-- BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW.md
-|       |-- LEVEL_11_2_EXPANSION_CRITERIA.md
-|       |-- LEVEL_11_2_NON_EXPANSION_CRITERIA.md
-|       |-- LEVEL_11_2_NEXT_CANDIDATE_SELECTION.md
-|       '-- LEVEL_11_2_REPORTS_REQUIREMENT.md
+|   |-- pr/
+|   |   |-- BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE.md
+|   |   |-- LEVEL_11_3_READINESS_CRITERIA.md
+|   |   |-- LEVEL_11_3_NON_IMPLEMENTATION_RULE.md
+|   |   '-- LEVEL_11_3_SLICE_DEFINITION.md
+|   '-- dev/
+|       '-- reports/
+|           |-- file_tree.txt
+|           |-- validation_checklist.txt
+|           '-- readiness_decision.txt
