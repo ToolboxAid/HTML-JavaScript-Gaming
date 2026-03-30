@@ -7,6 +7,7 @@ createWorldGameStateSystem.js
 
 import {
   WORLD_GAME_STATE_EVENT_TYPES,
+  WORLD_GAME_STATE_FEATURE_GATES,
   WORLD_GAME_STATE_SYSTEM_ID,
   WORLD_GAME_STATE_TRANSITION_NAMES
 } from './constants.js';
@@ -29,6 +30,13 @@ function createWorldGameStateSystem(options = {}) {
   const passiveMode = options.passiveMode !== undefined ? Boolean(options.passiveMode) : true;
   const strictTransitions = options.strictTransitions !== undefined ? Boolean(options.strictTransitions) : true;
   const publishEvent = typeof options.publishEvent === 'function' ? options.publishEvent : null;
+  const featureGates = Object.freeze({
+    [WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS]: Boolean(
+      options &&
+      options.featureGates &&
+      options.featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS]
+    )
+  });
   const correlationIdFactory = typeof options.correlationIdFactory === 'function'
     ? options.correlationIdFactory
     : (transitionName) => `${WORLD_GAME_STATE_SYSTEM_ID}:${String(transitionName || 'unknown')}:${Number(now())}`;
@@ -114,7 +122,9 @@ function createWorldGameStateSystem(options = {}) {
     }
 
     const correlationId = String((meta && meta.correlationId) || correlationIdFactory(normalizedTransitionName, payload, meta));
-    const changes = [];
+    let changes = [];
+    let comparison = null;
+    let applied = false;
     const result = {
       ok: true,
       applied: false,
@@ -123,8 +133,48 @@ function createWorldGameStateSystem(options = {}) {
       reason: 'STUB_NOOP',
       code: 'STUB_NOOP',
       correlationId,
-      changes
+      changes: [],
+      featureGates
     };
+
+    const canUseAuthoritativeObjectiveProgress = Boolean(
+      normalizedTransitionName === 'updateObjectiveProgress' &&
+      typeof transition.authoritativeApply === 'function'
+    );
+
+    if (canUseAuthoritativeObjectiveProgress) {
+      const previewSnapshot = cloneDeep(snapshot);
+      const previewResult = transition.authoritativeApply(previewSnapshot, payload, { now });
+      comparison = {
+        mode: passiveMode ? 'passive-comparison' : 'gated-comparison',
+        before: createReadonlyClone(snapshot.worldState.objectives),
+        candidate: createReadonlyClone(previewSnapshot.worldState.objectives),
+        changes: Array.isArray(previewResult && previewResult.changes) ? previewResult.changes.slice() : []
+      };
+
+      const authoritativeEnabled = featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS];
+      if (!passiveMode && authoritativeEnabled) {
+        snapshot = previewSnapshot;
+        changes = comparison.changes.slice();
+        applied = true;
+        result.reason = 'APPLIED_AUTHORITATIVE_OBJECTIVE_PROGRESS';
+        result.code = 'APPLIED_AUTHORITATIVE_OBJECTIVE_PROGRESS';
+      } else {
+        result.reason = 'PASSIVE_COMPARISON_ONLY';
+        result.code = 'PASSIVE_COMPARISON_ONLY';
+      }
+    }
+
+    if (!canUseAuthoritativeObjectiveProgress) {
+      result.reason = 'STUB_NOOP';
+      result.code = 'STUB_NOOP';
+    }
+
+    result.applied = applied;
+    result.changes = changes;
+    if (comparison) {
+      result.comparison = comparison;
+    }
 
     const eventEnvelope = createTransitionAppliedEvent({
       eventType: transition.eventType || WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_APPLIED,
@@ -133,7 +183,10 @@ function createWorldGameStateSystem(options = {}) {
       changes,
       payload: {
         passiveMode,
-        stub: true,
+        applied,
+        stub: !applied,
+        featureGates,
+        comparisonMode: Boolean(comparison && !applied),
         requestedPayload: isPlainObject(payload) ? payload : {}
       },
       meta,
@@ -183,6 +236,10 @@ function createWorldGameStateSystem(options = {}) {
     return Object.keys(selectorRegistry).sort();
   }
 
+  function getFeatureGates() {
+    return featureGates;
+  }
+
   const publicApi = {
     getSnapshot,
     getReadonlyView,
@@ -190,7 +247,8 @@ function createWorldGameStateSystem(options = {}) {
     requestTransition,
     applyExternalSnapshotPatch,
     getTransitionNames,
-    getSelectorNames
+    getSelectorNames,
+    getFeatureGates
   };
 
   function getPublicApi() {

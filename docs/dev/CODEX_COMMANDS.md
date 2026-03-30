@@ -1,33 +1,10 @@
 MODEL: GPT-5.3-codex
 REASONING: high
-
-COMMAND:
-Create BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT as an implementation delta driven by docs only.
-
-STRICT REQUIREMENTS:
-- ALL new code MUST be created under: src/advanced/state/
-- DO NOT modify or reuse:
-  - engine/state/
-  - samples/
-  - any existing state system
-- This is a NEW architectural layer
-
-Use Level 10.6 and 10.7 docs/pr as source of truth.
-
-Implement:
-- initial state factory
-- read-only selectors
-- named transition stubs (no real logic)
-- event helpers aligned to Level 10.4
-- integration wrapper aligned to Level 10.5
-- EXACTLY ONE optional consumer
-
-Constraints:
-- passiveMode = true by default
-- no engine core API changes
-- no cross-folder coupling
-- no reuse of sample implementations
+COMMAND: Create BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE as a docs-first, repo-structured delta. Use Level 10.7 docs and runtime stubs as source of truth. Promote exactly one named transition for objective progress from passive mirror handling to narrowly authoritative ownership behind a feature gate. Add contract tests, preserve passive-mode comparison behavior, validate one real consumer path through approved events and public selectors only, and do not change engine core APIs.
 
 FINAL STEP:
-- Package delta ZIP to:
-  <project>/tmp/BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT_delta.zip
+- Package all created and modified files into a repo-structured delta ZIP
+- Write the result ZIP to: <project folder>/tmp/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE_delta.zip
+- Preserve exact repo-relative structure inside the ZIP
+- Include only files relevant to this PR
+- Do not include unrelated files, full-repo copies, dependencies, or build artifacts

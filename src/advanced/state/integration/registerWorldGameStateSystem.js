@@ -29,10 +29,14 @@ function registerWorldGameStateSystem({
   integrationApi = null,
   eventPipeline = null,
   stateSystem = null,
-  consumerFactory = null
+  consumerFactory = null,
+  stateSystemOptions = null
 } = {}) {
   const publishEvent = resolvePublishHook({ integrationApi, eventPipeline });
-  const resolvedStateSystem = stateSystem || createWorldGameStateSystem({ publishEvent });
+  const resolvedStateSystem = stateSystem || createWorldGameStateSystem({
+    ...(stateSystemOptions || {}),
+    publishEvent
+  });
   const statePublicApi = typeof resolvedStateSystem.getPublicApi === 'function'
     ? resolvedStateSystem.getPublicApi()
     : resolvedStateSystem;

@@ -1,30 +1,28 @@
-Level 10.7 BUILD_PR implementation package.
+# Level 11.1 Bundle
+
+Implementation delta for one authoritative handoff candidate.
 
 Contents:
-- docs/pr/BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md
-- docs/pr/LEVEL_10_7_IMPLEMENTATION_SCOPE_AND_GATES.md
-- docs/pr/LEVEL_10_7_MODULE_PUBLIC_API.md
-- docs/pr/LEVEL_10_7_OPTIONAL_CONSUMER_PILOT.md
-- docs/pr/LEVEL_10_7_VALIDATION_AND_ROLLOUT.md
+- docs/pr/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md
+- docs/pr/LEVEL_11_1_HANDOFF_CANDIDATE_AND_OWNERSHIP.md
+- docs/pr/LEVEL_11_1_CONTRACT_TESTS_AND_ROLLBACK_GATES.md
+- docs/pr/LEVEL_11_1_REAL_CONSUMER_VALIDATION_PATH.md
+- docs/pr/LEVEL_11_1_IMPLEMENTATION_NOTES_FOR_CODEX.md
 - src/advanced/state/constants.js
-- src/advanced/state/utils.js
-- src/advanced/state/initialState.js
-- src/advanced/state/selectors.js
 - src/advanced/state/transitions.js
-- src/advanced/state/events.js
 - src/advanced/state/createWorldGameStateSystem.js
-- src/advanced/state/consumers/createObjectiveProgressMirrorConsumer.js
 - src/advanced/state/integration/registerWorldGameStateSystem.js
 - src/advanced/state/index.js
+- tests/world/WorldGameStateAuthoritativeHandoff.test.mjs
+- tests/run-tests.mjs
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
 - docs/dev/README.md
 
-Notes:
-- Runtime implementation is contract-only, passive-mode-first, and isolated under src/advanced/state.
-- No engine core APIs were modified.
-
-Codex output requirement:
-- Return a repo-structured delta ZIP at:
-  <project>/tmp/BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT_delta.zip
+Rules:
+- Promote exactly one authoritative transition (`updateObjectiveProgress`)
+- Preserve passive-mode comparison behavior
+- Validate one real consumer path only
+- No engine core API changes
+- Repo ZIP output path must use <project folder>/tmp/<ZIP_NAME>.zip

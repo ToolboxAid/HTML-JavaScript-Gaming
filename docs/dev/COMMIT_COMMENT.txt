@@ -1,1 +1,1 @@
-Level 10.7 BUILD_PR implementation: new isolated src/advanced/state layer with initial state factory, read-only selectors, named transition stubs, Level 10.4 event helpers, Level 10.5 registration wrapper, and one objective mirror consumer
+Level 11.1 BUILD_PR implementation: feature-gated authoritative updateObjectiveProgress handoff with passive comparison preservation, contract tests, and one approved real consumer validation path
