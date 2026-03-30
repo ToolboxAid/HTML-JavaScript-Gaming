@@ -21,6 +21,8 @@ BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md
 - contract-only runtime target with no engine core API changes
 - one optional consumer pilot through approved Level 10.4 and Level 10.5 boundaries
 - passive-mode-first rollout to preserve current behavior
+- all new runtime code constrained to `src/advanced/state/`
+- no `engine/state/` or `samples/` reuse
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
 - `docs/pr/BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md`
@@ -28,9 +30,16 @@ BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md
 - `docs/pr/LEVEL_10_7_MODULE_PUBLIC_API.md`
 - `docs/pr/LEVEL_10_7_OPTIONAL_CONSUMER_PILOT.md`
 - `docs/pr/LEVEL_10_7_VALIDATION_AND_ROLLOUT.md`
-- `samples/shared/worldGameStateSystem.js`
-- `tests/world/WorldGameStateSystem.test.mjs`
-- `tests/run-tests.mjs`
+- `src/advanced/state/constants.js`
+- `src/advanced/state/utils.js`
+- `src/advanced/state/initialState.js`
+- `src/advanced/state/selectors.js`
+- `src/advanced/state/transitions.js`
+- `src/advanced/state/events.js`
+- `src/advanced/state/createWorldGameStateSystem.js`
+- `src/advanced/state/consumers/createObjectiveProgressMirrorConsumer.js`
+- `src/advanced/state/integration/registerWorldGameStateSystem.js`
+- `src/advanced/state/index.js`
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
@@ -43,7 +52,7 @@ BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md
 - Level 10.4-aligned event envelope helpers and approved event names
 - Level 10.5-style registration wrapper with tolerant hook handling
 - objective mirror optional consumer using approved events + selectors only
-- validation coverage through dedicated world-state pilot tests
+- isolated module exports for the new advanced state layer
 
 ## Boundary Summary
 This BUILD implementation may:
@@ -59,6 +68,7 @@ This BUILD implementation does not:
 - bypass ownership boundaries from Level 10.6
 - make the pilot authoritative by default (`passiveMode: true` default)
 - migrate existing gameplay ownership into the pilot
+- import or reuse `samples/` state implementations
 
 ## Acceptance Check
 - implementation target remains minimal and contract-first: pass
@@ -66,4 +76,4 @@ This BUILD implementation does not:
 - optional consumer remains non-authoritative: pass
 - composition is public-API and approved-event only: pass
 - engine core API changes are explicitly excluded: pass
-- runtime and tests pass with no core API changes: pass
+- runtime layer is isolated to `src/advanced/state/`: pass
