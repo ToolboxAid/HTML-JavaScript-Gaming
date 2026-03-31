@@ -1,1 +1,7 @@
-BUILD_PR: implement Demo 1207 switch checkpoint marker
+BUILD_PR: implement Demo 1208 tool-formatted tiles parallax and fix Demo 1207 index link
+
+- add runnable Demo 1208 using tool-shaped tile and SVG parallax assets
+- preserve proven movement, jump, collision, camera follow, and parallax behavior
+- fix samples/index.html so Demo 1207 opens runnable index.html instead of README.md
+- keep change limited to Phase 12 demos and index
+- no engine, tools, tests, or games changes

@@ -1,10 +1,23 @@
-[ ] Demo 1207 launches
-[ ] hero movement works
-[ ] jump works
+Toolbox Aid
+David Quesenberry
+03/31/2026
+validation_checklist.txt
+
+[ ] Demo 1208 launches
+[ ] actual tile assets are used
+[ ] actual SVG parallax assets are used
+[ ] hero is visible
+[ ] Left/Right movement works
+[ ] Space triggers jump
+[ ] gravity is active
 [ ] collision works
-[ ] camera works
-[ ] parallax works
-[ ] switch exists
-[ ] touching switch toggles state
-[ ] visible feedback shown
-[ ] no extra systems added
+[ ] camera follows hero cleanly
+[ ] parallax is visible
+[ ] tilemap is larger than viewport
+[ ] scrolling is visible during play
+[ ] Demo 1207 index target opens runnable page, not README.md
+[ ] Demo 1208 index target opens runnable page
+[ ] README matches actual behavior
+[ ] no diff outside approved paths
+[ ] no engine/tools/tests/games changes
+[ ] output ZIP written to <project folder>/tmp/BUILD_PR_DEMO1208_TOOL_FORMATTED_TILES_PARALLAX_delta.zip

@@ -1,0 +1,32 @@
+﻿export default {
+  "tool": "Parallax Editor",
+  "formatVersion": 1,
+  "exportProfile": "demo1208-parallax",
+  "layers": [
+    {
+      "id": "far-mountains",
+      "asset": "./assets/parallax/layer-far-mountains.svg",
+      "scrollFactor": 0.14,
+      "y": 18,
+      "height": 84,
+      "segmentWidth": 340
+    },
+    {
+      "id": "mid-cliffs",
+      "asset": "./assets/parallax/layer-mid-cliffs.svg",
+      "scrollFactor": 0.28,
+      "y": 72,
+      "height": 120,
+      "segmentWidth": 310
+    },
+    {
+      "id": "near-forest",
+      "asset": "./assets/parallax/layer-near-forest.svg",
+      "scrollFactor": 0.5,
+      "y": 124,
+      "height": 132,
+      "segmentWidth": 270
+    }
+  ]
+};
+
