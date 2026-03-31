@@ -3,7 +3,7 @@ David Quesenberry
 03/31/2026
 README.md
 
-BUILD_PR bundle for sample1203 tilemap hero jump/collision implementation.
+BUILD_PR bundle for sample1204 tilemap parallax hero implementation.
 
 Contents:
 - PR build contract

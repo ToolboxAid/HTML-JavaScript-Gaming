@@ -4,14 +4,13 @@ David Quesenberry
 change_summary.txt
 
 BUILD_PR target:
-Implement sample1203 as a runnable hero jump/collision sample in a scrolling tilemap world.
+Implement sample1204 as a runnable parallax-enhanced hero platform sample.
 
 Expected changed area:
-- samples/Phase 12 - Sample Games/sample1203-tilemap-hero-jump-collision/**
+- samples/Phase 12 - Sample Games/sample1204-tilemap-parallax-hero/**
 - samples/index.html only if strictly required for launch correctness
 
 Blocked scope:
-- parallax
 - enemies
 - collectibles
 - broader game systems

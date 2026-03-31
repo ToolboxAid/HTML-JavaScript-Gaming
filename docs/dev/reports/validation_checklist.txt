@@ -3,7 +3,7 @@ David Quesenberry
 03/31/2026
 validation_checklist.txt
 
-[ ] sample1203 launches
+[ ] sample1204 launches
 [ ] hero is visible
 [ ] hero moves left/right
 [ ] hero jumps with Space
@@ -13,9 +13,10 @@ validation_checklist.txt
 [ ] camera follows cleanly
 [ ] tilemap is larger than viewport
 [ ] visible scrolling occurs during normal play
-[ ] no parallax exists
+[ ] parallax is clearly visible
+[ ] farther layers move slower than nearer layers
 [ ] no enemy/collectible/game systems exist
 [ ] README matches actual behavior
 [ ] no diff outside approved paths
 [ ] no engine/tools/tests/games changes
-[ ] output ZIP written to <project folder>/tmp/BUILD_PR_SAMPLE1203_TILEMAP_HERO_JUMP_COLLISION_IMPLEMENTATION_delta.zip
+[ ] output ZIP written to <project folder>/tmp/BUILD_PR_SAMPLE1204_TILEMAP_PARALLAX_HERO_IMPLEMENTATION_delta.zip

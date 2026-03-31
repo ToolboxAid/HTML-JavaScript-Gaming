@@ -1,8 +1,8 @@
-BUILD_PR: implement sample1203 hero jump and collision
+BUILD_PR: implement sample1204 parallax hero sample
 
-- add runnable sample1203 platform interaction sample
-- implement visible hero with left/right movement and Space-to-jump
-- add gravity, grounded behavior, and tile/platform collision
+- add runnable sample1204 parallax hero sample
+- preserve proven hero movement, jump, gravity, and collision behavior
+- add clearly visible background parallax depth with layered camera-relative motion
 - keep scrolling world larger than viewport with stable camera follow
-- keep scope tight (no parallax, no enemies, no broader game systems)
+- keep scope tight (no enemies, no collectibles, no broader game systems)
 - no engine, tools, tests, or games changes
