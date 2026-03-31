@@ -1,13 +1,16 @@
 # Sample1201 - Tilemap Viewer
 
 ## Purpose
-Launch a viewer-only sample that renders a stable tilemap using existing engine contracts.
+Launch a viewer-only sample that renders a stable tilemap larger than the viewport using existing engine contracts.
 
 ## Controls
-- None (viewer-only sample)
+- Left Arrow: pan viewer left
+- Right Arrow: pan viewer right
+- Up Arrow: pan viewer up
+- Down Arrow: pan viewer down
 
 ## Behavior
-Displays a static tilemap frame for visual inspection. No actor, movement, jump, collision behavior, or parallax is present.
+Displays a larger world tilemap and scrolls the camera view as the viewer pans with Arrow keys. No actor, jump, collision feature behavior, or parallax is present.
 
 ## Constraints
 - viewer-only scope
