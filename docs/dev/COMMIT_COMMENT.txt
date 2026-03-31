@@ -1,7 +1,1 @@
-BUILD_PR: implement Demo 1206 trigger zone
-
-- add integrated Demo 1206 runtime
-- preserve proven movement, jump, collision, camera follow, and parallax behavior
-- add a visible trigger zone with simple success state on entry
-- keep scope to one light interaction system only
-- no engine, tools, tests, or games changes
+BUILD_PR: implement Demo 1207 switch checkpoint marker

@@ -1,23 +1,10 @@
-Toolbox Aid
-David Quesenberry
-03/31/2026
-validation_checklist.txt
-
-[ ] Demo 1206 launches
-[ ] hero is visible
-[ ] hero moves left/right
-[ ] hero jumps with Space
-[ ] gravity is active
-[ ] collision works in normal play
-[ ] camera follow remains stable
-[ ] parallax remains clearly visible
-[ ] tilemap is larger than viewport
-[ ] visible scrolling occurs during normal play
-[ ] trigger zone exists
-[ ] entering trigger zone displays success state/message
-[ ] no collectible counter exists
-[ ] no switch/checkpoint system exists
-[ ] README matches actual behavior
-[ ] no diff outside approved paths
-[ ] no engine/tools/tests/games changes
-[ ] output ZIP written to <project folder>/tmp/BUILD_PR_DEMO1206_TRIGGER_ZONE_delta.zip
+[ ] Demo 1207 launches
+[ ] hero movement works
+[ ] jump works
+[ ] collision works
+[ ] camera works
+[ ] parallax works
+[ ] switch exists
+[ ] touching switch toggles state
+[ ] visible feedback shown
+[ ] no extra systems added

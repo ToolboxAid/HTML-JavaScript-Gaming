@@ -1,13 +1,1 @@
-Toolbox Aid
-David Quesenberry
-03/31/2026
-RULES.txt
-
 PLAN_PR -> BUILD_PR -> APPLY_PR
-Docs-first
-No skipped steps
-One PR per purpose
-Codex writes code
-ChatGPT plans/builds documentation bundles
-BUILD_PR execution must produce:
-<project folder>/tmp/BUILD_PR_DEMO1206_TRIGGER_ZONE_delta.zip
