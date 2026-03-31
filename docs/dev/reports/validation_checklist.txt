@@ -3,16 +3,19 @@ David Quesenberry
 03/31/2026
 validation_checklist.txt
 
-[ ] sample1202 launches
+[ ] sample1203 launches
 [ ] hero is visible
-[ ] hero moves left/right only
-[ ] camera follows hero cleanly
+[ ] hero moves left/right
+[ ] hero jumps with Space
+[ ] gravity is active
+[ ] grounded/landing behavior exists
+[ ] collision with ground/platform tiles works in normal play
+[ ] camera follows cleanly
 [ ] tilemap is larger than viewport
-[ ] visible scrolling occurs during normal traversal
-[ ] no jump exists
-[ ] no gravity/platforming behavior exists
+[ ] visible scrolling occurs during normal play
 [ ] no parallax exists
+[ ] no enemy/collectible/game systems exist
 [ ] README matches actual behavior
 [ ] no diff outside approved paths
 [ ] no engine/tools/tests/games changes
-[ ] output ZIP written to <project folder>/tmp/BUILD_PR_SAMPLE1202_TILEMAP_HERO_MOVEMENT_IMPLEMENTATION_delta.zip
+[ ] output ZIP written to <project folder>/tmp/BUILD_PR_SAMPLE1203_TILEMAP_HERO_JUMP_COLLISION_IMPLEMENTATION_delta.zip

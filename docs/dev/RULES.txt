@@ -10,4 +10,4 @@ One PR per purpose
 Codex writes code
 ChatGPT plans/builds documentation bundles
 BUILD_PR execution must produce:
-<project folder>/tmp/BUILD_PR_SAMPLE1202_TILEMAP_HERO_MOVEMENT_IMPLEMENTATION_delta.zip
+<project folder>/tmp/BUILD_PR_SAMPLE1203_TILEMAP_HERO_JUMP_COLLISION_IMPLEMENTATION_delta.zip

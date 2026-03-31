@@ -4,15 +4,15 @@ David Quesenberry
 change_summary.txt
 
 BUILD_PR target:
-Implement sample1202 as a runnable hero movement sample with horizontal camera follow.
+Implement sample1203 as a runnable hero jump/collision sample in a scrolling tilemap world.
 
 Expected changed area:
-- samples/Phase 12 - Sample Games/sample1202-tilemap-hero-movement/**
+- samples/Phase 12 - Sample Games/sample1203-tilemap-hero-jump-collision/**
 - samples/index.html only if strictly required for launch correctness
 
 Blocked scope:
-- jump
-- gravity/platforming
-- collision as feature
 - parallax
+- enemies
+- collectibles
+- broader game systems
 - engine changes
