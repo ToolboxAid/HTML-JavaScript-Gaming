@@ -3,7 +3,7 @@ David Quesenberry
 03/31/2026
 README.md
 
-BUILD_PR bundle for sample1204 tilemap parallax hero implementation.
+BUILD_PR bundle for Demo 1205 multi-system demo.
 
 Contents:
 - PR build contract

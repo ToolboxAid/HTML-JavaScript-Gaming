@@ -1,1 +1,7 @@
-BUILD_PR: rename Phase 12 Sample Games to Demo Games
+BUILD_PR: implement Demo 1205 multi-system demo with collectible counter
+
+- add integrated Demo 1205 runtime
+- preserve proven movement, jump, collision, camera follow, and parallax behavior
+- add collectible pickups with disappearance on touch and counter increment
+- keep scope to one light interaction system only
+- no engine, tools, tests, or games changes

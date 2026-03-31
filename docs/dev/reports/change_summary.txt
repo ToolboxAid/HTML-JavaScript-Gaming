@@ -1,1 +1,21 @@
-Rename Phase 12 structure only.
+Toolbox Aid
+David Quesenberry
+03/31/2026
+change_summary.txt
+
+BUILD_PR target:
+Implement Demo 1205 as the integrated showcase sample with one light interaction system: collectible counter.
+
+Expected changed area:
+- samples/Phase 12 - Demo Games/Demo 1205 - Multi-System Demo/**
+- samples/index.html only if strictly required for launch correctness
+
+Blocked scope:
+- trigger zone
+- switch/checkpoint marker
+- enemies
+- combat
+- inventory
+- menus
+- save/load
+- engine changes
