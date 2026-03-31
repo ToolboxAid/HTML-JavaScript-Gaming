@@ -1,19 +1,22 @@
 # Sample1202 - Tilemap Hero Movement
 
 ## Purpose
-Define a docs-only sample for horizontal hero traversal on tilemap ground with camera follow.
+Launch a runnable sample with a visible hero that traverses left/right across a large tilemap while the camera follows horizontally.
 
 ## Controls
-- Left/Right: move the hero
-- Space: jump input is listed but not activated in this movement-focused slice
+- Left Arrow: move hero left
+- Right Arrow: move hero right
 
 ## Behavior
-Hero movement is constrained by tile lanes and the camera follows hero position to keep traversal centered.
+The hero moves only on the horizontal axis. The tilemap is wider than the viewport, so normal traversal produces clear scrolling as the camera follows the hero horizontally.
 
 ## Constraints
-- docs-only entry for BUILD_PR planning
+- movement scope is left/right only
+- no jump or other actions
+- no gravity/platforming behavior
+- no collision as a featured mechanic
+- no parallax
+- no enemies, collectibles, scoring, menus, or save/load
 - no engine changes
 - no reusable shared logic introduced
 - fully removable sample folder
-- follows scene-contract direction from the plan
-- no game systems such as menus, save, or AI
