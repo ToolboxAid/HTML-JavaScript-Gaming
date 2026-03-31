@@ -67,7 +67,7 @@ export default class MultiSystemDemoScene extends Scene {
       { x: 1450, y: this.world.height - this.tilemap.tileSize - 230, radius: 10, collected: false },
       { x: 2010, y: this.world.height - this.tilemap.tileSize - 182, radius: 10, collected: false },
       { x: 2580, y: this.world.height - this.tilemap.tileSize - 278, radius: 10, collected: false },
-      { x: 3160, y: this.world.height - this.tilemap.tileSize - 230, radius: 10, collected: false },
+      { x: 3160, y: this.world.height - this.tilemap.tileSize - 200, radius: 10, collected: false },
     ];
     this.collectedCount = 0;
     this.totalCollectibles = this.collectibles.length;

@@ -1,7 +1,7 @@
-BUILD_PR: implement Demo 1205 multi-system demo with collectible counter
+BUILD_PR: implement Demo 1206 trigger zone
 
-- add integrated Demo 1205 runtime
+- add integrated Demo 1206 runtime
 - preserve proven movement, jump, collision, camera follow, and parallax behavior
-- add collectible pickups with disappearance on touch and counter increment
+- add a visible trigger zone with simple success state on entry
 - keep scope to one light interaction system only
 - no engine, tools, tests, or games changes

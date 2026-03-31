@@ -4,14 +4,14 @@ David Quesenberry
 change_summary.txt
 
 BUILD_PR target:
-Implement Demo 1205 as the integrated showcase sample with one light interaction system: collectible counter.
+Implement Demo 1206 as the integrated showcase sample with one light interaction system: trigger zone success state.
 
 Expected changed area:
-- samples/Phase 12 - Demo Games/Demo 1205 - Multi-System Demo/**
+- samples/Phase 12 - Demo Games/Demo 1206 - Trigger Zone/**
 - samples/index.html only if strictly required for launch correctness
 
 Blocked scope:
-- trigger zone
+- collectible counter
 - switch/checkpoint marker
 - enemies
 - combat

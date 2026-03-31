@@ -3,7 +3,7 @@ David Quesenberry
 03/31/2026
 README.md
 
-BUILD_PR bundle for Demo 1205 multi-system demo.
+BUILD_PR bundle for Demo 1206 trigger zone.
 
 Contents:
 - PR build contract
