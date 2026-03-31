@@ -1,19 +1,12 @@
-BUILD_PR_SAMPLE_RENUMBERING_AND_INDEX_REORG
+Toolbox Aid
+David Quesenberry
+03/31/2026
+change_summary.txt
 
-Implemented changes:
-- Reorganized all sample directories from a flat samples/ list into phase folders.
-- Renumbered samples using LLSS (Level + Sample-in-level) format, e.g. sample0101-..., sample1207-... .
-- Updated Phase folder naming to include new LLSS ranges (e.g., Phase 01 - Core Engine (0101-0124)).
-- Updated samples/index.html to point to new folder paths and LLSS sample names.
-- Inserted new empty section between Phase 11 and Phase 12:
-  Sample games (reserved for future tile, parallax, and other sample-game entries).
-- Updated moved sample file relative paths for deeper folder nesting.
+Requested correction:
+- Add a new Phase 12 Sample Games section/folder for future games
+- Shift existing Phase 12, 13, and 14 folders to 13, 14, and 15
+- Update samples/index.html so the section list and ordering reflect the new numbering
 
-Not changed:
-- engine/ APIs and engine core implementation were not modified.
-
-Key outputs:
-- samples/index.html
-- samples/Phase 01 ... Phase 14 folder trees
-- docs/dev/reports/file_tree.txt
-- docs/dev/reports/validation_checklist.txt
+Reason:
+- The prior reorganization ZIP showed Phase 12, 13, and 14 folders but did not insert a new Sample Games section between 11 and 12.

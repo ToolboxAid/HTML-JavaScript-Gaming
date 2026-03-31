@@ -1,102 +1,13 @@
-// Toolbox Aid
-// David Quesenberry
-// 2026-03-29
+Toolbox Aid
+David Quesenberry
+03/31/2026
+RULES.txt
 
-ENGINE RULES (LOCKED — CLEAN VERSION v5)
-
-WORKFLOW (NON-NEGOTIABLE)
-- ChatGPT defines: architecture, PLAN_PR, BUILD_PR
-- Codex executes: file creation, repo changes, deltas only
-- Required flow: PLAN_PR -> BUILD_PR -> APPLY_PR
-- Codex must NOT change architecture or expand scope
-
-CORE ARCHITECTURE
-- Engine owns lifecycle: init → update → render → dispose
-- Engine owns all reusable logic
-- Systems operate on data only (no rendering)
-
-RENDERING (STRICT)
-- ONLY renderer can draw
-- No ctx usage outside renderer
-- No rendering in scenes/systems/entities
-
-INPUT (STRICT)
-- No DOM events in scenes/systems
-- Use only InputService / ActionInputService
-- No raw keycodes in game logic
-
-SCENE CONTRACT (MANDATORY)
-constructor()
-init(engine)
-update(dt, engine)
-render(renderer, engine)
-dispose(engine)
-
-SEPARATION OF CONCERNS
-- Scenes orchestrate only
-- Systems contain logic only
-- Engine wires everything
-
-CODE OWNERSHIP
-- Reusable → engine/
-- Game-specific → games/
-- Sample-only → samples/
-- If reused twice → move to engine
-
-ECS DIRECTION
-- Entities = data only
-- Components = data only
-- Systems = logic only
-- No cross-system coupling
-
-SAMPLE RULES
-- One concept per sample
-- Sample001 is canonical template
-- All samples must match exactly
-- samples/index.html must stay synced
-- No engine logic in samples
-- No hacks
-- Removable without breaking engine
-- Only build from approved PLAN_PR
-
-NAMING
-- Sample001, Sample002, ...
-
-ZIP / DELIVERY RULES (CRITICAL)
-- ZIP MUST match repo directory structure EXACTLY
-- ALL documentation + control files MUST be under:
-    /docs/dev/
-        - RULES.txt
-        - README.md
-        - CODEX_COMMANDS.md
-        - COMMIT_COMMENT.txt
-- Paths must be full repo paths (/games/, /engine/, /docs/)
-- No flattened files at root
-- Delta only (no unrelated files)
-- Ready-to-run (no setup guessing)
-- Delta only (no unrelated files)
-
-CODEX RESULT ZIP RULE (MANDATORY)
-- All BUILD_PR executions MUST produce a result ZIP
-- Codex MUST write the result ZIP to:
-
-    tmp/BUILD_PR_<NAME>_delta.zip
-
-- The ZIP MUST:
-    - Contain ONLY changed/added files (delta only)
-    - Preserve exact repo-relative structure
-    - NOT include full repo copies
-    - NOT include dependencies or unrelated files
-
-- This ZIP is the ONLY accepted output from Codex for BUILD_PR
-- Chat summaries are NOT sufficient
-
-EXECUTION PACKAGING (MANDATORY)
-- ANY step requiring execution MUST include a ZIP
-- CODEX_COMMANDS.md MUST include:
-
-CODEX OUTPUT CONTRACT (MANDATORY)
-- CODEX_COMMANDS.md MUST include a FINAL STEP requiring:
-    - Creation of a repo-structured delta ZIP
-    - Output path: /tmp/BUILD_PR_<NAME>_delta.zip
-- Missing this step = invalid package
+PLAN_PR -> BUILD_PR -> APPLY_PR
+Docs-first
+No implementation code in bundles
+Codex writes code and repo edits
+One PR per purpose
+ZIP outputs go to <project folder>/tmp/
+Preserve exact repo-relative structure inside ZIP
+Delta only

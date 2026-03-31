@@ -1,25 +1,17 @@
-Validation Checklist
+Toolbox Aid
+David Quesenberry
+03/31/2026
+validation_checklist.txt
 
-[x] Flat sample directories removed from samples/ root (sample* at root = 0).
-[x] Phase folders present for Phase 01 through Phase 14.
-[x] LLSS numbering applied in sample directory names (sample####-*).
-[x] samples/index.html updated to new phase-folder paths.
-[x] New "Sample games" section inserted between Phase 11 and Phase 12.
-[x] Live-link validation passed (missing live links = 0).
-[x] No engine/ files modified.
-
-Observed counts:
-- Phase 01: 24
-- Phase 02: 24
-- Phase 03: 24
-- Phase 04: 12
-- Phase 05: 12
-- Phase 06: 13
-- Phase 07: 13
-- Phase 08: 10
-- Phase 09: 6
-- Phase 10: 3
-- Phase 11: 6
-- Phase 12: 15
-- Phase 13: 18
-- Phase 14: 6
+[ ] New folder exists: samples/Phase 12 - Sample Games/
+[ ] Previous Phase 12 folder renamed to Phase 13 with updated numeric range (1301-1315)
+[ ] Previous Phase 13 folder renamed to Phase 14 with updated numeric range (1401-1418)
+[ ] Previous Phase 14 folder renamed to Phase 15 with updated numeric range (1501-1506)
+[ ] samples/index.html includes Phase 12 - Sample Games between Phase 11 and Phase 13
+[ ] samples/index.html labels and folder references match shifted phase names exactly
+[ ] No duplicate phase numbers
+[ ] No missing phases in folder list after shift
+[ ] No engine changes
+[ ] No tool changes
+[ ] No sample logic changes
+[ ] Output ZIP path is <project folder>/tmp/BUILD_PR_SAMPLE_GAMES_PHASE_SHIFT_delta.zip
