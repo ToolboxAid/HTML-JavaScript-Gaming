@@ -10,7 +10,7 @@ import { clamp } from '../../../engine/utils/index.js';
 import { Camera2D, worldRectToScreen } from '../../../engine/camera/index.js';
 import { Tilemap, resolveRectVsTilemap } from '../../../engine/tilemap/index.js';
 import tileMapToolExport from './data/toolFormattedTileMap.export.js';
-import parallaxToolExport from './data/toolFormattedParallax.export.js';
+import fallbackParallaxToolExport from './data/toolFormattedParallax.export.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -54,7 +54,8 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     try {
       this.applyTileExportData(tileMapToolExport);
       const tileAssetCount = await this.loadTileAssets(extractTileEntries(tileMapToolExport));
-      this.parallaxLayers = await this.loadParallaxAssets(extractParallaxLayers(parallaxToolExport));
+      const parallaxDocument = await loadParallaxDocument(fallbackParallaxToolExport);
+      this.parallaxLayers = await this.loadParallaxAssets(extractParallaxLayers(parallaxDocument));
 
       this.contentLoaded = tileAssetCount > 0 && this.parallaxLayers.length === 3;
       this.contentStatus = `Loaded ${tileAssetCount} PNG atlas image and ${this.parallaxLayers.length} SVG parallax layers.`;
@@ -183,7 +184,14 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     }
 
     const loadOperations = layerDefinitions.map(async (layerDefinition, index) => {
-      const image = await loadImageFromRelativePath(layerDefinition.asset, import.meta.url);
+      const assetPath = layerDefinition.asset
+        || layerDefinition.imageDataUrl
+        || layerDefinition.imageSource;
+      if (!assetPath) {
+        throw new Error(`Parallax layer ${layerDefinition.id || index} missing image source.`);
+      }
+
+      const image = await loadImageFromRelativePath(assetPath, import.meta.url);
       const sourceWidth = Number(layerDefinition.sourceWidth)
         || image.naturalWidth
         || image.width
@@ -199,8 +207,8 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
         image,
         sourceWidth,
         sourceHeight,
-        scrollFactor: Number(layerDefinition.scrollFactor) || [0.2, 0.45, 0.7][index],
-        y: Number(layerDefinition.y) || 0,
+        scrollFactor: Number(layerDefinition.scrollFactor ?? layerDefinition.scrollFactorX) || [0.2, 0.45, 0.7][index],
+        y: Number(layerDefinition.y ?? layerDefinition.offsetY) || 0,
         height: Number(layerDefinition.height) || 90,
         segmentWidth: Number(layerDefinition.segmentWidth) || sourceWidth || 1024,
       };
@@ -511,12 +519,46 @@ function extractTileEntries(tileExport) {
 }
 
 function extractParallaxLayers(parallaxExport) {
-  return Array.isArray(parallaxExport?.layers) ? parallaxExport.layers : [];
+  if (!Array.isArray(parallaxExport?.layers)) {
+    return [];
+  }
+
+  if (parallaxExport?.schema === 'toolbox.parallax/1') {
+    const normalized = parallaxExport.layers
+      .filter((layer) => layer?.visible !== false)
+      .sort((a, b) => (Number(a?.drawOrder) || 0) - (Number(b?.drawOrder) || 0))
+      .map((layer) => ({
+        id: layer.id,
+        imageSource: layer.imageSource,
+        imageDataUrl: layer.imageDataUrl,
+        scrollFactorX: Number(layer.scrollFactorX),
+        offsetY: Number(layer.offsetY) || 0,
+        opacity: Number(layer.opacity),
+        segmentWidth: Number(layer.segmentWidth) || undefined,
+      }));
+    return normalized;
+  }
+
+  return parallaxExport.layers;
 }
 
 function placePlatform(cells, row, startCol, endCol, tileId) {
   for (let col = startCol; col <= endCol; col += 1) {
     cells[row][col] = tileId;
+  }
+}
+
+async function loadParallaxDocument(fallbackDocument) {
+  try {
+    const response = await fetch(new URL('./data/toolFormattedParallax.json', import.meta.url), {
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return await response.json();
+  } catch (_error) {
+    return fallbackDocument;
   }
 }
 
