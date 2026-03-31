@@ -4,16 +4,15 @@ David Quesenberry
 change_summary.txt
 
 BUILD_PR target:
-Implement sample1201 as a runnable tilemap viewer only.
+Implement sample1202 as a runnable hero movement sample with horizontal camera follow.
 
 Expected changed area:
-- samples/Phase 12 - Sample Games/sample1201-tilemap-viewer/**
+- samples/Phase 12 - Sample Games/sample1202-tilemap-hero-movement/**
 - samples/index.html only if strictly required for launch correctness
 
 Blocked scope:
-- hero
-- movement
 - jump
-- collision
+- gravity/platforming
+- collision as feature
 - parallax
 - engine changes

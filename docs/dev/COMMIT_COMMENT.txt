@@ -1,6 +1,7 @@
-BUILD_PR: implement sample1201 tilemap viewer
+BUILD_PR: implement sample1202 hero movement with camera follow
 
-- add runnable sample1201 tilemap viewer runtime
-- keep scope viewer-only
-- no hero, jump, collision, or parallax
-- no engine/tools/tests/games changes
+- add runnable sample1202 tilemap hero movement sample
+- implement visible hero with left/right traversal only
+- add horizontal camera follow across a larger-than-viewport tilemap
+- keep scope tight (no jump, no gravity/platforming, no parallax)
+- no engine, tools, tests, or games changes

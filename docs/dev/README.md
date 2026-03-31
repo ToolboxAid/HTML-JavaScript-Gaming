@@ -3,7 +3,7 @@ David Quesenberry
 03/31/2026
 README.md
 
-BUILD_PR bundle for sample1201 tilemap viewer implementation.
+BUILD_PR bundle for sample1202 tilemap hero movement implementation.
 
 Contents:
 - PR build contract
