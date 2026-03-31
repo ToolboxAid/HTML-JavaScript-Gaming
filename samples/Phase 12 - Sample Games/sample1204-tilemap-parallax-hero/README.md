@@ -1,19 +1,21 @@
 # Sample1204 - Tilemap Parallax Hero
 
 ## Purpose
-Define a docs-only sample that combines hero movement with parallax background layers over tilemap traversal.
+Launch a runnable sample that preserves the proven hero jump/collision contract while adding clear layered parallax depth.
 
 ## Controls
-- Left/Right: move the hero
+- Left Arrow: move hero left
+- Right Arrow: move hero right
 - Space: jump
 
 ## Behavior
-Camera follow tracks the hero while tile collision and layered parallax depth provide a more game-like traversal presentation.
+Hero movement, jump, gravity, grounded/landing, and tile/platform collision follow the established sample1203 pattern. Background parallax layers move relative to camera motion, with farther layers moving slower than nearer layers.
 
 ## Constraints
-- docs-only entry for BUILD_PR planning
+- preserve proven movement/jump/collision gameplay contract
+- parallax layers are background-focused and sample-local
+- no new hero abilities or advanced game rules
+- no enemies, collectibles, score systems, menus, or save/load
 - no engine changes
 - no reusable shared logic introduced
 - fully removable sample folder
-- follows scene-contract direction from the plan
-- no game systems such as menus, save, or AI
