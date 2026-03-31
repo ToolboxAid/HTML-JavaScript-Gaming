@@ -1,6 +1,1 @@
-Toolbox Aid
-David Quesenberry
-03/31/2026
-COMMIT_COMMENT.txt
-
-BUILD_PR: insert Phase 12 Sample Games and shift later sample phases up by +1
+PLAN_PR: Define Sample Games Foundation with hero interaction and structure

@@ -1,17 +1,9 @@
 Toolbox Aid
 David Quesenberry
 03/31/2026
-validation_checklist.txt
 
-[ ] New folder exists: samples/Phase 12 - Sample Games/
-[ ] Previous Phase 12 folder renamed to Phase 13 with updated numeric range (1301-1315)
-[ ] Previous Phase 13 folder renamed to Phase 14 with updated numeric range (1401-1418)
-[ ] Previous Phase 14 folder renamed to Phase 15 with updated numeric range (1501-1506)
-[ ] samples/index.html includes Phase 12 - Sample Games between Phase 11 and Phase 13
-[ ] samples/index.html labels and folder references match shifted phase names exactly
-[ ] No duplicate phase numbers
-[ ] No missing phases in folder list after shift
-[ ] No engine changes
-[ ] No tool changes
-[ ] No sample logic changes
-[ ] Output ZIP path is <project folder>/tmp/BUILD_PR_SAMPLE_GAMES_PHASE_SHIFT_delta.zip
+VALIDATION
+[ ] Structure defined
+[ ] Hero interaction defined
+[ ] Rules align with engine
+[ ] Ready for BUILD_PR
