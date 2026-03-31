@@ -1,24 +1,19 @@
-BUILD_PR_EDITOR_FIXES_AND_WORKFLOW_UPDATES
+BUILD_PR_SAMPLE_RENUMBERING_AND_INDEX_REORG
 
-Summary of Changes
+Implemented changes:
+- Reorganized all sample directories from a flat samples/ list into phase folders.
+- Renumbered samples using LLSS (Level + Sample-in-level) format, e.g. sample0101-..., sample1207-... .
+- Updated Phase folder naming to include new LLSS ranges (e.g., Phase 01 - Core Engine (0101-0124)).
+- Updated samples/index.html to point to new folder paths and LLSS sample names.
+- Inserted new empty section between Phase 11 and Phase 12:
+  Sample games (reserved for future tile, parallax, and other sample-game entries).
+- Updated moved sample file relative paths for deeper folder nesting.
 
-1) SVG Background Editor
-- Fixed selection/resize overlay placement by deriving overlay bounds from visible viewport geometry (`getBoundingClientRect`) rather than raw SVG bbox scaling math.
-- Improved scene pointer mapping using SVG matrix inversion so pointer-to-scene coordinates stay aligned under zoom/pan and viewbox fit behavior.
-- Added Palette dropdown with explicit palette-set filtering for the swatch grid.
-- Kept Active Paint and Active Stroke persistent; palette-set changes do not mutate active values.
+Not changed:
+- engine/ APIs and engine core implementation were not modified.
 
-2) Sprite Editor
-- Updated used-color swatch computation to aggregate colors across all frames in the current document, not only the active frame.
-
-3) Tile Map Editor
-- Added `Load Tile PNG(s)` workflow for importing multiple individual PNG tile assets.
-- Imported tile PNG assets are added as selectable tile entries with image-backed tile sources.
-- Extended tile source handling to support both atlas-sliced sources and individual image sources.
-- Added per-document preloading/cache of imported tile PNG images for palette preview and map rendering.
-- Updated tileset metadata text to report imported PNG tile counts.
-- Preserved existing tileset PNG slice workflow and failure-only popup behavior.
-
-Constraints Check
-- No engine core API files changed.
-- No modifications under `engine/`.
+Key outputs:
+- samples/index.html
+- samples/Phase 01 ... Phase 14 folder trees
+- docs/dev/reports/file_tree.txt
+- docs/dev/reports/validation_checklist.txt

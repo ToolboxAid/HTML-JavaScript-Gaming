@@ -1,7 +1,7 @@
 Docs-only bundle.
 
 Included:
-- SVG bounding-box alignment fix
-- SVG palette dropdown
-- Sprite Editor all-frame swatches
-- Tile Map Editor multi-PNG assignment workflow
+- sample renumbering rules
+- phase-folder regrouping rules
+- samples/index.html update requirements
+- empty Sample games section between 11 and 12

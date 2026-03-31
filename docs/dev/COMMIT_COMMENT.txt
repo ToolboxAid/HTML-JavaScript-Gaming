@@ -1,1 +1,1 @@
-Build plan: fix SVG bounding-box alignment, add SVG palette dropdown, use all-frame swatches in Sprite Editor, and support multi-PNG tile assignment in Tile Map Editor
+Build plan: renumber and regroup samples into phase folders and update samples/index.html

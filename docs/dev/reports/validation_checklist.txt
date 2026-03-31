@@ -1,20 +1,25 @@
-BUILD_PR_EDITOR_FIXES_AND_WORKFLOW_UPDATES
-
 Validation Checklist
 
-[PASS] SVG selection/handle overlay placement uses visible geometry relative to viewport.
-[PASS] SVG Palette dropdown added and wired to palette filtering.
-[PASS] SVG Active Paint/Stroke remain explicit persistent state until user changes selection.
-[PASS] Sprite Editor used-color strip source updated to all frames in document.
-[PASS] Tile Map Editor supports multi-file PNG tile asset import.
-[PASS] Imported tile PNG assets appear as selectable entries in tile palette.
-[PASS] Tile rendering supports both atlas tile sources and image tile sources.
-[PASS] No engine core API changes.
+[x] Flat sample directories removed from samples/ root (sample* at root = 0).
+[x] Phase folders present for Phase 01 through Phase 14.
+[x] LLSS numbering applied in sample directory names (sample####-*).
+[x] samples/index.html updated to new phase-folder paths.
+[x] New "Sample games" section inserted between Phase 11 and Phase 12.
+[x] Live-link validation passed (missing live links = 0).
+[x] No engine/ files modified.
 
-Static Validation
-- `tools/Tile Map Editor/main.js`: parsed with `node --check`.
-- `tools/SVG Background Editor/main.js`: parsed via stdin module check (`node --check --input-type=module -`).
-- `tools/SpriteEditor/modules/appPalette.js`: parsed via stdin module check (`node --check --input-type=module -`).
-
-Notes
-- Direct runtime GUI interaction was not executed in this terminal-only pass; behavior validated via code path inspection and syntax checks.
+Observed counts:
+- Phase 01: 24
+- Phase 02: 24
+- Phase 03: 24
+- Phase 04: 12
+- Phase 05: 12
+- Phase 06: 13
+- Phase 07: 13
+- Phase 08: 10
+- Phase 09: 6
+- Phase 10: 3
+- Phase 11: 6
+- Phase 12: 15
+- Phase 13: 18
+- Phase 14: 6
