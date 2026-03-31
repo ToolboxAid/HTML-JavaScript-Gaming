@@ -1,5 +1,6 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 120" preserveAspectRatio="none">
-  <rect width="360" height="120" fill="none"/>
-  <path d="M0 90 L38 60 L72 84 L112 48 L148 76 L186 40 L230 74 L266 52 L308 82 L338 64 L360 82 L360 120 L0 120 Z" fill="#94a3b8" fill-opacity="0.55"/>
-  <path d="M0 100 L28 82 L54 96 L84 70 L122 96 L152 78 L182 98 L214 76 L246 100 L282 80 L320 98 L360 90 L360 120 L0 120 Z" fill="#cbd5e1" fill-opacity="0.42"/>
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="300" viewBox="0 0 1024 300" preserveAspectRatio="none">
+  <rect width="1024" height="300" fill="none"/>
+  <path d="M0 210 L60 170 L118 194 L174 154 L230 186 L288 138 L340 172 L396 128 L452 166 L510 120 L568 160 L626 126 L690 176 L748 142 L808 182 L872 150 L930 188 L982 162 L1024 186 L1024 300 L0 300 Z" fill="#5f7490" fill-opacity="0.88"/>
+  <path d="M0 242 L56 226 L120 236 L184 220 L250 234 L320 218 L392 232 L458 214 L522 230 L596 212 L668 230 L740 214 L810 234 L884 220 L958 238 L1024 226 L1024 300 L0 300 Z" fill="#90a2b8" fill-opacity="0.74"/>
 </svg>
+

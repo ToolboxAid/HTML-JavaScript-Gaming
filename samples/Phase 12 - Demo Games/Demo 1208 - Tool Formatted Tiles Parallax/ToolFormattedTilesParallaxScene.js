@@ -7,7 +7,6 @@ ToolFormattedTilesParallaxScene.js
 import { Scene } from '../../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
 import { clamp } from '../../../engine/utils/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
 import { Camera2D, worldRectToScreen } from '../../../engine/camera/index.js';
 import { Tilemap, resolveRectVsTilemap } from '../../../engine/tilemap/index.js';
 import tileMapToolExport from './data/toolFormattedTileMap.export.js';
@@ -39,12 +38,12 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     this.contentStatus = 'Loading tool-formatted tile/parallax content...';
     this.contentLoaded = false;
     this.contentError = null;
-    this.tileAssetById = {};
-    this.tileImages = new Map();
+    this.tilesetAssetPath = '';
+    this.tilesetImage = null;
+    this.tileFrameById = {};
     this.parallaxLayers = [];
 
     this.applyTileExportData(getFallbackTileExport());
-    this.parallaxLayers = getFallbackParallaxLayerData();
   }
 
   enter() {
@@ -54,39 +53,56 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
   async loadToolFormattedContent() {
     try {
       this.applyTileExportData(tileMapToolExport);
-      await this.loadTileAssets(tileMapToolExport.tilePalette || []);
-      this.parallaxLayers = await this.loadParallaxAssets(parallaxToolExport.layers || []);
+      const tileAssetCount = await this.loadTileAssets(extractTileEntries(tileMapToolExport));
+      this.parallaxLayers = await this.loadParallaxAssets(extractParallaxLayers(parallaxToolExport));
 
-      this.contentLoaded = true;
-      this.contentStatus = 'Loaded tool-formatted tile + SVG parallax assets.';
+      this.contentLoaded = tileAssetCount > 0 && this.parallaxLayers.length === 3;
+      this.contentStatus = `Loaded ${tileAssetCount} PNG atlas image and ${this.parallaxLayers.length} SVG parallax layers.`;
       this.contentError = null;
     } catch (error) {
       this.contentError = error instanceof Error ? error.message : String(error);
-      this.contentStatus = 'Asset/data load failed. Running fallback data.';
+      this.contentStatus = 'Asset/data load failed.';
+      this.parallaxLayers = [];
     }
   }
 
   applyTileExportData(tileExport) {
-    const tileSize = Number(tileExport?.tileSize) || 48;
-    const cells = Array.isArray(tileExport?.cells) ? tileExport.cells : [[]];
-    const tilePalette = Array.isArray(tileExport?.tilePalette) ? tileExport.tilePalette : [];
+    const tileset = tileExport?.tileset || null;
+    const primaryLayer = Array.isArray(tileExport?.layers)
+      ? tileExport.layers.find((layer) => layer?.kind === 'tile-layer')
+      : null;
+    const cells = Array.isArray(primaryLayer?.cells)
+      ? primaryLayer.cells
+      : (Array.isArray(tileExport?.cells) ? tileExport.cells : [[]]);
+    const tileSize = Number(tileExport?.tileSize || tileset?.tileWidth) || 48;
+    const tilePalette = extractTileEntries(tileExport);
     const definitions = {};
-    this.tileAssetById = {};
+    this.tilesetAssetPath = typeof tileset?.image === 'string' ? tileset.image : '';
+    this.tilesetImage = null;
+    this.tileFrameById = {};
 
     for (const tileDefinition of tilePalette) {
-      if (!tileDefinition || typeof tileDefinition.id !== 'number') {
+      const tileId = Number(tileDefinition?.tileId ?? tileDefinition?.id);
+      if (!Number.isInteger(tileId)) {
         continue;
       }
 
-      definitions[tileDefinition.id] = {
+      definitions[tileId] = {
         solid: Boolean(tileDefinition.solid),
         color: tileDefinition.fallbackColor || '#1f2937',
-        label: tileDefinition.name || `tile-${tileDefinition.id}`,
+        label: tileDefinition.name || `tile-${tileId}`,
       };
 
-      if (tileDefinition.asset) {
-        this.tileAssetById[tileDefinition.id] = tileDefinition.asset;
+      if (tileDefinition?.source) {
+        const source = tileDefinition.source;
+        this.tileFrameById[tileId] = {
+          x: Number(source.x) || 0,
+          y: Number(source.y) || 0,
+          w: Number(source.w) || tileSize,
+          h: Number(source.h) || tileSize,
+        };
       }
+
     }
 
     this.tilemap = new Tilemap({
@@ -117,7 +133,9 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
       this.world.height
     );
 
-    const spawn = tileExport?.heroSpawn || { x: 120, y: this.world.height - tileSize - this.hero.height };
+    const spawn = tileExport?.spawnPoints?.hero
+      || tileExport?.heroSpawn
+      || { x: 120, y: this.world.height - tileSize - this.hero.height };
     this.hero.x = clamp(Number(spawn.x) || 120, 0, Math.max(0, this.world.width - this.hero.width));
     this.hero.y = clamp(
       Number(spawn.y) || this.world.height - tileSize - this.hero.height,
@@ -130,35 +148,40 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
   }
 
   async loadTileAssets(tilePalette) {
-    this.tileImages.clear();
-    const loadOperations = [];
-
-    for (const tileDefinition of tilePalette) {
-      if (!tileDefinition?.asset) {
-        continue;
-      }
-
-      const assetPath = tileDefinition.asset;
-      loadOperations.push(
-        loadImageFromRelativePath(assetPath, import.meta.url).then((image) => {
-          this.tileImages.set(assetPath, image);
-        })
-      );
+    this.tilesetImage = null;
+    if (!this.tilesetAssetPath) {
+      throw new Error('Missing tileset atlas image path.');
     }
 
-    await Promise.all(loadOperations);
+    for (const tileDefinition of tilePalette) {
+      const tileId = Number(tileDefinition?.tileId ?? tileDefinition?.id);
+      if (!Number.isInteger(tileId) || !this.tileFrameById[tileId]) {
+        throw new Error(`Missing tile frame for tileId ${tileId}.`);
+      }
+    }
+
+    this.tilesetImage = await loadImageFromRelativePath(this.tilesetAssetPath, import.meta.url);
+    return 1;
   }
 
   async loadParallaxAssets(layerDefinitions) {
-    const loadOperations = layerDefinitions.map(async (layerDefinition) => {
+    if (!Array.isArray(layerDefinitions) || layerDefinitions.length !== 3) {
+      throw new Error('Parallax export must provide exactly 3 layers.');
+    }
+
+    const loadOperations = layerDefinitions.map(async (layerDefinition, index) => {
       const image = await loadImageFromRelativePath(layerDefinition.asset, import.meta.url);
+      const sourceWidth = image.naturalWidth || image.width;
+      const sourceHeight = image.naturalHeight || image.height;
       return {
-        id: layerDefinition.id,
+        id: layerDefinition.id || `layer-${index}`,
         image,
-        scrollFactor: Number(layerDefinition.scrollFactor) || 0.2,
+        sourceWidth,
+        sourceHeight,
+        scrollFactor: Number(layerDefinition.scrollFactor) || [0.2, 0.45, 0.7][index],
         y: Number(layerDefinition.y) || 0,
         height: Number(layerDefinition.height) || 90,
-        segmentWidth: Number(layerDefinition.segmentWidth) || image.width || 256,
+        segmentWidth: Number(layerDefinition.segmentWidth) || sourceWidth || 1024,
       };
     });
 
@@ -245,13 +268,8 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
   }
 
   render(renderer) {
-    drawFrame(renderer, theme, [
-      'Demo 1208 - Tool Formatted Tiles Parallax',
-      'Move with Left/Right Arrow. Press Space to jump.',
-      'Tilemap and parallax layers load from tool-shaped JSON exports.',
-      'World rendering uses real SVG tile and parallax assets.',
-      'No extra gameplay systems beyond core traversal and rendering.',
-    ]);
+    renderer.clear('#0d1220');
+    this.drawHeaderText(renderer);
 
     renderer.strokeRect(
       this.screen.x,
@@ -270,16 +288,37 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     renderer.strokeRect(heroScreen.x, heroScreen.y, heroScreen.width, heroScreen.height, '#ffffff', 1);
 
     const stateLabel = this.hero.onGround ? (this.landingTimer > 0 ? 'landed' : 'grounded') : 'airborne';
-    const toolLoadStatus = this.contentError ? `Load error: ${this.contentError}` : this.contentStatus;
-
-    drawPanel(renderer, 600, 34, 320, 176, 'Tool Export Validation', [
+    const toolLoadStatus = this.contentError ? `Error: ${this.contentError}` : this.contentStatus;
+    const statusLines = [
+      'Tool Export Validation',
       `State: ${stateLabel}`,
       `World: ${this.tilemap.width}x${this.tilemap.height} tiles`,
       `Camera X: ${this.camera.x.toFixed(1)}`,
       `SVG Parallax Layers: ${this.parallaxLayers.length}`,
-      `SVG Tile Assets: ${this.tileImages.size}`,
+      `PNG Tileset Atlas: ${this.tilesetImage ? 'loaded' : 'missing'}`,
       this.contentLoaded ? 'Status: Tool data loaded' : `Status: ${toolLoadStatus}`,
-    ]);
+    ];
+    statusLines.forEach((line, index) => {
+      renderer.drawText(line, 600, 34 + index * 18, {
+        color: index === 0 ? '#f8fafc' : '#dbeafe',
+        font: index === 0 ? '16px monospace' : '13px monospace',
+      });
+    });
+  }
+
+  drawHeaderText(renderer) {
+    const lines = [
+      'Demo 1208 - Tool Formatted Tiles Parallax',
+      'Move with Left/Right Arrow. Press Space to jump.',
+      'PNG atlas tiles + SVG parallax layers rendered by canvas drawImage.',
+      'Parallax draw order: far -> mid -> near -> tilemap -> hero.',
+    ];
+    lines.forEach((line, index) => {
+      renderer.drawText(line, 34, 34 + index * 24, {
+        color: '#f8fafc',
+        font: index === 0 ? '28px monospace' : '14px monospace',
+      });
+    });
   }
 
   drawParallax(renderer) {
@@ -288,25 +327,33 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
       this.screen.y,
       this.camera.viewportWidth,
       this.camera.viewportHeight,
-      '#0b1222'
+      '#9fd2ff'
+    );
+    renderer.drawCircle(
+      this.screen.x + 160,
+      this.screen.y + 54,
+      28,
+      'rgba(255, 245, 190, 0.75)'
     );
 
     for (const layer of this.parallaxLayers) {
       const segment = layer.segmentWidth;
       const offset = -((this.camera.x * layer.scrollFactor) % segment);
       const endX = this.screen.x + this.camera.viewportWidth + segment;
+      const layerTop = this.screen.y + layer.y;
+      const layerHeight = Math.max(1, this.camera.viewportHeight - layer.y);
 
       for (let x = this.screen.x + offset - segment; x < endX; x += segment) {
         renderer.drawImageFrame(
           layer.image,
           0,
           0,
-          layer.image.width,
-          layer.image.height,
+          layer.sourceWidth,
+          layer.sourceHeight,
           x,
-          this.screen.y + layer.y,
+          layerTop,
           segment,
-          layer.height
+          layerHeight
         );
       }
     }
@@ -333,27 +380,21 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
 
         const x = tileScreen.x + col * tileSize;
         const y = tileScreen.y + row * tileSize;
-        const assetPath = this.tileAssetById[tile];
-        const image = assetPath ? this.tileImages.get(assetPath) : null;
-        const fallbackColor = this.tilemap.getTileColor(col, row);
+        const frame = this.tileFrameById[tile];
+        if (!frame || !this.tilesetImage) continue;
 
-        if (image) {
-          renderer.drawImageFrame(
-            image,
-            0,
-            0,
-            image.width,
-            image.height,
-            x,
-            y,
-            tileSize,
-            tileSize
-          );
-        } else {
-          renderer.drawRect(x, y, tileSize, tileSize, fallbackColor);
-        }
+        renderer.drawImageFrame(
+          this.tilesetImage,
+          frame.x,
+          frame.y,
+          frame.w,
+          frame.h,
+          x,
+          y,
+          tileSize,
+          tileSize
+        );
 
-        renderer.strokeRect(x, y, tileSize, tileSize, 'rgba(255, 255, 255, 0.18)', 1);
       }
     }
   }
@@ -391,58 +432,66 @@ function getFallbackTileExport() {
   placePlatform(cells, height - 10, 46, 50, 3);
 
   return {
-    tileSize: 48,
-    cells,
-    heroSpawn: { x: 120, y: (height - 2) * 48 },
-    camera: { viewportWidth: 860, viewportHeight: 300 },
-    tilePalette: [
-      { id: 0, name: 'air', solid: false, fallbackColor: 'rgba(0, 0, 0, 0)', asset: '' },
-      { id: 1, name: 'ground', solid: true, fallbackColor: '#334155', asset: './assets/tiles/tile-ground.svg' },
-      { id: 2, name: 'platform', solid: true, fallbackColor: '#1d4ed8', asset: './assets/tiles/tile-platform.svg' },
-      { id: 3, name: 'stone', solid: true, fallbackColor: '#0f766e', asset: './assets/tiles/tile-stone.svg' },
+    tool: 'Tile Map Editor',
+    formatVersion: 2,
+    exportProfile: 'demo1208-fallback-tilemap',
+    tileset: {
+      id: 'terrain-main',
+      image: './assets/tileset/demo1208-terrain-tileset.png',
+      tileWidth: 48,
+      tileHeight: 48,
+      columns: 3,
+      rows: 1,
+      entries: [
+        {
+          tileId: 1,
+          name: 'ground_grass',
+          solid: true,
+          fallbackColor: '#4b5563',
+          source: { x: 0, y: 0, w: 48, h: 48 },
+        },
+        {
+          tileId: 2,
+          name: 'platform_blue',
+          solid: true,
+          fallbackColor: '#1d4ed8',
+          source: { x: 48, y: 0, w: 48, h: 48 },
+        },
+        {
+          tileId: 3,
+          name: 'stone_teal',
+          solid: true,
+          fallbackColor: '#115e59',
+          source: { x: 96, y: 0, w: 48, h: 48 },
+        },
+      ],
+    },
+    layers: [
+      {
+        id: 'terrain_layer_01',
+        kind: 'tile-layer',
+        width,
+        height,
+        cells,
+      },
     ],
+    spawnPoints: { hero: { x: 120, y: (height - 2) * 48 } },
+    camera: { viewportWidth: 860, viewportHeight: 300 },
   };
 }
 
-function getFallbackParallaxLayerData() {
-  return [
-    {
-      id: 'far',
-      image: createFallbackImage('rgba(148, 163, 184, 0.35)'),
-      scrollFactor: 0.14,
-      y: 20,
-      height: 82,
-      segmentWidth: 340,
-    },
-    {
-      id: 'mid',
-      image: createFallbackImage('rgba(99, 102, 241, 0.30)'),
-      scrollFactor: 0.28,
-      y: 76,
-      height: 116,
-      segmentWidth: 300,
-    },
-    {
-      id: 'near',
-      image: createFallbackImage('rgba(45, 212, 191, 0.26)'),
-      scrollFactor: 0.50,
-      y: 132,
-      height: 128,
-      segmentWidth: 260,
-    },
-  ];
+function extractTileEntries(tileExport) {
+  if (Array.isArray(tileExport?.tileset?.entries)) {
+    return tileExport.tileset.entries;
+  }
+  if (Array.isArray(tileExport?.tilePalette)) {
+    return tileExport.tilePalette;
+  }
+  return [];
 }
 
-function createFallbackImage(color) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 256;
-  canvas.height = 128;
-  const context = canvas.getContext('2d');
-  context.fillStyle = color;
-  context.fillRect(0, 36, 256, 92);
-  context.fillRect(20, 12, 96, 52);
-  context.fillRect(134, 20, 102, 48);
-  return canvas;
+function extractParallaxLayers(parallaxExport) {
+  return Array.isArray(parallaxExport?.layers) ? parallaxExport.layers : [];
 }
 
 function placePlatform(cells, row, startCol, endCol, tileId) {
