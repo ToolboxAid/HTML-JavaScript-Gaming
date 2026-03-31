@@ -1,19 +1,22 @@
 # Sample1203 - Tilemap Hero Jump Collision
 
 ## Purpose
-Define a docs-only sample for hero jump behavior and tile collision interactions on a platforming layout.
+Launch a runnable platform-interaction sample with left/right movement, Space-to-jump, gravity, grounded behavior, and tile collision.
 
 ## Controls
-- Left/Right: move the hero
+- Left Arrow: move hero left
+- Right Arrow: move hero right
 - Space: jump
 
 ## Behavior
-Hero movement and jumping interact with tile collision boundaries while the camera follows the hero through vertical and horizontal movement.
+The hero traverses a scrolling tilemap, jumps with Space, falls under gravity, and lands on solid tiles. Collision prevents normal pass-through during horizontal and vertical movement.
 
 ## Constraints
-- docs-only entry for BUILD_PR planning
+- focused scope: movement, jump, gravity, grounded, and collision only
+- no wall jump, double jump, dash, climb, or combat/actions
+- no crouch/down gameplay
+- no parallax
+- no enemies, collectibles, score systems, menus, or save/load
 - no engine changes
 - no reusable shared logic introduced
 - fully removable sample folder
-- follows scene-contract direction from the plan
-- no game systems such as menus, save, or AI
