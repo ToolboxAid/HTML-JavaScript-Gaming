@@ -1,19 +1,14 @@
-BUILD_PR_TOOL_THEME_AND_SHARED_SWATCH_WORKFLOW
+BUILD_PR_EDITOR_FIXES_AND_WORKFLOW_UPDATES
 
-repo/
-  docs/
-    dev/
-      reports/
-        change_summary.txt
-        file_tree.txt
-        validation_checklist.txt
-  tools/
-    SVG Background Editor/
-      index.html
-      main.js
-    SpriteEditor/
-      index.html
-      modules/
-        appPalette.js
-        controlSurfaceDraw.js
-        controlSurfaceRightPanel.js
+docs/dev/reports/file_tree.txt
+
+Modified Files
+- tools/SVG Background Editor/index.html
+- tools/SVG Background Editor/main.js
+- tools/SVG Background Editor/svgBackgroundEditor.css
+- tools/SpriteEditor/modules/appPalette.js
+- tools/Tile Map Editor/index.html
+- tools/Tile Map Editor/main.js
+- docs/dev/reports/file_tree.txt
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/validation_checklist.txt

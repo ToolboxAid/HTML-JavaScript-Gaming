@@ -133,14 +133,14 @@ function computeAtlasGridMetrics(config) {
   };
 }
 
-function buildTilesetFromAtlas(config) {
+function buildTilesetFromAtlas(config, startId = 1) {
   const metrics = computeAtlasGridMetrics(config);
   const tiles = [{ id: 0, name: "Empty", color: "transparent", source: null }];
   if (metrics.total <= 0) {
     return { tiles, metrics };
   }
 
-  let nextId = 1;
+  let nextId = Math.max(1, clampInteger(startId, 1, 9999, 1));
   for (let row = 0; row < metrics.rows; row += 1) {
     for (let col = 0; col < metrics.columns; col += 1) {
       const sourceX = metrics.margin + (col * (metrics.tileWidth + metrics.spacing));
@@ -150,6 +150,7 @@ function buildTilesetFromAtlas(config) {
         name: `Tile ${nextId}`,
         color: DEFAULT_TILESET_SWATCH_COLOR,
         source: {
+          kind: "atlas",
           x: sourceX,
           y: sourceY,
           width: metrics.tileWidth,
@@ -161,6 +162,15 @@ function buildTilesetFromAtlas(config) {
   }
 
   return { tiles, metrics };
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Unable to read selected PNG file."));
+    reader.readAsDataURL(file);
+  });
 }
 
 function createInitialDocument(options = {}) {
@@ -235,20 +245,45 @@ function sanitizeTileset(rawTileset) {
     return cloneDeep(DEFAULT_TILESET);
   }
 
+  const sanitizeTileSource = (rawSource) => {
+    if (!rawSource || typeof rawSource !== "object") {
+      return null;
+    }
+
+    const inferredKind = rawSource.kind === "image" || (typeof rawSource.imageDataUrl === "string" && rawSource.imageDataUrl.trim())
+      ? "image"
+      : "atlas";
+
+    if (inferredKind === "image") {
+      const imageDataUrl = typeof rawSource.imageDataUrl === "string" ? rawSource.imageDataUrl : "";
+      if (!imageDataUrl) {
+        return null;
+      }
+      return {
+        kind: "image",
+        imageDataUrl,
+        imageName: typeof rawSource.imageName === "string" && rawSource.imageName.trim() ? rawSource.imageName.trim() : "tile.png",
+        width: clampInteger(rawSource.width ?? rawSource.sourceWidth, 1, 512, 24),
+        height: clampInteger(rawSource.height ?? rawSource.sourceHeight, 1, 512, 24)
+      };
+    }
+
+    return {
+      kind: "atlas",
+      x: clampInteger(rawSource.x, 0, 8192, 0),
+      y: clampInteger(rawSource.y, 0, 8192, 0),
+      width: clampInteger(rawSource.width, 1, 512, 1),
+      height: clampInteger(rawSource.height, 1, 512, 1)
+    };
+  };
+
   const tileMap = new Map();
   rawTileset.forEach((entry, index) => {
     const id = clampInteger(entry?.id ?? index, 0, 9999, index);
     if (!tileMap.has(id)) {
       const name = typeof entry?.name === "string" && entry.name.trim() ? entry.name.trim() : `Tile ${id}`;
       const color = typeof entry?.color === "string" ? entry.color : DEFAULT_TILESET_SWATCH_COLOR;
-      const source = entry?.source && typeof entry.source === "object"
-        ? {
-            x: clampInteger(entry.source.x, 0, 8192, 0),
-            y: clampInteger(entry.source.y, 0, 8192, 0),
-            width: clampInteger(entry.source.width, 1, 512, 1),
-            height: clampInteger(entry.source.height, 1, 512, 1)
-          }
-        : null;
+      const source = sanitizeTileSource(entry?.source);
       tileMap.set(id, { id, name, color, source });
     }
   });
@@ -481,6 +516,7 @@ class TileMapEditorApp {
       currentTraversalSummary: ""
     };
     this.tilesetImage = null;
+    this.tilesetImageCache = new Map();
   }
 
   init(rootDocument) {
@@ -489,6 +525,7 @@ class TileMapEditorApp {
     this.syncInputsFromDocument();
     this.renderAll();
     void this.reloadTilesetImageFromDocument({ quiet: true });
+    void this.preloadIndividualTileImages({ quiet: true });
     this.loadSampleManifest();
   }
 
@@ -521,6 +558,8 @@ class TileMapEditorApp {
     this.refs.tilePalette = rootDocument.getElementById("tilePalette");
     this.refs.loadTilesetPngButton = rootDocument.getElementById("loadTilesetPngButton");
     this.refs.loadTilesetPngInput = rootDocument.getElementById("loadTilesetPngInput");
+    this.refs.loadTilePngAssetsButton = rootDocument.getElementById("loadTilePngAssetsButton");
+    this.refs.loadTilePngAssetsInput = rootDocument.getElementById("loadTilePngAssetsInput");
     this.refs.tilesetTileWidthInput = rootDocument.getElementById("tilesetTileWidthInput");
     this.refs.tilesetTileHeightInput = rootDocument.getElementById("tilesetTileHeightInput");
     this.refs.tilesetSpacingInput = rootDocument.getElementById("tilesetSpacingInput");
@@ -587,6 +626,10 @@ class TileMapEditorApp {
     this.refs.loadTilesetPngInput.addEventListener("change", (event) => {
       void this.handleLoadTilesetPng(event);
     });
+    this.refs.loadTilePngAssetsButton.addEventListener("click", () => this.refs.loadTilePngAssetsInput.click());
+    this.refs.loadTilePngAssetsInput.addEventListener("change", (event) => {
+      void this.handleLoadTilePngAssets(event);
+    });
     this.refs.generateTilesetButton.addEventListener("click", () => {
       void this.generateTilesetFromLoadedPng();
     });
@@ -631,6 +674,7 @@ class TileMapEditorApp {
     this.selectedMarkerId = "";
     this.activeTileId = 1;
     this.tilesetImage = null;
+    this.tilesetImageCache = new Map();
     this.syncInputsFromDocument();
     this.renderAll();
     this.updateStatus("Created a new map document.");
@@ -667,9 +711,11 @@ class TileMapEditorApp {
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
         this.selectedMarkerId = "";
         this.activeTileId = this.findFirstNonEmptyTileId();
+        this.tilesetImageCache = new Map();
         this.syncInputsFromDocument();
         this.renderAll();
         void this.reloadTilesetImageFromDocument({ quiet: true });
+        void this.preloadIndividualTileImages({ quiet: true });
         this.updateStatus(`Loaded ${file.name}.`);
       } catch (error) {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
@@ -744,6 +790,95 @@ class TileMapEditorApp {
     }
   }
 
+  getNextTileId() {
+    let maxId = 0;
+    this.documentModel.tileset.forEach((tile) => {
+      maxId = Math.max(maxId, clampInteger(tile?.id, 0, 9999, 0));
+    });
+    return maxId + 1;
+  }
+
+  getPreservedTilesForAtlasRegeneration() {
+    const preserved = [];
+    let hasEmpty = false;
+    this.documentModel.tileset.forEach((tile) => {
+      if (!tile || !Number.isFinite(Number(tile.id))) {
+        return;
+      }
+      const safeId = clampInteger(tile.id, 0, 9999, 0);
+      if (safeId === 0) {
+        hasEmpty = true;
+        preserved.push({ ...tile, id: 0, source: null });
+        return;
+      }
+
+      if (tile.source && tile.source.kind === "image") {
+        preserved.push(tile);
+      }
+    });
+
+    if (!hasEmpty) {
+      preserved.unshift({ id: 0, name: "Empty", color: "transparent", source: null });
+    }
+    return preserved;
+  }
+
+  composeTilesetWithAtlasTiles(atlasTiles) {
+    const preserved = this.getPreservedTilesForAtlasRegeneration();
+    const baseTiles = preserved.filter((tile) => tile.id !== 0).sort((a, b) => a.id - b.id);
+    const maxBaseId = baseTiles.reduce((maxId, tile) => Math.max(maxId, clampInteger(tile.id, 1, 9999, 1)), 0);
+    const atlasOnlyTiles = Array.isArray(atlasTiles)
+      ? atlasTiles.filter((tile) => tile && tile.id > 0)
+      : [];
+    const resequencedAtlasTiles = atlasOnlyTiles.map((tile, index) => {
+      const nextId = maxBaseId + index + 1;
+      return {
+        ...tile,
+        id: nextId,
+        name: typeof tile.name === "string" && tile.name.trim() ? tile.name.trim() : `Tile ${nextId}`
+      };
+    });
+
+    return [
+      { id: 0, name: "Empty", color: "transparent", source: null },
+      ...baseTiles,
+      ...resequencedAtlasTiles
+    ];
+  }
+
+  async preloadIndividualTileImages(options = {}) {
+    const quiet = options.quiet === true;
+    const loadedUrls = new Set();
+
+    for (let index = 0; index < this.documentModel.tileset.length; index += 1) {
+      const tile = this.documentModel.tileset[index];
+      const source = tile?.source;
+      if (!source || source.kind !== "image" || !source.imageDataUrl) {
+        continue;
+      }
+      if (loadedUrls.has(source.imageDataUrl)) {
+        continue;
+      }
+
+      loadedUrls.add(source.imageDataUrl);
+      if (this.tilesetImageCache.has(source.imageDataUrl)) {
+        continue;
+      }
+
+      try {
+        const image = await loadImageElement(source.imageDataUrl);
+        this.tilesetImageCache.set(source.imageDataUrl, image);
+      } catch (error) {
+        if (!quiet) {
+          this.updateStatus(`Tile PNG failed to load (${source.imageName || "tile"}): ${error instanceof Error ? error.message : "unknown error"}`);
+        }
+      }
+    }
+
+    this.renderTileset();
+    this.renderCanvas();
+  }
+
   async handleLoadTilesetPng(event) {
     if (!this.ensureEditable()) {
       this.refs.loadTilesetPngInput.value = "";
@@ -755,12 +890,7 @@ class TileMapEditorApp {
     }
 
     try {
-      const imageDataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ""));
-        reader.onerror = () => reject(new Error("Unable to read selected PNG file."));
-        reader.readAsDataURL(file);
-      });
+      const imageDataUrl = await readFileAsDataUrl(file);
 
       const image = await loadImageElement(String(imageDataUrl));
       const atlas = sanitizeTilesetAtlas(this.documentModel.tilesetAtlas, this.documentModel.map.tileSize);
@@ -785,6 +915,71 @@ class TileMapEditorApp {
     } finally {
       this.refs.loadTilesetPngInput.value = "";
     }
+  }
+
+  async handleLoadTilePngAssets(event) {
+    if (!this.ensureEditable()) {
+      this.refs.loadTilePngAssetsInput.value = "";
+      return;
+    }
+
+    const files = Array.from(event.target.files || []).filter((file) => file && /\.png$/i.test(file.name));
+    if (files.length === 0) {
+      this.refs.loadTilePngAssetsInput.value = "";
+      return;
+    }
+
+    let importedCount = 0;
+    let failedCount = 0;
+    let firstImportedTileId = null;
+
+    for (let index = 0; index < files.length; index += 1) {
+      const file = files[index];
+      try {
+        const imageDataUrl = await readFileAsDataUrl(file);
+        const image = await loadImageElement(imageDataUrl);
+        const width = Math.max(1, clampInteger(image.naturalWidth, 1, 1024, this.documentModel.map.tileSize));
+        const height = Math.max(1, clampInteger(image.naturalHeight, 1, 1024, this.documentModel.map.tileSize));
+        const nextTileId = this.getNextTileId();
+        const safeName = file.name.replace(/\.png$/i, "").trim() || `Tile ${nextTileId}`;
+
+        this.documentModel.tileset.push({
+          id: nextTileId,
+          name: safeName,
+          color: DEFAULT_TILESET_SWATCH_COLOR,
+          source: {
+            kind: "image",
+            imageDataUrl,
+            imageName: file.name || `${safeName}.png`,
+            width,
+            height
+          }
+        });
+        this.tilesetImageCache.set(imageDataUrl, image);
+        importedCount += 1;
+        if (firstImportedTileId === null) {
+          firstImportedTileId = nextTileId;
+        }
+      } catch (error) {
+        failedCount += 1;
+        this.updateStatus(`Tile PNG import failed (${file.name}): ${error instanceof Error ? error.message : "unknown error"}`);
+      }
+    }
+
+    if (importedCount > 0) {
+      this.activeTileId = firstImportedTileId ?? this.activeTileId;
+      this.touchDocument();
+      this.renderAll();
+      this.updateStatus(`Imported ${importedCount} tile PNG asset${importedCount === 1 ? "" : "s"}${failedCount > 0 ? ` (${failedCount} failed)` : ""}.`);
+    } else if (failedCount > 0) {
+      const failureMessage = `Tile PNG import failed for all selected files (${failedCount}).`;
+      this.updateStatus(failureMessage);
+      if (typeof globalThis.alert === "function") {
+        globalThis.alert(failureMessage);
+      }
+    }
+
+    this.refs.loadTilePngAssetsInput.value = "";
   }
 
   async generateTilesetFromLoadedPng() {
@@ -820,7 +1015,9 @@ class TileMapEditorApp {
       this.renderTilesetMeta();
     }
 
-    const result = buildTilesetFromAtlas(atlas);
+    const preservedTiles = this.getPreservedTilesForAtlasRegeneration();
+    const maxPreservedId = preservedTiles.reduce((maxId, tile) => Math.max(maxId, clampInteger(tile.id, 0, 9999, 0)), 0);
+    const result = buildTilesetFromAtlas(atlas, maxPreservedId + 1);
     if (result.metrics.total <= 0) {
       this.renderTilesetMeta();
       const failureMessage = `No tiles fit: image ${result.metrics.imageWidth}x${result.metrics.imageHeight}, tile ${result.metrics.tileWidth}x${result.metrics.tileHeight}, spacing ${result.metrics.spacing}, margin ${result.metrics.margin}.`;
@@ -831,11 +1028,12 @@ class TileMapEditorApp {
       return;
     }
 
-    this.documentModel.tileset = result.tiles;
+    this.documentModel.tileset = this.composeTilesetWithAtlasTiles(result.tiles);
     this.activeTileId = this.findFirstNonEmptyTileId();
     this.touchDocument();
     this.renderAll();
-    this.updateStatus(`Generated ${result.metrics.total} tiles (${result.metrics.columns} x ${result.metrics.rows}) from ${atlas.imageName || "tileset PNG"}.`);
+    const importedPngCount = this.documentModel.tileset.filter((tile) => tile.id > 0 && tile?.source?.kind === "image").length;
+    this.updateStatus(`Generated ${result.metrics.total} atlas tiles (${result.metrics.columns} x ${result.metrics.rows}) from ${atlas.imageName || "tileset PNG"}; preserved ${importedPngCount} imported PNG tile${importedPngCount === 1 ? "" : "s"}.`);
   }
 
   applyMapSizing() {
@@ -1278,9 +1476,11 @@ class TileMapEditorApp {
       this.selectedLayerId = this.documentModel.layers[0]?.id || "";
       this.selectedMarkerId = "";
       this.activeTileId = this.findFirstNonEmptyTileId();
+      this.tilesetImageCache = new Map();
       this.syncInputsFromDocument();
       this.renderAll();
       void this.reloadTilesetImageFromDocument({ quiet: true });
+      void this.preloadIndividualTileImages({ quiet: true });
       this.updateStatus(`Loaded sample ${selectedPath}.`);
     } catch (error) {
       this.updateStatus(`Sample load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -1593,6 +1793,45 @@ class TileMapEditorApp {
     this.refs.activeLayerName.textContent = layer.name;
   }
 
+  getTileSourceDrawInfo(tile) {
+    if (!tile || tile.id <= 0 || !tile.source || typeof tile.source !== "object") {
+      return null;
+    }
+
+    const source = tile.source;
+    const sourceKind = source.kind === "image" ? "image" : "atlas";
+    if (sourceKind === "image") {
+      const imageDataUrl = typeof source.imageDataUrl === "string" ? source.imageDataUrl : "";
+      if (!imageDataUrl || !this.tilesetImageCache.has(imageDataUrl)) {
+        return null;
+      }
+      const image = this.tilesetImageCache.get(imageDataUrl);
+      const sourceWidth = Math.max(1, clampInteger(image?.naturalWidth, 1, 8192, clampInteger(source.width, 1, 8192, 1)));
+      const sourceHeight = Math.max(1, clampInteger(image?.naturalHeight, 1, 8192, clampInteger(source.height, 1, 8192, 1)));
+      return {
+        image,
+        sourceX: 0,
+        sourceY: 0,
+        sourceWidth,
+        sourceHeight,
+        sourceLabel: `${source.imageName || "tile.png"} ${sourceWidth}x${sourceHeight}`
+      };
+    }
+
+    if (!this.tilesetImage) {
+      return null;
+    }
+
+    return {
+      image: this.tilesetImage,
+      sourceX: clampInteger(source.x, 0, 8192, 0),
+      sourceY: clampInteger(source.y, 0, 8192, 0),
+      sourceWidth: clampInteger(source.width, 1, 8192, 1),
+      sourceHeight: clampInteger(source.height, 1, 8192, 1),
+      sourceLabel: `${clampInteger(source.x, 0, 8192, 0)},${clampInteger(source.y, 0, 8192, 0)}`
+    };
+  }
+
   renderTileset() {
     const container = this.refs.tilePalette;
     container.innerHTML = "";
@@ -1606,7 +1845,8 @@ class TileMapEditorApp {
       button.title = `${tile.name} (${tile.id})`;
 
       let swatch;
-      if (tile.id > 0 && tile.source && this.tilesetImage) {
+      const drawInfo = this.getTileSourceDrawInfo(tile);
+      if (drawInfo) {
         const previewCanvas = document.createElement("canvas");
         previewCanvas.className = "tile-image-preview";
         previewCanvas.width = 28;
@@ -1616,11 +1856,11 @@ class TileMapEditorApp {
           previewContext.imageSmoothingEnabled = false;
           previewContext.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
           previewContext.drawImage(
-            this.tilesetImage,
-            tile.source.x,
-            tile.source.y,
-            tile.source.width,
-            tile.source.height,
+            drawInfo.image,
+            drawInfo.sourceX,
+            drawInfo.sourceY,
+            drawInfo.sourceWidth,
+            drawInfo.sourceHeight,
             0,
             0,
             previewCanvas.width,
@@ -1639,8 +1879,8 @@ class TileMapEditorApp {
       }
 
       const label = document.createElement("span");
-      label.textContent = tile.source
-        ? `${tile.name} (${tile.id}) [${tile.source.x},${tile.source.y}]`
+      label.textContent = drawInfo
+        ? `${tile.name} (${tile.id}) [${drawInfo.sourceLabel}]`
         : `${tile.name} (${tile.id})`;
 
       button.appendChild(swatch);
@@ -1660,14 +1900,15 @@ class TileMapEditorApp {
   renderTilesetMeta() {
     const atlas = sanitizeTilesetAtlas(this.documentModel.tilesetAtlas, this.documentModel.map.tileSize);
     const metrics = computeAtlasGridMetrics(atlas);
+    const importedPngCount = this.documentModel.tileset.filter((tile) => tile.id > 0 && tile?.source?.kind === "image").length;
     if (!atlas.imageDataUrl) {
-      this.refs.tilesetMeta.textContent = "No tileset PNG loaded. Load a PNG and generate a tile grid.";
+      this.refs.tilesetMeta.textContent = `No tileset PNG loaded. Load a PNG and generate a tile grid. Imported PNG tiles: ${importedPngCount}.`;
       return;
     }
 
     const imageName = atlas.imageName || "tileset.png";
-    const generatedCount = Math.max(0, this.documentModel.tileset.length - 1);
-    this.refs.tilesetMeta.textContent = `${imageName} ${atlas.imageWidth}x${atlas.imageHeight} | slice ${atlas.tileWidth}x${atlas.tileHeight} spacing ${atlas.spacing} margin ${atlas.margin} | grid ${metrics.columns}x${metrics.rows} (${metrics.total}) | generated ${generatedCount}`;
+    const generatedCount = this.documentModel.tileset.filter((tile) => tile.id > 0 && tile?.source?.kind !== "image").length;
+    this.refs.tilesetMeta.textContent = `${imageName} ${atlas.imageWidth}x${atlas.imageHeight} | slice ${atlas.tileWidth}x${atlas.tileHeight} spacing ${atlas.spacing} margin ${atlas.margin} | grid ${metrics.columns}x${metrics.rows} (${metrics.total}) | generated ${generatedCount} | imported PNG tiles ${importedPngCount}`;
   }
 
   renderLayerList() {
@@ -1873,8 +2114,10 @@ class TileMapEditorApp {
 
   drawTileLayer(context, layer, tileSize) {
     const tileById = new Map();
+    const drawInfoByTileId = new Map();
     this.documentModel.tileset.forEach((entry) => {
       tileById.set(entry.id, entry);
+      drawInfoByTileId.set(entry.id, this.getTileSourceDrawInfo(entry));
     });
 
     for (let row = 0; row < layer.data.length; row += 1) {
@@ -1886,14 +2129,15 @@ class TileMapEditorApp {
         }
 
         const tile = tileById.get(tileId);
-        if (tile?.source && this.tilesetImage) {
+        const drawInfo = drawInfoByTileId.get(tileId);
+        if (drawInfo) {
           context.imageSmoothingEnabled = false;
           context.drawImage(
-            this.tilesetImage,
-            tile.source.x,
-            tile.source.y,
-            tile.source.width,
-            tile.source.height,
+            drawInfo.image,
+            drawInfo.sourceX,
+            drawInfo.sourceY,
+            drawInfo.sourceWidth,
+            drawInfo.sourceHeight,
             col * tileSize,
             row * tileSize,
             tileSize,

@@ -1,6 +1,7 @@
 Docs-only bundle.
 
-Includes:
-- all-tools shared theme rule
-- explicit SVG palette selection flow
-- used-color swatch strip for Sprite Editor
+Included:
+- SVG bounding-box alignment fix
+- SVG palette dropdown
+- Sprite Editor all-frame swatches
+- Tile Map Editor multi-PNG assignment workflow

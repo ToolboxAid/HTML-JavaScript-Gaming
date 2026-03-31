@@ -151,8 +151,10 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
     },
 
     getUsedColorEntries() {
-      const frame = this.document && this.document.activeFrame ? this.document.activeFrame : null;
-      if (!frame || !Array.isArray(frame.layers)) return [];
+      const frames = Array.isArray(this.document && this.document.frames)
+        ? this.document.frames
+        : (this.document && this.document.activeFrame ? [this.document.activeFrame] : []);
+      if (!frames.length) return [];
       const colors = [];
       const seen = new Set();
       const addColor = (value) => {
@@ -162,14 +164,17 @@ function installSpriteEditorPaletteMethods(SpriteEditorApp) {
         colors.push(normalized);
       };
 
-      frame.layers.forEach((layer) => {
-        if (!layer || !Array.isArray(layer.pixels)) return;
-        for (let row = 0; row < layer.pixels.length; row += 1) {
-          const rowValues = Array.isArray(layer.pixels[row]) ? layer.pixels[row] : [];
-          for (let col = 0; col < rowValues.length; col += 1) {
-            addColor(rowValues[col]);
+      frames.forEach((frame) => {
+        const layers = Array.isArray(frame && frame.layers) ? frame.layers : [];
+        layers.forEach((layer) => {
+          if (!layer || !Array.isArray(layer.pixels)) return;
+          for (let row = 0; row < layer.pixels.length; row += 1) {
+            const rowValues = Array.isArray(layer.pixels[row]) ? layer.pixels[row] : [];
+            for (let col = 0; col < rowValues.length; col += 1) {
+              addColor(rowValues[col]);
+            }
           }
-        }
+        });
       });
 
       if (colors.length <= 1) return colors;

@@ -1,1 +1,1 @@
-Build plan: shared theme across tools, explicit SVG palette selection, and used-color swatches in Sprite Editor
+Build plan: fix SVG bounding-box alignment, add SVG palette dropdown, use all-frame swatches in Sprite Editor, and support multi-PNG tile assignment in Tile Map Editor

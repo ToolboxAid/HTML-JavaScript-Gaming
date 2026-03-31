@@ -1,32 +1,24 @@
-Build: BUILD_PR_TOOL_THEME_AND_SHARED_SWATCH_WORKFLOW
-Date: 2026-03-30
+BUILD_PR_EDITOR_FIXES_AND_WORKFLOW_UPDATES
 
-Implementation Summary
-1) Shared theme adoption across tools
-- Added shared theme include to Sprite Editor entry page:
-  - tools/SpriteEditor/index.html now includes ../../engine/ui/hubCommon.css
-- Verified all tool index pages now include the shared theme stylesheet:
-  - tools/SpriteEditor/index.html
-  - tools/SVG Background Editor/index.html
-  - tools/Tile Map Editor/index.html
-  - tools/Parallax Editor/index.html
-  - tools/VectorMapEditor/index.html
+Summary of Changes
 
-2) SVG Background Editor explicit palette target workflow
-- Updated palette target button labels to explicit workflow language:
-  - Active Paint
-  - Active Stroke
-- Updated palette state/readout messaging to make behavior explicit:
-  - User selects active target first, then selects palette/used swatch color.
-  - Paint/Stroke values remain stored until intentionally changed.
+1) SVG Background Editor
+- Fixed selection/resize overlay placement by deriving overlay bounds from visible viewport geometry (`getBoundingClientRect`) rather than raw SVG bbox scaling math.
+- Improved scene pointer mapping using SVG matrix inversion so pointer-to-scene coordinates stay aligned under zoom/pan and viewbox fit behavior.
+- Added Palette dropdown with explicit palette-set filtering for the swatch grid.
+- Kept Active Paint and Active Stroke persistent; palette-set changes do not mutate active values.
 
-3) Sprite Editor used-color swatch strip above palette
-- Added used-color strip section above the main palette grid in the right panel.
-- Added used-color discovery from active frame layer pixel data.
-- Added swatch normalization for stable dedupe and matching.
-- Used-color swatches are clickable and set current color directly.
-- Main palette and used-color swatches now report source in status messaging.
+2) Sprite Editor
+- Updated used-color swatch computation to aggregate colors across all frames in the current document, not only the active frame.
 
-Boundaries respected
-- No files under engine/ were modified.
-- Changes are scoped to tools and required docs/dev/reports outputs.
+3) Tile Map Editor
+- Added `Load Tile PNG(s)` workflow for importing multiple individual PNG tile assets.
+- Imported tile PNG assets are added as selectable tile entries with image-backed tile sources.
+- Extended tile source handling to support both atlas-sliced sources and individual image sources.
+- Added per-document preloading/cache of imported tile PNG images for palette preview and map rendering.
+- Updated tileset metadata text to report imported PNG tile counts.
+- Preserved existing tileset PNG slice workflow and failure-only popup behavior.
+
+Constraints Check
+- No engine core API files changed.
+- No modifications under `engine/`.

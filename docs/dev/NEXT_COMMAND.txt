@@ -1,1 +1,1 @@
-Create BUILD_PR_TILESET_IMPORT_AND_THEME_POLISH_REVIEW as a docs-only, repo-structured delta
+Create BUILD_PR_SHARED_EDITOR_PALETTE_AND_TILESET_PANEL_REVIEW as a docs-only, repo-structured delta

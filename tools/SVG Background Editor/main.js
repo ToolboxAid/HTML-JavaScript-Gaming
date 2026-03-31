@@ -37,8 +37,15 @@ const state = {
   stroke: null,
   activePaletteTarget: "paint",
   strokeWidth: 2,
+  gradientFillFrom: null,
+  gradientFillTo: "#FFFFFF",
+  gradientAngle: 45,
+  gradientIdCounter: 1,
   usedColors: [],
   paletteEntries: [],
+  paletteGroups: {},
+  paletteOptions: [],
+  selectedPaletteId: "__none__",
   selectedId: null,
   drag: null,
   pendingPolyline: null,
@@ -62,24 +69,36 @@ const refs = {
   zoomPercentInput: document.getElementById("zoomPercentInput"),
   zoomInButton: document.getElementById("zoomInButton"),
   resetViewButton: document.getElementById("resetViewButton"),
+  finishPolylineButton: document.getElementById("finishPolylineButton"),
   toolGrid: document.getElementById("toolGrid"),
   setPaletteTargetPaintButton: document.getElementById("setPaletteTargetPaintButton"),
   setPaletteTargetStrokeButton: document.getElementById("setPaletteTargetStrokeButton"),
+  setPaletteTargetGradientStartButton: document.getElementById("setPaletteTargetGradientStartButton"),
+  setPaletteTargetGradientEndButton: document.getElementById("setPaletteTargetGradientEndButton"),
   paletteStateReadout: document.getElementById("paletteStateReadout"),
   activePaintSwatch: document.getElementById("activePaintSwatch"),
   activePaintLabel: document.getElementById("activePaintLabel"),
   activeStrokeSwatch: document.getElementById("activeStrokeSwatch"),
   activeStrokeLabel: document.getElementById("activeStrokeLabel"),
+  activeGradientStartSwatch: document.getElementById("activeGradientStartSwatch"),
+  activeGradientStartLabel: document.getElementById("activeGradientStartLabel"),
+  activeGradientEndSwatch: document.getElementById("activeGradientEndSwatch"),
+  activeGradientEndLabel: document.getElementById("activeGradientEndLabel"),
+  paletteSelect: document.getElementById("paletteSelect"),
   usedColorStrip: document.getElementById("usedColorStrip"),
   mainPaletteGrid: document.getElementById("mainPaletteGrid"),
   strokeWidthInput: document.getElementById("strokeWidthInput"),
+  gradientAngleInput: document.getElementById("gradientAngleInput"),
+  applyFillButton: document.getElementById("applyFillButton"),
   applyStyleButton: document.getElementById("applyStyleButton"),
+  applyGradientToSelectedButton: document.getElementById("applyGradientToSelectedButton"),
   deleteSelectedButton: document.getElementById("deleteSelectedButton"),
   selectionReadout: document.getElementById("selectionReadout"),
   pointerReadout: document.getElementById("pointerReadout"),
   viewReadout: document.getElementById("viewReadout"),
   canvasMeta: document.getElementById("canvasMeta"),
   canvasViewport: document.getElementById("canvasViewport"),
+  selectionChecklistOverlay: document.getElementById("selectionChecklistOverlay"),
   editorSvg: document.getElementById("editorSvg"),
   sceneRoot: document.getElementById("sceneRoot"),
   selectionOverlay: document.getElementById("selectionOverlay"),
@@ -87,7 +106,9 @@ const refs = {
   statusText: document.getElementById("statusText"),
   elementList: document.getElementById("elementList"),
   sendBackwardButton: document.getElementById("sendBackwardButton"),
-  bringForwardButton: document.getElementById("bringForwardButton")
+  bringForwardButton: document.getElementById("bringForwardButton"),
+  toggleElementVisibilityButton: document.getElementById("toggleElementVisibilityButton"),
+  toggleAllVisibilityButton: document.getElementById("toggleAllVisibilityButton")
 };
 
 function clamp(value, min, max, fallback) {
@@ -107,6 +128,7 @@ function setStatus(text) {
 }
 
 const DRAW_TOOL_SET = new Set(["rect", "ellipse", "line", "polyline", "path"]);
+const NO_PALETTE_ID = "__none__";
 const FALLBACK_PALETTE = [
   { hex: "#232323", name: "Black" },
   { hex: "#EDEDED", name: "White" },
@@ -164,8 +186,91 @@ function normalizeColorValue(value) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
+function getOrCreateEditorDefs() {
+  const existing = refs.editorSvg.querySelector('defs[data-editor-defs="1"]');
+  if (existing instanceof SVGDefsElement) {
+    return existing;
+  }
+  const defs = createSvgElement("defs");
+  defs.dataset.editorDefs = "1";
+  refs.editorSvg.insertBefore(defs, refs.sceneRoot);
+  return defs;
+}
+
+function clearEditorDefs() {
+  const defs = getOrCreateEditorDefs();
+  defs.replaceChildren();
+}
+
+function computeGradientVector(angleDegrees) {
+  const angle = Number.isFinite(Number(angleDegrees)) ? Number(angleDegrees) : 0;
+  const radians = angle * (Math.PI / 180);
+  const x = Math.cos(radians);
+  const y = Math.sin(radians);
+  return {
+    x1: `${round2(50 - (x * 50))}%`,
+    y1: `${round2(50 - (y * 50))}%`,
+    x2: `${round2(50 + (x * 50))}%`,
+    y2: `${round2(50 + (y * 50))}%`
+  };
+}
+
+function createLinearGradientDefinition(fromColor, toColor, angleDegrees) {
+  const defs = getOrCreateEditorDefs();
+  let gradientId = `svg-bg-gradient-${state.gradientIdCounter}`;
+  while (refs.editorSvg.querySelector(`#${gradientId}`)) {
+    state.gradientIdCounter += 1;
+    gradientId = `svg-bg-gradient-${state.gradientIdCounter}`;
+  }
+  state.gradientIdCounter += 1;
+  const vector = computeGradientVector(angleDegrees);
+
+  const gradient = createSvgElement("linearGradient");
+  gradient.setAttribute("id", gradientId);
+  gradient.dataset.editorGradient = "1";
+  gradient.setAttribute("x1", vector.x1);
+  gradient.setAttribute("y1", vector.y1);
+  gradient.setAttribute("x2", vector.x2);
+  gradient.setAttribute("y2", vector.y2);
+
+  const start = createSvgElement("stop");
+  start.setAttribute("offset", "0%");
+  start.setAttribute("stop-color", fromColor);
+  const end = createSvgElement("stop");
+  end.setAttribute("offset", "100%");
+  end.setAttribute("stop-color", toColor);
+
+  gradient.appendChild(start);
+  gradient.appendChild(end);
+  defs.appendChild(gradient);
+  return gradientId;
+}
+
+function pruneUnusedEditorGradients() {
+  const defs = getOrCreateEditorDefs();
+  const usedGradientIds = new Set();
+  getDrawableElements().forEach((element) => {
+    const fillValue = element.getAttribute("fill") || "";
+    const match = fillValue.match(/^url\(#([^)]+)\)$/);
+    if (match && match[1]) {
+      usedGradientIds.add(match[1]);
+    }
+  });
+
+  Array.from(defs.querySelectorAll('linearGradient[data-editor-gradient="1"]')).forEach((gradient) => {
+    const id = gradient.getAttribute("id") || "";
+    if (!usedGradientIds.has(id)) {
+      gradient.remove();
+    }
+  });
+}
+
 function hasRequiredStyleSelection() {
   return Boolean(normalizeColorValue(state.fill) && normalizeColorValue(state.stroke));
+}
+
+function hasFillSelection() {
+  return Boolean(normalizeColorValue(state.fill));
 }
 
 function getEditingGateMessage() {
@@ -182,6 +287,36 @@ function getEditingGateMessage() {
   return `Select ${missing.join(" and ")} from the palette to enable editing.`;
 }
 
+function hasPaletteSelection() {
+  return typeof state.selectedPaletteId === "string"
+    && state.selectedPaletteId.trim().length > 0
+    && state.selectedPaletteId !== NO_PALETTE_ID;
+}
+
+function updateSelectionChecklistOverlay() {
+  if (!(refs.selectionChecklistOverlay instanceof HTMLElement)) {
+    return;
+  }
+
+  const paletteSelected = hasPaletteSelection();
+  const paintSelected = Boolean(normalizeColorValue(state.fill));
+  const strokeSelected = Boolean(normalizeColorValue(state.stroke));
+  const allSelected = paletteSelected && paintSelected && strokeSelected;
+
+  if (allSelected) {
+    refs.selectionChecklistOverlay.classList.add("hidden");
+    refs.selectionChecklistOverlay.textContent = "";
+    return;
+  }
+
+  refs.selectionChecklistOverlay.classList.remove("hidden");
+  refs.selectionChecklistOverlay.textContent = [
+    `Palette Selected: ${paletteSelected}`,
+    `Paint selected: ${paintSelected}`,
+    `Stroke selected: ${strokeSelected}`
+  ].join("\n");
+}
+
 function getPaletteLibrary() {
   if (typeof globalThis.palettesList === "object" && globalThis.palettesList) {
     return globalThis.palettesList;
@@ -189,43 +324,139 @@ function getPaletteLibrary() {
   return null;
 }
 
-function loadPaletteEntriesFromExistingWorkflow() {
-  const library = getPaletteLibrary();
-  const seen = new Set();
-  const entries = [];
+function collectPaletteEntries(paletteName, paletteEntries) {
+  if (!Array.isArray(paletteEntries)) {
+    return [];
+  }
 
-  const consumePalette = (paletteName, paletteEntries) => {
-    if (!Array.isArray(paletteEntries)) {
+  const entries = [];
+  const seen = new Set();
+  paletteEntries.forEach((entry, index) => {
+    const normalizedHex = normalizeColorValue(entry?.hex);
+    if (!normalizedHex || seen.has(normalizedHex)) {
       return;
     }
-    paletteEntries.forEach((entry, index) => {
-      const normalizedHex = normalizeColorValue(entry?.hex);
-      if (!normalizedHex || seen.has(normalizedHex)) {
-        return;
-      }
-      seen.add(normalizedHex);
-      entries.push({
-        hex: normalizedHex,
-        name: typeof entry?.name === "string" && entry.name.trim() ? entry.name.trim() : `${paletteName} ${index + 1}`
-      });
+    seen.add(normalizedHex);
+    entries.push({
+      hex: normalizedHex,
+      name: typeof entry?.name === "string" && entry.name.trim() ? entry.name.trim() : `${paletteName} ${index + 1}`
     });
+  });
+  return entries;
+}
+
+function loadPaletteCatalogFromExistingWorkflow() {
+  const library = getPaletteLibrary();
+  const paletteGroups = {};
+  const paletteOptions = [{ id: NO_PALETTE_ID, label: "Select Palette..." }];
+
+  const consumePalette = (paletteName, paletteEntries) => {
+    const safeName = typeof paletteName === "string" && paletteName.trim() ? paletteName.trim() : "Palette";
+    const entries = collectPaletteEntries(safeName, paletteEntries);
+    if (entries.length === 0) {
+      return;
+    }
+
+    paletteGroups[safeName] = entries;
+    paletteOptions.push({ id: safeName, label: safeName });
   };
 
   if (library) {
     const preferred = ["default", "crayola024", "crayola016", "crayola008"];
+    const consumed = new Set();
     preferred.forEach((name) => {
-      if (Object.prototype.hasOwnProperty.call(library, name)) {
+      if (Object.prototype.hasOwnProperty.call(library, name) && !consumed.has(name)) {
+        consumed.add(name);
         consumePalette(name, library[name]);
       }
     });
-    Object.keys(library).forEach((name) => consumePalette(name, library[name]));
+    Object.keys(library).forEach((name) => {
+      if (consumed.has(name)) {
+        return;
+      }
+      consumed.add(name);
+      consumePalette(name, library[name]);
+    });
   }
 
-  if (entries.length === 0) {
-    FALLBACK_PALETTE.forEach((entry) => entries.push(entry));
+  if (Object.keys(paletteGroups).length === 0) {
+    consumePalette("fallback", FALLBACK_PALETTE);
   }
 
-  return entries;
+  return {
+    paletteGroups,
+    paletteOptions,
+    selectedPaletteId: NO_PALETTE_ID
+  };
+}
+
+function getVisiblePaletteEntries() {
+  const selectedPaletteId = state.selectedPaletteId;
+  if (selectedPaletteId === NO_PALETTE_ID) {
+    return [];
+  }
+  const groups = state.paletteGroups;
+  if (groups && Array.isArray(groups[selectedPaletteId])) {
+    return groups[selectedPaletteId];
+  }
+  return [];
+}
+
+function renderPaletteSelect() {
+  if (!(refs.paletteSelect instanceof HTMLSelectElement)) {
+    return;
+  }
+
+  refs.paletteSelect.innerHTML = "";
+  const options = Array.isArray(state.paletteOptions) && state.paletteOptions.length > 0
+    ? state.paletteOptions
+    : [{ id: NO_PALETTE_ID, label: "Select Palette..." }];
+
+  options.forEach((entry) => {
+    const option = document.createElement("option");
+    option.value = String(entry.id || NO_PALETTE_ID);
+    option.textContent = typeof entry.label === "string" && entry.label.trim() ? entry.label.trim() : option.value;
+    refs.paletteSelect.appendChild(option);
+  });
+
+  const hasSelected = options.some((entry) => entry.id === state.selectedPaletteId);
+  refs.paletteSelect.value = hasSelected ? state.selectedPaletteId : NO_PALETTE_ID;
+  state.selectedPaletteId = refs.paletteSelect.value;
+}
+
+function ensurePaletteSelectControl() {
+  if (refs.paletteSelect instanceof HTMLSelectElement) {
+    return;
+  }
+  if (!(refs.mainPaletteGrid instanceof HTMLElement)) {
+    return;
+  }
+
+  const header = refs.mainPaletteGrid.previousElementSibling;
+  if (!(header instanceof HTMLElement)) {
+    return;
+  }
+
+  if (!header.classList.contains("palette-header-row")) {
+    const existingTitle = header.textContent ? header.textContent.trim() : "Palette";
+    header.textContent = "";
+    header.classList.add("palette-header-row");
+    const title = document.createElement("span");
+    title.textContent = existingTitle || "Palette";
+    header.appendChild(title);
+  }
+
+  const label = document.createElement("label");
+  label.className = "palette-select-label";
+  const srText = document.createElement("span");
+  srText.className = "visually-hidden";
+  srText.textContent = "Palette Set";
+  const select = document.createElement("select");
+  select.id = "paletteSelect";
+  label.appendChild(srText);
+  label.appendChild(select);
+  header.appendChild(label);
+  refs.paletteSelect = select;
 }
 
 function createSwatchButton(colorHex, options = {}) {
@@ -241,13 +472,35 @@ function createSwatchButton(colorHex, options = {}) {
   return button;
 }
 
+function getTargetColorByName(targetName) {
+  if (targetName === "gradient_start") {
+    return normalizeColorValue(state.gradientFillFrom) || normalizeColorValue(state.fill);
+  }
+  if (targetName === "stroke") {
+    return normalizeColorValue(state.stroke);
+  }
+  if (targetName === "gradient_end") {
+    return normalizeColorValue(state.gradientFillTo);
+  }
+  return normalizeColorValue(state.fill);
+}
+
 function renderMainPaletteGrid() {
   refs.mainPaletteGrid.innerHTML = "";
-  state.paletteEntries.forEach((entry) => {
+  const entries = getVisiblePaletteEntries();
+  if (entries.length === 0) {
+    const empty = document.createElement("span");
+    empty.className = "muted";
+    empty.textContent = state.selectedPaletteId === NO_PALETTE_ID
+      ? "Select a palette set to show colors."
+      : "No colors available in this palette.";
+    refs.mainPaletteGrid.appendChild(empty);
+    return;
+  }
+
+  entries.forEach((entry) => {
     const swatch = createSwatchButton(entry.hex, { name: entry.name, used: false });
-    const isActiveColor = state.activePaletteTarget === "paint"
-      ? normalizeColorValue(state.fill) === entry.hex
-      : normalizeColorValue(state.stroke) === entry.hex;
+    const isActiveColor = getTargetColorByName(state.activePaletteTarget) === entry.hex;
     if (isActiveColor) {
       swatch.classList.add("active-target-color");
     }
@@ -267,9 +520,7 @@ function renderUsedColorStrip() {
 
   state.usedColors.forEach((colorHex) => {
     const swatch = createSwatchButton(colorHex, { used: true });
-    const isActiveColor = state.activePaletteTarget === "paint"
-      ? normalizeColorValue(state.fill) === colorHex
-      : normalizeColorValue(state.stroke) === colorHex;
+    const isActiveColor = getTargetColorByName(state.activePaletteTarget) === colorHex;
     if (isActiveColor) {
       swatch.classList.add("active-target-color");
     }
@@ -306,33 +557,94 @@ function refreshUsedColors() {
 }
 
 function updatePaletteReadout() {
-  const target = state.activePaletteTarget === "paint" ? "Paint" : "Stroke";
+  const target = state.activePaletteTarget === "stroke"
+    ? "Stroke"
+    : (state.activePaletteTarget === "gradient_start"
+      ? "Gradient Start"
+      : (state.activePaletteTarget === "gradient_end" ? "Gradient End" : "Paint"));
   const paintHex = normalizeColorValue(state.fill);
   const strokeHex = normalizeColorValue(state.stroke);
+  const gradientStartHex = normalizeColorValue(state.gradientFillFrom) || paintHex;
+  const gradientEndHex = normalizeColorValue(state.gradientFillTo);
+  const selectedPaletteLabel = refs.paletteSelect instanceof HTMLSelectElement
+    ? refs.paletteSelect.options[refs.paletteSelect.selectedIndex]?.textContent || "No Palette"
+    : "No Palette";
 
   refs.setPaletteTargetPaintButton.classList.toggle("active", state.activePaletteTarget === "paint");
   refs.setPaletteTargetStrokeButton.classList.toggle("active", state.activePaletteTarget === "stroke");
+  if (refs.setPaletteTargetGradientStartButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientStartButton.classList.toggle("active", state.activePaletteTarget === "gradient_start");
+  }
+  if (refs.setPaletteTargetGradientEndButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientEndButton.classList.toggle("active", state.activePaletteTarget === "gradient_end");
+  }
 
   refs.activePaintSwatch.style.backgroundColor = paintHex || "transparent";
   refs.activeStrokeSwatch.style.backgroundColor = strokeHex || "transparent";
   refs.activePaintSwatch.classList.toggle("empty", !paintHex);
   refs.activeStrokeSwatch.classList.toggle("empty", !strokeHex);
+  if (refs.activeGradientStartSwatch instanceof HTMLElement) {
+    refs.activeGradientStartSwatch.style.backgroundColor = gradientStartHex || "transparent";
+    refs.activeGradientStartSwatch.classList.toggle("empty", !gradientStartHex);
+  }
+  if (refs.activeGradientEndSwatch instanceof HTMLElement) {
+    refs.activeGradientEndSwatch.style.backgroundColor = gradientEndHex || "transparent";
+    refs.activeGradientEndSwatch.classList.toggle("empty", !gradientEndHex);
+  }
 
-  refs.activePaintLabel.textContent = paintHex ? `Paint: ${paintHex}` : "Paint: not selected";
-  refs.activeStrokeLabel.textContent = strokeHex ? `Stroke: ${strokeHex}` : "Stroke: not selected";
-  refs.paletteStateReadout.textContent = `${getEditingGateMessage()} Active target: ${target}. Paint/Stroke values stay stored until you change them.`;
+  refs.activePaintLabel.textContent = "Paint";
+  refs.activeStrokeLabel.textContent = "Stroke";
+  if (refs.activeGradientStartLabel instanceof HTMLElement) {
+    refs.activeGradientStartLabel.textContent = "Start Color";
+  }
+  if (refs.activeGradientEndLabel instanceof HTMLElement) {
+    refs.activeGradientEndLabel.textContent = "End Color";
+  }
+
+  refs.setPaletteTargetPaintButton.title = paintHex ? `Paint ${paintHex}` : "Paint";
+  refs.setPaletteTargetStrokeButton.title = strokeHex ? `Stroke ${strokeHex}` : "Stroke";
+  if (refs.setPaletteTargetGradientStartButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientStartButton.title = gradientStartHex ? `Start ${gradientStartHex}` : "Start Color";
+  }
+  if (refs.setPaletteTargetGradientEndButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientEndButton.title = gradientEndHex ? `End ${gradientEndHex}` : "End Color";
+  }
+
+  const palettePrompt = state.selectedPaletteId === NO_PALETTE_ID
+    ? "Select a palette set to choose colors."
+    : "Use palette targets for Paint, Stroke, or Gradient End.";
+  refs.paletteStateReadout.textContent = `${getEditingGateMessage()} Active target: ${target}. Palette: ${selectedPaletteLabel}. ${palettePrompt}`;
+  updateSelectionChecklistOverlay();
 }
 
 function applyEnablementState() {
   const hasStyleSelection = hasRequiredStyleSelection();
+  const hasFill = hasFillSelection();
+  const hasGradient = Boolean((normalizeColorValue(state.gradientFillFrom) || normalizeColorValue(state.fill)) && normalizeColorValue(state.gradientFillTo));
   const hasObjectSelection = Boolean(getSelectedElement());
 
   refs.applyCanvasSizeButton.disabled = !hasStyleSelection;
   refs.strokeWidthInput.disabled = !hasStyleSelection;
+  if (refs.applyFillButton instanceof HTMLButtonElement) {
+    refs.applyFillButton.disabled = !(hasFill && hasObjectSelection);
+  }
   refs.applyStyleButton.disabled = !(hasStyleSelection && hasObjectSelection);
-  refs.deleteSelectedButton.disabled = !(hasStyleSelection && hasObjectSelection);
+  if (refs.applyGradientToSelectedButton instanceof HTMLButtonElement) {
+    refs.applyGradientToSelectedButton.disabled = !(hasGradient && hasObjectSelection);
+  }
+  refs.deleteSelectedButton.disabled = !hasObjectSelection;
   refs.sendBackwardButton.disabled = !(hasStyleSelection && hasObjectSelection);
   refs.bringForwardButton.disabled = !(hasStyleSelection && hasObjectSelection);
+  if (refs.toggleElementVisibilityButton instanceof HTMLButtonElement) {
+    const selected = getSelectedElement();
+    refs.toggleElementVisibilityButton.disabled = !selected;
+    refs.toggleElementVisibilityButton.textContent = selected && isElementHidden(selected) ? "Show Selected" : "Hide Selected";
+  }
+  if (refs.toggleAllVisibilityButton instanceof HTMLButtonElement) {
+    const hasElements = getDrawableElements().length > 0;
+    refs.toggleAllVisibilityButton.disabled = !hasElements;
+    refs.toggleAllVisibilityButton.textContent = areAllDrawableElementsHidden() ? "Show All" : "Hide All";
+  }
 
   refs.toolGrid.querySelectorAll("[data-tool]").forEach((button) => {
     const isDrawTool = DRAW_TOOL_SET.has(button.dataset.tool || "");
@@ -346,15 +658,35 @@ function applyEnablementState() {
   }
 
   updatePaletteReadout();
+  updatePolylineActionState();
 }
 
 function setPaletteTarget(target, options = {}) {
-  state.activePaletteTarget = target === "stroke" ? "stroke" : "paint";
+  if (target === "stroke") {
+    state.activePaletteTarget = "stroke";
+  } else if (target === "gradient_start") {
+    state.activePaletteTarget = "gradient_start";
+  } else if (target === "gradient_end") {
+    state.activePaletteTarget = "gradient_end";
+  } else {
+    state.activePaletteTarget = "paint";
+  }
   updatePaletteReadout();
   renderUsedColorStrip();
   renderMainPaletteGrid();
   if (!options.silent) {
-    setStatus(`Active ${state.activePaletteTarget} target selected. Palette choices remain until changed.`);
+    const targetLabel = state.activePaletteTarget === "gradient_start"
+      ? "gradient start"
+      : (state.activePaletteTarget === "gradient_end" ? "gradient end" : state.activePaletteTarget);
+    setStatus(`Active ${targetLabel} target selected. Palette choices remain until changed.`);
+  }
+}
+
+function resetPaletteSelectionState() {
+  state.selectedPaletteId = NO_PALETTE_ID;
+  if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.disabled = false;
+    refs.paletteSelect.value = NO_PALETTE_ID;
   }
 }
 
@@ -366,6 +698,10 @@ function applyPaletteColorSelection(colorHex, sourceLabel = "palette") {
 
   if (state.activePaletteTarget === "paint") {
     state.fill = normalized;
+  } else if (state.activePaletteTarget === "gradient_start") {
+    state.gradientFillFrom = normalized;
+  } else if (state.activePaletteTarget === "gradient_end") {
+    state.gradientFillTo = normalized;
   } else {
     state.stroke = normalized;
   }
@@ -407,6 +743,43 @@ function getSelectedElement() {
   return refs.sceneRoot.querySelector(`[data-editor-id="${state.selectedId}"]`);
 }
 
+function isElementHidden(element) {
+  if (!(element instanceof SVGElement)) {
+    return false;
+  }
+  return element.getAttribute("display") === "none" || element.dataset.editorHidden === "1";
+}
+
+function setElementVisibility(element, visible) {
+  if (!(element instanceof SVGElement)) {
+    return;
+  }
+
+  if (!visible) {
+    if (!Object.prototype.hasOwnProperty.call(element.dataset, "editorDisplayOriginal")) {
+      const originalDisplay = element.getAttribute("display");
+      element.dataset.editorDisplayOriginal = originalDisplay === null ? "__none__" : originalDisplay;
+    }
+    element.setAttribute("display", "none");
+    element.dataset.editorHidden = "1";
+    return;
+  }
+
+  const original = element.dataset.editorDisplayOriginal;
+  if (typeof original === "string" && original.length > 0 && original !== "__none__") {
+    element.setAttribute("display", original);
+  } else {
+    element.removeAttribute("display");
+  }
+  delete element.dataset.editorDisplayOriginal;
+  delete element.dataset.editorHidden;
+}
+
+function areAllDrawableElementsHidden() {
+  const elements = getDrawableElements();
+  return elements.length > 0 && elements.every((element) => isElementHidden(element));
+}
+
 function setActiveTool(toolName, options = {}) {
   const targetButton = refs.toolGrid.querySelector(`[data-tool="${toolName}"]`);
   if (targetButton && targetButton.disabled) {
@@ -438,10 +811,24 @@ function setViewTransform() {
 }
 
 function getScenePoint(event) {
+  if (refs.editorSvg && typeof refs.editorSvg.createSVGPoint === "function") {
+    const svgPoint = refs.editorSvg.createSVGPoint();
+    svgPoint.x = event.clientX;
+    svgPoint.y = event.clientY;
+    const sceneMatrix = refs.sceneRoot.getScreenCTM();
+    if (sceneMatrix && typeof sceneMatrix.inverse === "function") {
+      const scenePoint = svgPoint.matrixTransform(sceneMatrix.inverse());
+      if (Number.isFinite(scenePoint.x) && Number.isFinite(scenePoint.y)) {
+        return { x: scenePoint.x, y: scenePoint.y };
+      }
+    }
+  }
+
   const bounds = refs.editorSvg.getBoundingClientRect();
-  const x = (event.clientX - bounds.left - state.panX) / state.zoom;
-  const y = (event.clientY - bounds.top - state.panY) / state.zoom;
-  return { x, y };
+  return {
+    x: (event.clientX - bounds.left - state.panX) / state.zoom,
+    y: (event.clientY - bounds.top - state.panY) / state.zoom
+  };
 }
 
 function safeGetBBox(element) {
@@ -450,6 +837,31 @@ function safeGetBBox(element) {
   } catch (error) {
     return null;
   }
+}
+
+function getSelectionViewportRect(element) {
+  if (!(element instanceof SVGElement)) {
+    return null;
+  }
+
+  const viewportRect = refs.canvasViewport.getBoundingClientRect();
+  const elementRect = element.getBoundingClientRect();
+  if (!Number.isFinite(elementRect.left) || !Number.isFinite(elementRect.top)) {
+    return null;
+  }
+
+  const width = Number.isFinite(elementRect.width) ? elementRect.width : 0;
+  const height = Number.isFinite(elementRect.height) ? elementRect.height : 0;
+  if (width <= 0 && height <= 0) {
+    return null;
+  }
+
+  return {
+    left: elementRect.left - viewportRect.left,
+    top: elementRect.top - viewportRect.top,
+    width: Math.max(1, width),
+    height: Math.max(1, height)
+  };
 }
 
 function clearSelection() {
@@ -468,9 +880,10 @@ function selectElement(element) {
 
   state.selectedId = ensureEditorIdentity(element);
   const tagName = element.tagName.toLowerCase();
+  const visibilityText = isElementHidden(element) ? "hidden" : "visible";
   const bbox = safeGetBBox(element);
   const bboxText = bbox ? `bounds: ${Math.round(bbox.x)}, ${Math.round(bbox.y)}, ${Math.round(bbox.width)} x ${Math.round(bbox.height)}` : "bounds: unavailable";
-  refs.selectionReadout.textContent = `${tagName} | id: ${element.getAttribute("id")} | ${bboxText}`;
+  refs.selectionReadout.textContent = `${tagName} | id: ${element.getAttribute("id")} | ${visibilityText} | ${bboxText}`;
   renderElementList();
   updateSelectionOverlay();
   applyEnablementState();
@@ -483,36 +896,31 @@ function updateSelectionOverlay() {
     return;
   }
 
-  const bbox = safeGetBBox(element);
-  if (!bbox || !Number.isFinite(bbox.width) || !Number.isFinite(bbox.height)) {
+  const viewportRect = getSelectionViewportRect(element);
+  if (!viewportRect) {
     refs.selectionOverlay.classList.add("hidden");
     return;
   }
 
-  const left = bbox.x * state.zoom + state.panX;
-  const top = bbox.y * state.zoom + state.panY;
-  const width = Math.max(1, bbox.width * state.zoom);
-  const height = Math.max(1, bbox.height * state.zoom);
-
   refs.selectionOverlay.classList.remove("hidden");
   refs.selectionOverlay.classList.toggle("gated", !hasRequiredStyleSelection());
-  refs.selectionBounds.style.left = `${left}px`;
-  refs.selectionBounds.style.top = `${top}px`;
-  refs.selectionBounds.style.width = `${width}px`;
-  refs.selectionBounds.style.height = `${height}px`;
+  refs.selectionBounds.style.left = `${viewportRect.left}px`;
+  refs.selectionBounds.style.top = `${viewportRect.top}px`;
+  refs.selectionBounds.style.width = `${viewportRect.width}px`;
+  refs.selectionBounds.style.height = `${viewportRect.height}px`;
 
   refs.selectionOverlay.querySelectorAll(".resize-handle").forEach((handle) => {
     const handleName = handle.dataset.handle;
-    let x = left;
-    let y = top;
+    let x = viewportRect.left;
+    let y = viewportRect.top;
 
     if (handleName === "ne") {
-      x = left + width;
+      x = viewportRect.left + viewportRect.width;
     } else if (handleName === "sw") {
-      y = top + height;
+      y = viewportRect.top + viewportRect.height;
     } else if (handleName === "se") {
-      x = left + width;
-      y = top + height;
+      x = viewportRect.left + viewportRect.width;
+      y = viewportRect.top + viewportRect.height;
     }
 
     handle.style.left = `${x - 6}px`;
@@ -552,7 +960,9 @@ function renderElementList() {
 
     const chip = document.createElement("span");
     chip.className = "chip";
-    chip.textContent = element.tagName.toLowerCase();
+    chip.textContent = isElementHidden(element)
+      ? `${element.tagName.toLowerCase()} hidden`
+      : element.tagName.toLowerCase();
 
     item.appendChild(selectButton);
     item.appendChild(chip);
@@ -575,12 +985,21 @@ function setCanvasSize(width, height) {
 
 function createNewDocument() {
   refs.sceneRoot.replaceChildren();
+  clearEditorDefs();
   state.documentName = "untitled-background";
   state.elementIdCounter = 1;
   state.usedColors = [];
+  state.fill = null;
+  state.stroke = null;
+  state.gradientFillFrom = null;
+  state.gradientFillTo = "#FFFFFF";
+  state.gradientAngle = 45;
+  state.activePaletteTarget = "paint";
   state.pendingPolyline = null;
   state.pendingFreehand = null;
+  resetPaletteSelectionState();
   clearSelection();
+  updatePolylineActionState();
   setCanvasSize(refs.canvasWidthInput.value, refs.canvasHeightInput.value);
   refreshUsedColors();
   applyEnablementState();
@@ -588,7 +1007,7 @@ function createNewDocument() {
 }
 
 function setZoom(nextZoom, anchorClientPoint = null) {
-  const clampedZoom = clamp(nextZoom, 0.25, 8, state.zoom);
+  const clampedZoom = clamp(nextZoom, 0.10, 8, state.zoom);
   const bounds = refs.editorSvg.getBoundingClientRect();
   const anchor = anchorClientPoint || {
     x: bounds.left + bounds.width / 2,
@@ -616,11 +1035,62 @@ function applyCurrentStyle(element) {
   if (!fillColor || !strokeColor) {
     return;
   }
-  element.setAttribute("fill", fillColor);
+  applyFillStyle(element);
   element.setAttribute("stroke", strokeColor);
   element.setAttribute("stroke-width", String(state.strokeWidth));
   element.setAttribute("stroke-linecap", "round");
   element.setAttribute("stroke-linejoin", "round");
+}
+
+function applyFillStyle(element) {
+  const fillColor = normalizeColorValue(state.fill);
+  if (!fillColor || !(element instanceof SVGElement)) {
+    return;
+  }
+
+  element.setAttribute("fill", fillColor);
+  delete element.dataset.editorGradientId;
+  pruneUnusedEditorGradients();
+}
+
+function applyGradientFillStyle(element) {
+  if (!(element instanceof SVGElement)) {
+    return false;
+  }
+  const fromColor = normalizeColorValue(state.gradientFillFrom) || normalizeColorValue(state.fill);
+  const toColor = normalizeColorValue(state.gradientFillTo);
+  if (!fromColor || !toColor) {
+    return false;
+  }
+  const gradientId = createLinearGradientDefinition(fromColor, toColor, state.gradientAngle);
+  element.setAttribute("fill", `url(#${gradientId})`);
+  element.dataset.editorGradientId = gradientId;
+  pruneUnusedEditorGradients();
+  return true;
+}
+
+function getLineStrokeColor() {
+  return normalizeColorValue(state.fill) || normalizeColorValue(state.stroke);
+}
+
+function applyLineStyle(element) {
+  const strokeColor = getLineStrokeColor();
+  if (!strokeColor) {
+    return;
+  }
+  element.setAttribute("fill", "none");
+  element.setAttribute("stroke", strokeColor);
+  element.setAttribute("stroke-width", String(state.strokeWidth));
+  element.setAttribute("stroke-linecap", "round");
+  element.setAttribute("stroke-linejoin", "round");
+  delete element.dataset.editorGradientId;
+  pruneUnusedEditorGradients();
+}
+
+function updatePolylineActionState() {
+  if (refs.finishPolylineButton instanceof HTMLButtonElement) {
+    refs.finishPolylineButton.disabled = !state.pendingPolyline;
+  }
 }
 
 function createShapeForTool(toolName, point) {
@@ -652,6 +1122,9 @@ function createShapeForTool(toolName, point) {
   }
 
   applyCurrentStyle(element);
+  if (toolName === "line") {
+    applyLineStyle(element);
+  }
   ensureEditorIdentity(element);
   refs.sceneRoot.appendChild(element);
   refreshUsedColors();
@@ -1032,6 +1505,7 @@ function findDrawableElementFromTarget(target) {
 
 function finalizePendingPolyline(commit = true) {
   if (!state.pendingPolyline) {
+    updatePolylineActionState();
     return;
   }
 
@@ -1043,6 +1517,7 @@ function finalizePendingPolyline(commit = true) {
     refreshUsedColors();
     setStatus("Polyline canceled.");
     renderElementList();
+    updatePolylineActionState();
     return;
   }
 
@@ -1050,18 +1525,20 @@ function finalizePendingPolyline(commit = true) {
   refreshUsedColors();
   selectElement(element);
   setStatus("Polyline committed.");
+  updatePolylineActionState();
 }
 
 function handlePolylineClick(point) {
   if (!state.pendingPolyline) {
     const element = createSvgElement("polyline");
     applyCurrentStyle(element);
-    element.setAttribute("fill", "none");
+    applyLineStyle(element);
     const points = [{ x: point.x, y: point.y }];
     element.setAttribute("points", pointsToAttribute(points));
     ensureEditorIdentity(element);
     refs.sceneRoot.appendChild(element);
     state.pendingPolyline = { element, points };
+    updatePolylineActionState();
     refreshUsedColors();
     selectElement(element);
     renderElementList();
@@ -1072,6 +1549,7 @@ function handlePolylineClick(point) {
   state.pendingPolyline.points.push({ x: point.x, y: point.y });
   const previewPoints = state.pendingPolyline.points;
   state.pendingPolyline.element.setAttribute("points", pointsToAttribute(previewPoints));
+  updatePolylineActionState();
 }
 
 function updatePolylinePreview(point) {
@@ -1087,7 +1565,7 @@ function updatePolylinePreview(point) {
 function startFreehandPath(point) {
   const element = createSvgElement("path");
   applyCurrentStyle(element);
-  element.setAttribute("fill", "none");
+  applyLineStyle(element);
   const points = [{ x: point.x, y: point.y }];
   element.setAttribute("d", pointsToPath(points, false));
   ensureEditorIdentity(element);
@@ -1160,6 +1638,13 @@ function onSvgPointerDown(event) {
     return;
   }
 
+  if (event.button === 2 && state.pendingPolyline) {
+    finalizePendingPolyline(true);
+    renderElementList();
+    event.preventDefault();
+    return;
+  }
+
   if (event.button !== 0) {
     return;
   }
@@ -1199,7 +1684,7 @@ function onSvgPointerDown(event) {
     if (hitShape) {
       selectElement(hitShape);
       const snapshot = captureGeometry(hitShape);
-      if (snapshot && hasRequiredStyleSelection()) {
+      if (snapshot) {
         state.drag = {
           kind: "move",
           pointerId: event.pointerId,
@@ -1321,15 +1806,12 @@ function onCanvasWheel(event) {
 }
 
 function deleteSelectedElement() {
-  if (!hasRequiredStyleSelection()) {
-    setStatus("Select Paint and Stroke from the palette first.");
-    return;
-  }
   const selected = getSelectedElement();
   if (!selected) {
     return;
   }
   selected.remove();
+  pruneUnusedEditorGradients();
   refreshUsedColors();
   clearSelection();
   renderElementList();
@@ -1372,6 +1854,52 @@ function moveSelectedBackward() {
   selectElement(selected);
 }
 
+function toggleSelectedElementVisibility() {
+  const selected = getSelectedElement();
+  if (!selected) {
+    setStatus("No selected element to show/hide.");
+    return;
+  }
+
+  const currentlyHidden = isElementHidden(selected);
+  setElementVisibility(selected, currentlyHidden);
+  updateSelectionOverlay();
+  renderElementList();
+  applyEnablementState();
+  setStatus(currentlyHidden ? "Selected element shown." : "Selected element hidden.");
+}
+
+function toggleAllElementsVisibility() {
+  const elements = getDrawableElements();
+  if (elements.length === 0) {
+    setStatus("No elements available to show/hide.");
+    return;
+  }
+
+  const allHidden = elements.every((element) => isElementHidden(element));
+  elements.forEach((element) => {
+    setElementVisibility(element, allHidden);
+  });
+  updateSelectionOverlay();
+  renderElementList();
+  applyEnablementState();
+  setStatus(allHidden ? "All elements shown." : "All elements hidden.");
+}
+
+function nudgeSelectedElementBy(deltaX, deltaY) {
+  const selected = getSelectedElement();
+  if (!selected) {
+    return false;
+  }
+  const snapshot = captureGeometry(selected);
+  if (!snapshot || snapshot.unsupported) {
+    return false;
+  }
+  translateGeometry(selected, snapshot, deltaX, deltaY);
+  selectElement(selected);
+  return true;
+}
+
 function applyStyleToSelection() {
   if (!hasRequiredStyleSelection()) {
     setStatus("Select Paint and Stroke from the palette first.");
@@ -1388,11 +1916,50 @@ function applyStyleToSelection() {
   setStatus("Applied style to selected element.");
 }
 
+function applyFillToSelection() {
+  const fillColor = normalizeColorValue(state.fill);
+  if (!fillColor) {
+    setStatus("Select Paint from the palette first.");
+    return;
+  }
+  const selected = getSelectedElement();
+  if (!selected) {
+    setStatus("No selected element to fill.");
+    return;
+  }
+  applyFillStyle(selected);
+  refreshUsedColors();
+  applyEnablementState();
+  setStatus("Applied fill to selected element.");
+}
+
+function applyGradientToSelection() {
+  const selected = getSelectedElement();
+  if (!selected) {
+    setStatus("No selected element to apply gradient.");
+    return;
+  }
+
+  const applied = applyGradientFillStyle(selected);
+  if (!applied) {
+    setStatus("Select gradient start/end colors from the palette first.");
+    return;
+  }
+
+  refreshUsedColors();
+  applyEnablementState();
+  setStatus(`Applied gradient fill at ${Math.round(state.gradientAngle)} degrees.`);
+}
+
 function stripEditorAttributes(node) {
   if (!(node instanceof Element)) {
     return;
   }
-  node.removeAttribute("data-editor-id");
+  Array.from(node.attributes).forEach((attribute) => {
+    if (attribute.name.toLowerCase().startsWith("data-editor")) {
+      node.removeAttribute(attribute.name);
+    }
+  });
   Array.from(node.children).forEach((child) => {
     stripEditorAttributes(child);
   });
@@ -1404,6 +1971,36 @@ function serializeCurrentSvg() {
   outputSvg.setAttribute("width", String(Math.trunc(state.canvasWidth)));
   outputSvg.setAttribute("height", String(Math.trunc(state.canvasHeight)));
   outputSvg.setAttribute("viewBox", `0 0 ${Math.trunc(state.canvasWidth)} ${Math.trunc(state.canvasHeight)}`);
+  outputSvg.setAttribute("data-editor-palette-id", state.selectedPaletteId || NO_PALETTE_ID);
+  if (normalizeColorValue(state.fill)) {
+    outputSvg.setAttribute("data-editor-paint", normalizeColorValue(state.fill));
+  }
+  if (normalizeColorValue(state.stroke)) {
+    outputSvg.setAttribute("data-editor-stroke", normalizeColorValue(state.stroke));
+  }
+  outputSvg.setAttribute("data-editor-stroke-width", String(state.strokeWidth));
+  outputSvg.setAttribute("data-editor-active-target", state.activePaletteTarget || "paint");
+  if (normalizeColorValue(state.gradientFillFrom)) {
+    outputSvg.setAttribute("data-editor-gradient-start", normalizeColorValue(state.gradientFillFrom));
+  }
+  if (normalizeColorValue(state.gradientFillTo)) {
+    outputSvg.setAttribute("data-editor-gradient-end", normalizeColorValue(state.gradientFillTo));
+  }
+  outputSvg.setAttribute("data-editor-gradient-angle", String(Math.round(state.gradientAngle)));
+
+  const editorDefs = getOrCreateEditorDefs();
+  if (editorDefs.childNodes.length > 0) {
+    const defsClone = createSvgElement("defs");
+    Array.from(editorDefs.childNodes).forEach((node) => {
+      if (!(node instanceof Element)) {
+        return;
+      }
+      const clone = node.cloneNode(true);
+      stripEditorAttributes(clone);
+      defsClone.appendChild(clone);
+    });
+    outputSvg.appendChild(defsClone);
+  }
 
   Array.from(refs.sceneRoot.childNodes).forEach((node) => {
     if (!(node instanceof Element)) {
@@ -1507,12 +2104,29 @@ function loadSvgFromText(svgText, sourceName = "loaded-svg") {
       height = parts[3];
     }
   }
+  const embeddedEditorOptions = readEmbeddedEditorOptionsFromSvgRoot(sourceSvg, width, height);
 
   setCanvasSize(width, height);
   refs.sceneRoot.replaceChildren();
+  clearEditorDefs();
+  resetPaletteSelectionState();
+  updatePolylineActionState();
 
   Array.from(sourceSvg.childNodes).forEach((node) => {
     if (!(node instanceof Element)) {
+      return;
+    }
+    if (node.tagName && node.tagName.toLowerCase() === "defs") {
+      const defs = getOrCreateEditorDefs();
+      Array.from(node.childNodes).forEach((defsChild) => {
+        if (!(defsChild instanceof Element)) {
+          return;
+        }
+        const importedDefsChild = sanitizeImportNode(defsChild);
+        if (importedDefsChild) {
+          defs.appendChild(document.importNode(importedDefsChild, true));
+        }
+      });
       return;
     }
     const imported = sanitizeImportNode(node);
@@ -1529,8 +2143,11 @@ function loadSvgFromText(svgText, sourceName = "loaded-svg") {
   clearSelection();
   renderElementList();
   refreshUsedColors();
+  if (embeddedEditorOptions) {
+    applySampleEditorOptions(embeddedEditorOptions);
+  }
   applyEnablementState();
-  setStatus(`Loaded SVG: ${sourceName}`);
+  setStatus(embeddedEditorOptions ? `Loaded SVG: ${sourceName} (embedded editor options applied).` : `Loaded SVG: ${sourceName}`);
 }
 
 function normalizeSamplePath(pathValue) {
@@ -1548,6 +2165,177 @@ function normalizeSamplePath(pathValue) {
     return `./${normalized}`;
   }
   return `./samples/${normalized}`;
+}
+
+function resolvePaletteIdFromConfig(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return NO_PALETTE_ID;
+  }
+
+  const raw = value.trim();
+  if (Object.prototype.hasOwnProperty.call(state.paletteGroups, raw)) {
+    return raw;
+  }
+
+  const lowered = raw.toLowerCase();
+  if ((lowered === "palette32" || lowered === "32" || lowered === "crayola32")
+    && Object.prototype.hasOwnProperty.call(state.paletteGroups, "crayola032")) {
+    return "crayola032";
+  }
+
+  const exactInsensitive = Object.keys(state.paletteGroups).find((paletteId) => paletteId.toLowerCase() === lowered);
+  return exactInsensitive || NO_PALETTE_ID;
+}
+
+function getPaletteEntryColors(paletteId) {
+  if (!paletteId || paletteId === NO_PALETTE_ID) {
+    return [];
+  }
+  return Array.isArray(state.paletteGroups[paletteId]) ? state.paletteGroups[paletteId].map((entry) => entry.hex) : [];
+}
+
+function normalizeColorFromPalette(paletteId, colorValue, fallbackColor = null) {
+  const normalizedColor = normalizeColorValue(colorValue);
+  if (!normalizedColor) {
+    return fallbackColor;
+  }
+  const paletteColors = getPaletteEntryColors(paletteId);
+  if (paletteColors.length === 0 || paletteColors.includes(normalizedColor)) {
+    return normalizedColor;
+  }
+  return fallbackColor;
+}
+
+function applySampleEditorOptions(options = {}) {
+  if (!options || typeof options !== "object") {
+    return;
+  }
+
+  const canvasBlock = options.canvas && typeof options.canvas === "object" ? options.canvas : null;
+  const width = canvasBlock ? canvasBlock.width : options.width;
+  const height = canvasBlock ? canvasBlock.height : options.height;
+  if (Number.isFinite(Number(width)) && Number.isFinite(Number(height))) {
+    setCanvasSize(width, height);
+  }
+
+  const paletteBlock = options.palette && typeof options.palette === "object" ? options.palette : null;
+  const paletteIdCandidate = paletteBlock ? paletteBlock.id : options.paletteId;
+  const paletteId = resolvePaletteIdFromConfig(paletteIdCandidate);
+  if (paletteId !== NO_PALETTE_ID) {
+    state.selectedPaletteId = paletteId;
+    if (refs.paletteSelect instanceof HTMLSelectElement) {
+      refs.paletteSelect.value = paletteId;
+      refs.paletteSelect.disabled = true;
+    }
+  }
+
+  const paletteColors = getPaletteEntryColors(state.selectedPaletteId);
+  const fallbackPaint = paletteColors[0] || null;
+  const fallbackStroke = paletteColors[1] || fallbackPaint;
+  const paintValue = paletteBlock ? paletteBlock.paint : options.paint;
+  const strokeValue = paletteBlock ? paletteBlock.stroke : options.stroke;
+  const nextPaint = normalizeColorFromPalette(state.selectedPaletteId, paintValue, fallbackPaint);
+  const nextStroke = normalizeColorFromPalette(state.selectedPaletteId, strokeValue, fallbackStroke);
+
+  if (nextPaint) {
+    state.fill = nextPaint;
+  }
+  if (nextStroke) {
+    state.stroke = nextStroke;
+  }
+
+  const configuredStrokeWidth = paletteBlock ? paletteBlock.strokeWidth : options.strokeWidth;
+  if (Number.isFinite(Number(configuredStrokeWidth))) {
+    state.strokeWidth = clamp(configuredStrokeWidth, 0, 128, state.strokeWidth);
+    refs.strokeWidthInput.value = String(state.strokeWidth);
+  }
+
+  const gradientStartValue = paletteBlock ? paletteBlock.gradientStart : options.gradientFillFrom;
+  const gradientEndValue = paletteBlock ? paletteBlock.gradientEnd : options.gradientFillTo;
+  const gradientStart = normalizeColorFromPalette(state.selectedPaletteId, gradientStartValue, state.fill || null);
+  const gradientEnd = normalizeColorFromPalette(state.selectedPaletteId, gradientEndValue, state.gradientFillTo || null);
+  if (gradientStart) {
+    state.gradientFillFrom = gradientStart;
+  }
+  if (gradientEnd) {
+    state.gradientFillTo = gradientEnd;
+  }
+
+  const configuredGradientAngle = paletteBlock ? paletteBlock.gradientAngle : options.gradientAngle;
+  if (Number.isFinite(Number(configuredGradientAngle))) {
+    state.gradientAngle = clamp(configuredGradientAngle, -360, 360, state.gradientAngle);
+    if (refs.gradientAngleInput instanceof HTMLInputElement) {
+      refs.gradientAngleInput.value = String(Math.round(state.gradientAngle));
+    }
+  }
+
+  const activeTarget = paletteBlock && typeof paletteBlock.activeTarget === "string"
+    ? paletteBlock.activeTarget
+    : options.activePaletteTarget;
+  if (typeof activeTarget === "string" && activeTarget.trim()) {
+    setPaletteTarget(activeTarget, { silent: true });
+  } else {
+    setPaletteTarget("paint", { silent: true });
+  }
+
+  renderMainPaletteGrid();
+  renderUsedColorStrip();
+  applyEnablementState();
+}
+
+function readEmbeddedEditorOptionsFromSvgRoot(svgRoot, width, height) {
+  if (!(svgRoot instanceof Element)) {
+    return null;
+  }
+
+  const options = {};
+  options.width = width;
+  options.height = height;
+
+  const paletteId = svgRoot.getAttribute("data-editor-palette-id") || svgRoot.getAttribute("data-editor-palette");
+  const paint = svgRoot.getAttribute("data-editor-paint");
+  const stroke = svgRoot.getAttribute("data-editor-stroke");
+  const strokeWidth = svgRoot.getAttribute("data-editor-stroke-width");
+  const activePaletteTarget = svgRoot.getAttribute("data-editor-active-target");
+  const gradientFillFrom = svgRoot.getAttribute("data-editor-gradient-start");
+  const gradientFillTo = svgRoot.getAttribute("data-editor-gradient-end");
+  const gradientAngle = svgRoot.getAttribute("data-editor-gradient-angle");
+
+  let hasEmbeddedOptions = false;
+  if (paletteId) {
+    options.paletteId = paletteId;
+    hasEmbeddedOptions = true;
+  }
+  if (paint) {
+    options.paint = paint;
+    hasEmbeddedOptions = true;
+  }
+  if (stroke) {
+    options.stroke = stroke;
+    hasEmbeddedOptions = true;
+  }
+  if (strokeWidth) {
+    options.strokeWidth = strokeWidth;
+    hasEmbeddedOptions = true;
+  }
+  if (activePaletteTarget) {
+    options.activePaletteTarget = activePaletteTarget;
+    hasEmbeddedOptions = true;
+  }
+  if (gradientFillFrom) {
+    options.gradientFillFrom = gradientFillFrom;
+    hasEmbeddedOptions = true;
+  }
+  if (gradientFillTo) {
+    options.gradientFillTo = gradientFillTo;
+    hasEmbeddedOptions = true;
+  }
+  if (gradientAngle) {
+    options.gradientAngle = gradientAngle;
+    hasEmbeddedOptions = true;
+  }
+
+  return hasEmbeddedOptions ? options : null;
 }
 
 async function refreshSampleOptions(preserveSelection = true) {
@@ -1684,13 +2472,24 @@ function bindEvents() {
   });
 
   refs.zoomPercentInput.addEventListener("change", () => {
-    const value = clamp(refs.zoomPercentInput.value, 25, 800, 100);
+    const value = clamp(refs.zoomPercentInput.value, 10, 800, 100);
     setZoom(value / 100);
   });
 
   refs.resetViewButton.addEventListener("click", () => {
     resetView();
   });
+
+  if (refs.finishPolylineButton instanceof HTMLButtonElement) {
+    refs.finishPolylineButton.addEventListener("click", () => {
+      if (!state.pendingPolyline) {
+        setStatus("No active polyline to finish.");
+        return;
+      }
+      finalizePendingPolyline(true);
+      renderElementList();
+    });
+  }
 
   refs.toolGrid.querySelectorAll("[data-tool]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1704,20 +2503,78 @@ function bindEvents() {
   refs.setPaletteTargetPaintButton.addEventListener("click", () => {
     setPaletteTarget("paint");
   });
+  refs.setPaletteTargetPaintButton.addEventListener("pointerdown", () => {
+    setPaletteTarget("paint", { silent: true });
+  });
 
   refs.setPaletteTargetStrokeButton.addEventListener("click", () => {
     setPaletteTarget("stroke");
   });
+  refs.setPaletteTargetStrokeButton.addEventListener("pointerdown", () => {
+    setPaletteTarget("stroke", { silent: true });
+  });
+  if (refs.setPaletteTargetGradientStartButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientStartButton.addEventListener("click", () => {
+      setPaletteTarget("gradient_start");
+    });
+    refs.setPaletteTargetGradientStartButton.addEventListener("pointerdown", () => {
+      setPaletteTarget("gradient_start", { silent: true });
+    });
+  }
+  if (refs.setPaletteTargetGradientEndButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientEndButton.addEventListener("click", () => {
+      setPaletteTarget("gradient_end");
+    });
+    refs.setPaletteTargetGradientEndButton.addEventListener("pointerdown", () => {
+      setPaletteTarget("gradient_end", { silent: true });
+    });
+  }
+
+  if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.addEventListener("change", () => {
+      const previousPaletteId = state.selectedPaletteId;
+      state.selectedPaletteId = refs.paletteSelect.value || NO_PALETTE_ID;
+      renderMainPaletteGrid();
+      updatePaletteReadout();
+      const selectedLabel = refs.paletteSelect.options[refs.paletteSelect.selectedIndex]?.textContent || "Palette";
+      if (state.selectedPaletteId === NO_PALETTE_ID) {
+        setStatus("Palette selection cleared. Choose a palette set to show colors.");
+      } else if (state.selectedPaletteId !== previousPaletteId) {
+        refs.paletteSelect.disabled = true;
+        setStatus(`Palette set changed to ${selectedLabel}.`);
+      }
+    });
+  }
 
   refs.strokeWidthInput.addEventListener("input", () => {
     state.strokeWidth = clamp(refs.strokeWidthInput.value, 0, 128, state.strokeWidth);
     applyEnablementState();
   });
 
+  if (refs.gradientAngleInput instanceof HTMLInputElement) {
+    refs.gradientAngleInput.addEventListener("change", () => {
+      state.gradientAngle = clamp(refs.gradientAngleInput.value, -360, 360, state.gradientAngle);
+      refs.gradientAngleInput.value = String(Math.round(state.gradientAngle));
+      setStatus(`Gradient angle set to ${Math.round(state.gradientAngle)} degrees.`);
+    });
+  }
+
+  if (refs.applyFillButton instanceof HTMLButtonElement) {
+    refs.applyFillButton.addEventListener("click", applyFillToSelection);
+  }
+  if (refs.applyGradientToSelectedButton instanceof HTMLButtonElement) {
+    refs.applyGradientToSelectedButton.addEventListener("click", applyGradientToSelection);
+  }
   refs.applyStyleButton.addEventListener("click", applyStyleToSelection);
   refs.deleteSelectedButton.addEventListener("click", deleteSelectedElement);
   refs.sendBackwardButton.addEventListener("click", moveSelectedBackward);
   refs.bringForwardButton.addEventListener("click", moveSelectedForward);
+  if (refs.toggleElementVisibilityButton instanceof HTMLButtonElement) {
+    refs.toggleElementVisibilityButton.addEventListener("click", toggleSelectedElementVisibility);
+  }
+  if (refs.toggleAllVisibilityButton instanceof HTMLButtonElement) {
+    refs.toggleAllVisibilityButton.addEventListener("click", toggleAllElementsVisibility);
+  }
 
   refs.editorSvg.addEventListener("pointerdown", onSvgPointerDown);
   refs.editorSvg.addEventListener("pointermove", onSvgPointerMove);
@@ -1795,8 +2652,32 @@ function bindEvents() {
   });
 
   window.addEventListener("keydown", (event) => {
+    const isTypingContext = Boolean(
+      document.activeElement
+      && (
+        ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)
+        || document.activeElement.isContentEditable
+      )
+    );
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "ArrowUp" || event.key === "ArrowDown") {
+      if (isTypingContext) {
+        return;
+      }
+      const step = event.altKey ? 10 : 1;
+      const deltaX = event.key === "ArrowLeft" ? -step : (event.key === "ArrowRight" ? step : 0);
+      const deltaY = event.key === "ArrowUp" ? -step : (event.key === "ArrowDown" ? step : 0);
+      if (deltaX !== 0 || deltaY !== 0) {
+        const moved = nudgeSelectedElementBy(deltaX, deltaY);
+        if (moved) {
+          event.preventDefault();
+        }
+      }
+      return;
+    }
+
     if (event.key === "Delete" || event.key === "Backspace") {
-      if (document.activeElement && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) {
+      if (isTypingContext) {
         return;
       }
       event.preventDefault();
@@ -1831,7 +2712,16 @@ function bindEvents() {
 }
 
 async function initialize() {
-  state.paletteEntries = loadPaletteEntriesFromExistingWorkflow();
+  ensurePaletteSelectControl();
+  const paletteCatalog = loadPaletteCatalogFromExistingWorkflow();
+  state.paletteGroups = paletteCatalog.paletteGroups;
+  state.paletteOptions = paletteCatalog.paletteOptions;
+  state.selectedPaletteId = paletteCatalog.selectedPaletteId;
+  state.paletteEntries = [];
+  if (refs.gradientAngleInput instanceof HTMLInputElement) {
+    refs.gradientAngleInput.value = String(state.gradientAngle);
+  }
+  renderPaletteSelect();
   bindEvents();
   setCanvasSize(state.canvasWidth, state.canvasHeight);
   resetView();

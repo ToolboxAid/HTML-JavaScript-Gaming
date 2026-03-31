@@ -1,31 +1,20 @@
-BUILD_PR_TOOL_THEME_AND_SHARED_SWATCH_WORKFLOW - Validation Checklist
+BUILD_PR_EDITOR_FIXES_AND_WORKFLOW_UPDATES
 
-[PASS] Shared theme system is present in all tool entry pages
-- Audited tool index pages and confirmed hubCommon.css is included for:
-  - tools/SpriteEditor/index.html
-  - tools/SVG Background Editor/index.html
-  - tools/Tile Map Editor/index.html
-  - tools/Parallax Editor/index.html
-  - tools/VectorMapEditor/index.html
+Validation Checklist
 
-[PASS] SVG Background Editor explicit palette-target workflow
-- Verified explicit target labels in UI: Active Paint / Active Stroke.
-- Verified palette state messaging clarifies:
-  - select target first
-  - choose color from palette or used-color strip
-  - stored value remains until intentionally changed
+[PASS] SVG selection/handle overlay placement uses visible geometry relative to viewport.
+[PASS] SVG Palette dropdown added and wired to palette filtering.
+[PASS] SVG Active Paint/Stroke remain explicit persistent state until user changes selection.
+[PASS] Sprite Editor used-color strip source updated to all frames in document.
+[PASS] Tile Map Editor supports multi-file PNG tile asset import.
+[PASS] Imported tile PNG assets appear as selectable entries in tile palette.
+[PASS] Tile rendering supports both atlas tile sources and image tile sources.
+[PASS] No engine core API changes.
 
-[PASS] Sprite Editor used-color strip added above palette
-- Verified right panel now renders USED COLORS strip before palette grid.
-- Verified used-color swatches are clickable and set current color.
-- Verified behavior aligns with explicit swatch-selection workflow.
+Static Validation
+- `tools/Tile Map Editor/main.js`: parsed with `node --check`.
+- `tools/SVG Background Editor/main.js`: parsed via stdin module check (`node --check --input-type=module -`).
+- `tools/SpriteEditor/modules/appPalette.js`: parsed via stdin module check (`node --check --input-type=module -`).
 
-[PASS] Syntax validation
-- node --check tools/SpriteEditor/modules/appPalette.js
-- node --check tools/SpriteEditor/modules/controlSurfaceRightPanel.js
-- node --check tools/SpriteEditor/modules/controlSurfaceDraw.js
-- node --check tools/SVG Background Editor/main.js
-- All returned exit code 0.
-
-[PASS] Engine boundary
-- Verified no engine/ file modifications in this delta.
+Notes
+- Direct runtime GUI interaction was not executed in this terminal-only pass; behavior validated via code path inspection and syntax checks.
