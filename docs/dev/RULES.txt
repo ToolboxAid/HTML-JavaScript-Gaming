@@ -5,9 +5,9 @@ RULES.txt
 
 PLAN_PR -> BUILD_PR -> APPLY_PR
 Docs-first
-No implementation code in bundles
-Codex writes code and repo edits
+No skipped steps
 One PR per purpose
-ZIP outputs go to <project folder>/tmp/
-Preserve exact repo-relative structure inside ZIP
-Delta only
+Codex writes code
+ChatGPT plans/builds documentation bundles
+BUILD_PR execution must produce:
+<project folder>/tmp/BUILD_PR_SAMPLE1201_TILEMAP_VIEWER_IMPLEMENTATION_delta.zip

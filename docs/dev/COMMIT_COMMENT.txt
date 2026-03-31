@@ -1,1 +1,6 @@
-PLAN_PR: Define Sample Games Foundation with hero interaction and structure
+BUILD_PR: implement sample1201 tilemap viewer
+
+- add runnable sample1201 tilemap viewer runtime
+- keep scope viewer-only
+- no hero, jump, collision, or parallax
+- no engine/tools/tests/games changes

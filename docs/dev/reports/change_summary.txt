@@ -3,10 +3,17 @@ David Quesenberry
 03/31/2026
 change_summary.txt
 
-Requested correction:
-- Add a new Phase 12 Sample Games section/folder for future games
-- Shift existing Phase 12, 13, and 14 folders to 13, 14, and 15
-- Update samples/index.html so the section list and ordering reflect the new numbering
+BUILD_PR target:
+Implement sample1201 as a runnable tilemap viewer only.
 
-Reason:
-- The prior reorganization ZIP showed Phase 12, 13, and 14 folders but did not insert a new Sample Games section between 11 and 12.
+Expected changed area:
+- samples/Phase 12 - Sample Games/sample1201-tilemap-viewer/**
+- samples/index.html only if strictly required for launch correctness
+
+Blocked scope:
+- hero
+- movement
+- jump
+- collision
+- parallax
+- engine changes

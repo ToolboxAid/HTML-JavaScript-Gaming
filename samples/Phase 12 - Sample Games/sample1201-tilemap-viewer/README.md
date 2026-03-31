@@ -1,19 +1,18 @@
 # Sample1201 - Tilemap Viewer
 
 ## Purpose
-Provide a docs-only baseline for viewing a tilemap scene with camera framing before hero movement features are layered in.
+Launch a viewer-only sample that renders a stable tilemap using existing engine contracts.
 
 ## Controls
-- Left/Right: move the hero marker focus across the tilemap
-- Space: jump input is reserved and documented for future hero-enabled variants
+- None (viewer-only sample)
 
 ## Behavior
-Shows tile layout readability and camera follow expectations while traversing horizontal lanes.
+Displays a static tilemap frame for visual inspection. No actor, movement, jump, collision behavior, or parallax is present.
 
 ## Constraints
-- docs-only entry for BUILD_PR planning
+- viewer-only scope
+- no hero or gameplay systems
 - no engine changes
 - no reusable shared logic introduced
 - fully removable sample folder
-- follows scene-contract direction from the plan
-- no game systems such as menus, save, or AI
+- no menus, save/load, enemies, or collectibles

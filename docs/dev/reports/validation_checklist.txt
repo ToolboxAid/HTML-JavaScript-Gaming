@@ -1,9 +1,16 @@
 Toolbox Aid
 David Quesenberry
 03/31/2026
+validation_checklist.txt
 
-VALIDATION
-[ ] Structure defined
-[ ] Hero interaction defined
-[ ] Rules align with engine
-[ ] Ready for BUILD_PR
+[ ] sample1201 launches
+[ ] tilemap renders correctly
+[ ] sample remains viewer-only
+[ ] no hero exists
+[ ] no jump exists
+[ ] no collision feature exists
+[ ] no parallax exists
+[ ] README matches actual behavior
+[ ] no diff outside approved paths
+[ ] no engine/tools/tests/games changes
+[ ] output ZIP written to <project folder>/tmp/BUILD_PR_SAMPLE1201_TILEMAP_VIEWER_IMPLEMENTATION_delta.zip
