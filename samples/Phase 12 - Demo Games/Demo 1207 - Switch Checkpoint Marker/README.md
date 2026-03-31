@@ -1,12 +1,22 @@
 # Demo 1207 - Switch Checkpoint Marker
 
 ## Purpose
-Reserve this Phase 12 demo slot for switch/checkpoint marker interactions.
+Provide an integrated runnable demo that preserves the proven Demo 1206 movement, jump, collision, camera follow, and parallax behavior while adding one switch/checkpoint marker interaction.
 
-## Status
-- placeholder only
-- runtime files not added in this rename PR
+## Controls
+- Left Arrow: move hero left
+- Right Arrow: move hero right
+- Space: jump
 
-## Scope Notes
+## Behavior
+The hero traverses a larger scrolling tilemap with jump, gravity, grounded landing, collision, and layered parallax depth. Touching the single activator toggles checkpoint state and causes a visible marker/state change.
+
+## Constraints
+- preserve proven movement/jump/collision/camera/parallax contract
+- one light interaction system only (switch/checkpoint marker toggle)
+- no collectible counter
+- no trigger-zone success system
+- no enemies or progression systems
 - no engine changes
-- no gameplay system additions in this PR
+- no reusable shared logic introduced
+- fully removable sample folder
