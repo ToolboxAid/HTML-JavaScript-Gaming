@@ -1,12 +1,22 @@
 # Demo 1206 - Trigger Zone
 
 ## Purpose
-Reserve this Phase 12 demo slot for trigger-zone focused traversal interactions.
+Provide an integrated runnable demo that preserves the proven Demo 1204/1205 movement, jump, collision, camera follow, and parallax behavior while adding one light trigger-zone interaction.
 
-## Status
-- placeholder only
-- runtime files not added in this rename PR
+## Controls
+- Left Arrow: move hero left
+- Right Arrow: move hero right
+- Space: jump
 
-## Scope Notes
+## Behavior
+The hero traverses a larger scrolling tilemap with jump, gravity, grounded landing, collision, and layered parallax depth. Entering the visible trigger zone activates a success state/message.
+
+## Constraints
+- preserve proven movement/jump/collision/camera/parallax contract
+- one light interaction system only (trigger zone success state)
+- no collectible counter
+- no switch/checkpoint logic
+- no enemies, combat, inventory, menus, or save/load
 - no engine changes
-- no gameplay system additions in this PR
+- no reusable shared logic introduced
+- fully removable sample folder
