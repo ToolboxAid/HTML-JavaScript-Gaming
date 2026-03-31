@@ -1,19 +1,21 @@
-# Sample1205 - Multi System Demo
+# Demo 1205 - Multi-System Demo
 
 ## Purpose
-Define a docs-only integrated sample that combines movement, jump, camera follow, and tile collision into one playable-ready design target.
+Provide an integrated runnable demo that preserves the proven Demo 1204 movement/jump/collision/parallax behavior and adds one light interaction layer: collectibles with a counter.
 
 ## Controls
-- Left/Right: move the hero
+- Left Arrow: move hero left
+- Right Arrow: move hero right
 - Space: jump
 
 ## Behavior
-Hero traversal, jump timing, camera follow, and tile collision are coordinated in one scenario to validate multi-system interaction expectations.
+The hero traverses a larger scrolling tilemap with jump, gravity, grounded landing, collision, camera follow, and parallax depth. Collectibles disappear on touch and increment the counter.
 
 ## Constraints
-- docs-only entry for BUILD_PR planning
+- preserve Demo 1204 gameplay and camera pattern
+- one light interaction system only (collectible counter)
+- no trigger zone or switch/checkpoint logic
+- no enemies, combat, inventory, menus, or save/load
 - no engine changes
 - no reusable shared logic introduced
 - fully removable sample folder
-- follows scene-contract direction from the plan
-- no game systems such as menus, save, or AI
