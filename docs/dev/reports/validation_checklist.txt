@@ -1,22 +1,5 @@
-Toolbox Aid
-David Quesenberry
-03/31/2026
-validation_checklist.txt
-
-[ ] sample1204 launches
-[ ] hero is visible
-[ ] hero moves left/right
-[ ] hero jumps with Space
-[ ] gravity is active
-[ ] grounded/landing behavior exists
-[ ] collision with ground/platform tiles works in normal play
-[ ] camera follows cleanly
-[ ] tilemap is larger than viewport
-[ ] visible scrolling occurs during normal play
-[ ] parallax is clearly visible
-[ ] farther layers move slower than nearer layers
-[ ] no enemy/collectible/game systems exist
-[ ] README matches actual behavior
-[ ] no diff outside approved paths
-[ ] no engine/tools/tests/games changes
-[ ] output ZIP written to <project folder>/tmp/BUILD_PR_SAMPLE1204_TILEMAP_PARALLAX_HERO_IMPLEMENTATION_delta.zip
+[ ] Folder renamed
+[ ] 1201–1208 renamed
+[ ] index updated
+[ ] links resolve
+[ ] no runtime changes

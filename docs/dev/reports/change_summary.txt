@@ -1,17 +1,1 @@
-Toolbox Aid
-David Quesenberry
-03/31/2026
-change_summary.txt
-
-BUILD_PR target:
-Implement sample1204 as a runnable parallax-enhanced hero platform sample.
-
-Expected changed area:
-- samples/Phase 12 - Sample Games/sample1204-tilemap-parallax-hero/**
-- samples/index.html only if strictly required for launch correctness
-
-Blocked scope:
-- enemies
-- collectibles
-- broader game systems
-- engine changes
+Rename Phase 12 structure only.
