@@ -1,6 +1,25 @@
 ﻿<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="300" viewBox="0 0 1024 300" preserveAspectRatio="none">
-  <rect width="1024" height="300" fill="none"/>
-  <path d="M0 210 L60 170 L118 194 L174 154 L230 186 L288 138 L340 172 L396 128 L452 166 L510 120 L568 160 L626 126 L690 176 L748 142 L808 182 L872 150 L930 188 L982 162 L1024 186 L1024 300 L0 300 Z" fill="#5f7490" fill-opacity="0.88"/>
-  <path d="M0 242 L56 226 L120 236 L184 220 L250 234 L320 218 L392 232 L458 214 L522 230 L596 212 L668 230 L740 214 L810 234 L884 220 L958 238 L1024 226 L1024 300 L0 300 Z" fill="#90a2b8" fill-opacity="0.74"/>
-</svg>
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b6ddff"/>
+      <stop offset="52%" stop-color="#8ec5f4"/>
+      <stop offset="100%" stop-color="#6f9dcd"/>
+    </linearGradient>
+    <linearGradient id="mistGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d8ecff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#d8ecff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
 
+  <rect width="1024" height="300" fill="url(#skyGrad)"/>
+
+  <circle cx="182" cy="70" r="38" fill="#f9f0c1" fill-opacity="0.82"/>
+  <ellipse cx="294" cy="66" rx="62" ry="20" fill="#ffffff" fill-opacity="0.28"/>
+  <ellipse cx="496" cy="74" rx="74" ry="24" fill="#ffffff" fill-opacity="0.24"/>
+  <ellipse cx="770" cy="58" rx="68" ry="22" fill="#ffffff" fill-opacity="0.20"/>
+
+  <path d="M0 204 L74 160 L140 180 L204 134 L270 174 L336 126 L400 166 L470 116 L540 164 L610 122 L684 172 L758 130 L832 176 L904 138 L978 186 L1024 170 L1024 300 L0 300 Z" fill="#6f87a8" fill-opacity="0.86"/>
+  <path d="M0 228 L70 210 L142 220 L214 204 L290 218 L364 198 L440 214 L520 196 L596 214 L674 198 L754 218 L834 206 L914 224 L994 212 L1024 216 L1024 300 L0 300 Z" fill="#95abc3" fill-opacity="0.76"/>
+
+  <rect y="206" width="1024" height="94" fill="url(#mistGrad)"/>
+</svg>

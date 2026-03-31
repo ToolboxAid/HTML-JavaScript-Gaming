@@ -1,13 +1,16 @@
 ﻿<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="300" viewBox="0 0 1024 300" preserveAspectRatio="none">
-  <rect width="1024" height="300" fill="none"/>
-  <path d="M0 246 L40 214 L88 240 L132 202 L176 236 L222 198 L268 232 L316 194 L362 228 L408 190 L454 226 L502 186 L548 224 L598 188 L646 228 L698 192 L752 232 L804 196 L860 238 L914 204 L968 244 L1024 210 L1024 300 L0 300 Z" fill="#1d9f95" fill-opacity="0.88"/>
-  <rect x="34" y="204" width="20" height="96" fill="#62e2d4" fill-opacity="0.54"/>
-  <rect x="146" y="194" width="18" height="106" fill="#62e2d4" fill-opacity="0.50"/>
-  <rect x="256" y="188" width="22" height="112" fill="#62e2d4" fill-opacity="0.52"/>
-  <rect x="380" y="186" width="18" height="114" fill="#62e2d4" fill-opacity="0.49"/>
-  <rect x="506" y="184" width="20" height="116" fill="#62e2d4" fill-opacity="0.51"/>
-  <rect x="626" y="190" width="18" height="110" fill="#62e2d4" fill-opacity="0.50"/>
-  <rect x="748" y="196" width="22" height="104" fill="#62e2d4" fill-opacity="0.51"/>
-  <rect x="874" y="202" width="18" height="98" fill="#62e2d4" fill-opacity="0.48"/>
-</svg>
+  <path d="M0 248 L46 216 L90 238 L136 202 L182 236 L228 198 L274 232 L322 194 L370 228 L418 190 L466 224 L516 186 L566 222 L618 188 L670 230 L724 194 L780 236 L836 198 L894 242 L952 206 L1024 244 L1024 300 L0 300 Z" fill="#218f86" fill-opacity="0.92"/>
 
+  <path d="M34 206 L50 206 L50 300 L34 300 Z" fill="#62dccc" fill-opacity="0.58"/>
+  <path d="M104 198 L120 198 L120 300 L104 300 Z" fill="#62dccc" fill-opacity="0.56"/>
+  <path d="M170 192 L188 192 L188 300 L170 300 Z" fill="#62dccc" fill-opacity="0.56"/>
+  <path d="M248 188 L266 188 L266 300 L248 300 Z" fill="#62dccc" fill-opacity="0.56"/>
+  <path d="M328 186 L346 186 L346 300 L328 300 Z" fill="#62dccc" fill-opacity="0.55"/>
+  <path d="M412 184 L430 184 L430 300 L412 300 Z" fill="#62dccc" fill-opacity="0.55"/>
+  <path d="M498 182 L518 182 L518 300 L498 300 Z" fill="#62dccc" fill-opacity="0.55"/>
+  <path d="M592 186 L610 186 L610 300 L592 300 Z" fill="#62dccc" fill-opacity="0.55"/>
+  <path d="M688 190 L706 190 L706 300 L688 300 Z" fill="#62dccc" fill-opacity="0.54"/>
+  <path d="M782 196 L800 196 L800 300 L782 300 Z" fill="#62dccc" fill-opacity="0.54"/>
+  <path d="M872 202 L890 202 L890 300 L872 300 Z" fill="#62dccc" fill-opacity="0.53"/>
+  <path d="M954 208 L972 208 L972 300 L954 300 Z" fill="#62dccc" fill-opacity="0.53"/>
+</svg>

@@ -1,10 +1,17 @@
 ﻿<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="300" viewBox="0 0 1024 300" preserveAspectRatio="none">
-  <rect width="1024" height="300" fill="none"/>
-  <path d="M0 232 C80 186 168 178 250 214 C318 242 394 244 472 214 C560 178 642 182 724 226 C796 266 868 264 942 232 C976 216 1002 210 1024 216 L1024 300 L0 300 Z" fill="#3f56bb" fill-opacity="0.86"/>
-  <path d="M0 252 C66 226 128 228 188 248 C260 272 330 270 404 244 C486 214 560 218 636 252 C708 284 782 286 854 256 C918 230 972 228 1024 240 L1024 300 L0 300 Z" fill="#6379d5" fill-opacity="0.72"/>
-  <rect x="102" y="170" width="40" height="92" rx="8" fill="#798be0" fill-opacity="0.55"/>
-  <rect x="302" y="160" width="52" height="108" rx="10" fill="#8998e4" fill-opacity="0.54"/>
-  <rect x="530" y="166" width="44" height="102" rx="9" fill="#798be0" fill-opacity="0.52"/>
-  <rect x="742" y="162" width="50" height="106" rx="10" fill="#8998e4" fill-opacity="0.53"/>
-</svg>
+  <defs>
+    <linearGradient id="midShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5568d2"/>
+      <stop offset="100%" stop-color="#3748a8"/>
+    </linearGradient>
+  </defs>
 
+  <path d="M0 236 C86 186 170 176 252 210 C332 242 402 246 486 214 C574 180 652 184 732 224 C806 262 878 264 954 234 C982 222 1008 216 1024 220 L1024 300 L0 300 Z" fill="url(#midShade)" fill-opacity="0.90"/>
+  <path d="M0 252 C68 228 132 226 196 244 C266 266 334 266 404 242 C482 214 556 216 632 246 C706 276 780 280 856 252 C920 228 976 224 1024 236 L1024 300 L0 300 Z" fill="#6679de" fill-opacity="0.74"/>
+
+  <path d="M82 198 L104 198 L104 300 L82 300 Z" fill="#7d8de5" fill-opacity="0.56"/>
+  <path d="M284 188 L310 188 L310 300 L284 300 Z" fill="#8898ea" fill-opacity="0.56"/>
+  <path d="M520 194 L544 194 L544 300 L520 300 Z" fill="#7d8de5" fill-opacity="0.54"/>
+  <path d="M742 190 L768 190 L768 300 L742 300 Z" fill="#8898ea" fill-opacity="0.56"/>
+  <path d="M910 198 L934 198 L934 300 L910 300 Z" fill="#7d8de5" fill-opacity="0.54"/>
+</svg>

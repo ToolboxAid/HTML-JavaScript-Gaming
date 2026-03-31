@@ -68,18 +68,19 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
 
   applyTileExportData(tileExport) {
     const tileset = tileExport?.tileset || null;
-    const primaryLayer = Array.isArray(tileExport?.layers)
-      ? tileExport.layers.find((layer) => layer?.kind === 'tile-layer')
-      : null;
-    const cells = Array.isArray(primaryLayer?.cells)
-      ? primaryLayer.cells
-      : (Array.isArray(tileExport?.cells) ? tileExport.cells : [[]]);
-    const tileSize = Number(tileExport?.tileSize || tileset?.tileWidth) || 48;
+    const atlas = extractTilesetAtlas(tileExport);
+    const primaryLayer = getPrimaryTileLayer(tileExport);
+    const cells = extractTileCells(tileExport, primaryLayer);
+    const tileSize = extractTileSize(tileExport);
     const tilePalette = extractTileEntries(tileExport);
     const definitions = {};
-    this.tilesetAssetPath = typeof tileset?.image === 'string' ? tileset.image : '';
+    this.tilesetAssetPath = extractTilesetImagePath(tileExport, atlas);
     this.tilesetImage = null;
     this.tileFrameById = {};
+    const atlasColumns = Number(atlas?.columns)
+      || ((Number(atlas?.imageWidth) > 0 && Number(atlas?.tileWidth) > 0)
+        ? Math.floor(Number(atlas.imageWidth) / Number(atlas.tileWidth))
+        : 0);
 
     for (const tileDefinition of tilePalette) {
       const tileId = Number(tileDefinition?.tileId ?? tileDefinition?.id);
@@ -98,8 +99,22 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
         this.tileFrameById[tileId] = {
           x: Number(source.x) || 0,
           y: Number(source.y) || 0,
-          w: Number(source.w) || tileSize,
-          h: Number(source.h) || tileSize,
+          w: Number(source.w ?? source.width) || tileSize,
+          h: Number(source.h ?? source.height) || tileSize,
+        };
+      } else if (atlasColumns > 0 && tileId > 0) {
+        const index = tileId - 1;
+        const col = index % atlasColumns;
+        const row = Math.floor(index / atlasColumns);
+        const atlasTileWidth = Number(atlas?.tileWidth) || tileSize;
+        const atlasTileHeight = Number(atlas?.tileHeight) || tileSize;
+        const spacing = Number(atlas?.spacing) || 0;
+        const margin = Number(atlas?.margin) || 0;
+        this.tileFrameById[tileId] = {
+          x: margin + col * (atlasTileWidth + spacing),
+          y: margin + row * (atlasTileHeight + spacing),
+          w: atlasTileWidth,
+          h: atlasTileHeight,
         };
       }
 
@@ -117,8 +132,7 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
       height: this.tilemap.height * this.tilemap.tileSize,
     };
 
-    const viewportWidth = Number(tileExport?.camera?.viewportWidth) || 860;
-    const viewportHeight = Number(tileExport?.camera?.viewportHeight) || 300;
+    const { viewportWidth, viewportHeight } = extractCameraViewport(tileExport);
 
     this.camera = new Camera2D({
       viewportWidth,
@@ -133,8 +147,7 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
       this.world.height
     );
 
-    const spawn = tileExport?.spawnPoints?.hero
-      || tileExport?.heroSpawn
+    const spawn = extractSpawnPoint(tileExport, tileSize, this.hero)
       || { x: 120, y: this.world.height - tileSize - this.hero.height };
     this.hero.x = clamp(Number(spawn.x) || 120, 0, Math.max(0, this.world.width - this.hero.width));
     this.hero.y = clamp(
@@ -171,8 +184,16 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
 
     const loadOperations = layerDefinitions.map(async (layerDefinition, index) => {
       const image = await loadImageFromRelativePath(layerDefinition.asset, import.meta.url);
-      const sourceWidth = image.naturalWidth || image.width;
-      const sourceHeight = image.naturalHeight || image.height;
+      const sourceWidth = Number(layerDefinition.sourceWidth)
+        || image.naturalWidth
+        || image.width
+        || Number(layerDefinition.segmentWidth)
+        || 1024;
+      const sourceHeight = Number(layerDefinition.sourceHeight)
+        || image.naturalHeight
+        || image.height
+        || Number(layerDefinition.height)
+        || 300;
       return {
         id: layerDefinition.id || `layer-${index}`,
         image,
@@ -322,26 +343,13 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
   }
 
   drawParallax(renderer) {
-    renderer.drawRect(
-      this.screen.x,
-      this.screen.y,
-      this.camera.viewportWidth,
-      this.camera.viewportHeight,
-      '#9fd2ff'
-    );
-    renderer.drawCircle(
-      this.screen.x + 160,
-      this.screen.y + 54,
-      28,
-      'rgba(255, 245, 190, 0.75)'
-    );
-
     for (const layer of this.parallaxLayers) {
-      const segment = layer.segmentWidth;
+      const segment = Math.max(1, layer.segmentWidth);
       const offset = -((this.camera.x * layer.scrollFactor) % segment);
       const endX = this.screen.x + this.camera.viewportWidth + segment;
       const layerTop = this.screen.y + layer.y;
-      const layerHeight = Math.max(1, this.camera.viewportHeight - layer.y);
+      const viewportBottom = this.screen.y + this.camera.viewportHeight;
+      const layerHeight = Math.max(1, viewportBottom - layerTop);
 
       for (let x = this.screen.x + offset - segment; x < endX; x += segment) {
         renderer.drawImageFrame(
@@ -481,6 +489,18 @@ function getFallbackTileExport() {
 }
 
 function extractTileEntries(tileExport) {
+  if (tileExport?.schema === 'toolbox.tilemap/1' && Array.isArray(tileExport?.tileset)) {
+    return tileExport.tileset
+      .map((entry) => ({
+        tileId: Number(entry?.id),
+        name: entry?.name || `tile-${entry?.id}`,
+        solid: Number(entry?.id) > 0,
+        fallbackColor: entry?.color || '#1f2937',
+        source: normalizeTilesetSource(entry?.source),
+      }))
+      .filter((entry) => Number.isInteger(entry.tileId) && entry.tileId > 0);
+  }
+
   if (Array.isArray(tileExport?.tileset?.entries)) {
     return tileExport.tileset.entries;
   }
@@ -498,4 +518,120 @@ function placePlatform(cells, row, startCol, endCol, tileId) {
   for (let col = startCol; col <= endCol; col += 1) {
     cells[row][col] = tileId;
   }
+}
+
+function getPrimaryTileLayer(tileExport) {
+  if (!Array.isArray(tileExport?.layers)) {
+    return null;
+  }
+  if (tileExport?.schema === 'toolbox.tilemap/1') {
+    return tileExport.layers.find((layer) => layer?.kind === 'tile') || null;
+  }
+  return tileExport.layers.find((layer) => layer?.kind === 'tile-layer') || null;
+}
+
+function extractTileCells(tileExport, primaryLayer) {
+  if (tileExport?.schema === 'toolbox.tilemap/1') {
+    if (Array.isArray(primaryLayer?.data)) {
+      return primaryLayer.data;
+    }
+  } else if (Array.isArray(primaryLayer?.cells)) {
+    return primaryLayer.cells;
+  }
+
+  if (Array.isArray(tileExport?.cells)) {
+    return tileExport.cells;
+  }
+  return [[]];
+}
+
+function extractTileSize(tileExport) {
+  if (tileExport?.schema === 'toolbox.tilemap/1') {
+    return Number(tileExport?.map?.tileSize)
+      || Number(tileExport?.tilesetAtlas?.tileWidth)
+      || 48;
+  }
+  return Number(tileExport?.tileSize || tileExport?.tileset?.tileWidth) || 48;
+}
+
+function extractTilesetAtlas(tileExport) {
+  if (tileExport?.schema === 'toolbox.tilemap/1') {
+    return tileExport?.tilesetAtlas || null;
+  }
+  return tileExport?.tileset || null;
+}
+
+function extractTilesetImagePath(tileExport, atlas) {
+  if (typeof tileExport?.tileset?.image === 'string' && tileExport.tileset.image) {
+    return tileExport.tileset.image;
+  }
+  if (typeof atlas?.imageName === 'string' && atlas.imageName) {
+    return atlas.imageName;
+  }
+  if (typeof atlas?.imageDataUrl === 'string' && atlas.imageDataUrl) {
+    return atlas.imageDataUrl;
+  }
+  return '';
+}
+
+function extractCameraViewport(tileExport) {
+  const markerCamera = Array.isArray(tileExport?.markers)
+    ? tileExport.markers.find((marker) => marker?.type === 'spawn' && marker?.properties)
+    : null;
+
+  return {
+    viewportWidth: Number(tileExport?.camera?.viewportWidth)
+      || Number(tileExport?.map?.viewportWidth)
+      || Number(markerCamera?.properties?.cameraViewportWidth)
+      || 860,
+    viewportHeight: Number(tileExport?.camera?.viewportHeight)
+      || Number(tileExport?.map?.viewportHeight)
+      || Number(markerCamera?.properties?.cameraViewportHeight)
+      || 300,
+  };
+}
+
+function extractSpawnPoint(tileExport, tileSize, hero) {
+  const explicit = tileExport?.spawnPoints?.hero || tileExport?.heroSpawn || null;
+  if (explicit && Number.isFinite(Number(explicit.x)) && Number.isFinite(Number(explicit.y))) {
+    return { x: Number(explicit.x), y: Number(explicit.y) };
+  }
+
+  if (Array.isArray(tileExport?.markers)) {
+    const spawnMarker = tileExport.markers.find((marker) => marker?.type === 'spawn');
+    if (spawnMarker?.properties) {
+      const px = Number(spawnMarker.properties.spawnX);
+      const py = Number(spawnMarker.properties.spawnY);
+      if (Number.isFinite(px) && Number.isFinite(py)) {
+        return { x: px, y: py };
+      }
+    }
+    if (spawnMarker && Number.isFinite(Number(spawnMarker.col)) && Number.isFinite(Number(spawnMarker.row))) {
+      const col = Number(spawnMarker.col);
+      const row = Number(spawnMarker.row);
+      return {
+        x: col * tileSize + (tileSize - hero.width) * 0.5,
+        y: (row + 1) * tileSize - hero.height,
+      };
+    }
+  }
+
+  return null;
+}
+
+function normalizeTilesetSource(source) {
+  if (!source || typeof source !== 'object') {
+    return null;
+  }
+
+  if (source.kind === 'atlas' || ('x' in source && 'y' in source)) {
+    return {
+      x: Number(source.x) || 0,
+      y: Number(source.y) || 0,
+      w: Number(source.width ?? source.w) || 0,
+      h: Number(source.height ?? source.h) || 0,
+    };
+  }
+
+  return null;
 }
