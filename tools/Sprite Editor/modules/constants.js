@@ -17,6 +17,7 @@ export const DEFAULT_WIDTH = 32;
 export const DEFAULT_HEIGHT = 32;
 export const DEFAULT_PIXEL_SIZE = 18;
 export const DEFAULT_FPS = 8;
+export const HISTORY_LIMIT = 50;
 
 export const MAX_RECENT_COLORS = 12;
 

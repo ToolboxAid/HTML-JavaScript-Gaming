@@ -49,6 +49,14 @@ index.html
       </div>
     </section>
 
+    <section class="state-row">
+      <p id="toolStateText" class="state-pill">Tool: Pencil</p>
+      <p id="activeColorText" class="state-pill">Color: #ff5a5aff</p>
+      <p id="frameStateText" class="state-pill">Frame: 1 / 1</p>
+      <p id="toggleStateText" class="state-pill">Grid: On | Onion: Off</p>
+      <p id="statusBarText" class="state-pill">Canvas: 32x32 | Zoom: 18 | Cursor: -, -</p>
+    </section>
+
     <section class="workspace">
       <div class="left-panel">
         <div class="panel-block">
@@ -71,8 +79,11 @@ index.html
             <button id="addFrameButton" type="button">Add</button>
             <button id="duplicateFrameButton" type="button">Duplicate</button>
             <button id="deleteFrameButton" type="button">Delete</button>
+            <button id="undoButton" type="button">Undo</button>
+            <button id="redoButton" type="button">Redo</button>
           </div>
           <p id="frameCounter" class="frame-counter">Frame 1 / 1</p>
+          <p class="hint-text">Shortcuts: [ / ] to change frame, Ctrl+Z undo, Ctrl+Y redo.</p>
           <label class="inline-toggle">
             <input id="onionSkinToggle" type="checkbox" />
             Onion skin
@@ -92,6 +103,7 @@ index.html
             <button id="exportSheetButton" type="button">Export Sprite Sheet</button>
             <input id="importPngInput" type="file" accept="image/png" class="hidden-input" />
           </div>
+          <p class="hint-text">Canvas resize preserves pixels. Create New Canvas resets to a fresh document.</p>
         </div>
       </div>
 
@@ -107,7 +119,8 @@ index.html
           <canvas id="previewCanvas" aria-label="Animation preview"></canvas>
           <div class="preview-controls">
             <button id="playPreviewButton" type="button">Play</button>
-            <button id="stopPreviewButton" type="button">Stop</button>
+            <button id="pausePreviewButton" type="button">Pause</button>
+            <button id="resetPreviewButton" type="button">Reset</button>
           </div>
           <label>FPS
             <input id="fpsInput" type="range" min="1" max="24" value="8" />
@@ -118,7 +131,7 @@ index.html
         <div class="panel-block">
           <h2>Status</h2>
           <p id="statusText" class="status-text">Ready.</p>
-          <p id="toolStateText" class="status-text">Tool: Pencil</p>
+          <p class="status-text">Shortcuts: P pencil, E eraser, F fill, G grid, O onion, [ ] frames.</p>
         </div>
       </div>
     </section>

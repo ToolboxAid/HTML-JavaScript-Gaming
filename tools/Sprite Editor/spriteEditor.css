@@ -62,6 +62,26 @@ spriteEditor.css
   background: color-mix(in srgb, var(--se-panel) 90%, black);
 }
 
+.state-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  border: 1px solid var(--se-panel-border);
+  border-radius: 12px;
+  padding: 0.6rem;
+  background: color-mix(in srgb, var(--se-panel) 90%, black);
+}
+
+.state-pill {
+  margin: 0;
+  border: 1px solid #3b6287;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.82rem;
+  color: var(--se-muted);
+  background: #112c47;
+}
+
 .toolbar-group {
   display: flex;
   align-items: center;
@@ -153,6 +173,7 @@ spriteEditor.css
   image-rendering: pixelated;
   cursor: crosshair;
   background: transparent;
+  touch-action: none;
 }
 
 #previewCanvas {
@@ -175,6 +196,12 @@ spriteEditor.css
 .frame-counter {
   margin: 0.6rem 0;
   color: var(--se-muted);
+}
+
+.hint-text {
+  margin: 0.45rem 0 0;
+  color: var(--se-muted);
+  font-size: 0.8rem;
 }
 
 .swatch-grid {

@@ -3,30 +3,38 @@ David Quesenberry
 04/03/2026
 change_summary.txt
 
-PLAN_PR target:
-Create a docs-only plan bundle for Sprite Editor usability polish without implementation edits.
+BUILD_PR target:
+Implement approved usability polish for the isolated Sprite Editor using PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH as source of truth.
 
-Planned BUILD scope (next step):
-- tools/Sprite Editor/** usability polish only
-- tools/index.html only if a tiny non-destructive update is strictly needed
-- docs/reports updates required by workflow
+Implemented areas:
+- tools/Sprite Editor/index.html
+  - Added persistent state row for tool/color/frame/toggle/canvas+cursor status visibility
+  - Added Undo/Redo controls
+  - Updated preview controls to Play/Pause/Reset
+  - Added usability hint text for shortcuts and resize/new-canvas behavior
+- tools/Sprite Editor/spriteEditor.css
+  - Added state row and state pill styling
+  - Added hint-text styling
+  - Added touch-action guard on editor canvas for pointer reliability
+- tools/Sprite Editor/modules/constants.js
+  - Added HISTORY_LIMIT for bounded undo/redo behavior
+- tools/Sprite Editor/modules/spriteEditorApp.js
+  - Added keyboard shortcuts (P/E/F/G/O/[ / ] + Ctrl+Z/Ctrl+Y/Ctrl+Shift+Z)
+  - Added bounded undo/redo stacks with UI controls
+  - Added explicit resize/new-canvas behavior messaging
+  - Added richer import/export/save/load feedback messages with file and size/frame context
+  - Added improved recent-color handling/rendering consistency for transparent swatches
+  - Added preview Play/Pause/Reset behavior and FPS status messages
+  - Added status bar updates for canvas/zoom/frame/cursor
+  - Added drag-stroke history-safe handling and pointer lifecycle reliability polish
+- tools/Sprite Editor/README.md
+  - Documented usability behavior contracts and shortcuts
 
-Planned polish focus:
-- state visibility
-- keyboard shortcuts
-- undo/redo
-- resize/new-canvas behavior clarity
-- import/export messaging clarity
-- recent-color polish
-- preview controls clarity
-- optional status bar telemetry
-- drag reliability
-- save/load UX cleanup
+Docs/build artifacts:
+- docs/pr/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH.md
+- CODEX_COMMANDS.md
 
-Locked exclusions:
-- no engine changes
-- no unrelated tools
-- no samples/games edits
-- no legacy sprite-editor path modifications
-
-This PLAN bundle is docs-only and contains no implementation code changes.
+Scope guardrails honored:
+- No engine changes
+- No unrelated tool changes
+- No modifications to pre-existing sprite editor implementations outside tools/Sprite Editor/

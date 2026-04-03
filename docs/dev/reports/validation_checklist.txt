@@ -3,26 +3,35 @@ David Quesenberry
 04/03/2026
 validation_checklist.txt
 
-PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH checklist
+BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH validation checklist
 
-Docs bundle validation:
-[x] PLAN doc created at docs/pr/PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH.md
-[x] CODEX_COMMANDS.md updated for BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH
-[x] change_summary.txt updated
-[x] validation_checklist.txt updated
-[x] file_tree.txt updated
-[x] Bundle is docs-only (no implementation code changes)
-[x] Scope boundaries clearly documented
-[x] In-scope / out-of-scope clearly documented
-[x] Exact likely BUILD file list documented
-[x] UX behavior contract documented for each polish item
-[x] Manual validation checklist documented
-[x] BUILD command documented
-[x] Commit comment documented
-[x] Next command documented
+Scope and safety:
+[x] Changes limited to tools/Sprite Editor and docs/reports bundle files
+[x] No engine changes
+[x] No unrelated tool changes
+[x] No pre-existing sprite editor paths outside tools/Sprite Editor modified
 
-Guardrail checks:
-[x] No engine scope introduced
-[x] No unrelated tool scope introduced
-[x] No legacy sprite-editor migration/refactor scope introduced
-[x] No destructive/deletion instructions included
+Usability contracts:
+[x] Active tool/color/frame/toggle visibility row implemented
+[x] Status bar includes canvas size, zoom, frame, and cursor pixel coordinates
+[x] Keyboard shortcuts implemented: P, E, F, G, O, [, ], Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
+[x] Undo/redo controls and history stack implemented
+[x] New canvas behavior explicitly resets document with status messaging
+[x] Resize behavior explicitly preserves pixels with nearest-neighbor status messaging
+[x] Import/export/save/load feedback messages include file and dimension/frame context
+[x] Recent color swatches remain deduped/newest-first and transparent swatches are visually distinct
+[x] Preview controls clarified to Play/Pause/Reset and FPS messaging is explicit
+[x] Pointer drag reliability improved with stroke-history and pointer lifecycle handling
+
+Syntax checks:
+[x] node --check tools/Sprite Editor/modules/spriteEditorApp.js
+[x] node --check tools/Sprite Editor/modules/constants.js
+[x] node --check tools/Sprite Editor/main.js
+
+Manual browser validation targets (for APPLY/QA pass):
+[ ] Open tools/Sprite Editor/index.html and confirm UI state row updates live
+[ ] Confirm all shortcuts perform expected actions
+[ ] Confirm undo/redo on draw/fill/frame/import/resize/new-canvas
+[ ] Confirm import/export/save/load messages in status panel
+[ ] Confirm preview play/pause/reset behavior and FPS feedback
+[ ] Confirm drag drawing remains reliable across fast pointer movement

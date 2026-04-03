@@ -21,6 +21,16 @@ Standalone browser-based Sprite Editor tool built as an isolated implementation 
 - Save/load editor project JSON
 - Transparent background support
 - Animation preview panel with FPS control
+- Persistent state row for active tool/color/frame/toggles + cursor position
+- Keyboard shortcuts: `P`, `E`, `F`, `G`, `O`, `[`, `]`, `Ctrl+Z`, `Ctrl+Y`, `Ctrl+Shift+Z`
+- Undo/redo history for drawing and editing actions
+
+## Usability behavior contract
+- `Create New Canvas` resets content to a fresh single-frame document.
+- Width/height resize preserves existing pixels via nearest-neighbor remap.
+- Import/export/save/load status messages include file and size/frame context when available.
+- Recent color swatches are deduplicated and newest-first.
+- Preview controls use Play/Pause/Reset semantics with visible FPS feedback.
 
 ## Entry point
 - `tools/Sprite Editor/index.html`

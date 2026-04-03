@@ -9,6 +9,7 @@ import {
   DEFAULT_HEIGHT,
   DEFAULT_PIXEL_SIZE,
   DEFAULT_WIDTH,
+  HISTORY_LIMIT,
   MAX_RECENT_COLORS,
   TOOL_IDS
 } from "./constants.js";
@@ -194,6 +195,22 @@ function setPixel(frame, width, height, x, y, color) {
   return true;
 }
 
+function willPixelChange(frame, width, height, x, y, color) {
+  if (x < 0 || y < 0 || x >= width || y >= height) {
+    return false;
+  }
+  const index = frameIndex(width, x, y);
+  const nextValue = color ? normalizeColor(color) : null;
+  return frame.pixels[index] !== nextValue;
+}
+
+function canFloodFill(frame, width, startX, startY, replacement) {
+  const startIndex = frameIndex(width, startX, startY);
+  const target = frame.pixels[startIndex] ?? null;
+  const nextValue = replacement ? normalizeColor(replacement) : null;
+  return target !== nextValue;
+}
+
 function floodFill(frame, width, height, startX, startY, replacement) {
   const startIndex = frameIndex(width, startX, startY);
   const target = frame.pixels[startIndex] ?? null;
@@ -261,8 +278,8 @@ function bresenhamLine(x0, y0, x1, y1, drawPoint) {
 
 function getCanvasPixelFromEvent(canvas, event, project) {
   const rect = canvas.getBoundingClientRect();
-  const relativeX = ((event.clientX - rect.left) * canvas.width) / rect.width;
-  const relativeY = ((event.clientY - rect.top) * canvas.height) / rect.height;
+  const relativeX = ((event.clientX - rect.left) * canvas.width) / Math.max(rect.width, 1);
+  const relativeY = ((event.clientY - rect.top) * canvas.height) / Math.max(rect.height, 1);
 
   const x = Math.floor(relativeX / project.pixelSize);
   const y = Math.floor(relativeY / project.pixelSize);
@@ -273,13 +290,109 @@ function getCanvasPixelFromEvent(canvas, event, project) {
   };
 }
 
+function isEditableTarget(target) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+  if (target.isContentEditable) {
+    return true;
+  }
+  return ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
+}
+
 function setStatus(state, message) {
   state.elements.statusText.textContent = message;
 }
 
+function syncControlsFromProject(state) {
+  state.elements.canvasWidthInput.value = String(state.project.width);
+  state.elements.canvasHeightInput.value = String(state.project.height);
+  state.elements.pixelSizeInput.value = String(state.project.pixelSize);
+  state.elements.gridToggle.checked = state.project.showGrid;
+  state.elements.onionSkinToggle.checked = state.project.onionSkin;
+  state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
+}
+
+function createHistorySnapshot(state) {
+  return {
+    project: serializeProject(state.project),
+    projectTool: state.projectTool,
+    previewFrameIndex: state.preview.frameIndex
+  };
+}
+
+function applyHistorySnapshot(state, snapshot) {
+  state.project = ensureProjectShape(snapshot.project);
+  state.projectTool = snapshot.projectTool ?? TOOL_IDS.PENCIL;
+  syncControlsFromProject(state);
+  state.preview.frameIndex = clamp(snapshot.previewFrameIndex, 0, state.project.frames.length - 1, state.project.currentFrameIndex);
+}
+
+function updateHistoryButtons(state) {
+  state.elements.undoButton.disabled = state.history.undoStack.length === 0;
+  state.elements.redoButton.disabled = state.history.redoStack.length === 0;
+}
+
+function pushHistory(state) {
+  state.history.undoStack.push(createHistorySnapshot(state));
+  if (state.history.undoStack.length > state.history.limit) {
+    state.history.undoStack.shift();
+  }
+  state.history.redoStack = [];
+  updateHistoryButtons(state);
+}
+
+function undo(state) {
+  if (state.history.undoStack.length === 0) {
+    setStatus(state, "Nothing to undo.");
+    return;
+  }
+
+  const snapshot = state.history.undoStack.pop();
+  state.history.redoStack.push(createHistorySnapshot(state));
+  applyHistorySnapshot(state, snapshot);
+  updateHistoryButtons(state);
+  setStatus(state, "Undo applied.");
+  renderAll(state);
+}
+
+function redo(state) {
+  if (state.history.redoStack.length === 0) {
+    setStatus(state, "Nothing to redo.");
+    return;
+  }
+
+  const snapshot = state.history.redoStack.pop();
+  state.history.undoStack.push(createHistorySnapshot(state));
+  applyHistorySnapshot(state, snapshot);
+  updateHistoryButtons(state);
+  setStatus(state, "Redo applied.");
+  renderAll(state);
+}
+
+function applySwatchVisual(button, color) {
+  if (isTransparent(color)) {
+    button.style.background = "linear-gradient(45deg, #2c445d 25%, #4d6a87 25%, #4d6a87 50%, #2c445d 50%, #2c445d 75%, #4d6a87 75%, #4d6a87 100%)";
+    button.style.backgroundSize = "10px 10px";
+    return;
+  }
+  button.style.background = normalizeColor(color);
+}
+
+function updateStatusBar(state) {
+  const cursorLabel = state.cursor.x === null || state.cursor.y === null
+    ? "-, -"
+    : `${state.cursor.x}, ${state.cursor.y}`;
+  state.elements.statusBarText.textContent = `Canvas: ${state.project.width}x${state.project.height} | Zoom: ${state.project.pixelSize} | Frame: ${state.project.currentFrameIndex + 1}/${state.project.frames.length} | Cursor: ${cursorLabel}`;
+}
+
 function updateToolStateText(state) {
   const toolName = state.projectTool[0].toUpperCase() + state.projectTool.slice(1);
-  state.elements.toolStateText.textContent = `Tool: ${toolName} | Color: ${state.project.activeColor} | Frame: ${state.project.currentFrameIndex + 1}`;
+  state.elements.toolStateText.textContent = `Tool: ${toolName}`;
+  state.elements.activeColorText.textContent = `Color: ${state.project.activeColor}`;
+  state.elements.frameStateText.textContent = `Frame: ${state.project.currentFrameIndex + 1} / ${state.project.frames.length}`;
+  state.elements.toggleStateText.textContent = `Grid: ${state.project.showGrid ? "On" : "Off"} | Onion: ${state.project.onionSkin ? "On" : "Off"}`;
+  updateStatusBar(state);
 }
 
 function renderPalette(state) {
@@ -293,16 +406,12 @@ function renderPalette(state) {
     if (normalizeColor(color) === state.project.activeColor) {
       button.classList.add("active");
     }
-    if (isTransparent(color)) {
-      button.style.background = "linear-gradient(45deg, #2c445d 25%, #4d6a87 25%, #4d6a87 50%, #2c445d 50%, #2c445d 75%, #4d6a87 75%, #4d6a87 100%)";
-      button.style.backgroundSize = "10px 10px";
-    } else {
-      button.style.background = normalizeColor(color);
-    }
+    applySwatchVisual(button, color);
     button.title = normalizeColor(color);
     button.addEventListener("click", () => {
       selectColor(state.project, color);
       state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
+      setStatus(state, `Active color set to ${state.project.activeColor}.`);
       renderHud(state);
       renderEditor(state);
     });
@@ -321,11 +430,12 @@ function renderRecentColors(state) {
     if (normalizeColor(color) === state.project.activeColor) {
       button.classList.add("active");
     }
-    button.style.background = normalizeColor(color);
+    applySwatchVisual(button, color);
     button.title = normalizeColor(color);
     button.addEventListener("click", () => {
       selectColor(state.project, color);
       state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
+      setStatus(state, `Picked recent color ${state.project.activeColor}.`);
       renderHud(state);
       renderEditor(state);
     });
@@ -358,6 +468,7 @@ function renderHud(state) {
   renderPalette(state);
   renderRecentColors(state);
   updateToolStateText(state);
+  updateHistoryButtons(state);
 }
 
 function renderEditor(state) {
@@ -438,6 +549,7 @@ function resetProject(state) {
   const width = clamp(state.elements.canvasWidthInput.value, 1, 256, DEFAULT_WIDTH);
   const height = clamp(state.elements.canvasHeightInput.value, 1, 256, DEFAULT_HEIGHT);
 
+  pushHistory(state);
   state.project = createNewProject({
     width,
     height,
@@ -448,36 +560,40 @@ function resetProject(state) {
     palette: state.project.palette
   });
 
+  syncControlsFromProject(state);
   state.preview.frameIndex = 0;
-  setStatus(state, `Created new ${width}x${height} sprite canvas.`);
+  setStatus(state, `Created fresh ${width}x${height} canvas. Existing pixels were reset.`);
   renderAll(state);
 }
 
 function addFrame(state) {
+  pushHistory(state);
   const insertAt = state.project.currentFrameIndex + 1;
   const frame = createEmptyFrame(state.project.width, state.project.height);
   state.project.frames.splice(insertAt, 0, frame);
   state.project.currentFrameIndex = insertAt;
   state.preview.frameIndex = state.project.currentFrameIndex;
-  setStatus(state, "Added frame.");
+  setStatus(state, `Added frame ${state.project.currentFrameIndex + 1}.`);
   renderAll(state);
 }
 
 function duplicateFrame(state) {
+  pushHistory(state);
   const current = state.project.frames[state.project.currentFrameIndex];
   const copy = cloneFrame(current);
   const insertAt = state.project.currentFrameIndex + 1;
   state.project.frames.splice(insertAt, 0, copy);
   state.project.currentFrameIndex = insertAt;
   state.preview.frameIndex = state.project.currentFrameIndex;
-  setStatus(state, "Duplicated current frame.");
+  setStatus(state, `Duplicated into frame ${state.project.currentFrameIndex + 1}.`);
   renderAll(state);
 }
 
 function deleteFrame(state) {
+  pushHistory(state);
   if (state.project.frames.length === 1) {
     state.project.frames[0] = createEmptyFrame(state.project.width, state.project.height);
-    setStatus(state, "Cleared the only frame (at least one frame is required).");
+    setStatus(state, "Cleared the only frame (minimum one frame is always preserved).");
     renderAll(state);
     return;
   }
@@ -485,7 +601,7 @@ function deleteFrame(state) {
   state.project.frames.splice(state.project.currentFrameIndex, 1);
   state.project.currentFrameIndex = Math.max(0, Math.min(state.project.currentFrameIndex, state.project.frames.length - 1));
   state.preview.frameIndex = state.project.currentFrameIndex;
-  setStatus(state, "Deleted frame.");
+  setStatus(state, `Deleted frame. Active frame is now ${state.project.currentFrameIndex + 1}.`);
   renderAll(state);
 }
 
@@ -495,22 +611,25 @@ function shiftFrame(state, direction) {
   if (!state.preview.playing) {
     state.preview.frameIndex = nextIndex;
   }
-  setStatus(state, `Moved to frame ${nextIndex + 1}.`);
+  setStatus(state, `Moved to frame ${nextIndex + 1} of ${state.project.frames.length}.`);
   renderAll(state);
 }
 
 async function importPngIntoCurrentFrame(state, file) {
   const image = await fileToImage(file);
+  let resizeDecision = "not needed";
 
   if (image.width !== state.project.width || image.height !== state.project.height) {
     const shouldResize = window.confirm(
-      `Imported PNG is ${image.width}x${image.height} but project is ${state.project.width}x${state.project.height}. Resize project to match the PNG?`
+      `Imported PNG is ${image.width}x${image.height} but canvas is ${state.project.width}x${state.project.height}. Resize canvas to match and preserve pixels first?`
     );
 
     if (shouldResize) {
+      resizeDecision = "accepted";
       state.project = resizeProject(state.project, image.width, image.height);
-      state.elements.canvasWidthInput.value = String(state.project.width);
-      state.elements.canvasHeightInput.value = String(state.project.height);
+      syncControlsFromProject(state);
+    } else {
+      resizeDecision = "declined";
     }
   }
 
@@ -543,7 +662,10 @@ async function importPngIntoCurrentFrame(state, file) {
   }
 
   state.project.frames[state.project.currentFrameIndex] = frame;
-  setStatus(state, `Imported PNG into frame ${state.project.currentFrameIndex + 1}.`);
+  setStatus(
+    state,
+    `Imported ${file.name} into frame ${state.project.currentFrameIndex + 1} (${image.width}x${image.height} -> ${targetWidth}x${targetHeight}, resize ${resizeDecision}).`
+  );
   renderAll(state);
 }
 
@@ -551,17 +673,17 @@ async function exportCurrentFramePng(state) {
   const frame = state.project.frames[state.project.currentFrameIndex];
   const frameCanvas = createImageFromFrame(frame, state.project.width, state.project.height);
   const blob = await canvasToBlob(frameCanvas);
-  const filename = `sprite-frame-${state.project.currentFrameIndex + 1}.png`;
+  const filename = `sprite-frame-${state.project.currentFrameIndex + 1}-${state.project.width}x${state.project.height}.png`;
   downloadBlob(blob, filename);
-  setStatus(state, `Exported ${filename}.`);
+  setStatus(state, `Exported ${filename} (${state.project.width}x${state.project.height}).`);
 }
 
 async function exportSpriteSheetPng(state) {
   const sheetCanvas = createSpriteSheetCanvas(state.project);
   const blob = await canvasToBlob(sheetCanvas);
-  const filename = `sprite-sheet-${state.project.frames.length}f.png`;
+  const filename = `sprite-sheet-${state.project.frames.length}f-${state.project.width}x${state.project.height}.png`;
   downloadBlob(blob, filename);
-  setStatus(state, `Exported ${filename}.`);
+  setStatus(state, `Exported ${filename} (${sheetCanvas.width}x${sheetCanvas.height}).`);
 }
 
 async function saveProjectJson(state) {
@@ -570,20 +692,17 @@ async function saveProjectJson(state) {
   const blob = new Blob([json], { type: "application/json" });
   const filename = `sprite-project-${state.project.width}x${state.project.height}-${state.project.frames.length}f.json`;
   downloadBlob(blob, filename);
-  setStatus(state, `Saved ${filename}.`);
+  setStatus(state, `Saved ${filename} (frame ${state.project.currentFrameIndex + 1} active).`);
 }
 
 async function loadProjectJson(state, file) {
   const text = await fileToText(file);
   const parsed = JSON.parse(text);
-  state.project = ensureProjectShape(parsed);
-  state.elements.canvasWidthInput.value = String(state.project.width);
-  state.elements.canvasHeightInput.value = String(state.project.height);
-  state.elements.pixelSizeInput.value = String(state.project.pixelSize);
-  state.elements.gridToggle.checked = state.project.showGrid;
-  state.elements.onionSkinToggle.checked = state.project.onionSkin;
+  const nextProject = ensureProjectShape(parsed);
+  state.project = nextProject;
+  syncControlsFromProject(state);
   state.preview.frameIndex = state.project.currentFrameIndex;
-  setStatus(state, "Loaded project JSON.");
+  setStatus(state, `Loaded ${file.name} (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames).`);
   renderAll(state);
 }
 
@@ -591,10 +710,18 @@ function bindPointerDrawing(state) {
   const canvas = state.elements.editorCanvas;
   let pointerDown = false;
   let lastPoint = null;
+  let strokeHistoryPushed = false;
 
   const applyDrawAt = (x, y) => {
     const frame = state.project.frames[state.project.currentFrameIndex];
     const color = state.projectTool === TOOL_IDS.ERASER ? null : state.project.activeColor;
+    if (!willPixelChange(frame, state.project.width, state.project.height, x, y, color)) {
+      return false;
+    }
+    if (!strokeHistoryPushed) {
+      pushHistory(state);
+      strokeHistoryPushed = true;
+    }
     return setPixel(frame, state.project.width, state.project.height, x, y, color);
   };
 
@@ -604,16 +731,20 @@ function bindPointerDrawing(state) {
     }
 
     const point = getCanvasPixelFromEvent(canvas, event, state.project);
+    state.cursor.x = point.x;
+    state.cursor.y = point.y;
 
     if (state.projectTool === TOOL_IDS.FILL) {
       const frame = state.project.frames[state.project.currentFrameIndex];
       const fillColor = state.project.activeColor;
-      const changed = floodFill(frame, state.project.width, state.project.height, point.x, point.y, fillColor);
-      if (changed) {
-        setStatus(state, "Fill applied.");
+      if (canFloodFill(frame, state.project.width, point.x, point.y, fillColor)) {
+        pushHistory(state);
+        floodFill(frame, state.project.width, state.project.height, point.x, point.y, fillColor);
+        setStatus(state, `Fill applied on frame ${state.project.currentFrameIndex + 1}.`);
         renderEditor(state);
         renderPreview(state);
       }
+      renderHud(state);
       return;
     }
 
@@ -625,14 +756,19 @@ function bindPointerDrawing(state) {
       renderEditor(state);
       renderPreview(state);
     }
+    renderHud(state);
   };
 
   const onPointerMove = (event) => {
+    const point = getCanvasPixelFromEvent(canvas, event, state.project);
+    state.cursor.x = point.x;
+    state.cursor.y = point.y;
+
     if (!pointerDown || !lastPoint) {
+      renderHud(state);
       return;
     }
 
-    const point = getCanvasPixelFromEvent(canvas, event, state.project);
     let changed = false;
 
     bresenhamLine(lastPoint.x, lastPoint.y, point.x, point.y, (x, y) => {
@@ -647,6 +783,7 @@ function bindPointerDrawing(state) {
       renderEditor(state);
       renderPreview(state);
     }
+    renderHud(state);
   };
 
   const onPointerUp = (event) => {
@@ -656,16 +793,112 @@ function bindPointerDrawing(state) {
 
     pointerDown = false;
     lastPoint = null;
+    strokeHistoryPushed = false;
     if (canvas.hasPointerCapture(event.pointerId)) {
       canvas.releasePointerCapture(event.pointerId);
     }
+  };
+
+  const onPointerLeave = () => {
+    state.cursor.x = null;
+    state.cursor.y = null;
+    renderHud(state);
   };
 
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointermove", onPointerMove);
   canvas.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("pointercancel", onPointerUp);
+  canvas.addEventListener("lostpointercapture", () => {
+    pointerDown = false;
+    lastPoint = null;
+    strokeHistoryPushed = false;
+  });
+  canvas.addEventListener("pointerleave", onPointerLeave);
   canvas.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
+function bindShortcuts(state) {
+  window.addEventListener("keydown", (event) => {
+    if (isEditableTarget(event.target)) {
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+
+    if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+      if (key === "z" && !event.shiftKey) {
+        event.preventDefault();
+        undo(state);
+        return;
+      }
+
+      if (key === "y" || (key === "z" && event.shiftKey)) {
+        event.preventDefault();
+        redo(state);
+        return;
+      }
+    }
+
+    if (event.ctrlKey || event.metaKey || event.altKey) {
+      return;
+    }
+
+    if (key === "p") {
+      event.preventDefault();
+      state.projectTool = TOOL_IDS.PENCIL;
+      setStatus(state, "Tool set to Pencil.");
+      renderHud(state);
+      return;
+    }
+
+    if (key === "e") {
+      event.preventDefault();
+      state.projectTool = TOOL_IDS.ERASER;
+      setStatus(state, "Tool set to Eraser.");
+      renderHud(state);
+      return;
+    }
+
+    if (key === "f") {
+      event.preventDefault();
+      state.projectTool = TOOL_IDS.FILL;
+      setStatus(state, "Tool set to Fill.");
+      renderHud(state);
+      return;
+    }
+
+    if (key === "g") {
+      event.preventDefault();
+      state.project.showGrid = !state.project.showGrid;
+      state.elements.gridToggle.checked = state.project.showGrid;
+      setStatus(state, `Grid ${state.project.showGrid ? "enabled" : "disabled"} via shortcut.`);
+      renderEditor(state);
+      renderHud(state);
+      return;
+    }
+
+    if (key === "o") {
+      event.preventDefault();
+      state.project.onionSkin = !state.project.onionSkin;
+      state.elements.onionSkinToggle.checked = state.project.onionSkin;
+      setStatus(state, `Onion skin ${state.project.onionSkin ? "enabled" : "disabled"} via shortcut.`);
+      renderEditor(state);
+      renderHud(state);
+      return;
+    }
+
+    if (event.key === "[") {
+      event.preventDefault();
+      shiftFrame(state, -1);
+      return;
+    }
+
+    if (event.key === "]") {
+      event.preventDefault();
+      shiftFrame(state, 1);
+    }
+  });
 }
 
 function bindControls(state) {
@@ -687,32 +920,40 @@ function bindControls(state) {
     newCanvasButton,
     nextFrameButton,
     onionSkinToggle,
+    pausePreviewButton,
     pixelSizeInput,
     playPreviewButton,
     prevFrameButton,
+    redoButton,
+    resetPreviewButton,
     saveProjectButton,
-    stopPreviewButton,
-    toolButtons
+    toolButtons,
+    undoButton
   } = state.elements;
 
   newCanvasButton.addEventListener("click", () => {
     resetProject(state);
   });
 
+  const resizeWithFeedback = (nextWidth, nextHeight) => {
+    if (nextWidth === state.project.width && nextHeight === state.project.height) {
+      return;
+    }
+    pushHistory(state);
+    state.project = resizeProject(state.project, nextWidth, nextHeight);
+    syncControlsFromProject(state);
+    setStatus(state, `Resized canvas to ${state.project.width}x${state.project.height} (preserve mode: nearest-neighbor).`);
+    renderAll(state);
+  };
+
   canvasWidthInput.addEventListener("change", () => {
     const width = clamp(canvasWidthInput.value, 1, 256, state.project.width);
-    state.project = resizeProject(state.project, width, state.project.height);
-    canvasWidthInput.value = String(state.project.width);
-    setStatus(state, `Updated width to ${state.project.width}.`);
-    renderAll(state);
+    resizeWithFeedback(width, state.project.height);
   });
 
   canvasHeightInput.addEventListener("change", () => {
     const height = clamp(canvasHeightInput.value, 1, 256, state.project.height);
-    state.project = resizeProject(state.project, state.project.width, height);
-    canvasHeightInput.value = String(state.project.height);
-    setStatus(state, `Updated height to ${state.project.height}.`);
-    renderAll(state);
+    resizeWithFeedback(state.project.width, height);
   });
 
   pixelSizeInput.addEventListener("input", () => {
@@ -762,21 +1003,30 @@ function bindControls(state) {
   deleteFrameButton.addEventListener("click", () => deleteFrame(state));
   prevFrameButton.addEventListener("click", () => shiftFrame(state, -1));
   nextFrameButton.addEventListener("click", () => shiftFrame(state, 1));
+  undoButton.addEventListener("click", () => undo(state));
+  redoButton.addEventListener("click", () => redo(state));
 
   playPreviewButton.addEventListener("click", () => {
     state.preview.playing = true;
-    setStatus(state, "Preview playback started.");
+    setStatus(state, `Preview playing at ${state.preview.fps} FPS.`);
   });
 
-  stopPreviewButton.addEventListener("click", () => {
+  pausePreviewButton.addEventListener("click", () => {
+    state.preview.playing = false;
+    setStatus(state, "Preview paused.");
+    renderPreview(state);
+  });
+
+  resetPreviewButton.addEventListener("click", () => {
     state.preview.playing = false;
     state.preview.frameIndex = state.project.currentFrameIndex;
-    setStatus(state, "Preview playback stopped.");
+    setStatus(state, `Preview reset to frame ${state.project.currentFrameIndex + 1}.`);
     renderPreview(state);
   });
 
   fpsInput.addEventListener("input", () => {
     state.preview.fps = clamp(fpsInput.value, 1, 24, DEFAULT_FPS);
+    setStatus(state, `Preview FPS set to ${state.preview.fps}.`);
     renderHud(state);
   });
 
@@ -789,9 +1039,10 @@ function bindControls(state) {
     }
 
     try {
+      pushHistory(state);
       await importPngIntoCurrentFrame(state, file);
     } catch (error) {
-      setStatus(state, `PNG import failed: ${error instanceof Error ? error.message : "unknown error"}`);
+      setStatus(state, `PNG import failed for ${file.name}: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   });
 
@@ -830,7 +1081,7 @@ function bindControls(state) {
     try {
       await loadProjectJson(state, file);
     } catch (error) {
-      setStatus(state, `JSON load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+      setStatus(state, `JSON load failed for ${file.name}: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   });
 }
@@ -877,8 +1128,18 @@ export function initializeSpriteEditorApp() {
       lastTimestamp: 0,
       accumulatorMs: 0
     },
+    history: {
+      undoStack: [],
+      redoStack: [],
+      limit: HISTORY_LIMIT
+    },
+    cursor: {
+      x: null,
+      y: null
+    },
     elements: {
       activeColorSwatch: getRequiredElement("activeColorSwatch"),
+      activeColorText: getRequiredElement("activeColorText"),
       addFrameButton: getRequiredElement("addFrameButton"),
       canvasHeightInput: getRequiredElement("canvasHeightInput"),
       canvasWidthInput: getRequiredElement("canvasWidthInput"),
@@ -891,6 +1152,7 @@ export function initializeSpriteEditorApp() {
       fpsInput: getRequiredElement("fpsInput"),
       fpsValue: getRequiredElement("fpsValue"),
       frameCounter: getRequiredElement("frameCounter"),
+      frameStateText: getRequiredElement("frameStateText"),
       gridToggle: getRequiredElement("gridToggle"),
       importPngButton: getRequiredElement("importPngButton"),
       importPngInput: getRequiredElement("importPngInput"),
@@ -899,6 +1161,7 @@ export function initializeSpriteEditorApp() {
       newCanvasButton: getRequiredElement("newCanvasButton"),
       nextFrameButton: getRequiredElement("nextFrameButton"),
       onionSkinToggle: getRequiredElement("onionSkinToggle"),
+      pausePreviewButton: getRequiredElement("pausePreviewButton"),
       paletteButtons: getRequiredElement("paletteButtons"),
       pixelSizeInput: getRequiredElement("pixelSizeInput"),
       pixelSizeValue: getRequiredElement("pixelSizeValue"),
@@ -906,22 +1169,23 @@ export function initializeSpriteEditorApp() {
       prevFrameButton: getRequiredElement("prevFrameButton"),
       previewCanvas: getRequiredElement("previewCanvas"),
       recentColorButtons: getRequiredElement("recentColorButtons"),
+      redoButton: getRequiredElement("redoButton"),
+      resetPreviewButton: getRequiredElement("resetPreviewButton"),
       saveProjectButton: getRequiredElement("saveProjectButton"),
+      statusBarText: getRequiredElement("statusBarText"),
       statusText: getRequiredElement("statusText"),
-      stopPreviewButton: getRequiredElement("stopPreviewButton"),
+      toggleStateText: getRequiredElement("toggleStateText"),
       toolButtons: getRequiredElement("toolButtons"),
-      toolStateText: getRequiredElement("toolStateText")
+      toolStateText: getRequiredElement("toolStateText"),
+      undoButton: getRequiredElement("undoButton")
     }
   };
 
-  state.elements.canvasWidthInput.value = String(state.project.width);
-  state.elements.canvasHeightInput.value = String(state.project.height);
-  state.elements.pixelSizeInput.value = String(state.project.pixelSize);
-  state.elements.gridToggle.checked = state.project.showGrid;
-  state.elements.onionSkinToggle.checked = state.project.onionSkin;
+  syncControlsFromProject(state);
   state.elements.fpsInput.value = String(state.preview.fps);
 
   bindControls(state);
+  bindShortcuts(state);
   bindPointerDrawing(state);
   renderAll(state);
   startPreviewLoop(state);

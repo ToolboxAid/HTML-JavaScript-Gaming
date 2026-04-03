@@ -9,36 +9,31 @@ REASONING: high
 COMMAND:
 Create BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH.
 
+Use docs/pr/PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH.md as the approved plan source of truth.
+
 Goal:
-Implement a small, surgical usability-polish PR for the isolated Sprite Editor now that core features are working.
+Implement the approved usability-polish PR for the isolated Sprite Editor only.
 
 Scope rules:
-1. Do not review, modify, migrate, or delete any pre-existing sprite editor outside tools/Sprite Editor/
-2. Keep scope limited to tools/Sprite Editor/, tools/index.html only if needed, and docs/reports
-3. Do not expand into engine or unrelated tools
-4. Docs-first
-5. One PR per purpose
-6. Preserve required file headers
-7. No destructive changes
+1. Only implement the approved polish items from the plan.
+2. Do not expand scope beyond the approved plan.
+3. Do not review, modify, migrate, or delete any pre-existing sprite editor outside tools/Sprite Editor/
+4. Do not touch engine code or unrelated tools.
+5. Leave unrelated workspace modifications untouched.
+6. Preserve required file headers on all new files.
+7. Follow repo workflow and keep this PR small and surgical.
 
-Polish targets:
+Primary implementation targets:
 - Better tool-state visibility for active tool / active color / active frame
-- Keyboard shortcuts plan (pencil, eraser, fill, grid toggle, onion skin toggle, frame next/prev)
-- Undo/redo implementation
-- Clear resize/new-canvas behavior contract messaging
+- Keyboard shortcuts for approved actions from the plan
+- Undo/redo if approved in the plan
+- Clear resize/new-canvas behavior based on the approved contract
 - Better import/export feedback messaging
 - Improved recent-color swatch behavior
-- Preview panel polish for FPS/play/pause clarity
-- Optional status bar (canvas size, zoom, active frame, cursor pixel position)
-- Mouse drag drawing reliability polish
+- Preview panel polish for FPS / play / pause clarity
+- Optional status bar if approved in the plan
+- Mouse interaction polish for drag drawing reliability
 - Save/load UX cleanup
-
-Required outputs:
-- docs/pr/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH.md
-- CODEX_COMMANDS.md
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/reports/file_tree.txt
 
 Packaging:
 - tmp/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH_delta.zip
