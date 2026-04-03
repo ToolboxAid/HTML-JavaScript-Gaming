@@ -11,9 +11,11 @@ import {
   DEFAULT_WIDTH,
   HISTORY_LIMIT,
   MAX_RECENT_COLORS,
+  NO_PALETTE_ID,
+  PALETTE_SOURCE_ID,
   TOOL_IDS
 } from "./constants.js";
-import { colorToPickerValue, dedupeColors, isTransparent, normalizeColor, rgbaToHex, withOpaqueAlpha } from "./colorUtils.js";
+import { colorToPickerValue, dedupeColors, isTransparent, normalizeColor, rgbaToHex } from "./colorUtils.js";
 import {
   cloneFrame,
   createEmptyFrame,
@@ -38,6 +40,72 @@ function clamp(value, min, max, fallback) {
     return fallback;
   }
   return Math.max(min, Math.min(max, parsed));
+}
+
+function normalizePaletteEntryColor(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return null;
+  }
+  return normalizeColor(value);
+}
+
+function extractPaletteColors(rawEntries) {
+  if (!Array.isArray(rawEntries)) {
+    return [];
+  }
+
+  const colors = [];
+  const seen = new Set();
+  rawEntries.forEach((entry) => {
+    const next = normalizePaletteEntryColor(entry?.hex);
+    if (!next || seen.has(next)) {
+      return;
+    }
+    seen.add(next);
+    colors.push(next);
+  });
+  return colors;
+}
+
+function buildEnginePaletteCatalog() {
+  const source = globalThis.palettesList;
+  if (!source || typeof source !== "object") {
+    return {
+      available: false,
+      groups: {},
+      options: [],
+      error: "Engine palette list is unavailable. Confirm ../../engine/paletteList.js is loaded."
+    };
+  }
+
+  const groups = {};
+  const options = [{ id: NO_PALETTE_ID, label: "Select Palette..." }];
+  const names = Object.keys(source);
+
+  names.forEach((name) => {
+    const colors = extractPaletteColors(source[name]);
+    if (colors.length === 0) {
+      return;
+    }
+    groups[name] = colors;
+    options.push({ id: name, label: name });
+  });
+
+  if (options.length <= 1) {
+    return {
+      available: false,
+      groups: {},
+      options,
+      error: "Engine palette list loaded but no usable palettes were found."
+    };
+  }
+
+  return {
+    available: true,
+    groups,
+    options,
+    error: ""
+  };
 }
 
 function downloadBlob(blob, filename) {
@@ -304,18 +372,178 @@ function setStatus(state, message) {
   state.elements.statusText.textContent = message;
 }
 
+function isPaletteSelected(project) {
+  return Boolean(project.paletteRef?.id && project.paletteRef.id !== NO_PALETTE_ID);
+}
+
+function isPaletteLocked(project) {
+  return isPaletteSelected(project) && project.paletteRef?.locked === true;
+}
+
+function isEditingEnabled(state) {
+  return Boolean(
+    state.enginePalette.available
+    && isPaletteLocked(state.project)
+    && Array.isArray(state.project.palette)
+    && state.project.palette.length > 0
+    && typeof state.project.activeColor === "string"
+  );
+}
+
+function ensureEditingEnabled(state, blockedMessage = "Select and lock a palette before editing.") {
+  if (isEditingEnabled(state)) {
+    return true;
+  }
+  setStatus(state, blockedMessage);
+  return false;
+}
+
+function renderPaletteSelect(state) {
+  const select = state.elements.paletteSelect;
+  select.innerHTML = "";
+
+  const options = state.enginePalette.options.length > 0
+    ? state.enginePalette.options
+    : [{ id: NO_PALETTE_ID, label: "Select Palette..." }];
+
+  options.forEach((entry) => {
+    const option = document.createElement("option");
+    option.value = entry.id;
+    option.textContent = entry.label;
+    select.appendChild(option);
+  });
+
+  const selectedId = state.project.paletteRef?.id ?? NO_PALETTE_ID;
+  const hasSelectedOption = options.some((entry) => entry.id === selectedId);
+  select.value = hasSelectedOption ? selectedId : NO_PALETTE_ID;
+  select.disabled = !state.enginePalette.available || isPaletteLocked(state.project);
+}
+
+function updatePaletteLockText(state) {
+  if (!state.enginePalette.available) {
+    state.elements.paletteLockText.textContent = state.enginePalette.error || "Engine palette list unavailable. Editing is disabled.";
+    return;
+  }
+
+  if (!isPaletteLocked(state.project)) {
+    state.elements.paletteLockText.textContent = "Palette not selected. Editing is disabled until you select one from the engine list.";
+    return;
+  }
+
+  state.elements.paletteLockText.textContent = `Palette locked to ${state.project.paletteRef.id}. Use Create New Canvas to unlock and choose a different palette.`;
+}
+
+function applyLockedPaletteToProject(state, paletteId, options = {}) {
+  const colors = state.enginePalette.groups[paletteId];
+  if (!Array.isArray(colors) || colors.length === 0) {
+    return false;
+  }
+
+  const previousActive = typeof state.project.activeColor === "string"
+    ? normalizeColor(state.project.activeColor)
+    : null;
+
+  state.project.palette = dedupeColors(colors).slice(0, 256);
+  state.project.paletteRef = {
+    source: PALETTE_SOURCE_ID,
+    id: paletteId,
+    locked: true
+  };
+
+  if (options.preferExistingActiveColor && previousActive && state.project.palette.includes(previousActive)) {
+    state.project.activeColor = previousActive;
+  } else {
+    state.project.activeColor = state.project.palette[0];
+  }
+
+  if (!Array.isArray(state.project.recentColors)) {
+    state.project.recentColors = [];
+  }
+
+  if (state.project.activeColor) {
+    const recent = dedupeColors([state.project.activeColor, ...state.project.recentColors]).slice(0, MAX_RECENT_COLORS);
+    state.project.recentColors = recent;
+  } else {
+    state.project.recentColors = [];
+  }
+
+  return true;
+}
+
+function clearPaletteLock(state) {
+  state.project.paletteRef = {
+    source: PALETTE_SOURCE_ID,
+    id: NO_PALETTE_ID,
+    locked: false
+  };
+  state.project.palette = [];
+  state.project.activeColor = null;
+  state.project.recentColors = [];
+  state.projectTool = TOOL_IDS.PENCIL;
+}
+
+function hydratePaletteFromRefIfPossible(state) {
+  const paletteId = state.project.paletteRef?.id;
+  if (!paletteId || paletteId === NO_PALETTE_ID) {
+    return false;
+  }
+
+  if (!state.enginePalette.available) {
+    return false;
+  }
+
+  const locked = applyLockedPaletteToProject(state, paletteId, { preferExistingActiveColor: true });
+  if (!locked) {
+    clearPaletteLock(state);
+    return false;
+  }
+  return true;
+}
+
+function updateEditGateDisabledState(state) {
+  const editable = isEditingEnabled(state);
+  const toolButtons = state.elements.toolButtons.querySelectorAll("[data-tool]");
+
+  toolButtons.forEach((button) => {
+    if (button instanceof HTMLButtonElement) {
+      button.disabled = !editable;
+    }
+  });
+
+  state.elements.canvasWidthInput.disabled = !editable;
+  state.elements.canvasHeightInput.disabled = !editable;
+  state.elements.addFrameButton.disabled = !editable;
+  state.elements.duplicateFrameButton.disabled = !editable;
+  state.elements.deleteFrameButton.disabled = !editable;
+  state.elements.prevFrameButton.disabled = !editable;
+  state.elements.nextFrameButton.disabled = !editable;
+  state.elements.importPngButton.disabled = !editable;
+  state.elements.exportPngButton.disabled = !editable;
+  state.elements.exportSheetButton.disabled = !editable;
+  state.elements.gridToggle.disabled = !editable;
+  state.elements.onionSkinToggle.disabled = !editable;
+  state.elements.undoButton.disabled = !editable || state.history.undoStack.length === 0;
+  state.elements.redoButton.disabled = !editable || state.history.redoStack.length === 0;
+  state.elements.colorPicker.disabled = true;
+}
+
 function syncControlsFromProject(state) {
   state.elements.canvasWidthInput.value = String(state.project.width);
   state.elements.canvasHeightInput.value = String(state.project.height);
   state.elements.pixelSizeInput.value = String(state.project.pixelSize);
   state.elements.gridToggle.checked = state.project.showGrid;
   state.elements.onionSkinToggle.checked = state.project.onionSkin;
-  state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
+  state.elements.colorPicker.value = typeof state.project.activeColor === "string"
+    ? colorToPickerValue(state.project.activeColor)
+    : "#000000";
+  renderPaletteSelect(state);
+  updatePaletteLockText(state);
+  updateEditGateDisabledState(state);
 }
 
 function createHistorySnapshot(state) {
   return {
-    project: serializeProject(state.project),
+    project: serializeProject(state.project, { includePalette: true }),
     projectTool: state.projectTool,
     previewFrameIndex: state.preview.frameIndex
   };
@@ -323,6 +551,7 @@ function createHistorySnapshot(state) {
 
 function applyHistorySnapshot(state, snapshot) {
   state.project = ensureProjectShape(snapshot.project);
+  hydratePaletteFromRefIfPossible(state);
   state.projectTool = snapshot.projectTool ?? TOOL_IDS.PENCIL;
   syncControlsFromProject(state);
   state.preview.frameIndex = clamp(snapshot.previewFrameIndex, 0, state.project.frames.length - 1, state.project.currentFrameIndex);
@@ -331,6 +560,7 @@ function applyHistorySnapshot(state, snapshot) {
 function updateHistoryButtons(state) {
   state.elements.undoButton.disabled = state.history.undoStack.length === 0;
   state.elements.redoButton.disabled = state.history.redoStack.length === 0;
+  updateEditGateDisabledState(state);
 }
 
 function pushHistory(state) {
@@ -383,13 +613,16 @@ function updateStatusBar(state) {
   const cursorLabel = state.cursor.x === null || state.cursor.y === null
     ? "-, -"
     : `${state.cursor.x}, ${state.cursor.y}`;
-  state.elements.statusBarText.textContent = `Canvas: ${state.project.width}x${state.project.height} | Zoom: ${state.project.pixelSize} | Frame: ${state.project.currentFrameIndex + 1}/${state.project.frames.length} | Cursor: ${cursorLabel}`;
+  const paletteLabel = isPaletteLocked(state.project)
+    ? state.project.paletteRef.id
+    : "none";
+  state.elements.statusBarText.textContent = `Canvas: ${state.project.width}x${state.project.height} | Zoom: ${state.project.pixelSize} | Frame: ${state.project.currentFrameIndex + 1}/${state.project.frames.length} | Palette: ${paletteLabel} | Cursor: ${cursorLabel}`;
 }
 
 function updateToolStateText(state) {
   const toolName = state.projectTool[0].toUpperCase() + state.projectTool.slice(1);
   state.elements.toolStateText.textContent = `Tool: ${toolName}`;
-  state.elements.activeColorText.textContent = `Color: ${state.project.activeColor}`;
+  state.elements.activeColorText.textContent = `Color: ${state.project.activeColor ?? "none"}`;
   state.elements.frameStateText.textContent = `Frame: ${state.project.currentFrameIndex + 1} / ${state.project.frames.length}`;
   state.elements.toggleStateText.textContent = `Grid: ${state.project.showGrid ? "On" : "Off"} | Onion: ${state.project.onionSkin ? "On" : "Off"}`;
   updateStatusBar(state);
@@ -409,6 +642,9 @@ function renderPalette(state) {
     applySwatchVisual(button, color);
     button.title = normalizeColor(color);
     button.addEventListener("click", () => {
+      if (!ensureEditingEnabled(state)) {
+        return;
+      }
       selectColor(state.project, color);
       state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
       setStatus(state, `Active color set to ${state.project.activeColor}.`);
@@ -433,6 +669,9 @@ function renderRecentColors(state) {
     applySwatchVisual(button, color);
     button.title = normalizeColor(color);
     button.addEventListener("click", () => {
+      if (!ensureEditingEnabled(state)) {
+        return;
+      }
       selectColor(state.project, color);
       state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
       setStatus(state, `Picked recent color ${state.project.activeColor}.`);
@@ -454,15 +693,21 @@ function renderToolButtons(state) {
 }
 
 function renderHud(state) {
-  state.elements.activeColorSwatch.style.background = isTransparent(state.project.activeColor)
-    ? "linear-gradient(45deg, #2c445d 25%, #4d6a87 25%, #4d6a87 50%, #2c445d 50%, #2c445d 75%, #4d6a87 75%, #4d6a87 100%)"
-    : state.project.activeColor;
+  if (typeof state.project.activeColor === "string") {
+    state.elements.activeColorSwatch.style.background = isTransparent(state.project.activeColor)
+      ? "linear-gradient(45deg, #2c445d 25%, #4d6a87 25%, #4d6a87 50%, #2c445d 50%, #2c445d 75%, #4d6a87 75%, #4d6a87 100%)"
+      : state.project.activeColor;
+  } else {
+    state.elements.activeColorSwatch.style.background = "linear-gradient(45deg, #2c445d 25%, #4d6a87 25%, #4d6a87 50%, #2c445d 50%, #2c445d 75%, #4d6a87 75%, #4d6a87 100%)";
+  }
   state.elements.activeColorSwatch.style.backgroundSize = "12px 12px";
 
   state.elements.frameCounter.textContent = `Frame ${state.project.currentFrameIndex + 1} / ${state.project.frames.length}`;
   state.elements.pixelSizeValue.textContent = String(state.project.pixelSize);
   state.elements.fpsValue.textContent = String(state.preview.fps);
-  state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
+  state.elements.colorPicker.value = typeof state.project.activeColor === "string"
+    ? colorToPickerValue(state.project.activeColor)
+    : "#000000";
 
   renderToolButtons(state);
   renderPalette(state);
@@ -555,18 +800,20 @@ function resetProject(state) {
     height,
     pixelSize: state.project.pixelSize,
     showGrid: state.project.showGrid,
-    onionSkin: state.project.onionSkin,
-    activeColor: state.project.activeColor,
-    palette: state.project.palette
+    onionSkin: state.project.onionSkin
   });
 
+  clearPaletteLock(state);
   syncControlsFromProject(state);
   state.preview.frameIndex = 0;
-  setStatus(state, `Created fresh ${width}x${height} canvas. Existing pixels were reset.`);
+  setStatus(state, `Created fresh ${width}x${height} project. Select a palette to enable editing.`);
   renderAll(state);
 }
 
 function addFrame(state) {
+  if (!ensureEditingEnabled(state)) {
+    return;
+  }
   pushHistory(state);
   const insertAt = state.project.currentFrameIndex + 1;
   const frame = createEmptyFrame(state.project.width, state.project.height);
@@ -578,6 +825,9 @@ function addFrame(state) {
 }
 
 function duplicateFrame(state) {
+  if (!ensureEditingEnabled(state)) {
+    return;
+  }
   pushHistory(state);
   const current = state.project.frames[state.project.currentFrameIndex];
   const copy = cloneFrame(current);
@@ -590,6 +840,9 @@ function duplicateFrame(state) {
 }
 
 function deleteFrame(state) {
+  if (!ensureEditingEnabled(state)) {
+    return;
+  }
   pushHistory(state);
   if (state.project.frames.length === 1) {
     state.project.frames[0] = createEmptyFrame(state.project.width, state.project.height);
@@ -606,6 +859,9 @@ function deleteFrame(state) {
 }
 
 function shiftFrame(state, direction) {
+  if (!ensureEditingEnabled(state)) {
+    return;
+  }
   const nextIndex = (state.project.currentFrameIndex + direction + state.project.frames.length) % state.project.frames.length;
   state.project.currentFrameIndex = nextIndex;
   if (!state.preview.playing) {
@@ -616,6 +872,11 @@ function shiftFrame(state, direction) {
 }
 
 async function importPngIntoCurrentFrame(state, file) {
+  if (!ensureEditingEnabled(state, "Select and lock a palette before importing PNG.")) {
+    return;
+  }
+  pushHistory(state);
+
   const image = await fileToImage(file);
   let resizeDecision = "not needed";
 
@@ -700,9 +961,18 @@ async function loadProjectJson(state, file) {
   const parsed = JSON.parse(text);
   const nextProject = ensureProjectShape(parsed);
   state.project = nextProject;
+  let lockMessage = "palette unresolved";
+
+  if (hydratePaletteFromRefIfPossible(state)) {
+    lockMessage = `palette locked (${state.project.paletteRef.id})`;
+  } else {
+    clearPaletteLock(state);
+    lockMessage = "palette selection required";
+  }
+
   syncControlsFromProject(state);
   state.preview.frameIndex = state.project.currentFrameIndex;
-  setStatus(state, `Loaded ${file.name} (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames).`);
+  setStatus(state, `Loaded ${file.name} (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames, ${lockMessage}).`);
   renderAll(state);
 }
 
@@ -727,6 +997,9 @@ function bindPointerDrawing(state) {
 
   const onPointerDown = (event) => {
     if (event.button !== 0) {
+      return;
+    }
+    if (!ensureEditingEnabled(state)) {
       return;
     }
 
@@ -829,13 +1102,17 @@ function bindShortcuts(state) {
     if ((event.ctrlKey || event.metaKey) && !event.altKey) {
       if (key === "z" && !event.shiftKey) {
         event.preventDefault();
-        undo(state);
+        if (ensureEditingEnabled(state)) {
+          undo(state);
+        }
         return;
       }
 
       if (key === "y" || (key === "z" && event.shiftKey)) {
         event.preventDefault();
-        redo(state);
+        if (ensureEditingEnabled(state)) {
+          redo(state);
+        }
         return;
       }
     }
@@ -846,6 +1123,9 @@ function bindShortcuts(state) {
 
     if (key === "p") {
       event.preventDefault();
+      if (!ensureEditingEnabled(state)) {
+        return;
+      }
       state.projectTool = TOOL_IDS.PENCIL;
       setStatus(state, "Tool set to Pencil.");
       renderHud(state);
@@ -854,6 +1134,9 @@ function bindShortcuts(state) {
 
     if (key === "e") {
       event.preventDefault();
+      if (!ensureEditingEnabled(state)) {
+        return;
+      }
       state.projectTool = TOOL_IDS.ERASER;
       setStatus(state, "Tool set to Eraser.");
       renderHud(state);
@@ -862,6 +1145,9 @@ function bindShortcuts(state) {
 
     if (key === "f") {
       event.preventDefault();
+      if (!ensureEditingEnabled(state)) {
+        return;
+      }
       state.projectTool = TOOL_IDS.FILL;
       setStatus(state, "Tool set to Fill.");
       renderHud(state);
@@ -870,6 +1156,9 @@ function bindShortcuts(state) {
 
     if (key === "g") {
       event.preventDefault();
+      if (!ensureEditingEnabled(state)) {
+        return;
+      }
       state.project.showGrid = !state.project.showGrid;
       state.elements.gridToggle.checked = state.project.showGrid;
       setStatus(state, `Grid ${state.project.showGrid ? "enabled" : "disabled"} via shortcut.`);
@@ -880,6 +1169,9 @@ function bindShortcuts(state) {
 
     if (key === "o") {
       event.preventDefault();
+      if (!ensureEditingEnabled(state)) {
+        return;
+      }
       state.project.onionSkin = !state.project.onionSkin;
       state.elements.onionSkinToggle.checked = state.project.onionSkin;
       setStatus(state, `Onion skin ${state.project.onionSkin ? "enabled" : "disabled"} via shortcut.`);
@@ -890,13 +1182,17 @@ function bindShortcuts(state) {
 
     if (event.key === "[") {
       event.preventDefault();
-      shiftFrame(state, -1);
+      if (ensureEditingEnabled(state)) {
+        shiftFrame(state, -1);
+      }
       return;
     }
 
     if (event.key === "]") {
       event.preventDefault();
-      shiftFrame(state, 1);
+      if (ensureEditingEnabled(state)) {
+        shiftFrame(state, 1);
+      }
     }
   });
 }
@@ -920,6 +1216,7 @@ function bindControls(state) {
     newCanvasButton,
     nextFrameButton,
     onionSkinToggle,
+    paletteSelect,
     pausePreviewButton,
     pixelSizeInput,
     playPreviewButton,
@@ -931,11 +1228,46 @@ function bindControls(state) {
     undoButton
   } = state.elements;
 
+  paletteSelect.addEventListener("change", () => {
+    const requestedId = paletteSelect.value;
+
+    if (!state.enginePalette.available) {
+      setStatus(state, state.enginePalette.error || "Engine palette list unavailable.");
+      paletteSelect.value = NO_PALETTE_ID;
+      return;
+    }
+
+    if (isPaletteLocked(state.project)) {
+      paletteSelect.value = state.project.paletteRef.id;
+      setStatus(state, "Palette is locked for this project. Use Create New Canvas to choose a different palette.");
+      return;
+    }
+
+    if (requestedId === NO_PALETTE_ID) {
+      setStatus(state, "Select a palette to enable editing.");
+      return;
+    }
+
+    const didLock = applyLockedPaletteToProject(state, requestedId, { preferExistingActiveColor: false });
+    if (!didLock) {
+      setStatus(state, `Palette ${requestedId} is unavailable in engine palette list.`);
+      paletteSelect.value = NO_PALETTE_ID;
+      return;
+    }
+
+    syncControlsFromProject(state);
+    setStatus(state, `Palette ${requestedId} selected and locked for this project session.`);
+    renderAll(state);
+  });
+
   newCanvasButton.addEventListener("click", () => {
     resetProject(state);
   });
 
   const resizeWithFeedback = (nextWidth, nextHeight) => {
+    if (!ensureEditingEnabled(state)) {
+      return;
+    }
     if (nextWidth === state.project.width && nextHeight === state.project.height) {
       return;
     }
@@ -977,12 +1309,16 @@ function bindControls(state) {
   });
 
   colorPicker.addEventListener("input", () => {
-    const nextColor = withOpaqueAlpha(colorPicker.value);
-    if (!state.project.palette.includes(nextColor)) {
-      state.project.palette = dedupeColors([nextColor, ...state.project.palette]).slice(0, 32);
+    if (!ensureEditingEnabled(state)) {
+      return;
     }
-    selectColor(state.project, nextColor);
-    setStatus(state, `Selected color ${state.project.activeColor}.`);
+    if (!state.project.activeColor) {
+      setStatus(state, "Select a palette color swatch.");
+      colorPicker.value = "#000000";
+      return;
+    }
+    colorPicker.value = colorToPickerValue(state.project.activeColor);
+    setStatus(state, "Use palette swatches to change color.");
     renderAll(state);
   });
 
@@ -990,6 +1326,9 @@ function bindControls(state) {
     button.addEventListener("click", () => {
       const tool = button.getAttribute("data-tool");
       if (!tool) {
+        return;
+      }
+      if (!ensureEditingEnabled(state)) {
         return;
       }
       state.projectTool = tool;
@@ -1003,8 +1342,16 @@ function bindControls(state) {
   deleteFrameButton.addEventListener("click", () => deleteFrame(state));
   prevFrameButton.addEventListener("click", () => shiftFrame(state, -1));
   nextFrameButton.addEventListener("click", () => shiftFrame(state, 1));
-  undoButton.addEventListener("click", () => undo(state));
-  redoButton.addEventListener("click", () => redo(state));
+  undoButton.addEventListener("click", () => {
+    if (ensureEditingEnabled(state)) {
+      undo(state);
+    }
+  });
+  redoButton.addEventListener("click", () => {
+    if (ensureEditingEnabled(state)) {
+      redo(state);
+    }
+  });
 
   playPreviewButton.addEventListener("click", () => {
     state.preview.playing = true;
@@ -1039,7 +1386,6 @@ function bindControls(state) {
     }
 
     try {
-      pushHistory(state);
       await importPngIntoCurrentFrame(state, file);
     } catch (error) {
       setStatus(state, `PNG import failed for ${file.name}: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -1120,6 +1466,7 @@ export function initializeSpriteEditorApp() {
       height: DEFAULT_HEIGHT,
       pixelSize: DEFAULT_PIXEL_SIZE
     }),
+    enginePalette: buildEnginePaletteCatalog(),
     projectTool: TOOL_IDS.PENCIL,
     preview: {
       playing: false,
@@ -1161,6 +1508,8 @@ export function initializeSpriteEditorApp() {
       newCanvasButton: getRequiredElement("newCanvasButton"),
       nextFrameButton: getRequiredElement("nextFrameButton"),
       onionSkinToggle: getRequiredElement("onionSkinToggle"),
+      paletteLockText: getRequiredElement("paletteLockText"),
+      paletteSelect: getRequiredElement("paletteSelect"),
       pausePreviewButton: getRequiredElement("pausePreviewButton"),
       paletteButtons: getRequiredElement("paletteButtons"),
       pixelSizeInput: getRequiredElement("pixelSizeInput"),
@@ -1189,4 +1538,10 @@ export function initializeSpriteEditorApp() {
   bindPointerDrawing(state);
   renderAll(state);
   startPreviewLoop(state);
+
+  if (!state.enginePalette.available) {
+    setStatus(state, state.enginePalette.error || "Engine palette list unavailable. Editing is disabled.");
+  } else {
+    setStatus(state, "Select a palette from engine paletteList to enable editing.");
+  }
 }

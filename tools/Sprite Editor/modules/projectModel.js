@@ -6,10 +6,11 @@ projectModel.js
 */
 import {
   DEFAULT_HEIGHT,
-  DEFAULT_PALETTE,
   DEFAULT_PIXEL_SIZE,
   DEFAULT_WIDTH,
   MAX_RECENT_COLORS,
+  NO_PALETTE_ID,
+  PALETTE_SOURCE_ID,
   PROJECT_FORMAT,
   PROJECT_VERSION
 } from "./constants.js";
@@ -21,6 +22,26 @@ function clampInt(value, min, max, fallback) {
     return fallback;
   }
   return Math.max(min, Math.min(max, parsed));
+}
+
+function normalizePaletteRef(rawPaletteRef) {
+  if (!rawPaletteRef || typeof rawPaletteRef !== "object") {
+    return {
+      source: PALETTE_SOURCE_ID,
+      id: NO_PALETTE_ID,
+      locked: false
+    };
+  }
+
+  const source = typeof rawPaletteRef.source === "string" && rawPaletteRef.source.trim()
+    ? rawPaletteRef.source.trim()
+    : PALETTE_SOURCE_ID;
+  const id = typeof rawPaletteRef.id === "string" && rawPaletteRef.id.trim()
+    ? rawPaletteRef.id.trim()
+    : NO_PALETTE_ID;
+  const locked = rawPaletteRef.locked === true && id !== NO_PALETTE_ID;
+
+  return { source, id, locked };
 }
 
 export function createEmptyFrame(width, height) {
@@ -43,8 +64,17 @@ export function createNewProject(options = {}) {
   const width = clampInt(options.width, 1, 256, DEFAULT_WIDTH);
   const height = clampInt(options.height, 1, 256, DEFAULT_HEIGHT);
   const pixelSize = clampInt(options.pixelSize, 4, 40, DEFAULT_PIXEL_SIZE);
-  const activeColor = normalizeColor(options.activeColor ?? DEFAULT_PALETTE[2]);
-  const palette = dedupeColors(options.palette ?? DEFAULT_PALETTE).slice(0, 32);
+  const palette = dedupeColors(Array.isArray(options.palette) ? options.palette : []).slice(0, 256);
+
+  let activeColor = null;
+  if (typeof options.activeColor === "string") {
+    activeColor = normalizeColor(options.activeColor);
+  } else if (palette.length > 0) {
+    activeColor = normalizeColor(palette[0]);
+  }
+
+  const recentColors = activeColor ? [activeColor] : [];
+  const paletteRef = normalizePaletteRef(options.paletteRef);
 
   return {
     format: PROJECT_FORMAT,
@@ -56,7 +86,8 @@ export function createNewProject(options = {}) {
     onionSkin: options.onionSkin === true,
     activeColor,
     palette,
-    recentColors: [activeColor],
+    paletteRef,
+    recentColors,
     frames: [createEmptyFrame(width, height)],
     currentFrameIndex: 0
   };
@@ -86,13 +117,21 @@ export function ensureProjectShape(rawProject) {
     return { pixels };
   });
 
-  const palette = dedupeColors(rawProject.palette ?? DEFAULT_PALETTE).slice(0, 32);
-  const activeColor = normalizeColor(rawProject.activeColor ?? palette[0] ?? DEFAULT_PALETTE[0]);
+  const palette = dedupeColors(Array.isArray(rawProject.palette) ? rawProject.palette : []).slice(0, 256);
+  const paletteRef = normalizePaletteRef(rawProject.paletteRef);
 
-  const recentColors = dedupeColors(rawProject.recentColors ?? [activeColor]).slice(0, MAX_RECENT_COLORS);
-  if (!recentColors.includes(activeColor)) {
+  let activeColor = null;
+  if (typeof rawProject.activeColor === "string") {
+    activeColor = normalizeColor(rawProject.activeColor);
+  } else if (palette.length > 0) {
+    activeColor = normalizeColor(palette[0]);
+  }
+
+  let recentColors = dedupeColors(Array.isArray(rawProject.recentColors) ? rawProject.recentColors : []).slice(0, MAX_RECENT_COLORS);
+  if (activeColor && !recentColors.includes(activeColor)) {
     recentColors.unshift(activeColor);
   }
+  recentColors = recentColors.slice(0, MAX_RECENT_COLORS);
 
   return {
     format: PROJECT_FORMAT,
@@ -104,7 +143,8 @@ export function ensureProjectShape(rawProject) {
     onionSkin: rawProject.onionSkin === true,
     activeColor,
     palette,
-    recentColors: recentColors.slice(0, MAX_RECENT_COLORS),
+    paletteRef,
+    recentColors,
     frames: sanitizedFrames,
     currentFrameIndex: clampInt(rawProject.currentFrameIndex, 0, sanitizedFrames.length - 1, 0)
   };
@@ -140,8 +180,8 @@ export function resizeProject(project, nextWidth, nextHeight) {
   };
 }
 
-export function serializeProject(project) {
-  return {
+export function serializeProject(project, options = {}) {
+  const output = {
     format: PROJECT_FORMAT,
     version: PROJECT_VERSION,
     width: project.width,
@@ -150,11 +190,21 @@ export function serializeProject(project) {
     showGrid: project.showGrid,
     onionSkin: project.onionSkin,
     activeColor: project.activeColor,
-    palette: project.palette,
+    paletteRef: {
+      source: project.paletteRef?.source ?? PALETTE_SOURCE_ID,
+      id: project.paletteRef?.id ?? NO_PALETTE_ID,
+      locked: project.paletteRef?.locked === true
+    },
     recentColors: project.recentColors,
     currentFrameIndex: project.currentFrameIndex,
     frames: project.frames.map((frame) => ({
       pixels: frame.pixels.map((color) => (color ? normalizeColor(color) : null))
     }))
   };
+
+  if (options.includePalette === true) {
+    output.palette = project.palette;
+  }
+
+  return output;
 }

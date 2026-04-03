@@ -12,6 +12,7 @@ index.html
   <title>Sprite Editor (From Scratch)</title>
   <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="./spriteEditor.css" />
+  <script src="../../engine/paletteList.js"></script>
 </head>
 <body class="sprite-editor-page">
   <div class="app-shell" id="appShell">
@@ -61,8 +62,14 @@ index.html
       <div class="left-panel">
         <div class="panel-block">
           <h2>Colors</h2>
+          <label>Palette Source (Engine)
+            <select id="paletteSelect">
+              <option value="__none__">Select Palette...</option>
+            </select>
+          </label>
+          <p id="paletteLockText" class="hint-text">Palette not selected. Editing is disabled.</p>
           <label>Active Color
-            <input id="colorPicker" type="color" value="#ff5a5a" />
+            <input id="colorPicker" type="color" value="#000000" disabled />
           </label>
           <div id="activeColorSwatch" class="active-color-swatch" aria-label="Active color swatch"></div>
           <h3>Palette</h3>

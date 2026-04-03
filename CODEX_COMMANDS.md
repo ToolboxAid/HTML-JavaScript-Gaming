@@ -3,33 +3,16 @@ David Quesenberry
 04/03/2026
 CODEX_COMMANDS.md
 
-MODEL: GPT-5.4-codex
+MODEL: GPT-5.4
 REASONING: high
 
-COMMAND:
-Create BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.
+PRIMARY COMMAND
+Create `BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` for the HTML-JavaScript-Gaming repo. Implement the approved Sprite Editor project integration contract from `PLAN_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` with small, surgical changes only. Enforce disabled-until-selected paint/stroke behavior, preserve locked palette behavior after explicit selection, persist and restore palette references safely across save/load, and keep new/load/import/resize/duplicate flows contract-compliant. Do not broaden scope beyond Sprite Editor project integration. Refresh `docs/dev/reports/change_summary.txt`, `docs/dev/reports/validation_checklist.txt`, and `docs/dev/reports/file_tree.txt`, and package a repo-structured ZIP to `<project folder>/tmp/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION_delta.zip`.
 
-Use docs/pr/PLAN_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md as the approved plan source of truth.
+COMMIT COMMENT
+`build(sprite-editor): integrate project palette selection and persistence contracts`
 
-Goal:
-Implement a small, surgical Sprite Editor integration PR so palette flow uses engine authority and session/project lock rules.
-
-Required integration rule:
-1. Sprite Editor must use engine paletteList as source of truth.
-2. Palette list is loaded from engine contract, not local hardcoded tool authority.
-3. Editing remains disabled until palette selected.
-4. Selected palette becomes locked for active project/session.
-5. Palette switching remains blocked unless explicit new/reset project flow is used.
-6. Lock behavior must match plan contracts for new project/load/import/resize/duplicate/save-load.
-7. No engine-boundary bypass and no duplicated palette authority inside tool.
-
-Scope rules:
-- Do not review/modify legacy sprite editor implementations outside tools/Sprite Editor/
-- Keep scope small and surgical
-- Prefer public engine-facing contracts only
-- No unrelated engine/tool rewrites
-- Docs-first and one PR per purpose
-- Preserve file headers
-
-Packaging:
-- tmp/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION_delta.zip
+NEXT COMMAND
+MODEL: GPT-5.4
+REASONING: high
+COMMAND: After BUILD validation is complete, create `APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` that verifies final repo readiness, confirms project-format compatibility, summarizes user-visible behavior changes, and packages the final repo-structured delta ZIP.

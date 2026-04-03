@@ -32,5 +32,13 @@ Standalone browser-based Sprite Editor tool built as an isolated implementation 
 - Recent color swatches are deduplicated and newest-first.
 - Preview controls use Play/Pause/Reset semantics with visible FPS feedback.
 
+## Project Integration Contract
+- Palette source of truth is engine-owned `globalThis.palettesList` from `engine/paletteList.js`.
+- Editing remains disabled until a palette is selected from the engine palette list.
+- Once selected, palette is locked for the active project/session.
+- Palette can only be changed through explicit new-project flow (`Create New Canvas`), which resets lock.
+- Saved project JSON persists `paletteRef` identity (`source`, `id`, `locked`) instead of storing an authoritative palette catalog.
+- Loading JSON attempts to resolve and lock `paletteRef.id` against engine palette list; unresolved refs load in blocked selection mode.
+
 ## Entry point
 - `tools/Sprite Editor/index.html`

@@ -269,17 +269,27 @@ button:hover {
   background: #1c4468;
 }
 
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 button:active {
   transform: translateY(1px);
 }
 
 input[type="number"],
 input[type="range"],
-input[type="color"] {
+input[type="color"],
+select {
   border: 1px solid #4779a0;
   border-radius: 6px;
   background: #0f253d;
   color: var(--se-text);
+}
+
+select {
+  padding: 0.2rem 0.35rem;
 }
 
 input[type="number"] {
