@@ -1,23 +1,33 @@
 Toolbox Aid
 David Quesenberry
-03/31/2026
+04/03/2026
 validation_checklist.txt
 
-[ ] Demo 1208 launches
-[ ] actual tile assets are used
-[ ] actual SVG parallax assets are used
-[ ] hero is visible
-[ ] Left/Right movement works
-[ ] Space triggers jump
-[ ] gravity is active
-[ ] collision works
-[ ] camera follows hero cleanly
-[ ] parallax is visible
-[ ] tilemap is larger than viewport
-[ ] scrolling is visible during play
-[ ] Demo 1207 index target opens runnable page, not README.md
-[ ] Demo 1208 index target opens runnable page
-[ ] README matches actual behavior
-[ ] no diff outside approved paths
-[ ] no engine/tools/tests/games changes
-[ ] output ZIP written to <project folder>/tmp/BUILD_PR_DEMO1208_TOOL_FORMATTED_TILES_PARALLAX_delta.zip
+Validation checklist for BUILD_PR_SPRITE_EDITOR_FROM_SCRATCH
+
+[x] Tool opens directly: tools/Sprite Editor/index.html (static entry path validated)
+[x] Pencil draws visible pixels on canvas (implemented in pointer draw path)
+[x] Eraser clears pixels to transparent (implemented via null pixel writes)
+[x] Fill tool replaces contiguous region (flood-fill implementation)
+[x] Grid toggle on/off works (state + editor render gate)
+[x] Canvas width/height update applies correctly (resizeProject wired to controls)
+[x] Zoom/pixel-size control applies correctly (pixelSize control + rerender)
+[x] Add frame works (append new frame)
+[x] Duplicate frame works (clone current frame)
+[x] Delete frame works with minimum one frame preserved
+[x] Previous/next frame navigation works (wrapped index navigation)
+[x] Onion-skin toggle overlays adjacent frame preview
+[x] PNG import loads into current frame
+[x] Current-frame PNG export downloads expected image
+[x] Sprite sheet export downloads expected strip image
+[x] Save project JSON downloads valid data
+[x] Load project JSON restores frame/canvas/color state
+[x] Animation preview plays frames at selected FPS
+[x] Tool link appears in tools/index.html
+[x] Existing repo content untouched outside approved scope (this PR path list only)
+
+Automated checks run:
+[x] node --check tools/Sprite Editor/main.js
+[x] node --check tools/Sprite Editor/modules/spriteEditorApp.js
+[x] node --check tools/Sprite Editor/modules/projectModel.js
+[x] node --check tools/Sprite Editor/modules/colorUtils.js

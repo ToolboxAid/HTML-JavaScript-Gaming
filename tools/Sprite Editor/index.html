@@ -1,0 +1,129 @@
+<!--
+Toolbox Aid
+David Quesenberry
+04/03/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en" class="sprite-editor-page-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprite Editor (From Scratch)</title>
+  <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="./spriteEditor.css" />
+</head>
+<body class="sprite-editor-page">
+  <div class="app-shell" id="appShell">
+    <header class="app-header">
+      <h1>Sprite Editor</h1>
+      <p>Standalone sprite tool built from scratch for pixel art and frame animation.</p>
+    </header>
+
+    <section class="toolbar-row">
+      <div class="toolbar-group">
+        <label>Width
+          <input id="canvasWidthInput" type="number" min="1" max="256" value="32" />
+        </label>
+        <label>Height
+          <input id="canvasHeightInput" type="number" min="1" max="256" value="32" />
+        </label>
+        <button id="newCanvasButton" type="button">Create New Canvas</button>
+      </div>
+
+      <div class="toolbar-group">
+        <label>Zoom
+          <input id="pixelSizeInput" type="range" min="4" max="40" value="18" />
+        </label>
+        <output id="pixelSizeValue">18</output>
+        <label class="inline-toggle">
+          <input id="gridToggle" type="checkbox" checked />
+          Grid
+        </label>
+      </div>
+
+      <div class="toolbar-group tools-group" id="toolButtons">
+        <button type="button" data-tool="pencil" class="tool-button active">Pencil</button>
+        <button type="button" data-tool="eraser" class="tool-button">Eraser</button>
+        <button type="button" data-tool="fill" class="tool-button">Fill</button>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="left-panel">
+        <div class="panel-block">
+          <h2>Colors</h2>
+          <label>Active Color
+            <input id="colorPicker" type="color" value="#ff5a5a" />
+          </label>
+          <div id="activeColorSwatch" class="active-color-swatch" aria-label="Active color swatch"></div>
+          <h3>Palette</h3>
+          <div id="paletteButtons" class="swatch-grid" aria-label="Palette"></div>
+          <h3>Recent</h3>
+          <div id="recentColorButtons" class="swatch-grid" aria-label="Recent colors"></div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Frames</h2>
+          <div class="frame-controls">
+            <button id="prevFrameButton" type="button">Prev</button>
+            <button id="nextFrameButton" type="button">Next</button>
+            <button id="addFrameButton" type="button">Add</button>
+            <button id="duplicateFrameButton" type="button">Duplicate</button>
+            <button id="deleteFrameButton" type="button">Delete</button>
+          </div>
+          <p id="frameCounter" class="frame-counter">Frame 1 / 1</p>
+          <label class="inline-toggle">
+            <input id="onionSkinToggle" type="checkbox" />
+            Onion skin
+          </label>
+        </div>
+
+        <div class="panel-block">
+          <h2>Project I/O</h2>
+          <div class="io-controls">
+            <button id="saveProjectButton" type="button">Save JSON</button>
+            <button id="loadProjectButton" type="button">Load JSON</button>
+            <input id="loadProjectInput" type="file" accept=".json,application/json" class="hidden-input" />
+          </div>
+          <div class="io-controls">
+            <button id="importPngButton" type="button">Import PNG</button>
+            <button id="exportPngButton" type="button">Export Frame PNG</button>
+            <button id="exportSheetButton" type="button">Export Sprite Sheet</button>
+            <input id="importPngInput" type="file" accept="image/png" class="hidden-input" />
+          </div>
+        </div>
+      </div>
+
+      <div class="center-panel">
+        <div class="canvas-wrap">
+          <canvas id="editorCanvas" aria-label="Sprite drawing canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="panel-block">
+          <h2>Preview</h2>
+          <canvas id="previewCanvas" aria-label="Animation preview"></canvas>
+          <div class="preview-controls">
+            <button id="playPreviewButton" type="button">Play</button>
+            <button id="stopPreviewButton" type="button">Stop</button>
+          </div>
+          <label>FPS
+            <input id="fpsInput" type="range" min="1" max="24" value="8" />
+          </label>
+          <output id="fpsValue">8</output>
+        </div>
+
+        <div class="panel-block">
+          <h2>Status</h2>
+          <p id="statusText" class="status-text">Ready.</p>
+          <p id="toolStateText" class="status-text">Tool: Pencil</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

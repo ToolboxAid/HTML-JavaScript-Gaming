@@ -1,19 +1,33 @@
 Toolbox Aid
 David Quesenberry
-03/31/2026
+04/03/2026
 change_summary.txt
 
 BUILD_PR target:
-Implement Demo 1208 as a tool-formatted tiles + SVG parallax integration demo and fix the broken Demo 1207 index target.
+Build a brand-new, isolated Sprite Editor from scratch under tools/Sprite Editor/ and expose it through tools/index.html.
 
-Expected changed area:
-- samples/Phase 12 - Demo Games/Demo 1208 - Tool Formatted Tiles Parallax/**
-- samples/index.html
-- Demo 1207 files only if strictly required for the link fix
+Scope executed:
+- New tool implementation only: tools/Sprite Editor/**
+- Tool hub integration link only: tools/index.html
+- Required docs/report deliverables for this PR bundle
 
-Blocked scope:
-- engine changes
-- tool rewrites
-- tests/games changes
-- non-Phase-12 refactors
-- new gameplay systems
+Feature outcome summary:
+- New project canvas (width/height)
+- Zoom/pixel-size controls + grid toggle
+- Pencil, eraser, and flood fill tools
+- Active palette + recent color swatches
+- Frame timeline operations (add/duplicate/delete/prev/next)
+- Onion-skin overlay toggle
+- PNG import into current frame
+- PNG export for current frame
+- Sprite sheet export across all frames
+- JSON save/load project round-trip
+- Transparent pixel handling
+- Animation preview with FPS controls
+
+Guardrails honored:
+- No dependency on existing SpriteEditor implementations
+- No deletion/rename/cleanup of existing sprite-editor-related paths
+- No engine code changes
+- No unrelated tool changes
+- Small, surgical PR surface
