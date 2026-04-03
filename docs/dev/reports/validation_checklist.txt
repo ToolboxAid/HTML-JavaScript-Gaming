@@ -3,31 +3,26 @@ David Quesenberry
 04/03/2026
 validation_checklist.txt
 
-Validation checklist for BUILD_PR_SPRITE_EDITOR_FROM_SCRATCH
+PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH checklist
 
-[x] Tool opens directly: tools/Sprite Editor/index.html (static entry path validated)
-[x] Pencil draws visible pixels on canvas (implemented in pointer draw path)
-[x] Eraser clears pixels to transparent (implemented via null pixel writes)
-[x] Fill tool replaces contiguous region (flood-fill implementation)
-[x] Grid toggle on/off works (state + editor render gate)
-[x] Canvas width/height update applies correctly (resizeProject wired to controls)
-[x] Zoom/pixel-size control applies correctly (pixelSize control + rerender)
-[x] Add frame works (append new frame)
-[x] Duplicate frame works (clone current frame)
-[x] Delete frame works with minimum one frame preserved
-[x] Previous/next frame navigation works (wrapped index navigation)
-[x] Onion-skin toggle overlays adjacent frame preview
-[x] PNG import loads into current frame
-[x] Current-frame PNG export downloads expected image
-[x] Sprite sheet export downloads expected strip image
-[x] Save project JSON downloads valid data
-[x] Load project JSON restores frame/canvas/color state
-[x] Animation preview plays frames at selected FPS
-[x] Tool link appears in tools/index.html
-[x] Existing repo content untouched outside approved scope (this PR path list only)
+Docs bundle validation:
+[x] PLAN doc created at docs/pr/PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH.md
+[x] CODEX_COMMANDS.md updated for BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH
+[x] change_summary.txt updated
+[x] validation_checklist.txt updated
+[x] file_tree.txt updated
+[x] Bundle is docs-only (no implementation code changes)
+[x] Scope boundaries clearly documented
+[x] In-scope / out-of-scope clearly documented
+[x] Exact likely BUILD file list documented
+[x] UX behavior contract documented for each polish item
+[x] Manual validation checklist documented
+[x] BUILD command documented
+[x] Commit comment documented
+[x] Next command documented
 
-Automated checks run:
-[x] node --check tools/Sprite Editor/main.js
-[x] node --check tools/Sprite Editor/modules/spriteEditorApp.js
-[x] node --check tools/Sprite Editor/modules/projectModel.js
-[x] node --check tools/Sprite Editor/modules/colorUtils.js
+Guardrail checks:
+[x] No engine scope introduced
+[x] No unrelated tool scope introduced
+[x] No legacy sprite-editor migration/refactor scope introduced
+[x] No destructive/deletion instructions included

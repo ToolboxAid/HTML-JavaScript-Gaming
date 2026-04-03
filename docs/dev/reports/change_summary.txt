@@ -3,31 +3,30 @@ David Quesenberry
 04/03/2026
 change_summary.txt
 
-BUILD_PR target:
-Build a brand-new, isolated Sprite Editor from scratch under tools/Sprite Editor/ and expose it through tools/index.html.
+PLAN_PR target:
+Create a docs-only plan bundle for Sprite Editor usability polish without implementation edits.
 
-Scope executed:
-- New tool implementation only: tools/Sprite Editor/**
-- Tool hub integration link only: tools/index.html
-- Required docs/report deliverables for this PR bundle
+Planned BUILD scope (next step):
+- tools/Sprite Editor/** usability polish only
+- tools/index.html only if a tiny non-destructive update is strictly needed
+- docs/reports updates required by workflow
 
-Feature outcome summary:
-- New project canvas (width/height)
-- Zoom/pixel-size controls + grid toggle
-- Pencil, eraser, and flood fill tools
-- Active palette + recent color swatches
-- Frame timeline operations (add/duplicate/delete/prev/next)
-- Onion-skin overlay toggle
-- PNG import into current frame
-- PNG export for current frame
-- Sprite sheet export across all frames
-- JSON save/load project round-trip
-- Transparent pixel handling
-- Animation preview with FPS controls
+Planned polish focus:
+- state visibility
+- keyboard shortcuts
+- undo/redo
+- resize/new-canvas behavior clarity
+- import/export messaging clarity
+- recent-color polish
+- preview controls clarity
+- optional status bar telemetry
+- drag reliability
+- save/load UX cleanup
 
-Guardrails honored:
-- No dependency on existing SpriteEditor implementations
-- No deletion/rename/cleanup of existing sprite-editor-related paths
-- No engine code changes
-- No unrelated tool changes
-- Small, surgical PR surface
+Locked exclusions:
+- no engine changes
+- no unrelated tools
+- no samples/games edits
+- no legacy sprite-editor path modifications
+
+This PLAN bundle is docs-only and contains no implementation code changes.
