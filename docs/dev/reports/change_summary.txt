@@ -3,38 +3,25 @@ David Quesenberry
 04/03/2026
 change_summary.txt
 
-BUILD_PR target:
-Implement approved usability polish for the isolated Sprite Editor using PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH as source of truth.
+PLAN_PR target:
+Define a docs-only integration plan for Sprite Editor palette authority and project/session lock behavior.
 
-Implemented areas:
-- tools/Sprite Editor/index.html
-  - Added persistent state row for tool/color/frame/toggle/canvas+cursor status visibility
-  - Added Undo/Redo controls
-  - Updated preview controls to Play/Pause/Reset
-  - Added usability hint text for shortcuts and resize/new-canvas behavior
-- tools/Sprite Editor/spriteEditor.css
-  - Added state row and state pill styling
-  - Added hint-text styling
-  - Added touch-action guard on editor canvas for pointer reliability
-- tools/Sprite Editor/modules/constants.js
-  - Added HISTORY_LIMIT for bounded undo/redo behavior
-- tools/Sprite Editor/modules/spriteEditorApp.js
-  - Added keyboard shortcuts (P/E/F/G/O/[ / ] + Ctrl+Z/Ctrl+Y/Ctrl+Shift+Z)
-  - Added bounded undo/redo stacks with UI controls
-  - Added explicit resize/new-canvas behavior messaging
-  - Added richer import/export/save/load feedback messages with file and size/frame context
-  - Added improved recent-color handling/rendering consistency for transparent swatches
-  - Added preview Play/Pause/Reset behavior and FPS status messages
-  - Added status bar updates for canvas/zoom/frame/cursor
-  - Added drag-stroke history-safe handling and pointer lifecycle reliability polish
-- tools/Sprite Editor/README.md
-  - Documented usability behavior contracts and shortcuts
+Planned BUILD focus:
+- engine-authoritative palette source in Sprite Editor
+- disabled editing until palette selection
+- locked palette semantics for active project/session
+- palette reference persistence contract in project JSON
+- clear fallback behavior when engine palette source is unavailable
 
-Docs/build artifacts:
-- docs/pr/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH.md
-- CODEX_COMMANDS.md
+Planned scope:
+- tools/Sprite Editor/** only for implementation
+- docs/reports for workflow outputs
+- no engine rewrites
+- no unrelated tools
+- no legacy sprite editor path modifications outside tools/Sprite Editor/
 
-Scope guardrails honored:
-- No engine changes
-- No unrelated tool changes
-- No modifications to pre-existing sprite editor implementations outside tools/Sprite Editor/
+Boundary emphasis:
+- consume public engine palette contract only
+- do not duplicate palette authority in tool-local hardcoded catalog
+
+This PLAN bundle is docs-only and includes no implementation code changes.
