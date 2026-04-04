@@ -48,6 +48,7 @@ import {
   summarizeProjectAssetRemediation
 } from "../../shared/projectAssetRemediation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "../../shared/projectPackaging.js";
+import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../../shared/editorExperienceLayer.js";
 
 function getRequiredElement(id) {
   const element = document.getElementById(id);
@@ -251,6 +252,13 @@ function validateSpriteProjectAssets(state) {
     validationResult: result,
     registry: state.assetRegistry
   });
+  state.editorExperienceResult = buildEditorExperienceLayer({
+    assetDependencyGraph: result.assetDependencyGraph,
+    validationResult: result,
+    remediationResult: state.remediationResult,
+    packageResult: state.lastPackageResult,
+    runtimeResult: state.lastRuntimeResult
+  });
   return result;
 }
 
@@ -270,6 +278,14 @@ function updateRemediationUI(state) {
   if (state.elements.applyRemediationButton) {
     state.elements.applyRemediationButton.disabled = !primaryFix;
   }
+}
+
+function updateEditorExperienceUI(state) {
+  if (!state.elements.experienceSummaryText || !state.elements.experienceDetailsText) {
+    return;
+  }
+  state.elements.experienceSummaryText.textContent = summarizeEditorExperienceLayer(state.editorExperienceResult);
+  state.elements.experienceDetailsText.textContent = state.editorExperienceResult?.experience?.reportText || "No experience snapshot available.";
 }
 
 function inspectRemediationActions(state) {
@@ -1201,6 +1217,15 @@ async function packageSpriteProject(state) {
     validationResult: validation,
     spriteProject: state.project
   });
+  state.lastPackageResult = packageResult;
+  state.editorExperienceResult = buildEditorExperienceLayer({
+    assetDependencyGraph: validation.assetDependencyGraph,
+    validationResult: validation,
+    remediationResult: state.remediationResult,
+    packageResult: state.lastPackageResult,
+    runtimeResult: state.lastRuntimeResult
+  });
+  updateEditorExperienceUI(state);
   if (packageResult.packageStatus !== "ready") {
     setStatus(state, `${summarizeProjectPackaging(packageResult)} ${packageResult.manifest.package.reports[0]?.message || ""}`.trim());
     return false;
@@ -1545,6 +1570,7 @@ function bindControls(state) {
     prevFrameButton,
     redoButton,
     resetPreviewButton,
+    refreshExperienceButton,
     saveAssetRegistryButton,
     saveProjectButton,
     inspectRemediationButton,
@@ -1802,6 +1828,12 @@ function bindControls(state) {
     applyRemediationAction(state);
     updateRemediationUI(state);
   });
+  refreshExperienceButton.addEventListener("click", () => {
+    validateSpriteProjectAssets(state);
+    updateRemediationUI(state);
+    updateEditorExperienceUI(state);
+    setStatus(state, summarizeEditorExperienceLayer(state.editorExperienceResult));
+  });
 }
 
 function startPreviewLoop(state) {
@@ -1856,6 +1888,9 @@ export function initializeSpriteEditorApp() {
     assetDependencyGraphSnapshot: null,
     validationResult: null,
     remediationResult: { remediation: { status: "unavailable", actions: [] } },
+    lastPackageResult: null,
+    lastRuntimeResult: null,
+    editorExperienceResult: null,
     cursor: {
       x: null,
       y: null
@@ -1900,6 +1935,9 @@ export function initializeSpriteEditorApp() {
       redoButton: getRequiredElement("redoButton"),
       resetPreviewButton: getRequiredElement("resetPreviewButton"),
       remediationSummaryText: getRequiredElement("remediationSummaryText"),
+      experienceSummaryText: getRequiredElement("experienceSummaryText"),
+      experienceDetailsText: getRequiredElement("experienceDetailsText"),
+      refreshExperienceButton: getRequiredElement("refreshExperienceButton"),
       inspectRemediationButton: getRequiredElement("inspectRemediationButton"),
       jumpToProblemButton: getRequiredElement("jumpToProblemButton"),
       applyRemediationButton: getRequiredElement("applyRemediationButton"),
@@ -1916,6 +1954,7 @@ export function initializeSpriteEditorApp() {
 
   syncControlsFromProject(state);
   validateSpriteProjectAssets(state);
+  updateEditorExperienceUI(state);
   state.elements.fpsInput.value = String(state.preview.fps);
 
   bindControls(state);

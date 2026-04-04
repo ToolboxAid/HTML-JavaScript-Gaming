@@ -1,0 +1,18 @@
+BUILD_PR_PLUGIN_ARCHITECTURE validation
+
+Files:
+- tools/shared/pluginArchitecture.js
+- tests/tools/PluginArchitectureSystem.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/pluginArchitecture.js
+- node --check tests/tools/PluginArchitectureSystem.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- plugin manifests require deterministic namespaced asset identities
+- conflicting plugin assets are rejected
+- accepted plugins can participate in packaging/runtime planning without weakening host boundaries
+- merged plugin package output is stable
+- no engine core API changes

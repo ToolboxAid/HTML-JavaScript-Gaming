@@ -88,6 +88,10 @@ import { run as runAssetValidationEngine } from './tools/AssetValidationEngine.t
 import { run as runAssetRemediationSystem } from './tools/AssetRemediationSystem.test.mjs';
 import { run as runProjectPackagingSystem } from './tools/ProjectPackagingSystem.test.mjs';
 import { run as runRuntimeAssetLoader } from './tools/RuntimeAssetLoader.test.mjs';
+import { run as runEditorExperienceLayer } from './tools/EditorExperienceLayer.test.mjs';
+import { run as runRuntimeStreamingSystem } from './tools/RuntimeStreamingSystem.test.mjs';
+import { run as runPluginArchitectureSystem } from './tools/PluginArchitectureSystem.test.mjs';
+import { run as runProjectVersioningSystem } from './tools/ProjectVersioningSystem.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -170,6 +174,10 @@ const tests = [
     ['AssetRemediationSystem', runAssetRemediationSystem],
     ['ProjectPackagingSystem', runProjectPackagingSystem],
     ['RuntimeAssetLoader', runRuntimeAssetLoader],
+    ['EditorExperienceLayer', runEditorExperienceLayer],
+    ['RuntimeStreamingSystem', runRuntimeStreamingSystem],
+    ['PluginArchitectureSystem', runPluginArchitectureSystem],
+    ['ProjectVersioningSystem', runProjectVersioningSystem],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

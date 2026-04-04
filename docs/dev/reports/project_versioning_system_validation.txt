@@ -1,0 +1,18 @@
+BUILD_PR_PROJECT_VERSIONING_SYSTEM validation
+
+Files:
+- tools/shared/projectVersioning.js
+- tests/tools/ProjectVersioningSystem.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/projectVersioning.js
+- node --check tests/tools/ProjectVersioningSystem.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- project and package versions are reported deterministically
+- outdated versions produce migration-needed guidance
+- diff/report lines are stable for forward planning
+- existing runtime and packaging contracts remain authoritative
+- no engine core API changes

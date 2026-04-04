@@ -2,28 +2,20 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute this atomic Level 13 package in order.
+Execute this Level 14 expansion suite in order, treating each PLAN as the governing architecture contract for its corresponding BUILD/APPLY.
 
-Step 1:
-Treat docs/pr/PLAN_PR_RUNTIME_ASSET_LOADER.md as the governing architecture contract.
+Order:
+1. PLAN/BUILD/APPLY_PR_EDITOR_EXPERIENCE_LAYER
+2. PLAN/BUILD/APPLY_PR_RUNTIME_STREAMING_SYSTEM
+3. PLAN/BUILD/APPLY_PR_PLUGIN_ARCHITECTURE
+4. PLAN/BUILD/APPLY_PR_PROJECT_VERSIONING_SYSTEM
 
-Step 2:
-Create BUILD_PR_RUNTIME_ASSET_LOADER.
-
-BUILD requirements:
-- Implement a strict runtime asset loader for packaged project output
-- Consume package manifest as runtime entry authority
-- Enforce deterministic load sequencing
-- Produce stable loader status/reporting
-- Fail fast on invalid packaged input or missing required packaged assets
-- Provide runtime bootstrap handoff for packaged projects
+Global requirements:
+- Preserve Level 13 accepted platform boundaries
 - Do not modify engine core APIs
+- Keep docs/dev command and commit files authoritative
+- Package each completed slice to the repo tmp directory using the PR/package naming conventions already established
+- Maintain deterministic behavior and readable validation/reporting wherever applicable
 
-Step 3:
-Validate BUILD against docs/pr/BUILD_PR_RUNTIME_ASSET_LOADER.md.
-
-Step 4:
-Treat docs/pr/APPLY_PR_RUNTIME_ASSET_LOADER.md as the acceptance boundary and package results.
-
-Package:
-HTML-JavaScript-Gaming/tmp/LEVEL_13_RUNTIME_ASSET_LOADER_STRICT_ATOMIC_PACKAGE_delta.zip
+Master package:
+HTML-JavaScript-Gaming/tmp/LEVEL_14_EXPANSION_SUITE_ATOMIC_PACKAGE_delta.zip

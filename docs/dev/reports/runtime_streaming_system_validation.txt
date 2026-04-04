@@ -1,0 +1,18 @@
+BUILD_PR_RUNTIME_STREAMING_SYSTEM validation
+
+Files:
+- tools/shared/runtimeStreaming.js
+- tests/tools/RuntimeStreamingSystem.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/runtimeStreaming.js
+- node --check tests/tools/RuntimeStreamingSystem.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- deterministic boot chunks include startup dependency closure
+- lazy chunks are emitted in stable package order
+- streamed chunk loading stays strict and fallback-free
+- invalid or unknown chunk requests fail fast with readable reports
+- no engine core API changes

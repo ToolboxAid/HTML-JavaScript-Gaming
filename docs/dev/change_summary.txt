@@ -1,3 +1,1 @@
-Single atomic Level 13 package containing PLAN, BUILD, and APPLY documentation for a strict
-packaged runtime asset loader. This bundle is docs-first and Codex-ready, with implementation
-ownership delegated to Codex.
+Combined Level 14 suite containing PLAN/BUILD/APPLY docs for UX, streaming, plugins, and versioning.

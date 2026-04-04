@@ -1,0 +1,27 @@
+BUILD_PR_EDITOR_EXPERIENCE_LAYER validation
+
+Files:
+- tools/shared/editorExperienceLayer.js
+- tests/tools/EditorExperienceLayer.test.mjs
+- tests/run-tests.mjs
+- tools/Sprite Editor/index.html
+- tools/Sprite Editor/modules/spriteEditorApp.js
+- tools/Tile Map Editor/index.html
+- tools/Tile Map Editor/main.js
+- tools/Parallax Editor/index.html
+- tools/Parallax Editor/main.js
+
+Checks passed:
+- node --check tools/shared/editorExperienceLayer.js
+- node --check tests/tools/EditorExperienceLayer.test.mjs
+- node --check tools/Sprite Editor/modules/spriteEditorApp.js
+- node --check tools/Tile Map Editor/main.js
+- node --check tools/Parallax Editor/main.js
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- experience panels consume validation, remediation, packaging, and runtime outputs without replacing them
+- dependency graph visibility is deterministic and stable
+- remediation navigation remains intact
+- accepted Level 13 save/package guards remain enforced
+- no engine core API changes

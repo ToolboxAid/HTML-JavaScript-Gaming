@@ -27,6 +27,7 @@ import {
   summarizeProjectAssetRemediation
 } from "../shared/projectAssetRemediation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projectPackaging.js";
+import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../shared/editorExperienceLayer.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -573,6 +574,9 @@ class TileMapEditorApp {
     this.assetDependencyGraphSnapshot = null;
     this.validationResult = null;
     this.remediationResult = { remediation: { status: "unavailable", actions: [] } };
+    this.lastPackageResult = null;
+    this.lastRuntimeResult = null;
+    this.editorExperienceResult = null;
   }
 
   init(rootDocument) {
@@ -603,6 +607,9 @@ class TileMapEditorApp {
     this.refs.exportRuntimeButton = rootDocument.getElementById("exportRuntimeButton");
     this.refs.packageProjectButton = rootDocument.getElementById("packageProjectButton");
     this.refs.remediationSummaryText = rootDocument.getElementById("remediationSummaryText");
+    this.refs.experienceSummaryText = rootDocument.getElementById("experienceSummaryText");
+    this.refs.experienceDetailsText = rootDocument.getElementById("experienceDetailsText");
+    this.refs.refreshExperienceButton = rootDocument.getElementById("refreshExperienceButton");
     this.refs.inspectRemediationButton = rootDocument.getElementById("inspectRemediationButton");
     this.refs.jumpToProblemButton = rootDocument.getElementById("jumpToProblemButton");
     this.refs.applyRemediationButton = rootDocument.getElementById("applyRemediationButton");
@@ -669,6 +676,7 @@ class TileMapEditorApp {
     this.refs.exitSimulationButton.addEventListener("click", () => this.exitSimulationMode());
     this.refs.exportRuntimeButton.addEventListener("click", () => this.handleExportRuntime());
     this.refs.packageProjectButton.addEventListener("click", () => this.handlePackageProject());
+    this.refs.refreshExperienceButton.addEventListener("click", () => this.refreshExperienceSnapshot());
     this.refs.inspectRemediationButton.addEventListener("click", () => this.inspectRemediationActions());
     this.refs.jumpToProblemButton.addEventListener("click", () => this.jumpToRemediationProblem());
     this.refs.applyRemediationButton.addEventListener("click", () => this.applyRemediationAction());
@@ -871,6 +879,15 @@ class TileMapEditorApp {
       validationResult: validation,
       tileMapDocument: this.documentModel
     });
+    this.lastPackageResult = packageResult;
+    this.editorExperienceResult = buildEditorExperienceLayer({
+      assetDependencyGraph: validation.assetDependencyGraph,
+      validationResult: validation,
+      remediationResult: this.remediationResult,
+      packageResult: this.lastPackageResult,
+      runtimeResult: this.lastRuntimeResult
+    });
+    this.updateEditorExperienceUI();
     if (packageResult.packageStatus !== "ready") {
       this.updateStatus(`${summarizeProjectPackaging(packageResult)} ${packageResult.manifest.package.reports[0]?.message || ""}`.trim());
       return;
@@ -2007,6 +2024,7 @@ class TileMapEditorApp {
     this.refreshSimulationActionState();
     this.updateSimulationContext();
     this.updateRemediationUI();
+    this.updateEditorExperienceUI();
   }
 
   renderLayerMeta() {
@@ -2478,6 +2496,13 @@ class TileMapEditorApp {
       validationResult: this.validationResult,
       registry: this.assetRegistry
     });
+    this.editorExperienceResult = buildEditorExperienceLayer({
+      assetDependencyGraph: this.validationResult.assetDependencyGraph,
+      validationResult: this.validationResult,
+      remediationResult: this.remediationResult,
+      packageResult: this.lastPackageResult,
+      runtimeResult: this.lastRuntimeResult
+    });
     return this.validationResult;
   }
 
@@ -2491,6 +2516,20 @@ class TileMapEditorApp {
     this.refs.inspectRemediationButton.disabled = this.remediationResult?.remediation?.status !== "available";
     this.refs.jumpToProblemButton.disabled = !navigateAction;
     this.refs.applyRemediationButton.disabled = !fixAction;
+  }
+
+  updateEditorExperienceUI() {
+    if (!this.refs.experienceSummaryText || !this.refs.experienceDetailsText) {
+      return;
+    }
+    this.refs.experienceSummaryText.textContent = summarizeEditorExperienceLayer(this.editorExperienceResult);
+    this.refs.experienceDetailsText.textContent = this.editorExperienceResult?.experience?.reportText || "No experience snapshot available.";
+  }
+
+  refreshExperienceSnapshot() {
+    this.validateProjectAssets();
+    this.updateEditorExperienceUI();
+    this.updateStatus(summarizeEditorExperienceLayer(this.editorExperienceResult));
   }
 
   inspectRemediationActions() {
