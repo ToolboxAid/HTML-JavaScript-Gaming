@@ -33,6 +33,9 @@ export async function runCiValidationPipeline(options = {}) {
   const suiteStatus = validationSuite?.platformValidationSuite?.status || "fail";
   const branch = sanitizeText(options.branch) || "local";
   const trigger = sanitizeText(options.trigger) || "manual";
+  const profilerSummary = sanitizeText(options.performanceResult?.performance?.bottleneck?.stage)
+    ? `Profiler bottleneck: ${options.performanceResult.performance.bottleneck.stage}.`
+    : "";
   const reports = [
     createReport("info", "CI_TRIGGER", `CI validation pipeline evaluated trigger ${trigger} on branch ${branch}.`),
     createReport(
@@ -59,8 +62,9 @@ export async function runCiValidationPipeline(options = {}) {
         `Trigger: ${trigger}`,
         `Branch: ${branch}`,
         `Artifacts: ${artifactEntries.map((entry) => `${entry.kind}:${entry.path}`).join(", ")}`,
+        profilerSummary,
         ...reports.map((report) => `[${report.level}] ${report.code}: ${report.message}`)
-      ].join("\n")
+      ].filter(Boolean).join("\n")
     }
   };
 }

@@ -1,1 +1,1 @@
-Combined Level 16 suite containing PLAN/BUILD/APPLY docs for CI, debug visualization, hot reload, and multi-target export.
+Combined Level 17 suite containing PLAN/BUILD/APPLY docs for AI authoring, gameplay, collaboration, and performance profiling.

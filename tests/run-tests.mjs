@@ -97,6 +97,10 @@ import { run as runCiValidationPipeline } from './tools/CiValidationPipeline.tes
 import { run as runDebugVisualizationLayer } from './tools/DebugVisualizationLayer.test.mjs';
 import { run as runHotReloadSystem } from './tools/HotReloadSystem.test.mjs';
 import { run as runMultiTargetExport } from './tools/MultiTargetExport.test.mjs';
+import { run as runAiAuthoringAssistant } from './tools/AiAuthoringAssistant.test.mjs';
+import { run as runGameplaySystemLayer } from './tools/GameplaySystemLayer.test.mjs';
+import { run as runCollaborationSystem } from './tools/CollaborationSystem.test.mjs';
+import { run as runPerformanceProfiler } from './tools/PerformanceProfiler.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -188,6 +192,10 @@ const tests = [
     ['DebugVisualizationLayer', runDebugVisualizationLayer],
     ['HotReloadSystem', runHotReloadSystem],
     ['MultiTargetExport', runMultiTargetExport],
+    ['AiAuthoringAssistant', runAiAuthoringAssistant],
+    ['GameplaySystemLayer', runGameplaySystemLayer],
+    ['CollaborationSystem', runCollaborationSystem],
+    ['PerformanceProfiler', runPerformanceProfiler],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

@@ -1,5 +1,5 @@
-- All four Level 16 capability groups are present
+- All four Level 17 capability groups are present
 - Each capability has PLAN, BUILD, and APPLY docs
 - docs/dev contains codex_commands.md and commit_comment.txt
-- Level 15 self-validating platform remains the prerequisite authority
+- Level 16 platform remains the prerequisite authority
 - No engine core API changes are authorized

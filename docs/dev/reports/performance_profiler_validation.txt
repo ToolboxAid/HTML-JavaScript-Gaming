@@ -1,0 +1,22 @@
+BUILD_PR_PERFORMANCE_PROFILER validation
+
+Files:
+- tools/shared/performanceProfiler.js
+- tools/shared/debugVisualizationLayer.js
+- tools/shared/ciValidationPipeline.js
+- tests/tools/PerformanceProfiler.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/performanceProfiler.js
+- node --check tests/tools/PerformanceProfiler.test.mjs
+- node --check tools/shared/debugVisualizationLayer.js
+- node --check tools/shared/ciValidationPipeline.js
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- profiler samples are deterministic and auditable
+- bottleneck reporting is stable and readable
+- profiler output integrates with shared debug and CI reporting surfaces
+- accepted platform boundaries remain authoritative
+- no engine core API changes

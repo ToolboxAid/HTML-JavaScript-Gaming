@@ -71,6 +71,18 @@ function toRuntimeLines(runtimeResult) {
   ];
 }
 
+function toProfilerLines(performanceResult) {
+  const performance = performanceResult?.performance;
+  if (!performance) {
+    return ["profiler=unavailable"];
+  }
+  return [
+    `status=${sanitizeText(performance.status) || "unknown"}`,
+    `bottleneck=${sanitizeText(performance.bottleneck?.stage) || "none"}`,
+    ...((Array.isArray(performance.samples) ? performance.samples : []).slice(0, 5).map((sample) => `${sample.stage}=${sample.units}`))
+  ];
+}
+
 function toRemediationLines(remediationResult) {
   const actions = Array.isArray(remediationResult?.remediation?.actions) ? remediationResult.remediation.actions : [];
   return [
@@ -92,7 +104,8 @@ export function buildDebugVisualizationLayer(options = {}) {
     createSection("Validation Overlay", toValidationLines(options.validationResult)),
     createSection("Remediation Navigation", toRemediationLines(options.remediationResult)),
     createSection("Packaging Report", toPackagingLines(options.packageResult)),
-    createSection("Runtime Trace", toRuntimeLines(options.runtimeResult))
+    createSection("Runtime Trace", toRuntimeLines(options.runtimeResult)),
+    createSection("Profiler", toProfilerLines(options.performanceResult))
   ];
   const summary = `Debug view: ${Object.keys(graph.nodes || {}).length} nodes, ${(graph.edges || []).length} edges, ${options.validationResult?.validation?.findings?.length || 0} findings.`;
   return {
