@@ -17,6 +17,7 @@ import { run as runParticleSystem } from './fx/ParticleSystem.test.mjs';
 import { run as runAudioService } from './audio/AudioService.test.mjs';
 import { run as runAsteroidsHardening } from './games/AsteroidsHardening.test.mjs';
 import { run as runAsteroidsCollisionTimingStress } from './games/AsteroidsCollisionTimingStress.test.mjs';
+import { run as runAsteroidsPlatformDemo } from './games/AsteroidsPlatformDemo.test.mjs';
 import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
 import { run as runAsteroidsPresentation } from './games/AsteroidsPresentation.test.mjs';
@@ -135,6 +136,7 @@ const tests = [
     ['RuntimeMetrics', runRuntimeMetrics],
     ['AsteroidsHardening', runAsteroidsHardening],
     ['AsteroidsCollisionTimingStress', runAsteroidsCollisionTimingStress],
+    ['AsteroidsPlatformDemo', runAsteroidsPlatformDemo],
     ['AsteroidsValidation', runAsteroidsValidation],
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
     ['AsteroidsPresentation', runAsteroidsPresentation],

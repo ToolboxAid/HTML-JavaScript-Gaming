@@ -1,1 +1,1 @@
-build(level-18): ecosystem suite
+build(demo): add flagship asteroids platform demo

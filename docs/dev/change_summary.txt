@@ -1,1 +1,3 @@
-Level 18 ecosystem
+Single atomic flagship demo package containing PLAN, BUILD, and APPLY documentation for an
+Asteroids-style platform demo. This bundle is docs-first and Codex-ready, with implementation
+ownership delegated to Codex.
