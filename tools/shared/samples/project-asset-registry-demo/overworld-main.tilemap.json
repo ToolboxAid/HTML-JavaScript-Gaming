@@ -1,0 +1,48 @@
+{
+  "header": {
+    "organization": "Toolbox Aid",
+    "author": "David Quesenberry",
+    "date": "04/03/2026",
+    "file": "overworld-main.tilemap.json"
+  },
+  "schema": "toolbox.tilemap/1",
+  "version": 1,
+  "map": {
+    "name": "overworld-main",
+    "width": 8,
+    "height": 6,
+    "tileSize": 24
+  },
+  "tileset": [
+    { "id": 0, "name": "Empty", "color": "transparent", "source": null },
+    { "id": 1, "name": "Grass", "color": "#4a8f39", "source": { "kind": "atlas", "x": 0, "y": 0, "width": 24, "height": 24 } }
+  ],
+  "tilesetAtlas": {
+    "schema": "toolbox.tileset-atlas/1",
+    "imageDataUrl": "",
+    "imageName": "assets/tiles/overworld-main.png",
+    "imageWidth": 0,
+    "imageHeight": 0,
+    "tileWidth": 24,
+    "tileHeight": 24,
+    "spacing": 0,
+    "margin": 0
+  },
+  "layers": [
+    { "id": "ground", "name": "Ground", "kind": "tile", "visible": true, "locked": false, "data": [[1, 1, 1], [1, 0, 1]] },
+    { "id": "collision", "name": "Collision", "kind": "collision", "visible": true, "locked": false, "data": [[0, 0, 0], [0, 0, 0]] },
+    { "id": "data", "name": "Data", "kind": "data", "visible": true, "locked": false, "data": [[0, 0, 0], [0, 0, 0]] }
+  ],
+  "markers": [],
+  "assetRefs": {
+    "tilesetId": "tileset.overworld-main",
+    "parallaxSourceIds": ["parallax.sky-clouds"]
+  },
+  "parallax": {
+    "schema": "toolbox.parallax/1",
+    "companionEditor": "ParallaxEditor",
+    "layers": [
+      { "id": "sky", "name": "Sky", "imageSource": "assets/parallax/clouds-layer.svg" }
+    ]
+  }
+}

@@ -4,6 +4,16 @@ David Quesenberry
 03/30/2026
 main.js
 */
+import {
+  createAssetId,
+  createAssetRegistry,
+  createRegistryDownloadPayload,
+  findRegistryEntryById,
+  mergeAssetRegistries,
+  normalizeProjectRelativePath,
+  sanitizeAssetRegistry,
+  upsertRegistryEntry
+} from "../shared/projectAssetRegistry.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -197,6 +207,10 @@ function createInitialDocument(options = {}) {
       createLayer("data", "Data", "data", width, height)
     ],
     markers: [],
+    assetRefs: {
+      tilesetId: "",
+      parallaxSourceIds: []
+    },
     parallax: cloneDeep(RESERVED_PARALLAX_BLOCK),
     metadata: {
       createdAt,
@@ -344,6 +358,24 @@ function sanitizeMarkers(rawMarkers, width, height) {
   return markers;
 }
 
+function sanitizeAssetRefs(rawAssetRefs) {
+  if (!rawAssetRefs || typeof rawAssetRefs !== "object") {
+    return {
+      tilesetId: "",
+      parallaxSourceIds: []
+    };
+  }
+
+  const parallaxSourceIds = Array.isArray(rawAssetRefs.parallaxSourceIds)
+    ? rawAssetRefs.parallaxSourceIds.filter((value) => typeof value === "string" && value.trim())
+    : [];
+
+  return {
+    tilesetId: typeof rawAssetRefs.tilesetId === "string" ? rawAssetRefs.tilesetId.trim() : "",
+    parallaxSourceIds: Array.from(new Set(parallaxSourceIds))
+  };
+}
+
 function sanitizeDocument(rawDocument) {
   const fallback = createInitialDocument();
   if (!rawDocument || typeof rawDocument !== "object") {
@@ -374,6 +406,7 @@ function sanitizeDocument(rawDocument) {
     tilesetAtlas,
     layers,
     markers: sanitizeMarkers(rawDocument.markers, width, height),
+    assetRefs: sanitizeAssetRefs(rawDocument.assetRefs),
     parallax: {
       schema: "toolbox.parallax/1",
       companionEditor: "ParallaxEditor",
@@ -517,6 +550,7 @@ class TileMapEditorApp {
     };
     this.tilesetImage = null;
     this.tilesetImageCache = new Map();
+    this.assetRegistry = createAssetRegistry({ projectId: documentModel?.map?.name || "tilemap-project" });
   }
 
   init(rootDocument) {
@@ -536,6 +570,9 @@ class TileMapEditorApp {
     this.refs.sampleSelect = rootDocument.getElementById("sampleSelect");
     this.refs.loadSampleButton = rootDocument.getElementById("loadSampleButton");
     this.refs.saveProjectButton = rootDocument.getElementById("saveProjectButton");
+    this.refs.loadAssetRegistryButton = rootDocument.getElementById("loadAssetRegistryButton");
+    this.refs.loadAssetRegistryInput = rootDocument.getElementById("loadAssetRegistryInput");
+    this.refs.saveAssetRegistryButton = rootDocument.getElementById("saveAssetRegistryButton");
     this.refs.simulateButton = rootDocument.getElementById("simulateButton");
     this.refs.playSimulationButton = rootDocument.getElementById("playSimulationButton");
     this.refs.pauseSimulationButton = rootDocument.getElementById("pauseSimulationButton");
@@ -595,6 +632,9 @@ class TileMapEditorApp {
       void this.loadSampleManifest({ quiet: true });
     });
     this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
+    this.refs.loadAssetRegistryButton.addEventListener("click", () => this.refs.loadAssetRegistryInput.click());
+    this.refs.loadAssetRegistryInput.addEventListener("change", (event) => this.handleLoadAssetRegistry(event));
+    this.refs.saveAssetRegistryButton.addEventListener("click", () => this.handleSaveAssetRegistry());
     this.refs.simulateButton.addEventListener("click", () => this.enterSimulationMode());
     this.refs.playSimulationButton.addEventListener("click", () => this.resumeSimulation());
     this.refs.pauseSimulationButton.addEventListener("click", () => this.pauseSimulation());
@@ -680,12 +720,120 @@ class TileMapEditorApp {
     this.updateStatus("Created a new map document.");
   }
 
+  syncAssetRegistryFromDocument(options = {}) {
+    const mapName = this.documentModel?.map?.name || "tile-map";
+    this.assetRegistry = sanitizeAssetRegistry(this.assetRegistry);
+    this.assetRegistry.projectId = this.assetRegistry.projectId || mapName;
+
+    const nextAssetRefs = sanitizeAssetRefs(this.documentModel.assetRefs);
+    const atlas = this.documentModel.tilesetAtlas || {};
+    const atlasImagePath = normalizeProjectRelativePath(atlas.imageName || options.tilesetPath || "");
+
+    if (atlasImagePath) {
+      const atlasImageId = createAssetId("image", atlasImagePath, "tileset-image");
+      const tilesetId = createAssetId("tileset", mapName, "tileset");
+
+      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "images", {
+        id: atlasImageId,
+        name: atlas.imageName || mapName,
+        path: atlasImagePath,
+        sourceTool: "tile-map-editor"
+      });
+
+      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "tilesets", {
+        id: tilesetId,
+        name: `${mapName} Tileset`,
+        path: atlasImagePath,
+        tileWidth: atlas.tileWidth,
+        tileHeight: atlas.tileHeight,
+        sourceTool: "tile-map-editor"
+      });
+
+      nextAssetRefs.tilesetId = tilesetId;
+    }
+
+    const parallaxLayerSources = [];
+    const parallaxLayers = Array.isArray(this.documentModel?.parallax?.layers) ? this.documentModel.parallax.layers : [];
+    parallaxLayers.forEach((layer, index) => {
+      const layerPath = normalizeProjectRelativePath(layer?.imageSource || "");
+      if (!layerPath) {
+        return;
+      }
+
+      const imageId = createAssetId("image", layerPath, `parallax-image-${index + 1}`);
+      const sourceId = createAssetId("parallax", layer?.id || layer?.name || `source-${index + 1}`, `source-${index + 1}`);
+
+      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "images", {
+        id: imageId,
+        name: layer?.name || `Parallax ${index + 1}`,
+        path: layerPath,
+        sourceTool: "tile-map-editor"
+      });
+
+      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "parallaxSources", {
+        id: sourceId,
+        name: layer?.name || `Parallax ${index + 1}`,
+        path: layerPath,
+        imageId,
+        sourceTool: "tile-map-editor"
+      });
+
+      parallaxLayerSources.push(sourceId);
+    });
+
+    if (parallaxLayerSources.length > 0) {
+      nextAssetRefs.parallaxSourceIds = Array.from(new Set(parallaxLayerSources));
+    }
+
+    this.documentModel.assetRefs = nextAssetRefs;
+  }
+
+  resolveAssetRefsFromRegistry() {
+    const refs = sanitizeAssetRefs(this.documentModel.assetRefs);
+    this.documentModel.assetRefs = refs;
+
+    if (refs.tilesetId && !normalizeProjectRelativePath(this.documentModel.tilesetAtlas?.imageName || "")) {
+      const tilesetEntry = findRegistryEntryById(this.assetRegistry, "tilesets", refs.tilesetId);
+      const tilesetPath = normalizeProjectRelativePath(tilesetEntry?.path || "");
+      if (tilesetPath) {
+        this.documentModel.tilesetAtlas.imageName = tilesetPath;
+      }
+    }
+
+    if (Array.isArray(refs.parallaxSourceIds) && refs.parallaxSourceIds.length > 0 && Array.isArray(this.documentModel?.parallax?.layers)) {
+      let sourceIndex = 0;
+      this.documentModel.parallax.layers.forEach((layer) => {
+        if (!layer || normalizeProjectRelativePath(layer.imageSource || "")) {
+          return;
+        }
+        const sourceId = refs.parallaxSourceIds[sourceIndex];
+        if (!sourceId) {
+          return;
+        }
+        const sourceEntry = findRegistryEntryById(this.assetRegistry, "parallaxSources", sourceId);
+        const sourcePath = normalizeProjectRelativePath(sourceEntry?.path || "");
+        if (sourcePath) {
+          layer.imageSource = sourcePath;
+        }
+        sourceIndex += 1;
+      });
+    }
+  }
+
   handleSaveProject() {
     this.touchDocument();
+    this.syncAssetRegistryFromDocument();
     const serialized = JSON.stringify(this.documentModel, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.tilemap.json`;
     downloadTextFile(fileName, serialized);
-    this.updateStatus(`Saved ${fileName}.`);
+    this.updateStatus(`Saved ${fileName} (tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).`);
+  }
+
+  handleSaveAssetRegistry() {
+    this.syncAssetRegistryFromDocument();
+    const payload = createRegistryDownloadPayload(this.assetRegistry);
+    downloadTextFile("project.assets.json", payload);
+    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilesets.length} tilesets, ${this.assetRegistry.images.length} images).`);
   }
 
   handleExportRuntime() {
@@ -708,6 +856,7 @@ class TileMapEditorApp {
       try {
         const parsed = JSON.parse(String(reader.result));
         this.documentModel = sanitizeDocument(parsed);
+        this.resolveAssetRefsFromRegistry();
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
         this.selectedMarkerId = "";
         this.activeTileId = this.findFirstNonEmptyTileId();
@@ -722,6 +871,31 @@ class TileMapEditorApp {
       }
 
       this.refs.loadProjectInput.value = "";
+    };
+
+    reader.readAsText(file);
+  }
+
+  handleLoadAssetRegistry(event) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        this.assetRegistry = mergeAssetRegistries(this.assetRegistry, parsed);
+        this.resolveAssetRefsFromRegistry();
+        this.renderAll();
+        void this.reloadTilesetImageFromDocument({ quiet: true });
+        this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilesets.length} tilesets, ${this.assetRegistry.parallaxSources.length} parallax sources).`);
+      } catch (error) {
+        this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
+      }
+
+      this.refs.loadAssetRegistryInput.value = "";
     };
 
     reader.readAsText(file);
@@ -1473,6 +1647,7 @@ class TileMapEditorApp {
 
       const raw = await response.json();
       this.documentModel = sanitizeDocument(raw);
+      this.resolveAssetRefsFromRegistry();
       this.selectedLayerId = this.documentModel.layers[0]?.id || "";
       this.selectedMarkerId = "";
       this.activeTileId = this.findFirstNonEmptyTileId();

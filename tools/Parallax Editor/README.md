@@ -26,6 +26,13 @@ Standalone companion tool for parallax depth/background authoring.
 - It does not include tile/collision/data map editing.
 - It does not modify engine core APIs.
 
+## Project Asset Registry
+- Supports loading and saving `project.assets.json` from top-level project controls.
+- Parallax saves additively register shared `images` and `parallaxSources`.
+- Parallax layers support optional `parallaxSourceId` references.
+- Parallax JSON includes optional `assetRefs.parallaxSourceIds` for cross-tool lookup.
+- Legacy parallax/tilemap documents with no registry references remain supported.
+
 ## Entry
 - `tools/Parallax Editor/index.html`
 

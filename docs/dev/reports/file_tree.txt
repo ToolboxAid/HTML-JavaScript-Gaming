@@ -3,10 +3,26 @@ David Quesenberry
 04/03/2026
 file_tree.txt
 
-APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION file tree
+BUILD_PR_PROJECT_ASSET_REGISTRY file tree
 
 CODEX_COMMANDS.md
-docs/pr/APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
+docs/pr/PLAN_PR_PROJECT_ASSET_REGISTRY.md
+docs/pr/BUILD_PR_PROJECT_ASSET_REGISTRY.md
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
 docs/dev/reports/file_tree.txt
+tools/shared/projectAssetRegistry.js
+tools/shared/samples/project-asset-registry-demo/project.assets.json
+tools/shared/samples/project-asset-registry-demo/hero-idle.sprite.json
+tools/shared/samples/project-asset-registry-demo/overworld-main.tilemap.json
+tools/shared/samples/project-asset-registry-demo/overworld-main.parallax.json
+tools/Sprite Editor/index.html
+tools/Sprite Editor/README.md
+tools/Sprite Editor/modules/projectModel.js
+tools/Sprite Editor/modules/spriteEditorApp.js
+tools/Tile Map Editor/index.html
+tools/Tile Map Editor/README.md
+tools/Tile Map Editor/main.js
+tools/Parallax Editor/index.html
+tools/Parallax Editor/README.md
+tools/Parallax Editor/main.js

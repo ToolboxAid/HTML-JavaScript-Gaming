@@ -1,0 +1,46 @@
+{
+  "header": {
+    "organization": "Toolbox Aid",
+    "author": "David Quesenberry",
+    "date": "04/03/2026",
+    "file": "overworld-main.parallax.json"
+  },
+  "schema": "toolbox.parallax/1",
+  "version": 1,
+  "companionEditor": "ParallaxEditor",
+  "map": {
+    "name": "overworld-main",
+    "width": 8,
+    "height": 6,
+    "tileSize": 24,
+    "pixelWidth": 192,
+    "pixelHeight": 144
+  },
+  "layers": [
+    {
+      "id": "sky",
+      "name": "Sky",
+      "parallaxSourceId": "parallax.sky-clouds",
+      "drawOrder": 0,
+      "imageSource": "assets/parallax/clouds-layer.svg",
+      "imageDataUrl": "",
+      "scrollFactorX": 0.2,
+      "scrollFactorY": 0.05,
+      "offsetX": 0,
+      "offsetY": 0,
+      "repeatX": true,
+      "repeatY": false,
+      "wrapMode": "wrap",
+      "opacity": 1,
+      "visible": true
+    }
+  ],
+  "assetRefs": {
+    "parallaxSourceIds": ["parallax.sky-clouds"]
+  },
+  "metadata": {
+    "createdAt": "2026-04-03T00:00:00.000Z",
+    "updatedAt": "2026-04-03T00:00:00.000Z",
+    "source": "parallax-editor-companion"
+  }
+}

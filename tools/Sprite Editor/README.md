@@ -40,5 +40,13 @@ Standalone browser-based Sprite Editor tool built as an isolated implementation 
 - Saved project JSON persists `paletteRef` identity (`source`, `id`, `locked`) instead of storing an authoritative palette catalog.
 - Loading JSON attempts to resolve and lock `paletteRef.id` against engine palette list; unresolved refs load in blocked selection mode.
 
+## Project Asset Registry
+- Supports loading and saving `project.assets.json` from the Project I/O panel.
+- Sprite saves register/update additive shared entries for:
+  - `palettes` (engine palette reference + color set)
+  - `sprites` (project-relative sprite document path)
+- Sprite project JSON now includes optional `assetRefs` (`paletteId`, `spriteId`) for cross-tool asset linkage.
+- Legacy sprite JSON files with no `assetRefs` remain fully loadable.
+
 ## Entry point
 - `tools/Sprite Editor/index.html`

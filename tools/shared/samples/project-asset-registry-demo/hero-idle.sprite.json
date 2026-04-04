@@ -1,0 +1,32 @@
+{
+  "header": {
+    "organization": "Toolbox Aid",
+    "author": "David Quesenberry",
+    "date": "04/03/2026",
+    "file": "hero-idle.sprite.json"
+  },
+  "format": "toolboxaid.sprite-editor.project",
+  "version": 1,
+  "width": 24,
+  "height": 24,
+  "pixelSize": 18,
+  "showGrid": true,
+  "onionSkin": false,
+  "activeColor": "#232323ff",
+  "paletteRef": {
+    "source": "engine/paletteList",
+    "id": "crayola032",
+    "locked": true
+  },
+  "assetRefs": {
+    "paletteId": "palette.crayola032",
+    "spriteId": "sprite.hero-idle"
+  },
+  "recentColors": ["#232323ff", "#EDEDEDff"],
+  "currentFrameIndex": 0,
+  "frames": [
+    {
+      "pixels": [null, null, "#232323ff", null]
+    }
+  ]
+}

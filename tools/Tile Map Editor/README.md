@@ -22,6 +22,14 @@ This tool provides the Tile Map Editor foundation for map authoring in the repo.
 - Parallax editing is intentionally out of scope for this PR.
 - Saved documents include a reserved `parallax` block for a later companion Parallax Editor.
 
+## Project Asset Registry
+- Supports loading and saving `project.assets.json` from top-level project controls.
+- Tile map saves additively register shared `tilesets`, `images`, and available `parallaxSources`.
+- Tile map JSON includes optional `assetRefs`:
+  - `tilesetId`
+  - `parallaxSourceIds`
+- Legacy tile map files without `assetRefs` continue to load and save.
+
 ## Entry point
 - `tools/Tile Map Editor/index.html`
 

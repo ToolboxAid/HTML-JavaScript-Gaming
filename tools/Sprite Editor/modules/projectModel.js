@@ -44,6 +44,20 @@ function normalizePaletteRef(rawPaletteRef) {
   return { source, id, locked };
 }
 
+function normalizeAssetRefs(rawAssetRefs) {
+  if (!rawAssetRefs || typeof rawAssetRefs !== "object") {
+    return {
+      paletteId: "",
+      spriteId: ""
+    };
+  }
+
+  return {
+    paletteId: typeof rawAssetRefs.paletteId === "string" ? rawAssetRefs.paletteId.trim() : "",
+    spriteId: typeof rawAssetRefs.spriteId === "string" ? rawAssetRefs.spriteId.trim() : ""
+  };
+}
+
 export function createEmptyFrame(width, height) {
   return {
     pixels: new Array(width * height).fill(null)
@@ -75,6 +89,7 @@ export function createNewProject(options = {}) {
 
   const recentColors = activeColor ? [activeColor] : [];
   const paletteRef = normalizePaletteRef(options.paletteRef);
+  const assetRefs = normalizeAssetRefs(options.assetRefs);
 
   return {
     format: PROJECT_FORMAT,
@@ -87,6 +102,7 @@ export function createNewProject(options = {}) {
     activeColor,
     palette,
     paletteRef,
+    assetRefs,
     recentColors,
     frames: [createEmptyFrame(width, height)],
     currentFrameIndex: 0
@@ -119,6 +135,7 @@ export function ensureProjectShape(rawProject) {
 
   const palette = dedupeColors(Array.isArray(rawProject.palette) ? rawProject.palette : []).slice(0, 256);
   const paletteRef = normalizePaletteRef(rawProject.paletteRef);
+  const assetRefs = normalizeAssetRefs(rawProject.assetRefs);
 
   let activeColor = null;
   if (typeof rawProject.activeColor === "string") {
@@ -144,6 +161,7 @@ export function ensureProjectShape(rawProject) {
     activeColor,
     palette,
     paletteRef,
+    assetRefs,
     recentColors,
     frames: sanitizedFrames,
     currentFrameIndex: clampInt(rawProject.currentFrameIndex, 0, sanitizedFrames.length - 1, 0)
@@ -194,6 +212,10 @@ export function serializeProject(project, options = {}) {
       source: project.paletteRef?.source ?? PALETTE_SOURCE_ID,
       id: project.paletteRef?.id ?? NO_PALETTE_ID,
       locked: project.paletteRef?.locked === true
+    },
+    assetRefs: {
+      paletteId: project.assetRefs?.paletteId ?? "",
+      spriteId: project.assetRefs?.spriteId ?? ""
     },
     recentColors: project.recentColors,
     currentFrameIndex: project.currentFrameIndex,

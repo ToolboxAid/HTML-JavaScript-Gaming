@@ -1,0 +1,60 @@
+{
+  "header": {
+    "organization": "Toolbox Aid",
+    "author": "David Quesenberry",
+    "date": "04/03/2026",
+    "file": "project.assets.json"
+  },
+  "version": 1,
+  "projectId": "mario-style-learning-level",
+  "basePath": ".",
+  "palettes": [
+    {
+      "id": "palette.crayola032",
+      "name": "crayola032",
+      "enginePaletteId": "crayola032",
+      "colors": ["#232323", "#EDEDED", "#FF5349"],
+      "sourceTool": "sprite-editor"
+    }
+  ],
+  "sprites": [
+    {
+      "id": "sprite.hero-idle",
+      "name": "Hero Idle",
+      "path": "assets/sprites/hero-idle.sprite.json",
+      "paletteId": "palette.crayola032",
+      "sourceTool": "sprite-editor"
+    }
+  ],
+  "tilesets": [
+    {
+      "id": "tileset.overworld-main",
+      "name": "Overworld Main",
+      "path": "assets/tiles/overworld-main.png",
+      "tileWidth": 24,
+      "tileHeight": 24,
+      "sourceTool": "tile-map-editor"
+    }
+  ],
+  "images": [
+    {
+      "id": "image.parallax-clouds",
+      "name": "Parallax Clouds",
+      "path": "assets/parallax/clouds-layer.svg",
+      "sourceTool": "parallax-editor"
+    }
+  ],
+  "parallaxSources": [
+    {
+      "id": "parallax.sky-clouds",
+      "name": "Sky Clouds",
+      "path": "assets/parallax/clouds-layer.svg",
+      "imageId": "image.parallax-clouds",
+      "sourceTool": "parallax-editor"
+    }
+  ],
+  "references": {
+    "projectRoot": ".",
+    "notes": "Shared cross-tool asset references for demo project."
+  }
+}

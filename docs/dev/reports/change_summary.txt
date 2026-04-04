@@ -3,24 +3,42 @@ David Quesenberry
 04/03/2026
 change_summary.txt
 
-APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION summary
+BUILD_PR_PROJECT_ASSET_REGISTRY summary
 
-- Executed docs-only APPLY step for the already-built Sprite Editor project integration slice.
-- Verified BUILD artifact presence and scope boundaries from the approved build package.
-- Confirmed readiness against PLAN/BUILD contracts without expanding implementation scope.
-- Confirmed project-format compatibility behavior for `paletteRef` persistence and fallback resolution.
-- Confirmed user-visible behavior expectations:
-  - disabled-until-palette-selected editing gate
-  - post-selection locked palette
-  - explicit unlock through `Create New Canvas`
-  - lock-preserving import/resize/duplicate flows
-- Re-ran JS syntax checks for Sprite Editor integration modules.
-- Packaged docs-only APPLY delta ZIP for this step.
+Implemented:
+- Added shared registry module:
+  - tools/shared/projectAssetRegistry.js
+  - supports sanitize/merge/upsert/find, project-relative path normalization, and duplicate reduction
+- Integrated Sprite Editor:
+  - tools/Sprite Editor/index.html
+  - tools/Sprite Editor/modules/projectModel.js
+  - tools/Sprite Editor/modules/spriteEditorApp.js
+  - tools/Sprite Editor/README.md
+  - Added optional load/save project.assets.json controls
+  - Added additive palette/sprite registry registration on save
+  - Added optional assetRefs persistence (`paletteId`, `spriteId`)
+- Integrated Tile Map Editor:
+  - tools/Tile Map Editor/index.html
+  - tools/Tile Map Editor/main.js
+  - tools/Tile Map Editor/README.md
+  - Added optional load/save project.assets.json controls
+  - Added additive tileset/image/parallax source registry registration
+  - Added optional assetRefs persistence (`tilesetId`, `parallaxSourceIds`)
+- Integrated Parallax Editor:
+  - tools/Parallax Editor/index.html
+  - tools/Parallax Editor/main.js
+  - tools/Parallax Editor/README.md
+  - Added optional load/save project.assets.json controls
+  - Added additive image/parallax source registration
+  - Added optional `parallaxSourceId` (layer) + document assetRefs persistence
+- Added sample project data showing shared references:
+  - tools/shared/samples/project-asset-registry-demo/project.assets.json
+  - tools/shared/samples/project-asset-registry-demo/hero-idle.sprite.json
+  - tools/shared/samples/project-asset-registry-demo/overworld-main.tilemap.json
+  - tools/shared/samples/project-asset-registry-demo/overworld-main.parallax.json
 
-Decision:
-- BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION approved to apply.
-
-Out of scope honored:
-- No new implementation code
-- No engine/core refactor
-- No asset registry work in this APPLY step
+Scope guardrails honored:
+- No engine core API changes
+- Additive, non-destructive registry merge behavior
+- Legacy standalone file compatibility preserved
+- Project-relative normalized paths used for registry path fields

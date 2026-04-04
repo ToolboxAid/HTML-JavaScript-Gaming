@@ -25,6 +25,16 @@ import {
   resizeProject,
   serializeProject
 } from "./projectModel.js";
+import {
+  createAssetId,
+  createAssetRegistry,
+  createRegistryDownloadPayload,
+  findRegistryEntryById,
+  mergeAssetRegistries,
+  normalizeProjectRelativePath,
+  sanitizeAssetRegistry,
+  upsertRegistryEntry
+} from "../../shared/projectAssetRegistry.js";
 
 function getRequiredElement(id) {
   const element = document.getElementById(id);
@@ -106,6 +116,98 @@ function buildEnginePaletteCatalog() {
     options,
     error: ""
   };
+}
+
+function deriveSpriteFileName(project) {
+  return `sprite-project-${project.width}x${project.height}-${project.frames.length}f.json`;
+}
+
+function deriveDefaultSpriteAssetPath(project) {
+  const fileName = deriveSpriteFileName(project);
+  return normalizeProjectRelativePath(`assets/sprites/${fileName}`);
+}
+
+function syncRegistryProjectId(state) {
+  if (!state.assetRegistry || typeof state.assetRegistry !== "object") {
+    state.assetRegistry = createAssetRegistry({ projectId: "sprite-project" });
+    return;
+  }
+
+  const activeSpriteId = state.project?.assetRefs?.spriteId || "";
+  if (activeSpriteId) {
+    state.assetRegistry.projectId = state.assetRegistry.projectId || activeSpriteId;
+    return;
+  }
+
+  state.assetRegistry.projectId = state.assetRegistry.projectId || "sprite-project";
+}
+
+function syncSpriteAssetsToRegistry(state, options = {}) {
+  syncRegistryProjectId(state);
+
+  const preferredPath = normalizeProjectRelativePath(options.spritePath || "");
+  const spritePath = preferredPath || deriveDefaultSpriteAssetPath(state.project);
+  const spriteName = deriveSpriteFileName(state.project).replace(/\.json$/i, "");
+  const spriteAssetId = createAssetId("sprite", spriteName, "sprite");
+  let nextRegistry = state.assetRegistry;
+  let paletteAssetId = "";
+
+  if (isPaletteLocked(state.project) && state.project.paletteRef?.id && state.project.paletteRef.id !== NO_PALETTE_ID) {
+    paletteAssetId = createAssetId("palette", state.project.paletteRef.id, "palette");
+    nextRegistry = upsertRegistryEntry(nextRegistry, "palettes", {
+      id: paletteAssetId,
+      name: state.project.paletteRef.id,
+      enginePaletteId: state.project.paletteRef.id,
+      colors: state.project.palette.slice(),
+      sourceTool: "sprite-editor"
+    });
+  }
+
+  nextRegistry = upsertRegistryEntry(nextRegistry, "sprites", {
+    id: spriteAssetId,
+    name: spriteName,
+    path: spritePath,
+    paletteId: paletteAssetId,
+    sourceTool: "sprite-editor"
+  });
+
+  state.assetRegistry = sanitizeAssetRegistry(nextRegistry);
+  state.project.assetRefs = {
+    paletteId: paletteAssetId,
+    spriteId: spriteAssetId
+  };
+}
+
+function resolvePaletteFromAssetRegistry(state) {
+  const paletteAssetId = state.project?.assetRefs?.paletteId;
+  if (!paletteAssetId || !state.enginePalette.available) {
+    return false;
+  }
+
+  const entry = findRegistryEntryById(state.assetRegistry, "palettes", paletteAssetId);
+  if (!entry) {
+    return false;
+  }
+
+  const enginePaletteId = typeof entry.enginePaletteId === "string" && entry.enginePaletteId.trim()
+    ? entry.enginePaletteId.trim()
+    : typeof entry.name === "string" && entry.name.trim()
+      ? entry.name.trim()
+      : "";
+  if (!enginePaletteId) {
+    return false;
+  }
+
+  const locked = applyLockedPaletteToProject(state, enginePaletteId, { preferExistingActiveColor: true });
+  if (!locked) {
+    return false;
+  }
+  state.project.paletteRef = {
+    source: PALETTE_SOURCE_ID,
+    id: enginePaletteId,
+    locked: true
+  };
+  return true;
 }
 
 function downloadBlob(blob, filename) {
@@ -947,13 +1049,44 @@ async function exportSpriteSheetPng(state) {
   setStatus(state, `Exported ${filename} (${sheetCanvas.width}x${sheetCanvas.height}).`);
 }
 
+async function saveAssetRegistryJson(state) {
+  syncSpriteAssetsToRegistry(state, {});
+  const payload = createRegistryDownloadPayload(state.assetRegistry);
+  const blob = new Blob([payload], { type: "application/json" });
+  const fileName = "project.assets.json";
+  downloadBlob(blob, fileName);
+  setStatus(state, `Saved ${fileName} with ${state.assetRegistry.sprites.length} sprite entries.`);
+}
+
+async function loadAssetRegistryJson(state, file) {
+  const text = await fileToText(file);
+  const parsed = JSON.parse(text);
+  state.assetRegistry = mergeAssetRegistries(state.assetRegistry, parsed);
+
+  const resolved = resolvePaletteFromAssetRegistry(state);
+  if (!resolved) {
+    hydratePaletteFromRefIfPossible(state);
+  }
+
+  syncControlsFromProject(state);
+  renderAll(state);
+  setStatus(
+    state,
+    `Loaded ${file.name} (${state.assetRegistry.palettes.length} palettes, ${state.assetRegistry.sprites.length} sprites).`
+  );
+}
+
 async function saveProjectJson(state) {
+  const fileName = deriveSpriteFileName(state.project);
+  syncSpriteAssetsToRegistry(state, { spritePath: `assets/sprites/${fileName}` });
   const payload = serializeProject(state.project);
   const json = `${JSON.stringify(payload, null, 2)}\n`;
   const blob = new Blob([json], { type: "application/json" });
-  const filename = `sprite-project-${state.project.width}x${state.project.height}-${state.project.frames.length}f.json`;
-  downloadBlob(blob, filename);
-  setStatus(state, `Saved ${filename} (frame ${state.project.currentFrameIndex + 1} active).`);
+  downloadBlob(blob, fileName);
+  setStatus(
+    state,
+    `Saved ${fileName} (frame ${state.project.currentFrameIndex + 1} active, asset refs: palette=${state.project.assetRefs.paletteId || "none"}, sprite=${state.project.assetRefs.spriteId || "none"}).`
+  );
 }
 
 async function loadProjectJson(state, file) {
@@ -965,6 +1098,8 @@ async function loadProjectJson(state, file) {
 
   if (hydratePaletteFromRefIfPossible(state)) {
     lockMessage = `palette locked (${state.project.paletteRef.id})`;
+  } else if (resolvePaletteFromAssetRegistry(state)) {
+    lockMessage = `palette locked via asset registry (${state.project.paletteRef.id})`;
   } else {
     clearPaletteLock(state);
     lockMessage = "palette selection required";
@@ -1213,6 +1348,8 @@ function bindControls(state) {
     importPngInput,
     loadProjectButton,
     loadProjectInput,
+    loadAssetRegistryButton,
+    loadAssetRegistryInput,
     newCanvasButton,
     nextFrameButton,
     onionSkinToggle,
@@ -1223,6 +1360,7 @@ function bindControls(state) {
     prevFrameButton,
     redoButton,
     resetPreviewButton,
+    saveAssetRegistryButton,
     saveProjectButton,
     toolButtons,
     undoButton
@@ -1416,6 +1554,14 @@ function bindControls(state) {
     }
   });
 
+  saveAssetRegistryButton.addEventListener("click", async () => {
+    try {
+      await saveAssetRegistryJson(state);
+    } catch (error) {
+      setStatus(state, `Asset registry save failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  });
+
   loadProjectButton.addEventListener("click", () => loadProjectInput.click());
   loadProjectInput.addEventListener("change", async () => {
     const file = loadProjectInput.files?.[0];
@@ -1428,6 +1574,21 @@ function bindControls(state) {
       await loadProjectJson(state, file);
     } catch (error) {
       setStatus(state, `JSON load failed for ${file.name}: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  });
+
+  loadAssetRegistryButton.addEventListener("click", () => loadAssetRegistryInput.click());
+  loadAssetRegistryInput.addEventListener("change", async () => {
+    const file = loadAssetRegistryInput.files?.[0];
+    loadAssetRegistryInput.value = "";
+    if (!file) {
+      return;
+    }
+
+    try {
+      await loadAssetRegistryJson(state, file);
+    } catch (error) {
+      setStatus(state, `Asset registry load failed for ${file.name}: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   });
 }
@@ -1466,6 +1627,7 @@ export function initializeSpriteEditorApp() {
       height: DEFAULT_HEIGHT,
       pixelSize: DEFAULT_PIXEL_SIZE
     }),
+    assetRegistry: createAssetRegistry({ projectId: "sprite-project" }),
     enginePalette: buildEnginePaletteCatalog(),
     projectTool: TOOL_IDS.PENCIL,
     preview: {
@@ -1503,6 +1665,8 @@ export function initializeSpriteEditorApp() {
       gridToggle: getRequiredElement("gridToggle"),
       importPngButton: getRequiredElement("importPngButton"),
       importPngInput: getRequiredElement("importPngInput"),
+      loadAssetRegistryButton: getRequiredElement("loadAssetRegistryButton"),
+      loadAssetRegistryInput: getRequiredElement("loadAssetRegistryInput"),
       loadProjectButton: getRequiredElement("loadProjectButton"),
       loadProjectInput: getRequiredElement("loadProjectInput"),
       newCanvasButton: getRequiredElement("newCanvasButton"),
@@ -1520,6 +1684,7 @@ export function initializeSpriteEditorApp() {
       recentColorButtons: getRequiredElement("recentColorButtons"),
       redoButton: getRequiredElement("redoButton"),
       resetPreviewButton: getRequiredElement("resetPreviewButton"),
+      saveAssetRegistryButton: getRequiredElement("saveAssetRegistryButton"),
       saveProjectButton: getRequiredElement("saveProjectButton"),
       statusBarText: getRequiredElement("statusBarText"),
       statusText: getRequiredElement("statusText"),

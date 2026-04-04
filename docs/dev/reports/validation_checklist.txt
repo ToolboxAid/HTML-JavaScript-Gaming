@@ -3,19 +3,30 @@ David Quesenberry
 04/03/2026
 validation_checklist.txt
 
-APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION validation checklist
+BUILD_PR_PROJECT_ASSET_REGISTRY validation checklist
 
-[x] Confirm BUILD delta zip exists at tmp/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION_delta.zip
-[x] Confirm BUILD delta contents are limited to approved Sprite Editor integration files/docs
-[x] Confirm no destructive deletes or unrelated repo areas were introduced by BUILD scope
-[x] Confirm engine palette authority remains external (engine/paletteList.js)
-[x] Confirm disabled-until-palette-selected behavior remains contract-compliant
-[x] Confirm locked-palette behavior remains contract-compliant
-[x] Confirm paletteRef persistence/load fallback behavior remains contract-compliant
-[x] Confirm new/import/resize/duplicate/load flow contracts remain compliant
-[x] node --check tools/Sprite Editor/modules/spriteEditorApp.js
+[x] Shared registry utility added for cross-tool use
+[x] Sprite Editor supports optional load/save of `project.assets.json`
+[x] Tile Map Editor supports optional load/save of `project.assets.json`
+[x] Parallax Editor supports optional load/save of `project.assets.json`
+[x] Registry merge behavior is additive and non-destructive
+[x] Duplicate entries reduced where practical (`id` + normalized `path`)
+[x] Registry path fields normalized to project-relative paths
+[x] Legacy standalone project files still load without registry presence
+[x] No engine core APIs were modified
+[x] Sample project data includes shared palette/sprite/tileset/parallax references
+
+Syntax checks
+[x] node --check tools/shared/projectAssetRegistry.js
 [x] node --check tools/Sprite Editor/modules/projectModel.js
-[x] node --check tools/Sprite Editor/modules/constants.js
+[x] node --check tools/Sprite Editor/modules/spriteEditorApp.js
 [x] node --check tools/Sprite Editor/main.js
-[x] Confirm APPLY step is docs-only and does not expand implementation scope
-[x] Confirm working tree cleanliness after APPLY packaging review
+[x] node --check tools/Tile Map Editor/main.js
+[x] node --check tools/Parallax Editor/main.js
+
+Manual contract checks
+[x] Sprite save/load continues to work with and without registry file
+[x] Tile map save/load continues to work with and without registry file
+[x] Parallax save/load continues to work with and without registry file
+[x] Registry load merges unknown/other sections without destructive replacement
+[x] Separate `project.assets.json` contract is used (not engine-embedded)
