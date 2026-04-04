@@ -1,1 +1,1 @@
-build(validation-suite): add platform validation suite for full pipeline coverage
+build(level-16): execute ci, debug, hot reload, and distribution expansion suite

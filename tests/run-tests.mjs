@@ -93,6 +93,10 @@ import { run as runRuntimeStreamingSystem } from './tools/RuntimeStreamingSystem
 import { run as runPluginArchitectureSystem } from './tools/PluginArchitectureSystem.test.mjs';
 import { run as runProjectVersioningSystem } from './tools/ProjectVersioningSystem.test.mjs';
 import { run as runPlatformValidationSuite } from './tools/PlatformValidationSuite.test.mjs';
+import { run as runCiValidationPipeline } from './tools/CiValidationPipeline.test.mjs';
+import { run as runDebugVisualizationLayer } from './tools/DebugVisualizationLayer.test.mjs';
+import { run as runHotReloadSystem } from './tools/HotReloadSystem.test.mjs';
+import { run as runMultiTargetExport } from './tools/MultiTargetExport.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -180,6 +184,10 @@ const tests = [
     ['PluginArchitectureSystem', runPluginArchitectureSystem],
     ['ProjectVersioningSystem', runProjectVersioningSystem],
     ['PlatformValidationSuite', runPlatformValidationSuite],
+    ['CiValidationPipeline', runCiValidationPipeline],
+    ['DebugVisualizationLayer', runDebugVisualizationLayer],
+    ['HotReloadSystem', runHotReloadSystem],
+    ['MultiTargetExport', runMultiTargetExport],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

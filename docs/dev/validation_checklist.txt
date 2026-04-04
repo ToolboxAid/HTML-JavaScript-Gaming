@@ -1,6 +1,5 @@
-- PLAN, BUILD, and APPLY docs are all present
-- codex_commands.md and commit_comment.txt are under docs/dev
-- Full-flow platform validation coverage is explicit
-- Plugin, versioning, and streaming are included in scope
+- All four Level 16 capability groups are present
+- Each capability has PLAN, BUILD, and APPLY docs
+- docs/dev contains codex_commands.md and commit_comment.txt
+- Level 15 self-validating platform remains the prerequisite authority
 - No engine core API changes are authorized
-- APPLY remains docs-only acceptance boundary

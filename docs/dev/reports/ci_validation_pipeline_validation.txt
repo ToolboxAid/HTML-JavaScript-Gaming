@@ -1,0 +1,21 @@
+BUILD_PR_CI_VALIDATION_PIPELINE validation
+
+Files:
+- tools/shared/ciValidationPipeline.js
+- scripts/run-platform-validation-suite.mjs
+- .github/workflows/platform-validation.yml
+- tests/tools/CiValidationPipeline.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/ciValidationPipeline.js
+- node --check scripts/run-platform-validation-suite.mjs
+- node --check tests/tools/CiValidationPipeline.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- CI consumes the platform validation suite as an authoritative gate
+- CI status blocks invalid changes deterministically
+- artifact/report entries are stable and readable
+- branch and trigger context are reported consistently
+- no engine core API changes

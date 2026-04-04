@@ -49,6 +49,7 @@ import {
 } from "../../shared/projectAssetRemediation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "../../shared/projectPackaging.js";
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../../shared/editorExperienceLayer.js";
+import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../../shared/debugVisualizationLayer.js";
 
 function getRequiredElement(id) {
   const element = document.getElementById(id);
@@ -259,6 +260,13 @@ function validateSpriteProjectAssets(state) {
     packageResult: state.lastPackageResult,
     runtimeResult: state.lastRuntimeResult
   });
+  state.debugVisualizationResult = buildDebugVisualizationLayer({
+    assetDependencyGraph: result.assetDependencyGraph,
+    validationResult: result,
+    remediationResult: state.remediationResult,
+    packageResult: state.lastPackageResult,
+    runtimeResult: state.lastRuntimeResult
+  });
   return result;
 }
 
@@ -286,6 +294,14 @@ function updateEditorExperienceUI(state) {
   }
   state.elements.experienceSummaryText.textContent = summarizeEditorExperienceLayer(state.editorExperienceResult);
   state.elements.experienceDetailsText.textContent = state.editorExperienceResult?.experience?.reportText || "No experience snapshot available.";
+}
+
+function updateDebugVisualizationUI(state) {
+  if (!state.elements.debugSummaryText || !state.elements.debugDetailsText) {
+    return;
+  }
+  state.elements.debugSummaryText.textContent = summarizeDebugVisualizationLayer(state.debugVisualizationResult);
+  state.elements.debugDetailsText.textContent = state.debugVisualizationResult?.debugVisualization?.reportText || "No debug visualization available.";
 }
 
 function inspectRemediationActions(state) {
@@ -1225,7 +1241,15 @@ async function packageSpriteProject(state) {
     packageResult: state.lastPackageResult,
     runtimeResult: state.lastRuntimeResult
   });
+  state.debugVisualizationResult = buildDebugVisualizationLayer({
+    assetDependencyGraph: validation.assetDependencyGraph,
+    validationResult: validation,
+    remediationResult: state.remediationResult,
+    packageResult: state.lastPackageResult,
+    runtimeResult: state.lastRuntimeResult
+  });
   updateEditorExperienceUI(state);
+  updateDebugVisualizationUI(state);
   if (packageResult.packageStatus !== "ready") {
     setStatus(state, `${summarizeProjectPackaging(packageResult)} ${packageResult.manifest.package.reports[0]?.message || ""}`.trim());
     return false;
@@ -1569,6 +1593,7 @@ function bindControls(state) {
     playPreviewButton,
     prevFrameButton,
     redoButton,
+    refreshDebugVisualizationButton,
     resetPreviewButton,
     refreshExperienceButton,
     saveAssetRegistryButton,
@@ -1834,6 +1859,11 @@ function bindControls(state) {
     updateEditorExperienceUI(state);
     setStatus(state, summarizeEditorExperienceLayer(state.editorExperienceResult));
   });
+  refreshDebugVisualizationButton.addEventListener("click", () => {
+    validateSpriteProjectAssets(state);
+    updateDebugVisualizationUI(state);
+    setStatus(state, summarizeDebugVisualizationLayer(state.debugVisualizationResult));
+  });
 }
 
 function startPreviewLoop(state) {
@@ -1891,6 +1921,7 @@ export function initializeSpriteEditorApp() {
     lastPackageResult: null,
     lastRuntimeResult: null,
     editorExperienceResult: null,
+    debugVisualizationResult: null,
     cursor: {
       x: null,
       y: null
@@ -1938,6 +1969,9 @@ export function initializeSpriteEditorApp() {
       experienceSummaryText: getRequiredElement("experienceSummaryText"),
       experienceDetailsText: getRequiredElement("experienceDetailsText"),
       refreshExperienceButton: getRequiredElement("refreshExperienceButton"),
+      debugSummaryText: getRequiredElement("debugSummaryText"),
+      debugDetailsText: getRequiredElement("debugDetailsText"),
+      refreshDebugVisualizationButton: getRequiredElement("refreshDebugVisualizationButton"),
       inspectRemediationButton: getRequiredElement("inspectRemediationButton"),
       jumpToProblemButton: getRequiredElement("jumpToProblemButton"),
       applyRemediationButton: getRequiredElement("applyRemediationButton"),
@@ -1955,6 +1989,7 @@ export function initializeSpriteEditorApp() {
   syncControlsFromProject(state);
   validateSpriteProjectAssets(state);
   updateEditorExperienceUI(state);
+  updateDebugVisualizationUI(state);
   state.elements.fpsInput.value = String(state.preview.fps);
 
   bindControls(state);

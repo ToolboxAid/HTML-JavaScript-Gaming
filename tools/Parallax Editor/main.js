@@ -28,6 +28,7 @@ import {
 } from "../shared/projectAssetRemediation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projectPackaging.js";
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../shared/editorExperienceLayer.js";
+import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 
 const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -386,6 +387,7 @@ class ParallaxEditorApp {
     this.lastPackageResult = null;
     this.lastRuntimeResult = null;
     this.editorExperienceResult = null;
+    this.debugVisualizationResult = null;
   }
 
   invalidateImageCache() {
@@ -420,6 +422,9 @@ class ParallaxEditorApp {
     this.refs.experienceSummaryText = rootDocument.getElementById("experienceSummaryText");
     this.refs.experienceDetailsText = rootDocument.getElementById("experienceDetailsText");
     this.refs.refreshExperienceButton = rootDocument.getElementById("refreshExperienceButton");
+    this.refs.debugSummaryText = rootDocument.getElementById("debugSummaryText");
+    this.refs.debugDetailsText = rootDocument.getElementById("debugDetailsText");
+    this.refs.refreshDebugVisualizationButton = rootDocument.getElementById("refreshDebugVisualizationButton");
     this.refs.inspectRemediationButton = rootDocument.getElementById("inspectRemediationButton");
     this.refs.jumpToProblemButton = rootDocument.getElementById("jumpToProblemButton");
     this.refs.applyRemediationButton = rootDocument.getElementById("applyRemediationButton");
@@ -486,6 +491,7 @@ class ParallaxEditorApp {
     this.refs.exportParallaxPatchButton.addEventListener("click", () => this.handleExportTilemapPatch());
     this.refs.packageProjectButton.addEventListener("click", () => this.handlePackageProject());
     this.refs.refreshExperienceButton.addEventListener("click", () => this.refreshExperienceSnapshot());
+    this.refs.refreshDebugVisualizationButton.addEventListener("click", () => this.refreshDebugVisualizationSnapshot());
     this.refs.inspectRemediationButton.addEventListener("click", () => this.inspectRemediationActions());
     this.refs.jumpToProblemButton.addEventListener("click", () => this.jumpToRemediationProblem());
     this.refs.applyRemediationButton.addEventListener("click", () => this.applyRemediationAction());
@@ -1091,7 +1097,15 @@ class ParallaxEditorApp {
       packageResult: this.lastPackageResult,
       runtimeResult: this.lastRuntimeResult
     });
+    this.debugVisualizationResult = buildDebugVisualizationLayer({
+      assetDependencyGraph: validation.assetDependencyGraph,
+      validationResult: validation,
+      remediationResult: this.remediationResult,
+      packageResult: this.lastPackageResult,
+      runtimeResult: this.lastRuntimeResult
+    });
     this.updateEditorExperienceUI();
+    this.updateDebugVisualizationUI();
     if (packageResult.packageStatus !== "ready") {
       this.updateStatus(`${summarizeProjectPackaging(packageResult)} ${packageResult.manifest.package.reports[0]?.message || ""}`.trim());
       return;
@@ -1361,6 +1375,7 @@ class ParallaxEditorApp {
     this.updateSimulationContextReadout();
     this.updateRemediationUI();
     this.updateEditorExperienceUI();
+    this.updateDebugVisualizationUI();
   }
 
   renderLayerList() {
@@ -1690,6 +1705,13 @@ class ParallaxEditorApp {
       packageResult: this.lastPackageResult,
       runtimeResult: this.lastRuntimeResult
     });
+    this.debugVisualizationResult = buildDebugVisualizationLayer({
+      assetDependencyGraph: this.validationResult.assetDependencyGraph,
+      validationResult: this.validationResult,
+      remediationResult: this.remediationResult,
+      packageResult: this.lastPackageResult,
+      runtimeResult: this.lastRuntimeResult
+    });
     return this.validationResult;
   }
 
@@ -1713,10 +1735,24 @@ class ParallaxEditorApp {
     this.refs.experienceDetailsText.textContent = this.editorExperienceResult?.experience?.reportText || "No experience snapshot available.";
   }
 
+  updateDebugVisualizationUI() {
+    if (!this.refs.debugSummaryText || !this.refs.debugDetailsText) {
+      return;
+    }
+    this.refs.debugSummaryText.textContent = summarizeDebugVisualizationLayer(this.debugVisualizationResult);
+    this.refs.debugDetailsText.textContent = this.debugVisualizationResult?.debugVisualization?.reportText || "No debug visualization available.";
+  }
+
   refreshExperienceSnapshot() {
     this.validateProjectAssets();
     this.updateEditorExperienceUI();
     this.updateStatus(summarizeEditorExperienceLayer(this.editorExperienceResult));
+  }
+
+  refreshDebugVisualizationSnapshot() {
+    this.validateProjectAssets();
+    this.updateDebugVisualizationUI();
+    this.updateStatus(summarizeDebugVisualizationLayer(this.debugVisualizationResult));
   }
 
   inspectRemediationActions() {

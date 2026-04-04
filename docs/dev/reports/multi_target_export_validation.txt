@@ -1,0 +1,18 @@
+BUILD_PR_MULTI_TARGET_EXPORT validation
+
+Files:
+- tools/shared/multiTargetExport.js
+- tests/tools/MultiTargetExport.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/multiTargetExport.js
+- node --check tests/tools/MultiTargetExport.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- valid packaged projects can emit deterministic web, desktop, and archive export plans
+- target ordering and output layout metadata are stable
+- validation and packaging remain authoritative export gates
+- export reports are readable and deterministic
+- no engine core API changes

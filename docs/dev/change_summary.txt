@@ -1,3 +1,1 @@
-Single atomic Level 15 package containing PLAN, BUILD, and APPLY documentation for a
-platform validation suite. This bundle is docs-first and Codex-ready, with implementation
-ownership delegated to Codex.
+Combined Level 16 suite containing PLAN/BUILD/APPLY docs for CI, debug visualization, hot reload, and multi-target export.

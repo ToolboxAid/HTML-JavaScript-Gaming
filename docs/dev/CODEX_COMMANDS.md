@@ -2,26 +2,20 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute this atomic Level 15 package in order.
+Execute this Level 16 expansion suite in order, treating each PLAN as the governing architecture contract for its corresponding BUILD/APPLY.
 
-Step 1:
-Treat docs/pr/PLAN_PR_PLATFORM_VALIDATION_SUITE.md as the governing architecture contract.
+Order:
+1. PLAN/BUILD/APPLY_PR_CI_VALIDATION_PIPELINE
+2. PLAN/BUILD/APPLY_PR_DEBUG_VISUALIZATION_LAYER
+3. PLAN/BUILD/APPLY_PR_HOT_RELOAD_SYSTEM
+4. PLAN/BUILD/APPLY_PR_MULTI_TARGET_EXPORT
 
-Step 2:
-Create BUILD_PR_PLATFORM_VALIDATION_SUITE.
-
-BUILD requirements:
-- Implement a repeatable platform validation suite for accepted system flows
-- Cover golden-path, failure-path, remediation, packaging, runtime, streaming, plugin, and versioning scenarios
-- Produce stable, readable validation reports
-- Preserve accepted platform boundaries
+Global requirements:
+- Preserve the accepted Level 15 self-validating platform baseline
 - Do not modify engine core APIs
+- Maintain deterministic behavior and readable reporting wherever applicable
+- Keep validation, packaging, and runtime boundaries authoritative
+- Package each completed slice to the repo tmp directory using the established naming conventions
 
-Step 3:
-Validate BUILD against docs/pr/BUILD_PR_PLATFORM_VALIDATION_SUITE.md.
-
-Step 4:
-Treat docs/pr/APPLY_PR_PLATFORM_VALIDATION_SUITE.md as the acceptance boundary and package results.
-
-Package:
-HTML-JavaScript-Gaming/tmp/LEVEL_15_PLATFORM_VALIDATION_SUITE_delta.zip
+Master package:
+HTML-JavaScript-Gaming/tmp/LEVEL_16_EXPANSION_SUITE_ATOMIC_PACKAGE_delta.zip
