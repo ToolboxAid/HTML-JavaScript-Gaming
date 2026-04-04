@@ -1,32 +1,10 @@
-Toolbox Aid
-David Quesenberry
-04/03/2026
-validation_checklist.txt
+BUILD VALIDATION CHECKLIST
 
-BUILD_PR_PROJECT_ASSET_REGISTRY validation checklist
-
-[x] Shared registry utility added for cross-tool use
-[x] Sprite Editor supports optional load/save of `project.assets.json`
-[x] Tile Map Editor supports optional load/save of `project.assets.json`
-[x] Parallax Editor supports optional load/save of `project.assets.json`
-[x] Registry merge behavior is additive and non-destructive
-[x] Duplicate entries reduced where practical (`id` + normalized `path`)
-[x] Registry path fields normalized to project-relative paths
-[x] Legacy standalone project files still load without registry presence
-[x] No engine core APIs were modified
-[x] Sample project data includes shared palette/sprite/tileset/parallax references
-
-Syntax checks
-[x] node --check tools/shared/projectAssetRegistry.js
-[x] node --check tools/Sprite Editor/modules/projectModel.js
-[x] node --check tools/Sprite Editor/modules/spriteEditorApp.js
-[x] node --check tools/Sprite Editor/main.js
-[x] node --check tools/Tile Map Editor/main.js
-[x] node --check tools/Parallax Editor/main.js
-
-Manual contract checks
-[x] Sprite save/load continues to work with and without registry file
-[x] Tile map save/load continues to work with and without registry file
-[x] Parallax save/load continues to work with and without registry file
-[x] Registry load merges unknown/other sections without destructive replacement
-[x] Separate `project.assets.json` contract is used (not engine-embedded)
+- [x] Tile Map Editor registry adoption implemented without engine core API changes
+- [x] Shared registry helpers reused and extended additively for `tilemaps`
+- [x] `project.assets.json` load/save supported in Tile Map Editor
+- [x] Tile map documents persist optional `assetRefs.tilemapId` and `assetRefs.tilesetId`
+- [x] Registry updates additively preserve existing groups and unknown safe fields
+- [x] Legacy tile map JSON remains loadable when `assetRefs` are absent
+- [x] No Parallax Editor implementation work included in this PR
+- [x] Syntax validation passed for changed JS files

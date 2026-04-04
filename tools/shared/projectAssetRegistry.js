@@ -5,7 +5,8 @@ David Quesenberry
 projectAssetRegistry.js
 */
 
-const KNOWN_SECTIONS = ["palettes", "sprites", "tilesets", "images", "parallaxSources"];
+const KNOWN_SECTIONS = ["palettes", "sprites", "tilesets", "tilemaps", "images", "parallaxSources"];
+const PATH_REQUIRED_SECTIONS = ["sprites", "tilesets", "tilemaps", "images", "parallaxSources"];
 
 function cloneDeep(value) {
   if (typeof structuredClone === "function") {
@@ -133,6 +134,17 @@ function sanitizeEntry(section, rawEntry, index = 0) {
     };
   }
 
+  if (section === "tilemaps") {
+    return {
+      ...source,
+      id,
+      name: sanitizeText(source.name) || fallbackLabel,
+      path: normalizeProjectRelativePath(source.path),
+      tilesetId: sanitizeText(source.tilesetId),
+      sourceTool: sanitizeText(source.sourceTool)
+    };
+  }
+
   if (section === "images") {
     return {
       ...source,
@@ -179,6 +191,7 @@ export function createAssetRegistry(options = {}) {
     palettes: [],
     sprites: [],
     tilesets: [],
+    tilemaps: [],
     images: [],
     parallaxSources: [],
     references: {}
@@ -206,7 +219,7 @@ export function sanitizeAssetRegistry(rawRegistry) {
       if (!sanitizeText(sanitized.id)) {
         return;
       }
-      if (sanitizeText(sanitized.path) === "" && ["sprites", "tilesets", "images", "parallaxSources"].includes(section)) {
+      if (sanitizeText(sanitized.path) === "" && PATH_REQUIRED_SECTIONS.includes(section)) {
         return;
       }
       const existingIndex = findMergeIndex(output[section], sanitized);
@@ -262,7 +275,7 @@ export function upsertRegistryEntry(registry, section, rawEntry) {
     return safeRegistry;
   }
 
-  if (["sprites", "tilesets", "images", "parallaxSources"].includes(section) && !sanitizeText(sanitized.path)) {
+  if (PATH_REQUIRED_SECTIONS.includes(section) && !sanitizeText(sanitized.path)) {
     return safeRegistry;
   }
 

@@ -24,10 +24,10 @@ This tool provides the Tile Map Editor foundation for map authoring in the repo.
 
 ## Project Asset Registry
 - Supports loading and saving `project.assets.json` from top-level project controls.
-- Tile map saves additively register shared `tilesets`, `images`, and available `parallaxSources`.
+- Tile map saves additively register shared `tilemaps` and relevant `tilesets`.
 - Tile map JSON includes optional `assetRefs`:
+  - `tilemapId`
   - `tilesetId`
-  - `parallaxSourceIds`
 - Legacy tile map files without `assetRefs` continue to load and save.
 
 ## Entry point

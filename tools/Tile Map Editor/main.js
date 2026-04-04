@@ -208,8 +208,8 @@ function createInitialDocument(options = {}) {
     ],
     markers: [],
     assetRefs: {
-      tilesetId: "",
-      parallaxSourceIds: []
+      tilemapId: "",
+      tilesetId: ""
     },
     parallax: cloneDeep(RESERVED_PARALLAX_BLOCK),
     metadata: {
@@ -361,18 +361,18 @@ function sanitizeMarkers(rawMarkers, width, height) {
 function sanitizeAssetRefs(rawAssetRefs) {
   if (!rawAssetRefs || typeof rawAssetRefs !== "object") {
     return {
-      tilesetId: "",
-      parallaxSourceIds: []
+      tilemapId: "",
+      tilesetId: ""
     };
   }
 
-  const parallaxSourceIds = Array.isArray(rawAssetRefs.parallaxSourceIds)
-    ? rawAssetRefs.parallaxSourceIds.filter((value) => typeof value === "string" && value.trim())
-    : [];
-
   return {
+    ...cloneDeep(rawAssetRefs),
+    tilemapId: typeof rawAssetRefs.tilemapId === "string" ? rawAssetRefs.tilemapId.trim() : "",
     tilesetId: typeof rawAssetRefs.tilesetId === "string" ? rawAssetRefs.tilesetId.trim() : "",
-    parallaxSourceIds: Array.from(new Set(parallaxSourceIds))
+    parallaxSourceIds: Array.isArray(rawAssetRefs.parallaxSourceIds)
+      ? Array.from(new Set(rawAssetRefs.parallaxSourceIds.filter((value) => typeof value === "string" && value.trim())))
+      : undefined
   };
 }
 
@@ -728,17 +728,14 @@ class TileMapEditorApp {
     const nextAssetRefs = sanitizeAssetRefs(this.documentModel.assetRefs);
     const atlas = this.documentModel.tilesetAtlas || {};
     const atlasImagePath = normalizeProjectRelativePath(atlas.imageName || options.tilesetPath || "");
+    const tilemapFileName = `${mapName || "tile-map"}.tilemap.json`;
+    const tilemapPath = normalizeProjectRelativePath(options.tilemapPath || `assets/tilemaps/${tilemapFileName}`);
+    const tilemapId = nextAssetRefs.tilemapId || createAssetId("tilemap", mapName, "tilemap");
+
+    nextAssetRefs.tilemapId = tilemapId;
 
     if (atlasImagePath) {
-      const atlasImageId = createAssetId("image", atlasImagePath, "tileset-image");
-      const tilesetId = createAssetId("tileset", mapName, "tileset");
-
-      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "images", {
-        id: atlasImageId,
-        name: atlas.imageName || mapName,
-        path: atlasImagePath,
-        sourceTool: "tile-map-editor"
-      });
+      const tilesetId = nextAssetRefs.tilesetId || createAssetId("tileset", mapName, "tileset");
 
       this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "tilesets", {
         id: tilesetId,
@@ -752,38 +749,13 @@ class TileMapEditorApp {
       nextAssetRefs.tilesetId = tilesetId;
     }
 
-    const parallaxLayerSources = [];
-    const parallaxLayers = Array.isArray(this.documentModel?.parallax?.layers) ? this.documentModel.parallax.layers : [];
-    parallaxLayers.forEach((layer, index) => {
-      const layerPath = normalizeProjectRelativePath(layer?.imageSource || "");
-      if (!layerPath) {
-        return;
-      }
-
-      const imageId = createAssetId("image", layerPath, `parallax-image-${index + 1}`);
-      const sourceId = createAssetId("parallax", layer?.id || layer?.name || `source-${index + 1}`, `source-${index + 1}`);
-
-      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "images", {
-        id: imageId,
-        name: layer?.name || `Parallax ${index + 1}`,
-        path: layerPath,
-        sourceTool: "tile-map-editor"
-      });
-
-      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "parallaxSources", {
-        id: sourceId,
-        name: layer?.name || `Parallax ${index + 1}`,
-        path: layerPath,
-        imageId,
-        sourceTool: "tile-map-editor"
-      });
-
-      parallaxLayerSources.push(sourceId);
+    this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "tilemaps", {
+      id: tilemapId,
+      name: mapName,
+      path: tilemapPath,
+      tilesetId: nextAssetRefs.tilesetId || "",
+      sourceTool: "tile-map-editor"
     });
-
-    if (parallaxLayerSources.length > 0) {
-      nextAssetRefs.parallaxSourceIds = Array.from(new Set(parallaxLayerSources));
-    }
 
     this.documentModel.assetRefs = nextAssetRefs;
   }
@@ -791,33 +763,23 @@ class TileMapEditorApp {
   resolveAssetRefsFromRegistry() {
     const refs = sanitizeAssetRefs(this.documentModel.assetRefs);
     this.documentModel.assetRefs = refs;
+    const resolution = {
+      tilesetResolved: false,
+      missingTilesetRef: false
+    };
 
     if (refs.tilesetId && !normalizeProjectRelativePath(this.documentModel.tilesetAtlas?.imageName || "")) {
       const tilesetEntry = findRegistryEntryById(this.assetRegistry, "tilesets", refs.tilesetId);
       const tilesetPath = normalizeProjectRelativePath(tilesetEntry?.path || "");
       if (tilesetPath) {
         this.documentModel.tilesetAtlas.imageName = tilesetPath;
+        resolution.tilesetResolved = true;
+      } else {
+        resolution.missingTilesetRef = true;
       }
     }
 
-    if (Array.isArray(refs.parallaxSourceIds) && refs.parallaxSourceIds.length > 0 && Array.isArray(this.documentModel?.parallax?.layers)) {
-      let sourceIndex = 0;
-      this.documentModel.parallax.layers.forEach((layer) => {
-        if (!layer || normalizeProjectRelativePath(layer.imageSource || "")) {
-          return;
-        }
-        const sourceId = refs.parallaxSourceIds[sourceIndex];
-        if (!sourceId) {
-          return;
-        }
-        const sourceEntry = findRegistryEntryById(this.assetRegistry, "parallaxSources", sourceId);
-        const sourcePath = normalizeProjectRelativePath(sourceEntry?.path || "");
-        if (sourcePath) {
-          layer.imageSource = sourcePath;
-        }
-        sourceIndex += 1;
-      });
-    }
+    return resolution;
   }
 
   handleSaveProject() {
@@ -826,14 +788,16 @@ class TileMapEditorApp {
     const serialized = JSON.stringify(this.documentModel, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.tilemap.json`;
     downloadTextFile(fileName, serialized);
-    this.updateStatus(`Saved ${fileName} (tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).`);
+    this.updateStatus(
+      `Saved ${fileName} (tilemapRef=${this.documentModel.assetRefs.tilemapId || "none"}, tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).`
+    );
   }
 
   handleSaveAssetRegistry() {
     this.syncAssetRegistryFromDocument();
     const payload = createRegistryDownloadPayload(this.assetRegistry);
     downloadTextFile("project.assets.json", payload);
-    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilesets.length} tilesets, ${this.assetRegistry.images.length} images).`);
+    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).`);
   }
 
   handleExportRuntime() {
@@ -856,7 +820,7 @@ class TileMapEditorApp {
       try {
         const parsed = JSON.parse(String(reader.result));
         this.documentModel = sanitizeDocument(parsed);
-        this.resolveAssetRefsFromRegistry();
+        const resolution = this.resolveAssetRefsFromRegistry();
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
         this.selectedMarkerId = "";
         this.activeTileId = this.findFirstNonEmptyTileId();
@@ -865,7 +829,13 @@ class TileMapEditorApp {
         this.renderAll();
         void this.reloadTilesetImageFromDocument({ quiet: true });
         void this.preloadIndividualTileImages({ quiet: true });
-        this.updateStatus(`Loaded ${file.name}.`);
+        if (resolution.tilesetResolved) {
+          this.updateStatus(`Loaded ${file.name} (tileset restored from asset registry).`);
+        } else if (resolution.missingTilesetRef) {
+          this.updateStatus(`Loaded ${file.name} (tileset asset ref missing in registry; using embedded tileset data).`);
+        } else {
+          this.updateStatus(`Loaded ${file.name}.`);
+        }
       } catch (error) {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
       }
@@ -887,10 +857,16 @@ class TileMapEditorApp {
       try {
         const parsed = JSON.parse(String(reader.result));
         this.assetRegistry = mergeAssetRegistries(this.assetRegistry, parsed);
-        this.resolveAssetRefsFromRegistry();
+        const resolution = this.resolveAssetRefsFromRegistry();
         this.renderAll();
         void this.reloadTilesetImageFromDocument({ quiet: true });
-        this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilesets.length} tilesets, ${this.assetRegistry.parallaxSources.length} parallax sources).`);
+        if (resolution.tilesetResolved) {
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets; tileset ref restored).`);
+        } else if (resolution.missingTilesetRef) {
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets; tileset ref still unresolved).`);
+        } else {
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).`);
+        }
       } catch (error) {
         this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
       }
