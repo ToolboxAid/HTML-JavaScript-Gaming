@@ -1,1 +1,1 @@
-build(vector-runtime): harden asteroids demo to vector-only runtime path
+plan(template): define reusable vector-native arcade template

@@ -1,0 +1,16 @@
+{
+  "id": "vector.template.obstacle.large",
+  "type": "vector",
+  "source": {
+    "kind": "svg",
+    "path": "templates/vector-native-arcade/assets/vectors/template-obstacle-large.vector.json"
+  },
+  "geometry": {
+    "viewBox": "-34 -34 68 68",
+    "paths": [{ "d": "M -20 -14 L 0 -24 L 22 -18 L 28 6 L 14 24 L -10 22 L -26 4 Z" }]
+  },
+  "style": {
+    "stroke": true,
+    "fill": false
+  }
+}

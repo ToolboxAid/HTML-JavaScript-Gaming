@@ -107,6 +107,7 @@ import { run as runCloudRuntime } from './tools/CloudRuntime.test.mjs';
 import { run as runGameTemplates } from './tools/GameTemplates.test.mjs';
 import { run as runPublishingPipeline } from './tools/PublishingPipeline.test.mjs';
 import { run as runVectorAssetSystem } from './tools/VectorAssetSystem.test.mjs';
+import { run as runVectorNativeTemplate } from './tools/VectorNativeTemplate.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -208,6 +209,7 @@ const tests = [
     ['GameTemplates', runGameTemplates],
     ['PublishingPipeline', runPublishingPipeline],
     ['VectorAssetSystem', runVectorAssetSystem],
+    ['VectorNativeTemplate', runVectorNativeTemplate],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

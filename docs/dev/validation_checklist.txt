@@ -1,7 +1,6 @@
-- PLAN, BUILD, and APPLY docs are all present
-- codex_commands.md and commit_comment.txt are under docs/dev
-- Vector-only runtime baseline is explicit
-- Sprite fallback is removed as active runtime dependency
-- Validation, packaging, runtime, debug, profiler, export, and publishing are preserved
+- PLAN doc exists and is docs-only
+- Vector-native template baseline is explicit
+- No sprite fallback dependency is allowed in the template baseline
+- Validation, packaging, runtime, CI, export, and publishing expectations are defined
+- docs/dev contains codex_commands.md and commit_comment.txt
 - No engine core API changes are authorized
-- APPLY remains docs-only acceptance boundary

@@ -1,0 +1,16 @@
+{
+  "id": "vector.template.player",
+  "type": "vector",
+  "source": {
+    "kind": "svg",
+    "path": "templates/vector-native-arcade/assets/vectors/template-player.vector.json"
+  },
+  "geometry": {
+    "viewBox": "-20 -20 40 40",
+    "paths": [{ "d": "M 0 -16 L 12 12 L 0 6 L -12 12 Z" }, { "d": "M -4 10 L 0 4 L 4 10" }]
+  },
+  "style": {
+    "stroke": true,
+    "fill": false
+  }
+}

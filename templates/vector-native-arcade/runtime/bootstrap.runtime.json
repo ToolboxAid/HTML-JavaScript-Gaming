@@ -1,0 +1,12 @@
+{
+  "modulePath": "games/Asteroids/main.js",
+  "exportName": "bootAsteroids",
+  "canvasId": "game",
+  "requiredVectorIds": [
+    "vector.template.player",
+    "vector.template.obstacle.large",
+    "vector.template.obstacle.small",
+    "vector.template.ui.title",
+    "vector.template.ui.hud"
+  ]
+}

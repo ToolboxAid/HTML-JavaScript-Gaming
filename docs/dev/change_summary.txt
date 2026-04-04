@@ -1,3 +1,2 @@
-Clean, surgical vector-only progression bundle for Codex.
-Converts the Asteroids demo from vector-preferred/sprite-fallback to true vector-only runtime behavior,
-while preserving accepted platform boundaries and docs-first workflow.
+Adds a docs-only plan for a reusable vector-native game template built on the accepted vector-only runtime baseline.
+Establishes vector-first starter structure for future arcade-style games.
