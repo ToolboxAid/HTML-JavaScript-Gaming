@@ -1,6 +1,6 @@
-docs/pr/PLAN_PR_PROJECT_PACKAGING_SYSTEM.md
-docs/pr/BUILD_PR_PROJECT_PACKAGING_SYSTEM.md
-docs/pr/APPLY_PR_PROJECT_PACKAGING_SYSTEM.md
+docs/pr/PLAN_PR_RUNTIME_ASSET_LOADER.md
+docs/pr/BUILD_PR_RUNTIME_ASSET_LOADER.md
+docs/pr/APPLY_PR_RUNTIME_ASSET_LOADER.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/change_summary.txt

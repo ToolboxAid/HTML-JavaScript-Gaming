@@ -1,8 +1,7 @@
 - PLAN, BUILD, and APPLY docs are all present
 - codex_commands.md and commit_comment.txt are under docs/dev
-- Strict validation gating is explicit for packaging/export
-- Registry remains source of truth
-- Dependency graph remains traversal source
-- Output determinism is required
+- Strict packaged runtime contracts are explicit
+- Packaged manifest is runtime entry authority
+- Fail-fast behavior is explicit for invalid packaged input
 - No engine core API changes are authorized
 - APPLY remains docs-only acceptance boundary

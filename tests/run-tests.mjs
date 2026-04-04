@@ -87,6 +87,7 @@ import { run as runStorageService } from './persistence/StorageService.test.mjs'
 import { run as runAssetValidationEngine } from './tools/AssetValidationEngine.test.mjs';
 import { run as runAssetRemediationSystem } from './tools/AssetRemediationSystem.test.mjs';
 import { run as runProjectPackagingSystem } from './tools/ProjectPackagingSystem.test.mjs';
+import { run as runRuntimeAssetLoader } from './tools/RuntimeAssetLoader.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -168,6 +169,7 @@ const tests = [
     ['AssetValidationEngine', runAssetValidationEngine],
     ['AssetRemediationSystem', runAssetRemediationSystem],
     ['ProjectPackagingSystem', runProjectPackagingSystem],
+    ['RuntimeAssetLoader', runRuntimeAssetLoader],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

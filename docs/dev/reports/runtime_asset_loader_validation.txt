@@ -1,0 +1,19 @@
+BUILD_PR_RUNTIME_ASSET_LOADER validation
+
+Files:
+- tools/shared/runtimeAssetLoader.js
+- tests/tools/RuntimeAssetLoader.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/runtimeAssetLoader.js
+- node --check tests/tools/RuntimeAssetLoader.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- package manifest is the runtime authority for packaged asset enumeration
+- deterministic packaged asset order drives repeatable runtime load sequencing
+- invalid packaged manifests fail before runtime readiness
+- missing required packaged assets fail fast with stable reporting
+- successful loads produce bootstrap handoff data for packaged projects
+- no engine core API changes
