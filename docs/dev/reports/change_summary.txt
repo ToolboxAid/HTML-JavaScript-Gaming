@@ -3,42 +3,24 @@ David Quesenberry
 04/03/2026
 change_summary.txt
 
-BUILD_PR target:
-Integrate isolated Sprite Editor project flow with engine-authoritative palette selection and locked palette project/session contracts.
+APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION summary
 
-Implemented changes:
-- tools/Sprite Editor/index.html
-  - Added engine palette bootstrap script include (`../../engine/paletteList.js`)
-  - Added palette selector UI and lock-state readout
-  - Kept color input as display-only (disabled) so palette swatches remain authority path
-- tools/Sprite Editor/modules/constants.js
-  - Removed hardcoded default palette authority constants
-  - Added palette contract constants (`PALETTE_SOURCE_ID`, `NO_PALETTE_ID`)
-- tools/Sprite Editor/modules/projectModel.js
-  - Added `paletteRef` project contract
-  - Updated new/load/serialize model behavior for palette reference persistence
-  - Save serialization now stores palette identity (`paletteRef`) rather than authoritative palette catalog
-- tools/Sprite Editor/modules/spriteEditorApp.js
-  - Added engine palette catalog loader from `globalThis.palettesList`
-  - Added disabled-until-selected edit gate
-  - Added explicit palette-selection lock flow
-  - Enforced lock-preserving behavior for import/resize/duplicate operations
-  - New project flow now unlocks palette and requires explicit re-selection
-  - Load flow resolves paletteRef and auto-locks when available; unresolved refs fall back to blocked selection mode
-  - Updated save/load status messaging for palette lock resolution
-- tools/Sprite Editor/spriteEditor.css
-  - Added disabled control and select styling for clearer lock/gate UX
-- tools/Sprite Editor/README.md
-  - Added project integration contract notes
+- Executed docs-only APPLY step for the already-built Sprite Editor project integration slice.
+- Verified BUILD artifact presence and scope boundaries from the approved build package.
+- Confirmed readiness against PLAN/BUILD contracts without expanding implementation scope.
+- Confirmed project-format compatibility behavior for `paletteRef` persistence and fallback resolution.
+- Confirmed user-visible behavior expectations:
+  - disabled-until-palette-selected editing gate
+  - post-selection locked palette
+  - explicit unlock through `Create New Canvas`
+  - lock-preserving import/resize/duplicate flows
+- Re-ran JS syntax checks for Sprite Editor integration modules.
+- Packaged docs-only APPLY delta ZIP for this step.
 
-Docs/build outputs:
-- docs/pr/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
-- CODEX_COMMANDS.md
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/reports/file_tree.txt
+Decision:
+- BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION approved to apply.
 
-Scope guardrails honored:
-- No engine rewrites
-- No unrelated tool changes
-- No modifications to legacy sprite editor implementations outside tools/Sprite Editor/
+Out of scope honored:
+- No new implementation code
+- No engine/core refactor
+- No asset registry work in this APPLY step

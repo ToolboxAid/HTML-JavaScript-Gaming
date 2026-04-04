@@ -3,16 +3,10 @@ David Quesenberry
 04/03/2026
 file_tree.txt
 
-BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION file tree
+APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION file tree
 
 CODEX_COMMANDS.md
-docs/pr/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
+docs/pr/APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
 docs/dev/reports/file_tree.txt
-tools/Sprite Editor/README.md
-tools/Sprite Editor/index.html
-tools/Sprite Editor/spriteEditor.css
-tools/Sprite Editor/modules/constants.js
-tools/Sprite Editor/modules/projectModel.js
-tools/Sprite Editor/modules/spriteEditorApp.js

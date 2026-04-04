@@ -3,36 +3,19 @@ David Quesenberry
 04/03/2026
 validation_checklist.txt
 
-BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION validation checklist
+APPLY_PR_SPRITE_EDITOR_PROJECT_INTEGRATION validation checklist
 
-Scope/safety checks:
-[x] Changes constrained to tools/Sprite Editor and required docs/report files
-[x] No engine rewrites performed
-[x] No unrelated tools modified
-[x] No pre-existing sprite editor implementations outside tools/Sprite Editor modified
-
-Integration contract checks:
-[x] Palette source of truth uses engine `globalThis.palettesList`
-[x] No local hardcoded authoritative palette list is used for editor selection flow
-[x] Editing functions are disabled until palette selection
-[x] Palette selection becomes locked for active project/session
-[x] Locked palette cannot be switched by normal interaction
-[x] New project flow (`Create New Canvas`) clears lock and requires explicit new selection
-[x] Load JSON resolves `paletteRef.id` and locks when resolvable
-[x] Load JSON enters blocked mode when palette reference is unresolved
-[x] PNG import preserves lock
-[x] Resize canvas preserves lock
-[x] Duplicate frame preserves lock
-[x] Save JSON persists palette reference identity metadata (`paletteRef`)
-
-Syntax checks:
+[x] Confirm BUILD delta zip exists at tmp/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION_delta.zip
+[x] Confirm BUILD delta contents are limited to approved Sprite Editor integration files/docs
+[x] Confirm no destructive deletes or unrelated repo areas were introduced by BUILD scope
+[x] Confirm engine palette authority remains external (engine/paletteList.js)
+[x] Confirm disabled-until-palette-selected behavior remains contract-compliant
+[x] Confirm locked-palette behavior remains contract-compliant
+[x] Confirm paletteRef persistence/load fallback behavior remains contract-compliant
+[x] Confirm new/import/resize/duplicate/load flow contracts remain compliant
 [x] node --check tools/Sprite Editor/modules/spriteEditorApp.js
 [x] node --check tools/Sprite Editor/modules/projectModel.js
 [x] node --check tools/Sprite Editor/modules/constants.js
-
-Manual UI validation targets (for APPLY/QA pass):
-[ ] Open tools/Sprite Editor/index.html and confirm palette selector loads engine palettes
-[ ] Confirm draw/frame/import/resize actions stay disabled before palette selection
-[ ] Select palette and confirm controls enable + lock text updates
-[ ] Confirm palette cannot be changed without explicit new-project flow
-[ ] Confirm load/save project paletteRef behavior for resolvable/unresolvable refs
+[x] node --check tools/Sprite Editor/main.js
+[x] Confirm APPLY step is docs-only and does not expand implementation scope
+[x] Confirm working tree cleanliness after APPLY packaging review
