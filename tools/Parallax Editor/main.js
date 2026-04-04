@@ -21,6 +21,12 @@ import {
   summarizeAssetValidation,
   validateProjectAssetState
 } from "../shared/projectAssetValidation.js";
+import {
+  buildProjectAssetRemediation,
+  getPrimaryRemediationAction,
+  summarizeProjectAssetRemediation
+} from "../shared/projectAssetRemediation.js";
+import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projectPackaging.js";
 
 const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -375,6 +381,7 @@ class ParallaxEditorApp {
     this.assetRegistry = createAssetRegistry({ projectId: documentModel?.map?.name || "parallax-project" });
     this.assetDependencyGraphSnapshot = null;
     this.validationResult = null;
+    this.remediationResult = { remediation: { status: "unavailable", actions: [] } };
   }
 
   invalidateImageCache() {
@@ -404,6 +411,11 @@ class ParallaxEditorApp {
     this.refs.restartSimulationButton = rootDocument.getElementById("restartSimulationButton");
     this.refs.exitSimulationButton = rootDocument.getElementById("exitSimulationButton");
     this.refs.exportParallaxPatchButton = rootDocument.getElementById("exportParallaxPatchButton");
+    this.refs.packageProjectButton = rootDocument.getElementById("packageProjectButton");
+    this.refs.remediationSummaryText = rootDocument.getElementById("remediationSummaryText");
+    this.refs.inspectRemediationButton = rootDocument.getElementById("inspectRemediationButton");
+    this.refs.jumpToProblemButton = rootDocument.getElementById("jumpToProblemButton");
+    this.refs.applyRemediationButton = rootDocument.getElementById("applyRemediationButton");
 
     this.refs.projectNameInput = rootDocument.getElementById("projectNameInput");
     this.refs.mapWidthInput = rootDocument.getElementById("mapWidthInput");
@@ -465,6 +477,10 @@ class ParallaxEditorApp {
     this.refs.restartSimulationButton.addEventListener("click", () => this.restartSimulationPosition());
     this.refs.exitSimulationButton.addEventListener("click", () => this.exitSimulationMode());
     this.refs.exportParallaxPatchButton.addEventListener("click", () => this.handleExportTilemapPatch());
+    this.refs.packageProjectButton.addEventListener("click", () => this.handlePackageProject());
+    this.refs.inspectRemediationButton.addEventListener("click", () => this.inspectRemediationActions());
+    this.refs.jumpToProblemButton.addEventListener("click", () => this.jumpToRemediationProblem());
+    this.refs.applyRemediationButton.addEventListener("click", () => this.applyRemediationAction());
 
     this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
     this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
@@ -1050,6 +1066,25 @@ class ParallaxEditorApp {
     this.updateStatus(`Exported ${fileName}. Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
+  handlePackageProject() {
+    this.touchDocument();
+    this.syncAssetRegistryFromDocument();
+    const validation = this.validateProjectAssets();
+    const packageResult = buildProjectPackage({
+      registry: this.assetRegistry,
+      validationResult: validation,
+      parallaxDocument: this.documentModel
+    });
+    if (packageResult.packageStatus !== "ready") {
+      this.updateStatus(`${summarizeProjectPackaging(packageResult)} ${packageResult.manifest.package.reports[0]?.message || ""}`.trim());
+      return;
+    }
+    const fileBase = `${this.assetRegistry.projectId || this.documentModel.map.name || "parallax-project"}.package`;
+    createDownload(`${fileBase}.json`, `${JSON.stringify(packageResult.manifest, null, 2)}\n`);
+    createDownload(`${fileBase}.report.txt`, `${packageResult.reportText}\n`);
+    this.updateStatus(`${summarizeProjectPackaging(packageResult)} Manifest and report exported.`);
+  }
+
   handleLoadProject(event) {
     this.exitSimulationMode();
     const file = event.target.files?.[0];
@@ -1307,6 +1342,7 @@ class ParallaxEditorApp {
     this.refs.cameraReadout.textContent = `camera: ${this.cameraX}, ${this.cameraY}`;
     this.refreshSimulationActionState();
     this.updateSimulationContextReadout();
+    this.updateRemediationUI();
   }
 
   renderLayerList() {
@@ -1625,7 +1661,103 @@ class ParallaxEditorApp {
       assetDependencyGraph: this.assetDependencyGraphSnapshot,
       parallaxDocument: this.documentModel
     });
+    this.remediationResult = buildProjectAssetRemediation({
+      validationResult: this.validationResult,
+      registry: this.assetRegistry
+    });
     return this.validationResult;
+  }
+
+  updateRemediationUI() {
+    if (!this.refs.remediationSummaryText) {
+      return;
+    }
+    this.refs.remediationSummaryText.textContent = summarizeProjectAssetRemediation(this.remediationResult);
+    const navigateAction = getPrimaryRemediationAction(this.remediationResult, "navigate");
+    const fixAction = getPrimaryRemediationAction(this.remediationResult, "confirmable-fix");
+    this.refs.inspectRemediationButton.disabled = this.remediationResult?.remediation?.status !== "available";
+    this.refs.jumpToProblemButton.disabled = !navigateAction;
+    this.refs.applyRemediationButton.disabled = !fixAction;
+  }
+
+  inspectRemediationActions() {
+    this.validateProjectAssets();
+    const actions = this.remediationResult?.remediation?.actions || [];
+    if (actions.length === 0) {
+      this.updateStatus("No remediation actions are currently available.");
+      this.updateRemediationUI();
+      return false;
+    }
+    this.updateStatus(`Remediation actions: ${actions.slice(0, 3).map((action) => `${action.label}: ${action.message}`).join(" | ")}`);
+    this.updateRemediationUI();
+    return true;
+  }
+
+  jumpToRemediationProblem() {
+    this.validateProjectAssets();
+    const action = getPrimaryRemediationAction(this.remediationResult, "navigate");
+    if (!action) {
+      this.updateStatus("No navigation remediation action is available.");
+      this.updateRemediationUI();
+      return false;
+    }
+
+    if (action.findingCode === "UNRESOLVED_IMAGE_LINK") {
+      const targetLayer = this.documentModel.layers.find((layer) => layer.id === action.sourceId) || this.documentModel.layers[0] || null;
+      if (targetLayer) {
+        this.selectedLayerId = targetLayer.id;
+      }
+      this.renderAll();
+      this.refs.layerImageSourceInput.focus();
+      this.updateStatus(`Jumped to image assignment for ${action.sourceId || "the current layer"}: ${action.message}`);
+    } else if (action.findingCode === "MISSING_ASSET_ID" || action.findingCode === "DUPLICATE_REGISTRY_ID") {
+      this.refs.saveAssetRegistryButton.focus();
+      this.updateStatus(`Jumped to project I/O: ${action.message}`);
+    } else {
+      this.updateStatus(`Inspected ${action.sourceId || "the current issue"}: ${action.message}`);
+    }
+    this.updateRemediationUI();
+    return true;
+  }
+
+  applyRemediationAction() {
+    this.validateProjectAssets();
+    const action = getPrimaryRemediationAction(this.remediationResult, "confirmable-fix");
+    if (!action) {
+      this.updateStatus("No confirmable remediation fix is available.");
+      this.updateRemediationUI();
+      return false;
+    }
+
+    const shouldApply = typeof globalThis.confirm === "function"
+      ? globalThis.confirm(`${action.label}? ${action.message}`)
+      : true;
+    if (!shouldApply) {
+      this.updateStatus("Remediation fix canceled.");
+      this.updateRemediationUI();
+      return false;
+    }
+
+    if (action.payload?.fixKind === "refresh-owned-registry-entry") {
+      this.syncAssetRegistryFromDocument();
+    } else if (action.payload?.fixKind === "relink-reference" && action.payload.referenceField === "parallaxSourceId") {
+      const targetLayer = this.documentModel.layers.find((layer) => layer.id === action.sourceId) || this.getSelectedLayer();
+      if (targetLayer) {
+        targetLayer.parallaxSourceId = action.payload.candidateId || "";
+      }
+      this.resolveAssetRefsFromRegistry();
+    } else if (action.payload?.fixKind === "refresh-graph-snapshot") {
+      const validation = validateProjectAssetState({
+        registry: this.assetRegistry,
+        parallaxDocument: this.documentModel
+      });
+      this.assetDependencyGraphSnapshot = validation.assetDependencyGraph;
+    }
+
+    const validation = this.validateProjectAssets();
+    this.renderAll();
+    this.updateStatus(`Applied remediation: ${action.label}. Validation: ${summarizeAssetValidation(validation)}.`);
+    return true;
   }
 }
 

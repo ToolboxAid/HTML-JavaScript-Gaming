@@ -1,0 +1,30 @@
+BUILD_PR_ASSET_REMEDIATION_SYSTEM validation
+
+Files:
+- tools/shared/projectAssetRemediation.js
+- tests/tools/AssetRemediationSystem.test.mjs
+- tests/run-tests.mjs
+- tools/Sprite Editor/index.html
+- tools/Sprite Editor/modules/spriteEditorApp.js
+- tools/Tile Map Editor/index.html
+- tools/Tile Map Editor/main.js
+- tools/Parallax Editor/index.html
+- tools/Parallax Editor/main.js
+
+Checks passed:
+- node --check tools/shared/projectAssetRemediation.js
+- node --check tests/tools/AssetRemediationSystem.test.mjs
+- node --check tools/Sprite Editor/modules/spriteEditorApp.js
+- node --check tools/Tile Map Editor/main.js
+- node --check tools/Parallax Editor/main.js
+- targeted AssetRemediationSystem test via node inline runner
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- validation remains authoritative
+- remediation action generation is deterministic
+- inspect and jump actions are non-destructive
+- confirmable fixes require explicit confirmation
+- guarded save/export blocking remains enforced
+- legacy invalid content can still load and move through repair flows
+- no engine core API changes

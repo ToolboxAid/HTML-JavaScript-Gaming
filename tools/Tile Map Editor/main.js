@@ -21,6 +21,12 @@ import {
   summarizeAssetValidation,
   validateProjectAssetState
 } from "../shared/projectAssetValidation.js";
+import {
+  buildProjectAssetRemediation,
+  getPrimaryRemediationAction,
+  summarizeProjectAssetRemediation
+} from "../shared/projectAssetRemediation.js";
+import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projectPackaging.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -566,6 +572,7 @@ class TileMapEditorApp {
     this.assetRegistry = createAssetRegistry({ projectId: documentModel?.map?.name || "tilemap-project" });
     this.assetDependencyGraphSnapshot = null;
     this.validationResult = null;
+    this.remediationResult = { remediation: { status: "unavailable", actions: [] } };
   }
 
   init(rootDocument) {
@@ -594,6 +601,11 @@ class TileMapEditorApp {
     this.refs.restartSimulationButton = rootDocument.getElementById("restartSimulationButton");
     this.refs.exitSimulationButton = rootDocument.getElementById("exitSimulationButton");
     this.refs.exportRuntimeButton = rootDocument.getElementById("exportRuntimeButton");
+    this.refs.packageProjectButton = rootDocument.getElementById("packageProjectButton");
+    this.refs.remediationSummaryText = rootDocument.getElementById("remediationSummaryText");
+    this.refs.inspectRemediationButton = rootDocument.getElementById("inspectRemediationButton");
+    this.refs.jumpToProblemButton = rootDocument.getElementById("jumpToProblemButton");
+    this.refs.applyRemediationButton = rootDocument.getElementById("applyRemediationButton");
 
     this.refs.mapNameInput = rootDocument.getElementById("mapNameInput");
     this.refs.mapWidthInput = rootDocument.getElementById("mapWidthInput");
@@ -656,6 +668,10 @@ class TileMapEditorApp {
     this.refs.restartSimulationButton.addEventListener("click", () => this.restartSimulationPosition());
     this.refs.exitSimulationButton.addEventListener("click", () => this.exitSimulationMode());
     this.refs.exportRuntimeButton.addEventListener("click", () => this.handleExportRuntime());
+    this.refs.packageProjectButton.addEventListener("click", () => this.handlePackageProject());
+    this.refs.inspectRemediationButton.addEventListener("click", () => this.inspectRemediationActions());
+    this.refs.jumpToProblemButton.addEventListener("click", () => this.jumpToRemediationProblem());
+    this.refs.applyRemediationButton.addEventListener("click", () => this.applyRemediationAction());
 
     this.refs.mapNameInput.addEventListener("change", () => {
       if (!this.ensureEditable()) {
@@ -844,6 +860,25 @@ class TileMapEditorApp {
     const fileName = `${this.documentModel.map.name || "tile-map"}.runtime.json`;
     downloadTextFile(fileName, serialized);
     this.updateStatus(`Exported ${fileName}. Validation: ${summarizeAssetValidation(validation)}.`);
+  }
+
+  handlePackageProject() {
+    this.touchDocument();
+    this.syncAssetRegistryFromDocument();
+    const validation = this.validateProjectAssets();
+    const packageResult = buildProjectPackage({
+      registry: this.assetRegistry,
+      validationResult: validation,
+      tileMapDocument: this.documentModel
+    });
+    if (packageResult.packageStatus !== "ready") {
+      this.updateStatus(`${summarizeProjectPackaging(packageResult)} ${packageResult.manifest.package.reports[0]?.message || ""}`.trim());
+      return;
+    }
+    const fileBase = `${this.assetRegistry.projectId || this.documentModel.map.name || "tile-map"}.package`;
+    downloadTextFile(`${fileBase}.json`, `${JSON.stringify(packageResult.manifest, null, 2)}\n`);
+    downloadTextFile(`${fileBase}.report.txt`, `${packageResult.reportText}\n`);
+    this.updateStatus(`${summarizeProjectPackaging(packageResult)} Manifest and report exported.`);
   }
 
   handleLoadProject(event) {
@@ -1971,6 +2006,7 @@ class TileMapEditorApp {
     this.refs.canvasMeta.textContent = `${this.documentModel.map.width}x${this.documentModel.map.height}`;
     this.refreshSimulationActionState();
     this.updateSimulationContext();
+    this.updateRemediationUI();
   }
 
   renderLayerMeta() {
@@ -2438,7 +2474,100 @@ class TileMapEditorApp {
       assetDependencyGraph: this.assetDependencyGraphSnapshot,
       tileMapDocument: this.documentModel
     });
+    this.remediationResult = buildProjectAssetRemediation({
+      validationResult: this.validationResult,
+      registry: this.assetRegistry
+    });
     return this.validationResult;
+  }
+
+  updateRemediationUI() {
+    if (!this.refs.remediationSummaryText) {
+      return;
+    }
+    this.refs.remediationSummaryText.textContent = summarizeProjectAssetRemediation(this.remediationResult);
+    const navigateAction = getPrimaryRemediationAction(this.remediationResult, "navigate");
+    const fixAction = getPrimaryRemediationAction(this.remediationResult, "confirmable-fix");
+    this.refs.inspectRemediationButton.disabled = this.remediationResult?.remediation?.status !== "available";
+    this.refs.jumpToProblemButton.disabled = !navigateAction;
+    this.refs.applyRemediationButton.disabled = !fixAction;
+  }
+
+  inspectRemediationActions() {
+    this.validateProjectAssets();
+    const actions = this.remediationResult?.remediation?.actions || [];
+    if (actions.length === 0) {
+      this.updateStatus("No remediation actions are currently available.");
+      this.updateRemediationUI();
+      return false;
+    }
+    this.updateStatus(`Remediation actions: ${actions.slice(0, 3).map((action) => `${action.label}: ${action.message}`).join(" | ")}`);
+    this.updateRemediationUI();
+    return true;
+  }
+
+  jumpToRemediationProblem() {
+    this.validateProjectAssets();
+    const action = getPrimaryRemediationAction(this.remediationResult, "navigate");
+    if (!action) {
+      this.updateStatus("No navigation remediation action is available.");
+      this.updateRemediationUI();
+      return false;
+    }
+
+    if (action.findingCode === "UNRESOLVED_TILESET_LINK") {
+      this.refs.loadTilesetPngButton.focus();
+      this.updateStatus(`Jumped to tileset tools: ${action.message}`);
+    } else if (action.findingCode === "MISSING_ASSET_ID" || action.findingCode === "DUPLICATE_REGISTRY_ID") {
+      this.refs.saveAssetRegistryButton.focus();
+      this.updateStatus(`Jumped to project I/O: ${action.message}`);
+    } else {
+      this.selectedLayerId = this.documentModel.layers[0]?.id || this.selectedLayerId;
+      this.renderAll();
+      this.updateStatus(`Inspected ${action.sourceId || "the current issue"}: ${action.message}`);
+    }
+    this.updateRemediationUI();
+    return true;
+  }
+
+  applyRemediationAction() {
+    this.validateProjectAssets();
+    const action = getPrimaryRemediationAction(this.remediationResult, "confirmable-fix");
+    if (!action) {
+      this.updateStatus("No confirmable remediation fix is available.");
+      this.updateRemediationUI();
+      return false;
+    }
+
+    const shouldApply = typeof globalThis.confirm === "function"
+      ? globalThis.confirm(`${action.label}? ${action.message}`)
+      : true;
+    if (!shouldApply) {
+      this.updateStatus("Remediation fix canceled.");
+      this.updateRemediationUI();
+      return false;
+    }
+
+    if (action.payload?.fixKind === "refresh-owned-registry-entry") {
+      this.syncAssetRegistryFromDocument();
+    } else if (action.payload?.fixKind === "relink-reference" && action.payload.referenceField === "tilesetId") {
+      this.documentModel.assetRefs = {
+        ...this.documentModel.assetRefs,
+        tilesetId: action.payload.candidateId || ""
+      };
+      this.resolveAssetRefsFromRegistry();
+    } else if (action.payload?.fixKind === "refresh-graph-snapshot") {
+      const validation = validateProjectAssetState({
+        registry: this.assetRegistry,
+        tileMapDocument: this.documentModel
+      });
+      this.assetDependencyGraphSnapshot = validation.assetDependencyGraph;
+    }
+
+    const validation = this.validateProjectAssets();
+    this.renderAll();
+    this.updateStatus(`Applied remediation: ${action.label}. Validation: ${summarizeAssetValidation(validation)}.`);
+    return true;
   }
 }
 

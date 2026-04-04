@@ -1,1 +1,1 @@
-build(asset-validation): add enforced project asset validation engine
+build(packaging): add strict project packaging and export system

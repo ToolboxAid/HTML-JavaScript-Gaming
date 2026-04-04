@@ -42,6 +42,12 @@ import {
   summarizeAssetValidation,
   validateProjectAssetState
 } from "../../shared/projectAssetValidation.js";
+import {
+  buildProjectAssetRemediation,
+  getPrimaryRemediationAction,
+  summarizeProjectAssetRemediation
+} from "../../shared/projectAssetRemediation.js";
+import { buildProjectPackage, summarizeProjectPackaging } from "../../shared/projectPackaging.js";
 
 function getRequiredElement(id) {
   const element = document.getElementById(id);
@@ -241,7 +247,106 @@ function validateSpriteProjectAssets(state) {
     spriteProject: state.project
   });
   state.validationResult = result;
+  state.remediationResult = buildProjectAssetRemediation({
+    validationResult: result,
+    registry: state.assetRegistry
+  });
   return result;
+}
+
+function updateRemediationUI(state) {
+  const summary = summarizeProjectAssetRemediation(state.remediationResult);
+  if (state.elements.remediationSummaryText) {
+    state.elements.remediationSummaryText.textContent = summary;
+  }
+  const primaryNavigation = getPrimaryRemediationAction(state.remediationResult, "navigate");
+  const primaryFix = getPrimaryRemediationAction(state.remediationResult, "confirmable-fix");
+  if (state.elements.inspectRemediationButton) {
+    state.elements.inspectRemediationButton.disabled = state.remediationResult?.remediation?.status !== "available";
+  }
+  if (state.elements.jumpToProblemButton) {
+    state.elements.jumpToProblemButton.disabled = !primaryNavigation;
+  }
+  if (state.elements.applyRemediationButton) {
+    state.elements.applyRemediationButton.disabled = !primaryFix;
+  }
+}
+
+function inspectRemediationActions(state) {
+  const actions = state.remediationResult?.remediation?.actions || [];
+  if (actions.length === 0) {
+    setStatus(state, "No remediation actions are currently available.");
+    return false;
+  }
+  const preview = actions
+    .slice(0, 3)
+    .map((action) => `${action.label}: ${action.message}`)
+    .join(" | ");
+  setStatus(state, `Remediation actions: ${preview}`);
+  return true;
+}
+
+function jumpToRemediationProblem(state) {
+  const action = getPrimaryRemediationAction(state.remediationResult, "navigate");
+  if (!action) {
+    setStatus(state, "No navigation remediation action is available.");
+    return false;
+  }
+
+  if (action.findingCode === "UNRESOLVED_PALETTE_LINK") {
+    state.elements.paletteSelect.focus();
+    setStatus(state, `Jumped to palette selection for ${action.sourceId || "the current sprite"}: ${action.message}`);
+    return true;
+  }
+
+  if (action.findingCode === "MISSING_ASSET_ID" || action.findingCode === "DUPLICATE_REGISTRY_ID") {
+    state.elements.saveAssetRegistryButton.focus();
+    setStatus(state, `Jumped to project I/O for ${action.sourceId || "the current sprite"}: ${action.message}`);
+    return true;
+  }
+
+  state.elements.statusText.focus?.();
+  setStatus(state, `Inspected ${action.sourceId || "the current issue"}: ${action.message}`);
+  return true;
+}
+
+function applyRemediationAction(state) {
+  const action = getPrimaryRemediationAction(state.remediationResult, "confirmable-fix");
+  if (!action) {
+    setStatus(state, "No confirmable remediation fix is available.");
+    return false;
+  }
+
+  const shouldApply = typeof window.confirm === "function"
+    ? window.confirm(`${action.label}? ${action.message}`)
+    : true;
+  if (!shouldApply) {
+    setStatus(state, "Remediation fix canceled.");
+    return false;
+  }
+
+  if (action.payload?.fixKind === "refresh-owned-registry-entry") {
+    syncSpriteAssetsToRegistry(state, {});
+  } else if (action.payload?.fixKind === "relink-reference" && action.payload.referenceField === "paletteId") {
+    state.project.assetRefs = {
+      ...(state.project.assetRefs || {}),
+      paletteId: action.payload.candidateId || "",
+      spriteId: state.project.assetRefs?.spriteId || ""
+    };
+    resolvePaletteFromAssetRegistry(state);
+  } else if (action.payload?.fixKind === "refresh-graph-snapshot") {
+    const validation = validateProjectAssetState({
+      registry: state.assetRegistry,
+      spriteProject: state.project
+    });
+    state.assetDependencyGraphSnapshot = validation.assetDependencyGraph;
+  }
+
+  const validation = validateSpriteProjectAssets(state);
+  syncControlsFromProject(state);
+  renderAll(state);
+  setStatus(state, `Applied remediation: ${action.label}. Validation: ${summarizeAssetValidation(validation)}.`);
+  return true;
 }
 
 function guardSpriteProjectAction(state, actionLabel) {
@@ -922,6 +1027,7 @@ function renderAll(state) {
   renderHud(state);
   renderEditor(state);
   renderPreview(state);
+  updateRemediationUI(state);
 }
 
 function resetProject(state) {
@@ -1085,6 +1191,25 @@ async function exportSpriteSheetPng(state) {
   const filename = `sprite-sheet-${state.project.frames.length}f-${state.project.width}x${state.project.height}.png`;
   downloadBlob(blob, filename);
   setStatus(state, `Exported ${filename} (${sheetCanvas.width}x${sheetCanvas.height}).`);
+}
+
+async function packageSpriteProject(state) {
+  syncSpriteAssetsToRegistry(state, { spritePath: `assets/sprites/${deriveSpriteFileName(state.project)}` });
+  const validation = validateSpriteProjectAssets(state);
+  const packageResult = buildProjectPackage({
+    registry: state.assetRegistry,
+    validationResult: validation,
+    spriteProject: state.project
+  });
+  if (packageResult.packageStatus !== "ready") {
+    setStatus(state, `${summarizeProjectPackaging(packageResult)} ${packageResult.manifest.package.reports[0]?.message || ""}`.trim());
+    return false;
+  }
+  const baseName = `${state.assetRegistry.projectId || "sprite-project"}.package`;
+  downloadBlob(new Blob([`${JSON.stringify(packageResult.manifest, null, 2)}\n`], { type: "application/json" }), `${baseName}.json`);
+  downloadBlob(new Blob([`${packageResult.reportText}\n`], { type: "text/plain" }), `${baseName}.report.txt`);
+  setStatus(state, `${summarizeProjectPackaging(packageResult)} Manifest and report exported.`);
+  return true;
 }
 
 async function saveAssetRegistryJson(state) {
@@ -1401,6 +1526,7 @@ function bindControls(state) {
     duplicateFrameButton,
     exportPngButton,
     exportSheetButton,
+    packageProjectButton,
     fpsInput,
     gridToggle,
     importPngButton,
@@ -1421,6 +1547,9 @@ function bindControls(state) {
     resetPreviewButton,
     saveAssetRegistryButton,
     saveProjectButton,
+    inspectRemediationButton,
+    jumpToProblemButton,
+    applyRemediationButton,
     toolButtons,
     undoButton
   } = state.elements;
@@ -1604,6 +1733,13 @@ function bindControls(state) {
       setStatus(state, `Sprite sheet export failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   });
+  packageProjectButton.addEventListener("click", async () => {
+    try {
+      await packageSpriteProject(state);
+    } catch (error) {
+      setStatus(state, `Package export failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  });
 
   saveProjectButton.addEventListener("click", async () => {
     try {
@@ -1649,6 +1785,22 @@ function bindControls(state) {
     } catch (error) {
       setStatus(state, `Asset registry load failed for ${file.name}: ${error instanceof Error ? error.message : "unknown error"}`);
     }
+  });
+
+  inspectRemediationButton.addEventListener("click", () => {
+    validateSpriteProjectAssets(state);
+    inspectRemediationActions(state);
+    updateRemediationUI(state);
+  });
+  jumpToProblemButton.addEventListener("click", () => {
+    validateSpriteProjectAssets(state);
+    jumpToRemediationProblem(state);
+    updateRemediationUI(state);
+  });
+  applyRemediationButton.addEventListener("click", () => {
+    validateSpriteProjectAssets(state);
+    applyRemediationAction(state);
+    updateRemediationUI(state);
   });
 }
 
@@ -1703,6 +1855,7 @@ export function initializeSpriteEditorApp() {
     },
     assetDependencyGraphSnapshot: null,
     validationResult: null,
+    remediationResult: { remediation: { status: "unavailable", actions: [] } },
     cursor: {
       x: null,
       y: null
@@ -1719,6 +1872,7 @@ export function initializeSpriteEditorApp() {
       editorCanvas: getRequiredElement("editorCanvas"),
       exportPngButton: getRequiredElement("exportPngButton"),
       exportSheetButton: getRequiredElement("exportSheetButton"),
+      packageProjectButton: getRequiredElement("packageProjectButton"),
       fpsInput: getRequiredElement("fpsInput"),
       fpsValue: getRequiredElement("fpsValue"),
       frameCounter: getRequiredElement("frameCounter"),
@@ -1745,6 +1899,10 @@ export function initializeSpriteEditorApp() {
       recentColorButtons: getRequiredElement("recentColorButtons"),
       redoButton: getRequiredElement("redoButton"),
       resetPreviewButton: getRequiredElement("resetPreviewButton"),
+      remediationSummaryText: getRequiredElement("remediationSummaryText"),
+      inspectRemediationButton: getRequiredElement("inspectRemediationButton"),
+      jumpToProblemButton: getRequiredElement("jumpToProblemButton"),
+      applyRemediationButton: getRequiredElement("applyRemediationButton"),
       saveAssetRegistryButton: getRequiredElement("saveAssetRegistryButton"),
       saveProjectButton: getRequiredElement("saveProjectButton"),
       statusBarText: getRequiredElement("statusBarText"),
@@ -1757,6 +1915,7 @@ export function initializeSpriteEditorApp() {
   };
 
   syncControlsFromProject(state);
+  validateSpriteProjectAssets(state);
   state.elements.fpsInput.value = String(state.preview.fps);
 
   bindControls(state);

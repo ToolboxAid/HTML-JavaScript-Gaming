@@ -1,0 +1,29 @@
+BUILD_PR_PROJECT_PACKAGING_SYSTEM validation
+
+Files:
+- tools/shared/projectPackaging.js
+- tests/tools/ProjectPackagingSystem.test.mjs
+- tests/run-tests.mjs
+- tools/Sprite Editor/index.html
+- tools/Sprite Editor/modules/spriteEditorApp.js
+- tools/Tile Map Editor/index.html
+- tools/Tile Map Editor/main.js
+- tools/Parallax Editor/index.html
+- tools/Parallax Editor/main.js
+
+Checks passed:
+- node --check tools/shared/projectPackaging.js
+- node --check tests/tools/ProjectPackagingSystem.test.mjs
+- node --check tools/Sprite Editor/modules/spriteEditorApp.js
+- node --check tools/Tile Map Editor/main.js
+- node --check tools/Parallax Editor/main.js
+- targeted ProjectPackagingSystem test via node inline runner
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- strict validation gating blocks invalid packaging/export
+- package manifest generation is deterministic
+- dependency traversal uses registry + dependency graph state
+- packaging reports are stable and human-readable
+- sprite, tile-map, and parallax editors can participate in packaging
+- no engine core API changes

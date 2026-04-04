@@ -113,6 +113,7 @@ index.html
             <button id="importPngButton" type="button">Import PNG</button>
             <button id="exportPngButton" type="button">Export Frame PNG</button>
             <button id="exportSheetButton" type="button">Export Sprite Sheet</button>
+            <button id="packageProjectButton" type="button">Package Project</button>
             <input id="importPngInput" type="file" accept="image/png" class="hidden-input" />
           </div>
           <p class="hint-text">Canvas resize preserves pixels. Create New Canvas resets to a fresh document.</p>
@@ -143,6 +144,12 @@ index.html
         <div class="panel-block">
           <h2>Status</h2>
           <p id="statusText" class="status-text">Ready.</p>
+          <p id="remediationSummaryText" class="status-text">No remediation actions available.</p>
+          <div class="io-controls">
+            <button id="inspectRemediationButton" type="button">Inspect Issues</button>
+            <button id="jumpToProblemButton" type="button">Jump to Problem</button>
+            <button id="applyRemediationButton" type="button">Apply Suggested Fix</button>
+          </div>
           <p class="status-text">Shortcuts: P pencil, E eraser, F fill, G grid, O onion, [ ] frames.</p>
         </div>
       </div>

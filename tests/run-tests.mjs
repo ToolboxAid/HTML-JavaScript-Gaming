@@ -85,6 +85,8 @@ import { run as runProductionReadiness } from './production/ProductionReadiness.
 import { run as runEnginePublicBarrelImports } from './production/EnginePublicBarrelImports.test.mjs';
 import { run as runStorageService } from './persistence/StorageService.test.mjs';
 import { run as runAssetValidationEngine } from './tools/AssetValidationEngine.test.mjs';
+import { run as runAssetRemediationSystem } from './tools/AssetRemediationSystem.test.mjs';
+import { run as runProjectPackagingSystem } from './tools/ProjectPackagingSystem.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -164,6 +166,8 @@ const tests = [
     ['MouseState', runMouseState],
     ['StorageService', runStorageService],
     ['AssetValidationEngine', runAssetValidationEngine],
+    ['AssetRemediationSystem', runAssetRemediationSystem],
+    ['ProjectPackagingSystem', runProjectPackagingSystem],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

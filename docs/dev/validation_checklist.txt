@@ -1,8 +1,8 @@
 - PLAN, BUILD, and APPLY docs are all present
 - codex_commands.md and commit_comment.txt are under docs/dev
-- Enforcement rules are explicit
-- Remediation workflows remain available for invalid projects
+- Strict validation gating is explicit for packaging/export
 - Registry remains source of truth
-- Dependency graph remains additive
+- Dependency graph remains traversal source
+- Output determinism is required
 - No engine core API changes are authorized
 - APPLY remains docs-only acceptance boundary

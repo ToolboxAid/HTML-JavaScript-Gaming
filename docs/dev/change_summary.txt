@@ -1,3 +1,3 @@
-Single atomic Level 10 package containing PLAN, BUILD, and APPLY documentation for an enforced
-project-level asset validation engine. This bundle is docs-first and Codex-ready, with implementation
+Single atomic Level 12 package containing PLAN, BUILD, and APPLY documentation for a strict
+project packaging and export system. This bundle is docs-first and Codex-ready, with implementation
 ownership delegated to Codex.

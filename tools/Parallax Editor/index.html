@@ -30,6 +30,7 @@ index.html
         <button id="restartSimulationButton" type="button" disabled>Restart Position</button>
         <button id="exitSimulationButton" type="button" disabled>Exit Simulation</button>
         <button id="exportParallaxPatchButton" type="button">Export Tilemap Patch</button>
+        <button id="packageProjectButton" type="button">Package Project</button>
       </div>
 
       <div class="toolbar-group">
@@ -199,6 +200,16 @@ index.html
             <li>No map tile/collision/data editing in this UI.</li>
             <li>No engine core API modifications.</li>
           </ul>
+        </section>
+
+        <section class="panel">
+          <h3>Remediation</h3>
+          <p id="remediationSummaryText" class="help-text">No remediation actions available.</p>
+          <div class="row buttons">
+            <button id="inspectRemediationButton" type="button">Inspect Issues</button>
+            <button id="jumpToProblemButton" type="button">Jump to Problem</button>
+            <button id="applyRemediationButton" type="button">Apply Suggested Fix</button>
+          </div>
         </section>
       </aside>
     </div>
