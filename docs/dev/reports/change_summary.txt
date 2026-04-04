@@ -3,7 +3,7 @@ Change Summary
 
 Canonical folders kept
 ----------------------
-- `tools/SpriteEditorV3/`
+- `tools/Sprite Editor V3/`
 - `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/`
@@ -17,7 +17,7 @@ Duplicate folders removed
 
 Files moved or merged
 ---------------------
-- Pixel tool implementation files moved into `tools/SpriteEditorV3/`
+- Pixel tool implementation files moved into `tools/Sprite Editor V3/`
 - Tilemap tool implementation files and samples moved into `tools/Tilemap Studio/`
 - Parallax tool implementation files and samples moved into `tools/Parallax Scene Studio/`
 - Vector tool implementation files and samples moved into `tools/Vector Asset Studio/`
@@ -33,4 +33,4 @@ References updated
 Explicit exclusion
 ------------------
 - `tools/SpriteEditor_old_keep/` was intentionally ignored as legacy and out of scope
-- `tools/SpriteEditorV3/` was not part of the duplicate-folder consolidation set
+- `tools/Sprite Editor V3/` was not part of the duplicate-folder consolidation set

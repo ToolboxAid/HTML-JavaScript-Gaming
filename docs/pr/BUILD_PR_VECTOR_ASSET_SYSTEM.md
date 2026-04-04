@@ -8,7 +8,7 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 - integrate vector assets into the dependency graph, validation, packaging, and runtime flows
 - use the SVG-focused tool as the authoring bridge for normalized vector asset output
 - normalize forward-facing tool naming to:
-  - `tools/SpriteEditorV3/`
+  - `tools/Sprite Editor V3/`
   - `tools/Tilemap Studio/`
   - `tools/Parallax Scene Studio/`
   - `tools/Vector Asset Studio/`
@@ -27,7 +27,7 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 - `games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json`
 - `games/Asteroids/platform/assets/vectors/asteroids-title.vector.json`
 - `tools/index.html`
-- `tools/SpriteEditorV3/*`
+- `tools/Sprite Editor V3/*`
 - `tools/Tilemap Studio/*`
 - `tools/Parallax Scene Studio/*`
 - `tools/Vector Asset Studio/*`
@@ -47,7 +47,7 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 ## Tool Naming Normalization
 Forward-facing normalized paths now exist in the repo and should be treated as the target standard:
 
-- `tools/SpriteEditorV3/`
+- `tools/Sprite Editor V3/`
 - `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/`
@@ -55,7 +55,7 @@ Forward-facing normalized paths now exist in the repo and should be treated as t
 ## Transitional Compatibility
 Legacy implementation paths remain intact during transition and are compatibility-only:
 
-- `tools/SpriteEditorV3/` backs `tools/SpriteEditorV3/`
+- `tools/Sprite Editor V3/` backs `tools/Sprite Editor V3/`
 - `tools/Tilemap Studio/` backs `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/` backs `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/` backs `tools/Vector Asset Studio/`

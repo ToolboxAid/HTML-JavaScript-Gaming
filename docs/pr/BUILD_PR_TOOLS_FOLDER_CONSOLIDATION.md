@@ -4,18 +4,18 @@
 Consolidate duplicate and rename-created tool folders under `tools/` into approved canonical paths, repair active references, and remove duplicate-folder drift without introducing unrelated feature work.
 
 ## Canonical Tool Folders Selected
-- `tools/SpriteEditorV3/`
+- `tools/Sprite Editor V3/`
 - `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/`
 - Kept unchanged and outside this consolidation pair set:
-  - `tools/VectorMapEditor/`
+  - `tools/Vector Map Editor/`
   - `tools/shared/`
   - legacy `tools/SpriteEditor_old_keep/`
-  - legacy `tools/SpriteEditorV3/`
+  - legacy `tools/Sprite Editor V3/`
 
 ## Duplicate Folders Found
-- `tools/Sprite Editor/` duplicated the active pixel-art implementation now consolidated into `tools/SpriteEditorV3/`
+- `tools/Sprite Editor/` duplicated the active pixel-art implementation now consolidated into `tools/Sprite Editor V3/`
 - `tools/Tile Map Editor/` duplicated the active tilemap implementation now consolidated into `tools/Tilemap Studio/`
 - `tools/Parallax Editor/` duplicated the active parallax implementation now consolidated into `tools/Parallax Scene Studio/`
 - `tools/SVG Background Editor/` duplicated the active vector-authoring implementation now consolidated into `tools/Vector Asset Studio/`

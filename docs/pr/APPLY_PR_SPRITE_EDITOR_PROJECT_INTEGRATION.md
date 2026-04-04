@@ -42,10 +42,10 @@ Out of scope:
 - Import/resize/duplicate flows preserve lock semantics.
 
 ## Validation Executed During APPLY
-- `node --check tools/SpriteEditorV3/modules/spriteEditorApp.js`
-- `node --check tools/SpriteEditorV3/modules/projectModel.js`
-- `node --check tools/SpriteEditorV3/modules/constants.js`
-- `node --check tools/SpriteEditorV3/main.js`
+- `node --check tools/Sprite Editor V3/modules/spriteEditorApp.js`
+- `node --check tools/Sprite Editor V3/modules/projectModel.js`
+- `node --check tools/Sprite Editor V3/modules/constants.js`
+- `node --check tools/Sprite Editor V3/main.js`
 - Confirmed APPLY bundle scope is docs-only for this step.
 
 ## Apply Decision

@@ -30,7 +30,7 @@ Reference cleanup
 Tool path validation
 --------------------
 [x] `tools/index.html` links target canonical tool folders
-[x] `tools/SpriteEditorV3/index.html` exists with matching JS and CSS
+[x] `tools/Sprite Editor V3/index.html` exists with matching JS and CSS
 [x] `tools/Tilemap Studio/index.html` exists with matching JS and CSS
 [x] `tools/Parallax Scene Studio/index.html` exists with matching JS and CSS
 [x] `tools/Vector Asset Studio/index.html` exists with matching JS and CSS

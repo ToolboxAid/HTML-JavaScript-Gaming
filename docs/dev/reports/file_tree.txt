@@ -23,7 +23,7 @@ tools/
     svgBackgroundEditor.css
     README.md
     samples/
-  VectorMapEditor/
+  Vector Map Editor/
   shared/
   SpriteEditor/
-  SpriteEditorV3/
+  Sprite Editor V3/
