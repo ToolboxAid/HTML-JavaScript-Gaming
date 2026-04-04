@@ -1,7 +1,6 @@
-Created implementation bundle for BUILD_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION.
+Created APPLY bundle for APPLY_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION.
 
 Summary:
-- Extends the shared registry helper with additive `tilemaps` support.
-- Updates Tile Map Editor to load/save `project.assets.json` and persist `assetRefs.tilemapId` plus `assetRefs.tilesetId`.
-- Registers `tilemaps` and relevant `tilesets` additively while preserving existing registry groups and unknown safe fields.
-- Keeps scope surgical: no engine changes and no Parallax Editor work in this PR.
+- Confirms the built Tile Map Editor registry adoption slice is ready to apply as implemented.
+- Verifies build/package scope stays limited to the approved Tile Map Editor registry files and docs.
+- Reaffirms legacy compatibility, additive registry preservation, and no engine or Parallax scope expansion.
