@@ -1,1 +1,1 @@
-build(demo): add flagship asteroids platform demo
+plan(vector-assets): define first-class vector asset system and normalized tool naming

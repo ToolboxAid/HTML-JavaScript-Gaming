@@ -106,6 +106,7 @@ import { run as runAssetMarketplace } from './tools/AssetMarketplace.test.mjs';
 import { run as runCloudRuntime } from './tools/CloudRuntime.test.mjs';
 import { run as runGameTemplates } from './tools/GameTemplates.test.mjs';
 import { run as runPublishingPipeline } from './tools/PublishingPipeline.test.mjs';
+import { run as runVectorAssetSystem } from './tools/VectorAssetSystem.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -206,6 +207,7 @@ const tests = [
     ['CloudRuntime', runCloudRuntime],
     ['GameTemplates', runGameTemplates],
     ['PublishingPipeline', runPublishingPipeline],
+    ['VectorAssetSystem', runVectorAssetSystem],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

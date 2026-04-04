@@ -15,6 +15,9 @@ function inferBindingRole(asset) {
   if (type === "sprite") {
     return "entity-visual";
   }
+  if (type === "vector") {
+    return "entity-visual";
+  }
   if (type === "tilemap") {
     return "world-layout";
   }

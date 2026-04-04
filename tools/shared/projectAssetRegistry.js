@@ -5,11 +5,12 @@ David Quesenberry
 projectAssetRegistry.js
 */
 
-const KNOWN_SECTIONS = ["palettes", "sprites", "tilesets", "tilemaps", "images", "parallaxSources"];
-const PATH_REQUIRED_SECTIONS = ["sprites", "tilesets", "tilemaps", "images", "parallaxSources"];
+const KNOWN_SECTIONS = ["palettes", "sprites", "vectors", "tilesets", "tilemaps", "images", "parallaxSources"];
+const PATH_REQUIRED_SECTIONS = ["sprites", "vectors", "tilesets", "tilemaps", "images", "parallaxSources"];
 const GRAPH_NODE_TYPES = Object.freeze({
   palettes: "palette",
   sprites: "sprite",
+  vectors: "vector",
   tilesets: "tileset",
   tilemaps: "tilemap",
   images: "image",
@@ -17,6 +18,7 @@ const GRAPH_NODE_TYPES = Object.freeze({
 });
 const GRAPH_EDGE_RULES = Object.freeze([
   { section: "sprites", targetSection: "palettes", sourceField: "paletteId", type: "usesPalette" },
+  { section: "vectors", targetSection: "palettes", sourceField: "paletteId", type: "usesPalette" },
   { section: "tilesets", targetSection: "palettes", sourceField: "paletteId", type: "usesPalette" },
   { section: "tilemaps", targetSection: "tilesets", sourceField: "tilesetId", type: "usesTileset" },
   { section: "parallaxSources", targetSection: "images", sourceField: "imageId", type: "usesImage" }
@@ -135,6 +137,32 @@ function sanitizeEntry(section, rawEntry, index = 0) {
     };
   }
 
+  if (section === "vectors") {
+    return {
+      ...source,
+      id,
+      name: sanitizeText(source.name) || fallbackLabel,
+      path: normalizeProjectRelativePath(source.path || source.source?.path),
+      paletteId: sanitizeText(source.paletteId),
+      source: source.source && typeof source.source === "object"
+        ? {
+          kind: sanitizeText(source.source.kind) || "svg",
+          path: normalizeProjectRelativePath(source.source.path || source.path)
+        }
+        : {
+          kind: "svg",
+          path: normalizeProjectRelativePath(source.path)
+        },
+      geometry: source.geometry && typeof source.geometry === "object"
+        ? cloneDeep(source.geometry)
+        : {},
+      style: source.style && typeof source.style === "object"
+        ? cloneDeep(source.style)
+        : {},
+      sourceTool: sanitizeText(source.sourceTool)
+    };
+  }
+
   if (section === "tilesets") {
     return {
       ...source,
@@ -204,6 +232,7 @@ export function createAssetRegistry(options = {}) {
     basePath: ".",
     palettes: [],
     sprites: [],
+    vectors: [],
     tilesets: [],
     tilemaps: [],
     images: [],

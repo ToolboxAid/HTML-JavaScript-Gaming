@@ -7,6 +7,7 @@ import {
 const SECTION_SOURCE_TYPES = Object.freeze({
   palettes: "palette",
   sprites: "sprite",
+  vectors: "vector",
   tilesets: "tileset",
   tilemaps: "tilemap",
   images: "image",
@@ -318,6 +319,117 @@ function collectTileMapDocumentFindings(documentModel, registry) {
   return findings;
 }
 
+function hasVectorGeometryPaths(geometry) {
+  const paths = Array.isArray(geometry?.paths) ? geometry.paths : [];
+  return paths.some((path) => sanitizeText(path?.d || path).length > 0);
+}
+
+function collectVectorRegistryFindings(registry) {
+  const vectors = Array.isArray(registry?.vectors) ? registry.vectors : [];
+  const findings = [];
+
+  vectors.forEach((entry) => {
+    const vectorId = sanitizeText(entry?.id) || "vector";
+    const sourceKind = sanitizeText(entry?.source?.kind);
+    const sourcePath = sanitizeText(entry?.source?.path) || sanitizeText(entry?.path);
+    const paletteId = sanitizeText(entry?.paletteId);
+    const hasStroke = entry?.style?.stroke === true;
+    const hasFill = entry?.style?.fill === true;
+
+    if (sourceKind !== "svg") {
+      findings.push(createFinding(
+        "INVALID_VECTOR_SOURCE",
+        "error",
+        true,
+        "vector",
+        vectorId,
+        `Vector asset ${vectorId} must declare source.kind as svg.`
+      ));
+    }
+
+    if (!sourcePath) {
+      findings.push(createFinding(
+        "INVALID_VECTOR_SOURCE",
+        "error",
+        true,
+        "vector",
+        vectorId,
+        `Vector asset ${vectorId} must declare a normalized project-relative source path.`
+      ));
+    }
+
+    if (!hasVectorGeometryPaths(entry?.geometry)) {
+      findings.push(createFinding(
+        "INVALID_VECTOR_GEOMETRY",
+        "error",
+        true,
+        "vector",
+        vectorId,
+        `Vector asset ${vectorId} must contain at least one geometry path.`
+      ));
+    }
+
+    if (!hasStroke && !hasFill) {
+      findings.push(createFinding(
+        "INVALID_VECTOR_STYLE",
+        "error",
+        true,
+        "vector",
+        vectorId,
+        `Vector asset ${vectorId} must enable stroke or fill styling.`
+      ));
+    }
+
+    if (paletteId && !findRegistryEntryById(registry, "palettes", paletteId)) {
+      findings.push(createFinding(
+        "UNRESOLVED_PALETTE_LINK",
+        "error",
+        true,
+        "vector",
+        vectorId,
+        `Palette asset reference ${paletteId} is missing from the registry.`
+      ));
+    }
+  });
+
+  return findings;
+}
+
+function collectVectorDocumentFindings(documentModel, registry) {
+  if (!documentModel || typeof documentModel !== "object") {
+    return [];
+  }
+
+  const findings = [];
+  const vectorId = sanitizeText(documentModel.assetRefs?.vectorId);
+  const paletteId = sanitizeText(documentModel.assetRefs?.paletteId);
+  const sourceId = vectorId || sanitizeText(documentModel.name) || "vector-project";
+
+  if (vectorId && !findRegistryEntryById(registry, "vectors", vectorId)) {
+    findings.push(createFinding(
+      "MISSING_ASSET_ID",
+      "error",
+      true,
+      "vector",
+      sourceId,
+      `Vector asset reference ${vectorId} is missing from the registry.`
+    ));
+  }
+
+  if (paletteId && !findRegistryEntryById(registry, "palettes", paletteId)) {
+    findings.push(createFinding(
+      "UNRESOLVED_PALETTE_LINK",
+      "error",
+      true,
+      "vector",
+      sourceId,
+      `Palette asset reference ${paletteId} is missing from the registry.`
+    ));
+  }
+
+  return findings;
+}
+
 function collectParallaxDocumentFindings(documentModel, registry) {
   if (!documentModel || typeof documentModel !== "object") {
     return [];
@@ -412,6 +524,7 @@ export function validateProjectAssetState(options = {}) {
     findings.push(mapGraphFindingToValidationFinding(graphFinding, graph));
   });
   findings.push(...collectCycleFindings(graph));
+  findings.push(...collectVectorRegistryFindings(registry));
 
   if (options.assetDependencyGraph && !graphsMatch(options.assetDependencyGraph, graph)) {
     findings.push(createFinding(
@@ -425,6 +538,7 @@ export function validateProjectAssetState(options = {}) {
   }
 
   findings.push(...collectSpriteProjectFindings(options.spriteProject, registry));
+  findings.push(...collectVectorDocumentFindings(options.vectorDocument, registry));
   findings.push(...collectTileMapDocumentFindings(options.tileMapDocument, registry));
   findings.push(...collectParallaxDocumentFindings(options.parallaxDocument, registry));
 

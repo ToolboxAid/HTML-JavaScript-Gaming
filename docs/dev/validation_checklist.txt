@@ -1,6 +1,7 @@
-- PLAN, BUILD, and APPLY docs are all present
-- codex_commands.md and commit_comment.txt are under docs/dev
-- Demo uses accepted platform boundaries
-- Strict validation, packaging, and runtime flow remain authoritative
+- PLAN doc exists and is docs-only
+- Vector asset type is defined as first-class and registry-owned
+- SVG authoring bridge is documented
+- Validation, packaging, runtime, debug, and profiler expectations are defined
+- Tool rename map is explicit
+- docs/dev contains codex_commands.md and commit_comment.txt
 - No engine core API changes are authorized
-- APPLY remains docs-only acceptance boundary

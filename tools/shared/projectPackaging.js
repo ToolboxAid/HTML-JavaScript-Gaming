@@ -4,6 +4,7 @@ import { hasBlockingAssetValidationFindings, summarizeAssetValidation, validateP
 const SECTION_BY_NODE_TYPE = Object.freeze({
   palette: "palettes",
   sprite: "sprites",
+  vector: "vectors",
   tileset: "tilesets",
   tilemap: "tilemaps",
   image: "images",
@@ -24,6 +25,11 @@ function collectPackagingRoots(options) {
   const spriteId = sanitizeText(options.spriteProject?.assetRefs?.spriteId);
   if (spriteId) {
     roots.push(spriteId);
+  }
+
+  const vectorId = sanitizeText(options.vectorDocument?.assetRefs?.vectorId);
+  if (vectorId) {
+    roots.push(vectorId);
   }
 
   const tilemapId = sanitizeText(options.tileMapDocument?.assetRefs?.tilemapId);
