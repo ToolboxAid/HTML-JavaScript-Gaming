@@ -1,1 +1,3 @@
-Combined Level 14 suite containing PLAN/BUILD/APPLY docs for UX, streaming, plugins, and versioning.
+Single atomic Level 15 package containing PLAN, BUILD, and APPLY documentation for a
+platform validation suite. This bundle is docs-first and Codex-ready, with implementation
+ownership delegated to Codex.

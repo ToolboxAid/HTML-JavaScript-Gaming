@@ -1,1 +1,1 @@
-build(level-14): execute expansion suite over accepted platform baseline
+build(validation-suite): add platform validation suite for full pipeline coverage

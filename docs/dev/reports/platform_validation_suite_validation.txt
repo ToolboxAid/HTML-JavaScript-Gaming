@@ -1,0 +1,20 @@
+BUILD_PR_PLATFORM_VALIDATION_SUITE validation
+
+Files:
+- tools/shared/platformValidationSuite.js
+- tests/tools/PlatformValidationSuite.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/platformValidationSuite.js
+- node --check tests/tools/PlatformValidationSuite.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- golden-path validation, packaging, and runtime flow passes
+- invalid references fail at enforced boundaries
+- remediation demonstrates recoverability
+- packaging and runtime ordering remain deterministic
+- runtime fail-fast, streaming, plugin, and versioning scenarios are covered explicitly
+- suite report text is stable and readable
+- no engine core API changes

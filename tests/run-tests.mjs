@@ -92,6 +92,7 @@ import { run as runEditorExperienceLayer } from './tools/EditorExperienceLayer.t
 import { run as runRuntimeStreamingSystem } from './tools/RuntimeStreamingSystem.test.mjs';
 import { run as runPluginArchitectureSystem } from './tools/PluginArchitectureSystem.test.mjs';
 import { run as runProjectVersioningSystem } from './tools/ProjectVersioningSystem.test.mjs';
+import { run as runPlatformValidationSuite } from './tools/PlatformValidationSuite.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -178,6 +179,7 @@ const tests = [
     ['RuntimeStreamingSystem', runRuntimeStreamingSystem],
     ['PluginArchitectureSystem', runPluginArchitectureSystem],
     ['ProjectVersioningSystem', runProjectVersioningSystem],
+    ['PlatformValidationSuite', runPlatformValidationSuite],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

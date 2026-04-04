@@ -1,5 +1,6 @@
-- All four Level 14 capability groups are present
-- Each capability has PLAN, BUILD, and APPLY docs
-- docs/dev contains codex_commands.md and commit_comment.txt
-- Existing Level 13 baseline remains the prerequisite authority
+- PLAN, BUILD, and APPLY docs are all present
+- codex_commands.md and commit_comment.txt are under docs/dev
+- Full-flow platform validation coverage is explicit
+- Plugin, versioning, and streaming are included in scope
 - No engine core API changes are authorized
+- APPLY remains docs-only acceptance boundary
