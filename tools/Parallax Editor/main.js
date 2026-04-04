@@ -15,6 +15,12 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../shared/projectAssetRegistry.js";
+import {
+  getBlockingAssetValidationMessage,
+  hasBlockingAssetValidationFindings,
+  summarizeAssetValidation,
+  validateProjectAssetState
+} from "../shared/projectAssetValidation.js";
 
 const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -367,6 +373,8 @@ class ParallaxEditorApp {
       traversalDurationMs: 14000
     };
     this.assetRegistry = createAssetRegistry({ projectId: documentModel?.map?.name || "parallax-project" });
+    this.assetDependencyGraphSnapshot = null;
+    this.validationResult = null;
   }
 
   invalidateImageCache() {
@@ -998,8 +1006,14 @@ class ParallaxEditorApp {
   handleSaveProject() {
     this.touchDocument();
     this.syncAssetRegistryFromDocument();
+    const validation = this.validateProjectAssets();
+    if (hasBlockingAssetValidationFindings(validation)) {
+      this.updateStatus(`${getBlockingAssetValidationMessage("Save Project", validation)} (${summarizeAssetValidation(validation)}).`);
+      return;
+    }
     const output = createRegistryManagedParallaxSaveDocument(this.documentModel);
     const { graph, findings } = buildAssetDependencyGraph(this.assetRegistry);
+    this.assetDependencyGraphSnapshot = graph;
     output.project = {
       ...(output.project && typeof output.project === "object" ? output.project : {}),
       assetDependencyGraph: graph
@@ -1007,23 +1021,33 @@ class ParallaxEditorApp {
     const payload = JSON.stringify(output, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.parallax.json`;
     createDownload(fileName, payload);
-    this.updateStatus(`Saved ${fileName} (${output.assetRefs.parallaxSourceIds.length} parallax asset refs, ID-based layer references).${summarizeGraphFindings(findings)}`);
+    this.updateStatus(`Saved ${fileName} (${output.assetRefs.parallaxSourceIds.length} parallax asset refs, ID-based layer references).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
   handleSaveAssetRegistry() {
     this.syncAssetRegistryFromDocument();
+    const validation = this.validateProjectAssets();
+    if (hasBlockingAssetValidationFindings(validation)) {
+      this.updateStatus(`${getBlockingAssetValidationMessage("Save Asset Registry", validation)} (${summarizeAssetValidation(validation)}).`);
+      return;
+    }
     const { findings } = buildAssetDependencyGraph(this.assetRegistry);
     const payload = createRegistryDownloadPayload(this.assetRegistry);
     createDownload("project.assets.json", payload);
-    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.parallaxSources.length} parallax sources).${summarizeGraphFindings(findings)}`);
+    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.parallaxSources.length} parallax sources).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
   handleExportTilemapPatch() {
+    const validation = this.validateProjectAssets();
+    if (hasBlockingAssetValidationFindings(validation)) {
+      this.updateStatus(`${getBlockingAssetValidationMessage("Export Parallax Patch", validation)} (${summarizeAssetValidation(validation)}).`);
+      return;
+    }
     const patch = createTilemapParallaxPatch(createRegistryManagedParallaxSaveDocument(this.documentModel));
     const payload = JSON.stringify(patch, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.tilemap-parallax.patch.json`;
     createDownload(fileName, payload);
-    this.updateStatus(`Exported ${fileName}.`);
+    this.updateStatus(`Exported ${fileName}. Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
   handleLoadProject(event) {
@@ -1038,6 +1062,7 @@ class ParallaxEditorApp {
       try {
         const raw = JSON.parse(String(reader.result));
         this.documentModel = extractParallaxDocument(raw);
+        this.assetDependencyGraphSnapshot = raw?.project?.assetDependencyGraph || null;
         const resolution = this.resolveAssetRefsFromRegistry();
         normalizeDrawOrderSequence(this.documentModel.layers);
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
@@ -1046,12 +1071,13 @@ class ParallaxEditorApp {
         this.cameraY = 0;
         this.syncInputsFromDocument();
         this.renderAll();
+        const validation = this.validateProjectAssets();
         if (resolution.resolvedCount > 0) {
-          this.updateStatus(`Loaded ${file.name} (${resolution.resolvedCount} layer image refs restored from asset registry).`);
+          this.updateStatus(`Loaded ${file.name} (${resolution.resolvedCount} layer image refs restored from asset registry, validation: ${summarizeAssetValidation(validation)}).`);
         } else if (resolution.unresolvedCount > 0) {
-          this.updateStatus(`Loaded ${file.name} (${resolution.unresolvedCount} registry image refs unresolved; legacy fallback preserved).`);
+          this.updateStatus(`Loaded ${file.name} (${resolution.unresolvedCount} registry image refs unresolved; legacy fallback preserved, validation: ${summarizeAssetValidation(validation)}).`);
         } else {
-          this.updateStatus(`Loaded ${file.name}.`);
+          this.updateStatus(`Loaded ${file.name} (validation: ${summarizeAssetValidation(validation)}).`);
         }
       } catch (error) {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
@@ -1076,12 +1102,13 @@ class ParallaxEditorApp {
         const resolution = this.resolveAssetRefsFromRegistry();
         this.invalidateImageCache();
         this.renderAll();
+        const validation = this.validateProjectAssets();
         if (resolution.resolvedCount > 0) {
-          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources; ${resolution.resolvedCount} layer refs restored).`);
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources; ${resolution.resolvedCount} layer refs restored; validation: ${summarizeAssetValidation(validation)}).`);
         } else if (resolution.unresolvedCount > 0) {
-          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources; ${resolution.unresolvedCount} refs still unresolved).`);
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources; ${resolution.unresolvedCount} refs still unresolved; validation: ${summarizeAssetValidation(validation)}).`);
         } else {
-          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources).`);
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources, validation: ${summarizeAssetValidation(validation)}).`);
         }
       } catch (error) {
         this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
@@ -1590,6 +1617,15 @@ class ParallaxEditorApp {
       context.fillText(row, 18, y);
     });
     this.updateSimulationContextReadout();
+  }
+
+  validateProjectAssets() {
+    this.validationResult = validateProjectAssetState({
+      registry: this.assetRegistry,
+      assetDependencyGraph: this.assetDependencyGraphSnapshot,
+      parallaxDocument: this.documentModel
+    });
+    return this.validationResult;
   }
 }
 

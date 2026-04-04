@@ -15,6 +15,12 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../shared/projectAssetRegistry.js";
+import {
+  getBlockingAssetValidationMessage,
+  hasBlockingAssetValidationFindings,
+  summarizeAssetValidation,
+  validateProjectAssetState
+} from "../shared/projectAssetValidation.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -558,6 +564,8 @@ class TileMapEditorApp {
     this.tilesetImage = null;
     this.tilesetImageCache = new Map();
     this.assetRegistry = createAssetRegistry({ projectId: documentModel?.map?.name || "tilemap-project" });
+    this.assetDependencyGraphSnapshot = null;
+    this.validationResult = null;
   }
 
   init(rootDocument) {
@@ -792,7 +800,13 @@ class TileMapEditorApp {
   handleSaveProject() {
     this.touchDocument();
     this.syncAssetRegistryFromDocument();
+    const validation = this.validateProjectAssets();
+    if (hasBlockingAssetValidationFindings(validation)) {
+      this.updateStatus(`${getBlockingAssetValidationMessage("Save Project", validation)} (${summarizeAssetValidation(validation)}).`);
+      return;
+    }
     const { graph, findings } = buildAssetDependencyGraph(this.assetRegistry);
+    this.assetDependencyGraphSnapshot = graph;
     const output = cloneDeep(this.documentModel);
     output.project = {
       ...(output.project && typeof output.project === "object" ? output.project : {}),
@@ -802,24 +816,34 @@ class TileMapEditorApp {
     const fileName = `${this.documentModel.map.name || "tile-map"}.tilemap.json`;
     downloadTextFile(fileName, serialized);
     this.updateStatus(
-      `Saved ${fileName} (tilemapRef=${this.documentModel.assetRefs.tilemapId || "none"}, tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).${summarizeGraphFindings(findings)}`
+      `Saved ${fileName} (tilemapRef=${this.documentModel.assetRefs.tilemapId || "none"}, tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`
     );
   }
 
   handleSaveAssetRegistry() {
     this.syncAssetRegistryFromDocument();
+    const validation = this.validateProjectAssets();
+    if (hasBlockingAssetValidationFindings(validation)) {
+      this.updateStatus(`${getBlockingAssetValidationMessage("Save Asset Registry", validation)} (${summarizeAssetValidation(validation)}).`);
+      return;
+    }
     const { findings } = buildAssetDependencyGraph(this.assetRegistry);
     const payload = createRegistryDownloadPayload(this.assetRegistry);
     downloadTextFile("project.assets.json", payload);
-    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).${summarizeGraphFindings(findings)}`);
+    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
   handleExportRuntime() {
+    const validation = this.validateProjectAssets();
+    if (hasBlockingAssetValidationFindings(validation)) {
+      this.updateStatus(`${getBlockingAssetValidationMessage("Export Runtime", validation)} (${summarizeAssetValidation(validation)}).`);
+      return;
+    }
     const runtimePayload = createRuntimeExport(this.documentModel);
     const serialized = JSON.stringify(runtimePayload, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.runtime.json`;
     downloadTextFile(fileName, serialized);
-    this.updateStatus(`Exported ${fileName}.`);
+    this.updateStatus(`Exported ${fileName}. Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
   handleLoadProject(event) {
@@ -834,6 +858,7 @@ class TileMapEditorApp {
       try {
         const parsed = JSON.parse(String(reader.result));
         this.documentModel = sanitizeDocument(parsed);
+        this.assetDependencyGraphSnapshot = parsed?.project?.assetDependencyGraph || null;
         const resolution = this.resolveAssetRefsFromRegistry();
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
         this.selectedMarkerId = "";
@@ -841,14 +866,15 @@ class TileMapEditorApp {
         this.tilesetImageCache = new Map();
         this.syncInputsFromDocument();
         this.renderAll();
+        const validation = this.validateProjectAssets();
         void this.reloadTilesetImageFromDocument({ quiet: true });
         void this.preloadIndividualTileImages({ quiet: true });
         if (resolution.tilesetResolved) {
-          this.updateStatus(`Loaded ${file.name} (tileset restored from asset registry).`);
+          this.updateStatus(`Loaded ${file.name} (tileset restored from asset registry, validation: ${summarizeAssetValidation(validation)}).`);
         } else if (resolution.missingTilesetRef) {
-          this.updateStatus(`Loaded ${file.name} (tileset asset ref missing in registry; using embedded tileset data).`);
+          this.updateStatus(`Loaded ${file.name} (tileset asset ref missing in registry; using embedded tileset data, validation: ${summarizeAssetValidation(validation)}).`);
         } else {
-          this.updateStatus(`Loaded ${file.name}.`);
+          this.updateStatus(`Loaded ${file.name} (validation: ${summarizeAssetValidation(validation)}).`);
         }
       } catch (error) {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
@@ -873,13 +899,14 @@ class TileMapEditorApp {
         this.assetRegistry = mergeAssetRegistries(this.assetRegistry, parsed);
         const resolution = this.resolveAssetRefsFromRegistry();
         this.renderAll();
+        const validation = this.validateProjectAssets();
         void this.reloadTilesetImageFromDocument({ quiet: true });
         if (resolution.tilesetResolved) {
-          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets; tileset ref restored).`);
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets; tileset ref restored; validation: ${summarizeAssetValidation(validation)}).`);
         } else if (resolution.missingTilesetRef) {
-          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets; tileset ref still unresolved).`);
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets; tileset ref still unresolved; validation: ${summarizeAssetValidation(validation)}).`);
         } else {
-          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).`);
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets, validation: ${summarizeAssetValidation(validation)}).`);
         }
       } catch (error) {
         this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
@@ -2403,6 +2430,15 @@ class TileMapEditorApp {
 
   updateStatus(message) {
     this.refs.statusText.textContent = message;
+  }
+
+  validateProjectAssets() {
+    this.validationResult = validateProjectAssetState({
+      registry: this.assetRegistry,
+      assetDependencyGraph: this.assetDependencyGraphSnapshot,
+      tileMapDocument: this.documentModel
+    });
+    return this.validationResult;
   }
 }
 

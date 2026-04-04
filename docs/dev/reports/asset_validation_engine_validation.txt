@@ -1,0 +1,25 @@
+BUILD_PR_ASSET_VALIDATION_ENGINE validation
+
+Files:
+- tools/shared/projectAssetValidation.js
+- tests/tools/AssetValidationEngine.test.mjs
+- tools/Sprite Editor/modules/spriteEditorApp.js
+- tools/Tile Map Editor/main.js
+- tools/Parallax Editor/main.js
+
+Checks passed:
+- node --check tools/shared/projectAssetValidation.js
+- node --check tools/Sprite Editor/modules/spriteEditorApp.js
+- node --check tools/Tile Map Editor/main.js
+- node --check tools/Parallax Editor/main.js
+- node --check tests/tools/AssetValidationEngine.test.mjs
+- targeted AssetValidationEngine test via node inline runner
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- deterministic validation findings
+- blocking findings stop guarded save/export/package actions
+- legacy/invalid projects still load for remediation
+- warnings remain visible but non-blocking
+- registry stays source of truth
+- no engine core API changes

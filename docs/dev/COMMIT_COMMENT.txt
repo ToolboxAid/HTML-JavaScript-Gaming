@@ -1,1 +1,1 @@
-build(asset-graph): add additive project asset dependency graph
+build(asset-validation): add enforced project asset validation engine

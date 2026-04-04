@@ -1,20 +1,8 @@
-LEVEL_9_ASSET_DEPENDENCY_GRAPH_ATOMIC_PACKAGE_delta/
-docs/
-docs/dev/
+docs/pr/PLAN_PR_ASSET_VALIDATION_ENGINE.md
+docs/pr/BUILD_PR_ASSET_VALIDATION_ENGINE.md
+docs/pr/APPLY_PR_ASSET_VALIDATION_ENGINE.md
+docs/dev/codex_commands.md
+docs/dev/commit_comment.txt
 docs/dev/change_summary.txt
-docs/dev/file_tree.txt
 docs/dev/validation_checklist.txt
-docs/pr/
-docs/pr/APPLY_PR_ASSET_DEPENDENCY_GRAPH.md
-docs/pr/BUILD_PR_ASSET_DEPENDENCY_GRAPH.md
-docs/pr/PLAN_PR_ASSET_DEPENDENCY_GRAPH.md
-tools/
-tools/shared/
-tools/shared/projectAssetRegistry.js
-tools/Sprite Editor/
-tools/Sprite Editor/modules/
-tools/Sprite Editor/modules/spriteEditorApp.js
-tools/Tile Map Editor/
-tools/Tile Map Editor/main.js
-tools/Parallax Editor/
-tools/Parallax Editor/main.js
+docs/dev/file_tree.txt

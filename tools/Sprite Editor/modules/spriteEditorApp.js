@@ -36,6 +36,12 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../../shared/projectAssetRegistry.js";
+import {
+  getBlockingAssetValidationMessage,
+  hasBlockingAssetValidationFindings,
+  summarizeAssetValidation,
+  validateProjectAssetState
+} from "../../shared/projectAssetValidation.js";
 
 function getRequiredElement(id) {
   const element = document.getElementById(id);
@@ -226,6 +232,25 @@ function summarizeGraphFindings(findings) {
   return Array.isArray(findings) && findings.length > 0
     ? ` Graph findings: ${findings.length}.`
     : " Graph findings: none.";
+}
+
+function validateSpriteProjectAssets(state) {
+  const result = validateProjectAssetState({
+    registry: state.assetRegistry,
+    assetDependencyGraph: state.assetDependencyGraphSnapshot,
+    spriteProject: state.project
+  });
+  state.validationResult = result;
+  return result;
+}
+
+function guardSpriteProjectAction(state, actionLabel) {
+  const validation = validateSpriteProjectAssets(state);
+  if (!hasBlockingAssetValidationFindings(validation)) {
+    return validation;
+  }
+  setStatus(state, `${getBlockingAssetValidationMessage(actionLabel, validation)} (${summarizeAssetValidation(validation)}).`);
+  return null;
 }
 
 function canvasToBlob(canvas) {
@@ -1040,6 +1065,9 @@ async function importPngIntoCurrentFrame(state, file) {
 }
 
 async function exportCurrentFramePng(state) {
+  if (!guardSpriteProjectAction(state, "Export PNG")) {
+    return;
+  }
   const frame = state.project.frames[state.project.currentFrameIndex];
   const frameCanvas = createImageFromFrame(frame, state.project.width, state.project.height);
   const blob = await canvasToBlob(frameCanvas);
@@ -1049,6 +1077,9 @@ async function exportCurrentFramePng(state) {
 }
 
 async function exportSpriteSheetPng(state) {
+  if (!guardSpriteProjectAction(state, "Export Sprite Sheet")) {
+    return;
+  }
   const sheetCanvas = createSpriteSheetCanvas(state.project);
   const blob = await canvasToBlob(sheetCanvas);
   const filename = `sprite-sheet-${state.project.frames.length}f-${state.project.width}x${state.project.height}.png`;
@@ -1058,12 +1089,19 @@ async function exportSpriteSheetPng(state) {
 
 async function saveAssetRegistryJson(state) {
   syncSpriteAssetsToRegistry(state, {});
+  const validation = guardSpriteProjectAction(state, "Save Asset Registry");
+  if (!validation) {
+    return;
+  }
   const { findings } = buildAssetDependencyGraph(state.assetRegistry);
   const payload = createRegistryDownloadPayload(state.assetRegistry);
   const blob = new Blob([payload], { type: "application/json" });
   const fileName = "project.assets.json";
   downloadBlob(blob, fileName);
-  setStatus(state, `Saved ${fileName} with ${state.assetRegistry.sprites.length} sprite entries.${summarizeGraphFindings(findings)}`);
+  setStatus(
+    state,
+    `Saved ${fileName} with ${state.assetRegistry.sprites.length} sprite entries.${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`
+  );
 }
 
 async function loadAssetRegistryJson(state, file) {
@@ -1076,18 +1114,24 @@ async function loadAssetRegistryJson(state, file) {
     hydratePaletteFromRefIfPossible(state);
   }
 
+  const validation = validateSpriteProjectAssets(state);
   syncControlsFromProject(state);
   renderAll(state);
   setStatus(
     state,
-    `Loaded ${file.name} (${state.assetRegistry.palettes.length} palettes, ${state.assetRegistry.sprites.length} sprites).`
+    `Loaded ${file.name} (${state.assetRegistry.palettes.length} palettes, ${state.assetRegistry.sprites.length} sprites, validation: ${summarizeAssetValidation(validation)}).`
   );
 }
 
 async function saveProjectJson(state) {
   const fileName = deriveSpriteFileName(state.project);
   syncSpriteAssetsToRegistry(state, { spritePath: `assets/sprites/${fileName}` });
+  const validation = guardSpriteProjectAction(state, "Save Project");
+  if (!validation) {
+    return;
+  }
   const { graph, findings } = buildAssetDependencyGraph(state.assetRegistry);
+  state.assetDependencyGraphSnapshot = graph;
   const payload = serializeProject(state.project);
   payload.project = {
     ...(payload.project && typeof payload.project === "object" ? payload.project : {}),
@@ -1098,7 +1142,7 @@ async function saveProjectJson(state) {
   downloadBlob(blob, fileName);
   setStatus(
     state,
-    `Saved ${fileName} (frame ${state.project.currentFrameIndex + 1} active, asset refs: palette=${state.project.assetRefs.paletteId || "none"}, sprite=${state.project.assetRefs.spriteId || "none"}).${summarizeGraphFindings(findings)}`
+    `Saved ${fileName} (frame ${state.project.currentFrameIndex + 1} active, asset refs: palette=${state.project.assetRefs.paletteId || "none"}, sprite=${state.project.assetRefs.spriteId || "none"}).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`
   );
 }
 
@@ -1107,6 +1151,7 @@ async function loadProjectJson(state, file) {
   const parsed = JSON.parse(text);
   const nextProject = ensureProjectShape(parsed);
   state.project = nextProject;
+  state.assetDependencyGraphSnapshot = parsed?.project?.assetDependencyGraph || null;
   let lockMessage = "palette unresolved";
 
   if (hydratePaletteFromRefIfPossible(state)) {
@@ -1118,9 +1163,10 @@ async function loadProjectJson(state, file) {
     lockMessage = "palette selection required";
   }
 
+  const validation = validateSpriteProjectAssets(state);
   syncControlsFromProject(state);
   state.preview.frameIndex = state.project.currentFrameIndex;
-  setStatus(state, `Loaded ${file.name} (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames, ${lockMessage}).`);
+  setStatus(state, `Loaded ${file.name} (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames, ${lockMessage}, validation: ${summarizeAssetValidation(validation)}).`);
   renderAll(state);
 }
 
@@ -1655,6 +1701,8 @@ export function initializeSpriteEditorApp() {
       redoStack: [],
       limit: HISTORY_LIMIT
     },
+    assetDependencyGraphSnapshot: null,
+    validationResult: null,
     cursor: {
       x: null,
       y: null

@@ -1,10 +1,8 @@
-BUILD VALIDATION CHECKLIST
-
-- [x] Legacy projects still load when `project.assetDependencyGraph` is absent
-- [x] Registry remains the source of truth for graph reconstruction
-- [x] Graph nodes use stable asset IDs and edges are emitted deterministically
-- [x] Missing targets and orphaned assets surface as findings instead of hard failures
-- [x] Sprite Editor, Tile Map Editor, and Parallax Editor each persist additive graph snapshots on save
-- [x] Asset registry save flows report graph findings without blocking editing
-- [x] No engine core API files were modified
-- [x] Syntax validation passed for changed JS files
+- PLAN, BUILD, and APPLY docs are all present
+- codex_commands.md and commit_comment.txt are under docs/dev
+- Enforcement rules are explicit
+- Remediation workflows remain available for invalid projects
+- Registry remains source of truth
+- Dependency graph remains additive
+- No engine core API changes are authorized
+- APPLY remains docs-only acceptance boundary
