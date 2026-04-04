@@ -1,2 +1,3 @@
-Combined clean progression bundle that first applies the accepted vector asset system baseline and then
-defines the Asteroids flagship demo migration toward first-class vector assets.
+Clean, surgical vector-only progression bundle for Codex.
+Converts the Asteroids demo from vector-preferred/sprite-fallback to true vector-only runtime behavior,
+while preserving accepted platform boundaries and docs-first workflow.

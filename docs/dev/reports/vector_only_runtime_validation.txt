@@ -1,0 +1,21 @@
+Asteroids platform demo ready with 12 packaged assets.
+Validation: valid (0 blocking findings, 0 warnings)
+Packaging: Package ready with 12 assets and 9 dependencies.
+Runtime: Runtime loader ready with 12 assets.
+Gameplay: Gameplay system layer ready with 12 content bindings.
+Templates: Game templates ready with 3 templates.
+Export: Multi-target export ready for 3 targets.
+Publishing: Publishing pipeline ready with 5 release targets.
+Debug: Debug view: 12 nodes, 9 edges, 0 findings.
+Profiler: Performance profiler captured 4 deterministic samples.
+Runtime entry: games/Asteroids/main.js#bootAsteroids
+Visual path: vector only
+Required vectors: vector.asteroids.ship, vector.asteroids.asteroid.large, vector.asteroids.asteroid.medium, vector.asteroids.asteroid.small, vector.asteroids.ui.title
+Rollback notes: documented=true
+Startup roots: parallax.asteroids-overlay, parallax.asteroids-title, tilemap.asteroids-stage, vector.asteroids.asteroid.large, vector.asteroids.asteroid.medium, vector.asteroids.asteroid.small, vector.asteroids.ship, vector.asteroids.ui.title
+Gameplay pillars: player ship rotation, thrust, and fire; asteroid spawning, splitting, and destruction; score, lives, and wave progression; title, start, game-over, and restart loop
+Content paths: games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json, games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json, games/Asteroids/platform/assets/vectors/asteroids-asteroid-medium.vector.json, games/Asteroids/platform/assets/vectors/asteroids-asteroid-small.vector.json, games/Asteroids/platform/assets/vectors/asteroids-title.vector.json, games/Asteroids/platform/assets/tilemaps/asteroids-stage.tilemap.json, games/Asteroids/platform/assets/parallax/asteroids-title.parallax.json, games/Asteroids/platform/assets/parallax/asteroids-overlay.parallax.json
+[info] ASTEROIDS_PLATFORM_DEMO_READY: Asteroids demo completed strict validation, packaging, runtime, export, and publishing flows.
+[info] ASTEROIDS_RUNTIME_HANDOFF: Runtime handoff preserved bootAsteroids from games/Asteroids/main.js.
+[info] ASTEROIDS_VECTOR_ONLY_RUNTIME: Vector assets are the sole active visual runtime path for ship, asteroid variants, and title presentation.
+[info] ASTEROIDS_ROLLBACK_NOTES_ONLY: Rollback guidance remains documented historically and is not part of the active packaged runtime dependency set.

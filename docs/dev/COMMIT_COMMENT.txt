@@ -1,1 +1,1 @@
-build(vector-demo): apply vector system baseline and migrate asteroids demo toward vector assets
+build(vector-runtime): harden asteroids demo to vector-only runtime path

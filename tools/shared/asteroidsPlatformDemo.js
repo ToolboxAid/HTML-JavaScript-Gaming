@@ -80,15 +80,7 @@ function createRegistry() {
         sourceTool: "pixel-asset-studio"
       }
     ],
-    sprites: [
-      {
-        id: "sprite.asteroids-demo",
-        name: "Asteroids Demo Atlas",
-        path: "games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json",
-        paletteId: "palette.asteroids-hud",
-        sourceTool: "pixel-asset-studio"
-      }
-    ],
+    sprites: [],
     vectors: [
       shipVector,
       asteroidLargeVector,
@@ -153,22 +145,11 @@ function createSpriteProject() {
   return {
     schema: "toolbox.sprite/1",
     version: 1,
-    name: "Asteroids Demo Sprite Project",
-    assetRefs: {
-      spriteId: "sprite.asteroids-demo",
-      paletteId: "palette.asteroids-hud"
-    },
-    renderPreference: {
-      preferredVisualAssetType: "vector",
-      fallbackVisualAssetType: "sprite"
-    },
+    name: "Asteroids Demo Historical Sprite Rollback Note",
+    assetRefs: {},
     content: {
-      ship: "player-ship",
-      bullet: "player-bullet",
-      asteroidLarge: "asteroid-large",
-      asteroidMedium: "asteroid-medium",
-      asteroidSmall: "asteroid-small",
-      ui: ["title-logo", "score-label", "lives-icon", "game-over-label"]
+      status: "historical-only",
+      note: "Sprite atlas rollback guidance is documented only and is not part of the active vector-only runtime baseline."
     }
   };
 }
@@ -195,9 +176,6 @@ function createVectorDocument() {
       asteroidMedium: "vector.asteroids.asteroid.medium",
       asteroidSmall: "vector.asteroids.asteroid.small",
       title: "vector.asteroids.ui.title"
-    },
-    fallbackVisuals: {
-      atlas: "sprite.asteroids-demo"
     }
   };
 }
@@ -264,16 +242,6 @@ function createRuntimeAssetSources() {
       file: "games/Asteroids/platform/assets/palettes/asteroids-hud.palette.json",
       colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"]
     },
-    "sprite.asteroids-demo": {
-      kind: "sprite",
-      file: "games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json",
-      content: {
-        ship: "player-ship",
-        bullets: ["player-bullet"],
-        asteroids: ["asteroid-large", "asteroid-medium", "asteroid-small"],
-        ui: ["title-logo", "score-label", "lives-icon", "wave-label", "game-over-label"]
-      }
-    },
     "vector.asteroids.ship": {
       kind: "vector",
       file: "games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json",
@@ -322,8 +290,7 @@ function createRuntimeAssetSources() {
           "vector.asteroids.asteroid.medium",
           "vector.asteroids.asteroid.small",
           "vector.asteroids.ui.title"
-        ],
-        fallbackSpriteId: "sprite.asteroids-demo"
+        ]
       },
       runtimeEntry: {
         modulePath: "games/Asteroids/main.js",
@@ -381,7 +348,7 @@ function createDemoDetails(definition) {
     templateCandidate: "arcade",
     visualBaseline: {
       preferred: "vector",
-      fallback: "sprite"
+      rollbackDocumented: true
     },
     gameplay: [
       "player ship rotation, thrust, and fire",
@@ -391,7 +358,6 @@ function createDemoDetails(definition) {
     ],
     contentPaths: [
       ...definition.registry.vectors.map((entry) => entry.path),
-      definition.registry.sprites[0].path,
       definition.registry.tilemaps[0].path,
       ...definition.registry.parallaxSources.map((entry) => entry.path)
     ],
@@ -501,12 +467,19 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
     canvasId: sanitizeText(runtimeStage?.runtimeEntry?.canvasId) || "game",
     startupAssetIds: cloneJson(runtimeResult.bootstrap?.startupAssetIds || [])
   };
+  const packageAssetIds = Array.isArray(packageResult.manifest?.package?.assets)
+    ? packageResult.manifest.package.assets.map((asset) => sanitizeText(asset?.id))
+    : [];
+  const requiredVectorIds = cloneJson(vectorDocument.assetRefs?.vectorIds || []);
+  const missingRequiredVectorIds = requiredVectorIds.filter((id) => !packageAssetIds.includes(id));
+  const hasSpriteRuntimeDependency = packageAssetIds.includes("sprite.asteroids-demo");
+  const vectorOnlyReady = missingRequiredVectorIds.length === 0 && !hasSpriteRuntimeDependency;
 
   const reports = [
     createReport("info", "ASTEROIDS_PLATFORM_DEMO_READY", "Asteroids demo completed strict validation, packaging, runtime, export, and publishing flows."),
     createReport("info", "ASTEROIDS_RUNTIME_HANDOFF", `Runtime handoff preserved ${handoff.exportName} from ${handoff.modulePath}.`),
-    createReport("info", "ASTEROIDS_VECTOR_PREFERRED", "Vector assets are the preferred visual path for ship, asteroid variants, and title presentation."),
-    createReport("info", "ASTEROIDS_SPRITE_FALLBACK", "Sprite atlas fallback remains documented as a temporary migration safety path while vector-led visuals are verified.")
+    createReport("info", "ASTEROIDS_VECTOR_ONLY_RUNTIME", "Vector assets are the sole active visual runtime path for ship, asteroid variants, and title presentation."),
+    createReport("info", "ASTEROIDS_ROLLBACK_NOTES_ONLY", "Rollback guidance remains documented historically and is not part of the active packaged runtime dependency set.")
   ];
 
   const reportText = [
@@ -526,7 +499,9 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
     `Debug: ${summarizeDebugVisualizationLayer(debugVisualizationResult)}`,
     `Profiler: ${summarizePerformanceProfiler(performanceResult)}`,
     `Runtime entry: ${handoff.modulePath}#${handoff.exportName}`,
-    `Visual path: ${definition.demo.visualBaseline.preferred} preferred, ${definition.demo.visualBaseline.fallback} fallback`,
+    `Visual path: ${definition.demo.visualBaseline.preferred} only`,
+    `Required vectors: ${requiredVectorIds.join(", ")}`,
+    `Rollback notes: documented=${definition.demo.visualBaseline.rollbackDocumented}`,
     `Startup roots: ${(runtimeManifest?.roots || []).map((root) => root.id).join(", ")}`,
     `Gameplay pillars: ${definition.demo.gameplay.join("; ")}`,
     `Content paths: ${definition.demo.contentPaths.join(", ")}`,
@@ -541,6 +516,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
         && runtimeResult.runtimeLoader.status === "ready"
         && multiTargetExportResult.multiTargetExport.status === "ready"
         && publishingResult.publishing.status === "ready"
+        && vectorOnlyReady
         ? "ready"
         : "blocked",
       definition,
@@ -555,6 +531,11 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
       debugVisualizationResult,
       performanceResult,
       runtimeHandoff: handoff,
+      vectorOnly: {
+        requiredVectorIds,
+        missingRequiredVectorIds,
+        hasSpriteRuntimeDependency
+      },
       reports,
       reportText
     }

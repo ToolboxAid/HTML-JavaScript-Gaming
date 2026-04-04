@@ -15,7 +15,7 @@ export async function run() {
   assert.equal(first.demo.runtimeHandoff.exportName, "bootAsteroids");
   assert.equal(first.demo.packageResult.manifest.package.projectId, "asteroids-platform-demo");
   assert.equal(first.demo.definition.demo.visualBaseline.preferred, "vector");
-  assert.equal(first.demo.definition.demo.visualBaseline.fallback, "sprite");
+  assert.equal(first.demo.definition.demo.visualBaseline.rollbackDocumented, true);
   assert.deepEqual(
     first.demo.packageResult.manifest.package.assets.filter((asset) => asset.type === "vector").map((asset) => asset.id),
     [
@@ -26,10 +26,17 @@ export async function run() {
       "vector.asteroids.ui.title"
     ]
   );
+  assert.equal(first.demo.vectorOnly.hasSpriteRuntimeDependency, false);
+  assert.deepEqual(first.demo.vectorOnly.missingRequiredVectorIds, []);
+  assert.equal(
+    first.demo.packageResult.manifest.package.assets.some((asset) => asset.id === "sprite.asteroids-demo"),
+    false
+  );
   assert.deepEqual(first, second);
   assert.match(first.demo.reportText, /title, start, game-over, and restart loop/i);
-  assert.match(first.demo.reportText, /Visual path: vector preferred, sprite fallback/);
-  assert.match(first.demo.reportText, /ASTEROIDS_SPRITE_FALLBACK/);
+  assert.match(first.demo.reportText, /Visual path: vector only/);
+  assert.match(first.demo.reportText, /ASTEROIDS_VECTOR_ONLY_RUNTIME/);
+  assert.match(first.demo.reportText, /ASTEROIDS_ROLLBACK_NOTES_ONLY/);
   assert.match(first.demo.reportText, /Publishing pipeline ready with 5 release targets\./);
-  assert.equal(summarizeAsteroidsPlatformDemo(first), "Asteroids platform demo ready with 13 packaged assets.");
+  assert.equal(summarizeAsteroidsPlatformDemo(first), "Asteroids platform demo ready with 12 packaged assets.");
 }

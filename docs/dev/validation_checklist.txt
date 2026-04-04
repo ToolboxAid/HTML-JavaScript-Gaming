@@ -1,6 +1,7 @@
-- APPLY_PR_VECTOR_ASSET_SYSTEM is docs-only
-- PLAN_PR_ASTEROIDS_VECTOR_MIGRATION is docs-only
+- PLAN, BUILD, and APPLY docs are all present
 - codex_commands.md and commit_comment.txt are under docs/dev
-- Vector assets are treated as accepted baseline before demo migration
-- Asteroids migration preserves strict platform boundaries
+- Vector-only runtime baseline is explicit
+- Sprite fallback is removed as active runtime dependency
+- Validation, packaging, runtime, debug, profiler, export, and publishing are preserved
 - No engine core API changes are authorized
+- APPLY remains docs-only acceptance boundary
