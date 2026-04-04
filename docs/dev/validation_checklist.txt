@@ -1,7 +1,6 @@
-- PLAN doc exists and is docs-only
-- Vector asset type is defined as first-class and registry-owned
-- SVG authoring bridge is documented
-- Validation, packaging, runtime, debug, and profiler expectations are defined
-- Tool rename map is explicit
-- docs/dev contains codex_commands.md and commit_comment.txt
+- APPLY_PR_VECTOR_ASSET_SYSTEM is docs-only
+- PLAN_PR_ASTEROIDS_VECTOR_MIGRATION is docs-only
+- codex_commands.md and commit_comment.txt are under docs/dev
+- Vector assets are treated as accepted baseline before demo migration
+- Asteroids migration preserves strict platform boundaries
 - No engine core API changes are authorized

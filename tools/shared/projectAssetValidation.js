@@ -402,6 +402,9 @@ function collectVectorDocumentFindings(documentModel, registry) {
 
   const findings = [];
   const vectorId = sanitizeText(documentModel.assetRefs?.vectorId);
+  const vectorIds = Array.isArray(documentModel.assetRefs?.vectorIds)
+    ? documentModel.assetRefs.vectorIds.map((id) => sanitizeText(id)).filter(Boolean)
+    : [];
   const paletteId = sanitizeText(documentModel.assetRefs?.paletteId);
   const sourceId = vectorId || sanitizeText(documentModel.name) || "vector-project";
 
@@ -415,6 +418,20 @@ function collectVectorDocumentFindings(documentModel, registry) {
       `Vector asset reference ${vectorId} is missing from the registry.`
     ));
   }
+
+  vectorIds.forEach((entryId) => {
+    if (findRegistryEntryById(registry, "vectors", entryId)) {
+      return;
+    }
+    findings.push(createFinding(
+      "MISSING_ASSET_ID",
+      "error",
+      true,
+      "vector",
+      sourceId,
+      `Vector asset reference ${entryId} is missing from the registry.`
+    ));
+  });
 
   if (paletteId && !findRegistryEntryById(registry, "palettes", paletteId)) {
     findings.push(createFinding(

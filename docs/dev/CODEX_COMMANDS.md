@@ -2,21 +2,24 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_VECTOR_ASSET_SYSTEM.
+Execute this clean progression in order.
 
-Requirements:
-- Implement a first-class vector asset type integrated with registry, dependency graph, validation, packaging, and runtime
-- Use the SVG-focused tool as the authoring bridge for vector asset output
-- Normalize tool naming and planned tool paths to match actual responsibilities
-- Ignore the original legacy SpriteEditor naming as the target standard
-- Preserve accepted platform boundaries and do not modify engine core APIs
-- Document any transitional compatibility needed for renamed tool paths
+Step 1:
+Treat docs/pr/APPLY_PR_VECTOR_ASSET_SYSTEM.md as the docs-only acceptance boundary for the completed vector asset system build.
 
-Tool naming targets:
-- tools/Pixel Asset Studio/
-- tools/Tilemap Studio/
-- tools/Parallax Scene Studio/
-- tools/Vector Asset Studio/
+Step 2:
+Treat docs/pr/PLAN_PR_ASTEROIDS_VECTOR_MIGRATION.md as the governing architecture contract for the next build slice.
+
+Step 3:
+Create BUILD_PR_ASTEROIDS_VECTOR_MIGRATION.
+
+BUILD requirements:
+- Migrate the flagship Asteroids demo to use first-class vector assets as the preferred visual path
+- Use the accepted vector asset system and normalized tool naming baseline
+- Preserve validation, packaging, runtime, debug, profiler, export, and publishing flows
+- Keep existing demo behavior and gameplay loop intact
+- Avoid engine core API changes
+- Document any temporary migration fallback paths clearly
 
 Package:
-HTML-JavaScript-Gaming/tmp/BUILD_PR_VECTOR_ASSET_SYSTEM_delta.zip
+HTML-JavaScript-Gaming/tmp/BUILD_PR_ASTEROIDS_VECTOR_MIGRATION_delta.zip

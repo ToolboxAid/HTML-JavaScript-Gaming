@@ -1,1 +1,1 @@
-plan(vector-assets): define first-class vector asset system and normalized tool naming
+build(vector-demo): apply vector system baseline and migrate asteroids demo toward vector assets

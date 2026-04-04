@@ -1,2 +1,2 @@
-Adds a docs-only plan for first-class vector asset support and a normalized naming plan for editor tools.
-Establishes SVG authoring as the vector asset bridge and standardizes future-facing tool names/spaces.
+Combined clean progression bundle that first applies the accepted vector asset system baseline and then
+defines the Asteroids flagship demo migration toward first-class vector assets.

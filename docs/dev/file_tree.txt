@@ -1,4 +1,5 @@
-docs/pr/PLAN_PR_VECTOR_ASSET_SYSTEM.md
+docs/pr/APPLY_PR_VECTOR_ASSET_SYSTEM.md
+docs/pr/PLAN_PR_ASTEROIDS_VECTOR_MIGRATION.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/change_summary.txt

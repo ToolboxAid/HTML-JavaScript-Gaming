@@ -14,8 +14,22 @@ export async function run() {
   assert.equal(first.demo.runtimeHandoff.modulePath, "games/Asteroids/main.js");
   assert.equal(first.demo.runtimeHandoff.exportName, "bootAsteroids");
   assert.equal(first.demo.packageResult.manifest.package.projectId, "asteroids-platform-demo");
+  assert.equal(first.demo.definition.demo.visualBaseline.preferred, "vector");
+  assert.equal(first.demo.definition.demo.visualBaseline.fallback, "sprite");
+  assert.deepEqual(
+    first.demo.packageResult.manifest.package.assets.filter((asset) => asset.type === "vector").map((asset) => asset.id),
+    [
+      "vector.asteroids.asteroid.large",
+      "vector.asteroids.asteroid.medium",
+      "vector.asteroids.asteroid.small",
+      "vector.asteroids.ship",
+      "vector.asteroids.ui.title"
+    ]
+  );
   assert.deepEqual(first, second);
   assert.match(first.demo.reportText, /title, start, game-over, and restart loop/i);
+  assert.match(first.demo.reportText, /Visual path: vector preferred, sprite fallback/);
+  assert.match(first.demo.reportText, /ASTEROIDS_SPRITE_FALLBACK/);
   assert.match(first.demo.reportText, /Publishing pipeline ready with 5 release targets\./);
-  assert.equal(summarizeAsteroidsPlatformDemo(first), "Asteroids platform demo ready with 8 packaged assets.");
+  assert.equal(summarizeAsteroidsPlatformDemo(first), "Asteroids platform demo ready with 13 packaged assets.");
 }

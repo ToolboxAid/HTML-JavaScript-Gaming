@@ -1,0 +1,19 @@
+Asteroids platform demo ready with 13 packaged assets.
+Validation: valid (0 blocking findings, 0 warnings)
+Packaging: Package ready with 13 assets and 10 dependencies.
+Runtime: Runtime loader ready with 13 assets.
+Gameplay: Gameplay system layer ready with 13 content bindings.
+Templates: Game templates ready with 3 templates.
+Export: Multi-target export ready for 3 targets.
+Publishing: Publishing pipeline ready with 5 release targets.
+Debug: Debug view: 13 nodes, 10 edges, 0 findings.
+Profiler: Performance profiler captured 4 deterministic samples.
+Runtime entry: games/Asteroids/main.js#bootAsteroids
+Visual path: vector preferred, sprite fallback
+Startup roots: parallax.asteroids-overlay, parallax.asteroids-title, sprite.asteroids-demo, tilemap.asteroids-stage, vector.asteroids.asteroid.large, vector.asteroids.asteroid.medium, vector.asteroids.asteroid.small, vector.asteroids.ship, vector.asteroids.ui.title
+Gameplay pillars: player ship rotation, thrust, and fire; asteroid spawning, splitting, and destruction; score, lives, and wave progression; title, start, game-over, and restart loop
+Content paths: games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json, games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json, games/Asteroids/platform/assets/vectors/asteroids-asteroid-medium.vector.json, games/Asteroids/platform/assets/vectors/asteroids-asteroid-small.vector.json, games/Asteroids/platform/assets/vectors/asteroids-title.vector.json, games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json, games/Asteroids/platform/assets/tilemaps/asteroids-stage.tilemap.json, games/Asteroids/platform/assets/parallax/asteroids-title.parallax.json, games/Asteroids/platform/assets/parallax/asteroids-overlay.parallax.json
+[info] ASTEROIDS_PLATFORM_DEMO_READY: Asteroids demo completed strict validation, packaging, runtime, export, and publishing flows.
+[info] ASTEROIDS_RUNTIME_HANDOFF: Runtime handoff preserved bootAsteroids from games/Asteroids/main.js.
+[info] ASTEROIDS_VECTOR_PREFERRED: Vector assets are the preferred visual path for ship, asteroid variants, and title presentation.
+[info] ASTEROIDS_SPRITE_FALLBACK: Sprite atlas fallback remains documented as a temporary migration safety path while vector-led visuals are verified.

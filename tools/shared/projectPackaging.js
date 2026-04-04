@@ -31,6 +31,15 @@ function collectPackagingRoots(options) {
   if (vectorId) {
     roots.push(vectorId);
   }
+  const vectorIds = Array.isArray(options.vectorDocument?.assetRefs?.vectorIds)
+    ? options.vectorDocument.assetRefs.vectorIds
+    : [];
+  vectorIds.forEach((id) => {
+    const safeId = sanitizeText(id);
+    if (safeId) {
+      roots.push(safeId);
+    }
+  });
 
   const tilemapId = sanitizeText(options.tileMapDocument?.assetRefs?.tilemapId);
   if (tilemapId) {
