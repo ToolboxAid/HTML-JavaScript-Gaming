@@ -14,7 +14,7 @@ Repo Cleanup Phase 1E - Sprite Editor Extraction Pilot
 ## Scope Confirmation
 - Minimal, controlled extraction delta
 - Sprite Editor-only code touch
-- Extract exactly one helper from `tools/SpriteEditor/modules/` to `tools/SpriteEditor/shared/`
+- Extract exactly one helper from `tools/SpriteEditor_old_keep/modules/` to `tools/SpriteEditor_old_keep/shared/`
 - Preserve behavior
 
 ## Do-Not-Touch Confirmation
@@ -24,8 +24,8 @@ Repo Cleanup Phase 1E - Sprite Editor Extraction Pilot
 - unrelated files outside this BUILD scope
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
-- `tools/SpriteEditor/modules/appPalette.js`
-- `tools/SpriteEditor/shared/getPaletteSignature.js`
+- `tools/SpriteEditor_old_keep/modules/appPalette.js`
+- `tools/SpriteEditor_old_keep/shared/getPaletteSignature.js`
 - `docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md`
 - `docs/pr/BUILD_PR_REPO_CLEANUP_PHASE_1E_SPRITE_EDITOR_EXTRACTION_PILOT.md`
 - `docs/dev/CODEX_COMMANDS.md`
@@ -36,20 +36,20 @@ Repo Cleanup Phase 1E - Sprite Editor Extraction Pilot
 ## Helper Ownership Before/After
 | helper | before owner | after owner | extraction rationale | behavior change |
 |---|---|---|---|---|
-| `getPaletteSignature(palette)` | `tools/SpriteEditor/modules/appPalette.js` (local prototype helper) | `tools/SpriteEditor/shared/getPaletteSignature.js` (shared Sprite Editor helper) | Pure deterministic serialization helper with repeated use and no panel/UI coupling | none |
+| `getPaletteSignature(palette)` | `tools/SpriteEditor_old_keep/modules/appPalette.js` (local prototype helper) | `tools/SpriteEditor_old_keep/shared/getPaletteSignature.js` (shared Sprite Editor helper) | Pure deterministic serialization helper with repeated use and no panel/UI coupling | none |
 
 ## Minimal Extraction Delta Applied
-1. Added `tools/SpriteEditor/shared/getPaletteSignature.js`
+1. Added `tools/SpriteEditor_old_keep/shared/getPaletteSignature.js`
 - Exports `getPaletteSignature(palette)` as a pure helper.
 
-2. Updated `tools/SpriteEditor/modules/appPalette.js`
+2. Updated `tools/SpriteEditor_old_keep/modules/appPalette.js`
 - Imported `getPaletteSignature` from `../shared/getPaletteSignature.js`.
 - Removed local `getPaletteSignature` prototype method.
 - Replaced all local method calls with the imported helper.
 
 ## Validation
-- `node -c tools/SpriteEditor/shared/getPaletteSignature.js`
-- `node -c tools/SpriteEditor/modules/appPalette.js`
+- `node -c tools/SpriteEditor_old_keep/shared/getPaletteSignature.js`
+- `node -c tools/SpriteEditor_old_keep/modules/appPalette.js`
 
 ## Risk Notes
 - Low risk: helper is pure and stateless.

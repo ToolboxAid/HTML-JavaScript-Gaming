@@ -1,0 +1,311 @@
+/*
+Toolbox Aid
+David Quesenberry
+04/03/2026
+spriteEditor.css
+*/
+:root {
+  --se-bg: #0b1727;
+  --se-panel: #102136;
+  --se-panel-border: #274868;
+  --se-text: #e7f3ff;
+  --se-muted: #9fbbd6;
+  --se-accent: #4eb6ff;
+  --se-accent-strong: #1d8cd6;
+  --se-danger: #c74f64;
+  --se-canvas-bg-a: #1f2f43;
+  --se-canvas-bg-b: #14263b;
+}
+
+.sprite-editor-page {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--se-text);
+  background:
+    radial-gradient(circle at 12% 18%, #1f3d5b 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, #11263d 0%, transparent 36%),
+    linear-gradient(155deg, #081221 0%, #132a44 100%);
+  font-family: "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
+}
+
+.app-shell {
+  width: min(1480px, calc(100vw - 2rem));
+  margin: 1rem auto 2rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.app-header {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--se-panel-border);
+  background: color-mix(in srgb, var(--se-panel) 88%, black);
+  border-radius: 12px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+
+.app-header p {
+  margin: 0.35rem 0 0;
+  color: var(--se-muted);
+}
+
+.toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  border: 1px solid var(--se-panel-border);
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: color-mix(in srgb, var(--se-panel) 90%, black);
+}
+
+.state-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  border: 1px solid var(--se-panel-border);
+  border-radius: 12px;
+  padding: 0.6rem;
+  background: color-mix(in srgb, var(--se-panel) 90%, black);
+}
+
+.state-pill {
+  margin: 0;
+  border: 1px solid #3b6287;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.82rem;
+  color: var(--se-muted);
+  background: #112c47;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-group label {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  color: var(--se-muted);
+}
+
+.toolbar-group input[type="number"] {
+  width: 4.5rem;
+}
+
+.tools-group {
+  margin-left: auto;
+}
+
+.tool-button {
+  background: #1d334d;
+  border: 1px solid #365f84;
+}
+
+.tool-button.active {
+  border-color: var(--se-accent);
+  box-shadow: inset 0 0 0 1px var(--se-accent);
+  background: #10415f;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr minmax(220px, 280px);
+  gap: 0.8rem;
+}
+
+.left-panel,
+.right-panel {
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+
+.panel-block {
+  border: 1px solid var(--se-panel-border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--se-panel) 90%, black);
+}
+
+.panel-block h2,
+.panel-block h3 {
+  margin: 0 0 0.55rem;
+}
+
+.panel-block h2 {
+  font-size: 1rem;
+}
+
+.panel-block h3 {
+  margin-top: 0.7rem;
+  color: var(--se-muted);
+  font-size: 0.85rem;
+}
+
+.center-panel {
+  border: 1px solid var(--se-panel-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--se-panel) 88%, black);
+  display: grid;
+  place-items: center;
+  padding: 0.9rem;
+  overflow: auto;
+}
+
+.canvas-wrap {
+  border: 1px solid #3a648a;
+  border-radius: 10px;
+  background: linear-gradient(45deg, var(--se-canvas-bg-a) 25%, var(--se-canvas-bg-b) 25%, var(--se-canvas-bg-b) 50%, var(--se-canvas-bg-a) 50%, var(--se-canvas-bg-a) 75%, var(--se-canvas-bg-b) 75%, var(--se-canvas-bg-b) 100%);
+  background-size: 20px 20px;
+  padding: 0.5rem;
+}
+
+#editorCanvas {
+  display: block;
+  image-rendering: pixelated;
+  cursor: crosshair;
+  background: transparent;
+  touch-action: none;
+}
+
+#previewCanvas {
+  width: 100%;
+  border: 1px solid #355f85;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #293c53 25%, #1b2f46 25%, #1b2f46 50%, #293c53 50%, #293c53 75%, #1b2f46 75%, #1b2f46 100%);
+  background-size: 16px 16px;
+  image-rendering: pixelated;
+}
+
+.frame-controls,
+.io-controls,
+.preview-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.frame-counter {
+  margin: 0.6rem 0;
+  color: var(--se-muted);
+}
+
+.hint-text {
+  margin: 0.45rem 0 0;
+  color: var(--se-muted);
+  font-size: 0.8rem;
+}
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(20px, 1fr));
+  gap: 0.35rem;
+}
+
+.swatch-button {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #5b7fa4;
+  border-radius: 4px;
+  background: transparent;
+  padding: 0;
+}
+
+.swatch-button.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px var(--se-accent);
+}
+
+.active-color-swatch {
+  height: 1.6rem;
+  border-radius: 6px;
+  border: 1px solid #5b7fa4;
+  margin-top: 0.4rem;
+}
+
+.inline-toggle {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.hidden-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.status-text {
+  margin: 0 0 0.5rem;
+  color: var(--se-muted);
+}
+
+button,
+input,
+output {
+  font: inherit;
+}
+
+button {
+  border: 1px solid #356a92;
+  color: var(--se-text);
+  background: #163351;
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1c4468;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+input[type="number"],
+input[type="range"],
+input[type="color"],
+select {
+  border: 1px solid #4779a0;
+  border-radius: 6px;
+  background: #0f253d;
+  color: var(--se-text);
+}
+
+select {
+  padding: 0.2rem 0.35rem;
+}
+
+input[type="number"] {
+  padding: 0.2rem 0.35rem;
+}
+
+@media (max-width: 1220px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .center-panel {
+    order: -1;
+  }
+
+  .tools-group {
+    margin-left: 0;
+  }
+}

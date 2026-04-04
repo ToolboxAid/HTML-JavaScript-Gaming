@@ -12,8 +12,8 @@ Current simulation is useful, but not enough for real authoring validation. The 
 - foreground/background behavior across a larger playfield
 
 ## Editors in Scope
-- tools/Tile Map Editor/
-- tools/Parallax Editor/
+- tools/Tilemap Studio/
+- tools/Parallax Scene Studio/
 
 ## Required Result
 Both editors must support a stronger simulation mode that can preview a full authored map instead of only a static or local view.

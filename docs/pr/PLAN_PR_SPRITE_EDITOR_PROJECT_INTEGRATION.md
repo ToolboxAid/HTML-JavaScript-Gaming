@@ -22,20 +22,20 @@ In scope:
 
 Out of scope:
 - Engine rewrites or new engine palette systems.
-- Changes to pre-existing sprite editor implementations outside `tools/Sprite Editor/`.
+- Changes to pre-existing sprite editor implementations outside `tools/SpriteEditorV3/`.
 - Unrelated tools or gameplay/runtime systems.
 - Any destructive or migration-heavy repo changes.
 
 ## 3. Exact Files Likely To Change (for BUILD_PR)
 Primary likely implementation files:
-- `tools/Sprite Editor/index.html`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
-- `tools/Sprite Editor/modules/projectModel.js`
-- `tools/Sprite Editor/modules/constants.js`
-- `tools/Sprite Editor/README.md`
+- `tools/SpriteEditorV3/index.html`
+- `tools/SpriteEditorV3/modules/spriteEditorApp.js`
+- `tools/SpriteEditorV3/modules/projectModel.js`
+- `tools/SpriteEditorV3/modules/constants.js`
+- `tools/SpriteEditorV3/README.md`
 
 Optional tiny integration point:
-- `tools/Sprite Editor/main.js` (only if bootstrap wiring required)
+- `tools/SpriteEditorV3/main.js` (only if bootstrap wiring required)
 
 Required BUILD docs/report files:
 - `docs/pr/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md`
@@ -150,7 +150,7 @@ Required BUILD constraints:
 - Implement only this approved plan.
 - Keep PR small and surgical.
 - Use engine palette contract as single authority.
-- Do not modify pre-existing sprite editor implementations outside `tools/Sprite Editor/`.
+- Do not modify pre-existing sprite editor implementations outside `tools/SpriteEditorV3/`.
 - Do not introduce engine rewrites.
 - Produce delta zip: `tmp/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION_delta.zip`.
 

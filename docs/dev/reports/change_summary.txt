@@ -1,6 +1,36 @@
-Completed BUILD_PR_ASSET_DEPENDENCY_GRAPH as an additive project-level asset graph slice.
+Change Summary
+==============
 
-Summary:
-- Added shared dependency graph generation in `tools/shared/projectAssetRegistry.js` using stable node IDs, deterministic edge ordering, and non-blocking validation findings.
-- Updated Sprite Editor, Tile Map Editor, and Parallax Editor save flows to persist `project.assetDependencyGraph` snapshots without changing engine core APIs.
-- Preserved legacy compatibility by keeping graph persistence additive and leaving load flows tolerant of missing graph data.
+Canonical folders kept
+----------------------
+- `tools/SpriteEditorV3/`
+- `tools/Tilemap Studio/`
+- `tools/Parallax Scene Studio/`
+- `tools/Vector Asset Studio/`
+
+Duplicate folders removed
+-------------------------
+- `tools/Sprite Editor/`
+- `tools/Tile Map Editor/`
+- `tools/Parallax Editor/`
+- `tools/SVG Background Editor/`
+
+Files moved or merged
+---------------------
+- Pixel tool implementation files moved into `tools/SpriteEditorV3/`
+- Tilemap tool implementation files and samples moved into `tools/Tilemap Studio/`
+- Parallax tool implementation files and samples moved into `tools/Parallax Scene Studio/`
+- Vector tool implementation files and samples moved into `tools/Vector Asset Studio/`
+- Canonical `index.html` and `README.md` files rewritten to remove transition text
+
+References updated
+------------------
+- `tools/index.html`
+- canonical tool entrypoints
+- canonical tool READMEs
+- docs and validation reports referencing deprecated duplicate active tool folders
+
+Explicit exclusion
+------------------
+- `tools/SpriteEditor_old_keep/` was intentionally ignored as legacy and out of scope
+- `tools/SpriteEditorV3/` was not part of the duplicate-folder consolidation set

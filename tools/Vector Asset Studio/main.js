@@ -2731,7 +2731,7 @@ async function initialize() {
   applyEnablementState();
   renderElementList();
   await refreshSampleOptions(false);
-  setStatus("SVG Background Editor ready.");
+  setStatus("Vector Asset Studio ready.");
 }
 
 initialize();

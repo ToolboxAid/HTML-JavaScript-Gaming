@@ -10,8 +10,8 @@ Apply one final tooling polish pass to both the Tile Map Editor and the Parallax
 - no engine core API changes
 
 ## Editors in Scope
-- tools/Tile Map Editor/
-- tools/Parallax Editor/
+- tools/Tilemap Studio/
+- tools/Parallax Scene Studio/
 
 ## Required Result
 Both editors should feel like companion tools:

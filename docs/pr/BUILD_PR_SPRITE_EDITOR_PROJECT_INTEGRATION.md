@@ -6,7 +6,7 @@ BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
 # BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION
 
 ## Goal
-Implement the approved Sprite Editor project integration contract from `PLAN_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` with small, surgical changes in `tools/Sprite Editor/` only.
+Implement the approved Sprite Editor project integration contract from `PLAN_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` with small, surgical changes in `tools/SpriteEditorV3/` only.
 
 ## Approved contract implemented
 - Sprite Editor now consumes palette authority from engine `globalThis.palettesList` (loaded from `../../engine/paletteList.js`).
@@ -30,24 +30,24 @@ Implement the approved Sprite Editor project integration contract from `PLAN_PR_
 
 ## Scope boundaries honored
 In scope:
-- `tools/Sprite Editor/index.html`
-- `tools/Sprite Editor/spriteEditor.css`
-- `tools/Sprite Editor/README.md`
-- `tools/Sprite Editor/modules/constants.js`
-- `tools/Sprite Editor/modules/projectModel.js`
-- `tools/Sprite Editor/modules/spriteEditorApp.js`
+- `tools/SpriteEditorV3/index.html`
+- `tools/SpriteEditorV3/spriteEditor.css`
+- `tools/SpriteEditorV3/README.md`
+- `tools/SpriteEditorV3/modules/constants.js`
+- `tools/SpriteEditorV3/modules/projectModel.js`
+- `tools/SpriteEditorV3/modules/spriteEditorApp.js`
 - docs/reports for this BUILD
 
 Out of scope:
 - engine rewrites
 - unrelated tools
-- pre-existing sprite editor implementations outside `tools/Sprite Editor/`
+- pre-existing sprite editor implementations outside `tools/SpriteEditorV3/`
 
 ## Validation summary
 - Syntax checks passed:
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Sprite Editor/modules/projectModel.js`
-  - `node --check tools/Sprite Editor/modules/constants.js`
+  - `node --check tools/SpriteEditorV3/modules/spriteEditorApp.js`
+  - `node --check tools/SpriteEditorV3/modules/projectModel.js`
+  - `node --check tools/SpriteEditorV3/modules/constants.js`
 - Palette-gating and lock flows implemented per plan contract.
 - Save/load palette reference behavior implemented with unresolved-reference fallback to blocked mode.
 

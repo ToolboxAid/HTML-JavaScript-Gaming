@@ -44,11 +44,11 @@ Implement project-level asset registry support for Sprite Editor, Tile Map Edito
 ## Validation summary
 - Syntax checks passed:
   - `node --check tools/shared/projectAssetRegistry.js`
-  - `node --check tools/Sprite Editor/modules/projectModel.js`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Sprite Editor/main.js`
-  - `node --check tools/Tile Map Editor/main.js`
-  - `node --check tools/Parallax Editor/main.js`
+  - `node --check tools/SpriteEditorV3/modules/projectModel.js`
+  - `node --check tools/SpriteEditorV3/modules/spriteEditorApp.js`
+  - `node --check tools/SpriteEditorV3/main.js`
+  - `node --check tools/Tilemap Studio/main.js`
+  - `node --check tools/Parallax Scene Studio/main.js`
 - Manual contract checklist updated and marked pass in `docs/dev/reports/validation_checklist.txt`.
 
 ## Packaging

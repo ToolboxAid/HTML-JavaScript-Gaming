@@ -283,7 +283,7 @@ function createTilemapParallaxPatch(parallaxDocument) {
     },
     metadata: {
       generatedAt: new Date().toISOString(),
-      generatedBy: "tools/Parallax Editor"
+      generatedBy: "tools/Parallax Scene Studio"
     }
   };
 }

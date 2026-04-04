@@ -12,7 +12,7 @@ Repo Cleanup Phase 1D — Sprite Editor Post-Normalization Extraction Gate
 Define extraction decision rules after Phase 1C ownership normalization. This is a docs-only classification pass.
 
 ## Scope
-- tools/SpriteEditor/modules/ analysis only
+- tools/SpriteEditor_old_keep/modules/ analysis only
 - docs/pr and docs/dev outputs only
 
 ## Out of Scope

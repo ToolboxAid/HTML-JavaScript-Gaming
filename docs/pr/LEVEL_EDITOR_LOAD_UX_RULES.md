@@ -19,4 +19,4 @@ Both editors must expose the same top-level actions:
 
 ## Path Rules
 - Tile Map Editor samples remain local to the Tile Map Editor tool
-- Parallax Editor samples remain in tools/Parallax Editor/samples/
+- Parallax Editor samples remain in tools/Parallax Scene Studio/samples/

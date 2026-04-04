@@ -42,8 +42,8 @@ Build a separate SVG Background Editor tool focused on authoring reusable backgr
 - Tile Map Editor remains responsible for gameplay structure only
 
 ## Recommended Output Location
-- tool: `tools/SVG Background Editor/`
-- local samples: `tools/SVG Background Editor/samples/`
+- tool: `tools/Vector Asset Studio/`
+- local samples: `tools/Vector Asset Studio/samples/`
 
 ## Result
 A dedicated background-art tool that completes the content pipeline:

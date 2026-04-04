@@ -1,7 +1,7 @@
 # LEVEL_SVG_BACKGROUND_EDITOR_SAMPLES
 
 Include local samples under:
-- tools/SVG Background Editor/samples/
+- tools/Vector Asset Studio/samples/
 
 Sample ideas:
 - sky gradient scene

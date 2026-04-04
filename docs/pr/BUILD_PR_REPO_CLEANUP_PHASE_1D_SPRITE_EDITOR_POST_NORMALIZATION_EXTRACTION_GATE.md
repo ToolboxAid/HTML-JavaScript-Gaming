@@ -13,7 +13,7 @@ Repo Cleanup Phase 1D - Sprite Editor Post-Normalization Extraction Gate
 
 ## Scope Confirmation
 - Docs-only delta
-- Analysis scope limited to `tools/SpriteEditor/modules/`
+- Analysis scope limited to `tools/SpriteEditor_old_keep/modules/`
 - Output scope limited to `docs/pr` and `docs/dev` artifacts
 - No runtime code changes
 
@@ -34,12 +34,12 @@ Repo Cleanup Phase 1D - Sprite Editor Post-Normalization Extraction Gate
 ## Helper Inventory (Post-Phase-1C Baseline)
 | helper family | primary paths | ownership domain | reuse signal | UI coupling | classification |
 |---|---|---|---|---|---|
-| Palette sidebar interaction helpers (`isPointInPaletteSidebar`, `scrollPaletteSidebarByWheel`, `handlePaletteSidebarWheel`) | `tools/SpriteEditor/modules/appPalette.js`, callsite in `tools/SpriteEditor/modules/appInput.js` | right-panel palette/state | 2 modules, same feature boundary | high | Keep Local |
-| Reference tool panel guidance (`showReferenceToolPanelGuidance`) | `tools/SpriteEditor/modules/appViewTools.js`, callsites in `appViewTools.js` and `appInput.js` | tool/view behavior | 2 modules, same guidance concern | high | Keep Local |
-| Color token normalization overlap (`normalizeColorToken` local action flow vs export color parsers) | `tools/SpriteEditor/modules/appActions.js`, `tools/SpriteEditor/modules/appExport.js` | action + export pipeline | near-duplicate intent, semantics differ | medium | Monitor |
-| Palette signature/matching policies (`getPaletteSignature`, `findMatchingPalettePresetName`) | `tools/SpriteEditor/modules/appPalette.js` | palette policy | currently concentrated in one domain | medium | Future Candidate |
-| Command text normalization/ranking (`normalizeCommandText`, `scoreCommandItem`) | `tools/SpriteEditor/modules/appCommands.js` | command palette/search | contained but expandable | low-medium | Future Candidate |
-| Control-surface panel builders and draw/input primitives | `tools/SpriteEditor/modules/controlSurface*.js` | panel composition + canvas UI | highly local to Sprite Editor shell | high | Keep Local |
+| Palette sidebar interaction helpers (`isPointInPaletteSidebar`, `scrollPaletteSidebarByWheel`, `handlePaletteSidebarWheel`) | `tools/SpriteEditor_old_keep/modules/appPalette.js`, callsite in `tools/SpriteEditor_old_keep/modules/appInput.js` | right-panel palette/state | 2 modules, same feature boundary | high | Keep Local |
+| Reference tool panel guidance (`showReferenceToolPanelGuidance`) | `tools/SpriteEditor_old_keep/modules/appViewTools.js`, callsites in `appViewTools.js` and `appInput.js` | tool/view behavior | 2 modules, same guidance concern | high | Keep Local |
+| Color token normalization overlap (`normalizeColorToken` local action flow vs export color parsers) | `tools/SpriteEditor_old_keep/modules/appActions.js`, `tools/SpriteEditor_old_keep/modules/appExport.js` | action + export pipeline | near-duplicate intent, semantics differ | medium | Monitor |
+| Palette signature/matching policies (`getPaletteSignature`, `findMatchingPalettePresetName`) | `tools/SpriteEditor_old_keep/modules/appPalette.js` | palette policy | currently concentrated in one domain | medium | Future Candidate |
+| Command text normalization/ranking (`normalizeCommandText`, `scoreCommandItem`) | `tools/SpriteEditor_old_keep/modules/appCommands.js` | command palette/search | contained but expandable | low-medium | Future Candidate |
+| Control-surface panel builders and draw/input primitives | `tools/SpriteEditor_old_keep/modules/controlSurface*.js` | panel composition + canvas UI | highly local to Sprite Editor shell | high | Keep Local |
 
 ## Classification Buckets
 

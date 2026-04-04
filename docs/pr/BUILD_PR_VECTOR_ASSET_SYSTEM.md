@@ -8,7 +8,7 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 - integrate vector assets into the dependency graph, validation, packaging, and runtime flows
 - use the SVG-focused tool as the authoring bridge for normalized vector asset output
 - normalize forward-facing tool naming to:
-  - `tools/Pixel Asset Studio/`
+  - `tools/SpriteEditorV3/`
   - `tools/Tilemap Studio/`
   - `tools/Parallax Scene Studio/`
   - `tools/Vector Asset Studio/`
@@ -27,7 +27,7 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 - `games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json`
 - `games/Asteroids/platform/assets/vectors/asteroids-title.vector.json`
 - `tools/index.html`
-- `tools/Pixel Asset Studio/*`
+- `tools/SpriteEditorV3/*`
 - `tools/Tilemap Studio/*`
 - `tools/Parallax Scene Studio/*`
 - `tools/Vector Asset Studio/*`
@@ -42,12 +42,12 @@ Implement the first-class vector asset system defined in `PLAN_PR_VECTOR_ASSET_S
 ## SVG Authoring Bridge
 - Added `tools/shared/vector/vectorAssetBridge.js` to normalize SVG-authored path data into first-class vector asset definitions.
 - `tools/Vector Asset Studio/` is now the normalized forward-facing authoring path.
-- The current implementation bridge redirects to `tools/SVG Background Editor/` during the transition window.
+- The current implementation bridge redirects to `tools/Vector Asset Studio/` during the transition window.
 
 ## Tool Naming Normalization
 Forward-facing normalized paths now exist in the repo and should be treated as the target standard:
 
-- `tools/Pixel Asset Studio/`
+- `tools/SpriteEditorV3/`
 - `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/`
@@ -55,10 +55,10 @@ Forward-facing normalized paths now exist in the repo and should be treated as t
 ## Transitional Compatibility
 Legacy implementation paths remain intact during transition and are compatibility-only:
 
-- `tools/Sprite Editor/` backs `tools/Pixel Asset Studio/`
-- `tools/Tile Map Editor/` backs `tools/Tilemap Studio/`
-- `tools/Parallax Editor/` backs `tools/Parallax Scene Studio/`
-- `tools/SVG Background Editor/` backs `tools/Vector Asset Studio/`
+- `tools/SpriteEditorV3/` backs `tools/SpriteEditorV3/`
+- `tools/Tilemap Studio/` backs `tools/Tilemap Studio/`
+- `tools/Parallax Scene Studio/` backs `tools/Parallax Scene Studio/`
+- `tools/Vector Asset Studio/` backs `tools/Vector Asset Studio/`
 
 Legacy naming such as `SpriteEditor` is not treated as the target standard.
 

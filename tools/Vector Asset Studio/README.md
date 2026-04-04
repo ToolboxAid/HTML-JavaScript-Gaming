@@ -1,14 +1,24 @@
 # Vector Asset Studio
 
-`tools/Vector Asset Studio/` is the normalized forward-facing path for vector asset authoring.
+Vector Asset Studio is a standalone authoring tool for SVG-first vector art assets.
 
-## Authoring bridge
+## Scope
+- Create new SVG files
+- Load existing SVG files
+- Save authored SVG files
+- Load local learning samples from `./samples/`
+- Draw and edit vector primitives
+- Manage fill and stroke style
+- Select, move, resize, delete, and reorder elements
+- Zoom and pan the canvas
 
-- Current implementation target: `tools/SVG Background Editor/`
-- The SVG-focused tool is the preferred authoring bridge for first-class vector asset output.
-- Normalized vector assets should be saved into project-owned paths such as `games/Asteroids/platform/assets/vectors/`.
+## Boundary
+- This tool is for vector art authoring only.
+- Tile map gameplay structure remains in `tools/Tilemap Studio/`.
+- Parallax depth and motion composition remains in `tools/Parallax Scene Studio/`.
+- No engine core API changes are required for this tool.
 
-## Transitional compatibility
-
-- Legacy tool names remain available only for compatibility.
-- Future docs and user-facing references should use `Vector Asset Studio`.
+## Handoff to Parallax Scene Studio
+1. Author and save an SVG in this editor.
+2. In Parallax Scene Studio, assign the saved SVG as a layer image source.
+3. Tune draw order, scroll factors, repeat/wrap, and foreground/background placement there.

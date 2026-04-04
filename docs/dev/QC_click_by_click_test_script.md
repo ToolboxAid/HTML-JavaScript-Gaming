@@ -16,7 +16,7 @@
 ## 1. Launch / Smoke Test
 
 ### 1.1 Open editor
-- [x] Open `tools/SpriteEditor/index.html`
+- [x] Open `tools/SpriteEditor_old_keep/index.html`
 - [x] Verify editor loads without visible errors
 - [x] Verify no console errors on load
 

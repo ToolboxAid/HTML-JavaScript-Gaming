@@ -12,8 +12,8 @@ Repo Cleanup Phase 1F — Controlled Multi-Helper Extraction and Engine Candidat
 Expand from Phase 1E single-helper extraction into controlled multi-helper extraction while introducing the first formal evaluation of engine promotion candidates.
 
 ## Scope
-- tools/SpriteEditor/modules/
-- tools/SpriteEditor/shared/
+- tools/SpriteEditor_old_keep/modules/
+- tools/SpriteEditor_old_keep/shared/
 - docs/pr
 - docs/dev
 

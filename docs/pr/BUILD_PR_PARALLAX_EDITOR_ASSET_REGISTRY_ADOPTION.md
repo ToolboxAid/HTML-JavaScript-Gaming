@@ -31,7 +31,7 @@ Integrate Parallax Editor with the shared project asset registry using ID-based 
 ## Validation summary
 - Syntax checks passed:
   - `node --check tools/shared/projectAssetRegistry.js`
-  - `node --check tools/Parallax Editor/main.js`
+  - `node --check tools/Parallax Scene Studio/main.js`
 - Validation checklist updated and all items marked pass in `docs/dev/reports/validation_checklist.txt`.
 
 ## Packaging

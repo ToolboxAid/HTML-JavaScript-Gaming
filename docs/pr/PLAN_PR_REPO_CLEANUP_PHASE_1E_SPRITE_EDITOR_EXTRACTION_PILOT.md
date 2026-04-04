@@ -15,8 +15,8 @@ This is a tightly controlled pilot to validate extraction rules without introduc
 
 ## Scope
 - One (1) helper ONLY from “Future Extraction Candidate”
-- Source: tools/SpriteEditor/modules/
-- Target: tools/SpriteEditor/shared/ (NOT engine)
+- Source: tools/SpriteEditor_old_keep/modules/
+- Target: tools/SpriteEditor_old_keep/shared/ (NOT engine)
 
 ## Out of Scope
 - engine/
@@ -34,7 +34,7 @@ Helper must:
 - Have no panel-specific coupling
 
 ## Extraction Rules
-- Move helper to: tools/SpriteEditor/shared/<helperName>.js
+- Move helper to: tools/SpriteEditor_old_keep/shared/<helperName>.js
 - Update imports ONLY where used
 - No API redesign
 - No renaming unless required for clarity

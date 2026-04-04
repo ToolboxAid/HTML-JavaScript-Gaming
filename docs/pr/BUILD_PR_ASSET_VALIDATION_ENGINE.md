@@ -24,13 +24,13 @@ Implement the enforced project-level asset validation engine defined in `PLAN_PR
   - repeated validation remains deterministic
   - legacy-style documents without required registry refs remain loadable
 - Integrated enforced validation into guarded editor operations only:
-  - `tools/Sprite Editor/modules/spriteEditorApp.js`
+  - `tools/SpriteEditorV3/modules/spriteEditorApp.js`
     - blocks guarded PNG/sprite-sheet export and save flows when blocking findings exist
     - surfaces validation summaries on load/save
-  - `tools/Tile Map Editor/main.js`
+  - `tools/Tilemap Studio/main.js`
     - blocks guarded project save, registry save, and runtime export when blocking findings exist
     - surfaces validation summaries on load/save
-  - `tools/Parallax Editor/main.js`
+  - `tools/Parallax Scene Studio/main.js`
     - blocks guarded project save, registry save, and patch export when blocking findings exist
     - surfaces validation summaries on load/save
 - Preserved legacy remediation behavior
@@ -51,9 +51,9 @@ Implement the enforced project-level asset validation engine defined in `PLAN_PR
 ## Validation Summary
 - Syntax checks passed:
   - `node --check tools/shared/projectAssetValidation.js`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Tile Map Editor/main.js`
-  - `node --check tools/Parallax Editor/main.js`
+  - `node --check tools/SpriteEditorV3/modules/spriteEditorApp.js`
+  - `node --check tools/Tilemap Studio/main.js`
+  - `node --check tools/Parallax Scene Studio/main.js`
   - `node --check tests/tools/AssetValidationEngine.test.mjs`
 - Targeted validation-engine test passed:
   - `node` inline runner for `tests/tools/AssetValidationEngine.test.mjs`

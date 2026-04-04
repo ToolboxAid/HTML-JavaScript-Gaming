@@ -10,10 +10,10 @@ Standardize visual theme usage across all tools, clarify SVG palette selection, 
 - no engine core API changes
 
 ## Tools in Scope
-- tools/Tile Map Editor/
-- tools/Parallax Editor/
-- tools/SVG Background Editor/
-- tools/SpriteEditor/ or equivalent sprite editor path in repo
+- tools/Tilemap Studio/
+- tools/Parallax Scene Studio/
+- tools/Vector Asset Studio/
+- tools/SpriteEditor_old_keep/ or equivalent sprite editor path in repo
 
 ## Output
 One shared UX rule set for theme + palette/swatch behavior across tools.

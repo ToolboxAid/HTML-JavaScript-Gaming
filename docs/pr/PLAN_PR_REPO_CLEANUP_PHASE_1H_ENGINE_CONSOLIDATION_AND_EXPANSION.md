@@ -13,7 +13,7 @@ Expand engine promotion from Phase 1G and consolidate promoted helpers into prop
 
 ## Scope
 - engine/
-- tools/SpriteEditor/shared/
+- tools/SpriteEditor_old_keep/shared/
 - docs/pr
 - docs/dev
 

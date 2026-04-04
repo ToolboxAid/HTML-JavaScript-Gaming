@@ -4,19 +4,19 @@ Files:
 - tools/shared/debugVisualizationLayer.js
 - tests/tools/DebugVisualizationLayer.test.mjs
 - tests/run-tests.mjs
-- tools/Sprite Editor/index.html
-- tools/Sprite Editor/modules/spriteEditorApp.js
-- tools/Tile Map Editor/index.html
-- tools/Tile Map Editor/main.js
-- tools/Parallax Editor/index.html
-- tools/Parallax Editor/main.js
+- tools/SpriteEditorV3/index.html
+- tools/SpriteEditorV3/modules/spriteEditorApp.js
+- tools/Tilemap Studio/index.html
+- tools/Tilemap Studio/main.js
+- tools/Parallax Scene Studio/index.html
+- tools/Parallax Scene Studio/main.js
 
 Checks passed:
 - node --check tools/shared/debugVisualizationLayer.js
 - node --check tests/tools/DebugVisualizationLayer.test.mjs
-- node --check tools/Sprite Editor/modules/spriteEditorApp.js
-- node --check tools/Tile Map Editor/main.js
-- node --check tools/Parallax Editor/main.js
+- node --check tools/SpriteEditorV3/modules/spriteEditorApp.js
+- node --check tools/Tilemap Studio/main.js
+- node --check tools/Parallax Scene Studio/main.js
 - node ./scripts/run-node-tests.mjs
 
 Behavior confirmed:

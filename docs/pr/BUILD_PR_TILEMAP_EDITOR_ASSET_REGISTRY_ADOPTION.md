@@ -31,7 +31,7 @@ Implement the approved Tile Map Editor asset registry adoption slice from `PLAN_
 ## Validation summary
 - Syntax checks passed:
   - `node --check tools/shared/projectAssetRegistry.js`
-  - `node --check tools/Tile Map Editor/main.js`
+  - `node --check tools/Tilemap Studio/main.js`
 - Validation checklist updated and all items marked pass in `docs/dev/reports/validation_checklist.txt`.
 
 ## Packaging

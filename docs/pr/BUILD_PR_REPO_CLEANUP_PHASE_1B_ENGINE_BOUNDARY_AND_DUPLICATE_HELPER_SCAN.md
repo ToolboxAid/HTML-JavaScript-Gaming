@@ -39,7 +39,7 @@
 | path | responsibility | duplicate of | should be in engine | already in engine | canonical location | risk | recommendation |
 |---|---|---|---|---|---|---|---|
 | `games/SpaceInvaders/game/WaveController.js` naming | helper name implies simulation controller but currently HUD/banner presenter | `games/SpaceDuel/game/WaveController.js` (name only) | no | no | likely rename to `WaveHudPresenter`/`WaveStatusPresenter` | low | Rename in a doc-safe or tiny code-safe follow-up with import-site checks. |
-| `tools/SpriteEditor/main.js` local `clamp` | overlaps engine clamp but file is a large patch/stabilization entrypoint | `engine/utils/math.js` (`clamp`) | uncertain | yes | evaluate per SpriteEditor stability plan | medium | Defer until SpriteEditor stabilization work is complete; avoid mixing concerns. |
+| `tools/SpriteEditor_old_keep/main.js` local `clamp` | overlaps engine clamp but file is a large patch/stabilization entrypoint | `engine/utils/math.js` (`clamp`) | uncertain | yes | evaluate per SpriteEditor stability plan | medium | Defer until SpriteEditor stabilization work is complete; avoid mixing concerns. |
 | `samples/sample003-mouse-input/MouseInputScene.js`, `samples/sample004-gamepad-input/GamepadScene.js` class-local clamp methods | duplicates engine clamp, but potentially intentional pedagogy | `engine/utils/math.js` (`clamp`) | uncertain | yes | sample-specific decision | low | Keep as-is unless sample docs explicitly prefer engine helper usage. |
 | Target path expectation: `engine/math/**` | scan target includes path that does not exist in repo (math lives under `engine/utils/math.js`) | N/A | N/A | N/A | `engine/utils/math.js` | low | Update future scan templates/docs to avoid path drift. |
 

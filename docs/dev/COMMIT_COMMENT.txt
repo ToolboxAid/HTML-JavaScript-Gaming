@@ -1,1 +1,1 @@
-build(vector-platform): add vector template sample game and define geometry runtime
+build(tools): consolidate duplicate tool folders into canonical studio paths

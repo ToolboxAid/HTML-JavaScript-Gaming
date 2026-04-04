@@ -1,10 +1,39 @@
-BUILD VALIDATION CHECKLIST
+Validation Checklist
+====================
 
-- [x] Legacy projects still load when `project.assetDependencyGraph` is absent
-- [x] Registry remains the source of truth for graph reconstruction
-- [x] Graph nodes use stable asset IDs and edges are emitted deterministically
-- [x] Missing targets and orphaned assets surface as findings instead of hard failures
-- [x] Sprite Editor, Tile Map Editor, and Parallax Editor each persist additive graph snapshots on save
-- [x] Asset registry save flows report graph findings without blocking editing
-- [x] No engine core API files were modified
-- [x] Syntax validation passed for changed JS files
+Inventory and selection
+-----------------------
+[x] Inventory all folders directly under `tools/`
+[x] Identify duplicate active tool folders created by rename drift
+[x] Select canonical current folders based on approved studio naming
+[x] Confirm legacy `tools/SpriteEditor_old_keep/` is intentionally out of scope
+
+Consolidation
+-------------
+[x] Move active implementation files into canonical tool folders
+[x] Move sample folders into canonical tool folders where applicable
+[x] Replace wrapper `index.html` files with real canonical tool entrypoints
+[x] Replace wrapper `README.md` files with canonical tool documentation
+[x] Remove obsolete duplicate active tool folders
+
+Reference cleanup
+-----------------
+[x] Update launcher/index links and descriptions to canonical tool folders
+[x] Update canonical tool READMEs to canonical paths
+[x] Update active docs and validation reports that referenced duplicate active tool folders
+[x] Remove remaining repo references to `tools/Sprite Editor/`
+[x] Remove remaining repo references to `tools/Tile Map Editor/`
+[x] Remove remaining repo references to `tools/Parallax Editor/`
+[x] Remove remaining repo references to `tools/SVG Background Editor/`
+[x] Confirm no required tool-loading paths depend on legacy `tools/SpriteEditor_old_keep/`
+
+Tool path validation
+--------------------
+[x] `tools/index.html` links target canonical tool folders
+[x] `tools/SpriteEditorV3/index.html` exists with matching JS and CSS
+[x] `tools/Tilemap Studio/index.html` exists with matching JS and CSS
+[x] `tools/Parallax Scene Studio/index.html` exists with matching JS and CSS
+[x] `tools/Vector Asset Studio/index.html` exists with matching JS and CSS
+[x] Tilemap sample manifest remains present
+[x] Parallax sample manifest remains present
+[x] Vector/SVG sample manifest remains present

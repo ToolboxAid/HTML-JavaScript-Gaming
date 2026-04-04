@@ -3,15 +3,15 @@ BUILD_PR_ASSET_VALIDATION_ENGINE validation
 Files:
 - tools/shared/projectAssetValidation.js
 - tests/tools/AssetValidationEngine.test.mjs
-- tools/Sprite Editor/modules/spriteEditorApp.js
-- tools/Tile Map Editor/main.js
-- tools/Parallax Editor/main.js
+- tools/SpriteEditorV3/modules/spriteEditorApp.js
+- tools/Tilemap Studio/main.js
+- tools/Parallax Scene Studio/main.js
 
 Checks passed:
 - node --check tools/shared/projectAssetValidation.js
-- node --check tools/Sprite Editor/modules/spriteEditorApp.js
-- node --check tools/Tile Map Editor/main.js
-- node --check tools/Parallax Editor/main.js
+- node --check tools/SpriteEditorV3/modules/spriteEditorApp.js
+- node --check tools/Tilemap Studio/main.js
+- node --check tools/Parallax Scene Studio/main.js
 - node --check tests/tools/AssetValidationEngine.test.mjs
 - targeted AssetValidationEngine test via node inline runner
 - node ./scripts/run-node-tests.mjs

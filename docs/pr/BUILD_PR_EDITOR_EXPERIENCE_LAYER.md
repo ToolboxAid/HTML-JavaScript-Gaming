@@ -23,9 +23,9 @@ Implement the Editor Experience Layer defined in `PLAN_PR_EDITOR_EXPERIENCE_LAYE
 - Syntax checks passed:
   - `node --check tools/shared/editorExperienceLayer.js`
   - `node --check tests/tools/EditorExperienceLayer.test.mjs`
-  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
-  - `node --check tools/Tile Map Editor/main.js`
-  - `node --check tools/Parallax Editor/main.js`
+  - `node --check tools/SpriteEditorV3/modules/spriteEditorApp.js`
+  - `node --check tools/Tilemap Studio/main.js`
+  - `node --check tools/Parallax Scene Studio/main.js`
 - Full Node test suite passed:
   - `node ./scripts/run-node-tests.mjs`
 

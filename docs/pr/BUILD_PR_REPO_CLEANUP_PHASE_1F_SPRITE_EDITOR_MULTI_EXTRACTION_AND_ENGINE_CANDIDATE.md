@@ -13,7 +13,7 @@ Repo Cleanup Phase 1F - Controlled Multi-Helper Extraction and Engine Candidate 
 
 ## Scope Confirmation
 - Controlled multi-helper extraction (max 3)
-- Sprite Editor-only code scope (`tools/SpriteEditor/modules/` and `tools/SpriteEditor/shared/`)
+- Sprite Editor-only code scope (`tools/SpriteEditor_old_keep/modules/` and `tools/SpriteEditor_old_keep/shared/`)
 - Behavior-preserving changes only
 
 ## Do-Not-Touch Confirmation
@@ -23,10 +23,10 @@ Repo Cleanup Phase 1F - Controlled Multi-Helper Extraction and Engine Candidate 
 - unrelated files outside this BUILD scope
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
-- `tools/SpriteEditor/modules/appCommands.js`
-- `tools/SpriteEditor/shared/normalizeCommandText.js`
-- `tools/SpriteEditor/shared/fuzzyMatchScore.js`
-- `tools/SpriteEditor/shared/scoreCommandItem.js`
+- `tools/SpriteEditor_old_keep/modules/appCommands.js`
+- `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js`
+- `tools/SpriteEditor_old_keep/shared/fuzzyMatchScore.js`
+- `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
 - `docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md`
 - `docs/pr/BUILD_PR_REPO_CLEANUP_PHASE_1F_SPRITE_EDITOR_MULTI_EXTRACTION_AND_ENGINE_CANDIDATE.md`
 - `docs/dev/CODEX_COMMANDS.md`
@@ -37,9 +37,9 @@ Repo Cleanup Phase 1F - Controlled Multi-Helper Extraction and Engine Candidate 
 ## Helper Inventory (Extracted in Phase 1F)
 | helper | before owner | after owner | usage points in module flow | behavior delta |
 |---|---|---|---|---|
-| `normalizeCommandText(input)` | `tools/SpriteEditor/modules/appCommands.js` prototype method | `tools/SpriteEditor/shared/normalizeCommandText.js` | query normalization + item field normalization | none |
-| `fuzzyMatchScore(text, query)` | `tools/SpriteEditor/modules/appCommands.js` prototype method | `tools/SpriteEditor/shared/fuzzyMatchScore.js` | fallback ranking path in command scoring | none |
-| `scoreCommandItem(item, normalizedQuery)` | `tools/SpriteEditor/modules/appCommands.js` prototype method | `tools/SpriteEditor/shared/scoreCommandItem.js` | ranking score core for command palette items | none |
+| `normalizeCommandText(input)` | `tools/SpriteEditor_old_keep/modules/appCommands.js` prototype method | `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js` | query normalization + item field normalization | none |
+| `fuzzyMatchScore(text, query)` | `tools/SpriteEditor_old_keep/modules/appCommands.js` prototype method | `tools/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` | fallback ranking path in command scoring | none |
+| `scoreCommandItem(item, normalizedQuery)` | `tools/SpriteEditor_old_keep/modules/appCommands.js` prototype method | `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js` | ranking score core for command palette items | none |
 
 ## Engine Candidate Evaluation Table
 | helper | multi-tool future potential | UI-independent | tool-specific state free | engine duplication reduction potential | classification |
@@ -52,7 +52,7 @@ Repo Cleanup Phase 1F - Controlled Multi-Helper Extraction and Engine Candidate 
 1. Extraction count is 3 helpers (within max 3).
 2. Helpers moved as isolated units (no bulk utility bundle file).
 3. No API redesign; call behavior remains unchanged.
-4. Updated imports only in `tools/SpriteEditor/modules/appCommands.js`.
+4. Updated imports only in `tools/SpriteEditor_old_keep/modules/appCommands.js`.
 5. No changes in `engine/`, `games/`, or `samples/`.
 
 ## Acceptance Check

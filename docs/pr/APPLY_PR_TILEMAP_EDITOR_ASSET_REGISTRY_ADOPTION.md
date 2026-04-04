@@ -46,7 +46,7 @@ Out of scope:
 - Confirmed build ZIP exists at `tmp/BUILD_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION_delta.zip`
 - Confirmed build ZIP contents are limited to approved PR files
 - `node --check tools/shared/projectAssetRegistry.js`
-- `node --check tools/Tile Map Editor/main.js`
+- `node --check tools/Tilemap Studio/main.js`
 - Confirmed APPLY bundle scope is docs-only for this step
 
 ## Apply Decision

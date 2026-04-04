@@ -1,21 +1,29 @@
-LEVEL_9_ASSET_DEPENDENCY_GRAPH_ATOMIC_PACKAGE_delta/
-docs/
-docs/dev/
-docs/dev/reports/
-docs/dev/reports/change_summary.txt
-docs/dev/reports/file_tree.txt
-docs/dev/reports/validation_checklist.txt
-docs/pr/
-docs/pr/APPLY_PR_ASSET_DEPENDENCY_GRAPH.md
-docs/pr/BUILD_PR_ASSET_DEPENDENCY_GRAPH.md
-docs/pr/PLAN_PR_ASSET_DEPENDENCY_GRAPH.md
 tools/
-tools/shared/
-tools/shared/projectAssetRegistry.js
-tools/Sprite Editor/
-tools/Sprite Editor/modules/
-tools/Sprite Editor/modules/spriteEditorApp.js
-tools/Tile Map Editor/
-tools/Tile Map Editor/main.js
-tools/Parallax Editor/
-tools/Parallax Editor/main.js
+  Parallax Scene Studio/
+    index.html
+    main.js
+    parallaxEditor.css
+    README.md
+    samples/
+  Sprite Editor V3/
+    index.html
+    main.js
+    spriteEditor.css
+    README.md
+    modules/
+  Tilemap Studio/
+    index.html
+    main.js
+    tileMapEditor.css
+    README.md
+    samples/
+  Vector Asset Studio/
+    index.html
+    main.js
+    svgBackgroundEditor.css
+    README.md
+    samples/
+  VectorMapEditor/
+  shared/
+  SpriteEditor/
+  SpriteEditorV3/

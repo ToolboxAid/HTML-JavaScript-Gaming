@@ -1,20 +1,30 @@
 MODEL: GPT-5.4
 REASONING: high
 
-COMMAND:
-Execute this clean progression in order.
+TASK:
+Create BUILD_PR_TOOLS_FOLDER_CONSOLIDATION under the HTML-JavaScript-Gaming repo.
 
-Step 1:
-Create BUILD_PR_VECTOR_TEMPLATE_SAMPLE_GAME.
+GOAL:
+Consolidate duplicate active tool folders into the approved canonical studio paths under `tools/`, repair active references, and remove duplicate folder drift.
 
-BUILD requirements:
-- Build a standalone sample game from `templates/vector-native-arcade/`
-- Use vector assets as the only active visual runtime dependency
-- Preserve strict validation, packaging, runtime, debug, profiler, export, and publishing compatibility
-- Avoid engine core API changes
+DELIVERABLES:
+- `docs/pr/BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.md`
+- `docs/dev/CODEX_COMMANDS.md`
+- `docs/dev/COMMIT_COMMENT.txt`
+- `docs/dev/reports/file_tree.txt`
+- `docs/dev/reports/change_summary.txt`
+- `docs/dev/reports/validation_checklist.txt`
+- `tmp/BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.zip`
 
-Step 2:
-Treat docs/pr/PLAN_PR_VECTOR_GEOMETRY_RUNTIME.md as the governing architecture contract for the next runtime evolution.
+NEXT COMMAND:
+MODEL: GPT-5.4
+REASONING: high
 
-Package:
-HTML-JavaScript-Gaming/tmp/VECTOR_TEMPLATE_SAMPLE_GAME_AND_GEOMETRY_RUNTIME_delta.zip
+TASK:
+Create PLAN_PR_TOOLS_CANONICAL_NAMING_AUDIT
+
+GOAL:
+Document and lock the final approved canonical naming/path convention for active tool folders and related internal references after consolidation.
+
+ZIP:
+`tmp/PLAN_PR_TOOLS_CANONICAL_NAMING_AUDIT.zip`
