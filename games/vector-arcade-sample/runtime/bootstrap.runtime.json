@@ -1,0 +1,12 @@
+{
+  "modulePath": "games/vector-arcade-sample/main.js",
+  "exportName": "bootVectorArcadeSample",
+  "canvasId": "game",
+  "requiredVectorIds": [
+    "vector.template.player",
+    "vector.template.obstacle.large",
+    "vector.template.obstacle.small",
+    "vector.template.ui.title",
+    "vector.template.ui.hud"
+  ]
+}

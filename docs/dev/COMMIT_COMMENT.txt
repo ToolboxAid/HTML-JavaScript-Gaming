@@ -1,1 +1,1 @@
-plan(template): define reusable vector-native arcade template
+build(vector-platform): add vector template sample game and define geometry runtime

@@ -1,0 +1,16 @@
+{
+  "id": "vector.template.ui.title",
+  "type": "vector",
+  "source": {
+    "kind": "svg",
+    "path": "games/vector-arcade-sample/assets/vectors/template-title.vector.json"
+  },
+  "geometry": {
+    "viewBox": "0 0 220 48",
+    "paths": [{ "d": "M 8 40 L 24 8 L 40 40 Z" }, { "d": "M 56 40 L 56 8 L 84 8 L 84 18 L 68 18 L 68 22 L 82 22 L 82 32 L 68 32 L 68 40 Z" }]
+  },
+  "style": {
+    "stroke": true,
+    "fill": false
+  }
+}

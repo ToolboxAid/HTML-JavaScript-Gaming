@@ -1,2 +1,3 @@
-Adds a docs-only plan for a reusable vector-native game template built on the accepted vector-only runtime baseline.
-Establishes vector-first starter structure for future arcade-style games.
+Combined progression bundle:
+1. build a standalone sample game from the vector-native template
+2. define the next runtime evolution for deterministic vector geometry behavior

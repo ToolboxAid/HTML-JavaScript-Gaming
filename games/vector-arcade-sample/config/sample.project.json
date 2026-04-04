@@ -1,0 +1,6 @@
+{
+  "sampleId": "vector-arcade-sample",
+  "schema": "toolbox.sample/1",
+  "visualContract": "vector-only",
+  "runtimeEntry": "games/vector-arcade-sample/main.js#bootVectorArcadeSample"
+}

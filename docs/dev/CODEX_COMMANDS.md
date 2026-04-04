@@ -2,18 +2,19 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_VECTOR_NATIVE_TEMPLATE.
+Execute this clean progression in order.
 
-Requirements:
-- Implement a reusable vector-native game template
-- Use first-class vector assets as the required visual contract
-- Preserve strict validation, packaging, runtime, CI, export, and publishing boundaries
-- Avoid reintroducing sprite fallback as an active runtime dependency
-- Keep the template reusable for future vector-led games
-- Do not modify engine core APIs
+Step 1:
+Create BUILD_PR_VECTOR_TEMPLATE_SAMPLE_GAME.
 
-Target template path:
-- templates/vector-native-arcade/
+BUILD requirements:
+- Build a standalone sample game from `templates/vector-native-arcade/`
+- Use vector assets as the only active visual runtime dependency
+- Preserve strict validation, packaging, runtime, debug, profiler, export, and publishing compatibility
+- Avoid engine core API changes
+
+Step 2:
+Treat docs/pr/PLAN_PR_VECTOR_GEOMETRY_RUNTIME.md as the governing architecture contract for the next runtime evolution.
 
 Package:
-HTML-JavaScript-Gaming/tmp/BUILD_PR_VECTOR_NATIVE_TEMPLATE_delta.zip
+HTML-JavaScript-Gaming/tmp/VECTOR_TEMPLATE_SAMPLE_GAME_AND_GEOMETRY_RUNTIME_delta.zip

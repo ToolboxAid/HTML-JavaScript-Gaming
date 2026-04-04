@@ -1,6 +1,5 @@
-- PLAN doc exists and is docs-only
-- Vector-native template baseline is explicit
-- No sprite fallback dependency is allowed in the template baseline
-- Validation, packaging, runtime, CI, export, and publishing expectations are defined
+- BUILD_PR_VECTOR_TEMPLATE_SAMPLE_GAME is present
+- PLAN_PR_VECTOR_GEOMETRY_RUNTIME is present
 - docs/dev contains codex_commands.md and commit_comment.txt
-- No engine core API changes are authorized
+- vector-only runtime assumptions are preserved
+- no engine core API changes are authorized
