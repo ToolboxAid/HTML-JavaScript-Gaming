@@ -101,6 +101,10 @@ import { run as runAiAuthoringAssistant } from './tools/AiAuthoringAssistant.tes
 import { run as runGameplaySystemLayer } from './tools/GameplaySystemLayer.test.mjs';
 import { run as runCollaborationSystem } from './tools/CollaborationSystem.test.mjs';
 import { run as runPerformanceProfiler } from './tools/PerformanceProfiler.test.mjs';
+import { run as runAssetMarketplace } from './tools/AssetMarketplace.test.mjs';
+import { run as runCloudRuntime } from './tools/CloudRuntime.test.mjs';
+import { run as runGameTemplates } from './tools/GameTemplates.test.mjs';
+import { run as runPublishingPipeline } from './tools/PublishingPipeline.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -196,6 +200,10 @@ const tests = [
     ['GameplaySystemLayer', runGameplaySystemLayer],
     ['CollaborationSystem', runCollaborationSystem],
     ['PerformanceProfiler', runPerformanceProfiler],
+    ['AssetMarketplace', runAssetMarketplace],
+    ['CloudRuntime', runCloudRuntime],
+    ['GameTemplates', runGameTemplates],
+    ['PublishingPipeline', runPublishingPipeline],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

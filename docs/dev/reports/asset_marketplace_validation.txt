@@ -1,0 +1,18 @@
+BUILD_PR_ASSET_MARKETPLACE validation
+
+Files:
+- tools/shared/assetMarketplace.js
+- tests/tools/AssetMarketplace.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/assetMarketplace.js
+- node --check tests/tools/AssetMarketplace.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- marketplace listings are normalized deterministically
+- version compatibility is incorporated into listing readiness
+- listing reports are auditable and readable
+- accepted platform boundaries remain authoritative
+- no engine core API changes

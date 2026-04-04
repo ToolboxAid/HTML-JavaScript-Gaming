@@ -1,0 +1,17 @@
+BUILD_PR_GAME_TEMPLATES validation
+
+Files:
+- tools/shared/gameTemplates.js
+- tests/tools/GameTemplates.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/gameTemplates.js
+- node --check tests/tools/GameTemplates.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- template compatibility is evaluated deterministically from gameplay bindings
+- template reports are readable and stable
+- accepted platform boundaries remain authoritative
+- no engine core API changes

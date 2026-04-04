@@ -1,0 +1,17 @@
+BUILD_PR_CLOUD_RUNTIME validation
+
+Files:
+- tools/shared/cloudRuntime.js
+- tests/tools/CloudRuntime.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/cloudRuntime.js
+- node --check tests/tools/CloudRuntime.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- cloud deployment targets are derived deterministically from packaged/export inputs
+- cloud runtime reports are readable and stable
+- accepted platform boundaries remain authoritative
+- no engine core API changes

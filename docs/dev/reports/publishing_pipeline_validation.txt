@@ -1,0 +1,17 @@
+BUILD_PR_PUBLISHING_PIPELINE validation
+
+Files:
+- tools/shared/publishingPipeline.js
+- tests/tools/PublishingPipeline.test.mjs
+- tests/run-tests.mjs
+
+Checks passed:
+- node --check tools/shared/publishingPipeline.js
+- node --check tests/tools/PublishingPipeline.test.mjs
+- node ./scripts/run-node-tests.mjs
+
+Behavior confirmed:
+- publishing is blocked when upstream CI/export gates are not ready
+- release target planning is deterministic and readable
+- accepted platform boundaries remain authoritative
+- no engine core API changes

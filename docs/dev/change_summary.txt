@@ -1,1 +1,1 @@
-Combined Level 17 suite containing PLAN/BUILD/APPLY docs for AI authoring, gameplay, collaboration, and performance profiling.
+Level 18 ecosystem
