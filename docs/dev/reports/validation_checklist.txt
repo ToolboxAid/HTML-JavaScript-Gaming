@@ -1,8 +1,10 @@
 BUILD VALIDATION CHECKLIST
 
-- [x] Parallax Editor integrated with project asset registry
-- [x] Registry-managed saves use ID-based references instead of direct paths
-- [x] Backward compatibility preserved for legacy parallax/tilemap JSON
-- [x] No engine core API changes introduced
-- [x] Shared registry helpers reused without destructive registry replacement
+- [x] Legacy projects still load when `project.assetDependencyGraph` is absent
+- [x] Registry remains the source of truth for graph reconstruction
+- [x] Graph nodes use stable asset IDs and edges are emitted deterministically
+- [x] Missing targets and orphaned assets surface as findings instead of hard failures
+- [x] Sprite Editor, Tile Map Editor, and Parallax Editor each persist additive graph snapshots on save
+- [x] Asset registry save flows report graph findings without blocking editing
+- [x] No engine core API files were modified
 - [x] Syntax validation passed for changed JS files

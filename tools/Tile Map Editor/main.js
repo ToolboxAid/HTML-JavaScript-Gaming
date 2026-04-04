@@ -5,6 +5,7 @@ David Quesenberry
 main.js
 */
 import {
+  buildAssetDependencyGraph,
   createAssetId,
   createAssetRegistry,
   createRegistryDownloadPayload,
@@ -490,6 +491,12 @@ function downloadTextFile(fileName, content) {
   URL.revokeObjectURL(blobUrl);
 }
 
+function summarizeGraphFindings(findings) {
+  return Array.isArray(findings) && findings.length > 0
+    ? ` Graph findings: ${findings.length}.`
+    : " Graph findings: none.";
+}
+
 function normalizeSamplePath(pathValue) {
   if (typeof pathValue !== "string") {
     return null;
@@ -785,19 +792,26 @@ class TileMapEditorApp {
   handleSaveProject() {
     this.touchDocument();
     this.syncAssetRegistryFromDocument();
-    const serialized = JSON.stringify(this.documentModel, null, 2);
+    const { graph, findings } = buildAssetDependencyGraph(this.assetRegistry);
+    const output = cloneDeep(this.documentModel);
+    output.project = {
+      ...(output.project && typeof output.project === "object" ? output.project : {}),
+      assetDependencyGraph: graph
+    };
+    const serialized = JSON.stringify(output, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.tilemap.json`;
     downloadTextFile(fileName, serialized);
     this.updateStatus(
-      `Saved ${fileName} (tilemapRef=${this.documentModel.assetRefs.tilemapId || "none"}, tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).`
+      `Saved ${fileName} (tilemapRef=${this.documentModel.assetRefs.tilemapId || "none"}, tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).${summarizeGraphFindings(findings)}`
     );
   }
 
   handleSaveAssetRegistry() {
     this.syncAssetRegistryFromDocument();
+    const { findings } = buildAssetDependencyGraph(this.assetRegistry);
     const payload = createRegistryDownloadPayload(this.assetRegistry);
     downloadTextFile("project.assets.json", payload);
-    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).`);
+    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).${summarizeGraphFindings(findings)}`);
   }
 
   handleExportRuntime() {

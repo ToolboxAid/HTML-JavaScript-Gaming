@@ -1,6 +1,6 @@
-Created implementation bundle for BUILD_PR_PARALLAX_EDITOR_ASSET_REGISTRY_ADOPTION.
+Completed BUILD_PR_ASSET_DEPENDENCY_GRAPH as an additive project-level asset graph slice.
 
 Summary:
-- Updates Parallax Editor to save registry-managed layers via ID-based references.
-- Preserves additive `images` and `parallaxSources` registry behavior through shared helpers.
-- Maintains backward compatibility for legacy direct-path parallax and tilemap documents.
+- Added shared dependency graph generation in `tools/shared/projectAssetRegistry.js` using stable node IDs, deterministic edge ordering, and non-blocking validation findings.
+- Updated Sprite Editor, Tile Map Editor, and Parallax Editor save flows to persist `project.assetDependencyGraph` snapshots without changing engine core APIs.
+- Preserved legacy compatibility by keeping graph persistence additive and leaving load flows tolerant of missing graph data.

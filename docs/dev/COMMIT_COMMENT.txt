@@ -1,1 +1,1 @@
-plan(parallax-editor): adopt project asset registry integration
+build(asset-graph): add additive project asset dependency graph

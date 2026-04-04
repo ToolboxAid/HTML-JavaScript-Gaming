@@ -7,6 +7,20 @@ projectAssetRegistry.js
 
 const KNOWN_SECTIONS = ["palettes", "sprites", "tilesets", "tilemaps", "images", "parallaxSources"];
 const PATH_REQUIRED_SECTIONS = ["sprites", "tilesets", "tilemaps", "images", "parallaxSources"];
+const GRAPH_NODE_TYPES = Object.freeze({
+  palettes: "palette",
+  sprites: "sprite",
+  tilesets: "tileset",
+  tilemaps: "tilemap",
+  images: "image",
+  parallaxSources: "parallaxLayer"
+});
+const GRAPH_EDGE_RULES = Object.freeze([
+  { section: "sprites", targetSection: "palettes", sourceField: "paletteId", type: "usesPalette" },
+  { section: "tilesets", targetSection: "palettes", sourceField: "paletteId", type: "usesPalette" },
+  { section: "tilemaps", targetSection: "tilesets", sourceField: "tilesetId", type: "usesTileset" },
+  { section: "parallaxSources", targetSection: "images", sourceField: "imageId", type: "usesImage" }
+]);
 
 function cloneDeep(value) {
   if (typeof structuredClone === "function") {
@@ -198,6 +212,14 @@ export function createAssetRegistry(options = {}) {
   };
 }
 
+export function createAssetDependencyGraph() {
+  return {
+    version: 1,
+    nodes: {},
+    edges: []
+  };
+}
+
 export function sanitizeAssetRegistry(rawRegistry) {
   const source = rawRegistry && typeof rawRegistry === "object" ? rawRegistry : {};
   const fallback = createAssetRegistry({ projectId: source.projectId });
@@ -232,6 +254,156 @@ export function sanitizeAssetRegistry(rawRegistry) {
   });
 
   return output;
+}
+
+function createGraphFinding(kind, nodeId, message, extra = {}) {
+  return {
+    kind,
+    nodeId: sanitizeText(nodeId),
+    message: sanitizeText(message),
+    ...extra
+  };
+}
+
+function createGraphNode(section, entry) {
+  return {
+    id: entry.id,
+    type: GRAPH_NODE_TYPES[section] || "asset",
+    name: sanitizeText(entry.name) || entry.id,
+    path: normalizeProjectRelativePath(entry.path),
+    sourceTool: sanitizeText(entry.sourceTool)
+  };
+}
+
+function createGraphEdgeId(type, sourceId, targetId) {
+  return `${sanitizeText(type)}:${sanitizeText(sourceId)}->${sanitizeText(targetId)}`;
+}
+
+function addGraphEdge(graph, edgeSet, type, sourceId, targetId) {
+  const safeType = sanitizeText(type);
+  const safeSourceId = sanitizeText(sourceId);
+  const safeTargetId = sanitizeText(targetId);
+  if (!safeType || !safeSourceId || !safeTargetId) {
+    return false;
+  }
+
+  const edgeId = createGraphEdgeId(safeType, safeSourceId, safeTargetId);
+  if (edgeSet.has(edgeId)) {
+    return false;
+  }
+
+  edgeSet.add(edgeId);
+  graph.edges.push({
+    id: edgeId,
+    type: safeType,
+    source: safeSourceId,
+    target: safeTargetId
+  });
+  return true;
+}
+
+export function buildAssetDependencyGraph(rawRegistry) {
+  const registry = sanitizeAssetRegistry(rawRegistry);
+  const graph = createAssetDependencyGraph();
+  const findings = [];
+  const edgeSet = new Set();
+  const degreeByNodeId = new Map();
+
+  KNOWN_SECTIONS.forEach((section) => {
+    registry[section].forEach((entry) => {
+      const nodeId = sanitizeText(entry?.id);
+      if (!nodeId) {
+        return;
+      }
+
+      if (graph.nodes[nodeId]) {
+        findings.push(createGraphFinding(
+          "duplicateNodeId",
+          nodeId,
+          `Duplicate asset node ID detected for ${nodeId}; keeping the first deterministic node.`
+        ));
+        return;
+      }
+
+      graph.nodes[nodeId] = createGraphNode(section, entry);
+      degreeByNodeId.set(nodeId, 0);
+    });
+  });
+
+  GRAPH_EDGE_RULES.forEach((rule) => {
+    registry[rule.section].forEach((entry) => {
+      const sourceId = sanitizeText(entry?.id);
+      const targetId = sanitizeText(entry?.[rule.sourceField]);
+      if (!sourceId || !targetId) {
+        return;
+      }
+
+      if (!findRegistryEntryById(registry, rule.targetSection, targetId)) {
+        findings.push(createGraphFinding(
+          "missingTarget",
+          sourceId,
+          `Missing ${rule.targetSection.slice(0, -1)} target ${targetId} referenced by ${sourceId}.`,
+          {
+            targetId,
+            edgeType: rule.type
+          }
+        ));
+        return;
+      }
+
+      if (addGraphEdge(graph, edgeSet, rule.type, sourceId, targetId)) {
+        degreeByNodeId.set(sourceId, (degreeByNodeId.get(sourceId) || 0) + 1);
+        degreeByNodeId.set(targetId, (degreeByNodeId.get(targetId) || 0) + 1);
+      }
+    });
+  });
+
+  Object.keys(graph.nodes)
+    .sort((left, right) => left.localeCompare(right))
+    .forEach((nodeId) => {
+      if ((degreeByNodeId.get(nodeId) || 0) > 0) {
+        return;
+      }
+      findings.push(createGraphFinding(
+        "orphanedAsset",
+        nodeId,
+        `Asset ${nodeId} is currently orphaned in the dependency graph.`
+      ));
+    });
+
+  const orderedNodeIds = Object.keys(graph.nodes).sort((left, right) => left.localeCompare(right));
+  graph.nodes = orderedNodeIds.reduce((accumulator, nodeId) => {
+    accumulator[nodeId] = graph.nodes[nodeId];
+    return accumulator;
+  }, {});
+  graph.edges.sort((left, right) => {
+    const byType = left.type.localeCompare(right.type);
+    if (byType !== 0) {
+      return byType;
+    }
+    const bySource = left.source.localeCompare(right.source);
+    if (bySource !== 0) {
+      return bySource;
+    }
+    return left.target.localeCompare(right.target);
+  });
+
+  findings.sort((left, right) => {
+    const byKind = left.kind.localeCompare(right.kind);
+    if (byKind !== 0) {
+      return byKind;
+    }
+    const byNode = left.nodeId.localeCompare(right.nodeId);
+    if (byNode !== 0) {
+      return byNode;
+    }
+    return left.message.localeCompare(right.message);
+  });
+
+  return {
+    graph,
+    findings
+  };
 }
 
 export function mergeAssetRegistries(baseRegistry, incomingRegistry) {

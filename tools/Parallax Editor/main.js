@@ -5,6 +5,7 @@ David Quesenberry
 main.js
 */
 import {
+  buildAssetDependencyGraph,
   createAssetId,
   createAssetRegistry,
   createRegistryDownloadPayload,
@@ -284,6 +285,12 @@ function createDownload(fileName, content) {
   anchor.click();
   document.body.removeChild(anchor);
   URL.revokeObjectURL(href);
+}
+
+function summarizeGraphFindings(findings) {
+  return Array.isArray(findings) && findings.length > 0
+    ? ` Graph findings: ${findings.length}.`
+    : " Graph findings: none.";
 }
 
 function normalizeSamplePath(pathValue) {
@@ -992,17 +999,23 @@ class ParallaxEditorApp {
     this.touchDocument();
     this.syncAssetRegistryFromDocument();
     const output = createRegistryManagedParallaxSaveDocument(this.documentModel);
+    const { graph, findings } = buildAssetDependencyGraph(this.assetRegistry);
+    output.project = {
+      ...(output.project && typeof output.project === "object" ? output.project : {}),
+      assetDependencyGraph: graph
+    };
     const payload = JSON.stringify(output, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.parallax.json`;
     createDownload(fileName, payload);
-    this.updateStatus(`Saved ${fileName} (${output.assetRefs.parallaxSourceIds.length} parallax asset refs, ID-based layer references).`);
+    this.updateStatus(`Saved ${fileName} (${output.assetRefs.parallaxSourceIds.length} parallax asset refs, ID-based layer references).${summarizeGraphFindings(findings)}`);
   }
 
   handleSaveAssetRegistry() {
     this.syncAssetRegistryFromDocument();
+    const { findings } = buildAssetDependencyGraph(this.assetRegistry);
     const payload = createRegistryDownloadPayload(this.assetRegistry);
     createDownload("project.assets.json", payload);
-    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.parallaxSources.length} parallax sources).`);
+    this.updateStatus(`Saved project.assets.json (${this.assetRegistry.parallaxSources.length} parallax sources).${summarizeGraphFindings(findings)}`);
   }
 
   handleExportTilemapPatch() {

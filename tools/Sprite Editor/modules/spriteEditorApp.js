@@ -26,6 +26,7 @@ import {
   serializeProject
 } from "./projectModel.js";
 import {
+  buildAssetDependencyGraph,
   createAssetId,
   createAssetRegistry,
   createRegistryDownloadPayload,
@@ -219,6 +220,12 @@ function downloadBlob(blob, filename) {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+function summarizeGraphFindings(findings) {
+  return Array.isArray(findings) && findings.length > 0
+    ? ` Graph findings: ${findings.length}.`
+    : " Graph findings: none.";
 }
 
 function canvasToBlob(canvas) {
@@ -1051,11 +1058,12 @@ async function exportSpriteSheetPng(state) {
 
 async function saveAssetRegistryJson(state) {
   syncSpriteAssetsToRegistry(state, {});
+  const { findings } = buildAssetDependencyGraph(state.assetRegistry);
   const payload = createRegistryDownloadPayload(state.assetRegistry);
   const blob = new Blob([payload], { type: "application/json" });
   const fileName = "project.assets.json";
   downloadBlob(blob, fileName);
-  setStatus(state, `Saved ${fileName} with ${state.assetRegistry.sprites.length} sprite entries.`);
+  setStatus(state, `Saved ${fileName} with ${state.assetRegistry.sprites.length} sprite entries.${summarizeGraphFindings(findings)}`);
 }
 
 async function loadAssetRegistryJson(state, file) {
@@ -1079,13 +1087,18 @@ async function loadAssetRegistryJson(state, file) {
 async function saveProjectJson(state) {
   const fileName = deriveSpriteFileName(state.project);
   syncSpriteAssetsToRegistry(state, { spritePath: `assets/sprites/${fileName}` });
+  const { graph, findings } = buildAssetDependencyGraph(state.assetRegistry);
   const payload = serializeProject(state.project);
+  payload.project = {
+    ...(payload.project && typeof payload.project === "object" ? payload.project : {}),
+    assetDependencyGraph: graph
+  };
   const json = `${JSON.stringify(payload, null, 2)}\n`;
   const blob = new Blob([json], { type: "application/json" });
   downloadBlob(blob, fileName);
   setStatus(
     state,
-    `Saved ${fileName} (frame ${state.project.currentFrameIndex + 1} active, asset refs: palette=${state.project.assetRefs.paletteId || "none"}, sprite=${state.project.assetRefs.spriteId || "none"}).`
+    `Saved ${fileName} (frame ${state.project.currentFrameIndex + 1} active, asset refs: palette=${state.project.assetRefs.paletteId || "none"}, sprite=${state.project.assetRefs.spriteId || "none"}).${summarizeGraphFindings(findings)}`
   );
 }
 
