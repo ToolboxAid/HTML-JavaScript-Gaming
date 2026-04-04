@@ -1,9 +1,13 @@
-APPLY_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION_delta/
-└── docs/
-    ├── dev/
-    │   └── reports/
-    │       ├── change_summary.txt
-    │       ├── file_tree.txt
-    │       └── validation_checklist.txt
-    └── pr/
-        └── APPLY_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION.md
+BUILD_PR_PARALLAX_EDITOR_ASSET_REGISTRY_ADOPTION_delta/
+├── docs/
+│   ├── dev/
+│   │   └── reports/
+│   │       ├── change_summary.txt
+│   │       ├── file_tree.txt
+│   │       └── validation_checklist.txt
+│   └── pr/
+│       └── BUILD_PR_PARALLAX_EDITOR_ASSET_REGISTRY_ADOPTION.md
+└── tools/
+    └── Parallax Editor/
+        ├── README.md
+        └── main.js

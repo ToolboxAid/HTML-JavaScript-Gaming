@@ -1,9 +1,8 @@
-APPLY VALIDATION CHECKLIST
+BUILD VALIDATION CHECKLIST
 
-- [x] Build artifact `tmp/BUILD_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION_delta.zip` exists
-- [x] Build artifact contents confirmed limited to approved PR files
-- [x] Plan/build/apply alignment confirmed for Tile Map Editor registry adoption
-- [x] Legacy compatibility and additive registry preservation confirmed in apply notes
-- [x] No engine core API changes or Parallax Editor scope expansion introduced during APPLY
-- [x] Syntax validation re-confirmed for changed JS files
-- [x] APPLY bundle is docs-only
+- [x] Parallax Editor integrated with project asset registry
+- [x] Registry-managed saves use ID-based references instead of direct paths
+- [x] Backward compatibility preserved for legacy parallax/tilemap JSON
+- [x] No engine core API changes introduced
+- [x] Shared registry helpers reused without destructive registry replacement
+- [x] Syntax validation passed for changed JS files

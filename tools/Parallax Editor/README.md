@@ -30,6 +30,7 @@ Standalone companion tool for parallax depth/background authoring.
 - Supports loading and saving `project.assets.json` from top-level project controls.
 - Parallax saves additively register shared `images` and `parallaxSources`.
 - Parallax layers support optional `parallaxSourceId` references.
+- Registry-managed parallax saves prefer ID-based references over direct layer image paths.
 - Parallax JSON includes optional `assetRefs.parallaxSourceIds` for cross-tool lookup.
 - Legacy parallax/tilemap documents with no registry references remain supported.
 

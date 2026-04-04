@@ -126,6 +126,21 @@ function sanitizeAssetRefs(rawAssetRefs) {
   };
 }
 
+function createRegistryManagedParallaxSaveDocument(documentModel) {
+  const output = cloneDeep(documentModel);
+  output.assetRefs = sanitizeAssetRefs(output.assetRefs);
+
+  output.layers = (Array.isArray(output.layers) ? output.layers : []).map((layer) => {
+    const nextLayer = normalizeLayer(layer);
+    if (nextLayer.parallaxSourceId && !nextLayer.imageDataUrl) {
+      nextLayer.imageSource = "";
+    }
+    return nextLayer;
+  });
+
+  return output;
+}
+
 function createInitialParallaxDocument(options = {}) {
   const map = normalizeMapMeta(options.map || {});
   const createdAt = new Date().toISOString();
@@ -932,10 +947,15 @@ class ParallaxEditorApp {
     this.documentModel.assetRefs = sanitizeAssetRefs(this.documentModel.assetRefs);
     const sourceIds = this.documentModel.assetRefs.parallaxSourceIds;
     if (!Array.isArray(sourceIds) || sourceIds.length === 0) {
-      return;
+      return {
+        resolvedCount: 0,
+        unresolvedCount: 0
+      };
     }
 
     let fallbackIndex = 0;
+    let resolvedCount = 0;
+    let unresolvedCount = 0;
     this.documentModel.layers.forEach((layer) => {
       const sourceId = layer.parallaxSourceId || sourceIds[fallbackIndex] || "";
       if (!sourceId) {
@@ -955,18 +975,27 @@ class ParallaxEditorApp {
       const sourcePath = normalizeProjectRelativePath(sourceEntry?.path || "");
       if (sourcePath) {
         layer.imageSource = sourcePath;
+        resolvedCount += 1;
+      } else {
+        unresolvedCount += 1;
       }
       fallbackIndex += 1;
     });
+
+    return {
+      resolvedCount,
+      unresolvedCount
+    };
   }
 
   handleSaveProject() {
     this.touchDocument();
     this.syncAssetRegistryFromDocument();
-    const payload = JSON.stringify(this.documentModel, null, 2);
+    const output = createRegistryManagedParallaxSaveDocument(this.documentModel);
+    const payload = JSON.stringify(output, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.parallax.json`;
     createDownload(fileName, payload);
-    this.updateStatus(`Saved ${fileName} (${this.documentModel.assetRefs.parallaxSourceIds.length} parallax asset refs).`);
+    this.updateStatus(`Saved ${fileName} (${output.assetRefs.parallaxSourceIds.length} parallax asset refs, ID-based layer references).`);
   }
 
   handleSaveAssetRegistry() {
@@ -977,7 +1006,7 @@ class ParallaxEditorApp {
   }
 
   handleExportTilemapPatch() {
-    const patch = createTilemapParallaxPatch(this.documentModel);
+    const patch = createTilemapParallaxPatch(createRegistryManagedParallaxSaveDocument(this.documentModel));
     const payload = JSON.stringify(patch, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.tilemap-parallax.patch.json`;
     createDownload(fileName, payload);
@@ -996,7 +1025,7 @@ class ParallaxEditorApp {
       try {
         const raw = JSON.parse(String(reader.result));
         this.documentModel = extractParallaxDocument(raw);
-        this.resolveAssetRefsFromRegistry();
+        const resolution = this.resolveAssetRefsFromRegistry();
         normalizeDrawOrderSequence(this.documentModel.layers);
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
         this.invalidateImageCache();
@@ -1004,7 +1033,13 @@ class ParallaxEditorApp {
         this.cameraY = 0;
         this.syncInputsFromDocument();
         this.renderAll();
-        this.updateStatus(`Loaded ${file.name}.`);
+        if (resolution.resolvedCount > 0) {
+          this.updateStatus(`Loaded ${file.name} (${resolution.resolvedCount} layer image refs restored from asset registry).`);
+        } else if (resolution.unresolvedCount > 0) {
+          this.updateStatus(`Loaded ${file.name} (${resolution.unresolvedCount} registry image refs unresolved; legacy fallback preserved).`);
+        } else {
+          this.updateStatus(`Loaded ${file.name}.`);
+        }
       } catch (error) {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
       }
@@ -1025,10 +1060,16 @@ class ParallaxEditorApp {
       try {
         const parsed = JSON.parse(String(reader.result));
         this.assetRegistry = mergeAssetRegistries(this.assetRegistry, parsed);
-        this.resolveAssetRefsFromRegistry();
+        const resolution = this.resolveAssetRefsFromRegistry();
         this.invalidateImageCache();
         this.renderAll();
-        this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources).`);
+        if (resolution.resolvedCount > 0) {
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources; ${resolution.resolvedCount} layer refs restored).`);
+        } else if (resolution.unresolvedCount > 0) {
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources; ${resolution.unresolvedCount} refs still unresolved).`);
+        } else {
+          this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources).`);
+        }
       } catch (error) {
         this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
       }

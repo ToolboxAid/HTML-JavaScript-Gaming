@@ -1,0 +1,1 @@
+Introduces Parallax Editor adoption of asset registry (docs-only).

@@ -1,6 +1,6 @@
-Created APPLY bundle for APPLY_PR_TILEMAP_EDITOR_ASSET_REGISTRY_ADOPTION.
+Created implementation bundle for BUILD_PR_PARALLAX_EDITOR_ASSET_REGISTRY_ADOPTION.
 
 Summary:
-- Confirms the built Tile Map Editor registry adoption slice is ready to apply as implemented.
-- Verifies build/package scope stays limited to the approved Tile Map Editor registry files and docs.
-- Reaffirms legacy compatibility, additive registry preservation, and no engine or Parallax scope expansion.
+- Updates Parallax Editor to save registry-managed layers via ID-based references.
+- Preserves additive `images` and `parallaxSources` registry behavior through shared helpers.
+- Maintains backward compatibility for legacy direct-path parallax and tilemap documents.

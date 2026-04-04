@@ -1,0 +1,3 @@
+- No code changes in PLAN
+- Contracts clearly defined
+- Backward compatibility documented
