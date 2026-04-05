@@ -486,6 +486,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     const code = sanitizeText(event?.code);
     const key = typeof event?.key === "string" ? event.key : "";
     const hasControlModifier = event?.ctrlKey === true || event?.metaKey === true || event?.altKey === true;
+    const isShiftArrow = event?.shiftKey === true && (code === "ArrowUp" || code === "ArrowDown");
 
     if (hasControlModifier) {
       return;
@@ -542,7 +543,10 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     }
 
     if (code === "ArrowUp") {
-      if (consoleTypingMode) {
+      if (isShiftArrow) {
+        consoleTypingMode = false;
+        scrollConsoleHistory(1);
+      } else if (consoleTypingMode) {
         navigateConsoleHistory(-1);
       } else {
         scrollConsoleHistory(1);
@@ -552,7 +556,10 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     }
 
     if (code === "ArrowDown") {
-      if (consoleTypingMode) {
+      if (isShiftArrow) {
+        consoleTypingMode = false;
+        scrollConsoleHistory(-1);
+      } else if (consoleTypingMode) {
         navigateConsoleHistory(1);
       } else {
         scrollConsoleHistory(-1);
@@ -747,7 +754,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
 
       const commandHint = "Shift+` console | Ctrl+Shift+` overlay | Ctrl+Shift+R reload";
       const inputHint = consoleTypingMode
-        ? "Typing: Left/Right cursor | Up/Down history | Backspace/Delete | Esc mode"
+        ? "Typing: Left/Right cursor | Up/Down history | Shift+Up/Down scroll | Backspace/Delete | Esc mode"
         : "Scroll: Up/Down output | Esc mode";
       const statusHint = `mode: ${consoleTypingMode ? "typing" : "scroll"} | scroll: ${consoleScrollOffset} | last: ${lastCommandBinding || "none"} | status: ${sanitizeText(lastCommandExecution?.status) || "idle"} | history: ${consoleCommandHistory.length}`;
 
