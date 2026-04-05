@@ -223,8 +223,11 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   let lastCommandBinding = "";
   let panelCursorIndex = -1;
   let consoleInputBuffer = "";
+  let consoleCursorIndex = 0;
   let consoleHistoryCursor = -1;
   let consoleOutputHistory = [];
+  let consoleScrollOffset = 0;
+  let consoleTypingMode = true;
   let consoleCommandHistory = [];
   const keyboardEventTarget = getKeyboardEventTarget();
   const commandRegistry = createDevConsoleCommandRegistry({
@@ -241,8 +244,11 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
 
   function resetConsoleUiState() {
     consoleInputBuffer = "";
+    consoleCursorIndex = 0;
     consoleHistoryCursor = -1;
     consoleOutputHistory = [];
+    consoleScrollOffset = 0;
+    consoleTypingMode = true;
   }
 
   function normalizeRuntimeDelegationResult(commandName, execution) {
@@ -292,6 +298,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       const trimCount = consoleOutputHistory.length - MAX_CONSOLE_OUTPUT_LINES;
       consoleOutputHistory.splice(0, trimCount);
     }
+    if (consoleTypingMode) {
+      consoleScrollOffset = 0;
+    }
   }
 
   function pushConsoleOutputLines(lines) {
@@ -309,6 +318,94 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       consoleCommandHistory.splice(0, trimCount);
     }
     consoleHistoryCursor = -1;
+    consoleScrollOffset = 0;
+  }
+
+  function clampConsoleCursor() {
+    consoleCursorIndex = Math.max(0, Math.min(consoleCursorIndex, consoleInputBuffer.length));
+  }
+
+  function setConsoleInputBuffer(value, moveCursorToEnd = true) {
+    consoleInputBuffer = String(value ?? "");
+    if (consoleInputBuffer.length > MAX_CONSOLE_INPUT_CHARS) {
+      consoleInputBuffer = consoleInputBuffer.slice(0, MAX_CONSOLE_INPUT_CHARS);
+    }
+
+    if (moveCursorToEnd) {
+      consoleCursorIndex = consoleInputBuffer.length;
+    } else {
+      clampConsoleCursor();
+    }
+  }
+
+  function insertConsoleText(text) {
+    const chunk = String(text ?? "");
+    if (!chunk) {
+      return;
+    }
+
+    const before = consoleInputBuffer.slice(0, consoleCursorIndex);
+    const after = consoleInputBuffer.slice(consoleCursorIndex);
+    const next = `${before}${chunk}${after}`;
+    setConsoleInputBuffer(next, false);
+    consoleCursorIndex = Math.min(before.length + chunk.length, consoleInputBuffer.length);
+    clampConsoleCursor();
+  }
+
+  function deleteBeforeCursor() {
+    if (consoleCursorIndex <= 0) {
+      return;
+    }
+    const before = consoleInputBuffer.slice(0, consoleCursorIndex - 1);
+    const after = consoleInputBuffer.slice(consoleCursorIndex);
+    setConsoleInputBuffer(`${before}${after}`, false);
+    consoleCursorIndex = before.length;
+    clampConsoleCursor();
+  }
+
+  function deleteAtCursor() {
+    if (consoleCursorIndex >= consoleInputBuffer.length) {
+      return;
+    }
+    const before = consoleInputBuffer.slice(0, consoleCursorIndex);
+    const after = consoleInputBuffer.slice(consoleCursorIndex + 1);
+    setConsoleInputBuffer(`${before}${after}`, false);
+    consoleCursorIndex = before.length;
+    clampConsoleCursor();
+  }
+
+  function scrollConsoleHistory(direction) {
+    if (direction === 0) {
+      return;
+    }
+    const maxOffset = Math.max(0, consoleOutputHistory.length - 1);
+    consoleScrollOffset = Math.max(0, Math.min(maxOffset, consoleScrollOffset + direction));
+  }
+
+  function getConsoleHistoryLines() {
+    const source = consoleOutputHistory.length > 0
+      ? consoleOutputHistory.slice()
+      : [
+          "Type a command and press Enter.",
+          "Try: help, status, scene.info"
+        ];
+
+    if (consoleTypingMode) {
+      return source;
+    }
+
+    const maxOffset = Math.max(0, source.length - 1);
+    const safeOffset = Math.max(0, Math.min(maxOffset, consoleScrollOffset));
+    if (safeOffset === 0) {
+      return source;
+    }
+    return source.slice(0, source.length - safeOffset);
+  }
+
+  function getConsoleInputDisplay() {
+    const before = consoleInputBuffer.slice(0, consoleCursorIndex);
+    const after = consoleInputBuffer.slice(consoleCursorIndex);
+    return `${before}|${after}`;
   }
 
   function appendExecutionToConsole(command, execution) {
@@ -351,7 +448,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     }
     const commandContext = buildRegistryCommandContext(buildCommandContext(diagnosticsSnapshot || {}));
     const execution = executeCommand(command, commandContext);
-    consoleInputBuffer = "";
+    setConsoleInputBuffer("", true);
+    consoleTypingMode = true;
+    consoleScrollOffset = 0;
     return execution;
   }
 
@@ -370,11 +469,13 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     );
 
     if (consoleHistoryCursor >= consoleCommandHistory.length) {
-      consoleInputBuffer = "";
+      setConsoleInputBuffer("", true);
       return;
     }
 
-    consoleInputBuffer = consoleCommandHistory[consoleHistoryCursor] || "";
+    setConsoleInputBuffer(consoleCommandHistory[consoleHistoryCursor] || "", true);
+    consoleTypingMode = true;
+    consoleScrollOffset = 0;
   }
 
   function onConsoleKeyDown(event) {
@@ -395,33 +496,67 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     }
 
     if (code === "Enter") {
+      consoleTypingMode = true;
       submitConsoleInput();
       event.preventDefault();
       return;
     }
 
     if (code === "Backspace") {
-      if (consoleInputBuffer.length > 0) {
-        consoleInputBuffer = consoleInputBuffer.slice(0, -1);
-      }
+      consoleTypingMode = true;
+      deleteBeforeCursor();
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "Delete") {
+      consoleTypingMode = true;
+      deleteAtCursor();
       event.preventDefault();
       return;
     }
 
     if (code === "Escape") {
-      consoleInputBuffer = "";
+      if (consoleInputBuffer.length > 0) {
+        setConsoleInputBuffer("", true);
+        consoleTypingMode = true;
+      } else {
+        consoleTypingMode = !consoleTypingMode;
+      }
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "ArrowLeft") {
+      consoleTypingMode = true;
+      consoleCursorIndex = Math.max(0, consoleCursorIndex - 1);
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "ArrowRight") {
+      consoleTypingMode = true;
+      consoleCursorIndex = Math.min(consoleInputBuffer.length, consoleCursorIndex + 1);
       event.preventDefault();
       return;
     }
 
     if (code === "ArrowUp") {
-      navigateConsoleHistory(-1);
+      if (consoleTypingMode) {
+        navigateConsoleHistory(-1);
+      } else {
+        scrollConsoleHistory(1);
+      }
       event.preventDefault();
       return;
     }
 
     if (code === "ArrowDown") {
-      navigateConsoleHistory(1);
+      if (consoleTypingMode) {
+        navigateConsoleHistory(1);
+      } else {
+        scrollConsoleHistory(-1);
+      }
       event.preventDefault();
       return;
     }
@@ -436,10 +571,13 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     }
 
     if (consoleInputBuffer.length >= MAX_CONSOLE_INPUT_CHARS) {
+      event.preventDefault();
       return;
     }
 
-    consoleInputBuffer += key;
+    consoleTypingMode = true;
+    insertConsoleText(key);
+    consoleScrollOffset = 0;
     event.preventDefault();
   }
 
@@ -532,6 +670,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       } else {
         runtime.showConsole();
         consoleHistoryCursor = -1;
+        consoleTypingMode = true;
+        consoleScrollOffset = 0;
+        clampConsoleCursor();
       }
     }
 
@@ -602,16 +743,13 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       const consoleWidth = Number.isFinite(optionsOverride?.consoleWidth) ? optionsOverride.consoleWidth : overlayWidth;
       const consoleHeight = Number.isFinite(optionsOverride?.consoleHeight) ? optionsOverride.consoleHeight : 234;
 
-      const historyLines = consoleOutputHistory.length > 0
-        ? consoleOutputHistory.slice()
-        : [
-            "Type a command and press Enter.",
-            "Try: help, status, scene.info"
-          ];
+      const historyLines = getConsoleHistoryLines();
 
       const commandHint = "Shift+` console | Ctrl+Shift+` overlay | Ctrl+Shift+R reload";
-      const inputHint = "Enter run | Up/Down history | Esc clear";
-      const statusHint = `last: ${lastCommandBinding || "none"} | status: ${sanitizeText(lastCommandExecution?.status) || "idle"} | history: ${consoleCommandHistory.length}`;
+      const inputHint = consoleTypingMode
+        ? "Typing: Left/Right cursor | Up/Down history | Backspace/Delete | Esc mode"
+        : "Scroll: Up/Down output | Esc mode";
+      const statusHint = `mode: ${consoleTypingMode ? "typing" : "scroll"} | scroll: ${consoleScrollOffset} | last: ${lastCommandBinding || "none"} | status: ${sanitizeText(lastCommandExecution?.status) || "idle"} | history: ${consoleCommandHistory.length}`;
 
       drawInteractiveDevConsole(renderer, {
         x: consoleX,
@@ -620,7 +758,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         height: consoleHeight,
         title: "Dev Console (Shift+`)",
         prompt: ">",
-        inputValue: consoleInputBuffer,
+        inputValue: getConsoleInputDisplay(),
         outputLines: historyLines,
         footerLines: [commandHint, inputHint, statusHint],
         caretVisible: Math.floor(Date.now() / 450) % 2 === 0
@@ -656,6 +794,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         lastCommandExecution,
         lastCommandBinding,
         consoleInputBuffer,
+        consoleCursorIndex,
+        consoleScrollOffset,
+        consoleTypingMode,
         consoleOutputHistory: consoleOutputHistory.slice(),
         consoleCommandHistory: consoleCommandHistory.slice(),
         commandPackCount: commandRegistry.getPackCount(),

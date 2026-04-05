@@ -1,5 +1,5 @@
-PLAN_BUILD_APPLY_PR_DEV_CONSOLE_COMMAND_PACKS
+DEV_CONSOLE_ARROW_KEYS_EDIT_AND_SCROLL_PATCH
 
-- Implemented full command pack system
-- Wired registry and packs
-- Applied integration
+- Added cursor editing
+- Added scroll mode
+- Improved keyboard handling
