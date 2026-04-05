@@ -1,0 +1,15 @@
+BUILD_PR_STARTER_PROJECT_TEMPLATE validation report
+
+STATUS: PASS
+
+Checks:
+- starter project manifest validates against shared project contract
+- shared vector/tilemap/parallax/sprite/palette references resolve on disk
+- starter project includes payloads for all active first-class tools
+- cross-tool loading payloads are structurally present
+- starter project serializes and reloads through shared project serializer
+- sprite tool visibility rules remain intact
+- tools/index.html remains tool-only and sample-free
+
+Issues:
+- none

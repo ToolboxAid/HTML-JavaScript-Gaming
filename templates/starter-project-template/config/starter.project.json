@@ -1,0 +1,448 @@
+{
+  "schema": "html-js-gaming.project",
+  "version": 1,
+  "id": "starter-project-template",
+  "name": "Starter Project Template",
+  "createdAt": "2026-04-05T00:00:00.000Z",
+  "updatedAt": "2026-04-05T00:00:00.000Z",
+  "activeToolId": "vector-map-editor",
+  "dirty": false,
+  "sharedReferences": {
+    "asset": {
+      "id": "vector.template.player",
+      "type": "vector",
+      "displayName": "Template Player Vector",
+      "sourcePath": "templates/vector-native-arcade/assets/vectors/template-player.vector.json",
+      "sourceToolId": "vector-asset-studio",
+      "updatedAt": "2026-04-05T00:00:00.000Z",
+      "metadata": {
+        "validationRole": "vector"
+      }
+    },
+    "palette": {
+      "id": "palette.vector-native-primary",
+      "type": "palette",
+      "displayName": "Vector Native Primary Palette",
+      "sourcePath": "templates/vector-native-arcade/assets/palettes/vector-native-primary.palette.json",
+      "sourceToolId": "palette-browser",
+      "updatedAt": "2026-04-05T00:00:00.000Z",
+      "metadata": {
+        "validationRole": "palette"
+      }
+    }
+  },
+  "sharedLibrary": {
+    "assets": [
+      {
+        "id": "vector.template.player",
+        "type": "vector",
+        "displayName": "Template Player Vector",
+        "sourcePath": "templates/vector-native-arcade/assets/vectors/template-player.vector.json",
+        "sourceToolId": "vector-asset-studio"
+      },
+      {
+        "id": "tilemap.template.arena",
+        "type": "tilemap",
+        "displayName": "Template Arena Tilemap",
+        "sourcePath": "templates/vector-native-arcade/assets/tilemaps/template-arena.tilemap.json",
+        "sourceToolId": "tile-map-editor"
+      },
+      {
+        "id": "parallax.template.backdrop",
+        "type": "parallax",
+        "displayName": "Template Backdrop Parallax",
+        "sourcePath": "templates/vector-native-arcade/assets/parallax/template-backdrop.parallax.json",
+        "sourceToolId": "parallax-editor"
+      },
+      {
+        "id": "sprite.asteroids-demo",
+        "type": "sprite",
+        "displayName": "Asteroids Demo Sprite Project",
+        "sourcePath": "games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json",
+        "sourceToolId": "sprite-editor"
+      }
+    ],
+    "palettes": [
+      {
+        "id": "palette.vector-native-primary",
+        "type": "palette",
+        "displayName": "Vector Native Primary Palette",
+        "sourcePath": "templates/vector-native-arcade/assets/palettes/vector-native-primary.palette.json",
+        "sourceToolId": "palette-browser"
+      }
+    ]
+  },
+  "tools": {
+    "vector-map-editor": {
+      "snapshot": {
+        "documentData": {
+          "schema": "toolbox.vector-map/1",
+          "version": 1,
+          "name": "Starter Vector Map",
+          "width": 1280,
+          "height": 720,
+          "background": "#05070D",
+          "mode": "2d",
+          "objects": []
+        },
+        "selection": {
+          "objectId": null,
+          "pointIndex": null
+        },
+        "workspaceViewMode": "2d"
+      },
+      "linkedAssetIds": [
+        "vector.template.player",
+        "tilemap.template.arena",
+        "parallax.template.backdrop",
+        "sprite.asteroids-demo"
+      ]
+    },
+    "vector-asset-studio": {
+      "documentName": "starter-backdrop",
+      "svgText": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1600\" height=\"900\" viewBox=\"0 0 1600 900\" data-editor-palette-id=\"vector-native-primary\" data-editor-paint=\"#6FD3FF\" data-editor-stroke=\"#E8F0FF\" data-editor-stroke-width=\"2\"><rect id=\"starter-bg\" x=\"0\" y=\"0\" width=\"1600\" height=\"900\" fill=\"#05070D\" stroke=\"#05070D\"/><circle id=\"starter-orbit\" cx=\"800\" cy=\"450\" r=\"180\" fill=\"none\" stroke=\"#6FD3FF\" stroke-width=\"4\"/><polygon id=\"starter-ship\" points=\"800,320 860,520 800,470 740,520\" fill=\"#E8F0FF\" stroke=\"#6FD3FF\" stroke-width=\"3\"/></svg>",
+      "canvasWidth": 1600,
+      "canvasHeight": 900,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "selectedPaletteId": "vector-native-primary",
+      "activePaletteTarget": "paint",
+      "strokeWidth": 2,
+      "gradientAngle": 45,
+      "selectedId": null,
+      "usedColors": [
+        "#05070D",
+        "#6FD3FF",
+        "#E8F0FF"
+      ],
+      "linkedAssetIds": [
+        "vector.template.player"
+      ]
+    },
+    "tile-map-editor": {
+      "documentModel": {
+        "schema": "toolbox.tilemap/1",
+        "version": 1,
+        "map": {
+          "name": "starter-map",
+          "width": 4,
+          "height": 4,
+          "tileSize": 24
+        },
+        "tileset": [
+          {
+            "id": 0,
+            "name": "Empty",
+            "color": "transparent",
+            "source": null
+          },
+          {
+            "id": 1,
+            "name": "Accent",
+            "color": "#6FD3FF",
+            "source": null
+          }
+        ],
+        "tilesetAtlas": {
+          "schema": "toolbox.tileset-atlas/1",
+          "imageDataUrl": "",
+          "imageName": "templates/vector-native-arcade/assets/tilemaps/template-ui.tileset.json",
+          "imageWidth": 0,
+          "imageHeight": 0,
+          "tileWidth": 24,
+          "tileHeight": 24,
+          "spacing": 0,
+          "margin": 0
+        },
+        "layers": [
+          {
+            "id": "ground",
+            "name": "Ground",
+            "kind": "tile",
+            "visible": true,
+            "locked": false,
+            "data": [
+              [1, 1, 1, 1],
+              [1, 0, 0, 1],
+              [1, 0, 0, 1],
+              [1, 1, 1, 1]
+            ]
+          },
+          {
+            "id": "collision",
+            "name": "Collision",
+            "kind": "collision",
+            "visible": true,
+            "locked": false,
+            "data": [
+              [0, 0, 0, 0],
+              [0, 1, 1, 0],
+              [0, 1, 1, 0],
+              [0, 0, 0, 0]
+            ]
+          },
+          {
+            "id": "data",
+            "name": "Data",
+            "kind": "data",
+            "visible": true,
+            "locked": false,
+            "data": [
+              [0, 0, 0, 0],
+              [0, 2, 0, 0],
+              [0, 0, 3, 0],
+              [0, 0, 0, 0]
+            ]
+          }
+        ],
+        "markers": [
+          {
+            "id": "marker-start",
+            "type": "spawn",
+            "name": "spawn-1",
+            "col": 1,
+            "row": 1,
+            "properties": {}
+          }
+        ],
+        "assetRefs": {
+          "tilemapId": "tilemap.template.arena",
+          "tilesetId": "tileset.template.ui"
+        },
+        "parallax": {
+          "schema": "toolbox.parallax/1",
+          "companionEditor": "ParallaxEditor",
+          "layers": []
+        },
+        "metadata": {
+          "createdAt": "2026-04-05T00:00:00.000Z",
+          "updatedAt": "2026-04-05T00:00:00.000Z",
+          "notes": "Starter tilemap references shared template content."
+        }
+      },
+      "assetRegistry": {
+        "version": 1,
+        "projectId": "starter-project-template",
+        "basePath": ".",
+        "palettes": [],
+        "sprites": [],
+        "vectors": [],
+        "tilesets": [
+          {
+            "id": "tileset.template.ui",
+            "name": "Template UI Tileset",
+            "path": "templates/vector-native-arcade/assets/tilemaps/template-ui.tileset.json",
+            "tileWidth": 24,
+            "tileHeight": 24,
+            "sourceTool": "tile-map-editor"
+          }
+        ],
+        "tilemaps": [
+          {
+            "id": "tilemap.template.arena",
+            "name": "Template Arena Tilemap",
+            "path": "templates/vector-native-arcade/assets/tilemaps/template-arena.tilemap.json",
+            "tilesetId": "tileset.template.ui",
+            "sourceTool": "tile-map-editor"
+          }
+        ],
+        "images": [],
+        "parallaxSources": [],
+        "references": {}
+      },
+      "selectedLayerId": "ground",
+      "selectedMarkerId": "marker-start",
+      "activeTileId": 1
+    },
+    "parallax-editor": {
+      "documentModel": {
+        "schema": "toolbox.parallax/1",
+        "version": 1,
+        "companionEditor": "ParallaxEditor",
+        "map": {
+          "name": "starter-map",
+          "width": 4,
+          "height": 4,
+          "tileSize": 24
+        },
+        "layers": [
+          {
+            "id": "starter-backdrop",
+            "name": "Starter Backdrop",
+            "parallaxSourceId": "parallax.template.backdrop",
+            "drawOrder": 0,
+            "imageSource": "templates/vector-native-arcade/assets/parallax/template-backdrop.svg",
+            "imageDataUrl": "",
+            "scrollFactorX": 0.4,
+            "scrollFactorY": 0.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "repeatX": true,
+            "repeatY": false,
+            "wrapMode": "wrap",
+            "opacity": 1,
+            "visible": true
+          }
+        ],
+        "assetRefs": {
+          "parallaxSourceIds": [
+            "parallax.template.backdrop"
+          ]
+        },
+        "metadata": {
+          "createdAt": "2026-04-05T00:00:00.000Z",
+          "updatedAt": "2026-04-05T00:00:00.000Z",
+          "source": "starter-project-template"
+        }
+      },
+      "assetRegistry": {
+        "version": 1,
+        "projectId": "starter-project-template",
+        "basePath": ".",
+        "palettes": [],
+        "sprites": [],
+        "vectors": [],
+        "tilesets": [],
+        "tilemaps": [],
+        "images": [
+          {
+            "id": "image.template.backdrop",
+            "name": "Template Backdrop SVG",
+            "path": "templates/vector-native-arcade/assets/parallax/template-backdrop.svg",
+            "sourceTool": "parallax-editor"
+          }
+        ],
+        "parallaxSources": [
+          {
+            "id": "parallax.template.backdrop",
+            "name": "Template Backdrop Parallax",
+            "path": "templates/vector-native-arcade/assets/parallax/template-backdrop.parallax.json",
+            "imageId": "image.template.backdrop",
+            "sourceTool": "parallax-editor"
+          }
+        ],
+        "references": {}
+      },
+      "selectedLayerId": "starter-backdrop",
+      "cameraX": 0,
+      "cameraY": 0
+    },
+    "sprite-editor": {
+      "project": {
+        "format": "toolboxaid.sprite-editor.project",
+        "version": 1,
+        "width": 4,
+        "height": 4,
+        "pixelSize": 16,
+        "showGrid": true,
+        "onionSkin": false,
+        "activeColor": "#6FD3FFFF",
+        "paletteRef": {
+          "source": "palette-list",
+          "id": "vector-native-primary",
+          "locked": true
+        },
+        "assetRefs": {
+          "paletteId": "palette.vector-native-primary",
+          "spriteId": "sprite.asteroids-demo"
+        },
+        "recentColors": [
+          "#6FD3FFFF",
+          "#E8F0FFFF",
+          "#05070DFF"
+        ],
+        "currentFrameIndex": 0,
+        "frames": [
+          {
+            "pixels": [
+              null,
+              "#E8F0FFFF",
+              "#E8F0FFFF",
+              null,
+              "#6FD3FFFF",
+              "#E8F0FFFF",
+              "#E8F0FFFF",
+              "#6FD3FFFF",
+              "#05070DFF",
+              "#6FD3FFFF",
+              "#6FD3FFFF",
+              "#05070DFF",
+              null,
+              "#05070DFF",
+              "#05070DFF",
+              null
+            ]
+          }
+        ],
+        "palette": [
+          "#05070DFF",
+          "#E8F0FFFF",
+          "#6FD3FFFF",
+          "#FFB347FF"
+        ]
+      },
+      "assetRegistry": {
+        "version": 1,
+        "projectId": "starter-project-template",
+        "basePath": ".",
+        "palettes": [
+          {
+            "id": "palette.vector-native-primary",
+            "name": "Vector Native Primary Palette",
+            "enginePaletteId": "vector-native-primary",
+            "colors": [
+              "#05070DFF",
+              "#E8F0FFFF",
+              "#6FD3FFFF",
+              "#FFB347FF"
+            ],
+            "sourceTool": "sprite-editor"
+          }
+        ],
+        "sprites": [
+          {
+            "id": "sprite.asteroids-demo",
+            "name": "Asteroids Demo Atlas",
+            "path": "games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json",
+            "paletteId": "palette.vector-native-primary",
+            "sourceTool": "sprite-editor"
+          }
+        ],
+        "vectors": [],
+        "tilesets": [],
+        "tilemaps": [],
+        "images": [],
+        "parallaxSources": [],
+        "references": {}
+      },
+      "preview": {
+        "fps": 8,
+        "frameIndex": 0,
+        "playing": false
+      },
+      "projectTool": "pencil"
+    },
+    "asset-browser": {
+      "selectedCategory": "All",
+      "search": "template",
+      "selectedAssetId": "asset-vector-player",
+      "importCategory": "Vector Assets",
+      "importName": "starter-import.vector.json"
+    },
+    "palette-browser": {
+      "search": "vector",
+      "selectedPaletteId": "",
+      "selectedSwatchIndex": 0,
+      "customPalettes": []
+    }
+  },
+  "workspace": {
+    "lastOpenTool": "vector-map-editor",
+    "notes": "Single starter template proving shared asset and palette references across the active first-class tools without adding gameplay or samples to tools/index.html."
+  },
+  "migration": {
+    "sourceVersion": 1,
+    "applied": []
+  }
+}

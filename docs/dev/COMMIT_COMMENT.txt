@@ -1,1 +1,1 @@
-Add shared project system across active tools with manifest, shell flows, adapter-based persistence, dirty-state tracking, and shared asset/palette references while keeping Sprite Editor first-class and legacy hidden.
+Add one starter project template with shared vector, tilemap, parallax, sprite, and palette references plus cross-tool validation

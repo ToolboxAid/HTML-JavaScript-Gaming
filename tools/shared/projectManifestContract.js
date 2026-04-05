@@ -52,6 +52,32 @@ function sanitizeToolsBlock(rawTools) {
   return tools;
 }
 
+function sanitizeSharedLibrary(rawSharedLibrary) {
+  if (!rawSharedLibrary || typeof rawSharedLibrary !== "object") {
+    return {
+      assets: [],
+      palettes: []
+    };
+  }
+
+  const sanitizeEntries = (entries) => Array.isArray(entries)
+    ? entries
+      .filter((entry) => entry && typeof entry === "object")
+      .map((entry) => ({
+        id: sanitizeString(entry.id, ""),
+        type: sanitizeString(entry.type, ""),
+        displayName: sanitizeString(entry.displayName || entry.name, ""),
+        sourcePath: sanitizeString(entry.sourcePath, ""),
+        sourceToolId: sanitizeString(entry.sourceToolId, "")
+      }))
+    : [];
+
+  return {
+    assets: sanitizeEntries(rawSharedLibrary.assets),
+    palettes: sanitizeEntries(rawSharedLibrary.palettes)
+  };
+}
+
 function createProjectId() {
   const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
   const randomSuffix = Math.random().toString(36).slice(2, 8);
@@ -84,6 +110,7 @@ export function createEmptyProjectManifest(options = {}) {
       asset: sanitizeSharedReference(options.sharedReferences?.asset || readSharedAssetHandoff()),
       palette: sanitizeSharedReference(options.sharedReferences?.palette || readSharedPaletteHandoff())
     },
+    sharedLibrary: sanitizeSharedLibrary(options.sharedLibrary),
     tools: sanitizeToolsBlock(options.tools),
     workspace: {
       lastOpenTool: toolId,
@@ -112,6 +139,7 @@ export function migrateProjectManifest(rawManifest) {
     toolId: rawManifest.activeToolId || rawManifest.workspace?.lastOpenTool,
     dirty: rawManifest.dirty === true,
     sharedReferences: rawManifest.sharedReferences,
+    sharedLibrary: rawManifest.sharedLibrary,
     tools: rawManifest.tools,
     workspace: rawManifest.workspace
   });

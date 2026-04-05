@@ -1,22 +1,13 @@
-BUILD_PR_PROJECT_SYSTEM validation checklist
-
-[x] Project system lives in shared platform layer, not scattered across tools
-[x] New/Open/Save/Save As/Close flows exist in shared shell
-[x] Active project name is visible in header
-[x] Dirty-state indicator is visible in shared project chrome
-[x] Dirty-state prompt is wired for tool navigation, new/open, and close
-[x] Asset references are captured through shared project references
-[x] Palette references are captured through shared project references
-[x] Vector Map Editor has a shared project adapter
-[x] Vector Asset Studio has a shared project adapter
-[x] Tilemap Studio has a shared project adapter
-[x] Parallax Scene Studio has a shared project adapter
-[x] Sprite Editor has a shared project adapter
-[x] Asset Browser / Import Hub has a shared project adapter
-[x] Palette Browser / Manager has a shared project adapter
-[x] Project schema version is validated
-[x] Migration entry point exists for future versions
-[x] Sprite Editor remains first-class in registry/UI
-[x] SpriteEditor_old_keep remains hidden and excluded from active surface
+[x] Starter Project Template exists as one project template only
+[x] Template is not positioned as a sample pack or game
+[x] Shared vector/tilemap/parallax/sprite references resolve correctly
+[x] Shared palette reference resolves correctly
+[x] Project manifest validates through shared project serializer/validator
+[x] Vector Map Editor starter payload is present
+[x] Vector Asset Studio starter payload is present
+[x] Tilemap Studio starter payload is present
+[x] Parallax Scene Studio starter payload is present
+[x] Sprite Editor remains first-class
+[x] SpriteEditor_old_keep remains hidden legacy
 [x] tools/index.html remains tool-only and sample-free
-[x] Validation report emitted at docs/dev/reports/project_system_validation.txt
+[x] Validation report emitted at docs/dev/reports/starter_project_template_validation.txt

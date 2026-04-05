@@ -1,25 +1,11 @@
-BUILD_PR_PROJECT_SYSTEM change summary
+BUILD_PR_STARTER_PROJECT_TEMPLATE change summary
 
-- Added shared project manifest/version/migration contract under `tools/shared/`
-- Added project controller wiring to the shared engine-themed shell
-- Added shell actions:
-  - New Project
-  - Open Project
-  - Save Project
-  - Save Project As
-  - Close Project
-- Added project name + dirty-state header/status rendering
-- Added active-tool adapters for:
-  - Vector Map Editor
-  - Vector Asset Studio
-  - Tilemap Studio
-  - Parallax Scene Studio
-  - Sprite Editor
-  - Asset Browser / Import Hub
-  - Palette Browser / Manager
-- Added active-tool bootstrap globals needed by the shared adapter layer
-- Added project-system validator/report output
+- Added one starter template folder under `templates/starter-project-template/`
+- Added one shared project manifest at `templates/starter-project-template/config/starter.project.json`
+- Reused existing shared vector, tilemap, parallax, sprite, and palette assets by reference
+- Added a minimal template README with shared project open instructions
+- Added a dedicated starter template validator and report output
 - Preserved current platform rules:
   - Sprite Editor first-class and visible
   - SpriteEditor_old_keep hidden legacy
-  - tools/index remains tool-only and sample-free
+  - tools/index.html remains tool-only and sample-free

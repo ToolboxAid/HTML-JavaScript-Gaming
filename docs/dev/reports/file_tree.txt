@@ -1,19 +1,18 @@
-docs/
-  pr/
-    BUILD_PR_PROJECT_SYSTEM.md
-  specs/
-    project_manifest_contract.md
-  dev/
-    COMMIT_COMMENT.txt
-    reports/
-      change_summary.txt
-      file_tree.txt
-      project_system_validation.txt
-      validation_checklist.txt
-scripts/
-  validate-project-system.mjs
-tools/
-  shared/
-    projectManifestContract.js
-    projectSystem.js
-    projectSystemAdapters.js
+BUILD_PR_STARTER_PROJECT_TEMPLATE/
+  templates/
+    starter-project-template/
+      README.md
+      config/
+        starter.project.json
+  docs/
+    pr/
+      BUILD_PR_STARTER_PROJECT_TEMPLATE.md
+    dev/
+      COMMIT_COMMENT.txt
+      reports/
+        change_summary.txt
+        starter_project_template_validation.txt
+        validation_checklist.txt
+        file_tree.txt
+  scripts/
+    validate-starter-project-template.mjs
