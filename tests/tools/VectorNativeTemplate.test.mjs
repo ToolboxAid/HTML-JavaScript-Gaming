@@ -16,6 +16,8 @@ export async function run() {
   assert.equal(first.template.runtimeResult.runtimeLoader.status, "ready");
   assert.equal(first.template.runtimeResult.bootstrap.assetTable["vector.template.player"].runtimeKind, "vector-geometry");
   assert.equal(first.template.runtimeResult.bootstrap.assetTable["vector.template.player"].renderables.length > 0, true);
+  assert.match(first.template.debugVisualizationResult.debugVisualization.reportText, /geometry=/);
+  assert.match(first.template.performanceResult.performance.reportText, /Geometry: assets=/);
   assert.equal(first.template.ciValidationResult.ciValidation.status, "pass");
   assert.equal(first.template.publishingResult.publishing.status, "ready");
   assert.equal(first.template.vectorOnly.hasSpriteRuntimeDependency, false);

@@ -103,6 +103,8 @@ export async function run() {
   const first = await buildVectorAssetSystem();
   const second = await buildVectorAssetSystem();
   assert.equal(first.vectorAssetSystem.status, "ready");
+  assert.match(first.vectorAssetSystem.debugVisualizationResult.debugVisualization.reportText, /geometry=/);
+  assert.match(first.vectorAssetSystem.performanceResult.performance.reportText, /Geometry: assets=/);
   assert.deepEqual(first, second);
   assert.match(first.vectorAssetSystem.reportText, /VECTOR_ASSET_SYSTEM_READY/);
 }

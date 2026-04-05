@@ -1,0 +1,3 @@
+# Public Platform Showcase Summary
+
+This release showcases a verified vector-native platform anchored by a flagship Asteroids-style demo, a reusable standalone vector-native template sample, and a deterministic vector geometry runtime. The live evidence behind the showcase is current repo output: the Asteroids runtime is vector-only with no active `sprite.asteroids-demo` dependency, the standalone template sample validates/packages/runs without sprite fallback, geometry participation is visible in debug and profiler output, and the node test runner currently passes with `110/110` explicit `run()` tests.

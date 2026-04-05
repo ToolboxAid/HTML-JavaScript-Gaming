@@ -1,5 +1,10 @@
-- BUILD_PR_VECTOR_TEMPLATE_SAMPLE_GAME is present
-- PLAN_PR_VECTOR_GEOMETRY_RUNTIME is present
-- docs/dev contains codex_commands.md and commit_comment.txt
-- vector-only runtime assumptions are preserved
-- no engine core API changes are authorized
+- [x] Asteroids vector-only runtime verified as ready
+- [x] `sprite.asteroids-demo` confirmed absent from the active packaged/runtime dependency set
+- [x] Asteroids validation/package/runtime/debug/profiler/export/publishing remain ready
+- [x] standalone vector-native template sample verified as ready with no sprite fallback dependency
+- [x] repeated vector geometry runtime runs verified as deterministic
+- [x] geometry participation is visible in debug output
+- [x] geometry participation is visible in profiler output
+- [x] public platform showcase assets were built from verified technical evidence only
+- [x] no engine core API files were modified
+- [x] `node ./scripts/run-node-tests.mjs` passed with `110/110` explicit `run()` tests

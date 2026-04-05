@@ -106,16 +106,17 @@ export async function buildVectorAssetSystem(options = {}) {
     packageManifest: packageResult.manifest,
     resolvePackagedAsset: (asset) => runtimeAssets[sanitizeText(asset?.id)] || null
   });
-  const debugVisualizationResult = buildDebugVisualizationLayer({
-    assetDependencyGraph: validationResult.assetDependencyGraph,
-    validationResult,
-    packageResult,
-    runtimeResult
-  });
   const performanceResult = buildPerformanceProfiler({
     validationResult,
     packageResult,
     runtimeResult
+  });
+  const debugVisualizationResult = buildDebugVisualizationLayer({
+    assetDependencyGraph: validationResult.assetDependencyGraph,
+    validationResult,
+    packageResult,
+    runtimeResult,
+    performanceResult
   });
 
   const reports = [

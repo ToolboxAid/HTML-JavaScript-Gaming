@@ -28,6 +28,8 @@ export async function run() {
   );
   assert.equal(first.demo.vectorOnly.hasSpriteRuntimeDependency, false);
   assert.deepEqual(first.demo.vectorOnly.missingRequiredVectorIds, []);
+  assert.match(first.demo.debugVisualizationResult.debugVisualization.reportText, /geometry=/);
+  assert.match(first.demo.performanceResult.performance.reportText, /Geometry: assets=/);
   assert.equal(
     first.demo.packageResult.manifest.package.assets.some((asset) => asset.id === "sprite.asteroids-demo"),
     false

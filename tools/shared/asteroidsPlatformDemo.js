@@ -435,17 +435,18 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
   const gameplayResult = buildGameplaySystemLayer({
     runtimeResult
   });
+  const performanceResult = buildPerformanceProfiler({
+    validationResult,
+    packageResult,
+    runtimeResult
+  });
   const debugVisualizationResult = buildDebugVisualizationLayer({
     assetDependencyGraph: validationResult.assetDependencyGraph,
     validationResult,
     remediationResult,
     packageResult,
-    runtimeResult
-  });
-  const performanceResult = buildPerformanceProfiler({
-    validationResult,
-    packageResult,
-    runtimeResult
+    runtimeResult,
+    performanceResult
   });
   const templateResult = buildGameTemplates({
     gameplayResult

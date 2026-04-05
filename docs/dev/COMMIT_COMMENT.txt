@@ -1,1 +1,1 @@
-Implement the initial vector geometry runtime aligned to the vector asset contract, with clean parsing, transform, bounds, and render-prep support for vector-native sample games.
+build(release): verify final vector-native release path and package public platform showcase

@@ -1,3 +1,24 @@
-Combined progression bundle:
-1. build a standalone sample game from the vector-native template
-2. define the next runtime evolution for deterministic vector geometry behavior
+Final release verification suite
+--------------------------------
+- verified the Asteroids vector-only runtime acceptance state against current shared build output
+- verified the standalone vector-native template sample-game acceptance state against current shared build output
+- tightened reporting so geometry participation is explicitly visible in both debug and profiler outputs
+- verified deterministic vector geometry runtime behavior with repeated runs
+- built the public-facing showcase package and release-ready support assets from verified platform evidence only
+
+Release packaging
+-----------------
+- created docs-only acceptance artifacts for:
+  - `APPLY_PR_VECTOR_ONLY_RUNTIME_VERIFIED`
+  - `APPLY_PR_VECTOR_TEMPLATE_SAMPLE_GAME_VERIFIED`
+  - `APPLY_PR_VECTOR_GEOMETRY_RUNTIME_VERIFIED`
+- created `BUILD_PR_PUBLIC_PLATFORM_SHOWCASE`
+- created the master release bundle package
+
+Verification highlights
+-----------------------
+- Asteroids runtime remains vector-only and ready across validation, packaging, runtime, debug, profiler, export, and publishing
+- standalone sample remains vector-only and ready
+- geometry runtime repeated runs are deterministic
+- debug/profiler surfaces now call out geometry participation directly
+- `node ./scripts/run-node-tests.mjs` passed with `110/110` explicit `run()` tests

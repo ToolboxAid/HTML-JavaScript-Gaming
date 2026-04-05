@@ -340,16 +340,17 @@ export async function buildVectorNativeTemplate(options = {}) {
   const templateResult = buildGameTemplates({
     gameplayResult
   });
-  const debugVisualizationResult = buildDebugVisualizationLayer({
-    assetDependencyGraph: validationResult.assetDependencyGraph,
-    validationResult,
-    packageResult,
-    runtimeResult
-  });
   const performanceResult = buildPerformanceProfiler({
     validationResult,
     packageResult,
     runtimeResult
+  });
+  const debugVisualizationResult = buildDebugVisualizationLayer({
+    assetDependencyGraph: validationResult.assetDependencyGraph,
+    validationResult,
+    packageResult,
+    runtimeResult,
+    performanceResult
   });
   const multiTargetExportResult = buildMultiTargetExport({
     validationResult,
