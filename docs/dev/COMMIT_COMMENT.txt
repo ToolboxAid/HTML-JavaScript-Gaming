@@ -1,5 +1,5 @@
-BUILD_PR_SAMPLE_GAME_DEV_CONSOLE_TOGGLE_INTEGRATION
+BUILD_PR_DEBUG_COMBO_KEYS_PATCH
 
-- Added dev console integration wrapper
-- Wired toggle keys (` and Shift+`)
-- Integrated into sample loop
+- Replaced F-key bindings with browser-safe combo keys
+- Added Shift+` and Ctrl+Shift+` toggles
+- Removed conflicting browser shortcuts

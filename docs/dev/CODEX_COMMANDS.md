@@ -7,9 +7,15 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Implement dev console integration into one sample using tools/dev/devConsoleIntegration.js
+Update dev console integration to replace F-key bindings with combo-key bindings.
 
-- follow BUILD PR
-- create file
-- wire sample
-- do not modify engine core
+- Shift + ` => toggleConsole
+- Ctrl + Shift + ` => toggleOverlay
+- Ctrl + Shift + R => reload
+- Ctrl + Shift + ] => next panel
+- Ctrl + Shift + [ => previous panel
+
+Remove all F-key bindings.
+
+Keep changes isolated to devConsoleIntegration.js
+Do not modify engine core

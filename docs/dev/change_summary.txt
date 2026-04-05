@@ -1,1 +1,1 @@
-Added dev console integration plan and execution instructions
+Replaced F-key debug bindings with combo keys for browser compatibility

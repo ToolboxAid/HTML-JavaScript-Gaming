@@ -18,12 +18,13 @@ const DEFAULT_WORLD_STAGES = Object.freeze([
   "vector-overlay"
 ]);
 
-const DEFAULT_COMMAND_BINDINGS = Object.freeze([
-  { key: "F6", command: "help", label: "help" },
-  { key: "F7", command: "status", label: "status" },
-  { key: "F8", command: "scene.info", label: "scene.info" },
-  { key: "F9", command: "unknown.command", label: "invalid" }
-]);
+const DEFAULT_COMBO_BINDINGS = Object.freeze({
+  toggleConsole: Object.freeze({ key: "Backquote", shift: true, ctrl: false, alt: false, meta: false }),
+  toggleOverlay: Object.freeze({ key: "Backquote", shift: true, ctrl: true, alt: false, meta: false }),
+  reload: Object.freeze({ key: "KeyR", shift: true, ctrl: true, alt: false, meta: false }),
+  nextPanel: Object.freeze({ key: "BracketRight", shift: true, ctrl: true, alt: false, meta: false }),
+  previousPanel: Object.freeze({ key: "BracketLeft", shift: true, ctrl: true, alt: false, meta: false })
+});
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -31,6 +32,13 @@ function sanitizeText(value) {
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function cloneJson(value) {
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value));
 }
 
 function toContextSection(context, field) {
@@ -58,6 +66,51 @@ function getInputEdgePress(input, keyCode, edgeState) {
   const wasDown = edgeState.get(key) === true;
   edgeState.set(key, isDown);
   return isDown && !wasDown;
+}
+
+function isModifierDown(input, keyCode) {
+  if (typeof input?.isDown !== "function") {
+    return false;
+  }
+  return input.isDown(keyCode) === true;
+}
+
+function getComboEdgePress(input, combo, edgeState) {
+  const normalizedCombo = isObject(combo) ? combo : {};
+  const key = sanitizeText(normalizedCombo.key);
+  if (!key) {
+    return false;
+  }
+
+  const keyEdge = getInputEdgePress(input, key, edgeState);
+  if (!keyEdge) {
+    return false;
+  }
+
+  const requiresShift = normalizedCombo.shift === true;
+  const requiresCtrl = normalizedCombo.ctrl === true;
+  const requiresAlt = normalizedCombo.alt === true;
+  const requiresMeta = normalizedCombo.meta === true;
+
+  const shiftDown = isModifierDown(input, "ShiftLeft") || isModifierDown(input, "ShiftRight");
+  const ctrlDown = isModifierDown(input, "ControlLeft") || isModifierDown(input, "ControlRight");
+  const altDown = isModifierDown(input, "AltLeft") || isModifierDown(input, "AltRight");
+  const metaDown = isModifierDown(input, "MetaLeft") || isModifierDown(input, "MetaRight");
+
+  if (requiresShift !== shiftDown) {
+    return false;
+  }
+  if (requiresCtrl !== ctrlDown) {
+    return false;
+  }
+  if (requiresAlt !== altDown) {
+    return false;
+  }
+  if (requiresMeta !== metaDown) {
+    return false;
+  }
+
+  return true;
 }
 
 function buildCommandContext(diagnostics) {
@@ -131,17 +184,16 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   const runtime = buildRuntimeFromOptions(options);
   const keyEdgeState = new Map();
 
-  const toggleConsoleKey = sanitizeText(options?.toggleConsoleKey) || "Backquote";
-  const toggleOverlayKey = sanitizeText(options?.toggleOverlayKey) || "F3";
-  const commandBindings = Array.isArray(options?.commandBindings)
-    ? options.commandBindings
-    : DEFAULT_COMMAND_BINDINGS;
+  const comboBindings = isObject(options?.comboBindings)
+    ? options.comboBindings
+    : DEFAULT_COMBO_BINDINGS;
 
   let diagnosticsSnapshot = null;
   let diagnosticsReports = [];
   let overlayRender = { status: "hidden", sections: [], reports: [] };
   let lastCommandExecution = null;
   let lastCommandBinding = "";
+  let panelCursorIndex = -1;
 
   function executeCommand(commandText, context = null) {
     const command = sanitizeText(commandText);
@@ -159,20 +211,51 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     return execution;
   }
 
+  function cyclePanel(direction) {
+    if (!runtime?.panelRegistry || typeof runtime.panelRegistry.getOrderedPanels !== "function") {
+      return null;
+    }
+
+    const orderedPanels = runtime.panelRegistry.getOrderedPanels(true);
+    if (!Array.isArray(orderedPanels) || orderedPanels.length === 0) {
+      return null;
+    }
+
+    if (panelCursorIndex < 0 || panelCursorIndex >= orderedPanels.length) {
+      const currentlyEnabledIndex = orderedPanels.findIndex((panel) => panel.enabled === true);
+      panelCursorIndex = currentlyEnabledIndex >= 0 ? currentlyEnabledIndex : 0;
+    } else {
+      panelCursorIndex = (panelCursorIndex + direction + orderedPanels.length) % orderedPanels.length;
+    }
+
+    const targetPanel = orderedPanels[panelCursorIndex];
+    orderedPanels.forEach((panel) => {
+      runtime.panelRegistry.setPanelEnabled(panel.id, panel.id === targetPanel.id);
+    });
+    runtime.showOverlay();
+
+    const label = direction > 0 ? "panel.next" : "panel.previous";
+    lastCommandBinding = `${label} -> ${targetPanel.id}`;
+    lastCommandExecution = {
+      status: "ready",
+      output: {
+        lines: [`panel=${targetPanel.id}`, `title=${targetPanel.title}`]
+      },
+      reports: []
+    };
+    return targetPanel;
+  }
+
   function update(frame = {}) {
     const engine = frame.engine || {};
     const input = engine.input || null;
 
-    if (getInputEdgePress(input, toggleConsoleKey, keyEdgeState)) {
-      const state = runtime.getState();
-      if (state.consoleVisible) {
-        runtime.hideConsole();
-      } else {
-        runtime.showConsole();
-      }
-    }
+    const diagnosticsContext = isObject(frame.diagnosticsContext) ? frame.diagnosticsContext : {};
+    const diagnosticsResult = runtime.collectDiagnostics(diagnosticsContext);
+    diagnosticsSnapshot = diagnosticsResult?.diagnostics || null;
+    diagnosticsReports = Array.isArray(diagnosticsResult?.reports) ? diagnosticsResult.reports.slice() : [];
 
-    if (getInputEdgePress(input, toggleOverlayKey, keyEdgeState)) {
+    if (getComboEdgePress(input, comboBindings.toggleOverlay, keyEdgeState)) {
       const state = runtime.getState();
       if (state.overlayVisible) {
         runtime.hideOverlay();
@@ -181,25 +264,31 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       }
     }
 
-    const diagnosticsContext = isObject(frame.diagnosticsContext) ? frame.diagnosticsContext : {};
-    const diagnosticsResult = runtime.collectDiagnostics(diagnosticsContext);
-    diagnosticsSnapshot = diagnosticsResult?.diagnostics || null;
-    diagnosticsReports = Array.isArray(diagnosticsResult?.reports) ? diagnosticsResult.reports.slice() : [];
-
-    const runtimeState = runtime.getState();
-    if (runtimeState.consoleVisible) {
-      for (let index = 0; index < commandBindings.length; index += 1) {
-        const binding = commandBindings[index];
-        const key = sanitizeText(binding?.key);
-        const command = sanitizeText(binding?.command);
-        if (!key || !command) {
-          continue;
-        }
-        if (!getInputEdgePress(input, key, keyEdgeState)) {
-          continue;
-        }
-        executeCommand(command);
+    if (getComboEdgePress(input, comboBindings.toggleConsole, keyEdgeState)) {
+      const state = runtime.getState();
+      if (state.consoleVisible) {
+        runtime.hideConsole();
+      } else {
+        runtime.showConsole();
       }
+    }
+
+    if (getComboEdgePress(input, comboBindings.reload, keyEdgeState)) {
+      const runtimeContext = buildCommandContext(diagnosticsSnapshot || {});
+      executeCommand("scene.reload", runtimeContext);
+      runtime.applyHotReload({
+        status: "ready",
+        mode: "targeted",
+        runtimeState: toContextSection(diagnosticsSnapshot, "runtime")
+      });
+    }
+
+    if (getComboEdgePress(input, comboBindings.nextPanel, keyEdgeState)) {
+      cyclePanel(1);
+    }
+
+    if (getComboEdgePress(input, comboBindings.previousPanel, keyEdgeState)) {
+      cyclePanel(-1);
     }
 
     return {
@@ -232,7 +321,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     if (overlayRender.status === "ready") {
       const overlayLines = flattenOverlaySections(overlayRender.sections, 9);
       overlayLines.push(`order: ${renderOrder.slice(-2).join(" -> ")}`);
-      drawPanel(renderer, overlayX, overlayY, overlayWidth, overlayHeight, "Debug Overlay (F3)", overlayLines.slice(0, 10));
+      drawPanel(renderer, overlayX, overlayY, overlayWidth, overlayHeight, "Debug Overlay (Ctrl+Shift+`)", overlayLines.slice(0, 10));
     }
 
     const state = runtime.getState();
@@ -246,10 +335,13 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         ? lastCommandExecution.output.lines.map((line) => sanitizeText(line)).filter(Boolean)
         : ["No command output yet."];
 
-      const commandHint = commandBindings
-        .map((binding) => `${sanitizeText(binding?.key)}=${sanitizeText(binding?.label) || sanitizeText(binding?.command)}`)
-        .filter(Boolean)
-        .join(" | ");
+      const commandHint = [
+        "Shift+`=console",
+        "Ctrl+Shift+`=overlay",
+        "Ctrl+Shift+R=reload",
+        "Ctrl+Shift+]=next panel",
+        "Ctrl+Shift+[=prev panel"
+      ].join(" | ");
 
       const lines = [
         `last: ${lastCommandBinding || "none"}`,
@@ -259,7 +351,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         ...outputLines.slice(0, 5)
       ];
 
-      drawPanel(renderer, consoleX, consoleY, consoleWidth, consoleHeight, "Dev Console (`)", lines.slice(0, 9));
+      drawPanel(renderer, consoleX, consoleY, consoleWidth, consoleHeight, "Dev Console (Shift+`)", lines.slice(0, 9));
     }
 
     return {
@@ -287,10 +379,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         overlayRender,
         lastCommandExecution,
         lastCommandBinding,
-        toggleKeys: {
-          console: toggleConsoleKey,
-          overlay: toggleOverlayKey
-        }
+        toggleCombos: cloneJson(comboBindings)
       };
     }
   };

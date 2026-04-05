@@ -1,1 +1,1 @@
-Toggle keys work, overlay renders, sample runs
+Combo keys work, no F-keys remain, no browser conflicts
