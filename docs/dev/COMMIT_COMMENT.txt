@@ -1,1 +1,1 @@
-build(tools): consolidate duplicate tool folders into canonical studio paths
+build(tools): finalize tool consolidation and plan vector asset contract

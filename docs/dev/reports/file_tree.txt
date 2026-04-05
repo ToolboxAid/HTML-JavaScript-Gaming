@@ -24,6 +24,12 @@ tools/
     README.md
     samples/
   Vector Map Editor/
+    index.html
+    main.js
+    vectorMapEditor.css
+    README.md
+    how_to_use.html
+    assets/
+    editor/
   shared/
-  SpriteEditor/
-  Sprite Editor V3/
+  SpriteEditor_old_keep/

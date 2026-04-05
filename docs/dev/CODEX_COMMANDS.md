@@ -2,29 +2,13 @@ MODEL: GPT-5.4
 REASONING: high
 
 TASK:
-Create BUILD_PR_TOOLS_FOLDER_CONSOLIDATION under the HTML-JavaScript-Gaming repo.
+Execute all three tasks in one continuous Codex pass with no manual intervention.
 
-GOAL:
-Consolidate duplicate active tool folders into the approved canonical studio paths under `tools/`, repair active references, and remove duplicate folder drift.
+SEQUENCE:
+1. Execute BUILD_PR_TOOLS_FOLDER_CONSOLIDATION
+2. Validate and repair any broken paths/imports/references caused by the consolidation
+3. Create PLAN_PR_VECTOR_ASSET_CONTRACT as a docs-only planning bundle
 
-DELIVERABLES:
-- `docs/pr/BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.md`
-- `docs/dev/CODEX_COMMANDS.md`
-- `docs/dev/COMMIT_COMMENT.txt`
-- `docs/dev/reports/file_tree.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
+ZIP TARGETS:
 - `tmp/BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.zip`
-
-NEXT COMMAND:
-MODEL: GPT-5.4
-REASONING: high
-
-TASK:
-Create PLAN_PR_TOOLS_CANONICAL_NAMING_AUDIT
-
-GOAL:
-Document and lock the final approved canonical naming/path convention for active tool folders and related internal references after consolidation.
-
-ZIP:
-`tmp/PLAN_PR_TOOLS_CANONICAL_NAMING_AUDIT.zip`
+- `tmp/PLAN_PR_VECTOR_ASSET_CONTRACT.zip`
