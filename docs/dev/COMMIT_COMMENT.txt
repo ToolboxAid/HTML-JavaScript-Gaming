@@ -3,4 +3,4 @@ David Quesenberry
 04/05/2026
 commit_comment.txt
 
-docs: harden unified 2D render pipeline contract, validation, composition, and engine mappings for all four tools
+Apply render pipeline contract runtime for all four tools with validation, composition loading, deterministic ordering, and tests.

@@ -3,9 +3,7 @@ David Quesenberry
 04/05/2026
 file_tree.txt
 
-BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS file tree
-
-docs/pr/BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md
+docs/pr/APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/change_summary.txt

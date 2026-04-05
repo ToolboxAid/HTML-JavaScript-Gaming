@@ -3,37 +3,66 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS summary
+APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS summary
 
-- Tightened the BUILD PR into a production-grade docs-only contract package.
-- Replaced the loose shared contract description with a formal contract family:
-  - toolbox.render.asset-document
-  - toolbox.render.composition-document
-- Added a required shared envelope with fixed versioning, producer, document, metadata, and payload requirements.
-- Added explicit shared schemas for metadata, assets, layers, and items.
-- Added locked tool-specific asset-document schemas for:
-  - Tile Map Editor
-  - Parallax Editor
-  - Sprite Editor
-  - Vector Asset Studio
-- Defined the formal render pipeline stages:
-  - load
-  - validate
-  - normalize
-  - resolve
-  - compose
-  - sequence
-  - render
-- Locked deterministic render order buckets and tie-break rules.
-- Locked engine seam ownership so runtime responsibilities and tool responsibilities are not guessed.
-- Added a mandatory validation layer with explicit rejection policy.
-- Added a formal composition document schema to assemble cross-tool scenes.
-- Tightened Codex execution instructions so the BUILD bundle is exact and non-drifting.
-- Added docs/dev/next_command.txt to make the follow-on APPLY step explicit.
+Implemented runtime contract path:
+- Added `tools/shared/renderPipelineContract.js` as the shared runtime contract seam for:
+  - `toolbox.render.asset-document`
+  - `toolbox.render.composition-document`
 
-Guardrails honored:
-- Docs-first only
-- No implementation code
-- One PR purpose only
-- No unrelated engine or tool changes
-- 2D-only scope preserved
+Implemented pipeline stages:
+- load
+- validate
+- normalize
+- resolve
+- compose
+- sequence
+- render
+
+Implemented validation and normalization behavior:
+- Enforces contract envelope and version (`1.0.0`)
+- Enforces 2D coordinate space and pixel units
+- Enforces strict producer tool allowlist and locked mapping rules
+- Enforces asset/layer/item/entity schema requirements
+- Rejects invalid references, enums, ranges, duplicate IDs, and invalid paths
+- Uses explicit structured errors with stage, code, path, message, and details
+- Allows only limited explicit defaults (visible/opacity/metadata/items) through normalization
+
+Implemented deterministic ordering:
+- Formal render bucket ordering by layer kind:
+  - parallax
+  - tilemap
+  - sprite
+  - vector
+  - overlay
+  - collision
+  - guide
+- Stable tie-breaks by zIndex, source document order, source layer order, then id
+- Deterministic item ordering by item order, source item order, then id
+
+Implemented composition-driven mixed-scene assembly:
+- Resolves composition references to asset documents through a shared document lookup
+- Validates referenced documents before composition
+- Merges scene assets with conflict detection for duplicate IDs with mismatched type/path
+- Applies runtime inclusion filtering (`gameplay`, optional `debug`, excludes `editor-only`)
+- Emits composed scene output with explicit tool-to-engine mappings attached
+
+Tests added:
+- `tests/tools/RenderPipelineContractAll4Tools.test.mjs`
+  - valid contract acceptance
+  - invalid contract rejection
+  - deterministic stage/layer/item ordering
+  - composition assembly and missing-reference rejection
+
+Test harness integration:
+- Updated `tests/run-tests.mjs` to include `RenderPipelineContractAll4Tools` run target
+
+Docs/report updates required by apply:
+- Updated `docs/dev/change_summary.txt`
+- Updated `docs/dev/validation_checklist.txt`
+
+Scope guardrails honored:
+- No unrelated refactors
+- No sample logic used as reusable runtime implementation
+- No implementation code added to docs bundles
+- Changes kept surgical and architecture-safe

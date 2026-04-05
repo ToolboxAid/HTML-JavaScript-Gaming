@@ -3,27 +3,49 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS validation checklist
+APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS validation checklist
 
-[x] Docs-only bundle created
-[x] No implementation code included
-[x] PLAN_PR -> BUILD_PR -> APPLY_PR workflow honored
-[x] One PR purpose only retained
-[x] Shared contract envelope formalized
-[x] Shared metadata schema formalized
-[x] Shared asset schema formalized
-[x] Shared layer schema formalized
-[x] Shared item schema formalized
-[x] Tile Map Editor schema documented
-[x] Parallax Editor schema documented
-[x] Sprite Editor schema documented
-[x] Vector Asset Studio schema documented
-[x] Render pipeline stages formalized
-[x] Deterministic render bucket ordering formalized
-[x] Engine mappings locked explicitly
-[x] Validation rules documented with rejection policy
-[x] Allowed defaults restricted and documented
-[x] Composition document schema documented
-[x] Codex execution constraints tightened
-[x] 2D-only scope preserved
-[x] No unrelated architecture redesign introduced
+Contract/runtime path
+[x] Shared runtime contract path implemented for `toolbox.render.asset-document`
+[x] Shared runtime contract path implemented for `toolbox.render.composition-document`
+[x] One formal staged pipeline exists: load/validate/normalize/resolve/compose/sequence/render
+
+Validation and errors
+[x] Contract envelope/version validation implemented
+[x] Producer tool allowlist and locked mapping checks implemented
+[x] Asset/layer/item/entity schema validation implemented
+[x] Duplicate ID and reference validation implemented
+[x] Invalid contracts rejected without silent repair
+[x] Structured error shape implemented (`stage`, `code`, `path`, `message`, `details`)
+
+Deterministic sequencing and composition
+[x] Deterministic render bucket ordering implemented
+[x] Stable tie-break ordering implemented
+[x] Composition manifest references are validated and resolved
+[x] Mixed-scene composition assembly implemented
+
+Tool mapping lock
+[x] Tile Map Editor mapping rules enforced
+[x] Parallax Editor mapping rules enforced
+[x] Sprite Editor mapping rules enforced
+[x] Vector Asset Studio mapping rules enforced
+
+Automated tests
+[x] Focused test added: `tests/tools/RenderPipelineContractAll4Tools.test.mjs`
+[x] Valid-document acceptance test passes
+[x] Invalid-document rejection test passes
+[x] Stage/layer/item ordering test passes
+[x] Composition assembly test passes
+[x] Missing composition reference rejection test passes
+[x] Test included in `tests/run-tests.mjs`
+
+Execution evidence
+[x] `node --check tools/shared/renderPipelineContract.js`
+[x] `node --check tests/tools/RenderPipelineContractAll4Tools.test.mjs`
+[x] `node --check tests/run-tests.mjs`
+[x] Targeted test run passed (`PASS RenderPipelineContractAll4Tools`)
+
+Scope safety
+[x] No unrelated runtime/tool refactor performed
+[x] No reusable logic moved into samples
+[x] No docs bundle implementation leakage
