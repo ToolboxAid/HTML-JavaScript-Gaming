@@ -1,5 +1,1 @@
-DEV_CONSOLE_AUTOCOMPLETE_TAB_PATCH
-
-- Added Tab autocomplete
-- Supports cycling suggestions
-- Integrated with cursor-based input
+Docs: define and lock Dev Console vs Debug Overlay boundary as a docs-only sample-level contract bundle.
