@@ -4,6 +4,6 @@ David Quesenberry
 change_summary.txt
 
 Summary
-- Applied canvas HUD implementation path
-- Locked draw-order, combo keys, and sample-only integration
-- Preserved no-header rule for docs/dev/commit_comment.txt
+- Added PLAN PR for interactive dev console UI
+- Preserved sample-safe integration boundaries
+- Preserved docs-first workflow and commit_comment no-header exception

@@ -1,5 +1,5 @@
-APPLY_PR_CANVAS_DEBUG_OVERLAY_RENDERER
+PLAN_PR_INTERACTIVE_DEV_CONSOLE_UI
 
-- Added on-canvas debug HUD renderer
-- Wired HUD draw into sample-level debug integration
-- Preserved combo-key controls and HUD-last draw order
+- Planned interactive on-canvas dev console UI
+- Reused existing runtime and combo-key architecture
+- Scoped implementation to tools/dev plus one sample

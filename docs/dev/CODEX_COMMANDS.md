@@ -7,23 +7,16 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Apply the canvas debug HUD renderer implementation.
+Create BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI as a docs-only, repo-structured delta.
 
 Requirements:
-- Keep changes isolated to:
-  - tools/dev/canvasDebugHudRenderer.js
-  - tools/dev/devConsoleIntegration.js
-  - one sample entry file only
-- Do not modify engine core
-- Draw HUD last on canvas
-- Preserve combo-key bindings exactly
-- Use canvas save()/restore()
-- Run node --check on touched JS files
-- Package result to:
-  <project folder>/tmp/APPLY_PR_CANVAS_DEBUG_OVERLAY_RENDERER_delta.zip
-
-Report back:
-- exact files changed
-- selected sample file
-- how HUD draw is invoked
-- validation results
+- Follow PLAN_PR -> BUILD_PR -> APPLY_PR
+- Docs-first only
+- No implementation code in this bundle
+- Plan a canvas-rendered interactive console UI
+- Reuse existing runtime and combo-key controls
+- Scope implementation to tools/dev and one sample entry only
+- Define input behavior, output history, validation steps, and rollback notes
+- Keep commit_comment.txt header-free
+- Package output to:
+  <project folder>/tmp/BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI_delta.zip

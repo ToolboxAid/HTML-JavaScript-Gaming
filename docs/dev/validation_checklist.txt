@@ -6,25 +6,18 @@ validation_checklist.txt
 VALIDATION CHECKLIST
 
 Workflow
-- APPLY_PR created
+- PLAN_PR created
 - One PR per purpose
-- commit_comment.txt has no header
+- No implementation code in bundle
 
-Files
-- tools/dev/canvasDebugHudRenderer.js present
-- tools/dev/devConsoleIntegration.js updated
-- one sample entry updated
+Header Rules
+- Header present in all new files except docs/dev/commit_comment.txt
+- commit_comment.txt contains no Toolbox Aid header
 
-Functional
-- Ctrl + Shift + ` toggles HUD visibility
-- HUD draws on canvas
-- HUD draws after gameplay content
-- Panel navigation works
-- Missing diagnostics do not crash draw path
-- Reload combo remains browser-safe
-
-Safety
-- No engine core files modified
-- No F-key bindings remain
-- Canvas save/restore used
-- No duplicate listeners/runtime instances
+Plan Quality
+- Interactive console UI scope defined
+- Input behavior defined
+- Output history behavior defined
+- Sample-only integration boundary defined
+- Acceptance criteria defined
+- Validation steps defined
