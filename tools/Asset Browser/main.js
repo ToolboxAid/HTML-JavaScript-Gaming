@@ -1,0 +1,346 @@
+const APPROVED_DESTINATIONS = Object.freeze({
+  "Vector Assets": "games/<project>/platform/assets/vectors/",
+  "Sprite Projects": "games/<project>/platform/assets/sprites/",
+  "Tilemaps": "games/<project>/platform/assets/tilemaps/",
+  "Parallax Scenes": "games/<project>/platform/assets/parallax/",
+  "Palettes": "games/<project>/platform/assets/palettes/",
+  "Workflow JSON": "games/<project>/config/"
+});
+
+const ASSET_CATALOG = Object.freeze([
+  {
+    id: "asset-vector-player",
+    label: "Asteroids Ship Vector",
+    category: "Vector Assets",
+    path: "../../games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json"
+  },
+  {
+    id: "asset-vector-title",
+    label: "Asteroids Title Vector",
+    category: "Vector Assets",
+    path: "../../games/Asteroids/platform/assets/vectors/asteroids-title.vector.json"
+  },
+  {
+    id: "asset-sprite-demo",
+    label: "Asteroids Sprite Project",
+    category: "Sprite Projects",
+    path: "../../games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json"
+  },
+  {
+    id: "asset-tilemap-template",
+    label: "Vector Arcade Template Tilemap",
+    category: "Tilemaps",
+    path: "../../games/vector-arcade-sample/assets/tilemaps/template-arena.tilemap.json"
+  },
+  {
+    id: "asset-parallax-template",
+    label: "Template Backdrop Parallax",
+    category: "Parallax Scenes",
+    path: "../../games/vector-arcade-sample/assets/parallax/template-backdrop.parallax.json"
+  },
+  {
+    id: "asset-parallax-svg",
+    label: "Template Backdrop SVG",
+    category: "Parallax Scenes",
+    path: "../../games/vector-arcade-sample/assets/parallax/template-backdrop.svg"
+  },
+  {
+    id: "asset-palette-primary",
+    label: "Vector Native Primary Palette",
+    category: "Palettes",
+    path: "../../games/vector-arcade-sample/assets/palettes/vector-native-primary.palette.json"
+  },
+  {
+    id: "asset-project-config",
+    label: "Vector Arcade Sample Project Config",
+    category: "Workflow JSON",
+    path: "../../games/vector-arcade-sample/config/sample.project.json"
+  }
+]);
+
+const CATEGORY_ORDER = ["All", ...Object.keys(APPROVED_DESTINATIONS)];
+
+const refs = {
+  categoryFilter: document.getElementById("assetCategoryFilter"),
+  searchInput: document.getElementById("assetSearchInput"),
+  countText: document.getElementById("assetCountText"),
+  assetList: document.getElementById("assetList"),
+  previewTitle: document.getElementById("assetPreviewTitle"),
+  previewMeta: document.getElementById("assetPreviewMeta"),
+  previewCanvas: document.getElementById("assetPreviewCanvas"),
+  previewText: document.getElementById("assetPreviewText"),
+  importFileInput: document.getElementById("importFileInput"),
+  importCategorySelect: document.getElementById("importCategorySelect"),
+  importDestinationSelect: document.getElementById("importDestinationSelect"),
+  importNameInput: document.getElementById("importNameInput"),
+  validateImportButton: document.getElementById("validateImportButton"),
+  downloadImportPlanButton: document.getElementById("downloadImportPlanButton"),
+  importStatusText: document.getElementById("importStatusText"),
+  importPlanText: document.getElementById("importPlanText")
+};
+
+const state = {
+  selectedCategory: "All",
+  search: "",
+  selectedAssetId: ASSET_CATALOG[0]?.id ?? ""
+};
+
+function getVisibleAssets() {
+  const query = state.search.trim().toLowerCase();
+  return ASSET_CATALOG.filter((entry) => {
+    const categoryMatch = state.selectedCategory === "All" || entry.category === state.selectedCategory;
+    if (!categoryMatch) {
+      return false;
+    }
+    if (!query) {
+      return true;
+    }
+    return `${entry.label} ${entry.path} ${entry.category}`.toLowerCase().includes(query);
+  });
+}
+
+function getSelectedAsset() {
+  return ASSET_CATALOG.find((entry) => entry.id === state.selectedAssetId) ?? null;
+}
+
+function getPathExtension(assetPath) {
+  const cleaned = String(assetPath || "").split("?")[0];
+  const match = cleaned.match(/\.([^.\\/]+)$/);
+  return match ? match[1].toLowerCase() : "";
+}
+
+function populateCategoryControls() {
+  refs.categoryFilter.innerHTML = CATEGORY_ORDER
+    .map((label) => `<option value="${label}">${label}</option>`)
+    .join("");
+  refs.importCategorySelect.innerHTML = Object.keys(APPROVED_DESTINATIONS)
+    .map((label) => `<option value="${label}">${label}</option>`)
+    .join("");
+  refs.categoryFilter.value = state.selectedCategory;
+  refs.importCategorySelect.value = "Vector Assets";
+}
+
+function populateDestinationOptions(category) {
+  const categories = category && APPROVED_DESTINATIONS[category]
+    ? [category]
+    : Object.keys(APPROVED_DESTINATIONS);
+  refs.importDestinationSelect.innerHTML = categories
+    .map((name) => `<option value="${APPROVED_DESTINATIONS[name]}">${APPROVED_DESTINATIONS[name]}</option>`)
+    .join("");
+}
+
+function renderAssetList() {
+  const entries = getVisibleAssets();
+  refs.countText.textContent = `${entries.length} approved asset${entries.length === 1 ? "" : "s"}`;
+  refs.assetList.innerHTML = entries.map((entry) => {
+    const currentClass = entry.id === state.selectedAssetId ? " is-current" : "";
+    return `
+      <button type="button" data-asset-id="${entry.id}" class="${currentClass.trim()}">
+        <strong>${entry.label}</strong>
+        <span>${entry.category}</span>
+        <span>${entry.path}</span>
+      </button>
+    `;
+  }).join("");
+
+  if (!entries.some((entry) => entry.id === state.selectedAssetId)) {
+    state.selectedAssetId = entries[0]?.id ?? "";
+  }
+}
+
+async function renderPreview() {
+  const selectedAsset = getSelectedAsset();
+  if (!selectedAsset) {
+    refs.previewTitle.textContent = "Preview";
+    refs.previewMeta.textContent = "Select an approved asset from the catalog.";
+    refs.previewCanvas.innerHTML = '<p class="asset-browser__empty">No asset selected.</p>';
+    refs.previewText.textContent = "Choose a file to inspect metadata and content.";
+    return;
+  }
+
+  refs.previewTitle.textContent = selectedAsset.label;
+  refs.previewMeta.textContent = `${selectedAsset.category} | ${selectedAsset.path} | Suggested destination: ${APPROVED_DESTINATIONS[selectedAsset.category]}`;
+
+  const extension = getPathExtension(selectedAsset.path);
+  try {
+    if (extension === "svg") {
+      refs.previewCanvas.innerHTML = `<img src="${selectedAsset.path}" alt="${selectedAsset.label}" />`;
+      const svgText = await fetch(selectedAsset.path).then((response) => response.text());
+      refs.previewText.textContent = svgText.slice(0, 2400);
+      return;
+    }
+
+    const text = await fetch(selectedAsset.path).then((response) => response.text());
+    if (["png", "jpg", "jpeg", "gif", "webp"].includes(extension)) {
+      refs.previewCanvas.innerHTML = `<img src="${selectedAsset.path}" alt="${selectedAsset.label}" />`;
+      refs.previewText.textContent = `${selectedAsset.label}\nBinary preview asset\n${selectedAsset.path}`;
+      return;
+    }
+
+    refs.previewCanvas.innerHTML = '<p class="asset-browser__empty">Text and metadata preview ready.</p>';
+    if (extension === "json") {
+      const parsed = JSON.parse(text);
+      const keys = Object.keys(parsed);
+      refs.previewText.textContent = `${selectedAsset.label}\nTop-level keys: ${keys.join(", ") || "(none)"}\n\n${JSON.stringify(parsed, null, 2).slice(0, 2400)}`;
+      return;
+    }
+    refs.previewText.textContent = text.slice(0, 2400);
+  } catch (error) {
+    refs.previewCanvas.innerHTML = '<p class="asset-browser__empty">Preview unavailable.</p>';
+    refs.previewText.textContent = `Preview failed for ${selectedAsset.path}\n${error instanceof Error ? error.message : String(error)}`;
+  }
+}
+
+function inferCategoryFromFileName(fileName) {
+  const lower = fileName.toLowerCase();
+  if (lower.endsWith(".vector.json") || lower.endsWith(".svg")) {
+    return "Vector Assets";
+  }
+  if (lower.endsWith(".sprite.json") || lower.endsWith(".png")) {
+    return "Sprite Projects";
+  }
+  if (lower.endsWith(".tilemap.json") || lower.endsWith(".tileset.json")) {
+    return "Tilemaps";
+  }
+  if (lower.endsWith(".parallax.json")) {
+    return "Parallax Scenes";
+  }
+  if (lower.endsWith(".palette.json")) {
+    return "Palettes";
+  }
+  return "Workflow JSON";
+}
+
+function normalizeImportName(fileName) {
+  const lower = String(fileName || "").trim().toLowerCase();
+  return lower.replace(/[^a-z0-9._-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+}
+
+function buildImportPlan() {
+  const file = refs.importFileInput.files?.[0] ?? null;
+  if (!file) {
+    return {
+      valid: false,
+      message: "Choose a local file to generate an import plan."
+    };
+  }
+
+  const importCategory = refs.importCategorySelect.value || inferCategoryFromFileName(file.name);
+  const destinationFolder = refs.importDestinationSelect.value || APPROVED_DESTINATIONS[importCategory];
+  const normalizedName = normalizeImportName(refs.importNameInput.value || file.name);
+  const validName = /^[a-z0-9][a-z0-9._-]*$/.test(normalizedName);
+  const conflicts = ASSET_CATALOG.filter((entry) => entry.category === importCategory)
+    .map((entry) => entry.path.split("/").pop()?.toLowerCase() || "")
+    .filter((name) => name === normalizedName);
+
+  const warnings = [];
+  if (!validName) {
+    warnings.push("Import name must be lowercase and use only a-z, 0-9, dot, underscore, or dash.");
+  }
+  if (conflicts.length > 0) {
+    warnings.push(`A file named ${normalizedName} already exists in the approved ${importCategory} catalog.`);
+  }
+
+  const plan = {
+    tool: "Asset Browser / Import Hub",
+    sourceFileName: file.name,
+    sourceFileSize: file.size,
+    sourceMimeType: file.type || "application/octet-stream",
+    importCategory,
+    destinationFolder,
+    proposedFileName: normalizedName,
+    conflictDetected: conflicts.length > 0,
+    nonDestructive: true,
+    status: warnings.length === 0 ? "ready" : "needs-attention"
+  };
+
+  return {
+    valid: warnings.length === 0,
+    message: warnings.length === 0
+      ? "Import plan is valid. Download the JSON and place the file manually in the approved destination."
+      : warnings.join(" "),
+    plan
+  };
+}
+
+function renderImportPlan() {
+  const result = buildImportPlan();
+  refs.importStatusText.textContent = result.message;
+  refs.importPlanText.textContent = result.plan
+    ? JSON.stringify(result.plan, null, 2)
+    : "Import plan output will appear here.";
+}
+
+function downloadImportPlan() {
+  const result = buildImportPlan();
+  if (!result.plan) {
+    refs.importStatusText.textContent = result.message;
+    return;
+  }
+  const payload = JSON.stringify(result.plan, null, 2);
+  const blob = new Blob([payload], { type: "application/json" });
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = `${result.plan.proposedFileName || "import-plan"}.import-plan.json`;
+  link.click();
+  URL.revokeObjectURL(objectUrl);
+}
+
+function syncImportFormFromFile() {
+  const file = refs.importFileInput.files?.[0] ?? null;
+  if (!file) {
+    refs.importStatusText.textContent = "No local file selected.";
+    refs.importPlanText.textContent = "Import plan output will appear here.";
+    return;
+  }
+  const inferredCategory = inferCategoryFromFileName(file.name);
+  refs.importCategorySelect.value = inferredCategory;
+  populateDestinationOptions(inferredCategory);
+  refs.importNameInput.value = normalizeImportName(file.name);
+  renderImportPlan();
+}
+
+function bindEvents() {
+  refs.categoryFilter.addEventListener("change", () => {
+    state.selectedCategory = refs.categoryFilter.value;
+    renderAssetList();
+    renderPreview();
+  });
+
+  refs.searchInput.addEventListener("input", () => {
+    state.search = refs.searchInput.value;
+    renderAssetList();
+    renderPreview();
+  });
+
+  refs.assetList.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("[data-asset-id]") : null;
+    if (!(button instanceof HTMLElement)) {
+      return;
+    }
+    state.selectedAssetId = button.dataset.assetId || "";
+    renderAssetList();
+    renderPreview();
+  });
+
+  refs.importFileInput.addEventListener("change", syncImportFormFromFile);
+  refs.importCategorySelect.addEventListener("change", () => {
+    populateDestinationOptions(refs.importCategorySelect.value);
+    renderImportPlan();
+  });
+  refs.importNameInput.addEventListener("input", renderImportPlan);
+  refs.validateImportButton.addEventListener("click", renderImportPlan);
+  refs.downloadImportPlanButton.addEventListener("click", downloadImportPlan);
+}
+
+function init() {
+  populateCategoryControls();
+  populateDestinationOptions(refs.importCategorySelect.value);
+  renderAssetList();
+  renderPreview();
+  renderImportPlan();
+  bindEvents();
+}
+
+init();

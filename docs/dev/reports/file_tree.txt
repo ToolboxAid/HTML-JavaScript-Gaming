@@ -1,7 +1,7 @@
-HTML-JavaScript-Gaming/
+HTML-JavaScript-Gaming-main/
   docs/
     pr/
-      BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP.md
+      BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER.md
     dev/
       codex_commands.md
       commit_comment.txt
@@ -9,3 +9,5 @@ HTML-JavaScript-Gaming/
         change_summary.txt
         validation_checklist.txt
         file_tree.txt
+  tmp/
+    BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER.zip

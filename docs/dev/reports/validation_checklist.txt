@@ -1,9 +1,17 @@
-[ ] tools/index.html audited for Advanced Systems & Extensions section
-[ ] tools/toolRegistry.js audited for Sprite Editor active entry
-[ ] tools/toolRegistry.js audited for SpriteEditor_old_keep legacy handling
-[ ] render logic verified to use active first-class tools only
-[ ] Sprite Editor visible on tools landing page
-[ ] SpriteEditor_old_keep hidden from tools landing page
-[ ] non-tool/internal/dev entries moved or deleted
-[ ] no dead links from tools landing page
-[ ] engine theme preserved across active tools page
+Validation Checklist
+
+[x] tools/Asset Browser/ exists
+[x] tools/Palette Browser/ exists
+[x] Both tools load through shared engine/platform shell
+[x] Both tools use engine theme
+[x] tools/toolRegistry.js contains active entries for both tools
+[x] tools/index.html shows both tools as first-class launchable tools
+[x] tools/index.html does not show samples
+[x] Static placeholder for Palette Browser / Manager removed after activation
+[x] Static placeholder for Asset Browser / Import Hub removed after activation
+[x] No non-validator references remain to the old Asset Browser name
+[x] Sprite Editor remains visible as first-class tool
+[x] SpriteEditor_old_keep remains hidden legacy
+[x] Registry validator checks both new tools
+[x] Registry validator flags placeholder drift for live tools
+[x] No broken paths from tools landing page

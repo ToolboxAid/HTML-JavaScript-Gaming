@@ -1,0 +1,114 @@
+.asset-browser {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.asset-browser__hero h2 {
+  margin: 0 0 0.35rem;
+}
+
+.asset-browser__layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(16rem, 20rem) minmax(20rem, 1fr) minmax(18rem, 24rem);
+}
+
+.asset-browser__panel {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.field input,
+.field select,
+.asset-browser__actions button {
+  width: 100%;
+}
+
+.asset-browser__hint,
+.asset-browser__meta,
+.asset-browser__status,
+.asset-browser__empty {
+  color: var(--muted-text, #c9d5e6);
+  font-size: 0.95rem;
+}
+
+.asset-browser__list {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+.asset-browser__list button {
+  text-align: left;
+  border: 1px solid var(--panel-border, #29405c);
+  background: rgba(12, 24, 40, 0.9);
+  color: inherit;
+  border-radius: 0.75rem;
+  padding: 0.8rem;
+}
+
+.asset-browser__list button.is-current {
+  border-color: var(--accent, #65c3ff);
+  box-shadow: 0 0 0 1px rgba(101, 195, 255, 0.25);
+}
+
+.asset-browser__list strong,
+.asset-browser__list span {
+  display: block;
+}
+
+.asset-browser__list span {
+  color: var(--muted-text, #c9d5e6);
+  font-size: 0.9rem;
+}
+
+.asset-browser__preview {
+  min-height: 20rem;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border: 1px solid var(--panel-border, #29405c);
+  border-radius: 1rem;
+  background: rgba(9, 18, 30, 0.72);
+}
+
+.asset-browser__preview img {
+  max-width: 100%;
+  max-height: 24rem;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.asset-browser__text-preview {
+  margin: 0;
+  min-height: 12rem;
+  max-height: 28rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid var(--panel-border, #29405c);
+  border-radius: 1rem;
+  background: rgba(9, 18, 30, 0.72);
+  padding: 1rem;
+}
+
+.asset-browser__actions {
+  display: grid;
+  gap: 0.5rem;
+}
+
+@media (max-width: 1100px) {
+  .asset-browser__layout {
+    grid-template-columns: 1fr;
+  }
+}

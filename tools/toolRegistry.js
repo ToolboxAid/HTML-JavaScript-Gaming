@@ -112,6 +112,50 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "asset-browser",
+    name: "Asset Browser / Import Hub",
+    displayName: "Asset Browser / Import Hub",
+    shortLabel: "Import",
+    path: "Asset Browser",
+    folderName: "Asset Browser",
+    entryPoint: "Asset Browser/index.html",
+    description: "Approved asset browsing and non-destructive import planning surface for vectors, palettes, parallax, tilemaps, and sprite workflow assets.",
+    showcaseTag: "Asset Workflow",
+    showcaseStatus: "Import Planning Ready",
+    active: true,
+    legacy: false,
+    order: 6,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "Asset Browser/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
+    id: "palette-browser",
+    name: "Palette Browser / Manager",
+    displayName: "Palette Browser / Manager",
+    shortLabel: "Palette",
+    path: "Palette Browser",
+    folderName: "Palette Browser",
+    entryPoint: "Palette Browser/index.html",
+    description: "Shared palette browsing and management surface for engine palettes and local editable palette workflows.",
+    showcaseTag: "Palettes",
+    showcaseStatus: "Shared Contract Ready",
+    active: true,
+    legacy: false,
+    order: 7,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "Palette Browser/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "sprite-editor-old-keep",
     name: "SpriteEditor_old_keep",
     displayName: "SpriteEditor_old_keep",

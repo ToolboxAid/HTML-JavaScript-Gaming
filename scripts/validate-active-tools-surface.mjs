@@ -17,7 +17,9 @@ const REQUIRED_ACTIVE_TOOL_NAMES = [
   "Vector Asset Studio",
   "Tilemap Studio",
   "Parallax Scene Studio",
-  "Sprite Editor"
+  "Sprite Editor",
+  "Asset Browser / Import Hub",
+  "Palette Browser / Manager"
 ];
 
 const SCAN_TARGETS = [
@@ -40,7 +42,9 @@ const ACTIVE_TOOL_ENTRYPOINTS = [
   "tools/Tilemap Studio/index.html",
   "tools/Parallax Scene Studio/index.html",
   "tools/Vector Map Editor/index.html",
-  "tools/Sprite Editor/index.html"
+  "tools/Sprite Editor/index.html",
+  "tools/Asset Browser/index.html",
+  "tools/Palette Browser/index.html"
 ];
 
 async function pathExists(targetPath) {
@@ -130,6 +134,15 @@ async function main() {
   }
 
   const toolsLandingPage = await readText("tools/index.html");
+  if (/Asset Browser \/ Import Helper/.test(toolsLandingPage)) {
+    issues.push('Stale "Asset Browser / Import Helper" placeholder remains on tools landing page.');
+  }
+  if (/Palette Browser \/ Manager/.test(toolsLandingPage)) {
+    issues.push('Palette Browser / Manager should be registry-rendered, not left behind as a static placeholder card.');
+  }
+  if (/Asset Browser \/ Import Hub/.test(toolsLandingPage)) {
+    issues.push('Asset Browser / Import Hub should be registry-rendered, not left behind as a static placeholder card.');
+  }
   if (!toolsLandingPage.includes("../engine/ui/hubCommon.css")) {
     issues.push("Engine theme stylesheet missing from tools landing page.");
   }

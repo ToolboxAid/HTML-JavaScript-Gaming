@@ -1,8 +1,10 @@
 TOOL_REGISTRY_VALIDATION
 status=PASS
-active=Vector Map Editor, Vector Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor
+active=Vector Map Editor, Vector Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor, Asset Browser / Import Hub, Palette Browser / Manager
 legacy=SpriteEditor_old_keep
 Filesystem Directories
+- Asset Browser
+- Palette Browser
 - Parallax Scene Studio
 - Sprite Editor
 - SpriteEditor_old_keep
@@ -15,6 +17,8 @@ Registry Paths
 - Tilemap Studio
 - Parallax Scene Studio
 - Sprite Editor
+- Asset Browser
+- Palette Browser
 - SpriteEditor_old_keep
 Issues
 - none

@@ -1,1 +1,1 @@
-TOOLS: clean tools/index launcher surface; keep Sprite Editor first-class; hide legacy; remove non-tool sections
+Build Asset Browser / Import Hub and Palette Browser / Manager as first-class registry-backed tools using the shared engine/platform shell, remove their planned placeholders from tools/index, keep Sprite Editor first-class, keep SpriteEditor_old_keep hidden legacy, and extend registry validation to prevent future drift.

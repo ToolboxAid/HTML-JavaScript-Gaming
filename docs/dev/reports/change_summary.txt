@@ -1,8 +1,10 @@
-BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP
+Change Summary
 
-Summary:
-- defines a strict rule for what may appear on tools/index.html
-- keeps Sprite Editor first-class and visible
-- keeps SpriteEditor_old_keep legacy and hidden
-- removes, relocates, or deletes Advanced Systems & Extensions items unless they are true launchable tools
-- keeps the cleanup surgical and surface-focused
+- Added two new first-class tools:
+  - Asset Browser / Import Hub
+  - Palette Browser / Manager
+- Registered both in the shared active tools registry.
+- Removed the static planned placeholder cards for the two now-live tools.
+- Kept the tools landing page registry-driven and sample-free.
+- Kept Sprite Editor first-class and SpriteEditor_old_keep hidden legacy.
+- Extended validator coverage for new tool folders, active surface participation, and placeholder drift.

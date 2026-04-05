@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palette Browser / Manager</title>
+  <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="./paletteBrowser.css" />
+  <script src="../../engine/paletteList.js"></script>
+</head>
+<body class="tools-platform-tool-page" data-tool-id="palette-browser" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="palette-browser app-shell">
+    <header class="palette-browser__hero panel">
+      <h2>Palette Browser / Manager</h2>
+      <p>Browse shared engine palettes, duplicate them into editable local palettes, validate entries, and hand off a chosen palette contract to the active art tools.</p>
+    </header>
+
+    <div class="palette-browser__layout">
+      <aside class="panel palette-browser__panel">
+        <h3>Palette List</h3>
+        <label class="field">
+          Search
+          <input id="paletteSearchInput" type="search" placeholder="Find a palette" />
+        </label>
+        <div id="paletteCountText" class="palette-browser__hint">0 palettes</div>
+        <div id="paletteList" class="palette-browser__list" aria-label="Palette list"></div>
+      </aside>
+
+      <main class="panel palette-browser__panel">
+        <h3 id="paletteTitle">Palette Preview</h3>
+        <div id="paletteSummaryText" class="palette-browser__hint">Select a palette to inspect its swatches.</div>
+        <div id="paletteSwatches" class="palette-browser__swatches"></div>
+        <div class="palette-browser__editor">
+          <label class="field">
+            Palette name
+            <input id="paletteNameInput" type="text" />
+          </label>
+          <div class="palette-browser__editor-grid">
+            <label class="field">
+              Swatch color
+              <input id="swatchColorInput" type="color" value="#ffffff" />
+            </label>
+            <label class="field">
+              Swatch name
+              <input id="swatchNameInput" type="text" placeholder="Color name" />
+            </label>
+            <label class="field">
+              Symbol
+              <input id="swatchSymbolInput" type="text" maxlength="2" placeholder="A" />
+            </label>
+          </div>
+          <div class="palette-browser__actions">
+            <button id="newPaletteButton" type="button">New Palette</button>
+            <button id="duplicatePaletteButton" type="button">Duplicate Selected</button>
+            <button id="renamePaletteButton" type="button">Rename Palette</button>
+            <button id="addSwatchButton" type="button">Add Swatch</button>
+            <button id="deleteSwatchButton" type="button">Delete Swatch</button>
+          </div>
+        </div>
+      </main>
+
+      <aside class="panel palette-browser__panel">
+        <h3>Actions &amp; Validation</h3>
+        <div id="paletteValidationText" class="palette-browser__hint">Validation summary will appear here.</div>
+        <div class="palette-browser__actions palette-browser__actions--stacked">
+          <button id="copyPaletteJsonButton" type="button">Copy Palette JSON</button>
+          <button id="exportPaletteJsonButton" type="button">Export Palette JSON</button>
+          <button id="usePaletteButton" type="button">Use In Active Tools</button>
+        </div>
+        <div id="paletteSelectionText" class="palette-browser__hint">No handoff recorded yet.</div>
+        <pre id="paletteJsonPreview" class="palette-browser__json-preview">Palette JSON preview will appear here.</pre>
+      </aside>
+    </div>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

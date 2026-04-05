@@ -2,39 +2,27 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP as a docs-first, surgical surface cleanup PR for HTML-JavaScript-Gaming.
+Create BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER using the latest uploaded GitHub repo as the baseline.
 
-GOAL:
-Make `tools/index.html` show only true first-class launchable tools. Keep `Sprite Editor` first-class and visible. Keep `SpriteEditor_old_keep` legacy and hidden. Remove `Advanced Systems & Extensions` from the tools landing page unless each item in that section is verified to be an actual active launchable tool under `tools/`.
+REQUIREMENTS:
+1. Build two new first-class tools under tools/:
+   - tools/Asset Browser/  -> display name: Asset Browser / Import Hub
+   - tools/Palette Browser/ -> display name: Palette Browser / Manager
+2. Register both in tools/toolRegistry.js as active first-class tools.
+3. Ensure tools/index.html renders them through the shared registry-driven surface.
+4. Remove the planned placeholder cards for these two tools once the real tools are live.
+5. Ensure any remaining older Asset Browser naming is normalized to "Asset Browser / Import Hub".
+6. Keep Sprite Editor first-class and visible.
+7. Keep SpriteEditor_old_keep legacy and hidden.
+8. Keep samples off the tools landing page.
+9. Use shared engine/platform shell + theme for both new tools.
+10. Update the registry validator so it verifies:
+    - both new tools exist in registry
+    - folder path matches registry path
+    - active first-class tools are surfaced
+    - legacy tools remain excluded
+    - placeholder cards are not left behind for live tools
+11. Keep changes surgical and aligned to current repo conventions.
 
-TARGET FILES TO AUDIT:
-- tools/index.html
-- tools/toolRegistry.js
-- tools/renderToolsIndex.js
-- any config/data feeding the tools page
-
-RULES:
-1. `tools/index.html` is a user-facing tool launcher, not a platform/dev page.
-2. Only render entries that are true first-class tools.
-3. Keep `Sprite Editor` active and visible.
-4. Keep `SpriteEditor_old_keep` hidden from active UI.
-5. If `Advanced Systems & Extensions` entries are platform/dev/internal, move or delete them.
-6. If they are duplicate/placeholder/dead, delete them.
-7. Do not expand scope beyond this cleanup.
-8. Preserve engine theme usage.
-
-EXPECTED ACTIVE TOOLS:
-- Vector Map Editor
-- Vector Asset Studio
-- Tilemap Studio
-- Parallax Scene Studio
-- Sprite Editor
-
-EXPECTED RESULT:
-- no misleading `Advanced Systems & Extensions` on main tools page unless truly valid
-- no legacy tool leakage
-- registry and rendered landing page aligned
-- no broken links
-
-OUTPUT:
-<project folder>/tmp/BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP.zip
+PACKAGE OUTPUT:
+<project folder>/tmp/BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER.zip

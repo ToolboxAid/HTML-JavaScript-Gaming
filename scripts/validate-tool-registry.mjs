@@ -14,7 +14,9 @@ const EXPECTED_ACTIVE_NAMES = [
   "Vector Asset Studio",
   "Tilemap Studio",
   "Parallax Scene Studio",
-  "Sprite Editor"
+  "Sprite Editor",
+  "Asset Browser / Import Hub",
+  "Palette Browser / Manager"
 ];
 
 const EXPECTED_LEGACY_NAMES = [
@@ -143,6 +145,17 @@ async function main() {
 
   if (activeEntries.some((entry) => normalizeText(entry.path || entry.folderName) === "SpriteEditor_old_keep")) {
     issues.push("Active registry entries must not include SpriteEditor_old_keep.");
+  }
+
+  const toolsLandingPage = await fs.readFile(path.join(toolsRoot, "index.html"), "utf8");
+  if (/Asset Browser \/ Import Helper/.test(toolsLandingPage)) {
+    issues.push('Placeholder drift detected: "Asset Browser / Import Helper" still appears in tools/index.html.');
+  }
+  if (/Palette Browser \/ Manager/.test(toolsLandingPage)) {
+    issues.push('Placeholder drift detected: "Palette Browser / Manager" still appears in static tools/index.html after activation.');
+  }
+  if (/Asset Browser \/ Import Hub/.test(toolsLandingPage)) {
+    issues.push('Placeholder drift detected: "Asset Browser / Import Hub" still appears in static tools/index.html instead of the registry-rendered grid.');
   }
 
   const reportLines = [
