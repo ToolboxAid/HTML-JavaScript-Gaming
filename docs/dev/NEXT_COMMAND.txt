@@ -1,1 +1,1 @@
-Create BUILD_PR_OVERLAY_PANEL_PRESETS_AND_TOGGLES as a docs-first follow-up that defines curated panel sets, visibility presets, and command-safe toggles on top of the registry contract without widening overlay/console coupling.
+Create BUILD_PR_OVERLAY_OPERATOR_COMMANDS as the next docs-first bundle, scoped to public console commands for querying/toggling overlay state through approved overlay contracts only.

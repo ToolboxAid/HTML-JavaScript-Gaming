@@ -1,28 +1,31 @@
-OVERLAY_PANEL_REGISTRY_delta Validation Checklist
+BUILD_PR_OVERLAY_DATA_PROVIDERS validation checklist
 
 Workflow
 - [done] PLAN_PR documented
 - [done] BUILD_PR documented
 - [done] APPLY_PR documented
 - [done] One PR purpose only
-- [done] Docs-first bundle only
+- [done] Docs-first bundle
 
-Scope
+Scope and Boundaries
 - [done] No engine core changes
-- [done] Integration remains sample-level
-- [done] MultiSystemDemoScene.js referenced
-- [done] Dev Console vs Debug Overlay boundary preserved
+- [done] Sample-level integration reference documented
+- [done] MultiSystemDemoScene.js used as reference
+- [done] Dev Console boundary preserved
+- [done] Debug Overlay boundary preserved
 
-Contract
-- [done] OverlayPanelRegistry deterministic ordering rules documented
-- [done] Panel descriptor validation contract documented
-- [done] Approved panel context boundary documented
-- [done] Approved console interaction via public registry calls documented
-- [done] Direct panel-to-console coupling prohibited
-- [done] Overlay host special-case behavior prohibited
+Provider Contract
+- [done] Read-only provider layer defined
+- [done] Recommended provider IDs documented
+- [done] Provider descriptor shape documented
+- [done] Provider guardrails documented
+- [done] Panels consume provider snapshots, not direct runtime reads
+- [done] Validation rules documented
+
+Build Quality
+- [done] Accomplishments summary included
+- [done] Next-step recommendations included
 
 Packaging
-- [done] PR docs written under docs/pr
-- [done] Commit comment and next command written under docs/dev
-- [done] Reports written under docs/dev/reports
-- [done] Delta zip created at <project folder>/tmp/OVERLAY_PANEL_REGISTRY_delta.zip
+- [done] Outputs written under docs/pr and docs/dev/reports
+- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_OVERLAY_DATA_PROVIDERS_delta.zip

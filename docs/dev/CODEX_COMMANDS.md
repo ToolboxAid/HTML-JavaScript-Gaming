@@ -1,23 +1,20 @@
 MODEL: GPT-5.4-codex
 REASONING: high
 
-COMMAND:
-Follow PLAN_PR -> BUILD_PR -> APPLY_PR.
+Create BUILD_PR_OVERLAY_DATA_PROVIDERS
 
-Create OVERLAY_PANEL_REGISTRY_delta focused on a clean contract for overlay panels.
+Follow PLAN_PR -> BUILD_PR -> APPLY_PR
 
 Requirements:
-- Docs-first planning/bundle structure unless explicitly executing BUILD/APPLY implementation
-- One PR per purpose
+- Docs-first unless APPLY explicitly needs code guidance notes
 - No engine core changes
+- One PR per purpose
 - Keep integration sample-level
-- Preserve Dev Console vs Debug Overlay boundary
 - Use MultiSystemDemoScene.js as the integration reference
-- Define and/or implement an OverlayPanelRegistry with deterministic ordering
-- Define panel descriptor validation and approved panel context boundaries
-- Allow only approved console interactions through public registry calls
-- Reject direct panel-to-console coupling and overlay host special cases
-- Write PR docs to docs/pr/
-- Write commit comment and next command under docs/dev/
-- Write reports under docs/dev/reports/
-- Package as <project folder>/tmp/OVERLAY_PANEL_REGISTRY_delta.zip
+- Define a clean read-only provider layer for Debug Overlay panels
+- Preserve the Dev Console = command/control boundary
+- Preserve the Debug Overlay = telemetry/visual boundary
+- Panels must consume provider snapshots instead of direct runtime reads
+- Include recommended provider IDs, descriptor shape, guardrails, validation, accomplishments summary, and next-step recommendations
+- Write outputs under docs/pr and docs/dev/reports
+- Package to <project folder>/tmp/BUILD_PR_OVERLAY_DATA_PROVIDERS_delta.zip

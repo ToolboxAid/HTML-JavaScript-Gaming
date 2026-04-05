@@ -1,19 +1,22 @@
-OVERLAY_PANEL_REGISTRY_delta
+BUILD_PR_OVERLAY_DATA_PROVIDERS change summary
 
-Summary
-- Produced docs-first PLAN/BUILD/APPLY bundle for a single PR purpose: clean OverlayPanelRegistry contract.
-- Kept integration sample-level using MultiSystemDemoScene.js as the reference touchpoint.
-- Preserved Dev Console vs Debug Overlay boundary.
-- Defined deterministic panel ordering, descriptor validation, panel context boundaries, and approved console interaction limits.
-- Rejected direct panel-to-console coupling and overlay host special-case behavior by contract.
+What was updated
+- Refreshed PLAN/BUILD/APPLY docs for overlay data providers.
+- Kept scope docs-first and sample-level.
+- Preserved Dev Console (command/control) vs Debug Overlay (telemetry/visual) boundary.
+- Defined read-only provider model where panels consume provider snapshots only.
 
-Scope
-- docs/pr: PLAN, BUILD, APPLY for overlay panel registry only.
-- docs/dev: codex command, commit comment, next command.
-- docs/dev/reports: change summary, validation checklist, file tree.
+Key contract outcomes
+- Recommended provider IDs documented.
+- Descriptor shape and validation rules documented.
+- Guardrails documented to prevent panel-to-console coupling and overlay host special cases.
+- Validation goals documented for deterministic snapshot behavior and graceful fallback.
+- Accomplishments summary and next-step recommendations included.
 
-Out of Scope
-- Engine core changes.
-- Runtime implementation changes.
-- Overlay preset/persistence expansion.
-- Console-overlay merger.
+Files included
+- docs/pr/PLAN_PR_OVERLAY_DATA_PROVIDERS.md
+- docs/pr/BUILD_PR_OVERLAY_DATA_PROVIDERS.md
+- docs/pr/APPLY_PR_OVERLAY_DATA_PROVIDERS.md
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/validation_checklist.txt
+- docs/dev/reports/file_tree.txt
