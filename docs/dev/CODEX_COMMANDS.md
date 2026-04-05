@@ -1,31 +1,36 @@
+# Codex Commands
+
+## Primary build
 MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION as a single combined build PR.
+Create `BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL` as a docs-driven implementation PR that combines the final public-facing vector platform showcase with deterministic geometry runtime finalization.
 
-GOAL:
-Finish the active tools platform in the fewest remaining steps by making all first-class tools use the engine theme and closing remaining platform-surface integration gaps.
+### Goals
+- registry-driven showcase surface
+- mandatory engine theme across all active first-class tools
+- deterministic vector geometry runtime contracts
+- stable transform/render/precision behavior
+- preserve `tools/SpritEditor_old_keep/` but exclude it from active platform surface
 
-DO:
-1. Identify the existing engine theme source of truth
-2. Normalize/extract a reusable shared theme contract only if needed
-3. Apply the engine theme to all active tools under tools/
-   - Vector Map Editor
-   - Vector Asset Studio
-   - Tile Map Editor
-   - Parallax Editor
-4. Unify shared shell/surface elements across active tools
-5. Ensure active tools surface/index/navigation reflects only active tools
-6. Preserve but exclude tools/SpritEditor_old_keep from active tool listings
-7. Fix broken paths/imports/assets caused by the consolidation if encountered
-8. Validate active tool loading and visual consistency
+### Active first-class tools
+- `tools/Vector Map Editor/`
+- `tools/Vector Asset Studio/`
+- `tools/Tile Map Editor/`
+- `tools/Parallax Editor/`
 
-DO NOT:
-- delete legacy Sprite content
-- invent a second theme system
-- perform unrelated refactors
-- split into multiple PRs unless a true blocker is discovered
+### Constraints
+- keep changes surgical
+- do not delete legacy sprite editor preserved path
+- no obsolete `Sprite Editor V3` references
+- no runtime-breaking engine rewrites
+- do not hardcode duplicate tool lists outside registry
+- prefer shared engine/theme and shared vector runtime over tool-specific behavior
 
-OUTPUT:
-<project folder>/tmp/BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION.zip
+### Package output
+Create:
+`<project folder>/tmp/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.zip`
+
+## Commit comment
+Use `docs/dev/commit_comment.txt`.

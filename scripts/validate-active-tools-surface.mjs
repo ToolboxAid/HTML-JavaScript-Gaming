@@ -25,7 +25,7 @@ const SCAN_TARGETS = [
   "tools/renderToolsIndex.js",
   "tools/shared/platformShell.js",
   "tools/shared/platformShell.css",
-  "docs/pr/BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION.md",
+  "docs/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
   "docs/dev/commit_comment.txt"
 ];
 
@@ -80,6 +80,13 @@ async function main() {
     }
     if (TOOL_NAME_SUFFIX_PATTERN.test(tool.displayName) || TOOL_NAME_SUFFIX_PATTERN.test(tool.folderName)) {
       issues.push(`Disallowed active naming suffix detected for ${tool.displayName} (${tool.folderName}).`);
+    }
+    const sampleEntryPoints = Array.isArray(tool.sampleEntryPoints) ? tool.sampleEntryPoints : [];
+    for (const sampleEntry of sampleEntryPoints) {
+      const samplePath = path.join(repoRoot, "tools", sampleEntry.path);
+      if (!(await pathExists(samplePath))) {
+        issues.push(`Missing showcase sample/help entry point for ${tool.displayName}: tools/${sampleEntry.path}`);
+      }
     }
   }
 

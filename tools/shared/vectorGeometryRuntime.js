@@ -1,6 +1,27 @@
 import { inspectVectorAssetContract } from "./vector/vectorAssetContract.js";
 import { prepareVectorRenderables } from "./vector/vectorRenderPrep.js";
 
+export const VECTOR_GEOMETRY_RUNTIME_POLICY = Object.freeze({
+  contract: "vector-geometry-runtime/1",
+  precision: {
+    epsilon: 0.000001,
+    decimalPlaces: 6,
+    rounding: "round-to-fixed-6"
+  },
+  transformOrder: [
+    "local-shape-points",
+    "normalized-contract-points",
+    "scale",
+    "rotate",
+    "translate"
+  ],
+  renderOrder: [
+    "layer-order",
+    "shape-order-within-layer"
+  ],
+  collisionPolicy: "collision-primitives-follow-render-order"
+});
+
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -61,10 +82,12 @@ export function prepareVectorGeometryRuntimeAsset(asset, options = {}) {
     bounds: cloneJson(inspection.renderPrep.bounds),
     renderables: cloneJson(inspection.renderPrep.renderables),
     collisionPrimitives: cloneJson(inspection.renderPrep.collisionPrimitives),
+    runtimePolicy: cloneJson(VECTOR_GEOMETRY_RUNTIME_POLICY),
     metadata: cloneJson(inspection.normalizedAsset.metadata),
     reports: [
       createReport("info", "VECTOR_CONTRACT_ACCEPTED", `Accepted vector contract for ${inspection.normalizedAsset.assetId}.`),
-      createReport("info", "VECTOR_RENDER_READY", `Prepared ${inspection.renderPrep.renderables.length} renderable primitive${inspection.renderPrep.renderables.length === 1 ? "" : "s"} for runtime.`)
+      createReport("info", "VECTOR_RENDER_READY", `Prepared ${inspection.renderPrep.renderables.length} renderable primitive${inspection.renderPrep.renderables.length === 1 ? "" : "s"} for runtime.`),
+      createReport("info", "VECTOR_RUNTIME_POLICY", "Applied deterministic vector runtime policy: scale -> rotate -> translate with fixed six-decimal rounding.")
     ],
     contract: cloneJson(inspection.normalizedAsset)
   };

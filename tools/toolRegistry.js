@@ -15,6 +15,14 @@ export const TOOL_REGISTRY = Object.freeze([
     folderName: "Vector Map Editor",
     entryPoint: "Vector Map Editor/index.html",
     description: "Vector geometry authoring tool for map layout, collision review, and runtime export workflows.",
+    showcaseTag: "Geometry",
+    showcaseStatus: "Deterministic Runtime Ready",
+    sampleEntryPoints: [
+      {
+        label: "How To Use",
+        path: "Vector Map Editor/how_to_use.html"
+      }
+    ],
     status: "active",
     visibleInToolsList: true
   },
@@ -25,6 +33,14 @@ export const TOOL_REGISTRY = Object.freeze([
     folderName: "Vector Asset Studio",
     entryPoint: "Vector Asset Studio/index.html",
     description: "Vector authoring studio for SVG-first asset work and first-class vector output for the platform.",
+    showcaseTag: "Vector Assets",
+    showcaseStatus: "SVG Contract Ready",
+    sampleEntryPoints: [
+      {
+        label: "Sample Manifest",
+        path: "Vector Asset Studio/samples/sample-manifest.json"
+      }
+    ],
     status: "active",
     visibleInToolsList: true
   },
@@ -35,6 +51,14 @@ export const TOOL_REGISTRY = Object.freeze([
     folderName: "Tilemap Studio",
     entryPoint: "Tilemap Studio/index.html",
     description: "Tile map layout studio for layered map authoring, sample playback, simulation, and packaging flows.",
+    showcaseTag: "Tile Maps",
+    showcaseStatus: "Sample Loading Ready",
+    sampleEntryPoints: [
+      {
+        label: "Sample Manifest",
+        path: "Tilemap Studio/samples/sample-manifest.json"
+      }
+    ],
     status: "active",
     visibleInToolsList: true
   },
@@ -45,6 +69,14 @@ export const TOOL_REGISTRY = Object.freeze([
     folderName: "Parallax Scene Studio",
     entryPoint: "Parallax Scene Studio/index.html",
     description: "Parallax composition studio for layered scene depth, sample loading, simulation, and export flows.",
+    showcaseTag: "Parallax",
+    showcaseStatus: "Scene Preview Ready",
+    sampleEntryPoints: [
+      {
+        label: "Sample Manifest",
+        path: "Parallax Scene Studio/samples/sample-manifest.json"
+      }
+    ],
     status: "active",
     visibleInToolsList: true
   },

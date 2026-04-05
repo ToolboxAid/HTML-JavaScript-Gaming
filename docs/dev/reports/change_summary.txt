@@ -1,16 +1,13 @@
-BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION
+CHANGE SUMMARY
 
-Summary:
-- makes engine theme mandatory for all active first-class tools
-- combines remaining theme/surface integration into one build PR
-- preserves legacy Sprite editor while excluding it from active tool surface
-- aims to finish platform polish in the fewest possible remaining steps
+Bundle:
+BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL
 
-Active tools in scope:
-- tools/Vector Map Editor/
-- tools/Vector Asset Studio/
-- tools/Tile Map Editor/
-- tools/Parallax Editor/
+Intent:
+Combine the last two major remaining docs-only steps into one Codex-ready PR bundle.
 
-Legacy preserved:
-- tools/SpritEditor_old_keep/
+What this bundle tells Codex to do:
+1. Build the public-facing platform showcase / landing surface.
+2. Make active tools registry-driven and engine-theme consistent.
+3. Finalize deterministic vector geometry runtime contracts.
+4. Keep legacy sprite editor preserved but excluded from the active platform surface.

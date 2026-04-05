@@ -1,14 +1,21 @@
-BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION Validation Checklist
+VALIDATION CHECKLIST
 
-[ ] Engine theme source of truth identified
-[ ] Shared theme contract reusable by active tools
-[ ] Vector Map Editor uses engine theme
-[ ] Vector Asset Studio uses engine theme
-[ ] Tile Map Editor uses engine theme
-[ ] Parallax Editor uses engine theme
-[ ] Shared shell/surface behavior consistent across active tools
-[ ] Active tool list excludes SpritEditor_old_keep
-[ ] No stale deprecated tool-name references remain on active surface
-[ ] No broken imports/paths/assets introduced by theme consolidation
-[ ] Active tools load without obvious console/runtime errors
-[ ] Final visual result reads as one coherent platform
+[ ] `tools/` remains the first-class active tool root
+[ ] Active tools shown only via registry
+[ ] Showcase surface lists only:
+    [ ] Vector Map Editor
+    [ ] Vector Asset Studio
+    [ ] Tile Map Editor
+    [ ] Parallax Editor
+[ ] `tools/SpritEditor_old_keep/` preserved
+[ ] Legacy sprite editor excluded from active showcase surface
+[ ] No `Sprite Editor V3` references remain
+[ ] All active tools consume engine theme tokens
+[ ] Shared shell/header/nav language is normalized
+[ ] Deterministic transform order documented
+[ ] Deterministic render ordering documented
+[ ] Precision / epsilon policy documented
+[ ] Path normalization rules documented
+[ ] Vector-native sample scenarios render stably
+[ ] No broken active tool links
+[ ] Combined PR remains surgical and docs-first

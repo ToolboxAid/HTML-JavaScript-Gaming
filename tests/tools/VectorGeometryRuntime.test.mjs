@@ -3,7 +3,8 @@ import { loadPackagedProjectRuntime } from "../../tools/shared/runtimeAssetLoade
 import {
   inspectVectorGeometryRuntimeAsset,
   prepareVectorGeometryRuntimeAsset,
-  summarizeVectorGeometryRuntime
+  summarizeVectorGeometryRuntime,
+  VECTOR_GEOMETRY_RUNTIME_POLICY
 } from "../../tools/shared/vectorGeometryRuntime.js";
 import { normalizeSvgToVectorAsset } from "../../tools/shared/vector/vectorAssetBridge.js";
 import { VECTOR_ASSET_FORMAT } from "../../tools/shared/vector/vectorAssetContract.js";
@@ -146,10 +147,21 @@ export async function run() {
   assert.equal(runtimeAsset.renderables.length, 2);
   assert.equal(runtimeAsset.collisionPrimitives.length, 2);
   assert.deepEqual(runtimeAsset.bounds.center, { x: 10, y: 3 });
+  assert.deepEqual(runtimeAsset.runtimePolicy, VECTOR_GEOMETRY_RUNTIME_POLICY);
+  assert.equal(runtimeAsset.reports.at(-1)?.code, "VECTOR_RUNTIME_POLICY");
   assert.equal(
     summarizeVectorGeometryRuntime(runtimeAsset),
     "Vector geometry runtime ready for vector.contract.sample with 2 renderable primitives."
   );
+
+  const repeatedRuntimeAsset = prepareVectorGeometryRuntimeAsset(contractAsset, {
+    transform: {
+      translate: { x: 10, y: 5 },
+      rotateRadians: 0,
+      scale: { x: 1, y: 1 }
+    }
+  });
+  assert.deepEqual(repeatedRuntimeAsset, runtimeAsset);
 
   const legacyAsset = normalizeSvgToVectorAsset({
     id: "vector.legacy.sample",
