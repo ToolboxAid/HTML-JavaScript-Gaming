@@ -1,1 +1,1 @@
-BUILD_PR_OVERLAY_PANEL_PERSISTENCE: define versioned, debug-only persistence contract for overlay panel state; keep registry as runtime source of truth and preserve sample-level integration.
+docs: plan debug surfaces promotion from tools/dev to engine-debug with minimal engine-core contracts

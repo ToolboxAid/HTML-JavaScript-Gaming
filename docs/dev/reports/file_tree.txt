@@ -1,13 +1,13 @@
 HTML-JavaScript-Gaming/
 |-- docs/
 |   |-- pr/
-|   |   |-- PLAN_PR_OVERLAY_PANEL_PERSISTENCE.md
-|   |   |-- BUILD_PR_OVERLAY_PANEL_PERSISTENCE.md
-|   |   `-- APPLY_PR_OVERLAY_PANEL_PERSISTENCE.md
+|   |   `-- PLAN_PR_DEBUG_SURFACES_PROMOTION.md
 |   `-- dev/
+|       |-- codex_commands.md
+|       |-- commit_comment.txt
 |       `-- reports/
 |           |-- change_summary.txt
 |           |-- validation_checklist.txt
 |           `-- file_tree.txt
 `-- tmp/
-    `-- BUILD_PR_OVERLAY_PANEL_PERSISTENCE_delta.zip
+    `-- PLAN_PR_DEBUG_SURFACES_PROMOTION_delta.zip
