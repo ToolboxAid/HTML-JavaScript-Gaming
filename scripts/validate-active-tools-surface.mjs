@@ -2,8 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  ACTIVE_TOOL_SURFACE_IDS,
   TOOL_NAME_SUFFIX_PATTERN,
   getToolRegistry,
+  getToolById,
   getVisibleActiveToolRegistry
 } from "../tools/toolRegistry.js";
 
@@ -15,17 +17,15 @@ const REQUIRED_ACTIVE_TOOL_NAMES = [
   "Vector Map Editor",
   "Vector Asset Studio",
   "Tile Map Editor",
-  "Parallax Editor",
-  "Sprite Editor"
+  "Parallax Editor"
 ];
 
 const SCAN_TARGETS = [
   "tools/index.html",
   "tools/renderToolsIndex.js",
-  "docs/pr/BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME.md",
-  "docs/dev/reports/validation_checklist.txt",
-  "docs/dev/reports/change_summary.txt",
-  "docs/dev/reports/file_tree.txt",
+  "tools/shared/platformShell.js",
+  "tools/shared/platformShell.css",
+  "docs/pr/BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.md",
   "docs/dev/commit_comment.txt"
 ];
 
@@ -52,9 +52,14 @@ async function main() {
   const toolRegistry = getToolRegistry();
   const visibleActiveTools = getVisibleActiveToolRegistry();
   const activeNames = visibleActiveTools.map((tool) => tool.displayName);
+  const activeIds = visibleActiveTools.map((tool) => tool.id);
 
   if (JSON.stringify(activeNames) !== JSON.stringify(REQUIRED_ACTIVE_TOOL_NAMES)) {
     issues.push(`Active tool names do not match the approved list. Found: ${activeNames.join(", ")}`);
+  }
+
+  if (JSON.stringify(activeIds) !== JSON.stringify(ACTIVE_TOOL_SURFACE_IDS)) {
+    issues.push(`Active tool ids do not match the approved registry surface. Found: ${activeIds.join(", ")}`);
   }
 
   for (const tool of visibleActiveTools) {
@@ -76,6 +81,11 @@ async function main() {
     issues.push(`Legacy tools appear in active navigation: ${visibleLegacyTools.map((tool) => tool.displayName).join(", ")}`);
   }
 
+  const preservedSpriteTool = getToolById("sprite-editor");
+  if (preservedSpriteTool?.visibleInToolsList === true || preservedSpriteTool?.status === "active") {
+    issues.push("Sprite Editor is still marked as a first-class active tool.");
+  }
+
   for (const target of SCAN_TARGETS) {
     const text = await readText(target);
     if (/Sprite Editor V3|tools\/Sprite Editor V3|tools\\Sprite Editor V3/.test(text)) {
@@ -85,7 +95,7 @@ async function main() {
 
   for (const target of NAVIGATION_SURFACE_TARGETS) {
     const text = await readText(target);
-    if (/SpriteEditor_old_keep/.test(text)) {
+    if (/SpriteEditor_old_keep|Sprite Editor Legacy|Sprite Editor/.test(text)) {
       issues.push(`Legacy tool appears in active navigation/report surface: ${target}`);
     }
   }

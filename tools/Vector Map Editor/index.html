@@ -9,11 +9,13 @@ index.html
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vector Map Editor</title>
+  <title>Tools Platform</title>
   <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="./vectorMapEditor.css" />
 </head>
-<body class="vector-editor-page">
+<body class="vector-editor-page" data-tool-id="vector-map-editor" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
   <div class="app" id="appRoot">
     <div class="toolbar">
       <div class="toolbar-group">
@@ -271,6 +273,8 @@ index.html
     </div>
   </div>
 
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
   <script type="module" src="./main.js"></script>
 </body>
 </html>

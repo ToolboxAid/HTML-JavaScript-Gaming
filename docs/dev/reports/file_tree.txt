@@ -1,18 +1,11 @@
-tools/
-  index.html
-  renderToolsIndex.js
-  toolRegistry.js
-  Sprite Editor/
-    index.html
-    README.md
-scripts/
-  validate-active-tools-surface.mjs
-docs/
-  pr/
-    BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME.md
-  dev/
-    commit_comment.txt
-    reports/
-      change_summary.txt
-      file_tree.txt
-      validation_checklist.txt
+BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH/
+  docs/
+    pr/
+      BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.md
+    dev/
+      codex_commands.md
+      commit_comment.txt
+      reports/
+        change_summary.txt
+        validation_checklist.txt
+        file_tree.txt

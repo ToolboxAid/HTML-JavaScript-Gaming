@@ -1,0 +1,178 @@
+:root {
+  --tools-shell-bg: #08111f;
+  --tools-shell-surface: rgba(8, 17, 31, 0.92);
+  --tools-shell-border: rgba(133, 183, 255, 0.18);
+  --tools-shell-text: #e8f1ff;
+  --tools-shell-muted: #8ea5c2;
+  --tools-shell-accent: #61d5ff;
+  --tools-shell-accent-soft: rgba(97, 213, 255, 0.14);
+  --tools-shell-shadow: 0 18px 50px rgba(4, 10, 20, 0.35);
+}
+
+body.tools-platform-surface {
+  background:
+    radial-gradient(circle at top, rgba(97, 213, 255, 0.14), transparent 32%),
+    linear-gradient(180deg, #050b14 0%, #091220 100%);
+  color: var(--tools-shell-text);
+}
+
+.tools-platform-header,
+.tools-platform-status {
+  width: min(1600px, calc(100% - 32px));
+  margin: 16px auto;
+}
+
+.tools-platform-frame,
+.tools-platform-statusbar {
+  border: 1px solid var(--tools-shell-border);
+  border-radius: 18px;
+  background: var(--tools-shell-surface);
+  box-shadow: var(--tools-shell-shadow);
+  backdrop-filter: blur(10px);
+}
+
+.tools-platform-frame {
+  padding: 18px 20px;
+}
+
+.tools-platform-frame__topline,
+.tools-platform-frame__bottomline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tools-platform-frame__eyebrow {
+  margin: 0;
+  color: var(--tools-shell-accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tools-platform-frame__title {
+  margin: 6px 0 0;
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  line-height: 1.05;
+}
+
+.tools-platform-frame__description {
+  margin: 8px 0 0;
+  max-width: 72ch;
+  color: var(--tools-shell-muted);
+}
+
+.tools-platform-frame__links,
+.tools-platform-frame__nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tools-platform-frame__link,
+.tools-platform-frame__nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.tools-platform-frame__link {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--tools-shell-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--tools-shell-text);
+}
+
+.tools-platform-frame__link:hover,
+.tools-platform-frame__link:focus-visible {
+  background: var(--tools-shell-accent-soft);
+  border-color: rgba(97, 213, 255, 0.4);
+  color: #ffffff;
+}
+
+.tools-platform-frame__nav-link {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--tools-shell-muted);
+  font-size: 0.94rem;
+}
+
+.tools-platform-frame__nav-link:hover,
+.tools-platform-frame__nav-link:focus-visible {
+  border-color: rgba(97, 213, 255, 0.45);
+  color: var(--tools-shell-text);
+}
+
+.tools-platform-frame__nav-link.is-current {
+  border-color: rgba(97, 213, 255, 0.5);
+  background: var(--tools-shell-accent-soft);
+  color: #ffffff;
+}
+
+.tools-platform-frame__meta {
+  color: var(--tools-shell-muted);
+  font-size: 0.95rem;
+}
+
+.tools-platform-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  color: var(--tools-shell-muted);
+  font-size: 0.92rem;
+}
+
+body.tools-platform-surface .wrap,
+body.tools-platform-surface .app-shell,
+body.tools-platform-surface .app {
+  width: min(1600px, calc(100% - 32px));
+  margin: 0 auto 16px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--tools-shell-shadow);
+}
+
+body.tools-platform-surface .wrap {
+  background: rgba(7, 14, 24, 0.9);
+}
+
+body.tools-platform-surface .topnav {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.tools-platform-surface .toolbar,
+body.tools-platform-surface .statusbar {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.tools-platform-surface .app-shell > .toolbar:first-child,
+body.tools-platform-surface .app > .toolbar:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 900px) {
+  .tools-platform-header,
+  .tools-platform-status,
+  body.tools-platform-surface .wrap,
+  body.tools-platform-surface .app-shell,
+  body.tools-platform-surface .app {
+    width: min(100%, calc(100% - 20px));
+  }
+
+  .tools-platform-frame {
+    padding: 16px;
+  }
+}

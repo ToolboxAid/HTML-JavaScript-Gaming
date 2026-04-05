@@ -1,13 +1,15 @@
-[x] canonical sprite tool folder is tools/Sprite Editor
-[x] no canonical stale sprite-editor rename references remain in the validated active tool surface
-[x] active tools registry exists and is the single source of truth
-[x] generated active tools list comes from registry
-[x] active tools list contains only approved first-class tools
-[x] Vector Map Editor listed
-[x] Vector Asset Studio listed
-[x] Tile Map Editor listed
-[x] Parallax Editor listed
-[x] Sprite Editor listed
-[x] legacy-preserved tools excluded from active tools list
-[x] validation detects stale references and naming drift
-[x] active tool paths load correctly after rename
+[ ] Tools landing page exists and is clearly first-class
+[ ] Active tools list is generated from canonical registry
+[ ] Only approved active tools appear on landing page
+[ ] Legacy Sprite Editor does not appear in active tools menu
+[ ] Vector Map Editor uses shared platform shell
+[ ] Vector Asset Studio uses shared platform shell
+[ ] Tile Map Editor uses shared platform shell
+[ ] Parallax Editor uses shared platform shell
+[ ] Current tool title matches canonical naming in every active tool
+[ ] Home/back-to-tools affordance works in every active tool
+[ ] Common actions use normalized wording
+[ ] No visible references to `Sprite Editor V3`
+[ ] No broken asset/script/style paths introduced
+[ ] No engine/game runtime files modified
+[ ] Legacy preserved folder remains intact

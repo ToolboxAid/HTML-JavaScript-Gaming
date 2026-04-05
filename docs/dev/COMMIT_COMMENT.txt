@@ -1,1 +1,1 @@
-Unify active tools under a first-class tools registry, standardize Sprite Editor at tools/Sprite Editor, generate active tool navigation from a single source of truth, and add validation to prevent naming/path drift.
+Polish tools platform surface with a shared shell, registry-driven active-tool navigation, and unified first-class labels while preserving Sprite Editor outside the active surface.

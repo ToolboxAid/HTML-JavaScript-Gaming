@@ -15,8 +15,8 @@ function renderToolCard(tool) {
       <h3><a href="${escapeHtml(tool.entryPoint)}">${escapeHtml(tool.displayName)}</a></h3>
       <p>${escapeHtml(tool.description)}</p>
       <div class="meta">
-        <span class="pill live">Live</span>
-        <span class="pill planned">Registry</span>
+        <span class="pill live">Active Tool</span>
+        <span class="pill planned">Registry Driven</span>
       </div>
     </div>
   `;

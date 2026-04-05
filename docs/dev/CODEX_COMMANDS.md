@@ -2,45 +2,35 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME as a docs-aligned implementation PR.
+Create BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH as a surgical tools-surface implementation PR.
 
-REPO RULES:
-- Treat tools/ as a first-class product surface.
-- Keep this PR surgical and limited to tool naming, tool registry, generated navigation, and validation.
-- Do not delete preserved legacy content unless absolutely required and explicitly approved.
-- Prefer one canonical source of truth for active tool metadata.
-- Preserve existing behavior except where required for the canonical Sprite Editor path and tool-surface cleanup.
+OBJECTIVE:
+Make the `tools/` folder first-class and visually unified by adding a shared platform shell and registry-driven active tools surface for:
+- Vector Map Editor
+- Vector Asset Studio
+- Tile Map Editor
+- Parallax Editor
 
-TASKS:
-1. Standardize the active sprite tool at tools/Sprite Editor.
-2. Update active references, labels, titles, links, and path usage to Sprite Editor.
-3. Introduce a single source of truth registry for active tools.
-4. Ensure the active tools list/navigation renders from that registry rather than duplicated hardcoded names.
-5. Mark only these as active first-class tools:
-   - Vector Map Editor
-   - Vector Asset Studio
-   - Tile Map Editor
-   - Parallax Editor
-   - Sprite Editor
-6. Ensure legacy-preserved tools do not appear in the active tools list.
-7. Add a lightweight validation check/script that detects:
-   - missing active tool folders
-   - stale sprite-editor rename references
-   - legacy tools appearing in active navigation
-   - disallowed active naming suffixes like V2/V3/new/final/copy
-8. Validate all active tool loading paths after the rename.
+PRESERVE:
+- legacy Sprite Editor under preserved pathing such as `tools/SpritEditor_old_keep/`
+- existing unique editor workspaces per tool
+- current repo boundaries; do not modify engine/game runtime code
 
-OUTPUTS:
-- Repo changes only for this PR scope
-- docs/pr/BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME.md retained
-- docs/dev/commit_comment.txt updated
-- package final delta zip to:
-  <project folder>/tmp/BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME_delta.zip
+IMPLEMENT:
+1. Add/update a first-class tools landing surface.
+2. Generate active tool entries from the canonical tool registry.
+3. Add a lightweight shared platform CSS/JS layer for header/nav/status/workspace chrome.
+4. Apply the shared shell to all active tools.
+5. Normalize visible labels/actions across active tools.
+6. Exclude legacy Sprite Editor from active tools surface.
+7. Validate all renamed paths and remove stale references.
 
-COMMIT COMMENT:
-Unify active tools under a first-class tools registry, standardize Sprite Editor at tools/Sprite Editor, generate active tool navigation from a single source of truth, and add validation to prevent naming/path drift.
+GUARDRAILS:
+- no destructive deletes
+- no framework migration
+- no gameplay/runtime engine changes
+- no ad hoc duplicated tool menus in multiple files
+- keep changes small, readable, and reversible
 
-NEXT COMMAND:
-MODEL: GPT-5.4
-REASONING: high
-COMMAND: Create BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH to standardize tool landing UX, descriptions, icons/labels, and showcase ordering across the active tools registry without changing engine behavior.
+OUTPUT:
+<project folder>/tmp/BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.zip

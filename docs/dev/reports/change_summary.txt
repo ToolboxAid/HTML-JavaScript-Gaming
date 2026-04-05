@@ -1,26 +1,17 @@
-BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME
------------------------------------------
+BUILD PR bundle prepared for vector platform surface polish.
 
-Implemented changes
-- standardized the canonical active sprite tool folder at `tools/Sprite Editor/`
-- updated the sprite tool title and heading to the canonical `Sprite Editor` name
-- introduced `tools/toolRegistry.js` as the single source of truth for active tool metadata
-- introduced `tools/renderToolsIndex.js` so the tools hub renders the active tools list from the registry
-- updated `tools/index.html` to use generated active tool cards instead of hardcoded tool names
-- added `scripts/validate-active-tools-surface.mjs` to detect folder/path/name drift
+Planned implementation summary:
+- establish `tools/` as a first-class product surface
+- add a shared platform shell for active tools
+- drive active tool menus/listings from one canonical registry
+- normalize naming, labels, and common actions across active tools
+- preserve legacy Sprite Editor outside the active tools surface
+- validate rename/path integrity and remove stale references
 
-Approved visible active tools
-- `Vector Map Editor`
-- `Vector Asset Studio`
-- `Tile Map Editor`
-- `Parallax Editor`
-- `Sprite Editor`
-
-Legacy handling
-- `tools/SpriteEditor_old_keep/` remains preserved on disk
-- legacy tools are excluded from the active tools list by registry metadata and validation
-
-Validation
-- active tool entry paths were checked after the rename
-- stale sprite-editor rename references are checked in canonical hub/build-report surfaces
-- disallowed active naming suffixes are checked by validation script
+Included bundle artifacts:
+- PR spec
+- Codex command
+- commit comment
+- change summary
+- validation checklist
+- file tree

@@ -9,10 +9,12 @@ index.html
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ToolboxAid - Tools</title>
+  <title>Tools Platform</title>
   <link rel="stylesheet" href="../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="./shared/platformShell.css" />
 </head>
-<body class="hub-page-tools">
+<body class="hub-page-tools" data-tools-platform-page="landing">
+  <div data-tools-platform-header></div>
   <div class="wrap">
     <div class="topnav">
       <a href="../index.html">Home</a>
@@ -20,12 +22,12 @@ index.html
     </div>
 
     <section class="hero">
-      <h1>ToolboxAid - Tools</h1>
-      <p class="subtitle">First-class tools for building sprites, maps, vector assets, and parallax scenes. The active tools surface is generated from one canonical registry so naming and navigation stay aligned.</p>
+      <h1>ToolboxAid - Active Tools</h1>
+      <p class="subtitle">Registry-driven tooling surface for vector maps, vector assets, tile maps, and parallax scenes. Preserved legacy editors stay on disk without appearing in the first-class navigation.</p>
     </section>
 
     <section>
-      <h2>Available Now</h2>
+      <h2>Active Tools</h2>
       <div class="grid" data-active-tools-grid>
       </div>
       <noscript>
@@ -345,6 +347,8 @@ index.html
       </div>
     </section>
   </div>
+  <div data-tools-platform-status></div>
   <script type="module" src="./renderToolsIndex.js"></script>
+  <script type="module" src="./shared/platformShell.js"></script>
 </body>
 </html>
