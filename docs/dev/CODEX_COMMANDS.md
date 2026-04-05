@@ -3,24 +3,33 @@ David Quesenberry
 04/05/2026
 codex_commands.md
 
-# Codex Commands
+# CODEX COMMANDS
 
-## Recommended model
-- MODEL: GPT-5.4
-- REASONING: high
+## APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD
 
-## Command
-Create APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD as the implementation PR for the approved runtime scene loader and hot reload contract.
+MODEL: GPT-5.3-codex
+REASONING: high
+
+COMMAND:
+Apply APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD as a focused implementation PR.
 
 Requirements:
-- follow PLAN_PR -> BUILD_PR -> APPLY_PR exactly
-- implement only what is defined in BUILD_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD
-- keep changes surgical and architecture-safe
-- preserve locked public engine mappings
-- include deterministic load/reload ordering
-- include structured validation and error behavior
-- include focused tests for valid/invalid/reload-order/composition-reload paths
-- update docs/dev reports after validation
+- Implement the approved runtime scene loader and hot reload flow only
+- Keep orchestration above engine core; do not pollute engine systems with tool-specific quirks
+- Consume existing approved render pipeline/composition contracts rather than inventing new ones
+- Preserve deterministic render order
+- Add structured validation-aware reload behavior
+- Preserve last-known-good scene on reload failure
+- Add focused automated tests for load, reload, validation failure, disposal, and repeated reload stability
+- Keep changes surgical and architecture-aligned
+- Do not introduce destructive runtime-breaking changes unless absolutely required and documented
+- Produce repo-structured implementation delta ZIP at:
+  <project folder>/tmp/APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD_delta.zip
 
-Output zip path:
-- <project folder>/tmp/APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD_delta.zip
+Expected documentation updates:
+- docs/dev/change_summary.txt
+- docs/dev/file_tree.txt
+- docs/dev/validation_checklist.txt
+
+Commit comment source:
+- docs/dev/commit_comment.txt

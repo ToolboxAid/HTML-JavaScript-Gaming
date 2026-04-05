@@ -107,6 +107,7 @@ import { run as runCloudRuntime } from './tools/CloudRuntime.test.mjs';
 import { run as runGameTemplates } from './tools/GameTemplates.test.mjs';
 import { run as runPublishingPipeline } from './tools/PublishingPipeline.test.mjs';
 import { run as runRenderPipelineContractAll4Tools } from './tools/RenderPipelineContractAll4Tools.test.mjs';
+import { run as runRuntimeSceneLoaderHotReload } from './tools/RuntimeSceneLoaderHotReload.test.mjs';
 import { run as runVectorAssetSystem } from './tools/VectorAssetSystem.test.mjs';
 import { run as runVectorNativeTemplate } from './tools/VectorNativeTemplate.test.mjs';
 import { run as runVectorTemplateSampleGame } from './tools/VectorTemplateSampleGame.test.mjs';
@@ -212,6 +213,7 @@ const tests = [
     ['GameTemplates', runGameTemplates],
     ['PublishingPipeline', runPublishingPipeline],
     ['RenderPipelineContractAll4Tools', runRenderPipelineContractAll4Tools],
+    ['RuntimeSceneLoaderHotReload', runRuntimeSceneLoaderHotReload],
     ['VectorAssetSystem', runVectorAssetSystem],
     ['VectorNativeTemplate', runVectorNativeTemplate],
     ['VectorTemplateSampleGame', runVectorTemplateSampleGame],
