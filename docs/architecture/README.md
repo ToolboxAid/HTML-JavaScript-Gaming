@@ -1,8 +1,27 @@
+Toolbox Aid
+David Quesenberry
+04/05/2026
+README.md
 
-# Architecture Overview
+# Architecture Docs
 
-engine/ → foundational systems  
-src/advanced/ → composable architecture layer  
-games/ → consumers  
+## Core Boundaries
+- [Engine API Boundary](engine-api-boundary.md)
+- [Repo Operating Model](repo-operating-model.md)
 
-Authoritative state lives in src/advanced/state/
+## Engine References
+- `engine-bootstrap.md`
+- `engine-render.md`
+- `engine-input.md`
+- `engine-input-mapping.md`
+- `engine-gamepad-input.md`
+- `engine-mouse-input.md`
+- `engine-entity.md`
+- `engine-scene-transitions.md`
+
+## Layer Model
+- `engine/`: stable foundational runtime systems
+- `src/advanced/`: composable advanced architecture layer
+- `samples/`: usage demonstrations
+- `games/`: consumer implementations
+- `tools/`: editor and pipeline tooling

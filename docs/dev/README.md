@@ -1,16 +1,27 @@
 Toolbox Aid
 David Quesenberry
-03/31/2026
+04/05/2026
 README.md
 
-BUILD_PR bundle for Demo 1208 tool-formatted tiles parallax.
+# Active Dev Surface
 
-Contents:
-- PR build contract
-- Codex execution command
-- commit comment
-- validation checklist
-- change summary
+`docs/dev/` is the active execution surface only.
 
-This bundle is docs-first.
-Codex performs repo edits and produces the implementation delta ZIP.
+## Active Files
+- `README.md`
+- `WORKFLOW_RULES.md`
+- `codex_commands.md` (must remain header-free)
+- `commit_comment.txt` (must remain header-free)
+- `next_command.txt`
+- `reports/change_summary.txt`
+- `reports/file_tree.txt`
+- `reports/validation_checklist.txt`
+
+## Archive Locations
+- Archived operational notes: `docs/archive/dev-ops/`
+- Archived generated reports: `docs/archive/generated-reports/`
+
+## Rules
+- Keep `docs/dev/` minimal and current.
+- Do not store stale generated bundles or duplicate operating notes in `docs/dev/`.
+- Preserve `docs/pr/` as historical record.

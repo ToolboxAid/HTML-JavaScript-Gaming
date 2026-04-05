@@ -1,0 +1,11 @@
+BUILD_PR_STARTER_PROJECT_TEMPLATE change summary
+
+- Added one starter template folder under `templates/starter-project-template/`
+- Added one shared project manifest at `templates/starter-project-template/config/starter.project.json`
+- Reused existing shared vector, tilemap, parallax, sprite, and palette assets by reference
+- Added a minimal template README with shared project open instructions
+- Added a dedicated starter template validator and report output
+- Preserved current platform rules:
+  - Sprite Editor first-class and visible
+  - SpriteEditor_old_keep hidden legacy
+  - tools/index.html remains tool-only and sample-free

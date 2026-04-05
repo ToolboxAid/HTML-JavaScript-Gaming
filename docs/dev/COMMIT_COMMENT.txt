@@ -1,5 +1,1 @@
-BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI
-
-- Added on-canvas interactive dev console UI
-- Wired typed command input into sample-level debug integration
-- Preserved combo-key controls and engine-safe boundaries
+docs: cleanup docs structure, archive stale dev artifacts, and normalize active dev surface

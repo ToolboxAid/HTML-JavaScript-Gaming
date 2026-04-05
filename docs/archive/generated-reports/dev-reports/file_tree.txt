@@ -1,0 +1,18 @@
+BUILD_PR_STARTER_PROJECT_TEMPLATE/
+  templates/
+    starter-project-template/
+      README.md
+      config/
+        starter.project.json
+  docs/
+    pr/
+      BUILD_PR_STARTER_PROJECT_TEMPLATE.md
+    dev/
+      COMMIT_COMMENT.txt
+      reports/
+        change_summary.txt
+        starter_project_template_validation.txt
+        validation_checklist.txt
+        file_tree.txt
+  scripts/
+    validate-starter-project-template.mjs

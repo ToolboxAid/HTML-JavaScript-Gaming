@@ -1,13 +1,30 @@
-[x] Starter Project Template exists as one project template only
-[x] Template is not positioned as a sample pack or game
-[x] Shared vector/tilemap/parallax/sprite references resolve correctly
-[x] Shared palette reference resolves correctly
-[x] Project manifest validates through shared project serializer/validator
-[x] Vector Map Editor starter payload is present
-[x] Vector Asset Studio starter payload is present
-[x] Tilemap Studio starter payload is present
-[x] Parallax Scene Studio starter payload is present
-[x] Sprite Editor remains first-class
-[x] SpriteEditor_old_keep remains hidden legacy
-[x] tools/index.html remains tool-only and sample-free
-[x] Validation report emitted at docs/dev/reports/starter_project_template_validation.txt
+Toolbox Aid
+David Quesenberry
+04/05/2026
+validation_checklist.txt
+
+VALIDATION CHECKLIST
+
+Workflow
+- BUILD_PR created for docs cleanup and structure reorg
+- One PR purpose maintained
+- docs-only implementation scope preserved
+
+Docs Surface
+- `docs/pr/` left intact
+- `docs/dev/` now active-only workflow controls
+- active reports consolidated under `docs/dev/reports/`
+- duplicate workflow/rules docs consolidated and archived
+
+Architecture
+- `docs/dev/ARCHITECTURE.txt` removed from active dev surface
+- durable operating model documented at `docs/architecture/repo-operating-model.md`
+
+Archive
+- `docs/archive/dev-ops/` contains superseded operational notes
+- `docs/archive/generated-reports/` contains legacy generated reports
+
+Safety
+- no engine/tools/samples/games/tests/runtime files modified
+- updated docs reference valid existing paths
+- `docs/dev/commit_comment.txt` remains header-free

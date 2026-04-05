@@ -1,14 +1,20 @@
+# Repo Directory Structure
 
-# Repo Structure
+## Runtime and Product Layers
+- `engine/`: stable foundational runtime systems
+- `src/advanced/`: composable advanced architecture layer
+- `tools/`: editor and pipeline tooling
+- `samples/`: demonstration consumers
+- `games/`: gameplay consumers
+- `tests/`: automated validation
 
-engine/ → core stable systems  
-src/advanced/state/ → authoritative state system  
-src/advanced/events/ → event system  
-src/advanced/integration/ → integration layer  
+## Documentation Layers
+- `docs/pr/`: preserved PR history
+- `docs/dev/`: active workflow controls
+- `docs/dev/reports/`: active reports
+- `docs/architecture/`: durable architecture and boundary references
+- `docs/archive/dev-ops/`: archived operational notes
+- `docs/archive/generated-reports/`: archived generated reports
 
-docs/pr/ → PR documentation  
-docs/dev/reports/ → generated reports  
-
-games/ → game implementations  
-tools/ → dev tools  
-samples/ → examples  
+## Packaging Output
+- `tmp/`: build/apply repo-structured delta ZIP outputs

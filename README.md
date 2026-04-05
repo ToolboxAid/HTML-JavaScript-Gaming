@@ -1,23 +1,27 @@
+Toolbox Aid
+David Quesenberry
+04/05/2026
+README.md
 
-# Project Overview
+# HTML-JavaScript-Gaming
 
-This repository provides a reusable game architecture framework.
+This repository is a docs-first game/runtime workspace with a stable engine layer, advanced architecture layer, tools, samples, and PR-history documentation.
 
-## Current State
+## Current Working Model
+- Workflow: `PLAN_PR -> BUILD_PR -> APPLY_PR`
+- One PR per purpose
+- Small, surgical scope changes
+- Build/apply delta ZIP outputs stored under `<project folder>/tmp/`
 
-- Advanced state system located in `src/advanced/state/`
-- Authoritative slices implemented:
-  - objectiveProgress
-  - score
-- Reports generated in `docs/dev/reports/`
-- Docs-first workflow enforced
-- Codex performs all implementation
+## Documentation Map
+- [docs/README.md](docs/README.md): top-level documentation index
+- `docs/pr/`: preserved PR history and architecture evolution
+- `docs/dev/`: active workflow controls
+- `docs/dev/reports/`: active report artifacts
+- `docs/architecture/`: durable architecture and boundary contracts
+- `docs/archive/`: archived dev-ops notes and generated reports
 
-## Workflow
-
-PLAN_PR → BUILD_PR → APPLY_PR
-
-## Output Rules
-
-All ZIP outputs must go to:
-<project folder>/tmp/
+## Runtime Boundary Reminder
+- Engine code remains in `engine/`.
+- Advanced composable architecture remains in `src/advanced/`.
+- Tools/samples/games consume public contracts and should not bypass engine boundaries.

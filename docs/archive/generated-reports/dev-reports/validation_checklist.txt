@@ -1,0 +1,13 @@
+[x] Starter Project Template exists as one project template only
+[x] Template is not positioned as a sample pack or game
+[x] Shared vector/tilemap/parallax/sprite references resolve correctly
+[x] Shared palette reference resolves correctly
+[x] Project manifest validates through shared project serializer/validator
+[x] Vector Map Editor starter payload is present
+[x] Vector Asset Studio starter payload is present
+[x] Tilemap Studio starter payload is present
+[x] Parallax Scene Studio starter payload is present
+[x] Sprite Editor remains first-class
+[x] SpriteEditor_old_keep remains hidden legacy
+[x] tools/index.html remains tool-only and sample-free
+[x] Validation report emitted at docs/dev/reports/starter_project_template_validation.txt

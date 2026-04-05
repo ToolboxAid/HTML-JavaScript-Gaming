@@ -7,32 +7,43 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI implementation.
+Create BUILD_PR_DOCS_CLEANUP_AND_STRUCTURE_REORG implementation.
 
 Requirements:
-- Create tools/dev/interactiveDevConsoleRenderer.js
-- Update tools/dev/devConsoleIntegration.js
-- Modify ONE sample entry file only
-- Reuse existing runtime executeConsoleInput()
-- Preserve combo keys exactly:
-  - Shift + ` => toggle console
-  - Ctrl + Shift + ` => toggle overlay
-  - Ctrl + Shift + R => reload
-  - Ctrl + Shift + ] => next panel
-  - Ctrl + Shift + [ => previous panel
-- Add typed console input behavior only while console is open
-- Draw console on canvas
-- Do not modify engine core
-- No F-key bindings
-- Use save()/restore() around canvas changes
-- Keep commit_comment.txt header-free
-- Run node --check on touched JS files
+- Clean only documentation and documentation-adjacent artifacts
+- Do not modify engine, tools, samples, games, tests, or runtime code
+- Keep `docs/pr/` intact as history
+- Make `docs/dev/` active-only:
+  - README.md
+  - WORKFLOW_RULES.md
+  - active CODEX_COMMANDS.md
+  - active COMMIT_COMMENT.txt
+  - active NEXT_COMMAND.txt
+  - only currently valuable reports
+- Move durable architecture material out of `docs/dev/ARCHITECTURE.txt` into:
+  `docs/architecture/repo-operating-model.md`
+- Consolidate duplicate workflow/rules/start-of-day notes
+- Move older or lower-value generated artifacts to:
+  - `docs/archive/dev-ops/`
+  - `docs/archive/generated-reports/`
+- Delete obvious no-value doc artifacts when safe
+- Update key docs:
+  - README.md
+  - docs/README.md
+  - docs/getting-started.md
+  - docs/architecture/README.md
+  - docs/architecture/engine-api-boundary.md
+  - docs/dev/README.md
+  - docs/repo-directory-structure.md if present
+  - docs/review-checklist.md if present
+- Do not introduce broken links
+- Keep `docs/dev/commit_comment.txt` header-free
 - Package implementation output to:
-  <project folder>/tmp/BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI_delta.zip
+  <project folder>/tmp/BUILD_PR_DOCS_CLEANUP_AND_STRUCTURE_REORG_delta.zip
 
 Report back:
-- exact files changed
-- selected sample file
-- how console input is captured
-- how console draw is invoked
-- validation command results
+- exact docs/files removed
+- exact docs/files moved
+- exact docs/files updated
+- final active docs/dev structure
+- final archive structure
