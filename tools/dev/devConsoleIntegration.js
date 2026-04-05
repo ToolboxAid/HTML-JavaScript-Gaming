@@ -4,7 +4,7 @@ David Quesenberry
 04/05/2026
 devConsoleIntegration.js
 */
-import { drawPanel } from "../../engine/debug/index.js";
+import { drawCanvasDebugHud } from "./canvasDebugHudRenderer.js";
 import {
   createDiagnosticsCollector,
   createDevConsoleDebugOverlayRuntime
@@ -321,7 +321,16 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     if (overlayRender.status === "ready") {
       const overlayLines = flattenOverlaySections(overlayRender.sections, 9);
       overlayLines.push(`order: ${renderOrder.slice(-2).join(" -> ")}`);
-      drawPanel(renderer, overlayX, overlayY, overlayWidth, overlayHeight, "Debug Overlay (Ctrl+Shift+`)", overlayLines.slice(0, 10));
+      drawCanvasDebugHud(renderer, [
+        {
+          x: overlayX,
+          y: overlayY,
+          width: overlayWidth,
+          height: overlayHeight,
+          title: "Debug Overlay (Ctrl+Shift+`)",
+          lines: overlayLines.slice(0, 10)
+        }
+      ]);
     }
 
     const state = runtime.getState();
@@ -351,7 +360,16 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         ...outputLines.slice(0, 5)
       ];
 
-      drawPanel(renderer, consoleX, consoleY, consoleWidth, consoleHeight, "Dev Console (Shift+`)", lines.slice(0, 9));
+      drawCanvasDebugHud(renderer, [
+        {
+          x: consoleX,
+          y: consoleY,
+          width: consoleWidth,
+          height: consoleHeight,
+          title: "Dev Console (Shift+`)",
+          lines: lines.slice(0, 9)
+        }
+      ]);
     }
 
     return {

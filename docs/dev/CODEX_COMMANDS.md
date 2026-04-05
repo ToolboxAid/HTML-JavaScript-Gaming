@@ -7,15 +7,29 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Update dev console integration to replace F-key bindings with combo-key bindings.
+Create BUILD_PR_CANVAS_DEBUG_OVERLAY_RENDERER implementation.
 
-- Shift + ` => toggleConsole
-- Ctrl + Shift + ` => toggleOverlay
-- Ctrl + Shift + R => reload
-- Ctrl + Shift + ] => next panel
-- Ctrl + Shift + [ => previous panel
+Requirements:
+- Create tools/dev/canvasDebugHudRenderer.js
+- Update tools/dev/devConsoleIntegration.js to use the HUD renderer
+- Modify ONE sample/dev entry file only
+- Draw debug HUD on canvas after world rendering
+- Keep combo keys exactly as currently implemented:
+  - Shift + ` => toggle console
+  - Ctrl + Shift + ` => toggle overlay
+  - Ctrl + Shift + R => reload
+  - Ctrl + Shift + ] => next panel
+  - Ctrl + Shift + [ => previous panel
+- No engine core changes
+- No F-key bindings
+- Use save()/restore() around canvas mutations
+- Keep commit_comment.txt header-free
+- Run node --check on touched JS files
+- Package implementation output to:
+  <project folder>/tmp/BUILD_PR_CANVAS_DEBUG_OVERLAY_RENDERER_delta.zip
 
-Remove all F-key bindings.
-
-Keep changes isolated to devConsoleIntegration.js
-Do not modify engine core
+Report back:
+- exact files changed
+- sample file selected
+- how HUD draw is invoked
+- validation command results

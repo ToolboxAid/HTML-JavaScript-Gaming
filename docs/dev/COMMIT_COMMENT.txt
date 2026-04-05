@@ -1,5 +1,5 @@
-BUILD_PR_DEBUG_COMBO_KEYS_PATCH
+BUILD_PR_CANVAS_DEBUG_OVERLAY_RENDERER
 
-- Replaced F-key bindings with browser-safe combo keys
-- Added Shift+` and Ctrl+Shift+` toggles
-- Removed conflicting browser shortcuts
+- Added canvas-based debug HUD renderer
+- Wired HUD draw into sample-level dev console integration
+- Rendered overlay after gameplay with existing combo-key controls

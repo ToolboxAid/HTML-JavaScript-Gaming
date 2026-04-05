@@ -187,6 +187,9 @@ export default class MultiSystemDemoScene extends Scene {
     const worldStages = ['parallax', 'tilemap', 'entities', 'sprite-effects', 'vector-overlay'];
     const renderOrder = this.devConsoleIntegration?.getRuntime?.().getDeterministicRenderOrder(worldStages) || worldStages;
     this.lastResolvedRenderOrder = renderOrder.slice();
+    const shiftDown = engine.input.isDown('ShiftLeft') || engine.input.isDown('ShiftRight');
+    const ctrlDown = engine.input.isDown('ControlLeft') || engine.input.isDown('ControlRight');
+    const backquoteDown = engine.input.isDown('Backquote');
 
     return {
       runtime: {
@@ -214,8 +217,11 @@ export default class MultiSystemDemoScene extends Scene {
         left: engine.input.isDown('ArrowLeft'),
         right: engine.input.isDown('ArrowRight'),
         jump: engine.input.isDown('Space'),
-        consoleToggle: engine.input.isDown('Backquote'),
-        overlayToggle: engine.input.isDown('F3'),
+        consoleToggle: shiftDown && !ctrlDown && backquoteDown,
+        overlayToggle: ctrlDown && shiftDown && backquoteDown,
+        reload: ctrlDown && shiftDown && engine.input.isDown('KeyR'),
+        nextPanel: ctrlDown && shiftDown && engine.input.isDown('BracketRight'),
+        previousPanel: ctrlDown && shiftDown && engine.input.isDown('BracketLeft'),
       },
       hotReload: {
         enabled: false,
@@ -244,7 +250,8 @@ export default class MultiSystemDemoScene extends Scene {
       'Gameplay contract matches Demo 1204 with one added collectible counter layer.',
       'Collectibles disappear on touch and increment the counter.',
       'No enemies, trigger/switch systems, or broader game systems.',
-      'Debug: ` toggles console, F3 toggles overlay, F6/F7/F8/F9 run console commands.',
+      'Debug: Shift+` console, Ctrl+Shift+` overlay, Ctrl+Shift+R reload.',
+      'Debug Panels: Ctrl+Shift+] next panel, Ctrl+Shift+[ previous panel.',
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
@@ -271,7 +278,7 @@ export default class MultiSystemDemoScene extends Scene {
       `Goal: ${complete}`,
       `Camera X: ${this.camera.x.toFixed(1)}`,
       `Parallax Far/Near: ${this.parallaxLayers[0].speed}/${this.parallaxLayers[2].speed}`,
-      'Controls: Left/Right + Space + ` + F3',
+      'Controls: Left/Right + Space + Shift+` + Ctrl+Shift+`',
     ]);
 
     if (this.devConsoleIntegration) {

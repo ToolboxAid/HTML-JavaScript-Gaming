@@ -1,1 +1,36 @@
-Combo keys work, no F-keys remain, no browser conflicts
+Toolbox Aid
+David Quesenberry
+04/05/2026
+validation_checklist.txt
+
+VALIDATION CHECKLIST
+
+Workflow
+- BUILD_PR created
+- One PR per purpose
+- Commit comment has no header
+
+Implementation Targets
+- tools/dev/canvasDebugHudRenderer.js created
+- tools/dev/devConsoleIntegration.js updated
+- one sample entry updated
+
+Functional
+- Shift + ` toggles console state
+- Ctrl + Shift + ` toggles HUD visibility
+- Ctrl + Shift + R triggers reload action
+- Ctrl + Shift + ] moves to next panel
+- Ctrl + Shift + [ moves to previous panel
+- HUD draws on canvas after gameplay/world rendering
+- HUD survives missing diagnostics safely
+
+Safety
+- No engine core files modified
+- No F-key bindings remain
+- Canvas save/restore used
+- No duplicate listeners/runtime instances after repeated init/reload
+
+Validation Commands
+- node --check tools/dev/canvasDebugHudRenderer.js
+- node --check tools/dev/devConsoleIntegration.js
+- node --check <selected sample file>

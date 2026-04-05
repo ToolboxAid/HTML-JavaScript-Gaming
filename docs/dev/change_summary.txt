@@ -1,1 +1,10 @@
-Replaced F-key debug bindings with combo keys for browser compatibility
+Toolbox Aid
+David Quesenberry
+04/05/2026
+change_summary.txt
+
+Summary
+- Added BUILD PR for a real on-canvas debug HUD
+- Scoped implementation to tools/dev plus one sample entry
+- Preserved combo-key debug controls
+- Preserved docs-first workflow and commit_comment no-header exception
