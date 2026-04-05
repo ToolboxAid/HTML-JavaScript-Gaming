@@ -3,18 +3,43 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-BUILD_PR_DEV_CONSOLE_AND_DEBUG_OVERLAY validation checklist
+APPLY_PR_DEV_CONSOLE_AND_DEBUG_OVERLAY validation checklist
 
-[x] Bundle is docs-only
-[x] No implementation code included
-[x] Workflow preserved: PLAN_PR -> BUILD_PR -> APPLY_PR
-[x] Diagnostics contract defined
-[x] Command registry contract defined
-[x] Overlay panel contract defined
-[x] Deterministic render order defined with debug overlay last
-[x] Engine mappings locked to public adapters only
-[x] Hot reload survival rules defined
-[x] Validation and test requirements defined
-[x] `docs/dev/commit_comment.txt` has no file header
-[x] Command and commit artifacts are in docs/dev
-[x] Repo-relative bundle structure preserved
+Contracts
+[x] Diagnostics contract implemented with required envelope fields
+[x] Command registry contract implemented and validated
+[x] Overlay panel contract implemented and validated
+[x] Structured error format used for validation/collection/render failures
+
+Ordering and mappings
+[x] Deterministic render ordering implemented
+[x] Debug overlay renders after authored world stages
+[x] Dev console surface renders after debug overlay
+[x] Engine mapping constants defined through public adapter contract mapping
+
+Hot reload survival
+[x] Hot reload success preserves diagnostics shell state
+[x] Hot reload failure preserves last-known-good runtime state
+[x] Repeated reloads do not duplicate commands or panels
+[x] Structured reload rejection reporting implemented
+
+Automated tests
+[x] Diagnostics adapter failure isolation test passes
+[x] Command registry conflict/unknown command tests pass
+[x] Overlay panel ordering/failure isolation tests pass
+[x] Deterministic render ordering test passes
+[x] Hot reload success/failure/repeated-reload stability tests pass
+[x] Disposal behavior test passes
+[x] New test wired into `tests/run-tests.mjs`
+
+Execution evidence
+[x] `node --check tools/shared/devConsoleDebugOverlay.js`
+[x] `node --check tests/tools/DevConsoleDebugOverlay.test.mjs`
+[x] `node --check tests/run-tests.mjs`
+[x] Targeted test run passed
+[x] Full suite run passed (`113/113 explicit run() tests passed`)
+
+Scope safety
+[x] Orchestration remains above engine core
+[x] No destructive runtime-breaking changes introduced
+[x] No unrelated runtime/sample/tool areas modified

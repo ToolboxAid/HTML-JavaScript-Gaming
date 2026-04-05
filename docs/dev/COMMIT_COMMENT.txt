@@ -1,1 +1,1 @@
-docs: build dev console and debug overlay contract bundle
+apply(debug): implement dev console and debug overlay contracts with deterministic ordering, validation isolation, and hot-reload-safe state handling

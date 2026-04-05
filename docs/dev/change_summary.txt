@@ -3,14 +3,59 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-BUILD_PR_DEV_CONSOLE_AND_DEBUG_OVERLAY summary
+APPLY_PR_DEV_CONSOLE_AND_DEBUG_OVERLAY summary
 
-- Added docs-only BUILD contract for development console and debug overlay
-- Defined formal diagnostics contract with structured error envelope
-- Defined command registry contract with deterministic conflict handling and no-eval rule
-- Defined overlay panel contract with deterministic ordering and failure isolation
-- Locked deterministic render order with debug overlay last and console surface after overlay
-- Locked public engine mappings and boundary rules
-- Defined hot reload survival rules for diagnostics shell state and duplication prevention
-- Defined validation gates and test requirements for future APPLY implementation
-- Updated docs/dev command, commit, validation checklist, file tree, and next command artifacts
+Implemented focused dev console and debug overlay runtime contracts:
+- Added `tools/shared/devConsoleDebugOverlay.js`
+- Preserved architecture boundaries by keeping orchestration in shared runtime tooling above engine core
+- Did not introduce tool-specific quirks into engine systems
+
+Implemented diagnostics contract:
+- Added diagnostics envelope contract (`contractVersion`, deterministic `timestamp`, required/optional sections)
+- Added structured diagnostics error reporting (`level`, `stage`, `code`, `message`, `details`)
+- Added adapter failure isolation so one adapter failure does not break diagnostics collection
+
+Implemented command registry contract:
+- Added command definition validation and deterministic registration behavior
+- Added no-eval command execution pathway
+- Added deterministic conflict handling (core wins, extension collisions rejected)
+- Added required core command families from the approved contract
+
+Implemented overlay panel contract:
+- Added panel definition validation
+- Added deterministic panel ordering (priority then id)
+- Added panel-level render failure isolation
+- Added required core panel families from the approved contract
+
+Implemented deterministic render ordering:
+- Added canonical ordering function with debug surfaces last
+- Enforced ordering tail: `debug-overlay`, then `dev-console-surface`
+
+Implemented hot reload survival behavior:
+- Added reload application flow that preserves console history and panel registration state
+- Added structured fallback on reload failure (`RELOAD_REJECTED_KEEP_LAST_GOOD`)
+- Preserved last-known-good runtime state on reload rejection
+- Added repeated-reload stability behavior without duplicate command/panel registration
+
+Automated tests added:
+- Added `tests/tools/DevConsoleDebugOverlay.test.mjs`
+- Covers diagnostics contract shaping and adapter failure isolation
+- Covers command registry validation/conflict/unknown-command behavior
+- Covers panel contract ordering and panel render failure isolation
+- Covers deterministic render ordering with debug overlay last
+- Covers hot reload success, failure fallback, repeated reload stability, and disposal behavior
+
+Test harness integration:
+- Updated `tests/run-tests.mjs` with `DevConsoleDebugOverlay`
+
+Validation evidence:
+- `node --check tools/shared/devConsoleDebugOverlay.js`
+- `node --check tests/tools/DevConsoleDebugOverlay.test.mjs`
+- `node --check tests/run-tests.mjs`
+- Targeted test run passed (`DevConsoleDebugOverlay targeted check passed`)
+- Full suite passed (`113/113 explicit run() tests passed`)
+
+Scope guardrails honored:
+- No engine-core API rewrite
+- No unrelated sample/tool refactors
+- Changes kept surgical and contract-aligned
