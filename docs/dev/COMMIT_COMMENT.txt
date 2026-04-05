@@ -1,1 +1,1 @@
-BUILD_PR_OVERLAY_OPERATOR_COMMANDS: add debug-only overlay operator command contract and sample-level console integration using public overlay APIs only
+BUILD_PR_OVERLAY_PANEL_PERSISTENCE: define versioned, debug-only persistence contract for overlay panel state; keep registry as runtime source of truth and preserve sample-level integration.

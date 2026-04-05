@@ -1,31 +1,25 @@
-BUILD_PR_OVERLAY_OPERATOR_COMMANDS change summary
+BUILD_PR_OVERLAY_PANEL_PERSISTENCE change summary
 
-Implemented
-- Added a new Dev Console command pack:
-  - `tools/dev/commandPacks/overlayCommandPack.js`
-- Wired overlay command pack into Dev Console integration:
-  - `tools/dev/devConsoleIntegration.js`
+Summary
+- Refreshed PLAN/BUILD/APPLY docs for overlay panel persistence.
+- Kept this bundle docs-first and single-purpose.
+- Preserved debug-only, sample-level scope with MultiSystemDemoScene.js as reference.
 
-Overlay commands registered
-- `overlay.help`
-- `overlay.list`
-- `overlay.status`
-- `overlay.show <panelId>`
-- `overlay.hide <panelId>`
-- `overlay.toggle <panelId>`
-- `overlay.showAll`
-- `overlay.hideAll`
-- `overlay.order`
+Key decisions
+- Added a clean persistence adapter boundary (`load/save/clear`).
+- Persist enabled/disabled panel state only.
+- Registry remains runtime source of truth.
+- Operator commands save state via public APIs only.
+- Unknown/invalid stored panel IDs are ignored safely.
+- Added versioned snapshot contract (`contract`, `version`, `panels`, `savedAt`).
 
-Contract and boundary outcomes
-- Commands use public runtime/registry APIs only.
-- Deterministic operator-readable output is enforced.
-- Invalid/missing panel IDs fail safely with explicit error codes.
-- Debug-only scope maintained.
-- No engine core changes.
-- Sample-level integration target preserved (`MultiSystemDemoScene.js`).
+Files in this bundle
+- docs/pr/PLAN_PR_OVERLAY_PANEL_PERSISTENCE.md
+- docs/pr/BUILD_PR_OVERLAY_PANEL_PERSISTENCE.md
+- docs/pr/APPLY_PR_OVERLAY_PANEL_PERSISTENCE.md
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/validation_checklist.txt
+- docs/dev/reports/file_tree.txt
 
-Docs updated
-- docs/pr/PLAN_PR_OVERLAY_OPERATOR_COMMANDS.md
-- docs/pr/BUILD_PR_OVERLAY_OPERATOR_COMMANDS.md
-- docs/pr/APPLY_PR_OVERLAY_OPERATOR_COMMANDS.md
+Next recommended command
+- PLAN_PR_DEBUG_SURFACES_ENGINE_PROMOTION

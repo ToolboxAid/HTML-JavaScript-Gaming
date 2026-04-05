@@ -1,11 +1,1 @@
-Create BUILD_PR_OVERLAY_PANEL_PERSISTENCE
-
-Requirements:
-- Follow PLAN_PR -> BUILD_PR -> APPLY_PR
-- One PR per purpose
-- No engine core changes
-- Keep integration sample-level
-- Persist overlay panel enabled/disabled state through approved debug-only storage
-- Restore state safely on sample boot without coupling console to overlay internals
-- Document validation, failure paths, and fallback defaults
-- Package to <project folder>/tmp/BUILD_PR_OVERLAY_PANEL_PERSISTENCE_delta.zip
+Create PLAN_PR_DEBUG_SURFACES_ENGINE_PROMOTION with docs-only evaluation of dev console and debug overlay promotion into engine-level debug surfaces after persistence validation.
