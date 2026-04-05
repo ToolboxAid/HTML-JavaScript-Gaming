@@ -6,7 +6,7 @@ BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH.md
 # BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH
 
 ## Goal
-Implement approved usability improvements for the isolated Sprite Editor at `tools/Sprite Editor V3/` without expanding scope.
+Implement approved usability improvements for the isolated Sprite Editor at `tools/Sprite Editor/` without expanding scope.
 
 ## Approved source
 - `docs/pr/PLAN_PR_SPRITE_EDITOR_USABILITY_POLISH.md`
@@ -33,13 +33,13 @@ Implement approved usability improvements for the isolated Sprite Editor at `too
 
 ## Scope boundaries honored
 In scope:
-- `tools/Sprite Editor V3/**`
+- `tools/Sprite Editor/**`
 - docs/reports for this BUILD bundle
 
 Out of scope:
 - engine changes
 - unrelated tools
-- legacy or pre-existing sprite editor implementations outside `tools/Sprite Editor V3/`
+- legacy or pre-existing sprite editor implementations outside `tools/Sprite Editor/`
 - sample/game edits
 
 ## Validation summary

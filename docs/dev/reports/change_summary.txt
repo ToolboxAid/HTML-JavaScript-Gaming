@@ -1,35 +1,26 @@
-Change Summary
-==============
+BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME
+-----------------------------------------
 
-Build outcome
--------------
-- implemented the initial shared vector geometry runtime aligned to `docs/specs/vector_asset_contract.md`
-- kept the runtime split across contract parsing, pure geometry math, render preparation, and the public runtime facade
-- integrated vector runtime preparation into packaged runtime loading without changing engine core APIs
+Implemented changes
+- standardized the canonical active sprite tool folder at `tools/Sprite Editor/`
+- updated the sprite tool title and heading to the canonical `Sprite Editor` name
+- introduced `tools/toolRegistry.js` as the single source of truth for active tool metadata
+- introduced `tools/renderToolsIndex.js` so the tools hub renders the active tools list from the registry
+- updated `tools/index.html` to use generated active tool cards instead of hardcoded tool names
+- added `scripts/validate-active-tools-surface.mjs` to detect folder/path/name drift
 
-Runtime modules
----------------
-- added `tools/shared/vector/vectorGeometryMath.js`
-- added `tools/shared/vector/vectorAssetContract.js`
-- added `tools/shared/vector/vectorRenderPrep.js`
-- added `tools/shared/vectorGeometryRuntime.js`
+Approved visible active tools
+- `Vector Map Editor`
+- `Vector Asset Studio`
+- `Tile Map Editor`
+- `Parallax Editor`
+- `Sprite Editor`
 
-Compatibility and integration updates
--------------------------------------
-- updated `tools/shared/vector/vectorAssetBridge.js` to emit contract-aligned vector assets while preserving legacy bridge fields
-- updated `tools/shared/projectAssetValidation.js` to validate vectors against the contract through stable finding families
-- updated `tools/shared/runtimeAssetLoader.js` to promote packaged vector assets into `runtimeKind: "vector-geometry"` output
-- updated vector-native template, sample-game, and Asteroids demo runtime fixtures to provide real vector asset documents to the runtime
+Legacy handling
+- `tools/SpriteEditor_old_keep/` remains preserved on disk
+- legacy tools are excluded from the active tools list by registry metadata and validation
 
-Validation highlights
----------------------
-- syntax checks passed for all new and touched shared runtime files
-- targeted vector/runtime tests passed
-- Asteroids platform demo runtime integration passed after vector fixture repair
-- full node test runner passed with `110/110` explicit `run()` tests passing
-
-Next-slice recommendations
---------------------------
-- migrate checked-in vector asset files from legacy bridge shape to canonical contract documents
-- extend supported path commands only when a consumer requires them
-- add geometry-runtime-specific debug and profiler surfacing when dynamic vector transforms become active
+Validation
+- active tool entry paths were checked after the rename
+- stale sprite-editor rename references are checked in canonical hub/build-report surfaces
+- disallowed active naming suffixes are checked by validation script

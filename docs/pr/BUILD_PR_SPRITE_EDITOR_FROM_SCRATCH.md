@@ -6,7 +6,7 @@ BUILD_PR_SPRITE_EDITOR_FROM_SCRATCH.md
 # BUILD_PR_SPRITE_EDITOR_FROM_SCRATCH
 
 ## Goal
-Build a brand-new browser Sprite Editor from scratch as an isolated tool under `tools/Sprite Editor V3/`.
+Build a brand-new browser Sprite Editor from scratch as an isolated tool under `tools/Sprite Editor/`.
 
 ## Required constraints
 - Do not review, migrate, refactor, or depend on existing Sprite Editor implementations.
@@ -22,7 +22,7 @@ Build a brand-new browser Sprite Editor from scratch as an isolated tool under `
 - `docs/dev/reports/change_summary.txt`
 - `docs/dev/reports/validation_checklist.txt`
 - `docs/dev/reports/file_tree.txt`
-- New isolated tool in `tools/Sprite Editor V3/`
+- New isolated tool in `tools/Sprite Editor/`
 - New link in `tools/index.html`
 - Delta zip at `tmp/BUILD_PR_SPRITE_EDITOR_FROM_SCRATCH_delta.zip`
 
@@ -44,7 +44,7 @@ Build a brand-new browser Sprite Editor from scratch as an isolated tool under `
 
 ## Scope boundaries
 In scope:
-- `tools/Sprite Editor V3/**`
+- `tools/Sprite Editor/**`
 - `tools/index.html` link addition only
 - required docs/reports listed above
 
@@ -55,7 +55,7 @@ Out of scope:
 - deleting or restructuring existing repo content
 
 ## Validation gates
-- Tool opens directly in browser from `tools/Sprite Editor V3/index.html`
+- Tool opens directly in browser from `tools/Sprite Editor/index.html`
 - Pixel draw and erase work via mouse
 - Multiple frames can be authored and navigated
 - JSON save/load round-trip works

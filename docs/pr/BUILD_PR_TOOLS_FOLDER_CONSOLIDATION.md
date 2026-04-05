@@ -4,7 +4,7 @@
 Consolidate renamed and duplicate tool folders under `tools/`, repair active references, and remove duplicate-folder drift without expanding into unrelated feature work.
 
 ## Canonical Tool Folders Selected
-- `tools/Sprite Editor V3/`
+- `tools/Sprite Editor/`
 - `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/`
@@ -23,11 +23,11 @@ Consolidate renamed and duplicate tool folders under `tools/`, repair active ref
 - `tools/VectorMapEditor/`
 
 ## Files Moved Or Renamed
-### Sprite Editor V3
-- consolidated the active isolated sprite editor into `tools/Sprite Editor V3/`
+### Sprite Editor
+- consolidated the active isolated sprite editor into `tools/Sprite Editor/`
 - kept `index.html`, `main.js`, `spriteEditor.css`, `README.md`, and `modules/`
 - removed duplicate `tools/Pixel Asset Studio/`
-- renamed compact path `tools/SpriteEditorV3/` to spaced canonical path `tools/Sprite Editor V3/`
+- renamed compact path `tools/SpriteEditorV3/` to spaced canonical path `tools/Sprite Editor/`
 
 ### Tilemap Studio
 - kept active implementation in `tools/Tilemap Studio/`
@@ -47,13 +47,13 @@ Consolidate renamed and duplicate tool folders under `tools/`, repair active ref
 
 ## References Updated
 - updated `tools/index.html` to point at:
-  - `tools/Sprite Editor V3/`
+  - `tools/Sprite Editor/`
   - `tools/Tilemap Studio/`
   - `tools/Parallax Scene Studio/`
   - `tools/Vector Asset Studio/`
   - `tools/Vector Map Editor/`
 - updated active docs and reports to use:
-  - `tools/Sprite Editor V3/`
+  - `tools/Sprite Editor/`
   - `tools/Vector Map Editor/`
 - kept legacy references to `tools/SpriteEditor_old_keep/` only where historical docs explicitly describe the parked legacy folder
 
@@ -70,10 +70,10 @@ Consolidate renamed and duplicate tool folders under `tools/`, repair active ref
 Legacy `tools/SpriteEditor_old_keep/` was intentionally ignored for consolidation.
 - no merge work was performed from `tools/SpriteEditor_old_keep/`
 - no compatibility work was added for `tools/SpriteEditor_old_keep/`
-- active platform paths were redirected to `tools/Sprite Editor V3/` instead
+- active platform paths were redirected to `tools/Sprite Editor/` instead
 
 ## Validation And Repair Notes
-- repaired the live tools hub so the active sprite tool links to `tools/Sprite Editor V3/index.html`
+- repaired the live tools hub so the active sprite tool links to `tools/Sprite Editor/index.html`
 - added `Vector Map Editor` to the tools hub so the spaced canonical path is launcher-visible
 - repaired path references created by folder renames for:
   - sprite editor V3 docs/report paths

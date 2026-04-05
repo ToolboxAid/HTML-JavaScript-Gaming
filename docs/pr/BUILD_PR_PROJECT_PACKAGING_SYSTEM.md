@@ -18,7 +18,7 @@ Implement the strict project packaging and export system defined in `PLAN_PR_PRO
   - deterministic repeated packaging output
   - blocked packaging when validation fails
 - Integrated packaging participation into registry-aware editors:
-  - `tools/Sprite Editor V3/`
+  - `tools/Sprite Editor/`
     - added `Package Project` action
     - exports strict package manifest JSON + report text for the active sprite project
   - `tools/Tilemap Studio/`
@@ -45,7 +45,7 @@ Implement the strict project packaging and export system defined in `PLAN_PR_PRO
 - Syntax checks passed:
   - `node --check tools/shared/projectPackaging.js`
   - `node --check tests/tools/ProjectPackagingSystem.test.mjs`
-  - `node --check tools/Sprite Editor V3/modules/spriteEditorApp.js`
+  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
   - `node --check tools/Tilemap Studio/main.js`
   - `node --check tools/Parallax Scene Studio/main.js`
 - Targeted packaging test passed:

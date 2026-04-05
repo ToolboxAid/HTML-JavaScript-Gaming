@@ -4,7 +4,7 @@
 Lock the final approved canonical naming and path convention for active tool folders and related references so future renames do not create path drift again.
 
 ## Canonical Active Tool Paths
-- `tools/Sprite Editor V3/`
+- `tools/Sprite Editor/`
 - `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/`
@@ -16,7 +16,7 @@ Lock the final approved canonical naming and path convention for active tool fol
 - Use one canonical folder per active tool.
 - Do not keep parallel wrapper folders once a canonical tool path is live.
 - Update launcher links, README examples, sample manifests, and validation docs in the same change as any future rename.
-- Keep `tools/SpriteEditor_old_keep/` and `tools/Sprite Editor V3/` treated as explicit legacy paths unless separately retired by a dedicated legacy cleanup plan.
+- Keep `tools/SpriteEditor_old_keep/` and `tools/Sprite Editor/` treated as explicit legacy paths unless separately retired by a dedicated legacy cleanup plan.
 
 ## Required Reference Surfaces
 - `tools/index.html`

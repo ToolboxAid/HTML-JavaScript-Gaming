@@ -3,9 +3,9 @@ David Quesenberry
 04/04/2026
 README.md
 
-# Sprite Editor V3
+# Sprite Editor
 
-Standalone browser-based pixel art tool under `tools/Sprite Editor V3/`.
+Standalone browser-based pixel art tool under `tools/Sprite Editor/`.
 
 ## Included features
 - New sprite project canvas with configurable width/height
@@ -35,4 +35,4 @@ Standalone browser-based pixel art tool under `tools/Sprite Editor V3/`.
 - Legacy sprite JSON files with no `assetRefs` remain loadable.
 
 ## Entry point
-- `tools/Sprite Editor V3/index.html`
+- `tools/Sprite Editor/index.html`

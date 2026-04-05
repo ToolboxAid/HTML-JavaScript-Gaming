@@ -8,7 +8,7 @@ In one pass:
 - produce the vector asset contract planning/spec outputs
 
 ## Canonical Tool Folders Selected
-- `tools/Sprite Editor V3/`
+- `tools/Sprite Editor/`
 - `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/`
 - `tools/Vector Asset Studio/`
@@ -26,10 +26,10 @@ In one pass:
 
 ## Files And Folders Moved Or Merged
 ### Sprite Tool
-- active isolated sprite editor finalized at `tools/Sprite Editor V3/`
+- active isolated sprite editor finalized at `tools/Sprite Editor/`
 - retained `index.html`, `main.js`, `spriteEditor.css`, `README.md`, and `modules/`
 - removed duplicate `tools/Pixel Asset Studio/`
-- renamed compact `tools/SpriteEditorV3/` path to `tools/Sprite Editor V3/`
+- renamed compact `tools/SpriteEditorV3/` path to `tools/Sprite Editor/`
 
 ### Tilemap Tool
 - retained the canonical implementation in `tools/Tilemap Studio/`
@@ -47,13 +47,13 @@ In one pass:
 
 ## References Updated
 - `tools/index.html` now points to:
-  - `tools/Sprite Editor V3/`
+  - `tools/Sprite Editor/`
   - `tools/Tilemap Studio/`
   - `tools/Parallax Scene Studio/`
   - `tools/Vector Asset Studio/`
   - `tools/Vector Map Editor/`
 - active docs and report paths now use:
-  - `tools/Sprite Editor V3/`
+  - `tools/Sprite Editor/`
   - `tools/Vector Map Editor/`
 - vector-map help/example references were updated to the spaced canonical folder name
 - active loading-surface scans show no required refs to deprecated duplicate folders
@@ -71,7 +71,7 @@ In one pass:
 Old `tools/SpriteEditor_old_keep/` was intentionally excluded except for active reference cleanup.
 - no merge work was performed from the legacy folder
 - no compatibility work was added for the legacy folder
-- active platform paths were redirected to `tools/Sprite Editor V3/`
+- active platform paths were redirected to `tools/Sprite Editor/`
 
 ## Validation Summary
 - verified launcher/index links resolve through canonical tool folders
@@ -81,10 +81,10 @@ Old `tools/SpriteEditor_old_keep/` was intentionally excluded except for active 
   - `tools/Parallax Scene Studio/samples/sample-manifest.json`
   - `tools/Vector Asset Studio/samples/sample-manifest.json`
 - ran `node --check` on:
-  - `tools/Sprite Editor V3/main.js`
-  - `tools/Sprite Editor V3/modules/spriteEditorApp.js`
-  - `tools/Sprite Editor V3/modules/projectModel.js`
-  - `tools/Sprite Editor V3/modules/constants.js`
+  - `tools/Sprite Editor/main.js`
+  - `tools/Sprite Editor/modules/spriteEditorApp.js`
+  - `tools/Sprite Editor/modules/projectModel.js`
+  - `tools/Sprite Editor/modules/constants.js`
   - `tools/Tilemap Studio/main.js`
   - `tools/Parallax Scene Studio/main.js`
   - `tools/Vector Asset Studio/main.js`

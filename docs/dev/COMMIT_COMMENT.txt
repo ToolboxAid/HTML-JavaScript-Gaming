@@ -1,1 +1,1 @@
-build(release): verify final vector-native release path and package public platform showcase
+Unify active tools under a first-class tools registry, standardize Sprite Editor at tools/Sprite Editor, generate active tool navigation from a single source of truth, and add validation to prevent naming/path drift.

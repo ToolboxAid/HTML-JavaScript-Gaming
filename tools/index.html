@@ -21,57 +21,16 @@ index.html
 
     <section class="hero">
       <h1>ToolboxAid - Tools</h1>
-      <p class="subtitle">Tools for building sprites, maps, palettes, animations, collision data, and other reusable game assets. This hub keeps the toolchain visible before we expand the build pipeline.</p>
+      <p class="subtitle">First-class tools for building sprites, maps, vector assets, and parallax scenes. The active tools surface is generated from one canonical registry so naming and navigation stay aligned.</p>
     </section>
 
     <section>
       <h2>Available Now</h2>
-      <div class="grid">
-        <div class="card">
-          <h3><a href="Sprite Editor V3/index.html">Sprite Editor V3</a></h3>
-          <p>Pixel-art authoring editor for palette-locked sprites, frames, and registry-aware project work.</p>
-          <div class="meta">
-            <span class="pill live">Live</span>
-            <span class="pill planned">Normalized Name</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3><a href="Vector Asset Studio/index.html">Vector Asset Studio</a></h3>
-          <p>Vector authoring studio for SVG-first asset work and first-class vector output for the platform.</p>
-          <div class="meta">
-            <span class="pill live">Live</span>
-            <span class="pill planned">Normalized Name</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3><a href="Tilemap Studio/index.html">Tilemap Studio</a></h3>
-          <p>Tilemap layout studio for layered map authoring, sample playback, simulation, and packaging flows.</p>
-          <div class="meta">
-            <span class="pill live">Live</span>
-            <span class="pill planned">Normalized Name</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3><a href="Parallax Scene Studio/index.html">Parallax Scene Studio</a></h3>
-          <p>Parallax composition studio for layered scene depth, sample loading, simulation, and export flows.</p>
-          <div class="meta">
-            <span class="pill live">Live</span>
-            <span class="pill planned">Normalized Name</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3><a href="Vector Map Editor/index.html">Vector Map Editor</a></h3>
-          <p>Vector geometry authoring tool for map layout, collision review, and runtime export workflows.</p>
-          <div class="meta">
-            <span class="pill live">Live</span>
-            <span class="pill planned">Normalized Name</span>
-          </div>
-        </div>
+      <div class="grid" data-active-tools-grid>
       </div>
+      <noscript>
+        <p class="callout"><strong>JavaScript required:</strong> the active tools list is generated from the shared tools registry.</p>
+      </noscript>
     </section>
 
     <section>
@@ -146,7 +105,7 @@ index.html
     </section>
 
     <div class="callout">
-      <strong>Tool naming:</strong> canonical studio folder names are now the repo standard for active tools.
+      <strong>Tool registry:</strong> the active tools list is generated from the shared registry and excludes preserved legacy tools.
     </div>
 
     <section>
@@ -386,5 +345,6 @@ index.html
       </div>
     </section>
   </div>
+  <script type="module" src="./renderToolsIndex.js"></script>
 </body>
 </html>

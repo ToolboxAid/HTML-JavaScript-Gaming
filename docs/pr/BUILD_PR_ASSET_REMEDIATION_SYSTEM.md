@@ -26,7 +26,7 @@ Implement the assistive remediation system defined in `PLAN_PR_ASSET_REMEDIATION
   - graph refresh remediation generation
   - unavailable remediation state for valid projects
 - Integrated assistive remediation consumption into all three registry-aware editors:
-  - `tools/Sprite Editor V3/`
+  - `tools/Sprite Editor/`
     - remediation summary text
     - `Inspect Issues`
     - `Jump to Problem`
@@ -64,7 +64,7 @@ Implement the assistive remediation system defined in `PLAN_PR_ASSET_REMEDIATION
 - Syntax checks passed:
   - `node --check tools/shared/projectAssetRemediation.js`
   - `node --check tests/tools/AssetRemediationSystem.test.mjs`
-  - `node --check tools/Sprite Editor V3/modules/spriteEditorApp.js`
+  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
   - `node --check tools/Tilemap Studio/main.js`
   - `node --check tools/Parallax Scene Studio/main.js`
 - Targeted remediation test passed:

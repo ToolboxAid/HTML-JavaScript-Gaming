@@ -118,7 +118,7 @@ Going forward, tool names should describe what the tools actually are, using nor
 Ignore the original legacy `SpriteEditor` label and naming pattern.
 
 ### Proposed tool rename map
-- `tools/Sprite Editor V3/` → `tools/Sprite Editor V3/`
+- `tools/Sprite Editor/` → `tools/Sprite Editor/`
 - `tools/Tilemap Studio/` → `tools/Tilemap Studio/`
 - `tools/Parallax Scene Studio/` → `tools/Parallax Scene Studio/`
 - `tools/SVG Editor/` → `tools/Vector Asset Studio/`

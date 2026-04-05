@@ -23,7 +23,7 @@ Implement the Debug Visualization Layer defined in `PLAN_PR_DEBUG_VISUALIZATION_
 - Syntax checks passed:
   - `node --check tools/shared/debugVisualizationLayer.js`
   - `node --check tests/tools/DebugVisualizationLayer.test.mjs`
-  - `node --check tools/Sprite Editor V3/modules/spriteEditorApp.js`
+  - `node --check tools/Sprite Editor/modules/spriteEditorApp.js`
   - `node --check tools/Tilemap Studio/main.js`
   - `node --check tools/Parallax Scene Studio/main.js`
 - Full Node test suite passed:

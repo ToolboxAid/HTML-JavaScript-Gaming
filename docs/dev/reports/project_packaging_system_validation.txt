@@ -4,8 +4,8 @@ Files:
 - tools/shared/projectPackaging.js
 - tests/tools/ProjectPackagingSystem.test.mjs
 - tests/run-tests.mjs
-- tools/Sprite Editor V3/index.html
-- tools/Sprite Editor V3/modules/spriteEditorApp.js
+- tools/Sprite Editor/index.html
+- tools/Sprite Editor/modules/spriteEditorApp.js
 - tools/Tilemap Studio/index.html
 - tools/Tilemap Studio/main.js
 - tools/Parallax Scene Studio/index.html
@@ -14,7 +14,7 @@ Files:
 Checks passed:
 - node --check tools/shared/projectPackaging.js
 - node --check tests/tools/ProjectPackagingSystem.test.mjs
-- node --check tools/Sprite Editor V3/modules/spriteEditorApp.js
+- node --check tools/Sprite Editor/modules/spriteEditorApp.js
 - node --check tools/Tilemap Studio/main.js
 - node --check tools/Parallax Scene Studio/main.js
 - targeted ProjectPackagingSystem test via node inline runner
