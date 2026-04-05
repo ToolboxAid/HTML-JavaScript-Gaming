@@ -1,27 +1,35 @@
+Toolbox Aid
+David Quesenberry
+04/05/2026
+codex_commands.md
+
 # Codex Commands
 
-MODEL: GPT-5.4
-REASONING: high
+## Recommended Model
+- Model: GPT-5.4
+- Reasoning: high
 
-COMMAND:
-Create `BUILD_PR_STARTER_PROJECT_TEMPLATE` as a docs-first implementation PR.
+## Primary Command
+Create BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS as a docs-only, repo-structured delta.
 
 Requirements:
-- Add one starter project template only
-- Keep `Sprite Editor` first-class
-- Keep `SpriteEditor_old_keep` hidden legacy
-- Keep `tools/index.html` tool-only and sample-free
-- Use shared assets and palettes by reference
-- Do not add gameplay systems
-- Do not add samples back to the main tools surface
+- Follow PLAN_PR -> BUILD_PR -> APPLY_PR
+- Docs-first only
+- No implementation code in the bundle
+- One PR per purpose
+- Preserve exact repo-relative structure inside the ZIP
+- Place outputs under docs/pr and docs/dev
+- Use docs/dev/codex_commands.md and docs/dev/commit_comment.txt
+- Output ZIP path:
+  - HTML-JavaScript-Gaming-main/tmp/BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS_delta.zip
 
-Implement:
-1. Starter project template folder and manifest
-2. Shared asset references for acvector/tile/parallax/sprite validation
-3. Shared palette references
-4. Project open/save/reload compatibility
-5. Minimal README or inline project notes if helpful
-6. Validation pass for cross-tool loading
+Deliverables:
+- docs/pr/BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md
+- docs/dev/codex_commands.md
+- docs/dev/commit_comment.txt
+- docs/dev/change_summary.txt
+- docs/dev/validation_checklist.txt
+- docs/dev/file_tree.txt
 
-Package output to:
-`<project folder>/tmp/BUILD_PR_STARTER_PROJECT_TEMPLATE.zip`
+Next command:
+- APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS

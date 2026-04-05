@@ -1,24 +1,27 @@
-Final release verification suite
---------------------------------
-- verified the Asteroids vector-only runtime acceptance state against current shared build output
-- verified the standalone vector-native template sample-game acceptance state against current shared build output
-- tightened reporting so geometry participation is explicitly visible in both debug and profiler outputs
-- verified deterministic vector geometry runtime behavior with repeated runs
-- built the public-facing showcase package and release-ready support assets from verified platform evidence only
+Toolbox Aid
+David Quesenberry
+04/05/2026
+change_summary.txt
 
-Release packaging
------------------
-- created docs-only acceptance artifacts for:
-  - `APPLY_PR_VECTOR_ONLY_RUNTIME_VERIFIED`
-  - `APPLY_PR_VECTOR_TEMPLATE_SAMPLE_GAME_VERIFIED`
-  - `APPLY_PR_VECTOR_GEOMETRY_RUNTIME_VERIFIED`
-- created `BUILD_PR_PUBLIC_PLATFORM_SHOWCASE`
-- created the master release bundle package
+BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS summary
 
-Verification highlights
------------------------
-- Asteroids runtime remains vector-only and ready across validation, packaging, runtime, debug, profiler, export, and publishing
-- standalone sample remains vector-only and ready
-- geometry runtime repeated runs are deterministic
-- debug/profiler surfaces now call out geometry participation directly
-- `node ./scripts/run-node-tests.mjs` passed with `110/110` explicit `run()` tests
+- Created docs-only BUILD PR bundle for a unified 2D render pipeline contract.
+- Defined canonical top-level contract shape shared by:
+  - Tile Map Editor
+  - Parallax Editor
+  - Sprite Editor
+  - Vector Asset Studio
+- Documented shared metadata requirements and ID stability rules.
+- Documented shared asset record rules with project-relative path normalization.
+- Documented normalized layer model and deterministic render ordering.
+- Added explicit tool-specific mapping notes for tilemap/parallax/sprite/vector payloads.
+- Defined runtime ownership boundaries and non-silent validation responsibilities.
+- Added validation rules and acceptance criteria for the contract seam.
+- Added incremental migration guidance designed to avoid breaking unrelated engine APIs.
+
+Guardrails honored:
+- Docs-first only
+- No implementation code
+- No 3D scope
+- No unrelated sample/game/tool changes
+- No engine redesign beyond contract seam

@@ -1,10 +1,22 @@
-- [x] Asteroids vector-only runtime verified as ready
-- [x] `sprite.asteroids-demo` confirmed absent from the active packaged/runtime dependency set
-- [x] Asteroids validation/package/runtime/debug/profiler/export/publishing remain ready
-- [x] standalone vector-native template sample verified as ready with no sprite fallback dependency
-- [x] repeated vector geometry runtime runs verified as deterministic
-- [x] geometry participation is visible in debug output
-- [x] geometry participation is visible in profiler output
-- [x] public platform showcase assets were built from verified technical evidence only
-- [x] no engine core API files were modified
-- [x] `node ./scripts/run-node-tests.mjs` passed with `110/110` explicit `run()` tests
+Toolbox Aid
+David Quesenberry
+04/05/2026
+validation_checklist.txt
+
+BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS validation checklist
+
+[x] Docs-only bundle created
+[x] No implementation code included
+[x] PLAN_PR -> BUILD_PR -> APPLY_PR workflow honored
+[x] One PR purpose only (render pipeline contract)
+[x] Unified top-level contract documented for all 4 tools
+[x] Shared metadata rules documented
+[x] Shared asset record rules documented
+[x] Normalized layer model documented
+[x] Deterministic render ordering documented
+[x] Tool-specific mapping notes included (tilemap/parallax/sprite/vector)
+[x] Runtime ownership boundaries documented
+[x] Validation rules and acceptance checklist documented
+[x] Incremental migration guidance documented
+[x] 2D-focused scope preserved
+[x] No unrelated architecture redesign introduced

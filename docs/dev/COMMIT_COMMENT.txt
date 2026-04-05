@@ -1,1 +1,6 @@
-Add one starter project template with shared vector, tilemap, parallax, sprite, and palette references plus cross-tool validation
+Toolbox Aid
+David Quesenberry
+04/05/2026
+commit_comment.txt
+
+docs: define unified 2D render pipeline contract seam across tilemap parallax sprite and vector tools
