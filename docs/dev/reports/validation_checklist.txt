@@ -6,25 +6,14 @@ validation_checklist.txt
 VALIDATION CHECKLIST
 
 Workflow
-- BUILD_PR created for docs cleanup and structure reorg
-- One PR purpose maintained
-- docs-only implementation scope preserved
-
-Docs Surface
-- `docs/pr/` left intact
-- `docs/dev/` now active-only workflow controls
-- active reports consolidated under `docs/dev/reports/`
-- duplicate workflow/rules docs consolidated and archived
-
-Architecture
-- `docs/dev/ARCHITECTURE.txt` removed from active dev surface
-- durable operating model documented at `docs/architecture/repo-operating-model.md`
-
-Archive
-- `docs/archive/dev-ops/` contains superseded operational notes
-- `docs/archive/generated-reports/` contains legacy generated reports
+- Single rules source created at `docs/dev/RULES_OF_ENGAGEMENT.md`
+- Legacy `RULES.txt` and `WORKFLOW.md` consolidated
+- Duplicate rule docs removed
 
 Safety
-- no engine/tools/samples/games/tests/runtime files modified
-- updated docs reference valid existing paths
-- `docs/dev/commit_comment.txt` remains header-free
+- Docs-only changes
+- No runtime code changes
+- References updated from `WORKFLOW_RULES.md` to `RULES_OF_ENGAGEMENT.md`
+
+Packaging
+- Delta ZIP generated at `<project folder>/tmp/BUILD_PR_RULES_OF_ENGAGEMENT_STANDARDIZATION_delta.zip`

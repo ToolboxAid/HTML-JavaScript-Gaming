@@ -19,7 +19,7 @@ Run work in this sequence:
 ## 3) Use Active Dev Controls
 Active files are in `docs/dev/`:
 - `README.md`
-- `WORKFLOW_RULES.md`
+- `RULES_OF_ENGAGEMENT.md`
 - `codex_commands.md`
 - `commit_comment.txt`
 - `next_command.txt`

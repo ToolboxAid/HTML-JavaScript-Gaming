@@ -9,7 +9,7 @@ README.md
 
 ## Active Files
 - `README.md`
-- `WORKFLOW_RULES.md`
+- `RULES_OF_ENGAGEMENT.md` (single source of truth)
 - `codex_commands.md` (must remain header-free)
 - `commit_comment.txt` (must remain header-free)
 - `next_command.txt`

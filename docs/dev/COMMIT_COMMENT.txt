@@ -1,1 +1,4 @@
-docs: cleanup docs structure, archive stale dev artifacts, and normalize active dev surface
+BUILD_PR_RULES_OF_ENGAGEMENT_STANDARDIZATION
+
+- Standardized rules into single source of truth
+- Removed duplicate rule files
