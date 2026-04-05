@@ -7,29 +7,23 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_CANVAS_DEBUG_OVERLAY_RENDERER implementation.
+Apply the canvas debug HUD renderer implementation.
 
 Requirements:
-- Create tools/dev/canvasDebugHudRenderer.js
-- Update tools/dev/devConsoleIntegration.js to use the HUD renderer
-- Modify ONE sample/dev entry file only
-- Draw debug HUD on canvas after world rendering
-- Keep combo keys exactly as currently implemented:
-  - Shift + ` => toggle console
-  - Ctrl + Shift + ` => toggle overlay
-  - Ctrl + Shift + R => reload
-  - Ctrl + Shift + ] => next panel
-  - Ctrl + Shift + [ => previous panel
-- No engine core changes
-- No F-key bindings
-- Use save()/restore() around canvas mutations
-- Keep commit_comment.txt header-free
+- Keep changes isolated to:
+  - tools/dev/canvasDebugHudRenderer.js
+  - tools/dev/devConsoleIntegration.js
+  - one sample entry file only
+- Do not modify engine core
+- Draw HUD last on canvas
+- Preserve combo-key bindings exactly
+- Use canvas save()/restore()
 - Run node --check on touched JS files
-- Package implementation output to:
-  <project folder>/tmp/BUILD_PR_CANVAS_DEBUG_OVERLAY_RENDERER_delta.zip
+- Package result to:
+  <project folder>/tmp/APPLY_PR_CANVAS_DEBUG_OVERLAY_RENDERER_delta.zip
 
 Report back:
 - exact files changed
-- sample file selected
+- selected sample file
 - how HUD draw is invoked
-- validation command results
+- validation results

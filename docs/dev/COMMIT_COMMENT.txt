@@ -1,5 +1,5 @@
-BUILD_PR_CANVAS_DEBUG_OVERLAY_RENDERER
+APPLY_PR_CANVAS_DEBUG_OVERLAY_RENDERER
 
-- Added canvas-based debug HUD renderer
-- Wired HUD draw into sample-level dev console integration
-- Rendered overlay after gameplay with existing combo-key controls
+- Added on-canvas debug HUD renderer
+- Wired HUD draw into sample-level debug integration
+- Preserved combo-key controls and HUD-last draw order
