@@ -4,6 +4,6 @@ David Quesenberry
 change_summary.txt
 
 Summary
-- Added PLAN PR for interactive dev console UI
-- Preserved sample-safe integration boundaries
-- Preserved docs-first workflow and commit_comment no-header exception
+- Added BUILD PR for interactive dev console UI
+- Scoped implementation to tools/dev plus one sample entry
+- Preserved existing runtime, HUD, and combo-key architecture

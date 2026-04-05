@@ -1,5 +1,5 @@
-PLAN_PR_INTERACTIVE_DEV_CONSOLE_UI
+BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI
 
-- Planned interactive on-canvas dev console UI
-- Reused existing runtime and combo-key architecture
-- Scoped implementation to tools/dev plus one sample
+- Added on-canvas interactive dev console UI
+- Wired typed command input into sample-level debug integration
+- Preserved combo-key controls and engine-safe boundaries

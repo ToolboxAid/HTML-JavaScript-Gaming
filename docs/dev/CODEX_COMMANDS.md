@@ -7,16 +7,32 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI as a docs-only, repo-structured delta.
+Create BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI implementation.
 
 Requirements:
-- Follow PLAN_PR -> BUILD_PR -> APPLY_PR
-- Docs-first only
-- No implementation code in this bundle
-- Plan a canvas-rendered interactive console UI
-- Reuse existing runtime and combo-key controls
-- Scope implementation to tools/dev and one sample entry only
-- Define input behavior, output history, validation steps, and rollback notes
+- Create tools/dev/interactiveDevConsoleRenderer.js
+- Update tools/dev/devConsoleIntegration.js
+- Modify ONE sample entry file only
+- Reuse existing runtime executeConsoleInput()
+- Preserve combo keys exactly:
+  - Shift + ` => toggle console
+  - Ctrl + Shift + ` => toggle overlay
+  - Ctrl + Shift + R => reload
+  - Ctrl + Shift + ] => next panel
+  - Ctrl + Shift + [ => previous panel
+- Add typed console input behavior only while console is open
+- Draw console on canvas
+- Do not modify engine core
+- No F-key bindings
+- Use save()/restore() around canvas changes
 - Keep commit_comment.txt header-free
-- Package output to:
+- Run node --check on touched JS files
+- Package implementation output to:
   <project folder>/tmp/BUILD_PR_INTERACTIVE_DEV_CONSOLE_UI_delta.zip
+
+Report back:
+- exact files changed
+- selected sample file
+- how console input is captured
+- how console draw is invoked
+- validation command results

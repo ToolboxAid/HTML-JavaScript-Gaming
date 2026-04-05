@@ -252,6 +252,7 @@ export default class MultiSystemDemoScene extends Scene {
       'No enemies, trigger/switch systems, or broader game systems.',
       'Debug: Shift+` console, Ctrl+Shift+` overlay, Ctrl+Shift+R reload.',
       'Debug Panels: Ctrl+Shift+] next panel, Ctrl+Shift+[ previous panel.',
+      'Console Input: type command + Enter (Up/Down history, Esc clear).',
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
@@ -278,7 +279,7 @@ export default class MultiSystemDemoScene extends Scene {
       `Goal: ${complete}`,
       `Camera X: ${this.camera.x.toFixed(1)}`,
       `Parallax Far/Near: ${this.parallaxLayers[0].speed}/${this.parallaxLayers[2].speed}`,
-      'Controls: Left/Right + Space + Shift+` + Ctrl+Shift+`',
+      'Controls: Left/Right + Space + Shift+` (console input while open)',
     ]);
 
     if (this.devConsoleIntegration) {

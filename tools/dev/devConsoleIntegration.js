@@ -5,6 +5,7 @@ David Quesenberry
 devConsoleIntegration.js
 */
 import { drawCanvasDebugHud } from "./canvasDebugHudRenderer.js";
+import { drawInteractiveDevConsole } from "./interactiveDevConsoleRenderer.js";
 import {
   createDiagnosticsCollector,
   createDevConsoleDebugOverlayRuntime
@@ -25,6 +26,10 @@ const DEFAULT_COMBO_BINDINGS = Object.freeze({
   nextPanel: Object.freeze({ key: "BracketRight", shift: true, ctrl: true, alt: false, meta: false }),
   previousPanel: Object.freeze({ key: "BracketLeft", shift: true, ctrl: true, alt: false, meta: false })
 });
+
+const MAX_CONSOLE_INPUT_CHARS = 120;
+const MAX_CONSOLE_OUTPUT_LINES = 60;
+const MAX_CONSOLE_COMMAND_HISTORY = 120;
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -141,6 +146,21 @@ function createDefaultAdapters() {
   };
 }
 
+function getKeyboardEventTarget() {
+  if (typeof window === "undefined" || typeof window.addEventListener !== "function") {
+    return null;
+  }
+  return window;
+}
+
+function isPrintableCharacter(key) {
+  if (typeof key !== "string" || key.length !== 1) {
+    return false;
+  }
+  const code = key.charCodeAt(0);
+  return code >= 32 && code <= 126;
+}
+
 function flattenOverlaySections(sections, maxLines = 9) {
   const lines = [];
   const source = Array.isArray(sections) ? sections : [];
@@ -194,6 +214,171 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   let lastCommandExecution = null;
   let lastCommandBinding = "";
   let panelCursorIndex = -1;
+  let consoleInputBuffer = "";
+  let consoleHistoryCursor = -1;
+  let consoleOutputHistory = [];
+  let consoleCommandHistory = [];
+  const keyboardEventTarget = getKeyboardEventTarget();
+
+  function pushConsoleOutputLine(value) {
+    const line = typeof value === "string" ? value : String(value ?? "");
+    if (!line) {
+      return;
+    }
+    consoleOutputHistory.push(line);
+    if (consoleOutputHistory.length > MAX_CONSOLE_OUTPUT_LINES) {
+      const trimCount = consoleOutputHistory.length - MAX_CONSOLE_OUTPUT_LINES;
+      consoleOutputHistory.splice(0, trimCount);
+    }
+  }
+
+  function pushConsoleOutputLines(lines) {
+    const source = Array.isArray(lines) ? lines : [];
+    source.forEach((line) => pushConsoleOutputLine(line));
+  }
+
+  function captureCommandHistory(command) {
+    if (!command) {
+      return;
+    }
+    consoleCommandHistory.push(command);
+    if (consoleCommandHistory.length > MAX_CONSOLE_COMMAND_HISTORY) {
+      const trimCount = consoleCommandHistory.length - MAX_CONSOLE_COMMAND_HISTORY;
+      consoleCommandHistory.splice(0, trimCount);
+    }
+    consoleHistoryCursor = -1;
+  }
+
+  function appendExecutionToConsole(command, execution) {
+    if (!command) {
+      return;
+    }
+
+    pushConsoleOutputLine(`> ${command}`);
+
+    const outputLines = Array.isArray(execution?.output?.lines)
+      ? execution.output.lines.map((line) => String(line)).filter(Boolean)
+      : [];
+
+    if (outputLines.length > 0) {
+      pushConsoleOutputLines(outputLines.slice(0, 8));
+    } else if (execution?.status === "ready") {
+      pushConsoleOutputLine("(ok)");
+    }
+
+    if (execution?.status !== "ready") {
+      pushConsoleOutputLine("(failed)");
+      const reports = Array.isArray(execution?.reports) ? execution.reports : [];
+      reports.slice(0, 2).forEach((report) => {
+        const code = sanitizeText(report?.code) || "EXECUTION_ERROR";
+        const message = sanitizeText(report?.message);
+        pushConsoleOutputLine(message ? `! ${code}: ${message}` : `! ${code}`);
+      });
+    }
+  }
+
+  function submitConsoleInput() {
+    const command = sanitizeText(consoleInputBuffer);
+    if (!command) {
+      return null;
+    }
+    const runtimeContext = buildCommandContext(diagnosticsSnapshot || {});
+    const execution = executeCommand(command, runtimeContext);
+    consoleInputBuffer = "";
+    return execution;
+  }
+
+  function navigateConsoleHistory(direction) {
+    if (consoleCommandHistory.length === 0) {
+      return;
+    }
+
+    if (consoleHistoryCursor < 0) {
+      consoleHistoryCursor = consoleCommandHistory.length;
+    }
+
+    consoleHistoryCursor = Math.min(
+      consoleCommandHistory.length,
+      Math.max(0, consoleHistoryCursor + direction)
+    );
+
+    if (consoleHistoryCursor >= consoleCommandHistory.length) {
+      consoleInputBuffer = "";
+      return;
+    }
+
+    consoleInputBuffer = consoleCommandHistory[consoleHistoryCursor] || "";
+  }
+
+  function onConsoleKeyDown(event) {
+    if (!runtime.getState().consoleVisible) {
+      return;
+    }
+
+    const code = sanitizeText(event?.code);
+    const key = typeof event?.key === "string" ? event.key : "";
+    const hasControlModifier = event?.ctrlKey === true || event?.metaKey === true || event?.altKey === true;
+
+    if (hasControlModifier) {
+      return;
+    }
+
+    if (code === "Backquote") {
+      return;
+    }
+
+    if (code === "Enter") {
+      submitConsoleInput();
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "Backspace") {
+      if (consoleInputBuffer.length > 0) {
+        consoleInputBuffer = consoleInputBuffer.slice(0, -1);
+      }
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "Escape") {
+      consoleInputBuffer = "";
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "ArrowUp") {
+      navigateConsoleHistory(-1);
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "ArrowDown") {
+      navigateConsoleHistory(1);
+      event.preventDefault();
+      return;
+    }
+
+    if (code === "Tab") {
+      event.preventDefault();
+      return;
+    }
+
+    if (!isPrintableCharacter(key) || key === "`" || key === "~") {
+      return;
+    }
+
+    if (consoleInputBuffer.length >= MAX_CONSOLE_INPUT_CHARS) {
+      return;
+    }
+
+    consoleInputBuffer += key;
+    event.preventDefault();
+  }
+
+  if (keyboardEventTarget) {
+    keyboardEventTarget.addEventListener("keydown", onConsoleKeyDown);
+  }
 
   function executeCommand(commandText, context = null) {
     const command = sanitizeText(commandText);
@@ -208,6 +393,8 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     const execution = runtime.executeConsoleInput(command, commandContext);
     lastCommandExecution = execution;
     lastCommandBinding = command;
+    captureCommandHistory(command);
+    appendExecutionToConsole(command, execution);
     return execution;
   }
 
@@ -243,6 +430,8 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       },
       reports: []
     };
+    captureCommandHistory(label);
+    appendExecutionToConsole(label, lastCommandExecution);
     return targetPanel;
   }
 
@@ -268,8 +457,10 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       const state = runtime.getState();
       if (state.consoleVisible) {
         runtime.hideConsole();
+        consoleHistoryCursor = -1;
       } else {
         runtime.showConsole();
+        consoleHistoryCursor = -1;
       }
     }
 
@@ -338,38 +529,31 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       const consoleX = Number.isFinite(optionsOverride?.consoleX) ? optionsOverride.consoleX : overlayX;
       const consoleY = Number.isFinite(optionsOverride?.consoleY) ? optionsOverride.consoleY : 94;
       const consoleWidth = Number.isFinite(optionsOverride?.consoleWidth) ? optionsOverride.consoleWidth : overlayWidth;
-      const consoleHeight = Number.isFinite(optionsOverride?.consoleHeight) ? optionsOverride.consoleHeight : 214;
+      const consoleHeight = Number.isFinite(optionsOverride?.consoleHeight) ? optionsOverride.consoleHeight : 234;
 
-      const outputLines = Array.isArray(lastCommandExecution?.output?.lines)
-        ? lastCommandExecution.output.lines.map((line) => sanitizeText(line)).filter(Boolean)
-        : ["No command output yet."];
+      const historyLines = consoleOutputHistory.length > 0
+        ? consoleOutputHistory.slice()
+        : [
+            "Type a command and press Enter.",
+            "Try: help, status, scene.info"
+          ];
 
-      const commandHint = [
-        "Shift+`=console",
-        "Ctrl+Shift+`=overlay",
-        "Ctrl+Shift+R=reload",
-        "Ctrl+Shift+]=next panel",
-        "Ctrl+Shift+[=prev panel"
-      ].join(" | ");
+      const commandHint = "Shift+` console | Ctrl+Shift+` overlay | Ctrl+Shift+R reload";
+      const inputHint = "Enter run | Up/Down history | Esc clear";
+      const statusHint = `last: ${lastCommandBinding || "none"} | status: ${sanitizeText(lastCommandExecution?.status) || "idle"} | history: ${state.commandHistory.length}`;
 
-      const lines = [
-        `last: ${lastCommandBinding || "none"}`,
-        `status: ${sanitizeText(lastCommandExecution?.status) || "idle"}`,
-        `history: ${state.commandHistory.length}`,
-        commandHint || "No command hotkeys configured.",
-        ...outputLines.slice(0, 5)
-      ];
-
-      drawCanvasDebugHud(renderer, [
-        {
-          x: consoleX,
-          y: consoleY,
-          width: consoleWidth,
-          height: consoleHeight,
-          title: "Dev Console (Shift+`)",
-          lines: lines.slice(0, 9)
-        }
-      ]);
+      drawInteractiveDevConsole(renderer, {
+        x: consoleX,
+        y: consoleY,
+        width: consoleWidth,
+        height: consoleHeight,
+        title: "Dev Console (Shift+`)",
+        prompt: ">",
+        inputValue: consoleInputBuffer,
+        outputLines: historyLines,
+        footerLines: [commandHint, inputHint, statusHint],
+        caretVisible: Math.floor(Date.now() / 450) % 2 === 0
+      });
     }
 
     return {
@@ -384,6 +568,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     render,
     executeCommand,
     dispose() {
+      if (keyboardEventTarget) {
+        keyboardEventTarget.removeEventListener("keydown", onConsoleKeyDown);
+      }
       return runtime.dispose();
     },
     getRuntime() {
@@ -397,6 +584,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         overlayRender,
         lastCommandExecution,
         lastCommandBinding,
+        consoleInputBuffer,
+        consoleOutputHistory: consoleOutputHistory.slice(),
+        consoleCommandHistory: consoleCommandHistory.slice(),
         toggleCombos: cloneJson(comboBindings)
       };
     }

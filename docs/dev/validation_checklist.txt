@@ -6,18 +6,26 @@ validation_checklist.txt
 VALIDATION CHECKLIST
 
 Workflow
-- PLAN_PR created
+- BUILD_PR created
 - One PR per purpose
-- No implementation code in bundle
+- commit_comment.txt has no header
 
-Header Rules
-- Header present in all new files except docs/dev/commit_comment.txt
-- commit_comment.txt contains no Toolbox Aid header
+Files
+- tools/dev/interactiveDevConsoleRenderer.js created
+- tools/dev/devConsoleIntegration.js updated
+- one sample entry updated
 
-Plan Quality
-- Interactive console UI scope defined
-- Input behavior defined
-- Output history behavior defined
-- Sample-only integration boundary defined
-- Acceptance criteria defined
-- Validation steps defined
+Functional
+- Shift + ` toggles console
+- Typed input appears while console is open
+- Enter executes command
+- Escape closes console
+- ArrowUp/ArrowDown navigate command history
+- Console output visible on canvas
+- HUD and console can coexist safely
+
+Safety
+- No engine core files modified
+- No F-key bindings remain
+- Canvas save/restore used
+- No duplicate listeners/runtime instances
