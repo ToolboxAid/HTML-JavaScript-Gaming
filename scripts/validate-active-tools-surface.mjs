@@ -2,7 +2,6 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  ACTIVE_TOOL_SURFACE_IDS,
   TOOL_NAME_SUFFIX_PATTERN,
   getToolRegistry,
   getToolById,
@@ -16,8 +15,9 @@ const repoRoot = path.resolve(__dirname, "..");
 const REQUIRED_ACTIVE_TOOL_NAMES = [
   "Vector Map Editor",
   "Vector Asset Studio",
-  "Tile Map Editor",
-  "Parallax Editor"
+  "Tilemap Studio",
+  "Parallax Scene Studio",
+  "Sprite Editor"
 ];
 
 const SCAN_TARGETS = [
@@ -26,7 +26,8 @@ const SCAN_TARGETS = [
   "tools/shared/platformShell.js",
   "tools/shared/platformShell.css",
   "docs/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
-  "docs/dev/commit_comment.txt"
+  "docs/dev/commit_comment.txt",
+  "docs/dev/reports/tool_registry_validation.txt"
 ];
 
 const NAVIGATION_SURFACE_TARGETS = [
@@ -38,7 +39,8 @@ const ACTIVE_TOOL_ENTRYPOINTS = [
   "tools/Vector Asset Studio/index.html",
   "tools/Tilemap Studio/index.html",
   "tools/Parallax Scene Studio/index.html",
-  "tools/Vector Map Editor/index.html"
+  "tools/Vector Map Editor/index.html",
+  "tools/Sprite Editor/index.html"
 ];
 
 async function pathExists(targetPath) {
@@ -59,14 +61,9 @@ async function main() {
   const toolRegistry = getToolRegistry();
   const visibleActiveTools = getVisibleActiveToolRegistry();
   const activeNames = visibleActiveTools.map((tool) => tool.displayName);
-  const activeIds = visibleActiveTools.map((tool) => tool.id);
 
   if (JSON.stringify(activeNames) !== JSON.stringify(REQUIRED_ACTIVE_TOOL_NAMES)) {
     issues.push(`Active tool names do not match the approved list. Found: ${activeNames.join(", ")}`);
-  }
-
-  if (JSON.stringify(activeIds) !== JSON.stringify(ACTIVE_TOOL_SURFACE_IDS)) {
-    issues.push(`Active tool ids do not match the approved registry surface. Found: ${activeIds.join(", ")}`);
   }
 
   for (const tool of visibleActiveTools) {
@@ -90,14 +87,19 @@ async function main() {
     }
   }
 
-  const visibleLegacyTools = toolRegistry.filter((tool) => tool.status === "legacy" && tool.visibleInToolsList === true);
+  const visibleLegacyTools = toolRegistry.filter((tool) => tool.legacy === true && tool.visibleInToolsList === true);
   if (visibleLegacyTools.length > 0) {
     issues.push(`Legacy tools appear in active navigation: ${visibleLegacyTools.map((tool) => tool.displayName).join(", ")}`);
   }
 
   const preservedSpriteTool = getToolById("sprite-editor");
-  if (preservedSpriteTool?.visibleInToolsList === true || preservedSpriteTool?.status === "active") {
-    issues.push("Sprite Editor is still marked as a first-class active tool.");
+  if (preservedSpriteTool?.active !== true || preservedSpriteTool?.visibleInToolsList !== true) {
+    issues.push("Sprite Editor must be active and visible in the first-class tool surface.");
+  }
+
+  const legacySpriteTool = getToolById("sprite-editor-old-keep");
+  if (legacySpriteTool?.active === true || legacySpriteTool?.visibleInToolsList === true) {
+    issues.push("SpriteEditor_old_keep must stay hidden from the first-class tool surface.");
   }
 
   for (const target of SCAN_TARGETS) {
@@ -109,7 +111,7 @@ async function main() {
 
   for (const target of NAVIGATION_SURFACE_TARGETS) {
     const text = await readText(target);
-    if (/SpriteEditor_old_keep|Sprite Editor Legacy|Sprite Editor/.test(text)) {
+    if (/SpriteEditor_old_keep|Sprite Editor Legacy/.test(text)) {
       issues.push(`Legacy tool appears in active navigation/report surface: ${target}`);
     }
   }

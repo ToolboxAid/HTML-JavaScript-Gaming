@@ -1,11 +1,10 @@
-BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL/
-└── docs/
-    ├── pr/
-    │   └── BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md
-    └── dev/
-        ├── codex_commands.md
-        ├── commit_comment.txt
-        └── reports/
-            ├── change_summary.txt
-            ├── validation_checklist.txt
-            └── file_tree.txt
+docs/
+  pr/
+    BUILD_PR_TOOL_REGISTRY_VALIDATOR_AND_SPRITE_FIRST_CLASS.md
+  dev/
+    codex_commands.md
+    commit_comment.txt
+    reports/
+      change_summary.txt
+      validation_checklist.txt
+      file_tree.txt

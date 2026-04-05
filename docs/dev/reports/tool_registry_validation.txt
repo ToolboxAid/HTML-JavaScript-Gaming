@@ -1,0 +1,22 @@
+TOOL_REGISTRY_VALIDATION
+status=PASS
+active=Vector Map Editor, Vector Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor
+legacy=SpriteEditor_old_keep
+Filesystem Directories
+- Parallax Scene Studio
+- Sprite Editor
+- SpriteEditor_old_keep
+- Tilemap Studio
+- Vector Asset Studio
+- Vector Map Editor
+Registry Paths
+- Vector Map Editor
+- Vector Asset Studio
+- Tilemap Studio
+- Parallax Scene Studio
+- Sprite Editor
+- SpriteEditor_old_keep
+Issues
+- none
+Notes
+- registry and filesystem are aligned

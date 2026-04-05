@@ -1,74 +1,122 @@
 # BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION
 
 ## Purpose
-Finish the active tools platform by making the engine theme the single visual source of truth for the first-class tools surface and by closing the remaining shared-shell integration gaps in one combined build PR.
+Finalize the active tools platform in the fewest possible remaining steps by applying the shared engine theme to all first-class tools and closing the remaining platform-surface integration gaps in one combined build PR.
 
-## Engine Theme Source Of Truth
-- `engine/ui/hubCommon.css` is the existing engine theme source of truth
-- no second theme system was introduced
-- no additional theme extraction layer was required beyond consuming the existing engine variables from the shared tools shell
+## Scope
+In scope:
+- Make the engine theme the required visual system for all active tools under `tools/`
+- Standardize shared shell/frame/navigation/header/footer behavior across active tools
+- Standardize shared tokens for color, spacing, typography, borders, shadows, focus, buttons, panels, dialogs, tabs, form controls, and status messaging
+- Align tool landing/index surfaces to the same engine-themed platform shell
+- Ensure active tools render consistently while preserving each tool's own workspace behavior
+- Ensure legacy `SpritEditor_old_keep` is excluded from active themed tool navigation unless explicitly opened by direct path
+- Fix pathing/imports/assets required to support the shared engine theme across tools
+- Perform one-pass validation for tool loading, theme application, and broken-reference checks
 
-## First-Class Active Tools
+Out of scope:
+- New editor features unrelated to shared platform/theme integration
+- Engine runtime feature changes unrelated to theme/surface integration
+- Deleting legacy tools
+- Rewriting tool-specific domain logic unless required for shell/theme adoption
+
+## Required Target State
+Active first-class tools:
 - `tools/Vector Map Editor/`
 - `tools/Vector Asset Studio/`
-- `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/`
+- `tools/Tile Map Editor/`
+- `tools/Parallax Editor/`
 
-## Preserved But Excluded
-- `tools/SpriteEditor_old_keep/` remains preserved on disk
-- `tools/Sprite Editor/` remains on disk but is not promoted in the active tools landing page or shared navigation
-- preserved sprite paths are excluded from the registry-driven active surface
+Legacy preserved but excluded from active platform surface:
+- `tools/SpritEditor_old_keep/`
 
-## Scope Implemented
-- rebased the shared tools shell onto the engine theme tokens from `hubCommon.css`
-- kept the active tools landing page and active-tool navigation registry-driven
-- kept the four active tool workspaces intact while standardizing the shell, header, nav, and status chrome around them
-- added validation for engine-theme stylesheet presence and shared-shell presence on active tool pages
-- kept path fixes and repo changes limited to the active tools platform surface
+All active tools must:
+- use the engine theme
+- use the same platform shell
+- use the same shared design tokens/components where appropriate
+- appear as one coherent product family
 
-## Modules Created Or Changed
-- `tools/shared/platformShell.css`
-- `tools/shared/platformShell.js`
-- `tools/index.html`
-- `tools/renderToolsIndex.js`
-- `scripts/validate-active-tools-surface.mjs`
-- `docs/pr/BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION.md`
-- `docs/dev/COMMIT_COMMENT.txt`
+## Engine Theme Rule (mandatory)
+All active tools must adopt the engine theme as the single source of truth for visual styling.
 
-## Public Surface Boundaries
-- `engine/ui/hubCommon.css` supplies the theme variables and shared visual tokens
-- `tools/shared/platformShell.css` consumes those tokens for platform chrome only
-- `tools/shared/platformShell.js` renders the shared shell from the canonical tool registry
-- `tools/toolRegistry.js` remains the source of truth for active-tool visibility and navigation
-- tool-specific editor logic and engine/game runtime code were not modified for this PR
+Codex must:
+- identify the current engine theme source(s)
+- normalize them into a reusable shared theme contract if needed
+- apply that contract to all active tools
+- remove duplicated per-tool visual drift where safe
+- preserve tool-specific layout/workspace needs while keeping the shared theme intact
 
-## Implementation Summary
-- converted the shared shell from a hardcoded standalone palette to the engine theme variables already defined in `hubCommon.css`
-- kept the landing page and the four first-class tools visually aligned through the same shared shell
-- made the landing surface explicitly communicate that it is engine-themed and registry-driven
-- preserved the active tool list as the approved four-tool surface only
-- kept preserved sprite content excluded from the first-class tools platform
+Minimum theme contract should cover:
+- app background / panel background / workspace background
+- primary / secondary / accent / muted colors
+- typography scale
+- spacing scale
+- borders / radii
+- elevation / shadows
+- button/input/tab/menu styling
+- selected/hover/focus/disabled states
+- status colors/messages
+- light/dark behavior only if already supported by engine theme; do not invent a new mode system unless already present
 
-## Validation Performed
-- `node --check tools/toolRegistry.js`
-- `node --check tools/renderToolsIndex.js`
-- `node --check tools/shared/platformShell.js`
-- `node --check scripts/validate-active-tools-surface.mjs`
-- `node --check tools/Vector Asset Studio/main.js`
-- `node --check tools/Tilemap Studio/main.js`
-- `node --check tools/Parallax Scene Studio/main.js`
-- `node --check tools/Vector Map Editor/main.js`
-- `node scripts/validate-active-tools-surface.mjs`
+## Implementation Plan (fewest remaining steps)
+Use a single combined build PR with these execution phases:
 
-## Validation Summary
-- active tool pages still load the engine theme stylesheet from `engine/ui/hubCommon.css`
-- active tool pages still load the shared shell stylesheet and module
-- the landing page loads the engine theme and shared shell
-- only the approved four tools appear in the active registry-driven surface
-- preserved sprite tooling does not appear in active landing or navigation output
-- stale deprecated sprite-rename references remain blocked by the validator
+### Phase 1 — Shared Theme Extraction/Normalization
+- Locate engine theme assets/tokens/styles/components already present in repo
+- Create or refine a shared theme module usable by all active tools
+- Define a stable public contract for tool consumption
+- Avoid duplicating theme values inside each tool
 
-## Follow-Up Recommendations
-- keep future first-class tool visual changes routed through `hubCommon.css` tokens and `tools/shared/platformShell.css`
-- keep future active-tool additions gated through `tools/toolRegistry.js` and the same validator
-- avoid reintroducing bespoke shell palettes on per-tool pages
+### Phase 2 — Active Tool Adoption
+Apply the shared engine theme to:
+- Vector Map Editor
+- Vector Asset Studio
+- Tile Map Editor
+- Parallax Editor
+
+Per tool:
+- replace divergent shell/header/nav styling with the platform shell
+- align panel/button/input/tab/dialog styling to engine theme
+- keep existing tool workflows intact
+- preserve existing functionality while updating surface appearance
+
+### Phase 3 — Platform Surface Unification
+- Ensure tools landing/index/menu uses same engine-themed shell
+- Ensure active tool cards/listing/navigation are registry-driven where available
+- Ensure naming shown to user matches approved display names
+- Ensure legacy Sprite editor is not presented in the active tools surface
+
+### Phase 4 — Validation and Cleanup
+- verify all active tools load
+- verify no obvious broken paths/imports caused by theme consolidation
+- verify no stale references to deprecated tool names
+- verify visual consistency across active tools
+- verify legacy exclusion behavior
+
+## Acceptance Criteria
+- Every active tool clearly uses the engine theme
+- Tools look like one coherent platform, not separate mini-apps
+- No active tool retains outdated bespoke styling when an engine-theme equivalent exists
+- Shared shell/header/nav is consistent across active tools
+- Legacy `SpritEditor_old_keep` is preserved but excluded from active tool listings/navigation
+- No broken imports, obvious console errors, or missing style assets caused by the change
+- Tool names displayed to users are normalized and approved
+
+## Preferred File Placement
+Codex should prefer shared theme/platform assets in stable shared locations already used by the engine. If a new shared location is needed, keep it minimal and aligned with existing repo organization.
+
+## Constraints
+- Keep this as one combined build PR
+- Do not split into multiple follow-up PRs unless blocked by a real technical dependency
+- No destructive removal of legacy content
+- No unrelated refactors
+- Do not introduce a second competing theme system
+
+## Suggested Deliverables from Codex
+- shared engine-theme contract/module updates
+- active tool shell/theme adoption changes
+- tool index/landing/platform surface polish updates
+- validation notes and any necessary path fixes
+
+## Codex Execution Intent
+This PR is intended to be the shortest path from “mostly organized tools” to “coherent themed platform.” Favor surgical reuse of existing engine theme assets over reinvention.

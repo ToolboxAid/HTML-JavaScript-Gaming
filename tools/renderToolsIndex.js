@@ -1,4 +1,4 @@
-import { getVisibleActiveToolRegistry } from "./toolRegistry.js";
+import { getToolRegistry } from "./toolRegistry.js";
 
 function escapeHtml(value) {
   return String(value || "")
@@ -41,7 +41,11 @@ function renderActiveToolsList() {
   if (!grid) {
     return;
   }
-  grid.innerHTML = getVisibleActiveToolRegistry().map((tool) => renderToolCard(tool)).join("\n");
+  grid.innerHTML = getToolRegistry()
+    .filter((entry) => entry.active === true)
+    .filter((entry) => entry.visibleInToolsList === true)
+    .map((tool) => renderToolCard(tool))
+    .join("\n");
 }
 
 renderActiveToolsList();

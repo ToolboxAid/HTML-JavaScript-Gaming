@@ -1,4 +1,4 @@
-import { getToolById, getVisibleActiveToolRegistry } from "../toolRegistry.js";
+import { getToolById, getToolRegistry } from "../toolRegistry.js";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -26,7 +26,9 @@ function getRegistryEntryHref(entryPoint) {
 }
 
 function renderToolLinks(currentToolId) {
-  return getVisibleActiveToolRegistry()
+  return getToolRegistry()
+    .filter((entry) => entry.active === true)
+    .filter((entry) => entry.visibleInToolsList === true)
     .map((tool) => {
       const currentClass = tool.id === currentToolId ? " is-current" : "";
       return `<a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>`;
@@ -39,9 +41,9 @@ function renderHeaderMarkup(currentTool) {
   const title = currentTool ? currentTool.displayName : "Tools Platform";
   const description = currentTool
     ? currentTool.description
-    : "Registry-driven, engine-themed entry surface for the active vector, tile-map, and parallax authoring tools.";
+    : "Registry-driven, engine-themed entry surface for vector maps, vector assets, tilemaps, parallax scenes, and sprite workspaces.";
   const meta = isLanding
-    ? `${getVisibleActiveToolRegistry().length} active tools | hubCommon.css theme`
+    ? `${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} active tools | hubCommon.css theme`
     : "Shared shell and engine theme applied from the active tool registry";
 
   return `
@@ -73,7 +75,7 @@ function renderStatusMarkup(currentTool) {
     <div class="tools-platform-statusbar">
       <span>Registry-driven navigation and engine theme are active.</span>
       <span>${escapeHtml(label)}</span>
-      <span>${getVisibleActiveToolRegistry().length} first-class tools</span>
+      <span>${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} first-class tools</span>
     </div>
   `;
 }

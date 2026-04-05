@@ -1,36 +1,27 @@
-# Codex Commands
-
-## Primary build
 MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL` as a docs-driven implementation PR that combines the final public-facing vector platform showcase with deterministic geometry runtime finalization.
+Create BUILD_PR_TOOL_REGISTRY_VALIDATOR_AND_SPRITE_FIRST_CLASS as a docs-aligned implementation PR.
 
-### Goals
-- registry-driven showcase surface
-- mandatory engine theme across all active first-class tools
-- deterministic vector geometry runtime contracts
-- stable transform/render/precision behavior
-- preserve `tools/SpritEditor_old_keep/` but exclude it from active platform surface
+REQUIREMENTS:
+1. Keep `tools/` first-class and registry-driven.
+2. Make `Sprite Editor` first-class and active in `tools/toolRegistry.js`.
+3. Keep `SpriteEditor_old_keep` preserved but excluded from active tool rendering.
+4. Update all active header/tool-surface rendering to use `entry.active === true`.
+5. Add a registry validator script that compares registry entries to filesystem directories.
+6. Fail validation on missing folders, missing registry entries, duplicate ids/names/paths, inactive `Sprite Editor`, or active legacy `SpriteEditor_old_keep`.
+7. Add a validation report output under `docs/dev/reports/` or equivalent repo-appropriate dev report location.
 
-### Active first-class tools
-- `tools/Vector Map Editor/`
-- `tools/Vector Asset Studio/`
-- `tools/Tile Map Editor/`
-- `tools/Parallax Editor/`
+EXPECTED ACTIVE TOOLS:
+- Vector Map Editor
+- Vector Asset Studio
+- Tilemap Studio
+- Parallax Scene Studio
+- Sprite Editor
 
-### Constraints
-- keep changes surgical
-- do not delete legacy sprite editor preserved path
-- no obsolete `Sprite Editor V3` references
-- no runtime-breaking engine rewrites
-- do not hardcode duplicate tool lists outside registry
-- prefer shared engine/theme and shared vector runtime over tool-specific behavior
+EXPECTED LEGACY TOOL:
+- SpriteEditor_old_keep
 
-### Package output
-Create:
-`<project folder>/tmp/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.zip`
-
-## Commit comment
-Use `docs/dev/commit_comment.txt`.
+OUTPUT:
+<project folder>/tmp/BUILD_PR_TOOL_REGISTRY_VALIDATOR_AND_SPRITE_FIRST_CLASS.zip

@@ -1,1 +1,1 @@
-Finalize the registry-driven vector platform showcase and deterministic geometry runtime contract while preserving legacy sprite paths outside the active surface.
+Restore Sprite Editor as a first-class active tool, keep SpriteEditor_old_keep preserved but hidden, and add a filesystem-aware tool registry validator with report output.

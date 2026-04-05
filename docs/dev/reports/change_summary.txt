@@ -1,13 +1,6 @@
 CHANGE SUMMARY
 
-Bundle:
-BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL
-
-Intent:
-Combine the last two major remaining docs-only steps into one Codex-ready PR bundle.
-
-What this bundle tells Codex to do:
-1. Build the public-facing platform showcase / landing surface.
-2. Make active tools registry-driven and engine-theme consistent.
-3. Finalize deterministic vector geometry runtime contracts.
-4. Keep legacy sprite editor preserved but excluded from the active platform surface.
+- Makes Sprite Editor first-class on the registry-driven tools surface
+- Preserves SpriteEditor_old_keep as legacy and non-rendered
+- Adds registry validator requirements to prevent registry/filesystem drift
+- Tightens rendering rules so only active registry entries appear in the header and tool landing surface

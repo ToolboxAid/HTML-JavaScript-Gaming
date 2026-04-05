@@ -1,21 +1,14 @@
 VALIDATION CHECKLIST
 
-[ ] `tools/` remains the first-class active tool root
-[ ] Active tools shown only via registry
-[ ] Showcase surface lists only:
-    [ ] Vector Map Editor
-    [ ] Vector Asset Studio
-    [ ] Tile Map Editor
-    [ ] Parallax Editor
-[ ] `tools/SpritEditor_old_keep/` preserved
-[ ] Legacy sprite editor excluded from active showcase surface
-[ ] No `Sprite Editor V3` references remain
-[ ] All active tools consume engine theme tokens
-[ ] Shared shell/header/nav language is normalized
-[ ] Deterministic transform order documented
-[ ] Deterministic render ordering documented
-[ ] Precision / epsilon policy documented
-[ ] Path normalization rules documented
-[ ] Vector-native sample scenarios render stably
-[ ] No broken active tool links
-[ ] Combined PR remains surgical and docs-first
+[ ] Sprite Editor folder exists under tools/
+[ ] Sprite Editor registry entry exists
+[ ] Sprite Editor is active=true
+[ ] Sprite Editor is legacy=false
+[ ] Sprite Editor appears in tools/index.html header
+[ ] SpriteEditor_old_keep does not appear in tools/index.html header
+[ ] Active render path is derived from registry active entries only
+[ ] Validator detects missing registry entries
+[ ] Validator detects missing folders
+[ ] Validator detects duplicate ids, names, and paths
+[ ] Validator fails if Sprite Editor is inactive
+[ ] Validator fails if SpriteEditor_old_keep is active
