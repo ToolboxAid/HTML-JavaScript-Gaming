@@ -4,7 +4,8 @@ David Quesenberry
 change_summary.txt
 
 Summary
-- Added canonical `docs/dev/RULES_OF_ENGAGEMENT.md` as the single source of truth.
-- Consolidated rule/workflow guidance from legacy `RULES.txt` and `WORKFLOW.md`.
-- Removed duplicate rule files from active/archive locations.
-- Updated active docs references to point at `RULES_OF_ENGAGEMENT.md`.
+- Added docs-only BUILD PR contract for namespaced dev-console command packs.
+- Defined command registry and command-pack schema.
+- Defined help behavior for global, pack, and command-level discovery.
+- Defined normalized output contract and validation/error conventions.
+- Constrained future implementation scope to `tools/dev` and optional `tests/tools` only.

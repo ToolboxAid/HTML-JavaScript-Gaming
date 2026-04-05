@@ -6,14 +6,22 @@ validation_checklist.txt
 VALIDATION CHECKLIST
 
 Workflow
-- Single rules source created at `docs/dev/RULES_OF_ENGAGEMENT.md`
-- Legacy `RULES.txt` and `WORKFLOW.md` consolidated
-- Duplicate rule docs removed
+- PLAN_PR source exists: `docs/pr/PLAN_PR_DEV_CONSOLE_COMMAND_PACKS.md`
+- BUILD_PR created as docs-only delta
+- No implementation/runtime code included
 
-Safety
-- Docs-only changes
-- No runtime code changes
-- References updated from `WORKFLOW_RULES.md` to `RULES_OF_ENGAGEMENT.md`
+Contract Coverage
+- Command-pack registry shape defined
+- Namespaced command definition shape defined
+- Help behavior defined for `help`, `help <pack>`, `help <command>`
+- Output contract standardized
+- Validation/error conventions and codes defined
+
+Scope Safety
+- Future implementation constrained to `tools/dev` and optional `tests/tools`
+- No engine core modifications required by contract
+- `docs/dev/commit_comment.txt` remains header-free
 
 Packaging
-- Delta ZIP generated at `<project folder>/tmp/BUILD_PR_RULES_OF_ENGAGEMENT_STANDARDIZATION_delta.zip`
+- Delta ZIP output path set to:
+  `<project folder>/tmp/BUILD_PR_DEV_CONSOLE_COMMAND_PACKS_delta.zip`

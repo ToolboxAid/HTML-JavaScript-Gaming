@@ -1,4 +1,1 @@
-BUILD_PR_RULES_OF_ENGAGEMENT_STANDARDIZATION
-
-- Standardized rules into single source of truth
-- Removed duplicate rule files
+docs: define dev console command-pack contracts, help behavior, and validation conventions

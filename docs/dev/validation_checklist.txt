@@ -1,0 +1,23 @@
+Toolbox Aid
+David Quesenberry
+04/05/2026
+validation_checklist.txt
+
+VALIDATION CHECKLIST
+
+Workflow
+- PLAN_PR created
+- One PR per purpose
+- No implementation code in bundle
+
+Header Rules
+- Header present in all new files except docs/dev/commit_comment.txt
+- commit_comment.txt contains no Toolbox Aid header
+
+Plan Quality
+- Command pack structure defined
+- Registry model defined
+- Help behavior defined
+- Output contract defined
+- Validation conventions defined
+- Engine-safe boundary preserved
