@@ -1,15 +1,14 @@
-[ ] Tools landing page exists and is clearly first-class
-[ ] Active tools list is generated from canonical registry
-[ ] Only approved active tools appear on landing page
-[ ] Legacy Sprite Editor does not appear in active tools menu
-[ ] Vector Map Editor uses shared platform shell
-[ ] Vector Asset Studio uses shared platform shell
-[ ] Tile Map Editor uses shared platform shell
-[ ] Parallax Editor uses shared platform shell
-[ ] Current tool title matches canonical naming in every active tool
-[ ] Home/back-to-tools affordance works in every active tool
-[ ] Common actions use normalized wording
-[ ] No visible references to `Sprite Editor V3`
-[ ] No broken asset/script/style paths introduced
-[ ] No engine/game runtime files modified
-[ ] Legacy preserved folder remains intact
+BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION Validation Checklist
+
+[ ] Engine theme source of truth identified
+[ ] Shared theme contract reusable by active tools
+[ ] Vector Map Editor uses engine theme
+[ ] Vector Asset Studio uses engine theme
+[ ] Tile Map Editor uses engine theme
+[ ] Parallax Editor uses engine theme
+[ ] Shared shell/surface behavior consistent across active tools
+[ ] Active tool list excludes SpritEditor_old_keep
+[ ] No stale deprecated tool-name references remain on active surface
+[ ] No broken imports/paths/assets introduced by theme consolidation
+[ ] Active tools load without obvious console/runtime errors
+[ ] Final visual result reads as one coherent platform

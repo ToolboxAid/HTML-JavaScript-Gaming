@@ -25,13 +25,20 @@ const SCAN_TARGETS = [
   "tools/renderToolsIndex.js",
   "tools/shared/platformShell.js",
   "tools/shared/platformShell.css",
-  "docs/pr/BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.md",
+  "docs/pr/BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION.md",
   "docs/dev/commit_comment.txt"
 ];
 
 const NAVIGATION_SURFACE_TARGETS = [
   "tools/index.html",
   "tools/renderToolsIndex.js"
+];
+
+const ACTIVE_TOOL_ENTRYPOINTS = [
+  "tools/Vector Asset Studio/index.html",
+  "tools/Tilemap Studio/index.html",
+  "tools/Parallax Scene Studio/index.html",
+  "tools/Vector Map Editor/index.html"
 ];
 
 async function pathExists(targetPath) {
@@ -98,6 +105,30 @@ async function main() {
     if (/SpriteEditor_old_keep|Sprite Editor Legacy|Sprite Editor/.test(text)) {
       issues.push(`Legacy tool appears in active navigation/report surface: ${target}`);
     }
+  }
+
+  for (const target of ACTIVE_TOOL_ENTRYPOINTS) {
+    const text = await readText(target);
+    if (!text.includes("../../engine/ui/hubCommon.css")) {
+      issues.push(`Engine theme stylesheet missing from active tool page: ${target}`);
+    }
+    if (!text.includes("../shared/platformShell.css")) {
+      issues.push(`Shared platform shell stylesheet missing from active tool page: ${target}`);
+    }
+    if (!text.includes("../shared/platformShell.js")) {
+      issues.push(`Shared platform shell module missing from active tool page: ${target}`);
+    }
+  }
+
+  const toolsLandingPage = await readText("tools/index.html");
+  if (!toolsLandingPage.includes("../engine/ui/hubCommon.css")) {
+    issues.push("Engine theme stylesheet missing from tools landing page.");
+  }
+  if (!toolsLandingPage.includes("./shared/platformShell.css")) {
+    issues.push("Shared platform shell stylesheet missing from tools landing page.");
+  }
+  if (!toolsLandingPage.includes("./shared/platformShell.js")) {
+    issues.push("Shared platform shell module missing from tools landing page.");
   }
 
   if (issues.length > 0) {

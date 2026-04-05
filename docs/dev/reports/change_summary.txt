@@ -1,17 +1,16 @@
-BUILD PR bundle prepared for vector platform surface polish.
+BUILD_PR_ENGINE_THEME_FINAL_PLATFORM_INTEGRATION
 
-Planned implementation summary:
-- establish `tools/` as a first-class product surface
-- add a shared platform shell for active tools
-- drive active tool menus/listings from one canonical registry
-- normalize naming, labels, and common actions across active tools
-- preserve legacy Sprite Editor outside the active tools surface
-- validate rename/path integrity and remove stale references
+Summary:
+- makes engine theme mandatory for all active first-class tools
+- combines remaining theme/surface integration into one build PR
+- preserves legacy Sprite editor while excluding it from active tool surface
+- aims to finish platform polish in the fewest possible remaining steps
 
-Included bundle artifacts:
-- PR spec
-- Codex command
-- commit comment
-- change summary
-- validation checklist
-- file tree
+Active tools in scope:
+- tools/Vector Map Editor/
+- tools/Vector Asset Studio/
+- tools/Tile Map Editor/
+- tools/Parallax Editor/
+
+Legacy preserved:
+- tools/SpritEditor_old_keep/

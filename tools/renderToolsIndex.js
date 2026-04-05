@@ -16,7 +16,7 @@ function renderToolCard(tool) {
       <p>${escapeHtml(tool.description)}</p>
       <div class="meta">
         <span class="pill live">Active Tool</span>
-        <span class="pill planned">Registry Driven</span>
+        <span class="pill planned">Engine Theme</span>
       </div>
     </div>
   `;

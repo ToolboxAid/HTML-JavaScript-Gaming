@@ -1,34 +1,35 @@
 :root {
-  --tools-shell-bg: #08111f;
-  --tools-shell-surface: rgba(8, 17, 31, 0.92);
-  --tools-shell-border: rgba(133, 183, 255, 0.18);
-  --tools-shell-text: #e8f1ff;
-  --tools-shell-muted: #8ea5c2;
-  --tools-shell-accent: #61d5ff;
-  --tools-shell-accent-soft: rgba(97, 213, 255, 0.14);
-  --tools-shell-shadow: 0 18px 50px rgba(4, 10, 20, 0.35);
+  --tools-shell-border-strong: rgba(221, 214, 254, 0.3);
+  --tools-shell-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+  --tools-shell-shadow-strong: 0 20px 44px rgba(0, 0, 0, 0.26);
+  --tools-shell-glass: rgba(43, 16, 91, 0.34);
+  --tools-shell-glass-strong: rgba(43, 16, 91, 0.56);
 }
 
 body.tools-platform-surface {
-  background:
-    radial-gradient(circle at top, rgba(97, 213, 255, 0.14), transparent 32%),
-    linear-gradient(180deg, #050b14 0%, #091220 100%);
-  color: var(--tools-shell-text);
+  color: var(--text, #f7f4ff);
+  background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
+}
+
+[data-tools-platform-header],
+[data-tools-platform-status] {
+  display: block;
 }
 
 .tools-platform-header,
-.tools-platform-status {
+.tools-platform-status,
+[data-tools-platform-header],
+[data-tools-platform-status] {
   width: min(1600px, calc(100% - 32px));
   margin: 16px auto;
 }
 
 .tools-platform-frame,
 .tools-platform-statusbar {
-  border: 1px solid var(--tools-shell-border);
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 18px;
-  background: var(--tools-shell-surface);
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
   box-shadow: var(--tools-shell-shadow);
-  backdrop-filter: blur(10px);
 }
 
 .tools-platform-frame {
@@ -46,7 +47,7 @@ body.tools-platform-surface {
 
 .tools-platform-frame__eyebrow {
   margin: 0;
-  color: var(--tools-shell-accent);
+  color: #f5d0fe;
   font-size: 0.78rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -56,12 +57,14 @@ body.tools-platform-surface {
   margin: 6px 0 0;
   font-size: clamp(1.75rem, 3vw, 2.4rem);
   line-height: 1.05;
+  color: var(--text, #f7f4ff);
 }
 
 .tools-platform-frame__description {
   margin: 8px 0 0;
   max-width: 72ch;
-  color: var(--tools-shell-muted);
+  color: var(--muted, #e9ddff);
+  line-height: 1.55;
 }
 
 .tools-platform-frame__links,
@@ -77,49 +80,42 @@ body.tools-platform-surface {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  text-decoration: none;
-  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
-}
-
-.tools-platform-frame__link {
   min-height: 36px;
   padding: 0 14px;
-  border: 1px solid var(--tools-shell-border);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--tools-shell-text);
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  color: var(--text, #f7f4ff);
+  font-weight: bold;
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .tools-platform-frame__link:hover,
-.tools-platform-frame__link:focus-visible {
-  background: var(--tools-shell-accent-soft);
-  border-color: rgba(97, 213, 255, 0.4);
-  color: #ffffff;
+.tools-platform-frame__link:focus-visible,
+.tools-platform-frame__nav-link:hover,
+.tools-platform-frame__nav-link:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--card-hover-border, #c4b5fd);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  outline: none;
 }
 
 .tools-platform-frame__nav-link {
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--tools-shell-muted);
+  color: var(--muted, #e9ddff);
   font-size: 0.94rem;
 }
 
-.tools-platform-frame__nav-link:hover,
-.tools-platform-frame__nav-link:focus-visible {
-  border-color: rgba(97, 213, 255, 0.45);
-  color: var(--tools-shell-text);
-}
-
 .tools-platform-frame__nav-link.is-current {
-  border-color: rgba(97, 213, 255, 0.5);
-  background: var(--tools-shell-accent-soft);
+  border-color: var(--tools-shell-border-strong);
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.34) 0%, rgba(91, 33, 182, 0.78) 100%);
   color: #ffffff;
 }
 
 .tools-platform-frame__meta {
-  color: var(--tools-shell-muted);
+  color: var(--muted, #e9ddff);
   font-size: 0.95rem;
 }
 
@@ -130,7 +126,7 @@ body.tools-platform-surface {
   gap: 12px;
   flex-wrap: wrap;
   padding: 12px 16px;
-  color: var(--tools-shell-muted);
+  color: var(--muted, #e9ddff);
   font-size: 0.92rem;
 }
 
@@ -141,31 +137,101 @@ body.tools-platform-surface .app {
   margin: 0 auto 16px;
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--tools-shell-shadow);
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  box-shadow: var(--tools-shell-shadow-strong);
 }
 
 body.tools-platform-surface .wrap {
-  background: rgba(7, 14, 24, 0.9);
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
 }
 
 body.tools-platform-surface .topnav {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--line, rgba(221, 214, 254, 0.26));
 }
 
 body.tools-platform-surface .toolbar,
-body.tools-platform-surface .statusbar {
-  border-color: rgba(255, 255, 255, 0.08);
+body.tools-platform-surface .statusbar,
+body.tools-platform-surface .preview-toolbar,
+body.tools-platform-surface .canvas-toolbar {
+  border-color: var(--line, rgba(221, 214, 254, 0.26));
+  background: var(--tools-shell-glass);
+  color: var(--text, #f7f4ff);
+}
+
+body.tools-platform-surface .sidebar,
+body.tools-platform-surface .rightbar,
+body.tools-platform-surface .left-sidebar,
+body.tools-platform-surface .right-sidebar {
+  background: var(--tools-shell-glass);
+}
+
+body.tools-platform-surface .panel,
+body.tools-platform-surface .dock,
+body.tools-platform-surface .card {
+  border-color: var(--line, rgba(221, 214, 254, 0.26));
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  box-shadow: var(--tools-shell-shadow);
+  color: var(--text, #f7f4ff);
+}
+
+body.tools-platform-surface button,
+body.tools-platform-surface .button,
+body.tools-platform-surface .toolbar-link,
+body.tools-platform-surface .file-input-label {
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  color: var(--text, #f7f4ff);
+  box-shadow: none;
+}
+
+body.tools-platform-surface button:hover,
+body.tools-platform-surface .button:hover,
+body.tools-platform-surface .toolbar-link:hover,
+body.tools-platform-surface .file-input-label:hover {
+  border-color: var(--card-hover-border, #c4b5fd);
+}
+
+body.tools-platform-surface button:focus-visible,
+body.tools-platform-surface .button:focus-visible,
+body.tools-platform-surface .toolbar-link:focus-visible,
+body.tools-platform-surface .file-input-label:focus-visible,
+body.tools-platform-surface input:focus-visible,
+body.tools-platform-surface select:focus-visible,
+body.tools-platform-surface textarea:focus-visible {
+  outline: 2px solid var(--accent, #ddd6fe);
+  outline-offset: 2px;
+}
+
+body.tools-platform-surface input,
+body.tools-platform-surface select,
+body.tools-platform-surface textarea {
+  border: 1px solid var(--surface-border, rgba(221, 214, 254, 0.22));
+  border-radius: 10px;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
+  color: var(--text, #f7f4ff);
+}
+
+body.tools-platform-surface .help,
+body.tools-platform-surface .help-text,
+body.tools-platform-surface .muted,
+body.tools-platform-surface #statusText,
+body.tools-platform-surface #statusLeft,
+body.tools-platform-surface #statusCenter,
+body.tools-platform-surface #statusRight {
+  color: var(--muted, #e9ddff);
 }
 
 body.tools-platform-surface .app-shell > .toolbar:first-child,
 body.tools-platform-surface .app > .toolbar:first-child {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--surface-border, rgba(221, 214, 254, 0.22));
 }
 
 @media (max-width: 900px) {
   .tools-platform-header,
   .tools-platform-status,
+  [data-tools-platform-header],
+  [data-tools-platform-status],
   body.tools-platform-surface .wrap,
   body.tools-platform-surface .app-shell,
   body.tools-platform-surface .app {

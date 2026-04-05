@@ -39,10 +39,10 @@ function renderHeaderMarkup(currentTool) {
   const title = currentTool ? currentTool.displayName : "Tools Platform";
   const description = currentTool
     ? currentTool.description
-    : "Registry-driven entry surface for the active vector, tile-map, and parallax authoring tools.";
+    : "Registry-driven, engine-themed entry surface for the active vector, tile-map, and parallax authoring tools.";
   const meta = isLanding
-    ? `${getVisibleActiveToolRegistry().length} active tools`
-    : "Shared shell applied from the active tool registry";
+    ? `${getVisibleActiveToolRegistry().length} active tools | hubCommon.css theme`
+    : "Shared shell and engine theme applied from the active tool registry";
 
   return `
     <section class="tools-platform-frame">
@@ -71,7 +71,7 @@ function renderStatusMarkup(currentTool) {
   const label = currentTool ? currentTool.displayName : "Landing Surface";
   return `
     <div class="tools-platform-statusbar">
-      <span>Registry-driven navigation is active.</span>
+      <span>Registry-driven navigation and engine theme are active.</span>
       <span>${escapeHtml(label)}</span>
       <span>${getVisibleActiveToolRegistry().length} first-class tools</span>
     </div>

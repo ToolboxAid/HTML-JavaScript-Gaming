@@ -1,1 +1,1 @@
-Polish tools platform surface with a shared shell, registry-driven active-tool navigation, and unified first-class labels while preserving Sprite Editor outside the active surface.
+Complete final active-tools platform integration by rebasing the shared shell onto the engine theme, preserving registry-driven navigation, and excluding preserved sprite tooling from the first-class surface.
