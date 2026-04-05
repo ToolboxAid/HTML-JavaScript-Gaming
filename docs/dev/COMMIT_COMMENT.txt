@@ -1,5 +1,5 @@
-DEV_CONSOLE_ARROW_KEYS_EDIT_AND_SCROLL_PATCH
+DEV_CONSOLE_AUTOCOMPLETE_TAB_PATCH
 
-- Added cursor editing
-- Added scroll mode
-- Improved keyboard handling
+- Added Tab autocomplete
+- Supports cycling suggestions
+- Integrated with cursor-based input

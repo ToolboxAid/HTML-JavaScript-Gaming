@@ -2,26 +2,30 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Patch dev console input system.
+Add TAB autocomplete to dev console.
 
 Modify:
 tools/dev/devConsoleIntegration.js
 
-Add:
-- cursor-based input editing (left/right arrows)
-- backspace/delete support
-- command history (up/down)
-- scroll mode when not typing
-- preventDefault for arrow keys
+Requirements:
+- Tab triggers autocomplete
+- Autocomplete uses command registry (if available)
+- If multiple matches → cycle suggestions
+- If one match → complete command
+- Do not break existing input/cursor logic
+- Prevent default tab behavior
 
-Rules:
-- Do NOT modify engine core
-- Keep combo keys unchanged
-- Keep logic isolated to this file only
+Behavior:
+- Partial input "sce" → Tab → "scene."
+- "scene.r" → Tab → "scene.reload"
+- Multiple matches → cycle each Tab press
+
+Constraints:
+- No engine core changes
+- Keep logic isolated to this file
+- Preserve combo keys
 
 Validation:
-- arrows move cursor
-- backspace/delete works
-- history works
-- scroll works
-- no browser scrolling
+- Tab completes commands
+- No browser focus change
+- Cursor remains correct

@@ -229,6 +229,11 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   let consoleScrollOffset = 0;
   let consoleTypingMode = true;
   let consoleCommandHistory = [];
+  let consoleAutocompleteState = {
+    basePrefix: "",
+    matches: [],
+    tokenStart: 0
+  };
   const keyboardEventTarget = getKeyboardEventTarget();
   const commandRegistry = createDevConsoleCommandRegistry({
     packs: [
@@ -249,6 +254,11 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     consoleOutputHistory = [];
     consoleScrollOffset = 0;
     consoleTypingMode = true;
+    consoleAutocompleteState = {
+      basePrefix: "",
+      matches: [],
+      tokenStart: 0
+    };
   }
 
   function normalizeRuntimeDelegationResult(commandName, execution) {
@@ -308,6 +318,54 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     source.forEach((line) => pushConsoleOutputLine(line));
   }
 
+  function resetConsoleAutocompleteState() {
+    consoleAutocompleteState = {
+      basePrefix: "",
+      matches: [],
+      tokenStart: 0
+    };
+  }
+
+  function getCommandRegistryNames() {
+    const names = new Set(["help", "status"]);
+    if (typeof commandRegistry?.listCommands === "function") {
+      const commands = commandRegistry.listCommands();
+      const source = Array.isArray(commands) ? commands : [];
+      source.forEach((entry) => {
+        const name = sanitizeText(typeof entry === "string" ? entry : entry?.name);
+        if (name) {
+          names.add(name);
+        }
+      });
+    }
+    return Array.from(names).sort((left, right) => left.localeCompare(right));
+  }
+
+  function findLongestCommonPrefix(values) {
+    const source = Array.isArray(values) ? values.filter(Boolean) : [];
+    if (source.length === 0) {
+      return "";
+    }
+    if (source.length === 1) {
+      return source[0];
+    }
+
+    let prefix = source[0];
+    for (let index = 1; index < source.length; index += 1) {
+      const candidate = source[index];
+      let prefixIndex = 0;
+      const maxLength = Math.min(prefix.length, candidate.length);
+      while (prefixIndex < maxLength && prefix[prefixIndex] === candidate[prefixIndex]) {
+        prefixIndex += 1;
+      }
+      prefix = prefix.slice(0, prefixIndex);
+      if (!prefix) {
+        break;
+      }
+    }
+    return prefix;
+  }
+
   function captureCommandHistory(command) {
     if (!command) {
       return;
@@ -319,6 +377,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     }
     consoleHistoryCursor = -1;
     consoleScrollOffset = 0;
+    resetConsoleAutocompleteState();
   }
 
   function clampConsoleCursor() {
@@ -336,6 +395,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     } else {
       clampConsoleCursor();
     }
+    resetConsoleAutocompleteState();
   }
 
   function insertConsoleText(text) {
@@ -406,6 +466,99 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     const before = consoleInputBuffer.slice(0, consoleCursorIndex);
     const after = consoleInputBuffer.slice(consoleCursorIndex);
     return `${before}|${after}`;
+  }
+
+  function replaceConsoleRange(startIndex, endIndex, replacement) {
+    const safeStart = Math.max(0, Math.min(startIndex, consoleInputBuffer.length));
+    const safeEnd = Math.max(safeStart, Math.min(endIndex, consoleInputBuffer.length));
+    const before = consoleInputBuffer.slice(0, safeStart);
+    const after = consoleInputBuffer.slice(safeEnd);
+    const next = `${before}${replacement}${after}`;
+    setConsoleInputBuffer(next, false);
+    consoleCursorIndex = safeStart + String(replacement ?? "").length;
+    clampConsoleCursor();
+  }
+
+  function getCommandTokenAtCursor() {
+    const beforeCursor = consoleInputBuffer.slice(0, consoleCursorIndex);
+    const afterCursor = consoleInputBuffer.slice(consoleCursorIndex);
+    const start = beforeCursor.lastIndexOf(" ") + 1;
+    const nextSpaceOffset = afterCursor.indexOf(" ");
+    const end = nextSpaceOffset >= 0
+      ? consoleCursorIndex + nextSpaceOffset
+      : consoleInputBuffer.length;
+    const token = consoleInputBuffer.slice(start, end);
+    return {
+      start,
+      end,
+      token: sanitizeText(token)
+    };
+  }
+
+  function autocompleteConsoleInput() {
+    const tokenInfo = getCommandTokenAtCursor();
+    if (tokenInfo.start !== 0) {
+      return false;
+    }
+
+    const commandPrefix = tokenInfo.token.toLowerCase();
+    const names = getCommandRegistryNames();
+    if (!commandPrefix) {
+      return false;
+    }
+
+    const matched = names.filter((name) => name.toLowerCase().startsWith(commandPrefix));
+    if (matched.length === 0) {
+      return false;
+    }
+
+    if (matched.length === 1) {
+      replaceConsoleRange(tokenInfo.start, tokenInfo.end, matched[0]);
+      resetConsoleAutocompleteState();
+      return true;
+    }
+
+    const currentAutocompleteMatches = Array.isArray(consoleAutocompleteState.matches)
+      ? consoleAutocompleteState.matches
+      : [];
+    const cycleMatches = currentAutocompleteMatches.length > 1
+      && consoleAutocompleteState.tokenStart === tokenInfo.start
+      && tokenInfo.token.toLowerCase().startsWith(sanitizeText(consoleAutocompleteState.basePrefix).toLowerCase())
+      && currentAutocompleteMatches.every((name) => matched.includes(name))
+      && matched.every((name) => currentAutocompleteMatches.includes(name));
+
+    if (cycleMatches) {
+      const currentIndex = currentAutocompleteMatches.indexOf(tokenInfo.token);
+      const nextIndex = currentIndex >= 0
+        ? (currentIndex + 1) % currentAutocompleteMatches.length
+        : 0;
+      replaceConsoleRange(tokenInfo.start, tokenInfo.end, currentAutocompleteMatches[nextIndex]);
+      consoleAutocompleteState = {
+        basePrefix: sanitizeText(consoleAutocompleteState.basePrefix) || tokenInfo.token,
+        matches: currentAutocompleteMatches.slice(),
+        tokenStart: tokenInfo.start
+      };
+      return true;
+    }
+
+    const commonPrefix = findLongestCommonPrefix(matched);
+    if (commonPrefix.length > tokenInfo.token.length) {
+      replaceConsoleRange(tokenInfo.start, tokenInfo.end, commonPrefix);
+      consoleAutocompleteState = {
+        basePrefix: commonPrefix,
+        matches: matched.slice(),
+        tokenStart: tokenInfo.start
+      };
+      return true;
+    }
+
+    replaceConsoleRange(tokenInfo.start, tokenInfo.end, matched[0]);
+    consoleAutocompleteState = {
+      basePrefix: tokenInfo.token,
+      matches: matched.slice(),
+      tokenStart: tokenInfo.start
+    };
+    return true;
   }
 
   function appendExecutionToConsole(command, execution) {
@@ -496,6 +649,12 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       return;
     }
 
+    if (code === "Tab") {
+      autocompleteConsoleInput();
+      event.preventDefault();
+      return;
+    }
+
     if (code === "Enter") {
       consoleTypingMode = true;
       submitConsoleInput();
@@ -531,6 +690,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     if (code === "ArrowLeft") {
       consoleTypingMode = true;
       consoleCursorIndex = Math.max(0, consoleCursorIndex - 1);
+      resetConsoleAutocompleteState();
       event.preventDefault();
       return;
     }
@@ -538,6 +698,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     if (code === "ArrowRight") {
       consoleTypingMode = true;
       consoleCursorIndex = Math.min(consoleInputBuffer.length, consoleCursorIndex + 1);
+      resetConsoleAutocompleteState();
       event.preventDefault();
       return;
     }
@@ -551,6 +712,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       } else {
         scrollConsoleHistory(1);
       }
+      resetConsoleAutocompleteState();
       event.preventDefault();
       return;
     }
@@ -564,11 +726,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       } else {
         scrollConsoleHistory(-1);
       }
-      event.preventDefault();
-      return;
-    }
-
-    if (code === "Tab") {
+      resetConsoleAutocompleteState();
       event.preventDefault();
       return;
     }
@@ -754,7 +912,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
 
       const commandHint = "Shift+` console | Ctrl+Shift+` overlay | Ctrl+Shift+R reload";
       const inputHint = consoleTypingMode
-        ? "Typing: Left/Right cursor | Up/Down history | Shift+Up/Down scroll | Backspace/Delete | Esc mode"
+        ? "Typing: Tab autocomplete | Left/Right cursor | Up/Down history | Shift+Up/Down scroll | Backspace/Delete | Esc mode"
         : "Scroll: Up/Down output | Esc mode";
       const statusHint = `mode: ${consoleTypingMode ? "typing" : "scroll"} | scroll: ${consoleScrollOffset} | last: ${lastCommandBinding || "none"} | status: ${sanitizeText(lastCommandExecution?.status) || "idle"} | history: ${consoleCommandHistory.length}`;
 
