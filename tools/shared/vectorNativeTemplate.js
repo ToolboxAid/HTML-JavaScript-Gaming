@@ -26,6 +26,10 @@ function createReport(level, code, message) {
   };
 }
 
+function findRegistryEntry(entries, id) {
+  return (Array.isArray(entries) ? entries : []).find((entry) => sanitizeText(entry?.id) === sanitizeText(id)) || null;
+}
+
 function createRegistry() {
   return {
     version: 1,
@@ -188,7 +192,7 @@ function createParallaxDocument() {
   };
 }
 
-function createRuntimeAssetSources() {
+function createRuntimeAssetSources(registry) {
   return {
     "palette.vector-native.primary": {
       kind: "palette",
@@ -196,26 +200,31 @@ function createRuntimeAssetSources() {
       colors: ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"]
     },
     "vector.template.player": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.player")),
       kind: "vector",
       file: "templates/vector-native-arcade/assets/vectors/template-player.vector.json",
       role: "player"
     },
     "vector.template.obstacle.large": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.obstacle.large")),
       kind: "vector",
       file: "templates/vector-native-arcade/assets/vectors/template-obstacle-large.vector.json",
       role: "obstacle-large"
     },
     "vector.template.obstacle.small": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.obstacle.small")),
       kind: "vector",
       file: "templates/vector-native-arcade/assets/vectors/template-obstacle-small.vector.json",
       role: "obstacle-small"
     },
     "vector.template.ui.title": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.ui.title")),
       kind: "vector",
       file: "templates/vector-native-arcade/assets/vectors/template-title.vector.json",
       role: "title"
     },
     "vector.template.ui.hud": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.ui.hud")),
       kind: "vector",
       file: "templates/vector-native-arcade/assets/vectors/template-hud.vector.json",
       role: "hud"
@@ -281,7 +290,7 @@ export function createVectorNativeTemplateDefinition() {
     vectorDocument: createVectorDocument(),
     tileMapDocument: createTileMapDocument(),
     parallaxDocument: createParallaxDocument(),
-    runtimeAssetSources: createRuntimeAssetSources(),
+    runtimeAssetSources: createRuntimeAssetSources(registry),
     configPath: "templates/vector-native-arcade/config/template.project.json",
     runtimeBootstrapPath: "templates/vector-native-arcade/runtime/bootstrap.runtime.json",
     docsPath: "templates/vector-native-arcade/docs/STARTER_GUIDE.md",

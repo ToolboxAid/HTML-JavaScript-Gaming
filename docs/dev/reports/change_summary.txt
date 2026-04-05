@@ -1,35 +1,35 @@
 Change Summary
 ==============
 
-Combined build outcome
-----------------------
-- finalized the canonical active tool folders under `tools/`
-- repaired active path and reference drift caused by prior rename/consolidation work
-- validated canonical loading surfaces and syntax
-- produced the vector asset contract spec in `docs/specs/vector_asset_contract.md`
+Build outcome
+-------------
+- implemented the initial shared vector geometry runtime aligned to `docs/specs/vector_asset_contract.md`
+- kept the runtime split across contract parsing, pure geometry math, render preparation, and the public runtime facade
+- integrated vector runtime preparation into packaged runtime loading without changing engine core APIs
 
-Canonical active tool folders
------------------------------
-- `tools/Sprite Editor V3/`
-- `tools/Tilemap Studio/`
-- `tools/Parallax Scene Studio/`
-- `tools/Vector Asset Studio/`
-- `tools/Vector Map Editor/`
+Runtime modules
+---------------
+- added `tools/shared/vector/vectorGeometryMath.js`
+- added `tools/shared/vector/vectorAssetContract.js`
+- added `tools/shared/vector/vectorRenderPrep.js`
+- added `tools/shared/vectorGeometryRuntime.js`
 
-Legacy and exclusions
+Compatibility and integration updates
+-------------------------------------
+- updated `tools/shared/vector/vectorAssetBridge.js` to emit contract-aligned vector assets while preserving legacy bridge fields
+- updated `tools/shared/projectAssetValidation.js` to validate vectors against the contract through stable finding families
+- updated `tools/shared/runtimeAssetLoader.js` to promote packaged vector assets into `runtimeKind: "vector-geometry"` output
+- updated vector-native template, sample-game, and Asteroids demo runtime fixtures to provide real vector asset documents to the runtime
+
+Validation highlights
 ---------------------
-- `tools/SpriteEditor_old_keep/` remains parked as legacy
-- old SpriteEditor stayed out of scope except for active reference cleanup
+- syntax checks passed for all new and touched shared runtime files
+- targeted vector/runtime tests passed
+- Asteroids platform demo runtime integration passed after vector fixture repair
+- full node test runner passed with `110/110` explicit `run()` tests passing
 
-Validation and repair highlights
---------------------------------
-- launcher/index links verified
-- canonical sample-manifest paths verified
-- canonical JS entry files validated with `node --check`
-- no required refs remain to deprecated duplicate folders in active surfaces
-- no required refs remain to legacy old SpriteEditor in active surfaces
-
-Vector contract output
-----------------------
-- created `docs/specs/vector_asset_contract.md`
-- defined purpose, scope, coordinate rules, origin/transform rules, stroke/fill/palette strategy, primitives, layering, naming, runtime expectations, future geometry runtime support, and non-goals
+Next-slice recommendations
+--------------------------
+- migrate checked-in vector asset files from legacy bridge shape to canonical contract documents
+- extend supported path commands only when a consumer requires them
+- add geometry-runtime-specific debug and profiler surfacing when dynamic vector transforms become active

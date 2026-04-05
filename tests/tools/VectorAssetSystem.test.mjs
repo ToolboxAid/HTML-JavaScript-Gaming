@@ -4,6 +4,7 @@ import { buildProjectPackage } from "../../tools/shared/projectPackaging.js";
 import { loadPackagedProjectRuntime } from "../../tools/shared/runtimeAssetLoader.js";
 import { buildVectorAssetSystem, createVectorAssetSystemFixture } from "../../tools/shared/vectorAssetSystem.js";
 import { normalizeSvgToVectorAsset, summarizeVectorAssetDefinition } from "../../tools/shared/vector/vectorAssetBridge.js";
+import { VECTOR_ASSET_FORMAT } from "../../tools/shared/vector/vectorAssetContract.js";
 
 export async function run() {
   const normalized = normalizeSvgToVectorAsset({
@@ -14,7 +15,11 @@ export async function run() {
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20"><path d="M 0 -8 L 6 8 L 0 4 L -6 8 Z" /></svg>'
   });
   assert.equal(normalized.type, "vector");
+  assert.equal(normalized.format, VECTOR_ASSET_FORMAT);
+  assert.equal(normalized.assetId, "vector.test.ship");
   assert.equal(normalized.source.kind, "svg");
+  assert.equal(normalized.viewport.width, 20);
+  assert.equal(normalized.layers.length, 1);
   assert.equal(normalized.geometry.paths.length, 1);
   assert.equal(summarizeVectorAssetDefinition(normalized), "Vector asset vector.test.ship ready with 1 path.");
 
@@ -47,6 +52,8 @@ export async function run() {
   });
   assert.equal(runtimeResult.runtimeLoader.status, "ready");
   assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.ship"].type, "vector");
+  assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.ship"].runtimeKind, "vector-geometry");
+  assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.ship"].renderables.length, 2);
 
   const invalidValidation = validateProjectAssetState({
     registry: {
@@ -58,7 +65,23 @@ export async function run() {
           path: "games/Asteroids/platform/assets/vectors/broken.vector.json",
           paletteId: "palette.asteroids-hud",
           source: { kind: "json", path: "" },
-          geometry: { paths: [] },
+          format: VECTOR_ASSET_FORMAT,
+          version: 1,
+          assetId: "vector.broken",
+          viewport: { x: 0, y: 0, width: 0, height: 0 },
+          origin: { name: "center", x: 0, y: 0 },
+          layers: [
+            {
+              id: "layer-01",
+              shapes: [
+                {
+                  id: "layer-01.shape-001",
+                  type: "path",
+                  d: ""
+                }
+              ]
+            }
+          ],
           style: { stroke: false, fill: false },
           sourceTool: "vector-asset-studio"
         }

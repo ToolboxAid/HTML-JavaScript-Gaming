@@ -1,4 +1,10 @@
 import { createAssetId, normalizeProjectRelativePath } from "../projectAssetRegistry.js";
+import {
+  VECTOR_ASSET_FORMAT,
+  VECTOR_ASSET_VERSION,
+  createDefaultVectorOrigin,
+  parseViewBoxString
+} from "./vectorAssetContract.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -19,7 +25,11 @@ function extractPathData(svgText) {
 }
 
 export function summarizeVectorAssetDefinition(asset) {
-  const pathCount = Array.isArray(asset?.geometry?.paths) ? asset.geometry.paths.length : 0;
+  const pathCount = Array.isArray(asset?.geometry?.paths)
+    ? asset.geometry.paths.length
+    : (Array.isArray(asset?.layers)
+      ? asset.layers.reduce((total, layer) => total + (Array.isArray(layer?.shapes) ? layer.shapes.length : 0), 0)
+      : 0);
   return `Vector asset ${sanitizeText(asset?.id) || "vector"} ready with ${pathCount} path${pathCount === 1 ? "" : "s"}.`;
 }
 
@@ -28,8 +38,28 @@ export function normalizeSvgToVectorAsset(options = {}) {
   const id = sanitizeText(options.id) || createAssetId("vector", options.name || "asset", "asset");
   const path = normalizeProjectRelativePath(options.path);
   const geometryPaths = extractPathData(svgText);
+  const viewport = parseViewBoxString(extractViewBox(svgText));
+  const origin = createDefaultVectorOrigin(viewport);
+  const stroke = options.style?.stroke !== false
+    ? {
+      color: "#FFFFFFFF",
+      width: 1,
+      opacity: 1,
+      join: "miter",
+      cap: "butt"
+    }
+    : null;
+  const fill = options.style?.fill === true
+    ? {
+      color: "#FFFFFFFF",
+      opacity: 1
+    }
+    : null;
 
   return {
+    format: VECTOR_ASSET_FORMAT,
+    version: VECTOR_ASSET_VERSION,
+    assetId: id,
     id,
     name: sanitizeText(options.name) || id,
     path,
@@ -39,6 +69,38 @@ export function normalizeSvgToVectorAsset(options = {}) {
     source: {
       kind: "svg",
       path
+    },
+    viewport,
+    origin,
+    anchors: [
+      {
+        name: "center",
+        x: origin.x,
+        y: origin.y
+      }
+    ],
+    layers: [
+      {
+        id: "layer-01",
+        name: "default",
+        visible: true,
+        style: {
+          stroke: null,
+          fill: null
+        },
+        shapes: geometryPaths.map((pathEntry, index) => ({
+          id: `layer-01.shape-${String(index + 1).padStart(3, "0")}`,
+          name: `path-${index + 1}`,
+          type: "path",
+          visible: true,
+          d: pathEntry.d,
+          stroke,
+          fill
+        }))
+      }
+    ],
+    metadata: {
+      authoringBridge: "svg-import"
     },
     geometry: {
       viewBox: extractViewBox(svgText),

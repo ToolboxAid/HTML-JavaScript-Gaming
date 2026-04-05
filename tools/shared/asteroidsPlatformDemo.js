@@ -26,6 +26,10 @@ function createReport(level, code, message) {
   };
 }
 
+function findRegistryEntry(entries, id) {
+  return (Array.isArray(entries) ? entries : []).find((entry) => sanitizeText(entry?.id) === sanitizeText(id)) || null;
+}
+
 function createRegistry() {
   const shipVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ship",
@@ -235,7 +239,7 @@ function createParallaxDocument() {
   };
 }
 
-function createRuntimeAssetSources() {
+function createRuntimeAssetSources(registry) {
   return {
     "palette.asteroids-hud": {
       kind: "palette",
@@ -243,26 +247,31 @@ function createRuntimeAssetSources() {
       colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"]
     },
     "vector.asteroids.ship": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.ship")),
       kind: "vector",
       file: "games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json",
       role: "ship"
     },
     "vector.asteroids.asteroid.large": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.asteroid.large")),
       kind: "vector",
       file: "games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json",
       role: "asteroid-large"
     },
     "vector.asteroids.asteroid.medium": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.asteroid.medium")),
       kind: "vector",
       file: "games/Asteroids/platform/assets/vectors/asteroids-asteroid-medium.vector.json",
       role: "asteroid-medium"
     },
     "vector.asteroids.asteroid.small": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.asteroid.small")),
       kind: "vector",
       file: "games/Asteroids/platform/assets/vectors/asteroids-asteroid-small.vector.json",
       role: "asteroid-small"
     },
     "vector.asteroids.ui.title": {
+      ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.ui.title")),
       kind: "vector",
       file: "games/Asteroids/platform/assets/vectors/asteroids-title.vector.json",
       role: "ui-title"
@@ -376,7 +385,7 @@ export function createAsteroidsPlatformDemoDefinition() {
     vectorDocument: createVectorDocument(),
     tileMapDocument: createTileMapDocument(),
     parallaxDocument: createParallaxDocument(),
-    runtimeAssetSources: createRuntimeAssetSources(),
+    runtimeAssetSources: createRuntimeAssetSources(registry),
     demo: createDemoDetails({ registry })
   };
 }

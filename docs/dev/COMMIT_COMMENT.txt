@@ -1,1 +1,1 @@
-build(tools): complete combined tools consolidation and vector contract docs
+Implement the initial vector geometry runtime aligned to the vector asset contract, with clean parsing, transform, bounds, and render-prep support for vector-native sample games.

@@ -1,35 +1,25 @@
+docs/
+  pr/
+    BUILD_PR_VECTOR_GEOMETRY_RUNTIME.md
+  specs/
+    vector_asset_contract.md
 tools/
-  Parallax Scene Studio/
-    index.html
-    main.js
-    parallaxEditor.css
-    README.md
-    samples/
-  Sprite Editor V3/
-    index.html
-    main.js
-    spriteEditor.css
-    README.md
-    modules/
-  Tilemap Studio/
-    index.html
-    main.js
-    tileMapEditor.css
-    README.md
-    samples/
-  Vector Asset Studio/
-    index.html
-    main.js
-    svgBackgroundEditor.css
-    README.md
-    samples/
-  Vector Map Editor/
-    index.html
-    main.js
-    vectorMapEditor.css
-    README.md
-    how_to_use.html
-    assets/
-    editor/
   shared/
-  SpriteEditor_old_keep/
+    asteroidsPlatformDemo.js
+    projectAssetValidation.js
+    runtimeAssetLoader.js
+    vectorGeometryRuntime.js
+    vectorNativeTemplate.js
+    vectorTemplateSampleGame.js
+    vector/
+      vectorAssetBridge.js
+      vectorAssetContract.js
+      vectorGeometryMath.js
+      vectorRenderPrep.js
+tests/
+  run-tests.mjs
+  tools/
+    VectorAssetSystem.test.mjs
+    VectorGeometryRuntime.test.mjs
+    VectorNativeTemplate.test.mjs
+    VectorTemplateSampleGame.test.mjs

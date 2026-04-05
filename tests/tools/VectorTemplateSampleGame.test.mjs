@@ -14,6 +14,8 @@ export async function run() {
   assert.equal(first.sampleGame.validationResult.validation.status, "valid");
   assert.equal(first.sampleGame.packageResult.packageStatus, "ready");
   assert.equal(first.sampleGame.runtimeResult.runtimeLoader.status, "ready");
+  assert.equal(first.sampleGame.runtimeResult.bootstrap.assetTable["vector.template.player"].runtimeKind, "vector-geometry");
+  assert.equal(first.sampleGame.runtimeResult.bootstrap.assetTable["vector.template.player"].renderables.length > 0, true);
   assert.equal(first.sampleGame.publishingResult.publishing.status, "ready");
   assert.equal(first.sampleGame.vectorOnly.hasSpriteRuntimeDependency, false);
   assert.equal(

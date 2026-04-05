@@ -3,6 +3,7 @@ import {
   findRegistryEntryById,
   sanitizeAssetRegistry
 } from "./projectAssetRegistry.js";
+import { inspectVectorAssetContract } from "./vector/vectorAssetContract.js";
 
 const SECTION_SOURCE_TYPES = Object.freeze({
   palettes: "palette",
@@ -319,64 +320,48 @@ function collectTileMapDocumentFindings(documentModel, registry) {
   return findings;
 }
 
-function hasVectorGeometryPaths(geometry) {
-  const paths = Array.isArray(geometry?.paths) ? geometry.paths : [];
-  return paths.some((path) => sanitizeText(path?.d || path).length > 0);
-}
-
 function collectVectorRegistryFindings(registry) {
   const vectors = Array.isArray(registry?.vectors) ? registry.vectors : [];
   const findings = [];
 
   vectors.forEach((entry) => {
     const vectorId = sanitizeText(entry?.id) || "vector";
-    const sourceKind = sanitizeText(entry?.source?.kind);
-    const sourcePath = sanitizeText(entry?.source?.path) || sanitizeText(entry?.path);
     const paletteId = sanitizeText(entry?.paletteId);
-    const hasStroke = entry?.style?.stroke === true;
-    const hasFill = entry?.style?.fill === true;
+    const inspection = inspectVectorAssetContract(entry, { allowLegacy: true });
+    const sourceIssue = inspection.issues.find((issue) => issue.category === "source");
+    const geometryIssue = inspection.issues.find((issue) => issue.category === "geometry");
+    const styleIssue = inspection.issues.find((issue) => issue.category === "style");
 
-    if (sourceKind !== "svg") {
+    if (sourceIssue) {
       findings.push(createFinding(
         "INVALID_VECTOR_SOURCE",
         "error",
         true,
         "vector",
         vectorId,
-        `Vector asset ${vectorId} must declare source.kind as svg.`
+        sourceIssue.message || `Vector asset ${vectorId} must declare source.kind as svg.`
       ));
     }
 
-    if (!sourcePath) {
-      findings.push(createFinding(
-        "INVALID_VECTOR_SOURCE",
-        "error",
-        true,
-        "vector",
-        vectorId,
-        `Vector asset ${vectorId} must declare a normalized project-relative source path.`
-      ));
-    }
-
-    if (!hasVectorGeometryPaths(entry?.geometry)) {
+    if (geometryIssue) {
       findings.push(createFinding(
         "INVALID_VECTOR_GEOMETRY",
         "error",
         true,
         "vector",
         vectorId,
-        `Vector asset ${vectorId} must contain at least one geometry path.`
+        geometryIssue.message || `Vector asset ${vectorId} must contain at least one geometry path.`
       ));
     }
 
-    if (!hasStroke && !hasFill) {
+    if (styleIssue) {
       findings.push(createFinding(
         "INVALID_VECTOR_STYLE",
         "error",
         true,
         "vector",
         vectorId,
-        `Vector asset ${vectorId} must enable stroke or fill styling.`
+        styleIssue.message || `Vector asset ${vectorId} must enable stroke or fill styling.`
       ));
     }
 

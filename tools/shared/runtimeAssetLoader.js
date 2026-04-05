@@ -1,6 +1,7 @@
 import AssetRegistry from "../../engine/assets/AssetRegistry.js";
 import AssetLoaderSystem from "../../engine/assets/AssetLoaderSystem.js";
 import ImageAssetLoader from "../../engine/assets/ImageAssetLoader.js";
+import { prepareVectorGeometryRuntimeAsset } from "./vectorGeometryRuntime.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -112,6 +113,16 @@ function toBootstrapData(packageManifest, loadedAssets) {
   };
 }
 
+function finalizeLoadedAsset(asset, loadedAsset) {
+  if (sanitizeText(asset?.type) !== "vector") {
+    return loadedAsset;
+  }
+  return prepareVectorGeometryRuntimeAsset(loadedAsset, {
+    sourcePath: sanitizeText(asset?.path),
+    assetId: sanitizeText(asset?.id)
+  });
+}
+
 export function summarizeRuntimeAssetLoader(result) {
   const loader = result?.runtimeLoader || {};
   if (loader.status === "ready") {
@@ -179,10 +190,14 @@ export async function loadPackagedProjectRuntime(options = {}) {
         bootstrap: null
       };
     }
+    const finalizedAsset = finalizeLoadedAsset(asset, result.asset);
+    if (sanitizeText(asset?.type) === "vector") {
+      reports.push(createReport("info", "VECTOR_RUNTIME_READY", `Prepared vector geometry runtime data for ${assetId}.`));
+    }
     loadedAssets.push({
       id: result.id,
       type: result.type,
-      asset: result.asset
+      asset: finalizedAsset
     });
   }
 

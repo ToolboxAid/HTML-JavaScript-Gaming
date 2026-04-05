@@ -109,6 +109,7 @@ import { run as runPublishingPipeline } from './tools/PublishingPipeline.test.mj
 import { run as runVectorAssetSystem } from './tools/VectorAssetSystem.test.mjs';
 import { run as runVectorNativeTemplate } from './tools/VectorNativeTemplate.test.mjs';
 import { run as runVectorTemplateSampleGame } from './tools/VectorTemplateSampleGame.test.mjs';
+import { run as runVectorGeometryRuntime } from './tools/VectorGeometryRuntime.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
@@ -212,6 +213,7 @@ const tests = [
     ['VectorAssetSystem', runVectorAssetSystem],
     ['VectorNativeTemplate', runVectorNativeTemplate],
     ['VectorTemplateSampleGame', runVectorTemplateSampleGame],
+    ['VectorGeometryRuntime', runVectorGeometryRuntime],
     ['ReplaySystem', runReplaySystem],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],

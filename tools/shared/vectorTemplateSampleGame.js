@@ -52,6 +52,12 @@ function remapRuntimeSources(sources) {
     if (next[key]?.file) {
       next[key].file = remapPath(next[key].file);
     }
+    if (next[key]?.path) {
+      next[key].path = remapPath(next[key].path);
+    }
+    if (next[key]?.source?.path) {
+      next[key].source.path = remapPath(next[key].source.path);
+    }
   });
   return next;
 }

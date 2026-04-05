@@ -1,46 +1,51 @@
 Validation Checklist
 ====================
 
-Consolidation and repair
-------------------------
-[x] Inspect folders directly under `tools/`
-[x] Identify duplicate and rename-drift tool folders
-[x] Select canonical folders for active tools
-[x] Repair launcher/index links
-[x] Repair active path/reference drift after consolidation
-[x] Keep old SpriteEditor excluded except for active reference cleanup
+Vector contract and parsing
+---------------------------
+[x] Contract-aligned vector assets parse successfully
+[x] Legacy SVG-bridge vector assets normalize successfully for runtime use
+[x] Unsupported or malformed vector geometry fails inspection
 
-Loading-path validation
------------------------
-[x] `tools/Sprite Editor V3/index.html` exists
-[x] `tools/Tilemap Studio/index.html` exists
-[x] `tools/Parallax Scene Studio/index.html` exists
-[x] `tools/Vector Asset Studio/index.html` exists
-[x] `tools/Vector Map Editor/index.html` exists
-[x] `tools/Vector Map Editor/how_to_use.html` exists
-[x] `tools/Tilemap Studio/samples/sample-manifest.json` exists
-[x] `tools/Parallax Scene Studio/samples/sample-manifest.json` exists
-[x] `tools/Vector Asset Studio/samples/sample-manifest.json` exists
+Geometry math
+-------------
+[x] translate support verified
+[x] rotate support verified
+[x] scale support verified
+[x] transformed point output verified
+[x] bounds and center calculations verified
+[x] supported SVG path parsing verified for runtime-supported commands
 
-Syntax validation
------------------
-[x] `node --check tools/Sprite Editor V3/main.js`
-[x] `node --check tools/Sprite Editor V3/modules/spriteEditorApp.js`
-[x] `node --check tools/Sprite Editor V3/modules/projectModel.js`
-[x] `node --check tools/Sprite Editor V3/modules/constants.js`
-[x] `node --check tools/Tilemap Studio/main.js`
-[x] `node --check tools/Parallax Scene Studio/main.js`
-[x] `node --check tools/Vector Asset Studio/main.js`
-[x] `node --check tools/Vector Map Editor/main.js`
-[x] `node --check tools/Vector Map Editor/editor/VectorMapEditorApp.js`
+Runtime preparation
+-------------------
+[x] supported primitives produce runtime-ready renderables
+[x] collision-ready geometry output is produced where appropriate
+[x] packaged runtime loader upgrades vector assets into `runtimeKind: "vector-geometry"` output
+[x] no broken imports or paths were introduced in touched shared modules
 
-Reference validation
---------------------
-[x] No required refs remain to deprecated duplicate folders in `tools/`, `games/`, `tests/`, or `scripts/`
-[x] No required runtime refs remain to old SpriteEditor in `tools/`, `games/`, `tests/`, or `scripts/`
+Integration path
+----------------
+[x] vector asset system still validates, packages, and loads correctly
+[x] vector-native template runtime path is clear and ready
+[x] vector template sample game runtime path is clear and ready
+[x] Asteroids platform demo runtime path remains ready after vector runtime integration
 
-Vector contract output
-----------------------
-[x] `docs/specs/vector_asset_contract.md` created
-[x] combined BUILD PR doc updated
-[x] docs/dev command, commit, and reports refreshed
+Verification commands
+---------------------
+[x] `node --check tools/shared/vector/vectorGeometryMath.js`
+[x] `node --check tools/shared/vector/vectorAssetContract.js`
+[x] `node --check tools/shared/vector/vectorRenderPrep.js`
+[x] `node --check tools/shared/vectorGeometryRuntime.js`
+[x] `node --check tools/shared/vector/vectorAssetBridge.js`
+[x] `node --check tools/shared/projectAssetValidation.js`
+[x] `node --check tools/shared/runtimeAssetLoader.js`
+[x] `node --check tools/shared/vectorNativeTemplate.js`
+[x] `node --check tools/shared/vectorTemplateSampleGame.js`
+[x] `node --check tools/shared/asteroidsPlatformDemo.js`
+[x] `node --input-type=module -e "import('./tests/tools/VectorGeometryRuntime.test.mjs').then((m) => m.run())"`
+[x] `node --input-type=module -e "import('./tests/tools/VectorAssetSystem.test.mjs').then((m) => m.run())"`
+[x] `node --input-type=module -e "import('./tests/tools/VectorNativeTemplate.test.mjs').then((m) => m.run())"`
+[x] `node --input-type=module -e "import('./tests/tools/VectorTemplateSampleGame.test.mjs').then((m) => m.run())"`
+[x] `node --input-type=module -e "import('./tests/games/AsteroidsPlatformDemo.test.mjs').then((m) => m.run())"`
+[x] `node ./scripts/run-node-tests.mjs`
+[x] Result: `110/110` explicit `run()` tests passed
