@@ -1,1 +1,1 @@
-Restore Sprite Editor as a first-class active tool, keep SpriteEditor_old_keep preserved but hidden, and add a filesystem-aware tool registry validator with report output.
+TOOLS: clean tools/index launcher surface; keep Sprite Editor first-class; hide legacy; remove non-tool sections

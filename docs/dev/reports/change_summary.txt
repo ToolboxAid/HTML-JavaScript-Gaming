@@ -1,6 +1,8 @@
-CHANGE SUMMARY
+BUILD_PR_TOOLS_INDEX_SURFACE_CLEANUP
 
-- Makes Sprite Editor first-class on the registry-driven tools surface
-- Preserves SpriteEditor_old_keep as legacy and non-rendered
-- Adds registry validator requirements to prevent registry/filesystem drift
-- Tightens rendering rules so only active registry entries appear in the header and tool landing surface
+Summary:
+- defines a strict rule for what may appear on tools/index.html
+- keeps Sprite Editor first-class and visible
+- keeps SpriteEditor_old_keep legacy and hidden
+- removes, relocates, or deletes Advanced Systems & Extensions items unless they are true launchable tools
+- keeps the cleanup surgical and surface-focused

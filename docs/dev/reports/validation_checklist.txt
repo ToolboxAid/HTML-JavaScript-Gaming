@@ -1,14 +1,9 @@
-VALIDATION CHECKLIST
-
-[ ] Sprite Editor folder exists under tools/
-[ ] Sprite Editor registry entry exists
-[ ] Sprite Editor is active=true
-[ ] Sprite Editor is legacy=false
-[ ] Sprite Editor appears in tools/index.html header
-[ ] SpriteEditor_old_keep does not appear in tools/index.html header
-[ ] Active render path is derived from registry active entries only
-[ ] Validator detects missing registry entries
-[ ] Validator detects missing folders
-[ ] Validator detects duplicate ids, names, and paths
-[ ] Validator fails if Sprite Editor is inactive
-[ ] Validator fails if SpriteEditor_old_keep is active
+[ ] tools/index.html audited for Advanced Systems & Extensions section
+[ ] tools/toolRegistry.js audited for Sprite Editor active entry
+[ ] tools/toolRegistry.js audited for SpriteEditor_old_keep legacy handling
+[ ] render logic verified to use active first-class tools only
+[ ] Sprite Editor visible on tools landing page
+[ ] SpriteEditor_old_keep hidden from tools landing page
+[ ] non-tool/internal/dev entries moved or deleted
+[ ] no dead links from tools landing page
+[ ] engine theme preserved across active tools page
