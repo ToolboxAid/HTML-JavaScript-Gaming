@@ -1,1 +1,1 @@
-Wire shared asset usage into all active first-class tools through the shared shell, normalize shared asset/palette handoff contracts, keep Sprite Editor first-class, keep SpriteEditor_old_keep hidden legacy, and preserve a tool-only tools/index surface.
+Add shared project system across active tools with manifest, shell flows, adapter-based persistence, dirty-state tracking, and shared asset/palette references while keeping Sprite Editor first-class and legacy hidden.

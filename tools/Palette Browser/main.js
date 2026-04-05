@@ -389,3 +389,25 @@ function init() {
 }
 
 init();
+window.paletteBrowserApp = {
+  captureProjectState() {
+    return {
+      search: state.search,
+      selectedPaletteId: state.selectedPaletteId,
+      selectedSwatchIndex: state.selectedSwatchIndex,
+      customPalettes: Array.isArray(state.customPalettes) ? structuredClone(state.customPalettes) : []
+    };
+  },
+  applyProjectState(snapshot) {
+    state.search = typeof snapshot?.search === "string" ? snapshot.search : "";
+    state.selectedPaletteId = typeof snapshot?.selectedPaletteId === "string" ? snapshot.selectedPaletteId : state.selectedPaletteId;
+    state.selectedSwatchIndex = Number.isInteger(snapshot?.selectedSwatchIndex) ? snapshot.selectedSwatchIndex : 0;
+    state.customPalettes = Array.isArray(snapshot?.customPalettes) ? structuredClone(snapshot.customPalettes) : [];
+    saveCustomPalettes();
+    refs.searchInput.value = state.search;
+    renderPaletteList();
+    renderSelectedPalette();
+    renderStoredSelection();
+    return true;
+  }
+};

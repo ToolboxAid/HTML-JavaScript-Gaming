@@ -1,11 +1,19 @@
-BUILD_PR_ASSET_USAGE_INTEGRATION/
-└── docs/
-    ├── pr/
-    │   └── BUILD_PR_ASSET_USAGE_INTEGRATION.md
-    └── dev/
-        ├── codex_commands.md
-        ├── commit_comment.txt
-        └── reports/
-            ├── change_summary.txt
-            ├── validation_checklist.txt
-            └── file_tree.txt
+docs/
+  pr/
+    BUILD_PR_PROJECT_SYSTEM.md
+  specs/
+    project_manifest_contract.md
+  dev/
+    COMMIT_COMMENT.txt
+    reports/
+      change_summary.txt
+      file_tree.txt
+      project_system_validation.txt
+      validation_checklist.txt
+scripts/
+  validate-project-system.mjs
+tools/
+  shared/
+    projectManifestContract.js
+    projectSystem.js
+    projectSystemAdapters.js

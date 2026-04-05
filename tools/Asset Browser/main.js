@@ -410,3 +410,30 @@ function init() {
 }
 
 init();
+window.assetBrowserApp = {
+  captureProjectState() {
+    return {
+      selectedCategory: state.selectedCategory,
+      search: state.search,
+      selectedAssetId: state.selectedAssetId,
+      importCategory: refs.importCategorySelect.value,
+      importDestination: refs.importDestinationSelect.value,
+      importName: refs.importNameInput.value
+    };
+  },
+  applyProjectState(snapshot) {
+    state.selectedCategory = typeof snapshot?.selectedCategory === "string" ? snapshot.selectedCategory : "All";
+    state.search = typeof snapshot?.search === "string" ? snapshot.search : "";
+    state.selectedAssetId = typeof snapshot?.selectedAssetId === "string" ? snapshot.selectedAssetId : state.selectedAssetId;
+    refs.categoryFilter.value = state.selectedCategory;
+    refs.searchInput.value = state.search;
+    refs.importCategorySelect.value = snapshot?.importCategory || refs.importCategorySelect.value;
+    populateDestinationOptions(refs.importCategorySelect.value);
+    refs.importDestinationSelect.value = snapshot?.importDestination || refs.importDestinationSelect.value;
+    refs.importNameInput.value = typeof snapshot?.importName === "string" ? snapshot.importName : "";
+    renderAssetList();
+    renderPreview();
+    renderImportPlan();
+    return true;
+  }
+};

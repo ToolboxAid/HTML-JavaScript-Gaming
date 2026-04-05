@@ -2003,4 +2003,26 @@ export function initializeSpriteEditorApp() {
   } else {
     setStatus(state, "Select a palette from engine paletteList to enable editing.");
   }
+
+  state.applyProjectSystemState = (snapshot) => {
+    const nextProject = ensureProjectShape(snapshot?.project || createNewProject({
+      width: DEFAULT_WIDTH,
+      height: DEFAULT_HEIGHT,
+      pixelSize: DEFAULT_PIXEL_SIZE
+    }));
+    state.project = nextProject;
+    state.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"
+      ? sanitizeAssetRegistry(snapshot.assetRegistry)
+      : createAssetRegistry({ projectId: "sprite-project" });
+    state.projectTool = typeof snapshot?.projectTool === "string" ? snapshot.projectTool : TOOL_IDS.PENCIL;
+    state.preview.fps = Number.isFinite(Number(snapshot?.preview?.fps)) ? Number(snapshot.preview.fps) : DEFAULT_FPS;
+    state.preview.frameIndex = Number.isFinite(Number(snapshot?.preview?.frameIndex)) ? Number(snapshot.preview.frameIndex) : state.project.currentFrameIndex;
+    state.preview.playing = snapshot?.preview?.playing === true;
+    validateSpriteProjectAssets(state);
+    syncControlsFromProject(state);
+    renderAll(state);
+    setStatus(state, `Project state loaded (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames).`);
+  };
+
+  return state;
 }

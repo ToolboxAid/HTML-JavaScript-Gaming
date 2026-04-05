@@ -6,4 +6,10 @@ main.js
 */
 import { initializeSpriteEditorApp } from "./modules/spriteEditorApp.js";
 
-initializeSpriteEditorApp();
+const spriteEditorApp = initializeSpriteEditorApp();
+window.spriteEditorApp = {
+  state: spriteEditorApp,
+  applyProjectSystemState(snapshot) {
+    spriteEditorApp.applyProjectSystemState(snapshot);
+  }
+};

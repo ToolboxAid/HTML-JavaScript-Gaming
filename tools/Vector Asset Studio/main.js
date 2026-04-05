@@ -2735,3 +2735,52 @@ async function initialize() {
 }
 
 initialize();
+window.vectorAssetStudioApp = {
+  getProjectName() {
+    return state.documentName || "untitled-background";
+  },
+  captureProjectState() {
+    return {
+      documentName: state.documentName,
+      svgText: serializeCurrentSvg(),
+      canvasWidth: state.canvasWidth,
+      canvasHeight: state.canvasHeight,
+      zoom: state.zoom,
+      panX: state.panX,
+      panY: state.panY,
+      selectedPaletteId: state.selectedPaletteId,
+      activePaletteTarget: state.activePaletteTarget,
+      strokeWidth: state.strokeWidth,
+      gradientAngle: state.gradientAngle,
+      selectedId: state.selectedId,
+      usedColors: Array.isArray(state.usedColors) ? state.usedColors.slice() : []
+    };
+  },
+  applyProjectState(snapshot) {
+    if (snapshot?.svgText) {
+      loadSvgFromText(snapshot.svgText, `${snapshot.documentName || "project"}.svg`);
+    } else {
+      createNewDocument();
+      setCanvasSize(snapshot?.canvasWidth || 1600, snapshot?.canvasHeight || 900);
+    }
+    state.documentName = snapshot?.documentName || state.documentName;
+    state.zoom = Number.isFinite(Number(snapshot?.zoom)) ? Number(snapshot.zoom) : state.zoom;
+    state.panX = Number.isFinite(Number(snapshot?.panX)) ? Number(snapshot.panX) : state.panX;
+    state.panY = Number.isFinite(Number(snapshot?.panY)) ? Number(snapshot.panY) : state.panY;
+    refs.zoomPercentInput.value = String(Math.round(state.zoom * 100));
+    updateViewTransform();
+    setStatus(`Project state loaded for ${state.documentName}.`);
+    return true;
+  },
+  createDefaultProjectState(projectName) {
+    return {
+      documentName: projectName || "untitled-background",
+      svgText: "",
+      canvasWidth: 1600,
+      canvasHeight: 900,
+      zoom: 1,
+      panX: 0,
+      panY: 0
+    };
+  }
+};

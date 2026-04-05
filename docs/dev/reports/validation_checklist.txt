@@ -1,25 +1,22 @@
-VALIDATION CHECKLIST
+BUILD_PR_PROJECT_SYSTEM validation checklist
 
-[x] Sprite Editor is still first-class and visible
-[x] SpriteEditor_old_keep is hidden legacy
-[x] tools/index.html remains tool-only
-[x] Vector Map Editor can launch Browse Assets
-[x] Vector Map Editor can launch Import Assets
-[x] Vector Map Editor can launch Browse Palettes / Manage Palettes
-[x] Vector Asset Studio can launch Browse Assets
-[x] Vector Asset Studio can launch Import Assets
-[x] Vector Asset Studio can launch Browse Palettes / Manage Palettes
-[x] Tilemap Studio can launch Browse Assets
-[x] Tilemap Studio can launch Import Assets
-[x] Tilemap Studio can launch Browse Palettes / Manage Palettes
-[x] Parallax Scene Studio can launch Browse Assets
-[x] Parallax Scene Studio can launch Import Assets
-[x] Parallax Scene Studio can launch Browse Palettes / Manage Palettes
-[x] Sprite Editor can launch Browse Assets
-[x] Sprite Editor can launch Import Assets
-[x] Sprite Editor can launch Browse Palettes / Manage Palettes
-[x] Shared asset references are used instead of tool-private duplication by default
-[x] Shared palettes remain the single source of truth
-[x] Shared contract doc exists at docs/specs/asset_usage_contract.md
-[x] No broken paths or dead launchers
-[x] Engine theme is consistent across the integrated flows
+[x] Project system lives in shared platform layer, not scattered across tools
+[x] New/Open/Save/Save As/Close flows exist in shared shell
+[x] Active project name is visible in header
+[x] Dirty-state indicator is visible in shared project chrome
+[x] Dirty-state prompt is wired for tool navigation, new/open, and close
+[x] Asset references are captured through shared project references
+[x] Palette references are captured through shared project references
+[x] Vector Map Editor has a shared project adapter
+[x] Vector Asset Studio has a shared project adapter
+[x] Tilemap Studio has a shared project adapter
+[x] Parallax Scene Studio has a shared project adapter
+[x] Sprite Editor has a shared project adapter
+[x] Asset Browser / Import Hub has a shared project adapter
+[x] Palette Browser / Manager has a shared project adapter
+[x] Project schema version is validated
+[x] Migration entry point exists for future versions
+[x] Sprite Editor remains first-class in registry/UI
+[x] SpriteEditor_old_keep remains hidden and excluded from active surface
+[x] tools/index.html remains tool-only and sample-free
+[x] Validation report emitted at docs/dev/reports/project_system_validation.txt

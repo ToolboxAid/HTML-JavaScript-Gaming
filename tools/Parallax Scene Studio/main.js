@@ -1839,3 +1839,21 @@ class ParallaxEditorApp {
 const initialDocument = createInitialParallaxDocument();
 const app = new ParallaxEditorApp(initialDocument);
 app.init(document);
+app.applyProjectSystemState = function applyProjectSystemState(snapshot) {
+  const nextDocument = sanitizeParallaxDocument(snapshot?.documentModel);
+  this.documentModel = nextDocument;
+  this.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"
+    ? sanitizeAssetRegistry(snapshot.assetRegistry)
+    : createAssetRegistry({ projectId: nextDocument?.map?.name || "parallax-project" });
+  this.selectedLayerId = typeof snapshot?.selectedLayerId === "string" && nextDocument.layers.some((layer) => layer.id === snapshot.selectedLayerId)
+    ? snapshot.selectedLayerId
+    : nextDocument.layers[0]?.id || "";
+  this.cameraX = Number.isFinite(Number(snapshot?.cameraX)) ? Number(snapshot.cameraX) : 0;
+  this.cameraY = Number.isFinite(Number(snapshot?.cameraY)) ? Number(snapshot.cameraY) : 0;
+  this.resolveAssetRefsFromRegistry();
+  this.invalidateImageCache();
+  this.syncInputsFromDocument();
+  this.renderAll();
+  this.updateStatus(`Project state loaded for ${this.documentModel.map.name}.`);
+};
+window.parallaxSceneStudioApp = app;

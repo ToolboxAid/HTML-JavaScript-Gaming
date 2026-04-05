@@ -84,6 +84,57 @@ body.tools-platform-surface {
   margin-top: 14px;
 }
 
+.tools-platform-frame__project {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+}
+
+.tools-platform-frame__project-copy,
+.tools-platform-frame__project-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tools-platform-frame__project-label,
+.tools-platform-frame__project-meta {
+  color: var(--muted, #e9ddff);
+  font-size: 0.92rem;
+}
+
+.tools-platform-frame__project-name {
+  color: var(--text, #f7f4ff);
+  font-size: 1rem;
+}
+
+.tools-platform-frame__project-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.34) 0%, rgba(91, 33, 182, 0.78) 100%);
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.tools-platform-frame__project-button.is-secondary {
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+}
+
+.tools-platform-frame__project-input {
+  display: none;
+}
+
 .tools-platform-frame__link,
 .tools-platform-frame__nav-link {
   display: inline-flex;
