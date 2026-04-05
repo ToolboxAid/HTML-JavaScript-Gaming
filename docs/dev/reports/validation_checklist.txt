@@ -1,26 +1,28 @@
-VALIDATION CHECKLIST
+OVERLAY_PANEL_REGISTRY_delta Validation Checklist
 
 Workflow
 - [done] PLAN_PR documented
 - [done] BUILD_PR documented
 - [done] APPLY_PR documented
 - [done] One PR purpose only
-- [done] Docs-first bundle
+- [done] Docs-first bundle only
 
 Scope
 - [done] No engine core changes
-- [done] Sample-level integration reference documented
+- [done] Integration remains sample-level
 - [done] MultiSystemDemoScene.js referenced
+- [done] Dev Console vs Debug Overlay boundary preserved
 
-Boundary Content
-- [done] Allowed interactions documented
-- [done] Prohibited coupling documented
-- [done] Public contract candidates documented
-- [done] Ownership matrix documented
-- [done] Validation goals documented
-- [done] Rollout notes documented
+Contract
+- [done] OverlayPanelRegistry deterministic ordering rules documented
+- [done] Panel descriptor validation contract documented
+- [done] Approved panel context boundary documented
+- [done] Approved console interaction via public registry calls documented
+- [done] Direct panel-to-console coupling prohibited
+- [done] Overlay host special-case behavior prohibited
 
 Packaging
-- [done] Outputs under docs/pr and docs/dev
-- [done] Reports under docs/dev/reports
-- [done] Delta zip generated at <project folder>/tmp/OVERLAY_BOUNDARY_delta.zip
+- [done] PR docs written under docs/pr
+- [done] Commit comment and next command written under docs/dev
+- [done] Reports written under docs/dev/reports
+- [done] Delta zip created at <project folder>/tmp/OVERLAY_PANEL_REGISTRY_delta.zip

@@ -1,1 +1,1 @@
-APPLY_PR_OVERLAY_BOUNDARY
+Create BUILD_PR_OVERLAY_PANEL_PRESETS_AND_TOGGLES as a docs-first follow-up that defines curated panel sets, visibility presets, and command-safe toggles on top of the registry contract without widening overlay/console coupling.

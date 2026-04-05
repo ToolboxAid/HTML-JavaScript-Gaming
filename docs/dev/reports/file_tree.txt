@@ -1,16 +1,16 @@
 HTML-JavaScript-Gaming/
 |-- docs/
-|   |-- dev/
-|   |   |-- codex_commands.md
-|   |   |-- commit_comment.txt
-|   |   |-- next_command.txt
-|   |   `-- reports/
-|   |       |-- change_summary.txt
-|   |       |-- file_tree.txt
-|   |       `-- validation_checklist.txt
-|   `-- pr/
-|       |-- PLAN_PR_OVERLAY_BOUNDARY.md
-|       |-- BUILD_PR_OVERLAY_BOUNDARY.md
-|       `-- APPLY_PR_OVERLAY_BOUNDARY.md
+|   |-- pr/
+|   |   |-- PLAN_PR_OVERLAY_PANEL_REGISTRY.md
+|   |   |-- BUILD_PR_OVERLAY_PANEL_REGISTRY.md
+|   |   `-- APPLY_PR_OVERLAY_PANEL_REGISTRY.md
+|   `-- dev/
+|       |-- codex_commands.md
+|       |-- commit_comment.txt
+|       |-- next_command.txt
+|       `-- reports/
+|           |-- change_summary.txt
+|           |-- validation_checklist.txt
+|           `-- file_tree.txt
 `-- tmp/
-    `-- OVERLAY_BOUNDARY_delta.zip
+    `-- OVERLAY_PANEL_REGISTRY_delta.zip

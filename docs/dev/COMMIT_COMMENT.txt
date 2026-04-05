@@ -1,1 +1,1 @@
-Docs: define and lock Dev Console vs Debug Overlay boundary as a docs-only sample-level contract bundle.
+Define clean overlay panel registry contract with deterministic registration, approved panel context, and sample-level integration boundaries.

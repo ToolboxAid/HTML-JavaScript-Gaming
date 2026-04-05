@@ -1,22 +1,19 @@
-CHANGE SUMMARY
+OVERLAY_PANEL_REGISTRY_delta
 
-Created a docs-only PLAN/BUILD/APPLY bundle for a single PR purpose:
-Dev Console vs Debug Overlay boundary.
+Summary
+- Produced docs-first PLAN/BUILD/APPLY bundle for a single PR purpose: clean OverlayPanelRegistry contract.
+- Kept integration sample-level using MultiSystemDemoScene.js as the reference touchpoint.
+- Preserved Dev Console vs Debug Overlay boundary.
+- Defined deterministic panel ordering, descriptor validation, panel context boundaries, and approved console interaction limits.
+- Rejected direct panel-to-console coupling and overlay host special-case behavior by contract.
 
-Updated files:
-- docs/pr/PLAN_PR_OVERLAY_BOUNDARY.md
-- docs/pr/BUILD_PR_OVERLAY_BOUNDARY.md
-- docs/pr/APPLY_PR_OVERLAY_BOUNDARY.md
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
-- docs/dev/next_command.txt
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/reports/file_tree.txt
+Scope
+- docs/pr: PLAN, BUILD, APPLY for overlay panel registry only.
+- docs/dev: codex command, commit comment, next command.
+- docs/dev/reports: change summary, validation checklist, file tree.
 
-Boundary outcome:
-- Dev Console remains command/input surface.
-- Debug Overlay remains passive telemetry/HUD surface.
-- Shared interactions are limited to public selectors/events/adapters.
-- Integration stays sample-level with MultiSystemDemoScene.js as reference.
-- No engine core changes.
+Out of Scope
+- Engine core changes.
+- Runtime implementation changes.
+- Overlay preset/persistence expansion.
+- Console-overlay merger.
