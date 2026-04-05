@@ -3,48 +3,14 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD summary
+BUILD_PR_DEV_CONSOLE_AND_DEBUG_OVERLAY summary
 
-Implemented focused runtime orchestration module:
-- Added `tools/shared/runtimeSceneLoaderHotReload.js`
-- Keeps orchestration above engine core and consumes existing approved render pipeline contracts
-- Uses `runRenderContractRuntimePath` for contract validation/normalization/composition/sequencing
-- Preserves deterministic runtime domain ordering: parallax -> tilemap -> sprite -> vector -> overlay
-
-Implemented runtime responsibilities:
-- `createSceneCompositionLoader` for composition/asset-document contract loading
-- `createRuntimeSceneLoader` for deterministic runtime domain assembly
-- `createHotReloadCoordinator` for validation-aware reload and scene-state management
-- `createWatcherBridge` for change-event normalization and watcher boundary isolation
-
-Implemented reload safety behavior:
-- Contract validation is required before applying reload
-- Reload rejects invalid changes with structured reports
-- Last-known-good runtime scene remains active on reload failure
-- Targeted reload domains supported when changed paths map to composition references
-- Full reload used for composition changes or unknown path impact
-- Replaced domain handles are disposed with guarded error reporting
-
-Implemented focused automated coverage:
-- Added `tests/tools/RuntimeSceneLoaderHotReload.test.mjs`
-- Covers initial load success
-- Covers targeted reload success
-- Covers validation failure fallback to last-known-good
-- Covers watcher bridge normalization/coalescing behavior
-- Covers repeated reload stability and disposal behavior
-
-Test harness integration:
-- Updated `tests/run-tests.mjs` to include `RuntimeSceneLoaderHotReload`
-
-Validation:
-- `node --check tools/shared/runtimeSceneLoaderHotReload.js`
-- `node --check tests/tools/RuntimeSceneLoaderHotReload.test.mjs`
-- `node --check tests/run-tests.mjs`
-- Targeted test run for `RuntimeSceneLoaderHotReload` passed
-- Full suite run passed (`112/112 explicit run() tests passed`)
-
-Scope guardrails honored:
-- No engine-core API rewrites
-- No tool-specific quirks moved into engine systems
-- No unrelated refactors
-- Changes remain surgical and architecture-aligned
+- Added docs-only BUILD contract for development console and debug overlay
+- Defined formal diagnostics contract with structured error envelope
+- Defined command registry contract with deterministic conflict handling and no-eval rule
+- Defined overlay panel contract with deterministic ordering and failure isolation
+- Locked deterministic render order with debug overlay last and console surface after overlay
+- Locked public engine mappings and boundary rules
+- Defined hot reload survival rules for diagnostics shell state and duplication prevention
+- Defined validation gates and test requirements for future APPLY implementation
+- Updated docs/dev command, commit, validation checklist, file tree, and next command artifacts

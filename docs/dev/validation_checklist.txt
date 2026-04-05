@@ -3,37 +3,18 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD validation checklist
+BUILD_PR_DEV_CONSOLE_AND_DEBUG_OVERLAY validation checklist
 
-Runtime scene loader and hot reload flow
-[x] Runtime scene loader orchestration implemented above engine core
-[x] Existing approved render/composition contract runtime path is consumed
-[x] Deterministic runtime domain ordering preserved
-[x] Structured validation-aware reload behavior implemented
-[x] Last-known-good scene preserved on reload failure
-[x] Composition-driven targeted/full reload decision rules implemented
-
-Watcher bridge boundaries
-[x] Watcher bridge normalizes project-relative path events
-[x] Watcher bridge remains orchestration boundary and does not own scene assembly
-[x] Watcher events can be coalesced by path before reload application
-
-Automated tests
-[x] Load success test added
-[x] Reload success test added
-[x] Validation failure fallback test added
-[x] Disposal behavior test added
-[x] Repeated reload stability test added
-[x] New test wired into `tests/run-tests.mjs`
-
-Execution evidence
-[x] `node --check tools/shared/runtimeSceneLoaderHotReload.js`
-[x] `node --check tests/tools/RuntimeSceneLoaderHotReload.test.mjs`
-[x] `node --check tests/run-tests.mjs`
-[x] Targeted runtime scene loader/hot reload test run passed
-[x] Full test suite passed (`112/112 explicit run() tests passed`)
-
-Scope safety
-[x] No destructive runtime-breaking changes introduced
-[x] No unrelated sample/game/tool refactors introduced
-[x] Changes kept focused to approved APPLY scope
+[x] Bundle is docs-only
+[x] No implementation code included
+[x] Workflow preserved: PLAN_PR -> BUILD_PR -> APPLY_PR
+[x] Diagnostics contract defined
+[x] Command registry contract defined
+[x] Overlay panel contract defined
+[x] Deterministic render order defined with debug overlay last
+[x] Engine mappings locked to public adapters only
+[x] Hot reload survival rules defined
+[x] Validation and test requirements defined
+[x] `docs/dev/commit_comment.txt` has no file header
+[x] Command and commit artifacts are in docs/dev
+[x] Repo-relative bundle structure preserved
