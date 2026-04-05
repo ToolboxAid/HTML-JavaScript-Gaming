@@ -96,6 +96,7 @@ import { run as runProjectVersioningSystem } from './tools/ProjectVersioningSyst
 import { run as runPlatformValidationSuite } from './tools/PlatformValidationSuite.test.mjs';
 import { run as runCiValidationPipeline } from './tools/CiValidationPipeline.test.mjs';
 import { run as runDebugVisualizationLayer } from './tools/DebugVisualizationLayer.test.mjs';
+import { run as runDevConsoleIntegration } from './tools/DevConsoleIntegration.test.mjs';
 import { run as runDevConsoleDebugOverlay } from './tools/DevConsoleDebugOverlay.test.mjs';
 import { run as runHotReloadSystem } from './tools/HotReloadSystem.test.mjs';
 import { run as runMultiTargetExport } from './tools/MultiTargetExport.test.mjs';
@@ -203,6 +204,7 @@ const tests = [
     ['PlatformValidationSuite', runPlatformValidationSuite],
     ['CiValidationPipeline', runCiValidationPipeline],
     ['DebugVisualizationLayer', runDebugVisualizationLayer],
+    ['DevConsoleIntegration', runDevConsoleIntegration],
     ['DevConsoleDebugOverlay', runDevConsoleDebugOverlay],
     ['HotReloadSystem', runHotReloadSystem],
     ['MultiTargetExport', runMultiTargetExport],

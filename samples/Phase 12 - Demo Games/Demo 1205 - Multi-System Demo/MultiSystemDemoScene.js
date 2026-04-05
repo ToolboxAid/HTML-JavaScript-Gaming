@@ -14,8 +14,9 @@ import { Tilemap, renderTilemap, resolveRectVsTilemap } from '../../../engine/ti
 const theme = new Theme(ThemeTokens);
 
 export default class MultiSystemDemoScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
+    this.devConsoleIntegration = options.devConsoleIntegration || null;
     this.screen = { x: 40, y: 180 };
     this.moveSpeed = 280;
     this.jumpSpeed = 900;
@@ -71,9 +72,18 @@ export default class MultiSystemDemoScene extends Scene {
     ];
     this.collectedCount = 0;
     this.totalCollectibles = this.collectibles.length;
+    this.lastDeltaTime = 0;
+    this.lastResolvedRenderOrder = [];
+  }
+
+  exit() {
+    if (this.devConsoleIntegration) {
+      this.devConsoleIntegration.dispose();
+    }
   }
 
   update(dt, engine) {
+    this.lastDeltaTime = dt;
     const left = engine.input.isDown('ArrowLeft');
     const right = engine.input.isDown('ArrowRight');
     const jumpPressed = engine.input.isDown('Space');
@@ -110,6 +120,15 @@ export default class MultiSystemDemoScene extends Scene {
     this.camera.x = this.hero.x + this.hero.width * 0.5 - this.camera.viewportWidth * 0.5;
     this.camera.y = this.fixedCameraY;
     this.camera.clampToWorld();
+
+    if (this.devConsoleIntegration) {
+      const diagnosticsContext = this.buildDiagnosticsContext(engine, dt);
+      this.devConsoleIntegration.update({
+        engine,
+        scene: this,
+        diagnosticsContext,
+      });
+    }
   }
 
   moveHeroHorizontally(distance) {
@@ -163,6 +182,61 @@ export default class MultiSystemDemoScene extends Scene {
     }
   }
 
+  buildDiagnosticsContext(engine, dt) {
+    const fps = dt > 0 ? Math.round(1 / dt) : 0;
+    const worldStages = ['parallax', 'tilemap', 'entities', 'sprite-effects', 'vector-overlay'];
+    const renderOrder = this.devConsoleIntegration?.getRuntime?.().getDeterministicRenderOrder(worldStages) || worldStages;
+    this.lastResolvedRenderOrder = renderOrder.slice();
+
+    return {
+      runtime: {
+        sceneId: 'demo-1205-multi-system',
+        status: 'running',
+        fps,
+        frameTimeMs: Math.round(dt * 1000 * 100) / 100,
+      },
+      camera: {
+        x: Math.round(this.camera.x * 100) / 100,
+        y: Math.round(this.camera.y * 100) / 100,
+        viewportWidth: this.camera.viewportWidth,
+        viewportHeight: this.camera.viewportHeight,
+      },
+      entities: {
+        count: 1 + (this.totalCollectibles - this.collectedCount),
+        heroState: this.hero.onGround ? 'grounded' : 'airborne',
+      },
+      tilemap: {
+        width: this.tilemap.width,
+        height: this.tilemap.height,
+        tileSize: this.tilemap.tileSize,
+      },
+      input: {
+        left: engine.input.isDown('ArrowLeft'),
+        right: engine.input.isDown('ArrowRight'),
+        jump: engine.input.isDown('Space'),
+        consoleToggle: engine.input.isDown('Backquote'),
+        overlayToggle: engine.input.isDown('F3'),
+      },
+      hotReload: {
+        enabled: false,
+        pending: false,
+        mode: 'sample-manual',
+      },
+      validation: {
+        errorCount: 0,
+        warningCount: 0,
+      },
+      render: {
+        stages: renderOrder,
+        debugSurfaceTail: renderOrder.slice(-2),
+      },
+      assets: {
+        parallaxLayers: this.parallaxLayers.length,
+        collectibleTotal: this.totalCollectibles,
+      },
+    };
+  }
+
   render(renderer) {
     drawFrame(renderer, theme, [
       'Demo 1205 - Multi-System Demo',
@@ -170,6 +244,7 @@ export default class MultiSystemDemoScene extends Scene {
       'Gameplay contract matches Demo 1204 with one added collectible counter layer.',
       'Collectibles disappear on touch and increment the counter.',
       'No enemies, trigger/switch systems, or broader game systems.',
+      'Debug: ` toggles console, F3 toggles overlay, F6/F7/F8/F9 run console commands.',
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
@@ -196,8 +271,17 @@ export default class MultiSystemDemoScene extends Scene {
       `Goal: ${complete}`,
       `Camera X: ${this.camera.x.toFixed(1)}`,
       `Parallax Far/Near: ${this.parallaxLayers[0].speed}/${this.parallaxLayers[2].speed}`,
-      'Controls: Left/Right + Space',
+      'Controls: Left/Right + Space + ` + F3',
     ]);
+
+    if (this.devConsoleIntegration) {
+      const debugRender = this.devConsoleIntegration.render(renderer, {
+        worldStages: ['parallax', 'tilemap', 'entities', 'sprite-effects', 'vector-overlay'],
+      });
+      if (Array.isArray(debugRender?.renderOrder)) {
+        this.lastResolvedRenderOrder = debugRender.renderOrder.slice();
+      }
+    }
   }
 
   drawParallax(renderer) {

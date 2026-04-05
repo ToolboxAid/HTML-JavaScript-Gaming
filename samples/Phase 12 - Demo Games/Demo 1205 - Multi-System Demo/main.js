@@ -7,6 +7,7 @@ main.js
 import Engine from '../../../engine/core/Engine.js';
 import { InputService } from '../../../engine/input/index.js';
 import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
+import { createSampleGameDevConsoleIntegration } from '../../../tools/dev/devConsoleIntegration.js';
 import MultiSystemDemoScene from './MultiSystemDemoScene.js';
 
 const theme = new Theme(ThemeTokens);
@@ -23,5 +24,9 @@ const engine = new Engine({
   input,
 });
 
-engine.setScene(new MultiSystemDemoScene());
+const devConsoleIntegration = createSampleGameDevConsoleIntegration({
+  sampleId: 'demo-1205-multi-system',
+});
+
+engine.setScene(new MultiSystemDemoScene({ devConsoleIntegration }));
 engine.start();
