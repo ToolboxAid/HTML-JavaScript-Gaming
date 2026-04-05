@@ -1,10 +1,27 @@
-Change Summary
+CHANGE SUMMARY
 
-- Added two new first-class tools:
-  - Asset Browser / Import Hub
-  - Palette Browser / Manager
-- Registered both in the shared active tools registry.
-- Removed the static planned placeholder cards for the two now-live tools.
-- Kept the tools landing page registry-driven and sample-free.
-- Kept Sprite Editor first-class and SpriteEditor_old_keep hidden legacy.
-- Extended validator coverage for new tool folders, active surface participation, and placeholder drift.
+PR:
+BUILD_PR_ASSET_USAGE_INTEGRATION
+
+SUMMARY:
+Wire shared asset and palette systems into all active first-class tools through the shared platform shell and documented handoff contracts.
+
+INCLUDED:
+- shared shell action hooks for every active first-class tool
+- normalized action labels:
+  - Browse Assets
+  - Import Assets
+  - Browse Palettes
+  - Manage Palettes
+- documented shared asset/palette handoff contract
+- Asset Browser launch-context and asset handoff publishing
+- Palette Browser launch-context and palette handoff publishing
+- Sprite Editor remains first-class
+- SpriteEditor_old_keep remains hidden legacy
+- tools/index.html remains tool-only
+
+EXCLUDED:
+- samples on tools/index.html
+- showcase game/sample content
+- legacy revival
+- unrelated platform restructuring

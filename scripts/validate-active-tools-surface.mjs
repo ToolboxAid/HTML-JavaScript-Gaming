@@ -27,7 +27,9 @@ const SCAN_TARGETS = [
   "tools/renderToolsIndex.js",
   "tools/shared/platformShell.js",
   "tools/shared/platformShell.css",
+  "tools/shared/assetUsageIntegration.js",
   "docs/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
+  "docs/specs/asset_usage_contract.md",
   "docs/dev/commit_comment.txt",
   "docs/dev/reports/tool_registry_validation.txt"
 ];
@@ -111,6 +113,19 @@ async function main() {
     if (/Sprite Editor V3|tools\/Sprite Editor V3|tools\\Sprite Editor V3/.test(text)) {
       issues.push(`Stale Sprite Editor V3 reference detected in ${target}`);
     }
+  }
+
+  const assetUsageIntegration = await readText("tools/shared/assetUsageIntegration.js");
+  for (const label of ["Browse Assets", "Import Assets", "Browse Palettes", "Manage Palettes"]) {
+    if (!assetUsageIntegration.includes(label)) {
+      issues.push(`Shared asset usage action label missing from assetUsageIntegration.js: ${label}`);
+    }
+  }
+  if (!assetUsageIntegration.includes("toolboxaid.shared.assetHandoff")) {
+    issues.push("Shared asset handoff storage key missing from assetUsageIntegration.js");
+  }
+  if (!assetUsageIntegration.includes("toolboxaid.shared.paletteHandoff")) {
+    issues.push("Shared palette handoff storage key missing from assetUsageIntegration.js");
   }
 
   for (const target of NAVIGATION_SURFACE_TARGETS) {

@@ -1,1 +1,1 @@
-Build Asset Browser / Import Hub and Palette Browser / Manager as first-class registry-backed tools using the shared engine/platform shell, remove their planned placeholders from tools/index, keep Sprite Editor first-class, keep SpriteEditor_old_keep hidden legacy, and extend registry validation to prevent future drift.
+Wire shared asset usage into all active first-class tools through the shared shell, normalize shared asset/palette handoff contracts, keep Sprite Editor first-class, keep SpriteEditor_old_keep hidden legacy, and preserve a tool-only tools/index surface.

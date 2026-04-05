@@ -1,13 +1,11 @@
-HTML-JavaScript-Gaming-main/
-  docs/
-    pr/
-      BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER.md
-    dev/
-      codex_commands.md
-      commit_comment.txt
-      reports/
-        change_summary.txt
-        validation_checklist.txt
-        file_tree.txt
-  tmp/
-    BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER.zip
+BUILD_PR_ASSET_USAGE_INTEGRATION/
+└── docs/
+    ├── pr/
+    │   └── BUILD_PR_ASSET_USAGE_INTEGRATION.md
+    └── dev/
+        ├── codex_commands.md
+        ├── commit_comment.txt
+        └── reports/
+            ├── change_summary.txt
+            ├── validation_checklist.txt
+            └── file_tree.txt

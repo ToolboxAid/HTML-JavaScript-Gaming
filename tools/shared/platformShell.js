@@ -1,4 +1,9 @@
 import { getToolById, getToolRegistry } from "../toolRegistry.js";
+import {
+  getSharedShellActions,
+  readSharedAssetHandoff,
+  readSharedPaletteHandoff
+} from "./assetUsageIntegration.js";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -36,6 +41,35 @@ function renderToolLinks(currentToolId) {
     .join("");
 }
 
+function renderSharedActionLinks(currentToolId) {
+  if (getPageMode() === "landing" || !currentToolId) {
+    return "";
+  }
+  return getSharedShellActions(currentToolId, getPageMode())
+    .map((action) => {
+      const currentClass = action.current ? " is-current" : "";
+      return `<a class="tools-platform-frame__action-link${currentClass}" href="${escapeHtml(action.href)}">${escapeHtml(action.label)}</a>`;
+    })
+    .join("");
+}
+
+function renderSharedSelectionSummary() {
+  if (getPageMode() === "landing") {
+    return "";
+  }
+  const asset = readSharedAssetHandoff();
+  const palette = readSharedPaletteHandoff();
+  const assetLabel = asset?.displayName || "No shared asset selected";
+  const paletteLabel = palette?.displayName || "No shared palette selected";
+
+  return `
+    <div class="tools-platform-frame__shared-status" aria-label="Shared asset and palette status">
+      <span><strong>Shared Asset:</strong> ${escapeHtml(assetLabel)}</span>
+      <span><strong>Shared Palette:</strong> ${escapeHtml(paletteLabel)}</span>
+    </div>
+  `;
+}
+
 function renderHeaderMarkup(currentTool) {
   const isLanding = getPageMode() === "landing";
   const title = currentTool ? currentTool.displayName : "Tools Platform";
@@ -65,6 +99,12 @@ function renderHeaderMarkup(currentTool) {
         </nav>
         <div class="tools-platform-frame__meta">${escapeHtml(meta)}</div>
       </div>
+      ${currentTool ? `
+        <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
+          ${renderSharedActionLinks(currentTool.id)}
+        </div>
+        ${renderSharedSelectionSummary()}
+      ` : ""}
     </section>
   `;
 }

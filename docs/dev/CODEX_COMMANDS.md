@@ -1,28 +1,57 @@
 MODEL: GPT-5.4
 REASONING: high
 
-COMMAND:
-Create BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER using the latest uploaded GitHub repo as the baseline.
+TASK:
+Create BUILD_PR_ASSET_USAGE_INTEGRATION.
+
+OBJECTIVE:
+Wire the shared asset system into all active first-class tools, using the latest uploaded GitHub repo state.
+
+IN SCOPE:
+- Vector Map Editor
+- Vector Asset Studio
+- Tilemap Studio
+- Parallax Scene Studio
+- Sprite Editor
+- shared Asset Browser / Import Hub integration
+- shared Palette Browser / Manager integration
+- registry-safe tool surfacing
+- engine theme consistency
+- contract documentation
+
+OUT OF SCOPE:
+- SpriteEditor_old_keep
+- restoring samples to tools/index.html
+- showcase game content
+- unrelated refactors
 
 REQUIREMENTS:
-1. Build two new first-class tools under tools/:
-   - tools/Asset Browser/  -> display name: Asset Browser / Import Hub
-   - tools/Palette Browser/ -> display name: Palette Browser / Manager
-2. Register both in tools/toolRegistry.js as active first-class tools.
-3. Ensure tools/index.html renders them through the shared registry-driven surface.
-4. Remove the planned placeholder cards for these two tools once the real tools are live.
-5. Ensure any remaining older Asset Browser naming is normalized to "Asset Browser / Import Hub".
-6. Keep Sprite Editor first-class and visible.
-7. Keep SpriteEditor_old_keep legacy and hidden.
-8. Keep samples off the tools landing page.
-9. Use shared engine/platform shell + theme for both new tools.
-10. Update the registry validator so it verifies:
-    - both new tools exist in registry
-    - folder path matches registry path
-    - active first-class tools are surfaced
-    - legacy tools remain excluded
-    - placeholder cards are not left behind for live tools
-11. Keep changes surgical and aligned to current repo conventions.
+1. Sprite Editor must remain first-class and visible.
+2. SpriteEditor_old_keep must remain hidden legacy.
+3. tools/index.html must stay tool-only.
+4. Tools consume shared assets/palettes; they do not own duplicated private copies by default.
+5. Normalize shared action labels:
+   - Browse Assets
+   - Import Assets
+   - Browse Palettes
+   - Manage Palettes
+6. Preserve engine theme and shared shell consistency.
+7. Update/extend the registry validator if needed so surfacing remains correct.
 
-PACKAGE OUTPUT:
-<project folder>/tmp/BUILD_PR_ASSET_BROWSER_IMPORT_HUB_AND_PALETTE_BROWSER_MANAGER.zip
+IMPLEMENTATION TARGETS:
+- add shared launch hooks/actions in each active tool
+- connect each tool to Asset Browser / Import Hub
+- connect each tool to Palette Browser / Manager
+- document the asset and palette handoff contracts
+- avoid structural churn unless required for the integration
+
+VALIDATE:
+- all active tools can launch asset/palette flows
+- no samples reappear on tools/index.html
+- no legacy leakage
+- no broken paths
+- action labels consistent
+- engine theme consistent
+
+OUTPUT:
+<project folder>/tmp/BUILD_PR_ASSET_USAGE_INTEGRATION.zip

@@ -1,3 +1,10 @@
+import {
+  createAssetHandoff,
+  getSharedLaunchContext,
+  getToolDisplayName,
+  writeSharedAssetHandoff
+} from "../shared/assetUsageIntegration.js";
+
 const APPROVED_DESTINATIONS = Object.freeze({
   "Vector Assets": "games/<project>/platform/assets/vectors/",
   "Sprite Projects": "games/<project>/platform/assets/sprites/",
@@ -63,11 +70,13 @@ const CATEGORY_ORDER = ["All", ...Object.keys(APPROVED_DESTINATIONS)];
 const refs = {
   categoryFilter: document.getElementById("assetCategoryFilter"),
   searchInput: document.getElementById("assetSearchInput"),
+  launchContextText: document.getElementById("launchContextText"),
   countText: document.getElementById("assetCountText"),
   assetList: document.getElementById("assetList"),
   previewTitle: document.getElementById("assetPreviewTitle"),
   previewMeta: document.getElementById("assetPreviewMeta"),
   previewCanvas: document.getElementById("assetPreviewCanvas"),
+  useAssetInToolButton: document.getElementById("useAssetInToolButton"),
   previewText: document.getElementById("assetPreviewText"),
   importFileInput: document.getElementById("importFileInput"),
   importCategorySelect: document.getElementById("importCategorySelect"),
@@ -84,6 +93,38 @@ const state = {
   search: "",
   selectedAssetId: ASSET_CATALOG[0]?.id ?? ""
 };
+
+function getAssetTypeFromCategory(category) {
+  switch (category) {
+    case "Vector Assets":
+      return "vector";
+    case "Sprite Projects":
+      return "sprite";
+    case "Tilemaps":
+      return "tileset";
+    case "Parallax Scenes":
+      return "background";
+    case "Palettes":
+      return "palette";
+    default:
+      return "other";
+  }
+}
+
+function applyLaunchContext() {
+  const context = getSharedLaunchContext();
+  const sourceLabel = context.sourceToolId
+    ? getToolDisplayName(context.sourceToolId, context.sourceToolId)
+    : "Shared Tools Surface";
+
+  refs.launchContextText.textContent = context.view === "import"
+    ? `Import Assets launched from ${sourceLabel}. Generated plans stay non-destructive and point to shared destination folders.`
+    : `Browse Assets launched from ${sourceLabel}. Choose a shared asset reference and publish it back to the active tool.`;
+
+  if (context.view === "import") {
+    refs.importStatusText.textContent = `Import Assets requested by ${sourceLabel}. Choose a local file to validate a shared import plan.`;
+  }
+}
 
 function getVisibleAssets() {
   const query = state.search.trim().toLowerCase();
@@ -287,6 +328,29 @@ function downloadImportPlan() {
   URL.revokeObjectURL(objectUrl);
 }
 
+function useSelectedAssetInActiveTool() {
+  const selectedAsset = getSelectedAsset();
+  const context = getSharedLaunchContext();
+  if (!selectedAsset) {
+    refs.launchContextText.textContent = "Select an approved asset before publishing a shared handoff.";
+    return;
+  }
+
+  const handoff = createAssetHandoff({
+    assetId: selectedAsset.id,
+    assetType: getAssetTypeFromCategory(selectedAsset.category),
+    sourcePath: selectedAsset.path,
+    displayName: selectedAsset.label,
+    tags: [selectedAsset.category],
+    metadata: {
+      category: selectedAsset.category
+    },
+    sourceToolId: context.sourceToolId || "asset-browser"
+  });
+  writeSharedAssetHandoff(handoff);
+  refs.launchContextText.textContent = `Shared asset handoff updated for ${getToolDisplayName(context.sourceToolId, "active tool")}: ${selectedAsset.label}`;
+}
+
 function syncImportFormFromFile() {
   const file = refs.importFileInput.files?.[0] ?? null;
   if (!file) {
@@ -332,11 +396,13 @@ function bindEvents() {
   refs.importNameInput.addEventListener("input", renderImportPlan);
   refs.validateImportButton.addEventListener("click", renderImportPlan);
   refs.downloadImportPlanButton.addEventListener("click", downloadImportPlan);
+  refs.useAssetInToolButton.addEventListener("click", useSelectedAssetInActiveTool);
 }
 
 function init() {
   populateCategoryControls();
   populateDestinationOptions(refs.importCategorySelect.value);
+  applyLaunchContext();
   renderAssetList();
   renderPreview();
   renderImportPlan();

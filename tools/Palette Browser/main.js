@@ -1,8 +1,16 @@
+import {
+  SHARED_PALETTE_HANDOFF_KEY,
+  createPaletteHandoff,
+  getSharedLaunchContext,
+  getToolDisplayName,
+  writeSharedPaletteHandoff
+} from "../shared/assetUsageIntegration.js";
+
 const CUSTOM_PALETTES_STORAGE_KEY = "toolboxaid.paletteBrowser.customPalettes";
-const ACTIVE_PALETTE_HANDOFF_KEY = "toolboxaid.shared.activePalette";
 
 const refs = {
   searchInput: document.getElementById("paletteSearchInput"),
+  launchContextText: document.getElementById("launchContextText"),
   countText: document.getElementById("paletteCountText"),
   paletteList: document.getElementById("paletteList"),
   paletteTitle: document.getElementById("paletteTitle"),
@@ -31,6 +39,16 @@ const state = {
   selectedSwatchIndex: 0,
   customPalettes: loadCustomPalettes()
 };
+
+function applyLaunchContext() {
+  const context = getSharedLaunchContext();
+  const sourceLabel = context.sourceToolId
+    ? getToolDisplayName(context.sourceToolId, context.sourceToolId)
+    : "Shared Tools Surface";
+  refs.launchContextText.textContent = context.view === "manage"
+    ? `Manage Palettes launched from ${sourceLabel}. Built-in palettes remain shared references; local edits stay exportable and non-destructive.`
+    : `Browse Palettes launched from ${sourceLabel}. Select a shared palette reference to hand back into the active tool.`;
+}
 
 function loadCustomPalettes() {
   try {
@@ -298,18 +316,23 @@ function usePaletteInActiveTools() {
   if (!palette) {
     return;
   }
-  const handoff = {
-    id: palette.id,
-    name: palette.name,
-    updatedAt: new Date().toISOString()
-  };
-  localStorage.setItem(ACTIVE_PALETTE_HANDOFF_KEY, JSON.stringify(handoff));
-  refs.selectionText.textContent = `Shared palette handoff updated: ${palette.name}`;
+  const context = getSharedLaunchContext();
+  const handoff = createPaletteHandoff({
+    paletteId: palette.id,
+    displayName: palette.name,
+    colors: palette.entries,
+    metadata: {
+      source: palette.source
+    },
+    sourceToolId: context.sourceToolId || "palette-browser"
+  });
+  writeSharedPaletteHandoff(handoff);
+  refs.selectionText.textContent = `Shared palette handoff updated for ${getToolDisplayName(context.sourceToolId, "active tool")}: ${palette.name}`;
 }
 
 function renderStoredSelection() {
   try {
-    const raw = localStorage.getItem(ACTIVE_PALETTE_HANDOFF_KEY);
+    const raw = localStorage.getItem(SHARED_PALETTE_HANDOFF_KEY);
     if (!raw) {
       refs.selectionText.textContent = "No handoff recorded yet.";
       return;
@@ -358,6 +381,7 @@ function bindEvents() {
 function init() {
   const firstPalette = getAllPalettes()[0] ?? null;
   state.selectedPaletteId = firstPalette?.id ?? "";
+  applyLaunchContext();
   renderPaletteList();
   renderSelectedPalette();
   renderStoredSelection();

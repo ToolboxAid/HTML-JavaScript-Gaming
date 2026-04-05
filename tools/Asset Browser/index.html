@@ -19,6 +19,7 @@
     <div class="asset-browser__layout">
       <aside class="panel asset-browser__panel">
         <h3>Browse Approved Assets</h3>
+        <div id="launchContextText" class="asset-browser__hint">Shared asset flow ready.</div>
         <label class="field">
           Category
           <select id="assetCategoryFilter"></select>
@@ -36,6 +37,9 @@
         <div id="assetPreviewMeta" class="asset-browser__meta">Select an approved asset from the catalog.</div>
         <div id="assetPreviewCanvas" class="asset-browser__preview">
           <p class="asset-browser__empty">No asset selected.</p>
+        </div>
+        <div class="asset-browser__actions">
+          <button id="useAssetInToolButton" type="button">Use In Active Tool</button>
         </div>
         <pre id="assetPreviewText" class="asset-browser__text-preview">Choose a file to inspect metadata and content.</pre>
       </main>
