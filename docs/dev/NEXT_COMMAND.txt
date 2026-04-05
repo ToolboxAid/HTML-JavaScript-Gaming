@@ -3,6 +3,4 @@ David Quesenberry
 04/05/2026
 next_command.txt
 
-Create BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS as a docs-only, repo-structured delta ZIP aligned to the approved PLAN_PR and output it to:
-
-HTML-JavaScript-Gaming-main/tmp/BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS_delta.zip
+APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS

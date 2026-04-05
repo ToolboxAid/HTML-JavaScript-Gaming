@@ -5,23 +5,35 @@ change_summary.txt
 
 BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS summary
 
-- Created docs-only BUILD PR bundle for a unified 2D render pipeline contract.
-- Defined canonical top-level contract shape shared by:
+- Tightened the BUILD PR into a production-grade docs-only contract package.
+- Replaced the loose shared contract description with a formal contract family:
+  - toolbox.render.asset-document
+  - toolbox.render.composition-document
+- Added a required shared envelope with fixed versioning, producer, document, metadata, and payload requirements.
+- Added explicit shared schemas for metadata, assets, layers, and items.
+- Added locked tool-specific asset-document schemas for:
   - Tile Map Editor
   - Parallax Editor
   - Sprite Editor
   - Vector Asset Studio
-- Documented shared metadata requirements and ID stability rules.
-- Documented shared asset record rules with project-relative path normalization.
-- Documented normalized layer model and deterministic render ordering.
-- Added explicit tool-specific mapping notes for tilemap/parallax/sprite/vector payloads.
-- Defined runtime ownership boundaries and non-silent validation responsibilities.
-- Added validation rules and acceptance criteria for the contract seam.
-- Added incremental migration guidance designed to avoid breaking unrelated engine APIs.
+- Defined the formal render pipeline stages:
+  - load
+  - validate
+  - normalize
+  - resolve
+  - compose
+  - sequence
+  - render
+- Locked deterministic render order buckets and tie-break rules.
+- Locked engine seam ownership so runtime responsibilities and tool responsibilities are not guessed.
+- Added a mandatory validation layer with explicit rejection policy.
+- Added a formal composition document schema to assemble cross-tool scenes.
+- Tightened Codex execution instructions so the BUILD bundle is exact and non-drifting.
+- Added docs/dev/next_command.txt to make the follow-on APPLY step explicit.
 
 Guardrails honored:
 - Docs-first only
 - No implementation code
-- No 3D scope
-- No unrelated sample/game/tool changes
-- No engine redesign beyond contract seam
+- One PR purpose only
+- No unrelated engine or tool changes
+- 2D-only scope preserved

@@ -6,195 +6,605 @@ BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md
 # BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS
 
 ## Purpose
-Define a unified 2D render pipeline contract for Tile Map Editor, Parallax Editor, Sprite Editor, and Vector Asset Studio using a docs-first, non-destructive seam that does not redesign engine architecture.
+Tighten the render pipeline contract into a production-grade, docs-only BUILD PR that closes the remaining gaps for all four tool producers:
+- Tile Map Editor
+- Parallax Editor
+- Sprite Editor
+- Vector Asset Studio
+
+This PR formalizes the engine-facing contract, deterministic render pipeline, locked engine mappings, validation rules, composition layer, and exact Codex execution boundaries without introducing implementation code.
 
 ## Scope
 In scope:
-- Unified top-level render contract shape
-- Shared metadata and asset record rules
-- Normalized layer model + deterministic render ordering
-- Tool-specific mapping notes for all 4 tools
-- Runtime ownership boundaries
-- Validation and acceptance checklist
-- Incremental migration guidance that preserves unrelated engine APIs
+- Formal canonical schema definitions for shared contract documents
+- Formal render pipeline ordering and stage ownership
+- Locked tool-to-engine mappings
+- Validation/error handling rules
+- Composition document for cross-tool scene assembly
+- Codex execution constraints and acceptance targets
 
 Out of scope:
-- Implementation code
+- Runtime implementation code
 - Engine renderer rewrite
-- 3D scope
-- Unrelated tool/game/sample edits
+- Asset conversion utilities
+- 3D features
+- Unrelated sample, game, or tool UX changes
 
-## 1. Unified Top-Level Render Contract
-Canonical engine-facing document (2D only):
+## 1. Canonical Contract Family
+The render pipeline uses a small contract family instead of ad hoc tool payloads.
+
+### 1.1 Document Types
+Allowed engine-facing document types:
+- `toolbox.render.asset-document`
+- `toolbox.render.composition-document`
+
+### 1.2 Shared Envelope
+Every engine-facing document MUST use this envelope:
 
 ```json
 {
-  "documentType": "toolbox.render-pipeline.contract",
+  "documentType": "toolbox.render.asset-document",
   "contractVersion": "1.0.0",
   "producer": {
-    "tool": "tile-map-editor|parallax-editor|sprite-editor|vector-asset-studio",
+    "tool": "tile-map-editor",
     "toolVersion": "string"
   },
-  "scene": {
-    "id": "string",
-    "name": "string",
-    "coordinateSpace": "2d"
+  "document": {
+    "id": "level.01",
+    "name": "Level 01",
+    "coordinateSpace": "2d",
+    "units": "pixels"
   },
-  "assets": [],
-  "layers": [],
-  "entities": [],
-  "metadata": {}
+  "metadata": {},
+  "payload": {}
 }
 ```
 
-Required:
-- `documentType`, `contractVersion`, `producer.tool`, `scene.id`, `scene.name`, `scene.coordinateSpace`
-- `assets`, `layers`, `entities`, `metadata` always present (can be empty)
-- `scene.coordinateSpace` must be `2d`
+Required top-level fields:
+- `documentType`
+- `contractVersion`
+- `producer.tool`
+- `producer.toolVersion`
+- `document.id`
+- `document.name`
+- `document.coordinateSpace`
+- `document.units`
+- `metadata`
+- `payload`
 
-## 2. Shared Metadata Rules
-Top-level metadata standards:
-- `projectId` (optional but recommended)
-- `createdAt` ISO timestamp (optional)
-- `updatedAt` ISO timestamp (optional)
-- `tags` array of strings (optional)
-- `runtimeFlags` object (optional)
+Rules:
+- `contractVersion` must be `1.0.0` for this PR
+- `document.coordinateSpace` must be `2d`
+- `document.units` must be `pixels` unless a future PR extends this explicitly
+- `metadata` and `payload` must exist even when empty
 
-Common object metadata standards:
-- `id` required, stable within document
-- `name` required, human-readable
-- `type` required where enumerated
-- `visible` required for renderable items
-- `locked` editor-side only (optional for runtime)
+## 2. Shared Schema Definitions
 
-ID rules:
-- Deterministic where practical
-- No duplicates per collection
-- No implicit ID rewriting at runtime
-
-## 3. Shared Asset Record Rules
-Asset entries under `assets` must use normalized project-relative paths.
-
-Minimal record:
+### 2.1 Shared Metadata Schema
 
 ```json
 {
-  "id": "asset.id",
-  "type": "image|spritesheet|vector|tileset",
-  "path": "assets/path/file.ext",
+  "projectId": "optional-string",
+  "createdAt": "ISO-8601 optional",
+  "updatedAt": "ISO-8601 optional",
+  "tags": ["optional", "strings"],
+  "runtimeFlags": {},
+  "notes": "optional-string"
+}
+```
+
+Metadata rules:
+- Unknown metadata fields may be preserved but must not change runtime behavior unless explicitly documented
+- Runtime behavior may only depend on documented `runtimeFlags`
+- Editor-only notes must not become runtime requirements
+
+### 2.2 Shared Asset Record Schema
+Every asset document may declare shared assets using the normalized asset record:
+
+```json
+{
+  "id": "asset.background.sky",
+  "type": "image",
+  "path": "assets/backgrounds/sky.png",
   "source": "relative",
   "preload": true,
+  "role": "render",
   "metadata": {}
 }
 ```
 
-Rules:
+Required asset fields:
+- `id`
+- `type`
+- `path`
+- `source`
+- `preload`
+- `role`
+- `metadata`
+
+Allowed `type` values:
+- `image`
+- `spritesheet`
+- `vector`
+- `tileset`
+- `template`
+
+Allowed `source` values:
+- `relative`
+
+Allowed `role` values:
+- `render`
+- `collision`
+- `reference`
+- `ui`
+
+Asset rules:
 - No absolute machine paths
-- No temp/session-only paths
-- Prefer additive updates over replacement
-- Avoid duplicates by `id`, then by normalized `type + path` where practical
-- Unknown extra fields must be preserved where low-risk
+- No temp paths
+- Paths are project-relative and slash-normalized
+- Duplicate asset IDs are invalid
+- Duplicate `type + path` combinations should be rejected unless explicitly aliased in a future PR
 
-## 4. Normalized Layer Model + Deterministic Ordering
-Layer contract fields:
-- `id`, `name`, `kind`, `visible`, `opacity`, `zIndex`, `items`
-- optional: `parallaxFactorX`, `parallaxFactorY`, `blendMode`
+### 2.3 Shared Layer Schema
+Every renderable payload normalizes to layers.
 
-Allowed `kind` values for this contract:
-- `tilemap`
+```json
+{
+  "id": "layer.background",
+  "name": "Background",
+  "kind": "parallax",
+  "visible": true,
+  "opacity": 1,
+  "zIndex": 0,
+  "runtimeInclusion": "gameplay",
+  "items": [],
+  "metadata": {}
+}
+```
+
+Required layer fields:
+- `id`
+- `name`
+- `kind`
+- `visible`
+- `opacity`
+- `zIndex`
+- `runtimeInclusion`
+- `items`
+- `metadata`
+
+Allowed `kind` values:
 - `parallax`
+- `tilemap`
 - `sprite`
 - `vector`
 - `collision`
 - `guide`
 - `overlay`
 
-Render order rules:
-1. Sort by `zIndex` ascending
-2. Tie-break by source order (stable)
-3. Within layer, render items by explicit item order if present, else source order
-4. `guide` and tool-only diagnostic layers excluded from gameplay render unless explicitly flagged
+Allowed `runtimeInclusion` values:
+- `gameplay`
+- `debug`
+- `editor-only`
 
-## 5. Tool-Specific Mapping Notes
-Tile Map Editor:
-- Produces `tilemap` layers
-- Declares tileset/image assets
-- Maps tile grids, map dimensions, tile size
-- `collision`/`data` tool layers mapped as non-art or debug/runtime utility layers by policy
+Layer rules:
+- `opacity` range: `0` to `1`
+- `zIndex` is integer
+- `guide` layers default to `editor-only`
+- `collision` layers default to non-art utility handling
+- Layers must not reference missing assets or items
 
-Parallax Editor:
-- Produces `parallax` layers
-- Declares image/vector assets for background planes
-- Maps `parallaxFactorX/Y`, repeat flags, wrap behavior
-- Preserves deterministic draw stack through `zIndex`
+### 2.4 Shared Item Schema
+Layer items normalize to a common item shell.
 
-Sprite Editor:
-- Produces `sprite` layers or sprite-entity records
-- Declares sprite/spritesheet assets
-- Maps frame/animation metadata and origin hints
-- Supports shared palette references through metadata links (non-authoritative at runtime)
+```json
+{
+  "id": "item.sky.01",
+  "type": "image-plane",
+  "assetId": "asset.background.sky",
+  "visible": true,
+  "order": 0,
+  "transform": {
+    "x": 0,
+    "y": 0,
+    "scaleX": 1,
+    "scaleY": 1,
+    "rotation": 0
+  },
+  "metadata": {}
+}
+```
 
-Vector Asset Studio:
-- Produces `vector` layers or vector item collections
-- Declares vector/template assets
-- Maps primitives/style/transform payloads to normalized render items
+Required item fields:
+- `id`
+- `type`
+- `visible`
+- `order`
+- `transform`
+- `metadata`
 
-## 6. Runtime Ownership Boundaries
-Engine/runtime owns:
-- Contract validation
-- Relative asset resolution
-- Normalized runtime model projection
-- Deterministic render sequencing
-- Clear validation errors
+Optional but common fields:
+- `assetId`
+- `tileId`
+- `frame`
+- `style`
+- `bounds`
+- `points`
+- `animation`
 
-Tools own:
-- Valid contract output
-- Stable IDs
-- Correct layer/asset typing
-- Cross-reference integrity
+## 3. Tool-Specific Asset Document Schemas
+Each tool produces an asset document using the shared envelope plus a locked payload shape.
 
-Boundary guardrails:
-- Runtime must not silently repair missing required fields
-- Runtime must not infer absolute/local paths
-- Contract seam should avoid unrelated engine API redesign
+### 3.1 Tile Map Editor Schema
 
-## 7. Validation Rules + Acceptance Checklist
-Validation rules:
-- Required key presence
+```json
+{
+  "documentType": "toolbox.render.asset-document",
+  "contractVersion": "1.0.0",
+  "producer": { "tool": "tile-map-editor", "toolVersion": "string" },
+  "document": { "id": "level.01", "name": "Level 01", "coordinateSpace": "2d", "units": "pixels" },
+  "metadata": {},
+  "payload": {
+    "assets": [],
+    "layers": [
+      {
+        "id": "layer.ground",
+        "name": "Ground",
+        "kind": "tilemap",
+        "visible": true,
+        "opacity": 1,
+        "zIndex": 100,
+        "runtimeInclusion": "gameplay",
+        "items": [],
+        "metadata": {
+          "tileWidth": 32,
+          "tileHeight": 32,
+          "mapWidth": 100,
+          "mapHeight": 20
+        }
+      }
+    ],
+    "entities": []
+  }
+}
+```
+
+Tile map rules:
+- Tile dimensions must be explicit
+- Map dimensions must be explicit
+- Collision content must use `kind: collision` or explicit collision metadata
+- Tile references must point to declared tileset assets
+
+### 3.2 Parallax Editor Schema
+
+```json
+{
+  "documentType": "toolbox.render.asset-document",
+  "contractVersion": "1.0.0",
+  "producer": { "tool": "parallax-editor", "toolVersion": "string" },
+  "document": { "id": "bg.01", "name": "Background Stack", "coordinateSpace": "2d", "units": "pixels" },
+  "metadata": {},
+  "payload": {
+    "assets": [],
+    "layers": [
+      {
+        "id": "layer.sky",
+        "name": "Sky",
+        "kind": "parallax",
+        "visible": true,
+        "opacity": 1,
+        "zIndex": 0,
+        "runtimeInclusion": "gameplay",
+        "items": [],
+        "metadata": {
+          "parallaxFactorX": 0.2,
+          "parallaxFactorY": 0,
+          "repeatX": true,
+          "repeatY": false
+        }
+      }
+    ],
+    "entities": []
+  }
+}
+```
+
+Parallax rules:
+- Each plane must define parallax factors through metadata
+- Repeat behavior must be explicit when supported
+- Draw order is controlled by `zIndex`, not editor tab order alone
+
+### 3.3 Sprite Editor Schema
+
+```json
+{
+  "documentType": "toolbox.render.asset-document",
+  "contractVersion": "1.0.0",
+  "producer": { "tool": "sprite-editor", "toolVersion": "string" },
+  "document": { "id": "player.sprite", "name": "Player Sprite", "coordinateSpace": "2d", "units": "pixels" },
+  "metadata": {},
+  "payload": {
+    "assets": [],
+    "layers": [
+      {
+        "id": "layer.player",
+        "name": "Player",
+        "kind": "sprite",
+        "visible": true,
+        "opacity": 1,
+        "zIndex": 200,
+        "runtimeInclusion": "gameplay",
+        "items": [],
+        "metadata": {}
+      }
+    ],
+    "entities": [
+      {
+        "id": "entity.player",
+        "name": "Player",
+        "spriteLayerId": "layer.player",
+        "metadata": {
+          "origin": "center",
+          "animations": []
+        }
+      }
+    ]
+  }
+}
+```
+
+Sprite rules:
+- Animation metadata belongs to sprite items/entities, not parallax or tilemap layers
+- Sprite frames must resolve to declared sprite or spritesheet assets
+- Palette hints may exist in metadata but are not authoritative runtime behavior unless explicitly documented
+
+### 3.4 Vector Asset Studio Schema
+
+```json
+{
+  "documentType": "toolbox.render.asset-document",
+  "contractVersion": "1.0.0",
+  "producer": { "tool": "vector-asset-studio", "toolVersion": "string" },
+  "document": { "id": "overlay.01", "name": "Vector Overlay", "coordinateSpace": "2d", "units": "pixels" },
+  "metadata": {},
+  "payload": {
+    "assets": [],
+    "layers": [
+      {
+        "id": "layer.overlay",
+        "name": "Overlay",
+        "kind": "vector",
+        "visible": true,
+        "opacity": 1,
+        "zIndex": 400,
+        "runtimeInclusion": "gameplay",
+        "items": [],
+        "metadata": {}
+      }
+    ],
+    "entities": []
+  }
+}
+```
+
+Vector rules:
+- Vector items must define style/geometry in item metadata or normalized item fields
+- Templates must resolve to declared vector/template assets
+- Debug overlays must use `runtimeInclusion: debug` or `editor-only`
+
+## 4. Formal Render Pipeline
+This PR locks the formal pipeline stages for 2D composition.
+
+### 4.1 Pipeline Stages
+1. **Load**
+   - Read asset and composition documents
+   - Reject unsupported document types or contract versions
+2. **Validate**
+   - Validate required fields, IDs, references, types, ranges, and mappings
+3. **Normalize**
+   - Normalize assets, layers, items, and composition references into runtime-safe records
+4. **Resolve**
+   - Resolve project-relative paths and cross-document references
+5. **Compose**
+   - Merge referenced documents into one deterministic scene graph
+6. **Sequence**
+   - Sort layers and items according to the contract rules below
+7. **Render**
+   - Submit normalized ordered layers to engine systems
+
+### 4.2 Formal Render Order
+Canonical render buckets for composed scenes:
+1. `parallax` background layers
+2. `tilemap` world layers
+3. gameplay `sprite` layers and sprite-backed entities
+4. gameplay `vector` layers
+5. `overlay` layers
+6. debug `collision` and `guide` layers only when explicitly enabled
+
+Formal ordering rules:
+- Bucket order above applies first
+- Then sort by `zIndex` ascending within bucket
+- Then sort by source document order
+- Then sort by item `order`
+- Then preserve stable source order as final tie-breaker
+
+### 4.3 Visibility Rules
+- `visible: false` excludes the item or layer from render submission
+- `runtimeInclusion: editor-only` excludes the layer from gameplay runtime
+- `runtimeInclusion: debug` excludes the layer unless debug mode explicitly enables it
+
+## 5. Locked Engine Mappings
+This PR locks the intended engine seam so Codex does not guess.
+
+| Producer | Contract Kind / Content | Engine Responsibility | Notes |
+|---|---|---|---|
+| Tile Map Editor | `tilemap`, `collision` | `engine/tilemap/`, renderer, collision, camera consumption | Tile art and collision data remain distinct even when exported together |
+| Parallax Editor | `parallax` | renderer + camera-based parallax handling | Camera motion modifies parallax factors, not source asset coordinates |
+| Sprite Editor | `sprite`, sprite-backed `entities` | ECS movement/collision + renderer consumption | Sprite content stays engine-facing through public contracts only |
+| Vector Asset Studio | `vector`, `overlay`, optional debug layers | renderer/debug paths as appropriate | Vector overlays may be gameplay or debug depending on `runtimeInclusion` |
+
+Mapping rules:
+- Tools export contract data only
+- Runtime owns validation, normalization, composition, and sequencing
+- Runtime must not silently rewrite invalid tool output
+- Existing public engine APIs remain stable unless a future PR explicitly changes them
+
+## 6. Validation Layer
+Validation is mandatory and non-silent.
+
+### 6.1 Required Validation Checks
+- Supported `documentType`
 - Supported `contractVersion`
 - Allowed `producer.tool`
-- Unique IDs by collection
-- Allowed layer kinds only
-- Valid asset references from layers/entities
-- Numeric/order field sanity (`zIndex`, opacity range)
-- 2D coordinate-space enforcement
+- Presence of required envelope fields
+- `document.coordinateSpace === "2d"`
+- Unique IDs within assets, layers, items, and entities collections
+- Valid enum values for `type`, `kind`, `source`, `role`, `runtimeInclusion`
+- Valid numeric ranges (`opacity`, transform values where constrained)
+- Valid cross-references (`assetId`, `spriteLayerId`, composition references)
+- Valid path rules (relative only)
 
-Acceptance checklist for this BUILD docs PR:
-- Contract covers all 4 tools
-- Metadata rules are explicit
-- Asset record rules are explicit
-- Layer model + deterministic ordering are explicit
-- Runtime ownership boundary is explicit
-- Migration guidance is incremental and non-breaking
-- Docs-only scope preserved
+### 6.2 Error Policy
+- Missing required field -> reject document
+- Unsupported version -> reject document
+- Unknown producer -> reject document
+- Duplicate ID -> reject document
+- Missing referenced asset/layer/document -> reject document
+- Unsupported layer kind -> reject document
+- Invalid `runtimeInclusion` -> reject document
+- Invalid opacity or malformed transform -> reject document
 
-## 8. Incremental Migration Guidance (Non-Breaking)
-Phase 1: Contract publication
-- Publish contract docs and validation checklist
-- No runtime or tool behavior changes required in this PR
+Rules:
+- No silent repairs
+- No automatic absolute path inference
+- No hidden default insertion for required fields
+- Optional fields may default only when the contract explicitly allows it
 
-Phase 2: Tool-side adapters (future BUILD/APPLY PRs)
-- Add tool exporters that emit normalized contract fields
-- Preserve legacy payload loading in parallel
+### 6.3 Allowed Explicit Defaults
+Only these defaults are permitted when fields are omitted in future-compatible payloads:
+- `visible: true`
+- `opacity: 1`
+- `metadata: {}`
+- `items: []`
 
-Phase 3: Runtime seam adoption (future BUILD/APPLY PRs)
-- Introduce a contract validation/normalization seam
-- Keep existing public engine APIs stable
-- Deprecate legacy ad hoc mappings only after coverage and parity checks
+If a tool omits any other required field, validation fails.
+
+## 7. Composition Layer
+Cross-tool composition is formally added in this PR so the four tools behave as one pipeline.
+
+### 7.1 Composition Document Schema
+
+```json
+{
+  "documentType": "toolbox.render.composition-document",
+  "contractVersion": "1.0.0",
+  "producer": {
+    "tool": "composition-manifest",
+    "toolVersion": "1.0.0"
+  },
+  "document": {
+    "id": "scene.level.01",
+    "name": "Scene Level 01",
+    "coordinateSpace": "2d",
+    "units": "pixels"
+  },
+  "metadata": {},
+  "payload": {
+    "references": [
+      {
+        "id": "ref.background",
+        "documentPath": "assets/contracts/background.json",
+        "role": "parallax"
+      },
+      {
+        "id": "ref.world",
+        "documentPath": "assets/contracts/level01.json",
+        "role": "tilemap"
+      },
+      {
+        "id": "ref.player",
+        "documentPath": "assets/contracts/player.json",
+        "role": "sprite"
+      },
+      {
+        "id": "ref.overlay",
+        "documentPath": "assets/contracts/overlay.json",
+        "role": "vector"
+      }
+    ]
+  }
+}
+```
+
+Required composition reference fields:
+- `id`
+- `documentPath`
+- `role`
+
+Allowed composition `role` values:
+- `parallax`
+- `tilemap`
+- `sprite`
+- `vector`
+- `overlay`
+
+Composition rules:
+- Composition documents do not redefine referenced content inline
+- Composition documents assemble existing normalized contract documents
+- Scene assembly order is derived from render bucket + `zIndex`, not composition file row order alone
+- Composition references must use project-relative paths
+
+## 8. Codex Execution Contract
+Codex must execute this BUILD PR without drifting scope.
+
+### 8.1 Required Deliverables
+- `docs/pr/BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md`
+- `docs/dev/codex_commands.md`
+- `docs/dev/commit_comment.txt`
+- `docs/dev/change_summary.txt`
+- `docs/dev/validation_checklist.txt`
+- `docs/dev/file_tree.txt`
+- `docs/dev/next_command.txt`
+
+### 8.2 Codex Must Do
+- Tighten the contract schemas exactly as documented here
+- Preserve docs-only scope
+- Preserve repo-relative structure
+- Preserve file header rules on every created file
+- Write explicit acceptance and validation language
+- Package the output as a delta ZIP at:
+  - `HTML-JavaScript-Gaming-main/tmp/BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS_delta.zip`
+
+### 8.3 Codex Must Not Do
+- Add implementation code
+- Change engine runtime files
+- Change tool runtime files
+- Rewrite unrelated docs
+- Expand to 3D or unrelated asset systems
+- Collapse this PR into multiple PR purposes
+
+## 9. Acceptance Criteria
+This BUILD PR is complete only if:
+- All four tools have explicit schema coverage
+- Render pipeline stages are formalized
+- Render ordering is deterministic and documented
+- Engine mappings are locked and explicit
+- Validation policy is explicit and non-silent
+- Composition document exists and is documented
+- Codex execution instructions are exact
+- The bundle remains docs-only and repo-structured
+
+## 10. Incremental Follow-Through
+Future PR sequence after this BUILD PR:
+1. APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS
+2. BUILD_PR_TOOL_EXPORTERS_RENDER_CONTRACT_ADAPTERS
+3. BUILD_PR_RUNTIME_VALIDATION_NORMALIZATION_SEAM
+4. BUILD_PR_SCENE_COMPOSITION_MANIFEST_LOADER
 
 ## Guardrails Confirmed
-- No implementation code added
-- No engine architecture redesign beyond contract seam
-- No 3D scope introduced
-- No unrelated sample/game/tool modifications
-- Contract remains 2D-focused and low-risk extensible
+- Docs-only bundle
+- No implementation code
+- No unrelated architecture redesign
+- No skipped workflow step
+- 2D-only scope retained
+- One PR purpose retained

@@ -8,15 +8,22 @@ BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS validation checklist
 [x] Docs-only bundle created
 [x] No implementation code included
 [x] PLAN_PR -> BUILD_PR -> APPLY_PR workflow honored
-[x] One PR purpose only (render pipeline contract)
-[x] Unified top-level contract documented for all 4 tools
-[x] Shared metadata rules documented
-[x] Shared asset record rules documented
-[x] Normalized layer model documented
-[x] Deterministic render ordering documented
-[x] Tool-specific mapping notes included (tilemap/parallax/sprite/vector)
-[x] Runtime ownership boundaries documented
-[x] Validation rules and acceptance checklist documented
-[x] Incremental migration guidance documented
-[x] 2D-focused scope preserved
+[x] One PR purpose only retained
+[x] Shared contract envelope formalized
+[x] Shared metadata schema formalized
+[x] Shared asset schema formalized
+[x] Shared layer schema formalized
+[x] Shared item schema formalized
+[x] Tile Map Editor schema documented
+[x] Parallax Editor schema documented
+[x] Sprite Editor schema documented
+[x] Vector Asset Studio schema documented
+[x] Render pipeline stages formalized
+[x] Deterministic render bucket ordering formalized
+[x] Engine mappings locked explicitly
+[x] Validation rules documented with rejection policy
+[x] Allowed defaults restricted and documented
+[x] Composition document schema documented
+[x] Codex execution constraints tightened
+[x] 2D-only scope preserved
 [x] No unrelated architecture redesign introduced
