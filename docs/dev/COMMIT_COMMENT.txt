@@ -3,4 +3,4 @@ David Quesenberry
 04/05/2026
 commit_comment.txt
 
-Apply render pipeline contract runtime for all four tools with validation, composition loading, deterministic ordering, and tests.
+docs: build runtime scene loader and hot reload contract bundle

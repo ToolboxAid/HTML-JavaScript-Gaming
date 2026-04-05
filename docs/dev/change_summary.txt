@@ -3,66 +3,11 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS summary
-
-Implemented runtime contract path:
-- Added `tools/shared/renderPipelineContract.js` as the shared runtime contract seam for:
-  - `toolbox.render.asset-document`
-  - `toolbox.render.composition-document`
-
-Implemented pipeline stages:
-- load
-- validate
-- normalize
-- resolve
-- compose
-- sequence
-- render
-
-Implemented validation and normalization behavior:
-- Enforces contract envelope and version (`1.0.0`)
-- Enforces 2D coordinate space and pixel units
-- Enforces strict producer tool allowlist and locked mapping rules
-- Enforces asset/layer/item/entity schema requirements
-- Rejects invalid references, enums, ranges, duplicate IDs, and invalid paths
-- Uses explicit structured errors with stage, code, path, message, and details
-- Allows only limited explicit defaults (visible/opacity/metadata/items) through normalization
-
-Implemented deterministic ordering:
-- Formal render bucket ordering by layer kind:
-  - parallax
-  - tilemap
-  - sprite
-  - vector
-  - overlay
-  - collision
-  - guide
-- Stable tie-breaks by zIndex, source document order, source layer order, then id
-- Deterministic item ordering by item order, source item order, then id
-
-Implemented composition-driven mixed-scene assembly:
-- Resolves composition references to asset documents through a shared document lookup
-- Validates referenced documents before composition
-- Merges scene assets with conflict detection for duplicate IDs with mismatched type/path
-- Applies runtime inclusion filtering (`gameplay`, optional `debug`, excludes `editor-only`)
-- Emits composed scene output with explicit tool-to-engine mappings attached
-
-Tests added:
-- `tests/tools/RenderPipelineContractAll4Tools.test.mjs`
-  - valid contract acceptance
-  - invalid contract rejection
-  - deterministic stage/layer/item ordering
-  - composition assembly and missing-reference rejection
-
-Test harness integration:
-- Updated `tests/run-tests.mjs` to include `RenderPipelineContractAll4Tools` run target
-
-Docs/report updates required by apply:
-- Updated `docs/dev/change_summary.txt`
-- Updated `docs/dev/validation_checklist.txt`
-
-Scope guardrails honored:
-- No unrelated refactors
-- No sample logic used as reusable runtime implementation
-- No implementation code added to docs bundles
-- Changes kept surgical and architecture-safe
+Summary:
+- Added docs-only BUILD bundle for runtime scene loader and hot reload
+- Defined formal responsibilities for SceneCompositionLoader and RuntimeSceneLoader
+- Defined deterministic hot reload lifecycle and stage ordering
+- Locked watcher bridge boundaries and public engine mappings
+- Added validation/error taxonomy and composition-driven reload rules
+- Added APPLY-focused test plan and manual validation targets
+- Updated command, commit, file tree, and next-command docs/dev artifacts

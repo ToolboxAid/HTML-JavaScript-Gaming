@@ -3,4 +3,4 @@ David Quesenberry
 04/05/2026
 next_command.txt
 
-After Codex implementation and validation, proceed with runtime verification and targeted follow-up fixes only if required.
+APPLY_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD

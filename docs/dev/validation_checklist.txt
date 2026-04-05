@@ -3,49 +3,16 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS validation checklist
-
-Contract/runtime path
-[x] Shared runtime contract path implemented for `toolbox.render.asset-document`
-[x] Shared runtime contract path implemented for `toolbox.render.composition-document`
-[x] One formal staged pipeline exists: load/validate/normalize/resolve/compose/sequence/render
-
-Validation and errors
-[x] Contract envelope/version validation implemented
-[x] Producer tool allowlist and locked mapping checks implemented
-[x] Asset/layer/item/entity schema validation implemented
-[x] Duplicate ID and reference validation implemented
-[x] Invalid contracts rejected without silent repair
-[x] Structured error shape implemented (`stage`, `code`, `path`, `message`, `details`)
-
-Deterministic sequencing and composition
-[x] Deterministic render bucket ordering implemented
-[x] Stable tie-break ordering implemented
-[x] Composition manifest references are validated and resolved
-[x] Mixed-scene composition assembly implemented
-
-Tool mapping lock
-[x] Tile Map Editor mapping rules enforced
-[x] Parallax Editor mapping rules enforced
-[x] Sprite Editor mapping rules enforced
-[x] Vector Asset Studio mapping rules enforced
-
-Automated tests
-[x] Focused test added: `tests/tools/RenderPipelineContractAll4Tools.test.mjs`
-[x] Valid-document acceptance test passes
-[x] Invalid-document rejection test passes
-[x] Stage/layer/item ordering test passes
-[x] Composition assembly test passes
-[x] Missing composition reference rejection test passes
-[x] Test included in `tests/run-tests.mjs`
-
-Execution evidence
-[x] `node --check tools/shared/renderPipelineContract.js`
-[x] `node --check tests/tools/RenderPipelineContractAll4Tools.test.mjs`
-[x] `node --check tests/run-tests.mjs`
-[x] Targeted test run passed (`PASS RenderPipelineContractAll4Tools`)
-
-Scope safety
-[x] No unrelated runtime/tool refactor performed
-[x] No reusable logic moved into samples
-[x] No docs bundle implementation leakage
+BUILD PR validation checklist
+[x] Bundle is docs-only
+[x] No implementation code included
+[x] Workflow preserved: PLAN_PR -> BUILD_PR -> APPLY_PR
+[x] Runtime scene loader responsibilities are explicit
+[x] Hot reload lifecycle and deterministic order are documented
+[x] Watcher bridge boundaries are explicit
+[x] Public engine mappings are locked to public entry paths
+[x] Validation and structured error taxonomy are documented
+[x] Composition-driven reload rules are documented
+[x] Test plan is defined for APPLY implementation
+[x] Command and commit artifacts are under docs/dev
+[x] Repo-relative bundle structure is preserved
