@@ -1,13 +1,18 @@
 HTML-JavaScript-Gaming/
+|-- tools/
+|   `-- dev/
+|       |-- commandPacks/
+|       |   `-- overlayCommandPack.js
+|       `-- devConsoleIntegration.js
 |-- docs/
 |   |-- pr/
-|   |   |-- PLAN_PR_OVERLAY_DATA_PROVIDERS.md
-|   |   |-- BUILD_PR_OVERLAY_DATA_PROVIDERS.md
-|   |   `-- APPLY_PR_OVERLAY_DATA_PROVIDERS.md
+|   |   |-- PLAN_PR_OVERLAY_OPERATOR_COMMANDS.md
+|   |   |-- BUILD_PR_OVERLAY_OPERATOR_COMMANDS.md
+|   |   `-- APPLY_PR_OVERLAY_OPERATOR_COMMANDS.md
 |   `-- dev/
 |       `-- reports/
 |           |-- change_summary.txt
 |           |-- validation_checklist.txt
 |           `-- file_tree.txt
 `-- tmp/
-    `-- BUILD_PR_OVERLAY_DATA_PROVIDERS_delta.zip
+    `-- BUILD_PR_OVERLAY_OPERATOR_COMMANDS_delta.zip

@@ -1,31 +1,38 @@
-BUILD_PR_OVERLAY_DATA_PROVIDERS validation checklist
+BUILD_PR_OVERLAY_OPERATOR_COMMANDS validation checklist
 
 Workflow
-- [done] PLAN_PR documented
-- [done] BUILD_PR documented
-- [done] APPLY_PR documented
+- [done] PLAN_PR, BUILD_PR, APPLY_PR docs updated
 - [done] One PR purpose only
-- [done] Docs-first bundle
 
-Scope and Boundaries
+Scope
 - [done] No engine core changes
-- [done] Sample-level integration reference documented
-- [done] MultiSystemDemoScene.js used as reference
-- [done] Dev Console boundary preserved
-- [done] Debug Overlay boundary preserved
+- [done] Integration remains sample-level
+- [done] MultiSystemDemoScene.js retained as reference target
+- [done] Dev Console vs Debug Overlay boundary preserved
 
-Provider Contract
-- [done] Read-only provider layer defined
-- [done] Recommended provider IDs documented
-- [done] Provider descriptor shape documented
-- [done] Provider guardrails documented
-- [done] Panels consume provider snapshots, not direct runtime reads
-- [done] Validation rules documented
+Functional Commands
+- [done] overlay.help
+- [done] overlay.list
+- [done] overlay.status
+- [done] overlay.show <panelId>
+- [done] overlay.hide <panelId>
+- [done] overlay.toggle <panelId>
+- [done] overlay.showAll
+- [done] overlay.hideAll
+- [done] overlay.order
 
-Build Quality
-- [done] Accomplishments summary included
-- [done] Next-step recommendations included
+Behavior
+- [done] Deterministic operator-readable outputs
+- [done] Invalid panel IDs fail safely
+- [done] Missing panel IDs fail safely
+- [done] Public overlay/registry APIs only
+
+Validation Commands
+- [done] node --check tools/dev/commandPacks/overlayCommandPack.js
+- [done] node --check tools/dev/devConsoleIntegration.js
+- [done] sample command harness execution for required overlay commands
 
 Packaging
-- [done] Outputs written under docs/pr and docs/dev/reports
-- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_OVERLAY_DATA_PROVIDERS_delta.zip
+- [done] Docs under docs/pr
+- [done] Reports under docs/dev/reports
+- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_OVERLAY_OPERATOR_COMMANDS_delta.zip

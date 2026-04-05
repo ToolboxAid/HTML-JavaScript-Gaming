@@ -1,1 +1,1 @@
-docs(debug): define overlay data provider contract and next-step execution path
+BUILD_PR_OVERLAY_OPERATOR_COMMANDS: add debug-only overlay operator command contract and sample-level console integration using public overlay APIs only

@@ -11,6 +11,7 @@ import { createDebugCommandPack } from "./commandPacks/debugCommandPack.js";
 import { createEntityCommandPack } from "./commandPacks/entityCommandPack.js";
 import { createHotReloadCommandPack } from "./commandPacks/hotReloadCommandPack.js";
 import { createInputCommandPack } from "./commandPacks/inputCommandPack.js";
+import { createOverlayCommandPack } from "./commandPacks/overlayCommandPack.js";
 import { createRenderCommandPack } from "./commandPacks/renderCommandPack.js";
 import { createSceneCommandPack } from "./commandPacks/sceneCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
@@ -242,6 +243,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       createEntityCommandPack(),
       createDebugCommandPack(),
       createInputCommandPack(),
+      createOverlayCommandPack(),
       createHotReloadCommandPack(),
       createValidationCommandPack()
     ]
