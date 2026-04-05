@@ -1,1 +1,5 @@
-docs: define dev console command-pack contracts, help behavior, and validation conventions
+PLAN_BUILD_PR_DEV_CONSOLE_COMMAND_PACKS
+
+- Added command pack system
+- Introduced command registry
+- Replaced flat command handling

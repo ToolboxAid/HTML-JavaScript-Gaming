@@ -5,7 +5,15 @@ David Quesenberry
 devConsoleIntegration.js
 */
 import { drawCanvasDebugHud } from "./canvasDebugHudRenderer.js";
+import { createDevConsoleCommandRegistry } from "./devConsoleCommandRegistry.js";
 import { drawInteractiveDevConsole } from "./interactiveDevConsoleRenderer.js";
+import { createDebugCommandPack } from "./commandPacks/debugCommandPack.js";
+import { createEntityCommandPack } from "./commandPacks/entityCommandPack.js";
+import { createHotReloadCommandPack } from "./commandPacks/hotReloadCommandPack.js";
+import { createInputCommandPack } from "./commandPacks/inputCommandPack.js";
+import { createRenderCommandPack } from "./commandPacks/renderCommandPack.js";
+import { createSceneCommandPack } from "./commandPacks/sceneCommandPack.js";
+import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
 import {
   createDiagnosticsCollector,
   createDevConsoleDebugOverlayRuntime
@@ -219,6 +227,60 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   let consoleOutputHistory = [];
   let consoleCommandHistory = [];
   const keyboardEventTarget = getKeyboardEventTarget();
+  const commandRegistry = createDevConsoleCommandRegistry({
+    packs: [
+      createSceneCommandPack(),
+      createRenderCommandPack(),
+      createEntityCommandPack(),
+      createDebugCommandPack(),
+      createInputCommandPack(),
+      createHotReloadCommandPack(),
+      createValidationCommandPack()
+    ]
+  });
+
+  function resetConsoleUiState() {
+    consoleInputBuffer = "";
+    consoleHistoryCursor = -1;
+    consoleOutputHistory = [];
+  }
+
+  function normalizeRuntimeDelegationResult(commandName, execution) {
+    const outputLines = Array.isArray(execution?.output?.lines)
+      ? execution.output.lines.map((line) => String(line)).filter(Boolean)
+      : [];
+
+    const runtimeCode = sanitizeText(execution?.reports?.[0]?.code)
+      || (execution?.status === "ready" ? "RUNTIME_COMMAND_OK" : "RUNTIME_COMMAND_FAILED");
+
+    return {
+      status: execution?.status === "ready" ? "ready" : "failed",
+      title: `Runtime: ${commandName}`,
+      lines: outputLines.length > 0 ? outputLines : [commandName],
+      details: {
+        runtimeCommand: commandName
+      },
+      code: runtimeCode
+    };
+  }
+
+  function executeRuntimeCommand(commandName, context = {}) {
+    const execution = runtime.executeConsoleInput(commandName, context);
+    return normalizeRuntimeDelegationResult(commandName, execution);
+  }
+
+  function buildRegistryCommandContext(baseContext = {}) {
+    const normalizedBase = isObject(baseContext)
+      ? baseContext
+      : buildCommandContext(diagnosticsSnapshot || {});
+
+    return {
+      ...normalizedBase,
+      consoleRuntime: runtime,
+      executeRuntimeCommand,
+      resetConsoleUiState
+    };
+  }
 
   function pushConsoleOutputLine(value) {
     const line = typeof value === "string" ? value : String(value ?? "");
@@ -256,9 +318,16 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
 
     pushConsoleOutputLine(`> ${command}`);
 
-    const outputLines = Array.isArray(execution?.output?.lines)
-      ? execution.output.lines.map((line) => String(line)).filter(Boolean)
-      : [];
+    const title = sanitizeText(execution?.title);
+    if (title) {
+      pushConsoleOutputLine(`[${title}]`);
+    }
+
+    const outputLines = Array.isArray(execution?.lines)
+      ? execution.lines.map((line) => String(line)).filter(Boolean)
+      : Array.isArray(execution?.output?.lines)
+        ? execution.output.lines.map((line) => String(line)).filter(Boolean)
+        : [];
 
     if (outputLines.length > 0) {
       pushConsoleOutputLines(outputLines.slice(0, 8));
@@ -268,12 +337,10 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
 
     if (execution?.status !== "ready") {
       pushConsoleOutputLine("(failed)");
-      const reports = Array.isArray(execution?.reports) ? execution.reports : [];
-      reports.slice(0, 2).forEach((report) => {
-        const code = sanitizeText(report?.code) || "EXECUTION_ERROR";
-        const message = sanitizeText(report?.message);
-        pushConsoleOutputLine(message ? `! ${code}: ${message}` : `! ${code}`);
-      });
+      const code = sanitizeText(execution?.code) || sanitizeText(execution?.reports?.[0]?.code) || "EXECUTION_ERROR";
+      if (code) {
+        pushConsoleOutputLine(`! ${code}`);
+      }
     }
   }
 
@@ -282,8 +349,8 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     if (!command) {
       return null;
     }
-    const runtimeContext = buildCommandContext(diagnosticsSnapshot || {});
-    const execution = executeCommand(command, runtimeContext);
+    const commandContext = buildRegistryCommandContext(buildCommandContext(diagnosticsSnapshot || {}));
+    const execution = executeCommand(command, commandContext);
     consoleInputBuffer = "";
     return execution;
   }
@@ -386,11 +453,13 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       return null;
     }
 
-    const commandContext = context && isObject(context)
-      ? context
-      : buildCommandContext(diagnosticsSnapshot || {});
+    const commandContext = buildRegistryCommandContext(
+      context && isObject(context)
+        ? context
+        : buildCommandContext(diagnosticsSnapshot || {})
+    );
 
-    const execution = runtime.executeConsoleInput(command, commandContext);
+    const execution = commandRegistry.execute(command, commandContext);
     lastCommandExecution = execution;
     lastCommandBinding = command;
     captureCommandHistory(command);
@@ -425,10 +494,12 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     lastCommandBinding = `${label} -> ${targetPanel.id}`;
     lastCommandExecution = {
       status: "ready",
-      output: {
-        lines: [`panel=${targetPanel.id}`, `title=${targetPanel.title}`]
+      title: "Panel Cycle",
+      lines: [`panel=${targetPanel.id}`, `title=${targetPanel.title}`],
+      details: {
+        panelId: targetPanel.id
       },
-      reports: []
+      code: "PANEL_CYCLE"
     };
     captureCommandHistory(label);
     appendExecutionToConsole(label, lastCommandExecution);
@@ -540,7 +611,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
 
       const commandHint = "Shift+` console | Ctrl+Shift+` overlay | Ctrl+Shift+R reload";
       const inputHint = "Enter run | Up/Down history | Esc clear";
-      const statusHint = `last: ${lastCommandBinding || "none"} | status: ${sanitizeText(lastCommandExecution?.status) || "idle"} | history: ${state.commandHistory.length}`;
+      const statusHint = `last: ${lastCommandBinding || "none"} | status: ${sanitizeText(lastCommandExecution?.status) || "idle"} | history: ${consoleCommandHistory.length}`;
 
       drawInteractiveDevConsole(renderer, {
         x: consoleX,
@@ -587,6 +658,8 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         consoleInputBuffer,
         consoleOutputHistory: consoleOutputHistory.slice(),
         consoleCommandHistory: consoleCommandHistory.slice(),
+        commandPackCount: commandRegistry.getPackCount(),
+        commandRegistryCount: commandRegistry.getCommandCount(),
         toggleCombos: cloneJson(comboBindings)
       };
     }
@@ -600,5 +673,6 @@ export function summarizeSampleGameDevConsoleIntegration(integration) {
 
   const state = integration.getState();
   const diagnosticsErrors = Array.isArray(state?.diagnosticsSnapshot?.errors) ? state.diagnosticsSnapshot.errors.length : 0;
-  return `Sample dev console integration ready (console=${state.consoleVisible}, overlay=${state.overlayVisible}, commands=${state.commandCount}, diagnosticsErrors=${diagnosticsErrors}).`;
+  const commandCount = Number.isFinite(state?.commandRegistryCount) ? state.commandRegistryCount : state.commandCount;
+  return `Sample dev console integration ready (console=${state.consoleVisible}, overlay=${state.overlayVisible}, commands=${commandCount}, diagnosticsErrors=${diagnosticsErrors}).`;
 }
