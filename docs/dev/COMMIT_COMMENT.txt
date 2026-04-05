@@ -1,5 +1,5 @@
-PLAN_BUILD_PR_DEV_CONSOLE_COMMAND_PACKS
+PLAN_BUILD_APPLY_PR_DEV_CONSOLE_COMMAND_PACKS
 
-- Added command pack system
-- Introduced command registry
-- Replaced flat command handling
+- Implemented full command pack system
+- Wired registry and packs
+- Applied integration

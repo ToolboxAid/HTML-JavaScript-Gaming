@@ -2,19 +2,19 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Implement command pack system.
+Execute full PLAN+BUILD+APPLY.
 
-- Create registry: tools/dev/devConsoleCommandRegistry.js
-- Create command packs under tools/dev/commandPacks/
-- Update devConsoleIntegration.js to use registry
+- Create registry
+- Create command packs
+- Wire into devConsoleIntegration.js
 - Implement help system
-- Use standardized output format
-- Do NOT modify engine core
-- Keep combo keys unchanged
-- Package result to:
-  <project>/tmp/PLAN_BUILD_PR_DEV_CONSOLE_COMMAND_PACKS_delta.zip
+- Ensure output contract
+- Do not modify engine core
+- Package final result to:
+  <project>/tmp/PLAN_BUILD_APPLY_PR_DEV_CONSOLE_COMMAND_PACKS_delta.zip
 
 Report:
 - files created
 - files updated
-- commands implemented
+- commands available
+- validation results
