@@ -1,1 +1,35 @@
-Summary of moved, merged, and deleted files.
+Change Summary
+==============
+
+Combined build outcome
+----------------------
+- finalized the canonical active tool folders under `tools/`
+- repaired active path and reference drift caused by prior rename/consolidation work
+- validated canonical loading surfaces and syntax
+- produced the vector asset contract spec in `docs/specs/vector_asset_contract.md`
+
+Canonical active tool folders
+-----------------------------
+- `tools/Sprite Editor V3/`
+- `tools/Tilemap Studio/`
+- `tools/Parallax Scene Studio/`
+- `tools/Vector Asset Studio/`
+- `tools/Vector Map Editor/`
+
+Legacy and exclusions
+---------------------
+- `tools/SpriteEditor_old_keep/` remains parked as legacy
+- old SpriteEditor stayed out of scope except for active reference cleanup
+
+Validation and repair highlights
+--------------------------------
+- launcher/index links verified
+- canonical sample-manifest paths verified
+- canonical JS entry files validated with `node --check`
+- no required refs remain to deprecated duplicate folders in active surfaces
+- no required refs remain to legacy old SpriteEditor in active surfaces
+
+Vector contract output
+----------------------
+- created `docs/specs/vector_asset_contract.md`
+- defined purpose, scope, coordinate rules, origin/transform rules, stroke/fill/palette strategy, primitives, layering, naming, runtime expectations, future geometry runtime support, and non-goals

@@ -1,7 +1,46 @@
-Validation Checklist:
-- Tools load correctly
-- No broken paths
-- Samples load
-- Assets render
-- No duplicate folders remain
-- SpriteEditor ignored
+Validation Checklist
+====================
+
+Consolidation and repair
+------------------------
+[x] Inspect folders directly under `tools/`
+[x] Identify duplicate and rename-drift tool folders
+[x] Select canonical folders for active tools
+[x] Repair launcher/index links
+[x] Repair active path/reference drift after consolidation
+[x] Keep old SpriteEditor excluded except for active reference cleanup
+
+Loading-path validation
+-----------------------
+[x] `tools/Sprite Editor V3/index.html` exists
+[x] `tools/Tilemap Studio/index.html` exists
+[x] `tools/Parallax Scene Studio/index.html` exists
+[x] `tools/Vector Asset Studio/index.html` exists
+[x] `tools/Vector Map Editor/index.html` exists
+[x] `tools/Vector Map Editor/how_to_use.html` exists
+[x] `tools/Tilemap Studio/samples/sample-manifest.json` exists
+[x] `tools/Parallax Scene Studio/samples/sample-manifest.json` exists
+[x] `tools/Vector Asset Studio/samples/sample-manifest.json` exists
+
+Syntax validation
+-----------------
+[x] `node --check tools/Sprite Editor V3/main.js`
+[x] `node --check tools/Sprite Editor V3/modules/spriteEditorApp.js`
+[x] `node --check tools/Sprite Editor V3/modules/projectModel.js`
+[x] `node --check tools/Sprite Editor V3/modules/constants.js`
+[x] `node --check tools/Tilemap Studio/main.js`
+[x] `node --check tools/Parallax Scene Studio/main.js`
+[x] `node --check tools/Vector Asset Studio/main.js`
+[x] `node --check tools/Vector Map Editor/main.js`
+[x] `node --check tools/Vector Map Editor/editor/VectorMapEditorApp.js`
+
+Reference validation
+--------------------
+[x] No required refs remain to deprecated duplicate folders in `tools/`, `games/`, `tests/`, or `scripts/`
+[x] No required runtime refs remain to old SpriteEditor in `tools/`, `games/`, `tests/`, or `scripts/`
+
+Vector contract output
+----------------------
+[x] `docs/specs/vector_asset_contract.md` created
+[x] combined BUILD PR doc updated
+[x] docs/dev command, commit, and reports refreshed

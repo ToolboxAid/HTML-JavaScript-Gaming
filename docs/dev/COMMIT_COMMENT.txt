@@ -1,1 +1,1 @@
-Consolidate tool folders, repair paths, validate runtime loading, and introduce vector asset contract planning in a single combined PR.
+build(tools): complete combined tools consolidation and vector contract docs
