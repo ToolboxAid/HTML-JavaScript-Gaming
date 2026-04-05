@@ -2,13 +2,13 @@ MODEL: GPT-5.4
 REASONING: high
 
 TASK:
-Execute all three tasks in one continuous Codex pass with no manual intervention.
+Execute combined tools consolidation + validation + vector asset contract plan.
 
-SEQUENCE:
-1. Execute BUILD_PR_TOOLS_FOLDER_CONSOLIDATION
-2. Validate and repair any broken paths/imports/references caused by the consolidation
-3. Create PLAN_PR_VECTOR_ASSET_CONTRACT as a docs-only planning bundle
+STEPS:
+1. Consolidate tools folder
+2. Fix all references
+3. Validate loading paths
+4. Generate vector asset contract spec
 
-ZIP TARGETS:
-- `tmp/BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.zip`
-- `tmp/PLAN_PR_VECTOR_ASSET_CONTRACT.zip`
+OUTPUT:
+<project folder>/tmp/BUILD_PR_TOOLS_AND_VECTOR_CONTRACT_COMBINED.zip

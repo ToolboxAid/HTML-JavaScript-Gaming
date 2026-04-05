@@ -1,34 +1,7 @@
-Validation Checklist
-====================
-
-Phase 1 and 2
--------------
-[x] Inventory folders directly under `tools/`
-[x] Identify duplicate and rename-drift tool folders
-[x] Select canonical current tool folders
-[x] Remove obsolete duplicate tool folders
-[x] Keep legacy `tools/SpriteEditor_old_keep/` out of the active platform
-[x] Repair launcher/index links
-[x] Repair broken path/reference drift after renames
-[x] Confirm `tools/Tilemap Studio/samples/sample-manifest.json` exists
-[x] Confirm `tools/Parallax Scene Studio/samples/sample-manifest.json` exists
-[x] Confirm `tools/Vector Asset Studio/samples/sample-manifest.json` exists
-[x] Confirm vector/svg tool paths remain present where referenced
-[x] `node --check tools/Sprite Editor V3/main.js`
-[x] `node --check tools/Sprite Editor V3/modules/spriteEditorApp.js`
-[x] `node --check tools/Sprite Editor V3/modules/projectModel.js`
-[x] `node --check tools/Sprite Editor V3/modules/constants.js`
-[x] `node --check tools/Tilemap Studio/main.js`
-[x] `node --check tools/Parallax Scene Studio/main.js`
-[x] `node --check tools/Vector Asset Studio/main.js`
-[x] `node --check tools/Vector Map Editor/main.js`
-[x] `node --check tools/Vector Map Editor/editor/VectorMapEditorApp.js`
-[x] No required refs to deprecated duplicate folders in `tools/`, `games/`, `tests/`, or `scripts/`
-[x] No required refs to legacy `tools/SpriteEditor_old_keep/` in `tools/`, `games/`, `tests/`, or `scripts/`
-
-Phase 3
--------
-[x] `docs/pr/PLAN_PR_VECTOR_ASSET_CONTRACT.md` created
-[x] `docs/dev/CODEX_COMMANDS.md` updated
-[x] `docs/dev/COMMIT_COMMENT.txt` updated
-[x] reports refreshed for the final canonical tool layout
+Validation Checklist:
+- Tools load correctly
+- No broken paths
+- Samples load
+- Assets render
+- No duplicate folders remain
+- SpriteEditor ignored
