@@ -3,21 +3,18 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-[x] PLAN, BUILD, APPLY docs created and aligned
-[x] Breakout card includes `Debug Showcase` in `games/index.html`
-[x] Breakout showcase badge uses unique color class
-[x] Breakout page includes `Debug: ON/OFF` badge
-[x] Breakout page includes `Open Debug Panel` button
-[x] Breakout page includes 1-2 lines of inline mini-help
-[x] Debug preset auto-load behavior implemented for debug-enabled mode
-[x] Overlay remains hidden by default after preset auto-load
-[x] Breakout scene renders debug integration HUD last
-[x] No engine core changes
-[x] No unrelated game entry edits
+[x] PLAN_PR document created/updated
+[x] BUILD_PR document created/updated
+[x] APPLY_PR document created/updated
+[x] Productization roadmap file exists
+[x] Productization roadmap includes bracket-only rule
+[x] Productization roadmap uses readable ASCII content
+[x] Scope is docs-only
+[x] BIG_PICTURE roadmap untouched
+[x] Reports refreshed
+[x] Repo-structured delta zip created
 
-Validation commands:
-- `node --check games/Breakout/main.js`
-- `node --check games/Breakout/game/BreakoutScene.js`
-- `node --check tools/dev/devConsoleIntegration.js`
-- `node tests/games/BreakoutValidation.test.mjs`
-- `rg -n "Debug Showcase|Debug: ON|Debug: OFF|Open Debug Panel|preset.apply" games/index.html games/Breakout/index.html games/Breakout/main.js`
+Validation checks:
+- `git diff --name-only`
+- `Get-Content -Raw docs/dev/PRODUCTIZATION_ROADMAP.md`
+- `tar -tf tmp/PR_PRODUCTIZATION_ROADMAP_FULL_bundle.zip`

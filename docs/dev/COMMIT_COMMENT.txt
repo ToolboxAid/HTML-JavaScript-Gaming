@@ -1,2 +1,2 @@
-PR_BREAKOUT_DEBUG_SHOWCASE_POLISH_FULL
-polish(breakout): add debug showcase label/UI affordances and debug preset bootstrap without unrelated refactors
+PR_PRODUCTIZATION_ROADMAP_FULL
+docs: add productization roadmap tracker and aligned PLAN/BUILD/APPLY docs bundle

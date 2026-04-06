@@ -3,24 +3,15 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for BREAKOUT_DEBUG_SHOWCASE_POLISH.
+Executed PLAN + BUILD + APPLY for PRODUCTIZATION_ROADMAP.
 
-Implemented:
-- Updated Breakout card in `games/index.html` to include `Debug Showcase` in header/tag area.
-- Added unique Breakout showcase badge color style.
-- Updated `games/Breakout/index.html` with:
-  - `Debug: ON/OFF` badge
-  - `Open Debug Panel` button
-  - 2-line inline mini-help
-  - Debug showcase title/header adjustments
-- Updated `games/Breakout/main.js` with:
-  - URL-based debug enablement
-  - default preset auto-load behavior (`preset.apply preset.gameplay` fallback safe)
-  - overlay hidden by default until explicit open
-  - UI state wiring for badge/button/help text
-- Updated `games/Breakout/game/BreakoutScene.js` to render debug integration surface last and update diagnostics snapshots.
+Summary of changes:
+- Added/updated productization roadmap docs bundle.
+- Standardized roadmap tracker content in `docs/dev/PRODUCTIZATION_ROADMAP.md`.
+- Removed malformed symbol encoding from roadmap content.
+- Refreshed PR docs, command/control docs, and reports for this one PR purpose.
 
 Scope guard:
-- Breakout runtime only + Breakout card in games hub.
-- No engine core API changes.
-- No unrelated game entry edits.
+- Docs-only.
+- No engine/runtime/tool implementation code changed.
+- No edits to BIG_PICTURE roadmap.
