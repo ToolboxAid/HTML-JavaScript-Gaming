@@ -3,25 +3,12 @@
 - [x] BUILD created
 - [x] APPLY created
 
-Sample A Runtime
-- [x] Sample opens from games/network_sample_a/index.html
-- [x] Fake loopback telemetry updates
-- [x] Connection lifecycle controls (disconnect/reconnect)
-- [x] Synthetic RTT and replication values update
-
-Debug Surfaces
-- [x] Connection status panel renders
-- [x] Latency panel renders
-- [x] Event trace panel renders
-- [x] Overlay hidden by default until explicit open
-
-Commands
-- [x] network.help
-- [x] network.status
-- [x] network.latency
-- [x] network.trace
+Roadmap Encoding
+- [x] BIG_PICTURE_ROADMAP.md rewritten as UTF-8 with BOM
+- [x] Roadmap wording unchanged
+- [x] Roadmap structure unchanged
+- [x] Bracket-state rows unchanged
 
 Scope Safety
-- [x] No engine core files modified
-- [x] Sample-level integration only
-- [x] Roadmap edits are bracket-only
+- [x] No engine/runtime/sample/tool code changed
+- [x] PR remains docs-first and surgical

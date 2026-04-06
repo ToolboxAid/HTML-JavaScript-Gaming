@@ -1,2 +1,1 @@
-﻿PR_DEBUG_SURFACES_NETWORK_SAMPLE_A_FULL
-build(sample-network): add Sample A loopback network debug sample with provider/panel/command integration
+﻿docs: normalize BIG_PICTURE_ROADMAP.md encoding without changing roadmap content or bracket states

@@ -1,11 +1,11 @@
-﻿Implemented Sample A network debug surfaces as a sample-level integration with no engine-core changes.
+﻿Applied a docs-first encoding normalization for docs/dev/BIG_PICTURE_ROADMAP.md.
 
-What was built:
-- New game sample at games/network_sample_a with fake loopback telemetry.
-- Synthetic connection lifecycle, latency, replication backlog, and trace events.
-- Sample debug plugin with read-only provider descriptors.
-- Overlay panels for connection status, latency/RTT, and trace events.
-- Console commands: network.help, network.status, network.latency, network.trace [count].
-- Overlay and console remain hidden by default until explicit user action.
-- Sample A PLAN/BUILD/APPLY docs finalized.
-- Network sample plan and roadmap states updated for completed Sample A slice.
+What changed:
+- Rewrote roadmap file as UTF-8 with BOM for reliable Windows decoding.
+- Preserved roadmap wording, structure, and bracket states.
+- Refreshed PLAN/BUILD/APPLY docs for BIG_PICTURE_ROADMAP_ENCODING_FIX.
+- Updated docs/dev control files and reports for this PR purpose.
+
+What did not change:
+- No engine/runtime/sample/tool implementation code.
+- No roadmap progress state edits.
