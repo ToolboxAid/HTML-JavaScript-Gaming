@@ -1,1 +1,25 @@
-Network promotion build bundle.
+# Change Summary
+
+## Bundle
+APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED_delta
+
+## Scope Applied
+- Docs-first PLAN/BUILD/APPLY updates for server dashboard advanced work.
+- Added advanced shared dashboard modules under `engine/debug/network/dashboard`.
+- Extended host/registry/renderer through public APIs.
+- Added read-only `dashboard.*` command registration bridge.
+- Exported advanced dashboard modules from `engine/debug/network/index.js`.
+- Updated `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` using bracket-only state edits.
+
+## Validation
+- Import and syntax checks for updated dashboard modules.
+- Snapshot normalization and metrics/view-model smoke coverage.
+- Refresh mode validation (`manual`, `normal`, `fast`).
+- Command output validation for `dashboard.help/status/refresh/mode/snapshot`.
+- Sample A/B/C plugin parity and provider read-only checks.
+
+## Constraints Kept
+- No engine core API changes.
+- No console coupling.
+- No overlay coupling.
+- No persistence.

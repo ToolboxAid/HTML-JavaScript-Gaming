@@ -1,2 +1,28 @@
-docs/pr
- docs/dev
+HTML-JavaScript-Gaming/
+  docs/
+    pr/
+      PLAN_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
+      BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
+      APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
+    dev/
+      CODEX_COMMANDS.md
+      COMMIT_COMMENT.txt
+      NEXT_COMMAND.txt
+      reports/
+        change_summary.txt
+        validation_checklist.txt
+        file_tree.txt
+    roadmaps/
+      NETWORK_SAMPLES_PLAN.md
+  engine/
+    debug/
+      network/
+        index.js
+        dashboard/
+          serverDashboardHost.js
+          serverDashboardRegistry.js
+          serverDashboardRenderer.js
+          serverDashboardMetrics.js
+          serverDashboardViewModel.js
+          serverDashboardRefreshModes.js
+          registerDashboardCommands.js

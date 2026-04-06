@@ -31,8 +31,21 @@ export {
   createServerDashboardSnapshotProvider,
   createServerDashboardSnapshotCollector
 } from "./dashboard/serverDashboardProviders.js";
+export { createServerDashboardMetrics } from "./dashboard/serverDashboardMetrics.js";
+export { createServerDashboardViewModel } from "./dashboard/serverDashboardViewModel.js";
+export {
+  SERVER_DASHBOARD_REFRESH_MODES,
+  listServerDashboardRefreshModes,
+  normalizeServerDashboardRefreshMode,
+  getServerDashboardRefreshModeDefinition,
+  resolveServerDashboardRefreshIntervalMs
+} from "./dashboard/serverDashboardRefreshModes.js";
 export { renderServerDashboardSections } from "./dashboard/serverDashboardRenderer.js";
 export { createServerDashboardHost } from "./dashboard/serverDashboardHost.js";
+export {
+  createServerDashboardCommandPack,
+  registerDashboardCommands
+} from "./dashboard/registerDashboardCommands.js";
 
 export { createLatencyDiagnosticsModel } from "./diagnostics/latencyDiagnosticsModel.js";
 export { createReplicationDiagnosticsModel } from "./diagnostics/replicationDiagnosticsModel.js";

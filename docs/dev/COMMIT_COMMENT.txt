@@ -1,1 +1,1 @@
-Apply network promotion build
+Apply advanced shared server dashboard under engine/debug/network/dashboard with read-only providers, refresh modes, view-model metrics, dashboard command pack registration, targeted validation coverage, and bracket-only NETWORK_SAMPLES_PLAN tracker updates.

@@ -5,27 +5,35 @@ David Quesenberry
 serverDashboardHost.js
 */
 
-import { asNumber, asObject } from "../shared/networkDebugUtils.js";
+import { asObject } from "../shared/networkDebugUtils.js";
+import { createServerDashboardRegistry } from "./serverDashboardRegistry.js";
 import { createServerDashboardSnapshotCollector } from "./serverDashboardProviders.js";
+import {
+  listServerDashboardRefreshModes,
+  normalizeServerDashboardRefreshMode,
+  resolveServerDashboardRefreshIntervalMs
+} from "./serverDashboardRefreshModes.js";
 import { renderServerDashboardSections } from "./serverDashboardRenderer.js";
-
-const MIN_REFRESH_INTERVAL_MS = 250;
 
 export function createServerDashboardHost(options = {}) {
   const source = asObject(options);
-  const pollIntervalMs = Math.max(
-    MIN_REFRESH_INTERVAL_MS,
-    Math.floor(asNumber(source.pollIntervalMs, 1000))
-  );
+  const registry = source.registry && typeof source.registry.listSections === "function"
+    ? source.registry
+    : createServerDashboardRegistry();
+  const refreshModeOptions = asObject(source.refreshModes);
+  let mode = normalizeServerDashboardRefreshMode(source.refreshMode, "normal");
+
   const collectSnapshot = createServerDashboardSnapshotCollector({
     getSnapshot: source.getSnapshot,
     snapshot: source.snapshot
   });
   const render = typeof source.render === "function"
     ? source.render
-    : (snapshot) => renderServerDashboardSections(snapshot, {
-      registry: source.registry,
+    : (snapshot, renderOptions = {}) => renderServerDashboardSections(snapshot, {
+      registry,
       title: source.title
+        || "Server Dashboard",
+      ...asObject(renderOptions)
     });
   const onRender = typeof source.onRender === "function" ? source.onRender : null;
   const onError = typeof source.onError === "function" ? source.onError : null;
@@ -34,28 +42,97 @@ export function createServerDashboardHost(options = {}) {
   let running = false;
   let lastSnapshot = null;
   let lastRendered = null;
+  let lastRefreshTimestampMs = 0;
+  let refreshCount = 0;
+  let lastErrorMessage = "";
 
-  function runOnce() {
+  function cloneValue(value) {
+    if (value === null || value === undefined) {
+      return value;
+    }
+    if (typeof structuredClone === "function") {
+      return structuredClone(value);
+    }
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function getRefreshIntervalMs(targetMode = mode) {
+    return resolveServerDashboardRefreshIntervalMs(targetMode, {
+      modes: refreshModeOptions
+    });
+  }
+
+  function clearRefreshTimer() {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function scheduleRefreshTimer() {
+    clearRefreshTimer();
+    if (!running || mode === "manual") {
+      return;
+    }
+    const intervalMs = getRefreshIntervalMs(mode);
+    timer = setInterval(() => {
+      refreshNow();
+    }, intervalMs);
+  }
+
+  function getStatus() {
+    const snapshot = asObject(lastSnapshot);
+    const sectionCount = Array.isArray(lastRendered?.sections) ? lastRendered.sections.length : 0;
+    return {
+      running,
+      mode,
+      refreshIntervalMs: getRefreshIntervalMs(mode),
+      refreshModes: listServerDashboardRefreshModes(),
+      refreshCount,
+      lastRefreshTimestampMs,
+      sectionCount,
+      playerCount: Array.isArray(snapshot.players) ? snapshot.players.length : 0,
+      connectionCount: Number(snapshot.connectionSessionCounts?.connections) || 0,
+      sessionCount: Number(snapshot.connectionSessionCounts?.sessions) || 0,
+      lastErrorMessage
+    };
+  }
+
+  function refreshNow() {
     try {
       lastSnapshot = collectSnapshot();
-      lastRendered = render(lastSnapshot);
+      lastRefreshTimestampMs = Date.now();
+      refreshCount += 1;
+      lastRendered = render(lastSnapshot, {
+        registry,
+        mode,
+        lastRefreshTimestampMs
+      });
+      lastErrorMessage = "";
       if (onRender) {
-        onRender(lastRendered, lastSnapshot);
+        onRender(lastRendered, lastSnapshot, getStatus());
       }
       return {
         ok: true,
-        snapshot: lastSnapshot,
-        rendered: lastRendered
+        snapshot: cloneValue(lastSnapshot),
+        rendered: cloneValue(lastRendered),
+        status: getStatus()
       };
     } catch (error) {
+      lastErrorMessage = error instanceof Error ? error.message : String(error);
       if (onError) {
         onError(error);
       }
       return {
         ok: false,
-        error
+        error,
+        status: getStatus()
       };
     }
+  }
+
+  function runOnce() {
+    return refreshNow();
   }
 
   function start() {
@@ -64,10 +141,8 @@ export function createServerDashboardHost(options = {}) {
     }
 
     running = true;
-    runOnce();
-    timer = setInterval(() => {
-      runOnce();
-    }, pollIntervalMs);
+    refreshNow();
+    scheduleRefreshTimer();
     return true;
   }
 
@@ -76,11 +151,22 @@ export function createServerDashboardHost(options = {}) {
       return false;
     }
     running = false;
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-    }
+    clearRefreshTimer();
     return true;
+  }
+
+  function destroy() {
+    return stop();
+  }
+
+  function setRefreshMode(nextMode) {
+    mode = normalizeServerDashboardRefreshMode(nextMode, mode);
+    scheduleRefreshTimer();
+    return getStatus();
+  }
+
+  function getSnapshot() {
+    return cloneValue(lastSnapshot);
   }
 
   function isRunning() {
@@ -88,20 +174,28 @@ export function createServerDashboardHost(options = {}) {
   }
 
   function getLastSnapshot() {
-    return lastSnapshot;
+    return cloneValue(lastSnapshot);
   }
 
   function getLastRendered() {
-    return lastRendered;
+    return cloneValue(lastRendered);
   }
 
   return {
     start,
     stop,
+    destroy,
     runOnce,
+    refreshNow,
     isRunning,
+    setRefreshMode,
+    getStatus,
+    getSnapshot,
     getLastSnapshot,
     getLastRendered,
-    pollIntervalMs
+    pollIntervalMs: getRefreshIntervalMs(mode),
+    getRefreshIntervalMs() {
+      return getRefreshIntervalMs(mode);
+    }
   };
 }

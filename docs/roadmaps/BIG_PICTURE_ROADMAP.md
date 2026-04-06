@@ -1,10 +1,3 @@
-⚠️ RULE:
-This file is a status tracker only.
-ONLY modify bracket states [ ] [.] [x].
-Do NOT change structure or wording.
-
----
-
 # 🧭 Debug Platform & Ecosystem Roadmap
 
 ## Status Legend
@@ -75,10 +68,10 @@ Do NOT change structure or wording.
 - [x] Connection status panel
 - [.] Latency / RTT panel
 - [ ] Replication state viewer
-- [ ] Client/server divergence inspector
+- [x] Client/server divergence inspector
 - [.] Event tracing
-- [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
 ---

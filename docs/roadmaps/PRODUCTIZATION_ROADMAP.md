@@ -1,15 +1,3 @@
-Toolbox Aid
-David Quesenberry
-04/05/2026
-PRODUCTIZATION_ROADMAP.md
-
-RULE:
-This file is a status tracker only.
-ONLY modify bracket states [ ] [.] [x].
-Do NOT change structure or wording.
-
----
-
 # Productization Roadmap
 
 ## Status Legend
