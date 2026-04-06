@@ -1,11 +1,14 @@
 Validation Checklist
 
-[x] Bundle is docs only
-[x] No new features introduced
-[x] PLAN_PR_FINAL_ENGINE_PROMOTION updated
-[x] BUILD_PR_FINAL_ENGINE_PROMOTION updated
-[x] APPLY_PR_FINAL_ENGINE_PROMOTION updated
-[x] Migration focus is explicit
-[x] Stabilization focus is explicit
-[x] Guardrails respected
-[x] Bundle contains only docs artifacts
+[x] PLAN_PR -> BUILD_PR -> APPLY_PR workflow preserved
+[x] Bundle is docs-only
+[x] Scope is migration/stabilization, not feature expansion
+[x] Stable debug API seams are explicitly defined
+[x] Plugin lifecycle boundaries are explicitly defined
+[x] Versioned contract metadata is explicitly defined
+[x] External documentation ownership is explicitly defined
+[x] Benchmark entry points and rules are explicitly defined
+[x] docs/pr history preserved
+[x] BIG_PICTURE_ROADMAP.md changed by brackets only
+[x] ROADMAP_GUARDRAILS.md unchanged
+[x] ZIP packaged with repo-structured paths

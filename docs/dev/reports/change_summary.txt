@@ -1,12 +1,15 @@
-Created docs-only FINAL_ENGINE_PROMOTION bundle.
+Created BUILD_PR_ENGINE_MATURITY docs-first implementation bundle.
 
-Updated:
-- PLAN/BUILD/APPLY final engine promotion docs
-- command and commit artifacts
-- reports and bundle file tree
+Updated scope:
+- stable public debug API seams
+- plugin lifecycle boundaries
+- versioned contract metadata requirements
+- external documentation ownership map
+- benchmark entry points and rules
 
 Constraints enforced:
-- docs only
+- docs-first and surgical
 - no new features
-- migration and stabilization focus only
-- guardrails respected
+- no engine-core API pollution
+- preserve docs/pr history
+- roadmap updates constrained to bracket-state transitions only

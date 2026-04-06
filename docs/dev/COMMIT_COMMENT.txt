@@ -1,1 +1,1 @@
-docs: finalize engine promotion bundle with migration and stabilization focus only
+docs: build engine maturity migration and stabilization bundle using proven public debug seams

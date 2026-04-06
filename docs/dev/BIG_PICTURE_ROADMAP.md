@@ -107,11 +107,11 @@ Do NOT change structure or wording.
 
 # 🧠 TRACK J — ENGINE MATURITY
 
-- [ ] Stable debug API
-- [ ] Plugin system
-- [ ] External documentation
-- [ ] Versioned contracts
-- [ ] Performance benchmarks
+- [.] Stable debug API
+- [.] Plugin system
+- [.] External documentation
+- [.] Versioned contracts
+- [.] Performance benchmarks
 
 ---
 
