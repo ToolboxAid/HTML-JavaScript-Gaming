@@ -5,6 +5,8 @@ David Quesenberry
 networkSampleCDebug.js
 */
 
+import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
+
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -331,7 +333,7 @@ function commandLinesForRewind(context) {
 }
 
 export function createNetworkSampleCDebugPlugin() {
-  return {
+  return createNetworkDebugPluginDefinition({
     pluginId: "network.sampleC",
     title: "Network Sample C Debug",
     featureFlag: "networkSampleCDebug",
@@ -552,5 +554,5 @@ export function createNetworkSampleCDebugPlugin() {
         }
       ];
     }
-  };
+  });
 }

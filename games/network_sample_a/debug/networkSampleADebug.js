@@ -5,6 +5,8 @@ David Quesenberry
 networkSampleADebug.js
 */
 
+import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
+
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -128,7 +130,7 @@ function commandLinesForTrace(context, args = []) {
 }
 
 export function createNetworkSampleADebugPlugin() {
-  return {
+  return createNetworkDebugPluginDefinition({
     pluginId: "network.sampleA",
     title: "Network Sample A Debug",
     featureFlag: "networkSampleADebug",
@@ -279,5 +281,5 @@ export function createNetworkSampleADebugPlugin() {
         }
       ];
     }
-  };
+  });
 }

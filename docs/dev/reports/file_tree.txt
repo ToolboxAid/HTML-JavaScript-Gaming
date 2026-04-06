@@ -1,13 +1,2 @@
-HTML-JavaScript-Gaming/
-  docs/
-    pr/
-      PLAN_PR_DEBUG_SURFACES_NETWORK_PROMOTION.md
-      BUILD_PR_DEBUG_SURFACES_NETWORK_PROMOTION.md
-      APPLY_PR_DEBUG_SURFACES_NETWORK_PROMOTION.md
-    dev/
-      reports/
-        file_tree.txt
-        change_summary.txt
-        validation_checklist.txt
-    roadmaps/
-      NETWORK_SAMPLES_PLAN.md
+docs/pr
+ docs/dev
