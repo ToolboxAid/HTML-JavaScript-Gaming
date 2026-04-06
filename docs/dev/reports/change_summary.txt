@@ -1,24 +1,19 @@
-BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS
+PLAN_PR_DEBUG_SURFACES_NETWORK_PROMOTION
 
 Summary:
-- Finalized PLAN/BUILD/APPLY docs for the server dashboard enhancement slice.
-- Extended the BUILD contract to include:
-  - player statistics view
-  - latency view
-  - RX bytes view
-  - TX bytes view
-  - connection/session counts
-  - per-player status rows
-  - refresh/update strategy
-  - debug-only access rules
-- Reinforced read-only data-flow guardrails and no-coupling rules for console/overlay.
-- Extended `tools/dev/server-dashboard/README.md` with enhancement-slice documentation.
-- Updated `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` Track T with bracket-state-only progress changes.
-- Refreshed report artifacts and packaged a repo-structured ZIP.
+- Rebuilt the PLAN PR document as a docs-first network promotion plan with explicit:
+  - target structure
+  - ownership matrix
+  - migration phases
+  - validation strategy
+  - risk controls
+  - rollout notes
+- Preserved one-PR-purpose scope and no engine-core implementation changes.
+- Kept reusable ownership centered on `engine/debug/network` and restricted core to minimal contracts/hooks.
+- Kept sample-specific scenarios, synthetic feeds, and local adapters project-owned by design.
+- Updated roadmap reference in `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` using bracket-only status change for promotion recommendation.
 
-Guardrails respected:
-- docs-first bundle
-- no engine core changes
-- one PR purpose only
-- sample-level integration only
-- dashboard flow remains read-only
+Scope controls:
+- docs-first only
+- read-only debug data-flow expectations preserved
+- no dashboard coupling to console/overlay internals

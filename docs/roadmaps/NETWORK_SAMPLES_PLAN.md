@@ -73,7 +73,7 @@ Track the staged network sample journey for debug surface support using a strict
 - [.] Sample-backed panel validation
 - [.] Operator command validation
 - [ ] Debug-only gating validation
-- [ ] Promotion recommendation
+- [.] Promotion recommendation
 
 ---
 

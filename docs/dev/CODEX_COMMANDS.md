@@ -2,27 +2,18 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS
+Create PLAN_PR_DEBUG_SURFACES_NETWORK_PROMOTION
 
 Requirements:
-- Follow PLAN_PR + BUILD_PR + APPLY_PR discipline
-- Build the zip automatically
+- Follow PLAN_PR + BUILD_PR + APPLY_PR
 - Docs-first
-- No engine core changes
 - One PR per purpose
-- Keep implementation under tools/dev/server-dashboard
-- Keep integration sample-level
-- Extend the server dashboard foundation with:
-  - player statistics view
-  - latency view
-  - rx bytes view
-  - tx bytes view
-  - connection/session counts
-  - per-player status rows
-  - refresh/update strategy
-  - debug-only access rules
-- Keep all data flow read-only
-- Do not couple dashboard to console or overlay
+- No engine core changes in this PLAN PR
+- Define promotion path for proven network debug capabilities
+- Prefer reusable ownership under engine/debug/network
+- Keep engine core limited to minimal contracts/hooks only
+- Keep sample-specific scenarios, feeds, and local adapters project-owned
+- Include target structure, ownership matrix, migration phases, validation strategy, risk controls, and rollout notes
+- Update roadmap references under docs/roadmaps/ with bracket-only edits only if needed
 - Write outputs under docs/pr and docs/dev/reports
-- Put roadmap files under docs/roadmaps
-- Package to <project folder>/tmp/BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS_delta.zip
+- Package to <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_NETWORK_PROMOTION_delta.zip

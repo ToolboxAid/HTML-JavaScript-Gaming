@@ -1,1 +1,1 @@
-Build BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS docs-first bundle to extend server-dashboard read-only contracts (player stats, latency, RX/TX, session counts, per-player rows, refresh strategy, debug-only access) under tools/dev/server-dashboard with sample-level integration only.
+docs: plan network debug promotion into reusable engine-debug layer

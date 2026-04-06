@@ -1,14 +1,18 @@
-BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS validation checklist
+PLAN_PR_DEBUG_SURFACES_NETWORK_PROMOTION validation checklist
 
-[x] PLAN/BUILD/APPLY discipline is preserved
-[x] BUILD bundle is docs-first
-[x] Enhancement inventory includes all requested views and rules
-[x] Data flow is explicitly read-only
-[x] Dashboard remains decoupled from console internals
-[x] Dashboard remains decoupled from overlay internals
-[x] No engine core changes included
-[x] Integration scope remains sample-level
-[x] Roadmap update is under docs/roadmaps
-[x] Roadmap changes are bracket-state-only for Track T items
-[x] Outputs written under docs/pr and docs/dev/reports
-[x] Delta zip generated under tmp/
+[x] PLAN/BUILD/APPLY discipline is explicitly stated
+[x] PLAN PR is docs-first and one-purpose
+[x] No engine core implementation changes are introduced
+[x] Promotion path for proven network debug capabilities is defined
+[x] Reusable ownership preference under `engine/debug/network` is documented
+[x] Engine core remains limited to minimal contracts/hooks in plan boundaries
+[x] Sample-specific scenarios/feeds/adapters remain project-owned
+[x] Target structure is documented
+[x] Ownership matrix is documented
+[x] Migration phases are documented
+[x] Validation strategy is documented
+[x] Risk controls are documented
+[x] Rollout notes are documented
+[x] Roadmap reference update (if needed) used bracket-only edit
+[x] Reports are written under `docs/dev/reports`
+[x] ZIP target path defined at `<project folder>/tmp/PLAN_PR_DEBUG_SURFACES_NETWORK_PROMOTION_delta.zip`
