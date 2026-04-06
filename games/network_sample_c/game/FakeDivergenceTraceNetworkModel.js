@@ -61,6 +61,37 @@ const REQUIRED_SEQUENCE_TYPES = [
 ];
 
 const PRIMARY_ENTITY_ID = "network-sample-c-entity";
+const FIXED_REPLAY_DT_SECONDS = 1 / 60;
+
+function createEmptyInputFrameRecord() {
+  return {
+    traceMarkers: 0,
+    mismatchCount: 0,
+    reconcileCount: 0,
+    validationCount: 0,
+    rewindPrepareCount: 0
+  };
+}
+
+function hasAnyInputRecordValue(record) {
+  const source = record && typeof record === "object" ? record : {};
+  return Number(source.traceMarkers || 0) > 0
+    || Number(source.mismatchCount || 0) > 0
+    || Number(source.reconcileCount || 0) > 0
+    || Number(source.validationCount || 0) > 0
+    || Number(source.rewindPrepareCount || 0) > 0;
+}
+
+function cloneInputRecord(record) {
+  const source = record && typeof record === "object" ? record : {};
+  return {
+    traceMarkers: Number(source.traceMarkers || 0),
+    mismatchCount: Number(source.mismatchCount || 0),
+    reconcileCount: Number(source.reconcileCount || 0),
+    validationCount: Number(source.validationCount || 0),
+    rewindPrepareCount: Number(source.rewindPrepareCount || 0)
+  };
+}
 
 function asPositiveNumber(value, fallback) {
   const numeric = Number(value);
@@ -121,6 +152,12 @@ function toEventMessage(type, details) {
       ? "Rewind preparation window is ready for resimulation."
       : "Rewind preparation requested; waiting on sufficient history.";
   }
+  if (type === "REWIND_REPLAY_EXECUTED") {
+    return "Rewind execution restored anchor frame and replayed deterministic inputs.";
+  }
+  if (type === "REWIND_REPLAY_SKIPPED") {
+    return "Rewind execution skipped due to unavailable replay window.";
+  }
   if (type === "VALIDATION_RUN") {
     return source.passed === true
       ? "Validation pass recorded."
@@ -167,6 +204,11 @@ export default class FakeDivergenceTraceNetworkModel {
     this.latestDivergenceReport = null;
     this.latestCorrectionPlan = null;
     this.latestRewindPreparation = null;
+    this.latestReplaySummary = null;
+    this.pendingInputRecord = createEmptyInputFrameRecord();
+    this.inputHistoryByFrame = new Map();
+    this.replayExecutionCount = 0;
+    this.isReplayExecuting = false;
 
     this.reconciliationLayer = new ReconciliationLayerAdapter({
       timelineId: "network-sample-c-reconciliation",
@@ -214,7 +256,8 @@ export default class FakeDivergenceTraceNetworkModel {
     }
   }
 
-  transitionToNextStep(reason = "auto") {
+  transitionToNextStep(reason = "auto", options = {}) {
+    const emitEvents = options.emitEvents !== false;
     this.stepIndex += 1;
     if (this.stepIndex >= SCENARIO_STEPS.length) {
       this.stepIndex = 0;
@@ -223,26 +266,29 @@ export default class FakeDivergenceTraceNetworkModel {
 
     this.stepElapsedSeconds = 0;
     const step = this.getCurrentStep();
-    this.pushEvent(step.transitionType, {
-      reason,
-      message: step.transitionMessage,
-      phase: step.id
-    });
+    if (emitEvents) {
+      this.pushEvent(step.transitionType, {
+        reason,
+        message: step.transitionMessage,
+        phase: step.id
+      });
+    }
   }
 
-  updateScenarioStep(dtSeconds) {
+  updateScenarioStep(dtSeconds, options = {}) {
+    const emitEvents = options.emitEvents !== false;
     const step = this.getCurrentStep();
     this.stepElapsedSeconds += dtSeconds;
 
     if (step.id !== "reconciled") {
       this.autoValidationForCycle = -1;
-    } else if (this.autoValidationForCycle !== this.cycleCount) {
+    } else if (emitEvents && this.autoValidationForCycle !== this.cycleCount) {
       this.runValidation("auto-reconcile");
       this.autoValidationForCycle = this.cycleCount;
     }
 
     if (this.stepElapsedSeconds >= step.durationSeconds) {
-      this.transitionToNextStep("timeline");
+      this.transitionToNextStep("timeline", { emitEvents });
     }
   }
 
@@ -255,7 +301,8 @@ export default class FakeDivergenceTraceNetworkModel {
     this.simulatedPacketLossPct = status === "critical" ? 4 : status === "warning" ? 2 : 0;
   }
 
-  updateFrameState(dtSeconds) {
+  updateFrameState(dtSeconds, options = {}) {
+    const emitEvents = options.emitEvents !== false;
     const frameAdvance = Math.max(1, Math.round(dtSeconds * 60));
     this.authoritativeFrame += frameAdvance;
 
@@ -281,14 +328,14 @@ export default class FakeDivergenceTraceNetworkModel {
     this.predictedFrame = this.authoritativeFrame + Math.round(this.predictedOffsetFrames);
 
     const currentStatus = this.getDivergenceStatus();
-    if (currentStatus !== this.lastKnownStatus) {
+    if (currentStatus !== this.lastKnownStatus && emitEvents) {
       this.pushEvent("DIVERGENCE_STATE_CHANGED", {
         previous: this.lastKnownStatus,
         current: currentStatus,
         delta: this.getFrameDelta()
       });
-      this.lastKnownStatus = currentStatus;
     }
+    this.lastKnownStatus = currentStatus;
   }
 
   getFrameDelta() {
@@ -297,6 +344,66 @@ export default class FakeDivergenceTraceNetworkModel {
 
   getDivergenceStatus() {
     return toStatusFromDelta(this.getFrameDelta());
+  }
+
+  markPendingInput(key, count = 1) {
+    const normalizedCount = Math.max(0, Number(count) || 0);
+    if (this.isReplayExecuting || normalizedCount <= 0) {
+      return;
+    }
+    this.pendingInputRecord[key] = Number(this.pendingInputRecord[key] || 0) + normalizedCount;
+  }
+
+  flushPendingInputsForFrame(frameId) {
+    const normalizedFrameId = Math.floor(Number(frameId));
+    if (!Number.isFinite(normalizedFrameId)) {
+      this.pendingInputRecord = createEmptyInputFrameRecord();
+      return;
+    }
+
+    if (hasAnyInputRecordValue(this.pendingInputRecord)) {
+      this.inputHistoryByFrame.set(normalizedFrameId, cloneInputRecord(this.pendingInputRecord));
+    }
+    this.pendingInputRecord = createEmptyInputFrameRecord();
+  }
+
+  getInputRecordForFrame(frameId) {
+    const normalizedFrameId = Math.floor(Number(frameId));
+    if (!Number.isFinite(normalizedFrameId) || !this.inputHistoryByFrame.has(normalizedFrameId)) {
+      return createEmptyInputFrameRecord();
+    }
+    return cloneInputRecord(this.inputHistoryByFrame.get(normalizedFrameId));
+  }
+
+  applyMismatchImpulse(count = 1) {
+    const normalizedCount = Math.max(1, Math.floor(Number(count) || 1));
+    this.manualOffsetFrames = clamp(this.manualOffsetFrames + (12 * normalizedCount), 0, 30);
+  }
+
+  applyReconcileImpulse() {
+    this.manualOffsetFrames = 0;
+    this.manualReconcileSeconds = 2.4;
+  }
+
+  applyReplayInputFrame(inputRecord) {
+    const replayInput = cloneInputRecord(inputRecord);
+
+    if (replayInput.mismatchCount > 0) {
+      this.applyMismatchImpulse(replayInput.mismatchCount);
+    }
+    if (replayInput.reconcileCount > 0) {
+      this.applyReconcileImpulse();
+    }
+  }
+
+  advanceSimulation(dtSeconds, options = {}) {
+    const safeDt = asPositiveNumber(dtSeconds, FIXED_REPLAY_DT_SECONDS);
+    const emitEvents = options.emitEvents !== false;
+
+    this.elapsedSeconds += safeDt;
+    this.updateScenarioStep(safeDt, { emitEvents });
+    this.updateFrameState(safeDt, { emitEvents });
+    this.updateNetworkMetrics();
   }
 
   createPredictedSnapshot() {
@@ -325,7 +432,22 @@ export default class FakeDivergenceTraceNetworkModel {
       ],
       meta: {
         source: "predicted",
-        sampleId: "network-sample-c"
+        sampleId: "network-sample-c",
+        modelState: {
+          elapsedSeconds: Number(this.elapsedSeconds.toFixed(6)),
+          stepIndex: this.stepIndex,
+          stepElapsedSeconds: Number(this.stepElapsedSeconds.toFixed(6)),
+          cycleCount: this.cycleCount,
+          authoritativeFrame: this.authoritativeFrame,
+          predictedFrame: this.predictedFrame,
+          predictedOffsetFrames: Number(this.predictedOffsetFrames.toFixed(6)),
+          manualOffsetFrames: Number(this.manualOffsetFrames.toFixed(6)),
+          manualReconcileSeconds: Number(this.manualReconcileSeconds.toFixed(6)),
+          lastKnownStatus: this.lastKnownStatus,
+          rttMs: this.rttMs,
+          jitterMs: this.jitterMs,
+          simulatedPacketLossPct: this.simulatedPacketLossPct
+        }
       }
     };
   }
@@ -380,6 +502,7 @@ export default class FakeDivergenceTraceNetworkModel {
   }
 
   addManualTraceMarker(label = "operator") {
+    this.markPendingInput("traceMarkers", 1);
     this.pushEvent("MANUAL_TRACE_MARKER", {
       label,
       frameDelta: this.getFrameDelta()
@@ -387,7 +510,8 @@ export default class FakeDivergenceTraceNetworkModel {
   }
 
   triggerManualMismatch(reason = "operator") {
-    this.manualOffsetFrames = clamp(this.manualOffsetFrames + 12, 0, 30);
+    this.markPendingInput("mismatchCount", 1);
+    this.applyMismatchImpulse(1);
     this.pushEvent("MANUAL_MISMATCH_INJECTED", {
       reason,
       manualOffsetFrames: Number(this.manualOffsetFrames.toFixed(2)),
@@ -396,8 +520,8 @@ export default class FakeDivergenceTraceNetworkModel {
   }
 
   triggerManualReconcile(reason = "operator") {
-    this.manualOffsetFrames = 0;
-    this.manualReconcileSeconds = 2.4;
+    this.markPendingInput("reconcileCount", 1);
+    this.applyReconcileImpulse();
     this.pushEvent("MANUAL_RECONCILE_REQUESTED", {
       reason,
       frameDelta: this.getFrameDelta()
@@ -405,6 +529,7 @@ export default class FakeDivergenceTraceNetworkModel {
   }
 
   triggerRewindPreparation(reason = "operator") {
+    this.markPendingInput("rewindPrepareCount", 1);
     this.updateReconciliationLayer();
     const rewindPreparation = this.latestRewindPreparation || {
       status: "insufficient-history",
@@ -422,7 +547,144 @@ export default class FakeDivergenceTraceNetworkModel {
     });
   }
 
+  restoreFromPredictedTimelineSnapshot(snapshotRecord) {
+    const source = snapshotRecord && typeof snapshotRecord === "object"
+      ? snapshotRecord
+      : {};
+    const snapshot = source.snapshot && typeof source.snapshot === "object"
+      ? source.snapshot
+      : {};
+    const modelState = snapshot.meta?.modelState && typeof snapshot.meta.modelState === "object"
+      ? snapshot.meta.modelState
+      : null;
+
+    if (!modelState) {
+      return false;
+    }
+
+    const restoredElapsedSeconds = Number(modelState.elapsedSeconds);
+    this.elapsedSeconds = Number.isFinite(restoredElapsedSeconds)
+      ? Math.max(0, restoredElapsedSeconds)
+      : this.elapsedSeconds;
+    const restoredStepIndex = Math.max(0, Math.floor(Number(modelState.stepIndex) || 0));
+    this.stepIndex = SCENARIO_STEPS.length > 0
+      ? restoredStepIndex % SCENARIO_STEPS.length
+      : 0;
+    this.stepElapsedSeconds = Math.max(0, Number(modelState.stepElapsedSeconds || 0));
+    this.cycleCount = Math.max(0, Math.floor(Number(modelState.cycleCount) || 0));
+    this.authoritativeFrame = Math.max(0, Math.floor(Number(modelState.authoritativeFrame) || 0));
+    this.predictedFrame = Math.max(0, Math.floor(Number(modelState.predictedFrame) || 0));
+    this.predictedOffsetFrames = Number(modelState.predictedOffsetFrames || 0);
+    this.manualOffsetFrames = Number(modelState.manualOffsetFrames || 0);
+    this.manualReconcileSeconds = Math.max(0, Number(modelState.manualReconcileSeconds || 0));
+    this.rttMs = Number(modelState.rttMs || this.rttMs);
+    this.jitterMs = Number(modelState.jitterMs || this.jitterMs);
+    this.simulatedPacketLossPct = Number(modelState.simulatedPacketLossPct || this.simulatedPacketLossPct);
+    this.lastKnownStatus = String(modelState.lastKnownStatus || this.lastKnownStatus);
+
+    return true;
+  }
+
+  executeRewindReplay(reason = "operator") {
+    this.updateReconciliationLayer();
+    const rewindPreparation = this.latestRewindPreparation || {};
+
+    if (rewindPreparation.canPrepare !== true) {
+      this.pushEvent("REWIND_REPLAY_SKIPPED", {
+        reason,
+        status: rewindPreparation.status || "not-ready",
+        canPrepare: false
+      });
+      return {
+        executed: false,
+        reason: "rewind-not-ready",
+        rewindPreparation
+      };
+    }
+
+    const anchorFrameId = Number(rewindPreparation.rewindAnchorFrameId);
+    const latestFrameId = Number(this.reconciliationLayer.getLatestTimelineFrameId());
+    if (!Number.isFinite(anchorFrameId) || !Number.isFinite(latestFrameId) || latestFrameId <= anchorFrameId) {
+      this.pushEvent("REWIND_REPLAY_SKIPPED", {
+        reason,
+        status: "invalid-window",
+        anchorFrameId: rewindPreparation.rewindAnchorFrameId,
+        latestFrameId: this.reconciliationLayer.getLatestTimelineFrameId()
+      });
+      return {
+        executed: false,
+        reason: "invalid-window",
+        rewindPreparation
+      };
+    }
+
+    const anchorSnapshot = this.reconciliationLayer.getTimelineSnapshot(anchorFrameId);
+    if (!anchorSnapshot || this.restoreFromPredictedTimelineSnapshot(anchorSnapshot) !== true) {
+      this.pushEvent("REWIND_REPLAY_SKIPPED", {
+        reason,
+        status: "missing-anchor",
+        anchorFrameId
+      });
+      return {
+        executed: false,
+        reason: "missing-anchor",
+        rewindPreparation
+      };
+    }
+
+    const truncatedCount = this.reconciliationLayer.truncatePredictedHistoryAfter(anchorFrameId);
+    const replayStartFrameId = anchorFrameId + 1;
+    let replayedFrameCount = 0;
+
+    this.isReplayExecuting = true;
+    for (let frameId = replayStartFrameId; frameId <= latestFrameId; frameId += 1) {
+      const replayInput = this.getInputRecordForFrame(frameId);
+      this.applyReplayInputFrame(replayInput);
+      this.advanceSimulation(FIXED_REPLAY_DT_SECONDS, { emitEvents: false });
+      this.reconciliationLayer.recordPredictedSnapshot(this.createPredictedSnapshot());
+      replayedFrameCount += 1;
+    }
+    this.isReplayExecuting = false;
+
+    this.updateReconciliationLayer();
+    const postReplayRewind = this.latestRewindPreparation || null;
+    const postReplayCorrection = this.latestCorrectionPlan || null;
+
+    this.replayExecutionCount += 1;
+    this.latestReplaySummary = {
+      replayId: this.replayExecutionCount,
+      reason,
+      replayAnchorFrameId: anchorFrameId,
+      replayLatestFrameId: latestFrameId,
+      replayedFrameCount,
+      truncatedCount,
+      postReplayCorrectionMode: postReplayCorrection?.mode || "hold-annotate",
+      postReplaySeverity: postReplayCorrection?.severity || "low",
+      postReplayRewindStatus: postReplayRewind?.status || "unknown"
+    };
+
+    this.pushEvent("REWIND_REPLAY_EXECUTED", {
+      reason,
+      replayId: this.latestReplaySummary.replayId,
+      replayAnchorFrameId: anchorFrameId,
+      replayLatestFrameId: latestFrameId,
+      replayedFrameCount,
+      truncatedCount,
+      postReplayCorrectionMode: this.latestReplaySummary.postReplayCorrectionMode,
+      postReplaySeverity: this.latestReplaySummary.postReplaySeverity,
+      postReplayRewindStatus: this.latestReplaySummary.postReplayRewindStatus
+    });
+
+    return {
+      executed: true,
+      replaySummary: { ...this.latestReplaySummary }
+    };
+  }
+
   runValidation(reason = "operator") {
+    if (reason !== "auto-reconcile") {
+      this.markPendingInput("validationCount", 1);
+    }
     const checks = this.computeValidationChecks();
     const passed = checks.every((item) => item.passed === true);
 
@@ -499,7 +761,6 @@ export default class FakeDivergenceTraceNetworkModel {
 
   update(dtSeconds, options = {}) {
     const safeDt = asPositiveNumber(dtSeconds, 1 / 60);
-    this.elapsedSeconds += safeDt;
 
     if (options.injectTraceMarker === true) {
       this.addManualTraceMarker("input");
@@ -517,9 +778,8 @@ export default class FakeDivergenceTraceNetworkModel {
       this.runValidation("input");
     }
 
-    this.updateScenarioStep(safeDt);
-    this.updateFrameState(safeDt);
-    this.updateNetworkMetrics();
+    this.advanceSimulation(safeDt, { emitEvents: true });
+    this.flushPendingInputsForFrame(this.authoritativeFrame);
     this.updateReconciliationLayer();
   }
 
@@ -609,6 +869,7 @@ export default class FakeDivergenceTraceNetworkModel {
       },
       correction: correctionPlan,
       rewindPreparation,
+      rewindReplay: this.latestReplaySummary ? { ...this.latestReplaySummary } : null,
       reproduction: {
         summary: "Reproduce divergence in a deterministic cycle and validate trace ordering before reconcile.",
         steps: [
@@ -618,6 +879,7 @@ export default class FakeDivergenceTraceNetworkModel {
           "Open Debug Mode and compare divergence state + trace ordering.",
           "Inspect timeline history/alignment and rewind preparation status.",
           "Press W to refresh rewind preparation snapshot when needed.",
+          "Press X to execute rewind + deterministic replay.",
           "Press V to run validation and verify checklist status.",
           "Press R or wait for reconcile phase, then validate again."
         ]

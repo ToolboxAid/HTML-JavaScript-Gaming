@@ -1,10 +1,14 @@
 docs/
+  pr/
+    BUILD_PR_LEVEL_11_4_REWIND_EXECUTION.md
   dev/
+    REWIND_EXECUTION_SPEC.md
+    DETERMINISTIC_REPLAY_RULES.md
+    TIMELINE_UPDATE_SPEC.md
+    DEBUG_REPLAY_VISUALS.md
     codex_commands.md
-    PLANNING_SYSTEM_RULES.md
+    commit_comment.txt
     reports/
       file_tree.txt
       change_summary.txt
       validation_checklist.txt
-  pr/
-    SYSTEM_RULES_PR_v2.md

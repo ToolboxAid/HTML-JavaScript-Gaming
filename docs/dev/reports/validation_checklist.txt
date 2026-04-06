@@ -1,4 +1,4 @@
-- Docs only
-- No code included
-- Enforces ownership boundaries
+- Docs-only bundle
+- No engine-core changes
+- Sample-scoped implementation instructions
 - Matches repo structure

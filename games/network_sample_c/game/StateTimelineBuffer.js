@@ -102,6 +102,24 @@ export default class StateTimelineBuffer {
     });
   }
 
+  removeSnapshotsAfter(frameId) {
+    const normalizedFrameId = normalizeFrameId(frameId);
+    if (normalizedFrameId === null || this.frameIds.length === 0) {
+      return 0;
+    }
+
+    const cutoffIndex = lowerBound(this.frameIds, normalizedFrameId + 1);
+    if (cutoffIndex >= this.frameIds.length) {
+      return 0;
+    }
+
+    const removed = this.frameIds.splice(cutoffIndex);
+    removed.forEach((removedFrameId) => {
+      this.snapshotMap.delete(removedFrameId);
+    });
+    return removed.length;
+  }
+
   getSnapshot(frameId) {
     const normalizedFrameId = normalizeFrameId(frameId);
     if (normalizedFrameId === null || !this.snapshotMap.has(normalizedFrameId)) {

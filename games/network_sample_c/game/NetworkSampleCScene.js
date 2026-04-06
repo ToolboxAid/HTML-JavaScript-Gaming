@@ -144,6 +144,10 @@ export default class NetworkSampleCScene extends Scene {
       this.networkModel.triggerRewindPreparation("manual-key");
     }
 
+    if (getEdgePress(engineInput, "KeyX", this.edgeState)) {
+      this.networkModel.executeRewindReplay("manual-key");
+    }
+
     if (getEdgePress(engineInput, "KeyV", this.edgeState)) {
       this.networkModel.runValidation("manual-key");
     }
@@ -208,7 +212,7 @@ export default class NetworkSampleCScene extends Scene {
       font: "14px monospace",
       textBaseline: "top"
     });
-    renderer.drawText("D mismatch  R reconcile  W rewind prep  V validate", 42, 338, {
+    renderer.drawText("D mismatch  R reconcile  W prep  X execute  V validate", 42, 338, {
       color: MUTED_TEXT,
       font: "14px monospace",
       textBaseline: "top"
@@ -260,6 +264,7 @@ export default class NetworkSampleCScene extends Scene {
     const divergence = this.lastSnapshot.divergence || {};
     const reproduction = this.lastSnapshot.reproduction || {};
     const rewindPreparation = this.lastSnapshot.rewindPreparation || {};
+    const rewindReplay = this.lastSnapshot.rewindReplay || {};
     const steps = Array.isArray(reproduction.steps) ? reproduction.steps : [];
 
     renderer.drawRect(24, 370, 442, 228, PANEL_COLOR);
@@ -289,9 +294,14 @@ export default class NetworkSampleCScene extends Scene {
       font: "13px monospace",
       textBaseline: "top"
     });
+    renderer.drawText(`replay=${rewindReplay.replayId ?? "none"} frames=${rewindReplay.replayedFrameCount ?? 0} severity=${rewindReplay.postReplaySeverity ?? "n/a"}`, 42, 494, {
+      color: MUTED_TEXT,
+      font: "12px monospace",
+      textBaseline: "top"
+    });
 
-    steps.slice(0, 5).forEach((step, index) => {
-      const y = 496 + (index * 18);
+    steps.slice(0, 4).forEach((step, index) => {
+      const y = 514 + (index * 17);
       renderer.drawText(`${index + 1}. ${String(step)}`, 42, y, {
         color: MUTED_TEXT,
         font: "12px monospace",
@@ -341,7 +351,7 @@ export default class NetworkSampleCScene extends Scene {
       font: "bold 24px monospace",
       textBaseline: "top"
     });
-    renderer.drawText("Space/Enter: trace marker  D: mismatch  R: reconcile  W: rewind prep  V: validate", 24, 56, {
+    renderer.drawText("Space/Enter: trace marker  D: mismatch  R: reconcile  W: prep  X: execute  V: validate", 24, 56, {
       color: MUTED_TEXT,
       font: "16px monospace",
       textBaseline: "top"

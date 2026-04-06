@@ -98,6 +98,7 @@ function toRewindLines(snapshot) {
   const network = toNetworkSnapshot(snapshot);
   const rewind = asObject(network.rewindPreparation);
   const correction = asObject(network.correction);
+  const replay = asObject(network.rewindReplay);
 
   return [
     `status=${sanitizeText(rewind.status) || "n/a"}`,
@@ -106,6 +107,7 @@ function toRewindLines(snapshot) {
     `resimulateFrameCount=${asNumber(rewind.resimulateFrameCount, 0)}`,
     `alignment=${sanitizeText(rewind.alignment) || "unavailable"} frameGap=${rewind.frameGap ?? "n/a"}`,
     `correctionMode=${sanitizeText(correction.mode) || "hold-annotate"} severity=${sanitizeText(correction.severity) || "low"}`,
+    `lastReplayId=${replay.replayId ?? "none"} replayedFrames=${asNumber(replay.replayedFrameCount, 0)} postReplaySeverity=${sanitizeText(replay.postReplaySeverity) || "n/a"}`,
     sanitizeText(rewind.note) || "No rewind preparation note."
   ];
 }
@@ -223,6 +225,7 @@ function commandLinesForRewind(context) {
   const timeline = asObject(snapshot.timeline);
   const history = asObject(timeline.history);
   const correction = asObject(snapshot.correction);
+  const replay = asObject(snapshot.rewindReplay);
 
   return [
     `rewindStatus=${sanitizeText(rewind.status) || "n/a"}`,
@@ -232,6 +235,7 @@ function commandLinesForRewind(context) {
     `resimulateFrameCount=${asNumber(rewind.resimulateFrameCount, 0)}`,
     `history=${asNumber(history.size, 0)}/${asNumber(history.limit, 0)} alignment=${sanitizeText(history.alignment) || "unavailable"} frameGap=${history.frameGap ?? "n/a"}`,
     `correctionMode=${sanitizeText(correction.mode) || "hold-annotate"} severity=${sanitizeText(correction.severity) || "low"}`,
+    `lastReplayId=${replay.replayId ?? "none"} replayedFrames=${asNumber(replay.replayedFrameCount, 0)} postReplaySeverity=${sanitizeText(replay.postReplaySeverity) || "n/a"}`,
     sanitizeText(rewind.note) || "Rewind preparation status unavailable."
   ];
 }

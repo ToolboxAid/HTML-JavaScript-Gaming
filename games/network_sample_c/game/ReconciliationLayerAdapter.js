@@ -400,4 +400,16 @@ export default class ReconciliationLayerAdapter {
     const referenceFrameId = this.latestDivergenceReport?.summary?.authoritativeFrameId ?? null;
     return this.timelineBuffer.getStatus({ referenceFrameId });
   }
+
+  getTimelineSnapshot(frameId) {
+    return this.timelineBuffer.getSnapshot(frameId);
+  }
+
+  truncatePredictedHistoryAfter(frameId) {
+    return this.timelineBuffer.removeSnapshotsAfter(frameId);
+  }
+
+  getLatestTimelineFrameId() {
+    return this.timelineBuffer.getStatus({}).latestFrameId;
+  }
 }

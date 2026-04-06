@@ -1,8 +1,13 @@
-Plan timeline rewind preparation for Level 11 network architecture
+Implement rewind execution and deterministic replay for Level 11
 
-- Defines frame history buffer
-- Establishes rewind strategy
-- Introduces authoritative injection model
-- Expands debug visualization concepts
+- Adds rewind-to-frame execution using timeline buffer
+- Replays inputs forward deterministically
+- Updates timeline after replay
+- Extends debug surfaces to visualize replay path
 
-Docs-only PR
+Validation:
+- Rewind restores correct frame
+- Replay produces consistent results
+- Timeline updates correctly
+
+No engine-core or shared system changes

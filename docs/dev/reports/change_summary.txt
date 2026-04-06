@@ -1,1 +1,1 @@
-Adds enforcement rules for ChatGPT (planning) and Codex (implementation).
+Adds Level 11.4 rewind execution and replay specifications
