@@ -1,1 +1,1 @@
-Build BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION as a docs-first, sample-level, read-only server-dashboard foundation bundle with explicit host/registry/providers/renderer boundaries and bracket-only tracker state updates.
+Build BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS docs-first bundle to extend server-dashboard read-only contracts (player stats, latency, RX/TX, session counts, per-player rows, refresh strategy, debug-only access) under tools/dev/server-dashboard with sample-level integration only.

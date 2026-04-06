@@ -60,3 +60,23 @@ Define a read-only server dashboard foundation that remains decoupled from conso
 
 ## Integration Rule
 Sample-level integration only. Engine core remains unchanged in this slice.
+
+---
+
+## Enhancement Slice (Docs-First)
+
+This enhancement slice extends the foundation with read-only view contracts:
+- player statistics view
+- latency view
+- RX bytes view
+- TX bytes view
+- connection/session counts
+- per-player status rows
+- refresh/update strategy
+- debug-only access rules
+
+### Enhancement Rules
+- remain decoupled from console and overlay internals
+- keep all provider flows read-only
+- keep dashboard-local rendering responsibilities
+- keep integration sample-level

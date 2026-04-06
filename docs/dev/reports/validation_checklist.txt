@@ -1,14 +1,14 @@
-BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION validation checklist
+BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS validation checklist
 
-[x] PLAN/BUILD/APPLY discipline is preserved in docs set
-[x] BUILD doc is docs-first and one-purpose
-[x] Host responsibility documented
-[x] Registry responsibility documented
-[x] Providers responsibility documented
-[x] Renderer responsibility documented
-[x] Console/overlay decoupling explicitly documented
-[x] Combo keys explicitly unchanged by contract
-[x] No engine-core changes included
-[x] Tracker update performed via bracket-only edits
-[x] Reports updated under docs/dev/reports
-[x] Bundle package target set to tmp/BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION_delta.zip
+[x] PLAN/BUILD/APPLY discipline is preserved
+[x] BUILD bundle is docs-first
+[x] Enhancement inventory includes all requested views and rules
+[x] Data flow is explicitly read-only
+[x] Dashboard remains decoupled from console internals
+[x] Dashboard remains decoupled from overlay internals
+[x] No engine core changes included
+[x] Integration scope remains sample-level
+[x] Roadmap update is under docs/roadmaps
+[x] Roadmap changes are bracket-state-only for Track T items
+[x] Outputs written under docs/pr and docs/dev/reports
+[x] Delta zip generated under tmp/

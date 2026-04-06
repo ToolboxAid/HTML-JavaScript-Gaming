@@ -1,15 +1,24 @@
-BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION
+BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ENHANCEMENTS
 
 Summary:
-- Refined the BUILD_PR doc as docs-first execution guidance for a read-only server dashboard foundation.
-- Added server-dashboard local documentation under `tools/dev/server-dashboard/README.md`.
-- Captured host, registry, providers, and renderer ownership boundaries.
-- Explicitly documented console/overlay decoupling and combo-key non-change requirements.
-- Updated tracker status using bracket-only edits in `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` (Track T moved further into in-progress states).
-- Refreshed report artifacts and commit comment for this BUILD bundle.
+- Finalized PLAN/BUILD/APPLY docs for the server dashboard enhancement slice.
+- Extended the BUILD contract to include:
+  - player statistics view
+  - latency view
+  - RX bytes view
+  - TX bytes view
+  - connection/session counts
+  - per-player status rows
+  - refresh/update strategy
+  - debug-only access rules
+- Reinforced read-only data-flow guardrails and no-coupling rules for console/overlay.
+- Extended `tools/dev/server-dashboard/README.md` with enhancement-slice documentation.
+- Updated `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` Track T with bracket-state-only progress changes.
+- Refreshed report artifacts and packaged a repo-structured ZIP.
 
 Guardrails respected:
+- docs-first bundle
 - no engine core changes
-- one PR purpose only (server dashboard foundation docs)
-- sample-level integration rule preserved
-- no server-dashboard runtime implementation code in this bundle
+- one PR purpose only
+- sample-level integration only
+- dashboard flow remains read-only
