@@ -1,15 +1,10 @@
-docs/
-  dev/
-    BIG_PICTURE_ROADMAP.md
-    NETWORK_SAMPLES_PLAN.md
-    codex_commands.md
-    commit_comment.txt
-    next_command.txt
-    reports/
-      change_summary.txt
-      file_tree.txt
-      validation_checklist.txt
-  pr/
-    APPLY_PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL.md
-    BUILD_PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL.md
-    PLAN_PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL.md
+BUILD_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION/
+`-- docs/
+    |-- dev/
+    |   |-- commit_comment.txt
+    |   `-- reports/
+    |       |-- change_summary.txt
+    |       |-- file_tree.txt
+    |       `-- validation_checklist.txt
+    `-- pr/
+        `-- BUILD_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION.md

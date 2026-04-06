@@ -1,1 +1,8 @@
-docs(network-sample-c): plan Level 11 divergence/trace sample and roadmap cleanup
+Build Level 11.2 reconciliation layer foundation (docs-first)
+
+- Create BUILD follow-up plan from reconciliation/timeline/debug contract specs
+- Preserve PLAN_PR -> BUILD_PR -> APPLY_PR workflow conventions
+- Keep Sample C as proving-ground consumer, not shared layer implementation
+- Normalize future interfaces around approved public selectors/events only
+- Require sample-level layering and bounded history buffers
+- Explicitly exclude engine-core, server-dashboard, docker, and transport implementation

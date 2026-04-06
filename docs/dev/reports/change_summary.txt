@@ -1,9 +1,20 @@
-Prepared a docs-only continuation bundle for the next repo workflow step.
+CHANGE SUMMARY
+
+Created a docs-only BUILD follow-up bundle for Level 11.2 reconciliation-layer foundation work.
 
 Included:
-- PLAN/BUILD/APPLY PR docs for PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL
-- refreshed NETWORK_SAMPLES_PLAN with Sample C in progress and T/U reset to future work
-- big-picture roadmap patch guidance to remove broken icons
-- codex command, commit comment, next command, and validation/report files
+- BUILD PR doc for Level 11.2 reconciliation-layer foundation
+- Updated report artifacts (file tree, change summary, validation checklist)
+- Updated commit comment for this BUILD bundle
 
-No implementation code is included.
+Guided by:
+- docs/dev/RECONCILIATION_LAYER_SPEC.md
+- docs/dev/STATE_TIMELINE_SPEC.md
+- docs/dev/DEBUG_SURFACE_CONTRACT.md
+
+Key BUILD outcomes:
+- preserve workflow convention (PLAN_PR -> BUILD_PR -> APPLY_PR)
+- keep Sample C as a consumer/proving ground, not shared implementation
+- normalize future interfaces around approved public selectors/events only
+- prefer sample-level layering with bounded history buffers
+- avoid engine-core, server-dashboard, docker, and transport implementation scope

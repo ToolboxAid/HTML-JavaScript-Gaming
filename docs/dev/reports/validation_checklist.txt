@@ -1,9 +1,17 @@
-[ ] Bundle is docs-only
-[ ] Workflow preserved as PLAN_PR -> BUILD_PR -> APPLY_PR
-[ ] Sample C named consistently as Divergence / Trace Validation
-[ ] games/index.html guidance says card-level update only
-[ ] No new top section allowed in games/index.html
-[ ] NETWORK_SAMPLES_PLAN shows Track P in progress
-[ ] Track T and Track U are present and not falsely marked complete
-[ ] BIG_PICTURE_ROADMAP guidance removes broken icons
-[ ] Codex command points to PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL
+VALIDATION CHECKLIST
+
+[ ] Bundle remains docs/planning only
+[ ] BUILD doc exists at docs/pr/BUILD_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION.md
+[ ] Source guidance references reconciliation/timeline/debug contract specs
+[ ] Workflow convention preserved as PLAN_PR -> BUILD_PR -> APPLY_PR
+[ ] Proposed interfaces constrained to approved public selectors/events only
+[ ] Sample C retained as consumer/proving ground, not shared runtime implementation
+[ ] Future-proof neutral naming guidance included (no sample-specific ad hoc shared names)
+[ ] Bounded history buffer guidance included
+[ ] No engine-core API changes proposed
+[ ] No server-dashboard implementation proposed
+[ ] No docker/container implementation proposed
+[ ] No transport implementation proposed
+[ ] commit_comment.txt updated for this BUILD bundle
+[ ] reports/file_tree.txt reflects this BUILD bundle structure
+[ ] reports/change_summary.txt reflects this BUILD bundle intent
