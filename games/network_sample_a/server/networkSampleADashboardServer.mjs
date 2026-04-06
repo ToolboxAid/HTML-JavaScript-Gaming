@@ -1,4 +1,4 @@
-﻿/*
+/*
 Toolbox Aid
 David Quesenberry
 04/06/2026
@@ -418,21 +418,24 @@ function checkAccess(requestUrl, request, config) {
   const queryKey = String(requestUrl.searchParams.get("key") || "").trim();
   const providedKey = headerKey || queryKey;
   const loopback = isLoopbackAddress(request.socket?.remoteAddress);
+  const validAdminKey = providedKey && providedKey === config.adminKey;
 
-  if (!loopback) {
+  if (loopback && config.allowLoopbackWithoutKey === true) {
+    return { ok: true };
+  }
+
+  if (validAdminKey) {
+    if (loopback || config.allowRemoteWithKey === true) {
+      return { ok: true };
+    }
+  }
+
+  if (!loopback && config.allowRemoteWithKey !== true) {
     return {
       ok: false,
       code: "REMOTE_BLOCKED",
       message: "Dashboard access is restricted to loopback addresses."
     };
-  }
-
-  if (config.allowLoopbackWithoutKey === true) {
-    return { ok: true };
-  }
-
-  if (providedKey && providedKey === config.adminKey) {
-    return { ok: true };
   }
 
   return {
@@ -450,6 +453,8 @@ export function createNetworkSampleADashboardServer(options = {}) {
     adminKey: String(options.adminKey || process.env.NETWORK_SAMPLE_A_ADMIN_KEY || DEFAULT_ADMIN_KEY),
     allowLoopbackWithoutKey: (options.allowLoopbackWithoutKey === true)
       || String(process.env.NETWORK_SAMPLE_A_ALLOW_LOCALHOST_WITHOUT_KEY || "").trim() === "1",
+    allowRemoteWithKey: (options.allowRemoteWithKey === true)
+      || String(process.env.NETWORK_SAMPLE_A_ALLOW_REMOTE_WITH_KEY || "").trim() === "1",
     dashboardPath: DASHBOARD_PATH,
     metricsPath: METRICS_PATH,
     healthPath: HEALTH_PATH

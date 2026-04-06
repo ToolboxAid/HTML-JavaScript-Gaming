@@ -1,15 +1,16 @@
-Implemented PR_DEBUG_SURFACES_NETWORK_SERVER_DASHBOARD_FULL (Track T).
+Implemented PR_DEBUG_SURFACES_NETWORK_SERVER_CONTAINER_FULL (Track U).
 
 Delivered:
-- Server-owned dashboard and metrics endpoints under games/network_sample_a/server.
-- Polling HTML dashboard (no websocket dependency).
-- Read-only diagnostics sourced from Sample A fake network model.
-- Metrics: player/session counts, connection state, latency summary + per-player, RX bytes, TX bytes.
-- Debug/admin gate: loopback restriction + key-based access.
-- Track T checklist in NETWORK_SAMPLES_PLAN updated to complete.
-- Runtime fix: corrected embedded dashboard script string construction to avoid nested-template parse failures.
+- Added container runtime artifacts for the Sample A dashboard server.
+- Added `games/network_sample_a/server/Dockerfile` with healthcheck and minimal runtime image.
+- Added `games/network_sample_a/.dockerignore` to keep context small and focused.
+- Added optional compose service at `games/network_sample_a/server/docker-compose.yml`.
+- Updated server access contract with opt-in `NETWORK_SAMPLE_A_ALLOW_REMOTE_WITH_KEY=1` for containerized browser access.
+- Updated server README with docker build/run, compose usage, env contract, port mapping, readiness, and logging expectations.
+- Updated Track U checklist to complete in `docs/dev/NETWORK_SAMPLES_PLAN.md`.
 
 Scope preserved:
 - no engine/core changes
-- no containerization work
+- no orchestration stack work
+- no dashboard feature expansion outside container access compatibility
 - BIG_PICTURE_ROADMAP not modified

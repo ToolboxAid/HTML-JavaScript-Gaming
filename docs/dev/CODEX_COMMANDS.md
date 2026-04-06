@@ -1,8 +1,8 @@
 MODEL: GPT-5.4-codex
-REASONING: high
+REASONING: medium
 
 COMMAND:
-Create PR_DEBUG_SURFACES_NETWORK_SERVER_DASHBOARD_FULL
+Create PR_DEBUG_SURFACES_NETWORK_SERVER_CONTAINER_FULL
 
 PURPOSE:
-Implement Track T — Server Dashboard for real-time network observability using Sample A as the data source.
+Implement Track U � Docker containerization for the network server and dashboard.

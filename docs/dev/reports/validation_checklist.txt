@@ -3,25 +3,26 @@ Workflow
 - [x] BUILD created
 - [x] APPLY created
 
-Track T Implementation
-- [x] lightweight server dashboard implemented
-- [x] player/session count metrics exposed
-- [x] connection state metrics exposed
-- [x] latency summary + per-player exposed
-- [x] RX/TX byte metrics exposed
-- [x] integrated with Sample A fake network source
-- [x] polling refresh implemented
-- [x] debug/admin-only gate implemented
+Track U Implementation
+- [x] Dockerfile for server
+- [x] .dockerignore added for sample context
+- [x] Environment variable contract documented
+- [x] Local run command documented
+- [x] Compose-ready service definition added
+- [x] Port mapping rules documented
+- [x] Health/readiness check implemented
+- [x] Logging/output expectations documented
+- [x] Container debug notes documented
 
 Safety
-- [x] read-only diagnostics only
 - [x] no engine changes
-- [x] Sample A game remains intact
+- [x] no orchestration scope expansion
+- [x] Sample A dashboard behavior preserved
 - [x] BIG_PICTURE_ROADMAP.md unchanged
 
 Validation Runs
 - [x] node --check games/network_sample_a/server/networkSampleADashboardServer.mjs
-- [x] health endpoint returns 200
-- [x] unauthorized metrics endpoint returns 403
-- [x] authorized metrics endpoint returns 200 with summary + players
-- [x] dashboard endpoint returns 200
+- [x] local node server health endpoint returns 200
+- [x] local node server authorized metrics endpoint returns 200
+- [x] docker artifact syntax checked (Dockerfile + compose present)
+- [x] docker image build/run validation skipped in this environment (Docker CLI unavailable)

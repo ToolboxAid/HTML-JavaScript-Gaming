@@ -1,0 +1,10 @@
+# Toolbox Aid
+# David Quesenberry
+# 04/06/2026
+# .dockerignore
+**
+!server/networkSampleADashboardServer.mjs
+!server/Dockerfile
+!server/docker-compose.yml
+!server/README.md
+!game/FakeLoopbackNetworkModel.js
