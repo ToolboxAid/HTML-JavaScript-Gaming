@@ -1,1 +1,1 @@
-Build BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION docs bundle with containerization-only scope, bracket-only Track U roadmap updates, no engine-core changes, and packaged delta zip output.
+Build Sample A server containerization artifacts and update Track U roadmap states without engine-core changes.

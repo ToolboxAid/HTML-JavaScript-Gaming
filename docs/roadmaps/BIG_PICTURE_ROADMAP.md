@@ -1,3 +1,10 @@
+⚠️ RULE:
+This file is a status tracker only.
+ONLY modify bracket states [ ] [.] [x].
+Do NOT change structure or wording.
+
+---
+
 # 🧭 Debug Platform & Ecosystem Roadmap
 
 ## Status Legend
@@ -68,19 +75,19 @@
 - [x] Connection status panel
 - [.] Latency / RTT panel
 - [ ] Replication state viewer
-- [x] Client/server divergence inspector
+- [ ] Client/server divergence inspector
 - [.] Event tracing
-- [x] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- [x] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
 ---
 
 # 🧊 TRACK H — 3D DEBUG SUPPORT
 
-- [ ] Transform inspector
-- [ ] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
-- [ ] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [.] Transform inspector
+- [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
 - [ ] Camera debug panel
 - [ ] Render pipeline stages
 - [ ] Collision overlays

@@ -1,7 +1,14 @@
 HTML-JavaScript-Gaming/
+  games/
+    network_sample_a/
+      .dockerignore
+      server/
+        Dockerfile
+        docker-compose.yml
+        README.md
+        networkSampleADashboardServer.mjs
   docs/
     pr/
-      PLAN_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
       BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
       APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
     dev/

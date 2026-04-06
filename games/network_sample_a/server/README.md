@@ -52,6 +52,8 @@ docker compose up --build
 - Docker healthcheck calls this route to determine container health.
 
 ## Logging Output Expectations
+Output is stdout/stderr only in this PR (no additional logging stack introduced).
+
 On startup, logs include:
 - `NETWORK_SAMPLE_A_SERVER_DASHBOARD_READY`
 - Dashboard URL (with key query)

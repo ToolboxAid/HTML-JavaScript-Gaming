@@ -69,9 +69,9 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK S — READINESS TO PROMOTE
 
-- [x] Sample-backed provider validation
-- [x] Sample-backed panel validation
-- [x] Operator command validation
+- [.] Sample-backed provider validation
+- [.] Sample-backed panel validation
+- [.] Operator command validation
 - [ ] Debug-only gating validation
 - [ ] Promotion recommendation
 
@@ -79,29 +79,29 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK T — SERVER DASHBOARD
 
-- [x] Server dashboard shell
-- [.] Player statistics view
-- [.] Latency view
-- [.] RX bytes view
-- [.] TX bytes view
-- [.] Connection/session counts
+- [ ] Server dashboard shell
+- [ ] Player statistics view
+- [ ] Latency view
+- [ ] RX bytes view
+- [ ] TX bytes view
+- [ ] Connection/session counts
 - [ ] Per-player status rows
-- [.] Refresh/update strategy
+- [ ] Refresh/update strategy
 - [ ] Debug-only access rules
 
 ---
 
 # TRACK U — SERVER CONTAINERIZATION
 
-- [.] Dockerfile for server
-- [.] .dockerignore
-- [.] Environment variable contract
-- [.] Local run command
-- [.] Compose-ready service definition
-- [.] Port mapping rules
-- [.] Health/readiness check
-- [.] Logging/output expectations
-- [.] Container debug notes
+- [x] Dockerfile for server
+- [x] .dockerignore
+- [x] Environment variable contract
+- [x] Local run command
+- [x] Compose-ready service definition
+- [x] Port mapping rules
+- [x] Health/readiness check
+- [x] Logging/output expectations
+- [x] Container debug notes
 
 ## Recommended Execution Order
 1. Sample A
