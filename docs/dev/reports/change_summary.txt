@@ -1,13 +1,6 @@
-﻿Implemented PR_DEBUG_SURFACES_NETWORK_SAMPLE_A_FULL as a sample-level network debug diagnostics slice.
+Full PR bundle to extend the network plan with:
+- Track T — Server Dashboard
+- Track U — Server Containerization
 
-Scope delivered:
-- PLAN/BUILD/APPLY docs for Sample A.
-- New sample at games/network_sample_a.
-- Fake loopback model for connection lifecycle, RTT/jitter, replication backlog, and trace events.
-- Sample-owned debug plugin panels/providers/commands.
-- Dev control files and reports refreshed for this PR.
-- Track G bracket-only roadmap updates for Connection status, Latency/RTT, and Event tracing.
-
-Safety:
-- No engine core API modifications.
-- No transport/protocol implementation.
+The dashboard track covers player statistics, latency, RX/TX bytes, and connection counts.
+The container track covers Docker packaging and runtime guidance for the server.

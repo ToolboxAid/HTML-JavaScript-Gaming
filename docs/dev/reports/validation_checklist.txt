@@ -1,25 +1,7 @@
-﻿Workflow
-- [x] PLAN created
-- [x] BUILD created
-- [x] APPLY created
-
-Sample A Runtime
-- [x] Sample opens from games/network_sample_a/index.html
-- [x] Synthetic telemetry updates continuously
-- [x] Disconnect/reconnect controls work
-
-Debug Surfaces
-- [x] Connection status panel renders
-- [x] Latency / RTT panel renders
-- [x] Event tracing panel renders
-
-Commands
-- [x] network.help
-- [x] network.status
-- [x] network.latency
-- [x] network.trace
-
-Scope Safety
-- [x] No engine core files changed
-- [x] Sample-level integration only
-- [x] Roadmap edits are bracket-only
+[ ] PLAN_PR_DEBUG_SURFACES_NETWORK_SERVER_OPS created
+[ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SERVER_OPS created
+[ ] APPLY_PR_DEBUG_SURFACES_NETWORK_SERVER_OPS created
+[ ] NETWORK_SAMPLES_PLAN Track T added
+[ ] NETWORK_SAMPLES_PLAN Track U added
+[ ] Checklist format preserved
+[ ] No unrelated roadmap edits
