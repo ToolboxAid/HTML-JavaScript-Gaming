@@ -1,1 +1,1 @@
-build(network-sample-b): implement host/client diagnostics sample with read-only debug panels and commands
+docs(network-sample-b): package Level 11 integration verification and Track O tracking alignment

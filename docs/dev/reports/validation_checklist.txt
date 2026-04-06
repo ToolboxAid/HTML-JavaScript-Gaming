@@ -3,25 +3,19 @@ Workflow
 - [x] BUILD created
 - [x] APPLY created
 
-Sample B Implementation
-- [x] host/client role simulation added
-- [x] multi-peer provider snapshot support added
-- [x] host status panel added
-- [x] client status panel added
-- [x] ownership/authority panel added
-- [x] replication snapshots panel added
-- [x] network.connections command added
-- [x] network.replication command added
-- [x] Sample B integrated in games/network_sample_b
-- [x] Sample B card added under Level 11 in games/index.html
+Integration Targets
+- [x] Network Sample B card present under Level 11 in games/index.html
+- [x] Card follows existing Debug Showcase pattern
+- [x] Play link present for Sample B
+- [x] Debug link present for Sample B
+- [x] Docs links present for Sample B
 
-Roadmap/Docs
-- [x] Track O items updated to [x] in docs/dev/NETWORK_SAMPLES_PLAN.md
-- [x] BIG_PICTURE_ROADMAP.md not modified
+Tracking
+- [x] Track O checklist verified as [x] in docs/dev/NETWORK_SAMPLES_PLAN.md
+- [x] no BIG_PICTURE_ROADMAP.md update required
 
-Validation Runs
-- [x] node --check games/network_sample_b/main.js
-- [x] node --check games/network_sample_b/game/FakeHostClientNetworkModel.js
-- [x] node --check games/network_sample_b/game/NetworkSampleBScene.js
-- [x] node --check games/network_sample_b/debug/networkSampleBDebug.js
-- [x] static check of Level 11 card links for Sample B in games/index.html
+Safety
+- [x] no server changes
+- [x] no container changes
+- [x] no engine changes
+- [x] no top section additions

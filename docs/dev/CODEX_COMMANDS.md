@@ -1,8 +1,8 @@
 MODEL: GPT-5.4-codex
-REASONING: high
+REASONING: medium
 
 COMMAND:
-Create PR_DEBUG_SURFACES_NETWORK_SAMPLE_B_FULL
+Create PR_DEBUG_SURFACES_NETWORK_SAMPLE_B_INTEGRATION_FULL
 
 PURPOSE:
-Implement Sample B � Host / Client Diagnostics to simulate multi-role network behavior using the existing debug surface system.
+Add Network Sample B to games/index.html under Level 11 and update tracking docs.

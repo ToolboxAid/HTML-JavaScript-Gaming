@@ -1,15 +1,13 @@
-Implemented PR_DEBUG_SURFACES_NETWORK_SAMPLE_B_FULL.
+Created PR_DEBUG_SURFACES_NETWORK_SAMPLE_B_INTEGRATION_FULL as an integration-focused bundle.
 
 Delivered:
-- Added `games/network_sample_b` sample with host/client fake peer simulation.
-- Added read-only debug plugin panels for host status, client status, ownership/authority, and replication snapshots.
-- Added operator commands `network.connections` and `network.replication` (plus sample help listing).
-- Integrated Sample B into `games/index.html` under Level 11 with Debug Showcase consistency.
-- Added Sample B preview asset and standalone sample entry page.
-- Updated Track O checklist items to complete in `docs/dev/NETWORK_SAMPLES_PLAN.md`.
+- Added integration PR docs for PLAN/BUILD/APPLY under docs/pr.
+- Verified Sample B card presence in `games/index.html` Level 11 using the existing Debug Showcase card pattern.
+- Verified Sample B card includes Play, Debug, and docs links.
+- Verified Track O checklist remains complete (`[x]`) in `docs/dev/NETWORK_SAMPLES_PLAN.md`.
 
 Scope preserved:
-- no engine/core changes
-- no real networking transport implementation
-- no server/dashboard changes
-- no required edits to BIG_PICTURE_ROADMAP.md
+- no server changes
+- no container changes
+- no engine changes
+- no top section additions or page structure changes
