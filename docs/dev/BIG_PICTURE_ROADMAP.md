@@ -1,29 +1,126 @@
-# BIG_PICTURE_ROADMAP
+⚠️ RULE:
+This file is a status tracker only.
+ONLY modify bracket states [ ] [.] [x].
+Do NOT change structure or wording.
 
-## Roadmap Patch Guidance For Next PR
-This bundle intentionally provides a text-only roadmap direction for the next Codex step because the prior session reported broken icon rendering in the big picture roadmap.
+---
 
-### Required Cleanup
-- remove broken decorative icons from the affected network/debug roadmap area
-- use plain text headings only for the relevant tracks
-- preserve existing ordering and surrounding roadmap structure
+# 🧭 Debug Platform & Ecosystem Roadmap
 
-### Required Network/Debug Sequence
-- Track N - Network Sample Foundation
-- Track O - Host / Client Sample
-- Track P - Divergence / Trace Sample
-- Track T - Server Dashboard
-- Track U - Server Containerization
+## Status Legend
+- [ ] Todo
+- [.] In Progress
+- [x] Complete
 
-### Level Mapping
-- Level 11 - Network Games
-- Phase 13 - Network Concepts, Latency & Simulation (1301-1315)
+---
 
-### Plain-Text Upcoming Tracks
-Track T - Server Dashboard
-Track U - Server Containerization
+# 🧱 TRACK A — DEBUG FOUNDATION (COMPLETE)
 
-### Notes For Codex
-- apply this as a minimal cleanup/update to the existing file
-- do not introduce new icon glyphs or emoji in the repaired section
-- keep wording aligned with `docs/dev/NETWORK_SAMPLES_PLAN.md`
+- [x] Dev Console (input + command execution)
+- [x] Debug Overlay (visual panels)
+- [x] Console ↔ Overlay Boundary
+- [x] Panel Registry
+- [x] Data Providers (read-only model)
+- [x] Operator Commands (control surface)
+- [x] Panel Persistence
+
+---
+
+# 🚀 TRACK B — PROMOTION TO ENGINE LAYER
+
+- [x] PLAN_PR_DEBUG_SURFACES_PROMOTION
+- [x] BUILD_PR_DEBUG_SURFACES_PROMOTION
+- [x] APPLY_PR_DEBUG_SURFACES_PROMOTION
+
+---
+
+# 📦 TRACK C — STANDARD DEBUG LIBRARY
+
+- [x] PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+- [x] BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+- [x] APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+
+---
+
+# 🎛️ TRACK D — DEBUG PRESETS
+
+- [x] PLAN_PR_DEBUG_SURFACES_PRESETS
+- [x] BUILD_PR_DEBUG_SURFACES_PRESETS
+- [x] APPLY_PR_DEBUG_SURFACES_PRESETS
+
+---
+
+# 🧰 TRACK E — ADVANCED DEBUG UX
+
+- [x] PLAN_PR_DEBUG_SURFACES_ADVANCED_UX
+- [x] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
+- [x] APPLY_PR_DEBUG_SURFACES_ADVANCED_UX
+
+---
+
+# 🎮 TRACK F — GAME INTEGRATION
+
+- [x] PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] Sample game uses full debug platform
+- [x] Toggle debug in production-safe mode
+- [x] Performance-safe overlays
+- [x] Build-time debug flags
+
+---
+
+# 🌐 TRACK G — NETWORK / MULTIPLAYER DEBUG
+
+- [x] Connection status panel
+- [.] Latency / RTT panel
+- [ ] Replication state viewer
+- [ ] Client/server divergence inspector
+- [.] Event tracing
+- [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+
+---
+
+# 🧊 TRACK H — 3D DEBUG SUPPORT
+
+- [.] Transform inspector
+- [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [ ] Camera debug panel
+- [ ] Render pipeline stages
+- [ ] Collision overlays
+- [ ] Scene graph inspector
+
+---
+
+# 🔬 TRACK I — INSPECTORS & TOOLING
+
+- [x] Entity inspector
+- [x] Component inspector
+- [x] State diff viewer
+- [x] Timeline debugger
+- [x] Event stream viewer
+
+---
+
+# 🧠 TRACK J — ENGINE MATURITY
+
+- [x] Stable debug API
+- [x] Plugin system
+- [x] External documentation
+- [x] Versioned contracts
+- [x] Performance benchmarks
+
+---
+
+# 🏁 END STATE
+
+A complete system:
+
+- Engine Core → minimal contracts
+- Engine Debug → reusable platform
+- Standard Library → shared baseline
+- Presets → usability layer
+- Extensions → 3D, network, inspectors
