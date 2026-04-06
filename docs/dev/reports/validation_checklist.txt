@@ -1,7 +1,27 @@
-[x] games/index.html patched from current code base
-[x] no top showcase section added
-[x] Level 11 - Network Games set
-[x] Network Sample A card added
-[x] docs links added
-[x] NETWORK_SAMPLES_PLAN updated
-[x] BIG_PICTURE_ROADMAP bracket-only edits only
+Workflow
+- [x] PLAN created
+- [x] BUILD created
+- [x] APPLY created
+
+Track T Implementation
+- [x] lightweight server dashboard implemented
+- [x] player/session count metrics exposed
+- [x] connection state metrics exposed
+- [x] latency summary + per-player exposed
+- [x] RX/TX byte metrics exposed
+- [x] integrated with Sample A fake network source
+- [x] polling refresh implemented
+- [x] debug/admin-only gate implemented
+
+Safety
+- [x] read-only diagnostics only
+- [x] no engine changes
+- [x] Sample A game remains intact
+- [x] BIG_PICTURE_ROADMAP.md unchanged
+
+Validation Runs
+- [x] node --check games/network_sample_a/server/networkSampleADashboardServer.mjs
+- [x] health endpoint returns 200
+- [x] unauthorized metrics endpoint returns 403
+- [x] authorized metrics endpoint returns 200 with summary + players
+- [x] dashboard endpoint returns 200

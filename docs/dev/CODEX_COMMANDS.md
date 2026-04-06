@@ -1,8 +1,8 @@
 MODEL: GPT-5.4-codex
-REASONING: medium
+REASONING: high
 
 COMMAND:
-Execute PLAN + BUILD + APPLY for NETWORK_SAMPLE_A_INDEX_FIX
+Create PR_DEBUG_SURFACES_NETWORK_SERVER_DASHBOARD_FULL
 
-OUTPUT:
-<project folder>/tmp/PR_NETWORK_SAMPLE_A_INDEX_FIX_FULL_bundle.zip
+PURPOSE:
+Implement Track T — Server Dashboard for real-time network observability using Sample A as the data source.

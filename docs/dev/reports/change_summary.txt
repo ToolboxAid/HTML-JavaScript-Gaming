@@ -1,10 +1,15 @@
-Executed PLAN + BUILD + APPLY for NETWORK_SAMPLE_A_INDEX_FIX.
+Implemented PR_DEBUG_SURFACES_NETWORK_SERVER_DASHBOARD_FULL (Track T).
 
-Applied scope:
-- patched games/index.html from current code base
-- kept existing structure and ordering intact
-- ensured Level 11 - Network Games placement for Network Sample A
-- ensured card-level docs links are present
-- updated docs/dev network tracking artifacts and bracket-only roadmap status items
+Delivered:
+- Server-owned dashboard and metrics endpoints under games/network_sample_a/server.
+- Polling HTML dashboard (no websocket dependency).
+- Read-only diagnostics sourced from Sample A fake network model.
+- Metrics: player/session counts, connection state, latency summary + per-player, RX bytes, TX bytes.
+- Debug/admin gate: loopback restriction + key-based access.
+- Track T checklist in NETWORK_SAMPLES_PLAN updated to complete.
+- Runtime fix: corrected embedded dashboard script string construction to avoid nested-template parse failures.
 
-No engine/runtime code changes were made.
+Scope preserved:
+- no engine/core changes
+- no containerization work
+- BIG_PICTURE_ROADMAP not modified
