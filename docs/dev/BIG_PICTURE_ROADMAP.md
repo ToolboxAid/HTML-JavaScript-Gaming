@@ -60,6 +60,9 @@ Do NOT change structure or wording.
 
 # 🎮 TRACK F — GAME INTEGRATION
 
+- [x] PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [.] APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [ ] Sample game uses full debug platform
 - [ ] Toggle debug in production-safe mode
 - [ ] Performance-safe overlays
@@ -74,9 +77,9 @@ Do NOT change structure or wording.
 - [ ] Replication state viewer
 - [ ] Client/server divergence inspector
 - [ ] Event tracing
-- [x] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- [x] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- [.] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [ ] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
 ---
 
@@ -84,7 +87,7 @@ Do NOT change structure or wording.
 
 - [.] Transform inspector
 - [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
-- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [.] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
 - [ ] Camera debug panel
 - [ ] Render pipeline stages
 - [ ] Collision overlays

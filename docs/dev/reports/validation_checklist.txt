@@ -1,19 +1,12 @@
 Validation Checklist
 
-[x] PLAN/BUILD/APPLY docs are all present
-[x] One PR purpose per document is clear
-[x] Workflow PLAN -> BUILD -> APPLY is explicit in all docs
-[x] Shared network panel inventory is explicit
-[x] Shared network provider inventory is explicit
-[x] Optional shared network presets are explicit
-[x] Adapter boundaries are explicit
-[x] Adoption models are included
-[x] Naming conventions are included
-[x] Target structure is included
-[x] Transport/protocol adapters are outside shared layer
-[x] Protocol-specific implementation excluded
-[x] Packet inspector scope excluded
-[x] Auth/matchmaking tooling excluded
-[x] Deep inspector scope excluded
+[x] PLAN/BUILD/APPLY docs are present
+[x] One PR purpose per document is explicit
+[x] Docs-only scope maintained
+[x] PLAN -> BUILD -> APPLY workflow is explicit
+[x] Game-integration boundaries are defined
+[x] Env flag contract is defined
+[x] Lifecycle and rollback notes are defined
 [x] BIG_PICTURE_ROADMAP.md changed by bracket states only
-[x] ROADMAP_GUARDRAILS.md included unchanged
+[x] ROADMAP_GUARDRAILS.md left unchanged
+[x] Bundle contains docs-only artifacts

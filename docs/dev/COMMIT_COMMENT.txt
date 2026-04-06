@@ -1,1 +1,1 @@
-docs: bundle network support PLAN/BUILD/APPLY contracts for debug surfaces
+docs: bundle game integration PLAN/BUILD/APPLY contracts for debug surfaces

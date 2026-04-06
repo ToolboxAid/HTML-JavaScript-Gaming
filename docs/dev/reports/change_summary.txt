@@ -1,16 +1,15 @@
-Created a docs-only bundled pack for network support planning/build/apply contracts.
+Created docs-only PLAN/BUILD/APPLY bundle for debug surfaces game integration.
 
 Updated:
-- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md
-- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md
-- APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md
+- PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION.md
+- BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION.md
+- APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION.md
 - docs/dev command + commit artifacts
 - docs/dev/reports summary/checklist/tree
 - BIG_PICTURE_ROADMAP.md bracket states only
 
-Scope enforced:
-- docs-first only
-- one purpose per document
-- summary-level + opt-in
-- transport/protocol specifics remain local
-- packet inspectors, auth/matchmaking, deep inspectors excluded
+Guardrails followed:
+- docs-only scope
+- one PR purpose per document
+- no structure/text edits in roadmap beyond bracket states
+- ROADMAP_GUARDRAILS.md retained unchanged
