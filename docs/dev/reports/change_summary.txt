@@ -3,15 +3,23 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for PRODUCTIZATION_ROADMAP.
+Executed PLAN + BUILD + APPLY for DEBUG_UX_FINAL_POLISH.
 
-Summary of changes:
-- Added/updated productization roadmap docs bundle.
-- Standardized roadmap tracker content in `docs/dev/PRODUCTIZATION_ROADMAP.md`.
-- Removed malformed symbol encoding from roadmap content.
-- Refreshed PR docs, command/control docs, and reports for this one PR purpose.
+Sample updates:
+- Asteroids:
+  - added debug badge/button/help UI
+  - finalized default preset auto-load with fallbacks
+  - added optional `rememberDebug=1`
+  - added optional `debugDemo=1`
+- Breakout:
+  - finalized optional `rememberDebug=1`
+  - finalized optional `debugDemo=1`
+  - aligned mini-help and preset-status messaging
 
-Scope guard:
-- Docs-only.
-- No engine/runtime/tool implementation code changed.
-- No edits to BIG_PICTURE roadmap.
+Roadmap updates:
+- Updated `docs/dev/PRODUCTIZATION_ROADMAP.md` with bracket-only state changes for completed UX polish items.
+
+Safety:
+- No engine core changes.
+- No BIG_PICTURE roadmap edits.
+- No Track G/H work.

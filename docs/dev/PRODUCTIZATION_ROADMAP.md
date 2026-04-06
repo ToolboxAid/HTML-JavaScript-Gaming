@@ -22,16 +22,16 @@ Do NOT change structure or wording.
 # TRACK P - SHOWCASE SAMPLES
 
 - [x] Asteroids Debug Showcase
-- [X] Breakout Debug Showcase
+- [x] Breakout Debug Showcase
 
 ---
 
 # TRACK Q - UX POLISH
 
-- [.] Debug toggle indicator
-- [.] Default preset auto-load
-- [.] Open Debug Panel button
-- [.] Inline mini help
+- [x] Debug toggle indicator
+- [x] Default preset auto-load
+- [x] Open Debug Panel button
+- [x] Inline mini help
 
 ---
 

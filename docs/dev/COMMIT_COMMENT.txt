@@ -1,2 +1,2 @@
-PR_PRODUCTIZATION_ROADMAP_FULL
-docs: add productization roadmap tracker and aligned PLAN/BUILD/APPLY docs bundle
+PR_DEBUG_UX_FINAL_POLISH_FULL
+polish(debug-ux): finalize Asteroids and Breakout debug badge/preset/panel/help flows with optional remember and demo modes

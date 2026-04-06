@@ -3,18 +3,22 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-[x] PLAN_PR document created/updated
-[x] BUILD_PR document created/updated
-[x] APPLY_PR document created/updated
-[x] Productization roadmap file exists
-[x] Productization roadmap includes bracket-only rule
-[x] Productization roadmap uses readable ASCII content
-[x] Scope is docs-only
-[x] BIG_PICTURE roadmap untouched
-[x] Reports refreshed
-[x] Repo-structured delta zip created
+[x] PLAN/BUILD/APPLY docs updated
+[x] Asteroids debug badge behavior finalized
+[x] Breakout debug badge behavior finalized
+[x] Default preset auto-load finalized for both samples
+[x] `Open Debug Panel` behavior consistent
+[x] Inline mini help consistency finalized
+[x] Remembered debug state evaluated and implemented as optional (`rememberDebug=1`)
+[x] One-click demo mode evaluated and implemented as optional (`debugDemo=1`)
+[x] Production-safe defaults preserved
+[x] No BIG_PICTURE_ROADMAP.md changes
+[x] PRODUCTIZATION_ROADMAP.md edits are bracket-only
+[x] No Track G or Track H work
 
-Validation checks:
-- `git diff --name-only`
-- `Get-Content -Raw docs/dev/PRODUCTIZATION_ROADMAP.md`
-- `tar -tf tmp/PR_PRODUCTIZATION_ROADMAP_FULL_bundle.zip`
+Validation commands:
+- `node --check games/Asteroids/main.js`
+- `node --check games/Breakout/main.js`
+- `node --check games/Breakout/game/BreakoutScene.js`
+- `node -e "import('./tests/games/AsteroidsValidation.test.mjs').then(async (m)=>{await m.run(); console.log('AsteroidsValidation:PASS');})"`
+- `node -e "import('./tests/games/BreakoutValidation.test.mjs').then(async (m)=>{await m.run(); console.log('BreakoutValidation:PASS');})"`

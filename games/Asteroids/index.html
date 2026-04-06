@@ -11,11 +11,63 @@ index.html
   <title>Asteroids - Debug Showcase</title>
   <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="/engine/ui/asteroids.css" />
+  <style>
+    .debug-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 10px 0 8px;
+    }
+
+    .debug-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font: 600 12px/1 monospace;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+
+    .debug-badge.is-on {
+      background: #1e4d2b;
+      border-color: #4ddf88;
+      color: #d9ffe8;
+    }
+
+    .debug-badge.is-off {
+      background: #3b1d20;
+      border-color: #b65560;
+      color: #ffdce1;
+    }
+
+    .debug-open-button {
+      border: 1px solid #8aa2c1;
+      background: #0f1522;
+      color: #e7f1ff;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font: 600 13px/1.2 monospace;
+    }
+
+    .debug-open-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
   <main>
     <h1>Asteroids - Debug Showcase</h1>
     <p>Playable Asteroids-style arcade game and canonical debug showcase with player-select flow, high score, player scores, and ship-icon lives.</p>
+    <div class="debug-meta">
+      <span id="debugStateBadge" class="debug-badge is-off">Debug: OFF</span>
+      <button id="openDebugPanelButton" class="debug-open-button" type="button" disabled>Open Debug Panel</button>
+    </div>
+    <p id="debugMiniHelp">Enable debug with <code>?debug=1</code>, then use <code>Shift+`</code> for console and <code>Ctrl+Shift+`</code> for overlay.</p>
+    <p id="debugPresetHelp">When debug is enabled, Asteroids auto-loads <code>asteroidsshowcase.preset.default</code> and keeps overlay hidden until you open it.</p>
     <canvas id="game" width="960" height="720"></canvas>
     <section>
       <h3>Keys</h3>
@@ -24,7 +76,7 @@ index.html
     <section>
       <h3>Debug Showcase</h3>
       <p>Debug surfaces are production-safe and opt-in. Launch with <code>?debug=1</code> (optional <code>&amp;debugMode=qa</code>) to enable the Asteroids showcase panels and commands.</p>
-      <p>When debug is enabled: <code>Shift+`</code> toggles console, <code>Ctrl+Shift+`</code> toggles overlay, <code>Ctrl+Shift+R</code> triggers reload command, and <code>asteroidsshowcase.preset.default</code> applies the showcase panel preset.</p>
+      <p>Use <code>?debugDemo=1</code> for one-click demo mode and <code>&amp;rememberDebug=1</code> to remember debug ON/OFF state for this browser.</p>
     </section>
     <section>
       <h3>Gameplay Loop</h3>

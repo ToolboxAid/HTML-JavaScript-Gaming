@@ -13,6 +13,7 @@ import BreakoutScene from './game/BreakoutScene.js';
 const theme = new Theme(ThemeTokens);
 const BUILD_DEBUG_MODE = 'prod';
 const BUILD_DEBUG_ENABLED = false;
+const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.breakout.debug.enabled';
 
 function sanitizeText(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -40,6 +41,38 @@ function normalizeDebugMode(value, fallback = 'prod') {
   return fallback;
 }
 
+function readStoredBoolean(key) {
+  if (!key || typeof globalThis.localStorage === 'undefined') {
+    return null;
+  }
+
+  try {
+    const value = globalThis.localStorage.getItem(key);
+    if (value === '1') {
+      return true;
+    }
+    if (value === '0') {
+      return false;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function writeStoredBoolean(key, value) {
+  if (!key || typeof globalThis.localStorage === 'undefined') {
+    return;
+  }
+
+  try {
+    globalThis.localStorage.setItem(key, value ? '1' : '0');
+  } catch {
+    // Ignore storage failures to preserve startup behavior.
+  }
+}
+
 function isLocalDebugEnvironment(documentRef) {
   const protocol = sanitizeText(documentRef?.location?.protocol) || sanitizeText(globalThis?.location?.protocol);
   const hostname = sanitizeText(documentRef?.location?.hostname) || sanitizeText(globalThis?.location?.hostname);
@@ -56,17 +89,32 @@ function resolveDebugConfig(documentRef) {
   const searchParams = new URLSearchParams(search);
   const queryMode = searchParams.get('debugMode');
   const queryEnabled = searchParams.get('debug');
+  const queryRemember = searchParams.get('rememberDebug');
+  const queryDemo = searchParams.get('debugDemo');
   const localDebugEnvironment = isLocalDebugEnvironment(documentRef);
+  const rememberDebugState = parseBooleanFlag(queryRemember, false);
+  const demoMode = parseBooleanFlag(queryDemo, false);
   const defaultMode = localDebugEnvironment
     ? 'dev'
     : normalizeDebugMode(BUILD_DEBUG_MODE, 'prod');
-  const debugMode = normalizeDebugMode(queryMode, defaultMode);
+  const debugMode = normalizeDebugMode(queryMode, demoMode ? 'qa' : defaultMode);
   const fallbackEnabled = (BUILD_DEBUG_ENABLED === true || localDebugEnvironment) && debugMode !== 'prod';
-  const debugEnabled = parseBooleanFlag(queryEnabled, fallbackEnabled);
+  const storedDebugEnabled = rememberDebugState && queryEnabled === null
+    ? readStoredBoolean(DEBUG_STATE_STORAGE_KEY)
+    : null;
+  const debugEnabled = demoMode
+    ? true
+    : parseBooleanFlag(queryEnabled, storedDebugEnabled ?? fallbackEnabled);
+
+  if (rememberDebugState) {
+    writeStoredBoolean(DEBUG_STATE_STORAGE_KEY, debugEnabled);
+  }
 
   return {
     debugMode,
     debugEnabled,
+    rememberDebugState,
+    demoMode,
   };
 }
 
@@ -95,6 +143,8 @@ function updateDebugShowcaseUi(documentRef, debugConfig, devConsoleIntegration, 
   const miniHelp = documentRef?.getElementById?.('debugMiniHelp') ?? null;
   const presetHelp = documentRef?.getElementById?.('debugPresetHelp') ?? null;
   const debugEnabled = debugConfig?.debugEnabled === true;
+  const demoMode = debugConfig?.demoMode === true;
+  const rememberDebugState = debugConfig?.rememberDebugState === true;
 
   if (badge) {
     badge.textContent = debugEnabled ? 'Debug: ON' : 'Debug: OFF';
@@ -116,13 +166,15 @@ function updateDebugShowcaseUi(documentRef, debugConfig, devConsoleIntegration, 
   if (miniHelp) {
     miniHelp.innerHTML = debugEnabled
       ? 'Debug is active. Use <code>Shift+`</code> for console and <code>Ctrl+Shift+`</code> for overlay, or click <strong>Open Debug Panel</strong>.'
-      : 'Debug is disabled by default. Add <code>?debug=1</code> to the URL to enable the showcase tools.';
+      : 'Debug is disabled by default. Add <code>?debug=1</code> to enable it, or <code>?debugDemo=1</code> for one-click demo mode.';
   }
 
   if (presetHelp) {
+    const rememberLabel = rememberDebugState ? 'remember=on' : 'remember=off';
+    const demoLabel = demoMode ? 'demo=on' : 'demo=off';
     presetHelp.innerHTML = debugEnabled
-      ? `Default preset loaded: <code>${sanitizeText(appliedPresetCommand) || 'none'}</code>. Overlay stays hidden until opened.`
-      : 'When debug is enabled, Breakout auto-loads <code>preset.gameplay</code> and keeps overlay hidden until you open it.';
+      ? `Default preset loaded: <code>${sanitizeText(appliedPresetCommand) || 'none'}</code>. Overlay stays hidden until opened. <code>${rememberLabel}</code>, <code>${demoLabel}</code>.`
+      : 'Add <code>&amp;rememberDebug=1</code> to persist debug ON/OFF in this browser. Demo mode auto-opens debug surfaces.';
   }
 }
 
@@ -165,8 +217,13 @@ export function bootBreakout({
     : null;
 
   const appliedPresetCommand = applyDefaultDebugPreset(devConsoleIntegration);
-  devConsoleIntegration?.getRuntime?.().hideOverlay?.();
-  devConsoleIntegration?.getRuntime?.().hideConsole?.();
+  const runtime = devConsoleIntegration?.getRuntime?.();
+  runtime?.hideOverlay?.();
+  runtime?.hideConsole?.();
+  if (debugConfig.demoMode) {
+    runtime?.showOverlay?.();
+    runtime?.showConsole?.();
+  }
 
   updateDebugShowcaseUi(documentRef, debugConfig, devConsoleIntegration, appliedPresetCommand);
 
