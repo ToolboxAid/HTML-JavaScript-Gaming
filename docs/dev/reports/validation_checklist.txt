@@ -1,3 +1,4 @@
 - Docs only
-- No engine changes
-- Structure matches repo conventions
+- No code included
+- Enforces ownership boundaries
+- Matches repo structure

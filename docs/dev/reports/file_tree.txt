@@ -1,14 +1,10 @@
 docs/
-  pr/
-    PLAN_PR_LEVEL_11_3_TIMELINE_REWIND_PREP.md
   dev/
-    FRAME_HISTORY_SPEC.md
-    REWIND_STRATEGY_SPEC.md
-    AUTHORITATIVE_INJECTION_SPEC.md
-    DEBUG_TIMELINE_VISUALIZATION.md
     codex_commands.md
-    commit_comment.txt
+    PLANNING_SYSTEM_RULES.md
     reports/
       file_tree.txt
       change_summary.txt
       validation_checklist.txt
+  pr/
+    SYSTEM_RULES_PR_v2.md

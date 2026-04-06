@@ -1,1 +1,1 @@
-Adds Level 11.3 planning docs for timeline rewind preparation
+Adds enforcement rules for ChatGPT (planning) and Codex (implementation).
