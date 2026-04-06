@@ -1,7 +1,15 @@
-[ ] PLAN_PR_DEBUG_SURFACES_NETWORK_SERVER_OPS created
-[ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SERVER_OPS created
-[ ] APPLY_PR_DEBUG_SURFACES_NETWORK_SERVER_OPS created
-[ ] NETWORK_SAMPLES_PLAN Track T added
-[ ] NETWORK_SAMPLES_PLAN Track U added
-[ ] Checklist format preserved
-[ ] No unrelated roadmap edits
+﻿Workflow
+- [x] PLAN created
+- [x] BUILD created
+- [x] APPLY created
+
+Integration
+- [x] Sample A card added to games/index.html
+- [x] Existing card structure preserved
+- [x] Debug Showcase label present
+- [x] Navigation path exists
+
+Safety
+- [x] No layout/structure redesign
+- [x] No nested links/buttons
+- [x] No engine/runtime changes

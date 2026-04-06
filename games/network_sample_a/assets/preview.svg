@@ -1,0 +1,46 @@
+﻿<!--
+Toolbox Aid
+David Quesenberry
+04/06/2026
+preview.svg
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Network Sample A Debug Showcase</title>
+  <desc id="desc">Stylized dashboard card art with connection, latency, and trace diagnostics.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#071325" />
+      <stop offset="100%" stop-color="#0f2a44" />
+    </linearGradient>
+    <linearGradient id="panel" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f1f35" />
+      <stop offset="100%" stop-color="#0b1524" />
+    </linearGradient>
+  </defs>
+
+  <rect width="960" height="540" fill="url(#bg)" />
+  <rect x="40" y="40" width="880" height="460" rx="16" fill="url(#panel)" stroke="#3f6b96" stroke-width="2" />
+
+  <text x="72" y="92" fill="#e2f2ff" font-size="34" font-family="monospace" font-weight="700">NETWORK SAMPLE A</text>
+  <text x="72" y="124" fill="#9fc4e4" font-size="18" font-family="monospace">Debug Showcase</text>
+
+  <rect x="72" y="154" width="390" height="150" rx="10" fill="#0f2238" stroke="#486f9a" />
+  <text x="92" y="184" fill="#c9e8ff" font-size="17" font-family="monospace">Connection: connected</text>
+  <text x="92" y="212" fill="#c9e8ff" font-size="17" font-family="monospace">RTT: 34ms</text>
+  <text x="92" y="240" fill="#c9e8ff" font-size="17" font-family="monospace">Jitter: 4ms</text>
+  <text x="92" y="268" fill="#c9e8ff" font-size="17" font-family="monospace">Pending: 1 packet</text>
+
+  <rect x="496" y="154" width="392" height="150" rx="10" fill="#0f2238" stroke="#486f9a" />
+  <text x="516" y="184" fill="#c9e8ff" font-size="17" font-family="monospace">Trace</text>
+  <text x="516" y="212" fill="#9fc4e4" font-size="15" font-family="monospace">1542ms PACKET_SENT</text>
+  <text x="516" y="236" fill="#9fc4e4" font-size="15" font-family="monospace">1684ms PACKET_ACKED</text>
+  <text x="516" y="260" fill="#9fc4e4" font-size="15" font-family="monospace">1829ms HEARTBEAT</text>
+
+  <rect x="72" y="336" width="816" height="126" rx="10" fill="#0f2238" stroke="#486f9a" />
+  <text x="92" y="372" fill="#b8ddfb" font-size="16" font-family="monospace">Shift + ` : Console</text>
+  <text x="92" y="398" fill="#b8ddfb" font-size="16" font-family="monospace">Ctrl + Shift + ` : Overlay</text>
+  <text x="92" y="424" fill="#b8ddfb" font-size="16" font-family="monospace">network.status | network.latency | network.trace</text>
+
+  <circle cx="840" cy="86" r="14" fill="#14b8a6" />
+  <text x="72" y="496" fill="#7fa7c8" font-size="14" font-family="monospace">/games/network_sample_a/index.html</text>
+</svg>

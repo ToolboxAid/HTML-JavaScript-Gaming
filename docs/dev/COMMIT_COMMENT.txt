@@ -1,9 +1,1 @@
-PR_DEBUG_SURFACES_NETWORK_SERVER_OPS_FULL
-
-Adds Track T (Server Dashboard) and Track U (Server Containerization)
-to the network samples plan.
-
-Includes:
-- PLAN / BUILD / APPLY PR docs
-- NETWORK_SAMPLES_PLAN.md updates
-- reports and active dev controls
+﻿build(hub): integrate Network Sample A debug showcase card into games index with existing card structure

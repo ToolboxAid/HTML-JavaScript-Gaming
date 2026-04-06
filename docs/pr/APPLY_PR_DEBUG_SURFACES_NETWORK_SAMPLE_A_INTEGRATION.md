@@ -1,0 +1,4 @@
+# APPLY_PR_DEBUG_SURFACES_NETWORK_SAMPLE_A_INTEGRATION
+Apply changes exactly as defined.
+Output:
+<project folder>/tmp/PR_DEBUG_SURFACES_NETWORK_SAMPLE_A_INTEGRATION_FULL_bundle.zip

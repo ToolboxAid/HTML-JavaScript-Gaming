@@ -1,6 +1,11 @@
-Full PR bundle to extend the network plan with:
-- Track T — Server Dashboard
-- Track U — Server Containerization
+﻿Executed PLAN+BUILD+APPLY for SAMPLE_A_INTEGRATION.
 
-The dashboard track covers player statistics, latency, RX/TX bytes, and connection counts.
-The container track covers Docker packaging and runtime guidance for the server.
+Implemented:
+- Added Network Sample A card to games/index.html using the existing anchor-card pattern.
+- Applied Debug Showcase label on the new card.
+- Confirmed navigation target path exists.
+- Preserved existing card order and hub structure.
+
+Out of scope preserved:
+- no server dashboard/containerization work
+- no engine/runtime changes

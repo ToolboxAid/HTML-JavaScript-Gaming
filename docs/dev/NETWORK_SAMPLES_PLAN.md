@@ -12,11 +12,11 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK N — NETWORK SAMPLE FOUNDATION
 
-- [ ] Sample A — Local Loopback / Fake Network
-- [ ] Synthetic connection lifecycle
-- [ ] Synthetic RTT feed
-- [ ] Synthetic replication feed
-- [ ] Trace event feed
+- [x] Sample A — Local Loopback / Fake Network
+- [x] Synthetic connection lifecycle
+- [x] Synthetic RTT feed
+- [x] Synthetic replication feed
+- [x] Trace event feed
 
 ---
 
