@@ -15,6 +15,7 @@ This repository is a docs-first game/runtime workspace with a stable engine laye
 
 ## Documentation Map
 - [docs/README.md](docs/README.md): top-level documentation index
+- [docs/architecture/debug-surfaces-external-integration.md](docs/architecture/debug-surfaces-external-integration.md): external debug platform integration contract
 - `docs/pr/`: preserved PR history and architecture evolution
 - `docs/dev/`: active workflow controls
 - `docs/dev/reports/`: active report artifacts

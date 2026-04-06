@@ -3,16 +3,25 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for PERFORMANCE_BENCHMARKS in one scoped bundle.
+Executed PLAN + BUILD + APPLY for BIG_PICTURE_REMAINDER_COMPLETION.
 
-Implemented:
-- Added shared benchmark suite contract runtime in `tools/shared/performanceBenchmarks.js`.
-- Added automated benchmark suite coverage in `tests/tools/PerformanceBenchmarks.test.mjs`.
-- Wired benchmark test into `tests/run-tests.mjs`.
-- Updated performance benchmark PR docs and engine maturity performance rules.
-- Updated Track J roadmap bracket state for Performance benchmarks.
+Completed in-scope roadmap closure:
+- Track E reconciliation: BUILD_PR_DEBUG_SURFACES_ADVANCED_UX -> [x]
+- Track F completion:
+  - Sample game uses full debug platform -> [x]
+  - Toggle debug in production-safe mode -> [x]
+  - Performance-safe overlays -> [x]
+  - Build-time debug flags -> [x]
+- Track J completion:
+  - External documentation -> [x]
 
-Scope controls preserved:
-- No engine core API changes.
-- No destructive changes.
-- No unrelated runtime feature expansion.
+Implementation highlights:
+- Added production-safe debug gating and build/runtime debug flags in Demo 1205 sample entry.
+- Kept debug integration optional so overlays/console are off-cost when disabled.
+- Added external integration guide and linked it from architecture and docs indexes.
+- Applied roadmap bracket-only edits with no wording changes.
+
+Out of scope preserved:
+- Track G unchanged
+- Track H unchanged
+- No engine core API changes

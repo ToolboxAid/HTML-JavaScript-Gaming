@@ -8,6 +8,7 @@ README.md
 ## Core Boundaries
 - [Engine API Boundary](engine-api-boundary.md)
 - [Repo Operating Model](repo-operating-model.md)
+- [Debug Surfaces External Integration](debug-surfaces-external-integration.md)
 
 ## Engine References
 - `engine-bootstrap.md`

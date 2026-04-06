@@ -3,17 +3,21 @@ David Quesenberry
 04/05/2026
 file_tree.txt
 
-docs/pr/PLAN_PR_PERFORMANCE_BENCHMARKS.md
-docs/pr/BUILD_PR_PERFORMANCE_BENCHMARKS.md
-docs/pr/APPLY_PR_PERFORMANCE_BENCHMARKS.md
+docs/pr/PLAN_PR_BIG_PICTURE_REMAINDER_COMPLETION.md
+docs/pr/BUILD_PR_BIG_PICTURE_REMAINDER_COMPLETION.md
+docs/pr/APPLY_PR_BIG_PICTURE_REMAINDER_COMPLETION.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/next_command.txt
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
 docs/dev/reports/file_tree.txt
-docs/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md
 docs/dev/BIG_PICTURE_ROADMAP.md
-tools/shared/performanceBenchmarks.js
-tests/tools/PerformanceBenchmarks.test.mjs
-tests/run-tests.mjs
+docs/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md
+docs/architecture/debug-surfaces-external-integration.md
+docs/architecture/README.md
+docs/README.md
+README.md
+samples/Phase 12 - Demo Games/Demo 1205 - Multi-System Demo/main.js
+samples/Phase 12 - Demo Games/Demo 1205 - Multi-System Demo/MultiSystemDemoScene.js
+samples/Phase 12 - Demo Games/Demo 1205 - Multi-System Demo/index.html

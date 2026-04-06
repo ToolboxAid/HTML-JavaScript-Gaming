@@ -17,6 +17,7 @@ export default class MultiSystemDemoScene extends Scene {
   constructor(options = {}) {
     super();
     this.devConsoleIntegration = options.devConsoleIntegration || null;
+    this.debugConfig = options.debugConfig || { debugMode: 'dev', debugEnabled: Boolean(options.devConsoleIntegration) };
     this.screen = { x: 40, y: 180 };
     this.moveSpeed = 280;
     this.jumpSpeed = 900;
@@ -279,6 +280,7 @@ export default class MultiSystemDemoScene extends Scene {
       `Goal: ${complete}`,
       `Camera X: ${this.camera.x.toFixed(1)}`,
       `Parallax Far/Near: ${this.parallaxLayers[0].speed}/${this.parallaxLayers[2].speed}`,
+      `Debug: ${this.debugConfig.debugEnabled ? 'enabled' : 'disabled'} (${this.debugConfig.debugMode})`,
       'Controls: Left/Right + Space + Shift+` (console input while open)',
     ]);
 

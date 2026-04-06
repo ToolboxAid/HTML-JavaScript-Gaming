@@ -53,7 +53,7 @@ Do NOT change structure or wording.
 # 🧰 TRACK E — ADVANCED DEBUG UX
 
 - [x] PLAN_PR_DEBUG_SURFACES_ADVANCED_UX
-- [.] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
+- [x] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
 - [x] APPLY_PR_DEBUG_SURFACES_ADVANCED_UX
 
 ---
@@ -63,10 +63,10 @@ Do NOT change structure or wording.
 - [x] PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [x] BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [x] APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION
-- [ ] Sample game uses full debug platform
-- [ ] Toggle debug in production-safe mode
-- [ ] Performance-safe overlays
-- [ ] Build-time debug flags
+- [x] Sample game uses full debug platform
+- [x] Toggle debug in production-safe mode
+- [x] Performance-safe overlays
+- [x] Build-time debug flags
 
 ---
 
@@ -109,7 +109,7 @@ Do NOT change structure or wording.
 
 - [x] Stable debug API
 - [x] Plugin system
-- [.] External documentation
+- [x] External documentation
 - [x] Versioned contracts
 - [x] Performance benchmarks
 

@@ -8,10 +8,12 @@
 - `docs/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md`
 - `docs/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md`
 - `docs/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md`
+- `docs/architecture/debug-surfaces-external-integration.md`
 
 ## Ownership
 - `docs/pr`: phase history and implementation intent
 - `docs/dev`: active controls + maturity reference docs
+- `docs/architecture`: durable external integration boundaries and reference guidance
 
 ## Rule
 Do not duplicate normative guidance across multiple files; cross-link to canonical source.

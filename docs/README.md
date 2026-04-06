@@ -16,5 +16,6 @@ README.md
 ## Key Entry Points
 - [Getting Started](getting-started.md)
 - [Architecture Overview](architecture/README.md)
+- [Debug Surfaces External Integration](architecture/debug-surfaces-external-integration.md)
 - [Repo Directory Structure](repo-directory-structure.md)
 - [Review Checklist](review-checklist.md)
