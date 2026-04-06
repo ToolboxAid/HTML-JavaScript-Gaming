@@ -1,27 +1,31 @@
-BUILD_PR_DEBUG_SURFACES_PROMOTION validation checklist
+PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY validation checklist
 
 Workflow
-- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure preserved
+- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure referenced
 - [done] Docs-first only
 - [done] One PR per purpose
 
-Scope
-- [done] Extraction/relocation only (no feature expansion)
-- [done] Engine-core changes minimized by contract-only ownership model
-- [done] Integration proving reference preserved: MultiSystemDemoScene.js
+Plan Content
+- [done] Shared panels defined
+- [done] Shared providers defined
+- [done] Shared operator commands defined
+- [done] Adoption models defined
+- [done] Naming conventions defined
+- [done] Target structure defined
+- [done] Initial library is small and opt-in
 
-Build Content
-- [done] Authoritative target structure documented
-- [done] Ownership matrix documented
-- [done] Ordered migration steps documented
-- [done] Validation goals documented
-- [done] Rollback strategy documented
-- [done] Rollout notes documented
-- [done] Sample-specific panels/providers/commands explicitly kept outside shared layers
+Boundaries
+- [done] Project-specific panels/providers/commands remain outside shared library
+- [done] Dev Console vs Debug Overlay separation preserved
+
+Exclusions
+- [done] 3D-specific scope excluded
+- [done] network-specific scope excluded
+- [done] deep-inspector scope excluded
 
 Outputs
-- [done] Docs under docs/pr
-- [done] Reports under docs/dev/reports
+- [done] Plan doc under docs/pr
 - [done] Codex command under docs/dev
 - [done] Commit comment under docs/dev
-- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_DEBUG_SURFACES_PROMOTION_delta.zip
+- [done] Reports under docs/dev/reports
+- [done] Delta zip generated at <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY_delta.zip

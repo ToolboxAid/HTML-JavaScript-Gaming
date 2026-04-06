@@ -1,1 +1,1 @@
-docs: build debug surfaces promotion extraction plan with authoritative ownership and migration rules
+docs: plan first opt-in debug surfaces standard library with clear shared/local boundaries
