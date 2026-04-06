@@ -3,25 +3,19 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for BIG_PICTURE_REMAINDER_COMPLETION.
+Executed PLAN + BUILD + APPLY for PRODUCTIZATION_ASTEROIDS_SHOWCASE.
 
-Completed in-scope roadmap closure:
-- Track E reconciliation: BUILD_PR_DEBUG_SURFACES_ADVANCED_UX -> [x]
-- Track F completion:
-  - Sample game uses full debug platform -> [x]
-  - Toggle debug in production-safe mode -> [x]
-  - Performance-safe overlays -> [x]
-  - Build-time debug flags -> [x]
-- Track J completion:
-  - External documentation -> [x]
+Completed scope:
+- Defined Asteroids as canonical debug-platform productization showcase.
+- Implemented sample-level debug integration in Asteroids boot + scene paths.
+- Added Asteroids showcase debug panels, commands, and preset commands.
+- Added bounded gameplay event visibility for ship/bullets/asteroids/score/lives/waves.
+- Added production-safe debug gating with build defaults + runtime query overrides.
+- Published showcase documentation set under docs/release.
+- Refreshed docs/pr and docs/dev control/report files.
 
-Implementation highlights:
-- Added production-safe debug gating and build/runtime debug flags in Demo 1205 sample entry.
-- Kept debug integration optional so overlays/console are off-cost when disabled.
-- Added external integration guide and linked it from architecture and docs indexes.
-- Applied roadmap bracket-only edits with no wording changes.
-
-Out of scope preserved:
-- Track G unchanged
-- Track H unchanged
-- No engine core API changes
+Scope protections preserved:
+- Track G untouched.
+- Track H untouched.
+- No unrelated engine-core refactors.
+- Classic Asteroids gameplay expectations preserved.

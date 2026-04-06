@@ -3,21 +3,23 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-[x] Track E reconciliation applied
-[x] Track F sample integration completion applied
-[x] Production-safe debug toggle implemented
-[x] Performance-safe overlay behavior preserved
-[x] Build-time debug flags implemented
-[x] Track J external documentation finalized
+[x] Asteroids defined as canonical showcase sample
+[x] Full debug integration defined for ship/bullets/asteroids/score/lives/waves
+[x] Debug event visibility and preset commands defined
+[x] Production-safe debug gating implemented
+[x] Showcase documentation set published
+[x] Reports and control files updated
 [x] Track G untouched
 [x] Track H untouched
-[x] Roadmap edits are bracket-only
-[x] No roadmap wording changes
-[x] Syntax checks pass for touched JS files
+[x] Engine/runtime separation preserved
+[x] Syntax checks passed for touched JS files
+[x] Targeted Asteroids regression tests passed
 [x] Bundle ZIP created at requested path
 
 Validation command results:
-- node --check samples/.../Demo 1205 - Multi-System Demo/main.js -> PASS
-- node --check samples/.../Demo 1205 - Multi-System Demo/MultiSystemDemoScene.js -> PASS
-- rg evidence for build/runtime debug flags and opt-in query usage -> PASS
-- git diff docs/dev/BIG_PICTURE_ROADMAP.md confirms bracket-only edits in Track E/F/J -> PASS
+- node --check games/Asteroids/main.js -> PASS
+- node --check games/Asteroids/game/AsteroidsGameScene.js -> PASS
+- node --check games/Asteroids/debug/asteroidsShowcaseDebug.js -> PASS
+- node --check tests/games/AsteroidsValidation.test.mjs -> PASS
+- AsteroidsValidation.test.mjs run() -> PASS
+- AsteroidsPlatformDemo.test.mjs run() -> PASS

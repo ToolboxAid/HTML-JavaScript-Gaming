@@ -84,8 +84,13 @@ function drawLives(renderer, centerX, y, lives) {
 }
 
 export default class AsteroidsGameScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
+    this.devConsoleIntegration = options.devConsoleIntegration || null;
+    this.debugConfig = options.debugConfig || {
+      debugMode: 'prod',
+      debugEnabled: Boolean(this.devConsoleIntegration),
+    };
     this.world = new AsteroidsWorld({ width: 960, height: 720 });
     this.highScoreService = new AsteroidsHighScoreService();
     this.highScoreRows = this.highScoreService.loadTable();
@@ -109,6 +114,13 @@ export default class AsteroidsGameScene extends Scene {
     this.initialsEntry = new AsteroidsInitialsEntry();
     this.attractAdapter = new AsteroidsAttractAdapter({ scene: this });
     this.currentInput = null;
+    this.debugFrame = 0;
+    this.debugEventLimit = 40;
+    this.debugEvents = [];
+    this.lastThrusting = false;
+    this.lastRotateDirection = 0;
+    this.lastMode = this.session.mode;
+    this.lastWave = this.world.wave;
     this.attractController = new AttractModeController({
       phases: ['title', 'highScores', 'demo'],
       isInputActive: () => this.isAttractExitInputActive(),
@@ -178,17 +190,263 @@ export default class AsteroidsGameScene extends Scene {
 
   exit(engine) {
     this.audio.stopAll();
+    if (this.devConsoleIntegration) {
+      this.devConsoleIntegration.dispose();
+    }
     if (engine?.canvas) {
       engine.canvas.style.cursor = 'default';
     }
   }
 
+  formatDebugEventSummary(details = {}) {
+    if (!details || typeof details !== 'object') {
+      return '';
+    }
+
+    const summaryParts = Object.entries(details)
+      .map(([key, value]) => `${key}=${String(value)}`)
+      .slice(0, 4);
+    return summaryParts.join(' ');
+  }
+
+  pushDebugEvent(type, details = {}) {
+    const eventType = typeof type === 'string' ? type.trim() : '';
+    if (!eventType) {
+      return;
+    }
+
+    const entry = {
+      frame: this.debugFrame,
+      type: eventType,
+      summary: this.formatDebugEventSummary(details),
+      details: { ...details },
+      timestamp: Date.now(),
+    };
+    this.debugEvents.push(entry);
+
+    if (this.debugEvents.length > this.debugEventLimit) {
+      this.debugEvents.splice(0, this.debugEvents.length - this.debugEventLimit);
+    }
+  }
+
+  recordGameplayInputEvents(input) {
+    if (!input || this.session.mode !== 'playing' || this.isPaused || !this.world.shipActive) {
+      this.lastThrusting = false;
+      this.lastRotateDirection = 0;
+      return;
+    }
+
+    const leftDown = input.isDown?.('ArrowLeft') === true;
+    const rightDown = input.isDown?.('ArrowRight') === true;
+    const rotateDirection = (rightDown ? 1 : 0) - (leftDown ? 1 : 0);
+    const thrusting = this.world.ship.thrusting === true;
+
+    if (thrusting && !this.lastThrusting) {
+      this.pushDebugEvent('SHIP_THRUST', {
+        shipX: Math.round(this.world.ship.x),
+        shipY: Math.round(this.world.ship.y),
+      });
+    }
+
+    if (rotateDirection !== 0 && rotateDirection !== this.lastRotateDirection) {
+      this.pushDebugEvent('SHIP_ROTATE', {
+        direction: rotateDirection > 0 ? 'right' : 'left',
+        angle: this.world.ship.angle.toFixed(2),
+      });
+    }
+
+    this.lastThrusting = thrusting;
+    this.lastRotateDirection = rotateDirection;
+  }
+
+  recordWorldEvents(frameEvents = {}) {
+    const events = frameEvents && typeof frameEvents === 'object' ? frameEvents : {};
+    const sfx = Array.isArray(events.sfx) ? events.sfx : [];
+    const scoreEvents = Array.isArray(events.scoreEvents) ? events.scoreEvents : [];
+    const explosions = Array.isArray(events.explosions) ? events.explosions : [];
+    const scoreDelta = scoreEvents.reduce((total, value) => total + (Number.isFinite(value) ? value : 0), 0);
+
+    if (sfx.includes('fire')) {
+      this.pushDebugEvent('BULLET_FIRED', {
+        bullets: this.world.bullets.length,
+      });
+    }
+
+    if (scoreDelta > 0) {
+      this.pushDebugEvent('SCORE_CHANGED', {
+        delta: scoreDelta,
+        score: this.session.activePlayer?.score || 0,
+      });
+    }
+
+    if (scoreEvents.some((points) => points === 20 || points === 50 || points === 100)) {
+      this.pushDebugEvent('ASTEROID_SPLIT', {
+        fragments: this.world.asteroids.length,
+      });
+    }
+
+    if (explosions.length > 0) {
+      this.pushDebugEvent('COLLISION_DETECTED', {
+        hits: explosions.length,
+      });
+    }
+
+    if (events.shipDestroyed) {
+      this.pushDebugEvent('LIFE_LOST', {
+        lives: this.session.activePlayer?.lives || 0,
+      });
+    }
+
+    if (events.shipRespawned) {
+      this.pushDebugEvent('SHIP_SPAWN', {
+        wave: this.world.wave,
+      });
+    }
+
+    if (events.waveCleared || this.lastWave !== this.world.wave) {
+      this.pushDebugEvent('WAVE_STARTED', {
+        wave: this.world.wave,
+        asteroids: this.world.asteroids.length,
+      });
+    }
+
+    if (this.lastMode !== this.session.mode && this.session.mode === 'game-over') {
+      this.pushDebugEvent('GAME_OVER', {
+        score: this.session.activePlayer?.score || 0,
+      });
+    }
+
+    this.lastMode = this.session.mode;
+    this.lastWave = this.world.wave;
+  }
+
+  buildDebugDiagnosticsContext(engine, dtSeconds, frameEvents = {}) {
+    const safeDt = Number.isFinite(dtSeconds) && dtSeconds > 0 ? dtSeconds : 1 / 60;
+    const fps = safeDt > 0 ? Math.round(1 / safeDt) : 0;
+    const activePlayer = this.session.activePlayer || { id: 1, score: 0, lives: 0 };
+    const recentEvents = this.debugEvents.slice(-12);
+    const input = engine?.input;
+    const worldStages = ['parallax', 'entities', 'sprite-effects', 'vector-overlay'];
+
+    return {
+      runtime: {
+        sceneId: 'asteroids-showcase',
+        status: this.session.mode,
+        fps,
+        frameTimeMs: Math.round(safeDt * 1000 * 100) / 100,
+        debugMode: this.debugConfig.debugMode,
+        debugEnabled: this.debugConfig.debugEnabled === true,
+      },
+      camera: {
+        x: 0,
+        y: 0,
+        viewportWidth: this.world.bounds.width,
+        viewportHeight: this.world.bounds.height,
+      },
+      entities: {
+        count: (this.world.shipActive ? 1 : 0) + this.world.asteroids.length + this.world.bullets.length + this.world.ufoBullets.length + (this.world.ufo ? 1 : 0),
+        shipActive: this.world.shipActive,
+        asteroidCount: this.world.asteroids.length,
+        bulletCount: this.world.bullets.length,
+        ufoBulletCount: this.world.ufoBullets.length,
+      },
+      tilemap: {
+        width: 0,
+        height: 0,
+        tileSize: 0,
+      },
+      input: {
+        left: input?.isDown?.('ArrowLeft') === true,
+        right: input?.isDown?.('ArrowRight') === true,
+        thrust: input?.isDown?.('ArrowUp') === true,
+        fire: input?.isDown?.('Space') === true,
+        pause: input?.isDown?.('KeyP') === true,
+        consoleToggle: input?.isDown?.('ShiftLeft') === true && input?.isDown?.('Backquote') === true,
+        overlayToggle: (input?.isDown?.('ControlLeft') === true || input?.isDown?.('ControlRight') === true) && input?.isDown?.('ShiftLeft') === true && input?.isDown?.('Backquote') === true,
+      },
+      hotReload: {
+        enabled: false,
+        pending: false,
+        mode: 'showcase-manual',
+      },
+      validation: {
+        errorCount: 0,
+        warningCount: 0,
+        asteroidsRecentEvents: recentEvents,
+        asteroidsFrameEvents: frameEvents,
+      },
+      render: {
+        stages: worldStages,
+        debugSurfaceTail: ['debug-overlay', 'dev-console-surface'],
+      },
+      assets: {
+        asteroidsShowcase: {
+          session: {
+            mode: this.session.mode,
+            status: this.session.status,
+            activePlayer: activePlayer.id,
+            score: activePlayer.score,
+            highScore: this.session.highScore,
+            lives: activePlayer.lives,
+            wave: this.world.wave,
+            isPaused: this.isPaused,
+          },
+          entities: {
+            ship: {
+              active: this.world.shipActive,
+              x: this.world.ship.x,
+              y: this.world.ship.y,
+              vx: this.world.ship.vx,
+              vy: this.world.ship.vy,
+              angle: this.world.ship.angle,
+            },
+            asteroidCount: this.world.asteroids.length,
+            bulletCount: this.world.bullets.length,
+            ufoBulletCount: this.world.ufoBullets.length,
+            ufo: {
+              active: Boolean(this.world.ufo),
+              type: this.world.ufo?.type || '',
+            },
+          },
+          presets: {
+            defaultCommand: 'asteroidsshowcase.preset.default',
+            eventsCommand: 'asteroidsshowcase.preset.events',
+          },
+        },
+      },
+    };
+  }
+
+  updateDebugIntegration(engine, dtSeconds, frameEvents = {}) {
+    if (!this.devConsoleIntegration) {
+      return;
+    }
+
+    this.devConsoleIntegration.update({
+      engine,
+      scene: this,
+      diagnosticsContext: this.buildDebugDiagnosticsContext(engine, dtSeconds, frameEvents),
+    });
+  }
+
   update(dtSeconds, engine) {
+    this.debugFrame += 1;
     this.currentInput = engine.input ?? null;
     const enterPressed = engine.input?.isDown('Enter');
     const onePressed = engine.input?.isDown('Digit1');
     const twoPressed = engine.input?.isDown('Digit2');
     const pPressed = engine.input?.isDown('KeyP');
+    const frameEvents = {
+      explosions: [],
+      scoreEvents: [],
+      shipDestroyed: false,
+      shipDestroyedState: null,
+      shipRespawned: false,
+      waveCleared: false,
+      sfx: [],
+    };
+
+    this.recordGameplayInputEvents(engine.input);
 
     if (this.session.mode === 'menu') {
       this.attractController.update(dtSeconds);
@@ -205,11 +463,17 @@ export default class AsteroidsGameScene extends Scene {
       if (onePressed && !this.lastOnePressed) {
         this.attractController.exitAttract();
         this.session.start(1);
+        this.pushDebugEvent('SHIP_SPAWN', { player: 1, wave: this.world.wave });
+        this.pushDebugEvent('WAVE_STARTED', { wave: this.world.wave, asteroids: this.world.asteroids.length });
       }
       if (twoPressed && !this.lastTwoPressed) {
         this.attractController.exitAttract();
         this.session.start(2);
+        this.pushDebugEvent('SHIP_SPAWN', { player: 1, wave: this.world.wave });
+        this.pushDebugEvent('WAVE_STARTED', { wave: this.world.wave, asteroids: this.world.asteroids.length });
       }
+      this.recordWorldEvents(frameEvents);
+      this.updateDebugIntegration(engine, dtSeconds, frameEvents);
       this.lastEnterPressed = enterPressed;
       this.lastOnePressed = onePressed;
       this.lastTwoPressed = twoPressed;
@@ -227,33 +491,41 @@ export default class AsteroidsGameScene extends Scene {
       if (engine.canvas) {
         engine.canvas.style.cursor = 'default';
       }
-      if (this.initialsEntry.active) {
-        const entryResult = this.initialsEntry.update(engine.input);
-        if (entryResult.confirmed) {
-          this.finishInitialsEntry(entryResult);
-        }
-        this.lastEnterPressed = enterPressed;
-        this.lastOnePressed = onePressed;
-        this.lastTwoPressed = twoPressed;
-        this.lastPPressed = pPressed;
-        return;
+        if (this.initialsEntry.active) {
+          const entryResult = this.initialsEntry.update(engine.input);
+          if (entryResult.confirmed) {
+            this.finishInitialsEntry(entryResult);
+          }
+          this.recordWorldEvents(frameEvents);
+          this.updateDebugIntegration(engine, dtSeconds, frameEvents);
+          this.lastEnterPressed = enterPressed;
+          this.lastOnePressed = onePressed;
+          this.lastTwoPressed = twoPressed;
+          this.lastPPressed = pPressed;
+          return;
       }
       if (enterPressed && !this.lastEnterPressed) {
         if (!this.tryBeginInitialsEntry()) {
           this.session.mode = 'menu';
           this.session.status = 'Press 1 for one player or 2 for two players.';
-          this.attractController.resetIdle();
+            this.attractController.resetIdle();
+          }
         }
-      }
-      this.lastEnterPressed = enterPressed;
-      this.lastOnePressed = onePressed;
-      this.lastTwoPressed = twoPressed;
-      this.lastPPressed = pPressed;
-      return;
+        this.recordWorldEvents(frameEvents);
+        this.updateDebugIntegration(engine, dtSeconds, frameEvents);
+        this.lastEnterPressed = enterPressed;
+        this.lastOnePressed = onePressed;
+        this.lastTwoPressed = twoPressed;
+        this.lastPPressed = pPressed;
+        return;
     }
 
     if (pPressed && !this.lastPPressed) {
       this.isPaused = !this.isPaused;
+      this.pushDebugEvent(this.isPaused ? 'GAME_PAUSED' : 'GAME_RESUMED', {
+        wave: this.world.wave,
+        score: this.session.activePlayer?.score || 0,
+      });
     }
 
     if (this.isPaused) {
@@ -264,6 +536,8 @@ export default class AsteroidsGameScene extends Scene {
       if (engine.canvas) {
         engine.canvas.style.cursor = 'none';
       }
+      this.recordWorldEvents(frameEvents);
+      this.updateDebugIntegration(engine, dtSeconds, frameEvents);
       this.lastEnterPressed = enterPressed;
       this.lastOnePressed = onePressed;
       this.lastTwoPressed = twoPressed;
@@ -272,6 +546,13 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     const events = this.session.update(dtSeconds, engine.input) || { sfx: [] };
+    frameEvents.explosions = Array.isArray(events.explosions) ? events.explosions : [];
+    frameEvents.scoreEvents = Array.isArray(events.scoreEvents) ? events.scoreEvents : [];
+    frameEvents.shipDestroyed = events.shipDestroyed === true;
+    frameEvents.shipDestroyedState = events.shipDestroyedState || null;
+    frameEvents.shipRespawned = events.shipRespawned === true;
+    frameEvents.waveCleared = events.waveCleared === true;
+    frameEvents.sfx = Array.isArray(events.sfx) ? events.sfx : [];
     this.shipDebris.update(dtSeconds);
     this.particles.update(dtSeconds);
     this.flamePulseTime += dtSeconds;
@@ -314,6 +595,8 @@ export default class AsteroidsGameScene extends Scene {
     if (engine.canvas) {
       engine.canvas.style.cursor = 'none';
     }
+    this.recordWorldEvents(frameEvents);
+    this.updateDebugIntegration(engine, dtSeconds, frameEvents);
     this.lastEnterPressed = enterPressed;
     this.lastOnePressed = onePressed;
     this.lastTwoPressed = twoPressed;
@@ -444,6 +727,12 @@ export default class AsteroidsGameScene extends Scene {
         color: '#ffffff',
         font: `36px ${HUD_FONT}`,
         textAlign: 'center',
+      });
+    }
+
+    if (this.devConsoleIntegration) {
+      this.devConsoleIntegration.render(renderer, {
+        worldStages: ['parallax', 'entities', 'sprite-effects', 'vector-overlay'],
       });
     }
   }

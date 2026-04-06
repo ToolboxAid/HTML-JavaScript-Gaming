@@ -218,6 +218,134 @@ export async function run() {
     }
   }
 
+  let capturedShowcaseOptions = null;
+  const showcaseCanvas = createCanvas();
+  const showcaseDocument = {
+    documentElement: { style: {} },
+    body: { style: {} },
+    location: { search: '?debug=1&debugMode=qa' },
+    getElementById(id) {
+      return id === 'game' ? showcaseCanvas : null;
+    },
+  };
+  await bootAsteroids({
+    documentRef: showcaseDocument,
+    InputServiceClass: class {},
+    EngineClass: class {
+      constructor({ canvas }) {
+        this.canvas = canvas;
+        this.fullscreen = {
+          getState() {
+            return { available: false, active: false };
+          },
+          async request() {
+            return false;
+          },
+        };
+      }
+
+      setScene(scene) {
+        capturedShowcaseOptions = scene.options;
+      }
+
+      start() {}
+    },
+    SceneClass: class {
+      constructor(options) {
+        this.options = options;
+      }
+    },
+  });
+  assert.equal(capturedShowcaseOptions.debugConfig.debugMode, 'qa');
+  assert.equal(capturedShowcaseOptions.debugConfig.debugEnabled, true);
+  assert.equal(Boolean(capturedShowcaseOptions.devConsoleIntegration), true);
+  assert.equal(capturedShowcaseOptions.devConsoleIntegration.getState().overlayVisible, false);
+
+  let capturedProductionOptions = null;
+  const productionCanvas = createCanvas();
+  const productionDocument = {
+    documentElement: { style: {} },
+    body: { style: {} },
+    location: { search: '' },
+    getElementById(id) {
+      return id === 'game' ? productionCanvas : null;
+    },
+  };
+  await bootAsteroids({
+    documentRef: productionDocument,
+    InputServiceClass: class {},
+    EngineClass: class {
+      constructor({ canvas }) {
+        this.canvas = canvas;
+        this.fullscreen = {
+          getState() {
+            return { available: false, active: false };
+          },
+          async request() {
+            return false;
+          },
+        };
+      }
+
+      setScene(scene) {
+        capturedProductionOptions = scene.options;
+      }
+
+      start() {}
+    },
+    SceneClass: class {
+      constructor(options) {
+        this.options = options;
+      }
+    },
+  });
+  assert.equal(capturedProductionOptions.debugConfig.debugMode, 'prod');
+  assert.equal(capturedProductionOptions.debugConfig.debugEnabled, false);
+  assert.equal(capturedProductionOptions.devConsoleIntegration, null);
+
+  let capturedLocalOptions = null;
+  const localCanvas = createCanvas();
+  const localDocument = {
+    documentElement: { style: {} },
+    body: { style: {} },
+    location: { search: '', protocol: 'file:' },
+    getElementById(id) {
+      return id === 'game' ? localCanvas : null;
+    },
+  };
+  await bootAsteroids({
+    documentRef: localDocument,
+    InputServiceClass: class {},
+    EngineClass: class {
+      constructor({ canvas }) {
+        this.canvas = canvas;
+        this.fullscreen = {
+          getState() {
+            return { available: false, active: false };
+          },
+          async request() {
+            return false;
+          },
+        };
+      }
+
+      setScene(scene) {
+        capturedLocalOptions = scene.options;
+      }
+
+      start() {}
+    },
+    SceneClass: class {
+      constructor(options) {
+        this.options = options;
+      }
+    },
+  });
+  assert.equal(capturedLocalOptions.debugConfig.debugMode, 'dev');
+  assert.equal(capturedLocalOptions.debugConfig.debugEnabled, true);
+  assert.equal(Boolean(capturedLocalOptions.devConsoleIntegration), true);
+  assert.equal(capturedLocalOptions.devConsoleIntegration.getState().overlayVisible, false);
+
   withBlockedLocalStorage(() => {
     const scene = new AsteroidsGameScene();
     assert.equal(scene.session.highScore >= 0, true);

@@ -10,6 +10,7 @@ README.md
 - `docs/dev/`: active workflow controls only
 - `docs/dev/reports/`: active current reports only
 - `docs/architecture/`: durable architecture and boundary documentation
+- `docs/release/`: release/readiness and showcase documentation sets
 - `docs/archive/dev-ops/`: archived operational notes and superseded workflow docs
 - `docs/archive/generated-reports/`: archived generated validation/report artifacts
 
@@ -17,5 +18,6 @@ README.md
 - [Getting Started](getting-started.md)
 - [Architecture Overview](architecture/README.md)
 - [Debug Surfaces External Integration](architecture/debug-surfaces-external-integration.md)
+- [Release Docs](release/README.md)
 - [Repo Directory Structure](repo-directory-structure.md)
 - [Review Checklist](review-checklist.md)

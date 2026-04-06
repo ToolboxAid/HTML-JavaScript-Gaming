@@ -2,10 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Execute PLAN + BUILD + APPLY for BIG_PICTURE_REMAINDER_COMPLETION.
+Execute PLAN + BUILD + APPLY for PRODUCTIZATION_ASTEROIDS_SHOWCASE.
 
 PURPOSE:
-Complete all remaining achievable items in BIG_PICTURE_ROADMAP.md, excluding Track G and Track H.
+Productize the completed debug platform through an Asteroids showcase sample.
 
 OUTPUT:
-<project folder>/tmp/PR_BIG_PICTURE_REMAINDER_COMPLETION_FULL_bundle.zip
+<project folder>/tmp/PR_PRODUCTIZATION_ASTEROIDS_SHOWCASE_FULL_bundle.zip
