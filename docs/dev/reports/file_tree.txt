@@ -1,13 +1,13 @@
-HTML-JavaScript-Gaming/
-|-- docs/
-|   |-- pr/
-|   |   `-- PLAN_PR_DEBUG_SURFACES_ADVANCED_UX.md
-|   `-- dev/
-|       |-- codex_commands.md
-|       |-- commit_comment.txt
-|       `-- reports/
-|           |-- change_summary.txt
-|           |-- validation_checklist.txt
-|           `-- file_tree.txt
-`-- tmp/
-    `-- PLAN_PR_DEBUG_SURFACES_ADVANCED_UX_delta.zip
+APPLY_PR_DEBUG_SURFACES_EXECUTION_PACK_v2/
+└── docs/
+    ├── dev/
+    │   ├── codex_commands.md
+    │   ├── commit_comment.txt
+    │   ├── next_command.txt
+    │   └── reports/
+    │       ├── change_summary.txt
+    │       ├── validation_checklist.txt
+    │       └── file_tree.txt
+    └── pr/
+        ├── APPLY_PR_DEBUG_SURFACES_PRESETS.md
+        └── APPLY_PR_DEBUG_SURFACES_ADVANCED_UX.md

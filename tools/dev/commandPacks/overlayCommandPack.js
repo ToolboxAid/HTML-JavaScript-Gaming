@@ -73,6 +73,30 @@ function getPanels(registry, includeDisabled = true) {
   return Array.isArray(panels) ? panels : [];
 }
 
+function buildPanelSnapshot(registry) {
+  const panels = getPanels(registry, true);
+  return {
+    version: "1",
+    updatedAt: Date.now(),
+    panels: panels.map((panel) => ({
+      id: sanitizeText(panel?.id),
+      enabled: Boolean(panel?.enabled)
+    }))
+  };
+}
+
+function persistOverlayState(context, registry) {
+  if (typeof context?.persistOverlayPanelState !== "function") {
+    return "PERSISTENCE_NOT_CONFIGURED";
+  }
+  try {
+    context.persistOverlayPanelState(buildPanelSnapshot(registry));
+    return "PERSISTENCE_UPDATED";
+  } catch (_error) {
+    return "PERSISTENCE_UPDATE_FAILED";
+  }
+}
+
 function findPanel(registry, panelId) {
   const id = sanitizeText(panelId);
   if (!id) {
@@ -265,18 +289,21 @@ export function createOverlayCommandPack() {
           runtimeContext.runtime.showOverlay();
           const nextPanel = findPanel(runtimeContext.registry, panelId);
           const runtimeState = runtimeContext.runtime.getState();
+          const persistence = persistOverlayState(context, runtimeContext.registry);
           return createReadyResult(
             "Overlay Show",
             [
               toLinePair("panelId", panelId),
               toLinePair("enabled", Boolean(nextPanel?.enabled)),
-              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible))
+              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible)),
+              toLinePair("persistence", persistence)
             ],
             "OVERLAY_SHOW",
             {
               panelId,
               enabled: Boolean(nextPanel?.enabled),
-              overlayVisible: Boolean(runtimeState.overlayVisible)
+              overlayVisible: Boolean(runtimeState.overlayVisible),
+              persistence
             }
           );
         }
@@ -307,18 +334,21 @@ export function createOverlayCommandPack() {
 
           const nextPanel = findPanel(runtimeContext.registry, panelId);
           const runtimeState = runtimeContext.runtime.getState();
+          const persistence = persistOverlayState(context, runtimeContext.registry);
           return createReadyResult(
             "Overlay Hide",
             [
               toLinePair("panelId", panelId),
               toLinePair("enabled", Boolean(nextPanel?.enabled)),
-              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible))
+              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible)),
+              toLinePair("persistence", persistence)
             ],
             "OVERLAY_HIDE",
             {
               panelId,
               enabled: Boolean(nextPanel?.enabled),
-              overlayVisible: Boolean(runtimeState.overlayVisible)
+              overlayVisible: Boolean(runtimeState.overlayVisible),
+              persistence
             }
           );
         }
@@ -348,16 +378,19 @@ export function createOverlayCommandPack() {
           }
 
           const nextPanel = findPanel(runtimeContext.registry, panelId);
+          const persistence = persistOverlayState(context, runtimeContext.registry);
           return createReadyResult(
             "Overlay Toggle",
             [
               toLinePair("panelId", panelId),
-              toLinePair("enabled", Boolean(nextPanel?.enabled))
+              toLinePair("enabled", Boolean(nextPanel?.enabled)),
+              toLinePair("persistence", persistence)
             ],
             "OVERLAY_TOGGLE",
             {
               panelId,
-              enabled: Boolean(nextPanel?.enabled)
+              enabled: Boolean(nextPanel?.enabled),
+              persistence
             }
           );
         }
@@ -391,18 +424,21 @@ export function createOverlayCommandPack() {
 
           runtimeContext.runtime.showOverlay();
           const runtimeState = runtimeContext.runtime.getState();
+          const persistence = persistOverlayState(context, runtimeContext.registry);
           return createReadyResult(
             "Overlay ShowAll",
             [
               toLinePair("panelCount", allPanels.length),
               toLinePair("changedCount", changedCount),
-              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible))
+              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible)),
+              toLinePair("persistence", persistence)
             ],
             "OVERLAY_SHOW_ALL",
             {
               panelCount: allPanels.length,
               changedCount,
-              overlayVisible: Boolean(runtimeState.overlayVisible)
+              overlayVisible: Boolean(runtimeState.overlayVisible),
+              persistence
             }
           );
         }
@@ -435,18 +471,21 @@ export function createOverlayCommandPack() {
           }
 
           const runtimeState = runtimeContext.runtime.getState();
+          const persistence = persistOverlayState(context, runtimeContext.registry);
           return createReadyResult(
             "Overlay HideAll",
             [
               toLinePair("panelCount", allPanels.length),
               toLinePair("changedCount", changedCount),
-              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible))
+              toLinePair("overlayVisible", Boolean(runtimeState.overlayVisible)),
+              toLinePair("persistence", persistence)
             ],
             "OVERLAY_HIDE_ALL",
             {
               panelCount: allPanels.length,
               changedCount,
-              overlayVisible: Boolean(runtimeState.overlayVisible)
+              overlayVisible: Boolean(runtimeState.overlayVisible),
+              persistence
             }
           );
         }

@@ -9,11 +9,15 @@ import { createDevConsoleCommandRegistry } from "./devConsoleCommandRegistry.js"
 import { drawInteractiveDevConsole } from "./interactiveDevConsoleRenderer.js";
 import { createDebugCommandPack } from "./commandPacks/debugCommandPack.js";
 import { createEntityCommandPack } from "./commandPacks/entityCommandPack.js";
+import { createGroupCommandPack } from "./commandPacks/groupCommandPack.js";
 import { createHotReloadCommandPack } from "./commandPacks/hotReloadCommandPack.js";
 import { createInputCommandPack } from "./commandPacks/inputCommandPack.js";
+import { createMacroCommandPack } from "./commandPacks/macroCommandPack.js";
 import { createOverlayCommandPack } from "./commandPacks/overlayCommandPack.js";
+import { createPresetCommandPack } from "./commandPacks/presetCommandPack.js";
 import { createRenderCommandPack } from "./commandPacks/renderCommandPack.js";
 import { createSceneCommandPack } from "./commandPacks/sceneCommandPack.js";
+import { createToggleCommandPack } from "./commandPacks/toggleCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
 import {
   createDiagnosticsCollector,
@@ -216,6 +220,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   const comboBindings = isObject(options?.comboBindings)
     ? options.comboBindings
     : DEFAULT_COMBO_BINDINGS;
+  const persistOverlayPanelState = typeof options?.persistOverlayPanelState === "function"
+    ? options.persistOverlayPanelState
+    : null;
 
   let diagnosticsSnapshot = null;
   let diagnosticsReports = [];
@@ -244,6 +251,10 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       createDebugCommandPack(),
       createInputCommandPack(),
       createOverlayCommandPack(),
+      createPresetCommandPack(),
+      createGroupCommandPack(),
+      createMacroCommandPack(),
+      createToggleCommandPack(),
       createHotReloadCommandPack(),
       createValidationCommandPack()
     ]
@@ -287,6 +298,25 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     return normalizeRuntimeDelegationResult(commandName, execution);
   }
 
+  function executeRegistryCommand(commandText, context = {}) {
+    const command = sanitizeText(commandText);
+    if (!command) {
+      return {
+        status: "failed",
+        title: "Command",
+        lines: ["No command entered."],
+        code: "EMPTY_COMMAND"
+      };
+    }
+
+    const nestedContext = buildRegistryCommandContext(
+      context && isObject(context)
+        ? context
+        : buildCommandContext(diagnosticsSnapshot || {})
+    );
+    return commandRegistry.execute(command, nestedContext);
+  }
+
   function buildRegistryCommandContext(baseContext = {}) {
     const normalizedBase = isObject(baseContext)
       ? baseContext
@@ -296,6 +326,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       ...normalizedBase,
       consoleRuntime: runtime,
       executeRuntimeCommand,
+      executeConsoleCommand: executeRegistryCommand,
+      listRegisteredCommands: getCommandRegistryNames,
+      persistOverlayPanelState,
       resetConsoleUiState
     };
   }

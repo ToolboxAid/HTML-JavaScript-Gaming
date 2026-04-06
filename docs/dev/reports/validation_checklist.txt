@@ -1,31 +1,9 @@
-PLAN_PR_DEBUG_SURFACES_ADVANCED_UX validation checklist
+Validation Checklist
 
-Workflow
-- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure referenced
-- [done] Docs-first only
-- [done] One PR per purpose
-
-Plan Content
-- [done] Panel group infrastructure defined
-- [done] Quick toggles defined
-- [done] Macro registry/executor defined
-- [done] Optional shortcut helpers defined
-- [done] Command surfaces defined
-- [done] Naming conventions defined
-- [done] Target structure defined
-- [done] Macros constrained to public APIs and approved commands/actions
-
-Scope Controls
-- [done] v1 remains small and opt-in
-- [done] layout editor scope excluded
-- [done] docking system scope excluded
-- [done] 3D-specific scope excluded
-- [done] network-specific scope excluded
-- [done] project-specific shared workflow implementations excluded
-
-Outputs
-- [done] Plan doc under docs/pr
-- [done] Codex command under docs/dev
-- [done] Commit comment under docs/dev
-- [done] Reports under docs/dev/reports
-- [done] Delta zip generated at <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_ADVANCED_UX_delta.zip
+[ ] Presets apply correctly
+[ ] Overlay responds to preset changes
+[ ] Persistence remains stable
+[ ] Panel groups work
+[ ] Macros execute correctly
+[ ] Toggles behave correctly
+[ ] No regression in console or overlay

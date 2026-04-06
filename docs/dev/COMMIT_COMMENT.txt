@@ -1,1 +1,1 @@
-docs: plan advanced UX layer for debug surfaces with public-API-only macro composition and opt-in groups/toggles/shortcuts
+apply: presets + advanced ux execution pack
