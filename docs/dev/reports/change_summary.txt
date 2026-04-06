@@ -1,5 +1,13 @@
-Execution pack v2:
-- Includes APPLY presets + advanced UX
-- Includes codex_commands.md (required)
-- Provides execution steps and validation
-- Ready for Codex execution
+Created docs-only PLAN bundle for `PLAN_PR_DEBUG_SURFACES_3D_SUPPORT`.
+
+Included updates:
+- plan doc with shared 3D panels/providers/presets, boundaries, adoption, naming, and target structure
+- command and commit artifacts under docs/dev
+- roadmap bracket-state update only
+- report refresh under docs/dev/reports
+
+Scope control:
+- docs-first only
+- one PR purpose only
+- no implementation code changes
+- renderer-specific, deep inspector, and network support remain out of scope

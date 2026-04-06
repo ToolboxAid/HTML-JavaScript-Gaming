@@ -1,1 +1,1 @@
-apply: presets + advanced ux execution pack
+docs: plan reusable opt-in 3D support layer for debug surfaces

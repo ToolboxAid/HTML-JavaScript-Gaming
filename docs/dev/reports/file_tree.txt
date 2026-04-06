@@ -1,13 +1,12 @@
-APPLY_PR_DEBUG_SURFACES_EXECUTION_PACK_v2/
-└── docs/
-    ├── dev/
-    │   ├── codex_commands.md
-    │   ├── commit_comment.txt
-    │   ├── next_command.txt
-    │   └── reports/
-    │       ├── change_summary.txt
-    │       ├── validation_checklist.txt
-    │       └── file_tree.txt
-    └── pr/
-        ├── APPLY_PR_DEBUG_SURFACES_PRESETS.md
-        └── APPLY_PR_DEBUG_SURFACES_ADVANCED_UX.md
+PLAN_PR_DEBUG_SURFACES_3D_SUPPORT_delta/
+`-- docs/
+    |-- dev/
+    |   |-- BIG_PICTURE_ROADMAP.md
+    |   |-- codex_commands.md
+    |   |-- commit_comment.txt
+    |   `-- reports/
+    |       |-- change_summary.txt
+    |       |-- file_tree.txt
+    |       `-- validation_checklist.txt
+    `-- pr/
+        `-- PLAN_PR_DEBUG_SURFACES_3D_SUPPORT.md

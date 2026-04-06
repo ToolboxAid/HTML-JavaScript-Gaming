@@ -1,9 +1,18 @@
 Validation Checklist
 
-[ ] Presets apply correctly
-[ ] Overlay responds to preset changes
-[ ] Persistence remains stable
-[ ] Panel groups work
-[ ] Macros execute correctly
-[ ] Toggles behave correctly
-[ ] No regression in console or overlay
+[x] PLAN_PR -> BUILD_PR -> APPLY_PR flow is declared
+[x] Docs-first only (no implementation files changed)
+[x] One PR purpose only (3D support planning)
+[x] Shared 3D panel inventory is explicit
+[x] Shared 3D provider inventory is explicit
+[x] Optional 3D presets are defined
+[x] Adapter boundaries are explicit
+[x] Adoption models are included
+[x] Naming conventions are included
+[x] Target structure is included
+[x] Renderer-specific implementation excluded
+[x] Deep inspectors excluded
+[x] Network support excluded
+[x] Project-specific adapters remain outside shared layer
+[x] BIG_PICTURE_ROADMAP.md updated via bracket-state changes only
+[x] BUILD next command is identified
