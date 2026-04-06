@@ -1,12 +1,15 @@
 Toolbox Aid
 David Quesenberry
-04/05/2026
+04/06/2026
 file_tree.txt
 
-docs/pr/PLAN_PR_DEV_CONSOLE_COMMAND_PACKS.md
-docs/dev/codex_commands.md
-docs/dev/commit_comment.txt
-docs/dev/change_summary.txt
-docs/dev/validation_checklist.txt
-docs/dev/file_tree.txt
-docs/dev/next_command.txt
+HTML-JavaScript-Gaming-main/docs/pr/PLAN_PR_DOCS_ARCHIVE_CLEANUP.md
+HTML-JavaScript-Gaming-main/docs/pr/BUILD_PR_DOCS_ARCHIVE_CLEANUP.md
+HTML-JavaScript-Gaming-main/docs/archive/pr/README.md
+HTML-JavaScript-Gaming-main/docs/dev/reports/docs_archive_pr_move_manifest.txt
+HTML-JavaScript-Gaming-main/docs/dev/reports/docs_archive_pr_keep_manifest.txt
+HTML-JavaScript-Gaming-main/docs/dev/codex_commands.md
+HTML-JavaScript-Gaming-main/docs/dev/commit_comment.txt
+HTML-JavaScript-Gaming-main/docs/dev/change_summary.txt
+HTML-JavaScript-Gaming-main/docs/dev/validation_checklist.txt
+HTML-JavaScript-Gaming-main/docs/dev/file_tree.txt

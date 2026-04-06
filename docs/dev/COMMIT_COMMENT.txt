@@ -1,1 +1,1 @@
-Apply Sample A server containerization artifacts and finalize Track U checklist states without engine-core changes.
+Archive legacy PR markdown files out of docs/pr while preserving active Level 11 work, .keep, roadmaps, and start_of_day protections.

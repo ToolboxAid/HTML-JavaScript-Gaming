@@ -1,23 +1,27 @@
 Toolbox Aid
 David Quesenberry
-04/05/2026
+04/06/2026
 validation_checklist.txt
 
 VALIDATION CHECKLIST
 
 Workflow
-- PLAN_PR created
-- One PR per purpose
-- No implementation code in bundle
+- Combined PLAN + BUILD bundle for one PR purpose only
+- Scope limited to docs archive cleanup
+- Execute step limited to non-destructive file moves only
 
-Header Rules
-- Header present in all new files except docs/dev/commit_comment.txt
-- commit_comment.txt contains no Toolbox Aid header
+Safety
+- No start_of_day paths touched
+- No roadmap files touched
+- No deletions
+- No engine/runtime/code changes
 
-Plan Quality
-- Command pack structure defined
-- Registry model defined
-- Help behavior defined
-- Output contract defined
-- Validation conventions defined
-- Engine-safe boundary preserved
+Archive Rules
+- Legacy PR files move only by exact manifest
+- Active Level 11 PR files remain in docs/pr
+- docs/pr/.keep remains in place
+- Archive destination is docs/archive/pr/legacy-pr-history/
+
+Counts
+- PR markdown files to move: 414
+- PR markdown files to keep active: 27

@@ -1,9 +1,10 @@
 Toolbox Aid
 David Quesenberry
-04/05/2026
+04/06/2026
 change_summary.txt
 
 Summary
-- Added PLAN PR for dev console command packs
-- Defined grouped command architecture for future console growth
-- Preserved docs-first workflow and commit_comment no-header exception
+- Added PLAN PR and BUILD PR docs for controlled docs archive cleanup
+- Defined exact keep vs move rules for docs/pr historical markdown files
+- Added archive destination README and exact PR move/keep manifests
+- Prepared Codex command for user-approved execute step limited to non-destructive file moves
