@@ -1,13 +1,16 @@
-Created APPLY bundle for shared 3D debug support.
+Created a docs-only bundled pack for network support planning/build/apply contracts.
 
-Included:
-- apply PR doc
-- codex command
-- roadmap guardrails
-- updated BIG_PICTURE_ROADMAP.md (brackets only)
-- 3D sample adapter harness notes
-- reports
+Updated:
+- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md
+- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md
+- APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md
+- docs/dev command + commit artifacts
+- docs/dev/reports summary/checklist/tree
+- BIG_PICTURE_ROADMAP.md bracket states only
 
-Primary intent:
-- add summary-level, renderer-agnostic shared 3D support
-- keep adapters local
+Scope enforced:
+- docs-first only
+- one purpose per document
+- summary-level + opt-in
+- transport/protocol specifics remain local
+- packet inspectors, auth/matchmaking, deep inspectors excluded

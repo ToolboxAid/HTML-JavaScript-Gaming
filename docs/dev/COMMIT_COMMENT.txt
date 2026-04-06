@@ -1,1 +1,1 @@
-apply: shared 3D debug support layer
+docs: bundle network support PLAN/BUILD/APPLY contracts for debug surfaces
