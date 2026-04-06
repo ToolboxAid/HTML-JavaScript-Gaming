@@ -1,21 +1,9 @@
-Workflow
-- [x] PLAN created
-- [x] BUILD created
-- [x] APPLY created
-
-Integration Targets
-- [x] Network Sample B card present under Level 11 in games/index.html
-- [x] Card follows existing Debug Showcase pattern
-- [x] Play link present for Sample B
-- [x] Debug link present for Sample B
-- [x] Docs links present for Sample B
-
-Tracking
-- [x] Track O checklist verified as [x] in docs/dev/NETWORK_SAMPLES_PLAN.md
-- [x] no BIG_PICTURE_ROADMAP.md update required
-
-Safety
-- [x] no server changes
-- [x] no container changes
-- [x] no engine changes
-- [x] no top section additions
+[ ] Bundle is docs-only
+[ ] Workflow preserved as PLAN_PR -> BUILD_PR -> APPLY_PR
+[ ] Sample C named consistently as Divergence / Trace Validation
+[ ] games/index.html guidance says card-level update only
+[ ] No new top section allowed in games/index.html
+[ ] NETWORK_SAMPLES_PLAN shows Track P in progress
+[ ] Track T and Track U are present and not falsely marked complete
+[ ] BIG_PICTURE_ROADMAP guidance removes broken icons
+[ ] Codex command points to PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL

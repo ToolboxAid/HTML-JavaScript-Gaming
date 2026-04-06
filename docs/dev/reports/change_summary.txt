@@ -1,13 +1,9 @@
-Created PR_DEBUG_SURFACES_NETWORK_SAMPLE_B_INTEGRATION_FULL as an integration-focused bundle.
+Prepared a docs-only continuation bundle for the next repo workflow step.
 
-Delivered:
-- Added integration PR docs for PLAN/BUILD/APPLY under docs/pr.
-- Verified Sample B card presence in `games/index.html` Level 11 using the existing Debug Showcase card pattern.
-- Verified Sample B card includes Play, Debug, and docs links.
-- Verified Track O checklist remains complete (`[x]`) in `docs/dev/NETWORK_SAMPLES_PLAN.md`.
+Included:
+- PLAN/BUILD/APPLY PR docs for PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL
+- refreshed NETWORK_SAMPLES_PLAN with Sample C in progress and T/U reset to future work
+- big-picture roadmap patch guidance to remove broken icons
+- codex command, commit comment, next command, and validation/report files
 
-Scope preserved:
-- no server changes
-- no container changes
-- no engine changes
-- no top section additions or page structure changes
+No implementation code is included.

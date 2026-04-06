@@ -36,12 +36,12 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK P — DIVERGENCE / TRACE SAMPLE
 
-- [ ] Sample C — Divergence / Trace Validation
-- [ ] Deterministic mismatch scenario
-- [ ] Event sequencing timeline
-- [ ] Divergence explanation notes
-- [ ] Reproduction guide
-- [ ] Validation checklist
+- [.] Sample C — Divergence / Trace Validation
+- [x] Deterministic mismatch scenario
+- [x] Event sequencing timeline
+- [x] Divergence explanation notes
+- [x] Reproduction guide
+- [.] Validation checklist
 
 ---
 
@@ -79,29 +79,29 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK T — SERVER DASHBOARD
 
-- [x] Server dashboard shell
-- [x] Player statistics view
-- [x] Latency view
-- [x] RX bytes view
-- [x] TX bytes view
-- [x] Connection/session counts
-- [x] Per-player status rows
-- [x] Refresh/update strategy
-- [x] Debug-only access rules
+- [ ] Server dashboard shell
+- [ ] Player statistics view
+- [ ] Latency view
+- [ ] RX bytes view
+- [ ] TX bytes view
+- [ ] Connection/session counts
+- [ ] Per-player status rows
+- [ ] Refresh/update strategy
+- [ ] Debug-only access rules
 
 ---
 
 # TRACK U — SERVER CONTAINERIZATION
 
-- [x] Dockerfile for server
-- [x] .dockerignore
-- [x] Environment variable contract
-- [x] Local run command
-- [x] Compose-ready service definition
-- [x] Port mapping rules
-- [x] Health/readiness check
-- [x] Logging/output expectations
-- [x] Container debug notes
+- [ ] Dockerfile for server
+- [ ] .dockerignore
+- [ ] Environment variable contract
+- [ ] Local run command
+- [ ] Compose-ready service definition
+- [ ] Port mapping rules
+- [ ] Health/readiness check
+- [ ] Logging/output expectations
+- [ ] Container debug notes
 
 ## Recommended Execution Order
 1. Sample A

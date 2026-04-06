@@ -1,1 +1,1 @@
-docs(network-sample-b): package Level 11 integration verification and Track O tracking alignment
+docs(network-sample-c): plan Level 11 divergence/trace sample and roadmap cleanup
