@@ -1,30 +1,20 @@
 # Engine Maturity Versioning Strategy
 
-## Purpose
-Define contract metadata and lifecycle rules for promoted debug surfaces.
-
-## Contract Metadata (required)
+## Contract Metadata
 Each promoted contract should declare:
 - `contractId`
 - `contractVersion`
-- `compatibility`
-  - `backwardCompatible` (boolean)
-  - `notes` (string)
+- `compatibility` (`backwardCompatible`, `notes`)
 - `status` (`active|deprecated`)
 - `deprecatedSince` (optional)
 - `replacementContractId` (optional)
 
-## Semantic Version Rules
-- MAJOR: breaking change
-- MINOR: additive compatible change
-- PATCH: non-breaking fixes/clarifications
+## SemVer Rules
+- MAJOR: breaking
+- MINOR: additive/backward-compatible
+- PATCH: non-breaking fix/clarification
 
-## Compatibility Rules
-- MINOR/PATCH must preserve existing consumers
-- breaking changes require MAJOR + migration notes
-- deprecated contracts require replacement path
-
-## Deprecation Window
-1. mark deprecated with replacement
-2. keep compatibility during transition window
-3. remove only on a MAJOR boundary
+## Deprecation
+- mark deprecated with replacement guidance
+- keep transition window
+- remove only on MAJOR boundary

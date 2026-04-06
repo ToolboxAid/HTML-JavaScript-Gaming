@@ -1,11 +1,13 @@
-[ ] APPLY scope matches approved BUILD scope
-[ ] No runtime mutation APIs added
-[ ] Entity inspector works
-[ ] Component inspector works
-[ ] State diff viewer works
-[ ] Timeline debugger works
-[ ] Event stream viewer works
-[ ] Frame buffer bounded
-[ ] Existing samples still run
-[ ] No unrelated files changed
-[ ] BIG_PICTURE_ROADMAP updated with bracket-only edits
+Validation Checklist
+
+[x] PLAN_PR -> BUILD_PR -> APPLY_PR flow preserved
+[x] Bundle is docs-only
+[x] No runtime code files changed in this step
+[x] Stable debug API seams documented
+[x] Plugin lifecycle boundaries documented
+[x] Versioned contract metadata documented
+[x] External documentation ownership documented
+[x] Performance benchmark entry points/rules documented
+[x] Public/internal/transitional boundaries preserved
+[x] BIG_PICTURE_ROADMAP.md structure preserved
+[x] Bracket-only roadmap edits used if needed

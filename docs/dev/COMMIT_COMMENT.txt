@@ -1,11 +1,1 @@
-APPLY_PR_DEBUG_SURFACES_INSPECTORS
-
-Applies the approved inspector layer:
-- Entity inspector
-- Component inspector
-- State diff viewer
-- Timeline debugger
-- Event stream viewer
-
-Preserves read-only behavior, bounded frame history, optional debug surfaces,
-and roadmap bracket-only updates for Track I.
+docs: build engine maturity docs bundle from PLAN with stable seams, lifecycle boundaries, versioning, docs ownership, and benchmark rules

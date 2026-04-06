@@ -1,104 +1,102 @@
 # PLAN_PR_ENGINE_MATURITY
 
-## Purpose
-Define the docs-first plan for promoting the current debug platform toward engine maturity without polluting engine core APIs and without skipping the established workflow.
+## Objective
+Define the engine-maturity planning layer for the debug platform so the current system can operate as a stable, reusable engine-grade capability.
 
-## Context
-The current project already has render pipeline contracts, a runtime scene loader with hot reload, a dev console runtime, a canvas HUD, and an interactive console UI. The active architecture is:
+This PR is docs-only and establishes:
+- stable debug API boundaries
+- plugin / extension strategy
+- external documentation structure
+- versioned contract strategy
+- performance benchmark rules
 
-`TOOLS -> CONTRACT -> RUNTIME -> DEBUG -> VISUAL`
-
-This PR is planning-only. Codex remains responsible for implementation.
-
-## Goals
-1. Establish a stable debug API surface.
-2. Define a plugin model for debug extensions.
-3. Define external documentation boundaries.
-4. Define versioned contracts for debug-facing integrations.
-5. Define performance benchmark rules and validation expectations.
-
-## Non-Goals
-- No runtime implementation changes.
-- No engine-core API expansion in this PR.
-- No restructuring of existing debug surfaces.
-- No changes to combo keys or operator UX.
-- No roadmap text edits outside bracket-state updates.
+## Workflow Position
+This is the PLAN step in:
+PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Scope
-### In Scope
-- Planning docs for engine maturity.
-- Build instructions for a later implementation PR.
-- Apply instructions for a later implementation PR.
-- API inventory and boundary definitions.
-- Versioning strategy.
-- Performance rules.
-- Documentation map.
-- Roadmap alignment notes.
 
-### Out Of Scope
-- New runtime modules.
-- Inspector implementation.
-- Network debug implementation.
-- 3D debug feature implementation.
-- Plugin host code.
-- Benchmark harness code.
+### 1. Stable Debug API
+Freeze and document the approved public debug-facing API surface.
 
-## Proposed Maturity Slices
-### Slice 1 — Stable Debug API
-Define approved public selectors, commands, provider registration points, panel registration boundaries, and event names that are safe to treat as supported.
+Required outcomes:
+- identify public entry points
+- separate public vs internal vs transitional surfaces
+- define approved selectors, events, and provider access patterns
+- prohibit direct runtime coupling from consumers
 
-### Slice 2 — Plugin System
-Define plugin manifest expectations, registration lifecycle, extension boundaries, and failure isolation rules.
+### 2. Plugin / Extension Model
+Define how future extensions attach to the debug platform without polluting engine core.
 
-### Slice 3 — External Documentation
-Define docs ownership, audience splits, and canonical document locations for engine-facing, tool-facing, and sample-facing consumers.
+Required outcomes:
+- plugin registration boundary
+- lifecycle hooks for safe initialization / teardown
+- capability discovery
+- optional loading
+- extension isolation rules
 
-### Slice 4 — Versioned Contracts
-Define compatibility policy, semantic versioning expectations, and deprecation handling for debug contracts.
+### 3. External Documentation Map
+Define how engine-grade docs are organized for maintainers and implementers.
 
-### Slice 5 — Performance Benchmarks
-Define benchmark categories, thresholds, measurement rules, and regression gates for debug surfaces.
+Required outcomes:
+- API reference structure
+- architecture overview structure
+- migration / versioning notes
+- examples and sample usage map
 
-## Acceptance Criteria
-- Planning docs clearly separate public vs internal debug surfaces.
-- Plugin model is defined without requiring engine pollution.
-- Documentation ownership and map are explicit.
-- Versioning rules identify compatibility expectations and deprecation flow.
-- Performance rules define measurable expectations.
-- Roadmap/tracker handling follows bracket-only rules.
+### 4. Versioned Contracts
+Establish contract versioning rules for debug providers, surfaces, and extensions.
 
-## Risks
-- Public API may be declared too early and limit future refactors.
-- Plugin scope may become too broad and leak internals.
-- Benchmark rules may be too vague to enforce.
-- Documentation sprawl may create conflicting sources of truth.
+Required outcomes:
+- semantic versioning guidance for debug contracts
+- compatibility rules
+- deprecation policy
+- transitional contract handling
 
-## Risk Controls
-- Promote only already-proven surfaces.
-- Prefer read-only/public contract seams.
-- Keep plugin hooks narrowly scoped.
-- Define one canonical doc per concern.
-- Require versioning and deprecation notes for promoted surfaces.
+### 5. Performance Benchmark Rules
+Define the non-negotiable performance guardrails for an engine-grade debug layer.
 
-## Dependencies
-- Existing debug platform baseline.
-- Existing docs/dev controls.
-- Strict adherence to `PLAN_PR -> BUILD_PR -> APPLY_PR`.
+Required outcomes:
+- no hidden per-frame allocations in hot paths unless explicitly approved
+- bounded buffering for history / inspection tools
+- optional debug surfaces remain non-invasive
+- measurable benchmark categories
+- validation expectations before promotion
+
+## Non-Goals
+- no runtime code changes
+- no new inspector features
+- no implementation of plugins in this PR
+- no engine restructuring
+- no sample behavior changes
+
+## Architecture Rules
+- Docs-first only
+- One PR per purpose
+- No skipped workflow steps
+- Preserve engine/runtime separation
+- Keep public/internal/transitional boundaries explicit
+- Do not modify unrelated runtime code
 
 ## Deliverables
-- `docs/pr/PLAN_PR_ENGINE_MATURITY.md`
-- `docs/pr/BUILD_PR_ENGINE_MATURITY.md`
-- `docs/pr/APPLY_PR_ENGINE_MATURITY.md`
-- `docs/dev/ENGINE_MATURITY_API_INVENTORY.md`
-- `docs/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md`
-- `docs/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md`
-- `docs/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md`
-- `docs/dev/BIG_PICTURE_ROADMAP.md`
-- `docs/dev/ROADMAP_GUARDRAILS.md`
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/next_command.txt`
-- reports under `docs/dev/reports/`
+This PLAN PR defines the need for the following docs in later steps:
+- ENGINE_MATURITY_API_INVENTORY.md
+- ENGINE_MATURITY_VERSIONING_STRATEGY.md
+- ENGINE_MATURITY_PERFORMANCE_RULES.md
+- ENGINE_MATURITY_DOCUMENTATION_MAP.md
+- BIG_PICTURE_ROADMAP bracket-state update only when appropriate
 
-## Exit Condition
-This planning slice is complete when the maturity surfaces are documented well enough for a separate BUILD PR to produce a surgical implementation bundle.
+## Acceptance Criteria
+- public debug API boundary is defined
+- plugin model is clearly bounded
+- versioning rules are documented
+- performance rules are explicit and testable
+- documentation structure is defined
+- no implementation code is introduced
+
+## Build Intent
+BUILD_PR_ENGINE_MATURITY should:
+- create the engine maturity support docs
+- prepare codex-facing implementation guidance
+- keep roadmap edits bracket-only
+- avoid runtime changes unless a later approved PR explicitly requires them

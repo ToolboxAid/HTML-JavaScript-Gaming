@@ -1,107 +1,73 @@
 # BUILD_PR_ENGINE_MATURITY
 
 ## Purpose
-Build a docs-first, implementation-ready bundle for final engine maturity work focused on migration and stabilization only.
+Build a docs-first, implementation-ready engine maturity bundle from `PLAN_PR_ENGINE_MATURITY`.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
-## Build Scope
-- promote only proven public debug surfaces
-- lock stable debug API seams
-- define plugin lifecycle boundaries
-- define versioned contract metadata
-- define external documentation ownership
-- define benchmark entry points and benchmark rules
+## Scope
+- stable debug API seams
+- plugin lifecycle boundaries
+- versioned contract metadata
+- external documentation ownership
+- performance benchmark entry points and rules
 
-## Hard Constraints
-- no new features
-- no engine-core API pollution
-- no unrelated refactors
+## Constraints
+- docs-only
+- no runtime code changes
+- no engine core API pollution
+- preserve public/internal/transitional boundaries
 - preserve `docs/pr` history
-- roadmap edits must be bracket-state-only
 
-## Stable Debug API Seams (authoritative)
-1. Command seams:
-- command registration
-- command discovery/help metadata
-- command execution contract (status/title/lines/code/details)
-
-2. Panel seams:
-- panel descriptor registration
-- panel identity/priority/enabled metadata
-- panel render contract (summary-level output)
-
-3. Provider seams:
-- provider registration and read-only snapshot access
-- deterministic snapshot shape guidance
-
-4. Runtime debug control seams:
-- console/overlay visibility toggles
-- deterministic debug render ordering hooks
+## Stable Debug API Seams
+- command registration/discovery/execution output contract
+- panel registration + descriptor contract
+- provider registration + read-only snapshot contract
+- runtime debug visibility/render-order control seams
 
 ## Plugin Lifecycle Boundaries
-Lifecycle phases:
-1. `register(context)`
-2. `enable(context)`
-3. `disable(context)`
-4. `dispose(context)`
+- `register(context)`
+- `enable(context)`
+- `disable(context)`
+- `dispose(context)`
 
-Boundary rules:
-- plugins consume public seams only
+Rules:
+- plugins use public seams only
 - no direct private-state mutation
-- failures must be isolated and non-fatal
-- plugin capability scope must be explicit
+- failure isolation is required
 
 ## Versioned Contract Metadata
-Required metadata fields for promoted contracts:
+Required fields:
 - `contractId`
 - `contractVersion`
-- `compatibility` (`backwardCompatible` boolean + notes)
+- `compatibility` (`backwardCompatible`, `notes`)
 - `status` (`active|deprecated`)
 - `deprecatedSince` (optional)
 - `replacementContractId` (optional)
 
-Version policy:
-- MAJOR: breaking changes
-- MINOR: additive/backward-compatible changes
-- PATCH: non-breaking fixes/clarifications
+Versioning:
+- MAJOR = breaking
+- MINOR = backward-compatible addition
+- PATCH = non-breaking fix/clarification
 
 ## External Documentation Ownership
-Ownership split:
-- `docs/pr/`: PR-specific intent/history
-- `docs/dev/`: active control docs + operational references
-- external-facing maturity references remain canonical in dedicated `docs/dev/ENGINE_MATURITY_*` docs until promoted to long-lived architecture docs
+- `docs/pr/` for phase/PR intent and history
+- `docs/dev/` for active controls and maturity reference docs
+- one canonical source per concern, cross-link only
 
-Canonicality rule:
-- one authoritative source per concern
-- cross-link, do not duplicate normative rules
-
-## Performance Benchmark Entry Points And Rules
-Entry points:
-- console command execution latency
+## Performance Benchmark Entry Points
+- command execution latency
 - overlay render/update cost
-- provider polling/update overhead
-- panel toggle/open/close cost
+- provider polling/snapshot overhead
+- panel show/hide/toggle cost
 - preset apply/reset cost
 
 Rules:
-- benchmark both debug-disabled and debug-enabled modes
-- measure cold-open vs steady-state
-- record environment/sample/scenario metadata
+- compare debug-disabled vs debug-enabled
+- measure cold-open and steady-state
+- capture environment/sample/scenario metadata
 - treat repeated regressions as maturity blockers
 
 ## Apply Handoff
-`APPLY_PR_ENGINE_MATURITY` should:
-- implement only approved seams and boundaries
-- preserve behavior parity
-- keep changes surgical and reversible
-- keep project/sample-specific adapters outside shared engine-debug
-
-## Validation Checklist
-- stable seams documented and bounded
-- plugin lifecycle boundaries explicit
-- contract metadata schema defined
-- docs ownership explicit
-- benchmark entry points/rules explicit
-- no feature expansion in this bundle
+`APPLY_PR_ENGINE_MATURITY` should implement only approved seams and stabilization paths without widening scope.

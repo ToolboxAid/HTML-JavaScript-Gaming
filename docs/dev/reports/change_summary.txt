@@ -1,10 +1,13 @@
-Applies BUILD_PR_DEBUG_SURFACES_INSPECTORS exactly as approved.
+Created BUILD_PR_ENGINE_MATURITY docs-only bundle from PLAN.
 
-Confirms:
-- inspector layer integrated
-- read-only inspection preserved
-- bounded frame history preserved
-- event stream remains passive
-- roadmap updated by bracket-only state changes in Track I
+Updated:
+- BUILD/APPLY PR docs for engine maturity
+- maturity API/versioning/performance/docs-map references
+- active codex/commit/next-command docs
+- reports and file tree
 
-No out-of-scope changes permitted.
+Constraints enforced:
+- docs-only
+- no runtime code changes
+- preserve public/internal/transitional boundaries
+- preserve roadmap guardrails (bracket-only if edited)
