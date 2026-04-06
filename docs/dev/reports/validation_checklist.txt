@@ -3,25 +3,22 @@ David Quesenberry
 04/06/2026
 validation_checklist.txt
 
-[x] PLAN doc created
-[x] BUILD doc created
-[x] APPLY doc created
-[x] Current game order preserved exactly
-[x] Current anchor-card structure preserved exactly
-[x] Debug Showcase badge retained in header
-[x] Debug Showcase badges retained on Asteroids and Breakout cards
-[x] Safe non-interactive showcase copy added to Asteroids and Breakout cards
-[x] Shared showcase intro/help block added above relevant game grid
-[x] Debug Tour and Getting Started links placed in shared intro block
-[x] Onboarding helper text added in shared showcase block
-[x] No nested links inside cards
-[x] No buttons inside cards
+[x] PLAN closeout doc created
+[x] BUILD closeout doc created
+[x] APPLY closeout doc created
+[x] PRODUCTIZATION_ROADMAP updated via bracket-only edits
+[x] Track P targets complete
+[x] Track Q targets complete
+[x] Track R targets complete
+[x] Track S targets complete
+[x] No BIG_PICTURE_ROADMAP edits
 [x] No engine changes
-[x] No unrelated card edits
-[x] Repo-structured bundle zip created
+[x] No UI changes
+[x] Docs/dev control files updated
+[x] Reports updated
+[x] Repo-structured closeout ZIP created
 
 Validation checks:
-- `rg -n "showcaseIntro|Debug Tour|Getting Started|Asteroids \(Debug Showcase\)|Breakout \(Debug Showcase\)" games/index.html`
-- `git diff -- games/index.html`
-- order check script comparing card href sequence against HEAD
-- `tar -tf tmp/PR_SHOWCASE_GAME_CARD_SAFE_FINISH_FULL_bundle.zip`
+- `git diff -- docs/dev/PRODUCTIZATION_ROADMAP.md`
+- `git diff --name-only`
+- `tar -tf tmp/PR_PRODUCTIZATION_ROADMAP_CLOSEOUT_FULL_bundle.zip`

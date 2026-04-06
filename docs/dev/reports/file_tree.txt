@@ -3,13 +3,13 @@ David Quesenberry
 04/06/2026
 file_tree.txt
 
-docs/pr/PLAN_PR_SHOWCASE_GAME_CARD_SAFE_FINISH.md
-docs/pr/BUILD_PR_SHOWCASE_GAME_CARD_SAFE_FINISH.md
-docs/pr/APPLY_PR_SHOWCASE_GAME_CARD_SAFE_FINISH.md
-docs/dev/codex_commands.md
-docs/dev/commit_comment.txt
-docs/dev/next_command.txt
+docs/pr/PLAN_PR_PRODUCTIZATION_ROADMAP_CLOSEOUT.md
+docs/pr/BUILD_PR_PRODUCTIZATION_ROADMAP_CLOSEOUT.md
+docs/pr/APPLY_PR_PRODUCTIZATION_ROADMAP_CLOSEOUT.md
+docs/dev/PRODUCTIZATION_ROADMAP.md
+docs/dev/CODEX_COMMANDS.md
+docs/dev/COMMIT_COMMENT.txt
+docs/dev/NEXT_COMMAND.txt
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
 docs/dev/reports/file_tree.txt
-games/index.html

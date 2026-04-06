@@ -1,33 +1,23 @@
 MODEL: GPT-5.3-codex
-REASONING: medium
+REASONING: low
 
 COMMAND:
-Create PR_SHOWCASE_GAME_CARD_SAFE_FINISH_FULL
+Create PR_PRODUCTIZATION_ROADMAP_CLOSEOUT_FULL
 
 PURPOSE:
-Finish the Debug Showcase presentation in games/index.html without breaking the existing card structure and order. Place showcase data on existing cards.
+Perform a bracket-only closeout pass on docs/dev/PRODUCTIZATION_ROADMAP.md after the showcase, UX polish, distribution starter, documentation/adoption, and safe game-card finish work.
 
 IN SCOPE:
-- preserve current game order exactly
-- preserve current anchor-card structure exactly
-- keep Debug Showcase badge in header
-- keep Debug Showcase badges on Asteroids and Breakout cards
-- add safe non-interactive showcase copy to Asteroids and Breakout cards
-- add a shared showcase intro/help block above the relevant game grid
-- place Debug Tour and Getting Started links in the shared showcase intro block, not inside cards
-- add onboarding helper text in the shared showcase block
-
-OUT OF SCOPE:
-- no nested links inside cards
-- no buttons inside cards
-- no engine changes
-- no unrelated card edits
+- bracket-only updates in PRODUCTIZATION_ROADMAP.md
+- mark completed items based on finished productization work
+- update docs/pr, docs/dev control files, and reports for the closeout bundle
 
 RULES:
-- surgical change only
-- preserve existing layout patterns
-- do not reorder games
-- do not convert card anchors into multi-action containers unless explicitly required later
+- plan + build + apply in one bundle
+- PRODUCTIZATION_ROADMAP.md bracket-only edits only
+- do not modify BIG_PICTURE_ROADMAP.md
+- no engine changes
+- no UI changes
 
 OUTPUT:
-<project folder>/tmp/PR_SHOWCASE_GAME_CARD_SAFE_FINISH_FULL_bundle.zip
+<project folder>/tmp/PR_PRODUCTIZATION_ROADMAP_CLOSEOUT_FULL_bundle.zip

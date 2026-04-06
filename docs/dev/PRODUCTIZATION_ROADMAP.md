@@ -37,14 +37,14 @@ Do NOT change structure or wording.
 
 # TRACK R - DISTRIBUTION AND PACKAGING
 
-- [.] Showcase landing page
-- [.] Build packaging strategy
-- [.] Asset bundling rules
+- [x] Showcase landing page
+- [x] Build packaging strategy
+- [x] Asset bundling rules
 
 ---
 
 # TRACK S - DOCUMENTATION AND ADOPTION
 
-- [ ] Debug tour
-- [ ] Getting started guide
-- [ ] Example-driven docs
+- [x] Debug tour
+- [x] Getting started guide
+- [x] Example-driven docs
