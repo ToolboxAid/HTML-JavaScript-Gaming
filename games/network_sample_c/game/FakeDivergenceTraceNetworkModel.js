@@ -4,6 +4,7 @@ David Quesenberry
 04/06/2026
 FakeDivergenceTraceNetworkModel.js
 */
+import ReconciliationLayerAdapter from "./ReconciliationLayerAdapter.js";
 
 const MAX_TRACE_EVENTS = 160;
 const MAX_TIMELINE_EVENTS = 80;
@@ -59,6 +60,8 @@ const REQUIRED_SEQUENCE_TYPES = [
   "RECONCILE_APPLIED"
 ];
 
+const PRIMARY_ENTITY_ID = "network-sample-c-entity";
+
 function asPositiveNumber(value, fallback) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric) || numeric <= 0) {
@@ -113,6 +116,11 @@ function toEventMessage(type, details) {
   if (type === "MANUAL_RECONCILE_REQUESTED") {
     return "Operator requested immediate reconcile.";
   }
+  if (type === "REWIND_PREP_REQUESTED") {
+    return source.canPrepare === true
+      ? "Rewind preparation window is ready for resimulation."
+      : "Rewind preparation requested; waiting on sufficient history.";
+  }
   if (type === "VALIDATION_RUN") {
     return source.passed === true
       ? "Validation pass recorded."
@@ -156,6 +164,15 @@ export default class FakeDivergenceTraceNetworkModel {
     this.seenEventTypes = new Set();
     this.lastValidation = null;
     this.autoValidationForCycle = -1;
+    this.latestDivergenceReport = null;
+    this.latestCorrectionPlan = null;
+    this.latestRewindPreparation = null;
+
+    this.reconciliationLayer = new ReconciliationLayerAdapter({
+      timelineId: "network-sample-c-reconciliation",
+      historyLimit: 180,
+      maxAuthoritativeHistory: 60
+    });
 
     const step = this.getCurrentStep();
     this.pushEvent(step.transitionType, {
@@ -282,6 +299,86 @@ export default class FakeDivergenceTraceNetworkModel {
     return toStatusFromDelta(this.getFrameDelta());
   }
 
+  createPredictedSnapshot() {
+    const step = this.getCurrentStep();
+    return {
+      frameId: this.authoritativeFrame,
+      timestampMs: Math.round(this.elapsedSeconds * 1000),
+      entities: [
+        {
+          entityId: PRIMARY_ENTITY_ID,
+          frameValue: this.predictedFrame,
+          position: {
+            x: this.predictedFrame,
+            y: 0
+          },
+          velocity: {
+            x: Number(this.predictedOffsetFrames.toFixed(2)),
+            y: 0
+          },
+          stateFlags: {
+            phaseId: step.id,
+            cycleCount: this.cycleCount,
+            divergenceStatus: this.getDivergenceStatus()
+          }
+        }
+      ],
+      meta: {
+        source: "predicted",
+        sampleId: "network-sample-c"
+      }
+    };
+  }
+
+  createAuthoritativeSnapshot() {
+    const step = this.getCurrentStep();
+    return {
+      frameId: this.authoritativeFrame,
+      timestampMs: Math.round(this.elapsedSeconds * 1000),
+      entities: [
+        {
+          entityId: PRIMARY_ENTITY_ID,
+          frameValue: this.authoritativeFrame,
+          position: {
+            x: this.authoritativeFrame,
+            y: 0
+          },
+          velocity: {
+            x: 0,
+            y: 0
+          },
+          stateFlags: {
+            phaseId: step.id,
+            cycleCount: this.cycleCount,
+            authoritative: true
+          }
+        }
+      ],
+      meta: {
+        source: "authoritative",
+        sampleId: "network-sample-c"
+      }
+    };
+  }
+
+  updateReconciliationLayer() {
+    const predictedSnapshot = this.createPredictedSnapshot();
+    const authoritativeSnapshot = this.createAuthoritativeSnapshot();
+
+    this.reconciliationLayer.recordPredictedSnapshot(predictedSnapshot);
+    this.reconciliationLayer.receiveAuthoritativeSnapshot(authoritativeSnapshot, {
+      eventType: "worldState.transition.applied",
+      producer: "networkSampleC",
+      correlationId: `network-sample-c:${this.authoritativeFrame}`,
+      timestampMs: authoritativeSnapshot.timestampMs
+    });
+    this.reconciliationLayer.reconcileLatest();
+
+    this.latestDivergenceReport = this.reconciliationLayer.getLatestDivergenceReport();
+    this.latestCorrectionPlan = this.reconciliationLayer.getCorrectionPlan();
+    this.latestRewindPreparation = this.reconciliationLayer.getRewindPreparation();
+  }
+
   addManualTraceMarker(label = "operator") {
     this.pushEvent("MANUAL_TRACE_MARKER", {
       label,
@@ -304,6 +401,24 @@ export default class FakeDivergenceTraceNetworkModel {
     this.pushEvent("MANUAL_RECONCILE_REQUESTED", {
       reason,
       frameDelta: this.getFrameDelta()
+    });
+  }
+
+  triggerRewindPreparation(reason = "operator") {
+    this.updateReconciliationLayer();
+    const rewindPreparation = this.latestRewindPreparation || {
+      status: "insufficient-history",
+      canPrepare: false,
+      rewindAnchorFrameId: null,
+      resimulateFrameCount: 0
+    };
+
+    this.pushEvent("REWIND_PREP_REQUESTED", {
+      reason,
+      status: rewindPreparation.status,
+      canPrepare: rewindPreparation.canPrepare,
+      rewindAnchorFrameId: rewindPreparation.rewindAnchorFrameId,
+      resimulateFrameCount: rewindPreparation.resimulateFrameCount
     });
   }
 
@@ -395,6 +510,9 @@ export default class FakeDivergenceTraceNetworkModel {
     if (options.forceReconcile === true) {
       this.triggerManualReconcile("input");
     }
+    if (options.prepareRewind === true) {
+      this.triggerRewindPreparation("input");
+    }
     if (options.runValidation === true) {
       this.runValidation("input");
     }
@@ -402,6 +520,7 @@ export default class FakeDivergenceTraceNetworkModel {
     this.updateScenarioStep(safeDt);
     this.updateFrameState(safeDt);
     this.updateNetworkMetrics();
+    this.updateReconciliationLayer();
   }
 
   buildValidationSnapshot() {
@@ -432,10 +551,21 @@ export default class FakeDivergenceTraceNetworkModel {
   }
 
   getSnapshot() {
+    if (!this.latestDivergenceReport) {
+      this.updateReconciliationLayer();
+    }
+
     const step = this.getCurrentStep();
     const frameDelta = this.getFrameDelta();
     const status = this.getDivergenceStatus();
     const validation = this.buildValidationSnapshot();
+    const divergenceReport = this.latestDivergenceReport || null;
+    const correctionPlan = this.latestCorrectionPlan || null;
+    const rewindPreparation = this.latestRewindPreparation || null;
+    const timelineStatus = this.reconciliationLayer.getTimelineStatus();
+    const primaryEntity = Array.isArray(divergenceReport?.entityReports) && divergenceReport.entityReports.length > 0
+      ? divergenceReport.entityReports[0]
+      : null;
 
     return {
       sessionId: this.sessionId,
@@ -458,14 +588,27 @@ export default class FakeDivergenceTraceNetworkModel {
         authoritativeFrame: this.authoritativeFrame,
         predictedFrame: this.predictedFrame,
         targetOffsetFrames: Number(this.predictedOffsetFrames.toFixed(2)),
+        alignment: divergenceReport?.alignment || "unavailable",
+        severity: primaryEntity?.severity || divergenceReport?.summary?.highestSeverity || "low",
+        correctionMode: primaryEntity?.correctionMode || correctionPlan?.mode || "hold-annotate",
         explanation: "Client-predicted frame intentionally diverges from authoritative frame during seeded mismatch windows.",
         likelyCause: "Deterministic offset injection plus delayed reconcile window.",
         reconciliationHint: "Use R or wait for reconcile phase to collapse frame delta."
       },
       timeline: {
         totalEvents: this.timelineEvents.length,
-        events: this.timelineEvents.slice(-20)
+        events: this.timelineEvents.slice(-20),
+        history: {
+          size: timelineStatus.historySize,
+          limit: timelineStatus.historyLimit,
+          oldestFrameId: timelineStatus.oldestFrameId,
+          latestFrameId: timelineStatus.latestFrameId,
+          alignment: timelineStatus.alignment,
+          frameGap: timelineStatus.frameGap
+        }
       },
+      correction: correctionPlan,
+      rewindPreparation,
       reproduction: {
         summary: "Reproduce divergence in a deterministic cycle and validate trace ordering before reconcile.",
         steps: [
@@ -473,6 +616,8 @@ export default class FakeDivergenceTraceNetworkModel {
           "Let mismatch-seeded and divergence-observed phases run.",
           "Optionally press D to inject an additional mismatch burst.",
           "Open Debug Mode and compare divergence state + trace ordering.",
+          "Inspect timeline history/alignment and rewind preparation status.",
+          "Press W to refresh rewind preparation snapshot when needed.",
           "Press V to run validation and verify checklist status.",
           "Press R or wait for reconcile phase, then validate again."
         ]

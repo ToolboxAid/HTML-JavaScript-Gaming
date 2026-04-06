@@ -140,6 +140,10 @@ export default class NetworkSampleCScene extends Scene {
       this.networkModel.triggerManualReconcile("manual-key");
     }
 
+    if (getEdgePress(engineInput, "KeyW", this.edgeState)) {
+      this.networkModel.triggerRewindPreparation("manual-key");
+    }
+
     if (getEdgePress(engineInput, "KeyV", this.edgeState)) {
       this.networkModel.runValidation("manual-key");
     }
@@ -184,22 +188,27 @@ export default class NetworkSampleCScene extends Scene {
       font: "14px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`authFrame=${Number(divergence.authoritativeFrame || 0)} predictedFrame=${Number(divergence.predictedFrame || 0)}`, 42, 242, {
+    renderer.drawText(`severity=${String(divergence.severity || "low")} correction=${String(divergence.correctionMode || "hold-annotate")}`, 42, 242, {
+      color: toStatusColor(String(divergence.status || "unknown")),
+      font: "14px monospace",
+      textBaseline: "top"
+    });
+    renderer.drawText(`authFrame=${Number(divergence.authoritativeFrame || 0)} predictedFrame=${Number(divergence.predictedFrame || 0)}`, 42, 266, {
       color: MUTED_TEXT,
       font: "14px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`rtt=${Number(network.rttMs || 0)}ms jitter=${Number(network.jitterMs || 0)}ms loss=${Number(network.packetLossPct || 0)}%`, 42, 266, {
+    renderer.drawText(`rtt=${Number(network.rttMs || 0)}ms jitter=${Number(network.jitterMs || 0)}ms loss=${Number(network.packetLossPct || 0)}%`, 42, 290, {
       color: MUTED_TEXT,
       font: "14px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`cycle=${Number(scenario.cycleCount || 0)} phaseTime=${Number(scenario.phaseElapsedSeconds || 0).toFixed(2)}s`, 42, 290, {
+    renderer.drawText(`cycle=${Number(scenario.cycleCount || 0)} phaseTime=${Number(scenario.phaseElapsedSeconds || 0).toFixed(2)}s align=${String(divergence.alignment || "n/a")}`, 42, 314, {
       color: MUTED_TEXT,
       font: "14px monospace",
       textBaseline: "top"
     });
-    renderer.drawText("D inject mismatch  R reconcile  V validate", 42, 314, {
+    renderer.drawText("D mismatch  R reconcile  W rewind prep  V validate", 42, 338, {
       color: MUTED_TEXT,
       font: "14px monospace",
       textBaseline: "top"
@@ -208,6 +217,7 @@ export default class NetworkSampleCScene extends Scene {
 
   renderTimelinePanel(renderer) {
     const timeline = this.lastSnapshot.timeline || {};
+    const history = timeline.history || {};
     const events = Array.isArray(timeline.events) ? timeline.events.slice(-7).reverse() : [];
 
     renderer.drawRect(494, 122, 442, 224, PANEL_COLOR);
@@ -218,8 +228,14 @@ export default class NetworkSampleCScene extends Scene {
       textBaseline: "top"
     });
 
+    renderer.drawText(`history=${Number(history.size || 0)}/${Number(history.limit || 0)} align=${String(history.alignment || "n/a")} gap=${history.frameGap ?? "n/a"}`, 512, 170, {
+      color: MUTED_TEXT,
+      font: "13px monospace",
+      textBaseline: "top"
+    });
+
     if (events.length === 0) {
-      renderer.drawText("No sequence events yet.", 512, 170, {
+      renderer.drawText("No sequence events yet.", 512, 194, {
         color: MUTED_TEXT,
         font: "14px monospace",
         textBaseline: "top"
@@ -228,7 +244,7 @@ export default class NetworkSampleCScene extends Scene {
     }
 
     events.forEach((event, index) => {
-      const y = 170 + (index * 24);
+      const y = 194 + (index * 22);
       const timestampMs = Number(event.timestampMs || 0);
       const type = String(event.type || "EVENT");
       const phaseId = String(event.phaseId || "phase");
@@ -243,6 +259,7 @@ export default class NetworkSampleCScene extends Scene {
   renderReproductionPanel(renderer) {
     const divergence = this.lastSnapshot.divergence || {};
     const reproduction = this.lastSnapshot.reproduction || {};
+    const rewindPreparation = this.lastSnapshot.rewindPreparation || {};
     const steps = Array.isArray(reproduction.steps) ? reproduction.steps : [];
 
     renderer.drawRect(24, 370, 442, 228, PANEL_COLOR);
@@ -252,19 +269,29 @@ export default class NetworkSampleCScene extends Scene {
       font: "bold 18px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`cause: ${String(divergence.likelyCause || "n/a")}`, 42, 418, {
+    renderer.drawText(`cause: ${String(divergence.likelyCause || "n/a")}`, 42, 414, {
       color: MUTED_TEXT,
       font: "13px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`hint: ${String(divergence.reconciliationHint || "n/a")}`, 42, 440, {
+    renderer.drawText(`hint: ${String(divergence.reconciliationHint || "n/a")}`, 42, 434, {
+      color: MUTED_TEXT,
+      font: "13px monospace",
+      textBaseline: "top"
+    });
+    renderer.drawText(`rewind=${String(rewindPreparation.status || "n/a")} canPrepare=${Boolean(rewindPreparation.canPrepare)}`, 42, 454, {
+      color: toStatusColor(rewindPreparation.canPrepare ? "pass" : "pending"),
+      font: "13px monospace",
+      textBaseline: "top"
+    });
+    renderer.drawText(`anchor=${rewindPreparation.rewindAnchorFrameId ?? "n/a"} resim=${rewindPreparation.resimulateFrameCount ?? 0}`, 42, 474, {
       color: MUTED_TEXT,
       font: "13px monospace",
       textBaseline: "top"
     });
 
-    steps.slice(0, 6).forEach((step, index) => {
-      const y = 466 + (index * 20);
+    steps.slice(0, 5).forEach((step, index) => {
+      const y = 496 + (index * 18);
       renderer.drawText(`${index + 1}. ${String(step)}`, 42, y, {
         color: MUTED_TEXT,
         font: "12px monospace",
@@ -314,7 +341,7 @@ export default class NetworkSampleCScene extends Scene {
       font: "bold 24px monospace",
       textBaseline: "top"
     });
-    renderer.drawText("Space/Enter: trace marker  D: mismatch  R: reconcile  V: validate", 24, 56, {
+    renderer.drawText("Space/Enter: trace marker  D: mismatch  R: reconcile  W: rewind prep  V: validate", 24, 56, {
       color: MUTED_TEXT,
       font: "16px monospace",
       textBaseline: "top"

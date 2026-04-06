@@ -38,10 +38,12 @@ function toDivergenceLines(snapshot) {
 
   return [
     `status=${sanitizeText(divergence.status) || "unknown"}`,
+    `severity=${sanitizeText(divergence.severity) || "low"} correction=${sanitizeText(divergence.correctionMode) || "hold-annotate"}`,
     `phase=${sanitizeText(scenario.phaseLabel) || "n/a"} (${sanitizeText(scenario.phaseId) || "n/a"})`,
     `frameDelta=${asNumber(divergence.frameDelta, 0)}`,
     `authoritativeFrame=${asNumber(divergence.authoritativeFrame, 0)}`,
     `predictedFrame=${asNumber(divergence.predictedFrame, 0)}`,
+    `alignment=${sanitizeText(divergence.alignment) || "unavailable"}`,
     `targetOffsetFrames=${asNumber(divergence.targetOffsetFrames, 0).toFixed(2)}`,
     `rttMs=${asNumber(transport.rttMs, 0)} jitterMs=${asNumber(transport.jitterMs, 0)} lossPct=${asNumber(transport.packetLossPct, 0)}`,
     `hint=${sanitizeText(divergence.reconciliationHint) || "n/a"}`
@@ -51,19 +53,27 @@ function toDivergenceLines(snapshot) {
 function toTimelineLines(snapshot) {
   const network = toNetworkSnapshot(snapshot);
   const timeline = asObject(network.timeline);
+  const history = asObject(timeline.history);
   const events = asArray(timeline.events);
+  const lines = [
+    `history=${asNumber(history.size, 0)}/${asNumber(history.limit, 0)}`,
+    `oldestFrame=${history.oldestFrameId ?? "n/a"} latestFrame=${history.latestFrameId ?? "n/a"}`,
+    `alignment=${sanitizeText(history.alignment) || "unavailable"} frameGap=${history.frameGap ?? "n/a"}`
+  ];
 
   if (events.length === 0) {
-    return ["No timeline events recorded yet."];
+    lines.push("No timeline events recorded yet.");
+    return lines;
   }
 
-  return events
-    .slice(-8)
+  events
+    .slice(-6)
     .reverse()
-    .map((event) => {
+    .forEach((event) => {
       const source = asObject(event);
-      return `${asNumber(source.timestampMs, 0)}ms ${sanitizeText(source.type) || "EVENT"} phase=${sanitizeText(source.phaseId) || "unknown"}`;
+      lines.push(`${asNumber(source.timestampMs, 0)}ms ${sanitizeText(source.type) || "EVENT"} phase=${sanitizeText(source.phaseId) || "unknown"}`);
     });
+  return lines;
 }
 
 function toValidationLines(snapshot) {
@@ -82,6 +92,22 @@ function toValidationLines(snapshot) {
   });
 
   return lines;
+}
+
+function toRewindLines(snapshot) {
+  const network = toNetworkSnapshot(snapshot);
+  const rewind = asObject(network.rewindPreparation);
+  const correction = asObject(network.correction);
+
+  return [
+    `status=${sanitizeText(rewind.status) || "n/a"}`,
+    `canPrepare=${Boolean(rewind.canPrepare)}`,
+    `anchorFrame=${rewind.rewindAnchorFrameId ?? "n/a"} targetFrame=${rewind.rewindTargetFrameId ?? "n/a"}`,
+    `resimulateFrameCount=${asNumber(rewind.resimulateFrameCount, 0)}`,
+    `alignment=${sanitizeText(rewind.alignment) || "unavailable"} frameGap=${rewind.frameGap ?? "n/a"}`,
+    `correctionMode=${sanitizeText(correction.mode) || "hold-annotate"} severity=${sanitizeText(correction.severity) || "low"}`,
+    sanitizeText(rewind.note) || "No rewind preparation note."
+  ];
 }
 
 function toTraceLines(snapshot, maxLines = 10) {
@@ -114,6 +140,9 @@ function commandLinesForDivergence(context) {
 
   return [
     `status=${sanitizeText(divergence.status) || "unknown"}`,
+    `severity=${sanitizeText(divergence.severity) || "low"}`,
+    `correctionMode=${sanitizeText(divergence.correctionMode) || "hold-annotate"}`,
+    `alignment=${sanitizeText(divergence.alignment) || "unavailable"}`,
     `phase=${sanitizeText(scenario.phaseId) || "unknown"}`,
     `phaseElapsed=${asNumber(scenario.phaseElapsedSeconds, 0).toFixed(2)}s/${asNumber(scenario.phaseDurationSeconds, 0).toFixed(2)}s`,
     `cycleCount=${asNumber(scenario.cycleCount, 0)}`,
@@ -188,6 +217,25 @@ function commandLinesForReproduction(context) {
   return lines;
 }
 
+function commandLinesForRewind(context) {
+  const snapshot = getCommandSnapshot(context);
+  const rewind = asObject(snapshot.rewindPreparation);
+  const timeline = asObject(snapshot.timeline);
+  const history = asObject(timeline.history);
+  const correction = asObject(snapshot.correction);
+
+  return [
+    `rewindStatus=${sanitizeText(rewind.status) || "n/a"}`,
+    `canPrepare=${Boolean(rewind.canPrepare)}`,
+    `rewindAnchorFrame=${rewind.rewindAnchorFrameId ?? "n/a"}`,
+    `rewindTargetFrame=${rewind.rewindTargetFrameId ?? "n/a"}`,
+    `resimulateFrameCount=${asNumber(rewind.resimulateFrameCount, 0)}`,
+    `history=${asNumber(history.size, 0)}/${asNumber(history.limit, 0)} alignment=${sanitizeText(history.alignment) || "unavailable"} frameGap=${history.frameGap ?? "n/a"}`,
+    `correctionMode=${sanitizeText(correction.mode) || "hold-annotate"} severity=${sanitizeText(correction.severity) || "low"}`,
+    sanitizeText(rewind.note) || "Rewind preparation status unavailable."
+  ];
+}
+
 export function createNetworkSampleCDebugPlugin() {
   return {
     pluginId: "network.sampleC",
@@ -225,6 +273,12 @@ export function createNetworkSampleCDebugPlugin() {
           title: "Sample C Trace Provider",
           readOnly: true,
           sourcePath: "assets.networkSampleC.trace"
+        },
+        {
+          providerId: "network.sampleC.rewind",
+          title: "Sample C Rewind Preparation Provider",
+          readOnly: true,
+          sourcePath: "assets.networkSampleC.rewindPreparation"
         }
       ];
     },
@@ -289,6 +343,21 @@ export function createNetworkSampleCDebugPlugin() {
               lines: toTraceLines(snapshot, 10)
             };
           }
+        },
+        {
+          id: "network-c-rewind-prep",
+          title: "Rewind Preparation",
+          enabled: true,
+          priority: 1164,
+          source: "assets",
+          renderMode: "text-block",
+          render(_panel, snapshot) {
+            return {
+              id: "network-c-rewind-prep",
+              title: "Rewind Preparation",
+              lines: toRewindLines(snapshot)
+            };
+          }
         }
       ];
     },
@@ -312,7 +381,8 @@ export function createNetworkSampleCDebugPlugin() {
                     "network.divergence",
                     "network.trace [count]",
                     "network.validate",
-                    "network.sample.repro"
+                    "network.sample.repro",
+                    "network.rewind"
                   ],
                   code: "NETWORK_HELP"
                 };
@@ -368,6 +438,19 @@ export function createNetworkSampleCDebugPlugin() {
                   title: "Network Reproduction",
                   lines: commandLinesForReproduction(context),
                   code: "NETWORK_SAMPLE_REPRO"
+                };
+              }
+            },
+            {
+              name: "network.rewind",
+              summary: "Show rewind preparation status and resimulation window details.",
+              usage: "network.rewind",
+              handler(context) {
+                return {
+                  status: "ready",
+                  title: "Network Rewind Preparation",
+                  lines: commandLinesForRewind(context),
+                  code: "NETWORK_REWIND"
                 };
               }
             }
