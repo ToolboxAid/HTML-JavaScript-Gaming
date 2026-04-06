@@ -6,29 +6,39 @@ PLAN_PR_DEBUG_SURFACES_NETWORK_SAMPLE_A.md
 # PLAN_PR_DEBUG_SURFACES_NETWORK_SAMPLE_A
 
 ## Goal
-Implement Sample A (local loopback / fake network) as a sample-backed validation slice for network debug surfaces.
+Implement Sample A (Local Loopback / Fake Network) to validate network debug surfaces using sample-backed diagnostics with no real transport dependency.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## In Scope
-- New sample under `games/network_sample_a/`.
-- Synthetic connection lifecycle, RTT, replication, and trace event feed.
-- Debug plugin with read-only providers, passive panels, and network command surface.
-- Command coverage for:
+- New sample at `games/network_sample_a/`.
+- Synthetic connection lifecycle and telemetry model.
+- Read-only network providers for debug consumption.
+- Passive debug overlay panels:
+  - connection status
+  - latency / RTT
+  - event trace
+- Command surface:
+  - `network.help`
   - `network.status`
   - `network.latency`
-  - `network.trace`
-- Docs and reports for this one PR purpose.
+  - `network.trace [count]`
 
 ## Out Of Scope
-- Real transport/protocol networking.
+- Real networking/protocol adapters.
 - Engine core API changes.
-- Host/client multiplayer behavior (Sample B).
-- Divergence deep-dive and explainers (Sample C).
+- Host/client multiplayer simulation (Sample B scope).
+- Divergence deep analysis workflows (Sample C scope).
+
+## Constraints
+- No engine core pollution.
+- Sample-level integration only.
+- Providers remain read-only snapshots.
+- Debug overlay and console remain opt-in/explicitly opened.
 
 ## Acceptance Criteria
-- Sample A opens and runs in browser.
-- Synthetic network state is visible in overlay panels.
-- `network.status`, `network.latency`, and `network.trace` execute through the dev console.
-- No engine-core files are modified.
+- Sample opens and runs in browser.
+- Synthetic network state feeds panels and commands.
+- Commands return deterministic, operator-readable output.
+- No engine core files modified.

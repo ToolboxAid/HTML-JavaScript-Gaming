@@ -6,33 +6,37 @@ BUILD_PR_DEBUG_SURFACES_NETWORK_SAMPLE_A.md
 # BUILD_PR_DEBUG_SURFACES_NETWORK_SAMPLE_A
 
 ## Build Summary
-Built a new sample-owned network diagnostics slice at `games/network_sample_a/` using fake loopback telemetry and existing public debug integration APIs.
+Built Sample A as a standalone sample-backed network diagnostics slice under `games/network_sample_a/`.
 
-## Implemented Scope
-1. Fake network model
-- synthetic phases (`disconnected`, `connecting`, `synchronizing`, `connected`)
-- synthetic RTT and jitter feed
-- synthetic replication counters and backlog
-- bounded trace event feed
+## Implemented
+1. Fake loopback network model
+- synthetic connection phases (`disconnected`, `connecting`, `synchronizing`, `connected`)
+- synthetic RTT and jitter values
+- synthetic replication/pending packet counters
+- bounded trace event stream
 
 2. Sample integration
-- new sample entry HTML and boot path
-- debug integration wired with overlay hidden by default
-- sample controls for packet inject/disconnect/reconnect
+- new sample entry HTML and boot module
+- sample scene with explicit input controls:
+  - `Space` / `Enter` send packet
+  - `C` disconnect
+  - `R` reconnect
+- debug integration wired via existing public API
 
-3. Debug plugin
-- read-only provider descriptors for connection/latency/trace
+3. Debug plugin integration
+- read-only providers for connection, latency, and trace
 - passive overlay panels:
   - connection status
   - latency / RTT
   - event trace
-- operator commands:
+- command pack:
   - `network.help`
   - `network.status`
   - `network.latency`
   - `network.trace [count]`
 
-## Scope Safety
-- no engine core API changes
-- no runtime transport/protocol work
-- sample-level integration only
+## Validation
+- sample renders and updates synthetic telemetry
+- panels render expected diagnostics sections
+- commands execute and return readable outputs
+- no engine core files changed

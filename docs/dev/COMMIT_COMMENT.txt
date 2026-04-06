@@ -1,1 +1,2 @@
-﻿docs: normalize BIG_PICTURE_ROADMAP.md encoding without changing roadmap content or bracket states
+﻿PR_DEBUG_SURFACES_NETWORK_SAMPLE_A_FULL
+build(sample-network): deliver Sample A loopback diagnostics with network panels and commands

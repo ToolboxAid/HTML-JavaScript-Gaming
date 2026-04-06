@@ -3,12 +3,23 @@
 - [x] BUILD created
 - [x] APPLY created
 
-Roadmap Encoding
-- [x] BIG_PICTURE_ROADMAP.md rewritten as UTF-8 with BOM
-- [x] Roadmap wording unchanged
-- [x] Roadmap structure unchanged
-- [x] Bracket-state rows unchanged
+Sample A Runtime
+- [x] Sample opens from games/network_sample_a/index.html
+- [x] Synthetic telemetry updates continuously
+- [x] Disconnect/reconnect controls work
+
+Debug Surfaces
+- [x] Connection status panel renders
+- [x] Latency / RTT panel renders
+- [x] Event tracing panel renders
+
+Commands
+- [x] network.help
+- [x] network.status
+- [x] network.latency
+- [x] network.trace
 
 Scope Safety
-- [x] No engine/runtime/sample/tool code changed
-- [x] PR remains docs-first and surgical
+- [x] No engine core files changed
+- [x] Sample-level integration only
+- [x] Roadmap edits are bracket-only

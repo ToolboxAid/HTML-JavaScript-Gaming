@@ -1,11 +1,13 @@
-﻿Applied a docs-first encoding normalization for docs/dev/BIG_PICTURE_ROADMAP.md.
+﻿Implemented PR_DEBUG_SURFACES_NETWORK_SAMPLE_A_FULL as a sample-level network debug diagnostics slice.
 
-What changed:
-- Rewrote roadmap file as UTF-8 with BOM for reliable Windows decoding.
-- Preserved roadmap wording, structure, and bracket states.
-- Refreshed PLAN/BUILD/APPLY docs for BIG_PICTURE_ROADMAP_ENCODING_FIX.
-- Updated docs/dev control files and reports for this PR purpose.
+Scope delivered:
+- PLAN/BUILD/APPLY docs for Sample A.
+- New sample at games/network_sample_a.
+- Fake loopback model for connection lifecycle, RTT/jitter, replication backlog, and trace events.
+- Sample-owned debug plugin panels/providers/commands.
+- Dev control files and reports refreshed for this PR.
+- Track G bracket-only roadmap updates for Connection status, Latency/RTT, and Event tracing.
 
-What did not change:
-- No engine/runtime/sample/tool implementation code.
-- No roadmap progress state edits.
+Safety:
+- No engine core API modifications.
+- No transport/protocol implementation.

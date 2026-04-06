@@ -72,11 +72,11 @@ Do NOT change structure or wording.
 
 # TRACK G — NETWORK / MULTIPLAYER DEBUG
 
-- [.] Connection status panel
-- [ ] Latency / RTT panel
+- [x] Connection status panel
+- [x] Latency / RTT panel
 - [ ] Replication state viewer
 - [ ] Client/server divergence inspector
-- [ ] Event tracing
+- [x] Event tracing
 - [x] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [.] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
