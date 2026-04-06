@@ -2,17 +2,17 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+Create PLAN_PR_DEBUG_SURFACES_PRESETS
 
 Requirements:
 - Follow PLAN_PR -> BUILD_PR -> APPLY_PR
 - Docs-first only
 - One PR per purpose
-- Build the first shared standard library under engine/debug/standard
-- Define authoritative target structure, initial inventory, registration pattern, adoption modes, validation goals, and rollback strategy
-- Keep the initial library small and opt-in
-- Exclude 3D-specific, network-specific, deep-inspector, and project-specific logic from this PR
-- Use `registerStandardDebugPreset()` as the main shared adoption entry point
+- Plan a reusable presets system for promoted debug surfaces
+- Define preset registry, preset applier, shared baseline presets, preset commands, precedence with persistence, adoption models, naming conventions, and target structure
+- Keep the first version small and opt-in
+- Focus only on panel visibility and optional ordering
+- Exclude layout editors, docking systems, 3D-specific, network-specific, and project-specific preset implementations from the shared layer
 - Write outputs under docs/pr and docs/dev/reports
 - Put codex command and commit comment under docs/dev
-- Package to <project folder>/tmp/BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY_delta.zip
+- Package to <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_PRESETS_delta.zip

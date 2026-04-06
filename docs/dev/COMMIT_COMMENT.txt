@@ -1,1 +1,1 @@
-docs: build first opt-in debug surfaces standard library bundle with authoritative preset-led registration
+docs: plan reusable debug surfaces presets system with registry/applier contracts and persistence precedence

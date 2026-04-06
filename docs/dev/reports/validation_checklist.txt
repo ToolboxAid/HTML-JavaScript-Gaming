@@ -1,29 +1,32 @@
-BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY validation checklist
+PLAN_PR_DEBUG_SURFACES_PRESETS validation checklist
 
 Workflow
-- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure preserved
+- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure referenced
 - [done] Docs-first only
 - [done] One PR per purpose
 
-Build Content
-- [done] Authoritative target structure documented
-- [done] Initial shared inventory documented
-- [done] Registration pattern documented
-- [done] Main adoption entry point set to `registerStandardDebugPreset()`
-- [done] Adoption modes documented
-- [done] Validation goals documented
-- [done] Rollback strategy documented
+Plan Content
+- [done] Preset registry defined
+- [done] Preset applier defined
+- [done] Shared baseline presets defined
+- [done] Preset commands defined
+- [done] Precedence with persistence defined
+- [done] Adoption models defined
+- [done] Naming conventions defined
+- [done] Target structure defined
 
 Scope Controls
-- [done] Initial library remains small and opt-in
+- [done] v1 remains small and opt-in
+- [done] scope limited to panel visibility and optional ordering
+- [done] layout editor scope excluded
+- [done] docking scope excluded
 - [done] 3D-specific scope excluded
 - [done] network-specific scope excluded
-- [done] deep-inspector scope excluded
-- [done] project-specific logic excluded from shared library
+- [done] project-specific shared implementations excluded
 
 Outputs
-- [done] Docs under docs/pr
-- [done] Reports under docs/dev/reports
+- [done] Plan doc under docs/pr
 - [done] Codex command under docs/dev
 - [done] Commit comment under docs/dev
-- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY_delta.zip
+- [done] Reports under docs/dev/reports
+- [done] Delta zip generated at <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_PRESETS_delta.zip
