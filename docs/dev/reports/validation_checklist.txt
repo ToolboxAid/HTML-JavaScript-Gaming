@@ -1,21 +1,17 @@
 # Validation Checklist
 
-- [x] BUILD doc present
 - [x] APPLY doc present
+- [x] Companion BUILD doc present
 - [x] Codex command present
 - [x] Commit comment present
 - [x] Next command present
-- [x] BUILD doc provides exact Dockerfile blueprint
-- [x] BUILD doc provides exact compose blueprint
-- [x] BUILD doc provides exact env contract
-- [x] BUILD doc limits scope to Sample A server containerization
-- [x] `node --check games/network_sample_a/server/networkSampleADashboardServer.mjs` passed
-- [x] Local smoke run passed (`/health` 200, `/api/metrics?key=...` 200, unauthenticated metrics 403)
-- [x] Dockerfile contract verified (Node 22 Alpine, port 4310, healthcheck path)
-- [x] Compose contract verified (port map, env vars, healthcheck, restart policy)
-- [x] `.dockerignore` constrains context to required files
-- [x] README includes build/run/compose/health/env/logging guidance
-- [x] `NETWORK_SAMPLES_PLAN.md` Track U updated with bracket-only edits
-- [x] `BIG_PICTURE_ROADMAP.md` not overwritten in this pass
-- [x] `PRODUCTIZATION_ROADMAP.md` not overwritten in this pass
-- [ ] Docker image build validation (Docker CLI unavailable in this environment)
+- [x] Dockerfile exists
+- [x] .dockerignore exists
+- [x] docker-compose.yml exists
+- [x] README exists
+- [x] `node --check games/network_sample_a/server/networkSampleADashboardServer.mjs` passes
+- [x] Docker validation documented as unavailable in this environment (`docker` CLI not installed)
+- [x] No engine-core changes in this APPLY working delta
+- [x] NETWORK_SAMPLES_PLAN Track U bracket states verified complete (`[x]`)
+- [x] BIG_PICTURE_ROADMAP preserved
+- [x] PRODUCTIZATION_ROADMAP preserved

@@ -1,35 +1,25 @@
 # Change Summary
 
 ## Bundle
-BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta
+APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta
 
-## Runtime Work Applied
-- Updated `games/network_sample_a/.dockerignore` to a strict allowlist pattern aligned with Dockerfile copy paths.
-- Updated `games/network_sample_a/server/README.md` with explicit stdout/stderr-only logging expectation.
-- Kept existing Sample A server runtime/container files aligned to the BUILD blueprint without broad refactors.
+## Intent
+Docs-only APPLY bundle for accepting and finalizing the already-completed Codex server containerization build.
 
-## Roadmap Update (Bracket-Only)
-- `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` Track U items set to `[x]`:
-  - Dockerfile for server
-  - .dockerignore
-  - Environment variable contract
-  - Local run command
-  - Compose-ready service definition
-  - Port mapping rules
-  - Health/readiness check
-  - Logging/output expectations
-  - Container debug notes
+## Acceptance Validation
+- Confirmed artifact presence:
+  - `games/network_sample_a/server/Dockerfile`
+  - `games/network_sample_a/.dockerignore`
+  - `games/network_sample_a/server/docker-compose.yml`
+  - `games/network_sample_a/server/README.md`
+  - `games/network_sample_a/server/networkSampleADashboardServer.mjs`
+- Required check passed:
+  - `node --check games/network_sample_a/server/networkSampleADashboardServer.mjs`
+- Docker CLI is unavailable in this environment, so image build/compose runtime checks could not be executed here.
 
-## Guardrails Confirmed
-- No engine core changes
-- Scope limited to Sample A server containerization
-- No overwrite of `BIG_PICTURE_ROADMAP.md`
-- No overwrite of `PRODUCTIZATION_ROADMAP.md`
-
-## Validation Highlights
-- `node --check games/network_sample_a/server/networkSampleADashboardServer.mjs` passed.
-- Local smoke run passed:
-  - `/admin/network-sample-a/health` returned 200
-  - `/admin/network-sample-a/api/metrics?key=sample-a-admin` returned 200
-  - unauthenticated `/admin/network-sample-a/api/metrics` returned 403
-- Docker CLI is unavailable in this environment, so image build validation could not be executed here.
+## Scope And Roadmap
+- Scope stayed on Sample A server containerization acceptance/finalization only.
+- No engine/core files were modified in this APPLY working delta.
+- `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` Track U checklist states are complete (`[x]`) and remain bracket-only.
+- `docs/roadmaps/BIG_PICTURE_ROADMAP.md` was not overwritten.
+- `docs/roadmaps/PRODUCTIZATION_ROADMAP.md` was not overwritten.

@@ -1,1 +1,1 @@
-Build Sample A server containerization artifacts and update Track U roadmap states without engine-core changes.
+Apply Sample A server containerization artifacts and finalize Track U checklist states without engine-core changes.
