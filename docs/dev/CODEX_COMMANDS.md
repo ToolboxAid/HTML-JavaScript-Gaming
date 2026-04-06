@@ -2,11 +2,7 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_PLUGIN_SYSTEM
-
-- Implement docs defined in PLAN_PR_PLUGIN_SYSTEM
-- Docs-only
-- No runtime changes
+Execute PLAN + BUILD + APPLY for VERSIONED_CONTRACTS
 
 OUTPUT:
-<project folder>/tmp/BUILD_PR_PLUGIN_SYSTEM_delta.zip
+<project folder>/tmp/PR_VERSIONED_CONTRACTS_FULL_bundle.zip

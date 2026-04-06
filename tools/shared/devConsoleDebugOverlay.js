@@ -4,8 +4,20 @@ David Quesenberry
 04/05/2026
 devConsoleDebugOverlay.js
 */
+import {
+  createVersionedContractMetadata,
+  createVersionedContractPolicy,
+  evaluateContractVersion
+} from "./contractVersioning.js";
 
 export const DEV_DIAGNOSTICS_CONTRACT_VERSION = "1.0.0";
+export const DEV_DIAGNOSTICS_CONTRACT_ID = "toolbox.dev.diagnostics";
+const DEV_DIAGNOSTICS_CONTRACT_POLICY = createVersionedContractPolicy({
+  contractId: DEV_DIAGNOSTICS_CONTRACT_ID,
+  currentVersion: DEV_DIAGNOSTICS_CONTRACT_VERSION,
+  supportedVersions: ["1", "1.0", "1.0.0"],
+  deprecatedVersions: []
+});
 
 export const DEV_CONSOLE_ENGINE_MAPPINGS = Object.freeze({
   runtime: "engine/lifecycle-runtime-adapter",
@@ -232,8 +244,16 @@ function validateDiagnosticsEnvelope(snapshot) {
     return errors;
   }
 
-  if (sanitizeText(snapshot.contractVersion) !== DEV_DIAGNOSTICS_CONTRACT_VERSION) {
-    errors.push(createStructuredReport("error", "validate", "INVALID_DIAGNOSTICS_VERSION", `Diagnostics contractVersion must be ${DEV_DIAGNOSTICS_CONTRACT_VERSION}.`));
+  const versionCheck = evaluateContractVersion(snapshot.contractVersion, DEV_DIAGNOSTICS_CONTRACT_POLICY);
+  if (versionCheck.status !== "ready") {
+    errors.push(
+      createStructuredReport(
+        "error",
+        "validate",
+        "INVALID_DIAGNOSTICS_VERSION",
+        sanitizeText(versionCheck.message) || `Diagnostics contractVersion must be ${DEV_DIAGNOSTICS_CONTRACT_VERSION}.`
+      )
+    );
   }
 
   if (!Number.isFinite(snapshot.timestamp)) {
@@ -886,4 +906,8 @@ export function createDevConsoleDebugOverlayRuntime(options = {}) {
     panelRegistry,
     diagnosticsCollector
   };
+}
+
+export function getDevDiagnosticsContractVersionMetadata() {
+  return createVersionedContractMetadata(DEV_DIAGNOSTICS_CONTRACT_POLICY);
 }

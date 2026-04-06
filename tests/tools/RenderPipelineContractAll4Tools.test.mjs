@@ -9,6 +9,7 @@ import {
   ASSET_DOCUMENT_TYPE,
   COMPOSITION_DOCUMENT_TYPE,
   RENDER_CONTRACT_VERSION,
+  getRenderContractVersionMetadata,
   getRenderPipelineStageOrder,
   runRenderContractRuntimePath,
   summarizeRenderContractRuntimePath
@@ -86,6 +87,11 @@ function createAssetDocument(tool, docId, layer) {
 }
 
 export async function run() {
+  const metadata = getRenderContractVersionMetadata();
+  assert.equal(metadata.contractId, "toolbox.render.contract");
+  assert.equal(metadata.currentVersion, "1.0.0");
+  assert.equal(metadata.supportedVersions.includes("1.0.0"), true);
+
   const stageOrder = getRenderPipelineStageOrder();
   assert.deepEqual(stageOrder, ["load", "validate", "normalize", "resolve", "compose", "sequence", "render"]);
 
@@ -105,6 +111,13 @@ export async function run() {
   assert.equal(invalidResult.status, "failed");
   assert.equal(invalidResult.errors.some((error) => error.code === "UNSUPPORTED_CONTRACT_VERSION"), true);
   assert.equal(invalidResult.errors.some((error) => error.code === "TOOL_ENGINE_MAPPING_VIOLATION"), true);
+
+  const compatibleDoc = {
+    ...createAssetDocument("sprite-editor", "sprite.compat", createLayer("sprite", "layer.compat", 1, "")),
+    contractVersion: "v1.0"
+  };
+  const compatibleResult = runRenderContractRuntimePath({ entryDocument: compatibleDoc });
+  assert.equal(compatibleResult.status, "ready");
 
   const parallaxDoc = createAssetDocument("parallax-editor", "parallax.scene", createLayer("parallax", "layer.parallax", 5, ""));
   const tilemapDoc = createAssetDocument("tile-map-editor", "tilemap.scene", createLayer("tilemap", "layer.tilemap", 0, ""));

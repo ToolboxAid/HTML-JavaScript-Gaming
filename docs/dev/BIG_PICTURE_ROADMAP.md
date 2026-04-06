@@ -108,9 +108,9 @@ Do NOT change structure or wording.
 # 🧠 TRACK J — ENGINE MATURITY
 
 - [x] Stable debug API
-- [.] Plugin system
+- [x] Plugin system
 - [.] External documentation
-- [.] Versioned contracts
+- [x] Versioned contracts
 - [.] Performance benchmarks
 
 ---

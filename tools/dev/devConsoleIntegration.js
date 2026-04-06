@@ -21,6 +21,7 @@ import { createSceneCommandPack } from "./commandPacks/sceneCommandPack.js";
 import { createToggleCommandPack } from "./commandPacks/toggleCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
 import { createInspectorStore } from "./inspectors/inspectorStore.js";
+import { createDebugPluginRegistry } from "./plugins/debugPluginSystem.js";
 import {
   createDiagnosticsCollector,
   createDevConsoleDebugOverlayRuntime
@@ -45,6 +46,14 @@ const DEFAULT_COMBO_BINDINGS = Object.freeze({
 const MAX_CONSOLE_INPUT_CHARS = 120;
 const MAX_CONSOLE_OUTPUT_LINES = 60;
 const MAX_CONSOLE_COMMAND_HISTORY = 120;
+const MAX_PLUGIN_ACTIVITY_REPORTS = 80;
+const DEFAULT_PLUGIN_CAPABILITIES = Object.freeze([
+  Object.freeze({ capabilityId: "debug.command-pack", version: "1.0.0" }),
+  Object.freeze({ capabilityId: "debug.overlay.panel", version: "1.0.0" }),
+  Object.freeze({ capabilityId: "debug.overlay.provider", version: "1.0.0" }),
+  Object.freeze({ capabilityId: "debug.runtime.snapshot", version: "1.0.0" }),
+  Object.freeze({ capabilityId: "debug.diagnostics.snapshot", version: "1.0.0" })
+]);
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -266,6 +275,33 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       createValidationCommandPack()
     ]
   });
+  const pluginRegistry = createDebugPluginRegistry({
+    commandRegistry,
+    panelRegistry: runtime.panelRegistry,
+    getRuntimeSnapshot: () => runtime.getState(),
+    getDiagnosticsSnapshot: () => diagnosticsSnapshot || {},
+    availableCapabilities: Array.isArray(options?.pluginCapabilities)
+      ? options.pluginCapabilities
+      : DEFAULT_PLUGIN_CAPABILITIES,
+    featureFlags: isObject(options?.pluginFeatureFlags) ? options.pluginFeatureFlags : {},
+    limits: isObject(options?.pluginLimits) ? options.pluginLimits : {}
+  });
+  let pluginActivityReports = [];
+  const pluginDescriptors = Array.isArray(options?.plugins) ? options.plugins : [];
+  const pluginBootstrapReports = pluginRegistry.registerPlugins(
+    pluginDescriptors,
+    options?.activatePluginsOnInit === true
+  );
+  pluginActivityReports = pluginBootstrapReports.slice(-MAX_PLUGIN_ACTIVITY_REPORTS);
+
+  function trackPluginReport(report) {
+    pluginActivityReports.push(cloneJson(report));
+    if (pluginActivityReports.length > MAX_PLUGIN_ACTIVITY_REPORTS) {
+      const trimCount = pluginActivityReports.length - MAX_PLUGIN_ACTIVITY_REPORTS;
+      pluginActivityReports.splice(0, trimCount);
+    }
+    return report;
+  }
 
   function resetConsoleUiState() {
     consoleInputBuffer = "";
@@ -337,6 +373,12 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       executeRuntimeCommand,
       executeConsoleCommand: executeRegistryCommand,
       listRegisteredCommands: getCommandRegistryNames,
+      pluginRegistry,
+      listPlugins: () => pluginRegistry.listPlugins(),
+      activatePlugin: (pluginId) => trackPluginReport(pluginRegistry.activatePlugin(pluginId)),
+      deactivatePlugin: (pluginId) => trackPluginReport(pluginRegistry.deactivatePlugin(pluginId)),
+      registerPlugin: (descriptor) => trackPluginReport(pluginRegistry.registerPlugin(descriptor)),
+      unregisterPlugin: (pluginId) => trackPluginReport(pluginRegistry.unregisterPlugin(pluginId)),
       persistOverlayPanelState,
       resetConsoleUiState
     };
@@ -990,10 +1032,36 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     update,
     render,
     executeCommand,
+    registerPlugin(descriptor, activate = false) {
+      const registration = trackPluginReport(pluginRegistry.registerPlugin(descriptor));
+      if (registration.status === "ready" && activate === true) {
+        return trackPluginReport(pluginRegistry.activatePlugin(sanitizeText(descriptor?.pluginId)));
+      }
+      return registration;
+    },
+    unregisterPlugin(pluginId) {
+      return trackPluginReport(pluginRegistry.unregisterPlugin(pluginId));
+    },
+    activatePlugin(pluginId) {
+      return trackPluginReport(pluginRegistry.activatePlugin(pluginId));
+    },
+    deactivatePlugin(pluginId) {
+      return trackPluginReport(pluginRegistry.deactivatePlugin(pluginId));
+    },
+    listPlugins() {
+      return pluginRegistry.listPlugins();
+    },
+    getPluginRegistry() {
+      return pluginRegistry;
+    },
     dispose() {
       if (keyboardEventTarget) {
         keyboardEventTarget.removeEventListener("keydown", onConsoleKeyDown);
       }
+      const pluginDisposeReports = pluginRegistry.dispose();
+      pluginDisposeReports.forEach((report) => {
+        trackPluginReport(report);
+      });
       return runtime.dispose();
     },
     getRuntime() {
@@ -1015,6 +1083,9 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         consoleCommandHistory: consoleCommandHistory.slice(),
         commandPackCount: commandRegistry.getPackCount(),
         commandRegistryCount: commandRegistry.getCommandCount(),
+        pluginCount: pluginRegistry.listPlugins().length,
+        plugins: pluginRegistry.listPlugins(),
+        pluginActivityReports: pluginActivityReports.slice(),
         inspectorSnapshot: inspectorStore.getSnapshot(),
         toggleCombos: cloneJson(comboBindings)
       };

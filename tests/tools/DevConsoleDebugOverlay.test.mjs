@@ -11,11 +11,17 @@ import {
   createDevConsoleDebugOverlayRuntime,
   createDiagnosticsCollector,
   createOverlayPanelRegistry,
+  getDevDiagnosticsContractVersionMetadata,
   getDeterministicRenderOrder,
   summarizeDevConsoleDebugOverlay
 } from "../../tools/shared/devConsoleDebugOverlay.js";
 
 export async function run() {
+  const metadata = getDevDiagnosticsContractVersionMetadata();
+  assert.equal(metadata.contractId, "toolbox.dev.diagnostics");
+  assert.equal(metadata.currentVersion, "1.0.0");
+  assert.equal(metadata.supportedVersions.includes("1.0.0"), true);
+
   assert.equal(typeof DEV_CONSOLE_ENGINE_MAPPINGS.runtime, "string");
   assert.equal(typeof DEV_CONSOLE_ENGINE_MAPPINGS.hotReload, "string");
 

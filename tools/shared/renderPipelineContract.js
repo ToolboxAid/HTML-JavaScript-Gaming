@@ -5,10 +5,23 @@ David Quesenberry
 renderPipelineContract.js
 */
 import { normalizeProjectRelativePath } from "./projectAssetRegistry.js";
+import {
+  createVersionedContractMetadata,
+  createVersionedContractPolicy,
+  evaluateContractVersion,
+  normalizeContractVersion
+} from "./contractVersioning.js";
 
 export const RENDER_CONTRACT_VERSION = "1.0.0";
+export const RENDER_CONTRACT_ID = "toolbox.render.contract";
 export const ASSET_DOCUMENT_TYPE = "toolbox.render.asset-document";
 export const COMPOSITION_DOCUMENT_TYPE = "toolbox.render.composition-document";
+const RENDER_CONTRACT_POLICY = createVersionedContractPolicy({
+  contractId: RENDER_CONTRACT_ID,
+  currentVersion: RENDER_CONTRACT_VERSION,
+  supportedVersions: ["1", "1.0", "1.0.0"],
+  deprecatedVersions: []
+});
 
 const ALLOWED_ASSET_TYPES = new Set(["image", "spritesheet", "vector", "tileset", "template"]);
 const ALLOWED_ASSET_SOURCE = new Set(["relative"]);
@@ -107,14 +120,17 @@ function validateEnvelope(document, expectedType, errors, pathPrefix) {
     );
   }
 
-  if (sanitizeText(document.contractVersion) !== RENDER_CONTRACT_VERSION) {
+  const versionCheck = evaluateContractVersion(document.contractVersion, RENDER_CONTRACT_POLICY);
+  if (versionCheck.status !== "ready") {
     pushError(
       errors,
       "validate",
-      "UNSUPPORTED_CONTRACT_VERSION",
+      sanitizeText(versionCheck.code) || "UNSUPPORTED_CONTRACT_VERSION",
       `${rootPath}.contractVersion`,
-      `Expected contractVersion ${RENDER_CONTRACT_VERSION}.`
+      sanitizeText(versionCheck.message) || `Expected contractVersion ${RENDER_CONTRACT_VERSION}.`
     );
+  } else {
+    document.contractVersion = normalizeContractVersion(document.contractVersion);
   }
 
   const producerTool = sanitizeText(document?.producer?.tool);
@@ -717,4 +733,8 @@ export function summarizeRenderContractRuntimePath(result) {
 
 export function getRenderPipelineStageOrder() {
   return STAGES.slice();
+}
+
+export function getRenderContractVersionMetadata() {
+  return createVersionedContractMetadata(RENDER_CONTRACT_POLICY);
 }

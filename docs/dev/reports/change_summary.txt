@@ -1,11 +1,18 @@
-Created BUILD_PR_PLUGIN_SYSTEM docs-only bundle from PLAN_PR_PLUGIN_SYSTEM.
+Toolbox Aid
+David Quesenberry
+04/05/2026
+change_summary.txt
 
-Included:
-- BUILD and APPLY docs for plugin system lifecycle/registration/isolation contracts
-- updated active codex/commit/next-command control files
-- refreshed reports and file tree
+Executed PLAN + BUILD + APPLY for VERSIONED_CONTRACTS in one scoped bundle.
 
-Constraints respected:
-- docs-only scope
-- no runtime code changes
-- no engine refactor or breaking change work in this step
+Implemented:
+- Added shared version policy helper module for contract normalization/evaluation.
+- Wired render and diagnostics contract validators to the shared policy seam.
+- Exposed version metadata helpers for both contract surfaces.
+- Updated targeted tests for metadata visibility and compatibility alias acceptance.
+- Updated Track J roadmap bracket state for Versioned contracts.
+
+Non-goals preserved:
+- No engine core API redesign.
+- No unrelated runtime feature expansion.
+- No destructive changes.

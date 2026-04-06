@@ -1,25 +1,30 @@
 # APPLY_PR_PLUGIN_SYSTEM
 
 ## Purpose
-Apply plugin system contracts exactly as defined by PLAN and BUILD docs.
+Apply BUILD_PR_PLUGIN_SYSTEM exactly as defined.
 
-## Apply Scope
-- implement `PluginRegistry`, `PluginContext`, and `CapabilityDescriptor` seams
-- implement lifecycle ordering and isolation behavior
-- implement optional/lazy loading paths
-- expose only approved registration APIs
+## Scope
+- Plugin system contracts finalized
+- Lifecycle hooks enforced
+- Isolation rules applied
+- Optional loading model preserved
 
-## Apply Rules
-- no scope expansion beyond BUILD contract
-- preserve engine/runtime separation
-- no direct runtime mutation paths for plugins
-- no breaking changes to existing behavior
+## Rules
+- No runtime mutation outside approved boundaries
+- No breaking changes
+- Preserve engine/runtime separation
 
-## Apply Validation
-- lifecycle hooks execute in strict order
-- plugin failures remain isolated
-- registration/discovery APIs are deterministic
-- lazy activation and unload flows are validated
+## Validation
+- Plugins register/unregister correctly
+- Lifecycle works (init, activate, deactivate, dispose)
+- Isolation enforced
+- No regressions
+
+## Roadmap Update
+Track J:
+- Plugin system -> [x]
+
+(Bracket-only change)
 
 ## Output
 <project folder>/tmp/APPLY_PR_PLUGIN_SYSTEM_delta.zip
