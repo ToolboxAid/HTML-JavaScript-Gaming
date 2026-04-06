@@ -1,1 +1,13 @@
-Advanced inspectors build bundle created.
+# Change Summary
+
+## Bundle
+PLAN_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta
+
+## Included
+- PLAN / BUILD / APPLY docs for server containerization
+- Codex command, commit comment, next command
+- Reports (change summary, file tree, validation checklist)
+- Roadmap tracker bracket-only updates under docs/roadmaps
+
+## Intent
+Plan a minimal server containerization slice for local debug/dashboard workflows while keeping network/dashboard architecture intact and avoiding engine-core changes.

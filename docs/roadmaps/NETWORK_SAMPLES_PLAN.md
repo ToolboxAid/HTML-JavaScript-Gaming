@@ -93,10 +93,10 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK U — SERVER CONTAINERIZATION
 
-- [ ] Dockerfile for server
-- [ ] .dockerignore
-- [ ] Environment variable contract
-- [ ] Local run command
+- [.] Dockerfile for server
+- [.] .dockerignore
+- [.] Environment variable contract
+- [.] Local run command
 - [ ] Compose-ready service definition
 - [ ] Port mapping rules
 - [ ] Health/readiness check

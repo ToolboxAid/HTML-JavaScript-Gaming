@@ -1,1 +1,1 @@
-Add advanced inspector debug surfaces (opt-in architecture).
+Plan minimal server containerization as a docs-first PLAN bundle with no engine-core changes, preserved dashboard/network debug architecture, bracket-only roadmap tracker edits, and packaged delta zip output.

@@ -1,3 +1,11 @@
-Inspectors load
-No auto-injection
-Commands work
+# Validation Checklist
+
+- [x] PLAN doc present
+- [x] BUILD doc present
+- [x] APPLY doc present
+- [x] Docs-first scope preserved
+- [x] No engine-core changes
+- [x] Scope is minimal server containerization
+- [x] Dashboard/network architecture preservation documented
+- [x] Roadmap edits are bracket-only
+- [x] Zip built under <project folder>/tmp/
