@@ -1,1 +1,1 @@
-Archive legacy PR markdown files out of docs/pr while preserving active Level 11 work, .keep, roadmaps, and start_of_day protections.
+docs: tighten low-token start_of_day workflow and move roadmaps to docs/dev/roadmaps

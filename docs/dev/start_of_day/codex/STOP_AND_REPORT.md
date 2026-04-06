@@ -8,6 +8,9 @@ Stop and report instead of improvising if:
 - implementation would touch engine core out of scope
 - the change would require modifying start_of_day directories
 - the PR purpose is no longer singular
+- the BUILD asks for broad repo analysis without exact targets
+- the BUILD mixes multiple objectives
+- the BUILD uses vague language such as "clean up", "improve", or "modernize" without exact scope
 
 Preferred behavior:
 - stop

@@ -5,10 +5,13 @@ Use this as the single pre-delivery gate.
 - Is this a PLAN, BUILD, APPLY, or combined PLAN + BUILD + APPLY bundle?
 - Does the bundle match only one PR purpose?
 - If BUILD: is it specific enough that Codex does not need to guess?
+- If BUILD: is this scope as small as possible?
+- If BUILD: does it avoid vague repo-wide scan/refactor language?
+- If BUILD retry: did I identify the exact prior failure and narrow the next BUILD?
 - If APPLY: did I remove any Codex command?
 - Are roadmap files preserved with bracket-only changes?
 - Did I avoid fake claims about code being written?
-- Did I avoid touching start_of_day directories?
+- Did I avoid touching start_of_day directories without explicit permission?
 - Is the ZIP repo-structured and commit-ready or execution-ready?
 
 ## Rule

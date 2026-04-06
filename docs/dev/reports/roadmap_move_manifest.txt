@@ -1,0 +1,13 @@
+ROADMAP MOVE MANIFEST
+
+New location:
+- docs/dev/roadmaps/BIG_PICTURE_ROADMAP.md
+- docs/dev/roadmaps/NETWORK_SAMPLES_PLAN.md
+- docs/dev/roadmaps/PRODUCTIZATION_ROADMAP.md
+- docs/dev/roadmaps/big_picture_roadmap_text.md
+
+Remove old location after apply:
+- docs/roadmaps/BIG_PICTURE_ROADMAP.md
+- docs/roadmaps/NETWORK_SAMPLES_PLAN.md
+- docs/roadmaps/PRODUCTIZATION_ROADMAP.md
+- docs/roadmaps/big_picture_roadmap_text.md

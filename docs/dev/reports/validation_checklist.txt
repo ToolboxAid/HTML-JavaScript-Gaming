@@ -1,17 +1,8 @@
-# Validation Checklist
-
-- [x] APPLY doc present
-- [x] Companion BUILD doc present
-- [x] Codex command present
-- [x] Commit comment present
-- [x] Next command present
-- [x] Dockerfile exists
-- [x] .dockerignore exists
-- [x] docker-compose.yml exists
-- [x] README exists
-- [x] `node --check games/network_sample_a/server/networkSampleADashboardServer.mjs` passes
-- [x] Docker validation documented as unavailable in this environment (`docker` CLI not installed)
-- [x] No engine-core changes in this APPLY working delta
-- [x] NETWORK_SAMPLES_PLAN Track U bracket states verified complete (`[x]`)
-- [x] BIG_PICTURE_ROADMAP preserved
-- [x] PRODUCTIZATION_ROADMAP preserved
+VALIDATION CHECKLIST
+[pass] Single PR purpose: low-token start_of_day update plus roadmap relocation
+[pass] Start_of_day updates were explicitly authorized by the user
+[pass] Roadmap files were moved without rewriting content
+[pass] Roadmap rule updated to new location: docs/dev/roadmaps/*
+[pass] No runtime code changed
+[pass] Repo-structured delta ZIP prepared
+[note] Old docs/roadmaps/* paths still need removal when applying the move in the repo

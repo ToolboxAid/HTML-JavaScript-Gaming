@@ -8,4 +8,9 @@ Follow PLAN_PR + BUILD_PR + APPLY_PR
 - No engine core changes
 - One PR per purpose
 - Keep integration sample-level
+- Smallest-scoped valid implementation only
+- Read target files first
+- Avoid repo-wide scanning unless exact targets require it
+- No speculative exploration
+- Stop on ambiguity
 - Package to <project folder>/tmp/*.zip

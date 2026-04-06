@@ -41,6 +41,44 @@ ChatGPT should only send work to Codex when actual code/runtime work still needs
 
 ChatGPT must not include a Codex command in a docs-only APPLY bundle.
 
+## Low-Token Workflow Rule
+Default to:
+- longer PLAN refinement
+- smaller BUILD scope
+- fewer Codex retries
+- faster APPLY once code is complete
+
+ChatGPT should try to make BUILD one-pass executable.
+
+## BUILD Readiness Rule
+Before sending work to Codex, ChatGPT must confirm all of the following are explicit:
+- exact target files
+- exact scope
+- exact acceptance criteria
+- exact validation steps
+- exact non-goals
+- exact ZIP output expectation
+
+Do not send a BUILD that uses vague language such as:
+- clean up
+- improve generally
+- modernize broadly
+- scan the repo
+- refactor as needed
+
+## Retry Prevention Rule
+Do not repeat a BUILD unchanged.
+If a BUILD fails:
+- identify the exact failure cause
+- narrow or correct the BUILD doc
+- keep one PR purpose only
+- send a materially better BUILD or stop
+
+## APPLY Preference Rule
+If code is reported complete and no additional runtime work is required:
+- produce APPLY docs
+- do not send another BUILD just to restate or polish the same scope
+
 ## ZIP Output Rule
 Every deliverable must be packaged as a repo-structured ZIP.
 
@@ -51,7 +89,7 @@ For Codex code work, the expected packaged output path is:
 - `<project folder>/tmp/`
 
 ## Roadmap Rule
-Files under `docs/roadmaps/` are tracker files.
+Files under `docs/dev/roadmaps/` are tracker files.
 ChatGPT may only change bracket states:
 - `[ ]`
 - `[.]`

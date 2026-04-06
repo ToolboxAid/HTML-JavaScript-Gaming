@@ -11,3 +11,8 @@
 
 ## Status
 Stable and validated
+
+## Operating Posture
+- Reduce avoidable Codex retries
+- Prefer tighter BUILD bundles
+- Prefer APPLY once code is complete

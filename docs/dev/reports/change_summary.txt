@@ -1,25 +1,6 @@
-# Change Summary
-
-## Bundle
-APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta
-
-## Intent
-Docs-only APPLY bundle for accepting and finalizing the already-completed Codex server containerization build.
-
-## Acceptance Validation
-- Confirmed artifact presence:
-  - `games/network_sample_a/server/Dockerfile`
-  - `games/network_sample_a/.dockerignore`
-  - `games/network_sample_a/server/docker-compose.yml`
-  - `games/network_sample_a/server/README.md`
-  - `games/network_sample_a/server/networkSampleADashboardServer.mjs`
-- Required check passed:
-  - `node --check games/network_sample_a/server/networkSampleADashboardServer.mjs`
-- Docker CLI is unavailable in this environment, so image build/compose runtime checks could not be executed here.
-
-## Scope And Roadmap
-- Scope stayed on Sample A server containerization acceptance/finalization only.
-- No engine/core files were modified in this APPLY working delta.
-- `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` Track U checklist states are complete (`[x]`) and remain bracket-only.
-- `docs/roadmaps/BIG_PICTURE_ROADMAP.md` was not overwritten.
-- `docs/roadmaps/PRODUCTIZATION_ROADMAP.md` was not overwritten.
+CHANGE SUMMARY
+- Tightened ChatGPT start_of_day workflow rules to reduce unnecessary Codex usage.
+- Tightened Codex start_of_day execution rules to reduce broad scans, vague BUILD retries, and opportunistic scope growth.
+- Refreshed helper startup files so low-token workflow mode is visible at session start.
+- Relocated roadmap tracker files from `docs/roadmaps/` to `docs/dev/roadmaps/` without rewriting roadmap content.
+- Updated direct references in bundled docs from `docs/roadmaps/` to `docs/dev/roadmaps/`.

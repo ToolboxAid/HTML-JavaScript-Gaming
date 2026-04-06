@@ -24,6 +24,14 @@ Codex is normally used in the BUILD phase only.
 Codex must treat the BUILD doc as the execution blueprint.
 If the BUILD doc is weak, incomplete, contradictory, or lacks explicit target files, stop and report the problem instead of improvising.
 
+## Low-Token Execution Rule
+Default to the smallest valid implementation for the approved BUILD.
+Do not:
+- scan the full repo unless exact target files require it
+- broaden scope to be helpful
+- refactor outside target files
+- chase speculative improvements
+
 ## ZIP Output Rule
 Codex should always package code/output ZIP files under:
 - `<project folder>/tmp/`
@@ -35,9 +43,10 @@ Codex must not stage or commit ZIP files from `<project folder>/tmp/`.
 - no unrelated edits
 - no engine-core changes unless explicitly in scope
 - preserve project-owned/sample-owned boundaries
+- keep changed-file count minimal
 
 ## Roadmap Rule
-For `docs/roadmaps/*`:
+For `docs/dev/roadmaps/*`:
 only bracket-state changes are allowed.
 Do not:
 - rewrite wording
@@ -52,6 +61,7 @@ Stop and report instead of continuing if:
 - roadmap edits would require anything beyond bracket-state changes
 - start_of_day directories would need modification
 - the requested work expands beyond one PR purpose
+- the BUILD asks for broad repo analysis without exact targets
 
 ## Directory Protection Rule
 Codex may not create, modify, overwrite, rename, delete, or add files inside:

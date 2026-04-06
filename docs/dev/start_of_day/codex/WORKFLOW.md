@@ -8,10 +8,13 @@
 5. Stop immediately if the BUILD doc fails the execution threshold.
 
 ## During Work
+- open target files first
+- read only immediate dependencies when needed
 - write code only where the BUILD doc says
 - keep diffs small and surgical
 - preserve project-specific ownership
 - avoid speculative expansion
+- avoid opportunistic cleanup/refactor
 
 ## When Finished
 1. run required validation
@@ -26,3 +29,4 @@
 - redo planning
 - modify roadmap wording
 - touch start_of_day files
+- continue after a failed execution threshold

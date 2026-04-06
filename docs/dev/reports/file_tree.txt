@@ -1,23 +1,33 @@
-HTML-JavaScript-Gaming/
-  games/
-    network_sample_a/
-      .dockerignore
-      server/
-        Dockerfile
-        docker-compose.yml
-        README.md
-        networkSampleADashboardServer.mjs
-  docs/
-    pr/
-      BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
-      APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
-    dev/
-      CODEX_COMMANDS.md
-      COMMIT_COMMENT.txt
-      NEXT_COMMAND.txt
-      reports/
-        change_summary.txt
-        file_tree.txt
-        validation_checklist.txt
+docs/
+  dev/
+    CODEX_COMMANDS.md
+    commit_comment.txt
+    reports/
+      change_summary.txt
+      file_tree.txt
+      roadmap_move_manifest.txt
+      validation_checklist.txt
     roadmaps/
+      BIG_PICTURE_ROADMAP.md
       NETWORK_SAMPLES_PLAN.md
+      PRODUCTIZATION_ROADMAP.md
+      big_picture_roadmap_text.md
+    start_of_day/
+      CODEX_SESSION_PROMPT.md
+      CURRENT_STATE.md
+      NEXT_STEPS.md
+      README.md
+      SESSION_CONTEXT.md
+      chatGPT/
+        RULES.md
+        SESSION_VALIDATION_GATE.md
+        WORKFLOW.md
+      codex/
+        BUILD_EXECUTION_CHECKLIST.md
+        RULES.md
+        STOP_AND_REPORT.md
+        WORKFLOW.md
+  pr/
+    APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
+    APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
+    APPLY_PR_LOW_TOKEN_START_OF_DAY_AND_ROADMAP_MOVE.md

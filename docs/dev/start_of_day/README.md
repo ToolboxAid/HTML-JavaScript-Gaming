@@ -1,11 +1,19 @@
 Toolbox Aid
 David Quesenberry
-04/05/2026
+04/06/2026
 README.md
 
 # Start Of Day Copy Map
 
 Use this folder as a quick copy/paste guide for session startup.
+
+## Session Mode
+Default mode is:
+- PLAN-heavy
+- BUILD-light
+- APPLY-fast
+
+Use this folder to reduce unnecessary Codex runs and keep BUILD scope surgical.
 
 ## Copy To Tool (If Present In This Folder)
 - `CODEX_SESSION_PROMPT.md` -> paste into the Codex command/session prompt input
