@@ -13,3 +13,4 @@ export { drawMinimap } from './Minimap.js';
 export { validateWorldEntities, drawValidationPanel } from './Validation.js';
 export * from './standard/threeD/index.js';
 export * from './network/index.js';
+export * from './inspectors/index.js';

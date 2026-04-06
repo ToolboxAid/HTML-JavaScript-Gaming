@@ -1,1 +1,1 @@
-Plan advanced inspector debug-surface contracts as a docs-first PLAN bundle with strict opt-in adoption, no engine-core changes, bracket-only roadmap tracker updates, and packaged delta zip output.
+Add advanced inspector debug surfaces (opt-in architecture).

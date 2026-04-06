@@ -1,13 +1,1 @@
-# Change Summary
-
-## Bundle
-PLAN_PR_DEBUG_SURFACES_ADVANCED_INSPECTORS_delta
-
-## Included
-- PLAN / BUILD / APPLY docs for advanced inspectors
-- Codex command, commit comment, next command
-- Reports (change summary, file tree, validation checklist)
-- Roadmap tracker bracket-state updates under docs/roadmaps
-
-## Intent
-Define the advanced inspector promotion path as opt-in shared debug capability with no engine-core changes, no forced sample adoption, and no hidden 3D assumptions.
+Advanced inspectors build bundle created.
