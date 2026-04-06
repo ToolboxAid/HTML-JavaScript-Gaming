@@ -1,4 +1,1 @@
-- Docs only
-- No engine changes
-- Sample-scoped design
-- Matches repo conventions
+ok

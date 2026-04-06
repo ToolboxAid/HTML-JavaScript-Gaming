@@ -2,14 +2,12 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Implement multi-entity timeline and selective rewind support in network_sample_c only.
+Validate multi-entity implementation in network_sample_c.
 
-- Introduce per-entity timeline buffers
-- Update reconciliation to operate per entity
-- Implement selective rewind execution
-- Extend debug visualization for multiple entities
+- Verify per-entity timelines
+- Verify selective rewind correctness
+- Verify debug outputs
 
 DO NOT:
-- Modify engine core APIs
-- Create or edit documentation
-- Expand beyond sample scope
+- modify docs
+- expand scope

@@ -36,12 +36,12 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK P — DIVERGENCE / TRACE SAMPLE
 
-- [.] Sample C — Divergence / Trace Validation
+- [x] Sample C — Divergence / Trace Validation
 - [x] Deterministic mismatch scenario
 - [x] Event sequencing timeline
 - [x] Divergence explanation notes
 - [x] Reproduction guide
-- [.] Validation checklist
+- [x] Validation checklist
 
 ---
 
@@ -50,7 +50,7 @@ Track the staged network sample journey for debug surface support using a strict
 - [x] Connection status panel
 - [.] Latency / RTT panel
 - [ ] Replication state viewer
-- [ ] Client/server divergence inspector
+- [x] Client/server divergence inspector
 - [.] Event tracing panel
 
 ---
@@ -61,7 +61,7 @@ Track the staged network sample journey for debug surface support using a strict
 - [x] network.status
 - [x] network.latency
 - [ ] network.replication
-- [ ] network.divergence
+- [x] network.divergence
 - [x] network.trace
 - [ ] network.sample.*
 
@@ -69,9 +69,9 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK S — READINESS TO PROMOTE
 
-- [ ] Sample-backed provider validation
-- [ ] Sample-backed panel validation
-- [ ] Operator command validation
+- [.] Sample-backed provider validation
+- [.] Sample-backed panel validation
+- [.] Operator command validation
 - [ ] Debug-only gating validation
 - [ ] Promotion recommendation
 

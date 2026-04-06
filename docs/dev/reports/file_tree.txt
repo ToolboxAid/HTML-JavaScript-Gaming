@@ -1,14 +1,1 @@
-docs/
-  pr/
-    PLAN_PR_LEVEL_11_5_MULTI_ENTITY_SUPPORT.md
-  dev/
-    MULTI_ENTITY_TIMELINE_SPEC.md
-    ENTITY_RECONCILIATION_SPEC.md
-    SELECTIVE_REWIND_SPEC.md
-    DEBUG_MULTI_ENTITY_SPEC.md
-    codex_commands.md
-    commit_comment.txt
-    reports/
-      file_tree.txt
-      change_summary.txt
-      validation_checklist.txt
+updated

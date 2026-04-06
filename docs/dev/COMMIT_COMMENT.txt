@@ -1,8 +1,1 @@
-Plan multi-entity rewind and reconciliation support for Level 11
-
-- Defines per-entity timeline buffers
-- Establishes entity-scoped reconciliation
-- Introduces selective rewind strategy
-- Expands debug visualization to multi-entity context
-
-Docs-only PR
+Validate multi-entity rewind support
