@@ -11,6 +11,7 @@ import { createDebugCommandPack } from "./commandPacks/debugCommandPack.js";
 import { createEntityCommandPack } from "./commandPacks/entityCommandPack.js";
 import { createGroupCommandPack } from "./commandPacks/groupCommandPack.js";
 import { createHotReloadCommandPack } from "./commandPacks/hotReloadCommandPack.js";
+import { createInspectorCommandPack } from "./commandPacks/inspectorCommandPack.js";
 import { createInputCommandPack } from "./commandPacks/inputCommandPack.js";
 import { createMacroCommandPack } from "./commandPacks/macroCommandPack.js";
 import { createOverlayCommandPack } from "./commandPacks/overlayCommandPack.js";
@@ -19,6 +20,7 @@ import { createRenderCommandPack } from "./commandPacks/renderCommandPack.js";
 import { createSceneCommandPack } from "./commandPacks/sceneCommandPack.js";
 import { createToggleCommandPack } from "./commandPacks/toggleCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
+import { createInspectorStore } from "./inspectors/inspectorStore.js";
 import {
   createDiagnosticsCollector,
   createDevConsoleDebugOverlayRuntime
@@ -141,7 +143,8 @@ function buildCommandContext(diagnostics) {
     input: toContextSection(diagnostics, "input"),
     assets: toContextSection(diagnostics, "assets"),
     hotReload: toContextSection(diagnostics, "hotReload"),
-    validation: toContextSection(diagnostics, "validation")
+    validation: toContextSection(diagnostics, "validation"),
+    inspectors: toContextSection(diagnostics, "inspectors")
   };
 }
 
@@ -216,6 +219,9 @@ function buildRuntimeFromOptions(options) {
 export function createSampleGameDevConsoleIntegration(options = {}) {
   const runtime = buildRuntimeFromOptions(options);
   const keyEdgeState = new Map();
+  const inspectorStore = createInspectorStore({
+    limits: isObject(options?.inspectorLimits) ? options.inspectorLimits : {}
+  });
 
   const comboBindings = isObject(options?.comboBindings)
     ? options.comboBindings
@@ -248,6 +254,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
       createSceneCommandPack(),
       createRenderCommandPack(),
       createEntityCommandPack(),
+      createInspectorCommandPack(),
       createDebugCommandPack(),
       createInputCommandPack(),
       createOverlayCommandPack(),
@@ -325,6 +332,8 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     return {
       ...normalizedBase,
       consoleRuntime: runtime,
+      inspectorStore,
+      inspectors: inspectorStore.getSnapshot(),
       executeRuntimeCommand,
       executeConsoleCommand: executeRegistryCommand,
       listRegisteredCommands: getCommandRegistryNames,
@@ -852,6 +861,11 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     const diagnosticsResult = runtime.collectDiagnostics(diagnosticsContext);
     diagnosticsSnapshot = diagnosticsResult?.diagnostics || null;
     diagnosticsReports = Array.isArray(diagnosticsResult?.reports) ? diagnosticsResult.reports.slice() : [];
+    inspectorStore.update({
+      diagnosticsSnapshot: diagnosticsSnapshot || {},
+      diagnosticsContext,
+      timestamp: Date.now()
+    });
 
     if (getComboEdgePress(input, comboBindings.toggleOverlay, keyEdgeState)) {
       const state = runtime.getState();
@@ -1001,6 +1015,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
         consoleCommandHistory: consoleCommandHistory.slice(),
         commandPackCount: commandRegistry.getPackCount(),
         commandRegistryCount: commandRegistry.getCommandCount(),
+        inspectorSnapshot: inspectorStore.getSnapshot(),
         toggleCombos: cloneJson(comboBindings)
       };
     }

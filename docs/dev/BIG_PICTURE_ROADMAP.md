@@ -97,11 +97,11 @@ Do NOT change structure or wording.
 
 # 🔬 TRACK I — INSPECTORS & TOOLING
 
-- [.] Entity inspector
-- [ ] Component inspector
-- [ ] State diff viewer
-- [ ] Timeline debugger
-- [ ] Event stream viewer
+- [x] Entity inspector
+- [x] Component inspector
+- [x] State diff viewer
+- [x] Timeline debugger
+- [x] Event stream viewer
 
 ---
 

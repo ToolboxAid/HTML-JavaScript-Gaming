@@ -1,10 +1,11 @@
-Validation Checklist
-
-[x] PLAN_PR -> BUILD_PR -> APPLY_PR workflow preserved
-[x] BUILD_PR_DEBUG_SURFACES_INSPECTORS created
-[x] Bundle remains docs-only
-[x] No runtime code changes
-[x] No engine-core API changes
-[x] Inspector boundaries are read-only
-[x] Adapter ownership boundaries are explicit
-[x] BIG_PICTURE_ROADMAP.md changed by brackets only
+[ ] APPLY scope matches approved BUILD scope
+[ ] No runtime mutation APIs added
+[ ] Entity inspector works
+[ ] Component inspector works
+[ ] State diff viewer works
+[ ] Timeline debugger works
+[ ] Event stream viewer works
+[ ] Frame buffer bounded
+[ ] Existing samples still run
+[ ] No unrelated files changed
+[ ] BIG_PICTURE_ROADMAP updated with bracket-only edits
