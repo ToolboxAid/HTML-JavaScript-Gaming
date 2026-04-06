@@ -2,18 +2,11 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Apply BUILD_PR_ENGINE_MATURITY exactly as defined.
+Create BUILD_PR_PLUGIN_SYSTEM
 
-- No scope expansion
-- Respect all contracts
-
-VALIDATION:
-- No runtime regressions
-- API stability preserved
-- Performance rules enforced
-
-ROADMAP:
-Update Stable debug API -> [x]
+- Implement docs defined in PLAN_PR_PLUGIN_SYSTEM
+- Docs-only
+- No runtime changes
 
 OUTPUT:
-Create APPLY_PR_ENGINE_MATURITY_delta.zip
+<project folder>/tmp/BUILD_PR_PLUGIN_SYSTEM_delta.zip

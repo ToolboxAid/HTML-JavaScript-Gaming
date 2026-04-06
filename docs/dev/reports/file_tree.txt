@@ -1,12 +1,10 @@
-APPLY_PR_ENGINE_MATURITY_delta.zip
-- docs/pr/BUILD_PR_ENGINE_MATURITY.md
-- docs/pr/APPLY_PR_ENGINE_MATURITY.md
-- docs/dev/ENGINE_MATURITY_API_INVENTORY.md
-- docs/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md
-- docs/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md
-- docs/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md
-- docs/dev/BIG_PICTURE_ROADMAP.md
-- docs/dev/ROADMAP_GUARDRAILS.md
+BUILD_PR_PLUGIN_SYSTEM_delta.zip
+- docs/pr/PLAN_PR_PLUGIN_SYSTEM.md
+- docs/pr/BUILD_PR_PLUGIN_SYSTEM.md
+- docs/pr/APPLY_PR_PLUGIN_SYSTEM.md
+- docs/dev/codex_commands.md
+- docs/dev/commit_comment.txt
+- docs/dev/next_command.txt
 - docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
 - docs/dev/reports/file_tree.txt
+- docs/dev/reports/validation_checklist.txt

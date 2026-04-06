@@ -1,2 +1,1 @@
-APPLY_PR_ENGINE_MATURITY
-Applies engine maturity layer. Stable API locked.
+docs: build plugin system contract bundle from PLAN with lifecycle, isolation, and registration boundaries

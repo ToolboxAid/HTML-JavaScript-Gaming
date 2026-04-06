@@ -1,10 +1,12 @@
 Validation Checklist
 
-[x] Apply executed without scope expansion
-[x] Contracts from BUILD_PR_ENGINE_MATURITY respected
-[x] Runtime regression smoke passed
-[x] API stability preserved
-[x] Performance rules enforced via bounded-buffer check
-[x] No runtime code changes required in this apply slice
-[x] BIG_PICTURE_ROADMAP.md edited by brackets only
-[x] Stable debug API transitioned to [x]
+[x] PLAN_PR -> BUILD_PR -> APPLY_PR flow preserved
+[x] BUILD_PR_PLUGIN_SYSTEM created
+[x] APPLY_PR_PLUGIN_SYSTEM created
+[x] PluginRegistry contract documented
+[x] PluginContext contract documented
+[x] CapabilityDescriptor contract documented
+[x] Lifecycle hooks and ordering documented
+[x] Isolation rules documented
+[x] Optional/lazy loading model documented
+[x] Docs-only scope maintained (no runtime changes)
