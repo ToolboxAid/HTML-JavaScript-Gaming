@@ -81,7 +81,7 @@ Do NOT change structure or wording.
 
 - [.] Transform inspector
 - [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
-- [ ] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
 - [ ] Camera debug panel
 - [ ] Render pipeline stages
 - [ ] Collision overlays

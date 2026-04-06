@@ -1,14 +1,27 @@
 # 🛡️ Roadmap Guardrails
 
-## RULE
-docs/dev/BIG_PICTURE_ROADMAP.md is a status tracker.
+## Purpose
+Prevent accidental corruption of BIG_PICTURE_ROADMAP.md by enforcing strict update rules.
 
-Allowed:
-- Change [ ] [.] [x] only
+## RULE: TRACKER FILE PROTECTION
+The file `docs/dev/BIG_PICTURE_ROADMAP.md` is a status tracker only.
 
-Forbidden:
-- Any wording/structure change
+### Allowed Changes
+- Change ONLY:
+  - [ ] → [.] → [x]
 
-## Validation
+### Forbidden Changes
+- Adding/removing sections
+- Rewriting text
+- Reordering items
+- Renaming tracks
+- Collapsing or expanding content
+
+## VALIDATION CHECK
+Any change to BIG_PICTURE_ROADMAP.md must pass:
 - Headings unchanged
-- Only bracket diffs
+- No text modified outside brackets
+- Only bracket states updated
+
+## CODEX RULE
+Codex must treat this file as immutable structure and perform surgical edits only.

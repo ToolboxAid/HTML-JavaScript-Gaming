@@ -1,12 +1,13 @@
-Created docs-only BUILD bundle for `BUILD_PR_DEBUG_SURFACES_3D_SUPPORT`.
+Created APPLY bundle for shared 3D debug support.
 
 Included:
-- refreshed BUILD doc for 3D support contracts
-- new dedicated guardrails file
-- bracket-only roadmap state update
-- refreshed reports and packaging metadata
+- apply PR doc
+- codex command
+- roadmap guardrails
+- updated BIG_PICTURE_ROADMAP.md (brackets only)
+- 3D sample adapter harness notes
+- reports
 
-Scope controls maintained:
-- docs-only
-- no implementation code changes
-- renderer-specific/deep-inspector/network scope excluded
+Primary intent:
+- add summary-level, renderer-agnostic shared 3D support
+- keep adapters local

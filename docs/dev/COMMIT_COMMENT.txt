@@ -1,1 +1,1 @@
-docs: build 3D support layer and define guardrails for apply readiness
+apply: shared 3D debug support layer
