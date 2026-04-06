@@ -10,7 +10,7 @@ HTML-JavaScript-Gaming/
       NEXT_COMMAND.txt
       reports/
         change_summary.txt
-        validation_checklist.txt
         file_tree.txt
+        validation_checklist.txt
     roadmaps/
       NETWORK_SAMPLES_PLAN.md

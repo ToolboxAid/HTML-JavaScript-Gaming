@@ -1,13 +1,20 @@
 # Change Summary
 
 ## Bundle
-PLAN_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta
+BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta
 
 ## Included
-- PLAN / BUILD / APPLY docs for server containerization
-- Codex command, commit comment, next command
-- Reports (change summary, file tree, validation checklist)
-- Roadmap tracker bracket-only updates under docs/roadmaps
+- BUILD PR doc refinement for minimal server containerization
+- Docs-first command/control/report updates under `docs/dev`
+- Roadmap tracker update in `docs/roadmaps/NETWORK_SAMPLES_PLAN.md` using bracket-only edits
+- No engine-core or runtime implementation changes
+
+## Roadmap Delta (Bracket-Only)
+- Track U `Compose-ready service definition`: `[ ]` -> `[.]`
+- Track U `Port mapping rules`: `[ ]` -> `[.]`
+- Track U `Health/readiness check`: `[ ]` -> `[.]`
+- Track U `Logging/output expectations`: `[ ]` -> `[.]`
+- Track U `Container debug notes`: `[ ]` -> `[.]`
 
 ## Intent
-Plan a minimal server containerization slice for local debug/dashboard workflows while keeping network/dashboard architecture intact and avoiding engine-core changes.
+Deliver a docs-first BUILD handoff for server containerization while preserving dashboard/network debug architecture boundaries.

@@ -5,46 +5,63 @@ BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
 
 # BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION
 
-## Build Intent
-Translate the approved PLAN into an implementation-ready minimal containerization bundle for debug server workflows.
+## Build Summary
+Prepare a docs-first BUILD bundle for minimal server containerization while preserving the existing debug network/dashboard architecture and avoiding all engine-core changes.
 
-## Authoritative Target Artifacts
+## Workflow Discipline
+PLAN_PR -> BUILD_PR -> APPLY_PR
+
+## Scope (Server Containerization Only)
+- Dockerfile for server runtime
+- .dockerignore for lean container contexts
+- compose-ready debug service definition
+- environment variable contract
+- local run command contract
+- port mapping rules
+- health/readiness check contract
+- logging/output expectations
+- container debug notes
+
+## Out Of Scope
+- engine core APIs and internals
+- dashboard architecture redesign
+- network debug architecture redesign
+- transport implementation changes
+- dashboard write/mutation features
+- docker orchestration beyond minimal local debug usage
+
+## Architecture Preservation Rules
+- keep dashboard/network debug flows read-only
+- do not couple server containerization to console internals
+- do not couple server containerization to overlay internals
+- preserve existing sample-level integration boundaries
+
+## APPLY Execution Targets
 ```text
-<project>/server/
+server/
   Dockerfile
   .dockerignore
   docker-compose.debug.yml (or compose-ready equivalent)
-
-docs/
-  pr/
-  dev/reports/
 ```
 
-## Build Rules
-- no engine-core changes
-- preserve network/dashboard debug architecture
-- no dashboard write controls
-- no server architecture redesign
-- local/dev-focused minimal containerization only
-
-## Ordered APPLY Steps
-1. Confirm server entrypoint assumptions.
-2. Add Dockerfile.
-3. Add .dockerignore.
-4. Add compose-ready service definition.
-5. Define environment variable contract.
-6. Define local run command.
-7. Define port mapping rules.
-8. Define health/readiness check behavior.
-9. Define logging/output expectations and debug notes.
-10. Update roadmap trackers via bracket-only edits.
+## Ordered Apply Steps
+1. Confirm server start command assumptions.
+2. Add Dockerfile and validate image build path.
+3. Add .dockerignore tuned for local debug iteration.
+4. Add compose-ready service definition for local debug runs.
+5. Define environment variable contract and defaults.
+6. Define local run command(s) and port mapping rules.
+7. Define health/readiness checks for debug orchestration.
+8. Define logging/output expectations and debug notes.
+9. Run targeted containerization validation checks.
+10. Keep roadmap edits bracket-only.
 
 ## Validation Targets
-- container artifact syntax validity
-- local run path clarity
-- architecture boundaries unchanged
-- no engine-core changes
-- no hidden coupling to dashboard internals
+- docs-first output is complete for APPLY handoff
+- no engine-core files are targeted
+- scope remains server containerization only
+- dashboard/network debug architecture remains intact
+- roadmap tracker edits are bracket-only
 
-## Packaging
-`<project folder>/tmp/PLAN_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta.zip`
+## Packaging Target
+`<project folder>/tmp/BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION_delta.zip`

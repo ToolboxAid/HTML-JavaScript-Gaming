@@ -1,11 +1,9 @@
 # Validation Checklist
 
-- [x] PLAN doc present
-- [x] BUILD doc present
-- [x] APPLY doc present
-- [x] Docs-first scope preserved
-- [x] No engine-core changes
-- [x] Scope is minimal server containerization
-- [x] Dashboard/network architecture preservation documented
-- [x] Roadmap edits are bracket-only
-- [x] Zip built under <project folder>/tmp/
+- [x] PLAN / BUILD / APPLY docs present
+- [x] BUILD doc is docs-first and containerization-scoped
+- [x] No engine-core changes requested
+- [x] Dashboard/network debug architecture preservation documented
+- [x] Roadmap edits performed via bracket-only updates
+- [x] NEXT command points to APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION
+- [x] Repo-structured delta zip built under `<project folder>/tmp/`

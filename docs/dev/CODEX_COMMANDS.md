@@ -2,16 +2,14 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Follow PLAN_PR + BUILD_PR + APPLY_PR
-
-Create PLAN_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION
+Create BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION
 
 Requirements:
+- Follow PLAN_PR + BUILD_PR + APPLY_PR
 - Docs-first
-- No engine core changes
 - One PR per purpose
-- Build zip automatically to <project folder>/tmp/
-- Plan minimal server containerization only
+- No engine core changes
+- Keep scope to server containerization only
+- Produce repo-structured delta zip to <project folder>/tmp/
+- Update docs/roadmaps/* with bracket-only edits only
 - Keep dashboard/network debug architecture intact
-- Update roadmap trackers with bracket-only edits only
-- Roadmaps live under docs/roadmaps/

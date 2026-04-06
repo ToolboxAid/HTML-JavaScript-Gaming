@@ -97,11 +97,11 @@ Track the staged network sample journey for debug surface support using a strict
 - [.] .dockerignore
 - [.] Environment variable contract
 - [.] Local run command
-- [ ] Compose-ready service definition
-- [ ] Port mapping rules
-- [ ] Health/readiness check
-- [ ] Logging/output expectations
-- [ ] Container debug notes
+- [.] Compose-ready service definition
+- [.] Port mapping rules
+- [.] Health/readiness check
+- [.] Logging/output expectations
+- [.] Container debug notes
 
 ## Recommended Execution Order
 1. Sample A

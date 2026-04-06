@@ -1,1 +1,1 @@
-Plan minimal server containerization as a docs-first PLAN bundle with no engine-core changes, preserved dashboard/network debug architecture, bracket-only roadmap tracker edits, and packaged delta zip output.
+Build BUILD_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION docs bundle with containerization-only scope, bracket-only Track U roadmap updates, no engine-core changes, and packaged delta zip output.
