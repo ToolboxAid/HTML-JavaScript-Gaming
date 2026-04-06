@@ -1,1 +1,1 @@
-Adds APPLY_PR bundle for Level 11.4 rewind execution validation and guarded integration in Sample C.
+Adds Level 11.5 planning docs for multi-entity rewind and reconciliation

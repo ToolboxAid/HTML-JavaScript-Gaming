@@ -1,12 +1,8 @@
-Apply Level 11.4 rewind execution candidate for Sample C
+Plan multi-entity rewind and reconciliation support for Level 11
 
-- Validates rewind execution and deterministic replay in network_sample_c
-- Confirms timeline truncation and replay repopulation behavior
-- Confirms replay status is surfaced through debug outputs
-- Preserves strict sample-only scope with no engine-core changes
+- Defines per-entity timeline buffers
+- Establishes entity-scoped reconciliation
+- Introduces selective rewind strategy
+- Expands debug visualization to multi-entity context
 
-Validation:
-- imports pass
-- rewind prep reaches ready
-- replay executes successfully
-- bounded timeline remains correct after replay
+Docs-only PR

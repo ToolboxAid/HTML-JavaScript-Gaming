@@ -51,6 +51,16 @@ function cloneSnapshot(snapshot) {
   };
 }
 
+function cloneEntitySnapshot(entity) {
+  const source = entity && typeof entity === "object" ? entity : {};
+  return {
+    ...source,
+    position: source.position ? { ...source.position } : undefined,
+    velocity: source.velocity ? { ...source.velocity } : undefined,
+    stateFlags: source.stateFlags ? { ...source.stateFlags } : undefined
+  };
+}
+
 function computeVectorDelta(predictedVector, authoritativeVector) {
   const predictedX = asFiniteNumber(predictedVector?.x);
   const predictedY = asFiniteNumber(predictedVector?.y);
@@ -125,6 +135,7 @@ export default class ReconciliationLayerAdapter {
 
     this.maxAuthoritativeHistory = asPositiveInteger(options.maxAuthoritativeHistory, 60);
     this.authoritativeHistory = [];
+    this.entityTimelineBuffers = new Map();
     this.latestAuthoritativeSnapshot = null;
     this.latestEventEnvelope = null;
     this.latestDivergenceReport = null;
@@ -144,13 +155,70 @@ export default class ReconciliationLayerAdapter {
     };
   }
 
+  getOrCreateEntityTimelineBuffer(entityId) {
+    const normalizedEntityId = sanitizeText(entityId);
+    if (!normalizedEntityId) {
+      return null;
+    }
+
+    if (!this.entityTimelineBuffers.has(normalizedEntityId)) {
+      this.entityTimelineBuffers.set(normalizedEntityId, new StateTimelineBuffer({
+        maxFrames: this.timelineBuffer.getMaxFrames()
+      }));
+    }
+    return this.entityTimelineBuffers.get(normalizedEntityId);
+  }
+
+  listEntityTimelineIds() {
+    return Array.from(this.entityTimelineBuffers.keys());
+  }
+
+  extractEntityFromSnapshot(snapshot, entityId) {
+    const entities = Array.isArray(snapshot?.entities) ? snapshot.entities : [];
+    return entities.find((entity) => sanitizeText(entity?.entityId) === entityId) || null;
+  }
+
+  buildEntityPredictedRecord(frameId, timestampMs, entity, snapshotMeta) {
+    return {
+      frameId,
+      timestampMs,
+      entity: cloneEntitySnapshot(entity),
+      meta: snapshotMeta && typeof snapshotMeta === "object"
+        ? { ...snapshotMeta }
+        : undefined
+    };
+  }
+
   recordPredictedSnapshot(snapshot = {}) {
     const source = cloneSnapshot(snapshot);
     const frameId = asFiniteNumber(source.frameId, NaN);
     if (!Number.isFinite(frameId)) {
       return false;
     }
-    return this.timelineBuffer.pushSnapshot(frameId, source);
+
+    const normalizedFrameId = Math.floor(frameId);
+    const pushedGlobal = this.timelineBuffer.pushSnapshot(normalizedFrameId, source);
+
+    const entities = Array.isArray(source.entities) ? source.entities : [];
+    entities.forEach((entity) => {
+      const entityId = sanitizeText(entity?.entityId);
+      if (!entityId) {
+        return;
+      }
+
+      const entityTimeline = this.getOrCreateEntityTimelineBuffer(entityId);
+      entityTimeline?.pushSnapshot(
+        normalizedFrameId,
+        this.buildEntityPredictedRecord(
+          normalizedFrameId,
+          asFiniteNumber(source.timestampMs, Date.now()),
+          entity,
+          source.meta
+        )
+      );
+    });
+
+    return pushedGlobal;
   }
 
   receiveAuthoritativeSnapshot(snapshot = {}, envelope = {}) {
@@ -173,6 +241,31 @@ export default class ReconciliationLayerAdapter {
       this.authoritativeHistory.splice(0, this.authoritativeHistory.length - this.maxAuthoritativeHistory);
     }
     return true;
+  }
+
+  resolvePredictedEntityMatch(entityId, authoritativeFrameId, globalMatch) {
+    const entityTimeline = this.getOrCreateEntityTimelineBuffer(entityId);
+    const entityMatch = entityTimeline?.getNearestSnapshot(authoritativeFrameId) || null;
+    if (entityMatch) {
+      return {
+        frameId: entityMatch.frameId,
+        alignment: entityMatch.alignment || "approximate",
+        entity: cloneEntitySnapshot(entityMatch.snapshot?.entity),
+        source: "entity-timeline"
+      };
+    }
+
+    const fallbackEntity = this.extractEntityFromSnapshot(globalMatch?.snapshot, entityId);
+    if (fallbackEntity) {
+      return {
+        frameId: globalMatch?.frameId ?? null,
+        alignment: globalMatch?.alignment || "approximate",
+        entity: cloneEntitySnapshot(fallbackEntity),
+        source: "global-fallback"
+      };
+    }
+
+    return null;
   }
 
   reconcileLatest() {
@@ -220,16 +313,7 @@ export default class ReconciliationLayerAdapter {
 
     const predictedFrameId = predictedMatch.frameId;
     const alignment = predictedMatch.alignment || "approximate";
-    const predictedSnapshot = predictedMatch.snapshot || {};
-    const predictedEntities = new Map();
     const authoritativeEntities = new Map();
-
-    (Array.isArray(predictedSnapshot.entities) ? predictedSnapshot.entities : []).forEach((entity) => {
-      const entityId = sanitizeText(entity?.entityId);
-      if (entityId) {
-        predictedEntities.set(entityId, entity);
-      }
-    });
 
     (Array.isArray(authoritative.entities) ? authoritative.entities : []).forEach((entity) => {
       const entityId = sanitizeText(entity?.entityId);
@@ -239,21 +323,24 @@ export default class ReconciliationLayerAdapter {
     });
 
     const allEntityIds = new Set([
-      ...predictedEntities.keys(),
+      ...this.listEntityTimelineIds(),
       ...authoritativeEntities.keys()
     ]);
 
     let highestSeverity = "low";
     const entityReports = [];
     allEntityIds.forEach((entityId) => {
-      const predictedEntity = predictedEntities.get(entityId) || {};
+      const predictedMatchForEntity = this.resolvePredictedEntityMatch(entityId, authoritativeFrameId, predictedMatch);
+      const predictedEntity = predictedMatchForEntity?.entity || {};
       const authoritativeEntity = authoritativeEntities.get(entityId) || {};
       const positionDelta = computeVectorDelta(predictedEntity.position, authoritativeEntity.position);
       const velocityDelta = computeVectorDelta(predictedEntity.velocity, authoritativeEntity.velocity);
       const stateFlagsDelta = computeStateFlagsDelta(predictedEntity.stateFlags, authoritativeEntity.stateFlags);
-      const frameGap = Math.max(0, authoritativeFrameId - predictedFrameId);
+      const frameGap = predictedMatchForEntity && Number.isFinite(Number(predictedMatchForEntity.frameId))
+        ? Math.max(0, authoritativeFrameId - Number(predictedMatchForEntity.frameId))
+        : null;
       const severity = severityFromDeltas({
-        frameGap,
+        frameGap: frameGap ?? 999,
         positionMagnitude: positionDelta.magnitude,
         velocityMagnitude: velocityDelta.magnitude,
         flagsDeltaCount: stateFlagsDelta.length
@@ -262,12 +349,15 @@ export default class ReconciliationLayerAdapter {
 
       entityReports.push({
         entityId,
-        predictedFrame: asFiniteNumber(predictedEntity.frameValue, predictedFrameId),
+        predictedFrame: asFiniteNumber(predictedEntity.frameValue, predictedMatchForEntity?.frameId ?? predictedFrameId),
         authoritativeFrame: asFiniteNumber(authoritativeEntity.frameValue, authoritativeFrameId),
+        matchedPredictedFrameId: predictedMatchForEntity?.frameId ?? null,
+        alignment: predictedMatchForEntity?.alignment || "unavailable",
+        frameGap,
         positionDelta,
         velocityDelta,
         stateFlagsDelta,
-        correctionMode: correctionModeFromSeverity(severity, alignment),
+        correctionMode: correctionModeFromSeverity(severity, predictedMatchForEntity?.alignment || alignment),
         severity
       });
     });
@@ -284,7 +374,8 @@ export default class ReconciliationLayerAdapter {
         authoritativeFrameId,
         frameGap,
         highestSeverity,
-        unresolvedCount
+        unresolvedCount,
+        entityCount: entityReports.length
       },
       entityReports,
       envelope: this.latestEventEnvelope
@@ -295,7 +386,13 @@ export default class ReconciliationLayerAdapter {
       severity: highestSeverity,
       reason: this.toCorrectionReason(correctionMode, alignment),
       targetFrameId: authoritativeFrameId,
-      applyAtFrameId: authoritativeFrameId + (correctionMode === "snap" ? 0 : 1)
+      applyAtFrameId: authoritativeFrameId + (correctionMode === "snap" ? 0 : 1),
+      entityModes: entityReports.map((entity) => ({
+        entityId: entity.entityId,
+        severity: entity.severity,
+        correctionMode: entity.correctionMode,
+        frameGap: entity.frameGap
+      }))
     };
 
     this.latestRewindPreparation = this.buildRewindPreparation({
