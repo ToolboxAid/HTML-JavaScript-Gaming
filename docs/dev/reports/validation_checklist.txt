@@ -3,13 +3,21 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-[x] Asteroids labeled as Debug Showcase on games hub
-[x] Asteroids page title updated
-[x] Asteroids page heading updated
-[x] Engine/classes section reflects debug integration
-[x] No runtime logic files changed for this PR purpose
-[x] Bundle ZIP created at requested path
+[x] PLAN, BUILD, APPLY docs created and aligned
+[x] Breakout card includes `Debug Showcase` in `games/index.html`
+[x] Breakout showcase badge uses unique color class
+[x] Breakout page includes `Debug: ON/OFF` badge
+[x] Breakout page includes `Open Debug Panel` button
+[x] Breakout page includes 1-2 lines of inline mini-help
+[x] Debug preset auto-load behavior implemented for debug-enabled mode
+[x] Overlay remains hidden by default after preset auto-load
+[x] Breakout scene renders debug integration HUD last
+[x] No engine core changes
+[x] No unrelated game entry edits
 
-Validation checks:
-- `games/index.html` contains `Debug Showcase` badge for Asteroids
-- `games/Asteroids/index.html` title/H1 updated
+Validation commands:
+- `node --check games/Breakout/main.js`
+- `node --check games/Breakout/game/BreakoutScene.js`
+- `node --check tools/dev/devConsoleIntegration.js`
+- `node tests/games/BreakoutValidation.test.mjs`
+- `rg -n "Debug Showcase|Debug: ON|Debug: OFF|Open Debug Panel|preset.apply" games/index.html games/Breakout/index.html games/Breakout/main.js`

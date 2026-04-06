@@ -47,37 +47,101 @@ function wrapText(text, maxCharacters = 34) {
 }
 
 export default class BreakoutScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
+    this.devConsoleIntegration = options.devConsoleIntegration || null;
+    this.debugConfig = options.debugConfig || {
+      debugMode: 'prod',
+      debugEnabled: Boolean(this.devConsoleIntegration),
+    };
     this.world = new BreakoutWorld(VIEW);
     this.inputController = null;
     this.audio = new BreakoutAudio();
     this.isPaused = false;
+    this.engineRef = null;
   }
 
   enter(engine) {
+    this.engineRef = engine || null;
     this.inputController = new BreakoutInputController(engine.input);
     this.audio.setAudioService(engine.audio ?? null);
     this.world.resetGame();
     this.isPaused = false;
   }
 
-  update(dt) {
+  exit() {
+    this.devConsoleIntegration?.dispose?.();
+  }
+
+  buildDebugDiagnosticsContext(engine, dt) {
+    const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 1 / 60;
+    const fps = Math.round(1 / safeDt);
+    const input = engine?.input ?? this.inputController?.input ?? null;
+
+    return {
+      runtime: {
+        sceneId: 'breakout-debug-showcase',
+        status: this.world.status,
+        fps,
+        frameTimeMs: Math.round(safeDt * 1000 * 100) / 100,
+        debugMode: this.debugConfig.debugMode,
+        debugEnabled: this.debugConfig.debugEnabled === true,
+      },
+      entities: {
+        count: this.world.remainingBricks + 2,
+        bricksRemaining: this.world.remainingBricks,
+        lives: this.world.lives,
+        score: this.world.score,
+      },
+      input: {
+        left: input?.isDown?.('ArrowLeft') === true || input?.isDown?.('KeyA') === true,
+        right: input?.isDown?.('ArrowRight') === true || input?.isDown?.('KeyD') === true,
+        launch: input?.isDown?.('Space') === true || input?.isDown?.('Enter') === true,
+        pause: input?.isDown?.('KeyP') === true,
+      },
+      render: {
+        stages: ['entities', 'vector-overlay'],
+        debugSurfaceTail: ['debug-overlay', 'dev-console-surface'],
+      },
+      validation: {
+        errorCount: 0,
+        warningCount: 0,
+      },
+    };
+  }
+
+  updateDebugIntegration(engine, dt) {
+    if (!this.devConsoleIntegration) {
+      return;
+    }
+
+    this.devConsoleIntegration.update({
+      engine,
+      scene: this,
+      diagnosticsContext: this.buildDebugDiagnosticsContext(engine, dt),
+    });
+  }
+
+  update(dt, engine = null) {
+    const engineRef = engine || this.engineRef || { input: this.inputController?.input ?? null };
     const frame = this.inputController.getFrameState();
 
     if (frame.exitPressed && this.isPaused) {
       this.isPaused = false;
       this.world.resetGame();
+      this.updateDebugIntegration(engineRef, dt);
       return;
     }
 
     const canPause = this.world.status === 'playing' || this.world.status === 'serve';
     if (canPause && frame.pausePressed) {
       this.isPaused = !this.isPaused;
+      this.updateDebugIntegration(engineRef, dt);
       return;
     }
 
     if (this.isPaused) {
+      this.updateDebugIntegration(engineRef, dt);
       return;
     }
 
@@ -101,6 +165,8 @@ export default class BreakoutScene extends Scene {
     if (event.won) {
       this.audio.playWin();
     }
+
+    this.updateDebugIntegration(engineRef, dt);
   }
 
   render(renderer) {
@@ -120,6 +186,12 @@ export default class BreakoutScene extends Scene {
       });
     } else if (this.world.status !== 'playing') {
       this.drawOverlay(renderer);
+    }
+
+    if (this.devConsoleIntegration) {
+      this.devConsoleIntegration.render(renderer, {
+        worldStages: ['entities', 'vector-overlay'],
+      });
     }
   }
 

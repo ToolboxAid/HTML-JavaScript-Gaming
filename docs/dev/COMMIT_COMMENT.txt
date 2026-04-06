@@ -1,2 +1,2 @@
-PR_ASTEROIDS_SHOWCASE_LABEL_UPDATE_FULL
-Add Debug Showcase label + update engine classes.
+PR_BREAKOUT_DEBUG_SHOWCASE_POLISH_FULL
+polish(breakout): add debug showcase label/UI affordances and debug preset bootstrap without unrelated refactors

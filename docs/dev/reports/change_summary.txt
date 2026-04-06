@@ -3,14 +3,24 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for ASTEROIDS_SHOWCASE_LABEL_UPDATE.
+Executed PLAN + BUILD + APPLY for BREAKOUT_DEBUG_SHOWCASE_POLISH.
 
-Applied updates:
-- Added `Debug Showcase` badge to Asteroids card on games hub.
-- Updated Asteroids card/list wording to call out showcase role.
-- Updated Asteroids landing page title and heading to `Asteroids - Debug Showcase`.
-- Updated Engine Classes section label and added debug integration references.
+Implemented:
+- Updated Breakout card in `games/index.html` to include `Debug Showcase` in header/tag area.
+- Added unique Breakout showcase badge color style.
+- Updated `games/Breakout/index.html` with:
+  - `Debug: ON/OFF` badge
+  - `Open Debug Panel` button
+  - 2-line inline mini-help
+  - Debug showcase title/header adjustments
+- Updated `games/Breakout/main.js` with:
+  - URL-based debug enablement
+  - default preset auto-load behavior (`preset.apply preset.gameplay` fallback safe)
+  - overlay hidden by default until explicit open
+  - UI state wiring for badge/button/help text
+- Updated `games/Breakout/game/BreakoutScene.js` to render debug integration surface last and update diagnostics snapshots.
 
 Scope guard:
-- Text/metadata updates only.
-- No runtime logic changes.
+- Breakout runtime only + Breakout card in games hub.
+- No engine core API changes.
+- No unrelated game entry edits.

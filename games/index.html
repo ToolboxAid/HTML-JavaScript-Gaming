@@ -11,6 +11,14 @@ index.html
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolboxAid - Games</title>
   <link rel="stylesheet" href="../engine/ui/hubCommon.css" />
+  <style>
+    .badge.debug-showcase {
+      background: #14b8a6;
+      border: 1px solid #7ce9dc;
+      color: #032320;
+      text-shadow: none;
+    }
+  </style>
 </head>
 <body class="hub-page-games">
   <main class="wrap">
@@ -22,6 +30,7 @@ index.html
         <span class="badge inprogress">In Progress</span>
         <span class="badge planned">Planned Game</span>
         <span class="badge sample">Better in /samples</span>
+        <span class="badge debug-showcase">Debug Showcase</span>
       </div>
       <div class="note">Recommendation: keep fully playable, user-facing projects in <strong>/games</strong>. Move engine probes, mechanic sandboxes, and system validation pieces into <strong>/samples</strong>. On the roadmap below, items marked <strong>(sample track)</strong> are better fits for samples than games.</div>
     </header>
@@ -46,9 +55,9 @@ index.html
           <a class="card" href="/games/Breakout/index.html">
             <img class="thumb" src="/games/Breakout/assets/preview.svg" alt="Breakout gameplay preview" />
             <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">Breakout</div>
-              <div class="cardDesc">Classic brick breaker with immediate paddle response, score-and-lives pressure, and keyboard plus gamepad play.</div>
+              <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge debug-showcase">Debug Showcase</span></div>
+              <div class="cardTitle">Breakout <span class="inline-status">(Debug Showcase)</span></div>
+              <div class="cardDesc">Classic brick breaker debug showcase with immediate paddle response, score-and-lives pressure, and keyboard plus gamepad play.</div>
             </div>
           </a>
         </div>
@@ -156,7 +165,7 @@ index.html
           <a class="card" href="/games/Asteroids/index.html">
             <img class="thumb" src="/games/Asteroids/assets/preview.png" alt="Asteroids gameplay screenshot" />
             <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge sample">Debug Showcase</span></div>
+              <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge debug-showcase">Debug Showcase</span></div>
               <div class="cardTitle">Asteroids</div>
               <div class="cardDesc">Classic-style space shooter and canonical debug showcase with one/two-player start, high score tracking, vector HUD, and ship-icon lives.</div>
             </div>
