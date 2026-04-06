@@ -8,14 +8,14 @@ index.html
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Asteroids</title>
+  <title>Asteroids - Debug Showcase</title>
   <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="/engine/ui/asteroids.css" />
 </head>
 <body>
   <main>
-    <h1>Asteroids</h1>
-    <p>Playable Asteroids-style arcade game with player-select flow, high score, player scores, and ship-icon lives.</p>
+    <h1>Asteroids - Debug Showcase</h1>
+    <p>Playable Asteroids-style arcade game and canonical debug showcase with player-select flow, high score, player scores, and ship-icon lives.</p>
     <canvas id="game" width="960" height="720"></canvas>
     <section>
       <h3>Keys</h3>
@@ -35,7 +35,7 @@ index.html
       </ul>
     </section>
     <section>
-      <h3>Engine Classes Used</h3>
+      <h3>Engine + Debug Classes Used</h3>
       <ul>
         <li>core / Engine</li>
         <li>render / CanvasRenderer</li>
@@ -53,6 +53,9 @@ index.html
         <li>utils / randomRange</li>
         <li>utils / wrap</li>
         <li>vector / transformPoints</li>
+        <li>tools/dev / createSampleGameDevConsoleIntegration</li>
+        <li>tools/dev/plugins / createDebugPluginRegistry</li>
+        <li>games/Asteroids/debug / createAsteroidsShowcaseDebugPlugin</li>
       </ul>
     </section>
   </main>

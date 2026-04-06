@@ -1,11 +1,8 @@
 MODEL: GPT-5.3-codex
-REASONING: high
+REASONING: low
 
 COMMAND:
-Execute PLAN + BUILD + APPLY for PRODUCTIZATION_ASTEROIDS_SHOWCASE.
-
-PURPOSE:
-Productize the completed debug platform through an Asteroids showcase sample.
+Execute PLAN + BUILD + APPLY for ASTEROIDS_SHOWCASE_LABEL_UPDATE
 
 OUTPUT:
-<project folder>/tmp/PR_PRODUCTIZATION_ASTEROIDS_SHOWCASE_FULL_bundle.zip
+<project folder>/tmp/PR_ASTEROIDS_SHOWCASE_LABEL_UPDATE_FULL_bundle.zip

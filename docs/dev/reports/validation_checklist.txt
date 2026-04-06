@@ -3,23 +3,13 @@ David Quesenberry
 04/05/2026
 validation_checklist.txt
 
-[x] Asteroids defined as canonical showcase sample
-[x] Full debug integration defined for ship/bullets/asteroids/score/lives/waves
-[x] Debug event visibility and preset commands defined
-[x] Production-safe debug gating implemented
-[x] Showcase documentation set published
-[x] Reports and control files updated
-[x] Track G untouched
-[x] Track H untouched
-[x] Engine/runtime separation preserved
-[x] Syntax checks passed for touched JS files
-[x] Targeted Asteroids regression tests passed
+[x] Asteroids labeled as Debug Showcase on games hub
+[x] Asteroids page title updated
+[x] Asteroids page heading updated
+[x] Engine/classes section reflects debug integration
+[x] No runtime logic files changed for this PR purpose
 [x] Bundle ZIP created at requested path
 
-Validation command results:
-- node --check games/Asteroids/main.js -> PASS
-- node --check games/Asteroids/game/AsteroidsGameScene.js -> PASS
-- node --check games/Asteroids/debug/asteroidsShowcaseDebug.js -> PASS
-- node --check tests/games/AsteroidsValidation.test.mjs -> PASS
-- AsteroidsValidation.test.mjs run() -> PASS
-- AsteroidsPlatformDemo.test.mjs run() -> PASS
+Validation checks:
+- `games/index.html` contains `Debug Showcase` badge for Asteroids
+- `games/Asteroids/index.html` title/H1 updated

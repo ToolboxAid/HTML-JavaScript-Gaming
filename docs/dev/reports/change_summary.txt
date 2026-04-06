@@ -3,19 +3,14 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for PRODUCTIZATION_ASTEROIDS_SHOWCASE.
+Executed PLAN + BUILD + APPLY for ASTEROIDS_SHOWCASE_LABEL_UPDATE.
 
-Completed scope:
-- Defined Asteroids as canonical debug-platform productization showcase.
-- Implemented sample-level debug integration in Asteroids boot + scene paths.
-- Added Asteroids showcase debug panels, commands, and preset commands.
-- Added bounded gameplay event visibility for ship/bullets/asteroids/score/lives/waves.
-- Added production-safe debug gating with build defaults + runtime query overrides.
-- Published showcase documentation set under docs/release.
-- Refreshed docs/pr and docs/dev control/report files.
+Applied updates:
+- Added `Debug Showcase` badge to Asteroids card on games hub.
+- Updated Asteroids card/list wording to call out showcase role.
+- Updated Asteroids landing page title and heading to `Asteroids - Debug Showcase`.
+- Updated Engine Classes section label and added debug integration references.
 
-Scope protections preserved:
-- Track G untouched.
-- Track H untouched.
-- No unrelated engine-core refactors.
-- Classic Asteroids gameplay expectations preserved.
+Scope guard:
+- Text/metadata updates only.
+- No runtime logic changes.

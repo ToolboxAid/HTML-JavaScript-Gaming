@@ -1,1 +1,2 @@
-build(productization): deliver asteroids showcase as canonical debug platform productization sample
+PR_ASTEROIDS_SHOWCASE_LABEL_UPDATE_FULL
+Add Debug Showcase label + update engine classes.
