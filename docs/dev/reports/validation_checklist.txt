@@ -1,13 +1,10 @@
 Validation Checklist
 
-[x] PLAN_PR -> BUILD_PR -> APPLY_PR flow preserved
-[x] Bundle is docs-only
-[x] No runtime code files changed in this step
-[x] Stable debug API seams documented
-[x] Plugin lifecycle boundaries documented
-[x] Versioned contract metadata documented
-[x] External documentation ownership documented
-[x] Performance benchmark entry points/rules documented
-[x] Public/internal/transitional boundaries preserved
-[x] BIG_PICTURE_ROADMAP.md structure preserved
-[x] Bracket-only roadmap edits used if needed
+[x] Apply executed without scope expansion
+[x] Contracts from BUILD_PR_ENGINE_MATURITY respected
+[x] Runtime regression smoke passed
+[x] API stability preserved
+[x] Performance rules enforced via bounded-buffer check
+[x] No runtime code changes required in this apply slice
+[x] BIG_PICTURE_ROADMAP.md edited by brackets only
+[x] Stable debug API transitioned to [x]

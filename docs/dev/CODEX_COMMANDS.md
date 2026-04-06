@@ -2,11 +2,18 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_ENGINE_MATURITY
+Apply BUILD_PR_ENGINE_MATURITY exactly as defined.
 
-REQUIREMENTS:
-- Build docs-only engine maturity bundle from PLAN_PR_ENGINE_MATURITY
-- Create required PR/dev/report files
-- Preserve boundaries and roadmap protection rules
-- Bracket-only roadmap state edits when needed
-- Package to <project folder>/tmp/BUILD_PR_ENGINE_MATURITY_delta.zip
+- No scope expansion
+- Respect all contracts
+
+VALIDATION:
+- No runtime regressions
+- API stability preserved
+- Performance rules enforced
+
+ROADMAP:
+Update Stable debug API -> [x]
+
+OUTPUT:
+Create APPLY_PR_ENGINE_MATURITY_delta.zip

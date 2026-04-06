@@ -1,1 +1,2 @@
-docs: build engine maturity docs bundle from PLAN with stable seams, lifecycle boundaries, versioning, docs ownership, and benchmark rules
+APPLY_PR_ENGINE_MATURITY
+Applies engine maturity layer. Stable API locked.
