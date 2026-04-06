@@ -1,2 +1,2 @@
-PR_PRODUCTIZATION_ROADMAP_CLOSEOUT_FULL
-docs: close out productization roadmap tracks via bracket-only completion updates
+PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL
+docs: define complete sample-backed network debug support path and staged execution plan

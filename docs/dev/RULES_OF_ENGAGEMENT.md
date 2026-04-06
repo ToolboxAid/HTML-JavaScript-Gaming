@@ -9,7 +9,7 @@ RULES_OF_ENGAGEMENT.md
 This file is the canonical workflow and rules document for active repo operations.
 
 ## Required Workflow
-`PLAN_PR -> BUILD_PR -> APPLY_PR`
+`PLAN_PR + BUILD_PR + APPLY_PR`
 
 ## Core Rules
 - Docs-first before implementation.

@@ -1,23 +1,26 @@
-MODEL: GPT-5.3-codex
-REASONING: low
+MODEL: GPT-5.4-codex
+REASONING: high
 
 COMMAND:
-Create PR_PRODUCTIZATION_ROADMAP_CLOSEOUT_FULL
+Create PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL
 
 PURPOSE:
-Perform a bracket-only closeout pass on docs/dev/PRODUCTIZATION_ROADMAP.md after the showcase, UX polish, distribution starter, documentation/adoption, and safe game-card finish work.
+Define the full network / multiplayer debug support path, including staged samples, using PLAN_PR + BUILD_PR + APPLY_PR in one bundle.
 
 IN SCOPE:
-- bracket-only updates in PRODUCTIZATION_ROADMAP.md
-- mark completed items based on finished productization work
-- update docs/pr, docs/dev control files, and reports for the closeout bundle
+- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- docs/dev/NETWORK_SAMPLES_PLAN.md
+- bracket-only updates to docs/dev/BIG_PICTURE_ROADMAP.md
 
 RULES:
-- plan + build + apply in one bundle
-- PRODUCTIZATION_ROADMAP.md bracket-only edits only
-- do not modify BIG_PICTURE_ROADMAP.md
-- no engine changes
-- no UI changes
+- docs-first
+- one PR per purpose
+- no engine-core pollution
+- keep network support sample-backed
+- BIG_PICTURE_ROADMAP.md bracket-only edits only
+- do not change wording or structure outside brackets
 
 OUTPUT:
-<project folder>/tmp/PR_PRODUCTIZATION_ROADMAP_CLOSEOUT_FULL_bundle.zip
+<project folder>/tmp/PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL_bundle.zip

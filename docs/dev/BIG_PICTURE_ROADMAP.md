@@ -1,11 +1,11 @@
-⚠️ RULE:
+﻿âš ï¸ RULE:
 This file is a status tracker only.
 ONLY modify bracket states [ ] [.] [x].
 Do NOT change structure or wording.
 
 ---
 
-# 🧭 Debug Platform & Ecosystem Roadmap
+# ðŸ§­ Debug Platform & Ecosystem Roadmap
 
 ## Status Legend
 - [ ] Todo
@@ -14,11 +14,11 @@ Do NOT change structure or wording.
 
 ---
 
-# 🧱 TRACK A — DEBUG FOUNDATION (COMPLETE)
+# ðŸ§± TRACK A â€” DEBUG FOUNDATION (COMPLETE)
 
 - [x] Dev Console (input + command execution)
 - [x] Debug Overlay (visual panels)
-- [x] Console ↔ Overlay Boundary
+- [x] Console â†” Overlay Boundary
 - [x] Panel Registry
 - [x] Data Providers (read-only model)
 - [x] Operator Commands (control surface)
@@ -26,7 +26,7 @@ Do NOT change structure or wording.
 
 ---
 
-# 🚀 TRACK B — PROMOTION TO ENGINE LAYER
+# ðŸš€ TRACK B â€” PROMOTION TO ENGINE LAYER
 
 - [x] PLAN_PR_DEBUG_SURFACES_PROMOTION
 - [x] BUILD_PR_DEBUG_SURFACES_PROMOTION
@@ -34,7 +34,7 @@ Do NOT change structure or wording.
 
 ---
 
-# 📦 TRACK C — STANDARD DEBUG LIBRARY
+# ðŸ“¦ TRACK C â€” STANDARD DEBUG LIBRARY
 
 - [x] PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 - [x] BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
@@ -42,7 +42,7 @@ Do NOT change structure or wording.
 
 ---
 
-# 🎛️ TRACK D — DEBUG PRESETS
+# ðŸŽ›ï¸ TRACK D â€” DEBUG PRESETS
 
 - [x] PLAN_PR_DEBUG_SURFACES_PRESETS
 - [x] BUILD_PR_DEBUG_SURFACES_PRESETS
@@ -50,7 +50,7 @@ Do NOT change structure or wording.
 
 ---
 
-# 🧰 TRACK E — ADVANCED DEBUG UX
+# ðŸ§° TRACK E â€” ADVANCED DEBUG UX
 
 - [x] PLAN_PR_DEBUG_SURFACES_ADVANCED_UX
 - [x] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
@@ -58,7 +58,7 @@ Do NOT change structure or wording.
 
 ---
 
-# 🎮 TRACK F — GAME INTEGRATION
+# ðŸŽ® TRACK F â€” GAME INTEGRATION
 
 - [x] PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [x] BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION
@@ -70,20 +70,20 @@ Do NOT change structure or wording.
 
 ---
 
-# 🌐 TRACK G — NETWORK / MULTIPLAYER DEBUG
+# ðŸŒ TRACK G â€” NETWORK / MULTIPLAYER DEBUG
 
 - [.] Connection status panel
 - [ ] Latency / RTT panel
 - [ ] Replication state viewer
 - [ ] Client/server divergence inspector
 - [ ] Event tracing
-- [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
 ---
 
-# 🧊 TRACK H — 3D DEBUG SUPPORT
+# ðŸ§Š TRACK H â€” 3D DEBUG SUPPORT
 
 - [.] Transform inspector
 - [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
@@ -95,7 +95,7 @@ Do NOT change structure or wording.
 
 ---
 
-# 🔬 TRACK I — INSPECTORS & TOOLING
+# ðŸ”¬ TRACK I â€” INSPECTORS & TOOLING
 
 - [x] Entity inspector
 - [x] Component inspector
@@ -105,7 +105,7 @@ Do NOT change structure or wording.
 
 ---
 
-# 🧠 TRACK J — ENGINE MATURITY
+# ðŸ§  TRACK J â€” ENGINE MATURITY
 
 - [x] Stable debug API
 - [x] Plugin system
@@ -115,12 +115,12 @@ Do NOT change structure or wording.
 
 ---
 
-# 🏁 END STATE
+# ðŸ END STATE
 
 A complete system:
 
-- Engine Core → minimal contracts
-- Engine Debug → reusable platform
-- Standard Library → shared baseline
-- Presets → usability layer
-- Extensions → 3D, network, inspectors
+- Engine Core â†’ minimal contracts
+- Engine Debug â†’ reusable platform
+- Standard Library â†’ shared baseline
+- Presets â†’ usability layer
+- Extensions â†’ 3D, network, inspectors

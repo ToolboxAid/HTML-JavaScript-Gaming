@@ -3,22 +3,18 @@ David Quesenberry
 04/06/2026
 validation_checklist.txt
 
-[x] PLAN closeout doc created
-[x] BUILD closeout doc created
-[x] APPLY closeout doc created
-[x] PRODUCTIZATION_ROADMAP updated via bracket-only edits
-[x] Track P targets complete
-[x] Track Q targets complete
-[x] Track R targets complete
-[x] Track S targets complete
-[x] No BIG_PICTURE_ROADMAP edits
-[x] No engine changes
-[x] No UI changes
-[x] Docs/dev control files updated
-[x] Reports updated
-[x] Repo-structured closeout ZIP created
+[x] PLAN_PR doc updated
+[x] BUILD_PR doc updated
+[x] APPLY_PR doc updated
+[x] NETWORK_SAMPLES_PLAN.md updated
+[x] BIG_PICTURE_ROADMAP updated using bracket-only edits
+[x] No wording/structure changes outside brackets in BIG_PICTURE roadmap
+[x] No engine-core changes
+[x] No UI/runtime changes
+[x] Network support remains sample-backed
+[x] Repo-structured bundle zip created
 
 Validation checks:
-- `git diff -- docs/dev/PRODUCTIZATION_ROADMAP.md`
+- `git diff -- docs/dev/BIG_PICTURE_ROADMAP.md`
 - `git diff --name-only`
-- `tar -tf tmp/PR_PRODUCTIZATION_ROADMAP_CLOSEOUT_FULL_bundle.zip`
+- `tar -tf tmp/PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL_bundle.zip`

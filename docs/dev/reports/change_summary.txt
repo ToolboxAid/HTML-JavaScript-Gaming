@@ -3,19 +3,20 @@ David Quesenberry
 04/06/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for PRODUCTIZATION_ROADMAP_CLOSEOUT.
+Executed PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL as a docs-first PLAN/BUILD/APPLY bundle.
 
-Closeout updates in `docs/dev/PRODUCTIZATION_ROADMAP.md` (bracket-only):
-- Track R
-  - Showcase landing page -> [x]
-  - Build packaging strategy -> [x]
-  - Asset bundling rules -> [x]
-- Track S
-  - Debug tour -> [x]
-  - Getting started guide -> [x]
-  - Example-driven docs -> [x]
+Included:
+- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- docs/dev/NETWORK_SAMPLES_PLAN.md
+- bracket-only update in docs/dev/BIG_PICTURE_ROADMAP.md
+
+Roadmap state update (Track G):
+- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT: [.] -> [x]
 
 Scope guard:
-- No BIG_PICTURE roadmap changes.
-- No engine/runtime/UI changes.
-- Docs-only closeout bundle.
+- No engine-core changes
+- No runtime/UI changes
+- No non-bracket edits in BIG_PICTURE roadmap
+- Network support remains sample-backed

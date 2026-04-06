@@ -1,102 +1,49 @@
+Toolbox Aid
+David Quesenberry
+04/06/2026
+PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT.md
+
 # PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
-## Objective
-Plan the first reusable, opt-in network support layer for the debug surfaces platform.
+## Goal
+Define the full network and multiplayer debug support path as a docs-first, sample-backed expansion of the existing debug surfaces platform.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
-## PR Purpose
-One PR purpose only: define the summary-level shared network support contract.
-
-## Goals
-- Define shared network panel inventory.
-- Define shared network provider inventory.
-- Define optional shared network preset inventory.
-- Define adapter boundaries between shared and project-specific layers.
-- Define adoption models, naming conventions, and target structure.
-
 ## In Scope
-- Shared network panel descriptors (summary-level only).
-- Shared network provider descriptor contracts (read-only snapshots).
-- Optional shared network presets (visibility + optional ordering only).
-- Public adapter boundaries and ownership model.
+- Network debug support plan, build contract, and apply contract.
+- `docs/dev/NETWORK_SAMPLES_PLAN.md` staged execution model.
+- Bracket-only updates to `docs/dev/BIG_PICTURE_ROADMAP.md` Track G state markers.
 
-## Out of Scope
-- Protocol-specific implementations.
-- Transport-specific implementations.
-- Packet inspectors.
-- Auth and matchmaking tooling.
-- Deep inspectors.
+## Out Of Scope
+- Engine-core implementation changes.
+- Runtime networking implementation.
+- Track H scope changes.
+- Any wording or structure edits in BIG_PICTURE roadmap.
 
-## Shared Network Panels (v1)
-- `panel.net.connection`
-- `panel.net.latency`
-- `panel.net.replication`
-- `panel.net.divergence`
-- `panel.net.events`
+## Network Support Coverage
+1. Network diagnostics categories:
+- connection status
+- latency / RTT
+- replication state
+- client/server divergence
+- event tracing
 
-## Shared Network Providers (v1)
-- `provider.net.connection.snapshot`
-- `provider.net.latency.snapshot`
-- `provider.net.replication.snapshot`
-- `provider.net.divergence.snapshot`
-- `provider.net.events.snapshot`
+2. Debug contract boundaries:
+- read-only providers
+- passive overlay panels
+- operator-safe command surfaces
+- sample-owned adapters
+- debug-only gating
 
-Provider guardrails:
-- read-only snapshots only
-- deterministic shape/version fields
-- no runtime mutation in provider contracts
+3. Staged sample path:
+- Sample A: local loopback/fake network
+- Sample B: host/client diagnostics
+- Sample C: divergence/trace validation
 
-## Optional Shared Network Presets (v1)
-- `preset.net.status`
-- `preset.net.replication`
-- `preset.net.diagnostics`
-
-## Adapter Boundaries
-Shared layer (`engine/debug`):
-- shared network panel/provider/preset descriptors
-- shared registration seams
-
-Project/sample/tool layer:
-- protocol/transport adapter implementations
-- authority model extraction
-- stack-specific mappings and visuals
-
-Hard rule:
-- shared layer never imports transport/protocol internals.
-
-## Adoption Models
-Minimal:
-- one network provider + one panel.
-
-Standard:
-- full shared network providers/panels + optional shared presets.
-
-Hybrid:
-- shared network base + project-specific adapter extensions.
-
-## Naming Conventions
-- Panel ids: `panel.net.<domain>`
-- Provider ids: `provider.net.<domain>.snapshot`
-- Preset ids: `preset.net.<name>`
-
-## Target Structure
-```text
-engine/
-  debug/
-    standard/
-      network/
-        panels/
-        providers/
-        presets/
-```
-
-## Validation Goals
-- Shared network inventory is explicit and transport-agnostic.
-- Adapter boundaries remain explicit and enforce local ownership.
-- Scope remains summary-level and opt-in.
-
-## Next Commands
-1. `BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT`
-2. `APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT`
+## Acceptance Criteria
+- PLAN/BUILD/APPLY docs align to one purpose.
+- Network path is clearly sample-backed and staged.
+- BIG_PICTURE roadmap receives bracket-only state updates.
+- No engine-core pollution.
