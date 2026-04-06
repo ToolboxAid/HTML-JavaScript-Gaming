@@ -1,0 +1,69 @@
+# Codex Rules
+
+## Role
+Codex owns:
+- implementation code
+- scoped runtime file edits
+- validation runs
+- repo-structured code ZIP packaging
+
+Codex does not own:
+- broad replanning
+- changing PR purpose
+- rewriting roadmap text
+- modifying start_of_day instructions
+- making unrelated refactors
+
+## Required Workflow
+Follow:
+`PLAN_PR -> BUILD_PR -> APPLY_PR`
+
+Codex is normally used in the BUILD phase only.
+
+## BUILD Execution Rule
+Codex must treat the BUILD doc as the execution blueprint.
+If the BUILD doc is weak, incomplete, contradictory, or lacks explicit target files, stop and report the problem instead of improvising.
+
+## ZIP Output Rule
+Codex should always package code/output ZIP files under:
+- `<project folder>/tmp/`
+
+Codex must not stage or commit ZIP files from `<project folder>/tmp/`.
+
+## Scope Rule
+- one PR purpose only
+- no unrelated edits
+- no engine-core changes unless explicitly in scope
+- preserve project-owned/sample-owned boundaries
+
+## Roadmap Rule
+For `docs/roadmaps/*`:
+only bracket-state changes are allowed.
+Do not:
+- rewrite wording
+- reorder lines
+- add headings
+- remove content
+- replace with placeholders
+
+## Fail-Fast Rule
+Stop and report instead of continuing if:
+- the BUILD doc is too vague to execute directly
+- roadmap edits would require anything beyond bracket-state changes
+- start_of_day directories would need modification
+- the requested work expands beyond one PR purpose
+
+## Directory Protection Rule
+Codex may not create, modify, overwrite, rename, delete, or add files inside:
+- `docs/dev/start_of_day/chatGPT/`
+- `docs/dev/start_of_day/codex/`
+
+unless the user explicitly asks for it.
+
+## Reporting Rule
+Codex must report:
+- files changed
+- validation performed
+- whether scope stayed clean
+- whether engine-core was untouched if expected
+- the ZIP output path under `<project folder>/tmp/`
