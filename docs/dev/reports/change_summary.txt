@@ -3,23 +3,25 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for DEBUG_UX_FINAL_POLISH.
+Executed PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL as docs-only PLAN/BUILD/APPLY.
 
-Sample updates:
-- Asteroids:
-  - added debug badge/button/help UI
-  - finalized default preset auto-load with fallbacks
-  - added optional `rememberDebug=1`
-  - added optional `debugDemo=1`
-- Breakout:
-  - finalized optional `rememberDebug=1`
-  - finalized optional `debugDemo=1`
-  - aligned mini-help and preset-status messaging
+Added:
+- `docs/pr/PLAN_PR_PRODUCTIZATION_DISTRIBUTION_STARTER.md`
+- `docs/pr/BUILD_PR_PRODUCTIZATION_DISTRIBUTION_STARTER.md`
+- `docs/pr/APPLY_PR_PRODUCTIZATION_DISTRIBUTION_STARTER.md`
 
-Roadmap updates:
-- Updated `docs/dev/PRODUCTIZATION_ROADMAP.md` with bracket-only state changes for completed UX polish items.
+Defined:
+- showcase landing page structure
+- discovery guidance for `games/index.html`
+- standalone vs repo-linked packaging strategy
+- asset bundling include/exclude rules
+- user entry points for play, debug, and demo
 
-Safety:
-- No engine core changes.
-- No BIG_PICTURE roadmap edits.
-- No Track G/H work.
+Roadmap update:
+- `docs/dev/PRODUCTIZATION_ROADMAP.md` Track R states moved to in-progress via bracket-only edits.
+
+Scope guard:
+- Docs-first only
+- No engine changes
+- No Track G/H work
+- No BIG_PICTURE roadmap edits

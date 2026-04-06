@@ -2,27 +2,27 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 COMMAND:
-Execute PLAN + BUILD + APPLY for DEBUG_UX_FINAL_POLISH.
+Create PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL
+
+PURPOSE:
+Define how showcase samples (Asteroids, Breakout) are packaged, presented, and shared as a product.
 
 IN SCOPE:
-- finalize debug ON/OFF badge behavior
-- finalize default preset auto-load behavior
-- finalize `Open Debug Panel` consistency
-- finalize inline mini help consistency
-- evaluate remembered debug state
-- evaluate one-click demo mode
+- showcase landing page structure
+- sample discovery (games/index.html improvements)
+- packaging strategy (standalone vs repo)
+- asset bundling rules
+- entry points for users (play vs debug)
 
-TARGET SAMPLES:
-- Asteroids
-- Breakout
+OUT OF SCOPE:
+- engine changes
+- Track G
+- Track H
 
 RULES:
-- sample-level integration only
-- preserve production-safe defaults
-- do not modify BIG_PICTURE_ROADMAP.md
-- if PRODUCTIZATION_ROADMAP.md is updated, use bracket-only edits only
-- no Track G or Track H work
+- docs-first
+- no BIG_PICTURE_ROADMAP edits
+- PRODUCTIZATION_ROADMAP updates are bracket-only
 
 OUTPUT:
-Create:
-<project folder>/tmp/PR_DEBUG_UX_FINAL_POLISH_FULL_bundle.zip
+<project folder>/tmp/PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL_bundle.zip

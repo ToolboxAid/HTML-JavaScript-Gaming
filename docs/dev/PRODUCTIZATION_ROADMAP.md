@@ -37,9 +37,9 @@ Do NOT change structure or wording.
 
 # TRACK R - DISTRIBUTION AND PACKAGING
 
-- [ ] Showcase landing page
-- [ ] Build packaging strategy
-- [ ] Asset bundling rules
+- [.] Showcase landing page
+- [.] Build packaging strategy
+- [.] Asset bundling rules
 
 ---
 

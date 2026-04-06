@@ -1,2 +1,2 @@
-PR_DEBUG_UX_FINAL_POLISH_FULL
-polish(debug-ux): finalize Asteroids and Breakout debug badge/preset/panel/help flows with optional remember and demo modes
+PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL
+docs: define productization distribution starter contracts for showcase packaging and entry flows
