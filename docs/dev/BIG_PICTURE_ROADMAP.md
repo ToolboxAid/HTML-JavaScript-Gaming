@@ -30,7 +30,7 @@ Do NOT change structure or wording.
 
 - [x] PLAN_PR_DEBUG_SURFACES_PROMOTION
 - [x] BUILD_PR_DEBUG_SURFACES_PROMOTION
-- [ ] APPLY_PR_DEBUG_SURFACES_PROMOTION
+- [x] APPLY_PR_DEBUG_SURFACES_PROMOTION
 
 ---
 
@@ -38,7 +38,7 @@ Do NOT change structure or wording.
 
 - [x] PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 - [x] BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
-- [ ] APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+- [x] APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 
 ---
 
@@ -46,7 +46,7 @@ Do NOT change structure or wording.
 
 - [x] PLAN_PR_DEBUG_SURFACES_PRESETS
 - [x] BUILD_PR_DEBUG_SURFACES_PRESETS
-- [ ] APPLY_PR_DEBUG_SURFACES_PRESETS
+- [x] APPLY_PR_DEBUG_SURFACES_PRESETS
 
 ---
 
@@ -54,7 +54,7 @@ Do NOT change structure or wording.
 
 - [x] PLAN_PR_DEBUG_SURFACES_ADVANCED_UX
 - [.] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
-- [ ] APPLY_PR_DEBUG_SURFACES_ADVANCED_UX
+- [x] APPLY_PR_DEBUG_SURFACES_ADVANCED_UX
 
 ---
 
@@ -62,7 +62,7 @@ Do NOT change structure or wording.
 
 - [x] PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [x] BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION
-- [.] APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [ ] Sample game uses full debug platform
 - [ ] Toggle debug in production-safe mode
 - [ ] Performance-safe overlays
@@ -79,7 +79,7 @@ Do NOT change structure or wording.
 - [ ] Event tracing
 - [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- [ ] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
 ---
 
@@ -87,7 +87,7 @@ Do NOT change structure or wording.
 
 - [.] Transform inspector
 - [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
-- [.] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
 - [ ] Camera debug panel
 - [ ] Render pipeline stages
 - [ ] Collision overlays

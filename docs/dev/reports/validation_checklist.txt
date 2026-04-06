@@ -1,12 +1,11 @@
 Validation Checklist
 
-[x] PLAN/BUILD/APPLY docs are present
-[x] One PR purpose per document is explicit
-[x] Docs-only scope maintained
-[x] PLAN -> BUILD -> APPLY workflow is explicit
-[x] Game-integration boundaries are defined
-[x] Env flag contract is defined
-[x] Lifecycle and rollback notes are defined
-[x] BIG_PICTURE_ROADMAP.md changed by bracket states only
-[x] ROADMAP_GUARDRAILS.md left unchanged
-[x] Bundle contains docs-only artifacts
+[x] Bundle is docs only
+[x] No new features introduced
+[x] PLAN_PR_DEBUG_SURFACES_CONVERGENCE updated
+[x] BUILD_PR_DEBUG_SURFACES_CONVERGENCE updated
+[x] APPLY_PR_DEBUG_SURFACES_CONVERGENCE updated
+[x] All APPLY_PR_DEBUG_SURFACES_* roadmap items set to [x]
+[x] BIG_PICTURE_ROADMAP.md changed by brackets only
+[x] ROADMAP_GUARDRAILS.md unchanged
+[x] Bundle contains convergence docs and reports
