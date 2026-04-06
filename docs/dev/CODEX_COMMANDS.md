@@ -1,4 +1,4 @@
-﻿MODEL: GPT-5.4-codex
+MODEL: GPT-5.4-codex
 REASONING: medium
 
 COMMAND:

@@ -1,16 +1,7 @@
-﻿Workflow
-- [x] PLAN created
-- [x] BUILD created
-- [x] APPLY created
-
-Index Fix
-- [x] games/index.html patched from current code base
-- [x] no top showcase section added
-- [x] Level 11 - Network Games set
-- [x] Network Sample A card visible
-- [x] docs links included on card
-
-Safety
-- [x] no engine changes
-- [x] no unrelated roadmap edits
-- [x] existing card order preserved
+[ ] games/index.html patched from current code base
+[ ] no top showcase section added
+[ ] Level 11 - Network Games set
+[ ] Network Sample A card added
+[ ] docs links added
+[ ] NETWORK_SAMPLES_PLAN updated
+[ ] BIG_PICTURE_ROADMAP bracket-only edits only

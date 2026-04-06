@@ -1,1 +1,1 @@
-﻿build(games-index): finalize Network Sample A index integration and visibility fix
+Fix Network Sample A integration in games/index.html, update NETWORK_SAMPLES_PLAN.md, and apply bracket-only BIG_PICTURE_ROADMAP.md updates.

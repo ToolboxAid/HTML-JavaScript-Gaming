@@ -1,7 +1,1 @@
-﻿Executed PLAN + BUILD + APPLY for NETWORK_SAMPLE_A_INDEX_FIX.
-
-Result:
-- Network Sample A index integration was finalized in games/index.html.
-- Level 11 network placement and debug-showcase labeling are present.
-- Sample A route references are preserved.
-- No engine/runtime files changed.
+Safely patches games/index.html using the rolled-back current code base, places Network Sample A in Level 11 - Network Games, adds docs links, and updates network tracking docs.

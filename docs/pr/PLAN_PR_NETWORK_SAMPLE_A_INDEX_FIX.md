@@ -1,36 +1,27 @@
-﻿Toolbox Aid
-David Quesenberry
-04/06/2026
-PLAN_PR_NETWORK_SAMPLE_A_INDEX_FIX.md
-
 # PLAN_PR_NETWORK_SAMPLE_A_INDEX_FIX
 
-## Goal
-Repair and finalize Network Sample A visibility in the launcher index while preserving the current page structure and ordering.
+## Objective
+Finish the Network Sample A index integration safely using the current code base as source of truth.
 
-## Workflow
-PLAN_PR -> BUILD_PR -> APPLY_PR
-
-## In Scope
-- `games/index.html` update/fix for Network Sample A integration.
-- Keep card structure aligned with existing index conventions.
-- Keep `Debug Showcase` labeling on Sample A entry.
-- Ensure navigation to `/games/network_sample_a/index.html`.
-- Update docs/dev control and report artifacts for this PR bundle.
-
-## Out Of Scope
-- Server dashboard/containerization tracks.
-- Engine/runtime changes.
-- Broad layout redesign of index pages.
+## Scope
+- update `games/index.html`
+- keep the current page structure intact
+- add Network Sample A card data directly to the game card area
+- place Network Sample A under `Level 11 - Network Games`
+- add documentation links on the card
+- update `docs/dev/NETWORK_SAMPLES_PLAN.md`
+- apply bracket-only updates to `docs/dev/BIG_PICTURE_ROADMAP.md`
 
 ## Constraints
-- Preserve existing order of existing cards/sections.
-- No top-level showcase block insertion.
-- No destructive edits.
-- No unrelated file changes.
+- do not add a top showcase section
+- do not delete or rewrite most of the page
+- preserve existing card/layout patterns
+- use `games/index.html` as the location
+- consider Phase 13 - Network Concepts, Latency & Simulation (1301-1315)
 
-## Acceptance Criteria
-- Sample A is visible in `games/index.html`.
-- Sample A navigation path is reachable.
-- Existing index structure/order is preserved.
-- Bundle packages only PR-relevant files.
+## Acceptance
+- page structure preserved
+- Level xx changed to Level 11
+- Network Sample A visible in playable and planned network locations
+- docs links included on the card
+- tracking docs updated
