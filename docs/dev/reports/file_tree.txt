@@ -1,1 +1,18 @@
-updated
+HTML-JavaScript-Gaming/
+  docs/
+    pr/
+      PLAN_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION.md
+      BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION.md
+      APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_FOUNDATION.md
+    dev/
+      commit_comment.txt
+      reports/
+        change_summary.txt
+        file_tree.txt
+        validation_checklist.txt
+    roadmaps/
+      NETWORK_SAMPLES_PLAN.md
+  tools/
+    dev/
+      server-dashboard/
+        README.md
