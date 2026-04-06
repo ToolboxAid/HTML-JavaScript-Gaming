@@ -1,33 +1,31 @@
-BUILD_PR_DEBUG_SURFACES_PRESETS validation checklist
+PLAN_PR_DEBUG_SURFACES_ADVANCED_UX validation checklist
 
 Workflow
-- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure preserved
+- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure referenced
 - [done] Docs-first only
 - [done] One PR per purpose
 
-Build Content
-- [done] Authoritative target structure defined
-- [done] Shared preset inventory defined
-- [done] Shared preset commands defined
-- [done] Precedence with persistence defined
-- [done] Adoption modes defined
-- [done] Validation goals defined
-- [done] Rollback strategy defined
-- [done] Required components explicitly included
+Plan Content
+- [done] Panel group infrastructure defined
+- [done] Quick toggles defined
+- [done] Macro registry/executor defined
+- [done] Optional shortcut helpers defined
+- [done] Command surfaces defined
+- [done] Naming conventions defined
+- [done] Target structure defined
+- [done] Macros constrained to public APIs and approved commands/actions
 
 Scope Controls
 - [done] v1 remains small and opt-in
-- [done] Scope limited to panel visibility and optional ordering
-- [done] layout editors excluded
-- [done] docking systems excluded
-- [done] role permissions excluded
+- [done] layout editor scope excluded
+- [done] docking system scope excluded
 - [done] 3D-specific scope excluded
 - [done] network-specific scope excluded
-- [done] project-specific shared implementations excluded
+- [done] project-specific shared workflow implementations excluded
 
 Outputs
-- [done] Docs under docs/pr
-- [done] Reports under docs/dev/reports
+- [done] Plan doc under docs/pr
 - [done] Codex command under docs/dev
 - [done] Commit comment under docs/dev
-- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_DEBUG_SURFACES_PRESETS_delta.zip
+- [done] Reports under docs/dev/reports
+- [done] Delta zip generated at <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_ADVANCED_UX_delta.zip

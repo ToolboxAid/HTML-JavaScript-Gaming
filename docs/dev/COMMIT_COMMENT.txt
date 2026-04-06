@@ -1,1 +1,1 @@
-docs: build reusable debug surfaces presets bundle with authoritative registry/applier and preset command contracts
+docs: plan advanced UX layer for debug surfaces with public-API-only macro composition and opt-in groups/toggles/shortcuts
