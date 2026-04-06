@@ -1,45 +1,35 @@
 # APPLY_PR_DEBUG_SURFACES_PROMOTION
 
-## Purpose
-
-Apply the approved promotion plan by moving the proven debug-surface stack into a reusable `engine-debug` layer, while moving only minimal contracts/hooks into engine core.
+## Objective
+Apply the approved extraction/relocation plan for debug surfaces with no feature expansion and minimal engine-core changes.
 
 ## Apply Scope
+- relocate proven reusable debug systems into `engine/debug`
+- keep engine-core changes limited to debug contracts/hooks
+- preserve local ownership for sample-specific panels/providers/commands
+- preserve `MultiSystemDemoScene.js` as proving integration
 
-### Promote to `engine-debug`
-- console host
-- overlay host
-- panel registry
-- provider registry/plumbing
-- operator command wiring
-- persistence
-- debug bootstrap/composition
+## Guardrails
+- no feature expansion
+- no engine-core UI behavior ownership
+- no private console-overlay coupling
+- no promotion of sample-specific artifacts into shared layers
 
-### Promote to `engine-core`
-- debug interfaces
-- registration contracts
-- lifecycle hooks
-- environment/debug gating hooks
+## Apply Sequence
+1. core contracts/hooks extraction
+2. console relocation
+3. overlay/registry/persistence relocation
+4. provider plumbing relocation
+5. bootstrap integration
+6. sample proving rewire
+7. parity + boundary validation
 
-### Keep Project-Owned
-- sample-specific commands
-- sample-specific panels
-- sample-specific providers
-- scene wiring
-- tool-specific adapters
+## Apply Validation
+- command/control and telemetry boundaries remain intact
+- overlay operator commands use public APIs only
+- registry remains runtime source of truth
+- provider and persistence behaviors remain stable
+- no unrelated files or systems changed
 
-## Apply Rules
-
-- no UI policy in engine core
-- no sample panel migration into shared layers
-- no direct console-to-panel coupling
-- preserve public API boundaries
-- keep provider flow read-only
-- validate against existing demo integration
-
-## Exit Criteria
-
-- shared debug implementation no longer lives in `tools/dev`
-- engine-debug contains the reusable platform
-- engine-core contains only minimal contracts/hooks
-- sample integration still works with minimal wiring change
+## Expected Outcome
+Debug surfaces are promoted out of `tools/dev` into shared `engine/debug` structure while engine-core remains minimal and local sample integrations stay local.

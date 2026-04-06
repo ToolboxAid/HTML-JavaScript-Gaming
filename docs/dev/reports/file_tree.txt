@@ -1,7 +1,9 @@
 HTML-JavaScript-Gaming/
 |-- docs/
 |   |-- pr/
-|   |   `-- PLAN_PR_DEBUG_SURFACES_PROMOTION.md
+|   |   |-- PLAN_PR_DEBUG_SURFACES_PROMOTION.md
+|   |   |-- BUILD_PR_DEBUG_SURFACES_PROMOTION.md
+|   |   `-- APPLY_PR_DEBUG_SURFACES_PROMOTION.md
 |   `-- dev/
 |       |-- codex_commands.md
 |       |-- commit_comment.txt
@@ -10,4 +12,4 @@ HTML-JavaScript-Gaming/
 |           |-- validation_checklist.txt
 |           `-- file_tree.txt
 `-- tmp/
-    `-- PLAN_PR_DEBUG_SURFACES_PROMOTION_delta.zip
+    `-- BUILD_PR_DEBUG_SURFACES_PROMOTION_delta.zip

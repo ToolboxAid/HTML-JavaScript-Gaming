@@ -1,69 +1,67 @@
 # PLAN_PR_DEBUG_SURFACES_PROMOTION
 
 ## Objective
-Plan a docs-first promotion path for proven debug surfaces from `tools/dev` into shared layers while minimizing engine-core changes.
+Define a docs-first promotion plan that moves proven debug surfaces out of `tools/dev` into shared layers while minimizing engine-core changes and preserving clean boundaries.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## PR Purpose
-Promote proven debug systems with clear ownership boundaries.
+Debug surfaces promotion planning only.
 
-## Scope
-In scope:
-- ownership model for `engine-core`, `engine-debug`, and `project/sample/tool` layers
-- target folder structure for promoted debug systems
-- phased migration plan
-- validation strategy
-- risk controls
-- rollout notes
+## In Scope
+- authoritative ownership boundaries for engine-core, engine-debug, and project/sample/tool layers
+- target folder structure for promoted systems
+- migration phases and ordered execution intent
+- validation strategy, risk controls, rollback/rollout notes
+- proving integration reference: `MultiSystemDemoScene.js`
 
-Out of scope:
+## Out of Scope
 - implementation migration in this PR
-- engine-core rewrite
-- promotion of sample-specific panels/providers/commands
+- feature expansion
+- engine-core debug UI ownership
+- moving sample-specific panels/providers/commands into shared layers
 
-## Current Proven Surface Set
-- Dev Console host
+## Proven Systems Candidate Set
+- Dev Console host and command bridge
 - Debug Overlay host
 - Overlay panel registry
-- Overlay data providers
-- Overlay operator commands
-- Overlay panel persistence
+- Overlay provider plumbing
+- Overlay operator command integration
+- Overlay panel persistence boundary
 
-## Target Ownership
-### Engine Core (minimal contracts only)
-Own only stable contracts and gates:
+## Ownership Model
+### Engine Core (minimal contract layer)
+Own only stable contracts and hooks:
 - debug surface interfaces
 - registration hooks
-- environment/debug gates
+- environment/debug gating contract
 
-Engine core must not own:
-- console UI details
-- overlay UI policy
-- provider implementation details
-- persistence policy/storage specifics
-- sample-specific debug assets
+Must not own:
+- console UI behavior
+- overlay panel rendering policy
+- persistence storage policy
+- sample/tool specific debug logic
 
-### Engine Debug (primary promoted implementation)
-Own shared reusable debug implementations:
-- console runtime host and command bridge
+### Engine Debug (shared implementation layer)
+Own reusable debug implementation:
+- console runtime host
 - overlay runtime host
 - panel registry
 - provider registry/plumbing
-- operator command adapters
-- persistence adapter boundary and wiring
+- operator command adapter wiring
+- persistence adapter boundary
 - debug bootstrap/composition
 
 ### Project/Sample/Tool Layers
-Remain local and non-promoted:
+Remain local:
 - sample-specific panels
 - sample-specific providers
-- sample-specific operator commands
-- scene-level wiring and defaults
-- tool-specific debug adapters
+- sample-specific commands
+- scene wiring/defaults/presets
+- tool-specific adapters
 
-## Target Folder Structure
+## Target Structure (Authoritative Direction)
 ```text
 engine/
   core/
@@ -87,51 +85,44 @@ engine/
 samples/
   Phase 12 - Demo Games/
     Demo 1205 - Multi-System Demo/
-      MultiSystemDemoScene.js   (integration reference)
+      MultiSystemDemoScene.js
 ```
 
 ## Migration Phases
 ### Phase 1: Ownership Lock
-- freeze boundary rules and ownership matrix
-- confirm sample-owned items remain local
+- freeze ownership matrix
+- freeze no-go boundaries for sample-owned artifacts
 
 ### Phase 2: Contract Extraction
-- define minimal core contracts/hooks
-- keep core surface narrow and stable
+- identify and isolate minimal engine-core debug contracts/hooks
+- keep core contract-only
 
 ### Phase 3: Engine-Debug Assembly
-- move reusable debug implementations into `engine/debug`
-- preserve existing public API seams
+- relocate reusable debug implementations to `engine/debug`
+- preserve current public behavior via adapter/bridge seams
 
 ### Phase 4: Sample Rewire
-- keep `MultiSystemDemoScene.js` as proving target
-- verify sample-specific panel/provider/command ownership remains local
+- reconnect `MultiSystemDemoScene.js` through shared debug bootstrap/public registration
+- keep sample-owned panels/providers/commands local
 
 ### Phase 5: Stabilization
-- validate behavior parity and rollback readiness
-- document promotion-ready state for BUILD/APPLY
+- run parity validation
+- confirm no feature expansion and no core policy creep
 
 ## Validation Strategy
-- contract validation: boundary and ownership checks pass
-- behavior validation: console and overlay continue to operate through public APIs
-- regression validation: sample commands, panel visibility, provider snapshots, and persistence remain stable
-- safety validation: unknown panel IDs and degraded states fail safely
+- contract validation: ownership boundaries remain intact
+- behavior validation: console/overlay parity retained
+- integration validation: `MultiSystemDemoScene.js` remains proving integration
+- safety validation: unknown panel/provider IDs and degraded states fail safely
 
 ## Risk Controls
-- minimize engine-core changes by promoting implementation to `engine/debug`
-- reject direct console-overlay private coupling
-- block promotion of sample-specific panels/providers/commands
-- preserve phased rollback points at each migration stage
+- minimize engine-core scope to contracts/hooks only
+- prohibit private console-overlay coupling
+- prohibit sample-specific artifact promotion into shared layers
+- maintain rollback checkpoints by phase
 
 ## Rollout Notes
-- start with docs-only plan (this PR)
-- BUILD PR should define surgical implementation mapping and test/validation execution
-- APPLY PR should execute migration incrementally with sample-level validation first
-- no broad refactors outside this purpose
-
-## Integration Reference
-- `samples/Phase 12 - Demo Games/Demo 1205 - Multi-System Demo/MultiSystemDemoScene.js`
-
-## Next Commands
-1. `BUILD_PR_DEBUG_SURFACES_PROMOTION`
-2. `APPLY_PR_DEBUG_SURFACES_PROMOTION`
+- this PLAN PR is docs-only
+- BUILD PR should define exact extraction map and acceptance checks
+- APPLY PR should execute relocation incrementally with sample-first validation
+- no unrelated refactors in promotion PRs

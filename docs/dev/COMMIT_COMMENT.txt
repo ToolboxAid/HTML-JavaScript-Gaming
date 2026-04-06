@@ -1,1 +1,1 @@
-docs: plan debug surfaces promotion from tools/dev to engine-debug with minimal engine-core contracts
+docs: build debug surfaces promotion extraction plan with authoritative ownership and migration rules

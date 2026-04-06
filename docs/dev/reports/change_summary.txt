@@ -1,29 +1,31 @@
-PLAN_PR_DEBUG_SURFACES_PROMOTION change summary
+BUILD_PR_DEBUG_SURFACES_PROMOTION change summary
 
 Summary
-- Created docs-first planning bundle for debug surfaces promotion.
-- Kept scope to one PR purpose: promotion planning only.
-- Defined ownership across engine-core, engine-debug, and project/sample/tool layers.
+- Produced a docs-first BUILD bundle for debug surfaces promotion.
+- Kept scope to extraction/relocation planning only (no feature expansion).
+- Locked authoritative ownership across engine-core, engine-debug, and project/sample/tool layers.
 
-What this plan defines
-- target folder structure for promoted debug surfaces
-- migration phases from ownership lock through stabilization
-- validation strategy for contracts, behavior, regressions, and safety
-- risk controls and rollout notes
-- explicit rule that sample-specific panels/providers/commands stay outside shared layers
+Included
+- authoritative target structure
+- ownership matrix
+- ordered migration steps
+- validation goals
+- rollback strategy
+- rollout notes
+- codex command and commit comment
+- report files
 
-Key constraints preserved
-- no implementation migration in this PR
-- minimize engine-core changes
-- integration reference remains MultiSystemDemoScene.js
+Boundary outcomes
+- sample-specific panels/providers/commands remain outside shared layers
+- `MultiSystemDemoScene.js` preserved as proving integration
+- engine-core remains minimal and contract-only
 
-Files in this bundle
+Outputs
 - docs/pr/PLAN_PR_DEBUG_SURFACES_PROMOTION.md
+- docs/pr/BUILD_PR_DEBUG_SURFACES_PROMOTION.md
+- docs/pr/APPLY_PR_DEBUG_SURFACES_PROMOTION.md
 - docs/dev/codex_commands.md
 - docs/dev/commit_comment.txt
 - docs/dev/reports/change_summary.txt
 - docs/dev/reports/validation_checklist.txt
 - docs/dev/reports/file_tree.txt
-
-Next recommended command
-- BUILD_PR_DEBUG_SURFACES_PROMOTION

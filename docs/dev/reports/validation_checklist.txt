@@ -1,27 +1,27 @@
-PLAN_PR_DEBUG_SURFACES_PROMOTION validation checklist
+BUILD_PR_DEBUG_SURFACES_PROMOTION validation checklist
 
 Workflow
-- [done] Followed PLAN_PR -> BUILD_PR -> APPLY_PR structure
+- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure preserved
 - [done] Docs-first only
 - [done] One PR per purpose
 
 Scope
-- [done] Plan focuses on debug surfaces promotion only
-- [done] No engine-core implementation changes in this PR
-- [done] Integration reference documented: MultiSystemDemoScene.js
+- [done] Extraction/relocation only (no feature expansion)
+- [done] Engine-core changes minimized by contract-only ownership model
+- [done] Integration proving reference preserved: MultiSystemDemoScene.js
 
-Plan Quality
-- [done] Ownership model defined for engine-core, engine-debug, project/sample/tool layers
-- [done] Target folder structure documented
-- [done] Migration phases documented
-- [done] Validation strategy documented
-- [done] Risk controls documented
+Build Content
+- [done] Authoritative target structure documented
+- [done] Ownership matrix documented
+- [done] Ordered migration steps documented
+- [done] Validation goals documented
+- [done] Rollback strategy documented
 - [done] Rollout notes documented
 - [done] Sample-specific panels/providers/commands explicitly kept outside shared layers
 
-Artifacts
-- [done] Plan doc under docs/pr
+Outputs
+- [done] Docs under docs/pr
+- [done] Reports under docs/dev/reports
 - [done] Codex command under docs/dev
 - [done] Commit comment under docs/dev
-- [done] Reports under docs/dev/reports
-- [done] Delta zip generated at <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_PROMOTION_delta.zip
+- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_DEBUG_SURFACES_PROMOTION_delta.zip
