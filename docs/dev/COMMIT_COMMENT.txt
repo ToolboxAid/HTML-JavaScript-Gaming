@@ -1,1 +1,1 @@
-docs: plan first opt-in debug surfaces standard library with clear shared/local boundaries
+docs: build standard library plan for promoted debug surfaces

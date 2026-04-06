@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Apply the approved standard library plan by creating the first reusable set of shared panels, providers, and operator commands in `engine/debug/standard`.
+Apply the approved standard library plan by creating the first reusable set of shared panels, providers, commands, and preset registration in `engine/debug/standard`.
 
 ## Apply Scope
 
@@ -25,17 +25,23 @@ Apply the approved standard library plan by creating the first reusable set of s
 
 ### Create Shared Commands
 - debug help/status
-- overlay status/list/show/hide/toggle/showAll/hideAll
+- overlay list/status/show/hide/toggle/showAll/hideAll
 
-### Keep Local
+### Create Shared Preset
+- `registerStandardDebugPreset()`
+
+## Keep Local
 - game-specific panels
 - game-specific providers
 - game-specific commands
-- scene-specific adapters
+- tool-specific panels
+- tool-specific adapters
+- scene-specific wiring
 
 ## Apply Rules
 
 - keep adoption opt-in
 - preserve public API boundaries
-- do not pull custom game logic into the shared library
+- do not pull custom project logic into the shared library
 - validate through sample and tool integrations
+- do not expand beyond the approved initial inventory

@@ -1,32 +1,17 @@
-PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY change summary
+Created docs-only BUILD PR bundle for the first debug surfaces standard library.
 
-Summary
-- Refreshed docs-only plan bundle for the first debug surfaces standard library.
-- Kept one PR purpose: planning only.
-- Kept initial shared library small and opt-in.
+Included:
+- authoritative target structure
+- initial shared inventory
+- registration pattern
+- adoption modes
+- validation goals
+- rollback strategy
+- codex command
+- commit comment
+- next command
+- report files
 
-Plan coverage
-- shared panel set defined
-- shared provider set defined
-- shared operator command set defined
-- adoption models defined (minimal, preset, hybrid)
-- naming conventions defined
-- target structure defined
-- ownership boundaries reinforced
-
-Constraints preserved
-- docs-first only
-- no implementation in this PR
-- excludes 3D-specific, network-specific, and deep-inspector scope
-- keeps project-specific panels/providers/commands outside shared library
-
-Outputs
-- docs/pr/PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/reports/file_tree.txt
-
-Next recommended command
-- BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+Primary intent:
+- create a small opt-in shared baseline of panels, providers, commands, and a preset
+- keep custom project logic local

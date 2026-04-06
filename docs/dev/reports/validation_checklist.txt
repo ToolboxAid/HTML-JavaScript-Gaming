@@ -1,31 +1,12 @@
-PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY validation checklist
+Validation Checklist
 
-Workflow
-- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure referenced
-- [done] Docs-first only
-- [done] One PR per purpose
-
-Plan Content
-- [done] Shared panels defined
-- [done] Shared providers defined
-- [done] Shared operator commands defined
-- [done] Adoption models defined
-- [done] Naming conventions defined
-- [done] Target structure defined
-- [done] Initial library is small and opt-in
-
-Boundaries
-- [done] Project-specific panels/providers/commands remain outside shared library
-- [done] Dev Console vs Debug Overlay separation preserved
-
-Exclusions
-- [done] 3D-specific scope excluded
-- [done] network-specific scope excluded
-- [done] deep-inspector scope excluded
-
-Outputs
-- [done] Plan doc under docs/pr
-- [done] Codex command under docs/dev
-- [done] Commit comment under docs/dev
-- [done] Reports under docs/dev/reports
-- [done] Delta zip generated at <project folder>/tmp/PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY_delta.zip
+[x] Authoritative target structure is defined
+[x] Initial shared inventory is explicit
+[x] Registration pattern is defined
+[x] Adoption modes are defined
+[x] Initial library remains small
+[x] Shared logic remains opt-in
+[x] Project-specific logic stays outside shared library
+[x] Validation goals are documented
+[x] Rollback strategy is documented
+[x] APPLY_PR follow-up is identified

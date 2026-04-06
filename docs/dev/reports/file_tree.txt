@@ -1,13 +1,14 @@
-HTML-JavaScript-Gaming/
-|-- docs/
-|   |-- pr/
-|   |   `-- PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md
-|   `-- dev/
-|       |-- codex_commands.md
-|       |-- commit_comment.txt
-|       `-- reports/
-|           |-- change_summary.txt
-|           |-- validation_checklist.txt
-|           `-- file_tree.txt
-`-- tmp/
-    `-- PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY_delta.zip
+BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY_delta/
+└── docs/
+    ├── dev/
+    │   ├── codex_commands.md
+    │   ├── commit_comment.txt
+    │   ├── next_command.txt
+    │   └── reports/
+    │       ├── change_summary.txt
+    │       ├── file_tree.txt
+    │       └── validation_checklist.txt
+    └── pr/
+        ├── APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md
+        ├── BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md
+        └── PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md
