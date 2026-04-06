@@ -35,28 +35,26 @@
 
 ---
 
-# 🎛️ TRACK D — DEBUG PRESETS (ACTIVE)
+# 🎛️ TRACK D — DEBUG PRESETS
 
 - [x] PLAN_PR_DEBUG_SURFACES_PRESETS
-- [ ] BUILD_PR_DEBUG_SURFACES_PRESETS
+- [x] BUILD_PR_DEBUG_SURFACES_PRESETS
 - [ ] APPLY_PR_DEBUG_SURFACES_PRESETS
 
 ---
 
 # 🧰 TRACK E — ADVANCED DEBUG UX
 
-- [ ] Preset persistence rules
-- [ ] Role-based presets
-- [ ] Panel grouping
-- [ ] Quick-toggle shortcuts
-- [ ] Command macros
+- [x] PLAN_PR_DEBUG_SURFACES_ADVANCED_UX
+- [.] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
+- [ ] APPLY_PR_DEBUG_SURFACES_ADVANCED_UX
 
 ---
 
 # 🎮 TRACK F — GAME INTEGRATION
 
 - [ ] Sample game uses full debug platform
-- [ ] Production-safe debug toggle
+- [ ] Toggle debug in production-safe mode
 - [ ] Performance-safe overlays
 - [ ] Build-time debug flags
 
@@ -104,9 +102,10 @@
 
 # 🏁 END STATE
 
-A full debug ecosystem:
-- Engine Core → contracts only
-- Engine Debug → platform
-- Standard Library → reusable baseline
+A complete system:
+
+- Engine Core → minimal contracts
+- Engine Debug → reusable platform
+- Standard Library → shared baseline
 - Presets → usability layer
 - Extensions → 3D, network, inspectors
