@@ -1,1 +1,1 @@
-docs: converge debug surfaces by finalizing all apply phases without feature expansion
+docs: finalize engine promotion bundle with migration and stabilization focus only

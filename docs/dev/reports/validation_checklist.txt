@@ -2,10 +2,10 @@ Validation Checklist
 
 [x] Bundle is docs only
 [x] No new features introduced
-[x] PLAN_PR_DEBUG_SURFACES_CONVERGENCE updated
-[x] BUILD_PR_DEBUG_SURFACES_CONVERGENCE updated
-[x] APPLY_PR_DEBUG_SURFACES_CONVERGENCE updated
-[x] All APPLY_PR_DEBUG_SURFACES_* roadmap items set to [x]
-[x] BIG_PICTURE_ROADMAP.md changed by brackets only
-[x] ROADMAP_GUARDRAILS.md unchanged
-[x] Bundle contains convergence docs and reports
+[x] PLAN_PR_FINAL_ENGINE_PROMOTION updated
+[x] BUILD_PR_FINAL_ENGINE_PROMOTION updated
+[x] APPLY_PR_FINAL_ENGINE_PROMOTION updated
+[x] Migration focus is explicit
+[x] Stabilization focus is explicit
+[x] Guardrails respected
+[x] Bundle contains only docs artifacts

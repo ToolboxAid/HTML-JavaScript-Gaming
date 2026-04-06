@@ -2,9 +2,9 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create convergence phase bundle
+Create FINAL_ENGINE_PROMOTION bundle
 
 Requirements:
 - docs only
-- finalize all apply phases
 - no new features
+- focus on migration and stabilization
