@@ -1,15 +1,12 @@
-Created BUILD_PR_ENGINE_MATURITY docs-first implementation bundle.
+Created docs-only BUILD_PR_DEBUG_SURFACES_INSPECTORS bundle.
 
-Updated scope:
-- stable public debug API seams
-- plugin lifecycle boundaries
-- versioned contract metadata requirements
-- external documentation ownership map
-- benchmark entry points and rules
+Updated:
+- BUILD_PR_DEBUG_SURFACES_INSPECTORS.md
+- active command/commit/next-command docs
+- reports and file tree
+- roadmap bracket-state transition under Track I
 
-Constraints enforced:
-- docs-first and surgical
-- no new features
-- no engine-core API pollution
-- preserve docs/pr history
-- roadmap updates constrained to bracket-state transitions only
+Constraints preserved:
+- docs only
+- no runtime or engine-core API changes
+- inspector scope remains read-only

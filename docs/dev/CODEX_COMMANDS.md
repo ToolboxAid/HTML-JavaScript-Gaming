@@ -1,3 +1,5 @@
-MODEL: GPT-5.4
+MODEL: GPT-5.3-codex
 REASONING: high
-COMMAND: Create BUILD_PR_ENGINE_MATURITY implementation bundle for HTML-JavaScript-Gaming. Respect PLAN_PR -> BUILD_PR -> APPLY_PR. Keep scope docs-first and surgical. Do not pollute engine core APIs. Promote only proven public debug surfaces. Define stable debug API seams, plugin lifecycle boundaries, versioned contract metadata, external documentation ownership, and performance benchmark entry points/rules. Preserve docs/pr history. Treat docs/dev/BIG_PICTURE_ROADMAP.md as bracket-only immutable structure except approved state transitions. Package output as repo-structured ZIP to <project folder>/tmp/BUILD_PR_ENGINE_MATURITY_delta.zip.
+
+COMMAND:
+Create BUILD_PR_DEBUG_SURFACES_INSPECTORS

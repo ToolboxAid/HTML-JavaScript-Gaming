@@ -97,7 +97,7 @@ Do NOT change structure or wording.
 
 # 🔬 TRACK I — INSPECTORS & TOOLING
 
-- [ ] Entity inspector
+- [.] Entity inspector
 - [ ] Component inspector
 - [ ] State diff viewer
 - [ ] Timeline debugger

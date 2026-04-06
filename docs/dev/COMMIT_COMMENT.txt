@@ -1,1 +1,1 @@
-docs: build engine maturity migration and stabilization bundle using proven public debug seams
+docs: build inspector surfaces bundle with read-only boundaries and apply-ready contracts
