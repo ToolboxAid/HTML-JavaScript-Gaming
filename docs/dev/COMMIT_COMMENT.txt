@@ -1,1 +1,1 @@
-docs: plan reusable opt-in 3D support layer for debug surfaces
+docs: build 3D support layer and define guardrails for apply readiness

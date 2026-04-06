@@ -1,38 +1,12 @@
 # APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
 
-## Purpose
+## Steps
+1. Create shared 3D providers (summary)
+2. Create panels consuming providers
+3. Register optional 3D presets
+4. Keep adapters local to project
+5. Validate with a 3D sample/adapters
 
-Apply the approved 3D support plan by creating the first shared 3D panels, providers, and optional presets for the debug surfaces platform.
-
-## Apply Scope
-
-### Create Shared 3D Panels
-- transform
-- camera
-- render stages
-- collision
-- scene graph
-
-### Create Shared 3D Providers
-- transform summary
-- camera summary
-- render stage summary
-- collision volume summary
-- scene graph summary
-
-### Create Optional Shared 3D Presets
-- 3d inspect
-- 3d render
-- 3d camera
-
-### Keep Local
-- renderer-specific adapters
-- scene-specific extraction
-- project-specific debug visuals
-
-## Apply Rules
-
-- keep adoption opt-in
-- preserve existing platform patterns
-- keep shared logic renderer-agnostic
-- validate through a 3D-capable sample or staged adapter harness
+## Rules
+- Use public APIs only
+- No renderer-specific logic in shared layer

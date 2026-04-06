@@ -1,18 +1,14 @@
 Validation Checklist
 
-[x] PLAN_PR -> BUILD_PR -> APPLY_PR flow is declared
-[x] Docs-first only (no implementation files changed)
-[x] One PR purpose only (3D support planning)
-[x] Shared 3D panel inventory is explicit
-[x] Shared 3D provider inventory is explicit
-[x] Optional 3D presets are defined
+[x] BUILD bundle is docs-only
+[x] Guardrails file is included
+[x] One PR purpose only (3D support BUILD)
+[x] Shared 3D panel inventory is present
+[x] Shared 3D provider inventory is present
+[x] Optional 3D presets are present
 [x] Adapter boundaries are explicit
-[x] Adoption models are included
-[x] Naming conventions are included
-[x] Target structure is included
-[x] Renderer-specific implementation excluded
-[x] Deep inspectors excluded
-[x] Network support excluded
-[x] Project-specific adapters remain outside shared layer
-[x] BIG_PICTURE_ROADMAP.md updated via bracket-state changes only
-[x] BUILD next command is identified
+[x] Renderer-specific implementation scope excluded
+[x] Deep inspector scope excluded
+[x] Network scope excluded
+[x] BIG_PICTURE_ROADMAP.md updated by bracket changes only
+[x] Delta ZIP contains only BUILD-relevant docs

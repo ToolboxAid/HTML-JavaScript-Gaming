@@ -1,3 +1,10 @@
+⚠️ RULE:
+This file is a status tracker only.
+ONLY modify bracket states [ ] [.] [x].
+Do NOT change structure or wording.
+
+---
+
 # 🧭 Debug Platform & Ecosystem Roadmap
 
 ## Status Legend
@@ -73,10 +80,12 @@
 # 🧊 TRACK H — 3D DEBUG SUPPORT
 
 - [.] Transform inspector
-- [.] Camera debug panel
-- [.] Render pipeline stages
-- [.] Collision overlays
-- [.] Scene graph inspector
+- [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
+- [ ] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [ ] Camera debug panel
+- [ ] Render pipeline stages
+- [ ] Collision overlays
+- [ ] Scene graph inspector
 
 ---
 

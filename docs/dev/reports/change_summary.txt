@@ -1,13 +1,12 @@
-Created docs-only PLAN bundle for `PLAN_PR_DEBUG_SURFACES_3D_SUPPORT`.
+Created docs-only BUILD bundle for `BUILD_PR_DEBUG_SURFACES_3D_SUPPORT`.
 
-Included updates:
-- plan doc with shared 3D panels/providers/presets, boundaries, adoption, naming, and target structure
-- command and commit artifacts under docs/dev
-- roadmap bracket-state update only
-- report refresh under docs/dev/reports
+Included:
+- refreshed BUILD doc for 3D support contracts
+- new dedicated guardrails file
+- bracket-only roadmap state update
+- refreshed reports and packaging metadata
 
-Scope control:
-- docs-first only
-- one PR purpose only
+Scope controls maintained:
+- docs-only
 - no implementation code changes
-- renderer-specific, deep inspector, and network support remain out of scope
+- renderer-specific/deep-inspector/network scope excluded
