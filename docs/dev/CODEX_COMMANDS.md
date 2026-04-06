@@ -1,8 +1,8 @@
 MODEL: GPT-5.4-codex
-REASONING: medium
+REASONING: high
 
 COMMAND:
-Create PR_DEBUG_SURFACES_NETWORK_SERVER_CONTAINER_FULL
+Create PR_DEBUG_SURFACES_NETWORK_SAMPLE_B_FULL
 
 PURPOSE:
-Implement Track U � Docker containerization for the network server and dashboard.
+Implement Sample B � Host / Client Diagnostics to simulate multi-role network behavior using the existing debug surface system.

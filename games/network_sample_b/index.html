@@ -1,0 +1,93 @@
+<!--
+Toolbox Aid
+David Quesenberry
+04/06/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Network Sample B - Host Client Diagnostics</title>
+  <link rel="stylesheet" href="/engine/ui/baseLayout.css" />
+  <style>
+    .debug-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 10px 0 8px;
+    }
+
+    .debug-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font: 600 12px/1 monospace;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+
+    .debug-badge.is-on {
+      background: #1e4d2b;
+      border-color: #4ddf88;
+      color: #d9ffe8;
+    }
+
+    .debug-badge.is-off {
+      background: #3b1d20;
+      border-color: #b65560;
+      color: #ffdce1;
+    }
+
+    .debug-open-button {
+      border: 1px solid #8aa2c1;
+      background: #0f1522;
+      color: #e7f1ff;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font: 600 13px/1.2 monospace;
+    }
+
+    .debug-open-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Network Sample B - Host / Client Diagnostics</h1>
+    <p>Sample-backed multi-role diagnostics that simulate host and client peers with read-only debug surfaces and no real transport layer.</p>
+    <div class="debug-meta">
+      <span id="debugStateBadge" class="debug-badge is-on">Debug: ON</span>
+      <button id="openDebugPanelButton" class="debug-open-button" type="button">Open Debug Panel</button>
+    </div>
+    <p>Debug overlay remains hidden by default. Use <code>Shift+`</code> for console or <code>Ctrl+Shift+`</code> for overlay.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>Space</code>/<code>Enter</code> inject host packet. <code>1</code> toggles Client A. <code>2</code> toggles Client B. <code>H</code> toggles Host.</p>
+    </section>
+    <section>
+      <h3>Network Commands</h3>
+      <p><code>network.help</code>, <code>network.connections</code>, and <code>network.replication</code>.</p>
+    </section>
+    <section>
+      <h3>Engine + Debug Classes Used</h3>
+      <ul>
+        <li>core / Engine</li>
+        <li>input / InputService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+        <li>tools/dev / createSampleGameDevConsoleIntegration</li>
+        <li>tools/dev/plugins / createDebugPluginRegistry</li>
+        <li>games/network_sample_b/debug / createNetworkSampleBDebugPlugin</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

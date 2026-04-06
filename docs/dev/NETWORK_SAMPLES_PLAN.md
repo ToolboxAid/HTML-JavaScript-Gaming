@@ -25,12 +25,12 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK O — HOST / CLIENT SAMPLE
 
-- [ ] Sample B — Host / Client Diagnostics
-- [ ] Host status panel data
-- [ ] Client status panel data
-- [ ] Authority / ownership visibility
-- [ ] Replication snapshot visibility
-- [ ] Divergence warning surface
+- [x] Sample B — Host / Client Diagnostics
+- [x] Host status panel data
+- [x] Client status panel data
+- [x] Authority / ownership visibility
+- [x] Replication snapshot visibility
+- [x] Divergence warning surface
 
 ---
 

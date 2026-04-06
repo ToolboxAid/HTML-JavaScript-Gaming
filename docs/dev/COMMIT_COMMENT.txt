@@ -1,1 +1,1 @@
-build(network-dashboard): implement Track U containerization for Sample A server dashboard
+build(network-sample-b): implement host/client diagnostics sample with read-only debug panels and commands

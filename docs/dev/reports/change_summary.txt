@@ -1,16 +1,15 @@
-Implemented PR_DEBUG_SURFACES_NETWORK_SERVER_CONTAINER_FULL (Track U).
+Implemented PR_DEBUG_SURFACES_NETWORK_SAMPLE_B_FULL.
 
 Delivered:
-- Added container runtime artifacts for the Sample A dashboard server.
-- Added `games/network_sample_a/server/Dockerfile` with healthcheck and minimal runtime image.
-- Added `games/network_sample_a/.dockerignore` to keep context small and focused.
-- Added optional compose service at `games/network_sample_a/server/docker-compose.yml`.
-- Updated server access contract with opt-in `NETWORK_SAMPLE_A_ALLOW_REMOTE_WITH_KEY=1` for containerized browser access.
-- Updated server README with docker build/run, compose usage, env contract, port mapping, readiness, and logging expectations.
-- Updated Track U checklist to complete in `docs/dev/NETWORK_SAMPLES_PLAN.md`.
+- Added `games/network_sample_b` sample with host/client fake peer simulation.
+- Added read-only debug plugin panels for host status, client status, ownership/authority, and replication snapshots.
+- Added operator commands `network.connections` and `network.replication` (plus sample help listing).
+- Integrated Sample B into `games/index.html` under Level 11 with Debug Showcase consistency.
+- Added Sample B preview asset and standalone sample entry page.
+- Updated Track O checklist items to complete in `docs/dev/NETWORK_SAMPLES_PLAN.md`.
 
 Scope preserved:
 - no engine/core changes
-- no orchestration stack work
-- no dashboard feature expansion outside container access compatibility
-- BIG_PICTURE_ROADMAP not modified
+- no real networking transport implementation
+- no server/dashboard changes
+- no required edits to BIG_PICTURE_ROADMAP.md

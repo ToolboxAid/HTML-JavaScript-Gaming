@@ -1,0 +1,42 @@
+<!--
+Toolbox Aid
+David Quesenberry
+04/06/2026
+preview.svg
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Network Sample B Debug Showcase</title>
+  <desc id="desc">Host and client diagnostics preview with ownership and replication status.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#09142a" />
+      <stop offset="100%" stop-color="#12355a" />
+    </linearGradient>
+  </defs>
+
+  <rect width="960" height="540" fill="url(#bg)" />
+  <rect x="40" y="40" width="880" height="460" rx="16" fill="#0d1f35" stroke="#4a7bb0" stroke-width="2" />
+
+  <text x="72" y="92" fill="#e6f3ff" font-size="34" font-family="monospace" font-weight="700">NETWORK SAMPLE B</text>
+  <text x="72" y="124" fill="#9fc7eb" font-size="18" font-family="monospace">Host / Client Diagnostics</text>
+
+  <rect x="72" y="154" width="390" height="148" rx="10" fill="#0f2238" stroke="#4e78a4" />
+  <text x="92" y="184" fill="#d4edff" font-size="17" font-family="monospace">Host: connected</text>
+  <text x="92" y="212" fill="#d4edff" font-size="17" font-family="monospace">Client A: connected</text>
+  <text x="92" y="240" fill="#f9c74f" font-size="17" font-family="monospace">Client B: synchronizing</text>
+  <text x="92" y="268" fill="#d4edff" font-size="17" font-family="monospace">Connections: 3 peers</text>
+
+  <rect x="496" y="154" width="392" height="148" rx="10" fill="#0f2238" stroke="#4e78a4" />
+  <text x="516" y="184" fill="#d4edff" font-size="17" font-family="monospace">Authority</text>
+  <text x="516" y="212" fill="#9fc7eb" font-size="15" font-family="monospace">world-clock -&gt; host-1</text>
+  <text x="516" y="236" fill="#9fc7eb" font-size="15" font-family="monospace">ship-alpha -&gt; client-a</text>
+  <text x="516" y="260" fill="#9fc7eb" font-size="15" font-family="monospace">ship-bravo -&gt; client-b</text>
+
+  <rect x="72" y="336" width="816" height="126" rx="10" fill="#0f2238" stroke="#4e78a4" />
+  <text x="92" y="372" fill="#b6defe" font-size="16" font-family="monospace">network.connections | network.replication</text>
+  <text x="92" y="398" fill="#b6defe" font-size="16" font-family="monospace">Shift + ` : Console | Ctrl + Shift + ` : Overlay</text>
+  <text x="92" y="424" fill="#b6defe" font-size="16" font-family="monospace">Level 11 Network host/client simulation</text>
+
+  <circle cx="840" cy="86" r="14" fill="#14b8a6" />
+  <text x="72" y="496" fill="#7fa9d0" font-size="14" font-family="monospace">/games/network_sample_b/index.html</text>
+</svg>

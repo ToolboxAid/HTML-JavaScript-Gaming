@@ -3,26 +3,25 @@ Workflow
 - [x] BUILD created
 - [x] APPLY created
 
-Track U Implementation
-- [x] Dockerfile for server
-- [x] .dockerignore added for sample context
-- [x] Environment variable contract documented
-- [x] Local run command documented
-- [x] Compose-ready service definition added
-- [x] Port mapping rules documented
-- [x] Health/readiness check implemented
-- [x] Logging/output expectations documented
-- [x] Container debug notes documented
+Sample B Implementation
+- [x] host/client role simulation added
+- [x] multi-peer provider snapshot support added
+- [x] host status panel added
+- [x] client status panel added
+- [x] ownership/authority panel added
+- [x] replication snapshots panel added
+- [x] network.connections command added
+- [x] network.replication command added
+- [x] Sample B integrated in games/network_sample_b
+- [x] Sample B card added under Level 11 in games/index.html
 
-Safety
-- [x] no engine changes
-- [x] no orchestration scope expansion
-- [x] Sample A dashboard behavior preserved
-- [x] BIG_PICTURE_ROADMAP.md unchanged
+Roadmap/Docs
+- [x] Track O items updated to [x] in docs/dev/NETWORK_SAMPLES_PLAN.md
+- [x] BIG_PICTURE_ROADMAP.md not modified
 
 Validation Runs
-- [x] node --check games/network_sample_a/server/networkSampleADashboardServer.mjs
-- [x] local node server health endpoint returns 200
-- [x] local node server authorized metrics endpoint returns 200
-- [x] docker artifact syntax checked (Dockerfile + compose present)
-- [x] docker image build/run validation skipped in this environment (Docker CLI unavailable)
+- [x] node --check games/network_sample_b/main.js
+- [x] node --check games/network_sample_b/game/FakeHostClientNetworkModel.js
+- [x] node --check games/network_sample_b/game/NetworkSampleBScene.js
+- [x] node --check games/network_sample_b/debug/networkSampleBDebug.js
+- [x] static check of Level 11 card links for Sample B in games/index.html
