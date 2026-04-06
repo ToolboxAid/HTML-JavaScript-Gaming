@@ -1,47 +1,26 @@
 # APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 
-## Purpose
-
-Apply the approved standard library plan by creating the first reusable set of shared panels, providers, commands, and preset registration in `engine/debug/standard`.
+## Objective
+Apply the approved standard library build as a focused implementation PR with opt-in adoption and no excluded scope expansion.
 
 ## Apply Scope
-
-### Create Shared Panels
-- system fps
-- system timing
-- scene summary
-- scene entities
-- render layers
-- input summary
-- debug status
-
-### Create Shared Providers
-- timing
-- scene summary
-- entity counts
-- render layer summary
-- input summary
-- debug status
-
-### Create Shared Commands
-- debug help/status
-- overlay list/status/show/hide/toggle/showAll/hideAll
-
-### Create Shared Preset
-- `registerStandardDebugPreset()`
-
-## Keep Local
-- game-specific panels
-- game-specific providers
-- game-specific commands
-- tool-specific panels
-- tool-specific adapters
-- scene-specific wiring
+- implement shared panels/providers/operator commands from the approved v1 inventory
+- implement `registerStandardDebugPreset()` as the main shared adoption entry point
+- keep project-specific panels/providers/commands outside shared library
 
 ## Apply Rules
+- no 3D-specific additions
+- no network-specific additions
+- no deep-inspector additions
+- no project-specific logic in shared library
+- use public APIs/contracts only
 
-- keep adoption opt-in
-- preserve public API boundaries
-- do not pull custom project logic into the shared library
-- validate through sample and tool integrations
-- do not expand beyond the approved initial inventory
+## Apply Validation
+- standard preset registration succeeds
+- minimal and standard adoption both function
+- commands and panels follow naming conventions
+- shared panels consume provider snapshots only
+- boundary checks confirm project-specific logic remains local
+
+## Expected Outcome
+A small, opt-in, reusable debug standard library baseline under `engine/debug/standard` with clear extension boundaries.

@@ -1,1 +1,1 @@
-docs: build standard library plan for promoted debug surfaces
+docs: build first opt-in debug surfaces standard library bundle with authoritative preset-led registration

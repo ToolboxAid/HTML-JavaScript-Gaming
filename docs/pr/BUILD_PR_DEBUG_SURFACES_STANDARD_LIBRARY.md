@@ -1,39 +1,42 @@
 # BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 
-## Purpose
+## Objective
+Create an authoritative docs-only BUILD bundle for the first shared debug surfaces standard library under `engine/debug/standard`.
 
-Convert the approved standard library plan into an implementation-ready docs bundle for Codex.
+## Workflow
+PLAN_PR -> BUILD_PR -> APPLY_PR
+
+## Build Constraints
+- docs-first only
+- one PR purpose only
+- keep initial shared library small and opt-in
+- extraction/standardization only; no feature expansion
+- exclude 3D-specific, network-specific, deep-inspector, and project-specific logic
 
 ## Authoritative Target Structure
-
 ```text
-src/
-  engine/
-    debug/
-      standard/
-        panels/
-          SystemFpsPanel.js
-          SystemTimingPanel.js
-          SceneSummaryPanel.js
-          SceneEntitiesPanel.js
-          RenderLayersPanel.js
-          InputSummaryPanel.js
-          DebugStatusPanel.js
-        providers/
-          SystemTimingProvider.js
-          SceneSummaryProvider.js
-          EntityCountProvider.js
-          RenderLayerSummaryProvider.js
-          InputSummaryProvider.js
-          DebugStatusProvider.js
-        commands/
-          registerStandardDebugCommands.js
-        presets/
-          registerStandardDebugPreset.js
+engine/
+  debug/
+    standard/
+      panels/
+        system/
+        scene/
+        render/
+        input/
+        debug/
+      providers/
+        system/
+        scene/
+        render/
+        input/
+        debug/
+      commands/
+        registerStandardDebugCommands.js
+      presets/
+        registerStandardDebugPreset.js
 ```
 
-## Initial Inventory
-
+## Initial Inventory (v1)
 ### Shared Panels
 - `system.fps`
 - `system.timing`
@@ -44,14 +47,14 @@ src/
 - `debug.status`
 
 ### Shared Providers
-- `systemTiming`
-- `sceneSummary`
-- `entityCount`
-- `renderLayerSummary`
-- `inputSummary`
-- `debugStatus`
+- `system.timing`
+- `scene.summary`
+- `scene.entities`
+- `render.layers`
+- `input.summary`
+- `debug.status`
 
-### Shared Commands
+### Shared Operator Commands
 - `debug.help`
 - `debug.status`
 - `overlay.list`
@@ -61,64 +64,60 @@ src/
 - `overlay.toggle <panelId>`
 - `overlay.showAll`
 - `overlay.hideAll`
+- `overlay.order`
 
-## Registration Pattern
-
-Use one shared registration entry point:
-
+## Registration Pattern (Authoritative)
+Main shared adoption entry point:
 - `registerStandardDebugPreset()`
 
-This preset should:
-1. register shared providers
-2. register shared panels
-3. register shared commands
+Expected registration sequence:
+1. register standard providers
+2. register standard panels
+3. register standard operator commands
+4. return a registration summary/report
 
-This keeps adoption simple and consistent.
+Rules:
+- registration is opt-in
+- registration uses public contracts only
+- registration is deterministic and idempotent-safe where practical
 
 ## Adoption Modes
-
 ### Minimal Adoption
-Consumer registers:
-- 1–2 standard providers
-- 1–2 standard panels
-- optional shared commands
+- register selected providers and 1-3 panels
+- optionally register shared commands
 
 ### Standard Adoption
-Consumer registers:
-- full `registerStandardDebugPreset()`
+- call `registerStandardDebugPreset()` to register the full baseline set
 
-### Custom Adoption
-Consumer registers:
-- selected shared providers/panels/commands
-- local project-specific additions
-
-## Build Rules
-
-- one PR purpose only
-- docs-first only
-- keep the initial library small
-- no 3D-specific diagnostics
-- no network-specific diagnostics
-- no deep inspectors
-- no game-specific logic in shared panels
-- no direct runtime access from shared panels
-- shared panels consume shared/public providers only
-- shared commands act through public APIs only
+### Hybrid Adoption
+- call `registerStandardDebugPreset()` then extend/override locally with project-owned panels/providers/commands
 
 ## Validation Goals
-
-- shared preset registers end-to-end
-- panels render from provider data only
-- commands operate through public overlay/debug APIs
-- partial adoption works
-- full adoption works
-- local project extensions remain possible
-- no project-specific logic leaks into the shared library
+- baseline preset registers successfully end-to-end
+- shared panels consume provider data only
+- shared commands operate through public overlay/debug APIs only
+- partial and full adoption modes both work
+- naming remains stable and deterministic
+- project-specific logic remains outside shared library
 
 ## Rollback Strategy
+If v1 library is too broad or unstable:
+1. keep target directory structure and preset entry point
+2. reduce initial inventory to highest-value subset
+3. preserve command/panel/provider naming contracts
+4. revalidate minimal adoption before re-expanding
 
-If the initial library is too broad or unstable:
-- keep the directory structure
-- reduce the initial inventory
-- preserve preset entry point
-- revalidate minimal adoption before re-expanding
+## Rollout Notes
+- BUILD bundle is docs-only and implementation-ready
+- APPLY should implement inventory incrementally (providers -> panels -> commands -> preset)
+- do not widen scope into excluded areas in this track
+
+## Deliverables
+- `docs/pr/PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md`
+- `docs/pr/BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md`
+- `docs/pr/APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY.md`
+- `docs/dev/codex_commands.md`
+- `docs/dev/commit_comment.txt`
+- `docs/dev/reports/change_summary.txt`
+- `docs/dev/reports/validation_checklist.txt`
+- `docs/dev/reports/file_tree.txt`

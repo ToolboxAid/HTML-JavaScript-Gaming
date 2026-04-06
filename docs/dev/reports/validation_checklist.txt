@@ -1,12 +1,29 @@
-Validation Checklist
+BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY validation checklist
 
-[x] Authoritative target structure is defined
-[x] Initial shared inventory is explicit
-[x] Registration pattern is defined
-[x] Adoption modes are defined
-[x] Initial library remains small
-[x] Shared logic remains opt-in
-[x] Project-specific logic stays outside shared library
-[x] Validation goals are documented
-[x] Rollback strategy is documented
-[x] APPLY_PR follow-up is identified
+Workflow
+- [done] PLAN_PR -> BUILD_PR -> APPLY_PR structure preserved
+- [done] Docs-first only
+- [done] One PR per purpose
+
+Build Content
+- [done] Authoritative target structure documented
+- [done] Initial shared inventory documented
+- [done] Registration pattern documented
+- [done] Main adoption entry point set to `registerStandardDebugPreset()`
+- [done] Adoption modes documented
+- [done] Validation goals documented
+- [done] Rollback strategy documented
+
+Scope Controls
+- [done] Initial library remains small and opt-in
+- [done] 3D-specific scope excluded
+- [done] network-specific scope excluded
+- [done] deep-inspector scope excluded
+- [done] project-specific logic excluded from shared library
+
+Outputs
+- [done] Docs under docs/pr
+- [done] Reports under docs/dev/reports
+- [done] Codex command under docs/dev
+- [done] Commit comment under docs/dev
+- [done] Delta zip generated at <project folder>/tmp/BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY_delta.zip
