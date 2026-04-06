@@ -37,7 +37,7 @@ export default class StateSyncReplicationScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample148',
+      'Engine Sample 1302',
       'Authoritative state is packed into snapshots and replicated to the remote side.',
       'Left is authority, right is replicated client view.',
     ]);

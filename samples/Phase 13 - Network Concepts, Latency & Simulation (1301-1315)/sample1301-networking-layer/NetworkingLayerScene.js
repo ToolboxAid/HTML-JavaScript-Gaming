@@ -54,7 +54,7 @@ export default class NetworkingLayerScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample147',
+      'Engine Sample 1301',
       'Connection lifecycle and message exchange are owned by the reusable networking layer.',
       this.status,
     ]);

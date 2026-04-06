@@ -31,7 +31,7 @@ export default class PropertyEditorScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample179',
+      'Engine Sample 1503',
       'Property editing stays in tooling instead of hardwired scene mutation paths.',
       this.status,
     ]);

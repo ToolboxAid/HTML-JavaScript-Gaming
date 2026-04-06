@@ -38,7 +38,7 @@ export default class ChatPresenceLayerScene extends Scene {
   render(renderer) {
     const state = this.chat.getState(this.sessionId);
     drawFrame(renderer, theme, [
-      'Engine Sample157',
+      'Engine Sample 1314',
       'Presence and chat stay decoupled from gameplay logic in a reusable social layer.',
       this.status,
     ]);

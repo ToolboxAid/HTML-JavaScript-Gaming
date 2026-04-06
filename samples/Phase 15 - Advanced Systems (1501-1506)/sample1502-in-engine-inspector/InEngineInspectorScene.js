@@ -33,7 +33,7 @@ export default class InEngineInspectorScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample178',
+      'Engine Sample 1502',
       'The inspector surfaces runtime object state without embedding debug reads into gameplay code.',
       this.status,
     ]);

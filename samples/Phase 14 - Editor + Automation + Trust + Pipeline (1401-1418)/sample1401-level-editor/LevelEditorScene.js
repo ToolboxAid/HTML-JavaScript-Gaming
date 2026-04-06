@@ -26,7 +26,7 @@ export default class LevelEditorScene extends Scene {
     this.status = 'Pattern written into editor-owned level data.';
   }
   render(renderer) {
-    drawFrame(renderer, theme, ['Engine Sample159', 'Level editing state is separate from gameplay runtime.', this.status]);
+    drawFrame(renderer, theme, ['Engine Sample 1401', 'Level editing state is separate from gameplay runtime.', this.status]);
     const level = this.editor.exportLevel();
     level.cells.forEach((row, y) => row.forEach((cell, x) => renderer.drawRect(120 + x * 42, 220 + y * 42, 36, 36, cell ? '#38bdf8' : '#1e293b')));
     drawPanel(renderer, 620, 40, 250, 150, 'Level Data', [`Width: ${level.width}`, `Height: ${level.height}`, `Cell 0,0: ${level.cells[0][0]}`]);

@@ -38,7 +38,7 @@ export default class LobbySessionSystemScene extends Scene {
   render(renderer) {
     const session = this.lobby.getSession(this.sessionId);
     drawFrame(renderer, theme, [
-      'Engine Sample153',
+      'Engine Sample 1308',
       'Session orchestration stays in a lobby layer instead of leaking into gameplay scenes.',
       this.status,
     ]);

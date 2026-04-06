@@ -35,7 +35,7 @@ export default class DeveloperConsoleScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample177',
+      'Engine Sample 1501',
       'Runtime commands route through a reusable developer console instead of scene-specific debug switches.',
       this.status,
     ]);

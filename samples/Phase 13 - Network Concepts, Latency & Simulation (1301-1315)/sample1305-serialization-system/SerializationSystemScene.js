@@ -30,7 +30,7 @@ export default class SerializationSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample150',
+      'Engine Sample 1305',
       'Serialization centralizes stable payload encoding for network, replay, save, and config flows.',
       this.status,
     ]);

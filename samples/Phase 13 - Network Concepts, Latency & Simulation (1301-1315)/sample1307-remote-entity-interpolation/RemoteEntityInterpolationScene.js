@@ -35,7 +35,7 @@ export default class RemoteEntityInterpolationScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample152',
+      'Engine Sample 1307',
       'Remote interpolation smooths between discrete network snapshots instead of snapping every update.',
       'Blue is raw snapshot position, green is interpolated remote view.',
     ]);

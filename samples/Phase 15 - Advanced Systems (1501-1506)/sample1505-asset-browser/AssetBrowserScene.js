@@ -29,7 +29,7 @@ export default class AssetBrowserScene extends Scene {
   render(renderer) {
     const selected = this.browser.getSelected();
     drawFrame(renderer, theme, [
-      'Engine Sample181',
+      'Engine Sample 1505',
       'The asset browser exposes project content without coupling browsing logic to runtime scenes.',
       this.status,
     ]);

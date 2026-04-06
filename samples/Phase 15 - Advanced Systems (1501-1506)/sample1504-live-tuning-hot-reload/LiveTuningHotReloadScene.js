@@ -35,7 +35,7 @@ export default class LiveTuningHotReloadScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample180',
+      'Engine Sample 1504',
       'Live tuning updates runtime values immediately without a restart or scene rebuild.',
       this.status,
     ]);

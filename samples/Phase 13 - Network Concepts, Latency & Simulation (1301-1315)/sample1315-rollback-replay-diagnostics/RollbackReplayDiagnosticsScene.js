@@ -51,7 +51,7 @@ export default class RollbackReplayDiagnosticsScene extends Scene {
     const state = this.reconciler.getState();
     const summary = this.diagnostics.getSummary();
     drawFrame(renderer, theme, [
-      'Engine Sample158',
+      'Engine Sample 1315',
       'Rollback diagnostics expose correction and replay behavior for multiplayer validation.',
       this.status,
     ]);

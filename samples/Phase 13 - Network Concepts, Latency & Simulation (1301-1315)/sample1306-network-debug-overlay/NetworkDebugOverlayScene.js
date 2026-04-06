@@ -37,7 +37,7 @@ export default class NetworkDebugOverlayScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample151',
+      'Engine Sample 1306',
       'The optional overlay surfaces network diagnostics without pushing debug UI into game scenes.',
       this.status,
     ]);

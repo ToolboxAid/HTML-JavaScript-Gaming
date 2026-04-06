@@ -42,7 +42,7 @@ export default class ClientPredictionReconciliationScene extends Scene {
   render(renderer) {
     const state = this.reconciler.getState();
     drawFrame(renderer, theme, [
-      'Engine Sample149',
+      'Engine Sample 1304',
       'Prediction keeps local movement immediate while reconciliation pulls back to authority.',
       this.status,
     ]);

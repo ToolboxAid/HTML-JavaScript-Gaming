@@ -35,7 +35,7 @@ export default class SceneGraphEntityHierarchyViewerScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample182',
+      'Engine Sample 1506',
       'Hierarchy inspection is handled by a reusable scene graph viewer instead of custom per-scene tree code.',
       this.status,
     ]);

@@ -31,7 +31,7 @@ export default class HostServerBootstrapScene extends Scene {
   render(renderer) {
     const state = this.bootstrap.getState();
     drawFrame(renderer, theme, [
-      'Engine Sample154',
+      'Engine Sample 1309',
       'Host bootstrap makes authority startup repeatable instead of ad hoc.',
       this.status,
     ]);
