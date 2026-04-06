@@ -78,13 +78,13 @@
 
 # 🧊 TRACK H — 3D DEBUG SUPPORT
 
-- [.] Transform inspector
+- [x] Transform inspector
 - [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
-- [ ] Camera debug panel
-- [ ] Render pipeline stages
-- [ ] Collision overlays
-- [ ] Scene graph inspector
+- [x] Camera debug panel
+- [x] Render pipeline stages
+- [x] Collision overlays
+- [x] Scene graph inspector
 
 ---
 

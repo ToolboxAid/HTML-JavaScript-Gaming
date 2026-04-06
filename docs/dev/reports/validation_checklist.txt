@@ -1,17 +1,1 @@
-# Validation Checklist
-
-- [x] PLAN doc present
-- [x] BUILD doc present
-- [x] APPLY doc present
-- [x] Codex command present
-- [x] Commit comment present
-- [x] Next command present
-- [x] Dashboard modules scoped to engine/debug/network/dashboard
-- [x] No engine-core changes
-- [x] Providers remain read-only
-- [x] Commands use host public APIs only
-- [x] Refresh modes validated
-- [x] Snapshot normalization validated
-- [x] Sample A/B/C plugin parity checked
-- [x] Roadmap edits bracket-only only
-- [x] Zip built under <project folder>/tmp/
+Validate 3D debug surfaces

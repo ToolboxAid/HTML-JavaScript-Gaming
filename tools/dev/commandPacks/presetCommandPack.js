@@ -9,10 +9,12 @@ import { DebugPresetApplier } from "../presets/debugPresetApplier.js";
 import { DebugPresetRegistry } from "../presets/debugPresetRegistry.js";
 import { registerPresetCommands } from "../presets/registerPresetCommands.js";
 import { registerStandardDebugPresets } from "../presets/registerStandardDebugPresets.js";
+import { registerStandard3dDebugPresets } from "../../../engine/debug/standard/threeD/index.js";
 
 export function createPresetCommandPack() {
   const presetRegistry = new DebugPresetRegistry();
   registerStandardDebugPresets(presetRegistry, "standard");
+  registerStandard3dDebugPresets(presetRegistry, "standard.3d");
 
   const presetApplier = new DebugPresetApplier({
     presetRegistry

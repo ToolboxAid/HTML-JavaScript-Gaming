@@ -38,3 +38,4 @@ export {
   STANDARD_3D_DEBUG_PRESETS,
   registerStandard3dDebugPresets
 } from "./presets/registerStandard3dDebugPresets.js";
+export { createStandard3dDebugPluginDefinition } from "./bootstrap/createStandard3dDebugSurfaceIntegration.js";
