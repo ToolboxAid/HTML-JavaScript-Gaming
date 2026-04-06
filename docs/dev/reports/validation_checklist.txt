@@ -1,4 +1,5 @@
-- Docs-only bundle
-- No engine-core changes
-- Sample-scoped implementation instructions
-- Matches repo structure
+- Docs-only APPLY bundle
+- No engine-core scope
+- No documentation delegated to Codex
+- Validation focused on Sample C rewind execution only
+- Repo structure preserved

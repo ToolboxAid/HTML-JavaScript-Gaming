@@ -2,14 +2,15 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Implement rewind execution and deterministic replay in network_sample_c only.
+Apply and validate the existing Level 11.4 rewind execution implementation in `games/network_sample_c` only.
 
-- Use StateTimelineBuffer
-- Use ReconciliationLayerAdapter outputs
-- Restore frame, replay inputs forward
-- Update timeline after replay
+Perform:
+- targeted import checks
+- targeted smoke checks for rewind prep and replay
+- manual validation support for W/X controls and debug outputs
+- surgical fixes only if validation reveals a defect
 
 DO NOT:
-- Modify engine core
-- Create or modify documentation
-- Expand beyond sample scope
+- modify engine core APIs
+- create or edit documentation
+- expand scope beyond `network_sample_c`

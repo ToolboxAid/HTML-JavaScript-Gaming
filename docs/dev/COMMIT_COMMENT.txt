@@ -1,13 +1,12 @@
-Implement rewind execution and deterministic replay for Level 11
+Apply Level 11.4 rewind execution candidate for Sample C
 
-- Adds rewind-to-frame execution using timeline buffer
-- Replays inputs forward deterministically
-- Updates timeline after replay
-- Extends debug surfaces to visualize replay path
+- Validates rewind execution and deterministic replay in network_sample_c
+- Confirms timeline truncation and replay repopulation behavior
+- Confirms replay status is surfaced through debug outputs
+- Preserves strict sample-only scope with no engine-core changes
 
 Validation:
-- Rewind restores correct frame
-- Replay produces consistent results
-- Timeline updates correctly
-
-No engine-core or shared system changes
+- imports pass
+- rewind prep reaches ready
+- replay executes successfully
+- bounded timeline remains correct after replay

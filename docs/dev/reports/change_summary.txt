@@ -1,1 +1,1 @@
-Adds Level 11.4 rewind execution and replay specifications
+Adds APPLY_PR bundle for Level 11.4 rewind execution validation and guarded integration in Sample C.
