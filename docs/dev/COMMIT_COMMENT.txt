@@ -1,2 +1,2 @@
-PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL
-docs: define complete sample-backed network debug support path and staged execution plan
+﻿PR_DEBUG_SURFACES_NETWORK_SAMPLE_A_FULL
+build(sample-network): add Sample A loopback network debug sample with provider/panel/command integration

@@ -1,4 +1,4 @@
-Toolbox Aid
+﻿Toolbox Aid
 David Quesenberry
 04/06/2026
 NETWORK_SAMPLES_PLAN.md
@@ -17,11 +17,11 @@ Track staged network sample progress used to validate multiplayer debug support 
 
 # TRACK N - NETWORK SAMPLE FOUNDATION
 
-- [ ] Sample A - Local Loopback / Fake Network
-- [ ] Synthetic connection lifecycle
-- [ ] Synthetic RTT feed
-- [ ] Synthetic replication feed
-- [ ] Trace event feed
+- [x] Sample A - Local Loopback / Fake Network
+- [x] Synthetic connection lifecycle
+- [x] Synthetic RTT feed
+- [x] Synthetic replication feed
+- [x] Trace event feed
 
 ---
 
@@ -49,33 +49,33 @@ Track staged network sample progress used to validate multiplayer debug support 
 
 # TRACK Q - NETWORK DEBUG PANELS
 
-- [ ] Connection status panel
-- [ ] Latency / RTT panel
+- [x] Connection status panel
+- [x] Latency / RTT panel
 - [ ] Replication state viewer
 - [ ] Client/server divergence inspector
-- [ ] Event tracing panel
+- [x] Event tracing panel
 
 ---
 
 # TRACK R - NETWORK DEBUG COMMANDS
 
-- [ ] network.help
-- [ ] network.status
+- [x] network.help
+- [x] network.status
 - [ ] network.connections
-- [ ] network.latency
+- [x] network.latency
 - [ ] network.replication
 - [ ] network.divergence
-- [ ] network.trace
+- [x] network.trace
 - [ ] network.sample.*
 
 ---
 
 # TRACK S - READINESS TO PROMOTE
 
-- [ ] Sample-backed provider validation
-- [ ] Sample-backed panel validation
-- [ ] Operator command validation
-- [ ] Debug-only gating validation
+- [.] Sample-backed provider validation
+- [.] Sample-backed panel validation
+- [.] Operator command validation
+- [x] Debug-only gating validation
 - [ ] Promotion recommendation
 
 ## Recommended Execution Order

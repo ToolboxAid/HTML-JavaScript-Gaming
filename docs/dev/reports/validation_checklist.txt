@@ -1,20 +1,27 @@
-Toolbox Aid
-David Quesenberry
-04/06/2026
-validation_checklist.txt
+﻿Workflow
+- [x] PLAN created
+- [x] BUILD created
+- [x] APPLY created
 
-[x] PLAN_PR doc updated
-[x] BUILD_PR doc updated
-[x] APPLY_PR doc updated
-[x] NETWORK_SAMPLES_PLAN.md updated
-[x] BIG_PICTURE_ROADMAP updated using bracket-only edits
-[x] No wording/structure changes outside brackets in BIG_PICTURE roadmap
-[x] No engine-core changes
-[x] No UI/runtime changes
-[x] Network support remains sample-backed
-[x] Repo-structured bundle zip created
+Sample A Runtime
+- [x] Sample opens from games/network_sample_a/index.html
+- [x] Fake loopback telemetry updates
+- [x] Connection lifecycle controls (disconnect/reconnect)
+- [x] Synthetic RTT and replication values update
 
-Validation checks:
-- `git diff -- docs/dev/BIG_PICTURE_ROADMAP.md`
-- `git diff --name-only`
-- `tar -tf tmp/PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL_bundle.zip`
+Debug Surfaces
+- [x] Connection status panel renders
+- [x] Latency panel renders
+- [x] Event trace panel renders
+- [x] Overlay hidden by default until explicit open
+
+Commands
+- [x] network.help
+- [x] network.status
+- [x] network.latency
+- [x] network.trace
+
+Scope Safety
+- [x] No engine core files modified
+- [x] Sample-level integration only
+- [x] Roadmap edits are bracket-only

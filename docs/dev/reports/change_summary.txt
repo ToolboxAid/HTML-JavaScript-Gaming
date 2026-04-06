@@ -1,22 +1,11 @@
-Toolbox Aid
-David Quesenberry
-04/06/2026
-change_summary.txt
+﻿Implemented Sample A network debug surfaces as a sample-level integration with no engine-core changes.
 
-Executed PR_DEBUG_SURFACES_NETWORK_SUPPORT_FULL as a docs-first PLAN/BUILD/APPLY bundle.
-
-Included:
-- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- docs/dev/NETWORK_SAMPLES_PLAN.md
-- bracket-only update in docs/dev/BIG_PICTURE_ROADMAP.md
-
-Roadmap state update (Track G):
-- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT: [.] -> [x]
-
-Scope guard:
-- No engine-core changes
-- No runtime/UI changes
-- No non-bracket edits in BIG_PICTURE roadmap
-- Network support remains sample-backed
+What was built:
+- New game sample at games/network_sample_a with fake loopback telemetry.
+- Synthetic connection lifecycle, latency, replication backlog, and trace events.
+- Sample debug plugin with read-only provider descriptors.
+- Overlay panels for connection status, latency/RTT, and trace events.
+- Console commands: network.help, network.status, network.latency, network.trace [count].
+- Overlay and console remain hidden by default until explicit user action.
+- Sample A PLAN/BUILD/APPLY docs finalized.
+- Network sample plan and roadmap states updated for completed Sample A slice.
