@@ -1,1 +1,1 @@
-build(versioned-contracts): execute plan/build/apply bundle with shared contract policy normalization and compatibility checks
+build(performance-benchmarks): execute plan/build/apply bundle with deterministic benchmark suites and regression thresholds

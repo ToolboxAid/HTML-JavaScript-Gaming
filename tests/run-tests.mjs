@@ -103,6 +103,7 @@ import { run as runMultiTargetExport } from './tools/MultiTargetExport.test.mjs'
 import { run as runAiAuthoringAssistant } from './tools/AiAuthoringAssistant.test.mjs';
 import { run as runGameplaySystemLayer } from './tools/GameplaySystemLayer.test.mjs';
 import { run as runCollaborationSystem } from './tools/CollaborationSystem.test.mjs';
+import { run as runPerformanceBenchmarks } from './tools/PerformanceBenchmarks.test.mjs';
 import { run as runPerformanceProfiler } from './tools/PerformanceProfiler.test.mjs';
 import { run as runAssetMarketplace } from './tools/AssetMarketplace.test.mjs';
 import { run as runCloudRuntime } from './tools/CloudRuntime.test.mjs';
@@ -211,6 +212,7 @@ const tests = [
     ['AiAuthoringAssistant', runAiAuthoringAssistant],
     ['GameplaySystemLayer', runGameplaySystemLayer],
     ['CollaborationSystem', runCollaborationSystem],
+    ['PerformanceBenchmarks', runPerformanceBenchmarks],
     ['PerformanceProfiler', runPerformanceProfiler],
     ['AssetMarketplace', runAssetMarketplace],
     ['CloudRuntime', runCloudRuntime],

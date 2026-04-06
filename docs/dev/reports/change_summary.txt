@@ -3,16 +3,16 @@ David Quesenberry
 04/05/2026
 change_summary.txt
 
-Executed PLAN + BUILD + APPLY for VERSIONED_CONTRACTS in one scoped bundle.
+Executed PLAN + BUILD + APPLY for PERFORMANCE_BENCHMARKS in one scoped bundle.
 
 Implemented:
-- Added shared version policy helper module for contract normalization/evaluation.
-- Wired render and diagnostics contract validators to the shared policy seam.
-- Exposed version metadata helpers for both contract surfaces.
-- Updated targeted tests for metadata visibility and compatibility alias acceptance.
-- Updated Track J roadmap bracket state for Versioned contracts.
+- Added shared benchmark suite contract runtime in `tools/shared/performanceBenchmarks.js`.
+- Added automated benchmark suite coverage in `tests/tools/PerformanceBenchmarks.test.mjs`.
+- Wired benchmark test into `tests/run-tests.mjs`.
+- Updated performance benchmark PR docs and engine maturity performance rules.
+- Updated Track J roadmap bracket state for Performance benchmarks.
 
-Non-goals preserved:
-- No engine core API redesign.
-- No unrelated runtime feature expansion.
+Scope controls preserved:
+- No engine core API changes.
 - No destructive changes.
+- No unrelated runtime feature expansion.

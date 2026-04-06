@@ -2,7 +2,7 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Execute PLAN + BUILD + APPLY for VERSIONED_CONTRACTS
+Execute PLAN + BUILD + APPLY for PERFORMANCE_BENCHMARKS
 
 OUTPUT:
-<project folder>/tmp/PR_VERSIONED_CONTRACTS_FULL_bundle.zip
+<project folder>/tmp/PR_PERFORMANCE_BENCHMARKS_FULL_bundle.zip

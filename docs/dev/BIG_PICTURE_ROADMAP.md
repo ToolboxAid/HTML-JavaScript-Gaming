@@ -111,7 +111,7 @@ Do NOT change structure or wording.
 - [x] Plugin system
 - [.] External documentation
 - [x] Versioned contracts
-- [.] Performance benchmarks
+- [x] Performance benchmarks
 
 ---
 
