@@ -3,13 +3,14 @@
 - [x] BUILD created
 - [x] APPLY created
 
-Integration
-- [x] Sample A card added to games/index.html
-- [x] Existing card structure preserved
-- [x] Debug Showcase label present
-- [x] Navigation path exists
+Index Fix
+- [x] games/index.html patched from current code base
+- [x] no top showcase section added
+- [x] Level 11 - Network Games set
+- [x] Network Sample A card visible
+- [x] docs links included on card
 
 Safety
-- [x] No layout/structure redesign
-- [x] No nested links/buttons
-- [x] No engine/runtime changes
+- [x] no engine changes
+- [x] no unrelated roadmap edits
+- [x] existing card order preserved

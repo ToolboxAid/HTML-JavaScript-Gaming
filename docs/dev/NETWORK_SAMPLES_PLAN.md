@@ -1,4 +1,4 @@
-﻿# NETWORK_SAMPLES_PLAN
+# NETWORK_SAMPLES_PLAN
 
 ## Purpose
 Track the staged network sample journey for debug surface support using a strict checklist process.
@@ -7,6 +7,9 @@ Track the staged network sample journey for debug surface support using a strict
 - [ ] Todo
 - [.] In Progress
 - [x] Complete
+
+## Phase Alignment
+- Phase 13 - Network Concepts, Latency & Simulation (1301-1315)
 
 ---
 
@@ -44,23 +47,22 @@ Track the staged network sample journey for debug surface support using a strict
 
 # TRACK Q — NETWORK DEBUG PANELS
 
-- [ ] Connection status panel
-- [ ] Latency / RTT panel
+- [x] Connection status panel
+- [.] Latency / RTT panel
 - [ ] Replication state viewer
 - [ ] Client/server divergence inspector
-- [ ] Event tracing panel
+- [.] Event tracing panel
 
 ---
 
 # TRACK R — NETWORK DEBUG COMMANDS
 
 - [ ] network.help
-- [ ] network.status
-- [ ] network.connections
-- [ ] network.latency
+- [x] network.status
+- [x] network.latency
 - [ ] network.replication
 - [ ] network.divergence
-- [ ] network.trace
+- [x] network.trace
 - [ ] network.sample.*
 
 ---

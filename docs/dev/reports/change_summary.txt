@@ -1,11 +1,7 @@
-﻿Executed PLAN+BUILD+APPLY for SAMPLE_A_INTEGRATION.
+﻿Executed PLAN + BUILD + APPLY for NETWORK_SAMPLE_A_INDEX_FIX.
 
-Implemented:
-- Added Network Sample A card to games/index.html using the existing anchor-card pattern.
-- Applied Debug Showcase label on the new card.
-- Confirmed navigation target path exists.
-- Preserved existing card order and hub structure.
-
-Out of scope preserved:
-- no server dashboard/containerization work
-- no engine/runtime changes
+Result:
+- Network Sample A index integration was finalized in games/index.html.
+- Level 11 network placement and debug-showcase labeling are present.
+- Sample A route references are preserved.
+- No engine/runtime files changed.

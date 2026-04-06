@@ -206,15 +206,6 @@ index.html
             </div>
           </a>
 
-          <a class="card" href="/games/network_sample_a/index.html">
-            <img class="thumb" src="/games/network_sample_a/assets/preview.svg" alt="Network Sample A debug showcase preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge debug-showcase">Debug Showcase</span></div>
-              <div class="cardTitle">Network Sample A (Debug Showcase)</div>
-              <div class="cardDesc">Local loopback network diagnostics sample with connection, latency, and trace visibility through the shared debug surface workflow.</div>
-            </div>
-          </a>
-
         </div>
       </section>
 
@@ -247,7 +238,24 @@ index.html
             </div>
           </a>
         </div>
-      </section>
+      
+<section class="playableLevel">
+  <h3>Level 11 - Network Games</h3>
+  <p>This level focuses on network concepts, latency, and simulation readiness while keeping the first validation path local, observable, and safe to debug. Network Sample A aligns to Phase 13 - Network Concepts, Latency &amp; Simulation (1301-1315).</p>
+  <div class="grid">
+    <div class="card">
+      <img class="thumb" src="/games/network_sample_a/assets/preview.svg" alt="Network Sample A gameplay preview" />
+      <div class="cardBody">
+        <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge debug-showcase">Debug Showcase</span></div>
+        <div class="cardTitle">Network Sample A - Local Loopback / Fake Network</div>
+        <div class="cardDesc">Local loopback network simulation that exposes connection state, synthetic latency, replication-style updates, and trace events through the debug surface platform.</div>
+        <div class="showcaseCardMeta">Play: <a href="/games/network_sample_a/index.html">/games/network_sample_a/index.html</a> | Debug Mode: <a href="/games/network_sample_a/index.html?debug=1">/games/network_sample_a/index.html?debug=1</a></div>
+        <div class="showcaseCardMeta">Docs: <a href="/docs/release/debug_showcase_tour.md">Debug Tour</a>, <a href="/docs/release/debug_showcase_getting_started.md">Getting Started</a>.</div>
+        <div class="showcaseCardMeta">Onboarding: Open Play first to confirm baseline loopback behavior, then open Debug Mode to inspect connection state, RTT, and trace events intentionally.</div>
+      </div>
+    </div>
+  </div>
+</section>
     </section>
 
     <section class="section">
@@ -369,10 +377,11 @@ index.html
 
         <article class="levelCard">
           <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-          <h3>Level xx - Network Games</h3>
+          <h3>Level 11 - Network Games</h3>
           <p></p>
           <ul>
-            <li>Tic Tac Toe</li>
+                        <li>Network Sample A <span class="inline-status">(Debug Showcase)</span></li>
+<li>Tic Tac Toe</li>
             <li>Connect Four</li>
             <li>Othello</li>
 

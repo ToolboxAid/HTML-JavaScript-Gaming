@@ -1,1 +1,1 @@
-﻿build(hub): integrate Network Sample A debug showcase card into games index with existing card structure
+﻿build(games-index): finalize Network Sample A index integration and visibility fix
