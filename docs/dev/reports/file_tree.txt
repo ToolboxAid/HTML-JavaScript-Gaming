@@ -10,3 +10,4 @@ docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
 docs/dev/reports/file_tree.txt
 games/index.html
+games/network_sample_a/assets/preview.svg

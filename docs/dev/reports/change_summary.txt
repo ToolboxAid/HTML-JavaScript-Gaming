@@ -1,1 +1,10 @@
-Safely patches games/index.html using the rolled-back current code base, places Network Sample A in Level 11 - Network Games, adds docs links, and updates network tracking docs.
+Executed PLAN + BUILD + APPLY for NETWORK_SAMPLE_A_INDEX_FIX.
+
+Applied scope:
+- patched games/index.html from current code base
+- kept existing structure and ordering intact
+- ensured Level 11 - Network Games placement for Network Sample A
+- ensured card-level docs links are present
+- updated docs/dev network tracking artifacts and bracket-only roadmap status items
+
+No engine/runtime code changes were made.

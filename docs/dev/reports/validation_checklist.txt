@@ -1,7 +1,7 @@
-[ ] games/index.html patched from current code base
-[ ] no top showcase section added
-[ ] Level 11 - Network Games set
-[ ] Network Sample A card added
-[ ] docs links added
-[ ] NETWORK_SAMPLES_PLAN updated
-[ ] BIG_PICTURE_ROADMAP bracket-only edits only
+[x] games/index.html patched from current code base
+[x] no top showcase section added
+[x] Level 11 - Network Games set
+[x] Network Sample A card added
+[x] docs links added
+[x] NETWORK_SAMPLES_PLAN updated
+[x] BIG_PICTURE_ROADMAP bracket-only edits only
