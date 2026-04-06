@@ -1,23 +1,27 @@
 Toolbox Aid
 David Quesenberry
-04/05/2026
+04/06/2026
 validation_checklist.txt
 
 [x] PLAN doc created
 [x] BUILD doc created
 [x] APPLY doc created
-[x] Landing page structure defined
-[x] Discovery improvements contract defined
-[x] Standalone vs repo-linked packaging strategy defined
-[x] Asset bundling rules defined
-[x] User entry points defined
-[x] Docs-only scope preserved
-[x] No BIG_PICTURE_ROADMAP edits
-[x] PRODUCTIZATION_ROADMAP updates are bracket-only
-[x] No Track G/H work
+[x] Current game order preserved exactly
+[x] Current anchor-card structure preserved exactly
+[x] Debug Showcase badge retained in header
+[x] Debug Showcase badges retained on Asteroids and Breakout cards
+[x] Safe non-interactive showcase copy added to Asteroids and Breakout cards
+[x] Shared showcase intro/help block added above relevant game grid
+[x] Debug Tour and Getting Started links placed in shared intro block
+[x] Onboarding helper text added in shared showcase block
+[x] No nested links inside cards
+[x] No buttons inside cards
+[x] No engine changes
+[x] No unrelated card edits
 [x] Repo-structured bundle zip created
 
 Validation checks:
-- `git diff --name-only`
-- `git diff -- docs/dev/PRODUCTIZATION_ROADMAP.md`
-- `tar -tf tmp/PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL_bundle.zip`
+- `rg -n "showcaseIntro|Debug Tour|Getting Started|Asteroids \(Debug Showcase\)|Breakout \(Debug Showcase\)" games/index.html`
+- `git diff -- games/index.html`
+- order check script comparing card href sequence against HEAD
+- `tar -tf tmp/PR_SHOWCASE_GAME_CARD_SAFE_FINISH_FULL_bundle.zip`

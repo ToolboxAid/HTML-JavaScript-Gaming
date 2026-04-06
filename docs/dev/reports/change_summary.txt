@@ -1,27 +1,20 @@
 Toolbox Aid
 David Quesenberry
-04/05/2026
+04/06/2026
 change_summary.txt
 
-Executed PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL as docs-only PLAN/BUILD/APPLY.
+Executed PLAN + BUILD + APPLY for SHOWCASE_GAME_CARD_SAFE_FINISH.
 
-Added:
-- `docs/pr/PLAN_PR_PRODUCTIZATION_DISTRIBUTION_STARTER.md`
-- `docs/pr/BUILD_PR_PRODUCTIZATION_DISTRIBUTION_STARTER.md`
-- `docs/pr/APPLY_PR_PRODUCTIZATION_DISTRIBUTION_STARTER.md`
+Implemented in `games/index.html`:
+- Added a shared showcase intro/help block above the relevant game grid.
+- Placed Debug Tour and Getting Started links in the shared intro block.
+- Added onboarding helper text in the shared intro block.
+- Updated Asteroids and Breakout card copy with safe non-interactive showcase messaging.
+- Kept Debug Showcase badge in header and on both showcase cards.
 
-Defined:
-- showcase landing page structure
-- discovery guidance for `games/index.html`
-- standalone vs repo-linked packaging strategy
-- asset bundling include/exclude rules
-- user entry points for play, debug, and demo
-
-Roadmap update:
-- `docs/dev/PRODUCTIZATION_ROADMAP.md` Track R states moved to in-progress via bracket-only edits.
-
-Scope guard:
-- Docs-first only
-- No engine changes
-- No Track G/H work
-- No BIG_PICTURE roadmap edits
+Safety guardrails met:
+- Preserved existing game order exactly.
+- Preserved existing anchor-card structure exactly.
+- No nested links/buttons inside cards.
+- No engine/runtime changes.
+- No unrelated card edits.

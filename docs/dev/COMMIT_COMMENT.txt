@@ -1,2 +1,2 @@
-PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL
-docs: define productization distribution starter contracts for showcase packaging and entry flows
+PR_SHOWCASE_GAME_CARD_SAFE_FINISH_FULL
+chore(showcase): safely finish Asteroids/Breakout showcase card presentation with shared intro/help block and non-interactive card copy

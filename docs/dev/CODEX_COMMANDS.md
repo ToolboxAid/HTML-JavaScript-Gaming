@@ -2,27 +2,32 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 COMMAND:
-Create PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL
+Create PR_SHOWCASE_GAME_CARD_SAFE_FINISH_FULL
 
 PURPOSE:
-Define how showcase samples (Asteroids, Breakout) are packaged, presented, and shared as a product.
+Finish the Debug Showcase presentation in games/index.html without breaking the existing card structure and order. Place showcase data on existing cards.
 
 IN SCOPE:
-- showcase landing page structure
-- sample discovery (games/index.html improvements)
-- packaging strategy (standalone vs repo)
-- asset bundling rules
-- entry points for users (play vs debug)
+- preserve current game order exactly
+- preserve current anchor-card structure exactly
+- keep Debug Showcase badge in header
+- keep Debug Showcase badges on Asteroids and Breakout cards
+- add safe non-interactive showcase copy to Asteroids and Breakout cards
+- add a shared showcase intro/help block above the relevant game grid
+- place Debug Tour and Getting Started links in the shared showcase intro block, not inside cards
+- add onboarding helper text in the shared showcase block
 
 OUT OF SCOPE:
-- engine changes
-- Track G
-- Track H
+- no nested links inside cards
+- no buttons inside cards
+- no engine changes
+- no unrelated card edits
 
 RULES:
-- docs-first
-- no BIG_PICTURE_ROADMAP edits
-- PRODUCTIZATION_ROADMAP updates are bracket-only
+- surgical change only
+- preserve existing layout patterns
+- do not reorder games
+- do not convert card anchors into multi-action containers unless explicitly required later
 
 OUTPUT:
-<project folder>/tmp/PR_PRODUCTIZATION_DISTRIBUTION_STARTER_FULL_bundle.zip
+<project folder>/tmp/PR_SHOWCASE_GAME_CARD_SAFE_FINISH_FULL_bundle.zip
