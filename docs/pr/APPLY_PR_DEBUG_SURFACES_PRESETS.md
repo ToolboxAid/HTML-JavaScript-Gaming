@@ -1,32 +1,27 @@
 # APPLY_PR_DEBUG_SURFACES_PRESETS
 
-## Purpose
-
-Apply the approved presets plan by creating the first reusable preset system and shared baseline presets for the promoted debug surfaces platform.
+## Objective
+Apply the approved presets build as a focused implementation PR with no expansion beyond the v1 preset scope.
 
 ## Apply Scope
+- implement `DebugPresetRegistry`
+- implement `DebugPresetApplier`
+- implement `registerStandardDebugPresets()` with v1 shared inventory
+- implement `registerPresetCommands()` with v1 command set
 
-### Create Shared Preset Infrastructure
-- preset registry
-- preset applier
-- preset commands
+## Guardrails
+- keep v1 to visibility + optional ordering
+- use public APIs only
+- keep project-specific presets outside shared layer
+- preserve precedence with persistence exactly as defined
+- no excluded scope features
 
-### Create Shared Presets
-- gameplay
-- rendering
-- systems
-- minimal
-- qa
+## Apply Validation
+- preset registry/applier functions pass deterministic behavior checks
+- shared preset inventory loads and applies
+- preset command set works with safe failures
+- precedence with persistence is correct
+- no project-specific preset implementation leaks into shared layer
 
-### Keep Local
-- project-specific presets
-- scene-specific startup choices
-- tool-specific preset extensions
-
-## Apply Rules
-
-- keep adoption opt-in
-- preserve public API boundaries
-- define clear persistence precedence
-- do not introduce layout editing features
-- validate through sample and tool integrations
+## Expected Outcome
+A small, opt-in presets system for promoted debug surfaces is ready with clear extension boundaries.

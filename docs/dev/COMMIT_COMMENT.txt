@@ -1,1 +1,1 @@
-docs: plan reusable debug surfaces presets system with registry/applier contracts and persistence precedence
+docs: build reusable debug surfaces presets bundle with authoritative registry/applier and preset command contracts
