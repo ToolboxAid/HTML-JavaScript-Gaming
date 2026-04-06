@@ -416,7 +416,7 @@ export default class ReconciliationLayerAdapter {
     return "Low divergence; hold and annotate for observability.";
   }
 
-  buildRewindPreparation({ divergenceReport, timelineStatus } = {}) {
+  buildRewindPreparation({ divergenceReport, timelineStatus, selectedEntityIds } = {}) {
     const report = divergenceReport || this.latestDivergenceReport;
     const status = timelineStatus || this.timelineBuffer.getStatus({
       referenceFrameId: report?.summary?.authoritativeFrameId ?? null
@@ -426,8 +426,98 @@ export default class ReconciliationLayerAdapter {
     const latestFrameId = status.latestFrameId;
     const oldestFrameId = status.oldestFrameId;
     const authoritativeFrameId = report?.summary?.authoritativeFrameId ?? null;
-    const alignedFrameId = status.alignedFrameId;
     const highestSeverity = report?.summary?.highestSeverity || "low";
+    const entityReports = Array.isArray(report?.entityReports) ? report.entityReports : [];
+    const entityPreparations = entityReports.map((entityReport) => {
+      const entityId = sanitizeText(entityReport.entityId);
+      const entityTimeline = this.getOrCreateEntityTimelineBuffer(entityId);
+      const entityStatus = entityTimeline?.getStatus({
+        referenceFrameId: authoritativeFrameId
+      }) || {
+        historySize: 0,
+        historyLimit: this.timelineBuffer.getMaxFrames(),
+        oldestFrameId: null,
+        latestFrameId: null,
+        alignment: "unavailable",
+        alignedFrameId: null,
+        frameGap: null
+      };
+
+      const entityHistorySize = asFiniteNumber(entityStatus.historySize, 0);
+      const entityLatestFrameId = entityStatus.latestFrameId;
+      const entityOldestFrameId = entityStatus.oldestFrameId;
+      const entityAlignedFrameId = entityStatus.alignedFrameId;
+      const entitySeverity = sanitizeText(entityReport.severity, "low");
+
+      if (entityHistorySize < 8 || entityLatestFrameId === null || entityOldestFrameId === null || authoritativeFrameId === null) {
+        return {
+          entityId,
+          severity: entitySeverity,
+          status: "insufficient-history",
+          canPrepare: false,
+          rewindAnchorFrameId: null,
+          rewindTargetFrameId: authoritativeFrameId,
+          resimulateFrameCount: 0,
+          frameGap: entityStatus.frameGap,
+          alignment: entityStatus.alignment,
+          historySize: entityHistorySize,
+          historyLimit: asFiniteNumber(entityStatus.historyLimit, 0)
+        };
+      }
+
+      if (entitySeverity === "low" && asFiniteNumber(entityStatus.frameGap, 0) === 0) {
+        return {
+          entityId,
+          severity: entitySeverity,
+          status: "standby",
+          canPrepare: false,
+          rewindAnchorFrameId: entityAlignedFrameId,
+          rewindTargetFrameId: authoritativeFrameId,
+          resimulateFrameCount: 0,
+          frameGap: entityStatus.frameGap,
+          alignment: entityStatus.alignment,
+          historySize: entityHistorySize,
+          historyLimit: asFiniteNumber(entityStatus.historyLimit, 0)
+        };
+      }
+
+      const baselineAnchorFrameId = entityAlignedFrameId ?? authoritativeFrameId;
+      const rewindLeadFrames = entitySeverity === "high" ? 20 : 10;
+      const rewindAnchorFrameId = Math.max(entityOldestFrameId, baselineAnchorFrameId - rewindLeadFrames);
+      const resimulateFrameCount = Math.max(0, entityLatestFrameId - rewindAnchorFrameId);
+      const canPrepare = resimulateFrameCount > 0;
+
+      return {
+        entityId,
+        severity: entitySeverity,
+        status: canPrepare ? "ready" : "insufficient-history",
+        canPrepare,
+        rewindAnchorFrameId,
+        rewindTargetFrameId: authoritativeFrameId,
+        resimulateFrameCount,
+        frameGap: entityStatus.frameGap,
+        alignment: entityStatus.alignment,
+        historySize: entityHistorySize,
+        historyLimit: asFiniteNumber(entityStatus.historyLimit, 0)
+      };
+    });
+
+    const preferredSelected = Array.isArray(selectedEntityIds)
+      ? selectedEntityIds.map((entityId) => sanitizeText(entityId)).filter(Boolean)
+      : [];
+    const autoSelected = entityPreparations
+      .filter((item) => item.canPrepare && item.severity !== "low")
+      .map((item) => item.entityId);
+
+    const selected = preferredSelected.length > 0
+      ? preferredSelected
+      : autoSelected.length > 0
+        ? autoSelected
+        : entityPreparations.filter((item) => item.canPrepare).map((item) => item.entityId).slice(0, 1);
+
+    const primaryEntityPrep = selected.length > 0
+      ? entityPreparations.find((item) => item.entityId === selected[0]) || null
+      : entityPreparations[0] || null;
 
     if (historySize < 8 || latestFrameId === null || oldestFrameId === null || authoritativeFrameId === null) {
       return {
@@ -439,29 +529,31 @@ export default class ReconciliationLayerAdapter {
         alignment: status.alignment,
         historySize,
         historyLimit: asFiniteNumber(status.historyLimit, 0),
+        selectedEntityIds: [],
+        entities: entityPreparations,
         note: "Collect more timeline history before preparing rewind windows."
       };
     }
 
-    if (highestSeverity === "low" && status.frameGap === 0) {
+    if (highestSeverity === "low" && asFiniteNumber(status.frameGap, 0) === 0 && (!primaryEntityPrep || primaryEntityPrep.canPrepare === false)) {
       return {
         status: "standby",
         canPrepare: false,
-        rewindAnchorFrameId: alignedFrameId,
+        rewindAnchorFrameId: primaryEntityPrep?.rewindAnchorFrameId ?? status.alignedFrameId,
         resimulateFrameCount: 0,
         frameGap: status.frameGap,
         alignment: status.alignment,
         historySize,
         historyLimit: asFiniteNumber(status.historyLimit, 0),
+        selectedEntityIds: selected,
+        entities: entityPreparations,
         note: "Timeline aligned with low divergence; rewind preparation not required."
       };
     }
 
-    const baselineAnchorFrameId = alignedFrameId ?? authoritativeFrameId;
-    const rewindLeadFrames = highestSeverity === "high" ? 20 : 10;
-    const rewindAnchorFrameId = Math.max(oldestFrameId, baselineAnchorFrameId - rewindLeadFrames);
-    const resimulateFrameCount = Math.max(0, latestFrameId - rewindAnchorFrameId);
-    const canPrepare = resimulateFrameCount > 0;
+    const rewindAnchorFrameId = primaryEntityPrep?.rewindAnchorFrameId ?? Math.max(oldestFrameId, authoritativeFrameId - 10);
+    const resimulateFrameCount = primaryEntityPrep?.resimulateFrameCount ?? Math.max(0, latestFrameId - rewindAnchorFrameId);
+    const canPrepare = primaryEntityPrep?.canPrepare === true || resimulateFrameCount > 0;
 
     return {
       status: canPrepare ? "ready" : "insufficient-history",
@@ -469,12 +561,14 @@ export default class ReconciliationLayerAdapter {
       rewindAnchorFrameId,
       rewindTargetFrameId: authoritativeFrameId,
       resimulateFrameCount,
-      frameGap: status.frameGap,
-      alignment: status.alignment,
+      frameGap: primaryEntityPrep?.frameGap ?? status.frameGap,
+      alignment: primaryEntityPrep?.alignment ?? status.alignment,
       historySize,
       historyLimit: asFiniteNumber(status.historyLimit, 0),
+      selectedEntityIds: selected,
+      entities: entityPreparations,
       note: canPrepare
-        ? "Rewind window prepared for future rollback/resimulation slice."
+        ? "Rewind window prepared for selective rollback/resimulation slice."
         : "Timeline cannot produce rewind window yet."
     };
   }
@@ -495,18 +589,78 @@ export default class ReconciliationLayerAdapter {
 
   getTimelineStatus() {
     const referenceFrameId = this.latestDivergenceReport?.summary?.authoritativeFrameId ?? null;
-    return this.timelineBuffer.getStatus({ referenceFrameId });
+    const globalStatus = this.timelineBuffer.getStatus({ referenceFrameId });
+    const entityStatuses = this.listEntityTimelineIds().map((entityId) => {
+      const timeline = this.getOrCreateEntityTimelineBuffer(entityId);
+      const status = timeline?.getStatus({ referenceFrameId }) || {};
+      return {
+        entityId,
+        historySize: status.historySize ?? 0,
+        historyLimit: status.historyLimit ?? this.timelineBuffer.getMaxFrames(),
+        oldestFrameId: status.oldestFrameId ?? null,
+        latestFrameId: status.latestFrameId ?? null,
+        alignment: status.alignment ?? "unavailable",
+        alignedFrameId: status.alignedFrameId ?? null,
+        frameGap: status.frameGap ?? null
+      };
+    });
+
+    return {
+      ...globalStatus,
+      entityCount: entityStatuses.length,
+      entityStatuses
+    };
   }
 
-  getTimelineSnapshot(frameId) {
+  getTimelineSnapshot(frameId, options = {}) {
+    const entityId = sanitizeText(options.entityId);
+    if (entityId) {
+      const timeline = this.getOrCreateEntityTimelineBuffer(entityId);
+      return timeline?.getSnapshot(frameId) || null;
+    }
     return this.timelineBuffer.getSnapshot(frameId);
   }
 
-  truncatePredictedHistoryAfter(frameId) {
-    return this.timelineBuffer.removeSnapshotsAfter(frameId);
+  truncatePredictedHistoryAfter(frameId, options = {}) {
+    const includeGlobal = options.includeGlobal !== false;
+    const entityIds = Array.isArray(options.entityIds)
+      ? options.entityIds.map((entityId) => sanitizeText(entityId)).filter(Boolean)
+      : [];
+
+    let removedGlobal = 0;
+    if (includeGlobal) {
+      removedGlobal = this.timelineBuffer.removeSnapshotsAfter(frameId);
+    }
+
+    const removedEntities = {};
+    const targetEntityIds = entityIds.length > 0 ? entityIds : this.listEntityTimelineIds();
+    targetEntityIds.forEach((entityId) => {
+      const timeline = this.getOrCreateEntityTimelineBuffer(entityId);
+      const removed = timeline?.removeSnapshotsAfter(frameId) || 0;
+      removedEntities[entityId] = removed;
+    });
+
+    const totalRemovedEntities = Object.values(removedEntities).reduce((sum, value) => sum + asFiniteNumber(value, 0), 0);
+    return {
+      removedGlobal,
+      removedEntities,
+      totalRemoved: removedGlobal + totalRemovedEntities
+    };
   }
 
-  getLatestTimelineFrameId() {
+  truncateEntityPredictedHistoryAfter(entityIds, frameId) {
+    return this.truncatePredictedHistoryAfter(frameId, {
+      includeGlobal: false,
+      entityIds
+    });
+  }
+
+  getLatestTimelineFrameId(options = {}) {
+    const entityId = sanitizeText(options.entityId);
+    if (entityId) {
+      const timeline = this.getOrCreateEntityTimelineBuffer(entityId);
+      return timeline?.getStatus({}).latestFrameId ?? null;
+    }
     return this.timelineBuffer.getStatus({}).latestFrameId;
   }
 }

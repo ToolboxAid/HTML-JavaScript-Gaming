@@ -60,36 +60,60 @@ const REQUIRED_SEQUENCE_TYPES = [
   "RECONCILE_APPLIED"
 ];
 
-const PRIMARY_ENTITY_ID = "network-sample-c-entity";
+const ENTITY_DEFINITIONS = [
+  { entityId: "ship-alpha", label: "Ship Alpha", laneY: -28, baselineLagFrames: 0.5, driftScale: 1.0 },
+  { entityId: "ship-bravo", label: "Ship Bravo", laneY: 0, baselineLagFrames: 1.25, driftScale: 0.82 },
+  { entityId: "drone-charlie", label: "Drone Charlie", laneY: 28, baselineLagFrames: 2.0, driftScale: 1.18 }
+];
+const PRIMARY_ENTITY_ID = ENTITY_DEFINITIONS[0].entityId;
 const FIXED_REPLAY_DT_SECONDS = 1 / 60;
 
 function createEmptyInputFrameRecord() {
   return {
     traceMarkers: 0,
-    mismatchCount: 0,
-    reconcileCount: 0,
     validationCount: 0,
-    rewindPrepareCount: 0
+    rewindPrepareCount: 0,
+    entityMutations: {}
   };
 }
 
 function hasAnyInputRecordValue(record) {
   const source = record && typeof record === "object" ? record : {};
+  const entityMutations = source.entityMutations && typeof source.entityMutations === "object"
+    ? source.entityMutations
+    : {};
+  const hasEntityMutations = Object.values(entityMutations).some((entityMutation) => {
+    const mutation = entityMutation && typeof entityMutation === "object" ? entityMutation : {};
+    return Number(mutation.mismatchCount || 0) > 0 || Number(mutation.reconcileCount || 0) > 0;
+  });
+
   return Number(source.traceMarkers || 0) > 0
-    || Number(source.mismatchCount || 0) > 0
-    || Number(source.reconcileCount || 0) > 0
     || Number(source.validationCount || 0) > 0
-    || Number(source.rewindPrepareCount || 0) > 0;
+    || Number(source.rewindPrepareCount || 0) > 0
+    || hasEntityMutations;
 }
 
 function cloneInputRecord(record) {
   const source = record && typeof record === "object" ? record : {};
+  const entityMutations = source.entityMutations && typeof source.entityMutations === "object"
+    ? source.entityMutations
+    : {};
+  const clonedEntityMutations = {};
+  Object.keys(entityMutations).forEach((entityId) => {
+    const mutation = entityMutations[entityId] && typeof entityMutations[entityId] === "object"
+      ? entityMutations[entityId]
+      : {};
+    clonedEntityMutations[entityId] = {
+      mismatchCount: Number(mutation.mismatchCount || 0),
+      reconcileCount: Number(mutation.reconcileCount || 0)
+    };
+  });
+
   return {
     traceMarkers: Number(source.traceMarkers || 0),
-    mismatchCount: Number(source.mismatchCount || 0),
-    reconcileCount: Number(source.reconcileCount || 0),
     validationCount: Number(source.validationCount || 0),
-    rewindPrepareCount: Number(source.rewindPrepareCount || 0)
+    rewindPrepareCount: Number(source.rewindPrepareCount || 0),
+    entityMutations: clonedEntityMutations
   };
 }
 
@@ -119,6 +143,25 @@ function moveToward(currentValue, targetValue, maxDelta) {
     return target;
   }
   return current + (difference > 0 ? delta : -delta);
+}
+
+function normalizeEntityIdList(entityIds) {
+  if (!Array.isArray(entityIds)) {
+    return [];
+  }
+
+  const normalized = [];
+  const seen = new Set();
+  entityIds.forEach((entityId) => {
+    const safeId = typeof entityId === "string" ? entityId.trim() : "";
+    if (!safeId || seen.has(safeId)) {
+      return;
+    }
+    seen.add(safeId);
+    normalized.push(safeId);
+  });
+
+  return normalized;
 }
 
 function toStatusFromDelta(frameDelta) {
@@ -168,6 +211,9 @@ function toEventMessage(type, details) {
     const current = String(source.current || "unknown");
     return `Divergence state moved from ${previous} to ${current}.`;
   }
+  if (type === "ENTITY_SELECTION_CHANGED") {
+    return `Active entity changed to ${String(source.entityId || "unknown")}.`;
+  }
 
   return `${type} event recorded`;
 }
@@ -188,6 +234,20 @@ export default class FakeDivergenceTraceNetworkModel {
     this.predictedFrame = 0;
     this.manualOffsetFrames = 0;
     this.manualReconcileSeconds = 0;
+    this.selectedEntityId = PRIMARY_ENTITY_ID;
+    this.entityStates = ENTITY_DEFINITIONS.map((definition, index) => ({
+      entityId: definition.entityId,
+      label: definition.label,
+      laneY: definition.laneY,
+      baselineLagFrames: definition.baselineLagFrames,
+      driftScale: definition.driftScale,
+      predictedOffsetFrames: definition.baselineLagFrames,
+      predictedFrame: 0,
+      manualOffsetFrames: 0,
+      manualReconcileSeconds: 0,
+      lastStatus: "stable",
+      channelIndex: index
+    }));
 
     this.lastKnownStatus = "stable";
 
@@ -225,6 +285,55 @@ export default class FakeDivergenceTraceNetworkModel {
 
   getCurrentStep() {
     return SCENARIO_STEPS[this.stepIndex] || SCENARIO_STEPS[0];
+  }
+
+  getEntityState(entityId = PRIMARY_ENTITY_ID) {
+    return this.entityStates.find((entity) => entity.entityId === entityId) || null;
+  }
+
+  getSelectedEntityState() {
+    return this.getEntityState(this.selectedEntityId) || this.entityStates[0] || null;
+  }
+
+  listEntityIds() {
+    return this.entityStates.map((entityState) => entityState.entityId);
+  }
+
+  selectEntity(entityId, reason = "operator") {
+    const normalizedEntityId = typeof entityId === "string" ? entityId.trim() : "";
+    const entityState = this.getEntityState(normalizedEntityId);
+    if (!entityState) {
+      return this.selectedEntityId;
+    }
+
+    const previousEntityId = this.selectedEntityId;
+    this.selectedEntityId = entityState.entityId;
+    this.predictedOffsetFrames = entityState.predictedOffsetFrames;
+    this.predictedFrame = entityState.predictedFrame;
+    this.manualOffsetFrames = entityState.manualOffsetFrames;
+    this.manualReconcileSeconds = entityState.manualReconcileSeconds;
+    this.lastKnownStatus = entityState.lastStatus;
+
+    if (previousEntityId !== this.selectedEntityId) {
+      this.pushEvent("ENTITY_SELECTION_CHANGED", {
+        reason,
+        previousEntityId,
+        entityId: this.selectedEntityId
+      });
+    }
+    return this.selectedEntityId;
+  }
+
+  selectNextEntity(reason = "operator") {
+    if (this.entityStates.length <= 1) {
+      return this.selectedEntityId;
+    }
+
+    const currentIndex = this.entityStates.findIndex((entity) => entity.entityId === this.selectedEntityId);
+    const nextIndex = currentIndex >= 0
+      ? (currentIndex + 1) % this.entityStates.length
+      : 0;
+    return this.selectEntity(this.entityStates[nextIndex].entityId, reason);
   }
 
   pushEvent(type, details = {}) {
@@ -297,7 +406,7 @@ export default class FakeDivergenceTraceNetworkModel {
     this.rttMs = clamp(Math.round(baseline), 14, 90);
     this.jitterMs = clamp(Math.round(2 + Math.abs(Math.cos(this.elapsedSeconds * 2.3)) * 5), 1, 9);
 
-    const status = this.getDivergenceStatus();
+    const status = this.getOverallDivergenceStatus();
     this.simulatedPacketLossPct = status === "critical" ? 4 : status === "warning" ? 2 : 0;
   }
 
@@ -307,43 +416,74 @@ export default class FakeDivergenceTraceNetworkModel {
     this.authoritativeFrame += frameAdvance;
 
     const step = this.getCurrentStep();
-    const baseTargetOffset = step.targetOffsetFrames;
-    let targetOffset = baseTargetOffset + this.manualOffsetFrames;
+    this.entityStates.forEach((entityState) => {
+      const baseTargetOffset = (step.targetOffsetFrames * entityState.driftScale) + entityState.baselineLagFrames;
+      let targetOffset = baseTargetOffset + entityState.manualOffsetFrames;
 
-    if (this.manualReconcileSeconds > 0) {
-      this.manualReconcileSeconds = Math.max(0, this.manualReconcileSeconds - dtSeconds);
-      targetOffset = 0;
-    } else if (this.manualOffsetFrames > 0) {
-      this.manualOffsetFrames = Math.max(0, this.manualOffsetFrames - (dtSeconds * 3));
+      if (entityState.manualReconcileSeconds > 0) {
+        entityState.manualReconcileSeconds = Math.max(0, entityState.manualReconcileSeconds - dtSeconds);
+        targetOffset = entityState.baselineLagFrames;
+      } else if (entityState.manualOffsetFrames > 0) {
+        entityState.manualOffsetFrames = Math.max(0, entityState.manualOffsetFrames - (dtSeconds * 3));
+      }
+
+      const moveRateFramesPerSecond = step.id === "reconciled" || entityState.manualReconcileSeconds > 0
+        ? 22
+        : 10;
+      entityState.predictedOffsetFrames = moveToward(
+        entityState.predictedOffsetFrames,
+        targetOffset,
+        moveRateFramesPerSecond * dtSeconds
+      );
+      entityState.predictedFrame = this.authoritativeFrame + Math.round(entityState.predictedOffsetFrames);
+
+      const currentStatus = toStatusFromDelta(entityState.predictedFrame - this.authoritativeFrame);
+      if (currentStatus !== entityState.lastStatus && emitEvents) {
+        this.pushEvent("DIVERGENCE_STATE_CHANGED", {
+          entityId: entityState.entityId,
+          previous: entityState.lastStatus,
+          current: currentStatus,
+          delta: entityState.predictedFrame - this.authoritativeFrame
+        });
+      }
+      entityState.lastStatus = currentStatus;
+    });
+
+    const selectedEntity = this.getSelectedEntityState();
+    if (selectedEntity) {
+      this.predictedOffsetFrames = selectedEntity.predictedOffsetFrames;
+      this.predictedFrame = selectedEntity.predictedFrame;
+      this.manualOffsetFrames = selectedEntity.manualOffsetFrames;
+      this.manualReconcileSeconds = selectedEntity.manualReconcileSeconds;
+      this.lastKnownStatus = selectedEntity.lastStatus;
     }
-
-    const moveRateFramesPerSecond = step.id === "reconciled" || this.manualReconcileSeconds > 0
-      ? 22
-      : 10;
-    this.predictedOffsetFrames = moveToward(
-      this.predictedOffsetFrames,
-      targetOffset,
-      moveRateFramesPerSecond * dtSeconds
-    );
-    this.predictedFrame = this.authoritativeFrame + Math.round(this.predictedOffsetFrames);
-
-    const currentStatus = this.getDivergenceStatus();
-    if (currentStatus !== this.lastKnownStatus && emitEvents) {
-      this.pushEvent("DIVERGENCE_STATE_CHANGED", {
-        previous: this.lastKnownStatus,
-        current: currentStatus,
-        delta: this.getFrameDelta()
-      });
-    }
-    this.lastKnownStatus = currentStatus;
   }
 
-  getFrameDelta() {
-    return this.predictedFrame - this.authoritativeFrame;
+  getFrameDelta(entityId = this.selectedEntityId) {
+    const entityState = this.getEntityState(entityId);
+    if (!entityState) {
+      return this.predictedFrame - this.authoritativeFrame;
+    }
+    return entityState.predictedFrame - this.authoritativeFrame;
   }
 
-  getDivergenceStatus() {
-    return toStatusFromDelta(this.getFrameDelta());
+  getDivergenceStatus(entityId = this.selectedEntityId) {
+    return toStatusFromDelta(this.getFrameDelta(entityId));
+  }
+
+  getMaxAbsoluteFrameDelta() {
+    if (!Array.isArray(this.entityStates) || this.entityStates.length === 0) {
+      return Math.abs(this.getFrameDelta());
+    }
+
+    return this.entityStates.reduce((maxValue, entityState) => {
+      const absoluteDelta = Math.abs(this.getFrameDelta(entityState.entityId));
+      return Math.max(maxValue, absoluteDelta);
+    }, 0);
+  }
+
+  getOverallDivergenceStatus() {
+    return toStatusFromDelta(this.getMaxAbsoluteFrameDelta());
   }
 
   markPendingInput(key, count = 1) {
@@ -352,6 +492,26 @@ export default class FakeDivergenceTraceNetworkModel {
       return;
     }
     this.pendingInputRecord[key] = Number(this.pendingInputRecord[key] || 0) + normalizedCount;
+  }
+
+  markPendingEntityMutation(entityId, mutationKey, count = 1) {
+    const normalizedEntityId = typeof entityId === "string" ? entityId.trim() : "";
+    const normalizedCount = Math.max(0, Number(count) || 0);
+    if (!normalizedEntityId || normalizedCount <= 0 || this.isReplayExecuting) {
+      return;
+    }
+
+    if (!this.pendingInputRecord.entityMutations || typeof this.pendingInputRecord.entityMutations !== "object") {
+      this.pendingInputRecord.entityMutations = {};
+    }
+    if (!this.pendingInputRecord.entityMutations[normalizedEntityId]) {
+      this.pendingInputRecord.entityMutations[normalizedEntityId] = {
+        mismatchCount: 0,
+        reconcileCount: 0
+      };
+    }
+    this.pendingInputRecord.entityMutations[normalizedEntityId][mutationKey] =
+      Number(this.pendingInputRecord.entityMutations[normalizedEntityId][mutationKey] || 0) + normalizedCount;
   }
 
   flushPendingInputsForFrame(frameId) {
@@ -375,25 +535,51 @@ export default class FakeDivergenceTraceNetworkModel {
     return cloneInputRecord(this.inputHistoryByFrame.get(normalizedFrameId));
   }
 
-  applyMismatchImpulse(count = 1) {
+  applyMismatchImpulse(entityId = this.selectedEntityId, count = 1) {
     const normalizedCount = Math.max(1, Math.floor(Number(count) || 1));
-    this.manualOffsetFrames = clamp(this.manualOffsetFrames + (12 * normalizedCount), 0, 30);
+    const entityState = this.getEntityState(entityId);
+    if (!entityState) {
+      return false;
+    }
+    entityState.manualOffsetFrames = clamp(entityState.manualOffsetFrames + (12 * normalizedCount), 0, 30);
+    return true;
   }
 
-  applyReconcileImpulse() {
-    this.manualOffsetFrames = 0;
-    this.manualReconcileSeconds = 2.4;
+  applyReconcileImpulse(entityId = this.selectedEntityId) {
+    const entityState = this.getEntityState(entityId);
+    if (!entityState) {
+      return false;
+    }
+    entityState.manualOffsetFrames = 0;
+    entityState.manualReconcileSeconds = 2.4;
+    return true;
   }
 
-  applyReplayInputFrame(inputRecord) {
+  applyReplayInputFrame(inputRecord, selectedEntityIds = null) {
     const replayInput = cloneInputRecord(inputRecord);
+    const entityFilter = Array.isArray(selectedEntityIds) && selectedEntityIds.length > 0
+      ? new Set(selectedEntityIds)
+      : null;
 
-    if (replayInput.mismatchCount > 0) {
-      this.applyMismatchImpulse(replayInput.mismatchCount);
-    }
-    if (replayInput.reconcileCount > 0) {
-      this.applyReconcileImpulse();
-    }
+    const entityMutations = replayInput.entityMutations && typeof replayInput.entityMutations === "object"
+      ? replayInput.entityMutations
+      : {};
+    Object.keys(entityMutations).forEach((entityId) => {
+      if (entityFilter && !entityFilter.has(entityId)) {
+        return;
+      }
+      const mutation = entityMutations[entityId] && typeof entityMutations[entityId] === "object"
+        ? entityMutations[entityId]
+        : {};
+      const mismatchCount = Math.max(0, Number(mutation.mismatchCount || 0));
+      const reconcileCount = Math.max(0, Number(mutation.reconcileCount || 0));
+      if (mismatchCount > 0) {
+        this.applyMismatchImpulse(entityId, mismatchCount);
+      }
+      if (reconcileCount > 0) {
+        this.applyReconcileImpulse(entityId);
+      }
+    });
   }
 
   advanceSimulation(dtSeconds, options = {}) {
@@ -411,25 +597,25 @@ export default class FakeDivergenceTraceNetworkModel {
     return {
       frameId: this.authoritativeFrame,
       timestampMs: Math.round(this.elapsedSeconds * 1000),
-      entities: [
-        {
-          entityId: PRIMARY_ENTITY_ID,
-          frameValue: this.predictedFrame,
-          position: {
-            x: this.predictedFrame,
-            y: 0
-          },
-          velocity: {
-            x: Number(this.predictedOffsetFrames.toFixed(2)),
-            y: 0
-          },
-          stateFlags: {
-            phaseId: step.id,
-            cycleCount: this.cycleCount,
-            divergenceStatus: this.getDivergenceStatus()
-          }
+      entities: this.entityStates.map((entityState) => ({
+        entityId: entityState.entityId,
+        label: entityState.label,
+        frameValue: entityState.predictedFrame,
+        position: {
+          x: entityState.predictedFrame,
+          y: entityState.laneY
+        },
+        velocity: {
+          x: Number(entityState.predictedOffsetFrames.toFixed(2)),
+          y: 0
+        },
+        stateFlags: {
+          phaseId: step.id,
+          cycleCount: this.cycleCount,
+          divergenceStatus: this.getDivergenceStatus(entityState.entityId),
+          selected: entityState.entityId === this.selectedEntityId
         }
-      ],
+      })),
       meta: {
         source: "predicted",
         sampleId: "network-sample-c",
@@ -446,7 +632,16 @@ export default class FakeDivergenceTraceNetworkModel {
           lastKnownStatus: this.lastKnownStatus,
           rttMs: this.rttMs,
           jitterMs: this.jitterMs,
-          simulatedPacketLossPct: this.simulatedPacketLossPct
+          simulatedPacketLossPct: this.simulatedPacketLossPct,
+          selectedEntityId: this.selectedEntityId,
+          entityStates: this.entityStates.map((entityState) => ({
+            entityId: entityState.entityId,
+            predictedOffsetFrames: Number(entityState.predictedOffsetFrames.toFixed(6)),
+            predictedFrame: entityState.predictedFrame,
+            manualOffsetFrames: Number(entityState.manualOffsetFrames.toFixed(6)),
+            manualReconcileSeconds: Number(entityState.manualReconcileSeconds.toFixed(6)),
+            lastStatus: entityState.lastStatus
+          }))
         }
       }
     };
@@ -457,25 +652,24 @@ export default class FakeDivergenceTraceNetworkModel {
     return {
       frameId: this.authoritativeFrame,
       timestampMs: Math.round(this.elapsedSeconds * 1000),
-      entities: [
-        {
-          entityId: PRIMARY_ENTITY_ID,
-          frameValue: this.authoritativeFrame,
-          position: {
-            x: this.authoritativeFrame,
-            y: 0
-          },
-          velocity: {
-            x: 0,
-            y: 0
-          },
-          stateFlags: {
-            phaseId: step.id,
-            cycleCount: this.cycleCount,
-            authoritative: true
-          }
+      entities: this.entityStates.map((entityState) => ({
+        entityId: entityState.entityId,
+        label: entityState.label,
+        frameValue: this.authoritativeFrame,
+        position: {
+          x: this.authoritativeFrame,
+          y: entityState.laneY
+        },
+        velocity: {
+          x: 0,
+          y: 0
+        },
+        stateFlags: {
+          phaseId: step.id,
+          cycleCount: this.cycleCount,
+          authoritative: true
         }
-      ],
+      })),
       meta: {
         source: "authoritative",
         sampleId: "network-sample-c"
@@ -509,28 +703,42 @@ export default class FakeDivergenceTraceNetworkModel {
     });
   }
 
-  triggerManualMismatch(reason = "operator") {
-    this.markPendingInput("mismatchCount", 1);
-    this.applyMismatchImpulse(1);
+  triggerManualMismatch(reason = "operator", entityId = this.selectedEntityId) {
+    this.markPendingEntityMutation(entityId, "mismatchCount", 1);
+    this.applyMismatchImpulse(entityId, 1);
+    const entityState = this.getEntityState(entityId);
     this.pushEvent("MANUAL_MISMATCH_INJECTED", {
       reason,
-      manualOffsetFrames: Number(this.manualOffsetFrames.toFixed(2)),
-      frameDelta: this.getFrameDelta()
+      entityId,
+      manualOffsetFrames: Number((entityState?.manualOffsetFrames ?? 0).toFixed(2)),
+      frameDelta: this.getFrameDelta(entityId)
     });
   }
 
-  triggerManualReconcile(reason = "operator") {
-    this.markPendingInput("reconcileCount", 1);
-    this.applyReconcileImpulse();
+  triggerManualReconcile(reason = "operator", entityId = this.selectedEntityId) {
+    this.markPendingEntityMutation(entityId, "reconcileCount", 1);
+    this.applyReconcileImpulse(entityId);
     this.pushEvent("MANUAL_RECONCILE_REQUESTED", {
       reason,
-      frameDelta: this.getFrameDelta()
+      entityId,
+      frameDelta: this.getFrameDelta(entityId)
     });
   }
 
-  triggerRewindPreparation(reason = "operator") {
+  triggerRewindPreparation(reason = "operator", options = {}) {
+    const requestedEntityIds = normalizeEntityIdList(
+      Array.isArray(options.entityIds) ? options.entityIds : options.selectedEntityIds
+    );
+    const availableEntityIds = new Set(this.listEntityIds());
+    const selectedEntityIds = requestedEntityIds.filter((entityId) => availableEntityIds.has(entityId));
+
     this.markPendingInput("rewindPrepareCount", 1);
     this.updateReconciliationLayer();
+    if (selectedEntityIds.length > 0) {
+      this.latestRewindPreparation = this.reconciliationLayer.buildRewindPreparation({
+        selectedEntityIds
+      });
+    }
     const rewindPreparation = this.latestRewindPreparation || {
       status: "insufficient-history",
       canPrepare: false,
@@ -542,6 +750,9 @@ export default class FakeDivergenceTraceNetworkModel {
       reason,
       status: rewindPreparation.status,
       canPrepare: rewindPreparation.canPrepare,
+      selectedEntityIds: Array.isArray(rewindPreparation.selectedEntityIds)
+        ? rewindPreparation.selectedEntityIds.slice()
+        : [],
       rewindAnchorFrameId: rewindPreparation.rewindAnchorFrameId,
       resimulateFrameCount: rewindPreparation.resimulateFrameCount
     });
@@ -581,19 +792,67 @@ export default class FakeDivergenceTraceNetworkModel {
     this.jitterMs = Number(modelState.jitterMs || this.jitterMs);
     this.simulatedPacketLossPct = Number(modelState.simulatedPacketLossPct || this.simulatedPacketLossPct);
     this.lastKnownStatus = String(modelState.lastKnownStatus || this.lastKnownStatus);
+    this.selectedEntityId = typeof modelState.selectedEntityId === "string" && modelState.selectedEntityId.trim()
+      ? modelState.selectedEntityId.trim()
+      : this.selectedEntityId;
+
+    const serializedEntityStates = Array.isArray(modelState.entityStates)
+      ? modelState.entityStates
+      : [];
+    serializedEntityStates.forEach((serializedState) => {
+      const entityId = typeof serializedState?.entityId === "string" ? serializedState.entityId : "";
+      const entityState = this.getEntityState(entityId);
+      if (!entityState) {
+        return;
+      }
+      entityState.predictedOffsetFrames = Number(serializedState.predictedOffsetFrames || entityState.predictedOffsetFrames);
+      entityState.predictedFrame = Math.max(0, Math.floor(Number(serializedState.predictedFrame ?? entityState.predictedFrame)));
+      entityState.manualOffsetFrames = Number(serializedState.manualOffsetFrames || entityState.manualOffsetFrames);
+      entityState.manualReconcileSeconds = Math.max(0, Number(serializedState.manualReconcileSeconds || entityState.manualReconcileSeconds));
+      entityState.lastStatus = String(serializedState.lastStatus || entityState.lastStatus);
+    });
+
+    const selectedState = this.getSelectedEntityState();
+    if (selectedState) {
+      this.predictedOffsetFrames = selectedState.predictedOffsetFrames;
+      this.predictedFrame = selectedState.predictedFrame;
+      this.manualOffsetFrames = selectedState.manualOffsetFrames;
+      this.manualReconcileSeconds = selectedState.manualReconcileSeconds;
+      this.lastKnownStatus = selectedState.lastStatus;
+    }
 
     return true;
   }
 
-  executeRewindReplay(reason = "operator") {
+  executeRewindReplay(reason = "operator", options = {}) {
     this.updateReconciliationLayer();
+    const availableEntityIds = new Set(this.listEntityIds());
+    const requestedEntityIds = normalizeEntityIdList(options.entityIds)
+      .filter((entityId) => availableEntityIds.has(entityId));
+    if (requestedEntityIds.length > 0) {
+      this.latestRewindPreparation = this.reconciliationLayer.buildRewindPreparation({
+        selectedEntityIds: requestedEntityIds
+      });
+    }
+
     const rewindPreparation = this.latestRewindPreparation || {};
+    const preparedEntityRows = Array.isArray(rewindPreparation.entities)
+      ? rewindPreparation.entities
+      : [];
+    const defaultEntityIds = normalizeEntityIdList(rewindPreparation.selectedEntityIds)
+      .filter((entityId) => availableEntityIds.has(entityId));
+    const selectedEntityIds = requestedEntityIds.length > 0
+      ? requestedEntityIds
+      : defaultEntityIds.length > 0
+        ? defaultEntityIds
+        : preparedEntityRows.filter((row) => row.canPrepare).map((row) => row.entityId).slice(0, 1);
 
     if (rewindPreparation.canPrepare !== true) {
       this.pushEvent("REWIND_REPLAY_SKIPPED", {
         reason,
         status: rewindPreparation.status || "not-ready",
-        canPrepare: false
+        canPrepare: false,
+        selectedEntityIds
       });
       return {
         executed: false,
@@ -602,14 +861,58 @@ export default class FakeDivergenceTraceNetworkModel {
       };
     }
 
-    const anchorFrameId = Number(rewindPreparation.rewindAnchorFrameId);
-    const latestFrameId = Number(this.reconciliationLayer.getLatestTimelineFrameId());
+    if (selectedEntityIds.length === 0) {
+      this.pushEvent("REWIND_REPLAY_SKIPPED", {
+        reason,
+        status: "no-entities-selected",
+        canPrepare: false
+      });
+      return {
+        executed: false,
+        reason: "no-entities-selected",
+        rewindPreparation
+      };
+    }
+
+    const entityPreparationMap = new Map(preparedEntityRows.map((row) => [row.entityId, row]));
+    const selectedEntityPreps = selectedEntityIds
+      .map((entityId) => entityPreparationMap.get(entityId))
+      .filter((row) => row && row.canPrepare);
+    if (selectedEntityPreps.length === 0) {
+      this.pushEvent("REWIND_REPLAY_SKIPPED", {
+        reason,
+        status: "entities-not-ready",
+        selectedEntityIds
+      });
+      return {
+        executed: false,
+        reason: "entities-not-ready",
+        rewindPreparation
+      };
+    }
+
+    const anchorFrameId = selectedEntityPreps.reduce((minValue, row) => {
+      const anchor = Number(row.rewindAnchorFrameId);
+      if (!Number.isFinite(anchor)) {
+        return minValue;
+      }
+      return Math.min(minValue, anchor);
+    }, Number.POSITIVE_INFINITY);
+    const latestFrameId = selectedEntityIds.reduce((maxValue, entityId) => {
+      const latestForEntity = Number(this.reconciliationLayer.getLatestTimelineFrameId({ entityId }));
+      if (!Number.isFinite(latestForEntity)) {
+        return maxValue;
+      }
+      return Math.max(maxValue, latestForEntity);
+    }, Number(this.reconciliationLayer.getLatestTimelineFrameId()));
+
     if (!Number.isFinite(anchorFrameId) || !Number.isFinite(latestFrameId) || latestFrameId <= anchorFrameId) {
       this.pushEvent("REWIND_REPLAY_SKIPPED", {
         reason,
         status: "invalid-window",
-        anchorFrameId: rewindPreparation.rewindAnchorFrameId,
-        latestFrameId: this.reconciliationLayer.getLatestTimelineFrameId()
+        anchorFrameId: Number.isFinite(anchorFrameId) ? anchorFrameId : rewindPreparation.rewindAnchorFrameId,
+        latestFrameId: Number.isFinite(latestFrameId) ? latestFrameId : this.reconciliationLayer.getLatestTimelineFrameId(),
+        selectedEntityIds
       });
       return {
         executed: false,
@@ -623,7 +926,8 @@ export default class FakeDivergenceTraceNetworkModel {
       this.pushEvent("REWIND_REPLAY_SKIPPED", {
         reason,
         status: "missing-anchor",
-        anchorFrameId
+        anchorFrameId,
+        selectedEntityIds
       });
       return {
         executed: false,
@@ -631,20 +935,29 @@ export default class FakeDivergenceTraceNetworkModel {
         rewindPreparation
       };
     }
+    if (selectedEntityIds.length > 0) {
+      this.selectEntity(selectedEntityIds[0], "rewind-replay");
+    }
 
-    const truncatedCount = this.reconciliationLayer.truncatePredictedHistoryAfter(anchorFrameId);
+    const truncation = this.reconciliationLayer.truncatePredictedHistoryAfter(anchorFrameId, {
+      includeGlobal: true,
+      entityIds: selectedEntityIds
+    });
     const replayStartFrameId = anchorFrameId + 1;
     let replayedFrameCount = 0;
 
     this.isReplayExecuting = true;
-    for (let frameId = replayStartFrameId; frameId <= latestFrameId; frameId += 1) {
-      const replayInput = this.getInputRecordForFrame(frameId);
-      this.applyReplayInputFrame(replayInput);
-      this.advanceSimulation(FIXED_REPLAY_DT_SECONDS, { emitEvents: false });
-      this.reconciliationLayer.recordPredictedSnapshot(this.createPredictedSnapshot());
-      replayedFrameCount += 1;
+    try {
+      for (let frameId = replayStartFrameId; frameId <= latestFrameId; frameId += 1) {
+        const replayInput = this.getInputRecordForFrame(frameId);
+        this.applyReplayInputFrame(replayInput, selectedEntityIds);
+        this.advanceSimulation(FIXED_REPLAY_DT_SECONDS, { emitEvents: false });
+        this.reconciliationLayer.recordPredictedSnapshot(this.createPredictedSnapshot());
+        replayedFrameCount += 1;
+      }
+    } finally {
+      this.isReplayExecuting = false;
     }
-    this.isReplayExecuting = false;
 
     this.updateReconciliationLayer();
     const postReplayRewind = this.latestRewindPreparation || null;
@@ -654,10 +967,11 @@ export default class FakeDivergenceTraceNetworkModel {
     this.latestReplaySummary = {
       replayId: this.replayExecutionCount,
       reason,
+      selectedEntityIds: selectedEntityIds.slice(),
       replayAnchorFrameId: anchorFrameId,
       replayLatestFrameId: latestFrameId,
       replayedFrameCount,
-      truncatedCount,
+      truncatedCount: truncation.totalRemoved,
       postReplayCorrectionMode: postReplayCorrection?.mode || "hold-annotate",
       postReplaySeverity: postReplayCorrection?.severity || "low",
       postReplayRewindStatus: postReplayRewind?.status || "unknown"
@@ -669,7 +983,8 @@ export default class FakeDivergenceTraceNetworkModel {
       replayAnchorFrameId: anchorFrameId,
       replayLatestFrameId: latestFrameId,
       replayedFrameCount,
-      truncatedCount,
+      truncatedCount: truncation.totalRemoved,
+      selectedEntityIds: selectedEntityIds.slice(),
       postReplayCorrectionMode: this.latestReplaySummary.postReplayCorrectionMode,
       postReplaySeverity: this.latestReplaySummary.postReplaySeverity,
       postReplayRewindStatus: this.latestReplaySummary.postReplayRewindStatus
@@ -710,8 +1025,8 @@ export default class FakeDivergenceTraceNetworkModel {
   }
 
   computeValidationChecks() {
-    const frameDelta = Math.abs(this.getFrameDelta());
-    const status = this.getDivergenceStatus();
+    const frameDelta = this.getMaxAbsoluteFrameDelta();
+    const status = this.getOverallDivergenceStatus();
     const hasCoreSequence = REQUIRED_SEQUENCE_TYPES.every((type) => this.seenEventTypes.has(type));
     const hasDivergenceObserved = this.seenEventTypes.has("DIVERGENCE_DETECTED") || frameDelta >= 8;
     const hasTraceValidationWindow = this.seenEventTypes.has("TRACE_VALIDATION_WINDOW");
@@ -816,16 +1131,57 @@ export default class FakeDivergenceTraceNetworkModel {
     }
 
     const step = this.getCurrentStep();
-    const frameDelta = this.getFrameDelta();
-    const status = this.getDivergenceStatus();
+    const selectedEntity = this.getSelectedEntityState();
+    const selectedEntityId = selectedEntity?.entityId || this.selectedEntityId;
+    const frameDelta = this.getFrameDelta(selectedEntityId);
+    const status = this.getDivergenceStatus(selectedEntityId);
+    const overallFrameDelta = this.getMaxAbsoluteFrameDelta();
+    const overallStatus = this.getOverallDivergenceStatus();
     const validation = this.buildValidationSnapshot();
     const divergenceReport = this.latestDivergenceReport || null;
     const correctionPlan = this.latestCorrectionPlan || null;
     const rewindPreparation = this.latestRewindPreparation || null;
     const timelineStatus = this.reconciliationLayer.getTimelineStatus();
-    const primaryEntity = Array.isArray(divergenceReport?.entityReports) && divergenceReport.entityReports.length > 0
-      ? divergenceReport.entityReports[0]
-      : null;
+    const entityReports = Array.isArray(divergenceReport?.entityReports)
+      ? divergenceReport.entityReports
+      : [];
+    const selectedEntityReport = entityReports.find((entity) => entity.entityId === selectedEntityId) || null;
+    const timelineEntityStatuses = Array.isArray(timelineStatus?.entityStatuses)
+      ? timelineStatus.entityStatuses
+      : [];
+    const rewindPreparationEntities = Array.isArray(rewindPreparation?.entities)
+      ? rewindPreparation.entities
+      : [];
+    const rewindSelectedEntityIds = normalizeEntityIdList(rewindPreparation?.selectedEntityIds);
+
+    const entityReportById = new Map(entityReports.map((entityReport) => [entityReport.entityId, entityReport]));
+    const timelineEntityStatusById = new Map(timelineEntityStatuses.map((entityStatus) => [entityStatus.entityId, entityStatus]));
+    const rewindPreparationById = new Map(rewindPreparationEntities.map((entityPrep) => [entityPrep.entityId, entityPrep]));
+
+    const divergenceEntities = this.entityStates.map((entityState) => {
+      const entityReport = entityReportById.get(entityState.entityId) || {};
+      const timelineEntityStatus = timelineEntityStatusById.get(entityState.entityId) || {};
+      const rewindEntityStatus = rewindPreparationById.get(entityState.entityId) || {};
+      return {
+        entityId: entityState.entityId,
+        label: entityState.label,
+        selected: entityState.entityId === selectedEntityId,
+        divergenceStatus: entityState.lastStatus,
+        frameDelta: this.getFrameDelta(entityState.entityId),
+        authoritativeFrame: this.authoritativeFrame,
+        predictedFrame: entityState.predictedFrame,
+        targetOffsetFrames: Number(entityState.predictedOffsetFrames.toFixed(2)),
+        severity: entityReport.severity || "low",
+        correctionMode: entityReport.correctionMode || "hold-annotate",
+        alignment: entityReport.alignment || timelineEntityStatus.alignment || "unavailable",
+        matchedPredictedFrameId: entityReport.matchedPredictedFrameId ?? timelineEntityStatus.alignedFrameId ?? null,
+        timelineFrameGap: timelineEntityStatus.frameGap ?? entityReport.frameGap ?? null,
+        rewindStatus: rewindEntityStatus.status || "n/a",
+        rewindCanPrepare: Boolean(rewindEntityStatus.canPrepare),
+        rewindAnchorFrameId: rewindEntityStatus.rewindAnchorFrameId ?? null,
+        rewindResimulateFrameCount: rewindEntityStatus.resimulateFrameCount ?? 0
+      };
+    });
 
     return {
       sessionId: this.sessionId,
@@ -844,13 +1200,22 @@ export default class FakeDivergenceTraceNetworkModel {
       },
       divergence: {
         status,
+        selectedStatus: status,
+        overallStatus,
         frameDelta,
+        selectedFrameDelta: frameDelta,
+        overallFrameDelta,
         authoritativeFrame: this.authoritativeFrame,
         predictedFrame: this.predictedFrame,
         targetOffsetFrames: Number(this.predictedOffsetFrames.toFixed(2)),
+        selectedEntityId,
+        selectedEntityLabel: selectedEntity?.label || selectedEntityId,
+        selectedEntityIndex: selectedEntity?.channelIndex ?? 0,
+        entityCount: divergenceEntities.length,
+        entities: divergenceEntities,
         alignment: divergenceReport?.alignment || "unavailable",
-        severity: primaryEntity?.severity || divergenceReport?.summary?.highestSeverity || "low",
-        correctionMode: primaryEntity?.correctionMode || correctionPlan?.mode || "hold-annotate",
+        severity: selectedEntityReport?.severity || divergenceReport?.summary?.highestSeverity || "low",
+        correctionMode: selectedEntityReport?.correctionMode || correctionPlan?.mode || "hold-annotate",
         explanation: "Client-predicted frame intentionally diverges from authoritative frame during seeded mismatch windows.",
         likelyCause: "Deterministic offset injection plus delayed reconcile window.",
         reconciliationHint: "Use R or wait for reconcile phase to collapse frame delta."
@@ -864,22 +1229,41 @@ export default class FakeDivergenceTraceNetworkModel {
           oldestFrameId: timelineStatus.oldestFrameId,
           latestFrameId: timelineStatus.latestFrameId,
           alignment: timelineStatus.alignment,
-          frameGap: timelineStatus.frameGap
+          frameGap: timelineStatus.frameGap,
+          entityCount: timelineStatus.entityCount || 0,
+          entities: timelineEntityStatuses.map((entityStatus) => ({
+            entityId: entityStatus.entityId,
+            selected: entityStatus.entityId === selectedEntityId,
+            historySize: entityStatus.historySize,
+            historyLimit: entityStatus.historyLimit,
+            oldestFrameId: entityStatus.oldestFrameId,
+            latestFrameId: entityStatus.latestFrameId,
+            alignment: entityStatus.alignment,
+            alignedFrameId: entityStatus.alignedFrameId,
+            frameGap: entityStatus.frameGap
+          }))
         }
       },
       correction: correctionPlan,
-      rewindPreparation,
+      rewindPreparation: rewindPreparation
+        ? {
+            ...rewindPreparation,
+            selectedEntityIds: rewindSelectedEntityIds,
+            entities: rewindPreparationEntities.slice()
+          }
+        : null,
       rewindReplay: this.latestReplaySummary ? { ...this.latestReplaySummary } : null,
       reproduction: {
         summary: "Reproduce divergence in a deterministic cycle and validate trace ordering before reconcile.",
         steps: [
           "Open Play first and observe baseline sync.",
           "Let mismatch-seeded and divergence-observed phases run.",
-          "Optionally press D to inject an additional mismatch burst.",
+          "Press E to cycle active entity before injecting divergence controls.",
+          "Optionally press D to inject an additional mismatch burst on selected entity.",
           "Open Debug Mode and compare divergence state + trace ordering.",
           "Inspect timeline history/alignment and rewind preparation status.",
-          "Press W to refresh rewind preparation snapshot when needed.",
-          "Press X to execute rewind + deterministic replay.",
+          "Press W to refresh rewind preparation snapshot for selected entity.",
+          "Press X to execute selective rewind + deterministic replay.",
           "Press V to run validation and verify checklist status.",
           "Press R or wait for reconcile phase, then validate again."
         ]

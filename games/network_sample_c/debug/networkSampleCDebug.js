@@ -22,6 +22,23 @@ function asNumber(value, fallback = 0) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+function formatEntityLine(entity, options = {}) {
+  const source = asObject(entity);
+  const limit = Number.isFinite(Number(options.labelLimit))
+    ? Math.max(6, Math.floor(Number(options.labelLimit)))
+    : 14;
+  const label = sanitizeText(source.label) || sanitizeText(source.entityId) || "entity";
+  const compactLabel = label.length > limit
+    ? `${label.slice(0, limit - 1)}.`
+    : label;
+  const marker = source.selected === true ? "*" : "-";
+  const frameDelta = asNumber(source.frameDelta, 0);
+  const status = sanitizeText(source.divergenceStatus || source.status) || "unknown";
+  const severity = sanitizeText(source.severity) || "low";
+  const alignment = sanitizeText(source.alignment) || "unavailable";
+  return `${marker}${compactLabel} delta=${frameDelta} status=${status} severity=${severity} align=${alignment}`;
+}
+
 function toNetworkSnapshot(snapshot) {
   return asObject(snapshot?.assets?.networkSampleC);
 }
@@ -35,12 +52,16 @@ function toDivergenceLines(snapshot) {
   const scenario = asObject(network.scenario);
   const divergence = asObject(network.divergence);
   const transport = asObject(network.network);
+  const entities = asArray(divergence.entities);
+  const selectedEntityId = sanitizeText(divergence.selectedEntityId);
+  const selectedEntity = entities.find((entity) => sanitizeText(asObject(entity).entityId) === selectedEntityId);
 
-  return [
-    `status=${sanitizeText(divergence.status) || "unknown"}`,
+  const lines = [
+    `selectedStatus=${sanitizeText(divergence.status) || "unknown"} overallStatus=${sanitizeText(divergence.overallStatus) || sanitizeText(divergence.status) || "unknown"}`,
     `severity=${sanitizeText(divergence.severity) || "low"} correction=${sanitizeText(divergence.correctionMode) || "hold-annotate"}`,
     `phase=${sanitizeText(scenario.phaseLabel) || "n/a"} (${sanitizeText(scenario.phaseId) || "n/a"})`,
-    `frameDelta=${asNumber(divergence.frameDelta, 0)}`,
+    `selectedEntity=${sanitizeText(divergence.selectedEntityLabel) || selectedEntityId || "n/a"} selectedFrameDelta=${asNumber(divergence.selectedFrameDelta ?? divergence.frameDelta, 0)}`,
+    `overallFrameDelta=${asNumber(divergence.overallFrameDelta, asNumber(divergence.frameDelta, 0))}`,
     `authoritativeFrame=${asNumber(divergence.authoritativeFrame, 0)}`,
     `predictedFrame=${asNumber(divergence.predictedFrame, 0)}`,
     `alignment=${sanitizeText(divergence.alignment) || "unavailable"}`,
@@ -48,18 +69,42 @@ function toDivergenceLines(snapshot) {
     `rttMs=${asNumber(transport.rttMs, 0)} jitterMs=${asNumber(transport.jitterMs, 0)} lossPct=${asNumber(transport.packetLossPct, 0)}`,
     `hint=${sanitizeText(divergence.reconciliationHint) || "n/a"}`
   ];
+
+  if (selectedEntity) {
+    lines.push(`selectedEntityDetail ${formatEntityLine(selectedEntity)}`);
+  }
+  if (entities.length > 0) {
+    lines.push(`entityCount=${entities.length}`);
+    entities.slice(0, 5).forEach((entity) => {
+      lines.push(formatEntityLine(entity));
+    });
+  }
+  return lines;
 }
 
 function toTimelineLines(snapshot) {
   const network = toNetworkSnapshot(snapshot);
   const timeline = asObject(network.timeline);
   const history = asObject(timeline.history);
+  const entityHistory = asArray(history.entities);
   const events = asArray(timeline.events);
   const lines = [
     `history=${asNumber(history.size, 0)}/${asNumber(history.limit, 0)}`,
     `oldestFrame=${history.oldestFrameId ?? "n/a"} latestFrame=${history.latestFrameId ?? "n/a"}`,
-    `alignment=${sanitizeText(history.alignment) || "unavailable"} frameGap=${history.frameGap ?? "n/a"}`
+    `alignment=${sanitizeText(history.alignment) || "unavailable"} frameGap=${history.frameGap ?? "n/a"}`,
+    `entityHistoryCount=${asNumber(history.entityCount, entityHistory.length)}`
   ];
+
+  if (entityHistory.length > 0) {
+    entityHistory.slice(0, 5).forEach((entityStatus) => {
+      const source = asObject(entityStatus);
+      const marker = source.selected === true ? "*" : "-";
+      lines.push(
+        `${marker}${sanitizeText(source.entityId) || "entity"} history=${asNumber(source.historySize, 0)}/${asNumber(source.historyLimit, 0)} `
+        + `aligned=${source.alignedFrameId ?? "n/a"} gap=${source.frameGap ?? "n/a"} align=${sanitizeText(source.alignment) || "unavailable"}`
+      );
+    });
+  }
 
   if (events.length === 0) {
     lines.push("No timeline events recorded yet.");
@@ -97,19 +142,37 @@ function toValidationLines(snapshot) {
 function toRewindLines(snapshot) {
   const network = toNetworkSnapshot(snapshot);
   const rewind = asObject(network.rewindPreparation);
+  const rewindEntities = asArray(rewind.entities);
+  const rewindSelected = asArray(rewind.selectedEntityIds);
   const correction = asObject(network.correction);
   const replay = asObject(network.rewindReplay);
+  const replaySelected = asArray(replay.selectedEntityIds);
 
-  return [
+  const lines = [
     `status=${sanitizeText(rewind.status) || "n/a"}`,
     `canPrepare=${Boolean(rewind.canPrepare)}`,
     `anchorFrame=${rewind.rewindAnchorFrameId ?? "n/a"} targetFrame=${rewind.rewindTargetFrameId ?? "n/a"}`,
     `resimulateFrameCount=${asNumber(rewind.resimulateFrameCount, 0)}`,
     `alignment=${sanitizeText(rewind.alignment) || "unavailable"} frameGap=${rewind.frameGap ?? "n/a"}`,
+    `selectedEntityIds=${rewindSelected.join(",") || "n/a"}`,
     `correctionMode=${sanitizeText(correction.mode) || "hold-annotate"} severity=${sanitizeText(correction.severity) || "low"}`,
-    `lastReplayId=${replay.replayId ?? "none"} replayedFrames=${asNumber(replay.replayedFrameCount, 0)} postReplaySeverity=${sanitizeText(replay.postReplaySeverity) || "n/a"}`,
+    `lastReplayId=${replay.replayId ?? "none"} replayedFrames=${asNumber(replay.replayedFrameCount, 0)} replayEntityIds=${replaySelected.join(",") || "n/a"}`,
+    `postReplaySeverity=${sanitizeText(replay.postReplaySeverity) || "n/a"}`,
     sanitizeText(rewind.note) || "No rewind preparation note."
   ];
+
+  if (rewindEntities.length > 0) {
+    lines.push(`rewindEntityCount=${rewindEntities.length}`);
+    rewindEntities.slice(0, 6).forEach((entityPrep) => {
+      const source = asObject(entityPrep);
+      lines.push(
+        `${sanitizeText(source.entityId) || "entity"} status=${sanitizeText(source.status) || "n/a"} `
+        + `canPrepare=${Boolean(source.canPrepare)} anchor=${source.rewindAnchorFrameId ?? "n/a"} `
+        + `resim=${asNumber(source.resimulateFrameCount, 0)} severity=${sanitizeText(source.severity) || "low"}`
+      );
+    });
+  }
+  return lines;
 }
 
 function toTraceLines(snapshot, maxLines = 10) {
@@ -139,20 +202,30 @@ function commandLinesForDivergence(context) {
   const scenario = asObject(snapshot.scenario);
   const divergence = asObject(snapshot.divergence);
   const network = asObject(snapshot.network);
+  const entities = asArray(divergence.entities);
 
-  return [
-    `status=${sanitizeText(divergence.status) || "unknown"}`,
+  const lines = [
+    `selectedStatus=${sanitizeText(divergence.status) || "unknown"}`,
+    `overallStatus=${sanitizeText(divergence.overallStatus) || sanitizeText(divergence.status) || "unknown"}`,
     `severity=${sanitizeText(divergence.severity) || "low"}`,
     `correctionMode=${sanitizeText(divergence.correctionMode) || "hold-annotate"}`,
     `alignment=${sanitizeText(divergence.alignment) || "unavailable"}`,
+    `selectedEntityId=${sanitizeText(divergence.selectedEntityId) || "n/a"}`,
     `phase=${sanitizeText(scenario.phaseId) || "unknown"}`,
     `phaseElapsed=${asNumber(scenario.phaseElapsedSeconds, 0).toFixed(2)}s/${asNumber(scenario.phaseDurationSeconds, 0).toFixed(2)}s`,
     `cycleCount=${asNumber(scenario.cycleCount, 0)}`,
-    `frameDelta=${asNumber(divergence.frameDelta, 0)}`,
+    `selectedFrameDelta=${asNumber(divergence.selectedFrameDelta ?? divergence.frameDelta, 0)}`,
+    `overallFrameDelta=${asNumber(divergence.overallFrameDelta, asNumber(divergence.frameDelta, 0))}`,
     `authoritativeFrame=${asNumber(divergence.authoritativeFrame, 0)}`,
     `predictedFrame=${asNumber(divergence.predictedFrame, 0)}`,
     `rttMs=${asNumber(network.rttMs, 0)} jitterMs=${asNumber(network.jitterMs, 0)} lossPct=${asNumber(network.packetLossPct, 0)}`
   ];
+
+  if (entities.length > 0) {
+    lines.push(`entityCount=${entities.length}`);
+    entities.slice(0, 6).forEach((entity) => lines.push(formatEntityLine(entity)));
+  }
+  return lines;
 }
 
 function commandLinesForTrace(context, args = []) {
@@ -222,22 +295,39 @@ function commandLinesForReproduction(context) {
 function commandLinesForRewind(context) {
   const snapshot = getCommandSnapshot(context);
   const rewind = asObject(snapshot.rewindPreparation);
+  const rewindEntities = asArray(rewind.entities);
+  const rewindSelected = asArray(rewind.selectedEntityIds);
   const timeline = asObject(snapshot.timeline);
   const history = asObject(timeline.history);
   const correction = asObject(snapshot.correction);
   const replay = asObject(snapshot.rewindReplay);
+  const replaySelected = asArray(replay.selectedEntityIds);
 
-  return [
+  const lines = [
     `rewindStatus=${sanitizeText(rewind.status) || "n/a"}`,
     `canPrepare=${Boolean(rewind.canPrepare)}`,
     `rewindAnchorFrame=${rewind.rewindAnchorFrameId ?? "n/a"}`,
     `rewindTargetFrame=${rewind.rewindTargetFrameId ?? "n/a"}`,
     `resimulateFrameCount=${asNumber(rewind.resimulateFrameCount, 0)}`,
+    `selectedEntityIds=${rewindSelected.join(",") || "n/a"}`,
     `history=${asNumber(history.size, 0)}/${asNumber(history.limit, 0)} alignment=${sanitizeText(history.alignment) || "unavailable"} frameGap=${history.frameGap ?? "n/a"}`,
     `correctionMode=${sanitizeText(correction.mode) || "hold-annotate"} severity=${sanitizeText(correction.severity) || "low"}`,
-    `lastReplayId=${replay.replayId ?? "none"} replayedFrames=${asNumber(replay.replayedFrameCount, 0)} postReplaySeverity=${sanitizeText(replay.postReplaySeverity) || "n/a"}`,
+    `lastReplayId=${replay.replayId ?? "none"} replayedFrames=${asNumber(replay.replayedFrameCount, 0)} replayEntityIds=${replaySelected.join(",") || "n/a"}`,
+    `postReplaySeverity=${sanitizeText(replay.postReplaySeverity) || "n/a"}`,
     sanitizeText(rewind.note) || "Rewind preparation status unavailable."
   ];
+
+  if (rewindEntities.length > 0) {
+    lines.push(`rewindEntityCount=${rewindEntities.length}`);
+    rewindEntities.slice(0, 8).forEach((entityPrep) => {
+      const source = asObject(entityPrep);
+      lines.push(
+        `${sanitizeText(source.entityId) || "entity"} status=${sanitizeText(source.status) || "n/a"} `
+        + `canPrepare=${Boolean(source.canPrepare)} anchor=${source.rewindAnchorFrameId ?? "n/a"} resim=${asNumber(source.resimulateFrameCount, 0)}`
+      );
+    });
+  }
+  return lines;
 }
 
 export function createNetworkSampleCDebugPlugin() {

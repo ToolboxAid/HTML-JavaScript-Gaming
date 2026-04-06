@@ -57,6 +57,21 @@ function toChecklistPrefix(status) {
   return "[.]";
 }
 
+function toEntityToken(entity, options = {}) {
+  const source = entity && typeof entity === "object" ? entity : {};
+  const limit = Number.isFinite(Number(options.labelLimit))
+    ? Math.max(6, Math.floor(Number(options.labelLimit)))
+    : 12;
+  const label = String(source.label || source.entityId || "entity");
+  const compactLabel = label.length > limit
+    ? `${label.slice(0, limit - 1)}.`
+    : label;
+  const delta = Number(source.frameDelta || 0);
+  const status = String(source.divergenceStatus || source.status || "unknown");
+  const marker = source.selected === true ? "*" : "-";
+  return `${marker}${compactLabel}:${delta}/${status}`;
+}
+
 export default class NetworkSampleCScene extends Scene {
   constructor(options = {}) {
     super();
@@ -96,7 +111,9 @@ export default class NetworkSampleCScene extends Scene {
         debugEnabled: this.debugConfig.debugEnabled === true
       },
       entities: {
-        count: 4,
+        count: Array.isArray(this.lastSnapshot?.divergence?.entities)
+          ? this.lastSnapshot.divergence.entities.length
+          : 0,
         timelineEvents: Number(this.lastSnapshot.timeline?.totalEvents || 0),
         traceEvents: Number(this.lastSnapshot.trace?.totalEvents || 0)
       },
@@ -128,24 +145,36 @@ export default class NetworkSampleCScene extends Scene {
   }
 
   handleControls(engineInput) {
+    const getSelectedEntityId = () => String(this.networkModel.selectedEntityId || this.lastSnapshot?.divergence?.selectedEntityId || "");
+
+    if (getEdgePress(engineInput, "KeyE", this.edgeState)) {
+      this.networkModel.selectNextEntity("manual-key");
+    }
+
     if (getEdgePress(engineInput, "Space", this.edgeState) || getEdgePress(engineInput, "Enter", this.edgeState)) {
       this.networkModel.addManualTraceMarker("manual-key");
     }
 
     if (getEdgePress(engineInput, "KeyD", this.edgeState)) {
-      this.networkModel.triggerManualMismatch("manual-key");
+      this.networkModel.triggerManualMismatch("manual-key", getSelectedEntityId());
     }
 
     if (getEdgePress(engineInput, "KeyR", this.edgeState)) {
-      this.networkModel.triggerManualReconcile("manual-key");
+      this.networkModel.triggerManualReconcile("manual-key", getSelectedEntityId());
     }
 
     if (getEdgePress(engineInput, "KeyW", this.edgeState)) {
-      this.networkModel.triggerRewindPreparation("manual-key");
+      const selectedEntityId = getSelectedEntityId();
+      this.networkModel.triggerRewindPreparation("manual-key", {
+        selectedEntityIds: selectedEntityId ? [selectedEntityId] : []
+      });
     }
 
     if (getEdgePress(engineInput, "KeyX", this.edgeState)) {
-      this.networkModel.executeRewindReplay("manual-key");
+      const selectedEntityId = getSelectedEntityId();
+      this.networkModel.executeRewindReplay("manual-key", {
+        entityIds: selectedEntityId ? [selectedEntityId] : []
+      });
     }
 
     if (getEdgePress(engineInput, "KeyV", this.edgeState)) {
@@ -167,6 +196,9 @@ export default class NetworkSampleCScene extends Scene {
     const divergence = this.lastSnapshot.divergence || {};
     const scenario = this.lastSnapshot.scenario || {};
     const network = this.lastSnapshot.network || {};
+    const entities = Array.isArray(divergence.entities) ? divergence.entities : [];
+    const selectedEntityLabel = String(divergence.selectedEntityLabel || divergence.selectedEntityId || "n/a");
+    const entitySummary = entities.slice(0, 3).map((entity) => toEntityToken(entity, { labelLimit: 11 })).join("  ");
 
     renderer.drawRect(24, 122, 442, 224, PANEL_COLOR);
     renderer.strokeRect(24, 122, 442, 224, PANEL_BORDER, 1);
@@ -177,44 +209,49 @@ export default class NetworkSampleCScene extends Scene {
     });
 
     const status = String(divergence.status || "unknown");
-    renderer.drawText(`status=${status}`, 42, 170, {
+    renderer.drawText(`selected=${status} overall=${String(divergence.overallStatus || status)}`, 42, 170, {
       color: toStatusColor(status),
-      font: "16px monospace",
+      font: "15px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`phase=${String(scenario.phaseLabel || "n/a")} (${String(scenario.phaseId || "n/a")})`, 42, 194, {
+    renderer.drawText(`phase=${String(scenario.phaseLabel || "n/a")} (${String(scenario.phaseId || "n/a")})`, 42, 192, {
       color: TEXT_COLOR,
-      font: "14px monospace",
+      font: "13px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`frameDelta=${Number(divergence.frameDelta || 0)} targetOffset=${Number(divergence.targetOffsetFrames || 0).toFixed(2)}`, 42, 218, {
+    renderer.drawText(`entity=${selectedEntityLabel} delta=${Number((divergence.selectedFrameDelta ?? divergence.frameDelta) || 0)} target=${Number(divergence.targetOffsetFrames || 0).toFixed(2)}`, 42, 214, {
       color: TEXT_COLOR,
-      font: "14px monospace",
+      font: "13px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`severity=${String(divergence.severity || "low")} correction=${String(divergence.correctionMode || "hold-annotate")}`, 42, 242, {
+    renderer.drawText(`severity=${String(divergence.severity || "low")} correction=${String(divergence.correctionMode || "hold-annotate")}`, 42, 236, {
       color: toStatusColor(String(divergence.status || "unknown")),
-      font: "14px monospace",
+      font: "13px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`authFrame=${Number(divergence.authoritativeFrame || 0)} predictedFrame=${Number(divergence.predictedFrame || 0)}`, 42, 266, {
+    renderer.drawText(`authFrame=${Number(divergence.authoritativeFrame || 0)} predictedFrame=${Number(divergence.predictedFrame || 0)}`, 42, 258, {
       color: MUTED_TEXT,
-      font: "14px monospace",
+      font: "13px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`rtt=${Number(network.rttMs || 0)}ms jitter=${Number(network.jitterMs || 0)}ms loss=${Number(network.packetLossPct || 0)}%`, 42, 290, {
+    renderer.drawText(`rtt=${Number(network.rttMs || 0)}ms jitter=${Number(network.jitterMs || 0)}ms loss=${Number(network.packetLossPct || 0)}%`, 42, 280, {
       color: MUTED_TEXT,
-      font: "14px monospace",
+      font: "13px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`cycle=${Number(scenario.cycleCount || 0)} phaseTime=${Number(scenario.phaseElapsedSeconds || 0).toFixed(2)}s align=${String(divergence.alignment || "n/a")}`, 42, 314, {
+    renderer.drawText(`cycle=${Number(scenario.cycleCount || 0)} phaseTime=${Number(scenario.phaseElapsedSeconds || 0).toFixed(2)}s align=${String(divergence.alignment || "n/a")}`, 42, 302, {
       color: MUTED_TEXT,
-      font: "14px monospace",
+      font: "12px monospace",
       textBaseline: "top"
     });
-    renderer.drawText("D mismatch  R reconcile  W prep  X execute  V validate", 42, 338, {
+    renderer.drawText(`entities ${entitySummary || "n/a"}`, 42, 322, {
       color: MUTED_TEXT,
-      font: "14px monospace",
+      font: "12px monospace",
+      textBaseline: "top"
+    });
+    renderer.drawText("E next entity  D mismatch  R reconcile  W prep  X execute  V validate", 42, 338, {
+      color: MUTED_TEXT,
+      font: "12px monospace",
       textBaseline: "top"
     });
   }
@@ -222,7 +259,15 @@ export default class NetworkSampleCScene extends Scene {
   renderTimelinePanel(renderer) {
     const timeline = this.lastSnapshot.timeline || {};
     const history = timeline.history || {};
-    const events = Array.isArray(timeline.events) ? timeline.events.slice(-7).reverse() : [];
+    const events = Array.isArray(timeline.events) ? timeline.events.slice(-5).reverse() : [];
+    const entityHistory = Array.isArray(history.entities) ? history.entities : [];
+    const entityHistorySummary = entityHistory
+      .slice(0, 3)
+      .map((entity) => {
+        const marker = entity.selected === true ? "*" : "-";
+        return `${marker}${String(entity.entityId || "entity")}:${entity.frameGap ?? "n/a"}/${String(entity.alignment || "n/a")}`;
+      })
+      .join("  ");
 
     renderer.drawRect(494, 122, 442, 224, PANEL_COLOR);
     renderer.strokeRect(494, 122, 442, 224, PANEL_BORDER, 1);
@@ -237,9 +282,14 @@ export default class NetworkSampleCScene extends Scene {
       font: "13px monospace",
       textBaseline: "top"
     });
+    renderer.drawText(`entityHistory=${entityHistorySummary || "n/a"}`, 512, 188, {
+      color: MUTED_TEXT,
+      font: "11px monospace",
+      textBaseline: "top"
+    });
 
     if (events.length === 0) {
-      renderer.drawText("No sequence events yet.", 512, 194, {
+      renderer.drawText("No sequence events yet.", 512, 210, {
         color: MUTED_TEXT,
         font: "14px monospace",
         textBaseline: "top"
@@ -248,7 +298,7 @@ export default class NetworkSampleCScene extends Scene {
     }
 
     events.forEach((event, index) => {
-      const y = 194 + (index * 22);
+      const y = 210 + (index * 22);
       const timestampMs = Number(event.timestampMs || 0);
       const type = String(event.type || "EVENT");
       const phaseId = String(event.phaseId || "phase");
@@ -265,6 +315,13 @@ export default class NetworkSampleCScene extends Scene {
     const reproduction = this.lastSnapshot.reproduction || {};
     const rewindPreparation = this.lastSnapshot.rewindPreparation || {};
     const rewindReplay = this.lastSnapshot.rewindReplay || {};
+    const rewindEntities = Array.isArray(rewindPreparation.entities) ? rewindPreparation.entities : [];
+    const rewindSelectedEntityIds = Array.isArray(rewindPreparation.selectedEntityIds)
+      ? rewindPreparation.selectedEntityIds
+      : [];
+    const replayEntityIds = Array.isArray(rewindReplay.selectedEntityIds)
+      ? rewindReplay.selectedEntityIds
+      : [];
     const steps = Array.isArray(reproduction.steps) ? reproduction.steps : [];
 
     renderer.drawRect(24, 370, 442, 228, PANEL_COLOR);
@@ -289,19 +346,24 @@ export default class NetworkSampleCScene extends Scene {
       font: "13px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`anchor=${rewindPreparation.rewindAnchorFrameId ?? "n/a"} resim=${rewindPreparation.resimulateFrameCount ?? 0}`, 42, 474, {
+    renderer.drawText(`selected=${rewindSelectedEntityIds.join(",") || "n/a"} anchor=${rewindPreparation.rewindAnchorFrameId ?? "n/a"} resim=${rewindPreparation.resimulateFrameCount ?? 0}`, 42, 474, {
       color: MUTED_TEXT,
-      font: "13px monospace",
+      font: "11px monospace",
       textBaseline: "top"
     });
-    renderer.drawText(`replay=${rewindReplay.replayId ?? "none"} frames=${rewindReplay.replayedFrameCount ?? 0} severity=${rewindReplay.postReplaySeverity ?? "n/a"}`, 42, 494, {
+    renderer.drawText(`replay=${rewindReplay.replayId ?? "none"} entities=${replayEntityIds.join(",") || "n/a"} frames=${rewindReplay.replayedFrameCount ?? 0}`, 42, 494, {
+      color: MUTED_TEXT,
+      font: "11px monospace",
+      textBaseline: "top"
+    });
+    renderer.drawText(`replaySeverity=${rewindReplay.postReplaySeverity ?? "n/a"} prepEntities=${rewindEntities.length}`, 42, 510, {
       color: MUTED_TEXT,
       font: "12px monospace",
       textBaseline: "top"
     });
 
-    steps.slice(0, 4).forEach((step, index) => {
-      const y = 514 + (index * 17);
+    steps.slice(0, 3).forEach((step, index) => {
+      const y = 530 + (index * 17);
       renderer.drawText(`${index + 1}. ${String(step)}`, 42, y, {
         color: MUTED_TEXT,
         font: "12px monospace",
@@ -351,9 +413,9 @@ export default class NetworkSampleCScene extends Scene {
       font: "bold 24px monospace",
       textBaseline: "top"
     });
-    renderer.drawText("Space/Enter: trace marker  D: mismatch  R: reconcile  W: prep  X: execute  V: validate", 24, 56, {
+    renderer.drawText("E: next entity  Space/Enter: trace marker  D: mismatch  R: reconcile  W: prep  X: execute  V: validate", 24, 56, {
       color: MUTED_TEXT,
-      font: "16px monospace",
+      font: "14px monospace",
       textBaseline: "top"
     });
     renderer.drawText("Open Play first, then Debug Mode for trace and checklist inspection.", 24, 80, {
