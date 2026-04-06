@@ -1,1 +1,12 @@
-Validate 3D debug surfaces
+# Validation Checklist
+
+- [x] PLAN doc present
+- [x] BUILD doc present
+- [x] APPLY doc present
+- [x] Docs-first scope preserved
+- [x] No engine-core changes
+- [x] Shared inspector capability marked opt-in
+- [x] No auto-injection requirement included
+- [x] No hidden 3D assumptions included
+- [x] Roadmap edits are bracket-only
+- [x] Zip built under <project folder>/tmp/

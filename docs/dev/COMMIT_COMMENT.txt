@@ -1,1 +1,1 @@
-Apply 3D debug surfaces
+Plan advanced inspector debug-surface contracts as a docs-first PLAN bundle with strict opt-in adoption, no engine-core changes, bracket-only roadmap tracker updates, and packaged delta zip output.

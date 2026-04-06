@@ -78,23 +78,23 @@
 
 # 🧊 TRACK H — 3D DEBUG SUPPORT
 
-- [x] Transform inspector
-- [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
-- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
-- [x] Camera debug panel
-- [x] Render pipeline stages
-- [x] Collision overlays
-- [x] Scene graph inspector
+- [ ] Transform inspector
+- [ ] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
+- [ ] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [ ] Camera debug panel
+- [ ] Render pipeline stages
+- [ ] Collision overlays
+- [ ] Scene graph inspector
 
 ---
 
 # 🔬 TRACK I — INSPECTORS & TOOLING
 
-- [x] Entity inspector
-- [x] Component inspector
-- [x] State diff viewer
-- [x] Timeline debugger
-- [x] Event stream viewer
+- [.] Entity inspector
+- [.] Component inspector
+- [.] State diff viewer
+- [.] Timeline debugger
+- [.] Event stream viewer
 
 ---
 

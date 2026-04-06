@@ -80,14 +80,14 @@ Track the staged network sample journey for debug surface support using a strict
 # TRACK T — SERVER DASHBOARD
 
 - [x] Server dashboard shell
-- [x] Player statistics view
-- [x] Latency view
-- [x] RX bytes view
-- [x] TX bytes view
-- [x] Connection/session counts
-- [x] Per-player status rows
-- [x] Refresh/update strategy
-- [x] Debug-only access rules
+- [.] Player statistics view
+- [.] Latency view
+- [.] RX bytes view
+- [.] TX bytes view
+- [.] Connection/session counts
+- [ ] Per-player status rows
+- [.] Refresh/update strategy
+- [ ] Debug-only access rules
 
 ---
 
