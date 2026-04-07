@@ -1,8 +1,7 @@
 VALIDATION CHECKLIST
-[pass] Single PR purpose: low-token start_of_day update plus roadmap relocation
-[pass] Start_of_day updates were explicitly authorized by the user
-[pass] Roadmap files were moved without rewriting content
-[pass] Roadmap rule updated to new location: docs/dev/roadmaps/*
-[pass] No runtime code changed
-[pass] Repo-structured delta ZIP prepared
-[note] Old docs/roadmaps/* paths still need removal when applying the move in the repo
+
+[✔] Sample directories unchanged
+[✔] No files added, removed, or renamed
+[✔] Numbering is sequential and consistent
+[✔] Formatting aligned across corrected samples
+[✔] Index references match updated numbering (if applicable)

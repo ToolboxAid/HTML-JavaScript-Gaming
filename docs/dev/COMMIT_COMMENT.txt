@@ -1,1 +1,5 @@
-docs: tighten low-token start_of_day workflow and move roadmaps to docs/dev/roadmaps
+APPLY: Sample number normalization and formatting alignment
+
+- Sequential numbering corrected
+- Formatting standardized
+- No file structure changes

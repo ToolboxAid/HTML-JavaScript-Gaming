@@ -1,6 +1,5 @@
 CHANGE SUMMARY
-- Tightened ChatGPT start_of_day workflow rules to reduce unnecessary Codex usage.
-- Tightened Codex start_of_day execution rules to reduce broad scans, vague BUILD retries, and opportunistic scope growth.
-- Refreshed helper startup files so low-token workflow mode is visible at session start.
-- Relocated roadmap tracker files from `docs/roadmaps/` to `docs/dev/roadmaps/` without rewriting roadmap content.
-- Updated direct references in bundled docs from `docs/roadmaps/` to `docs/dev/roadmaps/`.
+
+- Corrected sample numbering to be sequential
+- Standardized formatting across affected sample directories
+- No structural or file-level changes made
