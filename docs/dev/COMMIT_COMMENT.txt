@@ -1,13 +1,10 @@
-BUILD: Level 11.7 promotion gate (clean single-file retry)
+APPLY: accept clean Level 11.7 final promotion gate implementation
 
-- implemented promotion gate inline within createWorldGameStateSystem.js
+- accepted single-file inline promotion gate change in createWorldGameStateSystem.js
 - no new files created
 - no engine API changes
-- adhered to strict file-only scope
-
-notes:
-- replaces previous non-compliant attempt
-- ensures compatibility with repo constraints
+- no public API expansion
+- validation passed for handoff, score, and promotion-gate checks
 
 next:
-- validate promotion gate behavior
+- continue with roadmap item #1 Repo Structure Normalization after current lane is closed
