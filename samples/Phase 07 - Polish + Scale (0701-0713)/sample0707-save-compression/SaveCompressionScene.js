@@ -31,7 +31,7 @@ export default class SaveCompressionScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample115',
+      'Engine sample 0707',
       'Compressed save support stays inside engine persistence paths while preserving round-trip behavior.',
       'Press S to compress and L to restore.',
     ]);

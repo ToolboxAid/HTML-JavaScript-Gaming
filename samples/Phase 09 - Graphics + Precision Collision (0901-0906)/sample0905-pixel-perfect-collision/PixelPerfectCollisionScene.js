@@ -58,7 +58,7 @@ export default class PixelPerfectCollisionScene extends Scene {
     const pixelHit = areMasksColliding(ringMask, ax, ay, fillMask, bx, by);
 
     drawFrame(renderer, theme, [
-      'Engine Sample136',
+      'Engine sample 0905',
       'Pixel-perfect overlap resolves at occupied-cell precision.',
       pixelHit ? 'Pixel overlap: true' : 'Pixel overlap: false',
     ]);

@@ -24,7 +24,7 @@ export default class ControllerSupportScene extends Scene {
 
   render(renderer, engine) {
     drawFrame(renderer, theme, [
-      'Engine Sample110',
+      'Engine sample 0702',
       'Controller bindings flow through the same action-input abstraction as keyboard controls.',
       'Keyboard A/D or Pad0 Button0/Button1 can drive the same actions.',
     ]);

@@ -40,7 +40,7 @@ export default class AudioPlaylistTrackManagementScene extends Scene {
   render(renderer) {
     const state = this.playlist.getState('sample140-playlist');
     drawFrame(renderer, theme, [
-      'Engine Sample140',
+      'Engine sample 1003',
       'Track order and current selection are managed by a reusable playlist service.',
       this.status,
     ]);

@@ -69,7 +69,7 @@ export default class UIFrameworkScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample127',
+      'Engine sample 0806',
       'Canvas UI layout and input routing stay inside a reusable UI framework.',
       this.message,
     ]);

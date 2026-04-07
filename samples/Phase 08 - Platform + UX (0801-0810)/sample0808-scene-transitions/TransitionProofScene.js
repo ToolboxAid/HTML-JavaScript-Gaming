@@ -29,7 +29,7 @@ export default class TransitionProofScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample129',
+      'Engine sample 0808',
       'Scene handoff uses a reusable transition controller and transition scene.',
       `Current scene: ${this.label}`,
     ]);

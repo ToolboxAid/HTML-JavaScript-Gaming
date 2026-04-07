@@ -19,7 +19,7 @@ export default class AssetOptimizationScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample113',
+      'Engine sample 0705',
       'Asset optimization caches repeated loads inside engine-owned asset paths.',
       'The optimizer tracks deduplicated asset entries.',
     ]);

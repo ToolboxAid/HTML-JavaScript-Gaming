@@ -39,7 +39,7 @@ export default class FrequencyPlayerScene extends Scene {
   render(renderer, engine) {
     const track = engine.audio.getTrackState('sample125-frequencies');
     drawFrame(renderer, theme, [
-      'Engine Sample125',
+      'Engine sample 0804',
       'Specific frequencies are scheduled through a reusable playback contract.',
       this.status,
     ]);

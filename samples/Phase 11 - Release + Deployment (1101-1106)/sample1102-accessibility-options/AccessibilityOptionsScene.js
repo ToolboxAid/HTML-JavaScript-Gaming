@@ -63,7 +63,7 @@ export default class AccessibilityOptionsScene extends Scene {
     const bob = Math.sin(this.motion / 35) * 24;
 
     drawFrame(renderer, theme, [
-      'Engine Sample142',
+      'Engine sample 1102',
       'Accessibility settings adapt visuals and motion without embedding rules into the scene.',
       this.status,
     ]);

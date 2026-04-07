@@ -34,7 +34,7 @@ export default class PolygonCollisionScene extends Scene {
     const hit = arePolygonsColliding(staticPoly, movingPoly);
 
     drawFrame(renderer, theme, [
-      'Engine Sample133',
+      'Engine sample 0902',
       'Polygon-vs-polygon collision comes from an engine-owned SAT check.',
       hit ? 'Collision: true' : 'Collision: false',
     ]);

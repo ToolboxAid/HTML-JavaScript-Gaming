@@ -51,7 +51,7 @@ export default class MemoryManagementScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample114',
+      'Engine sample 0706',
       'Pooling and disposable cleanup stay engine-owned for safer long-running lifecycle behavior.',
       'Objects are reused instead of endlessly allocated.',
     ]);

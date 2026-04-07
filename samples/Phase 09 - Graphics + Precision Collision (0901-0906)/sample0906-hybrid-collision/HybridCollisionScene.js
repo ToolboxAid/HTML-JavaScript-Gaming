@@ -52,7 +52,7 @@ export default class HybridCollisionScene extends Scene {
     });
 
     drawFrame(renderer, theme, [
-      'Engine Sample137',
+      'Engine sample 0906',
       'Hybrid collision stages bounds, shape, and pixel checks in order.',
       result.collided ? 'Hybrid collision: true' : 'Hybrid collision: false',
     ]);

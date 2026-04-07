@@ -44,7 +44,7 @@ export default class ParticleFxScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample126',
+      'Engine sample 0805',
       'Explosion particles are managed by an engine-owned effect system.',
       this.status,
     ]);

@@ -59,7 +59,7 @@ export default class AudioSystemScene extends Scene {
     const sfx = engine.audio.getTrackState('sample122-sfx');
 
     drawFrame(renderer, theme, [
-      'Engine Sample122',
+      'Engine sample 0801',
       'Audio playback is routed through an engine-owned audio service.',
       this.status,
     ]);

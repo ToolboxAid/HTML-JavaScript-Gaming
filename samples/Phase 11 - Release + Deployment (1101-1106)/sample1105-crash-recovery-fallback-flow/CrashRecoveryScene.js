@@ -52,7 +52,7 @@ export default class CrashRecoveryScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample145',
+      'Engine sample 1105',
       'Crash recovery stores a failure record and exposes a fallback state instead of a hard stop.',
       this.status,
     ]);

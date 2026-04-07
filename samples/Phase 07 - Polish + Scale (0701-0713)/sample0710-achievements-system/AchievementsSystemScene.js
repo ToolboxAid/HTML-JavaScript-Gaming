@@ -31,7 +31,7 @@ export default class AchievementsSystemScene extends Scene {
   render(renderer) {
     const unlocked = this.achievements.getAll().filter((entry) => entry.unlocked);
     drawFrame(renderer, theme, [
-      'Engine Sample118',
+      'Engine sample 0710',
       'Achievements unlock through reusable engine-owned milestone evaluation.',
       'Press C to collect coins and unlock milestones.',
     ]);

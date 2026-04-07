@@ -36,7 +36,7 @@ export default class CookieWriteReadScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample139',
+      'Engine sample 1002',
       'Cookie persistence is wrapped in an engine-owned service.',
       this.status,
     ]);

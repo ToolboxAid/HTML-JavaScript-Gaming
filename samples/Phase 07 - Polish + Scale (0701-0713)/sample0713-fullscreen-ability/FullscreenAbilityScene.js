@@ -90,7 +90,7 @@ export default class FullscreenAbilityScene extends Scene {
     renderer.drawRect(this.box.x, this.box.y, this.box.width, this.box.height, fullscreen.active ? '#fbbf24' : theme.getColor('actorFill'));
 
     const lines = [
-      'Engine Sample121',
+      'Engine sample 0713',
       'Demonstrates reusable fullscreen enter, exit, and state reporting.',
       'Use the fullscreen buttons below or click the matching buttons on the canvas.',
       fullscreen.active ? 'Fullscreen is active.' : 'Running in windowed mode.',

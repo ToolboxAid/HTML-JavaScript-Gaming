@@ -32,7 +32,7 @@ export default class InputRemappingScene extends Scene {
 
   render(renderer, engine) {
     drawFrame(renderer, theme, [
-      'Engine Sample109',
+      'Engine sample 0701',
       'Input remapping updates engine-owned action bindings without changing scene logic.',
       this.message,
     ]);

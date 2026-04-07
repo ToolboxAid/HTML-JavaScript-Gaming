@@ -61,7 +61,7 @@ export default class MP3PlayerScene extends Scene {
       ? Math.max(0, Math.min(1, (track?.currentTime ?? 0) / duration))
       : 0;
     drawFrame(renderer, theme, [
-      'Engine Sample138',
+      'Engine sample 1001',
       'MP3-style controls route through an engine-owned media track service.',
       this.status,
     ]);

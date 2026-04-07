@@ -56,7 +56,7 @@ export default class RasterMaskCollisionScene extends Scene {
     const maskHit = areMasksColliding(plusMask, ax, ay, lMask, bx, by);
 
     drawFrame(renderer, theme, [
-      'Engine Sample135',
+      'Engine sample 0904',
       'Raster mask collision checks occupied cells instead of only loose bounds.',
       maskHit ? 'Mask collision: true' : 'Mask collision: false',
     ]);

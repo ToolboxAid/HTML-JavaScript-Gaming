@@ -47,7 +47,7 @@ export default class InputContextSystemScene extends Scene {
     const context = engine.input?.getContext?.() || 'none';
     const gameplayActive = context === 'gameplay';
     drawFrame(renderer, theme, [
-      'Engine Sample128',
+      'Engine sample 0807',
       'Input routing swaps action maps through a reusable context service.',
       this.status,
     ]);

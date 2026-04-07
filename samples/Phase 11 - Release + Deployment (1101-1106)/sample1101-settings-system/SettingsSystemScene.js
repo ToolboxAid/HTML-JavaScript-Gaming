@@ -58,7 +58,7 @@ export default class SettingsSystemScene extends Scene {
     const volumeWidth = 320;
 
     drawFrame(renderer, theme, [
-      'Engine Sample141',
+      'Engine sample 1101',
       'Settings persist separately from scene logic and can be applied by category.',
       this.status,
     ]);

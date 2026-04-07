@@ -28,7 +28,7 @@ export default class LocalizationSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample119',
+      'Engine sample 0711',
       'Localized text resolves through engine-owned language lookup instead of scene string switches.',
       this.localization.t('hint'),
     ]);

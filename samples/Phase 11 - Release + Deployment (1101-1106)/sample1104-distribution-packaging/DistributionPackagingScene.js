@@ -44,7 +44,7 @@ export default class DistributionPackagingScene extends Scene {
     const manifest = this.packageManifest;
 
     drawFrame(renderer, theme, [
-      'Engine Sample144',
+      'Engine sample 1104',
       'Packaging collects entries, assets, and notes into a reusable release descriptor.',
       this.status,
     ]);

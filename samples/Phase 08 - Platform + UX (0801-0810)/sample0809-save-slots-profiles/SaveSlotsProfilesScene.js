@@ -53,7 +53,7 @@ export default class SaveSlotsProfilesScene extends Scene {
   render(renderer) {
     const entries = this.slots.listSlots();
     drawFrame(renderer, theme, [
-      'Engine Sample130',
+      'Engine sample 0809',
       'Multiple save identities are managed by a reusable save slot service.',
       this.status,
     ]);

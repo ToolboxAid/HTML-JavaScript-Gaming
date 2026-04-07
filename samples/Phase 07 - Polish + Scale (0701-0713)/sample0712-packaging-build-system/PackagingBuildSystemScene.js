@@ -13,7 +13,7 @@ const theme = new Theme(ThemeTokens);
 export default class PackagingBuildSystemScene extends Scene {
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample120',
+      'Engine sample 0712',
       'The repo now has a repeatable manifest-generation build step for packaging sample outputs.',
       'This sample surfaces the build direction rather than re-implementing packaging in scene code.',
     ]);

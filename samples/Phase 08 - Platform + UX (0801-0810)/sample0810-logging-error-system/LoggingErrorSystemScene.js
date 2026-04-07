@@ -25,14 +25,14 @@ export default class LoggingErrorSystemScene extends Scene {
   }
 
   logInfo(engine) {
-    engine.logger.info('Sample131 info event.', { source: 'sample131' });
+    engine.logger.info('sample 0810 info event.', { source: 'sample131' });
     this.status = 'Info log added.';
   }
 
   triggerHandledError(engine) {
     this.ensureBoundary(engine);
     const fallback = this.boundary.run(() => {
-      throw new Error('Sample131 simulated failure.');
+      throw new Error('sample 0810 simulated failure.');
     }, 'Recovered with fallback');
     this.status = fallback;
   }
@@ -40,7 +40,7 @@ export default class LoggingErrorSystemScene extends Scene {
   render(renderer, engine) {
     const entries = engine.logger.getEntries().slice(-5);
     drawFrame(renderer, theme, [
-      'Engine Sample131',
+      'Engine sample 0810',
       'Structured logs and graceful error handling stay in reusable engine utilities.',
       this.status,
     ]);

@@ -46,7 +46,7 @@ export default class MidiPlayerScene extends Scene {
   render(renderer, engine) {
     const track = engine.audio.getTrackState('sample123-midi');
     drawFrame(renderer, theme, [
-      'Engine Sample123',
+      'Engine sample 0802',
       'Timed note playback is routed through a reusable MIDI player.',
       this.status,
     ]);

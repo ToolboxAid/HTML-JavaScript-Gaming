@@ -33,7 +33,7 @@ export default class MiniMapSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample117',
+      'Engine sample 0709',
       'Mini-map presentation stays inside engine-owned debug/render paths.',
       'Move with Arrow keys to watch the player and camera update on the map.',
     ]);

@@ -25,7 +25,7 @@ export default class ResolutionScalingScene extends Scene {
   render(renderer) {
     const scaled = this.scaler.getScaledSize();
     drawFrame(renderer, theme, [
-      'Engine Sample111',
+      'Engine sample 0703',
       'Resolution scaling stays engine-owned and exposes predictable scaled sizes.',
       'Press = to scale up and - to scale down.',
     ]);

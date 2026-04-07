@@ -45,7 +45,7 @@ export default class SynthesizerScene extends Scene {
   render(renderer, engine) {
     const note = engine.audio.getTrackState('sample124-note');
     drawFrame(renderer, theme, [
-      'Engine Sample124',
+      'Engine sample 0803',
       'Generated tones come from a reusable synth wrapper over engine audio.',
       this.status,
     ]);

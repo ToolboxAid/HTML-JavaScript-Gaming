@@ -25,7 +25,7 @@ export default class ReleaseValidationChecklistScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample146',
+      'Engine sample 1106',
       'Release validation turns readiness rules into a reusable checklist flow.',
       this.status,
     ]);

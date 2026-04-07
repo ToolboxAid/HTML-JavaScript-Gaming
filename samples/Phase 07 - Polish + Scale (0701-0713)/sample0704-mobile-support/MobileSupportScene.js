@@ -22,7 +22,7 @@ export default class MobileSupportScene extends Scene {
   render(renderer) {
     const buttonSize = 48 * this.tweaks.uiScale + this.tweaks.touchPadding;
     drawFrame(renderer, theme, [
-      'Engine Sample112',
+      'Engine sample 0704',
       'Mobile-friendly runtime tweaks stay reusable and engine-owned instead of living in scene hacks.',
       'Touch-capable runtimes get larger controls and padding defaults.',
     ]);

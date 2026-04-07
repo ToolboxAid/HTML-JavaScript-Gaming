@@ -28,7 +28,7 @@ export default class DeploymentProfilesScene extends Scene {
     const cards = this.profiles.list();
 
     drawFrame(renderer, theme, [
-      'Engine Sample143',
+      'Engine sample 1103',
       'Deployment profiles centralize per-build behavior instead of scattering conditionals.',
       this.status,
     ]);

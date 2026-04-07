@@ -40,7 +40,7 @@ export default class PointInPolygonScene extends Scene {
     const inside = isPointInPolygon(this.probe, polygon);
 
     drawFrame(renderer, theme, [
-      'Engine Sample134',
+      'Engine sample 0903',
       'Inside-shape testing stays reusable through point-in-polygon checks.',
       inside ? 'Probe is inside.' : 'Probe is outside.',
     ]);

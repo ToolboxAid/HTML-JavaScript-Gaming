@@ -42,7 +42,7 @@ export default class ReplaySystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample116',
+      'Engine sample 0708',
       'Replay capture and playback are engine-owned instead of scene-specific recording hacks.',
       'Press R to record a short run and watch playback.',
     ]);

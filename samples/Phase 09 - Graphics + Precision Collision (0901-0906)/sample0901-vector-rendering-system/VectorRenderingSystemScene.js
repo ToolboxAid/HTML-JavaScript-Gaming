@@ -39,7 +39,7 @@ export default class VectorRenderingSystemScene extends Scene {
     });
 
     drawFrame(renderer, theme, [
-      'Engine Sample132',
+      'Engine sample 0901',
       'Vector shapes render through engine-owned transform and drawing paths.',
       'The ship moves and rotates using transformed line geometry.',
     ]);
