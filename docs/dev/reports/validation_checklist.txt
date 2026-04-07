@@ -1,13 +1,7 @@
 VALIDATION CHECKLIST
 
-[x] Single approved file modified
-[x] No new source files created
-[x] No other files modified
-[x] No engine API changes
-[x] No public API expansion
-[x] WorldGameStateAuthoritativeHandoff passed
-[x] WorldGameStateAuthoritativeScore passed
-[x] Stable window promotion check passed
-[x] Divergence block check passed
-[x] Rollback abort check passed
-[x] Ready to commit
+[ ] src/engine/ exists
+[ ] all files from engine/** exist under src/engine/** (1:1)
+[ ] original engine/** remains unchanged
+[ ] no import paths changed
+[ ] application runs as before

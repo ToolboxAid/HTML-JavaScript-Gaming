@@ -1,12 +1,8 @@
-FILE TREE
+FILE TREE (expected after BUILD)
 
-docs/
-├── pr/
-│   └── APPLY_PR_LEVEL_11_7_FINAL_PROMOTION_GATE.md
-└── dev/
-    ├── commit_comment.txt
-    ├── codex_commands.md
-    └── reports/
-        ├── change_summary.txt
-        ├── file_tree.txt
-        └── validation_checklist.txt
+src/
+└── engine/
+    └── (mirror of engine/**)
+
+engine/
+└── (unchanged)

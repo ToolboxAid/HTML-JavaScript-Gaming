@@ -1,10 +1,15 @@
-APPLY: accept clean Level 11.7 final promotion gate implementation
+BUILD: repo structure normalization (01) staged engine move
 
-- accepted single-file inline promotion gate change in createWorldGameStateSystem.js
-- no new files created
+- created src/engine/ directory
+- copied engine/** to src/engine/** (1:1 mirror)
+- no changes to original engine/ directory
+- no import path changes
 - no engine API changes
-- no public API expansion
-- validation passed for handoff, score, and promotion-gate checks
+
+notes:
+- staged move to allow safe validation before cutover
+- follow-up PR will switch imports to src/engine/
 
 next:
-- continue with roadmap item #1 Repo Structure Normalization after current lane is closed
+- validate mirror integrity
+- proceed to import normalization PR
